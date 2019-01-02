@@ -367,6 +367,11 @@ public class DashboardUtil {
 	public static boolean addWidgetVsWorkflowContext(WidgetVsWorkflowContext widgetVsWorkflowContext) throws Exception {
 		if (widgetVsWorkflowContext != null) {
 			
+			if((widgetVsWorkflowContext.getWorkflowId() == null || widgetVsWorkflowContext.getWorkflowId() <= 0) && widgetVsWorkflowContext.getWorkflowString() != null) {
+				Long workflowId = WorkflowUtil.addWorkflow(widgetVsWorkflowContext.getWorkflowString());
+				widgetVsWorkflowContext.setWorkflowId(workflowId);
+			}
+			
 			GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
 					.table(ModuleFactory.getWidgetVsWorkflowModule().getTableName())
 					.fields(FieldFactory.getWidgetVsWorkflowFields());

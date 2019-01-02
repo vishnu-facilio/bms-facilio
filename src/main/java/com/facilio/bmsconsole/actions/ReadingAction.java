@@ -721,7 +721,7 @@ public class ReadingAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.FORMULA_FIELD, formula);
 		WorkflowContext workflow = formula.getWorkflow();
 		if(workflow!= null && workflow.getExpressions() == null) {
-			WorkflowUtil.parseStringToWorkflowObject(workflow.getWorkflowString(), workflow);
+			WorkflowUtil.getWorkflowContextFromString(workflow.getWorkflowString(), workflow);
 		}
 		
 		Chain updateEnPIChain = FacilioChainFactory.updateFormulaChain();

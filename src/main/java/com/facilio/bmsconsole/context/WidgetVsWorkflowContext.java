@@ -1,12 +1,32 @@
 package com.facilio.bmsconsole.context;
 
+import com.facilio.workflows.context.WorkflowContext;
+import com.facilio.workflows.util.WorkflowUtil;
+
 public class WidgetVsWorkflowContext {
 	
 	Long id,workflowId,baseSpaceId,widgetId;
 	String workflowName,workflowString;
+	WorkflowContext workflow;
 
-	public String getWorkflowString() {
+	public WorkflowContext getWorkflow() throws Exception {
+		
+		if(workflow == null && workflowString != null) {
+			workflow = WorkflowUtil.getWorkflowContextFromString(workflowString);
+		}
+		return workflow;
+	}
+
+	public void setWorkflow(WorkflowContext workflow) {
+		this.workflow = workflow;
+	}
+
+	public String getWorkflowString() throws Exception {
+		if(workflowString == null && workflow != null) {
+			workflowString = WorkflowUtil.getXmlStringFromWorkflow(workflow);
+		}
 		return workflowString;
+		
 	}
 
 	public void setWorkflowString(String workflowString) {

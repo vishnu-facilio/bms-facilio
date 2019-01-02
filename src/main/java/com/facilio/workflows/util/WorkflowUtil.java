@@ -147,7 +147,7 @@ public class WorkflowUtil {
 	}
 	public static Multimap<String, FacilioField> getAllParentAndfieldIdfromWorkflow(WorkflowContext workflow) throws Exception {
 		
-		WorkflowContext workflowContext = parseStringToWorkflowObject(workflow.getWorkflowString());
+		WorkflowContext workflowContext = getWorkflowContextFromString(workflow.getWorkflowString());
 		parseExpression(workflowContext);
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		Multimap<String, FacilioField> resultMap = ArrayListMultimap.create();
@@ -280,7 +280,7 @@ public class WorkflowUtil {
 	}
 	
 	public static Object getWorkflowExpressionResult(String workflowString,Map<String,Object> paramMap, Map<String, ReadingDataMeta> rdmCache, boolean ignoreNullExpressions, boolean ignoreMarked) throws Exception {
-		WorkflowContext workflowContext = parseStringToWorkflowObject(workflowString);
+		WorkflowContext workflowContext = getWorkflowContextFromString(workflowString);
 		workflowContext.setCachedRDM(rdmCache);
 		workflowContext.setIgnoreMarkedReadings(ignoreMarked);
 		List<ParameterContext> parameterContexts = validateAndGetParameters(workflowContext,paramMap);
@@ -294,7 +294,7 @@ public class WorkflowUtil {
 	}
 	
 	public static Map<String, Object> getExpressionResultMap(String workflowString,Map<String,Object> paramMap, Map<String, ReadingDataMeta> rdmCache, boolean ignoreNullExpressions, boolean ignoreMarked) throws Exception {
-		WorkflowContext workflowContext = parseStringToWorkflowObject(workflowString);
+		WorkflowContext workflowContext = getWorkflowContextFromString(workflowString);
 		workflowContext.setCachedRDM(rdmCache);
 		workflowContext.setIgnoreMarkedReadings(ignoreMarked);
 		List<ParameterContext> parameterContexts = validateAndGetParameters(workflowContext,paramMap);
@@ -423,7 +423,7 @@ public class WorkflowUtil {
 			workflow.setWorkflowString(workflowContext.getWorkflowString());
 		}
 		
-		parseStringToWorkflowObject(workflow.getWorkflowString(),workflow);
+		getWorkflowContextFromString(workflow.getWorkflowString(),workflow);
 		
 		validateWorkflow(workflow);
 		
@@ -670,7 +670,7 @@ public class WorkflowUtil {
 	
 	private static WorkflowContext getWorkflowFromProp(Map<String, Object> prop, boolean isWithExpParsed) throws Exception {
 		WorkflowContext workflow = FieldUtil.getAsBeanFromMap(prop, WorkflowContext.class);
-		workflow = parseStringToWorkflowObject(workflow.getWorkflowString(),workflow);
+		workflow = getWorkflowContextFromString(workflow.getWorkflowString(),workflow);
 		
 		if(isWithExpParsed) {
 			parseExpression(workflow);
@@ -1270,10 +1270,10 @@ public class WorkflowUtil {
 		}
 		return condition;
 	}
-	public static WorkflowContext parseStringToWorkflowObject(String workflow) throws Exception {
-		return parseStringToWorkflowObject(workflow,null);
+	public static WorkflowContext getWorkflowContextFromString(String workflow) throws Exception {
+		return getWorkflowContextFromString(workflow,null);
 	}
-	public static WorkflowContext parseStringToWorkflowObject(String workflow,WorkflowContext workflowContext) throws Exception {
+	public static WorkflowContext getWorkflowContextFromString(String workflow,WorkflowContext workflowContext) throws Exception {
     	if(workflowContext == null) {
     		workflowContext = new WorkflowContext();
     	}

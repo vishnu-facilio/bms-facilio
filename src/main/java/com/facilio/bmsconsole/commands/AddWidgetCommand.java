@@ -211,6 +211,12 @@ public class AddWidgetCommand implements Command {
 					
 				}
 				
+				else if (widget.getWidgetVsWorkflowContexts() != null && !widget.getWidgetVsWorkflowContexts().isEmpty()) {
+					for(WidgetVsWorkflowContext widgetVsWorkflowContext :widget.getWidgetVsWorkflowContexts()) {
+						widgetVsWorkflowContext.setWidgetId(widget.getId());
+						DashboardUtil.addWidgetVsWorkflowContext(widgetVsWorkflowContext);
+					}
+				}
 			}
 			else if(context.get(FacilioConstants.ContextNames.WIDGET_TYPE).equals(WidgetType.WEB)) {
 				WidgetWebContext widgetWebContext = (WidgetWebContext) widget;

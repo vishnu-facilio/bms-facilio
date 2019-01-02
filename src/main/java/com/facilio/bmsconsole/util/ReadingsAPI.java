@@ -753,7 +753,7 @@ public class ReadingsAPI {
 	public static int getDataInterval(WorkflowContext workflow, List<WorkflowFieldContext>... wFields) throws Exception {
 		int dataInterval = DEFAULT_DATA_INTERVAL;
 		if (workflow.getExpressions() == null) {
-			WorkflowUtil.parseStringToWorkflowObject(workflow.getWorkflowString(),workflow);
+			WorkflowUtil.getWorkflowContextFromString(workflow.getWorkflowString(),workflow);
 		}
 		List<WorkflowFieldContext> workflowFields = wFields != null && wFields.length == 1 ? wFields[0] : WorkflowUtil.getWorkflowField(workflow);
 		if (workflowFields != null) {
