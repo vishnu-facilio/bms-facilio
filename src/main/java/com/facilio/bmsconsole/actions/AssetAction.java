@@ -128,25 +128,46 @@ public class AssetAction extends FacilioAction {
  			searchObj.put("query", getSearch());
 	 		context.put(FacilioConstants.ContextNames.SEARCH, searchObj);
  		}
- 		
- 		JSONObject pagination = new JSONObject();
- 		pagination.put("page", getPage());
- 		pagination.put("perPage", getPerPage());
- 		if (getPerPage() < 0) {
- 			pagination.put("perPage", 5000);
+ 		if (getCount()) {	// only count
+			context.put(FacilioConstants.ContextNames.FETCH_COUNT, true);
+		}
+ 		else {
+ 			JSONObject pagination = new JSONObject();
+ 	 		pagination.put("page", getPage());
+ 	 		pagination.put("perPage", getPerPage());
+ 	 		if (getPerPage() < 0) {
+ 	 			pagination.put("perPage", 5000);
+ 	 		}
+ 	 		context.put(FacilioConstants.ContextNames.PAGINATION, pagination);
  		}
- 		context.put(FacilioConstants.ContextNames.READING_ID, readingId);
- 		context.put(FacilioConstants.ContextNames.PAGINATION, pagination);
  		
+ 		
+ 		context.put(FacilioConstants.ContextNames.READING_ID, readingId);
  		context.put(FacilioConstants.ContextNames.PARENT_CATEGORY_ID, categoryId);
  		context.put(FacilioConstants.ContextNames.INPUT_TYPE, getInputType());
  		context.put(FacilioConstants.ContextNames.WITH_READINGS, this.getWithReadings());
  		Chain assetList = FacilioChainFactory.getAssetListChain();
  		assetList.execute(context);
- 		assets = (List<AssetContext>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
- 		setAssetCount(assets.size());
- 		setResult("assets", assets);
+ 		if (getCount()) {
+			setAssetCount((Long) context.get(FacilioConstants.ContextNames.RECORD_COUNT));
+			setResult("count", assetCount);
+		}
+ 		else {
+ 			assets = (List<AssetContext>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
+ 			setResult("assets", assets);
+ 		}
 		return SUCCESS;
+	}
+	
+	private Boolean count;
+	public Boolean getCount() {
+		if (count == null) {
+			return false;
+		}
+		return count;
+	}
+	public void setCount(Boolean count) {
+		this.count = count;
 	}
 	
 	private ReadingInputType inputType;
@@ -245,12 +266,15 @@ public class AssetAction extends FacilioAction {
 	public void setAssets(List<AssetContext> assets) {
 		this.assets = assets;
 	}
-	private long assetCount;
-	public long getAssetCount() {
+	private Long assetCount;
+	public Long getAssetCount() {
+		if (assetCount == null) {
+			assetCount = 0L;
+		}
 		return assetCount;
 	}
 
-	public void setAssetCount(long assetCount) {
+	public void setAssetCount(Long assetCount) {
 		this.assetCount = assetCount;
 	}
 

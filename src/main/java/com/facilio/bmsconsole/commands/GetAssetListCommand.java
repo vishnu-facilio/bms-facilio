@@ -21,6 +21,7 @@ import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
+import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.SpaceAPI;
@@ -36,10 +37,19 @@ public class GetAssetListCommand implements Command {
 		// TODO Auto-generated method stub
 		long startTime = System.currentTimeMillis();
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
-		List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
-		FacilioView view = (FacilioView) context.get(FacilioConstants.ContextNames.CUSTOM_VIEW);
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(moduleName);
+		
+		Boolean getCount = (Boolean) context.get(FacilioConstants.ContextNames.FETCH_COUNT);
+		List<FacilioField> fields;
+		if (getCount != null && getCount) {
+			fields = FieldFactory.getCountField(module);
+		}
+		else {
+			fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
+		}
+		FacilioView view = (FacilioView) context.get(FacilioConstants.ContextNames.CUSTOM_VIEW);
+		
 		SelectRecordsBuilder<AssetContext> builder = new SelectRecordsBuilder<AssetContext>()
 															.module(module)
 															.beanClass(FacilioConstants.ContextNames.getClassFromModuleName(moduleName))
@@ -115,29 +125,34 @@ public class GetAssetListCommand implements Command {
 		LOGGER.debug("Time taken to execute Fetch assets in GetAssetListCommand : "+getTimeTaken);
 		
 		if (records != null && !records.isEmpty()) {
-			Set<Long> spaceIds = new HashSet<Long>();
-			Set<Long> typeIds = new HashSet<Long>();
-			for(AssetContext asset: records) {
-				if (asset.getSpaceId() > 0) {
-					spaceIds.add(asset.getSpaceId());
-				}
-				if (asset.getType() != null && asset.getType().getId() > 0) {
-					typeIds.add(asset.getType().getId());
-				}
+			if (getCount != null && getCount) {
+				context.put(FacilioConstants.ContextNames.RECORD_COUNT, records.get(0).getData().get("count"));
 			}
-			Map<Long, BaseSpaceContext> spaceMap = SpaceAPI.getBaseSpaceMap(spaceIds);
-			Map<Long, AssetTypeContext> assetTypeMap = AssetsAPI.getAssetType(typeIds);
-			for(AssetContext asset: records) {
-				if(asset.getSpaceId() != -1) {
-					asset.setSpace(spaceMap.get(asset.getSpaceId()));
+			else {
+				Set<Long> spaceIds = new HashSet<Long>();
+				Set<Long> typeIds = new HashSet<Long>();
+				for(AssetContext asset: records) {
+					if (asset.getSpaceId() > 0) {
+						spaceIds.add(asset.getSpaceId());
+					}
+					if (asset.getType() != null && asset.getType().getId() > 0) {
+						typeIds.add(asset.getType().getId());
+					}
 				}
-				if (asset.getType() != null && asset.getType().getId() > 0) {
-					asset.setType(assetTypeMap.get(asset.getType().getId()));
+				Map<Long, BaseSpaceContext> spaceMap = SpaceAPI.getBaseSpaceMap(spaceIds);
+				Map<Long, AssetTypeContext> assetTypeMap = AssetsAPI.getAssetType(typeIds);
+				for(AssetContext asset: records) {
+					if(asset.getSpaceId() != -1) {
+						asset.setSpace(spaceMap.get(asset.getSpaceId()));
+					}
+					if (asset.getType() != null && asset.getType().getId() > 0) {
+						asset.setType(assetTypeMap.get(asset.getType().getId()));
+					}
 				}
+				
+				context.put(FacilioConstants.ContextNames.RECORD_LIST, records);
 			}
 		}
-		
-		context.put(FacilioConstants.ContextNames.RECORD_LIST, records);
 		
 		long timeTaken = System.currentTimeMillis() - startTime;
 		LOGGER.debug("Time taken to execute GetAssetListCommand : "+timeTaken);
