@@ -139,6 +139,13 @@ public class ViewFactory {
 		
 		order = 1;
 		views = new LinkedHashMap<>();
+		views.put("active", getRulesByStatus("active", "Active", true).setOrder(order++));
+		views.put("inactive", getRulesByStatus("inactive", "In Active", false).setOrder(order++));
+		views.put("all", getAllRules());
+		viewsMap.put("workflowrule", views);
+		
+		order = 1;
+		views = new LinkedHashMap<>();
 		views.put("active", getSeverityAlarms("active", "Active", FacilioConstants.Alarm.CLEAR_SEVERITY, false).setOrder(order++));
 		views.put("unacknowledged", getUnacknowledgedAlarms().setOrder(order++));
 		views.put("critical", getSeverityAlarms("critical", "Critical Alarms", "Critical", true).setOrder(order++));
@@ -364,6 +371,36 @@ public class ViewFactory {
 		assetView.setSortFields(Arrays.asList(new SortField(localId, false)));
 		
 		return assetView;
+	}
+	
+	private static FacilioView getAllRules() {
+		
+		FacilioView allView = new FacilioView();
+		allView.setName("all");
+		allView.setDisplayName("All");
+		
+		return allView;
+	}
+	private static FacilioView getRulesByStatus(String name, String displayName, boolean status) {
+		Condition statusCondition = getRulesStateCondition(status);
+		
+		Criteria criteria = new Criteria();
+		criteria.addAndCondition(statusCondition);
+		
+		FacilioView view = new FacilioView();
+		view.setName(name);
+		view.setDisplayName(displayName);
+		view.setCriteria(criteria);
+		return view;
+	}
+	private static Condition getRulesStateCondition(Boolean status) {
+		List<FacilioField> rulesFields = FieldFactory.getWorkflowRuleFields();
+		Map<String,FacilioField> fieldProps = FieldFactory.getAsMap(rulesFields);
+		
+		FacilioField statusField = fieldProps.get("status");
+		
+		Condition statusCondition = CriteriaAPI.getCondition(statusField, String.valueOf(status),BooleanOperators.IS);
+		return statusCondition;
 	}
 	
 	private static FacilioView getAllAssetsView() {

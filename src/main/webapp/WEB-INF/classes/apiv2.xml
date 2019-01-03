@@ -241,6 +241,15 @@
 		</action>
 	</package>
 	
+	<package name="rulesListApiv2" namespace="/api/v2/rules" extends="v2Api">
+		<action name="*" class="com.facilio.bmsconsole.actions.WorkflowRuleAction"
+			method="v2RulesList">
+			<param name="permission">READ,READ_OWN,READ_TEAM</param>
+			<param name="viewName">{1}</param>
+			<param name="ruleType">1</param>
+		</action>
+	</package>
+	
 	<package name = "eventApiV2" namespace="/api/v2/events" extends = "v2Api">
 		<action name="*" class="com.facilio.events.actions.EventAction" method="v2viewEvent">
 			<param name="moduleName">alarm</param>

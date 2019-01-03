@@ -11,6 +11,8 @@ import java.util.StringJoiner;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.json.simple.JSONObject;
+
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioContext;
@@ -413,6 +415,45 @@ public class WorkflowRuleAPI {
 				.andCondition(CriteriaAPI.getCondition(ruleTypeField, String.valueOf(type.getIntVal()), NumberOperators.EQUALS))
 				.andCondition(CriteriaAPI.getCondition(latestVersionField, String.valueOf(true), BooleanOperators.IS))
 				;
+		
+		return getWorkFlowsFromMapList(builder.get(), fetchEvent, fetchChildren, true);
+	}
+	
+	
+	public static List<WorkflowRuleContext> getWorkflowRules(RuleType type, boolean fetchEvent, boolean fetchChildren, Criteria criteria, String searchQuery, JSONObject pagination) throws Exception{
+		List<FacilioField> fields = FieldFactory.getWorkflowRuleFields();
+		fields.addAll(FieldFactory.getWorkflowEventFields());
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+		FacilioField ruleTypeField = fieldMap.get("ruleType");
+		FacilioField latestVersionField = fieldMap.get("latestVersion");
+		
+		FacilioModule module = ModuleFactory.getWorkflowRuleModule();
+		FacilioModule eventModule = ModuleFactory.getWorkflowEventModule();
+		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+				.table(module.getTableName())
+				.select(fields)
+				.innerJoin(eventModule.getTableName())
+				.on(module.getTableName()+".EVENT_ID = "+ eventModule.getTableName() +".ID")
+				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+				.andCondition(CriteriaAPI.getCondition(ruleTypeField, String.valueOf(type.getIntVal()), NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition(latestVersionField, String.valueOf(true), BooleanOperators.IS))
+				;
+		
+		if (pagination != null) {
+			int page = (int) pagination.get("page");
+			int perPage = (int) pagination.get("perPage");
+			
+			int offset = ((page-1) * perPage);
+			if (offset < 0) {
+				offset = 0;
+			}
+			
+			builder.offset(offset);
+			builder.limit(perPage);
+		}
+		if(criteria != null && !criteria.isEmpty()) {
+			builder.andCriteria(criteria);
+		}
 		
 		return getWorkFlowsFromMapList(builder.get(), fetchEvent, fetchChildren, true);
 	}

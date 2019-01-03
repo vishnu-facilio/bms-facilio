@@ -2,8 +2,11 @@ package com.facilio.bmsconsole.commands;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.json.simple.JSONObject;
 
+import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
+import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.constants.FacilioConstants;
 
@@ -24,8 +27,28 @@ public class GetWorkFlowOfRuleTypeCommand implements Command {
 			fetchChildren = true;
 		}
 		
+		JSONObject filters = (JSONObject) context.get(FacilioConstants.ContextNames.FILTERS);
+		JSONObject serachQuery = (JSONObject) context.get(FacilioConstants.ContextNames.SEARCH);
+		Criteria filterCriteria = (Criteria) context.get(FacilioConstants.ContextNames.FILTER_CRITERIA);
+		FacilioView view = (FacilioView) context.get(FacilioConstants.ContextNames.CUSTOM_VIEW);
+		JSONObject pagination = (JSONObject) context.get(FacilioConstants.ContextNames.PAGINATION);
+		String query = null;
+		if (( serachQuery != null)) {
+			query = (String) serachQuery.get("query");
+		}
+		Boolean includeParentCriteria = (Boolean) context.get(FacilioConstants.ContextNames.INCLUDE_PARENT_CRITERIA);
+		Criteria criteria = new Criteria();
+		if (filterCriteria != null) {
+			criteria.andCriteria(filterCriteria);
+		}
+		if (( filters == null || includeParentCriteria) && view != null) {
+			Criteria viewCriteria = view.getCriteria();
+			if (viewCriteria != null) {
+				criteria.andCriteria(viewCriteria);
+			}
+		}
 		if(ruleType != null){
-			context.put(FacilioConstants.ContextNames.WORKFLOW_RULE_LIST, WorkflowRuleAPI.getWorkflowRulesOfType(ruleType, fetchEvent, fetchChildren));
+			context.put(FacilioConstants.ContextNames.WORKFLOW_RULE_LIST, WorkflowRuleAPI.getWorkflowRules(ruleType, fetchEvent, fetchChildren, criteria, query, pagination ));
 		}
 		return false;
 	}

@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.apache.commons.chain.Chain;
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
@@ -456,6 +457,16 @@ public class WorkflowRuleAction extends FacilioAction {
 		this.module = module;
 	}
 	
+	private boolean includeParentFilter;
+
+	public boolean getIncludeParentFilter() {
+		return includeParentFilter;
+	}
+
+	public void setIncludeParentFilter(boolean includeParentFilter) {
+		this.includeParentFilter = includeParentFilter;
+	}
+	
 	private Boolean status;
 	public Boolean getStatus() {
 		if (status == null) {
@@ -474,5 +485,40 @@ public class WorkflowRuleAction extends FacilioAction {
 		WorkflowRuleAPI.updateWorkflowRule(workFlow);
 		setResult("result", "success");
 		return SUCCESS;
+	}
+	public String v2RulesList() throws Exception {
+		FacilioContext context = new FacilioContext();
+		if (getFilters() != null) {
+			JSONParser parser = new JSONParser();
+			JSONObject json = (JSONObject) parser.parse(getFilters());
+			context.put(FacilioConstants.ContextNames.FILTERS, json);
+			context.put(FacilioConstants.ContextNames.INCLUDE_PARENT_CRITERIA, getIncludeParentFilter());
+		}
+
+		if (getSearch() != null) {
+			JSONObject searchObj = new JSONObject();
+			searchObj.put("query", getSearch());
+			context.put(FacilioConstants.ContextNames.SEARCH, searchObj);
+		}
+		
+		if (getPage() != 0) {
+			JSONObject pagination = new JSONObject();
+			pagination.put("page", getPage());
+			pagination.put("perPage", getPerPage());
+			context.put(FacilioConstants.ContextNames.PAGINATION, pagination);
+		}
+		context.put(FacilioConstants.ContextNames.ID, ruleId);
+		context.put(FacilioConstants.ContextNames.CV_NAME, getViewName());
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.WORKFLOW_RULE_MODULE);
+		context.put(FacilioConstants.ContextNames.WORKFLOW_RULE_TYPE, ruleType);
+		context.put(FacilioConstants.ContextNames.WORKFLOW_FETCH_EVENT, false);
+		context.put(FacilioConstants.ContextNames.WORKFLOW_FETCH_CHILDREN, false);
+		
+		Chain workflowRuleType = ReadOnlyChainFactory.fetchWorkflowRules();
+		workflowRuleType.execute(context);
+		workflowRuleList = (List<WorkflowRuleContext>) context.get(FacilioConstants.ContextNames.WORKFLOW_RULE_LIST);
+		setResult("rules", workflowRuleList);
+		return SUCCESS;
+
 	}
 }
