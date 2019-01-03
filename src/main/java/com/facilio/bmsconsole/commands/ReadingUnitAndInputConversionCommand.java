@@ -50,6 +50,9 @@ public class ReadingUnitAndInputConversionCommand implements Command {
 								if(field != null && readingData.get(fieldName) != null) {
 									if(reading.getParentId() > 0  && field.getId() > 0) {
 										ReadingDataMeta readingDataMeta = metaMap.get(ReadingsAPI.getRDMKey(reading.getParentId(), field));
+										if(readingDataMeta==null) {
+											LOGGER.info("Reading data meta is null for parent: "+reading.getParentId()+" for field: "+field);
+										}
 										if(readingDataMeta.getUnitEnum() != null) {
 											Object value = UnitsUtil.convertToSiUnit(readingData.get(fieldName), readingDataMeta.getUnitEnum());
 											readingData.put(fieldName, value);
