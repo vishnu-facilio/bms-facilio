@@ -63,8 +63,8 @@ public class WeatherDataJob extends FacilioJob {
 					logger.log(Level.INFO,"The psychometric data for orgid: "+AccountUtil.getCurrentOrg().getOrgId()+" : "+psychrometricReading);
 				}
 				//forecast..
-				List<ReadingContext> hourlyForecast= getHourlyForecastReadings(siteId,weatherData);
-				List<ReadingContext> dailyForecast= getDailyForecastReadings(siteId,weatherData);
+				List<ReadingContext> hourlyForecast= WeatherUtil.getHourlyForecastReadings(siteId,weatherData,true);
+				List<ReadingContext> dailyForecast= WeatherUtil.getDailyForecastReadings(siteId,weatherData,true);
 				if(!hourlyForecast.isEmpty()) {
 					hourlyReadings.addAll(hourlyForecast);
 				}
@@ -72,10 +72,10 @@ public class WeatherDataJob extends FacilioJob {
                   dailyReadings.addAll(dailyForecast);
 				}
 			}
-				addReading(FacilioConstants.ContextNames.WEATHER_READING,currentReadings);	
-				addReading(FacilioConstants.ContextNames.PSYCHROMETRIC_READING ,psychrometricReadings);
-				addReading(FacilioConstants.ContextNames.WEATHER_HOURLY_FORECAST_READING,hourlyReadings);	
-				addReading(FacilioConstants.ContextNames.WEATHER_DAILY_FORECAST_READING ,dailyReadings);	
+			WeatherUtil.addReading(FacilioConstants.ContextNames.WEATHER_READING,currentReadings);	
+			WeatherUtil.addReading(FacilioConstants.ContextNames.PSYCHROMETRIC_READING ,psychrometricReadings);
+			WeatherUtil.addReading(FacilioConstants.ContextNames.WEATHER_HOURLY_FORECAST_READING,hourlyReadings);	
+			WeatherUtil.addReading(FacilioConstants.ContextNames.WEATHER_DAILY_FORECAST_READING ,dailyReadings);	
 		}
 		catch (Exception e) {
 			logger.log(Level.ERROR, e.getMessage(), e);
@@ -84,78 +84,10 @@ public class WeatherDataJob extends FacilioJob {
 	}
 	
 	
-	private List<ReadingContext> getDailyForecastReadings(long siteId,Map<String, Object> weatherData) {
-		
-		List<ReadingContext> dailyForecastReadings= new ArrayList<ReadingContext>();
-		
-		
-
-		Map<String,Object> dailyWeather= (JSONObject)weatherData.get("daily");
-		
-		if(dailyWeather==null) {
-			return dailyForecastReadings;
-		}
-		JSONArray dailyData= (JSONArray) dailyWeather.get("data");
-		
-		if(dailyData== null || dailyData.isEmpty()) {
-			return dailyForecastReadings;
-		}
-		 dailyData.remove(0);
-		
-        ListIterator< JSONObject> dataIterator= dailyData.listIterator();	
-        while(dataIterator.hasNext()) {
-        
-        	JSONObject dailyWeatherReading=	dataIterator.next();
-        	ReadingContext reading=WeatherUtil.getDailyReading(siteId,dailyWeatherReading);
-        	if(reading!=null) {
-        		dailyForecastReadings.add(reading);
-        	}
-        }
-		
-		return dailyForecastReadings;
-	}
+	
 
 
-	private List<ReadingContext> getHourlyForecastReadings(long siteId,Map<String, Object> weatherData) {
-		List<ReadingContext> hourlyForecastReadings= new ArrayList<ReadingContext>();
-
-		Map<String,Object> hourlyWeather= (JSONObject)weatherData.get("hourly");
-		
-		if(hourlyWeather==null) {
-			return hourlyForecastReadings;
-		}
-		
-		JSONArray hourlyData= (JSONArray) hourlyWeather.get("data");
-		if(hourlyData== null || hourlyData.isEmpty()) {
-			return hourlyForecastReadings;
-		}
-		hourlyData.remove(0);
-		
-        ListIterator< JSONObject> dataIterator= hourlyData.listIterator();	
-        while(dataIterator.hasNext()) {
-        
-        	JSONObject hourlyWeatherReading=dataIterator.next();
-        	ReadingContext reading=WeatherUtil.getDailyReading(siteId,hourlyWeatherReading);
-        	if(reading!=null) {
-        		hourlyForecastReadings.add(reading);
-        	}
-        }
-		return hourlyForecastReadings;
-	}
-
-
-	private void addReading(String moduleName,List<ReadingContext> readings) throws Exception {
-		
-		if(readings==null || readings.isEmpty()) {
-			return;
-		}
-		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
-		context.put(FacilioConstants.ContextNames.READINGS, readings);
-		context.put(FacilioConstants.ContextNames.READINGS_SOURCE, SourceType.FORMULA);
-		Chain addReading = ReadOnlyChainFactory.getAddOrUpdateReadingValuesChain();
-		addReading.execute(context);
-	}
+	
 	
 	private ReadingContext getPsychrometricReading(long siteId, Map<String,Object> weatherData) {
 		

@@ -9,22 +9,28 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.Inflater;
 import java.util.zip.InflaterInputStream;
 
+import org.apache.commons.chain.Chain;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.commands.FacilioContext;
+import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.context.LocationContext;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.SiteContext;
+import com.facilio.bmsconsole.context.ReadingContext.SourceType;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.DateOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
@@ -287,6 +293,20 @@ public static Map<Long,List<Map<String,Object>>> getReadings(String moduleName) 
 			
 	}
 	
+	
+public static void addReading(String moduleName,List<ReadingContext> readings) throws Exception {
+		
+		if(readings==null || readings.isEmpty()) {
+			return;
+		}
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+		context.put(FacilioConstants.ContextNames.READINGS, readings);
+		context.put(FacilioConstants.ContextNames.READINGS_SOURCE, SourceType.FORMULA);
+		Chain addReading = ReadOnlyChainFactory.getAddOrUpdateReadingValuesChain();
+		addReading.execute(context);
+	}
+	
 	public static void main (String args[]) {
 		//for unit testing..
 		try {
@@ -309,6 +329,68 @@ public static Map<Long,List<Map<String,Object>>> getReadings(String moduleName) 
 		}
 	}
 	
+	
+public static List<ReadingContext> getDailyForecastReadings(long siteId,Map<String, Object> weatherData, boolean forecast) {
+		
+		List<ReadingContext> dailyForecastReadings= new ArrayList<ReadingContext>();
+		
+		Map<String,Object> dailyWeather= (JSONObject)weatherData.get("daily");
+		
+		if(dailyWeather==null) {
+			return dailyForecastReadings;
+		}
+		JSONArray dailyData= (JSONArray) dailyWeather.get("data");
+		
+		if(dailyData== null || dailyData.isEmpty()) {
+			return dailyForecastReadings;
+		}
+		
+		if(forecast) {
+			dailyData.remove(0);
+		}
+		
+        ListIterator< JSONObject> dataIterator= dailyData.listIterator();	
+        while(dataIterator.hasNext()) {
+        
+        	JSONObject dailyWeatherReading=	dataIterator.next();
+        	ReadingContext reading=WeatherUtil.getDailyReading(siteId,dailyWeatherReading,forecast);
+        	if(reading!=null) {
+        		dailyForecastReadings.add(reading);
+        	}
+        }
+		
+		return dailyForecastReadings;
+	}
+
+
+	public static List<ReadingContext> getHourlyForecastReadings(long siteId,Map<String, Object> weatherData,boolean forecast) {
+		List<ReadingContext> hourlyForecastReadings= new ArrayList<ReadingContext>();
+
+		Map<String,Object> hourlyWeather= (JSONObject)weatherData.get("hourly");
+		
+		if(hourlyWeather==null) {
+			return hourlyForecastReadings;
+		}
+		
+		JSONArray hourlyData= (JSONArray) hourlyWeather.get("data");
+		if(hourlyData== null || hourlyData.isEmpty()) {
+			return hourlyForecastReadings;
+		}
+		if(forecast) {
+			hourlyData.remove(0);
+		}
+		
+        ListIterator< JSONObject> dataIterator= hourlyData.listIterator();	
+        while(dataIterator.hasNext()) {
+        
+        	JSONObject hourlyWeatherReading=dataIterator.next();
+        	ReadingContext reading=WeatherUtil.getHourlyReading(siteId,hourlyWeatherReading);
+        	if(reading!=null) {
+        		hourlyForecastReadings.add(reading);
+        	}
+        }
+		return hourlyForecastReadings;
+	}
 	
 	public static ReadingContext getHourlyReading(long siteId,Map<String,Object> hourlyWeather) {
 
@@ -345,7 +427,7 @@ public static Map<Long,List<Map<String,Object>>> getReadings(String moduleName) 
 	}
 
 
-public static ReadingContext getDailyReading(long siteId,Map<String,Object> dailyWeather) {
+public static ReadingContext getDailyReading(long siteId,Map<String,Object> dailyWeather, boolean forecast) {
 		
 	
 	if(dailyWeather==null) {
@@ -388,8 +470,12 @@ public static ReadingContext getDailyReading(long siteId,Map<String,Object> dail
 	reading.addReading("sunsetTime", getTimeinMillis(dailyWeather.get("sunsetTime")));
 	reading.addReading("windGustTime", getTimeinMillis(dailyWeather.get("windGustTime")));
 	reading.addReading("uvIndexTime", getTimeinMillis(dailyWeather.get("uvIndexTime")));
+	Long ttime=getTimeinMillis(dailyWeather.get("time"));
 	//will be used for forecast alone..
-	reading.addReading("forecastTime", getTimeinMillis(dailyWeather.get("time")));
+	reading.addReading("forecastTime", ttime);
+	if(!forecast) {
+		reading.addReading("ttime",ttime);
+	}
 	return reading;
 }
 	
