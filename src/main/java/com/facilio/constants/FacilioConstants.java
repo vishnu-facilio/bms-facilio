@@ -591,6 +591,9 @@ public class FacilioConstants {
 		public static final String PUBLICKEYFILETYPE = "publicKeyFileNameType";
 		public static final String MARKED_READINGS = "markedReadings";
 		public static final String WEATHER_READING = "weather";
+		public static final String WEATHER_DAILY_READING = "weatherDaily";
+		public static final String WEATHER_DAILY_FORECAST_READING = "weatherDailyForecast";
+		public static final String WEATHER_HOURLY_FORECAST_READING = "weatherHourlyForecast";
 		public static final String CDD_READING="cdd";
 		public static final String HDD_READING="hdd";
 		public static final String WDD_READING="wdd";

@@ -2,12 +2,16 @@ package com.facilio.bmsconsole.jobs;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 
 import org.apache.commons.chain.Chain;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.FacilioContext;
@@ -35,32 +39,43 @@ public class WeatherDataJob extends FacilioJob {
 				return;
 			}
 			List<SiteContext> sites=SpaceAPI.getAllSites(1);
-			List<ReadingContext> readings= new ArrayList<ReadingContext>();
-			
+			List<ReadingContext> currentReadings= new ArrayList<ReadingContext>();
+			List<ReadingContext> hourlyReadings= new ArrayList<ReadingContext>();
+			List<ReadingContext> dailyReadings=new ArrayList<ReadingContext>();
 			List<ReadingContext> psychrometricReadings= new ArrayList<ReadingContext>();
+			
 			for(SiteContext site:sites) {
 
-				Map<String,Object> weatherData=WeatherUtil.getWeatherData(site);
+				Map<String,Object> weatherData=WeatherUtil.getWeatherData(site,null);
 				logger.log(Level.INFO,"The weather data for orgid: "+AccountUtil.getCurrentOrg().getOrgId()+" : "+weatherData);
 				if(weatherData==null || weatherData.isEmpty()) {
 					continue;
 				}
 				long siteId=site.getId();
-				ReadingContext reading=getReading(siteId,weatherData);
-				if(reading==null) {
-					continue;
+				Map<String,Object> currentWeather= (JSONObject)weatherData.get("currently");
+				ReadingContext reading=WeatherUtil.getHourlyReading(siteId,currentWeather);
+				if(reading!=null) {
+					currentReadings.add(reading);
+					ReadingContext psychrometricReading = getPsychrometricReading(siteId, currentWeather);
+					if(psychrometricReading != null) {
+						psychrometricReadings.add(psychrometricReading);
+					}
+					logger.log(Level.INFO,"The psychometric data for orgid: "+AccountUtil.getCurrentOrg().getOrgId()+" : "+psychrometricReading);
 				}
-				readings.add(reading);
-				ReadingContext psychrometricReading = getPsychrometricReading(siteId, weatherData);
-				if(psychrometricReading == null) {
-					continue;
+				//forecast..
+				List<ReadingContext> hourlyForecast= getHourlyForecastReadings(siteId,weatherData);
+				List<ReadingContext> dailyForecast= getDailyForecastReadings(siteId,weatherData);
+				if(!hourlyForecast.isEmpty()) {
+					hourlyReadings.addAll(hourlyForecast);
 				}
-				logger.log(Level.INFO,"The psychometric data for orgid: "+AccountUtil.getCurrentOrg().getOrgId()+" : "+psychrometricReading);
-				psychrometricReadings.add(psychrometricReading);
+				if(!dailyForecast.isEmpty()) {
+                  dailyReadings.addAll(dailyForecast);
+				}
 			}
-				addReading(FacilioConstants.ContextNames.WEATHER_READING,readings);	
+				addReading(FacilioConstants.ContextNames.WEATHER_READING,currentReadings);	
 				addReading(FacilioConstants.ContextNames.PSYCHROMETRIC_READING ,psychrometricReadings);
-			
+				addReading(FacilioConstants.ContextNames.WEATHER_HOURLY_FORECAST_READING,hourlyReadings);	
+				addReading(FacilioConstants.ContextNames.WEATHER_DAILY_FORECAST_READING ,dailyReadings);	
 		}
 		catch (Exception e) {
 			logger.log(Level.ERROR, e.getMessage(), e);
@@ -69,6 +84,56 @@ public class WeatherDataJob extends FacilioJob {
 	}
 	
 	
+	private List<ReadingContext> getDailyForecastReadings(long siteId,Map<String, Object> weatherData) {
+		
+		List<ReadingContext> dailyForecastReadings= new ArrayList<ReadingContext>();
+
+		Map<String,Object> dailyWeather= (JSONObject)weatherData.get("daily");
+		JSONArray dailyData= (JSONArray) dailyWeather.get("data");
+		
+		if(dailyData== null || dailyData.isEmpty()) {
+			return dailyForecastReadings;
+		}
+		 dailyData.remove(0);
+		
+        ListIterator< JSONObject> dataIterator= dailyData.listIterator();	
+        while(dataIterator.hasNext()) {
+        
+        	JSONObject dailyWeatherReading=	dataIterator.next();
+        	ReadingContext reading=WeatherUtil.getDailyReading(siteId,dailyWeatherReading);
+        	if(reading!=null) {
+        		dailyForecastReadings.add(reading);
+        	}
+        }
+		
+		return dailyForecastReadings;
+	}
+
+
+	private List<ReadingContext> getHourlyForecastReadings(long siteId,Map<String, Object> weatherData) {
+		List<ReadingContext> hourlyForecastReadings= new ArrayList<ReadingContext>();
+
+		Map<String,Object> hourlyWeather= (JSONObject)weatherData.get("hourly");
+		
+		JSONArray hourlyData= (JSONArray) hourlyWeather.get("data");
+		if(hourlyData== null || hourlyData.isEmpty()) {
+			return hourlyForecastReadings;
+		}
+		hourlyData.remove(0);
+		
+        ListIterator< JSONObject> dataIterator= hourlyData.listIterator();	
+        while(dataIterator.hasNext()) {
+        
+        	JSONObject hourlyWeatherReading=dataIterator.next();
+        	ReadingContext reading=WeatherUtil.getDailyReading(siteId,hourlyWeatherReading);
+        	if(reading!=null) {
+        		hourlyForecastReadings.add(reading);
+        	}
+        }
+		return hourlyForecastReadings;
+	}
+
+
 	private void addReading(String moduleName,List<ReadingContext> readings) throws Exception {
 		
 		if(readings==null || readings.isEmpty()) {
@@ -102,39 +167,6 @@ public class WeatherDataJob extends FacilioJob {
 		return reading;
 	}
 	
-	private ReadingContext getReading(long siteId,Map<String,Object> currentWeather) {
-		
-		
-		Object temperature=currentWeather.get("temperature");
-		
-		if(temperature==null) {
-			return null;
-		}
-		
-		ReadingContext reading= new ReadingContext();
-		reading.setParentId(siteId);
-		reading.addReading("temperature", temperature);
-		reading.addReading("icon", currentWeather.get("icon"));
-		reading.addReading("summary", currentWeather.get("summary"));
-		reading.addReading("humidity",currentWeather.get("humidity"));
-		reading.addReading("dewPoint", currentWeather.get("dewPoint"));
-		reading.addReading("pressure", currentWeather.get("pressure"));
-		reading.addReading("apparentTemperature", currentWeather.get("apparentTemperature"));
-		reading.addReading("precipitationIntensity", currentWeather.get("precipIntensity"));
-		reading.addReading("precipitationIntensityError", currentWeather.get("precipIntensityError"));
-		reading.addReading("precipitationProbability", currentWeather.get("precipProbability"));
-		reading.addReading("precipitationType", currentWeather.get("precipType"));	
-		
-		reading.addReading("windSpeed", currentWeather.get("windSpeed"));
-		reading.addReading("windGust", currentWeather.get("windGust"));
-		reading.addReading("windBearing", currentWeather.get("windBearing"));
-		reading.addReading("cloudCover", currentWeather.get("cloudCover"));
-		reading.addReading("uvIndex", currentWeather.get("uvIndex"));
-		reading.addReading("visibility", currentWeather.get("visibility"));
-		reading.addReading("ozone", currentWeather.get("ozone"));
-		reading.addReading("nearestStormDistance", currentWeather.get("nearestStormDistance"));
-		reading.addReading("nearestStormBearing", currentWeather.get("nearestStormBearing"));
-		return reading;
-	}
-
+	
+	
 }

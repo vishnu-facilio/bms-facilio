@@ -155,7 +155,7 @@ public class WeatherUtil {
 	
 	
 	@SuppressWarnings("unchecked")
-	public static Map<String,Object>getWeatherData(SiteContext site) throws Exception {
+	public static Map<String,Object>getWeatherData(SiteContext site, Long time) throws Exception {
 		
 		Map<String, Object> cordinates=getLocation(site);
 		if(cordinates==null) {
@@ -166,7 +166,7 @@ public class WeatherUtil {
 		if(lat==null || lng==null) {
 			return null;
 		}
-		String weatherURL=WeatherUtil.getForecastURL(lat, lng);
+		String weatherURL=WeatherUtil.getForecastURL(lat, lng,time);
 		HttpURLConnection connection= WeatherUtil.getHttpURLConnection(weatherURL);
 		String response=WeatherUtil.getResponse(connection);
 		if(response==null){
@@ -175,7 +175,8 @@ public class WeatherUtil {
 		}
 		JSONParser parser = new JSONParser();
 		JSONObject weatherData= (JSONObject) parser.parse(response);
-		return (JSONObject)weatherData.get("currently");
+		// return (JSONObject)weatherData.get("currently");
+		return weatherData;
 		
 	}
 	
@@ -308,4 +309,93 @@ public static Map<Long,List<Map<String,Object>>> getReadings(String moduleName) 
 		}
 	}
 	
+	
+	public static ReadingContext getHourlyReading(long siteId,Map<String,Object> hourlyWeather) {
+
+
+		if(hourlyWeather==null) {
+			return null;
+		}
+
+		ReadingContext reading= new ReadingContext();
+		reading.setParentId(siteId);
+		reading.addReading("temperature", hourlyWeather.get("temperature"));
+		reading.addReading("icon", hourlyWeather.get("icon"));
+		reading.addReading("summary", hourlyWeather.get("summary"));
+		reading.addReading("humidity",hourlyWeather.get("humidity"));
+		reading.addReading("dewPoint", hourlyWeather.get("dewPoint"));
+		reading.addReading("pressure", hourlyWeather.get("pressure"));
+		reading.addReading("apparentTemperature", hourlyWeather.get("apparentTemperature"));
+		reading.addReading("precipitationIntensity", hourlyWeather.get("precipIntensity"));
+		reading.addReading("precipitationIntensityError", hourlyWeather.get("precipIntensityError"));
+		reading.addReading("precipitationProbability", hourlyWeather.get("precipProbability"));
+		reading.addReading("precipitationType", hourlyWeather.get("precipType"));		
+		reading.addReading("windSpeed", hourlyWeather.get("windSpeed"));
+		reading.addReading("windGust", hourlyWeather.get("windGust"));
+		reading.addReading("windBearing", hourlyWeather.get("windBearing"));
+		reading.addReading("cloudCover", hourlyWeather.get("cloudCover"));
+		reading.addReading("uvIndex", hourlyWeather.get("uvIndex"));
+		reading.addReading("visibility", hourlyWeather.get("visibility"));
+		reading.addReading("ozone", hourlyWeather.get("ozone"));
+		reading.addReading("nearestStormDistance", hourlyWeather.get("nearestStormDistance"));
+		reading.addReading("nearestStormBearing", hourlyWeather.get("nearestStormBearing"));
+		//will be used for forecast alone..
+		reading.addReading("forecastTime", getTimeinMillis(hourlyWeather.get("time")));
+		return reading;
+	}
+
+
+public static ReadingContext getDailyReading(long siteId,Map<String,Object> dailyWeather) {
+		
+	
+	if(dailyWeather==null) {
+		return null;
+	}
+	
+	ReadingContext reading= new ReadingContext();
+	reading.setParentId(siteId);
+	
+	reading.addReading("icon", dailyWeather.get("icon"));
+	reading.addReading("summary", dailyWeather.get("summary"));
+	reading.addReading("humidity",dailyWeather.get("humidity"));
+	reading.addReading("dewPoint", dailyWeather.get("dewPoint"));
+	reading.addReading("pressure", dailyWeather.get("pressure"));
+	reading.addReading("precipitationIntensity", dailyWeather.get("precipIntensity"));
+	reading.addReading("precipitationIntensityError", dailyWeather.get("precipIntensityError"));
+	reading.addReading("precipitationProbability", dailyWeather.get("precipProbability"));
+	reading.addReading("precipitationType", dailyWeather.get("precipType"));
+	reading.addReading("windSpeed", dailyWeather.get("windSpeed"));
+	reading.addReading("windGust", dailyWeather.get("windGust"));
+	reading.addReading("windBearing", dailyWeather.get("windBearing"));
+	reading.addReading("cloudCover", dailyWeather.get("cloudCover"));
+	reading.addReading("uvIndex", dailyWeather.get("uvIndex"));
+	reading.addReading("visibility", dailyWeather.get("visibility"));
+	reading.addReading("ozone", dailyWeather.get("ozone"));
+	reading.addReading("moonPhase", dailyWeather.get("moonPhase"));
+	reading.addReading("apparentTemperatureLow", dailyWeather.get("apparentTemperatureLow"));
+	reading.addReading("apparentTemperatureHigh", dailyWeather.get("apparentTemperatureHigh"));
+	reading.addReading("temperatureLow", dailyWeather.get("temperatureLow"));
+	reading.addReading("temperatureHigh", dailyWeather.get("temperatureHigh"));
+	reading.addReading("precipitationIntensityMax", dailyWeather.get("precipIntensityMax"));
+
+	reading.addReading("apparentTemperatureLowTime", getTimeinMillis(dailyWeather.get("apparentTemperatureLowTime")));
+	reading.addReading("apparentTemperatureHighTime", getTimeinMillis(dailyWeather.get("apparentTemperatureHighTime")));
+	reading.addReading("temperatureLowTime", getTimeinMillis(dailyWeather.get("temperatureLowTime")));
+	reading.addReading("temperatureHighTime", getTimeinMillis(dailyWeather.get("temperatureHighTime")));
+	reading.addReading("precipitationIntensityMaxTime", getTimeinMillis(dailyWeather.get("precipIntensityMaxTime")));
+	
+	reading.addReading("sunriseTime", getTimeinMillis(dailyWeather.get("sunriseTime")));
+	reading.addReading("sunsetTime", getTimeinMillis(dailyWeather.get("sunsetTime")));
+	reading.addReading("windGustTime", getTimeinMillis(dailyWeather.get("windGustTime")));
+	reading.addReading("uvIndexTime", getTimeinMillis(dailyWeather.get("uvIndexTime")));
+	//will be used for forecast alone..
+	reading.addReading("forecastTime", getTimeinMillis(dailyWeather.get("time")));
+	return reading;
+}
+	
+private static Long getTimeinMillis(Object time) {
+	
+	return time!=null? (Long)time*1000 : null;
+}
+
 }
