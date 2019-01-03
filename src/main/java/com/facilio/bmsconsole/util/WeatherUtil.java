@@ -474,7 +474,7 @@ public static ReadingContext getDailyReading(long siteId,Map<String,Object> dail
 	//will be used for forecast alone..
 	reading.addReading("forecastTime", ttime);
 	if(!forecast) {
-		reading.addReading("ttime",ttime);
+		reading.setTtime(ttime);
 	}
 	return reading;
 }
