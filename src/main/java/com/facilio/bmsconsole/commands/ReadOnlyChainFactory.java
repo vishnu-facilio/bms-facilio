@@ -137,6 +137,19 @@ public class ReadOnlyChainFactory {
 		return c;
 	}
 	
+	public static Chain fetchWorkflowRules () {
+		Chain c = getDefaultChain();
+		c.addCommand(new LoadModuleNameCommand());
+		c.addCommand(new LoadViewCommand());
+		c.addCommand(new LoadAllFieldsCommand());
+		c.addCommand(new GenerateCriteriaFromFilterCommand());
+		c.addCommand(new GenerateSearchConditionCommand());
+		c.addCommand(new GetWorkFlowOfRuleTypeCommand());
+		CommonCommandUtil.addCleanUpCommand(c);
+		return c;
+	}
+	
+	
 	public static Chain fetchWorkflowRuleWithActionsChain() {
 		Chain c = getDefaultChain();
 		c.addCommand(new FetchWorkflowRuleCommand());
