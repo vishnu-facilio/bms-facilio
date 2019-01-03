@@ -39,7 +39,7 @@ import com.facilio.sql.GenericSelectRecordBuilder;
 public class WeatherUtil {
 	private static final Logger LOGGER = LogManager.getLogger(WeatherUtil.class.getName());
 	private static String weatherURL=AwsUtil.getConfig("weather.url");
-	private static String weatherParams="?units=si&exclude=flags,daily,hourly,alerts";
+	private static String weatherParams="?units=si&exclude=flags,alerts";
 	private static org.apache.log4j.Logger log = LogManager.getLogger(WeatherUtil.class.getName());
 
 

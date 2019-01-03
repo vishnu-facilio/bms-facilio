@@ -87,8 +87,14 @@ public class WeatherDataJob extends FacilioJob {
 	private List<ReadingContext> getDailyForecastReadings(long siteId,Map<String, Object> weatherData) {
 		
 		List<ReadingContext> dailyForecastReadings= new ArrayList<ReadingContext>();
+		
+		
 
 		Map<String,Object> dailyWeather= (JSONObject)weatherData.get("daily");
+		
+		if(dailyWeather==null) {
+			return dailyForecastReadings;
+		}
 		JSONArray dailyData= (JSONArray) dailyWeather.get("data");
 		
 		if(dailyData== null || dailyData.isEmpty()) {
@@ -114,6 +120,10 @@ public class WeatherDataJob extends FacilioJob {
 		List<ReadingContext> hourlyForecastReadings= new ArrayList<ReadingContext>();
 
 		Map<String,Object> hourlyWeather= (JSONObject)weatherData.get("hourly");
+		
+		if(hourlyWeather==null) {
+			return hourlyForecastReadings;
+		}
 		
 		JSONArray hourlyData= (JSONArray) hourlyWeather.get("data");
 		if(hourlyData== null || hourlyData.isEmpty()) {
