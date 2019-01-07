@@ -1165,7 +1165,7 @@ public enum DateOperators implements Operator<String> {
 						// TODO Auto-generated method stub
 						if(object != null && object instanceof Long) {
 							long currentVal = (long) object;
-							return DateTimeUtil.getMonthStartTime(-1) <= currentVal && currentVal < DateTimeUtil.getMonthStartTime();
+							return DateTimeUtil.getYearStartTime(-1) <= currentVal && currentVal < DateTimeUtil.getYearStartTime() - 1;
 						}
 						return false;
 					}
@@ -1177,7 +1177,7 @@ public enum DateOperators implements Operator<String> {
 		@Override
 		public DateRange getRange(String value) {
 			// TODO Auto-generated method stub
-			return new DateRange(DateTimeUtil.getMonthStartTime(-1), DateTimeUtil.getMonthStartTime());
+			return new DateRange(DateTimeUtil.getYearStartTime(-1), DateTimeUtil.getYearStartTime() -1);
 		}
 
 		@Override
