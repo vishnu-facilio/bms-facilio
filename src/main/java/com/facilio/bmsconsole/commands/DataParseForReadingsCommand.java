@@ -47,7 +47,8 @@ public class DataParseForReadingsCommand implements Command {
 
 	private static final Logger LOGGER = Logger.getLogger(DataParseForReadingsCommand.class.getName());
 	
-	private ArrayListMultimap<String, String> groupedFields;
+	// private ArrayListMultimap<String, String> groupedFields;
+	private Map<String, List<String>> groupedFields = new HashMap<String, List<String>>();
 	
 	@Override
 	public boolean execute(Context context) throws Exception,ImportParseException {
@@ -324,8 +325,6 @@ public class DataParseForReadingsCommand implements Command {
 	public void fieldMapParsing(HashMap<String, String> fieldMapping) throws Exception {
 
 		LOGGER.severe("fieldMapping -- " + fieldMapping);
-		groupedFields = ArrayListMultimap.create();
-		new HashMap<>();
 		List<String> fieldMappingKeys = new ArrayList<>(fieldMapping.keySet());
 		for (int i = 0; i < fieldMappingKeys.size(); i++) {
 			String[] modulePlusFieldName = fieldMappingKeys.get(i).split("__");
@@ -340,15 +339,28 @@ public class DataParseForReadingsCommand implements Command {
 			else {
 			moduleName = String.join("_", moduleNameList);
 			}
-			groupedFields.put(moduleName, fieldName);
+			if(groupedFields.isEmpty()) {
+				List<String> fields = new ArrayList<String>();
+				fields.add(fieldName);
+				groupedFields.put(moduleName, fields);
+			}
+			else if(groupedFields.containsKey(moduleName)) {
+				groupedFields.get(moduleName).add(fieldName);
+			}
+			else {
+				List<String> fields = new ArrayList<String>();
+				fields.add(fieldName);
+				groupedFields.put(moduleName, fields);
+			}
 		}
 		if(groupedFields.containsKey("sys")) {
 			List<String> sys = new ArrayList(groupedFields.get("sys"));
-			groupedFields.removeAll("sys");
+			groupedFields.remove("sys");
 			for(String module: groupedFields.keySet()) {
 				for(int i=0;i< sys.size(); i++) {
-					groupedFields.put(module, sys.get(i));
+					groupedFields.get(module).add(sys.get(i));
 				}
+				
 			}
 		}
 		LOGGER.severe("groupedFields -- " + groupedFields);
