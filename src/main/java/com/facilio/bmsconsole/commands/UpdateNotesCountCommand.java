@@ -67,6 +67,7 @@ public class UpdateNotesCountCommand implements Command {
 				UpdateRecordBuilder<WorkOrderContext> updateRecordBuilder = new UpdateRecordBuilder<WorkOrderContext>()
 						.module(tModule)
 						.fields(Collections.singletonList(noOfNotesField))
+						.andCondition(CriteriaAPI.getCurrentOrgIdCondition(tModule))
 						.andCondition(CriteriaAPI.getIdCondition(id, tModule))
 						;
 				

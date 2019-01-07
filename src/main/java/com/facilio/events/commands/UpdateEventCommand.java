@@ -4,6 +4,7 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.events.constants.EventConstants;
 import com.facilio.events.context.EventContext;
 import com.facilio.events.context.EventContext.EventInternalState;
@@ -17,6 +18,10 @@ public class UpdateEventCommand implements Command {
 		EventContext event = (EventContext) context.get(EventConstants.EventContextNames.EVENT);
 		event.setInternalState(EventInternalState.COMPLETED);
 		EventAPI.updateEvent(event, AccountUtil.getCurrentOrg().getId());
+		
+		if (event.getAlarmId() != -1) {
+			context.put(FacilioConstants.ContextNames.ALARM_ID, event.getAlarmId());
+		}
 		return false;
 	}
 
