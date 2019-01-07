@@ -497,6 +497,7 @@ public class WorkflowRuleAction extends FacilioAction {
 
 		if (getSearch() != null) {
 			JSONObject searchObj = new JSONObject();
+			searchObj.put("fields", "workflowrule.name");
 			searchObj.put("query", getSearch());
 			context.put(FacilioConstants.ContextNames.SEARCH, searchObj);
 		}

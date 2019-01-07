@@ -353,6 +353,9 @@ public class LookupSpecialTypeUtil {
 		}
 		else if(FacilioConstants.ContextNames.WORK_ORDER_TEMPLATE.equals(specialType)) {
 			return FieldFactory.getWorkOrderTemplateFields();
+		} 
+		else if(FacilioConstants.ContextNames.WORKFLOW_RULE_MODULE.equals(specialType)) {
+			return FieldFactory.getWorkflowRuleFields();
 		}
 		return null;
 	}

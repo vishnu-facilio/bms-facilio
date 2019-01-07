@@ -426,6 +426,7 @@ public class WorkflowRuleAPI {
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 		FacilioField ruleTypeField = fieldMap.get("ruleType");
 		FacilioField latestVersionField = fieldMap.get("latestVersion");
+		FacilioField ruleNameField = FieldFactory.getAsMap(fields).get("name");
 		
 		FacilioModule module = ModuleFactory.getWorkflowRuleModule();
 		FacilioModule eventModule = ModuleFactory.getWorkflowEventModule();
@@ -450,6 +451,9 @@ public class WorkflowRuleAPI {
 			
 			builder.offset(offset);
 			builder.limit(perPage);
+		}
+		if (searchQuery!= null) {
+			builder.andCondition(CriteriaAPI.getCondition(ruleNameField, searchQuery, StringOperators.CONTAINS));
 		}
 		if(criteria != null && !criteria.isEmpty()) {
 			builder.andCriteria(criteria);
