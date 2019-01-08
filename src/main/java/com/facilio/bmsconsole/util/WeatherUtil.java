@@ -18,6 +18,7 @@ import java.util.zip.Inflater;
 import java.util.zip.InflaterInputStream;
 
 import org.apache.commons.chain.Chain;
+import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
@@ -51,7 +52,6 @@ public class WeatherUtil {
 	private static final Logger LOGGER = LogManager.getLogger(WeatherUtil.class.getName());
 	private static String weatherURL=AwsUtil.getConfig("weather.url");
 	private static String weatherParams="?units=si&exclude=flags,alerts";
-	private static org.apache.log4j.Logger log = LogManager.getLogger(WeatherUtil.class.getName());
 
 
 	private static String[] apiKeys=AwsUtil.getConfig("weather.key").trim().split(",");
@@ -90,10 +90,10 @@ public class WeatherUtil {
 			if(apiCount!=null) {
 				apiCallCount=Integer.valueOf(apiCount);
 			}
-			System.err.println("Weather API call count: "+apiCallCount);
+			LOGGER.log(Level.INFO,"Weather API call count: "+apiCallCount);
 			
 		} catch (IOException e) {
-			System.err.println("Error: "+e.getMessage());		
+			LOGGER.error("Exception ",e);		
 			response = null;
 		} finally {		
 			connection.disconnect();
@@ -316,6 +316,7 @@ public static Map<Long,List<Map<String,Object>>> getReadings(String moduleName) 
 				}
 				reading.setId(ttimeReading.getId());
 				reading.setTtime(ttime);
+				LOGGER.info("The Weather reading which exists in DB for module: "+moduleName+" "+reading);
 			}
 		}
 		return readingsMap;
@@ -338,13 +339,14 @@ public static Map<Long,List<Map<String,Object>>> getReadings(String moduleName) 
 																	.andCondition(parentCondition)
 																	.andCondition(ttimeCondition);
 		List<ReadingContext> props = selectBuilder.get();
+		LOGGER.info("Matching reading from DB: "+props);
 		Map<Long,ReadingContext> ttimeVsReading = new HashMap<Long,ReadingContext>();
 		for(ReadingContext reading : props) {
 			
 			Long ttime=reading.getTtime();
 			ttimeVsReading.put(ttime, reading);
 		}
-		
+		LOGGER.info("ttimeVsReading map for moduleName: "+ttimeVsReading);
 		return ttimeVsReading;
 	}
 	
@@ -359,6 +361,8 @@ public static Map<Long,List<Map<String,Object>>> getReadings(String moduleName) 
 			//need to adjust the ttime based on the roundoff..
 			ttimeCriteria.add(String.valueOf(ttime));
 		}
+		LOGGER.info("ttimeCriteria >> "+ttimeCriteria);
+
 		return ttimeCriteria.toString();
 	}
 public static void addReading(String moduleName,List<ReadingContext> readings) throws Exception {
@@ -392,7 +396,7 @@ public static void addReading(String moduleName,List<ReadingContext> readings) t
 
 		}
 		catch (Exception e) {
-			log.info("Exception occurred ", e);
+			LOGGER.error("Exception occurred ", e);
 		}
 	}
 	
@@ -575,7 +579,7 @@ public static ReadingContext getDailyReading(long siteId,String moduleName, Map<
 	return reading;
 }
 
-private static long getAdjustedTtime(String moduleName,long ttime)  {
+private static long getAdjustedTtime(String moduleName,Long ttime)  {
 	
 	
 	try {
