@@ -548,7 +548,7 @@ public class ReadingsAPI {
 							String value = val.toString();
 							
 							ReadingDataMeta rdm = uniqueRDMs.get(uniqueKey);
-							if (rdm == null || rdm.getTtime() < timeStamp) {
+							if (rdm == null || (rdm.getTtime() <= System.currentTimeMillis() && rdm.getTtime() < timeStamp) ) {
 								rdm = new ReadingDataMeta();
 								rdm.setFieldId(fieldId);
 								rdm.setField(fField);
