@@ -309,13 +309,16 @@ public static Map<Long,List<Map<String,Object>>> getReadings(String moduleName) 
 			Map<Long,ReadingContext> ttimeVsReading= getWeatherReadingForSite(moduleName,siteId,readingsList);
 			for (ReadingContext reading: readingsList) {
 				
-				long ttime=reading.getTtime();
-				ReadingContext ttimeReading = ttimeVsReading.get(ttime);
-				if(ttimeReading==null) {
-					continue;
-				}
-				reading.setId(ttimeReading.getId());
+				Long ttime=(Long)reading.getReading("forecastTime");
 				reading.setTtime(ttime);
+				ReadingContext ttimeReading = ttimeVsReading.get(ttime);
+				if(ttimeReading!=null) {
+					reading.setId(ttimeReading.getId());
+				}
+				else {
+					reading.setId(-1);
+				}
+				
 				LOGGER.info("The Weather reading which exists in DB for module: "+moduleName+" "+reading);
 			}
 		}
@@ -447,8 +450,8 @@ public static void populateMap(long siteId, List<ReadingContext> list, Map<Long,
 	List<ReadingContext> readingsList=readingMap.get(siteId);
 	if(readingsList==null) {
 		readingsList= new ArrayList<ReadingContext>();
+		readingMap.put(siteId, readingsList);
 	}
-	readingMap.put(siteId, readingsList);
 	readingsList.addAll(list);
 }
 
