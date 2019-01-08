@@ -68,7 +68,8 @@ import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.context.WorkflowExpression;
 import com.facilio.workflows.context.WorkflowFieldContext;
 import com.facilio.workflows.context.WorkflowFunctionContext;
-import com.facilio.workflows.functions.FacilioCostFunction;
+import com.facilio.workflows.functions.FacilioAssetFunctions;
+import com.facilio.workflows.functions.FacilioCostFunctions;
 import com.facilio.workflows.functions.FacilioDateFunction;
 import com.facilio.workflows.functions.FacilioDefaultFunction;
 import com.facilio.workflows.functions.FacilioEnergyMeterFunction;
@@ -1486,7 +1487,7 @@ public class WorkflowUtil {
 					facilioWorkflowFunction = ThermoPhysicalR134aFunctions.getThermoPhysicalR134aFunction(functionName);
 					break;
 				case COST :
-					facilioWorkflowFunction = FacilioCostFunction.getFacilioCostFunction(functionName);
+					facilioWorkflowFunction = FacilioCostFunctions.getFacilioCostFunction(functionName);
 					break;
 				case MAP :
 					facilioWorkflowFunction = FacilioMapFunction.getFacilioMapFunction(functionName);
@@ -1515,6 +1516,9 @@ public class WorkflowUtil {
 				case SYSTEM:
 					facilioWorkflowFunction = FacilioSystemFunctions.getFacilioSystemFunction(functionName);
 					break;
+				case ASSET:
+					facilioWorkflowFunction = FacilioAssetFunctions.getFacilioCostFunction(functionName);
+					break;
 			}
 		}
 		return facilioWorkflowFunction;
@@ -1539,7 +1543,7 @@ public class WorkflowUtil {
 					facilioWorkflowFunction = new ArrayList<>( ThermoPhysicalR134aFunctions.getAllFunctions().values());
 					break;
 				case COST :
-					facilioWorkflowFunction = new ArrayList<>( FacilioCostFunction.getAllFunctions().values());
+					facilioWorkflowFunction = new ArrayList<>( FacilioCostFunctions.getAllFunctions().values());
 					break;
 				case MAP :
 					facilioWorkflowFunction = new ArrayList<>( FacilioMapFunction.getAllFunctions().values());
@@ -1567,6 +1571,9 @@ public class WorkflowUtil {
 					break;
 				case SYSTEM:
 					facilioWorkflowFunction = new ArrayList<>( FacilioSystemFunctions.getAllFunctions().values());
+					break;
+				case ASSET:
+					facilioWorkflowFunction = new ArrayList<>( FacilioAssetFunctions.getAllFunctions().values());
 					break;
 			}
 		}
