@@ -7,8 +7,8 @@ import org.apache.commons.chain.Chain;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
-import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
+import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.FacilioModule;
@@ -52,7 +52,7 @@ public class ReportEmailScheduler extends FacilioJob {
 				
 				context.put(FacilioConstants.ContextNames.REPORT, reportContext);
 				
-				Chain mailReportChain = FacilioChainFactory.sendReportMailChain();
+				Chain mailReportChain = TransactionChainFactory.sendReportMailChain();
 				mailReportChain.execute(context);				
 				
 			}
