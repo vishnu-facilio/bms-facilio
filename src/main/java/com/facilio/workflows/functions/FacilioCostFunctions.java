@@ -7,7 +7,7 @@ import java.util.Map;
 import com.facilio.workflows.exceptions.FunctionParamException;
 import com.facilio.workflows.util.FunctionUtil;
 
-public enum FacilioCostFunction implements FacilioWorkflowFunctionInterface {
+public enum FacilioCostFunctions implements FacilioWorkflowFunctionInterface {
 
 	GET_COST_FROM_KWH(1,"getCostFromKwh") {
 		@Override
@@ -81,20 +81,20 @@ public enum FacilioCostFunction implements FacilioWorkflowFunctionInterface {
 	public void setParams(String params) {
 		this.params = params;
 	}
-	FacilioCostFunction(Integer value,String functionName) {
+	FacilioCostFunctions(Integer value,String functionName) {
 		this.value = value;
 		this.functionName = functionName;
 	}
-	public static Map<String, FacilioCostFunction> getAllFunctions() {
+	public static Map<String, FacilioCostFunctions> getAllFunctions() {
 		return DEFAULT_FUNCTIONS;
 	}
-	public static FacilioCostFunction getFacilioCostFunction(String functionName) {
+	public static FacilioCostFunctions getFacilioCostFunction(String functionName) {
 		return DEFAULT_FUNCTIONS.get(functionName);
 	}
-	static final Map<String, FacilioCostFunction> DEFAULT_FUNCTIONS = Collections.unmodifiableMap(initTypeMap());
-	static Map<String, FacilioCostFunction> initTypeMap() {
-		Map<String, FacilioCostFunction> typeMap = new HashMap<>();
-		for(FacilioCostFunction type : FacilioCostFunction.values()) {
+	static final Map<String, FacilioCostFunctions> DEFAULT_FUNCTIONS = Collections.unmodifiableMap(initTypeMap());
+	static Map<String, FacilioCostFunctions> initTypeMap() {
+		Map<String, FacilioCostFunctions> typeMap = new HashMap<>();
+		for(FacilioCostFunctions type : FacilioCostFunctions.values()) {
 			typeMap.put(type.getFunctionName(), type);
 		}
 		return typeMap;
