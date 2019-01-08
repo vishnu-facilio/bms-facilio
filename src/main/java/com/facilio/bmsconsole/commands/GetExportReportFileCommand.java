@@ -62,7 +62,10 @@ public class GetExportReportFileCommand implements Command {
 			}
 			
 		    Map<String, Object> tableState = null;
-		    String tabularState = report.getTabularState() != null ? report.getTabularState() : (String) context.get(FacilioConstants.ContextNames.TABULAR_STATE);
+		    String tabularState = (String) context.get(FacilioConstants.ContextNames.TABULAR_STATE);
+		    if (tabularState == null) {
+		    		tabularState = report.getTabularState();
+		    }
 			if (tabularState != null) {
 				JSONParser parser = new JSONParser();
 	    			tableState = (Map<String, Object>) parser.parse(report.getTabularState());
@@ -205,11 +208,18 @@ public class GetExportReportFileCommand implements Command {
 				builder.append((unit != null && !unit.isEmpty() ? " (" + unit + ")" : ""));
 				if ( (dataPoint.getyAxis().getDataTypeEnum() == FieldType.BOOLEAN || dataPoint.getyAxis().getDataTypeEnum() == FieldType.ENUM)){
 					if (report.getxAggrEnum() != null && report.getxAggrEnum() != CommonAggregateOperator.ACTUAL) {
-						if (!col.containsKey("enumMode") || col.get("enumMode") == EnumMode.GRAPH ) {
-							col.put("enumMode", EnumMode.DURATION);
+						if (col.containsKey("enumMode") && (int)col.get("enumMode") > 0 ) {
+							EnumMode enumMode = EnumMode.valueOf((int)col.get("enumMode"));
+							col.put("enumModeEnum", enumMode);
+							if (enumMode == EnumMode.GRAPH) {
+								col.put("enumModeEnum", EnumMode.DURATION);
+							}
+							else if (enumMode == EnumMode.PERCENT){
+								builder.append(" (%)");
+							}
 						}
-						else if (col.get("enumMode") == EnumMode.PERCENT){
-							builder.append(" (%)");
+						else {
+							col.put("enumModeEnum", EnumMode.DURATION);
 						}
 					}
 				}
@@ -267,13 +277,13 @@ public class GetExportReportFileCommand implements Command {
 							case ENUM:
 								EnumVal enumVal = (EnumVal) value;
 								value = null;
-								if (column.get("enumMode") == null) {	// High-res
+								if (column.get("enumModeEnum") == null) {	// High-res
 									List<SimpleEntry<Long, Integer>> timeline = enumVal.getTimeline();
 									if (timeline != null && !timeline.isEmpty()) {
 										value = dataPoint.getyAxis().getEnumMap().get(timeline.get(0).getValue());
 									}
 								}
-								else if (column.get("enumMode") == EnumMode.PERCENT) {
+								else if (column.get("enumModeEnum") == EnumMode.PERCENT) {
 									Map<Integer, Long> duration = enumVal.getDuration();
 									if (duration != null) {
 										long total = duration.values().stream().reduce(0L, (prev, key) -> prev + key);
