@@ -537,10 +537,11 @@ public class ReadingsAPI {
 								{
 									Object lastReading = meta.getValue();
 									long lastTimeStamp = meta.getTtime();
-									if (lastReading != null 
+									if (timeStamp > System.currentTimeMillis()
+											|| (lastReading != null 
 											&& lastTimeStamp != -1 
 											&& !"-1".equals(meta.getActualValue()) 
-											&& (timeStamp < lastTimeStamp || timeStamp > System.currentTimeMillis())) { 
+											&& timeStamp < lastTimeStamp)) { 
 										continue;
 									}
 								}
@@ -548,7 +549,7 @@ public class ReadingsAPI {
 							String value = val.toString();
 							
 							ReadingDataMeta rdm = uniqueRDMs.get(uniqueKey);
-							if (rdm.getTtime() <= System.currentTimeMillis() && (rdm == null || rdm.getTtime() < timeStamp)) {
+							if (rdm == null || rdm.getTtime() < timeStamp) {
 								rdm = new ReadingDataMeta();
 								rdm.setFieldId(fieldId);
 								rdm.setField(fField);
