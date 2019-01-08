@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -15,6 +16,7 @@ import org.json.simple.parser.JSONParser;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
+import com.facilio.bmsconsole.commands.CalculateAggregationCommand.EnumVal;
 import com.facilio.bmsconsole.context.FormulaContext.AggregateOperator;
 import com.facilio.bmsconsole.context.FormulaContext.CommonAggregateOperator;
 import com.facilio.bmsconsole.context.FormulaContext.DateAggregateOperator;
@@ -192,10 +194,10 @@ public class GetExportReportFileCommand implements Command {
 				else {
 					String alias = (String) ((Map<String, Object>) pointObj).get("dpAlias");
 					dataPoint = (ReportDataPointContext) dataMap.get(alias);
-					baseLine = (ReportBaseLineContext) dataMap.get("baseline");
+					baseLine = (ReportBaseLineContext) ((Map<String, Object>) pointObj).get("baseline");
 				}
 				
-				StringBuilder builder = new StringBuilder(dataPoint.getyAxis().getLabel());
+				StringBuilder builder = new StringBuilder(dataPoint.getName());
 				if (baseLine != null) {
 					builder.append(" - ").append(baseLine.getBaseLine().getName());
 				}
@@ -263,16 +265,16 @@ public class GetExportReportFileCommand implements Command {
 						switch(dataPoint.getyAxis().getDataTypeEnum()) {
 							case BOOLEAN:
 							case ENUM:
-								Map<String, Object> enumVal = (Map<String, Object>) value;
+								EnumVal enumVal = (EnumVal) value;
 								value = null;
 								if (column.get("enumMode") == null) {	// High-res
-									List<Map<String, Object>> timeline = (List<Map<String, Object>>) enumVal.get("timeline");
+									List<SimpleEntry<Long, Integer>> timeline = enumVal.getTimeline();
 									if (timeline != null && !timeline.isEmpty()) {
-										value = dataPoint.getyAxis().getEnumMap().get(timeline.get(0).get("value"));
+										value = dataPoint.getyAxis().getEnumMap().get(timeline.get(0).getValue());
 									}
 								}
 								else if (column.get("enumMode") == EnumMode.PERCENT) {
-									Map<Integer, Long> duration = (Map<Integer, Long>) enumVal.get("duration");
+									Map<Integer, Long> duration = enumVal.getDuration();
 									if (duration != null) {
 										long total = duration.values().stream().reduce(0L, (prev, key) -> prev + key);
 										StringBuilder percent = new StringBuilder(); 
@@ -286,7 +288,7 @@ public class GetExportReportFileCommand implements Command {
 									}
 								}
 								else {	// DURATION
-									Map<Integer, Long> duration = (Map<Integer, Long>) enumVal.get("duration");
+									Map<Integer, Long> duration = enumVal.getDuration();
 									if (duration != null) {
 										StringBuilder durationVal = new StringBuilder();
 										for (Entry<Integer, Long> entry : duration.entrySet()) {

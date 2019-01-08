@@ -203,14 +203,14 @@ public class TransactionChainFactory {
 		
 		public static Chain getExportNewAnalyticsFileChain() {
 			Chain c = new ChainBase();
-			c.addCommand(ReadOnlyChainFactory.fetchReadingReportChain());
+			c.addCommand(ReadOnlyChainFactory.newFetchReadingReportChain());
 			c.addCommand(new GetExportReportFileCommand());
 			return c;
 		}
 		
 		public static Chain getExportNewReportFileChain() {
 			Chain c = new ChainBase();
-			c.addCommand(ReadOnlyChainFactory.fetchReportDataChain());
+			c.addCommand(ReadOnlyChainFactory.newFetchReportDataChain());
 			c.addCommand(new GetExportReportFileCommand());
 			return c;
 		}
