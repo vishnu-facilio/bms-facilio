@@ -8,5 +8,6 @@ cd /home/ubuntu
 sudo killall -9 java
 sudo sh $APP_HOME/bin/catalina.sh start
 sudo chmod 644 $APP_HOME/logs/*
+sudo rm -rf $UBUNTU_HOME/deployment-files/*
 
 echo "server started..."
