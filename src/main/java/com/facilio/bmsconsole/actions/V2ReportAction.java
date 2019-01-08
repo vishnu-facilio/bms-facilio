@@ -16,7 +16,6 @@ import org.json.simple.parser.JSONParser;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
@@ -46,8 +45,8 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.fs.FileInfo.FileFormat;
 import com.facilio.fw.BeanFactory;
 import com.facilio.report.context.ReadingAnalysisContext;
-import com.facilio.report.context.ReadingAnalysisContext.ReportMode;
 import com.facilio.report.context.ReadingAnalysisContext.ReportFilterMode;
+import com.facilio.report.context.ReadingAnalysisContext.ReportMode;
 import com.facilio.report.context.ReportBaseLineContext;
 import com.facilio.report.context.ReportContext;
 import com.facilio.report.context.ReportFolderContext;
@@ -770,13 +769,13 @@ public class V2ReportAction extends FacilioAction {
 		
 		Chain exportChain;
 		if (reportId != -1) {
-			exportChain = FacilioChainFactory.getExportReportFileChain();
+			exportChain = isNewFormat() ? TransactionChainFactory.getExportNewReportFileChain() : TransactionChainFactory.getExportReportFileChain();
 			setReportWithDataContext(context);
 			reportContext.setDateOperator(dateOperator);
 			reportContext.setDateValue(dateOperatorValue);
 		}
 		else {
-			exportChain = FacilioChainFactory.getExportReadingReportFileChain();
+			exportChain = isNewFormat() ? TransactionChainFactory.getExportNewAnalyticsFileChain() : TransactionChainFactory.getExportAnalyticsFileChain();
 			setReadingsDataContext(context);
 			context.put(FacilioConstants.ContextNames.TABULAR_STATE, tabularState);
 		}
@@ -803,13 +802,13 @@ public class V2ReportAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		Chain mailReportChain;
 		if (reportId != -1) {
-			mailReportChain = FacilioChainFactory.sendReportMailChain();
+			mailReportChain = isNewFormat() ? TransactionChainFactory.sendNewReportMailChain()  : TransactionChainFactory.sendReportMailChain();
 			setReportWithDataContext(context);
 			reportContext.setDateOperator(dateOperator);
 			reportContext.setDateValue(dateOperatorValue);
 		}
 		else {
-			mailReportChain = FacilioChainFactory.sendReadingReportMailChain();
+			mailReportChain = isNewFormat() ? TransactionChainFactory.sendNewAnalyticsMailChain() : TransactionChainFactory.sendAnalyticsMailChain();
 			setReadingsDataContext(context);
 			context.put(FacilioConstants.ContextNames.TABULAR_STATE, tabularState);
 		}

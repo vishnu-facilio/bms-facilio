@@ -173,6 +173,62 @@ public class TransactionChainFactory {
 			return c;
 		}
 		
+		public static Chain getExportAnalyticsFileChain() {
+			Chain c = new ChainBase();
+			c.addCommand(ReadOnlyChainFactory.fetchReadingReportChain());
+			c.addCommand(new GetExportReportDataCommand());
+			return c;
+		}
+		
+		public static Chain getExportReportFileChain() {
+			Chain c = new ChainBase();
+			c.addCommand(ReadOnlyChainFactory.fetchReportDataChain());
+			c.addCommand(new GetExportReportDataCommand());
+			return c;
+		}
+		
+		public static Chain sendAnalyticsMailChain() {
+			Chain c = new ChainBase();
+			c.addCommand(getExportAnalyticsFileChain());
+			c.addCommand(new SendReadingReportMailCommand());
+			return c;
+		}
+		
+		public static Chain sendReportMailChain() {
+			Chain c = new ChainBase();
+			c.addCommand(getExportReportFileChain());
+			c.addCommand(new SendReadingReportMailCommand());
+			return c;
+		}
+		
+		public static Chain getExportNewAnalyticsFileChain() {
+			Chain c = new ChainBase();
+			c.addCommand(ReadOnlyChainFactory.fetchReadingReportChain());
+			c.addCommand(new GetExportReportFileCommand());
+			return c;
+		}
+		
+		public static Chain getExportNewReportFileChain() {
+			Chain c = new ChainBase();
+			c.addCommand(ReadOnlyChainFactory.fetchReportDataChain());
+			c.addCommand(new GetExportReportFileCommand());
+			return c;
+		}
+		
+		public static Chain sendNewAnalyticsMailChain() {
+			Chain c = new ChainBase();
+			c.addCommand(getExportNewAnalyticsFileChain());
+			c.addCommand(new SendReadingReportMailCommand());
+			return c;
+		}
+		
+		public static Chain sendNewReportMailChain() {
+			Chain c = new ChainBase();
+			c.addCommand(getExportNewReportFileChain());
+			c.addCommand(new SendReadingReportMailCommand());
+			return c;
+		}
+		
 		public static Chain scheduleReportChain() {
 			Chain c = new ChainBase();
 			c.addCommand(new AddTemplateCommand());
