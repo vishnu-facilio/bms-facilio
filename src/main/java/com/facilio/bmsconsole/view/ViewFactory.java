@@ -7,7 +7,6 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import com.facilio.bmsconsole.context.AlarmContext.AlarmType;
 import com.facilio.bmsconsole.context.AssetCategoryContext;
@@ -40,7 +39,8 @@ import com.facilio.events.constants.EventConstants;
 public class ViewFactory {
 	
 	private static Map<String,Map<String,FacilioView>> views = Collections.unmodifiableMap(initializeViews());
-	private static Map<String, Map<String, List<String>>> groupViews = Collections.unmodifiableMap(initializeViews1());
+	private static Map<String, Map<String, List<String>>> groupViews = Collections.unmodifiableMap(initializeGroupViews());	// TODO remove
+	private static Map<String, List<Map<String, Object>>> groupVsViews = Collections.unmodifiableMap(initializeGroupVsViews());
 
 	public static FacilioView getView (String moduleName, String viewName) {
 		FacilioView view = null;
@@ -75,6 +75,15 @@ public class ViewFactory {
 
 		return moduleViews1;
 	}
+	
+	public static List<Map<String, Object>> getGroupVsViews (String moduleName) {
+		List<Map<String, Object>> moduleGroups = new ArrayList<>();
+		if(groupVsViews.containsKey(moduleName)) {
+			moduleGroups.addAll(groupVsViews.get(moduleName));
+		}
+		return moduleGroups;
+	}
+	
 	private static Map<String, Map<String, FacilioView>> initializeViews() {
 		Map<String, Map<String, FacilioView>> viewsMap = new HashMap<String, Map<String, FacilioView>>();
 		Map<String,FacilioView> views = new LinkedHashMap<>();
@@ -189,7 +198,7 @@ public class ViewFactory {
 	}
 	
 	
-	private static Map<String, Map<String, List<String>>> initializeViews1() {
+	private static Map<String, Map<String, List<String>>> initializeGroupViews() {
 		Map<String, Map<String,  List<String>>> viewsMap1 = new HashMap<String, Map<String,  List<String>>>();
 		 Map<String,  List<String>> groupViews = new LinkedHashMap<String, List<String>>();
 	        ArrayList<String> open = new ArrayList<String>();
@@ -215,28 +224,88 @@ public class ViewFactory {
 	        ArrayList<String> closed = new ArrayList<String>();
 	        closed.add("closed");
 	        
-	        
-//	        ArrayList<String> report = new ArrayList<String>();
-//	        report.add("report");
-	        
 	        ArrayList<String> all = new ArrayList<String>();
 	        all.add("all");
-	        groupViews.put("OpenWorkOrders", open);
+	        
+	        groupViews.put("OpenWorkOrders", open);	// TODO change name to lower case..also in client
 	        groupViews.put("MyopenWorkorders", myopen);
 	        groupViews.put("ResolvedWorkorders", resolved);
-//	        groupViews.put("ReportWorkorders", report);
 	        groupViews.put("AllWorkorders", all);
 	        groupViews.put("closeWorkorder", closed);
-	        
-	        
-	        for (Entry<String, List<String>> entry : groupViews.entrySet()) {
-	            String key = entry.getKey();
-	            List<String> values = entry.getValue();
-	        }
 	        
 	        viewsMap1.put(FacilioConstants.ContextNames.WORK_ORDER,groupViews);
 			return viewsMap1;
 	        	
+	}
+	
+	private static Map<String, List<Map<String, Object>>> initializeGroupVsViews() {
+		Map<String, List<Map<String, Object>>> moduleVsGroup = new HashMap<String, List<Map<String, Object>>>();
+		
+		List<Map<String, Object>> groupVsViews = new ArrayList<>();
+		Map<String, Object> groupDetails = new HashMap<>();
+		
+		ArrayList<String> open = new ArrayList<String>();
+		open.add("open");
+		open.add("overdue");
+		open.add("duetoday");
+		open.add("planned");
+		open.add("unplanned");
+		open.add("unassigned");
+		
+		groupDetails.put("name", "openworkorders");
+		groupDetails.put("displayName", "Open Work Orders");
+		groupDetails.put("views", open);
+		groupVsViews.add(groupDetails);
+		
+		
+		ArrayList<String> myopen = new ArrayList<String>();
+		myopen.add("myopen");
+		myopen.add("myteamopen");
+		myopen.add("myoverdue");
+		myopen.add("myduetoday");
+		
+		groupDetails = new HashMap<>();
+		groupDetails.put("name", "myopenworkorders");
+		groupDetails.put("displayName", "My Open Work Orders");
+		groupDetails.put("views", myopen);
+		groupVsViews.add(groupDetails);
+
+
+		ArrayList<String> resolved = new ArrayList<String>();
+		resolved.add("resolved");
+		
+		groupDetails = new HashMap<>();
+		groupDetails.put("name", "resolvedworkorders");
+		groupDetails.put("displayName", "Resolved Work Orders");
+		groupDetails.put("views", resolved);
+		groupVsViews.add(groupDetails);
+
+
+		ArrayList<String> closed = new ArrayList<String>();
+		closed.add("closed");
+		
+		groupDetails = new HashMap<>();
+		groupDetails.put("name", "closedworkorders");
+		groupDetails.put("displayName", "Closed Work Orders");
+		groupDetails.put("views", closed);
+		groupVsViews.add(groupDetails);
+
+		
+		ArrayList<String> all = new ArrayList<String>();
+		all.add("all");
+		
+		groupDetails = new HashMap<>();
+		groupDetails.put("name", "allworkorders");
+		groupDetails.put("displayName", "All Work Orders");
+		groupDetails.put("views", all);
+		groupVsViews.add(groupDetails);
+		
+
+		moduleVsGroup.put(FacilioConstants.ContextNames.WORK_ORDER, groupVsViews);
+		
+		
+		return moduleVsGroup;
+
 	}
 	
 	private static FacilioView getEvents(String category) {

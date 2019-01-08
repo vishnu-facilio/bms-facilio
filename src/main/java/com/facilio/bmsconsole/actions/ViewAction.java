@@ -1,6 +1,5 @@
 package com.facilio.bmsconsole.actions;
 
-import java.util.LinkedHashMap;
 import java.util.List;
 
 import org.apache.commons.chain.Chain;
@@ -39,14 +38,11 @@ public class ViewAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
 		context.put(FacilioConstants.ContextNames.GROUP_STATUS, true);
 
-		Chain getViewListsChain = FacilioChainFactory.getViewListsChain();
+		Chain getViewListsChain = FacilioChainFactory.getViewListChain();
 		getViewListsChain.execute(context);
-		setViews((List<FacilioView>) context.get(FacilioConstants.ContextNames.VIEW_LIST));
-		setGroupViews((LinkedHashMap) context.get(FacilioConstants.ContextNames.GROUP_VIEWS));
 
-		setResult("views", views);
-
-		setResult("groupViews", groupViews);
+		setResult("views", context.get(FacilioConstants.ContextNames.VIEW_LIST));
+		setResult("groupViews", context.get(FacilioConstants.ContextNames.GROUP_VIEWS));	// TODO remove
 
 		return SUCCESS;
 	}
@@ -204,14 +200,6 @@ public class ViewAction extends FacilioAction {
 		this.views = views;
 	}
 	
-	private LinkedHashMap groupViews;
-	public LinkedHashMap getGroupViews() {
-		return groupViews;
-	}
-	public void setGroupViews(LinkedHashMap groupViews) {
-		this.groupViews = groupViews;
-	}
-
 	private FacilioView view;
 	public FacilioView getView() {
 		return view;

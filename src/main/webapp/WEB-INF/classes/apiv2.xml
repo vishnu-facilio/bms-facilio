@@ -101,13 +101,18 @@
 	</package>
 	
 	
-		<package name="viewApiV2" namespace="/api/v2/views" extends="v2Api">
-			<action name="viewList" class="com.facilio.bmsconsole.actions.ViewAction" method="v2viewlist">
-			</action>
-			<action name="edit" class="com.facilio.bmsconsole.actions.ViewAction" method="v2editView">
-			</action>
-		</package>
+	<package name="viewApiV2" namespace="/api/v2/views" extends="v2Api">
+		<action name="viewList" class="com.facilio.bmsconsole.actions.ViewAction" method="v2viewlist">
+		</action>
+		<action name="edit" class="com.facilio.bmsconsole.actions.ViewAction" method="v2editView">
+		</action>
+	</package>
 	
+	<package name="viewListApiV2" namespace="/api/v2/views/module" extends="v2Api">
+		<action name="*" class="com.facilio.bmsconsole.actions.ViewAction" method="v2viewlist">
+			<param name="moduleName">{1}</param>
+		</action>
+	</package>
 
 	<package name="workOrderApiV2" namespace="/api/v2/workorders" extends="v2Api">
 	
