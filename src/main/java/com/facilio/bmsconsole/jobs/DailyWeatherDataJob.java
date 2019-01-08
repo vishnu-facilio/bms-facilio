@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.jobs;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -30,7 +31,7 @@ public class DailyWeatherDataJob extends FacilioJob {
 			{
 				return;
 			}
-			List<ReadingContext> dailyReadings=new ArrayList<ReadingContext>();
+			Map<Long,List<ReadingContext>> siteDailyReadings = new HashMap<Long,List<ReadingContext>>();
 
 			List<SiteContext> sites=SpaceAPI.getAllSites(1);
 			for(SiteContext site:sites) {
@@ -41,20 +42,19 @@ public class DailyWeatherDataJob extends FacilioJob {
 					continue;
 				}
 				long siteId=site.getId();
-				List<ReadingContext> readings= WeatherUtil.getDailyForecastReadings(siteId,weatherData,false);
+				List<ReadingContext> readings= WeatherUtil.getDailyForecastReadings(siteId,FacilioConstants.ContextNames.WEATHER_DAILY_READING,weatherData,false);
 				if(readings!=null && !readings.isEmpty()) {
-				 dailyReadings.addAll(readings);	
+					WeatherUtil.populateMap(siteId, readings,siteDailyReadings);
 				}
 			}
 
-			WeatherUtil.addReading(FacilioConstants.ContextNames.WEATHER_DAILY_READING ,dailyReadings);	
+			siteDailyReadings   = WeatherUtil.getWeatherReading(FacilioConstants.ContextNames.WEATHER_DAILY_READING, siteDailyReadings );
+			WeatherUtil.addReading(FacilioConstants.ContextNames.WEATHER_DAILY_READING,WeatherUtil.getReadingList(siteDailyReadings));	
 		}
 		catch (Exception e) {
 			logger.log(Level.SEVERE, e.getMessage(), e);
 			CommonCommandUtil.emailException("DailyWeatherDataJob", "Exception in DailyWeatherDataJob ", e);
 		}
 	}
-
-	
 
 }

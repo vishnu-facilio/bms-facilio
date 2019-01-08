@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.jobs;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
@@ -39,10 +40,16 @@ public class WeatherDataJob extends FacilioJob {
 				return;
 			}
 			List<SiteContext> sites=SpaceAPI.getAllSites(1);
-			List<ReadingContext> currentReadings= new ArrayList<ReadingContext>();
+			
 			List<ReadingContext> hourlyReadings= new ArrayList<ReadingContext>();
 			List<ReadingContext> dailyReadings=new ArrayList<ReadingContext>();
 			List<ReadingContext> psychrometricReadings= new ArrayList<ReadingContext>();
+
+			
+			Map<Long,List<ReadingContext>> siteCurrentReadings = new HashMap<Long,List<ReadingContext>>();
+			Map<Long,List<ReadingContext>> siteDailyReadings = new HashMap<Long,List<ReadingContext>>();
+
+			
 			
 			for(SiteContext site:sites) {
 
@@ -53,9 +60,11 @@ public class WeatherDataJob extends FacilioJob {
 				}
 				long siteId=site.getId();
 				Map<String,Object> currentWeather= (JSONObject)weatherData.get("currently");
-				ReadingContext reading=WeatherUtil.getHourlyReading(siteId,currentWeather);
+				ReadingContext reading=WeatherUtil.getHourlyReading(siteId,FacilioConstants.ContextNames.WEATHER_READING,currentWeather);
 				if(reading!=null) {
-					currentReadings.add(reading);
+					
+					WeatherUtil.populateMap(siteId, reading,siteCurrentReadings);
+					
 					ReadingContext psychrometricReading = getPsychrometricReading(siteId, currentWeather);
 					if(psychrometricReading != null) {
 						psychrometricReadings.add(psychrometricReading);
@@ -63,27 +72,33 @@ public class WeatherDataJob extends FacilioJob {
 					logger.log(Level.INFO,"The psychometric data for orgid: "+AccountUtil.getCurrentOrg().getOrgId()+" : "+psychrometricReading);
 				}
 				//forecast..
-				List<ReadingContext> hourlyForecast= WeatherUtil.getHourlyForecastReadings(siteId,weatherData,true);
-				List<ReadingContext> dailyForecast= WeatherUtil.getDailyForecastReadings(siteId,weatherData,true);
+				List<ReadingContext> hourlyForecast= WeatherUtil.getHourlyForecastReadings(siteId,FacilioConstants.ContextNames.WEATHER_HOURLY_FORECAST_READING,weatherData,true);
+				List<ReadingContext> dailyForecast= WeatherUtil.getDailyForecastReadings(siteId,FacilioConstants.ContextNames.WEATHER_DAILY_FORECAST_READING,weatherData,true);
 				if(!hourlyForecast.isEmpty()) {
 					hourlyReadings.addAll(hourlyForecast);
+					WeatherUtil.populateMap(siteId, hourlyForecast,siteCurrentReadings);
+
 				}
 				if(!dailyForecast.isEmpty()) {
-                  dailyReadings.addAll(dailyForecast);
+					dailyReadings.addAll(dailyForecast);
+					WeatherUtil.populateMap(siteId, dailyForecast,siteDailyReadings);
 				}
 			}
-			WeatherUtil.addReading(FacilioConstants.ContextNames.WEATHER_READING,currentReadings);	
 			WeatherUtil.addReading(FacilioConstants.ContextNames.PSYCHROMETRIC_READING ,psychrometricReadings);
 			WeatherUtil.addReading(FacilioConstants.ContextNames.WEATHER_HOURLY_FORECAST_READING,hourlyReadings);	
-			WeatherUtil.addReading(FacilioConstants.ContextNames.WEATHER_DAILY_FORECAST_READING ,dailyReadings);	
+			WeatherUtil.addReading(FacilioConstants.ContextNames.WEATHER_DAILY_FORECAST_READING ,dailyReadings);
+			
+			siteCurrentReadings = WeatherUtil.getWeatherReading(FacilioConstants.ContextNames.WEATHER_READING, siteCurrentReadings );
+			siteDailyReadings   = WeatherUtil.getWeatherReading(FacilioConstants.ContextNames.WEATHER_DAILY_READING, siteDailyReadings );
+			WeatherUtil.addReading(FacilioConstants.ContextNames.WEATHER_READING,WeatherUtil.getReadingList(siteCurrentReadings));	
+			WeatherUtil.addReading(FacilioConstants.ContextNames.WEATHER_DAILY_READING,WeatherUtil.getReadingList(siteDailyReadings));	
 		}
 		catch (Exception e) {
 			logger.log(Level.ERROR, e.getMessage(), e);
 			CommonCommandUtil.emailException("WeatherDataJob", "Exception in Weather Data job ", e);
 		}
 	}
-	
-	
+		
 	
 
 
