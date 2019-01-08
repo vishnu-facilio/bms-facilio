@@ -17,7 +17,21 @@ files:
     destination: /home/ubuntu
   - source: /setenv.sh
     destination: /home/ubuntu
-  - source: /deployment-files/*
+  - source: /deployment-files/awsprops-scheduler.properties
+    destination: /home/ubuntu/deployment-files/
+  - source: /deployment-files/awsprops-stage.properties
+    destination: /home/ubuntu/deployment-files/
+  - source: /deployment-files/awsprops-user.properties
+    destination: /home/ubuntu/deployment-files/
+  - source: /deployment-files/log4j-user.properties
+    destination: /home/ubuntu/deployment-files/
+  - source: /deployment-files/log4j-stage.properties
+    destination: /home/ubuntu/deployment-files/
+  - source: /deployment-files/log4j-scheduler.properties
+    destination: /home/ubuntu/deployment-files/
+  - source: /deployment-files/context-production.xml
+    destination: /home/ubuntu/deployment-files/
+  - source: /deployment-files/context-stage.xml
     destination: /home/ubuntu/deployment-files/
 
 permissions:
