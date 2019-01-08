@@ -17,6 +17,8 @@ files:
     destination: /home/ubuntu
   - source: /setenv.sh
     destination: /home/ubuntu
+  - source: /deployment-files/*
+    destination: /home/ubuntu/deployment-files/
 
 permissions:
   - object: /home/ubuntu/tomcat/webapps
