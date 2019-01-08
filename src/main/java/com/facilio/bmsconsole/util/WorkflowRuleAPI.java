@@ -718,11 +718,22 @@ public class WorkflowRuleAPI {
 	public static void deleteWorkFlowRules(List<Long> workflowIds) throws Exception {
 		if (workflowIds != null && !workflowIds.isEmpty()) {
 			List<WorkflowRuleContext> rules = getWorkflowRules(workflowIds);
-			
+			List<Long> deleteIds = new ArrayList<Long>();
+			List<Long> updateIds = new ArrayList<Long>();;
+			FacilioModule module = ModuleFactory.getWorkflowRuleModule();
+
 			if (rules != null && !rules.isEmpty()) {
+			 for(WorkflowRuleContext rule: rules ) {
+				if (rule.isLatestVersion()) {
+					updateIds.add(rule.getId());
+				}
+				else {
+					deleteIds.add(rule.getId());
+				}
+			 }
+			}
+			if (deleteIds.size() > 0) {
 				ActionAPI.deleteAllActionsFromWorkflowRules(workflowIds);
-				
-				FacilioModule module = ModuleFactory.getWorkflowRuleModule();
 				GenericDeleteRecordBuilder deleteBuilder = new GenericDeleteRecordBuilder()
 						.table(module.getTableName())
 						.andCondition(CriteriaAPI.getIdCondition(workflowIds, module));
@@ -742,6 +753,15 @@ public class WorkflowRuleAPI {
 					
 					deleteChildIdsForWorkflow(rule, rule);
 				}
+			}
+			if (updateIds.size() > 0) {
+				Map<String, Object> ruleProps = new HashMap<>();
+				ruleProps.put("latestVersion", false);
+				GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
+															.table(module.getTableName())
+															.fields(FieldFactory.getWorkflowRuleFields())
+															.andCondition(CriteriaAPI.getIdCondition(updateIds, module));
+				updateBuilder.update(ruleProps);
 			}
 		}
 	}
