@@ -206,6 +206,7 @@ public class PreventiveMaintenanceSummaryCommand implements Command {
 			}
 		}
 		context.put(FacilioConstants.ContextNames.TASK_SECTIONS, sectionTemplate);
+		context.put(FacilioConstants.ContextNames.PM_TASK_SECTIONS, sectionTemplate);
 		PreventiveMaintenanceAPI.updateResourceDetails(workorder, taskMap);
 		if (listOfTasks != null) {
 			CommonCommandUtil.loadTaskLookups(listOfTasks);
