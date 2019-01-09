@@ -35,9 +35,10 @@ import com.facilio.sql.GenericSelectRecordBuilder;
 
 public class FormsAPI {
 	public static Map<String, Set<FacilioForm>> getAllForms(FormType formtype) throws Exception {
-		Map<String, Set<FacilioForm>> forms = getAllFormsFromDB(formtype);
-		if (forms.isEmpty()) {
-			return FormFactory.getAllForms(formtype);
+		Map<String, Set<FacilioForm>> forms = new HashMap<> (FormFactory.getAllForms(formtype));
+		Map<String, Set<FacilioForm>> dbForms = getAllFormsFromDB(formtype);
+		if (!dbForms.isEmpty()) {
+			forms.putAll(dbForms);
 		}
 		return forms;
 	}
