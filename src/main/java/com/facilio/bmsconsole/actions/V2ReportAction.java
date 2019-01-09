@@ -238,6 +238,7 @@ public class V2ReportAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.PARENT_ID_LIST, parentId);
 		context.put(FacilioConstants.ContextNames.REPORT_SHOW_ALARMS, showAlarms);
 		context.put(FacilioConstants.ContextNames.REPORT_SHOW_SAFE_LIMIT, showSafeLimit);
+		context.put(FacilioConstants.Workflow.WORKFLOW, transformWorkflow);
 		
 		context.put(FacilioConstants.ContextNames.ALARM_ID, alarmId);
 	}
@@ -466,6 +467,14 @@ public class V2ReportAction extends FacilioAction {
 	}
 	public void setShowAlarms(boolean showAlarms) {
 		this.showAlarms = showAlarms;
+	}
+	
+	private WorkflowContext transformWorkflow;
+	public WorkflowContext getTransformWorkflow() {
+		return transformWorkflow;
+	}
+	public void setTransformWorkflow(WorkflowContext transformWorkflow) {
+		this.transformWorkflow = transformWorkflow;
 	}
 
 	private List<Long> assetCategory;

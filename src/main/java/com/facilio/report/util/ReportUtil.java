@@ -36,6 +36,7 @@ import com.facilio.sql.GenericDeleteRecordBuilder;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
+import com.facilio.workflows.context.WorkflowContext;
 
 public class ReportUtil {
 	
@@ -78,6 +79,11 @@ public class ReportUtil {
 			showSafeLimit = false;
 		}
 		report.addToReportState(FacilioConstants.ContextNames.REPORT_SHOW_SAFE_LIMIT, showSafeLimit);
+		
+		WorkflowContext transformWorkflow = (WorkflowContext)context.get(FacilioConstants.Workflow.WORKFLOW);
+		if (transformWorkflow != null) {
+			report.setTransformWorkflow(transformWorkflow);
+		}
 		
 		return report;
 	}

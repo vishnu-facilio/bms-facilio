@@ -31,6 +31,7 @@ import com.facilio.report.context.ReadingAnalysisContext.ReportMode;
 import com.facilio.report.context.ReportBaseLineContext;
 import com.facilio.report.context.ReportContext;
 import com.facilio.report.context.ReportDataPointContext;
+import com.facilio.report.context.ReportDataPointContext.DataPointType;
 
 public class GetExportReportFileCommand implements Command {
 	
@@ -105,7 +106,7 @@ public class GetExportReportFileCommand implements Command {
 			String alias = dp.getAliases().get(FacilioConstants.Reports.ACTUAL_DATA);
 			currentHeaderKeys.add(alias);
 			dataMap.put(alias, dp);
-			if (report.getBaseLines() != null) {
+			if (report.getBaseLines() != null && dp.getTypeEnum() != DataPointType.DERIVATION) {
 				report.getBaseLines().stream().forEach(bl -> {
 					String blAlias = dp.getAliases().get(bl.getBaseLine().getName());
 					currentHeaderKeys.add(blAlias);
@@ -291,7 +292,7 @@ public class GetExportReportFileCommand implements Command {
 										for (Entry<Integer, Long> entry : duration.entrySet()) {
 											percent.append(dataPoint.getyAxis().getEnumMap().get(entry.getKey()))
 												.append(": ")
-												.append(entry.getValue() / total * 100)
+												.append(ReportsUtil.roundOff(entry.getValue() / total * 100, 2))
 												.append("\n");
 										}
 										value = percent.toString();
