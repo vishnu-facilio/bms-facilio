@@ -1,9 +1,11 @@
 package com.facilio.workflows.context;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.facilio.beans.ModuleBean;
@@ -44,6 +46,7 @@ public class ExpressionContext implements WorkflowExpression {
 	FacilioModule module;
 	FacilioField facilioField;
 	Object constant;
+	String printStatement;
 	Object exprResult;
 	String orderByFieldName;
 	String sortBy;
@@ -63,6 +66,14 @@ public class ExpressionContext implements WorkflowExpression {
 
 	public WorkflowContext getWorkflowContext() {
 		return workflowContext;
+	}
+	
+	public String getPrintStatement() {
+		return printStatement;
+	}
+
+	public void setPrintStatement(String printStatement) {
+		this.printStatement = printStatement;
 	}
 
 	public void setWorkflowContext(WorkflowContext workflowContext) {
@@ -241,6 +252,11 @@ public class ExpressionContext implements WorkflowExpression {
 		}
 		if(getExpr() != null) {
 			return WorkflowUtil.evaluateExpression(getExpr(), variableToExpresionMap, workflowContext.isIgnoreNullParams());
+		}
+		if(getPrintStatement() != null) {
+			
+			printStatement(getPrintStatement(),variableToExpresionMap);
+			return null;
 		}
 		if(getWorkflowContext() != null && getWorkflowContext().isGetDataFromCache() && this.getWorkflowContext().getCachedData() != null) {
 			
@@ -481,6 +497,29 @@ public class ExpressionContext implements WorkflowExpression {
 			return true;
 		}
 		return false;
+	}
+	
+	private void printStatement(String printStatement,Map<String,Object> variableToExpresionMap1) {
+		String[] splitedPrints = printStatement.split("\\+");
+		
+		String finalResult = "";
+		
+		for(int i=0 ;i<splitedPrints.length;i++) {
+			splitedPrints[i] = splitedPrints[i].trim();
+			if(splitedPrints[i].startsWith("'") && splitedPrints[i].endsWith("'")) {
+				splitedPrints[i] = splitedPrints[i].substring(1, splitedPrints[i].length()-1);
+			}
+			else {
+				if(variableToExpresionMap1.containsKey(splitedPrints[i])) {
+					splitedPrints[i] = variableToExpresionMap1.get(splitedPrints[i]).toString();
+				}
+				else {
+					splitedPrints[i] = "null";
+				}
+			}
+			finalResult = finalResult + splitedPrints[i];
+		}
+		LOGGER.log(Level.SEVERE, finalResult);
 	}
 	
 	@Override
