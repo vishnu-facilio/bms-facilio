@@ -236,7 +236,7 @@ public class WorkflowContext implements Serializable {
 			
 			executeExpression(expressions,this);
 			
-			if(getResultEvaluator() == null && isSingleExpression()) {
+			if(getResultEvaluator() == null && isSingleExpression() && expressions.get(0) instanceof ExpressionContext) {
 				ExpressionContext exp = (ExpressionContext) expressions.get(0);
 				return variableResultMap.get(exp.getName());
 			}
