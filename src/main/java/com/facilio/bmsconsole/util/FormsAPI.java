@@ -121,8 +121,18 @@ public class FormsAPI {
 					}
 					f.setName(field.getName());
 				}
+				/***
+				 * Temp handling to set name for form fields if fieldId is empty 
+				 * Should introduce name column in Form Fields 
+				 */
 				else if (f.getDisplayTypeEnum() == FieldDisplayType.TICKETNOTES){
 					f.setName("comment");
+				}
+				else if (f.getDisplayTypeEnum() == FieldDisplayType.ATTACHMENT) {
+					f.setName("attachedFiles");
+				}
+				else if (f.getDisplayTypeEnum() == FieldDisplayType.LOOKUP_SIMPLE && f.getDisplayName().equals("Site")) {
+					f.setName("siteId");
 				}
 				fields.add(f);
 			}
