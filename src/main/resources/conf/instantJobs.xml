@@ -7,4 +7,5 @@
     <job name='PublishedDataChecker' classname= 'com.facilio.bmsconsole.instant.jobs.PublishedDataCheckerJob' transactionTimeout='300'/>
     <job name='MigrateReadingData' classname= 'com.facilio.bmsconsole.instant.jobs.MigrateReadingDataJob' transactionTimeout='300'/>
     <job name='ProcessUnmodelledHistoricalData' classname= 'com.facilio.bmsconsole.instant.jobs.ProcessUnmodelledHistoricalDataJob' transactionTimeout='300'/>
+    <job name='PubSubInstantJob' classname= 'com.facilio.bmsconsole.instant.jobs.PubSubInstantJob' transactionTimeout='300'/>
 </instantjob>
