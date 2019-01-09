@@ -149,6 +149,11 @@ public class WmsApi
 		sendMessage(recipients, message);
 	}
 	
+	public static void sendPubSubMessage(List<Long> recipients, Message message) throws IOException, EncodeException
+	{
+		sendMessage(recipients, message);
+	}
+	
 	public static void sendPublishResponse(List<Long> recipients, WmsPublishResponse data) throws IOException, EncodeException
 	{
 		sendMessage(recipients, data);

@@ -7,5 +7,6 @@ public enum MessageType {
 	SYSTEM,
 	REMOTE_SCREEN,
 	PUBLISH,
-	BROADCAST;
+	BROADCAST,
+	PUBSUB;
 }
