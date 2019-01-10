@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.apache.log4j.LogManager;
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 
 import com.facilio.bmsconsole.actions.FacilioAction;
 import com.facilio.workflows.context.WorkflowContext;
@@ -95,6 +96,15 @@ public class WorkflowAction extends FacilioAction {
 	
 	Long workflowId;
 	JSONObject params;
+	String paramString;
+	public String getParamString() {
+		return paramString;
+	}
+
+	public void setParamString(String paramString) {
+		this.paramString = paramString;
+	}
+
 	String workflowString;
 	
 	public Long getWorkflowId() {
@@ -131,6 +141,10 @@ public class WorkflowAction extends FacilioAction {
 	}
 
 	public String runWorkflow() throws Exception {
+		if(params == null && paramString != null) {
+    		JSONParser parser = new JSONParser();
+    		params = (JSONObject) parser.parse(paramString);
+    	}
 	    if(workflowId != null) {
 	    	resultMap = WorkflowUtil.getExpressionResultMap(workflowId, params);
 	    }
