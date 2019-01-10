@@ -134,6 +134,7 @@ public class FormsAPI {
 				}
 				else if (f.getDisplayTypeEnum() == FieldDisplayType.LOOKUP_SIMPLE && f.getDisplayName().equals("Site")) {
 					f.setName("siteId");
+					f.setLookupModuleName("site");
 				}
 				fields.add(f);
 			}
