@@ -29,9 +29,7 @@ import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.bmsconsole.workflow.rule.ActivityType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
-import com.facilio.tasker.FacilioTimer;
 import com.facilio.time.SecondsChronoUnit;
-import com.facilio.wms.endpoints.PubSubManager;
 
 public class AddOrUpdateReadingValuesCommand implements Command {
 	
@@ -143,19 +141,6 @@ public class AddOrUpdateReadingValuesCommand implements Command {
 			Map<String, ReadingDataMeta> currentRDMs = ReadingsAPI.updateReadingDataMeta(fields,readings,metaMap);
 			if (currentRDMs != null) {
 				currentReadingMap.putAll(currentRDMs);
-				
-				Iterator<String> readingKeys = currentRDMs.keySet().iterator();
-				while (readingKeys.hasNext()) {
-					String readingKey = readingKeys.next();
-					
-					if (PubSubManager.getInstance().isReadingChangeSubscribed(AccountUtil.getCurrentOrg().getId(), readingKey)) {
-						FacilioContext context = new FacilioContext();
-						context.put(FacilioConstants.ContextNames.PUBSUB_TOPIC, "readingChange");
-						context.put(FacilioConstants.ContextNames.READING_KEY, readingKey);
-						
-						FacilioTimer.scheduleInstantJob("PubSubInstantJob", context);
-					}
-				}
 			}
 		}
 //		System.err.println( Thread.currentThread().getName()+"Exiting addReadings in  AddorUpdateCommand#######  ");

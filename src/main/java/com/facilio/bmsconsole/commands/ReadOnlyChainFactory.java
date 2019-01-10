@@ -238,6 +238,13 @@ public class ReadOnlyChainFactory {
 		return c;
 	}
 	
+	public static Chain getPubSubPublishMessageChain() {
+		Chain c = new ChainBase();
+		c.addCommand(new PubSubPublishMessageCommand());
+		CommonCommandUtil.addCleanUpCommand(c);
+		return c;
+	}
+	
 	private static Chain getDefaultChain() {
 		return new FacilioChain(false);
     }
