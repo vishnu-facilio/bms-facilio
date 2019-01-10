@@ -91,6 +91,12 @@ public class WorkOrderAction extends FacilioAction {
 		return SUCCESS;
 	}
 
+    public String v2workOrderCount () throws Exception {
+		workOrderList();	
+		setResult(FacilioConstants.ContextNames.WORK_ORDER_COUNT, woCount);
+		return SUCCESS;
+	}
+    
 	private List<FacilioField> fields;
 
 	public List getFormlayout() {

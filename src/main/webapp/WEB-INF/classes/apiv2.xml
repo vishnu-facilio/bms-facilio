@@ -175,6 +175,17 @@
 				<param name="excludeProperties">result.subViewCount.*\.criteria</param>
 			</result>
 		</action>
+		<action name="count" class="com.facilio.bmsconsole.actions.WorkOrderAction"
+			method="v2workOrderCount">
+			<param name="moduleName">workorder</param>
+			<param name="permission">VIEW_APPROVAL</param>
+			<param name="approval">true</param>
+			<result name="success" type="json">
+				<param name="ignoreHierarchy">false</param>
+				<param name="includeProperties">responseCode, ^result.*</param>
+				<param name="excludeProperties">result.subViewCount.*\.criteria</param>
+			</result>
+		</action>
 	</package>
 	
 	
