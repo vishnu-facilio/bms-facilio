@@ -67,9 +67,9 @@ public class WorkflowContext implements Serializable {
 				WorkflowExpression workflowExpression = null;
 				
 				Map workflowExp = (Map)workflowExpressions.get(i);
-				Integer workflowExpressionType = (Integer) workflowExp.get("workflowExpressionType");
-				if(workflowExpressionType == null) {
-					workflowExpressionType = 0;
+				Integer workflowExpressionType = 0;
+				if (workflowExp.containsKey("workflowExpressionType")) {
+					workflowExpressionType = Integer.parseInt(workflowExp.get("workflowExpressionType").toString());
 				}
 				if(workflowExpressionType <= 0 || workflowExpressionType == WorkflowExpressionType.EXPRESSION.getValue()) {
 					workflowExpression = new ExpressionContext();
@@ -297,7 +297,7 @@ public class WorkflowContext implements Serializable {
 	}
 	
 	public boolean isMapReturnWorkflow() {
-		if(expressions != null && !expressions.isEmpty()) {
+		if(expressions != null && !expressions.isEmpty() && expressions.get(0) instanceof ExpressionContext) {
 			ExpressionContext exp = (ExpressionContext) expressions.get(0);
 			if(expressions.size() == 1 && exp != null && exp.getFieldName() == null && exp.getCriteria() != null && exp.getModuleName() != null) {
 				return true;
@@ -307,7 +307,7 @@ public class WorkflowContext implements Serializable {
 	}
 	
 	public boolean isListReturnWorkflow() {
-		if(expressions != null && !expressions.isEmpty()) {
+		if(expressions != null && !expressions.isEmpty() && expressions.get(0) instanceof ExpressionContext) {
 			ExpressionContext exp = (ExpressionContext) expressions.get(0);
 			if(expressions.size() == 1 && exp != null && exp.getFieldName() != null && exp.getCriteria() != null && exp.getModuleName() != null && exp.getAggregateString() == null) {
 				return true;
@@ -335,7 +335,7 @@ public class WorkflowContext implements Serializable {
 			return true;
 		}
 		else {
-			if(expressions != null && !expressions.isEmpty()) {
+			if(expressions != null && !expressions.isEmpty() && expressions.get(0) instanceof ExpressionContext) {
 				ExpressionContext exp = (ExpressionContext) expressions.get(0);
 				if(expressions.size() == 1 && exp.getFieldName() != null && exp.getCriteria() != null && exp.getModuleName() != null && exp.getAggregateString() != null) {
 					return true;

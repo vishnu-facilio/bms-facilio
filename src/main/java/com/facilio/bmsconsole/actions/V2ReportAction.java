@@ -136,7 +136,7 @@ public class V2ReportAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		setReportWithDataContext(context); //This could be moved to a command
 		
-		Chain fetchReadingDataChain = ReadOnlyChainFactory.fetchReportDataChain();
+		Chain fetchReadingDataChain = newFormat ? ReadOnlyChainFactory.newFetchReadingReportChain() : ReadOnlyChainFactory.fetchReportDataChain(); 
 		fetchReadingDataChain.execute(context);
 		
 		return setReportResult(context);
