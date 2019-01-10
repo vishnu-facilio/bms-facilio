@@ -13,6 +13,10 @@ public class ConditionContext implements Serializable,WorkflowExpression {
 	/**
 	 * 
 	 */
+	
+	public Object clone() throws CloneNotSupportedException{  
+		return super.clone();  
+	}  
 	private static final long serialVersionUID = 1L;
 	IfContext IfContext;
 	List<ElseIfContext> elseIfContexts;

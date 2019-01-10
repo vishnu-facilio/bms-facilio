@@ -32,6 +32,10 @@ public class ExpressionContext implements WorkflowExpression {
 	/**
 	 * 
 	 */
+	
+	public Object clone() throws CloneNotSupportedException{  
+		return super.clone();  
+	}  
 	private static final long serialVersionUID = 1L;
 
 	private static final Logger LOGGER = Logger.getLogger(ExpressionContext.class.getName());
