@@ -10,10 +10,8 @@ import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.WorkOrderContext;
-import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
-import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
@@ -23,7 +21,6 @@ import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.ViewFactory;
-import com.facilio.bmsconsole.workflow.rule.ApprovalState;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.sql.GenericSelectRecordBuilder;
 
@@ -34,7 +31,6 @@ public class GetWorkOrderListCommand implements Command {
 		// TODO Auto-generated method stub
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 		String dataTableName = (String) context.get(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME);
-		Boolean isApproval = (Boolean) context.get(FacilioConstants.ContextNames.IS_APPROVAL);
 		FacilioView view = (FacilioView) context.get(FacilioConstants.ContextNames.CUSTOM_VIEW);
 		String count = (String) context.get(FacilioConstants.ContextNames.WO_LIST_COUNT);
 		List<FacilioField> fields = null;
@@ -74,13 +70,6 @@ public class GetWorkOrderListCommand implements Command {
 		if (( filters == null || includeParentCriteria) && view != null) {
 			Criteria criteria = view.getCriteria();
 			selectBuilder.andCriteria(criteria);
-		}
-		if (!isApproval) {
-			Condition activApprovalCondition = new Condition();
-			activApprovalCondition.setColumnName("APPROVAL_STATE");
-			activApprovalCondition.setOperator(NumberOperators.NOT_EQUALS);
-			activApprovalCondition.setValue(String.valueOf(ApprovalState.REJECTED.getValue()));
-			selectBuilder.andCondition(activApprovalCondition);
 		}
 		
 		String subView = (String) context.get(FacilioConstants.ContextNames.SUB_VIEW);
