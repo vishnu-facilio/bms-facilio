@@ -246,6 +246,10 @@
 			<param name="moduleName">alarm</param>
 			<param name="permission">DELETE,DELETE_TEAM,DELETE_OWN</param>
 		</action>
+		<action name="count" class="com.facilio.bmsconsole.actions.AlarmAction" method="v2alarmCount">
+			<param name="moduleName">alarm</param>
+			<param name="permission">READ,READ_TEAM,READ_OWN</param>
+		</action>
 	</package>
 	
 	<package name="alarmListApiv2" namespace="/api/v2/alarms/view" extends="v2Api">
