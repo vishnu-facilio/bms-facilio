@@ -22,7 +22,6 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import com.facilio.kafka.KafkaProcessor;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.flywaydb.core.Flyway;
@@ -38,6 +37,7 @@ import com.facilio.bmsconsole.criteria.Operator;
 import com.facilio.cache.RedisManager;
 import com.facilio.filters.HealthCheckFilter;
 import com.facilio.fw.BeanFactory;
+import com.facilio.kafka.KafkaProcessor;
 import com.facilio.kinesis.KinesisProcessor;
 import com.facilio.logging.SysOutLogger;
 import com.facilio.queue.FacilioExceptionProcessor;
@@ -179,7 +179,7 @@ public class FacilioContextListener implements ServletContextListener {
 		URL url = SQLScriptRunner.class.getClassLoader().getResource(fileName);
 		if(url != null) {
 			File file = new File(url.getFile());
-			SQLScriptRunner scriptRunner = new SQLScriptRunner(file, true, null);
+			SQLScriptRunner scriptRunner = new SQLScriptRunner(file, true, null, DBUtil.getDBSQLScriptRunnerMode());
 			try {
 				scriptRunner.runScript();
 			} catch (Exception e) {
@@ -213,6 +213,7 @@ public class FacilioContextListener implements ServletContextListener {
 		DataSource ds = FacilioConnectionPool.getInstance().getDataSource();
 		long startTime = System.currentTimeMillis();
 		Flyway flyway = new Flyway();
+		flyway.setLocations("db/migration/" + AwsUtil.getDB());
 		flyway.setDataSource(ds);
 		flyway.setBaselineOnMigrate(true);
 		int mig_status = flyway.migrate();

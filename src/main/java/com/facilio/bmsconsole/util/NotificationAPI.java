@@ -135,7 +135,7 @@ public class NotificationAPI {
 		
 		List<Map<String, Object>> props = selectBuilder.get();
 		if(props != null && !props.isEmpty()) {
-			Integer count = (Integer) props.get(0).get("unseen");
+			Long count = ((Number) props.get(0).get("unseen")).longValue();
 			return count.intValue();
 		}
 		return 0;
@@ -160,7 +160,7 @@ public class NotificationAPI {
 		
 		List<Map<String, Object>> props = selectBuilder.get();
 		if(props != null && !props.isEmpty()) {
-			Integer count = (Integer) props.get(0).get("unread");
+			Long count = ((Number) props.get(0).get("unread")).longValue();
 			return count.intValue();
 		}
 		return 0;

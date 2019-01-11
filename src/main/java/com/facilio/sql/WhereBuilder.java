@@ -20,7 +20,7 @@ public class WhereBuilder implements WhereBuilderIfc<WhereBuilder>{
 		// TODO Auto-generated constructor stub
 		this.condition = new StringBuilder(whereBuilder.condition);
 		if (whereBuilder.values != null) {
-			this.values = new ArrayList<>(values);
+			this.values = new ArrayList<>(whereBuilder.values);
 		}
 	}
 	

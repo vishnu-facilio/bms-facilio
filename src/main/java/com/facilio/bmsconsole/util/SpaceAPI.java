@@ -1222,12 +1222,7 @@ public static long getSitesCount() throws Exception {
 			prevModule = extendedModule;
 			extendedModule = extendedModule.getExtendModule();
 		}
-		
-		SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder = new SelectRecordsBuilder<>()
-				.select(fields)
-				.module(assetModule)
-				.andCondition(spaceCond);
-		
+				
 		List<Map<String, Object>> rs = select.get();
 		if (rs == null || rs.isEmpty()) {
 			return 0;

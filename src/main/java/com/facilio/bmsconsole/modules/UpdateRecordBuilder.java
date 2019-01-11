@@ -322,6 +322,7 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 		
 		prevModule = module;
 		List<FacilioField> f = new ArrayList<>();
+		int updateCount = 0;
 		while (prevModule != null) {
 			for (FacilioField field : updateFields) {
 				if ((field.getModule() == null && prevModule.getExtendModule() != null)) {
@@ -336,13 +337,13 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 			
 			prevModule = prevModule.getExtendModule();
 			if (!f.isEmpty()) {
-				builder.update(moduleProps);
+				updateCount += builder.update(moduleProps);
 			}
 			f.clear();
 		}
 		
 		
-		return 1;	// TODO return rows updated
+		return updateCount;
 	}
 	
 	private void updateLookupFields(Map<String, Object> moduleProps, List<FacilioField> fields) throws Exception {

@@ -9,6 +9,7 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
 
+import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.BaseLineContext;
 import com.facilio.bmsconsole.modules.FacilioField;
@@ -16,13 +17,14 @@ import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.util.BaseLineAPI;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.fw.BeanFactory;
+import com.facilio.sql.DBUtil;
 import com.facilio.sql.SQLScriptRunner;
 
 public class AddDefaultReportCommand implements Command {
 
 	private static org.apache.log4j.Logger log = LogManager.getLogger(AddDefaultReportCommand.class.getName());
 
-	private static final File INSERT_REPORTS_SQL = new File(SQLScriptRunner.class.getClassLoader().getResource("conf/defaultReports.sql").getFile());
+	private static final File INSERT_REPORTS_SQL = new File(SQLScriptRunner.class.getClassLoader().getResource("conf/db/" + AwsUtil.getDB() + "/defaultReports.sql").getFile());
 	@Override
 	public boolean execute(Context context) throws Exception {
 		
@@ -84,7 +86,7 @@ public class AddDefaultReportCommand implements Command {
 		}
 		
 		System.out.println(paramValues);
-		SQLScriptRunner scriptRunner = new SQLScriptRunner(INSERT_REPORTS_SQL, true, paramValues);
+		SQLScriptRunner scriptRunner = new SQLScriptRunner(INSERT_REPORTS_SQL, true, paramValues, DBUtil.getDBSQLScriptRunnerMode());
 		scriptRunner.runScript();
 		
 		return false;

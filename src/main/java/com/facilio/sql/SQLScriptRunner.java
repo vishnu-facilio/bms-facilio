@@ -30,14 +30,17 @@ public class SQLScriptRunner {
 	
 	private StringSubstitutor substitutor = null;
 	private File file = null;
+	
+	private boolean executeSingleStatement = true;		// for some database, we should execute complete sql, rather than executing single statement. example, MSSQL
 
-	public SQLScriptRunner(File file, boolean stopOnError, Map<String, String> paramValues) {
+	public SQLScriptRunner(File file, boolean stopOnError, Map<String, String> paramValues, boolean executeSingleStatement) {
 		this.file = file;
 		this.stopOnError = stopOnError;
 		
 		if(paramValues != null && paramValues.size() > 0) {
 			substitutor = new StringSubstitutor(paramValues);
 		}
+		this.executeSingleStatement = executeSingleStatement;
 	}
 
 	public void runScript() throws SQLException, IOException {
@@ -95,8 +98,11 @@ public class SQLScriptRunner {
 						if(trimmedLine.endsWith(delimiter)) {
 							command.append(trimmedLine.substring(0, trimmedLine.lastIndexOf(delimiter)));
 							command.append(" ");
-							overallStringBuffer.append(command + "\n");
-//							execCommand(conn, command, lineReader.getLineNumber());
+							if (executeSingleStatement) {
+								execCommand(conn, command, lineReader.getLineNumber());	
+							} else {
+								overallStringBuffer.append(command + "\n");
+							}
 							command = null;
 						}
 						else {
@@ -107,11 +113,16 @@ public class SQLScriptRunner {
 				}
 			}
 			if (command != null && command.length() != 0) {
-				overallStringBuffer.append(command);
-				overallStringBuffer.append("\n");
-//				execCommand(conn, command, lineReader.getLineNumber());
+				if (executeSingleStatement) {
+					execCommand(conn, command, lineReader.getLineNumber());
+				} else {
+					overallStringBuffer.append(command);
+					overallStringBuffer.append("\n");
+				}
 			}
-			execCommand(conn, overallStringBuffer, -1);
+			if (!executeSingleStatement) {
+				execCommand(conn, overallStringBuffer, -1);
+			}
 		}
 		catch (SQLException e) {
 			throw e;

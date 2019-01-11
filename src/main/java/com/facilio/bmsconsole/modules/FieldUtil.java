@@ -184,6 +184,10 @@ public class FieldUtil {
 					else {
 						return val;
 					}
+				case NUMBER:
+					if (val instanceof Short) {
+						return ((Number) val).intValue();
+					}
 				default:
 					return val;
 			}

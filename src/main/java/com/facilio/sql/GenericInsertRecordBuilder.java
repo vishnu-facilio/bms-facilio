@@ -378,6 +378,7 @@ public class GenericInsertRecordBuilder implements InsertBuilderIfc<Map<String, 
 		pkFields.put("event", "id");
 		pkFields.put("event_to_alarm_field_mapping", "id");
 		pkFields.put("source_to_resource_mapping", "id");
+		pkFields.put("reading_data_meta", "id");
 	}
 	
 	public static boolean isPrimaryField(String tableName, String columnName) {

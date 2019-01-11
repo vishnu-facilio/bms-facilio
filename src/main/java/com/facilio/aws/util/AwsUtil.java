@@ -140,6 +140,9 @@ public class AwsUtil
 	private static boolean developmentEnvironment = true;
 	private static boolean disableCSP = false;
 
+	private static String db;
+	private static String dbClass;
+
 	static {
 		loadProperties();
 	}
@@ -819,5 +822,27 @@ public class AwsUtil
 
 	public static String getServerName() {
 		return SERVERNAME;
+	}
+	
+	public static String getDB() {
+		if (db == null) {
+			synchronized (LOCK) {
+				if (db == null) {
+					db = AwsUtil.getConfig("db.name");
+				}
+			}
+		}
+		return db;
+	}
+	
+	public static String getDBClass() {
+		if (dbClass == null) {
+			synchronized (LOCK) {
+				if (dbClass == null) {
+					dbClass = AwsUtil.getConfig("db.class");
+				}
+			}
+		}
+		return dbClass;
 	}
 }

@@ -14,6 +14,7 @@ import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
+import com.facilio.aws.util.AwsUtil;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
@@ -57,9 +58,43 @@ public class GenericUpdateRecordBuilder implements UpdateBuilderIfc<Map<String, 
 		this.baseTableName = baseTableName;
 		return this;
 	}
-
-
 	
+	public List<FacilioField> getFields() {
+		return fields;
+	}
+
+	public Map<String, List<FacilioField>> getFieldMap() {
+		return fieldMap;
+	}
+
+	public String getBaseTableName() {
+		return baseTableName;
+	}
+
+	public String getTableName() {
+		return tableName;
+	}
+
+	public Map<String, Object> getValue() {
+		return value;
+	}
+
+	public StringBuilder getJoinBuilder() {
+		return joinBuilder;
+	}
+
+	public WhereBuilder getWhere() {
+		return where;
+	}
+
+	public List<FileField> getFileFields() {
+		return fileFields;
+	}
+
+	public List<NumberField> getNumberFields() {
+		return numberFields;
+	}
+
 	@Override
 	public GenericJoinBuilder innerJoin(String tableName) {
 		joinBuilder.append(" INNER JOIN ")
@@ -222,45 +257,19 @@ public class GenericUpdateRecordBuilder implements UpdateBuilderIfc<Map<String, 
 		return 0;
 	}
 	
+	private DBUpdateRecordBuilder getDBUpdateRecordBuilder() throws Exception {
+		String dbClass = AwsUtil.getDBClass();
+		return (DBUpdateRecordBuilder) Class.forName(dbClass + ".UpdateRecordBuilder").getConstructor(GenericUpdateRecordBuilder.class).newInstance(this);
+	}
+
 	private String constructUpdateStatement() {
-		StringBuilder sql = new StringBuilder("UPDATE ");
-		sql.append(tableName)
-			.append(" SET ");
-		boolean isFirst = true;
-		for(String propKey : value.keySet()) {
-			List<FacilioField> fields = fieldMap.get(propKey);
-			if(fields != null) {
-				for (FacilioField field: fields) {
-					if (GenericInsertRecordBuilder.isPrimaryField(tableName, field.getColumnName())) {
-						continue;
-					}
-					if(isFirst) {
-						isFirst = false;
-					}
-					else {
-						sql.append(", ");
-					}
-					sql.append(field.getCompleteColumnName())
-						.append(" = ?");
-				}
-			}
+		try {
+			DBUpdateRecordBuilder updateRecordBuilder = getDBUpdateRecordBuilder();
+			return updateRecordBuilder.constructUpdateStatement();
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
-		
-		if(isFirst) {
-			return null; //Nothing to update
-		}
-		
-		if (joinBuilder.length() > 0) {
-			sql.append(" FROM " + (baseTableName == null ? tableName : baseTableName) + " " + joinBuilder.toString());
-		}
-		String whereString = where.getWhereClause();
-		whereString = whereString.replaceAll("true", "1");
-		whereString = whereString.replaceAll("false", "0");
-		sql.append(" WHERE ")
-			.append(whereString)
-			;
-		
-		return sql.toString();
+		return null;
 	}
 	
 	private Map<String, List<FacilioField>> convertFieldsToMap(List<FacilioField> fields) {
