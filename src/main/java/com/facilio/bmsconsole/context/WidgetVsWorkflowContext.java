@@ -23,7 +23,12 @@ public class WidgetVsWorkflowContext {
 
 	public String getWorkflowString() throws Exception {
 		if(workflowString == null && workflow != null) {
-			workflowString = WorkflowUtil.getXmlStringFromWorkflow(workflow);
+			if(workflow.getWorkflowString() != null) {
+				workflowString =  workflow.getWorkflowString();
+			}
+			else {
+				workflowString = WorkflowUtil.getXmlStringFromWorkflow(workflow);
+			}
 		}
 		return workflowString;
 		

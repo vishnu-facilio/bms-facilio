@@ -908,6 +908,9 @@ public static JSONObject getStandardVariance1(ReportContext report,JSONArray pro
 			 if (props != null && !props.isEmpty()) {
 				 for(Map<String, Object> prop:props) {
 					 WidgetVsWorkflowContext widgetVsWorkflowContext = FieldUtil.getAsBeanFromMap(prop, WidgetVsWorkflowContext.class);
+					 if(widgetVsWorkflowContext.getWorkflowId() != null) {
+						 widgetVsWorkflowContext.setWorkflow(WorkflowUtil.getWorkflowContext(widgetVsWorkflowContext.getWorkflowId()));
+					 }
 					 dashboardWidgetContext.addWidgetVsWorkflowContexts(widgetVsWorkflowContext);
 				 }
 			}
