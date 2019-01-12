@@ -779,11 +779,11 @@ public class ModuleFactory {
 		return dashboardWigetModule;
 	}
 
-	public static FacilioModule getDashboardVsWidgetModule() {
-		FacilioModule dashboardWigetModule = new FacilioModule();
-		dashboardWigetModule.setTableName("Dashboard_vs_Widget");
-		return dashboardWigetModule;
-	}
+//	public static FacilioModule getDashboardVsWidgetModule() {
+//		FacilioModule dashboardWigetModule = new FacilioModule();
+//		dashboardWigetModule.setTableName("Dashboard_vs_Widget");
+//		return dashboardWigetModule;
+//	}
 
 	public static FacilioModule getWidgetChartModule() {
 		FacilioModule dashboardWigetModule = new FacilioModule();
