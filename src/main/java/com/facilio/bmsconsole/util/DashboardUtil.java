@@ -429,7 +429,7 @@ public class DashboardUtil {
 		
 		GenericDeleteRecordBuilder deleteRecordBuilder = new GenericDeleteRecordBuilder();
 		
-		deleteRecordBuilder.table(ModuleFactory.getDashboardVsWidgetModule().getTableName())
+		deleteRecordBuilder.table(ModuleFactory.getWidgetModule().getTableName())
 		.andCustomWhere("DASHBOARD_ID = ?", dashboardId);
 		deleteRecordBuilder.delete();
 		
@@ -506,9 +506,9 @@ public class DashboardUtil {
 			
 			GenericDeleteRecordBuilder deleteRecordBuilder = new GenericDeleteRecordBuilder();
 			
-			deleteRecordBuilder.table(ModuleFactory.getDashboardVsWidgetModule().getTableName())
+			deleteRecordBuilder.table(ModuleFactory.getWidgetModule().getTableName())
 				.andCustomWhere("DASHBOARD_ID = ?", dashboardId)
-				.andCustomWhere("WIDGET_ID = ?", widgetId);
+				.andCustomWhere("ID = ?", widgetId);
 			
 			
 			int rowsDeleted = deleteRecordBuilder.delete();
@@ -520,22 +520,22 @@ public class DashboardUtil {
 		
 	}
 	
-	public static boolean deleteWidgetFromDashboard(Long dashboardVsWidgetId) throws SQLException {
-		
-		if(dashboardVsWidgetId != null) {
-			
-			GenericDeleteRecordBuilder deleteRecordBuilder = new GenericDeleteRecordBuilder();
-			
-			deleteRecordBuilder.table(ModuleFactory.getDashboardVsWidgetModule().getTableName())
-				.andCustomWhere("ID = ?", dashboardVsWidgetId);
-			
-			int rowsDeleted = deleteRecordBuilder.delete();
-			if(rowsDeleted > 0) {
-				return true;
-			}
-		}
-		return false;
-	}
+//	public static boolean deleteWidgetFromDashboard(Long dashboardVsWidgetId) throws SQLException {
+//		
+//		if(dashboardVsWidgetId != null) {
+//			
+//			GenericDeleteRecordBuilder deleteRecordBuilder = new GenericDeleteRecordBuilder();
+//			
+//			deleteRecordBuilder.table(ModuleFactory.getDashboardVsWidgetModule().getTableName())
+//				.andCustomWhere("ID = ?", dashboardVsWidgetId);
+//			
+//			int rowsDeleted = deleteRecordBuilder.delete();
+//			if(rowsDeleted > 0) {
+//				return true;
+//			}
+//		}
+//		return false;
+//	}
 	
 	public static JSONObject getStandardVariance(ReportContext report,List<Map<String, Object>> props,List<String> meterList) {
 		
@@ -841,13 +841,10 @@ public static JSONObject getStandardVariance1(ReportContext report,JSONArray pro
 		fields.addAll(FieldFactory.getWidgetListViewFields());
 		fields.addAll(FieldFactory.getWidgetStaticFields());
 		fields.addAll(FieldFactory.getWidgetWebFields());
-		fields.addAll(FieldFactory.getDashbaordVsWidgetFields());
 		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(fields)
 				.table(ModuleFactory.getWidgetModule().getTableName())
-				.innerJoin(ModuleFactory.getDashboardVsWidgetModule().getTableName())
-				.on(ModuleFactory.getWidgetModule().getTableName()+".ID="+ModuleFactory.getDashboardVsWidgetModule().getTableName()+".WIDGET_ID")
 				.leftJoin(ModuleFactory.getWidgetChartModule().getTableName())		
 				.on(ModuleFactory.getWidgetModule().getTableName()+".ID="+ModuleFactory.getWidgetChartModule().getTableName()+".ID")
 				.leftJoin(ModuleFactory.getWidgetListViewModule().getTableName())		
@@ -856,9 +853,7 @@ public static JSONObject getStandardVariance1(ReportContext report,JSONArray pro
 				.on(ModuleFactory.getWidgetModule().getTableName()+".ID="+ModuleFactory.getWidgetStaticModule().getTableName()+".ID")
 				.leftJoin(ModuleFactory.getWidgetWebModule().getTableName())		
 				.on(ModuleFactory.getWidgetModule().getTableName()+".ID="+ModuleFactory.getWidgetWebModule().getTableName()+".ID")
-				.andCustomWhere(ModuleFactory.getDashboardVsWidgetModule().getTableName()+".DASHBOARD_ID = ?", dashboardId);
-		
-		selectBuilder.orderBy(ModuleFactory.getDashboardVsWidgetModule().getTableName() + ".LAYOUT_POSITION");
+				.andCustomWhere(ModuleFactory.getWidgetModule().getTableName()+".DASHBOARD_ID = ?", dashboardId);
 		
 		List<Map<String, Object>> props = selectBuilder.get();
 		List<DashboardWidgetContext> dashboardWidgetContexts = new ArrayList<>();
@@ -2077,11 +2072,11 @@ public static JSONObject getStandardVariance1(ReportContext report,JSONArray pro
 			removedWidgets.add(widget.getId());
 		}
 		
-		deleteRecordBuilder = new GenericDeleteRecordBuilder();
-		deleteRecordBuilder.table(ModuleFactory.getDashboardVsWidgetModule().getTableName())
-		.andCondition(CriteriaAPI.getCondition(ModuleFactory.getDashboardVsWidgetModule().getTableName()+".WIDGET_ID", "widgetId", StringUtils.join(removedWidgets, ","),StringOperators.IS));
-		
-		deleteRecordBuilder.delete();
+//		deleteRecordBuilder = new GenericDeleteRecordBuilder();
+//		deleteRecordBuilder.table(ModuleFactory.getDashboardVsWidgetModule().getTableName())
+//		.andCondition(CriteriaAPI.getCondition(ModuleFactory.getDashboardVsWidgetModule().getTableName()+".WIDGET_ID", "widgetId", StringUtils.join(removedWidgets, ","),StringOperators.IS));
+//		
+//		deleteRecordBuilder.delete();
 		
 		deleteRecordBuilder = new GenericDeleteRecordBuilder();
 		deleteRecordBuilder.table(ModuleFactory.getWidgetModule().getTableName())

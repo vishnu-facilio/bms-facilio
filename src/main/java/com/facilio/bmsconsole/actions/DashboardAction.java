@@ -1692,13 +1692,7 @@ public class DashboardAction extends FacilioAction {
 	public Long dashboardVsWidgetId;
 	public String deleteWidgetFromDashboard() throws Exception {
 		
-		if(dashboardVsWidgetId != null) {
-			
-			if(DashboardUtil.deleteWidgetFromDashboard(dashboardVsWidgetId)) {
-				return SUCCESS;
-			}
-		}
-		else if(dashboardId != null && widgetId != null) {
+		if(dashboardId != null && widgetId != null) {
 
 			if(DashboardUtil.deleteWidgetFromDashboard(dashboardId,widgetId)) {
 				return SUCCESS;

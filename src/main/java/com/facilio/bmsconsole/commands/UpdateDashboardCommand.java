@@ -10,6 +10,7 @@ import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.DashboardContext;
 import com.facilio.bmsconsole.context.DashboardWidgetContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
@@ -80,20 +81,22 @@ public class UpdateDashboardCommand implements Command {
 				for (int i = 0; i < updatedWidgets.size(); i++) {
 					
 					updateBuilder = new GenericUpdateRecordBuilder()
-							.table(ModuleFactory.getDashboardVsWidgetModule().getTableName())
-							.fields(FieldFactory.getDashbaordVsWidgetFields())
-							.andCustomWhere(ModuleFactory.getDashboardVsWidgetModule().getTableName()+".DASHBOARD_ID = ? AND " + ModuleFactory.getDashboardVsWidgetModule().getTableName()+".WIDGET_ID = ?", dashboard.getId(), updatedWidgets.get(i).getId());
+							.table(ModuleFactory.getWidgetModule().getTableName())
+							.fields(FieldFactory.getWidgetFields())
+							.andCustomWhere(ModuleFactory.getWidgetModule().getTableName()+".DASHBOARD_ID = ? AND " + ModuleFactory.getWidgetModule().getTableName()+".ID = ?", dashboard.getId(), updatedWidgets.get(i).getId());
 
-					Map<String, Object> props1 = FieldUtil.getAsProperties(updatedWidgets.get(i));
+					DashboardWidgetContext updatewidget = updatedWidgets.get(i);
+					updatewidget.setOrgId(AccountUtil.getCurrentOrg().getId());
+					Map<String, Object> props1 = FieldUtil.getAsProperties(updatewidget);
 					
 					updateBuilder.update(props1);
 					
-					if(updatedWidgets.get(i).getType().equals(DashboardWidgetContext.WidgetType.STATIC.getValue())) {
+					if(updatewidget.getType().equals(DashboardWidgetContext.WidgetType.STATIC.getValue())) {
 						
 						updateBuilder = new GenericUpdateRecordBuilder()
 								.table(ModuleFactory.getWidgetStaticModule().getTableName())
 								.fields(FieldFactory.getWidgetStaticFields())
-								.andCustomWhere(ModuleFactory.getWidgetStaticModule().getTableName()+".ID = ?",updatedWidgets.get(i).getId());
+								.andCustomWhere(ModuleFactory.getWidgetStaticModule().getTableName()+".ID = ?",updatewidget.getId());
 
 						
 						System.out.println("dashboard update props --- "+props1);
@@ -103,20 +106,13 @@ public class UpdateDashboardCommand implements Command {
 					updateBuilder = new GenericUpdateRecordBuilder()
 							.table(ModuleFactory.getWidgetModule().getTableName())
 							.fields(FieldFactory.getWidgetFields())
-							.andCustomWhere(ModuleFactory.getWidgetModule().getTableName()+".ID = ?", updatedWidgets.get(i).getId());
+							.andCustomWhere(ModuleFactory.getWidgetModule().getTableName()+".ID = ?", updatewidget.getId());
 
 					updateBuilder.update(props1);
 				}
 			}
 			if(removedWidgets.size() > 0) {
 				GenericDeleteRecordBuilder genericDeleteRecordBuilder = new GenericDeleteRecordBuilder();
-				genericDeleteRecordBuilder.table(ModuleFactory.getDashboardVsWidgetModule().getTableName())
-				.andCustomWhere(ModuleFactory.getDashboardVsWidgetModule().getTableName()+".DASHBOARD_ID = ?", dashboard.getId())
-				.andCondition(CriteriaAPI.getCondition(ModuleFactory.getDashboardVsWidgetModule().getTableName()+".WIDGET_ID", "widgetId", StringUtils.join(removedWidgets, ","),StringOperators.IS));
-				
-				genericDeleteRecordBuilder.delete();
-				
-				genericDeleteRecordBuilder = new GenericDeleteRecordBuilder();
 				genericDeleteRecordBuilder.table(ModuleFactory.getWidgetModule().getTableName())
 				.andCondition(CriteriaAPI.getCondition(ModuleFactory.getWidgetModule().getTableName()+".ID", "ID", StringUtils.join(removedWidgets, ","),StringOperators.IS));
 				

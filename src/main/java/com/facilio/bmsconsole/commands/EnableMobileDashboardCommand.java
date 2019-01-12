@@ -52,9 +52,9 @@ public class EnableMobileDashboardCommand  implements Command {
 						widget.setmLayoutPosition(mLayoutPosition);
 					
 						GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
-								.table(ModuleFactory.getDashboardVsWidgetModule().getTableName())
-								.fields(FieldFactory.getDashbaordVsWidgetFields())
-								.andCustomWhere(ModuleFactory.getDashboardVsWidgetModule().getTableName()+".DASHBOARD_ID = ? AND " + ModuleFactory.getDashboardVsWidgetModule().getTableName()+".WIDGET_ID = ?", dashboardId, widget.getId());
+								.table(ModuleFactory.getWidgetModule().getTableName())
+								.fields(FieldFactory.getWidgetFields())
+								.andCustomWhere(ModuleFactory.getWidgetModule().getTableName()+".DASHBOARD_ID = ? AND " + ModuleFactory.getWidgetModule().getTableName()+".ID = ?", dashboardId, widget.getId());
 						
 						Map<String, Object> updateProps = FieldUtil.getAsProperties(widget);
 						

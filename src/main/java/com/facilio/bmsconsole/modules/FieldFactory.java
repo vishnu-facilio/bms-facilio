@@ -2895,6 +2895,10 @@ public class FieldFactory {
 		fields.add(getIdField(module));
 		fields.add(getOrgIdField(module));
 		fields.add(getModuleIdField(module));
+		
+		fields.add(getField("metaJSONString", "META_JSON", module, FieldType.STRING));
+		
+		fields.add(getField("dashboardId", "DASHBOARD_ID", module, FieldType.NUMBER));
 
 		FacilioField dashboardWidgetName = new FacilioField();
 		dashboardWidgetName.setName("widgetName");
