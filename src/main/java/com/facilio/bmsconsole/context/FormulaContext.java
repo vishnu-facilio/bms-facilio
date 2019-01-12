@@ -169,12 +169,12 @@ public class FormulaContext {
 					return field.clone();
 				case COUNT:
 					String selectFieldString = expr.replace("{$place_holder$}", field.getColumnName());
-					field = new NumberField();
-					field.setDataType(FieldType.NUMBER);
-					field.setName(field.getName());
-					field.setDisplayName(field.getDisplayName());
-					field.setColumnName(selectFieldString);
-					return field;
+					NumberField field1 = new NumberField();
+					field1.setDataType(FieldType.NUMBER);
+					field1.setName(field.getName());
+					field1.setDisplayName(field.getDisplayName());
+					field1.setColumnName(selectFieldString);
+					return field1;
 			}
 			return field;
 //			if(field instanceof NumberField) {

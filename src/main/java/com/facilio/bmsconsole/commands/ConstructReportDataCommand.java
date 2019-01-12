@@ -12,17 +12,26 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.FormulaContext.AggregateOperator;
 import com.facilio.bmsconsole.context.FormulaContext.DateAggregateOperator;
 import com.facilio.bmsconsole.context.FormulaContext.NumberAggregateOperator;
+import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.FacilioModule;
+import com.facilio.bmsconsole.modules.FieldFactory;
+import com.facilio.bmsconsole.modules.LookupField;
+import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
+import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
 import com.facilio.report.context.ReportBaseLineContext;
 import com.facilio.report.context.ReportContext;
 import com.facilio.report.context.ReportDataContext;
 import com.facilio.report.context.ReportDataPointContext;
 import com.facilio.report.context.ReportFieldContext;
 import com.facilio.report.context.ReportGroupByField;
+import com.facilio.sql.GenericSelectRecordBuilder;
 
 public class ConstructReportDataCommand implements Command {
 
@@ -30,6 +39,8 @@ public class ConstructReportDataCommand implements Command {
 		return new ArrayList<>();
 	}
 	
+	private Map<String, Map<Long, String>> lookupFieldMap = new HashMap<>();
+
 	@Override
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
@@ -75,7 +86,7 @@ public class ConstructReportDataCommand implements Command {
 							minYVal = formatVal(dataPoint.getyAxis().getField(), NumberAggregateOperator.MIN, prop.get(dataPoint.getyAxis().getField().getName()+"_min"), xVal, dataPoint.isHandleEnum());
 							maxYVal = formatVal(dataPoint.getyAxis().getField(), NumberAggregateOperator.MAX, prop.get(dataPoint.getyAxis().getField().getName()+"_max"), xVal, dataPoint.isHandleEnum());
 						}
-						
+
 						StringJoiner key = new StringJoiner("|");
 						key.add(formattedxVal.toString());
 						Map<String, Object> data = null;
@@ -115,7 +126,7 @@ public class ConstructReportDataCommand implements Command {
 		}
 		else {
 			data.put(yAlias, yVal);
-			
+
 			if (dataPoint.getyAxis().isFetchMinMax()) {
 				data.put(yAlias+".min", minYVal);
 				data.put(yAlias+".max", maxYVal);
@@ -145,7 +156,7 @@ public class ConstructReportDataCommand implements Command {
 	}
 	
 	private static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("#.##");
-	private Object formatVal(FacilioField field, AggregateOperator aggr, Object val, Object actualxVal, boolean handleEnum) {
+	private Object formatVal(FacilioField field, AggregateOperator aggr, Object val, Object actualxVal, boolean handleEnum) throws Exception {
 		if (val == null) {
 			return "";
 		}
@@ -175,6 +186,29 @@ public class ConstructReportDataCommand implements Command {
 				if (aggr != null && aggr instanceof DateAggregateOperator) {
 					val = ((DateAggregateOperator)aggr).getAdjustedTimestamp((long) val);
 				}
+				break;
+			case LOOKUP:
+				LookupField lookupField = (LookupField) field;
+				Map<Long, String> lookupMap = lookupFieldMap.get(lookupField.getLookupModule().getName());
+				if (lookupMap == null) {
+					FacilioModule lookupModule = lookupField.getLookupModule();
+					ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+					List<FacilioField> fields = new ArrayList<>(modBean.getAllFields(lookupModule.getName()));
+					fields.add(FieldFactory.getIdField(lookupModule));
+					GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+							.select(fields)
+							.table(lookupModule.getName())
+							.andCondition(CriteriaAPI.getCurrentOrgIdCondition(lookupModule));
+
+					List<Map<String,Object>> asProps = builder.get();
+					lookupMap = new HashMap<>();
+					lookupFieldMap.put(lookupModule.getName(), lookupMap);
+					for (Map<String, Object> map : asProps) {
+						lookupMap.put((Long) map.get("id"), (String) map.get("displayName"));
+					}
+				}
+				val = lookupMap.get(((Map) val).get("id"));
+
 				break;
 			default:
 				break;

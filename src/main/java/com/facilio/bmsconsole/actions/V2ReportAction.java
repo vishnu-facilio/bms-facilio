@@ -16,6 +16,8 @@ import org.json.simple.parser.JSONParser;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.commands.ConstructReportData;
+import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
@@ -425,6 +427,30 @@ public class V2ReportAction extends FacilioAction {
 		
 		Chain fetchReadingDataChain = newFormat ? ReadOnlyChainFactory.newFetchReadingReportChain() : ReadOnlyChainFactory.fetchReadingReportChain();
 		fetchReadingDataChain.execute(context);
+		
+		return setReportResult(context);
+	}
+	
+	private JSONObject xField;
+	
+	public JSONObject getxField() {
+		return xField;
+	}
+	public void setxField(JSONObject xField) {
+		this.xField = xField;
+	}
+	public String fetchReportData() throws Exception {
+		JSONParser parser = new JSONParser();
+		
+		FacilioContext context = new FacilioContext();
+		
+		context.put("x-axis", xField);
+		
+		Chain chain = new FacilioChainFactory.FacilioChain(false);
+		chain.addCommand(new ConstructReportData());
+		chain.addCommand(ReadOnlyChainFactory.newFetchReportDataChain());
+//		Chain fetchReadingData = ReadOnlyChainFactory.newFetchReportDataChain();
+		chain.execute(context);
 		
 		return setReportResult(context);
 	}

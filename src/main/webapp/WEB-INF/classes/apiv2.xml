@@ -449,6 +449,8 @@
 		</action>
 	</package>
 	<package name="reportApiv2" namespace="/api/v2/report" extends="v2Api">
+		<action name="fetchReportData" class="com.facilio.bmsconsole.actions.V2ReportAction" method="fetchReportData">
+		</action>
 	
 		<action name="readingReport" class="com.facilio.bmsconsole.actions.V2ReportAction" method="fetchReadingsData">
 		</action>

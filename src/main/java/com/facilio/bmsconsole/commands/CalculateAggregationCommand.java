@@ -184,13 +184,13 @@ public class CalculateAggregationCommand implements Command {
 	private void doDecimalAggr (ReportDataPointContext dp, List<Map<String, Object>> csvData, String sortAlias, Map<String, Object> aggrData) {
 		for (Map<String, Object> data : csvData) {
 			boolean isLatest = false;
-			if (sortAlias != null && !sortAlias.isEmpty()) {
-				Double sortVal = getDoubleVal(data.get(sortAlias));
-				if (sortVal != null) {
-					Double currentSortVal = (Double) aggrData.get(sortAlias+".lastValue");
-					isLatest = currentSortVal == null || currentSortVal <= sortVal;
-				}
-			}
+//			if (sortAlias != null && !sortAlias.isEmpty()) {
+//				Double sortVal = getDoubleVal(data.get(sortAlias));
+//				if (sortVal != null) {
+//					Double currentSortVal = (Double) aggrData.get(sortAlias+".lastValue");
+//					isLatest = currentSortVal == null || currentSortVal <= sortVal;
+//				}
+//			}
 			
 			for (String alias : dp.getAliases().values()) {
 				calculateNumericAggr(data.get(alias), alias, aggrData, isLatest);
