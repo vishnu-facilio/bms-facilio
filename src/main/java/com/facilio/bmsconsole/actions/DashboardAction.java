@@ -1169,11 +1169,34 @@ public class DashboardAction extends FacilioAction {
 	JSONObject paramsJson;
 	
 	public String getCardData() throws Exception {
+		
+		WidgetStaticContext widgetStaticContext = null;
 		if(widgetId != null) {
-			
 			DashboardWidgetContext dashboardWidgetContext =  DashboardUtil.getWidget(widgetId);
+			widgetStaticContext = (WidgetStaticContext) dashboardWidgetContext;
+		}
+		else {
+			widgetStaticContext = new WidgetStaticContext();
+			widgetStaticContext.setStaticKey(staticKey);
+			widgetStaticContext.setParamsJson(paramsJson);
+			widgetStaticContext.setBaseSpaceId(baseSpaceId);
 			
-			WidgetStaticContext widgetStaticContext = (WidgetStaticContext) dashboardWidgetContext;
+			if(workflow != null) {
+				WidgetVsWorkflowContext widgetVsWorkflowContext = new WidgetVsWorkflowContext();
+				widgetVsWorkflowContext.setWorkflow(workflow);
+				widgetStaticContext.addWidgetVsWorkflowContexts(widgetVsWorkflowContext);
+			}
+			else {
+				List<WidgetVsWorkflowContext> workflowList = DashboardUtil.getCardWorkflowBasedOnStaticKey(staticKey);
+				for(WidgetVsWorkflowContext workflow :workflowList) {
+					workflow.setBaseSpaceId(baseSpaceId);
+				}
+				widgetStaticContext.setWidgetVsWorkflowContexts(workflowList);
+			}
+		}
+		
+		if(widgetStaticContext != null) {
+			
 			Map<String,Object> result = null;
 			widgetStaticContext.setParamsJson(DashboardUtil.getCardParams(widgetStaticContext.getParamsJson()));
 			if(CardUtil.isGetDataFromEnum(widgetStaticContext.getStaticKey())) {
@@ -1182,8 +1205,8 @@ public class DashboardAction extends FacilioAction {
 				
 				CardType card = CardType.getCardType(widgetStaticContext.getStaticKey());
 				
-				if(card.getWorkflow() == null && dashboardWidgetContext.getWidgetVsWorkflowContexts() != null && !dashboardWidgetContext.getWidgetVsWorkflowContexts().isEmpty()) {
-					card.setWorkflow(dashboardWidgetContext.getWidgetVsWorkflowContexts().get(0).getWorkflowString());
+				if(DashboardUtil.isDynamicWFGeneratingCard(widgetStaticContext.getStaticKey())) {
+					card.setWorkflow(widgetStaticContext.getWidgetVsWorkflowContexts().get(0).getWorkflowString()); // check in pd7 org
 				}
 				
 				if(widgetStaticContext.getStaticKey().equals(CardType.FAHU_STATUS_CARD_NEW.getName())) {
@@ -1210,16 +1233,19 @@ public class DashboardAction extends FacilioAction {
 				return SUCCESS;
 			}
 			
-			else if(CardUtil.isExtraCard(widgetStaticContext.getStaticKey())) {
+			else if(CardUtil.isExtraCard(widgetStaticContext.getStaticKey())) { // check in stage
 				
 				result = new HashMap<>();
 				
 				if(widgetStaticContext.getStaticKey().equals("readingWithGraphCard")) {
 					
 					V2ReportAction reportAction = new V2ReportAction();
-					
-					reportAction.setCardWidgetId(widgetId);
-					
+					if(widgetId != null) {
+						reportAction.setCardWidgetId(widgetId);
+					}
+					else {
+						reportAction.setCardParamJson(widgetStaticContext.getParamsJson());
+					}
 					reportAction.fetchReadingsFromCard();
 					
 					FacilioContext context = reportAction.getResultContext();
@@ -1242,11 +1268,11 @@ public class DashboardAction extends FacilioAction {
 					
 				}
 			}
-			if(dashboardWidgetContext.getWidgetVsWorkflowContexts() != null) {
+			if(widgetStaticContext.getWidgetVsWorkflowContexts() != null) {
 				
 				result = new HashMap<>();
 				
-				for(WidgetVsWorkflowContext widgetVsWorkflowContext : dashboardWidgetContext.getWidgetVsWorkflowContexts()) {
+				for(WidgetVsWorkflowContext widgetVsWorkflowContext : widgetStaticContext.getWidgetVsWorkflowContexts()) {
 					
 					if(widgetStaticContext.getStaticKey().equals("profilemini") && widgetVsWorkflowContext.getBaseSpaceId() != null) {
 						
@@ -1328,7 +1354,13 @@ public class DashboardAction extends FacilioAction {
 								paramMap.put("startTime", range1.getStartTime());
 								paramMap.put("endTime", range1.getEndTime());
 							}
-							Object wfResult = WorkflowUtil.getResult(widgetVsWorkflowContext.getWorkflowId(), paramMap);
+							Object wfResult = null;
+							if(widgetVsWorkflowContext.getWorkflowId() != null) {
+								wfResult = WorkflowUtil.getResult(widgetVsWorkflowContext.getWorkflowId(), paramMap);
+							}
+							else {
+								wfResult = WorkflowUtil.getWorkflowExpressionResult(widgetVsWorkflowContext.getWorkflowString(), paramMap);
+							}
 							
 							if(widgetStaticContext != null && (widgetStaticContext.getStaticKey().equals("weathercard") || widgetStaticContext.getStaticKey().equals("weathermini")) && widgetVsWorkflowContext.getWorkflowName().equals("weather")) {
 								Map<String,Object> ss = (Map<String, Object>) wfResult;
@@ -1349,195 +1381,37 @@ public class DashboardAction extends FacilioAction {
 						}
 					}
 				}
-			}
+			} 
 			LOGGER.severe("result --- "+result);
 			setCardResult(result);
 		}
-		else if(staticKey != null) {
-			
-			Map<String,Object> result = null;
-			paramsJson = DashboardUtil.getCardParams(paramsJson);
-			
-			if(CardUtil.isGetDataFromEnum(staticKey)) {
-				
-				result = new HashMap<>();
-				
-				CardType card = CardType.getCardType(staticKey);
-				
-				if(DashboardUtil.isDynamicWFGeneratingCard(staticKey)) {
-					card.setWorkflow(WorkflowUtil.getXmlStringFromWorkflow(workflow));
-				}
-				
-				if(staticKey.equals(CardType.FAHU_STATUS_CARD_NEW.getName())) {
-					CardUtil.fillParamJsonForFahuCard(AccountUtil.getCurrentOrg().getId(),paramsJson);
-				}
-				
-				if(card.isSingleResultWorkFlow()) {
-					Object wfResult = WorkflowUtil.getWorkflowExpressionResult(card.getWorkflow(), paramsJson);
-					
-					wfResult = CardUtil.getWorkflowResultForClient(wfResult, widgetStaticContext); // parsing data suitable for client
-					result.put("result", wfResult);
-					result.put("unit", CardUtil.getUnit(paramsJson));
-				}
-				else {
-					Map<String, Object> expResult = WorkflowUtil.getExpressionResultMap(card.getWorkflow(), paramsJson);
-					
-					expResult = (Map<String, Object>) CardUtil.getWorkflowResultForClient(expResult, widgetStaticContext); // parsing data suitable for client
-					result.put("result", expResult);
-				}
-				
-				setCardResult(result);
-				return SUCCESS;
-			}
-			else if(CardUtil.isExtraCard(staticKey)) {
-				
-				result = new HashMap<>();
-				
-				if(staticKey.equals("readingWithGraphCard")) {
-					
-					V2ReportAction reportAction = new V2ReportAction();
-					
-					reportAction.setCardParamJson(paramsJson);
-					
-					reportAction.fetchReadingsFromCard();
-					
-					FacilioContext context = reportAction.getResultContext();
-					
-					result.put("result", context);
-					
-					Map<Long, ReadingRuleAlarmMeta> alarmMeta = ReadingRuleAPI.fetchAlarmMeta((Long)paramsJson.get("parentId"), (Long)paramsJson.get("fieldId"));
-					 
-					List<AlarmContext> alarms = AlarmAPI.getAlarms(alarmMeta.keySet());
-					
-					result.put("alarmSeverity", AlarmAPI.getMaxSeverity(alarms));
-					
-					result.put("unit", CardUtil.getUnit(paramsJson));
-					
-					setCardResult(result);
-					return SUCCESS;
-					
-				}
-			}
-			
-			
-			List<WidgetVsWorkflowContext> workflowList = DashboardUtil.getCardWorkflowBasedOnStaticKey(staticKey);
-			
-			if(workflowList != null) {
-				
-				result = new HashMap<>();
-				
-				for(WidgetVsWorkflowContext widgetVsWorkflowContext : workflowList) {
-					
-					widgetVsWorkflowContext.setBaseSpaceId(baseSpaceId);
-					
-					if(staticKey.equals("profilemini")) {
-						
-						if(widgetVsWorkflowContext.getBaseSpaceId() != null) {
-							
-							BuildingContext building = SpaceAPI.getBuildingSpace(widgetVsWorkflowContext.getBaseSpaceId());
-							
-							List<EnergyMeterContext> meters = DeviceAPI.getMainEnergyMeter(building.getId()+"");
-							
-							EnergyMeterContext meter = meters.get(0);
-							
-							DateOperators dateOpp = DateOperators.CURRENT_MONTH;
-							BaseLineContext baseline = BaseLineAPI.getBaseLine(RangeType.PREVIOUS_MONTH);
-							DateRange lastMonthUptoNow = baseline.calculateBaseLineRange(new DateRange(dateOpp.getRange(null).getStartTime(), DateTimeUtil.getCurrenTime()), AdjustType.NONE);
-							
-							double previousValue = DashboardAction.getTotalKwh(Collections.singletonList(meter.getId()+""), lastMonthUptoNow.getStartTime(), lastMonthUptoNow.getEndTime());
-							
-							value = DashboardAction.getTotalKwh(Collections.singletonList(meter.getId()+""), dateOpp.getRange(null).getStartTime(), dateOpp.getRange(null).getEndTime());
-							
-							JSONObject json1 = new JSONObject();
-							
-							json1.put("consumption", value);
-							json1.put("unit", "kWh");
-							
-							JSONObject json = new JSONObject();
-							
-							json.put("name", building.getName());
-							
-							if(building.getPhotoId() <= 0) {
-								
-								List<PhotosContext> photos = SpaceAPI.getBaseSpacePhotos(building.getId());
-								
-								if(photos != null && !photos.isEmpty()) {
-									building.setPhotoId(photos.get(0).getPhotoId());
-								}
-							}
-							
-							json.put("avatar", building.getAvatarUrl());
-							json.put("currentVal", json1);
-							
-							json.put("variance", ReportsUtil.getVariance(value, previousValue));
-							
-							result.put("card", json);
-							result.put("building", building);
-						}
-					}
-					else {
-						try {
-							Map<String,Object> paramMap = null;
-							if(widgetVsWorkflowContext.getBaseSpaceId() != null) {
-								if(paramMap == null) {
-									paramMap = new HashMap<>();
-								}
-								paramMap.put("parentId", widgetVsWorkflowContext.getBaseSpaceId());
-								
-								if( ( ((staticKey.equals(DashboardUtil.STATIC_WIDGET_WEATHER_CARD) || staticKey.equals(DashboardUtil.STATIC_WIDGET_WEATHER_CARD_MINI)) && widgetVsWorkflowContext.getWorkflowName().equals("weather"))  || (staticKey.equals("weathercardaltayer") && widgetVsWorkflowContext.getWorkflowName().equals("weather")) )) {
-									BaseSpaceContext basespace = SpaceAPI.getBaseSpace(widgetVsWorkflowContext.getBaseSpaceId());
-									if(basespace != null) {
-										paramMap.put("parentId", basespace.getSiteId());
-									}
-								}
-							}
-							if(reportSpaceFilterContext != null) {
-								if(paramMap == null) {
-									paramMap = new HashMap<>();
-								}
-								if(reportSpaceFilterContext.getBuildingId() != null) {
-									paramMap.put("parentId", reportSpaceFilterContext.getBuildingId());
-								}
-								if( ( ((staticKey.equals(DashboardUtil.STATIC_WIDGET_WEATHER_CARD) || staticKey.equals(DashboardUtil.STATIC_WIDGET_WEATHER_CARD_MINI)) && widgetVsWorkflowContext.getWorkflowName().equals("weather"))  || (staticKey.equals("weathercardaltayer") && widgetVsWorkflowContext.getWorkflowName().equals("weather")) )) {
-									BaseSpaceContext basespace = SpaceAPI.getBaseSpace(reportSpaceFilterContext.getBuildingId());
-									if(basespace != null) {
-										paramMap.put("parentId", basespace.getSiteId());
-									}
-								}
-							}
-							if (widgetVsWorkflowContext.getWorkflowName().equals("lastMonthThisDate") || widgetVsWorkflowContext.getWorkflowName().equals("lastMonthDate")){
-								if(paramMap == null) {
-									paramMap = new HashMap<>();
-								}
-								DateRange range1 = DateOperators.CURRENT_MONTH_UPTO_NOW.getRange(null);
-								paramMap.put("startTime", range1.getStartTime());
-								paramMap.put("endTime", range1.getEndTime());
-							}
-							Object wfResult = WorkflowUtil.getWorkflowExpressionResult(widgetVsWorkflowContext.getWorkflowString(), paramMap);
-							
-							if( staticKey.equals("weathercard") || staticKey.equals("weathermini")) {
-								Map<String,Object> ss = (Map<String, Object>) wfResult;
-								Object temprature = ss.get("temperature");
-								if(AccountUtil.getCurrentOrg().getOrgId() == 104l || AccountUtil.getCurrentOrg().getOrgId() == 75l) {
-									ss.put("unit", "F");
-								}
-								DecimalFormat f = new DecimalFormat("##.0");
-								ss.put("temperature", f.format(temprature));
-							}
-							
-							LOGGER.severe("widgetVsWorkflowContext.getWorkflowId() --- "+widgetVsWorkflowContext.getWorkflowId() +" wfResult --  "+wfResult);
-							result.put(widgetVsWorkflowContext.getWorkflowName(), wfResult);
-						}
-						catch(Exception e) {
-							LOGGER.severe(e.getMessage());
-						}
-					}
-				}
-			}
-			LOGGER.severe("result --- "+result);
-			setCardResult(result);
-			
-		}
+//		else if(staticKey != null) {
+//			
+//			Map<String,Object> result = null;
+//			paramsJson = DashboardUtil.getCardParams(paramsJson);
+//			
+//			if(CardUtil.isGetDataFromEnum(staticKey)) {}
+//			else if(CardUtil.isExtraCard(staticKey)) {}
+//			
+//			
+//			List<WidgetVsWorkflowContext> workflowList = DashboardUtil.getCardWorkflowBasedOnStaticKey(staticKey);
+//			
+//			if(workflowList != null) {
+//				
+//				result = new HashMap<>();
+//				
+//				for(WidgetVsWorkflowContext widgetVsWorkflowContext : workflowList) {
+//					
+//					widgetVsWorkflowContext.setBaseSpaceId(baseSpaceId);
+//					
+//					if(staticKey.equals("profilemini")) {}
+//					else {}
+//				}
+//			}
+//			LOGGER.severe("result --- "+result);
+//			setCardResult(result);
+//			
+//		}
 		return SUCCESS;
 	}
 	public JSONObject getParamsJson() {
