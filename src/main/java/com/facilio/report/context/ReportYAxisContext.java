@@ -20,6 +20,14 @@ public class ReportYAxisContext extends ReportFieldContext {
 		this.aggr = AggregateOperator.getAggregateOperator(aggr);
 	}
 	
+	private boolean fetchMinMax = false;
+	public boolean isFetchMinMax() {
+		return fetchMinMax;
+	}
+	public void setFetchMinMax(boolean fetchMinMax) {
+		this.fetchMinMax = fetchMinMax;
+	}
+	
 	@Override
 	public String toString() {
 		// TODO Auto-generated method stub
