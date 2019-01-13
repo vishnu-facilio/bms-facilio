@@ -1,11 +1,14 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.struts2.json.annotations.JSON;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import com.facilio.beans.ModuleBean;
@@ -19,6 +22,7 @@ import com.facilio.report.context.ReportContext;
 import com.facilio.report.context.ReportContext.ReportType;
 import com.facilio.report.context.ReportDataPointContext;
 import com.facilio.report.context.ReportFieldContext;
+import com.facilio.report.context.ReportGroupByField;
 import com.facilio.report.context.ReportYAxisContext;
 
 public class ConstructReportData implements Command {
@@ -41,12 +45,35 @@ public class ConstructReportData implements Command {
 		xAxis.setField(xField);
 		dataPointContext.setxAxis(xAxis);
 		
+		JSONObject yAxisJSON = (JSONObject) context.get("y-axis");
 		ReportYAxisContext yAxis = new ReportYAxisContext();
-		yAxis.setAggr(CommonAggregateOperator.COUNT);
-		FacilioField yField = FieldFactory.getIdField(xField.getModule());
-		yField.setColumnName(yField.getModule().getTableName() + ".ID");
+		
+		int yAggr = CommonAggregateOperator.COUNT.ordinal();
+		FacilioField yField = null;
+		if (yAxisJSON == null) {
+			yField = FieldFactory.getIdField(xField.getModule());
+			yField.setColumnName(yField.getModule().getTableName() + ".ID");
+		} else {
+			yAggr = ((Number) yAxisJSON.get("aggr")).intValue();
+			yField = modBean.getField((Long) yAxisJSON.get("field_id"));
+		}
+		yAxis.setAggr(yAggr);
 		yAxis.setField(yField);
 		dataPointContext.setyAxis(yAxis);
+		
+		JSONArray groupByJSONArray = (JSONArray) context.get("group-by");
+		if (groupByJSONArray != null) {
+			List<ReportGroupByField> groupByFields = new ArrayList<>();
+			for (int i = 0; i < groupByJSONArray.size(); i++) {
+				Map groupByJSON = (Map) groupByJSONArray.get(i);
+				ReportGroupByField groupByField = new ReportGroupByField();
+				FacilioField field = modBean.getField((long) groupByJSON.get("field_id"));
+				groupByField.setField(field);
+				groupByField.setAlias(field.getName());
+				groupByFields.add(groupByField);
+			}
+			dataPointContext.setGroupByFields(groupByFields);
+		}
 		
 		Map<String, String> aliases = new HashMap<>();
 		aliases.put("actual", "Y");

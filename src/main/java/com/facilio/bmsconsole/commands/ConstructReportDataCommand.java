@@ -194,9 +194,19 @@ public class ConstructReportDataCommand implements Command {
 					FacilioModule lookupModule = lookupField.getLookupModule();
 					ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 					List<FacilioField> fields = new ArrayList<>(modBean.getAllFields(lookupModule.getName()));
-					fields.add(FieldFactory.getIdField(lookupModule));
+					FacilioField mainField = null;
+					for (FacilioField f : fields) {
+						if (f.isMainField()) {
+							mainField = f;
+							break;
+						}
+					}
+					
+					List<FacilioField> selectFields = new ArrayList<>();
+					selectFields.add(mainField);
+					selectFields.add(FieldFactory.getIdField(lookupModule));
 					GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
-							.select(fields)
+							.select(selectFields)
 							.table(lookupModule.getName())
 							.andCondition(CriteriaAPI.getCurrentOrgIdCondition(lookupModule));
 
@@ -204,7 +214,7 @@ public class ConstructReportDataCommand implements Command {
 					lookupMap = new HashMap<>();
 					lookupFieldMap.put(lookupModule.getName(), lookupMap);
 					for (Map<String, Object> map : asProps) {
-						lookupMap.put((Long) map.get("id"), (String) map.get("displayName"));
+						lookupMap.put((Long) map.get("id"), (String) map.get(mainField.getName()));
 					}
 				}
 				val = lookupMap.get(((Map) val).get("id"));

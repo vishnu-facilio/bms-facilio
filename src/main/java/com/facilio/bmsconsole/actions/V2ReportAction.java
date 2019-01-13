@@ -432,12 +432,25 @@ public class V2ReportAction extends FacilioAction {
 	}
 	
 	private JSONObject xField;
-	
 	public JSONObject getxField() {
 		return xField;
 	}
 	public void setxField(JSONObject xField) {
 		this.xField = xField;
+	}
+	private JSONObject yField;
+	public JSONObject getyField() {
+		return yField;
+	}
+	public void setyField(JSONObject yField) {
+		this.yField = yField;
+	}
+	private JSONArray groupBy;
+	public JSONArray getGroupBy() {
+		return groupBy;
+	}
+	public void setGroupBy(JSONArray groupBy) {
+		this.groupBy = groupBy;
 	}
 	public String fetchReportData() throws Exception {
 		JSONParser parser = new JSONParser();
@@ -445,6 +458,8 @@ public class V2ReportAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		
 		context.put("x-axis", xField);
+		context.put("y-axis", yField);
+		context.put("group-by", groupBy);
 		
 		Chain chain = new FacilioChainFactory.FacilioChain(false);
 		chain.addCommand(new ConstructReportData());
