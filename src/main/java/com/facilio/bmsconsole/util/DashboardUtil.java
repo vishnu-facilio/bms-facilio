@@ -861,6 +861,11 @@ public static JSONObject getStandardVariance1(ReportContext report,JSONArray pro
 			for(Map<String, Object> prop:props) {
 				WidgetType widgetType = WidgetType.getWidgetType((Integer) prop.get("type"));
 				DashboardWidgetContext dashboardWidgetContext = (DashboardWidgetContext) FieldUtil.getAsBeanFromMap(prop, widgetType.getWidgetContextClass());
+				
+				if(dashboardWidgetContext != null) {
+					dashboardWidgetContext.setWidgetVsWorkflowContexts(DashboardUtil.getWidgetVsWorkflowList(dashboardWidgetContext.getId()));
+				}
+				
 				dashboardWidgetContexts.add(dashboardWidgetContext);
 			}
 		}
@@ -895,22 +900,34 @@ public static JSONObject getStandardVariance1(ReportContext report,JSONArray pro
 				dashboardWidgetContext = (DashboardWidgetContext) FieldUtil.getAsBeanFromMap(props.get(0), widgetType.getWidgetContextClass());
 		}
 		if(dashboardWidgetContext != null) {
-			selectBuilder = new GenericSelectRecordBuilder()
+			dashboardWidgetContext.setWidgetVsWorkflowContexts(DashboardUtil.getWidgetVsWorkflowList(dashboardWidgetContext.getId()));
+		}
+		return dashboardWidgetContext;
+	}
+	
+	public static List<WidgetVsWorkflowContext> getWidgetVsWorkflowList(Long widgetId) throws Exception {
+		if(widgetId != null) {
+			GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 					.select(FieldFactory.getWidgetVsWorkflowFields())
 					.table(ModuleFactory.getWidgetVsWorkflowModule().getTableName())
-					.andCustomWhere(ModuleFactory.getWidgetVsWorkflowModule().getTableName()+".WIDGET_ID= ?",dashboardWidgetContext.getId());
-			 props = selectBuilder.get();
+					.andCustomWhere(ModuleFactory.getWidgetVsWorkflowModule().getTableName()+".WIDGET_ID= ?",widgetId);
+			 List<Map<String, Object>> props = selectBuilder.get();
+			 
+			 List<WidgetVsWorkflowContext> widgetWorkflowContexts = new ArrayList<>();
+			 
 			 if (props != null && !props.isEmpty()) {
 				 for(Map<String, Object> prop:props) {
 					 WidgetVsWorkflowContext widgetVsWorkflowContext = FieldUtil.getAsBeanFromMap(prop, WidgetVsWorkflowContext.class);
 					 if(widgetVsWorkflowContext.getWorkflowId() != null) {
 						 widgetVsWorkflowContext.setWorkflow(WorkflowUtil.getWorkflowContext(widgetVsWorkflowContext.getWorkflowId()));
 					 }
-					 dashboardWidgetContext.addWidgetVsWorkflowContexts(widgetVsWorkflowContext);
+					 widgetWorkflowContexts.add(widgetVsWorkflowContext);
 				 }
 			}
+			 
+			return widgetWorkflowContexts;
 		}
-		return dashboardWidgetContext;
+		return null;
 	}
 
 	public static WidgetChartContext getWidgetChartContext(Long reportId) throws Exception {
