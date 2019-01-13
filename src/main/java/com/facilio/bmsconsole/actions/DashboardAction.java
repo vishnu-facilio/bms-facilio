@@ -1188,8 +1188,10 @@ public class DashboardAction extends FacilioAction {
 			}
 			else {
 				List<WidgetVsWorkflowContext> workflowList = DashboardUtil.getCardWorkflowBasedOnStaticKey(staticKey);
-				for(WidgetVsWorkflowContext workflow :workflowList) {
-					workflow.setBaseSpaceId(baseSpaceId);
+				if(workflowList != null) {
+					for(WidgetVsWorkflowContext workflow :workflowList) {
+						workflow.setBaseSpaceId(baseSpaceId);
+					}
 				}
 				widgetStaticContext.setWidgetVsWorkflowContexts(workflowList);
 			}
