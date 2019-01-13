@@ -270,7 +270,7 @@ public class FetchReportDataCommand implements Command {
 					minField.setName(dataPoint.getyAxis().getFieldName()+"_min");
 					fields.add(minField);
 					
-					FacilioField maxField = NumberAggregateOperator.MIN.getSelectField(dataPoint.getyAxis().getField());
+					FacilioField maxField = NumberAggregateOperator.MAX.getSelectField(dataPoint.getyAxis().getField());
 					maxField.setName(dataPoint.getyAxis().getFieldName()+"_max");
 					fields.add(maxField);
 				}
