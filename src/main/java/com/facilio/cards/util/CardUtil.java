@@ -1,18 +1,23 @@
 package com.facilio.cards.util;
 
+import java.text.DecimalFormat;
+import java.util.Map;
+import java.util.Set;
+
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.WidgetStaticContext;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.NumberField;
 import com.facilio.fw.BeanFactory;
 import com.facilio.unitconversion.Unit;
 import com.facilio.unitconversion.UnitsUtil;
+import com.facilio.util.FacilioUtil;
 
 public class CardUtil {
-
 	
 	public static boolean isGetDataFromEnum(String key) {
 		
@@ -87,6 +92,30 @@ public class CardUtil {
 		
 		FacilioField field = getField((String) paramsJson.get("moduleName"), (String) paramsJson.get("fieldName"));
 		return FieldUtil.getBooleanResultString(wfResult, field);
+	}
+	
+	public static Object getWorkflowResultForClient(Object wfResult,WidgetStaticContext widgetStaticContext) throws Exception {
+		if(wfResult instanceof Boolean) {
+			wfResult = CardUtil.getBooleanStringValue(wfResult,widgetStaticContext.getParamsJson());
+		}
+		else if(wfResult instanceof Double) {
+			Double value =  (Double) wfResult;
+			wfResult = FacilioUtil.DECIMAL_FORMAT.format(value);
+		}
+		else if(wfResult instanceof Map) {
+			Map<String, Object> expResult = (Map<String, Object>) wfResult;
+			Set<String> keys = expResult.keySet();
+			for(String key : keys) {
+				Object obj = expResult.get(key);
+				
+				if(obj instanceof Double) {
+					Double value =  (Double) obj;
+					expResult.put(key, FacilioUtil.DECIMAL_FORMAT.format(value));
+				}
+			}
+			return expResult;
+		}
+		return wfResult;
 	}
 
 	public static JSONObject fillParamJsonForFahuCard(long orgId, JSONObject paramsJson) {

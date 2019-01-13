@@ -1168,10 +1168,8 @@ public class DashboardAction extends FacilioAction {
 	
 	JSONObject paramsJson;
 	
-	private static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("#.##");
 	public String getCardData() throws Exception {
 		if(widgetId != null) {
-			
 			
 			DashboardWidgetContext dashboardWidgetContext =  DashboardUtil.getWidget(widgetId);
 			
@@ -1195,13 +1193,7 @@ public class DashboardAction extends FacilioAction {
 				if(card.isSingleResultWorkFlow()) {
 					Object wfResult = WorkflowUtil.getWorkflowExpressionResult(card.getWorkflow(), widgetStaticContext.getParamsJson());
 					
-					if(wfResult instanceof Boolean) {
-						wfResult = CardUtil.getBooleanStringValue(wfResult,widgetStaticContext.getParamsJson());
-					}
-					else if(wfResult instanceof Double) {
-						Double value =  (Double) wfResult;
-						wfResult = DECIMAL_FORMAT.format(value);
-					}
+					wfResult = CardUtil.getWorkflowResultForClient(wfResult, widgetStaticContext); // parsing data suitable for client
 					result.put("result", wfResult);
 					
 					result.put("unit", CardUtil.getUnit(widgetStaticContext.getParamsJson()));
@@ -1209,15 +1201,8 @@ public class DashboardAction extends FacilioAction {
 				else {
 					Map<String, Object> expResult = WorkflowUtil.getExpressionResultMap(card.getWorkflow(), widgetStaticContext.getParamsJson());
 					
-					Set<String> keys = expResult.keySet();
-					for(String key : keys) {
-						Object obj = expResult.get(key);
-						
-						if(obj instanceof Double) {
-							Double value =  (Double) obj;
-							expResult.put(key, DECIMAL_FORMAT.format(value));
-						}
-					}
+					expResult = (Map<String, Object>) CardUtil.getWorkflowResultForClient(expResult, widgetStaticContext); // parsing data suitable for client
+					
 					result.put("result", expResult);
 				}
 				result.put("widget", widgetStaticContext);
@@ -1263,50 +1248,47 @@ public class DashboardAction extends FacilioAction {
 				
 				for(WidgetVsWorkflowContext widgetVsWorkflowContext : dashboardWidgetContext.getWidgetVsWorkflowContexts()) {
 					
-					if(widgetStaticContext.getStaticKey().equals("profilemini")) {
+					if(widgetStaticContext.getStaticKey().equals("profilemini") && widgetVsWorkflowContext.getBaseSpaceId() != null) {
 						
-						if(widgetVsWorkflowContext.getBaseSpaceId() != null) {
+						BuildingContext building = SpaceAPI.getBuildingSpace(widgetVsWorkflowContext.getBaseSpaceId());
+						
+						List<EnergyMeterContext> meters = DeviceAPI.getMainEnergyMeter(building.getId()+"");
+						
+						EnergyMeterContext meter = meters.get(0);
+						
+						DateOperators dateOpp = DateOperators.CURRENT_MONTH;
+						
+						BaseLineContext baseline = BaseLineAPI.getBaseLine(RangeType.PREVIOUS_MONTH);
+						DateRange lastMonthUptoNow = baseline.calculateBaseLineRange(new DateRange(dateOpp.getRange(null).getStartTime(), DateTimeUtil.getCurrenTime()), AdjustType.NONE);
+						
+						double previousValue = DashboardAction.getTotalKwh(Collections.singletonList(meter.getId()+""), lastMonthUptoNow.getStartTime(), lastMonthUptoNow.getEndTime());
+						
+						value = DashboardAction.getTotalKwh(Collections.singletonList(meter.getId()+""), dateOpp.getRange(null).getStartTime(), dateOpp.getRange(null).getEndTime());
+						JSONObject json1 = new JSONObject();
+						
+						json1.put("consumption", value);
+						json1.put("unit", "kWh");
+						
+						JSONObject json = new JSONObject();
+						
+						json.put("name", building.getName());
+						
+						if(building.getPhotoId() <= 0) {
 							
-							BuildingContext building = SpaceAPI.getBuildingSpace(widgetVsWorkflowContext.getBaseSpaceId());
+							List<PhotosContext> photos = SpaceAPI.getBaseSpacePhotos(building.getId());
 							
-							List<EnergyMeterContext> meters = DeviceAPI.getMainEnergyMeter(building.getId()+"");
-							
-							EnergyMeterContext meter = meters.get(0);
-							
-							DateOperators dateOpp = DateOperators.CURRENT_MONTH;
-							
-							BaseLineContext baseline = BaseLineAPI.getBaseLine(RangeType.PREVIOUS_MONTH);
-							DateRange lastMonthUptoNow = baseline.calculateBaseLineRange(new DateRange(dateOpp.getRange(null).getStartTime(), DateTimeUtil.getCurrenTime()), AdjustType.NONE);
-							
-							double previousValue = DashboardAction.getTotalKwh(Collections.singletonList(meter.getId()+""), lastMonthUptoNow.getStartTime(), lastMonthUptoNow.getEndTime());
-							
-							value = DashboardAction.getTotalKwh(Collections.singletonList(meter.getId()+""), dateOpp.getRange(null).getStartTime(), dateOpp.getRange(null).getEndTime());
-							JSONObject json1 = new JSONObject();
-							
-							json1.put("consumption", value);
-							json1.put("unit", "kWh");
-							
-							JSONObject json = new JSONObject();
-							
-							json.put("name", building.getName());
-							
-							if(building.getPhotoId() <= 0) {
-								
-								List<PhotosContext> photos = SpaceAPI.getBaseSpacePhotos(building.getId());
-								
-								if(photos != null && !photos.isEmpty()) {
-									building.setPhotoId(photos.get(0).getPhotoId());
-								}
+							if(photos != null && !photos.isEmpty()) {
+								building.setPhotoId(photos.get(0).getPhotoId());
 							}
-							
-							json.put("avatar", building.getAvatarUrl());
-							json.put("currentVal", json1);
-							
-							json.put("variance", ReportsUtil.getVariance(value, previousValue));
-							
-							result.put("card", json);
-							result.put("building", building);
 						}
+						
+						json.put("avatar", building.getAvatarUrl());
+						json.put("currentVal", json1);
+						
+						json.put("variance", ReportsUtil.getVariance(value, previousValue));
+						
+						result.put("card", json);
+						result.put("building", building);
 					}
 					else {
 						try {
@@ -1393,18 +1375,14 @@ public class DashboardAction extends FacilioAction {
 				if(card.isSingleResultWorkFlow()) {
 					Object wfResult = WorkflowUtil.getWorkflowExpressionResult(card.getWorkflow(), paramsJson);
 					
-					if(wfResult instanceof Boolean) {
-						wfResult = CardUtil.getBooleanStringValue(wfResult,paramsJson);
-					}
-					else if(wfResult instanceof Double) {
-						Double value =  (Double) wfResult;
-						wfResult = DECIMAL_FORMAT.format(value);
-					}
+					wfResult = CardUtil.getWorkflowResultForClient(wfResult, widgetStaticContext); // parsing data suitable for client
 					result.put("result", wfResult);
 					result.put("unit", CardUtil.getUnit(paramsJson));
 				}
 				else {
 					Map<String, Object> expResult = WorkflowUtil.getExpressionResultMap(card.getWorkflow(), paramsJson);
+					
+					expResult = (Map<String, Object>) CardUtil.getWorkflowResultForClient(expResult, widgetStaticContext); // parsing data suitable for client
 					result.put("result", expResult);
 				}
 				
