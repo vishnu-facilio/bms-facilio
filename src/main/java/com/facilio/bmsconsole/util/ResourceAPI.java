@@ -49,6 +49,9 @@ public class ResourceAPI {
 																		.beanClass(ResourceContext.class)
 																		.andCondition(CriteriaAPI.getIdCondition(id, module))
 																		;
+		if (fetchDeleted) {
+			resourceBuilder.fetchDeleted();
+		}
 		
 		List<ResourceContext> resources = resourceBuilder.get();
 		if(resources != null && !resources.isEmpty()) {
