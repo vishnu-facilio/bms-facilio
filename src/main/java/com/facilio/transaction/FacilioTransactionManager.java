@@ -24,17 +24,16 @@ public enum FacilioTransactionManager {
 	}
 	
 	public TransactionManager getTransactionManager() {
-		if(true) {
+		
 		    return FTransactionManager.getTransactionManager();
-		}
-		try {
-			TransactionManager	txn = (TransactionManager) InitialContext.doLookup("java:comp/env/TransactionManager");
-			
-			return txn;
-		} catch (NamingException e) {
-			// TODO Auto-generated catch block
-			log.info("Exception occurred ", e);
-			throw new ExceptionInInitializerError("Unable to initialize Transaction manager due to the following error : \n"+e.getMessage());
-		}
+		
+		
 	}
+	public static int TRANSACTION_NotSupported=-1;
+	public static int TRANSACTION_REQUIRED=0;
+	public static int TRANSACTION_REQUIRES_NEW=1;
+	public static int TRANSACTION_Mandatory=2;
+
+
+	
 }

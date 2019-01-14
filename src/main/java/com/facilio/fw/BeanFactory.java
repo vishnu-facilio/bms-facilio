@@ -19,6 +19,7 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.transaction.FacilioTransactionManager;
 
 public class BeanFactory {
 
@@ -65,6 +66,17 @@ public class BeanFactory {
 	public static Object lookup(String beanname) throws InstantiationException, IllegalAccessException {
 		return lookup(beanname, false);
 	}
+	
+	public static Object lookup(String beanname, int transaction) throws InstantiationException, IllegalAccessException {
+		if(transaction==FacilioTransactionManager.TRANSACTION_NotSupported)
+		{
+		return lookup(beanname, false);
+		}
+		else
+		{
+			return lookup(beanname, 0L, transaction);
+		}
+	}
 
 	protected static Object lookup(String beanname, boolean transaction) throws InstantiationException, IllegalAccessException {
 		return lookup(beanname, 0L, transaction);
@@ -84,6 +96,13 @@ public class BeanFactory {
 	}
 
 	protected static Object lookup(String beanname, Long orgid, boolean transaction) throws InstantiationException, IllegalAccessException {
+		Class implclass = beans.get(beanname);
+		Object implobj = implclass.newInstance();
+		return Proxy.newProxyInstance(implclass.getClassLoader(),
+				implclass.getInterfaces(), new BeanInvocationHandler(implobj, orgid, transaction));
+	}
+	
+	protected static Object lookup(String beanname, Long orgid, int transaction) throws InstantiationException, IllegalAccessException {
 		Class implclass = beans.get(beanname);
 		Object implobj = implclass.newInstance();
 		return Proxy.newProxyInstance(implclass.getClassLoader(),
