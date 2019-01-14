@@ -13,6 +13,17 @@ public class SingleSharingContext {
 	public void setId(long id) {
 		this.id = id;
 	}
+	
+	
+	private long fieldId = -1;
+
+	public long getFieldId() {
+		return fieldId;
+	}
+	public void setFieldId(long fieldId) {
+		this.fieldId = fieldId;
+	}
+
 
 	private long orgId = -1;
 	public long getOrgId() {

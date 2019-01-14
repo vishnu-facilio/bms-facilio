@@ -3,11 +3,17 @@ package com.facilio.bmsconsole.context;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import com.facilio.accounts.bean.GroupBean;
 import com.facilio.accounts.dto.GroupMember;
 import com.facilio.accounts.dto.User;
+import com.facilio.beans.ModuleBean;
+import com.facilio.beans.ModuleBeanImpl;
+
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.fw.BeanFactory;
 
 public class SharingContext<E extends SingleSharingContext> extends ArrayList<E> {
@@ -29,24 +35,41 @@ public class SharingContext<E extends SingleSharingContext> extends ArrayList<E>
 		return isAllowed(AccountUtil.getCurrentUser());
 	}
 	
-	public boolean isAllowed (User user) throws Exception {
+	public boolean isAllowed (Object object) throws Exception {
+		return isAllowed(AccountUtil.getCurrentUser(), object);
+	}
+	
+	public boolean isAllowed (User user, Object object) throws Exception {
 		if (isEmpty()) {
 			return true;
 		}
 		
 		for (SingleSharingContext permission : this) {
-			if (isMatching(permission, user)) {
+			if (isMatching(permission, user, object)) {
 				return true;
 			}
 		}
 		return false;
 	}
 	
-	private boolean isMatching (SingleSharingContext permission, User user) throws Exception {
+	private boolean isMatching (SingleSharingContext permission, User user, Object object) throws Exception {
 		switch (permission.getTypeEnum()) {
 			case USER:
 				if (permission.getUserId() == user.getOuid()) {
 					return true;
+				}
+				else if (permission.getUserId() == -1 && permission.getFieldId() > 0) {
+					if (object != null) {
+						ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+						FacilioField field = modBean.getField(permission.getFieldId());
+						Map<String,Object> userObj = (Map<String, Object>) FieldUtil.getAsProperties(object).get(field.getName());
+						if (userObj != null) {
+							Long ouid = (Long) userObj.get("id");
+							if (ouid != null && ouid == user.getOuid()) {
+								return true;
+							}
+						}
+					}
 				}
 				break;
 			case ROLE:
@@ -72,18 +95,18 @@ public class SharingContext<E extends SingleSharingContext> extends ArrayList<E>
 		return false;
 	}
 	
-	public List<SingleSharingContext> getMatching() throws Exception {
-		return getMatching(AccountUtil.getCurrentUser());
+	public List<SingleSharingContext> getMatching(Object object) throws Exception {
+		return getMatching(AccountUtil.getCurrentUser(), object);
 	}
 	
-	public List<SingleSharingContext> getMatching (User user) throws Exception {
+	public List<SingleSharingContext> getMatching (User user, Object object) throws Exception {
 		if (isEmpty()) {
 			return null;
 		}
 		
 		List<SingleSharingContext> matchingPermissions = new ArrayList<>();
 		for (SingleSharingContext permission : this) {
-			if (isMatching(permission, user)) {
+			if (isMatching(permission, user, object)) {
 				matchingPermissions.add(permission);
 			}
 		}

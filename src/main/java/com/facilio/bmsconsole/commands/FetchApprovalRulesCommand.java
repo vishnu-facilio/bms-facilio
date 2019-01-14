@@ -14,8 +14,12 @@ import org.apache.commons.lang3.tuple.Pair;
 import com.facilio.accounts.dto.Group;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.beans.ModuleBean;
+import com.facilio.beans.ModuleBeanImpl;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.forms.FacilioForm;
+import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.util.ApprovalRulesAPI;
 import com.facilio.bmsconsole.util.FormsAPI;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
@@ -24,6 +28,7 @@ import com.facilio.bmsconsole.workflow.rule.ApprovalState;
 import com.facilio.bmsconsole.workflow.rule.ApproverContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
 
 public class FetchApprovalRulesCommand implements Command {
 
@@ -99,12 +104,22 @@ public class FetchApprovalRulesCommand implements Command {
 								wo.setWaitingApprovals(rule.getApprovers());
 							}
 							User currentUser = AccountUtil.getCurrentUser();
-							
+							ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 							for(ApproverContext approverContext: wo.getWaitingApprovals()) {
 								switch(approverContext.getTypeEnum()) {
 									case USER:
 										if (currentUser.getOuid() == approverContext.getUserId()) {
 											wo.setCanCurrentUserApprove(true);
+										}
+										else if (approverContext.getUserId() == -1 && approverContext.getFieldId() > 0) {
+											FacilioField field = modBean.getField(approverContext.getFieldId());
+											Map<String,Object> userObj = (Map<String, Object>) FieldUtil.getAsProperties(wo).get(field.getName());
+											if (userObj != null) {
+												Long ouid = (Long) userObj.get("id");
+												if (ouid != null && ouid == currentUser.getOuid()) {
+													wo.setCanCurrentUserApprove(true);
+												}
+											}
 										}
 										break;
 									case ROLE:

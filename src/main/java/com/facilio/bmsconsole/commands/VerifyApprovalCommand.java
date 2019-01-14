@@ -46,10 +46,10 @@ public class VerifyApprovalCommand implements Command {
 				for (WorkOrderContext wo : oldWos) {
 					if (wo.getApprovalStateEnum() == ApprovalState.REQUESTED) {
 						ApprovalRuleContext rule = ruleMap.get(wo.getApprovalRuleId()); 
-						if (!rule.hasApprovalPermission()) {
+						if (!rule.hasApprovalPermission(wo)) {
 							throw new IllegalArgumentException("You are not authorised to perform this operation");
 						}
-						else if (!rule.verified(wo.getId(), workOrder.getApprovalStateEnum())) {
+						else if (!rule.verified(wo, workOrder.getApprovalStateEnum())) {
 							WorkOrderContext newWo = FieldUtil.cloneBean(workOrder, WorkOrderContext.class);
 							newWo.setId(wo.getId());
 							newWo.setApprovalState(ApprovalState.REQUESTED);

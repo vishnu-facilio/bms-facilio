@@ -252,6 +252,13 @@
 		</action>
 	</package>
 	
+	<package name= "alarmListCount" namespace="/api/v2/alarms" extends="v2Api" >
+	<action name="count" class="com.facilio.bmsconsole.actions.AlarmAction" method="v2viewAlarm">
+			<param name="moduleName">alarm</param>
+			<param name="permission">READ,READ_TEAM,READ_OWN</param>
+		</action>
+	</package>
+	
 	<package name="alarmListApiv2" namespace="/api/v2/alarms/view" extends="v2Api">
 		<action name="*" class="com.facilio.bmsconsole.actions.AlarmAction"
 			method="v2alarmList">

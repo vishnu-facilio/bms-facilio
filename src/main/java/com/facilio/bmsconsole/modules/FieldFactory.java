@@ -78,6 +78,7 @@ public class FieldFactory {
 			workOrderFieldsInclude.add("noOfClosedTasks");
 			workOrderFieldsInclude.add("priority");
 			workOrderFieldsInclude.add("requester");
+			workOrderFieldsInclude.add("requestedBy");
 			workOrderFieldsInclude.add("resource");
 			workOrderFieldsInclude.add("scheduledStart");
 			workOrderFieldsInclude.add("sourceType");
@@ -1063,6 +1064,7 @@ public class FieldFactory {
 		fields.add(getField("userId", "ORG_USERID", module, FieldType.LOOKUP));
 		fields.add(getField("roleId", "ROLE_ID", module, FieldType.LOOKUP));
 		fields.add(getField("groupId", "GROUP_ID", module, FieldType.LOOKUP));
+		fields.add(getField("fieldId",  "FIELD_ID", module, FieldType.LOOKUP));
 		fields.add(getField("type", "SHARING_TYPE", module, FieldType.NUMBER));
 		
 		return fields;

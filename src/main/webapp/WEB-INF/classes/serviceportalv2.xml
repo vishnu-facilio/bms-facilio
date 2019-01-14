@@ -38,6 +38,10 @@
 		<action name="add" class="com.facilio.bmsconsole.actions.WorkOrderAction" method="addPortalOrders">
 		</action>
 		
+		<action name="update" class="com.facilio.bmsconsole.actions.WorkOrderAction" method="v2updateWorkOrder">
+		    <param name="moduleName">workorder</param>
+			<param name="permission">UPDATE,UPDATE_TEAM,UPDATE_OWN</param>
+		</action>
 		<action name="*" class="com.facilio.bmsconsole.actions.WorkOrderAction" method="v2viewWorkOrder">
 			<param name="workOrderId">{1}</param>
 		</action>
