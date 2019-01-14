@@ -24,6 +24,13 @@ public class ReadOnlyChainFactory {
 		return c;
 	}
 	
+	public static Chain fetchCardDataChain() {
+		Chain c = getDefaultChain();
+		c.addCommand(new FetchCardDataCommand());
+		CommonCommandUtil.addCleanUpCommand(c);
+		return c;
+	}
+	
 	public static Chain newFetchReportDataChain() {
 		Chain c = getDefaultChain();
 		c.addCommand(new FilterFieldCommand());

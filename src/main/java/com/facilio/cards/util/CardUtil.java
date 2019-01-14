@@ -39,7 +39,16 @@ public class CardUtil {
 		}
 		int metricId = getMetic((String) params.get("moduleName"), (String) params.get("fieldName"));
 		
-		if(metricId <= 0 ) {
+		if(metricId <= 0) {
+			if(params.get("moduleName") != null && params.get("fieldName") != null) {
+				FacilioField field = getField((String) params.get("moduleName"), (String) params.get("fieldName"));
+				if(field instanceof NumberField) {
+					NumberField numberField = (NumberField) field;
+					if(numberField.getUnit() != null) {
+						return  Unit.getUnitFromSymbol(numberField.getUnit());
+					}
+				}
+			}
 			return null;
 		}
 		Unit unit = UnitsUtil.getOrgDisplayUnit(AccountUtil.getCurrentOrg().getId(), metricId);
