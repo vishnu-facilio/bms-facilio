@@ -22,6 +22,7 @@ import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.bmsconsole.modules.NumberField;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.util.DashboardUtil;
+import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.cards.util.CardUtil;
 import com.facilio.fs.FileStore;
 import com.facilio.fs.FileStoreFactory;
@@ -328,8 +329,11 @@ public enum FacilioDefaultFunction implements FacilioWorkflowFunctionInterface {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			
 			String moduleName = objects[0].toString();
-			FacilioModule module = modBean.getModule(moduleName);
+			if(LookupSpecialTypeUtil.isSpecialType(moduleName)) {
+				return LookupSpecialTypeUtil.getPickList(moduleName);
+			}
 			
+			FacilioModule module = modBean.getModule(moduleName);
 			FacilioField field = objects.length > 1 && objects[1] != null ? modBean.getField(objects[1].toString(), moduleName) : modBean.getPrimaryField(moduleName);
 			
 			SelectRecordsBuilder<ModuleBaseWithCustomFields> builder = new SelectRecordsBuilder<ModuleBaseWithCustomFields>()
