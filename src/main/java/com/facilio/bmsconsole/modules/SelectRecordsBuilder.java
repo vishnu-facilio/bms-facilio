@@ -320,18 +320,21 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 			if(lookupFields.size() > 0) {
 				for(Map<String, Object> props : propList) {
 					for(FacilioField lookupField : lookupFields) {
-						Long recordId = (Long) props.remove(lookupField.getName());
-						if(recordId != null) {
-							Map<String, Object> lookedupProp = null;
-							if(level < maxLevel) {
-								lookedupProp = FieldUtil.getLookupProp((LookupField) lookupField, recordId, level+1);
-							}
-							else {
-								lookedupProp = new HashMap<>();
-								lookedupProp.put("id", recordId);
-							}
-							if(lookedupProp != null) {
-								props.put(lookupField.getName(), lookedupProp);
+						Object value = props.get(lookupField.getName());
+						if (value instanceof Long) {
+							Long recordId = (Long) props.remove(lookupField.getName());
+							if(recordId != null) {
+								Map<String, Object> lookedupProp = null;
+								if(level < maxLevel) {
+									lookedupProp = FieldUtil.getLookupProp((LookupField) lookupField, recordId, level+1);
+								}
+								else {
+									lookedupProp = new HashMap<>();
+									lookedupProp.put("id", recordId);
+								}
+								if(lookedupProp != null) {
+									props.put(lookupField.getName(), lookedupProp);
+								}
 							}
 						}
 					}
