@@ -11,6 +11,7 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 
 import com.amazonaws.services.iot.client.AWSIotConnectionStatus;
 import com.amazonaws.services.iot.client.AWSIotException;
@@ -76,12 +77,21 @@ public class IoTMessageAPI {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			for(Map<String, Object> instance : instances) {
 				JSONObject point = new JSONObject();
-				point.put("instance", instance.get("instance"));
 				point.put("instanceType", instance.get("instanceType"));
-				point.put("device", instance.get("device"));
 				point.put("objectInstanceNumber", instance.get("objectInstanceNumber"));
-				point.put("instanceDescription", instance.get("instanceDescription"));
-				if (command == IotCommandType.SET && instance.containsKey("value")) {
+				if (command == IotCommandType.CONFIGURE) {
+					point.put("instance", instance.get("instance"));
+					point.put("device", instance.get("device"));
+					point.put("instanceDescription", instance.get("instanceDescription"));
+				}
+				else if (command == IotCommandType.SUBSCRIBE) {
+					if (instance.containsKey("thresholdJson")) {
+						JSONParser parser = new JSONParser();
+						JSONObject threshold = (JSONObject) parser.parse((String) instance.get("thresholdJson"));
+						point.putAll(threshold);
+					}
+				}
+				else if (command == IotCommandType.SET && instance.containsKey("value")) {
 					point.put("newValue", instance.get("value"));
 					point.put("valueType", getValueType(modBean.getField((long) instance.get("fieldId")).getDataTypeEnum()));
 				}
@@ -285,6 +295,8 @@ public class IoTMessageAPI {
  		SET("set"),
  		PROPERTY("property"),
  		DISCOVER("discoverPoints"),
+ 		SUBSCRIBE("subscribe"),
+ 		UNSUBSCRIBE("unsubscribe")
  		;
  		
  		private String name;
@@ -306,6 +318,31 @@ public class IoTMessageAPI {
 			}
 			return null;
 		}
+ 	}
+ 	
+ 	public enum ThresholdOperator {
+ 		SUM,		// 1
+ 		SUBTRACTION,
+ 		MULTIPLICATION,
+ 		DIVISION,
+ 		GREATER_THAN,
+ 		LESS_THAN,
+ 		GREATER_THAN_EQUALS,
+ 		LESS_THAN_EQUALS,
+ 		EQUALS,
+ 		PERCENTAGE,
+ 		CONSTANT		// 11
+ 		;
  		
+ 		public int getValue() {
+			return ordinal() + 1;
+		}
+		
+		public static ThresholdOperator valueOf (int value) {
+			if (value > 0 && value <= values().length) {
+				return values() [value - 1];
+			}
+			return null;
+		}
  	}
 }

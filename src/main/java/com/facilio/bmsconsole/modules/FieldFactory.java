@@ -4261,6 +4261,8 @@ public class FieldFactory {
         fields.add(getField("instanceDescription", "INSTANCE_DESCRIPTION", module, FieldType.STRING));
         fields.add(getField("instanceType", "INSTANCE_TYPE", module, FieldType.NUMBER));
         fields.add(getField("inUse", "IN_USE", module, FieldType.BOOLEAN));
+        fields.add(getField("subscribed", "IS_SUBSCRIBED", module, FieldType.BOOLEAN));
+        fields.add(getField("thresholdJson", "THRESHOLD_JSON", module, FieldType.STRING));
         fields.add(getField("createdTime", "CREATED_TIME", module, FieldType.NUMBER));
 		return fields;
 	}
