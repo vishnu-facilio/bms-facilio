@@ -1,4 +1,5 @@
 
+
 -- dashbaord population starts
 
 INSERT INTO Dashboard (ORGID,MODULEID,DASHBOARD_NAME,PUBLISH_STATUS,LINK_NAME,DISPLAY_ORDER) VALUES (${orgId},${workOrderModuleId},'Overview',0,'overview',1);
@@ -1005,8 +1006,6 @@ set @WIDGET_ID = (SELECT LAST_INSERT_ID());
 
 INSERT INTO Widget_Chart (ID,REPORT_ID) VALUES (@WIDGET_ID,@REPORT_ID);
 
-INSERT INTO Dashboard_vs_Widget (DASHBOARD_ID,WIDGET_ID,META_JSON) VALUES (@BUILDING_DASHBOARD_ID,@WIDGET_ID,'{"layoutWidth":16,"layoutHeight":10,"xPosition":0,"yPosition":0,"layoutPosition":3}');
-
 
 INSERT INTO Report_Entity (ORGID) VALUES (${orgId});
 SET @REPORT_ENTITY_ID := (SELECT LAST_INSERT_ID());
@@ -1025,8 +1024,6 @@ INSERT INTO Widget (ORGID,MODULEID,WIDGET_NAME,TYPE,DATA_REFRESH_INTERTVEL,HEADE
 set @WIDGET_ID = (SELECT LAST_INSERT_ID());
 
 INSERT INTO Widget_Chart (ID,REPORT_ID) VALUES (@WIDGET_ID,@REPORT_ID);
-
-INSERT INTO Dashboard_vs_Widget (DASHBOARD_ID,WIDGET_ID,META_JSON) VALUES (@BUILDING_DASHBOARD_ID,@WIDGET_ID,'{"layoutWidth":24,"layoutHeight":10,"xPosition":0,"yPosition":10,"layoutPosition":1}');
 
 
 INSERT INTO Report_Entity (ORGID) VALUES (${orgId});
