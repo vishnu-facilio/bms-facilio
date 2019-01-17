@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.modules;
 
+import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -84,6 +85,14 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 	public SelectRecordsBuilder<E> table(String tableName) {
 		return this;
 	}
+	
+	@Override
+	public SelectRecordsBuilder<E> useExternalConnection (Connection conn) {
+		builder.useExternalConnection(conn);
+		return this;
+	}
+	
+	
 
 	@Override
 	public JoinRecordBuilder<E> innerJoin(String tableName) {

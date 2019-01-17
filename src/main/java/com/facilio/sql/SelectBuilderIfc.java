@@ -1,5 +1,6 @@
 package com.facilio.sql;
 
+import java.sql.Connection;
 import java.util.List;
 
 import com.facilio.bmsconsole.modules.FacilioField;
@@ -9,6 +10,8 @@ public interface SelectBuilderIfc<E> extends WhereBuilderIfc<SelectBuilderIfc<E>
 	public SelectBuilderIfc<E> select(List<FacilioField> fields);
 	
 	public SelectBuilderIfc<E> table(String tableName);
+	
+	public SelectBuilderIfc<E> useExternalConnection (Connection conn);
 	
 	public JoinBuilderIfc<? extends SelectBuilderIfc<E>> innerJoin(String tableName);
 	

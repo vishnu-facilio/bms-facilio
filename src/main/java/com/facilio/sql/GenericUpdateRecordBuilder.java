@@ -33,9 +33,16 @@ public class GenericUpdateRecordBuilder implements UpdateBuilderIfc<Map<String, 
 	private Map<String, Object> value;
 	private StringBuilder joinBuilder = new StringBuilder();
 	private WhereBuilder where = new WhereBuilder();
+	private Connection conn = null;
 	
 	public GenericUpdateRecordBuilder table(String tableName) {
 		this.tableName = tableName;
+		return this;
+	}
+	
+	@Override
+	public GenericUpdateRecordBuilder useExternalConnection (Connection conn) {
+		this.conn = conn;
 		return this;
 	}
 	
@@ -43,8 +50,6 @@ public class GenericUpdateRecordBuilder implements UpdateBuilderIfc<Map<String, 
 		this.fields = fields;
 		return this;
 	}
-	
-	
 	
 	@Override
 	public GenericJoinBuilder innerJoin(String tableName) {
@@ -146,7 +151,13 @@ public class GenericUpdateRecordBuilder implements UpdateBuilderIfc<Map<String, 
 			FieldUtil.handleNumberFieldUnitConversion(numberFields, Collections.singletonList(value));
 			
 			PreparedStatement pstmt = null;
-			try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection()) {
+			boolean isExternalConnection = true;
+			try {
+				if (conn == null) {
+					conn = FacilioConnectionPool.INSTANCE.getConnection();
+					isExternalConnection = false;
+				}
+				
 				fieldMap = convertFieldsToMap(fields);
 				String sql = constructUpdateStatement();
 				if(sql != null && !sql.isEmpty()) {
@@ -184,13 +195,11 @@ public class GenericUpdateRecordBuilder implements UpdateBuilderIfc<Map<String, 
 				throw e;
 			}
 			finally {
-				if(pstmt != null) {
-					try {
-						pstmt.close();
-					} catch (SQLException e) {
-						// TODO Auto-generated catch block
-						LOGGER.log(Level.ERROR, "Exception while closing resource ", e);
-					}
+				if (isExternalConnection) {
+					DBUtil.close(pstmt);
+				}
+				else {
+					DBUtil.closeAll(conn, pstmt);
 				}
 			}
 		}

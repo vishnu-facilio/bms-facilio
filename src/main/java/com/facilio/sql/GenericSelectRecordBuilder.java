@@ -42,6 +42,7 @@ public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, 
 	private int limit = -1;
 	private int offset = -1;
 	private boolean forUpdate = false;
+	private Connection conn = null;
 	
 	public GenericSelectRecordBuilder() {
 		
@@ -75,6 +76,12 @@ public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, 
 	@Override
 	public GenericSelectRecordBuilder table(String tableName) {
 		this.tableName = tableName;
+		return this;
+	}
+	
+	@Override
+	public GenericSelectRecordBuilder useExternalConnection (Connection conn) {
+		this.conn = conn;
 		return this;
 	}
 	
@@ -207,8 +214,13 @@ public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, 
 		
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
-		Connection conn = FacilioConnectionPool.INSTANCE.getConnection();
+		
+		boolean isExternalConnection = true;
 		try {
+			if (conn == null) {
+				conn = FacilioConnectionPool.INSTANCE.getConnection();
+				isExternalConnection = false;
+			}
 			
 			String sql = constructSelectStatement();
 //			System.out.println("########### sql : "+ sql);
@@ -285,7 +297,12 @@ public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, 
 			throw e;
 		}
 		finally {
-			DBUtil.closeAll(conn,pstmt, rs);
+			if (isExternalConnection) {
+				DBUtil.closeAll(pstmt, rs);
+			}
+			else {
+				DBUtil.closeAll(conn, pstmt, rs);
+			}
 		}
 		
 		if (fileIds != null && !records.isEmpty()) {

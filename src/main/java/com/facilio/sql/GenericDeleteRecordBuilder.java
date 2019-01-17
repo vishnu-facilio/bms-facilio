@@ -21,11 +21,18 @@ public class GenericDeleteRecordBuilder implements DeleteBuilderIfc<Map<String, 
 	private WhereBuilder where = new WhereBuilder();
 	private StringBuilder joinBuilder = new StringBuilder();
 	private StringJoiner tablesToBeDeleted = new StringJoiner(",");
+	private Connection conn = null;
 	
 	@Override
 	public GenericDeleteRecordBuilder table(String tableName) {
 		this.tableName = tableName;
 		tablesToBeDeleted.add(tableName);
+		return this;
+	}
+	
+	@Override
+	public GenericDeleteRecordBuilder useExternalConnection (Connection conn) {
+		this.conn = conn;
 		return this;
 	}
 	
@@ -105,7 +112,13 @@ public class GenericDeleteRecordBuilder implements DeleteBuilderIfc<Map<String, 
 		checkForNull();
 		PreparedStatement pstmt = null;
 		
-		try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection()) {
+		boolean isExternalConnection = true;
+		try {
+			if (conn == null) {
+				conn = FacilioConnectionPool.INSTANCE.getConnection();
+				isExternalConnection = false;
+			}
+			
 			String sql = constructDeleteStatement();
 			pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
 			
@@ -127,13 +140,11 @@ public class GenericDeleteRecordBuilder implements DeleteBuilderIfc<Map<String, 
 			throw e;
 		}
 		finally {
-			if(pstmt != null) {
-				try {
-					pstmt.close();
-				} catch (SQLException e) {
-					// TODO Auto-generated catch block
-					LOGGER.log(Level.ERROR, "Exception while closing resource ", e);
-				}
+			if (isExternalConnection) {
+				DBUtil.close(pstmt);
+			}
+			else {
+				DBUtil.closeAll(conn, pstmt);
 			}
 		}
 	}

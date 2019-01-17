@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.modules;
 
+import java.sql.Connection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -49,6 +50,14 @@ public class DeleteRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 	@Override
 	public DeleteRecordBuilder<E> table(String tableName) {
 		// TODO Auto-generated method stub
+		return this;
+	}
+	
+	@Override
+	public DeleteRecordBuilder<E> useExternalConnection (Connection conn) {
+		deleteBuilder.useExternalConnection(conn);
+		selectBuilder.useExternalConnection(conn);
+		updateBuilder.useExternalConnection(conn);
 		return this;
 	}
 	

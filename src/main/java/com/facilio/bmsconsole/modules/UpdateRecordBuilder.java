@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.modules;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -56,6 +57,13 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 	
 	@Override
 	public UpdateRecordBuilder<E> table(String tableName) {
+		return this;
+	}
+	
+	@Override
+	public UpdateRecordBuilder<E> useExternalConnection (Connection conn) {
+		builder.useExternalConnection(conn);
+		selectBuilder.useExternalConnection(conn);
 		return this;
 	}
 

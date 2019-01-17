@@ -1,7 +1,11 @@
 package com.facilio.sql;
 
+import java.sql.Connection;
+
 public interface DeleteBuilderIfc<E> extends WhereBuilderIfc<DeleteBuilderIfc<E>> {
 	public DeleteBuilderIfc<E> table(String tableName);
+	
+	public DeleteBuilderIfc<E> useExternalConnection (Connection conn);
 	
 	public int delete() throws Exception;
 	

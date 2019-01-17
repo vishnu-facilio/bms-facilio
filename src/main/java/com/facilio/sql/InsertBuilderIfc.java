@@ -1,5 +1,6 @@
 package com.facilio.sql;
 
+import java.sql.Connection;
 import java.util.List;
 
 import com.facilio.bmsconsole.modules.FacilioField;
@@ -7,6 +8,8 @@ import com.facilio.bmsconsole.modules.FacilioField;
 public interface InsertBuilderIfc<E> {
 	
 	public InsertBuilderIfc<E> table(String tableName);
+	
+	public InsertBuilderIfc<E> useExternalConnection (Connection conn);
 	
 	public InsertBuilderIfc<E> fields(List<FacilioField> fields);
 	

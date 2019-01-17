@@ -27,10 +27,17 @@ public class GenericInsertRecordBuilder implements InsertBuilderIfc<Map<String, 
 	private String tableName;
 	private List<Map<String, Object>> values = new ArrayList<>();
 	private String sql;
+	private Connection conn = null;
 	
 	@Override
 	public GenericInsertRecordBuilder table(String tableName) {
 		this.tableName = tableName;
+		return this;
+	}
+	
+	@Override
+	public GenericInsertRecordBuilder useExternalConnection (Connection conn) {
+		this.conn = conn;
 		return this;
 	}
 
@@ -96,7 +103,13 @@ public class GenericInsertRecordBuilder implements InsertBuilderIfc<Map<String, 
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
 		
-		try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection()) {
+		boolean isExternalConnection = true;
+		try {
+			if (conn == null) {
+				conn = FacilioConnectionPool.INSTANCE.getConnection();
+				isExternalConnection = false;
+			}
+			
 			sql = constructInsertStatement();
 			pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
 			
@@ -140,7 +153,12 @@ public class GenericInsertRecordBuilder implements InsertBuilderIfc<Map<String, 
 			throw e;
 		}
 		finally {
-			DBUtil.closeAll(pstmt, rs);
+			if (isExternalConnection) {
+				DBUtil.closeAll(pstmt, rs);
+			}
+			else {
+				DBUtil.closeAll(conn, pstmt, rs);
+			}
 		}
 	}
 	

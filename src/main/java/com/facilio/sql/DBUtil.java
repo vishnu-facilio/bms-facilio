@@ -16,13 +16,46 @@ import com.facilio.transaction.FacilioConnectionPool;
 public class DBUtil {
 	private static final Logger LOGGER = LogManager.getLogger(DBUtil.class.getName());
 
+	public static void close (Statement stmt) {
+		if(stmt != null) {
+			try {
+				stmt.close();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				LOGGER.log(Level.ERROR, "Exception while closing statement ", e);
+			}
+		}
+	}
+	
+	public static void close (Connection conn) {
+		if(conn != null) {
+			try {
+				conn.close();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				LOGGER.log(Level.ERROR, "Exception while closing connection ", e);
+			}
+		}
+	}
+	
+	public static void close (ResultSet rs) {
+		if(rs != null) {
+			try {
+				rs.close();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				LOGGER.log(Level.ERROR, "Exception while closing resultset ", e);
+			}
+		}
+	}
+	
 	public static void closeAll(Connection conn, Statement stmt, ResultSet rs) {
 		if(rs != null) {
 			try {
 				rs.close();
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
-				LOGGER.log(Level.ERROR, "Exception while closing resource ", e);
+				LOGGER.log(Level.ERROR, "Exception while closing resultset ", e);
 			}
 		}
 		closeAll(conn, stmt);
@@ -34,7 +67,7 @@ public class DBUtil {
 				stmt.close();
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
-				LOGGER.log(Level.ERROR, "Exception while closing resource ", e);
+				LOGGER.log(Level.ERROR, "Exception while closing statement ", e);
 			}
 		}
 		if(conn != null) {
@@ -42,7 +75,7 @@ public class DBUtil {
 				conn.close();
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
-				LOGGER.log(Level.ERROR, "Exception while closing resource ", e);
+				LOGGER.log(Level.ERROR, "Exception while closing connection ", e);
 			}
 		}
 	}
@@ -53,7 +86,7 @@ public class DBUtil {
 				rs.close();
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
-				LOGGER.log(Level.ERROR, "Exception while closing resource ", e);
+				LOGGER.log(Level.ERROR, "Exception while closing resultset ", e);
 			}
 		}
 		
@@ -62,7 +95,7 @@ public class DBUtil {
 				stmt.close();
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
-				LOGGER.log(Level.ERROR, "Exception while closing resource ", e);
+				LOGGER.log(Level.ERROR, "Exception while closing statement ", e);
 			}
 		}
 	}

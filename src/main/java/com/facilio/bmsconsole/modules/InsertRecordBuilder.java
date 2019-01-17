@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.modules;
 
 import java.lang.reflect.InvocationTargetException;
+import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -25,6 +26,7 @@ public class InsertRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 	private boolean withChangeSet = false;
 	private Map<Long, List<UpdateChangeSet>> changeSet;
 	private boolean isWithLocalIdModule;
+	private Connection conn = null;
 
 	public InsertRecordBuilder () {
 		// TODO Auto-generated constructor stub
@@ -42,6 +44,12 @@ public class InsertRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 	
 	@Override
 	public InsertRecordBuilder<E> table(String tableName) {
+		return this;
+	}
+	
+	@Override
+	public InsertRecordBuilder<E> useExternalConnection (Connection conn) {
+		this.conn = conn;
 		return this;
 	}
 	
@@ -156,6 +164,10 @@ public class InsertRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 				for(Map<String, Object> beanProp : beanProps) {
 					beanProp.put("moduleId", currentModule.getModuleId());
 					insertBuilder.addRecord(beanProp);
+				}
+				
+				if (conn != null) {
+					insertBuilder.useExternalConnection(conn);
 				}
 				
 				insertBuilder.save();
