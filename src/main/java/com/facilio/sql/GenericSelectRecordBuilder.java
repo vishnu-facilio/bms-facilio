@@ -41,6 +41,7 @@ public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, 
 	private String orderBy;
 	private int limit = -1;
 	private int offset = -1;
+	private boolean forUpdate = false;
 	
 	public GenericSelectRecordBuilder() {
 		
@@ -180,7 +181,11 @@ public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, 
 		return this;
 	}
 	
-	
+	@Override
+	public GenericSelectRecordBuilder forUpdate() {
+		this.forUpdate = true;
+		return this;
+	}
 	
 	private void checkForNull(boolean checkBean) {
 		if(tableName == null || tableName.isEmpty()) {
@@ -341,6 +346,10 @@ public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, 
 				sql.append(" OFFSET ")
 					.append(offset);
 			}
+		}
+		
+		if (forUpdate) {
+			sql.append(" FOR UPDATE ");
 		}
 		
 		return sql.toString();

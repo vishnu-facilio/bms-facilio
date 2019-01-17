@@ -14,6 +14,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.SharingContext;
 import com.facilio.bmsconsole.context.SingleSharingContext;
+import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.PickListOperators;
 import com.facilio.bmsconsole.forms.FacilioForm;
@@ -101,12 +102,12 @@ public class ApprovalRuleContext extends WorkflowRuleContext {
 		approvers.add(approver);
 	}
 	
-	public boolean hasApprovalPermission() throws Exception {
+	public boolean hasApprovalPermission(Object object) throws Exception {
 		if (approvers == null) {
 			return true;
 		}
 		else {
-			return approvers.isAllowed();
+			return approvers.isAllowed(object);
 		}
 	}
 	
@@ -267,12 +268,12 @@ public class ApprovalRuleContext extends WorkflowRuleContext {
 		}
 	}
 	
-	public boolean verified(long recordId, ApprovalState action) throws Exception {
+	public boolean verified(WorkOrderContext wo, ApprovalState action) throws Exception {
 		boolean result = true;
-		List<SingleSharingContext> matchingApprovers = approvers == null ? null : approvers.getMatching();
+		List<SingleSharingContext> matchingApprovers = approvers == null ? null : approvers.getMatching(wo);
 		if (action == ApprovalState.APPROVED && isAllApprovalRequired() && approvalOrder == ApprovalOrder.PARALLEL) {
 			if (approvers != null && approvers.size() > 1) {
-				List<Long> previousApprovers = fetchPreviousApprovers(recordId);
+				List<Long> previousApprovers = fetchPreviousApprovers(wo.getId());
 				Map<Long, SingleSharingContext> approverMap = approvers.stream().collect(Collectors.toMap(SingleSharingContext::getId, Function.identity()));
 				if (previousApprovers != null && !previousApprovers.isEmpty()) {
 					for (Long id : previousApprovers) {
@@ -285,7 +286,7 @@ public class ApprovalRuleContext extends WorkflowRuleContext {
 				result = approverMap.isEmpty();
 			}
 		}
-		addApprovalStep(recordId, action, matchingApprovers);
+		addApprovalStep(wo.getId(), action, matchingApprovers);
 		return result;
 	}
 	

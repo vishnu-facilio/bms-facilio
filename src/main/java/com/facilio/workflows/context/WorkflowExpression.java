@@ -2,11 +2,13 @@ package com.facilio.workflows.context;
 
 import java.io.Serializable;
 
-public interface WorkflowExpression extends Serializable {
+public interface WorkflowExpression extends Serializable,Cloneable {
 	
 	public Object execute() throws Exception;
 	
 	public int getWorkflowExpressionType();
+	
+	public Object clone() throws CloneNotSupportedException;
 	
 	public enum WorkflowExpressionType {
 		EXPRESSION,

@@ -197,6 +197,12 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 	}
 	
 	@Override
+	public SelectRecordsBuilder<E> forUpdate() {
+		this.builder.forUpdate();
+		return this;
+	}
+	
+	@Override
 	public List<E> get() throws Exception {
 		checkForNull(true);
 		long getStartTime = System.currentTimeMillis();

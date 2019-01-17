@@ -110,6 +110,7 @@ public class WidgetStaticContext extends DashboardWidgetContext {
 		
 		resultJson.put("dataOptions", dataOptionsJson);
 		
+		resultJson.put("widgetVsWorkflowContexts", getWidgetVsWorkflowContexts());
 		
 		JSONObject widgetJson = new JSONObject();
 		widgetJson.put("widget", resultJson);

@@ -157,6 +157,19 @@ public class TimeSeries extends FacilioAction {
 		return SUCCESS;
 	}
 	
+	public String subscribeInstances () throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.INSTANCE_INFO, instances);
+		context.put(FacilioConstants.ContextNames.SUBSCRIBE , subscribed);
+		context.put(FacilioConstants.ContextNames.CONTROLLER_ID , controllerId);
+		
+		Chain markChain = TransactionChainFactory.getSubscribeInstanceChain();
+		markChain.execute(context);
+
+		setResult("result", "success");
+		return SUCCESS;
+	}
+	
 	public String discoverInstances () throws Exception {
 		
 		PublishData data = IoTMessageAPI.publishIotMessage(controllerId, IotCommandType.DISCOVER);
@@ -179,6 +192,14 @@ public class TimeSeries extends FacilioAction {
 	}
 	public void setConfigured(Boolean configured) {
 		this.configured = configured;
+	}
+	
+	private Boolean subscribed;
+	public Boolean getSubscribed() {
+		return subscribed;
+	}
+	public void setSubscribed(Boolean subscribed) {
+		this.subscribed = subscribed;
 	}
 	
 	private Boolean fetchMapped;
@@ -236,6 +257,14 @@ public class TimeSeries extends FacilioAction {
 	}
 	public void setInstanceAssetMap(Map<String,Object> instanceAssetMap) {
 		this.instanceAssetMap = instanceAssetMap;		
+	}
+	
+	private List<Map<String,Object>> instances = null;
+	public List<Map<String,Object>> getInstances() {
+		return instances;
+	}
+	public void setInstances(List<Map<String,Object>> instances) {
+		this.instances = instances;		
 	}
 	
 	private Map<String, List<String>> allDevices = null;

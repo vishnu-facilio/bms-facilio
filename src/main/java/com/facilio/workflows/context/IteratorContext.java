@@ -16,6 +16,10 @@ public class IteratorContext implements WorkflowExpression {
 	/**
 	 * 
 	 */
+	
+	public Object clone() throws CloneNotSupportedException{  
+		return super.clone();  
+	}  
 	private static final long serialVersionUID = 1L;
 	private static final Logger LOGGER = Logger.getLogger(CalculateDerivationCommand.class.getName());
 	String loopVariableIndexName;
@@ -62,6 +66,7 @@ public class IteratorContext implements WorkflowExpression {
 		expressions.add(expression);
 	}
 	WorkflowContext workflowContext;
+	
 	public Object execute() throws Exception {
 		
 		Map<String, Object> variableToExpresionMap = workflowContext.getVariableResultMap();
@@ -80,8 +85,11 @@ public class IteratorContext implements WorkflowExpression {
 				variableToExpresionMap.put(loopVariableValueName, iterateList.get(i));
 				
 //				LOGGER.log(Level.SEVERE, "variableToExpresionMap -- "+variableToExpresionMap);
-				
-				WorkflowContext.executeExpression(expressions, workflowContext);
+				List<WorkflowExpression> newExpressions = new ArrayList<WorkflowExpression>(expressions.size());
+			    for (WorkflowExpression expression : expressions) {
+			    	newExpressions.add((WorkflowExpression)expression.clone());
+			    }
+				WorkflowContext.executeExpression(newExpressions, workflowContext);
 			}
 			variableToExpresionMap.remove(loopVariableIndexName);
 			variableToExpresionMap.remove(loopVariableValueName);

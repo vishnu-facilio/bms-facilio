@@ -226,6 +226,7 @@ public class WorkflowUtil {
 	static final String CONSTANT_STRING =  "constant";
 	static final String FUNCTION_STRING =  "function";
 	static final String EXPR_STRING =  "expr";
+	static final String PRINT_STRING =  "print";
 	static final String MODULE_STRING =  "module";
 	static final String FIELD_STRING =  "field";
 	static final String AGGREGATE_STRING =  "aggregate";
@@ -854,6 +855,11 @@ public class WorkflowUtil {
 			 exprElement.setTextContent(expressionContext.getExpr());
 			 expressionElement.appendChild(exprElement);
 		 }
+		 else if(expressionContext.getPrintStatement() != null) {
+			 Element printElement = doc.createElement(PRINT_STRING);
+			 printElement.setTextContent(expressionContext.getPrintStatement());
+			 expressionElement.appendChild(printElement);
+		 }
 		 else {
 			 Element moduleElement = doc.createElement(MODULE_STRING);
 			 moduleElement.setAttribute(NAME_STRING, expressionContext.getModuleName());
@@ -974,6 +980,7 @@ public class WorkflowUtil {
             NodeList valueNodes = expression.getElementsByTagName(CONSTANT_STRING);
             NodeList functionNodes = expression.getElementsByTagName(FUNCTION_STRING);
             NodeList exprNodes = expression.getElementsByTagName(EXPR_STRING);
+            NodeList printNodes = expression.getElementsByTagName(PRINT_STRING);
            
             if(valueNodes.getLength() > 0) {
             	Node valueNode =  valueNodes.item(0);
@@ -989,6 +996,14 @@ public class WorkflowUtil {
             		Element value = (Element) valueNode;
             		String valueString = value.getTextContent();
             		expressionContext.setExpr(valueString);
+            	}
+            }
+            else if(printNodes.getLength() > 0 ) {
+            	Node valueNode =  printNodes.item(0);
+            	if (valueNode.getNodeType() == Node.ELEMENT_NODE) {
+            		Element value = (Element) valueNode;
+            		String valueString = value.getTextContent();
+            		expressionContext.setPrintStatement(valueString);
             	}
             }
             else if (functionNodes.getLength() > 0) {

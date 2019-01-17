@@ -261,6 +261,8 @@ public class FacilioConstants {
 		public static final String DASHBOARD_FOLDERS = "dashboardFolders";
 		public static final String DASHBOARD_PUBLISH_STATUS = "dashboardPublishStatus";
 		public static final String WIDGET = "widget";
+		public static final String WIDGET_STATIC_CONTEXT = "widgetStaticContext";
+		public static final String REPORT_SPACE_FILTER_CONTEXT = "reportSpaceFilterContext";
 		public static final String WIDGET_TYPE = "widgetType";
 		
 		public static final String REPORT = "report";
@@ -568,7 +570,9 @@ public class FacilioConstants {
 		public static final String PAY_LOAD = "payLoad";
 		public static final String MODELED_DATA="modeledData";
 		public static final String INSTANCE_INFO="instanceInfo";
+		public static final String READING_KEY="readingKey";
 		public static final String CONFIGURE="configure";
+		public static final String SUBSCRIBE="subscribe";
 		public static final String UPDATE_LAST_READINGS = "updateLastReadings";
 		public static final String SKIP_LAST_READING_CHECK = "skipLastReadingCheck";
 		public static final String PREVIOUS_READING_DATA_META = "previousReadingDataMeta";
@@ -641,6 +645,8 @@ public class FacilioConstants {
 		public static final String ORGUNITS_LIST = "orgUnitsList";
 		public static final String ALL_METRICS = "allMetrics";
 		public static final String METRICS_WITH_UNITS = "MetricsWithUnits";
+		
+		public static final String PUBSUB_TOPIC = "pubsubTopic";
 		
 		private static Map<String, Class> classMap = Collections.unmodifiableMap(initClassMap());
 		private static Map<String, Class> initClassMap() {

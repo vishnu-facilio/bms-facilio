@@ -188,20 +188,24 @@ public class PreventiveMaintenanceSummaryCommand implements Command {
 		List<TaskSectionTemplate> sectionTemplate = template.getSectionTemplates();
 		sectionTemplate = fillSectionTemplate(template,sectionTemplate);
 		Map<Long, List<ReadingRuleContext>> fieldVsRules = new HashMap<>();
-		for (int i = 0; i < listOfTasks.size(); i++) {
-			TaskContext task = listOfTasks.get(i);
-			long readingFieldId = task.getReadingFieldId();
-			List<ReadingRuleContext> readingRules = task.getReadingRules();
-			if (readingFieldId > 0 && !fieldVsRules.containsKey(readingFieldId)) {
-				fieldVsRules.put(readingFieldId, readingRules);
+		if (listOfTasks != null) {
+			for (int i = 0; i < listOfTasks.size(); i++) {
+				TaskContext task = listOfTasks.get(i);
+				long readingFieldId = task.getReadingFieldId();
+				List<ReadingRuleContext> readingRules = task.getReadingRules();
+				if (readingFieldId > 0 && !fieldVsRules.containsKey(readingFieldId)) {
+					fieldVsRules.put(readingFieldId, readingRules);
+				}
 			}
 		}
-		for (int i = 0; i < sectionTemplate.size(); i++) {
-			TaskSectionTemplate section = sectionTemplate.get(i);
-			if (section.getTaskTemplates() != null) {
-				for (int j = 0; j < section.getTaskTemplates().size(); j++) {
-					TaskTemplate task = section.getTaskTemplates().get(j);
-					task.setReadingRules(fieldVsRules.get(task.getReadingFieldId()));
+		if (sectionTemplate != null) {
+			for (int i = 0; i < sectionTemplate.size(); i++) {
+				TaskSectionTemplate section = sectionTemplate.get(i);
+				if (section.getTaskTemplates() != null) {
+					for (int j = 0; j < section.getTaskTemplates().size(); j++) {
+						TaskTemplate task = section.getTaskTemplates().get(j);
+						task.setReadingRules(fieldVsRules.get(task.getReadingFieldId()));
+					}
 				}
 			}
 		}

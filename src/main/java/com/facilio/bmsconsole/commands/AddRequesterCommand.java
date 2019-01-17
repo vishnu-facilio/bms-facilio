@@ -25,12 +25,15 @@ public class AddRequesterCommand implements Command {
 		User requester = (User) context.get(FacilioConstants.ContextNames.REQUESTER);
 		if (requester != null && requester.getEmail() != null && !"".equals(requester.getEmail())) {
 			long orgid = AccountUtil.getCurrentOrg().getOrgId();
+			Account acct;
 			Criteria criteria = new Criteria();
 			Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(AccountConstants.getUserFields());
 			criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("email"), requester.getEmail(), StringOperators.IS));
 			List<User> user = AccountUtil.getOrgBean().getOrgUsers(orgid, criteria);
 			if (user != null && !user.isEmpty()) {
 				requester.setId(user.get(0).getOuid());
+				acct = new Account(AccountUtil.getCurrentOrg(), AccountUtil.getUserBean().getUser(requester.getId()));
+				AccountUtil.setCurrentAccount(acct);
 				return false;
 			}
 			
@@ -38,7 +41,7 @@ public class AddRequesterCommand implements Command {
 			
 			Boolean isPublicRequest = (Boolean) context.get(FacilioConstants.ContextNames.IS_PUBLIC_REQUEST);
 			if (isPublicRequest != null && isPublicRequest == true) {
-				Account acct = new Account(AccountUtil.getCurrentOrg(), AccountUtil.getUserBean().getUser(requester.getId()));
+				acct = new Account(AccountUtil.getCurrentOrg(), AccountUtil.getUserBean().getUser(requester.getId()));
 				AccountUtil.setCurrentAccount(acct);
 			}
 		}

@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -15,6 +16,7 @@ import org.json.simple.parser.JSONParser;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
+import com.facilio.bmsconsole.commands.CalculateAggregationCommand.EnumVal;
 import com.facilio.bmsconsole.context.FormulaContext.AggregateOperator;
 import com.facilio.bmsconsole.context.FormulaContext.CommonAggregateOperator;
 import com.facilio.bmsconsole.context.FormulaContext.DateAggregateOperator;
@@ -29,6 +31,7 @@ import com.facilio.report.context.ReadingAnalysisContext.ReportMode;
 import com.facilio.report.context.ReportBaseLineContext;
 import com.facilio.report.context.ReportContext;
 import com.facilio.report.context.ReportDataPointContext;
+import com.facilio.report.context.ReportDataPointContext.DataPointType;
 
 public class GetExportReportFileCommand implements Command {
 	
@@ -60,7 +63,10 @@ public class GetExportReportFileCommand implements Command {
 			}
 			
 		    Map<String, Object> tableState = null;
-		    String tabularState = report.getTabularState() != null ? report.getTabularState() : (String) context.get(FacilioConstants.ContextNames.TABULAR_STATE);
+		    String tabularState = (String) context.get(FacilioConstants.ContextNames.TABULAR_STATE);
+		    if (tabularState == null) {
+		    		tabularState = report.getTabularState();
+		    }
 			if (tabularState != null) {
 				JSONParser parser = new JSONParser();
 	    			tableState = (Map<String, Object>) parser.parse(report.getTabularState());
@@ -100,7 +106,7 @@ public class GetExportReportFileCommand implements Command {
 			String alias = dp.getAliases().get(FacilioConstants.Reports.ACTUAL_DATA);
 			currentHeaderKeys.add(alias);
 			dataMap.put(alias, dp);
-			if (report.getBaseLines() != null) {
+			if (report.getBaseLines() != null && dp.getTypeEnum() != DataPointType.DERIVATION) {
 				report.getBaseLines().stream().forEach(bl -> {
 					String blAlias = dp.getAliases().get(bl.getBaseLine().getName());
 					currentHeaderKeys.add(blAlias);
@@ -192,10 +198,10 @@ public class GetExportReportFileCommand implements Command {
 				else {
 					String alias = (String) ((Map<String, Object>) pointObj).get("dpAlias");
 					dataPoint = (ReportDataPointContext) dataMap.get(alias);
-					baseLine = (ReportBaseLineContext) dataMap.get("baseline");
+					baseLine = (ReportBaseLineContext) ((Map<String, Object>) pointObj).get("baseline");
 				}
 				
-				StringBuilder builder = new StringBuilder(dataPoint.getyAxis().getLabel());
+				StringBuilder builder = new StringBuilder(dataPoint.getName());
 				if (baseLine != null) {
 					builder.append(" - ").append(baseLine.getBaseLine().getName());
 				}
@@ -203,11 +209,18 @@ public class GetExportReportFileCommand implements Command {
 				builder.append((unit != null && !unit.isEmpty() ? " (" + unit + ")" : ""));
 				if ( (dataPoint.getyAxis().getDataTypeEnum() == FieldType.BOOLEAN || dataPoint.getyAxis().getDataTypeEnum() == FieldType.ENUM)){
 					if (report.getxAggrEnum() != null && report.getxAggrEnum() != CommonAggregateOperator.ACTUAL) {
-						if (!col.containsKey("enumMode") || col.get("enumMode") == EnumMode.GRAPH ) {
-							col.put("enumMode", EnumMode.DURATION);
+						if (col.containsKey("enumMode") && (int)col.get("enumMode") > 0 ) {
+							EnumMode enumMode = EnumMode.valueOf((int)col.get("enumMode"));
+							col.put("enumModeEnum", enumMode);
+							if (enumMode == EnumMode.GRAPH) {
+								col.put("enumModeEnum", EnumMode.DURATION);
+							}
+							else if (enumMode == EnumMode.PERCENT){
+								builder.append(" (%)");
+							}
 						}
-						else if (col.get("enumMode") == EnumMode.PERCENT){
-							builder.append(" (%)");
+						else {
+							col.put("enumModeEnum", EnumMode.DURATION);
 						}
 					}
 				}
@@ -263,30 +276,30 @@ public class GetExportReportFileCommand implements Command {
 						switch(dataPoint.getyAxis().getDataTypeEnum()) {
 							case BOOLEAN:
 							case ENUM:
-								Map<String, Object> enumVal = (Map<String, Object>) value;
+								EnumVal enumVal = (EnumVal) value;
 								value = null;
-								if (column.get("enumMode") == null) {	// High-res
-									List<Map<String, Object>> timeline = (List<Map<String, Object>>) enumVal.get("timeline");
+								if (column.get("enumModeEnum") == null) {	// High-res
+									List<SimpleEntry<Long, Integer>> timeline = enumVal.getTimeline();
 									if (timeline != null && !timeline.isEmpty()) {
-										value = dataPoint.getyAxis().getEnumMap().get(timeline.get(0).get("value"));
+										value = dataPoint.getyAxis().getEnumMap().get(timeline.get(0).getValue());
 									}
 								}
-								else if (column.get("enumMode") == EnumMode.PERCENT) {
-									Map<Integer, Long> duration = (Map<Integer, Long>) enumVal.get("duration");
+								else if (column.get("enumModeEnum") == EnumMode.PERCENT) {
+									Map<Integer, Long> duration = enumVal.getDuration();
 									if (duration != null) {
 										long total = duration.values().stream().reduce(0L, (prev, key) -> prev + key);
 										StringBuilder percent = new StringBuilder(); 
 										for (Entry<Integer, Long> entry : duration.entrySet()) {
 											percent.append(dataPoint.getyAxis().getEnumMap().get(entry.getKey()))
 												.append(": ")
-												.append(entry.getValue() / total * 100)
+												.append(ReportsUtil.roundOff(entry.getValue() / total * 100, 2))
 												.append("\n");
 										}
 										value = percent.toString();
 									}
 								}
 								else {	// DURATION
-									Map<Integer, Long> duration = (Map<Integer, Long>) enumVal.get("duration");
+									Map<Integer, Long> duration = enumVal.getDuration();
 									if (duration != null) {
 										StringBuilder durationVal = new StringBuilder();
 										for (Entry<Integer, Long> entry : duration.entrySet()) {

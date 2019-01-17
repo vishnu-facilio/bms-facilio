@@ -101,13 +101,18 @@
 	</package>
 	
 	
-		<package name="viewApiV2" namespace="/api/v2/views" extends="v2Api">
-			<action name="viewList" class="com.facilio.bmsconsole.actions.ViewAction" method="v2viewlist">
-			</action>
-			<action name="edit" class="com.facilio.bmsconsole.actions.ViewAction" method="v2editView">
-			</action>
-		</package>
+	<package name="viewApiV2" namespace="/api/v2/views" extends="v2Api">
+		<action name="viewList" class="com.facilio.bmsconsole.actions.ViewAction" method="v2viewlist">
+		</action>
+		<action name="edit" class="com.facilio.bmsconsole.actions.ViewAction" method="v2editView">
+		</action>
+	</package>
 	
+	<package name="viewListApiV2" namespace="/api/v2/views/module" extends="v2Api">
+		<action name="*" class="com.facilio.bmsconsole.actions.ViewAction" method="v2viewlist">
+			<param name="moduleName">{1}</param>
+		</action>
+	</package>
 
 	<package name="workOrderApiV2" namespace="/api/v2/workorders" extends="v2Api">
 	
@@ -163,6 +168,17 @@
 			<param name="moduleName">workorder</param>
 			<param name="permission">VIEW_APPROVAL</param>
 			<param name="viewName">{1}</param>
+			<param name="approval">true</param>
+			<result name="success" type="json">
+				<param name="ignoreHierarchy">false</param>
+				<param name="includeProperties">responseCode, ^result.*</param>
+				<param name="excludeProperties">result.subViewCount.*\.criteria</param>
+			</result>
+		</action>
+		<action name="count" class="com.facilio.bmsconsole.actions.WorkOrderAction"
+			method="v2workOrderCount">
+			<param name="moduleName">workorder</param>
+			<param name="permission">VIEW_APPROVAL</param>
 			<param name="approval">true</param>
 			<result name="success" type="json">
 				<param name="ignoreHierarchy">false</param>
@@ -229,6 +245,17 @@
 		<action name="delete" class="com.facilio.bmsconsole.actions.AlarmAction" method="v2deleteAlarm">
 			<param name="moduleName">alarm</param>
 			<param name="permission">DELETE,DELETE_TEAM,DELETE_OWN</param>
+		</action>
+		<action name="count" class="com.facilio.bmsconsole.actions.AlarmAction" method="v2alarmCount">
+			<param name="moduleName">alarm</param>
+			<param name="permission">READ,READ_TEAM,READ_OWN</param>
+		</action>
+	</package>
+	
+	<package name= "alarmListCount" namespace="/api/v2/alarms" extends="v2Api" >
+	<action name="count" class="com.facilio.bmsconsole.actions.AlarmAction" method="v2viewAlarm">
+			<param name="moduleName">alarm</param>
+			<param name="permission">READ,READ_TEAM,READ_OWN</param>
 		</action>
 	</package>
 	
@@ -566,6 +593,8 @@
 	
 	<package name="instancesApiv2" namespace="/api/v2/instances" extends="v2Api">
 		<action name="configure" class="com.facilio.bmsconsole.actions.TimeSeries" method="configureInstances">
+		</action>
+		<action name="subscribe" class="com.facilio.bmsconsole.actions.TimeSeries" method="subscribeInstances">
 		</action>
 		<action name="map" class="com.facilio.bmsconsole.actions.TimeSeries" method="mapInstance">
 		</action>

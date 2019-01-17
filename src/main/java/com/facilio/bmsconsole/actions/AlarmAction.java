@@ -185,8 +185,10 @@ public class AlarmAction extends FacilioAction {
  		return context;
 	}
 	
-	public String alarmsCount() throws Exception {
-		return alarmList();
+	public String v2alarmCount () throws Exception {
+		alarmList();
+		setResult(FacilioConstants.ContextNames.COUNT, getCount());
+		return SUCCESS;
 	}
 
 	public String alarmList() throws Exception {
@@ -543,7 +545,8 @@ public class AlarmAction extends FacilioAction {
 	/******************      V2 Api    ******************/
 	public String v2alarmList() throws Exception{
 		alarmList();
-		setResult(FacilioConstants.ContextNames.ALARM, alarms);
+		setResult(FacilioConstants.ContextNames.ALARM_LIST, getAlarm());
+		setResult(FacilioConstants.ContextNames.COUNT, getCount());
 		return SUCCESS;
 		
 	}

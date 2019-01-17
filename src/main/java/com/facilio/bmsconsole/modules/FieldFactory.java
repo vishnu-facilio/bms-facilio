@@ -78,6 +78,7 @@ public class FieldFactory {
 			workOrderFieldsInclude.add("noOfClosedTasks");
 			workOrderFieldsInclude.add("priority");
 			workOrderFieldsInclude.add("requester");
+			workOrderFieldsInclude.add("requestedBy");
 			workOrderFieldsInclude.add("resource");
 			workOrderFieldsInclude.add("scheduledStart");
 			workOrderFieldsInclude.add("sourceType");
@@ -1063,6 +1064,7 @@ public class FieldFactory {
 		fields.add(getField("userId", "ORG_USERID", module, FieldType.LOOKUP));
 		fields.add(getField("roleId", "ROLE_ID", module, FieldType.LOOKUP));
 		fields.add(getField("groupId", "GROUP_ID", module, FieldType.LOOKUP));
+		fields.add(getField("fieldId",  "FIELD_ID", module, FieldType.LOOKUP));
 		fields.add(getField("type", "SHARING_TYPE", module, FieldType.NUMBER));
 		
 		return fields;
@@ -2830,63 +2832,6 @@ public class FieldFactory {
 		return fields;
 	}
 
-	public static List<FacilioField> getDashbaordVsWidgetFields() {
-		List<FacilioField> fields = new ArrayList<>();
-		FacilioModule module = ModuleFactory.getDashboardVsWidgetModule();
-
-		FacilioField dashboardWidgetDashboardId = new FacilioField();
-		dashboardWidgetDashboardId.setName("dashboardId");
-		dashboardWidgetDashboardId.setDataType(FieldType.NUMBER);
-		dashboardWidgetDashboardId.setColumnName("DASHBOARD_ID");
-		dashboardWidgetDashboardId.setModule(module);
-		fields.add(dashboardWidgetDashboardId);
-
-		FacilioField widgetId = new FacilioField();
-		widgetId.setName("widgetId");
-		widgetId.setDataType(FieldType.NUMBER);
-		widgetId.setColumnName("WIDGET_ID");
-		widgetId.setModule(module);
-		fields.add(widgetId);
-
-//		FacilioField dashboardWidgetLayoutWidth = new FacilioField();
-//		dashboardWidgetLayoutWidth.setName("layoutWidth");
-//		dashboardWidgetLayoutWidth.setDataType(FieldType.NUMBER);
-//		dashboardWidgetLayoutWidth.setColumnName("LAYOUT_WIDTH");
-//		dashboardWidgetLayoutWidth.setModule(module);
-//		fields.add(dashboardWidgetLayoutWidth);
-//
-//		FacilioField dashboardWidgetLayoutHeight = new FacilioField();
-//		dashboardWidgetLayoutHeight.setName("layoutHeight");
-//		dashboardWidgetLayoutHeight.setDataType(FieldType.NUMBER);
-//		dashboardWidgetLayoutHeight.setColumnName("LAYOUT_HEIGHT");
-//		dashboardWidgetLayoutHeight.setModule(module);
-//		fields.add(dashboardWidgetLayoutHeight);
-//
-//		FacilioField xPosition = new FacilioField();
-//		xPosition.setName("xPosition");
-//		xPosition.setDataType(FieldType.NUMBER);
-//		xPosition.setColumnName("X_POSITION");
-//		xPosition.setModule(module);
-//		fields.add(xPosition);
-//
-//		FacilioField yPosition = new FacilioField();
-//		yPosition.setName("yPosition");
-//		yPosition.setDataType(FieldType.NUMBER);
-//		yPosition.setColumnName("Y_POSITION");
-//		yPosition.setModule(module);
-//		fields.add(yPosition);
-//
-//		FacilioField dashboardWidgetLayoutPosition = new FacilioField();
-//		dashboardWidgetLayoutPosition.setName("layoutPosition");
-//		dashboardWidgetLayoutPosition.setDataType(FieldType.NUMBER);
-//		dashboardWidgetLayoutPosition.setColumnName("LAYOUT_POSITION");
-//		dashboardWidgetLayoutPosition.setModule(module);
-//		fields.add(dashboardWidgetLayoutPosition);
-		
-		fields.add(getField("metaJSONString", "META_JSON", module, FieldType.STRING));
-
-		return fields;
-	}
 
 	public static List<FacilioField> getWidgetFields() {
 		List<FacilioField> fields = new ArrayList<>();
@@ -2895,6 +2840,10 @@ public class FieldFactory {
 		fields.add(getIdField(module));
 		fields.add(getOrgIdField(module));
 		fields.add(getModuleIdField(module));
+		
+		fields.add(getField("metaJSONString", "META_JSON", module, FieldType.STRING));
+		
+		fields.add(getField("dashboardId", "DASHBOARD_ID", module, FieldType.NUMBER));
 
 		FacilioField dashboardWidgetName = new FacilioField();
 		dashboardWidgetName.setName("widgetName");
@@ -4312,6 +4261,8 @@ public class FieldFactory {
         fields.add(getField("instanceDescription", "INSTANCE_DESCRIPTION", module, FieldType.STRING));
         fields.add(getField("instanceType", "INSTANCE_TYPE", module, FieldType.NUMBER));
         fields.add(getField("inUse", "IN_USE", module, FieldType.BOOLEAN));
+        fields.add(getField("subscribed", "IS_SUBSCRIBED", module, FieldType.BOOLEAN));
+        fields.add(getField("thresholdJson", "THRESHOLD_JSON", module, FieldType.STRING));
         fields.add(getField("createdTime", "CREATED_TIME", module, FieldType.NUMBER));
 		return fields;
 	}

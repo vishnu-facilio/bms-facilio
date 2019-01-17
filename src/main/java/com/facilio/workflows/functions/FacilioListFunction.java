@@ -47,7 +47,7 @@ public enum FacilioListFunction implements FacilioWorkflowFunctionInterface {
 		@Override
 		public Object execute(Object... objects) throws Exception {
 			 
-			checkParam();
+			checkParam(objects);
 			
 			List<Object> list = (List<Object>) objects[0];
 			int pos = (int) objects[1];
@@ -67,7 +67,7 @@ public enum FacilioListFunction implements FacilioWorkflowFunctionInterface {
 		@Override
 		public Object execute(Object... objects) throws Exception {
 			
-			checkParam();
+			checkParam(objects);
 			List<Object> list = (List<Object>) objects[0];
 			Object element = objects[1];
 			
@@ -86,7 +86,7 @@ public enum FacilioListFunction implements FacilioWorkflowFunctionInterface {
 		@Override
 		public Object execute(Object... objects) throws Exception {
 			
-			checkParam();
+			checkParam(objects);
 			List<Object> list = (List<Object>) objects[0];
 			Object element = objects[1];
 			
@@ -105,7 +105,7 @@ public enum FacilioListFunction implements FacilioWorkflowFunctionInterface {
 		@Override
 		public Object execute(Object... objects) throws Exception {
 			
-			checkParam();
+			checkParam(objects);
 			List<Object> list = (List<Object>) objects[0];
 			List<String> list1 = new ArrayList<>();
 			for(Object key :list) {
@@ -127,7 +127,7 @@ public enum FacilioListFunction implements FacilioWorkflowFunctionInterface {
 		@Override
 		public Object execute(Object... objects) throws Exception {
 			
-			checkParam();
+			checkParam(objects);
 			
 			List<Object> list = (List<Object>) objects[0];
 			List<Object> list1 = (List<Object>) objects[1];
@@ -146,12 +146,28 @@ public enum FacilioListFunction implements FacilioWorkflowFunctionInterface {
 		@Override
 		public Object execute(Object... objects) throws Exception {
 			
-			checkParam();
+			checkParam(objects);
 			List<Object> list = (List<Object>) objects[0];
 			List<Object> list1 = (List<Object>) objects[1];
 			
 			list.removeAll(list1);
 			return list;
+		};
+		
+		public void checkParam(Object... objects) throws Exception {
+			if(objects.length <= 0) {
+				throw new FunctionParamException("Required Object is null");
+			}
+		}
+	},
+	SIZE_OF(9,"size") {
+		@Override
+		public Object execute(Object... objects) throws Exception {
+			
+			checkParam(objects);
+			List<Object> list = (List<Object>) objects[0];
+			
+			return list.size();
 		};
 		
 		public void checkParam(Object... objects) throws Exception {

@@ -906,6 +906,28 @@ public class UserBeanImpl implements UserBean {
 		}
 		return null;
 	}
+	
+	@Override
+	public User getUserInternal(long ouid) throws Exception {
+		
+		List<FacilioField> fields = new ArrayList<>();
+		fields.addAll(AccountConstants.getUserFields());
+		fields.addAll(AccountConstants.getOrgUserFields());
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(fields)
+				.table("Users")
+				.innerJoin("ORG_Users")
+				.on("Users.USERID = ORG_Users.USERID")
+				.andCustomWhere("ORG_USERID = ? AND DELETED_TIME = -1", ouid);
+		
+		List<Map<String, Object>> props = selectBuilder.get();
+		if (props != null && !props.isEmpty()) {
+			User user =  createUserFromProps(props.get(0), true, true);
+			return user;
+		}
+		return null;
+	}
 
 	private User getUserWithPassword(long ouid) throws Exception {
 

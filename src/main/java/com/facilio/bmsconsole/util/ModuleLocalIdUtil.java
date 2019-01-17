@@ -8,7 +8,6 @@ import java.util.Map;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
-import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.criteria.StringOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
@@ -35,7 +34,7 @@ public class ModuleLocalIdUtil {
 		return modulesWithLocalId;
 	}
 	
-	public static long getModuleLocalId(String moduleName) throws Exception {
+	private static long getModuleLocalId(String moduleName) throws Exception {
 		FacilioModule module = ModuleFactory.getModuleLocalIdModule();
 		
 		GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
@@ -43,6 +42,7 @@ public class ModuleLocalIdUtil {
 																.select(FieldFactory.getModuleLocalIdFields())
 																.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 																.andCondition(CriteriaAPI.getCondition("MODULE_NAME", "moduleName", moduleName, StringOperators.IS))
+																.forUpdate()
 																;
 		
 		List<Map<String, Object>> props = selectRecordBuilder.get();
@@ -57,25 +57,27 @@ public class ModuleLocalIdUtil {
 			throw new IllegalArgumentException("Invalid current id size for fetching local Id");
 		}
 		long localId = getModuleLocalId(moduleName);
-		if (localId != -1 && updateModuleLocalId(moduleName, localId, localId+currentSize) <= 0) {
-			return getAndUpdateModuleLocalId(moduleName, currentSize);
-		}
+		updateModuleLocalId(moduleName, localId+currentSize);
+//		if (localId != -1 && updateModuleLocalId(moduleName, localId, localId+currentSize) <= 0) {
+//			return getAndUpdateModuleLocalId(moduleName, currentSize);
+//		}
 		return localId;
 	}
 	
-	public static int updateModuleLocalId(String moduleName,long oldId,long lastLocalId) throws Exception {
+	//private static int updateModuleLocalId(String moduleName,long oldId,long lastLocalId) throws Exception {
+	private static int updateModuleLocalId(String moduleName, long lastLocalId) throws Exception {
 		FacilioModule module = ModuleFactory.getModuleLocalIdModule();
 		List<FacilioField> fields = FieldFactory.getModuleLocalIdFields();
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 		FacilioField moduleField = fieldMap.get("moduleName");
-		FacilioField localIdField = fieldMap.get("localId");
+//		FacilioField localIdField = fieldMap.get("localId");
 		
 		GenericUpdateRecordBuilder updateRecordBuilder = new GenericUpdateRecordBuilder()
 																.table(module.getTableName())
 																.fields(fields)
 																.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 																.andCondition(CriteriaAPI.getCondition(moduleField, moduleName, StringOperators.IS))
-																.andCondition(CriteriaAPI.getCondition(localIdField, String.valueOf(oldId), NumberOperators.EQUALS))
+//																.andCondition(CriteriaAPI.getCondition(localIdField, String.valueOf(oldId), NumberOperators.EQUALS))
 																;
 		
 		

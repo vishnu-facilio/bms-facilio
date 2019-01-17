@@ -20,6 +20,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.FormulaContext.AggregateOperator;
 import com.facilio.bmsconsole.context.FormulaContext.CommonAggregateOperator;
 import com.facilio.bmsconsole.context.FormulaContext.DateAggregateOperator;
+import com.facilio.bmsconsole.context.FormulaContext.NumberAggregateOperator;
 import com.facilio.bmsconsole.context.FormulaContext.SpaceAggregateOperator;
 import com.facilio.bmsconsole.criteria.BooleanOperators;
 import com.facilio.bmsconsole.criteria.Condition;
@@ -261,6 +262,20 @@ public class FetchReportDataCommand implements Command {
 		}
 		
 		if (groupBy.length() > 0) {
+			
+			for (ReportDataPointContext dataPoint : dataPointList) {
+				//handling min/max if group by is present
+				if (dataPoint.getyAxis().isFetchMinMax()) {
+					FacilioField minField = NumberAggregateOperator.MIN.getSelectField(dataPoint.getyAxis().getField());
+					minField.setName(dataPoint.getyAxis().getFieldName()+"_min");
+					fields.add(minField);
+					
+					FacilioField maxField = NumberAggregateOperator.MAX.getSelectField(dataPoint.getyAxis().getField());
+					maxField.setName(dataPoint.getyAxis().getFieldName()+"_max");
+					fields.add(maxField);
+				}
+			}
+			
 			selectBuilder.groupBy(groupBy.toString());
 		}
 	}

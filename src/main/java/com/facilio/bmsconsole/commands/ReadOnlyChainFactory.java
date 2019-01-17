@@ -24,6 +24,13 @@ public class ReadOnlyChainFactory {
 		return c;
 	}
 	
+	public static Chain fetchCardDataChain() {
+		Chain c = getDefaultChain();
+		c.addCommand(new FetchCardDataCommand());
+		CommonCommandUtil.addCleanUpCommand(c);
+		return c;
+	}
+	
 	public static Chain newFetchReportDataChain() {
 		Chain c = getDefaultChain();
 		c.addCommand(new FilterFieldCommand());
@@ -234,6 +241,13 @@ public class ReadOnlyChainFactory {
 	public static Chain getResourcesListForMultiplePM() {
 		Chain c = new ChainBase();
 		c.addCommand(new getResourceListForMultiplePM());
+		CommonCommandUtil.addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain getPubSubPublishMessageChain() {
+		Chain c = new ChainBase();
+		c.addCommand(new PubSubPublishMessageCommand());
 		CommonCommandUtil.addCleanUpCommand(c);
 		return c;
 	}

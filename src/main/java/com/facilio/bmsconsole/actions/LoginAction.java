@@ -397,8 +397,9 @@ public class LoginAction extends FacilioAction {
 
 		data.put("serviceList", ReportsUtil.getPurposeMapping());
 		data.put("buildingList", ReportsUtil.getBuildingMap());
-		data.put("ticketStatus", getTicketStatus());
+		data.put("ticketStatus", TicketAPI.getAllStatus());
 		data.put("energyMeters", DeviceAPI.getAllMainEnergyMeters());
+		
 		data.put(FacilioConstants.ContextNames.TICKET_TYPE,
 				CommonCommandUtil.getPickList(FacilioConstants.ContextNames.TICKET_TYPE));
 		data.put(FacilioConstants.ContextNames.SPACE_CATEGORY,

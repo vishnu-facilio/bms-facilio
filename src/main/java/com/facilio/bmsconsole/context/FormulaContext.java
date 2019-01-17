@@ -317,7 +317,10 @@ public class FormulaContext {
 		}
 		public FacilioField getSelectField(FacilioField field) throws Exception {
 			String selectFieldString =expr.replace("{$place_holder$}", field.getColumnName());
-			String timeZone = DateTimeUtil.getDateTime().getOffset().toString().equalsIgnoreCase("Z") ? "+00:00":DateTimeUtil.getDateTime().getOffset().toString(); 
+			String timeZone = AccountUtil.getCurrentOrg().getTimezone();
+			if(timeZone == null) {
+				timeZone = "UTC";
+			}
 			selectFieldString = selectFieldString.replace("{$place_holder1$}",timeZone);
 			
 			FacilioField selectField =  new FacilioField();

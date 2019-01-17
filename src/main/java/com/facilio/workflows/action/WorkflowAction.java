@@ -2,8 +2,11 @@ package com.facilio.workflows.action;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.LogManager;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 
 import com.facilio.bmsconsole.actions.FacilioAction;
 import com.facilio.workflows.context.WorkflowContext;
@@ -88,6 +91,66 @@ public class WorkflowAction extends FacilioAction {
 	
 	public String getWorkflowXmlFromObject() throws Exception {
 		setResult("workflowString", WorkflowUtil.getXmlStringFromWorkflow(workflow));
+		return SUCCESS;
+	}
+	
+	Long workflowId;
+	JSONObject params;
+	String paramString;
+	public String getParamString() {
+		return paramString;
+	}
+
+	public void setParamString(String paramString) {
+		this.paramString = paramString;
+	}
+
+	String workflowString;
+	
+	public Long getWorkflowId() {
+		return workflowId;
+	}
+
+	public void setWorkflowId(Long workflowId) {
+		this.workflowId = workflowId;
+	}
+
+	public JSONObject getParams() {
+		return params;
+	}
+
+	public void setParams(JSONObject params) {
+		this.params = params;
+	}
+
+	public String getWorkflowString() {
+		return workflowString;
+	}
+
+	public void setWorkflowString(String workflowString) {
+		this.workflowString = workflowString;
+	}
+	Map<String, Object> resultMap;
+
+	public Map<String, Object> getResultMap() {
+		return resultMap;
+	}
+
+	public void setResultMap(Map<String, Object> resultMap) {
+		this.resultMap = resultMap;
+	}
+
+	public String runWorkflow() throws Exception {
+		if(params == null && paramString != null) {
+    		JSONParser parser = new JSONParser();
+    		params = (JSONObject) parser.parse(paramString);
+    	}
+	    if(workflowId != null) {
+	    	resultMap = WorkflowUtil.getExpressionResultMap(workflowId, params);
+	    }
+	    else if(workflowString != null) {
+	    	resultMap = WorkflowUtil.getExpressionResultMap(workflowString, params);
+	    }
 		return SUCCESS;
 	}
 	

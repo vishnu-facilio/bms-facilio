@@ -100,7 +100,7 @@ public class AddPMTriggerCommand implements Command {
 				}
 				break;
 			case SCHEDULE:
-				trigger.setStartTime(System.currentTimeMillis());
+//				trigger.setStartTime(System.currentTimeMillis());
 			}
 			insertBuilder.addRecord(FieldUtil.getAsProperties(trigger));
 		}

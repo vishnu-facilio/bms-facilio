@@ -28,6 +28,9 @@ public class PublishConfigMsgToIoTCommand implements Command {
 			List<Map<String, Object>> instances =  TimeSeriesAPI.getUnmodeledInstances(ids);
 			IoTMessageAPI.publishIotMessage(instances, IotCommandType.CONFIGURE, null, data -> markInstancesAsNotInUse(ids));
 		}
+		else {
+			// TODO
+		}
 		
 		return false;
 	}

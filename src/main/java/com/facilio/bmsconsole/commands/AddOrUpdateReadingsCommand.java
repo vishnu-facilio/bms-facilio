@@ -32,6 +32,8 @@ public class AddOrUpdateReadingsCommand implements Command {
 			execureFormulae(context);
 		}
 		
+		publishReadingChangeMessage(context);
+		
 		return false;
 	}
 	
@@ -72,6 +74,16 @@ public class AddOrUpdateReadingsCommand implements Command {
 			Map<String, List<ReadingContext>> readingMap = (Map<String, List<ReadingContext>>) context.get(FacilioConstants.ContextNames.RECORD_MAP);
 			LOGGER.error("Error occurred during formula calculation of readings. \n"+readingMap, e);
 			CommonCommandUtil.emailException(this.getClass().getName(), "Error occurred during formula calculation of readings.", e, String.valueOf(readingMap));
+		}
+	}
+	
+	private void publishReadingChangeMessage (Context context) {
+		try {
+			Chain publishChain = ReadOnlyChainFactory.getPubSubPublishMessageChain();
+			publishChain.execute(context);
+		}
+		catch (Exception e) {
+			LOGGER.error("Error occurred during publish reading change message. \n", e);
 		}
 	}
 

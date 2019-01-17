@@ -1,12 +1,13 @@
 package com.facilio.workflows.functions;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.workflows.exceptions.FunctionParamException;
-import com.facilio.workflows.util.FunctionUtil;
 
 public enum FacilioAssetFunctions implements FacilioWorkflowFunctionInterface {
 
@@ -14,8 +15,13 @@ public enum FacilioAssetFunctions implements FacilioWorkflowFunctionInterface {
 		@Override
 		public Object execute(Object... objects) throws Exception {
 			
-			Long spaceID = Long.parseLong(objects[0].toString());
-			return AssetsAPI.getAssetIdsFromBaseSpaceIds(Collections.singletonList(spaceID));
+			if(objects[0] instanceof List) {
+				return AssetsAPI.getAssetIdsFromBaseSpaceIds(new ArrayList((List)objects[0]));
+			}
+			else {
+				Long spaceID = Long.parseLong(objects[0].toString());
+				return AssetsAPI.getAssetIdsFromBaseSpaceIds(Collections.singletonList(spaceID));
+			}
 		};
 		
 		public void checkParam(Object... objects) throws Exception {

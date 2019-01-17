@@ -3071,6 +3071,16 @@
 			</result>
 		</action>
 		
+		<action name="runWorkflow" class="com.facilio.workflows.action.WorkflowAction" method="runWorkflow">
+			<result name="success" type="json">
+				<param name="enumAsBean">true</param>
+				<param name="includeProperties">^resultMap.*</param>
+			</result>
+			<result name="error" type="json">
+				<param name="statusCode">400</param>
+			</result>
+		</action>
+		
 	</package>
 	
 	<package name="screen" namespace="/api/screen" extends="homeApi">

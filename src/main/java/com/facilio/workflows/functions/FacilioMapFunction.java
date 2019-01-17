@@ -139,6 +139,21 @@ public enum FacilioMapFunction implements FacilioWorkflowFunctionInterface {
 			}
 		}
 	},
+	SIZE_OF(8,"size") {
+		@Override
+		public Object execute(Object... objects) throws Exception {
+			
+			checkParam(objects);
+			Map<Object,Object> map = (Map<Object, Object>) objects[0];
+			return map.size();
+		};
+		
+		public void checkParam(Object... objects) throws Exception {
+			if(objects == null || objects.length <= 1) {
+				throw new FunctionParamException("Required Object is null");
+			}
+		}
+	},
 	;
 	private Integer value;
 	private String functionName;

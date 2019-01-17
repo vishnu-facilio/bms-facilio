@@ -27,7 +27,7 @@ public enum FacilioResourceFunction implements FacilioWorkflowFunctionInterface 
 			
 			boolean isWithSpaceName = objects.length > 1 && objects[1] != null ? Boolean.parseBoolean(objects[1].toString()) : false; 
 			
-			ResourceContext resource = ResourceAPI.getResource(resourceId);
+			ResourceContext resource = ResourceAPI.getResource(resourceId, true);
 			
 			if(!isWithSpaceName) {
 				return resource.getName();

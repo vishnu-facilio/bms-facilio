@@ -537,10 +537,11 @@ public class ReadingsAPI {
 								{
 									Object lastReading = meta.getValue();
 									long lastTimeStamp = meta.getTtime();
-									if (lastReading != null 
+									if (timeStamp > System.currentTimeMillis()
+											|| (lastReading != null 
 											&& lastTimeStamp != -1 
 											&& !"-1".equals(meta.getActualValue()) 
-											&& (timeStamp < lastTimeStamp || timeStamp > System.currentTimeMillis())) { 
+											&& timeStamp < lastTimeStamp)) { 
 										continue;
 									}
 								}

@@ -136,7 +136,7 @@ public class V2ReportAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		setReportWithDataContext(context); //This could be moved to a command
 		
-		Chain fetchReadingDataChain = ReadOnlyChainFactory.fetchReportDataChain();
+		Chain fetchReadingDataChain = newFormat ? ReadOnlyChainFactory.newFetchReadingReportChain() : ReadOnlyChainFactory.fetchReportDataChain(); 
 		fetchReadingDataChain.execute(context);
 		
 		return setReportResult(context);
@@ -238,6 +238,7 @@ public class V2ReportAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.PARENT_ID_LIST, parentId);
 		context.put(FacilioConstants.ContextNames.REPORT_SHOW_ALARMS, showAlarms);
 		context.put(FacilioConstants.ContextNames.REPORT_SHOW_SAFE_LIMIT, showSafeLimit);
+		context.put(FacilioConstants.Workflow.WORKFLOW, transformWorkflow);
 		
 		context.put(FacilioConstants.ContextNames.ALARM_ID, alarmId);
 	}
@@ -466,6 +467,14 @@ public class V2ReportAction extends FacilioAction {
 	}
 	public void setShowAlarms(boolean showAlarms) {
 		this.showAlarms = showAlarms;
+	}
+	
+	private WorkflowContext transformWorkflow;
+	public WorkflowContext getTransformWorkflow() {
+		return transformWorkflow;
+	}
+	public void setTransformWorkflow(WorkflowContext transformWorkflow) {
+		this.transformWorkflow = transformWorkflow;
 	}
 
 	private List<Long> assetCategory;
@@ -779,6 +788,7 @@ public class V2ReportAction extends FacilioAction {
 			setReadingsDataContext(context);
 			context.put(FacilioConstants.ContextNames.TABULAR_STATE, tabularState);
 		}
+		context.put(FacilioConstants.ContextNames.REPORT_HANDLE_BOOLEAN, newFormat);
 		context.put(FacilioConstants.ContextNames.FILE_FORMAT, fileFormat);
 		context.put("chartType", chartType);	// Temp
 		
@@ -812,6 +822,7 @@ public class V2ReportAction extends FacilioAction {
 			setReadingsDataContext(context);
 			context.put(FacilioConstants.ContextNames.TABULAR_STATE, tabularState);
 		}
+		context.put(FacilioConstants.ContextNames.REPORT_HANDLE_BOOLEAN, newFormat);
 		context.put(FacilioConstants.ContextNames.FILE_FORMAT, fileFormat);
 		context.put(FacilioConstants.Workflow.TEMPLATE, emailTemplate);
 		context.put("chartType", chartType);	// Temp

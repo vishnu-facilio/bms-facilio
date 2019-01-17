@@ -46,6 +46,11 @@ public class Message
 		return this;
 	}
 	
+	public Message setMessageType(String messageType) {
+		this.messageType = MessageType.valueOf(messageType);
+		return this;
+	}
+	
 	public long getFrom() {
 		return this.from;
 	}

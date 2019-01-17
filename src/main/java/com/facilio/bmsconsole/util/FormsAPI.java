@@ -35,9 +35,10 @@ import com.facilio.sql.GenericSelectRecordBuilder;
 
 public class FormsAPI {
 	public static Map<String, Set<FacilioForm>> getAllForms(FormType formtype) throws Exception {
-		Map<String, Set<FacilioForm>> forms = getAllFormsFromDB(formtype);
-		if (forms.isEmpty()) {
-			return FormFactory.getAllForms(formtype);
+		Map<String, Set<FacilioForm>> forms = new HashMap<> (FormFactory.getAllForms(formtype));
+		Map<String, Set<FacilioForm>> dbForms = getAllFormsFromDB(formtype);
+		if (!dbForms.isEmpty()) {
+			forms.putAll(dbForms);
 		}
 		return forms;
 	}
@@ -121,8 +122,19 @@ public class FormsAPI {
 					}
 					f.setName(field.getName());
 				}
+				/***
+				 * Temp handling to set name for form fields if fieldId is empty 
+				 * Should introduce name column in Form Fields 
+				 */
 				else if (f.getDisplayTypeEnum() == FieldDisplayType.TICKETNOTES){
 					f.setName("comment");
+				}
+				else if (f.getDisplayTypeEnum() == FieldDisplayType.ATTACHMENT) {
+					f.setName("attachedFiles");
+				}
+				else if (f.getDisplayTypeEnum() == FieldDisplayType.LOOKUP_SIMPLE && f.getDisplayName().equals("Site")) {
+					f.setName("siteId");
+					f.setLookupModuleName("site");
 				}
 				fields.add(f);
 			}
