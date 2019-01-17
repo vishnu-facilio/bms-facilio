@@ -10,10 +10,10 @@ import java.util.Set;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.util.ModuleLocalIdUtil;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.InsertBuilderIfc;
-import com.facilio.transaction.FacilioTransactionManager;
 
 public class InsertRecordBuilder<E extends ModuleBaseWithCustomFields> implements InsertBuilderIfc<E> {
 	
@@ -216,8 +216,7 @@ public class InsertRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 		if(isWithLocalIdModule) {
 			for (int i = modules.size() - 1; i >= 0; i--) {
 				FacilioModule module = modules.get(i);
-				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean", FacilioTransactionManager.TRANSACTION_REQUIRES_NEW);
-				localId = modBean.getAndUpdateModuleLocalId(module.getName(), records.size());
+				localId = ModuleLocalIdUtil.getAndUpdateModuleLocalId(module.getName(), records.size());
 				if (localId != -1) {
 					break;
 				}

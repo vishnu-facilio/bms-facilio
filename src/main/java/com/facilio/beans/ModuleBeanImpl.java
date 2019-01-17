@@ -39,7 +39,6 @@ import com.facilio.bmsconsole.modules.LookupField;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.modules.NumberField;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
-import com.facilio.bmsconsole.util.ModuleLocalIdUtil;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.DBUtil;
 import com.facilio.sql.GenericDeleteRecordBuilder;
@@ -958,11 +957,5 @@ public class ModuleBeanImpl implements ModuleBean {
 		List<Map<String, Object>> fieldProps = selectBuilder.get();
 		List<FacilioField> fields = getFieldFromPropList(fieldProps, moduleMap);
 		return fields;
-	}
-
-	@Override
-	public long getAndUpdateModuleLocalId(String moduleName, int currentSize) throws Exception {
-		// TODO Auto-generated method stub
-		return ModuleLocalIdUtil.getAndUpdateModuleLocalId(moduleName, currentSize);
 	}
 }
