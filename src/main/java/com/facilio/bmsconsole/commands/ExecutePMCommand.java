@@ -46,7 +46,7 @@ public class ExecutePMCommand implements Command {
 					if (pm.getTriggerTypeEnum() == TriggerType.FLOATING) {
 						wo = getPreviousUnclosed(pm);
 						if (wo == null) {
-							List<WorkOrderContext> wos = executePM(pm, (Long) context.get(FacilioConstants.ContextNames.TEMPLATE_ID));
+							List<WorkOrderContext> wos = executePM(context, pm, (Long) context.get(FacilioConstants.ContextNames.TEMPLATE_ID));
 							wo = wos.get(0);
 						}
 						else {
@@ -54,7 +54,7 @@ public class ExecutePMCommand implements Command {
 						}
 					}
 					else {
-						List<WorkOrderContext> wos = executePM(pm, (Long) context.get(FacilioConstants.ContextNames.TEMPLATE_ID));
+						List<WorkOrderContext> wos = executePM(context, pm, (Long) context.get(FacilioConstants.ContextNames.TEMPLATE_ID));
 						wo = wos.get(0);
 					}
 				}
@@ -120,13 +120,13 @@ public class ExecutePMCommand implements Command {
 		return null;													
 	}
 	
-	private List<WorkOrderContext> executePM (PreventiveMaintenance pm, Long templateId) throws Exception {
+	private List<WorkOrderContext> executePM (Context context, PreventiveMaintenance pm, Long templateId) throws Exception {
 		ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD");
 		if (templateId == null) {
-			return bean.addWorkOrderFromPM(pm);
+			return bean.addWorkOrderFromPM(context, pm);
 		}
 		else {
-			return bean.addWorkOrderFromPM(pm, templateId);
+			return bean.addWorkOrderFromPM(context, pm, templateId);
 		}
 	}
 }

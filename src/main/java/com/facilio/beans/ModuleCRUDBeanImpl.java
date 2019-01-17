@@ -12,6 +12,7 @@ import java.util.StringJoiner;
 
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
@@ -179,12 +180,12 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 	}
 
 	@Override
-	public List<WorkOrderContext> addWorkOrderFromPM(PreventiveMaintenance pm) throws Exception {
-		return addWorkOrderFromPM(pm, -1);
+	public List<WorkOrderContext> addWorkOrderFromPM(Context context, PreventiveMaintenance pm) throws Exception {
+		return addWorkOrderFromPM(context, pm, -1);
 	}
 
 	@Override
-	public List<WorkOrderContext> addWorkOrderFromPM(PreventiveMaintenance pm, long templateId) throws Exception {
+	public List<WorkOrderContext> addWorkOrderFromPM(Context context, PreventiveMaintenance pm, long templateId) throws Exception {
 		// TODO Auto-generated method stub
 		if (pm != null) {
 			
@@ -248,7 +249,6 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 				
 				wo.setSourceType(TicketContext.SourceType.PREVENTIVE_MAINTENANCE);
 				wo.setPm(pm);
-				FacilioContext context = new FacilioContext();
 				context.put(FacilioConstants.ContextNames.WORK_ORDER, wo);
 				context.put(FacilioConstants.ContextNames.REQUESTER, wo.getRequester());
 				context.put(FacilioConstants.ContextNames.TASK_MAP, taskMap);

@@ -4,10 +4,12 @@ import java.io.File;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
 import com.amazonaws.services.kinesis.clientlibrary.interfaces.IRecordProcessorCheckpointer;
 import com.amazonaws.services.kinesis.model.Record;
+import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.AlarmContext;
 import com.facilio.bmsconsole.context.ControllerContext;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
@@ -38,9 +40,9 @@ public interface ModuleCRUDBean {
 	
 	public int updateAlarmFromJson(JSONObject alarmInfo, List<Long> ids) throws Exception;
 	
-	public List<WorkOrderContext> addWorkOrderFromPM(PreventiveMaintenance pm) throws Exception;
+	public List<WorkOrderContext> addWorkOrderFromPM(Context context, PreventiveMaintenance pm) throws Exception;
 	
-	public List<WorkOrderContext> addWorkOrderFromPM(PreventiveMaintenance pm, long templateId) throws Exception;
+	public List<WorkOrderContext> addWorkOrderFromPM(Context context, PreventiveMaintenance pm, long templateId) throws Exception;
 	
 	public void deleteAllData (String moduleName) throws Exception;
 	
