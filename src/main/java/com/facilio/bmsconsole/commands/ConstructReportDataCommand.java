@@ -14,6 +14,7 @@ import org.json.simple.JSONObject;
 
 import com.facilio.bmsconsole.context.FormulaContext.AggregateOperator;
 import com.facilio.bmsconsole.context.FormulaContext.DateAggregateOperator;
+import com.facilio.bmsconsole.context.FormulaContext.NumberAggregateOperator;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.report.context.ReportBaseLineContext;
@@ -67,8 +68,13 @@ public class ConstructReportDataCommand implements Command {
 					xVal = getBaseLineAdjustedXVal(xVal, dataPoint.getxAxis(), baseLine);
 					Object formattedxVal = formatVal(dataPoint.getxAxis().getField(), report.getxAggrEnum(), xVal, null, false);
 					Object yVal = prop.get(dataPoint.getyAxis().getField().getName());
+					Object minYVal = null, maxYVal = null;
 					if (yVal != null) {
 						yVal = formatVal(dataPoint.getyAxis().getField(), dataPoint.getyAxis().getAggrEnum(), yVal, xVal, dataPoint.isHandleEnum());
+						if (dataPoint.getyAxis().isFetchMinMax()) {
+							minYVal = formatVal(dataPoint.getyAxis().getField(), NumberAggregateOperator.MIN, prop.get(dataPoint.getyAxis().getField().getName()+"_min"), xVal, dataPoint.isHandleEnum());
+							maxYVal = formatVal(dataPoint.getyAxis().getField(), NumberAggregateOperator.MAX, prop.get(dataPoint.getyAxis().getField().getName()+"_max"), xVal, dataPoint.isHandleEnum());
+						}
 						
 						StringJoiner key = new StringJoiner("|");
 						key.add(formattedxVal.toString());
@@ -83,14 +89,14 @@ public class ConstructReportDataCommand implements Command {
 								key.add(groupBy.getAlias()+"_"+groupByVal.toString());
 							}
 						}
-						constructAndAddData(key.toString(), data, formattedxVal, yVal, getyAlias(dataPoint, baseLine), report, dataPoint, transformedData, directHelperData);
+						constructAndAddData(key.toString(), data, formattedxVal, yVal, minYVal, maxYVal, getyAlias(dataPoint, baseLine), report, dataPoint, transformedData, directHelperData);
 					}
 				}
 			}
 		}
 	}
 	
-	private void constructAndAddData(String key, Map<String, Object> existingData, Object xVal, Object yVal, String yAlias, ReportContext report, ReportDataPointContext dataPoint, List<Map<String, Object>> transformedData, Map<String, Object> intermediateData) {
+	private void constructAndAddData(String key, Map<String, Object> existingData, Object xVal, Object yVal, Object minYVal, Object maxYVal, String yAlias, ReportContext report, ReportDataPointContext dataPoint, List<Map<String, Object>> transformedData, Map<String, Object> intermediateData) {
 		Map<String, Object> data = (Map<String, Object>) intermediateData.get(key);
 		if (data == null) {
 			data = existingData == null ? new HashMap<>() : existingData;
@@ -109,6 +115,11 @@ public class ConstructReportDataCommand implements Command {
 		}
 		else {
 			data.put(yAlias, yVal);
+			
+			if (dataPoint.getyAxis().isFetchMinMax()) {
+				data.put(yAlias+".min", minYVal);
+				data.put(yAlias+".max", maxYVal);
+			}
 		}
 	}
 	

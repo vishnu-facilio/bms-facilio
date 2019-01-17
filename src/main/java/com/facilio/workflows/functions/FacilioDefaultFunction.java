@@ -22,6 +22,7 @@ import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.bmsconsole.modules.NumberField;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.util.DashboardUtil;
+import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.cards.util.CardUtil;
 import com.facilio.fs.FileStore;
 import com.facilio.fs.FileStoreFactory;
@@ -315,6 +316,43 @@ public enum FacilioDefaultFunction implements FacilioWorkflowFunctionInterface {
 			 }
 			return null;
 		}
+	},
+	PICKLIST(8, "picklist") {
+
+		@Override
+		public Object execute(Object... objects) throws Exception {
+			// TODO Auto-generated method stub
+			if (objects == null || objects.length < 1) {
+				return null;
+			}
+			
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			
+			String moduleName = objects[0].toString();
+			if(LookupSpecialTypeUtil.isSpecialType(moduleName)) {
+				return LookupSpecialTypeUtil.getPickList(moduleName);
+			}
+			
+			FacilioModule module = modBean.getModule(moduleName);
+			FacilioField field = objects.length > 1 && objects[1] != null ? modBean.getField(objects[1].toString(), moduleName) : modBean.getPrimaryField(moduleName);
+			
+			SelectRecordsBuilder<ModuleBaseWithCustomFields> builder = new SelectRecordsBuilder<ModuleBaseWithCustomFields>()
+					.module(module)
+					.select(Collections.singletonList(field))
+					.orderBy("ID");
+
+			List<Map<String, Object>> records = builder.getAsProps();
+			if(records != null && records.size() > 0) {
+				Map<Long, String> pickList = new HashMap<>();
+				for(Map<String, Object> record : records) {
+					pickList.put((Long) record.get("id"), record.get(field.getName()).toString());
+				}
+				return pickList; 
+			}
+			
+			return null;
+		}
+		
 	},
 	;
 	private Integer value;

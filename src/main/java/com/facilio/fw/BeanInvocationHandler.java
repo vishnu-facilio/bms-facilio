@@ -19,6 +19,8 @@ public class BeanInvocationHandler implements InvocationHandler {
 	private boolean enableTransaction = false;
 	private Object delegate;
 	private long orgid = 0;
+	
+	private int transactiolevel = FacilioTransactionManager.TRANSACTION_NotSupported;
 
 	public BeanInvocationHandler(Object obj, Long orgid) {
 		this(obj, orgid, false);
@@ -30,6 +32,19 @@ public class BeanInvocationHandler implements InvocationHandler {
 		this.enableTransaction = enableTransaction;
 	}
 
+	public BeanInvocationHandler(Object obj, Long orgid, int  transactiolevel) {
+		this.delegate = obj;
+		this.orgid = orgid;
+		if(transactiolevel==FacilioTransactionManager.TRANSACTION_NotSupported)
+		{
+		this.enableTransaction = false;
+		}
+		else 
+		{
+			this.enableTransaction = true;
+			this.transactiolevel=transactiolevel;
+		}
+	}
 
 	@Override
 	public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {

@@ -6,7 +6,10 @@ import java.util.List;
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.impl.ChainBase;
 
+import com.facilio.bmsconsole.commands.FacilioChainFactory;
+import com.facilio.bmsconsole.commands.FacilioChainFactory.FacilioChain;
 import com.facilio.bmsconsole.commands.GetExportValueField;
+import com.facilio.bmsconsole.commands.UpdateEventCountCommand;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
@@ -49,7 +52,7 @@ public class EventConstants {
 	
 	public static class EventChainFactory {
 		public static Chain processEventChain() {
-			Chain c = new ChainBase();
+			FacilioChain c = new FacilioChain(true);
 			c.addCommand(new InsertEventCommand());
 //			c.addCommand(new EvalEventBaseCriteriaCommand());
 //			c.addCommand(new EventTransformCommand());
@@ -59,9 +62,17 @@ public class EventConstants {
 			c.addCommand(new EventToAlarmCommand());
 			c.addCommand(new UpdateEventCommand());
 			CommonCommandUtil.addCleanUpCommand(c);
+			
+			c.setPostTransactionChain(getUpdateEventCountChain());
 			return c;
 		}
 		
+		public static Chain getUpdateEventCountChain() {
+			FacilioChain chain = new FacilioChain(true);
+			chain.addCommand(new UpdateEventCountCommand());
+			return chain;
+		}
+
 		public static Chain getAddEventChain() {
 			Chain c = new ChainBase();
 			c.addCommand(new ProcessEventCommand());

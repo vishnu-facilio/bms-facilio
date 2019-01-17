@@ -33,6 +33,9 @@ public class AddWidgetCommand implements Command {
 		// TODO Auto-generated method stub
 		DashboardWidgetContext widget = (DashboardWidgetContext) context.get(FacilioConstants.ContextNames.WIDGET);
 		if(widget != null) {
+			
+			widget.setOrgId(AccountUtil.getCurrentOrg().getId());
+			
 			List<FacilioField> fields = FieldFactory.getWidgetFields();
 			
 			GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()

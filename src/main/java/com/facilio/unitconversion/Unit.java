@@ -130,12 +130,29 @@ public enum Unit {
 	String toSiUnit;
 	
 	private static final Map<Integer, Unit> UNIT_MAP = Collections.unmodifiableMap(initTypeMap());
+	
+	private static final Map<String, Unit> UNIT_SYMBOL_MAP = Collections.unmodifiableMap(initUnitSymbolMap());
+	
 	private static Map<Integer, Unit> initTypeMap() {
 		Map<Integer, Unit> typeMap = new HashMap<>();
 		for(Unit type : values()) {
 			typeMap.put(type.getUnitId(), type);
 		}
 		return typeMap;
+	}
+	
+	private static Map<String, Unit> initUnitSymbolMap() {
+		Map<String, Unit> typeMap = new HashMap<>();
+		for(Unit type : values()) {
+			if(!typeMap.containsKey(type.getSymbol())) {
+				typeMap.put(type.getSymbol(), type);
+			}
+		}
+		return typeMap;
+	}
+	
+	public static Unit getUnitFromSymbol(String symbol) {
+		return UNIT_SYMBOL_MAP.get(symbol);
 	}
 	
 	private static final Map<Metric,Collection<Unit>> METRIC_UNIT_MAP = initMap();

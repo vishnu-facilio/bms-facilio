@@ -28,6 +28,8 @@ public interface SelectBuilderIfc<E> extends WhereBuilderIfc<SelectBuilderIfc<E>
 	
 	public SelectBuilderIfc<E> offset(int offset);
 	
-	List<E> get() throws Exception;
+	public List<E> get() throws Exception;
+	
+	public SelectBuilderIfc<E> forUpdate();
 	
 }

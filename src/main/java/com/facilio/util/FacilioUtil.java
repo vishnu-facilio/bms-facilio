@@ -23,7 +23,7 @@ public class FacilioUtil {
     private static final Properties PROPERTIES = new Properties();
     private static Logger log = LogManager.getLogger(FacilioUtil.class.getName());
     
-    private static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("#.##");
+    public static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("#.##");
 
     static {
         URL resource = FacilioUtil.class.getClassLoader().getResource(PROPERTY_FILE);
