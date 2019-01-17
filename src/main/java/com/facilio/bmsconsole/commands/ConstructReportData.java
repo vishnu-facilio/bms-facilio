@@ -12,10 +12,13 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.FormulaContext.AggregateOperator;
 import com.facilio.bmsconsole.context.FormulaContext.CommonAggregateOperator;
+import com.facilio.bmsconsole.context.FormulaContext.DateAggregateOperator;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
+import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.report.context.ReportContext;
@@ -42,6 +45,13 @@ public class ConstructReportData implements Command {
 		ReportDataPointContext dataPointContext = new ReportDataPointContext();
 		ReportFieldContext xAxis = new ReportFieldContext();
 		FacilioField xField = modBean.getField((Long) xAxisJSON.get("field_id"));
+		if (xAxisJSON.containsKey("aggr") && (xField.getDataType() == FieldType.DATE.getTypeAsInt() || xField.getDataType() == FieldType.DATE_TIME.getTypeAsInt())) {
+			Integer xAggr = ((Number) xAxisJSON.get("aggr")).intValue();
+			AggregateOperator aggregateOperator = AggregateOperator.getAggregateOperator(xAggr);
+			if (aggregateOperator instanceof DateAggregateOperator) {
+				reportContext.setxAggr(aggregateOperator);
+			}
+		}
 		xAxis.setField(xField);
 		dataPointContext.setxAxis(xAxis);
 		
