@@ -16,6 +16,7 @@ import com.facilio.bmsconsole.context.FormulaContext.AggregateOperator;
 import com.facilio.bmsconsole.context.WidgetChartContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.DateOperators;
+import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.criteria.StringOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
@@ -88,18 +89,24 @@ public class ReportUtil {
 		return report;
 	}
 	
-	public static List<ReportFolderContext> getAllReportFolder(String moduleName,boolean isWithReports) throws Exception {
+	public static List<ReportFolderContext> getAllReportFolder(String moduleName,boolean isWithReports, String searchText) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(moduleName);
 		
 		FacilioModule reportFoldermodule = ModuleFactory.getReportFolderModule();
+		List<FacilioField> fields = FieldFactory.getReport1FolderFields();
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 		
 		GenericSelectRecordBuilder select = new GenericSelectRecordBuilder()
-													.select(FieldFactory.getReport1FolderFields())
+													.select(fields)
 													.table(reportFoldermodule.getTableName())
 													.andCondition(CriteriaAPI.getCurrentOrgIdCondition(reportFoldermodule))
-													.andCustomWhere(reportFoldermodule.getTableName()+".MODULEID = ?",module.getModuleId())
+													.andCondition(CriteriaAPI.getCondition(fieldMap.get("moduleId"), String.valueOf(module.getModuleId()), NumberOperators.EQUALS));
 													;
+		
+		if (searchText != null) {
+			select.andCondition(CriteriaAPI.getCondition(fieldMap.get("name"), searchText, StringOperators.CONTAINS));
+		}
 		
 		List<Map<String, Object>> props = select.get();
 		List<ReportFolderContext> reportFolders = new ArrayList<>();
@@ -137,6 +144,37 @@ public class ReportUtil {
 													.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 													.andCustomWhere(module.getTableName()+".REPORT_FOLDER_ID = ?",folderId)
 													;
+		
+		List<Map<String, Object>> props = select.get();
+		List<ReportContext> reports = new ArrayList<>();
+		if(props != null && !props.isEmpty()) {
+			for(Map<String, Object> prop :props) {
+				
+				ReportContext report = FieldUtil.getAsBeanFromMap(prop, ReportContext.class);
+				reports.add(report);
+			}
+		}
+		return reports;
+	}
+	
+	public static List<ReportContext> getReports(String moduleName, String searchText) throws Exception {
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(moduleName);
+		
+		FacilioModule reportModule = ModuleFactory.getReportModule();
+		List<FacilioField> fields = FieldFactory.getReport1Fields();
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+		
+		GenericSelectRecordBuilder select = new GenericSelectRecordBuilder()
+													.select(fields)
+													.table(reportModule.getTableName())
+													.andCondition(CriteriaAPI.getCurrentOrgIdCondition(reportModule))
+													.andCondition(CriteriaAPI.getCondition(fieldMap.get("moduleId"), String.valueOf(module.getModuleId()), NumberOperators.EQUALS));
+		
+		if (searchText != null) {
+			select.andCondition(CriteriaAPI.getCondition(fieldMap.get("name"), searchText, StringOperators.CONTAINS));
+		}
 		
 		List<Map<String, Object>> props = select.get();
 		List<ReportContext> reports = new ArrayList<>();

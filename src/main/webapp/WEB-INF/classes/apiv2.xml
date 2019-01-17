@@ -485,6 +485,8 @@
 		</action>
 		<action name="moveReport" class="com.facilio.bmsconsole.actions.V2ReportAction" method="moveReport">
 		</action>
+		<action name="search" class="com.facilio.bmsconsole.actions.V2ReportAction" method="searchReportAndFolders">
+		</action>
 	</package>
 	
 	<package name="reportFoldersApiv2" namespace="/api/v2/report/folders" extends="v2Api">

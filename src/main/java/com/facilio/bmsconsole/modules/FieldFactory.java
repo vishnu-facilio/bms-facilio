@@ -4734,6 +4734,7 @@ public class FieldFactory {
 		fields.add(getIdField(module));
 		fields.add(getOrgIdField(module));
 		fields.add(getSiteIdField(module));
+		fields.add(getModuleIdField(module));
 		fields.add(getField("reportFolderId", "REPORT_FOLDER_ID", module, FieldType.LOOKUP));
 		fields.add(getField("name", "NAME", module, FieldType.STRING));
 		fields.add(getField("description", "DESCRIPTION", module, FieldType.STRING));
