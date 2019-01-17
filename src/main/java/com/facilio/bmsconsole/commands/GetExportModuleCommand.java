@@ -15,9 +15,10 @@ public class GetExportModuleCommand implements Command  {
 		// TODO Auto-generated method stub
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 		String viewName = (String) context.get(FacilioConstants.ContextNames.SUB_VIEW);
+		String filters = (String) context.get(FacilioConstants.ContextNames.FILTERS);
 		FileFormat type = (FileFormat) context.get(FacilioConstants.ContextNames.FILE_FORMAT);
 		
-		String fileUrl = ExportUtil.exportModule(type, moduleName, viewName);
+		String fileUrl = ExportUtil.exportModule(type, moduleName, viewName, filters);
 		context.put(FacilioConstants.ContextNames.FILE_URL, fileUrl);
 		return false;
 	}

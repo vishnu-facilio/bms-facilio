@@ -43,6 +43,7 @@ public class CommonAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.FILE_FORMAT, FileFormat.getFileFormat(type));
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
 		context.put(FacilioConstants.ContextNames.SUB_VIEW, viewName);
+		context.put(FacilioConstants.ContextNames.FILTERS, getFilters());
 		context.put(FacilioConstants.Workflow.TEMPLATE, emailTemplate);
 		Chain mailModuleChain = FacilioChainFactory.sendModuleMailChain();
 		mailModuleChain.execute(context);
@@ -50,7 +51,7 @@ public class CommonAction extends FacilioAction {
 		return SUCCESS;
 	}
 	public String exportModule() throws Exception {
-		fileUrl = ExportUtil.exportModule(FileFormat.getFileFormat(type), moduleName, viewName);
+		fileUrl = ExportUtil.exportModule(FileFormat.getFileFormat(type), moduleName, viewName, filters);
 		return SUCCESS;
 	}
 	
@@ -100,6 +101,16 @@ public class CommonAction extends FacilioAction {
 	}
 	public void setFileUrl(String url) {
 		this.fileUrl = url;
+	}
+	
+	private String filters;
+
+	public void setFilters(String filters) {
+		this.filters = filters;
+	}
+
+	public String getFilters() {
+		return this.filters;
 	}
 	
 	private String moduleName;

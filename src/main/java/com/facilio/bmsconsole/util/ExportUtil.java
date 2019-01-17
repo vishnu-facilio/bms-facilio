@@ -18,6 +18,7 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioContext;
@@ -493,7 +494,7 @@ public class ExportUtil {
 		return null;
 	}
 	
-	public static String exportModule(FileFormat fileFormat, String moduleName, String viewName) throws Exception {
+	public static String exportModule(FileFormat fileFormat, String moduleName, String viewName, String filters) throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
 		context.put(FacilioConstants.ContextNames.CV_NAME, viewName);
@@ -509,6 +510,11 @@ public class ExportUtil {
 		pagination.put("page", 1);
 		pagination.put("perPage", limit);
 		context.put(FacilioConstants.ContextNames.PAGINATION, pagination);
+		if (filters != null) {
+			JSONParser parser = new JSONParser();
+			JSONObject json = (JSONObject) parser.parse(filters);
+			context.put(FacilioConstants.ContextNames.FILTERS, json);
+		}
 		
 		Chain moduleListChain = ReadOnlyChainFactory.fetchModuleDataListChain();
 		moduleListChain.execute(context);
