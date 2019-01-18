@@ -3,8 +3,10 @@ package com.facilio.bmsconsole.criteria;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Stack;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -48,6 +50,21 @@ public class Criteria extends ExpressionEvaluator<Predicate> implements Serializ
 		return conditions;
 	}
 	public void setConditions(Map<Integer, Condition> conditions) {
+		if (conditions != null) {
+			// If key is of different type, convert them to Integer
+			Iterator<Integer> iterator = conditions.keySet().iterator();
+			Map<Integer, Condition> map = new HashMap<>();
+			while (iterator.hasNext()) {
+				Object key = iterator.next();
+				if (!(key instanceof Integer)) {
+					Integer k = Integer.parseInt(key.toString());
+					Condition value = conditions.get(key);
+					map.put(k, value);
+					iterator.remove();
+				}
+			}
+			conditions.putAll(map);
+		}
 		this.conditions = conditions;
 	}
 

@@ -7,7 +7,6 @@ import java.util.Map;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
-import org.apache.struts2.json.annotations.JSON;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
@@ -15,8 +14,10 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.FormulaContext.AggregateOperator;
 import com.facilio.bmsconsole.context.FormulaContext.CommonAggregateOperator;
 import com.facilio.bmsconsole.context.FormulaContext.DateAggregateOperator;
+import com.facilio.bmsconsole.criteria.Condition;
+import com.facilio.bmsconsole.criteria.Criteria;
+import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.constants.FacilioConstants;
@@ -45,7 +46,7 @@ public class ConstructReportData implements Command {
 		ReportDataPointContext dataPointContext = new ReportDataPointContext();
 		ReportFieldContext xAxis = new ReportFieldContext();
 		FacilioField xField = modBean.getField((Long) xAxisJSON.get("field_id"));
-		if (xAxisJSON.containsKey("aggr") && (xField.getDataType() == FieldType.DATE.getTypeAsInt() || xField.getDataType() == FieldType.DATE_TIME.getTypeAsInt())) {
+		if (xAxisJSON.containsKey("aggr") && isDateField(xField)) {
 			Integer xAggr = ((Number) xAxisJSON.get("aggr")).intValue();
 			AggregateOperator aggregateOperator = AggregateOperator.getAggregateOperator(xAggr);
 			if (aggregateOperator instanceof DateAggregateOperator) {
@@ -85,6 +86,14 @@ public class ConstructReportData implements Command {
 			dataPointContext.setGroupByFields(groupByFields);
 		}
 		
+		if (context.get("criteria") != null) {
+//			Criteria criteria = new Criteria();
+			Criteria criteria = (Criteria) context.get("criteria");
+			Map<Integer, Condition> conditions = criteria.getConditions();
+			
+			dataPointContext.setCriteria(criteria);
+		}
+		
 		Map<String, String> aliases = new HashMap<>();
 		aliases.put("actual", "Y");
 		dataPointContext.setAliases(aliases);
@@ -95,6 +104,10 @@ public class ConstructReportData implements Command {
 		context.put(FacilioConstants.ContextNames.REPORT, reportContext);
 		
 		return false;
+	}
+
+	private boolean isDateField(FacilioField field) {
+		return (field.getDataType() == FieldType.DATE.getTypeAsInt() || field.getDataType() == FieldType.DATE_TIME.getTypeAsInt());
 	}
 
 }

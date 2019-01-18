@@ -30,6 +30,7 @@ import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.WidgetChartContext;
 import com.facilio.bmsconsole.context.WidgetStaticContext;
 import com.facilio.bmsconsole.criteria.Condition;
+import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.DateOperators;
 import com.facilio.bmsconsole.criteria.DateRange;
 import com.facilio.bmsconsole.criteria.Operator;
@@ -452,6 +453,13 @@ public class V2ReportAction extends FacilioAction {
 	public void setGroupBy(JSONArray groupBy) {
 		this.groupBy = groupBy;
 	}
+	private Criteria criteria;
+	public Criteria getCriteria() {
+		return criteria;
+	}
+	public void setCriteria(Criteria criteria) {
+		this.criteria = criteria;
+	}
 	public String fetchReportData() throws Exception {
 		JSONParser parser = new JSONParser();
 		
@@ -460,6 +468,7 @@ public class V2ReportAction extends FacilioAction {
 		context.put("x-axis", xField);
 		context.put("y-axis", yField);
 		context.put("group-by", groupBy);
+		context.put("criteria", criteria);
 		
 		Chain chain = new FacilioChainFactory.FacilioChain(false);
 		chain.addCommand(new ConstructReportData());
