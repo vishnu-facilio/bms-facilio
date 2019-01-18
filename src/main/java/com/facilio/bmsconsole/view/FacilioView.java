@@ -203,6 +203,20 @@ public class FacilioView {
 		return false;
 	}
 	
+	private Boolean primary;
+	public Boolean getPrimary() {
+		return primary;
+	}
+	public void setPrimary(Boolean isPrimary) {
+		this.primary = primary;
+	}
+	public boolean isPrimary() {
+		if(primary != null) {
+			return primary.booleanValue();
+		}
+		return false;
+	}
+	
 	private Map<String, String> fieldDisplayNames;
 	public Map<String, String> getFieldDisplayNames() {
 		return fieldDisplayNames;

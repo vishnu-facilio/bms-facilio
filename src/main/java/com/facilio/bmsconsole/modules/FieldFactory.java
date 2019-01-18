@@ -2152,6 +2152,8 @@ public class FieldFactory {
 		moduleName.setColumnName("MODULENAME");
 		moduleName.setModule(module);
 		fields.add(moduleName);
+		
+		fields.add(getField("primary", "ISPRIMARY", module, FieldType.BOOLEAN));
 
 		return fields;
 
