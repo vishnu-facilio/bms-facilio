@@ -1,11 +1,13 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections.CollectionUtils;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
@@ -60,6 +62,7 @@ public class AddTasksCommand implements Command {
 			
 			builder.save();
 			context.put(FacilioConstants.ContextNames.TASK_LIST, builder.getRecords());
+ 			context.put(FacilioConstants.ContextNames.IDS_TO_UPDATE_TASK_COUNT, Collections.singletonList(workOrder.getId()));
 		}
 		else {
 //			throw new IllegalArgumentException("Task list cannot be null/ empty");
