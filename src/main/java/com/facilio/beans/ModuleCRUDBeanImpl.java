@@ -1,14 +1,15 @@
 package com.facilio.beans;
 
 import java.io.File;
-import java.lang.reflect.InvocationTargetException;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.StringJoiner;
+
+import javax.transaction.Transaction;
+import javax.transaction.TransactionManager;
 
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
@@ -67,6 +68,8 @@ import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
 import com.facilio.timeseries.TimeSeriesAPI;
+import com.facilio.transaction.FTransactionManager;
+import com.facilio.transaction.FacilioTransaction;
 
 public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 
@@ -269,7 +272,15 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 		return null;
 	}
 	
-	private void incrementPMCount(PreventiveMaintenance pm) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException, SQLException {
+	private void incrementPMCount(PreventiveMaintenance pm) throws Exception {
+		if (AccountUtil.getCurrentOrg().getId() == 155) {
+			TransactionManager tm = FTransactionManager.getTransactionManager();
+			if (tm != null) {
+				Transaction t = tm.getTransaction();
+				LOGGER.info("Connection & free connection size before incrementing PM count : "+((FacilioTransaction) t).getConnectionSize()+"::"+((FacilioTransaction) t).getFreeConnectionSize());
+			}
+		}
+		
 		pm.setCurrentExecutionCount(pm.getCurrentExecutionCount()+1);
 		Map<String, Object> props = new HashMap<>();
 		props.put("currentExecutionCount", pm.getCurrentExecutionCount());

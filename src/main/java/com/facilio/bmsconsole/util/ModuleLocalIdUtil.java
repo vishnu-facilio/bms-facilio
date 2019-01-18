@@ -7,7 +7,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.beans.ModuleCRUDBeanImpl;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.StringOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
@@ -21,6 +25,8 @@ import com.facilio.sql.GenericUpdateRecordBuilder;
 import com.facilio.transaction.FacilioConnectionPool;
 
 public class ModuleLocalIdUtil {
+	
+	private static final Logger LOGGER = LogManager.getLogger(ModuleLocalIdUtil.class.getName());
 
 	private static final List<String> MODULES_WITH_LOCAL_ID = Collections.unmodifiableList(initModulesWithLocalIds());
 	
@@ -64,15 +70,28 @@ public class ModuleLocalIdUtil {
 		Connection conn = null;
 		try {
 			conn = FacilioConnectionPool.getInstance().getConnectionFromPool();
+			
+			if (AccountUtil.getCurrentOrg().getId() == 155) {
+				LOGGER.info("Connection object instance while getting local id : "+conn.getClass().getName());
+			}
+			
 			conn.setAutoCommit(false);
 			long localId = getModuleLocalId(moduleName, conn);
 			updateModuleLocalId(moduleName, localId+currentSize, conn);
 			conn.commit();
+			
+			if (AccountUtil.getCurrentOrg().getId() == 155) {
+				LOGGER.info("Committed connection while getting local id");
+			}
+			
 			return localId;
 		}
 		catch (Exception e) {
 			if (conn != null) {
 				conn.rollback();
+				if (AccountUtil.getCurrentOrg().getId() == 155) {
+					LOGGER.info("Rolled back connection while getting local id");
+				}
 			}
 		}
 		finally {
