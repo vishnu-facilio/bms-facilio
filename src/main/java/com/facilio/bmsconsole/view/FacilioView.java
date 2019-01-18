@@ -207,7 +207,7 @@ public class FacilioView {
 	public Boolean getPrimary() {
 		return primary;
 	}
-	public void setPrimary(Boolean isPrimary) {
+	public void setPrimary(Boolean primary) {
 		this.primary = primary;
 	}
 	public boolean isPrimary() {
