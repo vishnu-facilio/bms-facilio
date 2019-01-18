@@ -56,11 +56,11 @@ public class TimeSeriesAPI {
 
 	private static final Logger LOGGER = LogManager.getLogger(TimeSeriesAPI.class.getName());
 	
-	public static void processPayLoad(long ttime, JSONObject payLoad) throws Exception {
-		processPayLoad(ttime, payLoad, null, null);
+	public static void processPayLoad(long ttime, JSONObject payLoad, String macAddr) throws Exception {
+		processPayLoad(ttime, payLoad, null, null, macAddr);
 	}
 	
-	public static void processPayLoad(long ttime, JSONObject payLoad, Record record, IRecordProcessorCheckpointer checkpointer) throws Exception {
+	public static void processPayLoad(long ttime, JSONObject payLoad, Record record, IRecordProcessorCheckpointer checkpointer, String macAddr) throws Exception {
 		
 		long timeStamp = getTimeStamp(ttime, payLoad);
 		FacilioContext context = new FacilioContext();
@@ -71,7 +71,10 @@ public class TimeSeriesAPI {
 			context.put(FacilioConstants.ContextNames.KINESIS_RECORD, record);
 			context.put(FacilioConstants.ContextNames.KINESIS_CHECK_POINTER, checkpointer);
 			//even if the above two lines are removed.. please do not remove the below partitionKey..
-			ControllerContext controller=  ControllerAPI.getController(record.getPartitionKey());
+			macAddr = record.getPartitionKey();
+		}
+		if (macAddr != null){
+			ControllerContext controller=  ControllerAPI.getController(macAddr);
 			if(controller!=null) {
 				context.put(FacilioConstants.ContextNames.CONTROLLER_ID, controller.getId());
 			}

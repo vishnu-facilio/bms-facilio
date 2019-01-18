@@ -32,7 +32,7 @@ public class TimeSeries extends FacilioAction {
 		JSONParser parser = new JSONParser();
 		try {
 			JSONObject payLoad = (JSONObject) parser.parse(getDeviceData());
-			TimeSeriesAPI.processPayLoad(getTimestamp(), payLoad);	
+			TimeSeriesAPI.processPayLoad(getTimestamp(), payLoad, macAddr);	
 			return SUCCESS;
 		}
 		catch(Exception e) {
@@ -184,6 +184,14 @@ public class TimeSeries extends FacilioAction {
 	}
 	public void setControllerId(long controllerId) {
 		this.controllerId = controllerId;
+	}
+	
+	private String macAddr;
+	public String getMacAddr() {
+		return macAddr;
+	}
+	public void setMacAddr(String macAddr) {
+		this.macAddr = macAddr;
 	}
 	
 	private Boolean configured;

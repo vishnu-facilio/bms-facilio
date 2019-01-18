@@ -564,7 +564,7 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 	@Override
 	public void processTimeSeries(long timeStamp, JSONObject payLoad, Record record,
 			IRecordProcessorCheckpointer checkPointer) throws Exception {
-			TimeSeriesAPI.processPayLoad(timeStamp, payLoad, record, checkPointer);
+			TimeSeriesAPI.processPayLoad(timeStamp, payLoad, record, checkPointer, null);
 	}
 	
 	@Override
