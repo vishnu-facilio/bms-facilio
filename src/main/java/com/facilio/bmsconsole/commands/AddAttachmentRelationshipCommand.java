@@ -50,6 +50,7 @@ public class AddAttachmentRelationshipCommand implements Command {
 			}
 			
 			if (AccountUtil.getCurrentOrg().getId() == 155) {
+				LOGGER.info("Inserting attachment for record id : "+recordId);
 				TransactionManager tm = FTransactionManager.getTransactionManager();
 				if (tm != null) {
 					Transaction t = tm.getTransaction();

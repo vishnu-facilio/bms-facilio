@@ -140,4 +140,14 @@ public class AttachmentContext extends ModuleBaseWithCustomFields {
 		
 		private static final AttachmentType[] ATTACHMENT_TYPES = AttachmentType.values();
 	}
+	
+	@Override
+	public String toString() {
+		// TODO Auto-generated method stub
+		return new StringBuilder("Attachment [")
+					.append("parentId : ").append(parentId).append(", ")
+					.append("fileName : ").append(fileName)
+					.append("]")
+					.toString();
+	}
 }
