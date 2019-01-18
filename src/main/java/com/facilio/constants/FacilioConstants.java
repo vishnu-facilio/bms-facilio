@@ -648,6 +648,8 @@ public class FacilioConstants {
 		
 		public static final String PUBSUB_TOPIC = "pubsubTopic";
 		
+		public static final String IDS_TO_UPDATE_TASK_COUNT = "ids_to_update_task_count";
+		
 		private static Map<String, Class> classMap = Collections.unmodifiableMap(initClassMap());
 		private static Map<String, Class> initClassMap() {
 			Map<String, Class> classMap = new HashMap<>();

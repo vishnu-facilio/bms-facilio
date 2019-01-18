@@ -36,7 +36,7 @@ public class AddTaskCommand implements Command {
 			long taskId = builder.insert(task);
 			task.setId(taskId);
 			context.put(FacilioConstants.ContextNames.RECORD_ID, taskId);
-			context.put(FacilioConstants.ContextNames.PARENT_ID_LIST, Collections.singletonList(task.getParentTicketId()));
+			context.put(FacilioConstants.ContextNames.IDS_TO_UPDATE_TASK_COUNT, Collections.singletonList(task.getParentTicketId()));
 		}
 		else {
 			throw new IllegalArgumentException("Task Object cannot be null");

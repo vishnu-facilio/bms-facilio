@@ -63,7 +63,7 @@ public class DeleteTaskCommand implements Command {
 			
 			context.put(FacilioConstants.ContextNames.ROWS_UPDATED, builder.delete());
 			context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.DELETE);
-			context.put(FacilioConstants.ContextNames.PARENT_ID_LIST, parentIds);
+			context.put(FacilioConstants.ContextNames.IDS_TO_UPDATE_TASK_COUNT, parentIds);
 		}
 		return false;
 	}
