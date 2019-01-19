@@ -49,7 +49,7 @@ public class AddAttachmentRelationshipCommand implements Command {
 				attachment.setParentId(recordId);
 			}
 			
-			if (AccountUtil.getCurrentOrg().getId() == 155) {
+			if (AccountUtil.getCurrentOrg().getId() == 155 || AccountUtil.getCurrentOrg().getId() == 151 || AccountUtil.getCurrentOrg().getId() == 92) {
 				LOGGER.info("Inserting attachment for record id : "+recordId);
 				TransactionManager tm = FTransactionManager.getTransactionManager();
 				if (tm != null) {

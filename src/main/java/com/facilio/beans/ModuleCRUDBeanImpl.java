@@ -273,7 +273,7 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 	}
 	
 	private void incrementPMCount(PreventiveMaintenance pm) throws Exception {
-		if (AccountUtil.getCurrentOrg().getId() == 155) {
+		if (AccountUtil.getCurrentOrg().getId() == 155 || AccountUtil.getCurrentOrg().getId() == 151 || AccountUtil.getCurrentOrg().getId() == 92) {
 			TransactionManager tm = FTransactionManager.getTransactionManager();
 			if (tm != null) {
 				Transaction t = tm.getTransaction();

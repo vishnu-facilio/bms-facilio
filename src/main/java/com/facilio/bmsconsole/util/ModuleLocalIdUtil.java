@@ -71,7 +71,7 @@ public class ModuleLocalIdUtil {
 		try {
 			conn = FacilioConnectionPool.getInstance().getConnectionFromPool();
 			
-			if (AccountUtil.getCurrentOrg().getId() == 155) {
+			if (AccountUtil.getCurrentOrg().getId() == 155 || AccountUtil.getCurrentOrg().getId() == 151 || AccountUtil.getCurrentOrg().getId() == 92) {
 				LOGGER.info("Connection object instance while getting local id : "+conn.getClass().getName());
 			}
 			
@@ -80,7 +80,7 @@ public class ModuleLocalIdUtil {
 			updateModuleLocalId(moduleName, localId+currentSize, conn);
 			conn.commit();
 			
-			if (AccountUtil.getCurrentOrg().getId() == 155) {
+			if (AccountUtil.getCurrentOrg().getId() == 155 || AccountUtil.getCurrentOrg().getId() == 151 || AccountUtil.getCurrentOrg().getId() == 92) {
 				LOGGER.info("Committed connection while getting local id");
 			}
 			
@@ -89,7 +89,7 @@ public class ModuleLocalIdUtil {
 		catch (Exception e) {
 			if (conn != null) {
 				conn.rollback();
-				if (AccountUtil.getCurrentOrg().getId() == 155) {
+				if (AccountUtil.getCurrentOrg().getId() == 155 || AccountUtil.getCurrentOrg().getId() == 151 || AccountUtil.getCurrentOrg().getId() == 92) {
 					LOGGER.info("Rolled back connection while getting local id");
 				}
 			}
