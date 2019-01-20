@@ -3,10 +3,10 @@ package com.facilio.beans;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
+import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
@@ -24,8 +24,7 @@ import com.facilio.fw.LRUCache;
  */
 public class ModuleBeanCacheImpl extends ModuleBeanImpl implements ModuleBean {
 	
-	private static final Logger LOGGER = Logger.getLogger(ModuleBeanCacheImpl.class.getName());
-	private static org.apache.log4j.Logger log = LogManager.getLogger(ModuleBeanCacheImpl.class.getName());
+	private static final Logger LOGGER = LogManager.getLogger(ModuleBeanCacheImpl.class.getName());
 	
 	@Override
 	public FacilioModule getModule(String moduleName) throws Exception {
@@ -60,7 +59,7 @@ LRUCache modulecache = LRUCache.getModuleCache();
 			
 			modulecache.put(CacheUtil.MODULE_KEY(getOrgId(), moduleId), moduleObj);
 			
-			LOGGER.log(Level.INFO, "getModule result from DB for module: "+moduleId);
+			LOGGER.debug("getModule result from DB for module: "+moduleId);
 		}
 		else {
 			//LOGGER.log(Level.INFO, "getModule result from CACHE for module: "+moduleId);
@@ -94,7 +93,7 @@ LRUCache modulecache = LRUCache.getModuleCache();
 			//LOGGER.log(Level.INFO, "getSubModules result from DB for module: "+moduleName);
 		}
 		else {
-			LOGGER.log(Level.INFO, "getSubModules result from CACHE for module: "+moduleName);
+			LOGGER.debug("getSubModules result from CACHE for module: "+moduleName);
 			modules = Collections.unmodifiableList(modules);
 		}
 		return modules;
@@ -111,7 +110,7 @@ LRUCache modulecache = LRUCache.getModuleCache();
 			
 			CacheUtil.set(CacheUtil.SUB_MODULE_KEY(getOrgId(), moduleId), new ArrayList<>(modules));
 			
-			LOGGER.log(Level.INFO, "getSubModules result from DB for module: "+moduleId);
+			LOGGER.debug("getSubModules result from DB for module: "+moduleId);
 		}
 		else {
 			modules = Collections.unmodifiableList(modules);
@@ -159,7 +158,7 @@ LRUCache modulecache = LRUCache.getModuleCache();
 		}
 		else {
 			modules = Collections.unmodifiableList(modules);
-			LOGGER.log(Level.INFO, "getSubModules result from CACHE for module: "+moduleId);
+			LOGGER.debug("getSubModules result from CACHE for module: "+moduleId);
 		}
 		return modules;
 	}
@@ -229,7 +228,7 @@ LRUCache modulecache = LRUCache.getModuleCache();
 		return field;
 		}
 		catch (Exception e) {
-			log.info("Exception occurred ", e);
+			LOGGER.error("Exception occurred ", e);
 			throw e;
 		}
 	}
