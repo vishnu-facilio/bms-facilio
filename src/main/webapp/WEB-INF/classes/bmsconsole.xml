@@ -2967,6 +2967,49 @@
 				<param name="statusCode">500</param>
 			</result>
 		</action>
+		<action name="beginimportvalidation" class="com.facilio.bmsconsole.actions.ImportDataAction" method="beginImportValidation">
+			<result name="success" type="json">
+				<param name="statusCode">200</param>
+			</result>
+			<result name="error" type="json">
+				<param name="statusCode">500</param>
+			</result>
+		</action>
+		<action name="fetchdataforValidation" class="com.facilio.bmsconsole.actions.ImportDataAction" method="fetchDataForValidation">
+			<result name="success" type="json">
+				<param name="statusCode">200</param>
+				<param name="properties">records,records\[\d+\],records\[\d+\].*</param>
+			</result>
+			<result name="error" type="json">
+				<param name="statusCode">500</param>
+			</result>
+		</action>
+		<action name="fetchallunvalidated" class="com.facilio.bmsconsole.actions.ImportDataAction" method="fetchAllUnvalidated">
+			<result name="success" type="json">
+				<param name="statusCode">200</param>
+				<param name="properties">unvalidatedRecords,unvalidatedRecords\[\d+\],unvalidatedRecords\[\d+\].*</param>
+			</result>
+			<result name="error" type="json">
+				<param name="statusCode">500</param>
+			</result>
+		</action>
+		<action name="fetchimporthistory" class="com.facilio.bmsconsole.actions.ImportDataAction" method="fetchImportHistory">
+			<result name="success" type="json">
+				<param name="statusCode">200</param>
+				<param name="properties">records,records\[\d+\],records\[\d+\].*</param>
+			</result>
+			<result name="error" type="json">
+				<param name="statusCode">500</param>
+			</result>
+		</action>
+		<action name="validateddata" class="com.facilio.bmsconsole.actions.ImportDataAction" method="finishValidation">
+			<result name="success" type="json">
+				<param name="statusCode">200</param>
+			</result>
+			<result name="error" type="json">
+				<param name="statusCode">500</param>
+			</result>
+		</action>
 		<action name="importreading" class="com.facilio.bmsconsole.actions.ImportDataAction" method="importReading">
 			<result name="success" type="json">
 				<param name="properties">importProcessContext.*</param>

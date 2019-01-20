@@ -98,6 +98,7 @@
 		<param name="permission">DATA_ADMINISTRATION</param>
 		</action>
 		<action name="deletetemplate" class="com.facilio.bmsconsole.actions.ImportTemplateAction" method="updateTemplate"></action>
+		<action name="updateTemplate" class="com.facilio.bmsconsole.actions.ImportTemplateAction" method="updateTemplate"></action>
 	</package>
 	
 	

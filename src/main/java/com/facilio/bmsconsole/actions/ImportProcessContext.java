@@ -388,6 +388,11 @@ public class ImportProcessContext implements Serializable
 	}
 	public enum ImportStatus {
 		UPLOAD_COMPLETE,
+		PARSING_IN_PROGRESS,
+		PARSING_FAILED,
+		BEGIN_VALIDATION,
+		RESOLVE_VALIDATION,
+		VALIDATION_COMPLETE,
 		IN_PROGRESS,
 		IMPORTED,
 		FAILED;
@@ -404,6 +409,62 @@ public class ImportProcessContext implements Serializable
 		private static Map<Integer, ImportStatus> initTypeMap() {
 			Map<Integer, ImportStatus> typeMap = new HashMap<>();
 			for(ImportStatus type : ImportStatus.values()) {
+				typeMap.put(type.getValue(), type);
+			}
+			return typeMap;
+		}
+	}
+	
+	public enum ImportLogErrorStatus {
+		NO_VALIDATION_REQUIRED,
+		UNRESOLVED,
+		RESOLVED;
+		
+		public int getValue() {
+			return ordinal()+1;
+		}
+		
+		public String getStringValue() {
+			Integer i = new Integer(ordinal() + 1);
+			return i.toString();
+		}
+		
+		public ImportLogErrorStatus getImportLogErrorStatus(int value) {
+			return IMPORT_LOG_ERROR_STATUS.get(value);
+		}
+		
+		private static final Map<Integer, ImportLogErrorStatus> IMPORT_LOG_ERROR_STATUS = Collections.unmodifiableMap(initTypeMap());
+		private static Map<Integer, ImportLogErrorStatus> initTypeMap() {
+			Map<Integer, ImportLogErrorStatus> typeMap = new HashMap<>();
+			for(ImportLogErrorStatus type : ImportLogErrorStatus.values()) {
+				typeMap.put(type.getValue(), type);
+			}
+			return typeMap;
+		}
+	}
+	
+	public enum ImportRowErrorCode {
+		NO_ERRORS,
+		NULL_RESOURCES,
+		NULL_UNIQUE_FIELDS;
+		
+		public int getValue() {
+			return ordinal()+1;
+		}
+		
+		public String getStringValue() {
+			Integer i = new Integer(ordinal() + 1);
+			return i.toString();
+		}
+		
+		public ImportRowErrorCode getImportRowErrorCode(int value) {
+			return IMPORT_ROW_ERROR_CODE.get(value);
+		}
+		
+		private static final Map<Integer, ImportRowErrorCode> IMPORT_ROW_ERROR_CODE = Collections.unmodifiableMap(initTypeMap());
+		private static Map<Integer, ImportRowErrorCode> initTypeMap() {
+			Map<Integer, ImportRowErrorCode> typeMap = new HashMap<>();
+			for(ImportRowErrorCode type : ImportRowErrorCode.values()) {
 				typeMap.put(type.getValue(), type);
 			}
 			return typeMap;

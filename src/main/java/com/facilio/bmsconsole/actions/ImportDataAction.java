@@ -1,21 +1,37 @@
 package com.facilio.bmsconsole.actions;
 
 import java.io.File;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import org.apache.commons.chain.Chain;
 import org.apache.log4j.LogManager;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.commands.FacilioChainFactory;
+import com.facilio.bmsconsole.commands.FacilioContext;
+import com.facilio.bmsconsole.commands.ImportProcessLogContext;
 import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
+import com.facilio.bmsconsole.context.ImportRowContext;
 import com.facilio.bmsconsole.context.SiteContext;
+import com.facilio.bmsconsole.criteria.BooleanOperators;
+import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.criteria.NumberOperators;
+import com.facilio.bmsconsole.criteria.StringOperators;
+import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
+import com.facilio.bmsconsole.modules.FieldFactory;
+import com.facilio.bmsconsole.modules.FieldUtil;
+import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
+import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
 import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.DateTimeUtil;
 import com.facilio.bmsconsole.util.DeviceAPI;
@@ -25,7 +41,10 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.fs.FileStore;
 import com.facilio.fs.FileStoreFactory;
 import com.facilio.fw.BeanFactory;
+import com.facilio.sql.GenericSelectRecordBuilder;
+import com.facilio.sql.GenericUpdateRecordBuilder;
 import com.facilio.tasker.FacilioTimer;
+import com.mysql.fabric.xmlrpc.base.Array;
 import com.opensymphony.xwork2.ActionSupport;
 
 public class ImportDataAction extends ActionSupport {
@@ -44,13 +63,12 @@ public class ImportDataAction extends ActionSupport {
 		
 		long fileId = fs.addFile(fileUploadFileName, fileUpload, fileUploadContentType);
 		LOGGER.severe("FILE_UPLOADED -- "+fileId);
-		JSONArray columnheadings = ImportAPI.getColumnHeadings(fileUpload);
+		importProcessContext = ImportAPI.getColumnHeadings(fileUpload, importProcessContext);
 		
 		JSONObject firstRow = ImportAPI.getFirstRow(fileUpload);	
-		
 		LOGGER.severe("SECOND POINT-- ");
 		importProcessContext.setfirstRow(firstRow);
-		importProcessContext.setColumnHeadingString(columnheadings.toJSONString().replaceAll("\"", "\\\""));
+		
 		importProcessContext.setImportMode(getImportMode());
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule facilioModule = modBean.getModule(getModuleName());
@@ -179,6 +197,75 @@ public class ImportDataAction extends ActionSupport {
 		return SUCCESS;
 	}
 	
+	public String beginImportValidation() throws Exception{
+		
+		importProcessContext.setStatus(ImportProcessContext.ImportStatus.PARSING_IN_PROGRESS.getValue());
+		ImportAPI.updateImportProcess(importProcessContext);
+		FacilioContext context = new FacilioContext();
+		context.put(ImportAPI.ImportProcessConstants.IMPORT_PROCESS_CONTEXT, this.importProcessContext);
+		FacilioTimer.scheduleInstantJob("ImportLogJob", context);
+		return SUCCESS;
+	}
+	
+	public String fetchAllUnvalidated() throws Exception{
+		GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
+				.select(FieldFactory.getImportProcessFields())
+				.table(ModuleFactory.getImportProcessModule().getTableName())
+				.andCustomWhere("STATUS", ImportProcessContext.ImportStatus.RESOLVE_VALIDATION.getValue());		
+		records = selectRecordBuilder.get();
+		
+		return SUCCESS;		
+	}
+	
+	public String finishValidation() throws Exception{
+		// add import data job here
+		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
+				.table(ModuleFactory.getImportProcessLogModule().getTableName())
+				.fields(FieldFactory.getImportProcessLogFields());
+		
+		for(ImportProcessLogContext row: validatedRecords) {
+			updateBuilder.andCustomWhere("ID = ?", row.getId());
+			JSONObject props = FieldUtil.getAsJSON(row);
+			updateBuilder.update(props);
+		}
+		
+		importProcessContext.setStatus(ImportProcessContext.ImportStatus.VALIDATION_COMPLETE.getValue());
+		ImportAPI.updateImportProcess(importProcessContext);
+		return SUCCESS;
+	}
+	
+	
+	public String fetchImportHistory() throws Exception{
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule importModule = modBean.getModule(ModuleFactory.getImportProcessModule().getName());
+		GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
+				.table(ModuleFactory.getImportProcessModule().getTableName())
+				.select(FieldFactory.getImportProcessFields())
+				.andCustomWhere("ORG_ID = ?", importProcessContext.getOrgId());
+		
+		records = selectRecordBuilder.get();
+		return SUCCESS;
+	}
+	
+	public String fetchDataForValidation() throws Exception{
+		List<FacilioField> fields = FieldFactory.getImportProcessLogFields();
+		GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
+				.select(FieldFactory.getImportProcessLogFields())
+				.table(ModuleFactory.getImportProcessLogModule().getTableName())
+				.andCondition(CriteriaAPI.getCondition("IMPORTID","importId", importProcessContext.getId().toString(), NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition("ERROR_RESOLVED", "error_resolved", ImportProcessContext.ImportLogErrorStatus.UNRESOLVED.getStringValue(), NumberOperators.EQUALS));
+		
+		records = selectRecordBuilder.get();
+		unvalidatedRecords = FieldUtil.getAsBeanListFromMapList(records, ImportProcessLogContext.class);
+		return SUCCESS;
+	}
+	
+	public String importReading() throws Exception{
+		importProcessContext.setStatus(ImportProcessContext.ImportStatus.IN_PROGRESS.getValue());
+		ImportAPI.updateImportProcess(importProcessContext);
+		FacilioTimer.scheduleOneTimeJob(importProcessContext.getId(), "importReading", 5, "priority");
+		return SUCCESS;
+	}
 	public String processImport() throws Exception
 	{	
 		if(assetId > 0) {
@@ -211,7 +298,7 @@ public class ImportDataAction extends ActionSupport {
 		JSONObject meta = im.getImportJobMetaJson();
 		Integer setting = importProcessContext.getImportSetting();
 		
-		if(status == 3 && mail ==null) {
+		if(status == 8 && mail ==null) {
 			if(setting == ImportProcessContext.ImportSetting.INSERT.getValue()) {
 				String inserted = meta.get("Inserted").toString();
 				im.setnewEntries(Integer.parseInt(inserted));
@@ -248,20 +335,14 @@ public class ImportDataAction extends ActionSupport {
 				im.setupdateEntries(Integer.parseInt(updated));				
 			}
 		}
-		else if(status ==2 && mail!=null) {
+		else if(status == 7 && mail!=null) {
 			ImportAPI.updateImportProcess(getImportProcessContext());
 		}
 		importProcessContext = im;
 		return SUCCESS;
 	}
 	
-	public String importReading() throws Exception{
-		
-		importProcessContext.setStatus(ImportProcessContext.ImportStatus.IN_PROGRESS.getValue());
-		ImportAPI.updateImportProcess(importProcessContext);
-		FacilioTimer.scheduleOneTimeJob(importProcessContext.getId(), "importReading", 5, "priority");
-		return SUCCESS;
-	}
+	
 	
 	public void getSites() throws Exception
 	{
@@ -303,6 +384,33 @@ public class ImportDataAction extends ActionSupport {
 
 	private String fileUploadContentType;
 	private String fileUploadFileName;
+	
+	private List<Map<String, Object>> records = new ArrayList<Map<String, Object>>();
+	private List<ImportProcessLogContext> validatedRecords = new ArrayList<ImportProcessLogContext>();
+	
+	public List<ImportProcessLogContext> getValidatedRecords() {
+		return validatedRecords;
+	}
+	public void setValidatedRecords(List<ImportProcessLogContext> validatedRecords) {
+		this.validatedRecords = validatedRecords;
+	}
+	public List<Map<String, Object>> getRecords() {
+		return records;
+	}
+	
+	public List<ImportProcessLogContext> unvalidatedRecords = new ArrayList<ImportProcessLogContext>();
+	
+	public List<ImportProcessLogContext> getUnvalidatedRecords() {
+		return unvalidatedRecords;
+	}
+	public void setUnvalidatedRecords(List<ImportProcessLogContext> unvalidatedRecords) {
+		this.unvalidatedRecords = unvalidatedRecords;
+	}
+	
+	public void setRecords(List<Map<String, Object>> records) {
+		this.records = records;
+	}
+	
 	public long getImportprocessid() {
 		return importprocessid;
 	}

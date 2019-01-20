@@ -37,6 +37,7 @@ public class ImportTemplateAction extends FacilioAction {
 		setResult("templateId", props.get("id"));
 		return SUCCESS;
 	}
+	
 	public String updateTemplate() throws Exception {
 		GenericUpdateRecordBuilder updateRecordBuilder = new GenericUpdateRecordBuilder();
 		FacilioModule importtemplateModule = ModuleFactory.getImportTemplateModule();
@@ -44,6 +45,7 @@ public class ImportTemplateAction extends FacilioAction {
 		updateRecordBuilder.table(importtemplateModule.getTableName()).fields(fields).andCustomWhere("ID = ?", importTemplateContext.getId());
 		Map<String,Object> props = FieldUtil.getAsProperties(importTemplateContext);
 		updateRecordBuilder.update(props);
+		setResult("templateId", importTemplateContext.getId());
 		return SUCCESS;
 	}
 	

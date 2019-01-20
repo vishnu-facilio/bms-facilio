@@ -1156,10 +1156,18 @@ public class FacilioChainFactory {
 	
 	public static Chain getImportReadingChain() {
 		ChainBase c = new ChainBase();
-		c.addCommand(new DataParseForReadingsCommand());
+		c.addCommand(new constructVirtualSheetForReadingsImport());
 		c.addCommand(new InsertReadingCommand());
 		c.addCommand(new WriteSkippedToFileCommand());
 		c.addCommand(new SendEmailCommand());
+		CommonCommandUtil.addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain parseReadingDataForImport() {
+		ChainBase c = new ChainBase();
+		c.addCommand(new DataParseForLogsCommand());
+		c.addCommand(new InsertImportDataIntoLogCommand());
 		CommonCommandUtil.addCleanUpCommand(c);
 		return c;
 	}

@@ -1184,6 +1184,14 @@ public class ModuleFactory {
 		dashboardSharing.setTableName("ImportProcess");
 		return dashboardSharing;
 	}
+	
+	public static FacilioModule getImportProcessLogModule() {
+		FacilioModule importProcessLogModule = new FacilioModule();
+		importProcessLogModule.setName("importProcessLogModule");
+		importProcessLogModule.setDisplayName("Import Log Module");
+		importProcessLogModule.setTableName("ImportProcessLog");
+		return importProcessLogModule;
+	}
 
 	public static FacilioModule getAnalyticsAnomalyModule() {
 		FacilioModule analyticsAnomalyJob = new FacilioModule();

@@ -4472,6 +4472,21 @@ public class FieldFactory {
 
 		return fields;
 	}
+	public static List<FacilioField> getImportProcessLogFields(){
+		FacilioModule module = ModuleFactory.getImportProcessLogModule();
+		List<FacilioField> fields = new ArrayList();
+		fields.add(getField("id" , "ID", module, FieldType.NUMBER));
+		fields.add(getOrgIdField(module));
+		fields.add(getField("parentId", "PARENTID", module, FieldType.NUMBER));
+		fields.add(getField("ttime","TTIME", module, FieldType.NUMBER));
+		fields.add(getField("importId" , "IMPORTID", module, FieldType.NUMBER));
+		fields.add(getField("templateId" , "TEMPLATEID", module, FieldType.NUMBER));
+		fields.add(getField("total_rows" , "ROW_TOTAL", module, FieldType.NUMBER));
+		fields.add(getField("rowContextString" , "GROUPED_ROWS", module, FieldType.STRING));
+		fields.add(getField("error_resolved" , "ERROR_RESOLVED", module, FieldType.NUMBER));
+		fields.add(getField("correctedRowString","CORRECTED_ROW", module, FieldType.STRING));
+		return fields;
+	}
 	public static List<FacilioField> getImportTemplateFields(){
 		FacilioModule module = ModuleFactory.getImportTemplateModule();
 		List<FacilioField> fields = new ArrayList<>();
