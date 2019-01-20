@@ -13,6 +13,7 @@ import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldUtil;
@@ -108,6 +109,10 @@ public class GenericInsertRecordBuilder implements InsertBuilderIfc<Map<String, 
 			if (conn == null) {
 				conn = FacilioConnectionPool.INSTANCE.getConnection();
 				isExternalConnection = false;
+			}
+			
+			if ((AccountUtil.getCurrentOrg().getId() == 155 || AccountUtil.getCurrentOrg().getId() == 151 || AccountUtil.getCurrentOrg().getId() == 92) && (tableName.equals("Ticket_Attachments") || tableName.equals("WorkOrders"))) {
+				LOGGER.info("Connection in Insert Builder : "+conn);
 			}
 			
 			sql = constructInsertStatement();
