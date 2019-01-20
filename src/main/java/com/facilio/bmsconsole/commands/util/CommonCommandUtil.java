@@ -332,9 +332,11 @@ public class CommonCommandUtil {
 				.append("\n\nApp Url : ")
 				.append(AwsUtil.getConfig("app.url"));
 			
+			String errorTrace = null;
 			if (e != null) {
+				errorTrace = ExceptionUtils.getStackTrace(e);
 				body.append("\n\nTrace : \n--------\n")
-					.append(ExceptionUtils.getStackTrace(e));
+					.append(errorTrace);
 			}
 			
 			if (info != null && !info.isEmpty()) {
@@ -342,9 +344,7 @@ public class CommonCommandUtil {
 					.append(info);
 			}
 			
-			if (e != null) {
-				checkDB(e.getMessage(), body);
-			}
+			checkDB(errorTrace, body);
 			String message = body.toString();
 			json.put("message", message);
 			//AwsUtil.sendEmail(json);
@@ -357,9 +357,9 @@ public class CommonCommandUtil {
 		}
 	}
 	
-	private static void checkDB(String msg, StringBuilder body) {
-		if (msg != null) {
-			if(msg.toLowerCase().contains("deadlock") || body.toString().toLowerCase().contains("deadlock")) {
+	private static void checkDB(String errorTrace, StringBuilder body) {
+		if (errorTrace != null) {
+			if(errorTrace.toLowerCase().contains("deadlock") || body.toString().toLowerCase().contains("deadlock")) {
 				String sql = "show engine innodb status";
 				try (Connection conn = FacilioConnectionPool.INSTANCE.getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql);ResultSet rs = pstmt.executeQuery()) {
 					rs.first();
@@ -370,7 +370,7 @@ public class CommonCommandUtil {
 					LOGGER.info("Exception occurred ", e);
 				}
 			}
-			if(msg.toLowerCase().contains("timeout")) {
+			if(errorTrace.toLowerCase().contains("timeout")) {
 				String sql = "show processlist";
 				try (Connection conn = FacilioConnectionPool.INSTANCE.getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql);ResultSet rs = pstmt.executeQuery()) {
 					body.append("\n\nProcess List : \n------------\n\n")
