@@ -112,7 +112,7 @@ public class GenericInsertRecordBuilder implements InsertBuilderIfc<Map<String, 
 			}
 			
 			if ((AccountUtil.getCurrentOrg().getId() == 155 || AccountUtil.getCurrentOrg().getId() == 151 || AccountUtil.getCurrentOrg().getId() == 92) && (tableName.equals("Ticket_Attachments") || tableName.equals("WorkOrders"))) {
-				LOGGER.info("Connection in Insert Builder : "+conn);
+				LOGGER.info("Connection in Insert Builder for "+tableName+" : "+conn);
 			}
 			
 			sql = constructInsertStatement();

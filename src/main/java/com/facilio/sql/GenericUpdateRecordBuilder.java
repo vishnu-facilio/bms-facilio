@@ -160,7 +160,7 @@ public class GenericUpdateRecordBuilder implements UpdateBuilderIfc<Map<String, 
 				}
 				
 				if ((AccountUtil.getCurrentOrg().getId() == 155 || AccountUtil.getCurrentOrg().getId() == 151 || AccountUtil.getCurrentOrg().getId() == 92) && tableName.equals("Preventive_Maintenance")) {
-					LOGGER.info("Connection in Update Builder : "+conn);
+					LOGGER.info("Connection in Update Builder for "+tableName+" : "+conn);
 				}
 				
 				fieldMap = convertFieldsToMap(fields);

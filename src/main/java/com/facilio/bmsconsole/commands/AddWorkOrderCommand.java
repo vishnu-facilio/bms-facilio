@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.commands;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.logging.Logger;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
@@ -17,6 +18,8 @@ import com.facilio.bmsconsole.workflow.rule.ApprovalState;
 import com.facilio.constants.FacilioConstants;
 
 public class AddWorkOrderCommand implements Command {
+	
+	private static final Logger LOGGER = Logger.getLogger(AddWorkOrderCommand.class.getName());
 
 	@Override
 	public boolean execute(Context context) throws Exception {
@@ -65,6 +68,11 @@ public class AddWorkOrderCommand implements Command {
 			
 			long workOrderId = builder.insert(workOrder);
 			workOrder.setId(workOrderId);
+			
+			if (AccountUtil.getCurrentOrg().getId() == 155 || AccountUtil.getCurrentOrg().getId() == 151 || AccountUtil.getCurrentOrg().getId() == 92) {
+				LOGGER.info("Added WO with id : "+workOrderId);
+			}
+			
 			if(context.get(FacilioConstants.ContextNames.ACTIVITY_TYPE) == null) {
 				List<ActivityType> activities = new ArrayList<>();
 				activities.add(ActivityType.CREATE);

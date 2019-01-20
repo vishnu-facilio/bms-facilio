@@ -72,7 +72,7 @@ public class ModuleLocalIdUtil {
 			conn = FacilioConnectionPool.getInstance().getConnectionFromPool();// Should be used with caution
 			
 			if (AccountUtil.getCurrentOrg().getId() == 155 || AccountUtil.getCurrentOrg().getId() == 151 || AccountUtil.getCurrentOrg().getId() == 92) {
-				LOGGER.info("Connection object instance while getting local id : "+conn.getClass().getName());
+				LOGGER.info("Connection object instance while getting local id : "+conn);
 			}
 			
 			conn.setAutoCommit(false);
