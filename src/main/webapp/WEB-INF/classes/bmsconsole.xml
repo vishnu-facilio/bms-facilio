@@ -3005,6 +3005,7 @@
 		<action name="validateddata" class="com.facilio.bmsconsole.actions.ImportDataAction" method="finishValidation">
 			<result name="success" type="json">
 				<param name="statusCode">200</param>
+				<param name="properties">importProcessContext.*</param>
 			</result>
 			<result name="error" type="json">
 				<param name="statusCode">500</param>

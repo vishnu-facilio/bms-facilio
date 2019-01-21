@@ -691,6 +691,8 @@ public class ImportAPI {
 		public static final String HAS_DUPLICATE_ENTRIES ="hasDuplicateEntries";
 		public static final String ROW_COUNT = "rowCount";
 		public static final String NULL_COUNT = "nullCount";
+		public static final String PARSING_ERROR="parsingError";
+		public static final String PARSING_ERROR_MESSAGE="parsingErrorMessage";
 	}
 	
 	

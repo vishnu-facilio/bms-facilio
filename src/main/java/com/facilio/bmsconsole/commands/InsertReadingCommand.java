@@ -40,8 +40,10 @@ public class InsertReadingCommand implements Command {
 		int nullFields = (int)context.get(ImportAPI.ImportProcessConstants.NULL_COUNT);
 		for(int i=0; i<keys.size(); i++) {
 		insertSize = insertSize + groupedContext.get(keys.get(i)).size();
+		LOGGER.severe("---Insert size----" + insertSize);
 		List<ReadingContext> readingContexts = new ArrayList(groupedContext.get(keys.get(i)).values());
-			
+		LOGGER.severe("----Insert Contexts:");
+		LOGGER.severe(readingContexts.toString());
 		insertReadings(keys.get(i),readingContexts);
 		}
 		StringBuilder emailMessage = new StringBuilder();

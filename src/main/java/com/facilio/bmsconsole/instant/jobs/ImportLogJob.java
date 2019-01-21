@@ -11,6 +11,7 @@ import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.exceptions.importExceptions.ImportParseException;
+import com.facilio.bmsconsole.exceptions.importExceptions.ImportTimeColumnParseException;
 import com.facilio.bmsconsole.jobs.ImportDataJob;
 import com.facilio.bmsconsole.util.ImportAPI;
 import com.facilio.tasker.job.InstantJob;
@@ -58,9 +59,14 @@ public class ImportLogJob extends InstantJob{
 				ImportParseException importParseException = (ImportParseException) e;
 				message = importParseException.getClientMessage();
 			}
+			else if(e instanceof ImportTimeColumnParseException) {
+				ImportTimeColumnParseException timeException = (ImportTimeColumnParseException) e;
+				message= timeException.getClientMessage();
+			}
 			else {
 				message = e.getMessage();
 			}
+			
 			try {
 				if(importProcessContext != null) {
 					JSONObject meta = importProcessContext.getImportJobMetaJson();
@@ -79,6 +85,15 @@ public class ImportLogJob extends InstantJob{
 			} catch(Exception a) {
 				System.out.println(a);
 			}
+			
+			WmsEvent wmsEvent = new WmsEvent();
+			wmsEvent.setNamespace("importData");
+			wmsEvent.setAction(ImportAPI.ImportProcessConstants.PARSING_ERROR);
+			wmsEvent.setEventType(WmsEvent.WmsEventType.RECORD_UPDATE);
+			wmsEvent.addData(ImportAPI.ImportProcessConstants.PARSING_ERROR, true);
+			wmsEvent.addData(ImportAPI.ImportProcessConstants.PARSING_ERROR_MESSAGE, message);
+			
+			WmsApi.sendEvent(AccountUtil.getCurrentUser().getId(), wmsEvent);
 			CommonCommandUtil.emailException("Import Failed", "Import failed - orgid -- "+AccountUtil.getCurrentOrg().getId(), e);
 			log.info("Exception occurred ", e);
 			LOGGER.severe(e.getMessage());

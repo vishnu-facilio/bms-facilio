@@ -52,11 +52,11 @@ public class constructVirtualSheetForReadingsImport implements Command {
 		LOGGER.severe("importTemplateContext getFieldMappingString-- "+importTemplateContext.getFieldMappingString());
 		
 		List<Map<String,Object>> allRows = ImportAPI.getValidatedRows(importProcessContext.getId());
+		fieldMapParsing(fieldMapping);
 		List<String> moduleNames = new ArrayList<>(groupedFields.keySet());
 		JSONObject templateMeta = importTemplateContext.getTemplateMetaJSON();
 		JSONObject dateFormats = (JSONObject) templateMeta.get(ImportAPI.ImportProcessConstants.DATE_FORMATS);
 		ModuleBean bean = (ModuleBean)BeanFactory.lookup("ModuleBean");
-		
 		LOGGER.severe("building contexts");
 		
 		for(Map<String, Object> row: allRows) {

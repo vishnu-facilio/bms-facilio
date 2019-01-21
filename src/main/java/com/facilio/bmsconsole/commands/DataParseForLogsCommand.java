@@ -26,6 +26,8 @@ import com.facilio.bmsconsole.actions.ImportProcessContext;
 import com.facilio.bmsconsole.actions.ImportTemplateAction;
 import com.facilio.bmsconsole.actions.ImportTemplateContext;
 import com.facilio.bmsconsole.context.ImportRowContext;
+import com.facilio.bmsconsole.exceptions.importExceptions.ImportParseException;
+import com.facilio.bmsconsole.exceptions.importExceptions.ImportTimeColumnParseException;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
@@ -111,31 +113,34 @@ public class DataParseForLogsCommand implements Command {
 					}
 
 					Object val = 0.0;
-					if (cell.getCellTypeEnum() == CellType.STRING) {
-
-						val = cell.getStringCellValue();
-					}
-					else if (cell.getCellTypeEnum() == CellType.NUMERIC || cell.getCellTypeEnum() == CellType.FORMULA) {
-						if(HSSFDateUtil.isCellDateFormatted(cell) && cell.getCellTypeEnum() == CellType.NUMERIC) {
-							Date date = cell.getDateCellValue();
-							Instant date1 = date.toInstant();
-							val = date1.getEpochSecond()*1000;
+					
+					try{
+						if (cell.getCellTypeEnum() == CellType.STRING) {
+							val = cell.getStringCellValue();
 						}
-						else if(cell.getCellTypeEnum() == CellType.FORMULA) {
-							val = cell.getNumericCellValue();
+						else if (cell.getCellTypeEnum() == CellType.NUMERIC || cell.getCellTypeEnum() == CellType.FORMULA) {
+							if(HSSFDateUtil.isCellDateFormatted(cell) && cell.getCellTypeEnum() == CellType.NUMERIC) {
+								Date date = cell.getDateCellValue();
+								Instant date1 = date.toInstant();
+								val = date1.getEpochSecond()*1000;
+							}
+							else if(cell.getCellTypeEnum() == CellType.FORMULA) {
+								val = cell.getNumericCellValue();
+							}
+							else {
+								val = cell.getNumericCellValue();
+							}
+						}
+						else if(cell.getCellTypeEnum() == CellType.BOOLEAN) {
+							val = cell.getBooleanCellValue();
 						}
 						else {
-							val = cell.getNumericCellValue();
+							val = null;
 						}
-					}
-					else if(cell.getCellTypeEnum() == CellType.BOOLEAN) {
-						val = cell.getBooleanCellValue();
-					}
-					else {
-						val = null;
-					}
-					colVal.put(cellName, val);
-
+						colVal.put(cellName, val);
+					}catch(Exception e) {
+						throw new ImportParseException(rowContext.getRowNumber(), cellName, e);
+						}
 				}
 				
 				if(colVal.values() == null || colVal.values().isEmpty()) {
@@ -197,15 +202,20 @@ public class DataParseForLogsCommand implements Command {
 				}
 				
 				long millis;
-				if(dateFormats.get(fieldMapping.get("sys__ttime")).equals(ImportAPI.ImportProcessConstants.TIME_STAMP_STRING)) {
-					String ttime = (String) colVal.get(fieldMapping.get("sys__ttime"));
-					millis = Long.parseLong(ttime.toString());
+				try {
+					if(dateFormats.get(fieldMapping.get("sys__ttime")).equals(ImportAPI.ImportProcessConstants.TIME_STAMP_STRING)) {
+						String ttime = (String) colVal.get(fieldMapping.get("sys__ttime"));
+						millis = Long.parseLong(ttime.toString());
+					}
+					else {
+						String ttime = (String) colVal.get(fieldMapping.get("sys__ttime"));
+						Instant dateInstant = DateTimeUtil.getTimeInstant(dateFormats.get(fieldMapping.get("sys__ttime")).toString(),ttime);
+						millis = dateInstant.toEpochMilli();
 				}
-				else {
-					String ttime = (String) colVal.get(fieldMapping.get("sys__ttime"));
-					Instant dateInstant = DateTimeUtil.getTimeInstant(dateFormats.get(fieldMapping.get("sys__ttime")).toString(),ttime);
-					millis = dateInstant.toEpochMilli();
+				}catch(Exception e) {
+					throw new ImportTimeColumnParseException(rowContext.getRowNumber(), fieldMapping.get("sys__ttime"), e);
 				}
+				
 				rowContext.setTtime(millis);
 				StringBuilder uniqueString = new StringBuilder();
 				uniqueString.append(parentId.toString());
