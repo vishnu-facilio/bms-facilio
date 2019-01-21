@@ -45,6 +45,13 @@ public class AddAlarmRuleCommand implements Command {
 			WorkflowRuleContext temp = preRequsiteRule;
 			for(ReadingRuleContext alarmTriggerRule :alarmTriggerRules) {
 				
+				if(isFirst) {
+					isFirst = false;
+					alarmTriggerRule.setOnSuccess(true);
+				}
+				else {
+					alarmTriggerRule.setOnSuccess(false);
+				}
 				alarmTriggerRule.setRuleGroupId(ruleId);
 				alarmTriggerRule.setParentRuleId(temp.getId());
 				alarmTriggerRule.setStatus(true);
