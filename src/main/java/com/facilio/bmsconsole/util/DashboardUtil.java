@@ -3279,6 +3279,38 @@ public static JSONObject getStandardVariance1(ReportContext report,JSONArray pro
 		return dashboardFolderContexts;
 	}
 	
+	public static List<DashboardFolderContext> getPortalDashboardFolder() throws Exception {
+		
+			GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(FieldFactory.getDashboardFields())
+				.table(ModuleFactory.getDashboardModule().getTableName())
+				.innerJoin(ModuleFactory.getDashboardSharingModule().getTableName())
+				.on("Dashboard.ID = Dashboard_Sharing.DASHBOARD_ID")
+				.andCustomWhere("Dashboard_Sharing.ORG_USERID=" + AccountUtil.getCurrentUser().getOuid());
+		
+		
+		List<Map<String, Object>> props = selectBuilder.get();
+
+		List<Long> dashboardIds = new ArrayList<>();
+		if (props != null && !props.isEmpty()) {
+			Map<Long, DashboardContext> dashboardMap = new HashMap<Long, DashboardContext>();
+			for (Map<String, Object> prop : props) {
+				DashboardContext dashboard = FieldUtil.getAsBeanFromMap(prop, DashboardContext.class);
+				dashboard.setSpaceFilteredDashboardSettings(getSpaceFilteredDashboardSettings(dashboard.getId()));
+				dashboard.setReportSpaceFilterContext(getDashboardSpaceFilter(dashboard.getId()));
+				dashboardMap.put(dashboard.getId(), dashboard);
+				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+				
+				FacilioModule module = modBean.getModule(dashboard.getModuleId());
+				dashboard.setModuleName(module.getName());
+				dashboardIds.add(dashboard.getId());
+			}
+			List<DashboardContext> dashboards = getFilteredDashboards(dashboardMap, dashboardIds);
+			
+			return sortDashboardByFolder(dashboards);
+		}
+		return null;
+	}
 	
 	public static DashboardFolderContext getorAddDashboardFolder(String moduleName,String dashboardFolderName) throws Exception {
 		
