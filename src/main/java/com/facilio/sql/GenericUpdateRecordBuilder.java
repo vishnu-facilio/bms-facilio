@@ -159,7 +159,7 @@ public class GenericUpdateRecordBuilder implements UpdateBuilderIfc<Map<String, 
 					isExternalConnection = false;
 				}
 				
-				if ((AccountUtil.getCurrentOrg().getId() == 155 || AccountUtil.getCurrentOrg().getId() == 151 || AccountUtil.getCurrentOrg().getId() == 92) && tableName.equals("Preventive_Maintenance")) {
+				if ((AccountUtil.getCurrentOrg() != null && (AccountUtil.getCurrentOrg().getId() == 155 || AccountUtil.getCurrentOrg().getId() == 151 || AccountUtil.getCurrentOrg().getId() == 92)) && tableName.equals("Preventive_Maintenance")) {
 					LOGGER.info("Connection in Update Builder for "+tableName+" : "+conn);
 				}
 				
