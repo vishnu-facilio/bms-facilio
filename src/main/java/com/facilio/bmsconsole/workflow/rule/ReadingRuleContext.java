@@ -28,6 +28,8 @@ import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.bmsconsole.templates.JSONTemplate;
+import com.facilio.bmsconsole.util.ActionAPI;
 import com.facilio.bmsconsole.util.AlarmAPI;
 import com.facilio.bmsconsole.util.ReadingRuleAPI;
 import com.facilio.bmsconsole.util.ReadingsAPI;
@@ -635,6 +637,22 @@ public class ReadingRuleContext extends WorkflowRuleContext {
 	}
 	public void setAlarmMetaMap(Map<Long, ReadingRuleAlarmMeta> alarmMetaMap) {
 		this.alarmMetaMap = alarmMetaMap;
+	}
+	
+	public void executeTrueActions(Object record, Context context, Map<String, Object> placeHolders) throws Exception {
+		long ruleId = getId();
+		List<ActionContext>	actions = ActionAPI.getActiveActionsFromWorkflowRule(ruleId);
+		if(actions != null) {
+			for(ActionContext action : actions) {
+				if(alarmSeverityId != null) {
+					JSONTemplate jsonTemplate = (JSONTemplate) action.getTemplate();
+					JSONObject templateJson = jsonTemplate.getOriginalTemplate();
+					templateJson.put("severity", AlarmAPI.getAlarmSeverity(alarmSeverityId).getDisplayName());
+					jsonTemplate.setContent(templateJson.toJSONString());
+				}
+				action.executeAction(placeHolders, context, this, record);
+			}
+		}
 	}
 	
 	@Override

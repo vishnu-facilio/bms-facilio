@@ -84,6 +84,8 @@ public class WorkflowRuleAPI {
 			case READING_RULE:
 			case PM_READING_RULE:
 			case VALIDATION_RULE:
+			case ALARM_TRIGGER_RULE:
+			case ALARM_CLEAR_RULE:
 				if (((ReadingRuleContext) rule).getClearAlarm() == null) {
 					ruleProps.put("clearAlarm", true);
 				}
@@ -544,6 +546,8 @@ public class WorkflowRuleAPI {
 				case READING_RULE:
 				case PM_READING_RULE:
 				case VALIDATION_RULE:
+				case ALARM_TRIGGER_RULE:
+				case ALARM_CLEAR_RULE:
 					typeWiseProps.put(entry.getKey(), getExtendedProps(ModuleFactory.getReadingRuleModule(), FieldFactory.getReadingRuleFields(), entry.getValue()));
 					break;
 				case SLA_RULE:
@@ -649,6 +653,8 @@ public class WorkflowRuleAPI {
 						case PM_READING_RULE:
 						case READING_RULE:
 						case VALIDATION_RULE:
+						case ALARM_TRIGGER_RULE:
+						case ALARM_CLEAR_RULE:
 							prop.putAll(typeWiseExtendedProps.get(ruleType).get(prop.get("id")));
 							rule = ReadingRuleAPI.constructReadingRuleFromProps(prop, modBean, fetchChildren);
 							break;
