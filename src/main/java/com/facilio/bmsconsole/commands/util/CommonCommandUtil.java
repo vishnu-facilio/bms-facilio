@@ -360,11 +360,26 @@ public class CommonCommandUtil {
 	private static void checkDB(String errorTrace, StringBuilder body) {
 		if (errorTrace != null) {
 			if(errorTrace.toLowerCase().contains("deadlock") || body.toString().toLowerCase().contains("deadlock")) {
-				String sql = "show engine innodb status";
-				try (Connection conn = FacilioConnectionPool.INSTANCE.getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql);ResultSet rs = pstmt.executeQuery()) {
-					rs.first();
-					body.append("\n\nInno DB Status : \n------------\n\n")
-						.append(rs.getString("Status"));
+				try (Connection conn = FacilioConnectionPool.INSTANCE.getConnection()) {
+					String sql = "show engine innodb status";
+					try (PreparedStatement pstmt = conn.prepareStatement(sql);ResultSet rs = pstmt.executeQuery()) {
+						rs.first();
+						body.append("\n\nInno DB Status : \n------------\n\n")
+							.append(rs.getString("Status"));
+					}
+					catch (SQLException e) {
+						LOGGER.info("Exception occurred while getting InnoDB status");
+					}
+					
+					sql = "SELECT * FROM information_schema.innodb_locks";
+					try (PreparedStatement pstmt = conn.prepareStatement(sql);ResultSet rs = pstmt.executeQuery()) {
+						rs.first();
+						body.append("\n\nLocks from Information Schema : \n------------\n\n")
+							.append(FacilioTablePrinter.getResultSetData(rs));
+					}
+					catch (SQLException e) {
+						LOGGER.info("Exception occurred while getting InnoDB status");
+					}
 				} catch (SQLException e) {
 					// TODO Auto-generated catch block
 					LOGGER.info("Exception occurred ", e);
