@@ -57,7 +57,7 @@ public class constructVirtualSheetForReadingsImport implements Command {
 		JSONObject templateMeta = importTemplateContext.getTemplateMetaJSON();
 		JSONObject dateFormats = (JSONObject) templateMeta.get(ImportAPI.ImportProcessConstants.DATE_FORMATS);
 		ModuleBean bean = (ModuleBean)BeanFactory.lookup("ModuleBean");
-		LOGGER.severe("building contexts");
+		LOGGER.severe("Starting virtual sheet reconstruction");
 		
 		for(Map<String, Object> row: allRows) {
 			ImportProcessLogContext rowLogContext = FieldUtil.getAsBeanFromMap(row, ImportProcessLogContext.class);
@@ -73,8 +73,6 @@ public class constructVirtualSheetForReadingsImport implements Command {
 			else {
 				rowContext = rowLogContext.getCorrectedRow();
 			}
-			LOGGER.severe("---CorrectedString----" + rowLogContext.getCorrectedRowString());
-			LOGGER.severe("---CorrectedRow---" + rowLogContext.getCorrectedRow());
 			LOGGER.severe("---RowContext----" + rowContext.toString());
 //			
 //			if(rowContext.getError_code() == ImportProcessContext.ImportRowErrorCode.NULL_RESOURCES.getValue()

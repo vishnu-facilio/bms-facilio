@@ -184,11 +184,16 @@ public class DataParseForLogsCommand implements Command {
 				
 				JSONObject meta = importTemplateContext.getModuleJSON();
 				Long parentId =null;
-				if(!meta.isEmpty()) {
+				if(!meta.isEmpty() && uniqueMapping == null) {
 					parentId = (Long) meta.get(ImportAPI.ImportProcessConstants.PARENT_ID_FIELD);
 				}
-				if(!importTemplateContext.getUniqueMappingJSON().isEmpty() && rowContext.getError_code() != ImportProcessContext.ImportRowErrorCode.NULL_UNIQUE_FIELDS.getValue()) {
-					parentId = getAssetByUniqueness(colVal, importTemplateContext.getModuleMapping().get("subModule"), uniqueMapping);
+				
+				if(!importTemplateContext.getUniqueMappingJSON().isEmpty())
+				{
+					if(rowContext.getError_code() == null)
+					{
+						parentId = getAssetByUniqueness(colVal, importTemplateContext.getModuleMapping().get("subModule"), uniqueMapping);
+					}
 				}
 				
 				if(parentId == null) {
@@ -218,7 +223,12 @@ public class DataParseForLogsCommand implements Command {
 				
 				rowContext.setTtime(millis);
 				StringBuilder uniqueString = new StringBuilder();
-				uniqueString.append(parentId.toString());
+				if(parentId == null || parentId < 0) {
+					uniqueString.append("-1");
+				}
+				else {
+					uniqueString.append(parentId.toString());
+				}
 				uniqueString.append("__");
 				uniqueString.append(String.valueOf(rowContext.getTtime()));
 				if(!groupedContext.containsKey(uniqueString.toString())) {
@@ -249,6 +259,7 @@ public class DataParseForLogsCommand implements Command {
 		return false;
 	}
 	public static Long getAssetByUniqueness(HashMap<String,Object> colVal, String module, HashMap<String,String> uniqueMapping) throws Exception {
+		LOGGER.severe("getAssetByUniqueness");
 		LOGGER.severe("colVal" + colVal.toString());
 		LOGGER.severe("module" + module);
 		LOGGER.severe("uniqueMapping" + uniqueMapping.toString());

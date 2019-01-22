@@ -42,8 +42,6 @@ public class InsertReadingCommand implements Command {
 		insertSize = insertSize + groupedContext.get(keys.get(i)).size();
 		LOGGER.severe("---Insert size----" + insertSize);
 		List<ReadingContext> readingContexts = new ArrayList(groupedContext.get(keys.get(i)).values());
-		LOGGER.severe("----Insert Contexts:");
-		LOGGER.severe(readingContexts.toString());
 		insertReadings(keys.get(i),readingContexts);
 		}
 		StringBuilder emailMessage = new StringBuilder();
@@ -86,8 +84,6 @@ public class InsertReadingCommand implements Command {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.HISTORY_READINGS,true);
 		context.put(FacilioConstants.ContextNames.READINGS_SOURCE, SourceType.IMPORT);
-		//TODO Have to check if this takes more time
-//		context.put(FacilioConstants.ContextNames.UPDATE_LAST_READINGS,false);
 		
 		context.put(FacilioConstants.ContextNames.READINGS_MAP , readingMap);
 		Chain importDataChain = ReadOnlyChainFactory.getAddOrUpdateReadingValuesChain();

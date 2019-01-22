@@ -42,8 +42,6 @@ public class WriteSkippedToFileCommand implements Command {
 		ImportTemplateContext importTemplateContext = (ImportTemplateContext) context.get(ImportAPI.ImportProcessConstants.IMPORT_TEMPLATE_CONTEXT);
 		List<Map<String, Object>> allRows = ImportAPI.getValidatedRows(importProcessContext.getId());
 		List<ImportRowContext> rowContexts = new ArrayList<ImportRowContext>();
-		// HashMap<Integer,HashMap<String,Object>> nullUniqueFields  = (HashMap<Integer,HashMap<String,Object>>) context.get(ImportAPI.ImportProcessConstants.NULL_UNIQUE_FIELDS);
-		// HashMap<Integer,HashMap<String,Object>> nullResources  = (HashMap<Integer,HashMap<String,Object>>) context.get(ImportAPI.ImportProcessConstants.NULL_RESOURCES);
 		
 		List<ImportRowContext> nullUniqueFields = new ArrayList<ImportRowContext>();
 		List<ImportRowContext> nullResources = new ArrayList<ImportRowContext>();
@@ -51,12 +49,6 @@ public class WriteSkippedToFileCommand implements Command {
 		for(Map<String, Object> row: allRows) {
 			ImportProcessLogContext logContext = FieldUtil.getAsBeanFromMap(row, ImportProcessLogContext.class);
 			
-//			if(logContext.getError_resolved() == ImportProcessContext.ImportLogErrorStatus.NO_VALIDATION_REQUIRED.getValue()) {
-//				rowContext = logContext.getRowContexts().get(0);
-//			}
-//			else {
-//				rowContext = logContext.getCorrectedRow();
-//			}
 			if(logContext.getError_resolved() == ImportProcessContext.ImportLogErrorStatus.OTHER_ERRORS.getValue()) {
 				rowContexts = logContext.getRowContexts();
 			}
@@ -72,29 +64,7 @@ public class WriteSkippedToFileCommand implements Command {
 				}
 			}
 		}
-		
-;
-		//		Map<String, ImportRowContext> nullUniqueFields = new HashMap<String, ImportRowContext>();
-//		Map<String, ImportRowContext> nullResources = new HashMap<String, ImportRowContext>();
-		
-//		for(String module : groupedContext.keySet()) {
-//			Map<String, ImportRowContext> rows = groupedContext.get(module);
-//			Map<String, ImportRowContext> tempNullUniqueFields = rows.entrySet()
-//																			.stream()
-//																			.filter(row -> row.getValue().isHasNullUniqueFields() == true)
-//																			.collect(Collectors.toMap(Entry::getKey, Entry::getValue))
-//																			;
-//			
-//			nullUniqueFields.putAll(tempNullUniqueFields);
-//			Map<String, ImportRowContext> tempNullResources = rows.entrySet()
-//																			.stream()
-//																			.filter(row -> row.getValue().isNullResource() == true)
-//																			.collect(Collectors.toMap(Entry::getKey, Entry::getValue))
-//																			;
-//			nullResources.putAll(tempNullResources);
-//			
-//		}
-		
+	
 		
 		if(!nullUniqueFields.isEmpty() || !nullResources.isEmpty()) {
 			FileStore fs = FileStoreFactory.getInstance().getFileStore();
