@@ -87,7 +87,7 @@ public class ImportProcessLogContext {
 	}
 	public void setParentId(Long parentId) throws Exception {
 		this.parentId = parentId;
-		if(parentId != -1) {
+		if(parentId != null && parentId > 0) {
 			 setAssetName(AssetsAPI.getAssetInfo(parentId).getName());
 		}
 	}

@@ -218,7 +218,6 @@ public class ImportDataAction extends ActionSupport {
 	}
 	
 	public String finishValidation() throws Exception{
-		// add import data job here
 		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
 				.table(ModuleFactory.getImportProcessLogModule().getTableName())
 				.fields(FieldFactory.getImportProcessLogFields());

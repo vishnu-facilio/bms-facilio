@@ -53,7 +53,10 @@ public class InsertImportDataIntoLogCommand implements Command {
 			LOGGER.severe("templat id set");
 			logContext.setTotal_rows(row_count);
 			LOGGER.severe("row count set");
-			if(groupedContext.get(uniqueString).size() == 1) {
+			if(logContext.getParentId() == null || logContext.getParentId() < 0) {
+				logContext.setError_resolved(ImportProcessContext.ImportLogErrorStatus.OTHER_ERRORS.getValue());
+			}
+			else if(groupedContext.get(uniqueString).size() == 1) {
 				LOGGER.severe("no validation set");
 				logContext.setError_resolved(ImportProcessContext.ImportLogErrorStatus.NO_VALIDATION_REQUIRED.getValue());
 			}

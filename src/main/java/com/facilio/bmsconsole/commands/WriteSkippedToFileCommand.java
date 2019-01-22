@@ -50,18 +50,26 @@ public class WriteSkippedToFileCommand implements Command {
 				
 		for(Map<String, Object> row: allRows) {
 			ImportProcessLogContext logContext = FieldUtil.getAsBeanFromMap(row, ImportProcessLogContext.class);
-			ImportRowContext rowContext = new ImportRowContext();
-			if(logContext.getError_resolved() == ImportProcessContext.ImportLogErrorStatus.NO_VALIDATION_REQUIRED.getValue()) {
-				rowContext = logContext.getRowContexts().get(0);
+			
+//			if(logContext.getError_resolved() == ImportProcessContext.ImportLogErrorStatus.NO_VALIDATION_REQUIRED.getValue()) {
+//				rowContext = logContext.getRowContexts().get(0);
+//			}
+//			else {
+//				rowContext = logContext.getCorrectedRow();
+//			}
+			if(logContext.getError_resolved() == ImportProcessContext.ImportLogErrorStatus.OTHER_ERRORS.getValue()) {
+				rowContexts = logContext.getRowContexts();
 			}
 			else {
-				rowContext = logContext.getCorrectedRow();
+				continue;
 			}
-			if(rowContext.getError_code() == ImportProcessContext.ImportRowErrorCode.NULL_UNIQUE_FIELDS.getValue()) {
-				nullUniqueFields.add(rowContext);
-			}
-			else if(rowContext.getError_code() == ImportProcessContext.ImportRowErrorCode.NULL_RESOURCES.getValue()) {
-				nullResources.add(rowContext);
+			for(ImportRowContext rowContext: rowContexts) {
+				if(rowContext.getError_code() == ImportProcessContext.ImportRowErrorCode.NULL_UNIQUE_FIELDS.getValue()) {
+					nullUniqueFields.add(rowContext);
+				}
+				else if(rowContext.getError_code() == ImportProcessContext.ImportRowErrorCode.NULL_RESOURCES.getValue()) {
+					nullResources.add(rowContext);
+				}
 			}
 		}
 		

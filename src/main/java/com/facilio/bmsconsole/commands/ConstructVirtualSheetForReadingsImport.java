@@ -66,19 +66,23 @@ public class constructVirtualSheetForReadingsImport implements Command {
 			if(rowLogContext.getError_resolved() == ImportProcessContext.ImportLogErrorStatus.NO_VALIDATION_REQUIRED.getValue()) {
 				rowContext = rowLogContext.getRowContexts().get(0);
 			}
+			else if(rowLogContext.getError_resolved() == ImportProcessContext.ImportLogErrorStatus.OTHER_ERRORS.getValue()) {
+				nullFields = nullFields + rowLogContext.getRowContexts().size();
+				continue;
+			}
 			else {
 				rowContext = rowLogContext.getCorrectedRow();
 			}
 			LOGGER.severe("---CorrectedString----" + rowLogContext.getCorrectedRowString());
 			LOGGER.severe("---CorrectedRow---" + rowLogContext.getCorrectedRow());
 			LOGGER.severe("---RowContext----" + rowContext.toString());
-			
-			if(rowContext.getError_code() == ImportProcessContext.ImportRowErrorCode.NULL_RESOURCES.getValue()
-					|| rowContext.getError_code() == ImportProcessContext.ImportRowErrorCode.NULL_UNIQUE_FIELDS.getValue()) {
-				nullFields = nullFields + 1;
-				continue;
-			}
-			else {
+//			
+//			if(rowContext.getError_code() == ImportProcessContext.ImportRowErrorCode.NULL_RESOURCES.getValue()
+//					|| rowContext.getError_code() == ImportProcessContext.ImportRowErrorCode.NULL_UNIQUE_FIELDS.getValue()) {
+//				nullFields = nullFields + 1;
+//				continue;
+//			}
+
 				HashMap<String,Object> colVal = rowContext.getColVal();
 				
 				for(String module : moduleNames) {
@@ -160,7 +164,6 @@ public class constructVirtualSheetForReadingsImport implements Command {
 					}
 					LOGGER.severe("Virtual sheet construction complete");
 			}
-		}
 			}
 			
 		context.put(ImportAPI.ImportProcessConstants.GROUPED_ROW_CONTEXT, groupedContext);

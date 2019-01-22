@@ -418,7 +418,8 @@ public class ImportProcessContext implements Serializable
 	public enum ImportLogErrorStatus {
 		NO_VALIDATION_REQUIRED,
 		UNRESOLVED,
-		RESOLVED;
+		RESOLVED,
+		OTHER_ERRORS;
 		
 		public int getValue() {
 			return ordinal()+1;
