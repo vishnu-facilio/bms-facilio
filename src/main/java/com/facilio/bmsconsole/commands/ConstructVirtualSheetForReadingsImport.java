@@ -29,7 +29,7 @@ import com.facilio.bmsconsole.util.ImportAPI;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericSelectRecordBuilder;
 
-public class constructVirtualSheetForReadingsImport implements Command {
+public class ConstructVirtualSheetForReadingsImport implements Command {
 
 	private static final Logger LOGGER = Logger.getLogger(DataParseForReadingsCommand.class.getName());
 	
