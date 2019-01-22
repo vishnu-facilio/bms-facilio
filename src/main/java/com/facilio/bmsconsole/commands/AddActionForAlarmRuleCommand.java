@@ -33,6 +33,7 @@ public class AddActionForAlarmRuleCommand implements Command {
 		if(alarmRule.getAlarmClearRule() != null) {
 			ActionContext actionContext = new ActionContext();
 			actionContext.setActionType(ActionType.CLEAR_ALARM);
+			actionContext.setStatus(true);
 			
 			actions = ActionAPI.addActions(Collections.singletonList(actionContext), alarmRule.getAlarmClearRule());
 			

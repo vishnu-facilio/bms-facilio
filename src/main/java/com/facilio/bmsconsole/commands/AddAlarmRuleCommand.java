@@ -44,8 +44,10 @@ public class AddAlarmRuleCommand implements Command {
 			
 			WorkflowRuleContext temp = preRequsiteRule;
 			boolean isFirst = true;
+			int i=0;
 			for(ReadingRuleContext alarmTriggerRule :alarmTriggerRules) {
 				
+				i++;
 				if(isFirst) {
 					isFirst = false;
 					alarmTriggerRule.setOnSuccess(true);
@@ -57,6 +59,10 @@ public class AddAlarmRuleCommand implements Command {
 				alarmTriggerRule.setParentRuleId(temp.getId());
 				alarmTriggerRule.setStatus(true);
 				alarmTriggerRule.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
+				
+				if(i == alarmTriggerRules.size() && alarmRule.getIsAutoClear()) {
+					alarmTriggerRule.setClearAlarm(true);
+				}
 				ruleId = WorkflowRuleAPI.addWorkflowRule(alarmTriggerRule);
 				
 				temp = alarmTriggerRule;

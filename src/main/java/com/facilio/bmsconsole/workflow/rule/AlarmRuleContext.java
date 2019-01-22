@@ -11,6 +11,22 @@ public class AlarmRuleContext {
 	List<ReadingRuleContext> alarmTriggerRules;
 	ReadingRuleContext alarmClearRule;
 	
+	boolean isAutoClear;			// set when autoclear without any condition.
+	
+	public boolean getIsAutoClear() {
+		return isAutoClear;
+	}
+	public void setIsAutoClear(boolean isAutoClear) {
+		this.isAutoClear = isAutoClear;
+	}
+	public boolean isAutoClear() {
+		return isAutoClear;
+	}
+
+	public void setAutoClear(boolean isAutoClear) {
+		this.isAutoClear = isAutoClear;
+	}
+
 	public AlarmRuleContext(List<ReadingRuleContext> rules) {
 		for(ReadingRuleContext rule :rules) {
 			
