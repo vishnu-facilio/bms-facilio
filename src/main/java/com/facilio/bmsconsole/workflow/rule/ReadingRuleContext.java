@@ -641,9 +641,6 @@ public class ReadingRuleContext extends WorkflowRuleContext {
 	
 	public void executeTrueActions(Object record, Context context, Map<String, Object> placeHolders) throws Exception {
 		long ruleId = getId();
-//		if (clearAlarm()) {
-//			addClearEvent(record, context, placeHolders, (ReadingContext) record, this);
-//		}
 		List<ActionContext>	actions = ActionAPI.getActiveActionsFromWorkflowRule(ruleId);
 		if(actions != null) {
 			for(ActionContext action : actions) {
