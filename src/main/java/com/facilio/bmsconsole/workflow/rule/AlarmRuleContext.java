@@ -38,6 +38,9 @@ public class AlarmRuleContext {
 			}
 			else if(rule.getRuleTypeEnum().equals(RuleType.ALARM_TRIGGER_RULE)) {
 				addAlarmTriggerRule(rule);
+				if(rule.getClearAlarm()) {
+					setIsAutoClear(true);
+				}
 			}
 		}
 	}

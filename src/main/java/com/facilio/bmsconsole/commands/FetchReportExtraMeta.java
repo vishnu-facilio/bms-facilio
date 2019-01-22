@@ -236,6 +236,9 @@ public class FetchReportExtraMeta implements Command {
 	
 	public boolean isAlarmEnabled(String chartStateJsonString) {
 		try {
+			if(chartStateJsonString == null) {
+				return Boolean.TRUE;
+			}
 			JSONObject chartStateSettingJson = getChartStateSetting(chartStateJsonString);
 			return (boolean) chartStateSettingJson.get("alarm");
 		}
