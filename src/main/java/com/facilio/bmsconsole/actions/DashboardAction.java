@@ -7037,6 +7037,10 @@ public class DashboardAction extends FacilioAction {
 		}
 		return SUCCESS;
 	}
+	public String getPortalDashboardFolder() throws Exception {
+		dashboardFolders = DashboardUtil.getPortalDashboardFolder();
+		return SUCCESS;
+	}
 	public String updateDashboardFolder() throws Exception {
 		
 		if(dashboardFolderContext != null) {

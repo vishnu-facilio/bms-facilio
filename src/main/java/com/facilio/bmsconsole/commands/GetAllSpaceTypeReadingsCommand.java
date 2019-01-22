@@ -64,11 +64,13 @@ public class GetAllSpaceTypeReadingsCommand implements Command {
 				BuildingContext building = buildings.get(i);
 				SiteContext site = new SiteContext();
 				site.setId(building.getSiteId());
-				String siteName = parentObjList.get(building.getSiteId()).getName();
-				site.setName(siteName);
-				building.setSite(site);
-				ids.add(building.getId());
-				spaces.put(building.getId(), building);
+				if (parentObjList.get(building.getSiteId()) != null) {
+					String siteName = parentObjList.get(building.getSiteId()).getName();
+					site.setName(siteName);
+					building.setSite(site);
+					ids.add(building.getId());
+					spaces.put(building.getId(), building);
+				}
 			}
 			spaceType = SpaceType.BUILDING;
 

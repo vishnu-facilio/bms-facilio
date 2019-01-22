@@ -24,6 +24,11 @@ public class FacilioConnection implements Connection {
 	private java.sql.Connection physicalConnection;
 
 	FacilioConnection(Connection c) {
+		
+		if (c == null) {
+			throw new IllegalArgumentException("Physical Connection cannot be null");
+		}
+		
 		this.physicalConnection = c;
 	}
 
@@ -313,6 +318,15 @@ public class FacilioConnection implements Connection {
 	
 	java.sql.Connection getPhysicalConnection() {
 		return this.physicalConnection;
+	}
+	
+	@Override
+	public String toString() {
+		// TODO Auto-generated method stub
+		return new StringBuilder("FacilioConnection[")
+				.append(physicalConnection.toString())
+				.append("]")
+				.toString();
 	}
 
 }

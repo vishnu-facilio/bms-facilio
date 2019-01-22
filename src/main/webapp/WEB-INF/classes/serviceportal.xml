@@ -232,6 +232,11 @@
 				<param name="includeProperties">responseCode, ^result.*</param>
 			</result>
 		</action>
+		<action name="dashboardWithFolder" class="com.facilio.bmsconsole.actions.DashboardAction" method="getPortalDashboardFolder">
+			<result name="success" type="json">
+				<param name="includeProperties">dashboardFolders,dashboardFolders\[\d+\],dashboardFolders\[\d+\].*</param>
+			</result>
+		</action>
 	</package>
 	
 </struts>

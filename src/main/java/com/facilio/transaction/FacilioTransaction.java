@@ -179,4 +179,13 @@ public class FacilioTransaction implements Transaction {
 	public long getTransactionTimeout(){
 		return transactionTimeout;
 	}
+	
+	@Override
+	public String toString() {
+		// TODO Auto-generated method stub
+		return new StringBuilder("FacilioTransaction[")
+					.append(connections.toString())
+					.append("]")
+					.toString();
+	}
 }
