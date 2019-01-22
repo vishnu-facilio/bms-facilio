@@ -26,8 +26,10 @@ public class AttachmentContext extends ModuleBaseWithCustomFields {
 	public long getFileId() {
 		return fileId;
 	}
-	public void setFileId(long fileId) {
+	public void setFileId(long fileId) throws Exception {
 		this.fileId = fileId;
+		getPreviewUrl();
+		getDownloadUrl();
 	}
 	
 	private long createdTime = -1;
@@ -94,8 +96,9 @@ public class AttachmentContext extends ModuleBaseWithCustomFields {
 		this.type = type;
 	}
 	
+	private String previewUrl;
 	public String getPreviewUrl() throws Exception {
-		if (this.fileId > 0) {
+		if (this.previewUrl == null && this.fileId > 0) {
 			if (!AccountUtil.getCurrentAccount().isFromMobile() && StringUtils.isNotEmpty(attachmentModule) && recordId > 0) {
 				StringBuffer url = ServletActionContext.getRequest().getRequestURL();
 				StringBuilder builder = new StringBuilder(url.substring(0, url.indexOf("/api")))
@@ -103,16 +106,18 @@ public class AttachmentContext extends ModuleBaseWithCustomFields {
 				return builder.toString();
 			}
 			FileStore fs = FileStoreFactory.getInstance().getFileStore();
-			return fs.getPrivateUrl(this.fileId);
+			previewUrl = fs.getPrivateUrl(this.fileId);
 		}
-		return null;
+		return previewUrl;
 	}
+	
+	private String downloadUrl;
 	public String getDownloadUrl() throws Exception {
-		if (this.fileId > 0) {
+		if (this.downloadUrl == null && this.fileId > 0) {
 			FileStore fs = FileStoreFactory.getInstance().getFileStore();
-			return fs.getDownloadUrl(this.fileId);
+			downloadUrl = fs.getDownloadUrl(this.fileId);
 		}
-		return null;
+		return downloadUrl;
 	}
 	
 	private String attachmentModule;
