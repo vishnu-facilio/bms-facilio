@@ -661,41 +661,10 @@ public class ReadingRuleContext extends WorkflowRuleContext {
 		ReadingContext reading = (ReadingContext) record;
 		if (getMetric(reading) != null) {
 			if (clearAlarm()) {
-				addClearEvent(record, context, placeHolders, reading, this);
+				ReadingRuleAPI.addClearEvent(record, context, placeHolders, reading, this);
 			}
 			
 			super.executeFalseActions(record, context, placeHolders);
-		}
-	}
-	
-	public void addClearEvent(Object record, Context context, Map<String, Object> placeHolders,ReadingContext reading,ReadingRuleContext readingRuleContext) throws Exception {
-		Map<Long, ReadingRuleAlarmMeta> alarmMetaMap = (Map<Long, ReadingRuleAlarmMeta>) context.get(FacilioConstants.ContextNames.READING_RULE_ALARM_META);
-		boolean isHistorical = true;
-		if (alarmMetaMap == null) {
-			alarmMetaMap = readingRuleContext.getAlarmMetaMap();
-			isHistorical = false;
-		}
-		
-		ReadingRuleAlarmMeta alarmMeta = alarmMetaMap != null ? alarmMetaMap.get(reading.getParentId()) : null;
-		if (isHistorical) {
-			LOGGER.info("Alarm meta for rule : "+readingRuleContext.getId()+" for resource : "+reading.getParentId()+" at time : "+reading.getTtime()+"::"+alarmMeta);
-		}
-		if (alarmMeta != null && !alarmMeta.isClear()) {
-			alarmMeta.setClear(true);
-			AlarmContext alarm = AlarmAPI.getAlarm(alarmMeta.getAlarmId());
-			
-			JSONObject json = AlarmAPI.constructClearEvent(alarm, "System auto cleared Alarm because associated rule executed false for the associated resource", reading.getTtime());
-			json.put("readingDataId", reading.getId());
-			json.put("readingVal", reading.getReading(readingRuleContext.getReadingField().getName()));
-			
-			if (isHistorical) {
-				LOGGER.info("Clearing alarm for rule : "+readingRuleContext.getId()+" for resource : "+reading.getParentId());
-			}
-			
-			FacilioContext addEventContext = new FacilioContext();
-			addEventContext.put(EventConstants.EventContextNames.EVENT_PAYLOAD, json);
-			Chain getAddEventChain = EventConstants.EventChainFactory.getAddEventChain();
-			getAddEventChain.execute(addEventContext);
 		}
 	}
 }

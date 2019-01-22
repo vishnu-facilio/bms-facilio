@@ -671,7 +671,7 @@ public enum ActionType {
 
 		@Override
 		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule, Object currentRecord) throws Exception {
-			
+//			ReadingRuleAPI.addClearEvent(currentRecord, context, obj, (ReadingContext) currentRecord, (ReadingRuleContext)currentRule);
 		}
 	},
 	;

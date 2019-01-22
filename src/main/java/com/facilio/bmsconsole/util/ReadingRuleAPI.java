@@ -8,12 +8,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.chain.Chain;
+import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.commands.FacilioContext;
+import com.facilio.bmsconsole.context.AlarmContext;
 import com.facilio.bmsconsole.context.AssetContext;
+import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
@@ -26,6 +32,8 @@ import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleAlarmMeta;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.events.constants.EventConstants;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
@@ -342,5 +350,38 @@ public class ReadingRuleAPI extends WorkflowRuleAPI {
 		}
 		return readingRuleContexts;
 	}
-	
+	public static void addClearEvent(Object record, Context context, Map<String, Object> placeHolders,ReadingContext reading,ReadingRuleContext readingRuleContext) throws Exception {
+		
+		if(reading == null) {
+			reading = (ReadingContext) record;
+		}
+		Map<Long, ReadingRuleAlarmMeta> alarmMetaMap = (Map<Long, ReadingRuleAlarmMeta>) context.get(FacilioConstants.ContextNames.READING_RULE_ALARM_META);
+		boolean isHistorical = true;
+		if (alarmMetaMap == null) {
+			alarmMetaMap = readingRuleContext.getAlarmMetaMap();
+			isHistorical = false;
+		}
+		
+		ReadingRuleAlarmMeta alarmMeta = alarmMetaMap != null ? alarmMetaMap.get(reading.getParentId()) : null;
+		if (isHistorical) {
+			LOGGER.info("Alarm meta for rule : "+readingRuleContext.getId()+" for resource : "+reading.getParentId()+" at time : "+reading.getTtime()+"::"+alarmMeta);
+		}
+		if (alarmMeta != null && !alarmMeta.isClear()) {
+			alarmMeta.setClear(true);
+			AlarmContext alarm = AlarmAPI.getAlarm(alarmMeta.getAlarmId());
+			
+			JSONObject json = AlarmAPI.constructClearEvent(alarm, "System auto cleared Alarm because associated rule executed false for the associated resource", reading.getTtime());
+			json.put("readingDataId", reading.getId());
+			json.put("readingVal", reading.getReading(readingRuleContext.getReadingField().getName()));
+			
+			if (isHistorical) {
+				LOGGER.info("Clearing alarm for rule : "+readingRuleContext.getId()+" for resource : "+reading.getParentId());
+			}
+			
+			FacilioContext addEventContext = new FacilioContext();
+			addEventContext.put(EventConstants.EventContextNames.EVENT_PAYLOAD, json);
+			Chain getAddEventChain = EventConstants.EventChainFactory.getAddEventChain();
+			getAddEventChain.execute(addEventContext);
+		}
+	}
 }
