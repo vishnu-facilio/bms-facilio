@@ -245,19 +245,21 @@ public class DataParseForLogsCommand implements Command {
 		LOGGER.severe(groupedContext.toString());
 		context.put(ImportAPI.ImportProcessConstants.GROUPED_ROW_CONTEXT, groupedContext);
 		context.put(ImportAPI.ImportProcessConstants.ROW_COUNT, row_no);
-		context.put(ImportAPI.ImportProcessConstants.HAS_DUPLICATE_ENTRIES, hasDuplicates(groupedContext));
+//		context.put(ImportAPI.ImportProcessConstants.HAS_DUPLICATE_ENTRIES, hasDuplicates(groupedContext));
 		LOGGER.severe("---DataParseForLogCommand End-----");
 		return false;
 	}
 	
-	private static boolean hasDuplicates(HashMap<String, List<ImportRowContext>> groupedContext) {
-		for(String uniqueString : groupedContext.keySet()) {
-			if(groupedContext.get(uniqueString).size() > 1) {
-				return true;
-			}
-		}
-		return false;
-	}
+//	private static boolean hasDuplicates(HashMap<String, List<ImportRowContext>> groupedContext) {
+//		for(String uniqueString : groupedContext.keySet()) {
+//			String[] split = uniqueString.split("__");
+//			if(split[0] != "-1")
+//			if(groupedContext.get(uniqueString).size() > 1) {
+//				return true;
+//			}
+//		}
+//		return false;
+//	}
 	public static Long getAssetByUniqueness(HashMap<String,Object> colVal, String module, HashMap<String,String> uniqueMapping) throws Exception {
 		LOGGER.severe("getAssetByUniqueness");
 		LOGGER.severe("colVal" + colVal.toString());

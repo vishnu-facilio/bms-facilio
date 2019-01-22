@@ -20,6 +20,7 @@ import com.facilio.sql.GenericInsertRecordBuilder;
 
 public class InsertImportDataIntoLogCommand implements Command {
 
+	private boolean hasDuplicates = false;
 	private static Logger LOGGER = Logger.getLogger(InsertImportDataIntoLogCommand.class.getName());
 	@Override
 	public boolean execute(Context context) throws Exception {
@@ -55,15 +56,36 @@ public class InsertImportDataIntoLogCommand implements Command {
 				logContext.setError_resolved(ImportProcessContext.ImportLogErrorStatus.UNRESOLVED.getValue());
 			}
 			logContext.setRowContexts(groupedContext.get(uniqueString));
+			if(hasDuplicates == false) {
+				hasDuplicates = hasDuplicate(logContext);
+			}
 			JSONObject props = FieldUtil.getAsJSON(logContext);
 			LOGGER.severe("props" + props.toString());
 			insertBuilder.addRecord(props);
 		}
 		insertBuilder.save();
+		context.put(ImportAPI.ImportProcessConstants.HAS_DUPLICATE_ENTRIES, hasDuplicates);
+		LOGGER.severe("HAS DUPLICATES" + hasDuplicates);
 		importProcessContext.setStatus(ImportProcessContext.ImportStatus.RESOLVE_VALIDATION.getValue());
 		ImportAPI.updateImportProcess(importProcessContext);
+		
 		LOGGER.severe("----Inserting into Import Log Table----- end");
 		return false;
 	}
+	
+	private boolean hasDuplicate(ImportProcessLogContext logContext) throws Exception {
+		// TODO Auto-generated method stub
+		if(logContext.getRowContexts().size() > 1) {
+			if(logContext.getParentId() < 0 || logContext.getParentId() == null) {
+				return false;
+			}
+			else {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	
 
 }
