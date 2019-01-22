@@ -17,6 +17,7 @@ import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.bmsconsole.util.ActionAPI;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
 
@@ -219,11 +220,19 @@ public class WorkflowRuleContext implements Serializable {
 	}
 	
 	public boolean evaluateMisc (String moduleName, Object record, Map<String, Object> placeHolders, FacilioContext context) throws Exception {
-		if (record instanceof ModuleBaseWithCustomFields && siteId != -1) {
+		return true;
+	}
+	
+	public boolean evaluateSite (String moduleName, Object record, Map<String, Object> placeHolders, FacilioContext context) throws Exception {
+		if(siteId == -1) {
+			return true;
+		}
+		else if (record instanceof ModuleBaseWithCustomFields && moduleName.equals(FacilioConstants.ContextNames.WORK_ORDER)) {
 			return ((ModuleBaseWithCustomFields) record).getSiteId() == siteId;
 		}
 		return true;
 	}
+	
 	
 	public boolean evaluateCriteria (String moduleName, Object record, Map<String, Object> placeHolders, FacilioContext context) throws Exception {
 		boolean criteriaFlag = true;

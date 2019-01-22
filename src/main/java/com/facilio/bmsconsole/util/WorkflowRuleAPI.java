@@ -799,20 +799,23 @@ public class WorkflowRuleAPI {
 	
 	public static boolean evaluateWorkflow(WorkflowRuleContext workflowRule, String moduleName, Object record, List<UpdateChangeSet> changeSet, Map<String, Object> recordPlaceHolders, FacilioContext context) throws Exception {
 		Map<String, Object> rulePlaceHolders = workflowRule.constructPlaceHolders(moduleName, record, recordPlaceHolders, context);
-		boolean fieldChangeFlag = false, miscFlag = false, criteriaFlag = false, workflowFlag = false;
+		boolean fieldChangeFlag = false, miscFlag = false, criteriaFlag = false, workflowFlag = false , siteId = false;
 		
-		fieldChangeFlag = evalFieldChange(workflowRule, changeSet);
-		if (fieldChangeFlag) {
-			miscFlag = workflowRule.evaluateMisc(moduleName, record, rulePlaceHolders, context);
-			if (miscFlag) {
-				criteriaFlag = workflowRule.evaluateCriteria(moduleName, record, rulePlaceHolders, context);
-				if (criteriaFlag) {
-					workflowFlag = workflowRule.evaluateWorkflowExpression(moduleName, record, rulePlaceHolders, context);
+		siteId = workflowRule.evaluateSite(moduleName, record, rulePlaceHolders, context);
+		if (siteId) {
+			fieldChangeFlag = evalFieldChange(workflowRule, changeSet);
+			if (fieldChangeFlag) {
+				miscFlag = workflowRule.evaluateMisc(moduleName, record, rulePlaceHolders, context);
+				if (miscFlag) {
+					criteriaFlag = workflowRule.evaluateCriteria(moduleName, record, rulePlaceHolders, context);
+					if (criteriaFlag) {
+						workflowFlag = workflowRule.evaluateWorkflowExpression(moduleName, record, rulePlaceHolders, context);
+					}
 				}
 			}
 		}
 		
-		boolean result = fieldChangeFlag && miscFlag && criteriaFlag && workflowFlag;
+		boolean result = fieldChangeFlag && miscFlag && criteriaFlag && workflowFlag && siteId ;
 		if(result) {
 			workflowRule.executeTrueActions(record, context, rulePlaceHolders);
 		}
