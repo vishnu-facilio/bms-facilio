@@ -1,5 +1,6 @@
 package com.facilio.sql;
 
+import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -207,6 +208,14 @@ public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, 
 
 	public int getOffset() {
 		return offset;
+	}
+	
+	public boolean isForUpdate() {
+		return forUpdate;
+	}
+
+	public Connection getConn() {
+		return conn;
 	}
 
 	@Override

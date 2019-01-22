@@ -244,7 +244,7 @@ public class FieldFactory {
 
 		FacilioField fieldId = new FacilioField();
 		fieldId.setName("fieldId");
-		fieldId.setDataType(FieldType.NUMBER);
+		fieldId.setDataType(FieldType.ID);
 		fieldId.setColumnName("FIELDID");
 		fieldId.setModule(module);
 		fields.add(fieldId);
@@ -274,7 +274,7 @@ public class FieldFactory {
 
 		FacilioField fieldId = new FacilioField();
 		fieldId.setName("fieldId");
-		fieldId.setDataType(FieldType.NUMBER);
+		fieldId.setDataType(FieldType.ID);
 		fieldId.setColumnName("FIELDID");
 		fieldId.setModule(module);
 		fields.add(fieldId);
@@ -299,7 +299,7 @@ public class FieldFactory {
 		List<FacilioField> fields = new ArrayList<>();
 		FacilioModule module = ModuleFactory.getBooleanFieldsModule();
 
-		fields.add(getField("fieldId", "FIELDID", module, FieldType.NUMBER));
+		fields.add(getField("fieldId", "FIELDID", module, FieldType.ID));
 		fields.add(getOrgIdField(module));
 		fields.add(getField("trueVal", "TRUE_VAL", module, FieldType.STRING));
 		fields.add(getField("falseVal", "FALSE_VAL", module, FieldType.STRING));
@@ -311,7 +311,7 @@ public class FieldFactory {
 		List<FacilioField> fields = new ArrayList<>();
 		FacilioModule module = ModuleFactory.getFileFieldModule();
 
-		fields.add(getField("fieldId", "FIELDID", module, FieldType.NUMBER));
+		fields.add(getField("fieldId", "FIELDID", module, FieldType.ID));
 		fields.add(getOrgIdField(module));
 		fields.add(getField("format", "FORMAT", module, FieldType.NUMBER));
 
@@ -563,7 +563,7 @@ public class FieldFactory {
 	public static FacilioField getUserIdField(FacilioModule module) {
 		FacilioField field = new FacilioField();
 		field.setName("userId");
-		field.setDataType(FieldType.NUMBER);
+		field.setDataType(FieldType.ID);
 		field.setColumnName("USERID");
 		if (module != null) {
 			field.setModule(module);
@@ -593,7 +593,7 @@ public class FieldFactory {
 	public static FacilioField getIdField(FacilioModule module) {
 		FacilioField field = new FacilioField();
 		field.setName("id");
-		field.setDataType(FieldType.NUMBER);
+		field.setDataType(FieldType.ID);
 		field.setDisplayName("Id");
 		field.setColumnName("ID");
 		if (module != null) {
@@ -782,7 +782,7 @@ public class FieldFactory {
 
 		FacilioField workflowRuleActionId = new FacilioField();
 		workflowRuleActionId.setName("workflowRuleActionId");
-		workflowRuleActionId.setDataType(FieldType.NUMBER);
+		workflowRuleActionId.setDataType(FieldType.ID);
 		workflowRuleActionId.setColumnName("WORKFLOW_RULE_ACTION_ID");
 		workflowRuleActionId.setModule(module);
 		fields.add(workflowRuleActionId);
@@ -1923,7 +1923,7 @@ public class FieldFactory {
 
 		FacilioField jobId = new FacilioField();
 		jobId.setName("jobId");
-		jobId.setDataType(FieldType.NUMBER);
+		jobId.setDataType(FieldType.ID);
 		jobId.setColumnName("JOBID");
 		jobId.setModule(module);
 		fields.add(jobId);
@@ -2000,7 +2000,7 @@ public class FieldFactory {
 
 		FacilioField criteriaId = new FacilioField();
 		criteriaId.setName("criteriaId");
-		criteriaId.setDataType(FieldType.NUMBER);
+		criteriaId.setDataType(FieldType.ID);
 		criteriaId.setColumnName("CRITERIAID");
 		criteriaId.setModule(module);
 		fields.add(criteriaId);
@@ -2022,7 +2022,7 @@ public class FieldFactory {
 
 		FacilioField conditionId = new FacilioField();
 		conditionId.setName("conditionId");
-		conditionId.setDataType(FieldType.NUMBER);
+		conditionId.setDataType(FieldType.ID);
 		conditionId.setColumnName("CONDITIONID");
 		conditionId.setModule(module);
 		fields.add(conditionId);
@@ -2233,7 +2233,7 @@ public class FieldFactory {
 
 		FacilioField connectedAppId = new FacilioField();
 		connectedAppId.setName("connectedAppId");
-		connectedAppId.setDataType(FieldType.NUMBER);
+		connectedAppId.setDataType(FieldType.ID);
 		connectedAppId.setColumnName("CONNECTED_APP_ID");
 		connectedAppId.setModule(module);
 		fields.add(connectedAppId);
@@ -2277,7 +2277,7 @@ public class FieldFactory {
 
 		FacilioField tabWidgetId = new FacilioField();
 		tabWidgetId.setName("tabWidgetId");
-		tabWidgetId.setDataType(FieldType.NUMBER);
+		tabWidgetId.setDataType(FieldType.ID);
 		tabWidgetId.setColumnName("TAB_WIDGET_ID");
 		tabWidgetId.setModule(module);
 		fields.add(tabWidgetId);
@@ -2463,7 +2463,7 @@ public class FieldFactory {
 		contentType.setModule(module);
 		fields.add(contentType);
 
-		fields.add(getField("fileId", "FILE_ID", module, FieldType.NUMBER));
+		fields.add(getField("fileId", "FILE_ID", module, FieldType.ID));
 		fields.add(getField("isDeleted", "IS_DELETED", module, FieldType.BOOLEAN));
 		
 		return fields;
@@ -3903,7 +3903,7 @@ public class FieldFactory {
 		List<FacilioField> fields = new ArrayList<>();
 
 		fields.add(getOrgIdField(module));
-		fields.add(getField("entityId", "ENTITY_ID", module, FieldType.NUMBER));
+		fields.add(getField("entityId", "ENTITY_ID", module, FieldType.ID));
 
 		return fields;
 	}
@@ -4196,7 +4196,7 @@ public class FieldFactory {
 		FacilioModule module = ModuleFactory.getServicePortalModule();
 		List<FacilioField> fields = new ArrayList<>();
 		fields.add(getOrgIdField(module));
-		fields.add(getField("portalId", "PORTALID", module, FieldType.NUMBER));
+		fields.add(getField("portalId", "PORTALID", module, FieldType.ID));
 		fields.add(getField("portalType", "PORTALTYPE", module, FieldType.NUMBER));
 		fields.add(getField("signup_allowed", "SIGNUP_ALLOWED", module, FieldType.BOOLEAN));
 		fields.add(getField("gmailLogin_allowed", "GMAILLOGIN_ALLOWED", module, FieldType.BOOLEAN));

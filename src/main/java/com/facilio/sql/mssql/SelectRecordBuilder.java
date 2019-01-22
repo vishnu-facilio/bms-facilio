@@ -130,6 +130,7 @@ public class SelectRecordBuilder extends DBSelectRecordBuilder {
 		}
 		finally {
 			DBUtil.closeAll(conn,pstmt, rs);
+			conn = null;
 		}
 		
 		if (fileIds != null && !records.isEmpty()) {

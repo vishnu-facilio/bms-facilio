@@ -5,7 +5,7 @@ import com.facilio.sql.GenericDeleteRecordBuilder;
 
 public class DeleteRecordBuilder extends DBDeleteRecordBuilder {
 
-	protected DeleteRecordBuilder(GenericDeleteRecordBuilder deleteRecordBuilder) {
+	public DeleteRecordBuilder(GenericDeleteRecordBuilder deleteRecordBuilder) {
 		super(deleteRecordBuilder);
 	}
 

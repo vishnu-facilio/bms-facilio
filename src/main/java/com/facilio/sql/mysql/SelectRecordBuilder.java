@@ -48,9 +48,13 @@ public class SelectRecordBuilder extends DBSelectRecordBuilder {
 		
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
-		Connection conn = FacilioConnectionPool.INSTANCE.getConnection();
+		
+		boolean isExternalConnection = true;
 		try {
-			
+			if (conn == null) {
+				conn = FacilioConnectionPool.INSTANCE.getConnection();
+				isExternalConnection = false;
+			}
 			String sql = constructSelectStatement();
 //			System.out.println("########### sql : "+ sql);
 			pstmt = conn.prepareStatement(sql);
@@ -126,7 +130,13 @@ public class SelectRecordBuilder extends DBSelectRecordBuilder {
 			throw e;
 		}
 		finally {
-			DBUtil.closeAll(conn,pstmt, rs);
+			if (isExternalConnection) {
+				DBUtil.closeAll(pstmt, rs);
+			}
+			else {
+				DBUtil.closeAll(conn, pstmt, rs);
+				conn = null;
+			}
 		}
 		
 		if (fileIds != null && !records.isEmpty()) {
@@ -188,6 +198,10 @@ public class SelectRecordBuilder extends DBSelectRecordBuilder {
 				sql.append(" OFFSET ")
 					.append(offset);
 			}
+		}
+		
+		if (forUpdate) {
+			sql.append(" FOR UPDATE ");
 		}
 		
 		return sql.toString();

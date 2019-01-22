@@ -213,19 +213,21 @@ public class GenericUpdateRecordBuilder implements UpdateBuilderIfc<Map<String, 
 					pstmt = conn.prepareStatement(sql);
 					
 					int paramIndex = 1;
-					for(Map.Entry<String, Object> entry : value.entrySet()) {
-						List<FacilioField> fields = fieldMap.get(entry.getKey());
-						if (fields != null) {
+//					for(Map.Entry<String, Object> entry : value.entrySet()) {
+//						List<FacilioField> fields = fieldMap.get(entry.getKey());
+//						if (fields != null) {
 							for (FacilioField field: fields) {
 								if(field != null) {
-									if (GenericInsertRecordBuilder.isPrimaryField(tableName, field.getColumnName())) {
-										continue;
+									if (value.containsKey(field.getName())) {
+										if (field.getDataType() == FieldType.ID.getTypeAsInt()) {
+											continue;
+										}
+										FieldUtil.castOrParseValueAsPerType(pstmt, paramIndex++, field, value.get(field.getName()));
 									}
-									FieldUtil.castOrParseValueAsPerType(pstmt, paramIndex++, field, value.get(field.getName()));
 								}
 							}
-						}
-					}
+//						}
+//					}
 					
 					Object[] whereValues = where.getValues();
 					if(whereValues != null) {
@@ -251,6 +253,7 @@ public class GenericUpdateRecordBuilder implements UpdateBuilderIfc<Map<String, 
 				}
 				else {
 					DBUtil.closeAll(conn, pstmt);
+					conn = null;
 				}
 			}
 		}

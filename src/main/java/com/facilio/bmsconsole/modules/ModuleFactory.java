@@ -98,7 +98,7 @@ public class ModuleFactory {
 		fieldModule.setName("lookupField");
 		fieldModule.setDisplayName("Lookup Fields");
 		fieldModule.setTableName("LookupFields");
-		// fieldModule.setExtendModule(getFieldsModule());
+		 fieldModule.setExtendModule(getFieldsModule());
 		return fieldModule;
 	}
 
@@ -107,7 +107,7 @@ public class ModuleFactory {
 		numberModule.setName("numberField");
 		numberModule.setDisplayName("Number Fields");
 		numberModule.setTableName("NumberFields");
-		// numberModule.setExtendModule(getFieldsModule());
+		numberModule.setExtendModule(getFieldsModule());
 		return numberModule;
 	}
 
@@ -116,7 +116,7 @@ public class ModuleFactory {
 		booleanModule.setName("booleanField");
 		booleanModule.setDisplayName("Boolean Fields");
 		booleanModule.setTableName("BooleanFields");
-		// booleanModule.setExtendModule(getFieldsModule());
+		 booleanModule.setExtendModule(getFieldsModule());
 		return booleanModule;
 	}
 
@@ -133,6 +133,7 @@ public class ModuleFactory {
 		fileModule.setName("fileFields");
 		fileModule.setDisplayName("File Fields");
 		fileModule.setTableName("FileFields");
+		fileModule.setExtendModule(getFieldsModule());
 		return fileModule;
 	}
 
@@ -217,7 +218,7 @@ public class ModuleFactory {
 		readingRuleModule.setName("readingrule");
 		readingRuleModule.setDisplayName("Reading Rule");
 		readingRuleModule.setTableName("Reading_Rule");
-//		readingRuleModule.setExtendModule(getWorkflowRuleModule());
+		readingRuleModule.setExtendModule(getWorkflowRuleModule());
 
 		return readingRuleModule;
 	}
@@ -284,6 +285,7 @@ public class ModuleFactory {
 		approvalRules.setName("approvalRules");
 		approvalRules.setDisplayName("Approval Rules");
 		approvalRules.setTableName("Approval_Rules");
+		approvalRules.setExtendModule(getWorkflowRuleModule());
 		
 		return approvalRules;
 	}
@@ -597,6 +599,7 @@ public class ModuleFactory {
 		jsonTemplateModule.setName("jsontemplate");
 		jsonTemplateModule.setDisplayName("JSON Template");
 		jsonTemplateModule.setTableName("JSON_Template");
+		jsonTemplateModule.setExtendModule(getTemplatesModule());
 		return jsonTemplateModule;
 	}
 
@@ -605,7 +608,16 @@ public class ModuleFactory {
 		alarmModule.setName("preventivemaintenance");
 		alarmModule.setDisplayName("Preventive Maintenance");
 		alarmModule.setTableName("Preventive_Maintenance");
+		alarmModule.setExtendModule(getResourceModule());
 		return alarmModule;
+	}
+
+	public static FacilioModule getResourceModule() {
+		FacilioModule resourceModule = new FacilioModule();
+		resourceModule.setName("resource");
+		resourceModule.setDisplayName("Resources");
+		resourceModule.setTableName("Resources");
+		return resourceModule;
 	}
 
 	public static FacilioModule getJobsModule() {
@@ -707,7 +719,9 @@ public class ModuleFactory {
 	}
 	
 	public static FacilioModule getControllerActivityRecordsModule() {
-		return constructModule("controllerActivityRecords", "Controller Activity Records", "Controller_Activity_Records");
+		FacilioModule controllerActivityRecordsModule = constructModule("controllerActivityRecords", "Controller Activity Records", "Controller_Activity_Records");;
+		controllerActivityRecordsModule.setExtendModule(getControllerActivityModule());
+		return controllerActivityRecordsModule;
 	}
 	
 	public static FacilioModule getControllerActivityWatcherModule() {
@@ -788,6 +802,7 @@ public class ModuleFactory {
 	public static FacilioModule getWidgetChartModule() {
 		FacilioModule dashboardWigetModule = new FacilioModule();
 		dashboardWigetModule.setTableName("Widget_Chart");
+		dashboardWigetModule.setExtendModule(getWidgetModule());
 		return dashboardWigetModule;
 	}
 
@@ -1052,6 +1067,7 @@ public class ModuleFactory {
 		workOrderTemplate.setName("workordertemplate");
 		workOrderTemplate.setDisplayName("Workorder Templates");
 		workOrderTemplate.setTableName("Workorder_Template");
+		workOrderTemplate.setExtendModule(getTemplatesModule());
 		return workOrderTemplate;
 	}
 
@@ -1060,6 +1076,7 @@ public class ModuleFactory {
 		taskSectionModule.setName("tasksectiontemplate");
 		taskSectionModule.setDisplayName("Task Section Template");
 		taskSectionModule.setTableName("Task_Section_Template");
+		taskSectionModule.setExtendModule(getTemplatesModule());
 		return taskSectionModule;
 	}
 
@@ -1068,6 +1085,7 @@ public class ModuleFactory {
 		taskTemplate.setName("tasktemplate");
 		taskTemplate.setDisplayName("Task Template");
 		taskTemplate.setTableName("Task_Template");
+		taskTemplate.setExtendModule(getTemplatesModule());
 		return taskTemplate;
 	}
 	

@@ -3,8 +3,8 @@ package com.facilio.sql.mssql;
 import java.util.List;
 
 import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.sql.DBUpdateRecordBuilder;
-import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
 
 public class UpdateRecordBuilder extends DBUpdateRecordBuilder {
@@ -23,7 +23,7 @@ public class UpdateRecordBuilder extends DBUpdateRecordBuilder {
 			List<FacilioField> fields = fieldMap.get(propKey);
 			if(fields != null) {
 				for (FacilioField field: fields) {
-					if (GenericInsertRecordBuilder.isPrimaryField(tableName, field.getColumnName())) {
+					if (field.getDataType() == FieldType.ID.getTypeAsInt()) {
 						continue;
 					}
 					if(isFirst) {

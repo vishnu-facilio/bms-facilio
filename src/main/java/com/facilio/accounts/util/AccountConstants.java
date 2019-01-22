@@ -8,11 +8,13 @@ import java.util.Map;
 
 import com.facilio.accounts.dto.Permissions;
 import com.facilio.accounts.dto.Role;
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.fw.BeanFactory;
 
 public class AccountConstants {
 
@@ -707,7 +709,7 @@ public class AccountConstants {
 
 		FacilioField orgId = new FacilioField();
 		orgId.setName("orgId");
-		orgId.setDataType(FieldType.NUMBER);
+		orgId.setDataType(FieldType.ID);
 		orgId.setColumnName("ORGID");
 		orgId.setModule(module);
 		fields.add(orgId);
@@ -841,7 +843,12 @@ public class AccountConstants {
 		FacilioModule module = getFacilioUserModule();
 		List<FacilioField> fields = new ArrayList<>();
 
-		fields.add(getUserIdField(module));
+		FacilioField uid = new FacilioField();
+		uid.setName("uid");
+		uid.setDataType(FieldType.ID);
+		uid.setColumnName("USERID");
+		uid.setModule(module);
+		fields.add(uid);
 
 		FacilioField name = new FacilioField();
 		name.setName("username");
@@ -889,7 +896,12 @@ public class AccountConstants {
 		FacilioModule module = getUserModule();
 		List<FacilioField> fields = new ArrayList<>();
 
-		fields.add(getUserIdField(module));
+		FacilioField uid = new FacilioField();
+		uid.setName("uid");
+		uid.setDataType(FieldType.ID);
+		uid.setColumnName("USERID");
+		uid.setModule(module);
+		fields.add(uid);
 
 		FacilioField name = new FacilioField();
 		name.setName("name");
@@ -1063,7 +1075,7 @@ public class AccountConstants {
 
 		FacilioField userMobileSettingId = new FacilioField();
 		userMobileSettingId.setName("userMobileSettingId");
-		userMobileSettingId.setDataType(FieldType.NUMBER);
+		userMobileSettingId.setDataType(FieldType.ID);
 		userMobileSettingId.setColumnName("USER_MOBILE_SETTING_ID");
 		userMobileSettingId.setModule(module);
 		fields.add(userMobileSettingId);
@@ -1083,11 +1095,12 @@ public class AccountConstants {
 
 	public static List<FacilioField> getOrgUserFields() {
 		FacilioModule module = getOrgUserModule();
+		module.setExtendModule(ModuleFactory.getResourceModule());
 		List<FacilioField> fields = new ArrayList<>();
 
 		FacilioField ouid = new FacilioField();
 		ouid.setName("ouid");
-		ouid.setDataType(FieldType.NUMBER);
+		ouid.setDataType(FieldType.ID);
 		ouid.setColumnName("ORG_USERID");
 		ouid.setModule(module);
 		fields.add(ouid);
@@ -1262,7 +1275,7 @@ public class AccountConstants {
 
 		FacilioField id = new FacilioField();
 		id.setName("id");
-		id.setDataType(FieldType.NUMBER);
+		id.setDataType(FieldType.ID);
 		id.setColumnName("SESSIONID");
 		id.setModule(module);
 		fields.add(id);
@@ -1329,7 +1342,7 @@ public class AccountConstants {
 
 		FacilioField groupId = new FacilioField();
 		groupId.setName("groupId");
-		groupId.setDataType(FieldType.NUMBER);
+		groupId.setDataType(FieldType.ID);
 		groupId.setColumnName("GROUPID");
 		groupId.setModule(module);
 		fields.add(groupId);
@@ -1402,7 +1415,7 @@ public class AccountConstants {
 
 		FacilioField memberId = new FacilioField();
 		memberId.setName("memberId");
-		memberId.setDataType(FieldType.NUMBER);
+		memberId.setDataType(FieldType.ID);
 		memberId.setColumnName("MEMBERID");
 		memberId.setModule(module);
 		fields.add(memberId);
@@ -1490,7 +1503,7 @@ public class AccountConstants {
 
 		FacilioField roleId = new FacilioField();
 		roleId.setName("roleId");
-		roleId.setDataType(FieldType.NUMBER);
+		roleId.setDataType(FieldType.ID);
 		roleId.setColumnName("ROLE_ID");
 		roleId.setModule(module);
 		fields.add(roleId);

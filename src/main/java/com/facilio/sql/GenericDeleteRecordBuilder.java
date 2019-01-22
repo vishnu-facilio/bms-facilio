@@ -162,6 +162,7 @@ public class GenericDeleteRecordBuilder implements DeleteBuilderIfc<Map<String, 
 			}
 			else {
 				DBUtil.closeAll(conn, pstmt);
+				conn = null;
 			}
 		}
 	}

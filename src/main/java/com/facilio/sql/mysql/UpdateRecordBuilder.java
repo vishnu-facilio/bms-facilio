@@ -8,21 +8,22 @@ import com.facilio.sql.GenericUpdateRecordBuilder;
 
 public class UpdateRecordBuilder extends DBUpdateRecordBuilder {
 
-	protected UpdateRecordBuilder(GenericUpdateRecordBuilder updateRecordBuilder) {
+	public UpdateRecordBuilder(GenericUpdateRecordBuilder updateRecordBuilder) {
 		super(updateRecordBuilder);
 	}
 
 	@Override
 	public String constructUpdateStatement() {
 		StringBuilder sql = new StringBuilder("UPDATE ");
-		sql.append(tableName)
+		sql.append(baseTableName == null ? tableName : baseTableName)
 			.append(joinString.toString())
 			.append(" SET ");
 		boolean isFirst = true;
-		for(String propKey : value.keySet()) {
-			List<FacilioField> fields = fieldMap.get(propKey);
-			if(fields != null) {
-				for (FacilioField field: fields) {
+		for(FacilioField field : fields) {
+//			List<FacilioField> fields = fieldMap.get(propKey);
+//			if(fields != null) {
+//				for (FacilioField field: fields) {
+			if (value.containsKey(field.getName())) {
 					if(isFirst) {
 						isFirst = false;
 					}
@@ -31,8 +32,9 @@ public class UpdateRecordBuilder extends DBUpdateRecordBuilder {
 					}
 					sql.append(field.getCompleteColumnName())
 						.append(" = ?");
-				}
 			}
+//				}
+//			}
 		}
 		
 		if(isFirst) {

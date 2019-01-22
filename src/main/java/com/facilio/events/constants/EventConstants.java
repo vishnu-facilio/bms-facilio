@@ -435,7 +435,7 @@ public class EventConstants {
 			
 			FacilioField id = new FacilioField();
 			id.setName("eventRuleId");
-			id.setDataType(FieldType.NUMBER);
+			id.setDataType(FieldType.ID);
 			id.setColumnName("EVENT_RULE_ID");
 			id.setModule(module);
 			fields.add(id);
@@ -512,7 +512,7 @@ public class EventConstants {
 			
 			FacilioField eventToAlarmFieldMappingId = new FacilioField();
 			eventToAlarmFieldMappingId.setName("eventToAlarmFieldMappingId");
-			eventToAlarmFieldMappingId.setDataType(FieldType.NUMBER);
+			eventToAlarmFieldMappingId.setDataType(FieldType.ID);
 			eventToAlarmFieldMappingId.setColumnName("EVENT_TO_ALARM_FIELD_MAPPING_ID");
 			eventToAlarmFieldMappingId.setModule(module);
 			fields.add(eventToAlarmFieldMappingId);

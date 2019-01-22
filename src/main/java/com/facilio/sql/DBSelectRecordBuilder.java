@@ -1,5 +1,6 @@
 package com.facilio.sql;
 
+import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -23,6 +24,8 @@ public abstract class DBSelectRecordBuilder {
 	protected int limit = -1;
 	protected int offset = -1;
 	protected String sql;
+	protected boolean forUpdate = false;
+	protected Connection conn = null;
 	
 	protected DBSelectRecordBuilder(GenericSelectRecordBuilder selectBuilder) {
 		// TODO Auto-generated constructor stub
@@ -41,6 +44,9 @@ public abstract class DBSelectRecordBuilder {
 		if (selectBuilder.getWhere() != null) {
 			this.where = new WhereBuilder(selectBuilder.getWhere());
 		}
+		
+		this.forUpdate = selectBuilder.isForUpdate();
+		this.conn = selectBuilder.getConn();
 	}
 	
 	public abstract List<Map<String, Object>> get() throws Exception;
