@@ -237,8 +237,7 @@ public enum ActionType {
 					}
 
 					if (currentRule instanceof ReadingRuleContext) {
-						AlarmAPI.addReadingAlarmProps(obj, (ReadingRuleContext) currentRule,
-								(ReadingContext) currentRecord);
+						AlarmAPI.addReadingAlarmProps(obj, (ReadingRuleContext) currentRule,(ReadingContext) currentRecord);
 					}
 
 					FacilioContext addEventContext = new FacilioContext();
