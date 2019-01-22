@@ -61,11 +61,10 @@ public class DeleteControllerActivityRecordsJob extends FacilioJob {
 	
 	private void deleteControllerActivityRecords(List<Long> ids) throws Exception {
 		FacilioModule module = ModuleFactory.getControllerActivityRecordsModule();
-		FacilioField conrollerId = FieldFactory.getAsMap(FieldFactory.getContollerActivityRecordsFields()).get("currentRecords");
 		new GenericDeleteRecordBuilder()
 			.table(module.getTableName())
 			.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
-			.andCondition(CriteriaAPI.getCondition(conrollerId, ids, PickListOperators.IS))
+			.andCondition(CriteriaAPI.getIdCondition(ids, module))
 			.delete()
 			;
 	}
