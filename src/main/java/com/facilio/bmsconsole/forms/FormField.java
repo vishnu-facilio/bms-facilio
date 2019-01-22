@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.forms;
 
 import java.io.Serializable;
 
+import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioField.FieldDisplayType;
 
 public class FormField implements Serializable {
@@ -85,7 +86,16 @@ public class FormField implements Serializable {
 		REQUIRED,
 		OPTIONAL
 	}
+	private FacilioField field;
 	
+	public FacilioField getField() {
+		return field;
+	}
+
+	public void setField(FacilioField field) {
+		this.field = field;
+	}
+
 	public FormField() {}
 	
 	public FormField(long fieldId, String name, FieldDisplayType displayType, String displayName, Required required, int sequenceNumber, int span) {
