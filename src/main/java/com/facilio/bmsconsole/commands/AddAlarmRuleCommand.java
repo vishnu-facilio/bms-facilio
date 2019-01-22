@@ -43,6 +43,7 @@ public class AddAlarmRuleCommand implements Command {
 			}
 			
 			WorkflowRuleContext temp = preRequsiteRule;
+			boolean isFirst = true;
 			for(ReadingRuleContext alarmTriggerRule :alarmTriggerRules) {
 				
 				if(isFirst) {

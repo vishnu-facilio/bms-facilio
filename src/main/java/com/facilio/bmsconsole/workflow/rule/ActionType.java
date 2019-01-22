@@ -237,8 +237,7 @@ public enum ActionType {
 					}
 
 					if (currentRule instanceof ReadingRuleContext) {
-						AlarmAPI.addReadingAlarmProps(obj, (ReadingRuleContext) currentRule,
-								(ReadingContext) currentRecord);
+						AlarmAPI.addReadingAlarmProps(obj, (ReadingRuleContext) currentRule,(ReadingContext) currentRecord);
 					}
 
 					FacilioContext addEventContext = new FacilioContext();
@@ -668,11 +667,11 @@ public enum ActionType {
 		}
 		
 	},
-	CLEAR_ALARM(15) {
+	CLEAR_ALARM(15,false) {
 
 		@Override
 		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule, Object currentRecord) throws Exception {
-			
+//			ReadingRuleAPI.addClearEvent(currentRecord, context, obj, (ReadingContext) currentRecord, (ReadingRuleContext)currentRule);
 		}
 	},
 	;
@@ -682,13 +681,18 @@ public enum ActionType {
 	private ActionType(int val) {
 		this.val = val;
 	}
+	
+	private ActionType(int val,boolean isTemplateNeeded) {
+		this.val = val;
+		this.isTemplateNeeded = isTemplateNeeded;
+	}
 
 	public int getVal() {
 		return val;
 	}
-	
+	boolean isTemplateNeeded = true;
 	public boolean isTemplateNeeded() {
-		return true;
+		return isTemplateNeeded;
 	}
 
 	abstract public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,

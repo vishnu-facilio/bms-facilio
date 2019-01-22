@@ -304,6 +304,7 @@ public class ReadingsAPI {
 		
 		if (excludeEmptyFields) {
 			builder.andCondition(CriteriaAPI.getCondition(readingFieldsMap.get("value"), "-1", StringOperators.ISN_T))
+			.orCondition(CriteriaAPI.getCondition(readingFieldsMap.get("inputType"),String.valueOf(ReadingInputType.IS_MANUAL_DATA.getValue()), PickListOperators.IS))
 			.andCondition(CriteriaAPI.getCondition(readingFieldsMap.get("value"), CommonOperators.IS_NOT_EMPTY));
 		}
 		
