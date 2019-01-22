@@ -667,7 +667,7 @@ public enum ActionType {
 		}
 		
 	},
-	CLEAR_ALARM(15) {
+	CLEAR_ALARM(15,false) {
 
 		@Override
 		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule, Object currentRecord) throws Exception {
@@ -681,13 +681,18 @@ public enum ActionType {
 	private ActionType(int val) {
 		this.val = val;
 	}
+	
+	private ActionType(int val,boolean isTemplateNeeded) {
+		this.val = val;
+		this.isTemplateNeeded = isTemplateNeeded;
+	}
 
 	public int getVal() {
 		return val;
 	}
-	
+	boolean isTemplateNeeded = true;
 	public boolean isTemplateNeeded() {
-		return true;
+		return isTemplateNeeded;
 	}
 
 	abstract public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,
