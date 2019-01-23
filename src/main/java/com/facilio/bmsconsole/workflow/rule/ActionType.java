@@ -11,6 +11,7 @@ import java.util.Map;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Context;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
@@ -315,7 +316,7 @@ public enum ActionType {
 				if (obj != null) {
 					String ids = (String) obj.get("id");
 
-					if (ids != null) {
+					if (!StringUtils.isEmpty(ids)) {
 						List<String> mobileInstanceIds = getMobileInstanceIDs(ids);
 						LOGGER.info("Sending push notifications for ids : "+ids);
 						LOGGER.info("Sending push notifications for mobileIds : "+mobileInstanceIds);
