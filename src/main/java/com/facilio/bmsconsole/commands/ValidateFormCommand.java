@@ -51,7 +51,19 @@ public class ValidateFormCommand implements Command {
 				continue;
 			}
 			
-			Object value = PropertyUtils.getProperty(formObject, f.getName());
+			Object value = null;
+			
+			if (formObject instanceof ModuleBaseWithCustomFields) {
+				ModuleBaseWithCustomFields obj = (ModuleBaseWithCustomFields) formObject;
+				if (obj.getData() != null && obj.getData().containsKey(f.getName())) {
+					value = obj.getData().get(f.getName());
+				}
+			} 
+			
+			if (value == null) {
+				value = PropertyUtils.getProperty(formObject, f.getName());
+			}
+			
 			if (f.isRequired()){
 				if (value == null || (value instanceof String && ((String) value).isEmpty()) || ((value instanceof Integer) && ((Integer) value) == -1)) {
 					throw new IllegalArgumentException(f.getDisplayName() + " is mandartory.");
