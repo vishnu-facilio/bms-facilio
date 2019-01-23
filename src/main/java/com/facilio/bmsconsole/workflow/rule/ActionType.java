@@ -8,6 +8,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
@@ -48,6 +49,7 @@ import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
 import com.facilio.bmsconsole.util.AlarmAPI;
+import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.bmsconsole.util.NotificationAPI;
 import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
 import com.facilio.bmsconsole.util.ReadingRuleAPI;
@@ -315,13 +317,15 @@ public enum ActionType {
 
 					if (ids != null) {
 						List<String> mobileInstanceIds = getMobileInstanceIDs(ids);
-
+						LOGGER.info("Sending push notifications for ids : "+ids);
+						LOGGER.info("Sending push notifications for mobileIds : "+mobileInstanceIds);
 						if (mobileInstanceIds != null && !mobileInstanceIds.isEmpty()) {
 							for (String mobileInstanceId : mobileInstanceIds) {
 								if (mobileInstanceId != null) {
 									// content.put("to",
 									// "exA12zxrItk:APA91bFzIR6XWcacYh24RgnTwtsyBDGa5oCs5DVM9h3AyBRk7GoWPmlZ51RLv4DxPt2Dq2J4HDTRxW6_j-RfxwAVl9RT9uf9-d9SzQchMO5DHCbJs7fLauLIuwA5XueDuk7p5P7k9PfV");
 									obj.put("to", mobileInstanceId);
+									
 									Map<String, String> headers = new HashMap<>();
 									headers.put("Content-Type", "application/json");
 									headers.put("Authorization",
@@ -633,7 +637,16 @@ public enum ActionType {
 			for (Object key : obj.keySet()) {
 				FacilioField field = modBean.getField((String) key, event.getModule().getName());
 				if (field != null) {
+					Object val = obj.get(key);
+					
 					fields.add(field);
+					
+					if (field.isDefault()) {
+//						BeanUtils.setProperty(currentRecord, field.getName(), );
+					}
+					else {
+						((ModuleBaseWithCustomFields) currentRecord).setDatum(field.getName(), obj.get(key));
+					}
 				}
 			}
 			
