@@ -317,13 +317,20 @@ public class TicketAPI {
 		return statuses.get(0);
 	}
 	
-	public static List<TicketStatusContext> getAllStatus() throws Exception
+	public static List<TicketStatusContext> getAllStatus(boolean ignorePreOpen) throws Exception
 	{
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.TICKET_STATUS);
 		SelectRecordsBuilder<TicketStatusContext> builder = new SelectRecordsBuilder<TicketStatusContext>()
 															.moduleName(FacilioConstants.ContextNames.TICKET_STATUS)
 															.beanClass(TicketStatusContext.class)
-															.select(modBean.getAllFields(FacilioConstants.ContextNames.TICKET_STATUS));
+															.select(fields);
+		
+		if (ignorePreOpen) {
+			FacilioField typeField = FieldFactory.getAsMap(fields).get("typeCode");
+			builder.andCondition(CriteriaAPI.getCondition(typeField, String.valueOf(TicketStatusContext.StatusType.PRE_OPEN.getIntVal()), NumberOperators.NOT_EQUALS));
+		}
+		
 		 return builder.get();
 	}
 	

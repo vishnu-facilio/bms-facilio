@@ -36,6 +36,7 @@ import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
 import com.facilio.bmsconsole.util.ShiftAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.workflow.rule.ActivityType;
+import com.facilio.bmsconsole.workflow.rule.ApprovalState;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericSelectRecordBuilder;
@@ -111,7 +112,7 @@ public class UpdateWorkOrderCommand implements Command {
 		List<WorkOrderContext> newWos = new ArrayList<WorkOrderContext>();
 		updateWODetails(workOrder);
 		
-		if (workOrder.getAssignedTo() != null || workOrder.getAssignmentGroup() != null) {
+		if (workOrder.getApprovalStateEnum() == ApprovalState.APPROVED || ((workOrder.getAssignedTo() != null && workOrder.getAssignedTo().getId() != -1) || (workOrder.getAssignmentGroup() != null && workOrder.getAssignmentGroup().getId() != -1)) ) {
 			updateStatus(workOrder, oldWos, newWos, readings, activityType);
 		}
 		else if(workOrder.getStatus() != null) {
@@ -168,7 +169,7 @@ public class UpdateWorkOrderCommand implements Command {
 	private Map<String, TicketStatusContext> statusMap = null;
 	private Map<String, TicketStatusContext> getAllTicketStatus() throws Exception {
 		if (statusMap == null) {
-			List<TicketStatusContext> allStatus = TicketAPI.getAllStatus();
+			List<TicketStatusContext> allStatus = TicketAPI.getAllStatus(false);
 			statusMap = allStatus.stream().collect(Collectors.toMap(TicketStatusContext::getStatus, Function.identity()));
 		}
 		return statusMap; 
@@ -232,35 +233,51 @@ public class UpdateWorkOrderCommand implements Command {
 		}
 	}
 	
+	private WorkOrderContext cloneWO (WorkOrderContext wo, long oldId, List<WorkOrderContext> newWos) {
+		WorkOrderContext newWo =FieldUtil.cloneBean(wo, WorkOrderContext.class);
+		newWo.setId(oldId);
+		newWos.add(newWo);
+		return newWo;
+	}
+	
 	private void updateStatus (WorkOrderContext workOrder, List<WorkOrderContext> oldWos, List<WorkOrderContext> newWos, List<ReadingContext> userReadings, ActivityType activityType) throws Exception {
-		Map<String, TicketStatusContext> allStatus = getAllTicketStatus(); 
+		Map<String, TicketStatusContext> allStatus = getAllTicketStatus();
+		TicketStatusContext preOpen = allStatus.get("preopen");
 		TicketStatusContext submittedStatus = allStatus.get("Submitted");
 		TicketStatusContext assignedStatus = allStatus.get("Assigned");  
 		TicketStatusContext onHoldStatus = allStatus.get("On Hold");
 		TicketStatusContext wipStatus = allStatus.get("Work in Progress");
 		long submittedId = submittedStatus.getId();
+		long preOpenId = preOpen == null ? -1 : preOpen.getId();
 		for (WorkOrderContext oldWo: oldWos) {
-			WorkOrderContext newWo = FieldUtil.cloneBean(workOrder, WorkOrderContext.class);
-			newWos.add(newWo);
-			newWo.setId(oldWo.getId());
-			if (oldWo.getStatus().getId() == submittedId) {
-				newWo.setStatus(assignedStatus);
-			} else {
-				if (workOrder.getAssignedTo() != null && oldWo.getAssignedTo() != null) {
-					if (workOrder.getAssignedTo().getOuid() == -1) {
-						userReadings.addAll(ShiftAPI.addUserWorkHoursReading(oldWo.getAssignedTo().getOuid(), oldWo.getId(), activityType, "Close", System.currentTimeMillis()));
-						newWo.setStatus(submittedStatus);
-					} else if (oldWo.getAssignedTo().getOuid() != workOrder.getAssignedTo().getOuid()) {
-						try {
-							if (oldWo.getStatus().getId() == wipStatus.getId()) {
-								newWo.setStatus(onHoldStatus);
-								userReadings.addAll(ShiftAPI.addUserWorkHoursReading(oldWo.getAssignedTo().getOuid(), oldWo.getId(), activityType, "Pause", System.currentTimeMillis()));
-							} else {
-								newWo.setStatus(oldWo.getStatus());
+			WorkOrderContext newWo = null;
+			if (workOrder.getApprovalStateEnum() == ApprovalState.APPROVED && oldWo.getStatus() != null && oldWo.getStatus().getId() == preOpenId) {
+				newWo = cloneWO(workOrder, oldWo.getId(), newWos);
+				newWo.setStatus(submittedStatus); //For updating
+				oldWo.setStatus(submittedStatus); //For further check
+			}
+			
+			if ( ((workOrder.getAssignedTo() != null && workOrder.getAssignedTo().getId() != -1) || (workOrder.getAssignmentGroup() != null && workOrder.getAssignmentGroup().getId() != -1)) && oldWo.getStatus() != null) {
+				newWo = newWo == null ? cloneWO(workOrder, oldWo.getId(), newWos) : newWo;
+				if (oldWo.getStatus().getId() == submittedId) {
+					newWo.setStatus(assignedStatus);
+				} else {
+					if (workOrder.getAssignedTo() != null && oldWo.getAssignedTo() != null) {
+						if (workOrder.getAssignedTo().getOuid() == -1) {
+							userReadings.addAll(ShiftAPI.addUserWorkHoursReading(oldWo.getAssignedTo().getOuid(), oldWo.getId(), activityType, "Close", System.currentTimeMillis()));
+							newWo.setStatus(submittedStatus);
+						} else if (oldWo.getAssignedTo().getOuid() != workOrder.getAssignedTo().getOuid()) {
+							try {
+								if (oldWo.getStatus().getId() == wipStatus.getId()) {
+									newWo.setStatus(onHoldStatus);
+									userReadings.addAll(ShiftAPI.addUserWorkHoursReading(oldWo.getAssignedTo().getOuid(), oldWo.getId(), activityType, "Pause", System.currentTimeMillis()));
+								} else {
+									newWo.setStatus(oldWo.getStatus());
+								}
+							} catch (Exception e) {
+								log.info("Exception occurred while handling work hours", e);
+								CommonCommandUtil.emailException(ShiftAPI.class.getName(), "Exception occurred while handling work hours", e);
 							}
-						} catch (Exception e) {
-							log.info("Exception occurred while handling work hours", e);
-							CommonCommandUtil.emailException(ShiftAPI.class.getName(), "Exception occurred while handling work hours", e);
 						}
 					}
 				}

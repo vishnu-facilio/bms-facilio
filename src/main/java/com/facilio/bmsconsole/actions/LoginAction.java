@@ -74,7 +74,6 @@ import com.facilio.fw.auth.SAMLAttribute;
 import com.facilio.fw.auth.SAMLUtil;
 import com.facilio.screen.context.RemoteScreenContext;
 import com.facilio.screen.util.ScreenUtil;
-import com.facilio.unitconversion.Metric;
 import com.facilio.wms.util.WmsApi;
 import com.opensymphony.xwork2.ActionContext;
 
@@ -343,7 +342,7 @@ public class LoginAction extends FacilioAction {
 		else {
 			Map<String, Set<FacilioForm>> forms = FormsAPI.getAllForms(FormType.WEB);
 			data.put("forms", forms);
-			data.put("ticketStatus", TicketAPI.getAllStatus());
+			data.put("ticketStatus", TicketAPI.getAllStatus(true));
 		}
 		data.put("mysites", CommonCommandUtil.getMySites());
 		data.put("buildings", SpaceAPI.getAllBuildings());
@@ -397,7 +396,7 @@ public class LoginAction extends FacilioAction {
 
 		data.put("serviceList", ReportsUtil.getPurposeMapping());
 		data.put("buildingList", ReportsUtil.getBuildingMap());
-		data.put("ticketStatus", TicketAPI.getAllStatus());
+		data.put("ticketStatus", TicketAPI.getAllStatus(true));
 		data.put("energyMeters", DeviceAPI.getAllMainEnergyMeters());
 		
 		data.put(FacilioConstants.ContextNames.TICKET_TYPE,
@@ -613,7 +612,7 @@ public class LoginAction extends FacilioAction {
 	private JSONObject getTicketStatus() {
 		try {
 			JSONObject result = new JSONObject();
-			List<TicketStatusContext> ticketStatusList = TicketAPI.getAllStatus();
+			List<TicketStatusContext> ticketStatusList = TicketAPI.getAllStatus(true);
 			for (TicketStatusContext tsc : ticketStatusList) {
 				result.put(tsc.getId(), tsc.getStatus());
 			}
