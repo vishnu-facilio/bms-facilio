@@ -6,7 +6,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -126,7 +125,7 @@ public class GenericInsertRecordBuilder implements InsertBuilderIfc<Map<String, 
 				pstmt.clearParameters();
 				int paramIndex = 1;
 				for(FacilioField field : fields) {
-					if (isPrimaryField(field, value)) {
+					if (isPrimaryField(field)) {
 						continue;
 					}
 					try {
@@ -383,8 +382,8 @@ public class GenericInsertRecordBuilder implements InsertBuilderIfc<Map<String, 
 //		pkFields.put("reading_data_meta", "id");
 //	}
 	
-	public static boolean isPrimaryField(FacilioField field, Map value) {
-		return (field.getDataType() == FieldType.ID.getTypeAsInt() && field.getModule().getExtendModule() == null && value.containsKey(field.getName()));
+	public static boolean isPrimaryField(FacilioField field) {
+		return (field.getDataTypeEnum() == FieldType.ID && (field.getModule() == null || field.getModule().getExtendModule() == null));
 	}
 	
 	private String constructInsertStatement() {
@@ -396,7 +395,7 @@ public class GenericInsertRecordBuilder implements InsertBuilderIfc<Map<String, 
 		
 		boolean isFirst = true;
 		for(FacilioField field : fields) {
-			if (isPrimaryField(field, map)) {
+			if (isPrimaryField(field)) {
 				continue;
 			}
 			if(isFirst) {
@@ -412,7 +411,7 @@ public class GenericInsertRecordBuilder implements InsertBuilderIfc<Map<String, 
 		
 		isFirst = true;
 		for(FacilioField field : fields) {
-			if (isPrimaryField(field, map)) {
+			if (isPrimaryField(field)) {
 				continue;
 			}
 			if(isFirst) {
