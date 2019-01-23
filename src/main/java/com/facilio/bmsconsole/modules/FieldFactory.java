@@ -156,8 +156,8 @@ public class FieldFactory {
 		List<FacilioField> fields = new ArrayList<>();
 		FacilioModule module = ModuleFactory.getFormFieldsModule();
 		
-		fields.add(getIdField());
-		fields.add(getOrgIdField());
+		fields.add(getIdField(module));
+		fields.add(getOrgIdField(module));
 		fields.add(getDisplayNameField(module));
 		
 		FacilioField formId = new FacilioField();
@@ -4505,7 +4505,7 @@ public class FieldFactory {
 		FacilioModule module = ModuleFactory.getDerivationsModule();
 		List<FacilioField> fields = new ArrayList<>();
 
-		fields.add(getIdField());
+		fields.add(getIdField(module));
 		fields.add(getOrgIdField(module));
 		fields.add(getField("name", "NAME", module, FieldType.STRING));
 		fields.add(getField("workflowId", "WORKFLOW_ID", module, FieldType.NUMBER));
