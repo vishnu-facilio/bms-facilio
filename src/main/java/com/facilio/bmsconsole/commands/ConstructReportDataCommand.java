@@ -208,7 +208,7 @@ public class ConstructReportDataCommand implements Command {
 						selectFields.add(FieldFactory.getIdField(lookupModule));
 						GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 								.select(selectFields)
-								.table(lookupModule.getName())
+								.table(lookupModule.getTableName())
 								.andCondition(CriteriaAPI.getCurrentOrgIdCondition(lookupModule));
 	
 						List<Map<String,Object>> asProps = builder.get();
