@@ -248,7 +248,7 @@ public class ModuleFactory {
 		slarule.setName("slarule");
 		slarule.setDisplayName("SLA Rule");
 		slarule.setTableName("SLA_Rule");
-//		slarule.setExtendModule(getWorkflowRuleModule());
+		slarule.setExtendModule(getWorkflowRuleModule());
 
 		return slarule;
 	}
@@ -258,6 +258,7 @@ public class ModuleFactory {
 		scheduledRule.setName("scheduledRule");
 		scheduledRule.setDisplayName("Scheduled Rules");
 		scheduledRule.setTableName("Scheduled_Rules");
+		scheduledRule.setExtendModule(getWorkflowRuleModule());
 		
 		return scheduledRule;
 	}
