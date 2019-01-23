@@ -420,6 +420,28 @@ public class FieldUtil {
 		}
 	}
 	
+	public static Object getEmptyLookupVal(LookupField lookupField, long id) throws Exception {
+		if(id > 0) {
+			if(LookupSpecialTypeUtil.isSpecialType(lookupField.getSpecialType())) {
+				return LookupSpecialTypeUtil.getEmptyLookedupObject(lookupField.getSpecialType(), id);
+			}
+			else {
+				Class<ModuleBaseWithCustomFields> moduleClass = FacilioConstants.ContextNames.getClassFromModuleName(lookupField.getLookupModule().getName());
+				if(moduleClass != null) {
+					ModuleBaseWithCustomFields lookedupModule = moduleClass.newInstance();
+					lookedupModule.setId(id);
+					return lookedupModule;
+				}
+				else {
+					throw new IllegalArgumentException("Unknown Module Name in Lookup field "+lookupField);
+				}
+			}
+		}
+		else {
+			return null;
+		}
+	}
+	
 	public static Object getLookupVal(LookupField lookupField, long id, int level) throws Exception {
 		if(id > 0) {
 			if(LookupSpecialTypeUtil.isSpecialType(lookupField.getSpecialType())) {

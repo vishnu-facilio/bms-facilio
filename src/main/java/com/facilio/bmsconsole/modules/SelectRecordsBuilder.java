@@ -231,7 +231,7 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 							lookedupObj = FieldUtil.getLookupVal((LookupField) lookupField, recordId, level+1);
 						}
 						else {
-							lookedupObj = getEmptyLookupVal((LookupField) lookupField, recordId);
+							lookedupObj = FieldUtil.getEmptyLookupVal((LookupField) lookupField, recordId);
 						}
 						if(lookedupObj != null) {
 							props.put(lookupField.getName(), lookedupObj);
@@ -266,7 +266,7 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 							lookedupObj = FieldUtil.getLookupVal((LookupField) lookupField, recordId, level+1);
 						}
 						else {
-							lookedupObj = getEmptyLookupVal((LookupField) lookupField, recordId);
+							lookedupObj = FieldUtil.getEmptyLookupVal((LookupField) lookupField, recordId);
 						}
 						if(lookedupObj != null) {
 							props.put(lookupField.getName(), lookedupObj);
@@ -425,28 +425,6 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 		
 		builder.andCustomWhere(whereCondition.getWhereClause(), whereCondition.getValues());
 		return builder.get();
-	}
-	
-	private Object getEmptyLookupVal(LookupField lookupField, long id) throws Exception {
-		if(id > 0) {
-			if(LookupSpecialTypeUtil.isSpecialType(lookupField.getSpecialType())) {
-				return LookupSpecialTypeUtil.getEmptyLookedupObject(lookupField.getSpecialType(), id);
-			}
-			else {
-				Class<ModuleBaseWithCustomFields> moduleClass = FacilioConstants.ContextNames.getClassFromModuleName(lookupField.getLookupModule().getName());
-				if(moduleClass != null) {
-					ModuleBaseWithCustomFields lookedupModule = moduleClass.newInstance();
-					lookedupModule.setId(id);
-					return lookedupModule;
-				}
-				else {
-					throw new IllegalArgumentException("Unknown Module Name in Lookup field "+lookupField);
-				}
-			}
-		}
-		else {
-			return null;
-		}
 	}
 	
 	private void checkForNull(boolean checkBean) throws Exception {

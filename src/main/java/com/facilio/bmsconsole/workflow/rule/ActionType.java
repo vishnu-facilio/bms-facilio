@@ -45,12 +45,12 @@ import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.FieldUtil;
+import com.facilio.bmsconsole.modules.LookupField;
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
 import com.facilio.bmsconsole.util.AlarmAPI;
-import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.bmsconsole.util.NotificationAPI;
 import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
 import com.facilio.bmsconsole.util.ReadingRuleAPI;
@@ -640,14 +640,17 @@ public enum ActionType {
 				FacilioField field = modBean.getField((String) key, event.getModule().getName());
 				if (field != null) {
 					Object val = obj.get(key);
-					
-					fields.add(field);
-					
-					if (field.isDefault()) {
-//						BeanUtils.setProperty(currentRecord, field.getName(), );
-					}
-					else {
-						((ModuleBaseWithCustomFields) currentRecord).setDatum(field.getName(), obj.get(key));
+					if (val != null) {
+						if (field.getDataTypeEnum() == FieldType.LOOKUP) {
+							val = FieldUtil.getEmptyLookupVal((LookupField) field, Long.parseLong(val.toString()));
+						}
+						fields.add(field);
+						if (field.isDefault()) {
+							BeanUtils.setProperty(currentRecord, field.getName(), val);
+						}
+						else {
+							((ModuleBaseWithCustomFields) currentRecord).setDatum(field.getName(), val);
+						}
 					}
 				}
 			}
