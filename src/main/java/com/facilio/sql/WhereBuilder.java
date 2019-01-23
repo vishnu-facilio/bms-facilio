@@ -100,12 +100,14 @@ public class WhereBuilder implements WhereBuilderIfc<WhereBuilder>{
 			throw new IllegalArgumentException("Criteria cannot be null");
 		}
 		
-		checkIfFirstAndAdd(isAND);
-		this.condition.append("(")
-					.append(criteria.computeWhereClause())
-					.append(")");
-		if(criteria.getComputedValues() != null) {
-			values.addAll(criteria.getComputedValues());
+		if (criteria != null) {
+			checkIfFirstAndAdd(isAND);
+			this.condition.append("(")
+						.append(criteria.computeWhereClause())
+						.append(")");
+			if(criteria.getComputedValues() != null) {
+				values.addAll(criteria.getComputedValues());
+			}
 		}
 		return this;
 	}
