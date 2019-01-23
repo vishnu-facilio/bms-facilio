@@ -10,6 +10,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
+import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.constants.FacilioConstants;
 
@@ -20,8 +21,8 @@ public class GetPreventiveMaintenanceCommand implements Command {
 		// TODO Auto-generated method stub
 		
 		Criteria criteria = new Criteria();
-		context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_COUNT);
-
+		
+		String count = (String) context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_COUNT);
 		FacilioView view = (FacilioView) context.get(FacilioConstants.ContextNames.CUSTOM_VIEW);
 		JSONObject filters = (JSONObject) context.get(FacilioConstants.ContextNames.FILTERS);
 		JSONObject serachQuery = (JSONObject) context.get(FacilioConstants.ContextNames.SEARCH);
@@ -68,7 +69,16 @@ public class GetPreventiveMaintenanceCommand implements Command {
 		if (pms != null) {
 			context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_LIST, pms);
 		}
-		
+	
+		if (count != null) {
+			if (pms != null && !pms.isEmpty()) {
+				long pmCount = pms.size();
+				context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_COUNT, pmCount);
+			}
+		}
+		else {
+			context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_LIST, pms);
+		}
 		return false;
 	}
 
