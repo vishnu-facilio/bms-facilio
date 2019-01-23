@@ -342,7 +342,7 @@ public class LoginAction extends FacilioAction {
 		else {
 			Map<String, Set<FacilioForm>> forms = FormsAPI.getAllForms(FormType.WEB);
 			data.put("forms", forms);
-			data.put("ticketStatus", TicketAPI.getAllStatus(true));
+			data.put("ticketStatus", TicketAPI.getAllStatus(false));
 		}
 		data.put("mysites", CommonCommandUtil.getMySites());
 		data.put("buildings", SpaceAPI.getAllBuildings());
@@ -396,7 +396,7 @@ public class LoginAction extends FacilioAction {
 
 		data.put("serviceList", ReportsUtil.getPurposeMapping());
 		data.put("buildingList", ReportsUtil.getBuildingMap());
-		data.put("ticketStatus", TicketAPI.getAllStatus(true));
+		data.put("ticketStatus", TicketAPI.getAllStatus(false));
 		data.put("energyMeters", DeviceAPI.getAllMainEnergyMeters());
 		
 		data.put(FacilioConstants.ContextNames.TICKET_TYPE,
@@ -612,7 +612,7 @@ public class LoginAction extends FacilioAction {
 	private JSONObject getTicketStatus() {
 		try {
 			JSONObject result = new JSONObject();
-			List<TicketStatusContext> ticketStatusList = TicketAPI.getAllStatus(true);
+			List<TicketStatusContext> ticketStatusList = TicketAPI.getAllStatus(false);
 			for (TicketStatusContext tsc : ticketStatusList) {
 				result.put(tsc.getId(), tsc.getStatus());
 			}
