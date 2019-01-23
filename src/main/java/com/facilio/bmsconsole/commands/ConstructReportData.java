@@ -59,13 +59,15 @@ public class ConstructReportData implements Command {
 		JSONObject yAxisJSON = (JSONObject) context.get("y-axis");
 		ReportYAxisContext yAxis = new ReportYAxisContext();
 		
-		int yAggr = CommonAggregateOperator.COUNT.ordinal();
+		AggregateOperator yAggr = CommonAggregateOperator.COUNT;
 		FacilioField yField = null;
 		if (yAxisJSON == null) {
 			yField = FieldFactory.getIdField(xField.getModule());
 			yField.setColumnName(yField.getModule().getTableName() + ".ID");
 		} else {
-			yAggr = ((Number) yAxisJSON.get("aggr")).intValue();
+			if (yAxisJSON.containsKey("aggr")) {
+				yAggr = AggregateOperator.getAggregateOperator(((Number) yAxisJSON.get("aggr")).intValue());
+			}
 			yField = modBean.getField((Long) yAxisJSON.get("field_id"));
 		}
 		yAxis.setAggr(yAggr);

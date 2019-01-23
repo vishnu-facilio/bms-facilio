@@ -190,34 +190,36 @@ public class ConstructReportDataCommand implements Command {
 			case LOOKUP:
 				LookupField lookupField = (LookupField) field;
 				Map<Long, String> lookupMap = lookupFieldMap.get(lookupField.getLookupModule().getName());
-				if (lookupMap == null) {
-					FacilioModule lookupModule = lookupField.getLookupModule();
-					ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-					List<FacilioField> fields = new ArrayList<>(modBean.getAllFields(lookupModule.getName()));
-					FacilioField mainField = null;
-					for (FacilioField f : fields) {
-						if (f.isMainField()) {
-							mainField = f;
-							break;
+				if (val instanceof Map) {
+					if (lookupMap == null) {
+						FacilioModule lookupModule = lookupField.getLookupModule();
+						ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+						List<FacilioField> fields = new ArrayList<>(modBean.getAllFields(lookupModule.getName()));
+						FacilioField mainField = null;
+						for (FacilioField f : fields) {
+							if (f.isMainField()) {
+								mainField = f;
+								break;
+							}
+						}
+						
+						List<FacilioField> selectFields = new ArrayList<>();
+						selectFields.add(mainField);
+						selectFields.add(FieldFactory.getIdField(lookupModule));
+						GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+								.select(selectFields)
+								.table(lookupModule.getName())
+								.andCondition(CriteriaAPI.getCurrentOrgIdCondition(lookupModule));
+	
+						List<Map<String,Object>> asProps = builder.get();
+						lookupMap = new HashMap<>();
+						lookupFieldMap.put(lookupModule.getName(), lookupMap);
+						for (Map<String, Object> map : asProps) {
+							lookupMap.put((Long) map.get("id"), (String) map.get(mainField.getName()));
 						}
 					}
-					
-					List<FacilioField> selectFields = new ArrayList<>();
-					selectFields.add(mainField);
-					selectFields.add(FieldFactory.getIdField(lookupModule));
-					GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
-							.select(selectFields)
-							.table(lookupModule.getName())
-							.andCondition(CriteriaAPI.getCurrentOrgIdCondition(lookupModule));
-
-					List<Map<String,Object>> asProps = builder.get();
-					lookupMap = new HashMap<>();
-					lookupFieldMap.put(lookupModule.getName(), lookupMap);
-					for (Map<String, Object> map : asProps) {
-						lookupMap.put((Long) map.get("id"), (String) map.get(mainField.getName()));
-					}
+					val = lookupMap.get(((Map) val).get("id"));
 				}
-				val = lookupMap.get(((Map) val).get("id"));
 
 				break;
 			default:
