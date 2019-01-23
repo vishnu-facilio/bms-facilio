@@ -50,21 +50,21 @@ public class Criteria extends ExpressionEvaluator<Predicate> implements Serializ
 		return conditions;
 	}
 	public void setConditions(Map<Integer, Condition> conditions) {
-		if (conditions != null) {
-			// If key is of different type, convert them to Integer
-			Iterator<Integer> iterator = conditions.keySet().iterator();
-			Map<Integer, Condition> map = new HashMap<>();
-			while (iterator.hasNext()) {
-				Object key = iterator.next();
-				if (!(key instanceof Integer)) {
-					Integer k = Integer.parseInt(key.toString());
-					Condition value = conditions.get(key);
-					map.put(k, value);
-					iterator.remove();
-				}
-			}
-			conditions.putAll(map);
-		}
+//		if (conditions != null) {
+//			// If key is of different type, convert them to Integer
+//			Iterator<Integer> iterator = conditions.keySet().iterator();
+//			Map<Integer, Condition> map = new HashMap<>();
+//			while (iterator.hasNext()) {
+//				Object key = iterator.next();
+//				if (!(key instanceof Integer)) {
+//					Integer k = Integer.parseInt(key.toString());
+//					Condition value = conditions.get(key);
+//					map.put(k, value);
+//					iterator.remove();
+//				}
+//			}
+//			conditions.putAll(map);
+//		}
 		this.conditions = conditions;
 	}
 

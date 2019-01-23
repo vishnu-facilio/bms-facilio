@@ -88,10 +88,10 @@ public class ConstructReportData implements Command {
 		
 		if (context.get("criteria") != null) {
 //			Criteria criteria = new Criteria();
-			Criteria criteria = (Criteria) context.get("criteria");
-			Map<Integer, Condition> conditions = criteria.getConditions();
+//			Criteria criteria = (Criteria) context.get("criteria");
+//			Map<Integer, Condition> conditions = criteria.getConditions();
 			
-			dataPointContext.setCriteria(criteria);
+//			dataPointContext.setCriteria(criteria);
 		}
 		
 		Map<String, String> aliases = new HashMap<>();
