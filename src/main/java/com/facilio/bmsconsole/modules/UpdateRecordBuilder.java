@@ -324,6 +324,7 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 		List<FacilioField> f = new ArrayList<>();
 		int updateCount = 0;
 		while (prevModule != null) {
+			GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder(builder);
 			for (FacilioField field : updateFields) {
 				if ((field.getModule() == null && prevModule.getExtendModule() != null)) {
 					continue;
@@ -332,12 +333,12 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 					f.add(field);
 				}
 			}
-			builder.fields(f);
-			builder.table(prevModule.getTableName());
+			updateBuilder.fields(f);
+			updateBuilder.table(prevModule.getTableName());
 			
 			prevModule = prevModule.getExtendModule();
 			if (!f.isEmpty()) {
-				updateCount += builder.update(moduleProps);
+				updateCount += updateBuilder.update(moduleProps);
 			}
 			f.clear();
 		}

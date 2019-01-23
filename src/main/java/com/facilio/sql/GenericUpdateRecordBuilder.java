@@ -37,6 +37,26 @@ public class GenericUpdateRecordBuilder implements UpdateBuilderIfc<Map<String, 
 	private StringBuilder joinBuilder = new StringBuilder();
 	private WhereBuilder where = new WhereBuilder();
 	private Connection conn = null;
+	
+	public GenericUpdateRecordBuilder() {
+		// TODO Auto-generated constructor stub
+	}
+
+	public GenericUpdateRecordBuilder(GenericUpdateRecordBuilder updateBuilder) {
+		super();
+		this.baseTableName = updateBuilder.baseTableName;
+		this.tableName = updateBuilder.tableName;
+		this.value = updateBuilder.value;
+		this.conn = updateBuilder.conn;
+		
+		this.joinBuilder = new StringBuilder(updateBuilder.joinBuilder);
+		if (updateBuilder.fields != null) {
+			this.fields = new ArrayList<>(updateBuilder.fields);
+		}
+		if (updateBuilder.where != null) {
+			this.where = new WhereBuilder(updateBuilder.where);
+		}
+	}
 
 	public GenericUpdateRecordBuilder table(String tableName) {
 		this.tableName = tableName;

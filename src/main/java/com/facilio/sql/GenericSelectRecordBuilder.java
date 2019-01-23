@@ -41,12 +41,12 @@ public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, 
 		this.orderBy = selectBuilder.orderBy;
 		this.limit = selectBuilder.limit;
 		this.offset = selectBuilder.offset;
+		this.conn = selectBuilder.conn;
 		
 		this.joinBuilder = new StringBuilder(selectBuilder.joinBuilder);
 		if (selectBuilder.selectFields != null) {
 			this.selectFields = new ArrayList<>(selectBuilder.selectFields);
 		}
-		this.selectFields = selectBuilder.selectFields;
 		if (selectBuilder.where != null) {
 			this.where = new WhereBuilder(selectBuilder.where);
 		}

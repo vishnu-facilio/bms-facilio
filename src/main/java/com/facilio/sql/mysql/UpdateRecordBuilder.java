@@ -1,7 +1,5 @@
 package com.facilio.sql.mysql;
 
-import java.util.List;
-
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.sql.DBUpdateRecordBuilder;
