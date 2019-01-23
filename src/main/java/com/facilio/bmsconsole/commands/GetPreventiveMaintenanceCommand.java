@@ -71,8 +71,12 @@ public class GetPreventiveMaintenanceCommand implements Command {
 		}
 	
 		if (count != null) {
+			long pmCount = -1;
 			if (pms != null && !pms.isEmpty()) {
-				long pmCount = pms.size();
+				pmCount = pms.size();
+				context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_COUNT, pmCount);
+			}
+			else {
 				context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_COUNT, pmCount);
 			}
 		}
