@@ -505,6 +505,9 @@ public class FacilioConstants {
 		public static final String WORKFLOW_RULE_MODULE = "workflowrule";
 		public static final String RULES = "rules";
 		public static final String ALARM_RULE = "alarmRule";
+		public static final String ALARM_RULE_ACTIVE_ALARM = "alarmRuleActiveAlarm";
+		public static final String ALARM_RULE_THIS_WEEK = "alarmRuleThisWeek";
+		public static final String ALARM_RULE_TOP_5_ASSETS = "alarmRuleTop5Assets";
 		public static final String WORKFLOW_ALARM_TRIGGER_RULES = "workflowAlarmTriggerRules";
 		public static final String WORKFLOW_ALRM_CLEAR_RULE = "workflowAlarmClearRule";
 		public static final String WORKFLOW_RULE_LIST="workflowRuleList";

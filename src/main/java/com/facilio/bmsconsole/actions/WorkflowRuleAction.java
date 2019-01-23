@@ -366,6 +366,10 @@ public class WorkflowRuleAction extends FacilioAction {
 			fetchAlarmChain.execute(context);
 			alarmRule =  (AlarmRuleContext) context.get(FacilioConstants.ContextNames.ALARM_RULE);
 			setResult("alarmRule", alarmRule);
+			
+			setResult(FacilioConstants.ContextNames.ALARM_RULE_ACTIVE_ALARM, context.get(FacilioConstants.ContextNames.ALARM_RULE_ACTIVE_ALARM));
+			setResult(FacilioConstants.ContextNames.ALARM_RULE_THIS_WEEK, context.get(FacilioConstants.ContextNames.ALARM_RULE_THIS_WEEK));
+			setResult(FacilioConstants.ContextNames.ALARM_RULE_TOP_5_ASSETS, context.get(FacilioConstants.ContextNames.ALARM_RULE_TOP_5_ASSETS));
 		}
 		
 		setResult("rule", rule);
