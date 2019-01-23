@@ -257,7 +257,7 @@ public class TicketAPI {
 															.beanClass(TicketCategoryContext.class)
 															.select(modBean.getAllFields(FacilioConstants.ContextNames.TICKET_CATEGORY))
 															.andCustomWhere("ORGID = ?", orgId)
-															.orderBy("ID");
+															.orderBy("DISPLAY_NAME");
 		return builder.get();
 	}
 	

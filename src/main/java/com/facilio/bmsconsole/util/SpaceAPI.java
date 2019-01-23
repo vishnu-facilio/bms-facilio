@@ -961,10 +961,12 @@ public static long getSitesCount() throws Exception {
 		if (searchCriteria != null) {
 			selectBuilder.andCriteria(searchCriteria);
 		}
-		
-		Criteria scopeCriteria = AccountUtil.getCurrentUser().scopeCriteria("basespace");
-		if(scopeCriteria != null) {
-			selectBuilder.andCriteria(scopeCriteria);
+		// temp handling for service portal without Login
+		if (AccountUtil.getCurrentUser() != null) {
+			Criteria scopeCriteria = AccountUtil.getCurrentUser().scopeCriteria("basespace");
+			if(scopeCriteria != null) {
+				selectBuilder.andCriteria(scopeCriteria);
+			}
 		}
 		
 		if (orderBy != null && !orderBy.isEmpty()) {

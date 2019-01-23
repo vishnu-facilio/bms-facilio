@@ -88,11 +88,12 @@ public class GetAssetListCommand implements Command {
 		if (searchCriteria != null) {
 			builder.andCriteria(searchCriteria);
 		}
+		if (AccountUtil.getCurrentUser() != null) { // temp handled for service portal space 
 		
-		Criteria scopeCriteria = AccountUtil.getCurrentUser().scopeCriteria(moduleName);
-		if(scopeCriteria != null)
-		{
-			builder.andCriteria(scopeCriteria);
+			Criteria scopeCriteria = AccountUtil.getCurrentUser().scopeCriteria(moduleName);
+			if(scopeCriteria != null) {
+				builder.andCriteria(scopeCriteria);
+			}
 		}
 		
 		JSONObject pagination = (JSONObject) context.get(FacilioConstants.ContextNames.PAGINATION);
