@@ -1,11 +1,10 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.List;
-
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsole.util.ReadingRuleAPI;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.rule.AlarmRuleContext;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
@@ -29,46 +28,7 @@ public class AddAlarmRuleCommand implements Command {
 		preRequsiteRule.setRuleGroupId(ruleId);
 		WorkflowRuleAPI.updateWorkflowRule(preRequsiteRule);
 		
-		List<ReadingRuleContext> alarmTriggerRules = alarmRule.getAlarmTriggerRules();
-		ReadingRuleContext alarmClear = alarmRule.getAlarmClearRule();
-		
-		if(alarmTriggerRules != null) {
-			
-			for(ReadingRuleContext alarmTriggerRule :alarmTriggerRules) {
-				alarmTriggerRule.setRuleType(WorkflowRuleContext.RuleType.ALARM_TRIGGER_RULE);
-			}
-			if(alarmClear != null) {
-				alarmClear.setRuleType(WorkflowRuleContext.RuleType.ALARM_CLEAR_RULE);
-				alarmTriggerRules.add(alarmClear);
-			}
-			
-			WorkflowRuleContext temp = preRequsiteRule;
-			boolean isFirst = true;
-			int i=0;
-			for(ReadingRuleContext alarmTriggerRule :alarmTriggerRules) {
-				
-				i++;
-				if(isFirst) {
-					isFirst = false;
-					alarmTriggerRule.setOnSuccess(true);
-				}
-				else {
-					alarmTriggerRule.setOnSuccess(false);
-				}
-				alarmTriggerRule.setRuleGroupId(ruleId);
-				alarmTriggerRule.setParentRuleId(temp.getId());
-				alarmTriggerRule.setStatus(true);
-				alarmTriggerRule.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
-				
-				if(i == alarmTriggerRules.size() && alarmRule.getIsAutoClear()) {
-					alarmTriggerRule.setClearAlarm(true);
-				}
-				ruleId = WorkflowRuleAPI.addWorkflowRule(alarmTriggerRule);
-				
-				temp = alarmTriggerRule;
-			}
-			
-		}
+		ReadingRuleAPI.addTriggerAndClearRule(alarmRule);
 		return false;
 	}
 

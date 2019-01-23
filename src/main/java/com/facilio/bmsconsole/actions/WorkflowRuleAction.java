@@ -173,7 +173,7 @@ public class WorkflowRuleAction extends FacilioAction {
 		FacilioContext facilioContext = new FacilioContext();
 
 		facilioContext.put(FacilioConstants.ContextNames.ALARM_RULE, alarmRule);
-		Chain addRule = TransactionChainFactory.addAlarmRuleChain();
+		Chain addRule = TransactionChainFactory.updateAlarmRuleChain();
 		addRule.execute(facilioContext);
 		
 		alarmRule = (AlarmRuleContext) facilioContext.get(FacilioConstants.ContextNames.ALARM_RULE);

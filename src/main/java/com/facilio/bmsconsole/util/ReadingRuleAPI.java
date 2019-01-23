@@ -30,8 +30,10 @@ import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.bmsconsole.workflow.rule.AlarmRuleContext;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleAlarmMeta;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
+import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.events.constants.EventConstants;
 import com.facilio.sql.GenericInsertRecordBuilder;
@@ -382,6 +384,52 @@ public class ReadingRuleAPI extends WorkflowRuleAPI {
 			addEventContext.put(EventConstants.EventContextNames.EVENT_PAYLOAD, json);
 			Chain getAddEventChain = EventConstants.EventChainFactory.getAddEventChain();
 			getAddEventChain.execute(addEventContext);
+		}
+	}
+	
+	public static void addTriggerAndClearRule(AlarmRuleContext alarmRule) throws Exception {
+		List<ReadingRuleContext> alarmTriggerRules = alarmRule.getAlarmTriggerRules();
+		ReadingRuleContext alarmClear = alarmRule.getAlarmClearRule();
+		ReadingRuleContext preRequsiteRule = alarmRule.getPreRequsite();
+		long ruleId = preRequsiteRule.getId();
+		if(alarmTriggerRules != null) {
+			
+			for(ReadingRuleContext alarmTriggerRule :alarmTriggerRules) {
+				alarmTriggerRule.setId(-1);
+				alarmTriggerRule.setRuleType(WorkflowRuleContext.RuleType.ALARM_TRIGGER_RULE);
+			}
+			if(alarmClear != null) {
+				alarmClear.setId(-1);
+				alarmClear.setRuleType(WorkflowRuleContext.RuleType.ALARM_CLEAR_RULE);
+				alarmTriggerRules.add(alarmClear);
+			}
+			
+			WorkflowRuleContext temp = preRequsiteRule;
+			boolean isFirst = true;
+			int i=0;
+			for(ReadingRuleContext alarmTriggerRule :alarmTriggerRules) {
+				
+				i++;
+				if(isFirst) {
+					isFirst = false;
+					alarmTriggerRule.setOnSuccess(true);
+				}
+				else {
+					alarmTriggerRule.setOnSuccess(false);
+				}
+				alarmTriggerRule.setRuleGroupId(ruleId);
+				alarmTriggerRule.setParentRuleId(temp.getId());
+				alarmTriggerRule.setStatus(true);
+				alarmTriggerRule.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
+				
+				if(i == alarmTriggerRules.size() && alarmRule.getIsAutoClear()) {
+					alarmTriggerRule.setClearAlarm(true);
+				}
+				ruleId = WorkflowRuleAPI.addWorkflowRule(alarmTriggerRule);
+				
+				temp = alarmTriggerRule;
+			}
+			
 		}
 	}
 }
