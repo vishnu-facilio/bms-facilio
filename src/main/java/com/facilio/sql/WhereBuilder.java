@@ -74,6 +74,12 @@ public class WhereBuilder implements WhereBuilderIfc<WhereBuilder>{
 					values.addAll(condition.getComputedValues());
 				}
 			}
+			else {
+				throw new IllegalArgumentException("Condition cannot be null");
+			}
+		}
+		else {
+			throw new IllegalArgumentException("Condition cannot be null");
 		}
 		return this;
 	}
@@ -97,6 +103,9 @@ public class WhereBuilder implements WhereBuilderIfc<WhereBuilder>{
 			if(criteria.getComputedValues() != null) {
 				values.addAll(criteria.getComputedValues());
 			}
+		}
+		else {
+			throw new IllegalArgumentException("Criteria cannot be null");
 		}
 		return this;
 	}
