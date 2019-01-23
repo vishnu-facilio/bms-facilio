@@ -1270,7 +1270,11 @@ public class UserBeanImpl implements UserBean {
 				.innerJoin("ORG_Users")
 				.on("Users.USERID = ORG_Users.USERID")
 				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(ModuleFactory.getOrgUserModule()))
-				.andCriteria(criteria);
+				;
+		
+		if (criteria != null && !criteria.isEmpty()) {
+			selectBuilder.andCriteria(criteria);
+		}
 				
 		if (ouids != null && ouids.length == 1) {
 			Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(orgUserFields);
