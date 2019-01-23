@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
 
@@ -65,21 +66,20 @@ public class WhereBuilder implements WhereBuilderIfc<WhereBuilder>{
 	}
 	
 	private WhereBuilder condition(boolean isAND, Condition condition) {
-		if(condition != null) {
-			String computeAndGetWhereClause = condition.computeAndGetWhereClause();
-			if (computeAndGetWhereClause != null) {
-				checkIfFirstAndAdd(isAND);
-				this.condition.append(computeAndGetWhereClause);
-				if(condition.getComputedValues() != null) {
-					values.addAll(condition.getComputedValues());
-				}
-			}
-			else {
-				throw new IllegalArgumentException("Condition cannot be null");
-			}
-		}
-		else {
+		
+		if (condition == null && AccountUtil.getCurrentOrg().getId() == 75) { //Checking for 75 alone
 			throw new IllegalArgumentException("Condition cannot be null");
+		}
+		
+		String computeAndGetWhereClause = condition.computeAndGetWhereClause();
+		if ((computeAndGetWhereClause == null || computeAndGetWhereClause.isEmpty()) && AccountUtil.getCurrentOrg().getId() == 75) { //Checking for 75 alone
+			throw new IllegalArgumentException("Condition cannot be null");
+		}
+		
+		checkIfFirstAndAdd(isAND);
+		this.condition.append(computeAndGetWhereClause);
+		if(condition.getComputedValues() != null) {
+			values.addAll(condition.getComputedValues());
 		}
 		return this;
 	}
@@ -95,17 +95,17 @@ public class WhereBuilder implements WhereBuilderIfc<WhereBuilder>{
 	}
 	
 	private WhereBuilder criteria(boolean isAND, Criteria criteria) {
-		if(criteria != null && !criteria.isEmpty()) {
-			checkIfFirstAndAdd(isAND);
-			this.condition.append("(")
-						.append(criteria.computeWhereClause())
-						.append(")");
-			if(criteria.getComputedValues() != null) {
-				values.addAll(criteria.getComputedValues());
-			}
-		}
-		else {
+		
+		if ((criteria == null || criteria.isEmpty()) && AccountUtil.getCurrentOrg().getId() == 75) { //Checking for 75 alone
 			throw new IllegalArgumentException("Criteria cannot be null");
+		}
+		
+		checkIfFirstAndAdd(isAND);
+		this.condition.append("(")
+					.append(criteria.computeWhereClause())
+					.append(")");
+		if(criteria.getComputedValues() != null) {
+			values.addAll(criteria.getComputedValues());
 		}
 		return this;
 	}
