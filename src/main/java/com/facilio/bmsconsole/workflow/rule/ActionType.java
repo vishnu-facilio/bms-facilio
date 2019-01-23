@@ -320,26 +320,26 @@ public enum ActionType {
 						List<String> mobileInstanceIds = getMobileInstanceIDs(ids);
 						LOGGER.info("Sending push notifications for ids : "+ids);
 						LOGGER.info("Sending push notifications for mobileIds : "+mobileInstanceIds);
-//						if (mobileInstanceIds != null && !mobileInstanceIds.isEmpty()) {
-//							for (String mobileInstanceId : mobileInstanceIds) {
-//								if (mobileInstanceId != null) {
-//									// content.put("to",
-//									// "exA12zxrItk:APA91bFzIR6XWcacYh24RgnTwtsyBDGa5oCs5DVM9h3AyBRk7GoWPmlZ51RLv4DxPt2Dq2J4HDTRxW6_j-RfxwAVl9RT9uf9-d9SzQchMO5DHCbJs7fLauLIuwA5XueDuk7p5P7k9PfV");
-//									obj.put("to", mobileInstanceId);
-//									
-//									Map<String, String> headers = new HashMap<>();
-//									headers.put("Content-Type", "application/json");
-//									headers.put("Authorization",
-//											"key=AAAAMZz7GzM:APA91bGGZjl_YGNfo9OfEP5kgFiBp3Z0dHq_oa0yHLjgoogHXdPqDWwF2Z1IHYq6T9poGCS-JOwdMEIBqRPxExfemOlJmjOAcdfVlD7qT0IGjLr5gReqwefjBjmPg0Re1O7o0_gC0mYx");
-//
-//									String url = "https://fcm.googleapis.com/fcm/send";
-//
-//									 AwsUtil.doHttpPost(url, headers, null, obj.toJSONString());
-////									System.out.println("Push notification sent");
-////									System.out.println(obj.toJSONString());
-//								}
-//							}
-//						}
+						if (mobileInstanceIds != null && !mobileInstanceIds.isEmpty()) {
+							for (String mobileInstanceId : mobileInstanceIds) {
+								if (mobileInstanceId != null) {
+									// content.put("to",
+									// "exA12zxrItk:APA91bFzIR6XWcacYh24RgnTwtsyBDGa5oCs5DVM9h3AyBRk7GoWPmlZ51RLv4DxPt2Dq2J4HDTRxW6_j-RfxwAVl9RT9uf9-d9SzQchMO5DHCbJs7fLauLIuwA5XueDuk7p5P7k9PfV");
+									obj.put("to", mobileInstanceId);
+									
+									Map<String, String> headers = new HashMap<>();
+									headers.put("Content-Type", "application/json");
+									headers.put("Authorization",
+											"key=AAAAMZz7GzM:APA91bGGZjl_YGNfo9OfEP5kgFiBp3Z0dHq_oa0yHLjgoogHXdPqDWwF2Z1IHYq6T9poGCS-JOwdMEIBqRPxExfemOlJmjOAcdfVlD7qT0IGjLr5gReqwefjBjmPg0Re1O7o0_gC0mYx");
+
+									String url = "https://fcm.googleapis.com/fcm/send";
+
+									AwsUtil.doHttpPost(url, headers, null, obj.toJSONString());
+//									System.out.println("Push notification sent");
+//									System.out.println(obj.toJSONString());
+								}
+							}
+						}
 					}
 				}
 			} catch (Exception e) {
