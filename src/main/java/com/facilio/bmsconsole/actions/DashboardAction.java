@@ -4166,7 +4166,7 @@ public class DashboardAction extends FacilioAction {
 			
 			if(module.getName().equals(FacilioConstants.ContextNames.WORK_ORDER)) {
 				if(report.isWorkRequestReport()) {
-					builder.andCustomWhere("APPROVAL_STATE != 3");
+//					builder.andCustomWhere("APPROVAL_STATE != 3");
 				}
 				else {
 					builder.andCustomWhere("APPROVAL_STATE = 3 OR APPROVAL_STATE is null");
