@@ -477,7 +477,7 @@ public class AlarmAPI {
 						range.setStartTime(reading.getTtime());
 					}
 					else {
-						Condition condition = expression.getCriteria().getConditions().get(2);
+						Condition condition = expression.getCriteria().getConditions().get("2");
 						range = ((DateOperators) condition.getOperator()).getRange(condition.getValue());
 					}
 				}

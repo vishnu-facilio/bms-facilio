@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
+import java.lang.reflect.Method;
 import java.text.DecimalFormat;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
@@ -16,6 +17,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.FormulaContext.AggregateOperator;
 import com.facilio.bmsconsole.context.FormulaContext.DateAggregateOperator;
 import com.facilio.bmsconsole.context.FormulaContext.NumberAggregateOperator;
+import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
@@ -23,6 +25,7 @@ import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.LookupField;
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
+import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.report.context.ReportBaseLineContext;
@@ -39,7 +42,7 @@ public class ConstructReportDataCommand implements Command {
 		return new ArrayList<>();
 	}
 	
-	private Map<String, Map<Long, String>> lookupFieldMap = new HashMap<>();
+	private Map<String, Map<Long, Object>> lookupFieldMap = new HashMap<>();
 
 	@Override
 	public boolean execute(Context context) throws Exception {
@@ -189,33 +192,44 @@ public class ConstructReportDataCommand implements Command {
 				break;
 			case LOOKUP:
 				LookupField lookupField = (LookupField) field;
-				Map<Long, String> lookupMap = lookupFieldMap.get(lookupField.getLookupModule().getName());
 				if (val instanceof Map) {
+					String moduleName = null;
+					if (LookupSpecialTypeUtil.isSpecialType(lookupField.getSpecialType())) {
+						moduleName = lookupField.getSpecialType();
+					} else {
+						moduleName = lookupField.getLookupModule().getName();
+					}
+					Map<Long, Object> lookupMap = lookupFieldMap.get(moduleName);
 					if (lookupMap == null) {
-						FacilioModule lookupModule = lookupField.getLookupModule();
-						ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-						List<FacilioField> fields = new ArrayList<>(modBean.getAllFields(lookupModule.getName()));
-						FacilioField mainField = null;
-						for (FacilioField f : fields) {
-							if (f.isMainField()) {
-								mainField = f;
-								break;
+						if (LookupSpecialTypeUtil.isSpecialType(lookupField.getSpecialType())) {
+							List list = LookupSpecialTypeUtil.getObjects(lookupField.getSpecialType(), null);
+							lookupMap = LookupSpecialTypeUtil.getPrimaryFieldValues(lookupField.getSpecialType(), list);
+						} else {
+							FacilioModule lookupModule = lookupField.getLookupModule();
+							ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+							List<FacilioField> fields = new ArrayList<>(modBean.getAllFields(lookupModule.getName()));
+							FacilioField mainField = null;
+							for (FacilioField f : fields) {
+								if (f.isMainField()) {
+									mainField = f;
+									break;
+								}
 							}
-						}
-						
-						List<FacilioField> selectFields = new ArrayList<>();
-						selectFields.add(mainField);
-						selectFields.add(FieldFactory.getIdField(lookupModule));
-						GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
-								.select(selectFields)
-								.table(lookupModule.getTableName())
-								.andCondition(CriteriaAPI.getCurrentOrgIdCondition(lookupModule));
-	
-						List<Map<String,Object>> asProps = builder.get();
-						lookupMap = new HashMap<>();
-						lookupFieldMap.put(lookupModule.getName(), lookupMap);
-						for (Map<String, Object> map : asProps) {
-							lookupMap.put((Long) map.get("id"), (String) map.get(mainField.getName()));
+							
+							List<FacilioField> selectFields = new ArrayList<>();
+							selectFields.add(mainField);
+							selectFields.add(FieldFactory.getIdField(lookupModule));
+							GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+									.select(selectFields)
+									.table(lookupModule.getTableName())
+									.andCondition(CriteriaAPI.getCurrentOrgIdCondition(lookupModule));
+		
+							List<Map<String,Object>> asProps = builder.get();
+							lookupMap = new HashMap<>();
+							lookupFieldMap.put(lookupModule.getName(), lookupMap);
+							for (Map<String, Object> map : asProps) {
+								lookupMap.put((Long) map.get("id"), (String) map.get(mainField.getName()));
+							}
 						}
 					}
 					val = lookupMap.get(((Map) val).get("id"));

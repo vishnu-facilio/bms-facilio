@@ -85,9 +85,9 @@ public class FetchReportExtraMeta implements Command {
 							
 							//The following is for backward compatibility
 							if(parentIds == null && dataPoint.getCriteria() != null && !dataPoint.getCriteria().getConditions().isEmpty()) {
-								Map<Integer, Condition> conditions = dataPoint.getCriteria().getConditions();
+								Map<String, Condition> conditions = dataPoint.getCriteria().getConditions();
 								
-								for(Integer key : conditions.keySet()) {
+								for(String key : conditions.keySet()) {
 									Condition condition = conditions.get(key);
 									if(condition.getFieldName().equals("parentId")) {
 										parentIds = Collections.singletonList(Long.parseLong(condition.getValue()));

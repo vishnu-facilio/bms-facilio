@@ -167,9 +167,9 @@ public class WorkflowUtil {
 	}
 	public static String getParentIdFromCriteria (Criteria criteria) {
 		
-		Map<Integer, Condition> conditions = criteria.getConditions();
+		Map<String, Condition> conditions = criteria.getConditions();
 		if(conditions != null) {
-			for(Integer key:conditions.keySet()) {
+			for(String key:conditions.keySet()) {
 				Condition condition = conditions.get(key);
 				if(condition.getFieldName().contains("parentId")) {
 					return condition.getValue();
@@ -493,7 +493,7 @@ public class WorkflowUtil {
 						
 						Long parentId = null;
 						if(expression.getCriteria() != null ) {
-							Map<Integer, Condition> conditions = expression.getCriteria().getConditions();
+							Map<String, Condition> conditions = expression.getCriteria().getConditions();
 							for(Condition condition :conditions.values()) {
 								if(condition.getFieldName().equals("parentId") && !condition.getValue().equals("${resourceId}")) {
 									if(condition.getValue() != null && !condition.getValue().contains("${")) {
@@ -557,7 +557,7 @@ public class WorkflowUtil {
 						}
 						Long parentId = null;
 						if(expression.getCriteria() != null) {
-							Map<Integer, Condition> conditions = expression.getCriteria().getConditions();
+							Map<String, Condition> conditions = expression.getCriteria().getConditions();
 							for(Condition condition :conditions.values()) {
 								if(condition.getFieldName().equals("parentId") && !condition.getValue().equals("${resourceId}")) {
 									parentId = Long.parseLong(condition.getValue());
@@ -869,8 +869,8 @@ public class WorkflowUtil {
 			 Element criteriaElement = doc.createElement(CRITERIA_STRING);
 			 criteriaElement.setAttribute(PATTERN_STRING, expressionContext.getCriteria().getPattern());
 			 
-			 Map<Integer, Condition> conditionMap =  expressionContext.getCriteria().getConditions();
-			 for(Map.Entry<Integer, Condition> conditionEntry : conditionMap.entrySet()) {
+			 Map<String, Condition> conditionMap =  expressionContext.getCriteria().getConditions();
+			 for(Map.Entry<String, Condition> conditionEntry : conditionMap.entrySet()) {
 				 
 				 Condition condition = conditionEntry.getValue();
 				 Object key = conditionEntry.getKey();
@@ -1076,7 +1076,7 @@ public class WorkflowUtil {
                 	String pattern = criteria.getAttribute(PATTERN_STRING);
                 	Criteria criteria1 = new Criteria();
                 	criteria1.setPattern(pattern);
-                	Map<Integer, Condition> conditions = new HashMap<>();
+                	Map<String, Condition> conditions = new HashMap<>();
                 	NodeList conditionNodes = criteria.getElementsByTagName(CONDITION_STRING);
                 	for(int j=0;j<conditionNodes.getLength();j++) {
                 		Condition condition1 = null;
@@ -1085,7 +1085,7 @@ public class WorkflowUtil {
                 			Element condition  = (Element) conditionNode;
                 			String sequence = condition.getAttribute(SEQUENCE_STRING);
                 			condition1 = getConditionObjectFromConditionString(expressionContext,condition.getTextContent(),expressionContext.getModuleName(),Integer.parseInt(sequence));
-                			conditions.put(Integer.parseInt(sequence), condition1);
+                			conditions.put(sequence, condition1);
                 		}
                 	}
                 	criteria1.setConditions(conditions);
@@ -1136,7 +1136,7 @@ public class WorkflowUtil {
 		for (FacilioField field : fields) {
 			fieldMap.put(field.getName(), field);
 		}
-		Map<Integer, Condition> conditions = new HashMap<>();
+		Map<String, Condition> conditions = new HashMap<>();
 		
 		String[] values = criteriaString.split(CONDITION_SPACE_SEPERATOR);
 		int sequence = 0;
@@ -1192,7 +1192,7 @@ public class WorkflowUtil {
 					sequence++;
 					sb.append(sequence + " ");
 					condition.setSequence(sequence);
-					conditions.put(sequence, condition);
+					conditions.put(String.valueOf(sequence), condition);
 				}
 			}
 		}

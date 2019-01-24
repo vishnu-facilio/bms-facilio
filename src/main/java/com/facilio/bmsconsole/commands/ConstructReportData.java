@@ -45,6 +45,11 @@ public class ConstructReportData implements Command {
 		
 		ReportDataPointContext dataPointContext = new ReportDataPointContext();
 		ReportFieldContext xAxis = new ReportFieldContext();
+		
+		if (!xAxisJSON.containsKey("field_id")) {
+			throw new Exception("field_id should be mandatory");
+		}
+		
 		FacilioField xField = modBean.getField((Long) xAxisJSON.get("field_id"));
 		if (xAxisJSON.containsKey("aggr") && isDateField(xField)) {
 			Integer xAggr = ((Number) xAxisJSON.get("aggr")).intValue();
@@ -61,7 +66,7 @@ public class ConstructReportData implements Command {
 		
 		AggregateOperator yAggr = CommonAggregateOperator.COUNT;
 		FacilioField yField = null;
-		if (yAxisJSON == null) {
+		if (yAxisJSON == null || !(yAxisJSON.containsKey("field_id"))) {
 			yField = FieldFactory.getIdField(xField.getModule());
 			yField.setColumnName(yField.getModule().getTableName() + ".ID");
 		} else {
@@ -80,6 +85,11 @@ public class ConstructReportData implements Command {
 			for (int i = 0; i < groupByJSONArray.size(); i++) {
 				Map groupByJSON = (Map) groupByJSONArray.get(i);
 				ReportGroupByField groupByField = new ReportGroupByField();
+				
+				if (!groupByJSON.containsKey("field_id")) {
+					throw new Exception("Field ID should be mandatory");
+				}
+				
 				FacilioField field = modBean.getField((long) groupByJSON.get("field_id"));
 				groupByField.setField(field);
 				groupByField.setAlias(field.getName());
@@ -88,12 +98,9 @@ public class ConstructReportData implements Command {
 			dataPointContext.setGroupByFields(groupByFields);
 		}
 		
-		if (context.get("criteria") != null) {
-//			Criteria criteria = new Criteria();
-//			Criteria criteria = (Criteria) context.get("criteria");
-//			Map<Integer, Condition> conditions = criteria.getConditions();
-			
-//			dataPointContext.setCriteria(criteria);
+		if (context.containsKey("criteria")) {
+			Criteria criteria = (Criteria) context.get("criteria");
+			dataPointContext.setCriteria(criteria);
 		}
 		
 		Map<String, String> aliases = new HashMap<>();

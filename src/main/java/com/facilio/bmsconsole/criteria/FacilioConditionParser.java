@@ -71,7 +71,7 @@ public class FacilioConditionParser {
 		String conditionStringFormatter = "((.*?)`([^`]*)`(.*))";
 		Pattern condtionStringpattern = Pattern.compile(conditionStringFormatter);
 		StringBuilder sb =  new StringBuilder();
-		Map<Integer, Condition> conditions = new HashMap<>();
+		Map<String, Condition> conditions = new HashMap<>();
 		Criteria criteria = new Criteria();
 		Matcher moduleMatcher = moduleNamePattern.matcher(templateString);
 		String conditionString = null;
@@ -122,7 +122,7 @@ public class FacilioConditionParser {
 					sequence++;
 					sb.append(sequence + " ");
 					condition.setSequence(sequence);
-					conditions.put(sequence, condition);
+					conditions.put(String.valueOf(sequence), condition);
 				}
 			}
 		}

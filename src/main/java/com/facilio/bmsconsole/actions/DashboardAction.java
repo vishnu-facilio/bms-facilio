@@ -981,9 +981,9 @@ public class DashboardAction extends FacilioAction {
 								dataPoint.put("readingField", readingField);
 							}
 							if(exp.getCriteria() != null) {
-								Map<Integer, Condition> conditions = exp.getCriteria().getConditions();
+								Map<String, Condition> conditions = exp.getCriteria().getConditions();
 								
-								for(Integer key : conditions.keySet()) {
+								for(String key : conditions.keySet()) {
 									
 									Condition condition = conditions.get(key);
 									
@@ -5499,7 +5499,7 @@ public class DashboardAction extends FacilioAction {
 				criteria = CriteriaAPI.getCriteria(AccountUtil.getCurrentOrg().getOrgId(), report.getCriteria().getCriteriaId());
 			}
 			if(criteria != null && criteria.getConditions() != null) {
-				Map<Integer, Condition> conditions = criteria.getConditions();
+				Map<String, Condition> conditions = criteria.getConditions();
 				for(Condition condition:conditions.values()) {
 					if(condition.getFieldName().equals("parentId")) {
 						energyMeterValue = energyMeterValue + condition.getValue() +",";

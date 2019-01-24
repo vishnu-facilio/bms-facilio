@@ -614,9 +614,9 @@ public class V2ReportAction extends FacilioAction {
 								
 							}
 							if(exp.getCriteria() != null) {
-								Map<Integer, Condition> conditions = exp.getCriteria().getConditions();
+								Map<String, Condition> conditions = exp.getCriteria().getConditions();
 								
-								for(Integer key : conditions.keySet()) {
+								for(String key : conditions.keySet()) {
 									
 									Condition condition = conditions.get(key);
 									

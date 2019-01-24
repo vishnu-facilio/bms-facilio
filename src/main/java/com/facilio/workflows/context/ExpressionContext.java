@@ -324,8 +324,8 @@ public class ExpressionContext implements WorkflowExpression {
 					else if(expAggregateOpp.equals(ExpressionAggregateOperator.LAST_VALUE)) {
 						boolean isLastValueWithTimeRange = false;
 						
-						Map<Integer, Condition> conditions = criteria.getConditions();
-						for(Integer key:conditions.keySet()) {
+						Map<String, Condition> conditions = criteria.getConditions();
+						for(String key:conditions.keySet()) {
 							Condition condition = conditions.get(key);
 							if(condition.getFieldName().contains("ttime")) {
 								isLastValueWithTimeRange = true;
@@ -342,7 +342,7 @@ public class ExpressionContext implements WorkflowExpression {
 							
 							String parentIdString = null;
 							conditions = criteria.getConditions();
-							for(Integer key:conditions.keySet()) {
+							for(String key:conditions.keySet()) {
 								Condition condition = conditions.get(key);
 								if(condition.getFieldName().contains("parentId")) {
 									parentIdString = condition.getValue();

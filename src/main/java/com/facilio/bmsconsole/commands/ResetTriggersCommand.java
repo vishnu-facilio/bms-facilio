@@ -145,7 +145,7 @@ public class ResetTriggersCommand implements SerializableCommand {
 		WorkflowEventContext event = rule.getEvent();
 		
 		Criteria criteria = rule.getCriteria();
-		Condition condition = criteria.getConditions().get(1);
+		Condition condition = criteria.getConditions().get("1");
 		ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = bean.getModule(event.getModuleId());
 		

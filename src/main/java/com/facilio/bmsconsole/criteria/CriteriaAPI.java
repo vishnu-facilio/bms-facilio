@@ -42,14 +42,14 @@ public class CriteriaAPI {
 		return -1;
 	}
 	
-	private static void addConditions(Map<Integer, Condition> conditions, long parentCriteriaId, long orgId) throws Exception {
+	private static void addConditions(Map<String, Condition> conditions, long parentCriteriaId, long orgId) throws Exception {
 		if(conditions != null && !conditions.isEmpty()) {
 			GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
 															.table("Conditions")
 															.fields(FieldFactory.getConditionFields())
 															;
 			
-			for(Map.Entry<Integer, Condition> conditionEntry : conditions.entrySet()) {
+			for(Map.Entry<String, Condition> conditionEntry : conditions.entrySet()) {
 				Condition condition = conditionEntry.getValue();
 				
 				if (condition.getFieldName() == null || condition.getFieldName().isEmpty()) {
@@ -146,7 +146,7 @@ public class CriteriaAPI {
 		List<Map<String, Object>> criteriaProps = criteriaBuilder.get();
 		
 		Criteria criteria = null;
-		Map<Integer, Condition> conditions = new HashMap<>();
+		Map<String, Condition> conditions = new HashMap<>();
 		if(criteriaProps != null && !criteriaProps.isEmpty()) {
 			for(Map<String, Object> props : criteriaProps) {
 				if(criteria == null) {
@@ -154,7 +154,7 @@ public class CriteriaAPI {
 					criteria.setConditions(conditions);
 				}
 				Condition condition = FieldUtil.getAsBeanFromMap(props, Condition.class);
-				conditions.put(condition.getSequence(), condition);
+				conditions.put(String.valueOf(condition.getSequence()), condition);
 			}
 		}
 		return criteria;
@@ -191,7 +191,7 @@ public class CriteriaAPI {
 					
 					criteriaMap.put(parentCriteria.getCriteriaId(), parentCriteria);
 				}
-				parentCriteria.getConditions().put(condition.getSequence(), condition);
+				parentCriteria.getConditions().put(String.valueOf(condition.getSequence()), condition);
 			}
 			return criteriaMap;
 		}
