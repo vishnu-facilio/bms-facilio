@@ -21,6 +21,26 @@ public class ReportContext extends ModuleBaseWithCustomFields {
 	 */
 	private static final long serialVersionUID = 1L;
 	Long parentFolderId;
+	
+	boolean isWorkRequestReport;
+	
+	
+	public boolean isWorkRequestReport() {
+		return isWorkRequestReport;
+	}
+
+	public void setWorkRequestReport(boolean isWorkRequestReport) {
+		this.isWorkRequestReport = isWorkRequestReport;
+	}
+	
+	public boolean getIsWorkRequestReport() {
+		return isWorkRequestReport;
+	}
+
+	public void setIsWorkRequestReport(boolean isWorkRequestReport) {
+		this.isWorkRequestReport = isWorkRequestReport;
+	}
+
 	ReportFolderContext reportFolderContext;
 	String customReportClass;
 	public String getCustomReportClass() {

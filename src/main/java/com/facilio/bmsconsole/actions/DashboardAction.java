@@ -135,6 +135,7 @@ import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.util.WorkOrderAPI;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.rule.ActivityType;
+import com.facilio.bmsconsole.workflow.rule.ApprovalState;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleAlarmMeta;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 import com.facilio.cards.util.CardType;
@@ -4159,6 +4160,18 @@ public class DashboardAction extends FacilioAction {
 		if(module.getExtendModule() != null) {
 			builder.innerJoin(module.getExtendModule().getTableName())
 				.on(module.getTableName()+".Id="+module.getExtendModule().getTableName()+".Id");
+		}
+		
+		if(AccountUtil.getCurrentOrg().getOrgId() == 182l) {	// remove this after checking
+			
+			if(module.getName().equals(FacilioConstants.ContextNames.WORK_ORDER)) {
+				if(report.isWorkRequestReport()) {
+					builder.andCustomWhere("APPROVAL_STATE != ?", ApprovalState.APPROVED.values());
+				}
+				else {
+					builder.andCustomWhere("APPROVAL_STATE = ? OR APPROVAL_STATE is null", ApprovalState.APPROVED.values());
+				}
+			}
 		}
 		
 		if(report.getId() == 4144l) {

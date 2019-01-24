@@ -3254,6 +3254,13 @@ public class FieldFactory {
 		reportColor.setModule(module);
 		fields.add(reportColor);
 
+		FacilioField isWorkRequestReport = new FacilioField();
+		isWorkRequestReport.setName("isWorkRequestReport");
+		isWorkRequestReport.setDataType(FieldType.BOOLEAN);
+		isWorkRequestReport.setColumnName("IS_WORK_REQUEST_REPORT");
+		isWorkRequestReport.setModule(module);
+		fields.add(isWorkRequestReport);
+		
 		fields.add(getField("customReportClass", "CUSTOM_REPORT_CLASS", module, FieldType.STRING));
 		return fields;
 	}
