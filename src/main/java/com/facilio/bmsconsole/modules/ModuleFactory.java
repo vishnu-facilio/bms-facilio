@@ -810,18 +810,21 @@ public class ModuleFactory {
 	public static FacilioModule getWidgetListViewModule() {
 		FacilioModule dashboardWigetModule = new FacilioModule();
 		dashboardWigetModule.setTableName("Widget_List_View");
+		dashboardWigetModule.setExtendModule(getWidgetModule());
 		return dashboardWigetModule;
 	}
 
 	public static FacilioModule getWidgetStaticModule() {
 		FacilioModule dashboardWigetModule = new FacilioModule();
 		dashboardWigetModule.setTableName("Widget_Static");
+		dashboardWigetModule.setExtendModule(getWidgetModule());
 		return dashboardWigetModule;
 	}
 
 	public static FacilioModule getWidgetWebModule() {
 		FacilioModule dashboardWigetModule = new FacilioModule();
 		dashboardWigetModule.setTableName("Widget_Web");
+		dashboardWigetModule.setExtendModule(getWidgetModule());
 		return dashboardWigetModule;
 	}
 
