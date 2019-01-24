@@ -3,19 +3,19 @@ package com.facilio.bmsconsole.workflow.rule;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
-import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
 import com.facilio.bmsconsole.commands.FacilioContext;
-import com.facilio.bmsconsole.context.AlarmContext;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.context.ResourceContext;
@@ -34,7 +34,6 @@ import com.facilio.bmsconsole.util.AlarmAPI;
 import com.facilio.bmsconsole.util.ReadingRuleAPI;
 import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.events.constants.EventConstants;
 import com.facilio.sql.GenericDeleteRecordBuilder;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
@@ -361,13 +360,15 @@ public class ReadingRuleContext extends WorkflowRuleContext {
 		}
 	}
 	
-	private static final int OVER_PERIOD_BUFFER = 20 * 60 * 1000;
+	private static final int OVER_PERIOD_BUFFER = 5 * 60 * 1000;
 	private boolean evalOverPeriod(boolean workflowFlag, ReadingContext reading) throws Exception {
 		if (workflowFlag) { ////If there is no prev flap, add flap and return false
 			List<Map<String, Object>> flaps = getFlaps(reading.getParentId());
+			List<Long> flapsToBeDeleted = filterFlapsAndGetOldIds(flaps, reading);
+			boolean result = false;
 			if (flaps.isEmpty()) {
 				addFlap(reading.getTtime(), reading.getParentId());
-				return false;
+				result = false;
 			}
 			else {
 				long firstFlapDiff = reading.getTtime() - (long)flaps.get(0).get("flapTime");
@@ -379,24 +380,28 @@ public class ReadingRuleContext extends WorkflowRuleContext {
 //					if (AccountUtil.getCurrentOrg().getId() == 135) {
 						LOGGER.debug(getId()+"::Within over period so ignoring");
 //					}
-					return false;
+					result = false;
 				}
 				else if (firstFlapDiff <= ((overPeriod * 1000) + OVER_PERIOD_BUFFER)) {
-					deleteAllFlaps(reading.getParentId());
+//					deleteAllFlaps(reading.getParentId());
 //					if (AccountUtil.getCurrentOrg().getId() == 135) {
 						LOGGER.debug(getId()+"::Rule passed");
 //					}
-					return true;
+					result = true;
 				}
-				else {
-					deleteAllFlaps(reading.getParentId());
+				else { //This shouldn't happen. We can check anyway
+//					deleteAllFlaps(reading.getParentId());
 					addFlap(reading.getTtime(), reading.getParentId());
 //					if (AccountUtil.getCurrentOrg().getId() == 135) {
-						LOGGER.debug(getId()+"::Over buffer");
+						LOGGER.info(getId()+"::Over buffer");
 //					}
-					return false;
+					result = false;
 				}
 			}
+			if (!flapsToBeDeleted.isEmpty()) {
+				deleteOldFlaps(flapsToBeDeleted);
+			}
+			return result;
 		}
 		else {
 			deleteAllFlaps(reading.getParentId());
@@ -404,23 +409,34 @@ public class ReadingRuleContext extends WorkflowRuleContext {
 		}
 	}
 	
+	private List<Long> filterFlapsAndGetOldIds (List<Map<String, Object>> flaps, ReadingContext reading) throws Exception {
+		List<Long> flapsToBeDeleted = new ArrayList<>();
+		Iterator<Map<String, Object>> itr = flaps.iterator();
+		while (itr.hasNext()) {
+			Map<String, Object> flap = itr.next();
+			long flapTime = (long) flap.get("flapTime");
+			if ((reading.getTtime() - flapTime) > (overPeriod * 1000)) {
+				flapsToBeDeleted.add((Long) flap.get("id"));
+				itr.remove();
+			}
+		}
+		return flapsToBeDeleted;
+	}
+	
+//	private void deleteFlapsBeyondPeriod(List<Map<String, Object>> flaps, long overPeriod, ReadingContext reading) throws SQLException {
+//		List<Long> flapsToBeDeleted = flaps.stream()
+//											.filter(flap -> (reading.getTtime() - (long) flap.get("flapTime")) > (overPeriod * 1000))
+//											.map(flap -> (long) flap.get("id"))
+//											.collect(Collectors.toList());
+//		deleteOldFlaps(flapsToBeDeleted);
+//	}
+	
 	private boolean evalOverPeriodAndOccurences(boolean workflowFlag, ReadingContext reading) throws Exception {
 		if (workflowFlag) {
 			List<Map<String, Object>> flaps = getFlaps(reading.getParentId());
-			List<Long> flapsToBeDeleted = new ArrayList<>();
-			Iterator<Map<String, Object>> itr = flaps.iterator();
-			while (itr.hasNext()) {
-				Map<String, Object> flap = itr.next();
-				long flapTime = (long) flap.get("flapTime");
-				if ((reading.getTtime() - flapTime) > (overPeriod * 1000)) {
-					flapsToBeDeleted.add((Long) flap.get("id"));
-					itr.remove();
-				}
-			}
+			List<Long> flapsToBeDeleted = filterFlapsAndGetOldIds(flaps, reading);
 			boolean flag = checkOccurences(flaps, reading);
-			if (!flag) {
-				deleteOldFlaps(flapsToBeDeleted);
-			}
+			deleteOldFlaps(flapsToBeDeleted);
 			return flag;
 		}
 		else {
@@ -431,7 +447,11 @@ public class ReadingRuleContext extends WorkflowRuleContext {
 	private boolean evalConsecutive(boolean workflowFlag, ReadingContext reading) throws Exception {
 		if (workflowFlag) {
 			List<Map<String, Object>> flaps = getFlaps(reading.getParentId());
-			return checkOccurences(flaps, reading);
+			boolean flag = checkOccurences(flaps, reading);
+			if (flag) { //Remove oldest entry alone
+				deleteOldFlaps(Collections.singletonList((Long) flaps.get(0).get("id")));
+			}
+			return flag;
 		}
 		else {
 			deleteAllFlaps(reading.getParentId());
@@ -441,7 +461,7 @@ public class ReadingRuleContext extends WorkflowRuleContext {
 	
 	private boolean checkOccurences(List<Map<String, Object>> flaps, ReadingContext reading) throws Exception {
 		if (flaps.size() + 1 == occurences) { //Old flaps + current flap
-			deleteAllFlaps(reading.getParentId());
+//			deleteAllFlaps(reading.getParentId());
 			return true;
 		}
 		else {
@@ -639,6 +659,7 @@ public class ReadingRuleContext extends WorkflowRuleContext {
 		this.alarmMetaMap = alarmMetaMap;
 	}
 	
+	@Override
 	public void executeTrueActions(Object record, Context context, Map<String, Object> placeHolders) throws Exception {
 		long ruleId = getId();
 		List<ActionContext>	actions = ActionAPI.getActiveActionsFromWorkflowRule(ruleId);
@@ -647,7 +668,7 @@ public class ReadingRuleContext extends WorkflowRuleContext {
 				if(alarmSeverityId != null) {
 					JSONTemplate jsonTemplate = (JSONTemplate) action.getTemplate();
 					JSONObject templateJson = jsonTemplate.getOriginalTemplate();
-					templateJson.put("severity", AlarmAPI.getAlarmSeverity(alarmSeverityId).getDisplayName());
+					templateJson.put("severity", AlarmAPI.getAlarmSeverity(alarmSeverityId).getSeverity());
 					jsonTemplate.setContent(templateJson.toJSONString());
 				}
 				action.executeAction(placeHolders, context, this, record);
