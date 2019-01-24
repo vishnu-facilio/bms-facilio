@@ -218,11 +218,11 @@ public class ImportDataAction extends ActionSupport {
 	}
 	
 	public String finishValidation() throws Exception{
-		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
-				.table(ModuleFactory.getImportProcessLogModule().getTableName())
-				.fields(FieldFactory.getImportProcessLogFields());
 		
 		for(ImportProcessLogContext row: validatedRecords) {
+			GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
+					.table(ModuleFactory.getImportProcessLogModule().getTableName())
+					.fields(FieldFactory.getImportProcessLogFields());
 			updateBuilder.andCustomWhere("ID = ?", row.getId());
 			JSONObject props = FieldUtil.getAsJSON(row);
 			updateBuilder.update(props);
