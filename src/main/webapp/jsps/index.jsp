@@ -120,6 +120,7 @@ if(brandName != null && (brandName.indexOf("BuildingsTalk") != -1 )) {%>
       <script type="text/javascript" charset="UTF-8" src="<%=staticUrl%>/js/app.js"></script>
   </body>
   
+  <script src="//unpkg.com/ckmeans@1.0.1/src/index.js"></script>
   <script src="//cdn.quilljs.com/1.3.6/quill.min.js"></script>
   <link rel="stylesheet" href="//cdn.quilljs.com/1.3.6/quill.snow.css" />
 
