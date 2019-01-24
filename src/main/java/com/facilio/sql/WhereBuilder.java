@@ -4,12 +4,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
-import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
 
 public class WhereBuilder implements WhereBuilderIfc<WhereBuilder>{
+	private static final Logger LOGGER = LogManager.getLogger(WhereBuilder.class.getName());
+	
 	private StringBuilder condition = new StringBuilder();
 	private List<Object> values = new ArrayList<>();;
 	
@@ -67,13 +70,15 @@ public class WhereBuilder implements WhereBuilderIfc<WhereBuilder>{
 	
 	private WhereBuilder condition(boolean isAND, Condition condition) {
 		
-		if (condition == null && AccountUtil.getCurrentOrg().getId() == 75) { //Checking for 75 alone
-			throw new IllegalArgumentException("Condition cannot be null");
+		if (condition == null) { 
+//			throw new IllegalArgumentException("Condition cannot be null");
+			printTrace("Condition cannot be null. This is wrong");
 		}
 		
 		String computeAndGetWhereClause = condition.computeAndGetWhereClause();
-		if ((computeAndGetWhereClause == null || computeAndGetWhereClause.isEmpty()) && AccountUtil.getCurrentOrg().getId() == 75) { //Checking for 75 alone
-			throw new IllegalArgumentException("Condition cannot be null");
+		if (computeAndGetWhereClause == null || computeAndGetWhereClause.isEmpty()) { //Checking for 75 alone
+//			throw new IllegalArgumentException("Condition cannot be null");
+			printTrace("Condition cannot be null. This is wrong");
 		}
 		
 		checkIfFirstAndAdd(isAND);
@@ -94,10 +99,22 @@ public class WhereBuilder implements WhereBuilderIfc<WhereBuilder>{
 		return criteria(false, criteria);
 	}
 	
+	private void printTrace (String msg) {
+		StringBuilder builder = new StringBuilder(msg)
+									.append("\nTruncated Trace\n");
+		
+		StackTraceElement[] trace = Thread.currentThread().getStackTrace();
+		for (int i = 0; i < Math.min(5, trace.length); i++) {
+			builder.append(trace[i])
+					.append("\n");
+		}
+		LOGGER.info(builder.toString());
+	}
+	
 	private WhereBuilder criteria(boolean isAND, Criteria criteria) {
 		
-		if ((criteria == null || criteria.isEmpty()) && AccountUtil.getCurrentOrg().getId() == 75) { //Checking for 75 alone
-			throw new IllegalArgumentException("Criteria cannot be null");
+		if (criteria == null || criteria.isEmpty()) { 
+			printTrace("Criteria cannot be null. This is wrong");
 		}
 		
 		if (criteria != null) {
