@@ -6,8 +6,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.stream.Collectors;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
@@ -29,7 +27,6 @@ import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.util.ImportAPI;
 import com.facilio.fs.FileStore;
 import com.facilio.fs.FileStoreFactory;
-import com.mysql.fabric.xmlrpc.base.Array;
 
 public class WriteSkippedToFileCommand implements Command {
 

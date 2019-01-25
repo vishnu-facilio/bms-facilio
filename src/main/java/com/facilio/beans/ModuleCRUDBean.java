@@ -9,7 +9,6 @@ import org.json.simple.JSONObject;
 
 import com.amazonaws.services.kinesis.clientlibrary.interfaces.IRecordProcessorCheckpointer;
 import com.amazonaws.services.kinesis.model.Record;
-import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.AlarmContext;
 import com.facilio.bmsconsole.context.ControllerContext;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;

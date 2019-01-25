@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.instant.jobs;
 
 import java.util.logging.Logger;
+
 import org.apache.commons.chain.Chain;
 import org.apache.log4j.LogManager;
 import org.json.simple.JSONObject;
@@ -12,7 +13,6 @@ import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.exceptions.importExceptions.ImportParseException;
 import com.facilio.bmsconsole.exceptions.importExceptions.ImportTimeColumnParseException;
-import com.facilio.bmsconsole.jobs.ImportDataJob;
 import com.facilio.bmsconsole.util.ImportAPI;
 import com.facilio.tasker.job.InstantJob;
 import com.facilio.wms.message.WmsEvent;

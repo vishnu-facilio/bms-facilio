@@ -1,7 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import org.json.simple.JSONArray;
@@ -11,7 +10,6 @@ import org.json.simple.parser.JSONParser;
 import com.facilio.bmsconsole.context.ImportRowContext;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.util.AssetsAPI;
-import com.facilio.report.context.ReportDataPointContext;
 
 public class ImportProcessLogContext {
 	Long id, orgId, importId, templateId,parentId;

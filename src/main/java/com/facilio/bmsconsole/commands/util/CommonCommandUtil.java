@@ -1,7 +1,6 @@
 package com.facilio.bmsconsole.commands.util;
 
 import java.sql.Connection;
-
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -37,8 +36,8 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainExceptionHandler;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
-import com.facilio.bmsconsole.context.OrgUnitsContext;
 import com.facilio.bmsconsole.context.BaseSpaceContext.SpaceType;
+import com.facilio.bmsconsole.context.OrgUnitsContext;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.SupportEmailContext;
@@ -82,7 +81,6 @@ import com.facilio.workflows.context.ExpressionContext;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.context.WorkflowExpression;
 import com.facilio.workflows.util.WorkflowUtil;
-import com.facilio.bmsconsole.modules.FieldType;
 
 public class CommonCommandUtil {
 	private static final Logger LOGGER = LogManager.getLogger(CommonCommandUtil.class.getName());

@@ -1,7 +1,5 @@
 package com.facilio.transaction;
 
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
 import javax.transaction.TransactionManager;
 
 import org.apache.log4j.LogManager;

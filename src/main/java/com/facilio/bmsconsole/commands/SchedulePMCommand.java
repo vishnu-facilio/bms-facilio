@@ -10,18 +10,12 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.context.PMJobsContext;
-import com.facilio.bmsconsole.context.PMReminder;
 import com.facilio.bmsconsole.context.PMResourcePlannerContext;
-import com.facilio.bmsconsole.context.PMResourcePlannerReminderContext;
 import com.facilio.bmsconsole.context.PMTriggerContext;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
-import com.facilio.bmsconsole.modules.FieldFactory;
-import com.facilio.bmsconsole.modules.FieldUtil;
-import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.util.DateTimeUtil;
 import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.sql.GenericInsertRecordBuilder;
 
 public class SchedulePMCommand implements Command {
 

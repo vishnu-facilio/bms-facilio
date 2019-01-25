@@ -8,10 +8,8 @@ import java.util.Map;
 import com.facilio.accounts.bean.GroupBean;
 import com.facilio.accounts.dto.GroupMember;
 import com.facilio.accounts.dto.User;
-import com.facilio.beans.ModuleBean;
-import com.facilio.beans.ModuleBeanImpl;
-
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.fw.BeanFactory;

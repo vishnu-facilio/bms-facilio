@@ -2,8 +2,6 @@ package com.facilio.bmsconsole.context;
 
 import java.util.HashMap;
 
-import com.facilio.bmsconsole.modules.FieldUtil;
-
 public class ImportRowContext {
 	
 	long parentId = -1;

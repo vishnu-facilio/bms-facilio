@@ -11,7 +11,6 @@ import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.facilio.aws.util.AwsUtil;
 import org.apache.struts2.ServletActionContext;
 import org.apache.struts2.dispatcher.Parameter;
 
@@ -20,6 +19,7 @@ import com.facilio.accounts.dto.Role;
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.auth.cookie.FacilioCookie;
+import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.fw.auth.CognitoUtil;
 import com.facilio.fw.auth.CognitoUtil.CognitoUser;

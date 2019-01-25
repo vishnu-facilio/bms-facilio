@@ -10,7 +10,6 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
-import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.constants.FacilioConstants;
 

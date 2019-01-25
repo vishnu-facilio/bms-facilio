@@ -2,8 +2,6 @@ package com.facilio.bmsconsole.context;
 
 import java.util.List;
 
-import com.facilio.bmsconsole.workflow.rule.ActionContext;
-
 public class PMReminder {
 	private long id = -1;
 	public long getId() {

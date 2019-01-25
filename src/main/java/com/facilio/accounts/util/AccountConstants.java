@@ -8,13 +8,11 @@ import java.util.Map;
 
 import com.facilio.accounts.dto.Permissions;
 import com.facilio.accounts.dto.Role;
-import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.ModuleFactory;
-import com.facilio.fw.BeanFactory;
 
 public class AccountConstants {
 

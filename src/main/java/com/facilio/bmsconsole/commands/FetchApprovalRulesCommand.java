@@ -15,7 +15,6 @@ import com.facilio.accounts.dto.Group;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
-import com.facilio.beans.ModuleBeanImpl;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.modules.FacilioField;

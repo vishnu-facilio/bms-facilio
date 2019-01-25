@@ -9,7 +9,6 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.criteria.DateOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldType;
@@ -17,14 +16,13 @@ import com.facilio.bmsconsole.modules.LookupField;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
-import com.facilio.report.context.ReportYAxisContext;
-import com.facilio.report.context.ReportBaseLineContext;
 import com.facilio.report.context.ReportContext;
+import com.facilio.report.context.ReportContext.ReportType;
 import com.facilio.report.context.ReportDataPointContext;
 import com.facilio.report.context.ReportFieldContext;
 import com.facilio.report.context.ReportGroupByField;
+import com.facilio.report.context.ReportYAxisContext;
 import com.facilio.report.context.WorkorderAnalysisContext;
-import com.facilio.report.context.ReportContext.ReportType;
 import com.facilio.report.util.ReportUtil;
 
 public class CreateWorkOrderAnalyticsReportCommand implements Command {

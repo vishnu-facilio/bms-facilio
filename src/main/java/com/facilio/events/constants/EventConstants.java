@@ -6,7 +6,6 @@ import java.util.List;
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.impl.ChainBase;
 
-import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioChainFactory.FacilioChain;
 import com.facilio.bmsconsole.commands.GetExportValueField;
 import com.facilio.bmsconsole.commands.UpdateEventCountCommand;

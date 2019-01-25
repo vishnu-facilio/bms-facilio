@@ -25,7 +25,6 @@ import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleCRUDBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.events.context.EventRuleContext;
-import com.facilio.fs.FileStoreFactory;
 import com.facilio.fw.BeanFactory;
 
 public class EventProcessor implements IRecordProcessor {
