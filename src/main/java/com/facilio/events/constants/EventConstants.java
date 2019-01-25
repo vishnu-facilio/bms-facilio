@@ -6,7 +6,6 @@ import java.util.List;
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.impl.ChainBase;
 
-import com.facilio.bmsconsole.commands.FacilioChainFactory.FacilioChain;
 import com.facilio.bmsconsole.commands.GetExportValueField;
 import com.facilio.bmsconsole.commands.UpdateEventCountCommand;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
@@ -14,6 +13,7 @@ import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldType;
+import com.facilio.chain.FacilioChain;
 import com.facilio.events.commands.EventToAlarmCommand;
 import com.facilio.events.commands.GetEventDetailCommand;
 import com.facilio.events.commands.GetEventListCommand;

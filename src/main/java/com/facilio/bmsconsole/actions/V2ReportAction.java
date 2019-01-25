@@ -17,7 +17,6 @@ import org.json.simple.parser.JSONParser;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.ConstructReportData;
-import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
@@ -44,6 +43,7 @@ import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.rule.ActivityType;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
+import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fs.FileInfo.FileFormat;
 import com.facilio.fw.BeanFactory;
@@ -470,7 +470,7 @@ public class V2ReportAction extends FacilioAction {
 		context.put("group-by", groupBy);
 		context.put("criteria", criteria);
 		
-		Chain chain = new FacilioChainFactory.FacilioChain(false);
+		Chain chain = new FacilioChain(false);
 		chain.addCommand(new ConstructReportData());
 		chain.addCommand(ReadOnlyChainFactory.newFetchReportDataChain());
 //		Chain fetchReadingData = ReadOnlyChainFactory.newFetchReportDataChain();

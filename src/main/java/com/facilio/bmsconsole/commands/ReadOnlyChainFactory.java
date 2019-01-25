@@ -5,9 +5,9 @@ import org.apache.commons.chain.impl.ChainBase;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
-import com.facilio.bmsconsole.commands.FacilioChainFactory.FacilioChain;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
+import com.facilio.chain.FacilioChain;
 
 public class ReadOnlyChainFactory {
 	private static Logger LOGGER = LogManager.getLogger(ReadOnlyChainFactory.class.getName());
