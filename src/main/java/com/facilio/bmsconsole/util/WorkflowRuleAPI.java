@@ -734,7 +734,7 @@ public class WorkflowRuleAPI {
 
 			if (rules != null && !rules.isEmpty()) {
 			 for(WorkflowRuleContext rule: rules ) {
-				if (rule.isLatestVersion()) {
+				if (rule.isLatestVersion() && rule.getRuleTypeEnum().versionSupported()) {
 					updateIds.add(rule.getId());
 				}
 				else {
