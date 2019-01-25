@@ -47,8 +47,8 @@ public class ReadingRuleAPI extends WorkflowRuleAPI {
 	protected static void addReadingRuleInclusionsExlusions(ReadingRuleContext rule) throws SQLException, RuntimeException {
 		if (rule.getAssetCategoryId() != -1) {
 			List<Map<String, Object>> inclusionExclusionList = new ArrayList<>();
-			getInclusionExclusionList(rule.getId(), rule.getIncludedResources(), true, inclusionExclusionList);
-			getInclusionExclusionList(rule.getId(), rule.getExcludedResources(), false, inclusionExclusionList);
+			getInclusionExclusionList(rule.getRuleGroupId(), rule.getIncludedResources(), true, inclusionExclusionList);
+			getInclusionExclusionList(rule.getRuleGroupId(), rule.getExcludedResources(), false, inclusionExclusionList);
 			
 			if (!inclusionExclusionList.isEmpty()) {
 				GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
@@ -60,13 +60,13 @@ public class ReadingRuleAPI extends WorkflowRuleAPI {
 		}
 	}
 	
-	private static void getInclusionExclusionList(long ruleId, List<Long> resources, boolean isInclude, List<Map<String, Object>> inclusionExclusionList) {
+	private static void getInclusionExclusionList(long ruleGroupId, List<Long> resources, boolean isInclude, List<Map<String, Object>> inclusionExclusionList) {
 		if (resources != null && !resources.isEmpty()) {
 			long orgId = AccountUtil.getCurrentOrg().getId();
 			for (Long resourceId : resources) {
 				Map<String, Object> prop = new HashMap<>();
 				prop.put("orgId", orgId);
-				prop.put("ruleId", ruleId);
+				prop.put("ruleGroupId", ruleGroupId);
 				prop.put("resourceId", resourceId);
 				prop.put("isInclude", isInclude);
 				
@@ -125,13 +125,13 @@ public class ReadingRuleAPI extends WorkflowRuleAPI {
 	private static void fetchInclusionsExclusions (ReadingRuleContext readingRule) throws Exception {
 		FacilioModule module = ModuleFactory.getReadingRuleInclusionsExclusionsModule();
 		List<FacilioField> fields = FieldFactory.getReadingRuleInclusionsExclusionsFields();
-		FacilioField ruleId = FieldFactory.getAsMap(fields).get("ruleId");
+		FacilioField ruleId = FieldFactory.getAsMap(fields).get("ruleGroupId");
 		
 		GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
 																.table(module.getTableName())
 																.select(fields)
 																.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
-																.andCondition(CriteriaAPI.getCondition(ruleId, String.valueOf(readingRule.getId()), PickListOperators.IS));
+																.andCondition(CriteriaAPI.getCondition(ruleId, String.valueOf(readingRule.getRuleGroupId()), PickListOperators.IS));
 		
 		List<Map<String, Object>> props = selectRecordBuilder.get();
 		if (props != null && !props.isEmpty()) {
@@ -209,13 +209,13 @@ public class ReadingRuleAPI extends WorkflowRuleAPI {
 	private static void fetchAlarmMeta (ReadingRuleContext rule) throws Exception {
 		FacilioModule module = ModuleFactory.getReadingRuleAlarmMetaModule();
 		List<FacilioField> fields = FieldFactory.getReadingRuleAlarmMetaFields();
-		FacilioField ruleField = FieldFactory.getAsMap(fields).get("ruleId");
+		FacilioField ruleGroupField = FieldFactory.getAsMap(fields).get("ruleGroupId");
 		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 														.select(fields)
 														.table(module.getTableName())
 														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
-														.andCondition(CriteriaAPI.getCondition(ruleField, String.valueOf(rule.getId()), PickListOperators.IS))
+														.andCondition(CriteriaAPI.getCondition(ruleGroupField, String.valueOf(rule.getRuleGroupId()), PickListOperators.IS))
 														;
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
@@ -258,7 +258,7 @@ public class ReadingRuleAPI extends WorkflowRuleAPI {
 		ReadingRuleAlarmMeta meta = new ReadingRuleAlarmMeta();
 		meta.setOrgId(AccountUtil.getCurrentOrg().getId());
 		meta.setAlarmId(alarmId);
-		meta.setRuleId(rule.getId());
+		meta.setRuleGroupId(rule.getRuleGroupId());
 		meta.setResourceId(resourceId);
 		meta.setReadingFieldId(rule.getReadingFieldId());
 		meta.setClear(false);
@@ -309,7 +309,7 @@ public class ReadingRuleAPI extends WorkflowRuleAPI {
 		
 		new GenericUpdateRecordBuilder()
 			.table(module.getTableName())
-			.fields(FieldFactory.getReadingRuleAlarmMetaFields())
+			.fields(fields)
 			.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 			.andCondition(CriteriaAPI.getCondition(alarmIdField, String.valueOf(alarmId), PickListOperators.IS))
 			.update(prop)

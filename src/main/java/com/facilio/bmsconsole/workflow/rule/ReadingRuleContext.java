@@ -287,7 +287,7 @@ public class ReadingRuleContext extends WorkflowRuleContext {
 		this.alarmSeverityId = alarmSeverityId;
 	}
 	
-	long ruleGroupId;
+	long ruleGroupId = -1l;
 
 	public long getRuleGroupId() {
 		return ruleGroupId;
@@ -475,7 +475,7 @@ public class ReadingRuleContext extends WorkflowRuleContext {
 		if (criteria != null) {
 			Condition condition = criteria.getConditions().get(1);
 			long lastValue = new Double(record.getReading(condition.getFieldName()).toString()).longValue();
-			ReadingRuleAPI.updateLastValueInReadingRule(getId(), lastValue);
+			ReadingRuleAPI.updateLastValueInReadingRule(getRuleGroupId(), lastValue);
 		}
 	}
 	
