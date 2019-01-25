@@ -77,11 +77,11 @@ public class PerformAssetAction implements Command {
 				Long siteId = null;
 				int operatorId = -1;
 				if(criteria != null && criteria.getConditions() != null && !criteria.getConditions().isEmpty()) {
-					 Condition condition = criteria.getConditions().get(1);
+					 Condition condition = criteria.getConditions().get("1");
 					 expiryDay = condition.getValue();
 					 operatorId = condition.getOperatorId();
-//					 if(criteria.getConditions().get(2) != null) {
-//						 condition = criteria.getConditions().get(2);
+//					 if(criteria.getConditions().get("2") != null) {
+//						 condition = criteria.getConditions().get("2");
 //						 if(condition.getValue() != null) {
 //							 siteId = Long.parseLong(condition.getValue());
 //							 List<BaseSpaceContext> baseSpaces = SpaceAPI.getBaseSpaceWithChildren(siteId);
@@ -197,7 +197,7 @@ public class PerformAssetAction implements Command {
 				
 				Long siteId = null;
 				if(criteria != null && criteria.getConditions() != null && !criteria.getConditions().isEmpty()) {
-					 Condition condition = criteria.getConditions().get(1);
+					 Condition condition = criteria.getConditions().get("1");
 					 condition.getValue();
 					 condition.getOperatorId();
 				}
