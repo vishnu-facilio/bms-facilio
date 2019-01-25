@@ -229,6 +229,7 @@ public class OrgBeanImpl implements OrgBean {
 			List<User> users = new ArrayList<>();
 			for(Map<String, Object> prop : props) {
 				User user = UserBeanImpl.createUserFromProps(prop, true, false);
+				user.setAccessibleSpace(UserBeanImpl.getAccessibleSpaceList(user.getOuid()));
 				user.setFacilioAuth(true);
 				users.add(user);
 			}

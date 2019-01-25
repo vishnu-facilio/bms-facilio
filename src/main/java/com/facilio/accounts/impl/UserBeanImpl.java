@@ -1068,7 +1068,7 @@ public class UserBeanImpl implements UserBean {
 
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
-			return createUserFromProps(props.get(0), true, false);
+			return createUserFromProps(props.get(0), true, true);
 		}
 		return null;
 	}
@@ -1372,7 +1372,11 @@ public class UserBeanImpl implements UserBean {
 		if(AccountUtil.getCurrentOrg() != null) {
 			Organization portalOrg = AccountUtil.getOrgBean().getPortalOrg(AccountUtil.getCurrentOrg().getDomain());
 			user.setPortalId(portalOrg.getPortalId());
-			return addRequester(orgId, user, false, true);
+			addRequester(orgId, user, false, true);
+			if(user.getAccessibleSpace() != null) {
+				addAccessibleSpace(user.getOuid(), user.getAccessibleSpace());
+			}
+			return user.getOuid();
 		}
 		return 0L;
 	}
