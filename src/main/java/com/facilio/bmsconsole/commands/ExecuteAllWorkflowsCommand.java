@@ -132,7 +132,7 @@ public class ExecuteAllWorkflowsCommand implements SerializableCommand
 						Map<String, Object> recordPlaceHolders = WorkflowRuleAPI.getRecordPlaceHolders(moduleName, record, placeHolders);
 						List<WorkflowRuleContext> currentWorkflows = workflowRules;
 						while (currentWorkflows != null && !currentWorkflows.isEmpty()) {
-							Criteria childCriteria = executeWorkflows(currentWorkflows, moduleName, record, changeSet, it, recordPlaceHolders, context);
+							Criteria childCriteria = executeWorkflowsAndGetChildRuleCriteria(currentWorkflows, moduleName, record, changeSet, it, recordPlaceHolders, context);
 							if (childCriteria == null) {
 								break;
 							}
@@ -144,7 +144,7 @@ public class ExecuteAllWorkflowsCommand implements SerializableCommand
 		}
 	}
 	
-	private Criteria executeWorkflows(List<WorkflowRuleContext> workflowRules, String moduleName, Object record, List<UpdateChangeSet> changeSet, Iterator itr, Map<String, Object> recordPlaceHolders, FacilioContext context) throws Exception {
+	private Criteria executeWorkflowsAndGetChildRuleCriteria(List<WorkflowRuleContext> workflowRules, String moduleName, Object record, List<UpdateChangeSet> changeSet, Iterator itr, Map<String, Object> recordPlaceHolders, FacilioContext context) throws Exception {
 		if(workflowRules != null && !workflowRules.isEmpty()) {
 			Map<String, FacilioField> fields = FieldFactory.getAsMap(FieldFactory.getWorkflowRuleFields());
 			FacilioField parentRule = fields.get("parentRuleId");

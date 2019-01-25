@@ -89,6 +89,10 @@ public class WorkflowRuleAPI {
 				if (((ReadingRuleContext) rule).getClearAlarm() == null) {
 					ruleProps.put("clearAlarm", true);
 				}
+				if(ruleProps.get("ruleGroupId") == null || (Long) ruleProps.get("ruleGroupId") <= 0) {
+					ruleProps.put("ruleGroupId", rule.getId());
+					((ReadingRuleContext) rule).setRuleGroupId(rule.getId());
+				}
 				addExtendedProps(ModuleFactory.getReadingRuleModule(), FieldFactory.getReadingRuleFields(), ruleProps);
 				ReadingRuleAPI.addReadingRuleInclusionsExlusions((ReadingRuleContext) rule);
 				break;
