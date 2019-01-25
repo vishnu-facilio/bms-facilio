@@ -763,6 +763,7 @@ public class WorkflowRuleAPI {
 			if (updateIds.size() > 0) {
 				Map<String, Object> ruleProps = new HashMap<>();
 				ruleProps.put("latestVersion", false);
+				ruleProps.put("status", false);
 				GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
 															.table(module.getTableName())
 															.fields(FieldFactory.getWorkflowRuleFields())
