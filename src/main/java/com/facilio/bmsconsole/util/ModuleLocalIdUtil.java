@@ -11,7 +11,6 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.beans.ModuleCRUDBeanImpl;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.StringOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
@@ -66,35 +65,38 @@ public class ModuleLocalIdUtil {
 		if (currentSize <= 0) {
 			throw new IllegalArgumentException("Invalid current id size for fetching local Id");
 		}
-		
 		Connection conn = null;
+		boolean olderCommit = false;
 		try {
-			conn = FacilioConnectionPool.getInstance().getConnectionFromPool();// Should be used with caution
-			
-			if (AccountUtil.getCurrentOrg().getId() == 155 || AccountUtil.getCurrentOrg().getId() == 151 || AccountUtil.getCurrentOrg().getId() == 92) {
-				LOGGER.info("Connection object instance while getting local id for module "+moduleName+" : "+conn);
-			}
-			
+			conn = FacilioConnectionPool.getInstance().getConnectionFromPool();//Getting connection directly from pool because this should be done outside transaction. Should be used with caution
+			olderCommit = conn.getAutoCommit();
 			conn.setAutoCommit(false);
+//			if (AccountUtil.getCurrentOrg().getId() == 155 || AccountUtil.getCurrentOrg().getId() == 151 || AccountUtil.getCurrentOrg().getId() == 92) {
+				LOGGER.debug("Connection object instance while getting local id for module "+moduleName+" : "+conn);
+//			}
+			
 			long localId = getModuleLocalId(moduleName, conn);
 			updateModuleLocalId(moduleName, localId+currentSize, conn);
 			conn.commit();
 			
-			if (AccountUtil.getCurrentOrg().getId() == 155 || AccountUtil.getCurrentOrg().getId() == 151 || AccountUtil.getCurrentOrg().getId() == 92) {
-				LOGGER.info("Committed connection while getting local id for module "+moduleName);
-			}
+//			if (AccountUtil.getCurrentOrg().getId() == 155 || AccountUtil.getCurrentOrg().getId() == 151 || AccountUtil.getCurrentOrg().getId() == 92) {
+				LOGGER.debug("Committed connection while getting local id for module "+moduleName);
+//			}
 			
 			return localId;
 		}
 		catch (Exception e) {
 			if (conn != null) {
 				conn.rollback();
-				if (AccountUtil.getCurrentOrg().getId() == 155 || AccountUtil.getCurrentOrg().getId() == 151 || AccountUtil.getCurrentOrg().getId() == 92) {
-					LOGGER.info("Rolled back connection while getting local id for module "+moduleName);
-				}
+//				if (AccountUtil.getCurrentOrg().getId() == 155 || AccountUtil.getCurrentOrg().getId() == 151 || AccountUtil.getCurrentOrg().getId() == 92) {
+					LOGGER.debug("Rolled back connection while getting local id for module "+moduleName);
+//				}
 			}
 		}
 		finally {
+			if (conn != null) {
+				conn.setAutoCommit(olderCommit);
+			}
 			DBUtil.close(conn);
 		}
 //		if (localId != -1 && updateModuleLocalId(moduleName, localId, localId+currentSize) <= 0) {

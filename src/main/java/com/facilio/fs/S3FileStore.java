@@ -248,7 +248,7 @@ public class S3FileStore extends FileStore {
 			addResizedFileEntry(rfi);
 		}
 		else {
-			updateFileEntry(rfi);
+			updateResizedFileEntry(rfi);
 		}
 		return url;
 	}

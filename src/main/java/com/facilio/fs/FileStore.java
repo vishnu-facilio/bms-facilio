@@ -73,8 +73,6 @@ public abstract class FileStore {
 	protected boolean updateFileEntry(long fileId, String fileName, String filePath, long fileSize, String contentType) throws Exception {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
-		ResultSet rs = null;
-		
 		try {
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
 			pstmt = conn.prepareStatement("UPDATE File SET FILE_NAME=?, FILE_PATH=?, FILE_SIZE=?, CONTENT_TYPE=? WHERE FILE_ID=? AND ORGID=?");
@@ -95,37 +93,45 @@ public abstract class FileStore {
 			throw e;
 		}
 		finally {
-			DBUtil.closeAll(conn, pstmt, rs);
+			DBUtil.closeAll(conn, pstmt);
 		}
 	}
 	
 	
-	protected boolean updateFileEntry(ResizedFileInfo fileInfo) throws Exception {
+	protected boolean updateResizedFileEntry(ResizedFileInfo fileInfo) throws Exception {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
-		ResultSet rs = null;
-		
+		boolean olderCommit = false;
 		try {
-			conn = FacilioConnectionPool.INSTANCE.getConnection();
-			pstmt = conn.prepareStatement("UPDATE ResizedFile SET URL=?, EXPIRY_TIME=? WHERE FILE_ID=? AND ORGID=? AND WIDTH=? AND HEIGHT=?");
+			conn = FacilioConnectionPool.INSTANCE.getConnectionFromPool(); //Getting connection from pool since this has to be done outside transaction
+			olderCommit = conn.getAutoCommit();
+			conn.setAutoCommit(false);
 			
+			pstmt = conn.prepareStatement("UPDATE ResizedFile SET URL=?, EXPIRY_TIME=? WHERE FILE_ID=? AND ORGID=? AND WIDTH=? AND HEIGHT=?");
 			pstmt.setString(1, fileInfo.getUrl());
 			pstmt.setLong(2, fileInfo.getExpiryTime());
 			pstmt.setLong(3, fileInfo.getFileId());
 			pstmt.setLong(4, getOrgId());
 			pstmt.setInt(5, fileInfo.getWidth());
 			pstmt.setInt(6, fileInfo.getHeight());
-			
 			if(pstmt.executeUpdate() < 1) {
 				throw new RuntimeException("Unable to update file");
 			}
+			
+			conn.commit();
 			return true;
 		}
 		catch(SQLException | RuntimeException e) {
+			if (conn != null) {
+				conn.rollback();
+			}
 			throw e;
 		}
 		finally {
-			DBUtil.closeAll(conn, pstmt, rs);
+			if (conn != null) {
+				conn.setAutoCommit(olderCommit);
+			}
+			DBUtil.closeAll(conn, pstmt);
 		}
 	}
 	
@@ -157,7 +163,6 @@ public abstract class FileStore {
 	protected boolean deleteFileEntries(List<Long> fileId) throws Exception {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
-		ResultSet rs = null;
 		
 		try {
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
@@ -176,19 +181,17 @@ public abstract class FileStore {
 			throw e;
 		}
 		finally {
-			DBUtil.closeAll(conn, pstmt, rs);
+			DBUtil.closeAll(conn, pstmt);
 		}
 	}
 	
 	protected boolean addResizedFileEntry(long fileId, int width, int height, String filePath, long fileSize, String contentType) throws Exception {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
-		ResultSet rs = null;
-		
 		try {
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
+
 			pstmt = conn.prepareStatement("INSERT INTO ResizedFile set FILE_ID=?, ORGID=?, WIDTH=?, HEIGHT=?, FILE_PATH=?, FILE_SIZE=?, CONTENT_TYPE=?, GENERATED_TIME=?");
-			
 			pstmt.setLong(1, fileId);
 			pstmt.setLong(2, getOrgId());
 			pstmt.setInt(3, width);
@@ -197,17 +200,17 @@ public abstract class FileStore {
 			pstmt.setLong(6, fileSize);
 			pstmt.setString(7, contentType);
 			pstmt.setLong(8, System.currentTimeMillis());
-			
 			if(pstmt.executeUpdate() < 1) {
 				throw new RuntimeException("Unable to add resized file");
 			}
+			
 			return true;
 		}
 		catch(SQLException | RuntimeException e) {
 			throw e;
 		}
 		finally {
-			DBUtil.closeAll(conn, pstmt, rs);
+			DBUtil.closeAll(conn, pstmt);
 		}
 	}
 	
@@ -215,7 +218,6 @@ public abstract class FileStore {
 	protected boolean addResizedFileEntry(ResizedFileInfo fileInfo) throws Exception {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
-		ResultSet rs = null;
 		
 		try {
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
@@ -241,7 +243,7 @@ public abstract class FileStore {
 			throw e;
 		}
 		finally {
-			DBUtil.closeAll(conn, pstmt, rs);
+			DBUtil.closeAll(conn, pstmt);
 		}
 	}
 	
