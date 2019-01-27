@@ -166,8 +166,7 @@ public class PreventiveMaintenanceAPI {
 
 		return startTimeInSecond;
 	}
-	public static List<Long> getMultipleResourceToBeAddedFromPM(PMAssignmentType pmAssignmentType,Long resourceId,Long spaceCategoryID,Long assetCategoryID,Long currentAssetId, List<PMIncludeExcludeResourceContext> includeExcludeRess) throws Exception {
-		
+	public static List<Long> getMultipleResourceToBeAddedFromPM(PMAssignmentType pmAssignmentType, Long resourceId,Long spaceCategoryID,Long assetCategoryID,Long currentAssetId, List<PMIncludeExcludeResourceContext> includeExcludeRess) throws Exception {
 		List<Long> includedIds = null;
 		List<Long> excludedIds = null;
 		if(includeExcludeRess != null && !includeExcludeRess.isEmpty()) {

@@ -1232,12 +1232,12 @@ public static long getSitesCount() throws Exception {
 		}
 	}
 	
-	public static List<Long> getSpaceCategoryIds(long baseSpaceID) throws Exception {
-		return getSpaceCategoryIds(Collections.singletonList(baseSpaceID));
+	public static List<Long> getSpaceCategoryIds(long baseSpaceID, Long buildingId) throws Exception {
+		return getSpaceCategoryIds(Collections.singletonList(baseSpaceID), buildingId);
 	}
 	
 	
-	public static List<Long> getSpaceCategoryIds(List<Long> baseSpaceID) throws Exception {
+	public static List<Long> getSpaceCategoryIds(List<Long> baseSpaceID, Long buildingId) throws Exception {
 		
 		SpaceType spacetype = null;
 		if(baseSpaceID != null && !baseSpaceID.isEmpty()) {
@@ -1268,6 +1268,10 @@ public static long getSitesCount() throws Exception {
 					.innerJoin(baseSpaceModule.getTableName())
 					.on(spaceModule.getTableName()+".ID = "+baseSpaceModule.getTableName()+".ID")
 					.select(selectFields);
+			
+			if (buildingId != null && buildingId > 0) {
+				newSelectBuilder.andCondition(CriteriaAPI.getCondition(baseSpaceModule.getTableName()+".BUILDING_ID", "BUILDING_ID", Long.toString(buildingId), NumberOperators.EQUALS));
+			}
 			
 			if(spacetype.equals(SpaceType.SITE)) {
 				newSelectBuilder.andCondition(CriteriaAPI.getCondition(baseSpaceModule.getTableName()+".SITE_ID", "SITE_ID", StringUtils.join(baseSpaceID, ","), NumberOperators.EQUALS));

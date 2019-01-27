@@ -126,18 +126,25 @@ public class AssetsAPI {
 		return null;
 	}
 	
-	public static List<Long> getAssetCategoryIds(long baseSpaceID) throws Exception {
-		return getAssetCategoryIds(baseSpaceID, false);
-	}
-	
-	public static List<Long> getAssetCategoryIds(long baseSpaceID, boolean fetchChildSpaces) throws Exception {
+	public static List<Long> getAssetCategoryIds(long baseSpaceID, Long buildingId, boolean fetchChildSpaces) throws Exception {
 		
-		return getAssetCategoryIds(Collections.singletonList(baseSpaceID),fetchChildSpaces);
+		return getAssetCategoryIds(Collections.singletonList(baseSpaceID), buildingId, fetchChildSpaces);
 	}
 	
-	public static List<Long> getAssetCategoryIds(List<Long> baseSpaceIDs, boolean fetchChildSpaces) throws Exception {
+	public static List<Long> getAssetCategoryIds(List<Long> baseSpaceIDs, Long buildingId, boolean fetchChildSpaces) throws Exception {
 		if (fetchChildSpaces) {
-			List<BaseSpaceContext> allSpaces = SpaceAPI.getBaseSpaceWithChildren(baseSpaceIDs);
+			List<BaseSpaceContext> spaces = SpaceAPI.getBaseSpaceWithChildren(baseSpaceIDs);
+			List<BaseSpaceContext> allSpaces = new ArrayList<>();
+			if (buildingId == null || buildingId < 0) {
+				allSpaces = spaces;
+			} else if (spaces != null) {
+				for (BaseSpaceContext space: spaces) {
+					if (space.getBuildingId() == buildingId) {
+						allSpaces.add(space);
+					}
+				}
+			}
+			
 			if (allSpaces != null && !allSpaces.isEmpty()) {
 				return getAssetCategoryIds(allSpaces.stream().map(BaseSpaceContext::getId).collect(Collectors.toList()));
 			}

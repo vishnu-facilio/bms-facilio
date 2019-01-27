@@ -408,6 +408,23 @@ public class PreventiveMaintenance extends ResourceContext {
 		this.pmIncludeExcludeResourceContexts = pmIncludeExcludeResourceContexts;
 	}
 	
+	private Boolean preventOnNoTask;
+	
+	public boolean isPreventOnNoTask() {
+		if (preventOnNoTask == null) {
+			return false;
+		}
+		return preventOnNoTask;
+	}
+	
+	public Boolean getPreventOnNoTask() {
+		return preventOnNoTask;
+	}
+
+	public void setPreventOnNoTask(Boolean preventOnNoTask) {
+		this.preventOnNoTask = preventOnNoTask;
+	}
+	
 	public static enum PMAssignmentType {
 		
 		ALL_FLOORS,

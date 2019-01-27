@@ -27,7 +27,11 @@ public class getResourceListForMultiplePM implements Command {
 			throw new IllegalArgumentException("PreventiveMaintenance Context cannot be null here");
 		}
 		if(preventivemaintenance.getPmCreationType() == PreventiveMaintenance.PMCreationType.MULTIPLE.getVal()) {
-			List<Long> resIds = PreventiveMaintenanceAPI.getMultipleResourceToBeAddedFromPM(preventivemaintenance.getAssignmentTypeEnum(), preventivemaintenance.getBaseSpaceId(), preventivemaintenance.getSpaceCategoryId(), preventivemaintenance.getAssetCategoryId(), null, preventivemaintenance.getPmIncludeExcludeResourceContexts());
+			Long resourceId = preventivemaintenance.getBaseSpaceId();
+			if (resourceId == null || resourceId < 0) {
+				resourceId = preventivemaintenance.getSiteId();
+			}
+			List<Long> resIds = PreventiveMaintenanceAPI.getMultipleResourceToBeAddedFromPM(preventivemaintenance.getAssignmentTypeEnum(), resourceId, preventivemaintenance.getSpaceCategoryId(), preventivemaintenance.getAssetCategoryId(), null, preventivemaintenance.getPmIncludeExcludeResourceContexts());
 			
 			context.put(FacilioConstants.ContextNames.MULTI_PM_RESOURCE_IDS, resIds);
 			context.put(FacilioConstants.ContextNames.MULTI_PM_RESOURCES, ResourceAPI.getResources(resIds, false));

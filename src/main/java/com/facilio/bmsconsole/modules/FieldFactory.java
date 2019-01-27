@@ -1905,6 +1905,7 @@ public class FieldFactory {
 		fields.add(getField("maxCount", "MAX_COUNT", module, FieldType.NUMBER));
 		fields.add(getField("frequency", "FREQUENCY_TYPE", module, FieldType.NUMBER));
 		fields.add(getField("custom", "IS_CUSTOM", module, FieldType.BOOLEAN));
+		fields.add(getField("preventOnNoTask", "PREVENT_ON_NO_TASK", module, FieldType.BOOLEAN));
 
 		fields.add(getSiteIdField(module));
 		

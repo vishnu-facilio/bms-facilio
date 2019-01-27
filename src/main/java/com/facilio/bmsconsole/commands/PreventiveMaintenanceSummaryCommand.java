@@ -103,8 +103,11 @@ public class PreventiveMaintenanceSummaryCommand implements Command {
 		if(pm.getPmCreationTypeEnum() == PreventiveMaintenance.PMCreationType.MULTIPLE) {
 			pm.setPmIncludeExcludeResourceContexts(TemplateAPI.getPMIncludeExcludeList(pm.getId(), null, null));
 			Map<Long, PMResourcePlannerContext> resourcePlanners = PreventiveMaintenanceAPI.getPMResourcesPlanner(pm.getId());
-			
-			List<Long> resourceIds = PreventiveMaintenanceAPI.getMultipleResourceToBeAddedFromPM(pm.getAssignmentTypeEnum(),pm.getBaseSpaceId(),pm.getSpaceCategoryId(),pm.getAssetCategoryId(),null,pm.getPmIncludeExcludeResourceContexts());
+			Long baseSpaceId = pm.getBaseSpaceId();
+			if (baseSpaceId == null || baseSpaceId < 0) {
+				baseSpaceId = pm.getSiteId();
+			}
+			List<Long> resourceIds = PreventiveMaintenanceAPI.getMultipleResourceToBeAddedFromPM(pm.getAssignmentTypeEnum(),baseSpaceId,pm.getSpaceCategoryId(),pm.getAssetCategoryId(),null,pm.getPmIncludeExcludeResourceContexts());
 			for(Long resourceId :resourceIds) {					// construct resource planner for default cases
 				if(!resourcePlanners.containsKey(resourceId)) {
 					PMResourcePlannerContext pmResourcePlannerContext = new PMResourcePlannerContext();

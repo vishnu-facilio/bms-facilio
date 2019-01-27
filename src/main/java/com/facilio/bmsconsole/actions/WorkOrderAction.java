@@ -577,6 +577,12 @@ public class WorkOrderAction extends FacilioAction {
 	List<Long> spaceCategoryIds;
 	boolean hasFloor;
 	
+	private Long siteId;
+	
+	public void setSiteId(Long siteId) {
+		this.siteId = siteId;
+	}
+	
 	public String getScopeFilteredValuesForPM() throws Exception {
 		
 		if(assignmentType != null) {
@@ -594,8 +600,8 @@ public class WorkOrderAction extends FacilioAction {
 					}
 				}
 				
-				assetCategoryIds = AssetsAPI.getAssetCategoryIds(floorsIds,true);
-				spaceCategoryIds = SpaceAPI.getSpaceCategoryIds(floorsIds);
+				assetCategoryIds = AssetsAPI.getAssetCategoryIds(floorsIds, buildingId, true);
+				spaceCategoryIds = SpaceAPI.getSpaceCategoryIds(floorsIds, buildingId);
 			}
 			else if(assignmentType.equals(PMAssignmentType.SPACE_CATEGORY)) {
 				
@@ -606,13 +612,19 @@ public class WorkOrderAction extends FacilioAction {
 						spaceIds = includeIds;
 					}
 					else {
-						spaceIds = getIdsFromSpaceContextList(SpaceAPI.getSpaceListOfCategory(buildingId, spaceCategoryId));
+						Long baseSpaceId = null;
+						if (buildingId != null && buildingId > 0) {
+							baseSpaceId = buildingId;
+						} else {
+							baseSpaceId = this.siteId;
+						}
+						spaceIds = getIdsFromSpaceContextList(SpaceAPI.getSpaceListOfCategory(baseSpaceId, spaceCategoryId));
 						if(excludeIds != null) {
 							spaceIds.removeAll(excludeIds);
 						}
 					}
 					
-					assetCategoryIds = AssetsAPI.getAssetCategoryIds(spaceIds,true);
+					assetCategoryIds = AssetsAPI.getAssetCategoryIds(spaceIds, buildingId, true);
 					spaceCategoryIds = Collections.emptyList();
 				}
 				else {
@@ -628,23 +640,22 @@ public class WorkOrderAction extends FacilioAction {
 						}
 					}
 					
-					assetCategoryIds = AssetsAPI.getAssetCategoryIds(spaceIds,true);
+					assetCategoryIds = AssetsAPI.getAssetCategoryIds(spaceIds, buildingId, true);
 					spaceCategoryIds = Collections.emptyList();
-					//spaceCategoryIds = SpaceAPI.getSpaceCategoryIds(spaceIds);
+					spaceCategoryIds = SpaceAPI.getSpaceCategoryIds(spaceIds, buildingId);
 				}
 			}
 			else if(assignmentType.equals(PMAssignmentType.ASSET_CATEGORY)) {
 				
-				assetCategoryIds = AssetsAPI.getSubCategoryIds(assetCategoryId);
+				assetCategoryIds = AssetsAPI.getSubCategoryIds(assetCategoryId); //doubt
 			}
-		}
-		else if(buildingId > 0) {		// only building selected case
-			List<BaseSpaceContext> floors = SpaceAPI.getBuildingFloors(buildingId);
+		} else if(siteId != null && siteId > -1) {
+			/* List<BaseSpaceContext> floors = SpaceAPI.getBuildingFloors(buildingId);
 			if(floors != null && !floors.isEmpty()) {
 				hasFloor = true;
-			}
-			assetCategoryIds = AssetsAPI.getAssetCategoryIds(buildingId, true);
-			spaceCategoryIds = SpaceAPI.getSpaceCategoryIds(buildingId);
+			} */
+			assetCategoryIds = AssetsAPI.getAssetCategoryIds(siteId, buildingId, true);
+			spaceCategoryIds = SpaceAPI.getSpaceCategoryIds(siteId, buildingId);
 		}
 		return SUCCESS;
 	}

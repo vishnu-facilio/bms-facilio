@@ -198,7 +198,11 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 			List<Long> resourceIds = null;
 			
 			if(pm.getPmCreationTypeEnum() == PreventiveMaintenance.PMCreationType.MULTIPLE) {
-				resourceIds = PreventiveMaintenanceAPI.getMultipleResourceToBeAddedFromPM(pm.getAssignmentTypeEnum(),pm.getBaseSpaceId(),pm.getSpaceCategoryId(),pm.getAssetCategoryId(),null,pm.getPmIncludeExcludeResourceContexts());
+				Long resourceId = pm.getBaseSpaceId();
+				if (resourceId == null || resourceId < 0) {
+					resourceId = pm.getSiteId();
+				}
+				resourceIds = PreventiveMaintenanceAPI.getMultipleResourceToBeAddedFromPM(pm.getAssignmentTypeEnum(),resourceId,pm.getSpaceCategoryId(),pm.getAssetCategoryId(),null,pm.getPmIncludeExcludeResourceContexts());
 			}
 			else {
 				resourceIds = Collections.singletonList(workorderTemplate.getResourceId());

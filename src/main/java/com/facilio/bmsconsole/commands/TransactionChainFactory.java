@@ -62,6 +62,7 @@ public class TransactionChainFactory {
 		
 		public static Chain getAddWorkOrderChain() {
 			Chain c = getDefaultChain();
+			c.addCommand(new PMSettingsCommand());
 			c.addCommand(new GetFormMetaCommand());
 			c.addCommand(new ValidateFormCommand());
 			c.addCommand(new AddRequesterCommand());

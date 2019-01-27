@@ -106,7 +106,11 @@ private List<PMJobsContext> pmJobsToBeScheduled;
 		List<PMJobsContext> pmJobs = new ArrayList<>();
 		pmJobsToBeScheduled = new ArrayList<>();
 		
-		List<Long> resourceIds = PreventiveMaintenanceAPI.getMultipleResourceToBeAddedFromPM(pm.getAssignmentTypeEnum(),pm.getBaseSpaceId(),pm.getSpaceCategoryId(),pm.getAssetCategoryId(),null,pm.getPmIncludeExcludeResourceContexts());
+		Long baseSpaceId = pm.getBaseSpaceId();
+		if (baseSpaceId == null || baseSpaceId < 0) {
+			baseSpaceId = pm.getSiteId();
+		}
+		List<Long> resourceIds = PreventiveMaintenanceAPI.getMultipleResourceToBeAddedFromPM(pm.getAssignmentTypeEnum(),baseSpaceId,pm.getSpaceCategoryId(),pm.getAssetCategoryId(),null,pm.getPmIncludeExcludeResourceContexts());
 		
 		Map<Long, PMResourcePlannerContext> pmResourcePlanner = PreventiveMaintenanceAPI.getPMResourcesPlanner(pm.getId());
 		for(Long resourceId :resourceIds) {
