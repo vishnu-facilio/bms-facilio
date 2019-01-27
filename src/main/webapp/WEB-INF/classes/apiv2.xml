@@ -607,6 +607,9 @@
 		</action>
 		<action name="discover" class="com.facilio.bmsconsole.actions.TimeSeries" method="discoverInstances">
 		</action>
+		<action name="count" class ="com.facilio.bmsconsole.actions.TimeSeries" method ="getInstancesForController">
+		     <param name="showInstanceCount">true</param>
+		</action>
 		<action name="*" class="com.facilio.bmsconsole.actions.TimeSeries" method="getInstancesForController">
 			<param name="controllerId">{1}</param>
 		</action>

@@ -592,6 +592,77 @@ public class TimeSeriesAPI {
 
 	}
 	
+	public static List<Map<String, Object>> getUnmodeledInstancesCountForController (long controllerId, Boolean configuredOnly, Boolean fetchMapped) throws Exception {
+		FacilioModule module = ModuleFactory.getUnmodeledInstancesModule();
+		List<FacilioField> fields = new ArrayList<FacilioField>();
+		List<FacilioField> queryFields = FieldFactory.getUnmodeledInstanceFields();
+		queryFields.add(FieldFactory.getIdField(module));
+		fields.add(FieldFactory.getIdField(module));
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(queryFields);
+		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+				.select(fields)
+				.table(module.getTableName())
+				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("controllerId"), String.valueOf(controllerId), NumberOperators.EQUALS))
+				.orderBy(fieldMap.get("createdTime").getColumnName() + " DESC");
+		
+		Criteria criteria = new Criteria();
+		criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("instanceType"), CommonOperators.IS_EMPTY));
+		criteria.addOrCondition(CriteriaAPI.getCondition(fieldMap.get("instanceType"), String.valueOf(6), NumberOperators.LESS_THAN));
+		
+		builder.andCriteria(criteria);
+		
+		if (configuredOnly != null) {
+			Criteria inUseCriteria = new Criteria();
+			inUseCriteria.addOrCondition(CriteriaAPI.getCondition(fieldMap.get("inUse"), String.valueOf(configuredOnly), BooleanOperators.IS));
+			if (configuredOnly) {
+				inUseCriteria.addOrCondition(CriteriaAPI.getCondition(fieldMap.get("objectInstanceNumber"), CommonOperators.IS_EMPTY));				
+			}
+			builder.andCriteria(inUseCriteria);
+		}
+		
+		if (fetchMapped != null) {
+			FacilioModule mappedModule = ModuleFactory.getInstanceMappingModule();
+			List<FacilioField> mappedFields = FieldFactory.getInstanceMappingFields();
+			Map<String, FacilioField> mappedFieldMap = FieldFactory.getAsMap(mappedFields);
+			
+			fields.addAll(mappedFields);
+			
+			FacilioField device = fieldMap.get("device");
+			FacilioField instance = fieldMap.get("instance");
+			FacilioField mappedDevice = mappedFieldMap.get("device");
+			FacilioField mappedInstance = mappedFieldMap.get("instance");
+			
+			String joinOn = module.getTableName() + "." + device.getColumnName()+"="+mappedModule.getTableName()+"."+mappedDevice.getColumnName()
+			+ " AND " + module.getTableName() +"." + instance.getColumnName() + "=" + mappedModule.getTableName()+"."+mappedInstance.getColumnName();
+			
+			if (!fetchMapped) {
+				builder.leftJoin(mappedModule.getTableName())
+				.on(joinOn)
+				.andCondition(CriteriaAPI.getCondition(mappedInstance, CommonOperators.IS_EMPTY));
+			}
+			else {
+				builder.innerJoin(mappedModule.getTableName()).on(joinOn)
+				.orderBy(mappedFieldMap.get("mappedTime").getColumnName() + " DESC");
+			}
+		}
+
+		 List<Map<String, Object>> props =  builder.get();
+		 if (props != null && !props.isEmpty()) {
+			 return props.stream().map(prop -> {
+				 if (prop.get("instanceType") != null) {
+					 InstanceType type = InstanceType.valueOf((int) prop.get("instanceType"));
+					 if (type != null) {
+						 prop.put("instanceTypeVal", type.name());
+					 }
+				 }
+				 return prop;
+			}).collect(Collectors.toList());
+		 }
+		 return props;
+
+	}
+	
 	public static List<Map<String, Object>> getUnmodeledInstances (List<Long> ids) throws Exception {
 		return getUnmodeledInstances(null, null, null, ids);
 	}

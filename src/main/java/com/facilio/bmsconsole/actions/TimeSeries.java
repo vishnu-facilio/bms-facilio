@@ -132,7 +132,11 @@ public class TimeSeries extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.CONFIGURE, configured);
 		context.put(FacilioConstants.ContextNames.FETCH_MAPPED, fetchMapped);
 		context.put(FacilioConstants.ContextNames.PAGINATION, getPagination());
-		context.put(FacilioConstants.ContextNames.FETCH_READING_INPUT_VALUES, true);
+		context.put(FacilioConstants.ContextNames.COUNT, getShowInstanceCount());
+		
+		if (!getShowInstanceCount()) {
+			context.put(FacilioConstants.ContextNames.FETCH_READING_INPUT_VALUES, true);
+		}
 		
 		Chain chain = ReadOnlyChainFactory.getUnmodelledInstancesForController();
 		chain.execute(context);
@@ -344,6 +348,17 @@ public class TimeSeries extends FacilioAction {
 		return TimeSeriesAPI.getCriteria(timeRange, resourceList, moduleList, fieldList, markTypeList);
 		
 	}
-	
+	private Boolean showInstanceCount;
+	public Boolean getShowInstanceCount() {
+		if (showInstanceCount == null) {
+			showInstanceCount = false;
+		}
+		return showInstanceCount;
+	}
+
+	public void setShowInstanceCount(Boolean showInstanceCount) {
+		this.showInstanceCount = showInstanceCount;
+	}
+
 	
 }

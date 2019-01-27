@@ -148,13 +148,13 @@ public enum ActivityType {
 			return "Closed the request";
 		}
 	},
-	CREATE_WORK_REQUEST(1 << 16) {
-		@Override
-		public String getMessage(JSONObject json) {
-			// TODO Auto-generated method stub
-			return "Create work request";
-		}
-	},
+//	CREATE_WORK_REQUEST(1 << 16) {
+//		@Override
+//		public String getMessage(JSONObject json) {
+//			// TODO Auto-generated method stub
+//			return "Create work request";
+//		}
+//	},
 	CLOSE_ALL_TASK(1 << 17) {
 		@Override
 		public String getMessage(JSONObject json) {
