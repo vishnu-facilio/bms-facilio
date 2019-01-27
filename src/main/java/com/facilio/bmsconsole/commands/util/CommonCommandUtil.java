@@ -677,11 +677,6 @@ public class CommonCommandUtil {
         }
     	return Pair.of(min, max);
     }
-    
-    public static void addCleanUpCommand(Chain c)
-	{
-		c.addCommand(new FacilioChainExceptionHandler());
-	}
 
 	public static void loadTaskLookups(List<TaskContext> tasks) throws Exception {
 		if(tasks != null && !tasks.isEmpty()) {

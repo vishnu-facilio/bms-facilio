@@ -25,7 +25,6 @@ public class ForkedChainJob extends InstantJob {
 			for (Command command : commands) {
 				chain.addCommand(command);
 			}
-			CommonCommandUtil.addCleanUpCommand(chain);
 			chain.execute(context);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

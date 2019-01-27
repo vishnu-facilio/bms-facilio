@@ -4,11 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.chain.Chain;
-import org.apache.commons.chain.impl.ChainBase;
 
 import com.facilio.bmsconsole.commands.GetExportValueField;
 import com.facilio.bmsconsole.commands.UpdateEventCountCommand;
-import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
@@ -50,8 +48,16 @@ public class EventConstants {
 	}
 	
 	public static class EventChainFactory {
+		private static FacilioChain getTransactionChain() {
+    	    return new FacilioChain(true);
+	    }
+	    
+	    private static FacilioChain getNonTransactionChain() {
+	    	    return new FacilioChain(false);
+	    }
+		
 		public static Chain processEventChain() {
-			FacilioChain c = new FacilioChain(true);
+			FacilioChain c = getTransactionChain();
 			c.addCommand(new InsertEventCommand());
 //			c.addCommand(new EvalEventBaseCriteriaCommand());
 //			c.addCommand(new EventTransformCommand());
@@ -60,8 +66,6 @@ public class EventConstants {
 			c.addCommand(new ExecuteEventRulesCommand());
 			c.addCommand(new EventToAlarmCommand());
 			c.addCommand(new UpdateEventCommand());
-			CommonCommandUtil.addCleanUpCommand(c);
-			
 			c.setPostTransactionChain(getUpdateEventCountChain());
 			return c;
 		}
@@ -73,104 +77,66 @@ public class EventConstants {
 		}
 
 		public static Chain getAddEventChain() {
-			Chain c = new ChainBase();
+			FacilioChain c = getTransactionChain();
 			c.addCommand(new ProcessEventCommand());
 			c.addCommand(processEventChain());
-			CommonCommandUtil.addCleanUpCommand(c);
 			return c;
 		}
 		
 		public static Chain getEventDetailChain() {
-			Chain c = new ChainBase();
+			Chain c = getNonTransactionChain();
 			c.addCommand(new GetEventDetailCommand());
-			CommonCommandUtil.addCleanUpCommand(c);
 			return c;
 		}
 		
-//		public static Chain getEventRulesChain() {
-//			Chain c = new ChainBase();
-//			c.addCommand(new GetEventRulesCommand());
-//			CommonCommandUtil.addCleanUpCommand(c);
-//			return c;
-//		}
-//		
-//		public static Chain getEventRuleChain() {
-//			Chain c = new ChainBase();
-//			c.addCommand(new GetEventRuleCommand());
-//			CommonCommandUtil.addCleanUpCommand(c);
-//			return c;
-//		}
-//		
-//		public static Chain addEventRuleChain() {
-//			Chain c = new ChainBase();
-//			c.addCommand(new AddEventRuleCommand());
-//			CommonCommandUtil.addCleanUpCommand(c);
-//			return c;
-//		}
-//		
-//		public static Chain updateEventRulesChain() {
-//			Chain c = new ChainBase();
-//			c.addCommand(new UpdateEventRulesCommand());
-//			CommonCommandUtil.addCleanUpCommand(c);
-//			return c;
-//		}
-		
 		public static Chain getActiveEventRuleChain() {
-			Chain c = new ChainBase();
+			Chain c = getNonTransactionChain();
 			c.addCommand(new GetActiveEventRulesCommand());
-			CommonCommandUtil.addCleanUpCommand(c);
 			return c;
 		}
 		
 		public static Chain getEventRuleChain() {
-			Chain c = new ChainBase();
+			Chain c = getNonTransactionChain();
 			c.addCommand(new GetNewEventRuleCommand());
-			CommonCommandUtil.addCleanUpCommand(c);
 			return c;
 		}
 		
 		public static Chain addEventRuleChain() {
-			Chain c = new ChainBase();
+			FacilioChain c = getTransactionChain();
 			c.addCommand(new AddNewEventRuleCommand());
-			CommonCommandUtil.addCleanUpCommand(c);
 			return c;
 		}
 		
 		public static Chain updateEventRuleChain() {
-			Chain c = new ChainBase();
+			FacilioChain c = getTransactionChain();
 			c.addCommand(new UpdateNewEventRuleCommand());
-			CommonCommandUtil.addCleanUpCommand(c);
 			return c;
 		}
 		
 		public static Chain deleteEventRuleChain() {
-			Chain c = new ChainBase();
+			FacilioChain c = getTransactionChain();
 			c.addCommand(new DeleteNewEventRuleCommand());
-			CommonCommandUtil.addCleanUpCommand(c);
 			return c;
 		}
 		
 		public static Chain getEventListChain() {
-			Chain c = new ChainBase();
+			Chain c = getNonTransactionChain();
 			c.addCommand(new GetEventListCommand());
-			CommonCommandUtil.addCleanUpCommand(c);
 			return c;
 		}
 		
 		public static Chain getExportFieldsValue() {
-			Chain c = new ChainBase();
+			Chain c = getNonTransactionChain();
 			c.addCommand(new GetEventListCommand());
 			c.addCommand(new GetExportValueField());
-			CommonCommandUtil.addCleanUpCommand(c);
 			return c;
 		}
 		
 		public static Chain updateNodeToResourceMappingChain() {
-			Chain c = new ChainBase();
+			FacilioChain c = getTransactionChain();
 			c.addCommand(new UpdateSourceToResourceMappingCommand());
 			c.addCommand(new UpdateEventResourcesMappingCommand());
 			c.addCommand(new UpdateAlarmAssetMappingCommand());
-			CommonCommandUtil.addCleanUpCommand(c);
 			return c;
 		}
 		

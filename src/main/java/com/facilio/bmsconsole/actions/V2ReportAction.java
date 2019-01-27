@@ -828,13 +828,13 @@ public class V2ReportAction extends FacilioAction {
 		
 		Chain exportChain;
 		if (reportId != -1) {
-			exportChain = isNewFormat() ? TransactionChainFactory.getExportNewReportFileChain() : TransactionChainFactory.getExportReportFileChain();
+			exportChain = isNewFormat() ? ReadOnlyChainFactory.getExportNewReportFileChain() : ReadOnlyChainFactory.getExportReportFileChain();
 			setReportWithDataContext(context);
 			reportContext.setDateOperator(dateOperator);
 			reportContext.setDateValue(dateOperatorValue);
 		}
 		else {
-			exportChain = isNewFormat() ? TransactionChainFactory.getExportNewAnalyticsFileChain() : TransactionChainFactory.getExportAnalyticsFileChain();
+			exportChain = isNewFormat() ? ReadOnlyChainFactory.getExportNewAnalyticsFileChain() : ReadOnlyChainFactory.getExportAnalyticsFileChain();
 			setReadingsDataContext(context);
 			context.put(FacilioConstants.ContextNames.TABULAR_STATE, tabularState);
 		}
@@ -862,13 +862,13 @@ public class V2ReportAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		Chain mailReportChain;
 		if (reportId != -1) {
-			mailReportChain = isNewFormat() ? TransactionChainFactory.sendNewReportMailChain()  : TransactionChainFactory.sendReportMailChain();
+			mailReportChain = isNewFormat() ? ReadOnlyChainFactory.sendNewReportMailChain()  : ReadOnlyChainFactory.sendReportMailChain();
 			setReportWithDataContext(context);
 			reportContext.setDateOperator(dateOperator);
 			reportContext.setDateValue(dateOperatorValue);
 		}
 		else {
-			mailReportChain = isNewFormat() ? TransactionChainFactory.sendNewAnalyticsMailChain() : TransactionChainFactory.sendAnalyticsMailChain();
+			mailReportChain = isNewFormat() ? ReadOnlyChainFactory.sendNewAnalyticsMailChain() : ReadOnlyChainFactory.sendAnalyticsMailChain();
 			setReadingsDataContext(context);
 			context.put(FacilioConstants.ContextNames.TABULAR_STATE, tabularState);
 		}

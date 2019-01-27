@@ -33,6 +33,7 @@ public class FacilioChain extends ChainBase {
 	}
 
 	public boolean execute(Context context) throws Exception {
+		this.addCommand(new FacilioChainExceptionHandler());
 		FacilioChain facilioChain = rootChain.get();
 		if (facilioChain == null) {
 			rootChain.set(this);
