@@ -7,8 +7,8 @@ import org.apache.commons.chain.Chain;
 
 import com.facilio.billing.context.BillContext;
 import com.facilio.billing.context.ExcelTemplate;
-import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.util.TemplateAPI;
+import com.facilio.chain.FacilioContext;
 import com.opensymphony.xwork2.ActionSupport;
 
 public class BillingAction extends ActionSupport {

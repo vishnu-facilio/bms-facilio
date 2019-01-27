@@ -9,7 +9,7 @@ import org.apache.log4j.Logger;
 import org.json.simple.parser.ParseException;
 
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.bmsconsole.commands.FacilioContext;
+import com.facilio.chain.FacilioContext;
 import com.facilio.queue.ObjectQueue;
 import com.facilio.tasker.ScheduleInfo.FrequencyType;
 import com.facilio.tasker.config.InstantJobConf;

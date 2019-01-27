@@ -6,6 +6,7 @@ import org.apache.commons.chain.Context;
 import com.facilio.bmsconsole.context.AlarmContext;
 import com.facilio.bmsconsole.context.NoteContext;
 import com.facilio.bmsconsole.workflow.rule.ActivityType;
+import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.serializable.SerializableCommand;
 

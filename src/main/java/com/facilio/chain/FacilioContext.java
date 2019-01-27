@@ -1,4 +1,4 @@
-package com.facilio.bmsconsole.commands;
+package com.facilio.chain;
 
 import org.apache.commons.chain.impl.ContextBase;
 

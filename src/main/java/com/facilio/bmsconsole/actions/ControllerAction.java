@@ -2,8 +2,8 @@ package com.facilio.bmsconsole.actions;
 
 import org.apache.commons.chain.Chain;
 
-import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 
 public class ControllerAction extends FacilioAction {

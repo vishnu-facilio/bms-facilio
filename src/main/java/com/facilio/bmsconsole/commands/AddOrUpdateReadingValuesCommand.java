@@ -27,6 +27,7 @@ import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
 import com.facilio.bmsconsole.util.DateTimeUtil;
 import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.bmsconsole.workflow.rule.ActivityType;
+import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.time.SecondsChronoUnit;

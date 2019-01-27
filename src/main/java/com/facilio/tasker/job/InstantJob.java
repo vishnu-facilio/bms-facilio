@@ -7,7 +7,7 @@ import javax.transaction.SystemException;
 
 import com.facilio.accounts.dto.Account;
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.bmsconsole.commands.FacilioContext;
+import com.facilio.chain.FacilioContext;
 import com.facilio.queue.ObjectQueue;
 import com.facilio.tasker.config.InstantJobConf;
 import com.facilio.transaction.FacilioTransactionManager;

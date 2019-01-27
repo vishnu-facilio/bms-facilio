@@ -4,10 +4,10 @@ import java.util.Collections;
 
 import org.apache.commons.chain.Chain;
 
-import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.ScheduledActionContext;
 import com.facilio.bmsconsole.util.ScheduledActionAPI;
+import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 
 public class ScheduledAction extends FacilioAction {

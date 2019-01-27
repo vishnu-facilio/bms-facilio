@@ -9,7 +9,7 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import com.facilio.aws.util.AwsUtil;
-import com.facilio.bmsconsole.commands.FacilioContext;
+import com.facilio.chain.FacilioContext;
 import com.facilio.queue.ObjectMessage;
 import com.facilio.queue.ObjectQueue;
 import com.facilio.tasker.FacilioScheduler;

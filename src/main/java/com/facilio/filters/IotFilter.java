@@ -18,8 +18,8 @@ import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.util.DateTimeUtil;
+import com.facilio.chain.FacilioContext;
 import com.facilio.events.constants.EventConstants;
 
 public class IotFilter implements Filter {

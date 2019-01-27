@@ -3,6 +3,8 @@ package com.facilio.bmsconsole.commands;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
+import com.facilio.chain.FacilioContext;
+
 public class FacilioReportContext extends FacilioContext{
 	/**
 	 * 
