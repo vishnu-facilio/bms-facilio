@@ -595,17 +595,14 @@ public class TimeSeriesAPI {
 	
 	public static List<Map<String, Object>> getUnmodeledInstancesCountForController (long controllerId, Boolean configuredOnly, Boolean fetchMapped) throws Exception {
 		FacilioModule module = ModuleFactory.getUnmodeledInstancesModule();
-		List<FacilioField> fields = new ArrayList<FacilioField>();
-		List<FacilioField> queryFields = FieldFactory.getUnmodeledInstanceFields();
-		queryFields.add(FieldFactory.getIdField(module));
+		List<FacilioField> fields = FieldFactory.getUnmodeledInstanceFields();
 		fields.add(FieldFactory.getIdField(module));
-		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(queryFields);
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
-				.select(Collections.singletonList( FieldFactory.getField("count", "COUNT(CONTROLLER_ID)", FieldType.NUMBER)))
+				.select(Collections.singletonList( FieldFactory.getField("count", "COUNT(Unmodeled_Instance.CONTROLLER_ID)", FieldType.NUMBER)))
 				.table(module.getTableName())
 				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
-				.andCondition(CriteriaAPI.getCondition(fieldMap.get("controllerId"), String.valueOf(controllerId), NumberOperators.EQUALS))
-				.orderBy(fieldMap.get("createdTime").getColumnName() + " DESC");
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("controllerId"), String.valueOf(controllerId), NumberOperators.EQUALS));
 		
 		Criteria criteria = new Criteria();
 		criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("instanceType"), CommonOperators.IS_EMPTY));
