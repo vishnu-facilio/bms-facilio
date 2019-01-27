@@ -537,7 +537,7 @@ public class TimeSeriesAPI {
 			}
 			builder.andCriteria(inUseCriteria);
 		}
-		
+				
 		if (fetchMapped != null) {
 			FacilioModule mappedModule = ModuleFactory.getInstanceMappingModule();
 			List<FacilioField> mappedFields = FieldFactory.getInstanceMappingFields();
@@ -593,7 +593,7 @@ public class TimeSeriesAPI {
 
 	}
 	
-	public static List<Map<String, Object>> getUnmodeledInstancesCountForController (long controllerId, Boolean configuredOnly, Boolean fetchMapped) throws Exception {
+	public static List<Map<String, Object>> getUnmodeledInstancesCountForController (long controllerId, Boolean configuredOnly, Boolean fetchMapped, Boolean isSubscribed) throws Exception {
 		FacilioModule module = ModuleFactory.getUnmodeledInstancesModule();
 		List<FacilioField> fields = FieldFactory.getUnmodeledInstanceFields();
 		fields.add(FieldFactory.getIdField(module));
@@ -617,6 +617,12 @@ public class TimeSeriesAPI {
 				inUseCriteria.addOrCondition(CriteriaAPI.getCondition(fieldMap.get("objectInstanceNumber"), CommonOperators.IS_EMPTY));				
 			}
 			builder.andCriteria(inUseCriteria);
+		}
+		
+		if (isSubscribed != null) {
+			Criteria isSubscribedCriteria = new Criteria();
+			isSubscribedCriteria.addOrCondition(CriteriaAPI.getCondition(fieldMap.get("subscribed"), String.valueOf(isSubscribed), BooleanOperators.IS));
+			builder.andCriteria(isSubscribedCriteria);
 		}
 		
 		if (fetchMapped != null) {

@@ -130,6 +130,7 @@ public class TimeSeries extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.CONTROLLER_ID, controllerId);
 		context.put(FacilioConstants.ContextNames.CONFIGURE, configured);
+		context.put(FacilioConstants.ContextNames.SUBSCRIBE, subscribed);
 		context.put(FacilioConstants.ContextNames.FETCH_MAPPED, fetchMapped);
 		context.put(FacilioConstants.ContextNames.PAGINATION, getPagination());
 		context.put(FacilioConstants.ContextNames.COUNT, getShowInstanceCount());

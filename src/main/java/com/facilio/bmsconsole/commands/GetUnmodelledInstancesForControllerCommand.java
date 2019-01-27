@@ -20,11 +20,12 @@ public class GetUnmodelledInstancesForControllerCommand implements Command {
 		long controllerId = (long) context.get(FacilioConstants.ContextNames.CONTROLLER_ID);
 		Boolean configured = (Boolean) context.get(FacilioConstants.ContextNames.CONFIGURE);
 		Boolean fetchMapped = (Boolean) context.get(FacilioConstants.ContextNames.FETCH_MAPPED);
+		Boolean isSubscribed = (Boolean) context.get(FacilioConstants.ContextNames.SUBSCRIBE);
 		JSONObject pagination = (JSONObject) context.get(FacilioConstants.ContextNames.PAGINATION);
 		Boolean isCount = (Boolean) context.get(FacilioConstants.ContextNames.COUNT);
 		List<Map<String, Object>> instances = new ArrayList<Map<String, Object>>();
 		if (isCount) {
-			instances = TimeSeriesAPI.getUnmodeledInstancesCountForController(controllerId, configured, fetchMapped);
+			instances = TimeSeriesAPI.getUnmodeledInstancesCountForController(controllerId, configured, fetchMapped, isSubscribed);
 		}
 		else {
 			 instances = TimeSeriesAPI.getUnmodeledInstancesForController(controllerId, configured, fetchMapped, pagination);
