@@ -2,8 +2,10 @@ package com.facilio.bmsconsole.util;
 
 import java.io.File;
 import java.io.FileReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
+import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -17,6 +19,7 @@ import java.util.regex.Pattern;
 
 import javax.xml.bind.JAXBContext;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
@@ -73,6 +76,7 @@ import com.facilio.workflows.util.WorkflowUtil;
 public class TemplateAPI {
 	private static Logger log = LogManager.getLogger(TemplateAPI.class.getName());
 
+	private static final String DEFAULT_TEMPLATES_FILE_PATH = "conf/templates/defaultTemplates_";
 	private static final String[] LANG = new String[]{"en"};
 	private static final Map<String, Map<Integer,DefaultTemplate>> DEFAULT_TEMPLATES = Collections.unmodifiableMap(loadDefaultTemplates());
 	private static Map<String, Map<Integer,DefaultTemplate>> loadDefaultTemplates() {
@@ -91,7 +95,7 @@ public class TemplateAPI {
 			
 			JSONParser parser = new JSONParser();
 			for (String lang : LANG) {
-				JSONObject templateJsons = (JSONObject) parser.parse(new FileReader(classLoader.getResource("conf/templates/defaultTemplates_"+lang+".json").getFile()));
+				JSONObject templateJsons = (JSONObject) parser.parse(new FileReader(classLoader.getResource(DEFAULT_TEMPLATES_FILE_PATH+lang+".json").getFile()));
 				Map<Integer, DefaultTemplate> templates = new HashMap<>();
 				for (Object key : templateJsons.keySet()) {
 					Integer templateId = Integer.parseInt(key.toString());
@@ -100,13 +104,16 @@ public class TemplateAPI {
 					DefaultTemplate defaultTemplate = new DefaultTemplate();
 					defaultTemplate.setId(templateId);
 					defaultTemplate.setName(name);
+					defaultTemplate.setFtl(checkAndLoadFtl(template, classLoader));
 					defaultTemplate.setJson(template);
 					defaultTemplate.setPlaceholder(getPlaceholders(defaultTemplate));
 					
 					WorkflowContext defaultWorkflow = defaultWorkflows.get(templateId);
 					if (defaultWorkflow != null) {
 						defaultWorkflow = WorkflowUtil.getWorkflowContextFromString(defaultWorkflow.getWorkflowString());
-						WorkflowUtil.parseExpression(defaultWorkflow);
+						if (!defaultTemplate.isFtl()) { //Temp fix
+							WorkflowUtil.parseExpression(defaultWorkflow);
+						}
 						defaultTemplate.setWorkflow(defaultWorkflow);
 					}
 					else {
@@ -122,6 +129,21 @@ public class TemplateAPI {
 			log.log(Level.ERROR, "Error in Parsing default templates",e);
 			throw new IllegalArgumentException(e);
 		}
+	}
+	
+	private static final String FTL_KEY_SUFFIX = "_ftl";
+	private static final String FTL_FILE_PATH = "conf/templates/ftl/";
+	private static boolean checkAndLoadFtl (JSONObject json, ClassLoader classLoader) throws Exception {
+		Set<String> keys = json.keySet();
+		boolean isFtl = false;
+		for (String key : keys) {
+			if (key.endsWith(FTL_KEY_SUFFIX)) {
+				isFtl = true;
+				String fileName = (String) json.remove(key);
+				json.put(key.substring(0, key.length()-FTL_KEY_SUFFIX.length()), FileUtils.readFileToString(new File(classLoader.getResource(FTL_FILE_PATH+fileName+".ftl").getFile()), StandardCharsets.UTF_8));
+			}
+		}
+		return isFtl;
 	}
 	
 	private static String getLang() {

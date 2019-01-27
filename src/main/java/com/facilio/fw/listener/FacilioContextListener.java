@@ -34,6 +34,8 @@ import org.xml.sax.SAXException;
 
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.criteria.Operator;
+import com.facilio.bmsconsole.templates.Template;
+import com.facilio.bmsconsole.util.TemplateAPI;
 import com.facilio.cache.RedisManager;
 import com.facilio.filters.HealthCheckFilter;
 import com.facilio.fw.BeanFactory;
@@ -97,6 +99,7 @@ public class FacilioContextListener implements ServletContextListener {
 
 		initDBConnectionPool();
 		Operator.OPERATOR_MAP.get(1);
+		TemplateAPI.getDefaultTemplate(1);
 		try {
 			try {
 				migrateSchemaChanges();
