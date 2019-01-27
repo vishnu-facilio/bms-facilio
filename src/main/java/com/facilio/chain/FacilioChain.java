@@ -17,12 +17,18 @@ public class FacilioChain extends ChainBase {
 	
 	private Chain postTransactionChain;
 	private boolean enableTransaction = false;
+	private int timeout = -1;
 	public FacilioChain(boolean isTransactionChain) {
 		// TODO Auto-generated constructor stub
 		this.enableTransaction = isTransactionChain && Boolean.valueOf(AwsUtil.getConfig("enable.transaction"));
 	}
 	
-    private static Logger log = LogManager.getLogger(FacilioChain.class.getName());
+	public FacilioChain (int timeout) { //If timeout is required, it's assumed to be Transaction chain
+		this.timeout = timeout;
+		this.enableTransaction = Boolean.valueOf(AwsUtil.getConfig("enable.transaction"));
+	}
+	
+    private static final Logger LOGGER = LogManager.getLogger(FacilioChain.class.getName());
 
 	public Chain getPostTransactionChain() {
 		return postTransactionChain;
@@ -34,6 +40,7 @@ public class FacilioChain extends ChainBase {
 
 	public boolean execute(Context context) throws Exception {
 		this.addCommand(new FacilioChainExceptionHandler());
+
 		FacilioChain facilioChain = rootChain.get();
 		if (facilioChain == null) {
 			rootChain.set(this);
@@ -46,6 +53,11 @@ public class FacilioChain extends ChainBase {
 				Transaction currenttrans = tm.getTransaction();
 				if (currenttrans == null) {
 					tm.begin();
+					
+					if (timeout != -1) {
+						tm.setTransactionTimeout(timeout);
+					}
+					
 					istransaction = true;
 				} else {
 					//LOGGER.info("joining parent transaction for " + method.getName());
@@ -77,7 +89,7 @@ public class FacilioChain extends ChainBase {
 			return status;
 		} catch (Throwable e) {
 			// TODO Auto-generated catch block
-			log.info("Exception occurred ", e);
+			LOGGER.error("Exception occurred ", e);
 			if (enableTransaction) {
 				if (istransaction) {
 					FacilioTransactionManager.INSTANCE.getTransactionManager().rollback();
