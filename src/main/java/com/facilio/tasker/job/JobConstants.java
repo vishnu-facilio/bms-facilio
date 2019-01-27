@@ -12,6 +12,7 @@ class JobConstants {
     
     static final String JOB_CONTEXT = "jobContext";
     static final String FACILIO_JOB = "facilioJob";
+    static final String INSTANT_JOB = "instantJob";
     
     static class ChainFactory {
     	
@@ -20,6 +21,12 @@ class JobConstants {
     		c.addCommand(new CalculateNextExecutionTimeCommand());
     		c.addCommand(new JobExecutionCommand());
     		c.addCommand(new UpdateNextExecutionCommand());
+    		return c;
+    	}
+    	
+    	static FacilioChain instantJobExecutionChain (int timeout) {
+    		FacilioChain c = new FacilioChain(timeout);
+    		c.addCommand(new InstantJobExecutionCommand());
     		return c;
     	}
     }

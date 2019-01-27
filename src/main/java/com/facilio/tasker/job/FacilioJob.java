@@ -2,8 +2,6 @@ package com.facilio.tasker.job;
 
 import java.sql.SQLException;
 
-import javax.transaction.SystemException;
-
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -11,7 +9,6 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.chain.FacilioContext;
 import com.facilio.tasker.executor.Executor;
-import com.facilio.transaction.FacilioTransactionManager;
 
 public abstract class FacilioJob implements Runnable {
 
@@ -55,7 +52,7 @@ public abstract class FacilioJob implements Runnable {
 		}
 		catch(Exception e) {
 			LOGGER.error("Job execution failed for Job :"+jc.getJobId()+" : "+ jc.getJobName(),e);
-			CommonCommandUtil.emailException(FacilioJob.class.getName(), "Job execution failed for Job : "+jc.getJobId()+" : "+ jc.getJobName(), e);
+			CommonCommandUtil.emailException("FacilioJob", "Job execution failed for Job : "+jc.getJobId()+" : "+ jc.getJobName(), e);
 			reschedule();
 		} finally {
 			LOGGER.info("Job completed " +jc.getJobId()+"-"+ jc.getJobName() + " time taken : " + (System.currentTimeMillis()-startTime));
@@ -70,7 +67,7 @@ public abstract class FacilioJob implements Runnable {
 		}
 		else {
 			LOGGER.error("Max retry exceeded for : "+jc+".\nSo making it inactive");
-			CommonCommandUtil.emailException(FacilioJob.class.getName(), "Max retry exceeded for Job : "+jc.getJobId()+" : "+ jc.getJobName(), "Since max retries exceeded for job : "+jc.getJobId()+"-"+jc.getJobName()+", making it inactive.");
+			CommonCommandUtil.emailException("FacilioJob", "Max retry exceeded for Job : "+jc.getJobId()+" : "+ jc.getJobName(), "Since max retries exceeded for job : "+jc.getJobId()+"-"+jc.getJobName()+", making it inactive.");
 			try {
 				JobStore.setInActive(jc.getJobId(), jc.getJobName());
 			} catch (SQLException e) {
