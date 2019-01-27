@@ -40,6 +40,7 @@ import com.facilio.bmsconsole.criteria.StringOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
+import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.util.ControllerAPI;
 import com.facilio.bmsconsole.util.ReadingsAPI;
@@ -600,7 +601,7 @@ public class TimeSeriesAPI {
 		fields.add(FieldFactory.getIdField(module));
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(queryFields);
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
-				.select(fields)
+				.select(Collections.singletonList( FieldFactory.getField("count", "COUNT(CONTROLLER_ID)", FieldType.NUMBER)))
 				.table(module.getTableName())
 				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("controllerId"), String.valueOf(controllerId), NumberOperators.EQUALS))
