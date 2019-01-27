@@ -4474,10 +4474,12 @@ public class DashboardAction extends FacilioAction {
 		if(!isWorkHourReport) {
 			rs = builder.get();
 		}
-		LOGGER.info("builder --- "+reportContext.getId() +"   "+baseLineId);
-		LOGGER.info("builder --- "+builder);
-		
-		LOGGER.info("res 1-- "+rs);
+		if(AccountUtil.getCurrentOrg().getId() == 154l) {
+			LOGGER.severe("builder --- "+reportContext.getId() +"   "+baseLineId);
+			LOGGER.severe("builder --- "+builder);
+			
+			LOGGER.severe("res 1-- "+rs);
+		}
 		
 		if(report.getGroupBy() != null) {
 			
