@@ -37,8 +37,8 @@ public class GetLatestReadingDataCommand implements Command {
 				if (valuesMap != null) {
 					rdmList.forEach(rdm -> rdm.setInputValues(valuesMap.get(rdm.getId())));
 				}
-				context.put(FacilioConstants.ContextNames.READING_DATA_META_LIST, rdmList);
 			}
+			context.put(FacilioConstants.ContextNames.READING_DATA_META_LIST, rdmList);
 				
 		}
 		
