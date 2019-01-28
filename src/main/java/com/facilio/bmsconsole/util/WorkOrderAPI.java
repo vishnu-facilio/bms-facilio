@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.util;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -8,20 +9,27 @@ import java.util.logging.Logger;
 
 import org.apache.commons.chain.Command;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.context.TicketStatusContext;
+import com.facilio.bmsconsole.context.TicketStatusContext.StatusType;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.criteria.BuildingOperator;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.DateOperators;
 import com.facilio.bmsconsole.criteria.DateRange;
 import com.facilio.bmsconsole.criteria.NumberOperators;
+import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
+import com.facilio.bmsconsole.modules.FieldFactory;
+import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
+import com.facilio.bmsconsole.view.ViewFactory;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
+import com.facilio.sql.GenericSelectRecordBuilder;
 
 public class WorkOrderAPI {
 	
@@ -125,7 +133,34 @@ public class WorkOrderAPI {
 		return workOrders;
 	}
 	
-	
+	public static Map<Long, Object> getLookupFieldPrimary(String moduleName) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(moduleName);
+		FacilioField mainField = modBean.getPrimaryField(moduleName);
+
+		List<FacilioField> selectFields = new ArrayList<>();
+		selectFields.add(mainField);
+		selectFields.add(FieldFactory.getIdField(module));
+		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+				.select(selectFields)
+				.table(module.getTableName())
+				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module));
+		FacilioModule prevModule = module;
+		while (prevModule.getExtendModule() != null) {
+			builder.innerJoin(prevModule.getExtendModule().getTableName())
+				.on(prevModule.getTableName()+".ID = " + prevModule.getExtendModule().getTableName()+ ".ID");
+			prevModule = prevModule.getExtendModule();
+		}
+
+		List<Map<String,Object>> asProps = builder.get();
+		Map lookupMap = new HashMap<>();
+		for (Map<String, Object> map : asProps) {
+			lookupMap.put((Long) map.get("id"), map.get(mainField.getName()));
+		}
+		return lookupMap;
+	}
+
+
 	public static List<WorkOrderContext> getOverdueWorkOrders(List<WorkOrderContext> workOrders) throws Exception {
 		List<WorkOrderContext> overdueWorkorders =null;
 		
@@ -170,6 +205,98 @@ public class WorkOrderAPI {
 	}
 	
 	
+public static List<WorkOrderContext> getWorkOrderStatusPercentage(Long startTime,Long endTime) throws Exception {
+
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+
+
+		FacilioModule workOrderModule = modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER);
+
+		List<FacilioField> workorderFields = modBean.getAllFields(workOrderModule.getName());
+
+		SelectRecordsBuilder<WorkOrderContext> selectRecordsBuilder = new SelectRecordsBuilder<WorkOrderContext>()
+																		  .module(workOrderModule)
+																		  .beanClass(WorkOrderContext.class)
+																		  .select(workorderFields)
+																		  .andCondition(CriteriaAPI.getCondition("CREATED_TIME", "createdTime", startTime+","+endTime, DateOperators.BETWEEN))
+																		  ;
+
+
+
+		List<WorkOrderContext> woStatusPercentage = selectRecordsBuilder.get();
+
+       return woStatusPercentage;
+	}
+
+
+public static List<Map<String,Object>> getAvgCompletionTimeByCategory(Long startTime,Long endTime) throws Exception {
+
+
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+
+
+		FacilioModule workOrderModule = modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER);
+		FacilioModule ticketModule = modBean.getModule(FacilioConstants.ContextNames.TICKET);
+
+
+		FacilioModule ticketStatusModule = modBean.getModule(FacilioConstants.ContextNames.TICKET_STATUS);
+
+		List<FacilioField> workorderFields = modBean.getAllFields(workOrderModule.getName());
+		List<FacilioField> ticketFields = modBean.getAllFields(workOrderModule.getName());
+
+
+		Map<String, FacilioField> workorderFieldMap = FieldFactory.getAsMap(workorderFields);
+		Map<String, FacilioField> ticketFieldMap = FieldFactory.getAsMap(ticketFields);
+
+
+		List<FacilioField> fields = new ArrayList<FacilioField>();
+
+		FacilioField avgField = new FacilioField();
+		avgField.setName("avg_resolution_time");
+		avgField.setColumnName("avg(ACTUAL_WORK_DURATION/(1000*60))");//to render client in mins
+		fields.add(avgField);
+
+		FacilioField countField = new FacilioField();
+		countField.setName("count");
+		countField.setColumnName("count(*)");
+		fields.add(countField);
+
+		FacilioField siteIdField = FieldFactory.getSiteIdField(workOrderModule);
+		fields.add(siteIdField);
+
+		FacilioField categoryField = workorderFieldMap.get("category");
+		fields.add(categoryField);
+
+		FacilioField statusField = ticketFieldMap.get("status");
+		//fields.add(statusField);
+
+
+		//fetching the workorders with closed status
+
+
+
+		GenericSelectRecordBuilder selectRecordsBuilder = new GenericSelectRecordBuilder()
+				  													.table(workOrderModule.getTableName())
+				  													.select(fields)
+				  													.innerJoin(ticketModule.getTableName()).on(workOrderModule.getTableName() +".ID = "+ticketModule.getTableName()+".ID")
+					  												.innerJoin(ticketStatusModule.getTableName()).on(statusField.getCompleteColumnName() +" = "+ticketStatusModule.getTableName()+".ID")
+					  												.andCondition(CriteriaAPI.getCondition("STATUS_TYPE", "typeCode", ""+StatusType.CLOSED.getIntVal() , NumberOperators.EQUALS))
+					  											    .andCondition(CriteriaAPI.getCondition("CREATED_TIME", "createdTime", startTime+","+endTime, DateOperators.BETWEEN))
+					  												.andCondition(CriteriaAPI.getCondition(workOrderModule.getTableName()+".ORGID", "orgId", ""+AccountUtil.getCurrentOrg().getOrgId(), NumberOperators.EQUALS))
+																	.groupBy(siteIdField.getCompleteColumnName() +  ", "  + categoryField.getCompleteColumnName())
+																  ;
+
+
+
+       List<Map<String,Object>> avgResolutionTime = selectRecordsBuilder.get();
+
+
+       return avgResolutionTime;
+
+	}
+
+
+
 	public static long getSiteIdForWO(long woId) throws Exception {
 		WorkOrderContext wo = getWorkOrder(woId);
 		if (wo == null) {

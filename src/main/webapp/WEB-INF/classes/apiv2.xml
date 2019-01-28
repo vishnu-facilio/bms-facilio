@@ -215,6 +215,26 @@
 			<param name="workOrderRequestId">{1}</param>
 		</action>
 		
+		<action name="workOrderStatusPercentage" class="com.facilio.bmsconsole.actions.WorkOrderAction"
+			method="getWorkOrderStatusPercentage">
+			<param name="moduleName">workorder</param>
+			<param name="permission">READ,READ_TEAM,READ_OWN</param>
+			<result name="success" type="json">
+				<param name="includeProperties">woStatusPercentage,woStatusPercentage\[\d+\],woStatusPercentage\[\d+\].*,^woStatusPercentage.*</param>
+			</result>
+		</action>
+		
+		<action name="avgWorkCompletionByCategory" class="com.facilio.bmsconsole.actions.WorkOrderAction"
+			method="getAvgWorkCompletionByCategory">
+			<param name="moduleName">workorder</param>
+			<param name="permission">READ,READ_TEAM,READ_OWN</param>
+			<result name="success" type="json">
+				<param name="includeProperties">avgResolutionTimeByCategory,avgResolutionTimeByCategory\[\d+\],avgResolutionTimeByCategory\[\d+\].*,^avgResolutionTimeByCategory.*</param>
+			</result>
+		</action>
+		
+	
+		
 	</package>
 	<package name="workOrderRequestListApiV2" namespace="/api/v2/workorderrequests/view" extends="v2Api">
 		<action name="*"
@@ -251,6 +271,9 @@
 			<param name="moduleName">alarm</param>
 			<param name="permission">READ,READ_TEAM,READ_OWN</param>
 		</action>
+		
+			
+		
 	</package>
 	
 	<package name= "alarmListCount" namespace="/api/v2/alarms" extends="v2Api" >
@@ -618,4 +641,13 @@
 			<param name="controllerId">{1}</param>
 		</action>
 	</package>
+	<package name="consumptionV2" namespace="/api/v2/consumptionData" extends="v2Api">
+		<action name="totalConsumptionByBuilding" class="com.facilio.bmsconsole.actions.ConsumptionAction" method="getTotalConsumptionForBuilding">
+			<param name="permission">READ,READ_TEAM,READ_OWN</param>
+			<result name="success" type="json">
+			<param name="includeProperties">totalConsumptionByBuilding,totalConsumptionByBuilding\[\d+\],totalConsumptionByBuilding\[\d+\].*,^totalConsumptionByBuilding.*</param>
+			</result>
+		</action>
+	</package>
+	
 </struts>

@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.actions;
 
 import java.io.File;
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -38,6 +39,7 @@ import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.context.PreventiveMaintenance.PMAssignmentType;
 import com.facilio.bmsconsole.context.RecordSummaryLayout;
 import com.facilio.bmsconsole.context.ResourceContext;
+import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.bmsconsole.context.SpaceContext;
 import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.TaskContext.InputType;
@@ -45,12 +47,16 @@ import com.facilio.bmsconsole.context.TaskSectionContext;
 import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.context.TicketContext.SourceType;
 import com.facilio.bmsconsole.context.TicketStatusContext;
+import com.facilio.bmsconsole.context.TicketStatusContext.StatusType;
 import com.facilio.bmsconsole.context.ViewLayout;
 import com.facilio.bmsconsole.context.WorkOrderContext;
+import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
+import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
+import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.templates.JSONTemplate;
 import com.facilio.bmsconsole.templates.TaskSectionTemplate;
@@ -61,6 +67,7 @@ import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
 import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.bmsconsole.util.TemplateAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
+import com.facilio.bmsconsole.util.WorkOrderAPI;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.workflow.rule.ActivityType;
 import com.facilio.bmsconsole.workflow.rule.TicketActivity;
@@ -1036,6 +1043,28 @@ public class WorkOrderAction extends FacilioAction {
 		this.actualTimings = actualTimings;
 	}
 
+
+	private Map<String, Object> woStatusPercentage;
+
+	public Map<String, Object> getWoStatusPercentage() {
+		return woStatusPercentage;
+	}
+
+	public void setWoStatusPercentage(Map<String, Object> woStatusPercentage) {
+		this.woStatusPercentage = woStatusPercentage;
+	}
+
+
+	private Map<String,Object> avgResolutionTimeByCategory;
+
+	public Map<String,Object> getAvgResolutionTimeByCategory() {
+		return avgResolutionTimeByCategory;
+	}
+
+	public void setAvgResolutionTimeByCategory(Map<String,Object> avgResolutionTimeByCategory) {
+		this.avgResolutionTimeByCategory = avgResolutionTimeByCategory;
+	}
+
 	public String assignWorkOrder() throws Exception {
 
 		FacilioContext context = new FacilioContext();
@@ -1776,6 +1805,43 @@ public class WorkOrderAction extends FacilioAction {
 		return SUCCESS;
 	}
 	
+	public String getWorkOrderStatusPercentage() throws Exception {
+
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.WORK_ORDER_STARTTIME, getStartTime());
+		context.put(FacilioConstants.ContextNames.WORK_ORDER_ENDTIME, getEndTime());
+
+
+		Chain workOrderStatusPercentageListChain = ReadOnlyChainFactory.getWorkOrderStatusPercentageChain();
+		workOrderStatusPercentageListChain.execute(context);
+
+
+		setWoStatusPercentage((Map<String, Object>) context.get(FacilioConstants.ContextNames.WORK_ORDER_STATUS_PERCENTAGE_RESPONSE));
+
+
+		return SUCCESS;
+	}
+
+
+
+
+	public String getAvgWorkCompletionByCategory() throws Exception {
+
+		FacilioContext context = new FacilioContext();
+
+		context.put(FacilioConstants.ContextNames.WORK_ORDER_STARTTIME, getStartTime());
+		context.put(FacilioConstants.ContextNames.WORK_ORDER_ENDTIME, getEndTime());
+
+		Chain avgCompletionTimeByCategoryChain = ReadOnlyChainFactory.getAvgCompletionTimeByCategoryChain();
+		avgCompletionTimeByCategoryChain.execute(context);
+		Map<String, Object> resp = (Map<String,Object>) context.get(FacilioConstants.ContextNames.WORK_ORDER_AVG_RESOLUTION_TIME);
+
+		setAvgResolutionTimeByCategory(resp) ;
+
+		return SUCCESS;
+	}
+
+
 	private List<Long> deleteReadingRulesList;
 	public void setDeleteReadingRulesList(List<Long> deleteReadingRulesList) {
 		this.deleteReadingRulesList = deleteReadingRulesList;
@@ -1829,13 +1895,13 @@ public class WorkOrderAction extends FacilioAction {
 		if(workOrderString != null) {
 			setWorkordercontex(workOrderString);
 		}
-		
+
 		//The following has to be moved to chain
 		workorder.setSourceType(SourceType.SERVICE_PORTAL_REQUEST);
 		workorder.setSendForApproval(true);
 		TicketStatusContext preOpenStatus = TicketAPI.getStatus("preopen");
 		workorder.setStatus(preOpenStatus);
-		
+
 		addWorkOrder(workorder);
 		setResult(FacilioConstants.ContextNames.WORK_ORDER, workorder);
 		return SUCCESS;

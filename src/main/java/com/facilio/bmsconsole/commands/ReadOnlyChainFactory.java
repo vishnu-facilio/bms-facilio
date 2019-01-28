@@ -116,6 +116,28 @@ public class ReadOnlyChainFactory {
 		return c;
 	}
 	
+	public static Chain getWorkOrderStatusPercentageChain() {
+		Chain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForWorkOrder());
+		c.addCommand(new LoadModuleNameCommand());
+		c.addCommand(new GetDigestTeamTechnicianCountCommand());
+		c.addCommand(new GetWorkOrderStatusPecentageCommand());
+		
+		CommonCommandUtil.addCleanUpCommand(c);
+		return c;
+	}
+	
+	
+	public static Chain getAvgCompletionTimeByCategoryChain() {
+		Chain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForWorkOrder());
+		c.addCommand(new LoadModuleNameCommand());
+		c.addCommand(new GetAvgCompletionTimeByCategoryCommand());
+		CommonCommandUtil.addCleanUpCommand(c);
+		return c;
+	}
+	
+	
 	public static Chain getAssetFromQRChain() {
 		Chain c = getDefaultChain();
 		c.addCommand(new ParseQRValueCommand());

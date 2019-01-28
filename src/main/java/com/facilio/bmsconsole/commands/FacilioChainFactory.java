@@ -956,6 +956,13 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
+	public static Chain getTotalConsumptionByBuildingChain() {
+		Chain c = new ChainBase();
+	    c.addCommand(new GetTotalConsumptionByBuidlingCommand());	
+		CommonCommandUtil.addCleanUpCommand(c);
+		return c;
+	}
+	
 	public static Chain getAddEnergyMeterPurposeChain() {
 		Chain c = getTransactionChain();
 		c.addCommand(SetTableNamesCommand.getForEnergyMeterPurpose());
@@ -1445,6 +1452,14 @@ public class FacilioChainFactory {
 		c.addCommand(new GetReadingFieldsCommand());
 		return c;
 	}
+	
+	public static Chain getSiteSpecificReadingsChain() {
+		Chain c = new ChainBase();
+		c.addCommand(new GetSiteSpecificReadingsCommand());
+		CommonCommandUtil.addCleanUpCommand(c);
+		return c;
+	}
+	
 	
 	public static Chain getReadingsForSpaceTypeChain() {
 		Chain c = getTransactionChain();

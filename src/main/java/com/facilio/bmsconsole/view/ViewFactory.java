@@ -572,7 +572,7 @@ public class ViewFactory {
 		return open;
 	}
 	
-	private static Criteria getCloseStatusCriteria() {
+	public static Criteria getCloseStatusCriteria() {
 		FacilioField statusTypeField = new FacilioField();
 		statusTypeField.setName("typeCode");
 		statusTypeField.setColumnName("STATUS_TYPE");

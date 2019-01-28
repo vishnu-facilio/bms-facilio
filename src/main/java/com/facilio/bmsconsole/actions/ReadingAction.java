@@ -561,6 +561,18 @@ public class ReadingAction extends FacilioAction {
 		return SUCCESS;
 	}
 	
+	public String getSiteSpecificReadings(FacilioModule module,FacilioField field) throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.PARENT_MODULE, module);
+		context.put(FacilioConstants.ContextNames.READING_FIELD, field);
+		Chain getSiteSpecificReadingChain = FacilioChainFactory.getSiteSpecificReadingsChain();
+		getSiteSpecificReadingChain.execute(context);
+		readings = (List<FacilioModule>) context.get(FacilioConstants.ContextNames.MODULE_LIST);
+		moduleMap = (Map<Long,List<FacilioModule>>)context.get(FacilioConstants.ContextNames.MODULE_MAP);	
+		
+		return SUCCESS;
+	}
+	
 	public String spaceType;
 	
 	

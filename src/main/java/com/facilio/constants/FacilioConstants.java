@@ -164,6 +164,15 @@ public class FacilioConstants {
 		public static final String WORK_ORDER = "workorder";
 		public static final String WORK_ORDER_LIST = "workorders";
 		public static final String WORK_ORDER_COUNT = "workorderscount";
+		public static final String WORK_ORDER_STATUS_PERCENTAGE = "workOrderStatusCount";
+		public static final String WORK_ORDER_STATUS_PERCENTAGE_RESPONSE = "workOrderStatusResponse";
+		public static final String WORK_ORDER_AVG_RESOLUTION_TIME = "avgCompletionTimeByCategory";
+		public static final String WORK_ORDER_STARTTIME = "starttime";
+		public static final String WORK_ORDER_ENDTIME = "endtime";
+		
+		
+		
+		
 		public static final String TEMPLATE_ID = "templateId";
 		public static final String TEMPLATE_TYPE = "templateType";
 		public static final String TEMPLATE_NAME = "templateName";
@@ -302,6 +311,13 @@ public class FacilioConstants {
 		public static final String REPORT_RESOURCE_ALIASES = "reportResourceAliases";
 		public static final String REPORT_SHOW_ALARMS = "showAlarms";
 		public static final String REPORT_SHOW_SAFE_LIMIT = "showSafeLimit";
+		public static final String REPORT_STARTTIME = "starttime";
+		public static final String REPORT_ENDTIME = "endtime";
+		
+		public static final String TOTAL_CONSUMPTION = "totalConsumption";
+		public static final String UNIT = "unit";
+		
+		
 		
 		public static final String AGGR_KEY = "aggr";
 		public static final String DATA_KEY = "data";
@@ -524,7 +540,9 @@ public class FacilioConstants {
 		public static final String NEXT_EXECUTION_TIMES = "nextexecutiontimes";
 		public static final String PM_JOBS = "pmjobs";
 		public static final String GROUP_STATUS = "groupStatus";
-
+		
+		public static final String TECH_COUNT_GROUP_DIGEST = "techCountGroupDigest";
+		
 		
 		public static final String VIEWID = "viewId";
 		public static final String VIEW_LIST = "views";
