@@ -957,9 +957,9 @@ public class FacilioChainFactory {
 	}
 	
 	public static Chain getTotalConsumptionByBuildingChain() {
-		Chain c = new ChainBase();
+		Chain c = getTransactionChain();
 	    c.addCommand(new GetTotalConsumptionByBuidlingCommand());	
-		CommonCommandUtil.addCleanUpCommand(c);
+//		CommonCommandUtil.addCleanUpCommand(c);
 		return c;
 	}
 	
@@ -1454,9 +1454,9 @@ public class FacilioChainFactory {
 	}
 	
 	public static Chain getSiteSpecificReadingsChain() {
-		Chain c = new ChainBase();
+		Chain c = getNonTransactionChain();
 		c.addCommand(new GetSiteSpecificReadingsCommand());
-		CommonCommandUtil.addCleanUpCommand(c);
+//		CommonCommandUtil.addCleanUpCommand(c);
 		return c;
 	}
 	

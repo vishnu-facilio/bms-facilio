@@ -123,7 +123,7 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new GetDigestTeamTechnicianCountCommand());
 		c.addCommand(new GetWorkOrderStatusPecentageCommand());
 		
-		CommonCommandUtil.addCleanUpCommand(c);
+//		CommonCommandUtil.addCleanUpCommand(c);
 		return c;
 	}
 	
@@ -133,7 +133,7 @@ public class ReadOnlyChainFactory {
 		c.addCommand(SetTableNamesCommand.getForWorkOrder());
 		c.addCommand(new LoadModuleNameCommand());
 		c.addCommand(new GetAvgCompletionTimeByCategoryCommand());
-		CommonCommandUtil.addCleanUpCommand(c);
+//		CommonCommandUtil.addCleanUpCommand(c);
 		return c;
 	}
 	
