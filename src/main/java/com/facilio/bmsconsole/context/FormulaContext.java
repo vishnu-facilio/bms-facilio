@@ -170,7 +170,7 @@ public class FormulaContext {
 				case ACTUAL: 
 					return field.clone();
 				case COUNT:
-					String selectFieldString = expr.replace("{$place_holder$}", field.getColumnName());
+					String selectFieldString = expr.replace("{$place_holder$}", field.getCompleteColumnName());
 					NumberField field1 = new NumberField();
 					field1.setDataType(FieldType.NUMBER);
 					field1.setName(field.getName());
@@ -221,7 +221,7 @@ public class FormulaContext {
 		}
 		
 		public FacilioField getSelectField(FacilioField field) throws Exception {
-			String selectFieldString = expr.replace("{$place_holder$}", field.getColumnName());
+			String selectFieldString = expr.replace("{$place_holder$}", field.getCompleteColumnName());
 			FacilioField selectField = null;
 			if(field instanceof NumberField) {
 				NumberField numberField =  (NumberField)field;
@@ -260,7 +260,7 @@ public class FormulaContext {
 			this.expr = expr;
 		}
 		public FacilioField getSelectField(FacilioField field) throws Exception {
-			String selectFieldString =expr.replace("{$place_holder$}", field.getColumnName());
+			String selectFieldString =expr.replace("{$place_holder$}", field.getCompleteColumnName());
 			
 			FacilioField selectField =  new FacilioField();
 			selectField.setName(field.getName());
@@ -315,7 +315,7 @@ public class FormulaContext {
 			this.isPublic = isPublic;
 		}
 		public FacilioField getSelectField(FacilioField field) throws Exception {
-			String selectFieldString = expr.replace("{$place_holder$}", field.getColumnName());
+			String selectFieldString = expr.replace("{$place_holder$}", field.getCompleteColumnName());
 			String timeZone = getTimeZoneString();
 //			String timeZone = AccountUtil.getCurrentOrg().getTimezone();
 //			if(timeZone == null) {

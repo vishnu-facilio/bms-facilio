@@ -14,6 +14,7 @@ import org.apache.commons.collections.PredicateUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import com.facilio.util.ExpressionEvaluator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.base.Objects;
 
 public class Criteria extends ExpressionEvaluator<Predicate> implements Serializable {
@@ -83,6 +84,7 @@ public class Criteria extends ExpressionEvaluator<Predicate> implements Serializ
 		return null;
 	}
 	
+	@JsonIgnore
 	public List<Object> getComputedValues() {
 		List<Object> list = new ArrayList<>();
 		if(conditions != null && !conditions.isEmpty()) {

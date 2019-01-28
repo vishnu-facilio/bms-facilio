@@ -16,6 +16,7 @@ import org.json.simple.parser.JSONParser;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.commands.AddOrUpdateReportCommand;
 import com.facilio.bmsconsole.commands.ConstructReportData;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
@@ -473,7 +474,39 @@ public class V2ReportAction extends FacilioAction {
 		Chain chain = new FacilioChain(false);
 		chain.addCommand(new ConstructReportData());
 		chain.addCommand(ReadOnlyChainFactory.newFetchReportDataChain());
-//		Chain fetchReadingData = ReadOnlyChainFactory.newFetchReportDataChain();
+		chain.execute(context);
+		
+		return setReportResult(context);
+	}
+	
+	public String saveReport() throws Exception {
+		Chain chain = new FacilioChainFactory.FacilioChain(true);
+		FacilioContext context = new FacilioContext();
+		
+		context.put(FacilioConstants.ContextNames.REPORT, reportContext);
+		context.put("x-axis", xField);
+		context.put("y-axis", yField);
+		context.put("group-by", groupBy);
+		context.put("criteria", criteria);
+		
+		chain.addCommand(new ConstructReportData());
+		chain.addCommand(new AddOrUpdateReportCommand());
+		chain.execute(context);
+		
+		setResult("message", "Report saved");
+		return SUCCESS;
+	}
+	
+	public String executeReport() throws Exception {
+		Chain chain = new FacilioChainFactory.FacilioChain(true);
+		FacilioContext context = new FacilioContext();
+		
+		ReportContext reportContext = ReportUtil.getReport(reportId);
+		if (reportContext == null) {
+			throw new Exception("Report not found");
+		}
+		context.put(FacilioConstants.ContextNames.REPORT, reportContext);
+		chain.addCommand(ReadOnlyChainFactory.newFetchReportDataChain());
 		chain.execute(context);
 		
 		return setReportResult(context);

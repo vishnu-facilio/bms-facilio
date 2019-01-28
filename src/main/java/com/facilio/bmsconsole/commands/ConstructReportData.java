@@ -31,7 +31,10 @@ public class ConstructReportData implements Command {
 
 	@Override
 	public boolean execute(Context context) throws Exception {
-		ReportContext reportContext = new ReportContext();
+		ReportContext reportContext = (ReportContext) context.get(FacilioConstants.ContextNames.REPORT);
+		if (reportContext == null) {
+			reportContext = new ReportContext();
+		}
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
@@ -66,7 +69,7 @@ public class ConstructReportData implements Command {
 		FacilioField yField = null;
 		if (yAxisJSON == null || !(yAxisJSON.containsKey("field_id"))) {
 			yField = FieldFactory.getIdField(xField.getModule());
-			yField.setColumnName(yField.getModule().getTableName() + ".ID");
+//			yField.setColumnName(yField.getModule().getTableName() + ".ID");
 		} else {
 			if (yAxisJSON.containsKey("aggr")) {
 				yAggr = AggregateOperator.getAggregateOperator(((Number) yAxisJSON.get("aggr")).intValue());
