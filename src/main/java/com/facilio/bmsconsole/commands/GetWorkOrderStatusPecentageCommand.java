@@ -57,13 +57,15 @@ public class GetWorkOrderStatusPecentageCommand implements Command{
 			
             if(statusMap.getType() == StatusType.CLOSED)
             {
-            	if(actualWorkDuration <= estimatedWorkDuration)
+            	if(dueDate != null && actualWorkEnd != null) {
+            	if(actualWorkEnd <= dueDate)
             	{
             		onTime = true;
             	}
             	else
             	{
             		overDue = true;
+            	}
             	}
             }
             else
@@ -86,7 +88,7 @@ public class GetWorkOrderStatusPecentageCommand implements Command{
                    siteInfo.put("onTime",onTimeCount);
                  
                }
-               else
+               else if(open)
                {
             	   Integer openCount = (Integer)siteInfo.get("open");
             	   openCount = openCount + 1;
