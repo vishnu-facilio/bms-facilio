@@ -621,7 +621,7 @@ public class TimeSeriesAPI {
 		
 		if (isSubscribed != null) {
 			Criteria isSubscribedCriteria = new Criteria();
-			isSubscribedCriteria.addOrCondition(CriteriaAPI.getCondition(fieldMap.get("subscribed"), String.valueOf(isSubscribed), BooleanOperators.IS));
+			isSubscribedCriteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("subscribed"), String.valueOf(isSubscribed), BooleanOperators.IS));
 			builder.andCriteria(isSubscribedCriteria);
 		}
 		
