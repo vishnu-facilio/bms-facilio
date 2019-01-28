@@ -307,7 +307,14 @@ public class ReadOnlyChainFactory {
 		return c;
 	}
 	
+	public static Chain constructAndFetchReportDataChain() {
+		Chain c = getDefaultChain();
+		c.addCommand(new ConstructReportData());
+		c.addCommand(newFetchReportDataChain());
+		return c;
+	}
+	
 	private static Chain getDefaultChain() {
-		return new FacilioChain(false);
+		return FacilioChain.getNonTransactionChain();
     }
 }

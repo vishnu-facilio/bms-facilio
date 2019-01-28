@@ -543,7 +543,7 @@ public class TransactionChainFactory {
 		}
 		
 	    private static Chain getDefaultChain() {
-	    	return new FacilioChain(true);
+	    	return FacilioChain.getTransactionChain();
 	    }
 	    public static Chain getAddWidgetChain() {
 			Chain c = getDefaultChain();

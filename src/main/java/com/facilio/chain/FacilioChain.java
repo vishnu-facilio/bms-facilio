@@ -18,12 +18,23 @@ public class FacilioChain extends ChainBase {
 	private Chain postTransactionChain;
 	private boolean enableTransaction = false;
 	private int timeout = -1;
-	public FacilioChain(boolean isTransactionChain) {
+	
+	public static FacilioChain getTransactionChain() {
+		return new FacilioChain(true);
+	}
+	public static FacilioChain getTransactionChain(int timeout) {
+		return new FacilioChain(timeout);
+	}
+	public static FacilioChain getNonTransactionChain() {
+		return new FacilioChain(false);
+	}
+	
+	private FacilioChain(boolean isTransactionChain) {
 		// TODO Auto-generated constructor stub
 		this.enableTransaction = isTransactionChain && Boolean.valueOf(AwsUtil.getConfig("enable.transaction"));
 	}
 	
-	public FacilioChain (int timeout) { //If timeout is required, it's assumed to be Transaction chain
+	private FacilioChain (int timeout) { //If timeout is required, it's assumed to be Transaction chain
 		this.timeout = timeout;
 		this.enableTransaction = Boolean.valueOf(AwsUtil.getConfig("enable.transaction"));
 	}

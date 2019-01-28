@@ -17,7 +17,7 @@ class JobConstants {
     static class ChainFactory {
     	
     	static FacilioChain jobExecutionChain(int timeout) {
-    		FacilioChain c = new FacilioChain(timeout);
+    		FacilioChain c = FacilioChain.getTransactionChain(timeout);
     		c.addCommand(new CalculateNextExecutionTimeCommand());
     		c.addCommand(new JobExecutionCommand());
     		c.addCommand(new UpdateNextExecutionCommand());
@@ -25,7 +25,7 @@ class JobConstants {
     	}
     	
     	static FacilioChain instantJobExecutionChain (int timeout) {
-    		FacilioChain c = new FacilioChain(timeout);
+    		FacilioChain c = FacilioChain.getTransactionChain(timeout);
     		c.addCommand(new InstantJobExecutionCommand());
     		return c;
     	}
