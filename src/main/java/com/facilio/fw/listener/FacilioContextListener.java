@@ -133,9 +133,9 @@ public class FacilioContextListener implements ServletContextListener {
 				log.info("Custom domains loaded " + customDomains);
 			}
 			
-			if(AwsUtil.isDevelopment() || AwsUtil.disableCSP()) {
+			/*if(AwsUtil.isDevelopment() || AwsUtil.disableCSP()) {
 				initializeDB();
-			}
+			}*/
 
 			try {
 				if(AwsUtil.isProduction() && ("true".equalsIgnoreCase(AwsUtil.getConfig("enable.kinesis"))) && "true".equalsIgnoreCase(AwsUtil.getConfig("kinesisServer"))) {
@@ -173,10 +173,10 @@ public class FacilioContextListener implements ServletContextListener {
 		
 	}
 
-	private void initializeDB() {
+	/*private void initializeDB() {
 //		createTables("conf/leedconsole.sql");
-		createTables("conf/db/" + AwsUtil.getDB() + "/eventconsole.sql");
-	}
+		//createTables("conf/db/" + AwsUtil.getDB() + "/eventconsole.sql");
+	}*/
 
 	private void createTables(String fileName) {
 		URL url = SQLScriptRunner.class.getClassLoader().getResource(fileName);
