@@ -27,7 +27,7 @@ public class AddDashboardWidgetCommand implements Command {
 					
 					widget.setId(-1l);
 					
-					Chain addWidgetChain = FacilioChainFactory.getAddWidgetChain();
+					Chain addWidgetChain = TransactionChainFactory.getAddWidgetChain();
 
 					widget.setDashboardId(dashboard.getId());
 					context.put(FacilioConstants.ContextNames.WIDGET, widget);

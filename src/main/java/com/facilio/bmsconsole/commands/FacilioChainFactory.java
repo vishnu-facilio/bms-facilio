@@ -1542,13 +1542,7 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
-	public static Chain getUpdateDashboardChain() {
-		Chain c = getTransactionChain();
-		c.addCommand(new UpdateDashboardCommand());
-		c.addCommand(new EnableMobileDashboardCommand());
-		return c;
-	}
-	
+
 	public static Chain getEnableMobileDashboardChain() {
 		Chain c = getTransactionChain();
 		c.addCommand(new EnableMobileDashboardCommand());
@@ -1567,18 +1561,7 @@ public class FacilioChainFactory {
 //		return c;
 //	}
 	
-	public static Chain getAddWidgetChain() {
-		Chain c = getTransactionChain();
-		c.addCommand(new AddWidgetCommand());
-//		c.addCommand(new AddDashboardVsWidgetCommand());
-		return c;
-	}
-	public static Chain getAddDashboardVsWidgetChain() {
-		Chain c = getTransactionChain();
-		c.addCommand(new AddDashboardVsWidgetCommand());
-		return c;
-	}
-	
+
 	public static Chain addBaseLineChain() {
 		Chain c = getTransactionChain();
 		c.addCommand(new ValidateBaseLineCommand());

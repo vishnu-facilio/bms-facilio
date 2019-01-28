@@ -33,6 +33,7 @@ import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.ReportsChainFactory;
+import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.AlarmContext;
 import com.facilio.bmsconsole.context.AssetCategoryContext;
@@ -6945,9 +6946,8 @@ public class DashboardAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.DASHBOARD, dashboard);
 		
-		Chain updateDashboardChain = FacilioChainFactory.getUpdateDashboardChain();
+		Chain updateDashboardChain = TransactionChainFactory.getUpdateDashboardChain();
 		updateDashboardChain.execute(context);
-		
 		return SUCCESS;
 	}
 	
@@ -6982,10 +6982,10 @@ public class DashboardAction extends FacilioAction {
 		
 		Chain addWidgetChain = null;
 		if(dashboardWidget != null && dashboardWidget.getId() != -1) {
-			addWidgetChain = FacilioChainFactory.getAddDashboardVsWidgetChain();
+//			addWidgetChain = FacilioChainFactory.getAddDashboardVsWidgetChain();
 		}
 		else {
-			addWidgetChain = FacilioChainFactory.getAddWidgetChain();
+			addWidgetChain = TransactionChainFactory.getAddWidgetChain();
 		}
 		addWidgetChain.execute(context);
 		

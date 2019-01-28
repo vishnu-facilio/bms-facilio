@@ -545,4 +545,15 @@ public class TransactionChainFactory {
 	    private static Chain getDefaultChain() {
 	    	return new FacilioChain(true);
 	    }
+	    public static Chain getAddWidgetChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new AddWidgetCommand());
+			return c;
+		}
+	    public static Chain getUpdateDashboardChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new UpdateDashboardCommand());
+			c.addCommand(new EnableMobileDashboardCommand());
+			return c;
+		}
 }

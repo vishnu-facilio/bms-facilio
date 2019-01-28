@@ -25,9 +25,11 @@ import org.json.simple.JSONObject;
 import com.facilio.accounts.dto.Group;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.BaseLineContext;
 import com.facilio.bmsconsole.context.BaseLineContext.RangeType;
+import com.facilio.bmsconsole.context.DashboardContext.DashboardPublishStatus;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.BuildingContext;
 import com.facilio.bmsconsole.context.DashboardContext;
@@ -3651,4 +3653,26 @@ public static JSONObject getStandardVariance1(ReportContext report,JSONArray pro
 		}
 		return false;
 	}
+	
+	public static void duplicateDashboard(DashboardContext dashboard) throws Exception {
+		
+		FacilioContext context = new FacilioContext();
+		dashboard.setId(-1l);
+		dashboard.setCreatedByUserId(AccountUtil.getCurrentUser().getId());
+		dashboard.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
+		context.put(FacilioConstants.ContextNames.DASHBOARD, dashboard);
+		Chain addDashboardChain = FacilioChainFactory.getAddDashboardChain();
+		
+		addDashboardChain.execute(context);
+		
+		for(DashboardWidgetContext widget : dashboard.getDashboardWidgets()) {
+			widget.setId(-1);
+		}
+		Chain updateDashboardChain = TransactionChainFactory.getUpdateDashboardChain();
+		updateDashboardChain.execute(context);
+	}
+	
+	
+	
+	
 }
