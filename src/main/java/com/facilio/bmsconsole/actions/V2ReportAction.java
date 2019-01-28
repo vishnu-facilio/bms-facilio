@@ -18,6 +18,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.AddOrUpdateReportCommand;
 import com.facilio.bmsconsole.commands.ConstructReportData;
+import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.AlarmContext;
@@ -480,7 +481,7 @@ public class V2ReportAction extends FacilioAction {
 	}
 	
 	public String saveReport() throws Exception {
-		Chain chain = new FacilioChainFactory.FacilioChain(true);
+		Chain chain = new FacilioChain(true);
 		FacilioContext context = new FacilioContext();
 		
 		context.put(FacilioConstants.ContextNames.REPORT, reportContext);
@@ -498,7 +499,7 @@ public class V2ReportAction extends FacilioAction {
 	}
 	
 	public String executeReport() throws Exception {
-		Chain chain = new FacilioChainFactory.FacilioChain(true);
+		Chain chain = new FacilioChain(true);
 		FacilioContext context = new FacilioContext();
 		
 		ReportContext reportContext = ReportUtil.getReport(reportId);
