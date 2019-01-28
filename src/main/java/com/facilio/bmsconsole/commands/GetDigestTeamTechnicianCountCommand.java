@@ -41,22 +41,34 @@ public class GetDigestTeamTechnicianCountCommand implements Command {
 
 		FacilioModule groupsModule = AccountConstants.getGroupModule();
 		FacilioModule groupMembersModule = AccountConstants.getGroupMemberModule();
+		FacilioModule rolesModule = AccountConstants.getRoleModule();
+		FacilioModule orgUserModule = AccountConstants.getOrgUserModule();
 		
 		List<FacilioField> fields = new ArrayList<FacilioField>();
 		
 		FacilioField countField = new FacilioField();
 		countField.setName("count");
-		countField.setColumnName("count(DISTINCT ORG_USERID)");
+		countField.setColumnName("count(DISTINCT "+groupMembersModule.getTableName()+".ORG_USERID)");
 		fields.add(countField);
 		
 		FacilioField siteIdField = FieldFactory.getSiteIdField(groupsModule);
 		fields.add(siteIdField);
 	
+		List<FacilioField> roleFields = AccountConstants.getRoleFields();
+		
+		GenericSelectRecordBuilder roleSelectBuilder = new GenericSelectRecordBuilder()
+				.select(roleFields).table(rolesModule.getTableName())
+				.andCondition(CriteriaAPI.getCondition(rolesModule.getTableName()+".NAME", "name" ,"Technician", StringOperators.STARTS_WITH))
+				.andCondition(CriteriaAPI.getCondition(rolesModule.getTableName()+".ORGID", "orgId", ""+AccountUtil.getCurrentOrg().getOrgId(), NumberOperators.EQUALS))
+			    ;
+		List<Map<String, Object>> roleList = roleSelectBuilder.get();
+		Long roleId = (Long)roleList.get(0).get("roleId");
 		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-				.select(fields).table(groupMembersModule.getTableName())
-				.innerJoin(groupsModule.getTableName()).on(groupsModule.getTableName()+".GROUPID = "+groupMembersModule.getTableName()+".GROUPID")
-				.andCondition(CriteriaAPI.getCondition(groupMembersModule.getTableName()+".MEMBER_ROLE", "memberRole", "4", NumberOperators.EQUALS))
+				.select(fields).table(groupsModule.getTableName())
+				.innerJoin(groupMembersModule.getTableName()).on(groupsModule.getTableName()+".GROUPID = "+groupMembersModule.getTableName()+".GROUPID")
+				.innerJoin(orgUserModule.getTableName()).on(groupMembersModule.getTableName()+".ORG_USERID = "+orgUserModule.getTableName()+".ORG_USERID")
+				.andCondition(CriteriaAPI.getCondition(orgUserModule.getTableName()+".ROLE_ID", "roleId" ,""+roleId, NumberOperators.EQUALS))
 				.andCondition(CriteriaAPI.getCondition(groupsModule.getTableName()+".ORGID", "orgId", ""+AccountUtil.getCurrentOrg().getOrgId(), NumberOperators.EQUALS))
 				.groupBy(siteIdField.getCompleteColumnName())
 			    ;

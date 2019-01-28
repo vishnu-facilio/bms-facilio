@@ -16,6 +16,7 @@ import com.facilio.bmsconsole.context.TicketStatusContext;
 import com.facilio.bmsconsole.context.TicketStatusContext.StatusType;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.criteria.BuildingOperator;
+import com.facilio.bmsconsole.criteria.CommonOperators;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.DateOperators;
 import com.facilio.bmsconsole.criteria.DateRange;
@@ -219,6 +220,8 @@ public static List<WorkOrderContext> getWorkOrderStatusPercentage(Long startTime
 																		  .beanClass(WorkOrderContext.class)
 																		  .select(workorderFields)
 																		  .andCondition(CriteriaAPI.getCondition("CREATED_TIME", "createdTime", startTime+","+endTime, DateOperators.BETWEEN))
+																		  .andCondition(CriteriaAPI.getCondition(FieldFactory.getSiteIdField(workOrderModule), CommonOperators.IS_NOT_EMPTY))
+																		  
 																		  ;
 
 

@@ -54,8 +54,7 @@ public class GetWorkOrderStatusPecentageCommand implements Command{
 			boolean overDue = false;
 			boolean onTime = false;
 			boolean open = false;
-			
-            if(statusMap.getType() == StatusType.CLOSED)
+		    if(statusMap.getType() == StatusType.CLOSED)
             {
             	if(dueDate != null && actualWorkEnd != null) {
             	if(actualWorkEnd <= dueDate)
@@ -108,12 +107,20 @@ public class GetWorkOrderStatusPecentageCommand implements Command{
 				siteInfo.put("onTime",onTime?1:0);
 				siteInfo.put("siteId",siteId);
 				siteInfo.put("totalCount",1);
+				if(techCount.get(siteId) == null) {
+					
+					siteInfo.put("technicianCount",0);
+					
+				}
+				else {
 				siteInfo.put("technicianCount",techCount.get(siteId));
+				}
 				
 					
 				
 			}
 			  resp.put(siteId, siteInfo);
+			
 	      	
 		
 		}
