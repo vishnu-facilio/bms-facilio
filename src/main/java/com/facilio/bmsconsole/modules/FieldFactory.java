@@ -4798,6 +4798,36 @@ public class FieldFactory {
 		fields.add(getField("moduleName", "MODULE_NAME", module, FieldType.STRING));
 		return fields;
 	}
+
+	public static List<FacilioField> getAnomalyV1ConfigFields() {
+        FacilioModule module = ModuleFactory.getAnalyticsV1AnomalyConfigModule();
+        List<FacilioField> fields = new ArrayList<>();
+
+        fields.add(getOrgIdField(module));
+        fields.add(getField("meterId", "METER_ID", module, FieldType.NUMBER));
+        fields.add(getField("dimension1Buckets", "DIMENSION1_BUCKETS", module, FieldType.STRING));
+        fields.add(getField("dimension1Value", "DIMENSION1_VALUE", module, FieldType.STRING));
+        fields.add(getField("historyDays", "HISTORY_DAYS", module, FieldType.NUMBER));
+        fields.add(getField("startDate", "START_DATE", module, FieldType.STRING));
+        fields.add(getField("startDateMode", "START_DATE_MODE", module, FieldType.BOOLEAN));
+        fields.add(getField("meterInterval", "METER_INTERVAL", module, FieldType.NUMBER));
+        fields.add(getField("tableValue", "TABLE_VALUE", module, FieldType.DECIMAL));
+        fields.add(getField("adjustmentPercentage", "ADJUSTMENT_PERCENTAGE", module, FieldType.DECIMAL));
+        fields.add(getField("orderRange", "ORDER_RANGE", module, FieldType.NUMBER));
+        return fields;
+    }
+
+    public static List<FacilioField> getAssetTreeHeirarchyFields() {
+        FacilioModule module = ModuleFactory.getAssetTreeHeirarchyModule();
+        List<FacilioField> fields = new ArrayList<>();
+
+        fields.add(getOrgIdField(module));
+        fields.add(getField("parentAsset", "PARENTASSET", module, FieldType.NUMBER));
+        fields.add(getField("childAsset", "CHILDASSET", module, FieldType.NUMBER));
+    
+        return fields;
+    }
+
 	
 //	public static List<FacilioField> getReportDataPointFields() {
 //		FacilioModule module = ModuleFactory.getReportDataPointModule();

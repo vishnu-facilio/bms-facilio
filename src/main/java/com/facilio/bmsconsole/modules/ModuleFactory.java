@@ -1521,4 +1521,21 @@ public class ModuleFactory {
 		enumFieldValues.setTableName("Reading_Input_Values");
 		return enumFieldValues;
 	}
+	
+	public static FacilioModule getAnalyticsV1AnomalyConfigModule() {
+		FacilioModule analyticsAnomalyJob = new FacilioModule();
+		analyticsAnomalyJob.setName("anomalyConfigV1");
+		analyticsAnomalyJob.setDisplayName("Analytics ConfigV1");
+		analyticsAnomalyJob.setTableName("Anomaly_Asset_Config_v1");
+
+		return analyticsAnomalyJob;
+	}
+
+	public static FacilioModule getAssetTreeHeirarchyModule() {
+		FacilioModule assetHeirarchy = new FacilioModule();
+		assetHeirarchy.setName("assetTreeHeirarchyV1");
+		assetHeirarchy.setDisplayName("AssetTreeHeirarchy V1");
+		assetHeirarchy.setTableName("AssetTreeHeirarchy");
+		return assetHeirarchy;
+	}
 }

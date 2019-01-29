@@ -21,6 +21,7 @@
 	 <job name='WeatherData' classname = 'com.facilio.bmsconsole.jobs.WeatherDataJob' transactionTimeout='300000'/>
 	 <job name='DailyWeatherData' classname = 'com.facilio.bmsconsole.jobs.DailyWeatherDataJob' transactionTimeout='300000'/>
 	 <job name='DegreeDaysCalculator' classname = 'com.facilio.bmsconsole.jobs.DegreeDaysCalculatorJob' transactionTimeout='300000'/>
+	 <job name='V1AnomalyDetector' classname = 'com.facilio.bmsconsole.jobs.V1AnomalyDetectorJob' transactionTimeout='1800000'/>
 	 <job name='AnomalyDetector' classname = 'com.facilio.bmsconsole.jobs.AnomalyDetectorJob' transactionTimeout='1800000'/>
 	 <job name='RefreshAnomalyModel' classname = 'com.facilio.bmsconsole.jobs.RefreshAnomalyModelJob' transactionTimeout='14400000'/>
 	 <job name='importData' classname = 'com.facilio.bmsconsole.jobs.ImportDataJob' transactionTimeout='7200000'/>
