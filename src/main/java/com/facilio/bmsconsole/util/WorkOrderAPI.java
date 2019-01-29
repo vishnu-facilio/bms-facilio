@@ -223,7 +223,7 @@ public static List<WorkOrderContext> getWorkOrderStatusPercentage(Long startTime
 																		  .andCondition(CriteriaAPI.getCondition(FieldFactory.getSiteIdField(workOrderModule), CommonOperators.IS_NOT_EMPTY))
 																		  
 																		  ;
-
+  
 
 
 		List<WorkOrderContext> woStatusPercentage = selectRecordsBuilder.get();

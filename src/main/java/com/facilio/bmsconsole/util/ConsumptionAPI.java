@@ -53,10 +53,17 @@ public static Map<String,Object> getTotalConsumptionByBuildings(Long startTime,L
 		FacilioField parentField = moduleFieldMap.get("parentId");
 		
 		List<FacilioField> fields = new ArrayList<FacilioField>();
-		FacilioField totalConsumptionField = FormulaContext.NumberAggregateOperator.SUM.getSelectField(consumptionField);
-		totalConsumptionField.setName("total_consumption");
-		fields.add(totalConsumptionField);
 		
+		FacilioField totalConsumptionField = new FacilioField();
+		totalConsumptionField.setName("total_consumption");
+		totalConsumptionField.setColumnName("sum(round("+consumptionField.getColumnName()+",2))");
+		fields.add(totalConsumptionField);
+
+		
+//		FacilioField totalConsumptionField = FormulaContext.NumberAggregateOperator.SUM.getSelectField(.consumptionField);
+//		totalConsumptionField.setName("total_consumption");
+//		fields.add(totalConsumptionField);
+//		
 		FacilioField buildingField = baseSpaceFieldMap.get("buildingId");
 		fields.add(buildingField);
 		

@@ -66,9 +66,9 @@ public class GetAvgCompletionTimeByCategoryCommand implements Command {
 				}
 				group.put("siteId", siteId);
 				group.put("siteName", siteName);
+				avgResolutionTime = Math.round(avgResolutionTime*100.0)/100.0;
 				group.put("avgResolutionTime", avgResolutionTime);
 				group.put("count", count);
-				
 				
 				list.add(group);
 				
@@ -82,10 +82,7 @@ public class GetAvgCompletionTimeByCategoryCommand implements Command {
 			}
 			
 			List<Map<String,Object>> tableResp = new ArrayList<Map<String,Object>>(resp.values());
-			
-
-			
-			
+					
 			//desired resp for chart
 			List<Map<String,Object>> graphResp = new ArrayList<Map<String,Object>>();
 					
@@ -138,7 +135,6 @@ public class GetAvgCompletionTimeByCategoryCommand implements Command {
 				
 				dataPointsResp.add(avgResolutionTimeItem);
 			
-			
 				Map<String,Object> optionsResp = new HashMap<String, Object>();
 				optionsResp.put("axis",axisResp);
 				optionsResp.put("type","bar");
@@ -152,7 +148,6 @@ public class GetAvgCompletionTimeByCategoryCommand implements Command {
 				perCategoryGraphResp.put("categoryName",category.get("categoryName"));
 				
 				graphResp.add(perCategoryGraphResp);
-				
 				
 			}
 			

@@ -13,6 +13,7 @@ import org.apache.commons.chain.Context;
 import com.facilio.bmsconsole.context.TicketStatusContext;
 import com.facilio.bmsconsole.context.TicketStatusContext.StatusType;
 import com.facilio.bmsconsole.context.WorkOrderContext;
+import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.util.WorkOrderAPI;
 import com.facilio.constants.FacilioConstants;
 
@@ -30,6 +31,7 @@ public class GetWorkOrderStatusPecentageCommand implements Command{
 		long endTime = (Long) context.get(FacilioConstants.ContextNames.WORK_ORDER_ENDTIME);
 		
 	    List<WorkOrderContext> workOrderStatusCount = WorkOrderAPI.getWorkOrderStatusPercentage(startTime, endTime);
+	    TicketAPI.loadTicketLookups(workOrderStatusCount);
 		
 	    Map<Long, Object> techCount = (Map<Long, Object>) context.get(FacilioConstants.ContextNames.TECH_COUNT_GROUP_DIGEST);
 	    
@@ -164,7 +166,7 @@ public class GetWorkOrderStatusPecentageCommand implements Command{
 		xLabelObject.put("text", "Site");
 		
 		Map<String,Object> yLabelObject = new HashMap<String, Object>();
-		yLabelObject.put("text", "Work Order Completion Percentage");
+		yLabelObject.put("text", "Work Order Completion (%) ");
 		
 		xAxisResp.put("label", xLabelObject);
 		xAxisResp.put("datatype","string");
