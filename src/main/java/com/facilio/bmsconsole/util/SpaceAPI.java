@@ -613,6 +613,37 @@ public class SpaceAPI {
 		return null;
 	}
 	
+	public static List<BaseSpaceContext> getBuildingsWithFloors(long siteId) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.BASE_SPACE);
+		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.BASE_SPACE);
+		
+		SelectRecordsBuilder<BaseSpaceContext> selectBuilder = new SelectRecordsBuilder<BaseSpaceContext>()
+				.select(fields)
+				.module(module)
+				.maxLevel(0)
+				.beanClass(BaseSpaceContext.class)
+				.andCustomWhere("SITE_ID=? AND SPACE_TYPE=?",siteId,BaseSpaceContext.SpaceType.BUILDING.getIntVal());
+		
+		List<BaseSpaceContext> spaces = selectBuilder.get();
+		return spaces;
+	}
+	
+	public static List<BaseSpaceContext> getSiteBuildingsWithFloors(long sitedId) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.BASE_SPACE);
+		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.BASE_SPACE);
+		
+		SelectRecordsBuilder<BaseSpaceContext> selectBuilder = new SelectRecordsBuilder<BaseSpaceContext>()
+																	.select(fields)
+																	.module(module)
+																	.maxLevel(0)
+																	.beanClass(BaseSpaceContext.class)
+																	.andCustomWhere("BaseSpace.SITE_ID =? AND BaseSpace.SPACE_TYPE=? and exists(select BS.ID FROM BaseSpace BS INNER JOIN Resources RS ON BS.ID = RS.ID WHERE (RS.SYS_DELETED IS NULL OR NOT(RS.SYS_DELETED)) AND BS.BUILDING_ID=BaseSpace.ID AND BS.SPACE_TYPE=? LIMIT 1)",sitedId,BaseSpaceContext.SpaceType.BUILDING.getIntVal(),BaseSpaceContext.SpaceType.FLOOR.getIntVal());
+		List<BaseSpaceContext> spaces = selectBuilder.get();
+		return spaces;
+	}
+	
 	public static List<BaseSpaceContext> getBuildingFloors(long buildingId) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.BASE_SPACE);

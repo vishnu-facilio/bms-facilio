@@ -650,10 +650,18 @@ public class WorkOrderAction extends FacilioAction {
 				assetCategoryIds = AssetsAPI.getSubCategoryIds(assetCategoryId); //doubt
 			}
 		} else if(siteId != null && siteId > -1) {
-			/* List<BaseSpaceContext> floors = SpaceAPI.getBuildingFloors(buildingId);
-			if(floors != null && !floors.isEmpty()) {
-				hasFloor = true;
-			} */
+			if (buildingId == null || buildingId < -1) {
+				List<BaseSpaceContext> buildings = SpaceAPI.getSiteBuildingsWithFloors(siteId);
+				if(buildings != null && !buildings.isEmpty()) {
+					hasFloor = true;
+				}
+			} else {
+				List<BaseSpaceContext> floors = SpaceAPI.getBuildingFloors(buildingId);
+				if(floors != null && !floors.isEmpty()) {
+					hasFloor = true;
+				}
+			}
+			
 			assetCategoryIds = AssetsAPI.getAssetCategoryIds(siteId, buildingId, true);
 			spaceCategoryIds = SpaceAPI.getSpaceCategoryIds(siteId, buildingId);
 		}
