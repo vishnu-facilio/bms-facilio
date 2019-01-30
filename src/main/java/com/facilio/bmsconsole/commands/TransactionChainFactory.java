@@ -556,4 +556,10 @@ public class TransactionChainFactory {
 			c.addCommand(new EnableMobileDashboardCommand());
 			return c;
 		}
+
+		public static Chain executeScheduledReadingRuleChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new ExecuteScheduledReadingRuleCommand());
+			return c;
+		}
 }
