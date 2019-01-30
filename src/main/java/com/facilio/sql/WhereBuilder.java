@@ -51,6 +51,10 @@ public class WhereBuilder implements WhereBuilderIfc<WhereBuilder>{
 					.append(")");
 			if(values != null) {
 				for(Object val : values) {
+					if (val instanceof Enum) {
+						printTrace("Enum is give as value in custom where. This is wrong");
+					}
+					
 					this.values.add(val);
 				}
 			}
