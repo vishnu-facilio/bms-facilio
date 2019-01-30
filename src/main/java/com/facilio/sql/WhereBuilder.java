@@ -82,7 +82,7 @@ public class WhereBuilder implements WhereBuilderIfc<WhereBuilder>{
 		String computeAndGetWhereClause = condition.computeAndGetWhereClause();
 		if (computeAndGetWhereClause == null || computeAndGetWhereClause.isEmpty()) { //Checking for 75 alone
 //			throw new IllegalArgumentException("Condition cannot be null");
-			printTrace("Condition cannot be null. This is wrong");
+			printTrace("Condition where class cannot be null. This is wrong");
 		}
 		
 		checkIfFirstAndAdd(isAND);

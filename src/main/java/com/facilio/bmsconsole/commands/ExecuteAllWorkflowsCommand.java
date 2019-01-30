@@ -182,7 +182,7 @@ public class ExecuteAllWorkflowsCommand implements SerializableCommand
 								.append(" of module : ")
 								.append(moduleName);
 					}
-					LOGGER.log(Level.ERROR, builder.toString(), e);
+					LOGGER.error(builder.toString(), e);
 					
 					if (propagateError) {
 						throw e;
