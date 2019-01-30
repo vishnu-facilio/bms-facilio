@@ -41,6 +41,7 @@ public class PhotosContext extends ModuleBaseWithCustomFields {
 			FileStore fs = FileStoreFactory.getInstance().getFileStore();
 			originalUrl = fs.getPrivateUrl(this.photoId);
 		}
+		return originalUrl;
 	}
 	private long ttime = -1;
 	public long getTtime() {
