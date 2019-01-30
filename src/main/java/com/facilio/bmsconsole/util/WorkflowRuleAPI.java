@@ -5,12 +5,16 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.StringJoiner;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.apache.log4j.Level;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
@@ -27,6 +31,7 @@ import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
+import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.modules.UpdateChangeSet;
 import com.facilio.bmsconsole.workflow.rule.ActionContext;
@@ -39,6 +44,7 @@ import com.facilio.bmsconsole.workflow.rule.WorkflowEventContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.chain.FacilioContext;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericDeleteRecordBuilder;
 import com.facilio.sql.GenericInsertRecordBuilder;
@@ -48,6 +54,7 @@ import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
 
 public class WorkflowRuleAPI {
+	private static final Logger LOGGER = LogManager.getLogger(WorkflowRuleAPI.class.getName());
 	
 	public static Map<String, Object> getOrgPlaceHolders() throws Exception {
 		Map<String, Object> placeHolders = new HashMap<>();
@@ -830,4 +837,52 @@ public class WorkflowRuleAPI {
 		return result;
 	}
 	
+	public static Criteria executeWorkflowsAndGetChildRuleCriteria(List<WorkflowRuleContext> workflowRules, String moduleName, Object record, List<UpdateChangeSet> changeSet, Iterator itr, Map<String, Object> recordPlaceHolders, FacilioContext context,boolean propagateError) throws Exception {
+		if(workflowRules != null && !workflowRules.isEmpty()) {
+			Map<String, FacilioField> fields = FieldFactory.getAsMap(FieldFactory.getWorkflowRuleFields());
+			FacilioField parentRule = fields.get("parentRuleId");
+			FacilioField onSuccess = fields.get("onSuccess");
+			Criteria criteria = new Criteria();
+			
+			for(WorkflowRuleContext workflowRule : workflowRules) {
+				try {
+					long workflowStartTime = System.currentTimeMillis();
+					boolean result = WorkflowRuleAPI.evaluateWorkflow(workflowRule, moduleName, record, changeSet, recordPlaceHolders, context);
+					if (AccountUtil.getCurrentOrg().getId() == 133 && FacilioConstants.ContextNames.ALARM.equals(moduleName)) {
+						LOGGER.info("Result of rule : "+workflowRule.getId()+" for record : "+record+" is "+result);
+					}
+					
+					Criteria currentCriteria = new Criteria();
+					currentCriteria.addAndCondition(CriteriaAPI.getCondition(parentRule, String.valueOf(workflowRule.getId()), NumberOperators.EQUALS));
+					currentCriteria.addAndCondition(CriteriaAPI.getCondition(onSuccess, String.valueOf(result), BooleanOperators.IS));
+					criteria.orCriteria(currentCriteria);
+					LOGGER.debug("Time taken to execute rule : "+workflowRule.getName()+" with id : "+workflowRule.getId()+" for module : "+moduleName+" is "+(System.currentTimeMillis() - workflowStartTime));
+					
+					if (result) {
+						if(workflowRule.getRuleTypeEnum().stopFurtherRuleExecution()) {
+							itr.remove();
+							break;
+						}
+					}
+				}
+				catch (Exception e) {
+					StringBuilder builder = new StringBuilder("Error during execution of rule : ");
+					builder.append(workflowRule.getId());
+					if (record instanceof ModuleBaseWithCustomFields) {
+						builder.append(" for Record : ")
+								.append(((ModuleBaseWithCustomFields)record).getId())
+								.append(" of module : ")
+								.append(moduleName);
+					}
+					LOGGER.log(Level.ERROR, builder.toString(), e);
+					
+					if (propagateError) {
+						throw e;
+					}
+				}
+			}
+			return criteria;
+		}
+		return null;
+	}
 }
