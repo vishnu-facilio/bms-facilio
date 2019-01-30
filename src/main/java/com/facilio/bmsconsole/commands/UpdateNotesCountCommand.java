@@ -31,7 +31,7 @@ public class UpdateNotesCountCommand implements Command {
 		
 		String ticketModule = (String) context.get("ticketmodule");
 		String moduleString = (String) context.get("moduleName");
-		Set<Long> parentIds = (Set<Long>) context.get(FacilioConstants.ContextNames.PARENT_ID_LIST);
+		Set<Long> parentIds = (Set<Long>) context.get(FacilioConstants.ContextNames.IDS_TO_UPDATE_COUNT);
 		
 		if (StringUtils.isNoneEmpty(ticketModule) && CollectionUtils.isNotEmpty(parentIds)) {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");

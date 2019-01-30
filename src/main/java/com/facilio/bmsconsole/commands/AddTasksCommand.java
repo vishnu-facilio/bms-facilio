@@ -17,6 +17,7 @@ import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.InsertRecordBuilder;
+import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 
@@ -61,7 +62,8 @@ public class AddTasksCommand implements Command {
 			
 			builder.save();
 			context.put(FacilioConstants.ContextNames.TASK_LIST, builder.getRecords());
- 			context.put(FacilioConstants.ContextNames.IDS_TO_UPDATE_TASK_COUNT, Collections.singletonList(workOrder.getId()));
+ 			FacilioChain.addPostTrasanction(FacilioConstants.ContextNames.IDS_TO_UPDATE_TASK_COUNT, Collections.singletonList(workOrder.getId()));
+			FacilioChain.addPostTrasanction(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
 		}
 		else {
 //			throw new IllegalArgumentException("Task list cannot be null/ empty");

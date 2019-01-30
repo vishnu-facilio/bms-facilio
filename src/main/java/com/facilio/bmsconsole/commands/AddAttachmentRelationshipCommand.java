@@ -11,6 +11,7 @@ import org.apache.commons.chain.Context;
 import com.facilio.bmsconsole.context.AttachmentContext;
 import com.facilio.bmsconsole.util.AttachmentsAPI;
 import com.facilio.bmsconsole.workflow.rule.ActivityType;
+import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 
 public class AddAttachmentRelationshipCommand implements Command {
@@ -42,7 +43,9 @@ public class AddAttachmentRelationshipCommand implements Command {
 		if(recordId == null || recordId == -1) {
 			throw new IllegalArgumentException("Invalid record id during addition of attachments");
 		}
-		context.put(FacilioConstants.ContextNames.PARENT_ID_LIST, Collections.singletonList(recordId));
+		FacilioChain.addPostTrasanction(FacilioConstants.ContextNames.IDS_TO_UPDATE_COUNT, Collections.singletonList(recordId));
+		FacilioChain.addPostTrasanction(FacilioConstants.ContextNames.MODULE_NAME, context.get(FacilioConstants.ContextNames.MODULE_NAME));
+		
 		List<AttachmentContext> attachments = (List<AttachmentContext>) context.get(FacilioConstants.ContextNames.ATTACHMENT_CONTEXT_LIST);
 		if(attachments != null && !attachments.isEmpty()) {
 			for(AttachmentContext attachment : attachments) {

@@ -14,6 +14,7 @@ import com.facilio.transaction.FacilioTransactionManager;
 
 public class FacilioChain extends ChainBase {
 	private static final ThreadLocal<FacilioChain> rootChain = new ThreadLocal<>();
+	private static final ThreadLocal<FacilioContext> postTransactionContext = new ThreadLocal<>();
 	
 	private Chain postTransactionChain;
 	private boolean enableTransaction = false;
@@ -47,6 +48,15 @@ public class FacilioChain extends ChainBase {
 
 	public void setPostTransactionChain(Chain postTransaction) {
 		this.postTransactionChain = postTransaction;
+	}
+	
+	public static void addPostTrasanction(Object key, Object value) {
+		FacilioContext facilioContext = postTransactionContext.get();
+		if (facilioContext == null) {
+			facilioContext = new FacilioContext();
+			postTransactionContext.set(facilioContext);
+		}
+		facilioContext.put(key, value);
 	}
 
 	public boolean execute(Context context) throws Exception {
@@ -85,9 +95,10 @@ public class FacilioChain extends ChainBase {
 			if (postTransactionChain != null) {
 				FacilioChain root = rootChain.get();
 				if (this.equals(root)) {
+					postTransactionChain.execute(postTransactionContext.get());
 					// clear rootChain to set transaction chain as root
 					rootChain.remove();
-					postTransactionChain.execute(context);
+					postTransactionContext.remove();
 				} else {
 					if (root.getPostTransactionChain() != null) {
 						root.getPostTransactionChain().addCommand(this.postTransactionChain);
@@ -112,6 +123,7 @@ public class FacilioChain extends ChainBase {
 			FacilioChain root = rootChain.get();
 			if (this.equals(root)) {
 				rootChain.remove();
+				postTransactionContext.remove();
 			}
 		}
 	}
