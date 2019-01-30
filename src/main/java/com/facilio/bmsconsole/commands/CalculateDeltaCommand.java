@@ -60,12 +60,18 @@ public class CalculateDeltaCommand implements Command {
 										if (field.getDataTypeEnum() == FieldType.DECIMAL) {
 											Double prevVal = (Double) FieldUtil.castOrParseValueAsPerType(field, rdm.getValue());
 											if (prevVal != -1) {
+												if (AccountUtil.getCurrentOrg().getId() == 168) {
+													LOGGER.info("Pre Value for "+field.getName()+" is : "+prevVal);
+												}
 												deltaVal = (Double) val - prevVal;
 											}
 										}
 										else {
 											Long prevVal = (Long) FieldUtil.castOrParseValueAsPerType(field, rdm.getValue());
 											if (prevVal != -1) {
+												if (AccountUtil.getCurrentOrg().getId() == 168) {
+													LOGGER.info("Pre Value for "+field.getName()+" is : "+prevVal);
+												}
 												deltaVal = (Long) val - prevVal;
 											}
 										}
