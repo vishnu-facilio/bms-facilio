@@ -1559,18 +1559,6 @@ public class FacilioChainFactory {
 //		return c;
 //	}
 	
-	public static Chain getAddWidgetChain() {
-		Chain c = FacilioChain.getTransactionChain();
-		c.addCommand(new AddWidgetCommand());
-//		c.addCommand(new AddDashboardVsWidgetCommand());
-		return c;
-	}
-	public static Chain getAddDashboardVsWidgetChain() {
-		Chain c = FacilioChain.getTransactionChain();
-//		c.addCommand(new AddDashboardVsWidgetCommand());
-		return c;
-	}
-	
 	public static Chain addBaseLineChain() {
 		Chain c = FacilioChain.getTransactionChain();
 		c.addCommand(new ValidateBaseLineCommand());
