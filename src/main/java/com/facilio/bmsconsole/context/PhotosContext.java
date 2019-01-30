@@ -24,21 +24,23 @@ public class PhotosContext extends ModuleBaseWithCustomFields {
 	public void setPhotoId(long photoId) {
 		this.photoId = photoId;
 	}
+	private String url;
 	
 	public String getUrl() throws Exception {
-		if (this.photoId > 0) {
+		if (this.url == null && this.photoId > 0) {
 			FileStore fs = FileStoreFactory.getInstance().getFileStore();
-			return fs.getPrivateUrl(this.photoId, 120);
+			url = fs.getPrivateUrl(this.photoId, 120);
 		}
-		return null;
+		return url;
 	}
+	
+	private String originalUrl;
 
 	public String getOriginalUrl() throws Exception {
-		if (this.photoId > 0) {
+		if (this.originalUrl == null && this.photoId > 0) {
 			FileStore fs = FileStoreFactory.getInstance().getFileStore();
-			return fs.getPrivateUrl(this.photoId);
+			originalUrl = fs.getPrivateUrl(this.photoId);
 		}
-		return null;
 	}
 	private long ttime = -1;
 	public long getTtime() {
