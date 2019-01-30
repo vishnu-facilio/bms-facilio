@@ -1567,7 +1567,7 @@ public class FacilioChainFactory {
 	}
 	public static Chain getAddDashboardVsWidgetChain() {
 		Chain c = FacilioChain.getTransactionChain();
-		c.addCommand(new AddDashboardVsWidgetCommand());
+//		c.addCommand(new AddDashboardVsWidgetCommand());
 		return c;
 	}
 	
