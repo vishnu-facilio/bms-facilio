@@ -99,12 +99,13 @@ public class WhereBuilder implements WhereBuilderIfc<WhereBuilder>{
 		return criteria(false, criteria);
 	}
 	
+	private static final int MAX_LINES_TO_BE_PRINTED = 10;
 	private void printTrace (String msg) {
 		StringBuilder builder = new StringBuilder(msg)
 									.append("\nTruncated Trace\n");
 		
 		StackTraceElement[] trace = Thread.currentThread().getStackTrace();
-		for (int i = 0; i < Math.min(5, trace.length); i++) {
+		for (int i = 0; i < Math.min(MAX_LINES_TO_BE_PRINTED, trace.length); i++) {
 			builder.append(trace[i])
 					.append("\n");
 		}
