@@ -296,6 +296,16 @@
 				<param name="root">rateCards</param>
 			</result>
 		</action>
+		
+		<action name="validatePermalink" class="com.facilio.bmsconsole.actions.LoginAction" method="validatePermalink">
+			<param name="auth">false</param>
+			<result name="success" type="json">
+				<param name="includeProperties">^account.*</param>
+			</result>
+			<result name="error" type="json">
+				<param name="includeProperties">^account.*</param>
+			</result>
+		</action>
 	</package>
 	<package name="tvApi" namespace="/api/tv" extends="homeApi">
 		<action name="connect" class="com.facilio.bmsconsole.actions.LoginAction" method="tvAccount">

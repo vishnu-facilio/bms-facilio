@@ -48,6 +48,8 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
+import com.auth0.jwt.interfaces.DecodedJWT;
+import com.facilio.accounts.dto.Account;
 import com.facilio.accounts.dto.Group;
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.Role;
@@ -70,6 +72,7 @@ import com.facilio.bmsconsole.util.ShiftAPI;
 import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.auth.CognitoUtil;
 import com.facilio.fw.auth.SAMLAttribute;
 import com.facilio.fw.auth.SAMLUtil;
 import com.facilio.screen.context.RemoteScreenContext;
@@ -638,5 +641,36 @@ public class LoginAction extends FacilioAction {
 		setResult("account", account);
 		return SUCCESS;
 	}
+	
+	private String permalink;
+	
+	public void setPermalink(String permalink) {
+		this.permalink = permalink;
+	}
+	
+	public String getPermalink() {
+		return this.permalink;
+	}
+	
+	public String validatePermalink() throws Exception {
+		
+		if (AccountUtil.getUserBean().verifyPermalinkForURL(getPermalink(), null)) {
+			
+			DecodedJWT decodedjwt = CognitoUtil.validateJWT(getPermalink(), "auth0");
+			
+			if (decodedjwt != null) {
+				long orgId = Long.parseLong(decodedjwt.getSubject().split("_")[0].split("-")[0]);
+				long ouid = Long.parseLong(decodedjwt.getSubject().split("_")[0].split("-")[1]);
 
+				account = new HashMap<>();
+				account.put("org", AccountUtil.getOrgBean().getOrg(orgId));
+				account.put("user", AccountUtil.getUserBean().getUserInternal(ouid));
+				
+				return SUCCESS;
+			}
+		}
+		
+		account = null;
+		return ERROR;
+	}
 }
