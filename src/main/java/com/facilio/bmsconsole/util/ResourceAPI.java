@@ -154,8 +154,8 @@ public class ResourceAPI {
 						break;
 				}
 			}
-			Map<Long, BaseSpaceContext> spaceMap = getSpaces(spaceIds, fetchDeleted);
-			Map<Long, AssetContext> assetMap = getAssets(assetIds, fetchDeleted);
+			Map<Long, BaseSpaceContext> spaceMap = spaceIds.isEmpty() ? null : getSpaces(spaceIds, fetchDeleted);
+			Map<Long, AssetContext> assetMap = assetIds.isEmpty() ? null : getAssets(assetIds, fetchDeleted);
 			
 			for(int i = 0; i < resources.size(); i++) {
 				ResourceContext resource = resources.get(i);

@@ -134,7 +134,7 @@ public class ExecuteAllWorkflowsCommand implements SerializableCommand
 						List<WorkflowRuleContext> currentWorkflows = workflowRules;
 						while (currentWorkflows != null && !currentWorkflows.isEmpty()) {
 							Criteria childCriteria = executeWorkflowsAndGetChildRuleCriteria(currentWorkflows, moduleName, record, changeSet, it, recordPlaceHolders, context);
-							if (childCriteria == null) {
+							if (childCriteria == null || childCriteria.isEmpty()) {
 								break;
 							}
 							currentWorkflows = WorkflowRuleAPI.getActiveWorkflowRulesFromActivityAndRuleType(moduleId, activities, childCriteria, ruleTypes);
