@@ -95,7 +95,9 @@ public class FacilioChain extends ChainBase {
 			if (postTransactionChain != null) {
 				FacilioChain root = rootChain.get();
 				if (this.equals(root)) {
-					postTransactionChain.execute(postTransactionContext.get());
+					if (postTransactionContext.get() != null) {
+						postTransactionChain.execute(postTransactionContext.get());
+					}
 					// clear rootChain to set transaction chain as root
 					rootChain.remove();
 					postTransactionContext.remove();
