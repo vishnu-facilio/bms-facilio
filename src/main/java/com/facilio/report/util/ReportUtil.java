@@ -15,6 +15,7 @@ import com.facilio.bmsconsole.context.FormulaContext.AggregateOperator;
 import com.facilio.bmsconsole.context.WidgetChartContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.DateOperators;
+import com.facilio.bmsconsole.criteria.DateRange;
 import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.criteria.StringOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
@@ -150,7 +151,7 @@ public class ReportUtil {
 		if(props != null && !props.isEmpty()) {
 			for(Map<String, Object> prop :props) {
 				
-				ReportContext report = FieldUtil.getAsBeanFromMap(prop, ReportContext.class);
+				ReportContext report = getReportContextFromProps(prop);
 				reports.add(report);
 			}
 		}
@@ -181,11 +182,21 @@ public class ReportUtil {
 		if(props != null && !props.isEmpty()) {
 			for(Map<String, Object> prop :props) {
 				
-				ReportContext report = FieldUtil.getAsBeanFromMap(prop, ReportContext.class);
+				ReportContext report = getReportContextFromProps(prop);
 				reports.add(report);
 			}
 		}
 		return reports;
+	}
+	
+	public static ReportContext getReportContextFromProps(Map<String, Object> prop) {
+		ReportContext report = FieldUtil.getAsBeanFromMap(prop, ReportContext.class);
+		DateRange actualRange = null;
+		if(report.getDateRange() == null && report.getDateOperatorEnum() != null) {
+			actualRange = ((DateOperators) report.getDateOperatorEnum()).getRange(report.getDateValue());
+			report.setDateRange(actualRange);
+		}
+		return report;
 	}
 	
 	public static ReportContext getReport(long reportId) throws Exception {
