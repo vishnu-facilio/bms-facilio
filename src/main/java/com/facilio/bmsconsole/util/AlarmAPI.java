@@ -749,6 +749,11 @@ public class AlarmAPI {
 	}
 	
 	public static List<AlarmContext> getAlarms(Collection<Long> ids) throws Exception {
+		
+		if (ids == null || ids.isEmpty()) {
+			return null;
+		}
+		
 		String moduleName = FacilioConstants.ContextNames.ALARM;
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(moduleName);
@@ -788,29 +793,30 @@ public class AlarmAPI {
 	
 	public static AlarmSeverityContext getMaxSeverity(List<AlarmContext> alarms) throws Exception {
 		
-		List<Long> severityList = new ArrayList<>();
-		
-		for(AlarmContext alarm :alarms) {
-			severityList.add(alarm.getSeverity().getId());
-		}
-		
-		Map<Integer,AlarmSeverityContext> alarmSeverityMap = new HashMap<>();
-		Map<Long, AlarmSeverityContext> severities = getAlarmSeverityMap(severityList);
-		
-		if(severities != null) {
-			for(Long key :severities.keySet()) {
-				AlarmSeverityContext sev = severities.get(key);
-				alarmSeverityMap.put(sev.getCardinality(), sev);
+		if (alarms != null && !alarms.isEmpty()) {
+			List<Long> severityList = new ArrayList<>();
+			
+			for(AlarmContext alarm :alarms) {
+				severityList.add(alarm.getSeverity().getId());
 			}
 			
-			List<Integer> cardinalityList = new ArrayList<>(alarmSeverityMap.keySet());
-			Collections.sort(cardinalityList);
+			Map<Integer,AlarmSeverityContext> alarmSeverityMap = new HashMap<>();
+			Map<Long, AlarmSeverityContext> severities = getAlarmSeverityMap(severityList);
 			
-			if(cardinalityList != null && !cardinalityList.isEmpty()) {
-				return alarmSeverityMap.get(cardinalityList.get(0));
+			if(severities != null) {
+				for(Long key :severities.keySet()) {
+					AlarmSeverityContext sev = severities.get(key);
+					alarmSeverityMap.put(sev.getCardinality(), sev);
+				}
+				
+				List<Integer> cardinalityList = new ArrayList<>(alarmSeverityMap.keySet());
+				Collections.sort(cardinalityList);
+				
+				if(cardinalityList != null && !cardinalityList.isEmpty()) {
+					return alarmSeverityMap.get(cardinalityList.get(0));
+				}
 			}
 		}
-		
 		return getAlarmSeverity("Clear");
 	}
 	
