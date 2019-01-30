@@ -81,6 +81,7 @@ public class ReadOnlyChainFactory {
 	public static Chain fetchLatestReadingDataChain() {
 		Chain c = getDefaultChain();
 		c.addCommand(new GetLatestReadingDataCommand());
+		c.addCommand(new ConvertUnitForLatestReadingDataCommand());
 		return c;
 	}
 	

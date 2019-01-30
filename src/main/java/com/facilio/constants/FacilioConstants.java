@@ -612,6 +612,7 @@ public class FacilioConstants {
 		public static final String DERIVATION = "derivation";
 		public static final String FETCH_MAPPED="fetchMapped";
 		public static final String FETCH_READING_INPUT_VALUES="fetchReadingInputValues";
+		public static final String IS_FETCH_RDM_FROM_UI="isFetchRDMFromUI";
 		
 		public static final String PORTALINFO = "portalInfo";
 		public static final String PUBLICKEYFILE = "publicKeyFile";
