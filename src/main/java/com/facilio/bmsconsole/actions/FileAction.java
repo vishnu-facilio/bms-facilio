@@ -74,7 +74,7 @@ public class FileAction extends FacilioAction {
 			if (fileID > 0) {
 				FileStore fs = FileStoreFactory.getInstance().getFileStore();
 				FileInfo fileInfo = fs.getFileInfo(fileID);
-				if (fileInfo != null && fileInfo.getFileId() > 0) {
+				if (fileInfo != null) {
 					downloadStream = fs.readFile(fileInfo);
 					if (downloadStream != null) {
 						String dateStamp = new SimpleDateFormat("E, dd MMM yyyy HH:mm:ss Z").format(new Date());
