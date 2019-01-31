@@ -67,9 +67,28 @@ public class ConsumptionAction  extends FacilioAction{
 	
 		
 		
-		public String getTotalConsumptionForBuilding() throws Exception {
+		public String getTotalEnergyConsumptionForBuilding() throws Exception {
 			FacilioContext context = new FacilioContext();
-			context.put(FacilioConstants.ContextNames.MODULE_NAME, getModuleName());
+			context.put(FacilioConstants.ContextNames.MODULE_NAME, "energydata");
+			context.put(FacilioConstants.ContextNames.MODULE_FIELD_NAME, getFieldName());
+			context.put(FacilioConstants.ContextNames.WORK_ORDER_STARTTIME, getStartTime());
+			context.put(FacilioConstants.ContextNames.WORK_ORDER_ENDTIME, getEndTime());
+			
+			Chain totalConsumptionChain = FacilioChainFactory.getTotalConsumptionByBuildingChain();
+			totalConsumptionChain.execute(context);
+			Map<String,Object> consumptionDataByBuilding = (Map<String,Object>)context.get(FacilioConstants.ContextNames.TOTAL_CONSUMPTION);
+			
+			
+			setTotalConsumptionByBuilding(consumptionDataByBuilding);
+			
+			
+			
+			return SUCCESS;
+		}
+		
+		public String getTotalWaterConsumptionForBuilding() throws Exception {
+			FacilioContext context = new FacilioContext();
+			context.put(FacilioConstants.ContextNames.MODULE_NAME, "waterreading");
 			context.put(FacilioConstants.ContextNames.MODULE_FIELD_NAME, getFieldName());
 			context.put(FacilioConstants.ContextNames.WORK_ORDER_STARTTIME, getStartTime());
 			context.put(FacilioConstants.ContextNames.WORK_ORDER_ENDTIME, getEndTime());

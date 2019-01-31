@@ -2,8 +2,8 @@ package com.facilio.bmsconsole.commands;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -12,10 +12,14 @@ import java.util.logging.Logger;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
-import com.facilio.bmsconsole.context.PMJobsContext;
-import com.facilio.bmsconsole.context.WorkOrderContext;
+import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.SiteContext;
+import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.FacilioModule;
+import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.util.WorkOrderAPI;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
 
 public class GetAvgCompletionTimeByCategoryCommand implements Command {
 
@@ -33,7 +37,8 @@ public class GetAvgCompletionTimeByCategoryCommand implements Command {
 			
 			List<Map<String,Object>> avgResolutionTimeByCategory = WorkOrderAPI.getAvgCompletionTimeByCategory(startTime, endTime);
 			
-			 Map<Long, Object> ticketCategoryArray = WorkOrderAPI.getLookupFieldPrimary("ticketcategory");
+			
+			Map<Long, Object> ticketCategoryArray = WorkOrderAPI.getLookupFieldPrimary("ticketcategory");
 
 			 Map<Long, Object> siteArray = WorkOrderAPI.getLookupFieldPrimary("site");
 
@@ -48,40 +53,61 @@ public class GetAvgCompletionTimeByCategoryCommand implements Command {
 				
 				Long siteId = (Long) mp.get("siteId");
 				String siteName = (String) siteArray.get(siteId);
+				List<Long> allSites = getAllSiteList();
 				
+				Map<Long, Object> sitesMap = new HashMap<Long, Object>();
 
-				
-				List<Map<String, Object>> list = null;
-
-				Map<String, Object> group = new HashMap<String, Object>();
 				if (resp.containsKey(categoryId)) {
-
-					list = (List<Map<String, Object>>) resp.get(categoryId).get("resolutionTimeGrouping");
+					sitesMap = (Map<Long, Object>) resp.get(categoryId).get("sitesMap");
 				}
 
 				else {
 					
-					list = new ArrayList<Map<String,Object>>();
+					sitesMap = new HashMap<Long, Object>();
+					
+					for(int j=0;j<allSites.size();j++)
+					{
+						Long id = allSites.get(j);
+						Map<String,Object> eachSite = new HashMap<String, Object>();
+						eachSite.put("siteId", id);
+						eachSite.put("siteName", siteArray.get(id));
+						eachSite.put("avgResolutionTime", 0);
+						eachSite.put("count", 0);
+						
+						sitesMap.put(allSites.get(j),eachSite);
+					}
+					Map<String,Object> categoryInfo = new HashMap<String, Object>();
+						categoryInfo.put("categoryId", categoryId);
+						categoryInfo.put("categoryName", categoryName);
+						categoryInfo.put("sitesMap", sitesMap);
+						resp.put(categoryId,categoryInfo);
 					
 				}
+				Map<String, Object> group = (Map<String, Object>)sitesMap.get(siteId);
+				
 				group.put("siteId", siteId);
 				group.put("siteName", siteName);
 				avgResolutionTime = Math.round(avgResolutionTime*100.0)/100.0;
 				group.put("avgResolutionTime", avgResolutionTime);
 				group.put("count", count);
 				
-				list.add(group);
+				sitesMap.put(siteId,group);
 				
-				Map<String,Object> categoryInfo = new HashMap<String, Object>();
-			//	categoryInfo.put("categoryName", categoryName);
-				categoryInfo.put("resolutionTimeGrouping", list);
-				categoryInfo.put("categoryId", categoryId);
-				categoryInfo.put("categoryName", categoryName);
 				
-				resp.put(categoryId, categoryInfo);
 			}
 			
 			List<Map<String,Object>> tableResp = new ArrayList<Map<String,Object>>(resp.values());
+			
+			for(int i=0;i<tableResp.size();i++)
+			{
+				Map<String,Object> eachCategory = tableResp.get(i);
+				Map<Long,Map<String, Object>> sitesMap = (Map<Long,Map<String, Object>>)eachCategory.get("sitesMap");
+				List<Map<String,Object>> siteResp = new ArrayList<Map<String,Object>>(sitesMap.values());
+				eachCategory.put("resolutionTimeGrouping",siteResp );
+				eachCategory.remove("sitesMap");
+				
+			}
+			
 					
 			//desired resp for chart
 			List<Map<String,Object>> graphResp = new ArrayList<Map<String,Object>>();
@@ -164,6 +190,32 @@ public class GetAvgCompletionTimeByCategoryCommand implements Command {
 		return false;
 	}
 	
+	private List<Long> getAllSiteList() throws Exception
+	{
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+
+		FacilioModule sitesModule = modBean.getModule(FacilioConstants.ContextNames.SITE);
+		List<FacilioField> siteFields = modBean.getAllFields(sitesModule.getName());
+		
+
+		SelectRecordsBuilder<SiteContext> selectRecordsBuilder = new SelectRecordsBuilder<SiteContext>()
+				  													  .module(sitesModule)
+				  													  .beanClass(SiteContext.class)
+				  													  .select(siteFields)
+				  													  ;
+
+
+
+		Map<Long, SiteContext> sitesMap  = selectRecordsBuilder.getAsMap();
+		List<Long> siteIds = new ArrayList<Long>(sitesMap.keySet());
+				
+		return siteIds;
+	        
+      
+
+
+	}
 	
 }
 
