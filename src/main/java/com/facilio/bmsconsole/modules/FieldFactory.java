@@ -4083,6 +4083,14 @@ public class FieldFactory {
 		return fields;
 	}
 	
+	public static List<FacilioField> getTaskSectionTemplateTriggersFields() {
+		FacilioModule module = ModuleFactory.getTaskSectionTemplateTriggersModule();
+		List<FacilioField> fields = new ArrayList<>();
+		fields.add(getField("sectionId", "SECTION_ID", module, FieldType.NUMBER));
+		fields.add(getField("triggerId", "PM_TRIGGER_ID", module, FieldType.NUMBER));
+		return fields;
+	}
+	
 	public static List<FacilioField> getPMIncludeExcludeResourceFields() {
 		FacilioModule module = ModuleFactory.getPMIncludeExcludeResourceModule();
 		List<FacilioField> fields = new ArrayList<>();

@@ -32,6 +32,7 @@ import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.billing.context.ExcelTemplate;
 import com.facilio.bmsconsole.context.PMIncludeExcludeResourceContext;
+import com.facilio.bmsconsole.context.PMTriggerContext;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.TaskContext;
@@ -44,6 +45,7 @@ import com.facilio.bmsconsole.criteria.PickListOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
+import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.templates.AssignmentTemplate;
@@ -721,12 +723,46 @@ public class TemplateAPI {
 		if (sectionProps != null && !sectionProps.isEmpty()) {
 			Map<Long, TaskSectionTemplate> sections = new HashMap<>();
 			List<TaskSectionTemplate> sectionTemplates = new ArrayList<>();
+			List<Long> sectionIDs = new ArrayList<>();
 			for (Map<String, Object> prop : sectionProps) {
 				TaskSectionTemplate sectionTemplate = FieldUtil.getAsBeanFromMap(prop, TaskSectionTemplate.class);
 				sectionTemplate.setPmIncludeExcludeResourceContexts(TemplateAPI.getPMIncludeExcludeList(null, sectionTemplate.getId(), null));
 				sections.put(sectionTemplate.getId(), sectionTemplate);
+				sectionIDs.add(sectionTemplate.getId());
 				sectionTemplates.add(sectionTemplate);
 			}
+			
+			if (!sectionIDs.isEmpty()) {
+				FacilioModule sectionTriggerModule = ModuleFactory.getTaskSectionTemplateTriggersModule();
+				FacilioModule trigModule = ModuleFactory.getPMTriggersModule();
+				List<FacilioField> secTrigfields = new ArrayList<>(FieldFactory.getTaskSectionTemplateTriggersFields());
+				secTrigfields.add(FieldFactory.getField("name", "NAME", trigModule, FieldType.STRING));
+				GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+						.table(sectionTriggerModule.getTableName())
+						.select(secTrigfields)
+						.innerJoin(trigModule.getTableName())
+						.on("Task_Section_Template_Triggers.PM_TRIGGER_ID = PM_Triggers.ID")
+						.andCondition(CriteriaAPI.getCondition(FieldFactory.getField("sectionId", "SECTION_ID", sectionTriggerModule, FieldType.NUMBER), sectionIDs, NumberOperators.EQUALS));
+				List<Map<String, Object>> props = builder.get();
+				if (props != null && !props.isEmpty()) {
+					for (Map<String, Object> prop: props) {
+						Long sectionId = (Long) prop.get("sectionId");
+						Long triggerId = (Long) prop.get("triggerId");
+						String trigName = (String) prop.get("name");
+						TaskSectionTemplate section = sections.get(sectionId);
+						if (section != null) {
+							if (section.getPmTriggerContexts() == null) {
+								section.setPmTriggerContexts(new ArrayList<>());
+							}
+							PMTriggerContext trigContext = new PMTriggerContext();
+							trigContext.setId(triggerId);
+							trigContext.setName(trigName);
+							section.getPmTriggerContexts().add(trigContext);
+						}
+					}
+				}
+			}
+						
 			woTemplate.setSectionTemplates(sectionTemplates);
 			return sections;
 		}
