@@ -56,6 +56,7 @@ import com.facilio.bmsconsole.util.EncryptionUtil;
 import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.fs.FileInfo;
 import com.facilio.fs.FileStore;
 import com.facilio.fs.FileStoreFactory;
 import com.facilio.fw.BeanFactory;
@@ -1865,7 +1866,10 @@ public class UserBeanImpl implements UserBean {
 		User user = FieldUtil.getAsBeanFromMap(prop, User.class);
 		if (user.getPhotoId() > 0) {
 			FileStore fs = FileStoreFactory.getInstance().getFileStoreFromOrg(user.getOrgId(), user.getOuid());
-			user.setAvatarUrl(fs.getPrivateUrl(user.getPhotoId()));
+			FileInfo fileInfo = fs.getFileInfo(user.getPhotoId());
+			if (fileInfo != null) {
+				user.setAvatarUrl(fs.getPrivateUrl(user.getPhotoId()));
+			}
 		}
 		
 		if (fetchRole) {
