@@ -444,11 +444,21 @@ public abstract class FileStore {
 	}
 
 	public String getPrivateUrl(long fileId) throws Exception {
-		return AwsUtil.getConfig("clientapp.url")+"/api/v2/files/preview/" + fileId;
+		if (AwsUtil.isDevelopment()) {
+			return AwsUtil.getConfig("clientapp.url")+"/api/v2/files/preview/" + fileId;
+		}
+		else {
+			return "/api/v2/files/preview/" + fileId;
+		}
 	}
 	
 	public String getPrivateUrl(long fileId, int width) throws Exception {
-		return AwsUtil.getConfig("clientapp.url")+"/api/v2/files/preview/" + fileId +"?width=" + width;
+		if (AwsUtil.isDevelopment()) {
+			return AwsUtil.getConfig("clientapp.url")+"/api/v2/files/preview/" + fileId +"?width=" + width;
+		}
+		else {
+			return "/api/v2/files/preview/" + fileId +"?width=" + width;
+		}
 	}
 	
 	public String getDownloadUrl(long fileId) throws Exception {

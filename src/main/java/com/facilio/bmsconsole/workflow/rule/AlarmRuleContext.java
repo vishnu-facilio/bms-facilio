@@ -26,6 +26,10 @@ public class AlarmRuleContext {
 	public void setAutoClear(boolean isAutoClear) {
 		this.isAutoClear = isAutoClear;
 	}
+	
+	public AlarmRuleContext() {
+		
+	}
 
 	public AlarmRuleContext(List<ReadingRuleContext> rules) {
 		for(ReadingRuleContext rule :rules) {
