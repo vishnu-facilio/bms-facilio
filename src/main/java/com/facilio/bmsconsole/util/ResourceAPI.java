@@ -61,6 +61,11 @@ public class ResourceAPI {
 	}
 	
 	public static List<ResourceContext> getResources (List<Long> ids, boolean fetchDeleted) throws Exception {
+		
+		if (ids == null || ids.isEmpty()) {
+			return null;
+		}
+		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.RESOURCE);
 		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.RESOURCE);
