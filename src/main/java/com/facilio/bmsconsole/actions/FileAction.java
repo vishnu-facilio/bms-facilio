@@ -61,7 +61,6 @@ public class FileAction extends FacilioAction {
 				if (downloadStream != null) {
 					String dateStamp = new SimpleDateFormat("E, dd MMM yyyy HH:mm:ss Z").format(new Date());
 					response.setHeader("Last-Modified", dateStamp);
-					setContentType("image/png");
 		 			return SUCCESS;
 				} 
 				else {
