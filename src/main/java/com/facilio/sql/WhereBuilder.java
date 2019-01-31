@@ -85,12 +85,10 @@ public class WhereBuilder implements WhereBuilderIfc<WhereBuilder>{
 			printTrace("Condition where class cannot be null. This is wrong");
 		}
 		
-		if (StringUtils.isNotEmpty(computeAndGetWhereClause)) {
-			checkIfFirstAndAdd(isAND);
-			this.condition.append(computeAndGetWhereClause);
-			if(condition.getComputedValues() != null) {
-				values.addAll(condition.getComputedValues());
-			}
+		checkIfFirstAndAdd(isAND);
+		this.condition.append(computeAndGetWhereClause);
+		if(condition.getComputedValues() != null) {
+			values.addAll(condition.getComputedValues());
 		}
 		return this;
 	}
