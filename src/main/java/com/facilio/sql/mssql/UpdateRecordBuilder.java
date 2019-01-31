@@ -19,22 +19,19 @@ public class UpdateRecordBuilder extends DBUpdateRecordBuilder {
 		sql.append(tableName)
 			.append(" SET ");
 		boolean isFirst = true;
-		for(String propKey : value.keySet()) {
-			List<FacilioField> fields = fieldMap.get(propKey);
-			if(fields != null) {
-				for (FacilioField field: fields) {
-					if (field.getDataType() == FieldType.ID.getTypeAsInt()) {
-						continue;
-					}
-					if(isFirst) {
-						isFirst = false;
-					}
-					else {
-						sql.append(", ");
-					}
-					sql.append(field.getCompleteColumnName())
-						.append(" = ?");
+		for(FacilioField field : fields) {
+			if (field.getDataType() == FieldType.ID.getTypeAsInt()) {
+				continue;
+			}
+			if (value.containsKey(field.getName())) {
+				if(isFirst) {
+					isFirst = false;
 				}
+				else {
+					sql.append(", ");
+				}
+				sql.append(field.getCompleteColumnName())
+					.append(" = ?");
 			}
 		}
 		
