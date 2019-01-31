@@ -7,8 +7,13 @@ import java.util.Map;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
+import com.facilio.bmsconsole.criteria.BooleanOperators;
 import com.facilio.bmsconsole.criteria.Criteria;
+import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.criteria.NumberOperators;
+import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
+import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowEventContext;
@@ -17,7 +22,7 @@ import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 
-public class ExecuteScheduledReadingRuleCommand implements Command {
+public class ExecuteScheduledAlarmTriggerCommand implements Command {
 
 	private static RuleType[] ruleTypes = {RuleType.READING_RULE,RuleType.ALARM_TRIGGER_RULE,RuleType.ALARM_CLEAR_RULE};
 	@Override
@@ -31,18 +36,27 @@ public class ExecuteScheduledReadingRuleCommand implements Command {
 		
 		FacilioModule module = event.getModule();
 		
+		Map<String, FacilioField> fields = FieldFactory.getAsMap(FieldFactory.getWorkflowRuleFields());
+		FacilioField parentRule = fields.get("parentRuleId");
+		FacilioField onSuccess = fields.get("onSuccess");
+		
+		Criteria criteria = new Criteria();
+		criteria.addAndCondition(CriteriaAPI.getCondition(parentRule, String.valueOf(readingRuleId), NumberOperators.EQUALS));
+		criteria.addAndCondition(CriteriaAPI.getCondition(onSuccess, String.valueOf(true), BooleanOperators.IS));
+
+		
+		List<WorkflowRuleContext> currentWorkflows = WorkflowRuleAPI.getActiveWorkflowRulesFromActivityAndRuleType(module.getModuleId(), Collections.singletonList(event.getActivityTypeEnum()), criteria, ruleTypes);
+
 		Map<String, Object> placeHolders = WorkflowRuleAPI.getOrgPlaceHolders();
 		Map<String, Object> recordPlaceHolders = WorkflowRuleAPI.getRecordPlaceHolders(module.getName(), null, placeHolders);
-
-		List<WorkflowRuleContext> currentWorkflows = Collections.singletonList(rule);
+		
 		while (currentWorkflows != null && !currentWorkflows.isEmpty()) {
-			Criteria childCriteria = WorkflowRuleAPI.executeWorkflowsAndGetChildRuleCriteria(currentWorkflows, module.getName(), null, null, null, recordPlaceHolders, (FacilioContext)context,true);
-			if (childCriteria == null) {
+			criteria = WorkflowRuleAPI.executeWorkflowsAndGetChildRuleCriteria(currentWorkflows, module.getName(), null, null, null, recordPlaceHolders, (FacilioContext)context,true);
+			if (criteria == null) {
 				break;
 			}
-			currentWorkflows = WorkflowRuleAPI.getActiveWorkflowRulesFromActivityAndRuleType(module.getModuleId(), Collections.singletonList(event.getActivityTypeEnum()), childCriteria, ruleTypes);
+			currentWorkflows = WorkflowRuleAPI.getActiveWorkflowRulesFromActivityAndRuleType(module.getModuleId(), Collections.singletonList(event.getActivityTypeEnum()), criteria, ruleTypes);
 		}
-		
 		return false;
 	}
 
