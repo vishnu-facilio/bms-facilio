@@ -18,7 +18,11 @@ public class CheckAndStartWatcherCommand implements Command {
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		ControllerContext controller = (ControllerContext) context.get(FacilioConstants.ContextNames.CONTROLLER);
-		if (controller != null) {
+		Boolean adjustTime = (Boolean) context.get(FacilioConstants.ContextNames.ADJUST_READING_TTIME);
+		if (adjustTime == null) {
+			adjustTime = true;
+		}
+		if (controller != null && adjustTime) {
 			long time = (long) context.get(FacilioConstants.ContextNames.CONTROLLER_TIME);
 			int dataInterval = ControllerAPI.getDataIntervalInMin(controller);
 			Integer level = (Integer) context.get(FacilioConstants.ContextNames.CONTROLLER_LEVEL);
