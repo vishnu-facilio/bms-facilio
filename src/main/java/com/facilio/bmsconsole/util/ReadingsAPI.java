@@ -298,7 +298,7 @@ public class ReadingsAPI {
 			builder.andCondition(CriteriaAPI.getCondition(readingFieldsMap.get("fieldId"), StringUtils.join(fieldMap.keySet(), ","), NumberOperators.EQUALS));
 		}
 		
-		if(resourceIds != null) {
+		if(resourceIds != null && !resourceIds.isEmpty()) {
 			builder.andCondition(CriteriaAPI.getCondition(readingFieldsMap.get("resourceId"), resourceIds, NumberOperators.EQUALS));
 		}
 		

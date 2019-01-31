@@ -58,9 +58,8 @@ public class GenericGetModuleDataListCommand implements Command {
 		Criteria filterCriteria = (Criteria) context.get(FacilioConstants.ContextNames.FILTER_CRITERIA);
 		if (filterCriteria != null) {
 			builder.andCriteria(filterCriteria);
-		} else if (filters == null && view != null) {
-			Criteria criteria = view.getCriteria();
-			builder.andCriteria(criteria);
+		} else if (filters == null && view != null && view.getCriteria() != null && !view.getCriteria().isEmpty()) {
+			builder.andCriteria(view.getCriteria());
 		}
 		
 		Criteria searchCriteria = (Criteria) context.get(FacilioConstants.ContextNames.SEARCH_CRITERIA);

@@ -9,7 +9,6 @@ import org.apache.commons.lang3.StringUtils;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AlarmContext;
 import com.facilio.bmsconsole.criteria.Condition;
-import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
@@ -46,9 +45,8 @@ public class GetAlarmCommand implements Command {
 					.orderBy("MODIFIED_TIME desc")
 					.maxLevel(0);
 
-			if(view != null) {
-				Criteria criteria = view.getCriteria();
-				builder.andCriteria(criteria);
+			if(view != null && view.getCriteria() != null && !view.getCriteria().isEmpty()) {
+				builder.andCriteria(view.getCriteria());
 			}
 
 			String ids = StringUtils.join(recordIds, ",");
