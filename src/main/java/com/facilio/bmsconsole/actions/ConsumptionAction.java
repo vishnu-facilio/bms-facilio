@@ -1,11 +1,10 @@
 package com.facilio.bmsconsole.actions;
 
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.chain.Chain;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -67,9 +66,9 @@ public class ConsumptionAction  extends FacilioAction{
 	
 		
 		
-		public String getTotalEnergyConsumptionForBuilding() throws Exception {
+		public String getTotalConsumptionForBuilding() throws Exception {
 			FacilioContext context = new FacilioContext();
-			context.put(FacilioConstants.ContextNames.MODULE_NAME, "energydata");
+			context.put(FacilioConstants.ContextNames.MODULE_NAME, getModuleName());
 			context.put(FacilioConstants.ContextNames.MODULE_FIELD_NAME, getFieldName());
 			context.put(FacilioConstants.ContextNames.WORK_ORDER_STARTTIME, getStartTime());
 			context.put(FacilioConstants.ContextNames.WORK_ORDER_ENDTIME, getEndTime());
@@ -86,26 +85,5 @@ public class ConsumptionAction  extends FacilioAction{
 			return SUCCESS;
 		}
 		
-		public String getTotalWaterConsumptionForBuilding() throws Exception {
-			FacilioContext context = new FacilioContext();
-			context.put(FacilioConstants.ContextNames.MODULE_NAME, "waterreading");
-			context.put(FacilioConstants.ContextNames.MODULE_FIELD_NAME, getFieldName());
-			context.put(FacilioConstants.ContextNames.WORK_ORDER_STARTTIME, getStartTime());
-			context.put(FacilioConstants.ContextNames.WORK_ORDER_ENDTIME, getEndTime());
-			
-			Chain totalConsumptionChain = FacilioChainFactory.getTotalConsumptionByBuildingChain();
-			totalConsumptionChain.execute(context);
-			Map<String,Object> consumptionDataByBuilding = (Map<String,Object>)context.get(FacilioConstants.ContextNames.TOTAL_CONSUMPTION);
-			
-			
-			setTotalConsumptionByBuilding(consumptionDataByBuilding);
-			
-			
-			
-			return SUCCESS;
-		}
-		
-		
-
-
+				
 }

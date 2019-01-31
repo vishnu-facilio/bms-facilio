@@ -170,7 +170,8 @@ public class FacilioConstants {
 		public static final String WORK_ORDER_STARTTIME = "starttime";
 		public static final String WORK_ORDER_ENDTIME = "endtime";
 		
-		
+		public static final String PERMALINK_FOR_URL = "permalinkForUrl";
+		public static final String PERMALINK_TOKEN_FOR_URL = "permalinkTokenForUrl";
 		
 		
 		public static final String TEMPLATE_ID = "templateId";

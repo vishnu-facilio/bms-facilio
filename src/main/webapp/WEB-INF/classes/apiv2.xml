@@ -642,19 +642,32 @@
 		</action>
 	</package>
 	<package name="consumptionV2" namespace="/api/v2/consumptionData" extends="v2Api">
-		<action name="totalEnergyConsumptionByBuilding" class="com.facilio.bmsconsole.actions.ConsumptionAction" method="getTotalEnergyConsumptionForBuilding">
+		
+		<action name="totalConsumptionByBuilding" class="com.facilio.bmsconsole.actions.ConsumptionAction" method="getTotalConsumptionForBuilding">
 			<param name="permission">READ,READ_TEAM,READ_OWN</param>
 			<result name="success" type="json">
 			<param name="includeProperties">totalConsumptionByBuilding,totalConsumptionByBuilding\[\d+\],totalConsumptionByBuilding\[\d+\].*,^totalConsumptionByBuilding.*</param>
 			</result>
 		</action>
-			<action name="totalWaterConsumptionByBuilding" class="com.facilio.bmsconsole.actions.ConsumptionAction" method="getTotalWaterConsumptionForBuilding">
+		<!-- 	<action name="totalWaterConsumptionByBuilding" class="com.facilio.bmsconsole.actions.ConsumptionAction" method="getTotalWaterConsumptionForBuilding">
 			<param name="permission">READ,READ_TEAM,READ_OWN</param>
 			<result name="success" type="json">
 			<param name="includeProperties">totalConsumptionByBuilding,totalConsumptionByBuilding\[\d+\],totalConsumptionByBuilding\[\d+\].*,^totalConsumptionByBuilding.*</param>
 			</result>
 		</action>
+		 -->
 	
 	</package>
+		<package name="generatePermalink" namespace="/api/v2/generatePermaLink" extends="v2Api">
+		<action name="generateToken" class="com.facilio.bmsconsole.actions.AccountsAction" method="getPermalinkToken">
+			<param name="permission">READ,READ_TEAM,READ_OWN</param>
+			<result name="success" type="json">
+			<param name="includeProperties">permaLinkUrl,permaLinkUrl\[\d+\],permaLinkUrl\[\d+\].*,^permaLinkUrl.*</param>
+			</result>
+		</action>
+	</package>
+	
+	
+	
 	
 </struts>
