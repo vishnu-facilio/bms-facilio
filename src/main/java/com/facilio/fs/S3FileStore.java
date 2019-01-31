@@ -145,15 +145,17 @@ public class S3FileStore extends FileStore {
 
 	@Override
 	public InputStream readFile(long fileId) throws Exception {
-		
 		FileInfo fileInfo = getFileInfo(fileId);
-		if (fileInfo == null) {
+		return readFile(fileInfo);
+	}
+	@Override
+	public InputStream readFile(FileInfo fileInfo) throws Exception {
+				if (fileInfo == null) {
 			return null;
 		}
 		S3Object so = AwsUtil.getAmazonS3Client().getObject(getBucketName(), fileInfo.getFilePath());
 		return so.getObjectContent();
-	}
-
+	} 
 	@Override
 	public InputStream readFile(long fileId, int height, int width) throws Exception {
 		

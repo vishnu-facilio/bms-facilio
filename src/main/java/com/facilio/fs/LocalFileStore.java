@@ -122,6 +122,11 @@ select * from Virtual_Energy_Meter_Rel where VIRTUAL_METER_ID=ENERGYMETER_ID
 	public InputStream readFile(long fileId) throws Exception {
 		
 		FileInfo fileInfo = getFileInfo(fileId);
+		return readFile(fileInfo);
+	}
+	
+	@Override
+	public InputStream readFile(FileInfo fileInfo) throws Exception {
 		if (fileInfo == null) {
 			return null;
 		}

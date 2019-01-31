@@ -462,7 +462,12 @@ public abstract class FileStore {
 	}
 	
 	public String getDownloadUrl(long fileId) throws Exception {
-		return getPrivateUrl(fileId);
+		if (AwsUtil.isDevelopment()) {
+			return AwsUtil.getConfig("clientapp.url")+"/api/v2/files/download/" + fileId;
+		}
+		else {
+			return "/api/v2/files/download/" + fileId;
+		}
 	}
 	
 	public int markAsDeleted(List<Long> fileIds) throws SQLException {
@@ -479,6 +484,8 @@ public abstract class FileStore {
 	}
 	
 	public abstract InputStream readFile(long fileId) throws Exception;
+	
+	public abstract InputStream readFile(FileInfo fileInfo) throws Exception;
 	
 	public abstract InputStream readFile(long fileId, int width, int heigth) throws Exception;
 	

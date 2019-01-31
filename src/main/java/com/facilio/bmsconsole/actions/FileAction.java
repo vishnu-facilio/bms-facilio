@@ -54,21 +54,43 @@ public class FileAction extends FacilioAction {
 		this.downloadStream = downloadStream;
 	}
 	
+	private Boolean isDownload;
+	public Boolean getIsDownload() {
+		if (isDownload == null) {
+			isDownload = false;
+		}
+		return isDownload;
+	}
+
+	public void setIsDownload(Boolean isDownload) {
+		this.isDownload = isDownload;
+	}
+	
 	public String previewFile() throws Exception {
 		HttpServletRequest request = ServletActionContext.getRequest();
 		HttpServletResponse response = ServletActionContext.getResponse();
-		System.out.println("If-Modified-Since" + request.getHeaders("If-Modified-Since"));
+		
 		if (request.getHeader("If-Modified-Since") == null) {
 			if (fileID > 0) {
 				FileStore fs = FileStoreFactory.getInstance().getFileStore();
-				downloadStream = fs.readFile(fileID);
-				if (downloadStream != null) {
-					String dateStamp = new SimpleDateFormat("E, dd MMM yyyy HH:mm:ss Z").format(new Date());
-					response.setHeader("Last-Modified", dateStamp);
-		 			return SUCCESS;
-				} 
-				else {
-					throw new Exception("File not Found");
+				FileInfo fileInfo = fs.getFileInfo(fileID);
+				if (fileInfo != null) {
+					downloadStream = fs.readFile(fileInfo);
+					if (downloadStream != null) {
+						String dateStamp = new SimpleDateFormat("E, dd MMM yyyy HH:mm:ss Z").format(new Date());
+						response.setHeader("Last-Modified", dateStamp);
+						if (getIsDownload()) {
+							setContentType("application/x-download");
+							setFilename(fileInfo.getFileName());
+						}
+						else {
+							setContentType(fileInfo.getContentType());
+						}
+						return SUCCESS;
+					} 
+					else {
+						throw new Exception("File not Found");
+					}
 				}
 			}
 		} else {
