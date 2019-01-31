@@ -152,9 +152,9 @@ public class AssetAnomalyUtil {
         return siteWeatherReadings;
 	}
 
-	public static long getStartTime(long endTime, AnalyticsAnomalyConfigContext meterConfigContext) {
+	public static long getStartTime(long endTime, AnomalyAssetConfigurationContext meterConfigContext) {
 		long startTime=0;
-		if (!meterConfigContext.getStartDateMode()) {
+		if (!meterConfigContext.isStartDateMode()) {
 			startTime = endTime - (meterConfigContext.getHistoryDays() * 24 * 60 * 60 * 1000L);
 		}else {
 			startTime = DateTimeUtil.getDayStartTime(meterConfigContext.getStartDate(), "yyyy-MM-dd");
