@@ -13,6 +13,10 @@ import com.facilio.fs.FileStoreFactory;
 
 public class FileAction extends FacilioAction {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private long fileID;
 
 	public long getFileID() {
