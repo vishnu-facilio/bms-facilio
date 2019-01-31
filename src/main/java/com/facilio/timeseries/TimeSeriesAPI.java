@@ -58,10 +58,14 @@ public class TimeSeriesAPI {
 	private static final Logger LOGGER = LogManager.getLogger(TimeSeriesAPI.class.getName());
 	
 	public static void processPayLoad(long ttime, JSONObject payLoad, String macAddr) throws Exception {
-		processPayLoad(ttime, payLoad, null, null, macAddr);
+		processPayLoad(ttime, payLoad, null, null, macAddr, false);
 	}
 	
-	public static void processPayLoad(long ttime, JSONObject payLoad, Record record, IRecordProcessorCheckpointer checkpointer, String macAddr) throws Exception {
+	public static void processPayLoad(long ttime, JSONObject payLoad, String macAddr, boolean adjustTime) throws Exception {
+		processPayLoad(ttime, payLoad, null, null, macAddr, adjustTime);
+	}
+	
+	public static void processPayLoad(long ttime, JSONObject payLoad, Record record, IRecordProcessorCheckpointer checkpointer, String macAddr, boolean adjustTime) throws Exception {
 		
 		long timeStamp = getTimeStamp(ttime, payLoad);
 		FacilioContext context = new FacilioContext();
@@ -82,6 +86,7 @@ public class TimeSeriesAPI {
 		}
 		//Temp code. To be removed later *END*
 		context.put(FacilioConstants.ContextNames.READINGS_SOURCE, SourceType.KINESIS);
+		context.put(FacilioConstants.ContextNames.ADJUST_READING_TTIME, adjustTime);
 		Chain processDataChain = TransactionChainFactory.getProcessDataChain();
 		processDataChain.execute(context);
 	}
