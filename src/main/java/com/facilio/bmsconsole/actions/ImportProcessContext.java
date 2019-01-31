@@ -18,6 +18,8 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.util.ImportAPI;
+import com.facilio.fs.FileStore;
+import com.facilio.fs.FileStoreFactory;
 import com.facilio.fw.BeanFactory;
 
 public class ImportProcessContext implements Serializable
@@ -41,8 +43,20 @@ public class ImportProcessContext implements Serializable
 	Integer importSetting;
 	Integer importMode;
 	Long templateId;
+	String fileName;
 	
 	
+	public String getFileName() throws Exception{
+		if(fileId != null) {
+			FileStore fs = FileStoreFactory.getInstance().getFileStore();
+			String name = fs.getFileInfo(fileId).getFileName();
+			setFileName(name);
+		}
+		return fileName;
+	}
+	public void setFileName(String fileName) {
+		this.fileName = fileName;
+	}
 	public Integer getImportMode() {
 		return this.importMode;
 	}
