@@ -298,7 +298,7 @@ public class ReadingsAPI {
 			builder.andCondition(CriteriaAPI.getCondition(readingFieldsMap.get("fieldId"), StringUtils.join(fieldMap.keySet(), ","), NumberOperators.EQUALS));
 		}
 		
-		if(resourceIds != null) {
+		if(resourceIds != null && !resourceIds.isEmpty()) {
 			builder.andCondition(CriteriaAPI.getCondition(readingFieldsMap.get("resourceId"), resourceIds, NumberOperators.EQUALS));
 		}
 		
@@ -364,26 +364,6 @@ public class ReadingsAPI {
 		}
 		meta.setValue(FieldUtil.castOrParseValueAsPerType(field, value));
 		meta.setField(field);
-		
-		if (meta.getField() instanceof NumberField) {
-			value = meta.getValue();
-			
-			NumberField numberField =  (NumberField)meta.getField();
-			if(numberField.getMetric() > 0) {
-				
-				if(numberField.getUnitId() > 0) {
-					Unit siUnit = Unit.valueOf(Metric.valueOf(numberField.getMetric()).getSiUnitId());
-					value = UnitsUtil.convert(meta.getValue(), siUnit.getUnitId(), numberField.getUnitId());
-				}
-				else {
-					value = UnitsUtil.convertToOrgDisplayUnitFromSi(meta.getValue(), numberField.getMetric());
-				}
-			}
-			if(value != null) {
-				meta.setValue(value);
-			}
-		}
-		
 		return meta;
 	}
 	
@@ -681,8 +661,11 @@ public class ReadingsAPI {
 	}
 	public static void updateReadingDataMeta(List<ResourceContext> resourcesList) throws Exception {
 		
-		long orgId=AccountUtil.getCurrentOrg().getOrgId();
+		if (resourcesList == null || resourcesList.isEmpty()) {
+			return;
+		}
 		
+		long orgId=AccountUtil.getCurrentOrg().getOrgId();
 		
 		GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
 				.table(ModuleFactory.getReadingDataMetaModule().getTableName())

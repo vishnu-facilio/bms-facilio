@@ -89,6 +89,40 @@ public class AccountConstants {
 			return typeMap;
 		}
 	}
+	
+	public static enum SessionType {
+		USER_LOGIN_SESSION(1),
+		PERMALINK_SESSION(2)
+		;
+
+	    private int sessionType;
+
+	    SessionType(int sessionType) {
+	        this.sessionType = sessionType;
+	    }
+
+	    public int getValue() {
+	        return sessionType;
+	    }
+	    
+	    public static SessionType valueOf(int sessionType) {
+	    	return typeMap.get(sessionType);
+	    }
+	    
+	    private static final Map<Integer, SessionType> typeMap = Collections.unmodifiableMap(initTypeMap());
+		private static Map<Integer, SessionType> initTypeMap() {
+			Map<Integer, SessionType> typeMap = new HashMap<>();
+			
+			for(SessionType type : values()) {
+				typeMap.put(type.getValue(), type);
+			}
+			return typeMap;
+		}
+		public Map<Integer, SessionType> getAllTypes() {
+			return typeMap;
+		}
+	}
+	
 	public static class DefaultSuperAdmin {
 		public static final String SUPER_ADMIN 	= "Super Administrator"; }
 	public static enum CommonPermission {
@@ -1280,6 +1314,13 @@ public class AccountConstants {
 		
 		fields.add(getUserIdField(module));
 		
+		FacilioField sessionType = new FacilioField();
+		sessionType.setName("sessionType");
+		sessionType.setDataType(FieldType.NUMBER);
+		sessionType.setColumnName("SESSION_TYPE");
+		sessionType.setModule(module);
+		fields.add(sessionType);
+		
 		FacilioField token = new FacilioField();
 		token.setName("token");
 		token.setDataType(FieldType.STRING);
@@ -1321,6 +1362,13 @@ public class AccountConstants {
 		userAgent.setColumnName("USER_AGENT");
 		userAgent.setModule(module);
 		fields.add(userAgent);
+		
+		FacilioField sessionInfo = new FacilioField();
+		sessionInfo.setName("sessionInfo");
+		sessionInfo.setDataType(FieldType.STRING);
+		sessionInfo.setColumnName("SESSION_INFO");
+		sessionInfo.setModule(module);
+		fields.add(sessionInfo);
 	
 		return fields;
 	}

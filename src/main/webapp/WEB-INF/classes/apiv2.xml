@@ -613,6 +613,39 @@
 		</action>
 	</package>
 	
+		<package name="filePreviewApi" extends="v2Api">
+		<global-results>
+			<result name="success" type="stream">
+				<param name="contentType">${contentType}</param>
+				<param name="contentDisposition">attachment;filename="${filename}"</param>
+				<param name="inputName">downloadStream</param>
+				<param name="bufferSize">1024</param>
+			</result>
+		</global-results>
+	</package>
+	
+	<package name="filePreviewApiv2" namespace="/api/v2/files/preview" extends="filePreviewApi">
+		<action name="*" class="com.facilio.bmsconsole.actions.FileAction" method="previewFile">
+			<param name="permission">READ</param>
+			<param name="fileID">{1}</param>
+		</action>
+	</package>
+	<package name="fileDownloadApiv2" namespace="/api/v2/files/download" extends="filePreviewApi">
+	<!-- <global-results>
+			<result name="success" type="stream">
+				<param name="contentType">${contentType}</param>
+				<param name="contentDisposition">attachment;filename="${filename}"</param>
+				<param name="inputName">downloadStream</param>
+				<param name="bufferSize">1024</param>
+			</result>
+		</global-results> -->
+		<action name="*" class="com.facilio.bmsconsole.actions.FileAction" method="previewFile">
+			<param name="permission">READ</param>
+			<param name="fileID">{1}</param>
+			<param name="isDownload">true</param>
+		</action>
+	</package>
+	
 	<package name="workflowApiv2" namespace="/api/v2/workflow" extends="v2Api">
 		<action name="xml" class="com.facilio.workflows.action.WorkflowAction" method="getWorkflowXmlFromObject">
 		</action>
@@ -642,12 +675,32 @@
 		</action>
 	</package>
 	<package name="consumptionV2" namespace="/api/v2/consumptionData" extends="v2Api">
+		
 		<action name="totalConsumptionByBuilding" class="com.facilio.bmsconsole.actions.ConsumptionAction" method="getTotalConsumptionForBuilding">
 			<param name="permission">READ,READ_TEAM,READ_OWN</param>
 			<result name="success" type="json">
 			<param name="includeProperties">totalConsumptionByBuilding,totalConsumptionByBuilding\[\d+\],totalConsumptionByBuilding\[\d+\].*,^totalConsumptionByBuilding.*</param>
 			</result>
 		</action>
+		<!-- 	<action name="totalWaterConsumptionByBuilding" class="com.facilio.bmsconsole.actions.ConsumptionAction" method="getTotalWaterConsumptionForBuilding">
+			<param name="permission">READ,READ_TEAM,READ_OWN</param>
+			<result name="success" type="json">
+			<param name="includeProperties">totalConsumptionByBuilding,totalConsumptionByBuilding\[\d+\],totalConsumptionByBuilding\[\d+\].*,^totalConsumptionByBuilding.*</param>
+			</result>
+		</action>
+		 -->
+	
 	</package>
+		<package name="generatePermalink" namespace="/api/v2/generatePermaLink" extends="v2Api">
+		<action name="generateToken" class="com.facilio.bmsconsole.actions.AccountsAction" method="getPermalinkToken">
+			<param name="permission">READ,READ_TEAM,READ_OWN</param>
+			<result name="success" type="json">
+			<param name="includeProperties">permaLinkUrl,permaLinkUrl\[\d+\],permaLinkUrl\[\d+\].*,^permaLinkUrl.*</param>
+			</result>
+		</action>
+	</package>
+	
+	
+	
 	
 </struts>

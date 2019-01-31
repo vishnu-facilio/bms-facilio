@@ -11,6 +11,7 @@ import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.TaskContext.TaskStatus;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.InsertRecordBuilder;
+import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 
 public class AddTaskCommand implements Command {
@@ -36,7 +37,9 @@ public class AddTaskCommand implements Command {
 			long taskId = builder.insert(task);
 			task.setId(taskId);
 			context.put(FacilioConstants.ContextNames.RECORD_ID, taskId);
-			context.put(FacilioConstants.ContextNames.IDS_TO_UPDATE_TASK_COUNT, Collections.singletonList(task.getParentTicketId()));
+//			context.put(FacilioConstants.ContextNames.IDS_TO_UPDATE_TASK_COUNT, Collections.singletonList(task.getParentTicketId()));
+			FacilioChain.addPostTrasanction(FacilioConstants.ContextNames.IDS_TO_UPDATE_TASK_COUNT, Collections.singletonList(task.getParentTicketId()));
+			FacilioChain.addPostTrasanction(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
 		}
 		else {
 			throw new IllegalArgumentException("Task Object cannot be null");

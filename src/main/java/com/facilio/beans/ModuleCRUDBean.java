@@ -49,7 +49,7 @@ public interface ModuleCRUDBean {
 			Map<String, Integer> eventCountMap, long lastEventTime, String partitionKey) throws Exception ;
 	
 	public void processTimeSeries(long timeStamp, JSONObject payLoad, Record record, 
-			IRecordProcessorCheckpointer checkpointer) throws Exception;
+			IRecordProcessorCheckpointer checkpointer, boolean adjustTime) throws Exception;
 	
 	public void processTimeSeries(FacilioConsumer consumer, FacilioRecord record) throws Exception;
 	

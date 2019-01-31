@@ -170,7 +170,8 @@ public class FacilioConstants {
 		public static final String WORK_ORDER_STARTTIME = "starttime";
 		public static final String WORK_ORDER_ENDTIME = "endtime";
 		
-		
+		public static final String PERMALINK_FOR_URL = "permalinkForUrl";
+		public static final String PERMALINK_TOKEN_FOR_URL = "permalinkTokenForUrl";
 		
 		
 		public static final String TEMPLATE_ID = "templateId";
@@ -518,6 +519,7 @@ public class FacilioConstants {
 		public static final String WORKFLOW_FETCH_CHILDREN = "workflowFetchChildren";
 		public static final String WORKFLOW_UPDATE = "workflowUpdate";
 		public static final String WORKFLOW_RULE = "workflowRule";
+		public static final String WORKFLOW_RULE_ID = "workflowRuleID";
 		public static final String WORKFLOW_RULE_MODULE = "workflowrule";
 		public static final String RULES = "rules";
 		public static final String ALARM_RULE = "alarmRule";
@@ -561,6 +563,7 @@ public class FacilioConstants {
 		public static final String SPACECATEGORIESLIST = "SPACECATEGORIESLIST";
 		
 		public static final String FILE_FORMAT = "fileFormat";
+		public static final String FILE_ID = "fileID";
 		public static final String FILE_URL = "fileUrl";
 		public static final String DATE_FILTER = "dateFilter";
 		public static final String START_TIME = "startTime";
@@ -612,6 +615,7 @@ public class FacilioConstants {
 		public static final String DERIVATION = "derivation";
 		public static final String FETCH_MAPPED="fetchMapped";
 		public static final String FETCH_READING_INPUT_VALUES="fetchReadingInputValues";
+		public static final String IS_FETCH_RDM_FROM_UI="isFetchRDMFromUI";
 		
 		public static final String PORTALINFO = "portalInfo";
 		public static final String PUBLICKEYFILE = "publicKeyFile";
@@ -670,6 +674,7 @@ public class FacilioConstants {
 		public static final String PUBSUB_TOPIC = "pubsubTopic";
 		
 		public static final String IDS_TO_UPDATE_TASK_COUNT = "ids_to_update_task_count";
+		public static final String IDS_TO_UPDATE_COUNT = "ids_to_update_count";
 		
 		private static Map<String, Class> classMap = Collections.unmodifiableMap(initClassMap());
 		private static Map<String, Class> initClassMap() {

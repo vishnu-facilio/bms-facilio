@@ -106,7 +106,7 @@ public enum Unit {
 	CUBICMETER(81,"Cubic meter","m<sup>3</sup>",Metric.VOLUME,"si/1000","this*1000"),
 	CUBICFOOT(72,"CubicFoot","ft<sup>3</sup>",Metric.VOLUME,"si/28.3168","this*28.3168"),
 	CUBICINCH(73,"CubicInch","in<sup>3</sup>",Metric.VOLUME,"si*61.0237","this/61.0237"),
-	USGALLON(74,"US Gallon","G",Metric.VOLUME,"si/3.78541","this*3.78541"),
+	USGALLON(74,"US Gallon","gal",Metric.VOLUME,"si/3.78541","this*3.78541"),
 	IMPERIALGALLON(75,"Imperial Gallon","IG",Metric.VOLUME,"si/4.54609","this*4.54609"),
 	
 	AED(83,"AED","AED", Metric.CURRENCY),
@@ -121,7 +121,7 @@ public enum Unit {
 	
 	CUBICFEETPERMIN(90,"Cubic Feet per Minute","ft<sup>3</sup>/min",Metric.FLOWRATE),
 	CUBICFEETPERHOUR(91,"Cubic Feet per Hour","ft<sup>3</sup>/hr",Metric.FLOWRATE,"si*60","this/60"),
-	GALLONSPERMIN(92,"Gallons per Minute","G/min",Metric.FLOWRATE,"si*7.48","this/7.48"),
+	GALLONSPERMIN(92,"Gallons per Minute","gal/min",Metric.FLOWRATE,"si*7.48","this/7.48"),
 	LITRESPERMIN(93,"Litres per Minute","l/min",Metric.FLOWRATE,"si*28.316","this/28.316"),
 	;
 	

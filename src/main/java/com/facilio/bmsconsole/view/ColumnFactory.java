@@ -50,7 +50,7 @@ public class ColumnFactory {
 		columnMap.put("energydata-report", getDefaultEnergyColumns());
 		
 		// Special types
-		//columnMap.put("preventivemaintenance", )
+		columnMap.put("preventivemaintenance-default", getPreventiveMaintenanceColumns());
 		
 		return columnMap;
 	}
@@ -185,6 +185,18 @@ public class ColumnFactory {
 		columns.add(new ViewField("source", "Source"));
 		columns.add(new ViewField("condition", "Condition"));
 		columns.add(new ViewField("acknowledgedBy", "Acknowledged By"));
+		
+		return columns;
+	}
+	
+	private static List<ViewField> getPreventiveMaintenanceColumns() {
+		List<ViewField> columns = new ArrayList<ViewField>();
+		
+		columns.add(new ViewField("title", "Message"));
+		columns.add(new ViewField("status", "Status"));
+		columns.add(new ViewField("createdById", "createdById"));
+		columns.add(new ViewField("createdTime", "createdTime"));
+		columns.add(new ViewField("lastModifiedTime", "lastModifiedTime"));
 		
 		return columns;
 	}

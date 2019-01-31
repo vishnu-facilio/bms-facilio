@@ -51,6 +51,10 @@ public class WhereBuilder implements WhereBuilderIfc<WhereBuilder>{
 					.append(")");
 			if(values != null) {
 				for(Object val : values) {
+					if (val instanceof Enum) {
+						printTrace("Enum is give as value in custom where. This is wrong");
+					}
+					
 					this.values.add(val);
 				}
 			}
@@ -78,7 +82,7 @@ public class WhereBuilder implements WhereBuilderIfc<WhereBuilder>{
 		String computeAndGetWhereClause = condition.computeAndGetWhereClause();
 		if (computeAndGetWhereClause == null || computeAndGetWhereClause.isEmpty()) { //Checking for 75 alone
 //			throw new IllegalArgumentException("Condition cannot be null");
-			printTrace("Condition cannot be null. This is wrong");
+			printTrace("Condition where class cannot be null. This is wrong");
 		}
 		
 		checkIfFirstAndAdd(isAND);
@@ -99,12 +103,13 @@ public class WhereBuilder implements WhereBuilderIfc<WhereBuilder>{
 		return criteria(false, criteria);
 	}
 	
+	private static final int MAX_LINES_TO_BE_PRINTED = 10;
 	private void printTrace (String msg) {
 		StringBuilder builder = new StringBuilder(msg)
 									.append("\nTruncated Trace\n");
 		
 		StackTraceElement[] trace = Thread.currentThread().getStackTrace();
-		for (int i = 0; i < Math.min(5, trace.length); i++) {
+		for (int i = 0; i < Math.min(MAX_LINES_TO_BE_PRINTED, trace.length); i++) {
 			builder.append(trace[i])
 					.append("\n");
 		}

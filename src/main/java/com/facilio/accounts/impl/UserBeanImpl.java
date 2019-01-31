@@ -5,6 +5,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -17,6 +18,9 @@ import org.apache.commons.chain.Chain;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.apache.logging.log4j.util.Strings;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 import com.facilio.accounts.bean.UserBean;
 import com.facilio.accounts.dto.Organization;
@@ -52,10 +56,12 @@ import com.facilio.bmsconsole.util.EncryptionUtil;
 import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.fs.FileInfo;
 import com.facilio.fs.FileStore;
 import com.facilio.fs.FileStoreFactory;
 import com.facilio.fw.BeanFactory;
 import com.facilio.fw.LRUCache;
+import com.facilio.fw.auth.CognitoUtil;
 import com.facilio.sql.GenericDeleteRecordBuilder;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
@@ -1749,6 +1755,7 @@ public class UserBeanImpl implements UserBean {
 
 		Map<String, Object> props = new HashMap<>();
 		props.put("uid", uid);
+		props.put("sessionType", AccountConstants.SessionType.USER_LOGIN_SESSION.getValue());
 		props.put("token", token);
 		props.put("startTime", System.currentTimeMillis());
 		props.put("isActive", true);
@@ -1859,7 +1866,10 @@ public class UserBeanImpl implements UserBean {
 		User user = FieldUtil.getAsBeanFromMap(prop, User.class);
 		if (user.getPhotoId() > 0) {
 			FileStore fs = FileStoreFactory.getInstance().getFileStoreFromOrg(user.getOrgId(), user.getOuid());
-			user.setAvatarUrl(fs.getPrivateUrl(user.getPhotoId()));
+			FileInfo fileInfo = fs.getFileInfo(user.getPhotoId());
+			if (fileInfo != null) {
+				user.setAvatarUrl(fs.getPrivateUrl(user.getPhotoId()));
+			}
 		}
 		
 		if (fetchRole) {
@@ -1874,4 +1884,80 @@ public class UserBeanImpl implements UserBean {
 		
 		return user;
 	}
+	
+	public String generatePermalinkForURL(String url) throws Exception {
+		
+		long orgId = AccountUtil.getCurrentOrg().getOrgId();
+		long uid = AccountUtil.getCurrentUser().getUid();
+		long ouid = AccountUtil.getCurrentUser().getId();
+		
+		String tokenKey = orgId + "-" + ouid;
+		String jwt = CognitoUtil.createJWT("id", "auth0", tokenKey, System.currentTimeMillis() + 24 * 60 * 60000, false);
+		
+		JSONObject sessionInfo = new JSONObject();
+		sessionInfo.put("allowUrls", url);
+		
+		List<FacilioField> fields = AccountConstants.getUserSessionFields();
+
+		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+				.table(AccountConstants.getUserSessionModule().getTableName())
+				.fields(fields);
+
+		Map<String, Object> props = new HashMap<>();
+		props.put("uid", uid);
+		props.put("sessionType", AccountConstants.SessionType.PERMALINK_SESSION.getValue());
+		props.put("token", jwt);
+		props.put("startTime", System.currentTimeMillis());
+		props.put("isActive", true);
+		props.put("sessionInfo", sessionInfo.toJSONString());
+
+		insertBuilder.addRecord(props);
+		insertBuilder.save();
+		long sessionId = (Long) props.get("id");
+		
+		return jwt;
+	}
+    
+    public boolean verifyPermalinkForURL(String token, List<String> urls) throws Exception {
+    	
+    	GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(AccountConstants.getUserSessionFields())
+				.table("UserSessions")
+				.andCustomWhere("UserSessions.TOKEN = ? AND UserSessions.IS_ACTIVE = ?", token, true);
+		
+		List<Map<String, Object>> props = selectBuilder.get();
+		if (props != null && !props.isEmpty()) {
+			Map<String, Object> session = props.get(0);
+			Long startTime = (Long) session.get("startTime");
+			String sessionInfo = (String) session.get("sessionInfo");
+			
+			if ((startTime + 2678400000l) < System.currentTimeMillis()) { // one month
+				// expired
+				return false;
+			}
+			
+			if (urls != null) {
+				JSONParser parser = new JSONParser();
+				try {
+					JSONObject sessionInfoObj = (JSONObject) parser.parse(sessionInfo);
+					String allowUrls = (String) sessionInfoObj.get("allowUrls");
+					List<String> allowedUrlList = Arrays.asList(allowUrls.split(","));
+					
+					for (String url : urls) {
+						if (allowedUrlList.contains(url)) {
+							// url valid
+							return true;
+						}
+					}
+				} catch (ParseException e) {
+					log.info("Exception occurred ", e);
+				}
+			}
+			else {
+				// token valid
+				return true;
+			}
+		}
+		return false;
+    }
 }

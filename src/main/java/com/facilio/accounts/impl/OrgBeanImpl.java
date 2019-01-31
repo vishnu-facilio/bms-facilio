@@ -30,6 +30,7 @@ import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.fs.FileInfo;
 import com.facilio.fs.FileStore;
 import com.facilio.fs.FileStoreFactory;
 import com.facilio.sql.GenericInsertRecordBuilder;
@@ -193,7 +194,10 @@ public class OrgBeanImpl implements OrgBean {
 		Organization org = FieldUtil.getAsBeanFromMap(prop, Organization.class);
 		if (org.getLogoId() > 0) {
 			FileStore fs = FileStoreFactory.getInstance().getFileStoreFromOrg(org.getId());
-			org.setLogoUrl(fs.getPrivateUrl(org.getLogoId()));
+			FileInfo fileInfo = fs.getFileInfo(org.getLogoId());
+			if (fileInfo != null) {
+				org.setLogoUrl(fs.getPrivateUrl(org.getLogoId()));
+			}
 		}
 		return org;
 	}

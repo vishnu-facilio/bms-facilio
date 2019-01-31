@@ -20,7 +20,7 @@ public class ForkedChainJob extends InstantJob {
 	public void execute(FacilioContext context) {
 		// TODO Auto-generated method stub
 		try {
-			FacilioChain chain = new FacilioChain(false);
+			FacilioChain chain = FacilioChain.getTransactionChain();
 			List<Command> commands = (List<Command>) context.remove(FacilioConstants.Job.FORKED_COMMANDS);
 			for (Command command : commands) {
 				chain.addCommand(command);

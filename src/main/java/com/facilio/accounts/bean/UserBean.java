@@ -110,6 +110,10 @@ public interface UserBean {
     public void clearAllUserSessions(long uid, String email) throws Exception;
     
     public boolean verifyUserSession(String email, String token) throws Exception;
+    
+    public String generatePermalinkForURL(String url) throws Exception;
+    
+    public boolean verifyPermalinkForURL(String token, List<String> url) throws Exception;
 
 	//public void sendInvitation(long ouid, User user) throws Exception;
 

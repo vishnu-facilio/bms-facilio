@@ -15,6 +15,7 @@ import com.facilio.bmsconsole.exceptions.importExceptions.ImportTimeColumnParseE
 import com.facilio.bmsconsole.util.ImportAPI;
 import com.facilio.chain.FacilioContext;
 import com.facilio.tasker.job.InstantJob;
+import com.facilio.wms.endpoints.PubSubManager;
 import com.facilio.wms.message.WmsEvent;
 import com.facilio.wms.util.WmsApi;
 
@@ -23,6 +24,7 @@ public class ImportLogJob extends InstantJob{
 	private org.apache.log4j.Logger log = LogManager.getLogger(ImportLogJob.class.getName());
 	@Override
 	public void execute(FacilioContext context) throws Exception{
+		PubSubManager pubsub = PubSubManager.getInstance();
 		LOGGER.severe("----Beginning Import Log Job-----");
 		ImportProcessContext importProcessContext = (ImportProcessContext) context.get(ImportAPI.ImportProcessConstants.IMPORT_PROCESS_CONTEXT);
 		System.out.println(context);
@@ -35,17 +37,17 @@ public class ImportLogJob extends InstantJob{
 			importProcessContext.setStatus(ImportProcessContext.ImportStatus.BEGIN_VALIDATION.getValue());
 			ImportAPI.updateImportProcess(importProcessContext);
 			
-			WmsEvent wmsEvent = new WmsEvent();
-			wmsEvent.setNamespace("importData");
-			wmsEvent.setAction("hasDuplicates");
-			wmsEvent.setEventType(WmsEvent.WmsEventType.RECORD_UPDATE);
+			JSONObject hasDuplicates = new JSONObject();
 			if((boolean)context.get(ImportAPI.ImportProcessConstants.HAS_DUPLICATE_ENTRIES)) {
-				wmsEvent.addData("duplicates", true);
+				hasDuplicates.put("hasDuplicates",true);
 			}
 			else {
-				wmsEvent.addData("duplicates", false);
+				hasDuplicates.put("hasDuplicates", false);
 			}
-			WmsApi.sendEvent(AccountUtil.getCurrentUser().getId(),wmsEvent);
+			
+			
+			pubsub.publishImportStatusChange(importProcessContext.getOrgId(), importProcessContext.getId(), hasDuplicates);
+			
 			
 			LOGGER.severe("------Import Log Job Finished------");
 			
@@ -86,14 +88,14 @@ public class ImportLogJob extends InstantJob{
 				System.out.println(a);
 			}
 			
-			WmsEvent wmsEvent = new WmsEvent();
-			wmsEvent.setNamespace("importData");
-			wmsEvent.setAction(ImportAPI.ImportProcessConstants.PARSING_ERROR);
-			wmsEvent.setEventType(WmsEvent.WmsEventType.RECORD_UPDATE);
-			wmsEvent.addData(ImportAPI.ImportProcessConstants.PARSING_ERROR, true);
-			wmsEvent.addData(ImportAPI.ImportProcessConstants.PARSING_ERROR_MESSAGE, message);
 			
-			WmsApi.sendEvent(AccountUtil.getCurrentUser().getId(), wmsEvent);
+			JSONObject parseError = new JSONObject();
+			parseError.put(ImportAPI.ImportProcessConstants.PARSING_ERROR, true);
+			parseError.put(ImportAPI.ImportProcessConstants.PARSING_ERROR_MESSAGE, message);
+			
+			pubsub.publishImportStatusChange(importProcessContext.getOrgId(), importProcessContext.getId(), parseError);
+			
+			
 			CommonCommandUtil.emailException("Import Failed", "Import failed - orgid -- "+AccountUtil.getCurrentOrg().getId(), e);
 			log.info("Exception occurred ", e);
 			LOGGER.severe(e.getMessage());

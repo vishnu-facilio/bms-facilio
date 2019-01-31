@@ -27,7 +27,7 @@ public class UpdateAttachmentCountUpdateCommand implements Command {
 
 	@Override
 	public boolean execute(Context context) throws Exception {
-		Collection<Long> list = (List<Long>) context.get(FacilioConstants.ContextNames.PARENT_ID_LIST);
+		Collection<Long> list = (List<Long>) context.get(FacilioConstants.ContextNames.IDS_TO_UPDATE_COUNT);
 		String attachmentModuleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 
 		String moduleName = null;

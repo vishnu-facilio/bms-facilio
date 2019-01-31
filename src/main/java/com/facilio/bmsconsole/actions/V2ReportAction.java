@@ -472,36 +472,33 @@ public class V2ReportAction extends FacilioAction {
 		context.put("group-by", groupBy);
 		context.put("criteria", criteria);
 		
-		Chain chain = new FacilioChain(false);
-		chain.addCommand(new ConstructReportData());
-		chain.addCommand(ReadOnlyChainFactory.newFetchReportDataChain());
-		chain.execute(context);
-		
+		ReadOnlyChainFactory.constructAndFetchReportDataChain().execute(context);
+
 		return setReportResult(context);
 	}
-	
+
 	public String saveReport() throws Exception {
-		Chain chain = new FacilioChain(true);
+		Chain chain = FacilioChain.getTransactionChain();
 		FacilioContext context = new FacilioContext();
-		
+
 		context.put(FacilioConstants.ContextNames.REPORT, reportContext);
 		context.put("x-axis", xField);
 		context.put("y-axis", yField);
 		context.put("group-by", groupBy);
 		context.put("criteria", criteria);
-		
+
 		chain.addCommand(new ConstructReportData());
 		chain.addCommand(new AddOrUpdateReportCommand());
 		chain.execute(context);
-		
+
 		setResult("message", "Report saved");
 		return SUCCESS;
 	}
-	
+
 	public String executeReport() throws Exception {
-		Chain chain = new FacilioChain(true);
+		Chain chain = FacilioChain.getNonTransactionChain();
 		FacilioContext context = new FacilioContext();
-		
+
 		ReportContext reportContext = ReportUtil.getReport(reportId);
 		if (reportContext == null) {
 			throw new Exception("Report not found");
@@ -509,7 +506,7 @@ public class V2ReportAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.REPORT, reportContext);
 		chain.addCommand(ReadOnlyChainFactory.newFetchReportDataChain());
 		chain.execute(context);
-		
+
 		return setReportResult(context);
 	}
 	

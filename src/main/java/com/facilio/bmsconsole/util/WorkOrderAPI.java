@@ -240,7 +240,7 @@ public static List<Map<String,Object>> getAvgCompletionTimeByCategory(Long start
 
 		FacilioModule workOrderModule = modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER);
 		FacilioModule ticketModule = modBean.getModule(FacilioConstants.ContextNames.TICKET);
-
+		
 
 		FacilioModule ticketStatusModule = modBean.getModule(FacilioConstants.ContextNames.TICKET_STATUS);
 
@@ -256,7 +256,7 @@ public static List<Map<String,Object>> getAvgCompletionTimeByCategory(Long start
 
 		FacilioField avgField = new FacilioField();
 		avgField.setName("avg_resolution_time");
-		avgField.setColumnName("avg(ACTUAL_WORK_DURATION/(1000*60))");//to render client in mins
+		avgField.setColumnName("avg(ACTUAL_WORK_DURATION/(60))");//to render client in mins
 		fields.add(avgField);
 
 		FacilioField countField = new FacilioField();

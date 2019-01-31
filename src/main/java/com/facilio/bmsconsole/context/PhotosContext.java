@@ -1,7 +1,6 @@
 package com.facilio.bmsconsole.context;
 
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
-import com.facilio.fs.FileStore;
 import com.facilio.fs.FileStoreFactory;
 
 public class PhotosContext extends ModuleBaseWithCustomFields {
@@ -24,21 +23,26 @@ public class PhotosContext extends ModuleBaseWithCustomFields {
 	public void setPhotoId(long photoId) {
 		this.photoId = photoId;
 	}
-	
 	public String getUrl() throws Exception {
+	
+//		if (this.url == null && this.parentId > 0) {
+//			if (!AccountUtil.getCurrentAccount().isFromMobile() && parentId > 0) {
+//				StringBuffer url = ServletActionContext.getRequest().getRequestURL();
+//				StringBuilder builder = new StringBuilder(url.substring(0, url.indexOf("/api")))
+//						.append(AwsUtil.getConfig("clientapp.url") + "/files/preview/" + photoId);
+//				return builder.toString();
+//			}
+//			FileStore fs = FileStoreFactory.getInstance().getFileStore();
+//			url = fs.getPrivateUrl(this.parentId);
+//		}
 		if (this.photoId > 0) {
-			FileStore fs = FileStoreFactory.getInstance().getFileStore();
-			return fs.getPrivateUrl(this.photoId, 120);
+			return FileStoreFactory.getInstance().getFileStore().getPrivateUrl(photoId);
 		}
 		return null;
 	}
 
 	public String getOriginalUrl() throws Exception {
-		if (this.photoId > 0) {
-			FileStore fs = FileStoreFactory.getInstance().getFileStore();
-			return fs.getPrivateUrl(this.photoId);
-		}
-		return null;
+		return getUrl();
 	}
 	private long ttime = -1;
 	public long getTtime() {

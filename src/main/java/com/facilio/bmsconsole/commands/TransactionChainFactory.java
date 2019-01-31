@@ -543,7 +543,7 @@ public class TransactionChainFactory {
 		}
 		
 	    private static Chain getDefaultChain() {
-	    	return new FacilioChain(true);
+	    	return FacilioChain.getTransactionChain();
 	    }
 	    public static Chain getAddWidgetChain() {
 			Chain c = getDefaultChain();
@@ -554,6 +554,18 @@ public class TransactionChainFactory {
 			Chain c = getDefaultChain();
 			c.addCommand(new UpdateDashboardCommand());
 			c.addCommand(new EnableMobileDashboardCommand());
+			return c;
+		}
+
+		public static Chain executeScheduledReadingRuleChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new ExecuteScheduledReadingRuleCommand());
+			return c;
+		}
+		
+		public static Chain executeScheduledAlarmTriggerChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new ExecuteScheduledAlarmTriggerCommand());
 			return c;
 		}
 }

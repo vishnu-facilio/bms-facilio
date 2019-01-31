@@ -177,20 +177,28 @@ public class ViewFactory {
 		order = 1;
 		views = new LinkedHashMap<>();
 		FacilioView preventiveView = getStatusPreventiveWorkOrders("active", "Active", true).setOrder(order++);
+		preventiveView.setModuleName(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE);
 		views.put(preventiveView.getName(),preventiveView);
 		preventiveView = getTypePreventiveWorkOrders("preventive", "Preventive", "Preventive").setOrder(order++);
+		preventiveView.setModuleName(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE);
 		views.put(preventiveView.getName(),preventiveView);
 		preventiveView = getTypePreventiveWorkOrders("corrective", "Corrective", "Corrective").setOrder(order++);
+		preventiveView.setModuleName(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE);
 		views.put(preventiveView.getName(),preventiveView);
 		preventiveView = getTypePreventiveWorkOrders("rounds", "Rounds", "Rounds").setOrder(order++);
+		preventiveView.setModuleName(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE);
 		views.put(preventiveView.getName(),preventiveView);
 		preventiveView = getTypePreventiveWorkOrders("breakdown", "Breakdown", "Breakdown").setOrder(order++);
+		preventiveView.setModuleName(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE);
 		views.put(preventiveView.getName(),preventiveView);
 		preventiveView = getTypePreventiveWorkOrders("compliance", "Compliance", "Compliance").setOrder(order++);
+		preventiveView.setModuleName(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE);
 		views.put(preventiveView.getName(),preventiveView);
 		preventiveView = getAllPreventiveWorkOrders().setOrder(order++);
+		preventiveView.setModuleName(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE);
 		views.put(preventiveView.getName(),preventiveView);
 		preventiveView = getStatusPreventiveWorkOrders("inactive", "Inactive", false).setOrder(order++);
+		preventiveView.setModuleName(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE);
 		views.put(preventiveView.getName(),preventiveView);
 		viewsMap.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE,views);
 		

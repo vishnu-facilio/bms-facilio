@@ -114,7 +114,7 @@ public class ReportsChainFactory {
 	}
 	
 	private static Chain getDefaultChain() {
-		return new FacilioChain(false);
+		return FacilioChain.getNonTransactionChain();
     }
 
 }

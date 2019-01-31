@@ -194,7 +194,16 @@ public enum ActivityType {
 			return null;
 		}
 		
-	}
+	},
+	SCHEDULED_READING_RULE (1 << 21) {
+
+		@Override
+		public String getMessage(JSONObject json) {
+			// TODO Auto-generated method stub
+			return null;
+		}
+		
+	},
 	;
 
     private int eventType;

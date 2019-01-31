@@ -933,6 +933,7 @@ public class ReadingAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.PARENT_ID, parentId);
 		context.put(FacilioConstants.ContextNames.EXCLUDE_EMPTY_FIELDS, excludeEmptyFields != null ? excludeEmptyFields : true);
 		context.put(FacilioConstants.ContextNames.FETCH_READING_INPUT_VALUES, fetchInputValues);
+		context.put(FacilioConstants.ContextNames.IS_FETCH_RDM_FROM_UI, true);
 		
 		Chain latestAssetData = ReadOnlyChainFactory.fetchLatestReadingDataChain();
 		latestAssetData.execute(context);

@@ -230,9 +230,12 @@ public class ImportDataAction extends ActionSupport {
 		GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
 				.table(ModuleFactory.getImportProcessModule().getTableName())
 				.select(FieldFactory.getImportProcessFields())
-				.andCustomWhere("ORG_ID = ?", importProcessContext.getOrgId());
+				.andCustomWhere("ORGID = ?", orgId)
+				.orderBy("IMPORT_TIME desc")
+				.limit(10);
 		
-		records = selectRecordBuilder.get();
+		List<Map<String, Object>> temp = selectRecordBuilder.get();
+		importHistory = FieldUtil.getAsBeanListFromMapList(temp, ImportProcessContext.class);
 		return SUCCESS;
 	}
 	
@@ -370,6 +373,14 @@ public class ImportDataAction extends ActionSupport {
 		this.fileUploadFileName = fileUploadFileName;
 	}
 
+	private List<ImportProcessContext> importHistory = new ArrayList<ImportProcessContext>();
+	
+	public List<ImportProcessContext> getImportHistory() {
+		return importHistory;
+	}
+	public void setImportHistory(List<ImportProcessContext> importHistory) {
+		this.importHistory = importHistory;
+	}
 
 	private String fileUploadContentType;
 	private String fileUploadFileName;
@@ -458,7 +469,15 @@ public class ImportDataAction extends ActionSupport {
 	private long assetId;
 	private String moduleName;
 	private Long fileId;
+	private long orgId;
 	
+	
+	public long getOrgId() {
+		return orgId;
+	}
+	public void setOrgId(long orgId) {
+		this.orgId = orgId;
+	}
 	public Long getFileId() {
 		return fileId;
 	}
