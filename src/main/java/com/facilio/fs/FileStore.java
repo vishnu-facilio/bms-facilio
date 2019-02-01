@@ -449,7 +449,7 @@ public abstract class FileStore {
 			return AwsUtil.getConfig("clientapp.url")+"/api/v2/files/preview/" + fileId;
 		}
 		else {
-			if (AccountUtil.getCurrentUser() == null || AccountUtil.getCurrentUser().isPortalUser()) {
+			if (AccountUtil.getCurrentOrg().getPortalId() > 0 || AccountUtil.getCurrentUser().isPortalUser()) {
 				return "/api/v2/service/files/preview/" + fileId;
 			}
 			else {
@@ -463,7 +463,7 @@ public abstract class FileStore {
 			return AwsUtil.getConfig("clientapp.url")+"/api/v2/files/preview/" + fileId +"?width=" + width;
 		}
 		else {
-		if (AccountUtil.getCurrentUser() == null || AccountUtil.getCurrentUser().isPortalUser()) {
+		if (AccountUtil.getCurrentOrg().getPortalId() > 0 || AccountUtil.getCurrentUser().isPortalUser()) {
 				return "/api/v2/service/files/preview/" + fileId +"?width=" + width;
 			}
 			else {
@@ -477,7 +477,7 @@ public abstract class FileStore {
 			return AwsUtil.getConfig("clientapp.url")+"/api/v2/files/download/" + fileId;
 		}
 		else {
-			if (AccountUtil.getCurrentUser() == null || AccountUtil.getCurrentUser().isPortalUser()) {
+			if (AccountUtil.getCurrentOrg().getPortalId() > 0 || AccountUtil.getCurrentUser().isPortalUser()) {
 				return "/api/v2/service/files/download/" + fileId;
 			}
 			else  {
