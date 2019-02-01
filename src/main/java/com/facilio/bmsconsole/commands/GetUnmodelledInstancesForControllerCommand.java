@@ -28,7 +28,7 @@ public class GetUnmodelledInstancesForControllerCommand implements Command {
 			instances = TimeSeriesAPI.getUnmodeledInstancesCountForController(controllerId, configured, fetchMapped, isSubscribed);
 		}
 		else {
-			 instances = TimeSeriesAPI.getUnmodeledInstancesForController(controllerId, configured, fetchMapped, pagination);
+			 instances = TimeSeriesAPI.getUnmodeledInstancesForController(controllerId, configured, fetchMapped, pagination, isSubscribed);
 		}
 		if (fetchMapped != null && fetchMapped && instances != null) {
 			Set<Long> assetIds = instances.stream().map(inst -> (Long) inst.get("assetId")).collect(Collectors.toSet());

@@ -485,7 +485,7 @@ public class TimeSeriesAPI {
 		
 		List<String> instanceNames = null;
 		if (controllerId != null) {
-			List<Map<String, Object>> instances = getUnmodeledInstancesForController(controllerId, null, null, null);
+			List<Map<String, Object>> instances = getUnmodeledInstancesForController(controllerId, null, null, null, null);
 			if (instances != null && !instances.isEmpty()) {
 				instanceNames = instances.stream().map(instance -> instance.get("device") + "|" + instance.get("instance")).collect(Collectors.toList());
 			}
@@ -516,7 +516,7 @@ public class TimeSeriesAPI {
 		insertBuilder.save();
 	}
 	
-	public static List<Map<String, Object>> getUnmodeledInstancesForController (long controllerId, Boolean configuredOnly, Boolean fetchMapped, JSONObject pagination) throws Exception {
+	public static List<Map<String, Object>> getUnmodeledInstancesForController (long controllerId, Boolean configuredOnly, Boolean fetchMapped, JSONObject pagination, Boolean isSubscribed) throws Exception {
 		FacilioModule module = ModuleFactory.getUnmodeledInstancesModule();
 		List<FacilioField> fields = FieldFactory.getUnmodeledInstanceFields();
 		fields.add(FieldFactory.getIdField(module));
@@ -541,6 +541,11 @@ public class TimeSeriesAPI {
 				inUseCriteria.addOrCondition(CriteriaAPI.getCondition(fieldMap.get("objectInstanceNumber"), CommonOperators.IS_EMPTY));				
 			}
 			builder.andCriteria(inUseCriteria);
+		}
+		if (isSubscribed != null) {
+			Criteria isSubscribedCriteria = new Criteria();
+			isSubscribedCriteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("subscribed"), String.valueOf(isSubscribed), BooleanOperators.IS));
+			builder.andCriteria(isSubscribedCriteria);
 		}
 				
 		if (fetchMapped != null) {
