@@ -94,7 +94,12 @@ public class FacilioFileStore extends FileStore {
 	@Override
 	public InputStream readFile(long fileId) throws Exception {
 		FileInfo fileInfo = getFileInfo(fileId);
-		String url = AwsUtil.getConfig("files.url")+"/api/file/get?orgId="+getOrgId()+"&fileName="+URLEncoder.encode(fileInfo.getFileName(), "UTF-8")+"&fileId="+fileId+"&contentType="+fileInfo.getContentType();
+		return readFile(fileInfo);
+	}
+	@Override
+	public InputStream readFile(FileInfo fileInfo) throws Exception {
+		// TODO Auto-generated method stub
+		String url = AwsUtil.getConfig("files.url")+"/api/file/get?orgId="+getOrgId()+"&fileName="+URLEncoder.encode(fileInfo.getFileName(), "UTF-8")+"&fileId="+fileInfo.getFileId()+"&contentType="+fileInfo.getContentType();
 		URL obj = new URL(url);
 		HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 
@@ -112,6 +117,11 @@ public class FacilioFileStore extends FileStore {
 		}
 		return null;
 	}
+	
+	@Override
+	public InputStream readFile(long fileId, int width, int height) throws Exception {
+		return readFile(fileId);
+	}
 
 	@Override
 	public boolean deleteFile(long fileId) throws Exception {
@@ -128,21 +138,6 @@ public class FacilioFileStore extends FileStore {
 	@Override
 	public boolean renameFile(long fileId, String newName) throws Exception {
 		return false;
-	}
-
-	@Override
-	public String getPrivateUrl(long fileId) throws Exception {
-		return getFileUrl(fileId, "preview");
-	}
-
-	@Override
-	public String getPrivateUrl(long fileId, int width) throws Exception {
-		return getFileUrl(fileId, "preview");
-	}
-
-	@Override
-	public String getDownloadUrl(long fileId) throws Exception {
-		return getFileUrl(fileId, "download");
 	}
 	
 	private String getFileUrl(long fileId, String mode) throws Exception {

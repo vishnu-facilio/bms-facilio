@@ -1083,6 +1083,14 @@ public class ModuleFactory {
 		taskSectionModule.setExtendModule(getTemplatesModule());
 		return taskSectionModule;
 	}
+	
+	public static FacilioModule getTaskSectionTemplateTriggersModule() {
+		FacilioModule taskSectionTriggerModule = new FacilioModule();
+		taskSectionTriggerModule.setName("tasksectiontemplatetriggers");
+		taskSectionTriggerModule.setDisplayName("Task Section Template Triggers");
+		taskSectionTriggerModule.setTableName("Task_Section_Template_Triggers");
+		return taskSectionTriggerModule;
+	}
 
 	public static FacilioModule getTaskTemplateModule() {
 		FacilioModule taskTemplate = new FacilioModule();

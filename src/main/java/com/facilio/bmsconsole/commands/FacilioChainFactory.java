@@ -1134,6 +1134,7 @@ public class FacilioChainFactory {
 		c.addCommand(new InsertReadingDataMetaForNewResourceCommand());
 		c.addCommand(new AddPMReminderCommand());
 		c.addCommand(new AddPMTriggerCommand());
+		c.addCommand(new AddTaskSectionTriggersCommand());
 		c.addCommand(new AddPMRelFieldsCommand());
 		c.addCommand(new SchedulePMCommand());
 		c.addCommand(new scheduleBeforePMRemindersCommand());
@@ -1158,6 +1159,7 @@ public class FacilioChainFactory {
 		c.addCommand(new DeletePMAndDependenciesCommand(false));
 		c.addCommand(new AddPMTriggerCommand());
 //		c.addCommand(new DeletePMRemindersCommand());
+		c.addCommand(new AddTaskSectionTriggersCommand());
 		c.addCommand(new AddPMReminderCommand());
 		c.addCommand(new AddPMRelFieldsCommand());
 		c.addCommand(new SchedulePMCommand());
@@ -1942,6 +1944,13 @@ public class FacilioChainFactory {
 		c.addCommand(new EditFormCommand());
 		return c;
 	}
+	
+	public static Chain getPermaLinkTokenChain() {
+		Chain c = FacilioChain.getTransactionChain();
+		c.addCommand(new GetPermaLinkTokenCommand());
+		return c;
+	}
+	
 	
 	private static  long createOrg(Organization org) throws Exception {
 		

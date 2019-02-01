@@ -1,11 +1,10 @@
 package com.facilio.bmsconsole.actions;
 
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.chain.Chain;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -86,7 +85,5 @@ public class ConsumptionAction  extends FacilioAction{
 			return SUCCESS;
 		}
 		
-		
-
-
+				
 }

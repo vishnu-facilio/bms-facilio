@@ -1,4 +1,5 @@
 
+
 -- dashbaord population starts
 
 INSERT INTO Dashboard (ORGID,MODULEID,DASHBOARD_NAME,PUBLISH_STATUS,LINK_NAME,DISPLAY_ORDER) VALUES (${orgId},${workOrderModuleId},'Overview',0,'overview',1);
@@ -8,35 +9,25 @@ INSERT INTO Dashboard (ORGID,MODULEID,DASHBOARD_NAME,PUBLISH_STATUS,LINK_NAME,DI
 DECLARE @TECHNICIAN_DASHBOARD_ID BIGINT = (SELECT SCOPE_IDENTITY());
 
 -- static or list widget population starts
-INSERT INTO Widget (ORGID,MODULEID,WIDGET_NAME,TYPE,DATA_REFRESH_INTERTVEL,HEADER_TEXT) VALUES (${orgId},${workOrderModuleId},'Workorder Summary',0,100,'Workorder Summary');
+INSERT INTO Widget (ORGID,MODULEID,WIDGET_NAME,TYPE,DATA_REFRESH_INTERTVEL,HEADER_TEXT,DASHBOARD_ID,META_JSON) VALUES (${orgId},${workOrderModuleId},'Workorder Summary',0,100,'Workorder Summary',@OVERVIEW_DASHBOARD_ID,'{"layoutWidth":6,"layoutHeight":8,"xPosition":18,"yPosition":0,"layoutPosition":3}');
 DECLARE @WIDGET_ID BIGINT = (SELECT SCOPE_IDENTITY());
 
 INSERT INTO Widget_Static (ID,STATIC_KEY) VALUES (@WIDGET_ID,'workordersummary');
 
-INSERT INTO Dashboard_vs_Widget (DASHBOARD_ID,WIDGET_ID,META_JSON) VALUES (@OVERVIEW_DASHBOARD_ID,@WIDGET_ID,'{"layoutWidth":6,"layoutHeight":8,"xPosition":18,"yPosition":0,"layoutPosition":3}');
-
-
-INSERT INTO Widget (ORGID,MODULEID,WIDGET_NAME,TYPE,DATA_REFRESH_INTERTVEL,HEADER_TEXT) VALUES (${orgId},${workOrderModuleId},'Recent Workorders',2,100,'Recent Workorders');
+INSERT INTO Widget (ORGID,MODULEID,WIDGET_NAME,TYPE,DATA_REFRESH_INTERTVEL,HEADER_TEXT,DASHBOARD_ID,META_JSON) VALUES (${orgId},${workOrderModuleId},'Recent Workorders',2,100,'Recent Workorders',@OVERVIEW_DASHBOARD_ID,'{"layoutWidth":16,"layoutHeight":8,"xPosition":0,"yPosition":8,"layoutPosition":4}');
 set @WIDGET_ID = (SELECT SCOPE_IDENTITY());
 
 INSERT INTO Widget_List_View (ID,MODULE_NAME,VIEW_NAME) VALUES (@WIDGET_ID,'workorder','open');
 
-INSERT INTO Dashboard_vs_Widget (DASHBOARD_ID,WIDGET_ID,META_JSON) VALUES (@OVERVIEW_DASHBOARD_ID,@WIDGET_ID,'{"layoutWidth":16,"layoutHeight":8,"xPosition":0,"yPosition":8,"layoutPosition":4}');
-
-
-INSERT INTO Widget (ORGID,MODULEID,WIDGET_NAME,TYPE,DATA_REFRESH_INTERTVEL,HEADER_TEXT) VALUES (${orgId},${workOrderModuleId},'My Workorder Summary',0,100,'My Workorder Summary');
+INSERT INTO Widget (ORGID,MODULEID,WIDGET_NAME,TYPE,DATA_REFRESH_INTERTVEL,HEADER_TEXT,DASHBOARD_ID,META_JSON) VALUES (${orgId},${workOrderModuleId},'My Workorder Summary',0,100,'My Workorder Summary',@TECHNICIAN_DASHBOARD_ID,'{"layoutWidth":6,"layoutHeight":8,"xPosition":0,"yPosition":0,"layoutPosition":3}');
 set @WIDGET_ID = (SELECT SCOPE_IDENTITY());
 
 INSERT INTO Widget_Static (ID,STATIC_KEY) VALUES (@WIDGET_ID,'mywosummary');
 
-INSERT INTO Dashboard_vs_Widget (DASHBOARD_ID,WIDGET_ID,META_JSON) VALUES (@TECHNICIAN_DASHBOARD_ID,@WIDGET_ID,'{"layoutWidth":6,"layoutHeight":8,"xPosition":0,"yPosition":0,"layoutPosition":3}');
-
-INSERT INTO Widget (ORGID,MODULEID,WIDGET_NAME,TYPE,DATA_REFRESH_INTERTVEL,HEADER_TEXT) VALUES (${orgId},${workOrderModuleId},'My Open Workorders',0,100,'My Open Workorders');
+INSERT INTO Widget (ORGID,MODULEID,WIDGET_NAME,TYPE,DATA_REFRESH_INTERTVEL,HEADER_TEXT,DASHBOARD_ID,META_JSON) VALUES (${orgId},${workOrderModuleId},'My Open Workorders',0,100,'My Open Workorders',@TECHNICIAN_DASHBOARD_ID,'{"layoutWidth":16,"layoutHeight":8,"xPosition":0,"yPosition":8,"layoutPosition":4}');
 set @WIDGET_ID = (SELECT SCOPE_IDENTITY());
 
 INSERT INTO Widget_List_View (ID,MODULE_NAME,VIEW_NAME) VALUES (@WIDGET_ID,'workorder','myopen');
-
-INSERT INTO Dashboard_vs_Widget (DASHBOARD_ID,WIDGET_ID,META_JSON) VALUES (@TECHNICIAN_DASHBOARD_ID,@WIDGET_ID,'{"layoutWidth":16,"layoutHeight":8,"xPosition":0,"yPosition":8,"layoutPosition":4}');
 
 -- static or list widget population ends
 
@@ -184,13 +175,10 @@ INSERT INTO Conditions (PARENT_CRITERIA_ID,SEQUENCE,FIELD_NAME,COLUMN_NAME,OPERA
 INSERT INTO Report_Criteria (REPORT_ID,CRITERIA_ID) VALUES (@REPORT_ID,@CRITERIA_ID);
 
 
-INSERT INTO Widget (ORGID,MODULEID,WIDGET_NAME,TYPE,DATA_REFRESH_INTERTVEL,HEADER_TEXT) VALUES (${orgId},${workOrderModuleId},'Open Workorder by Category',1,100,'Open Workorder by Category');
+INSERT INTO Widget (ORGID,MODULEID,WIDGET_NAME,TYPE,DATA_REFRESH_INTERTVEL,HEADER_TEXT,DASHBOARD_ID,META_JSON) VALUES (${orgId},${workOrderModuleId},'Open Workorder by Category',1,100,'Open Workorder by Category',@OVERVIEW_DASHBOARD_ID,'{"layoutWidth":8,"layoutHeight":8,"xPosition":0,"yPosition":16,"layoutPosition":6}');
 set @WIDGET_ID = (SELECT SCOPE_IDENTITY());
 
 INSERT INTO Widget_Chart (ID,REPORT_ID) VALUES (@WIDGET_ID,@REPORT_ID);
-
-INSERT INTO Dashboard_vs_Widget (DASHBOARD_ID,WIDGET_ID,META_JSON) VALUES (@OVERVIEW_DASHBOARD_ID,@WIDGET_ID,'{"layoutWidth":8,"layoutHeight":8,"xPosition":0,"yPosition":16,"layoutPosition":6}');
-
 
 INSERT INTO Report_Entity (ORGID) VALUES (${orgId});
 SET @REPORT_ENTITY_ID = (SELECT SCOPE_IDENTITY());
@@ -220,13 +208,10 @@ INSERT INTO Conditions (PARENT_CRITERIA_ID,SEQUENCE,FIELD_NAME,COLUMN_NAME,OPERA
 INSERT INTO Report_Criteria (REPORT_ID,CRITERIA_ID) VALUES (@REPORT_ID,@CRITERIA_ID);
 
 
-INSERT INTO Widget (ORGID,MODULEID,WIDGET_NAME,TYPE,DATA_REFRESH_INTERTVEL,HEADER_TEXT) VALUES (${orgId},${workOrderModuleId},'Open Workorder by Type',1,100,'Open Workorder by Type');
+INSERT INTO Widget (ORGID,MODULEID,WIDGET_NAME,TYPE,DATA_REFRESH_INTERTVEL,HEADER_TEXT,DASHBOARD_ID,META_JSON) VALUES (${orgId},${workOrderModuleId},'Open Workorder by Type',1,100,'Open Workorder by Type',@OVERVIEW_DASHBOARD_ID,'{"layoutWidth":8,"layoutHeight":8,"xPosition":8,"yPosition":16,"layoutPosition":7}');
 set @WIDGET_ID = (SELECT SCOPE_IDENTITY());
 
 INSERT INTO Widget_Chart (ID,REPORT_ID) VALUES (@WIDGET_ID,@REPORT_ID);
-
-INSERT INTO Dashboard_vs_Widget (DASHBOARD_ID,WIDGET_ID,META_JSON) VALUES (@OVERVIEW_DASHBOARD_ID,@WIDGET_ID,'{"layoutWidth":8,"layoutHeight":8,"xPosition":8,"yPosition":16,"layoutPosition":7}');
-
 
 INSERT INTO Report_Entity (ORGID) VALUES (${orgId});
 SET @REPORT_ENTITY_ID = (SELECT SCOPE_IDENTITY());
@@ -241,13 +226,10 @@ INSERT INTO Conditions (PARENT_CRITERIA_ID,SEQUENCE,FIELD_NAME,COLUMN_NAME,OPERA
 INSERT INTO Report_Criteria (REPORT_ID,CRITERIA_ID) VALUES (@REPORT_ID,@CRITERIA_ID);
 
 
-INSERT INTO Widget (ORGID,MODULEID,WIDGET_NAME,TYPE,DATA_REFRESH_INTERTVEL,HEADER_TEXT) VALUES (${orgId},${workOrderModuleId},'Open Workorders by Techinician',1,100,'Open Workorders by Techinician');
+INSERT INTO Widget (ORGID,MODULEID,WIDGET_NAME,TYPE,DATA_REFRESH_INTERTVEL,HEADER_TEXT,DASHBOARD_ID,META_JSON) VALUES (${orgId},${workOrderModuleId},'Open Workorders by Techinician',1,100,'Open Workorders by Techinician',@OVERVIEW_DASHBOARD_ID,'{"layoutWidth":8,"layoutHeight":8,"xPosition":16,"yPosition":16,"layoutPosition":8}');
 set @WIDGET_ID = (SELECT SCOPE_IDENTITY());
 
 INSERT INTO Widget_Chart (ID,REPORT_ID) VALUES (@WIDGET_ID,@REPORT_ID);
-
-INSERT INTO Dashboard_vs_Widget (DASHBOARD_ID,WIDGET_ID,META_JSON) VALUES (@OVERVIEW_DASHBOARD_ID,@WIDGET_ID,'{"layoutWidth":8,"layoutHeight":8,"xPosition":16,"yPosition":16,"layoutPosition":8}');
-
 
 INSERT INTO Report_Entity (ORGID) VALUES (${orgId});
 SET @REPORT_ENTITY_ID = (SELECT SCOPE_IDENTITY());
@@ -303,12 +285,10 @@ INSERT INTO Conditions (PARENT_CRITERIA_ID,SEQUENCE,FIELD_NAME,COLUMN_NAME,OPERA
 INSERT INTO Report_Criteria (REPORT_ID,CRITERIA_ID) VALUES (@REPORT_ID,@CRITERIA_ID);
 
 
-INSERT INTO Widget (ORGID,MODULEID,WIDGET_NAME,TYPE,DATA_REFRESH_INTERTVEL,HEADER_TEXT) VALUES (${orgId},${workOrderModuleId},'Open Workorders',1,100,'Open Workorders');
+INSERT INTO Widget (ORGID,MODULEID,WIDGET_NAME,TYPE,DATA_REFRESH_INTERTVEL,HEADER_TEXT,DASHBOARD_ID,META_JSON) VALUES (${orgId},${workOrderModuleId},'Open Workorders',1,100,'Open Workorders',@OVERVIEW_DASHBOARD_ID,'{"layoutWidth":8,"layoutHeight":8,"xPosition":0,"yPosition":0,"layoutPosition":1}');
 set @WIDGET_ID = (SELECT SCOPE_IDENTITY());
 
 INSERT INTO Widget_Chart (ID,REPORT_ID) VALUES (@WIDGET_ID,@REPORT_ID);
-
-INSERT INTO Dashboard_vs_Widget (DASHBOARD_ID,WIDGET_ID,META_JSON) VALUES (@OVERVIEW_DASHBOARD_ID,@WIDGET_ID,'{"layoutWidth":8,"layoutHeight":8,"xPosition":0,"yPosition":0,"layoutPosition":1}');
 
 -- open workorders report ends
 
@@ -438,12 +418,10 @@ INSERT INTO Report_Criteria (REPORT_ID,CRITERIA_ID) VALUES (@REPORT_ID,@CRITERIA
 INSERT INTO Report_DateFilter (REPORT_ID,FIELD_ID,OPERATOR,VAL) VALUES (@REPORT_ID,${workorder_actualWorkEnd},49,'30');
 
 
-INSERT INTO Widget (ORGID,MODULEID,WIDGET_NAME,TYPE,DATA_REFRESH_INTERTVEL,HEADER_TEXT) VALUES (${orgId},${workOrderModuleId},'Closed Workorders Trend',1,100,'Closed Workorders Trend');
+INSERT INTO Widget (ORGID,MODULEID,WIDGET_NAME,TYPE,DATA_REFRESH_INTERTVEL,HEADER_TEXT,DASHBOARD_ID,META_JSON) VALUES (${orgId},${workOrderModuleId},'Closed Workorders Trend',1,100,'Closed Workorders Trend',@OVERVIEW_DASHBOARD_ID,'{"layoutWidth":10,"layoutHeight":8,"xPosition":8,"yPosition":0,"layoutPosition":2}');
 set @WIDGET_ID = (SELECT SCOPE_IDENTITY());
 
 INSERT INTO Widget_Chart (ID,REPORT_ID) VALUES (@WIDGET_ID,@REPORT_ID);
-
-INSERT INTO Dashboard_vs_Widget (DASHBOARD_ID,WIDGET_ID,META_JSON) VALUES (@OVERVIEW_DASHBOARD_ID,@WIDGET_ID,'{"layoutWidth":10,"layoutHeight":8,"xPosition":8,"yPosition":0,"layoutPosition":2}');
 
 -- closed workorders report ends
 
@@ -566,12 +544,10 @@ INSERT INTO Conditions (PARENT_CRITERIA_ID,SEQUENCE,FIELD_NAME,COLUMN_NAME,OPERA
 INSERT INTO Report_Criteria (REPORT_ID,CRITERIA_ID) VALUES (@REPORT_ID,@CRITERIA_ID);
 
 
-INSERT INTO Widget (ORGID,MODULEID,WIDGET_NAME,TYPE,DATA_REFRESH_INTERTVEL,HEADER_TEXT) VALUES (${orgId},${workOrderModuleId},'Avg Resolution Time by Technician',1,100,'Avg Resolution Time by Technician');
+INSERT INTO Widget (ORGID,MODULEID,WIDGET_NAME,TYPE,DATA_REFRESH_INTERTVEL,HEADER_TEXT,DASHBOARD_ID,META_JSON) VALUES (${orgId},${workOrderModuleId},'Avg Resolution Time by Technician',1,100,'Avg Resolution Time by Technician',@OVERVIEW_DASHBOARD_ID,'{"layoutWidth":8,"layoutHeight":8,"xPosition":16,"yPosition":8,"layoutPosition":5}');
 set @WIDGET_ID = (SELECT SCOPE_IDENTITY());
 
 INSERT INTO Widget_Chart (ID,REPORT_ID) VALUES (@WIDGET_ID,@REPORT_ID);
-
-INSERT INTO Dashboard_vs_Widget (DASHBOARD_ID,WIDGET_ID,META_JSON) VALUES (@OVERVIEW_DASHBOARD_ID,@WIDGET_ID,'{"layoutWidth":8,"layoutHeight":8,"xPosition":16,"yPosition":8,"layoutPosition":5}');
 
 -- Efficiency reports ends
 
@@ -590,13 +566,10 @@ SET @REPORT_ID = (SELECT SCOPE_IDENTITY());
 INSERT INTO Report_DateFilter (REPORT_ID,FIELD_ID,OPERATOR,VAL) VALUES (@REPORT_ID,${workorder_createdTime},49,'30');
 
 
-INSERT INTO Widget (ORGID,MODULEID,WIDGET_NAME,TYPE,DATA_REFRESH_INTERTVEL,HEADER_TEXT) VALUES (${orgId},${workOrderModuleId},'Workorder Inflow Trend',1,100,'Workorder Inflow Trend');
+INSERT INTO Widget (ORGID,MODULEID,WIDGET_NAME,TYPE,DATA_REFRESH_INTERTVEL,HEADER_TEXT,DASHBOARD_ID,META_JSON) VALUES (${orgId},${workOrderModuleId},'Workorder Inflow Trend',1,100,'Workorder Inflow Trend',@OVERVIEW_DASHBOARD_ID,'{"layoutWidth":24,"layoutHeight":8,"xPosition":0,"yPosition":24,"layoutPosition":9}');
 set @WIDGET_ID = (SELECT SCOPE_IDENTITY());
 
 INSERT INTO Widget_Chart (ID,REPORT_ID) VALUES (@WIDGET_ID,@REPORT_ID);
-
-INSERT INTO Dashboard_vs_Widget (DASHBOARD_ID,WIDGET_ID,META_JSON) VALUES (@OVERVIEW_DASHBOARD_ID,@WIDGET_ID,'{"layoutWidth":24,"layoutHeight":8,"xPosition":0,"yPosition":24,"layoutPosition":9}');
-
 
 INSERT INTO Report_Entity (ORGID) VALUES (${orgId});
 SET @REPORT_ENTITY_ID = (SELECT SCOPE_IDENTITY());
@@ -627,13 +600,10 @@ INSERT INTO Conditions (PARENT_CRITERIA_ID,SEQUENCE,FIELD_NAME,COLUMN_NAME,OPERA
 INSERT INTO Report_Criteria (REPORT_ID,CRITERIA_ID) VALUES (@REPORT_ID,@CRITERIA_ID);
 
 
-INSERT INTO Widget (ORGID,MODULEID,WIDGET_NAME,TYPE,DATA_REFRESH_INTERTVEL,HEADER_TEXT) VALUES (${orgId},${workOrderModuleId},'My Open Workorders by Category',1,100,'My Open Workorders by Category');
+INSERT INTO Widget (ORGID,MODULEID,WIDGET_NAME,TYPE,DATA_REFRESH_INTERTVEL,HEADER_TEXT,DASHBOARD_ID,META_JSON) VALUES (${orgId},${workOrderModuleId},'My Open Workorders by Category',1,100,'My Open Workorders by Category',@TECHNICIAN_DASHBOARD_ID,'{"layoutWidth":8,"layoutHeight":8,"xPosition":16,"yPosition":8,"layoutPosition":2}');
 set @WIDGET_ID = (SELECT SCOPE_IDENTITY());
 
 INSERT INTO Widget_Chart (ID,REPORT_ID) VALUES (@WIDGET_ID,@REPORT_ID);
-
-INSERT INTO Dashboard_vs_Widget (DASHBOARD_ID,WIDGET_ID,META_JSON) VALUES (@TECHNICIAN_DASHBOARD_ID,@WIDGET_ID,'{"layoutWidth":8,"layoutHeight":8,"xPosition":16,"yPosition":8,"layoutPosition":2}');
-
 
 INSERT INTO Report_Entity (ORGID) VALUES (${orgId});
 SET @REPORT_ENTITY_ID = (SELECT SCOPE_IDENTITY());
@@ -649,13 +619,10 @@ INSERT INTO Conditions (PARENT_CRITERIA_ID,SEQUENCE,FIELD_NAME,COLUMN_NAME,OPERA
 INSERT INTO Report_Criteria (REPORT_ID,CRITERIA_ID) VALUES (@REPORT_ID,@CRITERIA_ID);
 
 
-INSERT INTO Widget (ORGID,MODULEID,WIDGET_NAME,TYPE,DATA_REFRESH_INTERTVEL,HEADER_TEXT) VALUES (${orgId},${workOrderModuleId},'Open Workorders by Priority',1,100,'Open Workorders by Priority');
+INSERT INTO Widget (ORGID,MODULEID,WIDGET_NAME,TYPE,DATA_REFRESH_INTERTVEL,HEADER_TEXT,DASHBOARD_ID,META_JSON) VALUES (${orgId},${workOrderModuleId},'Open Workorders by Priority',1,100,'Open Workorders by Priority',@TECHNICIAN_DASHBOARD_ID,'{"layoutWidth":8,"layoutHeight":8,"xPosition":6,"yPosition":0,"layoutPosition":5}');
 set @WIDGET_ID = (SELECT SCOPE_IDENTITY());
 
 INSERT INTO Widget_Chart (ID,REPORT_ID) VALUES (@WIDGET_ID,@REPORT_ID);
-
-INSERT INTO Dashboard_vs_Widget (DASHBOARD_ID,WIDGET_ID,META_JSON) VALUES (@TECHNICIAN_DASHBOARD_ID,@WIDGET_ID,'{"layoutWidth":8,"layoutHeight":8,"xPosition":6,"yPosition":0,"layoutPosition":5}');
-
 
 INSERT INTO Report_Entity (ORGID) VALUES (${orgId});
 SET @REPORT_ENTITY_ID = (SELECT SCOPE_IDENTITY());
@@ -672,12 +639,10 @@ INSERT INTO Report_Criteria (REPORT_ID,CRITERIA_ID) VALUES (@REPORT_ID,@CRITERIA
 
 INSERT INTO Report_DateFilter (REPORT_ID,FIELD_ID,OPERATOR,VAL) VALUES (@REPORT_ID,${workorder_actualWorkEnd},49,'30');
 
-INSERT INTO Widget (ORGID,MODULEID,WIDGET_NAME,TYPE,DATA_REFRESH_INTERTVEL,HEADER_TEXT) VALUES (${orgId},${workOrderModuleId},'My Closed Workorders Trend',1,100,'My Closed Workorders Trend');
+INSERT INTO Widget (ORGID,MODULEID,WIDGET_NAME,TYPE,DATA_REFRESH_INTERTVEL,HEADER_TEXT,DASHBOARD_ID,META_JSON) VALUES (${orgId},${workOrderModuleId},'My Closed Workorders Trend',1,100,'My Closed Workorders Trend',@TECHNICIAN_DASHBOARD_ID,'{"layoutWidth":10,"layoutHeight":8,"xPosition":14,"yPosition":0,"layoutPosition":4}');
 set @WIDGET_ID = (SELECT SCOPE_IDENTITY());
 
 INSERT INTO Widget_Chart (ID,REPORT_ID) VALUES (@WIDGET_ID,@REPORT_ID);
-
-INSERT INTO Dashboard_vs_Widget (DASHBOARD_ID,WIDGET_ID,META_JSON) VALUES (@TECHNICIAN_DASHBOARD_ID,@WIDGET_ID,'{"layoutWidth":10,"layoutHeight":8,"xPosition":14,"yPosition":0,"layoutPosition":4}');
 
 -- My Reports ends
 
@@ -695,44 +660,31 @@ DECLARE @ALARM_BUILDING_DASHBOARD_ID BIGINT = (SELECT SCOPE_IDENTITY());
 
 -- static widget starts
 
-INSERT INTO Widget (ORGID,MODULEID,TYPE,DATA_REFRESH_INTERTVEL) VALUES (${orgId},${alarmModuleId},0,100);
+INSERT INTO Widget (ORGID,MODULEID,TYPE,DATA_REFRESH_INTERTVEL,DASHBOARD_ID,META_JSON) VALUES (${orgId},${alarmModuleId},0,100,@PORTFOLIO_DASHBOARD_ID,'{"layoutWidth":18,"layoutHeight":8,"xPosition":0,"yPosition":0,"layoutPosition":1}');
 set @WIDGET_ID = (SELECT SCOPE_IDENTITY());
 
 INSERT INTO Widget_Static (ID,STATIC_KEY) VALUES (@WIDGET_ID,'mapwidget');
 
-INSERT INTO Dashboard_vs_Widget (DASHBOARD_ID,WIDGET_ID,META_JSON) VALUES (@PORTFOLIO_DASHBOARD_ID,@WIDGET_ID,'{"layoutWidth":18,"layoutHeight":8,"xPosition":0,"yPosition":0,"layoutPosition":1}');
-
-INSERT INTO Widget (ORGID,MODULEID,WIDGET_NAME,TYPE,DATA_REFRESH_INTERTVEL,HEADER_TEXT) VALUES (${orgId},${alarmModuleId},'Open Alarms',0,100,'Open Alarms');
+INSERT INTO Widget (ORGID,MODULEID,WIDGET_NAME,TYPE,DATA_REFRESH_INTERTVEL,HEADER_TEXT,DASHBOARD_ID,META_JSON) VALUES (${orgId},${alarmModuleId},'Open Alarms',0,100,'Open Alarms',@PORTFOLIO_DASHBOARD_ID,'{"layoutWidth":6,"layoutHeight":8,"xPosition":18,"yPosition":0,"layoutPosition":4}');
 set @WIDGET_ID = (SELECT SCOPE_IDENTITY());
 
 INSERT INTO Widget_Static (ID,STATIC_KEY) VALUES (@WIDGET_ID,'openalarms');
 
-INSERT INTO Dashboard_vs_Widget (DASHBOARD_ID,WIDGET_ID,META_JSON) VALUES (@PORTFOLIO_DASHBOARD_ID,@WIDGET_ID,'{"layoutWidth":6,"layoutHeight":8,"xPosition":18,"yPosition":0,"layoutPosition":4}');
-
-INSERT INTO Widget (ORGID,MODULEID,WIDGET_NAME,TYPE,DATA_REFRESH_INTERTVEL,HEADER_TEXT) VALUES (${orgId},${alarmModuleId},'Recent Alarms',2,100,'Recent Alarms');
+INSERT INTO Widget (ORGID,MODULEID,WIDGET_NAME,TYPE,DATA_REFRESH_INTERTVEL,HEADER_TEXT,DASHBOARD_ID,META_JSON) VALUES (${orgId},${alarmModuleId},'Recent Alarms',2,100,'Recent Alarms',@PORTFOLIO_DASHBOARD_ID,'{"layoutWidth":16,"layoutHeight":8,"xPosition":0,"yPosition":8,"layoutPosition":6}');
 set @WIDGET_ID = (SELECT SCOPE_IDENTITY());
 
 INSERT INTO Widget_List_View (ID,MODULE_NAME,VIEW_NAME) VALUES (@WIDGET_ID,'alarm','active');
 
-INSERT INTO Dashboard_vs_Widget (DASHBOARD_ID,WIDGET_ID,META_JSON) VALUES (@PORTFOLIO_DASHBOARD_ID,@WIDGET_ID,'{"layoutWidth":16,"layoutHeight":8,"xPosition":0,"yPosition":8,"layoutPosition":6}');
 
-
-
-INSERT INTO Widget (ORGID,MODULEID,WIDGET_NAME,TYPE,DATA_REFRESH_INTERTVEL,HEADER_TEXT) VALUES (${orgId},${alarmModuleId},'Open Alarms',0,100,'Open Alarms');
+INSERT INTO Widget (ORGID,MODULEID,WIDGET_NAME,TYPE,DATA_REFRESH_INTERTVEL,HEADER_TEXT,DASHBOARD_ID,META_JSON) VALUES (${orgId},${alarmModuleId},'Open Alarms',0,100,'Open Alarms',@ALARM_BUILDING_DASHBOARD_ID,'{"layoutWidth":6,"layoutHeight":8,"xPosition":8,"yPosition":0,"layoutPosition":4}');
 set @WIDGET_ID = (SELECT SCOPE_IDENTITY());
 
 INSERT INTO Widget_Static (ID,STATIC_KEY) VALUES (@WIDGET_ID,'buildingopenalarms');
 
-INSERT INTO Dashboard_vs_Widget (DASHBOARD_ID,WIDGET_ID,META_JSON) VALUES (@ALARM_BUILDING_DASHBOARD_ID,@WIDGET_ID,'{"layoutWidth":6,"layoutHeight":8,"xPosition":8,"yPosition":0,"layoutPosition":4}');
-
-
-INSERT INTO Widget (ORGID,MODULEID,WIDGET_NAME,TYPE,DATA_REFRESH_INTERTVEL,HEADER_TEXT) VALUES (${orgId},${alarmModuleId},'Recent Alarms',2,100,'Recent Alarms');
+INSERT INTO Widget (ORGID,MODULEID,WIDGET_NAME,TYPE,DATA_REFRESH_INTERTVEL,HEADER_TEXT,DASHBOARD_ID,META_JSON) VALUES (${orgId},${alarmModuleId},'Recent Alarms',2,100,'Recent Alarms',@ALARM_BUILDING_DASHBOARD_ID,'{"layoutWidth":14,"layoutHeight":8,"xPosition":10,"yPosition":8,"layoutPosition":5}');
 set @WIDGET_ID = (SELECT SCOPE_IDENTITY());
 
 INSERT INTO Widget_List_View (ID,MODULE_NAME,VIEW_NAME) VALUES (@WIDGET_ID,'alarm','active');
-
-INSERT INTO Dashboard_vs_Widget (DASHBOARD_ID,WIDGET_ID,META_JSON) VALUES (@ALARM_BUILDING_DASHBOARD_ID,@WIDGET_ID,'{"layoutWidth":14,"layoutHeight":8,"xPosition":10,"yPosition":8,"layoutPosition":5}');
-
 
 -- static widget ends
 
@@ -794,13 +746,10 @@ INSERT INTO Conditions (PARENT_CRITERIA_ID,SEQUENCE,FIELD_NAME,COLUMN_NAME,OPERA
 
 INSERT INTO Report_Criteria (REPORT_ID,CRITERIA_ID) VALUES (@REPORT_ID,@CRITERIA_ID);
 
-INSERT INTO Widget (ORGID,MODULEID,WIDGET_NAME,TYPE,DATA_REFRESH_INTERTVEL,HEADER_TEXT) VALUES (${orgId},${alarmModuleId},'Alarm Summary',1,100,'Alarm Summary');
+INSERT INTO Widget (ORGID,MODULEID,WIDGET_NAME,TYPE,DATA_REFRESH_INTERTVEL,HEADER_TEXT,DASHBOARD_ID,META_JSON) VALUES (${orgId},${alarmModuleId},'Alarm Summary',1,100,'Alarm Summary',@PORTFOLIO_DASHBOARD_ID,'{"layoutWidth":8,"layoutHeight":8,"xPosition":16,"yPosition":8,"layoutPosition":4}');
 set @WIDGET_ID = (SELECT SCOPE_IDENTITY());
 
 INSERT INTO Widget_Chart (ID,REPORT_ID) VALUES (@WIDGET_ID,@REPORT_ID);
-
-INSERT INTO Dashboard_vs_Widget (DASHBOARD_ID,WIDGET_ID,META_JSON) VALUES (@PORTFOLIO_DASHBOARD_ID,@WIDGET_ID,'{"layoutWidth":8,"layoutHeight":8,"xPosition":16,"yPosition":8,"layoutPosition":4}');
-
 
 INSERT INTO Report_Entity (ORGID) VALUES (${orgId});
 SET @REPORT_ENTITY_ID = (SELECT SCOPE_IDENTITY());
@@ -817,13 +766,10 @@ INSERT INTO Conditions (PARENT_CRITERIA_ID,SEQUENCE,FIELD_NAME,COLUMN_NAME,OPERA
 INSERT INTO Report_Criteria (REPORT_ID,CRITERIA_ID) VALUES (@REPORT_ID,@CRITERIA_ID);
 
 
-INSERT INTO Widget (ORGID,MODULEID,WIDGET_NAME,TYPE,DATA_REFRESH_INTERTVEL,HEADER_TEXT) VALUES (${orgId},${alarmModuleId},'Building Alarm Stats',1,100,'Building Alarm Stats');
+INSERT INTO Widget (ORGID,MODULEID,WIDGET_NAME,TYPE,DATA_REFRESH_INTERTVEL,HEADER_TEXT,DASHBOARD_ID,META_JSON) VALUES (${orgId},${alarmModuleId},'Building Alarm Stats',1,100,'Building Alarm Stats',@PORTFOLIO_DASHBOARD_ID,'{"layoutWidth":10,"layoutHeight":10,"xPosition":0,"yPosition":16,"layoutPosition":2}');
 set @WIDGET_ID = (SELECT SCOPE_IDENTITY());
 
 INSERT INTO Widget_Chart (ID,REPORT_ID) VALUES (@WIDGET_ID,@REPORT_ID);
-
-INSERT INTO Dashboard_vs_Widget (DASHBOARD_ID,WIDGET_ID,META_JSON) VALUES (@PORTFOLIO_DASHBOARD_ID,@WIDGET_ID,'{"layoutWidth":10,"layoutHeight":10,"xPosition":0,"yPosition":16,"layoutPosition":2}');
-
 
 INSERT INTO Report_Entity (ORGID) VALUES (${orgId});
 SET @REPORT_ENTITY_ID = (SELECT SCOPE_IDENTITY());
@@ -841,13 +787,10 @@ INSERT INTO Conditions (PARENT_CRITERIA_ID,SEQUENCE,FIELD_NAME,COLUMN_NAME,OPERA
 INSERT INTO Report_Criteria (REPORT_ID,CRITERIA_ID) VALUES (@REPORT_ID,@CRITERIA_ID);
 
 
-INSERT INTO Widget (ORGID,MODULEID,WIDGET_NAME,TYPE,DATA_REFRESH_INTERTVEL,HEADER_TEXT) VALUES (${orgId},${alarmModuleId},'Average Response Time',1,100,'Average Response Time');
+INSERT INTO Widget (ORGID,MODULEID,WIDGET_NAME,TYPE,DATA_REFRESH_INTERTVEL,HEADER_TEXT,DASHBOARD_ID,META_JSON) VALUES (${orgId},${alarmModuleId},'Average Response Time',1,100,'Average Response Time',@PORTFOLIO_DASHBOARD_ID,'{"layoutWidth":14,"layoutHeight":10,"xPosition":10,"yPosition":16,"layoutPosition":1}');
 set @WIDGET_ID = (SELECT SCOPE_IDENTITY());
 
 INSERT INTO Widget_Chart (ID,REPORT_ID) VALUES (@WIDGET_ID,@REPORT_ID);
-
-INSERT INTO Dashboard_vs_Widget (DASHBOARD_ID,WIDGET_ID,META_JSON) VALUES (@PORTFOLIO_DASHBOARD_ID,@WIDGET_ID,'{"layoutWidth":14,"layoutHeight":10,"xPosition":10,"yPosition":16,"layoutPosition":1}');
-
 
 -- portfolio report ends
 
@@ -867,13 +810,10 @@ INSERT INTO Report_SpaceFilter(REPORT_ID,BUILDING_ID) VALUES(@REPORT_ID,-1);
 
 INSERT INTO Report_DateFilter (REPORT_ID,FIELD_ID,OPERATOR,VAL) VALUES (@REPORT_ID,${alarm_createdTime},49,'30');
 
-INSERT INTO Widget (ORGID,MODULEID,WIDGET_NAME,TYPE,DATA_REFRESH_INTERTVEL,HEADER_TEXT) VALUES (${orgId},${alarmModuleId},'Alarm Summary',1,100,'Alarm Summary');
+INSERT INTO Widget (ORGID,MODULEID,WIDGET_NAME,TYPE,DATA_REFRESH_INTERTVEL,HEADER_TEXT,DASHBOARD_ID,META_JSON) VALUES (${orgId},${alarmModuleId},'Alarm Summary',1,100,'Alarm Summary',@ALARM_BUILDING_DASHBOARD_ID,'{"layoutWidth":8,"layoutHeight":8,"xPosition":0,"yPosition":0,"layoutPosition":1}');
 set @WIDGET_ID = (SELECT SCOPE_IDENTITY());
 
 INSERT INTO Widget_Chart (ID,REPORT_ID) VALUES (@WIDGET_ID,@REPORT_ID);
-
-INSERT INTO Dashboard_vs_Widget (DASHBOARD_ID,WIDGET_ID,META_JSON) VALUES (@ALARM_BUILDING_DASHBOARD_ID,@WIDGET_ID,'{"layoutWidth":8,"layoutHeight":8,"xPosition":0,"yPosition":0,"layoutPosition":1}');
-
 
 INSERT INTO Report_Entity (ORGID) VALUES (${orgId});
 SET @REPORT_ENTITY_ID = (SELECT SCOPE_IDENTITY());
@@ -893,13 +833,10 @@ INSERT INTO Conditions (PARENT_CRITERIA_ID,SEQUENCE,FIELD_NAME,COLUMN_NAME,OPERA
 INSERT INTO Report_Criteria (REPORT_ID,CRITERIA_ID) VALUES (@REPORT_ID,@CRITERIA_ID);
 
 
-INSERT INTO Widget (ORGID,MODULEID,WIDGET_NAME,TYPE,DATA_REFRESH_INTERTVEL,HEADER_TEXT) VALUES (${orgId},${alarmModuleId},'Avg Response Time By Technicians',1,100,'Avg Response Time By Technicians');
+INSERT INTO Widget (ORGID,MODULEID,WIDGET_NAME,TYPE,DATA_REFRESH_INTERTVEL,HEADER_TEXT,DASHBOARD_ID,META_JSON) VALUES (${orgId},${alarmModuleId},'Avg Response Time By Technicians',1,100,'Avg Response Time By Technicians',@ALARM_BUILDING_DASHBOARD_ID,'{"layoutWidth":10,"layoutHeight":8,"xPosition":14,"yPosition":0,"layoutPosition":3}');
 set @WIDGET_ID = (SELECT SCOPE_IDENTITY());
 
 INSERT INTO Widget_Chart (ID,REPORT_ID) VALUES (@WIDGET_ID,@REPORT_ID);
-
-INSERT INTO Dashboard_vs_Widget (DASHBOARD_ID,WIDGET_ID,META_JSON) VALUES (@ALARM_BUILDING_DASHBOARD_ID,@WIDGET_ID,'{"layoutWidth":10,"layoutHeight":8,"xPosition":14,"yPosition":0,"layoutPosition":3}');
-
 
 INSERT INTO Report_Entity (ORGID) VALUES (${orgId});
 SET @REPORT_ENTITY_ID = (SELECT SCOPE_IDENTITY());
@@ -919,12 +856,10 @@ INSERT INTO Conditions (PARENT_CRITERIA_ID,SEQUENCE,FIELD_NAME,COLUMN_NAME,OPERA
 
 INSERT INTO Report_Criteria (REPORT_ID,CRITERIA_ID) VALUES (@REPORT_ID,@CRITERIA_ID);
 
-INSERT INTO Widget (ORGID,MODULEID,WIDGET_NAME,TYPE,DATA_REFRESH_INTERTVEL,HEADER_TEXT) VALUES (${orgId},${alarmModuleId},'Avg Resolution time By Technicians',1,100,'Avg Resolution time By Technicians');
+INSERT INTO Widget (ORGID,MODULEID,WIDGET_NAME,TYPE,DATA_REFRESH_INTERTVEL,HEADER_TEXT,DASHBOARD_ID,META_JSON) VALUES (${orgId},${alarmModuleId},'Avg Resolution time By Technicians',1,100,'Avg Resolution time By Technicians',@ALARM_BUILDING_DASHBOARD_ID,'{"layoutWidth":10,"layoutHeight":8,"xPosition":0,"yPosition":8,"layoutPosition":2}');
 set @WIDGET_ID = (SELECT SCOPE_IDENTITY());
 
 INSERT INTO Widget_Chart (ID,REPORT_ID) VALUES (@WIDGET_ID,@REPORT_ID);
-
-INSERT INTO Dashboard_vs_Widget (DASHBOARD_ID,WIDGET_ID,META_JSON) VALUES (@ALARM_BUILDING_DASHBOARD_ID,@WIDGET_ID,'{"layoutWidth":10,"layoutHeight":8,"xPosition":0,"yPosition":8,"layoutPosition":2}');
 
 -- building report ends
 
@@ -970,13 +905,10 @@ SET @REPORT_ID = (SELECT SCOPE_IDENTITY());
 INSERT INTO Report_DateFilter (REPORT_ID,FIELD_ID,OPERATOR,VAL) VALUES (@REPORT_ID,${energydata_ttime},49,30);
 
 
-INSERT INTO Widget (ORGID,MODULEID,WIDGET_NAME,TYPE,DATA_REFRESH_INTERTVEL,HEADER_TEXT) VALUES (${orgId},${energyDataModuleId},'Consumption by Buildings',1,100,'Consumption by Buildings');
+INSERT INTO Widget (ORGID,MODULEID,WIDGET_NAME,TYPE,DATA_REFRESH_INTERTVEL,HEADER_TEXT,DASHBOARD_ID,META_JSON) VALUES (${orgId},${energyDataModuleId},'Consumption by Buildings',1,100,'Consumption by Buildings',@PORTFOLIO_DASHBOARD_ID,'{"layoutWidth":10,"layoutHeight":8,"xPosition":0,"yPosition":0,"layoutPosition":1}');
 set @WIDGET_ID = (SELECT SCOPE_IDENTITY());
 
 INSERT INTO Widget_Chart (ID,REPORT_ID) VALUES (@WIDGET_ID,@REPORT_ID);
-
-INSERT INTO Dashboard_vs_Widget (DASHBOARD_ID,WIDGET_ID,META_JSON) VALUES (@PORTFOLIO_DASHBOARD_ID,@WIDGET_ID,'{"layoutWidth":10,"layoutHeight":8,"xPosition":0,"yPosition":0,"layoutPosition":1}');
-
 
 INSERT INTO Report_Entity (ORGID) VALUES (${orgId});
 SET @REPORT_ENTITY_ID = (SELECT SCOPE_IDENTITY());
@@ -987,13 +919,10 @@ SET @REPORT_ID = (SELECT SCOPE_IDENTITY());
 INSERT INTO Report_DateFilter (REPORT_ID,FIELD_ID,OPERATOR,VAL) VALUES (@REPORT_ID,${energydata_ttime},49,30);
 
 
-INSERT INTO Widget (ORGID,MODULEID,WIDGET_NAME,TYPE,DATA_REFRESH_INTERTVEL,HEADER_TEXT) VALUES (${orgId},${energyDataModuleId},'Cost by Buildings',1,100,'Cost by Buildings');
+INSERT INTO Widget (ORGID,MODULEID,WIDGET_NAME,TYPE,DATA_REFRESH_INTERTVEL,HEADER_TEXT,DASHBOARD_ID,META_JSON) VALUES (${orgId},${energyDataModuleId},'Cost by Buildings',1,100,'Cost by Buildings',@PORTFOLIO_DASHBOARD_ID,'{"layoutWidth":14,"layoutHeight":8,"xPosition":10,"yPosition":0,"layoutPosition":2}');
 set @WIDGET_ID = (SELECT SCOPE_IDENTITY());
 
 INSERT INTO Widget_Chart (ID,REPORT_ID) VALUES (@WIDGET_ID,@REPORT_ID);
-
-INSERT INTO Dashboard_vs_Widget (DASHBOARD_ID,WIDGET_ID,META_JSON) VALUES (@PORTFOLIO_DASHBOARD_ID,@WIDGET_ID,'{"layoutWidth":14,"layoutHeight":8,"xPosition":10,"yPosition":0,"layoutPosition":2}');
-
 
 INSERT INTO Report_Entity (ORGID) VALUES (${orgId});
 SET @REPORT_ENTITY_ID = (SELECT SCOPE_IDENTITY());
@@ -1005,13 +934,10 @@ INSERT INTO Report_DateFilter (REPORT_ID,FIELD_ID,OPERATOR,VAL) VALUES (@REPORT_
 
 INSERT INTO Report_SpaceFilter (REPORT_ID,SITE_ID) VALUES (@REPORT_ID,-1);
 
-INSERT INTO Widget (ORGID,MODULEID,WIDGET_NAME,TYPE,DATA_REFRESH_INTERTVEL,HEADER_TEXT) VALUES (${orgId},${energyDataModuleId},'Overall Energy Consumption',1,100,'Overall Energy Consumption');
+INSERT INTO Widget (ORGID,MODULEID,WIDGET_NAME,TYPE,DATA_REFRESH_INTERTVEL,HEADER_TEXT,DASHBOARD_ID,META_JSON) VALUES (${orgId},${energyDataModuleId},'Overall Energy Consumption',1,100,'Overall Energy Consumption',@PORTFOLIO_DASHBOARD_ID,'{"layoutWidth":24,"layoutHeight":10,"xPosition":0,"yPosition":8,"layoutPosition":3}');
 set @WIDGET_ID = (SELECT SCOPE_IDENTITY());
 
 INSERT INTO Widget_Chart (ID,REPORT_ID) VALUES (@WIDGET_ID,@REPORT_ID);
-
-INSERT INTO Dashboard_vs_Widget (DASHBOARD_ID,WIDGET_ID,META_JSON) VALUES (@PORTFOLIO_DASHBOARD_ID,@WIDGET_ID,'{"layoutWidth":24,"layoutHeight":10,"xPosition":0,"yPosition":8,"layoutPosition":3}');
-
 
 INSERT INTO Report_Entity (ORGID) VALUES (${orgId});
 SET @REPORT_ENTITY_ID = (SELECT SCOPE_IDENTITY());
@@ -1021,13 +947,10 @@ SET @REPORT_ID = (SELECT SCOPE_IDENTITY());
 
 INSERT INTO Report_DateFilter (REPORT_ID,FIELD_ID,OPERATOR,VAL) VALUES (@REPORT_ID,${energydata_ttime},49,30);
 
-INSERT INTO Widget (ORGID,MODULEID,WIDGET_NAME,TYPE,DATA_REFRESH_INTERTVEL,HEADER_TEXT) VALUES (${orgId},${energyDataModuleId},'Use Wise Ranking',1,100,'Use Wise Ranking');
+INSERT INTO Widget (ORGID,MODULEID,WIDGET_NAME,TYPE,DATA_REFRESH_INTERTVEL,HEADER_TEXT,DASHBOARD_ID,META_JSON) VALUES (${orgId},${energyDataModuleId},'Use Wise Ranking',1,100,'Use Wise Ranking',@PORTFOLIO_DASHBOARD_ID,'{"layoutWidth":10,"layoutHeight":8,"xPosition":0,"yPosition":18,"layoutPosition":4}');
 set @WIDGET_ID = (SELECT SCOPE_IDENTITY());
 
 INSERT INTO Widget_Chart (ID,REPORT_ID) VALUES (@WIDGET_ID,@REPORT_ID);
-
-INSERT INTO Dashboard_vs_Widget (DASHBOARD_ID,WIDGET_ID,META_JSON) VALUES (@PORTFOLIO_DASHBOARD_ID,@WIDGET_ID,'{"layoutWidth":10,"layoutHeight":8,"xPosition":0,"yPosition":18,"layoutPosition":4}');
-
 
 INSERT INTO Report_Entity (ORGID) VALUES (${orgId});
 SET @REPORT_ENTITY_ID = (SELECT SCOPE_IDENTITY());
@@ -1037,13 +960,10 @@ SET @REPORT_ID = (SELECT SCOPE_IDENTITY());
 
 INSERT INTO Report_DateFilter (REPORT_ID,FIELD_ID,OPERATOR,VAL) VALUES (@REPORT_ID,${energydata_ttime},49,30);
 
-INSERT INTO Widget (ORGID,MODULEID,WIDGET_NAME,TYPE,DATA_REFRESH_INTERTVEL,HEADER_TEXT) VALUES (${orgId},${energyDataModuleId},'Energy Consumption Ranking',1,100,'Energy Consumption Ranking');
+INSERT INTO Widget (ORGID,MODULEID,WIDGET_NAME,TYPE,DATA_REFRESH_INTERTVEL,HEADER_TEXT,DASHBOARD_ID,META_JSON) VALUES (${orgId},${energyDataModuleId},'Energy Consumption Ranking',1,100,'Energy Consumption Ranking',@PORTFOLIO_DASHBOARD_ID,'{"layoutWidth":14,"layoutHeight":8,"xPosition":10,"yPosition":18,"layoutPosition":5}');
 set @WIDGET_ID = (SELECT SCOPE_IDENTITY());
 
 INSERT INTO Widget_Chart (ID,REPORT_ID) VALUES (@WIDGET_ID,@REPORT_ID);
-
-INSERT INTO Dashboard_vs_Widget (DASHBOARD_ID,WIDGET_ID,META_JSON) VALUES (@PORTFOLIO_DASHBOARD_ID,@WIDGET_ID,'{"layoutWidth":14,"layoutHeight":8,"xPosition":10,"yPosition":18,"layoutPosition":5}');
-
 
 INSERT INTO Report_Entity (ORGID) VALUES (${orgId});
 SET @REPORT_ENTITY_ID = (SELECT SCOPE_IDENTITY());
@@ -1058,12 +978,10 @@ INSERT INTO Report_SpaceFilter (REPORT_ID,SITE_ID) VALUES (@REPORT_ID,-1);
 INSERT INTO Report_BaseLine_Rel (BASE_LINE_ID,REPORT_ID,ADJUST_TYPE) VALUES (${baseline_PreviousDay},@REPORT_ID,1);
 
 
-INSERT INTO Widget (ORGID,MODULEID,WIDGET_NAME,TYPE,DATA_REFRESH_INTERTVEL,HEADER_TEXT) VALUES (${orgId},${energyDataModuleId},'Energy Comparision by Baseline',1,100,'Energy Comparision by Baseline');
+INSERT INTO Widget (ORGID,MODULEID,WIDGET_NAME,TYPE,DATA_REFRESH_INTERTVEL,HEADER_TEXT,DASHBOARD_ID,META_JSON) VALUES (${orgId},${energyDataModuleId},'Energy Comparision by Baseline',1,100,'Energy Comparision by Baseline',@PORTFOLIO_DASHBOARD_ID,'{"layoutWidth":24,"layoutHeight":10,"xPosition":0,"yPosition":26,"layoutPosition":6}');
 set @WIDGET_ID = (SELECT SCOPE_IDENTITY());
 
 INSERT INTO Widget_Chart (ID,REPORT_ID) VALUES (@WIDGET_ID,@REPORT_ID);
-
-INSERT INTO Dashboard_vs_Widget (DASHBOARD_ID,WIDGET_ID,META_JSON) VALUES (@PORTFOLIO_DASHBOARD_ID,@WIDGET_ID,'{"layoutWidth":24,"layoutHeight":10,"xPosition":0,"yPosition":26,"layoutPosition":6}');
 
 -- portfolio Report Ends
 
@@ -1083,12 +1001,10 @@ INSERT INTO Report_DateFilter (REPORT_ID,FIELD_ID,OPERATOR,VAL) VALUES (@REPORT_
 
 INSERT INTO Report_SpaceFilter (REPORT_ID,BUILDING_ID) VALUES (@REPORT_ID,-1);
 
-INSERT INTO Widget (ORGID,MODULEID,WIDGET_NAME,TYPE,DATA_REFRESH_INTERTVEL,HEADER_TEXT) VALUES (${orgId},${energyDataModuleId},'Energy Consumption',1,100,'Energy Consumption');
+INSERT INTO Widget (ORGID,MODULEID,WIDGET_NAME,TYPE,DATA_REFRESH_INTERTVEL,HEADER_TEXT,DASHBOARD_ID,META_JSON) VALUES (${orgId},${energyDataModuleId},'Energy Consumption',1,100,'Energy Consumption',@BUILDING_DASHBOARD_ID,'{"layoutWidth":16,"layoutHeight":10,"xPosition":0,"yPosition":0,"layoutPosition":3}');
 set @WIDGET_ID = (SELECT SCOPE_IDENTITY());
 
 INSERT INTO Widget_Chart (ID,REPORT_ID) VALUES (@WIDGET_ID,@REPORT_ID);
-
-INSERT INTO Dashboard_vs_Widget (DASHBOARD_ID,WIDGET_ID,META_JSON) VALUES (@BUILDING_DASHBOARD_ID,@WIDGET_ID,'{"layoutWidth":16,"layoutHeight":10,"xPosition":0,"yPosition":0,"layoutPosition":3}');
 
 
 INSERT INTO Report_Entity (ORGID) VALUES (${orgId});
@@ -1104,12 +1020,10 @@ INSERT INTO Report_SpaceFilter (REPORT_ID,BUILDING_ID) VALUES (@REPORT_ID,-1);
 INSERT INTO Report_BaseLine_Rel (BASE_LINE_ID,REPORT_ID,ADJUST_TYPE) VALUES (${baseline_PreviousMonth},@REPORT_ID,1);
 
 
-INSERT INTO Widget (ORGID,MODULEID,WIDGET_NAME,TYPE,DATA_REFRESH_INTERTVEL,HEADER_TEXT) VALUES (${orgId},${energyDataModuleId},'Energy Comparision',1,100,'Energy Comparision');
+INSERT INTO Widget (ORGID,MODULEID,WIDGET_NAME,TYPE,DATA_REFRESH_INTERTVEL,HEADER_TEXT,DASHBOARD_ID,META_JSON) VALUES (${orgId},${energyDataModuleId},'Energy Comparision',1,100,'Energy Comparision',@BUILDING_DASHBOARD_ID,'{"layoutWidth":24,"layoutHeight":10,"xPosition":0,"yPosition":10,"layoutPosition":1}');
 set @WIDGET_ID = (SELECT SCOPE_IDENTITY());
 
 INSERT INTO Widget_Chart (ID,REPORT_ID) VALUES (@WIDGET_ID,@REPORT_ID);
-
-INSERT INTO Dashboard_vs_Widget (DASHBOARD_ID,WIDGET_ID,META_JSON) VALUES (@BUILDING_DASHBOARD_ID,@WIDGET_ID,'{"layoutWidth":24,"layoutHeight":10,"xPosition":0,"yPosition":10,"layoutPosition":1}');
 
 
 INSERT INTO Report_Entity (ORGID) VALUES (${orgId});
@@ -1123,13 +1037,10 @@ INSERT INTO Report_DateFilter (REPORT_ID,FIELD_ID,OPERATOR,VAL) VALUES (@REPORT_
 INSERT INTO Report_SpaceFilter (REPORT_ID,BUILDING_ID) VALUES (@REPORT_ID,-1);
 
 
-INSERT INTO Widget (ORGID,MODULEID,WIDGET_NAME,TYPE,DATA_REFRESH_INTERTVEL,HEADER_TEXT) VALUES (${orgId},${energyDataModuleId},'Service Usage',1,100,'Service Usage');
+INSERT INTO Widget (ORGID,MODULEID,WIDGET_NAME,TYPE,DATA_REFRESH_INTERTVEL,HEADER_TEXT,DASHBOARD_ID,META_JSON) VALUES (${orgId},${energyDataModuleId},'Service Usage',1,100,'Service Usage',@BUILDING_DASHBOARD_ID,'{"layoutWidth":8,"layoutHeight":10,"xPosition":16,"yPosition":0,"layoutPosition":2}');
 set @WIDGET_ID = (SELECT SCOPE_IDENTITY());
 
 INSERT INTO Widget_Chart (ID,REPORT_ID) VALUES (@WIDGET_ID,@REPORT_ID);
-
-INSERT INTO Dashboard_vs_Widget (DASHBOARD_ID,WIDGET_ID,META_JSON) VALUES (@BUILDING_DASHBOARD_ID,@WIDGET_ID,'{"layoutWidth":8,"layoutHeight":10,"xPosition":16,"yPosition":0,"layoutPosition":2}');
-
 
 INSERT INTO Report_Entity (ORGID) VALUES (${orgId});
 SET @REPORT_ENTITY_ID = (SELECT SCOPE_IDENTITY());
@@ -1142,13 +1053,10 @@ INSERT INTO Report_DateFilter (REPORT_ID,FIELD_ID,OPERATOR,VAL) VALUES (@REPORT_
 INSERT INTO Report_SpaceFilter (REPORT_ID,BUILDING_ID) VALUES (@REPORT_ID,-1);
 
 
-INSERT INTO Widget (ORGID,MODULEID,WIDGET_NAME,TYPE,DATA_REFRESH_INTERTVEL,HEADER_TEXT) VALUES (${orgId},${energyDataModuleId},'Daily Energy Breakdown',1,100,'Daily Energy Breakdown');
+INSERT INTO Widget (ORGID,MODULEID,WIDGET_NAME,TYPE,DATA_REFRESH_INTERTVEL,HEADER_TEXT,DASHBOARD_ID,META_JSON) VALUES (${orgId},${energyDataModuleId},'Daily Energy Breakdown',1,100,'Daily Energy Breakdown',@BUILDING_DASHBOARD_ID,'{"layoutWidth":24,"layoutHeight":8,"xPosition":0,"yPosition":20,"layoutPosition":4}');
 set @WIDGET_ID = (SELECT SCOPE_IDENTITY());
 
 INSERT INTO Widget_Chart (ID,REPORT_ID) VALUES (@WIDGET_ID,@REPORT_ID);
-
-INSERT INTO Dashboard_vs_Widget (DASHBOARD_ID,WIDGET_ID,META_JSON) VALUES (@BUILDING_DASHBOARD_ID,@WIDGET_ID,'{"layoutWidth":24,"layoutHeight":8,"xPosition":0,"yPosition":20,"layoutPosition":4}');
-
 
 INSERT INTO Report_Entity (ORGID) VALUES (${orgId});
 SET @REPORT_ENTITY_ID = (SELECT SCOPE_IDENTITY());
@@ -1161,12 +1069,10 @@ INSERT INTO Report_DateFilter (REPORT_ID,FIELD_ID,OPERATOR,VAL) VALUES (@REPORT_
 INSERT INTO Report_SpaceFilter (REPORT_ID,BUILDING_ID) VALUES (@REPORT_ID,-1);
 
 
-INSERT INTO Widget (ORGID,MODULEID,WIDGET_NAME,TYPE,DATA_REFRESH_INTERTVEL,HEADER_TEXT) VALUES (${orgId},${energyDataModuleId},'Heatmap',1,100,'Heatmap');
+INSERT INTO Widget (ORGID,MODULEID,WIDGET_NAME,TYPE,DATA_REFRESH_INTERTVEL,HEADER_TEXT,DASHBOARD_ID,META_JSON) VALUES (${orgId},${energyDataModuleId},'Heatmap',1,100,'Heatmap',@BUILDING_DASHBOARD_ID,'{"layoutWidth":24,"layoutHeight":10,"xPosition":0,"yPosition":46,"layoutPosition":5}');
 set @WIDGET_ID = (SELECT SCOPE_IDENTITY());
 
 INSERT INTO Widget_Chart (ID,REPORT_ID) VALUES (@WIDGET_ID,@REPORT_ID);
-
-INSERT INTO Dashboard_vs_Widget (DASHBOARD_ID,WIDGET_ID,META_JSON) VALUES (@BUILDING_DASHBOARD_ID,@WIDGET_ID,'{"layoutWidth":24,"layoutHeight":10,"xPosition":0,"yPosition":46,"layoutPosition":5}');
 
 
 INSERT INTO Report_Entity (ORGID) VALUES (${orgId});
@@ -1182,12 +1088,10 @@ INSERT INTO Report_SpaceFilter (REPORT_ID,BUILDING_ID) VALUES (@REPORT_ID,-1);
 INSERT INTO Report_BaseLine_Rel (BASE_LINE_ID,REPORT_ID,ADJUST_TYPE) VALUES (${baseline_PreviousYear},@REPORT_ID,1);
 
 
-INSERT INTO Widget (ORGID,MODULEID,WIDGET_NAME,TYPE,DATA_REFRESH_INTERTVEL,HEADER_TEXT) VALUES (${orgId},${energyDataModuleId},'Year Wise Comparison',1,100,'Year Wise Comparison');
+INSERT INTO Widget (ORGID,MODULEID,WIDGET_NAME,TYPE,DATA_REFRESH_INTERTVEL,HEADER_TEXT,DASHBOARD_ID,META_JSON) VALUES (${orgId},${energyDataModuleId},'Year Wise Comparison',1,100,'Year Wise Comparison',@BUILDING_DASHBOARD_ID,'{"layoutWidth":14,"layoutHeight":8,"xPosition":0,"yPosition":38,"layoutPosition":8}');
 set @WIDGET_ID = (SELECT SCOPE_IDENTITY());
 
 INSERT INTO Widget_Chart (ID,REPORT_ID) VALUES (@WIDGET_ID,@REPORT_ID);
-
-INSERT INTO Dashboard_vs_Widget (DASHBOARD_ID,WIDGET_ID,META_JSON) VALUES (@BUILDING_DASHBOARD_ID,@WIDGET_ID,'{"layoutWidth":14,"layoutHeight":8,"xPosition":0,"yPosition":38,"layoutPosition":8}');
 
 
 INSERT INTO Report_Entity (ORGID) VALUES (${orgId});
@@ -1201,13 +1105,10 @@ INSERT INTO Report_DateFilter (REPORT_ID,FIELD_ID,OPERATOR,VAL) VALUES (@REPORT_
 INSERT INTO Report_SpaceFilter (REPORT_ID,BUILDING_ID,GROUP_BY) VALUES (@REPORT_ID,-1,'service');
 
 
-INSERT INTO Widget (ORGID,MODULEID,WIDGET_NAME,TYPE,DATA_REFRESH_INTERTVEL,HEADER_TEXT) VALUES (${orgId},${energyDataModuleId},'End Use Breakdown',1,100,'End Use Breakdown');
+INSERT INTO Widget (ORGID,MODULEID,WIDGET_NAME,TYPE,DATA_REFRESH_INTERTVEL,HEADER_TEXT,DASHBOARD_ID,META_JSON) VALUES (${orgId},${energyDataModuleId},'End Use Breakdown',1,100,'End Use Breakdown',@BUILDING_DASHBOARD_ID,'{"layoutWidth":24,"layoutHeight":10,"xPosition":0,"yPosition":28,"layoutPosition":6}');
 set @WIDGET_ID = (SELECT SCOPE_IDENTITY());
 
 INSERT INTO Widget_Chart (ID,REPORT_ID) VALUES (@WIDGET_ID,@REPORT_ID);
-
-INSERT INTO Dashboard_vs_Widget (DASHBOARD_ID,WIDGET_ID,META_JSON) VALUES (@BUILDING_DASHBOARD_ID,@WIDGET_ID,'{"layoutWidth":24,"layoutHeight":10,"xPosition":0,"yPosition":28,"layoutPosition":6}');
-
 
 INSERT INTO Report_Entity (ORGID) VALUES (${orgId});
 SET @REPORT_ENTITY_ID = (SELECT SCOPE_IDENTITY());
@@ -1220,13 +1121,10 @@ INSERT INTO Report_DateFilter (REPORT_ID,FIELD_ID,OPERATOR,VAL) VALUES (@REPORT_
 INSERT INTO Report_SpaceFilter (REPORT_ID,BUILDING_ID,GROUP_BY) VALUES (@REPORT_ID,-1,'service');
 
 
-INSERT INTO Widget (ORGID,MODULEID,WIDGET_NAME,TYPE,DATA_REFRESH_INTERTVEL,HEADER_TEXT) VALUES (${orgId},${energyDataModuleId},'Cost usage by End use',1,100,'Cost usage by End use');
+INSERT INTO Widget (ORGID,MODULEID,WIDGET_NAME,TYPE,DATA_REFRESH_INTERTVEL,HEADER_TEXT,DASHBOARD_ID,META_JSON) VALUES (${orgId},${energyDataModuleId},'Cost usage by End use',1,100,'Cost usage by End use',@BUILDING_DASHBOARD_ID,'{"layoutWidth":10,"layoutHeight":8,"xPosition":14,"yPosition":38,"layoutPosition":7}');
 set @WIDGET_ID = (SELECT SCOPE_IDENTITY());
 
 INSERT INTO Widget_Chart (ID,REPORT_ID) VALUES (@WIDGET_ID,@REPORT_ID);
-
-INSERT INTO Dashboard_vs_Widget (DASHBOARD_ID,WIDGET_ID,META_JSON) VALUES (@BUILDING_DASHBOARD_ID,@WIDGET_ID,'{"layoutWidth":10,"layoutHeight":8,"xPosition":14,"yPosition":38,"layoutPosition":7}');
-
 
 -- Building Report Ends
 

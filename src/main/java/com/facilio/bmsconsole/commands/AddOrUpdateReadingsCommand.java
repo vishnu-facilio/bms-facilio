@@ -28,8 +28,12 @@ public class AddOrUpdateReadingsCommand implements Command {
 		ControllerContext controller = updateCheckPointAndControllerActivity(context);
 		executeWorkflowsRules(context);
 		
-		if (controller == null) {
-			execureFormulae(context);
+		Boolean adjustTime = (Boolean) context.get(FacilioConstants.ContextNames.ADJUST_READING_TTIME);
+		if (adjustTime == null) {
+			adjustTime = true;
+		}
+		if (controller == null && adjustTime) {
+			executeFormulae(context);
 		}
 		
 		publishReadingChangeMessage(context);
@@ -65,7 +69,7 @@ public class AddOrUpdateReadingsCommand implements Command {
 		}
 	}
 	
-	private void execureFormulae (Context context) {
+	private void executeFormulae (Context context) {
 		try {
 			Chain formulaChain = ReadOnlyChainFactory.calculateFormulaChain();
 			formulaChain.execute(context);

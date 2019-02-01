@@ -170,7 +170,8 @@ public class FacilioConstants {
 		public static final String WORK_ORDER_STARTTIME = "starttime";
 		public static final String WORK_ORDER_ENDTIME = "endtime";
 		
-		
+		public static final String PERMALINK_FOR_URL = "permalinkForUrl";
+		public static final String PERMALINK_TOKEN_FOR_URL = "permalinkTokenForUrl";
 		
 		
 		public static final String TEMPLATE_ID = "templateId";
@@ -518,6 +519,7 @@ public class FacilioConstants {
 		public static final String WORKFLOW_FETCH_CHILDREN = "workflowFetchChildren";
 		public static final String WORKFLOW_UPDATE = "workflowUpdate";
 		public static final String WORKFLOW_RULE = "workflowRule";
+		public static final String WORKFLOW_RULE_ID = "workflowRuleID";
 		public static final String WORKFLOW_RULE_MODULE = "workflowrule";
 		public static final String RULES = "rules";
 		public static final String ALARM_RULE = "alarmRule";
@@ -561,6 +563,7 @@ public class FacilioConstants {
 		public static final String SPACECATEGORIESLIST = "SPACECATEGORIESLIST";
 		
 		public static final String FILE_FORMAT = "fileFormat";
+		public static final String FILE_ID = "fileID";
 		public static final String FILE_URL = "fileUrl";
 		public static final String DATE_FILTER = "dateFilter";
 		public static final String START_TIME = "startTime";

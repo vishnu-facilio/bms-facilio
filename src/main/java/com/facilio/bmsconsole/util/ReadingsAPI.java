@@ -298,7 +298,7 @@ public class ReadingsAPI {
 			builder.andCondition(CriteriaAPI.getCondition(readingFieldsMap.get("fieldId"), StringUtils.join(fieldMap.keySet(), ","), NumberOperators.EQUALS));
 		}
 		
-		if(resourceIds != null) {
+		if(resourceIds != null && !resourceIds.isEmpty()) {
 			builder.andCondition(CriteriaAPI.getCondition(readingFieldsMap.get("resourceId"), resourceIds, NumberOperators.EQUALS));
 		}
 		
@@ -661,8 +661,11 @@ public class ReadingsAPI {
 	}
 	public static void updateReadingDataMeta(List<ResourceContext> resourcesList) throws Exception {
 		
-		long orgId=AccountUtil.getCurrentOrg().getOrgId();
+		if (resourcesList == null || resourcesList.isEmpty()) {
+			return;
+		}
 		
+		long orgId=AccountUtil.getCurrentOrg().getOrgId();
 		
 		GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
 				.table(ModuleFactory.getReadingDataMetaModule().getTableName())

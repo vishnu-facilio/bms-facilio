@@ -67,9 +67,8 @@ public class GetWorkOrderListCommand implements Command {
 		if (filterCriteria != null) {
 			selectBuilder.andCriteria(filterCriteria);
 		}
-		if (( filters == null || includeParentCriteria) && view != null) {
-			Criteria criteria = view.getCriteria();
-			selectBuilder.andCriteria(criteria);
+		if (( filters == null || includeParentCriteria) && view != null && view.getCriteria() != null && !view.getCriteria().isEmpty()) {
+			selectBuilder.andCriteria(view.getCriteria());
 		}
 		
 		String subView = (String) context.get(FacilioConstants.ContextNames.SUB_VIEW);

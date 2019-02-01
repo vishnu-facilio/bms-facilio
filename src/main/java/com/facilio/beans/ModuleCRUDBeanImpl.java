@@ -23,6 +23,7 @@ import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.AlarmContext;
 import com.facilio.bmsconsole.context.ControllerContext;
 import com.facilio.bmsconsole.context.PMResourcePlannerContext;
+import com.facilio.bmsconsole.context.PMTriggerContext;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.TaskContext.TaskStatus;
@@ -242,7 +243,12 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 				if(isNewPmType) {
 					Long woTemplateResourceId = wo.getResource() != null ? wo.getResource().getId() : -1;
 					if(woTemplateResourceId > 0) {
-						taskMapForNewPmExecution = PreventiveMaintenanceAPI.getTaskMapForNewPMExecution(workorderTemplate.getSectionTemplates(), woTemplateResourceId);
+						PMTriggerContext pmTrigger = (PMTriggerContext) context.get(FacilioConstants.ContextNames.PM_CURRENT_TRIGGER);
+						Long currentTriggerId = null;
+						if (pmTrigger != null) {
+							currentTriggerId = pmTrigger.getId();
+						}
+						taskMapForNewPmExecution = PreventiveMaintenanceAPI.getTaskMapForNewPMExecution(workorderTemplate.getSectionTemplates(), woTemplateResourceId, currentTriggerId);
 					}
 				}
 				if(taskMapForNewPmExecution != null) {
@@ -564,8 +570,8 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 
 	@Override
 	public void processTimeSeries(long timeStamp, JSONObject payLoad, Record record,
-			IRecordProcessorCheckpointer checkPointer) throws Exception {
-			TimeSeriesAPI.processPayLoad(timeStamp, payLoad, record, checkPointer, null);
+			IRecordProcessorCheckpointer checkPointer, boolean adjustTime) throws Exception {
+			TimeSeriesAPI.processPayLoad(timeStamp, payLoad, record, checkPointer, null, adjustTime);
 	}
 	
 	@Override

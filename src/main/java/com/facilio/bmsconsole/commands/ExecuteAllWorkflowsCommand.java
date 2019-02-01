@@ -133,8 +133,8 @@ public class ExecuteAllWorkflowsCommand implements SerializableCommand
 						Map<String, Object> recordPlaceHolders = WorkflowRuleAPI.getRecordPlaceHolders(moduleName, record, placeHolders);
 						List<WorkflowRuleContext> currentWorkflows = workflowRules;
 						while (currentWorkflows != null && !currentWorkflows.isEmpty()) {
-							Criteria childCriteria = executeWorkflowsAndGetChildRuleCriteria(currentWorkflows, moduleName, record, changeSet, it, recordPlaceHolders, context);
-							if (childCriteria == null) {
+							Criteria childCriteria = WorkflowRuleAPI.executeWorkflowsAndGetChildRuleCriteria(currentWorkflows, moduleName, record, changeSet, it, recordPlaceHolders, context,propagateError);
+							if (childCriteria == null || childCriteria.isEmpty()) {
 								break;
 							}
 							currentWorkflows = WorkflowRuleAPI.getActiveWorkflowRulesFromActivityAndRuleType(moduleId, activities, childCriteria, ruleTypes);
@@ -143,55 +143,6 @@ public class ExecuteAllWorkflowsCommand implements SerializableCommand
 				}
 			}
 		}
-	}
-	
-	private Criteria executeWorkflowsAndGetChildRuleCriteria(List<WorkflowRuleContext> workflowRules, String moduleName, Object record, List<UpdateChangeSet> changeSet, Iterator itr, Map<String, Object> recordPlaceHolders, FacilioContext context) throws Exception {
-		if(workflowRules != null && !workflowRules.isEmpty()) {
-			Map<String, FacilioField> fields = FieldFactory.getAsMap(FieldFactory.getWorkflowRuleFields());
-			FacilioField parentRule = fields.get("parentRuleId");
-			FacilioField onSuccess = fields.get("onSuccess");
-			Criteria criteria = new Criteria();
-			
-			for(WorkflowRuleContext workflowRule : workflowRules) {
-				try {
-					long workflowStartTime = System.currentTimeMillis();
-					boolean result = WorkflowRuleAPI.evaluateWorkflow(workflowRule, moduleName, record, changeSet, recordPlaceHolders, context);
-					if (AccountUtil.getCurrentOrg().getId() == 133 && FacilioConstants.ContextNames.ALARM.equals(moduleName)) {
-						LOGGER.info("Result of rule : "+workflowRule.getId()+" for record : "+record+" is "+result);
-					}
-					
-					Criteria currentCriteria = new Criteria();
-					currentCriteria.addAndCondition(CriteriaAPI.getCondition(parentRule, String.valueOf(workflowRule.getId()), NumberOperators.EQUALS));
-					currentCriteria.addAndCondition(CriteriaAPI.getCondition(onSuccess, String.valueOf(result), BooleanOperators.IS));
-					criteria.orCriteria(currentCriteria);
-					LOGGER.debug("Time taken to execute rule : "+workflowRule.getName()+" with id : "+workflowRule.getId()+" for module : "+moduleName+" is "+(System.currentTimeMillis() - workflowStartTime));
-					
-					if (result) {
-						if(workflowRule.getRuleTypeEnum().stopFurtherRuleExecution()) {
-							itr.remove();
-							break;
-						}
-					}
-				}
-				catch (Exception e) {
-					StringBuilder builder = new StringBuilder("Error during execution of rule : ");
-					builder.append(workflowRule.getId());
-					if (record instanceof ModuleBaseWithCustomFields) {
-						builder.append(" for Record : ")
-								.append(((ModuleBaseWithCustomFields)record).getId())
-								.append(" of module : ")
-								.append(moduleName);
-					}
-					LOGGER.log(Level.ERROR, builder.toString(), e);
-					
-					if (propagateError) {
-						throw e;
-					}
-				}
-			}
-			return criteria;
-		}
-		return null;
 	}
 	
 	private class ParallalWorkflowExecution extends RecursiveAction {

@@ -155,5 +155,14 @@ public class FacilioAction extends ActionSupport {
 	protected void setContentType(String contentType) {
 		this.contentType = contentType;
 	}
+	
+	private String filename;
+	public String getFilename() {
+		return filename;
+	}
+	public void setFilename(String filename) {
+		this.filename = filename;
+	}
+	
 
 }

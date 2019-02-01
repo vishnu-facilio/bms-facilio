@@ -121,10 +121,24 @@ public class PreventiveMaintenanceAPI {
 			taskTemplate.setAdditionalInfoJsonStr(sectiontemplate.getAdditionalInfoJsonStr());
 		}
 	}
-	public static Map<String, List<TaskContext>> getTaskMapForNewPMExecution(List<TaskSectionTemplate> sectiontemplates,Long woResourceId) throws Exception {
+	public static Map<String, List<TaskContext>> getTaskMapForNewPMExecution(List<TaskSectionTemplate> sectiontemplates,Long woResourceId, Long triggerId) throws Exception {
 		Map<String, List<TaskContext>> taskMap = new HashMap<>();
 		for(TaskSectionTemplate sectiontemplate :sectiontemplates) {
-			
+			if (triggerId != null && triggerId > -1) {
+				List<PMTriggerContext> triggerContexts = sectiontemplate.getPmTriggerContexts();
+				if (triggerContexts != null && !triggerContexts.isEmpty()) {
+					boolean found = false;
+					for (int i = 0; i < triggerContexts.size(); i++) {
+						if (triggerContexts.get(i).getId() == triggerId) {
+							found = true;
+							break;
+						}
+					}
+					if (!found) {
+						continue;
+					}
+				}
+			}
 			Template sectionTemplate = TemplateAPI.getTemplate(sectiontemplate.getId());
 			sectiontemplate = (TaskSectionTemplate)sectionTemplate;
 			
