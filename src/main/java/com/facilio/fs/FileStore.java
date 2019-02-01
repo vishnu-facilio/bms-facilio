@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
@@ -448,8 +449,13 @@ public abstract class FileStore {
 			return AwsUtil.getConfig("clientapp.url")+"/api/v2/files/preview/" + fileId;
 		}
 		else {
-			return "/api/v2/files/preview/" + fileId;
-		}
+			if (AccountUtil.getCurrentUser() == null || AccountUtil.getCurrentUser().isPortalUser()) {
+				return "/api/v2/service/files/preview/" + fileId;
+			}
+			else {
+				return "/api/v2/files/preview/" + fileId;
+			}
+		 }
 	}
 	
 	public String getPrivateUrl(long fileId, int width) throws Exception {
@@ -457,8 +463,13 @@ public abstract class FileStore {
 			return AwsUtil.getConfig("clientapp.url")+"/api/v2/files/preview/" + fileId +"?width=" + width;
 		}
 		else {
-			return "/api/v2/files/preview/" + fileId +"?width=" + width;
-		}
+		if (AccountUtil.getCurrentUser() == null || AccountUtil.getCurrentUser().isPortalUser()) {
+				return "/api/v2/service/files/preview/" + fileId +"?width=" + width;
+			}
+			else {
+				return "/api/v2/files/preview/" + fileId +"?width=" + width;
+			}
+		 }
 	}
 	
 	public String getDownloadUrl(long fileId) throws Exception {
@@ -466,7 +477,12 @@ public abstract class FileStore {
 			return AwsUtil.getConfig("clientapp.url")+"/api/v2/files/download/" + fileId;
 		}
 		else {
-			return "/api/v2/files/download/" + fileId;
+			if (AccountUtil.getCurrentUser() == null || AccountUtil.getCurrentUser().isPortalUser()) {
+				return "/api/v2/service/files/download/" + fileId;
+			}
+			else  {
+				return "/api/v2/files/download/" + fileId;
+			}
 		}
 	}
 	
@@ -486,9 +502,7 @@ public abstract class FileStore {
 	public abstract InputStream readFile(long fileId) throws Exception;
 	
 	public abstract InputStream readFile(FileInfo fileInfo) throws Exception;
-	
-	public abstract InputStream readFile(long fileId, int width, int heigth) throws Exception;
-	
+		
 	public abstract boolean deleteFile(long fileId) throws Exception;
 	
 	public abstract boolean deleteFiles(List<Long> fileId) throws Exception;
