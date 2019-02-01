@@ -38,8 +38,11 @@ public class AccountUtil {
 		Organization org = AccountUtil.getOrgBean().getOrg(orgId);
 		
 		if (org != null) {
+			System.out.println("the orgis"+org);
+			Account account = new Account(org, null);
+			setCurrentAccount(account);
 			User user = AccountUtil.getOrgBean().getSuperAdmin(org.getId());
-			setCurrentAccount(new Account(org, user));
+			account.setUser(user);
 		}
 	}
 	

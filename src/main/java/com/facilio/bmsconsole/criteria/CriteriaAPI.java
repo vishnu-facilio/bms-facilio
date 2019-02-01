@@ -200,7 +200,7 @@ public class CriteriaAPI {
 	
 	public static Condition getOrgIdCondition(long orgId, FacilioModule module) {
 		Condition idCondition = new Condition();
-		idCondition.setField(FieldFactory.getOrgIdField(module));
+		/*idCondition.setField(FieldFactory.getOrgIdField(module));*/
 		idCondition.setOperator(NumberOperators.EQUALS);
 		idCondition.setValue(String.valueOf(orgId));
 		
@@ -209,7 +209,7 @@ public class CriteriaAPI {
 	
 	public static Condition getCurrentOrgIdCondition(FacilioModule module) {
 		Condition idCondition = new Condition();
-		idCondition.setField(FieldFactory.getOrgIdField(module));
+		/*idCondition.setField(FieldFactory.getOrgIdField(module));*/
 		idCondition.setOperator(NumberOperators.EQUALS);
 		idCondition.setValue(String.valueOf(AccountUtil.getCurrentOrg().getOrgId()));
 		

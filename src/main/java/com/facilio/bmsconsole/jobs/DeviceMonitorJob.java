@@ -30,7 +30,7 @@ public class DeviceMonitorJob extends FacilioJob {
     private static final Logger LOGGER = LogManager.getLogger(DeviceMonitorJob.class.getName());
     private static final FacilioModule DEVICE_DETAILS_MODULE = ModuleFactory.getDeviceDetailsModule();
     private static final List<FacilioField> FIELDS = FieldFactory.getDeviceDetailsFields();
-    private static final FacilioField ORG_ID_FIELD = FieldFactory.getOrgIdField(DEVICE_DETAILS_MODULE);
+    /*private static final FacilioField ORG_ID_FIELD = FieldFactory.getOrgIdField(DEVICE_DETAILS_MODULE);*/
     private static final FacilioField ID_FIELD = FieldFactory.getIdField(DEVICE_DETAILS_MODULE);
     private static final Condition IN_USE = CriteriaAPI.getCondition("IN_USE", "IN_USE", String.valueOf(1), NumberOperators.EQUALS);
     private static final long DEFAULT_TIMEOUT = 40*60*1000L;
@@ -39,7 +39,7 @@ public class DeviceMonitorJob extends FacilioJob {
 
         if(jc.getOrgId() != -1) {
             Condition orgIdCondition = new Condition();
-            orgIdCondition.setField(ORG_ID_FIELD);
+            /*orgIdCondition.setField(ORG_ID_FIELD);*/
             orgIdCondition.setOperator(NumberOperators.EQUALS);
             orgIdCondition.setValue(String.valueOf(jc.getOrgId()));
 

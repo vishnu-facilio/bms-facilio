@@ -362,7 +362,7 @@ public class ProcessXLS implements Command {
 			
 			fieldsList= new ArrayList<> (bean.getAllFields(lookupField.getLookupModule().getName()));
 			fieldsList.add(FieldFactory.getIdField(lookupField.getLookupModule()));
-			fieldsList.add(FieldFactory.getOrgIdField(lookupField.getLookupModule()));
+			/*fieldsList.add(FieldFactory.getOrgIdField(lookupField.getLookupModule()));*/
 			fieldsList.add(FieldFactory.getModuleIdField(lookupField.getLookupModule()));
 			
 			String collumnName = "NAME";

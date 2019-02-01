@@ -383,6 +383,7 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 		}
 		else {
 			StringBuilder moduleGroupBy = new StringBuilder();
+
 			moduleGroupBy.append(orgIdField.getCompleteColumnName())
 							.append(",")
 							.append(moduleIdField.getCompleteColumnName())
@@ -393,6 +394,11 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 					.append(",");
 			}
 			moduleGroupBy.append(groupBy);
+
+//			moduleGroupBy.append(moduleIdField.getCompleteColumnName())
+//						.append(",")
+//						.append(groupBy);
+
 			
 			builder.groupBy(moduleGroupBy.toString());
 		}
@@ -401,9 +407,6 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 		builder.select(selectFields);
 		
 		WhereBuilder whereCondition = new WhereBuilder();
-		Condition orgCondition = CriteriaAPI.getCondition(orgIdField, String.valueOf(AccountUtil.getCurrentOrg().getOrgId()), NumberOperators.EQUALS);
-		whereCondition.andCondition(orgCondition);
-		
 		Condition moduleCondition = CriteriaAPI.getCondition(moduleIdField, String.valueOf(module.getModuleId()), NumberOperators.EQUALS);
 		whereCondition.andCondition(moduleCondition);
 

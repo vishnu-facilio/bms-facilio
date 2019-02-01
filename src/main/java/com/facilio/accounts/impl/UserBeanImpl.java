@@ -1058,7 +1058,7 @@ public class UserBeanImpl implements UserBean {
 		fields.addAll(AccountConstants.getPortalUserFields());
 		fields.addAll(AccountConstants.getUserFields());
 		fields.addAll(AccountConstants.getOrgUserFields());
-		fields.add(FieldFactory.getOrgIdField(portalInfoModule));
+		/*fields.add(FieldFactory.getOrgIdField(portalInfoModule));*/
 		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(fields)
@@ -1086,7 +1086,7 @@ public class UserBeanImpl implements UserBean {
 		fields.addAll(AccountConstants.getPortalUserFields());
 		fields.addAll(AccountConstants.getUserFields());
 		fields.addAll(AccountConstants.getOrgUserFields());
-		fields.add(FieldFactory.getOrgIdField(portalInfoModule));
+		/*fields.add(FieldFactory.getOrgIdField(portalInfoModule));*/
 		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(fields)
@@ -1115,7 +1115,7 @@ public class UserBeanImpl implements UserBean {
 		fields.addAll(AccountConstants.getPortalUserFields());
 		fields.addAll(AccountConstants.getUserFields());
 		fields.addAll(AccountConstants.getOrgUserFields());
-		fields.add(FieldFactory.getOrgIdField(portalInfoModule));
+		/*fields.add(FieldFactory.getOrgIdField(portalInfoModule));*/
 		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(fields)
@@ -1404,7 +1404,7 @@ public class UserBeanImpl implements UserBean {
 		fields.addAll(AccountConstants.getPortalUserFields());
 		fields.addAll(AccountConstants.getUserFields());
 		fields.addAll(AccountConstants.getOrgUserFields());
-		fields.add(FieldFactory.getOrgIdField(portalInfoModule));
+		/*fields.add(FieldFactory.getOrgIdField(portalInfoModule));*/
 		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(fields)

@@ -19,6 +19,8 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
+import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.FieldUtil;
@@ -31,12 +33,14 @@ import com.facilio.transaction.FacilioConnectionPool;
 public class GenericUpdateRecordBuilder implements UpdateBuilderIfc<Map<String, Object>> {
 	private static final Logger LOGGER = LogManager.getLogger(GenericUpdateRecordBuilder.class.getName());
 	private List<FacilioField> fields;
+	private FacilioField orgIdField = null;
 	private Map<String, List<FacilioField>> fieldMap;
 	private String baseTableName;
 	private String tableName;
 	private Map<String, Object> value;
 	private StringBuilder joinBuilder = new StringBuilder();
 	private WhereBuilder where = new WhereBuilder();
+	private WhereBuilder oldWhere = null;
 	private Connection conn = null;
 	
 	public GenericUpdateRecordBuilder() {
@@ -214,9 +218,13 @@ public class GenericUpdateRecordBuilder implements UpdateBuilderIfc<Map<String, 
 	@Override
 	public int update(Map<String, Object> value) throws SQLException {
 		checkForNull();
+		handleOrgId();
 		splitFields();
 		if (value == null) {
 			return 0;
+		}
+		if (orgIdField != null) {
+			value.put(orgIdField.getName(), AccountUtil.getCurrentOrg().getId());
 		}
 		value.remove("id");
 		this.value = value;
@@ -287,6 +295,10 @@ public class GenericUpdateRecordBuilder implements UpdateBuilderIfc<Map<String, 
 					conn = null;
 				}
 			}
+			
+			if(orgIdField != null) {
+				where = oldWhere;
+			}
 		}
 		return 0;
 	}
@@ -317,6 +329,20 @@ public class GenericUpdateRecordBuilder implements UpdateBuilderIfc<Map<String, 
 			return fieldMap;
 		}
 		return null;
+	}
+	
+	public void handleOrgId() {
+		if (!DBUtil.isTableWithoutOrgId(tableName)) {
+			orgIdField = DBUtil.getOrgIdField(tableName);
+			
+			WhereBuilder whereCondition = new WhereBuilder();
+			Condition orgCondition = CriteriaAPI.getCondition(orgIdField, String.valueOf(AccountUtil.getCurrentOrg().getOrgId()), NumberOperators.EQUALS);
+			whereCondition.andCondition(orgCondition);
+			
+			oldWhere = where;
+			where = whereCondition.andCustomWhere(where.getWhereClause(), where.getValues());
+		}
+		
 	}
 	
 	private void checkForNull() {

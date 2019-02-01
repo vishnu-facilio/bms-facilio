@@ -13,15 +13,21 @@ import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
+import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.criteria.NumberOperators;
+import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.transaction.FacilioConnectionPool;
 
 public class GenericDeleteRecordBuilder implements DeleteBuilderIfc<Map<String, Object>> {
 	private static final Logger LOGGER = LogManager.getLogger(GenericDeleteRecordBuilder.class.getName());
 	private String tableName;
+	private FacilioField orgIdField = null;
 	private WhereBuilder where = new WhereBuilder();
+	private WhereBuilder oldWhere = null;
 	private StringBuilder joinBuilder = new StringBuilder();
 	private StringJoiner tablesToBeDeleted = new StringJoiner(",");
 	private Connection conn = null;
@@ -139,6 +145,7 @@ public class GenericDeleteRecordBuilder implements DeleteBuilderIfc<Map<String, 
 	@Override
 	public int delete() throws SQLException {
 		checkForNull();
+		handleOrgId();
 		PreparedStatement pstmt = null;
 		
 		boolean isExternalConnection = true;
@@ -176,6 +183,10 @@ public class GenericDeleteRecordBuilder implements DeleteBuilderIfc<Map<String, 
 				DBUtil.closeAll(conn, pstmt);
 				conn = null;
 			}
+			
+			if(orgIdField != null) {
+				where = oldWhere;
+			}
 		}
 	}
 	
@@ -202,6 +213,19 @@ public class GenericDeleteRecordBuilder implements DeleteBuilderIfc<Map<String, 
 		}
 	}
 	
+	public void handleOrgId() {
+		if (!DBUtil.isTableWithoutOrgId(tableName)) {
+			orgIdField = DBUtil.getOrgIdField(tableName);
+			
+			WhereBuilder whereCondition = new WhereBuilder();
+			Condition orgCondition = CriteriaAPI.getCondition(orgIdField, String.valueOf(AccountUtil.getCurrentOrg().getOrgId()), NumberOperators.EQUALS);
+			whereCondition.andCondition(orgCondition);
+			
+			oldWhere = where;
+			where = whereCondition.andCustomWhere(where.getWhereClause(), where.getValues());
+		}
+		
+	}
 	public static class GenericJoinBuilder implements JoinBuilderIfc<GenericDeleteRecordBuilder> {
 
 		private GenericDeleteRecordBuilder parentBuilder;
