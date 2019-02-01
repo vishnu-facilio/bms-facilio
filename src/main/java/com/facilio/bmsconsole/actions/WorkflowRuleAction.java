@@ -13,6 +13,7 @@ import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.ActionForm;
+import com.facilio.bmsconsole.context.AlarmContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.DateOperators;
 import com.facilio.bmsconsole.modules.FacilioModule;
@@ -522,8 +523,37 @@ public class WorkflowRuleAction extends FacilioAction {
 		Chain workflowRuleType = ReadOnlyChainFactory.fetchWorkflowRules();
 		workflowRuleType.execute(context);
 		workflowRuleList = (List<WorkflowRuleContext>) context.get(FacilioConstants.ContextNames.WORKFLOW_RULE_LIST);
+		if (getIsCount() != null) {
+			if (workflowRuleList != null) {
+			setCount(workflowRuleList.size());
+			System.out.println("data" + getCount());
+			}
+		}
 		setResult("rules", workflowRuleList);
 		return SUCCESS;
 
+	}
+	
+	public String v2rulesCount () throws Exception {
+		v2RulesList();
+		long listCount = getCount();
+		setResult("count", listCount);
+		return SUCCESS;
+	}
+private String isCount;
+	
+	
+	public String getIsCount() {
+		return isCount;
+	}
+	public void setIsCount(String isCount) {
+		this.isCount = isCount;
+	}
+	private long count ;
+	public long getCount() {
+		return count;
+	}
+	public void setCount(long count) {
+		this.count = count;
 	}
 }

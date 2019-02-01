@@ -299,6 +299,10 @@
 			<param name="viewName">{1}</param>
 			<param name="ruleType">1</param>
 		</action>
+		<action name="rulesCount" class="com.facilio.bmsconsole.actions.WorkflowRuleAction" method="v2rulesCount">
+			<param name="moduleName">workflowrule</param>
+			<param name="permission">READ,READ_TEAM,READ_OWN</param>
+		</action>
 	</package>
 	
 	<package name = "eventApiV2" namespace="/api/v2/events" extends = "v2Api">
