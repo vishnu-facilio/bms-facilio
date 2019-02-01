@@ -257,6 +257,7 @@ public class V2ReportAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.CHART_STATE, chartState);
 		context.put(FacilioConstants.ContextNames.TABULAR_STATE, tabularState);
 		context.put(FacilioConstants.ContextNames.REPORT, reportContext);
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
 		
 		Chain addReadingReport = TransactionChainFactory.addOrUpdateReadingReportChain();
 		addReadingReport.execute(context);

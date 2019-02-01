@@ -15,10 +15,8 @@ import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.ModuleFactory;
-import com.facilio.bmsconsole.templates.EMailTemplate;
 import com.facilio.bmsconsole.workflow.rule.ActivityType;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.fs.FileInfo.FileFormat;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
@@ -31,8 +29,6 @@ public class ScheduleV2ReportCommand implements Command {
 	public boolean execute(Context context) throws Exception {
 		ReportInfo reportInfo = (ReportInfo) context.get(FacilioConstants.ContextNames.SCHEDULE_INFO);
 		
-		FileFormat fileFormat = reportInfo.getFileFormatEnum();
-		EMailTemplate emailTemplate = reportInfo.getEmailTemplate();
 		
 		String moduleName = reportInfo.getModuleName();
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -43,8 +39,9 @@ public class ScheduleV2ReportCommand implements Command {
 		props.put("reportId", reportInfo.getReportId());
 		props.put("orgId", AccountUtil.getCurrentOrg().getId());
 		props.put("moduleId", reportModule.getModuleId());
-		props.put("fileFormat", fileFormat.getIntVal());
-		props.put("templateId", emailTemplate.getId());
+		props.put("fileFormat", reportInfo.getFileFormatEnum().getIntVal());
+		props.put("templateId", reportInfo.getEmailTemplate().getId());
+		props.put("printParams", reportInfo.getPrintParams().toJSONString());
 		
 		FacilioModule module = ModuleFactory.getReportScheduleInfo();
 		List<FacilioField> fields = FieldFactory.getReportScheduleInfo1Fields();

@@ -87,6 +87,14 @@ public class ReportUtil {
 			report.setTransformWorkflow(transformWorkflow);
 		}
 		
+		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
+		if (moduleName != null) {
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			FacilioModule module = modBean.getModule(moduleName);
+			report.setModuleId(module.getModuleId());		
+		}
+		
+		
 		return report;
 	}
 	

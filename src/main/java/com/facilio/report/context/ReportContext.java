@@ -371,6 +371,14 @@ public class ReportContext {
 	public void setType(int type) {
 		this.type = ReportType.valueOf(type);
 	}
+	
+	private long moduleId = -1;
+	public long getModuleId() {
+		return moduleId;
+	}
+	public void setModuleId(long moduleId) {
+		this.moduleId = moduleId;
+	}
 
 	private Class<? extends TransformReportDataIfc> transformClass;
 	public Class<? extends TransformReportDataIfc> getTransformClassObject() {
