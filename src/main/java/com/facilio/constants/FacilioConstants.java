@@ -597,6 +597,7 @@ public class FacilioConstants {
 		public static final String READING_KEY="readingKey";
 		public static final String CONFIGURE="configure";
 		public static final String SUBSCRIBE="subscribe";
+		public static final String UNSUBSCRIBE_IDS="unsubscribeIds";
 		public static final String UPDATE_LAST_READINGS = "updateLastReadings";
 		public static final String SKIP_LAST_READING_CHECK = "skipLastReadingCheck";
 		public static final String PREVIOUS_READING_DATA_META = "previousReadingDataMeta";
@@ -675,6 +676,8 @@ public class FacilioConstants {
 		
 		public static final String IDS_TO_UPDATE_TASK_COUNT = "ids_to_update_task_count";
 		public static final String IDS_TO_UPDATE_COUNT = "ids_to_update_count";
+		
+		public static final String PAGE = "page";
 		
 		private static Map<String, Class> classMap = Collections.unmodifiableMap(initClassMap());
 		private static Map<String, Class> initClassMap() {

@@ -468,6 +468,8 @@
 	<package name="readingFieldLatestValuesApiv2" namespace="/api/v2/reading" extends="v2Api">
 		<action name="set" class="com.facilio.bmsconsole.actions.ReadingAction" method="setReading">
 		</action>
+		<action name="get" class="com.facilio.bmsconsole.actions.ReadingAction" method="getLiveReading">
+		</action>
 		<action name="update" class="com.facilio.bmsconsole.actions.ReadingAction" method="updateRDM">
 		</action>
 		<action name="occupantdata" class="com.facilio.bmsconsole.actions.ReadingAction" method="getResourcesOccupantLatestReadingData">
@@ -662,14 +664,28 @@
 	
 	<package name="instancesApiv2" namespace="/api/v2/instances" extends="v2Api">
 		<action name="configure" class="com.facilio.bmsconsole.actions.TimeSeries" method="configureInstances">
+			<param name="moduleName">setup</param>
+			<param name="permission">CONTROLLER</param>
 		</action>
 		<action name="subscribe" class="com.facilio.bmsconsole.actions.TimeSeries" method="subscribeInstances">
+			<param name="moduleName">setup</param>
+			<param name="permission">CONTROLLER</param>
+		</action>
+		<action name="unsubscribe" class="com.facilio.bmsconsole.actions.TimeSeries" method="unsubscribeInstances">
+			<param name="moduleName">setup</param>
+			<param name="permission">CONTROLLER</param>
 		</action>
 		<action name="map" class="com.facilio.bmsconsole.actions.TimeSeries" method="mapInstance">
+			<param name="moduleName">setup</param>
+			<param name="permission">CONTROLLER</param>
 		</action>
 		<action name="mapped" class="com.facilio.bmsconsole.actions.TimeSeries" method="getMappedInstances">
+			<param name="moduleName">setup</param>
+			<param name="permission">CONTROLLER</param>
 		</action>
 		<action name="discover" class="com.facilio.bmsconsole.actions.TimeSeries" method="discoverInstances">
+			<param name="moduleName">setup</param>
+			<param name="permission">CONTROLLER</param>
 		</action>
 		<action name="count" class ="com.facilio.bmsconsole.actions.TimeSeries" method ="getInstancesForController">
 		     <param name="showInstanceCount">true</param>
@@ -707,4 +723,13 @@
 	
 	
 	
+	
+	<package name="pageApiv2" namespace="/api/v2/pages" extends="v2Api">
+		<action name="*" class="com.facilio.bmsconsole.actions.PageAction" method="fetchPage">
+			<param name="moduleName">asset</param>
+			<param name="permission">READ</param>
+			<param name="module">{1}</param>
+		</action>
+	</package>
+		
 </struts>

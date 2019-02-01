@@ -488,6 +488,12 @@ public class TransactionChainFactory {
 			return c;
 		}
 		
+		public static Chain getUnSubscribeInstanceChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new UnsubscribeInstanceIoTCommand());
+			return c;
+		}
+		
 		public static Chain getChangePreventiveMaintenanceStatusChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(new ChangePreventiveMaintenanceStatusCommand());
