@@ -12,6 +12,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.struts2.ServletActionContext;
+
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
@@ -445,45 +449,52 @@ public abstract class FileStore {
 	}
 
 	public String getPrivateUrl(long fileId) throws Exception {
+		String request = ServletActionContext.getRequest().getRequestURL().toString();
 		if (AwsUtil.isDevelopment()) {
 			return AwsUtil.getConfig("clientapp.url")+"/api/v2/files/preview/" + fileId;
 		}
 		else {
-			if (AccountUtil.getCurrentUser() == null || AccountUtil.getCurrentUser().isPortalUser()) {
+//		if (AccountUtil.getCurrentUser() == null || AccountUtil.getCurrentUser().isPortalUser()) {
+
+			if (request != null && request.contains("service")) {
 				return "/api/v2/service/files/preview/" + fileId;
 			}
 			else {
 				return "/api/v2/files/preview/" + fileId;
 			}
-		 }
+		  }
 	}
 	
 	public String getPrivateUrl(long fileId, int width) throws Exception {
+		String request = ServletActionContext.getRequest().getRequestURL().toString();
 		if (AwsUtil.isDevelopment()) {
 			return AwsUtil.getConfig("clientapp.url")+"/api/v2/files/preview/" + fileId +"?width=" + width;
 		}
 		else {
-		if (AccountUtil.getCurrentUser() == null || AccountUtil.getCurrentUser().isPortalUser()) {
+//			if (AccountUtil.getCurrentUser() == null || AccountUtil.getCurrentUser().isPortalUser()) {
+		if (request != null && request.contains("service")) {
 				return "/api/v2/service/files/preview/" + fileId +"?width=" + width;
 			}
 			else {
 				return "/api/v2/files/preview/" + fileId +"?width=" + width;
 			}
-		 }
+		  }
 	}
 	
 	public String getDownloadUrl(long fileId) throws Exception {
+		String request = ServletActionContext.getRequest().getRequestURL().toString();
 		if (AwsUtil.isDevelopment()) {
 			return AwsUtil.getConfig("clientapp.url")+"/api/v2/files/download/" + fileId;
 		}
 		else {
-			if (AccountUtil.getCurrentUser() == null || AccountUtil.getCurrentUser().isPortalUser()) {
+//			if (AccountUtil.getCurrentUser() == null || AccountUtil.getCurrentUser().isPortalUser()) {
+			if (request != null && request.contains("service")) {
 				return "/api/v2/service/files/download/" + fileId;
 			}
 			else  {
 				return "/api/v2/files/download/" + fileId;
 			}
-		}
+		 }
 	}
 	
 	public int markAsDeleted(List<Long> fileIds) throws SQLException {
