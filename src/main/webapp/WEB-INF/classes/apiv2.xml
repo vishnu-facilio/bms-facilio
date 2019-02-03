@@ -720,16 +720,12 @@
 		</action>
 	</package>
 	
-	
-	
-	
-	
-	<package name="pageApiv2" namespace="/api/v2/pages" extends="v2Api">
+	<!-- <package name="pageApiv2" namespace="/api/v2/pages" extends="v2Api">
 		<action name="*" class="com.facilio.bmsconsole.actions.PageAction" method="fetchPage">
 			<param name="moduleName">asset</param>
 			<param name="permission">READ</param>
 			<param name="module">{1}</param>
 		</action>
-	</package>
+	</package> -->
 		
 </struts>
