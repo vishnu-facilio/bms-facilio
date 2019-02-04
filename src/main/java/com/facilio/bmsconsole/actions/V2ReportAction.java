@@ -517,6 +517,7 @@ public class V2ReportAction extends FacilioAction {
 		chain.execute(context);
 
 		setResult("message", "Report saved");
+		setResult("report", reportContext);
 		return SUCCESS;
 	}
 
