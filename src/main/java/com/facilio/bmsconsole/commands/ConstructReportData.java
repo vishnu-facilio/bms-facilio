@@ -114,6 +114,11 @@ public class ConstructReportData implements Command {
 				FacilioField field = modBean.getField((long) groupByJSON.get("field_id"));
 				groupByField.setField(field);
 				groupByField.setAlias(field.getName());
+
+				if (groupByJSON.containsKey("aggr")) {
+					groupByField.setAggr(AggregateOperator.getAggregateOperator(((Number) groupByJSON.get("aggr")).intValue()));
+				}
+				
 				groupByFields.add(groupByField);
 			}
 			dataPointContext.setGroupByFields(groupByFields);
@@ -124,7 +129,8 @@ public class ConstructReportData implements Command {
 			dataPointContext.setCriteria(criteria);
 		}
 		
-		if (context.containsKey("sort_fields")) {
+		JSONArray sortFields = (JSONArray) context.get("sort_fields");
+		if (sortFields != null) {
 			List<String> orderBy = new ArrayList<>();
 			JSONArray orderByArray = (JSONArray) context.get("sort_fields");
 			for (int i = 0; i < orderByArray.size(); i++) {
