@@ -428,6 +428,10 @@ public class ReportsUtil
 	{
 		List<Map<String, Object>> result=null;
 		
+		if (deviceList.trim().isEmpty()) {
+			return Collections.EMPTY_LIST;
+		}
+		
 		FacilioField energyFld = ReportsUtil.getEnergyField();
 		List<FacilioField> fields = new ArrayList<>();
 		fields.add(energyFld);
