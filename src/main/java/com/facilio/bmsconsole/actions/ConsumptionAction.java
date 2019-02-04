@@ -68,8 +68,8 @@ public class ConsumptionAction  extends FacilioAction{
 		
 		public String getTotalConsumptionForBuilding() throws Exception {
 			FacilioContext context = new FacilioContext();
-			context.put(FacilioConstants.ContextNames.MODULE_NAME, getModuleName());
-			context.put(FacilioConstants.ContextNames.MODULE_FIELD_NAME, getFieldName());
+		//	context.put(FacilioConstants.ContextNames.MODULE_NAME, getModuleName());
+		//	context.put(FacilioConstants.ContextNames.MODULE_FIELD_NAME, getFieldName());
 			context.put(FacilioConstants.ContextNames.WORK_ORDER_STARTTIME, getStartTime());
 			context.put(FacilioConstants.ContextNames.WORK_ORDER_ENDTIME, getEndTime());
 			

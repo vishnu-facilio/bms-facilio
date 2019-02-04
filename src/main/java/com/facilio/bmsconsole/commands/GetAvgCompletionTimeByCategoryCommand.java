@@ -40,8 +40,8 @@ public class GetAvgCompletionTimeByCategoryCommand implements Command {
 			
 			Map<Long, Object> ticketCategoryArray = WorkOrderAPI.getLookupFieldPrimary("ticketcategory");
 
-			 Map<Long, Object> siteArray = WorkOrderAPI.getLookupFieldPrimary("site");
-
+			List<Object> techNameObj = new ArrayList<Object>();
+			List<Object> closedWoCountObj = new ArrayList<Object>();
 		
 			 Map<Long, Map<String, Object>> resp = new HashMap<Long, Map<String, Object>>();
 			for (int i = 0; i < avgResolutionTimeByCategory.size(); i++) {
@@ -50,173 +50,84 @@ public class GetAvgCompletionTimeByCategoryCommand implements Command {
 				Long count = (Long) mp.get("count");
 				Long categoryId = (Long) mp.get("category");
 				String categoryName = (String) ticketCategoryArray.get(categoryId);
-				
-				Long siteId = (Long) mp.get("siteId");
-				String siteName = (String) siteArray.get(siteId);
-				List<Long> allSites = getAllSiteList();
-				
-				Map<Long, Object> sitesMap = new HashMap<Long, Object>();
-
-				if (resp.containsKey(categoryId)) {
-					sitesMap = (Map<Long, Object>) resp.get(categoryId).get("sitesMap");
-				}
-
-				else {
-					
-					sitesMap = new HashMap<Long, Object>();
-					
-					for(int j=0;j<allSites.size();j++)
-					{
-						Long id = allSites.get(j);
-						Map<String,Object> eachSite = new HashMap<String, Object>();
-						eachSite.put("siteId", id);
-						eachSite.put("siteName", siteArray.get(id));
-						eachSite.put("avgResolutionTime", 0);
-						eachSite.put("count", 0);
-						
-						sitesMap.put(allSites.get(j),eachSite);
-					}
-					Map<String,Object> categoryInfo = new HashMap<String, Object>();
-						categoryInfo.put("categoryId", categoryId);
-						categoryInfo.put("categoryName", categoryName);
-						categoryInfo.put("sitesMap", sitesMap);
-						resp.put(categoryId,categoryInfo);
-					
-				}
-				Map<String, Object> group = (Map<String, Object>)sitesMap.get(siteId);
-				
-				group.put("siteId", siteId);
-				group.put("siteName", siteName);
+				Map<String,Object> categoryInfo = new HashMap<String, Object>();
+				categoryInfo.put("categoryId", categoryId);
+				categoryInfo.put("categoryName", categoryName);
 				avgResolutionTime = Math.round(avgResolutionTime*100.0)/100.0;
-				group.put("avgResolutionTime", avgResolutionTime);
-				group.put("count", count);
+				categoryInfo.put("avgResolutionTime",avgResolutionTime );
+				resp.put(categoryId,categoryInfo);
 				
-				sitesMap.put(siteId,group);
-				
+				techNameObj.add(categoryName);
+				closedWoCountObj.add(avgResolutionTime);
+		
 				
 			}
 			
 			List<Map<String,Object>> tableResp = new ArrayList<Map<String,Object>>(resp.values());
 			
-			for(int i=0;i<tableResp.size();i++)
-			{
-				Map<String,Object> eachCategory = tableResp.get(i);
-				Map<Long,Map<String, Object>> sitesMap = (Map<Long,Map<String, Object>>)eachCategory.get("sitesMap");
-				List<Map<String,Object>> siteResp = new ArrayList<Map<String,Object>>(sitesMap.values());
-				eachCategory.put("resolutionTimeGrouping",siteResp );
-				eachCategory.remove("sitesMap");
-				
-			}
-			
-					
 			//desired resp for chart
-			List<Map<String,Object>> graphResp = new ArrayList<Map<String,Object>>();
-					
 			
-			for(int i=0;i<tableResp.size();i++)
-			{
-				Map<String,Object> category = tableResp.get(i) ;
-				List<Object> siteNameObj = new ArrayList<Object>();
-				List<Object> resolutionTimeObj = new ArrayList<Object>();
-						
-				Map<String,Object> perCategoryGraphResp = new HashMap<String, Object>();
-				Map<String,List<Object>> dataResp = new HashMap<String, List<Object>>();
-				
-				List<Map<String,Object>> siteGroup = (List<Map<String, Object>>) category.get("resolutionTimeGrouping");
-				for(int j=0;j<siteGroup.size();j++)
-				{
-					Map<String,Object> siteObj = siteGroup.get(j);	
-					siteNameObj.add(siteObj.get("siteName"));
-					resolutionTimeObj.add(siteObj.get("avgResolutionTime"));
-				}
-				
-				dataResp.put("x", siteNameObj);
-				dataResp.put("y", resolutionTimeObj);
-				
-				
-				Map<String,Object> axisResp = new HashMap<String, Object>();
-				Map<String,Object> xAxisResp = new HashMap<String, Object>();
-				Map<String,Object> yAxisResp = new HashMap<String, Object>();
-				
-				Map<String,Object> xLabelObject = new HashMap<String, Object>();
-				xLabelObject.put("text", "Site");
-				
-				Map<String,Object> yLabelObject = new HashMap<String, Object>();
-				yLabelObject.put("text", "Avg Resolution Time");
-				
-				xAxisResp.put("label", xLabelObject);
-				xAxisResp.put("datatype","string");
-				yAxisResp.put("label", yLabelObject);
-					
-				axisResp.put("x",xAxisResp);
-				axisResp.put("y",yAxisResp);
-				
-				
-				List<Map<String,Object>> dataPointsResp = new ArrayList<Map<String,Object>>();
-				Map<String,Object> avgResolutionTimeItem = new HashMap<String, Object>();
-				avgResolutionTimeItem.put("key","avgResolutionTime");
-				avgResolutionTimeItem.put("label","ResolutionTime");
-				avgResolutionTimeItem.put("color","#39C2B0");
-				avgResolutionTimeItem.put("type","datapoint");
-				
-				dataPointsResp.add(avgResolutionTimeItem);
+			Map<String,Object> axisResp = new HashMap<String, Object>();
+			Map<String,Object> xAxisResp = new HashMap<String, Object>();
+			Map<String,Object> yAxisResp = new HashMap<String, Object>();
+			Map<String,List<Object>> dataResp = new HashMap<String, List<Object>>();
+			Map<String,Object> categoryGraphResp = new HashMap<String, Object>();
 			
-				Map<String,Object> optionsResp = new HashMap<String, Object>();
-				optionsResp.put("axis",axisResp);
-				optionsResp.put("type","bar");
-				optionsResp.put("dataPoints",dataPointsResp);
-				optionsResp.put("widgetLegend",false);
+			
+			Map<String,Object> xLabelObject = new HashMap<String, Object>();
+			xLabelObject.put("text", "Category");
+			
+			Map<String,Object> yLabelObject = new HashMap<String, Object>();
+			yLabelObject.put("text", "Avg Resolution Time");
+			
+			xAxisResp.put("label", xLabelObject);
+			xAxisResp.put("datatype","string");
+			yAxisResp.put("label", yLabelObject);
 				
-				
-				perCategoryGraphResp.put("data",dataResp);
-				perCategoryGraphResp.put("options",optionsResp);
-				perCategoryGraphResp.put("categoryId",category.get("categoryId"));
-				perCategoryGraphResp.put("categoryName",category.get("categoryName"));
-				
-				graphResp.add(perCategoryGraphResp);
-				
-			}
+			axisResp.put("x",xAxisResp);
+			axisResp.put("y",yAxisResp);
+			
+			List<Map<String,Object>> dataPointsResp = new ArrayList<Map<String,Object>>();
+			Map<String,Object> avgResolutionTimeItem = new HashMap<String, Object>();
+			avgResolutionTimeItem.put("key","avgResolutionTime");
+			avgResolutionTimeItem.put("label","AvgResolutionTime");
+			avgResolutionTimeItem.put("color","#CF77DB");
+			avgResolutionTimeItem.put("type","datapoint");
+			
+			dataPointsResp.add(avgResolutionTimeItem);
+		
+			Map<String,Object> optionsResp = new HashMap<String, Object>();
+			optionsResp.put("axis",axisResp);
+			optionsResp.put("type","bar");
+			optionsResp.put("dataPoints",dataPointsResp);
+			optionsResp.put("widgetLegend",false);
+			
+		
+			dataResp.put("x", techNameObj);
+			dataResp.put("y", closedWoCountObj);
+		
+			categoryGraphResp.put("data",dataResp);
+			categoryGraphResp.put("options",optionsResp);
+			
+		
 			
 			Map<String,Object> outputResp = new HashMap<String, Object>();
 			//this is for tabular response
 			outputResp.put("tabularData",tableResp);
 			
 			//this is for graph response
-			outputResp.put("graphData",graphResp);
-			context.put(FacilioConstants.ContextNames.WORK_ORDER_AVG_RESOLUTION_TIME, outputResp);
+			outputResp.put("graphData",categoryGraphResp);
+			
+		
+			
+		context.put(FacilioConstants.ContextNames.WORK_ORDER_AVG_RESOLUTION_TIME, outputResp);
 			
 
 		
 		return false;
 	}
 	
-	private List<Long> getAllSiteList() throws Exception
-	{
 		
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-
-		FacilioModule sitesModule = modBean.getModule(FacilioConstants.ContextNames.SITE);
-		List<FacilioField> siteFields = modBean.getAllFields(sitesModule.getName());
-		
-
-		SelectRecordsBuilder<SiteContext> selectRecordsBuilder = new SelectRecordsBuilder<SiteContext>()
-				  													  .module(sitesModule)
-				  													  .beanClass(SiteContext.class)
-				  													  .select(siteFields)
-				  													  ;
-
-
-
-		Map<Long, SiteContext> sitesMap  = selectRecordsBuilder.getAsMap();
-		List<Long> siteIds = new ArrayList<Long>(sitesMap.keySet());
-				
-		return siteIds;
-	        
-      
-
-
-	}
-	
 }
 
 

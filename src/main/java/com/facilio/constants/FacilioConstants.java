@@ -169,7 +169,11 @@ public class FacilioConstants {
 		public static final String WORK_ORDER_AVG_RESOLUTION_TIME = "avgCompletionTimeByCategory";
 		public static final String WORK_ORDER_STARTTIME = "starttime";
 		public static final String WORK_ORDER_ENDTIME = "endtime";
-		
+		public static final String WORK_ORDER_COUNT_BY_SITE = "workOrderCountBySite";
+		public static final String WORK_ORDER_TECHNICIAN_COUNT = "workOrderTechCount";
+		public static final String TOP_N_TECHNICIAN = "topNTechnician";
+		public static final String WORKORDER_INFO_BY_SITE = "workOrderInfoBySite";
+			
 		public static final String PERMALINK_FOR_URL = "permalinkForUrl";
 		public static final String PERMALINK_TOKEN_FOR_URL = "permalinkTokenForUrl";
 		
@@ -544,6 +548,8 @@ public class FacilioConstants {
 		public static final String GROUP_STATUS = "groupStatus";
 		
 		public static final String TECH_COUNT_GROUP_DIGEST = "techCountGroupDigest";
+		public static final String SITE_ROLE_WISE_COUNT= "siteRoleWiseCount";
+		public static final String SITE_ROLE_WO_COUNT= "siteRoleWoCount";
 		
 		
 		public static final String VIEWID = "viewId";

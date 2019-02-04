@@ -233,6 +233,34 @@
 			</result>
 		</action>
 		
+		<action name="topNTechnicians" class="com.facilio.bmsconsole.actions.WorkOrderAction"
+			method="getTopNTechnicians">
+			<param name="moduleName">workorder</param>
+			<param name="permission">READ,READ_TEAM,READ_OWN</param>
+			<result name="success" type="json">
+				<param name="includeProperties">topTechnicians,topTechnicians\[\d+\],topTechnicians\[\d+\].*,^topTechnicians.*</param>
+			</result>
+		</action>
+		
+		
+		<action name="woCountBySite" class="com.facilio.bmsconsole.actions.WorkOrderAction"
+			method="getWoCountBySite">
+			<param name="moduleName">workorder</param>
+			<param name="permission">READ,READ_TEAM,READ_OWN</param>
+			<result name="success" type="json">
+				<param name="includeProperties">workOrderBySite,workOrderBySite\[\d+\],workOrderBySite\[\d+\].*,^workOrderBySite.*</param>
+			</result>
+		</action>
+		
+		<action name="avgResolutionResponseTimeBySite" class="com.facilio.bmsconsole.actions.WorkOrderAction"
+			method="getAvgResolutionResponseTimeBySite">
+			<param name="moduleName">workorder</param>
+			<param name="permission">READ,READ_TEAM,READ_OWN</param>
+			<result name="success" type="json">
+				<param name="includeProperties">avgResponseResolution,avgResponseResolution\[\d+\],avgResponseResolution\[\d+\].*,^avgResponseResolution.*</param>
+			</result>
+		</action>
+		
 	
 		
 	</package>
