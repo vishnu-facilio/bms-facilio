@@ -43,7 +43,7 @@ public class ExecuteScheduledAlarmTriggerCommand implements Command {
 		
 		while (currentWorkflows != null && !currentWorkflows.isEmpty()) {
 			Criteria criteria = WorkflowRuleAPI.executeWorkflowsAndGetChildRuleCriteria(currentWorkflows, module.getName(), null, null, null, recordPlaceHolders, (FacilioContext)context,true);
-			if (criteria == null) {
+			if (criteria == null || criteria.isEmpty()) {
 				break;
 			}
 			currentWorkflows = WorkflowRuleAPI.getActiveWorkflowRulesFromActivityAndRuleType(module.getModuleId(), Collections.singletonList(event.getActivityTypeEnum()), criteria, ruleTypes);

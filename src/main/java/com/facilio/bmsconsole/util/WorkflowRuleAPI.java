@@ -847,15 +847,18 @@ public class WorkflowRuleAPI {
 			for(WorkflowRuleContext workflowRule : workflowRules) {
 				try {
 					long workflowStartTime = System.currentTimeMillis();
+					workflowRule.setTerminateExecution(false);
 					boolean result = WorkflowRuleAPI.evaluateWorkflow(workflowRule, moduleName, record, changeSet, recordPlaceHolders, context);
+					
 					if (AccountUtil.getCurrentOrg().getId() == 133 && FacilioConstants.ContextNames.ALARM.equals(moduleName)) {
 						LOGGER.info("Result of rule : "+workflowRule.getId()+" for record : "+record+" is "+result);
 					}
-					
-					Criteria currentCriteria = new Criteria();
-					currentCriteria.addAndCondition(CriteriaAPI.getCondition(parentRule, String.valueOf(workflowRule.getId()), NumberOperators.EQUALS));
-					currentCriteria.addAndCondition(CriteriaAPI.getCondition(onSuccess, String.valueOf(result), BooleanOperators.IS));
-					criteria.orCriteria(currentCriteria);
+					if(!workflowRule.isTerminateExecution()) {
+						Criteria currentCriteria = new Criteria();
+						currentCriteria.addAndCondition(CriteriaAPI.getCondition(parentRule, String.valueOf(workflowRule.getId()), NumberOperators.EQUALS));
+						currentCriteria.addAndCondition(CriteriaAPI.getCondition(onSuccess, String.valueOf(result), BooleanOperators.IS));
+						criteria.orCriteria(currentCriteria);
+					}
 					LOGGER.debug("Time taken to execute rule : "+workflowRule.getName()+" with id : "+workflowRule.getId()+" for module : "+moduleName+" is "+(System.currentTimeMillis() - workflowStartTime));
 					
 					if (result) {
