@@ -9,6 +9,8 @@ import java.util.Map;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
@@ -18,6 +20,7 @@ import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.bmsconsole.util.ActionAPI;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.tasker.ScheduleInfo;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
 
@@ -35,6 +38,36 @@ public class WorkflowRuleContext implements Serializable {
 		this.orgId = orgId;
 	}
 	
+	private boolean terminateExecution = false;
+	
+	public boolean isTerminateExecution() {
+		return terminateExecution;
+	}
+	public void setTerminateExecution(boolean terminateExecution) {
+		this.terminateExecution = terminateExecution;
+	}
+	
+	private ScheduleInfo schedule;
+	public ScheduleInfo getSchedule() {
+		return schedule;
+	}
+	public void setSchedule(ScheduleInfo schedule) {
+		this.schedule = schedule;
+	}
+	
+	public String getScheduleJson() throws Exception {
+		if(schedule != null) {
+			return FieldUtil.getAsJSON(schedule).toJSONString();
+		}
+		return null;
+	}
+	public void setScheduleJson(String jsonString) throws Exception {
+		if(jsonString != null) {
+			JSONParser parser = new JSONParser();
+			this.schedule = FieldUtil.getAsBeanFromJson((JSONObject)parser.parse(jsonString), ScheduleInfo.class);
+		}
+	}
+
 	private long siteId = -1;
 	public long getSiteId() {
 		return siteId;

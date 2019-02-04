@@ -223,6 +223,7 @@ public class TransactionChainFactory {
 			Chain c = getDefaultChain();
 			c.addCommand(new AddAlarmRuleCommand());
 			c.addCommand(new AddActionForAlarmRuleCommand());
+			c.addCommand(new AddJobEntryForScheduledReadingRuleCommand());
 			return c;
 		}
 		

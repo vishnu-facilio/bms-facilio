@@ -861,6 +861,7 @@ public class FieldFactory {
 		fields.add(getField("onSuccess", "ON_SUCCESS", module, FieldType.BOOLEAN));
 		fields.add(getField("versionGroupId", "VERSION_GROUP_ID", module, FieldType.NUMBER));
 		fields.add(getField("latestVersion", "IS_LATEST_VERSION", module, FieldType.BOOLEAN));
+		fields.add(getField("scheduleJson", "SCHEDULE_INFO", module, FieldType.STRING));
 
 		return fields;
 	}
@@ -932,6 +933,7 @@ public class FieldFactory {
 		fields.add(getField("flapFrequency", "FLAP_FREQUENCY", module, FieldType.NUMBER));
 		fields.add(getField("ruleGroupId", "RULE_GROUP_ID", module, FieldType.LOOKUP));
 		fields.add(getField("alarmSeverityId", "ALARM_SEVERITY_ID", module, FieldType.LOOKUP));
+		fields.add(getField("triggerExecutePeriod", "TRIGGER_EXECUTE_PERIOD", module, FieldType.NUMBER));
 		
 		return fields;
 	}
