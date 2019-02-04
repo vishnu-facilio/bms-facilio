@@ -631,22 +631,21 @@ public static Map<Long, Object> getTotalWoCountBySite(Long startTime,Long endTim
     Map<Long, Object> sites = new HashMap<Long, Object>();
     for(int i=0;i<totalWoCountBySite.size();i++)
     {
-    	sites.put((Long)totalWoCountBySite.get(i).get("siteId"),totalWoCountBySite.get(i).get("count"));
+    	 
+       	sites.put((Long)totalWoCountBySite.get(i).get("siteId"),totalWoCountBySite.get(i).get("count"));
+       
     }
 
    return sites;
 
 }
 
-public static Map<Long, Map<String,Object>> getTotalClosedWoCountBySite(Long startTime,Long endTime) throws Exception {
+public static Map<Long,Object> getTotalClosedWoCountBySite(Long startTime,Long endTime) throws Exception {
 
 
 	ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 	FacilioModule workOrderModule = modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER);
 		
-	List<FacilioField> workorderFields = modBean.getAllFields(workOrderModule.getName());
-	Map<String, FacilioField> workorderFieldMap = FieldFactory.getAsMap(workorderFields);
-
 	List<FacilioField> fields = new ArrayList<FacilioField>();
 
 	FacilioField idCountField = new FacilioField();
@@ -669,14 +668,11 @@ public static Map<Long, Map<String,Object>> getTotalClosedWoCountBySite(Long sta
 																  .groupBy(siteIdField.getCompleteColumnName());
 			  													  ;
    List<Map<String, Object>> totalClosedWoCountBySite = selectRecordsBuilder.getAsProps();
-   Map<Long, Map<String,Object>> sites = new HashMap<Long, Map<String,Object>>();
+   Map<Long,Object> sites = new HashMap<Long,Object>();
    for(int i=0;i<totalClosedWoCountBySite.size();i++)
    {
-	 Map<String,Object> eachSite = new HashMap<String, Object>();
-	 eachSite.put("siteId",totalClosedWoCountBySite.get(i).get("siteId"));
-	 eachSite.put("count",totalClosedWoCountBySite.get(i).get("count"));
-	 
-   	sites.put((Long)totalClosedWoCountBySite.get(i).get("siteId"),eachSite);
+	sites.put((Long)totalClosedWoCountBySite.get(i).get("siteId"),totalClosedWoCountBySite.get(i).get("count"));
+    
    }
 
   return sites;
@@ -712,23 +708,25 @@ public static Map<Long, Map<String,Object>> getTotalClosedWoCountBySite(Long sta
 		
 		GenericSelectRecordBuilder roleSelectBuilder = new GenericSelectRecordBuilder()
 				.select(roleFields).table(rolesModule.getTableName())
-				.andCondition(CriteriaAPI.getCondition(rolesModule.getTableName()+".NAME", "name" ,"Technician", StringOperators.IS))
-				.andCondition(CriteriaAPI.getCondition(rolesModule.getTableName()+".NAME", "name" ,"Executive", StringOperators.IS))
-				.andCondition(CriteriaAPI.getCondition(rolesModule.getTableName()+".NAME", "name" ,"TL", StringOperators.IS))
+				.andCondition(CriteriaAPI.getCondition(rolesModule.getTableName()+".NAME", "name" ,"Technician,Executive,TL", StringOperators.IS))
 				.andCondition(CriteriaAPI.getCondition(rolesModule.getTableName()+".ORGID", "orgId", ""+AccountUtil.getCurrentOrg().getOrgId(), NumberOperators.EQUALS))
 			    ;
 		List<Map<String, Object>> roleList = roleSelectBuilder.get();
 		StringBuilder sb = new StringBuilder();
 		
-		Map<String,Object> map = new HashMap<String,Object>();
+		Map<Long,Object> roleNameMap = new HashMap<Long,Object>();
 		
 		
 		for(int i=0;i<roleList.size();i++)
 		{   
 			
-		    map.put((String)roleList.get(i).get("roleId"),roleList.get(i).get("name"));
-		    String roleId = (String)roleList.get(i).get("roleId");
-			sb.append(roleId+",");
+		    roleNameMap.put((Long)roleList.get(i).get("roleId"),roleList.get(i).get("name"));
+		    Long roleId = (Long)roleList.get(i).get("roleId");
+			sb.append(roleId);
+			if(i<roleList.size()-1)
+			{
+				sb.append(",");
+			}
 			
 			
 		}
@@ -759,7 +757,7 @@ public static Map<Long, Map<String,Object>> getTotalClosedWoCountBySite(Long sta
 		    {
 		    	site = new HashMap<String, Object>();
 		    }
-		 	site.put((String)map.get(siteTechMap.get("roleId")),siteTechMap.get("count"));
+		 	site.put((String)roleNameMap.get(siteTechMap.get("roleId")),siteTechMap.get("count"));
 	    
 			countMap.put((Long)siteTechMap.get("siteId"),site);
 			
@@ -794,7 +792,6 @@ public static Map<Long, Map<String,Object>> getTotalClosedWoCountBySite(Long sta
 
 		
 		FacilioField assignedToField = workorderFieldMap.get("assignedTo");
-		fields.add(assignedToField);
 		
 		FacilioField userIdField = AccountConstants.getUserIdField(orgUserModule);
 		
@@ -802,13 +799,15 @@ public static Map<Long, Map<String,Object>> getTotalClosedWoCountBySite(Long sta
 		Map<String,FacilioField> userFieldMap = FieldFactory.getAsMap(userFields);
 	
 		FacilioField userNameField = userFieldMap.get("name");
-		userNameField.setName("user_name");
-		fields.add(userNameField);
+		FacilioField userField = userNameField.clone();
+		userField.setName("user_name");
+		fields.add(userField);
 	
 		
 		FacilioField resourceNameField = resourceFieldMap.get("name");
-		resourceNameField.setName("site_name");
-		fields.add(resourceNameField);
+		FacilioField resourceField = resourceNameField.clone();
+		resourceField.setName("site_name");
+		fields.add(resourceField);
 		
      	
 
@@ -825,7 +824,7 @@ public static Map<Long, Map<String,Object>> getTotalClosedWoCountBySite(Long sta
 				  													.andCondition(CriteriaAPI.getCondition(workOrderModule.getTableName()+".ORGID", "orgId", ""+AccountUtil.getCurrentOrg().getOrgId(), NumberOperators.EQUALS))
 																	.andCriteria(closedCriteria)
 				  													.limit(Integer.parseInt(count))
-				  													.groupBy(assignedToField.getCompleteColumnName()+","+userIdField.getCompleteColumnName()+","+userNameField.getCompleteColumnName()+","+resourceNameField.getCompleteColumnName())
+				  													.groupBy(assignedToField.getCompleteColumnName()+","+userIdField.getCompleteColumnName()+","+userField.getCompleteColumnName()+","+resourceField.getCompleteColumnName())
 																	.orderBy(idCountField.getColumnName()+" DESC");
 		                                                            
 				  													

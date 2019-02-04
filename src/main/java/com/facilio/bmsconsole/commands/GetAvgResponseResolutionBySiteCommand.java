@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -49,11 +50,32 @@ public class GetAvgResponseResolutionBySiteCommand implements Command{
              siteInfo.put("siteName",siteNameArray.get(entry.getKey()));
              siteInfo.put("overDue",statusVal.get("overDue"));
              siteInfo.put("open",statusVal.get("open"));
-             siteInfo.put("technicianCount",technicianCountBySite.get(entry.getKey()));
-             siteInfo.put("avgResolutionTime",avgResolutionTimeBySite.get(entry.getKey()));
-             siteInfo.put("avgResponseTime",avgResponseTimeBySite.get(entry.getKey()));
-             siteInfo.put("avgResolutionTimeTillLastMonth",avgResolutionTimeBySiteTillLastMonth.get(entry.getKey()));
-             siteInfo.put("avgResponseTimeTillLastMonth",avgResponseTimeBySiteTillLastMonth.get(entry.getKey()));
+             siteInfo.put("technicianCount",technicianCountBySite.get(entry.getKey())!=null?technicianCountBySite.get(entry.getKey()):0);
+             
+             Double avgResolutionTime=0.0,avgResponseTime=0.0,avgResolutionTimeTillLastMonth=0.0,avgResponseTimeTillLastMonth=0.0;
+             if(avgResolutionTimeBySite.get(entry.getKey())!=null) {
+         	   avgResolutionTime = ((BigDecimal)avgResolutionTimeBySite.get(entry.getKey())).doubleValue();
+         	   avgResolutionTime = Math.round(avgResolutionTime*100.0)/100.0;}
+             
+             if(avgResponseTimeBySite.get(entry.getKey())!=null) {
+            	 avgResponseTime = ((BigDecimal)avgResponseTimeBySite.get(entry.getKey())).doubleValue();
+            	 avgResponseTime = Math.round(avgResponseTime*100.0)/100.0;
+             }
+             
+             if(avgResponseTimeBySiteTillLastMonth.get(entry.getKey())!=null) {
+            	 avgResponseTimeTillLastMonth = ((BigDecimal)avgResponseTimeBySiteTillLastMonth.get(entry.getKey())).doubleValue();
+            	 avgResponseTimeTillLastMonth = Math.round(avgResponseTimeTillLastMonth*100.0)/100.0;
+             }
+             
+             if(avgResolutionTimeBySiteTillLastMonth.get(entry.getKey())!=null) {
+            	 avgResolutionTimeTillLastMonth = ((BigDecimal)avgResolutionTimeBySiteTillLastMonth.get(entry.getKey())).doubleValue();
+        	 	avgResolutionTimeTillLastMonth = Math.round(avgResolutionTimeTillLastMonth*100.0)/100.0;
+             }
+			
+         	 siteInfo.put("avgResolutionTime",avgResolutionTime);
+             siteInfo.put("avgResponseTime",avgResponseTime);
+             siteInfo.put("avgResolutionTimeTillLastMonth",avgResolutionTimeTillLastMonth);
+             siteInfo.put("avgResponseTimeTillLastMonth",avgResponseTimeTillLastMonth);
               
              finalResp.add(siteInfo);
              
