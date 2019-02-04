@@ -28,8 +28,8 @@ public class GetAvgResponseResolutionBySiteCommand implements Command{
 		
 		Map<Long, Map<String, Object>> workOrderStatusCount = WorkOrderAPI.getWorkOrderStatusPercentage(startTime, endTime);
 		Map<Long,Object> technicianCountBySite = WorkOrderAPI.getTechnicianCountBySite();
-		Map<Long,Object> avgRequestTimeBySite = WorkOrderAPI.getAvgResponseTimeBySite(startTime, endTime,false);
-		Map<Long,Object> avgResponseTimeBySite = WorkOrderAPI.getAvgCompletionTimeBySite(startTime, endTime,false);
+		Map<Long,Object> avgResponseTimeBySite = WorkOrderAPI.getAvgResponseTimeBySite(startTime, endTime,false);
+		Map<Long,Object> avgResolutionTimeBySite = WorkOrderAPI.getAvgCompletionTimeBySite(startTime, endTime,false);
 		Map<Long,Object> avgResponseTimeBySiteTillLastMonth = WorkOrderAPI.getAvgResponseTimeBySite(startTime, endTime,true);
 		Map<Long,Object> avgResolutionTimeBySiteTillLastMonth = WorkOrderAPI.getAvgCompletionTimeBySite(startTime, endTime,true);
 		Map<Long, Object> siteNameArray = WorkOrderAPI.getLookupFieldPrimary("site");
@@ -49,14 +49,11 @@ public class GetAvgResponseResolutionBySiteCommand implements Command{
              siteInfo.put("siteName",siteNameArray.get(entry.getKey()));
              siteInfo.put("overDue",statusVal.get("overDue"));
              siteInfo.put("open",statusVal.get("open"));
-             siteInfo.put("technicianCount",technicianCountBySite.get("siteId"));
-             siteInfo.put("avgResolutionTime",avgRequestTimeBySite.get("avg_resolution_time"));
-             siteInfo.put("avgResponseTime",avgResponseTimeBySite.get("avg_response"
-             		+ "_time"));
-             siteInfo.put("avgResolutionTimeTillLastMonth",avgResolutionTimeBySiteTillLastMonth.get("avg_resolution"
-              		+ "_time"));
-             siteInfo.put("avgResponseTimeTillLastMonth",avgResponseTimeBySiteTillLastMonth.get("avg_response"
-              		+ "_time"));
+             siteInfo.put("technicianCount",technicianCountBySite.get(entry.getKey()));
+             siteInfo.put("avgResolutionTime",avgResolutionTimeBySite.get(entry.getKey()));
+             siteInfo.put("avgResponseTime",avgResponseTimeBySite.get(entry.getKey()));
+             siteInfo.put("avgResolutionTimeTillLastMonth",avgResolutionTimeBySiteTillLastMonth.get(entry.getKey()));
+             siteInfo.put("avgResponseTimeTillLastMonth",avgResponseTimeBySiteTillLastMonth.get(entry.getKey()));
               
              finalResp.add(siteInfo);
              

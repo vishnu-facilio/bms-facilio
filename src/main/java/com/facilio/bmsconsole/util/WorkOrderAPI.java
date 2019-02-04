@@ -418,7 +418,8 @@ public static List<Map<String,Object>> getAvgCompletionTimeByCategory(Long start
 					  												.innerJoin(ticketStatusModule.getTableName()).on(statusField.getCompleteColumnName() +" = "+ticketStatusModule.getTableName()+".ID")
 					  												.andCondition(CriteriaAPI.getCondition("STATUS_TYPE", "typeCode", ""+StatusType.CLOSED.getIntVal() , NumberOperators.EQUALS))
 					  											    .andCondition(CriteriaAPI.getCondition("CREATED_TIME", "createdTime", startTime+","+endTime, DateOperators.BETWEEN))
-					  												.andCondition(CriteriaAPI.getCondition(workOrderModule.getTableName()+".ORGID", "orgId", ""+AccountUtil.getCurrentOrg().getOrgId(), NumberOperators.EQUALS))
+					  											    .andCondition(CriteriaAPI.getCondition(categoryField, CommonOperators.IS_NOT_EMPTY))
+																    .andCondition(CriteriaAPI.getCondition(workOrderModule.getTableName()+".ORGID", "orgId", ""+AccountUtil.getCurrentOrg().getOrgId(), NumberOperators.EQUALS))
 																	.groupBy(categoryField.getCompleteColumnName())
 																  ;
 
@@ -480,7 +481,8 @@ public static Map<Long,Object> getAvgCompletionTimeBySite(Long startTime,Long en
 			  													.innerJoin(ticketModule.getTableName()).on(workOrderModule.getTableName() +".ID = "+ticketModule.getTableName()+".ID")
 				  												.innerJoin(ticketStatusModule.getTableName()).on(statusField.getCompleteColumnName() +" = "+ticketStatusModule.getTableName()+".ID")
 				  												.andCondition(CriteriaAPI.getCondition("STATUS_TYPE", "typeCode", ""+StatusType.CLOSED.getIntVal() , NumberOperators.EQUALS))
-				  												.andCondition(CriteriaAPI.getCondition(workOrderModule.getTableName()+".ORGID", "orgId", ""+AccountUtil.getCurrentOrg().getOrgId(), NumberOperators.EQUALS))
+				  												.andCondition(CriteriaAPI.getCondition(FieldFactory.getSiteIdField(workOrderModule), CommonOperators.IS_NOT_EMPTY))
+																.andCondition(CriteriaAPI.getCondition(workOrderModule.getTableName()+".ORGID", "orgId", ""+AccountUtil.getCurrentOrg().getOrgId(), NumberOperators.EQUALS))
 																.groupBy(siteIdField.getCompleteColumnName())
 															  ;
 
@@ -504,17 +506,7 @@ public static Map<Long,Object> getAvgCompletionTimeBySite(Long startTime,Long en
 	for(int i=0;i<avgResolutionTime.size();i++)
 	{
 		Map<String, Object> siteTechMap = avgResolutionTime.get(i);
-		Map<Object,Object> site = null;
-	    if(countMap.containsKey(siteTechMap.get("siteId"))) {
-	    	site = (Map<Object, Object>) countMap.get(siteTechMap.get("siteId"));
-	    }
-	    else
-	    {
-	    	site = new HashMap<Object, Object>();
-	    }
-	 	site.put((Long)siteTechMap.get("siteId"),siteTechMap.get("count"));
-   
-		countMap.put((Long)siteTechMap.get("siteId"),site);
+		countMap.put((Long)siteTechMap.get("siteId"),siteTechMap.get("avg_resolution_time"));
 		
 	}
 	return countMap;
@@ -572,7 +564,8 @@ public static Map<Long,Object> getAvgResponseTimeBySite(Long startTime,Long endT
 			  													.innerJoin(ticketModule.getTableName()).on(workOrderModule.getTableName() +".ID = "+ticketModule.getTableName()+".ID")
 				  												.innerJoin(ticketStatusModule.getTableName()).on(statusField.getCompleteColumnName() +" = "+ticketStatusModule.getTableName()+".ID")
 				  												.andCondition(CriteriaAPI.getCondition("STATUS_TYPE", "typeCode", ""+StatusType.CLOSED.getIntVal() , NumberOperators.EQUALS))
-				  											   .andCondition(CriteriaAPI.getCondition(workOrderModule.getTableName()+".ORGID", "orgId", ""+AccountUtil.getCurrentOrg().getOrgId(), NumberOperators.EQUALS))
+				  												.andCondition(CriteriaAPI.getCondition(FieldFactory.getSiteIdField(workOrderModule), CommonOperators.IS_NOT_EMPTY))
+																.andCondition(CriteriaAPI.getCondition(workOrderModule.getTableName()+".ORGID", "orgId", ""+AccountUtil.getCurrentOrg().getOrgId(), NumberOperators.EQUALS))
 																.groupBy(siteIdField.getCompleteColumnName())
 															  ;
 
@@ -595,17 +588,7 @@ public static Map<Long,Object> getAvgResponseTimeBySite(Long startTime,Long endT
 	for(int i=0;i<avgResolutionTime.size();i++)
 	{
 		Map<String, Object> siteTechMap = avgResolutionTime.get(i);
-		Map<Object,Object> site = null;
-	    if(countMap.containsKey(siteTechMap.get("siteId"))) {
-	    	site = (Map<Object, Object>) countMap.get(siteTechMap.get("siteId"));
-	    }
-	    else
-	    {
-	    	site = new HashMap<Object, Object>();
-	    }
-	 	site.put((Long)siteTechMap.get("siteId"),siteTechMap.get("count"));
-   
-		countMap.put((Long)siteTechMap.get("siteId"),site);
+		countMap.put((Long)siteTechMap.get("siteId"),siteTechMap.get("avg_response_time"));
 		
 	}
 	return countMap;
@@ -681,7 +664,6 @@ public static Map<Long, Map<String,Object>> getTotalClosedWoCountBySite(Long sta
 																  .beanClass(WorkOrderContext.class)
 																  .select(fields)
 																  .andCondition(CriteriaAPI.getCondition("CREATED_TIME", "createdTime", startTime+","+endTime, DateOperators.BETWEEN))
-																  .andCondition(CriteriaAPI.getCondition(FieldFactory.getSiteIdField(workOrderModule), CommonOperators.IS_NOT_EMPTY))
 																  .andCondition(CriteriaAPI.getCondition(FieldFactory.getSiteIdField(workOrderModule), CommonOperators.IS_NOT_EMPTY))
 																  .andCriteria(closedCriteria)
 																  .groupBy(siteIdField.getCompleteColumnName());
@@ -815,7 +797,6 @@ public static Map<Long, Map<String,Object>> getTotalClosedWoCountBySite(Long sta
 		fields.add(assignedToField);
 		
 		FacilioField userIdField = AccountConstants.getUserIdField(orgUserModule);
-		fields.add(userIdField);
 		
 		List<FacilioField> userFields = AccountConstants.getUserFields();
 		Map<String,FacilioField> userFieldMap = FieldFactory.getAsMap(userFields);

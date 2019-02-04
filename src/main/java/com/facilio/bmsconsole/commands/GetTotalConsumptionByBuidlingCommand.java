@@ -68,20 +68,18 @@ public class GetTotalConsumptionByBuidlingCommand implements Command{
         } 
     
         Iterator<Map.Entry<Long, Object>> itrWater = waterData.entrySet().iterator(); 
-    	Map<Long, Map<String, Object>> waterConsumptionData = new HashMap<Long, Map<String,Object>>();
-	
+    
         
         while(itrWater.hasNext()) 
         { 
              Map.Entry<Long, Object> entry = itrWater.next();
              Map<String,Object> buildingData = new HashMap<String, Object>();
-             Map<String,Object> buildingEnergyData = (Map<String, Object>) entry.getValue();
+             Map<String,Object> buildingWaterData = (Map<String, Object>) entry.getValue();
              
              buildingData.put("buildingId", entry.getKey());
-             buildingData.put("buildingName", buildingEnergyData.get("buildingName"));
+             buildingData.put("buildingName", buildingWaterData.get("buildingName"));
              buildingData.put("energyConsumption", -1);
            
-             Map<String,Object> buildingWaterData = (Map<String, Object>) waterConsumptionData.get(entry.getKey());
              buildingData.put("waterConsumption", buildingWaterData.get("total_consumption"));
              
              consumptionData.put(entry.getKey(), buildingData);

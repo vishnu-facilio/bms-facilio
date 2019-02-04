@@ -40,8 +40,8 @@ public class GetAvgCompletionTimeByCategoryCommand implements Command {
 			
 			Map<Long, Object> ticketCategoryArray = WorkOrderAPI.getLookupFieldPrimary("ticketcategory");
 
-			List<Object> techNameObj = new ArrayList<Object>();
-			List<Object> closedWoCountObj = new ArrayList<Object>();
+			List<Object> categoryNameObj = new ArrayList<Object>();
+			List<Object> resolutionTimeObj = new ArrayList<Object>();
 		
 			 Map<Long, Map<String, Object>> resp = new HashMap<Long, Map<String, Object>>();
 			for (int i = 0; i < avgResolutionTimeByCategory.size(); i++) {
@@ -57,8 +57,8 @@ public class GetAvgCompletionTimeByCategoryCommand implements Command {
 				categoryInfo.put("avgResolutionTime",avgResolutionTime );
 				resp.put(categoryId,categoryInfo);
 				
-				techNameObj.add(categoryName);
-				closedWoCountObj.add(avgResolutionTime);
+				categoryNameObj.add(categoryName);
+				resolutionTimeObj.add(avgResolutionTime);
 		
 				
 			}
@@ -103,8 +103,8 @@ public class GetAvgCompletionTimeByCategoryCommand implements Command {
 			optionsResp.put("widgetLegend",false);
 			
 		
-			dataResp.put("x", techNameObj);
-			dataResp.put("y", closedWoCountObj);
+			dataResp.put("x", categoryNameObj);
+			dataResp.put("y", resolutionTimeObj);
 		
 			categoryGraphResp.put("data",dataResp);
 			categoryGraphResp.put("options",optionsResp);
