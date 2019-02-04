@@ -16,24 +16,8 @@ import com.facilio.workflows.exceptions.FunctionParamException;
 
 public enum FacilioWorkOrderFunctions implements FacilioWorkflowFunctionInterface {
 
-	GET_WORKORDERS_COMPLETION_TIME(1,"getWorkOrdersByCompletionTime") {
-		@Override
-		public Object execute(Object... objects) throws Exception {
-			
-				List<WorkOrderContext> workOrderStatusCount = WorkOrderAPI.getWorkOrderStatusPercentage(Long.valueOf(objects[0].toString()), Long.valueOf(objects[1].toString()));
-			    TicketAPI.loadTicketLookups(workOrderStatusCount);
-			    
-			    return GET_WORKORDERS_COMPLETION_TIME.constructWOByCompletionResponse(workOrderStatusCount);
-		};
-		
-		public void checkParam(Object... objects) throws Exception {
-			if(objects.length <= 0) {
-				throw new FunctionParamException("Required Object is null");
-			}
-		}
-	},
 	
-	GET_AVG_RESOLUTION_TIME(2,"getAvgResolutionTime") {
+	GET_AVG_RESOLUTION_TIME(1,"getAvgResolutionTime") {
 		@Override
 		public Object execute(Object... objects) throws Exception {
 			
