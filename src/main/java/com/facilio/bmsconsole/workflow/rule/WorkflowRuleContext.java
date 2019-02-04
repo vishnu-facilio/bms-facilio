@@ -346,15 +346,15 @@ public class WorkflowRuleContext implements Serializable {
 		
 		CHILD_APPROVAL_RULE(true),
 		PM_ALARM_RULE,
-		ALARM_TRIGGER_RULE, //18
+		ALARM_TRIGGER_RULE(false,false,true), //18
 		
-		ALARM_CLEAR_RULE,
+		ALARM_CLEAR_RULE(false,false,true),
 		WORKORDER_CUSTOM_CHANGE 
 		;
 		//Always add at the end
 		
 		
-		private boolean stopFurtherExecution = false, versionSupported = false;
+		private boolean stopFurtherExecution = false, versionSupported = false,isChildType = false;
 		private RuleType() {
 			// TODO Auto-generated constructor stub
 		}
@@ -370,6 +370,20 @@ public class WorkflowRuleContext implements Serializable {
 			this.versionSupported = versionSupported;
 		}
 		
+		private RuleType(boolean stopFurtherExecution, boolean versionSupported,boolean isChildType) {
+			this.stopFurtherExecution = stopFurtherExecution;
+			this.versionSupported = versionSupported;
+			this.isChildType = isChildType;
+		}
+		
+		public boolean isChildType() {
+			return isChildType;
+		}
+
+		public void setChildType(boolean isChildType) {
+			this.isChildType = isChildType;
+		}
+
 		public int getIntVal() {
 			return ordinal()+1;
 		}

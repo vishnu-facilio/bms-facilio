@@ -148,12 +148,11 @@ public class WorkflowRuleAPI {
 	}
 	
 	private static void validateWorkflowRule (WorkflowRuleContext rule) {
-		if (rule.getEventId() == -1) {
-			throw new IllegalArgumentException("Event ID cannot be null during addition for Workflow");
-		}
-		
 		if (rule.getRuleTypeEnum() == null) {
 			throw new IllegalArgumentException("Rule Type cannot be null during addition for Workflow");
+		}
+		if (rule.getEventId() == -1 && !rule.getRuleTypeEnum().isChildType()) {
+			throw new IllegalArgumentException("Event ID cannot be null during addition for Workflow");
 		}
 	}
 	
