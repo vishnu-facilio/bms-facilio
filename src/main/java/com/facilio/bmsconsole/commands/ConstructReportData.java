@@ -20,6 +20,7 @@ import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldType;
+import com.facilio.bmsconsole.modules.LookupField;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.report.context.ReportContext;
@@ -69,17 +70,11 @@ public class ConstructReportData implements Command {
 				
 			} else if (aggregateOperator instanceof SpaceAggregateOperator) {
 				reportContext.setxAggr(aggregateOperator);
-//				FacilioModule module = xField.getModule();
-//				switch ((SpaceAggregateOperator) aggregateOperator) {
-//					case SITE:
-//						xField = FieldFactory.getSiteIdField(module);
-//						break;
-//						
-//					case BUILDING:
-//						xField = FieldFactory.getSiteIdField(module);
-//						xField.setName("buildingId");
-//						break;
-//				}
+				if (xField instanceof LookupField) {
+					// TODO check whether lookup module is resource module 
+				} else {
+					throw new Exception("x field should be resource field");
+				}
 			}
 		}
 		if (xField == null) {
@@ -95,7 +90,6 @@ public class ConstructReportData implements Command {
 		FacilioField yField = null;
 		if (yAxisJSON == null || !(yAxisJSON.containsKey("field_id"))) {
 			yField = FieldFactory.getIdField(xField.getModule());
-//			yField.setColumnName(yField.getModule().getTableName() + ".ID");
 		} else {
 			if (yAxisJSON.containsKey("aggr")) {
 				yAggr = AggregateOperator.getAggregateOperator(((Number) yAxisJSON.get("aggr")).intValue());
@@ -128,6 +122,25 @@ public class ConstructReportData implements Command {
 		if (context.containsKey("criteria")) {
 			Criteria criteria = (Criteria) context.get("criteria");
 			dataPointContext.setCriteria(criteria);
+		}
+		
+		if (context.containsKey("sort_fields")) {
+			List<String> orderBy = new ArrayList<>();
+			JSONArray orderByArray = (JSONArray) context.get("sort_fields");
+			for (int i = 0; i < orderByArray.size(); i++) {
+				Map object = (Map) orderByArray.get(i);
+				FacilioField orderByField = modBean.getField((Long) object.get("field_id"));
+				orderBy.add(orderByField.getCompleteColumnName());
+			}
+			dataPointContext.setOrderBy(orderBy);
+			
+			if (context.containsKey("sort_order")) {
+				dataPointContext.setOrderByFunc(((Number) context.get("sort_order")).intValue());
+			}
+		}
+		if (context.containsKey("limit")) {
+			int limit = ((Number) context.get("limit")).intValue();
+			dataPointContext.setLimit(limit);
 		}
 		
 		Map<String, String> aliases = new HashMap<>();

@@ -463,6 +463,27 @@ public class V2ReportAction extends FacilioAction {
 	public void setCriteria(Criteria criteria) {
 		this.criteria = criteria;
 	}
+	private JSONArray sortFields;
+	public JSONArray getSortFields() {
+		return sortFields;
+	}
+	public void setSortFields(JSONArray sortFields) {
+		this.sortFields = sortFields;
+	}
+	private int sortOrder;
+	public int getSortOrder() {
+		return sortOrder;
+	}
+	public void setSortOrder(int sortOrder) {
+		this.sortOrder = sortOrder;
+	}
+	private int limit;
+	public int getLimit() {
+		return limit;
+	}
+	public void setLimit(int limit) {
+		this.limit = limit;
+	}
 	public String fetchReportData() throws Exception {
 		JSONParser parser = new JSONParser();
 		
@@ -472,6 +493,9 @@ public class V2ReportAction extends FacilioAction {
 		context.put("y-axis", yField);
 		context.put("group-by", groupBy);
 		context.put("criteria", criteria);
+		context.put("sort_fields", sortFields);
+		context.put("sort_order", sortOrder);
+		context.put("limit", limit);
 		
 		ReadOnlyChainFactory.constructAndFetchReportDataChain().execute(context);
 
