@@ -76,9 +76,17 @@ public class SelectRecordBuilder extends DBSelectRecordBuilder {
 		}
 		
 		String sqlString = sql.toString();
-		return handleReseveredKeywords(sqlString);
+//		sqlString = handleKeywords(sqlString);
+		return sqlString;
 	}
-	
+
+	private String handleKeywords(String query) {
+		for (String keyword : keywords) {
+			query = query.replace(keyword, "\"" + keyword + "\"");
+		}
+		return query;
+	}
+
 	private String handleReseveredKeywords(String sqlString) {
 //		for (String reservedKeyword : reservedKeywords) {
 //			sqlString = sqlString.replaceAll(reservedKeyword, "\"" + reservedKeyword + "\"");
@@ -86,5 +94,5 @@ public class SelectRecordBuilder extends DBSelectRecordBuilder {
 		return sqlString;
 	}
 
-	private static List<String> reservedKeywords = Arrays.asList("File");
+	private static String[] keywords = {"File"};
 }

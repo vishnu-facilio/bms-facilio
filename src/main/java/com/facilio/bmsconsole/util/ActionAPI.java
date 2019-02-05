@@ -221,7 +221,10 @@ public class ActionAPI {
 														.select(FieldFactory.getActionFields())
 														.table(module.getTableName())
 														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
-														.andCondition(CriteriaAPI.getIdCondition(actionIds, module));
+														;
+		if (actionIds != null && !actionIds.isEmpty()) {
+			actionBuilder.andCondition(CriteriaAPI.getIdCondition(actionIds, module));
+		}
 		
 		List<Map<String, Object>> props = actionBuilder.get();
 		if(props != null && !props.isEmpty()) {
