@@ -734,7 +734,7 @@
 		<action name="totalConsumptionBySite" class="com.facilio.bmsconsole.actions.ConsumptionAction" method="getTotalConsumptionForSite">
 			<param name="permission">READ,READ_TEAM,READ_OWN</param>
 			<result name="success" type="json">
-			<param name="includeProperties">totalConsumptionByBuilding,totalConsumptionByBuilding\[\d+\],totalConsumptionByBuilding\[\d+\].*,^totalConsumptionByBuilding.*</param>
+			<param name="includeProperties">totalConsumptionBySite,totalConsumptionBySite\[\d+\],totalConsumptionBySite\[\d+\].*,^totalConsumptionBySite.*</param>
 			</result>
 		</action>
 		<!-- 	<action name="totalWaterConsumptionByBuilding" class="com.facilio.bmsconsole.actions.ConsumptionAction" method="getTotalWaterConsumptionForBuilding">
