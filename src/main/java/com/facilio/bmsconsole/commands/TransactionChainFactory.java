@@ -232,6 +232,7 @@ public class TransactionChainFactory {
 			c.addCommand(new UpdateAlarmRuleCommand());
 			c.addCommand(new DeleteOldAlarmRuleActionsCommand());
 			c.addCommand(new AddActionForAlarmRuleCommand());
+			c.addCommand(new AddJobEntryForScheduledReadingRuleCommand());
 			return c;
 		}
 		

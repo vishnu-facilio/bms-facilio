@@ -797,6 +797,13 @@ public class FacilioConstants {
 		public static final String TABLE_NAME = "Jobs";
 		public static final String FORKED_COMMANDS = "forkedCommands";
 		public static final String JOB_CONTEXT = "jobContext";
+		
+		public static final String EXECUTER_NAME_FACILIO = "facilio";
+		public static final String EXECUTER_NAME_PRIORTIY = "priority";
+		
+		public static final String SCHEDULED_READING_RULE_JOB_NAME = "scheduledReadingRule";
+		public static final String SCHEDULED_ALARM_TRIGGER_RULE_JOB_NAME = "scheduledAlarmTriggerRule";
+		
 	}
 	public static class Ticket{
 		public static final String STATUS_ID = "status_id";

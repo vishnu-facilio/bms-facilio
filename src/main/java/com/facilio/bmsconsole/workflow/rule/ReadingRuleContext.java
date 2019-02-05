@@ -534,7 +534,7 @@ public class ReadingRuleContext extends WorkflowRuleContext {
 			}
 		}
 		else if(this.getTriggerExecutePeriod() > 0) {
-			FacilioTimer.scheduleOneTimeJob(this.getId(), "scheduledAlarmTriggerRule", this.getTriggerExecutePeriod(), "priority");
+			FacilioTimer.scheduleOneTimeJob(this.getId(), FacilioConstants.Job.SCHEDULED_ALARM_TRIGGER_RULE_JOB_NAME, this.getTriggerExecutePeriod(), FacilioConstants.Job.EXECUTER_NAME_FACILIO);
 			this.setTerminateExecution(true);
 			return false;
 		}
