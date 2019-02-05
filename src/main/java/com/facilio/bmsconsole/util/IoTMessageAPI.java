@@ -51,6 +51,10 @@ public class IoTMessageAPI {
 		return constructIotMessage(controllerId, IotCommandType.PROPERTY, null, property);
 	}
 	
+	private static PublishData constructIotMessage (long controllerId, IotCommandType command) throws Exception {
+		return constructIotMessage(controllerId, command, null, null);
+	}
+	
 	@SuppressWarnings("unchecked")
 	private static PublishData constructIotMessage (long controllerId, IotCommandType command, List<Map<String, Object>> instances, JSONObject property) throws Exception {
 		ControllerContext controller = ControllerAPI.getController(controllerId);
@@ -71,7 +75,7 @@ public class IoTMessageAPI {
 		if (command == IotCommandType.PROPERTY) {
 			object.putAll(property);
 		}
-		else if (command != IotCommandType.DISCOVER) {
+		else if (command != IotCommandType.DISCOVER && instances != null && !instances.isEmpty()) {
 			
 			JSONArray points = new JSONArray();
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -228,12 +232,12 @@ public class IoTMessageAPI {
 	}
 	
 	public static PublishData publishIotMessage(long controllerId, IotCommandType command) throws Exception {
-		PublishData data = constructIotMessage(controllerId, command, null, null);
+		PublishData data = constructIotMessage(controllerId, command);
 		return publishIotMessage(data, null, null);
 	}
 	
 	public static PublishData publishIotMessage(long controllerId, IotCommandType command, SerializableConsumer<PublishData> success, SerializableConsumer<PublishData> failure) throws Exception {
-		PublishData data = constructIotMessage(controllerId, command, null, null);
+		PublishData data = constructIotMessage(controllerId, command);
 		return publishIotMessage(data, success, failure);
 	}
 	
@@ -293,6 +297,7 @@ public class IoTMessageAPI {
  	public enum IotCommandType {
  		CONFIGURE("configure"),
  		SET("set"),
+ 		GET("get"),
  		PROPERTY("property"),
  		DISCOVER("discoverPoints"),
  		SUBSCRIBE("subscribe"),

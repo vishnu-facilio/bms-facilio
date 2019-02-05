@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.workflow.rule;
 
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -13,6 +14,8 @@ import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
@@ -37,7 +40,11 @@ import com.facilio.sql.GenericDeleteRecordBuilder;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
+import com.facilio.tasker.FacilioTimer;
+import com.facilio.tasker.ScheduleInfo;
 import com.facilio.workflows.util.WorkflowUtil;
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 
 public class ReadingRuleContext extends WorkflowRuleContext {
 	/**
@@ -55,6 +62,14 @@ public class ReadingRuleContext extends WorkflowRuleContext {
 		this.startValue = startValue;
 	}
 	
+	private int triggerExecutePeriod = -1;
+	public int getTriggerExecutePeriod() {	//in sec
+		return triggerExecutePeriod;
+	}
+	public void setTriggerExecutePeriod(int triggerExecutePeriod) {
+		this.triggerExecutePeriod = triggerExecutePeriod;
+	}
+
 	private long interval = -1;
 	public long getInterval() {
 		return interval;
@@ -315,7 +330,6 @@ public class ReadingRuleContext extends WorkflowRuleContext {
 			return null;
 		}
 	}
-	
 	@Override
 	public boolean evaluateCriteria(String moduleName, Object record, Map<String, Object> placeHolders, FacilioContext context) throws Exception {
 		// TODO Auto-generated method stub
@@ -489,33 +503,42 @@ public class ReadingRuleContext extends WorkflowRuleContext {
 	@Override
 	public boolean evaluateMisc(String moduleName, Object record, Map<String, Object> placeHolders, FacilioContext context) throws Exception {
 		// TODO Auto-generated method stub
-		ReadingContext reading = (ReadingContext) record;
-		Object currentMetric = getMetric(reading);
-		if (currentMetric == null) {
+		
+		if(this.getTriggerExecutePeriod() <= 0 || (this.getTriggerExecutePeriod() > 0 && (Boolean) context.get(FacilioConstants.ContextNames.IS_READING_RULE_EXECUTE_FROM_JOB))) {
+			ReadingContext reading = (ReadingContext) record;
+			Object currentMetric = getMetric(reading);
+			if (currentMetric == null) {
+				return false;
+			}
+			
+			switch (thresholdType) {
+				case FLAPPING:
+					boolean singleFlap = false;
+					Map<String, ReadingDataMeta> metaMap =(Map<String, ReadingDataMeta>)context.get(FacilioConstants.ContextNames.PREVIOUS_READING_DATA_META);
+					ReadingDataMeta meta = metaMap.get(ReadingsAPI.getRDMKey(reading.getParentId(), readingField));
+					Object prevValue = meta.getValue();
+					if (currentMetric instanceof Number) {
+						double prevVal = Double.valueOf(prevValue.toString());
+						double currentVal = Double.valueOf(currentMetric.toString());
+						double minVal = Math.min(prevVal, currentVal);
+						double maxVal = Math.max(prevVal, currentVal);
+						
+						singleFlap = minVal <= minFlapValue && maxVal >= maxFlapValue;
+					}
+					else if (currentMetric instanceof Boolean) {
+						singleFlap = currentMetric != (Boolean) prevValue;
+					}
+					return singleFlap && isFlappedNTimes(reading);
+				default:
+					break;
+			}
+		}
+		else if(this.getTriggerExecutePeriod() > 0) {
+			FacilioTimer.scheduleOneTimeJob(this.getId(), FacilioConstants.Job.SCHEDULED_ALARM_TRIGGER_RULE_JOB_NAME, this.getTriggerExecutePeriod(), FacilioConstants.Job.EXECUTER_NAME_FACILIO);
+			this.setTerminateExecution(true);
 			return false;
 		}
 		
-		switch (thresholdType) {
-			case FLAPPING:
-				boolean singleFlap = false;
-				Map<String, ReadingDataMeta> metaMap =(Map<String, ReadingDataMeta>)context.get(FacilioConstants.ContextNames.PREVIOUS_READING_DATA_META);
-				ReadingDataMeta meta = metaMap.get(ReadingsAPI.getRDMKey(reading.getParentId(), readingField));
-				Object prevValue = meta.getValue();
-				if (currentMetric instanceof Number) {
-					double prevVal = Double.valueOf(prevValue.toString());
-					double currentVal = Double.valueOf(currentMetric.toString());
-					double minVal = Math.min(prevVal, currentVal);
-					double maxVal = Math.max(prevVal, currentVal);
-					
-					singleFlap = minVal <= minFlapValue && maxVal >= maxFlapValue;
-				}
-				else if (currentMetric instanceof Boolean) {
-					singleFlap = currentMetric != (Boolean) prevValue;
-				}
-				return singleFlap && isFlappedNTimes(reading);
-			default:
-				break;
-		}
 		return true;
 	}
 	

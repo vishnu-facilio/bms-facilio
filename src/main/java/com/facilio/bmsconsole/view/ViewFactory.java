@@ -897,7 +897,7 @@ public class ViewFactory {
 		return openTicketsView;
 	}
 	
-	private static Criteria getClosedTicketsCriteria (FacilioModule module) {
+	public static Criteria getClosedTicketsCriteria (FacilioModule module) {
 		LookupField statusField = new LookupField();
 		statusField.setName("status");
 		statusField.setColumnName("STATUS_ID");

@@ -31,13 +31,13 @@ public class ScheduleV2ReportCommand implements Command {
 	public boolean execute(Context context) throws Exception {
 		ReportInfo reportInfo = (ReportInfo) context.get(FacilioConstants.ContextNames.SCHEDULE_INFO);
 		
-		FileFormat fileFormat = reportInfo.getFileFormatEnum();
-		EMailTemplate emailTemplate = reportInfo.getEmailTemplate();
 		
 		String moduleName = reportInfo.getModuleName();
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule reportModule = modBean.getModule(moduleName);
 		
+		FileFormat fileFormat = reportInfo.getFileFormatEnum();
+		EMailTemplate emailTemplate = reportInfo.getEmailTemplate();
 		
 		Map<String, Object> props=new HashMap<String,Object>();
 		props.put("reportId", reportInfo.getReportId());

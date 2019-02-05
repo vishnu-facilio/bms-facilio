@@ -165,10 +165,21 @@ public class TimeSeries extends FacilioAction {
 	public String subscribeInstances () throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.INSTANCE_INFO, instances);
-		context.put(FacilioConstants.ContextNames.SUBSCRIBE , subscribed);
 		context.put(FacilioConstants.ContextNames.CONTROLLER_ID , controllerId);
 		
 		Chain markChain = TransactionChainFactory.getSubscribeInstanceChain();
+		markChain.execute(context);
+
+		setResult("result", "success");
+		return SUCCESS;
+	}
+	
+	public String unsubscribeInstances () throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.UNSUBSCRIBE_IDS, ids);
+		context.put(FacilioConstants.ContextNames.CONTROLLER_ID , controllerId);
+		
+		Chain markChain = TransactionChainFactory.getUnSubscribeInstanceChain();
 		markChain.execute(context);
 
 		setResult("result", "success");

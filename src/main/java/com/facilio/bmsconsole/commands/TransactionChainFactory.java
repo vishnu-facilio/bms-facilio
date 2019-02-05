@@ -223,6 +223,7 @@ public class TransactionChainFactory {
 			Chain c = getDefaultChain();
 			c.addCommand(new AddAlarmRuleCommand());
 			c.addCommand(new AddActionForAlarmRuleCommand());
+			c.addCommand(new AddJobEntryForScheduledReadingRuleCommand());
 			return c;
 		}
 		
@@ -231,6 +232,7 @@ public class TransactionChainFactory {
 			c.addCommand(new UpdateAlarmRuleCommand());
 			c.addCommand(new DeleteOldAlarmRuleActionsCommand());
 			c.addCommand(new AddActionForAlarmRuleCommand());
+			c.addCommand(new AddJobEntryForScheduledReadingRuleCommand());
 			return c;
 		}
 		
@@ -485,6 +487,12 @@ public class TransactionChainFactory {
 		public static Chain getSubscribeInstanceChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(new SubscribeInstanceIoTCommand());
+			return c;
+		}
+		
+		public static Chain getUnSubscribeInstanceChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new UnsubscribeInstanceIoTCommand());
 			return c;
 		}
 		

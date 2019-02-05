@@ -169,7 +169,11 @@ public class FacilioConstants {
 		public static final String WORK_ORDER_AVG_RESOLUTION_TIME = "avgCompletionTimeByCategory";
 		public static final String WORK_ORDER_STARTTIME = "starttime";
 		public static final String WORK_ORDER_ENDTIME = "endtime";
-		
+		public static final String WORK_ORDER_COUNT_BY_SITE = "workOrderCountBySite";
+		public static final String WORK_ORDER_TECHNICIAN_COUNT = "workOrderTechCount";
+		public static final String TOP_N_TECHNICIAN = "topNTechnician";
+		public static final String WORKORDER_INFO_BY_SITE = "workOrderInfoBySite";
+			
 		public static final String PERMALINK_FOR_URL = "permalinkForUrl";
 		public static final String PERMALINK_TOKEN_FOR_URL = "permalinkTokenForUrl";
 		
@@ -521,6 +525,7 @@ public class FacilioConstants {
 		public static final String WORKFLOW_RULE = "workflowRule";
 		public static final String WORKFLOW_RULE_ID = "workflowRuleID";
 		public static final String WORKFLOW_RULE_MODULE = "workflowrule";
+		public static final String RULE_COUNT = "ruleCount";
 		public static final String RULES = "rules";
 		public static final String ALARM_RULE = "alarmRule";
 		public static final String ALARM_RULE_ACTIVE_ALARM = "alarmRuleActiveAlarm";
@@ -533,6 +538,7 @@ public class FacilioConstants {
 		public static final String APPROVER_ID_LIST = "approverIdList";
 		public static final String APPROVER_LIST = "approverList";
 		public static final String READING_RULE_LIST ="readingRules";
+		public static final String IS_READING_RULE_EXECUTE_FROM_JOB ="isReadingRulesExecutionFromJob";
 		public static final String READING_RULE_ALARM_META ="readingRuleAlarmMeta";
 		public static final String WORKFLOW_RULE_TYPE = "workflowRuleType";
 		public static final String WORKFLOW_ACTION_LIST="workflowActions";
@@ -544,6 +550,8 @@ public class FacilioConstants {
 		public static final String GROUP_STATUS = "groupStatus";
 		
 		public static final String TECH_COUNT_GROUP_DIGEST = "techCountGroupDigest";
+		public static final String SITE_ROLE_WISE_COUNT= "siteRoleWiseCount";
+		public static final String SITE_ROLE_WO_COUNT= "siteRoleWoCount";
 		
 		
 		public static final String VIEWID = "viewId";
@@ -597,6 +605,7 @@ public class FacilioConstants {
 		public static final String READING_KEY="readingKey";
 		public static final String CONFIGURE="configure";
 		public static final String SUBSCRIBE="subscribe";
+		public static final String UNSUBSCRIBE_IDS="unsubscribeIds";
 		public static final String UPDATE_LAST_READINGS = "updateLastReadings";
 		public static final String SKIP_LAST_READING_CHECK = "skipLastReadingCheck";
 		public static final String PREVIOUS_READING_DATA_META = "previousReadingDataMeta";
@@ -675,6 +684,8 @@ public class FacilioConstants {
 		
 		public static final String IDS_TO_UPDATE_TASK_COUNT = "ids_to_update_task_count";
 		public static final String IDS_TO_UPDATE_COUNT = "ids_to_update_count";
+		
+		public static final String PAGE = "page";
 		
 		private static Map<String, Class> classMap = Collections.unmodifiableMap(initClassMap());
 		private static Map<String, Class> initClassMap() {
@@ -787,6 +798,13 @@ public class FacilioConstants {
 		public static final String TABLE_NAME = "Jobs";
 		public static final String FORKED_COMMANDS = "forkedCommands";
 		public static final String JOB_CONTEXT = "jobContext";
+		
+		public static final String EXECUTER_NAME_FACILIO = "facilio";
+		public static final String EXECUTER_NAME_PRIORTIY = "priority";
+		
+		public static final String SCHEDULED_READING_RULE_JOB_NAME = "scheduledReadingRule";
+		public static final String SCHEDULED_ALARM_TRIGGER_RULE_JOB_NAME = "scheduledAlarmTriggerRule";
+		
 	}
 	public static class Ticket{
 		public static final String STATUS_ID = "status_id";

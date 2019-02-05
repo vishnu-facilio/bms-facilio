@@ -97,7 +97,7 @@ public static Map<String,Object> getTotalConsumptionByBuildings(Long startTime,L
 				
 		List<Map<String,Object>> totalConsumptionByBuilding = selectBuilder.get();
 		
-		List<Map<String,Object>> outputTotalConsumptionByBuilding = new ArrayList<Map<String,Object>>();
+		Map<Long,Object> outputTotalConsumptionByBuilding = new HashMap<Long, Object>();
 		
 		Map<Long, Object> buildingArray = getLookupFieldPrimary("building");
 
@@ -106,7 +106,7 @@ public static Map<String,Object> getTotalConsumptionByBuildings(Long startTime,L
 			Map<String,Object> consumptionObj = totalConsumptionByBuilding.get(i) ;
 			Long buildingId = (Long)consumptionObj.get("buildingId");
 			consumptionObj.put("buildingName",buildingArray.get(buildingId) );
-			outputTotalConsumptionByBuilding.add(consumptionObj);
+			outputTotalConsumptionByBuilding.put(buildingId,consumptionObj);
 		}
 		Map<String,Object> resp = new HashMap<String, Object>();
 		

@@ -1074,6 +1074,17 @@ public class WorkOrderAction extends FacilioAction {
 	}
 
 
+	private List<Map<String,Object>> avgResponseResolution;
+
+	public List<Map<String,Object>> getAvgResponseResolution() {
+		return avgResponseResolution;
+	}
+
+	public void setAvgResponseResolution(List<Map<String,Object>> avgResponseResolution) {
+		this.avgResponseResolution = avgResponseResolution;
+	}
+
+	
 	private Map<String,Object> avgResolutionTimeByCategory;
 
 	public Map<String,Object> getAvgResolutionTimeByCategory() {
@@ -1840,9 +1851,63 @@ public class WorkOrderAction extends FacilioAction {
 
 		return SUCCESS;
 	}
+	
+	
+	public String getAvgResolutionResponseTimeBySite() throws Exception {
+		
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.WORK_ORDER_STARTTIME, getStartTime());
+		context.put(FacilioConstants.ContextNames.WORK_ORDER_ENDTIME, getEndTime());
+
+
+		Chain avgResponseResolutionTimeChain = ReadOnlyChainFactory.getAvgResponseResolutionTimeBySiteChain();
+		avgResponseResolutionTimeChain.execute(context);
 
 
 
+		setAvgResponseResolution((List<Map<String,Object>>) context.get(FacilioConstants.ContextNames.WORKORDER_INFO_BY_SITE));
+
+		
+		
+		return SUCCESS;
+	}
+	public String getTopNTechnicians() throws Exception
+	{
+		
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.WORK_ORDER_TECHNICIAN_COUNT, getCount());
+		context.put(FacilioConstants.ContextNames.WORK_ORDER_STARTTIME, getStartTime());
+		context.put(FacilioConstants.ContextNames.WORK_ORDER_ENDTIME, getEndTime());
+		
+		Chain woTechCountBySite = ReadOnlyChainFactory.getTopNTechBySiteChain();
+		woTechCountBySite.execute(context);
+
+
+		setTopTechnicians((Map<String, Object>) context.get(FacilioConstants.ContextNames.TOP_N_TECHNICIAN));
+
+
+		return SUCCESS;
+
+	}
+
+	public String getWoCountBySite() throws Exception {
+
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.WORK_ORDER_STARTTIME, getStartTime());
+		context.put(FacilioConstants.ContextNames.WORK_ORDER_ENDTIME, getEndTime());
+
+
+		Chain woCountBySite = ReadOnlyChainFactory.getWorkOrderCountBySiteChain();
+		woCountBySite.execute(context);
+
+
+		setWorkOrderBySite((List<Map<String, Object>>) context.get(FacilioConstants.ContextNames.SITE_ROLE_WO_COUNT));
+
+
+		return SUCCESS;
+	}
+
+	
 
 	public String getAvgWorkCompletionByCategory() throws Exception {
 
@@ -1972,6 +2037,21 @@ public class WorkOrderAction extends FacilioAction {
 	}
 	public void setLastSyncTime(Long lastSyncTime) {
 		this.lastSyncTime = lastSyncTime;
+	}
+	
+	private List<Map<String,Object>> workOrderBySite;
+	public List<Map<String,Object>> getWorkOrderBySite() {
+		return workOrderBySite;
+	}
+	public void setWorkOrderBySite(List<Map<String,Object>> workOrderBySite) {
+		this.workOrderBySite = workOrderBySite;
+	}
+	private Map<String,Object> topTechnicians;
+	public Map<String,Object> getTopTechnicians() {
+		return topTechnicians;
+	}
+	public void setTopTechnicians(Map<String,Object> topTechnicians) {
+		this.topTechnicians = topTechnicians;
 	}
 
 }

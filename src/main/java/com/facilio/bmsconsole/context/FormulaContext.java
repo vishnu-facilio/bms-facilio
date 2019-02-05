@@ -317,10 +317,6 @@ public class FormulaContext {
 		public FacilioField getSelectField(FacilioField field) throws Exception {
 			String selectFieldString = expr.replace("{$place_holder$}", field.getCompleteColumnName());
 			String timeZone = getTimeZoneString();
-//			String timeZone = AccountUtil.getCurrentOrg().getTimezone();
-//			if(timeZone == null) {
-//				timeZone = "UTC";
-//			}
 			selectFieldString = selectFieldString.replace("{$place_holder1$}",timeZone);
 			
 			FacilioField selectField =  new FacilioField();
@@ -343,7 +339,11 @@ public class FormulaContext {
 		private String getTimeZoneString() {
 			String db = AwsUtil.getDB();
 			if (db.equalsIgnoreCase("mysql")) {
-				return DateTimeUtil.getDateTime().getOffset().toString().equalsIgnoreCase("Z") ? "+00:00":DateTimeUtil.getDateTime().getOffset().toString();
+				String timeZone = AccountUtil.getCurrentOrg().getTimezone();
+				if(timeZone == null) {
+					timeZone = "UTC";
+				}
+				return timeZone;
 			} else if (db.equalsIgnoreCase("mssql")) {
 				return DateTimeUtil.getDateTime().getOffset().toString().equalsIgnoreCase("Z") ? "0": String.valueOf(DateTimeUtil.getDateTime().getOffset().getTotalSeconds());
 			}

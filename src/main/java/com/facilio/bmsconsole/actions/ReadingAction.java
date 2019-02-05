@@ -961,6 +961,14 @@ public class ReadingAction extends FacilioAction {
 		return SUCCESS;
 	}
 	
+	public String getLiveReading () throws Exception {
+		Map<String, Object> instance = TimeSeriesAPI.getUnmodeledInstance(assetId,fieldId);
+		if (instance != null && AccountUtil.getCurrentOrg()!= null) {
+			IoTMessageAPI.publishIotMessage(Collections.singletonList(instance), IotCommandType.GET);
+		}
+		return SUCCESS;
+	}
+	
 	public String setReadingInputValues() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.READING_DATA_META_ID, readingId);

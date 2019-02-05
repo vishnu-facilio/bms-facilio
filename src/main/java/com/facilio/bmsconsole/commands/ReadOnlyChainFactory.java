@@ -124,10 +124,36 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new GetDigestTeamTechnicianCountCommand());
 		c.addCommand(new GetWorkOrderStatusPecentageCommand());
 		
-//		CommonCommandUtil.addCleanUpCommand(c);
 		return c;
 	}
 	
+	public static Chain getAvgResponseResolutionTimeBySiteChain() {
+		Chain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForWorkOrder());
+		c.addCommand(new LoadModuleNameCommand());
+		c.addCommand(new GetAvgResponseResolutionBySiteCommand());
+		
+		return c;
+	}
+	
+	public static Chain getWorkOrderCountBySiteChain() {
+		Chain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForWorkOrder());
+		c.addCommand(new LoadModuleNameCommand());
+		c.addCommand(new GetRoleWoCountBySiteCommand());
+		
+		return c;
+	}
+	
+	public static Chain getTopNTechBySiteChain() {
+		Chain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForWorkOrder());
+		c.addCommand(new LoadModuleNameCommand());
+		c.addCommand(new GetTopNTechCountCommand());
+		
+		
+		return c;
+	}
 	
 	public static Chain getAvgCompletionTimeByCategoryChain() {
 		Chain c = getDefaultChain();

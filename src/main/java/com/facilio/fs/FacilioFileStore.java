@@ -117,11 +117,6 @@ public class FacilioFileStore extends FileStore {
 		}
 		return null;
 	}
-	
-	@Override
-	public InputStream readFile(long fileId, int width, int height) throws Exception {
-		return readFile(fileId);
-	}
 
 	@Override
 	public boolean deleteFile(long fileId) throws Exception {

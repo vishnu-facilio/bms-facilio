@@ -1,6 +1,5 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -23,13 +22,10 @@ public class GetUnmodelledInstancesForControllerCommand implements Command {
 		Boolean isSubscribed = (Boolean) context.get(FacilioConstants.ContextNames.SUBSCRIBE);
 		JSONObject pagination = (JSONObject) context.get(FacilioConstants.ContextNames.PAGINATION);
 		Boolean isCount = (Boolean) context.get(FacilioConstants.ContextNames.COUNT);
-		List<Map<String, Object>> instances = new ArrayList<Map<String, Object>>();
-		if (isCount) {
-			instances = TimeSeriesAPI.getUnmodeledInstancesCountForController(controllerId, configured, fetchMapped, isSubscribed);
+		if (isCount == null) {
+			isCount = false;
 		}
-		else {
-			 instances = TimeSeriesAPI.getUnmodeledInstancesForController(controllerId, configured, fetchMapped, pagination);
-		}
+		List<Map<String, Object>> instances = TimeSeriesAPI.getUnmodeledInstancesForController(controllerId, configured, fetchMapped, pagination, isSubscribed, isCount);
 		if (fetchMapped != null && fetchMapped && instances != null) {
 			Set<Long> assetIds = instances.stream().map(inst -> (Long) inst.get("assetId")).collect(Collectors.toSet());
 			context.put(FacilioConstants.ContextNames.PARENT_ID_LIST, assetIds);

@@ -233,6 +233,34 @@
 			</result>
 		</action>
 		
+		<action name="topNTechnicians" class="com.facilio.bmsconsole.actions.WorkOrderAction"
+			method="getTopNTechnicians">
+			<param name="moduleName">workorder</param>
+			<param name="permission">READ,READ_TEAM,READ_OWN</param>
+			<result name="success" type="json">
+				<param name="includeProperties">topTechnicians,topTechnicians\[\d+\],topTechnicians\[\d+\].*,^topTechnicians.*</param>
+			</result>
+		</action>
+		
+		
+		<action name="woCountBySite" class="com.facilio.bmsconsole.actions.WorkOrderAction"
+			method="getWoCountBySite">
+			<param name="moduleName">workorder</param>
+			<param name="permission">READ,READ_TEAM,READ_OWN</param>
+			<result name="success" type="json">
+				<param name="includeProperties">workOrderBySite,workOrderBySite\[\d+\],workOrderBySite\[\d+\].*,^workOrderBySite.*</param>
+			</result>
+		</action>
+		
+		<action name="avgResolutionResponseTimeBySite" class="com.facilio.bmsconsole.actions.WorkOrderAction"
+			method="getAvgResolutionResponseTimeBySite">
+			<param name="moduleName">workorder</param>
+			<param name="permission">READ,READ_TEAM,READ_OWN</param>
+			<result name="success" type="json">
+				<param name="includeProperties">avgResponseResolution,avgResponseResolution\[\d+\],avgResponseResolution\[\d+\].*,^avgResponseResolution.*</param>
+			</result>
+		</action>
+		
 	
 		
 	</package>
@@ -277,7 +305,14 @@
 	</package>
 	
 	<package name= "alarmListCount" namespace="/api/v2/alarms" extends="v2Api" >
-	<action name="count" class="com.facilio.bmsconsole.actions.AlarmAction" method="v2viewAlarm">
+		<action name="count" class="com.facilio.bmsconsole.actions.AlarmAction" method="v2viewAlarm">
+			<param name="moduleName">alarm</param>
+			<param name="permission">READ,READ_TEAM,READ_OWN</param>
+		</action>
+	</package>
+	
+	<package name= "alarmRules" namespace="/api/v2/alarm/rules" extends="v2Api" >
+		<action name="addNew" class="com.facilio.bmsconsole.actions.WorkflowRuleAction" method="addNewReadingRule">
 			<param name="moduleName">alarm</param>
 			<param name="permission">READ,READ_TEAM,READ_OWN</param>
 		</action>
@@ -298,6 +333,10 @@
 			<param name="permission">READ,READ_OWN,READ_TEAM</param>
 			<param name="viewName">{1}</param>
 			<param name="ruleType">1</param>
+		</action>
+		<action name="rulesCount" class="com.facilio.bmsconsole.actions.WorkflowRuleAction" method="v2rulesCount">
+			<param name="moduleName">workflowrule</param>
+			<param name="permission">READ,READ_TEAM,READ_OWN</param>
 		</action>
 	</package>
 	
@@ -463,6 +502,8 @@
 	
 	<package name="readingFieldLatestValuesApiv2" namespace="/api/v2/reading" extends="v2Api">
 		<action name="set" class="com.facilio.bmsconsole.actions.ReadingAction" method="setReading">
+		</action>
+		<action name="get" class="com.facilio.bmsconsole.actions.ReadingAction" method="getLiveReading">
 		</action>
 		<action name="update" class="com.facilio.bmsconsole.actions.ReadingAction" method="updateRDM">
 		</action>
@@ -658,14 +699,28 @@
 	
 	<package name="instancesApiv2" namespace="/api/v2/instances" extends="v2Api">
 		<action name="configure" class="com.facilio.bmsconsole.actions.TimeSeries" method="configureInstances">
+			<param name="moduleName">setup</param>
+			<param name="permission">CONTROLLER</param>
 		</action>
 		<action name="subscribe" class="com.facilio.bmsconsole.actions.TimeSeries" method="subscribeInstances">
+			<param name="moduleName">setup</param>
+			<param name="permission">CONTROLLER</param>
+		</action>
+		<action name="unsubscribe" class="com.facilio.bmsconsole.actions.TimeSeries" method="unsubscribeInstances">
+			<param name="moduleName">setup</param>
+			<param name="permission">CONTROLLER</param>
 		</action>
 		<action name="map" class="com.facilio.bmsconsole.actions.TimeSeries" method="mapInstance">
+			<param name="moduleName">setup</param>
+			<param name="permission">CONTROLLER</param>
 		</action>
 		<action name="mapped" class="com.facilio.bmsconsole.actions.TimeSeries" method="getMappedInstances">
+			<param name="moduleName">setup</param>
+			<param name="permission">CONTROLLER</param>
 		</action>
 		<action name="discover" class="com.facilio.bmsconsole.actions.TimeSeries" method="discoverInstances">
+			<param name="moduleName">setup</param>
+			<param name="permission">CONTROLLER</param>
 		</action>
 		<action name="count" class ="com.facilio.bmsconsole.actions.TimeSeries" method ="getInstancesForController">
 		     <param name="showInstanceCount">true</param>
@@ -700,7 +755,12 @@
 		</action>
 	</package>
 	
-	
-	
-	
+	<!-- <package name="pageApiv2" namespace="/api/v2/pages" extends="v2Api">
+		<action name="*" class="com.facilio.bmsconsole.actions.PageAction" method="fetchPage">
+			<param name="moduleName">asset</param>
+			<param name="permission">READ</param>
+			<param name="module">{1}</param>
+		</action>
+	</package> -->
+		
 </struts>

@@ -155,16 +155,6 @@ public class S3FileStore extends FileStore {
 		}
 		S3Object so = AwsUtil.getAmazonS3Client().getObject(getBucketName(), fileInfo.getFilePath());
 		return so.getObjectContent();
-	} 
-	@Override
-	public InputStream readFile(long fileId, int height, int width) throws Exception {
-		
-		FileInfo fileInfo = getResizedFileInfo(fileId, width, height);
-		if (fileInfo == null) {
-			return null;
-		}
-		S3Object so = AwsUtil.getAmazonS3Client().getObject(getBucketName(), fileInfo.getFilePath());
-		return so.getObjectContent();
 	}
 
 	@Override
