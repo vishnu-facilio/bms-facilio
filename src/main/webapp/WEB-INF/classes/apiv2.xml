@@ -305,7 +305,14 @@
 	</package>
 	
 	<package name= "alarmListCount" namespace="/api/v2/alarms" extends="v2Api" >
-	<action name="count" class="com.facilio.bmsconsole.actions.AlarmAction" method="v2viewAlarm">
+		<action name="count" class="com.facilio.bmsconsole.actions.AlarmAction" method="v2viewAlarm">
+			<param name="moduleName">alarm</param>
+			<param name="permission">READ,READ_TEAM,READ_OWN</param>
+		</action>
+	</package>
+	
+	<package name= "alarmRules" namespace="/api/v2/alarm/rules" extends="v2Api" >
+		<action name="addNew" class="com.facilio.bmsconsole.actions.WorkflowRuleAction" method="addNewReadingRule">
 			<param name="moduleName">alarm</param>
 			<param name="permission">READ,READ_TEAM,READ_OWN</param>
 		</action>
