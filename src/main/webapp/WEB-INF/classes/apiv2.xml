@@ -731,7 +731,7 @@
 	</package>
 	<package name="consumptionV2" namespace="/api/v2/consumptionData" extends="v2Api">
 		
-		<action name="totalConsumptionByBuilding" class="com.facilio.bmsconsole.actions.ConsumptionAction" method="getTotalConsumptionForBuilding">
+		<action name="totalConsumptionBySite" class="com.facilio.bmsconsole.actions.ConsumptionAction" method="getTotalConsumptionForSite">
 			<param name="permission">READ,READ_TEAM,READ_OWN</param>
 			<result name="success" type="json">
 			<param name="includeProperties">totalConsumptionByBuilding,totalConsumptionByBuilding\[\d+\],totalConsumptionByBuilding\[\d+\].*,^totalConsumptionByBuilding.*</param>

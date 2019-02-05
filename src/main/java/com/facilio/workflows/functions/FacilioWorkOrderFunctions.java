@@ -21,7 +21,7 @@ public enum FacilioWorkOrderFunctions implements FacilioWorkflowFunctionInterfac
 		@Override
 		public Object execute(Object... objects) throws Exception {
 			
-			List<Map<String,Object>> avgResolutionTimeByCategory = WorkOrderAPI.getAvgCompletionTimeByCategory(Long.valueOf(objects[0].toString()),Long.valueOf(objects[1].toString()));
+			List<Map<String,Object>> avgResolutionTimeByCategory = WorkOrderAPI.getAvgCompletionTimeByCategory(Long.valueOf(objects[0].toString()),Long.valueOf(objects[1].toString()),Long.valueOf(objects[2].toString()));
 			
             return GET_AVG_RESOLUTION_TIME.constructAvgTimeResponse(avgResolutionTimeByCategory);
 		};
