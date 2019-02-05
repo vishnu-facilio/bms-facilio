@@ -417,7 +417,7 @@ public class ReadingRuleAPI extends WorkflowRuleAPI {
 				else {
 					alarmTriggerRule.setOnSuccess(false);
 				}
-				alarmTriggerRule.setRuleGroupId(ruleId);
+				alarmTriggerRule.setRuleGroupId(preRequsiteRule.getId());
 				alarmTriggerRule.setParentRuleId(temp.getId());
 				alarmTriggerRule.setStatus(true);
 				alarmTriggerRule.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
