@@ -94,5 +94,5 @@ public class SelectRecordBuilder extends DBSelectRecordBuilder {
 		return sqlString;
 	}
 
-	private static String[] keywords = {"File"};
+	private static String[] keywords = {"FacilioFile"};
 }

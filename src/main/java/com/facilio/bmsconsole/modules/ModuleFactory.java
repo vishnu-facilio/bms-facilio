@@ -675,7 +675,7 @@ public class ModuleFactory {
 		FacilioModule filesModule = new FacilioModule();
 		filesModule.setName("files");
 		filesModule.setDisplayName("Files");
-		filesModule.setTableName("File");
+		filesModule.setTableName("FacilioFile");
 
 		return filesModule;
 	}
