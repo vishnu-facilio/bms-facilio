@@ -499,6 +499,9 @@ public class WorkflowRuleAction extends FacilioAction {
 			context.put(FacilioConstants.ContextNames.FILTERS, json);
 			context.put(FacilioConstants.ContextNames.INCLUDE_PARENT_CRITERIA, getIncludeParentFilter());
 		}
+		if (getIsCount() != null) {
+ 			context.put(FacilioConstants.ContextNames.RULE_COUNT, getIsCount());
+ 		}
 
 		if (getSearch() != null) {
 			JSONObject searchObj = new JSONObject();
@@ -524,11 +527,9 @@ public class WorkflowRuleAction extends FacilioAction {
 		workflowRuleType.execute(context);
 		workflowRuleList = (List<WorkflowRuleContext>) context.get(FacilioConstants.ContextNames.WORKFLOW_RULE_LIST);
 		if (getIsCount() != null) {
-			if (workflowRuleList != null) {
-			setCount(workflowRuleList.size());
-			System.out.println("data" + getCount());
-			}
+			setCount((long) context.get(FacilioConstants.ContextNames.RULE_COUNT));
 		}
+		setResult("count", getCount());
 		setResult("rules", workflowRuleList);
 		return SUCCESS;
 
@@ -540,8 +541,8 @@ public class WorkflowRuleAction extends FacilioAction {
 		setResult("count", listCount);
 		return SUCCESS;
 	}
-private String isCount;
 	
+	private String isCount;
 	
 	public String getIsCount() {
 		return isCount;
