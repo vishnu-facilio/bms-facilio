@@ -564,7 +564,7 @@ public class FieldUtil {
 	}
 	
 	private static Set<String> ALLOWED_MODULES = Collections.unmodifiableSet(
-			new HashSet<>(Arrays.asList("resource", "asset", "building", "floor", "space", "zone", "alarm", "ticket", "workorder", "workorderrequest", "task", "readingalarm")));
+			new HashSet<>(Arrays.asList("resource", "asset", "building", "floor", "space", "zone", "alarm", "ticket", "workorder", "workorderrequest", "task", "readingalarm", "inventory")));
 	
 	public static boolean isSiteIdFieldPresent(FacilioModule module) {
 		return ALLOWED_MODULES.contains(module.getName()) || (module.getExtendModule() != null && module.getExtendModule().getName().equals("asset"));

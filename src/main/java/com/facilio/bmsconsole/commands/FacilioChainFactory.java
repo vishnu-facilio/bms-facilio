@@ -2235,6 +2235,15 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
+	public static Chain getNewInventoryChain() {
+		Chain c = new ChainBase();
+		c.addCommand(SetTableNamesCommand.getForInventory());
+		c.addCommand(new LoadModuleNameCommand());
+		c.addCommand(new LoadAllFieldsCommand());
+		CommonCommandUtil.addCleanUpCommand(c);
+		return c;
+	}
+	
 	private static  long createOrg(Organization org) throws Exception {
 		
 		Organization existingOrg = getOrg(org.getDomain());

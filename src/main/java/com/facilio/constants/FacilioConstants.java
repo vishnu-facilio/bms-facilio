@@ -27,6 +27,9 @@ import com.facilio.bmsconsole.context.EnergyMeterPurposeContext;
 import com.facilio.bmsconsole.context.FCUContext;
 import com.facilio.bmsconsole.context.FloorContext;
 import com.facilio.bmsconsole.context.HeatPumpContext;
+import com.facilio.bmsconsole.context.InventoryCategoryContext;
+import com.facilio.bmsconsole.context.InventoryContext;
+import com.facilio.bmsconsole.context.InventoryVendorContext;
 import com.facilio.bmsconsole.context.LocationContext;
 import com.facilio.bmsconsole.context.PhotosContext;
 import com.facilio.bmsconsole.context.ReadingAlarmContext;
@@ -196,6 +199,13 @@ public class FacilioConstants {
 		
 		
 		public static final String EVENT = "event";
+		
+		public static final String INVENTORY = "inventory";
+		public static final String INVENTORY_LIST = "inventories";
+		public static final String INVENTORY_VENDOR ="inventoryvendor";
+		public static final String INVENTORY_VENDORS ="inventory_vendors";
+		public static final String INVENTORY_VENDOR_LIST ="inventoryvendors";
+		public static final String INVENTORY_CATEGORY = "inventoryCategory";
 		
 		public static final String TASK = "task";
 		public static final String TASK_LIST = "tasks";
@@ -399,11 +409,13 @@ public class FacilioConstants {
 		public static final String TICKET_NOTES = "ticketnotes";
 		public static final String BASE_SPACE_NOTES = "basespacenotes";
 		public static final String ASSET_NOTES = "assetnotes";
+		public static final String INVENTORY_NOTES = "inventorynotes";
 		
 		public static final String TICKET_ATTACHMENTS = "ticketattachments";
 		public static final String BASE_SPACE_ATTACHMENTS = "basespaceattachments";
 		public static final String ASSET_ATTACHMENTS = "assetattachments";
 		public static final String TASK_ATTACHMENTS = "taskattachments";
+		public static final String INVENTORY_ATTACHMENTS = "inventoryattachments";
 		
 		public static final String PICKLIST = "pickList";
 		
@@ -648,6 +660,7 @@ public class FacilioConstants {
 		
 		public static final String PUBSUB_TOPIC = "pubsubTopic";
 		
+		
 		private static Map<String, Class> classMap = Collections.unmodifiableMap(initClassMap());
 		private static Map<String, Class> initClassMap() {
 			Map<String, Class> classMap = new HashMap<>();
@@ -698,7 +711,11 @@ public class FacilioConstants {
 			classMap.put(HDD_READING, ReadingContext.class);
 			classMap.put(UTILITY_BILL_READING, ReadingContext.class);
 			classMap.put(WATER_METER, WaterMeterContext.class);
-			classMap.put(CHILLER_SECONDARY_PUMP, ChillerSecondaryPumpContext.class);			
+			classMap.put(CHILLER_SECONDARY_PUMP, ChillerSecondaryPumpContext.class);	
+			classMap.put(INVENTORY, InventoryContext.class);
+			classMap.put(INVENTORY_VENDOR, InventoryVendorContext.class);
+			classMap.put(INVENTORY_VENDORS, InventoryVendorContext.class);
+			classMap.put(INVENTORY_CATEGORY, InventoryCategoryContext.class);
 			return classMap;
 		}
 		

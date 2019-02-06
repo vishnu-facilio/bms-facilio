@@ -4920,6 +4920,28 @@ public class FieldFactory {
 		
 		return fields;
 	}
+	
+	public static List<FacilioField> getInventoryVendorsFields() {
+		FacilioModule module = ModuleFactory.getInventoryVendorsModule();
+		List<FacilioField> fields = new ArrayList<>();
+
+		fields.add(getIdField(module));
+		fields.add(getOrgIdField(module));
+		fields.add(getNameField(module));
+		FacilioField email = new FacilioField();
+		email.setName("email");
+		email.setDataType(FieldType.STRING);
+		email.setColumnName("EMAIL");
+		email.setModule(module);
+		fields.add(email);
+		FacilioField phone = new FacilioField();
+		phone.setName("phone");
+		phone.setDataType(FieldType.STRING);
+		phone.setColumnName("PHONE");
+		phone.setModule(module);
+		fields.add(phone);
+		return fields;
+	}
 
 
 	public static FacilioField getField(String name, String colName, FacilioModule module, FieldType type) {

@@ -41,6 +41,10 @@ public class NoteAction extends FacilioAction {
 		return addNote(FacilioConstants.ContextNames.ASSET_NOTES);
 	}
 	
+	public String addInventoryNote() throws Exception {
+		return addNote(FacilioConstants.ContextNames.INVENTORY_NOTES);
+	}
+	
 	public String addNote() throws Exception {
 		return addNote(module);
 	}
@@ -109,6 +113,9 @@ public class NoteAction extends FacilioAction {
 		return getNotesList(FacilioConstants.ContextNames.ASSET_NOTES);
 	}
 	
+	public String getInventoryNotes() throws Exception {
+		return getNotesList(FacilioConstants.ContextNames.INVENTORY_NOTES);
+	}
 	public String getNotesList() throws Exception {
 		return getNotesList(module);
 	}

@@ -255,4 +255,41 @@ public class ReadOnlyChainFactory {
 	private static Chain getDefaultChain() {
 		return new FacilioChain(false);
     }
+	
+	public static Chain fetchInventoryDetails() {
+		Chain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForInventory());
+		c.addCommand(new GetInventoryDetailsCommand());
+		CommonCommandUtil.addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain getInventoryListChain(){
+		Chain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForInventory());
+		c.addCommand(new LoadViewCommand());
+		c.addCommand(new LoadAllFieldsCommand());
+		c.addCommand(new GenerateCriteriaFromFilterCommand());
+		c.addCommand(new GenerateSearchConditionCommand());
+		c.addCommand(new GetInventoryListCommand());
+		CommonCommandUtil.addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain fetchInventoryVendorDetails() {
+		Chain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForInventoryVendor());
+		c.addCommand(new GenericGetModuleDataDetailCommand());
+		CommonCommandUtil.addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain getInventoryVendorsList(){
+		Chain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForInventoryVendor());
+		c.addCommand(new LoadAllFieldsCommand());
+		c.addCommand(new GenericGetModuleDataListCommand());
+		CommonCommandUtil.addCleanUpCommand(c);
+		return c;
+	}
 }

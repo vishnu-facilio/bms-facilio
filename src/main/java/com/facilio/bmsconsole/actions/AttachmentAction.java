@@ -121,6 +121,10 @@ public class AttachmentAction  extends FacilioAction {
 				attachmentList.get(0).setAttachmentModule(FacilioConstants.ContextNames.ASSET_LIST);
 				attachmentList.get(0).setRecordId(recordId);
 			}
+			if (module.equals(FacilioConstants.ContextNames.INVENTORY_ATTACHMENTS)) {
+				attachmentList.get(0).setAttachmentModule(FacilioConstants.ContextNames.INVENTORY_LIST);
+				attachmentList.get(0).setRecordId(recordId);
+			}
 		}
 		return SUCCESS;
 	}
@@ -147,6 +151,12 @@ public class AttachmentAction  extends FacilioAction {
 			if (module.equals(FacilioConstants.ContextNames.ASSET_ATTACHMENTS)) {
 				attachmentList.forEach(attachment -> {
 					attachment.setAttachmentModule(FacilioConstants.ContextNames.ASSET_LIST);
+					attachment.setRecordId(recordId);
+				});
+			}
+			else if (module.equals(FacilioConstants.ContextNames.INVENTORY_ATTACHMENTS)) {
+				attachmentList.forEach(attachment -> {
+					attachment.setAttachmentModule(FacilioConstants.ContextNames.INVENTORY_LIST);
 					attachment.setRecordId(recordId);
 				});
 			}

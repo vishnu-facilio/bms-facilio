@@ -10,10 +10,12 @@ import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioContext;
+import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.AlarmSeverityContext;
 import com.facilio.bmsconsole.context.AssetCategoryContext;
 import com.facilio.bmsconsole.context.AssetDepartmentContext;
 import com.facilio.bmsconsole.context.AssetTypeContext;
+import com.facilio.bmsconsole.context.InventoryCategoryContext;
 import com.facilio.bmsconsole.context.TicketCategoryContext;
 import com.facilio.bmsconsole.context.TicketPriorityContext;
 import com.facilio.bmsconsole.context.TicketTypeContext;
@@ -373,6 +375,7 @@ public class PickListAction extends FacilioAction {
 	
 	
 	
+	
 /******************      V2 Api    
  * @throws Exception ******************/
 	
@@ -427,6 +430,50 @@ public class PickListAction extends FacilioAction {
 	public String v2addAlarmSeverity () throws Exception {
 		addAlarmSeverity();
 		setResult(FacilioConstants.ContextNames.RECORD, getAssetSeverity());
+		return SUCCESS;
+	}
+	
+	InventoryCategoryContext inventoryCategory;
+	public InventoryCategoryContext getInventoryCategory() {
+		return inventoryCategory;
+	}
+	public void setInventoryCategory(InventoryCategoryContext inventoryCategory) {
+		this.inventoryCategory = inventoryCategory;
+	}
+
+	public String addInventoryCategory() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.RECORD, getInventoryCategory());
+		Chain addInventoryCategoryChain = TransactionChainFactory.getAddInventoryCategoryChain();
+		addInventoryCategoryChain.execute(context);
+		setResult(FacilioConstants.ContextNames.RECORD, getInventoryCategory());
+		return SUCCESS;
+	}
+	
+	private long inventoryCategoryId;
+	public long getInventoryCategoryId() {
+		return inventoryCategoryId;
+	}
+	public void setInventoryCategoryId(long inventoryCategoryId) {
+		this.inventoryCategoryId = inventoryCategoryId;
+	}
+	public String updateInventoryCategory() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.RECORD, getInventoryCategory());
+		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Arrays.asList(getInventoryCategory().getId()));
+		Chain updateInventoryCategoryChain = TransactionChainFactory.getUpdateInventoryCategoryChain();
+		updateInventoryCategoryChain.execute(context);
+		setResult(FacilioConstants.ContextNames.RECORD, getInventoryCategory());
+		return SUCCESS;
+	}
+	
+	public String deleteInventoryCategory() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.RECORD, this.inventoryCategoryId);
+		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Arrays.asList(this.inventoryCategoryId));
+		Chain deleteInventoryCategoryChain = TransactionChainFactory.getDeleteInventoryCategoryChain();
+		deleteInventoryCategoryChain.execute(context);
+		setResult("inventoryCategoryId", inventoryCategoryId);
 		return SUCCESS;
 	}
 	

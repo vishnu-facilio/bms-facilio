@@ -113,7 +113,7 @@ public class AttachmentsAPI {
 		}
 		
 		// TODO handle other attachments
-		if (moduleName.equals(FacilioConstants.ContextNames.ASSET_ATTACHMENTS) || moduleName.equals(FacilioConstants.ContextNames.BASE_SPACE_ATTACHMENTS)) {
+		if (moduleName.equals(FacilioConstants.ContextNames.ASSET_ATTACHMENTS) || moduleName.equals(FacilioConstants.ContextNames.BASE_SPACE_ATTACHMENTS) || moduleName.equals(FacilioConstants.ContextNames.INVENTORY_ATTACHMENTS)) {
 			Criteria scopeCriteria = AccountUtil.getCurrentUser().scopeCriteria(moduleName, fieldMap.get("parentId"));
 			if(scopeCriteria != null){
 				selectBuilder.andCriteria(scopeCriteria);
