@@ -327,7 +327,8 @@ public class FacilioConstants {
 		
 		public static final String AGGR_KEY = "aggr";
 		public static final String DATA_KEY = "data";
-		
+		public static final String LABEL_MAP = "labelMap";
+
 		public static final String REPORT_CALLING_FROM = "reportCallingFrom";
 		
 		public static final String NOTE = "note";
