@@ -506,6 +506,12 @@ public class V2ReportAction extends FacilioAction {
 		Chain chain = FacilioChain.getTransactionChain();
 		FacilioContext context = new FacilioContext();
 
+		if (reportContext == null) {
+			throw new Exception("Report context cannot be empty");
+		}
+		reportContext.setChartState(chartState);
+		reportContext.setTabularState(tabularState);
+		
 		context.put(FacilioConstants.ContextNames.REPORT, reportContext);
 		context.put("x-axis", xField);
 		context.put("y-axis", yField);
