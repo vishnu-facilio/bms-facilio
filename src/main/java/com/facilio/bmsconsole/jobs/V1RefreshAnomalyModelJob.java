@@ -39,13 +39,13 @@ public class V1RefreshAnomalyModelJob extends FacilioJob {
 		try {
 			// TO DO .. Feature bit check
 			if (!AccountUtil.isFeatureEnabled(AccountUtil.FEATURE_ANOMALY_DETECTOR)) {
-				logger.log(Level.INFO, "RefreshAnomalyJob: Feature Bit is not enabled");
+				logger.log(Level.INFO, "V1RefreshAnomalyJob: Feature Bit is not enabled");
 				return;
 			} else {
-				logger.log(Level.INFO, "RefreshAnomalyJob: Feature Bit is enabled");
+				logger.log(Level.INFO, "V1RefreshAnomalyJob: Feature Bit is enabled");
 			}
 
-			logger.log(Level.INFO, "RefreshAnomalyJob: Getting energy meters ");
+			logger.log(Level.INFO, "V1RefreshAnomalyJob: Getting energy meters ");
 
 			// Collect all asset configuration details
 			Map<Long, AnomalyAssetConfigurationContext> meterConfigurations = null;
@@ -78,7 +78,7 @@ public class V1RefreshAnomalyModelJob extends FacilioJob {
 			}
 
 		} catch (Exception e) {
-			logger.log(Level.INFO, "RefreshAnomalyJob: Exception " + e.getMessage());
+			logger.log(Level.INFO, "V1RefreshAnomalyJob: Exception " + e.getMessage());
 			logger.log(Level.SEVERE, e.getMessage(), e);
 		}
 	}
@@ -120,7 +120,7 @@ public class V1RefreshAnomalyModelJob extends FacilioJob {
 		    				s3WeatherFileUrl = "http://localhost:8000/" + weatherBaseFileName;
 		    			}else {
 		    				s3WeatherFileUrl = S3FileStore.getURL(bucket, filePath + File.separator + weatherBaseFileName, new File(weatherAbsoluteFilePath));
-		    				new File(weatherAbsoluteFilePath).delete();
+		    				//new File(weatherAbsoluteFilePath).delete();
 		    			}
 		    			
 						siteIdToWeatherMapping.put(siteId, s3WeatherFileUrl);		
@@ -144,7 +144,7 @@ public class V1RefreshAnomalyModelJob extends FacilioJob {
 	    				s3EnergyFileUrl = "http://localhost:8000/" + energyBaseFileName;
 	    			}else {
 	    				s3EnergyFileUrl = S3FileStore.getURL(bucket, filePath + File.separator + energyBaseFileName, new File(energyAbsoluteFilePath));
-	    				new File(energyAbsoluteFilePath).delete();
+	    				//new File(energyAbsoluteFilePath).delete();
 	    			}
 
 	    			long createdTime = System.currentTimeMillis();
@@ -162,7 +162,7 @@ public class V1RefreshAnomalyModelJob extends FacilioJob {
 	    				if(waitTimeInSecs > 0) {
 	    				}
 	    			}catch (Exception e) {
-	    				logger.log(Level.INFO, "RefreshAnomalyJob: Exception " + e.getMessage());
+	    				logger.log(Level.INFO, "V1RefreshAnomalyJob: Exception " + e.getMessage());
 	    			}
 			 }
 	}

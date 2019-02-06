@@ -120,7 +120,7 @@ public class RefreshAnomalyModelJob extends FacilioJob {
 		    				s3WeatherFileUrl = "http://localhost:8000/" + weatherBaseFileName;
 		    			}else {
 		    				s3WeatherFileUrl = S3FileStore.getURL(bucket, filePath + File.separator + weatherBaseFileName, new File(weatherAbsoluteFilePath));
-		    				new File(weatherAbsoluteFilePath).delete();
+		    				//new File(weatherAbsoluteFilePath).delete();
 		    			}
 		    			
 						siteIdToWeatherMapping.put(siteId, s3WeatherFileUrl);		
@@ -144,7 +144,7 @@ public class RefreshAnomalyModelJob extends FacilioJob {
 	    				s3EnergyFileUrl = "http://localhost:8000/" + energyBaseFileName;
 	    			}else {
 	    				s3EnergyFileUrl = S3FileStore.getURL(bucket, filePath + File.separator + energyBaseFileName, new File(energyAbsoluteFilePath));
-	    				new File(energyAbsoluteFilePath).delete();
+	    				//new File(energyAbsoluteFilePath).delete();
 	    			}
 
 	    			long createdTime = System.currentTimeMillis();
