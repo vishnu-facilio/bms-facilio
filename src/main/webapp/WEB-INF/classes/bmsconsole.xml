@@ -636,7 +636,7 @@
 			<param name="permission">CREATE_WO</param>
 			<!-- <param name="permission">WORKORDER_READ</param> -->
 			<result name="success" type="json">
-				<param name="includeProperties">rowsUpdated</param>
+				<param name="includeProperties">rowsUpdated,^workorder.*</param>
 			</result>
 		</action>
 		<action name="updatestatus" class="com.facilio.bmsconsole.actions.AlarmAction"
