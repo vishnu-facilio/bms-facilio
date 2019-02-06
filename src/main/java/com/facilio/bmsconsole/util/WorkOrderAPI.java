@@ -775,7 +775,13 @@ public static List<Map<String,Object>> getTotalClosedWoCountBySite(Long startTim
 	  FacilioModule spaceModule = modBean.getModule(FacilioConstants.ContextNames.SPACE);
 	  FacilioModule spaceCategoryModule = modBean.getModule(FacilioConstants.ContextNames.SPACE_CATEGORY);
 	
-	  List<FacilioField> spaceCategoryFields = modBean.getAllFields(spaceCategoryModule.getName());
+	  List<FacilioField> spaceCategoryFields = new ArrayList<FacilioField>();
+	  FacilioField idField = new FacilioField();
+	  idField.setName("id");
+	  idField.setColumnName("ID");
+	  idField.setModule(spaceCategoryModule);
+	  spaceCategoryFields.add(idField);
+	  
 	  List<FacilioField> fields = new ArrayList<FacilioField>();
 		
 	  FacilioField countField = new FacilioField();
@@ -786,12 +792,12 @@ public static List<Map<String,Object>> getTotalClosedWoCountBySite(Long startTim
 	  FacilioField siteIdField = FieldFactory.getSiteIdField(spaceModule);
 	  fields.add(siteIdField);
  
-	  GenericSelectRecordBuilder roleSelectBuilder = new GenericSelectRecordBuilder()
+	  GenericSelectRecordBuilder spaceCategorySelectBuilder = new GenericSelectRecordBuilder()
 				.select(spaceCategoryFields).table(spaceCategoryModule.getTableName())
 				.andCondition(CriteriaAPI.getCondition(spaceCategoryModule.getTableName()+".NAME", "name" ,"Movie Screen", StringOperators.IS))
 				.andCondition(CriteriaAPI.getCondition(spaceCategoryModule.getTableName()+".ORGID", "orgId", ""+AccountUtil.getCurrentOrg().getOrgId(), NumberOperators.EQUALS))
 			    ;
-	 List<Map<String, Object>> spaceCategoryList = roleSelectBuilder.get();
+	 List<Map<String, Object>> spaceCategoryList = spaceCategorySelectBuilder.get();
 	 if(spaceCategoryList.size()>0) {
 	 Long screenCategoryId =(Long) spaceCategoryList.get(0).get("id");
 	 
