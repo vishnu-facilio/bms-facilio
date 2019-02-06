@@ -582,6 +582,10 @@ public class WorkOrderAction extends FacilioAction {
 	public void setSiteId(Long siteId) {
 		this.siteId = siteId;
 	}
+	public Long getSiteId() {
+		return this.siteId;
+	}
+	
 	
 	public String getScopeFilteredValuesForPM() throws Exception {
 		
@@ -1915,6 +1919,7 @@ public class WorkOrderAction extends FacilioAction {
 
 		context.put(FacilioConstants.ContextNames.WORK_ORDER_STARTTIME, getStartTime());
 		context.put(FacilioConstants.ContextNames.WORK_ORDER_ENDTIME, getEndTime());
+		context.put(FacilioConstants.ContextNames.WORK_ORDER_SITE_ID, getSiteId());
 
 		Chain avgCompletionTimeByCategoryChain = ReadOnlyChainFactory.getAvgCompletionTimeByCategoryChain();
 		avgCompletionTimeByCategoryChain.execute(context);

@@ -11,7 +11,7 @@ import com.facilio.constants.FacilioConstants;
 
 public class GetPermaLinkTokenCommand implements Command{
 	
-	private static final Logger LOGGER = Logger.getLogger(GetTotalConsumptionByBuidlingCommand.class.getName());
+	private static final Logger LOGGER = Logger.getLogger(GetTotalConsumptionBySiteCommand.class.getName());
 	@SuppressWarnings("unchecked")
 	@Override
 	public boolean execute(Context context) throws Exception {

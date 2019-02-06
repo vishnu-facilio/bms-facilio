@@ -34,8 +34,12 @@ public class GetAvgCompletionTimeByCategoryCommand implements Command {
 			
 			long startTime = (Long) context.get(FacilioConstants.ContextNames.WORK_ORDER_STARTTIME);
 			long endTime = (Long) context.get(FacilioConstants.ContextNames.WORK_ORDER_ENDTIME);
+			long siteId = 0;
+			if(context.get(FacilioConstants.ContextNames.WORK_ORDER_SITE_ID)!=null) {
+			 siteId = (Long) context.get(FacilioConstants.ContextNames.WORK_ORDER_SITE_ID);
+			}
 			
-			List<Map<String,Object>> avgResolutionTimeByCategory = WorkOrderAPI.getAvgCompletionTimeByCategory(startTime, endTime);
+			List<Map<String,Object>> avgResolutionTimeByCategory = WorkOrderAPI.getAvgCompletionTimeByCategory(startTime, endTime,siteId);
 			
 			
 			Map<Long, Object> ticketCategoryArray = WorkOrderAPI.getLookupFieldPrimary("ticketcategory");

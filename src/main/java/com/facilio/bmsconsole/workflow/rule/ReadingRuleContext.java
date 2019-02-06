@@ -1,6 +1,5 @@
 package com.facilio.bmsconsole.workflow.rule;
 
-import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -14,9 +13,8 @@ import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.context.ResourceContext;
@@ -41,10 +39,7 @@ import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
 import com.facilio.tasker.FacilioTimer;
-import com.facilio.tasker.ScheduleInfo;
 import com.facilio.workflows.util.WorkflowUtil;
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 
 public class ReadingRuleContext extends WorkflowRuleContext {
 	/**
@@ -379,27 +374,26 @@ public class ReadingRuleContext extends WorkflowRuleContext {
 			List<Map<String, Object>> flaps = getFlaps(reading.getParentId());
 			List<Long> flapsToBeDeleted = filterFlapsAndGetOldIds(flaps, reading);
 			boolean result = false;
+			addFlap(reading.getTtime(), reading.getParentId()); //Add flap if it's true
 			if (flaps.isEmpty()) {
-				addFlap(reading.getTtime(), reading.getParentId());
 				result = false;
 			}
 			else {
 				long firstFlapDiff = reading.getTtime() - (long)flaps.get(0).get("flapTime");
-//				if (AccountUtil.getCurrentOrg().getId() == 135) {
-					LOGGER.debug(getId()+"::First flap diff : "+firstFlapDiff+"::"+overPeriod);
-//				}
+				if (AccountUtil.getCurrentOrg().getId() == 134) {
+					LOGGER.info(getId()+"::First flap diff : "+firstFlapDiff+"::"+overPeriod);
+				}
 				if (firstFlapDiff < (overPeriod * 1000)) { // If the first flap is within over period, add flap and return false
-					addFlap(reading.getTtime(), reading.getParentId());
-//					if (AccountUtil.getCurrentOrg().getId() == 135) {
-						LOGGER.debug(getId()+"::Within over period so ignoring");
-//					}
+					if (AccountUtil.getCurrentOrg().getId() == 134) {
+						LOGGER.info(getId()+"::Within over period so ignoring");
+					}
 					result = false;
 				}
 				else if (firstFlapDiff <= ((overPeriod * 1000) + OVER_PERIOD_BUFFER)) {
 //					deleteAllFlaps(reading.getParentId());
-//					if (AccountUtil.getCurrentOrg().getId() == 135) {
-						LOGGER.debug(getId()+"::Rule passed");
-//					}
+					if (AccountUtil.getCurrentOrg().getId() == 134) {
+						LOGGER.info(getId()+"::Rule passed");
+					}
 					result = true;
 				}
 				else { //This shouldn't happen. We can check anyway
@@ -473,12 +467,12 @@ public class ReadingRuleContext extends WorkflowRuleContext {
 	}
 	
 	private boolean checkOccurences(List<Map<String, Object>> flaps, ReadingContext reading) throws Exception {
+		addFlap(reading.getTtime(), reading.getParentId()); //Add flap if it's true
 		if (flaps.size() + 1 == occurences) { //Old flaps + current flap
 //			deleteAllFlaps(reading.getParentId());
 			return true;
 		}
 		else {
-			addFlap(reading.getTtime(), reading.getParentId());
 			return false;
 		}
 	}

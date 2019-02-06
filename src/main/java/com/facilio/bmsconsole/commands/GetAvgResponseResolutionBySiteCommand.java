@@ -38,37 +38,38 @@ public class GetAvgResponseResolutionBySiteCommand implements Command{
 		
 		List<Map<String,Object>> finalResp = new ArrayList<Map<String,Object>>();
 		
-		Iterator<Map.Entry<Long, Map<String, Object>>> itr = workOrderStatusCount.entrySet().iterator(); 
+		Iterator<Map.Entry<Long, Object>> itr = avgResolutionTimeBySite.entrySet().iterator(); 
         
         while(itr.hasNext()) 
         { 
         	 Map<String,Object> siteInfo = new HashMap<String, Object>();
-             Map.Entry<Long, Map<String, Object>> entry = itr.next(); 
-             siteInfo.put("siteId",entry.getKey());
-             Map<String,Object> statusVal = entry.getValue();
+             Map.Entry<Long,Object> entry = itr.next(); 
+             Long siteId = entry.getKey();
+             siteInfo.put("siteId",siteId);
+             Map<String,Object> statusVal = workOrderStatusCount.get(siteId);
              siteInfo.put("onTime",statusVal.get("onTime"));
-             siteInfo.put("siteName",siteNameArray.get(entry.getKey()));
+             siteInfo.put("siteName",siteNameArray.get(siteId));
              siteInfo.put("overDue",statusVal.get("overDue"));
              siteInfo.put("open",statusVal.get("open"));
-             siteInfo.put("technicianCount",technicianCountBySite.get(entry.getKey())!=null?technicianCountBySite.get(entry.getKey()):0);
+             siteInfo.put("technicianCount",technicianCountBySite.get(siteId)!=null?technicianCountBySite.get(siteId):0);
              
              Double avgResolutionTime=0.0,avgResponseTime=0.0,avgResolutionTimeTillLastMonth=0.0,avgResponseTimeTillLastMonth=0.0;
-             if(avgResolutionTimeBySite.get(entry.getKey())!=null) {
-         	   avgResolutionTime = ((BigDecimal)avgResolutionTimeBySite.get(entry.getKey())).doubleValue();
+             if(avgResolutionTimeBySite.get(siteId)!=null) {
+         	   avgResolutionTime = ((BigDecimal)entry.getValue()).doubleValue();
          	   avgResolutionTime = Math.round(avgResolutionTime*100.0)/100.0;}
              
-             if(avgResponseTimeBySite.get(entry.getKey())!=null) {
-            	 avgResponseTime = ((BigDecimal)avgResponseTimeBySite.get(entry.getKey())).doubleValue();
+             if(avgResponseTimeBySite.get(siteId)!=null) {
+            	 avgResponseTime = ((BigDecimal)avgResponseTimeBySite.get(siteId)).doubleValue();
             	 avgResponseTime = Math.round(avgResponseTime*100.0)/100.0;
              }
              
-             if(avgResponseTimeBySiteTillLastMonth.get(entry.getKey())!=null) {
-            	 avgResponseTimeTillLastMonth = ((BigDecimal)avgResponseTimeBySiteTillLastMonth.get(entry.getKey())).doubleValue();
+             if(avgResponseTimeBySiteTillLastMonth.get(siteId)!=null) {
+            	 avgResponseTimeTillLastMonth = ((BigDecimal)avgResponseTimeBySiteTillLastMonth.get(siteId)).doubleValue();
             	 avgResponseTimeTillLastMonth = Math.round(avgResponseTimeTillLastMonth*100.0)/100.0;
              }
              
-             if(avgResolutionTimeBySiteTillLastMonth.get(entry.getKey())!=null) {
-            	 avgResolutionTimeTillLastMonth = ((BigDecimal)avgResolutionTimeBySiteTillLastMonth.get(entry.getKey())).doubleValue();
+             if(avgResolutionTimeBySiteTillLastMonth.get(siteId)!=null) {
+            	 avgResolutionTimeTillLastMonth = ((BigDecimal)avgResolutionTimeBySiteTillLastMonth.get(siteId)).doubleValue();
         	 	avgResolutionTimeTillLastMonth = Math.round(avgResolutionTimeTillLastMonth*100.0)/100.0;
              }
 			
