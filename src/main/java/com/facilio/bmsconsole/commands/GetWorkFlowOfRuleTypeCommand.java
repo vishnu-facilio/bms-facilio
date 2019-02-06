@@ -52,7 +52,7 @@ public class GetWorkFlowOfRuleTypeCommand implements Command {
 				criteria.andCriteria(viewCriteria);
 			}
 		}
-		if(ruleType != null && count != null){
+		if(ruleType != null){
 			context.put(FacilioConstants.ContextNames.WORKFLOW_RULE_LIST, WorkflowRuleAPI.getWorkflowRules(ruleType, fetchEvent, fetchChildren, criteria, query, pagination ));
 			ArrayList info;
 			info =  (ArrayList) context.put(FacilioConstants.ContextNames.WORKFLOW_RULE_LIST, WorkflowRuleAPI.getWorkflowRules(ruleType, fetchEvent, fetchChildren, criteria, query, pagination ));

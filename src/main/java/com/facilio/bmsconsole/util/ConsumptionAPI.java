@@ -7,6 +7,7 @@ import java.util.Map;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.criteria.CommonOperators;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.DateOperators;
 import com.facilio.bmsconsole.criteria.NumberOperators;
@@ -22,17 +23,19 @@ import com.facilio.sql.GenericSelectRecordBuilder;
 public class ConsumptionAPI {
 
 	
-public static Map<String,Object> getTotalConsumptionByBuildings(Long startTime,Long endTime,String moduleName, String fieldName) throws Exception {
+public static Map<String,Object> getTotalConsumptionBySites(Long startTime,Long endTime,String moduleName, String fieldName) throws Exception {
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		
+		Map<Long,Object> outputTotalConsumptionBySite = new HashMap<Long, Object>();
+		
 	    
 		FacilioModule dataModule = modBean.getModule(moduleName);
 		FacilioModule resourcesModule = modBean.getModule(FacilioConstants.ContextNames.RESOURCE);
-		FacilioModule baseSpaceModule = modBean.getModule(FacilioConstants.ContextNames.BASE_SPACE);
 		
 		
-		List<FacilioField> baseSpaceFields = modBean.getAllFields(baseSpaceModule.getName());
-		Map<String, FacilioField> baseSpaceFieldMap = FieldFactory.getAsMap(baseSpaceFields);
+		List<FacilioField> resourceFields = modBean.getAllFields(resourcesModule.getName());
+		Map<String, FacilioField> resourcesFieldMap = FieldFactory.getAsMap(resourceFields);
 
 		List<FacilioField> moduleFields = modBean.getAllFields(dataModule.getName());
 		Map<String, FacilioField> moduleFieldMap = FieldFactory.getAsMap(moduleFields);
@@ -56,15 +59,19 @@ public static Map<String,Object> getTotalConsumptionByBuildings(Long startTime,L
 		totalConsumptionField.setColumnName("sum(round("+consumptionField.getColumnName()+",2))");
 		fields.add(totalConsumptionField);
 
+		FacilioField siteName = resourcesFieldMap.get("name");
+		fields.add(siteName);
 		
-		FacilioField buildingField = baseSpaceFieldMap.get("buildingId");
-		fields.add(buildingField);
 		GenericSelectRecordBuilder selectBuilder = null;
 		
 			if(moduleName.equals("energydata"))
 			{
+				
 				FacilioModule energyPurposeModule = modBean.getModule(FacilioConstants.ContextNames.ENERGY_METER_PURPOSE);
 				FacilioModule energyMeterModule = modBean.getModule(FacilioConstants.ContextNames.ENERGY_METER);
+				FacilioField siteField = FieldFactory.getSiteIdField(energyMeterModule);
+				fields.add(siteField);
+				
 			
 		
 				selectBuilder = new GenericSelectRecordBuilder()
@@ -72,50 +79,91 @@ public static Map<String,Object> getTotalConsumptionByBuildings(Long startTime,L
 													.table(dataModule.getTableName())
 													.innerJoin(energyMeterModule.getTableName()).on(energyMeterModule.getTableName()+".ID = "+dataModule.getTableName()+".PARENT_METER_ID")
 													.innerJoin(energyPurposeModule.getTableName()).on(energyPurposeModule.getTableName()+".ID = "+energyMeterModule.getTableName()+".PURPOSE_ID")
-													.innerJoin(resourcesModule.getTableName()).on(parentField.getCompleteColumnName()+" = "+resourcesModule.getTableName()+".ID")
-													.innerJoin(baseSpaceModule.getTableName()).on(resourcesModule.getTableName()+".SPACE_ID = "+baseSpaceModule.getTableName()+".ID")
+													.innerJoin(resourcesModule.getTableName()).on(siteField.getCompleteColumnName()+" = "+resourcesModule.getTableName()+".ID")
 													.andCondition(CriteriaAPI.getCondition("TTIME", "ttime", startTime+","+endTime, DateOperators.BETWEEN))
 													.andCondition(CriteriaAPI.getCondition(dataModule.getTableName()+".ORGID", "orgId", ""+AccountUtil.getCurrentOrg().getOrgId(), NumberOperators.EQUALS))
 													.andCondition(CriteriaAPI.getCondition(energyMeterModule.getTableName()+".IS_ROOT", "root", ""+1, NumberOperators.EQUALS))
 													.andCondition(CriteriaAPI.getCondition(energyPurposeModule.getTableName()+".NAME", "name", "Main", StringOperators.IS))
-													.groupBy(buildingField.getCompleteColumnName())
+													.andCondition(CriteriaAPI.getCondition(siteField, CommonOperators.IS_NOT_EMPTY))
+					                                .groupBy(siteField.getCompleteColumnName()+","+siteName.getCompleteColumnName())
 													;
 			}
 			else {
+				FacilioModule waterMeterModule = modBean.getModule(FacilioConstants.ContextNames.WATER_METER);
+				FacilioField siteField = FieldFactory.getSiteIdField(waterMeterModule);
+				fields.add(siteField);
+				
 			selectBuilder = new GenericSelectRecordBuilder()
-					.select(fields)
-					.table(dataModule.getTableName())
-					.innerJoin(resourcesModule.getTableName()).on(parentField.getCompleteColumnName()+" = "+resourcesModule.getTableName()+".ID")
-					.innerJoin(baseSpaceModule.getTableName()).on(resourcesModule.getTableName()+".SPACE_ID = "+baseSpaceModule.getTableName()+".ID")
-					.andCondition(CriteriaAPI.getCondition("TTIME", "ttime", startTime+","+endTime, DateOperators.BETWEEN))
-					.andCondition(CriteriaAPI.getCondition(dataModule.getTableName()+".ORGID", "orgId", ""+AccountUtil.getCurrentOrg().getOrgId(), NumberOperators.EQUALS))
-					.groupBy(buildingField.getCompleteColumnName())
-					;
+													.select(fields)
+													.table(dataModule.getTableName())
+													.innerJoin(waterMeterModule.getTableName()).on(parentField.getCompleteColumnName()+" = "+waterMeterModule.getTableName()+".ID")
+													.innerJoin(resourcesModule.getTableName()).on(siteField.getCompleteColumnName()+" = "+resourcesModule.getTableName()+".ID")
+													.andCondition(CriteriaAPI.getCondition("TTIME", "ttime", startTime+","+endTime, DateOperators.BETWEEN))
+													.andCondition(CriteriaAPI.getCondition(dataModule.getTableName()+".ORGID", "orgId", ""+AccountUtil.getCurrentOrg().getOrgId(), NumberOperators.EQUALS))
+													.andCondition(CriteriaAPI.getCondition(siteField, CommonOperators.IS_NOT_EMPTY))
+					                                .groupBy(siteField.getCompleteColumnName()+","+siteName.getCompleteColumnName())
+													;
+			
+			if(AccountUtil.getCurrentOrg().getId() == 92)//for spi cinemas because RO water reading are put inside readings table initially
+			{
+				FacilioModule readingsModule = modBean.getModule(FacilioConstants.ContextNames.RO_MODULE_SPI_CINEMAS);
+				List<FacilioField> readingFields = modBean.getAllFields(readingsModule.getName());
+				Map<String, FacilioField> readingsFieldMap = FieldFactory.getAsMap(readingFields);
+				
+				FacilioField parentReadingField = readingsFieldMap.get("parentId");
+				FacilioField waterReadingField = readingsFieldMap.get("rowaterenpinew");
+				
+				List<FacilioField> readingSelectFields = new ArrayList<FacilioField>();
+				
+				FacilioField sumConsumptionField = new FacilioField();
+				sumConsumptionField.setName("total_consumption");
+				sumConsumptionField.setColumnName("sum(round("+waterReadingField.getColumnName()+",2))");
+				readingSelectFields.add(sumConsumptionField);
+				
+				readingSelectFields.add(siteName);
+
+				
+				FacilioField readingSiteField = FieldFactory.getSiteIdField(resourcesModule);
+				readingSelectFields.add(readingSiteField);
+				
+				GenericSelectRecordBuilder readingSelectBuilder = new GenericSelectRecordBuilder()
+													.select(readingSelectFields)
+													.table(readingsModule.getTableName())
+													.innerJoin(resourcesModule.getTableName()).on(parentReadingField.getCompleteColumnName()+" = "+resourcesModule.getTableName()+".ID")
+													.andCondition(CriteriaAPI.getCondition("TTIME", "ttime", startTime+","+endTime, DateOperators.BETWEEN))
+													.andCondition(CriteriaAPI.getCondition(readingsModule.getTableName()+".ORGID", "orgId", ""+AccountUtil.getCurrentOrg().getOrgId(), NumberOperators.EQUALS))
+													.andCondition(CriteriaAPI.getCondition(readingsModule.getTableName()+".MODULEID", "moduleId", ""+readingsModule.getModuleId(), NumberOperators.EQUALS))
+													.andCondition(CriteriaAPI.getCondition(readingSiteField, CommonOperators.IS_NOT_EMPTY))
+					                      			.groupBy(readingSiteField.getCompleteColumnName()+","+siteName.getCompleteColumnName())
+													;
+				List<Map<String,Object>> totalRoReadingsConsumptionBySite  = readingSelectBuilder.get();
+				for(int i=0;i<totalRoReadingsConsumptionBySite.size();i++)
+				{
+					Map<String,Object> consumptionObj = totalRoReadingsConsumptionBySite.get(i) ;
+					Long siteId = (Long)consumptionObj.get("siteId");
+					outputTotalConsumptionBySite.put(siteId,consumptionObj);
+				}
 
 			}
-		
-				
-		List<Map<String,Object>> totalConsumptionByBuilding = selectBuilder.get();
-		
-		Map<Long,Object> outputTotalConsumptionByBuilding = new HashMap<Long, Object>();
-		
-		Map<Long, Object> buildingArray = getLookupFieldPrimary("building");
 
-		for(int i=0;i<totalConsumptionByBuilding.size();i++)
+			
+			}
+				
+		List<Map<String,Object>> totalConsumptionBySite = selectBuilder.get();
+		
+		
+		for(int i=0;i<totalConsumptionBySite.size();i++)
 		{
-			Map<String,Object> consumptionObj = totalConsumptionByBuilding.get(i) ;
-			Long buildingId = (Long)consumptionObj.get("buildingId");
-			consumptionObj.put("buildingName",buildingArray.get(buildingId) );
-			outputTotalConsumptionByBuilding.put(buildingId,consumptionObj);
+			Map<String,Object> consumptionObj = totalConsumptionBySite.get(i) ;
+			Long siteId = (Long)consumptionObj.get("siteId");
+			outputTotalConsumptionBySite.put(siteId,consumptionObj);
 		}
 		Map<String,Object> resp = new HashMap<String, Object>();
 		
 		resp.put("moduleName",dataModule.getDisplayName());
 		resp.put("fieldName",consumptionField.getName());
 		resp.put("unit",unit);
-		resp.put("totalConsumptionData",outputTotalConsumptionByBuilding);
-		
-
+		resp.put("totalConsumptionData",outputTotalConsumptionBySite);
      
        return resp;
 	}

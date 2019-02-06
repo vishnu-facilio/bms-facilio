@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.util;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -285,5 +286,16 @@ public class AssetAnomalyUtil {
 		}
 		
 		return listOfAssets;
+	}
+	
+	public static Map<Long, Long>  getAssetTree(long orgID) throws Exception{
+		List<AssetTreeContext> assetList = getAllEnergyMetersInAssetTree(orgID);
+		Map<Long, Long> resultMap = new LinkedHashMap<>();
+		
+		for(AssetTreeContext assetContext: assetList) {
+			resultMap.put(assetContext.getChildAsset(), assetContext.getParentAsset());
+		}
+		
+		return resultMap;
 	}
 }

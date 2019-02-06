@@ -397,10 +397,12 @@ public class ReadingRuleAPI extends WorkflowRuleAPI {
 			for(ReadingRuleContext alarmTriggerRule :alarmTriggerRules) {
 				alarmTriggerRule.setId(-1);
 				alarmTriggerRule.setRuleType(WorkflowRuleContext.RuleType.ALARM_TRIGGER_RULE);
+				alarmTriggerRule.setEventId(preRequsiteRule.getEventId());
 			}
 			if(alarmClear != null) {
 				alarmClear.setId(-1);
 				alarmClear.setRuleType(WorkflowRuleContext.RuleType.ALARM_CLEAR_RULE);
+				alarmClear.setEventId(preRequsiteRule.getEventId());
 				alarmTriggerRules.add(alarmClear);
 			}
 			
@@ -417,7 +419,7 @@ public class ReadingRuleAPI extends WorkflowRuleAPI {
 				else {
 					alarmTriggerRule.setOnSuccess(false);
 				}
-				alarmTriggerRule.setRuleGroupId(ruleId);
+				alarmTriggerRule.setRuleGroupId(preRequsiteRule.getId());
 				alarmTriggerRule.setParentRuleId(temp.getId());
 				alarmTriggerRule.setStatus(true);
 				alarmTriggerRule.setOrgId(AccountUtil.getCurrentOrg().getOrgId());

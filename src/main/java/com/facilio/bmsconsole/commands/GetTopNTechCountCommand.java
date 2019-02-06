@@ -79,11 +79,10 @@ public class GetTopNTechCountCommand implements Command{
 		optionsResp.put("type","bar");
 		optionsResp.put("dataPoints",dataPointsResp);
 		optionsResp.put("widgetLegend",false);
-		
 		for(int i=0;i<countMap.size();i++)
 		{
 			Map<String,Object> techInfo = countMap.get(i) ;
-			String xName = techInfo.get("user_name")+" "+techInfo.get("site_name");
+			String xName = techInfo.get("user_name")+"("+techInfo.get("site_name")+")";
 			techNameObj.add(xName);
 			closedWoCountObj.add(techInfo.get("count"));
 			

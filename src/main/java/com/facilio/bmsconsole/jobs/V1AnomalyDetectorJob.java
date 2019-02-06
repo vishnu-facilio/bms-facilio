@@ -3,11 +3,8 @@ package com.facilio.bmsconsole.jobs;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -21,25 +18,20 @@ import org.json.simple.JSONObject;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleBean;
-import com.facilio.chain.FacilioContext;
-import com.facilio.bmsconsole.context.AnomalyAssetConfigurationContext;
 import com.facilio.bmsconsole.context.AnalyticsAnomalyContext;
+import com.facilio.bmsconsole.context.AnomalyAssetConfigurationContext;
 import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.AssetTreeContext;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.context.TemperatureContext;
 import com.facilio.bmsconsole.context.TicketContext.SourceType;
 import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.FieldFactory;
-import com.facilio.bmsconsole.modules.FieldUtil;
-import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.util.AssetAnomalyUtil;
 import com.facilio.bmsconsole.util.AssetsAPI;
-import com.facilio.bmsconsole.util.DateTimeUtil;
+import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.events.constants.EventConstants;
 import com.facilio.fw.BeanFactory;
-import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.tasker.job.FacilioJob;
 import com.facilio.tasker.job.JobContext;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -47,7 +39,7 @@ import com.google.gson.GsonBuilder;
 
 public class V1AnomalyDetectorJob extends FacilioJob {
 	private static long THIRTY_MINUTES_IN_MILLISEC = 30 * 60 * 1000L;
-
+	public static final long MAIN_METER_ID=-1;
 	private static final Logger logger = Logger.getLogger(V1AnomalyDetectorJob.class.getName());
 
 	@Override
@@ -185,9 +177,10 @@ public class V1AnomalyDetectorJob extends FacilioJob {
 			Map<Long, AnomalyAssetConfigurationContext> meterConfigurations, long startTime, long endTime, Long siteId,
 			long orgID) {
 		String moduleName = "dummyModuleName";
+		
 		new ObjectMapper();
 		Map<Long, List<TemperatureContext>> siteIdToWeatherMapping = new HashMap<>();
-
+		Map<EnergyMeterContext, AnomalyDetails[]> masterAnomalyMap = new LinkedHashMap<>(); 
 		try {
 			for (EnergyMeterContext energyMeterContext : subEnergyMeterContextList) {
 				List<AnalyticsAnomalyContext> meterReadings = AssetAnomalyUtil.getAllEnergyReadings(startTime,
@@ -221,20 +214,61 @@ public class V1AnomalyDetectorJob extends FacilioJob {
 				logger.log(Level.INFO, " result is " + result);
 
 				AnomalyList anomalyList = new GsonBuilder().create().fromJson(result,AnomalyList.class);
-				logger.log(Level.INFO, " result is " + anomalyList.getAnomalyDetails().length);
+				logger.log(Level.INFO, " anomaly result is " + anomalyList.getAnomalyDetails().length);
 				
-				for (AnomalyDetails detail: anomalyList.getAnomalyDetails()) {
-					//double minKWH, double maxKWH, double actualKWH, double temperature, long ttime, long meterId, long rowID
-					triggerAlarm(detail, energyMeterContext);
+				if((anomalyList != null) && (anomalyList.getAnomalyDetails().length > 0)) {
+					masterAnomalyMap.put(energyMeterContext, anomalyList.getAnomalyDetails());
 				}
-					
+			} // end of for
+			if(masterAnomalyMap.size()>0) {
+			
+			         doRootCause(orgID, startTime, endTime);
+			
+			for (EnergyMeterContext energyMeterContext: masterAnomalyMap.keySet()) {
+				//double minKWH, double maxKWH, double actualKWH, double temperature, long ttime, long meterId, long rowID
 				
+				for(AnomalyDetails detail:  masterAnomalyMap.get(energyMeterContext)) {
+					triggerAlarm(detail,energyMeterContext);
+				}
+			}
 			}
 		} catch (Exception e) {
 			logger.log(Level.SEVERE, e.getMessage(), e);
 		}
 	}
-
+	
+	public static List<Long> getKeyFromValue(Map<Long, Long> hm, Long value) {
+	    ArrayList<Long> result = new ArrayList<>();
+		for (Long o : hm.keySet()) {
+	      if (hm.get(o).equals(value)) {
+	        result.add(o);
+	      }
+	    }
+		
+	    return (result.size() == 0 ? null : result);
+	 }
+	
+	public void doRootCause(long orgID, long startTime, long endTime) throws Exception {
+		//Get Tree
+		Map<Long, Long> parentChildTree=AssetAnomalyUtil.getAssetTree(orgID);
+		
+		// get main tree
+		List<Long> mainMeterList = getKeyFromValue(parentChildTree, MAIN_METER_ID);
+		
+		if(mainMeterList == null || mainMeterList.size() == 0) {
+			return;
+		}
+		
+		Long mainMeter = mainMeterList.get(0);
+		rootCauseAnalysisApi(mainMeter, orgID, startTime ,endTime,AccountUtil.getCurrentOrg().getTimezone());
+		
+		// get level 1 
+		List<Long> levelOneNodes=getKeyFromValue(parentChildTree, mainMeter);
+		for(Long meterIds: levelOneNodes) {
+			rootCauseAnalysisApi(meterIds, orgID, startTime ,endTime,AccountUtil.getCurrentOrg().getTimezone());
+		}
+	}
+	
 	String doPostAnomalyDetectAPI(AnomalyAssetConfigurationContext configContext,
 			List<AnalyticsAnomalyContext> meterReadings, List<TemperatureContext> siteTemperatureReadings, long meterID)
 			throws IOException {
@@ -260,95 +294,59 @@ public class V1AnomalyDetectorJob extends FacilioJob {
 		String result = AwsUtil.doHttpPost(postURL, headers, null, jsonInString);
 		return result;
 	}
+	void rootCauseAnalysisApi(long meterid,long orgid,long ttimestart,long ttimeend,String timezone) throws IOException
+	{
+		AnomalyData anomalydata = new AnomalyData();
+		String postURL = AwsUtil.getConfig("anomalyCheckServiceURL") + "/ratioCheck";
+		anomalydata.meterId = meterid;
+		anomalydata.orgId = orgid;
+		anomalydata.ttimeStart = ttimestart;
+		anomalydata.ttimeEnd= ttimeend;
+		anomalydata.timeZone = timezone;
+		
+		ObjectMapper mapper = new ObjectMapper();
+		String jsonInString = mapper.writeValueAsString(anomalydata);
+		logger.log(Level.INFO, " anomaly root cause post: " + jsonInString);
 
-	class AnomalyIDInsertRow {
-		private long id;
-		private long orgId;
-		private long moduleId;
-		private long meterId;
-		private long ttime;
-		private double energyDelta;
-		private long createdTime;
-		private double outlierDistance;
-
-		public AnomalyIDInsertRow() {
-		}
-
-		public AnomalyIDInsertRow(long id, long orgId, long moduleId, long meterId, long ttime, double energyDelta,
-				long createdTime, double outlierDistance) {
-			this.id = id;
-			this.orgId = orgId;
-			this.moduleId = moduleId;
-			this.meterId = meterId;
-			this.ttime = ttime;
-			this.energyDelta = energyDelta;
-			this.createdTime = createdTime;
-			this.outlierDistance = outlierDistance;
-		}
-
-		public long getId() {
-			return id;
-		}
-
-		public void setId(long id) {
-
-			this.id = id;
-		}
-
-		public long getOrgId() {
-			return orgId;
-		}
-
-		public void setOrgId(long orgId) {
-			this.orgId = orgId;
-		}
-
-		public long getModuleId() {
-			return moduleId;
-		}
-
-		public void setModuleId(long moduleId) {
-			this.moduleId = moduleId;
-		}
-
+		Map<String, String> headers = new HashMap<>();
+		headers.put("Content-Type", "application/json");
+        AwsUtil.doHttpPost(postURL, headers, null, jsonInString);
+	    logger.log(Level.INFO,"after root cause api call");
+		
+	}
+	class AnomalyData
+	{
+		long meterId,orgId,ttimeStart,ttimeEnd;
+		String timeZone;
 		public long getMeterId() {
 			return meterId;
 		}
-
 		public void setMeterId(long meterId) {
 			this.meterId = meterId;
 		}
-
-		public long getTtime() {
-			return ttime;
+		public long getOrgId() {
+			return orgId;
 		}
-
-		public void setTtime(long ttime) {
-			this.ttime = ttime;
+		public void setOrgId(long orgId) {
+			this.orgId = orgId;
 		}
-
-		public long getCreatedTime() {
-			return createdTime;
+		public long getTtimeStart() {
+			return ttimeStart;
 		}
-
-		public void setCreatedTime(long createdTime) {
-			this.createdTime = createdTime;
+		public void setTtimeStart(long ttimeStart) {
+			this.ttimeStart = ttimeStart;
 		}
-
-		public double getEnergyDelta() {
-			return energyDelta;
+		public long getTtimeEnd() {
+			return ttimeEnd;
 		}
-
-		public void setEnergyDelta(double energyDelta) {
-			this.energyDelta = energyDelta;
+		public void setTtimeEnd(long ttimeEnd) {
+			this.ttimeEnd = ttimeEnd;
 		}
-
-		public double getOutlierDistance() {
-			return outlierDistance;
+		public String getTimeZone() {
+			return timeZone;
 		}
-
-		public void setOutlierDistance(double outlierDistance) {
-			this.outlierDistance = outlierDistance;
+		public void setTimeZone(String timeZone) {
+			this.timeZone = timeZone;
 		}
 	}
 
@@ -391,7 +389,7 @@ public class V1AnomalyDetectorJob extends FacilioJob {
 			addEventContext.put(EventConstants.EventContextNames.EVENT_PAYLOAD, obj);
 			Chain getAddEventChain = EventConstants.EventChainFactory.getAddEventChain();
 			getAddEventChain.execute(addEventContext);
-		}
+	}
 
 	class CheckAnomalyModelPostData {
 		public long getMeterID() {

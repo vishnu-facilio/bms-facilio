@@ -171,6 +171,7 @@ public class FacilioConstants {
 		public static final String WORK_ORDER_ENDTIME = "endtime";
 		public static final String WORK_ORDER_COUNT_BY_SITE = "workOrderCountBySite";
 		public static final String WORK_ORDER_TECHNICIAN_COUNT = "workOrderTechCount";
+		public static final String WORK_ORDER_SITE_ID = "siteId";
 		public static final String TOP_N_TECHNICIAN = "topNTechnician";
 		public static final String WORKORDER_INFO_BY_SITE = "workOrderInfoBySite";
 			
@@ -326,7 +327,8 @@ public class FacilioConstants {
 		
 		public static final String AGGR_KEY = "aggr";
 		public static final String DATA_KEY = "data";
-		
+		public static final String LABEL_MAP = "labelMap";
+
 		public static final String REPORT_CALLING_FROM = "reportCallingFrom";
 		
 		public static final String NOTE = "note";
@@ -403,6 +405,8 @@ public class FacilioConstants {
 		public static final String HEAT_PUMP = "heatpump";
 		public static final String UTILITY_METER = "utilitymeter";
 		public static final String ENERGY_METER_PURPOSE = "energymeterpurpose";
+		public static final String RO_MODULE_SPI_CINEMAS = "rowaterenpinew";
+		
 		
 		public static final String CURRENT_OCCUPANCY_READING = "currentoccupancyreading";
 		public static final String ASSIGNED_OCCUPANCY_READING = "assignedoccupancyreading";

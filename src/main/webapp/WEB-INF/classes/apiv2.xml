@@ -305,7 +305,14 @@
 	</package>
 	
 	<package name= "alarmListCount" namespace="/api/v2/alarms" extends="v2Api" >
-	<action name="count" class="com.facilio.bmsconsole.actions.AlarmAction" method="v2viewAlarm">
+		<action name="count" class="com.facilio.bmsconsole.actions.AlarmAction" method="v2viewAlarm">
+			<param name="moduleName">alarm</param>
+			<param name="permission">READ,READ_TEAM,READ_OWN</param>
+		</action>
+	</package>
+	
+	<package name= "alarmRules" namespace="/api/v2/alarm/rules" extends="v2Api" >
+		<action name="addNew" class="com.facilio.bmsconsole.actions.WorkflowRuleAction" method="addNewReadingRule">
 			<param name="moduleName">alarm</param>
 			<param name="permission">READ,READ_TEAM,READ_OWN</param>
 		</action>
@@ -724,10 +731,10 @@
 	</package>
 	<package name="consumptionV2" namespace="/api/v2/consumptionData" extends="v2Api">
 		
-		<action name="totalConsumptionByBuilding" class="com.facilio.bmsconsole.actions.ConsumptionAction" method="getTotalConsumptionForBuilding">
+		<action name="totalConsumptionBySite" class="com.facilio.bmsconsole.actions.ConsumptionAction" method="getTotalConsumptionForSite">
 			<param name="permission">READ,READ_TEAM,READ_OWN</param>
 			<result name="success" type="json">
-			<param name="includeProperties">totalConsumptionByBuilding,totalConsumptionByBuilding\[\d+\],totalConsumptionByBuilding\[\d+\].*,^totalConsumptionByBuilding.*</param>
+			<param name="includeProperties">totalConsumptionBySite,totalConsumptionBySite\[\d+\],totalConsumptionBySite\[\d+\].*,^totalConsumptionBySite.*</param>
 			</result>
 		</action>
 		<!-- 	<action name="totalWaterConsumptionByBuilding" class="com.facilio.bmsconsole.actions.ConsumptionAction" method="getTotalWaterConsumptionForBuilding">

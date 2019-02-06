@@ -948,9 +948,9 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
-	public static Chain getTotalConsumptionByBuildingChain() {
+	public static Chain getTotalConsumptionBySiteChain() {
 		Chain c = FacilioChain.getTransactionChain();
-	    c.addCommand(new GetTotalConsumptionByBuidlingCommand());
+	    c.addCommand(new GetTotalConsumptionBySiteCommand());
 //		CommonCommandUtil.addCleanUpCommand(c);
 		return c;
 	}

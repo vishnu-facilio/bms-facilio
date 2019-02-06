@@ -21,7 +21,7 @@ public enum FacilioConsumptionFunctions implements FacilioWorkflowFunctionInterf
 		@Override
 		public Object execute(Object... objects) throws Exception {
 			
-			Map<String,Object> totalConsumptionByBuilding = ConsumptionAPI.getTotalConsumptionByBuildings(Long.valueOf(objects[0].toString()), Long.valueOf(objects[1].toString()), "energydata","totalEnergyConsumptionDelta");
+			Map<String,Object> totalConsumptionByBuilding = ConsumptionAPI.getTotalConsumptionBySites(Long.valueOf(objects[0].toString()), Long.valueOf(objects[1].toString()), "energydata","totalEnergyConsumptionDelta");
 			return totalConsumptionByBuilding;
 			    
 		};
@@ -37,7 +37,7 @@ public enum FacilioConsumptionFunctions implements FacilioWorkflowFunctionInterf
 		@Override
 		public Object execute(Object... objects) throws Exception {
 			
-			Map<String,Object> totalConsumptionByBuilding = ConsumptionAPI.getTotalConsumptionByBuildings(Long.valueOf(objects[0].toString()), Long.valueOf(objects[1].toString()), "waterreading","waterConsumptionDelta");
+			Map<String,Object> totalConsumptionByBuilding = ConsumptionAPI.getTotalConsumptionBySites(Long.valueOf(objects[0].toString()), Long.valueOf(objects[1].toString()), "waterreading","waterConsumptionDelta");
 			return totalConsumptionByBuilding;
 			    
 		};
