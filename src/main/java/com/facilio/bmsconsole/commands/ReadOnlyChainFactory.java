@@ -117,6 +117,16 @@ public class ReadOnlyChainFactory {
 		return c;
 	}
 	
+	public static Chain getCalendarWorkOrdersChain() {
+		Chain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForWorkOrder());
+		c.addCommand(new ValidateCalendarWOCommand());
+		c.addCommand(new LoadViewCommand());
+		c.addCommand(new GetCalendarWOsCommands());
+		c.addCommand(new GetFutureWOsCommands());
+		return c;
+	}
+	
 	public static Chain getWorkOrderStatusPercentageChain() {
 		Chain c = getDefaultChain();
 		c.addCommand(SetTableNamesCommand.getForWorkOrder());

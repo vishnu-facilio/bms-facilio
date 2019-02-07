@@ -579,6 +579,7 @@ public class FacilioConstants {
 		public static final String FILE_ID = "fileID";
 		public static final String FILE_URL = "fileUrl";
 		public static final String DATE_FILTER = "dateFilter";
+		public static final String DATE_FIELD = "dateField";
 		public static final String START_TIME = "startTime";
 		public static final String ALARM_ID = "alarmId";
 		public static final String SCHEDULE_INFO = "schedule";

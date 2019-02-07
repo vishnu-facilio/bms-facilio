@@ -127,9 +127,9 @@ public class GenerateCriteriaFromFilterCommand implements Command {
 		}
 	}
 	
+	private static final List<String> TEMPLATE_FIELDS = Arrays.asList("priorityId", "statusId", "categoryId", "typeId", "assignmentGroupId", "assignedToId", "resourceId");
 	private String gePreventiveMaintenanceModule(String fieldName) {
-		List<String> templateFields = Arrays.asList("priorityId", "statusId", "categoryId", "typeId", "assignmentGroupId", "assignedToId", "resourceId");
-		if (templateFields.contains(fieldName)) {
+		if (TEMPLATE_FIELDS.contains(fieldName)) {
 			return FacilioConstants.ContextNames.WORK_ORDER_TEMPLATE;
 		}
 		return FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE;
