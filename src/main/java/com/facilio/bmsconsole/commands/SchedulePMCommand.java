@@ -73,7 +73,7 @@ private List<PMJobsContext> pmJobsToBeScheduled;
 		else {
 			for (PMTriggerContext trigger : pm.getTriggers()) {
 				if (trigger.getSchedule() != null) {
-					long startTime = PreventiveMaintenanceAPI.getStartTimeInSecond(trigger.getStartTime());
+					long startTime = PreventiveMaintenanceAPI.getStartTimeInSecond(System.currentTimeMillis());
 					PMJobsContext pmJob = null;
 					switch (pm.getTriggerTypeEnum()) {
 					case ONLY_SCHEDULE_TRIGGER:
