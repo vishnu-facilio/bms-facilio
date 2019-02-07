@@ -9,6 +9,8 @@ import java.util.Map;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 import com.facilio.bmsconsole.context.FormulaContext.DateAggregateOperator;
 import com.facilio.bmsconsole.context.PMJobsContext;
@@ -30,9 +32,12 @@ import com.facilio.tasker.ScheduleInfo;
 
 public class GetFutureWOsCommands implements Command {
 
+	private static final Logger LOGGER = LogManager.getLogger(GetFutureWOsCommands.class.getName());
+	
 	@Override
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
+		long processStartTime = System.currentTimeMillis();
 		FacilioField dateField = (FacilioField) context.get(FacilioConstants.ContextNames.DATE_FIELD);
 		long startTime = (long) context.get(FacilioConstants.ContextNames.START_TIME);
 		long endTime = (long) context.get(FacilioConstants.ContextNames.END_TIME);
@@ -40,6 +45,8 @@ public class GetFutureWOsCommands implements Command {
 		if (dateField.getName().equals("createdTime") && endTime < System.currentTimeMillis()) {
 			return false;
 		}
+		
+		FacilioView view = (FacilioView) context.get(FacilioConstants.ContextNames.CUSTOM_VIEW);
 		
 		Criteria filterCriteria = null;
 		if (dateField.getName().equals("dueDate")) {
@@ -50,10 +57,10 @@ public class GetFutureWOsCommands implements Command {
 		}
 		
 		List<PreventiveMaintenance> pms = PreventiveMaintenanceAPI.getAllActivePMs(filterCriteria);
-		FacilioView view = (FacilioView) context.get(FacilioConstants.ContextNames.CUSTOM_VIEW);
 		
 		if(pms != null && !pms.isEmpty()) 
 		{
+			LOGGER.info("PM Size : "+pms.size());
 			List<WorkOrderContext> wos = new ArrayList<>();
 			Map<Long, List<PMTriggerContext>> pmTriggersMap = PreventiveMaintenanceAPI.getPMTriggers(pms);
 			
@@ -74,12 +81,14 @@ public class GetFutureWOsCommands implements Command {
 				
 				List<PMTriggerContext> pmTrigggers = pmTriggersMap.get(pm.getId());
 				if (pmTrigggers != null) {
+					long triggerStartTime = System.currentTimeMillis();
+					LOGGER.info("Trigger Size for "+pm.getId()+" is "+pmTrigggers.size());
 					for (PMTriggerContext trigger : pmTrigggers) {
 						if(trigger.getSchedule() != null) {
 							if(trigger.getSchedule().getFrequencyTypeEnum() == ScheduleInfo.FrequencyType.DO_NOT_REPEAT) {
 								if(trigger.getStartTime() > currentStartTime && trigger.getStartTime() <= currentEndTime) {
 									PMJobsContext pmJob = PreventiveMaintenanceAPI.getNextPMJob(trigger.getId(), currentStartTime, false);
-									checkAndAddWOs(wos, Collections.singletonList(pmJob), woTemplate, view.getCriteria());
+									checkAndAddWOs(wos, Collections.singletonList(pmJob), woTemplate, view.getCriteria(), trigger);
 								}
 							}
 							else {
@@ -87,7 +96,7 @@ public class GetFutureWOsCommands implements Command {
 								switch(pm.getTriggerTypeEnum()) {
 									case ONLY_SCHEDULE_TRIGGER: 
 										List<PMJobsContext> pmJobs = PreventiveMaintenanceAPI.getNextPMJobs(trigger, currentStartTime, currentEndTime);
-										checkAndAddWOs(wos, pmJobs, woTemplate, view.getCriteria());
+										checkAndAddWOs(wos, pmJobs, woTemplate, view.getCriteria(), trigger);
 											// virtualJobsStartTime = pmJobs.get(pmJobs.size() - 1).getNextExecutionTime();
 										long plannedEndTime = DateTimeUtil.getDayStartTime(PreventiveMaintenanceAPI.PM_CALCULATION_DAYS+1, true) - 1;
 										if(currentStartTime > plannedEndTime) {
@@ -104,7 +113,7 @@ public class GetFutureWOsCommands implements Command {
 											virtualJobsStartTime = -1;
 										}
 										else if(pmJob.getNextExecutionTime() > currentStartTime) {
-											checkAndAddWOs(wos, Collections.singletonList(pmJob), woTemplate, view.getCriteria());
+											checkAndAddWOs(wos, Collections.singletonList(pmJob), woTemplate, view.getCriteria(), trigger);
 											virtualJobsStartTime = pmJob.getNextExecutionTime();
 										}
 										else {
@@ -114,11 +123,12 @@ public class GetFutureWOsCommands implements Command {
 								}
 								if(virtualJobsStartTime != -1) {
 									List<PMJobsContext> pmJobs = PreventiveMaintenanceAPI.createPMJobs(pm, trigger, virtualJobsStartTime, currentEndTime, false);
-									checkAndAddWOs(wos, pmJobs, woTemplate, view.getCriteria());
+									checkAndAddWOs(wos, pmJobs, woTemplate, view.getCriteria(), trigger);
 								}
 							}
 						}
 					}
+					LOGGER.info("Time taken for checking of Triggers for pm : "+pm.getName()+" is " + (System.currentTimeMillis() - triggerStartTime));
 				}
 			}
 			
@@ -154,16 +164,20 @@ public class GetFutureWOsCommands implements Command {
 				}
 			}
 		}
-		
+		LOGGER.info("Time taken for future calendar wo to be executed : " + (System.currentTimeMillis() - processStartTime));
 		return false;
 	}
 	
-	private void checkAndAddWOs (List<WorkOrderContext> woList, List<PMJobsContext> pmJobs, WorkorderTemplate template, Criteria criteria) throws Exception {
+	private void checkAndAddWOs (List<WorkOrderContext> woList, List<PMJobsContext> pmJobs, WorkorderTemplate template, Criteria criteria, PMTriggerContext trigger) throws Exception {
 		if(pmJobs != null && !pmJobs.isEmpty()) {
+			long startTime = System.currentTimeMillis();
 			WorkOrderContext wo = template.getWorkorder();
 			TicketAPI.loadWorkOrderLookups(Collections.singletonList(wo));
+			long evalStartTime = System.currentTimeMillis();
 			boolean isPassed = criteria == null ? true : criteria.computePredicate().evaluate(wo);
+			LOGGER.info("Time taken for evaluation of WOs for trigger : "+trigger.getId()+" is " + (System.currentTimeMillis() - evalStartTime));
 			if (isPassed) {
+				long woCreationTime = System.currentTimeMillis();
 				for (PMJobsContext pmJob : pmJobs) {
 					WorkOrderContext currentWo = template.getWorkorder();
 					currentWo.setCreatedTime(pmJob.getNextExecutionTime() * 1000);
@@ -172,7 +186,9 @@ public class GetFutureWOsCommands implements Command {
 					}
 					woList.add(currentWo);
 				}
+				LOGGER.info("Time taken for WO Creation for trigger : "+trigger.getId()+" is " + (System.currentTimeMillis() - woCreationTime));
 			}
+			LOGGER.info("Time taken for checking of WOs for trigger : "+trigger.getId()+" is " + (System.currentTimeMillis() - startTime));
 		}
 	}
 	
