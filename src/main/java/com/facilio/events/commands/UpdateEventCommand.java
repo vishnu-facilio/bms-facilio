@@ -23,18 +23,6 @@ public class UpdateEventCommand implements Command {
 		event.setInternalState(EventInternalState.COMPLETED);
 		EventAPI.updateEvent(event, AccountUtil.getCurrentOrg().getId());
 		
-		if (AccountUtil.getCurrentOrg().getId() == 88l) {
-			StringBuilder builder = new StringBuilder("Updating event " + event.getId() + " with alarm id: " + event.getAlarmId())
-					.append("\nTruncated Trace\n");
-	
-			StackTraceElement[] trace = Thread.currentThread().getStackTrace();
-			for (int i = 0; i < Math.min(10, trace.length); i++) {
-				builder.append(trace[i])
-					.append("\n");
-			}
-			LOGGER.info(builder.toString());
-		}
-		
 		if (event.getAlarmId() != -1) {
 			FacilioChain.addPostTransactionListObject(FacilioConstants.ContextNames.ALARM_ID, event.getAlarmId());
 		}
