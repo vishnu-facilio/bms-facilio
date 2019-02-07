@@ -21,9 +21,39 @@ public enum FacilioWorkOrderFunctions implements FacilioWorkflowFunctionInterfac
 		@Override
 		public Object execute(Object... objects) throws Exception {
 			
-			List<Map<String,Object>> avgResolutionTimeByCategory = WorkOrderAPI.getAvgCompletionTimeByCategory(Long.valueOf(objects[0].toString()),Long.valueOf(objects[1].toString()),Long.valueOf(objects[2].toString()));
+			List<Map<String,Object>> avgResolutionTimeByCategory = WorkOrderAPI.getTopNCategoryOnAvgCompletionTime(String.valueOf(objects[0].toString()),Long.valueOf(objects[1].toString()),Long.valueOf(objects[2].toString()));
 			
-            return GET_AVG_RESOLUTION_TIME.constructAvgTimeResponse(avgResolutionTimeByCategory);
+            return avgResolutionTimeByCategory;
+		};
+		
+		public void checkParam(Object... objects) throws Exception {
+			if(objects.length <= 0) {
+				throw new FunctionParamException("Required Object is null");
+			}
+		}
+	},
+	GET_WORK_ORDERS_ON_COMPLETION_TIME(2,"getWorkOrdersByCompletionTime") {
+		@Override
+		public Object execute(Object... objects) throws Exception {
+			
+			List<Map<String,Object>> siteOnCompletion = WorkOrderAPI.getWorkOrderStatusPercentageForWorkflow(String.valueOf(objects[0]),Long.valueOf(objects[1].toString()),Long.valueOf(objects[2].toString()));
+			
+            return siteOnCompletion;
+		};
+		
+		public void checkParam(Object... objects) throws Exception {
+			if(objects.length <= 0) {
+				throw new FunctionParamException("Required Object is null");
+			}
+		}
+	},
+	GET_TOP_N_TECHNICIANS(3,"getTopNTechnicians") {
+		@Override
+		public Object execute(Object... objects) throws Exception {
+			
+			List<Map<String,Object>> siteOnCompletion = WorkOrderAPI.getTopNTechnicians(objects[0].toString(), Long.valueOf(objects[1].toString()), Long.valueOf(objects[2].toString()));
+			
+            return siteOnCompletion;
 		};
 		
 		public void checkParam(Object... objects) throws Exception {
@@ -33,6 +63,8 @@ public enum FacilioWorkOrderFunctions implements FacilioWorkflowFunctionInterfac
 		}
 	}
 	;
+	;
+	
 	private Integer value;
 	private String functionName;
 	private String namespace = "workorder";
@@ -179,7 +211,7 @@ public enum FacilioWorkOrderFunctions implements FacilioWorkflowFunctionInterfac
 		 Map<Long, Map<String, Object>> resp = new HashMap<Long, Map<String, Object>>();
 		for (int i = 0; i < avgResolutionTimeByCategory.size(); i++) {
             Map<String,Object> mp = avgResolutionTimeByCategory.get(i);
-			Double avgResolutionTime = ((BigDecimal)mp.get("avg_resolution_time")).doubleValue();
+           Double avgResolutionTime =mp.get("avg_resolution_time")!=null?((BigDecimal)mp.get("avg_resolution_time")).doubleValue():0;
 			Long count = (Long) mp.get("count");
 			Long categoryId = (Long) mp.get("category");
 			String categoryName = (String) ticketCategoryArray.get(categoryId);
