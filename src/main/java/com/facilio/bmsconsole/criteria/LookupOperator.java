@@ -94,7 +94,7 @@ public enum LookupOperator implements Operator<Criteria> {
 	public FacilioModulePredicate getPredicate(String fieldName, Criteria value) {
 		// TODO Auto-generated method stub
 		if(fieldName != null && !fieldName.isEmpty() && value != null) {
-			String[] module = fieldName.split(".");
+			String[] module = fieldName.split("\\.");
 			if(module.length > 1) {
 				return new FacilioModulePredicate(module[1], value.computePredicate());
 			}
