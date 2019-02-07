@@ -1,7 +1,6 @@
 package com.facilio.bmsconsole.commands.util;
 
 import java.sql.Connection;
-
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -34,11 +33,9 @@ import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.commands.FacilioChainExceptionHandler;
-import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
-import com.facilio.bmsconsole.context.OrgUnitsContext;
 import com.facilio.bmsconsole.context.BaseSpaceContext.SpaceType;
+import com.facilio.bmsconsole.context.OrgUnitsContext;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.SupportEmailContext;
@@ -67,6 +64,8 @@ import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
+import com.facilio.chain.FacilioChainExceptionHandler;
+import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.queue.FAWSQueue;
@@ -82,7 +81,6 @@ import com.facilio.workflows.context.ExpressionContext;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.context.WorkflowExpression;
 import com.facilio.workflows.util.WorkflowUtil;
-import com.facilio.bmsconsole.modules.FieldType;
 
 public class CommonCommandUtil {
 	private static final Logger LOGGER = LogManager.getLogger(CommonCommandUtil.class.getName());
@@ -332,9 +330,11 @@ public class CommonCommandUtil {
 				.append("\n\nApp Url : ")
 				.append(AwsUtil.getConfig("app.url"));
 			
+			String errorTrace = null;
 			if (e != null) {
+				errorTrace = ExceptionUtils.getStackTrace(e);
 				body.append("\n\nTrace : \n--------\n")
-					.append(ExceptionUtils.getStackTrace(e));
+					.append(errorTrace);
 			}
 			
 			if (info != null && !info.isEmpty()) {
@@ -342,9 +342,7 @@ public class CommonCommandUtil {
 					.append(info);
 			}
 			
-			if (e != null) {
-				checkDB(e.getMessage(), body);
-			}
+			checkDB(errorTrace, body);
 			String message = body.toString();
 			json.put("message", message);
 			//AwsUtil.sendEmail(json);
@@ -357,20 +355,35 @@ public class CommonCommandUtil {
 		}
 	}
 	
-	private static void checkDB(String msg, StringBuilder body) {
-		if (msg != null) {
-			if(msg.toLowerCase().contains("deadlock") || body.toString().toLowerCase().contains("deadlock")) {
-				String sql = "show engine innodb status";
-				try (Connection conn = FacilioConnectionPool.INSTANCE.getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql);ResultSet rs = pstmt.executeQuery()) {
-					rs.first();
-					body.append("\n\nInno DB Status : \n------------\n\n")
-						.append(rs.getString("Status"));
+	private static void checkDB(String errorTrace, StringBuilder body) {
+		if (errorTrace != null) {
+			if(errorTrace.toLowerCase().contains("deadlock") || body.toString().toLowerCase().contains("deadlock")) {
+				try (Connection conn = FacilioConnectionPool.INSTANCE.getConnection()) {
+					String sql = "show engine innodb status";
+					try (PreparedStatement pstmt = conn.prepareStatement(sql);ResultSet rs = pstmt.executeQuery()) {
+						rs.first();
+						body.append("\n\nInno DB Status : \n------------\n\n")
+							.append(rs.getString("Status"));
+					}
+					catch (SQLException e) {
+						LOGGER.info("Exception occurred while getting InnoDB status");
+					}
+					
+					sql = "SELECT * FROM information_schema.innodb_locks";
+					try (PreparedStatement pstmt = conn.prepareStatement(sql);ResultSet rs = pstmt.executeQuery()) {
+						rs.first();
+						body.append("\n\nLocks from Information Schema : \n------------\n\n")
+							.append(FacilioTablePrinter.getResultSetData(rs));
+					}
+					catch (SQLException e) {
+						LOGGER.info("Exception occurred while getting InnoDB status");
+					}
 				} catch (SQLException e) {
 					// TODO Auto-generated catch block
 					LOGGER.info("Exception occurred ", e);
 				}
 			}
-			if(msg.toLowerCase().contains("timeout")) {
+			if(errorTrace.toLowerCase().contains("timeout")) {
 				String sql = "show processlist";
 				try (Connection conn = FacilioConnectionPool.INSTANCE.getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql);ResultSet rs = pstmt.executeQuery()) {
 					body.append("\n\nProcess List : \n------------\n\n")
@@ -664,11 +677,6 @@ public class CommonCommandUtil {
         }
     	return Pair.of(min, max);
     }
-    
-    public static void addCleanUpCommand(Chain c)
-	{
-		c.addCommand(new FacilioChainExceptionHandler());
-	}
 
 	public static void loadTaskLookups(List<TaskContext> tasks) throws Exception {
 		if(tasks != null && !tasks.isEmpty()) {

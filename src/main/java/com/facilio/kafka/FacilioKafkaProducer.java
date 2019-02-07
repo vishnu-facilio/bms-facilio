@@ -1,12 +1,13 @@
 package com.facilio.kafka;
 
-import com.facilio.aws.util.AwsUtil;
-import com.facilio.procon.message.FacilioRecord;
-import com.facilio.procon.producer.FacilioProducer;
+import java.util.Properties;
+
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 
-import java.util.Properties;
+import com.facilio.aws.util.AwsUtil;
+import com.facilio.procon.message.FacilioRecord;
+import com.facilio.procon.producer.FacilioProducer;
 
 public class FacilioKafkaProducer implements FacilioProducer {
 

@@ -14,6 +14,7 @@ import org.apache.commons.collections.PredicateUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import com.facilio.util.ExpressionEvaluator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.base.Objects;
 
 public class Criteria extends ExpressionEvaluator<Predicate> implements Serializable {
@@ -43,11 +44,11 @@ public class Criteria extends ExpressionEvaluator<Predicate> implements Serializ
 		this.orgId = orgId;
 	}
 
-	private Map<Integer, Condition> conditions = null;
-	public Map<Integer, Condition> getConditions() {
+	private Map<String, Condition> conditions = null;
+	public Map<String, Condition> getConditions() {
 		return conditions;
 	}
-	public void setConditions(Map<Integer, Condition> conditions) {
+	public void setConditions(Map<String, Condition> conditions) {
 		this.conditions = conditions;
 	}
 
@@ -68,7 +69,7 @@ public class Criteria extends ExpressionEvaluator<Predicate> implements Serializ
 			StringBuilder builder = new StringBuilder();
 			int i = 0;
 			while (matcher.find()) {
-				Condition condition = conditions.get(Integer.parseInt(matcher.group(1)));
+				Condition condition = conditions.get(matcher.group(1));
 				if (condition == null) {
 					throw new IllegalArgumentException("Pattern and conditions don't match");
 				}
@@ -83,6 +84,7 @@ public class Criteria extends ExpressionEvaluator<Predicate> implements Serializ
 		return null;
 	}
 	
+	@JsonIgnore
 	public List<Object> getComputedValues() {
 		List<Object> list = new ArrayList<>();
 		if(conditions != null && !conditions.isEmpty()) {
@@ -115,7 +117,7 @@ public class Criteria extends ExpressionEvaluator<Predicate> implements Serializ
 			if (e.equals("(") && prev != null && !prev.equals("(") && !prev.equalsIgnoreCase("and") && prev.equalsIgnoreCase("or")) {
 		       throw new IllegalArgumentException("Invalid Expression");
 		    }
-	        else if (e.equals(")") && !prev.equals(')') && !isNumber(prev)) {
+	        else if (e.equals(")") && !prev.equals(")") && !isNumber(prev)) {
 	        	throw new IllegalArgumentException("Invalid Expression");
 	        }
 		    else if ((e.equalsIgnoreCase("and") || e.equalsIgnoreCase("or")) && !prev.equals(")") && !isNumber(prev)) {
@@ -247,7 +249,7 @@ public class Criteria extends ExpressionEvaluator<Predicate> implements Serializ
 	@Override
 	public Predicate getOperand(String operand) {
 		// TODO Auto-generated method stub
-		Condition condition = conditions.get(Integer.parseInt(operand));
+		Condition condition = conditions.get(operand);
 		if(condition != null) {
 			return condition.computePredicate(variables);
 		}
@@ -269,7 +271,7 @@ public class Criteria extends ExpressionEvaluator<Predicate> implements Serializ
 		if(pattern != null && !pattern.isEmpty()) {
 			int sequence = conditions.size()+1;
 			condition.setSequence(sequence);
-			conditions.put(sequence, condition);
+			conditions.put(String.valueOf(sequence), condition);
 			
 			StringBuilder newPattern = new StringBuilder();
 			newPattern.append("(")
@@ -286,7 +288,7 @@ public class Criteria extends ExpressionEvaluator<Predicate> implements Serializ
 			condition.setSequence(1);
 			
 			conditions = new HashMap<>();
-			conditions.put(1, condition);
+			conditions.put("1", condition);
 		}
 	}
 	
@@ -294,7 +296,7 @@ public class Criteria extends ExpressionEvaluator<Predicate> implements Serializ
 		if(pattern != null && !pattern.isEmpty()) {
 			int sequence = conditions.size()+1;
 			condition.setSequence(sequence);
-			conditions.put(sequence, condition);
+			conditions.put(String.valueOf(sequence), condition);
 			
 			StringBuilder newPattern = new StringBuilder();
 			newPattern.append("(")
@@ -311,7 +313,7 @@ public class Criteria extends ExpressionEvaluator<Predicate> implements Serializ
 			condition.setSequence(1);
 			
 			conditions = new HashMap<>();
-			conditions.put(1, condition);
+			conditions.put("1", condition);
 		}
 	}
 	
@@ -340,7 +342,7 @@ public class Criteria extends ExpressionEvaluator<Predicate> implements Serializ
 				}
 				newPattern.append(sequence);
 				condition.setSequence(sequence);
-				conditions.put(sequence++, condition);
+				conditions.put(String.valueOf(sequence++), condition);
 			}
 			setPattern(newPattern.toString());
 		}
@@ -369,7 +371,7 @@ public class Criteria extends ExpressionEvaluator<Predicate> implements Serializ
 				}
 				newPattern.append(sequence);
 				condition.setSequence(sequence);
-				conditions.put(sequence++, condition);
+				conditions.put(String.valueOf(sequence++), condition);
 			}
 			newPattern.append(")");
 			setPattern(newPattern.toString());
@@ -388,7 +390,7 @@ public class Criteria extends ExpressionEvaluator<Predicate> implements Serializ
 		if (newCriteria == null) {
 			return;
 		}
-		Map<Integer, Condition> newConditions = newCriteria.getConditions();
+		Map<String, Condition> newConditions = newCriteria.getConditions();
 		String newPattern = newCriteria.getPattern();
 		int sequence = 1;
 		StringBuilder finalPattern = new StringBuilder();
@@ -404,10 +406,10 @@ public class Criteria extends ExpressionEvaluator<Predicate> implements Serializ
 				Matcher matcher = REG_EX.matcher(newPattern);
 				int i = 0;
 				while (matcher.find()) {
-					Condition condition = newConditions.get(Integer.parseInt(matcher.group(1)));
+					Condition condition = newConditions.get(matcher.group(1));
 					finalPattern.append(newPattern.substring(i, matcher.start()));
 					condition.setSequence(sequence);
-					conditions.put(sequence, condition);
+					conditions.put(String.valueOf(sequence), condition);
 					finalPattern.append(sequence++);
 					i = matcher.end();
 				}

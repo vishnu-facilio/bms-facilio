@@ -32,12 +32,12 @@ public class ReadingRuleAlarmMeta implements Serializable {
 		this.alarmId = alarmId;
 	}
 	
-	private long ruleId = -1;
-	public long getRuleId() {
-		return ruleId;
+	private long ruleGroupId = -1;
+	public long getRuleGroupId() {
+		return ruleGroupId;
 	}
-	public void setRuleId(long ruleId) {
-		this.ruleId = ruleId;
+	public void setRuleGroupId(long ruleGroupId) {
+		this.ruleGroupId = ruleGroupId;
 	}
 	
 	private long resourceId = -1;
@@ -75,7 +75,7 @@ public class ReadingRuleAlarmMeta implements Serializable {
 		// TODO Auto-generated method stub
 		return new StringBuilder("Alarm Meta [id:").append(id)
 					.append(", alarmId: ").append(alarmId)
-					.append(", ruleId: ").append(ruleId)
+					.append(", ruleId: ").append(ruleGroupId)
 					.append(", resourceId: ").append(resourceId)
 					.append(", readingFieldId: ").append(readingFieldId)
 					.append(", clear: ").append(clear)

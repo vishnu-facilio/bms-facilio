@@ -54,9 +54,8 @@ public class GetAlarmListCommand implements Command {
 		if (filterCriteria != null) {
 			builder.andCriteria(filterCriteria);
 		}
-		if (( filters == null || includeParentCriteria) && view != null) {
-			Criteria criteria = view.getCriteria();
-			builder.andCriteria(criteria);
+		if (( filters == null || includeParentCriteria) && view != null && view.getCriteria() != null && !view.getCriteria().isEmpty()) {
+			builder.andCriteria(view.getCriteria());
 		}
 
 		Criteria searchCriteria = (Criteria) context.get(FacilioConstants.ContextNames.SEARCH_CRITERIA);

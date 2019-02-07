@@ -5,6 +5,7 @@ import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
@@ -21,6 +22,8 @@ import org.json.simple.JSONObject;
 
 import com.facilio.bmsconsole.actions.ImportProcessContext;
 import com.facilio.bmsconsole.actions.ImportTemplateContext;
+import com.facilio.bmsconsole.context.ImportRowContext;
+import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.util.ImportAPI;
 import com.facilio.fs.FileStore;
 import com.facilio.fs.FileStoreFactory;
@@ -34,8 +37,32 @@ public class WriteSkippedToFileCommand implements Command {
 
 		ImportProcessContext importProcessContext = (ImportProcessContext) context.get(ImportAPI.ImportProcessConstants.IMPORT_PROCESS_CONTEXT);
 		ImportTemplateContext importTemplateContext = (ImportTemplateContext) context.get(ImportAPI.ImportProcessConstants.IMPORT_TEMPLATE_CONTEXT);
-		HashMap<Integer,HashMap<String,Object>> nullUniqueFields  = (HashMap<Integer,HashMap<String,Object>>) context.get(ImportAPI.ImportProcessConstants.NULL_UNIQUE_FIELDS);
-		HashMap<Integer,HashMap<String,Object>> nullResources  = (HashMap<Integer,HashMap<String,Object>>) context.get(ImportAPI.ImportProcessConstants.NULL_RESOURCES);
+		List<Map<String, Object>> allRows = ImportAPI.getValidatedRows(importProcessContext.getId());
+		List<ImportRowContext> rowContexts = new ArrayList<ImportRowContext>();
+		
+		List<ImportRowContext> nullUniqueFields = new ArrayList<ImportRowContext>();
+		List<ImportRowContext> nullResources = new ArrayList<ImportRowContext>();
+				
+		for(Map<String, Object> row: allRows) {
+			ImportProcessLogContext logContext = FieldUtil.getAsBeanFromMap(row, ImportProcessLogContext.class);
+			
+			if(logContext.getError_resolved() == ImportProcessContext.ImportLogErrorStatus.OTHER_ERRORS.getValue()) {
+				rowContexts = logContext.getRowContexts();
+			}
+			else {
+				continue;
+			}
+			for(ImportRowContext rowContext: rowContexts) {
+				if(rowContext.getError_code() == ImportProcessContext.ImportRowErrorCode.NULL_UNIQUE_FIELDS.getValue()) {
+					nullUniqueFields.add(rowContext);
+				}
+				else if(rowContext.getError_code() == ImportProcessContext.ImportRowErrorCode.NULL_RESOURCES.getValue()) {
+					nullResources.add(rowContext);
+				}
+			}
+		}
+	
+		
 		if(!nullUniqueFields.isEmpty() || !nullResources.isEmpty()) {
 			FileStore fs = FileStoreFactory.getInstance().getFileStore();
 			CreationHelper createHelper = workbook.getCreationHelper();
@@ -77,7 +104,7 @@ public class WriteSkippedToFileCommand implements Command {
 		
 	}
 	
-	public void writeToSheet(String Header,HashMap<Integer, HashMap<String,Object>> data, CreationHelper createHelper){
+	public void writeToSheet(String Header,List<ImportRowContext> data, CreationHelper createHelper){
 		Sheet sheet = null;
 		if(workbook.getSheet("Error report") != null) {
 			sheet = workbook.getSheet("Error report");
@@ -85,8 +112,6 @@ public class WriteSkippedToFileCommand implements Command {
 		else {
 			sheet = workbook.createSheet("Error report");
 		}
-		
-		List<Integer> numberOfRows = new ArrayList(data.keySet());
 		Integer offset = sheet.getPhysicalNumberOfRows();
 		Row row;
 		Cell cell;
@@ -107,10 +132,11 @@ public class WriteSkippedToFileCommand implements Command {
 			}
 		
 		
-		for(Integer rowNumber: numberOfRows) {
-			HashMap<String, Object> colVal = data.get(rowNumber);
+		for(int i =0; i< data.size(); i++) {
+			ImportRowContext rowContext = data.get(i);
+			HashMap<String, Object> colVal = rowContext.getColVal();
 			List<String> columnHeadings = new ArrayList(colVal.keySet());
-			if(numberOfRows.indexOf(rowNumber) == 0) {
+			if(i == 0) {
 				// writing column headings
 				Font headerFont = workbook.createFont();
 				headerFont.setBold(true);
@@ -132,7 +158,7 @@ public class WriteSkippedToFileCommand implements Command {
 				// write first row values 
 				row = sheet.createRow(offset + 2);
 				cell = row.createCell(0);
-				cell.setCellValue(rowNumber);
+				cell.setCellValue(rowContext.getRowNumber());
 				for(String Heading: columnHeadings) {
 					cell = row.createCell(columnHeadings.indexOf(Heading)+ 1);
 					if(colVal.get(Heading) == null) {
@@ -148,7 +174,7 @@ public class WriteSkippedToFileCommand implements Command {
 			else {
 				row = sheet.createRow(sheet.getPhysicalNumberOfRows() + 1);
 				cell = row.createCell(0);
-				cell.setCellValue(rowNumber);
+				cell.setCellValue(rowContext.getRowNumber());
 				for(String Heading: columnHeadings) {
 					cell = row.createCell(columnHeadings.indexOf(Heading)+ 1);
 					if(colVal.get(Heading) == null) {

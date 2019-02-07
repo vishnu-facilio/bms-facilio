@@ -428,6 +428,10 @@ public class ReportsUtil
 	{
 		List<Map<String, Object>> result=null;
 		
+		if (deviceList.trim().isEmpty()) {
+			return Collections.EMPTY_LIST;
+		}
+		
 		FacilioField energyFld = ReportsUtil.getEnergyField();
 		List<FacilioField> fields = new ArrayList<>();
 		fields.add(energyFld);
@@ -436,7 +440,7 @@ public class ReportsUtil
 		{
 			FacilioField meterFld = ReportsUtil.getField("Meter_ID","PARENT_METER_ID",FieldType.NUMBER);
 			fields.add(meterFld);
-			groupBy.append(meterFld.getName());
+			groupBy.append(meterFld.getCompleteColumnName());
 			if(rollUp)
 			{
 				groupBy.append(" WITH ROLLUP");

@@ -14,6 +14,7 @@ import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
+import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.modules.FacilioField;
@@ -43,7 +44,7 @@ public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, 
 	private int offset = -1;
 	private boolean forUpdate = false;
 	private Connection conn = null;
-	
+
 	public GenericSelectRecordBuilder() {
 		
 	}
@@ -56,12 +57,12 @@ public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, 
 		this.orderBy = selectBuilder.orderBy;
 		this.limit = selectBuilder.limit;
 		this.offset = selectBuilder.offset;
+		this.conn = selectBuilder.conn;
 		
 		this.joinBuilder = new StringBuilder(selectBuilder.joinBuilder);
 		if (selectBuilder.selectFields != null) {
 			this.selectFields = new ArrayList<>(selectBuilder.selectFields);
 		}
-		this.selectFields = selectBuilder.selectFields;
 		if (selectBuilder.where != null) {
 			this.where = new WhereBuilder(selectBuilder.where);
 		}
@@ -78,13 +79,13 @@ public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, 
 		this.tableName = tableName;
 		return this;
 	}
-	
+
 	@Override
 	public GenericSelectRecordBuilder useExternalConnection (Connection conn) {
 		this.conn = conn;
 		return this;
 	}
-	
+
 	@Override
 	public GenericJoinBuilder innerJoin(String tableName) {
 		joinBuilder.append(" INNER JOIN ")
@@ -188,20 +189,60 @@ public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, 
 		return this;
 	}
 	
+	
+	public List<FacilioField> getSelectFields() {
+		return selectFields;
+	}
+
+	public String getTableName() {
+		return tableName;
+	}
+
+	public StringBuilder getJoinBuilder() {
+		return joinBuilder;
+	}
+
+	public WhereBuilder getWhere() {
+		return where;
+	}
+
+	public String getGroupBy() {
+		return groupBy;
+	}
+
+	public String getHaving() {
+		return having;
+	}
+
+	public String getOrderBy() {
+		return orderBy;
+	}
+
+	public int getLimit() {
+		return limit;
+	}
+
+	public int getOffset() {
+		return offset;
+	}
+	
+	public boolean isForUpdate() {
+		return forUpdate;
+	}
+
+	public Connection getConn() {
+		return conn;
+	}
+
 	@Override
 	public GenericSelectRecordBuilder forUpdate() {
 		this.forUpdate = true;
 		return this;
 	}
-	
-	private void checkForNull(boolean checkBean) {
-		if(tableName == null || tableName.isEmpty()) {
-			throw new IllegalArgumentException("Table Name cannot be empty");
-		}
-		
-		if(selectFields == null || selectFields.size() <= 0) {
-			throw new IllegalArgumentException("Select Fields cannot be null or empty");
-		}
+
+	private DBSelectRecordBuilder getDBSelectRecordBuilder() throws Exception {
+		String dbClass = AwsUtil.getDBClass();
+		return (DBSelectRecordBuilder) Class.forName(dbClass + ".SelectRecordBuilder").getConstructor(GenericSelectRecordBuilder.class).newInstance(this);
 	}
 
 	@Override
@@ -221,9 +262,8 @@ public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, 
 				conn = FacilioConnectionPool.INSTANCE.getConnection();
 				isExternalConnection = false;
 			}
-			
 			String sql = constructSelectStatement();
-//			System.out.println("########### sql : "+ sql);
+//				System.out.println("########### sql : "+ sql);
 			pstmt = conn.prepareStatement(sql);
 			
 			Object[] whereValues = where.getValues();
@@ -302,6 +342,7 @@ public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, 
 			}
 			else {
 				DBUtil.closeAll(conn, pstmt, rs);
+				conn = null;
 			}
 		}
 		
@@ -309,93 +350,6 @@ public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, 
 			fetchFileUrl(records, fileIds);
 		}
 		return records;
-	}
-	
-	public String constructSelectStatement() {
-		
-		StringBuilder sql = new StringBuilder();
-		sql.append("SELECT ");
-		
-		boolean isFirst = true;
-		for(FacilioField field : selectFields) {
-			if(isFirst) {
-				isFirst = false;
-			}
-			else {
-				sql.append(", ");
-			}
-			sql.append(field.getCompleteColumnName())
-				.append(" AS `")
-				.append(field.getName())
-				.append("`");
-		}
-		
-		sql.append(" FROM ")
-			.append(tableName);
-		
-		sql.append(joinBuilder.toString());
-		
-		if(where.getWhereClause() != null && !where.getWhereClause().isEmpty()) {
-			sql.append(" WHERE ")
-				.append(where.getWhereClause());
-		}
-		
-		if(groupBy != null && !groupBy.isEmpty()) {
-			sql.append(" GROUP BY ")
-				.append(groupBy);
-		}
-		
-		if(having != null && !having.isEmpty()) {
-			sql.append(" HAVING ")
-				.append(having);
-		}
-		
-		if(orderBy != null && !orderBy.isEmpty()) {
-			sql.append(" ORDER BY ")
-				.append(orderBy);
-		}
-		
-		if(limit != -1) {
-			sql.append(" LIMIT ")
-				.append(limit);
-			
-			if(offset != -1) {
-				sql.append(" OFFSET ")
-					.append(offset);
-			}
-		}
-		
-		if (forUpdate) {
-			sql.append(" FOR UPDATE ");
-		}
-		
-		return sql.toString();
-	}
-	
-	private String sql;
-	@Override
-	public String toString() {
-		// TODO Auto-generated method stub
-		return sql;
-	}
-	
-	public static class GenericJoinBuilder implements JoinBuilderIfc<GenericSelectRecordBuilder> {
-
-		private GenericSelectRecordBuilder parentBuilder;
-		private GenericJoinBuilder(GenericSelectRecordBuilder parentBuilder) {
-			// TODO Auto-generated constructor stub
-			this.parentBuilder = parentBuilder;
-		}
-		
-		@Override
-		public GenericSelectRecordBuilder on(String condition) {
-			// TODO Auto-generated method stub
-			parentBuilder.joinBuilder.append("ON ")
-										.append(condition)
-										.append(" ");
-			return parentBuilder;
-		}
-		
 	}
 	
 	private void fetchFileUrl(List<Map<String,Object>> records, List<Long> fileIds) throws Exception {
@@ -418,5 +372,52 @@ public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, 
 				}
 			}
 		}
+	}
+	
+	private void checkForNull(boolean checkBean) {
+		if(tableName == null || tableName.isEmpty()) {
+			throw new IllegalArgumentException("Table Name cannot be empty");
+		}
+		
+		if(selectFields == null || selectFields.size() <= 0) {
+			throw new IllegalArgumentException("Select Fields cannot be null or empty");
+		}
+	}
+	
+	public String constructSelectStatement() {
+		try {
+			DBSelectRecordBuilder selectRecordBuilder = getDBSelectRecordBuilder();
+			sql = selectRecordBuilder.constructSelectStatement();
+			return sql;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	private String sql;
+	@Override
+	public String toString() {
+		// TODO Auto-generated method stub
+		return sql;
+	}
+	
+	public static class GenericJoinBuilder implements JoinBuilderIfc<GenericSelectRecordBuilder> {
+
+		private GenericSelectRecordBuilder parentBuilder;
+		public GenericJoinBuilder(GenericSelectRecordBuilder parentBuilder) {
+			// TODO Auto-generated constructor stub
+			this.parentBuilder = parentBuilder;
+		}
+		
+		@Override
+		public GenericSelectRecordBuilder on(String condition) {
+			// TODO Auto-generated method stub
+			parentBuilder.joinBuilder.append("ON ")
+										.append(condition)
+										.append(" ");
+			return parentBuilder;
+		}
+
 	}
 }

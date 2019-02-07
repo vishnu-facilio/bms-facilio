@@ -10,7 +10,6 @@ import org.apache.log4j.Logger;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.DateOperators;
-import com.facilio.bmsconsole.criteria.PickListOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
@@ -61,11 +60,10 @@ public class DeleteControllerActivityRecordsJob extends FacilioJob {
 	
 	private void deleteControllerActivityRecords(List<Long> ids) throws Exception {
 		FacilioModule module = ModuleFactory.getControllerActivityRecordsModule();
-		FacilioField conrollerId = FieldFactory.getAsMap(FieldFactory.getContollerActivityRecordsFields()).get("currentRecords");
 		new GenericDeleteRecordBuilder()
 			.table(module.getTableName())
 			.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
-			.andCondition(CriteriaAPI.getCondition(conrollerId, ids, PickListOperators.IS))
+			.andCondition(CriteriaAPI.getIdCondition(ids, module))
 			.delete()
 			;
 	}

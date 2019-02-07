@@ -40,7 +40,6 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.fs.FileStore;
 import com.facilio.fs.FileStoreFactory;
 import com.facilio.fw.BeanFactory;
-import com.google.common.collect.ArrayListMultimap;
 
 
 public class DataParseForReadingsCommand implements Command {

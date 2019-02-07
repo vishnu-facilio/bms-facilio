@@ -32,8 +32,8 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
-import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.commands.ReportsChainFactory;
+import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.AlarmContext;
 import com.facilio.bmsconsole.context.AssetCategoryContext;
@@ -139,6 +139,7 @@ import com.facilio.bmsconsole.workflow.rule.ReadingRuleAlarmMeta;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 import com.facilio.cards.util.CardType;
 import com.facilio.cards.util.CardUtil;
+import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fs.FileInfo.FileFormat;
 import com.facilio.fw.BeanFactory;
@@ -980,9 +981,9 @@ public class DashboardAction extends FacilioAction {
 								dataPoint.put("readingField", readingField);
 							}
 							if(exp.getCriteria() != null) {
-								Map<Integer, Condition> conditions = exp.getCriteria().getConditions();
+								Map<String, Condition> conditions = exp.getCriteria().getConditions();
 								
-								for(Integer key : conditions.keySet()) {
+								for(String key : conditions.keySet()) {
 									
 									Condition condition = conditions.get(key);
 									
@@ -4161,6 +4162,18 @@ public class DashboardAction extends FacilioAction {
 				.on(module.getTableName()+".Id="+module.getExtendModule().getTableName()+".Id");
 		}
 		
+		if(AccountUtil.getCurrentOrg().getOrgId() == 182l) {	// remove this after checking
+			
+			if(module.getName().equals(FacilioConstants.ContextNames.WORK_ORDER)) {
+				if(report.isWorkRequestReport()) {
+//					builder.andCustomWhere("APPROVAL_STATE != 3");
+				}
+				else {
+					builder.andCustomWhere("APPROVAL_STATE = 3 OR APPROVAL_STATE is null");
+				}
+			}
+		}
+		
 		if(report.getId() == 4144l) {
 			builder.having("value is not null");
 		}
@@ -4462,10 +4475,12 @@ public class DashboardAction extends FacilioAction {
 		if(!isWorkHourReport) {
 			rs = builder.get();
 		}
-		LOGGER.info("builder --- "+reportContext.getId() +"   "+baseLineId);
-		LOGGER.info("builder --- "+builder);
-		
-		LOGGER.info("res 1-- "+rs);
+		if(AccountUtil.getCurrentOrg().getId() == 154l) {
+			LOGGER.severe("builder --- "+reportContext.getId() +"   "+baseLineId);
+			LOGGER.severe("builder --- "+builder);
+			
+			LOGGER.severe("res 1-- "+rs);
+		}
 		
 		if(report.getGroupBy() != null) {
 			
@@ -5486,7 +5501,7 @@ public class DashboardAction extends FacilioAction {
 				criteria = CriteriaAPI.getCriteria(AccountUtil.getCurrentOrg().getOrgId(), report.getCriteria().getCriteriaId());
 			}
 			if(criteria != null && criteria.getConditions() != null) {
-				Map<Integer, Condition> conditions = criteria.getConditions();
+				Map<String, Condition> conditions = criteria.getConditions();
 				for(Condition condition:conditions.values()) {
 					if(condition.getFieldName().equals("parentId")) {
 						energyMeterValue = energyMeterValue + condition.getValue() +",";
@@ -6931,9 +6946,8 @@ public class DashboardAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.DASHBOARD, dashboard);
 		
-		Chain updateDashboardChain = FacilioChainFactory.getUpdateDashboardChain();
+		Chain updateDashboardChain = TransactionChainFactory.getUpdateDashboardChain();
 		updateDashboardChain.execute(context);
-		
 		return SUCCESS;
 	}
 	
@@ -6968,10 +6982,10 @@ public class DashboardAction extends FacilioAction {
 		
 		Chain addWidgetChain = null;
 		if(dashboardWidget != null && dashboardWidget.getId() != -1) {
-			addWidgetChain = FacilioChainFactory.getAddDashboardVsWidgetChain();
+//			addWidgetChain = FacilioChainFactory.getAddDashboardVsWidgetChain();
 		}
 		else {
-			addWidgetChain = FacilioChainFactory.getAddWidgetChain();
+			addWidgetChain = TransactionChainFactory.getAddWidgetChain();
 		}
 		addWidgetChain.execute(context);
 		
@@ -7035,6 +7049,10 @@ public class DashboardAction extends FacilioAction {
 		if(moduleName != null) {
 			dashboardFolders = DashboardUtil.getDashboardFolder(moduleName);
 		}
+		return SUCCESS;
+	}
+	public String getPortalDashboardFolder() throws Exception {
+		dashboardFolders = DashboardUtil.getPortalDashboardFolder();
 		return SUCCESS;
 	}
 	public String updateDashboardFolder() throws Exception {

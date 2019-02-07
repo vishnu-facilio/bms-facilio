@@ -77,20 +77,20 @@ public class GetAssetListCommand implements Command {
 		if (filterCriteria != null) {
 			builder.andCriteria(filterCriteria);
 		} 
-		if (( filters == null || includeParentCriteria) && view != null) {
-		Criteria criteria = view.getCriteria();
-		builder.andCriteria(criteria);
+		if (( filters == null || includeParentCriteria) && view != null && view.getCriteria() != null && !view.getCriteria().isEmpty()) {
+			builder.andCriteria(view.getCriteria());
 		}
 		
 		Criteria searchCriteria = (Criteria) context.get(FacilioConstants.ContextNames.SEARCH_CRITERIA);
 		if (searchCriteria != null) {
 			builder.andCriteria(searchCriteria);
 		}
+		if (AccountUtil.getCurrentUser() != null) { // temp handled for service portal space 
 		
-		Criteria scopeCriteria = AccountUtil.getCurrentUser().scopeCriteria(moduleName);
-		if(scopeCriteria != null)
-		{
-			builder.andCriteria(scopeCriteria);
+			Criteria scopeCriteria = AccountUtil.getCurrentUser().scopeCriteria(moduleName);
+			if(scopeCriteria != null) {
+				builder.andCriteria(scopeCriteria);
+			}
 		}
 		
 		JSONObject pagination = (JSONObject) context.get(FacilioConstants.ContextNames.PAGINATION);
@@ -109,7 +109,7 @@ public class GetAssetListCommand implements Command {
 		
 		Boolean withReadings = (Boolean) context.get(FacilioConstants.ContextNames.WITH_READINGS);
 		if (withReadings != null && withReadings) {
-			builder.andCustomWhere("exists(select 1 from Reading_Data_Meta r where r.ORGID=? and r.RESOURCE_ID=Assets.ID and r.VALUE <> -1 and r.VALUE IS NOT NULL)", AccountUtil.getCurrentOrg().getId());
+            builder.andCustomWhere("exists(select 1 from Reading_Data_Meta r where r.ORGID=? and r.RESOURCE_ID=Assets.ID and r.VALUE <> '-1' and r.VALUE IS NOT NULL)", AccountUtil.getCurrentOrg().getId());		
 		}
 		Long readingId = (Long) context.get(FacilioConstants.ContextNames.READING_ID);
 		ReadingInputType inputType = (ReadingInputType) context.get(FacilioConstants.ContextNames.INPUT_TYPE);

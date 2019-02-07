@@ -1,9 +1,8 @@
 package com.facilio.bmsconsole.commands;
 
 import org.apache.commons.chain.Chain;
-import org.apache.commons.chain.impl.ChainBase;
 
-import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.chain.FacilioChain;
 
 public class ReportsChainFactory {
 	
@@ -22,109 +21,100 @@ public class ReportsChainFactory {
 		c.addCommand(new SetTopNReportCommand());
 	}
 	public static Chain getSummaryReportChain() {
-		Chain c = new ChainBase();
+		Chain c = getDefaultChain();
 		addReportCommands(c);
 		addSummaryReportCommand(c);
-		CommonCommandUtil.addCleanUpCommand(c);
 		return c;
 	}
 	public static Chain getNumericReportChain() {
-		Chain c = new ChainBase();
+		Chain c = getDefaultChain();
 		addReportCommands(c);
 		addSummaryReportCommand(c);
-		CommonCommandUtil.addCleanUpCommand(c);
 		return c;
 	}
 	public static Chain getTabularReportChain() {
-		Chain c = new ChainBase();
+		Chain c = getDefaultChain();
 		addReportCommands(c);
 		addSummaryReportCommand(c);
-		CommonCommandUtil.addCleanUpCommand(c);
 		return c;
 	}
 	public static Chain getTopNTabularReportChain() {
-		Chain c = new ChainBase();
+		Chain c = getDefaultChain();
 		addTopNReportCommand(c);
 		addReportCommands(c);
 		addSummaryReportCommand(c);
-		CommonCommandUtil.addCleanUpCommand(c);
 		return c;
 	}
 	public static Chain getTopNSummaryReportChain() {
-		Chain c = new ChainBase();
+		Chain c = getDefaultChain();
 		addTopNReportCommand(c);
 		addReportCommands(c);
 		addSummaryReportCommand(c);
-		CommonCommandUtil.addCleanUpCommand(c);
 		return c;
 	}
 	public static Chain getWorkOrderReportChain() {
-		Chain c = new ChainBase();
+		Chain c = getDefaultChain();
 		c.addCommand(SetTableNamesCommand.getForWorkOrder());
 		c.addCommand(new LoadViewCommand());
 		c.addCommand(new SetJoinsCommand());
 		c.addCommand(new SetOrgIdConditionCommand());
 		c.addCommand(new LoadReportTypeChainCommand());
-		CommonCommandUtil.addCleanUpCommand(c);
 		return c;
 	}
 	public static Chain getWorkOrderRequestReportChain() {
-		Chain c = new ChainBase();
+		Chain c = getDefaultChain();
 		c.addCommand(SetTableNamesCommand.getForWorkOrderRequest());
 		c.addCommand(new LoadViewCommand());
 		c.addCommand(new SetJoinsCommand());
 		c.addCommand(new SetOrgIdConditionCommand());
 		c.addCommand(new LoadReportTypeChainCommand());
-		CommonCommandUtil.addCleanUpCommand(c);
 		return c;
 	}
 	
 	public static Chain getSendMailReportChain() {
-		Chain c = new ChainBase();
+		Chain c = getDefaultChain();
 //		c.addCommand(new LoadViewCommand());
 //		c.addCommand(new GetReportUnderlyingDataCommand());
 		c.addCommand(new SendReportMailCommand());
-		CommonCommandUtil.addCleanUpCommand(c);
 		return c;
 	}
 	
 	public static Chain getReportUnderlyingDataChain() {
-		Chain c = new ChainBase();
+		Chain c = getDefaultChain();
 		c.addCommand(new LoadViewCommand());
 		c.addCommand(new GetReportUnderlyingDataCommand());
-		CommonCommandUtil.addCleanUpCommand(c);
 		return c;
 	}
 	
 	public static Chain getReportScheduleChain() {
-		Chain c = new ChainBase();
+		Chain c = getDefaultChain();
 		c.addCommand(new AddTemplateCommand());
 		c.addCommand(new ScheduleReportCommand());
-		CommonCommandUtil.addCleanUpCommand(c);
 		return c;
 	}
 	
 	public static Chain getScheduledReportsChain() {
-		Chain c = new ChainBase();
+		Chain c = getDefaultChain();
 		c.addCommand(new ReportScheduledListCommand());
-		CommonCommandUtil.addCleanUpCommand(c);
 		return c;
 	}
 	
 	public static Chain deleteScheduledReportsChain() {
-		Chain c = new ChainBase();
+		Chain c = getDefaultChain();
 		c.addCommand(new DeleteScheduledReportsCommand());
-		CommonCommandUtil.addCleanUpCommand(c);
 		return c;
 	}
 	
 	public static Chain updateScheduledReportsChain() {
-		Chain c = new ChainBase();
+		Chain c = getDefaultChain();
 		c.addCommand(new AddTemplateCommand());
 		c.addCommand(new DeleteScheduledReportsCommand());
 		c.addCommand(new ScheduleReportCommand());
-		CommonCommandUtil.addCleanUpCommand(c);
 		return c;
 	}
+	
+	private static Chain getDefaultChain() {
+		return FacilioChain.getNonTransactionChain();
+    }
 
 }

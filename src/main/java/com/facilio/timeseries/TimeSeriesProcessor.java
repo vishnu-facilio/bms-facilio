@@ -142,13 +142,16 @@ public class TimeSeriesProcessor implements IRecordProcessor {
 				if(dataType!=null ) {
 					switch (dataType) {
 						case "timeseries":
-							processTimeSeries(record, payLoad, processRecordsInput);
+							processTimeSeries(record, payLoad, processRecordsInput, true);
 							break;
 						case "devicepoints":
 							processDevicePoints(payLoad);
 							break;
 						case "ack":
 							processAck(payLoad);
+							break;
+						case "cov":
+							processTimeSeries(record, payLoad, processRecordsInput, false);
 							break;
 					}
 //					Temp fix
@@ -185,12 +188,12 @@ public class TimeSeriesProcessor implements IRecordProcessor {
 		bean.acknowledgePublishedMessage(msgId);
 	}
 
-	private void processTimeSeries(Record record, JSONObject payLoad, ProcessRecordsInput processRecordsInput) throws Exception {
+	private void processTimeSeries(Record record, JSONObject payLoad, ProcessRecordsInput processRecordsInput, boolean isTimeSeries) throws Exception {
 		long timeStamp=	record.getApproximateArrivalTimestamp().getTime();
 		long startTime = System.currentTimeMillis();
         LOGGER.info("TIMESERIES DATA PROCESSED TIME::: ORGID::::::: "+orgId + " TIME::::" +timeStamp);
 		ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", orgId);
-		bean.processTimeSeries(timeStamp, payLoad, record, processRecordsInput.getCheckpointer());
+		bean.processTimeSeries(timeStamp, payLoad, record, processRecordsInput.getCheckpointer(), isTimeSeries);
 		LOGGER.info("TIMESERIES DATA PROCESSED TIME::: ORGID::::::: "+orgId + "COMPLETED:::::::TIME TAKEN : "+(System.currentTimeMillis() - startTime));
 	}
 	

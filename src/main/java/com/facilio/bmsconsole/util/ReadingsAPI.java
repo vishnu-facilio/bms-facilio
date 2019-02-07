@@ -25,7 +25,6 @@ import org.apache.log4j.Logger;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
-import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.ControllerContext;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
@@ -43,6 +42,7 @@ import com.facilio.bmsconsole.criteria.StringOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FacilioModule.ModuleType;
+import com.facilio.chain.FacilioContext;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.FieldUtil;
@@ -298,12 +298,13 @@ public class ReadingsAPI {
 			builder.andCondition(CriteriaAPI.getCondition(readingFieldsMap.get("fieldId"), StringUtils.join(fieldMap.keySet(), ","), NumberOperators.EQUALS));
 		}
 		
-		if(resourceIds != null) {
+		if(resourceIds != null && !resourceIds.isEmpty()) {
 			builder.andCondition(CriteriaAPI.getCondition(readingFieldsMap.get("resourceId"), resourceIds, NumberOperators.EQUALS));
 		}
 		
 		if (excludeEmptyFields) {
 			builder.andCondition(CriteriaAPI.getCondition(readingFieldsMap.get("value"), "-1", StringOperators.ISN_T))
+			.orCondition(CriteriaAPI.getCondition(readingFieldsMap.get("inputType"),String.valueOf(ReadingInputType.IS_MANUAL_DATA.getValue()), PickListOperators.IS))
 			.andCondition(CriteriaAPI.getCondition(readingFieldsMap.get("value"), CommonOperators.IS_NOT_EMPTY));
 		}
 		
@@ -363,26 +364,6 @@ public class ReadingsAPI {
 		}
 		meta.setValue(FieldUtil.castOrParseValueAsPerType(field, value));
 		meta.setField(field);
-		
-		if (meta.getField() instanceof NumberField) {
-			value = meta.getValue();
-			
-			NumberField numberField =  (NumberField)meta.getField();
-			if(numberField.getMetric() > 0) {
-				
-				if(numberField.getUnitId() > 0) {
-					Unit siUnit = Unit.valueOf(Metric.valueOf(numberField.getMetric()).getSiUnitId());
-					value = UnitsUtil.convert(meta.getValue(), siUnit.getUnitId(), numberField.getUnitId());
-				}
-				else {
-					value = UnitsUtil.convertToOrgDisplayUnitFromSi(meta.getValue(), numberField.getMetric());
-				}
-			}
-			if(value != null) {
-				meta.setValue(value);
-			}
-		}
-		
 		return meta;
 	}
 	
@@ -680,8 +661,11 @@ public class ReadingsAPI {
 	}
 	public static void updateReadingDataMeta(List<ResourceContext> resourcesList) throws Exception {
 		
-		long orgId=AccountUtil.getCurrentOrg().getOrgId();
+		if (resourcesList == null || resourcesList.isEmpty()) {
+			return;
+		}
 		
+		long orgId=AccountUtil.getCurrentOrg().getOrgId();
 		
 		GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
 				.table(ModuleFactory.getReadingDataMetaModule().getTableName())

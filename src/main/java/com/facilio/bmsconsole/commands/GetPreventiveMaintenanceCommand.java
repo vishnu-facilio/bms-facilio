@@ -20,8 +20,8 @@ public class GetPreventiveMaintenanceCommand implements Command {
 		// TODO Auto-generated method stub
 		
 		Criteria criteria = new Criteria();
-		context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_COUNT);
-
+		
+		String count = (String) context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_COUNT);
 		FacilioView view = (FacilioView) context.get(FacilioConstants.ContextNames.CUSTOM_VIEW);
 		JSONObject filters = (JSONObject) context.get(FacilioConstants.ContextNames.FILTERS);
 		JSONObject serachQuery = (JSONObject) context.get(FacilioConstants.ContextNames.SEARCH);
@@ -68,7 +68,20 @@ public class GetPreventiveMaintenanceCommand implements Command {
 		if (pms != null) {
 			context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_LIST, pms);
 		}
-		
+	
+		if (count != null) {
+			long pmCount = -1;
+			if (pms != null && !pms.isEmpty()) {
+				pmCount = pms.size();
+				context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_COUNT, pmCount);
+			}
+			else {
+				context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_COUNT, pmCount);
+			}
+		}
+		else {
+			context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_LIST, pms);
+		}
 		return false;
 	}
 

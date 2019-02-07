@@ -152,9 +152,9 @@ public class FetchReportAdditionalInfoCommand implements Command {
 		
 		//The following is for backward compatibility
 		if(parentIds == null && dp.getCriteria() != null && !dp.getCriteria().getConditions().isEmpty()) {
-			Map<Integer, Condition> conditions = dp.getCriteria().getConditions();
+			Map<String, Condition> conditions = dp.getCriteria().getConditions();
 			
-			for(Integer key : conditions.keySet()) {
+			for(String key : conditions.keySet()) {
 				Condition condition = conditions.get(key);
 				if(condition.getFieldName().equals("parentId")) {
 					parentIds = Collections.singletonList(Long.parseLong(condition.getValue()));

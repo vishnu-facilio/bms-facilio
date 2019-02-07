@@ -27,6 +27,7 @@ import com.facilio.bmsconsole.util.ReadingRuleAPI;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowEventContext;
+import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.serializable.SerializableCommand;
@@ -145,7 +146,7 @@ public class ResetTriggersCommand implements SerializableCommand {
 		WorkflowEventContext event = rule.getEvent();
 		
 		Criteria criteria = rule.getCriteria();
-		Condition condition = criteria.getConditions().get(1);
+		Condition condition = criteria.getConditions().get("1");
 		ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = bean.getModule(event.getModuleId());
 		

@@ -22,7 +22,6 @@ import com.amazonaws.services.kinesis.model.Record;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bacnet.BACNetUtil.InstanceType;
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.ControllerContext;
 import com.facilio.bmsconsole.context.ReadingContext.SourceType;
@@ -43,6 +42,7 @@ import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.util.ControllerAPI;
 import com.facilio.bmsconsole.util.ReadingsAPI;
+import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.procon.consumer.FacilioConsumer;
@@ -56,11 +56,15 @@ public class TimeSeriesAPI {
 
 	private static final Logger LOGGER = LogManager.getLogger(TimeSeriesAPI.class.getName());
 	
-	public static void processPayLoad(long ttime, JSONObject payLoad) throws Exception {
-		processPayLoad(ttime, payLoad, null, null);
+	public static void processPayLoad(long ttime, JSONObject payLoad, String macAddr) throws Exception {
+		processPayLoad(ttime, payLoad, null, null, macAddr, false);
 	}
 	
-	public static void processPayLoad(long ttime, JSONObject payLoad, Record record, IRecordProcessorCheckpointer checkpointer) throws Exception {
+	public static void processPayLoad(long ttime, JSONObject payLoad, String macAddr, boolean adjustTime) throws Exception {
+		processPayLoad(ttime, payLoad, null, null, macAddr, adjustTime);
+	}
+	
+	public static void processPayLoad(long ttime, JSONObject payLoad, Record record, IRecordProcessorCheckpointer checkpointer, String macAddr, boolean adjustTime) throws Exception {
 		
 		long timeStamp = getTimeStamp(ttime, payLoad);
 		FacilioContext context = new FacilioContext();
@@ -71,13 +75,17 @@ public class TimeSeriesAPI {
 			context.put(FacilioConstants.ContextNames.KINESIS_RECORD, record);
 			context.put(FacilioConstants.ContextNames.KINESIS_CHECK_POINTER, checkpointer);
 			//even if the above two lines are removed.. please do not remove the below partitionKey..
-			ControllerContext controller=  ControllerAPI.getController(record.getPartitionKey());
+			macAddr = record.getPartitionKey();
+		}
+		if (macAddr != null){
+			ControllerContext controller=  ControllerAPI.getController(macAddr);
 			if(controller!=null) {
 				context.put(FacilioConstants.ContextNames.CONTROLLER_ID, controller.getId());
 			}
 		}
 		//Temp code. To be removed later *END*
 		context.put(FacilioConstants.ContextNames.READINGS_SOURCE, SourceType.KINESIS);
+		context.put(FacilioConstants.ContextNames.ADJUST_READING_TTIME, adjustTime);
 		Chain processDataChain = TransactionChainFactory.getProcessDataChain();
 		processDataChain.execute(context);
 	}
@@ -476,7 +484,7 @@ public class TimeSeriesAPI {
 		
 		List<String> instanceNames = null;
 		if (controllerId != null) {
-			List<Map<String, Object>> instances = getUnmodeledInstancesForController(controllerId, null, null, null);
+			List<Map<String, Object>> instances = getUnmodeledInstancesForController(controllerId);
 			if (instances != null && !instances.isEmpty()) {
 				instanceNames = instances.stream().map(instance -> instance.get("device") + "|" + instance.get("instance")).collect(Collectors.toList());
 			}
@@ -507,23 +515,36 @@ public class TimeSeriesAPI {
 		insertBuilder.save();
 	}
 	
-	public static List<Map<String, Object>> getUnmodeledInstancesForController (long controllerId, Boolean configuredOnly, Boolean fetchMapped, JSONObject pagination) throws Exception {
+	public static List<Map<String, Object>> getUnmodeledInstancesForController (long controllerId) throws Exception {
+		return getUnmodeledInstancesForController(controllerId, null, null, null, null, false, null);
+	}
+	
+	public static List<Map<String, Object>> getUnmodeledInstancesForController (long controllerId, Boolean configuredOnly, Boolean fetchMapped, JSONObject pagination, Boolean isSubscribed, boolean fetchCount, String searchText) throws Exception {
 		FacilioModule module = ModuleFactory.getUnmodeledInstancesModule();
 		List<FacilioField> fields = FieldFactory.getUnmodeledInstanceFields();
 		fields.add(FieldFactory.getIdField(module));
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
-				.select(fields)
 				.table(module.getTableName())
 				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
-				.andCondition(CriteriaAPI.getCondition(fieldMap.get("controllerId"), String.valueOf(controllerId), NumberOperators.EQUALS))
-				.orderBy(fieldMap.get("createdTime").getColumnName() + " DESC");
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("controllerId"), String.valueOf(controllerId), NumberOperators.EQUALS));
+		
+		if (!fetchCount) {
+			builder.select(fields).orderBy(fieldMap.get("createdTime").getColumnName() + " DESC");
+		}
+		else {
+			builder.select(FieldFactory.getCountField(module, fieldMap.get("controllerId")));
+		}
 		
 		Criteria criteria = new Criteria();
 		criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("instanceType"), CommonOperators.IS_EMPTY));
 		criteria.addOrCondition(CriteriaAPI.getCondition(fieldMap.get("instanceType"), String.valueOf(6), NumberOperators.LESS_THAN));
 		
 		builder.andCriteria(criteria);
+
+        if (searchText != null) {
+    		criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("instance"), searchText, StringOperators.CONTAINS));
+   		}
 		
 		if (configuredOnly != null) {
 			Criteria inUseCriteria = new Criteria();
@@ -533,7 +554,12 @@ public class TimeSeriesAPI {
 			}
 			builder.andCriteria(inUseCriteria);
 		}
-		
+		if (isSubscribed != null) {
+			Criteria isSubscribedCriteria = new Criteria();
+			isSubscribedCriteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("subscribed"), String.valueOf(isSubscribed), BooleanOperators.IS));
+			builder.andCriteria(isSubscribedCriteria);
+		}
+				
 		if (fetchMapped != null) {
 			FacilioModule mappedModule = ModuleFactory.getInstanceMappingModule();
 			List<FacilioField> mappedFields = FieldFactory.getInstanceMappingFields();
@@ -574,7 +600,7 @@ public class TimeSeriesAPI {
 		}
 
 		 List<Map<String, Object>> props =  builder.get();
-		 if (props != null && !props.isEmpty()) {
+		 if (props != null && !props.isEmpty() && !fetchCount) {
 			 return props.stream().map(prop -> {
 				 if (prop.get("instanceType") != null) {
 					 InstanceType type = InstanceType.valueOf((int) prop.get("instanceType"));
@@ -588,7 +614,7 @@ public class TimeSeriesAPI {
 		 return props;
 
 	}
-	
+		
 	public static List<Map<String, Object>> getUnmodeledInstances (List<Long> ids) throws Exception {
 		return getUnmodeledInstances(null, null, null, ids);
 	}
@@ -621,6 +647,23 @@ public class TimeSeriesAPI {
 				   .andCondition(CriteriaAPI.getCondition(fieldMap.get("instance"), StringUtils.join(instances, ","), StringOperators.IS))
 				   .andCondition(CriteriaAPI.getCondition(fieldMap.get("controllerId"), String.valueOf(controllerId), StringOperators.IS));
 		}
+		
+		return builder.get();
+	}
+	
+	public static List<Map<String, Object>> getSubscribedInstances (long controllerId) throws Exception {
+		FacilioModule module = ModuleFactory.getUnmodeledInstancesModule();
+		List<FacilioField> fields = FieldFactory.getUnmodeledInstanceFields();
+		fields.add(FieldFactory.getIdField(module));
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+		
+		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+				.select(fields)
+				.table(module.getTableName())
+				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("controllerId"), String.valueOf(controllerId), StringOperators.IS))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("subscribed"), String.valueOf(true), BooleanOperators.IS))
+				;
 		
 		return builder.get();
 	}
@@ -672,4 +715,5 @@ public class TimeSeriesAPI {
 		}
 		return null;
 	}
+	
 }

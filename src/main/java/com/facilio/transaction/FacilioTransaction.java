@@ -39,6 +39,24 @@ public class FacilioTransaction implements Transaction {
 	private void associateConnection(java.sql.Connection c) {
 		connections.add(c);
 	}
+	
+	public int getConnectionSize() {
+		return connections.size();
+	}
+	
+	public int getFreeConnectionSize() {
+		if (connections.size() == 0) {
+			return -1;
+		}
+		
+		int count = 0;
+		for (Connection conn : connections) {
+			if (((FacilioConnection) conn).isFree()) {
+				count++;
+			}
+		}
+		return count;
+	}
 
 	public Connection getConnection() throws SQLException
 	{
@@ -160,5 +178,14 @@ public class FacilioTransaction implements Transaction {
 
 	public long getTransactionTimeout(){
 		return transactionTimeout;
+	}
+	
+	@Override
+	public String toString() {
+		// TODO Auto-generated method stub
+		return new StringBuilder("FacilioTransaction[")
+					.append(connections.toString())
+					.append("]")
+					.toString();
 	}
 }

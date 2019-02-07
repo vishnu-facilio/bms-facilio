@@ -9,7 +9,10 @@ import java.util.stream.Collectors;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.ReadingContext;
@@ -20,11 +23,14 @@ import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.NumberField;
 import com.facilio.bmsconsole.util.ReadingsAPI;
+import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 
 public class CalculateDeltaCommand implements Command {
 
+	private static final Logger LOGGER = LogManager.getLogger(CalculateDeltaCommand.class.getName());
+	
 	@Override
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
@@ -45,18 +51,27 @@ public class CalculateDeltaCommand implements Command {
 							for (ReadingContext reading : readings) {
 								for (FacilioField field : counterFields) {
 									Object val = FieldUtil.castOrParseValueAsPerType(field, reading.getReading(field.getName()));
+									if (AccountUtil.getCurrentOrg().getId() == 168) {
+										LOGGER.info("Value for "+field.getName()+" is : "+val);
+									}
 									if (val != null) {
 										ReadingDataMeta rdm = rdmMap.get(ReadingsAPI.getRDMKey(reading.getParentId(), field));
 										Object deltaVal = null;
 										if (field.getDataTypeEnum() == FieldType.DECIMAL) {
 											Double prevVal = (Double) FieldUtil.castOrParseValueAsPerType(field, rdm.getValue());
 											if (prevVal != -1) {
+												if (AccountUtil.getCurrentOrg().getId() == 168) {
+													LOGGER.info("Pre Value for "+field.getName()+" is : "+prevVal);
+												}
 												deltaVal = (Double) val - prevVal;
 											}
 										}
 										else {
 											Long prevVal = (Long) FieldUtil.castOrParseValueAsPerType(field, rdm.getValue());
 											if (prevVal != -1) {
+												if (AccountUtil.getCurrentOrg().getId() == 168) {
+													LOGGER.info("Pre Value for "+field.getName()+" is : "+prevVal);
+												}
 												deltaVal = (Long) val - prevVal;
 											}
 										}
@@ -65,6 +80,9 @@ public class CalculateDeltaCommand implements Command {
 											String fieldName = field.getName()+"Delta";
 											reading.addReading(fieldName, deltaVal);
 											newRdmPairs.add(Pair.of(reading.getParentId(), fieldMap.get(fieldName)));
+											if (AccountUtil.getCurrentOrg().getId() == 168) {
+												LOGGER.info("Delta Value for "+fieldName+" is : "+deltaVal);
+											}
 										}
 									}
 								}

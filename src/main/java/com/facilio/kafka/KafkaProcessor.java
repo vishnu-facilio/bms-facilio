@@ -1,5 +1,17 @@
 package com.facilio.kafka;
 
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
+
+import org.apache.kafka.clients.admin.AdminClient;
+import org.apache.kafka.clients.admin.KafkaAdminClient;
+import org.apache.kafka.clients.admin.ListTopicsResult;
+import org.apache.kafka.common.KafkaFuture;
+import org.apache.log4j.LogManager;
+
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
@@ -7,15 +19,8 @@ import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.kafka.event.EventProcessor;
 import com.facilio.kafka.timeseries.TimeSeriesProcessor;
 import com.facilio.kinesis.KinesisProcessor;
-import com.facilio.sql.GenericSelectRecordBuilder;
-import org.apache.kafka.clients.admin.AdminClient;
-import org.apache.kafka.clients.admin.KafkaAdminClient;
-import org.apache.kafka.clients.admin.ListTopicsResult;
-import org.apache.kafka.common.KafkaFuture;
-import org.apache.log4j.LogManager;
 import com.facilio.procon.processor.FacilioProcessor;
-
-import java.util.*;
+import com.facilio.sql.GenericSelectRecordBuilder;
 
 public class KafkaProcessor {
 

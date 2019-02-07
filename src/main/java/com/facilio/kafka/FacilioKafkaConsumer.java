@@ -1,8 +1,10 @@
 package com.facilio.kafka;
 
-import com.facilio.aws.util.AwsUtil;
-import com.facilio.procon.consumer.FacilioConsumer;
-import com.facilio.procon.message.FacilioRecord;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Properties;
+
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
@@ -14,7 +16,9 @@ import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
-import java.util.*;
+import com.facilio.aws.util.AwsUtil;
+import com.facilio.procon.consumer.FacilioConsumer;
+import com.facilio.procon.message.FacilioRecord;
 
 public class FacilioKafkaConsumer implements FacilioConsumer {
 

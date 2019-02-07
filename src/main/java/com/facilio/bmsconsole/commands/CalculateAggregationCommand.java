@@ -246,7 +246,11 @@ public class CalculateAggregationCommand implements Command {
 			if (val instanceof Number) {
 				return ((Number) val).doubleValue();
 			}
-			return new Double(val.toString()); 
+			try {
+				return new Double(val.toString());
+			} catch (NumberFormatException ex) {
+				return null;
+			}
 		}
 		return null;
 	}

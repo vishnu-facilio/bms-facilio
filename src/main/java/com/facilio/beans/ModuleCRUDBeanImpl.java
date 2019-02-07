@@ -1,8 +1,6 @@
 package com.facilio.beans;
 
 import java.io.File;
-import java.lang.reflect.InvocationTargetException;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -12,6 +10,7 @@ import java.util.StringJoiner;
 
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
@@ -20,11 +19,11 @@ import com.amazonaws.services.kinesis.clientlibrary.interfaces.IRecordProcessorC
 import com.amazonaws.services.kinesis.model.Record;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
-import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.AlarmContext;
 import com.facilio.bmsconsole.context.ControllerContext;
 import com.facilio.bmsconsole.context.PMResourcePlannerContext;
+import com.facilio.bmsconsole.context.PMTriggerContext;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.TaskContext.TaskStatus;
@@ -54,6 +53,7 @@ import com.facilio.bmsconsole.util.TemplateAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.view.ViewFactory;
 import com.facilio.bmsconsole.workflow.rule.ActivityType;
+import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.events.context.EventRuleContext;
 import com.facilio.events.util.EventAPI;
@@ -179,12 +179,12 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 	}
 
 	@Override
-	public List<WorkOrderContext> addWorkOrderFromPM(PreventiveMaintenance pm) throws Exception {
-		return addWorkOrderFromPM(pm, -1);
+	public List<WorkOrderContext> addWorkOrderFromPM(Context context, PreventiveMaintenance pm) throws Exception {
+		return addWorkOrderFromPM(context, pm, -1);
 	}
 
 	@Override
-	public List<WorkOrderContext> addWorkOrderFromPM(PreventiveMaintenance pm, long templateId) throws Exception {
+	public List<WorkOrderContext> addWorkOrderFromPM(Context context, PreventiveMaintenance pm, long templateId) throws Exception {
 		// TODO Auto-generated method stub
 		if (pm != null) {
 			
@@ -199,7 +199,11 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 			List<Long> resourceIds = null;
 			
 			if(pm.getPmCreationTypeEnum() == PreventiveMaintenance.PMCreationType.MULTIPLE) {
-				resourceIds = PreventiveMaintenanceAPI.getMultipleResourceToBeAddedFromPM(pm.getAssignmentTypeEnum(),pm.getBaseSpaceId(),pm.getSpaceCategoryId(),pm.getAssetCategoryId(),null,pm.getPmIncludeExcludeResourceContexts());
+				Long resourceId = pm.getBaseSpaceId();
+				if (resourceId == null || resourceId < 0) {
+					resourceId = pm.getSiteId();
+				}
+				resourceIds = PreventiveMaintenanceAPI.getMultipleResourceToBeAddedFromPM(pm.getAssignmentTypeEnum(),resourceId,pm.getSpaceCategoryId(),pm.getAssetCategoryId(),null,pm.getPmIncludeExcludeResourceContexts());
 			}
 			else {
 				resourceIds = Collections.singletonList(workorderTemplate.getResourceId());
@@ -239,7 +243,12 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 				if(isNewPmType) {
 					Long woTemplateResourceId = wo.getResource() != null ? wo.getResource().getId() : -1;
 					if(woTemplateResourceId > 0) {
-						taskMapForNewPmExecution = PreventiveMaintenanceAPI.getTaskMapForNewPMExecution(workorderTemplate.getSectionTemplates(), woTemplateResourceId);
+						PMTriggerContext pmTrigger = (PMTriggerContext) context.get(FacilioConstants.ContextNames.PM_CURRENT_TRIGGER);
+						Long currentTriggerId = null;
+						if (pmTrigger != null) {
+							currentTriggerId = pmTrigger.getId();
+						}
+						taskMapForNewPmExecution = PreventiveMaintenanceAPI.getTaskMapForNewPMExecution(workorderTemplate.getSectionTemplates(), woTemplateResourceId, currentTriggerId);
 					}
 				}
 				if(taskMapForNewPmExecution != null) {
@@ -248,7 +257,6 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 				
 				wo.setSourceType(TicketContext.SourceType.PREVENTIVE_MAINTENANCE);
 				wo.setPm(pm);
-				FacilioContext context = new FacilioContext();
 				context.put(FacilioConstants.ContextNames.WORK_ORDER, wo);
 				context.put(FacilioConstants.ContextNames.REQUESTER, wo.getRequester());
 				context.put(FacilioConstants.ContextNames.TASK_MAP, taskMap);
@@ -260,8 +268,10 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 				PreventiveMaintenanceAPI.updateResourceDetails(wo, taskMap);
 				Chain addWOChain = TransactionChainFactory.getAddWorkOrderChain();
 				addWOChain.execute(context);
-
-				incrementPMCount(pm); //Need to be handled for multiple resources
+				
+				if(pm.getPmCreationTypeEnum() == PreventiveMaintenance.PMCreationType.SINGLE) { //Need to be handled for multiple resources, it causes deadlock 
+					incrementPMCount(pm);
+				}
 				workOrderContexts.add(wo);
 			}
 			return workOrderContexts;
@@ -269,7 +279,15 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 		return null;
 	}
 	
-	private void incrementPMCount(PreventiveMaintenance pm) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException, SQLException {
+	private void incrementPMCount(PreventiveMaintenance pm) throws Exception {
+//		if (AccountUtil.getCurrentOrg().getId() == 155 || AccountUtil.getCurrentOrg().getId() == 151 || AccountUtil.getCurrentOrg().getId() == 92) {
+//			TransactionManager tm = FTransactionManager.getTransactionManager();
+//			if (tm != null) {
+//				Transaction t = tm.getTransaction();
+//				LOGGER.info("Connection & free connection size before incrementing PM count : "+((FacilioTransaction) t).getConnectionSize()+"::"+((FacilioTransaction) t).getFreeConnectionSize());
+//			}
+//		}
+		
 		pm.setCurrentExecutionCount(pm.getCurrentExecutionCount()+1);
 		Map<String, Object> props = new HashMap<>();
 		props.put("currentExecutionCount", pm.getCurrentExecutionCount());
@@ -552,8 +570,8 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 
 	@Override
 	public void processTimeSeries(long timeStamp, JSONObject payLoad, Record record,
-			IRecordProcessorCheckpointer checkPointer) throws Exception {
-			TimeSeriesAPI.processPayLoad(timeStamp, payLoad, record, checkPointer);
+			IRecordProcessorCheckpointer checkPointer, boolean adjustTime) throws Exception {
+			TimeSeriesAPI.processPayLoad(timeStamp, payLoad, record, checkPointer, null, adjustTime);
 	}
 	
 	@Override

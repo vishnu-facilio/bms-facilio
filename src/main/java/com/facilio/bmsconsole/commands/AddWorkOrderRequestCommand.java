@@ -52,7 +52,7 @@ public class AddWorkOrderRequestCommand implements Command {
 			context.put(FacilioConstants.ContextNames.RECORD, workOrderRequest);
 			context.put(FacilioConstants.ContextNames.RECORD_ID, workOrderId);
 			context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(workOrderId));
-			context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.CREATE_WORK_REQUEST);
+//			context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.CREATE_WORK_REQUEST);
 		}
 		else {
 			throw new IllegalArgumentException("WorkOrder Object cannot be null");

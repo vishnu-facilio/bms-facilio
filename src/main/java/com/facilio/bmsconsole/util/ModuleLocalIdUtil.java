@@ -1,10 +1,14 @@
 package com.facilio.bmsconsole.util;
 
+import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
@@ -14,10 +18,14 @@ import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.sql.DBUtil;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
+import com.facilio.transaction.FacilioConnectionPool;
 
 public class ModuleLocalIdUtil {
+	
+	private static final Logger LOGGER = LogManager.getLogger(ModuleLocalIdUtil.class.getName());
 
 	private static final List<String> MODULES_WITH_LOCAL_ID = Collections.unmodifiableList(initModulesWithLocalIds());
 	
@@ -30,14 +38,16 @@ public class ModuleLocalIdUtil {
 		modulesWithLocalId.add(FacilioConstants.ContextNames.TASK);
 		modulesWithLocalId.add(FacilioConstants.ContextNames.ALARM);
 		modulesWithLocalId.add(FacilioConstants.ContextNames.READING_ALARM);
+		modulesWithLocalId.add(FacilioConstants.ContextNames.INVENTORY);
 		
 		return modulesWithLocalId;
 	}
 	
-	private static long getModuleLocalId(String moduleName) throws Exception {
+	private static long getModuleLocalId(String moduleName, Connection conn) throws Exception {
 		FacilioModule module = ModuleFactory.getModuleLocalIdModule();
 		
 		GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
+																.useExternalConnection(conn) //This connection will not be closed by builder. Use this with caution
 																.table(module.getTableName())
 																.select(FieldFactory.getModuleLocalIdFields())
 																.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
@@ -56,16 +66,48 @@ public class ModuleLocalIdUtil {
 		if (currentSize <= 0) {
 			throw new IllegalArgumentException("Invalid current id size for fetching local Id");
 		}
-		long localId = getModuleLocalId(moduleName);
-		updateModuleLocalId(moduleName, localId+currentSize);
+		Connection conn = null;
+		boolean olderCommit = false;
+		try {
+			conn = FacilioConnectionPool.getInstance().getConnectionFromPool();//Getting connection directly from pool because this should be done outside transaction. Should be used with caution
+			olderCommit = conn.getAutoCommit();
+			conn.setAutoCommit(false);
+//			if (AccountUtil.getCurrentOrg().getId() == 155 || AccountUtil.getCurrentOrg().getId() == 151 || AccountUtil.getCurrentOrg().getId() == 92) {
+				LOGGER.debug("Connection object instance while getting local id for module "+moduleName+" : "+conn);
+//			}
+			
+			long localId = getModuleLocalId(moduleName, conn);
+			updateModuleLocalId(moduleName, localId+currentSize, conn);
+			conn.commit();
+			
+//			if (AccountUtil.getCurrentOrg().getId() == 155 || AccountUtil.getCurrentOrg().getId() == 151 || AccountUtil.getCurrentOrg().getId() == 92) {
+				LOGGER.debug("Committed connection while getting local id for module "+moduleName);
+//			}
+			
+			return localId;
+		}
+		catch (Exception e) {
+			if (conn != null) {
+				conn.rollback();
+//				if (AccountUtil.getCurrentOrg().getId() == 155 || AccountUtil.getCurrentOrg().getId() == 151 || AccountUtil.getCurrentOrg().getId() == 92) {
+					LOGGER.debug("Rolled back connection while getting local id for module "+moduleName);
+//				}
+			}
+		}
+		finally {
+			if (conn != null) {
+				conn.setAutoCommit(olderCommit);
+			}
+			DBUtil.close(conn);
+		}
 //		if (localId != -1 && updateModuleLocalId(moduleName, localId, localId+currentSize) <= 0) {
 //			return getAndUpdateModuleLocalId(moduleName, currentSize);
 //		}
-		return localId;
+		return -1;
 	}
 	
 	//private static int updateModuleLocalId(String moduleName,long oldId,long lastLocalId) throws Exception {
-	private static int updateModuleLocalId(String moduleName, long lastLocalId) throws Exception {
+	private static int updateModuleLocalId(String moduleName, long lastLocalId, Connection conn) throws Exception {
 		FacilioModule module = ModuleFactory.getModuleLocalIdModule();
 		List<FacilioField> fields = FieldFactory.getModuleLocalIdFields();
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
@@ -73,6 +115,7 @@ public class ModuleLocalIdUtil {
 //		FacilioField localIdField = fieldMap.get("localId");
 		
 		GenericUpdateRecordBuilder updateRecordBuilder = new GenericUpdateRecordBuilder()
+																.useExternalConnection(conn) //This connection will not be closed by builder. Use this with caution
 																.table(module.getTableName())
 																.fields(fields)
 																.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))

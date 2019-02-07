@@ -192,7 +192,7 @@ public class FacilioExpressionParser {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			fields = modBean.getAllFields(moduleName);
 			
-			Map<Integer, Condition> conditions = new HashMap<>();
+			Map<String, Condition> conditions = new HashMap<>();
 			for (FacilioField field : fields) {
 				if(fieldMap == null) {
 					fieldMap = new HashMap<>();
@@ -251,7 +251,7 @@ public class FacilioExpressionParser {
 						sequence++;
 						sb.append(sequence + " ");
 						condition.setSequence(sequence);
-						conditions.put(sequence, condition);
+						conditions.put(String.valueOf(sequence), condition);
 					}
 				}
 			}

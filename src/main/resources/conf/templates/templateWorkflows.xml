@@ -1831,4 +1831,105 @@
 			</expression>
 		</workflow>
 	</template>
+	<template id="83">
+		<workflow>
+			<parameter name="org" type="String" />
+			<expression name="user_email1">
+				<module name="users" />
+				<criteria pattern="(1)">
+					<condition sequence="1">ouid`=`848538</condition>
+				</criteria>
+				<field aggregate="[0]" name="email" />
+			</expression>
+			<expression name="user_email2">
+				<module name="users" />
+				<criteria pattern="(1)">
+					<condition sequence="1">ouid`=`1010220</condition>
+				</criteria>
+				<field aggregate="[0]" name="email" />
+			</expression>
+			<expression name="overdueWos">
+				<module name="workorder" />
+				<criteria pattern="1 and 2">
+					<condition sequence="1">dueDate`Till Yesterday`</condition>
+					<condition sequence="2">status`is`292</condition>
+				</criteria>
+				<orderBy name="modifiedTime" sort="desc" />
+				<limit>3</limit>
+			</expression>
+			<expression name="overdueCount">
+				<module name="workorder" />
+				<criteria pattern="1 and 2">
+					<condition sequence="1">dueDate`Till Yesterday`</condition>
+					<condition sequence="2">status`isn't`292</condition>
+				</criteria>
+				<field aggregate="count" name="id" />
+			</expression>
+			<expression name="dueTodayWos">
+				<module name="workorder" />
+				<criteria pattern="1 and 2">
+					<condition sequence="1">dueDate`Today`</condition>
+					<condition sequence="2">status`isn't`292</condition>
+				</criteria>
+				<orderBy name="modifiedTime" sort="desc" />
+				<limit>3</limit>
+			</expression>
+			<expression name="dueTodayCount">
+				<module name="workorder" />
+				<criteria pattern="1 and 2">
+					<condition sequence="1">dueDate`Today`</condition>
+					<condition sequence="2">status`isn't`292</condition>
+				</criteria>
+				<field aggregate="count" name="id" />
+			</expression>
+			<expression name="openWos">
+				<module name="workorder" />
+				<criteria pattern="1">
+					<condition sequence="1">status`isn't`292</condition>
+				</criteria>
+				<orderBy name="modifiedTime" sort="desc" />
+				<limit>3</limit>
+			</expression>
+			<expression name="openCount">
+				<module name="workorder" />
+				<criteria pattern="1">
+					<condition sequence="1">status`isn't`292</condition>
+				</criteria>
+				<field aggregate="count" name="id" />
+			</expression>
+			<iterator var="index,workorder:overdueWos">
+				<expression name="resource">
+					<function>map.get(workorder, 'resource')</function>
+				</expression>
+				<expression name="resourceName">
+					<function>resource.getResourceName(resource, 'true')</function>
+				</expression>
+				<expression name="result">
+					<function>map.put(workorder, 'resourceName', resourceName)</function>
+				</expression>
+			</iterator>
+			<iterator var="index,workorder:dueTodayWos">
+				<expression name="resource">
+					<function>map.get(workorder, 'resource')</function>
+				</expression>
+				<expression name="resourceName">
+					<function>resource.getResourceName(resource, 'true')</function>
+				</expression>
+				<expression name="result">
+					<function>map.put(workorder, 'resourceName', resourceName)</function>
+				</expression>
+			</iterator>
+			<iterator var="index,workorder:openWos">
+				<expression name="resource">
+					<function>map.get(workorder, 'resource')</function>
+				</expression>
+				<expression name="resourceName">
+					<function>resource.getResourceName(resource, 'true')</function>
+				</expression>
+				<expression name="result">
+					<function>map.put(workorder, 'resourceName', resourceName)</function>
+				</expression>
+			</iterator>
+		</workflow>
+	</template>
 </workflows>

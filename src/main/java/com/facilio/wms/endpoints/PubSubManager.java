@@ -96,6 +96,36 @@ public class PubSubManager {
 					}
 				}
 			}
+			else if ("importStatusChange".equalsIgnoreCase(topic)) {
+				String uniqueKey = (String) content.get("uniqueKey");
+				Long importProcessId = Long.parseLong(content.get("importProcessId").toString());
+				
+				String importProcessKey = importProcessId + "";
+				
+				JSONObject watchProps = new JSONObject();
+				watchProps.put("uid", message.getTo());
+				watchProps.put("uniqueKey", uniqueKey);
+				watchProps.put("timestamp", System.currentTimeMillis());
+				
+				JSONArray watchers = null;
+				
+				JSONObject readingWatchers = this.getReadingWatchers(orgId);
+				if (readingWatchers == null) {
+					readingWatchers = new JSONObject();
+				}
+				
+				if (readingWatchers.containsKey(importProcessKey)) {
+					watchers = (JSONArray) readingWatchers.get(importProcessKey);
+				}
+				else {
+					watchers = new JSONArray();
+				}
+				watchers.add(watchProps);
+				
+				readingWatchers.put(importProcessKey, watchers);
+				
+				this.setReadingWatchers(orgId, readingWatchers);
+			}
 		}
 		catch (Exception e) {
 			logger.log(Level.WARNING, "Error occurred in subscribe:::: ", e);
@@ -161,6 +191,38 @@ public class PubSubManager {
 							this.setReadingWatchers(orgId, readingWatchers);
 						}
 					}
+				}
+			}
+			else if ("importStatusChange".equalsIgnoreCase(topic)) {
+				String uniqueKey = (String) content.get("uniqueKey");
+				Long importProcessId = Long.parseLong(content.get("importProcessId").toString());
+				
+				String importProcessKey = importProcessId + "";
+				
+				JSONObject readingWatchers = this.getReadingWatchers(orgId);
+				if (readingWatchers != null && readingWatchers.containsKey(importProcessKey)) {
+					JSONArray watchers = (JSONArray) readingWatchers.get(importProcessKey);
+					List<Integer> removedWatchers = new ArrayList<>();
+					for (int j = 0; j < watchers.size(); j++) {
+						JSONObject props = (JSONObject) watchers.get(j);
+						String uKey = (String) props.get("uniqueKey");
+						if (uniqueKey.equals(uKey)) {
+							removedWatchers.add(j);
+						}
+					}
+					
+					for (Integer idx : removedWatchers) {
+						watchers.remove((int) idx);
+					}
+					
+					if (watchers.size() > 0) {
+						readingWatchers.put(importProcessKey, watchers);
+					}
+					else {
+						readingWatchers.remove(importProcessKey);
+					}
+					
+					this.setReadingWatchers(orgId, readingWatchers);
 				}
 			}
 		}
@@ -293,6 +355,43 @@ public class PubSubManager {
 		}
 		catch (Exception e) {
 			logger.log(Level.WARNING, "Error occurred while publish reading change : "+readingKey, e);
+		}
+	}
+	
+	public void publishImportStatusChange(long orgId, long importProcessId, JSONObject additionalInfo) {
+		
+		String importProcessKey = importProcessId + "";
+		try {
+			JSONObject readingWatchers = this.getReadingWatchers(orgId);
+			
+			if (readingWatchers == null || !readingWatchers.containsKey(importProcessKey)) {
+				return;
+			}
+			
+			JSONArray watchers = (JSONArray) readingWatchers.get(importProcessKey);
+			if (watchers != null) {
+				for (int i = 0; i < watchers.size(); i++) {
+					JSONObject watcher = (JSONObject) watchers.get(i);
+					
+					long uid = (Long) watcher.get("uid");
+					String uniqueKey = (String) watcher.get("uniqueKey");
+					
+					Message msg = new Message();
+					msg.setMessageType(MessageType.PUBSUB);
+					msg.setAction("publish");
+					msg.setNamespace("pubsub");
+					msg.setTo(uid);
+					msg.addData("uniqueKey", uniqueKey);
+					msg.addData("additionalInfo", additionalInfo);
+					
+					List<Long> recipients = new ArrayList<>();
+					recipients.add(uid);
+					WmsApi.sendPubSubMessage(recipients, msg);
+				}
+			}
+		}
+		catch (Exception e) {
+			logger.log(Level.WARNING, "Error occurred while publish reading change : "+importProcessKey, e);
 		}
 	}
 }

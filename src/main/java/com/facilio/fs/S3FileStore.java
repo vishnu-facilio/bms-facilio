@@ -145,12 +145,14 @@ public class S3FileStore extends FileStore {
 
 	@Override
 	public InputStream readFile(long fileId) throws Exception {
-		
 		FileInfo fileInfo = getFileInfo(fileId);
-		if (fileInfo == null) {
+		return readFile(fileInfo);
+	}
+	@Override
+	public InputStream readFile(FileInfo fileInfo) throws Exception {
+				if (fileInfo == null) {
 			return null;
 		}
-		
 		S3Object so = AwsUtil.getAmazonS3Client().getObject(getBucketName(), fileInfo.getFilePath());
 		return so.getObjectContent();
 	}
@@ -201,57 +203,58 @@ public class S3FileStore extends FileStore {
 		return true;
 	}
 	
-	@Override
-	public String getPrivateUrl(long fileId) throws Exception {
-		return getPrivateUrl(fileId,0);
-	}
-	
-	@Override
-	public String getPrivateUrl(long fileId, int width) throws Exception {
+//	@Override
+//	public String getPrivateUrl(long fileId) throws Exception {
+//		return AwsUtil.getConfig("app.url")+"/files/preview/" + fileId;
+//	}
+//	
+//	@Override
+//	public String getPrivateUrl(long fileId, int width) throws Exception {
+//		return AwsUtil.getConfig("app.url")+"/files/preview/" + fileId +"?width=" + width;
 		
-		FileInfo fileInfo = getResizedFileInfo(fileId, width, width);
-		long currentTime=System.currentTimeMillis();
-		long bufferTime=180000;
-		boolean insertEntry=false;
-		
-		if (fileInfo == null) {
-			 fileInfo = getFileInfo(fileId);
-			 if (fileInfo == null) {//invalid fileid scenario
-				 return null;
-			 }
-			 insertEntry=true;
-		}
-		else {
-			ResizedFileInfo rfi=	(ResizedFileInfo)fileInfo;
-			String url= rfi.getUrl();
-			long expiryTime= rfi.getExpiryTime();
-			
-			long thresholdTime=currentTime+bufferTime;//adding 3 minutes buffer time to avoid timing issues
-			if(thresholdTime<expiryTime && url!=null) {
-				return url;
-			}
-			//if here means... need to fetch url & update entry..
-		}
-		
-		String url= fetchUrl(fileInfo, getExpiration(), false);
-		if(url==null) {
-			return url;
-		}
-
-		ResizedFileInfo rfi=(ResizedFileInfo)fileInfo;
-		rfi.setUrl(url);
-		rfi.setExpiryTime(currentTime+getExpiration());
-		rfi.setWidth(width);
-		rfi.setHeight(width);
-		
-		if(insertEntry) {
-			addResizedFileEntry(rfi);
-		}
-		else {
-			updateFileEntry(rfi);
-		}
-		return url;
-	}
+//		FileInfo fileInfo = getResizedFileInfo(fileId, width, width);
+//		long currentTime=System.currentTimeMillis();
+//		long bufferTime=180000;
+//		boolean insertEntry=false;
+//		
+//		if (fileInfo == null) {
+//			 fileInfo = getFileInfo(fileId);
+//			 if (fileInfo == null) {//invalid fileid scenario
+//				 return null;
+//			 }
+//			 insertEntry=true;
+//		}
+//		else {
+//			ResizedFileInfo rfi= (ResizedFileInfo)fileInfo;
+//			String url= rfi.getUrl();
+//			long expiryTime= rfi.getExpiryTime();
+//			
+//			long thresholdTime=currentTime+bufferTime; //adding 3 minutes buffer time to avoid timing issues
+//			if(thresholdTime<expiryTime && url!=null) {
+//				return url;
+//			}
+//			//if here means... need to fetch url & update entry..
+//		}
+//		
+//		String url= fetchUrl(fileInfo, getExpiration(), false);
+//		if(url==null) {
+//			return url;
+//		}
+//
+//		ResizedFileInfo rfi=(ResizedFileInfo)fileInfo;
+//		rfi.setUrl(url);
+//		rfi.setExpiryTime(currentTime+getExpiration());
+//		rfi.setWidth(width);
+//		rfi.setHeight(width);
+//		
+//		if(insertEntry) {
+//			addResizedFileEntry(rfi);
+//		}
+//		else {
+//			updateResizedFileEntry(rfi);
+//		}
+//		return url;
+//	}
 	
 	@Override
 	public String getDownloadUrl(long fileId) throws Exception {

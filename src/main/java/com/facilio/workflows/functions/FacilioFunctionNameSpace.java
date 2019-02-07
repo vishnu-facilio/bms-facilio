@@ -21,7 +21,11 @@ public enum FacilioFunctionNameSpace {
 	RESOURCE(13,"resource"),
 	SYSTEM(14, "system"), //For internal purpose only. Should never be exposed for Users
 	ASSET(15, "asset"),
+	WORKORDER(16, "workorder"),
+	CONSUMPTION(17, "consumption"),
+	
 	;
+	
 	
 	public Integer value;
 	public String name;

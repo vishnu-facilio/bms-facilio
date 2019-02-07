@@ -12,6 +12,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.struts2.ServletActionContext;
+
+import com.facilio.accounts.dto.User;
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
@@ -73,8 +80,6 @@ public abstract class FileStore {
 	protected boolean updateFileEntry(long fileId, String fileName, String filePath, long fileSize, String contentType) throws Exception {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
-		ResultSet rs = null;
-		
 		try {
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
 			pstmt = conn.prepareStatement("UPDATE File SET FILE_NAME=?, FILE_PATH=?, FILE_SIZE=?, CONTENT_TYPE=? WHERE FILE_ID=? AND ORGID=?");
@@ -95,37 +100,45 @@ public abstract class FileStore {
 			throw e;
 		}
 		finally {
-			DBUtil.closeAll(conn, pstmt, rs);
+			DBUtil.closeAll(conn, pstmt);
 		}
 	}
 	
 	
-	protected boolean updateFileEntry(ResizedFileInfo fileInfo) throws Exception {
+	protected boolean updateResizedFileEntry(ResizedFileInfo fileInfo) throws Exception {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
-		ResultSet rs = null;
-		
+		boolean olderCommit = false;
 		try {
-			conn = FacilioConnectionPool.INSTANCE.getConnection();
-			pstmt = conn.prepareStatement("UPDATE ResizedFile SET URL=?, EXPIRY_TIME=? WHERE FILE_ID=? AND ORGID=? AND WIDTH=? AND HEIGHT=?");
+			conn = FacilioConnectionPool.INSTANCE.getConnectionFromPool(); //Getting connection from pool since this has to be done outside transaction
+			olderCommit = conn.getAutoCommit();
+			conn.setAutoCommit(false);
 			
+			pstmt = conn.prepareStatement("UPDATE ResizedFile SET URL=?, EXPIRY_TIME=? WHERE FILE_ID=? AND ORGID=? AND WIDTH=? AND HEIGHT=?");
 			pstmt.setString(1, fileInfo.getUrl());
 			pstmt.setLong(2, fileInfo.getExpiryTime());
 			pstmt.setLong(3, fileInfo.getFileId());
 			pstmt.setLong(4, getOrgId());
 			pstmt.setInt(5, fileInfo.getWidth());
 			pstmt.setInt(6, fileInfo.getHeight());
-			
 			if(pstmt.executeUpdate() < 1) {
 				throw new RuntimeException("Unable to update file");
 			}
+			
+			conn.commit();
 			return true;
 		}
 		catch(SQLException | RuntimeException e) {
+			if (conn != null) {
+				conn.rollback();
+			}
 			throw e;
 		}
 		finally {
-			DBUtil.closeAll(conn, pstmt, rs);
+			if (conn != null) {
+				conn.setAutoCommit(olderCommit);
+			}
+			DBUtil.closeAll(conn, pstmt);
 		}
 	}
 	
@@ -157,7 +170,6 @@ public abstract class FileStore {
 	protected boolean deleteFileEntries(List<Long> fileId) throws Exception {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
-		ResultSet rs = null;
 		
 		try {
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
@@ -176,19 +188,17 @@ public abstract class FileStore {
 			throw e;
 		}
 		finally {
-			DBUtil.closeAll(conn, pstmt, rs);
+			DBUtil.closeAll(conn, pstmt);
 		}
 	}
 	
 	protected boolean addResizedFileEntry(long fileId, int width, int height, String filePath, long fileSize, String contentType) throws Exception {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
-		ResultSet rs = null;
-		
 		try {
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
+
 			pstmt = conn.prepareStatement("INSERT INTO ResizedFile set FILE_ID=?, ORGID=?, WIDTH=?, HEIGHT=?, FILE_PATH=?, FILE_SIZE=?, CONTENT_TYPE=?, GENERATED_TIME=?");
-			
 			pstmt.setLong(1, fileId);
 			pstmt.setLong(2, getOrgId());
 			pstmt.setInt(3, width);
@@ -197,17 +207,17 @@ public abstract class FileStore {
 			pstmt.setLong(6, fileSize);
 			pstmt.setString(7, contentType);
 			pstmt.setLong(8, System.currentTimeMillis());
-			
 			if(pstmt.executeUpdate() < 1) {
 				throw new RuntimeException("Unable to add resized file");
 			}
+			
 			return true;
 		}
 		catch(SQLException | RuntimeException e) {
 			throw e;
 		}
 		finally {
-			DBUtil.closeAll(conn, pstmt, rs);
+			DBUtil.closeAll(conn, pstmt);
 		}
 	}
 	
@@ -215,7 +225,6 @@ public abstract class FileStore {
 	protected boolean addResizedFileEntry(ResizedFileInfo fileInfo) throws Exception {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
-		ResultSet rs = null;
 		
 		try {
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
@@ -241,7 +250,7 @@ public abstract class FileStore {
 			throw e;
 		}
 		finally {
-			DBUtil.closeAll(conn, pstmt, rs);
+			DBUtil.closeAll(conn, pstmt);
 		}
 	}
 	
@@ -440,6 +449,80 @@ public abstract class FileStore {
 		return fileInfo;
 	}
 	
+	private String getUrl (long fileId, boolean isDownload, boolean isPortal, int width, int height) {
+		StringBuilder url = new StringBuilder();
+		if (AwsUtil.isDevelopment()) {
+			url.append(AwsUtil.getConfig("clientapp.url"));
+		}
+		url.append("/api/v2/");
+		
+		if (isPortal) {
+			url.append("service/");
+		}
+		
+		url.append("files/");
+		if (isDownload) {
+			url.append("download/");
+		}
+		else {
+			url.append("preview/");
+		}
+		url.append(fileId);
+		
+		if (width != -1) {
+			url.append("?width=").append(width);
+			
+			if (height != -1) {
+				url.append("&height=").append(height);
+			}
+		}
+		return url.toString();
+	}
+
+	public String getPrivateUrl(long fileId) throws Exception {
+		User currentUser = AccountUtil.getCurrentAccount() == null ? null : AccountUtil.getCurrentAccount().getUser();
+		
+		if (currentUser != null) {
+			return getPrivateUrl(fileId, currentUser.isPortalUser());
+		}
+		else {
+			return getPrivateUrl(fileId, false);
+		}
+	}
+	
+	public String getPrivateUrl(long fileId, boolean isPortalUser) throws Exception {
+		return getUrl(fileId, false, isPortalUser, -1, -1);
+	}
+	
+	public String getPrivateUrl(long fileId, int width) throws Exception {
+		User currentUser = AccountUtil.getCurrentAccount() == null ? null : AccountUtil.getCurrentAccount().getUser();
+		
+		if (currentUser != null) {
+			return getPrivateUrl(fileId, width, currentUser.isPortalUser());
+		}
+		else {
+			return getPrivateUrl(fileId, width, false);
+		}
+	}
+	
+	public String getPrivateUrl(long fileId, int width,boolean isPortalUser) throws Exception {
+		return getUrl(fileId, false, isPortalUser, width, -1);
+	}
+	
+	public String getDownloadUrl(long fileId) throws Exception {
+		User currentUser = AccountUtil.getCurrentAccount() == null ? null : AccountUtil.getCurrentAccount().getUser();
+		if (currentUser != null) {
+			return getDownloadUrl(fileId, currentUser.isPortalUser());
+		}
+		else {
+			return getDownloadUrl(fileId, false);
+		}
+	}
+	
+	public String getDownloadUrl(long fileId, boolean isPortalUser) throws Exception {
+		return getUrl(fileId, true, isPortalUser, -1, -1);
+	}
+	
 	public int markAsDeleted(List<Long> fileIds) throws SQLException {
 		List<FacilioField> fields = FieldFactory.getFileFields();
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
@@ -455,15 +538,12 @@ public abstract class FileStore {
 	
 	public abstract InputStream readFile(long fileId) throws Exception;
 	
+	public abstract InputStream readFile(FileInfo fileInfo) throws Exception;
+		
 	public abstract boolean deleteFile(long fileId) throws Exception;
 	
 	public abstract boolean deleteFiles(List<Long> fileId) throws Exception;
 	
 	public abstract boolean renameFile(long fileId, String newName) throws Exception;
-	
-	public abstract String getPrivateUrl(long fileId) throws Exception;
-	
-	public abstract String getPrivateUrl(long fileId, int width) throws Exception;
-	
-	public abstract String getDownloadUrl(long fileId) throws Exception;
+
 }

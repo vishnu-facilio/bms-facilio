@@ -5,9 +5,9 @@ import java.util.Map;
 
 import org.apache.commons.beanutils.PropertyUtils;
 
-import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
+import com.facilio.chain.FacilioContext;
 
 public class ScheduledRuleContext extends WorkflowRuleContext {
 	/**

@@ -12,6 +12,7 @@ import com.facilio.bmsconsole.context.AttachmentContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
+import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fs.FileStoreFactory;
 import com.facilio.fw.BeanFactory;
@@ -39,7 +40,8 @@ public class DeleteAttachmentCommand implements Command {
 			List<AttachmentContext> attachments = attachmentBuilder.get();
 			if (attachments != null && !attachments.isEmpty()) {
 				Set<Long> parentIds = attachments.stream().map(AttachmentContext::getParentId).collect(Collectors.toSet());
-				context.put(FacilioConstants.ContextNames.PARENT_ID_LIST, parentIds);
+				FacilioChain.addPostTrasanction(FacilioConstants.ContextNames.IDS_TO_UPDATE_COUNT, parentIds);
+				FacilioChain.addPostTrasanction(FacilioConstants.ContextNames.MODULE_NAME, moduleName);				
 			}
 			
 			// TODO mark file as deleted if no reference for that file is available for all modules

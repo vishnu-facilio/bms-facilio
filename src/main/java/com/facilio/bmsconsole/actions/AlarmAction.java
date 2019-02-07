@@ -19,7 +19,6 @@ import org.json.simple.parser.JSONParser;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
-import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
@@ -35,6 +34,7 @@ import com.facilio.bmsconsole.util.AlarmAPI;
 import com.facilio.bmsconsole.util.TemplateAPI;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.workflow.rule.ActivityType;
+import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.sql.DBUtil;
 import com.facilio.sql.GenericSelectRecordBuilder;
@@ -52,6 +52,15 @@ public class AlarmAction extends FacilioAction {
 	}
 	public void setAlarm(AlarmContext alarm) {
 		this.alarm = alarm;
+	}
+
+	private WorkOrderContext workorder;
+	
+	public WorkOrderContext getWorkorder() {
+		return workorder;
+	}
+	public void setWorkorder(WorkOrderContext workorder) {
+		this.workorder = workorder;
 	}
 
 	private String moduleName;
@@ -73,7 +82,7 @@ public class AlarmAction extends FacilioAction {
 		rowsUpdated = (int) woContext.get(FacilioConstants.ContextNames.ROWS_UPDATED);
 		WorkOrderContext wo = (WorkOrderContext) woContext.get(FacilioConstants.ContextNames.WORK_ORDER);
 		setWoId(wo.getId());
-		
+		setWorkorder(wo);
 		return SUCCESS;
 	}
 
@@ -545,7 +554,7 @@ public class AlarmAction extends FacilioAction {
 	/******************      V2 Api    ******************/
 	public String v2alarmList() throws Exception{
 		alarmList();
-		setResult(FacilioConstants.ContextNames.ALARM_LIST, getAlarm());
+		setResult(FacilioConstants.ContextNames.ALARM, getAlarms());
 		setResult(FacilioConstants.ContextNames.COUNT, getCount());
 		return SUCCESS;
 		

@@ -56,6 +56,7 @@ public class TicketStatusContext extends ModuleBaseWithCustomFields {
 	public static enum StatusType {
 		OPEN(1, "Open"),
 		CLOSED(2, "Closed"),
+		PRE_OPEN(3, "Pre-Open")
 		;
 		
 		private int intVal;

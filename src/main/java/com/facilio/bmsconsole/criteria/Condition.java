@@ -175,6 +175,7 @@ public class Condition implements Serializable {
 		return false;
 	}
 	
+	@JsonIgnore
 	public List<Object> getComputedValues() {
 		if(operator != null) {
 			if(operator == LookupOperator.LOOKUP) {

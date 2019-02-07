@@ -11,11 +11,12 @@ import org.apache.commons.lang3.StringUtils;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.CommonReportUtil;
-import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.FormulaContext.AggregateOperator;
 import com.facilio.bmsconsole.context.WidgetChartContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.DateOperators;
+import com.facilio.bmsconsole.criteria.DateRange;
+import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.criteria.StringOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
@@ -23,6 +24,7 @@ import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.util.DashboardUtil;
+import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.report.context.ReportBaseLineContext;
@@ -85,21 +87,35 @@ public class ReportUtil {
 			report.setTransformWorkflow(transformWorkflow);
 		}
 		
+		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
+		if (moduleName != null) {
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			FacilioModule module = modBean.getModule(moduleName);
+			report.setModuleId(module.getModuleId());		
+		}
+		
+		
 		return report;
 	}
 	
-	public static List<ReportFolderContext> getAllReportFolder(String moduleName,boolean isWithReports) throws Exception {
+	public static List<ReportFolderContext> getAllReportFolder(String moduleName,boolean isWithReports, String searchText) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(moduleName);
 		
 		FacilioModule reportFoldermodule = ModuleFactory.getReportFolderModule();
+		List<FacilioField> fields = FieldFactory.getReport1FolderFields();
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 		
 		GenericSelectRecordBuilder select = new GenericSelectRecordBuilder()
-													.select(FieldFactory.getReport1FolderFields())
+													.select(fields)
 													.table(reportFoldermodule.getTableName())
 													.andCondition(CriteriaAPI.getCurrentOrgIdCondition(reportFoldermodule))
-													.andCustomWhere(reportFoldermodule.getTableName()+".MODULEID = ?",module.getModuleId())
+													.andCondition(CriteriaAPI.getCondition(fieldMap.get("moduleId"), String.valueOf(module.getModuleId()), NumberOperators.EQUALS));
 													;
+		
+		if (searchText != null) {
+			select.andCondition(CriteriaAPI.getCondition(fieldMap.get("name"), searchText, StringOperators.CONTAINS));
+		}
 		
 		List<Map<String, Object>> props = select.get();
 		List<ReportFolderContext> reportFolders = new ArrayList<>();
@@ -143,11 +159,52 @@ public class ReportUtil {
 		if(props != null && !props.isEmpty()) {
 			for(Map<String, Object> prop :props) {
 				
-				ReportContext report = FieldUtil.getAsBeanFromMap(prop, ReportContext.class);
+				ReportContext report = getReportContextFromProps(prop);
 				reports.add(report);
 			}
 		}
 		return reports;
+	}
+	
+	public static List<ReportContext> getReports(String moduleName, String searchText) throws Exception {
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(moduleName);
+		
+		FacilioModule reportModule = ModuleFactory.getReportModule();
+		List<FacilioField> fields = FieldFactory.getReport1Fields();
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+		
+		GenericSelectRecordBuilder select = new GenericSelectRecordBuilder()
+													.select(fields)
+													.table(reportModule.getTableName())
+													.andCondition(CriteriaAPI.getCurrentOrgIdCondition(reportModule))
+													.andCondition(CriteriaAPI.getCondition(fieldMap.get("moduleId"), String.valueOf(module.getModuleId()), NumberOperators.EQUALS));
+		
+		if (searchText != null) {
+			select.andCondition(CriteriaAPI.getCondition(fieldMap.get("name"), searchText, StringOperators.CONTAINS));
+		}
+		
+		List<Map<String, Object>> props = select.get();
+		List<ReportContext> reports = new ArrayList<>();
+		if(props != null && !props.isEmpty()) {
+			for(Map<String, Object> prop :props) {
+				
+				ReportContext report = getReportContextFromProps(prop);
+				reports.add(report);
+			}
+		}
+		return reports;
+	}
+	
+	public static ReportContext getReportContextFromProps(Map<String, Object> prop) {
+		ReportContext report = FieldUtil.getAsBeanFromMap(prop, ReportContext.class);
+		DateRange actualRange = null;
+		if(report.getDateRange() == null && report.getDateOperatorEnum() != null) {
+			actualRange = ((DateOperators) report.getDateOperatorEnum()).getRange(report.getDateValue());
+			report.setDateRange(actualRange);
+		}
+		return report;
 	}
 	
 	public static ReportContext getReport(long reportId) throws Exception {

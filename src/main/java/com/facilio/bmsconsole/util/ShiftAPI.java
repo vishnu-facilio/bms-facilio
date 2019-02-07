@@ -73,6 +73,10 @@ public class ShiftAPI {
 			}
 		}
 		
+		if (shifts.isEmpty()) {
+			return shifts;
+		}
+		
 		String businessHoursTable = ModuleFactory.getBusinessHoursModule().getTableName();
 		String singleDayTable = ModuleFactory.getSingleDayBusinessHourModule().getTableName();
 		selectBuilder = new GenericSelectRecordBuilder()
@@ -86,7 +90,6 @@ public class ShiftAPI {
 		
 		props = selectBuilder.get();
 		
-		new ArrayList<>();
 		Map<Long, List<BusinessHourContext>> parentIdVsContext = new HashMap<>();
 		if (props != null && !props.isEmpty()) {
 			for (Map<String, Object> prop: props) {

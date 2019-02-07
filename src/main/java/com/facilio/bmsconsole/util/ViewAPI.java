@@ -560,8 +560,8 @@ public class ViewAPI {
 	}
 	
 	private static void setCriteriaValue(Criteria criteria) throws Exception {
-		Map<Integer, Condition> conditions = criteria.getConditions();
-		for(Map.Entry<Integer, Condition> entry : conditions.entrySet()) {
+		Map<String, Condition> conditions = criteria.getConditions();
+		for(Map.Entry<String, Condition> entry : conditions.entrySet()) {
 			Condition condition = entry.getValue();
 			if(condition.getOperatorId() == LookupOperator.LOOKUP.getOperatorId() && condition.getCriteriaValueId() != -1) {
 				Criteria criteriaValue = CriteriaAPI.getCriteria(criteria.getOrgId(),condition.getCriteriaValueId());

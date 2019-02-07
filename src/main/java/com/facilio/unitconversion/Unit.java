@@ -11,7 +11,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 @JsonFormat(shape = JsonFormat.Shape.OBJECT)
 public enum Unit {
 	
-	// last id -- 89
+	// last id -- 93
 	
 	KWH(1,"Kilowatt Hour","kWh",Metric.ENERGY),
 	HECTOWH(76,"Hectowatt Hour","hWh",Metric.ENERGY,"si*10","this/10"),
@@ -22,7 +22,7 @@ public enum Unit {
 	
 	CELSIUS(4,"Celsius","&deg;C",Metric.TEMPERATURE),
 	FAHRENHEIT(5,"Fahrenheit","&deg;F",Metric.TEMPERATURE,"(si*1.8)+32","(this-32)/1.8"),
-	KELWIN(6,"Kelwin","K",Metric.TEMPERATURE,"si+273.15","this-273.15"),
+	KELWIN(6,"Kelvin","K",Metric.TEMPERATURE,"si+273.15","this-273.15"),
 	
 	METER(7,"Meter","m",Metric.LENGTH),
 	DECIMETER(8,"Decimeter","dm",Metric.LENGTH,"si*10","this/10"),
@@ -106,7 +106,7 @@ public enum Unit {
 	CUBICMETER(81,"Cubic meter","m<sup>3</sup>",Metric.VOLUME,"si/1000","this*1000"),
 	CUBICFOOT(72,"CubicFoot","ft<sup>3</sup>",Metric.VOLUME,"si/28.3168","this*28.3168"),
 	CUBICINCH(73,"CubicInch","in<sup>3</sup>",Metric.VOLUME,"si*61.0237","this/61.0237"),
-	USGALLON(74,"US Gallon","G",Metric.VOLUME,"si/3.78541","this*3.78541"),
+	USGALLON(74,"US Gallon","gal",Metric.VOLUME,"si/3.78541","this*3.78541"),
 	IMPERIALGALLON(75,"Imperial Gallon","IG",Metric.VOLUME,"si/4.54609","this*4.54609"),
 	
 	AED(83,"AED","AED", Metric.CURRENCY),
@@ -118,6 +118,11 @@ public enum Unit {
 	PERCENTAGE_DIV_100(88,"percentage","%",Metric.PERCENTAGE,"si/100","this*100"),	// do not use this in ORG_UNITS
 	
 	MILLIPERHOUR(89,"Millimeters/hour","mm/hr",Metric.PRECIPITATION_INTENSITY),
+	
+	CUBICFEETPERMIN(90,"Cubic Feet per Minute","ft<sup>3</sup>/min",Metric.FLOWRATE),
+	CUBICFEETPERHOUR(91,"Cubic Feet per Hour","ft<sup>3</sup>/hr",Metric.FLOWRATE,"si*60","this/60"),
+	GALLONSPERMIN(92,"Gallons per Minute","gal/min",Metric.FLOWRATE,"si*7.48","this/7.48"),
+	LITRESPERMIN(93,"Litres per Minute","l/min",Metric.FLOWRATE,"si*28.316","this/28.316"),
 	;
 	
 	int unitId;

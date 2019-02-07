@@ -16,7 +16,9 @@ import org.json.simple.parser.JSONParser;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.commands.FacilioContext;
+import com.facilio.bmsconsole.commands.AddOrUpdateReportCommand;
+import com.facilio.bmsconsole.commands.ConstructReportData;
+import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.AlarmContext;
@@ -28,6 +30,7 @@ import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.WidgetChartContext;
 import com.facilio.bmsconsole.context.WidgetStaticContext;
 import com.facilio.bmsconsole.criteria.Condition;
+import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.DateOperators;
 import com.facilio.bmsconsole.criteria.DateRange;
 import com.facilio.bmsconsole.criteria.Operator;
@@ -41,6 +44,8 @@ import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.rule.ActivityType;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
+import com.facilio.chain.FacilioChain;
+import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fs.FileInfo.FileFormat;
 import com.facilio.fw.BeanFactory;
@@ -101,7 +106,7 @@ public class V2ReportAction extends FacilioAction {
 	
 	public String fetchReportFolders() throws Exception {
 		
-		List<ReportFolderContext> reportFolders = ReportUtil.getAllReportFolder(moduleName, getIsWithReport());
+		List<ReportFolderContext> reportFolders = ReportUtil.getAllReportFolder(moduleName, getIsWithReport(), null);
 		setResult("reportFolders", reportFolders);
 		setResult("moduleName", moduleName);
 		return SUCCESS;
@@ -252,6 +257,7 @@ public class V2ReportAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.CHART_STATE, chartState);
 		context.put(FacilioConstants.ContextNames.TABULAR_STATE, tabularState);
 		context.put(FacilioConstants.ContextNames.REPORT, reportContext);
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
 		
 		Chain addReadingReport = TransactionChainFactory.addOrUpdateReadingReportChain();
 		addReadingReport.execute(context);
@@ -429,6 +435,113 @@ public class V2ReportAction extends FacilioAction {
 		return setReportResult(context);
 	}
 	
+	private JSONObject xField;
+	public JSONObject getxField() {
+		return xField;
+	}
+	public void setxField(JSONObject xField) {
+		this.xField = xField;
+	}
+	private JSONObject yField;
+	public JSONObject getyField() {
+		return yField;
+	}
+	public void setyField(JSONObject yField) {
+		this.yField = yField;
+	}
+	private JSONArray groupBy;
+	public JSONArray getGroupBy() {
+		return groupBy;
+	}
+	public void setGroupBy(JSONArray groupBy) {
+		this.groupBy = groupBy;
+	}
+	private Criteria criteria;
+	public Criteria getCriteria() {
+		return criteria;
+	}
+	public void setCriteria(Criteria criteria) {
+		this.criteria = criteria;
+	}
+	private JSONArray sortFields;
+	public JSONArray getSortFields() {
+		return sortFields;
+	}
+	public void setSortFields(JSONArray sortFields) {
+		this.sortFields = sortFields;
+	}
+	private int sortOrder;
+	public int getSortOrder() {
+		return sortOrder;
+	}
+	public void setSortOrder(int sortOrder) {
+		this.sortOrder = sortOrder;
+	}
+	private int limit;
+	public int getLimit() {
+		return limit;
+	}
+	public void setLimit(int limit) {
+		this.limit = limit;
+	}
+	public String fetchReportData() throws Exception {
+		JSONParser parser = new JSONParser();
+		
+		FacilioContext context = new FacilioContext();
+		
+		context.put("x-axis", xField);
+		context.put("y-axis", yField);
+		context.put("group-by", groupBy);
+		context.put("criteria", criteria);
+		context.put("sort_fields", sortFields);
+		context.put("sort_order", sortOrder);
+		context.put("limit", limit);
+		
+		ReadOnlyChainFactory.constructAndFetchReportDataChain().execute(context);
+
+		return setReportResult(context);
+	}
+
+	public String saveReport() throws Exception {
+		Chain chain = FacilioChain.getTransactionChain();
+		FacilioContext context = new FacilioContext();
+
+		if (reportContext == null) {
+			throw new Exception("Report context cannot be empty");
+		}
+		reportContext.setChartState(chartState);
+		reportContext.setTabularState(tabularState);
+		
+		context.put(FacilioConstants.ContextNames.REPORT, reportContext);
+		context.put("x-axis", xField);
+		context.put("y-axis", yField);
+		context.put("group-by", groupBy);
+		context.put("criteria", criteria);
+
+		chain.addCommand(new ConstructReportData());
+		chain.addCommand(new AddOrUpdateReportCommand());
+		chain.execute(context);
+
+		setResult("message", "Report saved");
+		setResult("report", reportContext);
+		return SUCCESS;
+	}
+
+	public String executeReport() throws Exception {
+		Chain chain = FacilioChain.getNonTransactionChain();
+		FacilioContext context = new FacilioContext();
+
+		ReportContext reportContext = ReportUtil.getReport(reportId);
+		if (reportContext == null) {
+			throw new Exception("Report not found");
+		}
+		context.put(FacilioConstants.ContextNames.REPORT, reportContext);
+		chain.addCommand(ReadOnlyChainFactory.newFetchReportDataChain());
+		chain.execute(context);
+
+		return setReportResult(context);
+	}
+	
 	private ReportFilterMode xCriteriaMode;
 	public int getxCriteriaMode() {
 		if (xCriteriaMode != null) {
@@ -564,9 +677,9 @@ public class V2ReportAction extends FacilioAction {
 								
 							}
 							if(exp.getCriteria() != null) {
-								Map<Integer, Condition> conditions = exp.getCriteria().getConditions();
+								Map<String, Condition> conditions = exp.getCriteria().getConditions();
 								
-								for(Integer key : conditions.keySet()) {
+								for(String key : conditions.keySet()) {
 									
 									Condition condition = conditions.get(key);
 									
@@ -778,13 +891,13 @@ public class V2ReportAction extends FacilioAction {
 		
 		Chain exportChain;
 		if (reportId != -1) {
-			exportChain = isNewFormat() ? TransactionChainFactory.getExportNewReportFileChain() : TransactionChainFactory.getExportReportFileChain();
+			exportChain = isNewFormat() ? ReadOnlyChainFactory.getExportNewReportFileChain() : ReadOnlyChainFactory.getExportReportFileChain();
 			setReportWithDataContext(context);
 			reportContext.setDateOperator(dateOperator);
 			reportContext.setDateValue(dateOperatorValue);
 		}
 		else {
-			exportChain = isNewFormat() ? TransactionChainFactory.getExportNewAnalyticsFileChain() : TransactionChainFactory.getExportAnalyticsFileChain();
+			exportChain = isNewFormat() ? ReadOnlyChainFactory.getExportNewAnalyticsFileChain() : ReadOnlyChainFactory.getExportAnalyticsFileChain();
 			setReadingsDataContext(context);
 			context.put(FacilioConstants.ContextNames.TABULAR_STATE, tabularState);
 		}
@@ -812,13 +925,13 @@ public class V2ReportAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		Chain mailReportChain;
 		if (reportId != -1) {
-			mailReportChain = isNewFormat() ? TransactionChainFactory.sendNewReportMailChain()  : TransactionChainFactory.sendReportMailChain();
+			mailReportChain = isNewFormat() ? ReadOnlyChainFactory.sendNewReportMailChain()  : ReadOnlyChainFactory.sendReportMailChain();
 			setReportWithDataContext(context);
 			reportContext.setDateOperator(dateOperator);
 			reportContext.setDateValue(dateOperatorValue);
 		}
 		else {
-			mailReportChain = isNewFormat() ? TransactionChainFactory.sendNewAnalyticsMailChain() : TransactionChainFactory.sendAnalyticsMailChain();
+			mailReportChain = isNewFormat() ? ReadOnlyChainFactory.sendNewAnalyticsMailChain() : ReadOnlyChainFactory.sendAnalyticsMailChain();
 			setReadingsDataContext(context);
 			context.put(FacilioConstants.ContextNames.TABULAR_STATE, tabularState);
 		}
@@ -894,6 +1007,15 @@ public class V2ReportAction extends FacilioAction {
 		setModuleName(reportInfo.getModuleName());
 		scheduledList();
 		
+		return SUCCESS;
+	}
+	
+	public String searchReportAndFolders() throws Exception {
+		
+		List<ReportFolderContext> reportFolders = ReportUtil.getAllReportFolder(moduleName, false, getSearch());
+		List<ReportContext> reports = ReportUtil.getReports(moduleName, getSearch());
+		setResult("reportFolders", reportFolders);
+		setResult("reports", reports);
 		return SUCCESS;
 	}
 	

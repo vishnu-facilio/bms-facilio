@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -293,7 +294,7 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 	}
 	
 	private int update(WhereBuilder where, Map<String, Object> moduleProps) throws SQLException {
-		List<FacilioField> updateFields = new ArrayList<>();
+		Set<FacilioField> updateFields = new HashSet<>();
 		if (module.isTrashEnabled()) {
 			FacilioField isDeletedField = FieldFactory.getIsDeletedField();
 			updateFields.add(isDeletedField);
@@ -303,12 +304,10 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 		if (FieldUtil.isSiteIdFieldPresent(module) && AccountUtil.getCurrentSiteId() == -1) {
 			updateFields.add(FieldFactory.getSiteIdField(module));
 		}
-		builder.fields(updateFields);
-		
-		builder.table(module.getTableName());
 		
 		FacilioModule prevModule = module;
 		FacilioModule extendedModule = module.getExtendModule();
+		builder.setBaseTableName(prevModule.getTableName());
 		while(extendedModule != null) {
 			builder.innerJoin(extendedModule.getTableName())
 					.on(prevModule.getTableName()+".ID = "+extendedModule.getTableName()+".ID");
@@ -321,7 +320,31 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 		
 		builder.andCustomWhere(where.getWhereClause(), where.getValues());
 		
-		return builder.update(moduleProps);
+		prevModule = module;
+		List<FacilioField> f = new ArrayList<>();
+		int updateCount = 0;
+		while (prevModule != null) {
+			GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder(builder);
+			for (FacilioField field : updateFields) {
+				if ((field.getModule() == null && prevModule.getExtendModule() != null)) {
+					continue;
+				}
+				if (((prevModule.getExtendModule() == null && field.getExtendedModule() == null) || (field.getExtendedModule().equals(prevModule)) )) {
+					f.add(field);
+				}
+			}
+			updateBuilder.fields(f);
+			updateBuilder.table(prevModule.getTableName());
+			
+			prevModule = prevModule.getExtendModule();
+			if (!f.isEmpty()) {
+				updateCount += updateBuilder.update(moduleProps);
+			}
+			f.clear();
+		}
+		
+		
+		return updateCount;
 	}
 	
 	private void updateLookupFields(Map<String, Object> moduleProps, List<FacilioField> fields) throws Exception {

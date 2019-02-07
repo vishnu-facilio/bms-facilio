@@ -85,4 +85,10 @@ public class InventoryContext extends ModuleBaseWithCustomFields{
 	public void setModifiedTime(long modifiedTime) {
 		this.modifiedTime = modifiedTime;
 	}
+	public long getLocalId() {
+		return super.getLocalId();
+	}
+	public void setLocalId(long localId) {
+		super.setLocalId(localId);
+	}
 }

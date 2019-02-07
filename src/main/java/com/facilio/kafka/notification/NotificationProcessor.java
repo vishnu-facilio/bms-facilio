@@ -1,10 +1,10 @@
 package com.facilio.kafka.notification;
 
-import com.facilio.aws.util.AwsUtil;
-import com.facilio.server.ServerInfo;
-import com.facilio.wms.endpoints.SessionManager;
-import com.facilio.wms.message.Message;
-import com.facilio.wms.util.WmsApi;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Properties;
+
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
@@ -18,7 +18,11 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import java.util.*;
+import com.facilio.aws.util.AwsUtil;
+import com.facilio.server.ServerInfo;
+import com.facilio.wms.endpoints.SessionManager;
+import com.facilio.wms.message.Message;
+import com.facilio.wms.util.WmsApi;
 
 public class NotificationProcessor implements Runnable {
 

@@ -43,8 +43,8 @@ public class GenerateFilterFromCriteriaCommand implements Command{
 	
 	@SuppressWarnings("unchecked")
 	private void setFilters(Criteria criteria, JSONObject filters) throws Exception {
-		Map<Integer, Condition> conditions = criteria.getConditions();
-		for(Map.Entry<Integer, Condition> entry : conditions.entrySet()) {
+		Map<String, Condition> conditions = criteria.getConditions();
+		for(Map.Entry<String, Condition> entry : conditions.entrySet()) {
 			Condition condition = entry.getValue();
 			String[] name = condition.getFieldName().split("\\.");
 			String fieldName = name.length > 1 ? name[1] : name[0];

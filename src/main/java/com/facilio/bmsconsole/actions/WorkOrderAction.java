@@ -22,7 +22,6 @@ import org.json.simple.parser.JSONParser;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
-import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.ActionForm;
@@ -45,6 +44,7 @@ import com.facilio.bmsconsole.context.TaskContext.InputType;
 import com.facilio.bmsconsole.context.TaskSectionContext;
 import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.context.TicketContext.SourceType;
+import com.facilio.bmsconsole.context.TicketStatusContext;
 import com.facilio.bmsconsole.context.ViewLayout;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.modules.FacilioField;
@@ -54,18 +54,17 @@ import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.templates.JSONTemplate;
 import com.facilio.bmsconsole.templates.TaskSectionTemplate;
-import com.facilio.bmsconsole.templates.TaskTemplate;
 import com.facilio.bmsconsole.templates.Template.Type;
 import com.facilio.bmsconsole.templates.WorkorderTemplate;
 import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
-import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.bmsconsole.util.TemplateAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.workflow.rule.ActivityType;
 import com.facilio.bmsconsole.workflow.rule.TicketActivity;
+import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 
@@ -571,6 +570,16 @@ public class WorkOrderAction extends FacilioAction {
 	List<Long> spaceCategoryIds;
 	boolean hasFloor;
 	
+	private Long siteId;
+	
+	public void setSiteId(Long siteId) {
+		this.siteId = siteId;
+	}
+	public Long getSiteId() {
+		return this.siteId;
+	}
+	
+	
 	public String getScopeFilteredValuesForPM() throws Exception {
 		
 		if(assignmentType != null) {
@@ -588,8 +597,8 @@ public class WorkOrderAction extends FacilioAction {
 					}
 				}
 				
-				assetCategoryIds = AssetsAPI.getAssetCategoryIds(floorsIds,true);
-				spaceCategoryIds = SpaceAPI.getSpaceCategoryIds(floorsIds);
+				assetCategoryIds = AssetsAPI.getAssetCategoryIds(floorsIds, buildingId, true);
+				spaceCategoryIds = SpaceAPI.getSpaceCategoryIds(floorsIds, buildingId);
 			}
 			else if(assignmentType.equals(PMAssignmentType.SPACE_CATEGORY)) {
 				
@@ -600,13 +609,19 @@ public class WorkOrderAction extends FacilioAction {
 						spaceIds = includeIds;
 					}
 					else {
-						spaceIds = getIdsFromSpaceContextList(SpaceAPI.getSpaceListOfCategory(buildingId, spaceCategoryId));
+						Long baseSpaceId = null;
+						if (buildingId != null && buildingId > 0) {
+							baseSpaceId = buildingId;
+						} else {
+							baseSpaceId = this.siteId;
+						}
+						spaceIds = getIdsFromSpaceContextList(SpaceAPI.getSpaceListOfCategory(baseSpaceId, spaceCategoryId));
 						if(excludeIds != null) {
 							spaceIds.removeAll(excludeIds);
 						}
 					}
 					
-					assetCategoryIds = AssetsAPI.getAssetCategoryIds(spaceIds,true);
+					assetCategoryIds = AssetsAPI.getAssetCategoryIds(spaceIds, buildingId, true);
 					spaceCategoryIds = Collections.emptyList();
 				}
 				else {
@@ -622,23 +637,30 @@ public class WorkOrderAction extends FacilioAction {
 						}
 					}
 					
-					assetCategoryIds = AssetsAPI.getAssetCategoryIds(spaceIds,true);
+					assetCategoryIds = AssetsAPI.getAssetCategoryIds(spaceIds, buildingId, true);
 					spaceCategoryIds = Collections.emptyList();
-					//spaceCategoryIds = SpaceAPI.getSpaceCategoryIds(spaceIds);
+					spaceCategoryIds = SpaceAPI.getSpaceCategoryIds(spaceIds, buildingId);
 				}
 			}
 			else if(assignmentType.equals(PMAssignmentType.ASSET_CATEGORY)) {
 				
-				assetCategoryIds = AssetsAPI.getSubCategoryIds(assetCategoryId);
+				assetCategoryIds = AssetsAPI.getSubCategoryIds(assetCategoryId); //doubt
 			}
-		}
-		else if(buildingId > 0) {		// only building selected case
-			List<BaseSpaceContext> floors = SpaceAPI.getBuildingFloors(buildingId);
-			if(floors != null && !floors.isEmpty()) {
-				hasFloor = true;
+		} else if(siteId != null && siteId > -1) {
+			if (buildingId == null || buildingId < -1) {
+				List<BaseSpaceContext> buildings = SpaceAPI.getSiteBuildingsWithFloors(siteId);
+				if(buildings != null && !buildings.isEmpty()) {
+					hasFloor = true;
+				}
+			} else {
+				List<BaseSpaceContext> floors = SpaceAPI.getBuildingFloors(buildingId);
+				if(floors != null && !floors.isEmpty()) {
+					hasFloor = true;
+				}
 			}
-			assetCategoryIds = AssetsAPI.getAssetCategoryIds(buildingId, true);
-			spaceCategoryIds = SpaceAPI.getSpaceCategoryIds(buildingId);
+			
+			assetCategoryIds = AssetsAPI.getAssetCategoryIds(siteId, buildingId, true);
+			spaceCategoryIds = SpaceAPI.getSpaceCategoryIds(siteId, buildingId);
 		}
 		return SUCCESS;
 	}
@@ -947,9 +969,7 @@ public class WorkOrderAction extends FacilioAction {
 		Chain getPmchain = FacilioChainFactory.getGetPreventiveMaintenanceListChain();
 		getPmchain.execute(context);
 		if (getCount() != null) {
-//			setWorkorder((WorkOrderContext) context.get(FacilioConstants.ContextNames.WORK_ORDER_LIST));
 			setWoCount((long) context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_COUNT));
-			System.out.println("data" + getWoCount());
 		}
 		else {
 			setPms((List<PreventiveMaintenance>) context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_LIST));
@@ -1037,6 +1057,39 @@ public class WorkOrderAction extends FacilioAction {
 	
 	public void setActualTimings(List<List<Long>> actualTimings) {
 		this.actualTimings = actualTimings;
+	}
+
+
+	private Map<String, Object> woStatusPercentage;
+
+	public Map<String, Object> getWoStatusPercentage() {
+		return woStatusPercentage;
+	}
+
+	public void setWoStatusPercentage(Map<String, Object> woStatusPercentage) {
+		this.woStatusPercentage = woStatusPercentage;
+	}
+
+
+	private List<Map<String,Object>> avgResponseResolution;
+
+	public List<Map<String,Object>> getAvgResponseResolution() {
+		return avgResponseResolution;
+	}
+
+	public void setAvgResponseResolution(List<Map<String,Object>> avgResponseResolution) {
+		this.avgResponseResolution = avgResponseResolution;
+	}
+
+	
+	private Map<String,Object> avgResolutionTimeByCategory;
+
+	public Map<String,Object> getAvgResolutionTimeByCategory() {
+		return avgResolutionTimeByCategory;
+	}
+
+	public void setAvgResolutionTimeByCategory(Map<String,Object> avgResolutionTimeByCategory) {
+		this.avgResolutionTimeByCategory = avgResolutionTimeByCategory;
 	}
 
 	public String assignWorkOrder() throws Exception {
@@ -1779,6 +1832,98 @@ public class WorkOrderAction extends FacilioAction {
 		return SUCCESS;
 	}
 	
+	public String getWorkOrderStatusPercentage() throws Exception {
+
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.WORK_ORDER_STARTTIME, getStartTime());
+		context.put(FacilioConstants.ContextNames.WORK_ORDER_ENDTIME, getEndTime());
+
+
+		Chain workOrderStatusPercentageListChain = ReadOnlyChainFactory.getWorkOrderStatusPercentageChain();
+		workOrderStatusPercentageListChain.execute(context);
+
+
+		setWoStatusPercentage((Map<String, Object>) context.get(FacilioConstants.ContextNames.WORK_ORDER_STATUS_PERCENTAGE_RESPONSE));
+
+
+		return SUCCESS;
+	}
+	
+	
+	public String getAvgResolutionResponseTimeBySite() throws Exception {
+		
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.WORK_ORDER_STARTTIME, getStartTime());
+		context.put(FacilioConstants.ContextNames.WORK_ORDER_ENDTIME, getEndTime());
+
+
+		Chain avgResponseResolutionTimeChain = ReadOnlyChainFactory.getAvgResponseResolutionTimeBySiteChain();
+		avgResponseResolutionTimeChain.execute(context);
+
+
+
+		setAvgResponseResolution((List<Map<String,Object>>) context.get(FacilioConstants.ContextNames.WORKORDER_INFO_BY_SITE));
+
+		
+		
+		return SUCCESS;
+	}
+	public String getTopNTechnicians() throws Exception
+	{
+		
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.WORK_ORDER_TECHNICIAN_COUNT, getCount());
+		context.put(FacilioConstants.ContextNames.WORK_ORDER_STARTTIME, getStartTime());
+		context.put(FacilioConstants.ContextNames.WORK_ORDER_ENDTIME, getEndTime());
+		
+		Chain woTechCountBySite = ReadOnlyChainFactory.getTopNTechBySiteChain();
+		woTechCountBySite.execute(context);
+
+
+		setTopTechnicians((Map<String, Object>) context.get(FacilioConstants.ContextNames.TOP_N_TECHNICIAN));
+
+
+		return SUCCESS;
+
+	}
+
+	public String getWoCountBySite() throws Exception {
+
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.WORK_ORDER_STARTTIME, getStartTime());
+		context.put(FacilioConstants.ContextNames.WORK_ORDER_ENDTIME, getEndTime());
+
+
+		Chain woCountBySite = ReadOnlyChainFactory.getWorkOrderCountBySiteChain();
+		woCountBySite.execute(context);
+
+
+		setWorkOrderBySite((List<Map<String, Object>>) context.get(FacilioConstants.ContextNames.SITE_ROLE_WO_COUNT));
+
+
+		return SUCCESS;
+	}
+
+	
+
+	public String getAvgWorkCompletionByCategory() throws Exception {
+
+		FacilioContext context = new FacilioContext();
+
+		context.put(FacilioConstants.ContextNames.WORK_ORDER_STARTTIME, getStartTime());
+		context.put(FacilioConstants.ContextNames.WORK_ORDER_ENDTIME, getEndTime());
+		context.put(FacilioConstants.ContextNames.WORK_ORDER_SITE_ID, getSiteId());
+
+		Chain avgCompletionTimeByCategoryChain = ReadOnlyChainFactory.getAvgCompletionTimeByCategoryChain();
+		avgCompletionTimeByCategoryChain.execute(context);
+		Map<String, Object> resp = (Map<String,Object>) context.get(FacilioConstants.ContextNames.WORK_ORDER_AVG_RESOLUTION_TIME);
+
+		setAvgResolutionTimeByCategory(resp) ;
+
+		return SUCCESS;
+	}
+
+
 	private List<Long> deleteReadingRulesList;
 	public void setDeleteReadingRulesList(List<Long> deleteReadingRulesList) {
 		this.deleteReadingRulesList = deleteReadingRulesList;
@@ -1832,8 +1977,13 @@ public class WorkOrderAction extends FacilioAction {
 		if(workOrderString != null) {
 			setWorkordercontex(workOrderString);
 		}
+
+		//The following has to be moved to chain
 		workorder.setSourceType(SourceType.SERVICE_PORTAL_REQUEST);
 		workorder.setSendForApproval(true);
+		TicketStatusContext preOpenStatus = TicketAPI.getStatus("preopen");
+		workorder.setStatus(preOpenStatus);
+
 		addWorkOrder(workorder);
 		setResult(FacilioConstants.ContextNames.WORK_ORDER, workorder);
 		return SUCCESS;
@@ -1885,6 +2035,58 @@ public class WorkOrderAction extends FacilioAction {
 	}
 	public void setLastSyncTime(Long lastSyncTime) {
 		this.lastSyncTime = lastSyncTime;
+	}
+	
+	private List<Map<String,Object>> workOrderBySite;
+	public List<Map<String,Object>> getWorkOrderBySite() {
+		return workOrderBySite;
+	}
+	public void setWorkOrderBySite(List<Map<String,Object>> workOrderBySite) {
+		this.workOrderBySite = workOrderBySite;
+	}
+	private Map<String,Object> topTechnicians;
+	public Map<String,Object> getTopTechnicians() {
+		return topTechnicians;
+	}
+	public void setTopTechnicians(Map<String,Object> topTechnicians) {
+		this.topTechnicians = topTechnicians;
+	}
+	
+	private String dateField;
+	public String getDateField() {
+		return dateField;
+	}
+	public void setDateField(String dateField) {
+		this.dateField = dateField;
+	}
+	
+	private boolean isCount;
+	public boolean isCount() {
+		return isCount;
+	}
+	public void setCount(boolean isCount) {
+		this.isCount = isCount;
+	}
+
+	public String calendarWOs() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.DATE_FIELD, dateField);
+		context.put(FacilioConstants.ContextNames.START_TIME, startTime);
+		context.put(FacilioConstants.ContextNames.END_TIME, endTime);
+		context.put(FacilioConstants.ContextNames.CV_NAME, viewName);
+		context.put(FacilioConstants.ContextNames.COUNT, isCount);
+		
+		Chain woChain = ReadOnlyChainFactory.getCalendarWorkOrdersChain();
+		woChain.execute(context);
+		
+		if (isCount) {
+			setResult("count", context.get(FacilioConstants.ContextNames.WORK_ORDER_COUNT));
+		}
+		else {
+			setResult("workorders", context.get(FacilioConstants.ContextNames.WORK_ORDER_LIST));
+		}
+		
+		return SUCCESS;
 	}
 
 }

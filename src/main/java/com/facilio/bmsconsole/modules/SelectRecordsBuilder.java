@@ -16,11 +16,8 @@ import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
-import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
-import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericSelectRecordBuilder;
-import com.facilio.sql.GenericSelectRecordBuilder.GenericJoinBuilder;
 import com.facilio.sql.JoinBuilderIfc;
 import com.facilio.sql.SelectBuilderIfc;
 import com.facilio.sql.WhereBuilder;
@@ -40,6 +37,7 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 	private boolean fetchDeleted = false;
 	private String groupBy;
 	private WhereBuilder where = new WhereBuilder();
+	private StringBuilder joinBuilder = new StringBuilder();
 	//Need where condition builder for custom field
 	
 	public SelectRecordsBuilder() {
@@ -64,6 +62,7 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 		if (selectBuilder.where != null) {
 			this.where = new WhereBuilder(selectBuilder.where);
 		}
+		this.joinBuilder = selectBuilder.joinBuilder;
 	}
 	
 	public SelectRecordsBuilder (int level) {
@@ -92,26 +91,36 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 		return this;
 	}
 	
-	
-
 	@Override
 	public JoinRecordBuilder<E> innerJoin(String tableName) {
-		return new JoinRecordBuilder<E>(this, builder.innerJoin(tableName));
+		joinBuilder.append(" INNER JOIN ")
+				.append(tableName)
+				.append(" ");
+		return new JoinRecordBuilder<E>(this);
 	}
 	
 	@Override
 	public JoinRecordBuilder<E> leftJoin(String tableName) {
-		return new JoinRecordBuilder<E>(this, builder.leftJoin(tableName));
+		joinBuilder.append(" LEFT JOIN ")
+				.append(tableName)
+				.append(" ");
+		return new JoinRecordBuilder<E>(this);
 	}
 	
 	@Override
 	public JoinRecordBuilder<E> rightJoin(String tableName) {
-		return new JoinRecordBuilder<E>(this, builder.rightJoin(tableName));
+		joinBuilder.append(" RIGHT JOIN ")
+				.append(tableName)
+				.append(" ");
+		return new JoinRecordBuilder<E>(this);
 	}
 	
 	@Override
 	public JoinRecordBuilder<E> fullJoin(String tableName) {
-		return new JoinRecordBuilder<E>(this, builder.fullJoin(tableName));
+		joinBuilder.append(" FULL JOIN ")
+				.append(tableName)
+				.append(" ");
+		return new JoinRecordBuilder<E>(this);
 	}
 	
 	@Override
@@ -231,7 +240,7 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 							lookedupObj = FieldUtil.getLookupVal((LookupField) lookupField, recordId, level+1);
 						}
 						else {
-							lookedupObj = getEmptyLookupVal((LookupField) lookupField, recordId);
+							lookedupObj = FieldUtil.getEmptyLookupVal((LookupField) lookupField, recordId);
 						}
 						if(lookedupObj != null) {
 							props.put(lookupField.getName(), lookedupObj);
@@ -266,7 +275,7 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 							lookedupObj = FieldUtil.getLookupVal((LookupField) lookupField, recordId, level+1);
 						}
 						else {
-							lookedupObj = getEmptyLookupVal((LookupField) lookupField, recordId);
+							lookedupObj = FieldUtil.getEmptyLookupVal((LookupField) lookupField, recordId);
 						}
 						if(lookedupObj != null) {
 							props.put(lookupField.getName(), lookedupObj);
@@ -320,18 +329,21 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 			if(lookupFields.size() > 0) {
 				for(Map<String, Object> props : propList) {
 					for(FacilioField lookupField : lookupFields) {
-						Long recordId = (Long) props.remove(lookupField.getName());
-						if(recordId != null) {
-							Map<String, Object> lookedupProp = null;
-							if(level < maxLevel) {
-								lookedupProp = FieldUtil.getLookupProp((LookupField) lookupField, recordId, level+1);
-							}
-							else {
-								lookedupProp = new HashMap<>();
-								lookedupProp.put("id", recordId);
-							}
-							if(lookedupProp != null) {
-								props.put(lookupField.getName(), lookedupProp);
+						Object value = props.get(lookupField.getName());
+						if (value instanceof Long) {
+							Long recordId = (Long) props.remove(lookupField.getName());
+							if(recordId != null) {
+								Map<String, Object> lookedupProp = null;
+								if(level < maxLevel) {
+									lookedupProp = FieldUtil.getLookupProp((LookupField) lookupField, recordId, level+1);
+								}
+								else {
+									lookedupProp = new HashMap<>();
+									lookedupProp.put("id", recordId);
+								}
+								if(lookedupProp != null) {
+									props.put(lookupField.getName(), lookedupProp);
+								}
 							}
 						}
 					}
@@ -420,30 +432,10 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 			extendedModule = extendedModule.getExtendModule();
 		}
 		
+		builder.getJoinBuilder().append(joinBuilder.toString());
+		
 		builder.andCustomWhere(whereCondition.getWhereClause(), whereCondition.getValues());
 		return builder.get();
-	}
-	
-	private Object getEmptyLookupVal(LookupField lookupField, long id) throws Exception {
-		if(id > 0) {
-			if(LookupSpecialTypeUtil.isSpecialType(lookupField.getSpecialType())) {
-				return LookupSpecialTypeUtil.getEmptyLookedupObject(lookupField.getSpecialType(), id);
-			}
-			else {
-				Class<ModuleBaseWithCustomFields> moduleClass = FacilioConstants.ContextNames.getClassFromModuleName(lookupField.getLookupModule().getName());
-				if(moduleClass != null) {
-					ModuleBaseWithCustomFields lookedupModule = moduleClass.newInstance();
-					lookedupModule.setId(id);
-					return lookedupModule;
-				}
-				else {
-					throw new IllegalArgumentException("Unknown Module Name in Lookup field "+lookupField);
-				}
-			}
-		}
-		else {
-			return null;
-		}
 	}
 	
 	private void checkForNull(boolean checkBean) throws Exception {
@@ -474,18 +466,20 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 	
 	public static class JoinRecordBuilder<E extends ModuleBaseWithCustomFields> implements JoinBuilderIfc<SelectRecordsBuilder<E>> {
 		private SelectRecordsBuilder<E> parentBuilder;
-		private GenericJoinBuilder joinBuilder;
+//		private GenericJoinBuilder joinBuilder;
 		
-		private JoinRecordBuilder(SelectRecordsBuilder<E> parentBuilder, GenericJoinBuilder joinBuilder) {
+		private JoinRecordBuilder(SelectRecordsBuilder<E> parentBuilder) {
 			this.parentBuilder = parentBuilder;
-			this.joinBuilder = joinBuilder;
+//			this.joinBuilder = joinBuilder;
 			// TODO Auto-generated constructor stub
 		}
 		
 		@Override
 		public SelectRecordsBuilder<E> on(String condition) {
 			// TODO Auto-generated method stub
-			joinBuilder.on(condition);
+			parentBuilder.joinBuilder.append("ON ")
+				.append(condition)
+				.append(" ");
 			return parentBuilder;
 		}
 		

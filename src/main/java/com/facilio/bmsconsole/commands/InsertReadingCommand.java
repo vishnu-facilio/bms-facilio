@@ -18,8 +18,8 @@ import com.facilio.bmsconsole.actions.ImportTemplateContext;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ReadingContext.SourceType;
 import com.facilio.bmsconsole.util.ImportAPI;
+import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
-import com.google.common.collect.ArrayListMultimap;
 
 public class InsertReadingCommand implements Command {
 
@@ -30,24 +30,20 @@ public class InsertReadingCommand implements Command {
 		ImportProcessContext importProcessContext =(ImportProcessContext) context.get(ImportAPI.ImportProcessConstants.IMPORT_PROCESS_CONTEXT);
 		ImportTemplateContext importTemplateContext = (ImportTemplateContext) context.get(ImportAPI.ImportProcessConstants.IMPORT_TEMPLATE_CONTEXT);
 		JSONObject modulesJSON = importTemplateContext.getModuleJSON();
-		Map<String, List<ReadingContext>> groupedContext = (Map<String, List<ReadingContext>>) context.get(ImportAPI.ImportProcessConstants.GROUPED_READING_CONTEXT);
+
 		Map<String, List<String>> groupedFields = (Map<String, List<String>>) context.get(ImportAPI.ImportProcessConstants.GROUPED_FIELDS);
-		List<String> keys = new ArrayList(groupedFields.keySet());
-		HashMap<Integer, HashMap<String, Object>> nullUniqueFields = (HashMap<Integer,HashMap<String,Object>>) context.get(ImportAPI.ImportProcessConstants.NULL_UNIQUE_FIELDS);
-		HashMap<Integer, HashMap<String, Object>> nullResources = (HashMap<Integer,HashMap<String,Object>>) context.get(ImportAPI.ImportProcessConstants.NULL_RESOURCES);
-		int nullFields = 0;
+
+		HashMap<String, HashMap<String, ReadingContext>> groupedContext = (HashMap<String, HashMap<String, ReadingContext>>) context.get(ImportAPI.ImportProcessConstants.GROUPED_ROW_CONTEXT);
+		List<String> keys = new ArrayList(groupedContext.keySet());
+		int nullFields = (int)context.get(ImportAPI.ImportProcessConstants.NULL_COUNT);
 		for(int i=0; i<keys.size(); i++) {
-		insertReadings(keys.get(i),groupedContext.get(keys.get(i)));
 		insertSize = insertSize + groupedContext.get(keys.get(i)).size();
+		LOGGER.severe("---Insert size----" + insertSize);
+		List<ReadingContext> readingContexts = new ArrayList(groupedContext.get(keys.get(i)).values());
+		insertReadings(keys.get(i),readingContexts);
 		}
 		StringBuilder emailMessage = new StringBuilder();
 		emailMessage.append("Inserted Readings: " + groupedContext.size());
-		if(nullUniqueFields != null) {
-			nullFields = nullFields + nullUniqueFields.size();
-		}
-		if(nullResources !=  null) {
-			nullFields = nullFields + nullResources.size();
-		}
 		emailMessage.append("Skipped Readings:" + nullFields);
 		JSONObject meta = importProcessContext.getImportJobMetaJson();
 		if(meta == null) {
@@ -71,7 +67,6 @@ public class InsertReadingCommand implements Command {
 			meta.put("Skipped", nullFields);
 			importProcessContext.setImportJobMeta(meta.toJSONString());
 		}
-//		ImportAPI.updateImportProcess(importProcessContext);
 		context.put(ImportAPI.ImportProcessConstants.EMAIL_MESSAGE, emailMessage);
 		return false;
 	}
@@ -87,8 +82,6 @@ public class InsertReadingCommand implements Command {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.HISTORY_READINGS,true);
 		context.put(FacilioConstants.ContextNames.READINGS_SOURCE, SourceType.IMPORT);
-		//TODO Have to check if this takes more time
-//		context.put(FacilioConstants.ContextNames.UPDATE_LAST_READINGS,false);
 		
 		context.put(FacilioConstants.ContextNames.READINGS_MAP , readingMap);
 		Chain importDataChain = ReadOnlyChainFactory.getAddOrUpdateReadingValuesChain();

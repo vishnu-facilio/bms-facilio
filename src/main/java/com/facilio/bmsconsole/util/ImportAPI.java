@@ -9,6 +9,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import org.apache.log4j.LogManager;
 import org.apache.poi.hssf.usermodel.HSSFDateUtil;
@@ -56,35 +57,117 @@ import com.facilio.sql.GenericUpdateRecordBuilder;
 public class ImportAPI {
 
 	private static org.apache.log4j.Logger log = LogManager.getLogger(ImportAPI.class.getName());
+	private static Logger LOGGER  = Logger.getLogger(ImportAPI.class.getName());
 
 	public static JSONArray getColumnHeadings(File excelfile) throws Exception
 	{
+		HashMap<String,String> headingsInFirstSheet = new HashMap<String, String>();
 		JSONArray columnheadings = new JSONArray();
-		
+		ArrayList<String> missingInSheet;
+		HashMap<Integer, ArrayList<String>> missingColumns = new HashMap<Integer, ArrayList<String>>();
         Workbook workbook = WorkbookFactory.create(excelfile);
-        Sheet datatypeSheet = workbook.getSheetAt(0);
-        
-        Iterator<Row> itr = datatypeSheet.iterator();
-        while (itr.hasNext()) {
-        	Row row = itr.next();
-        	Iterator<Cell> cellItr = row.cellIterator();
-        	while (cellItr.hasNext()) {
-        		Cell cell = cellItr.next();
-        		if(cell.getCellType() == Cell.CELL_TYPE_BLANK) {
-        			columnheadings.add(null);
+        if(workbook.getNumberOfSheets() > 1) {
+        	for(int i =0; i< workbook.getNumberOfSheets();i++) {
+        		Sheet dataSheet =workbook.getSheetAt(i);
+        		Row row = dataSheet.getRow(0);
+        		Iterator ctr = row.cellIterator();
+        		missingInSheet = new ArrayList<String>();
+        		while(ctr.hasNext()) {
+        			Cell cell = (Cell)ctr.next();
+        			if(cell.getCellType() == Cell.CELL_TYPE_BLANK) {
+        				if(i == 0) {
+        					columnheadings.add(null);
+        				}
+        			}
+        			else {
+        				if(i!=0) {
+        					if(columnheadings.contains(cell.getStringCellValue())) {
+        						continue;
+        					}
+        					else {
+        						missingInSheet.add(cell.getStringCellValue());
+        					}
+        				}
+        				else {
+        					String cellValue = cell.getStringCellValue();
+        				}
+        			}
         		}
-        		else {
-        			String cellValue = cell.getStringCellValue();
-        			columnheadings.add(cellValue);
-        		}
+        		missingColumns.put(i, missingInSheet);
         	}
-        	break;
+        	
+        	columnheadings.add(missingColumns);
         }
-		workbook.close();
-		
-		return columnheadings;
+        else {
+        	Sheet datatypeSheet = workbook.getSheetAt(0);
+            
+            Iterator<Row> itr = datatypeSheet.iterator();
+            while (itr.hasNext()) {
+            	Row row = itr.next();
+            	Iterator<Cell> cellItr = row.cellIterator();
+            	while (cellItr.hasNext()) {
+            		Cell cell = cellItr.next();
+            		if(cell.getCellType() == Cell.CELL_TYPE_BLANK) {
+            			columnheadings.add(null);
+            		}
+            		else {
+            			String cellValue = cell.getStringCellValue();
+            			columnheadings.add(cellValue);
+            		}
+            	}
+            	break;
+            }
+        }
+        workbook.close();
+        return columnheadings;
 	}
 	
+	public static ImportProcessContext getColumnHeadings(File excelFile, ImportProcessContext importProcessContext) throws Exception{
+		JSONArray columnHeadings = getColumnHeadings(excelFile);
+		if(columnHeadings.size() == 1) {
+			if(columnHeadings.get(0) instanceof java.util.HashMap<?,?>) {
+				HashMap<Integer,ArrayList<String>> missingColumns = (HashMap<Integer, ArrayList<String>>) columnHeadings.get(0);
+				if(!missingColumns.isEmpty()) {
+		    		String warningMessage = constructWarning(missingColumns);
+		    		if(importProcessContext.getImportJobMetaJson().isEmpty()) {
+		    			JSONObject importMeta = new JSONObject();
+		    			importMeta.put(ImportProcessConstants.IMPORT_WARNING, warningMessage);
+		    		}
+		    		else {
+		    			JSONObject importMeta = importProcessContext.getImportJobMetaJson();
+		    			importMeta.put(ImportProcessConstants.IMPORT_WARNING, warningMessage);
+		    		}
+		    	}
+				importProcessContext.setColumnHeadingString(null);
+			}
+			else {
+				importProcessContext.setColumnHeadingString(columnHeadings.toJSONString().replaceAll("\"", "\\\""));
+			}	
+		}
+		else {
+			importProcessContext.setColumnHeadingString(columnHeadings.toJSONString().replaceAll("\"", "\\\""));
+		}
+		return importProcessContext;
+		
+	}
+	
+	public static String constructWarning(HashMap<Integer, ArrayList<String>> missingColumns) {
+		StringBuilder newWarning= new StringBuilder();
+		newWarning.append("Error! Missing columns");
+		newWarning.append(System.getProperty("line.separator"));
+		ArrayList<Integer> sheetIndexes = new ArrayList(missingColumns.values());
+		for(Integer sheet: sheetIndexes) {
+			ArrayList<String> columns = missingColumns.get(sheet);
+			for(String column: columns) {
+				newWarning.append(column + ' ');
+			}
+			newWarning.append("at sheet " + sheet);
+			newWarning.append(System.getProperty("line.separator"));
+		}
+		LOGGER.severe("Import Warning:" + newWarning.toString());
+		return newWarning.toString();
+		
+	}
 	public static void addImportProcess(ImportProcessContext importProcessContext) throws Exception {
 		
 		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
@@ -126,6 +209,15 @@ public class ImportAPI {
 		
 		update.update(props);	
 		
+	}
+	
+	public static List<Map<String,Object>> getValidatedRows(Long importProcessId) throws Exception{
+		GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
+				.table(ModuleFactory.getImportProcessLogModule().getTableName())
+				.select(FieldFactory.getImportProcessLogFields())
+				.andCustomWhere("IMPORTID = ?", importProcessId);
+		List<Map<String,Object>> result = selectRecordBuilder.get();
+		return result;
 	}
 	
 	public static void getFieldMapping(ImportProcessContext importProcessContext) throws Exception {
@@ -571,7 +663,8 @@ public class ImportAPI {
 		public static final String BULK_SETTING = "bulkSetting";
 		public static final String MODULES_INFO = "modulesInfo";
 		public static final String GROUPED_FIELDS = "groupedfields";
-		public static final String GROUPED_READING_CONTEXT = "groupedContext";
+		public static final String GROUPED_ROW_CONTEXT = "groupedContext";
+		public static final String GROUPED_READING_CONTEXT = "groupedContext"; // TODO: Remove after clearing in normal import
 		public static final String SITE_ID_FIELD = "site";
 		public static final String PARENT_ID_FIELD = "parentId";
 		public static final String FLOOR_ID_FIELD = "floor";
@@ -592,6 +685,13 @@ public class ImportAPI {
 		public static final String DATE_FORMATS = "dateFormats";
 		public static final String IMPORT_TEMPLATE_CONTEXT = "importTemplateContext";
 		public static final String TIME_STAMP_STRING = "TimeStamp";
+		public static final String IMPORT_WARNING= "warningMessage";
+		public static final String IMPORT_ROW_CONTEXT = "importRowContext";
+		public static final String HAS_DUPLICATE_ENTRIES ="hasDuplicateEntries";
+		public static final String ROW_COUNT = "rowCount";
+		public static final String NULL_COUNT = "nullCount";
+		public static final String PARSING_ERROR="parsingError";
+		public static final String PARSING_ERROR_MESSAGE="parsingErrorMessage";
 	}
 	
 	

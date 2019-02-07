@@ -232,6 +232,19 @@
 				<param name="includeProperties">responseCode, ^result.*</param>
 			</result>
 		</action>
+		<action name="dashboardWithFolder" class="com.facilio.bmsconsole.actions.DashboardAction" method="getPortalDashboardFolder">
+			<result name="success" type="json">
+				<param name="includeProperties">dashboardFolders,dashboardFolders\[\d+\],dashboardFolders\[\d+\].*</param>
+			</result>
+		</action>
+		<action name="basespace" class="com.facilio.bmsconsole.actions.BaseSpaceAction"
+			method="baseSpaceList">
+				<param name="moduleName">space</param>
+				<param name="permission">READ</param>
+				<result name="success" type="json">
+				<param name="includeProperties">basespaces,basespaces\[\d+\],basespaces\[\d+\].*</param>
+			</result>
+		</action>
 	</package>
 	
 </struts>

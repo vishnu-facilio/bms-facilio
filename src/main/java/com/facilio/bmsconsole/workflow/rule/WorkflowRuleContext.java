@@ -9,14 +9,18 @@ import java.util.Map;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.bmsconsole.util.ActionAPI;
+import com.facilio.chain.FacilioContext;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.tasker.ScheduleInfo;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
 
@@ -34,6 +38,36 @@ public class WorkflowRuleContext implements Serializable {
 		this.orgId = orgId;
 	}
 	
+	private boolean terminateExecution = false;
+	
+	public boolean isTerminateExecution() {
+		return terminateExecution;
+	}
+	public void setTerminateExecution(boolean terminateExecution) {
+		this.terminateExecution = terminateExecution;
+	}
+	
+	private ScheduleInfo schedule;
+	public ScheduleInfo getSchedule() {
+		return schedule;
+	}
+	public void setSchedule(ScheduleInfo schedule) {
+		this.schedule = schedule;
+	}
+	
+	public String getScheduleJson() throws Exception {
+		if(schedule != null) {
+			return FieldUtil.getAsJSON(schedule).toJSONString();
+		}
+		return null;
+	}
+	public void setScheduleJson(String jsonString) throws Exception {
+		if(jsonString != null) {
+			JSONParser parser = new JSONParser();
+			this.schedule = FieldUtil.getAsBeanFromJson((JSONObject)parser.parse(jsonString), ScheduleInfo.class);
+		}
+	}
+
 	private long siteId = -1;
 	public long getSiteId() {
 		return siteId;
@@ -219,11 +253,19 @@ public class WorkflowRuleContext implements Serializable {
 	}
 	
 	public boolean evaluateMisc (String moduleName, Object record, Map<String, Object> placeHolders, FacilioContext context) throws Exception {
-		if (record instanceof ModuleBaseWithCustomFields && siteId != -1) {
+		return true;
+	}
+	
+	public boolean evaluateSite (String moduleName, Object record, Map<String, Object> placeHolders, FacilioContext context) throws Exception {
+		if(siteId == -1) {
+			return true;
+		}
+		else if (record instanceof ModuleBaseWithCustomFields && moduleName.equals(FacilioConstants.ContextNames.WORK_ORDER)) {
 			return ((ModuleBaseWithCustomFields) record).getSiteId() == siteId;
 		}
 		return true;
 	}
+	
 	
 	public boolean evaluateCriteria (String moduleName, Object record, Map<String, Object> placeHolders, FacilioContext context) throws Exception {
 		boolean criteriaFlag = true;
@@ -284,34 +326,35 @@ public class WorkflowRuleContext implements Serializable {
 	public static enum RuleType {
 		READING_RULE,
 		WORKORDER_AGENT_NOTIFICATION_RULE,
-		WORKORDER_REQUESTER_NOTIFICATION_RULE,
+		WORKORDER_REQUESTER_NOTIFICATION_RULE, //3
 		
 		ALARM_NOTIFICATION_RULE,
 		SLA_RULE (true),
-		ASSIGNMENT_RULE (true),
+		ASSIGNMENT_RULE (true), //6
 		
 		PM_READING_RULE,
 		CUSTOM_ALARM_NOTIFICATION_RULE,
-		VALIDATION_RULE,
+		VALIDATION_RULE, //9
 		
 		ASSET_ACTION_RULE,
 		CUSTOM_WORKORDER_NOTIFICATION_RULE,
-		SCHEDULED_RULE,
+		SCHEDULED_RULE, //12
 		
 		APPROVAL_RULE(true, true),
 		REQUEST_APPROVAL_RULE(true),
-		REQUEST_REJECT_RULE(true),
+		REQUEST_REJECT_RULE(true), //15
 		
 		CHILD_APPROVAL_RULE(true),
 		PM_ALARM_RULE,
-		ALARM_TRIGGER_RULE,
+		ALARM_TRIGGER_RULE(false,false,true), //18
 		
-		ALARM_CLEAR_RULE,
+		ALARM_CLEAR_RULE(false,false,true),
+		WORKORDER_CUSTOM_CHANGE 
 		;
 		//Always add at the end
 		
 		
-		private boolean stopFurtherExecution = false, versionSupported = false;
+		private boolean stopFurtherExecution = false, versionSupported = false,isChildType = false;
 		private RuleType() {
 			// TODO Auto-generated constructor stub
 		}
@@ -327,6 +370,20 @@ public class WorkflowRuleContext implements Serializable {
 			this.versionSupported = versionSupported;
 		}
 		
+		private RuleType(boolean stopFurtherExecution, boolean versionSupported,boolean isChildType) {
+			this.stopFurtherExecution = stopFurtherExecution;
+			this.versionSupported = versionSupported;
+			this.isChildType = isChildType;
+		}
+		
+		public boolean isChildType() {
+			return isChildType;
+		}
+
+		public void setChildType(boolean isChildType) {
+			this.isChildType = isChildType;
+		}
+
 		public int getIntVal() {
 			return ordinal()+1;
 		}

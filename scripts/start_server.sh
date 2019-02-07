@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 echo "starting the server..."
 export UBUNTU_HOME="/home/ubuntu"
 export APP_HOME="$UBUNTU_HOME/tomcat"

@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -39,7 +40,6 @@ import com.facilio.bmsconsole.modules.LookupField;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.modules.NumberField;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
-import com.facilio.bmsconsole.util.ModuleLocalIdUtil;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.DBUtil;
 import com.facilio.sql.GenericDeleteRecordBuilder;
@@ -101,7 +101,8 @@ public class ModuleBeanImpl implements ModuleBean {
 		ResultSet rs = null;
 		try {
 			 conn = getConnection();
-			pstmt = conn.prepareStatement("SELECT m.MODULEID, m.ORGID, m.NAME, m.DISPLAY_NAME, m.TABLE_NAME, m.MODULE_TYPE, m.IS_TRASH_ENABLED, m.DATA_INTERVAL, @em:=m.EXTENDS_ID AS EXTENDS_ID FROM (SELECT * FROM Modules ORDER BY MODULEID DESC) m JOIN (SELECT @em:=MODULEID FROM Modules WHERE ORGID = ? AND MODULEID = ?) tmp WHERE m.MODULEID=@em;");
+			 String sql = DBUtil.getQuery("module.child.id");
+			pstmt = conn.prepareStatement(sql);
 			pstmt.setLong(1, getOrgId());
 			pstmt.setLong(2, moduleId);
 			
@@ -131,7 +132,8 @@ public class ModuleBeanImpl implements ModuleBean {
 		try {
 			 conn = getConnection();
 			 
-			pstmt = conn.prepareStatement("SELECT m.MODULEID, m.ORGID, m.NAME, m.DISPLAY_NAME, m.TABLE_NAME, m.MODULE_TYPE, m.IS_TRASH_ENABLED, m.DATA_INTERVAL, @em:=m.EXTENDS_ID AS EXTENDS_ID FROM (SELECT * FROM Modules ORDER BY MODULEID DESC) m JOIN (SELECT @em:=MODULEID FROM Modules WHERE ORGID = ? AND NAME = ?) tmp WHERE m.MODULEID=@em");
+			 String sql = DBUtil.getQuery("module.child.name");
+			 pstmt = conn.prepareStatement(sql);
 
 			pstmt.setLong(1, getOrgId());
 			pstmt.setString(2, moduleName);
@@ -261,7 +263,7 @@ public class ModuleBeanImpl implements ModuleBean {
 			return LookupSpecialTypeUtil.getSubModules(moduleName, types);
 		}
 		
-		String sql = "SELECT CHILD_MODULE_ID FROM SubModulesRel INNER JOIN Modules childmod ON SubModulesRel.CHILD_MODULE_ID = childmod.MODULEID INNER JOIN (SELECT m.MODULEID, @em:=m.EXTENDS_ID AS EXTENDS_ID FROM (SELECT * FROM Modules ORDER BY MODULEID DESC) m JOIN (SELECT @em:=MODULEID FROM Modules WHERE ORGID = ? AND NAME = ?) tmp WHERE m.MODULEID=@em) parentmod ON SubModulesRel.PARENT_MODULE_ID = parentmod.MODULEID WHERE childmod.MODULE_TYPE IN ("+getTypes(types)+")";
+		String sql = MessageFormat.format(DBUtil.getQuery("module.submodule.get"), getTypes(types));
 		ResultSet rs = null;
 		try(Connection conn = getConnection();PreparedStatement pstmt = conn.prepareStatement(sql)) {
 			pstmt.setLong(1, getOrgId());
@@ -958,11 +960,5 @@ public class ModuleBeanImpl implements ModuleBean {
 		List<Map<String, Object>> fieldProps = selectBuilder.get();
 		List<FacilioField> fields = getFieldFromPropList(fieldProps, moduleMap);
 		return fields;
-	}
-
-	@Override
-	public long getAndUpdateModuleLocalId(String moduleName, int currentSize) throws Exception {
-		// TODO Auto-generated method stub
-		return ModuleLocalIdUtil.getAndUpdateModuleLocalId(moduleName, currentSize);
 	}
 }

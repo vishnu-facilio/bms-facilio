@@ -59,6 +59,4 @@ public interface ModuleBean extends RootBean {
 	public ServicePortalInfo getServicePortalInfo() throws Exception;
 	
 	public JSONObject getStateFlow(String module) throws  Exception;
-	
-	public long getAndUpdateModuleLocalId(String moduleName, int currentSize) throws Exception;
 }

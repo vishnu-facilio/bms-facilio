@@ -8,12 +8,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.chain.Chain;
+import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.AlarmContext;
 import com.facilio.bmsconsole.context.AssetContext;
+import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
@@ -24,8 +29,13 @@ import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.bmsconsole.workflow.rule.AlarmRuleContext;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleAlarmMeta;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
+import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
+import com.facilio.chain.FacilioContext;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.events.constants.EventConstants;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
@@ -37,8 +47,8 @@ public class ReadingRuleAPI extends WorkflowRuleAPI {
 	protected static void addReadingRuleInclusionsExlusions(ReadingRuleContext rule) throws SQLException, RuntimeException {
 		if (rule.getAssetCategoryId() != -1) {
 			List<Map<String, Object>> inclusionExclusionList = new ArrayList<>();
-			getInclusionExclusionList(rule.getId(), rule.getIncludedResources(), true, inclusionExclusionList);
-			getInclusionExclusionList(rule.getId(), rule.getExcludedResources(), false, inclusionExclusionList);
+			getInclusionExclusionList(rule.getRuleGroupId(), rule.getIncludedResources(), true, inclusionExclusionList);
+			getInclusionExclusionList(rule.getRuleGroupId(), rule.getExcludedResources(), false, inclusionExclusionList);
 			
 			if (!inclusionExclusionList.isEmpty()) {
 				GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
@@ -50,13 +60,13 @@ public class ReadingRuleAPI extends WorkflowRuleAPI {
 		}
 	}
 	
-	private static void getInclusionExclusionList(long ruleId, List<Long> resources, boolean isInclude, List<Map<String, Object>> inclusionExclusionList) {
+	private static void getInclusionExclusionList(long ruleGroupId, List<Long> resources, boolean isInclude, List<Map<String, Object>> inclusionExclusionList) {
 		if (resources != null && !resources.isEmpty()) {
 			long orgId = AccountUtil.getCurrentOrg().getId();
 			for (Long resourceId : resources) {
 				Map<String, Object> prop = new HashMap<>();
 				prop.put("orgId", orgId);
-				prop.put("ruleId", ruleId);
+				prop.put("ruleGroupId", ruleGroupId);
 				prop.put("resourceId", resourceId);
 				prop.put("isInclude", isInclude);
 				
@@ -115,13 +125,13 @@ public class ReadingRuleAPI extends WorkflowRuleAPI {
 	private static void fetchInclusionsExclusions (ReadingRuleContext readingRule) throws Exception {
 		FacilioModule module = ModuleFactory.getReadingRuleInclusionsExclusionsModule();
 		List<FacilioField> fields = FieldFactory.getReadingRuleInclusionsExclusionsFields();
-		FacilioField ruleId = FieldFactory.getAsMap(fields).get("ruleId");
+		FacilioField ruleId = FieldFactory.getAsMap(fields).get("ruleGroupId");
 		
 		GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
 																.table(module.getTableName())
 																.select(fields)
 																.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
-																.andCondition(CriteriaAPI.getCondition(ruleId, String.valueOf(readingRule.getId()), PickListOperators.IS));
+																.andCondition(CriteriaAPI.getCondition(ruleId, String.valueOf(readingRule.getRuleGroupId()), PickListOperators.IS));
 		
 		List<Map<String, Object>> props = selectRecordBuilder.get();
 		if (props != null && !props.isEmpty()) {
@@ -199,13 +209,13 @@ public class ReadingRuleAPI extends WorkflowRuleAPI {
 	private static void fetchAlarmMeta (ReadingRuleContext rule) throws Exception {
 		FacilioModule module = ModuleFactory.getReadingRuleAlarmMetaModule();
 		List<FacilioField> fields = FieldFactory.getReadingRuleAlarmMetaFields();
-		FacilioField ruleField = FieldFactory.getAsMap(fields).get("ruleId");
+		FacilioField ruleGroupField = FieldFactory.getAsMap(fields).get("ruleGroupId");
 		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 														.select(fields)
 														.table(module.getTableName())
 														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
-														.andCondition(CriteriaAPI.getCondition(ruleField, String.valueOf(rule.getId()), PickListOperators.IS))
+														.andCondition(CriteriaAPI.getCondition(ruleGroupField, String.valueOf(rule.getRuleGroupId()), PickListOperators.IS))
 														;
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
@@ -248,7 +258,7 @@ public class ReadingRuleAPI extends WorkflowRuleAPI {
 		ReadingRuleAlarmMeta meta = new ReadingRuleAlarmMeta();
 		meta.setOrgId(AccountUtil.getCurrentOrg().getId());
 		meta.setAlarmId(alarmId);
-		meta.setRuleId(rule.getId());
+		meta.setRuleGroupId(rule.getRuleGroupId());
 		meta.setResourceId(resourceId);
 		meta.setReadingFieldId(rule.getReadingFieldId());
 		meta.setClear(false);
@@ -299,7 +309,7 @@ public class ReadingRuleAPI extends WorkflowRuleAPI {
 		
 		new GenericUpdateRecordBuilder()
 			.table(module.getTableName())
-			.fields(FieldFactory.getReadingRuleAlarmMetaFields())
+			.fields(fields)
 			.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 			.andCondition(CriteriaAPI.getCondition(alarmIdField, String.valueOf(alarmId), PickListOperators.IS))
 			.update(prop)
@@ -342,5 +352,86 @@ public class ReadingRuleAPI extends WorkflowRuleAPI {
 		}
 		return readingRuleContexts;
 	}
+	public static void addClearEvent(Object record, Context context, Map<String, Object> placeHolders,ReadingContext reading,ReadingRuleContext readingRuleContext) throws Exception {
+		
+		if(reading == null) {
+			reading = (ReadingContext) record;
+		}
+		Map<Long, ReadingRuleAlarmMeta> alarmMetaMap = (Map<Long, ReadingRuleAlarmMeta>) context.get(FacilioConstants.ContextNames.READING_RULE_ALARM_META);
+		boolean isHistorical = true;
+		if (alarmMetaMap == null) {
+			alarmMetaMap = readingRuleContext.getAlarmMetaMap();
+			isHistorical = false;
+		}
+		
+		ReadingRuleAlarmMeta alarmMeta = alarmMetaMap != null ? alarmMetaMap.get(reading.getParentId()) : null;
+		if (isHistorical) {
+			LOGGER.info("Alarm meta for rule : "+readingRuleContext.getId()+" for resource : "+reading.getParentId()+" at time : "+reading.getTtime()+"::"+alarmMeta);
+		}
+		if (alarmMeta != null && !alarmMeta.isClear()) {
+			alarmMeta.setClear(true);
+			AlarmContext alarm = AlarmAPI.getAlarm(alarmMeta.getAlarmId());
+			
+			JSONObject json = AlarmAPI.constructClearEvent(alarm, "System auto cleared Alarm because associated rule executed false for the associated resource", reading.getTtime());
+			json.put("readingDataId", reading.getId());
+			json.put("readingVal", reading.getReading(readingRuleContext.getReadingField().getName()));
+			
+			if (isHistorical) {
+				LOGGER.info("Clearing alarm for rule : "+readingRuleContext.getId()+" for resource : "+reading.getParentId());
+			}
+			
+			FacilioContext addEventContext = new FacilioContext();
+			addEventContext.put(EventConstants.EventContextNames.EVENT_PAYLOAD, json);
+			Chain getAddEventChain = EventConstants.EventChainFactory.getAddEventChain();
+			getAddEventChain.execute(addEventContext);
+		}
+	}
 	
+	public static void addTriggerAndClearRule(AlarmRuleContext alarmRule) throws Exception {
+		List<ReadingRuleContext> alarmTriggerRules = alarmRule.getAlarmTriggerRules();
+		ReadingRuleContext alarmClear = alarmRule.getAlarmClearRule();
+		ReadingRuleContext preRequsiteRule = alarmRule.getPreRequsite();
+		long ruleId = preRequsiteRule.getId();
+		if(alarmTriggerRules != null) {
+			
+			for(ReadingRuleContext alarmTriggerRule :alarmTriggerRules) {
+				alarmTriggerRule.setId(-1);
+				alarmTriggerRule.setRuleType(WorkflowRuleContext.RuleType.ALARM_TRIGGER_RULE);
+				alarmTriggerRule.setEventId(preRequsiteRule.getEventId());
+			}
+			if(alarmClear != null) {
+				alarmClear.setId(-1);
+				alarmClear.setRuleType(WorkflowRuleContext.RuleType.ALARM_CLEAR_RULE);
+				alarmClear.setEventId(preRequsiteRule.getEventId());
+				alarmTriggerRules.add(alarmClear);
+			}
+			
+			WorkflowRuleContext temp = preRequsiteRule;
+			boolean isFirst = true;
+			int i=0;
+			for(ReadingRuleContext alarmTriggerRule :alarmTriggerRules) {
+				
+				i++;
+				if(isFirst) {
+					isFirst = false;
+					alarmTriggerRule.setOnSuccess(true);
+				}
+				else {
+					alarmTriggerRule.setOnSuccess(false);
+				}
+				alarmTriggerRule.setRuleGroupId(preRequsiteRule.getId());
+				alarmTriggerRule.setParentRuleId(temp.getId());
+				alarmTriggerRule.setStatus(true);
+				alarmTriggerRule.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
+				
+				if(i == alarmTriggerRules.size() && alarmRule.getIsAutoClear()) {
+					alarmTriggerRule.setClearAlarm(true);
+				}
+				ruleId = WorkflowRuleAPI.addWorkflowRule(alarmTriggerRule);
+				
+				temp = alarmTriggerRule;
+			}
+			
+		}
+	}
 }

@@ -70,7 +70,7 @@
   </init-param>
   <init-param>
     <param-name>cors.allowed.headers</param-name>
-    <param-value>Content-Type,X-Requested-With,accept,Accept-Encoding,Accept-Language,Origin,Access-Control-Request-Method,Access-Control-Request-Headers,Referer,User-Agent,Authorization,X-Device-Type,X-App-Version,X-Remote-Screen,X-current-site</param-value>
+    <param-value>Content-Type,X-Requested-With,accept,Accept-Encoding,Accept-Language,Origin,Access-Control-Request-Method,Access-Control-Request-Headers,Referer,User-Agent,Authorization,X-Device-Type,X-App-Version,X-Remote-Screen,X-current-site,X-Permalink-Token</param-value>
   </init-param>
   <init-param>
     <param-name>cors.exposed.headers</param-name>

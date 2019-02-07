@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
@@ -23,9 +25,15 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 
 public class AttachmentsAPI {
+	private static final Logger LOGGER = LogManager.getLogger(AttachmentsAPI.class.getName());
+	
 	public static final void addAttachments(List<AttachmentContext> attachments, String moduleName) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(moduleName);
+		
+		if (AccountUtil.getCurrentOrg().getId() == 155) {
+			LOGGER.info("Inserting rel for attachments : "+attachments);
+		}
 		
 		InsertRecordBuilder<AttachmentContext> attachmentBuilder = new InsertRecordBuilder<AttachmentContext>()
 																	.module(module)

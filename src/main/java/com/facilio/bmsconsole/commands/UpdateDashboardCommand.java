@@ -56,7 +56,7 @@ public class UpdateDashboardCommand implements Command {
 					if(widget.getId() <= 0) {
 						
 						
-						Chain addWidgetChain = FacilioChainFactory.getAddWidgetChain();
+						Chain addWidgetChain = TransactionChainFactory.getAddWidgetChain();
 
 						widget.setDashboardId(dashboard.getId());
 						context.put(FacilioConstants.ContextNames.WIDGET, widget);

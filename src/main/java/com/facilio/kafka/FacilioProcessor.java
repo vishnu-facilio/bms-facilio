@@ -1,9 +1,10 @@
 package com.facilio.kafka;
 
-import com.facilio.aws.util.AwsUtil;
+import java.util.Properties;
+
 import org.apache.kafka.common.serialization.StringDeserializer;
 
-import java.util.Properties;
+import com.facilio.aws.util.AwsUtil;
 
 public abstract class FacilioProcessor implements Runnable {
 

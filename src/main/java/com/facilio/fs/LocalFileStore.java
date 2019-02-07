@@ -12,6 +12,8 @@ import java.util.List;
 
 import org.apache.commons.io.IOUtils;
 
+import com.facilio.aws.util.AwsUtil;
+
 public class LocalFileStore extends FileStore {
 
 	public LocalFileStore(long orgId, long userId) {
@@ -81,7 +83,7 @@ select * from Virtual_Energy_Meter_Rel where VIRTUAL_METER_ID=ENERGYMETER_ID
 	
 	@Override
 	public long addFile(String fileName, File file, String contentType, int[] resize) throws Exception {
-		return 0;
+		return addFile(fileName, file, contentType);
 	}
 	
 	@Override
@@ -120,6 +122,11 @@ select * from Virtual_Energy_Meter_Rel where VIRTUAL_METER_ID=ENERGYMETER_ID
 	public InputStream readFile(long fileId) throws Exception {
 		
 		FileInfo fileInfo = getFileInfo(fileId);
+		return readFile(fileInfo);
+	}
+	
+	@Override
+	public InputStream readFile(FileInfo fileInfo) throws Exception {
 		if (fileInfo == null) {
 			return null;
 		}
@@ -173,20 +180,5 @@ select * from Virtual_Energy_Meter_Rel where VIRTUAL_METER_ID=ENERGYMETER_ID
 		else {
 			return false;
 		}
-	}
-	
-	@Override
-	public String getPrivateUrl(long fileId) throws Exception {
-		return null;
-	}
-
-	@Override
-	public String getPrivateUrl(long fileId, int width) throws Exception {
-		return null;
-	}
-	
-	@Override
-	public String getDownloadUrl(long fileId) throws Exception {
-		return null;
 	}
 }

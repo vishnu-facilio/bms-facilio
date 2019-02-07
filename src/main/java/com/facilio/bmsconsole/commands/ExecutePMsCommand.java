@@ -37,7 +37,7 @@ public class ExecutePMsCommand implements Command {
 					pm.setPmIncludeExcludeResourceContexts(pmIncludeExcludeResourceContexts);
 				}
 					
-				List<WorkOrderContext> wos = bean.addWorkOrderFromPM(pm);
+				List<WorkOrderContext> wos = bean.addWorkOrderFromPM(context, pm);
 				
 				for(WorkOrderContext wo :wos) {
 					if(wo != null) {

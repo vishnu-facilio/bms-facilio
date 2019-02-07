@@ -6,9 +6,9 @@ import org.apache.commons.chain.Command;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
-import com.facilio.bmsconsole.commands.FacilioChainFactory.FacilioChain;
-import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.chain.FacilioChain;
+import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.tasker.job.InstantJob;
 
@@ -20,12 +20,11 @@ public class ForkedChainJob extends InstantJob {
 	public void execute(FacilioContext context) {
 		// TODO Auto-generated method stub
 		try {
-			FacilioChain chain = new FacilioChain(false);
+			FacilioChain chain = FacilioChain.getTransactionChain();
 			List<Command> commands = (List<Command>) context.remove(FacilioConstants.Job.FORKED_COMMANDS);
 			for (Command command : commands) {
 				chain.addCommand(command);
 			}
-			CommonCommandUtil.addCleanUpCommand(chain);
 			chain.execute(context);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

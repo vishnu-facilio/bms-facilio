@@ -23,9 +23,9 @@ import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleCRUDBean;
-import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.bmsconsole.context.SupportEmailContext;
 import com.facilio.bmsconsole.context.TicketContext;
+import com.facilio.bmsconsole.context.TicketStatusContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.context.WorkOrderRequestContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
@@ -34,6 +34,7 @@ import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.bmsconsole.util.SupportEmailAPI;
+import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericSelectRecordBuilder;
@@ -151,6 +152,9 @@ public class WorkOrderRequestEmailParser extends FacilioJob {
 			ticketContext.setSiteId(supportEmail.getSiteId());
 			
 			ticketContext.setSourceType(TicketContext.SourceType.EMAIL_REQUEST);
+			
+			TicketStatusContext preOpenStatus = TicketAPI.getStatus("preopen");
+			ticketContext.setStatus(preOpenStatus);
 			
 			long requestId;
 			if (ticketContext instanceof WorkOrderContext) {

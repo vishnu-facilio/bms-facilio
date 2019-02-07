@@ -296,6 +296,16 @@
 				<param name="root">rateCards</param>
 			</result>
 		</action>
+		
+		<action name="validatePermalink" class="com.facilio.bmsconsole.actions.LoginAction" method="validatePermalink">
+			<param name="auth">false</param>
+			<result name="success" type="json">
+				<param name="includeProperties">^account.*</param>
+			</result>
+			<result name="error" type="json">
+				<param name="includeProperties">^account.*</param>
+			</result>
+		</action>
 	</package>
 	<package name="tvApi" namespace="/api/tv" extends="homeApi">
 		<action name="connect" class="com.facilio.bmsconsole.actions.LoginAction" method="tvAccount">
@@ -626,7 +636,7 @@
 			<param name="permission">CREATE_WO</param>
 			<!-- <param name="permission">WORKORDER_READ</param> -->
 			<result name="success" type="json">
-				<param name="includeProperties">rowsUpdated</param>
+				<param name="includeProperties">rowsUpdated,^workorder.*</param>
 			</result>
 		</action>
 		<action name="updatestatus" class="com.facilio.bmsconsole.actions.AlarmAction"
@@ -2962,6 +2972,50 @@
 		<action name="checkImport" class="com.facilio.bmsconsole.actions.ImportDataAction" method="checkImportStatus">
 			<result name="success" type="json">
 				<param name="properties">im.*</param>
+			</result>
+			<result name="error" type="json">
+				<param name="statusCode">500</param>
+			</result>
+		</action>
+		<action name="beginimportvalidation" class="com.facilio.bmsconsole.actions.ImportDataAction" method="beginImportValidation">
+			<result name="success" type="json">
+				<param name="statusCode">200</param>
+			</result>
+			<result name="error" type="json">
+				<param name="statusCode">500</param>
+			</result>
+		</action>
+		<action name="fetchdataforValidation" class="com.facilio.bmsconsole.actions.ImportDataAction" method="fetchDataForValidation">
+			<result name="success" type="json">
+				<param name="statusCode">200</param>
+				<param name="properties">records,records\[\d+\],records\[\d+\].*</param>
+			</result>
+			<result name="error" type="json">
+				<param name="statusCode">500</param>
+			</result>
+		</action>
+		<action name="fetchallunvalidated" class="com.facilio.bmsconsole.actions.ImportDataAction" method="fetchAllUnvalidated">
+			<result name="success" type="json">
+				<param name="statusCode">200</param>
+				<param name="properties">unvalidatedRecords,unvalidatedRecords\[\d+\],unvalidatedRecords\[\d+\].*</param>
+			</result>
+			<result name="error" type="json">
+				<param name="statusCode">500</param>
+			</result>
+		</action>
+		<action name="fetchimporthistory" class="com.facilio.bmsconsole.actions.ImportDataAction" method="fetchImportHistory">
+			<result name="success" type="json">
+				<param name="statusCode">200</param>
+				<param name="properties">records,records\[\d+\],records\[\d+\].*</param>
+			</result>
+			<result name="error" type="json">
+				<param name="statusCode">500</param>
+			</result>
+		</action>
+		<action name="validateddata" class="com.facilio.bmsconsole.actions.ImportDataAction" method="finishValidation">
+			<result name="success" type="json">
+				<param name="statusCode">200</param>
+				<param name="properties">importProcessContext.*</param>
 			</result>
 			<result name="error" type="json">
 				<param name="statusCode">500</param>

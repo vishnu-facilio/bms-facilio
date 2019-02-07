@@ -148,7 +148,12 @@ public class PortfolioAction extends ActionSupport {
 		Map <Long, Long> buildingVsMeter = DeviceAPI.getMainEnergyMeterForAllBuildings(siteIds);
 		String deviceList=StringUtils.join(buildingVsMeter.values(),",");
 		String buildingList=StringUtils.join(buildingVsMeter.keySet(),",");
-		List<BuildingContext> buildings=SpaceAPI.getBuildingSpace(buildingList);
+		List<BuildingContext> buildings;
+		if (!buildingList.isEmpty()) {
+			buildings=SpaceAPI.getBuildingSpace(buildingList);
+		} else {
+			buildings = new ArrayList<>();
+		}
 		result.put("buildingCount", buildings.size());
 		
 		long prevStartTime=DateTimeUtil.getMonthStartTime(-1);

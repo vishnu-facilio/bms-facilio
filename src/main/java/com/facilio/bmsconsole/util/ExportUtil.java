@@ -21,7 +21,6 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.AlarmContext.AlarmType;
@@ -34,6 +33,7 @@ import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.LookupField;
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.bmsconsole.view.FacilioView;
+import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fs.FileInfo.FileFormat;
 import com.facilio.fs.FileStore;
@@ -121,7 +121,7 @@ public class ExportUtil {
 		FileStore fs = FileStoreFactory.getInstance().getFileStore();
 		long fileId = fs.addFile(file.getPath(), file, "application/xls");
 
-		return fs.getPrivateUrl(fileId);
+		return fs.getDownloadUrl(fileId);
 	}
 	
 	public static String exportDataAsXLS(String name, Map<String,Object> table) throws Exception 
@@ -203,7 +203,7 @@ public class ExportUtil {
 		File file = new File(fileName);
 		FileStore fs = FileStoreFactory.getInstance().getFileStore();
 		long fileId = fs.addFile(file.getPath(), file, "application/xls");
-		return fs.getPrivateUrl(fileId);
+		return fs.getDownloadUrl(fileId);
 	}
 	
 	private static void autoSizeColumns(HSSFSheet sheet) {
@@ -275,7 +275,7 @@ public class ExportUtil {
 	    FileStore fs = FileStoreFactory.getInstance().getFileStore();
 	    long fileId = fs.addFile(file.getPath(), file, "application/csv");
 	    
-	    return fs.getPrivateUrl(fileId);
+	    return fs.getDownloadUrl(fileId);
     }
 	
 	@SuppressWarnings("unchecked")
@@ -358,7 +358,7 @@ public class ExportUtil {
 	    FileStore fs = FileStoreFactory.getInstance().getFileStore();
 	    long fileId = fs.addFile(file.getPath(), file, "application/csv");
 	    
-	    return fs.getPrivateUrl(fileId);
+	    return fs.getDownloadUrl(fileId);
     }
 
 	private static Object getFormattedValue(Map<String, Map<Long, Object>> modVsData, FacilioField field, Object value) {

@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.Map;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
@@ -14,6 +15,7 @@ import com.facilio.bmsconsole.modules.NumberField;
 import com.facilio.bmsconsole.util.DateTimeUtil;
 import com.facilio.collections.UniqueMap;
 import com.facilio.fw.BeanFactory;
+import com.facilio.sql.DBUtil;
 
 public class FormulaContext {
 
@@ -168,13 +170,13 @@ public class FormulaContext {
 				case ACTUAL: 
 					return field.clone();
 				case COUNT:
-					String selectFieldString = expr.replace("{$place_holder$}", field.getColumnName());
-					field = new NumberField();
-					field.setDataType(FieldType.NUMBER);
-					field.setName(field.getName());
-					field.setDisplayName(field.getDisplayName());
-					field.setColumnName(selectFieldString);
-					return field;
+					String selectFieldString = expr.replace("{$place_holder$}", field.getCompleteColumnName());
+					NumberField field1 = new NumberField();
+					field1.setDataType(FieldType.NUMBER);
+					field1.setName(field.getName());
+					field1.setDisplayName(field.getDisplayName());
+					field1.setColumnName(selectFieldString);
+					return field1;
 			}
 			return field;
 //			if(field instanceof NumberField) {
@@ -219,7 +221,7 @@ public class FormulaContext {
 		}
 		
 		public FacilioField getSelectField(FacilioField field) throws Exception {
-			String selectFieldString = expr.replace("{$place_holder$}", field.getColumnName());
+			String selectFieldString = expr.replace("{$place_holder$}", field.getCompleteColumnName());
 			FacilioField selectField = null;
 			if(field instanceof NumberField) {
 				NumberField numberField =  (NumberField)field;
@@ -258,7 +260,7 @@ public class FormulaContext {
 			this.expr = expr;
 		}
 		public FacilioField getSelectField(FacilioField field) throws Exception {
-			String selectFieldString =expr.replace("{$place_holder$}", field.getColumnName());
+			String selectFieldString =expr.replace("{$place_holder$}", field.getCompleteColumnName());
 			
 			FacilioField selectField =  new FacilioField();
 			selectField.setName(field.getName());
@@ -271,18 +273,18 @@ public class FormulaContext {
 	
 	public enum DateAggregateOperator implements AggregateOperator {
 		
-		YEAR(8,"Yearly","DATE_FORMAT(CONVERT_TZ(from_unixtime(floor({$place_holder$}/1000)),@@session.time_zone,'{$place_holder1$}'),'%Y')",true), //Yearly aggregation
-		MONTHANDYEAR(10,"monthAndYear","DATE_FORMAT(CONVERT_TZ(from_unixtime(floor({$place_holder$}/1000)),@@session.time_zone,'{$place_holder1$}'),'%Y %m')", "MMMM yyyy",false), //Monthly aggregation
-		WEEKANDYEAR(11,"weekAndYear","DATE_FORMAT(CONVERT_TZ(from_unixtime(floor({$place_holder$}/1000)),@@session.time_zone,'{$place_holder1$}'),'%Y %V')",false), //Weekly aggregation 
-		FULLDATE(12,"daily","DATE_FORMAT(CONVERT_TZ(from_unixtime(floor({$place_holder$}/1000)),@@session.time_zone,'{$place_holder1$}'),'%Y %m %d')", "EEEE, MMMM dd, yyyy",true), //Daily Aggregation
-		DATEANDTIME(13,"dateAndTime","DATE_FORMAT(CONVERT_TZ(from_unixtime(floor({$place_holder$}/1000)),@@session.time_zone,'{$place_holder1$}'),'%Y %m %d %H:%i')",false), //Hourly aggregation
-		MONTH(15,"Monthly","DATE_FORMAT(CONVERT_TZ(from_unixtime(floor({$place_holder$}/1000)),@@session.time_zone,'{$place_holder1$}'),'%m')",true), //Monthly aggregation
-		WEEK(16,"Week","DATE_FORMAT(CONVERT_TZ(from_unixtime(floor({$place_holder$}/1000)),@@session.time_zone,'{$place_holder1$}'),'%V')",false), //Weekly aggregation
-		WEEKDAY(17,"Weekly","DATE_FORMAT(CONVERT_TZ(from_unixtime(floor({$place_holder$}/1000)),@@session.time_zone,'{$place_holder1$}'),'%w')",true), //Daily aggregation
-		DAYSOFMONTH(18,"Daily","DATE_FORMAT(CONVERT_TZ(from_unixtime(floor({$place_holder$}/1000)),@@session.time_zone,'{$place_holder1$}'),'%d')", "EEEE, MMMM dd, yyyy",false), //Daily
-		HOURSOFDAY(19,"hoursOfDay","DATE_FORMAT(CONVERT_TZ(from_unixtime(floor({$place_holder$}/1000)),@@session.time_zone,'{$place_holder1$}'),'%H')", "EEE, MMM dd, yyyy hh a",false), //Hourly
-		HOURSOFDAYONLY(20,"Hourly","DATE_FORMAT(CONVERT_TZ(from_unixtime(floor({$place_holder$}/1000)),@@session.time_zone,'{$place_holder1$}'),'%Y %m %d %H')", "EEE, MMM dd, yyyy hh a",true), //Hourly
-		QUARTERLY(25,"Quarterly","YEAR(CONVERT_TZ(from_unixtime(floor({$place_holder$}/1000)),@@session.time_zone,'{$place_holder1$}')), QUARTER(CONVERT_TZ(from_unixtime(floor({$place_holder$}/1000)),@@session.time_zone,'{$place_holder1$}'))", "MMMM yyyy",false), //Quarterly
+		YEAR(8,"Yearly","year.expr",true), //Yearly aggregation
+		MONTHANDYEAR(10,"monthAndYear","monthandyear.expr", "MMMM yyyy",false), //Monthly aggregation
+		WEEKANDYEAR(11,"weekAndYear","weekandyear.expr",false), //Weekly aggregation
+		FULLDATE(12,"daily","fulldate.expr", "EEEE, MMMM dd, yyyy",true), //Daily Aggregation
+		DATEANDTIME(13,"dateAndTime","dateandtime.expr",false), //Hourly aggregation
+		MONTH(15,"Monthly","month.expr",true), //Monthly aggregation
+		WEEK(16,"Week","week.expr",false), //Weekly aggregation
+		WEEKDAY(17,"Weekly","weekday.expr",true), //Daily aggregation
+		DAYSOFMONTH(18,"Daily","daysofmonth.expr", "EEEE, MMMM dd, yyyy",false), //Daily
+		HOURSOFDAY(19,"hoursOfDay","hoursofday.expr", "EEE, MMM dd, yyyy hh a",false), //Hourly
+		HOURSOFDAYONLY(20,"Hourly","hoursofdayonly.expr", "EEE, MMM dd, yyyy hh a",true), //Hourly
+		QUARTERLY(25,"Quarterly","quaterly.expr", "MMMM yyyy",false), //Quarterly
 		;
 		
 		private int value;
@@ -303,24 +305,18 @@ public class FormulaContext {
 			return format;
 		}
 		DateAggregateOperator(Integer value,String stringValue,String expr,boolean isPublic) {
-			this.value = value;
-			this.stringValue = stringValue;
-			this.expr = expr;
-			this.isPublic = isPublic;
+			this(value, stringValue, expr, null, isPublic);
 		}
 		DateAggregateOperator(Integer value,String stringValue,String expr, String format,boolean isPublic) {
 			this.value = value;
 			this.stringValue = stringValue;
-			this.expr = expr;
+			this.expr = DBUtil.getQuery(expr);
 			this.format = format;
 			this.isPublic = isPublic;
 		}
 		public FacilioField getSelectField(FacilioField field) throws Exception {
-			String selectFieldString =expr.replace("{$place_holder$}", field.getColumnName());
-			String timeZone = AccountUtil.getCurrentOrg().getTimezone();
-			if(timeZone == null) {
-				timeZone = "UTC";
-			}
+			String selectFieldString = expr.replace("{$place_holder$}", field.getCompleteColumnName());
+			String timeZone = getTimeZoneString();
 			selectFieldString = selectFieldString.replace("{$place_holder1$}",timeZone);
 			
 			FacilioField selectField =  new FacilioField();
@@ -340,6 +336,20 @@ public class FormulaContext {
 			return selectField;
 		}
 		
+		private String getTimeZoneString() {
+			String db = AwsUtil.getDB();
+			if (db.equalsIgnoreCase("mysql")) {
+				String timeZone = AccountUtil.getCurrentOrg().getTimezone();
+				if(timeZone == null) {
+					timeZone = "UTC";
+				}
+				return timeZone;
+			} else if (db.equalsIgnoreCase("mssql")) {
+				return DateTimeUtil.getDateTime().getOffset().toString().equalsIgnoreCase("Z") ? "0": String.valueOf(DateTimeUtil.getDateTime().getOffset().getTotalSeconds());
+			}
+			throw new IllegalArgumentException("Invalid db");
+		}
+
 		public long getAdjustedTimestamp(long time) {
 			switch (this) {
 				case YEAR:

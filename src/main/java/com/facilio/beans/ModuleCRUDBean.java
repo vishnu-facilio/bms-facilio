@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
 import com.amazonaws.services.kinesis.clientlibrary.interfaces.IRecordProcessorCheckpointer;
@@ -38,9 +39,9 @@ public interface ModuleCRUDBean {
 	
 	public int updateAlarmFromJson(JSONObject alarmInfo, List<Long> ids) throws Exception;
 	
-	public List<WorkOrderContext> addWorkOrderFromPM(PreventiveMaintenance pm) throws Exception;
+	public List<WorkOrderContext> addWorkOrderFromPM(Context context, PreventiveMaintenance pm) throws Exception;
 	
-	public List<WorkOrderContext> addWorkOrderFromPM(PreventiveMaintenance pm, long templateId) throws Exception;
+	public List<WorkOrderContext> addWorkOrderFromPM(Context context, PreventiveMaintenance pm, long templateId) throws Exception;
 	
 	public void deleteAllData (String moduleName) throws Exception;
 	
@@ -48,7 +49,7 @@ public interface ModuleCRUDBean {
 			Map<String, Integer> eventCountMap, long lastEventTime, String partitionKey) throws Exception ;
 	
 	public void processTimeSeries(long timeStamp, JSONObject payLoad, Record record, 
-			IRecordProcessorCheckpointer checkpointer) throws Exception;
+			IRecordProcessorCheckpointer checkpointer, boolean adjustTime) throws Exception;
 	
 	public void processTimeSeries(FacilioConsumer consumer, FacilioRecord record) throws Exception;
 	

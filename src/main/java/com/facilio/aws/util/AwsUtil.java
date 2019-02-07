@@ -35,7 +35,6 @@ import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 import javax.mail.internet.MimeUtility;
 
-import com.facilio.email.EmailUtil;
 import org.apache.http.HttpEntity;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
@@ -97,6 +96,7 @@ import com.amazonaws.services.simpleemail.model.SendRawEmailRequest;
 import com.amazonaws.services.sqs.AmazonSQS;
 import com.amazonaws.services.sqs.AmazonSQSClientBuilder;
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.email.EmailUtil;
 import com.facilio.sql.DBUtil;
 import com.facilio.transaction.FacilioConnectionPool;
 
@@ -139,6 +139,9 @@ public class AwsUtil
 	private static boolean productionEnvironment = false;
 	private static boolean developmentEnvironment = true;
 	private static boolean disableCSP = false;
+
+	private static String db;
+	private static String dbClass;
 
 	static {
 		loadProperties();
@@ -819,5 +822,27 @@ public class AwsUtil
 
 	public static String getServerName() {
 		return SERVERNAME;
+	}
+	
+	public static String getDB() {
+		if (db == null) {
+			synchronized (LOCK) {
+				if (db == null) {
+					db = AwsUtil.getConfig("db.name");
+				}
+			}
+		}
+		return db;
+	}
+	
+	public static String getDBClass() {
+		if (dbClass == null) {
+			synchronized (LOCK) {
+				if (dbClass == null) {
+					dbClass = AwsUtil.getConfig("db.class");
+				}
+			}
+		}
+		return dbClass;
 	}
 }

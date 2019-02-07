@@ -22,7 +22,6 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import com.facilio.kafka.KafkaProcessor;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.flywaydb.core.Flyway;
@@ -35,9 +34,12 @@ import org.xml.sax.SAXException;
 
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.criteria.Operator;
+import com.facilio.bmsconsole.templates.Template;
+import com.facilio.bmsconsole.util.TemplateAPI;
 import com.facilio.cache.RedisManager;
 import com.facilio.filters.HealthCheckFilter;
 import com.facilio.fw.BeanFactory;
+import com.facilio.kafka.KafkaProcessor;
 import com.facilio.kinesis.KinesisProcessor;
 import com.facilio.logging.SysOutLogger;
 import com.facilio.queue.FacilioExceptionProcessor;
@@ -97,6 +99,7 @@ public class FacilioContextListener implements ServletContextListener {
 
 		initDBConnectionPool();
 		Operator.OPERATOR_MAP.get(1);
+		TemplateAPI.getDefaultTemplate(1);
 		try {
 			try {
 				migrateSchemaChanges();
@@ -130,9 +133,9 @@ public class FacilioContextListener implements ServletContextListener {
 				log.info("Custom domains loaded " + customDomains);
 			}
 			
-			if(AwsUtil.isDevelopment() || AwsUtil.disableCSP()) {
+			/*if(AwsUtil.isDevelopment() || AwsUtil.disableCSP()) {
 				initializeDB();
-			}
+			}*/
 
 			try {
 				if(AwsUtil.isProduction() && ("true".equalsIgnoreCase(AwsUtil.getConfig("enable.kinesis"))) && "true".equalsIgnoreCase(AwsUtil.getConfig("kinesisServer"))) {
@@ -170,16 +173,16 @@ public class FacilioContextListener implements ServletContextListener {
 		
 	}
 
-	private void initializeDB() {
-		createTables("conf/leedconsole.sql");
-		createTables("conf/eventconsole.sql");
-	}
+	/*private void initializeDB() {
+//		createTables("conf/leedconsole.sql");
+		//createTables("conf/db/" + AwsUtil.getDB() + "/eventconsole.sql");
+	}*/
 
 	private void createTables(String fileName) {
 		URL url = SQLScriptRunner.class.getClassLoader().getResource(fileName);
 		if(url != null) {
 			File file = new File(url.getFile());
-			SQLScriptRunner scriptRunner = new SQLScriptRunner(file, true, null);
+			SQLScriptRunner scriptRunner = new SQLScriptRunner(file, true, null, DBUtil.getDBSQLScriptRunnerMode());
 			try {
 				scriptRunner.runScript();
 			} catch (Exception e) {
@@ -213,6 +216,7 @@ public class FacilioContextListener implements ServletContextListener {
 		DataSource ds = FacilioConnectionPool.getInstance().getDataSource();
 		long startTime = System.currentTimeMillis();
 		Flyway flyway = new Flyway();
+		flyway.setLocations("db/migration/" + AwsUtil.getDB());
 		flyway.setDataSource(ds);
 		flyway.setBaselineOnMigrate(true);
 		int mig_status = flyway.migrate();

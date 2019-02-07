@@ -249,7 +249,17 @@ public class FetchReportDataCommand implements Command {
 		
 		if (dp.getGroupByFields() != null && !dp.getGroupByFields().isEmpty()) {
 			for (ReportGroupByField groupByField : dp.getGroupByFields()) {
-				fields.add(groupByField.getField());
+				if (groupByField.getField() == null) {
+					ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+					groupByField.setField(modBean.getField(groupByField.getFieldId()));
+				}
+				
+				FacilioField gField = groupByField.getField();
+				
+				if (groupByField.getAggrEnum() != null) {
+					gField = groupByField.getAggrEnum().getSelectField(gField);
+				}
+				fields.add(gField);
 				
 				FacilioModule groupByModule = groupByField.getField().getModule();
 				if (!addedModules.contains(groupByModule)) {
@@ -257,7 +267,7 @@ public class FetchReportDataCommand implements Command {
 					applyJoin(groupByField.getJoinOn(), groupByModule, selectBuilder);
 					addedModules.add(groupByModule);
 				}
-				groupBy.add(groupByField.getField().getCompleteColumnName());
+				groupBy.add(gField.getCompleteColumnName());
 			}
 		}
 		

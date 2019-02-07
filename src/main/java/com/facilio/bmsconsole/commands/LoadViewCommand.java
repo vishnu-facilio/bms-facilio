@@ -177,12 +177,22 @@ public class LoadViewCommand implements Command {
 		return field.getSortField().getColumnName() + " " + (field.getIsAscending()? "asc" : "desc");
 	}
 	
+
 	private void setFieldDisplayNames(String moduleName, FacilioView view) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		List<FacilioField> fields = modBean.getAllFields(moduleName);
-		Map<String, ViewField> fieldMap = null;
+		Map<String, ViewField> fieldMap = new HashMap<>();
+//		if (view.getFields() != null) {
+//			fieldMap = view.getFields().stream().collect(Collectors.toMap(vf -> vf.getField().getName(), Function.identity()));
+//		}
 		if (view.getFields() != null) {
-			fieldMap = view.getFields().stream().collect(Collectors.toMap(vf -> vf.getField().getName(), Function.identity()));
+			for(int i=0;i<view.getFields().size();i++) {
+			String modulesName;
+			String fieldsName;
+			modulesName = view.getFields().get(i).getField().getModule().getName();
+			fieldsName = view.getFields().get(i).getName();
+			fieldMap.put(fieldsName + modulesName, view.getFields().get(i));
+			}
 		}
 		Map<String, String> fieldNames = null;
 		if (fields != null) {

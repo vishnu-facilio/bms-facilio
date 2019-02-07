@@ -9,6 +9,7 @@ import java.util.Map;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.PMJobsContext;
 import com.facilio.bmsconsole.context.PMReminder;
 import com.facilio.bmsconsole.context.PMReminder.ReminderType;
@@ -79,7 +80,11 @@ public class scheduleBeforePMRemindersCommand implements Command {
 	private void scheduleBeforePMRemindersForMultiplePM(PreventiveMaintenance pm,Map<String,PMJobsContext> scheduledPMJobMap) throws Exception {
 		
 		if(pm.getReminders() != null && !pm.getReminders().isEmpty()) {
-			List<Long> resourceIds = PreventiveMaintenanceAPI.getMultipleResourceToBeAddedFromPM(pm.getAssignmentTypeEnum(),pm.getBaseSpaceId(),pm.getSpaceCategoryId(),pm.getAssetCategoryId(),null,pm.getPmIncludeExcludeResourceContexts());
+			Long baseSpaceId = pm.getBaseSpaceId();
+			if (baseSpaceId == null || baseSpaceId < 0) {
+				baseSpaceId = pm.getSiteId();
+			}
+			List<Long> resourceIds = PreventiveMaintenanceAPI.getMultipleResourceToBeAddedFromPM(pm.getAssignmentTypeEnum(),baseSpaceId,pm.getSpaceCategoryId(),pm.getAssetCategoryId(),null,pm.getPmIncludeExcludeResourceContexts());
 			
 			Map<Long, PMReminder> pmReminderMap = getPMReminderMap(pm.getReminders());
 			
@@ -116,6 +121,9 @@ public class scheduleBeforePMRemindersCommand implements Command {
 				for(PMReminder reminder :reminders) {
 					if(reminder.getTypeEnum().equals(PMReminder.ReminderType.BEFORE_EXECUTION) && pmTriggerContext != null) {
 						PMJobsContext pmJob = scheduledPMJobMap.get(resourceId+"-"+pmTriggerContext.getId());
+						if (pmJob == null) {
+							CommonCommandUtil.emailAlert("Invalid State! pmjob should not be null", "scheduledPMJobMap = " + scheduledPMJobMap.toString() + " resourceid = " + resourceId + " TriggerId = " + pmTriggerContext.getId());
+						}
 						PreventiveMaintenanceAPI.schedulePrePMReminder(reminder, pmJob.getNextExecutionTime(), pmTriggerContext.getId(),resourceId);
 					}
 				}

@@ -7,9 +7,9 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
-import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.ActionForm;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
+import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 
 @SuppressWarnings("serial")

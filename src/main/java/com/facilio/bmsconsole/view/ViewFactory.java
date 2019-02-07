@@ -185,30 +185,38 @@ public class ViewFactory {
 		order = 1;
 		views = new LinkedHashMap<>();
 		FacilioView preventiveView = getStatusPreventiveWorkOrders("active", "Active", true).setOrder(order++);
+		preventiveView.setModuleName(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE);
 		views.put(preventiveView.getName(), preventiveView);
 		preventiveView = getTypePreventiveWorkOrders("preventive", "Preventive", "Preventive").setOrder(order++);
+		preventiveView.setModuleName(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE);
 		views.put(preventiveView.getName(), preventiveView);
 		preventiveView = getTypePreventiveWorkOrders("corrective", "Corrective", "Corrective").setOrder(order++);
+		preventiveView.setModuleName(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE);
 		views.put(preventiveView.getName(), preventiveView);
 		preventiveView = getTypePreventiveWorkOrders("rounds", "Rounds", "Rounds").setOrder(order++);
+		preventiveView.setModuleName(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE);
 		views.put(preventiveView.getName(), preventiveView);
 		preventiveView = getTypePreventiveWorkOrders("breakdown", "Breakdown", "Breakdown").setOrder(order++);
+		preventiveView.setModuleName(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE);
 		views.put(preventiveView.getName(), preventiveView);
 		preventiveView = getTypePreventiveWorkOrders("compliance", "Compliance", "Compliance").setOrder(order++);
+		preventiveView.setModuleName(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE);
 		views.put(preventiveView.getName(), preventiveView);
 		preventiveView = getAllPreventiveWorkOrders().setOrder(order++);
+		preventiveView.setModuleName(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE);
 		views.put(preventiveView.getName(), preventiveView);
 		preventiveView = getStatusPreventiveWorkOrders("inactive", "Inactive", false).setOrder(order++);
+		preventiveView.setModuleName(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE);
 		views.put(preventiveView.getName(), preventiveView);
 		viewsMap.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE, views);
-
+		
 		order = 1;
 		views = new LinkedHashMap<>();
 		views.put("all", getAllInventory().setOrder(order++));
 		views.put("stale", getStalePartsView().setOrder(order++));
 		views.put("understocked", getUnderStockedPartsView().setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.INVENTORY, views);
-		
+
 		return viewsMap;
 	}
 
@@ -561,7 +569,7 @@ public class ViewFactory {
 		return open;
 	}
 
-	private static Criteria getCloseStatusCriteria() {
+	public static Criteria getCloseStatusCriteria() {
 		FacilioField statusTypeField = new FacilioField();
 		statusTypeField.setName("typeCode");
 		statusTypeField.setColumnName("STATUS_TYPE");
@@ -880,7 +888,7 @@ public class ViewFactory {
 		return openTicketsView;
 	}
 
-	private static Criteria getClosedTicketsCriteria(FacilioModule module) {
+	public static Criteria getClosedTicketsCriteria (FacilioModule module) {
 		LookupField statusField = new LookupField();
 		statusField.setName("status");
 		statusField.setColumnName("STATUS_ID");
@@ -1925,40 +1933,40 @@ public class ViewFactory {
 
 		return allView;
 	}
-	
+
 	private static Criteria getStalePartsCriteria(FacilioModule module) {
 		NumberField modifiedTime = new NumberField();
 		modifiedTime.setName("modifiedTime");
 		modifiedTime.setColumnName("MODIFIED_TIME");
 		modifiedTime.setDataType(FieldType.NUMBER);
 		modifiedTime.setModule(module);
-		
+
 		Long currTime = DateTimeUtil.getCurrenTime();
 		Long twoMonthInMillis = 5184000000l;
 
 		Condition staleParts = new Condition();
 		staleParts.setField(modifiedTime);
 		staleParts.setOperator(NumberOperators.LESS_THAN);
-		staleParts.setValue(currTime-twoMonthInMillis+"");
-		
+		staleParts.setValue(currTime - twoMonthInMillis + "");
+
 		Criteria criteria = new Criteria();
 		criteria.addAndCondition(staleParts);
 		return criteria;
 	}
-	
+
 	private static Criteria getUnderstockedPartCriteria(FacilioModule module) {
 		FacilioField quantity = new NumberField();
 		quantity.setName("quantity");
 		quantity.setColumnName("QUANTITY");
 		quantity.setDataType(FieldType.NUMBER);
 		quantity.setModule(module);
-		
+
 		FacilioField minimumQuantity = new FacilioField();
 		minimumQuantity.setName("minimumQuantity");
 		minimumQuantity.setColumnName("MINIMUM_QUANTITY");
 		minimumQuantity.setDataType(FieldType.NUMBER);
 		minimumQuantity.setModule(module);
-		
+
 		Condition ticketClose = new Condition();
 		ticketClose.setField(quantity);
 		ticketClose.setOperator(NumberOperators.LESS_THAN);
@@ -1968,7 +1976,7 @@ public class ViewFactory {
 		criteria.addAndCondition(ticketClose);
 		return criteria;
 	}
-	
+
 	private static FacilioView getStalePartsView() {
 
 		Criteria criteria = getStalePartsCriteria(ModuleFactory.getInventoryModule());
@@ -1986,7 +1994,7 @@ public class ViewFactory {
 		staleParts.setSortFields(Arrays.asList(new SortField(createdTime, false)));
 		return staleParts;
 	}
-	
+
 	private static FacilioView getUnderStockedPartsView() {
 
 		Criteria criteria = getUnderstockedPartCriteria(ModuleFactory.getInventoryModule());

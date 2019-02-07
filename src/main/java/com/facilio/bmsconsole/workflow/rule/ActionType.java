@@ -8,8 +8,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Context;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
@@ -22,7 +24,6 @@ import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.AlarmContext;
@@ -43,6 +44,7 @@ import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.FieldUtil;
+import com.facilio.bmsconsole.modules.LookupField;
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
@@ -55,6 +57,7 @@ import com.facilio.bmsconsole.util.SMSUtil;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.util.WorkOrderAPI;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
+import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.events.constants.EventConstants;
 import com.facilio.events.context.EventContext;
@@ -237,8 +240,7 @@ public enum ActionType {
 					}
 
 					if (currentRule instanceof ReadingRuleContext) {
-						AlarmAPI.addReadingAlarmProps(obj, (ReadingRuleContext) currentRule,
-								(ReadingContext) currentRecord);
+						AlarmAPI.addReadingAlarmProps(obj, (ReadingRuleContext) currentRule,(ReadingContext) currentRecord);
 					}
 
 					FacilioContext addEventContext = new FacilioContext();
@@ -314,15 +316,17 @@ public enum ActionType {
 				if (obj != null) {
 					String ids = (String) obj.get("id");
 
-					if (ids != null) {
+					if (!StringUtils.isEmpty(ids)) {
 						List<String> mobileInstanceIds = getMobileInstanceIDs(ids);
-
+						LOGGER.info("Sending push notifications for ids : "+ids);
+						LOGGER.info("Sending push notifications for mobileIds : "+mobileInstanceIds);
 						if (mobileInstanceIds != null && !mobileInstanceIds.isEmpty()) {
 							for (String mobileInstanceId : mobileInstanceIds) {
 								if (mobileInstanceId != null) {
 									// content.put("to",
 									// "exA12zxrItk:APA91bFzIR6XWcacYh24RgnTwtsyBDGa5oCs5DVM9h3AyBRk7GoWPmlZ51RLv4DxPt2Dq2J4HDTRxW6_j-RfxwAVl9RT9uf9-d9SzQchMO5DHCbJs7fLauLIuwA5XueDuk7p5P7k9PfV");
 									obj.put("to", mobileInstanceId);
+									
 									Map<String, String> headers = new HashMap<>();
 									headers.put("Content-Type", "application/json");
 									headers.put("Authorization",
@@ -331,8 +335,8 @@ public enum ActionType {
 									String url = "https://fcm.googleapis.com/fcm/send";
 
 									AwsUtil.doHttpPost(url, headers, null, obj.toJSONString());
-									System.out.println("Push notification sent");
-									System.out.println(obj.toJSONString());
+//									System.out.println("Push notification sent");
+//									System.out.println(obj.toJSONString());
 								}
 							}
 						}
@@ -367,6 +371,7 @@ public enum ActionType {
 			GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder().select(fields).table("Users")
 					.innerJoin("ORG_Users").on("Users.USERID = ORG_Users.USERID").innerJoin("User_Mobile_Setting")
 					.on("ORG_Users.USERID = User_Mobile_Setting.USERID")
+					.andCondition(CriteriaAPI.getCurrentOrgIdCondition(AccountConstants.getOrgUserModule()))
 					.andCondition(CriteriaAPI.getCondition("ORG_Users.ORG_USERID", "ouid", idList, NumberOperators.EQUALS))
 					.andCustomWhere("ORG_Users.USER_STATUS = true and ORG_Users.DELETED_TIME = -1")
 					.orderBy("USER_MOBILE_SETTING_ID");
@@ -634,7 +639,19 @@ public enum ActionType {
 			for (Object key : obj.keySet()) {
 				FacilioField field = modBean.getField((String) key, event.getModule().getName());
 				if (field != null) {
-					fields.add(field);
+					Object val = obj.get(key);
+					if (val != null) {
+						if (field.getDataTypeEnum() == FieldType.LOOKUP) {
+							val = FieldUtil.getEmptyLookupVal((LookupField) field, Long.parseLong(val.toString()));
+						}
+						fields.add(field);
+						if (field.isDefault()) {
+							BeanUtils.setProperty(currentRecord, field.getName(), val);
+						}
+						else {
+							((ModuleBaseWithCustomFields) currentRecord).setDatum(field.getName(), val);
+						}
+					}
 				}
 			}
 			
@@ -668,11 +685,11 @@ public enum ActionType {
 		}
 		
 	},
-	CLEAR_ALARM(15) {
+	CLEAR_ALARM(15,false) {
 
 		@Override
 		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule, Object currentRecord) throws Exception {
-			
+//			ReadingRuleAPI.addClearEvent(currentRecord, context, obj, (ReadingContext) currentRecord, (ReadingRuleContext)currentRule);
 		}
 	},
 	;
@@ -682,13 +699,18 @@ public enum ActionType {
 	private ActionType(int val) {
 		this.val = val;
 	}
+	
+	private ActionType(int val,boolean isTemplateNeeded) {
+		this.val = val;
+		this.isTemplateNeeded = isTemplateNeeded;
+	}
 
 	public int getVal() {
 		return val;
 	}
-	
+	boolean isTemplateNeeded = true;
 	public boolean isTemplateNeeded() {
-		return true;
+		return isTemplateNeeded;
 	}
 
 	abstract public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,

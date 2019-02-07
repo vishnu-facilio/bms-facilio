@@ -10,10 +10,10 @@ import org.json.simple.parser.JSONParser;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
-import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.ActionForm;
+import com.facilio.bmsconsole.context.AlarmContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.DateOperators;
 import com.facilio.bmsconsole.modules.FacilioModule;
@@ -28,6 +28,7 @@ import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 import com.facilio.bmsconsole.workflow.rule.SLARuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
+import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericSelectRecordBuilder;
@@ -173,7 +174,7 @@ public class WorkflowRuleAction extends FacilioAction {
 		FacilioContext facilioContext = new FacilioContext();
 
 		facilioContext.put(FacilioConstants.ContextNames.ALARM_RULE, alarmRule);
-		Chain addRule = TransactionChainFactory.addAlarmRuleChain();
+		Chain addRule = TransactionChainFactory.updateAlarmRuleChain();
 		addRule.execute(facilioContext);
 		
 		alarmRule = (AlarmRuleContext) facilioContext.get(FacilioConstants.ContextNames.ALARM_RULE);
@@ -366,6 +367,10 @@ public class WorkflowRuleAction extends FacilioAction {
 			fetchAlarmChain.execute(context);
 			alarmRule =  (AlarmRuleContext) context.get(FacilioConstants.ContextNames.ALARM_RULE);
 			setResult("alarmRule", alarmRule);
+			
+			setResult(FacilioConstants.ContextNames.ALARM_RULE_ACTIVE_ALARM, context.get(FacilioConstants.ContextNames.ALARM_RULE_ACTIVE_ALARM));
+			setResult(FacilioConstants.ContextNames.ALARM_RULE_THIS_WEEK, context.get(FacilioConstants.ContextNames.ALARM_RULE_THIS_WEEK));
+			setResult(FacilioConstants.ContextNames.ALARM_RULE_TOP_5_ASSETS, context.get(FacilioConstants.ContextNames.ALARM_RULE_TOP_5_ASSETS));
 		}
 		
 		setResult("rule", rule);
@@ -494,6 +499,9 @@ public class WorkflowRuleAction extends FacilioAction {
 			context.put(FacilioConstants.ContextNames.FILTERS, json);
 			context.put(FacilioConstants.ContextNames.INCLUDE_PARENT_CRITERIA, getIncludeParentFilter());
 		}
+		if (getIsCount() != null) {
+ 			context.put(FacilioConstants.ContextNames.RULE_COUNT, getIsCount());
+ 		}
 
 		if (getSearch() != null) {
 			JSONObject searchObj = new JSONObject();
@@ -518,8 +526,35 @@ public class WorkflowRuleAction extends FacilioAction {
 		Chain workflowRuleType = ReadOnlyChainFactory.fetchWorkflowRules();
 		workflowRuleType.execute(context);
 		workflowRuleList = (List<WorkflowRuleContext>) context.get(FacilioConstants.ContextNames.WORKFLOW_RULE_LIST);
+		if (getIsCount() != null) {
+			setCount((long) context.get(FacilioConstants.ContextNames.RULE_COUNT));
+		}
+		setResult("count", getCount());
 		setResult("rules", workflowRuleList);
 		return SUCCESS;
 
+	}
+	
+	public String v2rulesCount () throws Exception {
+		v2RulesList();
+		long listCount = getCount();
+		setResult("count", listCount);
+		return SUCCESS;
+	}
+	
+	private String isCount;
+	
+	public String getIsCount() {
+		return isCount;
+	}
+	public void setIsCount(String isCount) {
+		this.isCount = isCount;
+	}
+	private long count ;
+	public long getCount() {
+		return count;
+	}
+	public void setCount(long count) {
+		this.count = count;
 	}
 }

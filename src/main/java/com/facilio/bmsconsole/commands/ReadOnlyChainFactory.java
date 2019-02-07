@@ -1,13 +1,11 @@
 package com.facilio.bmsconsole.commands;
 
 import org.apache.commons.chain.Chain;
-import org.apache.commons.chain.impl.ChainBase;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
-import com.facilio.bmsconsole.commands.FacilioChainFactory.FacilioChain;
-import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
+import com.facilio.chain.FacilioChain;
 
 public class ReadOnlyChainFactory {
 	private static Logger LOGGER = LogManager.getLogger(ReadOnlyChainFactory.class.getName());
@@ -20,14 +18,12 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new CalculateDerivationCommand());
 		c.addCommand(new CalculateVarianceCommand());
 		c.addCommand(new FetchReportExtraMeta());
-		CommonCommandUtil.addCleanUpCommand(c);
 		return c;
 	}
 	
 	public static Chain fetchCardDataChain() {
 		Chain c = getDefaultChain();
 		c.addCommand(new FetchCardDataCommand());
-		CommonCommandUtil.addCleanUpCommand(c);
 		return c;
 	}
 	
@@ -42,7 +38,6 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new CalculateAggregationCommand()); //For new ones created in Derivations
 		c.addCommand(new FetchReportAdditionalInfoCommand());
 		c.addCommand(new FetchResourcesCommand());
-		CommonCommandUtil.addCleanUpCommand(c);
 		return c;
 	}
 	
@@ -74,32 +69,30 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new GenerateCriteriaFromFilterCommand());
 		c.addCommand(new GenerateSearchConditionCommand());
 		c.addCommand(new GenericGetModuleDataListCommand());
-		CommonCommandUtil.addCleanUpCommand(c);
 		return c;
 	}
 	
 	public static Chain fetchModuleDataDetailsChain() {
 		Chain c = getDefaultChain();
 		c.addCommand(new GenericGetModuleDataDetailCommand());
-		CommonCommandUtil.addCleanUpCommand(c);
 		return c;
 	}
 	
 	public static Chain fetchLatestReadingDataChain() {
 		Chain c = getDefaultChain();
 		c.addCommand(new GetLatestReadingDataCommand());
+		c.addCommand(new ConvertUnitForLatestReadingDataCommand());
 		return c;
 	}
 	
 	public static Chain fetchScheduledReportsChain() {
 		Chain c = getDefaultChain();
 		c.addCommand(new ScheduledV2ReportListCommand());
-		CommonCommandUtil.addCleanUpCommand(c);
 		return c;
 	}
 	
 	public static Chain getWorkOrderDetailsChain() {
-		Chain c = new ChainBase();
+		Chain c = getDefaultChain();
 		c.addCommand(SetTableNamesCommand.getForWorkOrder());
 		c.addCommand(new LoadModuleNameCommand());
 		c.addCommand(new LoadAllFieldsCommand());
@@ -107,7 +100,6 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new GetTaskInputDataCommand());
 		c.addCommand(new FetchApprovalRulesCommand());
 		c.addCommand(new FetchSourceTypeDetailsForWorkorderCommand());
-		CommonCommandUtil.addCleanUpCommand(c);
 		return c;
 	}
 	
@@ -122,9 +114,66 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new GenerateSearchConditionCommand());
 		c.addCommand(new GetWorkOrderListCommand());
 		c.addCommand(new FetchApprovalRulesCommand());
-		CommonCommandUtil.addCleanUpCommand(c);
 		return c;
 	}
+	
+	public static Chain getCalendarWorkOrdersChain() {
+		Chain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForWorkOrder());
+		c.addCommand(new ValidateCalendarWOCommand());
+		c.addCommand(new LoadViewCommand());
+		c.addCommand(new GetCalendarWOsCommands());
+		c.addCommand(new GetFutureWOsCommands());
+		return c;
+	}
+	
+	public static Chain getWorkOrderStatusPercentageChain() {
+		Chain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForWorkOrder());
+		c.addCommand(new LoadModuleNameCommand());
+		c.addCommand(new GetDigestTeamTechnicianCountCommand());
+		c.addCommand(new GetWorkOrderStatusPecentageCommand());
+		
+		return c;
+	}
+	
+	public static Chain getAvgResponseResolutionTimeBySiteChain() {
+		Chain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForWorkOrder());
+		c.addCommand(new LoadModuleNameCommand());
+		c.addCommand(new GetAvgResponseResolutionBySiteCommand());
+		
+		return c;
+	}
+	
+	public static Chain getWorkOrderCountBySiteChain() {
+		Chain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForWorkOrder());
+		c.addCommand(new LoadModuleNameCommand());
+		c.addCommand(new GetRoleWoCountBySiteCommand());
+		
+		return c;
+	}
+	
+	public static Chain getTopNTechBySiteChain() {
+		Chain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForWorkOrder());
+		c.addCommand(new LoadModuleNameCommand());
+		c.addCommand(new GetTopNTechCountCommand());
+		
+		
+		return c;
+	}
+	
+	public static Chain getAvgCompletionTimeByCategoryChain() {
+		Chain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForWorkOrder());
+		c.addCommand(new LoadModuleNameCommand());
+		c.addCommand(new GetAvgCompletionTimeByCategoryCommand());
+//		CommonCommandUtil.addCleanUpCommand(c);
+		return c;
+	}
+	
 	
 	public static Chain getAssetFromQRChain() {
 		Chain c = getDefaultChain();
@@ -133,14 +182,12 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new SetModuleForSpecialAssetsCommand());
 		c.addCommand(new LoadAssetFields());
 		c.addCommand(new GetAssetDetailCommand());
-		CommonCommandUtil.addCleanUpCommand(c);
 		return c;
 	}
 	
 	public static Chain fetchWorkflowRulesOfTypeChain() {
 		Chain c = getDefaultChain();
 		c.addCommand(new GetWorkFlowOfRuleTypeCommand());
-		CommonCommandUtil.addCleanUpCommand(c);
 		return c;
 	}
 	
@@ -152,7 +199,6 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new GenerateCriteriaFromFilterCommand());
 		c.addCommand(new GenerateSearchConditionCommand());
 		c.addCommand(new GetWorkFlowOfRuleTypeCommand());
-		CommonCommandUtil.addCleanUpCommand(c);
 		return c;
 	}
 	
@@ -161,7 +207,6 @@ public class ReadOnlyChainFactory {
 		Chain c = getDefaultChain();
 		c.addCommand(new FetchWorkflowRuleCommand());
 		c.addCommand(new GetActionListForWorkflowRulesCommand());
-		CommonCommandUtil.addCleanUpCommand(c);
 		return c;
 	}
 	
@@ -169,7 +214,7 @@ public class ReadOnlyChainFactory {
 		Chain c = getDefaultChain();
 		c.addCommand(new FetchAlarmRuleCommand());
 		c.addCommand(new GetActionListForAlarmRuleCommand());
-		CommonCommandUtil.addCleanUpCommand(c);
+		c.addCommand(new FetchExtraMetaForAlarmRuleCommand());
 		return c;
 	}
 	
@@ -179,7 +224,6 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new FetchChildRulesOfApprovalRuleCommand());
 		c.addCommand(new GetActionListForWorkflowRulesCommand());
 		c.addCommand(new DeConstructApprovalRuleCommand());
-		CommonCommandUtil.addCleanUpCommand(c);
 		return c;
 	}
 	
@@ -193,7 +237,6 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new GenerateSearchConditionCommand());
 		c.addCommand(new GetAlarmListCommand());
 		c.addCommand(new GetReadingRuleNameCommand());
-		CommonCommandUtil.addCleanUpCommand(c);
 		return c;
 	}
 	
@@ -205,62 +248,118 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new GetAlarmCommand());
 		c.addCommand(new GetReadingRuleNameCommand());
-		CommonCommandUtil.addCleanUpCommand(c);
 		return c;
 	}
 	
 	public static Chain getAddOrUpdateReadingValuesChain() {
-		Chain c = new ChainBase();
+		Chain c = getDefaultChain();
 		c.addCommand(new AddOrUpdateReadingsCommand());
-		CommonCommandUtil.addCleanUpCommand(c);
 		return c;
 	}
 	
 	public static Chain executeWorkflowsForReadingChain() {
-		Chain c = new ChainBase();
-		c.addCommand(new ExecuteAllWorkflowsCommand(false, RuleType.READING_RULE, RuleType.PM_READING_RULE, RuleType.VALIDATION_RULE));
-		CommonCommandUtil.addCleanUpCommand(c);
+		Chain c = getDefaultChain();
+		c.addCommand(new ExecuteAllWorkflowsCommand(false, RuleType.READING_RULE, RuleType.PM_READING_RULE, RuleType.VALIDATION_RULE,RuleType.ALARM_TRIGGER_RULE,RuleType.ALARM_CLEAR_RULE));
 		return c;
 	}
 	
 	public static Chain calculateFormulaChain() {
-		Chain c = new ChainBase();
+		Chain c = getDefaultChain();
 		c.addCommand(new CalculatePostFormulaCommand());
-		CommonCommandUtil.addCleanUpCommand(c);
 		return c;
 	}
 	
 	public static Chain getUnmodelledInstancesForController() {
-		Chain c = new ChainBase();
+		Chain c = getDefaultChain();
 		c.addCommand(new GetUnmodelledInstancesForControllerCommand());
 		c.addCommand(new GetLatestReadingDataCommand());
-		CommonCommandUtil.addCleanUpCommand(c);
 		return c;
 	}
 	
 	public static Chain getResourcesListForMultiplePM() {
-		Chain c = new ChainBase();
+		Chain c = getDefaultChain();
 		c.addCommand(new getResourceListForMultiplePM());
-		CommonCommandUtil.addCleanUpCommand(c);
 		return c;
 	}
 	
 	public static Chain getPubSubPublishMessageChain() {
-		Chain c = new ChainBase();
+		Chain c = getDefaultChain();
 		c.addCommand(new PubSubPublishMessageCommand());
-		CommonCommandUtil.addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain getExportAnalyticsFileChain() {
+		Chain c = getDefaultChain();
+		c.addCommand(ReadOnlyChainFactory.fetchReadingReportChain());
+		c.addCommand(new GetExportReportDataCommand());
+		return c;
+	}
+	
+	public static Chain getExportReportFileChain() {
+		Chain c = getDefaultChain();
+		c.addCommand(fetchReportDataChain());
+		c.addCommand(new GetExportReportDataCommand());
+		return c;
+	}
+	
+	public static Chain sendAnalyticsMailChain() {
+		Chain c = getDefaultChain();
+		c.addCommand(getExportAnalyticsFileChain());
+		c.addCommand(new SendReadingReportMailCommand());
+		return c;
+	}
+	
+	public static Chain sendReportMailChain() {
+		Chain c = getDefaultChain();
+		c.addCommand(getExportReportFileChain());
+		c.addCommand(new SendReadingReportMailCommand());
+		return c;
+	}
+	
+	public static Chain getExportNewAnalyticsFileChain() {
+		Chain c = getDefaultChain();
+		c.addCommand(ReadOnlyChainFactory.newFetchReadingReportChain());
+		c.addCommand(new GetExportReportFileCommand());
+		return c;
+	}
+	
+	public static Chain getExportNewReportFileChain() {
+		Chain c = getDefaultChain();
+		c.addCommand(newFetchReportDataChain());
+		c.addCommand(new GetExportReportFileCommand());
+		return c;
+	}
+	
+	public static Chain sendNewAnalyticsMailChain() {
+		Chain c = getDefaultChain();
+		c.addCommand(getExportNewAnalyticsFileChain());
+		c.addCommand(new SendReadingReportMailCommand());
+		return c;
+	}
+	
+	public static Chain sendNewReportMailChain() {
+		Chain c = getDefaultChain();
+		c.addCommand(getExportNewReportFileChain());
+		c.addCommand(new SendReadingReportMailCommand());
+		return c;
+	}
+	
+	public static Chain constructAndFetchReportDataChain() {
+		Chain c = getDefaultChain();
+		c.addCommand(new ConstructReportData());
+		c.addCommand(newFetchReportDataChain());
 		return c;
 	}
 	
 	private static Chain getDefaultChain() {
-		return new FacilioChain(false);
+		return FacilioChain.getNonTransactionChain();
     }
 	
 	public static Chain fetchInventoryDetails() {
 		Chain c = getDefaultChain();
 		c.addCommand(SetTableNamesCommand.getForInventory());
 		c.addCommand(new GetInventoryDetailsCommand());
-		CommonCommandUtil.addCleanUpCommand(c);
+//		CommonCommandUtil.addCleanUpCommand(c);
 		return c;
 	}
 	
@@ -272,7 +371,7 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new GenerateCriteriaFromFilterCommand());
 		c.addCommand(new GenerateSearchConditionCommand());
 		c.addCommand(new GetInventoryListCommand());
-		CommonCommandUtil.addCleanUpCommand(c);
+//		CommonCommandUtil.addCleanUpCommand(c);
 		return c;
 	}
 	
@@ -280,7 +379,7 @@ public class ReadOnlyChainFactory {
 		Chain c = getDefaultChain();
 		c.addCommand(SetTableNamesCommand.getForInventoryVendor());
 		c.addCommand(new GenericGetModuleDataDetailCommand());
-		CommonCommandUtil.addCleanUpCommand(c);
+//		CommonCommandUtil.addCleanUpCommand(c);
 		return c;
 	}
 	
@@ -289,7 +388,7 @@ public class ReadOnlyChainFactory {
 		c.addCommand(SetTableNamesCommand.getForInventoryVendor());
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new GenericGetModuleDataListCommand());
-		CommonCommandUtil.addCleanUpCommand(c);
+//		CommonCommandUtil.addCleanUpCommand(c);
 		return c;
 	}
 }

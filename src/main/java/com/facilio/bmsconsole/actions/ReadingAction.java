@@ -14,7 +14,6 @@ import org.json.simple.JSONObject;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
-import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.AssetCategoryContext;
@@ -39,6 +38,7 @@ import com.facilio.bmsconsole.util.IoTMessageAPI.IotCommandType;
 import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.bmsconsole.workflow.rule.ActionContext;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
+import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.timeseries.TimeSeriesAPI;
@@ -561,6 +561,18 @@ public class ReadingAction extends FacilioAction {
 		return SUCCESS;
 	}
 	
+	public String getSiteSpecificReadings(FacilioModule module,FacilioField field) throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.PARENT_MODULE, module);
+		context.put(FacilioConstants.ContextNames.READING_FIELD, field);
+		Chain getSiteSpecificReadingChain = FacilioChainFactory.getSiteSpecificReadingsChain();
+		getSiteSpecificReadingChain.execute(context);
+		readings = (List<FacilioModule>) context.get(FacilioConstants.ContextNames.MODULE_LIST);
+		moduleMap = (Map<Long,List<FacilioModule>>)context.get(FacilioConstants.ContextNames.MODULE_MAP);	
+		
+		return SUCCESS;
+	}
+	
 	public String spaceType;
 	
 	
@@ -921,6 +933,7 @@ public class ReadingAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.PARENT_ID, parentId);
 		context.put(FacilioConstants.ContextNames.EXCLUDE_EMPTY_FIELDS, excludeEmptyFields != null ? excludeEmptyFields : true);
 		context.put(FacilioConstants.ContextNames.FETCH_READING_INPUT_VALUES, fetchInputValues);
+		context.put(FacilioConstants.ContextNames.IS_FETCH_RDM_FROM_UI, true);
 		
 		Chain latestAssetData = ReadOnlyChainFactory.fetchLatestReadingDataChain();
 		latestAssetData.execute(context);
@@ -944,6 +957,14 @@ public class ReadingAction extends FacilioAction {
 			instance.put("value", value);
 			instance.put("fieldId", fieldId);
 			IoTMessageAPI.publishIotMessage(Collections.singletonList(instance), IotCommandType.SET);
+		}
+		return SUCCESS;
+	}
+	
+	public String getLiveReading () throws Exception {
+		Map<String, Object> instance = TimeSeriesAPI.getUnmodeledInstance(assetId,fieldId);
+		if (instance != null && AccountUtil.getCurrentOrg()!= null) {
+			IoTMessageAPI.publishIotMessage(Collections.singletonList(instance), IotCommandType.GET);
 		}
 		return SUCCESS;
 	}

@@ -11,6 +11,7 @@ import org.apache.commons.chain.Context;
 import com.facilio.bmsconsole.context.AttachmentContext;
 import com.facilio.bmsconsole.util.AttachmentsAPI;
 import com.facilio.bmsconsole.workflow.rule.ActivityType;
+import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 
 public class AddAttachmentRelationshipCommand implements Command {
@@ -25,23 +26,40 @@ public class AddAttachmentRelationshipCommand implements Command {
 		if(moduleName == null ) {
 			moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 		}
-		Long recordId = (Long) context.get(FacilioConstants.ContextNames.RECORD_ID);
-		if (recordId == null) {
-			recordId = (Long) ((List) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST)).get(0);
+		
+		Long recordId = null;
+		List<Long> recordIds = (List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST);
+		if (recordIds == null || recordIds.isEmpty()) {
+			recordId = (Long) context.get(FacilioConstants.ContextNames.RECORD_ID);
 		}
+		else {
+			recordId = recordIds.get(0); //Have to discuss why this is done like this.
+		}
+		
 		if(moduleName == null || moduleName.isEmpty()) {
 			throw new IllegalArgumentException("Invalid module name during addition of attachments");
 		}
 		
-		if(recordId == -1) {
+		if(recordId == null || recordId == -1) {
 			throw new IllegalArgumentException("Invalid record id during addition of attachments");
 		}
-		context.put(FacilioConstants.ContextNames.PARENT_ID_LIST, Collections.singletonList(recordId));
+		FacilioChain.addPostTrasanction(FacilioConstants.ContextNames.IDS_TO_UPDATE_COUNT, Collections.singletonList(recordId));
+		FacilioChain.addPostTrasanction(FacilioConstants.ContextNames.MODULE_NAME, context.get(FacilioConstants.ContextNames.MODULE_NAME));
+		
 		List<AttachmentContext> attachments = (List<AttachmentContext>) context.get(FacilioConstants.ContextNames.ATTACHMENT_CONTEXT_LIST);
 		if(attachments != null && !attachments.isEmpty()) {
 			for(AttachmentContext attachment : attachments) {
 				attachment.setParentId(recordId);
 			}
+			
+//			if (AccountUtil.getCurrentOrg().getId() == 155 || AccountUtil.getCurrentOrg().getId() == 151 || AccountUtil.getCurrentOrg().getId() == 92) {
+//				LOGGER.info("Inserting attachment for record id : "+recordId);
+//				TransactionManager tm = FTransactionManager.getTransactionManager();
+//				if (tm != null) {
+//					Transaction t = tm.getTransaction();
+//					LOGGER.info("Connection & free connection size before adding attachments : "+((FacilioTransaction) t).getConnectionSize()+"::"+((FacilioTransaction) t).getFreeConnectionSize());
+//				}
+//			}
 			
 			AttachmentsAPI.addAttachments(attachments, moduleName);
 			List<Long> attachmentIds = new ArrayList<>();

@@ -21,7 +21,6 @@ import com.amazonaws.services.iot.client.AWSIotQos;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.context.ControllerContext;
 import com.facilio.bmsconsole.context.PublishData;
 import com.facilio.bmsconsole.context.PublishMessage;
@@ -31,6 +30,7 @@ import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.serializable.SerializableConsumer;
@@ -49,6 +49,10 @@ public class IoTMessageAPI {
 	
 	private static PublishData constructIotMessage (long controllerId, JSONObject property) throws Exception {
 		return constructIotMessage(controllerId, IotCommandType.PROPERTY, null, property);
+	}
+	
+	private static PublishData constructIotMessage (long controllerId, IotCommandType command) throws Exception {
+		return constructIotMessage(controllerId, command, null, null);
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -71,7 +75,7 @@ public class IoTMessageAPI {
 		if (command == IotCommandType.PROPERTY) {
 			object.putAll(property);
 		}
-		else if (command != IotCommandType.DISCOVER) {
+		else if (command != IotCommandType.DISCOVER && instances != null && !instances.isEmpty()) {
 			
 			JSONArray points = new JSONArray();
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -228,12 +232,12 @@ public class IoTMessageAPI {
 	}
 	
 	public static PublishData publishIotMessage(long controllerId, IotCommandType command) throws Exception {
-		PublishData data = constructIotMessage(controllerId, command, null, null);
+		PublishData data = constructIotMessage(controllerId, command);
 		return publishIotMessage(data, null, null);
 	}
 	
 	public static PublishData publishIotMessage(long controllerId, IotCommandType command, SerializableConsumer<PublishData> success, SerializableConsumer<PublishData> failure) throws Exception {
-		PublishData data = constructIotMessage(controllerId, command, null, null);
+		PublishData data = constructIotMessage(controllerId, command);
 		return publishIotMessage(data, success, failure);
 	}
 	
@@ -293,6 +297,7 @@ public class IoTMessageAPI {
  	public enum IotCommandType {
  		CONFIGURE("configure"),
  		SET("set"),
+ 		GET("get"),
  		PROPERTY("property"),
  		DISCOVER("discoverPoints"),
  		SUBSCRIBE("subscribe"),

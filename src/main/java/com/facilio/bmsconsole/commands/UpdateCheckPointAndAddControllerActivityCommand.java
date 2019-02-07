@@ -16,6 +16,7 @@ import com.facilio.bmsconsole.context.MultiModuleReadingData;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.util.ControllerAPI;
 import com.facilio.bmsconsole.util.DateTimeUtil;
+import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.procon.consumer.FacilioConsumer;
 import com.facilio.procon.message.FacilioRecord;
@@ -39,7 +40,7 @@ public class UpdateCheckPointAndAddControllerActivityCommand implements Command 
 											.append("The Controller with Mac Addr - ")
 											.append(controller.getMacAddr())
 											.append(" has been made active because data was received at time : ")
-											.append(DateTimeUtil.getFormattedTime(record.getApproximateArrivalTimestamp().getTime()))
+											.append(DateTimeUtil.getFormattedTime(record != null ? record.getApproximateArrivalTimestamp().getTime() : fRecord.getTimeStamp()))
 											;
 					
 					CommonCommandUtil.emailAlert("Making Controller as active - "+controller.getMacAddr(), msg.toString());
@@ -53,7 +54,7 @@ public class UpdateCheckPointAndAddControllerActivityCommand implements Command 
 				addControllerActivity((FacilioContext) context, controller, recordTime);
 			}
 			else {
-				CommonCommandUtil.emailAlert("No controller with client id - "+record.getPartitionKey(), "No controller with client id - "+record.getPartitionKey()+"\nKindly add proper controller for this");
+				CommonCommandUtil.emailAlert("No controller with client id - "+partitionKey, "No controller with client id - "+partitionKey+"\nKindly add proper controller for this");
 			}
 		}
 		else {

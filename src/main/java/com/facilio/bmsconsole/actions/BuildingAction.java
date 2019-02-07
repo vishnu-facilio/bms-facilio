@@ -10,7 +10,6 @@ import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
-import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.commands.SetTableNamesCommand;
 import com.facilio.bmsconsole.context.ActionForm;
 import com.facilio.bmsconsole.context.BuildingContext;
@@ -23,6 +22,7 @@ import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.util.DashboardUtil;
+import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.opensymphony.xwork2.ActionContext;
@@ -235,7 +235,7 @@ public class BuildingAction extends ActionSupport {
 				.on("BaseSpace.ID = Space.ID")
 				.leftJoin("Space_Category")
 				.on("Space.SPACE_CATEGORY_ID = Space_Category.ID")
-				.groupBy("Space_Category.ID")
+				.groupBy("Space_Category.ID, Space_Category.NAME, Space_Category.DESCRIPTION")
 				.andCustomWhere("BaseSpace.ORGID=? AND Space.ORGID = ? AND BaseSpace.BUILDING_ID = ?", orgId, orgId, getBuildingId());
 
 		List<Map<String, Object>> rs = builder.get();

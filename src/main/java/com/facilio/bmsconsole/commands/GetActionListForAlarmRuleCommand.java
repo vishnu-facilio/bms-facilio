@@ -1,6 +1,9 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
@@ -19,13 +22,19 @@ public class GetActionListForAlarmRuleCommand implements Command {
 	public boolean execute(Context context) throws Exception {
 		AlarmRuleContext alarmRule = (AlarmRuleContext) context.get(FacilioConstants.ContextNames.ALARM_RULE);
 		
-		List<ReadingRuleContext> rules = alarmRule.getAllRuleList();
+		List<ReadingRuleContext> rules = alarmRule.getAlarmTriggerRules();
+		Map<Long,ActionContext> finalAction = new HashMap<>();
 		if(rules != null && !rules.isEmpty()) {
 			for (WorkflowRuleContext rule : rules) {
 				List<ActionContext> actions = ActionAPI.getAllActionsFromWorkflowRule(AccountUtil.getCurrentOrg().getId(), rule.getId());
-				rule.setActions(actions);
+				for(ActionContext action :actions) {
+					if(!finalAction.containsKey(action.getId())) {
+						finalAction.put(action.getId(), action);
+					}
+				}
 			}
 		}
+		alarmRule.setAddAlarmActions(new ArrayList<>(finalAction.values()));
 		return false;
 	}
 

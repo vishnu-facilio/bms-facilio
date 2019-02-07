@@ -10,7 +10,6 @@ import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
-import com.facilio.bmsconsole.commands.FacilioContext;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.PublishData;
@@ -18,6 +17,7 @@ import com.facilio.bmsconsole.context.ReadingContext.SourceType;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.util.IoTMessageAPI;
 import com.facilio.bmsconsole.util.IoTMessageAPI.IotCommandType;
+import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.timeseries.TimeSeriesAPI;
 
@@ -32,7 +32,7 @@ public class TimeSeries extends FacilioAction {
 		JSONParser parser = new JSONParser();
 		try {
 			JSONObject payLoad = (JSONObject) parser.parse(getDeviceData());
-			TimeSeriesAPI.processPayLoad(getTimestamp(), payLoad);	
+			TimeSeriesAPI.processPayLoad(getTimestamp(), payLoad, macAddr);	
 			return SUCCESS;
 		}
 		catch(Exception e) {
@@ -130,10 +130,17 @@ public class TimeSeries extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.CONTROLLER_ID, controllerId);
 		context.put(FacilioConstants.ContextNames.CONFIGURE, configured);
+		context.put(FacilioConstants.ContextNames.SUBSCRIBE, subscribed);
 		context.put(FacilioConstants.ContextNames.FETCH_MAPPED, fetchMapped);
 		context.put(FacilioConstants.ContextNames.PAGINATION, getPagination());
-		context.put(FacilioConstants.ContextNames.FETCH_READING_INPUT_VALUES, true);
+		context.put(FacilioConstants.ContextNames.COUNT, getShowInstanceCount());
 		
+		if (!getShowInstanceCount()) {
+			context.put(FacilioConstants.ContextNames.FETCH_READING_INPUT_VALUES, true);
+		}
+		if (getSearch() != null) {
+			context.put(FacilioConstants.ContextNames.SEARCH, getSearch());
+		}
 		Chain chain = ReadOnlyChainFactory.getUnmodelledInstancesForController();
 		chain.execute(context);
 		
@@ -160,10 +167,21 @@ public class TimeSeries extends FacilioAction {
 	public String subscribeInstances () throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.INSTANCE_INFO, instances);
-		context.put(FacilioConstants.ContextNames.SUBSCRIBE , subscribed);
 		context.put(FacilioConstants.ContextNames.CONTROLLER_ID , controllerId);
 		
 		Chain markChain = TransactionChainFactory.getSubscribeInstanceChain();
+		markChain.execute(context);
+
+		setResult("result", "success");
+		return SUCCESS;
+	}
+	
+	public String unsubscribeInstances () throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.UNSUBSCRIBE_IDS, ids);
+		context.put(FacilioConstants.ContextNames.CONTROLLER_ID , controllerId);
+		
+		Chain markChain = TransactionChainFactory.getUnSubscribeInstanceChain();
 		markChain.execute(context);
 
 		setResult("result", "success");
@@ -184,6 +202,24 @@ public class TimeSeries extends FacilioAction {
 	}
 	public void setControllerId(long controllerId) {
 		this.controllerId = controllerId;
+	}
+	
+	String search;
+
+	public void setSearch(String search) {
+		this.search = search;
+	}
+
+	public String getSearch() {
+		return this.search;
+	}
+	
+	private String macAddr;
+	public String getMacAddr() {
+		return macAddr;
+	}
+	public void setMacAddr(String macAddr) {
+		this.macAddr = macAddr;
 	}
 	
 	private Boolean configured;
@@ -336,6 +372,17 @@ public class TimeSeries extends FacilioAction {
 		return TimeSeriesAPI.getCriteria(timeRange, resourceList, moduleList, fieldList, markTypeList);
 		
 	}
-	
+	private Boolean showInstanceCount;
+	public Boolean getShowInstanceCount() {
+		if (showInstanceCount == null) {
+			showInstanceCount = false;
+		}
+		return showInstanceCount;
+	}
+
+	public void setShowInstanceCount(Boolean showInstanceCount) {
+		this.showInstanceCount = showInstanceCount;
+	}
+
 	
 }

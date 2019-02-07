@@ -2,13 +2,11 @@ package com.facilio.report.context;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.struts2.json.annotations.JSON;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 
 import com.facilio.bmsconsole.context.FormulaContext.AggregateOperator;
 import com.facilio.bmsconsole.criteria.DateOperators;
@@ -372,6 +370,14 @@ public class ReportContext {
 	}
 	public void setType(int type) {
 		this.type = ReportType.valueOf(type);
+	}
+	
+	private long moduleId = -1;
+	public long getModuleId() {
+		return moduleId;
+	}
+	public void setModuleId(long moduleId) {
+		this.moduleId = moduleId;
 	}
 
 	private Class<? extends TransformReportDataIfc> transformClass;

@@ -21,6 +21,8 @@
 	 <job name='WeatherData' classname = 'com.facilio.bmsconsole.jobs.WeatherDataJob' transactionTimeout='300000'/>
 	 <job name='DailyWeatherData' classname = 'com.facilio.bmsconsole.jobs.DailyWeatherDataJob' transactionTimeout='300000'/>
 	 <job name='DegreeDaysCalculator' classname = 'com.facilio.bmsconsole.jobs.DegreeDaysCalculatorJob' transactionTimeout='300000'/>
+	 <job name='V1AnomalyDetector' classname = 'com.facilio.bmsconsole.jobs.V1AnomalyDetectorJob' transactionTimeout='1800000'/>
+	 <job name='V1RefreshAnomalyModel' classname = 'com.facilio.bmsconsole.jobs.V1RefreshAnomalyModelJob' transactionTimeout='14400000'/>
 	 <job name='AnomalyDetector' classname = 'com.facilio.bmsconsole.jobs.AnomalyDetectorJob' transactionTimeout='1800000'/>
 	 <job name='RefreshAnomalyModel' classname = 'com.facilio.bmsconsole.jobs.RefreshAnomalyModelJob' transactionTimeout='14400000'/>
 	 <job name='importData' classname = 'com.facilio.bmsconsole.jobs.ImportDataJob' transactionTimeout='7200000'/>
@@ -38,4 +40,8 @@
 	 <job name='EndShift' classname= 'com.facilio.bmsconsole.jobs.ShiftEndJob' transactionTimeout='300000'/>
 	 <job name='EndShiftOTJ' classname= 'com.facilio.bmsconsole.jobs.ShiftEndOneTimeJob' transactionTimeout='300000'/>
 	 <job name='DeviceMonitor' classname= 'com.facilio.bmsconsole.jobs.DeviceMonitorJob' transactionTimeout='300000'/>
+	 
+	 <!-- Shift jobs -->
+	 <job name='scheduledReadingRule' classname= 'com.facilio.bmsconsole.jobs.ScheduledReadingRuleJob' transactionTimeout='300000'/>
+	 <job name='scheduledAlarmTriggerRule' classname= 'com.facilio.bmsconsole.jobs.ScheduledAlarmTriggerJob' transactionTimeout='300000'/>
 </scheduler>

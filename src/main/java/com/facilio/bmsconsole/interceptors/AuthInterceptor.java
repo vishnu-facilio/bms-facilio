@@ -1,6 +1,7 @@
 
 package com.facilio.bmsconsole.interceptors;
 
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -11,15 +12,17 @@ import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.facilio.aws.util.AwsUtil;
+import org.apache.http.HttpHeaders;
 import org.apache.struts2.ServletActionContext;
 import org.apache.struts2.dispatcher.Parameter;
 
+import com.auth0.jwt.interfaces.DecodedJWT;
 import com.facilio.accounts.dto.Account;
 import com.facilio.accounts.dto.Role;
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.auth.cookie.FacilioCookie;
+import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.fw.auth.CognitoUtil;
 import com.facilio.fw.auth.CognitoUtil.CognitoUser;
@@ -51,7 +54,47 @@ public class AuthInterceptor extends AbstractInterceptor {
 		try {
 			HttpServletRequest request = ServletActionContext.getRequest();
 
-			if (!isRemoteScreenMode(request)) {
+			if (getPermalinkToken(request) != null) {
+				String token = getPermalinkToken(request);
+				
+				List<String> urlsToValidate = new ArrayList<>();
+				
+				String reqURL = request.getRequestURI();
+				urlsToValidate.add(reqURL);
+				
+				String referrer = request.getHeader(HttpHeaders.REFERER);
+				if (referrer != null && !"".equals(referrer.trim())) {
+					URL url = new URL(referrer);
+					urlsToValidate.add(url.getPath());
+				}
+				
+				if (AccountUtil.getUserBean().verifyPermalinkForURL(token, urlsToValidate)) {
+					DecodedJWT decodedjwt = CognitoUtil.validateJWT(token, "auth0");
+					
+					long orgId = Long.parseLong(decodedjwt.getSubject().split("_")[0].split("-")[0]);
+					long ouid = Long.parseLong(decodedjwt.getSubject().split("_")[0].split("-")[1]);
+					
+					Account currentAccount = new Account(AccountUtil.getOrgBean().getOrg(orgId), AccountUtil.getUserBean().getUserInternal(ouid));
+					
+					AccountUtil.cleanCurrentAccount();
+					AccountUtil.setCurrentAccount(currentAccount);
+					request.setAttribute("ORGID", currentAccount.getOrg().getOrgId());
+					request.setAttribute("USERID", currentAccount.getUser().getOuid());
+					
+					try {
+						return arg0.invoke();
+					} catch (Exception e) {
+						System.out.println("exception code 154");
+
+						LOGGER.log(Level.SEVERE, "error thrown from action class", e);
+						throw e;
+					}
+				}
+				else {
+					return Action.ERROR;
+				}
+			}
+			else if (!isRemoteScreenMode(request)) {
 				CognitoUser cognitoUser = AuthenticationUtil.getCognitoUser(request, false);
 				Account currentAccount = null;
 				if ( ! AuthenticationUtil.checkIfSameUser(currentAccount, cognitoUser)) {
@@ -194,6 +237,14 @@ public class AuthInterceptor extends AbstractInterceptor {
 	private boolean isRemoteScreenMode(HttpServletRequest request) {
 		String remoteScreenHeader = request.getHeader("X-Remote-Screen");
 		return ( remoteScreenHeader != null && "true".equalsIgnoreCase(remoteScreenHeader.trim()));
+	}
+	
+	private String getPermalinkToken(HttpServletRequest request) {
+		String remoteScreenHeader = request.getHeader("X-Permalink-Token");
+		if (remoteScreenHeader != null && !"".equals(remoteScreenHeader.trim())) {
+			return remoteScreenHeader;
+		}
+		return null;
 	}
 	
 	private boolean handleRemoteScreenAuth(HttpServletRequest request) {

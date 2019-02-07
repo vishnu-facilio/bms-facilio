@@ -14,6 +14,8 @@ import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.modules.FacilioField;
@@ -29,28 +31,90 @@ public class GenericUpdateRecordBuilder implements UpdateBuilderIfc<Map<String, 
 	private static final Logger LOGGER = LogManager.getLogger(GenericUpdateRecordBuilder.class.getName());
 	private List<FacilioField> fields;
 	private Map<String, List<FacilioField>> fieldMap;
+	private String baseTableName;
 	private String tableName;
 	private Map<String, Object> value;
 	private StringBuilder joinBuilder = new StringBuilder();
 	private WhereBuilder where = new WhereBuilder();
 	private Connection conn = null;
 	
+	public GenericUpdateRecordBuilder() {
+		// TODO Auto-generated constructor stub
+	}
+
+	public GenericUpdateRecordBuilder(GenericUpdateRecordBuilder updateBuilder) {
+		super();
+		this.baseTableName = updateBuilder.baseTableName;
+		this.tableName = updateBuilder.tableName;
+		this.value = updateBuilder.value;
+		this.conn = updateBuilder.conn;
+		
+		this.joinBuilder = new StringBuilder(updateBuilder.joinBuilder);
+		if (updateBuilder.fields != null) {
+			this.fields = new ArrayList<>(updateBuilder.fields);
+		}
+		if (updateBuilder.where != null) {
+			this.where = new WhereBuilder(updateBuilder.where);
+		}
+	}
+
 	public GenericUpdateRecordBuilder table(String tableName) {
 		this.tableName = tableName;
 		return this;
 	}
-	
+
 	@Override
 	public GenericUpdateRecordBuilder useExternalConnection (Connection conn) {
 		this.conn = conn;
 		return this;
 	}
-	
+
 	public GenericUpdateRecordBuilder fields(List<FacilioField> fields) {
 		this.fields = fields;
 		return this;
 	}
 	
+	public GenericUpdateRecordBuilder setBaseTableName(String baseTableName) {
+		this.baseTableName = baseTableName;
+		return this;
+	}
+	
+	public List<FacilioField> getFields() {
+		return fields;
+	}
+
+	public Map<String, List<FacilioField>> getFieldMap() {
+		return fieldMap;
+	}
+
+	public String getBaseTableName() {
+		return baseTableName;
+	}
+
+	public String getTableName() {
+		return tableName;
+	}
+
+	public Map<String, Object> getValue() {
+		return value;
+	}
+
+	public StringBuilder getJoinBuilder() {
+		return joinBuilder;
+	}
+
+	public WhereBuilder getWhere() {
+		return where;
+	}
+
+	public List<FileField> getFileFields() {
+		return fileFields;
+	}
+
+	public List<NumberField> getNumberFields() {
+		return numberFields;
+	}
+
 	@Override
 	public GenericJoinBuilder innerJoin(String tableName) {
 		joinBuilder.append(" INNER JOIN ")
@@ -157,7 +221,11 @@ public class GenericUpdateRecordBuilder implements UpdateBuilderIfc<Map<String, 
 					conn = FacilioConnectionPool.INSTANCE.getConnection();
 					isExternalConnection = false;
 				}
-				
+
+				if ((AccountUtil.getCurrentOrg() != null && (AccountUtil.getCurrentOrg().getId() == 155 || AccountUtil.getCurrentOrg().getId() == 151 || AccountUtil.getCurrentOrg().getId() == 92)) && tableName.equals("Preventive_Maintenance")) {
+					LOGGER.info("Connection in Update Builder for "+tableName+" : "+conn);
+				}
+
 				fieldMap = convertFieldsToMap(fields);
 				String sql = constructUpdateStatement();
 				if(sql != null && !sql.isEmpty()) {
@@ -165,16 +233,21 @@ public class GenericUpdateRecordBuilder implements UpdateBuilderIfc<Map<String, 
 					pstmt = conn.prepareStatement(sql);
 					
 					int paramIndex = 1;
-					for(Map.Entry<String, Object> entry : value.entrySet()) {
-						List<FacilioField> fields = fieldMap.get(entry.getKey());
-						if (fields != null) {
+//					for(Map.Entry<String, Object> entry : value.entrySet()) {
+//						List<FacilioField> fields = fieldMap.get(entry.getKey());
+//						if (fields != null) {
 							for (FacilioField field: fields) {
 								if(field != null) {
-									FieldUtil.castOrParseValueAsPerType(pstmt, paramIndex++, field, value.get(field.getName()));
+									if (value.containsKey(field.getName())) {
+										if (field.getDataType() == FieldType.ID.getTypeAsInt()) {
+											continue;
+										}
+										FieldUtil.castOrParseValueAsPerType(pstmt, paramIndex++, field, value.get(field.getName()));
+									}
 								}
 							}
-						}
-					}
+//						}
+//					}
 					
 					Object[] whereValues = where.getValues();
 					if(whereValues != null) {
@@ -200,43 +273,26 @@ public class GenericUpdateRecordBuilder implements UpdateBuilderIfc<Map<String, 
 				}
 				else {
 					DBUtil.closeAll(conn, pstmt);
+					conn = null;
 				}
 			}
 		}
 		return 0;
 	}
 	
+	private DBUpdateRecordBuilder getDBUpdateRecordBuilder() throws Exception {
+		String dbClass = AwsUtil.getDBClass();
+		return (DBUpdateRecordBuilder) Class.forName(dbClass + ".UpdateRecordBuilder").getConstructor(GenericUpdateRecordBuilder.class).newInstance(this);
+	}
+
 	private String constructUpdateStatement() {
-		StringBuilder sql = new StringBuilder("UPDATE ");
-		sql.append(tableName)
-			.append(joinBuilder.toString())
-			.append(" SET ");
-		boolean isFirst = true;
-		for(String propKey : value.keySet()) {
-			List<FacilioField> fields = fieldMap.get(propKey);
-			if(fields != null) {
-				for (FacilioField field: fields) {
-					if(isFirst) {
-						isFirst = false;
-					}
-					else {
-						sql.append(", ");
-					}
-					sql.append(field.getCompleteColumnName())
-						.append(" = ?");
-				}
-			}
+		try {
+			DBUpdateRecordBuilder updateRecordBuilder = getDBUpdateRecordBuilder();
+			return updateRecordBuilder.constructUpdateStatement();
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
-		
-		if(isFirst) {
-			return null; //Nothing to update
-		}
-		
-		sql.append(" WHERE ")
-			.append(where.getWhereClause())
-			;
-		
-		return sql.toString();
+		return null;
 	}
 	
 	private Map<String, List<FacilioField>> convertFieldsToMap(List<FacilioField> fields) {

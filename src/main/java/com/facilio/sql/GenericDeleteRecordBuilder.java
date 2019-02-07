@@ -11,6 +11,7 @@ import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
+import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.transaction.FacilioConnectionPool;
@@ -23,6 +24,22 @@ public class GenericDeleteRecordBuilder implements DeleteBuilderIfc<Map<String, 
 	private StringJoiner tablesToBeDeleted = new StringJoiner(",");
 	private Connection conn = null;
 	
+	public String getTableName() {
+		return tableName;
+	}
+
+	public WhereBuilder getWhere() {
+		return where;
+	}
+
+	public StringBuilder getJoinBuilder() {
+		return joinBuilder;
+	}
+
+	public StringJoiner getTablesToBeDeleted() {
+		return tablesToBeDeleted;
+	}
+
 	@Override
 	public GenericDeleteRecordBuilder table(String tableName) {
 		this.tableName = tableName;
@@ -145,20 +162,24 @@ public class GenericDeleteRecordBuilder implements DeleteBuilderIfc<Map<String, 
 			}
 			else {
 				DBUtil.closeAll(conn, pstmt);
+				conn = null;
 			}
 		}
 	}
 	
+	private DBDeleteRecordBuilder getDBDeleteRecordBuilder() throws Exception {
+		String dbClass = AwsUtil.getDBClass();
+		return (DBDeleteRecordBuilder) Class.forName(dbClass + ".DeleteRecordBuilder").getConstructor(GenericDeleteRecordBuilder.class).newInstance(this);
+	}
+	
 	private String constructDeleteStatement() {
-		StringBuilder sql = new StringBuilder("DELETE ");
-		sql.append(tablesToBeDeleted.toString())
-			.append(" FROM ")
-			.append(tableName)
-			.append(joinBuilder.toString())
-			.append(" WHERE ")
-			.append(where.getWhereClause());
-		
-		return sql.toString();
+		try {
+			DBDeleteRecordBuilder recordBuilder = getDBDeleteRecordBuilder();
+			return recordBuilder.constructDeleteStatement();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 	
 	private void checkForNull() {

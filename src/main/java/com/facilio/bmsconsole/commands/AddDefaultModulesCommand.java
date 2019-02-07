@@ -9,6 +9,8 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
 
+import com.facilio.aws.util.AwsUtil;
+import com.facilio.sql.DBUtil;
 import com.facilio.sql.SQLScriptRunner;
 
 public class AddDefaultModulesCommand implements Command {
@@ -16,7 +18,7 @@ public class AddDefaultModulesCommand implements Command {
 
 	private static Logger logger = Logger.getLogger("AddDefaultModulesCommand");
 
-	private static final File INSERT_MODULES_SQL = new File(SQLScriptRunner.class.getClassLoader().getResource("conf/defaultModules.sql").getFile());
+	private static final File INSERT_MODULES_SQL = new File(SQLScriptRunner.class.getClassLoader().getResource("conf/db/" + AwsUtil.getDB() + "/defaultModules.sql").getFile());
 	
 	@Override
 	public boolean execute(Context context) throws Exception {
@@ -26,7 +28,7 @@ public class AddDefaultModulesCommand implements Command {
 		Map<String, String> paramValues = new HashMap<>(); 
 		paramValues.put("orgId", String.valueOf(orgId));
 	
-		SQLScriptRunner scriptRunner = new SQLScriptRunner(INSERT_MODULES_SQL, true, paramValues);
+		SQLScriptRunner scriptRunner = new SQLScriptRunner(INSERT_MODULES_SQL, true, paramValues, DBUtil.getDBSQLScriptRunnerMode());
 		scriptRunner.runScript();
 		
 		return false;

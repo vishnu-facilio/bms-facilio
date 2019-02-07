@@ -89,6 +89,40 @@ public class AccountConstants {
 			return typeMap;
 		}
 	}
+	
+	public static enum SessionType {
+		USER_LOGIN_SESSION(1),
+		PERMALINK_SESSION(2)
+		;
+
+	    private int sessionType;
+
+	    SessionType(int sessionType) {
+	        this.sessionType = sessionType;
+	    }
+
+	    public int getValue() {
+	        return sessionType;
+	    }
+	    
+	    public static SessionType valueOf(int sessionType) {
+	    	return typeMap.get(sessionType);
+	    }
+	    
+	    private static final Map<Integer, SessionType> typeMap = Collections.unmodifiableMap(initTypeMap());
+		private static Map<Integer, SessionType> initTypeMap() {
+			Map<Integer, SessionType> typeMap = new HashMap<>();
+			
+			for(SessionType type : values()) {
+				typeMap.put(type.getValue(), type);
+			}
+			return typeMap;
+		}
+		public Map<Integer, SessionType> getAllTypes() {
+			return typeMap;
+		}
+	}
+	
 	public static class DefaultSuperAdmin {
 		public static final String SUPER_ADMIN 	= "Super Administrator"; }
 	public static enum CommonPermission {
@@ -707,7 +741,7 @@ public class AccountConstants {
 
 		FacilioField orgId = new FacilioField();
 		orgId.setName("orgId");
-		orgId.setDataType(FieldType.NUMBER);
+		orgId.setDataType(FieldType.ID);
 		orgId.setColumnName("ORGID");
 		orgId.setModule(module);
 		fields.add(orgId);
@@ -841,7 +875,12 @@ public class AccountConstants {
 		FacilioModule module = getFacilioUserModule();
 		List<FacilioField> fields = new ArrayList<>();
 
-		fields.add(getUserIdField(module));
+		FacilioField uid = new FacilioField();
+		uid.setName("uid");
+		uid.setDataType(FieldType.ID);
+		uid.setColumnName("USERID");
+		uid.setModule(module);
+		fields.add(uid);
 
 		FacilioField name = new FacilioField();
 		name.setName("username");
@@ -889,7 +928,12 @@ public class AccountConstants {
 		FacilioModule module = getUserModule();
 		List<FacilioField> fields = new ArrayList<>();
 
-		fields.add(getUserIdField(module));
+		FacilioField uid = new FacilioField();
+		uid.setName("uid");
+		uid.setDataType(FieldType.ID);
+		uid.setColumnName("USERID");
+		uid.setModule(module);
+		fields.add(uid);
 
 		FacilioField name = new FacilioField();
 		name.setName("name");
@@ -1063,7 +1107,7 @@ public class AccountConstants {
 
 		FacilioField userMobileSettingId = new FacilioField();
 		userMobileSettingId.setName("userMobileSettingId");
-		userMobileSettingId.setDataType(FieldType.NUMBER);
+		userMobileSettingId.setDataType(FieldType.ID);
 		userMobileSettingId.setColumnName("USER_MOBILE_SETTING_ID");
 		userMobileSettingId.setModule(module);
 		fields.add(userMobileSettingId);
@@ -1083,11 +1127,12 @@ public class AccountConstants {
 
 	public static List<FacilioField> getOrgUserFields() {
 		FacilioModule module = getOrgUserModule();
+		module.setExtendModule(ModuleFactory.getResourceModule());
 		List<FacilioField> fields = new ArrayList<>();
 
 		FacilioField ouid = new FacilioField();
 		ouid.setName("ouid");
-		ouid.setDataType(FieldType.NUMBER);
+		ouid.setDataType(FieldType.ID);
 		ouid.setColumnName("ORG_USERID");
 		ouid.setModule(module);
 		fields.add(ouid);
@@ -1262,12 +1307,19 @@ public class AccountConstants {
 
 		FacilioField id = new FacilioField();
 		id.setName("id");
-		id.setDataType(FieldType.NUMBER);
+		id.setDataType(FieldType.ID);
 		id.setColumnName("SESSIONID");
 		id.setModule(module);
 		fields.add(id);
 		
 		fields.add(getUserIdField(module));
+		
+		FacilioField sessionType = new FacilioField();
+		sessionType.setName("sessionType");
+		sessionType.setDataType(FieldType.NUMBER);
+		sessionType.setColumnName("SESSION_TYPE");
+		sessionType.setModule(module);
+		fields.add(sessionType);
 		
 		FacilioField token = new FacilioField();
 		token.setName("token");
@@ -1310,6 +1362,13 @@ public class AccountConstants {
 		userAgent.setColumnName("USER_AGENT");
 		userAgent.setModule(module);
 		fields.add(userAgent);
+		
+		FacilioField sessionInfo = new FacilioField();
+		sessionInfo.setName("sessionInfo");
+		sessionInfo.setDataType(FieldType.STRING);
+		sessionInfo.setColumnName("SESSION_INFO");
+		sessionInfo.setModule(module);
+		fields.add(sessionInfo);
 	
 		return fields;
 	}
@@ -1329,7 +1388,7 @@ public class AccountConstants {
 
 		FacilioField groupId = new FacilioField();
 		groupId.setName("groupId");
-		groupId.setDataType(FieldType.NUMBER);
+		groupId.setDataType(FieldType.ID);
 		groupId.setColumnName("GROUPID");
 		groupId.setModule(module);
 		fields.add(groupId);
@@ -1402,7 +1461,7 @@ public class AccountConstants {
 
 		FacilioField memberId = new FacilioField();
 		memberId.setName("memberId");
-		memberId.setDataType(FieldType.NUMBER);
+		memberId.setDataType(FieldType.ID);
 		memberId.setColumnName("MEMBERID");
 		memberId.setModule(module);
 		fields.add(memberId);
@@ -1490,7 +1549,7 @@ public class AccountConstants {
 
 		FacilioField roleId = new FacilioField();
 		roleId.setName("roleId");
-		roleId.setDataType(FieldType.NUMBER);
+		roleId.setDataType(FieldType.ID);
 		roleId.setColumnName("ROLE_ID");
 		roleId.setModule(module);
 		fields.add(roleId);

@@ -121,10 +121,24 @@ public class PreventiveMaintenanceAPI {
 			taskTemplate.setAdditionalInfoJsonStr(sectiontemplate.getAdditionalInfoJsonStr());
 		}
 	}
-	public static Map<String, List<TaskContext>> getTaskMapForNewPMExecution(List<TaskSectionTemplate> sectiontemplates,Long woResourceId) throws Exception {
+	public static Map<String, List<TaskContext>> getTaskMapForNewPMExecution(List<TaskSectionTemplate> sectiontemplates,Long woResourceId, Long triggerId) throws Exception {
 		Map<String, List<TaskContext>> taskMap = new HashMap<>();
 		for(TaskSectionTemplate sectiontemplate :sectiontemplates) {
-			
+			if (triggerId != null && triggerId > -1) {
+				List<PMTriggerContext> triggerContexts = sectiontemplate.getPmTriggerContexts();
+				if (triggerContexts != null && !triggerContexts.isEmpty()) {
+					boolean found = false;
+					for (int i = 0; i < triggerContexts.size(); i++) {
+						if (triggerContexts.get(i).getId() == triggerId) {
+							found = true;
+							break;
+						}
+					}
+					if (!found) {
+						continue;
+					}
+				}
+			}
 			Template sectionTemplate = TemplateAPI.getTemplate(sectiontemplate.getId());
 			sectiontemplate = (TaskSectionTemplate)sectionTemplate;
 			
@@ -166,8 +180,7 @@ public class PreventiveMaintenanceAPI {
 
 		return startTimeInSecond;
 	}
-	public static List<Long> getMultipleResourceToBeAddedFromPM(PMAssignmentType pmAssignmentType,Long resourceId,Long spaceCategoryID,Long assetCategoryID,Long currentAssetId, List<PMIncludeExcludeResourceContext> includeExcludeRess) throws Exception {
-		
+	public static List<Long> getMultipleResourceToBeAddedFromPM(PMAssignmentType pmAssignmentType, Long resourceId,Long spaceCategoryID,Long assetCategoryID,Long currentAssetId, List<PMIncludeExcludeResourceContext> includeExcludeRess) throws Exception {
 		List<Long> includedIds = null;
 		List<Long> excludedIds = null;
 		if(includeExcludeRess != null && !includeExcludeRess.isEmpty()) {
@@ -1342,7 +1355,7 @@ public class PreventiveMaintenanceAPI {
 			return 0;
 		}
 		else {
-			return (Long) rs.get(0).get("count");
+			return ((Number) rs.get(0).get("count")).longValue();
 		}
 	}
 	

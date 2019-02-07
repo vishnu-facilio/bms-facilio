@@ -1,20 +1,29 @@
 package com.facilio.sql;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.HashMap;
+import java.util.Properties;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
+import com.facilio.aws.util.AwsUtil;
 import com.facilio.transaction.FacilioConnectionPool;
 
 public class DBUtil {
 	private static final Logger LOGGER = LogManager.getLogger(DBUtil.class.getName());
+	private static final String DB_PROPERTY_FILE = "conf/db/";
+	private static final Properties PROPERTIES = new Properties();
+	private static Boolean executeSingleStatement;
+	private static final Object LOCK = new Object();
 
 	public static void close (Statement stmt) {
 		if(stmt != null) {
@@ -129,6 +138,44 @@ public class DBUtil {
 			closeAll(c, stmt, rs);
 		}
 		return null;
+	}
+
+	public static String getQuery(String key) {
+		String value = PROPERTIES.getProperty(key);
+        if (value != null ) {
+        	value = value.trim();
+        	if(value.length() > 0) {
+        		return value;
+        	}
+        }
+		return null;
+	}
+	
+	public static boolean getDBSQLScriptRunnerMode() {
+		if (executeSingleStatement == null) {
+			synchronized (LOCK) {
+				if (executeSingleStatement == null) {
+					executeSingleStatement = Boolean.parseBoolean(getQuery("db.executeSingleStatement"));
+				}
+			}
+		}
+		return executeSingleStatement;
+	}
+	
+	static {
+		loadProperties();
+	}
+
+	private static void loadProperties() {
+		String propertyFile = DB_PROPERTY_FILE + AwsUtil.getDB() + ".properties";
+		URL resource = AwsUtil.class.getClassLoader().getResource(propertyFile);
+		if (resource != null) {
+			try (InputStream stream = resource.openStream()) {
+				PROPERTIES.load(stream);
+			} catch (IOException e) {
+				LOGGER.info("Exception while trying to load property file " + propertyFile);
+			}
+		}
 	}
 	
 }

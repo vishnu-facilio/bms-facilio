@@ -114,6 +114,7 @@ public class FormsAPI {
 				FormField f = FieldUtil.getAsBeanFromMap(p, FormField.class);
 				if (f.getFieldId() != -1) {
 					FacilioField field =  modBean.getField(f.getFieldId());
+					f.setField(field);
 					if (field instanceof LookupField) {
 						FacilioModule lookupMod = ((LookupField) field).getLookupModule();
 						if (lookupMod != null) {

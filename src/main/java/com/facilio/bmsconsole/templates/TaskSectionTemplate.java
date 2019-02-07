@@ -8,6 +8,7 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import com.facilio.bmsconsole.context.PMIncludeExcludeResourceContext;
+import com.facilio.bmsconsole.context.PMTriggerContext;
 import com.facilio.bmsconsole.context.PreventiveMaintenance.PMAssignmentType;
 import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.TaskContext.InputType;
@@ -27,6 +28,16 @@ public class TaskSectionTemplate extends Template {
 	public void setPmIncludeExcludeResourceContexts(List<PMIncludeExcludeResourceContext> pmIncludeExcludeResourceContexts) {
 		this.pmIncludeExcludeResourceContexts = pmIncludeExcludeResourceContexts;
 	}
+	
+	private List<PMTriggerContext> pmTriggerContexts;
+	public List<PMTriggerContext> getPmTriggerContexts() {
+		return pmTriggerContexts;
+	}
+	public void setPmTriggerContexts(List<PMTriggerContext> pmTriggerContexts) {
+		this.pmTriggerContexts = pmTriggerContexts;
+	}
+	
+	
 	private Boolean isEditable;
 	public Boolean getIsEditable() {
 		return isEditable;

@@ -23,7 +23,8 @@ public enum FieldType {
 	LOOKUP(7, "Lookup", null, LookupOperator.getAllOperators()),
 	ENUM(8, "Enum", new String[] {"ENUM_CF1", "ENUM_CF2", "ENUM_CF3", "ENUM_CF4", "ENUM_CF5","ENUM_CF6", "ENUM_CF7", "ENUM_CF8", "ENUM_CF9", "ENUM_CF10"}, EnumOperators.getAllOperators()),
 	FILE(9, "File", null, null),
-	COUNTER(10, "Counter", null, null)
+	COUNTER(10, "Counter", null, null), 
+	ID(11, "Identifier", null, NumberOperators.getAllOperators()),
 	;
 	
 	private int value;

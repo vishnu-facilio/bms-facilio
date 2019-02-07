@@ -16,6 +16,7 @@ import java.time.temporal.ChronoField;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.IsoFields;
 import java.time.temporal.TemporalAdjusters;
+import java.time.temporal.TemporalAmount;
 import java.time.temporal.WeekFields;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -49,7 +50,7 @@ public class DateTimeUtil
 		if(org != null) {
 			String zone = org.getTimezone();
 			if(zone != null && !zone.isEmpty()) {
-				return ZoneId.of(zone);
+				return ZoneId.of(zone.trim());
 			}
 		}
 		return AwsUtil.isDevelopment() ? ZoneId.systemDefault() : ZoneId.of("Z");
@@ -195,6 +196,7 @@ public class DateTimeUtil
 	public static long addMonths(long time,int monthCount) {
 		return getLong(getZonedDateTime(time).plusMonths((long)monthCount),true);
 	}
+	
 	public static long addWeeks(long time,int weekCount) {
 		return getLong(getZonedDateTime(time).plusWeeks((long)weekCount),true);
 	}
