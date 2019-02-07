@@ -51,7 +51,7 @@ public class GetAvgResponseResolutionBySiteCommand implements Command{
 		for(int i=0;i<avgResolutionTimeBySiteTillLastMonthList.size();i++)
 		{
 			Map<String, Object> siteTechMap = avgResolutionTimeBySiteTillLastMonthList.get(i);
-			avgResolutionTimeBySite.put((Long)siteTechMap.get("siteId"),siteTechMap.get("avg_resolution_time"));
+			avgResolutionTimeBySiteTillLastMonth.put((Long)siteTechMap.get("siteId"),siteTechMap.get("avg_resolution_time"));
 			
 		}
 		
@@ -59,11 +59,11 @@ public class GetAvgResponseResolutionBySiteCommand implements Command{
 		
 		List<Map<String,Object>> finalResp = new ArrayList<Map<String,Object>>();
 		
-		//Iterator<Map.Entry<Long, Object>> itr = avgResolutionTimeBySite.entrySet().iterator(); 
-        
-		for (Map map : avgResolutionTimeBySiteList) 
+	    
+		for (int i=0;i<avgResolutionTimeBySiteList.size();i++) 
 	    	
         { 
+			Map<String, Object> map = avgResolutionTimeBySiteList.get(i);
 			Long siteId = (Long)map.get("siteId");
 	     
         	 Map<String,Object> siteInfo = new HashMap<String, Object>();
