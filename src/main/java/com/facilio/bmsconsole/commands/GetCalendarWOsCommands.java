@@ -49,7 +49,7 @@ public class GetCalendarWOsCommands implements Command {
 			countField.setName("count");
 			fields.add(countField);
 			
-			FacilioField createdTimeField = modBean.getField(FacilioConstants.ContextNames.WORK_ORDER, "createdTime");
+			FacilioField createdTimeField = modBean.getField("createdTime", FacilioConstants.ContextNames.WORK_ORDER);
 			DateAggregateOperator aggr = (DateAggregateOperator) context.get(FacilioConstants.ContextNames.AGGR_KEY);
 			fields.add(aggr.getTimestampField(createdTimeField));
 			woBuilder.groupBy(aggr.getSelectField(createdTimeField).getCompleteColumnName())
