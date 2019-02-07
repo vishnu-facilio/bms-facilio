@@ -138,7 +138,9 @@ public class TimeSeries extends FacilioAction {
 		if (!getShowInstanceCount()) {
 			context.put(FacilioConstants.ContextNames.FETCH_READING_INPUT_VALUES, true);
 		}
-		
+		if (getSearch() != null) {
+			context.put(FacilioConstants.ContextNames.SEARCH, getSearch());
+		}
 		Chain chain = ReadOnlyChainFactory.getUnmodelledInstancesForController();
 		chain.execute(context);
 		
@@ -200,6 +202,16 @@ public class TimeSeries extends FacilioAction {
 	}
 	public void setControllerId(long controllerId) {
 		this.controllerId = controllerId;
+	}
+	
+	String search;
+
+	public void setSearch(String search) {
+		this.search = search;
+	}
+
+	public String getSearch() {
+		return this.search;
 	}
 	
 	private String macAddr;

@@ -516,10 +516,10 @@ public class TimeSeriesAPI {
 	}
 	
 	public static List<Map<String, Object>> getUnmodeledInstancesForController (long controllerId) throws Exception {
-		return getUnmodeledInstancesForController(controllerId, null, null, null, null, false);
+		return getUnmodeledInstancesForController(controllerId, null, null, null, null, false, null);
 	}
 	
-	public static List<Map<String, Object>> getUnmodeledInstancesForController (long controllerId, Boolean configuredOnly, Boolean fetchMapped, JSONObject pagination, Boolean isSubscribed, boolean fetchCount) throws Exception {
+	public static List<Map<String, Object>> getUnmodeledInstancesForController (long controllerId, Boolean configuredOnly, Boolean fetchMapped, JSONObject pagination, Boolean isSubscribed, boolean fetchCount, String searchText) throws Exception {
 		FacilioModule module = ModuleFactory.getUnmodeledInstancesModule();
 		List<FacilioField> fields = FieldFactory.getUnmodeledInstanceFields();
 		fields.add(FieldFactory.getIdField(module));
@@ -541,6 +541,10 @@ public class TimeSeriesAPI {
 		criteria.addOrCondition(CriteriaAPI.getCondition(fieldMap.get("instanceType"), String.valueOf(6), NumberOperators.LESS_THAN));
 		
 		builder.andCriteria(criteria);
+
+        if (searchText != null) {
+    		criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("instance"), searchText, StringOperators.CONTAINS));
+   		}
 		
 		if (configuredOnly != null) {
 			Criteria inUseCriteria = new Criteria();
