@@ -67,6 +67,17 @@ public class GetFutureWOsCommands implements Command {
 			for(PreventiveMaintenance pm : pms) {
 				WorkorderTemplate woTemplate = pm.getWoTemplate();
 				
+				WorkOrderContext wo = woTemplate.getWorkorder();
+				TicketAPI.loadWorkOrderLookups(Collections.singletonList(wo));
+				TicketAPI.updateTicketStatus(wo);
+				long evalStartTime = System.currentTimeMillis();
+				boolean isPassed = view.getCriteria() == null ? true : view.getCriteria().computePredicate().evaluate(wo);
+				LOGGER.debug("Time taken for evaluation of WOs for PM : "+pm.getId()+" is " + (System.currentTimeMillis() - evalStartTime));
+				
+				if (!isPassed) {
+					continue;
+				}
+				
 				long currentStartTime = startTime / 1000;
 				long currentEndTime = endTime / 1000;
 				if (dateField.getName().equals("dueDate")) {
@@ -88,7 +99,7 @@ public class GetFutureWOsCommands implements Command {
 							if(trigger.getSchedule().getFrequencyTypeEnum() == ScheduleInfo.FrequencyType.DO_NOT_REPEAT) {
 								if(trigger.getStartTime() > currentStartTime && trigger.getStartTime() <= currentEndTime) {
 									PMJobsContext pmJob = PreventiveMaintenanceAPI.getNextPMJob(trigger.getId(), currentStartTime, false);
-									checkAndAddWOs(wos, Collections.singletonList(pmJob), woTemplate, view.getCriteria(), trigger);
+									checkAndAddWOs(wos, Collections.singletonList(pmJob), woTemplate, trigger);
 								}
 							}
 							else {
@@ -96,7 +107,7 @@ public class GetFutureWOsCommands implements Command {
 								switch(pm.getTriggerTypeEnum()) {
 									case ONLY_SCHEDULE_TRIGGER: 
 										List<PMJobsContext> pmJobs = PreventiveMaintenanceAPI.getNextPMJobs(trigger, currentStartTime, currentEndTime);
-										checkAndAddWOs(wos, pmJobs, woTemplate, view.getCriteria(), trigger);
+										checkAndAddWOs(wos, pmJobs, woTemplate, trigger);
 											// virtualJobsStartTime = pmJobs.get(pmJobs.size() - 1).getNextExecutionTime();
 										long plannedEndTime = DateTimeUtil.getDayStartTime(PreventiveMaintenanceAPI.PM_CALCULATION_DAYS+1, true) - 1;
 										if(currentStartTime > plannedEndTime) {
@@ -113,7 +124,7 @@ public class GetFutureWOsCommands implements Command {
 											virtualJobsStartTime = -1;
 										}
 										else if(pmJob.getNextExecutionTime() > currentStartTime) {
-											checkAndAddWOs(wos, Collections.singletonList(pmJob), woTemplate, view.getCriteria(), trigger);
+											checkAndAddWOs(wos, Collections.singletonList(pmJob), woTemplate, trigger);
 											virtualJobsStartTime = pmJob.getNextExecutionTime();
 										}
 										else {
@@ -123,7 +134,7 @@ public class GetFutureWOsCommands implements Command {
 								}
 								if(virtualJobsStartTime != -1) {
 									List<PMJobsContext> pmJobs = PreventiveMaintenanceAPI.createPMJobs(pm, trigger, virtualJobsStartTime, currentEndTime, false);
-									checkAndAddWOs(wos, pmJobs, woTemplate, view.getCriteria(), trigger);
+									checkAndAddWOs(wos, pmJobs, woTemplate, trigger);
 								}
 							}
 						}
@@ -168,25 +179,16 @@ public class GetFutureWOsCommands implements Command {
 		return false;
 	}
 	
-	private void checkAndAddWOs (List<WorkOrderContext> woList, List<PMJobsContext> pmJobs, WorkorderTemplate template, Criteria criteria, PMTriggerContext trigger) throws Exception {
+	private void checkAndAddWOs (List<WorkOrderContext> woList, List<PMJobsContext> pmJobs, WorkorderTemplate template, PMTriggerContext trigger) throws Exception {
 		if(pmJobs != null && !pmJobs.isEmpty()) {
 			long startTime = System.currentTimeMillis();
-			WorkOrderContext wo = template.getWorkorder();
-			TicketAPI.loadWorkOrderLookups(Collections.singletonList(wo));
-			long evalStartTime = System.currentTimeMillis();
-			boolean isPassed = criteria == null ? true : criteria.computePredicate().evaluate(wo);
-			LOGGER.debug("Time taken for evaluation of WOs for trigger : "+trigger.getId()+" is " + (System.currentTimeMillis() - evalStartTime));
-			if (isPassed) {
-				long woCreationTime = System.currentTimeMillis();
-				for (PMJobsContext pmJob : pmJobs) {
-					WorkOrderContext currentWo = template.getWorkorder();
-					currentWo.setCreatedTime(pmJob.getNextExecutionTime() * 1000);
-					if (currentWo.getDuration() != -1) {
-						currentWo.setDueDate((pmJob.getNextExecutionTime() + currentWo.getDuration()) * 1000);
-					}
-					woList.add(currentWo);
+			for (PMJobsContext pmJob : pmJobs) {
+				WorkOrderContext currentWo = template.getWorkorder();
+				currentWo.setCreatedTime(pmJob.getNextExecutionTime() * 1000);
+				if (currentWo.getDuration() != -1) {
+					currentWo.setDueDate((pmJob.getNextExecutionTime() + currentWo.getDuration()) * 1000);
 				}
-				LOGGER.debug("Time taken for WO Creation for trigger : "+trigger.getId()+" is " + (System.currentTimeMillis() - woCreationTime));
+				woList.add(currentWo);
 			}
 			LOGGER.info("Time taken for checking of WOs for trigger : "+trigger.getId()+" is " + (System.currentTimeMillis() - startTime));
 		}
