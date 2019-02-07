@@ -20,8 +20,8 @@ public enum Unit {
 	DECIWH(82,"Deciwatt Hour","DWh",Metric.ENERGY,"si*100","this/100"),
 	MWH(3,"Megawatt Hour","mWh",Metric.ENERGY,"si/1000","this*1000"),
 	
-	CELSIUS(4,"Celsius","&deg;C",Metric.TEMPERATURE),
-	FAHRENHEIT(5,"Fahrenheit","&deg;F",Metric.TEMPERATURE,"(si*1.8)+32","(this-32)/1.8"),
+	CELSIUS(4,"Celsius","°C",Metric.TEMPERATURE),
+	FAHRENHEIT(5,"Fahrenheit","°F",Metric.TEMPERATURE,"(si*1.8)+32","(this-32)/1.8"),
 	KELWIN(6,"Kelvin","K",Metric.TEMPERATURE,"si+273.15","this-273.15"),
 	
 	METER(7,"Meter","m",Metric.LENGTH),
