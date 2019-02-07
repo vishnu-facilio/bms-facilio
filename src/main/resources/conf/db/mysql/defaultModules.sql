@@ -3010,6 +3010,7 @@ INSERT INTO Module_Local_ID (ORGID, MODULE_NAME, LAST_LOCAL_ID) VALUES (${orgId}
 INSERT INTO Module_Local_ID (ORGID, MODULE_NAME, LAST_LOCAL_ID) VALUES (${orgId}, 'task', 0);
 INSERT INTO Module_Local_ID (ORGID, MODULE_NAME, LAST_LOCAL_ID) VALUES (${orgId}, 'alarm', 0);
 INSERT INTO Module_Local_ID (ORGID, MODULE_NAME, LAST_LOCAL_ID) VALUES (${orgId}, 'readingalarm', 0);
+INSERT INTO Module_Local_ID (ORGID, MODULE_NAME, LAST_LOCAL_ID) VALUES (${orgId}, 'inventory', 0);
 
 -- Default Approval Rule
 INSERT INTO Criteria (ORGID, PATTERN) VALUES (${orgId}, '1');
