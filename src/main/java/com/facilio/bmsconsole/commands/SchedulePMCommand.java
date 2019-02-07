@@ -123,7 +123,7 @@ private List<PMJobsContext> pmJobsToBeScheduled;
 			if(trigger == null) {
 				trigger = PreventiveMaintenanceAPI.getDefaultTrigger(pm.getTriggers());
 			}
-			long startTime = PreventiveMaintenanceAPI.getStartTimeInSecond(trigger.getStartTime());
+			long startTime = PreventiveMaintenanceAPI.getStartTimeInSecond(System.currentTimeMillis());
 			long nextExecutionTime = trigger.getSchedule().nextExecutionTime(startTime);
 			
 			boolean isFirst = true;
