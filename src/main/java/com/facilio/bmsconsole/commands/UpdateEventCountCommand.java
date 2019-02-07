@@ -8,6 +8,7 @@ import java.util.Map;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -15,11 +16,13 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.events.constants.EventConstants.EventModuleFactory;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericSelectRecordBuilder;
 
@@ -28,8 +31,8 @@ public class UpdateEventCountCommand implements Command {
 
 	@Override
 	public boolean execute(Context context) throws Exception {
-		Long alarmId = (Long) context.get(FacilioConstants.ContextNames.ALARM_ID);
-		if (alarmId == null && AccountUtil.getCurrentOrg().getId() == 88l) {
+		List alarmIds = (List) context.get(FacilioConstants.ContextNames.ALARM_ID);
+		if (alarmIds == null && AccountUtil.getCurrentOrg().getId() == 88l) {
 			StringBuilder builder = new StringBuilder("Alarm is null for the event")
 					.append("\nTruncated Trace\n");
 
@@ -41,17 +44,19 @@ public class UpdateEventCountCommand implements Command {
 			LOGGER.info(builder.toString());
 		}
 		
-		if (alarmId != null) {
+		if (CollectionUtils.isNotEmpty(alarmIds)) {
 			String moduleName = "alarm";
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioModule module = modBean.getModule(moduleName);
 			FacilioField noOfEventsField = modBean.getField("noOfEvents", moduleName);
 			
+			FacilioModule eventModule = EventModuleFactory.getEventModule();
 			List<FacilioField> fields = new ArrayList<>();
 			FacilioField alarmIdField = new FacilioField();
 			alarmIdField.setName("alarmId");
 			alarmIdField.setColumnName("ALARM_ID");
 			alarmIdField.setDataType(FieldType.NUMBER);
+			alarmIdField.setModule(eventModule);
 			fields.add(alarmIdField);
 			
 			FacilioField countField = new FacilioField();
@@ -64,10 +69,11 @@ public class UpdateEventCountCommand implements Command {
 					.table("Event")
 					.select(fields)
 					.groupBy(alarmIdField.getCompleteColumnName())
-					.andCustomWhere("ORGID = ? AND ALARM_ID = ?", String.valueOf(AccountUtil.getCurrentOrg().getOrgId()), alarmId);
+					.andCondition(CriteriaAPI.getCondition(alarmIdField, alarmIds, NumberOperators.EQUALS))
+					.andCustomWhere("ORGID = ?", String.valueOf(AccountUtil.getCurrentOrg().getOrgId()));
 			List<Map<String, Object>> list = builder.get();
 			if (AccountUtil.getCurrentOrg().getId() == 88l && list != null) {
-				StringBuilder sb = new StringBuilder("Result for alarm_id:" + alarmId + "; " + list.toString())
+				StringBuilder sb = new StringBuilder("Result for alarm_id:" + alarmIds + "; " + list.toString())
 						.append("\nTruncated Trace\n");
 
 				StackTraceElement[] trace = Thread.currentThread().getStackTrace();
