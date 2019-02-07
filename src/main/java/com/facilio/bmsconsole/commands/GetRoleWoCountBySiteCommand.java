@@ -28,7 +28,25 @@ public class GetRoleWoCountBySiteCommand implements Command{
 		long endTime = (Long) context.get(FacilioConstants.ContextNames.WORK_ORDER_ENDTIME);
 	
 		List<Map<String, Object>> woClosedCount = WorkOrderAPI.getTotalClosedWoCountBySite(startTime, endTime);
-		Map<Long, Object> woTotalCount = WorkOrderAPI.getTotalWoCountBySite(startTime, endTime);
+		List<Map<String, Object>> woTotalCountList = WorkOrderAPI.getTotalWoCountBySite(startTime, endTime);
+		
+		 Map<Long, Object> woTotalCount = new HashMap<Long, Object>();
+		    for(int i=0;i<woTotalCountList.size();i++)
+		    {
+		    	 
+		    	woTotalCount.put((Long)woTotalCountList.get(i).get("siteId"),woTotalCountList.get(i).get("count"));
+		       
+		    }
+
+		    Map<Long, Object> woClosedCountMap = new HashMap<Long, Object>();
+		    for(int i=0;i<woClosedCount.size();i++)
+		    {
+		    	 
+		    	woClosedCountMap.put((Long)woClosedCount.get(i).get("siteId"),woClosedCount.get(i).get("count"));
+		       
+		    }
+
+		
 		Map<Long, Object> teamCount = WorkOrderAPI.getTeamsCountBySite();
 		Map<Long, Object> screenCountBySite = WorkOrderAPI.getScreensCountBySite();
 		
@@ -78,23 +96,24 @@ public class GetRoleWoCountBySiteCommand implements Command{
 			
 		}
 		
-		
-		   Iterator<Map.Entry<Long, Object>> itr =woTotalCount.entrySet().iterator(); 
-	        
-	     while(itr.hasNext()) 
-	      { 
-	        Map.Entry<Long, Object> entry = itr.next(); 
+		    
+		for(int i=0;i<woTotalCountList.size();i++)
+		{
+	 
 	       
-			Long totalCountVal = (Long)entry.getValue();
-			Long siteId = (Long)entry.getKey();
+			Long totalCountVal = (Long)woClosedCount.get(i).get("count");
+			Long siteId = (Long)woClosedCount.get(i).get("siteId");
+			
+			if(!woClosedCountMap.containsKey(siteId)) {
+			
 			Map<String,Object> siteCount = new HashMap<String, Object>();
 		    String siteName = (String) siteNameMap.remove(siteId);
 		    Long screenCount = null;
-            if(screenCountBySite!=null) {
-              screenCount = screenCountBySite.get(siteId)!=null?(Long)screenCountBySite.get(siteId):0;
-              siteCount.put("screenCount",screenCount);
+            	if(screenCountBySite!=null) {
+            		screenCount = screenCountBySite.get(siteId)!=null?(Long)screenCountBySite.get(siteId):0;
+            		siteCount.put("screenCount",screenCount);
   			
-            }
+            	}
             Object totalCount = woTotalCount.get(siteId);
             siteCount.put("totalCount",(Long)totalCount);
             Map<String,Object> teamCountBySite = (Map<String, Object>) teamCount.get(siteId);
@@ -120,6 +139,7 @@ public class GetRoleWoCountBySiteCommand implements Command{
 			
 			
 			resp.add(siteCount);
+			}
 			
 		}
 		

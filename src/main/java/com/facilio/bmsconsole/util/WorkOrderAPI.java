@@ -694,7 +694,11 @@ public static List<Map<String,Object>> getTopNCategoryOnAvgCompletionTime(String
 	       
 	     }
 	   
-	    List<Map<String,Object>> resp = new ArrayList<Map<String,Object>>(finalResp.values());
+	    List<Map<String,Object>> resp = new ArrayList<Map<String,Object>>();
+	    for (Map map : list) {
+	    	Long siteId = (Long)map.get("siteId");
+	    	resp.add(finalResp.get(siteId));
+	    }
 		return resp;
 
 
@@ -704,7 +708,7 @@ public static List<Map<String,Object>> getTopNCategoryOnAvgCompletionTime(String
 
 
 
-public static Map<Long,Object> getAvgCompletionTimeBySite(Long startTime,Long endTime,boolean isTillLastMonth) throws Exception {
+public static List<Map<String,Object>> getAvgCompletionTimeBySite(Long startTime,Long endTime,boolean isTillLastMonth) throws Exception {
 
 
 	ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -772,7 +776,7 @@ public static Map<Long,Object> getAvgCompletionTimeBySite(Long startTime,Long en
 	   }
 
    List<Map<String,Object>> avgResolutionTime = selectRecordsBuilder.get();
-   Map<Long,Object> countMap = new HashMap<Long, Object>();
+   /*Map<Long,Object> countMap = new HashMap<Long, Object>();
 	
 	
 	for(int i=0;i<avgResolutionTime.size();i++)
@@ -781,7 +785,8 @@ public static Map<Long,Object> getAvgCompletionTimeBySite(Long startTime,Long en
 		countMap.put((Long)siteTechMap.get("siteId"),siteTechMap.get("avg_resolution_time"));
 		
 	}
-	return countMap;
+	*/
+	return avgResolutionTime;
 
 
 
@@ -871,7 +876,7 @@ public static Map<Long,Object> getAvgResponseTimeBySite(Long startTime,Long endT
 
 
 
-public static Map<Long, Object> getTotalWoCountBySite(Long startTime,Long endTime) throws Exception {
+public static List<Map<String, Object>> getTotalWoCountBySite(Long startTime,Long endTime) throws Exception {
 
 
 	ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -900,15 +905,8 @@ public static Map<Long, Object> getTotalWoCountBySite(Long startTime,Long endTim
 					                                      		  ;
     List<Map<String, Object>> totalWoCountBySite = selectRecordsBuilder.getAsProps();
     
-    Map<Long, Object> sites = new HashMap<Long, Object>();
-    for(int i=0;i<totalWoCountBySite.size();i++)
-    {
-    	 
-       	sites.put((Long)totalWoCountBySite.get(i).get("siteId"),totalWoCountBySite.get(i).get("count"));
-       
-    }
-
-   return sites;
+   
+   return totalWoCountBySite;
 
 }
 
