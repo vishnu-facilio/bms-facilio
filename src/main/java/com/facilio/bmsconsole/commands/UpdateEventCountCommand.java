@@ -32,18 +32,6 @@ public class UpdateEventCountCommand implements Command {
 	@Override
 	public boolean execute(Context context) throws Exception {
 		List alarmIds = (List) context.get(FacilioConstants.ContextNames.ALARM_ID);
-		if (alarmIds == null && AccountUtil.getCurrentOrg().getId() == 88l) {
-			StringBuilder builder = new StringBuilder("Alarm is null for the event")
-					.append("\nTruncated Trace\n");
-
-			StackTraceElement[] trace = Thread.currentThread().getStackTrace();
-			for (int i = 0; i < Math.min(10, trace.length); i++) {
-				builder.append(trace[i])
-					.append("\n");
-			}
-			LOGGER.info(builder.toString());
-		}
-		
 		if (CollectionUtils.isNotEmpty(alarmIds)) {
 			String moduleName = "alarm";
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -72,17 +60,6 @@ public class UpdateEventCountCommand implements Command {
 					.andCondition(CriteriaAPI.getCondition(alarmIdField, alarmIds, NumberOperators.EQUALS))
 					.andCustomWhere("ORGID = ?", String.valueOf(AccountUtil.getCurrentOrg().getOrgId()));
 			List<Map<String, Object>> list = builder.get();
-			if (AccountUtil.getCurrentOrg().getId() == 88l && list != null) {
-				StringBuilder sb = new StringBuilder("Result for alarm_id:" + alarmIds + "; " + list.toString())
-						.append("\nTruncated Trace\n");
-
-				StackTraceElement[] trace = Thread.currentThread().getStackTrace();
-				for (int i = 0; i < Math.min(10, trace.length); i++) {
-					sb.append(trace[i])
-						.append("\n");
-				}
-				LOGGER.info(sb.toString());
-			}
 			
 			Map<String, Object> updateMap = new HashMap<>();
 			for (Map<String, Object> map : list) {
