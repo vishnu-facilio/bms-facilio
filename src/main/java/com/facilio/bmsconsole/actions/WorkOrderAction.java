@@ -1266,6 +1266,10 @@ public class WorkOrderAction extends FacilioAction {
 		this.count = count;
 	}
 
+	public void setCount(long count) {
+		this.count = count+"";
+	}
+	
 	public String workOrderCount () throws Exception {
 		System.out.println("View Name :  clount " + getViewName());
 		return workOrderList();	
