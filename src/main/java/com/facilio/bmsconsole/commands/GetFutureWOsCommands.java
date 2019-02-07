@@ -73,47 +73,49 @@ public class GetFutureWOsCommands implements Command {
 				}
 				
 				List<PMTriggerContext> pmTrigggers = pmTriggersMap.get(pm.getId());
-				for (PMTriggerContext trigger : pmTrigggers) {
-					if(trigger.getSchedule() != null) {
-						if(trigger.getSchedule().getFrequencyTypeEnum() == ScheduleInfo.FrequencyType.DO_NOT_REPEAT) {
-							if(trigger.getStartTime() > currentStartTime && trigger.getStartTime() <= currentEndTime) {
-								PMJobsContext pmJob = PreventiveMaintenanceAPI.getNextPMJob(trigger.getId(), currentStartTime, false);
-								checkAndAddWOs(wos, Collections.singletonList(pmJob), woTemplate, view.getCriteria());
-							}
-						}
-						else {
-							long virtualJobsStartTime = -1;
-							switch(pm.getTriggerTypeEnum()) {
-								case ONLY_SCHEDULE_TRIGGER: 
-									List<PMJobsContext> pmJobs = PreventiveMaintenanceAPI.getNextPMJobs(trigger, currentStartTime, currentEndTime);
-									checkAndAddWOs(wos, pmJobs, woTemplate, view.getCriteria());
-										// virtualJobsStartTime = pmJobs.get(pmJobs.size() - 1).getNextExecutionTime();
-									long plannedEndTime = DateTimeUtil.getDayStartTime(PreventiveMaintenanceAPI.PM_CALCULATION_DAYS+1, true) - 1;
-									if(currentStartTime > plannedEndTime) {
-										virtualJobsStartTime = currentStartTime;
-									}
-									else if(currentEndTime > plannedEndTime) {
-										virtualJobsStartTime = plannedEndTime+1;
-									}
-									break;
-								case FIXED:
-								case FLOATING:
+				if (pmTrigggers != null) {
+					for (PMTriggerContext trigger : pmTrigggers) {
+						if(trigger.getSchedule() != null) {
+							if(trigger.getSchedule().getFrequencyTypeEnum() == ScheduleInfo.FrequencyType.DO_NOT_REPEAT) {
+								if(trigger.getStartTime() > currentStartTime && trigger.getStartTime() <= currentEndTime) {
 									PMJobsContext pmJob = PreventiveMaintenanceAPI.getNextPMJob(trigger.getId(), currentStartTime, false);
-									if(pmJob.getNextExecutionTime() > currentEndTime) {
-										virtualJobsStartTime = -1;
-									}
-									else if(pmJob.getNextExecutionTime() > currentStartTime) {
-										checkAndAddWOs(wos, Collections.singletonList(pmJob), woTemplate, view.getCriteria());
-										virtualJobsStartTime = pmJob.getNextExecutionTime();
-									}
-									else {
-										virtualJobsStartTime = currentStartTime;
-									}
-									break;
+									checkAndAddWOs(wos, Collections.singletonList(pmJob), woTemplate, view.getCriteria());
+								}
 							}
-							if(virtualJobsStartTime != -1) {
-								List<PMJobsContext> pmJobs = PreventiveMaintenanceAPI.createPMJobs(pm, trigger, virtualJobsStartTime, currentEndTime, false);
-								checkAndAddWOs(wos, pmJobs, woTemplate, view.getCriteria());
+							else {
+								long virtualJobsStartTime = -1;
+								switch(pm.getTriggerTypeEnum()) {
+									case ONLY_SCHEDULE_TRIGGER: 
+										List<PMJobsContext> pmJobs = PreventiveMaintenanceAPI.getNextPMJobs(trigger, currentStartTime, currentEndTime);
+										checkAndAddWOs(wos, pmJobs, woTemplate, view.getCriteria());
+											// virtualJobsStartTime = pmJobs.get(pmJobs.size() - 1).getNextExecutionTime();
+										long plannedEndTime = DateTimeUtil.getDayStartTime(PreventiveMaintenanceAPI.PM_CALCULATION_DAYS+1, true) - 1;
+										if(currentStartTime > plannedEndTime) {
+											virtualJobsStartTime = currentStartTime;
+										}
+										else if(currentEndTime > plannedEndTime) {
+											virtualJobsStartTime = plannedEndTime+1;
+										}
+										break;
+									case FIXED:
+									case FLOATING:
+										PMJobsContext pmJob = PreventiveMaintenanceAPI.getNextPMJob(trigger.getId(), currentStartTime, false);
+										if(pmJob.getNextExecutionTime() > currentEndTime) {
+											virtualJobsStartTime = -1;
+										}
+										else if(pmJob.getNextExecutionTime() > currentStartTime) {
+											checkAndAddWOs(wos, Collections.singletonList(pmJob), woTemplate, view.getCriteria());
+											virtualJobsStartTime = pmJob.getNextExecutionTime();
+										}
+										else {
+											virtualJobsStartTime = currentStartTime;
+										}
+										break;
+								}
+								if(virtualJobsStartTime != -1) {
+									List<PMJobsContext> pmJobs = PreventiveMaintenanceAPI.createPMJobs(pm, trigger, virtualJobsStartTime, currentEndTime, false);
+									checkAndAddWOs(wos, pmJobs, woTemplate, view.getCriteria());
+								}
 							}
 						}
 					}

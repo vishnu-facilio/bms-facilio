@@ -20,7 +20,7 @@ public class ValidateCalendarWOCommand implements Command {
 			throw new IllegalArgumentException("Date Field cannot be empty");
 		}
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioField dateField = modBean.getField(FacilioConstants.ContextNames.WORK_ORDER, dateFieldName);
+		FacilioField dateField = modBean.getField(dateFieldName, FacilioConstants.ContextNames.WORK_ORDER);
 		if (dateField == null) {
 			throw new IllegalArgumentException("Invalid date field");
 		}
