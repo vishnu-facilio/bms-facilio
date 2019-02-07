@@ -70,6 +70,7 @@ public class GetFutureWOsCommands implements Command {
 				WorkOrderContext wo = woTemplate.getWorkorder();
 				TicketAPI.loadWorkOrderLookups(Collections.singletonList(wo));
 				TicketAPI.updateTicketStatus(wo);
+				LOGGER.info("WO status for pm : "+pm.getId()+" : "+wo.getStatus());
 				long evalStartTime = System.currentTimeMillis();
 				boolean isPassed = view.getCriteria() == null ? true : view.getCriteria().computePredicate().evaluate(wo);
 				LOGGER.debug("Time taken for evaluation of WOs for PM : "+pm.getId()+" is " + (System.currentTimeMillis() - evalStartTime));
