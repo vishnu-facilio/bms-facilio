@@ -2064,15 +2064,15 @@ public class WorkOrderAction extends FacilioAction {
 		this.dateField = dateField;
 	}
 	
-	private boolean isCount;
-	public boolean isCount() {
-		return isCount;
-	}
-	public void setCount(boolean isCount) {
-		this.isCount = isCount;
-	}
-
 	public String calendarWOs() throws Exception {
+		return calendarApi(false);
+	}
+	
+	public String calendarWOCount() throws Exception {
+		return calendarApi(true);
+	}
+	
+	private String calendarApi (boolean isCount) throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.DATE_FIELD, dateField);
 		context.put(FacilioConstants.ContextNames.START_TIME, startTime);

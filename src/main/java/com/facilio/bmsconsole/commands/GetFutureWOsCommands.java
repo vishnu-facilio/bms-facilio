@@ -82,7 +82,7 @@ public class GetFutureWOsCommands implements Command {
 				List<PMTriggerContext> pmTrigggers = pmTriggersMap.get(pm.getId());
 				if (pmTrigggers != null) {
 					long triggerStartTime = System.currentTimeMillis();
-					LOGGER.info("Trigger Size for "+pm.getId()+" is "+pmTrigggers.size());
+					LOGGER.debug("Trigger Size for "+pm.getId()+" is "+pmTrigggers.size());
 					for (PMTriggerContext trigger : pmTrigggers) {
 						if(trigger.getSchedule() != null) {
 							if(trigger.getSchedule().getFrequencyTypeEnum() == ScheduleInfo.FrequencyType.DO_NOT_REPEAT) {
@@ -128,7 +128,7 @@ public class GetFutureWOsCommands implements Command {
 							}
 						}
 					}
-					LOGGER.info("Time taken for checking of Triggers for pm : "+pm.getName()+" is " + (System.currentTimeMillis() - triggerStartTime));
+					LOGGER.debug("Time taken for checking of Triggers for pm : "+pm.getId()+" is " + (System.currentTimeMillis() - triggerStartTime));
 				}
 			}
 			
@@ -175,7 +175,7 @@ public class GetFutureWOsCommands implements Command {
 			TicketAPI.loadWorkOrderLookups(Collections.singletonList(wo));
 			long evalStartTime = System.currentTimeMillis();
 			boolean isPassed = criteria == null ? true : criteria.computePredicate().evaluate(wo);
-			LOGGER.info("Time taken for evaluation of WOs for trigger : "+trigger.getId()+" is " + (System.currentTimeMillis() - evalStartTime));
+			LOGGER.debug("Time taken for evaluation of WOs for trigger : "+trigger.getId()+" is " + (System.currentTimeMillis() - evalStartTime));
 			if (isPassed) {
 				long woCreationTime = System.currentTimeMillis();
 				for (PMJobsContext pmJob : pmJobs) {
@@ -186,7 +186,7 @@ public class GetFutureWOsCommands implements Command {
 					}
 					woList.add(currentWo);
 				}
-				LOGGER.info("Time taken for WO Creation for trigger : "+trigger.getId()+" is " + (System.currentTimeMillis() - woCreationTime));
+				LOGGER.debug("Time taken for WO Creation for trigger : "+trigger.getId()+" is " + (System.currentTimeMillis() - woCreationTime));
 			}
 			LOGGER.info("Time taken for checking of WOs for trigger : "+trigger.getId()+" is " + (System.currentTimeMillis() - startTime));
 		}
