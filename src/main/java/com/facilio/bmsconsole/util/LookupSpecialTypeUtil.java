@@ -322,6 +322,9 @@ public class LookupSpecialTypeUtil {
 		else if(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE.equals(specialType)) {
 			return ModuleFactory.getPreventiveMaintenancetModule();
 		}
+		else if(FacilioConstants.ContextNames.READING_RULE_MODULE.equals(specialType)) {
+			return ModuleFactory.getReadingRuleModule();
+		}
 		else if(FacilioConstants.ContextNames.WORKFLOW_RULE_MODULE.equals(specialType)) {
 			return ModuleFactory.getWorkflowRuleModule();
 		}
@@ -357,6 +360,9 @@ public class LookupSpecialTypeUtil {
 		} 
 		else if(FacilioConstants.ContextNames.WORKFLOW_RULE_MODULE.equals(specialType)) {
 			return FieldFactory.getWorkflowRuleFields();
+		}
+		else if(FacilioConstants.ContextNames.READING_RULE_MODULE.equals(specialType)) {
+			return FieldFactory.getReadingRuleFields();
 		}
 		return null;
 	}

@@ -156,8 +156,7 @@ public class ViewFactory {
 		views.put("active", getRulesByStatus("active", "Active", true).setOrder(order++));
 		views.put("inactive", getRulesByStatus("inactive", "In Active", false).setOrder(order++));
 		views.put("all", getAllRules());
-		viewsMap.put("workflowrule", views);
-
+		viewsMap.put("readingrule", views);
 		order = 1;
 		views = new LinkedHashMap<>();
 		views.put("active",
