@@ -30,21 +30,16 @@ public class GetRoleWoCountBySiteCommand implements Command{
 		List<Map<String, Object>> woClosedCount = WorkOrderAPI.getTotalClosedWoCountBySite(startTime, endTime);
 		List<Map<String, Object>> woTotalCountList = WorkOrderAPI.getTotalWoCountBySite(startTime, endTime);
 		
-		 Map<Long, Object> woTotalCount = new HashMap<Long, Object>();
-		    for(int i=0;i<woTotalCountList.size();i++)
-		    {
-		    	 
-		    	woTotalCount.put((Long)woTotalCountList.get(i).get("siteId"),woTotalCountList.get(i).get("count"));
-		       
-		    }
+		Map<Long, Object> woTotalCount = new HashMap<Long, Object>();
+	    for(int i=0;i<woTotalCountList.size();i++)
+	    {
+	    	woTotalCount.put((Long)woTotalCountList.get(i).get("siteId"),woTotalCountList.get(i).get("count"));
+	    }
 
-		    Map<Long, Object> woClosedCountMap = new HashMap<Long, Object>();
-		    for(int i=0;i<woClosedCount.size();i++)
-		    {
-		    	 
-		    	woClosedCountMap.put((Long)woClosedCount.get(i).get("siteId"),woClosedCount.get(i).get("count"));
-		       
-		    }
+	    Map<Long, Object> woClosedCountMap = new HashMap<Long, Object>();
+	    for(int i=0;i<woClosedCount.size();i++)  {
+	    	woClosedCountMap.put((Long)woClosedCount.get(i).get("siteId"),woClosedCount.get(i).get("count"));
+	    }
 
 		
 		Map<Long, Object> teamCount = WorkOrderAPI.getTeamsCountBySite();
@@ -95,81 +90,70 @@ public class GetRoleWoCountBySiteCommand implements Command{
 			resp.add(siteCount);
 			
 		}
-		
 		    
-		for(int i=0;i<woTotalCountList.size();i++)
-		{
-	 
-	       
-			Long totalCountVal = (Long)woClosedCount.get(i).get("count");
-			Long siteId = (Long)woClosedCount.get(i).get("siteId");
+		for(int i=0;i<woTotalCountList.size();i++) {
+			Long siteId = (Long)woTotalCountList.get(i).get("siteId");
 			
 			if(!woClosedCountMap.containsKey(siteId)) {
 			
-			Map<String,Object> siteCount = new HashMap<String, Object>();
-		    String siteName = (String) siteNameMap.remove(siteId);
-		    Long screenCount = null;
+				Map<String,Object> siteCount = new HashMap<String, Object>();
+			    String siteName = (String) siteNameMap.remove(siteId);
+			    Long screenCount = null;
             	if(screenCountBySite!=null) {
             		screenCount = screenCountBySite.get(siteId)!=null?(Long)screenCountBySite.get(siteId):0;
             		siteCount.put("screenCount",screenCount);
-  			
-            	}
-            Object totalCount = woTotalCount.get(siteId);
-            siteCount.put("totalCount",(Long)totalCount);
-            Map<String,Object> teamCountBySite = (Map<String, Object>) teamCount.get(siteId);
-			if(teamCountBySite!=null) {
-			Long technicianCount = teamCountBySite.get("Technician")!=null?(Long)teamCountBySite.get("Technician"):0;
-			Long tlCount = teamCountBySite.get("TL")!=null?(Long)teamCountBySite.get("TL"):0;
-			Long executiveCount = teamCountBySite.get("Executive")!=null?(Long)teamCountBySite.get("Executive"):0;
-			siteCount.put("technicianCount",technicianCount);
-			siteCount.put("tlCount",tlCount);
-			siteCount.put("executiveCount",executiveCount);
-		
-			}
-			else
-			{
-				siteCount.put("technicianCount",0);
-				siteCount.put("tlCount",0);
-				siteCount.put("executiveCount",0);
-			
-			}
-			siteCount.put("siteId",siteId);
-			siteCount.put("siteName",siteName);
-			siteCount.put("closedCount",0);
-			
-			
-			resp.add(siteCount);
+	           	}
+	            Object totalCount = woTotalCount.get(siteId);
+	            siteCount.put("totalCount",(Long)totalCount);
+	            Map<String,Object> teamCountBySite = (Map<String, Object>) teamCount.get(siteId);
+				
+	            if(teamCountBySite!=null) {
+					Long technicianCount = teamCountBySite.get("Technician")!=null?(Long)teamCountBySite.get("Technician"):0;
+					Long tlCount = teamCountBySite.get("TL")!=null?(Long)teamCountBySite.get("TL"):0;
+					Long executiveCount = teamCountBySite.get("Executive")!=null?(Long)teamCountBySite.get("Executive"):0;
+					siteCount.put("technicianCount",technicianCount);
+					siteCount.put("tlCount",tlCount);
+					siteCount.put("executiveCount",executiveCount);
+				}
+				else {
+					siteCount.put("technicianCount",0);
+					siteCount.put("tlCount",0);
+					siteCount.put("executiveCount",0);
+				}
+				siteCount.put("siteId",siteId);
+				siteCount.put("siteName",siteName);
+				siteCount.put("closedCount",0);
+				
+				
+				resp.add(siteCount);
 			}
 			
 		}
 		
 	    Iterator<Map.Entry<Long, Object>> remainingSitesitr = siteNameMap.entrySet().iterator(); 
         
-        while(remainingSitesitr.hasNext()) 
-        { 
+        while(remainingSitesitr.hasNext()) { 
              Map.Entry<Long, Object> entry = remainingSitesitr.next(); 
              Map<String,Object> siteCount = new HashMap<String, Object>();
              Long siteId = entry.getKey();
              String siteName = entry.getValue().toString();
              Long screenCount = null;
+             
              if(screenCountBySite!=null) {
                screenCount = screenCountBySite.get(siteId)!=null?(Long)screenCountBySite.get(siteId):0;
                siteCount.put("screenCount",screenCount);
-   			
              }
             
  			Map<String,Object> teamCountBySite = (Map<String, Object>) teamCount.get(siteId);
 			if(teamCountBySite!=null) {
-			Long technicianCount = teamCountBySite.get("Technician")!=null?(Long)teamCountBySite.get("Technician"):0;
-			Long tlCount = teamCountBySite.get("TL")!=null?(Long)teamCountBySite.get("TL"):0;
-			Long executiveCount = teamCountBySite.get("Executive")!=null?(Long)teamCountBySite.get("Executive"):0;
-			siteCount.put("technicianCount",technicianCount);
-			siteCount.put("tlCount",tlCount);
-			siteCount.put("executiveCount",executiveCount);
-		
+				Long technicianCount = teamCountBySite.get("Technician")!=null?(Long)teamCountBySite.get("Technician"):0;
+				Long tlCount = teamCountBySite.get("TL")!=null?(Long)teamCountBySite.get("TL"):0;
+				Long executiveCount = teamCountBySite.get("Executive")!=null?(Long)teamCountBySite.get("Executive"):0;
+				siteCount.put("technicianCount",technicianCount);
+				siteCount.put("tlCount",tlCount);
+				siteCount.put("executiveCount",executiveCount);
 			}
-			else
-			{
+			else {
 				siteCount.put("technicianCount",0);
 				siteCount.put("tlCount",0);
 				siteCount.put("executiveCount",0);
@@ -182,13 +166,8 @@ public class GetRoleWoCountBySiteCommand implements Command{
 			siteCount.put("totalCount",0);
 			
 			resp.add(siteCount);
-		
-       
         } 
-
-		
-		
-			context.put(FacilioConstants.ContextNames.SITE_ROLE_WO_COUNT, resp);
+		context.put(FacilioConstants.ContextNames.SITE_ROLE_WO_COUNT, resp);
 
 		return false;
 	}
