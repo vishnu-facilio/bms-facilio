@@ -1,33 +1,29 @@
 package com.facilio.bmsconsole.commands;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
-import org.apache.commons.lang3.tuple.ImmutablePair;
 
+import com.facilio.bmsconsole.context.FormulaContext.DateAggregateOperator;
 import com.facilio.bmsconsole.context.PMJobsContext;
 import com.facilio.bmsconsole.context.PMTriggerContext;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.context.WorkOrderContext;
-import com.facilio.bmsconsole.context.FormulaContext.DateAggregateOperator;
 import com.facilio.bmsconsole.criteria.CommonOperators;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
-import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.templates.WorkorderTemplate;
 import com.facilio.bmsconsole.util.DateTimeUtil;
 import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
-import com.facilio.bmsconsole.util.TemplateAPI;
+import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.tasker.ScheduleInfo;
@@ -38,16 +34,18 @@ public class GetFutureWOsCommands implements Command {
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		FacilioField dateField = (FacilioField) context.get(FacilioConstants.ContextNames.DATE_FIELD);
-		long startTime1 = (long) context.get(FacilioConstants.ContextNames.START_TIME);
-		long endTime1 = (long) context.get(FacilioConstants.ContextNames.END_TIME);
+		long startTime = (long) context.get(FacilioConstants.ContextNames.START_TIME);
+		long endTime = (long) context.get(FacilioConstants.ContextNames.END_TIME);
 		
-		if (dateField.getName().equals("createdTime") && endTime1 < System.currentTimeMillis()) {
+		if (dateField.getName().equals("createdTime") && endTime < System.currentTimeMillis()) {
 			return false;
 		}
 		
 		Criteria filterCriteria = null;
 		if (dateField.getName().equals("dueDate")) {
 			FacilioField durationField = FieldFactory.getAsMap(FieldFactory.getWorkOrderTemplateFields()).get("duration");
+			
+			filterCriteria = new Criteria();
 			filterCriteria.addAndCondition(CriteriaAPI.getCondition(durationField, CommonOperators.IS_NOT_EMPTY));
 		}
 		
@@ -57,17 +55,21 @@ public class GetFutureWOsCommands implements Command {
 		if(pms != null && !pms.isEmpty()) 
 		{
 			List<WorkOrderContext> wos = new ArrayList<>();
-			Map<Long, PreventiveMaintenance> pmMap = pms.stream().collect(Collectors.toMap(PreventiveMaintenance::getId, Function.identity()));
 			Map<Long, List<PMTriggerContext>> pmTriggersMap = PreventiveMaintenanceAPI.getPMTriggers(pms);
 			
 			for(PreventiveMaintenance pm : pms) {
 				WorkorderTemplate woTemplate = pm.getWoTemplate();
 				
-				long currentStartTime = startTime1 / 1000;
-				long currentEndTime = endTime1 / 1000;
+				long currentStartTime = startTime / 1000;
+				long currentEndTime = endTime / 1000;
 				if (dateField.getName().equals("dueDate")) {
-					currentStartTime = startTime1 - woTemplate.getDuration();
-					currentEndTime = endTime1 - woTemplate.getDuration();
+					currentStartTime = startTime - woTemplate.getDuration();
+					currentEndTime = endTime - woTemplate.getDuration();
+				}
+				
+				long currentTime = Instant.now().getEpochSecond();
+				if (currentStartTime > currentTime) {
+					currentStartTime = currentTime;
 				}
 				
 				List<PMTriggerContext> pmTrigggers = pmTriggersMap.get(pm.getId());
@@ -154,9 +156,10 @@ public class GetFutureWOsCommands implements Command {
 		return false;
 	}
 	
-	private void checkAndAddWOs (List<WorkOrderContext> woList, List<PMJobsContext> pmJobs, WorkorderTemplate template, Criteria criteria) {
+	private void checkAndAddWOs (List<WorkOrderContext> woList, List<PMJobsContext> pmJobs, WorkorderTemplate template, Criteria criteria) throws Exception {
 		if(pmJobs != null && !pmJobs.isEmpty()) {
 			WorkOrderContext wo = template.getWorkorder();
+			TicketAPI.loadWorkOrderLookups(Collections.singletonList(wo));
 			boolean isPassed = criteria == null ? true : criteria.computePredicate().evaluate(wo);
 			if (isPassed) {
 				for (PMJobsContext pmJob : pmJobs) {
