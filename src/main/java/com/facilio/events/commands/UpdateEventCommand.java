@@ -36,7 +36,7 @@ public class UpdateEventCommand implements Command {
 		}
 		
 		if (event.getAlarmId() != -1) {
-			FacilioChain.addPostTrasanction(FacilioConstants.ContextNames.ALARM_ID, event.getAlarmId());
+			FacilioChain.addPostTransactionListObject(FacilioConstants.ContextNames.ALARM_ID, event.getAlarmId());
 		}
 		return false;
 	}

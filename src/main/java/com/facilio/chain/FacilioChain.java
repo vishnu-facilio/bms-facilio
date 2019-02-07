@@ -1,5 +1,8 @@
 package com.facilio.chain;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.transaction.Transaction;
 import javax.transaction.TransactionManager;
 
@@ -51,14 +54,28 @@ public class FacilioChain extends ChainBase {
 	}
 	
 	public static void addPostTrasanction(Object key, Object value) {
+		FacilioContext facilioContext = getPostTransactionContext();
+		facilioContext.put(key, value);
+	}
+	
+	public static void addPostTransactionListObject(Object key, Object value) {
+		FacilioContext facilioContext = getPostTransactionContext();
+		List list = (List) facilioContext.get(key);
+		if (list == null) {
+			list = new ArrayList();
+			facilioContext.put(key, list);
+		}
+		list.add(value);
+	}
+
+	private static FacilioContext getPostTransactionContext() {
 		FacilioContext facilioContext = postTransactionContext.get();
 		if (facilioContext == null) {
 			facilioContext = new FacilioContext();
 			postTransactionContext.set(facilioContext);
 		}
-		facilioContext.put(key, value);
+		return facilioContext;
 	}
-
 	public boolean execute(Context context) throws Exception {
 		this.addCommand(new FacilioChainExceptionHandler());
 
