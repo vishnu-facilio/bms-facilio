@@ -169,31 +169,5 @@ public static Map<String,Object> getTotalConsumptionBySites(Long startTime,Long 
 	}
 
 
-public static Map<Long, Object> getLookupFieldPrimary(String moduleName) throws Exception {
-	ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-	FacilioModule module = modBean.getModule(moduleName);
-	FacilioField mainField = modBean.getPrimaryField(moduleName);
-	
-	List<FacilioField> selectFields = new ArrayList<>();
-	selectFields.add(mainField);
-	selectFields.add(FieldFactory.getIdField(module));
-	GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
-			.select(selectFields)
-			.table(module.getTableName())
-			.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module));
-	FacilioModule prevModule = module;
-	while (prevModule.getExtendModule() != null) {
-		builder.innerJoin(prevModule.getExtendModule().getTableName())
-			.on(prevModule.getTableName()+".ID = " + prevModule.getExtendModule().getTableName()+ ".ID");
-		prevModule = prevModule.getExtendModule();
-	}
-
-	List<Map<String,Object>> asProps = builder.get();
-	Map lookupMap = new HashMap<>();
-	for (Map<String, Object> map : asProps) {
-		lookupMap.put((Long) map.get("id"), map.get(mainField.getName()));
-	}
-	return lookupMap;
-}
 
 }

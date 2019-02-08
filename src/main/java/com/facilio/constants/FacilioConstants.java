@@ -180,6 +180,7 @@ public class FacilioConstants {
 			
 		public static final String PERMALINK_FOR_URL = "permalinkForUrl";
 		public static final String PERMALINK_TOKEN_FOR_URL = "permalinkTokenForUrl";
+		public static final String USER_EMAIL = "userEmail";
 		
 		
 		public static final String TEMPLATE_ID = "templateId";

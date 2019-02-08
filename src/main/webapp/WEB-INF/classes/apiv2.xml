@@ -189,11 +189,10 @@
 	<package name="workOrderCalendarCountApiV2" namespace="/api/v2/workorders/calendar/count"
 		extends="v2Api">
 		<action name="*" class="com.facilio.bmsconsole.actions.WorkOrderAction"
-			method="calendarWOs">
+			method="calendarWOCount">
 			<param name="moduleName">workorder</param>
 			<param name="permission">READ,READ_TEAM,READ_OWN</param>
 			<param name="viewName">{1}</param>
-			<param name="count">true</param>
 		</action>
 	</package>
 
