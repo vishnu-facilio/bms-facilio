@@ -37,14 +37,13 @@ public class GetCalendarWOsCommands implements Command {
 																;
 																
 		FacilioView view = (FacilioView) context.get(FacilioConstants.ContextNames.CUSTOM_VIEW);
-		if (view.getCriteria() != null) {
+		if (view.getCriteria() != null && !view.getCriteria().isEmpty()) {
 			woBuilder.andCriteria(view.getCriteria());
 		}
 		
 		boolean isCount = (boolean) context.get(FacilioConstants.ContextNames.COUNT);
-		List<FacilioField> fields = null;
 		if (isCount) {
-			fields = new ArrayList<>();
+			List<FacilioField> fields = new ArrayList<>();
 			FacilioField countField = CommonAggregateOperator.COUNT.getSelectField(FieldFactory.getIdField(module));
 			countField.setName("count");
 			fields.add(countField);
@@ -58,7 +57,7 @@ public class GetCalendarWOsCommands implements Command {
 			context.put(FacilioConstants.ContextNames.WORK_ORDER_COUNT, woBuilder.getAsProps());
 		}
 		else {
-			fields = modBean.getAllFields(module.getName());
+			List<FacilioField> fields = modBean.getAllFields(module.getName());
 			woBuilder.select(fields)
 					.beanClass(WorkOrderContext.class);
 			context.put(FacilioConstants.ContextNames.WORK_ORDER_LIST, woBuilder.get());

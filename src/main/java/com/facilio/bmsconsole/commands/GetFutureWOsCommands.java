@@ -194,7 +194,5 @@ public class GetFutureWOsCommands implements Command {
 			LOGGER.info("Time taken for checking of WOs for trigger : "+trigger.getId()+" is " + (System.currentTimeMillis() - startTime));
 		}
 	}
-	
-	
 
 }
