@@ -1377,7 +1377,7 @@ public class UserBeanImpl implements UserBean {
 		if(AccountUtil.getCurrentOrg() != null) {
 			Organization portalOrg = AccountUtil.getOrgBean().getPortalOrg(AccountUtil.getCurrentOrg().getDomain());
 			user.setPortalId(portalOrg.getPortalId());
-			addRequester(orgId, user, false, true);
+			user.setId(addRequester(orgId, user, false, true));
 			if(user.getAccessibleSpace() != null) {
 				addAccessibleSpace(user.getOuid(), user.getAccessibleSpace());
 			}
