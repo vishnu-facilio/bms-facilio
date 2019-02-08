@@ -14,10 +14,13 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.FormulaContext.AggregateOperator;
 import com.facilio.bmsconsole.context.FormulaContext.CommonAggregateOperator;
 import com.facilio.bmsconsole.context.FormulaContext.DateAggregateOperator;
+import com.facilio.bmsconsole.context.FormulaContext.SpaceAggregateOperator;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldType;
+import com.facilio.bmsconsole.modules.LookupField;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.report.context.ReportContext;
@@ -47,17 +50,35 @@ public class ConstructReportData implements Command {
 		ReportDataPointContext dataPointContext = new ReportDataPointContext();
 		ReportFieldContext xAxis = new ReportFieldContext();
 		
-		if (!xAxisJSON.containsKey("field_id")) {
-			throw new Exception("field_id should be mandatory");
+		FacilioField xField = null;
+		if (xAxisJSON.containsKey("field_id")) {
+			xField = modBean.getField((Long) xAxisJSON.get("field_id"));
 		}
 		
-		FacilioField xField = modBean.getField((Long) xAxisJSON.get("field_id"));
-		if (xAxisJSON.containsKey("aggr") && isDateField(xField)) {
+		if (xAxisJSON.containsKey("aggr")) {
 			Integer xAggr = ((Number) xAxisJSON.get("aggr")).intValue();
 			AggregateOperator aggregateOperator = AggregateOperator.getAggregateOperator(xAggr);
-			if (aggregateOperator instanceof DateAggregateOperator) {
+			if (aggregateOperator instanceof DateAggregateOperator && isDateField(xField)) {
 				reportContext.setxAggr(aggregateOperator);
+				
+				if (xAxisJSON.containsKey("operator") && xAxisJSON.containsKey("date_value")) {
+					Integer operator = ((Number) xAxisJSON.get("operator")).intValue();
+					reportContext.setDateOperator(operator);
+					reportContext.setDateValue((String) xAxisJSON.get("date_value"));
+					dataPointContext.setDateField(xField);
+				}
+				
+			} else if (aggregateOperator instanceof SpaceAggregateOperator) {
+				reportContext.setxAggr(aggregateOperator);
+				if (xField instanceof LookupField) {
+					// TODO check whether lookup module is resource module 
+				} else {
+					throw new Exception("x field should be resource field");
+				}
 			}
+		}
+		if (xField == null) {
+			throw new Exception("field_id should be mandatory");
 		}
 		xAxis.setField(xField);
 		dataPointContext.setxAxis(xAxis);
@@ -69,7 +90,6 @@ public class ConstructReportData implements Command {
 		FacilioField yField = null;
 		if (yAxisJSON == null || !(yAxisJSON.containsKey("field_id"))) {
 			yField = FieldFactory.getIdField(xField.getModule());
-//			yField.setColumnName(yField.getModule().getTableName() + ".ID");
 		} else {
 			if (yAxisJSON.containsKey("aggr")) {
 				yAggr = AggregateOperator.getAggregateOperator(((Number) yAxisJSON.get("aggr")).intValue());
@@ -94,6 +114,11 @@ public class ConstructReportData implements Command {
 				FacilioField field = modBean.getField((long) groupByJSON.get("field_id"));
 				groupByField.setField(field);
 				groupByField.setAlias(field.getName());
+
+				if (groupByJSON.containsKey("aggr")) {
+					groupByField.setAggr(AggregateOperator.getAggregateOperator(((Number) groupByJSON.get("aggr")).intValue()));
+				}
+				
 				groupByFields.add(groupByField);
 			}
 			dataPointContext.setGroupByFields(groupByFields);
@@ -102,6 +127,26 @@ public class ConstructReportData implements Command {
 		if (context.containsKey("criteria")) {
 			Criteria criteria = (Criteria) context.get("criteria");
 			dataPointContext.setCriteria(criteria);
+		}
+		
+		JSONArray sortFields = (JSONArray) context.get("sort_fields");
+		if (sortFields != null) {
+			List<String> orderBy = new ArrayList<>();
+			JSONArray orderByArray = (JSONArray) context.get("sort_fields");
+			for (int i = 0; i < orderByArray.size(); i++) {
+				Map object = (Map) orderByArray.get(i);
+				FacilioField orderByField = modBean.getField((Long) object.get("field_id"));
+				orderBy.add(orderByField.getCompleteColumnName());
+			}
+			dataPointContext.setOrderBy(orderBy);
+			
+			if (context.containsKey("sort_order")) {
+				dataPointContext.setOrderByFunc(((Number) context.get("sort_order")).intValue());
+			}
+		}
+		if (context.containsKey("limit")) {
+			int limit = ((Number) context.get("limit")).intValue();
+			dataPointContext.setLimit(limit);
 		}
 		
 		Map<String, String> aliases = new HashMap<>();
@@ -117,7 +162,7 @@ public class ConstructReportData implements Command {
 	}
 
 	private boolean isDateField(FacilioField field) {
-		return (field.getDataType() == FieldType.DATE.getTypeAsInt() || field.getDataType() == FieldType.DATE_TIME.getTypeAsInt());
+		return field != null && (field.getDataType() == FieldType.DATE.getTypeAsInt() || field.getDataType() == FieldType.DATE_TIME.getTypeAsInt());
 	}
 
 }

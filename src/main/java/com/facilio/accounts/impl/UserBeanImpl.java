@@ -662,7 +662,7 @@ public class UserBeanImpl implements UserBean {
 
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
-			User user =  createUserFromProps(props.get(0), true, true);
+			User user =  createUserFromProps(props.get(0), true, true, false); //Giving as false because user cannot accept invite via portal APIs
 			return user;
 		}
 		return null;
@@ -906,7 +906,7 @@ public class UserBeanImpl implements UserBean {
 		
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
-			User user =  createUserFromProps(props.get(0), true, true);
+			User user =  createUserFromProps(props.get(0), true, true, false);
 			return user;
 		}
 		return null;
@@ -928,7 +928,7 @@ public class UserBeanImpl implements UserBean {
 		
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
-			User user =  createUserFromProps(props.get(0), true, true);
+			User user =  createUserFromProps(props.get(0), true, true, false);
 			return user;
 		}
 		return null;
@@ -950,7 +950,7 @@ public class UserBeanImpl implements UserBean {
 
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
-			User user =  createUserFromProps(props.get(0), true, true);
+			User user =  createUserFromProps(props.get(0), true, true, false);
 			return user;
 		}
 		return null;
@@ -972,7 +972,7 @@ public class UserBeanImpl implements UserBean {
 		
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
-			User user =  createUserFromProps(props.get(0), true, true);
+			User user =  createUserFromProps(props.get(0), true, true, false);
 			return user;
 		}
 		return null;
@@ -994,7 +994,7 @@ public class UserBeanImpl implements UserBean {
 		
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
-			User user =  createUserFromProps(props.get(0), true, true);
+			User user =  createUserFromProps(props.get(0), true, true, false);
 			return user;
 		}
 		return null;
@@ -1018,7 +1018,7 @@ public class UserBeanImpl implements UserBean {
 
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
-			User user =  createUserFromProps(props.get(0), true, true);
+			User user =  createUserFromProps(props.get(0), true, true, false);
 			return user;
 		}
 		
@@ -1045,7 +1045,7 @@ public class UserBeanImpl implements UserBean {
 
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
-			User user =  createUserFromProps(props.get(0), true, true);
+			User user =  createUserFromProps(props.get(0), true, true, false);
 			return user;
 		}
 		return null;
@@ -1073,7 +1073,7 @@ public class UserBeanImpl implements UserBean {
 
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
-			return createUserFromProps(props.get(0), true, true);
+			return createUserFromProps(props.get(0), true, true, true);
 		}
 		return null;
 	}
@@ -1101,7 +1101,7 @@ public class UserBeanImpl implements UserBean {
 
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
-			return createUserFromProps(props.get(0), true, false);
+			return createUserFromProps(props.get(0), true, false, true);
 		}
 		return null;
 	}
@@ -1130,7 +1130,7 @@ public class UserBeanImpl implements UserBean {
 
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
-			return createUserFromProps(props.get(0), true, false);
+			return createUserFromProps(props.get(0), true, false, true);
 		}
 		
 		return  null ;
@@ -1150,7 +1150,7 @@ public class UserBeanImpl implements UserBean {
 		if (props != null && !props.isEmpty()) {
 			List<User> users = new ArrayList<>();
 			for(Map<String, Object> prop : props) {
-				User user = createUserFromProps(prop, true, true);
+				User user = createUserFromProps(prop, true, true, false);
 				users.add(user);
 			}
 			return users;
@@ -1167,7 +1167,7 @@ public class UserBeanImpl implements UserBean {
 		if (props != null && !props.isEmpty()) {
 			Map<Long, List<User>> userMap = new HashMap<>();
 			for(Map<String, Object> prop : props) {
-				User user = createUserFromProps(prop, false, false);
+				User user = createUserFromProps(prop, false, false, false);
 				
 				List<User> users = userMap.get(user.getRoleId());
 				if (users == null) {
@@ -1190,7 +1190,7 @@ public class UserBeanImpl implements UserBean {
 		if (props != null && !props.isEmpty()) {
 			List<User> users = new ArrayList<>();
 			for(Map<String, Object> prop : props) {
-				User user = createUserFromProps(prop, false, false);
+				User user = createUserFromProps(prop, false, false, false);
 				users.add(user);
 			}
 			return users;
@@ -1211,7 +1211,7 @@ public class UserBeanImpl implements UserBean {
 			if (props != null && !props.isEmpty()) {
 				List<User> users = new ArrayList<>();
 				for(Map<String, Object> prop : props) {
-					User user = createUserFromProps(prop, false, true);
+					User user = createUserFromProps(prop, false, true, false);
 					if (user.getAccessibleSpace() == null || user.getAccessibleSpace().isEmpty() || !Collections.disjoint(parentIds, user.getAccessibleSpace())) { 
 						users.add(user);
 					}
@@ -1255,7 +1255,7 @@ public class UserBeanImpl implements UserBean {
 		if (props != null && !props.isEmpty()) {
 			Map<Long, User> users = new HashMap<>();
 			for(Map<String, Object> prop : props) {
-				User user = createUserFromProps(prop, true, true);
+				User user = createUserFromProps(prop, true, true, false);
 				users.put(user.getId(), user);
 			}
 			return users;
@@ -1307,7 +1307,7 @@ public class UserBeanImpl implements UserBean {
 
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
-			User user =  createUserFromProps(props.get(0), true, true);
+			User user =  createUserFromProps(props.get(0), true, true, false);
 			return user;
 		}
 		return null;
@@ -1329,7 +1329,7 @@ public class UserBeanImpl implements UserBean {
 		
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
-			User user =  createUserFromProps(props.get(0), true, true);
+			User user =  createUserFromProps(props.get(0), true, true, false);
 			return user;
 		}
 		return null;
@@ -1377,7 +1377,7 @@ public class UserBeanImpl implements UserBean {
 		if(AccountUtil.getCurrentOrg() != null) {
 			Organization portalOrg = AccountUtil.getOrgBean().getPortalOrg(AccountUtil.getCurrentOrg().getDomain());
 			user.setPortalId(portalOrg.getPortalId());
-			addRequester(orgId, user, false, true);
+			user.setId(addRequester(orgId, user, false, true));
 			if(user.getAccessibleSpace() != null) {
 				addAccessibleSpace(user.getOuid(), user.getAccessibleSpace());
 			}
@@ -1419,7 +1419,7 @@ public class UserBeanImpl implements UserBean {
 
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
-			return createUserFromProps(props.get(0), true, false);
+			return createUserFromProps(props.get(0), true, false, false);
 		}
 		return null;
 	}
@@ -1861,11 +1861,11 @@ public class UserBeanImpl implements UserBean {
 		LRUCache.getUserSessionCache().remove(email);
 	}
 	
-	static User createUserFromProps(Map<String, Object> prop, boolean fetchRole, boolean fetchSpace) throws Exception {
+	static User createUserFromProps(Map<String, Object> prop, boolean fetchRole, boolean fetchSpace, boolean isPortalRequest) throws Exception {
 		User user = FieldUtil.getAsBeanFromMap(prop, User.class);
 		if (user.getPhotoId() > 0) {
 			FileStore fs = FileStoreFactory.getInstance().getFileStoreFromOrg(user.getOrgId(), user.getOuid());
-			user.setAvatarUrl(fs.getPrivateUrl(user.getPhotoId()));
+			user.setAvatarUrl(fs.getPrivateUrl(user.getPhotoId(), isPortalRequest));
 		}
 		
 		if (fetchRole) {
@@ -1881,11 +1881,15 @@ public class UserBeanImpl implements UserBean {
 		return user;
 	}
 	
-	public String generatePermalinkForURL(String url) throws Exception {
+	public String generatePermalinkForURL(String url, User user) throws Exception {
 		
 		long orgId = AccountUtil.getCurrentOrg().getOrgId();
-		long uid = AccountUtil.getCurrentUser().getUid();
-		long ouid = AccountUtil.getCurrentUser().getId();
+		if(user == null)
+		{
+			user = AccountUtil.getCurrentUser();
+		}
+		long uid = user.getUid();
+		long ouid = user.getId();
 		
 		String tokenKey = orgId + "-" + ouid;
 		String jwt = CognitoUtil.createJWT("id", "auth0", tokenKey, System.currentTimeMillis() + 24 * 60 * 60000, false);

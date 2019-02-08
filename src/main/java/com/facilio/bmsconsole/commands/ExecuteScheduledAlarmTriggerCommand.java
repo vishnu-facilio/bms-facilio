@@ -36,23 +36,14 @@ public class ExecuteScheduledAlarmTriggerCommand implements Command {
 		
 		FacilioModule module = event.getModule();
 		
-		Map<String, FacilioField> fields = FieldFactory.getAsMap(FieldFactory.getWorkflowRuleFields());
-		FacilioField parentRule = fields.get("parentRuleId");
-		FacilioField onSuccess = fields.get("onSuccess");
-		
-		Criteria criteria = new Criteria();
-		criteria.addAndCondition(CriteriaAPI.getCondition(parentRule, String.valueOf(readingRuleId), NumberOperators.EQUALS));
-		criteria.addAndCondition(CriteriaAPI.getCondition(onSuccess, String.valueOf(true), BooleanOperators.IS));
-
-		
-		List<WorkflowRuleContext> currentWorkflows = WorkflowRuleAPI.getActiveWorkflowRulesFromActivityAndRuleType(module.getModuleId(), Collections.singletonList(event.getActivityTypeEnum()), criteria, ruleTypes);
+		List<WorkflowRuleContext> currentWorkflows = Collections.singletonList(rule);
 
 		Map<String, Object> placeHolders = WorkflowRuleAPI.getOrgPlaceHolders();
 		Map<String, Object> recordPlaceHolders = WorkflowRuleAPI.getRecordPlaceHolders(module.getName(), null, placeHolders);
 		
 		while (currentWorkflows != null && !currentWorkflows.isEmpty()) {
-			criteria = WorkflowRuleAPI.executeWorkflowsAndGetChildRuleCriteria(currentWorkflows, module.getName(), null, null, null, recordPlaceHolders, (FacilioContext)context,true);
-			if (criteria == null) {
+			Criteria criteria = WorkflowRuleAPI.executeWorkflowsAndGetChildRuleCriteria(currentWorkflows, module.getName(), null, null, null, recordPlaceHolders, (FacilioContext)context,true);
+			if (criteria == null || criteria.isEmpty()) {
 				break;
 			}
 			currentWorkflows = WorkflowRuleAPI.getActiveWorkflowRulesFromActivityAndRuleType(module.getModuleId(), Collections.singletonList(event.getActivityTypeEnum()), criteria, ruleTypes);

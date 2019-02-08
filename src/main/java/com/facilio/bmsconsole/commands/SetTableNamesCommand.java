@@ -140,6 +140,17 @@ public class SetTableNamesCommand implements Command {
 		return new SetTableNamesCommand("ticketattachments","Ticket_Attachments");
 	}
 	
+	public static SetTableNamesCommand getForInventory(){
+		return new SetTableNamesCommand("inventory", "Inventory");
+	}
+	
+	public static SetTableNamesCommand getForInventoryVendor(){
+		return new SetTableNamesCommand("inventory_vendors", "Inventory_vendors");
+	}
+	
+	public static SetTableNamesCommand getForInventoryCategory() {
+		return new SetTableNamesCommand("inventoryCategory", "Inventory_category");
+	}
 		
 	public static void setForModule (Context context, String moduleName) {
 		//TODO handle all module and get from map

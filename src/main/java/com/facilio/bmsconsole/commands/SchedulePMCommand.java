@@ -73,7 +73,12 @@ private List<PMJobsContext> pmJobsToBeScheduled;
 		else {
 			for (PMTriggerContext trigger : pm.getTriggers()) {
 				if (trigger.getSchedule() != null) {
-					long startTime = PreventiveMaintenanceAPI.getStartTimeInSecond(trigger.getStartTime());
+					long startTime;
+					if (trigger.getStartTime() < System.currentTimeMillis()) {
+						startTime = PreventiveMaintenanceAPI.getStartTimeInSecond(System.currentTimeMillis());
+					} else {
+						startTime = PreventiveMaintenanceAPI.getStartTimeInSecond(trigger.getStartTime());
+					}
 					PMJobsContext pmJob = null;
 					switch (pm.getTriggerTypeEnum()) {
 					case ONLY_SCHEDULE_TRIGGER:
@@ -123,7 +128,13 @@ private List<PMJobsContext> pmJobsToBeScheduled;
 			if(trigger == null) {
 				trigger = PreventiveMaintenanceAPI.getDefaultTrigger(pm.getTriggers());
 			}
-			long startTime = PreventiveMaintenanceAPI.getStartTimeInSecond(trigger.getStartTime());
+
+			long startTime;
+			if (trigger.getStartTime() < System.currentTimeMillis()) {
+				startTime = PreventiveMaintenanceAPI.getStartTimeInSecond(System.currentTimeMillis());
+			} else {
+				startTime = PreventiveMaintenanceAPI.getStartTimeInSecond(trigger.getStartTime());
+			}
 			long nextExecutionTime = trigger.getSchedule().nextExecutionTime(startTime);
 			
 			boolean isFirst = true;

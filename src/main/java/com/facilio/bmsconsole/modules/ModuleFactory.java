@@ -55,6 +55,8 @@ public class ModuleFactory {
 		moduleMap.put("anomalyScheduler", getAnalyticsAnomalyModule());
 		moduleMap.put("form", getFormModule());
 		moduleMap.put("formFields", getFormFieldsModule());
+		moduleMap.put(FacilioConstants.ContextNames.INVENTORY, getInventoryModule());
+		moduleMap.put(FacilioConstants.ContextNames.INVENTORY_CATEGORY, getInventoryCategoryModule());
 		return moduleMap;
 	}
 	
@@ -1530,6 +1532,29 @@ public class ModuleFactory {
 		return enumFieldValues;
 	}
 	
+	public static FacilioModule getInventoryModule() {
+		FacilioModule inventoryModule = new FacilioModule();
+		inventoryModule.setName(FacilioConstants.ContextNames.INVENTORY);
+		inventoryModule.setDisplayName("Inventory");
+		inventoryModule.setTableName("Inventory");
+		return inventoryModule;
+	}
+	
+	public static FacilioModule getInventoryCategoryModule() {
+		FacilioModule ticketCategoryModule = new FacilioModule();
+		ticketCategoryModule.setName(FacilioConstants.ContextNames.INVENTORY_CATEGORY);
+		ticketCategoryModule.setDisplayName("Inventory Category");
+		ticketCategoryModule.setTableName("Inventory_category");
+		return ticketCategoryModule;
+	}
+	
+	public static FacilioModule getInventoryVendorsModule() {
+		FacilioModule ticketCategoryModule = new FacilioModule();
+		ticketCategoryModule.setName(FacilioConstants.ContextNames.INVENTORY_VENDOR);
+		ticketCategoryModule.setDisplayName("Inventory Vendor");
+		ticketCategoryModule.setTableName("Inventory_vendors");
+		return ticketCategoryModule;
+	}
 	public static FacilioModule getAnalyticsV1AnomalyConfigModule() {
 		FacilioModule analyticsAnomalyJob = new FacilioModule();
 		analyticsAnomalyJob.setName("anomalyConfigV1");

@@ -692,14 +692,6 @@ public enum ActionType {
 //			ReadingRuleAPI.addClearEvent(currentRecord, context, obj, (ReadingContext) currentRecord, (ReadingRuleContext)currentRule);
 		}
 	},
-	SCHEDULE_ALARM_TRIGGER_RULE(16,false) {
-
-		@Override
-		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule, Object currentRecord) throws Exception {
-//			ReadingRuleAPI.addClearEvent(currentRecord, context, obj, (ReadingContext) currentRecord, (ReadingRuleContext)currentRule);
-			
-		}
-	},
 	;
 
 	private int val;

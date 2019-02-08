@@ -37,7 +37,7 @@ public class ExecuteScheduledReadingRuleCommand implements Command {
 		List<WorkflowRuleContext> currentWorkflows = Collections.singletonList(rule);
 		while (currentWorkflows != null && !currentWorkflows.isEmpty()) {
 			Criteria childCriteria = WorkflowRuleAPI.executeWorkflowsAndGetChildRuleCriteria(currentWorkflows, module.getName(), null, null, null, recordPlaceHolders, (FacilioContext)context,true);
-			if (childCriteria == null) {
+			if (childCriteria == null || childCriteria.isEmpty()) {
 				break;
 			}
 			currentWorkflows = WorkflowRuleAPI.getActiveWorkflowRulesFromActivityAndRuleType(module.getModuleId(), Collections.singletonList(event.getActivityTypeEnum()), childCriteria, ruleTypes);

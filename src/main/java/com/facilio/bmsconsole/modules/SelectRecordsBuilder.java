@@ -18,7 +18,6 @@ import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericSelectRecordBuilder;
-import com.facilio.sql.GenericSelectRecordBuilder.GenericJoinBuilder;
 import com.facilio.sql.JoinBuilderIfc;
 import com.facilio.sql.SelectBuilderIfc;
 import com.facilio.sql.WhereBuilder;
@@ -38,6 +37,7 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 	private boolean fetchDeleted = false;
 	private String groupBy;
 	private WhereBuilder where = new WhereBuilder();
+	private StringBuilder joinBuilder = new StringBuilder();
 	//Need where condition builder for custom field
 	
 	public SelectRecordsBuilder() {
@@ -62,6 +62,7 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 		if (selectBuilder.where != null) {
 			this.where = new WhereBuilder(selectBuilder.where);
 		}
+		this.joinBuilder = selectBuilder.joinBuilder;
 	}
 	
 	public SelectRecordsBuilder (int level) {
@@ -90,26 +91,36 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 		return this;
 	}
 	
-	
-
 	@Override
 	public JoinRecordBuilder<E> innerJoin(String tableName) {
-		return new JoinRecordBuilder<E>(this, builder.innerJoin(tableName));
+		joinBuilder.append(" INNER JOIN ")
+				.append(tableName)
+				.append(" ");
+		return new JoinRecordBuilder<E>(this);
 	}
 	
 	@Override
 	public JoinRecordBuilder<E> leftJoin(String tableName) {
-		return new JoinRecordBuilder<E>(this, builder.leftJoin(tableName));
+		joinBuilder.append(" LEFT JOIN ")
+				.append(tableName)
+				.append(" ");
+		return new JoinRecordBuilder<E>(this);
 	}
 	
 	@Override
 	public JoinRecordBuilder<E> rightJoin(String tableName) {
-		return new JoinRecordBuilder<E>(this, builder.rightJoin(tableName));
+		joinBuilder.append(" RIGHT JOIN ")
+				.append(tableName)
+				.append(" ");
+		return new JoinRecordBuilder<E>(this);
 	}
 	
 	@Override
 	public JoinRecordBuilder<E> fullJoin(String tableName) {
-		return new JoinRecordBuilder<E>(this, builder.fullJoin(tableName));
+		joinBuilder.append(" FULL JOIN ")
+				.append(tableName)
+				.append(" ");
+		return new JoinRecordBuilder<E>(this);
 	}
 	
 	@Override
@@ -357,11 +368,13 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 		FacilioField moduleIdField = FieldFactory.getModuleIdField(module);
 		FacilioField siteIdField = FieldFactory.getSiteIdField(module);
 		
+		long currentSiteId = AccountUtil.getCurrentSiteId();
+		
 		List<FacilioField> selectFields = new ArrayList<>();
 		selectFields.add(orgIdField);
 		selectFields.add(moduleIdField);
 		
-		if (FieldUtil.isSiteIdFieldPresent(module)) {
+		if (FieldUtil.isSiteIdFieldPresent(module) && (currentSiteId > 0 || (groupBy == null || groupBy.isEmpty()) )) {
 			selectFields.add(siteIdField);
 		}
 		
@@ -374,7 +387,12 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 							.append(",")
 							.append(moduleIdField.getCompleteColumnName())
 							.append(",")
-							.append(groupBy);
+							;
+			
+			if (FieldUtil.isSiteIdFieldPresent(module) && currentSiteId > 0) {
+				moduleGroupBy.append(siteIdField.getCompleteColumnName());
+			}
+			moduleGroupBy.append(groupBy);
 			
 			builder.groupBy(moduleGroupBy.toString());
 		}
@@ -388,8 +406,6 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 		
 		Condition moduleCondition = CriteriaAPI.getCondition(moduleIdField, String.valueOf(module.getModuleId()), NumberOperators.EQUALS);
 		whereCondition.andCondition(moduleCondition);
-		
-		long currentSiteId = AccountUtil.getCurrentSiteId();
 		
 		if (FieldUtil.isSiteIdFieldPresent(module) && currentSiteId > 0) {
 			Condition siteCondition = CriteriaAPI.getCondition(siteIdField, String.valueOf(currentSiteId), NumberOperators.EQUALS);
@@ -420,6 +436,8 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 			prevModule = extendedModule;
 			extendedModule = extendedModule.getExtendModule();
 		}
+		
+		builder.getJoinBuilder().append(joinBuilder.toString());
 		
 		builder.andCustomWhere(whereCondition.getWhereClause(), whereCondition.getValues());
 		return builder.get();
@@ -453,18 +471,20 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 	
 	public static class JoinRecordBuilder<E extends ModuleBaseWithCustomFields> implements JoinBuilderIfc<SelectRecordsBuilder<E>> {
 		private SelectRecordsBuilder<E> parentBuilder;
-		private GenericJoinBuilder joinBuilder;
+//		private GenericJoinBuilder joinBuilder;
 		
-		private JoinRecordBuilder(SelectRecordsBuilder<E> parentBuilder, GenericJoinBuilder joinBuilder) {
+		private JoinRecordBuilder(SelectRecordsBuilder<E> parentBuilder) {
 			this.parentBuilder = parentBuilder;
-			this.joinBuilder = joinBuilder;
+//			this.joinBuilder = joinBuilder;
 			// TODO Auto-generated constructor stub
 		}
 		
 		@Override
 		public SelectRecordsBuilder<E> on(String condition) {
 			// TODO Auto-generated method stub
-			joinBuilder.on(condition);
+			parentBuilder.joinBuilder.append("ON ")
+				.append(condition)
+				.append(" ");
 			return parentBuilder;
 		}
 		

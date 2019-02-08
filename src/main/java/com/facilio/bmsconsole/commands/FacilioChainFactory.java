@@ -948,9 +948,9 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
-	public static Chain getTotalConsumptionByBuildingChain() {
+	public static Chain getTotalConsumptionBySiteChain() {
 		Chain c = FacilioChain.getTransactionChain();
-	    c.addCommand(new GetTotalConsumptionByBuidlingCommand());
+	    c.addCommand(new GetTotalConsumptionBySiteCommand());
 //		CommonCommandUtil.addCleanUpCommand(c);
 		return c;
 	}
@@ -1942,6 +1942,15 @@ public class FacilioChainFactory {
 		Chain c = FacilioChain.getTransactionChain();
 		c.addCommand(new GetFormMetaCommand());
 		c.addCommand(new EditFormCommand());
+		return c;
+	}
+	
+	public static Chain getNewInventoryChain() {
+		Chain c = FacilioChain.getTransactionChain();
+		c.addCommand(SetTableNamesCommand.getForInventory());
+		c.addCommand(new LoadModuleNameCommand());
+		c.addCommand(new LoadAllFieldsCommand());
+//		CommonCommandUtil.addCleanUpCommand(c);
 		return c;
 	}
 	

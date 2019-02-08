@@ -40,7 +40,7 @@ public class AddRequesterCommand implements Command {
 			requester.setId(AccountUtil.getUserBean().inviteRequester(orgid, requester));		
 			
 			Boolean isPublicRequest = (Boolean) context.get(FacilioConstants.ContextNames.IS_PUBLIC_REQUEST);
-			if (isPublicRequest != null && isPublicRequest == true) {
+			if (isPublicRequest != null && isPublicRequest) {
 				acct = new Account(AccountUtil.getCurrentOrg(), AccountUtil.getUserBean().getUser(requester.getId()));
 				AccountUtil.setCurrentAccount(acct);
 			}

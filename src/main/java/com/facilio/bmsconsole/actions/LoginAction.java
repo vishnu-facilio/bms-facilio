@@ -68,6 +68,7 @@ import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.DeviceAPI;
 import com.facilio.bmsconsole.util.EncryptionUtil;
 import com.facilio.bmsconsole.util.FormsAPI;
+import com.facilio.bmsconsole.util.InventoryApi;
 import com.facilio.bmsconsole.util.ShiftAPI;
 import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
@@ -325,6 +326,8 @@ public class LoginAction extends FacilioAction {
 		data.put("assetCategory", AssetsAPI.getCategoryList());
 		data.put("assetType", AssetsAPI.getTypeList());
 		data.put("assetDepartment", AssetsAPI.getDepartmentList());
+//		data.put("inventoryVendors", InventoryApi.getInventoryVendorList());
+//		data.put("inventoryCategory", InventoryApi.getInventoryCategoryList());
 		
 		data.put("serviceList", ReportsUtil.getPurposeMapping());
 		data.put("buildingList", ReportsUtil.getBuildingMap());
@@ -396,6 +399,8 @@ public class LoginAction extends FacilioAction {
 		data.put("assetCategory", AssetsAPI.getCategoryList());
 		data.put("assetType", AssetsAPI.getTypeList());
 		data.put("assetDepartment", AssetsAPI.getDepartmentList());
+//		data.put("inventoryVendors", InventoryApi.getInventoryVendorList());
+//		data.put("inventoryCategory", InventoryApi.getInventoryCategoryList());
 
 		data.put("serviceList", ReportsUtil.getPurposeMapping());
 		data.put("buildingList", ReportsUtil.getBuildingMap());

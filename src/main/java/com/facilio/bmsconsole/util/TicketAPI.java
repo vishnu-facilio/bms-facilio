@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
+import org.eclipse.paho.client.mqttv3.logging.Logger;
 
 import com.facilio.accounts.dto.Group;
 import com.facilio.accounts.dto.User;
@@ -526,8 +527,7 @@ public class TicketAPI {
 	
 	public static void updateTicketStatus(ActivityType activityType, TicketContext ticket, TicketContext oldTicket, boolean isWorkDurationChangeAllowed) throws Exception {
 		TicketStatusContext statusObj = ticket.getStatus();
-		
-		if(statusObj != null) {
+		if(statusObj != null && statusObj.getId() > 0) {
 			statusObj = TicketAPI.getStatus(AccountUtil.getCurrentOrg().getOrgId(), statusObj.getId());
 		}
 		else {

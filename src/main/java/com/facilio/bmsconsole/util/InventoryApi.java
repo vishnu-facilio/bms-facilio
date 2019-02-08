@@ -1,0 +1,56 @@
+package com.facilio.bmsconsole.util;
+
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+
+import com.facilio.accounts.dto.Organization;
+import com.facilio.accounts.dto.User;
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.AssetDepartmentContext;
+import com.facilio.bmsconsole.context.InventoryCategoryContext;
+import com.facilio.bmsconsole.context.InventoryVendorContext;
+import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.modules.FacilioModule;
+import com.facilio.bmsconsole.modules.FieldFactory;
+import com.facilio.bmsconsole.modules.FieldUtil;
+import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
+import com.facilio.bmsconsole.tenant.TenantContext;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
+import com.facilio.sql.GenericInsertRecordBuilder;
+import com.facilio.sql.GenericSelectRecordBuilder;
+
+public class InventoryApi {
+	public static Map<Long, InventoryVendorContext> getInventoryVendorMap(Collection<Long> idList) throws Exception
+	{
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		SelectRecordsBuilder<InventoryVendorContext> selectBuilder = new SelectRecordsBuilder<InventoryVendorContext>()
+																		.select(modBean.getAllFields("inventory_vendors"))
+																		.moduleName("inventory_vendors")
+																		.beanClass(InventoryVendorContext.class);
+		return selectBuilder.getAsMap();
+	}
+	
+public static List<InventoryVendorContext> getInventoryVendorList() throws Exception {
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		SelectRecordsBuilder<InventoryVendorContext> selectBuilder = new SelectRecordsBuilder<InventoryVendorContext>()
+																		.select(modBean.getAllFields("inventory_vendors"))
+																		.moduleName("inventory_vendors")
+																		.beanClass(InventoryVendorContext.class);
+		return selectBuilder.get();
+	}
+
+public static List<InventoryCategoryContext> getInventoryCategoryList() throws Exception {
+	
+	ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+	SelectRecordsBuilder<InventoryCategoryContext> selectBuilder = new SelectRecordsBuilder<InventoryCategoryContext>()
+																	.select(modBean.getAllFields("inventoryCategory"))
+																	.moduleName("inventoryCategory")
+																	.beanClass(InventoryCategoryContext.class);
+	return selectBuilder.get();
+}
+}

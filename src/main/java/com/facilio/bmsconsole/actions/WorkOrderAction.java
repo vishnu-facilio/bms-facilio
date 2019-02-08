@@ -1,7 +1,6 @@
 package com.facilio.bmsconsole.actions;
 
 import java.io.File;
-import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -39,7 +38,6 @@ import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.context.PreventiveMaintenance.PMAssignmentType;
 import com.facilio.bmsconsole.context.RecordSummaryLayout;
 import com.facilio.bmsconsole.context.ResourceContext;
-import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.bmsconsole.context.SpaceContext;
 import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.TaskContext.InputType;
@@ -47,16 +45,12 @@ import com.facilio.bmsconsole.context.TaskSectionContext;
 import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.context.TicketContext.SourceType;
 import com.facilio.bmsconsole.context.TicketStatusContext;
-import com.facilio.bmsconsole.context.TicketStatusContext.StatusType;
 import com.facilio.bmsconsole.context.ViewLayout;
 import com.facilio.bmsconsole.context.WorkOrderContext;
-import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
-import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
-import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.templates.JSONTemplate;
 import com.facilio.bmsconsole.templates.TaskSectionTemplate;
@@ -67,7 +61,6 @@ import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
 import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.bmsconsole.util.TemplateAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
-import com.facilio.bmsconsole.util.WorkOrderAPI;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.workflow.rule.ActivityType;
 import com.facilio.bmsconsole.workflow.rule.TicketActivity;
@@ -582,6 +575,10 @@ public class WorkOrderAction extends FacilioAction {
 	public void setSiteId(Long siteId) {
 		this.siteId = siteId;
 	}
+	public Long getSiteId() {
+		return this.siteId;
+	}
+	
 	
 	public String getScopeFilteredValuesForPM() throws Exception {
 		
@@ -1074,6 +1071,17 @@ public class WorkOrderAction extends FacilioAction {
 	}
 
 
+	private List<Map<String,Object>> avgResponseResolution;
+
+	public List<Map<String,Object>> getAvgResponseResolution() {
+		return avgResponseResolution;
+	}
+
+	public void setAvgResponseResolution(List<Map<String,Object>> avgResponseResolution) {
+		this.avgResponseResolution = avgResponseResolution;
+	}
+
+	
 	private Map<String,Object> avgResolutionTimeByCategory;
 
 	public Map<String,Object> getAvgResolutionTimeByCategory() {
@@ -1258,6 +1266,10 @@ public class WorkOrderAction extends FacilioAction {
 		this.count = count;
 	}
 
+	public void setCount(long count) {
+		this.count = count+"";
+	}
+	
 	public String workOrderCount () throws Exception {
 		System.out.println("View Name :  clount " + getViewName());
 		return workOrderList();	
@@ -1840,9 +1852,63 @@ public class WorkOrderAction extends FacilioAction {
 
 		return SUCCESS;
 	}
+	
+	
+	public String getAvgResolutionResponseTimeBySite() throws Exception {
+		
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.WORK_ORDER_STARTTIME, getStartTime());
+		context.put(FacilioConstants.ContextNames.WORK_ORDER_ENDTIME, getEndTime());
+
+
+		Chain avgResponseResolutionTimeChain = ReadOnlyChainFactory.getAvgResponseResolutionTimeBySiteChain();
+		avgResponseResolutionTimeChain.execute(context);
 
 
 
+		setAvgResponseResolution((List<Map<String,Object>>) context.get(FacilioConstants.ContextNames.WORKORDER_INFO_BY_SITE));
+
+		
+		
+		return SUCCESS;
+	}
+	public String getTopNTechnicians() throws Exception
+	{
+		
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.WORK_ORDER_TECHNICIAN_COUNT, getCount());
+		context.put(FacilioConstants.ContextNames.WORK_ORDER_STARTTIME, getStartTime());
+		context.put(FacilioConstants.ContextNames.WORK_ORDER_ENDTIME, getEndTime());
+		
+		Chain woTechCountBySite = ReadOnlyChainFactory.getTopNTechBySiteChain();
+		woTechCountBySite.execute(context);
+
+
+		setTopTechnicians((Map<String, Object>) context.get(FacilioConstants.ContextNames.TOP_N_TECHNICIAN));
+
+
+		return SUCCESS;
+
+	}
+
+	public String getWoCountBySite() throws Exception {
+
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.WORK_ORDER_STARTTIME, getStartTime());
+		context.put(FacilioConstants.ContextNames.WORK_ORDER_ENDTIME, getEndTime());
+
+
+		Chain woCountBySite = ReadOnlyChainFactory.getWorkOrderCountBySiteChain();
+		woCountBySite.execute(context);
+
+
+		setWorkOrderBySite((List<Map<String, Object>>) context.get(FacilioConstants.ContextNames.SITE_ROLE_WO_COUNT));
+
+
+		return SUCCESS;
+	}
+
+	
 
 	public String getAvgWorkCompletionByCategory() throws Exception {
 
@@ -1850,6 +1916,7 @@ public class WorkOrderAction extends FacilioAction {
 
 		context.put(FacilioConstants.ContextNames.WORK_ORDER_STARTTIME, getStartTime());
 		context.put(FacilioConstants.ContextNames.WORK_ORDER_ENDTIME, getEndTime());
+		context.put(FacilioConstants.ContextNames.WORK_ORDER_SITE_ID, getSiteId());
 
 		Chain avgCompletionTimeByCategoryChain = ReadOnlyChainFactory.getAvgCompletionTimeByCategoryChain();
 		avgCompletionTimeByCategoryChain.execute(context);
@@ -1972,6 +2039,58 @@ public class WorkOrderAction extends FacilioAction {
 	}
 	public void setLastSyncTime(Long lastSyncTime) {
 		this.lastSyncTime = lastSyncTime;
+	}
+	
+	private List<Map<String,Object>> workOrderBySite;
+	public List<Map<String,Object>> getWorkOrderBySite() {
+		return workOrderBySite;
+	}
+	public void setWorkOrderBySite(List<Map<String,Object>> workOrderBySite) {
+		this.workOrderBySite = workOrderBySite;
+	}
+	private Map<String,Object> topTechnicians;
+	public Map<String,Object> getTopTechnicians() {
+		return topTechnicians;
+	}
+	public void setTopTechnicians(Map<String,Object> topTechnicians) {
+		this.topTechnicians = topTechnicians;
+	}
+	
+	private String dateField;
+	public String getDateField() {
+		return dateField;
+	}
+	public void setDateField(String dateField) {
+		this.dateField = dateField;
+	}
+	
+	public String calendarWOs() throws Exception {
+		return calendarApi(false);
+	}
+	
+	public String calendarWOCount() throws Exception {
+		return calendarApi(true);
+	}
+	
+	private String calendarApi (boolean isCount) throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.DATE_FIELD, dateField);
+		context.put(FacilioConstants.ContextNames.START_TIME, startTime);
+		context.put(FacilioConstants.ContextNames.END_TIME, endTime);
+		context.put(FacilioConstants.ContextNames.CV_NAME, viewName);
+		context.put(FacilioConstants.ContextNames.COUNT, isCount);
+		
+		Chain woChain = ReadOnlyChainFactory.getCalendarWorkOrdersChain();
+		woChain.execute(context);
+		
+		if (isCount) {
+			setResult("count", context.get(FacilioConstants.ContextNames.WORK_ORDER_COUNT));
+		}
+		else {
+			setResult("workorders", context.get(FacilioConstants.ContextNames.WORK_ORDER_LIST));
+		}
+		
+		return SUCCESS;
 	}
 
 }

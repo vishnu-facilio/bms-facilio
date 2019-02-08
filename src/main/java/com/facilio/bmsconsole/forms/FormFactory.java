@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.collections4.Put;
+
 import com.facilio.bmsconsole.forms.FacilioForm.FormType;
 import com.facilio.bmsconsole.forms.FacilioForm.LabelPosition;
 import com.facilio.bmsconsole.forms.FormField.Required;
@@ -34,6 +36,7 @@ public class FormFactory {
 		forms.put("loggedInServiceWorkRequest", getLoggedInServiceWorkRequest());
 		forms.put("web_pm", getPMForm());
 		forms.put("approvalForm", getApprovalForm());
+		forms.put("inventory_form", getInventoryForm());
 		return forms;
 	}
 
@@ -49,7 +52,8 @@ public class FormFactory {
 						.put(FacilioConstants.ContextNames.APPROVAL, getMobileApprovalForm()).build())
 				.put(FormType.WEB, ImmutableMultimap.<String, FacilioForm>builder()
 						.put(FacilioConstants.ContextNames.WORK_ORDER, getWebWorkOrderForm())
-						.put(FacilioConstants.ContextNames.WORK_ORDER_REQUEST, getWebWorkRequestForm()).build())
+						.put(FacilioConstants.ContextNames.WORK_ORDER_REQUEST, getWebWorkRequestForm())
+						.put(FacilioConstants.ContextNames.INVENTORY, getInventoryForm()).build())
 				.put(FormType.PORTAL, ImmutableMultimap.<String, FacilioForm>builder()
 						.put(FacilioConstants.ContextNames.WORK_ORDER_REQUEST, getServiceWorkRequestForm()).build())
 				.build();
@@ -212,9 +216,20 @@ public class FormFactory {
 		form.setDisplayName("PREVENTIVE MAINTENANCE");
 		form.setName("web_pm");
 		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.WORK_ORDER));
-		form.setLabelPosition(LabelPosition.LEFT);
+		form.setLabelPosition(LabelPosition.TOP);
 		form.setFormType(FormType.WEB);
 		form.setFields(getWebPMFormFields());
+		return form;
+	}
+	
+	public static FacilioForm getInventoryForm() {
+		FacilioForm form = new FacilioForm();
+		form.setDisplayName("INVENTORY");
+		form.setName("web_default");
+		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.INVENTORY));
+		form.setLabelPosition(LabelPosition.LEFT);
+		form.setFields(getInventoryFormField());
+		form.setFormType(FormType.WEB);
 		return form;
 	}
 	
@@ -229,7 +244,7 @@ public class FormFactory {
 		fields.add(new FormField("resource", FieldDisplayType.WOASSETSPACECHOOSER, "Space/Asset", Required.OPTIONAL, 6, 1));
 		fields.add(new FormField("assignment", FieldDisplayType.TEAMSTAFFASSIGNMENT, "Team/Staff", Required.OPTIONAL, 7, 1));
 		fields.add(new FormField("attachedFiles", FieldDisplayType.ATTACHMENT, "Attachments", Required.OPTIONAL, "attachment", 8, 1));
-		fields.add(new FormField("tasks", FieldDisplayType.TASKS, "Tasks", Required.OPTIONAL, 9, 1));
+		fields.add(new FormField("tasks", FieldDisplayType.TASKS, "TASKS", Required.OPTIONAL, 9, 1));
 		return fields;
 	}
 	
@@ -292,6 +307,22 @@ public class FormFactory {
 		fields.add(new FormField("type",FieldDisplayType.LOOKUP_SIMPLE,"Maintenance Type", Required.OPTIONAL, 5, 1));
 		fields.add(new FormField("team", FieldDisplayType.TEAM, "Team", Required.REQUIRED, 6, 1));
 		fields.add(new FormField("attachedFiles", FieldDisplayType.ATTACHMENT, "Attachment", Required.OPTIONAL, 7, 1));
+		return fields;
+	}
+	
+	private static List<FormField> getInventoryFormField() {
+		List<FormField> fields = new ArrayList<>();
+		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.REQUIRED, 1, 1));
+		fields.add(new FormField("siteId", FieldDisplayType.LOOKUP_SIMPLE, "Site", Required.REQUIRED, "site", 2, 1));
+		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 3, 1));
+		fields.add(new FormField("category", FieldDisplayType.LOOKUP_SIMPLE, "Category", Required.OPTIONAL, "inventoryCategory", 4, 1));
+		fields.add(new FormField("unitcost", FieldDisplayType.TEXTBOX, "Unit Cost", Required.OPTIONAL, 5, 1));
+		fields.add(new FormField("serialNumber", FieldDisplayType.TEXTBOX, "Serial Numver", Required.OPTIONAL, 6,1));
+		fields.add(new FormField("quantity",FieldDisplayType.TEXTBOX,"Quantity", Required.OPTIONAL, "tickettype", 7, 1));
+		fields.add(new FormField("minimumQuantity", FieldDisplayType.TEXTBOX, "Minimum Quantity", Required.OPTIONAL, 8, 1));
+		fields.add(new FormField("vendor", FieldDisplayType.LOOKUP_SIMPLE, "Vendor", Required.OPTIONAL,"inventory_vendors", 9, 1));
+		fields.add(new FormField("space", FieldDisplayType.WOASSETSPACECHOOSER, "Location", Required.OPTIONAL, 10, 1));
+		fields.add(new FormField("qrVal", FieldDisplayType.TEXTBOX, "QR VALUE", Required.OPTIONAL, 11, 1));
 		return fields;
 	}
 

@@ -65,7 +65,24 @@ public class FileAction extends FacilioAction {
 	public void setIsDownload(Boolean isDownload) {
 		this.isDownload = isDownload;
 	}
-	
+	public int getWidth() {
+		return width;
+	}
+
+	public void setWidth(int width) {
+		this.width = width;
+	}
+
+	private int width;
+	private int height;
+	public int getHeigth() {
+		return height;
+	}
+
+	public void setHeigth(int height) {
+		this.height = height;
+	}
+
 	public String previewFile() throws Exception {
 		HttpServletRequest request = ServletActionContext.getRequest();
 		HttpServletResponse response = ServletActionContext.getResponse();
@@ -73,10 +90,21 @@ public class FileAction extends FacilioAction {
 		if (request.getHeader("If-Modified-Since") == null) {
 			if (fileID > 0) {
 				FileStore fs = FileStoreFactory.getInstance().getFileStore();
-				FileInfo fileInfo = fs.getFileInfo(fileID);
+				FileInfo fileInfo;
+				if (width > 0 || height > 0) {
+					if (height < 0) {
+						fileInfo = fs.getResizedFileInfo(fileID, width, width);
+					}
+					else {
+						fileInfo = fs.getResizedFileInfo(fileID, width, height);
+					}
+				}
+				else {
+					fileInfo = fs.getFileInfo(fileID);
+				}
 				if (fileInfo != null) {
 					downloadStream = fs.readFile(fileInfo);
-					if (downloadStream != null) {
+					 if (downloadStream != null) {
 						String dateStamp = new SimpleDateFormat("E, dd MMM yyyy HH:mm:ss Z").format(new Date());
 						response.setHeader("Last-Modified", dateStamp);
 						if (getIsDownload()) {
@@ -91,6 +119,9 @@ public class FileAction extends FacilioAction {
 					else {
 						throw new Exception("File not Found");
 					}
+				}
+				else {
+					response.setStatus(404);
 				}
 			}
 		} else {

@@ -133,17 +133,6 @@ select * from Virtual_Energy_Meter_Rel where VIRTUAL_METER_ID=ENERGYMETER_ID
 		
 		return new FileInputStream(new File(fileInfo.getFilePath()));
 	}
-	
-	@Override
-	public InputStream readFile(long fileId, int width, int height) throws Exception {
-		
-		FileInfo fileInfo = getResizedFileInfo(fileId, width, height);
-		if (fileInfo == null) {
-			return null;
-		}
-		
-		return new FileInputStream(new File(fileInfo.getFilePath()));
-	}
 
 	@Override
 	public boolean deleteFile(long fileId) throws Exception {

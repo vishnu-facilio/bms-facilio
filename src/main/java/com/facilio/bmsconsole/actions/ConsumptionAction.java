@@ -15,12 +15,12 @@ public class ConsumptionAction  extends FacilioAction{
 		 * 
 		 */
 		private static final long serialVersionUID = 1L;
-		private Map<String,Object> totalConsumptionByBuilding;
-		public Map<String,Object> getTotalConsumptionByBuilding() {
-			return totalConsumptionByBuilding;
+		private Map<String,Object> totalConsumptionBySite;
+		public Map<String,Object> getTotalConsumptionBySite() {
+			return totalConsumptionBySite;
 		}
-		public void setTotalConsumptionByBuilding(Map<String,Object> totalConsumptionByBuilding) {
-			this.totalConsumptionByBuilding = totalConsumptionByBuilding;
+		public void setTotalConsumptionBySite(Map<String,Object> totalConsumptionBySite) {
+			this.totalConsumptionBySite = totalConsumptionBySite;
 		}
 		
 		private String moduleName;
@@ -66,19 +66,19 @@ public class ConsumptionAction  extends FacilioAction{
 	
 		
 		
-		public String getTotalConsumptionForBuilding() throws Exception {
+		public String getTotalConsumptionForSite() throws Exception {
 			FacilioContext context = new FacilioContext();
-			context.put(FacilioConstants.ContextNames.MODULE_NAME, getModuleName());
-			context.put(FacilioConstants.ContextNames.MODULE_FIELD_NAME, getFieldName());
+		//	context.put(FacilioConstants.ContextNames.MODULE_NAME, getModuleName());
+		//	context.put(FacilioConstants.ContextNames.MODULE_FIELD_NAME, getFieldName());
 			context.put(FacilioConstants.ContextNames.WORK_ORDER_STARTTIME, getStartTime());
 			context.put(FacilioConstants.ContextNames.WORK_ORDER_ENDTIME, getEndTime());
 			
-			Chain totalConsumptionChain = FacilioChainFactory.getTotalConsumptionByBuildingChain();
+			Chain totalConsumptionChain = FacilioChainFactory.getTotalConsumptionBySiteChain();
 			totalConsumptionChain.execute(context);
 			Map<String,Object> consumptionDataByBuilding = (Map<String,Object>)context.get(FacilioConstants.ContextNames.TOTAL_CONSUMPTION);
 			
 			
-			setTotalConsumptionByBuilding(consumptionDataByBuilding);
+			setTotalConsumptionBySite(consumptionDataByBuilding);
 			
 			
 			

@@ -257,6 +257,7 @@ public class V2ReportAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.CHART_STATE, chartState);
 		context.put(FacilioConstants.ContextNames.TABULAR_STATE, tabularState);
 		context.put(FacilioConstants.ContextNames.REPORT, reportContext);
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
 		
 		Chain addReadingReport = TransactionChainFactory.addOrUpdateReadingReportChain();
 		addReadingReport.execute(context);
@@ -462,6 +463,27 @@ public class V2ReportAction extends FacilioAction {
 	public void setCriteria(Criteria criteria) {
 		this.criteria = criteria;
 	}
+	private JSONArray sortFields;
+	public JSONArray getSortFields() {
+		return sortFields;
+	}
+	public void setSortFields(JSONArray sortFields) {
+		this.sortFields = sortFields;
+	}
+	private int sortOrder;
+	public int getSortOrder() {
+		return sortOrder;
+	}
+	public void setSortOrder(int sortOrder) {
+		this.sortOrder = sortOrder;
+	}
+	private int limit;
+	public int getLimit() {
+		return limit;
+	}
+	public void setLimit(int limit) {
+		this.limit = limit;
+	}
 	public String fetchReportData() throws Exception {
 		JSONParser parser = new JSONParser();
 		
@@ -471,6 +493,9 @@ public class V2ReportAction extends FacilioAction {
 		context.put("y-axis", yField);
 		context.put("group-by", groupBy);
 		context.put("criteria", criteria);
+		context.put("sort_fields", sortFields);
+		context.put("sort_order", sortOrder);
+		context.put("limit", limit);
 		
 		ReadOnlyChainFactory.constructAndFetchReportDataChain().execute(context);
 
@@ -481,6 +506,12 @@ public class V2ReportAction extends FacilioAction {
 		Chain chain = FacilioChain.getTransactionChain();
 		FacilioContext context = new FacilioContext();
 
+		if (reportContext == null) {
+			throw new Exception("Report context cannot be empty");
+		}
+		reportContext.setChartState(chartState);
+		reportContext.setTabularState(tabularState);
+		
 		context.put(FacilioConstants.ContextNames.REPORT, reportContext);
 		context.put("x-axis", xField);
 		context.put("y-axis", yField);
@@ -492,6 +523,7 @@ public class V2ReportAction extends FacilioAction {
 		chain.execute(context);
 
 		setResult("message", "Report saved");
+		setResult("report", reportContext);
 		return SUCCESS;
 	}
 

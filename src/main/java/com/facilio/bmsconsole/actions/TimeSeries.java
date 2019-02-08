@@ -138,7 +138,9 @@ public class TimeSeries extends FacilioAction {
 		if (!getShowInstanceCount()) {
 			context.put(FacilioConstants.ContextNames.FETCH_READING_INPUT_VALUES, true);
 		}
-		
+		if (getSearch() != null) {
+			context.put(FacilioConstants.ContextNames.SEARCH, getSearch());
+		}
 		Chain chain = ReadOnlyChainFactory.getUnmodelledInstancesForController();
 		chain.execute(context);
 		
@@ -165,10 +167,21 @@ public class TimeSeries extends FacilioAction {
 	public String subscribeInstances () throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.INSTANCE_INFO, instances);
-		context.put(FacilioConstants.ContextNames.SUBSCRIBE , subscribed);
 		context.put(FacilioConstants.ContextNames.CONTROLLER_ID , controllerId);
 		
 		Chain markChain = TransactionChainFactory.getSubscribeInstanceChain();
+		markChain.execute(context);
+
+		setResult("result", "success");
+		return SUCCESS;
+	}
+	
+	public String unsubscribeInstances () throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.UNSUBSCRIBE_IDS, ids);
+		context.put(FacilioConstants.ContextNames.CONTROLLER_ID , controllerId);
+		
+		Chain markChain = TransactionChainFactory.getUnSubscribeInstanceChain();
 		markChain.execute(context);
 
 		setResult("result", "success");
@@ -189,6 +202,16 @@ public class TimeSeries extends FacilioAction {
 	}
 	public void setControllerId(long controllerId) {
 		this.controllerId = controllerId;
+	}
+	
+	String search;
+
+	public void setSearch(String search) {
+		this.search = search;
+	}
+
+	public String getSearch() {
+		return this.search;
 	}
 	
 	private String macAddr;

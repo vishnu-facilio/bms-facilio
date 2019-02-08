@@ -117,6 +117,17 @@ public class ReadOnlyChainFactory {
 		return c;
 	}
 	
+	public static Chain getCalendarWorkOrdersChain() {
+		Chain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForWorkOrder());
+		c.addCommand(new ValidateCalendarWOCommand());
+		c.addCommand(new LoadViewCommand());
+		c.addCommand(new GetCalendarWOsCommands());
+//		c.addCommand(new GetFutureWOsCommands());
+		c.addCommand(new GetPlannedFutureWOCommand());
+		return c;
+	}
+	
 	public static Chain getWorkOrderStatusPercentageChain() {
 		Chain c = getDefaultChain();
 		c.addCommand(SetTableNamesCommand.getForWorkOrder());
@@ -124,10 +135,36 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new GetDigestTeamTechnicianCountCommand());
 		c.addCommand(new GetWorkOrderStatusPecentageCommand());
 		
-//		CommonCommandUtil.addCleanUpCommand(c);
 		return c;
 	}
 	
+	public static Chain getAvgResponseResolutionTimeBySiteChain() {
+		Chain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForWorkOrder());
+		c.addCommand(new LoadModuleNameCommand());
+		c.addCommand(new GetAvgResponseResolutionBySiteCommand());
+		
+		return c;
+	}
+	
+	public static Chain getWorkOrderCountBySiteChain() {
+		Chain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForWorkOrder());
+		c.addCommand(new LoadModuleNameCommand());
+		c.addCommand(new GetRoleWoCountBySiteCommand());
+		
+		return c;
+	}
+	
+	public static Chain getTopNTechBySiteChain() {
+		Chain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForWorkOrder());
+		c.addCommand(new LoadModuleNameCommand());
+		c.addCommand(new GetTopNTechCountCommand());
+		
+		
+		return c;
+	}
 	
 	public static Chain getAvgCompletionTimeByCategoryChain() {
 		Chain c = getDefaultChain();
@@ -318,4 +355,41 @@ public class ReadOnlyChainFactory {
 	private static Chain getDefaultChain() {
 		return FacilioChain.getNonTransactionChain();
     }
+	
+	public static Chain fetchInventoryDetails() {
+		Chain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForInventory());
+		c.addCommand(new GetInventoryDetailsCommand());
+//		CommonCommandUtil.addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain getInventoryListChain(){
+		Chain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForInventory());
+		c.addCommand(new LoadViewCommand());
+		c.addCommand(new LoadAllFieldsCommand());
+		c.addCommand(new GenerateCriteriaFromFilterCommand());
+		c.addCommand(new GenerateSearchConditionCommand());
+		c.addCommand(new GetInventoryListCommand());
+//		CommonCommandUtil.addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain fetchInventoryVendorDetails() {
+		Chain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForInventoryVendor());
+		c.addCommand(new GenericGetModuleDataDetailCommand());
+//		CommonCommandUtil.addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain getInventoryVendorsList(){
+		Chain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForInventoryVendor());
+		c.addCommand(new LoadAllFieldsCommand());
+		c.addCommand(new GenericGetModuleDataListCommand());
+//		CommonCommandUtil.addCleanUpCommand(c);
+		return c;
+	}
 }

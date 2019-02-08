@@ -12,6 +12,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.struts2.ServletActionContext;
+
+import com.facilio.accounts.dto.User;
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
@@ -442,32 +448,79 @@ public abstract class FileStore {
 		
 		return fileInfo;
 	}
-
-	public String getPrivateUrl(long fileId) throws Exception {
+	
+	private String getUrl (long fileId, boolean isDownload, boolean isPortal, int width, int height) {
+		StringBuilder url = new StringBuilder();
 		if (AwsUtil.isDevelopment()) {
-			return AwsUtil.getConfig("clientapp.url")+"/api/v2/files/preview/" + fileId;
+			url.append(AwsUtil.getConfig("clientapp.url"));
+		}
+		url.append("/api/v2/");
+		
+		if (isPortal) {
+			url.append("service/");
+		}
+		
+		url.append("files/");
+		if (isDownload) {
+			url.append("download/");
 		}
 		else {
-			return "/api/v2/files/preview/" + fileId;
+			url.append("preview/");
 		}
+		url.append(fileId);
+		
+		if (width != -1) {
+			url.append("?width=").append(width);
+			
+			if (height != -1) {
+				url.append("&height=").append(height);
+			}
+		}
+		return url.toString();
+	}
+
+	public String getPrivateUrl(long fileId) throws Exception {
+		User currentUser = AccountUtil.getCurrentAccount() == null ? null : AccountUtil.getCurrentAccount().getUser();
+		
+		if (currentUser != null) {
+			return getPrivateUrl(fileId, currentUser.isPortalUser());
+		}
+		else {
+			return getPrivateUrl(fileId, false);
+		}
+	}
+	
+	public String getPrivateUrl(long fileId, boolean isPortalUser) throws Exception {
+		return getUrl(fileId, false, isPortalUser, -1, -1);
 	}
 	
 	public String getPrivateUrl(long fileId, int width) throws Exception {
-		if (AwsUtil.isDevelopment()) {
-			return AwsUtil.getConfig("clientapp.url")+"/api/v2/files/preview/" + fileId +"?width=" + width;
+		User currentUser = AccountUtil.getCurrentAccount() == null ? null : AccountUtil.getCurrentAccount().getUser();
+		
+		if (currentUser != null) {
+			return getPrivateUrl(fileId, width, currentUser.isPortalUser());
 		}
 		else {
-			return "/api/v2/files/preview/" + fileId +"?width=" + width;
+			return getPrivateUrl(fileId, width, false);
 		}
 	}
 	
+	public String getPrivateUrl(long fileId, int width,boolean isPortalUser) throws Exception {
+		return getUrl(fileId, false, isPortalUser, width, -1);
+	}
+	
 	public String getDownloadUrl(long fileId) throws Exception {
-		if (AwsUtil.isDevelopment()) {
-			return AwsUtil.getConfig("clientapp.url")+"/api/v2/files/download/" + fileId;
+		User currentUser = AccountUtil.getCurrentAccount() == null ? null : AccountUtil.getCurrentAccount().getUser();
+		if (currentUser != null) {
+			return getDownloadUrl(fileId, currentUser.isPortalUser());
 		}
 		else {
-			return "/api/v2/files/download/" + fileId;
+			return getDownloadUrl(fileId, false);
 		}
+	}
+	
+	public String getDownloadUrl(long fileId, boolean isPortalUser) throws Exception {
+		return getUrl(fileId, true, isPortalUser, -1, -1);
 	}
 	
 	public int markAsDeleted(List<Long> fileIds) throws SQLException {
@@ -486,9 +539,7 @@ public abstract class FileStore {
 	public abstract InputStream readFile(long fileId) throws Exception;
 	
 	public abstract InputStream readFile(FileInfo fileInfo) throws Exception;
-	
-	public abstract InputStream readFile(long fileId, int width, int heigth) throws Exception;
-	
+		
 	public abstract boolean deleteFile(long fileId) throws Exception;
 	
 	public abstract boolean deleteFiles(List<Long> fileId) throws Exception;
