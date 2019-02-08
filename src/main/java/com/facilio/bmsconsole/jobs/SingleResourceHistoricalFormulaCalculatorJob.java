@@ -48,9 +48,9 @@ public class SingleResourceHistoricalFormulaCalculatorJob extends FacilioJob {
 			String msg = "Time taken for Historical Formula calculation of formula : "+formulaId+" for resource : "+resourceId+" between "+startTime+" and "+endTime+" is "+(System.currentTimeMillis() - jobStartTime);
 			LOGGER.info(msg);
 			
-			if (AccountUtil.getCurrentOrg().getId() == 88 && !isSystem) {
+			if (!isSystem) {
 				JSONObject json = new JSONObject();
-				json.put("to", "error@facilio.com");
+				json.put("to", "praveen@facilio.com, manthosh@facilio.com, shivaraj@facilio.com");
 				json.put("sender", "noreply@facilio.com");
 				json.put("subject", "Historical Calculation completed for Formula : "+formulaId);
 				json.put("message", msg);
