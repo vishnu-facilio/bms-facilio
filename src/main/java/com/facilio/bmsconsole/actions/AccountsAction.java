@@ -18,6 +18,7 @@ public class AccountsAction extends FacilioAction{
 
 	private String url;
 	private String permaLinkUrlToken;
+	private String email;
 
 	public String getUrl() {
 		return url;
@@ -25,6 +26,14 @@ public class AccountsAction extends FacilioAction{
 
 	public void setUrl(String url) {
 		this.url = url;
+	}
+	
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
 	}
 	
 	public String getPermaLinkUrlToken() {
@@ -39,7 +48,7 @@ public class AccountsAction extends FacilioAction{
    
 	    FacilioContext context = new FacilioContext();
 	    context.put(FacilioConstants.ContextNames.PERMALINK_FOR_URL, getUrl());
-		
+	    context.put(FacilioConstants.ContextNames.USER_EMAIL, getEmail());
 		Chain permaLinkTokenChain = FacilioChainFactory.getPermaLinkTokenChain();
 		permaLinkTokenChain.execute(context);
 		

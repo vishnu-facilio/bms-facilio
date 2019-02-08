@@ -6,6 +6,7 @@ import java.util.logging.Logger;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
+import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.constants.FacilioConstants;
 
@@ -20,7 +21,10 @@ public class GetPermaLinkTokenCommand implements Command{
 		LOGGER.log(Level.SEVERE, "startTime -- "+System.currentTimeMillis());
 			
 		String url = (String) context.get(FacilioConstants.ContextNames.PERMALINK_FOR_URL);
-		String token = AccountUtil.getUserBean().generatePermalinkForURL(url);
+		String email = (String) context.get(FacilioConstants.ContextNames.USER_EMAIL);
+		User user = AccountUtil.getUserBean().getUser(AccountUtil.getCurrentOrg().getId(), email);
+		
+		String token = AccountUtil.getUserBean().generatePermalinkForURL(url,user);
 		   
 		context.put(FacilioConstants.ContextNames.PERMALINK_TOKEN_FOR_URL, token);
 		

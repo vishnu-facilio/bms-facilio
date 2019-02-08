@@ -111,7 +111,7 @@ public interface UserBean {
     
     public boolean verifyUserSession(String email, String token) throws Exception;
     
-    public String generatePermalinkForURL(String url) throws Exception;
+    public String generatePermalinkForURL(String url, User user) throws Exception;
     
     public boolean verifyPermalinkForURL(String token, List<String> url) throws Exception;
 

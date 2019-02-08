@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 
+import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
@@ -363,9 +364,9 @@ public enum FacilioDefaultFunction implements FacilioWorkflowFunctionInterface {
 			if (objects == null || objects.length < 1) {
 				return null;
 			}
-			String token = AccountUtil.getUserBean().generatePermalinkForURL(objects[1].toString());
 			
-			
+			User user = AccountUtil.getUserBean().getUser(AccountUtil.getCurrentOrg().getId(), (String) objects[4]);
+			String token = AccountUtil.getUserBean().generatePermalinkForURL(objects[1].toString(), user);
 			String permalLinkURL = objects[0].toString()+objects[1].toString()+"?token="+token+"&startDate="+Long.valueOf(objects[2].toString())+"&endDate="+Long.valueOf(objects[3].toString());
 			
 			return permalLinkURL;

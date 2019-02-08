@@ -14,6 +14,7 @@ import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
+import com.facilio.bmsconsole.context.SpaceContext;
 import com.facilio.bmsconsole.context.TicketStatusContext;
 import com.facilio.bmsconsole.context.TicketStatusContext.StatusType;
 import com.facilio.bmsconsole.context.WorkOrderContext;
@@ -141,22 +142,16 @@ public class WorkOrderAPI {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(moduleName);
 		FacilioField mainField = modBean.getPrimaryField(moduleName);
-
+       
 		List<FacilioField> selectFields = new ArrayList<>();
 		selectFields.add(mainField);
 		selectFields.add(FieldFactory.getIdField(module));
-		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+		SelectRecordsBuilder builder = new SelectRecordsBuilder()
 				.select(selectFields)
-				.table(module.getTableName())
-				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module));
-		FacilioModule prevModule = module;
-		while (prevModule.getExtendModule() != null) {
-			builder.innerJoin(prevModule.getExtendModule().getTableName())
-				.on(prevModule.getTableName()+".ID = " + prevModule.getExtendModule().getTableName()+ ".ID");
-			prevModule = prevModule.getExtendModule();
-		}
+				.module(module)
+				;
 
-		List<Map<String,Object>> asProps = builder.get();
+		List<Map<String,Object>> asProps = builder.getAsProps();
 		Map lookupMap = new HashMap<>();
 		for (Map<String, Object> map : asProps) {
 			lookupMap.put((Long) map.get("id"), map.get(mainField.getName()));
@@ -1066,8 +1061,9 @@ public static List<Map<String,Object>> getTotalClosedWoCountBySite(Long startTim
 	 Long screenCategoryId =(Long) spaceCategoryList.get(0).get("id");
 	 
 	 
-	 GenericSelectRecordBuilder selectRecordsBuilder = new GenericSelectRecordBuilder()
-														  .table(spaceModule.getTableName())
+	 SelectRecordsBuilder<SpaceContext> selectRecordsBuilder = new SelectRecordsBuilder<SpaceContext>()
+														  .module(spaceModule)
+														  .beanClass(SpaceContext.class)
 					                                      .select(fields)
 					                                      .andCondition(CriteriaAPI.getCondition(spaceModule.getTableName()+".ORGID", "orgId", ""+AccountUtil.getCurrentOrg().getOrgId(), NumberOperators.EQUALS))
 					                                      .andCondition(CriteriaAPI.getCondition(siteIdField, CommonOperators.IS_NOT_EMPTY))
@@ -1076,7 +1072,7 @@ public static List<Map<String,Object>> getTotalClosedWoCountBySite(Long startTim
 					                                      ;
 	 
 	 
-	 List<Map<String, Object>> screenCountList = selectRecordsBuilder.get();
+	 List<Map<String, Object>> screenCountList = selectRecordsBuilder.getAsProps();
 	 Map<Long,Object> countMap = new HashMap<Long, Object>();
 		
 		
