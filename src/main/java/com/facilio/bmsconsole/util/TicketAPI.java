@@ -527,8 +527,6 @@ public class TicketAPI {
 	
 	public static void updateTicketStatus(ActivityType activityType, TicketContext ticket, TicketContext oldTicket, boolean isWorkDurationChangeAllowed) throws Exception {
 		TicketStatusContext statusObj = ticket.getStatus();
-		log.info("ORGID  ======>" + AccountUtil.getCurrentOrg().getOrgId());
-		log.info("Status ID ======>" + statusObj.getId());
 		if(statusObj != null && statusObj.getId() > 0) {
 			statusObj = TicketAPI.getStatus(AccountUtil.getCurrentOrg().getOrgId(), statusObj.getId());
 		}
