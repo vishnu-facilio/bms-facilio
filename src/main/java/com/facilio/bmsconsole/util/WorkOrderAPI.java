@@ -411,36 +411,39 @@ public static List<Map<String,Object>> getWorkOrderStatusPercentageForWorkflow(S
 	    
     }
     
-    Map<Long,Map<String,Object>> finalResp = new HashMap<Long, Map<String,Object>>();
-    
-    
-    Iterator<Map.Entry<Long, Object>> itr =onTimeMap.entrySet().iterator(); 
     Map<Long, Object> siteNameArray = getLookupFieldPrimary("site");
+    List<Map<String,Object>> resp = new ArrayList<Map<String,Object>>();
     
-    while(itr.hasNext()) 
+    for(int i=0;i<ontimeCount.size();i++)
      { 
-       Map.Entry<Long,Object> entry = itr.next(); 
-       Long siteId = entry.getKey();
+       Long siteId =(Long) ontimeCount.get(i).get("siteId");
        Map<String,Object> siteInfo = new HashMap<String, Object>();
-       Long onTime = (Long)entry.getValue();
+       Long onTime = (Long)ontimeCount.get(i).get("count");
        Long overdue =overDueMap.get(siteId)!=null?(Long) overDueMap.get(siteId):0;
        Long open = openMap.get(siteId)!=null?(Long)openMap.get(siteId):0;
        Long total = onTime+overdue+open;
-       onTime= (onTime*100)/total;
-       overdue= (overdue*100)/total;
-       open= (open*100)/total;
+       if(total>0) {
+	       onTime= (onTime*100)/total;
+	       overdue= (overdue*100)/total;
+	       open= (open*100)/total;
+	       siteInfo.put("onTime",onTime);
+	       siteInfo.put("overdue",overdue);
+	      
+       }
+       else
+       {
+    	   siteInfo.put("onTime",0);
+           siteInfo.put("overdue",0);
+          
+       }
         
        siteInfo.put("siteId",siteId);
-       siteInfo.put("onTime",onTime);
-       siteInfo.put("overdue",overdue);
        siteInfo.put("siteName",siteNameArray.get(siteId));
-       finalResp.put(siteId,siteInfo);
-       
-            
+       resp.add(siteInfo);
        
      }
    
-    List<Map<String,Object>> resp = new ArrayList<Map<String,Object>>(finalResp.values());
+    
 	
 
    return resp;
@@ -667,34 +670,35 @@ public static List<Map<String,Object>> getTopNCategoryOnAvgCompletionTime(String
 		    
 	    }
 	    
-	    Map<Long,Map<String,Object>> finalResp = new HashMap<Long, Map<String,Object>>();
+	     
 	    
-	    
-	    Iterator<Map.Entry<Long, Object>> itr =avgResolutionMap.entrySet().iterator(); 
 	    Map<Long, Object> siteNameArray = getLookupFieldPrimary("site");
-	    
-	    while(itr.hasNext()) 
+	    List<Map<String,Object>> resp = new ArrayList<Map<String,Object>>();
+		 
+	    for(int i=0;i<list.size();i++) 
 	     { 
-	       Map.Entry<Long,Object> entry = itr.next(); 
-	       Long siteId = entry.getKey();
+	       Long siteId = (Long)list.get(i).get("siteId");
 	       Map<String,Object> siteInfo = new HashMap<String, Object>();
 	         
 	       siteInfo.put("siteId",siteId);
-	       siteInfo.put("avgResolutionTime",avgResolutionMap.get(siteId));
-	       siteInfo.put("avgResolutionTimeTillLastMonth",avgResolutionTillLastMonthMap.get(siteId)!=null?avgResolutionTillLastMonthMap.get(siteId):0);
-	       siteInfo.put("siteName",siteNameArray.get(siteId));
-	       finalResp.put(siteId,siteInfo);
 	       
-	            
+	       Double avgResolutionTime = ((Number)avgResolutionMap.get(siteId)).doubleValue();
+	       avgResolutionTime = Math.round(avgResolutionTime*100.0)/100.0;
+		   siteInfo.put("avgResolutionTime",avgResolutionTime);
+	    
+		   Double avgResolutionTimeTillLastMonth = 0.0;
+		   if(avgResolutionTillLastMonthMap.get(siteId)!=null)
+		   {
+			   avgResolutionTimeTillLastMonth = ((Number)avgResolutionTillLastMonthMap.get(siteId)).doubleValue();
+		       avgResolutionTime = Math.round(avgResolutionTimeTillLastMonth*100.0)/100.0;
+		   }
+		   siteInfo.put("avgResolutionTimeTillLastMonth",avgResolutionTimeTillLastMonth);
+		   siteInfo.put("siteName",siteNameArray.get(siteId));
+	       resp.add(siteInfo);
 	       
 	     }
 	   
-	    List<Map<String,Object>> resp = new ArrayList<Map<String,Object>>();
-	    for (Map map : list) {
-	    	Long siteId = (Long)map.get("siteId");
-	    	resp.add(finalResp.get(siteId));
-	    }
-		return resp;
+	   return resp;
 
 
  

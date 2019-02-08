@@ -63,6 +63,11 @@ public class GetRoleWoCountBySiteCommand implements Command{
               siteCount.put("screenCount",screenCount);
   			
             }
+            else
+            {
+                siteCount.put("screenCount",0);
+          		
+            }
             Object totalCount = woTotalCount.remove(siteId);
             Long totalCountVal = totalCount!=null?(Long)totalCount:0;
             Map<String,Object> teamCountBySite = (Map<String, Object>) teamCount.get(siteId);
@@ -103,6 +108,11 @@ public class GetRoleWoCountBySiteCommand implements Command{
             		screenCount = screenCountBySite.get(siteId)!=null?(Long)screenCountBySite.get(siteId):0;
             		siteCount.put("screenCount",screenCount);
 	           	}
+            	else
+            	{
+            		siteCount.put("screenCount",0);
+        	        
+            	}
 	            Object totalCount = woTotalCount.get(siteId);
 	            siteCount.put("totalCount",(Long)totalCount);
 	            Map<String,Object> teamCountBySite = (Map<String, Object>) teamCount.get(siteId);
@@ -142,6 +152,11 @@ public class GetRoleWoCountBySiteCommand implements Command{
              if(screenCountBySite!=null) {
                screenCount = screenCountBySite.get(siteId)!=null?(Long)screenCountBySite.get(siteId):0;
                siteCount.put("screenCount",screenCount);
+             }
+             else
+             {
+         		siteCount.put("screenCount",0);
+    	        
              }
             
  			Map<String,Object> teamCountBySite = (Map<String, Object>) teamCount.get(siteId);
