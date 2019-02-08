@@ -360,7 +360,7 @@ public class FieldUtil {
 			ObjectMapper mapper = getMapper(bean.getClass());
 			properties = mapper.convertValue(bean, Map.class);
 		}
-		System.out.println("######" + properties + "#####");
+		LOGGER.info("######" + properties + "#####");
 		return properties;
 	}
 	
