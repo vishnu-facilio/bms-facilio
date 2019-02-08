@@ -442,11 +442,11 @@ public class V2ReportAction extends FacilioAction {
 	public void setxField(JSONObject xField) {
 		this.xField = xField;
 	}
-	private JSONObject yField;
-	public JSONObject getyField() {
+	private JSONArray yField;
+	public JSONArray getyField() {
 		return yField;
 	}
-	public void setyField(JSONObject yField) {
+	public void setyField(JSONArray yField) {
 		this.yField = yField;
 	}
 	private JSONArray groupBy;

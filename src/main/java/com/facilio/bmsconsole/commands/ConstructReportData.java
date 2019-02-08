@@ -39,15 +39,43 @@ public class ConstructReportData implements Command {
 			reportContext = new ReportContext();
 		}
 		
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
 		reportContext.setType(ReportType.READING_REPORT);
 		reportContext.setxAggr(0);
 		reportContext.setxAlias("X");
 		
 		JSONObject xAxisJSON = (JSONObject) context.get("x-axis");
+		JSONArray yAxisJSON = (JSONArray) context.get("y-axis");
+		JSONArray groupByJSONArray = (JSONArray) context.get("group-by");
+		Criteria criteria = (Criteria) context.get("criteria");
+		JSONArray sortFields = (JSONArray) context.get("sort_fields");
+		Integer sortOrder = null;
+		if (context.containsKey("sort_order")) {
+			sortOrder = ((Number) context.get("sort_order")).intValue();
+		}
+		Integer limit = null;
+		if (context.containsKey("limit")) {
+			limit = ((Number) context.get("limit")).intValue();
+		}
+		
+		if (yAxisJSON == null || yAxisJSON.size() == 0) {
+			addDataPointContext(reportContext, xAxisJSON, null, groupByJSONArray, criteria, sortFields, sortOrder, limit);
+		} else {
+			for (int i = 0; i < yAxisJSON.size(); i++) {
+				addDataPointContext(reportContext, xAxisJSON, (Map) yAxisJSON.get(i), groupByJSONArray, criteria, sortFields, sortOrder, limit);
+			}
+		}
+		
+		context.put(FacilioConstants.ContextNames.REPORT, reportContext);
+		
+		return false;
+	}
+	
+	private void addDataPointContext(ReportContext reportContext, JSONObject xAxisJSON, Map yMap, JSONArray groupByJSONArray, Criteria criteria, JSONArray sortFields, Integer sortOrder, Integer limit) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
 		ReportDataPointContext dataPointContext = new ReportDataPointContext();
+		
 		ReportFieldContext xAxis = new ReportFieldContext();
 		
 		FacilioField xField = null;
@@ -83,24 +111,27 @@ public class ConstructReportData implements Command {
 		xAxis.setField(xField);
 		dataPointContext.setxAxis(xAxis);
 		
-		JSONObject yAxisJSON = (JSONObject) context.get("y-axis");
 		ReportYAxisContext yAxis = new ReportYAxisContext();
-		
-		AggregateOperator yAggr = CommonAggregateOperator.COUNT;
 		FacilioField yField = null;
-		if (yAxisJSON == null || !(yAxisJSON.containsKey("field_id"))) {
+
+		AggregateOperator yAggr = CommonAggregateOperator.COUNT;
+		if (yMap == null) {
 			yField = FieldFactory.getIdField(xField.getModule());
 		} else {
-			if (yAxisJSON.containsKey("aggr")) {
-				yAggr = AggregateOperator.getAggregateOperator(((Number) yAxisJSON.get("aggr")).intValue());
+			if (yMap == null || !(yMap.containsKey("field_id"))) {
+				yField = FieldFactory.getIdField(xField.getModule());
+			} else {
+				if (yMap.containsKey("aggr")) {
+					yAggr = AggregateOperator.getAggregateOperator(((Number) yMap.get("aggr")).intValue());
+				}
+				yField = modBean.getField((Long) yMap.get("field_id"));
 			}
-			yField = modBean.getField((Long) yAxisJSON.get("field_id"));
 		}
+
 		yAxis.setAggr(yAggr);
 		yAxis.setField(yField);
 		dataPointContext.setyAxis(yAxis);
 		
-		JSONArray groupByJSONArray = (JSONArray) context.get("group-by");
 		if (groupByJSONArray != null) {
 			List<ReportGroupByField> groupByFields = new ArrayList<>();
 			for (int i = 0; i < groupByJSONArray.size(); i++) {
@@ -124,41 +155,33 @@ public class ConstructReportData implements Command {
 			dataPointContext.setGroupByFields(groupByFields);
 		}
 		
-		if (context.containsKey("criteria")) {
-			Criteria criteria = (Criteria) context.get("criteria");
+		if (criteria != null) {
 			dataPointContext.setCriteria(criteria);
 		}
 		
-		JSONArray sortFields = (JSONArray) context.get("sort_fields");
 		if (sortFields != null) {
 			List<String> orderBy = new ArrayList<>();
-			JSONArray orderByArray = (JSONArray) context.get("sort_fields");
-			for (int i = 0; i < orderByArray.size(); i++) {
-				Map object = (Map) orderByArray.get(i);
+			for (int i = 0; i < sortFields.size(); i++) {
+				Map object = (Map) sortFields.get(i);
 				FacilioField orderByField = modBean.getField((Long) object.get("field_id"));
 				orderBy.add(orderByField.getCompleteColumnName());
 			}
 			dataPointContext.setOrderBy(orderBy);
 			
-			if (context.containsKey("sort_order")) {
-				dataPointContext.setOrderByFunc(((Number) context.get("sort_order")).intValue());
+			if (sortOrder != null) {
+				dataPointContext.setOrderByFunc(sortOrder);
 			}
 		}
-		if (context.containsKey("limit")) {
-			int limit = ((Number) context.get("limit")).intValue();
+		if (limit != null) {
 			dataPointContext.setLimit(limit);
 		}
 		
 		Map<String, String> aliases = new HashMap<>();
-		aliases.put("actual", "Y");
+		aliases.put("actual", yField.getDisplayName());
 		dataPointContext.setAliases(aliases);
 		dataPointContext.setName(xField.getName());
 		
 		reportContext.addDataPoint(dataPointContext);
-		
-		context.put(FacilioConstants.ContextNames.REPORT, reportContext);
-		
-		return false;
 	}
 
 	private boolean isDateField(FacilioField field) {

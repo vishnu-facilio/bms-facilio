@@ -216,11 +216,14 @@ public class ConstructReportDataCommand implements Command {
 	
 						List<Map<String,Object>> asProps = builder.get();
 						lookupMap = new HashMap<>();
-						labelMap.put(lookupField.getFieldId(), lookupMap);
 						for (Map<String, Object> map : asProps) {
 							lookupMap.put((Long) map.get("id"), (String) map.get(mainField.getName()));
 						}
 					}
+					labelMap.put(lookupField.getFieldId(), lookupMap);
+				}
+				if (val instanceof Map) {
+					return ((Map) val).get("id");
 				}
 				break;
 			default:

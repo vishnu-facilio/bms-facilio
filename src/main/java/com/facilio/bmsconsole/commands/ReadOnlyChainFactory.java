@@ -38,6 +38,8 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new CalculateAggregationCommand()); //For new ones created in Derivations
 		c.addCommand(new FetchReportAdditionalInfoCommand());
 		c.addCommand(new FetchResourcesCommand());
+		
+		c.addCommand(new HandleGroupByDataCommand());
 		return c;
 	}
 	
