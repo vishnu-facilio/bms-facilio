@@ -453,7 +453,7 @@ public class AwsUtil
 				client.sendEmail(request);
 				LOGGER.info("Email sent!");
 				if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 151) {
-					LOGGER.info(mailJson.toJSONString());
+					LOGGER.info("Email sent to "+toAddress+"\n"+mailJson);
 				}
 			} catch (Exception ex) {
 				LOGGER.info("Error message: " + ex.getMessage());
@@ -515,6 +515,11 @@ public class AwsUtil
 						.withRegion(Regions.US_WEST_2).withCredentials(getAWSCredentialsProvider()).build();
 				client.sendRawEmail(request);
 				LOGGER.info("Email sent!");
+				
+				if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 151) {
+					LOGGER.info("Email sent to "+toAddress+"\n"+mailJson);
+				}
+				
 			} catch (Exception ex) {
 				LOGGER.info("The email was not sent.");
 				LOGGER.info("Error message: " + ex.getMessage());
