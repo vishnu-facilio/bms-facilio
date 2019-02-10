@@ -68,6 +68,7 @@ public class FetchScheduledRuleMatchingRecordsCommand implements Command {
 		FacilioField dateField = rule.getDateField();
 		DateRange range = getRange(rule, jc);
 		LOGGER.info("Range for rule : "+rule.getId()+" is "+range.toString());
+		LOGGER.info("Date field id : "+rule.getId()+" is "+rule.getDateFieldId());
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
 		Class beanClassName = FacilioConstants.ContextNames.getClassFromModuleName(module.getName());
