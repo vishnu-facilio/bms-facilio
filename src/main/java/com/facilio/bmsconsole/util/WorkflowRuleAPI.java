@@ -12,7 +12,6 @@ import java.util.StringJoiner;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
@@ -39,7 +38,6 @@ import com.facilio.bmsconsole.workflow.rule.ActivityType;
 import com.facilio.bmsconsole.workflow.rule.ApprovalRuleContext;
 import com.facilio.bmsconsole.workflow.rule.FieldChangeFieldContext;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
-import com.facilio.bmsconsole.workflow.rule.ScheduledRuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowEventContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
@@ -106,11 +104,6 @@ public class WorkflowRuleAPI {
 			case SLA_RULE:
 				addExtendedProps(ModuleFactory.getSLARuleModule(), FieldFactory.getSLARuleFields(), ruleProps);
 				break;
-			case SCHEDULED_RULE:
-				ScheduledRuleAPI.validateScheduledRule((ScheduledRuleContext) rule);
-				addExtendedProps(ModuleFactory.getScheduledRuleModule(), FieldFactory.getScheduledRuleFields(), ruleProps);
-				ScheduledRuleAPI.addScheduledRuleJob((ScheduledRuleContext) rule);
-				break;
 			case APPROVAL_RULE:
 			case CHILD_APPROVAL_RULE:
 				ApprovalRulesAPI.validateApprovalRule((ApprovalRuleContext) rule);
@@ -122,8 +115,13 @@ public class WorkflowRuleAPI {
 				break;
 		}
 		
-		if (rule.getEvent() != null && ActivityType.FIELD_CHANGE.isPresent(rule.getEvent().getActivityType())) {
-			addFieldChangeFields(rule);
+		if (rule.getEvent() != null) {
+			if (ActivityType.FIELD_CHANGE.isPresent(rule.getEvent().getActivityType())) {
+				addFieldChangeFields(rule);
+			}
+			else if (ActivityType.SCHEDULED.isPresent(rule.getEvent().getActivityType())) {
+				ScheduledRuleAPI.addScheduledRuleJob(rule);
+			}
 		}
 		
 		return rule.getId();
@@ -147,12 +145,16 @@ public class WorkflowRuleAPI {
 		insertBuilder.save();
 	}
 	
-	private static void validateWorkflowRule (WorkflowRuleContext rule) {
+	private static void validateWorkflowRule (WorkflowRuleContext rule) throws Exception {
 		if (rule.getRuleTypeEnum() == null) {
 			throw new IllegalArgumentException("Rule Type cannot be null during addition for Workflow");
 		}
 		if (rule.getEventId() == -1 && !rule.getRuleTypeEnum().isChildType()) {
 			throw new IllegalArgumentException("Event ID cannot be null during addition for Workflow");
+		}
+		
+		if (rule.getEvent() != null && ActivityType.SCHEDULED.isPresent(rule.getEvent().getActivityType())) {
+			ScheduledRuleAPI.validateScheduledRule(rule, false);
 		}
 	}
 	
@@ -230,11 +232,15 @@ public class WorkflowRuleAPI {
 	}
 	
 	public static WorkflowRuleContext updateWorkflowRuleWithChildren(WorkflowRuleContext rule) throws Exception {
-		WorkflowRuleContext oldRule = getWorkflowRule(rule.getId());
+		WorkflowRuleContext oldRule = getWorkflowRule(rule.getId(), true);
 		updateWorkflowRuleChildIds(rule);
 		updateWorkflowRule(rule);
 		deleteChildIdsForWorkflow(oldRule, rule);
 		
+		if(ActivityType.SCHEDULED.isPresent(oldRule.getEvent().getActivityType()) && rule.getTimeObj() != null) {
+			ScheduledRuleAPI.validateScheduledRule(rule, true);
+			ScheduledRuleAPI.updateScheduledRuleJob(rule);
+		}
 		if (rule.getName() == null) {
 			rule.setName(oldRule.getName());
 		}
@@ -345,15 +351,27 @@ public class WorkflowRuleAPI {
 		return getWorkFlowsFromMapList(ruleBuilder.get(), false, true, true);
 	}
 	
-	public static List<WorkflowRuleContext> getWorkflowRules(List<Long> ids) throws Exception {
+	public static List<WorkflowRuleContext> getWorkflowRules(List<Long> ids, boolean fetchEvent) throws Exception {
 		FacilioModule module = ModuleFactory.getWorkflowRuleModule();
+		List<FacilioField> fields = FieldFactory.getWorkflowRuleFields(); 
 		GenericSelectRecordBuilder ruleBuilder = new GenericSelectRecordBuilder()
 				.table("Workflow_Rule")
-				.select(FieldFactory.getWorkflowRuleFields())
+				.select(fields)
 				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 				.andCondition(CriteriaAPI.getIdCondition(ids, module))
 				;
-		return getWorkFlowsFromMapList(ruleBuilder.get(), false, true, true);
+		if (fetchEvent) {
+			fields.addAll(FieldFactory.getWorkflowEventFields());
+			FacilioModule eventModule = ModuleFactory.getWorkflowEventModule();
+			ruleBuilder.innerJoin(eventModule.getTableName())
+						.on(module.getTableName()+".EVENT_ID = "+eventModule.getTableName()+".ID");
+		}
+		
+		return getWorkFlowsFromMapList(ruleBuilder.get(), fetchEvent, true, true);
+	}
+	
+	public static List<WorkflowRuleContext> getWorkflowRules(List<Long> ids) throws Exception {
+		return getWorkflowRules(ids, false);
 	}
 	
 	public static Map<Long, WorkflowRuleContext> getWorkflowRulesAsMap (List<Long> ids, boolean fetchEvent, boolean fetchChildren, boolean fetchExtended) throws Exception {
@@ -563,9 +581,6 @@ public class WorkflowRuleAPI {
 				case SLA_RULE:
 					typeWiseProps.put(entry.getKey(), getExtendedProps(ModuleFactory.getSLARuleModule(), FieldFactory.getSLARuleFields(), entry.getValue()));
 					break;
-				case SCHEDULED_RULE:
-					typeWiseProps.put(entry.getKey(), getExtendedProps(ModuleFactory.getScheduledRuleModule(), FieldFactory.getScheduledRuleFields(), entry.getValue()));
-					break;
 				case APPROVAL_RULE:
 				case CHILD_APPROVAL_RULE:
 					typeWiseProps.put(entry.getKey(), getExtendedProps(ModuleFactory.getApprovalRulesModule(), FieldFactory.getApprovalRuleFields(), entry.getValue()));
@@ -672,10 +687,6 @@ public class WorkflowRuleAPI {
 							prop.putAll(typeWiseExtendedProps.get(ruleType).get(prop.get("id")));
 							rule = SLARuleAPI.constructSLARuleFromProps(prop, modBean);
 							break;
-						case SCHEDULED_RULE:
-							prop.putAll(typeWiseExtendedProps.get(ruleType).get(prop.get("id")));
-							rule = ScheduledRuleAPI.constructScheduledRuleFromProps(prop, modBean);
-							break;
 						case APPROVAL_RULE:
 						case CHILD_APPROVAL_RULE:
 							prop.putAll(typeWiseExtendedProps.get(ruleType).get(prop.get("id")));
@@ -733,20 +744,23 @@ public class WorkflowRuleAPI {
 	
 	public static void deleteWorkFlowRules(List<Long> workflowIds) throws Exception {
 		if (workflowIds != null && !workflowIds.isEmpty()) {
-			List<WorkflowRuleContext> rules = getWorkflowRules(workflowIds);
+			List<WorkflowRuleContext> rules = getWorkflowRules(workflowIds, true);
 			List<Long> deleteIds = new ArrayList<Long>();
 			List<Long> updateIds = new ArrayList<Long>();;
 			FacilioModule module = ModuleFactory.getWorkflowRuleModule();
 
 			if (rules != null && !rules.isEmpty()) {
-			 for(WorkflowRuleContext rule: rules ) {
-				if (rule.isLatestVersion() && rule.getRuleTypeEnum().versionSupported()) {
-					updateIds.add(rule.getId());
+				for(WorkflowRuleContext rule: rules ) {
+					if (rule.isLatestVersion() && rule.getRuleTypeEnum().versionSupported()) {
+						updateIds.add(rule.getId());
+					}
+					else {
+						deleteIds.add(rule.getId());
+					}
+					if (ActivityType.SCHEDULED.isPresent(rule.getEvent().getActivityType())) {
+						ScheduledRuleAPI.deleteScheduledRuleJob(rule);
+					}
 				}
-				else {
-					deleteIds.add(rule.getId());
-				}
-			 }
 			}
 			if (deleteIds.size() > 0) {
 				ActionAPI.deleteAllActionsFromWorkflowRules(workflowIds);
@@ -761,8 +775,6 @@ public class WorkflowRuleAPI {
 						case CHILD_APPROVAL_RULE:
 							ApprovalRulesAPI.deleteApprovalRuleChildIds((ApprovalRuleContext) rule);
 							break;
-						case SCHEDULED_RULE:
-							ScheduledRuleAPI.deleteScheduledRuleJob((ScheduledRuleContext) rule);
 						default:
 							break;
 					}

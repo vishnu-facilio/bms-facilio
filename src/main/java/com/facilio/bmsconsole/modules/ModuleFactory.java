@@ -255,16 +255,6 @@ public class ModuleFactory {
 		return slarule;
 	}
 	
-	public static FacilioModule getScheduledRuleModule() {
-		FacilioModule scheduledRule = new FacilioModule();
-		scheduledRule.setName("scheduledRule");
-		scheduledRule.setDisplayName("Scheduled Rules");
-		scheduledRule.setTableName("Scheduled_Rules");
-		scheduledRule.setExtendModule(getWorkflowRuleModule());
-		
-		return scheduledRule;
-	}
-	
 	public static FacilioModule getScheduledRuleJobModule() {
 		FacilioModule scheduledRuleJob = new FacilioModule();
 		scheduledRuleJob.setName("scheduledRuleJob");

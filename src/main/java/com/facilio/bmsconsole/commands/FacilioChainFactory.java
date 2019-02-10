@@ -236,7 +236,7 @@ public class FacilioChainFactory {
 		c.addCommand(new SplitDependentTicketsCommand());
 		c.addCommand(new DeleteTicketDependenciesCommand());
 		c.addCommand(new DeleteTicketCommand());
-		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.WORKORDER_AGENT_NOTIFICATION_RULE, RuleType.WORKORDER_REQUESTER_NOTIFICATION_RULE, RuleType.CUSTOM_WORKORDER_NOTIFICATION_RULE, RuleType.SCHEDULED_RULE));
+		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.WORKORDER_AGENT_NOTIFICATION_RULE, RuleType.WORKORDER_REQUESTER_NOTIFICATION_RULE, RuleType.CUSTOM_WORKORDER_NOTIFICATION_RULE));
 		return c;
 	}
 	

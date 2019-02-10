@@ -7,7 +7,7 @@ import org.apache.log4j.Logger;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
-import com.facilio.bmsconsole.workflow.rule.ScheduledRuleContext;
+import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.tasker.job.FacilioJob;
@@ -20,7 +20,7 @@ public class ScheduledRuleExecutionJob extends FacilioJob {
 	public void execute(JobContext jc) {
 		// TODO Auto-generated method stub
 		try {
-			ScheduledRuleContext rule = (ScheduledRuleContext) WorkflowRuleAPI.getWorkflowRule(jc.getJobId(), true);
+			WorkflowRuleContext rule = WorkflowRuleAPI.getWorkflowRule(jc.getJobId(), true);
 			
 			FacilioContext context = new FacilioContext();
 			context.put(FacilioConstants.ContextNames.WORKFLOW_RULE, rule);

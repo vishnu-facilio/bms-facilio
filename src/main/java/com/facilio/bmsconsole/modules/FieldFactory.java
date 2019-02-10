@@ -862,6 +862,10 @@ public class FieldFactory {
 		fields.add(getField("versionGroupId", "VERSION_GROUP_ID", module, FieldType.NUMBER));
 		fields.add(getField("latestVersion", "IS_LATEST_VERSION", module, FieldType.BOOLEAN));
 		fields.add(getField("scheduleJson", "SCHEDULE_INFO", module, FieldType.STRING));
+		fields.add(getField("dateFieldId", "DATE_FIELD_ID", module, FieldType.LOOKUP));
+		fields.add(getField("scheduleType", "SCHEDULE_TYPE", module, FieldType.NUMBER));
+		fields.add(getField("interval", "TIME_INTERVAL", module, FieldType.NUMBER));
+		fields.add(getField("time", "JOB_TIME", module, FieldType.STRING));
 
 		return fields;
 	}
@@ -974,21 +978,6 @@ public class FieldFactory {
 		fields.add(getField("resourceId", "RESOURCE_ID", module, FieldType.NUMBER));
 		fields.add(getField("groupId", "GROUP_ID", module, FieldType.NUMBER));
 
-		return fields;
-	}
-	
-	public static List<FacilioField> getScheduledRuleFields() {
-		List<FacilioField> fields = new ArrayList<>();
-		FacilioModule module = ModuleFactory.getScheduledRuleModule();
-		
-		fields.add(getIdField(module));
-		fields.add(getOrgIdField(module));
-		fields.add(getSiteIdField(module));
-		fields.add(getField("dateFieldId", "DATE_FIELD_ID", module, FieldType.LOOKUP));
-		fields.add(getField("scheduleType", "SCHEDULE_TYPE", module, FieldType.NUMBER));
-		fields.add(getField("interval", "TIME_INTERVAL", module, FieldType.NUMBER));
-		fields.add(getField("time", "JOB_TIME", module, FieldType.STRING));
-		
 		return fields;
 	}
 	
