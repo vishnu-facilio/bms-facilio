@@ -528,13 +528,14 @@ public class TicketAPI {
 	public static void updateTicketStatus(ActivityType activityType, TicketContext ticket, TicketContext oldTicket, boolean isWorkDurationChangeAllowed) throws Exception {
 		TicketStatusContext statusObj = ticket.getStatus();
 		if(statusObj != null && statusObj.getId() > 0) {
-			statusObj = TicketAPI.getStatus(AccountUtil.getCurrentOrg().getOrgId(), statusObj.getId());
+			long orgId = AccountUtil.getCurrentOrg().getOrgId();
+			statusObj = TicketAPI.getStatus(orgId, statusObj.getId());
 		}
 		else {
 			ticket.setStatus(TicketAPI.getStatus("Submitted"));
 		}
 		
-		if((ticket.getAssignedTo() != null || ticket.getAssignmentGroup() != null) && (statusObj == null || statusObj.getStatus().equals("Submitted"))) {
+		if(( (ticket.getAssignedTo() != null && ticket.getAssignedTo().getId() > 0) || ( ticket.getAssignmentGroup() != null && ticket.getAssignmentGroup().getId() > 0) ) && (statusObj == null || statusObj.getStatus().equals("Submitted"))) {
 			ticket.setStatus(TicketAPI.getStatus("Assigned"));
 		}
 		statusObj = ticket.getStatus();
