@@ -2,14 +2,12 @@ package com.facilio.bmsconsole.util;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.commons.chain.Command;
-import org.apache.http.impl.client.AIMDBackoffManager;
 
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
@@ -660,7 +658,11 @@ public static List<Map<String,Object>> getTopNCategoryOnAvgCompletionTime(String
 																.limit(Integer.parseInt(count))
 																;
 
-		selectRecordsBuilderLastMonth.andCondition(CriteriaAPI.getCondition("CREATED_TIME", "createdTime", ""+startTime, DateOperators.IS_BEFORE));
+		Long lastMonthStartTime = DateTimeUtil.getMonthStartTime(-2,false);
+		Long lastMonthEndTime = DateTimeUtil.getMonthEndTimeOf(lastMonthStartTime,false);
+		
+		selectRecordsBuilderLastMonth.andCondition(CriteriaAPI.getCondition("CREATED_TIME", "createdTime", lastMonthStartTime+","+lastMonthEndTime, DateOperators.BETWEEN));
+		
 		List<Map<String,Object>> lastMonthList =selectRecordsBuilderLastMonth.get();		
 		Map<Long,Object> avgResolutionTillLastMonthMap = new HashMap<Long, Object>();
 		
@@ -708,7 +710,7 @@ public static List<Map<String,Object>> getTopNCategoryOnAvgCompletionTime(String
 
 
 
-public static List<Map<String,Object>> getAvgCompletionTimeBySite(Long startTime,Long endTime,boolean isTillLastMonth) throws Exception {
+public static List<Map<String,Object>> getAvgCompletionTimeBySite(Long startTime,Long endTime,boolean isLastMonth) throws Exception {
 
 
 	ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -763,11 +765,14 @@ public static List<Map<String,Object>> getAvgCompletionTimeBySite(Long startTime
 															  ;
 
 
-	 if(isTillLastMonth)
+	 if(isLastMonth)
 	   {
-		 //endTime=DateTimeUtil.minusDays(startTime, 1);
-		 selectRecordsBuilder.andCondition(CriteriaAPI.getCondition("CREATED_TIME", "createdTime", ""+startTime, DateOperators.IS_BEFORE));
-				
+		    Long previousMonthTime = DateTimeUtil.addMonths(startTime, -1);
+		 	Long lastMonthStartTime = DateTimeUtil.getMonthStartTimeOf(previousMonthTime, false);
+		 	Long lastMonthEndTime = DateTimeUtil.getMonthEndTimeOf(lastMonthStartTime,false);
+			
+			selectRecordsBuilder.andCondition(CriteriaAPI.getCondition("CREATED_TIME", "createdTime", lastMonthStartTime+","+lastMonthEndTime, DateOperators.BETWEEN));
+					
 	   }
 	   else
 	   {
@@ -793,7 +798,7 @@ public static List<Map<String,Object>> getAvgCompletionTimeBySite(Long startTime
 }
 
 
-public static Map<Long,Object> getAvgResponseTimeBySite(Long startTime,Long endTime,boolean isTillLastMonth) throws Exception {
+public static Map<Long,Object> getAvgResponseTimeBySite(Long startTime,Long endTime,boolean isLastMonth) throws Exception {
 
 
 	ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -846,10 +851,14 @@ public static Map<Long,Object> getAvgResponseTimeBySite(Long startTime,Long endT
 																.groupBy(siteIdField.getCompleteColumnName())
 															  ;
 
-   if(isTillLastMonth)
+   if(isLastMonth)
    {
-	   selectRecordsBuilder.andCondition(CriteriaAPI.getCondition("CREATED_TIME", "createdTime", ""+startTime, DateOperators.IS_BEFORE));
+	    Long previousMonthTime = DateTimeUtil.addMonths(startTime, -1);
+	    Long lastMonthStartTime = DateTimeUtil.getMonthStartTimeOf(previousMonthTime, false);
+	 	Long lastMonthEndTime = DateTimeUtil.getMonthEndTimeOf(lastMonthStartTime,false);
 			
+		selectRecordsBuilder.andCondition(CriteriaAPI.getCondition("CREATED_TIME", "createdTime", lastMonthStartTime+","+lastMonthEndTime, DateOperators.BETWEEN));
+				
    }
    else
    {
