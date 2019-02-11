@@ -9,6 +9,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.commons.chain.Command;
+import org.apache.http.impl.client.AIMDBackoffManager;
 
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
@@ -690,7 +691,7 @@ public static List<Map<String,Object>> getTopNCategoryOnAvgCompletionTime(String
 		   if(avgResolutionTillLastMonthMap.get(siteId)!=null)
 		   {
 			   avgResolutionTimeTillLastMonth = ((Number)avgResolutionTillLastMonthMap.get(siteId)).doubleValue();
-		       avgResolutionTime = Math.round(avgResolutionTimeTillLastMonth*100.0)/100.0;
+		       avgResolutionTimeTillLastMonth = Math.round(avgResolutionTimeTillLastMonth*100.0)/100.0;
 		   }
 		   siteInfo.put("avgResolutionTimeTillLastMonth",avgResolutionTimeTillLastMonth);
 		   siteInfo.put("siteName",siteNameArray.get(siteId));
