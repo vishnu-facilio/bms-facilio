@@ -83,6 +83,10 @@ public class ActionAPI {
 	}
 	
 	public static Map<Long,ActionContext> getActionsAsMap(List<Long> ids) throws Exception {
+		if (ids == null || ids.isEmpty()) {
+			return null;
+		}
+		
 		FacilioModule module = ModuleFactory.getActionModule();
 		GenericSelectRecordBuilder actionBuilder = new GenericSelectRecordBuilder()
 														.select(FieldFactory.getActionFields())

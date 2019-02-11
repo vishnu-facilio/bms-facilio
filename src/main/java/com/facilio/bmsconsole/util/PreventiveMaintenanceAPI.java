@@ -1126,8 +1126,8 @@ public class PreventiveMaintenanceAPI {
 			}
 			pmReminderActionMap.put(reminderAction.getReminderId(), reminderAction);
 		}
-		Map<Long, ActionContext> actionMap = ActionAPI.getActionsAsMap(actionIds);
-		for(PMReminderAction pmReminderAction : pmReminderActionMap.values()) {
+		Map<Long, ActionContext> actionMap = actionIds.isEmpty() ? null : ActionAPI.getActionsAsMap(actionIds);
+		for (PMReminderAction pmReminderAction : pmReminderActionMap.values()) {
 			if(pmReminderAction.getActionId() > 0) {
 				pmReminderAction.setAction(actionMap.get(pmReminderAction.getActionId()));
 			}
