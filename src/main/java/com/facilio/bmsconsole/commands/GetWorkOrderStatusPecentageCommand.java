@@ -30,8 +30,7 @@ public class GetWorkOrderStatusPecentageCommand implements Command{
 		long startTime = (Long) context.get(FacilioConstants.ContextNames.WORK_ORDER_STARTTIME);
 		long endTime = (Long) context.get(FacilioConstants.ContextNames.WORK_ORDER_ENDTIME);
 		
-		Map<Long, Map<String, Object>> workOrderStatusCount = WorkOrderAPI.getWorkOrderStatusPercentage(startTime, endTime);
-		List<Map<String,Object>> tableResp = new ArrayList<Map<String,Object>>(workOrderStatusCount.values());
+		List<Map<String,Object>> tableResp = WorkOrderAPI.getWorkOrderStatusPercentageForWorkflow(null, startTime, endTime);
 		
 		
 		//desired resp for chart
@@ -46,8 +45,8 @@ public class GetWorkOrderStatusPecentageCommand implements Command{
 		for(int i=0;i<tableResp.size();i++)
 		{
 			Map<String,Object> site = tableResp.get(i) ;
-			siteNameObj.add(site.get("name"));
-			overDueObj.add(site.get("overDue"));
+			siteNameObj.add(site.get("siteName"));
+			overDueObj.add(site.get("overdue"));
 			onTimeObj.add(site.get("onTime"));
 			openObj.add(site.get("open"));
 				
