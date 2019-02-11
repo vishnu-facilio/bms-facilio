@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
@@ -216,6 +217,10 @@ public class ActionAPI {
 	}
 	
 	public static void deleteActions(List<Long> actionIds) throws Exception {
+		if (CollectionUtils.isEmpty(actionIds)) {
+			return;
+		}
+		
 		FacilioModule module = ModuleFactory.getActionModule();
 		GenericSelectRecordBuilder actionBuilder = new GenericSelectRecordBuilder()
 														.select(FieldFactory.getActionFields())
