@@ -46,11 +46,7 @@ public class SetMissingRelInResourcePlannersCommand implements Command {
 					if (pm.getResourcePlanners() != null) {
 						for (int k = 0; k < pm.getResourcePlanners().size(); k++) {
 							PMResourcePlannerContext resourcePlan = pm.getResourcePlanners().get(k);
-							
-							if (resourcePlan.getTriggerId() != null && resourcePlan.getTriggerId() > 0) {
-								resourcePlan.setTriggerName(triggerMap.get(resourcePlan.getTriggerId()));
-							}
-							
+
 							if (resourcePlan.getPmResourcePlannerReminderContexts() != null) {
 								for (int l = 0; l < resourcePlan.getPmResourcePlannerReminderContexts().size(); l++) {
 									PMResourcePlannerReminderContext resourcePlannerRemContext = resourcePlan.getPmResourcePlannerReminderContexts().get(l);

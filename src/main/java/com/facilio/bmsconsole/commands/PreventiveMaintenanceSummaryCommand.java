@@ -117,7 +117,7 @@ public class PreventiveMaintenanceSummaryCommand implements Command {
 					}
 					pmResourcePlannerContext.setPmId(pm.getId());
 					pmResourcePlannerContext.setAssignedToId(-1l);
-					pmResourcePlannerContext.setTriggerId(-1l);
+					pmResourcePlannerContext.setTriggerContexts(new ArrayList<>());
 					pmResourcePlannerContext.setPmResourcePlannerReminderContexts(Collections.emptyList());
 					
 					resourcePlanners.put(resourceId, pmResourcePlannerContext);

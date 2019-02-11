@@ -903,6 +903,14 @@ public class ModuleFactory {
 		pmTriggers.setTableName("PM_Resource_Planner");
 		return pmTriggers;
 	}
+
+	public static FacilioModule getPMResourcePlannerTriggersModule() {
+		FacilioModule pmTriggers = new FacilioModule();
+		pmTriggers.setName("PMResourcePlannerTriggers");
+		pmTriggers.setDisplayName("PM Resource Planner Triggers");
+		pmTriggers.setTableName("PM_Resource_Planner_Triggers");
+		return pmTriggers;
+	}
 	
 	public static FacilioModule getPMResourcePlannerReminderModule() {
 		FacilioModule pmTriggers = new FacilioModule();

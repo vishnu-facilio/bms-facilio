@@ -3814,9 +3814,19 @@ public class FieldFactory {
 		fields.add(getIdField(module));
 		fields.add(getField("pmId", "PM_ID", module, FieldType.LOOKUP));
 		fields.add(getField("resourceId", "RESOURCE_ID", module, FieldType.LOOKUP));
-		fields.add(getField("triggerId", "TRIGGER_ID", module, FieldType.LOOKUP));
 		fields.add(getField("assignedToId", "ASSIGNED_TO", module, FieldType.LOOKUP));
 		
+		return fields;
+	}
+
+	public static List<FacilioField> getPMResourcePlannerTriggersFields() {
+		FacilioModule module = ModuleFactory.getPMResourcePlannerTriggersModule();
+		List<FacilioField> fields = new ArrayList<>();
+
+		fields.add(getOrgIdField(module));
+		fields.add(getField("triggerId", "TRIGGER_ID", module, FieldType.LOOKUP));
+		fields.add(getField("resourcePlannerId", "PM_RESOURCE_PLANNER_ID", module, FieldType.LOOKUP));
+
 		return fields;
 	}
 	
