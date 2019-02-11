@@ -720,6 +720,9 @@ public class WorkflowRuleAPI {
 					if (ActivityType.FIELD_CHANGE.isPresent(event.getActivityType())) {
 						rule.setFields(ruleFieldsMap.get(rule.getId()));
 					}
+					else if (ActivityType.SCHEDULED.isPresent(event.getActivityType())) {
+						rule.setDateField(modBean.getField(rule.getDateFieldId()));
+					}
 				}
 				workflows.add(rule);
 			}
