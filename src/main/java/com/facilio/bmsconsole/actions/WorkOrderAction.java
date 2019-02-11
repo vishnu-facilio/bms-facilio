@@ -566,6 +566,16 @@ public class WorkOrderAction extends FacilioAction {
 	PMAssignmentType assignmentType;
 	PMAssignmentType parentAssignmentType;
 
+	public List<BaseSpaceContext> getBuildings() {
+		return buildings;
+	}
+
+	public void setBuildings(List<BaseSpaceContext> buildings) {
+		this.buildings = buildings;
+	}
+
+	private List<BaseSpaceContext> buildings;
+
 	List<Long> assetCategoryIds;
 	List<Long> spaceCategoryIds;
 	boolean hasFloor;
@@ -650,6 +660,7 @@ public class WorkOrderAction extends FacilioAction {
 			if (buildingId == null || buildingId < -1) {
 				List<BaseSpaceContext> buildings = SpaceAPI.getSiteBuildingsWithFloors(siteId);
 				if(buildings != null && !buildings.isEmpty()) {
+					setBuildings(buildings);
 					hasFloor = true;
 				}
 			} else {
