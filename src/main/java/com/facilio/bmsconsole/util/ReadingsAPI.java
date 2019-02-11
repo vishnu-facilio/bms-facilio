@@ -226,6 +226,11 @@ public class ReadingsAPI {
 	}
 	
 	public static Map<String, ReadingDataMeta> getReadingDataMetaMap(List<Pair<Long, FacilioField>> rdmPairs) throws Exception {
+		
+		if (rdmPairs == null || rdmPairs.isEmpty()) {
+			return Collections.EMPTY_MAP;
+		}
+		
 		FacilioModule module = ModuleFactory.getReadingDataMetaModule();
 		List<FacilioField> fields = FieldFactory.getReadingDataMetaFields();
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
