@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.util;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -9,6 +10,7 @@ import java.util.logging.Logger;
 
 import org.apache.commons.chain.Command;
 
+import com.chargebee.internal.StringJoiner;
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
@@ -348,7 +350,7 @@ public static List<Map<String,Object>> getWorkOrderStatusPercentageForWorkflow(S
 
 	List<Map<String, Object>> closedCount = closedSelectRecordsBuilder.getAsProps();
 	Map<Long,Object> closedMap = new HashMap<Long,Object>();
-	Map<Long,Object> overDueMap = new HashMap<Long,Object>();
+	Map<Long,Object> onTimeMap = new HashMap<Long,Object>();
 	Map<Long,Object> openMap = new HashMap<Long,Object>();
 	
 	StringBuilder sb = new StringBuilder();
@@ -367,7 +369,7 @@ public static List<Map<String,Object>> getWorkOrderStatusPercentageForWorkflow(S
 	}
 
 	
-	SelectRecordsBuilder<WorkOrderContext> overDueSelectRecordsBuilder = new SelectRecordsBuilder<WorkOrderContext>()
+	SelectRecordsBuilder<WorkOrderContext> onTimeSelectRecordsBuilder = new SelectRecordsBuilder<WorkOrderContext>()
 															.module(workOrderModule)
 															.beanClass(WorkOrderContext.class)
 															.select(fields)
@@ -375,17 +377,17 @@ public static List<Map<String,Object>> getWorkOrderStatusPercentageForWorkflow(S
 			  												.andCondition(CriteriaAPI.getCondition(siteIdField, CommonOperators.IS_NOT_EMPTY))
 			  												.andCondition(CriteriaAPI.getCondition(siteIdField,sb.toString(), NumberOperators.EQUALS))
 			  												.andCriteria(closedCriteria)
-			  												.andCustomWhere("ACTUAL_WORK_END > DUE_DATE")
+			  												.andCustomWhere("ACTUAL_WORK_END <= DUE_DATE")
 			  											    .groupBy(siteIdField.getCompleteColumnName())
 	                                                        ;
 
 
 
-    List<Map<String, Object>> overDueCount = overDueSelectRecordsBuilder.getAsProps();
-    for(int i=0;i<overDueCount.size();i++)
+    List<Map<String, Object>> onTimeCount = onTimeSelectRecordsBuilder.getAsProps();
+    for(int i=0;i<onTimeCount.size();i++)
     {
-    	Long siteId = (Long)overDueCount.get(i).get("siteId");
-		overDueMap.put(siteId,overDueCount.get(i).get("count"));
+    	Long siteId = (Long)onTimeCount.get(i).get("siteId");
+		onTimeMap.put(siteId,onTimeCount.get(i).get("count"));
 	    
     }
     
@@ -420,9 +422,10 @@ public static List<Map<String,Object>> getWorkOrderStatusPercentageForWorkflow(S
        Long siteId =(Long) closedCount.get(i).get("siteId");
        Map<String,Object> siteInfo = new HashMap<String, Object>();
        Long closed = (Long)closedCount.get(i).get("count");
-       Long overdue =overDueMap.get(siteId)!=null?(Long) overDueMap.get(siteId):0;
-       Long open = openMap.get(siteId)!=null?(Long)openMap.get(siteId):0;
-       Long onTime = closed - overdue;
+       Long onTime =onTimeMap.get(siteId)!=null?(Long) onTimeMap.get(siteId):0;
+       Object openObj = openMap.remove(siteId);
+       Long open = openObj!=null?(Long)openObj:0;
+       Long overdue = closed - onTime;
        Long total = onTime+overdue+open;
        if(total>0) {
     	   Long onTimePercentage = (onTime*100) / total ;
@@ -454,10 +457,24 @@ public static List<Map<String,Object>> getWorkOrderStatusPercentageForWorkflow(S
        resp.add(siteInfo);
        
      }
-   
+    Iterator<Map.Entry<Long, Object>> openSitesitr = openMap.entrySet().iterator(); 
     
-	
-
+    while(openSitesitr.hasNext()) { 
+         Map.Entry<Long, Object> entry = openSitesitr.next(); 
+         Long siteId = entry.getKey();
+         Long openCountVal = (Long)entry.getValue();
+         Map<String,Object> siteInfo = new HashMap<String, Object>();
+         siteInfo.put("onTime",0);
+         siteInfo.put("overdue",0);
+         siteInfo.put("open",openCountVal);
+         siteInfo.put("total",openCountVal);
+         siteInfo.put("onTimePercentage",0);
+         siteInfo.put("overduePercentage",0);
+         siteInfo.put("siteId",siteId);
+         siteInfo.put("siteName",siteNameArray.get(siteId));
+         resp.add(siteInfo);
+    }
+ 
    return resp;
 }
 
@@ -675,20 +692,15 @@ public static List<Map<String,Object>> getTopNCategoryOnAvgCompletionTime(String
 	    
     }
 
-    StringBuilder sb = new StringBuilder();
-	for(int i=0;i<totalList.size();i++)
-	{   
-		 
+    StringJoiner sb = new StringJoiner(",");
+	for(int i=0;i<totalList.size();i++) {
 		Long siteId = (Long)totalList.get(i).get("siteId");
 		Long totalCount = (Long)totalList.get(i).get("count");
 		Long closedCount =closedMap.get(siteId)!=null? (Long)closedMap.get(siteId) : 0;
 		Long closedOnTimePercentage = (closedCount*100)/totalCount;
+		
 		if(closedOnTimePercentage >= 70) {
-		sb.append(siteId);
-		if(i<totalList.size()-1)
-		{
-			sb.append(",");
-		}
+			sb.add(String.valueOf(siteId));
 		}
 		
 	}
