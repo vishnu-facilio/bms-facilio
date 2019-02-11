@@ -29,7 +29,6 @@ import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.BaseLineContext;
 import com.facilio.bmsconsole.context.BaseLineContext.RangeType;
-import com.facilio.bmsconsole.context.DashboardContext.DashboardPublishStatus;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.BuildingContext;
 import com.facilio.bmsconsole.context.DashboardContext;
@@ -407,7 +406,7 @@ public class DashboardUtil {
 					.maxLevel(0);
 			return selectBuilder.get();
 		}
-		return null;
+		return Collections.EMPTY_LIST;
 	}
 	
 	public static List<EnergyMeterContext> getRootServiceMeters(String buildingList) throws Exception {
