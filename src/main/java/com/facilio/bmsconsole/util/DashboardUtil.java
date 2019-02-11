@@ -394,7 +394,7 @@ public class DashboardUtil {
 		
 		EnergyMeterPurposeContext energyMeterPurpose = DeviceAPI.getEnergyMetersPurposeByName(ENERGY_METER_PURPOSE_MAIN);
 		
-		if(energyMeterPurpose != null && spaceList != null) {
+		if(energyMeterPurpose != null && spaceList != null && !spaceList.isEmpty()) {
 			SelectRecordsBuilder<EnergyMeterContext> selectBuilder = 
 					new SelectRecordsBuilder<EnergyMeterContext>()
 					.select(modBean.getAllFields(module.getName()))

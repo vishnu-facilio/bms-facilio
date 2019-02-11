@@ -1073,7 +1073,7 @@ public static long getSitesCount() throws Exception {
 				.table("Building")
 				.innerJoin("BaseSpace")
 				.on("Building.ID = BaseSpace.ID")
-				.andCustomWhere("Building.ORGID=? AND BaseSpace.ORGID = ? AND BaseSpace.BUILDING_ID = ? AND BaseSpace.SPACE_TYPE = ?", orgId, orgId, buildingId, BaseSpaceContext.SpaceType.SPACE);
+				.andCustomWhere("Building.ORGID=? AND BaseSpace.ORGID = ? AND BaseSpace.BUILDING_ID = ? AND BaseSpace.SPACE_TYPE = ?", orgId, orgId, buildingId, BaseSpaceContext.SpaceType.SPACE.getIntVal());
 		
 		List<Map<String, Object>> rs = builder.get();
 		if (rs == null || rs.isEmpty()) {
