@@ -664,6 +664,10 @@ public class WorkOrderAction extends FacilioAction {
 					hasFloor = true;
 				}
 			} else {
+				List<BaseSpaceContext> buildings = SpaceAPI.getSiteBuildingsWithFloors(siteId);
+				if (buildings != null && !buildings.isEmpty()) {
+					setBuildings(buildings);
+				}
 				List<BaseSpaceContext> floors = SpaceAPI.getBuildingFloors(buildingId);
 				if(floors != null && !floors.isEmpty()) {
 					hasFloor = true;
