@@ -74,7 +74,7 @@ public class UpdateClosedTasksCounterCommand implements Command {
 			if(rs != null && !rs.isEmpty()) {
 				Map<String, Object> count = rs.get(0);
 				if(count.get("closedTasks") != null) {
-					Long counter = (Long) count.get("closedTasks"); 
+					Long counter = ((Number) count.get("closedTasks")).longValue(); 
 					return counter.intValue();
 				}
 			}

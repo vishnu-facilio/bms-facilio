@@ -161,7 +161,7 @@ public class ModuleBeanImpl implements ModuleBean {
 	
 	@Override
 	public List<FacilioModule> getAllSubModules(long moduleId) throws Exception {
-		String sql = "SELECT CHILD_MODULE_ID FROM SubModulesRel INNER JOIN (SELECT m.MODULEID, @em:=m.EXTENDS_ID AS EXTENDS_ID FROM (SELECT * FROM Modules ORDER BY MODULEID DESC) m JOIN (SELECT @em:=MODULEID FROM Modules WHERE ORGID = ? AND MODULEID = ?) tmp WHERE m.MODULEID=@em) parentmod ON SubModulesRel.PARENT_MODULE_ID = parentmod.MODULEID";
+		String sql = DBUtil.getQuery("module.submodule.all.id");
 		ResultSet rs = null;
 		try(Connection conn = getConnection();PreparedStatement pstmt = conn.prepareStatement(sql)) {
 			pstmt.setLong(1, getOrgId());
@@ -192,7 +192,7 @@ public class ModuleBeanImpl implements ModuleBean {
 			return LookupSpecialTypeUtil.getAllSubModules(moduleName);
 		}
 		
-		String sql = "SELECT CHILD_MODULE_ID FROM SubModulesRel INNER JOIN (SELECT m.MODULEID, @em:=m.EXTENDS_ID AS EXTENDS_ID FROM (SELECT * FROM Modules ORDER BY MODULEID DESC) m JOIN (SELECT @em:=MODULEID FROM Modules WHERE ORGID = ? AND NAME = ?) tmp WHERE m.MODULEID=@em) parentmod ON SubModulesRel.PARENT_MODULE_ID = parentmod.MODULEID";
+		String sql = DBUtil.getQuery("module.submodule.all.name");
 		ResultSet rs = null;
 		try(Connection conn = getConnection();PreparedStatement pstmt = conn.prepareStatement(sql)) {
 			pstmt.setLong(1, getOrgId());
@@ -229,7 +229,7 @@ public class ModuleBeanImpl implements ModuleBean {
 		if (types == null || types.length == 0) {
 			return null;
 		}
-		String sql = "SELECT CHILD_MODULE_ID FROM SubModulesRel INNER JOIN Modules childmod ON SubModulesRel.CHILD_MODULE_ID = childmod.MODULEID INNER JOIN (SELECT m.MODULEID, @em:=m.EXTENDS_ID AS EXTENDS_ID FROM (SELECT * FROM Modules ORDER BY MODULEID DESC) m JOIN (SELECT @em:=MODULEID FROM Modules WHERE ORGID = ? AND MODULEID = ?) tmp WHERE m.MODULEID=@em) parentmod ON SubModulesRel.PARENT_MODULE_ID = parentmod.MODULEID WHERE childmod.MODULE_TYPE IN ("+getTypes(types)+")";
+		String sql = MessageFormat.format(DBUtil.getQuery("module.submodule.type.id"), getTypes(types));
 		ResultSet rs = null;
 		try(Connection conn = getConnection();PreparedStatement pstmt = conn.prepareStatement(sql)) {
 			pstmt.setLong(1, getOrgId());

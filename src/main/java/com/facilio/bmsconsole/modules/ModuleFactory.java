@@ -255,15 +255,6 @@ public class ModuleFactory {
 		return slarule;
 	}
 	
-	public static FacilioModule getScheduledRuleJobModule() {
-		FacilioModule scheduledRuleJob = new FacilioModule();
-		scheduledRuleJob.setName("scheduledRuleJob");
-		scheduledRuleJob.setDisplayName("Scheduled Rule Jobs");
-		scheduledRuleJob.setTableName("Scheduled_Rule_Jobs");
-		
-		return scheduledRuleJob;
-	}
-	
 	public static FacilioModule getScheduledActionModule() {
 		FacilioModule scheduledRule = new FacilioModule();
 		scheduledRule.setName("scheduledAction");
@@ -675,7 +666,7 @@ public class ModuleFactory {
 		FacilioModule filesModule = new FacilioModule();
 		filesModule.setName("files");
 		filesModule.setDisplayName("Files");
-		filesModule.setTableName("File");
+		filesModule.setTableName("FacilioFile");
 
 		return filesModule;
 	}
@@ -910,6 +901,14 @@ public class ModuleFactory {
 		pmTriggers.setName("PMResourcePlanner");
 		pmTriggers.setDisplayName("PM Resource Planner");
 		pmTriggers.setTableName("PM_Resource_Planner");
+		return pmTriggers;
+	}
+
+	public static FacilioModule getPMResourcePlannerTriggersModule() {
+		FacilioModule pmTriggers = new FacilioModule();
+		pmTriggers.setName("PMResourcePlannerTriggers");
+		pmTriggers.setDisplayName("PM Resource Planner Triggers");
+		pmTriggers.setTableName("PM_Resource_Planner_Triggers");
 		return pmTriggers;
 	}
 	

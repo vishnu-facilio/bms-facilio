@@ -302,7 +302,7 @@ public class UpdateWorkOrderCommand implements Command {
 			
 			List<Map<String, Object>> task = builder.get();
 			if (task != null && !task.isEmpty()) {
-				long count = (long) task.get(0).get("closedTasks");
+				long count = ((Number) task.get(0).get("closedTasks")).longValue();
 				if (count < oldWo.getNoOfTasks()) {
 					return false;
 				}

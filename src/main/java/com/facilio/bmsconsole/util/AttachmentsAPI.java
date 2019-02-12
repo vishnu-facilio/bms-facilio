@@ -62,8 +62,8 @@ public class AttachmentsAPI {
 																		.beanClass(AttachmentContext.class)
 																		.select(fields)
 																		.module(module)
-																		.innerJoin("File")
-																		.on("File.FILE_ID = "+module.getTableName()+".FILE_ID")
+																		.innerJoin("FacilioFile")
+																		.on("FacilioFile.FILE_ID = "+module.getTableName()+".FILE_ID")
 																		.andCondition(idCondition);
 		
 		return selectBuilder.get();
@@ -105,8 +105,8 @@ public class AttachmentsAPI {
 				.beanClass(AttachmentContext.class)
 				.select(fields)
 				.module(module)
-				.innerJoin("File")
-				.on("File.FILE_ID = "+module.getTableName()+".FILE_ID");
+				.innerJoin("FacilioFile")
+				.on("FacilioFile.FILE_ID = "+module.getTableName()+".FILE_ID");
 				
 		if (!fetchDeleted) {
 			selectBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("isDeleted"), String.valueOf(false), BooleanOperators.IS));

@@ -226,6 +226,11 @@ public class ReadingsAPI {
 	}
 	
 	public static Map<String, ReadingDataMeta> getReadingDataMetaMap(List<Pair<Long, FacilioField>> rdmPairs) throws Exception {
+		
+		if (rdmPairs == null || rdmPairs.isEmpty()) {
+			return Collections.EMPTY_MAP;
+		}
+		
 		FacilioModule module = ModuleFactory.getReadingDataMetaModule();
 		List<FacilioField> fields = FieldFactory.getReadingDataMetaFields();
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
@@ -299,7 +304,9 @@ public class ReadingsAPI {
 		}
 		
 		if(resourceIds != null && !resourceIds.isEmpty()) {
-			builder.andCondition(CriteriaAPI.getCondition(readingFieldsMap.get("resourceId"), resourceIds, NumberOperators.EQUALS));
+			FacilioField resourceIdField = readingFieldsMap.get("resourceId");
+			LOGGER.info("Resource Ids in getRDMProps : "+resourceIds+"\nResource Field : "+resourceIdField);
+			builder.andCondition(CriteriaAPI.getCondition(resourceIdField, resourceIds, NumberOperators.EQUALS));
 		}
 		
 		if (excludeEmptyFields) {

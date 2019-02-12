@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.util;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -126,6 +127,11 @@ public class ResourceAPI {
 	}
 	
 	public static Map<Long, ResourceContext> getResourceAsMapFromIds (Collection<Long> resourceIds) throws Exception {
+		
+		if (resourceIds == null || resourceIds.isEmpty()) {
+			return Collections.EMPTY_MAP;
+		}
+		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.RESOURCE);
 		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.RESOURCE);

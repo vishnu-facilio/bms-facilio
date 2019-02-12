@@ -26,6 +26,9 @@ public class UpdatePreventiveMaintenanceCommand implements Command{
 		
 		updateDefaultProps(newPm, context);
 		Map<String, Object> pmProps = FieldUtil.getAsProperties(newPm);
+		if (newPm.getBaseSpaceId() == null || newPm.getBaseSpaceId() == -1) {
+			pmProps.put("baseSpaceId", -99);
+		}
 		
 		FacilioModule module = ModuleFactory.getPreventiveMaintenancetModule();
 		

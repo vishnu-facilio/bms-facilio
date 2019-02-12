@@ -93,13 +93,15 @@ public class scheduleBeforePMRemindersCommand implements Command {
 			for(Long resourceId :resourceIds) {
 				
 				List<PMReminder> reminders = new ArrayList<>();
-				PMTriggerContext pmTriggerContext = null;
+				List<PMTriggerContext> pmTriggerContexts = new ArrayList<>();
 				if(resourcePlannerMap.containsKey(resourceId)) {
 					
 					PMResourcePlannerContext resourcePlanner = resourcePlannerMap.get(resourceId);
 					
-					if(resourcePlanner.getTriggerName() != null) {
-						pmTriggerContext = pm.getTriggerMap().get(resourcePlanner.getTriggerName());
+					if(resourcePlanner.getTriggerContexts() != null) {
+						for (PMTriggerContext trigger: resourcePlanner.getTriggerContexts()) {
+							pmTriggerContexts.add(pm.getTriggerMap().get(trigger.getName()));
+						}
 					}
 					
 					if(resourcePlanner.getPmResourcePlannerReminderContexts() != null && !resourcePlanner.getPmResourcePlannerReminderContexts().isEmpty()) {
@@ -114,17 +116,19 @@ public class scheduleBeforePMRemindersCommand implements Command {
 				if(reminders.isEmpty()) {
 					reminders.add(pm.getReminders().get(0));
 				}
-				if(pmTriggerContext == null) {
-					pmTriggerContext = pm.getTriggers().get(0);
+				if(pmTriggerContexts.isEmpty()) {
+					pmTriggerContexts.add(pm.getTriggers().get(0));
 				}
 				
 				for(PMReminder reminder :reminders) {
-					if(reminder.getTypeEnum().equals(PMReminder.ReminderType.BEFORE_EXECUTION) && pmTriggerContext != null) {
-						PMJobsContext pmJob = scheduledPMJobMap.get(resourceId+"-"+pmTriggerContext.getId());
-						if (pmJob == null) {
-							CommonCommandUtil.emailAlert("Invalid State! pmjob should not be null", "scheduledPMJobMap = " + scheduledPMJobMap.toString() + " resourceid = " + resourceId + " TriggerId = " + pmTriggerContext.getId());
+					if(reminder.getTypeEnum().equals(PMReminder.ReminderType.BEFORE_EXECUTION) && !pmTriggerContexts.isEmpty()) {
+						for (PMTriggerContext pmTriggerContext: pmTriggerContexts) {
+							PMJobsContext pmJob = scheduledPMJobMap.get(resourceId+"-"+pmTriggerContext.getId());
+							if (pmJob == null) {
+								CommonCommandUtil.emailAlert("Invalid State! pmjob should not be null", "scheduledPMJobMap = " + scheduledPMJobMap.toString() + " resourceid = " + resourceId + " TriggerId = " + pmTriggerContext.getId());
+							}
+							PreventiveMaintenanceAPI.schedulePrePMReminder(reminder, pmJob.getNextExecutionTime(), pmTriggerContext.getId(),resourceId);
 						}
-						PreventiveMaintenanceAPI.schedulePrePMReminder(reminder, pmJob.getNextExecutionTime(), pmTriggerContext.getId(),resourceId);
 					}
 				}
 			}

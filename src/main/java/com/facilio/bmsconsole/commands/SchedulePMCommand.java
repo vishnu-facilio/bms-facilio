@@ -22,7 +22,7 @@ public class SchedulePMCommand implements Command {
 	
 private boolean isBulkUpdate = false;
 private List<PMJobsContext> pmJobsToBeScheduled;
-	
+
 	public SchedulePMCommand() {}
 	
 	public SchedulePMCommand(boolean isBulkUpdate) {
@@ -119,33 +119,42 @@ private List<PMJobsContext> pmJobsToBeScheduled;
 		
 		Map<Long, PMResourcePlannerContext> pmResourcePlanner = PreventiveMaintenanceAPI.getPMResourcesPlanner(pm.getId());
 		for(Long resourceId :resourceIds) {
-			PMTriggerContext trigger = null;
+			List<PMTriggerContext> triggers  = null;
 			if(pmResourcePlanner.get(resourceId) != null) {
 				PMResourcePlannerContext currentResourcePlanner = pmResourcePlanner.get(resourceId);
-				
-				trigger = PreventiveMaintenanceAPI.getTrigger(pm.getTriggers(),currentResourcePlanner.getTriggerId());
+				triggers = new ArrayList<>();
+				for (PMTriggerContext trig: currentResourcePlanner.getTriggerContexts()) {
+					if (pm.getTriggerMap() != null && pm.getTriggerMap().get(trig.getName()) != null) {
+						triggers.add(pm.getTriggerMap().get(trig.getName()));
+					}
+				}
 			}
-			if(trigger == null) {
-				trigger = PreventiveMaintenanceAPI.getDefaultTrigger(pm.getTriggers());
+			if(triggers == null) {
+				triggers = new ArrayList<>();
+				triggers.add(PreventiveMaintenanceAPI.getDefaultTrigger(pm.getTriggers()));
 			}
 
-			long startTime;
-			if (trigger.getStartTime() < System.currentTimeMillis()) {
-				startTime = PreventiveMaintenanceAPI.getStartTimeInSecond(System.currentTimeMillis());
-			} else {
-				startTime = PreventiveMaintenanceAPI.getStartTimeInSecond(trigger.getStartTime());
-			}
-			long nextExecutionTime = trigger.getSchedule().nextExecutionTime(startTime);
-			
-			boolean isFirst = true;
-			while(nextExecutionTime <= endTime && (pm.getEndTime() == -1 || nextExecutionTime <= pm.getEndTime())) {
-				PMJobsContext pmJob = PreventiveMaintenanceAPI.getpmJob(pm, trigger, resourceId, nextExecutionTime, addToDb);
-				pmJobs.add(pmJob);
-				if(isFirst) {
-					pmJobsToBeScheduled.add(pmJob);
+			if (triggers != null) {
+				for (PMTriggerContext trigger : triggers) {
+					long startTime;
+					if (trigger.getStartTime() < System.currentTimeMillis()) {
+						startTime = PreventiveMaintenanceAPI.getStartTimeInSecond(System.currentTimeMillis());
+					} else {
+						startTime = PreventiveMaintenanceAPI.getStartTimeInSecond(trigger.getStartTime());
+					}
+					long nextExecutionTime = trigger.getSchedule().nextExecutionTime(startTime);
+
+					boolean isFirst = true;
+					while(nextExecutionTime <= endTime && (pm.getEndTime() == -1 || nextExecutionTime <= pm.getEndTime())) {
+						PMJobsContext pmJob = PreventiveMaintenanceAPI.getpmJob(pm, trigger, resourceId, nextExecutionTime, addToDb);
+						pmJobs.add(pmJob);
+						if(isFirst) {
+							pmJobsToBeScheduled.add(pmJob);
+						}
+						nextExecutionTime = trigger.getSchedule().nextExecutionTime(nextExecutionTime);
+						isFirst = false;
+					}
 				}
-				nextExecutionTime = trigger.getSchedule().nextExecutionTime(nextExecutionTime);
-				isFirst = false;
 			}
 		}
 		

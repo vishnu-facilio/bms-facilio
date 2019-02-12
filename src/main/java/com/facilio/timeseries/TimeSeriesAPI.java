@@ -530,7 +530,7 @@ public class TimeSeriesAPI {
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("controllerId"), String.valueOf(controllerId), NumberOperators.EQUALS));
 		
 		if (!fetchCount) {
-			builder.select(fields).orderBy(fieldMap.get("createdTime").getColumnName() + " DESC");
+			builder.select(fields).orderBy(module.getTableName()+ "." + fieldMap.get("instance").getColumnName() + " ASC");
 		}
 		else {
 			builder.select(FieldFactory.getCountField(module, fieldMap.get("controllerId")));
@@ -542,7 +542,7 @@ public class TimeSeriesAPI {
 		if (searchText != null) {
     		criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("instance"), searchText, StringOperators.CONTAINS));
    		}
-		
+			       
 		builder.andCriteria(criteria);
 		
 		if (configuredOnly != null) {

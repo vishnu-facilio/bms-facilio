@@ -10,6 +10,7 @@ import java.util.logging.Logger;
 
 import org.apache.commons.chain.Command;
 
+import com.chargebee.internal.StringJoiner;
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
@@ -330,34 +331,36 @@ public static List<Map<String,Object>> getWorkOrderStatusPercentageForWorkflow(S
 
 	Criteria closedCriteria = ViewFactory.getClosedTicketsCriteria(workOrderModule);
 
-	SelectRecordsBuilder<WorkOrderContext> selectRecordsBuilder = new SelectRecordsBuilder<WorkOrderContext>()
+	SelectRecordsBuilder<WorkOrderContext> closedSelectRecordsBuilder = new SelectRecordsBuilder<WorkOrderContext>()
 																	  .module(workOrderModule)
 																	  .beanClass(WorkOrderContext.class)
 																	  .select(fields)
 																	  .andCondition(CriteriaAPI.getCondition("CREATED_TIME", "createdTime", startTime+","+endTime, DateOperators.BETWEEN))
 																	  .andCondition(CriteriaAPI.getCondition(siteIdField, CommonOperators.IS_NOT_EMPTY))
 																	  .andCriteria(closedCriteria)
-																	  .andCustomWhere("ACTUAL_WORK_END <= DUE_DATE")
-																	  .limit(Integer.parseInt(count))	
 																	  .orderBy(idCountField.getColumnName()+" DESC")
 																	  .groupBy(siteIdField.getCompleteColumnName())
 			                                                          ;
 
+    if(count != null)
+    {
+    	closedSelectRecordsBuilder.limit(Integer.parseInt(count));
+		 
+    }
 
-
-	List<Map<String, Object>> ontimeCount = selectRecordsBuilder.getAsProps();
+	List<Map<String, Object>> closedCount = closedSelectRecordsBuilder.getAsProps();
+	Map<Long,Object> closedMap = new HashMap<Long,Object>();
 	Map<Long,Object> onTimeMap = new HashMap<Long,Object>();
-	Map<Long,Object> overDueMap = new HashMap<Long,Object>();
 	Map<Long,Object> openMap = new HashMap<Long,Object>();
 	
 	StringBuilder sb = new StringBuilder();
-	for(int i=0;i<ontimeCount.size();i++)
+	for(int i=0;i<closedCount.size();i++)
 	{   
 		 
-		Long siteId = (Long)ontimeCount.get(i).get("siteId");
-		onTimeMap.put(siteId,ontimeCount.get(i).get("count"));
+		Long siteId = (Long)closedCount.get(i).get("siteId");
+		closedMap.put(siteId,closedCount.get(i).get("count"));
 	    sb.append(siteId);
-		if(i<ontimeCount.size()-1)
+		if(i<closedCount.size()-1)
 		{
 			sb.append(",");
 		}
@@ -366,7 +369,7 @@ public static List<Map<String,Object>> getWorkOrderStatusPercentageForWorkflow(S
 	}
 
 	
-	SelectRecordsBuilder<WorkOrderContext> overDueSelectRecordsBuilder = new SelectRecordsBuilder<WorkOrderContext>()
+	SelectRecordsBuilder<WorkOrderContext> onTimeSelectRecordsBuilder = new SelectRecordsBuilder<WorkOrderContext>()
 															.module(workOrderModule)
 															.beanClass(WorkOrderContext.class)
 															.select(fields)
@@ -374,17 +377,17 @@ public static List<Map<String,Object>> getWorkOrderStatusPercentageForWorkflow(S
 			  												.andCondition(CriteriaAPI.getCondition(siteIdField, CommonOperators.IS_NOT_EMPTY))
 			  												.andCondition(CriteriaAPI.getCondition(siteIdField,sb.toString(), NumberOperators.EQUALS))
 			  												.andCriteria(closedCriteria)
-			  												.andCustomWhere("ACTUAL_WORK_END > DUE_DATE")
+			  												.andCustomWhere("ACTUAL_WORK_END <= DUE_DATE")
 			  											    .groupBy(siteIdField.getCompleteColumnName())
 	                                                        ;
 
 
 
-    List<Map<String, Object>> overDueCount = overDueSelectRecordsBuilder.getAsProps();
-    for(int i=0;i<overDueCount.size();i++)
+    List<Map<String, Object>> onTimeCount = onTimeSelectRecordsBuilder.getAsProps();
+    for(int i=0;i<onTimeCount.size();i++)
     {
-    	Long siteId = (Long)overDueCount.get(i).get("siteId");
-		overDueMap.put(siteId,overDueCount.get(i).get("count"));
+    	Long siteId = (Long)onTimeCount.get(i).get("siteId");
+		onTimeMap.put(siteId,onTimeCount.get(i).get("count"));
 	    
     }
     
@@ -414,26 +417,38 @@ public static List<Map<String,Object>> getWorkOrderStatusPercentageForWorkflow(S
     Map<Long, Object> siteNameArray = getLookupFieldPrimary("site");
     List<Map<String,Object>> resp = new ArrayList<Map<String,Object>>();
     
-    for(int i=0;i<ontimeCount.size();i++)
+    for(int i=0;i<closedCount.size();i++)
      { 
-       Long siteId =(Long) ontimeCount.get(i).get("siteId");
+       Long siteId =(Long) closedCount.get(i).get("siteId");
        Map<String,Object> siteInfo = new HashMap<String, Object>();
-       Long onTime = (Long)ontimeCount.get(i).get("count");
-       Long overdue =overDueMap.get(siteId)!=null?(Long) overDueMap.get(siteId):0;
-       Long open = openMap.get(siteId)!=null?(Long)openMap.get(siteId):0;
+       Long closed = (Long)closedCount.get(i).get("count");
+       Long onTime =onTimeMap.get(siteId)!=null?(Long) onTimeMap.get(siteId):0;
+       Object openObj = openMap.remove(siteId);
+       Long open = openObj!=null?(Long)openObj:0;
+       Long overdue = closed - onTime;
        Long total = onTime+overdue+open;
        if(total>0) {
-	       onTime= (onTime*100)/total;
-	       overdue= (overdue*100)/total;
-	       open= (open*100)/total;
-	       siteInfo.put("onTime",onTime);
-	       siteInfo.put("overdue",overdue);
-	      
+    	   Long onTimePercentage = (onTime*100) / total ;
+    	   Long overDuePercentage = (overdue*100) / total ;
+      	   siteInfo.put("onTime",onTime);
+           siteInfo.put("overdue",overdue);
+           siteInfo.put("open",open);
+           siteInfo.put("total",total);
+           siteInfo.put("onTimePercentage",onTimePercentage);
+           siteInfo.put("overduePercentage",overDuePercentage);
+           
+  	      
        }
        else
        {
     	   siteInfo.put("onTime",0);
            siteInfo.put("overdue",0);
+           siteInfo.put("open",0);
+           siteInfo.put("total",total);
+           siteInfo.put("onTimePercentage",0);
+           siteInfo.put("overduePercentage",0);
+         
+           
           
        }
         
@@ -442,10 +457,24 @@ public static List<Map<String,Object>> getWorkOrderStatusPercentageForWorkflow(S
        resp.add(siteInfo);
        
      }
-   
+    Iterator<Map.Entry<Long, Object>> openSitesitr = openMap.entrySet().iterator(); 
     
-	
-
+    while(openSitesitr.hasNext()) { 
+         Map.Entry<Long, Object> entry = openSitesitr.next(); 
+         Long siteId = entry.getKey();
+         Long openCountVal = (Long)entry.getValue();
+         Map<String,Object> siteInfo = new HashMap<String, Object>();
+         siteInfo.put("onTime",0);
+         siteInfo.put("overdue",0);
+         siteInfo.put("open",openCountVal);
+         siteInfo.put("total",openCountVal);
+         siteInfo.put("onTimePercentage",0);
+         siteInfo.put("overduePercentage",0);
+         siteInfo.put("siteId",siteId);
+         siteInfo.put("siteName",siteNameArray.get(siteId));
+         resp.add(siteInfo);
+    }
+ 
    return resp;
 }
 
@@ -612,7 +641,70 @@ public static List<Map<String,Object>> getTopNCategoryOnAvgCompletionTime(String
 	//fetching the workorders with closed status
 
 
+	FacilioField idCountField = new FacilioField();
+	idCountField.setColumnName("count(*)");
+	idCountField.setName("count");
+	fields.add(idCountField);
+	
+	Criteria closedCriteria = ViewFactory.getClosedTicketsCriteria(workOrderModule);
 
+	SelectRecordsBuilder<WorkOrderContext> selectRecordsBuilderClosed = new SelectRecordsBuilder<WorkOrderContext>()
+																.module(workOrderModule)
+																.beanClass(WorkOrderContext.class)
+																.select(fields)
+																.andCondition(CriteriaAPI.getCondition("CREATED_TIME", "createdTime", startTime+","+endTime, DateOperators.BETWEEN))
+																.andCondition(CriteriaAPI.getCondition(siteIdField, CommonOperators.IS_NOT_EMPTY))
+																.andCriteria(closedCriteria)
+																.orderBy(idCountField.getColumnName()+" DESC")
+																.groupBy(siteIdField.getCompleteColumnName())
+																;
+	List<Map<String,Object>> closedList = selectRecordsBuilderClosed.getAsProps();	
+	
+	Map<Long,Object> closedMap = new HashMap<Long, Object>();
+	
+    for(int i=0;i<closedList.size();i++)
+    {
+    	Long siteId = (Long)closedList.get(i).get("siteId");
+    	closedMap.put(siteId,closedList.get(i).get("count"));
+	    
+    }
+
+
+	SelectRecordsBuilder<WorkOrderContext> selectRecordsBuilderTotal = new SelectRecordsBuilder<WorkOrderContext>()
+																		.module(workOrderModule)
+																		.beanClass(WorkOrderContext.class)
+																		.select(fields)
+																		.andCondition(CriteriaAPI.getCondition("CREATED_TIME", "createdTime", startTime+","+endTime, DateOperators.BETWEEN))
+																		.andCondition(CriteriaAPI.getCondition(siteIdField, CommonOperators.IS_NOT_EMPTY))
+																		.orderBy(idCountField.getColumnName()+" DESC")
+																		.groupBy(siteIdField.getCompleteColumnName())
+																		;
+	
+	
+    List<Map<String,Object>> totalList = selectRecordsBuilderTotal.getAsProps();	
+	
+	Map<Long,Object> totalMap = new HashMap<Long, Object>();
+	
+    for(int i=0;i<totalList.size();i++)
+    {
+    	Long siteId = (Long)totalList.get(i).get("siteId");
+    	totalMap.put(siteId,totalList.get(i).get("count"));
+	    
+    }
+
+    StringJoiner sb = new StringJoiner(",");
+	for(int i=0;i<totalList.size();i++) {
+		Long siteId = (Long)totalList.get(i).get("siteId");
+		Long totalCount = (Long)totalList.get(i).get("count");
+		Long closedCount =closedMap.get(siteId)!=null? (Long)closedMap.get(siteId) : 0;
+		Long closedOnTimePercentage = (closedCount*100)/totalCount;
+		
+		if(closedOnTimePercentage >= 70) {
+			sb.add(String.valueOf(siteId));
+		}
+		
+	}
+	
 	GenericSelectRecordBuilder selectRecordsBuilder = new GenericSelectRecordBuilder()
 			  													.table(workOrderModule.getTableName())
 			  													.select(fields)
@@ -620,7 +712,8 @@ public static List<Map<String,Object>> getTopNCategoryOnAvgCompletionTime(String
 				  												.innerJoin(ticketStatusModule.getTableName()).on(statusField.getCompleteColumnName() +" = "+ticketStatusModule.getTableName()+".ID")
 				  												.andCondition(CriteriaAPI.getCondition("STATUS_TYPE", "typeCode", ""+StatusType.CLOSED.getIntVal() , NumberOperators.EQUALS))
 				  												.andCondition(CriteriaAPI.getCondition(FieldFactory.getSiteIdField(workOrderModule), CommonOperators.IS_NOT_EMPTY))
-																.andCondition(CriteriaAPI.getCondition(workOrderModule.getTableName()+".ORGID", "orgId", ""+AccountUtil.getCurrentOrg().getOrgId(), NumberOperators.EQUALS))
+				  												.andCondition(CriteriaAPI.getCondition(siteIdField,sb.toString(), NumberOperators.EQUALS))
+				  												.andCondition(CriteriaAPI.getCondition(workOrderModule.getTableName()+".ORGID", "orgId", ""+AccountUtil.getCurrentOrg().getOrgId(), NumberOperators.EQUALS))
 																.groupBy(siteIdField.getCompleteColumnName())
 																.orderBy(avgField.getCompleteColumnName()+" ASC")
 																.limit(Integer.parseInt(count))
@@ -630,16 +723,16 @@ public static List<Map<String,Object>> getTopNCategoryOnAvgCompletionTime(String
 		List<Map<String,Object>> list =selectRecordsBuilder.get();		
 		
 		Map<Long,Object> avgResolutionMap = new HashMap<Long, Object>();
-		StringBuilder sb = new StringBuilder();
+		StringBuilder closeCountSb = new StringBuilder();
 		for(int i=0;i<list.size();i++)
 		{   
 			 
 			Long siteId = (Long)list.get(i).get("siteId");
 			avgResolutionMap.put(siteId,list.get(i).get("avg_resolution_time"));
-		    sb.append(siteId);
+			closeCountSb.append(siteId);
 			if(i<list.size()-1)
 			{
-				sb.append(",");
+				closeCountSb.append(",");
 			}
 			
 			
@@ -653,13 +746,17 @@ public static List<Map<String,Object>> getTopNCategoryOnAvgCompletionTime(String
 																.andCondition(CriteriaAPI.getCondition("STATUS_TYPE", "typeCode", ""+StatusType.CLOSED.getIntVal() , NumberOperators.EQUALS))
 																.andCondition(CriteriaAPI.getCondition(FieldFactory.getSiteIdField(workOrderModule), CommonOperators.IS_NOT_EMPTY))
 																.andCondition(CriteriaAPI.getCondition(workOrderModule.getTableName()+".ORGID", "orgId", ""+AccountUtil.getCurrentOrg().getOrgId(), NumberOperators.EQUALS))
-																.andCondition(CriteriaAPI.getCondition(siteIdField,sb.toString(), NumberOperators.EQUALS))
+																.andCondition(CriteriaAPI.getCondition(siteIdField,closeCountSb.toString(), NumberOperators.EQUALS))
 					  											.groupBy(siteIdField.getCompleteColumnName())
 																.orderBy(avgField.getCompleteColumnName()+" ASC")
 																.limit(Integer.parseInt(count))
 																;
 
-		selectRecordsBuilderLastMonth.andCondition(CriteriaAPI.getCondition("CREATED_TIME", "createdTime", ""+startTime, DateOperators.IS_BEFORE));
+		Long lastMonthStartTime = DateTimeUtil.getMonthStartTime(-2,false);
+		Long lastMonthEndTime = DateTimeUtil.getMonthEndTimeOf(lastMonthStartTime,false);
+		
+		selectRecordsBuilderLastMonth.andCondition(CriteriaAPI.getCondition("CREATED_TIME", "createdTime", lastMonthStartTime+","+lastMonthEndTime, DateOperators.BETWEEN));
+		
 		List<Map<String,Object>> lastMonthList =selectRecordsBuilderLastMonth.get();		
 		Map<Long,Object> avgResolutionTillLastMonthMap = new HashMap<Long, Object>();
 		
@@ -690,7 +787,7 @@ public static List<Map<String,Object>> getTopNCategoryOnAvgCompletionTime(String
 		   if(avgResolutionTillLastMonthMap.get(siteId)!=null)
 		   {
 			   avgResolutionTimeTillLastMonth = ((Number)avgResolutionTillLastMonthMap.get(siteId)).doubleValue();
-		       avgResolutionTime = Math.round(avgResolutionTimeTillLastMonth*100.0)/100.0;
+		       avgResolutionTimeTillLastMonth = Math.round(avgResolutionTimeTillLastMonth*100.0)/100.0;
 		   }
 		   siteInfo.put("avgResolutionTimeTillLastMonth",avgResolutionTimeTillLastMonth);
 		   siteInfo.put("siteName",siteNameArray.get(siteId));
@@ -707,7 +804,7 @@ public static List<Map<String,Object>> getTopNCategoryOnAvgCompletionTime(String
 
 
 
-public static List<Map<String,Object>> getAvgCompletionTimeBySite(Long startTime,Long endTime,boolean isTillLastMonth) throws Exception {
+public static List<Map<String,Object>> getAvgCompletionTimeBySite(Long startTime,Long endTime,boolean isLastMonth) throws Exception {
 
 
 	ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -762,11 +859,14 @@ public static List<Map<String,Object>> getAvgCompletionTimeBySite(Long startTime
 															  ;
 
 
-	 if(isTillLastMonth)
+	 if(isLastMonth)
 	   {
-		 //endTime=DateTimeUtil.minusDays(startTime, 1);
-		 selectRecordsBuilder.andCondition(CriteriaAPI.getCondition("CREATED_TIME", "createdTime", ""+startTime, DateOperators.IS_BEFORE));
-				
+		    Long previousMonthTime = DateTimeUtil.addMonths(startTime, -1);
+		 	Long lastMonthStartTime = DateTimeUtil.getMonthStartTimeOf(previousMonthTime, false);
+		 	Long lastMonthEndTime = DateTimeUtil.getMonthEndTimeOf(lastMonthStartTime,false);
+			
+			selectRecordsBuilder.andCondition(CriteriaAPI.getCondition("CREATED_TIME", "createdTime", lastMonthStartTime+","+lastMonthEndTime, DateOperators.BETWEEN));
+					
 	   }
 	   else
 	   {
@@ -792,7 +892,7 @@ public static List<Map<String,Object>> getAvgCompletionTimeBySite(Long startTime
 }
 
 
-public static Map<Long,Object> getAvgResponseTimeBySite(Long startTime,Long endTime,boolean isTillLastMonth) throws Exception {
+public static Map<Long,Object> getAvgResponseTimeBySite(Long startTime,Long endTime,boolean isLastMonth) throws Exception {
 
 
 	ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -845,10 +945,14 @@ public static Map<Long,Object> getAvgResponseTimeBySite(Long startTime,Long endT
 																.groupBy(siteIdField.getCompleteColumnName())
 															  ;
 
-   if(isTillLastMonth)
+   if(isLastMonth)
    {
-	   selectRecordsBuilder.andCondition(CriteriaAPI.getCondition("CREATED_TIME", "createdTime", ""+startTime, DateOperators.IS_BEFORE));
+	    Long previousMonthTime = DateTimeUtil.addMonths(startTime, -1);
+	    Long lastMonthStartTime = DateTimeUtil.getMonthStartTimeOf(previousMonthTime, false);
+	 	Long lastMonthEndTime = DateTimeUtil.getMonthEndTimeOf(lastMonthStartTime,false);
 			
+		selectRecordsBuilder.andCondition(CriteriaAPI.getCondition("CREATED_TIME", "createdTime", lastMonthStartTime+","+lastMonthEndTime, DateOperators.BETWEEN));
+				
    }
    else
    {

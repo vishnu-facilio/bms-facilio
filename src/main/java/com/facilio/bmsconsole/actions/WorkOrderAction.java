@@ -566,6 +566,16 @@ public class WorkOrderAction extends FacilioAction {
 	PMAssignmentType assignmentType;
 	PMAssignmentType parentAssignmentType;
 
+	public List<BaseSpaceContext> getBuildings() {
+		return buildings;
+	}
+
+	public void setBuildings(List<BaseSpaceContext> buildings) {
+		this.buildings = buildings;
+	}
+
+	private List<BaseSpaceContext> buildings;
+
 	List<Long> assetCategoryIds;
 	List<Long> spaceCategoryIds;
 	boolean hasFloor;
@@ -650,9 +660,14 @@ public class WorkOrderAction extends FacilioAction {
 			if (buildingId == null || buildingId < -1) {
 				List<BaseSpaceContext> buildings = SpaceAPI.getSiteBuildingsWithFloors(siteId);
 				if(buildings != null && !buildings.isEmpty()) {
+					setBuildings(buildings);
 					hasFloor = true;
 				}
 			} else {
+				List<BaseSpaceContext> buildings = SpaceAPI.getSiteBuildingsWithFloors(siteId);
+				if (buildings != null && !buildings.isEmpty()) {
+					setBuildings(buildings);
+				}
 				List<BaseSpaceContext> floors = SpaceAPI.getBuildingFloors(buildingId);
 				if(floors != null && !floors.isEmpty()) {
 					hasFloor = true;
@@ -1262,14 +1277,20 @@ public class WorkOrderAction extends FacilioAction {
 		this.woCount = woCount;
 	}
 
+	private String recordCount;
+
+	public String getRecordCount() {
+		return recordCount;
+	}
+
+	public void setRecordCount(long count) {
+		this.recordCount = ""+count;
+	}
+
 	public void setCount(String count) {
 		this.count = count;
 	}
-
-	public void setCount(long count) {
-		this.count = count+"";
-	}
-	
+		
 	public String workOrderCount () throws Exception {
 		System.out.println("View Name :  clount " + getViewName());
 		return workOrderList();	
@@ -1876,7 +1897,7 @@ public class WorkOrderAction extends FacilioAction {
 	{
 		
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.WORK_ORDER_TECHNICIAN_COUNT, getCount());
+		context.put(FacilioConstants.ContextNames.WORK_ORDER_TECHNICIAN_COUNT, getRecordCount());
 		context.put(FacilioConstants.ContextNames.WORK_ORDER_STARTTIME, getStartTime());
 		context.put(FacilioConstants.ContextNames.WORK_ORDER_ENDTIME, getEndTime());
 		
