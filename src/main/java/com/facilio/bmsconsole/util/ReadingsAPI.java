@@ -285,10 +285,6 @@ public class ReadingsAPI {
 	}
 	
 	private static List<Map<String, Object>> getRDMProps (Collection<Long> resourceIds, Map<Long, FacilioField> fieldMap, boolean excludeEmptyFields, boolean fetchCount, ReadingInputType...readingTypes) throws Exception {
-		if (resourceIds == null || resourceIds.isEmpty()) {
-			return null;
-		}
-		
 		FacilioModule module = ModuleFactory.getReadingDataMetaModule();
 		List<FacilioField> redingFields = FieldFactory.getReadingDataMetaFields();
 		Map<String, FacilioField> readingFieldsMap = FieldFactory.getAsMap(redingFields);
@@ -308,7 +304,9 @@ public class ReadingsAPI {
 		}
 		
 		if(resourceIds != null && !resourceIds.isEmpty()) {
-			builder.andCondition(CriteriaAPI.getCondition(readingFieldsMap.get("resourceId"), resourceIds, NumberOperators.EQUALS));
+			FacilioField resourceIdField = readingFieldsMap.get("resourceId");
+			LOGGER.info("Resource Ids in getRDMProps : "+resourceIds+"\nResource Field : "+resourceIdField);
+			builder.andCondition(CriteriaAPI.getCondition(resourceIdField, resourceIds, NumberOperators.EQUALS));
 		}
 		
 		if (excludeEmptyFields) {

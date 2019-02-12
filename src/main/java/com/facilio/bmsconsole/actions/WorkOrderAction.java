@@ -1277,14 +1277,20 @@ public class WorkOrderAction extends FacilioAction {
 		this.woCount = woCount;
 	}
 
+	private String recordCount;
+
+	public String getRecordCount() {
+		return recordCount;
+	}
+
+	public void setRecordCount(long count) {
+		this.recordCount = ""+count;
+	}
+
 	public void setCount(String count) {
 		this.count = count;
 	}
-
-	public void setCount(long count) {
-		this.count = count+"";
-	}
-	
+		
 	public String workOrderCount () throws Exception {
 		System.out.println("View Name :  clount " + getViewName());
 		return workOrderList();	
@@ -1891,7 +1897,7 @@ public class WorkOrderAction extends FacilioAction {
 	{
 		
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.WORK_ORDER_TECHNICIAN_COUNT, getCount());
+		context.put(FacilioConstants.ContextNames.WORK_ORDER_TECHNICIAN_COUNT, getRecordCount());
 		context.put(FacilioConstants.ContextNames.WORK_ORDER_STARTTIME, getStartTime());
 		context.put(FacilioConstants.ContextNames.WORK_ORDER_ENDTIME, getEndTime());
 		
