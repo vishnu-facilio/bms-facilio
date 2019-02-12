@@ -1934,16 +1934,12 @@
 
 	<package name="templateApi" namespace="/api/template" extends="homeApi">
 		<action name="gettemplates" class="com.facilio.bmsconsole.actions.TemplateAction" method="fetchTemplates">
-			<param name="moduleName">setup</param>
-			<param name="permission">WORKORDER_SETTINGS</param>
 			<result name="success" type="json">
 				<param name="root">templates</param>
 			</result>
 		</action>
 		
 		<action name="*" class="com.facilio.bmsconsole.actions.TemplateAction" method="fetchTemplate">
-			<param name="moduleName">setup</param>
-			<param name="permission">WORKORDER_SETTINGS</param>
 			<param name="id">{1}</param>
 			<result name="success" type="json">
 				<param name="root">template</param>
