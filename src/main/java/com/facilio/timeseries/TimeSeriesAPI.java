@@ -570,8 +570,10 @@ public class TimeSeriesAPI {
 			FacilioField instance = fieldMap.get("instance");
 			FacilioField mappedDevice = mappedFieldMap.get("device");
 			FacilioField mappedInstance = mappedFieldMap.get("instance");
+			String orgIdColumnName = FieldFactory.getOrgIdField().getColumnName();
 			
-			String joinOn = module.getTableName() + "." + device.getColumnName()+"="+mappedModule.getTableName()+"."+mappedDevice.getColumnName()
+			String joinOn = module.getTableName()+"."+orgIdColumnName+ "=" + mappedModule.getTableName()+"."+orgIdColumnName + " AND " +
+			module.getTableName() + "." + device.getColumnName()+"="+mappedModule.getTableName()+"."+mappedDevice.getColumnName()
 			+ " AND " + module.getTableName() +"." + instance.getColumnName() + "=" + mappedModule.getTableName()+"."+mappedInstance.getColumnName();
 			
 			if (!fetchMapped) {
