@@ -396,6 +396,32 @@ public enum FacilioDateFunction implements FacilioWorkflowFunctionInterface {
 
 		}
 	},
+	PREVIOUS_LAST_MONTH_NAME(21,"getPreviousLastMonthName") {
+		@Override
+		public Object execute(Object... objects) throws Exception {
+			
+			checkParam(objects);
+			
+			String month = "";int year;
+			if(objects == null || objects.length == 0) {
+				
+				ZonedDateTime zdt = DateTimeUtil.getZonedDateTime(DateTimeUtil.getMonthStartTime(-2,false));
+				month = zdt.getMonth().getDisplayName(TextStyle.FULL, Locale.getDefault());
+			    year = zdt.getYear();
+			}
+			else {
+				Long startTime = Long.parseLong( objects[0].toString());
+				ZonedDateTime zdt = DateTimeUtil.getZonedDateTime(startTime);
+				month = zdt.getMonth().getDisplayName(TextStyle.FULL, Locale.getDefault());
+				year = zdt.getYear();
+			}
+			
+			return month+" "+year;
+		};
+		public void checkParam(Object... objects) throws Exception {
+
+		}
+	}
 
 	;
 	private Integer value;
