@@ -27,35 +27,56 @@ public class GetAvgResponseResolutionBySiteCommand implements Command{
 		long startTime = (Long) context.get(FacilioConstants.ContextNames.WORK_ORDER_STARTTIME);
 		long endTime = (Long) context.get(FacilioConstants.ContextNames.WORK_ORDER_ENDTIME);
 		
-		Map<Long, Map<String, Object>> workOrderStatusCount = WorkOrderAPI.getWorkOrderStatusPercentage(startTime, endTime);
+		List<Map<String,Object>> workOrderStatusCountList = WorkOrderAPI.getWorkOrderStatusPercentageForWorkflow(null, startTime, endTime);
 		Map<Long,Object> technicianCountBySite = WorkOrderAPI.getTechnicianCountBySite();
 		Map<Long,Object> avgResponseTimeBySite = WorkOrderAPI.getAvgResponseTimeBySite(startTime, endTime,false);
-		Map<Long,Object> avgResolutionTimeBySite = WorkOrderAPI.getAvgCompletionTimeBySite(startTime, endTime,false);
+		List<Map<String,Object>> avgResolutionTimeBySiteList = WorkOrderAPI.getAvgCompletionTimeBySite(startTime, endTime,false);
 		Map<Long,Object> avgResponseTimeBySiteTillLastMonth = WorkOrderAPI.getAvgResponseTimeBySite(startTime, endTime,true);
-		Map<Long,Object> avgResolutionTimeBySiteTillLastMonth = WorkOrderAPI.getAvgCompletionTimeBySite(startTime, endTime,true);
+		List<Map<String,Object>> avgResolutionTimeBySiteTillLastMonthList = WorkOrderAPI.getAvgCompletionTimeBySite(startTime, endTime,true);
 		Map<Long, Object> siteNameArray = WorkOrderAPI.getLookupFieldPrimary("site");
-
+		
+		Map<Long,Object> avgResolutionTimeBySite = new HashMap<Long, Object>();
+		
+		
+		for(int i=0;i<avgResolutionTimeBySiteList.size();i++)
+		{
+			Map<String, Object> siteTechMap = avgResolutionTimeBySiteList.get(i);
+			avgResolutionTimeBySite.put((Long)siteTechMap.get("siteId"),siteTechMap.get("avg_resolution_time"));
+			
+		}
+		
+		Map<Long,Object> avgResolutionTimeBySiteTillLastMonth = new HashMap<Long, Object>();
+		
+		
+		for(int i=0;i<avgResolutionTimeBySiteTillLastMonthList.size();i++)
+		{
+			Map<String, Object> siteTechMap = avgResolutionTimeBySiteTillLastMonthList.get(i);
+			avgResolutionTimeBySiteTillLastMonth.put((Long)siteTechMap.get("siteId"),siteTechMap.get("avg_resolution_time"));
+			
+		}
+		
+		
 		
 		List<Map<String,Object>> finalResp = new ArrayList<Map<String,Object>>();
 		
-		Iterator<Map.Entry<Long, Object>> itr = avgResolutionTimeBySite.entrySet().iterator(); 
-        
-        while(itr.hasNext()) 
+	    
+		for (int i=0;i<workOrderStatusCountList.size();i++) 
+	    	
         { 
+			Map<String, Object> map = workOrderStatusCountList.get(i);
+			Long siteId = (Long)map.get("siteId");
+	     
         	 Map<String,Object> siteInfo = new HashMap<String, Object>();
-             Map.Entry<Long,Object> entry = itr.next(); 
-             Long siteId = entry.getKey();
              siteInfo.put("siteId",siteId);
-             Map<String,Object> statusVal = workOrderStatusCount.get(siteId);
-             siteInfo.put("onTime",statusVal.get("onTime"));
+             siteInfo.put("onTime",map.get("onTime"));
              siteInfo.put("siteName",siteNameArray.get(siteId));
-             siteInfo.put("overDue",statusVal.get("overDue"));
-             siteInfo.put("open",statusVal.get("open"));
+             siteInfo.put("overDue",map.get("overdue"));
+             siteInfo.put("open",map.get("open"));
              siteInfo.put("technicianCount",technicianCountBySite.get(siteId)!=null?technicianCountBySite.get(siteId):0);
              
              Double avgResolutionTime=0.0,avgResponseTime=0.0,avgResolutionTimeTillLastMonth=0.0,avgResponseTimeTillLastMonth=0.0;
              if(avgResolutionTimeBySite.get(siteId)!=null) {
-         	   avgResolutionTime = ((BigDecimal)entry.getValue()).doubleValue();
+         	   avgResolutionTime = ((BigDecimal)avgResolutionTimeBySite.get(siteId)).doubleValue();
          	   avgResolutionTime = Math.round(avgResolutionTime*100.0)/100.0;}
              
              if(avgResponseTimeBySite.get(siteId)!=null) {

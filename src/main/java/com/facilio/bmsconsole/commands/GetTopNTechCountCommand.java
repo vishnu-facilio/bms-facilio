@@ -82,7 +82,8 @@ public class GetTopNTechCountCommand implements Command{
 		for(int i=0;i<countMap.size();i++)
 		{
 			Map<String,Object> techInfo = countMap.get(i) ;
-			String xName = techInfo.get("user_name")+"("+techInfo.get("site_name")+")";
+			String siteName =(String) techInfo.get("site_name");
+			String xName = techInfo.get("user_name")+"\n"+techInfo.get("site_name");
 			techNameObj.add(xName);
 			closedWoCountObj.add(techInfo.get("count"));
 			

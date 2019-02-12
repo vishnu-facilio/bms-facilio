@@ -27,7 +27,7 @@ public enum Metric {
 	VOLUME(14,"Liquid",70),
 	CURRENCY(15,"Currency"),
 	PERCENTAGE(16,"Percentage",87),
-	PRECIPITATION_INTENSITY(17,"precipitation intensity",89),
+	PRECIPITATION_INTENSITY(17,"Precipitation Intensity",89),
 	FLOWRATE(18,"Flow Rate",90),
 	;
 	

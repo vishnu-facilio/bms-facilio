@@ -16,7 +16,7 @@ import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.util.DateTimeUtil;
-import com.facilio.bmsconsole.workflow.rule.ScheduledRuleContext;
+import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.tasker.job.JobContext;
@@ -28,7 +28,7 @@ public class FetchScheduledRuleMatchingRecordsCommand implements Command {
 	@Override
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
-		ScheduledRuleContext rule = (ScheduledRuleContext) context.get(FacilioConstants.ContextNames.WORKFLOW_RULE);
+		WorkflowRuleContext rule = (WorkflowRuleContext) context.get(FacilioConstants.ContextNames.WORKFLOW_RULE);
 		List<? extends ModuleBaseWithCustomFields> records = getRecords(rule, (JobContext) context.get(FacilioConstants.Job.JOB_CONTEXT));
 		LOGGER.info("Matching records of rule : "+rule.getId()+" is : "+records);
 		
@@ -38,7 +38,7 @@ public class FetchScheduledRuleMatchingRecordsCommand implements Command {
 		return false;
 	}
 
-	private DateRange getRange(ScheduledRuleContext rule, JobContext jc) {
+	private DateRange getRange(WorkflowRuleContext rule, JobContext jc) {
 		long startTime = -1, endTime = -1;
 		if (rule.getTime() == null) { //DATE_TIME field
 			startTime = jc.getExecutionTime() * 1000;
@@ -63,11 +63,12 @@ public class FetchScheduledRuleMatchingRecordsCommand implements Command {
 	}
 	
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private List<? extends ModuleBaseWithCustomFields> getRecords(ScheduledRuleContext rule, JobContext jc) throws Exception {
+	private List<? extends ModuleBaseWithCustomFields> getRecords(WorkflowRuleContext rule, JobContext jc) throws Exception {
 		FacilioModule module = rule.getEvent().getModule();
 		FacilioField dateField = rule.getDateField();
 		DateRange range = getRange(rule, jc);
 		LOGGER.info("Range for rule : "+rule.getId()+" is "+range.toString());
+		LOGGER.info("Date field id : "+rule.getId()+" is "+rule.getDateFieldId());
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
 		Class beanClassName = FacilioConstants.ContextNames.getClassFromModuleName(module.getName());

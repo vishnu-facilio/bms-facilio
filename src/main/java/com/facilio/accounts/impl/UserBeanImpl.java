@@ -1377,7 +1377,7 @@ public class UserBeanImpl implements UserBean {
 		if(AccountUtil.getCurrentOrg() != null) {
 			Organization portalOrg = AccountUtil.getOrgBean().getPortalOrg(AccountUtil.getCurrentOrg().getDomain());
 			user.setPortalId(portalOrg.getPortalId());
-			addRequester(orgId, user, false, true);
+			user.setId(addRequester(orgId, user, false, true));
 			if(user.getAccessibleSpace() != null) {
 				addAccessibleSpace(user.getOuid(), user.getAccessibleSpace());
 			}
@@ -1881,11 +1881,15 @@ public class UserBeanImpl implements UserBean {
 		return user;
 	}
 	
-	public String generatePermalinkForURL(String url) throws Exception {
+	public String generatePermalinkForURL(String url, User user) throws Exception {
 		
 		long orgId = AccountUtil.getCurrentOrg().getOrgId();
-		long uid = AccountUtil.getCurrentUser().getUid();
-		long ouid = AccountUtil.getCurrentUser().getId();
+		if(user == null)
+		{
+			user = AccountUtil.getCurrentUser();
+		}
+		long uid = user.getUid();
+		long ouid = user.getId();
 		
 		String tokenKey = orgId + "-" + ouid;
 		String jwt = CognitoUtil.createJWT("id", "auth0", tokenKey, System.currentTimeMillis() + 24 * 60 * 60000, false);

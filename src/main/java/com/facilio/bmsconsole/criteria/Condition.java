@@ -47,7 +47,7 @@ public class Condition implements Serializable {
 	private FacilioField field;
 	public void setField(FacilioField field) {
 		this.field = field;
-		this.columnName = field.getExtendedModule().getTableName()+"."+field.getColumnName();
+		this.columnName = field.getCompleteColumnName();
 		this.fieldName = field.getName();
 	}
 	

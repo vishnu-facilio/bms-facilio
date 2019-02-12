@@ -148,7 +148,7 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 			context.put(FacilioConstants.ContextNames.REQUESTER, workOrder.getRequester());
 			context.put(FacilioConstants.ApprovalRule.APPROVAL_REQUESTER, workOrder.getRequester());
 			context.put(FacilioConstants.ContextNames.WORK_ORDER, workOrder);
-
+			
 			if (attachedFiles != null && !attachedFiles.isEmpty() && attachedFileNames != null && !attachedFileNames.isEmpty() && attachedFilesContentType != null && !attachedFilesContentType.isEmpty()) {
 				context.put(FacilioConstants.ContextNames.ATTACHMENT_FILE_LIST, attachedFiles);
 		 		context.put(FacilioConstants.ContextNames.ATTACHMENT_FILE_NAME, attachedFileNames);

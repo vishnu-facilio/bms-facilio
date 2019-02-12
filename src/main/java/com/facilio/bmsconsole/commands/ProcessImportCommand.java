@@ -341,6 +341,7 @@ public class ProcessImportCommand implements Command {
 											if(cellValueString.contains(",")) {
 												cellValueString = cellValueString.replaceAll(",", "");
 											}
+											
 											Double cellDoubleValue = Double.parseDouble(cellValueString);
 											if(!props.containsKey(field)) {
 												props.put(field, cellDoubleValue);
@@ -443,7 +444,8 @@ public class ProcessImportCommand implements Command {
 			}
 			return props;
 		} catch (Exception e) {
-			log.info("Exception occurred ", e);
+			LOGGER.severe("Exception occurred at lookup field");
+			LOGGER.severe(e.toString());
 		}
 		return null;
 	}
@@ -481,7 +483,8 @@ public class ProcessImportCommand implements Command {
 			}
 
 		} catch (Exception e) {
-			log.info("Exception occurred ", e);
+			LOGGER.severe("Exception occured for special lookup");
+			LOGGER.severe(e.toString());
 		}
 		return null;
 	}

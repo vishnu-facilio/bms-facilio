@@ -54,6 +54,15 @@ public class AlarmAction extends FacilioAction {
 		this.alarm = alarm;
 	}
 
+	private WorkOrderContext workorder;
+	
+	public WorkOrderContext getWorkorder() {
+		return workorder;
+	}
+	public void setWorkorder(WorkOrderContext workorder) {
+		this.workorder = workorder;
+	}
+
 	private String moduleName;
 	public String getModuleName() {
 		return moduleName;
@@ -73,7 +82,7 @@ public class AlarmAction extends FacilioAction {
 		rowsUpdated = (int) woContext.get(FacilioConstants.ContextNames.ROWS_UPDATED);
 		WorkOrderContext wo = (WorkOrderContext) woContext.get(FacilioConstants.ContextNames.WORK_ORDER);
 		setWoId(wo.getId());
-		
+		setWorkorder(wo);
 		return SUCCESS;
 	}
 

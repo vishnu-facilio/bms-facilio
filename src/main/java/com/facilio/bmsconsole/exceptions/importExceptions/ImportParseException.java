@@ -16,11 +16,13 @@ public class ImportParseException extends Exception{
 	}
 	
 	public String getClientMessage() {
+		String exceptionString;
 		if(this.e instanceof NumberFormatException) {
-			String exceptionString = "Value cannot be parsed at row: " + this.row_no + "under column: " + this.columnName;
+			exceptionString = "Value cannot be parsed at row: " + this.row_no + "under column: " + this.columnName;
 		}
-		
-		String exceptionString = "Exception at row: " + this.row_no + " under column: " + this.columnName;
+		else {
+			exceptionString = "Exception at row: " + this.row_no + " under column: " + this.columnName;
+		}
 		return exceptionString;
 	}
 }

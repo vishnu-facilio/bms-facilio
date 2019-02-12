@@ -27,6 +27,9 @@ import com.facilio.bmsconsole.context.EnergyMeterPurposeContext;
 import com.facilio.bmsconsole.context.FCUContext;
 import com.facilio.bmsconsole.context.FloorContext;
 import com.facilio.bmsconsole.context.HeatPumpContext;
+import com.facilio.bmsconsole.context.InventoryCategoryContext;
+import com.facilio.bmsconsole.context.InventoryContext;
+import com.facilio.bmsconsole.context.InventoryVendorContext;
 import com.facilio.bmsconsole.context.LocationContext;
 import com.facilio.bmsconsole.context.PhotosContext;
 import com.facilio.bmsconsole.context.ReadingAlarmContext;
@@ -177,6 +180,7 @@ public class FacilioConstants {
 			
 		public static final String PERMALINK_FOR_URL = "permalinkForUrl";
 		public static final String PERMALINK_TOKEN_FOR_URL = "permalinkTokenForUrl";
+		public static final String USER_EMAIL = "userEmail";
 		
 		
 		public static final String TEMPLATE_ID = "templateId";
@@ -211,6 +215,13 @@ public class FacilioConstants {
 		
 		
 		public static final String EVENT = "event";
+		
+		public static final String INVENTORY = "inventory";
+		public static final String INVENTORY_LIST = "inventories";
+		public static final String INVENTORY_VENDOR ="inventoryvendor";
+		public static final String INVENTORY_VENDORS ="inventory_vendors";
+		public static final String INVENTORY_VENDOR_LIST ="inventoryvendors";
+		public static final String INVENTORY_CATEGORY = "inventoryCategory";
 		
 		public static final String TASK = "task";
 		public static final String TASK_LIST = "tasks";
@@ -327,7 +338,8 @@ public class FacilioConstants {
 		
 		public static final String AGGR_KEY = "aggr";
 		public static final String DATA_KEY = "data";
-		
+		public static final String LABEL_MAP = "labelMap";
+
 		public static final String REPORT_CALLING_FROM = "reportCallingFrom";
 		
 		public static final String NOTE = "note";
@@ -423,11 +435,13 @@ public class FacilioConstants {
 		public static final String TICKET_NOTES = "ticketnotes";
 		public static final String BASE_SPACE_NOTES = "basespacenotes";
 		public static final String ASSET_NOTES = "assetnotes";
+		public static final String INVENTORY_NOTES = "inventorynotes";
 		
 		public static final String TICKET_ATTACHMENTS = "ticketattachments";
 		public static final String BASE_SPACE_ATTACHMENTS = "basespaceattachments";
 		public static final String ASSET_ATTACHMENTS = "assetattachments";
 		public static final String TASK_ATTACHMENTS = "taskattachments";
+		public static final String INVENTORY_ATTACHMENTS = "inventoryattachments";
 		
 		public static final String PICKLIST = "pickList";
 		
@@ -528,12 +542,14 @@ public class FacilioConstants {
 		public static final String WORKFLOW_RULE = "workflowRule";
 		public static final String WORKFLOW_RULE_ID = "workflowRuleID";
 		public static final String WORKFLOW_RULE_MODULE = "workflowrule";
+		public static final String READING_RULE_MODULE = "readingrule";
 		public static final String RULE_COUNT = "ruleCount";
 		public static final String RULES = "rules";
 		public static final String ALARM_RULE = "alarmRule";
 		public static final String ALARM_RULE_ACTIVE_ALARM = "alarmRuleActiveAlarm";
 		public static final String ALARM_RULE_THIS_WEEK = "alarmRuleThisWeek";
 		public static final String ALARM_RULE_TOP_5_ASSETS = "alarmRuleTop5Assets";
+		public static final String ALARM_RULE_WO_SUMMARY = "alarmRulewoSummary";
 		public static final String WORKFLOW_ALARM_TRIGGER_RULES = "workflowAlarmTriggerRules";
 		public static final String WORKFLOW_ALRM_CLEAR_RULE = "workflowAlarmClearRule";
 		public static final String WORKFLOW_RULE_LIST="workflowRuleList";
@@ -577,6 +593,7 @@ public class FacilioConstants {
 		public static final String FILE_ID = "fileID";
 		public static final String FILE_URL = "fileUrl";
 		public static final String DATE_FILTER = "dateFilter";
+		public static final String DATE_FIELD = "dateField";
 		public static final String START_TIME = "startTime";
 		public static final String ALARM_ID = "alarmId";
 		public static final String SCHEDULE_INFO = "schedule";
@@ -684,7 +701,7 @@ public class FacilioConstants {
 		public static final String METRICS_WITH_UNITS = "MetricsWithUnits";
 		
 		public static final String PUBSUB_TOPIC = "pubsubTopic";
-		
+
 		public static final String IDS_TO_UPDATE_TASK_COUNT = "ids_to_update_task_count";
 		public static final String IDS_TO_UPDATE_COUNT = "ids_to_update_count";
 		
@@ -740,7 +757,11 @@ public class FacilioConstants {
 			classMap.put(HDD_READING, ReadingContext.class);
 			classMap.put(UTILITY_BILL_READING, ReadingContext.class);
 			classMap.put(WATER_METER, WaterMeterContext.class);
-			classMap.put(CHILLER_SECONDARY_PUMP, ChillerSecondaryPumpContext.class);			
+			classMap.put(CHILLER_SECONDARY_PUMP, ChillerSecondaryPumpContext.class);	
+			classMap.put(INVENTORY, InventoryContext.class);
+			classMap.put(INVENTORY_VENDOR, InventoryVendorContext.class);
+			classMap.put(INVENTORY_VENDORS, InventoryVendorContext.class);
+			classMap.put(INVENTORY_CATEGORY, InventoryCategoryContext.class);
 			return classMap;
 		}
 		

@@ -13,8 +13,10 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 import com.facilio.accounts.dto.Group;
+import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
@@ -65,7 +67,7 @@ import com.facilio.workflows.util.WorkflowUtil;
 
 public class TicketAPI {
 	
-	private static org.apache.log4j.Logger log = LogManager.getLogger(TicketAPI.class.getName());
+	private static Logger LOGGER = LogManager.getLogger(TicketAPI.class.getName());
 
 
 	public static List<AttachmentContext> getRelatedAttachments(long ticketId) throws Exception 
@@ -508,7 +510,7 @@ public class TicketAPI {
 			}
 		}
 		catch(Exception e) {
-			log.info("Exception occurred ", e);
+			LOGGER.error("Exception occurred ", e);
 			throw e;
 		}
 		return 0;
@@ -526,15 +528,17 @@ public class TicketAPI {
 	
 	public static void updateTicketStatus(ActivityType activityType, TicketContext ticket, TicketContext oldTicket, boolean isWorkDurationChangeAllowed) throws Exception {
 		TicketStatusContext statusObj = ticket.getStatus();
-		
-		if(statusObj != null) {
-			statusObj = TicketAPI.getStatus(AccountUtil.getCurrentOrg().getOrgId(), statusObj.getId());
+		if(statusObj != null && statusObj.getId() > 0) {
+			Organization org = AccountUtil.getCurrentOrg(); 
+			LOGGER.info("Current org : "+org);
+			long orgId = org.getOrgId();
+			statusObj = TicketAPI.getStatus(orgId, statusObj.getId());
 		}
 		else {
 			ticket.setStatus(TicketAPI.getStatus("Submitted"));
 		}
 		
-		if((ticket.getAssignedTo() != null || ticket.getAssignmentGroup() != null) && (statusObj == null || statusObj.getStatus().equals("Submitted"))) {
+		if(( (ticket.getAssignedTo() != null && ticket.getAssignedTo().getId() > 0) || ( ticket.getAssignmentGroup() != null && ticket.getAssignmentGroup().getId() > 0) ) && (statusObj == null || statusObj.getStatus().equals("Submitted"))) {
 			ticket.setStatus(TicketAPI.getStatus("Assigned"));
 		}
 		statusObj = ticket.getStatus();
@@ -592,7 +596,7 @@ public class TicketAPI {
 						ids = myGroups.stream().map(Group::getId).collect(Collectors.toList());
 					}
 				} catch (Exception e) {
-					log.info("Exception occurred ", e);
+					LOGGER.error("Exception occurred ", e);
 				}
 				
 				if (!ids.contains(oldTicket.getAssignmentGroup().getId())) {
@@ -672,7 +676,7 @@ public static Map<Long, TicketContext> getTickets(String ids) throws Exception {
 				}
 			}
 			catch(Exception e) {
-				log.info("Exception occurred ", e);
+				LOGGER.error("Exception occurred ", e);
 				throw e;
 			}
 		}
@@ -701,7 +705,7 @@ public static Map<Long, TicketContext> getTickets(String ids) throws Exception {
 				}
 			}
 			catch(Exception e) {
-				log.info("Exception occurred ", e);
+				LOGGER.error("Exception occurred ", e);
 				throw e;
 			}
 		}
@@ -730,7 +734,7 @@ public static Map<Long, TicketContext> getTickets(String ids) throws Exception {
 				}
 			}
 			catch(Exception e) {
-				log.info("Exception occurred ", e);
+				LOGGER.error("Exception occurred ", e);
 				throw e;
 			}
 		}

@@ -516,10 +516,10 @@ public class TimeSeriesAPI {
 	}
 	
 	public static List<Map<String, Object>> getUnmodeledInstancesForController (long controllerId) throws Exception {
-		return getUnmodeledInstancesForController(controllerId, null, null, null, null, false);
+		return getUnmodeledInstancesForController(controllerId, null, null, null, null, false, null);
 	}
 	
-	public static List<Map<String, Object>> getUnmodeledInstancesForController (long controllerId, Boolean configuredOnly, Boolean fetchMapped, JSONObject pagination, Boolean isSubscribed, boolean fetchCount) throws Exception {
+	public static List<Map<String, Object>> getUnmodeledInstancesForController (long controllerId, Boolean configuredOnly, Boolean fetchMapped, JSONObject pagination, Boolean isSubscribed, boolean fetchCount, String searchText) throws Exception {
 		FacilioModule module = ModuleFactory.getUnmodeledInstancesModule();
 		List<FacilioField> fields = FieldFactory.getUnmodeledInstanceFields();
 		fields.add(FieldFactory.getIdField(module));
@@ -530,7 +530,7 @@ public class TimeSeriesAPI {
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("controllerId"), String.valueOf(controllerId), NumberOperators.EQUALS));
 		
 		if (!fetchCount) {
-			builder.select(fields).orderBy(fieldMap.get("createdTime").getColumnName() + " DESC");
+			builder.select(fields).orderBy(module.getTableName()+ "." + fieldMap.get("instance").getColumnName() + " ASC");
 		}
 		else {
 			builder.select(FieldFactory.getCountField(module, fieldMap.get("controllerId")));
@@ -539,7 +539,10 @@ public class TimeSeriesAPI {
 		Criteria criteria = new Criteria();
 		criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("instanceType"), CommonOperators.IS_EMPTY));
 		criteria.addOrCondition(CriteriaAPI.getCondition(fieldMap.get("instanceType"), String.valueOf(6), NumberOperators.LESS_THAN));
-		
+		if (searchText != null) {
+    		criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("instance"), searchText, StringOperators.CONTAINS));
+   		}
+			       
 		builder.andCriteria(criteria);
 		
 		if (configuredOnly != null) {
@@ -567,8 +570,10 @@ public class TimeSeriesAPI {
 			FacilioField instance = fieldMap.get("instance");
 			FacilioField mappedDevice = mappedFieldMap.get("device");
 			FacilioField mappedInstance = mappedFieldMap.get("instance");
+			String orgIdColumnName = FieldFactory.getOrgIdField().getColumnName();
 			
-			String joinOn = module.getTableName() + "." + device.getColumnName()+"="+mappedModule.getTableName()+"."+mappedDevice.getColumnName()
+			String joinOn = module.getTableName()+"."+orgIdColumnName+ "=" + mappedModule.getTableName()+"."+orgIdColumnName + " AND " +
+			module.getTableName() + "." + device.getColumnName()+"="+mappedModule.getTableName()+"."+mappedDevice.getColumnName()
 			+ " AND " + module.getTableName() +"." + instance.getColumnName() + "=" + mappedModule.getTableName()+"."+mappedInstance.getColumnName();
 			
 			if (!fetchMapped) {

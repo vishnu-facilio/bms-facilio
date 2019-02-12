@@ -38,7 +38,7 @@ public class ConstructReportDataCommand implements Command {
 		return new ArrayList<>();
 	}
 	
-	private Map<String, Map<Long, Object>> lookupFieldMap = new HashMap<>();
+	private Map<Long, Map<Long, Object>> labelMap = new HashMap<>();
 
 	@Override
 	public boolean execute(Context context) throws Exception {
@@ -65,6 +65,7 @@ public class ConstructReportDataCommand implements Command {
 		}
 		JSONObject data = new JSONObject();
 		data.put(FacilioConstants.ContextNames.DATA_KEY, transformedData);
+		data.put(FacilioConstants.ContextNames.LABEL_MAP, labelMap);
 		context.put(FacilioConstants.ContextNames.REPORT_SORT_ALIAS, getxAlias(report));
 		context.put(FacilioConstants.ContextNames.REPORT_DATA, data);
 		return false;
@@ -188,49 +189,42 @@ public class ConstructReportDataCommand implements Command {
 				break;
 			case LOOKUP:
 				LookupField lookupField = (LookupField) field;
-				if (val instanceof Map) {
+				if (!labelMap.containsKey(lookupField.getFieldId())) {
 					String moduleName = null;
 					if (LookupSpecialTypeUtil.isSpecialType(lookupField.getSpecialType())) {
 						moduleName = lookupField.getSpecialType();
 					} else {
 						moduleName = lookupField.getLookupModule().getName();
 					}
-					Map<Long, Object> lookupMap = lookupFieldMap.get(moduleName);
-					if (lookupMap == null) {
-						if (LookupSpecialTypeUtil.isSpecialType(lookupField.getSpecialType())) {
-							List list = LookupSpecialTypeUtil.getObjects(lookupField.getSpecialType(), null);
-							lookupMap = LookupSpecialTypeUtil.getPrimaryFieldValues(lookupField.getSpecialType(), list);
-						} else {
-							FacilioModule lookupModule = lookupField.getLookupModule();
-							ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-							List<FacilioField> fields = new ArrayList<>(modBean.getAllFields(lookupModule.getName()));
-							FacilioField mainField = null;
-							for (FacilioField f : fields) {
-								if (f.isMainField()) {
-									mainField = f;
-									break;
-								}
-							}
-							
-							List<FacilioField> selectFields = new ArrayList<>();
-							selectFields.add(mainField);
-							selectFields.add(FieldFactory.getIdField(lookupModule));
-							GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
-									.select(selectFields)
-									.table(lookupModule.getTableName())
-									.andCondition(CriteriaAPI.getCurrentOrgIdCondition(lookupModule));
-		
-							List<Map<String,Object>> asProps = builder.get();
-							lookupMap = new HashMap<>();
-							lookupFieldMap.put(lookupModule.getName(), lookupMap);
-							for (Map<String, Object> map : asProps) {
-								lookupMap.put((Long) map.get("id"), (String) map.get(mainField.getName()));
-							}
+					
+					Map<Long, Object> lookupMap = labelMap.get(lookupField.getFieldId());
+					if (LookupSpecialTypeUtil.isSpecialType(lookupField.getSpecialType())) {
+						List list = LookupSpecialTypeUtil.getObjects(lookupField.getSpecialType(), null);
+						lookupMap = LookupSpecialTypeUtil.getPrimaryFieldValues(lookupField.getSpecialType(), list);
+					} else {
+						FacilioModule lookupModule = lookupField.getLookupModule();
+						ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+						FacilioField mainField = modBean.getPrimaryField(moduleName);
+						
+						List<FacilioField> selectFields = new ArrayList<>();
+						selectFields.add(mainField);
+						selectFields.add(FieldFactory.getIdField(lookupModule));
+						GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+								.select(selectFields)
+								.table(lookupModule.getTableName())
+								.andCondition(CriteriaAPI.getCurrentOrgIdCondition(lookupModule));
+	
+						List<Map<String,Object>> asProps = builder.get();
+						lookupMap = new HashMap<>();
+						for (Map<String, Object> map : asProps) {
+							lookupMap.put((Long) map.get("id"), (String) map.get(mainField.getName()));
 						}
 					}
-					val = lookupMap.get(((Map) val).get("id"));
+					labelMap.put(lookupField.getFieldId(), lookupMap);
 				}
-
+				if (val instanceof Map) {
+					return ((Map) val).get("id");
+				}
 				break;
 			default:
 				break;

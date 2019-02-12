@@ -2,8 +2,10 @@ package com.facilio.workflows.functions;
 
 import java.time.YearMonth;
 import java.time.ZonedDateTime;
+import java.time.format.TextStyle;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 import com.facilio.bmsconsole.util.DateTimeUtil;
@@ -342,6 +344,85 @@ public enum FacilioDateFunction implements FacilioWorkflowFunctionInterface {
 			
 		}
 	},
+	GET_PREVIOUS_MONTH_START_DATE(18,"getPreviousMonthStartDate") {
+		@Override
+		public Object execute(Object... objects) throws Exception {
+			
+			checkParam(objects);
+			
+			return DateTimeUtil.getMonthStartTime(-1,false);
+			
+			
+		};
+		public void checkParam(Object... objects) throws Exception {
+			
+		}
+	},
+	GET_PREVIOUS_MONTH_END_DATE(19,"getPreviousMonthEndDate") {
+		@Override
+		public Object execute(Object... objects) throws Exception {
+			
+			checkParam(objects);
+			 Long previousStart = DateTimeUtil.getMonthStartTime(-1,false);
+			 return DateTimeUtil.getMonthEndTimeOf(previousStart,false);
+		};
+		public void checkParam(Object... objects) throws Exception {
+			
+		}
+	},
+	PREVIOUS_MONTH_NAME(20,"getPreviousMonthName") {
+		@Override
+		public Object execute(Object... objects) throws Exception {
+			
+			checkParam(objects);
+			
+			String month = "";int year;
+			if(objects == null || objects.length == 0) {
+				
+				ZonedDateTime zdt = DateTimeUtil.getZonedDateTime(DateTimeUtil.getMonthStartTime(-1,false));
+				month = zdt.getMonth().getDisplayName(TextStyle.FULL, Locale.getDefault());
+			    year = zdt.getYear();
+			}
+			else {
+				Long startTime = Long.parseLong( objects[0].toString());
+				ZonedDateTime zdt = DateTimeUtil.getZonedDateTime(startTime);
+				month = zdt.getMonth().getDisplayName(TextStyle.FULL, Locale.getDefault());
+				year = zdt.getYear();
+			}
+			
+			return month+" "+year;
+		};
+		public void checkParam(Object... objects) throws Exception {
+
+		}
+	},
+	PREVIOUS_LAST_MONTH_NAME(21,"getPreviousLastMonthName") {
+		@Override
+		public Object execute(Object... objects) throws Exception {
+			
+			checkParam(objects);
+			
+			String month = "";int year;
+			if(objects == null || objects.length == 0) {
+				
+				ZonedDateTime zdt = DateTimeUtil.getZonedDateTime(DateTimeUtil.getMonthStartTime(-2,false));
+				month = zdt.getMonth().getDisplayName(TextStyle.FULL, Locale.getDefault());
+			    year = zdt.getYear();
+			}
+			else {
+				Long startTime = Long.parseLong( objects[0].toString());
+				ZonedDateTime zdt = DateTimeUtil.getZonedDateTime(startTime);
+				month = zdt.getMonth().getDisplayName(TextStyle.FULL, Locale.getDefault());
+				year = zdt.getYear();
+			}
+			
+			return month+" "+year;
+		};
+		public void checkParam(Object... objects) throws Exception {
+
+		}
+	}
+
 	;
 	private Integer value;
 	private String functionName;

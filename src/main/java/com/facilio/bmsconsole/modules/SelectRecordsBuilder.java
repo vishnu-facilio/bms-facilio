@@ -368,11 +368,13 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 		FacilioField moduleIdField = FieldFactory.getModuleIdField(module);
 		FacilioField siteIdField = FieldFactory.getSiteIdField(module);
 		
+		long currentSiteId = AccountUtil.getCurrentSiteId();
+
 		List<FacilioField> selectFields = new ArrayList<>();
 		selectFields.add(orgIdField);
 		selectFields.add(moduleIdField);
 		
-		if (FieldUtil.isSiteIdFieldPresent(module)) {
+		if (FieldUtil.isSiteIdFieldPresent(module) && (currentSiteId > 0 || (groupBy == null || groupBy.isEmpty()) )) {
 			selectFields.add(siteIdField);
 		}
 		
@@ -384,8 +386,13 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 			moduleGroupBy.append(orgIdField.getCompleteColumnName())
 							.append(",")
 							.append(moduleIdField.getCompleteColumnName())
-							.append(",")
-							.append(groupBy);
+							.append(",");
+
+			if (FieldUtil.isSiteIdFieldPresent(module)) {
+				moduleGroupBy.append(siteIdField.getCompleteColumnName())
+					.append(",");
+			}
+			moduleGroupBy.append(groupBy);
 			
 			builder.groupBy(moduleGroupBy.toString());
 		}
@@ -399,9 +406,7 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 		
 		Condition moduleCondition = CriteriaAPI.getCondition(moduleIdField, String.valueOf(module.getModuleId()), NumberOperators.EQUALS);
 		whereCondition.andCondition(moduleCondition);
-		
-		long currentSiteId = AccountUtil.getCurrentSiteId();
-		
+
 		if (FieldUtil.isSiteIdFieldPresent(module) && currentSiteId > 0) {
 			Condition siteCondition = CriteriaAPI.getCondition(siteIdField, String.valueOf(currentSiteId), NumberOperators.EQUALS);
 			whereCondition.andCondition(siteCondition);

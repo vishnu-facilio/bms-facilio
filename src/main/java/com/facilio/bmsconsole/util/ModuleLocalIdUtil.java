@@ -38,6 +38,7 @@ public class ModuleLocalIdUtil {
 		modulesWithLocalId.add(FacilioConstants.ContextNames.TASK);
 		modulesWithLocalId.add(FacilioConstants.ContextNames.ALARM);
 		modulesWithLocalId.add(FacilioConstants.ContextNames.READING_ALARM);
+		modulesWithLocalId.add(FacilioConstants.ContextNames.INVENTORY);
 		
 		return modulesWithLocalId;
 	}

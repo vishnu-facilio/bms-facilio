@@ -52,7 +52,7 @@ public abstract class FileStore {
 		
 		try {
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
-			pstmt = conn.prepareStatement("INSERT INTO File (ORGID, FILE_NAME, UPLOADED_BY, UPLOADED_TIME) VALUES (?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
+			pstmt = conn.prepareStatement("INSERT INTO FacilioFile (ORGID, FILE_NAME, UPLOADED_BY, UPLOADED_TIME) VALUES (?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
 			
 			pstmt.setLong(1, getOrgId());
 			pstmt.setString(2, fileName);
@@ -82,7 +82,7 @@ public abstract class FileStore {
 		PreparedStatement pstmt = null;
 		try {
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
-			pstmt = conn.prepareStatement("UPDATE File SET FILE_NAME=?, FILE_PATH=?, FILE_SIZE=?, CONTENT_TYPE=? WHERE FILE_ID=? AND ORGID=?");
+			pstmt = conn.prepareStatement("UPDATE FacilioFile SET FILE_NAME=?, FILE_PATH=?, FILE_SIZE=?, CONTENT_TYPE=? WHERE FILE_ID=? AND ORGID=?");
 			
 			pstmt.setString(1, fileName);
 			pstmt.setString(2, filePath);
@@ -149,7 +149,7 @@ public abstract class FileStore {
 		
 		try {
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
-			pstmt = conn.prepareStatement("DELETE FROM File WHERE FILE_ID=? AND ORGID=?");
+			pstmt = conn.prepareStatement("DELETE FROM FacilioFile WHERE FILE_ID=? AND ORGID=?");
 			
 			pstmt.setLong(1, fileId);
 			pstmt.setLong(2, getOrgId());
@@ -173,7 +173,7 @@ public abstract class FileStore {
 		
 		try {
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
-			pstmt = conn.prepareStatement("DELETE FROM File WHERE FILE_ID=? AND ORGID=?");
+			pstmt = conn.prepareStatement("DELETE FROM FacilioFile WHERE FILE_ID=? AND ORGID=?");
 			
 			for (long id : fileId) {
 				pstmt.setLong(1, id);
@@ -269,7 +269,7 @@ public abstract class FileStore {
 		
 		try {
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
-			pstmt = conn.prepareStatement("SELECT * FROM File WHERE FILE_ID=? AND ORGID=? ORDER BY FILE_NAME");
+			pstmt = conn.prepareStatement("SELECT * FROM FacilioFile WHERE FILE_ID=? AND ORGID=? ORDER BY FILE_NAME");
 			pstmt.setLong(1, fileId);
 			pstmt.setLong(2, getOrgId());
 			
@@ -295,7 +295,7 @@ public abstract class FileStore {
 		
 		try {
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
-			pstmt = conn.prepareStatement("SELECT File.FILE_ID, File.ORGID, File.FILE_NAME, File.UPLOADED_BY, File.UPLOADED_TIME, ResizedFile.FILE_PATH, ResizedFile.FILE_SIZE, ResizedFile.CONTENT_TYPE,ResizedFile.EXPIRY_TIME, ResizedFile.URL FROM ResizedFile join File on ResizedFile.FILE_ID = File.FILE_ID WHERE ResizedFile.FILE_ID=? AND ResizedFile.ORGID=? AND ResizedFile.WIDTH=? AND ResizedFile.HEIGHT=?");
+			pstmt = conn.prepareStatement("SELECT FacilioFile.FILE_ID, FacilioFile.ORGID, FacilioFile.FILE_NAME, FacilioFile.UPLOADED_BY, FacilioFile.UPLOADED_TIME, ResizedFile.FILE_PATH, ResizedFile.FILE_SIZE, ResizedFile.CONTENT_TYPE,ResizedFile.EXPIRY_TIME, ResizedFile.URL FROM ResizedFile join FacilioFile on ResizedFile.FILE_ID = FacilioFile.FILE_ID WHERE ResizedFile.FILE_ID=? AND ResizedFile.ORGID=? AND ResizedFile.WIDTH=? AND ResizedFile.HEIGHT=?");
 			pstmt.setLong(1, fileId);
 			pstmt.setLong(2, getOrgId());
 			pstmt.setInt(3, width);
@@ -324,7 +324,7 @@ public abstract class FileStore {
 		try {
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
 			
-			String sql = "SELECT * FROM File WHERE FILE_ID IN (";
+			String sql = "SELECT * FROM FacilioFile WHERE FILE_ID IN (";
 			for (int i=0; i< fileId.size(); i++) {
 				if (i != 0) {
 					sql += ", ";
@@ -362,7 +362,7 @@ public abstract class FileStore {
 		try {
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
 			
-			String sql = "SELECT * FROM File WHERE FILE_ID IN (";
+			String sql = "SELECT * FROM FacilioFile WHERE FILE_ID IN (";
 			for (int i=0; i< fileId.size(); i++) {
 				if (i != 0) {
 					sql += ", ";
@@ -398,7 +398,7 @@ public abstract class FileStore {
 		try {
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
 			
-			String sql = "SELECT FILE_PATH FROM File WHERE FILE_ID IN (";
+			String sql = "SELECT FILE_PATH FROM FacilioFile WHERE FILE_ID IN (";
 			for (int i=0; i< fileId.size(); i++) {
 				if (i != 0) {
 					sql += ", ";

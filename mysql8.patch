@@ -1,0 +1,171 @@
+diff --git a/src/main/java/com/facilio/sql/GenericDeleteRecordBuilder.java b/src/main/java/com/facilio/sql/GenericDeleteRecordBuilder.java
+index d4820c680..893b5f043 100644
+--- a/src/main/java/com/facilio/sql/GenericDeleteRecordBuilder.java
++++ b/src/main/java/com/facilio/sql/GenericDeleteRecordBuilder.java
+@@ -92,10 +92,11 @@ public class GenericDeleteRecordBuilder implements DeleteBuilderIfc<Map<String,
+ 	
+ 	private GenericJoinBuilder genericJoin(String joinString, String tableName, boolean delete) {
+ 		joinBuilder.append(joinString)
++					.append("`")
+ 					.append(tableName)
+-					.append(" ");
++					.append("` ");
+ 		if (delete) {
+-			tablesToBeDeleted.add(tableName);
++			tablesToBeDeleted.add("`"+tableName+"`");
+ 		}
+ 		return new GenericJoinBuilder(this);
+ 	}
+@@ -141,8 +142,9 @@ public class GenericDeleteRecordBuilder implements DeleteBuilderIfc<Map<String,
+ 	private String constructDeleteStatement() {
+ 		StringBuilder sql = new StringBuilder("DELETE ");
+ 		sql.append(tablesToBeDeleted.toString())
+-			.append(" FROM ")
++			.append(" FROM `")
+ 			.append(tableName)
++			.append("`")
+ 			.append(joinBuilder.toString())
+ 			.append(" WHERE ")
+ 			.append(where.getWhereClause());
+diff --git a/src/main/java/com/facilio/sql/GenericInsertRecordBuilder.java b/src/main/java/com/facilio/sql/GenericInsertRecordBuilder.java
+index e41b21f94..0e3b68320 100644
+--- a/src/main/java/com/facilio/sql/GenericInsertRecordBuilder.java
++++ b/src/main/java/com/facilio/sql/GenericInsertRecordBuilder.java
+@@ -133,9 +133,9 @@ public class GenericInsertRecordBuilder implements InsertBuilderIfc<Map<String,
+ 	}
+ 	
+ 	private String constructInsertStatement() {
+-		StringBuilder sql = new StringBuilder("INSERT INTO ");
++		StringBuilder sql = new StringBuilder("INSERT INTO `");
+ 		sql.append(tableName);
+-		sql.append(" (");
++		sql.append("` (");
+ 		
+ 		boolean isFirst = true;
+ 		for(FacilioField field : fields) {
+@@ -145,7 +145,9 @@ public class GenericInsertRecordBuilder implements InsertBuilderIfc<Map<String,
+ 			else {
+ 				sql.append(", ");
+ 			}
+-			sql.append(field.getColumnName());
++			sql.append("`")
++				.append(field.getColumnName())
++				.append("`");
+ 		}
+ 		
+ 		sql.append(") VALUES (");
+diff --git a/src/main/java/com/facilio/sql/GenericSelectRecordBuilder.java b/src/main/java/com/facilio/sql/GenericSelectRecordBuilder.java
+index 4801e7e18..f41f9a6e0 100644
+--- a/src/main/java/com/facilio/sql/GenericSelectRecordBuilder.java
++++ b/src/main/java/com/facilio/sql/GenericSelectRecordBuilder.java
+@@ -76,33 +76,33 @@ public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String,
+ 	
+ 	@Override
+ 	public GenericJoinBuilder innerJoin(String tableName) {
+-		joinBuilder.append(" INNER JOIN ")
++		joinBuilder.append(" INNER JOIN `")
+ 					.append(tableName)
+-					.append(" ");
++					.append("` ");
+ 		return new GenericJoinBuilder(this);
+ 	}
+ 	
+ 	@Override
+ 	public GenericJoinBuilder leftJoin(String tableName) {
+-		joinBuilder.append(" LEFT JOIN ")
++		joinBuilder.append(" LEFT JOIN `")
+ 					.append(tableName)
+-					.append(" ");
++					.append("` ");
+ 		return new GenericJoinBuilder(this);
+ 	}
+ 	
+ 	@Override
+ 	public GenericJoinBuilder rightJoin(String tableName) {
+-		joinBuilder.append(" RIGHT JOIN ")
++		joinBuilder.append(" RIGHT JOIN `")
+ 					.append(tableName)
+-					.append(" ");
++					.append("` ");
+ 		return new GenericJoinBuilder(this);
+ 	}
+ 	
+ 	@Override
+ 	public GenericJoinBuilder fullJoin(String tableName) {
+-		joinBuilder.append(" FULL JOIN ")
++		joinBuilder.append(" FULL JOIN `")
+ 					.append(tableName)
+-					.append(" ");
++					.append("` ");
+ 		return new GenericJoinBuilder(this);
+ 	}
+ 	
+@@ -291,8 +291,9 @@ public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String,
+ 				.append("`");
+ 		}
+ 		
+-		sql.append(" FROM ")
+-			.append(tableName);
++		sql.append(" FROM `")
++			.append(tableName)
++			.append("`");
+ 		
+ 		sql.append(joinBuilder.toString());
+ 		
+diff --git a/src/main/java/com/facilio/sql/GenericUpdateRecordBuilder.java b/src/main/java/com/facilio/sql/GenericUpdateRecordBuilder.java
+index 84a328f09..9262e72cb 100644
+--- a/src/main/java/com/facilio/sql/GenericUpdateRecordBuilder.java
++++ b/src/main/java/com/facilio/sql/GenericUpdateRecordBuilder.java
+@@ -46,33 +46,33 @@ public class GenericUpdateRecordBuilder implements UpdateBuilderIfc<Map<String,
+ 	
+ 	@Override
+ 	public GenericJoinBuilder innerJoin(String tableName) {
+-		joinBuilder.append(" INNER JOIN ")
++		joinBuilder.append(" INNER JOIN `")
+ 					.append(tableName)
+-					.append(" ");
++					.append("` ");
+ 		return new GenericJoinBuilder(this);
+ 	}
+ 	
+ 	@Override
+ 	public GenericJoinBuilder leftJoin(String tableName) {
+-		joinBuilder.append(" LEFT JOIN ")
++		joinBuilder.append(" LEFT JOIN `")
+ 					.append(tableName)
+-					.append(" ");
++					.append("` ");
+ 		return new GenericJoinBuilder(this);
+ 	}
+ 	
+ 	@Override
+ 	public GenericJoinBuilder rightJoin(String tableName) {
+-		joinBuilder.append(" RIGHT JOIN ")
++		joinBuilder.append(" RIGHT JOIN `")
+ 					.append(tableName)
+-					.append(" ");
++					.append("` ");
+ 		return new GenericJoinBuilder(this);
+ 	}
+ 	
+ 	@Override
+ 	public GenericJoinBuilder fullJoin(String tableName) {
+-		joinBuilder.append(" FULL JOIN ")
++		joinBuilder.append(" FULL JOIN `")
+ 					.append(tableName)
+-					.append(" ");
++					.append("` ");
+ 		return new GenericJoinBuilder(this);
+ 	}
+ 	
+@@ -188,8 +188,9 @@ public class GenericUpdateRecordBuilder implements UpdateBuilderIfc<Map<String,
+ 	}
+ 	
+ 	private String constructUpdateStatement() {
+-		StringBuilder sql = new StringBuilder("UPDATE ");
++		StringBuilder sql = new StringBuilder("UPDATE `");
+ 		sql.append(tableName)
++			.append("`")
+ 			.append(joinBuilder.toString())
+ 			.append(" SET ");
+ 		boolean isFirst = true;

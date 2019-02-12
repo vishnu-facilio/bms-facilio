@@ -55,6 +55,8 @@ public class ModuleFactory {
 		moduleMap.put("anomalyScheduler", getAnalyticsAnomalyModule());
 		moduleMap.put("form", getFormModule());
 		moduleMap.put("formFields", getFormFieldsModule());
+		moduleMap.put(FacilioConstants.ContextNames.INVENTORY, getInventoryModule());
+		moduleMap.put(FacilioConstants.ContextNames.INVENTORY_CATEGORY, getInventoryCategoryModule());
 		return moduleMap;
 	}
 	
@@ -251,25 +253,6 @@ public class ModuleFactory {
 		slarule.setExtendModule(getWorkflowRuleModule());
 
 		return slarule;
-	}
-	
-	public static FacilioModule getScheduledRuleModule() {
-		FacilioModule scheduledRule = new FacilioModule();
-		scheduledRule.setName("scheduledRule");
-		scheduledRule.setDisplayName("Scheduled Rules");
-		scheduledRule.setTableName("Scheduled_Rules");
-		scheduledRule.setExtendModule(getWorkflowRuleModule());
-		
-		return scheduledRule;
-	}
-	
-	public static FacilioModule getScheduledRuleJobModule() {
-		FacilioModule scheduledRuleJob = new FacilioModule();
-		scheduledRuleJob.setName("scheduledRuleJob");
-		scheduledRuleJob.setDisplayName("Scheduled Rule Jobs");
-		scheduledRuleJob.setTableName("Scheduled_Rule_Jobs");
-		
-		return scheduledRuleJob;
 	}
 	
 	public static FacilioModule getScheduledActionModule() {
@@ -683,7 +666,7 @@ public class ModuleFactory {
 		FacilioModule filesModule = new FacilioModule();
 		filesModule.setName("files");
 		filesModule.setDisplayName("Files");
-		filesModule.setTableName("File");
+		filesModule.setTableName("FacilioFile");
 
 		return filesModule;
 	}
@@ -918,6 +901,14 @@ public class ModuleFactory {
 		pmTriggers.setName("PMResourcePlanner");
 		pmTriggers.setDisplayName("PM Resource Planner");
 		pmTriggers.setTableName("PM_Resource_Planner");
+		return pmTriggers;
+	}
+
+	public static FacilioModule getPMResourcePlannerTriggersModule() {
+		FacilioModule pmTriggers = new FacilioModule();
+		pmTriggers.setName("PMResourcePlannerTriggers");
+		pmTriggers.setDisplayName("PM Resource Planner Triggers");
+		pmTriggers.setTableName("PM_Resource_Planner_Triggers");
 		return pmTriggers;
 	}
 	
@@ -1530,6 +1521,29 @@ public class ModuleFactory {
 		return enumFieldValues;
 	}
 	
+	public static FacilioModule getInventoryModule() {
+		FacilioModule inventoryModule = new FacilioModule();
+		inventoryModule.setName(FacilioConstants.ContextNames.INVENTORY);
+		inventoryModule.setDisplayName("Inventory");
+		inventoryModule.setTableName("Inventory");
+		return inventoryModule;
+	}
+	
+	public static FacilioModule getInventoryCategoryModule() {
+		FacilioModule ticketCategoryModule = new FacilioModule();
+		ticketCategoryModule.setName(FacilioConstants.ContextNames.INVENTORY_CATEGORY);
+		ticketCategoryModule.setDisplayName("Inventory Category");
+		ticketCategoryModule.setTableName("Inventory_category");
+		return ticketCategoryModule;
+	}
+	
+	public static FacilioModule getInventoryVendorsModule() {
+		FacilioModule ticketCategoryModule = new FacilioModule();
+		ticketCategoryModule.setName(FacilioConstants.ContextNames.INVENTORY_VENDOR);
+		ticketCategoryModule.setDisplayName("Inventory Vendor");
+		ticketCategoryModule.setTableName("Inventory_vendors");
+		return ticketCategoryModule;
+	}
 	public static FacilioModule getAnalyticsV1AnomalyConfigModule() {
 		FacilioModule analyticsAnomalyJob = new FacilioModule();
 		analyticsAnomalyJob.setName("anomalyConfigV1");

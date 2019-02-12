@@ -1,9 +1,8 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
+import com.facilio.accounts.util.AccountUtil;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
@@ -60,9 +59,13 @@ public class AddPMRelFieldsCommand implements Command {
 		if(pm.getResourcePlanners() != null) {
 			
 			for(PMResourcePlannerContext resourcePlanner :pm.getResourcePlanners()) {
-				if(resourcePlanner.getTriggerName() != null) {
-					PMTriggerContext trigger = pm.getTriggerMap().get(resourcePlanner.getTriggerName());
-					resourcePlanner.setTriggerId(trigger.getId());
+				if(resourcePlanner.getTriggerContexts() != null) {
+					List<PMTriggerContext> trigs = new ArrayList<>();
+					for (PMTriggerContext t: resourcePlanner.getTriggerContexts()) {
+						PMTriggerContext trigger = pm.getTriggerMap().get(t.getName());
+						trigs.add(trigger);
+					}
+					resourcePlanner.setTriggerContexts(trigs);
 					resourcePlanner.setPmId(pm.getId());
 				}
 				Map<String, Object> prop = FieldUtil.getAsProperties(resourcePlanner);
@@ -71,7 +74,26 @@ public class AddPMRelFieldsCommand implements Command {
 				insert.fields(FieldFactory.getPMResourcePlannerFields());
 				insert.insert(prop);
 				resourcePlanner.setId((Long)prop.get("id"));
-				
+
+				List<Map<String, Object>> relProps = new ArrayList<>();
+				if (resourcePlanner.getTriggerContexts() != null) {
+					for (PMTriggerContext t: resourcePlanner.getTriggerContexts()) {
+						Map<String, Object> p = new HashMap<>();
+						p.put("orgId", AccountUtil.getCurrentAccount().getOrg().getId());
+						p.put("triggerId", t.getId());
+						p.put("resourcePlannerId", resourcePlanner.getId());
+						relProps.add(p);
+					}
+				}
+
+				if (!relProps.isEmpty()) {
+					GenericInsertRecordBuilder insertTrigResourceRel = new GenericInsertRecordBuilder()
+							.table(ModuleFactory.getPMResourcePlannerTriggersModule().getTableName())
+							.fields(FieldFactory.getPMResourcePlannerTriggersFields());
+
+					insertTrigResourceRel.addRecords(relProps);
+					insertTrigResourceRel.save();
+				}
 				
 				if(resourcePlanner.getPmResourcePlannerReminderContexts() != null) {
 					for(PMResourcePlannerReminderContext pmResourcePlannerReminderContext : resourcePlanner.getPmResourcePlannerReminderContexts()) {

@@ -2,15 +2,10 @@ package com.facilio.bmsconsole.util;
 
 import java.time.LocalTime;
 import java.time.ZonedDateTime;
-import java.util.Map;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.FieldFactory;
-import com.facilio.bmsconsole.modules.FieldUtil;
-import com.facilio.bmsconsole.modules.ModuleFactory;
-import com.facilio.bmsconsole.workflow.rule.SLARuleContext;
-import com.facilio.bmsconsole.workflow.rule.ScheduledRuleContext;
+import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.fw.BeanFactory;
 import com.facilio.tasker.FacilioTimer;
 import com.facilio.tasker.ScheduleInfo;
@@ -18,88 +13,70 @@ import com.facilio.tasker.ScheduleInfo.FrequencyType;
 import com.facilio.time.SecondsChronoUnit;
 
 public class ScheduledRuleAPI extends WorkflowRuleAPI {
-	protected static void validateScheduledRule(ScheduledRuleContext rule) throws Exception {
-		if (rule.getDateFieldId() == -1) {
+	protected static void validateScheduledRule(WorkflowRuleContext rule, boolean isUpdate) throws Exception {
+		if (rule.getDateFieldId() == -1 && !isUpdate) {
 			throw new IllegalArgumentException("Date Field Id cannot be null for Scheduled Rule");
 		}
 		
-		if (rule.getScheduleTypeEnum() == null) {
+		if (rule.getScheduleTypeEnum() == null && !isUpdate) {
 			throw new IllegalArgumentException("Schedule Type cannot be null for Scheduled Rule");
 		}
 		
-		switch (rule.getScheduleTypeEnum()) {
-			case BEFORE:
-			case AFTER:
-				if (rule.getInterval() == -1) {
-					throw new IllegalArgumentException("Interval cannot be null for Scheduled Rule with type BEFORE/ AFTER");
-				}
-				break;
-			case ON:
-				break;
+		if (rule.getScheduleTypeEnum() != null) {
+			switch (rule.getScheduleTypeEnum()) {
+				case BEFORE:
+				case AFTER:
+					if (rule.getInterval() == -1) {
+						throw new IllegalArgumentException("Interval cannot be null for Scheduled Rule with type BEFORE/ AFTER");
+					}
+					break;
+				case ON:
+					break;
+			}
 		}
 		
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioField field = modBean.getField(rule.getDateFieldId());
-		switch (field.getDataTypeEnum()) {
-			case DATE:
-				if (rule.getTimeObj() == null) {
-					throw new IllegalArgumentException("Time is mandatory for DATE field");
-				}
-				if (rule.getInterval() % 86400 != 0) {
-					throw new IllegalArgumentException("Interval should be in multiples of days for DATE field");
-				}
-				break;
-			case DATE_TIME:
-				if (rule.getTimeObj() != null) {
-					throw new IllegalArgumentException("Time is not required for DATE_TIME field");
-				}
-				if (rule.getInterval() % (DATE_TIME_RULE_INTERVAL * 60) != 0) {
-					throw new IllegalArgumentException("Interval should be in multiples of "+DATE_TIME_RULE_INTERVAL+" min for DATE_TIME field");
-				}
-				break;
-			default:
-				throw new IllegalArgumentException("Only DATE/ DATE_TIME field can be used for Scheduled Rules");
+		if (rule.getDateFieldId() != -1) {
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			FacilioField field = modBean.getField(rule.getDateFieldId());
+			switch (field.getDataTypeEnum()) {
+				case DATE:
+					if (rule.getTimeObj() == null) {
+						throw new IllegalArgumentException("Time is mandatory for DATE field");
+					}
+					if (rule.getInterval() % 86400 != 0) {
+						throw new IllegalArgumentException("Interval should be in multiples of days for DATE field");
+					}
+					break;
+				case DATE_TIME:
+					if (rule.getTimeObj() != null) {
+						throw new IllegalArgumentException("Time is not required for DATE_TIME field");
+					}
+					if (rule.getInterval() % (DATE_TIME_RULE_INTERVAL * 60) != 0) {
+						throw new IllegalArgumentException("Interval should be in multiples of "+DATE_TIME_RULE_INTERVAL+" min for DATE_TIME field");
+					}
+					break;
+				default:
+					throw new IllegalArgumentException("Only DATE/ DATE_TIME field can be used for Scheduled Rules");
+			}
 		}
 	}
 	
-	protected static ScheduledRuleContext constructScheduledRuleFromProps(Map<String, Object> prop, ModuleBean modBean) throws Exception {
-		ScheduledRuleContext scheduledRule = FieldUtil.getAsBeanFromMap(prop, ScheduledRuleContext.class);
-		scheduledRule.setDateField(modBean.getField(scheduledRule.getDateFieldId()));
-		return scheduledRule;
-	}
-	
-	protected static void addScheduledRuleJob(ScheduledRuleContext rule) throws Exception {
+	protected static void addScheduledRuleJob(WorkflowRuleContext rule) throws Exception {
 		long startTime = ZonedDateTime.now().truncatedTo(new SecondsChronoUnit(ScheduledRuleAPI.DATE_TIME_RULE_INTERVAL * 60)).toInstant().toEpochMilli() - 1;
 		FacilioTimer.scheduleCalendarJob(rule.getId(), "ScheduledRuleExecution", startTime, getDateTimeSchedule(rule), "facilio");
 	}
 	
-	protected static void updateScheduledRuleJob(ScheduledRuleContext rule) throws Exception {
+	protected static void updateScheduledRuleJob(WorkflowRuleContext rule) throws Exception {
 		deleteScheduledRuleJob(rule);
 		addScheduledRuleJob(rule);
 	}
 	
-	protected static void deleteScheduledRuleJob(ScheduledRuleContext rule) throws Exception {
+	protected static void deleteScheduledRuleJob(WorkflowRuleContext rule) throws Exception {
 		FacilioTimer.deleteJob(rule.getId(), "ScheduledRuleExecution");
 	}
 	
-	public static ScheduledRuleContext updateScheduledRuleWithChildren(ScheduledRuleContext rule) throws Exception {
-		SLARuleContext oldRule = (SLARuleContext) getWorkflowRule(rule.getId());
-		updateWorkflowRuleChildIds(rule);
-		updateExtendedRule(rule, ModuleFactory.getScheduledRuleModule(), FieldFactory.getScheduledRuleFields());
-		deleteChildIdsForWorkflow(oldRule, rule);
-		
-		if (rule.getTimeObj() != null) {
-			updateScheduledRuleJob(rule);
-		}
-		
-		if (rule.getName() == null) {
-			rule.setName(oldRule.getName());
-		}
-		return rule;
-	}
-	
 	private static final int DATE_TIME_RULE_INTERVAL = 30; //In Minutes //Only 5, 10, 15, 20, 30
-	private static ScheduleInfo getDateTimeSchedule(ScheduledRuleContext rule) {
+	private static ScheduleInfo getDateTimeSchedule(WorkflowRuleContext rule) {
 		ScheduleInfo info = new ScheduleInfo();
 		info.setFrequencyType(FrequencyType.DAILY);
 		

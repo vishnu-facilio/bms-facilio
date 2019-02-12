@@ -34,6 +34,7 @@ public class IotDataFilter implements Filter {
             builder.append(System.lineSeparator());
         }
         LOGGER.warn("header : " + headerToken + "  data : " + builder.toString());
+        filterChain.doFilter(servletRequest, servletResponse);
     }
 
     public void destroy() {

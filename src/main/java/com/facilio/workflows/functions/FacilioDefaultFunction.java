@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 
+import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
@@ -22,6 +23,7 @@ import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.bmsconsole.modules.NumberField;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.util.DashboardUtil;
+import com.facilio.bmsconsole.util.DateTimeUtil;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.cards.util.CardUtil;
 import com.facilio.fs.FileStore;
@@ -354,6 +356,24 @@ public enum FacilioDefaultFunction implements FacilioWorkflowFunctionInterface {
 		}
 		
 	},
+	GET_PERMALINK_URL(9, "getPermaLinkUrl") {
+
+		@Override
+		public Object execute(Object... objects) throws Exception {
+			// TODO Auto-generated method stub
+			if (objects == null || objects.length < 1) {
+				return null;
+			}
+			
+			User user = AccountUtil.getUserBean().getUser(AccountUtil.getCurrentOrg().getId(), (String) objects[4]);
+			String token = AccountUtil.getUserBean().generatePermalinkForURL(objects[1].toString(), user);
+			String permalLinkURL = objects[0].toString()+objects[1].toString()+"?token="+token+"&startDate="+Long.valueOf(objects[2].toString())+"&endDate="+Long.valueOf(objects[3].toString());
+			
+			return permalLinkURL;
+		}
+		
+	},
+
 	;
 	private Integer value;
 	private String functionName;

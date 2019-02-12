@@ -8,14 +8,22 @@ public class PMResourcePlannerContext {
 	Long pmId;
 	Long resourceId;
 	ResourceContext resource;
-	String triggerName;
+
+	public List<PMTriggerContext> getTriggerContexts() {
+		return triggerContexts;
+	}
+
+	public void setTriggerContexts(List<PMTriggerContext> triggers) {
+		this.triggerContexts = triggers;
+	}
+
+	private List<PMTriggerContext> triggerContexts;
 	public ResourceContext getResource() {
 		return resource;
 	}
 	public void setResource(ResourceContext resource) {
 		this.resource = resource;
 	}
-	Long triggerId;
 	Long assignedToId;
 	
 	public Long getId() {
@@ -36,12 +44,6 @@ public class PMResourcePlannerContext {
 	public void setResourceId(Long resourceId) {
 		this.resourceId = resourceId;
 	}
-	public Long getTriggerId() {
-		return triggerId;
-	}
-	public void setTriggerId(Long triggerId) {
-		this.triggerId = triggerId;
-	}
 	public Long getAssignedToId() {
 		return assignedToId;
 	}
@@ -49,12 +51,6 @@ public class PMResourcePlannerContext {
 		this.assignedToId = assignedToId;
 	}
 	List<PMResourcePlannerReminderContext> pmResourcePlannerReminderContexts;
-	public String getTriggerName() {
-		return triggerName;
-	}
-	public void setTriggerName(String triggerName) {
-		this.triggerName = triggerName;
-	}
 	public List<PMResourcePlannerReminderContext> getPmResourcePlannerReminderContexts() {
 		return pmResourcePlannerReminderContexts;
 	}

@@ -236,7 +236,7 @@ public class FacilioChainFactory {
 		c.addCommand(new SplitDependentTicketsCommand());
 		c.addCommand(new DeleteTicketDependenciesCommand());
 		c.addCommand(new DeleteTicketCommand());
-		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.WORKORDER_AGENT_NOTIFICATION_RULE, RuleType.WORKORDER_REQUESTER_NOTIFICATION_RULE, RuleType.CUSTOM_WORKORDER_NOTIFICATION_RULE, RuleType.SCHEDULED_RULE));
+		c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.WORKORDER_AGENT_NOTIFICATION_RULE, RuleType.WORKORDER_REQUESTER_NOTIFICATION_RULE, RuleType.CUSTOM_WORKORDER_NOTIFICATION_RULE));
 		return c;
 	}
 	
@@ -1942,6 +1942,15 @@ public class FacilioChainFactory {
 		Chain c = FacilioChain.getTransactionChain();
 		c.addCommand(new GetFormMetaCommand());
 		c.addCommand(new EditFormCommand());
+		return c;
+	}
+	
+	public static Chain getNewInventoryChain() {
+		Chain c = FacilioChain.getTransactionChain();
+		c.addCommand(SetTableNamesCommand.getForInventory());
+		c.addCommand(new LoadModuleNameCommand());
+		c.addCommand(new LoadAllFieldsCommand());
+//		CommonCommandUtil.addCleanUpCommand(c);
 		return c;
 	}
 	

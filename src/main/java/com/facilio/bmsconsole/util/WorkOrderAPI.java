@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.util;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -9,11 +10,12 @@ import java.util.logging.Logger;
 
 import org.apache.commons.chain.Command;
 
+import com.chargebee.internal.StringJoiner;
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
-import com.facilio.bmsconsole.context.FormulaContext;
+import com.facilio.bmsconsole.context.SpaceContext;
 import com.facilio.bmsconsole.context.TicketStatusContext;
 import com.facilio.bmsconsole.context.TicketStatusContext.StatusType;
 import com.facilio.bmsconsole.context.WorkOrderContext;
@@ -141,22 +143,16 @@ public class WorkOrderAPI {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(moduleName);
 		FacilioField mainField = modBean.getPrimaryField(moduleName);
-
+       
 		List<FacilioField> selectFields = new ArrayList<>();
 		selectFields.add(mainField);
 		selectFields.add(FieldFactory.getIdField(module));
-		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+		SelectRecordsBuilder builder = new SelectRecordsBuilder()
 				.select(selectFields)
-				.table(module.getTableName())
-				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module));
-		FacilioModule prevModule = module;
-		while (prevModule.getExtendModule() != null) {
-			builder.innerJoin(prevModule.getExtendModule().getTableName())
-				.on(prevModule.getTableName()+".ID = " + prevModule.getExtendModule().getTableName()+ ".ID");
-			prevModule = prevModule.getExtendModule();
-		}
+				.module(module)
+				;
 
-		List<Map<String,Object>> asProps = builder.get();
+		List<Map<String,Object>> asProps = builder.getAsProps();
 		Map lookupMap = new HashMap<>();
 		for (Map<String, Object> map : asProps) {
 			lookupMap.put((Long) map.get("id"), map.get(mainField.getName()));
@@ -316,6 +312,173 @@ public static Map<Long, Map<String, Object>> getWorkOrderStatusPercentage(Long s
 	}
 
 
+public static List<Map<String,Object>> getWorkOrderStatusPercentageForWorkflow(String count,Long startTime,Long endTime) throws Exception {
+
+	ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+
+
+	FacilioModule workOrderModule = modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER);
+	ArrayList<FacilioField> fields = new ArrayList<FacilioField>();
+	
+	FacilioField idCountField = new FacilioField();
+	idCountField.setColumnName("count(*)");
+	idCountField.setName("count");
+	fields.add(idCountField);
+	
+	FacilioField siteIdField = FieldFactory.getSiteIdField(workOrderModule);
+	fields.add(siteIdField);
+
+
+	Criteria closedCriteria = ViewFactory.getClosedTicketsCriteria(workOrderModule);
+
+	SelectRecordsBuilder<WorkOrderContext> closedSelectRecordsBuilder = new SelectRecordsBuilder<WorkOrderContext>()
+																	  .module(workOrderModule)
+																	  .beanClass(WorkOrderContext.class)
+																	  .select(fields)
+																	  .andCondition(CriteriaAPI.getCondition("CREATED_TIME", "createdTime", startTime+","+endTime, DateOperators.BETWEEN))
+																	  .andCondition(CriteriaAPI.getCondition(siteIdField, CommonOperators.IS_NOT_EMPTY))
+																	  .andCriteria(closedCriteria)
+																	  .orderBy(idCountField.getColumnName()+" DESC")
+																	  .groupBy(siteIdField.getCompleteColumnName())
+			                                                          ;
+
+    if(count != null)
+    {
+    	closedSelectRecordsBuilder.limit(Integer.parseInt(count));
+		 
+    }
+
+	List<Map<String, Object>> closedCount = closedSelectRecordsBuilder.getAsProps();
+	Map<Long,Object> closedMap = new HashMap<Long,Object>();
+	Map<Long,Object> onTimeMap = new HashMap<Long,Object>();
+	Map<Long,Object> openMap = new HashMap<Long,Object>();
+	
+	StringBuilder sb = new StringBuilder();
+	for(int i=0;i<closedCount.size();i++)
+	{   
+		 
+		Long siteId = (Long)closedCount.get(i).get("siteId");
+		closedMap.put(siteId,closedCount.get(i).get("count"));
+	    sb.append(siteId);
+		if(i<closedCount.size()-1)
+		{
+			sb.append(",");
+		}
+		
+		
+	}
+
+	
+	SelectRecordsBuilder<WorkOrderContext> onTimeSelectRecordsBuilder = new SelectRecordsBuilder<WorkOrderContext>()
+															.module(workOrderModule)
+															.beanClass(WorkOrderContext.class)
+															.select(fields)
+			  												.andCondition(CriteriaAPI.getCondition("CREATED_TIME", "createdTime", startTime+","+endTime, DateOperators.BETWEEN))
+			  												.andCondition(CriteriaAPI.getCondition(siteIdField, CommonOperators.IS_NOT_EMPTY))
+			  												.andCondition(CriteriaAPI.getCondition(siteIdField,sb.toString(), NumberOperators.EQUALS))
+			  												.andCriteria(closedCriteria)
+			  												.andCustomWhere("ACTUAL_WORK_END <= DUE_DATE")
+			  											    .groupBy(siteIdField.getCompleteColumnName())
+	                                                        ;
+
+
+
+    List<Map<String, Object>> onTimeCount = onTimeSelectRecordsBuilder.getAsProps();
+    for(int i=0;i<onTimeCount.size();i++)
+    {
+    	Long siteId = (Long)onTimeCount.get(i).get("siteId");
+		onTimeMap.put(siteId,onTimeCount.get(i).get("count"));
+	    
+    }
+    
+    TicketStatusContext status = TicketAPI.getStatus("Closed");
+	
+	SelectRecordsBuilder<WorkOrderContext> openSelectRecordsBuilder = new SelectRecordsBuilder<WorkOrderContext>()
+													.module(workOrderModule)
+													.beanClass(WorkOrderContext.class)
+													.select(fields)
+													.andCondition(CriteriaAPI.getCondition("CREATED_TIME", "createdTime", startTime+","+endTime, DateOperators.BETWEEN))
+													.andCondition(CriteriaAPI.getCondition(siteIdField, CommonOperators.IS_NOT_EMPTY))
+													.andCondition(CriteriaAPI.getCondition("STATUS_ID", "status", status.getId()+"", NumberOperators.NOT_EQUALS))
+													.andCondition(CriteriaAPI.getCondition(siteIdField,sb.toString(), NumberOperators.EQUALS))
+													.groupBy(siteIdField.getCompleteColumnName())
+	                                                ;
+
+
+
+    List<Map<String, Object>> openCount = openSelectRecordsBuilder.getAsProps();
+    for(int i=0;i<openCount.size();i++)
+    {
+    	Long siteId = (Long)openCount.get(i).get("siteId");
+		openMap.put(siteId,openCount.get(i).get("count"));
+	    
+    }
+    
+    Map<Long, Object> siteNameArray = getLookupFieldPrimary("site");
+    List<Map<String,Object>> resp = new ArrayList<Map<String,Object>>();
+    
+    for(int i=0;i<closedCount.size();i++)
+     { 
+       Long siteId =(Long) closedCount.get(i).get("siteId");
+       Map<String,Object> siteInfo = new HashMap<String, Object>();
+       Long closed = (Long)closedCount.get(i).get("count");
+       Long onTime =onTimeMap.get(siteId)!=null?(Long) onTimeMap.get(siteId):0;
+       Object openObj = openMap.remove(siteId);
+       Long open = openObj!=null?(Long)openObj:0;
+       Long overdue = closed - onTime;
+       Long total = onTime+overdue+open;
+       if(total>0) {
+    	   Long onTimePercentage = (onTime*100) / total ;
+    	   Long overDuePercentage = (overdue*100) / total ;
+      	   siteInfo.put("onTime",onTime);
+           siteInfo.put("overdue",overdue);
+           siteInfo.put("open",open);
+           siteInfo.put("total",total);
+           siteInfo.put("onTimePercentage",onTimePercentage);
+           siteInfo.put("overduePercentage",overDuePercentage);
+           
+  	      
+       }
+       else
+       {
+    	   siteInfo.put("onTime",0);
+           siteInfo.put("overdue",0);
+           siteInfo.put("open",0);
+           siteInfo.put("total",total);
+           siteInfo.put("onTimePercentage",0);
+           siteInfo.put("overduePercentage",0);
+         
+           
+          
+       }
+        
+       siteInfo.put("siteId",siteId);
+       siteInfo.put("siteName",siteNameArray.get(siteId));
+       resp.add(siteInfo);
+       
+     }
+    Iterator<Map.Entry<Long, Object>> openSitesitr = openMap.entrySet().iterator(); 
+    
+    while(openSitesitr.hasNext()) { 
+         Map.Entry<Long, Object> entry = openSitesitr.next(); 
+         Long siteId = entry.getKey();
+         Long openCountVal = (Long)entry.getValue();
+         Map<String,Object> siteInfo = new HashMap<String, Object>();
+         siteInfo.put("onTime",0);
+         siteInfo.put("overdue",0);
+         siteInfo.put("open",openCountVal);
+         siteInfo.put("total",openCountVal);
+         siteInfo.put("onTimePercentage",0);
+         siteInfo.put("overduePercentage",0);
+         siteInfo.put("siteId",siteId);
+         siteInfo.put("siteName",siteNameArray.get(siteId));
+         resp.add(siteInfo);
+    }
+ 
+   return resp;
+}
+
+
 public static Map<Long,Object> getTechnicianCountBySite() throws Exception{
 	
 	
@@ -437,8 +600,211 @@ public static List<Map<String,Object>> getAvgCompletionTimeByCategory(Long start
 
 	}
 
+public static List<Map<String,Object>> getTopNCategoryOnAvgCompletionTime(String count,Long startTime,Long endTime) throws Exception {
 
-public static Map<Long,Object> getAvgCompletionTimeBySite(Long startTime,Long endTime,boolean isTillLastMonth) throws Exception {
+
+	ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+
+
+	FacilioModule workOrderModule = modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER);
+	FacilioModule ticketModule = modBean.getModule(FacilioConstants.ContextNames.TICKET);
+	
+
+	FacilioModule ticketStatusModule = modBean.getModule(FacilioConstants.ContextNames.TICKET_STATUS);
+
+	List<FacilioField> ticketFields = modBean.getAllFields(workOrderModule.getName());
+
+
+	Map<String, FacilioField> ticketFieldMap = FieldFactory.getAsMap(ticketFields);
+
+
+	List<FacilioField> fields = new ArrayList<FacilioField>();
+
+	FacilioField avgField = new FacilioField();
+	avgField.setName("avg_resolution_time");
+	avgField.setColumnName("avg(ACTUAL_WORK_DURATION/(60))");//to render client in mins
+	fields.add(avgField);
+
+	FacilioField countField = new FacilioField();
+	countField.setName("count");
+	countField.setColumnName("count(*)");
+	fields.add(countField);
+
+	FacilioField siteIdField = FieldFactory.getSiteIdField(workOrderModule);
+	fields.add(siteIdField);
+
+	
+	FacilioField statusField = ticketFieldMap.get("status");
+	//fields.add(statusField);
+
+
+	//fetching the workorders with closed status
+
+
+	FacilioField idCountField = new FacilioField();
+	idCountField.setColumnName("count(*)");
+	idCountField.setName("count");
+	fields.add(idCountField);
+	
+	Criteria closedCriteria = ViewFactory.getClosedTicketsCriteria(workOrderModule);
+
+	SelectRecordsBuilder<WorkOrderContext> selectRecordsBuilderClosed = new SelectRecordsBuilder<WorkOrderContext>()
+																.module(workOrderModule)
+																.beanClass(WorkOrderContext.class)
+																.select(fields)
+																.andCondition(CriteriaAPI.getCondition("CREATED_TIME", "createdTime", startTime+","+endTime, DateOperators.BETWEEN))
+																.andCondition(CriteriaAPI.getCondition(siteIdField, CommonOperators.IS_NOT_EMPTY))
+																.andCriteria(closedCriteria)
+																.orderBy(idCountField.getColumnName()+" DESC")
+																.groupBy(siteIdField.getCompleteColumnName())
+																;
+	List<Map<String,Object>> closedList = selectRecordsBuilderClosed.getAsProps();	
+	
+	Map<Long,Object> closedMap = new HashMap<Long, Object>();
+	
+    for(int i=0;i<closedList.size();i++)
+    {
+    	Long siteId = (Long)closedList.get(i).get("siteId");
+    	closedMap.put(siteId,closedList.get(i).get("count"));
+	    
+    }
+
+
+	SelectRecordsBuilder<WorkOrderContext> selectRecordsBuilderTotal = new SelectRecordsBuilder<WorkOrderContext>()
+																		.module(workOrderModule)
+																		.beanClass(WorkOrderContext.class)
+																		.select(fields)
+																		.andCondition(CriteriaAPI.getCondition("CREATED_TIME", "createdTime", startTime+","+endTime, DateOperators.BETWEEN))
+																		.andCondition(CriteriaAPI.getCondition(siteIdField, CommonOperators.IS_NOT_EMPTY))
+																		.orderBy(idCountField.getColumnName()+" DESC")
+																		.groupBy(siteIdField.getCompleteColumnName())
+																		;
+	
+	
+    List<Map<String,Object>> totalList = selectRecordsBuilderTotal.getAsProps();	
+	
+	Map<Long,Object> totalMap = new HashMap<Long, Object>();
+	
+    for(int i=0;i<totalList.size();i++)
+    {
+    	Long siteId = (Long)totalList.get(i).get("siteId");
+    	totalMap.put(siteId,totalList.get(i).get("count"));
+	    
+    }
+
+    StringJoiner sb = new StringJoiner(",");
+	for(int i=0;i<totalList.size();i++) {
+		Long siteId = (Long)totalList.get(i).get("siteId");
+		Long totalCount = (Long)totalList.get(i).get("count");
+		Long closedCount =closedMap.get(siteId)!=null? (Long)closedMap.get(siteId) : 0;
+		Long closedOnTimePercentage = (closedCount*100)/totalCount;
+		
+		if(closedOnTimePercentage >= 70) {
+			sb.add(String.valueOf(siteId));
+		}
+		
+	}
+	
+	GenericSelectRecordBuilder selectRecordsBuilder = new GenericSelectRecordBuilder()
+			  													.table(workOrderModule.getTableName())
+			  													.select(fields)
+			  													.innerJoin(ticketModule.getTableName()).on(workOrderModule.getTableName() +".ID = "+ticketModule.getTableName()+".ID")
+				  												.innerJoin(ticketStatusModule.getTableName()).on(statusField.getCompleteColumnName() +" = "+ticketStatusModule.getTableName()+".ID")
+				  												.andCondition(CriteriaAPI.getCondition("STATUS_TYPE", "typeCode", ""+StatusType.CLOSED.getIntVal() , NumberOperators.EQUALS))
+				  												.andCondition(CriteriaAPI.getCondition(FieldFactory.getSiteIdField(workOrderModule), CommonOperators.IS_NOT_EMPTY))
+				  												.andCondition(CriteriaAPI.getCondition(siteIdField,sb.toString(), NumberOperators.EQUALS))
+				  												.andCondition(CriteriaAPI.getCondition(workOrderModule.getTableName()+".ORGID", "orgId", ""+AccountUtil.getCurrentOrg().getOrgId(), NumberOperators.EQUALS))
+																.groupBy(siteIdField.getCompleteColumnName())
+																.orderBy(avgField.getCompleteColumnName()+" ASC")
+																.limit(Integer.parseInt(count))
+															  ;
+	   
+		selectRecordsBuilder.andCondition(CriteriaAPI.getCondition("CREATED_TIME", "createdTime", startTime+","+endTime, DateOperators.BETWEEN));
+		List<Map<String,Object>> list =selectRecordsBuilder.get();		
+		
+		Map<Long,Object> avgResolutionMap = new HashMap<Long, Object>();
+		StringBuilder closeCountSb = new StringBuilder();
+		for(int i=0;i<list.size();i++)
+		{   
+			 
+			Long siteId = (Long)list.get(i).get("siteId");
+			avgResolutionMap.put(siteId,list.get(i).get("avg_resolution_time"));
+			closeCountSb.append(siteId);
+			if(i<list.size()-1)
+			{
+				closeCountSb.append(",");
+			}
+			
+			
+		}
+	  
+		GenericSelectRecordBuilder selectRecordsBuilderLastMonth = new GenericSelectRecordBuilder()
+																.table(workOrderModule.getTableName())
+																.select(fields)
+																.innerJoin(ticketModule.getTableName()).on(workOrderModule.getTableName() +".ID = "+ticketModule.getTableName()+".ID")
+																.innerJoin(ticketStatusModule.getTableName()).on(statusField.getCompleteColumnName() +" = "+ticketStatusModule.getTableName()+".ID")
+																.andCondition(CriteriaAPI.getCondition("STATUS_TYPE", "typeCode", ""+StatusType.CLOSED.getIntVal() , NumberOperators.EQUALS))
+																.andCondition(CriteriaAPI.getCondition(FieldFactory.getSiteIdField(workOrderModule), CommonOperators.IS_NOT_EMPTY))
+																.andCondition(CriteriaAPI.getCondition(workOrderModule.getTableName()+".ORGID", "orgId", ""+AccountUtil.getCurrentOrg().getOrgId(), NumberOperators.EQUALS))
+																.andCondition(CriteriaAPI.getCondition(siteIdField,closeCountSb.toString(), NumberOperators.EQUALS))
+					  											.groupBy(siteIdField.getCompleteColumnName())
+																.orderBy(avgField.getCompleteColumnName()+" ASC")
+																.limit(Integer.parseInt(count))
+																;
+
+		Long lastMonthStartTime = DateTimeUtil.getMonthStartTime(-2,false);
+		Long lastMonthEndTime = DateTimeUtil.getMonthEndTimeOf(lastMonthStartTime,false);
+		
+		selectRecordsBuilderLastMonth.andCondition(CriteriaAPI.getCondition("CREATED_TIME", "createdTime", lastMonthStartTime+","+lastMonthEndTime, DateOperators.BETWEEN));
+		
+		List<Map<String,Object>> lastMonthList =selectRecordsBuilderLastMonth.get();		
+		Map<Long,Object> avgResolutionTillLastMonthMap = new HashMap<Long, Object>();
+		
+	    for(int i=0;i<lastMonthList.size();i++)
+	    {
+	    	Long siteId = (Long)lastMonthList.get(i).get("siteId");
+	    	avgResolutionTillLastMonthMap.put(siteId,lastMonthList.get(i).get("avg_resolution_time"));
+		    
+	    }
+	    
+	     
+	    
+	    Map<Long, Object> siteNameArray = getLookupFieldPrimary("site");
+	    List<Map<String,Object>> resp = new ArrayList<Map<String,Object>>();
+		 
+	    for(int i=0;i<list.size();i++) 
+	     { 
+	       Long siteId = (Long)list.get(i).get("siteId");
+	       Map<String,Object> siteInfo = new HashMap<String, Object>();
+	         
+	       siteInfo.put("siteId",siteId);
+	       
+	       Double avgResolutionTime = ((Number)avgResolutionMap.get(siteId)).doubleValue();
+	       avgResolutionTime = Math.round(avgResolutionTime*100.0)/100.0;
+		   siteInfo.put("avgResolutionTime",avgResolutionTime);
+	    
+		   Double avgResolutionTimeTillLastMonth = 0.0;
+		   if(avgResolutionTillLastMonthMap.get(siteId)!=null)
+		   {
+			   avgResolutionTimeTillLastMonth = ((Number)avgResolutionTillLastMonthMap.get(siteId)).doubleValue();
+		       avgResolutionTimeTillLastMonth = Math.round(avgResolutionTimeTillLastMonth*100.0)/100.0;
+		   }
+		   siteInfo.put("avgResolutionTimeTillLastMonth",avgResolutionTimeTillLastMonth);
+		   siteInfo.put("siteName",siteNameArray.get(siteId));
+	       resp.add(siteInfo);
+	       
+	     }
+	   
+	   return resp;
+
+
+ 
+
+}
+
+
+
+public static List<Map<String,Object>> getAvgCompletionTimeBySite(Long startTime,Long endTime,boolean isLastMonth) throws Exception {
 
 
 	ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -493,11 +859,14 @@ public static Map<Long,Object> getAvgCompletionTimeBySite(Long startTime,Long en
 															  ;
 
 
-	 if(isTillLastMonth)
+	 if(isLastMonth)
 	   {
-		 //endTime=DateTimeUtil.minusDays(startTime, 1);
-		 selectRecordsBuilder.andCondition(CriteriaAPI.getCondition("CREATED_TIME", "createdTime", ""+startTime, DateOperators.IS_BEFORE));
-				
+		    Long previousMonthTime = DateTimeUtil.addMonths(startTime, -1);
+		 	Long lastMonthStartTime = DateTimeUtil.getMonthStartTimeOf(previousMonthTime, false);
+		 	Long lastMonthEndTime = DateTimeUtil.getMonthEndTimeOf(lastMonthStartTime,false);
+			
+			selectRecordsBuilder.andCondition(CriteriaAPI.getCondition("CREATED_TIME", "createdTime", lastMonthStartTime+","+lastMonthEndTime, DateOperators.BETWEEN));
+					
 	   }
 	   else
 	   {
@@ -506,7 +875,7 @@ public static Map<Long,Object> getAvgCompletionTimeBySite(Long startTime,Long en
 	   }
 
    List<Map<String,Object>> avgResolutionTime = selectRecordsBuilder.get();
-   Map<Long,Object> countMap = new HashMap<Long, Object>();
+   /*Map<Long,Object> countMap = new HashMap<Long, Object>();
 	
 	
 	for(int i=0;i<avgResolutionTime.size();i++)
@@ -515,14 +884,15 @@ public static Map<Long,Object> getAvgCompletionTimeBySite(Long startTime,Long en
 		countMap.put((Long)siteTechMap.get("siteId"),siteTechMap.get("avg_resolution_time"));
 		
 	}
-	return countMap;
+	*/
+	return avgResolutionTime;
 
 
 
 }
 
 
-public static Map<Long,Object> getAvgResponseTimeBySite(Long startTime,Long endTime,boolean isTillLastMonth) throws Exception {
+public static Map<Long,Object> getAvgResponseTimeBySite(Long startTime,Long endTime,boolean isLastMonth) throws Exception {
 
 
 	ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -575,10 +945,14 @@ public static Map<Long,Object> getAvgResponseTimeBySite(Long startTime,Long endT
 																.groupBy(siteIdField.getCompleteColumnName())
 															  ;
 
-   if(isTillLastMonth)
+   if(isLastMonth)
    {
-	   selectRecordsBuilder.andCondition(CriteriaAPI.getCondition("CREATED_TIME", "createdTime", ""+startTime, DateOperators.IS_BEFORE));
+	    Long previousMonthTime = DateTimeUtil.addMonths(startTime, -1);
+	    Long lastMonthStartTime = DateTimeUtil.getMonthStartTimeOf(previousMonthTime, false);
+	 	Long lastMonthEndTime = DateTimeUtil.getMonthEndTimeOf(lastMonthStartTime,false);
 			
+		selectRecordsBuilder.andCondition(CriteriaAPI.getCondition("CREATED_TIME", "createdTime", lastMonthStartTime+","+lastMonthEndTime, DateOperators.BETWEEN));
+				
    }
    else
    {
@@ -605,7 +979,7 @@ public static Map<Long,Object> getAvgResponseTimeBySite(Long startTime,Long endT
 
 
 
-public static Map<Long, Object> getTotalWoCountBySite(Long startTime,Long endTime) throws Exception {
+public static List<Map<String, Object>> getTotalWoCountBySite(Long startTime,Long endTime) throws Exception {
 
 
 	ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -634,15 +1008,8 @@ public static Map<Long, Object> getTotalWoCountBySite(Long startTime,Long endTim
 					                                      		  ;
     List<Map<String, Object>> totalWoCountBySite = selectRecordsBuilder.getAsProps();
     
-    Map<Long, Object> sites = new HashMap<Long, Object>();
-    for(int i=0;i<totalWoCountBySite.size();i++)
-    {
-    	 
-       	sites.put((Long)totalWoCountBySite.get(i).get("siteId"),totalWoCountBySite.get(i).get("count"));
-       
-    }
-
-   return sites;
+   
+   return totalWoCountBySite;
 
 }
 
@@ -802,8 +1169,9 @@ public static List<Map<String,Object>> getTotalClosedWoCountBySite(Long startTim
 	 Long screenCategoryId =(Long) spaceCategoryList.get(0).get("id");
 	 
 	 
-	 GenericSelectRecordBuilder selectRecordsBuilder = new GenericSelectRecordBuilder()
-														  .table(spaceModule.getTableName())
+	 SelectRecordsBuilder<SpaceContext> selectRecordsBuilder = new SelectRecordsBuilder<SpaceContext>()
+														  .module(spaceModule)
+														  .beanClass(SpaceContext.class)
 					                                      .select(fields)
 					                                      .andCondition(CriteriaAPI.getCondition(spaceModule.getTableName()+".ORGID", "orgId", ""+AccountUtil.getCurrentOrg().getOrgId(), NumberOperators.EQUALS))
 					                                      .andCondition(CriteriaAPI.getCondition(siteIdField, CommonOperators.IS_NOT_EMPTY))
@@ -812,7 +1180,7 @@ public static List<Map<String,Object>> getTotalClosedWoCountBySite(Long startTim
 					                                      ;
 	 
 	 
-	 List<Map<String, Object>> screenCountList = selectRecordsBuilder.get();
+	 List<Map<String, Object>> screenCountList = selectRecordsBuilder.getAsProps();
 	 Map<Long,Object> countMap = new HashMap<Long, Object>();
 		
 		
