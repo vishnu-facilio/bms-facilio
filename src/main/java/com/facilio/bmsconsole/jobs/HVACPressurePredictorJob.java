@@ -6,10 +6,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.apache.commons.chain.Chain;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -34,8 +34,8 @@ import com.facilio.tasker.job.JobContext;
 
 public class HVACPressurePredictorJob extends FacilioJob 
 {
-	
-	private static final Logger LOGGER = Logger.getLogger(HVACPressurePredictorJob.class.getName());
+	 private static final Logger LOGGER = LogManager.getLogger(HVACPressurePredictorJob.class.getName());
+	//private static final Logger LOGGER = Logger.getLogger(HVACPressurePredictorJob.class.getName());
 	
 	@Override
 	public void execute(JobContext jc) throws Exception 
@@ -85,7 +85,7 @@ public class HVACPressurePredictorJob extends FacilioJob
 		}
 		catch(Exception e)
 		{
-			LOGGER.log(Level.SEVERE, "Error while getting resources for OrgID "+orgID, e);
+			LOGGER.fatal("Error while getting resources for OrgID "+orgID, e);
 			throw e;
 		}
 	}
@@ -183,13 +183,13 @@ public class HVACPressurePredictorJob extends FacilioJob
 			 Map<String, String> headers = new HashMap<>();
 			 headers.put("Content-Type", "application/json");	
 			 String result = AwsUtil.doHttpPost(postURL, headers, null, postObj.toString());
-				 
+			 LOGGER.debug("Result is "+result);
 			 updateResultinDB(resource.getId(),predictedField,result);
 
 		}
 		catch(Exception e)
 		{
-			LOGGER.log(Level.SEVERE, "Error while getting Prediction for "+resource.getId(), e) ;
+			LOGGER.fatal("Error while getting Prediction for "+resource.getId(), e) ;
 		}
 	}
 		
@@ -224,7 +224,7 @@ public class HVACPressurePredictorJob extends FacilioJob
 		}
 		catch(Exception e)
 		{
-			LOGGER.log(Level.SEVERE, "Error while updating Result in DB", e);
+			LOGGER.fatal("Error while updating Result in DB", e);
 			throw e;
 		}
 	}
