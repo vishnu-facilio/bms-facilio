@@ -1543,7 +1543,7 @@ public class ModuleFactory {
 		FacilioModule assetHeirarchy = new FacilioModule();
 		assetHeirarchy.setName("assetTreeHeirarchyV1");
 		assetHeirarchy.setDisplayName("AssetTreeHeirarchy V1");
-		assetHeirarchy.setTableName("AssetTreeHeirarchy");
+		assetHeirarchy.setTableName("Asset_Tree_Heirarchy");
 		return assetHeirarchy;
 	}
 }

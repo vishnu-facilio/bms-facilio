@@ -4832,8 +4832,8 @@ public class FieldFactory {
         List<FacilioField> fields = new ArrayList<>();
 
         fields.add(getOrgIdField(module));
-        fields.add(getField("parentAsset", "PARENTASSET", module, FieldType.NUMBER));
-        fields.add(getField("childAsset", "CHILDASSET", module, FieldType.NUMBER));
+        fields.add(getField("parentAsset", "PARENT_ASSET", module, FieldType.NUMBER));
+        fields.add(getField("childAsset", "CHILD_ASSET", module, FieldType.NUMBER));
     
         return fields;
     }
