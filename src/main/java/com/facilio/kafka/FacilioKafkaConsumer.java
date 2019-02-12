@@ -64,6 +64,8 @@ public class FacilioKafkaConsumer implements FacilioConsumer {
                     if(object.containsKey("timestamp")) {
                         Long timestamp = Long.parseLong(object.get("timestamp").toString());
                         facilioRecord.setTimeStamp(timestamp);
+                    } else {
+                        facilioRecord.setTimeStamp(record.timestamp());
                     }
                 } catch (NumberFormatException e) {
                     LOGGER.info("Exception while getting timestamp " + e.getLocalizedMessage());

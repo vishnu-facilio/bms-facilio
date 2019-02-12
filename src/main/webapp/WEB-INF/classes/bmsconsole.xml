@@ -3044,6 +3044,20 @@
 	</action>
 	</package>
 
+	<package name="timeseriesDataPublish" namespace="/iot/api/timeseries/data" extends="homeApi">
+		<action name="publish" class="com.facilio.bmsconsole.actions.TimeSeries"
+				method="publish">
+			<result name="success" type="json">
+				<param name="statusCode">200</param>
+			</result>
+			<result name="error" type="json">
+				<param name="statusCode">500</param>
+				<param name="ignoreHierarchy">false</param>
+				<param name="includeProperties">^actionErrors.*,^fieldErrors.*</param>
+			</result>
+		</action>
+	</package>
+
 	<package name="timeseriesapi" namespace="/api/timeseries" extends="homeApi">
 		<action name="migrateData" class="com.facilio.bmsconsole.actions.TimeSeries"
 			method="migrateData">
