@@ -1628,7 +1628,9 @@ public class WorkflowUtil {
 	private static final DecimalFormat DEFAULT_DECIMAL_FORMAT = getDefaultDecimalFormat();
 	
 	public static Object evaluateExpression(String exp,Map<String,Object> variablesMap, boolean ignoreNullValues) throws Exception {
-
+		if (AccountUtil.getCurrentOrg().getOrgId() == 186) {
+			LOGGER.info("EXPRESSION STRING IS -- "+exp+" variablesMap -- "+variablesMap);
+		}
 		LOGGER.fine("EXPRESSION STRING IS -- "+exp+" variablesMap -- "+variablesMap);
 		if(exp == null) {
 			return null;
