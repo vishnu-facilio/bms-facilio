@@ -7,8 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.collections4.Put;
-
 import com.facilio.bmsconsole.forms.FacilioForm.FormType;
 import com.facilio.bmsconsole.forms.FacilioForm.LabelPosition;
 import com.facilio.bmsconsole.forms.FormField.Required;
@@ -49,7 +47,8 @@ public class FormFactory {
 		return ImmutableMap.<FormType, Multimap<String, FacilioForm>>builder()
 				.put(FormType.MOBILE, ImmutableMultimap.<String, FacilioForm>builder()
 						.put(FacilioConstants.ContextNames.WORK_ORDER, getMobileWorkOrderForm())
-						.put(FacilioConstants.ContextNames.APPROVAL, getMobileApprovalForm()).build())
+						.put(FacilioConstants.ContextNames.APPROVAL, getMobileApprovalForm())
+						.put(FacilioConstants.ContextNames.ASSET, getMobileAssetForm()).build())
 				.put(FormType.WEB, ImmutableMultimap.<String, FacilioForm>builder()
 						.put(FacilioConstants.ContextNames.WORK_ORDER, getWebWorkOrderForm())
 						.put(FacilioConstants.ContextNames.WORK_ORDER_REQUEST, getWebWorkRequestForm())
@@ -139,6 +138,17 @@ public class FormFactory {
 		return form;
 	}
 	
+	public static FacilioForm getMobileAssetForm() {
+		FacilioForm form = new FacilioForm();
+		form.setDisplayName("Asset");
+		form.setName("mobile_asset");
+		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.ASSET));
+		form.setLabelPosition(LabelPosition.LEFT);
+		form.setFields(getMobileAssetFormFields());
+		form.setFormType(FormType.MOBILE);
+		return form;
+	}
+	
 	private static List<FormField> getMobileApprovalFormFields() {
 		List<FormField> fields = new ArrayList<>();
 		fields.add(new FormField("subject", FieldDisplayType.TEXTBOX, "Subject", Required.REQUIRED, 1, 1));
@@ -149,6 +159,21 @@ public class FormFactory {
 		fields.add(new FormField("priority", FieldDisplayType.LOOKUP_SIMPLE, "Priority", Required.OPTIONAL, "ticketpriority", 6, 1));
 		fields.add(new FormField("urgency", FieldDisplayType.URGENCY, "Urgency", Required.OPTIONAL, "urgency" , 7, 1));
 		fields.add(new FormField("attachedFiles", FieldDisplayType.ATTACHMENT, "Attachment", Required.OPTIONAL, 8, 1));
+		return fields;
+	}
+	
+	private static List<FormField> getMobileAssetFormFields() {
+		List<FormField> fields = new ArrayList<>();
+		fields.add(new FormField("manufacturer", FieldDisplayType.TEXTBOX, "Manufacturer", Required.OPTIONAL, 1, 1));
+		fields.add(new FormField("model", FieldDisplayType.TEXTBOX, "Model", Required.OPTIONAL, 2, 1));
+		fields.add(new FormField("serialNumber", FieldDisplayType.TEXTBOX, "Serial Number", Required.OPTIONAL, 3, 1));
+		fields.add(new FormField("tagNumber", FieldDisplayType.TEXTBOX, "Tag", Required.OPTIONAL, 4, 1));
+		fields.add(new FormField("partNumber", FieldDisplayType.TEXTBOX, "Part No.", Required.OPTIONAL, 5, 1));
+		fields.add(new FormField("unitPrice", FieldDisplayType.TEXTBOX, "Unit Price", Required.OPTIONAL, 6, 1));
+		fields.add(new FormField("supplier", FieldDisplayType.TEXTBOX, "Supplier", Required.OPTIONAL, 7, 1));
+		fields.add(new FormField("purchasedDate", FieldDisplayType.DATE, "Purchased Date", Required.OPTIONAL, 8, 1));
+		fields.add(new FormField("retireDate", FieldDisplayType.DATE, "Retire Date", Required.OPTIONAL, 9, 1));
+		fields.add(new FormField("warrantyExpiryDate", FieldDisplayType.DATE, "Warranty Expiry Date", Required.OPTIONAL, 10, 1));
 		return fields;
 	}
 	
@@ -236,7 +261,7 @@ public class FormFactory {
 	private static List<FormField> getWebWorkOrderFormFields() {
 		List<FormField> fields = new ArrayList<>();
 		fields.add(new FormField("subject", FieldDisplayType.TEXTBOX, "Subject", Required.REQUIRED, 1, 1));
-		fields.add(new FormField("siteId", FieldDisplayType.LOOKUP_SIMPLE, "Site", Required.REQUIRED, "site", 2, 1));
+		fields.add(new FormField("site", FieldDisplayType.LOOKUP_SIMPLE, "Site", Required.REQUIRED, "site", 2, 1));
 		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 3, 1));
 		fields.add(new FormField("category", FieldDisplayType.LOOKUP_SIMPLE, "Category", Required.OPTIONAL, "ticketcategory", 4, 2));
 		fields.add(new FormField("priority", FieldDisplayType.LOOKUP_SIMPLE, "Priority", Required.OPTIONAL, "ticketpriority", 4, 3));
