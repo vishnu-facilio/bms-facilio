@@ -57,6 +57,7 @@ public class TimeSeriesAPI {
 	private static final Logger LOGGER = LogManager.getLogger(TimeSeriesAPI.class.getName());
 	
 	public static void processPayLoad(long ttime, JSONObject payLoad, String macAddr) throws Exception {
+		LOGGER.info(payLoad);
 		processPayLoad(ttime, payLoad, null, null, macAddr, false);
 	}
 	
@@ -65,7 +66,7 @@ public class TimeSeriesAPI {
 	}
 	
 	public static void processPayLoad(long ttime, JSONObject payLoad, Record record, IRecordProcessorCheckpointer checkpointer, String macAddr, boolean adjustTime) throws Exception {
-		
+
 		long timeStamp = getTimeStamp(ttime, payLoad);
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.TIMESTAMP , timeStamp);

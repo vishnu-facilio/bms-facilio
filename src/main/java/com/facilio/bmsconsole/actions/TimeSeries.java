@@ -34,6 +34,7 @@ public class TimeSeries extends FacilioAction {
 
 	public String publish() throws Exception
 	{
+	    LOGGER.info("device data " + getDeviceData());
 		if ( getDeviceData() == null) {
 			HttpServletRequest request = ServletActionContext.getRequest();
 			BufferedReader reader = request.getReader();
@@ -44,6 +45,7 @@ public class TimeSeries extends FacilioAction {
 			}
 			deviceData = builder.toString();
 		}
+		LOGGER.info("after processing "+ getDeviceData());
 
 		JSONParser parser = new JSONParser();
 		try {
