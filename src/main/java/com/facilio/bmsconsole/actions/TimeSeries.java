@@ -34,8 +34,7 @@ public class TimeSeries extends FacilioAction {
 
 	public String publish() throws Exception
 	{
-	    LOGGER.info("device data " + getDeviceData());
-		if ( getDeviceData() == null) {
+		if ( getDeviceData() == null) { // added this for altayer emsol also check authentication util
 			HttpServletRequest request = ServletActionContext.getRequest();
 			BufferedReader reader = request.getReader();
 			StringBuilder builder = new StringBuilder();
@@ -45,12 +44,11 @@ public class TimeSeries extends FacilioAction {
 			}
 			deviceData = builder.toString();
 		}
-		LOGGER.info("after processing "+ getDeviceData());
 
 		JSONParser parser = new JSONParser();
 		try {
 			JSONObject payLoad = (JSONObject) parser.parse(getDeviceData());
-			TimeSeriesAPI.processPayLoad(getTimestamp(), payLoad, macAddr);	
+			TimeSeriesAPI.processPayLoad(getTimestamp(), payLoad, getMacAddr());
 			return SUCCESS;
 		}
 		catch(Exception e) {
@@ -234,8 +232,8 @@ public class TimeSeries extends FacilioAction {
 	
 	private String macAddr;
 	public String getMacAddr() {
-		if(macAddr==null) {
-			setMacAddr(AccountUtil.getCurrentOrg().getDomain());
+		if (macAddr == null && AccountUtil.getCurrentOrg() != null) {
+            setMacAddr(AccountUtil.getCurrentOrg().getDomain());
 		}
 		return macAddr;
 	}
