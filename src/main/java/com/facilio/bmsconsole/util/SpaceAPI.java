@@ -24,6 +24,7 @@ import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.bmsconsole.context.SpaceContext;
 import com.facilio.bmsconsole.context.TicketStatusContext;
 import com.facilio.bmsconsole.context.ZoneContext;
+import com.facilio.bmsconsole.criteria.BooleanOperators;
 import com.facilio.bmsconsole.criteria.BuildingOperator;
 import com.facilio.bmsconsole.criteria.CommonOperators;
 import com.facilio.bmsconsole.criteria.Condition;
@@ -1238,12 +1239,12 @@ public static long getSitesCount() throws Exception {
 		spaceCond.setOperator(BuildingOperator.BUILDING_IS);
 		spaceCond.setValue(spaceId+"");
 
-		AccountUtil.getCurrentOrg().getOrgId();
-		
 		GenericSelectRecordBuilder select = new GenericSelectRecordBuilder()
 				.table(assetModule.getTableName())
 				.select(fields)
-				.andCondition(spaceCond);
+				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(assetModule))
+				.andCondition(spaceCond)
+				.andCondition(CriteriaAPI.getCondition(FieldFactory.getIsDeletedField(), String.valueOf(false), BooleanOperators.IS));
 		
 		FacilioModule prevModule = assetModule;
 		FacilioModule extendedModule = assetModule.getExtendModule();

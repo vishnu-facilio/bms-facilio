@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.actions;
 
+import java.io.BufferedReader;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -7,9 +8,11 @@ import java.util.Map;
 import org.apache.commons.chain.Chain;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.apache.struts2.ServletActionContext;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.PublishData;
@@ -20,19 +23,32 @@ import com.facilio.bmsconsole.util.IoTMessageAPI.IotCommandType;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.timeseries.TimeSeriesAPI;
+import org.json.simple.parser.ParseException;
+
+import javax.servlet.http.HttpServletRequest;
 
 public class TimeSeries extends FacilioAction {
 	
 	private static final long serialVersionUID = 1L;
 	private static final Logger LOGGER = LogManager.getLogger(TimeSeries.class.getName());
 
-	
 	public String publish() throws Exception
 	{
+		if ( getDeviceData() == null) { // added this for altayer emsol also check authentication util
+			HttpServletRequest request = ServletActionContext.getRequest();
+			BufferedReader reader = request.getReader();
+			StringBuilder builder = new StringBuilder();
+			String line;
+			while ((line = reader.readLine()) != null) {
+				builder.append(line);
+			}
+			deviceData = builder.toString();
+		}
+
 		JSONParser parser = new JSONParser();
 		try {
 			JSONObject payLoad = (JSONObject) parser.parse(getDeviceData());
-			TimeSeriesAPI.processPayLoad(getTimestamp(), payLoad, macAddr);	
+			TimeSeriesAPI.processPayLoad(getTimestamp(), payLoad, getMacAddr());
 			return SUCCESS;
 		}
 		catch(Exception e) {
@@ -216,6 +232,9 @@ public class TimeSeries extends FacilioAction {
 	
 	private String macAddr;
 	public String getMacAddr() {
+		if (macAddr == null && AccountUtil.getCurrentOrg() != null) {
+            setMacAddr(AccountUtil.getCurrentOrg().getDomain());
+		}
 		return macAddr;
 	}
 	public void setMacAddr(String macAddr) {
@@ -262,7 +281,7 @@ public class TimeSeries extends FacilioAction {
 		this.changedDevices = changedDevices;
 	}
 
-	private long timestamp;
+	private long timestamp=-1;
 	public void setTimestamp(long ttime) {
 		this.timestamp=ttime;
 	}

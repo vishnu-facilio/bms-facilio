@@ -103,7 +103,7 @@ public class WhereBuilder implements WhereBuilderIfc<WhereBuilder>{
 		return criteria(false, criteria);
 	}
 	
-	private static final int MAX_LINES_TO_BE_PRINTED = 10;
+	private static final int MAX_LINES_TO_BE_PRINTED = 30;
 	private void printTrace (String msg) {
 		StringBuilder builder = new StringBuilder(msg)
 									.append("\nTruncated Trace\n");

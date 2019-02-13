@@ -42,7 +42,7 @@ public class CreateWorkorderTemplateCommand implements Command {
 		}
 		
 		String templateName = (String) context.get(FacilioConstants.ContextNames.TEMPLATE_NAME);
-		if (templateName == null || !templateName.isEmpty()) {
+		if (templateName == null || templateName.isEmpty()) {
 			workorderTemplate.setName(workorder.getSubject());
 		}
 		else {

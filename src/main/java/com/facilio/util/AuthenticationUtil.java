@@ -23,8 +23,10 @@ public class AuthenticationUtil {
             if (headerToken != null) {
                 if (headerToken.startsWith("Bearer facilio ")) {
                     facilioToken = headerToken.replace("Bearer facilio ", "");
+                } else if(headerToken.startsWith("Bearer Facilio ")) { // added this check for altayer emsol data // Todo remove this later
+                    facilioToken = headerToken.replace("Bearer Facilio ", "");
                 } else {
-                    headerToken = request.getHeader("Authorization").replace("Bearer ", "");
+                    facilioToken = request.getHeader("Authorization").replace("Bearer ", "");
                 }
             }
 

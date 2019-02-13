@@ -41,7 +41,7 @@ import com.facilio.tasker.FacilioTimer;
 public class IoTMessageAPI {
 	private static final Logger LOGGER = LogManager.getLogger(IoTMessageAPI.class.getName());
 	
-	private static final int MAX_BUFFER = 2000000;
+	private static final int MAX_BUFFER = 112640; // 110KiB;  AWS IOT limits max publish message size to 128KiB
 	
 	private static PublishData constructIotMessage (List<Map<String, Object>> instances, IotCommandType command) throws Exception {
 		return constructIotMessage((long) instances.get(0).get("controllerId"), command, instances, null);

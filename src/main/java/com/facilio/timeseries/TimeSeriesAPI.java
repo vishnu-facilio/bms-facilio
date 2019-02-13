@@ -57,6 +57,7 @@ public class TimeSeriesAPI {
 	private static final Logger LOGGER = LogManager.getLogger(TimeSeriesAPI.class.getName());
 	
 	public static void processPayLoad(long ttime, JSONObject payLoad, String macAddr) throws Exception {
+		LOGGER.info(payLoad);
 		processPayLoad(ttime, payLoad, null, null, macAddr, false);
 	}
 	
@@ -65,7 +66,7 @@ public class TimeSeriesAPI {
 	}
 	
 	public static void processPayLoad(long ttime, JSONObject payLoad, Record record, IRecordProcessorCheckpointer checkpointer, String macAddr, boolean adjustTime) throws Exception {
-		
+
 		long timeStamp = getTimeStamp(ttime, payLoad);
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.TIMESTAMP , timeStamp);
@@ -121,14 +122,16 @@ public class TimeSeriesAPI {
 			}
 			catch(NumberFormatException nfe) {}
 		}
-		
-		if(timeStamp == -1)
+
+		if(timeStamp!= -1)
 		{
+			return timeStamp ;
+		}
+		else if (ttime!=-1){
 			return ttime;
 		}
-		else {
-			return timeStamp;
-		}
+		//both are not set.. assuming current time
+		return System.currentTimeMillis();
 	}
 	
 	public static Map<String, List<String>> getAllDevices() throws Exception {
@@ -601,6 +604,9 @@ public class TimeSeriesAPI {
 		}
 
 		 List<Map<String, Object>> props =  builder.get();
+		 
+		 LOGGER.info("Query in getting instances : "+builder);
+		 
 		 if (props != null && !props.isEmpty() && !fetchCount) {
 			 return props.stream().map(prop -> {
 				 if (prop.get("instanceType") != null) {
