@@ -124,7 +124,7 @@ public class PMScheduler extends FacilioJob {
 
 					for (PMTriggerContext trigger: triggers) {
 						Long maxTime = maxNextExecutionTimesMap.get(trigger.getId());
-						if (maxTime < endTime) {
+						if (maxTime != null && maxTime < endTime) {
 							PreventiveMaintenanceAPI.createPMJobs(pm, trigger, resourceId, maxTime, endTime, true);
 						}
 					}
