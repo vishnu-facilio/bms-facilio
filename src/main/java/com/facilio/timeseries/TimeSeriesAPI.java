@@ -571,11 +571,14 @@ public class TimeSeriesAPI {
 			
 			FacilioField device = fieldMap.get("device");
 			FacilioField instance = fieldMap.get("instance");
+			FacilioField controller = fieldMap.get("controllerId");
 			FacilioField mappedDevice = mappedFieldMap.get("device");
 			FacilioField mappedInstance = mappedFieldMap.get("instance");
+			FacilioField mappedController = mappedFieldMap.get("controllerId");
 			String orgIdColumnName = FieldFactory.getOrgIdField().getColumnName();
 			
 			String joinOn = module.getTableName()+"."+orgIdColumnName+ "=" + mappedModule.getTableName()+"."+orgIdColumnName + " AND " +
+			module.getTableName()+"."+controller.getColumnName()+ "=" + mappedModule.getTableName()+"."+mappedController.getColumnName()+ " AND " +
 			module.getTableName() + "." + device.getColumnName()+"="+mappedModule.getTableName()+"."+mappedDevice.getColumnName()
 			+ " AND " + module.getTableName() +"." + instance.getColumnName() + "=" + mappedModule.getTableName()+"."+mappedInstance.getColumnName();
 			

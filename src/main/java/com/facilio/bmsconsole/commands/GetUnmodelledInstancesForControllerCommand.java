@@ -9,7 +9,6 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
-import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.timeseries.TimeSeriesAPI;
 
@@ -30,7 +29,7 @@ public class GetUnmodelledInstancesForControllerCommand implements Command {
 
 		List<Map<String, Object>> instances = TimeSeriesAPI.getUnmodeledInstancesForController(controllerId, configured, fetchMapped, pagination, isSubscribed, isCount, searchText);
 
-		if (fetchMapped != null && fetchMapped && instances != null) {
+		if (fetchMapped != null && fetchMapped && instances != null && !isCount) {
 			Set<Long> assetIds = instances.stream().map(inst -> (Long) inst.get("assetId")).collect(Collectors.toSet());
 			context.put(FacilioConstants.ContextNames.PARENT_ID_LIST, assetIds);
 		}
