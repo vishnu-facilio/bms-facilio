@@ -332,14 +332,14 @@ public class ModuleBeanImpl implements ModuleBean {
 	@Override
 	public FacilioField getPrimaryField(String moduleName) throws Exception {
 		FacilioModule module = getMod(moduleName);
-		
+
 		List<Long> extendedModuleIds = getExtendedModuleIds(module);
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 														.select(FieldFactory.getSelectFieldFields())
 														.table("Fields")
 														.andCustomWhere("Fields.ORGID = ? AND IS_MAIN_FIELD = true", getOrgId())
 														.andCondition(CriteriaAPI.getCondition("MODULEID", "moduleId", StringUtils.join(extendedModuleIds, ","), NumberOperators.EQUALS));
-		
+
 		List<Map<String, Object>> fieldProps = selectBuilder.get();
 		
 		Map<Long, FacilioModule> moduleMap = splitModules(module);
@@ -531,7 +531,7 @@ public class ModuleBeanImpl implements ModuleBean {
 	
 	private List<Long> getExtendedModuleIds(FacilioModule module) throws Exception {
 		String extendModuleQuery = DBUtil.getQuery("module.extended.id");
-		
+
 		Connection conn = getConnection();
 		List<Long> moduleIds = new ArrayList<>();
 		ResultSet resultSet = null;
@@ -541,7 +541,7 @@ public class ModuleBeanImpl implements ModuleBean {
 			preparedStatement.setLong(1, getOrgId());
 			preparedStatement.setLong(2, module.getModuleId());
 			resultSet = preparedStatement.executeQuery();
-			
+
 			while (resultSet.next()) {
 				moduleIds.add(resultSet.getLong(1));
 			}
@@ -550,7 +550,7 @@ public class ModuleBeanImpl implements ModuleBean {
 		}
 		return moduleIds;
 	}
-	
+
 	@Override
 	public List<FacilioField> getAllFields(String moduleName) throws Exception {
 		
@@ -560,9 +560,9 @@ public class ModuleBeanImpl implements ModuleBean {
 		
 		FacilioModule module = getMod(moduleName);
 		Map<Long, FacilioModule> moduleMap = splitModules(module);
-		
+
 		List<Long> extendedModuleIds = getExtendedModuleIds(module);
-		
+
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 														.select(FieldFactory.getSelectFieldFields())
 														.table("Fields")
@@ -629,13 +629,13 @@ public class ModuleBeanImpl implements ModuleBean {
 		}
 		
 		List<Long> extendedModuleIds = getExtendedModuleIds(module);
-		
+
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 														.select(FieldFactory.getSelectFieldFields())
 														.table("Fields")
 														.andCustomWhere("Fields.ORGID = ? AND Fields.NAME = ?", getOrgId(),fieldName)
 														.andCondition(CriteriaAPI.getCondition("MODULEID", "moduleId", StringUtils.join(extendedModuleIds, ","), NumberOperators.EQUALS));
-		
+
 		List<Map<String, Object>> fieldProps = selectBuilder.get();
 		Map<Long, FacilioModule> moduleMap = splitModules(module);
 		List<FacilioField> fields = getFieldFromPropList(fieldProps, moduleMap);
