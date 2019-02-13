@@ -42,7 +42,7 @@ public class HVACPressurePredictorJob extends FacilioJob
 	{
 		LOGGER.info("Job started");
 		long currentTime = System.currentTimeMillis();
-		if( AwsUtil.getConfig("environment").equals("development")) 
+		if( AwsUtil.isDevelopment()) 
 		{ // for dev testing purpose time is moved back 
 			currentTime = 1538677800000L;
 		}
@@ -79,7 +79,6 @@ public class HVACPressurePredictorJob extends FacilioJob
 																			.select(modBean.getAllFields(FacilioConstants.ContextNames.RESOURCE))
 																			.module(module)
 																			.beanClass(ResourceContext.class)
-																			.andCondition(CriteriaAPI.getOrgIdCondition(orgID, module))
 																			.andCondition(CriteriaAPI.getCondition("RESOURCE_TYPE","resource_type",2+"", NumberOperators.EQUALS));
 			return resourceBuilder.get();
 		}
