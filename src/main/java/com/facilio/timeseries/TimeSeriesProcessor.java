@@ -168,9 +168,11 @@ public class TimeSeriesProcessor implements IRecordProcessor {
 								processTimeSeries(record, payLoad, processRecordsInput, false);
 								break;
 						}
+						dataTypeLastMessageTime.put(dataType, lastMessageReceivedTime);
+						deviceMessageTime.put(deviceId, dataTypeLastMessageTime);
+					} else {
+						log.info("Duplicate message for device " + deviceId + " and type " + dataType);
 					}
-					dataTypeLastMessageTime.put(dataType, lastMessageReceivedTime);
-					deviceMessageTime.put(deviceId, dataTypeLastMessageTime);
 //					Temp fix
 //					processRecordsInput.getCheckpointer().checkpoint(record);
 				}
