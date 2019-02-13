@@ -146,7 +146,8 @@ public class TimeSeriesProcessor implements IRecordProcessor {
 				}
 				long lastMessageReceivedTime = System.currentTimeMillis();
 				if (payLoad.containsKey("timestamp")) {
-					lastMessageReceivedTime = (Long)payLoad.get("timestamp");
+					Object lastTime = payLoad.get("timestamp");
+					lastMessageReceivedTime = lastTime instanceof Long ? (Long) lastTime : Long.parseLong(lastTime.toString());
 				}
 
 				if(dataType!=null ) {
