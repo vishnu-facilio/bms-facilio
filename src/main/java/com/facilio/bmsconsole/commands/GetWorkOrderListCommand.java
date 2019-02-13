@@ -73,7 +73,10 @@ public class GetWorkOrderListCommand implements Command {
 		
 		String subView = (String) context.get(FacilioConstants.ContextNames.SUB_VIEW);
 		if (subView != null && !subView.isEmpty()) {
-			selectBuilder.andCriteria(ViewFactory.getCriteriaForView(subView, ModuleFactory.getWorkOrdersModule()));
+			Criteria subViewCriteria = ViewFactory.getCriteriaForView(subView, ModuleFactory.getWorkOrdersModule());
+			if (subViewCriteria != null && !subViewCriteria.isEmpty()) {
+				selectBuilder.andCriteria(subViewCriteria);
+			}
 		}
 		else if (subViewsCount != null && !subViewsCount.isEmpty()) {
 			String defaultSubView = (String) subViewsCount.get(0).get("name");
