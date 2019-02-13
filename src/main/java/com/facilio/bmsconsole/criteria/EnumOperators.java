@@ -151,7 +151,7 @@ public enum EnumOperators implements Operator<String> {
 					String values = splitAndReturnValues(enumField, value);
 					if(values != null && !values.isEmpty()) {
 						StringBuilder builder = new StringBuilder();
-						builder.append(enumField.getExtendedModule().getTableName())
+						builder.append(enumField.getTableName())
 								.append(".")
 								.append(enumField.getColumnName());
 								if (isNot) {

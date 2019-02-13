@@ -332,10 +332,14 @@ public class ModuleBeanImpl implements ModuleBean {
 	@Override
 	public FacilioField getPrimaryField(String moduleName) throws Exception {
 		FacilioModule module = getMod(moduleName);
+		
+		String extendModuleQuery = DBUtil.getQuery("module.extended.id");
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 														.select(FieldFactory.getSelectFieldFields())
 														.table("Fields")
-														.andCustomWhere("Fields.ORGID = ? AND Fields.MODULEID = ? AND IS_MAIN_FIELD = true", getOrgId(), module.getModuleId());
+														.andCustomWhere("Fields.ORGID = ? AND IS_MAIN_FIELD = true", getOrgId())
+														.andCustomWhere("Fields.MODULEID in " + extendModuleQuery, getOrgId(), module.getModuleId());
+														;
 		List<Map<String, Object>> fieldProps = selectBuilder.get();
 		
 		Map<Long, FacilioModule> moduleMap = splitModules(module);
@@ -534,10 +538,13 @@ public class ModuleBeanImpl implements ModuleBean {
 		
 		FacilioModule module = getMod(moduleName);
 		Map<Long, FacilioModule> moduleMap = splitModules(module);
+		String extendModuleQuery = DBUtil.getQuery("module.extended.id");
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 														.select(FieldFactory.getSelectFieldFields())
 														.table("Fields")
-															.andCustomWhere("Fields.ORGID = ? AND Fields.MODULEID = ?", getOrgId(), module.getModuleId());
+														.andCustomWhere("Fields.EXTENDED_MODULEID is null")
+														.andCustomWhere("Fields.MODULEID in " + extendModuleQuery, getOrgId(), module.getModuleId());
+
 		List<Map<String, Object>> fieldProps = selectBuilder.get();
 		List<FacilioField> fields = getFieldFromPropList(fieldProps, moduleMap);
 		return fields;
@@ -596,10 +603,13 @@ public class ModuleBeanImpl implements ModuleBean {
 			return LookupSpecialTypeUtil.getField(fieldName, moduleName);
 		}
 		
+		String extendModuleQuery = DBUtil.getQuery("module.extended.id");
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 														.select(FieldFactory.getSelectFieldFields())
 														.table("Fields")
-														.andCustomWhere("Fields.ORGID = ? AND Fields.NAME = ? AND Fields.MODULEID = ?", getOrgId(),fieldName, module.getModuleId());
+														.andCustomWhere("Fields.ORGID = ? AND Fields.NAME = ?", getOrgId(),fieldName)
+														.andCustomWhere("Fields.MODULEID in " + extendModuleQuery, getOrgId(), module.getModuleId())
+														;
 		List<Map<String, Object>> fieldProps = selectBuilder.get();
 		Map<Long, FacilioModule> moduleMap = splitModules(module);
 		List<FacilioField> fields = getFieldFromPropList(fieldProps, moduleMap);

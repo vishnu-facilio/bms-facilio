@@ -420,12 +420,13 @@ public class ViewFactory {
 		return criteria;
 	}
 
-	private static Condition getAssetStateCondition(FacilioModule module, String state) {
+	private static Condition getAssetStateCondition(String state) {
+		FacilioModule assetsModule = ModuleFactory.getAssetsModule();
 		FacilioField statusField = new FacilioField();
 		statusField.setName("state");
 		statusField.setColumnName("STATE");
 		statusField.setDataType(FieldType.NUMBER);
-		statusField.setModule(module);
+		statusField.setModule(assetsModule);
 
 		Condition open = new Condition();
 		open.setField(statusField);
@@ -439,7 +440,8 @@ public class ViewFactory {
 		return open;
 	}
 
-	private static Condition getAssetCategoryCondition(FacilioModule module, String category) {
+	private static Condition getAssetCategoryCondition(String category) {
+		FacilioModule module = ModuleFactory.getAssetsModule();
 		LookupField statusField = new LookupField();
 		statusField.setName("category");
 		statusField.setColumnName("CATEGORY");
@@ -460,14 +462,14 @@ public class ViewFactory {
 		FacilioView assetView = new FacilioView();
 		if (state.equals("Active")) {
 			Criteria criteria = new Criteria();
-			criteria.addAndCondition(getAssetStateCondition(ModuleFactory.getAssetsModule(), state));
+			criteria.addAndCondition(getAssetStateCondition(state));
 
 			assetView.setName("active");
 			assetView.setDisplayName("Active Assets");
 			assetView.setCriteria(criteria);
 		} else if (state.equals("Retired")) {
 			Criteria criteria = new Criteria();
-			criteria.addAndCondition(getAssetStateCondition(ModuleFactory.getAssetsModule(), state));
+			criteria.addAndCondition(getAssetStateCondition(state));
 
 			assetView.setName("retired");
 			assetView.setDisplayName("Retired Assets");
@@ -536,14 +538,14 @@ public class ViewFactory {
 		FacilioView assetView = new FacilioView();
 		if (category.equals("Energy")) {
 			Criteria criteria = new Criteria();
-			criteria.addAndCondition(getAssetCategoryCondition(ModuleFactory.getAssetsModule(), category));
+			criteria.addAndCondition(getAssetCategoryCondition(category));
 
 			assetView.setName("energy");
 			assetView.setDisplayName("Energy Assets");
 			assetView.setCriteria(criteria);
 		} else if (category.equals("HVAC")) {
 			Criteria criteria = new Criteria();
-			criteria.addAndCondition(getAssetCategoryCondition(ModuleFactory.getAssetsModule(), category));
+			criteria.addAndCondition(getAssetCategoryCondition(category));
 
 			assetView.setName("hvac");
 			assetView.setDisplayName("HVAC Assets");
@@ -597,13 +599,13 @@ public class ViewFactory {
 		return criteria;
 	}
 
-	public static Condition getOpenStatusCondition(FacilioModule module) {
+	public static Condition getOpenStatusCondition() {
+		FacilioModule module = ModuleFactory.getTicketsModule();
 		LookupField statusField = new LookupField();
 		statusField.setName("status");
 		statusField.setColumnName("STATUS_ID");
 		statusField.setDataType(FieldType.LOOKUP);
 		statusField.setModule(module);
-		statusField.setExtendedModule(ModuleFactory.getTicketsModule());
 		statusField.setLookupModule(ModuleFactory.getTicketStatusModule());
 
 		Condition open = new Condition();
@@ -634,8 +636,8 @@ public class ViewFactory {
 
 	private static FacilioView getUnassignedWorkorders() {
 		FacilioModule workOrdersModule = ModuleFactory.getWorkOrdersModule();
-		Criteria unassignedWOCriteria = getUnAssignedCriteria(workOrdersModule);
-		unassignedWOCriteria.addAndCondition(getOpenStatusCondition(workOrdersModule));
+		Criteria unassignedWOCriteria = getUnAssignedCriteria();
+		unassignedWOCriteria.addAndCondition(getOpenStatusCondition());
 
 		FacilioField createdTime = new FacilioField();
 		createdTime.setName("createdTime");
@@ -654,14 +656,14 @@ public class ViewFactory {
 		return unassignedWOView;
 	}
 
-	private static Criteria getUnAssignedCriteria(FacilioModule module) {
+	private static Criteria getUnAssignedCriteria() {
 		LookupField userField = new LookupField();
 		userField.setName("assignedTo");
 		userField.setColumnName("ASSIGNED_TO_ID");
 		userField.setDataType(FieldType.LOOKUP);
 
+		FacilioModule module = ModuleFactory.getTicketsModule();
 		userField.setModule(module);
-		userField.setExtendedModule(ModuleFactory.getTicketsModule());
 		userField.setSpecialType(FacilioConstants.ContextNames.USERS);
 
 		Condition userFieldCondition = new Condition();
@@ -687,7 +689,7 @@ public class ViewFactory {
 
 		Criteria criteria = new Criteria();
 		FacilioModule workOrderRequestsModule = ModuleFactory.getWorkOrderRequestsModule();
-		criteria.addAndCondition(getMyRequestCondition(workOrderRequestsModule));
+		criteria.addAndCondition(getMyRequestCondition());
 
 		FacilioField createdTime = new FacilioField();
 		createdTime.setName("createdTime");
@@ -703,12 +705,13 @@ public class ViewFactory {
 		return myRequestsView;
 	}
 
-	private static Condition getMyRequestCondition(FacilioModule module) {
+	private static Condition getMyRequestCondition() {
+		FacilioModule workOrderRequestsModule = ModuleFactory.getWorkOrderRequestsModule();
 		LookupField userField = new LookupField();
 		userField.setName("requester");
 		userField.setColumnName("REQUESTER_ID");
 		userField.setDataType(FieldType.LOOKUP);
-		userField.setModule(module);
+		userField.setModule(workOrderRequestsModule);
 		userField.setSpecialType(FacilioConstants.ContextNames.REQUESTER);
 
 		Condition myUserCondition = new Condition();
@@ -759,7 +762,7 @@ public class ViewFactory {
 	public static Criteria getWorkRequestStatusCriteria(WorkOrderRequestContext.RequestStatus status) {
 
 		FacilioField field = new FacilioField();
-		field.setName("status");
+		field.setName("requestStatus");
 		field.setColumnName("STATUS");
 		field.setDataType(FieldType.NUMBER);
 		FacilioModule workOrderRequestsModule = ModuleFactory.getWorkOrderRequestsModule();
@@ -780,7 +783,7 @@ public class ViewFactory {
 		// All Open Tickets
 
 		Criteria criteria = new Criteria();
-		criteria.addAndCondition(getOpenStatusCondition(ModuleFactory.getWorkOrdersModule()));
+		criteria.addAndCondition(getOpenStatusCondition());
 
 		FacilioView openTicketsView = new FacilioView();
 		openTicketsView.setName("open");
@@ -927,20 +930,21 @@ public class ViewFactory {
 		FacilioView openTicketsView = new FacilioView();
 		openTicketsView.setName("closed");
 		openTicketsView.setDisplayName("Closed Workorders");
-		openTicketsView.setCriteria(getClosedTicketsCriteria(workOrdersModule));
+		openTicketsView.setCriteria(getClosedTicketsCriteria());
 		openTicketsView.setSortFields(sortFields);
 
 		return openTicketsView;
 	}
 
-	public static Criteria getClosedTicketsCriteria (FacilioModule module) {
+	public static Criteria getClosedTicketsCriteria () {
+		FacilioModule module = ModuleFactory.getTicketsModule();
 		LookupField statusField = new LookupField();
 		statusField.setName("status");
 		statusField.setColumnName("STATUS_ID");
 		statusField.setDataType(FieldType.LOOKUP);
 
 		statusField.setModule(module);
-		statusField.setExtendedModule(ModuleFactory.getTicketsModule());
+//		statusField.setExtendedModule(ModuleFactory.getTicketsModule());
 		statusField.setLookupModule(ModuleFactory.getTicketStatusModule());
 
 		Condition ticketClose = new Condition();
@@ -968,13 +972,13 @@ public class ViewFactory {
 		FacilioView resolvedTicketsView = new FacilioView();
 		resolvedTicketsView.setName("resolved");
 		resolvedTicketsView.setDisplayName("Resolved");
-		resolvedTicketsView.setCriteria(getTicketStatusCriteria("Resolved", workOrdersModule));
+		resolvedTicketsView.setCriteria(getTicketStatusCriteria("Resolved"));
 		resolvedTicketsView.setSortFields(sortFields);
 
 		return resolvedTicketsView;
 	}
 
-	private static Criteria getTicketStatusCriteria(String status, FacilioModule module) {
+	private static Criteria getTicketStatusCriteria(String status) {
 		FacilioField statusTypeField = new FacilioField();
 		statusTypeField.setName("status");
 		statusTypeField.setColumnName("STATUS");
@@ -993,8 +997,8 @@ public class ViewFactory {
 		statusField.setName("status");
 		statusField.setColumnName("STATUS_ID");
 		statusField.setDataType(FieldType.LOOKUP);
-		statusField.setModule(module);
-		statusField.setExtendedModule(ModuleFactory.getTicketsModule());
+		statusField.setModule(ModuleFactory.getTicketsModule());
+//		statusField.setExtendedModule(ModuleFactory.getTicketsModule());
 		statusField.setLookupModule(ModuleFactory.getTicketStatusModule());
 
 		Condition ticketClose = new Condition();
@@ -1011,8 +1015,8 @@ public class ViewFactory {
 
 		Criteria criteria = new Criteria();
 		FacilioModule workOrdersModule = ModuleFactory.getWorkOrdersModule();
-		criteria.addAndCondition(getOpenStatusCondition(workOrdersModule));
-		criteria.addAndCondition(getMyUserCondition(workOrdersModule));
+		criteria.addAndCondition(getOpenStatusCondition());
+		criteria.addAndCondition(getMyUserCondition());
 
 		FacilioField createdTime = new FacilioField();
 		createdTime.setName("createdTime");
@@ -1034,8 +1038,8 @@ public class ViewFactory {
 	private static FacilioView getAllDueTodayWorkOrders() {
 		FacilioModule workOrdersModule = ModuleFactory.getWorkOrdersModule();
 
-		Criteria criteria = getDueTodayCriteria(workOrdersModule);
-		criteria.addAndCondition(getOpenStatusCondition(workOrdersModule));
+		Criteria criteria = getDueTodayCriteria();
+		criteria.addAndCondition(getOpenStatusCondition());
 
 		FacilioField createdTime = new FacilioField();
 		createdTime.setName("createdTime");
@@ -1054,14 +1058,13 @@ public class ViewFactory {
 		return overdueView;
 	}
 
-	private static Criteria getDueTodayCriteria(FacilioModule workOrdersModule) {
+	private static Criteria getDueTodayCriteria() {
+		FacilioModule ticketsModule = ModuleFactory.getTicketsModule();
 		FacilioField dueField = new FacilioField();
 		dueField.setName("dueDate");
 		dueField.setColumnName("DUE_DATE");
 		dueField.setDataType(FieldType.DATE_TIME);
-
-		dueField.setModule(workOrdersModule);
-		dueField.setExtendedModule(ModuleFactory.getTicketsModule());
+		dueField.setModule(ticketsModule);
 
 		Condition overdue = new Condition();
 		overdue.setField(dueField);
@@ -1077,8 +1080,8 @@ public class ViewFactory {
 
 		Criteria criteria = new Criteria();
 		FacilioModule workOrdersModule = ModuleFactory.getWorkOrdersModule();
-		criteria.addAndCondition(getOpenStatusCondition(workOrdersModule));
-		criteria.addAndCondition(getMyTeamCondition(workOrdersModule));
+		criteria.addAndCondition(getOpenStatusCondition());
+		criteria.addAndCondition(getMyTeamCondition());
 
 		FacilioField createdTime = new FacilioField();
 		createdTime.setName("createdTime");
@@ -1098,13 +1101,14 @@ public class ViewFactory {
 	}
 
 	private static FacilioView getOpenPlannedWorkOrders() {
+		FacilioModule ticketsModule = ModuleFactory.getTicketsModule();
+		FacilioModule workOrdersModule = ModuleFactory.getWorkOrdersModule();
+		
 		FacilioField sourceType = new FacilioField();
 		sourceType.setName("sourceType");
 		sourceType.setColumnName("SOURCE_TYPE");
 		sourceType.setDataType(FieldType.NUMBER);
-		FacilioModule workOrdersModule = ModuleFactory.getWorkOrdersModule();
-		sourceType.setModule(workOrdersModule);
-		sourceType.setExtendedModule(ModuleFactory.getTicketsModule());
+		sourceType.setModule(ticketsModule);
 
 		Condition sourceTypeCondition = new Condition();
 		sourceTypeCondition.setField(sourceType);
@@ -1113,7 +1117,7 @@ public class ViewFactory {
 
 		Criteria criteria = new Criteria();
 		criteria.addAndCondition(sourceTypeCondition);
-		criteria.addAndCondition(getOpenStatusCondition(workOrdersModule));
+		criteria.addAndCondition(getOpenStatusCondition());
 
 		FacilioField createdTime = new FacilioField();
 		createdTime.setName("createdTime");
@@ -1139,7 +1143,7 @@ public class ViewFactory {
 		sourceType.setDataType(FieldType.NUMBER);
 		FacilioModule workOrdersModule = ModuleFactory.getWorkOrdersModule();
 		sourceType.setModule(workOrdersModule);
-		sourceType.setExtendedModule(ModuleFactory.getTicketsModule());
+//		sourceType.setExtendedModule(ModuleFactory.getTicketsModule());
 
 		Condition sourceTypeCondition = new Condition();
 		sourceTypeCondition.setField(sourceType);
@@ -1148,7 +1152,7 @@ public class ViewFactory {
 
 		Criteria criteria = new Criteria();
 		criteria.addAndCondition(sourceTypeCondition);
-		criteria.addAndCondition(getOpenStatusCondition(workOrdersModule));
+		criteria.addAndCondition(getOpenStatusCondition());
 
 		FacilioField createdTime = new FacilioField();
 		createdTime.setName("createdTime");
@@ -1172,8 +1176,7 @@ public class ViewFactory {
 		dueField.setName("dueDate");
 		dueField.setColumnName("DUE_DATE");
 		dueField.setDataType(FieldType.DATE_TIME);
-		dueField.setModule(ModuleFactory.getWorkOrdersModule());
-		dueField.setExtendedModule(ModuleFactory.getTicketsModule());
+		dueField.setModule(ModuleFactory.getTicketsModule());
 
 		Condition overdue = new Condition();
 		overdue.setField(dueField);
@@ -1181,7 +1184,7 @@ public class ViewFactory {
 
 		Criteria criteria = new Criteria();
 		criteria.addAndCondition(overdue);
-		criteria.addAndCondition(getOpenStatusCondition(ModuleFactory.getWorkOrdersModule()));
+		criteria.addAndCondition(getOpenStatusCondition());
 
 		return criteria;
 	}
@@ -1212,7 +1215,7 @@ public class ViewFactory {
 		dueField.setColumnName("DUE_DATE");
 		dueField.setDataType(FieldType.DATE_TIME);
 		dueField.setModule(ModuleFactory.getWorkOrdersModule());
-		dueField.setExtendedModule(ModuleFactory.getTicketsModule());
+//		dueField.setExtendedModule(ModuleFactory.getTicketsModule());
 
 		Condition overdue = new Condition();
 		overdue.setField(dueField);
@@ -1220,8 +1223,8 @@ public class ViewFactory {
 
 		Criteria criteria = new Criteria();
 		criteria.addAndCondition(overdue);
-		criteria.addAndCondition(getMyUserCondition(ModuleFactory.getWorkOrdersModule()));
-		criteria.addAndCondition(getOpenStatusCondition(ModuleFactory.getWorkOrdersModule()));
+		criteria.addAndCondition(getMyUserCondition());
+		criteria.addAndCondition(getOpenStatusCondition());
 
 		FacilioField createdTime = new FacilioField();
 		createdTime.setName("createdTime");
@@ -1251,9 +1254,9 @@ public class ViewFactory {
 
 		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));
 
-		Criteria criteria = getOverdueCriteria(workOrdersModule);
-		criteria.addAndCondition(getOpenStatusCondition(workOrdersModule));
-		criteria.addAndCondition(getMyUserCondition(workOrdersModule));
+		Criteria criteria = getOverdueCriteria();
+		criteria.addAndCondition(getOpenStatusCondition());
+		criteria.addAndCondition(getMyUserCondition());
 
 		FacilioView view = new FacilioView();
 		view.setName("myoverdue");
@@ -1264,14 +1267,12 @@ public class ViewFactory {
 		return view;
 	}
 
-	private static Criteria getOverdueCriteria(FacilioModule module) {
+	private static Criteria getOverdueCriteria() {
 		FacilioField dueField = new FacilioField();
 		dueField.setName("dueDate");
 		dueField.setColumnName("DUE_DATE");
 		dueField.setDataType(FieldType.DATE_TIME);
-
-		dueField.setModule(module);
-		dueField.setExtendedModule(ModuleFactory.getTicketsModule());
+		dueField.setModule(ModuleFactory.getTicketsModule());
 
 		Condition overdue = new Condition();
 		overdue.setField(dueField);
@@ -1285,7 +1286,7 @@ public class ViewFactory {
 
 	private static FacilioView getMyWorkOrders() {
 		Criteria criteria = new Criteria();
-		criteria.addAndCondition(getMyUserCondition(ModuleFactory.getWorkOrdersModule()));
+		criteria.addAndCondition(getMyUserCondition());
 
 		FacilioView myWorkOrdersView = new FacilioView();
 		myWorkOrdersView.setName("my");
@@ -1296,7 +1297,7 @@ public class ViewFactory {
 
 	private static FacilioView getMyTasks() {
 		Criteria criteria = new Criteria();
-		criteria.addAndCondition(getMyUserCondition(ModuleFactory.getTasksModule()));
+		criteria.addAndCondition(getMyUserCondition());
 
 		FacilioView openTicketsView = new FacilioView();
 		openTicketsView.setName("mytasks");
@@ -1305,13 +1306,12 @@ public class ViewFactory {
 		return openTicketsView;
 	}
 
-	public static Condition getMyUserCondition(FacilioModule module) {
+	public static Condition getMyUserCondition() {
 		LookupField userField = new LookupField();
 		userField.setName("assignedTo");
 		userField.setColumnName("ASSIGNED_TO_ID");
 		userField.setDataType(FieldType.LOOKUP);
-		userField.setModule(module);
-		userField.setExtendedModule(ModuleFactory.getTicketsModule());
+		userField.setModule(ModuleFactory.getTicketsModule());
 		userField.setSpecialType(FacilioConstants.ContextNames.USERS);
 
 		Condition myUserCondition = new Condition();
@@ -1322,13 +1322,12 @@ public class ViewFactory {
 		return myUserCondition;
 	}
 
-	private static Condition getMyTeamCondition(FacilioModule module) {
+	private static Condition getMyTeamCondition() {
 		LookupField groupField = new LookupField();
 		groupField.setName("assignmentGroup");
 		groupField.setColumnName("ASSIGNMENT_GROUP_ID");
 		groupField.setDataType(FieldType.LOOKUP);
-		groupField.setModule(module);
-		groupField.setExtendedModule(ModuleFactory.getTicketsModule());
+		groupField.setModule(ModuleFactory.getTicketsModule());
 		groupField.setSpecialType(FacilioConstants.ContextNames.GROUPS);
 
 		/*
@@ -1368,13 +1367,14 @@ public class ViewFactory {
 	}
 
 	private static FacilioView getFireSafetyWOs() {
+		FacilioModule workOrdersModule = ModuleFactory.getWorkOrdersModule();
+		FacilioModule ticketsModule = ModuleFactory.getTicketsModule();
+
 		LookupField categoryField = new LookupField();
 		categoryField.setName("category");
 		categoryField.setColumnName("CATEGORY_ID");
 		categoryField.setDataType(FieldType.LOOKUP);
-		FacilioModule workOrdersModule = ModuleFactory.getWorkOrdersModule();
-		categoryField.setModule(workOrdersModule);
-		categoryField.setExtendedModule(ModuleFactory.getTicketsModule());
+		categoryField.setModule(ticketsModule);
 		categoryField.setLookupModule(ModuleFactory.getTicketCategoryModule());
 
 		Condition fireSafetyCategory = new Condition();
@@ -1386,8 +1386,7 @@ public class ViewFactory {
 		sourceField.setName("sourceType");
 		sourceField.setColumnName("SOURCE_TYPE");
 		sourceField.setDataType(FieldType.NUMBER);
-		sourceField.setModule(workOrdersModule);
-		sourceField.setExtendedModule(ModuleFactory.getTicketsModule());
+		sourceField.setModule(ticketsModule);
 
 		Condition alarmSourceCondition = new Condition();
 		alarmSourceCondition.setField(sourceField);
@@ -1396,7 +1395,7 @@ public class ViewFactory {
 
 		Criteria criteria = new Criteria();
 		criteria.addAndCondition(fireSafetyCategory);
-		criteria.addAndCondition(getOpenStatusCondition(workOrdersModule));
+		criteria.addAndCondition(getOpenStatusCondition());
 		criteria.addAndCondition(alarmSourceCondition);
 
 		FacilioField createdTime = new FacilioField();
@@ -1482,7 +1481,7 @@ public class ViewFactory {
 
 		FacilioModule module = ModuleFactory.getAlarmsModule();
 
-		Criteria criteria = getSourceTypeCriteria(sourceType, module, true);
+		Criteria criteria = getSourceTypeCriteria(sourceType, true);
 
 		FacilioField modifiedTime = new FacilioField();
 		modifiedTime.setColumnName("MODIFIED_TIME");
@@ -1500,18 +1499,17 @@ public class ViewFactory {
 	}
 
 	private static Criteria getCommonAlarmCriteria() {
-		return getSourceTypeCriteria(SourceType.ANOMALY_ALARM, ModuleFactory.getAlarmsModule(), false);
+		return getSourceTypeCriteria(SourceType.ANOMALY_ALARM, false);
 	}
 
-	private static Criteria getSourceTypeCriteria(TicketContext.SourceType sourceType, FacilioModule module,
-			boolean isEqual) {
+	private static Criteria getSourceTypeCriteria(TicketContext.SourceType sourceType, boolean isEqual) {
+		FacilioModule module = ModuleFactory.getTicketsModule();
 
 		FacilioField sourceField = new FacilioField();
 		sourceField.setName("sourceType");
 		sourceField.setColumnName("SOURCE_TYPE");
 		sourceField.setDataType(FieldType.NUMBER);
 		sourceField.setModule(module);
-		sourceField.setExtendedModule(ModuleFactory.getTicketsModule());
 
 		Condition sourceCondition = new Condition();
 		sourceCondition.setField(sourceField);
@@ -1527,7 +1525,7 @@ public class ViewFactory {
 	private static FacilioView getMyAlarms() {
 
 		Criteria criteria = new Criteria();
-		criteria.addAndCondition(getMyUserCondition(ModuleFactory.getAlarmsModule()));
+		criteria.addAndCondition(getMyUserCondition());
 
 		FacilioView myAlarms = new FacilioView();
 		myAlarms.setName("myalarms");
@@ -1629,8 +1627,7 @@ public class ViewFactory {
 		userField.setName("assignedTo");
 		userField.setColumnName("ASSIGNED_TO_ID");
 		userField.setDataType(FieldType.LOOKUP);
-		userField.setModule(ModuleFactory.getAlarmsModule());
-		userField.setExtendedModule(ModuleFactory.getTicketsModule());
+		userField.setModule(ModuleFactory.getTicketsModule());
 		userField.setSpecialType(FacilioConstants.ContextNames.USERS);
 
 		Condition userFieldCondition = new Condition();
@@ -1775,7 +1772,7 @@ public class ViewFactory {
 
 		Criteria criteria = new Criteria();
 		FacilioModule workOrdersModule = ModuleFactory.getWorkOrdersModule();
-		criteria.addAndCondition(getMyRequestCondition(workOrdersModule));
+		criteria.addAndCondition(getMyRequestCondition());
 
 		FacilioField createdTime = new FacilioField();
 		createdTime.setName("createdTime");
@@ -1804,25 +1801,25 @@ public class ViewFactory {
 		Criteria criteria = new Criteria();
 		switch (viewName) {
 		case "my":
-			Condition myUser = getMyUserCondition(module);
+			Condition myUser = getMyUserCondition();
 			criteria.addAndCondition(myUser);
 			break;
 
 		case "myTeam":
-			Condition myTeam = getMyTeamCondition(module);
+			Condition myTeam = getMyTeamCondition();
 			criteria.addAndCondition(myTeam);
 			break;
 
 		case "overdue":
-			criteria = getOverdueCriteria(module);
+			criteria = getOverdueCriteria();
 			break;
 
 		case "duetoday":
-			criteria = getDueTodayCriteria(module);
+			criteria = getDueTodayCriteria();
 			break;
 
 		case "unassigned":
-			criteria = getUnAssignedCriteria(module);
+			criteria = getUnAssignedCriteria();
 			break;
 
 		case "rejected":

@@ -1275,7 +1275,7 @@ public static long getSitesCount() throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule resourceModule = modBean.getModule(FacilioConstants.ContextNames.RESOURCE);
 		FacilioModule assetModule = modBean.getModule(FacilioConstants.ContextNames.ASSET);
-		FacilioField spaceIdFld = modBean.getField("spaceId", resourceModule.getName());
+		FacilioField spaceIdFld = modBean.getField("space", resourceModule.getName());
 
 		Condition spaceCond = new Condition();
 		spaceCond.setField(spaceIdFld);

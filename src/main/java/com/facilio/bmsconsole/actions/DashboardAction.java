@@ -4225,9 +4225,10 @@ public class DashboardAction extends FacilioAction {
 			if(xAxisField.getModule().getName().equals(FacilioConstants.ContextNames.ASSET) || xAxisField.getModule().getName().equals(FacilioConstants.ContextNames.RESOURCE)) {
 				builder.innerJoin(xAxisField.getModule().getTableName())
 				.on(xAxisField.getModule().getTableName()+".ID = Tickets.RESOURCE_ID");
-				if(!xAxisField.getExtendedModule().getName().equals(xAxisField.getModule().getName())) {
-					builder.innerJoin(xAxisField.getExtendedModule().getTableName())
-					.on(xAxisField.getModule().getTableName()+".ID = "+xAxisField.getExtendedModule().getTableName()+".ID");
+				FacilioModule facilioModule = xAxisField.getModule();
+				if(!facilioModule.getExtendModule().getName().equals(xAxisField.getModule().getName())) {
+					builder.innerJoin(facilioModule.getExtendModule().getTableName())
+					.on(xAxisField.getModule().getTableName()+".ID = "+facilioModule.getExtendModule().getTableName()+".ID");
 				}
 			}
 		}

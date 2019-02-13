@@ -116,7 +116,7 @@ public class FacilioConditionParser {
 					else {
 						field = fieldMap.get(fieldName);
 					}
-					condition.setColumnName(field.getExtendedModule().getTableName()+"."+field.getColumnName());
+					condition.setColumnName(field.getTableName()+"."+field.getColumnName());
 					condition.setOperator(field.getDataTypeEnum().getOperator(matcher.group(3)));
 					condition.setValue(matcher.group(4));
 					sequence++;

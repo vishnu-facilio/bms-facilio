@@ -57,7 +57,7 @@ public class AssetsAPI {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.RESOURCE);
 		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.RESOURCE);
-		FacilioField spaceField= FieldFactory.getAsMap(fields).get("spaceId");
+		FacilioField spaceField= FieldFactory.getAsMap(fields).get("space");
 		
 		SelectRecordsBuilder<BaseSpaceContext> selectBuilder = new SelectRecordsBuilder<BaseSpaceContext>()
 				.select(fields)

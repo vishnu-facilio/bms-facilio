@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.facilio.bmsconsole.workflow.rule.ActionContext;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -25,7 +27,7 @@ public class FacilioField implements Serializable {
 		this.fieldId = field.fieldId;
 		this.orgId = field.orgId;
 		this.module = field.module;
-		this.extendedModule = field.extendedModule;
+//		this.extendedModule = field.extendedModule;
 		this.name = field.name;
 		this.columnName = field.columnName;
 		this.sequenceNumber = field.sequenceNumber;
@@ -85,25 +87,25 @@ public class FacilioField implements Serializable {
 		return -1;
 	}
 	
-	private FacilioModule extendedModule;
-	public FacilioModule getExtendedModule() {
-		if(extendedModule != null) {
-			return extendedModule;
-		}
-		else {
-			return module;
-		}
-	}
-	public void setExtendedModule(FacilioModule extendedModule) {
-		this.extendedModule = extendedModule;
-	}
-	
-	public long getExtendedModuleId() {
-		if(extendedModule != null) {
-			return extendedModule.getModuleId();
-		}
-		return -1;
-	}
+//	private FacilioModule extendedModule;
+//	public FacilioModule getExtendedModule() {
+//		if(extendedModule != null) {
+//			return extendedModule;
+//		}
+//		else {
+//			return module;
+//		}
+//	}
+//	public void setExtendedModule(FacilioModule extendedModule) {
+//		this.extendedModule = extendedModule;
+//	}
+//	
+//	public long getExtendedModuleId() {
+//		if(extendedModule != null) {
+//			return extendedModule.getModuleId();
+//		}
+//		return -1;
+//	}
 
 	private String name;
 	public String getName() {
@@ -121,9 +123,20 @@ public class FacilioField implements Serializable {
 		this.columnName = columnName;
 	}
 	
+	public String getTableName() {
+		if (getModule() != null) {
+			String tableName = null;
+			FacilioModule module = getModule();
+			tableName = module.getTableName();
+			return tableName;
+		}
+		return null;
+	}
+	
 	public String getCompleteColumnName() {
-		if(getExtendedModule() != null) {
-			return getExtendedModule().getTableName()+"."+getColumnName();
+		String tableName = getTableName();
+		if (StringUtils.isNotEmpty(tableName)) {
+			return tableName + "." + getColumnName();
 		}
 		else {
 			return getColumnName();

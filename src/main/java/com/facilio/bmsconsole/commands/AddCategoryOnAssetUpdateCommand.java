@@ -44,7 +44,7 @@ public class AddCategoryOnAssetUpdateCommand implements Command {
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 				FacilioModule module = modBean.getModule(moduleName);
 				
-				List<FacilioField> fields = modBean.getAllFields(moduleName).stream().filter(field -> field.getExtendedModuleId() == -1).collect(Collectors.toList());
+				List<FacilioField> fields = modBean.getAllFields(moduleName).stream().filter(field -> field.getModule().getExtendModule() == null).collect(Collectors.toList()); // TODO check
 				fields.add(FieldFactory.getIdField(module));
 				/*fields.add(FieldFactory.getOrgIdField(module));*/
 				fields.add(FieldFactory.getModuleIdField(module));

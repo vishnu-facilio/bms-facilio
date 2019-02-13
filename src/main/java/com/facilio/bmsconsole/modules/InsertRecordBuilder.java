@@ -230,11 +230,17 @@ public class InsertRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 	private Map<Long, List<FacilioField>> splitFields() {
 		Map<Long, List<FacilioField>> fieldMap = new HashMap<>();
 		
+		// TODO check this again
 		for(FacilioField field : fields) {
-			List<FacilioField> moduleFields = fieldMap.get(field.getExtendedModule().getModuleId());
+			FacilioModule module = field.getModule();
+			long moduleId = -1;
+			if (module != null) {
+				moduleId = module.getModuleId();
+			}
+			List<FacilioField> moduleFields = fieldMap.get(moduleId);
 			if(moduleFields == null) {
 				moduleFields = new ArrayList<>();
-				fieldMap.put(field.getExtendedModule().getModuleId(), moduleFields);
+				fieldMap.put(moduleId, moduleFields);
 			}
 			moduleFields.add(field);
 		}

@@ -338,7 +338,11 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 				if ((field.getModule() == null && prevModule.getExtendModule() != null)) {
 					continue;
 				}
-				if (((prevModule.getExtendModule() == null && field.getExtendedModule() == null) || (field.getExtendedModule().equals(prevModule)) )) {
+				// TODO check this again
+				if (field.getModule() == null) {
+					continue;
+				}
+				if (((prevModule.getExtendModule() == null && field.getModule().getExtendModule() == null) || (field.getModule().equals(prevModule)) )) {
 					f.add(field);
 				}
 			}
