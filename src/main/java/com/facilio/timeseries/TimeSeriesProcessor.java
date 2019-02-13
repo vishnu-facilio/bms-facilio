@@ -59,8 +59,9 @@ public class TimeSeriesProcessor implements IRecordProcessor {
 	private FacilioModule deviceDetailsModule;
 	private final FacilioField orgIdField = FieldFactory.getOrgIdField();
 	private Producer<String, String> producer;
+	private HashMap<String, HashMap<String, Long>> deviceMessageTime = new HashMap<>();
 
-	public TimeSeriesProcessor(long orgId, String orgDomainName){
+	TimeSeriesProcessor(long orgId, String orgDomainName){
         this.orgId = orgId;
         this.orgDomainName = orgDomainName;
         this.errorStream = orgDomainName + "-error";
@@ -139,21 +140,37 @@ public class TimeSeriesProcessor implements IRecordProcessor {
 				JSONObject payLoad = (JSONObject) parser.parse(data);
 				String dataType = (String)payLoad.remove(EventProcessor.DATA_TYPE);
 
+				String deviceId = orgDomainName;
+				if (payLoad.containsKey("deviceId")) {
+					deviceId = payLoad.get("deviceId").toString();
+				}
+				long lastMessageReceivedTime = System.currentTimeMillis();
+				if (payLoad.containsKey("timestamp")) {
+					lastMessageReceivedTime = (Long)payLoad.get("timestamp");
+				}
+
 				if(dataType!=null ) {
-					switch (dataType) {
-						case "timeseries":
-							processTimeSeries(record, payLoad, processRecordsInput, true);
-							break;
-						case "devicepoints":
-							processDevicePoints(payLoad);
-							break;
-						case "ack":
-							processAck(payLoad);
-							break;
-						case "cov":
-							processTimeSeries(record, payLoad, processRecordsInput, false);
-							break;
+					HashMap<String, Long> dataTypeLastMessageTime = deviceMessageTime.getOrDefault(deviceId, new HashMap<>());
+					long deviceLastMessageTime = dataTypeLastMessageTime.getOrDefault(dataType, 0L);
+
+					if(deviceLastMessageTime != lastMessageReceivedTime) {
+						switch (dataType) {
+							case "timeseries":
+								processTimeSeries(record, payLoad, processRecordsInput, true);
+								break;
+							case "devicepoints":
+								processDevicePoints(payLoad);
+								break;
+							case "ack":
+								processAck(payLoad);
+								break;
+							case "cov":
+								processTimeSeries(record, payLoad, processRecordsInput, false);
+								break;
+						}
 					}
+					dataTypeLastMessageTime.put(dataType, lastMessageReceivedTime);
+					deviceMessageTime.put(deviceId, dataTypeLastMessageTime);
 //					Temp fix
 //					processRecordsInput.getCheckpointer().checkpoint(record);
 				}
