@@ -608,7 +608,7 @@ public class TimeSeriesAPI {
 
 		 List<Map<String, Object>> props =  builder.get();
 		 
-		 LOGGER.info("Query in getting instances : "+builder);
+		 LOGGER.debug("Query in getting instances : "+builder);
 		 
 		 if (props != null && !props.isEmpty() && !fetchCount) {
 			 return props.stream().map(prop -> {
