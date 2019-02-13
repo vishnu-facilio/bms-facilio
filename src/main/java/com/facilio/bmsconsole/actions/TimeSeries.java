@@ -12,6 +12,7 @@ import org.apache.struts2.ServletActionContext;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.PublishData;
@@ -231,6 +232,9 @@ public class TimeSeries extends FacilioAction {
 	
 	private String macAddr;
 	public String getMacAddr() {
+		if(macAddr==null) {
+			setMacAddr(AccountUtil.getCurrentOrg().getDomain());
+		}
 		return macAddr;
 	}
 	public void setMacAddr(String macAddr) {
@@ -277,7 +281,7 @@ public class TimeSeries extends FacilioAction {
 		this.changedDevices = changedDevices;
 	}
 
-	private long timestamp;
+	private long timestamp=-1;
 	public void setTimestamp(long ttime) {
 		this.timestamp=ttime;
 	}

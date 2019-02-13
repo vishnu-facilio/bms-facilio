@@ -121,14 +121,16 @@ public class TimeSeriesAPI {
 			}
 			catch(NumberFormatException nfe) {}
 		}
-		
-		if(timeStamp == -1)
+
+		if(timeStamp!= -1)
 		{
+			return timeStamp ;
+		}
+		else if (ttime!=-1){
 			return ttime;
 		}
-		else {
-			return timeStamp;
-		}
+		//both are not set.. assuming current time
+		return System.currentTimeMillis();
 	}
 	
 	public static Map<String, List<String>> getAllDevices() throws Exception {
