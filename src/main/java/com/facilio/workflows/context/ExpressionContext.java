@@ -307,8 +307,8 @@ public class ExpressionContext implements WorkflowExpression {
 				List<FacilioField> selectFields = new ArrayList<>();
 				
 				FacilioField select = modBean.getField(fieldName, moduleName);
-				select.setColumnName(select.getExtendedModule().getTableName()+"."+select.getColumnName());
-				select.setExtendedModule(null);
+				select.setColumnName(select.getTableName()+"."+select.getColumnName());
+//				select.setExtendedModule(null);
 				select.setModule(null);
 				select.setName(RESULT_STRING);
 				
@@ -371,7 +371,7 @@ public class ExpressionContext implements WorkflowExpression {
 						else {
 							selectMarked.setColumnName("MAX("+selectMarked.getColumnName()+")");
 						}
-						selectMarked.setExtendedModule(null);
+//						selectMarked.setExtendedModule(null);
 						selectMarked.setModule(null);
 						selectMarked.setName("hasMarked");
 						
