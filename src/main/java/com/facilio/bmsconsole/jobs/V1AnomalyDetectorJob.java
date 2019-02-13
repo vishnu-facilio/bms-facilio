@@ -210,7 +210,7 @@ public class V1AnomalyDetectorJob extends FacilioJob {
 				AnomalyAssetConfigurationContext configContext = AssetAnomalyUtil
 						.getAssetConfig(energyMeterContext.getId(), meterConfigurations);
 				String result = doPostAnomalyDetectAPI(configContext, meterReadings, siteTemperatureReadings,
-						energyMeterContext.getId());
+						energyMeterContext.getId(), orgID);
 				logger.log(Level.INFO, " result is " + result);
 
 				AnomalyList anomalyList = new GsonBuilder().create().fromJson(result,AnomalyList.class);
@@ -270,12 +270,16 @@ public class V1AnomalyDetectorJob extends FacilioJob {
 	}
 	
 	String doPostAnomalyDetectAPI(AnomalyAssetConfigurationContext configContext,
-			List<AnalyticsAnomalyContext> meterReadings, List<TemperatureContext> siteTemperatureReadings, long meterID)
-			throws IOException {
+			List<AnalyticsAnomalyContext> meterReadings, 
+			List<TemperatureContext> siteTemperatureReadings, 
+			long meterID, long orgId)
+			
+					throws IOException {
 		CheckAnomalyModelPostData postData = new CheckAnomalyModelPostData();
 
 		String postURL = AwsUtil.getConfig("anomalyCheckServiceURL") + "/checkGam";
 		postData.meterID = meterID;
+		postData.orgId=orgId;
 		postData.dimension1 = configContext.getDimension1Buckets();
 		postData.dimension1Value = configContext.getDimension1Value();
 		postData.temperatureData = siteTemperatureReadings;
@@ -471,8 +475,18 @@ public class V1AnomalyDetectorJob extends FacilioJob {
 		public void setOrderRange(int orderRange) {
 			this.orderRange = orderRange;
 		}
+		public long getOrgId() {
+			return orgId;
+		}
+
+		public void setOrgId(long orgId) {
+			this.orgId = orgId;
+		}
 
 		long meterID;
+		long orgId;
+		
+
 		String dimension1;
 		String dimension1Value;
 		List<TemperatureContext> temperatureData;
