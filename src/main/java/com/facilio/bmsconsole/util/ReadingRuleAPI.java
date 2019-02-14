@@ -95,7 +95,7 @@ public class ReadingRuleAPI extends WorkflowRuleAPI {
 		return rule;
 	}
 	
-	private static void setMatchedResources (ReadingRuleContext readingRule) throws Exception {
+	public static void setMatchedResources (ReadingRuleContext readingRule) throws Exception {
 		if (readingRule.getAssetCategoryId() == -1) {
 			long resourceId = readingRule.getResourceId();
 			readingRule.setMatchedResources(Collections.singletonMap(resourceId, ResourceAPI.getExtendedResource(resourceId)));

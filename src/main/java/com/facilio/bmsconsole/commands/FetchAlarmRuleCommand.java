@@ -16,7 +16,10 @@ public class FetchAlarmRuleCommand implements Command {
 		if (id == null || id == -1) {
 			throw new IllegalArgumentException("Invalid ID to fetch workflow");
 		}
-		context.put(FacilioConstants.ContextNames.ALARM_RULE, new AlarmRuleContext(ReadingRuleAPI.getReadingRules(id)));
+		AlarmRuleContext alarmRule = new AlarmRuleContext(ReadingRuleAPI.getReadingRules(id));
+		ReadingRuleAPI.setMatchedResources(alarmRule.getPreRequsite());
+		context.put(FacilioConstants.ContextNames.ALARM_RULE, alarmRule);
+		
 		return false;
 	}
 
