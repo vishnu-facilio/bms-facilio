@@ -13,6 +13,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.FormulaContext;
 import com.facilio.bmsconsole.context.ReadingAlarmContext;
 import com.facilio.bmsconsole.context.ResourceContext;
+import com.facilio.bmsconsole.context.TicketStatusContext;
 import com.facilio.bmsconsole.criteria.CommonOperators;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.DateOperators;
@@ -24,6 +25,7 @@ import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.util.ResourceAPI;
+import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.workflow.rule.AlarmRuleContext;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 import com.facilio.constants.FacilioConstants;
@@ -39,7 +41,7 @@ public class FetchExtraMetaForAlarmRuleCommand implements Command {
 		
 		int activeAlarmCount = getActiveAlarmCount(preRequsite);
 		int alarmsCreatedThusWeek = getAlarmsCountCreatedThisWeek(preRequsite);
-		Map<ResourceContext, Integer> resourceVsAlarmCount = getTop5CriticalAssets(preRequsite);
+		Map<ResourceContext, Integer> resourceVsAlarmCount = getAllCriticalAssets(preRequsite);
 		Map<String, Double> wfSummaryRes = getWorkflowSummary(preRequsite);
 		
 		context.put(FacilioConstants.ContextNames.ALARM_RULE_ACTIVE_ALARM, activeAlarmCount);
@@ -54,16 +56,26 @@ public class FetchExtraMetaForAlarmRuleCommand implements Command {
 		Map<String,Double> result = new HashMap<>();
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		
+		FacilioModule ticketModule = modBean.getModule(FacilioConstants.ContextNames.TICKET);
+		
+		FacilioModule ticketStatusModule = modBean.getModule(FacilioConstants.ContextNames.TICKET_STATUS);
+		
 		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.READING_ALARM);
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 		
 		SelectRecordsBuilder<ReadingAlarmContext> selectBuilder = new SelectRecordsBuilder<ReadingAlarmContext>()
 				.select(fields)
+				.innerJoin(ticketModule.getTableName())
+				.on(ticketModule.getTableName()+".ID = Alarms.WO_ID")
+				.innerJoin(ticketStatusModule.getTableName())
+				.on(ticketStatusModule.getTableName()+".ID = "+ticketModule.getTableName()+".STATUS_ID")
 				.moduleName(FacilioConstants.ContextNames.READING_ALARM)
 				.beanClass(ReadingAlarmContext.class)
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("ruleId"), String.valueOf(rule.getId()), NumberOperators.EQUALS))
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("woId"), "", CommonOperators.IS_NOT_EMPTY))
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("createdTime"), "", DateOperators.CURRENT_WEEK))
+				.andCustomWhere(ticketStatusModule.getTableName()+".STATUS_TYPE = ?", TicketStatusContext.StatusType.OPEN.getIntVal())
 				;
 		 int woCreatedThisWeek = selectBuilder.get().size();
 		 
@@ -71,11 +83,16 @@ public class FetchExtraMetaForAlarmRuleCommand implements Command {
 		 
 		 selectBuilder = new SelectRecordsBuilder<ReadingAlarmContext>()
 					.select(fields)
+					.innerJoin(ticketModule.getTableName())
+					.on(ticketModule.getTableName()+".ID = Alarms.WO_ID")
+					.innerJoin(ticketStatusModule.getTableName())
+					.on(ticketStatusModule.getTableName()+".ID = "+ticketModule.getTableName()+".STATUS_ID")
 					.moduleName(FacilioConstants.ContextNames.READING_ALARM)
 					.beanClass(ReadingAlarmContext.class)
 					.andCondition(CriteriaAPI.getCondition(fieldMap.get("ruleId"), String.valueOf(rule.getId()), NumberOperators.EQUALS))
 					.andCondition(CriteriaAPI.getCondition(fieldMap.get("woId"), "", CommonOperators.IS_NOT_EMPTY))
 					.andCondition(CriteriaAPI.getCondition(fieldMap.get("createdTime"), "", DateOperators.CURRENT_MONTH))
+					.andCustomWhere(ticketStatusModule.getTableName()+".STATUS_TYPE = ?", TicketStatusContext.StatusType.OPEN.getIntVal())
 					;
 		 int woCreatedThisMonth = selectBuilder.get().size();
 		 
@@ -92,7 +109,7 @@ public class FetchExtraMetaForAlarmRuleCommand implements Command {
 					.select(Collections.singletonList(field))
 					.table(readingAlarmModule.getTableName())
 					.innerJoin(alarmModule.getTableName())
-					.on("Alarms.id = Reading_Alarms.id")
+					.on("Alarms.id = Reading_Alarms.id") 
 					.andCondition(CriteriaAPI.getCondition(fieldMap.get("ruleId"), String.valueOf(rule.getId()), NumberOperators.EQUALS))
 					.andCondition(CriteriaAPI.getCondition(fieldMap.get("acknowledgedTime"), "", CommonOperators.IS_NOT_EMPTY))
 					.andCondition(CriteriaAPI.getCondition(fieldMap.get("createdTime"), "", CommonOperators.IS_NOT_EMPTY))
@@ -159,7 +176,7 @@ public class FetchExtraMetaForAlarmRuleCommand implements Command {
 		return selectBuilder.get().size();
 	}
 	
-	private Map<ResourceContext, Integer> getTop5CriticalAssets(ReadingRuleContext rule) throws Exception {
+	private Map<ResourceContext, Integer> getAllCriticalAssets(ReadingRuleContext rule) throws Exception {
 		
 		Map<ResourceContext,Integer> resourceVsAlarmCount = new HashMap<>();
 		
@@ -184,7 +201,6 @@ public class FetchExtraMetaForAlarmRuleCommand implements Command {
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("ruleId"), String.valueOf(rule.getId()), NumberOperators.EQUALS))
 				.groupBy(fieldMap.get("resource").getColumnName())
 				.orderBy(countField.getColumnName() + " desc")
-				.limit(5)
 				;
 		 List<Map<String, Object>> props = selectBuilder.get();
 		 
