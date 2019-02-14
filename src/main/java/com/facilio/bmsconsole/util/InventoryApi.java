@@ -8,14 +8,10 @@ import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.actions.InventoryAction;
 import com.facilio.bmsconsole.context.AssetDepartmentContext;
-import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.InventoryCategoryContext;
-import com.facilio.bmsconsole.context.InventoryContext;
 import com.facilio.bmsconsole.context.InventoryVendorContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
-import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
@@ -28,27 +24,6 @@ import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
 
 public class InventoryApi {
-	
-	public static InventoryContext getInventory(long id) throws Exception {
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.INVENTORY);
-		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.INVENTORY);
-		
-		SelectRecordsBuilder<InventoryContext> selectBuilder = new SelectRecordsBuilder<InventoryContext>()
-																	.select(fields)
-																	.table(module.getTableName())
-																	.moduleName(module.getName())
-																	.beanClass(InventoryContext.class)
-																	.andCustomWhere(module.getTableName()+".ID = ?", id);
-		
-		List<InventoryContext> inventories = selectBuilder.get();
-		
-		if(inventories != null && !inventories.isEmpty()) {
-			return inventories.get(0);
-		}
-		return null;
-	}
-	
 	public static Map<Long, InventoryVendorContext> getInventoryVendorMap(Collection<Long> idList) throws Exception
 	{
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");

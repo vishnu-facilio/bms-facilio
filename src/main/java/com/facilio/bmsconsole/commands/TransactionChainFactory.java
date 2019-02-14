@@ -1306,29 +1306,4 @@ public class TransactionChainFactory {
 //			CommonCommandUtil.addCleanUpCommand(c);
 			return c;
 		}
-		
-		public static Chain getAddOrUdpateWorkorderPartChain() {
-			Chain c = getDefaultChain();
-			c.addCommand(SetTableNamesCommand.getForWorkOrderParts());
-			c.addCommand(new AddOrUpdateWorkorderPartCommand());
-			c.addCommand(new ExecuteAllWorkflowsCommand());
-			c.addCommand(new AddOrUpdateWorkorderCostCommand());
-			c.addCommand(new UpdateWorkorderTotalCostCommand());
-			c.addCommand(getUpdateWorkOrderChain());
-			return c;
-		}
-		
-		public static Chain getDeleteWorkorderPartChain() {
-			Chain c = getDefaultChain();
-			c.addCommand(SetTableNamesCommand.getForWorkOrderParts());
-			c.addCommand(new GenericDeleteModuleDataCommand());
-			return c;
-		}
-		
-		public static Chain getAddWorkorderCostChain() {
-			Chain c = getDefaultChain();
-			c.addCommand(SetTableNamesCommand.getForWorkOrderCosts());
-			c.addCommand(new GenericAddModuleDataCommand());
-			return c;
-		}
 }

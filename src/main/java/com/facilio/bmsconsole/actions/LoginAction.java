@@ -326,8 +326,8 @@ public class LoginAction extends FacilioAction {
 		data.put("assetCategory", AssetsAPI.getCategoryList());
 		data.put("assetType", AssetsAPI.getTypeList());
 		data.put("assetDepartment", AssetsAPI.getDepartmentList());
-		data.put("inventoryVendors", InventoryApi.getInventoryVendorList());
-		data.put("inventoryCategory", InventoryApi.getInventoryCategoryList());
+//		data.put("inventoryVendors", InventoryApi.getInventoryVendorList());
+//		data.put("inventoryCategory", InventoryApi.getInventoryCategoryList());
 		
 		data.put("serviceList", ReportsUtil.getPurposeMapping());
 		data.put("buildingList", ReportsUtil.getBuildingMap());
@@ -399,8 +399,8 @@ public class LoginAction extends FacilioAction {
 		data.put("assetCategory", AssetsAPI.getCategoryList());
 		data.put("assetType", AssetsAPI.getTypeList());
 		data.put("assetDepartment", AssetsAPI.getDepartmentList());
-		data.put("inventoryVendors", InventoryApi.getInventoryVendorList());
-		data.put("inventoryCategory", InventoryApi.getInventoryCategoryList());
+//		data.put("inventoryVendors", InventoryApi.getInventoryVendorList());
+//		data.put("inventoryCategory", InventoryApi.getInventoryCategoryList());
 
 		data.put("serviceList", ReportsUtil.getPurposeMapping());
 		data.put("buildingList", ReportsUtil.getBuildingMap());

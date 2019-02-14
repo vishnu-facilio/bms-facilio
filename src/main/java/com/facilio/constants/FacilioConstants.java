@@ -51,8 +51,6 @@ import com.facilio.bmsconsole.context.UtilityMeterContext;
 import com.facilio.bmsconsole.context.WaterMeterContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.context.WorkOrderRequestContext;
-import com.facilio.bmsconsole.context.WorkorderCostContext;
-import com.facilio.bmsconsole.context.WorkorderPartsContext;
 import com.facilio.bmsconsole.context.ZoneContext;
 
 public class FacilioConstants {
@@ -717,13 +715,6 @@ public class FacilioConstants {
 		public static final String ML_FORECASTING = "ml_forecasting";
 
         private static Map<String, Class> classMap = Collections.unmodifiableMap(initClassMap());
-		
-		public static final String WORKORDER_PARTS = "workorderParts";
-		public static final String WORKORDER_PART = "workorderPart";
-		public static final String WORKORDER_PART_LIST = "workorderPartsList";
-		
-		public static final String WORKORDER_COST = "workorderCost";
-		public static final String WORKORDER_COST_TYPE = "workorderCostType";
 		
 		private static Map<String, Class> classMap = Collections.unmodifiableMap(initClassMap());
 		private static Map<String, Class> initClassMap() {
