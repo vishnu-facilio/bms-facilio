@@ -421,6 +421,23 @@ public enum FacilioDateFunction implements FacilioWorkflowFunctionInterface {
 		public void checkParam(Object... objects) throws Exception {
 
 		}
+	},
+	NOW(22, "now") {
+		@Override
+		public Object execute(Object... objects) throws Exception {
+			
+			checkParam(objects);
+			if (objects != null && objects.length > 0) {
+				Boolean withoutTime = Boolean.parseBoolean(objects[0].toString());
+				if (withoutTime) {
+					return DateTimeUtil.getDayStartTime(false);
+				}
+			}
+			return DateTimeUtil.getCurrenTime(true);
+		}
+		public void checkParam(Object... objects) throws Exception {
+
+		}
 	}
 
 	;
