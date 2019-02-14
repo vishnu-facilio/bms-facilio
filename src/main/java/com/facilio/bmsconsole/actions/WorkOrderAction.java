@@ -1282,15 +1282,7 @@ public class WorkOrderAction extends FacilioAction {
 	public String getRecordCount() {
 		return recordCount;
 	}
-
-	public void setRecordCount(long count) {
-		this.recordCount = ""+count;
-	}
-
-	public void setCount(String count) {
-		this.count = count;
-	}
-		
+	
 	public String workOrderCount () throws Exception {
 		System.out.println("View Name :  clount " + getViewName());
 		return workOrderList();	
