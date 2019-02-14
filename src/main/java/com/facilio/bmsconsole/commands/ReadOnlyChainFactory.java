@@ -375,7 +375,6 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new GenerateCriteriaFromFilterCommand());
 		c.addCommand(new GenerateSearchConditionCommand());
 		c.addCommand(new GetInventoryListCommand());
-//		CommonCommandUtil.addCleanUpCommand(c);
 		return c;
 	}
 	
@@ -383,7 +382,6 @@ public class ReadOnlyChainFactory {
 		Chain c = getDefaultChain();
 		c.addCommand(SetTableNamesCommand.getForInventoryVendor());
 		c.addCommand(new GenericGetModuleDataDetailCommand());
-//		CommonCommandUtil.addCleanUpCommand(c);
 		return c;
 	}
 	
@@ -392,7 +390,14 @@ public class ReadOnlyChainFactory {
 		c.addCommand(SetTableNamesCommand.getForInventoryVendor());
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new GenericGetModuleDataListCommand());
-//		CommonCommandUtil.addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain getWorkorderPartsList(){
+		Chain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForWorkOrderParts());
+		c.addCommand(new LoadAllFieldsCommand());
+		c.addCommand(new GetWorkorderPartsListCommand());
 		return c;
 	}
 }

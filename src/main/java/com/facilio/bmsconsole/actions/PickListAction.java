@@ -443,6 +443,9 @@ public class PickListAction extends FacilioAction {
 	}
 
 	public String addInventoryCategory() throws Exception {
+		if(inventoryCategory.getDisplayName() != null && !inventoryCategory.getDisplayName().isEmpty()) {
+			inventoryCategory.setName(inventoryCategory.getDisplayName().toLowerCase().replaceAll("[^a-zA-Z0-9]+",""));
+		}
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD, getInventoryCategory());
 		Chain addInventoryCategoryChain = TransactionChainFactory.getAddInventoryCategoryChain();
