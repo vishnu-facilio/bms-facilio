@@ -11,6 +11,8 @@ import javax.transaction.SystemException;
 import javax.transaction.Transaction;
 import javax.transaction.TransactionManager;
 
+import com.facilio.accounts.dto.Account;
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
 
 public class FTransactionManager implements TransactionManager {
@@ -33,7 +35,12 @@ public class FTransactionManager implements TransactionManager {
 	private static final ConcurrentHashMap<FacilioTransaction, Long> TRANSACTION_TIMEOUT_MAP = new ConcurrentHashMap<>();
 
 	private String getTransactionId() {
-		return  Thread.currentThread().getName();
+		Account account = AccountUtil.getCurrentAccount();
+		String transactionId = "";
+		if(account != null && account.getOrg() != null && account.getUser() != null) {
+			transactionId = account.getOrg().getDomain()+"-"+ account.getUser().getId()+"-";
+		}
+		return  transactionId+Thread.currentThread().getName();
 	}
 
 	@Override
