@@ -42,14 +42,13 @@ import com.facilio.bmsconsole.criteria.StringOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FacilioModule.ModuleType;
-import com.facilio.chain.FacilioContext;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
-import com.facilio.bmsconsole.modules.NumberField;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
+import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericInsertRecordBuilder;
@@ -58,9 +57,6 @@ import com.facilio.sql.GenericUpdateRecordBuilder;
 import com.facilio.time.SecondsChronoUnit;
 import com.facilio.timeseries.TimeSeriesAPI;
 import com.facilio.transaction.FacilioConnectionPool;
-import com.facilio.unitconversion.Metric;
-import com.facilio.unitconversion.Unit;
-import com.facilio.unitconversion.UnitsUtil;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.context.WorkflowFieldContext;
 import com.facilio.workflows.util.WorkflowUtil;
@@ -305,7 +301,7 @@ public class ReadingsAPI {
 		
 		if(resourceIds != null && !resourceIds.isEmpty()) {
 			FacilioField resourceIdField = readingFieldsMap.get("resourceId");
-			LOGGER.info("Resource Ids in getRDMProps : "+resourceIds+"\nResource Field : "+resourceIdField);
+			LOGGER.debug("Resource Ids in getRDMProps : "+resourceIds+"\nResource Field : "+resourceIdField);
 			builder.andCondition(CriteriaAPI.getCondition(resourceIdField, resourceIds, NumberOperators.EQUALS));
 		}
 		
@@ -404,7 +400,7 @@ public class ReadingsAPI {
 				}
 			}
 			catch(Exception e) {
-				LOGGER.info("Exception occurred ", e);
+				LOGGER.error("Exception occurred ", e);
 				throw e;
 			}
 		}
@@ -550,7 +546,7 @@ public class ReadingsAPI {
 							}
 						}
 						else {
-							LOGGER.log(Level.INFO, "Not updating RDM for "+fField.getName()+" from "+readingContext+" because after parsing, value is null");
+							LOGGER.info("Not updating RDM for "+fField.getName()+" from "+readingContext+" because after parsing, value is null");
 						}
 					}
 				}
@@ -611,7 +607,7 @@ public class ReadingsAPI {
 			try(PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)){
 				pstmt.executeUpdate();
 			} catch(SQLException e) {
-				LOGGER.info("Exception occurred ", e);
+				LOGGER.error("Exception occurred ", e);
 				throw new SQLException("Query failed : "+sql, e);
 			}
 			}

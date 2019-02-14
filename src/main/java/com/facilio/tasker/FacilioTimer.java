@@ -96,7 +96,7 @@ public class FacilioTimer {
 //			size.add(new StringBuilder().append(key).append(" : ").append(SizeOf.sizeOf(context.get(key))).toString());
 //		}
 //		LOGGER.info(new StringBuilder().append("Adding instant job : ").append(jobName).append("\n Size : \n").append(size.toString()));
-		LOGGER.info("Adding instant job : "+jobName);
+		LOGGER.debug("Adding instant job : "+jobName);
 		if (!ObjectQueue.sendMessage(InstantJobConf.getInstantJobQueue(), context)) {
 			throw new IllegalArgumentException("Unable to add instant job to queue");
 		}

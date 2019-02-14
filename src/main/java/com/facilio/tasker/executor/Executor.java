@@ -17,7 +17,7 @@ import com.facilio.tasker.job.JobStore;
 public class Executor implements Runnable {
 	
 	private static final int MAX_RETRY = 5;
-	private static Logger log = LogManager.getLogger(Executor.class.getName());
+	private static final Logger LOGGER = LogManager.getLogger(Executor.class.getName());
 	
 	private ScheduledExecutorService executor = null;
 	private String name = null;
@@ -51,7 +51,7 @@ public class Executor implements Runnable {
 			long startTime = System.currentTimeMillis()/1000;
 			long endTime = startTime+bufferPeriod;
 			
-			log.info(name+"::"+startTime+"::"+endTime);
+			LOGGER.debug(name+"::"+startTime+"::"+endTime);
 			
 			List<JobContext> jobs = JobStore.getJobs(name, startTime, endTime, getMaxRetry());
 			jobs.addAll(JobStore.getIncompletedJobs(name, startTime, endTime, getMaxRetry()));
@@ -60,14 +60,14 @@ public class Executor implements Runnable {
 					scheduleJob(jc);
 				}
 				catch(Exception e) {
-					log.info("Unable to schedule job : "+jc.getJobName());
-					log.info("Exception occurred ", e);
+					LOGGER.error("Unable to schedule job : "+jc.getJobName());
+					LOGGER.error("Exception occurred ", e);
 				}
 			}
 			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
-			log.info("Exception occurred ", e);
+			LOGGER.error("Exception occurred ", e);
 		}
 		finally {
 			currentThread.setName(threadName);
@@ -83,10 +83,10 @@ public class Executor implements Runnable {
 				job.setJobContext(jc);
 				job.setExecutor(this);
 
-				log.info("Scheduling : " + jc);
+				LOGGER.debug("Scheduling : " + jc);
 				schedule(job, (jc.getExecutionTime() - (System.currentTimeMillis() / 1000)));
 			} else {
-				log.info("No such Job with jobname : " + jc.getJobName());
+				LOGGER.info("No such Job with jobname : " + jc.getJobName());
 			}
 		}
 	}

@@ -250,9 +250,9 @@ public class FormulaFieldAPI {
 						workflow.setWorkflowString(WorkflowUtil.getXmlStringFromWorkflow(workflow));
 					}
 					Double resultVal = (Double) WorkflowUtil.getWorkflowExpressionResult(workflow.getWorkflowString(), params, null, ignoreNullValues, false);
-					if (AccountUtil.getCurrentOrg().getId() == 135) {
-						LOGGER.info("Result of Formula : "+fieldName+" for resource : "+resourceId+" : "+resultVal);
-					}
+//					if (AccountUtil.getCurrentOrg().getId() == 135) {
+						LOGGER.debug("Result of Formula : "+fieldName+" for resource : "+resourceId+" : "+resultVal);
+//					}
 					if (resultVal != null) {
 						ReadingContext reading = new ReadingContext();
 						reading.setParentId(resourceId);
@@ -273,9 +273,9 @@ public class FormulaFieldAPI {
 						}
 					}
 					long timeTaken = System.currentTimeMillis() - startTime;
-					if (AccountUtil.getCurrentOrg().getId() == 135) {
-						LOGGER.info("Time taken for Formula calculation of : "+fieldName+" between "+iStartTime+" and "+iEndTime+" : "+timeTaken);
-					}
+//					if (AccountUtil.getCurrentOrg().getId() == 135) {
+						LOGGER.debug("Time taken for Formula calculation of : "+fieldName+" between "+iStartTime+" and "+iEndTime+" : "+timeTaken);
+//					}
 				}
 				catch (Exception e) {
 					LOGGER.log(Level.ERROR, e.getMessage(), e);
@@ -720,33 +720,33 @@ public class FormulaFieldAPI {
 		}
 		
 		if (dependsOnSameModule(formula)) {
-			LOGGER.warn("Calculating the usual way instead of optimised, since formula is depending on itself");
+			LOGGER.debug("Calculating the usual way instead of optimised, since formula is depending on itself");
 			historicalCalculation(formula, range, singleResourceId, isSystem, historicalAlarm);
 		}
 		
 		if (!isAllWorkflowFieldsAggregationIsLastVal(formula.getWorkflow())) {
-			LOGGER.warn("Calculating the usual way instead of optimised, since formula depends on fields who's aggregation is not 'lastValue'");
+			LOGGER.debug("Calculating the usual way instead of optimised, since formula depends on fields who's aggregation is not 'lastValue'");
 			historicalCalculation(formula, range, singleResourceId, isSystem, historicalAlarm);
 		}
 		
 		List<DateRange> intervals = getIntervals(formula, range);
-		LOGGER.info(intervals);
+		LOGGER.debug(intervals);
 		if (intervals != null && !intervals.isEmpty()) {
 			List<ReadingContext> readings = new ArrayList<>();
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			if (singleResourceId != -1) {
-				LOGGER.info("Gonna perform optmised historical calculation for formula : "+formula.getId()+" for resource : "+singleResourceId);
+				LOGGER.debug("Gonna perform optmised historical calculation for formula : "+formula.getId()+" for resource : "+singleResourceId);
 				if (formula.getMatchedResourcesIds().contains(singleResourceId)) {
 					LOGGER.debug("Matched");
 					long workflowStarttime = System.currentTimeMillis();
 					OptimisedFormulaCalculationWorkflow optimisedWorkflow = constructOptimisedWorkflowForHistoricalCalculation(formula.getWorkflow());
-					LOGGER.info("Time taken to generate optimised workflow : "+(System.currentTimeMillis() - workflowStarttime));
+					LOGGER.debug("Time taken to generate optimised workflow : "+(System.currentTimeMillis() - workflowStarttime));
 					int deletedData = deleteOlderData(range.getStartTime(), range.getEndTime(), Collections.singletonList(singleResourceId), formula.getReadingField().getModule().getName());
-					LOGGER.info("Deleted rows for formula : "+formula.getName()+" between "+range+" is : "+deletedData);
+					LOGGER.debug("Deleted rows for formula : "+formula.getName()+" between "+range+" is : "+deletedData);
 					Set<Object> xValues = new TreeSet<>(); 
 					long independentDataStarttime = System.currentTimeMillis();
 					Map<String,Object> wfParams = fetchIndependentParams(optimisedWorkflow.getMetas(), range, modBean, xValues);
-					LOGGER.info("Time taken to fetch independent data : "+(System.currentTimeMillis() - independentDataStarttime));
+					LOGGER.debug("Time taken to fetch independent data : "+(System.currentTimeMillis() - independentDataStarttime));
 					List<ReadingContext> currentReadings = computeOptimisedWorkflow(formula.getReadingField().getName(), optimisedWorkflow, range, wfParams, xValues, singleResourceId, modBean);
 					if (currentReadings != null && !currentReadings.isEmpty()) {
 						readings.addAll(currentReadings);
@@ -756,7 +756,7 @@ public class FormulaFieldAPI {
 			else {
 				OptimisedFormulaCalculationWorkflow optimisedWorkflow = constructOptimisedWorkflowForHistoricalCalculation(formula.getWorkflow());
 				int deletedData = deleteOlderData(range.getStartTime(), range.getEndTime(), formula.getMatchedResourcesIds(), formula.getReadingField().getModule().getName());
-				LOGGER.info("Deleted rows for formula : "+formula.getName()+" between "+range+" is : "+deletedData);
+				LOGGER.debug("Deleted rows for formula : "+formula.getName()+" between "+range+" is : "+deletedData);
 				Set<Object> xValues = new TreeSet<>(); 
 				Map<String,Object> wfParams = fetchIndependentParams(optimisedWorkflow.getMetas(), range, modBean, xValues);
 				for (Long resourceId : formula.getMatchedResourcesIds()) {
@@ -767,7 +767,7 @@ public class FormulaFieldAPI {
 				}
 			}
 			
-			LOGGER.info("Historical Data to be added for formula "+readings.size());
+			LOGGER.debug("Historical Data to be added for formula "+readings.size());
 			if (!readings.isEmpty()) {
 				FacilioContext context = new FacilioContext();
 				context.put(FacilioConstants.ContextNames.MODULE_NAME, formula.getReadingField().getModule().getName());
@@ -786,15 +786,15 @@ public class FormulaFieldAPI {
 		Set<Object> currentxValues = new TreeSet<>(xValues);
 		long resourceParamsStarttime = System.currentTimeMillis();
 		params.putAll(fetchResourceParams(resourceId, workflow.getMetas(), range, modBean, currentxValues));
-		LOGGER.info("Time taken to fetch resource params : "+(System.currentTimeMillis() - resourceParamsStarttime));
+		LOGGER.debug("Time taken to fetch resource params : "+(System.currentTimeMillis() - resourceParamsStarttime));
 		params.put("xValues", currentxValues);
 		String wfXmlString = WorkflowUtil.getXmlStringFromWorkflow(workflow);
-		LOGGER.info("Optimised wfXmlString -- "+wfXmlString);
-		LOGGER.info("Meta -- "+workflow.getMetas());
-		LOGGER.info("wfParams :: "+params);
+		LOGGER.debug("Optimised wfXmlString -- "+wfXmlString);
+		LOGGER.debug("Meta -- "+workflow.getMetas());
+		LOGGER.debug("wfParams :: "+params);
 		long workflowExecutionStartTime = System.currentTimeMillis();
 		Map<Object, Object> result = (Map<Object,Object>) WorkflowUtil.getWorkflowExpressionResult(wfXmlString, params, null, false, false);
-		LOGGER.info("Time taken for optimised workflow execution : "+(System.currentTimeMillis() - workflowExecutionStartTime));
+		LOGGER.debug("Time taken for optimised workflow execution : "+(System.currentTimeMillis() - workflowExecutionStartTime));
 		
 		long readingsStartTime = System.currentTimeMillis();
 		if (result != null && !result.isEmpty()) {
@@ -808,7 +808,7 @@ public class FormulaFieldAPI {
 			}
 			return readings;
 		}
-		LOGGER.info("Time taken to generate readings from Workflow result : "+(System.currentTimeMillis() - readingsStartTime));
+		LOGGER.debug("Time taken to generate readings from Workflow result : "+(System.currentTimeMillis() - readingsStartTime));
 		return null;
 	}
 	
@@ -977,16 +977,16 @@ public class FormulaFieldAPI {
 	
 	public static void historicalCalculation(FormulaFieldContext formula, DateRange range, long singleResourceId, boolean isSystem, boolean historicalAlarm) throws Exception {
 		List<DateRange> intervals = getIntervals(formula, range);
-		LOGGER.info(intervals);
+		LOGGER.debug(intervals);
 		if (intervals != null && !intervals.isEmpty()) {
 			List<ReadingContext> readings = new ArrayList<>();
 			boolean isSelfDependent = dependsOnSameModule(formula);
 			if (singleResourceId != -1) {
-				LOGGER.info("Gonna calculate historical formula of : "+formula.getId()+" for resource : "+singleResourceId);
+				LOGGER.debug("Gonna calculate historical formula of : "+formula.getId()+" for resource : "+singleResourceId);
 				if (formula.getMatchedResourcesIds().contains(singleResourceId)) {
 					LOGGER.debug("Matched");
 					int deletedData = deleteOlderData(range.getStartTime(), range.getEndTime(), Collections.singletonList(singleResourceId), formula.getReadingField().getModule().getName());
-					LOGGER.info("Deleted rows for formula : "+formula.getName()+" between "+range+" is : "+deletedData);
+					LOGGER.debug("Deleted rows for formula : "+formula.getName()+" between "+range+" is : "+deletedData);
 					
 					List<ReadingContext> currentReadings = FormulaFieldAPI.calculateFormulaReadings(singleResourceId, formula.getReadingField().getModule().getName(), formula.getReadingField().getName(), intervals, formula.getWorkflow(), formula.getTriggerTypeEnum() == TriggerType.SCHEDULE, isSelfDependent);
 					if (currentReadings != null && !currentReadings.isEmpty()) {
@@ -996,7 +996,7 @@ public class FormulaFieldAPI {
 			}
 			else {
 				int deletedData = deleteOlderData(range.getStartTime(), range.getEndTime(), formula.getMatchedResourcesIds(), formula.getReadingField().getModule().getName());
-				LOGGER.info("Deleted rows for formula : "+formula.getName()+" between "+range+" is : "+deletedData);
+				LOGGER.debug("Deleted rows for formula : "+formula.getName()+" between "+range+" is : "+deletedData);
 				
 				for (Long resourceId : formula.getMatchedResourcesIds()) {
 					List<ReadingContext> currentReadings = FormulaFieldAPI.calculateFormulaReadings(resourceId, formula.getReadingField().getModule().getName(), formula.getReadingField().getName(), intervals, formula.getWorkflow(), formula.getTriggerTypeEnum() == TriggerType.SCHEDULE, isSelfDependent);
@@ -1006,7 +1006,7 @@ public class FormulaFieldAPI {
 				}
 			}
 			
-			LOGGER.info("Historical Data to be added for formula "+readings.size());
+			LOGGER.debug("Historical Data to be added for formula "+readings.size());
 			if (!isSelfDependent && !readings.isEmpty()) {
 				FacilioContext context = new FacilioContext();
 				context.put(FacilioConstants.ContextNames.MODULE_NAME, formula.getReadingField().getModule().getName());
