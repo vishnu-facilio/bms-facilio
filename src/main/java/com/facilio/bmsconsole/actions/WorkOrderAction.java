@@ -1526,6 +1526,7 @@ public class WorkOrderAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.CV_NAME, getViewName());
 		context.put(FacilioConstants.ContextNames.WO_DUE_STARTTIME, getStartTime());
 		context.put(FacilioConstants.ContextNames.WO_DUE_ENDTIME, getEndTime());
+		context.put(FacilioConstants.ContextNames.IS_APPROVAL, isApproval());
 		if (getCount() != null) {	// only count
 			context.put(FacilioConstants.ContextNames.WO_LIST_COUNT, getCount());
 		}

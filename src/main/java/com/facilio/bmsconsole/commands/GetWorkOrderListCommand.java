@@ -12,6 +12,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
@@ -33,6 +34,7 @@ public class GetWorkOrderListCommand implements Command {
 		String dataTableName = (String) context.get(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME);
 		FacilioView view = (FacilioView) context.get(FacilioConstants.ContextNames.CUSTOM_VIEW);
 		String count = (String) context.get(FacilioConstants.ContextNames.WO_LIST_COUNT);
+		boolean isApproval = (Boolean) context.get(FacilioConstants.ContextNames.IS_APPROVAL);
 		List<FacilioField> fields = null;
 		
 		 List<Map<String, Object>> subViewsCount = null;
@@ -117,7 +119,10 @@ public class GetWorkOrderListCommand implements Command {
 		{
 			selectBuilder.andCustomWhere("Tickets.DUE_DATE BETWEEN ? AND ?", (Long) context.get(FacilioConstants.ContextNames.WO_DUE_STARTTIME) * 1000, (Long) context.get(FacilioConstants.ContextNames.WO_DUE_ENDTIME) * 1000);
 		}
+		if (!isApproval) {
+			selectBuilder.andCondition(CriteriaAPI.getCondition("STATUS_ID", "status", TicketAPI.getStatus("preopen").getId()+"", NumberOperators.NOT_EQUALS));
 
+		}
 		String orderBy = (String) context.get(FacilioConstants.ContextNames.SORTING_QUERY);
 		if (orderBy != null && !orderBy.isEmpty()) {
 			selectBuilder.orderBy(orderBy);

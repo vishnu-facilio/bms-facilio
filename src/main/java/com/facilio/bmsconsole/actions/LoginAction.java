@@ -348,7 +348,7 @@ public class LoginAction extends FacilioAction {
 		else {
 			Map<String, Set<FacilioForm>> forms = FormsAPI.getAllForms(FormType.WEB);
 			data.put("forms", forms);
-			data.put("ticketStatus", TicketAPI.getAllStatus(false));
+			data.put("ticketStatus", TicketAPI.getAllStatus(true));
 		}
 		data.put("mysites", CommonCommandUtil.getMySites());
 		data.put("buildings", SpaceAPI.getAllBuildings());

@@ -519,6 +519,7 @@ public class FacilioConstants {
 		public static final String WO_DUE_ENDTIME = "woDueEndtime";
 		public static final String WO_LIST_COUNT = "woListCount";
 		public static final String WO_VIEW_COUNT = "woListAndCount";
+		public static final String IS_APPROVAL = "isApproval";
 		
 		public static final String CV_NAME = "cvName";
 		public static final String CUSTOM_VIEW = "customView";
