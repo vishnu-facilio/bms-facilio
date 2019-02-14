@@ -428,12 +428,10 @@ public enum FacilioDateFunction implements FacilioWorkflowFunctionInterface {
 			
 			checkParam(objects);
 			if (objects != null && objects.length > 0) {
-				Boolean withoutTime = Boolean.parseBoolean(objects[0].toString());
-				if (withoutTime) {
-					return DateTimeUtil.getDayStartTime(false);
-				}
+				Boolean inSeconds = Boolean.parseBoolean(objects[0].toString());
+				return DateTimeUtil.getCurrenTime(inSeconds);
 			}
-			return DateTimeUtil.getCurrenTime(true);
+			return DateTimeUtil.getCurrenTime(false);
 		}
 		public void checkParam(Object... objects) throws Exception {
 

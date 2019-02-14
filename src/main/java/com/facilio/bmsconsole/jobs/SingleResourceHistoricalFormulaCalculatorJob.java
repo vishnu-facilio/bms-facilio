@@ -6,7 +6,6 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
-import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.FormulaFieldContext;
@@ -50,7 +49,7 @@ public class SingleResourceHistoricalFormulaCalculatorJob extends FacilioJob {
 			
 			if (!isSystem) {
 				JSONObject json = new JSONObject();
-				json.put("to", "praveen@facilio.com, manthosh@facilio.com, shivaraj@facilio.com");
+				json.put("to", "praveen@facilio.com, manthosh@facilio.com, shivaraj@facilio.com, shaan@facilio.com");
 				json.put("sender", "noreply@facilio.com");
 				json.put("subject", "Historical Calculation completed for Formula : "+formulaId);
 				json.put("message", msg);
