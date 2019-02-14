@@ -27,7 +27,8 @@ public class HandleGroupByDataCommand implements Command {
 		
 		List<ReportDataPointContext> dataPoints = report.getDataPoints();
 		
-//		ReportDataPointContext dataPointContext = dataPoints.get(0);
+		String xAlias = getxAlias(report);
+		
 		boolean shouldIterate = false;
 		for (ReportDataPointContext dataPointContext : dataPoints) {
 			List<Map<String, Object>> dataList = (List<Map<String, Object>>) data.get("data");
@@ -35,14 +36,14 @@ public class HandleGroupByDataCommand implements Command {
 				for (Map<String, Object> map : dataList) {
 					Map<String, Object> object = null;
 					for (Map<String, Object> d : dataFormatted) {
-						if (d.get(report.getxAlias()).equals(map.get(report.getxAlias()))) {
+						if (d.get(xAlias).equals(map.get(xAlias))) {
 							object = d;
 							break;
 						}
 					}
 					if (object == null) {
 						object = new HashMap<>();
-						object.put(report.getxAlias(), map.get(report.getxAlias()));
+						object.put(xAlias, map.get(xAlias));
 						dataFormatted.add(object);
 					}
 					
@@ -84,6 +85,10 @@ public class HandleGroupByDataCommand implements Command {
 //		context.put(FacilioConstants.ContextNames.REPORT_DATA, dataFormated);
 		
 		return false;
+	}
+	
+	private String getxAlias(ReportContext report) {
+		return report.getxAlias() == null ? FacilioConstants.ContextNames.REPORT_DEFAULT_X_ALIAS : report.getxAlias();
 	}
 
 }
