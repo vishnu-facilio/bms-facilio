@@ -21,7 +21,7 @@ public class ProcessDataCommand implements Command {
 		JSONObject payLoad =(JSONObject)context.get(FacilioConstants.ContextNames.PAY_LOAD);
 		Iterator<String> keyList = payLoad.keySet().iterator();
 		Map<String, Map<String,String>> deviceData= new HashMap<String, Map<String,String>>();
-		LOGGER.info("Inside ProcessDataCommand####### incoming JSON: "+payLoad);
+		LOGGER.debug("Inside ProcessDataCommand####### incoming JSON: "+payLoad);
 		while(keyList.hasNext())
 		{
 			String actualKey = keyList.next();

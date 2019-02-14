@@ -23,7 +23,7 @@ public class TransactionMonitor extends TimerTask {
         if(timeTaken > entry.getKey().getTransactionTimeout()){
             try {
                 LOGGER.debug("Rolling back Transaction for " + entry.getKey().getTransactionId());
-                LOGGER.info("Rolling back Transaction for " + entry.getKey().getTransactionId() +" time taken : " + timeTaken + " timeout : " + entry.getValue());
+                LOGGER.info("Rolling back Transaction for " + entry.getKey().getTransactionId() +" time taken : " + timeTaken + " timeout : " + entry.getKey().getTransactionTimeout());
                 entry.getKey().rollback(false);
                 LOGGER.debug("Rolled back Transaction for " + entry.getKey().getTransactionId());
             } catch (SystemException e) {
