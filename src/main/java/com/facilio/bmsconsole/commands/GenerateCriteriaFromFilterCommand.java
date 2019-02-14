@@ -65,6 +65,10 @@ public class GenerateCriteriaFromFilterCommand implements Command {
 			moduleName = gePreventiveMaintenanceModule(fieldName);
 		}
 		FacilioField field = modBean.getField(fieldName, moduleName);
+		if (field == null) {
+			LOGGER.error("Field is not found for: " + fieldName + " : " + moduleName);
+			throw new Exception("Field is not found for: " + fieldName + " : " + moduleName);
+		}
 		JSONArray value = (JSONArray) fieldJson.get("value");
 		int operatorId;
 		String operatorName;
