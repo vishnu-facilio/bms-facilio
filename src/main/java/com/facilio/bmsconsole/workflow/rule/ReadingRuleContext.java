@@ -12,6 +12,7 @@ import java.util.Map;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.apache.log4j.Priority;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
@@ -130,10 +131,15 @@ public class ReadingRuleContext extends WorkflowRuleContext {
 	}
 
 	private FacilioField readingField;
-	public FacilioField getReadingField() throws Exception {
-		if(readingField == null && readingFieldId > 0) {
-			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			readingField = modBean.getField(readingFieldId);
+	public FacilioField getReadingField(){
+		try {
+			if(readingField == null && readingFieldId > 0) {
+				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+				readingField = modBean.getField(readingFieldId);
+			}
+		}
+		catch(Exception e) {
+			LOGGER.error("Error while fetching reading fieldid : "+readingFieldId, e);
 		}
 		return readingField;
 	}
