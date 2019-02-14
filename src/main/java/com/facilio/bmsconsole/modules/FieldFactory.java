@@ -545,6 +545,7 @@ public class FieldFactory {
 	public static FacilioField getOrgIdField() {
 		return getOrgIdField(null);
 	}
+
 	public static FacilioField getOrgIdField(FacilioModule module) {
 		FacilioField field = new FacilioField();
 		field.setName("orgId");
@@ -554,9 +555,10 @@ public class FieldFactory {
 		if (module != null) {
 			field.setModule(module);
 		}
+
 		
 		return field;
-	}
+		}
 	
 
 	public static FacilioField getSiteIdField() {

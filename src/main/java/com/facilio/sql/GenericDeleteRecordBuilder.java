@@ -217,12 +217,12 @@ public class GenericDeleteRecordBuilder implements DeleteBuilderIfc<Map<String, 
 		if (!DBUtil.isTableWithoutOrgId(tableName)) {
 			orgIdField = DBUtil.getOrgIdField(tableName);
 			
-			WhereBuilder whereCondition = new WhereBuilder();
+			/*WhereBuilder whereCondition = new WhereBuilder();
 			Condition orgCondition = CriteriaAPI.getCondition(orgIdField, String.valueOf(AccountUtil.getCurrentOrg().getOrgId()), NumberOperators.EQUALS);
 			whereCondition.andCondition(orgCondition);
 			
 			oldWhere = where;
-			where = whereCondition.andCustomWhere(where.getWhereClause(), where.getValues());
+			where = whereCondition.andCustomWhere(where.getWhereClause(), where.getValues());*/
 		}
 		
 	}

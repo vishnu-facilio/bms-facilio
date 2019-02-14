@@ -223,9 +223,9 @@ public class GenericUpdateRecordBuilder implements UpdateBuilderIfc<Map<String, 
 		if (value == null) {
 			return 0;
 		}
-		if (orgIdField != null) {
+		/*if (orgIdField != null) {
 			value.put(orgIdField.getName(), AccountUtil.getCurrentOrg().getId());
-		}
+		}*/
 		value.remove("id");
 		this.value = value;
 		if(!value.isEmpty()) {
@@ -335,12 +335,12 @@ public class GenericUpdateRecordBuilder implements UpdateBuilderIfc<Map<String, 
 		if (!DBUtil.isTableWithoutOrgId(tableName)) {
 			orgIdField = DBUtil.getOrgIdField(tableName);
 			
-			WhereBuilder whereCondition = new WhereBuilder();
+			/*WhereBuilder whereCondition = new WhereBuilder();
 			Condition orgCondition = CriteriaAPI.getCondition(orgIdField, String.valueOf(AccountUtil.getCurrentOrg().getOrgId()), NumberOperators.EQUALS);
 			whereCondition.andCondition(orgCondition);
 			
 			oldWhere = where;
-			where = whereCondition.andCustomWhere(where.getWhereClause(), where.getValues());
+			where = whereCondition.andCustomWhere(where.getWhereClause(), where.getValues());*/
 		}
 		
 	}

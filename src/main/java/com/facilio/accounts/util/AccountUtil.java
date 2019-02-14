@@ -31,6 +31,7 @@ public class AccountUtil {
 	private static ThreadLocal<Account> currentAccount = new ThreadLocal<Account>();
 	
 	public static void setCurrentAccount(Account account) throws Exception {
+
 		currentAccount.set(account);
 	}
 	
@@ -38,7 +39,7 @@ public class AccountUtil {
 		Organization org = AccountUtil.getOrgBean().getOrg(orgId);
 		
 		if (org != null) {
-			System.out.println("the orgis"+org);
+			
 			Account account = new Account(org, null);
 			setCurrentAccount(account);
 			User user = AccountUtil.getOrgBean().getSuperAdmin(org.getId());
@@ -96,6 +97,10 @@ public class AccountUtil {
 	
 	public static RoleBean getRoleBean() throws Exception {
 		RoleBean roleBean = (RoleBean) BeanFactory.lookup("RoleBean");
+		return roleBean;
+	}
+	public static RoleBean getRoleBean(long orgId) throws Exception {
+		RoleBean roleBean = (RoleBean) BeanFactory.lookup("RoleBean",orgId);
 		return roleBean;
 	}
 	

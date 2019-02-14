@@ -851,7 +851,7 @@ public class AccountConstants {
 		FacilioModule module = getOrgInfoModule();
 		List<FacilioField> fields = new ArrayList<>();
 
-		/*fields.add(FieldFactory.getOrgIdField(module));*/
+		fields.add(FieldFactory.getOrgIdField(module));
 
 		FacilioField name = new FacilioField();
 		name.setName("name");
@@ -1139,12 +1139,12 @@ public class AccountConstants {
 
 		fields.add(getUserIdField(module));
 
-		/*FacilioField orgId = new FacilioField();
+		FacilioField orgId = new FacilioField();
 		orgId.setName("orgId");
 		orgId.setDataType(FieldType.NUMBER);
 		orgId.setColumnName("ORGID");
 		orgId.setModule(module);
-		fields.add(orgId);*/
+		fields.add(orgId);
 		
 		FacilioField license = new FacilioField();
 		license.setName("license");

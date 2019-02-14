@@ -22,6 +22,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import com.facilio.accounts.bean.RoleBean;
 import com.facilio.accounts.bean.UserBean;
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
@@ -1870,9 +1871,17 @@ public class UserBeanImpl implements UserBean {
 		
 		if (fetchRole) {
 			if (user.getRoleId() > 0) {
-				user.setRole(AccountUtil.getRoleBean().getRole(user.getRoleId(), false));
+				RoleBean roleBean = null;
+				if (AccountUtil.getCurrentOrg() == null) {
+					roleBean = AccountUtil.getRoleBean(user.getOrgId());
+				}
+				else {
+					roleBean = AccountUtil.getRoleBean();
+				}
+				user.setRole(roleBean.getRole(user.getRoleId(), false));
 			}
 		}
+		
 		
 		if (fetchSpace) {
 			user.setAccessibleSpace(getAccessibleSpaceList(user.getOuid()));

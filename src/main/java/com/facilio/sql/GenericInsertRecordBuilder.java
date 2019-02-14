@@ -128,6 +128,10 @@ public class GenericInsertRecordBuilder implements InsertBuilderIfc<Map<String, 
 			List<Long> ids = new ArrayList<>();
 			int itr = 0;
 			for(Map<String, Object> value : values) {
+				
+				if(orgIdField!=null) {
+					value.put(orgIdField.getName(),AccountUtil.getCurrentOrg().getId());
+				}
 				pstmt.clearParameters();
 				int paramIndex = 1;
 				
