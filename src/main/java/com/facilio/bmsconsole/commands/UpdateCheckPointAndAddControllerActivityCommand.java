@@ -64,9 +64,9 @@ public class UpdateCheckPointAndAddControllerActivityCommand implements Command 
 				addControllerActivity((FacilioContext) context, controller, controllerTime);
 			}
 			else {
-				String controllerId = (String) context.get(FacilioConstants.ContextNames.CONTROLLER_ID);
-				if (controllerId != null && !controllerId.isEmpty()) {
-					controller = ControllerAPI.getActiveController(controllerId);
+				Long controllerId = (Long) context.get(FacilioConstants.ContextNames.CONTROLLER_ID);
+				if (controllerId != null) {
+					controller = ControllerAPI.getController(controllerId);
 					if (controller != null) {
 						//TODO Have to figure what to do with time
 					}
