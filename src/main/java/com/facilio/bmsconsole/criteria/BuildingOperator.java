@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.criteria;
 
+import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -8,6 +9,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.apache.commons.beanutils.PropertyUtils;
+import org.apache.commons.collections.Predicate;
+import org.apache.commons.collections.PredicateUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 
 import com.facilio.bmsconsole.context.BaseSpaceContext;
@@ -20,7 +25,17 @@ public enum BuildingOperator implements Operator<String> {
 	BUILDING_IS(38, "building_is") {
 		@Override
 		public FacilioModulePredicate getPredicate(String fieldName, String value) {
-			// TODO Auto-generated method stub
+			if(fieldName != null && !fieldName.isEmpty() && value != null && !value.isEmpty()) {
+				try {
+					List<ResourceContext> resources = getAllResources(value);
+					if (resources != null && !resources.isEmpty()) {
+						List<Long> ids = resources.stream().map(resource -> resource.getId()).collect(Collectors.toList());
+						return new FacilioModulePredicate(fieldName, computeBuildingIsPredicate(StringUtils.join(ids, ",")));
+					}
+				} catch (Exception e) {
+					log.info("Exception occurred ", e);
+				}
+			}
 			return null;
 		}
 
@@ -66,6 +81,48 @@ public enum BuildingOperator implements Operator<String> {
 			return null;
 		}
 	};
+	
+	private static Predicate computeBuildingIsPredicate(String value) {
+		if(value.contains(",")) {
+			List<Predicate> buildingIsPredicates = new ArrayList<>();
+			String[] values = value.trim().split("\\s*,\\s*");
+			for(String val : values) {
+				buildingIsPredicates.add(getBuildingIsPredicate(val));
+			}
+			return PredicateUtils.anyPredicate(buildingIsPredicates);
+		}
+		else {
+			return getBuildingIsPredicate(value);
+		}
+	}
+	
+	private static Predicate getBuildingIsPredicate(String value) {
+		return new Predicate() {
+			@Override
+			public boolean evaluate(Object object) {
+				// TODO Auto-generated method stub
+				if(object != null) {
+					try {
+						long currentId;
+						if(object instanceof Long) {
+							currentId = (long) object;
+						}
+						else if(PropertyUtils.isReadable(object, "id")) {
+							currentId = (long) PropertyUtils.getProperty(object, "id");
+						}
+						else {
+							return false;
+						}
+						long longVal = Long.parseLong(value);
+						return currentId == longVal;
+					} catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+						log.info("Exception occurred ", e);
+					}
+				}
+				return false;
+			}
+		};
+	}
 
 	private static org.apache.log4j.Logger log = LogManager.getLogger(BuildingOperator.class.getName());
 
