@@ -79,7 +79,7 @@ public class ExecuteAllWorkflowsCommand implements SerializableCommand
 			else {
 				new ParallalWorkflowExecution(AccountUtil.getCurrentAccount(), recordMap, changeSetMap, (FacilioContext) context).invoke();
 			}
-			LOGGER.info("Time taken to Execute workflows for modules : "+recordMap.keySet()+" is "+(System.currentTimeMillis() - startTime));
+			LOGGER.debug("Time taken to Execute workflows for modules : "+recordMap.keySet()+" is "+(System.currentTimeMillis() - startTime));
 		}
 		return false;
 	}
@@ -116,10 +116,10 @@ public class ExecuteAllWorkflowsCommand implements SerializableCommand
 				parentCriteria.addAndCondition(CriteriaAPI.getCondition(onSuccess, CommonOperators.IS_EMPTY));
 				List<WorkflowRuleContext> workflowRules = WorkflowRuleAPI.getActiveWorkflowRulesFromActivityAndRuleType(moduleId, activities, parentCriteria, ruleTypes);
 				
-				if (AccountUtil.getCurrentOrg().getId() == 133 && FacilioConstants.ContextNames.ALARM.equals(moduleName)) {
-					LOGGER.info("Records : "+entry.getValue());
-					LOGGER.info("Matching Rules : "+workflowRules);
-				}
+//				if (AccountUtil.getCurrentOrg().getId() == 133 && FacilioConstants.ContextNames.ALARM.equals(moduleName)) {
+					LOGGER.debug("Records : "+entry.getValue());
+					LOGGER.debug("Matching Rules : "+workflowRules);
+//				}
 				
 				if (workflowRules != null && !workflowRules.isEmpty()) {
 					Map<String, Object> placeHolders = WorkflowRuleAPI.getOrgPlaceHolders();

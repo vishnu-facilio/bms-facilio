@@ -546,7 +546,7 @@ public class ReadingsAPI {
 							}
 						}
 						else {
-							LOGGER.info("Not updating RDM for "+fField.getName()+" from "+readingContext+" because after parsing, value is null");
+							LOGGER.debug("Not updating RDM for "+fField.getName()+" from "+readingContext+" because after parsing, value is null");
 						}
 					}
 				}
