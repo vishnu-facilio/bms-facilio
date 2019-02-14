@@ -505,12 +505,17 @@ public class V2ReportAction extends FacilioAction {
 	public String saveReport() throws Exception {
 		Chain chain = FacilioChain.getTransactionChain();
 		FacilioContext context = new FacilioContext();
-
+		
 		if (reportContext == null) {
 			throw new Exception("Report context cannot be empty");
 		}
 		reportContext.setChartState(chartState);
 		reportContext.setTabularState(tabularState);
+		
+		if (reportId > 0) {
+			ReportContext report = ReportUtil.getReport(reportId);
+			reportContext.setId(report.getId());
+		}
 		
 		context.put(FacilioConstants.ContextNames.REPORT, reportContext);
 		context.put("x-axis", xField);
