@@ -313,6 +313,13 @@ public class ViewFactory {
 		groupDetails.put("displayName", "All Work Orders");
 		groupDetails.put("views", all);
 		groupVsViews.add(groupDetails);
+		
+		groupDetails = new HashMap<>();
+		groupDetails.put("name", "customworkorders");
+		groupDetails.put("displayName", "Custom Work Orders");
+		groupDetails.put("type", "custom");
+		groupDetails.put("views", null);
+		groupVsViews.add(groupDetails);
 
 		moduleVsGroup.put(FacilioConstants.ContextNames.WORK_ORDER, groupVsViews);
 

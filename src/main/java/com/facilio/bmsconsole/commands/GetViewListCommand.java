@@ -50,32 +50,58 @@ public class GetViewListCommand implements Command {
 		
 		Boolean fetchByGroup = (Boolean) context.get(FacilioConstants.ContextNames.GROUP_STATUS);
 		if (fetchByGroup != null && fetchByGroup) {
+			List<FacilioView> customViews = allViews.stream().filter(view -> view.getIsDefault() != null && !view.getIsDefault()).collect(Collectors.toList());
+			
 			// Temp...Needs to change in web client also
 			if (AccountUtil.getCurrentAccount().isFromMobile()) {
 				List<Map<String, Object>> groupViews = ViewFactory.getGroupVsViews(moduleName);
 				if (groupViews != null && !groupViews.isEmpty()) {
-					for(int i = 0, size = groupViews.size(); i < size; i++) {
-						Map<String, Object> group = groupViews.get(i);
+					int groupSize = groupViews.size();
+					Map<String, Object> group = groupViews.get(groupSize - 1);
+					if (group.containsKey("type") && group.get("type").equals("custom") && !customViews.isEmpty()) {
 						Map<String, Object> mutatedDetail = new HashMap<>(group);
-						List<FacilioView> views = ((List<String>)group.get("views")).stream().map(view -> viewMap.get(view)).collect(Collectors.toList());
+						mutatedDetail.remove("type");
+						mutatedDetail.put("views", customViews);
+						groupViews.set(groupSize - 1, mutatedDetail);
+					}
+				}
+				else {
+					groupViews = new ArrayList<>();
+					Map<String, Object> groupDetails = new HashMap<>();
+					groupDetails.put("name", "systemviews");
+					groupDetails.put("displayName", "System Views");
+					groupDetails.put("views", allViews.stream().filter(view -> view.getIsDefault() == null || view.getIsDefault()).collect(Collectors.toList()));
+					groupViews.add(groupDetails);
+					
+					if (!customViews.isEmpty()) {
+						groupDetails = new HashMap<>();
+						groupDetails.put("name", "customviews");
+						groupDetails.put("displayName", "Custom Views");
+						groupDetails.put("views", customViews);
+						groupViews.add(groupDetails);
+					}
+				}
+				
+				for(int i = 0, size = groupViews.size(); i < size; i++) {
+					Map<String, Object> group = groupViews.get(i);
+					Map<String, Object> mutatedDetail = new HashMap<>(group);
+					if (group.get("views") != null) {
+						List<FacilioView> views;
+						if (((List<?>)group.get("views")).get(0) instanceof FacilioView) {
+							views = (List<FacilioView>) group.get("views");
+						}
+						else {
+							views = ((List<String>)group.get("views")).stream().map(view -> viewMap.get(view)).collect(Collectors.toList());
+						}
 						views.sort(Comparator.comparing(FacilioView::getSequenceNumber, (s1, s2) -> {
 							if(s1 == s2){
-						         return 0;
-						    }
-						    return s1 < s2 ? -1 : 1;
+								return 0;
+							}
+							return s1 < s2 ? -1 : 1;
 						}));
 						mutatedDetail.put("views", views);
 						groupViews.set(i, mutatedDetail);
 					}
-				}
-				
-				List<FacilioView> customViews = allViews.stream().filter(view -> view.getIsDefault() != null && !view.getIsDefault()).collect(Collectors.toList());
-				if (!customViews.isEmpty()) {
-					Map<String, Object> customViewGroup = new HashMap<>();
-					customViewGroup.put("name", "customworkorders");
-					customViewGroup.put("displayName", "Custom Work Orders");
-					customViewGroup.put("views", customViews);
-					groupViews.add(customViewGroup);
 				}
 				
 				context.put(FacilioConstants.ContextNames.VIEW_LIST, groupViews);
