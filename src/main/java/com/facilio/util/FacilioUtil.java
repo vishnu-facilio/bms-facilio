@@ -1,15 +1,11 @@
 package com.facilio.util;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -19,28 +15,11 @@ import org.json.simple.JSONObject;
 
 public class FacilioUtil {
 
-    private static final String PROPERTY_FILE = "conf/facilio.properties";
-    private static final Properties PROPERTIES = new Properties();
-    private static Logger log = LogManager.getLogger(FacilioUtil.class.getName());
-    
+    private static final Logger LOGGER = LogManager.getLogger(FacilioUtil.class.getName());
+
     public static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("#.##");
 
-    static {
-        URL resource = FacilioUtil.class.getClassLoader().getResource(PROPERTY_FILE);
-        if (resource != null) {
-            try (InputStream stream = resource.openStream()) {
-                PROPERTIES.load(stream);
-				PROPERTIES.forEach((k,v) -> PROPERTIES.put(k, v.toString().trim()));
-            } catch (IOException e) {
-                log.info("Exception occurred ", e);
-            }
-        }
-    }
 
-    public static String getProperty(String name) {
-        return PROPERTIES.getProperty(name);
-    }
-    
     public static boolean isNumeric(String str) {
     	if(str == null) {
     		return false;

@@ -142,7 +142,7 @@ public class AwsUtil
 	private static String db;
 	private static String dbClass;
 	private static boolean userServer = true;
-	private static boolean kinesisServer = false;
+	private static boolean messageProcessor = false;
 	private static String appDomain;
 	private static String clientAppUrl;
 	private static String pushNotificationKey;
@@ -165,7 +165,7 @@ public class AwsUtil
 				developmentEnvironment = "development".equalsIgnoreCase(environment);
 				disableCSP = "true".equals(PROPERTIES.getProperty("onpremise", "false").trim());
 				scheduleServer = "true".equals(AwsUtil.getConfig("schedulerServer"));
-				kinesisServer = productionEnvironment && "true".equalsIgnoreCase(PROPERTIES.getProperty("enable.kinesis"));
+				messageProcessor = "true".equalsIgnoreCase(PROPERTIES.getProperty("messageProcessor"));
 				userServer = ! scheduleServer;
 				db = PROPERTIES.getProperty("db.name");
 				dbClass = PROPERTIES.getProperty("db.class");
@@ -848,8 +848,8 @@ public class AwsUtil
 		return userServer;
 	}
 
-	public static boolean isKinesisServer() {
-		return kinesisServer;
+	public static boolean isMessageProcessor() {
+		return messageProcessor;
 	}
 	
 	public static String getAppDomain() {

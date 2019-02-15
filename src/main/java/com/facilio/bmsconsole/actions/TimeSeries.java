@@ -52,7 +52,7 @@ public class TimeSeries extends FacilioAction {
 			return SUCCESS;
 		}
 		catch(Exception e) {
-			LOGGER.info("Error while processing data: ", e);
+			LOGGER.info("Error while processing data: " + getDeviceData(), e);
 		}
 		return ERROR;
 	}

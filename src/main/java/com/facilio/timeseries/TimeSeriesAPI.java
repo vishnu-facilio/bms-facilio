@@ -57,7 +57,7 @@ public class TimeSeriesAPI {
 	private static final Logger LOGGER = LogManager.getLogger(TimeSeriesAPI.class.getName());
 	
 	public static void processPayLoad(long ttime, JSONObject payLoad, String macAddr) throws Exception {
-		LOGGER.info(payLoad);
+		LOGGER.debug(payLoad);
 		processPayLoad(ttime, payLoad, null, null, macAddr, false);
 	}
 	

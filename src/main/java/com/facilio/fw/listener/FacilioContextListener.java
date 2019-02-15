@@ -34,7 +34,6 @@ import org.xml.sax.SAXException;
 
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.criteria.Operator;
-import com.facilio.bmsconsole.templates.Template;
 import com.facilio.bmsconsole.util.TemplateAPI;
 import com.facilio.cache.RedisManager;
 import com.facilio.filters.HealthCheckFilter;
@@ -51,8 +50,6 @@ import com.facilio.tasker.FacilioScheduler;
 import com.facilio.tasker.executor.InstantJobExecutor;
 import com.facilio.transaction.FacilioConnectionPool;
 import com.facilio.transaction.TransactionMonitor;
-import com.facilio.wms.message.NotificationProcessor;
-import com.facilio.wms.message.NotificationProcessorFactory;
 
 public class FacilioContextListener implements ServletContextListener {
 
@@ -123,11 +120,11 @@ public class FacilioContextListener implements ServletContextListener {
 			}*/
 
 			try {
-				if(AwsUtil.isKinesisServer()) {
+				if(AwsUtil.isProduction() && AwsUtil.isMessageProcessor()) {
 					new Thread(KinesisProcessor::startKinesis).start();
 				}
 				
-				if((!(AwsUtil.isProduction() || AwsUtil.isDevelopment()))) {
+				if((!(AwsUtil.isProduction() || AwsUtil.isDevelopment())) && AwsUtil.isMessageProcessor()) {
 				    log.info("Starting kafka processor");
 					new Thread(KafkaProcessor::start).start();
 				}
