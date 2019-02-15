@@ -93,12 +93,10 @@ public class ServerInfo extends TimerTask {
         try (PreparedStatement insertQuery = connection.prepareStatement(INSERT_IP)){
             LOGGER.info("Server id is empty ");
             String environment = "user";
-            String scheduler = AwsUtil.getConfig("schedulerServer");
-            if(scheduler != null) {
-                if (Boolean.parseBoolean(scheduler.trim().toLowerCase())) {
-                    environment = "scheduler";
-                }
+            if (AwsUtil.isScheduleServer()) {
+               environment = "scheduler";
             }
+
             insertQuery.setString(1, ip);
             insertQuery.setString(2, environment);
             insertQuery.setBoolean(3, true);

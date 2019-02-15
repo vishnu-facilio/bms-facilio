@@ -27,8 +27,8 @@ public class UpdateAlarmAssetMappingCommand implements Command {
 		
 		Map<String, String> headers = new HashMap<>();
 		headers.put("Content-Type","application/json");
-		String server = AwsUtil.getConfig("servername");
-		String url = "http://" + server + "/internal/updateAlarmResource";
+		String server = AwsUtil.getConfig("clientapp.url");
+		String url = server + "/internal/updateAlarmResource";
 		AwsUtil.doHttpPost(url, headers, null, json.toJSONString());
 		
 		context.put(FacilioConstants.ContextNames.RESULT, "success");

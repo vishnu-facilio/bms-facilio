@@ -33,7 +33,7 @@ public class FacilioKafkaConsumer implements FacilioConsumer {
 
     private Properties getConsumerProperties(String client, String consumerGroup) {
         Properties props = new Properties();
-        props.put("bootstrap.servers", AwsUtil.getConfig("kafka.brokers"));
+        props.put("bootstrap.servers", AwsUtil.getKafkaConsumer());
         props.put("group.id", consumerGroup);
         props.put("enable.auto.commit", "false");
         props.put("key.deserializer", StringDeserializer.class.getName());

@@ -53,7 +53,7 @@ public class KafkaProcessor {
 
     private static Properties getKafkaProperties() {
         Properties properties = new Properties();
-        properties.put("bootstrap.servers", AwsUtil.getConfig("kafka.brokers"));
+        properties.put("bootstrap.servers", AwsUtil.getKafkaConsumer());
         properties.put("connections.max.idle.ms", 300000);
         properties.put("receive.buffer.bytes", 65536);
         properties.put("request.timeout.ms", 120000);

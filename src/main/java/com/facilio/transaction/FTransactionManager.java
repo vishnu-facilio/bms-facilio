@@ -46,7 +46,7 @@ public class FTransactionManager implements TransactionManager {
 	@Override
 	public void begin() throws NotSupportedException, SystemException {
         FacilioTransaction currenttrans = currentTransaction.get();
-		if("true".equals(AwsUtil.getConfig("enable.transaction")) && currenttrans == null) {
+		if(currenttrans == null) {
 			currenttrans =  new FacilioTransaction(getTransactionId());
 			currentTransaction.set(currenttrans);
 			TRANSACTION_TIMEOUT_MAP.put(currenttrans, System.currentTimeMillis());

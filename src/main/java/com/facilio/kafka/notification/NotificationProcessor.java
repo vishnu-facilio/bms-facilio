@@ -47,7 +47,7 @@ public class NotificationProcessor implements Runnable {
 
     private Properties getProperties(String groupId) {
         Properties props = new Properties();
-        props.put("bootstrap.servers", AwsUtil.getConfig("kafka.consumers"));
+        props.put("bootstrap.servers", AwsUtil.getKafkaConsumer());
         props.put("group.id", groupId);
         props.put("enable.auto.commit", "false");
         props.put("auto.offset.reset", "latest");

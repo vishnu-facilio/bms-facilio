@@ -32,7 +32,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class V1RefreshAnomalyModelJob extends FacilioJob {
-	private static final Logger logger = Logger.getLogger(RefreshAnomalyModelJob.class.getName());
+	private static final Logger logger = Logger.getLogger(V1RefreshAnomalyModelJob.class.getName());
 
 	@Override
 	public void execute(JobContext jc) {

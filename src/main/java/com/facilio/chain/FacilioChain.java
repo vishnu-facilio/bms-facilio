@@ -20,7 +20,7 @@ public class FacilioChain extends ChainBase {
 	private static final ThreadLocal<FacilioContext> postTransactionContext = new ThreadLocal<>();
 	
 	private Chain postTransactionChain;
-	private boolean enableTransaction = false;
+	private boolean enableTransaction = true;
 	private int timeout = -1;
 	
 	public static FacilioChain getTransactionChain() {
@@ -35,12 +35,11 @@ public class FacilioChain extends ChainBase {
 	
 	private FacilioChain(boolean isTransactionChain) {
 		// TODO Auto-generated constructor stub
-		this.enableTransaction = isTransactionChain && Boolean.valueOf(AwsUtil.getConfig("enable.transaction"));
+		this.enableTransaction = isTransactionChain;
 	}
 	
 	private FacilioChain (int timeout) { //If timeout is required, it's assumed to be Transaction chain
 		this.timeout = timeout;
-		this.enableTransaction = Boolean.valueOf(AwsUtil.getConfig("enable.transaction"));
 	}
 	
     private static final Logger LOGGER = LogManager.getLogger(FacilioChain.class.getName());

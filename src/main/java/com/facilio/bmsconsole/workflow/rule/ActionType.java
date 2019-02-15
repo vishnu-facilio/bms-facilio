@@ -329,8 +329,7 @@ public enum ActionType {
 									
 									Map<String, String> headers = new HashMap<>();
 									headers.put("Content-Type", "application/json");
-									headers.put("Authorization",
-											"key=AAAAMZz7GzM:APA91bGGZjl_YGNfo9OfEP5kgFiBp3Z0dHq_oa0yHLjgoogHXdPqDWwF2Z1IHYq6T9poGCS-JOwdMEIBqRPxExfemOlJmjOAcdfVlD7qT0IGjLr5gReqwefjBjmPg0Re1O7o0_gC0mYx");
+									headers.put("Authorization", "key="+AwsUtil.getPushNotificationKey());
 
 									String url = "https://fcm.googleapis.com/fcm/send";
 

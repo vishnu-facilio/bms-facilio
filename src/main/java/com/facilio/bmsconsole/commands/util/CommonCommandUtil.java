@@ -265,7 +265,7 @@ public class CommonCommandUtil {
 										.append("\n\nMsg : ")
 										.append(msg)
 										.append("\n\nApp Url : ")
-										.append(AwsUtil.getConfig("app.url"))
+										.append(AwsUtil.getConfig("clientapp.url"))
 										.append("\n\nOrg Info : \n--------\n")
 										.append(org.toString())
 										;
@@ -328,7 +328,7 @@ public class CommonCommandUtil {
 				.append("\n\nMsg : ")
 				.append(msg)
 				.append("\n\nApp Url : ")
-				.append(AwsUtil.getConfig("app.url"));
+				.append(AwsUtil.getConfig("clientapp.url"));
 			
 			String errorTrace = null;
 			if (e != null) {
@@ -346,7 +346,7 @@ public class CommonCommandUtil {
 			String message = body.toString();
 			json.put("message", message);
 			//AwsUtil.sendEmail(json);
-			if("production".equals(AwsUtil.getConfig("environment"))) {
+			if(AwsUtil.isProduction()) {
 				FAWSQueue.sendMessage("Exception", message);
 			}
 		} catch (Exception e1) {

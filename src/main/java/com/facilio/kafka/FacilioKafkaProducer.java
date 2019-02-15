@@ -1,6 +1,8 @@
 package com.facilio.kafka;
 
 import java.util.Properties;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
@@ -8,25 +10,33 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.procon.message.FacilioRecord;
 import com.facilio.procon.producer.FacilioProducer;
+import org.apache.kafka.clients.producer.RecordMetadata;
 
 public class FacilioKafkaProducer implements FacilioProducer {
 
     private String topic;
 
-    private KafkaProducer<String, org.json.simple.JSONObject> producer;
+    private KafkaProducer<String, String> producer;
 
     public FacilioKafkaProducer (String topic) {
         this.topic = topic;
         producer = new KafkaProducer<>(getProducerProperties());
     }
 
-    public Object putRecord(FacilioRecord record) {
-        return producer.send(new ProducerRecord<>(topic, record.getPartitionKey(), record.getData()));
+    public RecordMetadata putRecord(FacilioRecord record) {
+        Future<RecordMetadata> future = producer.send(new ProducerRecord<>(topic, record.getPartitionKey(), record.getData().toJSONString()));
+        RecordMetadata recordMetadata = null;
+        try {
+            recordMetadata = future.get();
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
+        return recordMetadata;
     }
 
     private Properties getProducerProperties() {
         Properties props = new Properties();
-        props.put("bootstrap.servers", AwsUtil.getConfig("kafka.brokers"));
+        props.put("bootstrap.servers", AwsUtil.getKafkaProducer());
         props.put("acks", "all");
         props.put("retries", 0);
         props.put("batch.size", 16384);

@@ -17,8 +17,8 @@ public class PdfUtil {
 
     private static final String PDF_CMD = System.getProperty("user.home")+"/slimerjs-0.10.3/slimerjs";
     private static final String RENDER_JS = System.getProperty("user.home")+"/render.js";
-    private static final String SERVER_NAME = AwsUtil.getConfig("api.servername");
-    private static Logger log = LogManager.getLogger(PdfUtil.class.getName());
+    private static final String SERVER_NAME = AwsUtil.getConfig("app.domain");
+    private static final Logger LOGGER = LogManager.getLogger(PdfUtil.class.getName());
     public static String convertUrlToPdf(long orgId, String username, String url, FileFormat... formats) {
     		FileFormat format = FileFormat.PDF;
 		if (formats != null && formats.length > 0) {
@@ -42,9 +42,9 @@ public class PdfUtil {
                 }
                 String[] command = new String[]{PDF_CMD, RENDER_JS, url, pdfFileLocation, token, serverName};
                 int exitStatus = CommandExecutor.execute(command);
-                log.info("Converted to pdf with exit status" + exitStatus + " and file " + pdfFile.getAbsolutePath());
+                LOGGER.info("Converted to pdf with exit status" + exitStatus + " and file " + pdfFile.getAbsolutePath());
             } catch (IOException e) {
-                log.info("Exception occurred ", e);
+                LOGGER.info("Exception occurred ", e);
             }
         }
         return pdfFileLocation;
@@ -64,7 +64,7 @@ public class PdfUtil {
                 fileId = fs.addFile(pdfFile.getName(), pdfFile, format.getContentType());
                 return fs.getDownloadUrl(fileId);
             } catch (Exception e) {
-                log.info("Exception occurred ", e);
+                LOGGER.info("Exception occurred ", e);
             }
         }
         return null;

@@ -133,15 +133,22 @@ public class AwsUtil
 
 	private static final Properties PROPERTIES = new Properties();
 
-	private static final String SERVERNAME = getConfig("servername");
-	private static final String USER_ID="668907905219";
-
 	private static boolean productionEnvironment = false;
 	private static boolean developmentEnvironment = true;
 	private static boolean disableCSP = false;
+	private static boolean scheduleServer = false;
+	private static boolean isSmtp = false;
 
 	private static String db;
 	private static String dbClass;
+	private static boolean userServer = true;
+	private static boolean kinesisServer = false;
+	private static String appDomain;
+	private static String clientAppUrl;
+	private static String pushNotificationKey;
+	private static String environment;
+	private static String kafkaProducer;
+	private static String kafkaConsumer;
 
 	static {
 		loadProperties();
@@ -152,10 +159,24 @@ public class AwsUtil
 		if (resource != null) {
 			try (InputStream stream = resource.openStream()) {
 				PROPERTIES.load(stream);
-				String environment = PROPERTIES.getProperty("environment");
+				PROPERTIES.forEach((k,v) -> PROPERTIES.put(k.toString().trim(), v.toString().trim()));
+				environment = PROPERTIES.getProperty("environment");
 				productionEnvironment = "production".equalsIgnoreCase(environment);
 				developmentEnvironment = "development".equalsIgnoreCase(environment);
-				disableCSP = "true".equals(PROPERTIES.getProperty("disable.csp", "false").trim());
+				disableCSP = "true".equals(PROPERTIES.getProperty("onpremise", "false").trim());
+				scheduleServer = "true".equals(AwsUtil.getConfig("schedulerServer"));
+				kinesisServer = productionEnvironment && "true".equalsIgnoreCase(PROPERTIES.getProperty("enable.kinesis"));
+				userServer = ! scheduleServer;
+				db = PROPERTIES.getProperty("db.name");
+				dbClass = PROPERTIES.getProperty("db.class");
+				appDomain = PROPERTIES.getProperty("app.domain");
+				pushNotificationKey = PROPERTIES.getProperty("push.notification.key");
+				clientAppUrl = "https://"+appDomain;
+				kafkaProducer = PROPERTIES.getProperty("kafka.producer");
+				kafkaConsumer = PROPERTIES.getProperty("kafka.consumer");
+				isSmtp = "smtp".equalsIgnoreCase(PROPERTIES.getProperty("email.type"));
+				PROPERTIES.put("clientapp.url", clientAppUrl);
+
 			} catch (IOException e) {
 				LOGGER.info("Exception while trying to load property file " + AWS_PROPERTY_FILE);
 			}
@@ -163,14 +184,7 @@ public class AwsUtil
 	}
 
 	public static String getConfig(String name) {
-    	String value = PROPERTIES.getProperty(name);
-        if (value != null ) {
-        	value = value.trim();
-        	if(value.length() > 0) {
-        		return value;
-        	}
-        }
-        return null;
+    	return PROPERTIES.getProperty(name);
     }
 
 	public static String getClientVersion() {
@@ -179,7 +193,6 @@ public class AwsUtil
 		ResultSet rs;
 		String clientVersion = null;
 		try {
-			String environment = getConfig("environment");
 			if( environment != null ) {
 				conn = FacilioConnectionPool.INSTANCE.getConnection();
 				pstmt = conn.prepareStatement("SELECT version FROM ClientApp WHERE environment=?");
@@ -206,7 +219,6 @@ public class AwsUtil
 			PreparedStatement pstmt = null;
 			try {
 				if(checkIfVersionExistsInS3(newVersion)) {
-					String environment = getConfig("environment");
 					com.facilio.accounts.dto.User currentUser = AccountUtil.getCurrentUser();
 					if (environment != null && currentUser != null) {
 						conn = FacilioConnectionPool.INSTANCE.getConnection();
@@ -389,12 +401,11 @@ public class AwsUtil
     }
 	
 	public static void sendEmail(JSONObject mailJson) throws Exception  {
-		String appUrl = AwsUtil.getConfig("app.url");
-		if(appUrl == null || appUrl.contains("localhost")) {
+		if(AwsUtil.isDevelopment()) {
 //			mailJson.put("subject", "Local - "+mailJson.get("subject"));
 			return;
 		}
-		if("smtp".equals(AwsUtil.getConfig("email.type"))) {
+		if(isSmtp()) {
 			EmailUtil.sendEmail(mailJson);
 		} else {
 			sendEmailViaAws(mailJson);
@@ -402,15 +413,9 @@ public class AwsUtil
 	}
 
 	private static void sendEmailViaAws(JSONObject mailJson) throws Exception  {
-		String appUrl = AwsUtil.getConfig("app.url");
-		if(appUrl == null || appUrl.contains("localhost")) {
-//			mailJson.put("subject", "Local - "+mailJson.get("subject"));
-			return;
-		}
-
 		String toAddress = (String)mailJson.get("to");
 		boolean sendEmail = true;
-		if( ! "production".equals(AwsUtil.getConfig("environment")) ) {
+		if( ! AwsUtil.isProduction() ) {
 			if(toAddress != null) {
 				String to = "";
 				for(String address : toAddress.split(",")) {
@@ -467,7 +472,7 @@ public class AwsUtil
 			sendEmail(mailJson);
 			return;
 		}
-		if("smtp".equals(AwsUtil.getConfig("email.type"))) {
+		if(isSmtp()) {
 			EmailUtil.sendEmail(mailJson, files);
 		} else {
 			sendEmailViaAws(mailJson, files);
@@ -500,7 +505,7 @@ public class AwsUtil
 		}
 		if(sendEmail) {
 			try {
-				if (AwsUtil.getConfig("app.url") == null || AwsUtil.getConfig("app.url").contains("localhost")) {
+				if (AwsUtil.isDevelopment()) {
 //					mailJson.put("subject", "Local - " + mailJson.get("subject"));
 					return;
 				}
@@ -601,7 +606,7 @@ public class AwsUtil
 			}
 		}
 		return user.getUserId();*/
-    	return USER_ID;
+    	return getConfig("user.id");
 	}
 
 	public static void addIotClient(String policyName, String clientId) {
@@ -807,9 +812,7 @@ public class AwsUtil
 	    }
 	    
 	    message.setContent(messageContent);
-	    if(SERVERNAME!=null) {
-	       message.addHeader("host", SERVERNAME);
-	    }
+	    message.addHeader("host", getAppDomain());
 	    return message;
 	}
 
@@ -826,28 +829,51 @@ public class AwsUtil
 	}
 
 	public static String getServerName() {
-		return SERVERNAME;
+		return getAppDomain();
 	}
 	
 	public static String getDB() {
-		if (db == null) {
-			synchronized (LOCK) {
-				if (db == null) {
-					db = AwsUtil.getConfig("db.name");
-				}
-			}
-		}
 		return db;
 	}
 	
 	public static String getDBClass() {
-		if (dbClass == null) {
-			synchronized (LOCK) {
-				if (dbClass == null) {
-					dbClass = AwsUtil.getConfig("db.class");
-				}
-			}
-		}
 		return dbClass;
+	}
+
+	public static boolean isScheduleServer() {
+		return scheduleServer;
+	}
+
+	public static boolean isUserServer() {
+		return userServer;
+	}
+
+	public static boolean isKinesisServer() {
+		return kinesisServer;
+	}
+	
+	public static String getAppDomain() {
+		return appDomain;
+	}
+
+	public static String getClientAppUrl() {
+		return clientAppUrl;
+	}
+
+	public static String getPushNotificationKey() {
+		return pushNotificationKey;
+	}
+
+	public static String getKafkaProducer() {
+		return kafkaProducer;
+	}
+
+
+	public static String getKafkaConsumer() {
+		return kafkaConsumer;
+	}
+
+	public static boolean isSmtp() {
+		return isSmtp;
 	}
 }

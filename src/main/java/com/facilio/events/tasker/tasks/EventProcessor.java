@@ -117,7 +117,7 @@ public class EventProcessor implements IRecordProcessor {
 
     private Properties getKafkaProducerProperties() {
         Properties props = new Properties();
-        props.put("bootstrap.servers", AwsUtil.getConfig("kafka.producer"));
+        props.put("bootstrap.servers", AwsUtil.getKafkaProducer());
         props.put("acks", "all");
         props.put("retries", 0);
         props.put("batch.size", 16384);

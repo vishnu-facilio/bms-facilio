@@ -32,22 +32,26 @@ public class EmailUtil {
 
     private static Properties getSMTPProperties() {
         Properties props = new Properties();
-        props.put("mail.smtp.host", FacilioUtil.getProperty("mail.smtp.host"));
-        props.put("mail.smtp.socketFactory.port", FacilioUtil.getProperty("mail.smtp.socketFactory.port"));
+        props.put("mail.smtp.host", AwsUtil.getConfig("mail.smtp.host"));
+        props.put("mail.smtp.socketFactory.port", AwsUtil.getConfig("mail.smtp.socketFactory.port"));
         props.put("mail.smtp.socketFactory.class","javax.net.ssl.SSLSocketFactory");
         props.put("mail.smtp.auth", "true");
-        props.put("mail.smtp.port", FacilioUtil.getProperty("mail.smtp.port"));
+        props.put("mail.smtp.port", AwsUtil.getConfig("mail.smtp.port"));
+        String startTls = AwsUtil.getConfig("mail.smtp.starttls.enable");
+        if(startTls != null) {
+            props.put("mail.smtp.starttls.enable", startTls);
+        }
 
         return props;
     }
 
     public static void sendEmail(JSONObject mailJson) throws Exception {
-        String sender = FacilioUtil.getProperty("mail.username");
+        String sender = AwsUtil.getConfig("mail.username");
 
         Session session = Session.getDefaultInstance(getSMTPProperties(),
                 new javax.mail.Authenticator() {
                     protected PasswordAuthentication getPasswordAuthentication() {
-                        return new PasswordAuthentication(sender, FacilioUtil.getProperty("mail.password"));
+                        return new PasswordAuthentication(sender, AwsUtil.getConfig("mail.password"));
                     }
                 });
 
@@ -75,12 +79,12 @@ public class EmailUtil {
 
     public static void sendEmail(JSONObject mailJson, Map<String,String> files) throws Exception {
 
-        String user = FacilioUtil.getProperty("mail.username");
+        String user = AwsUtil.getConfig("mail.username");
 
         Session session = Session.getDefaultInstance(getSMTPProperties(),
                 new javax.mail.Authenticator() {
                     protected PasswordAuthentication getPasswordAuthentication() {
-                        return new PasswordAuthentication(user, FacilioUtil.getProperty("mail.password"));
+                        return new PasswordAuthentication(user, AwsUtil.getConfig("mail.password"));
                     }
                 });
 

@@ -16,8 +16,10 @@ import java.util.logging.Logger;
 
 import javax.websocket.EncodeException;
 
+import com.facilio.kafka.FacilioKafkaProducer;
+import com.facilio.procon.message.FacilioRecord;
+import com.facilio.procon.producer.FacilioProducer;
 import org.apache.kafka.clients.producer.KafkaProducer;
-import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
 import org.json.simple.JSONObject;
@@ -39,22 +41,20 @@ public class WmsApi
 	private static final Logger LOGGER = Logger.getLogger(WmsApi.class.getName());
 	private static String kinesisNotificationTopic = "notifications";
 	
-	public static String WEBSOCKET_URL = "ws://localhost:8080/bms/websocket";
+	private static String WEBSOCKET_URL = "ws://localhost:8080/bms/websocket";
 	private static Map<String, FacilioClientEndpoint> FACILIO_CLIENT_ENDPOINTS = new HashMap<>();
-	private static Producer<String, String> producer;
+	private static FacilioProducer producer;
 	
 	static {
-		String socketUrl = AwsUtil.getConfig("websocket.url");
+		String socketUrl = AwsUtil.getConfig("app.domain");
 		if (socketUrl != null) {
-			WEBSOCKET_URL = socketUrl;
+			WEBSOCKET_URL = "wss://"+socketUrl+"/websocket";
 		}
-		String environment = AwsUtil.getConfig("environment");
-		if(environment != null &&  !("development".equalsIgnoreCase(environment))) {
-			kinesisNotificationTopic = environment + "-" + kinesisNotificationTopic;
-		}
-		if(!(AwsUtil.isDevelopment() || AwsUtil.isProduction())) {
+
+		if(! AwsUtil.isDevelopment()) {
+			kinesisNotificationTopic = AwsUtil.getConfig("environment") + "-" + kinesisNotificationTopic;
 			LOGGER.info("Initialized Kafka Producer");
-			producer = new KafkaProducer<>(getKafkaProducerProperties());
+			producer = new FacilioKafkaProducer(kinesisNotificationTopic);
 		}
 	}
 
@@ -67,7 +67,7 @@ public class WmsApi
 			}
 			dataMap.put("timestamp", System.currentTimeMillis());
 			dataMap.put("data", data);
-			Future<RecordMetadata> future = producer.send(new ProducerRecord<>(kinesisNotificationTopic,0, partitionKey, dataMap.toString()));
+			Future<RecordMetadata> future = (Future<RecordMetadata>)producer.putRecord(new FacilioRecord(partitionKey, dataMap));
 			RecordMetadata metadata = future.get();
 		} catch (Exception e) {
 			LOGGER.info(kinesisNotificationTopic + " : " + dataMap);
@@ -77,7 +77,7 @@ public class WmsApi
 
 	private static Properties getKafkaProducerProperties() {
 		Properties props = new Properties();
-		props.put("bootstrap.servers", AwsUtil.getConfig("kafka.brokers"));
+		props.put("bootstrap.servers", AwsUtil.getKafkaProducer());
 		props.put("acks", "all");
 		props.put("retries", 0);
 		props.put("batch.size", 16384);
@@ -168,8 +168,6 @@ public class WmsApi
 			}
 			if (AwsUtil.isDevelopment()) {
 				SessionManager.getInstance().sendMessage(message);
-			} else if (AwsUtil.isProduction()){
-				sendToKinesis(message.toJson());
 			} else {
 				sendToKafka(message.toJson());
 			}

@@ -71,12 +71,6 @@ public class FacilioContextListener implements ServletContextListener {
 
 	public void contextInitialized(ServletContextEvent event) {
 
-		String schedulerProp = AwsUtil.getConfig("schedulerServer");
-		boolean scheduler = false;
-		if(schedulerProp != null) {
-			scheduler = Boolean.parseBoolean(schedulerProp.trim());
-		}
-
 		try {
 			System.setOut(new SysOutLogger("SysOut"));
 		} catch (FileNotFoundException e1) {
@@ -88,11 +82,10 @@ public class FacilioContextListener implements ServletContextListener {
 			log.info("Exception occurred ", e1);
 		}
 
-		if("true".equals(AwsUtil.getConfig("enable.transaction"))) {
-			timer.schedule(new TransactionMonitor(), 0L, 3000L);
-		}
+		timer.schedule(new TransactionMonitor(), 0L, 3000L);
 
-		if(scheduler && AwsUtil.isProduction()) {
+
+		if(AwsUtil.isScheduleServer() && AwsUtil.isProduction()) {
 			timer.schedule(new FacilioExceptionProcessor(), 0L, 900000L); // 30 minutes
 		}
 
@@ -100,22 +93,14 @@ public class FacilioContextListener implements ServletContextListener {
 		initDBConnectionPool();
 		Operator.OPERATOR_MAP.get(1);
 		TemplateAPI.getDefaultTemplate(1);
+
 		try {
-			try {
-				migrateSchemaChanges();
-			} catch(Exception e) {
-				log.info("Exception occurred ", e);
-			}
+			migrateSchemaChanges();
 			ServerInfo.registerServer();
 			//timer.schedule(new ServerInfo(), 30000L, 30000L);
-			String environment = AwsUtil.getConfig("environment");
 
-
-			//handle if server is both user and scheduler.
-			if( "stage".equalsIgnoreCase(environment)){
+			if( ! AwsUtil.isDevelopment()) {
 				new Thread(new com.facilio.kafka.notification.NotificationProcessor()).start();
-			} else if((AwsUtil.isProduction() && ( ! scheduler) && ( ! AwsUtil.disableCSP()))) {
-				new Thread(() -> NotificationProcessor.run(new NotificationProcessorFactory())).start();
 			}
 
 			BeanFactory.initBeans();
@@ -138,7 +123,7 @@ public class FacilioContextListener implements ServletContextListener {
 			}*/
 
 			try {
-				if(AwsUtil.isProduction() && ("true".equalsIgnoreCase(AwsUtil.getConfig("enable.kinesis"))) && "true".equalsIgnoreCase(AwsUtil.getConfig("kinesisServer"))) {
+				if(AwsUtil.isKinesisServer()) {
 					new Thread(KinesisProcessor::startKinesis).start();
 				}
 				
@@ -161,7 +146,7 @@ public class FacilioContextListener implements ServletContextListener {
 				log.info("Exception occurred ", e);
 			}
 
-			PortalAuthInterceptor.setPortalDomain(com.facilio.aws.util.AwsUtil.getConfig("portal.domain"));// event.getServletContext().getInitParameter("SERVICEPORTAL_DOMAIN");
+			PortalAuthInterceptor.setPortalDomain(AwsUtil.getConfig("portal.domain"));// event.getServletContext().getInitParameter("SERVICEPORTAL_DOMAIN");
 			log.info("Loading the domain name as ######"+PortalAuthInterceptor.getPortalDomain());
 			initLocalHostName();
 			HealthCheckFilter.setStatus(200);
@@ -211,17 +196,20 @@ public class FacilioContextListener implements ServletContextListener {
 	}
 	
 	private void migrateSchemaChanges() {
-		System.out.println("Flyway migration handler started...");
-		
-		DataSource ds = FacilioConnectionPool.getInstance().getDataSource();
-		long startTime = System.currentTimeMillis();
-		Flyway flyway = new Flyway();
-		flyway.setLocations("db/migration/" + AwsUtil.getDB());
-		flyway.setDataSource(ds);
-		flyway.setBaselineOnMigrate(true);
-		int mig_status = flyway.migrate();
-		
-		System.out.println("Flyway migration status: "+mig_status +" time taken in ms : " + (System.currentTimeMillis() - startTime));
+		log.info("Flyway migration handler started...");
+		try {
+			DataSource ds = FacilioConnectionPool.getInstance().getDataSource();
+			long startTime = System.currentTimeMillis();
+			Flyway flyway = new Flyway();
+			flyway.setLocations("db/migration/" + AwsUtil.getDB());
+			flyway.setDataSource(ds);
+			flyway.setBaselineOnMigrate(true);
+			int mig_status = flyway.migrate();
+
+			log.info("Flyway migration status: " + mig_status + " time taken in ms : " + (System.currentTimeMillis() - startTime));
+		} catch (Exception e) {
+			log.info("Exception occurred ", e);
+		}
 	}
 	
 	private void initDBConnectionPool() {
