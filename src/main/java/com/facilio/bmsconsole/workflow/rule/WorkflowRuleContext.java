@@ -415,7 +415,12 @@ public class WorkflowRuleContext implements Serializable {
 		ALARM_TRIGGER_RULE(false,false,true), //18
 		
 		ALARM_CLEAR_RULE(false,false,true),
-		WORKORDER_CUSTOM_CHANGE 
+		WORKORDER_CUSTOM_CHANGE,
+		BUSSINESS_LOGIC_ALARM_RULE,    //21
+
+		BUSSINESS_LOGIC_WORKORDER_RULE
+		
+		
 		;
 		//Always add at the end
 		
