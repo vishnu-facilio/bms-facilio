@@ -58,7 +58,7 @@ public class HVACPressurePredictorJob extends FacilioJob
 		{
 			for(ResourceContext resource: resources)
 			{
-				predictReadings(resource, orgID, startTime, currentTime, jc.getExecutionTime());
+				predictReadings(resource, orgID, startTime, currentTime, jc.getExecutionTime() * 1000);
 			}
 		}
 				            	 //writeJSONArray(jsonArray.toString());
