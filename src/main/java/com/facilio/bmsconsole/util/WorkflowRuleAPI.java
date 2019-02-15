@@ -823,7 +823,7 @@ public class WorkflowRuleAPI {
 		return true;
 	}
 	
-	public static boolean evaluateWorkflow(WorkflowRuleContext workflowRule, String moduleName, Object record, List<UpdateChangeSet> changeSet, Map<String, Object> recordPlaceHolders, FacilioContext context) throws Exception {
+	public static boolean evaluateWorkflowAndExecuteActions(WorkflowRuleContext workflowRule, String moduleName, Object record, List<UpdateChangeSet> changeSet, Map<String, Object> recordPlaceHolders, FacilioContext context) throws Exception {
 		Map<String, Object> rulePlaceHolders = workflowRule.constructPlaceHolders(moduleName, record, recordPlaceHolders, context);
 		boolean fieldChangeFlag = false, miscFlag = false, criteriaFlag = false, workflowFlag = false , siteId = false;
 		
@@ -862,7 +862,7 @@ public class WorkflowRuleAPI {
 				try {
 					long workflowStartTime = System.currentTimeMillis();
 					workflowRule.setTerminateExecution(false);
-					boolean result = WorkflowRuleAPI.evaluateWorkflow(workflowRule, moduleName, record, changeSet, recordPlaceHolders, context);
+					boolean result = WorkflowRuleAPI.evaluateWorkflowAndExecuteActions(workflowRule, moduleName, record, changeSet, recordPlaceHolders, context);
 					
 					if (AccountUtil.getCurrentOrg().getId() == 133 && FacilioConstants.ContextNames.ALARM.equals(moduleName)) {
 						LOGGER.info("Result of rule : "+workflowRule.getId()+" for record : "+record+" is "+result);

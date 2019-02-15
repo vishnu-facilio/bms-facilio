@@ -42,7 +42,7 @@ public class ExecuteSingleWorkflowRuleCommand implements Command {
 				for (Object record : entry.getValue()) {
 					List<UpdateChangeSet> changeSet = currentChangeSet == null ? null : currentChangeSet.get( ((ModuleBaseWithCustomFields)record).getId() );
 					Map<String, Object> recordPlaceHolders = WorkflowRuleAPI.getRecordPlaceHolders(moduleName, record, placeHolders);
-					boolean result = WorkflowRuleAPI.evaluateWorkflow(rule, moduleName, record, changeSet, recordPlaceHolders, (FacilioContext) context);
+					boolean result = WorkflowRuleAPI.evaluateWorkflowAndExecuteActions(rule, moduleName, record, changeSet, recordPlaceHolders, (FacilioContext) context);
 					LOGGER.info("Result of record : "+((ModuleBaseWithCustomFields) record).getId()+" for for rule : "+rule.getId()+" is "+result);
 				}
 				
