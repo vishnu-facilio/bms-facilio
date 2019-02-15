@@ -16,6 +16,7 @@ import com.facilio.bmsconsole.context.AssetCategoryContext;
 import com.facilio.bmsconsole.context.AssetDepartmentContext;
 import com.facilio.bmsconsole.context.AssetTypeContext;
 import com.facilio.bmsconsole.context.InventoryCategoryContext;
+import com.facilio.bmsconsole.context.ItemCategoryContext;
 import com.facilio.bmsconsole.context.TicketCategoryContext;
 import com.facilio.bmsconsole.context.TicketPriorityContext;
 import com.facilio.bmsconsole.context.TicketTypeContext;
@@ -478,6 +479,57 @@ public class PickListAction extends FacilioAction {
 		Chain deleteInventoryCategoryChain = TransactionChainFactory.getDeleteInventoryCategoryChain();
 		deleteInventoryCategoryChain.execute(context);
 		setResult("inventoryCategoryId", inventoryCategoryId);
+		return SUCCESS;
+	}
+	
+	private ItemCategoryContext itemCategory;
+	public ItemCategoryContext getItemCategory() {
+		return itemCategory;
+	}
+	public void setItemCategory(ItemCategoryContext itemCategory) {
+		this.itemCategory = itemCategory;
+	}
+	
+	private long itemCategoryId;
+	public long getItemCategoryId() {
+		return itemCategoryId;
+	}
+	public void setItemCategoryId(long itemCategoryId) {
+		this.itemCategoryId = itemCategoryId;
+	}
+	
+	public String addItemCategory() throws Exception {
+		if(itemCategory.getDisplayName() != null && !itemCategory.getDisplayName().isEmpty()) {
+			itemCategory.setName(itemCategory.getDisplayName().toLowerCase().replaceAll("[^a-zA-Z0-9]+",""));
+		}
+		itemCategory.setTtime(System.currentTimeMillis());
+		itemCategory.setModifiedTime(System.currentTimeMillis());
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.RECORD, getItemCategory());
+		Chain addItemCategoryChain = TransactionChainFactory.getAddItemCategoryChain();
+		addItemCategoryChain.execute(context);
+		setResult(FacilioConstants.ContextNames.RECORD, getItemCategory());
+		return SUCCESS;
+	}
+	
+	public String updateItemCategory() throws Exception {
+		FacilioContext context = new FacilioContext();
+		itemCategory.setModifiedTime(System.currentTimeMillis());
+		context.put(FacilioConstants.ContextNames.RECORD, getItemCategory());
+		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Arrays.asList(getItemCategory().getId()));
+		Chain updateItemCategoryChain = TransactionChainFactory.getUpdateItemCategoryChain();
+		updateItemCategoryChain.execute(context);
+		setResult(FacilioConstants.ContextNames.RECORD, getItemCategory());
+		return SUCCESS;
+	}
+	
+	public String deleteItemCategory() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.RECORD, this.itemCategoryId);
+		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Arrays.asList(this.itemCategoryId));
+		Chain deleteItemCategoryChain = TransactionChainFactory.getDeleteItemCategoryChain();
+		deleteItemCategoryChain.execute(context);
+		setResult("itemCategoryId", itemCategoryId);
 		return SUCCESS;
 	}
 	

@@ -1331,4 +1331,42 @@ public class TransactionChainFactory {
 			c.addCommand(new GenericAddModuleDataCommand());
 			return c;
 		}
+		
+		public static Chain getAddStoreRoomChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForStoreRoom());
+			c.addCommand(new GenericAddModuleDataCommand());
+			return c;
+		}
+		
+		public static Chain getUpdateStoreRoomChain(){
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForStoreRoom());
+			c.addCommand(new GenericUpdateModuleDataCommand());
+			return c;
+		}
+		
+		public static Chain getAddItemCategoryChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForItemCategory());
+			c.addCommand(new GenericAddModuleDataCommand());
+			c.addCommand(new ExecuteAllWorkflowsCommand());
+			return c;
+		}
+
+		public static Chain getUpdateItemCategoryChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForItemCategory());
+			c.addCommand(new GenericUpdateModuleDataCommand());
+//			CommonCommandUtil.addCleanUpCommand(c);
+			return c;
+		}
+
+		public static Chain getDeleteItemCategoryChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForItemCategory());
+			c.addCommand(new GenericDeleteModuleDataCommand());
+//			CommonCommandUtil.addCleanUpCommand(c);
+			return c;
+		}
 }

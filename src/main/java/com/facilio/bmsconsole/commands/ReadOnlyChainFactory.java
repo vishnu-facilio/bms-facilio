@@ -400,4 +400,23 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new GetWorkorderPartsListCommand());
 		return c;
 	}
+	
+	public static Chain getStoreRoomList() {
+		Chain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForStoreRoom());
+		c.addCommand(new LoadAllFieldsCommand());
+		c.addCommand(new GenerateCriteriaFromFilterCommand());
+		c.addCommand(new GenerateSearchConditionCommand());
+		c.addCommand(new GetStoreRoomListCommand());
+		return c;
+	}
+	
+	public static Chain fetchStoreRoomDetails() {
+		Chain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForStoreRoom());
+		c.addCommand(new GenericGetModuleDataDetailCommand());
+		c.addCommand(new GetStoreRoomDetailsCommand());
+//		CommonCommandUtil.addCleanUpCommand(c);
+		return c;
+	}
 }

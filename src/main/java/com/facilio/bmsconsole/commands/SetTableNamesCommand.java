@@ -159,6 +159,14 @@ public class SetTableNamesCommand implements Command {
 	public static SetTableNamesCommand getForWorkOrderCosts() {
 		return new SetTableNamesCommand("workorderCost", "Workorder_cost");
 	}
+	
+	public static SetTableNamesCommand getForStoreRoom() {
+		return new SetTableNamesCommand("storeRoom", "Store_room");
+	}
+	
+	public static SetTableNamesCommand getForItemCategory() {
+		return new SetTableNamesCommand("itemCategory", "Item_category");
+	}
 		
 	public static void setForModule (Context context, String moduleName) {
 		//TODO handle all module and get from map

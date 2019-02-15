@@ -542,7 +542,15 @@
 			<action name="deleteInventoryCategory" class="com.facilio.bmsconsole.actions.PickListAction"
 				method="deleteInventoryCategory">
 			</action>
-		
+		<action name="addItemCategory" class="com.facilio.bmsconsole.actions.PickListAction"
+				method="addItemCategory">
+			</action>
+			<action name="updateItemCategory" class="com.facilio.bmsconsole.actions.PickListAction"
+				method="updateItemCategory">
+			</action>
+			<action name="deleteItemCategory" class="com.facilio.bmsconsole.actions.PickListAction"
+				method="deleteItemCategory">
+			</action>
 	</package>
 	<package name="formsApiv2" namespace="/api/v2/form" extends="v2Api">
 		<action name="fields" class="com.facilio.bmsconsole.actions.FormAction"
@@ -1037,6 +1045,30 @@
 			<param name="moduleName">asset</param>
 			<param name="permission">READ</param>
 			<param name = "parentId">{1}</param>
+		</action>
+	</package>
+	
+	<package name="storeRoomApi" namespace="/api/v2/storeroom"
+		extends="v2Api">
+		<action name="add"
+			class="com.facilio.bmsconsole.actions.StoreRoomAction" method="addStoreRoom">
+			<param name="moduleName">asset</param>
+			<param name="permission">CREATE</param>
+		</action>
+		<action name="update"
+			class="com.facilio.bmsconsole.actions.StoreRoomAction" method="updateStoreRoom">
+			<param name="moduleName">asset</param>
+			<param name="permission">UPDATE</param>
+		</action>
+	</package>
+	
+	<package name="storeRoomListApiv2" namespace="/api/v2/storeroom/view"
+		extends="v2Api">
+		<action name="*" class="com.facilio.bmsconsole.actions.StoreRoomAction"
+			method="storeRoomList">
+			<param name="moduleName">asset</param>
+			<param name="permission">READ</param>
+			<param name="viewName">{1}</param>
 		</action>
 	</package>
 

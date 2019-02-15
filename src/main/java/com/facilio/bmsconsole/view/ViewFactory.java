@@ -216,6 +216,10 @@ public class ViewFactory {
 		views.put("understocked", getUnderStockedPartsView().setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.INVENTORY, views);
 
+		order = 1;
+		views = new LinkedHashMap<>();
+		views.put("all", getAllStoreRooms().setOrder(order++));
+		viewsMap.put(FacilioConstants.ContextNames.STORE_ROOM, views);
 		return viewsMap;
 	}
 
@@ -2017,5 +2021,25 @@ public class ViewFactory {
 		staleParts.setCriteria(criteria);
 		staleParts.setSortFields(Arrays.asList(new SortField(createdTime, false)));
 		return staleParts;
+	}
+	
+	private static FacilioView getAllStoreRooms() {
+
+		FacilioModule storeRoomModule = ModuleFactory.getStoreRoomModule();
+
+		FacilioField createdTime = new FacilioField();
+		createdTime.setName("sysCreatedTime");
+		createdTime.setDataType(FieldType.NUMBER);
+		createdTime.setColumnName("CREATED_TIME");
+		createdTime.setModule(storeRoomModule);
+
+		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));
+
+		FacilioView allView = new FacilioView();
+		allView.setName("all");
+		allView.setDisplayName("All Stores");
+		allView.setSortFields(sortFields);
+
+		return allView;
 	}
 }

@@ -36,6 +36,7 @@ public class FormFactory {
 		forms.put("approvalForm", getApprovalForm());
 		forms.put("inventory_form", getInventoryForm());
 		forms.put("assetForm", getAssetForm());
+		forms.put("store_room_form", getStoreRoomForm());
 		return forms;
 	}
 
@@ -262,6 +263,17 @@ public class FormFactory {
 		return form;
 	}
 	
+	public static FacilioForm getStoreRoomForm() {
+		FacilioForm form = new FacilioForm();
+		form.setDisplayName("STORE ROOM");
+		form.setName("web_default");
+		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.STORE_ROOM));
+		form.setLabelPosition(LabelPosition.TOP);
+		form.setFields(getStoreRoomFormField());
+		form.setFormType(FormType.WEB);
+		return form;
+	}
+	
 	private static List<FormField> getWebWorkOrderFormFields() {
 		List<FormField> fields = new ArrayList<>();
 		fields.add(new FormField("subject", FieldDisplayType.TEXTBOX, "Subject", Required.REQUIRED, 1, 1));
@@ -388,6 +400,15 @@ public class FormFactory {
 		fields.add(new FormField("space", FieldDisplayType.WOASSETSPACECHOOSER, "Location", Required.OPTIONAL, 10, 1));
 		fields.add(new FormField("qrVal", FieldDisplayType.TEXTBOX, "QR VALUE", Required.OPTIONAL, 11, 1));
 		return Collections.unmodifiableList(fields);
+	}
+	
+	private static List<FormField> getStoreRoomFormField() {
+		List<FormField> fields = new ArrayList<>();
+		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.REQUIRED, 1, 1));
+		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 2, 1));
+		fields.add(new FormField("location", FieldDisplayType.LOOKUP_SIMPLE, "Location", Required.OPTIONAL, "location", 3, 1));
+		fields.add(new FormField("owner", FieldDisplayType.USER, "Owner", Required.OPTIONAL, 4, 1));
+		return fields;
 	}
 
 }

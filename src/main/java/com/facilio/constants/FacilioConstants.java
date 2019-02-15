@@ -41,6 +41,7 @@ import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.bmsconsole.context.SkillContext;
 import com.facilio.bmsconsole.context.SpaceCategoryContext;
 import com.facilio.bmsconsole.context.SpaceContext;
+import com.facilio.bmsconsole.context.StoreRoomContext;
 import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.TicketCategoryContext;
 import com.facilio.bmsconsole.context.TicketContext;
@@ -725,6 +726,9 @@ public class FacilioConstants {
 		public static final String WORKORDER_COST = "workorderCost";
 		public static final String WORKORDER_COST_TYPE = "workorderCostType";
 		
+		public static final String STORE_ROOM = "storeRoom";
+		public static final String STORE_ROOMS = "storeRooms";
+		
 		private static Map<String, Class> classMap = Collections.unmodifiableMap(initClassMap());
 		private static Map<String, Class> initClassMap() {
 			Map<String, Class> classMap = new HashMap<>();
@@ -786,6 +790,8 @@ public class FacilioConstants {
 			classMap.put(WORKORDER_PART, WorkorderPartsContext.class);
 			classMap.put(WORKORDER_PART_LIST, WorkorderPartsContext.class);
 			classMap.put(WORKORDER_COST, WorkorderCostContext.class);
+			classMap.put(STORE_ROOM, StoreRoomContext.class);
+			classMap.put(STORE_ROOMS, StoreRoomContext.class);
 			return classMap;
 		}
 		

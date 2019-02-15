@@ -7,13 +7,20 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.LocationContext;
+import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.FacilioModule;
+import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.DBUtil;
 import com.facilio.transaction.FacilioConnectionPool;
@@ -219,5 +226,22 @@ public class LocationAPI {
 		lc.setFaxPhone(rs.getString("FAX_PHONE"));
 		
 		return lc;
+	}
+	
+	public static Map<Long, LocationContext> getLocationMap(Collection<Long> idList) throws Exception
+	{
+		if(idList == null || idList.isEmpty()) {
+			return null;
+		}
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.LOCATION);
+		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.LOCATION);
+		SelectRecordsBuilder<LocationContext> selectBuilder = new SelectRecordsBuilder<LocationContext>()
+				.select(fields)
+				.table(module.getTableName())
+				.moduleName(module.getName())
+				.beanClass(LocationContext.class)
+				.andCondition(CriteriaAPI.getIdCondition(idList, module));
+		return selectBuilder.getAsMap();
 	}
 }
