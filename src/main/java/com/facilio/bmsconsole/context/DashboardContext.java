@@ -117,17 +117,6 @@ public class DashboardContext extends ModuleBaseWithCustomFields implements Clon
 		this.displayOrder = displayOrder;
 	}
 	public String getLinkName() {
-		if (linkName == null && dashboardName != null) {
-			linkName = dashboardName.replaceAll("[^a-zA-Z0-9]", "").toLowerCase();
-
-			if (this.getId() > 0) {
-				try {
-					DashboardUtil.updateDashboardLinkName(this.getId(), linkName);
-				} catch (Exception e) {
-					log.info("Exception occurred ", e);
-				}
-			}
-		}
 		return linkName;
 	}
 	public void setLinkName(String linkName) {

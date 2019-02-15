@@ -11,6 +11,7 @@ import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.bmsconsole.util.DashboardUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.sql.GenericInsertRecordBuilder;
 
@@ -28,6 +29,8 @@ public class AddDashboardCommand implements Command {
 //			
 //			dashboard.setDisplayOrder(lastDisplayOrder + 1);
 			
+			getDashboardLinkName(dashboard);
+			
 			GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
 					.table(ModuleFactory.getDashboardModule().getTableName())
 					.fields(fields);
@@ -41,6 +44,25 @@ public class AddDashboardCommand implements Command {
 		}
 		
 		return false;
+	}
+
+	private void getDashboardLinkName(DashboardContext dashboard) throws Exception {
+		
+		String linkName = dashboard.getDashboardName().replaceAll("[^a-zA-Z0-9]", "").toLowerCase();
+		
+		int i=1;
+		String temp = linkName;
+		while(true) {
+			
+			if(DashboardUtil.getDashboard(temp,dashboard.getModuleId()) == null) {
+				dashboard.setLinkName(temp);
+				break;
+			}
+			else {
+				temp = linkName + i++;
+			}
+		}
+		
 	}
 
 }

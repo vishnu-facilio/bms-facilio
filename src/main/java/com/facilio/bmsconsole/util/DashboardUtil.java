@@ -1081,6 +1081,43 @@ public static JSONObject getStandardVariance1(ReportContext report,JSONArray pro
 		}
 		return null;
 	}
+	
+	public static DashboardContext getDashboard(Long dashboardId) throws Exception {
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(FieldFactory.getDashboardFields())
+				.table(ModuleFactory.getDashboardModule().getTableName())
+				.andCustomWhere("ORGID = ?", AccountUtil.getCurrentOrg().getOrgId())
+				.andCustomWhere("ID = ?", dashboardId);
+		
+		List<Map<String, Object>> props = selectBuilder.get();
+		
+		if (props != null && !props.isEmpty()) {
+			
+			DashboardContext dashboard = FieldUtil.getAsBeanFromMap(props.get(0), DashboardContext.class);
+			
+			return dashboard;
+		}
+		return null;
+	}
+	
+	public static DashboardContext getDashboard(String dashboardLinkName,long moduleId) throws Exception {
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(FieldFactory.getDashboardFields())
+				.table(ModuleFactory.getDashboardModule().getTableName())
+				.andCustomWhere("ORGID = ?", AccountUtil.getCurrentOrg().getOrgId())
+				.andCustomWhere("MODULEID = ?", moduleId)
+				.andCustomWhere("LINK_NAME = ?", dashboardLinkName);
+		
+		List<Map<String, Object>> props = selectBuilder.get();
+		
+		if (props != null && !props.isEmpty()) {
+			
+			DashboardContext dashboard = FieldUtil.getAsBeanFromMap(props.get(0), DashboardContext.class);
+			
+			return dashboard;
+		}
+		return null;
+	}
 
 	public static DashboardContext getDashboardWithWidgets(String dashboardLinkName, String moduleName) throws Exception {
 		
@@ -3670,8 +3707,6 @@ public static JSONObject getStandardVariance1(ReportContext report,JSONArray pro
 		Chain updateDashboardChain = TransactionChainFactory.getUpdateDashboardChain();
 		updateDashboardChain.execute(context);
 	}
-	
-	
-	
+
 	
 }
