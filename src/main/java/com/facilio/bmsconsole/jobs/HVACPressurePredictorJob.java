@@ -58,7 +58,7 @@ public class HVACPressurePredictorJob extends FacilioJob
 		{
 			for(ResourceContext resource: resources)
 			{
-				predictReadings(resource,orgID,startTime,currentTime);
+				predictReadings(resource, orgID, startTime, currentTime, jc.getExecutionTime());
 			}
 		}
 				            	 //writeJSONArray(jsonArray.toString());
@@ -89,7 +89,7 @@ public class HVACPressurePredictorJob extends FacilioJob
 		}
 	}
 	
-	private void predictReadings(ResourceContext resource,long orgID,long startTime,long endTime) throws Exception
+	private void predictReadings(ResourceContext resource,long orgID,long startTime,long endTime, long predictionTime) throws Exception
 	{
 		try
 		{
@@ -99,7 +99,7 @@ public class HVACPressurePredictorJob extends FacilioJob
 			GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
 	                										 .select(fields)
 	                										 .table("Prediction_Relation")
-	                										 .andCustomWhere("org_id = ? and asset_id = ?", orgID,resource.getId());
+	                										 .andCustomWhere("ORGID = ? and asset_id = ?", orgID,resource.getId());
 			
 			List<Map<String,Object>> predictionRelationMap = selectRecordBuilder.get();
 			
@@ -183,7 +183,7 @@ public class HVACPressurePredictorJob extends FacilioJob
 			 headers.put("Content-Type", "application/json");	
 			 String result = AwsUtil.doHttpPost(postURL, headers, null, postObj.toString());
 			 LOGGER.debug("Result is "+result);
-			 updateResultinDB(resource.getId(),predictedField,result);
+			 updateResultinDB(resource.getId(),predictedField,result, predictionTime);
 
 		}
 		catch(Exception e)
@@ -193,7 +193,7 @@ public class HVACPressurePredictorJob extends FacilioJob
 	}
 		
 	
-	private void updateResultinDB(long parentID,FacilioField field , String result) throws Exception
+	private void updateResultinDB(long parentID,FacilioField field , String result, long predictionTime) throws Exception
 	{
 		try
 		{
@@ -211,6 +211,7 @@ public class HVACPressurePredictorJob extends FacilioJob
 				 newReading.addReading(field.getName(), value);
 	   			
 				 newReading.setTtime((long)readingObj.get("ttime"));
+				 newReading.addReading("predictedTime", predictionTime);
 				 newList.add(newReading);
 			 }
 	   		

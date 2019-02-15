@@ -32,14 +32,6 @@
 		</action>
 	</package>
 	
-	<package name="scheduledRuleApiV2" namespace="/api/v2/setup/scheduledrule" extends="v2Api">
-		<action name="add"  class="com.facilio.bmsconsole.actions.V2WorkflowAction" method="addScheduledRule">
-		</action>
-		
-		<action name="update"  class="com.facilio.bmsconsole.actions.V2WorkflowAction" method="updateScheduledRule">
-		</action>
-	</package>
-	
 	<package name="scheduledActionApiV2" namespace="/api/v2/setup/scheduledaction" extends="v2Api">
 		<action name="add"  class="com.facilio.bmsconsole.actions.ScheduledAction" method="addScheduledAction">
 		</action>
