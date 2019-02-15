@@ -22,7 +22,7 @@ public class HVACPressurePredictorUtil
 		FacilioField orgId = new FacilioField();
         orgId.setName("orgId");
         orgId.setDataType(FieldType.DECIMAL);
-        orgId.setColumnName("ORG_ID");
+        orgId.setColumnName("ORGID");
         orgId.setModule(predictionRelationModule);
         fields.add(orgId);
         
