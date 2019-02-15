@@ -1358,7 +1358,6 @@ public class TransactionChainFactory {
 			Chain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForItemCategory());
 			c.addCommand(new GenericUpdateModuleDataCommand());
-//			CommonCommandUtil.addCleanUpCommand(c);
 			return c;
 		}
 
@@ -1366,7 +1365,28 @@ public class TransactionChainFactory {
 			Chain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForItemCategory());
 			c.addCommand(new GenericDeleteModuleDataCommand());
-//			CommonCommandUtil.addCleanUpCommand(c);
+			return c;
+		}
+		
+		public static Chain getAddItemStatusChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForItemStatus());
+			c.addCommand(new GenericAddModuleDataCommand());
+			c.addCommand(new ExecuteAllWorkflowsCommand());
+			return c;
+		}
+
+		public static Chain getUpdateItemStatusChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForItemStatus());
+			c.addCommand(new GenericUpdateModuleDataCommand());
+			return c;
+		}
+
+		public static Chain getDeleteItemStatusChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForItemStatus());
+			c.addCommand(new GenericDeleteModuleDataCommand());
 			return c;
 		}
 }

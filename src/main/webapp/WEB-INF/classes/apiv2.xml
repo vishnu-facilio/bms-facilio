@@ -551,6 +551,15 @@
 			<action name="deleteItemCategory" class="com.facilio.bmsconsole.actions.PickListAction"
 				method="deleteItemCategory">
 			</action>
+			<action name="addItemStatus" class="com.facilio.bmsconsole.actions.PickListAction"
+				method="addItemStatus">
+			</action>
+			<action name="updateItemStatus" class="com.facilio.bmsconsole.actions.PickListAction"
+				method="updateItemStatus">
+			</action>
+			<action name="deleteItemStatus" class="com.facilio.bmsconsole.actions.PickListAction"
+				method="deleteItemStatus">
+			</action>
 	</package>
 	<package name="formsApiv2" namespace="/api/v2/form" extends="v2Api">
 		<action name="fields" class="com.facilio.bmsconsole.actions.FormAction"

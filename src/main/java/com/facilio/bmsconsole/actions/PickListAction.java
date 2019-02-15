@@ -17,6 +17,7 @@ import com.facilio.bmsconsole.context.AssetDepartmentContext;
 import com.facilio.bmsconsole.context.AssetTypeContext;
 import com.facilio.bmsconsole.context.InventoryCategoryContext;
 import com.facilio.bmsconsole.context.ItemCategoryContext;
+import com.facilio.bmsconsole.context.ItemStatusContext;
 import com.facilio.bmsconsole.context.TicketCategoryContext;
 import com.facilio.bmsconsole.context.TicketPriorityContext;
 import com.facilio.bmsconsole.context.TicketTypeContext;
@@ -533,4 +534,54 @@ public class PickListAction extends FacilioAction {
 		return SUCCESS;
 	}
 	
+	private ItemStatusContext itemStatus;
+	public ItemStatusContext getItemStatus() {
+		return itemStatus;
+	}
+	public void setItemStatus(ItemStatusContext itemStatus) {
+		this.itemStatus = itemStatus;
+	}
+	
+	private long itemStatusId;
+	public long getItemStatusId() {
+		return itemStatusId;
+	}
+	public void setItemStatusId(long itemStatusId) {
+		this.itemStatusId = itemStatusId;
+	}
+	
+	public String addItemStatus() throws Exception {
+		if(itemStatus.getDisplayName() != null && !itemStatus.getDisplayName().isEmpty()) {
+			itemStatus.setName(itemStatus.getDisplayName().toLowerCase().replaceAll("[^a-zA-Z0-9]+",""));
+		}
+		itemStatus.setTtime(System.currentTimeMillis());
+		itemStatus.setModifiedTime(System.currentTimeMillis());
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.RECORD, getItemStatus());
+		Chain addItemstatusChain = TransactionChainFactory.getAddItemStatusChain();
+		addItemstatusChain.execute(context);
+		setResult(FacilioConstants.ContextNames.RECORD, getItemStatus());
+		return SUCCESS;
+	}
+	
+	public String updateItemStatus() throws Exception {
+		FacilioContext context = new FacilioContext();
+		itemStatus.setModifiedTime(System.currentTimeMillis());
+		context.put(FacilioConstants.ContextNames.RECORD, getItemStatus());
+		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Arrays.asList(getItemStatus().getId()));
+		Chain updateItemstatusChain = TransactionChainFactory.getUpdateItemStatusChain();
+		updateItemstatusChain.execute(context);
+		setResult(FacilioConstants.ContextNames.RECORD, getItemStatus());
+		return SUCCESS;
+	}
+	
+	public String deleteItemStatus() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.RECORD, this.itemStatusId);
+		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Arrays.asList(this.itemStatusId));
+		Chain deleteItemStatusChain = TransactionChainFactory.getDeleteItemStatusChain();
+		deleteItemStatusChain.execute(context);
+		setResult("itemStatusId", itemStatusId);
+		return SUCCESS;
+	}
 }
