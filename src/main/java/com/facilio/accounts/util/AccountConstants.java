@@ -851,7 +851,7 @@ public class AccountConstants {
 		FacilioModule module = getOrgInfoModule();
 		List<FacilioField> fields = new ArrayList<>();
 
-		fields.add(FieldFactory.getOrgIdField(module));
+		/*fields.add(FieldFactory.getOrgIdField(module));*/
 
 		FacilioField name = new FacilioField();
 		name.setName("name");

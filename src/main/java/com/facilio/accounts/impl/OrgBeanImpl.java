@@ -253,7 +253,7 @@ public class OrgBeanImpl implements OrgBean {
 				.on("Users.USERID = ORG_Users.USERID")
 				.leftJoin("Shift_User_Rel")
 				.on("ORG_Users.ORG_USERID = Shift_User_Rel.ORG_USERID")
-				.andCustomWhere("ORG_USers.ORGID = ? AND USER_TYPE = ? AND DELETED_TIME = -1", orgId, AccountConstants.UserType.USER.getValue());
+				.andCustomWhere("ORG_Users.ORGID = ? AND USER_TYPE = ? AND DELETED_TIME = -1", orgId, AccountConstants.UserType.USER.getValue());
 		
 		User currentUser = AccountUtil.getCurrentAccount().getUser();
 		if(currentUser == null){
