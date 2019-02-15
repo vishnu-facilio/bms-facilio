@@ -19,24 +19,25 @@ public class ConvertUnitForLatestReadingDataCommand implements Command {
 		
 		if(context.get(FacilioConstants.ContextNames.IS_FETCH_RDM_FROM_UI) != null && (Boolean) context.get(FacilioConstants.ContextNames.IS_FETCH_RDM_FROM_UI)) {
 			List<ReadingDataMeta> rdmList = (List<ReadingDataMeta>) context.get(FacilioConstants.ContextNames.READING_DATA_META_LIST);
-			
-			for(ReadingDataMeta meta : rdmList) {
-				if (meta.getField() instanceof NumberField) {
-					Object value = meta.getValue();
-					
-					NumberField numberField =  (NumberField)meta.getField();
-					if(numberField.getMetric() > 0) {
+			if (rdmList != null) {
+				for(ReadingDataMeta meta : rdmList) {
+					if (meta.getField() instanceof NumberField) {
+						Object value = meta.getValue();
 						
-						if(numberField.getUnitId() > 0) {
-							Unit siUnit = Unit.valueOf(Metric.valueOf(numberField.getMetric()).getSiUnitId());
-							value = UnitsUtil.convert(meta.getValue(), siUnit.getUnitId(), numberField.getUnitId());
+						NumberField numberField =  (NumberField)meta.getField();
+						if(numberField.getMetric() > 0) {
+							
+							if(numberField.getUnitId() > 0) {
+								Unit siUnit = Unit.valueOf(Metric.valueOf(numberField.getMetric()).getSiUnitId());
+								value = UnitsUtil.convert(meta.getValue(), siUnit.getUnitId(), numberField.getUnitId());
+							}
+							else {
+								value = UnitsUtil.convertToOrgDisplayUnitFromSi(meta.getValue(), numberField.getMetric());
+							}
 						}
-						else {
-							value = UnitsUtil.convertToOrgDisplayUnitFromSi(meta.getValue(), numberField.getMetric());
+						if(value != null) {
+							meta.setValue(value);
 						}
-					}
-					if(value != null) {
-						meta.setValue(value);
 					}
 				}
 			}

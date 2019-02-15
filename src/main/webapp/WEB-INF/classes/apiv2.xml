@@ -759,6 +759,14 @@
 		<action name="cards" class="com.facilio.bmsconsole.actions.AssetAction"
 			method="reportCards">
 		</action>
+		
+		<action name="add" class="com.facilio.bmsconsole.actions.AssetAction"
+			method="v2addAsset">
+		</action>
+		
+		<action name="update" class="com.facilio.bmsconsole.actions.AssetAction"
+			method="v2updateAsset">
+		</action>
 
 		<action name="*" class="com.facilio.bmsconsole.actions.AssetAction"
 			method="assetDetails">
@@ -986,10 +994,12 @@
 			</result>
 		</action>
 	</package>
-
-	<!-- <package name="pageApiv2" namespace="/api/v2/pages" extends="v2Api"> 
-		<action name="*" class="com.facilio.bmsconsole.actions.PageAction" method="fetchPage"> 
-		<param name="moduleName">asset</param> <param name="permission">READ</param> 
-		<param name="module">{1}</param> </action> </package> -->
-
+	
+	<!-- <package name="pageApiv2" namespace="/api/v2/pages" extends="v2Api">
+		<action name="*" class="com.facilio.bmsconsole.actions.PageAction" method="fetchPage">
+			<param name="moduleName">{1}</param>
+			<param name="permission">READ,READ_TEAM,READ_OWN</param>
+		</action>
+	</package> -->
+		
 </struts>

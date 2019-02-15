@@ -198,7 +198,7 @@ public class AssetAction extends FacilioAction {
 		
 		setAsset((AssetContext) context.get(FacilioConstants.ContextNames.ASSET));
 		setRelationsCount((Map<String, Long>) context.get(FacilioConstants.ContextNames.RELATIONS_COUNT));
-		setResult("asset", asset);
+		setResult(FacilioConstants.ContextNames.ASSET, asset);
 		setResult("relationsCount", relationsCount);
 		return SUCCESS;
 	}
@@ -433,6 +433,19 @@ public class AssetAction extends FacilioAction {
 		getAssetChain.execute(context);
 		setResult("asset", context.get(FacilioConstants.ContextNames.ASSET));
 		
+		return SUCCESS;
+	}
+	
+	public String v2addAsset() throws Exception {
+		addAsset();
+		assetDetails();
+		return SUCCESS;
+	}
+	
+	public String v2updateAsset() throws Exception {
+		updateAsset();
+		setAssetId(asset.getId());
+		assetDetails();
 		return SUCCESS;
 	}
 }
