@@ -55,6 +55,7 @@ public class FieldFactory {
 			alarmsFieldsInclude.add("subject");
 			alarmsFieldsInclude.add("previousSeverity");
 			alarmsFieldsInclude.add("createdTime");
+			alarmsFieldsInclude.add("modifiedTime");
 			alarmsFieldsInclude.add("condition");
 			alarmsFieldsInclude.add("autoClear");
 //			alarmsFieldsInclude.add("noOfAttachments");
@@ -71,8 +72,8 @@ public class FieldFactory {
 			workOrderFieldsInclude.add("createdBy");
 			workOrderFieldsInclude.add("createdTime");
 			workOrderFieldsInclude.add("dueDate");
-			workOrderFieldsInclude.add("estimatedEnd");
-			workOrderFieldsInclude.add("estimatedStart");
+//			workOrderFieldsInclude.add("estimatedEnd");
+//			workOrderFieldsInclude.add("estimatedStart");
 			workOrderFieldsInclude.add("estimatedWorkDuration");
 			workOrderFieldsInclude.add("modifiedTime");
 			workOrderFieldsInclude.add("noOfClosedTasks");
