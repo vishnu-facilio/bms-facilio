@@ -1267,6 +1267,9 @@ public class WorkOrderAction extends FacilioAction {
 	public String getCount() {
 		return count;
 	}
+	public void setCount(String count) {
+		this.count = count;
+	}
 	private long woCount;
 
 	public long getWoCount() {
