@@ -117,6 +117,7 @@ public class FacilioConstants {
 		public static final String PM_INCLUDE_EXCLUDE_LIST = "pmIcludeExcludeList";
 		public static final String IS_BULK_EXECUTE_COMMAND = "isbulkExecuteCommand";
 		public static final String FETCH_COUNT = "fetchCount";
+		public static final String FETCH_SELECTED_FIELDS = "fetchSelectedFields";
 		public static final String RECORD_COUNT = "recordCount";
 		public static final String ROWS_UPDATED = "rowsUpdated";
 		public static final String ACTIVITY_TYPE = "activityType";

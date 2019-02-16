@@ -1,9 +1,11 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
@@ -39,23 +41,36 @@ public class GetAssetListCommand implements Command {
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(moduleName);
+		List<String> selectFields = (List<String>) context.get(FacilioConstants.ContextNames.FETCH_SELECTED_FIELDS);
 		
 		Boolean getCount = (Boolean) context.get(FacilioConstants.ContextNames.FETCH_COUNT);
 		List<FacilioField> fields;
+		List<FacilioField> specifiedfields =  new ArrayList<>();
 		if (getCount != null && getCount) {
 			fields = FieldFactory.getCountField(module);
 		}
 		else {
 			fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
+			if (selectFields != null) {
+				Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(fields);
+				for (String fil : selectFields)
+				{
+					if (fieldsMap.get(fil) != null) {
+						specifiedfields.add(fieldsMap.get(fil));
+					}
+				}
+			}
+		}
+		if(specifiedfields.isEmpty()) {
+			specifiedfields = fields;
 		}
 		FacilioView view = (FacilioView) context.get(FacilioConstants.ContextNames.CUSTOM_VIEW);
 		
 		SelectRecordsBuilder<AssetContext> builder = new SelectRecordsBuilder<AssetContext>()
 															.module(module)
 															.beanClass(FacilioConstants.ContextNames.getClassFromModuleName(moduleName))
-															.select(fields)
+															.select(specifiedfields)
 															;
-		
 		String orderBy = (String) context.get(FacilioConstants.ContextNames.SORTING_QUERY);
 		if (orderBy != null && !orderBy.isEmpty()) {
 			builder.orderBy(orderBy);

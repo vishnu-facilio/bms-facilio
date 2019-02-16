@@ -132,6 +132,9 @@ public class AssetAction extends FacilioAction {
  		if (getCount()) {	// only count
 			context.put(FacilioConstants.ContextNames.FETCH_COUNT, true);
 		}
+ 		if (getSelectFields() != null) {
+ 			context.put(FacilioConstants.ContextNames.FETCH_SELECTED_FIELDS, getSelectFields());			
+ 		}
  		else {
  			JSONObject pagination = new JSONObject();
  	 		pagination.put("page", getPage());

@@ -1,11 +1,15 @@
 package com.facilio.bmsconsole.actions;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.log4j.LogManager;
 import org.json.simple.JSONObject;
 
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.constants.FacilioConstants;
+import com.mysql.fabric.xmlrpc.base.Array;
 import com.opensymphony.xwork2.ActionSupport;
 
 public class FacilioAction extends ActionSupport {
@@ -30,6 +34,16 @@ public class FacilioAction extends ActionSupport {
 		this.message = message;
 	}
 	
+	private List<String> selectFields;
+	
+	
+	public List<String> getSelectFields() {
+		return selectFields;
+	}
+	public void setSelectFields(List<String> selectFields) {
+		this.selectFields = selectFields;
+	}
+
 	private Exception exception;
 	public Exception getException() {
 		return exception;
