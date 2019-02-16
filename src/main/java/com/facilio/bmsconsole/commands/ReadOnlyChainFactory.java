@@ -416,7 +416,23 @@ public class ReadOnlyChainFactory {
 		c.addCommand(SetTableNamesCommand.getForStoreRoom());
 		c.addCommand(new GenericGetModuleDataDetailCommand());
 		c.addCommand(new GetStoreRoomDetailsCommand());
-//		CommonCommandUtil.addCleanUpCommand(c);
+		return c;
+	}
+	
+	public static Chain fetchItemDetails() {
+		Chain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForItems());
+		c.addCommand(new GenericGetModuleDataDetailCommand());
+		return c;
+	}
+	
+	public static Chain getItemsList() {
+		Chain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForItems());
+		c.addCommand(new LoadAllFieldsCommand());
+		c.addCommand(new GenerateCriteriaFromFilterCommand());
+		c.addCommand(new GenerateSearchConditionCommand());
+		c.addCommand(new GetItemsListCommand());
 		return c;
 	}
 }

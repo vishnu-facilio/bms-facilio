@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.commands;
 import org.apache.commons.chain.Chain;
 
 import com.facilio.bmsconsole.commands.data.PopulateImportProcessCommand;
+import com.facilio.bmsconsole.context.ToolsStatusContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.chain.FacilioChain;
 
@@ -1386,6 +1387,86 @@ public class TransactionChainFactory {
 		public static Chain getDeleteItemStatusChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForItemStatus());
+			c.addCommand(new GenericDeleteModuleDataCommand());
+			return c;
+		}
+		
+		public static Chain getAddItemChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForItems());
+			c.addCommand(new GenericAddModuleDataCommand());
+			return c;
+		}
+		
+		public static Chain getUpdateItemChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForItems());
+			c.addCommand(new GenericUpdateModuleDataCommand());
+			return c;
+		}
+		
+		public static Chain getAddToolsCategoryChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForToolsCategory());
+			c.addCommand(new GenericAddModuleDataCommand());
+			c.addCommand(new ExecuteAllWorkflowsCommand());
+			return c;
+		}
+
+		public static Chain getUpdateToolsCategoryChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForToolsCategory());
+			c.addCommand(new GenericUpdateModuleDataCommand());
+			return c;
+		}
+
+		public static Chain getDeleteToolsCategoryChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForToolsCategory());
+			c.addCommand(new GenericDeleteModuleDataCommand());
+			return c;
+		}
+
+		public static Chain getAddToolsStatusChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForToolsStatus());
+			c.addCommand(new GenericAddModuleDataCommand());
+			c.addCommand(new ExecuteAllWorkflowsCommand());
+			return c;
+		}
+
+		public static Chain getUpdateToolsStatusChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForToolsStatus());
+			c.addCommand(new GenericUpdateModuleDataCommand());
+			return c;
+		}
+
+		public static Chain getDeleteToolsStatusChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForToolsStatus());
+			c.addCommand(new GenericDeleteModuleDataCommand());
+			return c;
+		}
+		
+		public static Chain getAddStockedToolsStatusChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForStockedToolsStatus());
+			c.addCommand(new GenericAddModuleDataCommand());
+			c.addCommand(new ExecuteAllWorkflowsCommand());
+			return c;
+		}
+
+		public static Chain getUpdateStockedToolsStatusChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForStockedToolsStatus());
+			c.addCommand(new GenericUpdateModuleDataCommand());
+			return c;
+		}
+
+		public static Chain getDeleteStockedToolsStatusChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForStockedToolsStatus());
 			c.addCommand(new GenericDeleteModuleDataCommand());
 			return c;
 		}

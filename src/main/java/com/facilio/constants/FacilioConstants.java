@@ -30,6 +30,9 @@ import com.facilio.bmsconsole.context.HeatPumpContext;
 import com.facilio.bmsconsole.context.InventoryCategoryContext;
 import com.facilio.bmsconsole.context.InventoryContext;
 import com.facilio.bmsconsole.context.InventoryVendorContext;
+import com.facilio.bmsconsole.context.ItemCategoryContext;
+import com.facilio.bmsconsole.context.ItemStatusContext;
+import com.facilio.bmsconsole.context.ItemsContext;
 import com.facilio.bmsconsole.context.LocationContext;
 import com.facilio.bmsconsole.context.MLAlarmContext;
 import com.facilio.bmsconsole.context.MlForecastingContext;
@@ -729,6 +732,11 @@ public class FacilioConstants {
 		public static final String STORE_ROOM = "storeRoom";
 		public static final String STORE_ROOMS = "storeRooms";
 		
+		public static final String ITEM = "item";
+		public static final String ITEMS = "items";
+		public static final String ITEM_CATEGORY = "itemCategory";
+		public static final String ITEM_STATUS = "itemStatus";
+		
 		private static Map<String, Class> classMap = Collections.unmodifiableMap(initClassMap());
 		private static Map<String, Class> initClassMap() {
 			Map<String, Class> classMap = new HashMap<>();
@@ -792,6 +800,10 @@ public class FacilioConstants {
 			classMap.put(WORKORDER_COST, WorkorderCostContext.class);
 			classMap.put(STORE_ROOM, StoreRoomContext.class);
 			classMap.put(STORE_ROOMS, StoreRoomContext.class);
+			classMap.put(ITEM, ItemsContext.class);
+			classMap.put(ITEMS, ItemsContext.class);
+			classMap.put(ITEM_CATEGORY,ItemCategoryContext.class);
+			classMap.put(ITEM_STATUS, ItemStatusContext.class);
 			return classMap;
 		}
 		

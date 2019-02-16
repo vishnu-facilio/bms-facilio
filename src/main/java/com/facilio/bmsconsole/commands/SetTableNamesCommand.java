@@ -171,7 +171,23 @@ public class SetTableNamesCommand implements Command {
 	public static SetTableNamesCommand getForItemStatus() {
 		return new SetTableNamesCommand("itemStatus", "Item_status");
 	}
+	
+	public static SetTableNamesCommand getForItems() {
+		return new SetTableNamesCommand("items", "Items");
+	}
 		
+	public static SetTableNamesCommand getForToolsCategory() {
+		return new SetTableNamesCommand("toolsCategory", "Tools_category");
+	}
+	
+	public static SetTableNamesCommand getForToolsStatus() {
+		return new SetTableNamesCommand("toolsStatus", "Tools_status");
+	}
+	
+	public static SetTableNamesCommand getForStockedToolsStatus() {
+		return new SetTableNamesCommand("stockedToolsStatus", "Stocked_tools_status");
+	}
+	
 	public static void setForModule (Context context, String moduleName) {
 		//TODO handle all module and get from map
 		String tableName = "";

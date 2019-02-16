@@ -542,7 +542,7 @@
 			<action name="deleteInventoryCategory" class="com.facilio.bmsconsole.actions.PickListAction"
 				method="deleteInventoryCategory">
 			</action>
-		<action name="addItemCategory" class="com.facilio.bmsconsole.actions.PickListAction"
+			<action name="addItemCategory" class="com.facilio.bmsconsole.actions.PickListAction"
 				method="addItemCategory">
 			</action>
 			<action name="updateItemCategory" class="com.facilio.bmsconsole.actions.PickListAction"
@@ -559,6 +559,34 @@
 			</action>
 			<action name="deleteItemStatus" class="com.facilio.bmsconsole.actions.PickListAction"
 				method="deleteItemStatus">
+			</action>
+			<action name="addToolsCategory" class="com.facilio.bmsconsole.actions.PickListAction"
+				method="addToolsCategory">
+			</action>
+			<action name="updateToolsCategory" class="com.facilio.bmsconsole.actions.PickListAction"
+				method="updateToolsCategory">
+			</action>
+			<action name="deleteToolsCategory" class="com.facilio.bmsconsole.actions.PickListAction"
+				method="deleteToolsCategory">
+			</action>
+			<action name="addToolsStatus" class="com.facilio.bmsconsole.actions.PickListAction"
+				method="addToolsStatus">
+			</action>
+			<action name="updateToolsStatus" class="com.facilio.bmsconsole.actions.PickListAction"
+				method="updateToolsStatus">
+			</action>
+			<action name="deleteToolsStatus" class="com.facilio.bmsconsole.actions.PickListAction"
+				method="deleteToolsStatus">
+			</action>
+			
+			<action name="addStockedToolsStatus" class="com.facilio.bmsconsole.actions.PickListAction"
+				method="addStockedToolsStatus">
+			</action>
+			<action name="updateStockedToolsStatus" class="com.facilio.bmsconsole.actions.PickListAction"
+				method="updateStockedToolsStatus">
+			</action>
+			<action name="deleteStockedToolsStatus" class="com.facilio.bmsconsole.actions.PickListAction"
+				method="deleteStockedToolsStatus">
 			</action>
 	</package>
 	<package name="formsApiv2" namespace="/api/v2/form" extends="v2Api">
@@ -1075,6 +1103,36 @@
 		extends="v2Api">
 		<action name="*" class="com.facilio.bmsconsole.actions.StoreRoomAction"
 			method="storeRoomList">
+			<param name="moduleName">asset</param>
+			<param name="permission">READ</param>
+			<param name="viewName">{1}</param>
+		</action>
+	</package>
+	
+	<package name="itemsApi" namespace="/api/v2/items"
+		extends="v2Api">
+		<action name="add"
+			class="com.facilio.bmsconsole.actions.ItemsAction" method="addItem">
+			<param name="moduleName">asset</param>
+			<param name="permission">CREATE</param>
+		</action>
+		<action name="update"
+			class="com.facilio.bmsconsole.actions.ItemsAction" method="updateItem">
+			<param name="moduleName">asset</param>
+			<param name="permission">UPDATE</param>
+		</action> 
+		<action name="*"
+			class="com.facilio.bmsconsole.actions.ItemsAction" method="itemDetails">
+			<param name="moduleName">asset</param>
+			<param name="permission">READ</param>
+			<param name = "itemId">{1}</param>
+		</action>
+	</package>
+	
+	<package name="itemsListApiv2" namespace="/api/v2/items/view"
+		extends="v2Api">
+		<action name="*" class="com.facilio.bmsconsole.actions.ItemsAction"
+			method="itemsList">
 			<param name="moduleName">asset</param>
 			<param name="permission">READ</param>
 			<param name="viewName">{1}</param>
