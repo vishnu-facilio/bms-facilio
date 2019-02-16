@@ -5,6 +5,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.chain.Chain;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -23,9 +25,6 @@ import com.facilio.bmsconsole.util.IoTMessageAPI.IotCommandType;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.timeseries.TimeSeriesAPI;
-import org.json.simple.parser.ParseException;
-
-import javax.servlet.http.HttpServletRequest;
 
 public class TimeSeries extends FacilioAction {
 	
@@ -128,6 +127,15 @@ public class TimeSeries extends FacilioAction {
 		mappingChain.execute(context);
 		
 		setResult("result", "success");
+		return SUCCESS;
+	}
+	
+	// Temporary...Needs to handle in getInstanceAssetMappingChain 
+	public String mapMultipleInstance() throws Exception {
+		for(int i =0; i < instances.size(); i++) {
+			instanceAssetMap = instances.get(i);
+			mapInstance();
+		}
 		return SUCCESS;
 	}
 

@@ -877,6 +877,11 @@
 			<param name="moduleName">setup</param>
 			<param name="permission">CONTROLLER</param>
 		</action>
+		<action name="mapmultiple" class="com.facilio.bmsconsole.actions.TimeSeries"
+			method="mapMultipleInstance">
+			<param name="moduleName">setup</param>
+			<param name="permission">CONTROLLER</param>
+		</action>
 		<action name="mapped" class="com.facilio.bmsconsole.actions.TimeSeries"
 			method="getMappedInstances">
 			<param name="moduleName">setup</param>
