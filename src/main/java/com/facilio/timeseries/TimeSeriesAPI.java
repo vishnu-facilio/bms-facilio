@@ -206,14 +206,14 @@ public class TimeSeriesAPI {
 	
 	// Temp
 	public static void migrateUnmodelledData(long controllerId, List<Map<String, Object>> instances) throws Exception {
-		if (instances != null) {
+		if (instances == null) {
 			instances = TimeSeriesAPI.getMappedInstances(controllerId);
 		}
 		if (instances != null && !instances.isEmpty()) {
 			 for(Map<String, Object> instance: instances) {
 				FacilioContext context = new FacilioContext();
-				context.put(FacilioConstants.ContextNames.DEVICE_DATA, instance.get("deviceName"));
-				context.put(FacilioConstants.ContextNames.INSTANCE_INFO, instance.get("instanceName"));
+				context.put(FacilioConstants.ContextNames.DEVICE_DATA, instance.get("device"));
+				context.put(FacilioConstants.ContextNames.INSTANCE_INFO, instance.get("instance"));
 				context.put(FacilioConstants.ContextNames.ASSET_ID, instance.get("assetId"));
 				context.put(FacilioConstants.ContextNames.FIELD_ID, instance.get("fieldId"));
 				context.put(FacilioConstants.ContextNames.CONTROLLER_ID, controllerId);

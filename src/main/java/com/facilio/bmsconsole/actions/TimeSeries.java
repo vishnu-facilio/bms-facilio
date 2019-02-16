@@ -132,6 +132,7 @@ public class TimeSeries extends FacilioAction {
 	
 	public String migrateUnmodelledData() throws Exception {
 		TimeSeriesAPI.migrateUnmodelledData(controllerId, instances);
+		setResult("result", "success");
 		return SUCCESS;
 	}
 
