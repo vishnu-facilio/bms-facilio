@@ -971,7 +971,11 @@ public class TransactionChainFactory {
 			Chain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForAlarm());
 			c.addCommand(new AddAlarmCommand());
-			c.addCommand(new ExecuteAllWorkflowsCommand());
+			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.BUSSINESS_LOGIC_ALARM_RULE));
+			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.PM_ALARM_RULE));
+			c.addCommand(new ForkChainToInstantJobCommand()
+				.addCommand(new ExecuteAllWorkflowsCommand(RuleType.ALARM_NOTIFICATION_RULE, RuleType.CUSTOM_ALARM_NOTIFICATION_RULE))
+			);
 			c.addCommand(new AddAlarmFollowersCommand());
 			c.addCommand(new ConstructTicketNotesCommand());
 			c.addCommand(getAddNotesChain());
@@ -989,10 +993,12 @@ public class TransactionChainFactory {
 			Chain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForAlarm());
 			c.addCommand(new UpdateAlarmCommand());
-			c.addCommand(new ExecuteAllWorkflowsCommand());
+			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.BUSSINESS_LOGIC_ALARM_RULE));
+			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.PM_ALARM_RULE));
 			c.addCommand(new ForkChainToInstantJobCommand()
-					.addCommand(new AddClearCommentInWoOnAlarmClearCommand())
-				);
+				.addCommand(new ExecuteAllWorkflowsCommand(RuleType.ALARM_NOTIFICATION_RULE, RuleType.CUSTOM_ALARM_NOTIFICATION_RULE))
+				.addCommand(new AddClearCommentInWoOnAlarmClearCommand())
+			);
 			c.addCommand(new ConstructTicketNotesCommand());
 			c.addCommand(getAddNotesChain());
 			return c;
