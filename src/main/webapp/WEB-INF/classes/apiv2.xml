@@ -877,8 +877,8 @@
 			<param name="moduleName">setup</param>
 			<param name="permission">CONTROLLER</param>
 		</action>
-		<action name="mapmultiple" class="com.facilio.bmsconsole.actions.TimeSeries"
-			method="mapMultipleInstance">
+		<action name="migrate" class="com.facilio.bmsconsole.actions.TimeSeries"
+			method="migrateUnmodelledData">
 			<param name="moduleName">setup</param>
 			<param name="permission">CONTROLLER</param>
 		</action>

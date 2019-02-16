@@ -130,12 +130,8 @@ public class TimeSeries extends FacilioAction {
 		return SUCCESS;
 	}
 	
-	// Temporary...Needs to handle in getInstanceAssetMappingChain 
-	public String mapMultipleInstance() throws Exception {
-		for(int i =0; i < instances.size(); i++) {
-			instanceAssetMap = instances.get(i);
-			mapInstance();
-		}
+	public String migrateUnmodelledData() throws Exception {
+		TimeSeriesAPI.migrateUnmodelledData(controllerId, instances);
 		return SUCCESS;
 	}
 
