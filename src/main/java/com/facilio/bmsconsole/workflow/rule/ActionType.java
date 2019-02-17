@@ -659,7 +659,7 @@ public enum ActionType {
 																				.module(event.getModule())
 																				.andCondition(CriteriaAPI.getIdCondition(((ModuleBaseWithCustomFields) currentRecord).getId(), event.getModule()))
 																				;
-			updateBuilder.update(obj);
+			updateBuilder.update(FieldUtil.getAsProperties(currentRecord));
 			
 		}
 		
