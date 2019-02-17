@@ -641,7 +641,8 @@ public enum ActionType {
 					Object val = obj.get(key);
 					if (val != null) {
 						if (field.getDataTypeEnum() == FieldType.LOOKUP) {
-							val = FieldUtil.getEmptyLookupVal((LookupField) field, Long.parseLong(val.toString()));
+							String id = ((Map<String, Object>)val).get("id").toString();
+							val = FieldUtil.getEmptyLookupVal((LookupField) field, Long.parseLong(id));
 						}
 						fields.add(field);
 						if (field.isDefault()) {
@@ -659,7 +660,7 @@ public enum ActionType {
 																				.module(event.getModule())
 																				.andCondition(CriteriaAPI.getIdCondition(((ModuleBaseWithCustomFields) currentRecord).getId(), event.getModule()))
 																				;
-			updateBuilder.update(FieldUtil.getAsProperties(currentRecord));
+			updateBuilder.update(obj);
 			
 		}
 		
