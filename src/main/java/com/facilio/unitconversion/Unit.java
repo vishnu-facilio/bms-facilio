@@ -11,7 +11,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 @JsonFormat(shape = JsonFormat.Shape.OBJECT)
 public enum Unit {
 	
-	// last id -- 96
+	// last id -- 99
 	
 	KWH(1,"Kilowatt Hour","kWh",Metric.ENERGY),
 	HECTOWH(76,"Hectowatt Hour","hWh",Metric.ENERGY,"si*10","this/10"),
@@ -85,6 +85,9 @@ public enum Unit {
 	TERAHERTZ(57,"Terahertz","THz",Metric.FREQUENCY,"si/1000000000000","this*1000000000000"),
 	
 	VOLTAMP(96,"Volt Amperes","VA",Metric.APPARENTPOWER),
+	KILOVOLTAMP(97,"Kilo Volt Amperes","kVA",Metric.APPARENTPOWER,"si/1000","this*1000"),
+	MEGAVOLTAMP(98,"Mega Volt Amperes","MVA",Metric.APPARENTPOWER,"si/1000000","this*1000000"),
+	MILLIVOLTAMP(99,"Milli Volt Amperes","mVA",Metric.APPARENTPOWER,"si*1000000","this/1000000"),
 	
 	VAR(58,"Var","var",Metric.REACTIVEPOWER),
 	KILOVAR(59,"Kilo Var","kvar",Metric.REACTIVEPOWER,"si/1000","this*1000"),
