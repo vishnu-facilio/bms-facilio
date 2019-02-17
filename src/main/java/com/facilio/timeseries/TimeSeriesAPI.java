@@ -58,7 +58,7 @@ public class TimeSeriesAPI {
 	
 	public static void processPayLoad(long ttime, JSONObject payLoad, String macAddr) throws Exception {
 		LOGGER.debug(payLoad);
-		processPayLoad(ttime, payLoad, null, null, macAddr, false);
+		processPayLoad(ttime, payLoad, null, null, macAddr, true);
 	}
 	
 	public static void processPayLoad(long ttime, JSONObject payLoad, String macAddr, boolean adjustTime) throws Exception {
