@@ -1211,6 +1211,9 @@ public static JSONObject getStandardVariance1(ReportContext report,JSONArray pro
 		if(getOnlyMobileDashboard) {
 			selectBuilder.andCondition(CriteriaAPI.getCondition("SHOW_HIDE_MOBILE", "mobileEnabled", "true", BooleanOperators.IS));
 		}
+		else if(AccountUtil.getCurrentOrg().getOrgId() == 169l) {	// temp fix for emrill
+			selectBuilder.andCustomWhere(ModuleFactory.getDashboardModule().getTableName()+".ID != ?", 1058);
+		}
 		
 		List<Map<String, Object>> props = selectBuilder.get();
 		
