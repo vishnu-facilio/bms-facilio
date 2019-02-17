@@ -29,6 +29,7 @@ public enum Metric {
 	PERCENTAGE(16,"Percentage",87),
 	PRECIPITATION_INTENSITY(17,"Precipitation Intensity",89),
 	FLOWRATE(18,"Flow Rate",90),
+	APPARENTPOWER(19,"Apparent Power",96),
 	;
 	
 	public static Map<Integer, Metric> getMetricMap() {

@@ -11,7 +11,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 @JsonFormat(shape = JsonFormat.Shape.OBJECT)
 public enum Unit {
 	
-	// last id -- 93
+	// last id -- 96
 	
 	KWH(1,"Kilowatt Hour","kWh",Metric.ENERGY),
 	HECTOWH(76,"Hectowatt Hour","hWh",Metric.ENERGY,"si*10","this/10"),
@@ -76,11 +76,15 @@ public enum Unit {
 	
 	HERTZ(51,"Hertz","Hz",Metric.FREQUENCY),
 	MILLIHERTZ(52,"Millihertz","mHz",Metric.FREQUENCY,"si*1000","this/1000"),
+	DECAHERTZ(94,"Decahertz","daHz",Metric.FREQUENCY,"si/10","this*10"),
+	DECIHERTZ(95,"Decihertz","dHz",Metric.FREQUENCY,"si*10","this/10"),
 	MICROHERTZ(53,"Microhertz","&#x3BC;Hz",Metric.FREQUENCY,"si*1000000","this/1000000"),
 	KILOHERTZ(54,"Kilohertz","kHz",Metric.FREQUENCY,"si/1000","this*1000"),
 	MEGAHERTZ(55,"Megahertz","MHz",Metric.FREQUENCY,"si/1000000","this*1000000"),
 	GIGAHERTZ(56,"Gigahertz","GHz",Metric.FREQUENCY,"si/1000000000","this*1000000000"),
 	TERAHERTZ(57,"Terahertz","THz",Metric.FREQUENCY,"si/1000000000000","this*1000000000000"),
+	
+	VOLTAMP(96,"Volt Amperes","VA",Metric.APPARENTPOWER),
 	
 	VAR(58,"Var","var",Metric.REACTIVEPOWER),
 	KILOVAR(59,"Kilo Var","kvar",Metric.REACTIVEPOWER,"si/1000","this*1000"),
