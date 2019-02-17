@@ -210,6 +210,7 @@ public class TimeSeriesAPI {
 			instances = TimeSeriesAPI.getMappedInstances(controllerId);
 		}
 		if (instances != null && !instances.isEmpty()) {
+			int i = 0;	// Temp
 			 for(Map<String, Object> instance: instances) {
 				FacilioContext context = new FacilioContext();
 				context.put(FacilioConstants.ContextNames.DEVICE_DATA, instance.get("device"));
@@ -217,8 +218,13 @@ public class TimeSeriesAPI {
 				context.put(FacilioConstants.ContextNames.ASSET_ID, instance.get("assetId"));
 				context.put(FacilioConstants.ContextNames.FIELD_ID, instance.get("fieldId"));
 				context.put(FacilioConstants.ContextNames.CONTROLLER_ID, controllerId);
+				if (i < 10) {
+					LOGGER.info("Migrating UnmodelledData, device: " + instance.get("device") + ",instance: " + instance.get("instance") + ", controllerId: " + controllerId + ", assetId:" + instance.get("assetId"));
+				}
 					
 				FacilioTimer.scheduleInstantJob("ProcessUnmodelledHistoricalData", context);
+				i++;
+				
 			 }
 		}
 	}
@@ -731,6 +737,9 @@ public class TimeSeriesAPI {
 		FacilioModule module = ModuleFactory.getUnmodeledDataModule();
 		
 		Map<String, Object> unmodeledInstance = getUnmodeledInstance(device, instance, controllerId);
+		if (unmodeledInstance == null) {
+			LOGGER.info("Unmodelled Instance null check, device: " + device + ",instance: " + instance + ", controllerId: " + controllerId);
+		}
 		
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 				.select(fields)

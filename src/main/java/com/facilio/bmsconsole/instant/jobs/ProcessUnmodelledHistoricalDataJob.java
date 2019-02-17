@@ -63,7 +63,7 @@ public class ProcessUnmodelledHistoricalDataJob extends InstantJob {
 		}
 		catch (Exception e) {
 			LOGGER.error("Error occurred during execution of ProcessUnmodelledHistoricalDataJob", e);
-			CommonCommandUtil.emailException("MigrateReadingDataJob", "Error occurred during execution of ProcessUnmodelledHistoricalDataJob", e);
+			CommonCommandUtil.emailException("ProcessUnmodelledHistoricalDataJob", "Error occurred during execution of ProcessUnmodelledHistoricalDataJob", e);
 		}
 	}
 
