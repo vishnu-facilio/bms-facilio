@@ -708,8 +708,9 @@ public class FacilioConstants {
 		public static final String IDS_TO_UPDATE_COUNT = "ids_to_update_count";
 		
 		public static final String PAGE = "page";
-		
-		private static Map<String, Class> classMap = Collections.unmodifiableMap(initClassMap());
+		public static final String CURRENT_CALENDAR_VIEW = "currentCalendarView";
+
+        private static Map<String, Class> classMap = Collections.unmodifiableMap(initClassMap());
 		private static Map<String, Class> initClassMap() {
 			Map<String, Class> classMap = new HashMap<>();
 			classMap.put(TICKET_STATUS, TicketStatusContext.class);

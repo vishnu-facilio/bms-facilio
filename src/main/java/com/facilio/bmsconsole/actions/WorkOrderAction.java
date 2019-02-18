@@ -95,6 +95,16 @@ public class WorkOrderAction extends FacilioAction {
 		setResult(FacilioConstants.ContextNames.WORK_ORDER_COUNT, woCount);
 		return SUCCESS;
 	}
+
+    public String getCurrentView() {
+        return currentView;
+    }
+
+    public void setCurrentView(String currentView) {
+        this.currentView = currentView;
+    }
+
+    private String currentView;
     
 	private List<FacilioField> fields;
 
@@ -931,6 +941,7 @@ public class WorkOrderAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_STARTTIME, getStartTime());
 		context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_ENDTIME, getEndTime());
+		context.put(FacilioConstants.ContextNames.CURRENT_CALENDAR_VIEW, getCurrentView());
 
 		if (getFilters() != null) {
 			JSONParser parser = new JSONParser();

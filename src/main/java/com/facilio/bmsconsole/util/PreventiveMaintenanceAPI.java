@@ -480,10 +480,18 @@ public class PreventiveMaintenanceAPI {
 		Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(fields);
 		FacilioField pmIdField = fieldsMap.get("pmId");
 		FacilioField nextExecutionField = fieldsMap.get("nextExecutionTime");
+
+		FacilioModule pmRPModule = ModuleFactory.getPMResourcePlannerModule();
+		List<FacilioField> rpFields = FieldFactory.getPMResourcePlannerFields();
+		Map<String, FacilioField> rpFieldsMap = FieldFactory.getAsMap(rpFields);
+		FacilioField assignedToField = rpFieldsMap.get("assignedToId");
+		fields.add(assignedToField);
 		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 														.select(fields)
 														.table(pmJobsModule.getTableName())
+														.leftJoin(pmRPModule.getTableName())
+														.on("PM_Resource_Planner.PM_ID=PM_Jobs.PM_ID AND PM_Resource_Planner.RESOURCE_ID=PM_Jobs.RESOURCE_ID")
 														.andCondition(CriteriaAPI.getCondition(pmIdField,pmIds, NumberOperators.EQUALS))
 														.andCondition(CriteriaAPI.getCondition(nextExecutionField, String.valueOf(startTime), NumberOperators.GREATER_THAN_EQUAL))
 														.andCondition(CriteriaAPI.getCondition(nextExecutionField, String.valueOf(endTime), NumberOperators.LESS_THAN))

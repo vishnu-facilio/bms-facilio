@@ -42,6 +42,7 @@ public class GetPMJobsCommand implements Command {
 		// TODO Auto-generated method stub
 		
 		LOGGER.log(Level.SEVERE, "startTime -- "+System.currentTimeMillis());
+		String currentCalendarView = (String) context.get(FacilioConstants.ContextNames.CURRENT_CALENDAR_VIEW);
 		Criteria filterCriteria = (Criteria) context.get(FacilioConstants.ContextNames.FILTER_CRITERIA);
 		List<FacilioField> fields = FieldFactory.getPreventiveMaintenanceFields();
 		FacilioField triggerField = FieldFactory.getAsMap(fields).get("triggerType");
@@ -120,7 +121,7 @@ public class GetPMJobsCommand implements Command {
 													ResourceContext resource = ResourceAPI.getResource((long) pmJob.get("resourceId"));
 													pmJob.put("resource", resource);
 												}
-												if(pm.getPmCreationTypeEnum() == PreventiveMaintenance.PMCreationType.MULTIPLE) {
+												if(pm.getPmCreationTypeEnum() == PreventiveMaintenance.PMCreationType.MULTIPLE && currentCalendarView != null && currentCalendarView.equals("planned")) {
 													Long executionTime = (Long) pmJob.get("nextExecutionTime");
 													 Map<Long, List<Map<String, Object>>> triggerMap = pmTriggerTimeBasedGroupedMap.get(executionTime);
 													if(triggerMap == null) {
