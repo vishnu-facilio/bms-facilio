@@ -218,7 +218,7 @@ public class HVACPressurePredictorJob extends FacilioJob
 			 FacilioContext context = new FacilioContext();
 			 context.put(FacilioConstants.ContextNames.MODULE_NAME, field.getModule().getName());
 			 context.put(FacilioConstants.ContextNames.READINGS, newList);
-			 context.put(FacilioConstants.ContextNames.READINGS_SOURCE, SourceType.FORMULA);
+			 context.put(FacilioConstants.ContextNames.READINGS_SOURCE, SourceType.ML);
 			 Chain chain = TransactionChainFactory.onlyAddOrUpdateReadingsChain();
 			 chain.execute(context);
 		}
