@@ -116,6 +116,11 @@ public class GetAllFieldsCommand implements Command {
 					else if(FieldFactory.Fields.workOrderFieldsInclude.contains(fieldObject.getName())) {
 						fields.add(fieldObject);
 					}
+				}
+				else if (moduleName.equals("asset")) {
+					if(FieldFactory.Fields.assetFieldsInclude.contains(fieldObject.getName())) {
+						fields.add(fieldObject);
+					}
 				}else {
 					fields = allFields;
 				}

@@ -30,6 +30,9 @@ public class FieldFactory {
 		lookupModuleVsSortFieldName.put("assetdepartment", Pair.of("name", true));
 		lookupModuleVsSortFieldName.put("assettype", Pair.of("name", true));
 		lookupModuleVsSortFieldName.put("alarmseverity", Pair.of("cardinality", false));
+		lookupModuleVsSortFieldName.put("users", Pair.of("name", true));
+		lookupModuleVsSortFieldName.put("resource", Pair.of("name", true));
+		lookupModuleVsSortFieldName.put("space", Pair.of("name", true));
 		return lookupModuleVsSortFieldName;
 	}
 
@@ -87,6 +90,31 @@ public class FieldFactory {
 			workOrderFieldsInclude.add("type");
 			workOrderFieldsInclude.add("sendForApproval");
 		}
+		
+		public static List<String> assetFieldsInclude = new ArrayList<String>();
+		static {
+			assetFieldsInclude.add("category");
+			assetFieldsInclude.add("department");
+			assetFieldsInclude.add("description");
+			assetFieldsInclude.add("localId");
+			assetFieldsInclude.add("manufacturer");
+			assetFieldsInclude.add("name");
+			assetFieldsInclude.add("parentAssetId");
+			assetFieldsInclude.add("photoId");
+			assetFieldsInclude.add("purchasedDate");
+			assetFieldsInclude.add("qrVal");
+			assetFieldsInclude.add("resourceType");
+			assetFieldsInclude.add("retireDate");
+			assetFieldsInclude.add("serialNumber");
+			assetFieldsInclude.add("state");
+			assetFieldsInclude.add("supplier");
+			assetFieldsInclude.add("tagNumber");
+			assetFieldsInclude.add("type");
+//			assetFieldsInclude.add("resource");
+			assetFieldsInclude.add("unitPrice");
+			assetFieldsInclude.add("warrantyExpiryDate");
+		}
+		
 		public static List<String> approvalFormFields = new ArrayList<String>();
 		static {
 			approvalFormFields.add("assignmentGroup");
