@@ -27,6 +27,15 @@ public class AlarmRuleContext {
 		this.isAutoClear = isAutoClear;
 	}
 	
+	boolean isClearAlarmOnPreRequsiteFail = true;
+	
+	public boolean isClearAlarmOnPreRequsiteFail() {
+		return isClearAlarmOnPreRequsiteFail;
+	}
+	public void setClearAlarmOnPreRequsiteFail(boolean isClearAlarmOnPreRequsiteFail) {
+		this.isClearAlarmOnPreRequsiteFail = isClearAlarmOnPreRequsiteFail;
+	}
+	
 	public AlarmRuleContext() {
 		
 	}
