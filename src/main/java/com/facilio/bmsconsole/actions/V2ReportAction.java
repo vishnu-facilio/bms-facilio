@@ -18,7 +18,6 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.AddOrUpdateReportCommand;
 import com.facilio.bmsconsole.commands.ConstructReportData;
-import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.AlarmContext;
@@ -478,7 +477,7 @@ public class V2ReportAction extends FacilioAction {
 	public void setSortOrder(int sortOrder) {
 		this.sortOrder = sortOrder;
 	}
-	private int limit;
+	private int limit = -1;
 	public int getLimit() {
 		return limit;
 	}
@@ -489,7 +488,14 @@ public class V2ReportAction extends FacilioAction {
 		JSONParser parser = new JSONParser();
 		
 		FacilioContext context = new FacilioContext();
+		updateContext(context);
 		
+		ReadOnlyChainFactory.constructAndFetchReportDataChain().execute(context);
+
+		return setReportResult(context);
+	}
+	
+	private void updateContext(FacilioContext context) {
 		context.put("x-axis", xField);
 		context.put("y-axis", yField);
 		context.put("group-by", groupBy);
@@ -497,10 +503,6 @@ public class V2ReportAction extends FacilioAction {
 		context.put("sort_fields", sortFields);
 		context.put("sort_order", sortOrder);
 		context.put("limit", limit);
-		
-		ReadOnlyChainFactory.constructAndFetchReportDataChain().execute(context);
-
-		return setReportResult(context);
 	}
 
 	public String saveReport() throws Exception {
@@ -520,11 +522,8 @@ public class V2ReportAction extends FacilioAction {
 		}
 		
 		context.put(FacilioConstants.ContextNames.REPORT, reportContext);
-		context.put("x-axis", xField);
-		context.put("y-axis", yField);
-		context.put("group-by", groupBy);
-		context.put("criteria", criteria);
-
+		updateContext(context);
+		
 		chain.addCommand(new ConstructReportData());
 		chain.addCommand(new AddOrUpdateReportCommand());
 		chain.execute(context);
