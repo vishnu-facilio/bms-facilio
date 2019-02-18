@@ -20,7 +20,7 @@ public class AuthenticationUtil {
 
         if (facilioToken != null || headerToken != null) {
 
-            if (headerToken != null) {
+            if (headerToken != null && headerToken.trim().length() > 0) {
                 if (headerToken.startsWith("Bearer facilio ")) {
                     facilioToken = headerToken.replace("Bearer facilio ", "");
                 } else if(headerToken.startsWith("Bearer Facilio ")) { // added this check for altayer emsol data // Todo remove this later
