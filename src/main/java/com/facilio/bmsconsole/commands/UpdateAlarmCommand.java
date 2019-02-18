@@ -88,8 +88,7 @@ public class UpdateAlarmCommand implements Command {
 				}
 			}
 			
-			if(alarm.getSeverity() != null)
-			{
+			if(alarm.getSeverity() != null) {
 				if(isCleared) {
 					context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.ALARM_CLEARED);
 				}

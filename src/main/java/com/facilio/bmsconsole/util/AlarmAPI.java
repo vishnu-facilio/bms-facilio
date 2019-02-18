@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.util;
 import java.text.DecimalFormat;
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -203,7 +204,13 @@ public class AlarmAPI {
 		}
 		
 		if(sourceAlarm != destinationAlarm && destinationAlarm.getSeverity() != null) {
-			destinationAlarm.setPreviousSeverity(sourceAlarm.getSeverity());
+			Map<Long, AlarmSeverityContext> severityMap = AlarmAPI.getAlarmSeverityMap(sourceAlarm.getSeverity().getId(), destinationAlarm.getSeverity().getId());
+			if (destinationAlarm.isForceSeverity() || severityMap.get(sourceAlarm.getSeverity().getId()).getCardinality() > severityMap.get(destinationAlarm.getSeverity().getId()).getCardinality()) { //Updating severity only if previous severity is lower
+				destinationAlarm.setPreviousSeverity(sourceAlarm.getSeverity());
+			}
+			else {
+				destinationAlarm.setSeverity(null);
+			}
 		}
 		
 		ResourceContext resource = sourceAlarm.getResource();
@@ -333,6 +340,10 @@ public class AlarmAPI {
 			return severities.get(0);
 		}
 		return null;
+	}
+	
+	public static Map<Long, AlarmSeverityContext> getAlarmSeverityMap(Long... ids) throws Exception {
+		return getAlarmSeverityMap(Arrays.asList(ids));
 	}
 	
 	public static Map<Long, AlarmSeverityContext> getAlarmSeverityMap(Collection<Long> ids) throws Exception {

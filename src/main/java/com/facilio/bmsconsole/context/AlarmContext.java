@@ -416,6 +416,13 @@ public class AlarmContext extends TicketContext {
 		relatedEvents.add(relatedEvent);
 	}
 	
+	private boolean forceSeverity = false;
+	public boolean isForceSeverity() {
+		return forceSeverity;
+	}
+	public void setForceSeverity(boolean forceSeverity) {
+		this.forceSeverity = forceSeverity;
+	}
 	@Override
 	public String toString() {
 		// TODO Auto-generated method stub
