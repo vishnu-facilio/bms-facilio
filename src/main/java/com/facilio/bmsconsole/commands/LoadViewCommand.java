@@ -22,6 +22,7 @@ import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldType;
+import com.facilio.bmsconsole.modules.LookupField;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.bmsconsole.util.ViewAPI;
@@ -118,9 +119,17 @@ public class LoadViewCommand implements Command {
 			}
 			
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			Pair<String, Boolean> fieldOrdering;
+			FacilioModule lookupModule = null;
+			List<Map<String, Object>> props = null;
+			GenericSelectRecordBuilder builder;
+			FacilioField sortableField;
+			String columnName = null;
+			
+			if ((((LookupField) field.getSortField()).getSpecialType()) == null) {
 			FacilioModule lookupMod = ModuleFactory.getLookupFieldsModule();
 			
-			String columnName = field.getSortField().getColumnName();
+			columnName = field.getSortField().getColumnName();
 			
 			FacilioField name = new FacilioField();
 			name.setName("name");
@@ -137,19 +146,18 @@ public class LoadViewCommand implements Command {
 			moduleID.setDataType(FieldType.NUMBER);
 			moduleID.setColumnName("MODULEID");
 			
-			GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+			builder = new GenericSelectRecordBuilder()
 					.select(Arrays.asList(moduleID, name, table))
 					.table(ModuleFactory.getLookupFieldsModule().getTableName())
 					.innerJoin("Modules")
 					.on("Modules.MODULEID = LookupFields.LOOKUP_MODULE_ID")
 					.andCustomWhere(lookupMod.getTableName()+".FIELDID = ? AND "+lookupMod.getTableName()+".ORGID = ?", fieldID, AccountUtil.getCurrentOrg().getOrgId());
 			
-			List<Map<String, Object>> props = builder.get();
+			props = builder.get();
 			
-			FacilioModule lookupModule = modBean.getModule((long) props.get(0).get("moduleID"));
-			Pair<String, Boolean> fieldOrdering = FieldFactory.getSortableFieldName(lookupModule.getName());
-			FacilioField sortableField = modBean.getField(fieldOrdering.getLeft(), lookupModule.getName());
-			
+			lookupModule = modBean.getModule((long) props.get(0).get("moduleID"));
+			fieldOrdering = FieldFactory.getSortableFieldName(lookupModule.getName());
+			sortableField = modBean.getField(fieldOrdering.getLeft(), lookupModule.getName());
 			String order;
 			if (fieldOrdering.getRight()) {
 				order = field.getIsAscending() ? "asc" : "desc";
@@ -163,6 +171,22 @@ public class LoadViewCommand implements Command {
 					.andCustomWhere("ORGID = ?", AccountUtil.getCurrentOrg().getOrgId())
 					.orderBy(sortableField.getColumnName() + " " + order);					
 			props = builder.get();
+		}
+			else {	
+				fieldOrdering = FieldFactory.getSortableFieldName(((LookupField) field.getSortField()).getSpecialType());
+				sortableField = modBean.getField(fieldOrdering.getLeft(), ((LookupField) field.getSortField()).getSpecialType());
+				String order;
+				if (fieldOrdering.getRight()) {
+					order = field.getIsAscending() ? "asc" : "desc";
+				} else {
+					order = field.getIsAscending() ? "desc" : "asc";
+				}
+				
+				FacilioModule tableNames;
+				tableNames = LookupSpecialTypeUtil.getModule(((LookupField) field.getSortField()).getSpecialType());
+
+			}
+			
 			
 			List<Long> ids = new ArrayList<>();
 			for (Map<String, Object> prop : props) {
