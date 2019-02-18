@@ -1,10 +1,6 @@
 package com.facilio.aws.util;
 
-import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
@@ -149,6 +145,7 @@ public class AwsUtil
 	private static String environment;
 	private static String kafkaProducer;
 	private static String kafkaConsumer;
+	private static String pdfjs;
 
 	static {
 		loadProperties();
@@ -176,7 +173,10 @@ public class AwsUtil
 				kafkaConsumer = PROPERTIES.getProperty("kafka.consumer");
 				isSmtp = "smtp".equalsIgnoreCase(PROPERTIES.getProperty("email.type"));
 				PROPERTIES.put("clientapp.url", clientAppUrl);
-
+				File file = new File(resource.getPath());
+				if (file.getParentFile() != null) {
+					pdfjs = file.getParentFile().getParentFile().getAbsolutePath()+"/js";
+				}
 			} catch (IOException e) {
 				LOGGER.info("Exception while trying to load property file " + AWS_PROPERTY_FILE);
 			}
@@ -875,5 +875,9 @@ public class AwsUtil
 
 	public static boolean isSmtp() {
 		return isSmtp;
+	}
+
+	public static String getPdfjsLocation() {
+		return pdfjs;
 	}
 }

@@ -5,7 +5,7 @@ export CONF_DIR="$APP_HOME/webapps/ROOT/WEB-INF/classes/conf"
 
 ipAddress=`hostname -I|awk '{$1=$1};1'`
 logsBucket=facilio-server-logs
-servername=`grep "api.servername" $CONF_DIR/awsprops.properties | cut -d'=' -f 2`
+servername=`grep "app.domain" $CONF_DIR/awsprops.properties | cut -d'=' -f 2`
 logsBucket=`grep "logs.bucket" $CONF_DIR/awsprops.properties | cut -d'=' -f 2`
 
 today=`date +%F`
@@ -17,10 +17,10 @@ do
         if [ $dateString != $today ]; then
             gzip $APP_HOME/logs/$file
             if [ -f $APP_HOME/logs/$file ]; then
-                sudo aws s3 mv $APP_HOME/logs/$file s3://$logsBucket/$logDir/$servername/$ipAddress/
+                aws s3 mv $APP_HOME/logs/$file s3://$logsBucket/$logDir/$servername/$ipAddress/
             fi
             if [ -f $APP_HOME/logs/$file".gz" ]; then
-                sudo aws s3 mv $APP_HOME/logs/$file".gz" s3://$logsBucket/$logDir/$servername/$ipAddress/
+                aws s3 mv $APP_HOME/logs/$file".gz" s3://$logsBucket/$logDir/$servername/$ipAddress/
             fi
         fi
     fi

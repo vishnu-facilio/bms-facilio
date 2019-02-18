@@ -6,9 +6,10 @@ export CONF_DIR="$APP_HOME/webapps/ROOT/WEB-INF/classes/conf"
 
 cd /home/ubuntu
 
-sudo killall -9 java
-sudo sh $APP_HOME/bin/catalina.sh start
-sudo chmod 644 $APP_HOME/logs/*
-sudo rm -rf $UBUNTU_HOME/deployment-files/*
+killall -9 java
+sh start_xvfb.sh
+chmod 644 $APP_HOME/logs/*
+sh $APP_HOME/bin/startup.sh
+rm -rf $UBUNTU_HOME/deployment-files/*
 
 echo "server started..."

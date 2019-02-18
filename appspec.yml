@@ -5,8 +5,6 @@ files:
     destination: /home/ubuntu/tomcat/webapps
   - source: /kill_server.sh
     destination: /home/ubuntu
-  - source: /replace_conf.sh
-    destination: /home/ubuntu
   - source: /start_server.sh
     destination: /home/ubuntu
   - source: /change_conf.sh

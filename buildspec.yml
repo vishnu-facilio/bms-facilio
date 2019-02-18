@@ -10,7 +10,6 @@ artifacts:
     - appspec.yml
     - scripts/kill_server.sh
     - scripts/start_server.sh
-    - scripts/replace_conf.sh
     - scripts/change_conf.sh
     - scripts/move_logs.sh
     - scripts/start_xvfb.sh

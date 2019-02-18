@@ -15,12 +15,13 @@ import com.facilio.fw.auth.CognitoUtil;
 
 public class PdfUtil {
 
-    private static final String PDF_CMD = System.getProperty("user.home")+"/slimerjs-0.10.3/slimerjs";
-    private static final String RENDER_JS = System.getProperty("user.home")+"/render.js";
-    private static final String SERVER_NAME = AwsUtil.getConfig("app.domain");
+    private static final String PDF_CMD = System.getProperty("user.home")+"/pdf/slimerjs/slimerjs";
+    private static final String RENDER_JS = AwsUtil.getPdfjsLocation()+"/render.js";
     private static final Logger LOGGER = LogManager.getLogger(PdfUtil.class.getName());
+
     public static String convertUrlToPdf(long orgId, String username, String url, FileFormat... formats) {
-    		FileFormat format = FileFormat.PDF;
+
+        FileFormat format = FileFormat.PDF;
 		if (formats != null && formats.length > 0) {
 			format = formats[0];
 		}
@@ -32,12 +33,12 @@ public class PdfUtil {
         }
         if(directoryExits){
             try {
-                String token = CognitoUtil.createJWT("id", "auth0", username, System.currentTimeMillis()+1*60*60000,false);
+                String token = CognitoUtil.createJWT("id", "auth0", username, System.currentTimeMillis()+60*60000,false);
                 File pdfFile = File.createTempFile("report-", format.getExtention(), pdfDirectory);
                 pdfFileLocation = pdfFile.getAbsolutePath();
-                String serverName = SERVER_NAME;
-                if(SERVER_NAME != null) {
-                    String[] server = SERVER_NAME.split(":");
+                String serverName = AwsUtil.getAppDomain();
+                if(serverName != null) {
+                    String[] server = serverName.split(":");
                     serverName = server[0];
                 }
                 String[] command = new String[]{PDF_CMD, RENDER_JS, url, pdfFileLocation, token, serverName};
@@ -51,10 +52,10 @@ public class PdfUtil {
     }
 
     public static String exportUrlAsPdf(long orgId, String username, String url, FileFormat... formats){
-    		FileFormat format = FileFormat.PDF;
-    		if (formats != null && formats.length > 0) {
-    			format = formats[0];
-    		}
+        FileFormat format = FileFormat.PDF;
+        if (formats != null && formats.length > 0) {
+            format = formats[0];
+        }
         String pdfFileLocation = convertUrlToPdf(orgId, username, url, format);
         File pdfFile = new File(pdfFileLocation);
         if(pdfFileLocation != null) {
