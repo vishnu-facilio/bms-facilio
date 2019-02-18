@@ -4994,6 +4994,34 @@ public class FieldFactory {
 		fields.add(phone);
 		return fields;
 	}
+	
+	public static List<FacilioField> getMlForecastingFields() {
+		List<FacilioField> fields = new ArrayList<>();
+		FacilioModule module = ModuleFactory.getMlForecastingModule();
+
+		fields.add(getIdField(module));
+		fields.add(getOrgIdField(module));
+		
+		fields.add(getField("assetid", "ASSET_ID", module, FieldType.NUMBER));
+		fields.add(getField("criteriaid","CRITERIA_ID",module,FieldType.NUMBER));
+		fields.add(getField("sourcemoduleid","SOURCE_MODULEID",module,FieldType.NUMBER));
+		fields.add(getField("predictedfieldid","PREDICTED_FIELDID",module,FieldType.NUMBER));
+		fields.add(getField("predictioninterval","PREDICTION_INTERVAL",module,FieldType.NUMBER));
+		fields.add(getField("lastexecutiontime","LAST_EXECUTION_TIME",module,FieldType.NUMBER));
+		fields.add(getField("datainterval","DATA_INTERVAL",module,FieldType.NUMBER));
+		fields.add(getField("modelsamplinginterval","MODEL_SAMPLING_INTERVAL",module,FieldType.NUMBER));
+		
+		return fields;
+	}
+	
+	public static List<FacilioField> getMlForecastingFieldsFields(){
+		List<FacilioField> fields = new ArrayList<>();
+		FacilioModule module = ModuleFactory.getMlForecastingFieldsModule();
+		fields.add(getIdField(module));
+		fields.add(getField("fieldid","FIELDID",module,FieldType.NUMBER));
+		return fields;
+	}
+
 
 
 	public static FacilioField getField(String name, String colName, FacilioModule module, FieldType type) {
