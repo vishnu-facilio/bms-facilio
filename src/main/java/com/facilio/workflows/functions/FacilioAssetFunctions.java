@@ -15,12 +15,25 @@ public enum FacilioAssetFunctions implements FacilioWorkflowFunctionInterface {
 		@Override
 		public Object execute(Object... objects) throws Exception {
 			
-			if(objects[0] instanceof List) {
-				return AssetsAPI.getAssetIdsFromBaseSpaceIds(new ArrayList((List)objects[0]));
+			if(objects.length > 1) {
+				
+				Long assetCategoryId = Long.parseLong(objects[1].toString());
+				if(objects[0] instanceof List) {
+					return AssetsAPI.getAssetIdsFromBaseSpaceIdsWithCategory(new ArrayList((List)objects[0]),Collections.singletonList(assetCategoryId));
+				}
+				else {
+					Long spaceID = Long.parseLong(objects[0].toString());
+					return AssetsAPI.getAssetIdsFromBaseSpaceIdsWithCategory(Collections.singletonList(spaceID),Collections.singletonList(assetCategoryId));
+				}
 			}
 			else {
-				Long spaceID = Long.parseLong(objects[0].toString());
-				return AssetsAPI.getAssetIdsFromBaseSpaceIds(Collections.singletonList(spaceID));
+				if(objects[0] instanceof List) {
+					return AssetsAPI.getAssetIdsFromBaseSpaceIds(new ArrayList((List)objects[0]));
+				}
+				else {
+					Long spaceID = Long.parseLong(objects[0].toString());
+					return AssetsAPI.getAssetIdsFromBaseSpaceIds(Collections.singletonList(spaceID));
+				}
 			}
 		};
 		
