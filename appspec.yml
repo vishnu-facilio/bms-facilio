@@ -46,11 +46,13 @@ permissions:
     group: ubuntu
     mode: 644
 
-  - object: /home/ubuntu/deployment-files
+  - object: /home/ubuntu/deployment-files/
     pattern: "**"
     owner: ubuntu
     group: ubuntu
     mode: 644
+    type:
+      - file
 
   - object: /home/ubuntu
     pattern: "*.sh"
