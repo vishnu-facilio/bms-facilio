@@ -1,6 +1,9 @@
 package com.facilio.bmsconsole.commands;
 
+import java.sql.Array;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
@@ -8,6 +11,7 @@ import org.apache.commons.chain.Context;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ViewSharingContext;
+import com.facilio.bmsconsole.context.ViewSharingContext.SharingType;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
@@ -76,7 +80,14 @@ public class AddCVCommand implements Command {
 			}
 			
 			List<ViewSharingContext> viewSharingList = (List<ViewSharingContext>) context.get(FacilioConstants.ContextNames.VIEW_SHARING_LIST);
+			List<Long> orgUsersId = (List<Long>) viewSharingList.stream().filter(value -> (value.getSharingType() == SharingType.USER.getIntVal())).map(val -> val.getOrgUserId()).collect(Collectors.toList());
+			ViewSharingContext newViewSharingContext = new ViewSharingContext();
 			if (viewSharingList != null) {
+				if (!orgUsersId.contains(AccountUtil.getCurrentUser().getId())) {
+					((ViewSharingContext) newViewSharingContext).setOrgUserId(AccountUtil.getCurrentUser().getId());
+					((ViewSharingContext) newViewSharingContext).setSharingType(SharingType.USER.getIntVal());;
+					viewSharingList.add(newViewSharingContext);	
+				}
 				ViewAPI.applyViewSharing(viewId, viewSharingList);
 			}
 			context.put(FacilioConstants.ContextNames.VIEWID, viewId);
