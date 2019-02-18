@@ -33,19 +33,24 @@ files:
     destination: /home/ubuntu/deployment-files/
 
 permissions:
+  - object: /home/ubuntu
+    owner: ubuntu
+    group: ubuntu
+    mode: 644
+    type:
+      - directory
+
   - object: /home/ubuntu/tomcat/webapps
     pattern: "ROOT.war"
     owner: ubuntu
     group: ubuntu
     mode: 644
 
-
   - object: /home/ubuntu/deployment-files
+    pattern: "**"
     owner: ubuntu
     group: ubuntu
     mode: 644
-    type:
-      - directory
 
   - object: /home/ubuntu
     pattern: "*.sh"
