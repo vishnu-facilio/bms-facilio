@@ -120,6 +120,9 @@ public class GetPMJobsCommand implements Command {
 												if(pmJob.get("resourceId") != null) {
 													ResourceContext resource = ResourceAPI.getResource((long) pmJob.get("resourceId"));
 													pmJob.put("resource", resource);
+													if (!resourceIds.contains(pmJob.get("resourceId"))) {
+														resourceIds.add((long) pmJob.get("resourceId"));
+													}
 												}
 												if(pm.getPmCreationTypeEnum() == PreventiveMaintenance.PMCreationType.MULTIPLE && currentCalendarView != null && currentCalendarView.equals("planned")) {
 													Long executionTime = (Long) pmJob.get("nextExecutionTime");
