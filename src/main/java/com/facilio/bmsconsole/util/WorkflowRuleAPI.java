@@ -237,9 +237,22 @@ public class WorkflowRuleAPI {
 		updateWorkflowRule(rule);
 		deleteChildIdsForWorkflow(oldRule, rule);
 		
-		if(ActivityType.SCHEDULED.isPresent(oldRule.getEvent().getActivityType()) && rule.getTimeObj() != null) {
-			ScheduledRuleAPI.validateScheduledRule(rule, true);
-			ScheduledRuleAPI.updateScheduledRuleJob(rule);
+		if(ActivityType.SCHEDULED.isPresent(oldRule.getEvent().getActivityType())) {
+			if (rule.getTimeObj() != null) {
+				ScheduledRuleAPI.validateScheduledRule(rule, true);
+				ScheduledRuleAPI.updateScheduledRuleJob(rule);
+			}
+			
+			if (rule.getStatus() != null) {
+				if (rule.isActive()) {
+					if (rule.getTimeObj() == null) {
+						ScheduledRuleAPI.updateScheduledRuleJob(oldRule);
+					}
+				}
+				else {
+					ScheduledRuleAPI.deleteScheduledRuleJob(rule);
+				}
+			}
 		}
 		if (rule.getName() == null) {
 			rule.setName(oldRule.getName());
