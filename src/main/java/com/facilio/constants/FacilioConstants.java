@@ -31,6 +31,7 @@ import com.facilio.bmsconsole.context.InventoryCategoryContext;
 import com.facilio.bmsconsole.context.InventoryContext;
 import com.facilio.bmsconsole.context.InventoryVendorContext;
 import com.facilio.bmsconsole.context.LocationContext;
+import com.facilio.bmsconsole.context.MlForecastingContext;
 import com.facilio.bmsconsole.context.PhotosContext;
 import com.facilio.bmsconsole.context.ReadingAlarmContext;
 import com.facilio.bmsconsole.context.ReadingContext;
@@ -709,6 +710,7 @@ public class FacilioConstants {
 		
 		public static final String PAGE = "page";
 		public static final String CURRENT_CALENDAR_VIEW = "currentCalendarView";
+		public static final String ML_FORECASTING = "ml_forecasting";
 
         private static Map<String, Class> classMap = Collections.unmodifiableMap(initClassMap());
 		private static Map<String, Class> initClassMap() {
@@ -765,6 +767,7 @@ public class FacilioConstants {
 			classMap.put(INVENTORY_VENDOR, InventoryVendorContext.class);
 			classMap.put(INVENTORY_VENDORS, InventoryVendorContext.class);
 			classMap.put(INVENTORY_CATEGORY, InventoryCategoryContext.class);
+			classMap.put(ML_FORECASTING, MlForecastingContext.class);
 			return classMap;
 		}
 		
