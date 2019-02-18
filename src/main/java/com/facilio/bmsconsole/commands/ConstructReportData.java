@@ -162,8 +162,13 @@ public class ConstructReportData implements Command {
 			List<String> orderBy = new ArrayList<>();
 			for (int i = 0; i < sortFields.size(); i++) {
 				Map object = (Map) sortFields.get(i);
-				FacilioField orderByField = modBean.getField((Long) object.get("field_id"));
-				orderBy.add(orderByField.getCompleteColumnName());
+				Object fieldId = object.get("field_id");
+				if (fieldId instanceof String && ((String) fieldId).equals("y-field")) {
+					orderBy.add(yAggr.getSelectField(yField).getCompleteColumnName());
+				} else if (fieldId instanceof Long) {
+					FacilioField orderByField = modBean.getField((Long) fieldId);
+					orderBy.add(orderByField.getCompleteColumnName());
+				}
 			}
 			dataPointContext.setOrderBy(orderBy);
 			
@@ -171,7 +176,7 @@ public class ConstructReportData implements Command {
 				dataPointContext.setOrderByFunc(sortOrder);
 			}
 		}
-		if (limit != null) {
+		if (limit != null && limit > 0) {
 			dataPointContext.setLimit(limit);
 		}
 		
