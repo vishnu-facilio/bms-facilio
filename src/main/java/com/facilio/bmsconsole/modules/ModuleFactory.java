@@ -1560,4 +1560,20 @@ public class ModuleFactory {
 		assetHeirarchy.setTableName("Asset_Tree_Heirarchy");
 		return assetHeirarchy;
 	}
+
+	public static FacilioModule getMlForecastingModule() {
+		FacilioModule mlForecastingModule = new FacilioModule();
+		mlForecastingModule.setName("mlforecasting");
+		mlForecastingModule.setDisplayName("Ml Forecasting");
+		mlForecastingModule.setTableName("Ml_Forecasting");
+		return mlForecastingModule;
+	}
+	
+	public static FacilioModule getMlForecastingFieldsModule() {
+		FacilioModule mlForecastingFieldModule = new FacilioModule();
+		mlForecastingFieldModule.setName("mlforecastingfields");
+		mlForecastingFieldModule.setDisplayName("Ml Forecasting Fields");
+		mlForecastingFieldModule.setTableName("Ml_Forecasting_Fields");
+		return mlForecastingFieldModule;
+	}
 }
