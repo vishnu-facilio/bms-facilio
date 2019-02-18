@@ -92,19 +92,20 @@ public class TimeSeriesAPI {
 	}
 	
 	public static void processFacilioRecord(FacilioConsumer consumer, FacilioRecord record) throws Exception {
-		LOGGER.info(" timeseries data " + record.getData());
+		// LOGGER.info(" timeseries data " + record.getData());
+		if (record == null) {
+			return;
+		}
 		long timeStamp = getTimeStamp(record.getTimeStamp(), record.getData());
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.TIMESTAMP , timeStamp);
 		context.put(FacilioConstants.ContextNames.PAY_LOAD , record.getData());
-		if (record != null) {
-			context.put(FacilioConstants.ContextNames.FACILIO_RECORD, record);
-			context.put(FacilioConstants.ContextNames.FACILIO_CONSUMER, consumer);
-			//even if the above two lines are removed.. please do not remove the below partitionKey..
-			ControllerContext controller=  ControllerAPI.getController(record.getPartitionKey());
-			if(controller!=null) {
-				context.put(FacilioConstants.ContextNames.CONTROLLER_ID, controller.getId());
-			}
+		context.put(FacilioConstants.ContextNames.FACILIO_RECORD, record);
+		context.put(FacilioConstants.ContextNames.FACILIO_CONSUMER, consumer);
+		//even if the above two lines are removed.. please do not remove the below partitionKey..
+		ControllerContext controller=  ControllerAPI.getController(record.getPartitionKey());
+		if(controller!=null) {
+			context.put(FacilioConstants.ContextNames.CONTROLLER_ID, controller.getId());
 		}
 		context.put(FacilioConstants.ContextNames.READINGS_SOURCE, SourceType.KINESIS);
 		Chain processDataChain = TransactionChainFactory.getProcessDataChain();
