@@ -1276,8 +1276,14 @@ public class DashboardAction extends FacilioAction {
 					
 					result = new HashMap<>();
 					
+					List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.RESOURCE);
+					
+					List newFieldList = new ArrayList<>(fields);
+					
+					newFieldList.add(FieldFactory.getIdField(modBean.getModule(FacilioConstants.ContextNames.RESOURCE)));
+					
 					GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-							.select(modBean.getAllFields(FacilioConstants.ContextNames.RESOURCE))
+							.select(newFieldList)
 							.table(modBean.getModule(FacilioConstants.ContextNames.RESOURCE).getTableName())
 							.andCustomWhere("ID between 1100395 and 1100431 or ID between 1100500 and 1100518");
 					
@@ -1329,8 +1335,14 @@ public class DashboardAction extends FacilioAction {
 					
 					result = new HashMap<>();
 					
+					List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.RESOURCE);
+					
+					List newFieldList = new ArrayList<>(fields);
+					
+					newFieldList.add(FieldFactory.getIdField(modBean.getModule(FacilioConstants.ContextNames.RESOURCE)));
+					
 					GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-							.select(modBean.getAllFields(FacilioConstants.ContextNames.RESOURCE))
+							.select(newFieldList)
 							.table(modBean.getModule(FacilioConstants.ContextNames.RESOURCE).getTableName())
 							.andCustomWhere("ID between 1100432 and 1100471");
 					
@@ -1382,8 +1394,14 @@ public class DashboardAction extends FacilioAction {
 					
 					result = new HashMap<>();
 					
+					List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.RESOURCE);
+					
+					List newFieldList = new ArrayList<>(fields);
+					
+					newFieldList.add(FieldFactory.getIdField(modBean.getModule(FacilioConstants.ContextNames.RESOURCE)));
+					
 					GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-							.select(modBean.getAllFields(FacilioConstants.ContextNames.RESOURCE))
+							.select(newFieldList)
 							.table(modBean.getModule(FacilioConstants.ContextNames.RESOURCE).getTableName())
 							.andCustomWhere("ID between 1100472 and 1100499 or ID between 1100519 and 1100530");
 					
