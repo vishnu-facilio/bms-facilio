@@ -173,9 +173,12 @@ public class AwsUtil
 				kafkaConsumer = PROPERTIES.getProperty("kafka.consumer");
 				isSmtp = "smtp".equalsIgnoreCase(PROPERTIES.getProperty("email.type"));
 				PROPERTIES.put("clientapp.url", clientAppUrl);
-				File file = new File(resource.getPath());
-				if (file.getParentFile() != null) {
-					pdfjs = file.getParentFile().getParentFile().getAbsolutePath()+"/js";
+				URL resourceDir = AwsUtil.class.getClassLoader().getResource("");
+				if(resourceDir != null) {
+					File file = new File(resourceDir.getPath());
+					if (file.getParentFile() != null) {
+						pdfjs = file.getParentFile().getParentFile().getAbsolutePath() + "/js";
+					}
 				}
 			} catch (IOException e) {
 				LOGGER.info("Exception while trying to load property file " + AWS_PROPERTY_FILE);
