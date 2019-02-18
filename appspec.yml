@@ -36,16 +36,19 @@ permissions:
   - object: /home/ubuntu/tomcat/webapps
     pattern: "ROOT.war"
     owner: ubuntu
+    group: ubuntu
     mode: 644
 
   - object: /home/ubuntu/deployment-files/
     pattern: "**"
     owner: ubuntu
+    group: ubuntu
     mode: 644
 
   - object: /home/ubuntu
     pattern: "*.sh"
     owner: ubuntu
+    group: ubuntu
     mode: 755
 
 

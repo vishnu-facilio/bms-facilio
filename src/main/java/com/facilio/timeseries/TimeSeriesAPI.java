@@ -1,5 +1,7 @@
 package com.facilio.timeseries;
 
+import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -9,6 +11,9 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.amazonaws.services.kinesis.model.PutRecordResult;
+import com.facilio.accounts.dto.Account;
+import com.facilio.aws.util.AwsUtil;
 import org.apache.commons.chain.Chain;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -58,7 +63,13 @@ public class TimeSeriesAPI {
 	
 	public static void processPayLoad(long ttime, JSONObject payLoad, String macAddr) throws Exception {
 		LOGGER.debug(payLoad);
-		processPayLoad(ttime, payLoad, null, null, macAddr, true);
+		String stream = AccountUtil.getCurrentOrg().getDomain();
+		PutRecordResult recordResult = AwsUtil.getKinesisClient().putRecord(stream, ByteBuffer.wrap(payLoad.toJSONString().getBytes(Charset.defaultCharset())), macAddr);
+		int status = recordResult.getSdkHttpMetadata().getHttpStatusCode();
+		if (status != 200) {
+			LOGGER.info("Couldn't add data to " + stream);
+		}
+		// processPayLoad(ttime, payLoad, null, null, macAddr, true);
 	}
 	
 	public static void processPayLoad(long ttime, JSONObject payLoad, String macAddr, boolean adjustTime) throws Exception {
