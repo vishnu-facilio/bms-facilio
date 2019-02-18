@@ -566,7 +566,7 @@ SET @REPORT_ID := (SELECT LAST_INSERT_ID());
 INSERT INTO Report_DateFilter (REPORT_ID,FIELD_ID,OPERATOR,VAL) VALUES (@REPORT_ID,${workorder_createdTime},49,'30');
 
 
-INSERT INTO Widget (ORGID,MODULEID,WIDGET_NAME,TYPE,DATA_REFRESH_INTERTVEL,HEADER_TEXT,DASHBOARD_ID,META_JSON) VALUES (${orgId},${workOrderModuleId},'Workorder Inflow Trend',1,100,'Workorder Inflow Trend',@OVERVIEW_DASHBOARD_ID,'{"layoutWidth":24,"layoutHeight":32,"xPosition":0,"yPosition":24,"layoutPosition":9}');
+INSERT INTO Widget (ORGID,MODULEID,WIDGET_NAME,TYPE,DATA_REFRESH_INTERTVEL,HEADER_TEXT,DASHBOARD_ID,META_JSON) VALUES (${orgId},${workOrderModuleId},'Workorder Inflow Trend',1,100,'Workorder Inflow Trend',@OVERVIEW_DASHBOARD_ID,'{"layoutWidth":96,"layoutHeight":32,"xPosition":0,"yPosition":96,"layoutPosition":9}');
 set @WIDGET_ID = (SELECT LAST_INSERT_ID());
 
 INSERT INTO Widget_Chart (ID,REPORT_ID) VALUES (@WIDGET_ID,@REPORT_ID);
@@ -934,7 +934,7 @@ INSERT INTO Report_DateFilter (REPORT_ID,FIELD_ID,OPERATOR,VAL) VALUES (@REPORT_
 
 INSERT INTO Report_SpaceFilter (REPORT_ID,SITE_ID) VALUES (@REPORT_ID,-1);
 
-INSERT INTO Widget (ORGID,MODULEID,WIDGET_NAME,TYPE,DATA_REFRESH_INTERTVEL,HEADER_TEXT,DASHBOARD_ID,META_JSON) VALUES (${orgId},${energyDataModuleId},'Overall Energy Consumption',1,100,'Overall Energy Consumption',@PORTFOLIO_DASHBOARD_ID,'{"layoutWidth":24,"layoutHeight":40,"xPosition":0,"yPosition":32,"layoutPosition":3}');
+INSERT INTO Widget (ORGID,MODULEID,WIDGET_NAME,TYPE,DATA_REFRESH_INTERTVEL,HEADER_TEXT,DASHBOARD_ID,META_JSON) VALUES (${orgId},${energyDataModuleId},'Overall Energy Consumption',1,100,'Overall Energy Consumption',@PORTFOLIO_DASHBOARD_ID,'{"layoutWidth":96,"layoutHeight":40,"xPosition":0,"yPosition":32,"layoutPosition":3}');
 set @WIDGET_ID = (SELECT LAST_INSERT_ID());
 
 INSERT INTO Widget_Chart (ID,REPORT_ID) VALUES (@WIDGET_ID,@REPORT_ID);
@@ -978,7 +978,7 @@ INSERT INTO Report_SpaceFilter (REPORT_ID,SITE_ID) VALUES (@REPORT_ID,-1);
 INSERT INTO Report_BaseLine_Rel (BASE_LINE_ID,REPORT_ID,ADJUST_TYPE) VALUES (${baseline_PreviousDay},@REPORT_ID,1);
 
 
-INSERT INTO Widget (ORGID,MODULEID,WIDGET_NAME,TYPE,DATA_REFRESH_INTERTVEL,HEADER_TEXT,DASHBOARD_ID,META_JSON) VALUES (${orgId},${energyDataModuleId},'Energy Comparision by Baseline',1,100,'Energy Comparision by Baseline',@PORTFOLIO_DASHBOARD_ID,'{"layoutWidth":24,"layoutHeight":40,"xPosition":0,"yPosition":104,"layoutPosition":6}');
+INSERT INTO Widget (ORGID,MODULEID,WIDGET_NAME,TYPE,DATA_REFRESH_INTERTVEL,HEADER_TEXT,DASHBOARD_ID,META_JSON) VALUES (${orgId},${energyDataModuleId},'Energy Comparision by Baseline',1,100,'Energy Comparision by Baseline',@PORTFOLIO_DASHBOARD_ID,'{"layoutWidth":96,"layoutHeight":40,"xPosition":0,"yPosition":104,"layoutPosition":6}');
 set @WIDGET_ID = (SELECT LAST_INSERT_ID());
 
 INSERT INTO Widget_Chart (ID,REPORT_ID) VALUES (@WIDGET_ID,@REPORT_ID);
@@ -1020,7 +1020,7 @@ INSERT INTO Report_SpaceFilter (REPORT_ID,BUILDING_ID) VALUES (@REPORT_ID,-1);
 INSERT INTO Report_BaseLine_Rel (BASE_LINE_ID,REPORT_ID,ADJUST_TYPE) VALUES (${baseline_PreviousMonth},@REPORT_ID,1);
 
 
-INSERT INTO Widget (ORGID,MODULEID,WIDGET_NAME,TYPE,DATA_REFRESH_INTERTVEL,HEADER_TEXT,DASHBOARD_ID,META_JSON) VALUES (${orgId},${energyDataModuleId},'Energy Comparision',1,100,'Energy Comparision',@BUILDING_DASHBOARD_ID,'{"layoutWidth":24,"layoutHeight":40,"xPosition":0,"yPosition":40,"layoutPosition":1}');
+INSERT INTO Widget (ORGID,MODULEID,WIDGET_NAME,TYPE,DATA_REFRESH_INTERTVEL,HEADER_TEXT,DASHBOARD_ID,META_JSON) VALUES (${orgId},${energyDataModuleId},'Energy Comparision',1,100,'Energy Comparision',@BUILDING_DASHBOARD_ID,'{"layoutWidth":96,"layoutHeight":40,"xPosition":0,"yPosition":40,"layoutPosition":1}');
 set @WIDGET_ID = (SELECT LAST_INSERT_ID());
 
 INSERT INTO Widget_Chart (ID,REPORT_ID) VALUES (@WIDGET_ID,@REPORT_ID);
@@ -1053,7 +1053,7 @@ INSERT INTO Report_DateFilter (REPORT_ID,FIELD_ID,OPERATOR,VAL) VALUES (@REPORT_
 INSERT INTO Report_SpaceFilter (REPORT_ID,BUILDING_ID) VALUES (@REPORT_ID,-1);
 
 
-INSERT INTO Widget (ORGID,MODULEID,WIDGET_NAME,TYPE,DATA_REFRESH_INTERTVEL,HEADER_TEXT,DASHBOARD_ID,META_JSON) VALUES (${orgId},${energyDataModuleId},'Daily Energy Breakdown',1,100,'Daily Energy Breakdown',@BUILDING_DASHBOARD_ID,'{"layoutWidth":24,"layoutHeight":32,"xPosition":0,"yPosition":80,"layoutPosition":4}');
+INSERT INTO Widget (ORGID,MODULEID,WIDGET_NAME,TYPE,DATA_REFRESH_INTERTVEL,HEADER_TEXT,DASHBOARD_ID,META_JSON) VALUES (${orgId},${energyDataModuleId},'Daily Energy Breakdown',1,100,'Daily Energy Breakdown',@BUILDING_DASHBOARD_ID,'{"layoutWidth":96,"layoutHeight":32,"xPosition":0,"yPosition":80,"layoutPosition":4}');
 set @WIDGET_ID = (SELECT LAST_INSERT_ID());
 
 INSERT INTO Widget_Chart (ID,REPORT_ID) VALUES (@WIDGET_ID,@REPORT_ID);
@@ -1069,7 +1069,7 @@ INSERT INTO Report_DateFilter (REPORT_ID,FIELD_ID,OPERATOR,VAL) VALUES (@REPORT_
 INSERT INTO Report_SpaceFilter (REPORT_ID,BUILDING_ID) VALUES (@REPORT_ID,-1);
 
 
-INSERT INTO Widget (ORGID,MODULEID,WIDGET_NAME,TYPE,DATA_REFRESH_INTERTVEL,HEADER_TEXT,DASHBOARD_ID,META_JSON) VALUES (${orgId},${energyDataModuleId},'Heatmap',1,100,'Heatmap',@BUILDING_DASHBOARD_ID,'{"layoutWidth":24,"layoutHeight":40,"xPosition":0,"yPosition":46,"layoutPosition":5}');
+INSERT INTO Widget (ORGID,MODULEID,WIDGET_NAME,TYPE,DATA_REFRESH_INTERTVEL,HEADER_TEXT,DASHBOARD_ID,META_JSON) VALUES (${orgId},${energyDataModuleId},'Heatmap',1,100,'Heatmap',@BUILDING_DASHBOARD_ID,'{"layoutWidth":96,"layoutHeight":40,"xPosition":0,"yPosition":46,"layoutPosition":5}');
 set @WIDGET_ID = (SELECT LAST_INSERT_ID());
 
 INSERT INTO Widget_Chart (ID,REPORT_ID) VALUES (@WIDGET_ID,@REPORT_ID);
@@ -1105,7 +1105,7 @@ INSERT INTO Report_DateFilter (REPORT_ID,FIELD_ID,OPERATOR,VAL) VALUES (@REPORT_
 INSERT INTO Report_SpaceFilter (REPORT_ID,BUILDING_ID,GROUP_BY) VALUES (@REPORT_ID,-1,'service');
 
 
-INSERT INTO Widget (ORGID,MODULEID,WIDGET_NAME,TYPE,DATA_REFRESH_INTERTVEL,HEADER_TEXT,DASHBOARD_ID,META_JSON) VALUES (${orgId},${energyDataModuleId},'End Use Breakdown',1,100,'End Use Breakdown',@BUILDING_DASHBOARD_ID,'{"layoutWidth":24,"layoutHeight":40,"xPosition":0,"yPosition":112,"layoutPosition":6}');
+INSERT INTO Widget (ORGID,MODULEID,WIDGET_NAME,TYPE,DATA_REFRESH_INTERTVEL,HEADER_TEXT,DASHBOARD_ID,META_JSON) VALUES (${orgId},${energyDataModuleId},'End Use Breakdown',1,100,'End Use Breakdown',@BUILDING_DASHBOARD_ID,'{"layoutWidth":96,"layoutHeight":40,"xPosition":0,"yPosition":112,"layoutPosition":6}');
 set @WIDGET_ID = (SELECT LAST_INSERT_ID());
 
 INSERT INTO Widget_Chart (ID,REPORT_ID) VALUES (@WIDGET_ID,@REPORT_ID);
