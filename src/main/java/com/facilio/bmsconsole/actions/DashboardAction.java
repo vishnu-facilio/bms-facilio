@@ -1313,7 +1313,7 @@ public class DashboardAction extends FacilioAction {
 						
 						for(ReadingDataMeta rdm :rdms) {
 							try {
-								Integer runStatus = Integer.valueOf(rdm.getValue().toString());
+								Double runStatus = Double.valueOf(rdm.getValue().toString());
 								if(runStatus > 0) {
 									runningCount++;
 								}
