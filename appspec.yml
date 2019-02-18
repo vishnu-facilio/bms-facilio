@@ -39,9 +39,9 @@ permissions:
     mode: 644
 
   - object: /home/ubuntu/deployment-files/
-      pattern: "**"
-      owner: ubuntu
-      mode: 644
+    pattern: "**"
+    owner: ubuntu
+    mode: 644
 
   - object: /home/ubuntu
     pattern: "*.sh"
