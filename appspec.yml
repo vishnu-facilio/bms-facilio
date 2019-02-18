@@ -35,11 +35,19 @@ files:
 permissions:
   - object: /home/ubuntu/tomcat/webapps
     pattern: "ROOT.war"
+    owner: ubuntu
     mode: 644
+
+  - object: /home/ubuntu/deployment-files/
+      pattern: "**"
+      owner: ubuntu
+      mode: 644
 
   - object: /home/ubuntu
     pattern: "*.sh"
+    owner: ubuntu
     mode: 755
+
 
 hooks:
   ApplicationStop:
