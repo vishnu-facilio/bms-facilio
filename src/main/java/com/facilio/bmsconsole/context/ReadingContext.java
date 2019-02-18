@@ -147,7 +147,8 @@ public class ReadingContext extends ModuleBaseWithCustomFields {
 		IMPORT,
 		FORMULA,
 		SHIFT_READING,
-		KINESIS
+		KINESIS,
+		ML
 		;
 		
 		public int getValue() {
