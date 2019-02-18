@@ -1596,4 +1596,12 @@ public class ModuleFactory {
 		inventoryModule.setTableName("Items");
 		return inventoryModule;
 	}
+	
+	public static FacilioModule getToolsModule() {
+		FacilioModule inventoryModule = new FacilioModule();
+		inventoryModule.setName(FacilioConstants.ContextNames.TOOLS);
+		inventoryModule.setDisplayName("Tools");
+		inventoryModule.setTableName("Tools");
+		return inventoryModule;
+	}
 }

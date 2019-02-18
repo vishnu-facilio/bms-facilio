@@ -1470,4 +1470,18 @@ public class TransactionChainFactory {
 			c.addCommand(new GenericDeleteModuleDataCommand());
 			return c;
 		}
+		
+		public static Chain getAddToolChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForTools());
+			c.addCommand(new GenericAddModuleDataCommand());
+			return c;
+		}
+		
+		public static Chain getUpdateToolChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForTools());
+			c.addCommand(new GenericUpdateModuleDataCommand());
+			return c;
+		}
 }

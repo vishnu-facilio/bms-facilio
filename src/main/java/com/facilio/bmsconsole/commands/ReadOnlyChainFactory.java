@@ -435,4 +435,22 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new GetItemsListCommand());
 		return c;
 	}
+	
+	public static Chain fetchToolDetails() {
+		Chain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForTools());
+		c.addCommand(new GenericGetModuleDataDetailCommand());
+		return c;
+	}
+	
+	public static Chain gettoolsList() {
+		Chain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForTools());
+		c.addCommand(new LoadAllFieldsCommand());
+		c.addCommand(new GenerateCriteriaFromFilterCommand());
+		c.addCommand(new GenerateSearchConditionCommand());
+		c.addCommand(new GetToolsListCommand());
+		return c;
+	}
+	
 }

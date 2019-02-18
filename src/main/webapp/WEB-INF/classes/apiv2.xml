@@ -1139,6 +1139,36 @@
 		</action>
 	</package>
 
+	<package name="toolsApi" namespace="/api/v2/tools"
+		extends="v2Api">
+		<action name="add"
+			class="com.facilio.bmsconsole.actions.ToolsAction" method="addTool">
+			<param name="moduleName">asset</param>
+			<param name="permission">CREATE</param>
+		</action>
+		<action name="update"
+			class="com.facilio.bmsconsole.actions.ToolsAction" method="updateTool">
+			<param name="moduleName">asset</param>
+			<param name="permission">UPDATE</param>
+		</action> 
+		<action name="*"
+			class="com.facilio.bmsconsole.actions.ToolsAction" method="toolDetails">
+			<param name="moduleName">asset</param>
+			<param name="permission">READ</param>
+			<param name = "toolId">{1}</param>
+		</action>
+	</package>
+	
+	<package name="toolsListApiv2" namespace="/api/v2/tools/view"
+		extends="v2Api">
+		<action name="*" class="com.facilio.bmsconsole.actions.ToolsAction"
+			method="toolsList">
+			<param name="moduleName">asset</param>
+			<param name="permission">READ</param>
+			<param name="viewName">{1}</param>
+		</action>
+	</package>
+	
 	<!-- <package name="pageApiv2" namespace="/api/v2/pages" extends="v2Api"> 
 		<action name="*" class="com.facilio.bmsconsole.actions.PageAction" method="fetchPage"> 
 		<param name="moduleName">asset</param> <param name="permission">READ</param> 

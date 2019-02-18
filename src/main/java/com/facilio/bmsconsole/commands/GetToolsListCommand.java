@@ -1,9 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
@@ -12,21 +9,19 @@ import org.json.simple.JSONObject;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ItemsContext;
-import com.facilio.bmsconsole.context.LocationContext;
-import com.facilio.bmsconsole.context.StoreRoomContext;
+import com.facilio.bmsconsole.context.ToolsContext;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
-import com.facilio.bmsconsole.util.LocationAPI;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.unitconversion.Unit;
 
-public class GetItemsListCommand implements Command{
+public class GetToolsListCommand implements Command{
 
 	@Override
 	public boolean execute(Context context) throws Exception {
@@ -47,7 +42,7 @@ public class GetItemsListCommand implements Command{
 		}
 		FacilioView view = (FacilioView) context.get(FacilioConstants.ContextNames.CUSTOM_VIEW);
 		
-		SelectRecordsBuilder<ItemsContext> builder = new SelectRecordsBuilder<ItemsContext>()
+		SelectRecordsBuilder<ToolsContext> builder = new SelectRecordsBuilder<ToolsContext>()
 															.module(module)
 															.beanClass(FacilioConstants.ContextNames.getClassFromModuleName(moduleName))
 															.select(fields)
@@ -105,19 +100,16 @@ public class GetItemsListCommand implements Command{
 		}
 		
 		
-		List<ItemsContext> records = builder.get();
+		List<ToolsContext> records = builder.get();
 		
 		if (records != null && !records.isEmpty()) {
 			if (getCount != null && getCount) {
 				context.put(FacilioConstants.ContextNames.RECORD_COUNT, records.get(0).getData().get("count"));
 			}
 			else {
-				for(ItemsContext item: records) {
-					if (item.getIssuingUnit() > 0) {
-						item.setIssuingUnit(Unit.valueOf(item.getIssuingUnit()));
-					}
-					if (item.getOrderingUnit() > 0) {
-						item.setOrderingUnit(Unit.valueOf(item.getIssuingUnit()));
+				for(ToolsContext tool: records) {
+					if (tool.getIssuingUnit() > 0) {
+						tool.setIssuingUnit(Unit.valueOf(tool.getIssuingUnit()));
 					}
 				}				
 				context.put(FacilioConstants.ContextNames.RECORD_LIST, records);
@@ -128,3 +120,4 @@ public class GetItemsListCommand implements Command{
 		return false;
 	}
 }
+

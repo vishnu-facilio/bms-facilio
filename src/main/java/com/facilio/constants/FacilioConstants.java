@@ -51,6 +51,9 @@ import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.context.TicketPriorityContext;
 import com.facilio.bmsconsole.context.TicketStatusContext;
 import com.facilio.bmsconsole.context.TicketTypeContext;
+import com.facilio.bmsconsole.context.ToolsCategoryContext;
+import com.facilio.bmsconsole.context.ToolsContext;
+import com.facilio.bmsconsole.context.ToolsStatusContext;
 import com.facilio.bmsconsole.context.UtilityMeterContext;
 import com.facilio.bmsconsole.context.WaterMeterContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
@@ -737,6 +740,12 @@ public class FacilioConstants {
 		public static final String ITEM_CATEGORY = "itemCategory";
 		public static final String ITEM_STATUS = "itemStatus";
 		
+		public static final String TOOL = "tool";
+		public static final String TOOLS = "tools";
+		public static final String TOOLS_STATUS = "toolsStatus";
+		public static final String TOOLS_CATEGORY = "toolsCategory";
+
+		
 		private static Map<String, Class> classMap = Collections.unmodifiableMap(initClassMap());
 		private static Map<String, Class> initClassMap() {
 			Map<String, Class> classMap = new HashMap<>();
@@ -804,6 +813,10 @@ public class FacilioConstants {
 			classMap.put(ITEMS, ItemsContext.class);
 			classMap.put(ITEM_CATEGORY,ItemCategoryContext.class);
 			classMap.put(ITEM_STATUS, ItemStatusContext.class);
+			classMap.put(TOOL, ToolsContext.class);
+			classMap.put(TOOLS, ToolsContext.class);
+			classMap.put(TOOLS_CATEGORY, ToolsCategoryContext.class);
+			classMap.put(TOOLS_STATUS, ToolsStatusContext.class);
 			return classMap;
 		}
 		
