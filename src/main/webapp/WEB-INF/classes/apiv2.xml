@@ -578,7 +578,6 @@
 			<action name="deleteToolsStatus" class="com.facilio.bmsconsole.actions.PickListAction"
 				method="deleteToolsStatus">
 			</action>
-			
 			<action name="addStockedToolsStatus" class="com.facilio.bmsconsole.actions.PickListAction"
 				method="addStockedToolsStatus">
 			</action>
@@ -587,6 +586,16 @@
 			</action>
 			<action name="deleteStockedToolsStatus" class="com.facilio.bmsconsole.actions.PickListAction"
 				method="deleteStockedToolsStatus">
+			</action>
+			
+			<action name="addInventoryStatus" class="com.facilio.bmsconsole.actions.PickListAction"
+				method="addInventoryStatus">
+			</action>
+			<action name="updateInventoryStatus" class="com.facilio.bmsconsole.actions.PickListAction"
+				method="updateInventoryStatus">
+			</action>
+			<action name="deleteInventoryStatus" class="com.facilio.bmsconsole.actions.PickListAction"
+				method="deleteInventoryStatus">
 			</action>
 	</package>
 	<package name="formsApiv2" namespace="/api/v2/form" extends="v2Api">

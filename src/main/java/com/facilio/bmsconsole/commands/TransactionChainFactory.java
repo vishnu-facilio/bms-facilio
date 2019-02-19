@@ -1498,4 +1498,26 @@ public class TransactionChainFactory {
 			c.addCommand(new GenericUpdateModuleDataCommand());
 			return c;
 		}
+		
+		public static Chain getAddInventoryStatusChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForInventoryStatus());
+			c.addCommand(new GenericAddModuleDataCommand());
+			c.addCommand(new ExecuteAllWorkflowsCommand());
+			return c;
+		}
+
+		public static Chain getUpdateInventoryStatusChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForInventoryStatus());
+			c.addCommand(new GenericUpdateModuleDataCommand());
+			return c;
+		}
+
+		public static Chain getInventoryStatusChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForInventoryStatus());
+			c.addCommand(new GenericDeleteModuleDataCommand());
+			return c;
+		}
 }

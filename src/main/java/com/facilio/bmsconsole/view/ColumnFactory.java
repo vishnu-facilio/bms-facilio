@@ -44,6 +44,7 @@ public class ColumnFactory {
 		columnMap.put("energy-default", getDefaultEnergyColumns());
 		columnMap.put("asset-default", getDefaultAssetsColumns());
 		columnMap.put("inventory-default", getDefaultInventoryColumns());
+		columnMap.put("storeRoom-default", getDefaultStoreRoomColumns());
 		// Default report columns 
 		columnMap.put("workorder-report", getWorkOrderReportColumns());
 		columnMap.put("alarm-report", getAlarmReportColumns());
@@ -206,6 +207,17 @@ public class ColumnFactory {
 		columns.add(new ViewField("createdById", "createdById"));
 		columns.add(new ViewField("createdTime", "createdTime"));
 		columns.add(new ViewField("lastModifiedTime", "lastModifiedTime"));
+		
+		return columns;
+	}
+	
+	private static List<ViewField> getDefaultStoreRoomColumns() {
+		List<ViewField> columns = new ArrayList<ViewField>();
+		
+		columns.add(new ViewField("name", "Name"));
+		columns.add(new ViewField("description", "Description"));
+		columns.add(new ViewField("location", "Location"));
+		columns.add(new ViewField("owner", "Owner"));
 		
 		return columns;
 	}
