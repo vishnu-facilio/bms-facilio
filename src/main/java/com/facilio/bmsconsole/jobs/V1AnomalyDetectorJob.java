@@ -52,12 +52,12 @@ public class V1AnomalyDetectorJob extends FacilioJob {
 				logger.log(Level.INFO, "Feature Bit is enabled");
 			}
 
-			Integer anomalyPeriodicity = Integer.parseInt(AwsUtil.getConfig("anomalyPeriodicity"));
+			Integer anomalyPeriodicity = Integer.parseInt(AwsUtil.getAnomalyPeriodicity());
 			// get the list of all sub meters
 
 			long correction = 0;
 
-			if (AwsUtil.getConfig("environment").equals("development")) { // for dev testing purpose time is moved back
+			if (AwsUtil.isDevelopment()) { // for dev testing purpose time is moved back
 				correction = System.currentTimeMillis() - 1529948963000L;
 			}
 
@@ -219,18 +219,21 @@ public class V1AnomalyDetectorJob extends FacilioJob {
 				if((anomalyList != null) && (anomalyList.getAnomalyDetails().length > 0)) {
 					masterAnomalyMap.put(energyMeterContext, anomalyList.getAnomalyDetails());
 				}
-			} // end of for
-			if(masterAnomalyMap.size()>0) {
-			
-			         doRootCause(orgID, startTime, endTime);
-			
-			for (EnergyMeterContext energyMeterContext: masterAnomalyMap.keySet()) {
-				//double minKWH, double maxKWH, double actualKWH, double temperature, long ttime, long meterId, long rowID
 				
-				for(AnomalyDetails detail:  masterAnomalyMap.get(energyMeterContext)) {
-					triggerAlarm(detail,energyMeterContext);
+				int waitTimeInSecs = Integer.parseInt(AwsUtil.getAnomalyDetectWaitTimeInSeconds());
+				
+				if(waitTimeInSecs > 0) {
+						Thread.sleep(1000 * waitTimeInSecs);
 				}
-			}
+			} // end of for
+			if (masterAnomalyMap.size() > 0) {
+				doRootCause(orgID, startTime, endTime);
+
+				for (EnergyMeterContext energyMeterContext : masterAnomalyMap.keySet()) {
+					for (AnomalyDetails detail : masterAnomalyMap.get(energyMeterContext)) {
+						triggerAlarm(detail, energyMeterContext);
+					}
+				}
 			}
 		} catch (Exception e) {
 			logger.log(Level.SEVERE, e.getMessage(), e);
@@ -277,7 +280,7 @@ public class V1AnomalyDetectorJob extends FacilioJob {
 					throws IOException {
 		CheckAnomalyModelPostData postData = new CheckAnomalyModelPostData();
 
-		String postURL = AwsUtil.getConfig("anomalyCheckServiceURL") + "/checkGam";
+		String postURL = AwsUtil.getAnomalyCheckServiceURL() + "/checkGam";
 		postData.meterID = meterID;
 		postData.orgId=orgId;
 		postData.dimension1 = configContext.getDimension1Buckets();
@@ -301,7 +304,7 @@ public class V1AnomalyDetectorJob extends FacilioJob {
 	void rootCauseAnalysisApi(long meterid,long orgid,long ttimestart,long ttimeend,String timezone) throws IOException
 	{
 		AnomalyData anomalydata = new AnomalyData();
-		String postURL = AwsUtil.getConfig("anomalyCheckServiceURL") + "/ratioCheck";
+		String postURL = AwsUtil.getAnomalyCheckServiceURL() + "/ratioCheck";
 		anomalydata.meterId = meterid;
 		anomalydata.orgId = orgid;
 		anomalydata.ttimeStart = ttimestart;

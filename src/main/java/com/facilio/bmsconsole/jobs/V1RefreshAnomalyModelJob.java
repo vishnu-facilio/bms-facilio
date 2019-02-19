@@ -86,9 +86,9 @@ public class V1RefreshAnomalyModelJob extends FacilioJob {
 		 public void buildEnergyAnomalyModel(List<EnergyMeterContext> subEnergyMeterContextList,
 				 Map<Long, AnomalyAssetConfigurationContext> meterConfigurations, long endTime,long siteId, long orgID) throws Exception {
 			 
-			 String bucket = AwsUtil.getConfig("anomalyBucket");
-			 String filePath = AwsUtil.getConfig("anomalyBucketDir");
- 			 String tempDir =  AwsUtil.getConfig("anomalyTempDir");
+			 String bucket = AwsUtil.getAnomalyBucket();
+			 String filePath = AwsUtil.getAnomalyBucketDir();
+ 			 String tempDir =  AwsUtil.getAnomalyTempDir();
              Map<Long, String> siteIdToWeatherMapping = new HashMap<>();
  			
 			 for (EnergyMeterContext eachEnergyMeterContext: subEnergyMeterContextList) {
@@ -156,7 +156,7 @@ public class V1RefreshAnomalyModelJob extends FacilioJob {
 	    			doRefreshAnomalyModel(meterID, orgID, s3EnergyFileUrl, s3WeatherFileUrl,meterConfigContext);
 	    			
 	    			try {
-	    				int waitTimeInSecs = Integer.parseInt(AwsUtil.getConfig("anomalyRefreshWaitTimeInSeconds"));
+	    				int waitTimeInSecs = Integer.parseInt(AwsUtil.getAnomalyRefreshWaitTimeInSeconds());
 	    				
 	    				Thread.sleep(1000 * waitTimeInSecs);
 	    				if(waitTimeInSecs > 0) {
@@ -187,7 +187,7 @@ public class V1RefreshAnomalyModelJob extends FacilioJob {
 		
 		Map<String, String> headers = new HashMap<>();
 		headers.put("Content-Type","application/json");
-		String postURL = AwsUtil.getConfig("anomalyCheckServiceURL") + "/refreshGamModel";
+		String postURL = AwsUtil.getAnomalyCheckServiceURL() + "/refreshGamModel";
 		String result=AwsUtil.doHttpPost(postURL, headers, null, jsonInString);
 		logger.log(Level.INFO, " result is " + result);
 	}

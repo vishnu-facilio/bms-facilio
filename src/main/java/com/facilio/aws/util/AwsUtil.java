@@ -146,7 +146,14 @@ public class AwsUtil
 	private static String kafkaProducer;
 	private static String kafkaConsumer;
 	private static String pdfjs;
-
+	private static String anomalyTempDir;
+	private static String anomalyCheckServiceURL;
+	private static String anomalyBucket;
+	private static String anomalyBucketDir;
+	private static String anomalyPeriodicity;
+	private static String anomalyRefreshWaitTimeInSeconds;
+	private static String anomalyDetectWaitTimeInSeconds;
+	
 	static {
 		loadProperties();
 	}
@@ -172,6 +179,14 @@ public class AwsUtil
 				kafkaProducer = PROPERTIES.getProperty("kafka.producer");
 				kafkaConsumer = PROPERTIES.getProperty("kafka.consumer");
 				isSmtp = "smtp".equalsIgnoreCase(PROPERTIES.getProperty("email.type"));
+				anomalyTempDir = PROPERTIES.getProperty("anomalyTempDir", "/tmp");
+				anomalyCheckServiceURL = PROPERTIES.getProperty("anomalyCheckServiceURL", "http://localhost:7444/api");
+				anomalyBucket = PROPERTIES.getProperty("anomalyBucket","facilio-analytics");
+				anomalyBucketDir = PROPERTIES.getProperty("anomalyBucketDir","stage/anomaly");
+				anomalyPeriodicity = PROPERTIES.getProperty("anomalyPeriodicity","30");
+				anomalyRefreshWaitTimeInSeconds = PROPERTIES.getProperty("anomalyRefreshWaitTimeInSeconds","10");
+				anomalyDetectWaitTimeInSeconds = PROPERTIES.getProperty("anomalyDetectWaitTimeInSeconds","3");
+						
 				PROPERTIES.put("clientapp.url", clientAppUrl);
 				File file = new File(resource.getPath());
 				if (file.getParentFile() != null) {
@@ -879,5 +894,33 @@ public class AwsUtil
 
 	public static String getPdfjsLocation() {
 		return pdfjs;
+	}
+	
+	public static String getAnomalyTempDir() {
+		return anomalyTempDir;
+	}
+
+	public static String getAnomalyCheckServiceURL() {
+		return anomalyCheckServiceURL;
+	}
+
+	public static String getAnomalyBucket() {
+		return anomalyBucket;
+	}
+
+	public static String getAnomalyBucketDir() {
+		return anomalyBucketDir;
+	}
+
+	public static String getAnomalyPeriodicity() {
+		return anomalyPeriodicity;
+	}
+
+	public static String getAnomalyRefreshWaitTimeInSeconds() {
+		return anomalyRefreshWaitTimeInSeconds;
+	}
+
+	public static String getAnomalyDetectWaitTimeInSeconds() {
+		return anomalyDetectWaitTimeInSeconds;
 	}
 }
