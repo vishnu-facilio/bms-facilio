@@ -453,4 +453,22 @@ public class ReadOnlyChainFactory {
 		return c;
 	}
 	
+	public static Chain fetchVendorDetails() {
+		Chain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForVendors());
+		c.addCommand(new GenericGetModuleDataDetailCommand());
+		c.addCommand(new GetVendorDetailsCommand());
+		return c;
+	}
+	
+	public static Chain getVendorsList() {
+		Chain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForVendors());
+		c.addCommand(new LoadAllFieldsCommand());
+		c.addCommand(new GenerateCriteriaFromFilterCommand());
+		c.addCommand(new GenerateSearchConditionCommand());
+		c.addCommand(new GetVendorsListCommand());
+		return c;
+	}
+	
 }

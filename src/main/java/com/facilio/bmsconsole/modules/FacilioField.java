@@ -396,8 +396,11 @@ public class FacilioField implements Serializable {
 		SIGNATURE(22, null),
 		DURATION(23, "duration"), 
 		TASKS(24, "tasks"),
-		SPACECHOOSER(25, "space-chooser")
-		USER(25,"user")
+		SPACECHOOSER(25, "space-chooser"),
+		UNIT(26, "unit"),
+		UNITMETRIC(27, "unit-metric"),
+		ADDRESS(28, "address"),
+		USER(29,"user")
 		;
 		
 		private int intVal;

@@ -192,6 +192,10 @@ public class SetTableNamesCommand implements Command {
 		return new SetTableNamesCommand("tools", "Tools");
 	}
 	
+	public static SetTableNamesCommand getForVendors() {
+		return new SetTableNamesCommand("vendors", "Vendors");
+	}
+	
 	public static void setForModule (Context context, String moduleName) {
 		//TODO handle all module and get from map
 		String tableName = "";

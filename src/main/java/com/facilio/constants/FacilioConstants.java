@@ -55,6 +55,7 @@ import com.facilio.bmsconsole.context.ToolsCategoryContext;
 import com.facilio.bmsconsole.context.ToolsContext;
 import com.facilio.bmsconsole.context.ToolsStatusContext;
 import com.facilio.bmsconsole.context.UtilityMeterContext;
+import com.facilio.bmsconsole.context.VendorContext;
 import com.facilio.bmsconsole.context.WaterMeterContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.context.WorkOrderRequestContext;
@@ -745,6 +746,8 @@ public class FacilioConstants {
 		public static final String TOOLS_STATUS = "toolsStatus";
 		public static final String TOOLS_CATEGORY = "toolsCategory";
 
+		public static final String VENDOR = "vendor";
+		public static final String VENDORS = "vendors";
 		
 		private static Map<String, Class> classMap = Collections.unmodifiableMap(initClassMap());
 		private static Map<String, Class> initClassMap() {
@@ -817,6 +820,9 @@ public class FacilioConstants {
 			classMap.put(TOOLS, ToolsContext.class);
 			classMap.put(TOOLS_CATEGORY, ToolsCategoryContext.class);
 			classMap.put(TOOLS_STATUS, ToolsStatusContext.class);
+			classMap.put(VENDOR, VendorContext.class);
+			classMap.put(VENDORS, VendorContext.class);
+
 			return classMap;
 		}
 		

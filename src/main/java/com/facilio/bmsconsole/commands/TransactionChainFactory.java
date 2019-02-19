@@ -1256,7 +1256,7 @@ public class TransactionChainFactory {
 			return c;
 		}
 
-		public static Chain getAddVendorChain() {
+		public static Chain getAddInventoryVendorChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForInventoryVendor());
 			c.addCommand(new GenericAddModuleDataCommand());
@@ -1265,7 +1265,7 @@ public class TransactionChainFactory {
 			return c;
 		}
 
-		public static Chain getUpdateVendorChain() {
+		public static Chain getUpdateInventoryVendorChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForInventoryVendor());
 			c.addCommand(new GenericUpdateModuleDataCommand());
@@ -1481,6 +1481,20 @@ public class TransactionChainFactory {
 		public static Chain getUpdateToolChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForTools());
+			c.addCommand(new GenericUpdateModuleDataCommand());
+			return c;
+		}
+		
+		public static Chain getAddVendorChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForVendors());
+			c.addCommand(new GenericAddModuleDataCommand());
+			return c;
+		}
+		
+		public static Chain getUpdateVendorChain(){
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForVendors());
 			c.addCommand(new GenericUpdateModuleDataCommand());
 			return c;
 		}
