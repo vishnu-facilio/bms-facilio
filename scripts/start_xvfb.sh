@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-xvfb=`ps auxx | grep xvfb | grep -v "grep"`
+xvfb=`ps auxx | grep Xvfb | grep -v "grep"`
 
 if [ "xvfb$xvfb" = "xvfb" ]; then
     export DISPLAY=:99
