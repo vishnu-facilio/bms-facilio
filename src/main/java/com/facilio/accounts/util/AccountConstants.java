@@ -1139,12 +1139,12 @@ public class AccountConstants {
 
 		fields.add(getUserIdField(module));
 
-		/*FacilioField orgId = new FacilioField();
+		FacilioField orgId = new FacilioField();
 		orgId.setName("orgId");
 		orgId.setDataType(FieldType.NUMBER);
 		orgId.setColumnName("ORGID");
 		orgId.setModule(module);
-		fields.add(orgId);*/
+		fields.add(orgId);	
 		
 		FacilioField license = new FacilioField();
 		license.setName("license");
@@ -1554,12 +1554,12 @@ public class AccountConstants {
 		roleId.setModule(module);
 		fields.add(roleId);
 
-		/*FacilioField orgId = new FacilioField();
+		FacilioField orgId = new FacilioField();
 		orgId.setName("orgId");
 		orgId.setDataType(FieldType.NUMBER);
 		orgId.setColumnName("ORGID");
 		orgId.setModule(module);
-		fields.add(orgId);*/
+		fields.add(orgId);
 		
 		FacilioField name = new FacilioField();
 		name.setName("name");
