@@ -1520,4 +1520,18 @@ public class TransactionChainFactory {
 			c.addCommand(new GenericDeleteModuleDataCommand());
 			return c;
 		}
+		
+		public static Chain getAddInventryChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForInventry());
+			c.addCommand(new GenericAddModuleDataCommand());
+			return c;
+		}
+		
+		public static Chain getUpdateInventryChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForInventry());
+			c.addCommand(new GenericUpdateModuleDataCommand());
+			return c;
+		}
 }

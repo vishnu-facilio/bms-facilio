@@ -1206,6 +1206,35 @@
 			<param name="viewName">{1}</param>
 		</action>
 	</package>
+	
+	<package name="inventryApi" namespace="/api/v2/inventry"
+		extends="v2Api">
+		<action name="add"
+			class="com.facilio.bmsconsole.actions.InventryAction" method="addInventry">
+			<param name="moduleName">asset</param>
+			<param name="permission">CREATE</param>
+		</action>
+		<action name="update"
+			class="com.facilio.bmsconsole.actions.InventryAction" method="updateInventry">
+			<param name="moduleName">asset</param>
+			<param name="permission">UPDATE</param>
+		</action> 
+		<action name="*"
+			class="com.facilio.bmsconsole.actions.InventryAction" method="inventryDetails">
+			<param name="moduleName">asset</param>
+			<param name="permission">READ</param>
+			<param name = "inventryId">{1}</param>
+		</action>
+	</package>
+	<package name="inventryListApiv2" namespace="/api/v2/inventry/view"
+		extends="v2Api">
+		<action name="*" class="com.facilio.bmsconsole.actions.InventryAction"
+			method="inventryList">
+			<param name="moduleName">asset</param>
+			<param name="permission">READ</param>
+			<param name="viewName">{1}</param>
+		</action>
+	</package>
 	<!-- <package name="pageApiv2" namespace="/api/v2/pages" extends="v2Api"> 
 		<action name="*" class="com.facilio.bmsconsole.actions.PageAction" method="fetchPage"> 
 		<param name="moduleName">asset</param> <param name="permission">READ</param> 

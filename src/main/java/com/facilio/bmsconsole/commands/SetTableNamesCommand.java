@@ -200,6 +200,10 @@ public class SetTableNamesCommand implements Command {
 		return new SetTableNamesCommand("inventoryStatus", "Inventory_status");
 	}
 	
+	public static SetTableNamesCommand getForInventry() {
+		return new SetTableNamesCommand("inventry", "Inventry");
+	}
+	
 	public static void setForModule (Context context, String moduleName) {
 		//TODO handle all module and get from map
 		String tableName = "";

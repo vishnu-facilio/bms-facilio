@@ -29,7 +29,9 @@ import com.facilio.bmsconsole.context.FloorContext;
 import com.facilio.bmsconsole.context.HeatPumpContext;
 import com.facilio.bmsconsole.context.InventoryCategoryContext;
 import com.facilio.bmsconsole.context.InventoryContext;
+import com.facilio.bmsconsole.context.InventoryStatusContext;
 import com.facilio.bmsconsole.context.InventoryVendorContext;
+import com.facilio.bmsconsole.context.InventryContext;
 import com.facilio.bmsconsole.context.ItemCategoryContext;
 import com.facilio.bmsconsole.context.ItemStatusContext;
 import com.facilio.bmsconsole.context.ItemsContext;
@@ -749,6 +751,10 @@ public class FacilioConstants {
 		public static final String VENDOR = "vendor";
 		public static final String VENDORS = "vendors";
 		
+		public static final String INVENTRY = "inventry";
+		public static final String INVENTRIES = "inventries";
+		public static final String INVENTORY_STATUS = "inventoryStatus";
+		
 		private static Map<String, Class> classMap = Collections.unmodifiableMap(initClassMap());
 		private static Map<String, Class> initClassMap() {
 			Map<String, Class> classMap = new HashMap<>();
@@ -822,7 +828,9 @@ public class FacilioConstants {
 			classMap.put(TOOLS_STATUS, ToolsStatusContext.class);
 			classMap.put(VENDOR, VendorContext.class);
 			classMap.put(VENDORS, VendorContext.class);
-
+			classMap.put(INVENTRY, InventryContext.class);
+			classMap.put(INVENTORY_STATUS, InventoryStatusContext.class);
+			
 			return classMap;
 		}
 		

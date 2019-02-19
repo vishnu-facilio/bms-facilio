@@ -471,4 +471,21 @@ public class ReadOnlyChainFactory {
 		return c;
 	}
 	
+	public static Chain fetchInventryDetails() {
+		Chain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForInventry());
+		c.addCommand(new GenericGetModuleDataDetailCommand());
+		c.addCommand(new GetInventryDetailsCommand());
+		return c;
+	}
+	
+	public static Chain getInvenrtyList() {
+		Chain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForInventry());
+		c.addCommand(new LoadAllFieldsCommand());
+		c.addCommand(new GenerateCriteriaFromFilterCommand());
+		c.addCommand(new GenerateSearchConditionCommand());
+		c.addCommand(new GetInvenrtyListCommand());
+		return c;
+	}
 }
