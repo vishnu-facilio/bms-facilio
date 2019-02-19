@@ -12,7 +12,6 @@ import java.util.Map;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.apache.log4j.Priority;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
@@ -341,7 +340,7 @@ public class ReadingRuleContext extends WorkflowRuleContext {
 	public boolean evaluateCriteria(String moduleName, Object record, Map<String, Object> placeHolders, FacilioContext context) throws Exception {
 		// TODO Auto-generated method stub
 		boolean criteriaFlag = super.evaluateCriteria(moduleName, record, placeHolders, context);
-		if (criteriaFlag) {
+		if (criteriaFlag && record != null) {
 			updateLastValueForReadingRule((ReadingContext) record);
 		}
 		return criteriaFlag;
@@ -352,6 +351,11 @@ public class ReadingRuleContext extends WorkflowRuleContext {
 			FacilioContext context) throws Exception {
 		// TODO Auto-generated method stub
 		boolean workflowFlag = evalWorkflow(placeHolders, (Map<String, ReadingDataMeta>) context.get(FacilioConstants.ContextNames.CURRRENT_READING_DATA_META));
+		
+		if (record == null) {
+			return workflowFlag;
+		}
+		
 		if (overPeriod != -1 && occurences == -1) {
 			return evalOverPeriod(workflowFlag, (ReadingContext) record);
 		}
@@ -512,6 +516,11 @@ public class ReadingRuleContext extends WorkflowRuleContext {
 		
 		if(this.getTriggerExecutePeriod() <= 0 || (this.getTriggerExecutePeriod() > 0 && (Boolean) context.get(FacilioConstants.ContextNames.IS_READING_RULE_EXECUTE_FROM_JOB))) {
 			ReadingContext reading = (ReadingContext) record;
+			
+			if (reading == null) {
+				return true;
+			}
+			
 			Object currentMetric = getMetric(reading);
 			if (currentMetric == null) {
 				return false;
@@ -667,15 +676,18 @@ public class ReadingRuleContext extends WorkflowRuleContext {
 	public Map<String, Object> constructPlaceHolders(String moduleName, Object record, Map<String, Object> recordPlaceHolders, FacilioContext context) throws Exception {
 		// TODO Auto-generated method stub
 		Map<String, Object> rulePlaceHolders = super.constructPlaceHolders(moduleName, record, recordPlaceHolders, context);
-		Map<String, ReadingDataMeta> metaMap =(Map<String, ReadingDataMeta>)context.get(FacilioConstants.ContextNames.PREVIOUS_READING_DATA_META);
-		ReadingDataMeta meta = metaMap.get(ReadingsAPI.getRDMKey(((ReadingContext)record).getParentId(), readingField));
-		if (meta != null) {
-			Object prevValue = meta.getValue();
-			rulePlaceHolders.put("previousValue", FieldUtil.castOrParseValueAsPerType(readingField, prevValue));
+		
+		if (record != null) {
+			Map<String, ReadingDataMeta> metaMap =(Map<String, ReadingDataMeta>)context.get(FacilioConstants.ContextNames.PREVIOUS_READING_DATA_META);
+			ReadingDataMeta meta = metaMap.get(ReadingsAPI.getRDMKey(((ReadingContext)record).getParentId(), readingField));
+			if (meta != null) {
+				Object prevValue = meta.getValue();
+				rulePlaceHolders.put("previousValue", FieldUtil.castOrParseValueAsPerType(readingField, prevValue));
+			}
+			rulePlaceHolders.put("resourceId", ((ReadingContext) record).getParentId());
+			rulePlaceHolders.put("inputValue", ((ReadingContext) record).getReading(readingField.getName()));
+			rulePlaceHolders.put("ttime", ((ReadingContext) record).getTtime());
 		}
-		rulePlaceHolders.put("resourceId", ((ReadingContext) record).getParentId());
-		rulePlaceHolders.put("inputValue", ((ReadingContext) record).getReading(readingField.getName()));
-		rulePlaceHolders.put("ttime", ((ReadingContext) record).getTtime());
 		return rulePlaceHolders;
 	}
 	
