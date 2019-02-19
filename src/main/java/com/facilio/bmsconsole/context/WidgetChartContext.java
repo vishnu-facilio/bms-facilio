@@ -1,12 +1,18 @@
 package com.facilio.bmsconsole.context;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import org.json.simple.JSONObject;
+
+import com.facilio.report.util.ReportUtil;
 
 public class WidgetChartContext extends DashboardWidgetContext {
 
 	/**
 	 * 
 	 */
+	private static final Logger LOGGER = Logger.getLogger(WidgetChartContext.class.getName());
 	private static final long serialVersionUID = 1L;
 	Long reportId;
 	Long newReportId;
@@ -84,6 +90,14 @@ public class WidgetChartContext extends DashboardWidgetContext {
 		dataOptionsJson.put("name", "dummy");
 		dataOptionsJson.put("reportId", getReportId());
 		dataOptionsJson.put("newReportId", getNewReportId());
+		try {
+			if(getNewReportId() != null && getNewReportId() > 0) {
+				dataOptionsJson.put("newReport", ReportUtil.getReport(getNewReportId()));
+			}
+		}
+		catch(Exception e) {
+			LOGGER.log(Level.SEVERE, e.getMessage(), e);
+		}
 		dataOptionsJson.put("chartTypeInt", chartType);
 		dataOptionsJson.put("dateFilter", dateFilterId);
 		dataOptionsJson.put("refresh_interval", getDataRefreshIntervel());
