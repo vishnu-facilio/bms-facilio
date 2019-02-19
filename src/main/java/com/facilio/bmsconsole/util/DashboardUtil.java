@@ -2182,6 +2182,19 @@ public static JSONObject getStandardVariance1(ReportContext report,JSONArray pro
 		return null;
 	}
 	
+	public static void duplicateReport(List<Long> reportIds) throws Exception {
+		
+		for(Long reportId : reportIds) {
+			ReportContext reportContext = DashboardUtil.getReportContext(reportId);
+			duplicateReport(reportContext);
+		}
+	}
+	
+	public static boolean duplicateReport(ReportContext reportContext) throws Exception {
+		
+		return addReport(reportContext);
+	}
+	
 	public static boolean addReport(ReportContext reportContext) throws Exception {
 		
 		boolean isSubReport = true;
@@ -2248,7 +2261,7 @@ public static JSONObject getStandardVariance1(ReportContext report,JSONArray pro
 				reportContext.setGroupBy(DashboardUtil.addOrGetReportfield(reportContext.getGroupByField(), reportContext.getModuleName()).getId());
 			}
 			
-
+			reportContext.setId(-1);
 			Map<String, Object> props = FieldUtil.getAsProperties(reportContext);
 			insertBuilder.addRecord(props);
 			insertBuilder.save();
@@ -2295,6 +2308,7 @@ public static JSONObject getStandardVariance1(ReportContext report,JSONArray pro
 				}
 			}
 			if(reportContext.getDateFilter() != null) {
+				reportContext.getDateFilter().setId(-1l);
 				Map<String, Object> prop = FieldUtil.getAsProperties(reportContext.getDateFilter());
 				prop.put("reportId", reportContext.getId());
 
@@ -2304,20 +2318,20 @@ public static JSONObject getStandardVariance1(ReportContext report,JSONArray pro
 				
 				insertBuilder.addRecord(prop).save();
 			}
-			else if(isSubReport) {
-				Map<String, Object> prop = new HashMap<>();
-				prop.put("reportId", reportContext.getId());
-				prop.put("fieldId", reportContext.getxAxisField().getField().getId());
-				prop.put("operatorId", parentReportContext.getDateFilter().getOperatorId());
-
-				insertBuilder = new GenericInsertRecordBuilder()
-						.table(ModuleFactory.getReportDateFilter().getTableName())
-						.fields(FieldFactory.getReportDateFilterFields());
-				
-				insertBuilder.addRecord(prop).save();
-				
-				LOGGER.severe("sssssaaaa --- "+prop);
-			}
+//			else if(isSubReport) {
+//				Map<String, Object> prop = new HashMap<>();
+//				prop.put("reportId", reportContext.getId());
+//				prop.put("fieldId", reportContext.getxAxisField().getField().getId());
+//				prop.put("operatorId", parentReportContext.getDateFilter().getOperatorId());
+//
+//				insertBuilder = new GenericInsertRecordBuilder()
+//						.table(ModuleFactory.getReportDateFilter().getTableName())
+//						.fields(FieldFactory.getReportDateFilterFields());
+//				
+//				insertBuilder.addRecord(prop).save();
+//				
+//				LOGGER.severe("sssssaaaa --- "+prop);
+//			}
 //			if(reportContext.getEnergyMeter() != null) {
 //				Map<String, Object> prop = FieldUtil.getAsProperties(reportContext.getEnergyMeter());
 //				prop.put("reportId", reportContext.getId());
@@ -2350,7 +2364,7 @@ public static JSONObject getStandardVariance1(ReportContext report,JSONArray pro
 //						.fields(FieldFactory.getReportEnergyMeterFields());
 //				
 //				insertBuilder.addRecord(prop).save();
-				
+				reportContext.getReportSpaceFilterContext().setId(-1l);
 				Map<String, Object> prop = FieldUtil.getAsProperties(reportContext.getReportSpaceFilterContext());
 				prop.put("reportId", reportContext.getId());
 				
