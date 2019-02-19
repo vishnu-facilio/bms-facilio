@@ -1007,6 +1007,7 @@ public class UserBeanImpl implements UserBean {
 		List<FacilioField> fields = new ArrayList<>();
 		fields.addAll(AccountConstants.getUserFields());
 		fields.addAll(AccountConstants.getOrgUserFields());
+		fields.add(FieldFactory.getOrgIdField());
 
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(fields)
@@ -1032,6 +1033,7 @@ public class UserBeanImpl implements UserBean {
 		List<FacilioField> fields = new ArrayList<>();
 		fields.addAll(AccountConstants.getUserFields());
 		fields.addAll(AccountConstants.getOrgUserFields());
+		fields.add(FieldFactory.getOrgIdField());
 
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(fields)
@@ -1059,7 +1061,7 @@ public class UserBeanImpl implements UserBean {
 		fields.addAll(AccountConstants.getPortalUserFields());
 		fields.addAll(AccountConstants.getUserFields());
 		fields.addAll(AccountConstants.getOrgUserFields());
-		/*fields.add(FieldFactory.getOrgIdField(portalInfoModule));*/
+		fields.add(FieldFactory.getOrgIdField(portalInfoModule));
 		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(fields)
@@ -1087,7 +1089,7 @@ public class UserBeanImpl implements UserBean {
 		fields.addAll(AccountConstants.getPortalUserFields());
 		fields.addAll(AccountConstants.getUserFields());
 		fields.addAll(AccountConstants.getOrgUserFields());
-		/*fields.add(FieldFactory.getOrgIdField(portalInfoModule));*/
+		fields.add(FieldFactory.getOrgIdField(portalInfoModule));
 		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(fields)
@@ -1116,7 +1118,7 @@ public class UserBeanImpl implements UserBean {
 		fields.addAll(AccountConstants.getPortalUserFields());
 		fields.addAll(AccountConstants.getUserFields());
 		fields.addAll(AccountConstants.getOrgUserFields());
-		/*fields.add(FieldFactory.getOrgIdField(portalInfoModule));*/
+		fields.add(FieldFactory.getOrgIdField(portalInfoModule));
 		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(fields)
@@ -1873,6 +1875,7 @@ public class UserBeanImpl implements UserBean {
 			if (user.getRoleId() > 0) {
 				RoleBean roleBean = null;
 				if (AccountUtil.getCurrentOrg() == null) {
+					System.out.print("User org ID : "+user.getOrgId());
 					roleBean = AccountUtil.getRoleBean(user.getOrgId());
 				}
 				else {
