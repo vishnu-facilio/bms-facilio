@@ -48,7 +48,7 @@ public class MLForecastingJob extends FacilioJob
 		List<MlForecastingContext> pcList = getPredictionJobs(jc.getOrgId());
 		for(MlForecastingContext predictionContext : pcList)
 		{
-			doPrediction(predictionContext);
+			doPrediction(predictionContext, jc.getExecutionTime() * 1000);
 		}
 
 	}
@@ -89,14 +89,14 @@ public class MLForecastingJob extends FacilioJob
 		return null;
 	}
 	
-	private void doPrediction(MlForecastingContext pc)
+	private void doPrediction(MlForecastingContext pc, long predictionTime)
 	{
 		try
 		{
 			getFields(pc);
 			getReadings(pc);
 			generateModel(pc);
-			addToDB(pc);
+			addToDB(pc, predictionTime);
 			
 		}
 		catch(Exception e)
@@ -105,7 +105,7 @@ public class MLForecastingJob extends FacilioJob
 		}
 	}
 	
-	private void addToDB(MlForecastingContext pc) throws Exception
+	private void addToDB(MlForecastingContext pc, long predictionTime) throws Exception
 	{
 		try
 		{
@@ -125,6 +125,9 @@ public class MLForecastingJob extends FacilioJob
 				 newReading.addReading(field.getName(), value);
 	   			
 				 newReading.setTtime((long)readingObj.get("ttime"));
+				 
+				 newReading.addReading("predictedTime", predictionTime);
+				 
 				 newList.add(newReading);
 			 }
 	   		
