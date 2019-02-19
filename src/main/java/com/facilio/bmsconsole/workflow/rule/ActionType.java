@@ -240,7 +240,14 @@ public enum ActionType {
 					}
 
 					if (currentRule instanceof ReadingRuleContext) {
-						AlarmAPI.addReadingAlarmProps(obj, (ReadingRuleContext) currentRule,(ReadingContext) currentRecord);
+						switch (((ReadingRuleContext) currentRule).getReadingRuleTypeEnum()) {
+							case THRESHOLD_RULE:
+								AlarmAPI.addReadingAlarmProps(obj, (ReadingRuleContext) currentRule,(ReadingContext) currentRecord);
+								break;
+							case ML_RULE:
+								AlarmAPI.addMLAlarmProps(obj, (ReadingRuleContext) currentRule);
+								break;
+						}
 					}
 
 					FacilioContext addEventContext = new FacilioContext();

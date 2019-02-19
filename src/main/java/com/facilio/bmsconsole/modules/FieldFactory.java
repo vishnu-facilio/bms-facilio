@@ -967,6 +967,9 @@ public class FieldFactory {
 		fields.add(getField("ruleGroupId", "RULE_GROUP_ID", module, FieldType.LOOKUP));
 		fields.add(getField("alarmSeverityId", "ALARM_SEVERITY_ID", module, FieldType.LOOKUP));
 		fields.add(getField("triggerExecutePeriod", "TRIGGER_EXECUTE_PERIOD", module, FieldType.NUMBER));
+		fields.add(getField("readingRuleType", "READING_RULE_TYPE", module, FieldType.NUMBER));
+		fields.add(getField("upperBound", "UPPER_BOUND", module, FieldType.DECIMAL));
+		fields.add(getField("lowerBound", "LOWER_BOUND", module, FieldType.DECIMAL));
 		
 		return fields;
 	}

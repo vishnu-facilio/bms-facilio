@@ -307,13 +307,45 @@ public class ReadingRuleContext extends WorkflowRuleContext {
 		this.alarmSeverityId = alarmSeverityId;
 	}
 	
-	long ruleGroupId = -1l;
-
+	private long ruleGroupId = -1l;
 	public long getRuleGroupId() {
 		return ruleGroupId;
 	}
 	public void setRuleGroupId(long ruleGroupId) {
 		this.ruleGroupId = ruleGroupId;
+	}
+	
+	private ReadingRuleType readingRuleType;
+	public ReadingRuleType getReadingRuleTypeEnum() {
+		return readingRuleType;
+	}
+	public void setReadingRuleType(ReadingRuleType readingRuleType) {
+		this.readingRuleType = readingRuleType;
+	}
+	public int getReadingRuleType() {
+		if (readingRuleType != null) {
+			return readingRuleType.getValue();
+		}
+		return -1;
+	}
+	public void setReadingRuleType(int readingRuleType) {
+		this.readingRuleType = ReadingRuleType.valueOf(readingRuleType);
+	}
+	
+	private double upperBound = -1;
+	public double getUpperBound() {
+		return upperBound;
+	}
+	public void setUpperBound(double upperBound) {
+		this.upperBound = upperBound;
+	}
+	
+	private double lowerBound = -1;
+	public double getLowerBound() {
+		return lowerBound;
+	}
+	public void setLowerBound(double lowerBound) {
+		this.lowerBound = lowerBound;
 	}
 
 	public enum ThresholdType {
@@ -336,6 +368,24 @@ public class ReadingRuleContext extends WorkflowRuleContext {
 			return null;
 		}
 	}
+	
+	public enum ReadingRuleType {
+		THRESHOLD_RULE,
+		ML_RULE
+		;
+		
+		public int getValue() {
+			return ordinal()+1;
+		}
+		
+		public static ReadingRuleType valueOf(int value) {
+			if (value > 0 && value <= values().length) {
+				return values()[value - 1];
+			}
+			return null;
+		}
+	}
+	
 	@Override
 	public boolean evaluateCriteria(String moduleName, Object record, Map<String, Object> placeHolders, FacilioContext context) throws Exception {
 		// TODO Auto-generated method stub

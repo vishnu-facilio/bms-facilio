@@ -43,6 +43,7 @@ public class ClearAlarmOnWOCloseCommand implements SerializableCommand {
 						case ALARM:
 						case THRESHOLD_ALARM:
 						case ANOMALY_ALARM:
+						case ML_ALARM:
 							woIds.add(workOrder.getId());
 							break;
 						default:

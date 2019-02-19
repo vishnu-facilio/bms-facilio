@@ -22,6 +22,7 @@ import com.facilio.bmsconsole.context.AssetCategoryContext;
 import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.BaseLineContext;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
+import com.facilio.bmsconsole.context.MLAlarmContext;
 import com.facilio.bmsconsole.context.ReadingAlarmContext;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ResourceContext;
@@ -80,27 +81,58 @@ public class AlarmAPI {
 			event.put("controllerId", alarm.getControllerId());
 		}
 		
-		if (isReadingAlarm(alarm.getSourceTypeEnum())) {
-			ReadingAlarmContext readingAlarm = getReadingAlarmContext(alarm.getId());
-			event.put("sourceType", readingAlarm.getSourceTypeEnum().getIntVal());
-			event.put("ruleId", readingAlarm.getRuleId());
-			event.put("readingFieldId", readingAlarm.getReadingFieldId());
+		switch (alarm.getSourceTypeEnum()) {
+			case THRESHOLD_ALARM:
+			case ANOMALY_ALARM:
+				ReadingAlarmContext readingAlarm = getReadingAlarmContext(alarm.getId());
+				event.put("sourceType", readingAlarm.getSourceTypeEnum().getIntVal());
+				event.put("ruleId", readingAlarm.getRuleId());
+				event.put("readingFieldId", readingAlarm.getReadingFieldId());
+				break;
+			case ML_ALARM:
+				MLAlarmContext mlAlarm = getMLAlarmContext(alarm.getId());
+				event.put("sourceType", mlAlarm.getSourceTypeEnum().getIntVal());
+				event.put("ruleId", mlAlarm.getRuleId());
+				event.put("readingFieldId", mlAlarm.getReadingFieldId());
+				break;
+			default:
+				break;
 		}
 		
 		return event;
 	}
 	
+	public static AlarmContext getExtendedAlarm (long alarmId, SourceType type) throws Exception {
+		switch (type) {
+			case THRESHOLD_ALARM:
+			case ANOMALY_ALARM:
+				return getReadingAlarmContext(alarmId);
+			case ML_ALARM:
+				return getMLAlarmContext(alarmId);
+			default:
+				return null;
+		}
+	}
+	
+	public static MLAlarmContext getMLAlarmContext (long alarmId) throws Exception {
+		return getExtendedAlarm(alarmId, FacilioConstants.ContextNames.ML_ALARM);
+	}
+	
 	public static ReadingAlarmContext getReadingAlarmContext(long alarmId) throws Exception {
-		
+		return getExtendedAlarm(alarmId, FacilioConstants.ContextNames.READING_ALARM);
+	}
+	
+	@SuppressWarnings("unchecked")
+	private static <E extends AlarmContext> E getExtendedAlarm(long alarmId, String moduleName) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.READING_ALARM);
-		SelectRecordsBuilder<ReadingAlarmContext> selectBuilder = new SelectRecordsBuilder<ReadingAlarmContext>()
-																.select(modBean.getAllFields(FacilioConstants.ContextNames.READING_ALARM))
+		FacilioModule module = modBean.getModule(moduleName);
+		SelectRecordsBuilder<E> selectBuilder = new SelectRecordsBuilder<E>()
+																.select(modBean.getAllFields(moduleName))
 																.module(module)
-																.beanClass(ReadingAlarmContext.class)
+																.beanClass(FacilioConstants.ContextNames.getClassFromModuleName(moduleName))
 																.andCondition(CriteriaAPI.getIdCondition(alarmId, module));
 		
-		List<ReadingAlarmContext> props = selectBuilder.get();
+		List<E> props = selectBuilder.get();
 		
 		if(props != null && !props.isEmpty()) {
 			return props.get(0);
@@ -128,6 +160,7 @@ public class AlarmAPI {
 					switch (type) {
 						case THRESHOLD_ALARM:
 						case ANOMALY_ALARM:
+						case ML_ALARM:
 							alarms.set(i, typeWiseAlarms.get(alarm.getSourceTypeEnum()).get(alarm.getId()));
 							break;
 						default:
@@ -138,10 +171,11 @@ public class AlarmAPI {
 		}
 	}
 	
-	public static boolean isReadingAlarm (SourceType type) {
+	public static boolean isReadingRuleAlarm (SourceType type) {
 		switch (type) {
 			case THRESHOLD_ALARM:
 			case ANOMALY_ALARM:
+			case ML_ALARM:
 				return true;
 			default:
 				return false;
@@ -158,9 +192,12 @@ public class AlarmAPI {
 				if (type != null) {
 					switch (type) {
 						case THRESHOLD_ALARM:
-						case ANOMALY_ALARM: {
+						case ANOMALY_ALARM: 
 							typewiseAlarms.put(entry.getKey(), fetchExtendedAlarms(modBean.getModule(FacilioConstants.ContextNames.READING_ALARM), modBean.getAllFields(FacilioConstants.ContextNames.READING_ALARM), entry.getValue(), ReadingAlarmContext.class));
-						}break;
+							break;
+						case ML_ALARM:
+							typewiseAlarms.put(entry.getKey(), fetchExtendedAlarms(modBean.getModule(FacilioConstants.ContextNames.ML_ALARM), modBean.getAllFields(FacilioConstants.ContextNames.ML_ALARM), entry.getValue(), MLAlarmContext.class));
+							break;
 						default:
 							break;
 					}
@@ -470,6 +507,16 @@ public class AlarmAPI {
 		String resourceName = ((ResourceContext)reading.getParent()).getName();
 		obj.put("source", resourceName);
 		obj.put("timestamp", reading.getTtime());
+	}
+	
+	public static void addMLAlarmProps (JSONObject obj, ReadingRuleContext rule) {
+		obj.put("sourceType", SourceType.ML_ALARM.getIntVal());
+		obj.put("resourceId", rule.getResourceId());
+		obj.put("siteId", rule.getSiteId());
+		obj.put("timestamp", DateTimeUtil.getHourStartTime());
+		obj.put("ruleId", rule.getRuleGroupId());
+		obj.put("readingFieldId", rule.getReadingFieldId());
+		obj.put("condition", rule.getName());
 	}
 	
 	private static DateRange getRange(ReadingRuleContext rule, ReadingContext reading) {
@@ -857,6 +904,8 @@ public class AlarmAPI {
 			case THRESHOLD_ALARM:
 			case ANOMALY_ALARM:
 				return FacilioConstants.ContextNames.READING_ALARM;
+			case ML_ALARM:
+				return FacilioConstants.ContextNames.ML_ALARM;
 			default:
 				return FacilioConstants.ContextNames.ALARM;
 		}
@@ -873,6 +922,8 @@ public class AlarmAPI {
 			case THRESHOLD_ALARM:
 			case ANOMALY_ALARM:
 				return bean.getAllFields(FacilioConstants.ContextNames.READING_ALARM);
+			case ML_ALARM:
+				return bean.getAllFields(FacilioConstants.ContextNames.ML_ALARM);
 			default:
 				return bean.getAllFields(FacilioConstants.ContextNames.ALARM);
 		}
@@ -887,6 +938,8 @@ public class AlarmAPI {
 			case THRESHOLD_ALARM:
 			case ANOMALY_ALARM:
 				return ReadingAlarmContext.class;
+			case ML_ALARM:
+				return MLAlarmContext.class;
 			default:
 				return AlarmContext.class;
 		}
