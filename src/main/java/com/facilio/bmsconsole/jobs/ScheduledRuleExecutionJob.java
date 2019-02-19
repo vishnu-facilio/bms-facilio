@@ -22,6 +22,10 @@ public class ScheduledRuleExecutionJob extends FacilioJob {
 		try {
 			WorkflowRuleContext rule = WorkflowRuleAPI.getWorkflowRule(jc.getJobId(), true);
 			
+			if (!rule.isActive()) {
+				return;
+			}
+			
 			FacilioContext context = new FacilioContext();
 			context.put(FacilioConstants.ContextNames.WORKFLOW_RULE, rule);
 			context.put(FacilioConstants.Job.JOB_CONTEXT, jc);

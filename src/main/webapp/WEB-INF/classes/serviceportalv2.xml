@@ -30,6 +30,7 @@
 		
 		<action name="workorders" class="com.facilio.bmsconsole.actions.WorkOrderAction" method="v2workOrderList">
 			<param name="viewName">myrequests</param>
+			<param name="approval">true</param>
 		</action>
 		
 	</package>

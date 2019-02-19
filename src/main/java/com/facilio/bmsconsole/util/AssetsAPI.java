@@ -76,6 +76,37 @@ public class AssetsAPI {
 		return assetIds;
 	}
 	
+	
+	public static List<Long> getAssetIdsFromBaseSpaceIdsWithCategory(List<Long> baseSpaceIds,List<Long> categoryIds) throws Exception {
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.RESOURCE);
+		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.RESOURCE);
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+		
+		FacilioField spaceField= fieldMap.get("spaceId");
+		FacilioField categoryField= fieldMap.get("category");
+		
+		SelectRecordsBuilder<BaseSpaceContext> selectBuilder = new SelectRecordsBuilder<BaseSpaceContext>()
+				.select(fields)
+				.table(module.getTableName())
+				.moduleName(module.getName())
+				.beanClass(BaseSpaceContext.class)
+				.andCondition(CriteriaAPI.getCondition(spaceField, StringUtils.join(baseSpaceIds, ","), PickListOperators.IS))
+				.andCondition(CriteriaAPI.getCondition(categoryField, StringUtils.join(categoryIds, ","), PickListOperators.IS))
+				.andCustomWhere("Resources.RESOURCE_TYPE = ?", ResourceContext.ResourceType.ASSET.getValue());
+		
+		List<BaseSpaceContext> assets = selectBuilder.get();
+		List<Long> assetIds = null; 
+		for(BaseSpaceContext asset :assets) {
+			if(assetIds == null) {
+				assetIds = new ArrayList<>();
+			}
+			assetIds.add(asset.getId());
+		}
+		return assetIds;
+	}
+	
 	public static long getOrgId(Long assetId) throws Exception
 	{
 		List<FacilioField> fields = new ArrayList<>();

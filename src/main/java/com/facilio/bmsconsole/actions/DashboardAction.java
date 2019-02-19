@@ -66,6 +66,7 @@ import com.facilio.bmsconsole.context.PhotosContext;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.context.ReadingAlarmContext;
 import com.facilio.bmsconsole.context.ReadingContext;
+import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.context.ReportBenchmarkRelContext;
 import com.facilio.bmsconsole.context.ReportColumnContext;
 import com.facilio.bmsconsole.context.ReportContext;
@@ -1172,6 +1173,7 @@ public class DashboardAction extends FacilioAction {
 	public String getCardData() throws Exception {
 		
 		WidgetStaticContext widgetStaticContext = null;
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		if(widgetId != null) {
 			DashboardWidgetContext dashboardWidgetContext =  DashboardUtil.getWidget(widgetId);
 			widgetStaticContext = (WidgetStaticContext) dashboardWidgetContext;
@@ -1269,6 +1271,183 @@ public class DashboardAction extends FacilioAction {
 					setCardResult(result);
 					return SUCCESS;
 					
+				}
+				else if(widgetStaticContext.getStaticKey().equals("emrilllevel1")) {
+					
+					result = new HashMap<>();
+					
+					List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.RESOURCE);
+					
+					List newFieldList = new ArrayList<>(fields);
+					
+					newFieldList.add(FieldFactory.getIdField(modBean.getModule(FacilioConstants.ContextNames.RESOURCE)));
+					
+					GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+							.select(newFieldList)
+							.table(modBean.getModule(FacilioConstants.ContextNames.RESOURCE).getTableName())
+							.andCustomWhere("ID between 1100395 and 1100431 or ID between 1100500 and 1100518");
+					
+					List<Map<String, Object>> props = selectBuilder.get();
+					
+					LOGGER.severe("EMRILL CARD TEST LOGGERS emrilllevel1");
+					LOGGER.severe(selectBuilder +" ---- "+props.size());
+					
+					result.put("name", "Level 1");
+					
+					result.put("totalFcu", props.size());
+					
+					FacilioField fanStatusField = modBean.getField(453787l);
+					
+					LOGGER.severe("fanStatusField ---- "+fanStatusField);
+					
+					List<Pair<Long, FacilioField>> rdmPairs = new ArrayList<>();
+					
+					int runningCount = 0;
+					if(props != null && !props.isEmpty()) {
+						for(Map<String, Object> prop :props) {
+							rdmPairs.add(Pair.of((Long) prop.get("id"),fanStatusField));
+						}
+						List<ReadingDataMeta> rdms = ReadingsAPI.getReadingDataMetaList(rdmPairs);
+						
+						LOGGER.severe("rdms ---- "+rdms.size());
+						
+						for(ReadingDataMeta rdm :rdms) {
+							try {
+								Double runStatus = Double.valueOf(rdm.getValue().toString());
+								if(runStatus > 0) {
+									runningCount++;
+								}
+							}
+							catch(Exception e) {
+								LOGGER.log(Level.SEVERE, e.getMessage(), e);
+							}
+							
+						}
+						
+						result.put("runningFcu", runningCount);
+						
+						result.put("runningFcuPercentage", (runningCount/props.size()) * 100);
+					}
+					setCardResult(result);
+					return SUCCESS;
+				}
+				else if(widgetStaticContext.getStaticKey().equals("emrilllevel2")) {
+					
+					result = new HashMap<>();
+					
+					List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.RESOURCE);
+					
+					List newFieldList = new ArrayList<>(fields);
+					
+					newFieldList.add(FieldFactory.getIdField(modBean.getModule(FacilioConstants.ContextNames.RESOURCE)));
+					
+					GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+							.select(newFieldList)
+							.table(modBean.getModule(FacilioConstants.ContextNames.RESOURCE).getTableName())
+							.andCustomWhere("ID between 1100432 and 1100471");
+					
+					List<Map<String, Object>> props = selectBuilder.get();
+					
+					LOGGER.severe("EMRILL CARD TEST LOGGERS emrilllevel2");
+					LOGGER.severe(selectBuilder +" ---- "+props.size());
+					
+					result.put("name", "Level 1");
+					
+					result.put("totalFcu", props.size());
+					
+					FacilioField fanStatusField = modBean.getField(453787l);
+					
+					LOGGER.severe("fanStatusField ---- "+fanStatusField);
+					
+					List<Pair<Long, FacilioField>> rdmPairs = new ArrayList<>();
+					
+					int runningCount = 0;
+					if(props != null && !props.isEmpty()) {
+						for(Map<String, Object> prop :props) {
+							rdmPairs.add(Pair.of((Long) prop.get("id"),fanStatusField));
+						}
+						List<ReadingDataMeta> rdms = ReadingsAPI.getReadingDataMetaList(rdmPairs);
+						
+						LOGGER.severe("rdms ---- "+rdms.size());
+						
+						for(ReadingDataMeta rdm :rdms) {
+							try {
+								Integer runStatus = Integer.valueOf(rdm.getValue().toString());
+								if(runStatus > 0) {
+									runningCount++;
+								}
+							}
+							catch(Exception e) {
+								LOGGER.log(Level.SEVERE, e.getMessage(), e);
+							}
+							
+						}
+						
+						result.put("runningFcu", runningCount);
+						
+						result.put("runningFcuPercentage", (runningCount/props.size()) * 100);
+					}
+					setCardResult(result);
+					return SUCCESS;
+				}
+				else if(widgetStaticContext.getStaticKey().equals("emrilllevel3")) {
+					
+					result = new HashMap<>();
+					
+					List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.RESOURCE);
+					
+					List newFieldList = new ArrayList<>(fields);
+					
+					newFieldList.add(FieldFactory.getIdField(modBean.getModule(FacilioConstants.ContextNames.RESOURCE)));
+					
+					GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+							.select(newFieldList)
+							.table(modBean.getModule(FacilioConstants.ContextNames.RESOURCE).getTableName())
+							.andCustomWhere("ID between 1100472 and 1100499 or ID between 1100519 and 1100530");
+					
+					List<Map<String, Object>> props = selectBuilder.get();
+					
+					LOGGER.severe("EMRILL CARD TEST LOGGERS emrilllevel3");
+					LOGGER.severe(selectBuilder +" ---- "+props.size());
+					
+					result.put("name", "Level 1");
+					
+					result.put("totalFcu", props.size());
+					
+					FacilioField fanStatusField = modBean.getField(453787l);
+					
+					LOGGER.severe("fanStatusField ---- "+fanStatusField);
+					
+					List<Pair<Long, FacilioField>> rdmPairs = new ArrayList<>();
+					
+					int runningCount = 0;
+					if(props != null && !props.isEmpty()) {
+						for(Map<String, Object> prop :props) {
+							rdmPairs.add(Pair.of((Long) prop.get("id"),fanStatusField));
+						}
+						List<ReadingDataMeta> rdms = ReadingsAPI.getReadingDataMetaList(rdmPairs);
+						
+						LOGGER.severe("rdms ---- "+rdms.size());
+						
+						for(ReadingDataMeta rdm :rdms) {
+							try {
+								Integer runStatus = Integer.valueOf(rdm.getValue().toString());
+								if(runStatus > 0) {
+									runningCount++;
+								}
+							}
+							catch(Exception e) {
+								LOGGER.log(Level.SEVERE, e.getMessage(), e);
+							}
+							
+						}
+						
+						result.put("runningFcu", runningCount);
+						
+						result.put("runningFcuPercentage", (runningCount/props.size()) * 100);
+					}
+					setCardResult(result);
+					return SUCCESS;
 				}
 			}
 			if(widgetStaticContext.getWidgetVsWorkflowContexts() != null) {

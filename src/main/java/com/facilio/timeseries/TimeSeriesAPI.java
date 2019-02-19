@@ -1,5 +1,7 @@
 package com.facilio.timeseries;
 
+import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -9,6 +11,9 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.amazonaws.services.kinesis.model.PutRecordResult;
+import com.facilio.accounts.dto.Account;
+import com.facilio.aws.util.AwsUtil;
 import org.apache.commons.chain.Chain;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -58,7 +63,13 @@ public class TimeSeriesAPI {
 	
 	public static void processPayLoad(long ttime, JSONObject payLoad, String macAddr) throws Exception {
 		LOGGER.debug(payLoad);
-		processPayLoad(ttime, payLoad, null, null, macAddr, true);
+		String stream = AccountUtil.getCurrentOrg().getDomain();
+		PutRecordResult recordResult = AwsUtil.getKinesisClient().putRecord(stream, ByteBuffer.wrap(payLoad.toJSONString().getBytes(Charset.defaultCharset())), macAddr);
+		int status = recordResult.getSdkHttpMetadata().getHttpStatusCode();
+		if (status != 200) {
+			LOGGER.info("Couldn't add data to " + stream);
+		}
+		// processPayLoad(ttime, payLoad, null, null, macAddr, true);
 	}
 	
 	public static void processPayLoad(long ttime, JSONObject payLoad, String macAddr, boolean adjustTime) throws Exception {
@@ -92,19 +103,20 @@ public class TimeSeriesAPI {
 	}
 	
 	public static void processFacilioRecord(FacilioConsumer consumer, FacilioRecord record) throws Exception {
-		LOGGER.info(" timeseries data " + record.getData());
+		// LOGGER.info(" timeseries data " + record.getData());
+		if (record == null) {
+			return;
+		}
 		long timeStamp = getTimeStamp(record.getTimeStamp(), record.getData());
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.TIMESTAMP , timeStamp);
 		context.put(FacilioConstants.ContextNames.PAY_LOAD , record.getData());
-		if (record != null) {
-			context.put(FacilioConstants.ContextNames.FACILIO_RECORD, record);
-			context.put(FacilioConstants.ContextNames.FACILIO_CONSUMER, consumer);
-			//even if the above two lines are removed.. please do not remove the below partitionKey..
-			ControllerContext controller=  ControllerAPI.getController(record.getPartitionKey());
-			if(controller!=null) {
-				context.put(FacilioConstants.ContextNames.CONTROLLER_ID, controller.getId());
-			}
+		context.put(FacilioConstants.ContextNames.FACILIO_RECORD, record);
+		context.put(FacilioConstants.ContextNames.FACILIO_CONSUMER, consumer);
+		//even if the above two lines are removed.. please do not remove the below partitionKey..
+		ControllerContext controller=  ControllerAPI.getController(record.getPartitionKey());
+		if(controller!=null) {
+			context.put(FacilioConstants.ContextNames.CONTROLLER_ID, controller.getId());
 		}
 		context.put(FacilioConstants.ContextNames.READINGS_SOURCE, SourceType.KINESIS);
 		Chain processDataChain = TransactionChainFactory.getProcessDataChain();
