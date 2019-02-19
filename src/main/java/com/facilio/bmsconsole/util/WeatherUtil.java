@@ -284,8 +284,8 @@ public static Map<Long,List<Map<String,Object>>> getReadings(String moduleName) 
 	public static List<Map<String, Object>> getWeatherStation(long siteId) throws Exception {
 		
 		 List<FacilioField> fields = new ArrayList<>();
-		 fields.add( FieldFactory.getField("latitude","LAT",FieldType.NUMBER));
-		 fields.add(FieldFactory.getField("longtitude","LNG",FieldType.NUMBER));
+		 fields.add( FieldFactory.getField("latitude","Locations.LAT",FieldType.NUMBER));
+		 fields.add(FieldFactory.getField("longtitude","Locations.LNG",FieldType.NUMBER));
 
 		 GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 					.select(fields)

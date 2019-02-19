@@ -4307,6 +4307,8 @@ public class FieldFactory {
 		fields.add(getField("siteId", "SITE_ID", FieldType.NUMBER));
 		fields.add(getField("name", "NAME", FieldType.STRING));
 		fields.add(getField("locationId", "LOCATION_ID", FieldType.NUMBER));
+		fields.add(getField("latitude", "LAT", FieldType.NUMBER));
+		fields.add(getField("longtitude", "LNG", FieldType.NUMBER));
 		return fields;
 	}
 
