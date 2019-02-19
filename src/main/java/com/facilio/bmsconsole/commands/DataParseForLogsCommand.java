@@ -208,11 +208,11 @@ public class DataParseForLogsCommand implements Command {
 				long millis;
 				try {
 					if(dateFormats.get(fieldMapping.get("sys__ttime")).equals(ImportAPI.ImportProcessConstants.TIME_STAMP_STRING)) {
-						String ttime = (String) colVal.get(fieldMapping.get("sys__ttime"));
-						millis = Long.parseLong(ttime.toString());
+						String ttime = colVal.get(fieldMapping.get("sys__ttime")).toString();
+						millis = Long.parseLong(ttime);
 					}
 					else {
-						String ttime = (String) colVal.get(fieldMapping.get("sys__ttime"));
+						String ttime = colVal.get(fieldMapping.get("sys__ttime")).toString();
 						Instant dateInstant = DateTimeUtil.getTimeInstant(dateFormats.get(fieldMapping.get("sys__ttime")).toString(),ttime);
 						millis = dateInstant.toEpochMilli();
 				}
