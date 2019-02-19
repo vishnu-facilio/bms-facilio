@@ -395,7 +395,8 @@ public class FacilioField implements Serializable {
 		TICKETNOTES(21, "ticketnotes"),
 		SIGNATURE(22, null),
 		DURATION(23, "duration"), 
-		TASKS(24, "tasks")
+		TASKS(24, "tasks"),
+		SPACECHOOSER(25, "space-chooser")
 		;
 		
 		private int intVal;
