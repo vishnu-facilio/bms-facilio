@@ -2305,7 +2305,6 @@ CREATE TABLE WorkOrderRequests (
 -- Create table for WorkOrderRequests creation from Email
 CREATE TABLE WorkOrderRequest_EMail (
 	ID BIGINT identity(1,1) PRIMARY KEY,
-	ORGID BIGINT NOT NULL,
 	S3_MESSAGE_ID VARCHAR(100) NOT NULL,
 	TO_ADDR VARCHAR(500) NOT NULL,
 	CREATED_TIME BIGINT NOT NULL,

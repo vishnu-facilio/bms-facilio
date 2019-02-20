@@ -3889,7 +3889,7 @@ public class FieldFactory {
 		FacilioModule module = ModuleFactory.getPMResourcePlannerTriggersModule();
 		List<FacilioField> fields = new ArrayList<>();
 
-		fields.add(getOrgIdField(module));
+//		fields.add(getOrgIdField(module));
 		fields.add(getField("triggerId", "TRIGGER_ID", module, FieldType.LOOKUP));
 		fields.add(getField("resourcePlannerId", "PM_RESOURCE_PLANNER_ID", module, FieldType.LOOKUP));
 
@@ -4324,7 +4324,6 @@ public class FieldFactory {
 	public static List<FacilioField> getUnmodeledInstanceFields() {
 		FacilioModule module = ModuleFactory.getUnmodeledInstancesModule();
 		List<FacilioField> fields = new ArrayList<>();
-		fields.add(getField("orgId", "ORGID", module, FieldType.NUMBER));
 		fields.add(getField("device", "DEVICE_NAME", module, FieldType.STRING));
 		fields.add(getField("instance", "INSTANCE_NAME", module, FieldType.STRING));
         fields.add(getField("controllerId", "CONTROLLER_ID", module, FieldType.NUMBER));
@@ -4881,7 +4880,7 @@ public class FieldFactory {
         List<FacilioField> fields = new ArrayList<>();
 
 
-        fields.add(getOrgIdField(module));
+//        fields.add(getOrgIdField(module));
         fields.add(getField("parentAsset", "PARENT_ASSET", module, FieldType.NUMBER));
         fields.add(getField("childAsset", "CHILD_ASSET", module, FieldType.NUMBER));
 
@@ -5043,7 +5042,7 @@ public class FieldFactory {
 		List<FacilioField> fields = new ArrayList<>();
 
 		fields.add(getIdField(module));
-		fields.add(getOrgIdField(module));
+//		fields.add(getOrgIdField(module));
 		fields.add(getNameField(module));
 		FacilioField email = new FacilioField();
 		email.setName("email");
@@ -5065,7 +5064,7 @@ public class FieldFactory {
 		FacilioModule module = ModuleFactory.getMlForecastingModule();
 
 		fields.add(getIdField(module));
-		fields.add(getOrgIdField(module));
+//		fields.add(getOrgIdField(module));
 		
 		fields.add(getField("assetid", "ASSET_ID", module, FieldType.NUMBER));
 		fields.add(getField("criteriaid","CRITERIA_ID",module,FieldType.NUMBER));

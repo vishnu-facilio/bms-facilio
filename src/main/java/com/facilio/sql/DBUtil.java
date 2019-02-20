@@ -69,6 +69,7 @@ public class DBUtil {
 		tablesWithoutOrgId.add("Service");
 		tablesWithoutOrgId.add("ClientApp");
 		tablesWithoutOrgId.add("Organizations");
+		tablesWithoutOrgId.add("WorkOrderRequest_EMail");
 		
 
 		return tablesWithoutOrgId;
