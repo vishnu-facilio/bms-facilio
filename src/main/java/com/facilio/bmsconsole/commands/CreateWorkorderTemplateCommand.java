@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.commands;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.bmsconsole.util.ResourceAPI;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
@@ -17,6 +18,8 @@ import com.facilio.bmsconsole.templates.WorkorderTemplate;
 import com.facilio.bmsconsole.util.TemplateAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.constants.FacilioConstants;
+
+import com.facilio.bmsconsole.context.ResourceContext.ResourceType;
 
 public class CreateWorkorderTemplateCommand implements Command {
 
@@ -39,6 +42,27 @@ public class CreateWorkorderTemplateCommand implements Command {
 		if(context.get(FacilioConstants.ContextNames.TASK_SECTION_TEMPLATES) != null) {
 			List<TaskSectionTemplate> sectionTemplates =  (List<TaskSectionTemplate>) context.get(FacilioConstants.ContextNames.TASK_SECTION_TEMPLATES);
 			workorderTemplate.setSectionTemplates(sectionTemplates);
+			if (preventivemaintenance.getPmCreationTypeEnum() == PreventiveMaintenance.PMCreationType.SINGLE && workorderTemplate.getResourceId() > 0) {
+				workorderTemplate.setResource(ResourceAPI.getResource(workorderTemplate.getResourceId()));
+				if (workorderTemplate.getResource().getResourceTypeEnum() == ResourceType.ASSET) {
+					if (workorderTemplate.getSectionTemplates() != null) {
+						for (int i = 0; i < workorderTemplate.getSectionTemplates().size(); i++) {
+							if (workorderTemplate.getSectionTemplates().get(i).getAssignmentType() > 0) {
+								continue;
+							}
+							workorderTemplate.getSectionTemplates().get(i).setAssignmentType(PreventiveMaintenance.PMAssignmentType.CURRENT_ASSET.getVal());
+							if (workorderTemplate.getSectionTemplates().get(i).getTaskTemplates() != null) {
+								for (int j = 0; j < workorderTemplate.getSectionTemplates().get(i).getTaskTemplates().size(); j++) {
+									if (workorderTemplate.getSectionTemplates().get(i).getTaskTemplates().get(j).getAssignmentType() > 0) {
+										continue;
+									}
+									workorderTemplate.getSectionTemplates().get(i).getTaskTemplates().get(j).setAssignmentType(PreventiveMaintenance.PMAssignmentType.CURRENT_ASSET.getVal());
+								}
+							}
+						}
+					}
+				}
+			}
 		}
 		
 		String templateName = (String) context.get(FacilioConstants.ContextNames.TEMPLATE_NAME);
