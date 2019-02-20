@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.chain.Chain;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
@@ -485,8 +486,6 @@ public class V2ReportAction extends FacilioAction {
 		this.limit = limit;
 	}
 	public String fetchReportData() throws Exception {
-		JSONParser parser = new JSONParser();
-		
 		FacilioContext context = new FacilioContext();
 		updateContext(context);
 		
@@ -503,6 +502,7 @@ public class V2ReportAction extends FacilioAction {
 		context.put("sort_fields", sortFields);
 		context.put("sort_order", sortOrder);
 		context.put("limit", limit);
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
 	}
 
 	public String saveReport() throws Exception {
@@ -515,6 +515,10 @@ public class V2ReportAction extends FacilioAction {
 		reportContext.setChartState(chartState);
 		reportContext.setTabularState(tabularState);
 		reportContext.setType(ReportType.WORKORDER_REPORT);
+		
+		if (StringUtils.isEmpty(moduleName)) {
+			throw new Exception("Module name is mandatory");
+		}
 		
 		if (reportId > 0) {
 			ReportContext report = ReportUtil.getReport(reportId);
@@ -802,6 +806,11 @@ public class V2ReportAction extends FacilioAction {
 //		setResult("reportAlarms", context.get(FacilioConstants.ContextNames.REPORT_ALARMS));
 		setResult("safeLimits", context.get(FacilioConstants.ContextNames.REPORT_SAFE_LIMIT));
 		setResult(FacilioConstants.ContextNames.REPORT_ALARM_CONTEXT, context.get(FacilioConstants.ContextNames.REPORT_ALARM_CONTEXT));
+		
+		FacilioModule module = (FacilioModule) context.get(FacilioConstants.ContextNames.MODULE);
+		if (module != null) {
+			setResult("module", module);
+		}
 		resultContext = context;
 		
 		return SUCCESS;
