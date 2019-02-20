@@ -225,6 +225,23 @@ public class GroupBeanImpl implements GroupBean {
 		return null;
 	}
 	
+	public Group getGroup(String groupName) throws Exception {
+		FacilioModule module = AccountConstants.getGroupModule();
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(AccountConstants.getGroupFields())
+				.table(module.getTableName())
+				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+				.andCustomWhere("GROUP_NAME = ?", groupName);
+		
+		List<Map<String, Object>> props = selectBuilder.get();
+		if (props != null && !props.isEmpty()) {
+			Group group = FieldUtil.getAsBeanFromMap(props.get(0), Group.class);
+			populateGroupEmailAndPhone(group);
+			return group;
+		}
+		return null;
+	}
+	
 	private void populateGroupEmailAndPhone(Group group) throws Exception {
 		group.setMembers(AccountUtil.getGroupBean().getGroupMembers(group.getId()));
 		if (group.getMembers() != null && !group.getMembers().isEmpty()) {

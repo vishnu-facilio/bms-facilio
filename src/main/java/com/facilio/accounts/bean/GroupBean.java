@@ -31,6 +31,8 @@ public interface GroupBean {
 
 	public Group getGroup(long groupId) throws Exception;
 	
+	public Group getGroup(String groupName) throws Exception;
+	
 	public List<Group> getGroups(Criteria criteria) throws Exception;
 
 	public List<Group> getAllOrgGroups(long orgId) throws Exception;

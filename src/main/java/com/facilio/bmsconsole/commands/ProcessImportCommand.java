@@ -24,6 +24,7 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.json.simple.JSONObject;
 
+import com.facilio.accounts.dto.Group;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
@@ -39,18 +40,22 @@ import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.BuildingContext;
 import com.facilio.bmsconsole.context.FloorContext;
 import com.facilio.bmsconsole.context.ReadingContext;
+import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.ResourceContext.ResourceType;
 import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.exceptions.importExceptions.ImportParseException;
 import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.LookupField;
+import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.DateTimeUtil;
 import com.facilio.bmsconsole.util.ImportAPI;
+import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fs.FileStore;
@@ -281,15 +286,13 @@ public class ProcessImportCommand implements Command {
 								}
 
 								if (facilioField != null) {
-									if (facilioField.getDataTypeEnum().equals(FieldType.LOOKUP)
-											&& facilioField instanceof LookupField) {
+									if (facilioField.getDataTypeEnum().equals(FieldType.LOOKUP) && facilioField instanceof LookupField) {
 										LookupField lookupField = (LookupField) facilioField;
 
 										boolean isSkipSpecialLookup = false;
 
 										try {
-											if ((importProcessContext.getModule().getName().equals(FacilioConstants.ContextNames.ASSET) || (importProcessContext.getModule().getExtendModule() != null && importProcessContext.getModule().getExtendModule().getName().equals(FacilioConstants.ContextNames.ASSET)))
-													&& lookupField.getName().equals("department")) {
+											if ((importProcessContext.getModule().getName().equals(FacilioConstants.ContextNames.ASSET) || (importProcessContext.getModule().getExtendModule() != null && importProcessContext.getModule().getExtendModule().getName().equals(FacilioConstants.ContextNames.ASSET))) && lookupField.getName().equals("department")) {
 												isSkipSpecialLookup = true;
 											}
 										} catch (Exception e) {
@@ -453,13 +456,18 @@ public class ProcessImportCommand implements Command {
 	public static Map<String, Object> getSpecialLookupProps(LookupField lookupField, Object value) {
 
 		try {
-
-			switch (lookupField.getLookupModule().getName()) {
+			String moduleName;
+			if(lookupField.getLookupModule() == null && lookupField.getSpecialType() != null) {
+				moduleName = lookupField.getSpecialType();
+			}
+			else {
+				moduleName = lookupField.getLookupModule().getName();
+			}
+			switch (moduleName) {
 			case "workorder": {
 				User user = AccountUtil.getUserBean().getFacilioUser(value.toString());
 				Map<String, Object> prop = FieldUtil.getAsProperties(user);
 				return prop;
-
 			}
 			case "asset": {
 				long assetid = AssetsAPI.getAssetId(value.toString(), lookupField.getOrgId());
@@ -474,11 +482,20 @@ public class ProcessImportCommand implements Command {
 				Map<String, Object> prop2 = FieldUtil.getAsProperties(site);
 				return prop2;
 			}
-			case "building": {
-//				SpaceAPI.getBaseSpace(value);
-//				User user = AccountUtil.getUserBean().getFacilioUser(value.toString());
-//				Map<String, Object> prop = FieldUtil.getAsProperties(user);
-//				return prop;
+			case "resource": {
+				ResourceContext resource = getResource(value.toString());
+				Map<String, Object> prop2 = FieldUtil.getAsProperties(resource);
+				return prop2;
+			}
+			case "users": {
+				User user = AccountUtil.getUserBean().getFacilioUser(value.toString());
+				Map<String, Object> prop = FieldUtil.getAsProperties(user);
+				return prop;
+			}
+			case "groups": {
+				Group group = AccountUtil.getGroupBean().getGroup(value.toString());
+				Map<String, Object> prop = FieldUtil.getAsProperties(group);
+				return prop;
 			}
 			}
 
@@ -667,5 +684,26 @@ public class ProcessImportCommand implements Command {
 			}
 		return spaceId;
 	
+	}
+	
+	public static ResourceContext getResource(String name) throws Exception {
+		boolean fetchDeleted = false;
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.RESOURCE);
+		SelectRecordsBuilder<ResourceContext> resourceBuilder = new SelectRecordsBuilder<ResourceContext>()
+																		.select(modBean.getAllFields(FacilioConstants.ContextNames.RESOURCE))
+																		.module(module)
+																		.beanClass(ResourceContext.class)
+																		.andCustomWhere("NAME = ?",name)
+																		;
+		if (fetchDeleted) {
+			resourceBuilder.fetchDeleted();
+		}
+		
+		List<ResourceContext> resources = resourceBuilder.get();
+		if(resources != null && !resources.isEmpty()) {
+			return resources.get(0);
+		}
+		return null;									
 	}
 }
