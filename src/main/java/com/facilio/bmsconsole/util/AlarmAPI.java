@@ -509,9 +509,15 @@ public class AlarmAPI {
 		obj.put("timestamp", reading.getTtime());
 	}
 	
-	public static void addMLAlarmProps (JSONObject obj, ReadingRuleContext rule) {
+	public static void addMLAlarmProps (JSONObject obj, ReadingRuleContext rule) throws Exception {
 		obj.put("sourceType", SourceType.ML_ALARM.getIntVal());
 		obj.put("resourceId", rule.getResourceId());
+		
+		ResourceContext resource = ResourceAPI.getResource(rule.getResourceId());
+		if (resource != null) {
+			obj.put("source", resource.getName());
+		}
+		
 		obj.put("siteId", rule.getSiteId());
 		obj.put("timestamp", DateTimeUtil.getHourStartTime());
 		obj.put("ruleId", rule.getRuleGroupId());
