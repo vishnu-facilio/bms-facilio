@@ -26,9 +26,11 @@ import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.AssetDepartmentContext;
 import com.facilio.bmsconsole.context.AssetTypeContext;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
+import com.facilio.bmsconsole.context.PhotosContext;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.criteria.BuildingOperator;
 import com.facilio.bmsconsole.criteria.CommonOperators;
+import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
@@ -76,6 +78,29 @@ public class AssetsAPI {
 		return assetIds;
 	}
 	
+	public static Map<Long, PhotosContext> getAssetPhotoId(List<Long> assetIds) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ASSET_PHOTOS);
+		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.ASSET_PHOTOS);
+			Condition idCondition = new Condition();
+			idCondition.setField(modBean.getField("parentId", module.getName()));
+			idCondition.setOperator(PickListOperators.IS);
+			idCondition.setValue(StringUtils.join(assetIds, ","));
+			
+			SelectRecordsBuilder<PhotosContext> selectBuilder = new SelectRecordsBuilder<PhotosContext>()
+																		.moduleName(module.getName())
+																		.beanClass(PhotosContext.class)
+																		.select(fields)
+																		.table(module.getTableName())
+																		.andCondition(idCondition);	
+			List<PhotosContext> photos = selectBuilder.get();
+			Map<Long, PhotosContext> photoMap = new HashMap<Long, PhotosContext>();
+			for (PhotosContext photoContext : photos) {
+				photoMap.put(photoContext.getParentId(), photoContext);
+			}
+		return photoMap;
+		
+	}
 
 	
 	public static List<Long> getAssetIdsFromBaseSpaceIdsWithCategory(List<Long> baseSpaceIds,List<Long> categoryIds) throws Exception {

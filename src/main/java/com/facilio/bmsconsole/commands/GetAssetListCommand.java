@@ -18,6 +18,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.AssetTypeContext;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
+import com.facilio.bmsconsole.context.PhotosContext;
 import com.facilio.bmsconsole.context.ReadingDataMeta.ReadingInputType;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
@@ -146,7 +147,9 @@ public class GetAssetListCommand implements Command {
 			else {
 				Set<Long> spaceIds = new HashSet<Long>();
 				Set<Long> typeIds = new HashSet<Long>();
+				List<Long> assetIds = new ArrayList<Long>();
 				for(AssetContext asset: records) {
+					assetIds.add(asset.getId());
 					if (asset.getSpaceId() > 0) {
 						spaceIds.add(asset.getSpaceId());
 					}
@@ -156,7 +159,12 @@ public class GetAssetListCommand implements Command {
 				}
 				Map<Long, BaseSpaceContext> spaceMap = SpaceAPI.getBaseSpaceMap(spaceIds);
 				Map<Long, AssetTypeContext> assetTypeMap = AssetsAPI.getAssetType(typeIds);
+				Map<Long, PhotosContext> assetPhotoMap = AssetsAPI.getAssetPhotoId(assetIds);
 				for(AssetContext asset: records) {
+					PhotosContext phot = assetPhotoMap.get(asset.getId());
+					if (phot != null) {
+						asset.setPhotoId(phot.getPhotoId());
+					}
 					if(asset.getSpaceId() != -1) {
 						asset.setSpace(spaceMap.get(asset.getSpaceId()));
 					}
