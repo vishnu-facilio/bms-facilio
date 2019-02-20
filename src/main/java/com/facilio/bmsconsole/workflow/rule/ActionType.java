@@ -63,6 +63,7 @@ import com.facilio.events.constants.EventConstants;
 import com.facilio.events.context.EventContext;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericSelectRecordBuilder;
+import com.facilio.util.FacilioUtil;
 
 public enum ActionType {
 
@@ -642,15 +643,25 @@ public enum ActionType {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			WorkflowEventContext event = currentRule.getEvent();
 			List<FacilioField> fields = new ArrayList<>();
+			long currentTime = System.currentTimeMillis();
 			for (Object key : obj.keySet()) {
 				FacilioField field = modBean.getField((String) key, event.getModule().getName());
 				if (field != null) {
 					Object val = obj.get(key);
 					if (val != null) {
-						if (field.getDataTypeEnum() == FieldType.LOOKUP) {
-							String id = ((Map<String, Object>)val).get("id").toString();
-							val = FieldUtil.getEmptyLookupVal((LookupField) field, Long.parseLong(id));
+						switch (field.getDataTypeEnum()) {
+							case LOOKUP:
+								Object id = ((Map<String, Object>)val).get("id");
+								val = FieldUtil.getEmptyLookupVal((LookupField) field, FacilioUtil.parseLong(id));
+								break;
+							case DATE:
+							case DATE_TIME:
+								val = currentTime + FacilioUtil.parseLong(val);
+								break;
+							default:
+								break;
 						}
+						
 						fields.add(field);
 						if (field.isDefault()) {
 							BeanUtils.setProperty(currentRecord, field.getName(), val);

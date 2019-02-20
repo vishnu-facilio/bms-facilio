@@ -75,4 +75,23 @@ public class FacilioUtil {
 	    }
 	    return list;
 	}
+	
+	public static int parseInt (Object val) {
+		if (val instanceof Integer) {
+			return (int) val;
+		}
+		return new Double(val.toString()).intValue();
+	}
+	public static long parseLong (Object val) {
+		if (val instanceof Long) {
+			return (long) val;
+		}
+		return new Double(val.toString()).longValue();
+	}
+	public static double parseDouble (Object val) {
+		if (val instanceof Double) {
+			return (double) val;
+		}
+		return new Double(val.toString());
+	}
 }
