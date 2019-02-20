@@ -30,41 +30,49 @@ public class AddOrUpdateInventoryQuantityCommand implements Command {
 		FacilioModule inventoryCostModule = modBean.getModule(FacilioConstants.ContextNames.INVENTORY_COST);
 		List<FacilioField> inventoryCostFields = modBean.getAllFields(FacilioConstants.ContextNames.INVENTORY_COST);
 		Map<String, FacilioField> inventoryrCostsFieldMap = FieldFactory.getAsMap(inventoryCostFields);
-		long inventoryId = (long) context.get(FacilioConstants.ContextNames.INVENTORY_ID);
+		// long inventoryId = (long)
+		// context.get(FacilioConstants.ContextNames.INVENTORY_ID);
+		List<Long> inventoryIds = (List<Long>) context.get(FacilioConstants.ContextNames.INVENTORY_IDS);
 
-		SelectRecordsBuilder<InventoryCostContext> selectBuilder = new SelectRecordsBuilder<InventoryCostContext>()
-				.select(inventoryCostFields).table(inventoryCostModule.getTableName())
-				.moduleName(inventoryCostModule.getName()).beanClass(InventoryCostContext.class)
-				.andCondition(CriteriaAPI.getCondition(inventoryrCostsFieldMap.get("inventory"),
-						String.valueOf(inventoryId), PickListOperators.IS));
+		if (inventoryIds != null && !inventoryIds.isEmpty()) {
+			for (long inventoryId : inventoryIds) {
+				SelectRecordsBuilder<InventoryCostContext> selectBuilder = new SelectRecordsBuilder<InventoryCostContext>()
+						.select(inventoryCostFields).table(inventoryCostModule.getTableName())
+						.moduleName(inventoryCostModule.getName()).beanClass(InventoryCostContext.class)
+						.andCondition(CriteriaAPI.getCondition(inventoryrCostsFieldMap.get("inventory"),
+								String.valueOf(inventoryId), PickListOperators.IS));
 
-		List<InventoryCostContext> inventoryCosts = selectBuilder.get();
-		int quantity = 0;
-		if (inventoryCosts != null && !inventoryCosts.isEmpty()) {
-			for (InventoryCostContext invCost : inventoryCosts) {
-				quantity += invCost.getCurrentQuantity();
+				List<InventoryCostContext> inventoryCosts = selectBuilder.get();
+				int quantity = 0;
+				if (inventoryCosts != null && !inventoryCosts.isEmpty()) {
+					for (InventoryCostContext invCost : inventoryCosts) {
+						quantity += invCost.getCurrentQuantity();
+					}
+				}
+				FacilioModule inventoryModule = modBean.getModule(FacilioConstants.ContextNames.INVENTRY);
+				List<FacilioField> inventoryFields = modBean.getAllFields(FacilioConstants.ContextNames.INVENTRY);
+				Map<String, FacilioField> inventoryFieldMap = FieldFactory.getAsMap(inventoryFields);
+
+				SelectRecordsBuilder<InventryContext> inventoryselectBuilder = new SelectRecordsBuilder<InventryContext>()
+						.select(inventoryFields).table(inventoryModule.getTableName())
+						.moduleName(inventoryModule.getName()).beanClass(InventryContext.class)
+						.andCondition(CriteriaAPI.getIdCondition(inventoryId, inventoryModule));
+
+				List<InventryContext> inventory = inventoryselectBuilder.get();
+				InventryContext inven = new InventryContext();
+				if (inventory != null && !inventory.isEmpty()) {
+					inven = inventory.get(0);
+					inven.setQuantity(quantity);
+				}
+
+				UpdateRecordBuilder<InventryContext> updateBuilder = new UpdateRecordBuilder<InventryContext>()
+						.module(inventoryModule).fields(modBean.getAllFields(inventoryModule.getName()))
+						.andCondition(CriteriaAPI.getIdCondition(inven.getId(), inventoryModule));
+
+				updateBuilder.update(inven);
 			}
 		}
-		FacilioModule inventoryModule = modBean.getModule(FacilioConstants.ContextNames.INVENTRY);
-		List<FacilioField> inventoryFields = modBean.getAllFields(FacilioConstants.ContextNames.INVENTRY);
-		Map<String, FacilioField> inventoryFieldMap = FieldFactory.getAsMap(inventoryFields);
 
-		SelectRecordsBuilder<InventryContext> inventoryselectBuilder = new SelectRecordsBuilder<InventryContext>()
-				.select(inventoryFields).table(inventoryModule.getTableName()).moduleName(inventoryModule.getName())
-				.beanClass(InventryContext.class).andCondition(CriteriaAPI.getIdCondition(inventoryId, inventoryModule));
-
-		List<InventryContext> inventory = inventoryselectBuilder.get();
-		InventryContext inven = new InventryContext();
-		if (inventory != null && !inventory.isEmpty()) {
-			inven = inventory.get(0);
-			inven.setQuantity(quantity);
-		}
-		
-		UpdateRecordBuilder<InventryContext> updateBuilder = new UpdateRecordBuilder<InventryContext>()
-				.module(inventoryModule).fields(modBean.getAllFields(inventoryModule.getName()))
-				.andCondition(CriteriaAPI.getIdCondition(inven.getId(), inventoryModule));
-
-		updateBuilder.update(inven);
 		return false;
 	}
 

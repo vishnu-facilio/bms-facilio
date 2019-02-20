@@ -1259,7 +1259,7 @@
 	<package name="workorderItemsApi" namespace="/api/v2/workorderItems"
 		extends="v2Api">
 		<action name="delete"
-			class="com.facilio.bmsconsole.actions.WorkorderItemsAction" method="deleteWorkorderParts">
+			class="com.facilio.bmsconsole.actions.WorkorderItemsAction" method="deleteWorkorderItems">
 			<param name="moduleName">asset</param>
 			<param name="permission">CREATE</param>
 		</action>
@@ -1279,7 +1279,7 @@
 	<package name="workorderItemsList" namespace="/api/v2/workorderItemsList/parent"
 		extends="v2Api">
 		<action name="*"
-			class="com.facilio.bmsconsole.actions.WorkorderItemsAction" method="workorderPartsList">
+			class="com.facilio.bmsconsole.actions.WorkorderItemsAction" method="workorderItemsList">
 			<param name="moduleName">asset</param>
 			<param name="permission">READ</param>
 			<param name = "parentId">{1}</param>

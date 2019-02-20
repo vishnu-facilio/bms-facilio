@@ -496,4 +496,12 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new fetchInventoryCostDetailsCommand());
 		return c;
 	}
+	
+	public static Chain getWorkorderItemsList(){
+		Chain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForWorkorderItems());
+		c.addCommand(new LoadAllFieldsCommand());
+		c.addCommand(new GetWorkorderItemsListCommand());
+		return c;
+	}
 }

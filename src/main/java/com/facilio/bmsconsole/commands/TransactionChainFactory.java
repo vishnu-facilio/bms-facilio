@@ -1575,9 +1575,19 @@ public class TransactionChainFactory {
 			c.addCommand(SetTableNamesCommand.getForWorkorderItems());
 			c.addCommand(new AddOrUpdateWorkorderItemsCommand());
 			c.addCommand(new ExecuteAllWorkflowsCommand());
-//			c.addCommand(new AddOrUpdateWorkorderCostCommand());
+			c.addCommand(new InventoryCostQuantityRollUpCommand());
+			c.addCommand(getUpdateInventoryQuantityRollupChain());
 //			c.addCommand(new UpdateWorkorderTotalCostCommand());
 //			c.addCommand(getUpdateWorkOrderChain());
+			return c;
+		}
+		
+		public static Chain getDeleteWorkorderItemChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForConsumables());
+			c.addCommand(new GenericDeleteModuleDataCommand());
+			c.addCommand(new InventoryCostQuantityRollUpCommand());
+			c.addCommand(getUpdateInventoryQuantityRollupChain());
 			return c;
 		}
 }

@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.chain.Command;
@@ -56,6 +57,7 @@ public class AddOrUpdateWorkorderItemsCommand implements Command {
 			}
 			context.put(FacilioConstants.ContextNames.PARENT_ID, workorderitems.get(0).getParentId());
 			context.put(FacilioConstants.ContextNames.INVENTORY_ID, workorderitems.get(0).getInventory().getId());
+			context.put(FacilioConstants.ContextNames.INVENTORY_IDS, Collections.singletonList(workorderitems.get(0).getInventory().getId()));
 			context.put(FacilioConstants.ContextNames.RECORD_LIST, workorderitems);
 		}
 		return false;

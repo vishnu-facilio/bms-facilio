@@ -54,6 +54,7 @@ public class InventryAction extends FacilioAction{
 		addInventry.execute(context);
 		setResult(FacilioConstants.ContextNames.INVENTRY, inventry);
 		context.put(FacilioConstants.ContextNames.INVENTORY_ID, inventry.getId());
+		context.put(FacilioConstants.ContextNames.INVENTORY_IDS, Collections.singletonList(inventry.getId()));
 		return SUCCESS;
 	}
 	

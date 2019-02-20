@@ -760,6 +760,7 @@ public class FacilioConstants {
 		public static final String INVENTRIES = "inventries";
 		public static final String INVENTORY_STATUS = "inventoryStatus";
 		public static final String INVENTORY_ID = "inventoryId";
+		public static final String INVENTORY_IDS = "inventoryIds";
 		public static final String INVENTORY_COST = "inventoryCost";
 		public static final String INVENTORY_COSTS = "inventoryCosts";
 		

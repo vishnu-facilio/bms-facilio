@@ -50,6 +50,7 @@ public class InventoryCostAction extends FacilioAction{
 		context.put(FacilioConstants.ContextNames.RECORD, inventoryCost);
 		context.put(FacilioConstants.ContextNames.ID, inventoryCost.getId());
 		context.put(FacilioConstants.ContextNames.INVENTORY_ID, inventoryId);
+		context.put(FacilioConstants.ContextNames.INVENTORY_IDS, Collections.singletonList(inventoryId));
 		context.put(FacilioConstants.ContextNames.RECORD_ID, inventoryCost.getId());
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(inventoryCost.getId()));
 		context.put(FacilioConstants.ContextNames.WITH_CHANGE_SET, true);
@@ -82,6 +83,7 @@ public class InventoryCostAction extends FacilioAction{
 		context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.DELETE);
 		context.put(FacilioConstants.ContextNames.RECORD, inventoryCost);
 		context.put(FacilioConstants.ContextNames.INVENTORY_ID, inventoryId);
+		context.put(FacilioConstants.ContextNames.INVENTORY_IDS, Collections.singletonList(inventoryId));
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, inventoryCostsId);
 
 		Chain deleteInventoryChain = TransactionChainFactory.getDeleteInventoryCostChain();

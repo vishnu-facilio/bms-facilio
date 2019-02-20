@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -70,6 +71,7 @@ public class GetAddInventoryCostCommand implements Command{
 		context.put(FacilioConstants.ContextNames.INVENTORY_COST, inventoryCost);
 		context.put(FacilioConstants.ContextNames.RECORD_LIST, inventoryCost);
 		context.put(FacilioConstants.ContextNames.INVENTORY_ID, inventoryId);
+		context.put(FacilioConstants.ContextNames.INVENTORY_IDS, Collections.singletonList(inventoryId));
 		return false;
 	}
 	
