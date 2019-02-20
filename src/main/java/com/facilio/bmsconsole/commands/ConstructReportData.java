@@ -23,7 +23,6 @@ import com.facilio.bmsconsole.modules.LookupField;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.report.context.ReportContext;
-import com.facilio.report.context.ReportContext.ReportType;
 import com.facilio.report.context.ReportDataPointContext;
 import com.facilio.report.context.ReportFieldContext;
 import com.facilio.report.context.ReportGroupByField;
@@ -38,8 +37,6 @@ public class ConstructReportData implements Command {
 			reportContext = new ReportContext();
 		}
 		
-		
-		reportContext.setType(ReportType.READING_REPORT);
 		reportContext.setxAggr(0);
 		reportContext.setxAlias("X");
 		
