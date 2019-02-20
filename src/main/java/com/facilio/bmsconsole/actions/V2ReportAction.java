@@ -548,6 +548,13 @@ public class V2ReportAction extends FacilioAction {
 		return setReportResult(context);
 	}
 	
+	public String getReportFields() throws Exception {
+		JSONObject reportFields = ReportUtil.getReportFields(moduleName);
+		
+		setResult("meta", reportFields);
+		return SUCCESS;
+	}
+	
 	private ReportFilterMode xCriteriaMode;
 	public int getxCriteriaMode() {
 		if (xCriteriaMode != null) {

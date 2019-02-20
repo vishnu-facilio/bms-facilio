@@ -1,5 +1,6 @@
 package com.facilio.sql;
 
+import java.lang.reflect.Constructor;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -32,6 +33,7 @@ import com.facilio.unitconversion.UnitsUtil;
 public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, Object>> {
 	private static final Logger LOGGER = LogManager.getLogger(GenericSelectRecordBuilder.class.getName());
 	private static final int QUERY_TIME_THRESHOLD = 5000;
+	private static Constructor<?> constructor;
 
 	private List<FacilioField> selectFields;
 	private String tableName;
@@ -44,6 +46,15 @@ public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, 
 	private int offset = -1;
 	private boolean forUpdate = false;
 	private Connection conn = null;
+	
+	static {
+		String dbClass = AwsUtil.getDBClass();
+		try {
+			constructor = Class.forName(dbClass + ".SelectRecordBuilder").getConstructor(GenericSelectRecordBuilder.class);
+		} catch (NoSuchMethodException | SecurityException | ClassNotFoundException e) {
+			e.printStackTrace();
+		}
+	}
 
 	public GenericSelectRecordBuilder() {
 		
@@ -241,8 +252,7 @@ public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, 
 	}
 
 	private DBSelectRecordBuilder getDBSelectRecordBuilder() throws Exception {
-		String dbClass = AwsUtil.getDBClass();
-		return (DBSelectRecordBuilder) Class.forName(dbClass + ".SelectRecordBuilder").getConstructor(GenericSelectRecordBuilder.class).newInstance(this);
+		return (DBSelectRecordBuilder) constructor.newInstance(this);
 	}
 
 	@Override

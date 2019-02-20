@@ -1,5 +1,7 @@
+
 package com.facilio.sql;
 
+import java.lang.reflect.Constructor;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -23,6 +25,16 @@ public class GenericDeleteRecordBuilder implements DeleteBuilderIfc<Map<String, 
 	private StringBuilder joinBuilder = new StringBuilder();
 	private StringJoiner tablesToBeDeleted = new StringJoiner(",");
 	private Connection conn = null;
+	private static Constructor constructor;
+	
+	static {
+		String dbClass = AwsUtil.getDBClass();
+		try {
+			constructor = Class.forName(dbClass + ".DeleteRecordBuilder").getConstructor(GenericDeleteRecordBuilder.class);
+		} catch (NoSuchMethodException | SecurityException | ClassNotFoundException e) {
+			e.printStackTrace();
+		}
+	}
 	
 	public String getTableName() {
 		return tableName;
@@ -168,8 +180,7 @@ public class GenericDeleteRecordBuilder implements DeleteBuilderIfc<Map<String, 
 	}
 	
 	private DBDeleteRecordBuilder getDBDeleteRecordBuilder() throws Exception {
-		String dbClass = AwsUtil.getDBClass();
-		return (DBDeleteRecordBuilder) Class.forName(dbClass + ".DeleteRecordBuilder").getConstructor(GenericDeleteRecordBuilder.class).newInstance(this);
+		return (DBDeleteRecordBuilder) constructor.newInstance(this);
 	}
 	
 	private String constructDeleteStatement() {

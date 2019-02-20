@@ -388,7 +388,7 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 							.append(moduleIdField.getCompleteColumnName())
 							.append(",");
 
-			if (FieldUtil.isSiteIdFieldPresent(module)) {
+			if (FieldUtil.isSiteIdFieldPresent(module) && currentSiteId > 0) {
 				moduleGroupBy.append(siteIdField.getCompleteColumnName())
 					.append(",");
 			}

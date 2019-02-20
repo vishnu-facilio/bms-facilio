@@ -1,5 +1,6 @@
 package com.facilio.sql;
 
+import java.lang.reflect.Constructor;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -199,6 +200,16 @@ public class GenericUpdateRecordBuilder implements UpdateBuilderIfc<Map<String, 
 	}
 	
 	private List<NumberField> numberFields = new ArrayList<>();
+	private static Constructor constructor;
+	
+	static {
+		String dbClass = AwsUtil.getDBClass();
+		try {
+			constructor = Class.forName(dbClass + ".UpdateRecordBuilder").getConstructor(GenericUpdateRecordBuilder.class);
+		} catch (NoSuchMethodException | SecurityException | ClassNotFoundException e) {
+			e.printStackTrace();
+		}
+	}
 	
 	@Override
 	public int update(Map<String, Object> value) throws SQLException {
@@ -281,8 +292,7 @@ public class GenericUpdateRecordBuilder implements UpdateBuilderIfc<Map<String, 
 	}
 	
 	private DBUpdateRecordBuilder getDBUpdateRecordBuilder() throws Exception {
-		String dbClass = AwsUtil.getDBClass();
-		return (DBUpdateRecordBuilder) Class.forName(dbClass + ".UpdateRecordBuilder").getConstructor(GenericUpdateRecordBuilder.class).newInstance(this);
+		return (DBUpdateRecordBuilder) constructor.newInstance(this);
 	}
 
 	private String constructUpdateStatement() {
