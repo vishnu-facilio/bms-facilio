@@ -488,7 +488,12 @@ public class ProcessImportCommand implements Command {
 				return prop2;
 			}
 			case "users": {
-				User user = AccountUtil.getUserBean().getFacilioUser(value.toString());
+				User user = AccountUtil.getUserBean().getUserFromEmail(value.toString());
+				if(user == null) {
+					user = new User();
+					user.setEmail(value.toString());
+					AccountUtil.getUserBean().addRequester(AccountUtil.getCurrentOrg().getId(), user);
+				}
 				Map<String, Object> prop = FieldUtil.getAsProperties(user);
 				return prop;
 			}
