@@ -4300,7 +4300,7 @@ public class FieldFactory {
 		FacilioModule module = ModuleFactory.getInstanceMappingModule();
 		
 		List<FacilioField> fields = new ArrayList<>();
-		fields.add(getField("orgId", "ORGID", module, FieldType.NUMBER));
+//		fields.add(getField("orgId", "ORGID", module, FieldType.NUMBER));
 		fields.add(getField("device", "DEVICE_NAME", module, FieldType.STRING));
 		fields.add(getField("instance", "INSTANCE_NAME", module, FieldType.STRING));
 		fields.add(getField("assetId", "ASSET_ID", module, FieldType.NUMBER));

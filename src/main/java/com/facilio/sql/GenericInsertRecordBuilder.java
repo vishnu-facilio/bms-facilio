@@ -127,7 +127,6 @@ public class GenericInsertRecordBuilder implements InsertBuilderIfc<Map<String, 
 			for(Map<String, Object> value : values) {
 				
 				if(orgIdField!=null) {
-					System.out.println("orgid"+AccountUtil.getCurrentOrg().getId());
 					value.put(orgIdField.getName(),AccountUtil.getCurrentOrg().getId());
 				}
 				pstmt.clearParameters();
