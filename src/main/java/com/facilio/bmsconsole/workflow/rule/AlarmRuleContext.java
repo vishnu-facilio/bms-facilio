@@ -94,13 +94,4 @@ public class AlarmRuleContext {
 		}
 		return rules;
 	}
-	
-	List<ActionContext> addAlarmActions;
-
-	public List<ActionContext> getAddAlarmActions() {
-		return addAlarmActions;
-	}
-	public void setAddAlarmActions(List<ActionContext> addAlarmActions) {
-		this.addAlarmActions = addAlarmActions;
-	}
 }
