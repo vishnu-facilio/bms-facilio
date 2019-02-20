@@ -118,7 +118,12 @@ public class WorkOrderRequestEmailParser extends FacilioJob {
 			requester.setEmail(parser.getFrom());
 			
 			ticketContext.setSubject(parser.getSubject());
-			ticketContext.setDescription(StringUtils.trim(parser.getPlainContent()));
+			if (parser.getPlainContent() != null) {
+				ticketContext.setDescription(StringUtils.trim(parser.getPlainContent()));
+			} 
+			else {
+				ticketContext.setDescription(StringUtils.trim(parser.getHtmlContent()));
+			}
 			
 			List<DataSource> attachments = parser.getAttachmentList();
 			List<File> attachedFiles = null;

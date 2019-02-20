@@ -1078,15 +1078,16 @@ public static Map<Long, TicketContext> getTickets(String ids) throws Exception {
 		}
 		
 		switch (sourceType) { 
-		case THRESHOLD_ALARM:
-		case ANOMALY_ALARM:
-		case ALARM:
-			return;
-		default:
-			if (AccountUtil.getCurrentSiteId() != -1) {
-				ticket.setSiteId(AccountUtil.getCurrentSiteId());
-			}
-			break;
+			case THRESHOLD_ALARM:
+			case ANOMALY_ALARM:
+			case ALARM:
+			case ML_ALARM:
+				return;
+			default:
+				if (AccountUtil.getCurrentSiteId() != -1) {
+					ticket.setSiteId(AccountUtil.getCurrentSiteId());
+				}
+				break;
 		}
 	}
 

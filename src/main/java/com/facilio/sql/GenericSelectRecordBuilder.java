@@ -1,5 +1,6 @@
 package com.facilio.sql;
 
+import java.lang.reflect.Constructor;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -14,9 +15,12 @@ import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
+import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.FieldUtil;
@@ -33,10 +37,15 @@ public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, 
 	private static final Logger LOGGER = LogManager.getLogger(GenericSelectRecordBuilder.class.getName());
 	private static final int QUERY_TIME_THRESHOLD = 5000;
 
+	private static Constructor<?> constructor;
+
+
 	private List<FacilioField> selectFields;
+	private FacilioField orgIdField=null;
 	private String tableName;
 	private StringBuilder joinBuilder = new StringBuilder();
 	private WhereBuilder where = new WhereBuilder();
+	private WhereBuilder oldWhere = null;
 	private String groupBy;
 	private String having;
 	private String orderBy;
@@ -44,6 +53,15 @@ public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, 
 	private int offset = -1;
 	private boolean forUpdate = false;
 	private Connection conn = null;
+	
+	static {
+		String dbClass = AwsUtil.getDBClass();
+		try {
+			constructor = Class.forName(dbClass + ".SelectRecordBuilder").getConstructor(GenericSelectRecordBuilder.class);
+		} catch (NoSuchMethodException | SecurityException | ClassNotFoundException e) {
+			e.printStackTrace();
+		}
+	}
 
 	public GenericSelectRecordBuilder() {
 		
@@ -68,8 +86,10 @@ public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, 
 		}
 	}
 	
+	
+
 	@Override
-	public GenericSelectRecordBuilder select(List<FacilioField> fields) {
+	public GenericSelectRecordBuilder select(List<FacilioField> fields) { 
 		this.selectFields = fields;
 		return this;
 	}
@@ -241,15 +261,14 @@ public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, 
 	}
 
 	private DBSelectRecordBuilder getDBSelectRecordBuilder() throws Exception {
-		String dbClass = AwsUtil.getDBClass();
-		return (DBSelectRecordBuilder) Class.forName(dbClass + ".SelectRecordBuilder").getConstructor(GenericSelectRecordBuilder.class).newInstance(this);
+		return (DBSelectRecordBuilder) constructor.newInstance(this);
 	}
 
 	@Override
 	public List<Map<String, Object>> get() throws Exception {
 		long startTime = System.currentTimeMillis();
-		checkForNull(false);
-		
+		checkForNull();
+		handleOrgId();
 		List<Long> fileIds = null;
 		List<Map<String, Object>> records = new ArrayList<>();
 		
@@ -290,6 +309,11 @@ public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, 
 			
 			while(rs.next()) {
 				Map<String, Object> record = new HashMap<>();
+				if (orgIdField != null) {
+					System.out.print(AccountUtil.getCurrentOrg().getId());
+					record.put(orgIdField.getName(), AccountUtil.getCurrentOrg().getId());
+				}
+				 
 				for(FacilioField field : selectFields) {
 					Object val = FieldUtil.getObjectFromRS(field, rs);
 					if(field != null) {
@@ -344,10 +368,14 @@ public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, 
 				DBUtil.closeAll(conn, pstmt, rs);
 				conn = null;
 			}
-		}
+		} 
 		
 		if (fileIds != null && !records.isEmpty()) {
 			fetchFileUrl(records, fileIds);
+		}
+		
+		if(orgIdField != null) {
+			where = oldWhere;
 		}
 		return records;
 	}
@@ -374,7 +402,7 @@ public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, 
 		}
 	}
 	
-	private void checkForNull(boolean checkBean) {
+	private void checkForNull() {
 		if(tableName == null || tableName.isEmpty()) {
 			throw new IllegalArgumentException("Table Name cannot be empty");
 		}
@@ -383,6 +411,7 @@ public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, 
 			throw new IllegalArgumentException("Select Fields cannot be null or empty");
 		}
 	}
+	
 	
 	public String constructSelectStatement() {
 		try {
@@ -395,6 +424,19 @@ public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, 
 		return null;
 	}
 	
+	public void handleOrgId() {
+		if (!DBUtil.isTableWithoutOrgId(tableName)) {
+			orgIdField = DBUtil.getOrgIdField(tableName);
+		
+			/*WhereBuilder whereCondition = new WhereBuilder();
+			Condition orgCondition = CriteriaAPI.getCondition(orgIdField, String.valueOf(AccountUtil.getCurrentOrg().getOrgId()), NumberOperators.EQUALS);
+			
+			whereCondition.andCondition(orgCondition);
+			
+			oldWhere = where;
+			where = whereCondition.andCustomWhere(where.getWhereClause(), where.getValues());*/
+		}
+	}
 	private String sql;
 	@Override
 	public String toString() {

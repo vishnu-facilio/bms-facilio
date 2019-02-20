@@ -48,6 +48,7 @@ public class CreateSuperAdminCommand implements Command {
 		user.setServerName(serverName);
 		long ouid = AccountUtil.getUserBean().createUser(orgId, user);
 		context.put("ouid", ouid);
+		
 		return false;
 	}
 

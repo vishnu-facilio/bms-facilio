@@ -110,7 +110,7 @@ public class UpdateAlarmCommand implements Command {
 				if(alarmObj != null) {
 					context.put(FacilioConstants.ContextNames.RECORD, alarmObj);
 					
-					if (isCleared && AlarmAPI.isReadingAlarm(alarmObj.getSourceTypeEnum())) {
+					if (isCleared && AlarmAPI.isReadingRuleAlarm(alarmObj.getSourceTypeEnum())) {
 						if (AccountUtil.getCurrentOrg().getId() == 135) {
 							LOGGER.info("Updating meta as clear alarm : "+alarmObj.getId()+" for resource : "+(alarmObj.getResource() == null ? "" : alarmObj.getResource().getId()));
 						}

@@ -335,7 +335,7 @@ public class WorkflowRuleContext implements Serializable {
 	
 	public boolean evaluateCriteria (String moduleName, Object record, Map<String, Object> placeHolders, FacilioContext context) throws Exception {
 		boolean criteriaFlag = true;
-		if(criteria != null) {
+		if(criteria != null && record != null) {
 			criteriaFlag = criteria.computePredicate(placeHolders).evaluate(record);
 		}
 		return criteriaFlag;

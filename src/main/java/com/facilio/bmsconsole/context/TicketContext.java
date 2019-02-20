@@ -418,7 +418,8 @@ public class TicketContext extends ModuleBaseWithCustomFields {
 		WEB_REQUEST(7, "Web Request"),
 		ANOMALY_ALARM(9, "Anomaly Alarm"),
 		SERVICE_PORTAL_REQUEST(10, "Service Portal Request"),
-		WORKFLOW_RULE(11, "Workflow Rule")
+		WORKFLOW_RULE(11, "Workflow Rule"),
+		ML_ALARM(12, "Prediction Alarm")
 		;
 		
 		private int intVal;

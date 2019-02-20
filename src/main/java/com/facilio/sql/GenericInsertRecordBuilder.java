@@ -15,6 +15,9 @@ import org.apache.log4j.Logger;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.bmsconsole.criteria.Condition;
+import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.FieldUtil;
@@ -26,6 +29,7 @@ public class GenericInsertRecordBuilder implements InsertBuilderIfc<Map<String, 
 	private static final Logger LOGGER = LogManager.getLogger(GenericInsertRecordBuilder.class.getName());
 
 	private List<FacilioField> fields;
+	private FacilioField orgIdField = null;
 	private String tableName;
 	private List<Map<String, Object>> values = new ArrayList<>();
 	private String sql;
@@ -97,7 +101,9 @@ public class GenericInsertRecordBuilder implements InsertBuilderIfc<Map<String, 
 		}
 		
 		checkForNull();
+		handleInsertOrgFields();
 		splitFields();
+			
 		
 		handleFileFields();
 		FieldUtil.handleNumberFieldUnitConversion(numberFields, values);
@@ -122,8 +128,14 @@ public class GenericInsertRecordBuilder implements InsertBuilderIfc<Map<String, 
 			List<Long> ids = new ArrayList<>();
 			int itr = 0;
 			for(Map<String, Object> value : values) {
+				
+				if(orgIdField!=null) {
+					System.out.println("orgid"+AccountUtil.getCurrentOrg().getId());
+					value.put(orgIdField.getName(),AccountUtil.getCurrentOrg().getId());
+				}
 				pstmt.clearParameters();
 				int paramIndex = 1;
+				
 				for(FacilioField field : fields) {
 					if (isPrimaryField(field)) {
 						continue;
@@ -175,6 +187,10 @@ public class GenericInsertRecordBuilder implements InsertBuilderIfc<Map<String, 
 				DBUtil.closeAll(conn, pstmt, rs);
 				conn = null;
 			}
+		}
+		
+		if(orgIdField != null) {
+			fields.remove(orgIdField);
 		}
 	}
 	
@@ -436,6 +452,14 @@ public class GenericInsertRecordBuilder implements InsertBuilderIfc<Map<String, 
 		
 		if(fields == null || fields.size() < 1) {
 			throw new IllegalArgumentException("Fields cannot be null or empty");
+		}
+		
+	}
+	
+	public void handleInsertOrgFields() {
+		if (!DBUtil.isTableWithoutOrgId(tableName)) {
+			orgIdField = DBUtil.getOrgIdField(tableName);
+			fields.add(orgIdField);
 		}
 		
 	}

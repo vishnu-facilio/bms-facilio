@@ -46,7 +46,7 @@ public class AddCategoryOnAssetUpdateCommand implements Command {
 				
 				List<FacilioField> fields = modBean.getAllFields(moduleName).stream().filter(field -> field.getExtendedModuleId() == -1).collect(Collectors.toList());
 				fields.add(FieldFactory.getIdField(module));
-				fields.add(FieldFactory.getOrgIdField(module));
+				/*fields.add(FieldFactory.getOrgIdField(module));*/
 				fields.add(FieldFactory.getModuleIdField(module));
 				
 				if (FieldUtil.isSiteIdFieldPresent(module)) {

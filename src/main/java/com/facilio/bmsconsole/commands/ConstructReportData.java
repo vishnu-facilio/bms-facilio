@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
@@ -17,13 +18,13 @@ import com.facilio.bmsconsole.context.FormulaContext.DateAggregateOperator;
 import com.facilio.bmsconsole.context.FormulaContext.SpaceAggregateOperator;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.LookupField;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.report.context.ReportContext;
-import com.facilio.report.context.ReportContext.ReportType;
 import com.facilio.report.context.ReportDataPointContext;
 import com.facilio.report.context.ReportFieldContext;
 import com.facilio.report.context.ReportGroupByField;
@@ -34,14 +35,28 @@ public class ConstructReportData implements Command {
 	@Override
 	public boolean execute(Context context) throws Exception {
 		ReportContext reportContext = (ReportContext) context.get(FacilioConstants.ContextNames.REPORT);
+		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 		if (reportContext == null) {
 			reportContext = new ReportContext();
 		}
 		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = null;
+		if (reportContext.getModuleId() > 0) {
+			module = modBean.getModule(reportContext.getModuleId());
+		} else if (StringUtils.isNotEmpty(moduleName)) {
+			module = modBean.getModule(moduleName);
+		}
 		
-		reportContext.setType(ReportType.READING_REPORT);
+		if (module == null) {
+			throw new Exception("Module name should not be empty");
+		}
+		
+		context.put(FacilioConstants.ContextNames.MODULE, module);
+		
 		reportContext.setxAggr(0);
 		reportContext.setxAlias("X");
+		reportContext.setModuleId(module.getModuleId());
 		
 		JSONObject xAxisJSON = (JSONObject) context.get("x-axis");
 		JSONArray yAxisJSON = (JSONArray) context.get("y-axis");
@@ -58,10 +73,10 @@ public class ConstructReportData implements Command {
 		}
 		
 		if (yAxisJSON == null || yAxisJSON.size() == 0) {
-			addDataPointContext(reportContext, xAxisJSON, null, groupByJSONArray, criteria, sortFields, sortOrder, limit);
+			addDataPointContext(modBean, reportContext, xAxisJSON, null, groupByJSONArray, criteria, sortFields, sortOrder, limit);
 		} else {
 			for (int i = 0; i < yAxisJSON.size(); i++) {
-				addDataPointContext(reportContext, xAxisJSON, (Map) yAxisJSON.get(i), groupByJSONArray, criteria, sortFields, sortOrder, limit);
+				addDataPointContext(modBean, reportContext, xAxisJSON, (Map) yAxisJSON.get(i), groupByJSONArray, criteria, sortFields, sortOrder, limit);
 			}
 		}
 		
@@ -70,9 +85,7 @@ public class ConstructReportData implements Command {
 		return false;
 	}
 	
-	private void addDataPointContext(ReportContext reportContext, JSONObject xAxisJSON, Map yMap, JSONArray groupByJSONArray, Criteria criteria, JSONArray sortFields, Integer sortOrder, Integer limit) throws Exception {
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		
+	private void addDataPointContext(ModuleBean modBean, ReportContext reportContext, JSONObject xAxisJSON, Map yMap, JSONArray groupByJSONArray, Criteria criteria, JSONArray sortFields, Integer sortOrder, Integer limit) throws Exception {
 		ReportDataPointContext dataPointContext = new ReportDataPointContext();
 		
 		ReportFieldContext xAxis = new ReportFieldContext();

@@ -6,11 +6,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.chain.Chain;
 import org.apache.commons.lang3.StringUtils;
+import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.CommonReportUtil;
+import com.facilio.bmsconsole.commands.GetAllFieldsCommand;
 import com.facilio.bmsconsole.context.FormulaContext.AggregateOperator;
 import com.facilio.bmsconsole.context.WidgetChartContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
@@ -21,9 +24,13 @@ import com.facilio.bmsconsole.criteria.StringOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
+import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.FieldUtil;
+import com.facilio.bmsconsole.modules.LookupField;
 import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.bmsconsole.modules.NumberField;
 import com.facilio.bmsconsole.util.DashboardUtil;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
@@ -412,5 +419,49 @@ public class ReportUtil {
 		deleteRecordBuilder.table(ModuleFactory.getReportModule().getTableName())
 		.andCustomWhere("ID = ?", reportId);
 		deleteRecordBuilder.delete();
+	}
+
+	public static JSONObject getReportFields(String moduleName) throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.PARENT_CATEGORY_ID, -1l);
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+		
+		Chain c = FacilioChain.getNonTransactionChain();
+		c.addCommand(new GetAllFieldsCommand());
+		c.execute(context);
+		
+		FacilioModule resourceModule = ModuleFactory.getResourceModule();
+		
+		JSONObject jsonObject = (JSONObject) context.get("meta");
+		Map<String, List<FacilioField>> dimensionFieldMap = new HashMap<>();
+		List<FacilioField> metricFields = new ArrayList<>();
+		List<FacilioField> list = (List<FacilioField>) jsonObject.get("fields");
+		for (FacilioField field : list) {
+			if (field instanceof NumberField) {
+				metricFields.add(field);
+			} else if (field instanceof LookupField) {
+				if (((LookupField) field).getLookupModule() != null && ((LookupField) field).getLookupModule().equals(resourceModule)) {
+					addFieldInList(dimensionFieldMap, "resource_fields", field);
+				} else {
+					addFieldInList(dimensionFieldMap, moduleName, field);
+				}
+			} else if (field.getDataTypeEnum() == FieldType.DATE || field.getDataTypeEnum() == FieldType.DATE_TIME) {
+				addFieldInList(dimensionFieldMap, "time", field);
+			}
+		}
+		jsonObject.put("dimension", dimensionFieldMap);
+		jsonObject.put("metrics", metricFields);
+		
+		System.out.println(context);
+		return jsonObject;
+	}
+	
+	private static void addFieldInList(Map<String, List<FacilioField>> map, String name, FacilioField field) {
+		List<FacilioField> list = (List<FacilioField>) map.get(name);
+		if (list == null) {
+			list = new ArrayList<>();
+			map.put(name, list);
+		}
+		list.add(field);
 	}
 }

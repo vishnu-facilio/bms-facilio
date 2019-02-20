@@ -38,11 +38,10 @@ import com.facilio.timeseries.TimeSeriesAPI;
 public class TimeSeriesProcessor extends FacilioProcessor {
 
     private final List<FacilioField> fields = new ArrayList<>();
-    private final Condition orgIdCondition = new Condition();
     private final FacilioField deviceIdField = new FacilioField();
     private final HashMap<String, Long> deviceMap = new HashMap<>();
     private FacilioModule deviceDetailsModule;
-    private final FacilioField orgIdField = FieldFactory.getOrgIdField();
+    /*private final FacilioField orgIdField = FieldFactory.getOrgIdField();*/
 
 
     private static final Logger LOGGER = LogManager.getLogger(TimeSeriesProcessor.class.getName());
@@ -64,11 +63,11 @@ public class TimeSeriesProcessor extends FacilioProcessor {
     private void initializeModules() {
 
         deviceDetailsModule = ModuleFactory.getDeviceDetailsModule();
-        orgIdField.setModule(deviceDetailsModule);
+        //orgIdField.setModule(deviceDetailsModule);
 
-        orgIdCondition.setField(orgIdField);
-        orgIdCondition.setOperator(NumberOperators.EQUALS);
-        orgIdCondition.setValue(String.valueOf(getOrgId()));
+        //orgIdCondition.setField(orgIdField);
+        //orgIdCondition.setOperator(NumberOperators.EQUALS);
+        //orgIdCondition.setValue(String.valueOf(getOrgId()));
 
         deviceIdField.setName("deviceId");
         deviceIdField.setDataType(FieldType.STRING);
@@ -178,7 +177,7 @@ public class TimeSeriesProcessor extends FacilioProcessor {
                 HashMap<String, Object> map = new HashMap<>();
                 map.put("lastUpdatedTime", System.currentTimeMillis());
                 GenericUpdateRecordBuilder builder = new GenericUpdateRecordBuilder().table(deviceDetailsModule.getTableName())
-                        .fields(fields).andCondition(getDeviceIdCondition(deviceId)).andCondition(orgIdCondition);
+                        .fields(fields).andCondition(getDeviceIdCondition(deviceId));
                 builder.update(map);
             }
         } catch (Exception e) {
@@ -191,7 +190,7 @@ public class TimeSeriesProcessor extends FacilioProcessor {
     }
 
     private HashMap<String, Long> getDeviceMap() {
-        GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder().table(deviceDetailsModule.getTableName()).andCondition(orgIdCondition).select(fields);
+        GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder().table(deviceDetailsModule.getTableName()).select(fields);
         HashMap<String, Long> deviceData = new HashMap<>();
         try {
             List<Map<String, Object>> data = builder.get();

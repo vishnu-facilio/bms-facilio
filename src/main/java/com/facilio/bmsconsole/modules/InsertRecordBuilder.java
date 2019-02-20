@@ -150,7 +150,7 @@ public class InsertRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 					currentFields = new ArrayList<>();
 				}
 				currentFields.add(FieldFactory.getIdField(currentModule));
-				currentFields.add(FieldFactory.getOrgIdField(currentModule));
+				/*currentFields.add(FieldFactory.getOrgIdField(currentModule));*/
 				currentFields.add(FieldFactory.getModuleIdField(currentModule));
 				
 				if (FieldUtil.isSiteIdFieldPresent(currentModule)) {

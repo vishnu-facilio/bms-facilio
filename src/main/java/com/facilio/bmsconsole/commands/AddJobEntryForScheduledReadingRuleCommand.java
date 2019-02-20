@@ -2,7 +2,6 @@ package com.facilio.bmsconsole.commands;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
-import org.joda.time.DateTime;
 
 import com.facilio.bmsconsole.util.DateTimeUtil;
 import com.facilio.bmsconsole.workflow.rule.ActivityType;

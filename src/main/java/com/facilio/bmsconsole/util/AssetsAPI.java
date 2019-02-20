@@ -76,6 +76,7 @@ public class AssetsAPI {
 		return assetIds;
 	}
 	
+
 	
 	public static List<Long> getAssetIdsFromBaseSpaceIdsWithCategory(List<Long> baseSpaceIds,List<Long> categoryIds) throws Exception {
 		
@@ -128,6 +129,7 @@ public class AssetsAPI {
 		}
 		return -1;
 	}
+
 	
 	public static AssetContext getAssetInfo(long assetId) throws Exception
 	{

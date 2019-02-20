@@ -159,6 +159,7 @@ public class EventToAlarmCommand implements Command {
 			String msgKey = null;
 			switch (type) {
 				case THRESHOLD_ALARM:
+				case ML_ALARM:
 					msgKey = event.getResourceId()+"_"+event.getAdditionInfo().get("ruleId");
 					break;
 				case ANOMALY_ALARM:
@@ -188,14 +189,22 @@ public class EventToAlarmCommand implements Command {
 		
 		if (event.getAdditionInfo() != null) {
 			Long sourceType = (Long) FieldUtil.castOrParseValueAsPerType(FieldType.NUMBER, event.getAdditionInfo().get("sourceType"));
-			if (sourceType != null && (sourceType == SourceType.THRESHOLD_ALARM.getIntVal() || sourceType == SourceType.ANOMALY_ALARM.getIntVal())) {
-				alarm.put("sourceType", sourceType);
-				alarm.put("startTime", event.getAdditionInfo().get("startTime"));
-				alarm.put("endTime", event.getAdditionInfo().get("endTime"));
-				alarm.put("readingMessage", event.getAdditionInfo().get("readingMessage"));
-				alarm.put("readingDataId", event.getAdditionInfo().get("readingDataId"));
-				alarm.put("readingVal", event.getAdditionInfo().get("readingVal"));
-				alarm.put("ruleId", event.getAdditionInfo().get("ruleId"));
+			if (sourceType != null) {
+				SourceType type = SourceType.getType(sourceType.intValue());
+				switch (type) {
+					case THRESHOLD_ALARM:
+					case ANOMALY_ALARM:
+						alarm.put("sourceType", sourceType);
+						alarm.put("startTime", event.getAdditionInfo().get("startTime"));
+						alarm.put("endTime", event.getAdditionInfo().get("endTime"));
+						alarm.put("readingMessage", event.getAdditionInfo().get("readingMessage"));
+						alarm.put("readingDataId", event.getAdditionInfo().get("readingDataId"));
+						alarm.put("readingVal", event.getAdditionInfo().get("readingVal"));
+						alarm.put("ruleId", event.getAdditionInfo().get("ruleId"));
+						break;
+					default:
+						break;
+				}
 			}
 			alarm.put("autoClear", event.getAdditionInfo().get("autoClear"));
 		}

@@ -174,11 +174,11 @@ public class DeleteRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 	}
 	
 	private WhereBuilder getWhereWithOrgIdAndModuleId(FacilioModule module) {
-		FacilioField orgIdField = FieldFactory.getOrgIdField(module);
+		/*FacilioField orgIdField = FieldFactory.getOrgIdField(module);*/
 		FacilioField moduleIdField = FieldFactory.getModuleIdField(module);
 		WhereBuilder whereCondition = new WhereBuilder();
-		Condition orgCondition = CriteriaAPI.getCondition(orgIdField, String.valueOf(AccountUtil.getCurrentOrg().getOrgId()), NumberOperators.EQUALS);
-		whereCondition.andCondition(orgCondition);
+		/*Condition orgCondition = CriteriaAPI.getCondition(orgIdField, String.valueOf(AccountUtil.getCurrentOrg().getOrgId()), NumberOperators.EQUALS);*/
+		/*whereCondition.andCondition(orgCondition);*/
 		
 		Condition moduleCondition = CriteriaAPI.getCondition(moduleIdField, String.valueOf(module.getModuleId()), NumberOperators.EQUALS);
 		whereCondition.andCondition(moduleCondition);

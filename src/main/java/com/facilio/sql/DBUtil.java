@@ -8,14 +8,21 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Properties;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
+import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.FieldType;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.transaction.FacilioConnectionPool;
 
 public class DBUtil {
@@ -24,6 +31,7 @@ public class DBUtil {
 	private static final Properties PROPERTIES = new Properties();
 	private static Boolean executeSingleStatement;
 	private static final Object LOCK = new Object();
+	private static final List<String> TABLES_WITHOUT_ORGID= Collections.unmodifiableList(initOrgIdNotRequired());
 
 	public static void close (Statement stmt) {
 		if(stmt != null) {
@@ -45,6 +53,39 @@ public class DBUtil {
 				LOGGER.log(Level.ERROR, "Exception while closing connection ", e);
 			}
 		}
+	}
+	
+	
+	private static List<String> initOrgIdNotRequired() {
+		
+		List<String> tablesWithoutOrgId = new ArrayList<>();
+		
+		tablesWithoutOrgId.add("Users");
+		tablesWithoutOrgId.add("UserSessions");
+		tablesWithoutOrgId.add("TVPasscodes");
+		tablesWithoutOrgId.add("server_info");
+		tablesWithoutOrgId.add("faciliousers");
+		tablesWithoutOrgId.add("faciliorequestors");
+		tablesWithoutOrgId.add("Service");
+		tablesWithoutOrgId.add("ClientApp");
+		tablesWithoutOrgId.add("Organizations");
+		
+
+		return tablesWithoutOrgId;
+	}
+	
+	static boolean isTableWithoutOrgId(String tableName) {
+		return TABLES_WITHOUT_ORGID.contains(tableName);
+	}
+	
+	static FacilioField getOrgIdField(String tableName) {
+		FacilioField field = new FacilioField();
+		field.setName("orgId");
+		field.setDisplayName("Org Id");
+		field.setDataType(FieldType.NUMBER);
+		field.setColumnName(tableName+".ORGID");
+		
+		return field;
 	}
 	
 	public static void close (ResultSet rs) {

@@ -63,6 +63,7 @@ import com.facilio.events.constants.EventConstants;
 import com.facilio.events.context.EventContext;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericSelectRecordBuilder;
+import com.facilio.util.FacilioUtil;
 
 public enum ActionType {
 
@@ -240,7 +241,14 @@ public enum ActionType {
 					}
 
 					if (currentRule instanceof ReadingRuleContext) {
-						AlarmAPI.addReadingAlarmProps(obj, (ReadingRuleContext) currentRule,(ReadingContext) currentRecord);
+						switch (((ReadingRuleContext) currentRule).getReadingRuleTypeEnum()) {
+							case THRESHOLD_RULE:
+								AlarmAPI.addReadingAlarmProps(obj, (ReadingRuleContext) currentRule,(ReadingContext) currentRecord);
+								break;
+							case ML_RULE:
+								AlarmAPI.addMLAlarmProps(obj, (ReadingRuleContext) currentRule);
+								break;
+						}
 					}
 
 					FacilioContext addEventContext = new FacilioContext();
@@ -249,7 +257,7 @@ public enum ActionType {
 					getAddEventChain.execute(addEventContext);
 					EventContext event = (EventContext) addEventContext.get(EventConstants.EventContextNames.EVENT);
 					if (currentRule instanceof ReadingRuleContext) {
-						processAlarmMeta((ReadingRuleContext) currentRule, (ReadingContext) currentRecord, event, context);
+						processAlarmMeta((ReadingRuleContext) currentRule, (long) obj.get("resourceId"), (long) obj.get("timestamp"), event, context);
 					}
 				} catch (Exception e) {
 					LOGGER.error("Exception occurred ", e);
@@ -258,7 +266,7 @@ public enum ActionType {
 		}
 		
 		//Assuming readings will come in ascending order of time
-		private void processAlarmMeta (ReadingRuleContext rule, ReadingContext reading, EventContext event, Context context) throws Exception {
+		private void processAlarmMeta (ReadingRuleContext rule, long resourceId, long time, EventContext event, Context context) throws Exception {
 			if (event.getAlarmId() != -1) {
 				boolean isHistorical = true;
 				Map<Long, ReadingRuleAlarmMeta> metaMap = (Map<Long, ReadingRuleAlarmMeta>) context.get(FacilioConstants.ContextNames.READING_RULE_ALARM_META);
@@ -267,17 +275,17 @@ public enum ActionType {
 					isHistorical = false;
 				}
 				if (isHistorical) {/*if (AccountUtil.getCurrentOrg().getId() == 135) {*/
-					LOGGER.info("Meta map of rule : "+rule.getId()+" when creating alarm for resource "+reading.getParentId()+" at time : "+reading.getTtime()+" : "+metaMap);
+					LOGGER.info("Meta map of rule : "+rule.getId()+" when creating alarm for resource "+resourceId+" at time : "+time+" : "+metaMap);
 				}
 					
 				if (metaMap != null) {
-					ReadingRuleAlarmMeta alarmMeta = metaMap.get(reading.getParentId());
+					ReadingRuleAlarmMeta alarmMeta = metaMap.get(resourceId);
 					if (alarmMeta == null) {
-						metaMap.put(reading.getParentId(), addAlarmMeta(event.getAlarmId(), reading.getParentId(), rule, isHistorical));
+						metaMap.put(resourceId, addAlarmMeta(event.getAlarmId(), resourceId, rule, isHistorical));
 					}
 					else if (alarmMeta.isClear()) {
 						if (isHistorical) {/*if (AccountUtil.getCurrentOrg().getId() == 135) {*/
-							LOGGER.info("Updating meta with alarm id : "+event.getAlarmId()+" for rule : "+rule.getId()+" for resource : "+reading.getParentId());
+							LOGGER.info("Updating meta with alarm id : "+event.getAlarmId()+" for rule : "+rule.getId()+" for resource : "+resourceId);
 						}
 						alarmMeta.setAlarmId(event.getAlarmId());
 						alarmMeta.setClear(false);
@@ -289,7 +297,7 @@ public enum ActionType {
 				else {
 					metaMap = new HashMap<>();
 					rule.setAlarmMetaMap(metaMap);
-					metaMap.put(reading.getParentId(), addAlarmMeta(event.getAlarmId(), reading.getParentId(), rule, isHistorical));
+					metaMap.put(resourceId, addAlarmMeta(event.getAlarmId(), resourceId, rule, isHistorical));
 				}
 			}
 		}
@@ -635,15 +643,25 @@ public enum ActionType {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			WorkflowEventContext event = currentRule.getEvent();
 			List<FacilioField> fields = new ArrayList<>();
+			long currentTime = System.currentTimeMillis();
 			for (Object key : obj.keySet()) {
 				FacilioField field = modBean.getField((String) key, event.getModule().getName());
 				if (field != null) {
 					Object val = obj.get(key);
 					if (val != null) {
-						if (field.getDataTypeEnum() == FieldType.LOOKUP) {
-							String id = ((Map<String, Object>)val).get("id").toString();
-							val = FieldUtil.getEmptyLookupVal((LookupField) field, Long.parseLong(id));
+						switch (field.getDataTypeEnum()) {
+							case LOOKUP:
+								Object id = ((Map<String, Object>)val).get("id");
+								val = FieldUtil.getEmptyLookupVal((LookupField) field, FacilioUtil.parseLong(id));
+								break;
+							case DATE:
+							case DATE_TIME:
+								val = currentTime + FacilioUtil.parseLong(val);
+								break;
+							default:
+								break;
 						}
+						
 						fields.add(field);
 						if (field.isDefault()) {
 							BeanUtils.setProperty(currentRecord, field.getName(), val);

@@ -64,11 +64,11 @@ public class SiteContext extends BaseSpaceContext {
 		return null;
 	}
 	
-	private String weatherStation;
-	public String getWeatherStation() {
+	private Long weatherStation;
+	public Long getWeatherStation() {
 		return weatherStation;
 	}
-	public void setWeatherStation(String weatherStation) {
+	public void setWeatherStation(Long weatherStation) {
 		this.weatherStation = weatherStation;
 	}
 	

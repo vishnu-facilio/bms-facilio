@@ -20,9 +20,11 @@ import com.facilio.bmsconsole.context.AlarmContext;
 import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ResourceContext;
+import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
+import com.facilio.bmsconsole.criteria.Operator;
 import com.facilio.bmsconsole.criteria.PickListOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
@@ -39,6 +41,8 @@ import com.facilio.events.constants.EventConstants;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
+import com.facilio.workflows.context.ExpressionContext;
+import com.facilio.workflows.context.WorkflowContext;
 
 public class ReadingRuleAPI extends WorkflowRuleAPI {
 	
@@ -387,11 +391,87 @@ public class ReadingRuleAPI extends WorkflowRuleAPI {
 		}
 	}
 	
+	public static void getRuleConditionText(ReadingRuleContext rule) throws Exception {
+		StringBuilder msgBuilder = new StringBuilder();
+		switch (rule.getThresholdTypeEnum()) {
+		case SIMPLE:
+			appendSimpleMsg(msgBuilder, rule);
+			appendOccurences(msgBuilder, rule);
+			break;
+		case AGGREGATION:
+			appendSimpleMsg(msgBuilder, rule);
+			break;
+//		case BASE_LINE:
+//			appendBaseLineMsg(msgBuilder, operator, rule);
+//			break;
+//		case FLAPPING:
+//			appendFlappingMsg(msgBuilder, rule);
+//			break;
+//		case ADVANCED:
+//			appendAdvancedMsg(msgBuilder, rule, reading);
+//			break;
+//		case FUNCTION:
+//			appendFunctionMsg(msgBuilder, rule, reading);
+//			break;
+	}
+	}
+	
+	private static void appendOccurences(StringBuilder msgBuilder, ReadingRuleContext rule) {
+		WorkflowContext workflow = rule.getWorkflow();
+		if (workflow != null) {
+			ExpressionContext expression = (ExpressionContext) workflow.getExpressions().get(0);
+			if (expression.getAggregateCondition() != null && !expression.getAggregateCondition().isEmpty()) {
+				msgBuilder.append(" for "+rule.getPercentage()+ " time(s)");
+			}
+		}
+	}
+
+	private static void appendSimpleMsg(StringBuilder msgBuilder, ReadingRuleContext rule) throws Exception {
+		
+		String fieldName = null;
+		
+		if(rule.getAggregation() != null) {
+			fieldName = rule.getAggregation() + "(" + rule.getReadingField().getDisplayName() +")";
+		}
+		else {
+			fieldName = rule.getReadingField().getDisplayName();
+		}
+		msgBuilder.append(fieldName);
+		
+		if(rule.getDateRange() > 0) {
+			msgBuilder.append(" for "+rule.getDateRange()+ " hour(s)");
+		}
+		
+		NumberOperators operator = (NumberOperators) Operator.OPERATOR_MAP.get(rule.getOperatorId());
+		msgBuilder.append(" "+operator.getOperator());
+		
+		String value = null;
+		if (rule.getWorkflow() != null) {
+			
+			ExpressionContext expr = (ExpressionContext) rule.getWorkflow().getExpressions().get(0);
+
+			if (expr.getAggregateCondition() != null && !expr.getAggregateCondition().isEmpty()) {
+				Condition aggrCondition = expr.getAggregateCondition().get(0);
+				value = aggrCondition.getValue();
+			}
+		}
+		if (value == null) {
+			value = rule.getPercentage();
+		}
+		
+		if ("${previousValue}".equals(value)) {
+			msgBuilder.append(" previous value");
+		}
+		else {
+			msgBuilder.append(" "+value);
+		}
+		
+	}
+
 	public static void addTriggerAndClearRule(AlarmRuleContext alarmRule) throws Exception {
 		List<ReadingRuleContext> alarmTriggerRules = alarmRule.getAlarmTriggerRules();
 		ReadingRuleContext alarmClear = alarmRule.getAlarmClearRule();
 		ReadingRuleContext preRequsiteRule = alarmRule.getPreRequsite();
-		long ruleId = preRequsiteRule.getId();
 		if(alarmTriggerRules != null) {
 			
 			for(ReadingRuleContext alarmTriggerRule :alarmTriggerRules) {
@@ -406,32 +486,32 @@ public class ReadingRuleAPI extends WorkflowRuleAPI {
 				alarmTriggerRules.add(alarmClear);
 			}
 			
-			WorkflowRuleContext temp = preRequsiteRule;
-			boolean isFirst = true;
-			int i=0;
 			for(ReadingRuleContext alarmTriggerRule :alarmTriggerRules) {
 				
-				i++;
-				if(isFirst) {
-					isFirst = false;
-					alarmTriggerRule.setOnSuccess(true);
-				}
-				else {
-					alarmTriggerRule.setOnSuccess(false);
-				}
+				alarmTriggerRule.setOnSuccess(true);
+				
 				alarmTriggerRule.setRuleGroupId(preRequsiteRule.getId());
-				alarmTriggerRule.setParentRuleId(temp.getId());
+				alarmTriggerRule.setParentRuleId(preRequsiteRule.getId());
 				alarmTriggerRule.setStatus(true);
 				alarmTriggerRule.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
 				
-				if(i == alarmTriggerRules.size() && alarmRule.getIsAutoClear()) {
-					alarmTriggerRule.setClearAlarm(true);
-				}
-				ruleId = WorkflowRuleAPI.addWorkflowRule(alarmTriggerRule);
-				
-				temp = alarmTriggerRule;
+				WorkflowRuleAPI.addWorkflowRule(alarmTriggerRule);
 			}
 			
+			if(alarmRule.isClearAlarmOnPreRequsiteFail() && alarmClear != null) {
+				alarmClear.setId(-1);
+				alarmClear.setRuleType(WorkflowRuleContext.RuleType.ALARM_CLEAR_RULE);
+				alarmClear.setEventId(preRequsiteRule.getEventId());
+				
+				alarmClear.setOnSuccess(false);
+				
+				alarmClear.setRuleGroupId(preRequsiteRule.getId());
+				alarmClear.setParentRuleId(preRequsiteRule.getId());
+				alarmClear.setStatus(true);
+				alarmClear.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
+				
+				WorkflowRuleAPI.addWorkflowRule(alarmClear);
+			}
 		}
 	}
 }

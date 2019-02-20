@@ -191,7 +191,7 @@ public class EventConstants {
 			List<FacilioField> fields = new ArrayList<>();
 			
 			fields.add(FieldFactory.getIdField(module));
-			fields.add(FieldFactory.getOrgIdField(module));
+			/*fields.add(FieldFactory.getOrgIdField(module));*/
 			fields.add(FieldFactory.getSiteIdField(module));
 			
 			FacilioField source = new FacilioField();
@@ -348,7 +348,7 @@ public class EventConstants {
 			List<FacilioField> fields = new ArrayList<>();
 			
 			fields.add(FieldFactory.getIdField(module));
-			fields.add(FieldFactory.getOrgIdField(module));
+			/*fields.add(FieldFactory.getOrgIdField(module));*/
 			
 			FacilioField isEventEnabled = new FacilioField();
 			isEventEnabled.setName("isEventEnabled");
@@ -372,7 +372,7 @@ public class EventConstants {
 			
 			List<FacilioField> fields = new ArrayList<>();
 			fields.add(FieldFactory.getIdField(module));
-			fields.add(FieldFactory.getOrgIdField(module));
+			/*fields.add(FieldFactory.getOrgIdField(module));*/
 			fields.add(FieldFactory.getNameField(module));
 			fields.add(FieldFactory.getField("description", "DESCRIPTION", module, FieldType.STRING));
 			fields.add(FieldFactory.getField("criteriaId", "CRITERIA_ID", module, FieldType.LOOKUP));
@@ -397,7 +397,7 @@ public class EventConstants {
 			id.setModule(module);
 			fields.add(id);
 			
-			fields.add(FieldFactory.getOrgIdField(module));
+			/*fields.add(FieldFactory.getOrgIdField(module));*/
 			fields.add(FieldFactory.getNameField(module));
 			
 			FacilioField ruleOrder = new FacilioField();
@@ -474,7 +474,7 @@ public class EventConstants {
 			eventToAlarmFieldMappingId.setModule(module);
 			fields.add(eventToAlarmFieldMappingId);
 			
-			fields.add(FieldFactory.getOrgIdField(module));
+			/*fields.add(FieldFactory.getOrgIdField(module));*/
 			
 			FacilioField type = new FacilioField();
 			type.setName("type");
@@ -526,7 +526,7 @@ public class EventConstants {
 			List<FacilioField> fields = new ArrayList<>();
 			
 			fields.add(FieldFactory.getIdField(module));
-			fields.add(FieldFactory.getOrgIdField(module));
+			/*fields.add(FieldFactory.getOrgIdField(module));*/
 			
 			FacilioField node = new FacilioField();
 			node.setName(EventConstants.EventContextNames.SOURCE);

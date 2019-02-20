@@ -56,7 +56,7 @@ public class OrgBeanImpl implements OrgBean {
 		
 		long orgId = (Long) props.get("id");
 		
-		AccountUtil.getRoleBean().createSuperdminRoles(orgId);
+		AccountUtil.getRoleBean(orgId).createSuperdminRoles(orgId);
 		
 		return orgId;
 	}
@@ -253,7 +253,7 @@ public class OrgBeanImpl implements OrgBean {
 				.on("Users.USERID = ORG_Users.USERID")
 				.leftJoin("Shift_User_Rel")
 				.on("ORG_Users.ORG_USERID = Shift_User_Rel.ORG_USERID")
-				.andCustomWhere("ORGID = ? AND USER_TYPE = ? AND DELETED_TIME = -1", orgId, AccountConstants.UserType.USER.getValue());
+				.andCustomWhere("ORG_Users.ORGID = ? AND USER_TYPE = ? AND DELETED_TIME = -1", orgId, AccountConstants.UserType.USER.getValue());
 		
 		User currentUser = AccountUtil.getCurrentAccount().getUser();
 		if(currentUser == null){
@@ -413,6 +413,10 @@ public class OrgBeanImpl implements OrgBean {
 	public User getSuperAdmin(long orgId) throws Exception {
 		
 		Role superAdminRole = AccountUtil.getRoleBean().getRole(orgId, AccountConstants.DefaultRole.SUPER_ADMIN, false);
+		
+		if(superAdminRole == null) {
+			return null;
+		}
 		
 		List<FacilioField> fields = new ArrayList<>();
 		fields.addAll(AccountConstants.getUserFields());

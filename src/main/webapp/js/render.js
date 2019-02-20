@@ -1,35 +1,30 @@
 var page = require("webpage").create();
 system = require('system'),
-
-var url = system.args[1];
-var output = system.args[2];
-var token = system.args[3];
-var domainName = system.args[4];
-
 phantom.addCookie({
      name   : 'fc.idToken.facilio',
-     value  : token,
-     domain : domainName
+     value  : system.args[3],
+     domain : system.args[4],
+     path   : '/'
 });
 
 phantom.addCookie({
     name   : 'fc.overrideSession',
     value  : 'true',
-    domain : domainName,
+    domain : system.args[4],
     path   : '/'
 });
 
 phantom.addCookie({
      name   : 'fc.idToken',
-     value  : encodeURIComponent('facilio ' + token),
-     domain : domainName,
+     value  : 'facilio ' + system.args[3],
+     domain : system.args[4],
      path   : '/'
 });
 
 phantom.addCookie({
      name   : 'fc.authtype',
      value  : 'facilio',
-     domain : domainName,
+     domain : system.args[4],
      path   : '/'
 });
 
@@ -41,8 +36,11 @@ page.paperSize = {
     }
 }
 
+var pageurl=system.args[1];
+var output=system.args[2];
+
 page.viewportSize = { width:1024, height:768 };
-page.open(url, function (status) {
+page.open(pageurl, function (status) {
         if (status !== 'success') {
             console.log('Unable to load the address!');
             phantom.exit(1);

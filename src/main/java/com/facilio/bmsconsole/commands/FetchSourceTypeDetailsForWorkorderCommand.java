@@ -20,13 +20,13 @@ public class FetchSourceTypeDetailsForWorkorderCommand implements Command {
 			switch(workOrder.getSourceTypeEnum()) {
 				case THRESHOLD_ALARM:
 				case ALARM:
-				case ANOMALY_ALARM: {
+				case ANOMALY_ALARM: 
+				case ML_ALARM :
 					List<AlarmContext> alarms = AlarmAPI.getActiveAlarmsFromWoId(Collections.singletonList(workOrder.getId()));
 					if (alarms != null && !alarms.isEmpty()) {
 						workOrder.setAlarm(alarms.get(0));
 					}
-				}
-				break;
+					break;
 			}
 		}
 		return false;

@@ -79,13 +79,7 @@ public class FieldUtil {
 				break;
 			case DECIMAL:
 				if(value != null && !(value instanceof String && ((String)value).isEmpty())) {
-					double val;
-					if(value instanceof Double) {
-						val = (double) value;
-					}
-					else {
-						val = Double.parseDouble(value.toString());
-					}
+					double val = FacilioUtil.parseDouble(value);
 					if(val != -1 && val != -99) {
 						pstmt.setDouble(paramIndex, val);
 					}
@@ -125,13 +119,7 @@ public class FieldUtil {
 			case COUNTER:
 			case ID:
 				if(value != null && !(value instanceof String && ((String)value).isEmpty())) {
-					long val;
-					if(value instanceof Long) {
-						val = (long) value;
-					}
-					else {
-						val = new Double(value.toString()).longValue();
-					}
+					long val = FacilioUtil.parseLong(value);
 					if(val != -1 && val != -99) {
 						pstmt.setLong(paramIndex, val);
 					}
@@ -224,20 +212,12 @@ public class FieldUtil {
 				}
 				return value;
 			case DECIMAL:
-				Double doubleVal;
 				if(value != null && !(value instanceof String && ((String)value).isEmpty())) {
-	
-					if(value instanceof Double) {
-						doubleVal = (double) value;
-					}
-					else {
-						doubleVal = Double.parseDouble(value.toString());
-					}
+					return FacilioUtil.parseDouble(value);
 				}
 				else {
-					doubleVal = null;
+					return null;
 				}
-				return doubleVal;
 			case BOOLEAN:
 				Boolean booleanVal;
 				if(value != null) {
@@ -266,21 +246,12 @@ public class FieldUtil {
 			case FILE:
 			case COUNTER:
 			case ID:
-				Long longVal;
 				if(value != null && !(value instanceof String && ((String)value).isEmpty())) {
-	
-					if(value instanceof Long) {
-						longVal = (long) value;
-					}
-					else {
-						longVal = new Double(value.toString()).longValue();
-					}
-	
+					return FacilioUtil.parseLong(value);
 				}
 				else {
-					longVal=null;
+					return null;
 				}
-				return longVal;
 			case ENUM:
 				Integer enumVal = null; 
 				if(value != null && !(value instanceof String && ((String)value).isEmpty())) {

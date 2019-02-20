@@ -94,6 +94,11 @@ public class WorkflowRuleAPI {
 				if (((ReadingRuleContext) rule).getClearAlarm() == null) {
 					ruleProps.put("clearAlarm", true);
 				}
+				
+				if (((ReadingRuleContext) rule).getReadingRuleTypeEnum() == null) {
+					ruleProps.put("readingRuleType", ReadingRuleContext.ReadingRuleType.THRESHOLD_RULE.getValue());
+				}
+				
 				if(ruleProps.get("ruleGroupId") == null || (Long) ruleProps.get("ruleGroupId") <= 0) {
 					ruleProps.put("ruleGroupId", rule.getId());
 					((ReadingRuleContext) rule).setRuleGroupId(rule.getId());

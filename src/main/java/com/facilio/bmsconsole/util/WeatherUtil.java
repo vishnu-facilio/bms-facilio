@@ -193,7 +193,7 @@ public class WeatherUtil {
 	
 	public static Map<String, Object> getLocation(SiteContext site) throws Exception {
 		
-		List<Map<String, Object>> weatherStation= getWeatherStation(site.getId());
+		List<Map<String, Object>> weatherStation= getWeatherStationLocation(site.getWeatherStation());
 		if(weatherStation!=null && !weatherStation.isEmpty()) {
 			Map<String, Object> prop = weatherStation.get(0);
 			LOGGER.info("Weather Util::ORGID::"+AccountUtil.getCurrentOrg().getId()+"::Location::"+prop);
@@ -281,19 +281,16 @@ public static Map<Long,List<Map<String,Object>>> getReadings(String moduleName) 
 	}
 	
 	
-	public static List<Map<String, Object>> getWeatherStation(long siteId) throws Exception {
+	public static List<Map<String, Object>> getWeatherStationLocation(Long stationId) throws Exception {
 		
-		 List<FacilioField> fields = new ArrayList<>();
-		 fields.add( FieldFactory.getField("latitude","LAT",FieldType.NUMBER));
-		 fields.add(FieldFactory.getField("longtitude","LNG",FieldType.NUMBER));
+		if(stationId==null) {
+			return null;
+		}
 
 		 GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
-					.select(fields)
+					.select(FieldFactory.getWeatherStationsFields())
 					.table("Weather_Stations")
-					.innerJoin("Locations")
-					.on("Weather_Stations.LOCATION_ID=Locations.ID")
-	                .andCustomWhere("Weather_Stations.ORGID=?",AccountUtil.getCurrentOrg().getOrgId())
-					.andCustomWhere("Weather_Stations.SITE_ID=?",siteId );
+					.andCustomWhere("Weather_Stations.ID=?",stationId );
 				return builder.get();
 			
 	}
