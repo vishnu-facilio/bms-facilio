@@ -37,8 +37,6 @@ import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.events.tasker.tasks.EventProcessor;
 import com.facilio.fw.BeanFactory;
-import com.facilio.sql.GenericInsertRecordBuilder;
-import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
 
 public class TimeSeriesProcessor implements IRecordProcessor {
@@ -281,34 +279,19 @@ public class TimeSeriesProcessor implements IRecordProcessor {
 		return condition;*/
 	}
 
-	private HashMap<String, Long> getDeviceMap() {
-		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder().table(deviceDetailsModule.getTableName()).andCondition(orgIdCondition).select(fields);
-		HashMap<String, Long> deviceData = new HashMap<>();
+	private Map<String, Long> getDeviceMap() {
 		try {
-			List<Map<String, Object>> data = builder.get();
-			for(Map<String, Object> obj : data) {
-				String deviceId = (String)obj.get("deviceId");
-				Long id = (Long)obj.get("id");
-				deviceData.put(deviceId, id);
-			}
+			ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", orgId);
+			return bean.getDeviceMap();
 		} catch (Exception e) {
 			LOGGER.info("Exception while getting device data", e);
+			return new HashMap<>();
 		}
-
-		return deviceData;
 	}
 
 	private void addDeviceId(String deviceId) throws Exception {
-		GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder().table(deviceDetailsModule.getTableName()).fields(fields);
-		HashMap<String, Object> device = new HashMap<>();
-		device.put("orgId", orgId);
-		device.put("deviceId", deviceId);
-		device.put("inUse", true);
-		device.put("lastUpdatedTime", System.currentTimeMillis());
-		device.put("lastAlertedTime", 0L);
-		device.put("alertFrequency", 2400000L);
-		long id = builder.insert(device);
-		deviceMap.put(deviceId, id);
+		ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", orgId);
+		deviceMap.put(deviceId, bean.addDeviceId(deviceId));
 	}
 
 	@Override

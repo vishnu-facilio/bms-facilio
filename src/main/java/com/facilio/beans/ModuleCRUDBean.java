@@ -61,4 +61,8 @@ public interface ModuleCRUDBean {
 	
 	public int acknowledgePublishedMessage (long id) throws Exception;
 	
+	public long addDeviceId (String deviceId) throws Exception;
+	
+	public Map<String, Long> getDeviceMap() throws Exception;
+	
 }

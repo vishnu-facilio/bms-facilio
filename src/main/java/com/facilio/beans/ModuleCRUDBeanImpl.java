@@ -614,4 +614,34 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 		return IoTMessageAPI.acknowdledgeMessage(id);
 	}
 
+	@Override
+	public long addDeviceId(String deviceId) throws Exception {
+		// TODO Auto-generated method stub
+		FacilioModule deviceDetailsModule = ModuleFactory.getDeviceDetailsModule();
+		GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder().table(deviceDetailsModule.getTableName()).fields(FieldFactory.getDeviceDetailsFields());
+		HashMap<String, Object> device = new HashMap<>();
+		device.put("deviceId", deviceId);
+		device.put("inUse", true);
+		device.put("lastUpdatedTime", System.currentTimeMillis());
+		device.put("lastAlertedTime", 0L);
+		device.put("alertFrequency", 2400000L);
+		long id = builder.insert(device);
+		return id;
+	}
+
+	@Override
+	public Map<String, Long> getDeviceMap() throws Exception {
+		// TODO Auto-generated method stub
+		FacilioModule deviceDetailsModule = ModuleFactory.getDeviceDetailsModule();
+		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder().table(deviceDetailsModule.getTableName()).andCondition(CriteriaAPI.getCurrentOrgIdCondition(deviceDetailsModule)).select(FieldFactory.getDeviceDetailsFields());
+		HashMap<String, Long> deviceData = new HashMap<>();
+		List<Map<String, Object>> data = builder.get();
+		for(Map<String, Object> obj : data) {
+			String deviceId = (String)obj.get("deviceId");
+			Long id = (Long)obj.get("id");
+			deviceData.put(deviceId, id);
+		}
+		return deviceData;
+	}
+
 }
