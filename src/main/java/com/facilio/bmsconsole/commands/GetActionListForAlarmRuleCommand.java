@@ -34,7 +34,7 @@ public class GetActionListForAlarmRuleCommand implements Command {
 				}
 			}
 		}
-		alarmRule.setAddAlarmActions(new ArrayList<>(finalAction.values()));
+		//alarmRule.setAddAlarmActions(new ArrayList<>(finalAction.values()));
 		return false;
 	}
 
