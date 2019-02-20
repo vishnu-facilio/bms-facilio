@@ -4306,10 +4306,7 @@ public class FieldFactory {
 
 	public static List<FacilioField> getWeatherStationsFields() {
 		List<FacilioField> fields = new ArrayList<>();
-		fields.add(getField("orgId", "ORGID", FieldType.NUMBER));
-		fields.add(getField("siteId", "SITE_ID", FieldType.NUMBER));
 		fields.add(getField("name", "NAME", FieldType.STRING));
-		fields.add(getField("locationId", "LOCATION_ID", FieldType.NUMBER));
 		fields.add(getField("latitude", "LAT", FieldType.NUMBER));
 		fields.add(getField("longtitude", "LNG", FieldType.NUMBER));
 		return fields;
