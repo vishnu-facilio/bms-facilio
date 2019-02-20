@@ -1,5 +1,7 @@
 package com.facilio.bmsconsole.context;
 
+import java.util.List;
+
 import com.facilio.bmsconsole.context.WorkorderCostContext.CostType;
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.unitconversion.Unit;
@@ -122,4 +124,21 @@ public class InventryContext extends ModuleBaseWithCustomFields {
 	public void setModifiedTime(long modifiedTime) {
 		this.modifiedTime = modifiedTime;
 	}
+	
+	private double quantity;
+	public double getQuantity() {
+		return quantity;
+	}
+	public void setQuantity(double quantity) {
+		this.quantity = quantity;
+	}
+	
+	private List<InventoryCostContext> inventoryCost;
+	public List<InventoryCostContext> getInventoryCost() {
+		return inventoryCost;
+	}
+	public void setInventoryCost(List<InventoryCostContext> inventoryCost) {
+		this.inventoryCost = inventoryCost;
+	}
+	
 }

@@ -488,4 +488,12 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new GetInvenrtyListCommand());
 		return c;
 	}
+	
+	public static Chain fetchInventoryCostDetails() {
+		Chain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForInventoryCost());
+		c.addCommand(new GenericGetModuleDataDetailCommand());
+		c.addCommand(new fetchInventoryCostDetailsCommand());
+		return c;
+	}
 }

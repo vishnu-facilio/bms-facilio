@@ -10,6 +10,7 @@ import org.json.simple.parser.JSONParser;
 
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsole.context.InventoryCostContext;
 import com.facilio.bmsconsole.context.InventryContext;
 import com.facilio.bmsconsole.context.ItemsContext;
 import com.facilio.bmsconsole.workflow.rule.ActivityType;
@@ -48,9 +49,11 @@ public class InventryAction extends FacilioAction{
 		inventry.setTtime(System.currentTimeMillis());
 		inventry.setModifiedTime(System.currentTimeMillis());
 		context.put(FacilioConstants.ContextNames.RECORD, inventry);
+		context.put(FacilioConstants.ContextNames.INVENTORY_COST, inventry.getInventoryCost());
 		Chain addInventry = TransactionChainFactory.getAddInventryChain();
 		addInventry.execute(context);
 		setResult(FacilioConstants.ContextNames.INVENTRY, inventry);
+		context.put(FacilioConstants.ContextNames.INVENTORY_ID, inventry.getId());
 		return SUCCESS;
 	}
 	
@@ -58,7 +61,9 @@ public class InventryAction extends FacilioAction{
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.EDIT);
 		context.put(FacilioConstants.ContextNames.RECORD, inventry);
+		context.put(FacilioConstants.ContextNames.INVENTORY_COST, inventry.getInventoryCost());
 		context.put(FacilioConstants.ContextNames.ID, inventry.getId());
+		context.put(FacilioConstants.ContextNames.RECORD_ID, inventry.getId());
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(inventry.getId()));
 		context.put(FacilioConstants.ContextNames.WITH_CHANGE_SET, true);
 
@@ -156,4 +161,11 @@ public class InventryAction extends FacilioAction{
 		this.inventryCount = inventryCount;
 	}
 
+	private InventoryCostContext inventoryCost;
+	public InventoryCostContext getInventoryCost() {
+		return inventoryCost;
+	}
+	public void setInventoryCost(InventoryCostContext inventoryCost) {
+		this.inventoryCost = inventoryCost;
+	}
 }

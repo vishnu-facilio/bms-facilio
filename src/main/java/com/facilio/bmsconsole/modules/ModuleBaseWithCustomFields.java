@@ -120,6 +120,21 @@ public class ModuleBaseWithCustomFields implements Serializable {
 		this.sysCreatedTime = sysCreatedTime;
 	}
 	
+	private long ttime = -1;
+	public void setTtime(long ttime) {
+		this.ttime = ttime;
+	}
+	public long getTtime() {
+		return ttime;
+	}
+	
+	private long modifiedTime = -1;
+	public long getModifiedTime() {
+		return modifiedTime;
+	}
+	public void setModifiedTime(long modifiedTime) {
+		this.modifiedTime = modifiedTime;
+	}
 	@Override
 	public String toString() {
 		// TODO Auto-generated method stub

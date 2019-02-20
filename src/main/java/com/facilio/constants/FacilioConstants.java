@@ -21,6 +21,7 @@ import com.facilio.bmsconsole.context.ChillerCondenserPumpContext;
 import com.facilio.bmsconsole.context.ChillerContext;
 import com.facilio.bmsconsole.context.ChillerPrimaryPumpContext;
 import com.facilio.bmsconsole.context.ChillerSecondaryPumpContext;
+import com.facilio.bmsconsole.context.ConsumableContext;
 import com.facilio.bmsconsole.context.CoolingTowerContext;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.context.EnergyMeterPurposeContext;
@@ -29,6 +30,7 @@ import com.facilio.bmsconsole.context.FloorContext;
 import com.facilio.bmsconsole.context.HeatPumpContext;
 import com.facilio.bmsconsole.context.InventoryCategoryContext;
 import com.facilio.bmsconsole.context.InventoryContext;
+import com.facilio.bmsconsole.context.InventoryCostContext;
 import com.facilio.bmsconsole.context.InventoryStatusContext;
 import com.facilio.bmsconsole.context.InventoryVendorContext;
 import com.facilio.bmsconsole.context.InventryContext;
@@ -62,6 +64,7 @@ import com.facilio.bmsconsole.context.WaterMeterContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.context.WorkOrderRequestContext;
 import com.facilio.bmsconsole.context.WorkorderCostContext;
+import com.facilio.bmsconsole.context.WorkorderItemContext;
 import com.facilio.bmsconsole.context.WorkorderPartsContext;
 import com.facilio.bmsconsole.context.ZoneContext;
 
@@ -452,6 +455,8 @@ public class FacilioConstants {
 		public static final String BASE_SPACE_NOTES = "basespacenotes";
 		public static final String ASSET_NOTES = "assetnotes";
 		public static final String INVENTORY_NOTES = "inventorynotes";
+		public static final String ITEM_NOTES = "itemNotes";
+		public static final String TOOL_NOTES = "toolNotes";
 		
 		public static final String TICKET_ATTACHMENTS = "ticketattachments";
 		public static final String BASE_SPACE_ATTACHMENTS = "basespaceattachments";
@@ -754,6 +759,12 @@ public class FacilioConstants {
 		public static final String INVENTRY = "inventry";
 		public static final String INVENTRIES = "inventries";
 		public static final String INVENTORY_STATUS = "inventoryStatus";
+		public static final String INVENTORY_ID = "inventoryId";
+		public static final String INVENTORY_COST = "inventoryCost";
+		public static final String INVENTORY_COSTS = "inventoryCosts";
+		
+		public static final String WORKORDER_ITEMS = "workorderItem";
+		public static final String CONSUMABLES = "consumables";
 		
 		private static Map<String, Class> classMap = Collections.unmodifiableMap(initClassMap());
 		private static Map<String, Class> initClassMap() {
@@ -830,7 +841,9 @@ public class FacilioConstants {
 			classMap.put(VENDORS, VendorContext.class);
 			classMap.put(INVENTRY, InventryContext.class);
 			classMap.put(INVENTORY_STATUS, InventoryStatusContext.class);
-			
+			classMap.put(INVENTORY_COST, InventoryCostContext.class);
+			classMap.put(WORKORDER_ITEMS, WorkorderItemContext.class);
+			classMap.put(CONSUMABLES, ConsumableContext.class);
 			return classMap;
 		}
 		

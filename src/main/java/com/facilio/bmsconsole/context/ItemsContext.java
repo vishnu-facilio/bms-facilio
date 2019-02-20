@@ -91,11 +91,11 @@ public class ItemsContext extends ModuleBaseWithCustomFields {
 		this.orderingUnit = Unit.valueOf(orderingUnit);;
 	}
 	
-	private int minimumQuantity;
-	public int getMinimumQuantity() {
+	private double minimumQuantity;
+	public double getMinimumQuantity() {
 		return minimumQuantity;
 	}
-	public void setMinimumQuantity(int minimumQuantity) {
+	public void setMinimumQuantity(double minimumQuantity) {
 		this.minimumQuantity = minimumQuantity;
 	}
 	

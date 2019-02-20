@@ -1,0 +1,63 @@
+package com.facilio.bmsconsole.context;
+
+import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
+
+public class InventoryCostContext extends ModuleBaseWithCustomFields{
+	private static final long serialVersionUID = 1L;
+
+	private InventryContext inventory;
+	public InventryContext getInventory() {
+		return inventory;
+	}
+	public void setInventory(InventryContext inventory) {
+		this.inventory = inventory;
+	}
+	
+	private double unitcost;
+	public double getUnitcost() {
+		return unitcost;
+	}
+	public void setUnitcost(double unitcost) {
+		this.unitcost = unitcost;
+	}
+	
+	private double quantity;
+	public double getQuantity() {
+		return quantity;
+	}
+	public void setQuantity(double quantity) {
+		this.quantity = quantity;
+	}
+	
+	private double currentQuantity;
+	public double getCurrentQuantity() {
+		return currentQuantity;
+	}
+	public void setCurrentQuantity(double currentQuantity) {
+		this.currentQuantity = currentQuantity;
+	}
+	
+	private long costDate;
+	public long getCostDate() {
+		return costDate;
+	}
+	public void setCostDate(long costDate) {
+		this.costDate = costDate;
+	}
+	
+	private long ttime;
+	public long getTtime() {
+		return ttime;
+	}
+	public void setTtime(long ttime) {
+		this.ttime = ttime;
+	}
+	
+	private long modifiedTime;
+	public long getModifiedTime() {
+		return modifiedTime;
+	}
+	public void setModifiedTime(long modifiedTime) {
+		this.modifiedTime = modifiedTime;
+	}
+}

@@ -204,6 +204,14 @@ public class SetTableNamesCommand implements Command {
 		return new SetTableNamesCommand("inventry", "Inventry");
 	}
 	
+	public static SetTableNamesCommand getForInventoryCost() {
+		return new SetTableNamesCommand("inventoryCost", "Inventory_cost");
+	}
+	
+	public static SetTableNamesCommand getForWorkorderItems() {
+		return new SetTableNamesCommand("workorderItem", "Workorder_items");
+	}
+	
 	public static void setForModule (Context context, String moduleName) {
 		//TODO handle all module and get from map
 		String tableName = "";

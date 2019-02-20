@@ -1525,6 +1525,9 @@ public class TransactionChainFactory {
 			Chain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForInventry());
 			c.addCommand(new GenericAddModuleDataCommand());
+			c.addCommand(new ExecuteAllWorkflowsCommand());
+			c.addCommand(getAddInventoryCostChain());
+			c.addCommand(getUpdateInventoryQuantityRollupChain());
 			return c;
 		}
 		
@@ -1532,6 +1535,50 @@ public class TransactionChainFactory {
 			Chain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForInventry());
 			c.addCommand(new GenericUpdateModuleDataCommand());
+			c.addCommand(getAddInventoryCostChain());
+			c.addCommand(getUpdateInventoryQuantityRollupChain());
+			return c;
+		}
+		
+		public static Chain getAddInventoryCostChain(){
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForInventoryCost());
+			c.addCommand(new GetAddInventoryCostCommand());
+//			c.addCommand(new GenericAddModuleDataListCommand());
+			return c;
+		}
+		
+		public static Chain getUpdateInventoryQuantityRollupChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new AddOrUpdateInventoryQuantityCommand());
+			return c;
+		}
+		public static Chain getUpdateInventoryCostChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForInventoryCost());
+			c.addCommand(new GenericUpdateModuleDataCommand());
+			c.addCommand(getUpdateInventoryQuantityRollupChain());
+			return c;
+		}
+		
+		public static Chain getDeleteInventoryCostChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForInventoryCost());
+			c.addCommand(new GenericDeleteModuleDataCommand());
+			c.addCommand(getUpdateInventoryQuantityRollupChain());
+			c.addCommand(new ExecuteAllWorkflowsCommand());
+			return c;
+		}
+		
+		public static Chain getAddOrUdpateWorkorderItemsChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForWorkorderItems());
+			c.addCommand(new AddOrUpdateWorkorderItemsCommand());
+			c.addCommand(new ExecuteAllWorkflowsCommand());
+//			c.addCommand(new AddOrUpdateWorkorderCostCommand());
+//			c.addCommand(new UpdateWorkorderTotalCostCommand());
+//			c.addCommand(getUpdateWorkOrderChain());
 			return c;
 		}
 }
+
