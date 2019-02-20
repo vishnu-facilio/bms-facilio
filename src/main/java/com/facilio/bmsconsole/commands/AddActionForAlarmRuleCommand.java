@@ -20,13 +20,11 @@ public class AddActionForAlarmRuleCommand implements Command {
 		
 		AlarmRuleContext alarmRule = (AlarmRuleContext) context.get(FacilioConstants.ContextNames.ALARM_RULE);
 		
-		List<ActionContext> actions = ActionAPI.addActions(alarmRule.getAddAlarmActions(), alarmRule.getPreRequsite());
-		
 		for( ReadingRuleContext rule :alarmRule.getAlarmTriggerRules()) {
 			
-			if (actions != null && !actions.isEmpty()) {
+			if (rule.getActions() != null && !rule.getActions().isEmpty()) {
+				List<ActionContext> actions = ActionAPI.addActions(rule.getActions(), rule);
 				ActionAPI.addWorkflowRuleActionRel(rule.getId(), actions);
-				rule.setActions(actions);
 			}
 		}
 		
@@ -35,7 +33,7 @@ public class AddActionForAlarmRuleCommand implements Command {
 			actionContext.setActionType(ActionType.CLEAR_ALARM);
 			actionContext.setStatus(true);
 			
-			actions = ActionAPI.addActions(Collections.singletonList(actionContext), alarmRule.getAlarmClearRule());
+			List<ActionContext> actions = ActionAPI.addActions(Collections.singletonList(actionContext), alarmRule.getAlarmClearRule());
 			
 			ActionAPI.addWorkflowRuleActionRel(alarmRule.getAlarmClearRule().getId(), actions);
 			
