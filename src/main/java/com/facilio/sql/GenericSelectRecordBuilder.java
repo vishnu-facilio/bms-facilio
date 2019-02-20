@@ -310,7 +310,6 @@ public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, 
 			while(rs.next()) {
 				Map<String, Object> record = new HashMap<>();
 				if (orgIdField != null) {
-					System.out.print(AccountUtil.getCurrentOrg().getId());
 					record.put(orgIdField.getName(), AccountUtil.getCurrentOrg().getId());
 				}
 				 
