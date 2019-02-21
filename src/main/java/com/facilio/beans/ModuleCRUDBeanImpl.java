@@ -271,9 +271,9 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 				Chain addWOChain = TransactionChainFactory.getAddWorkOrderChain();
 				addWOChain.execute(context);
 				
-				if(pm.getPmCreationTypeEnum() == PreventiveMaintenance.PMCreationType.SINGLE) { //Need to be handled for multiple resources, it causes deadlock 
+				// if(pm.getPmCreationTypeEnum() == PreventiveMaintenance.PMCreationType.SINGLE) { //Need to be handled for multiple resources, it causes deadlock
 					// incrementPMCount(pm);
-				}
+				// }
 				workOrderContexts.add(wo);
 			}
 			return workOrderContexts;
