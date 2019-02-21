@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.5//EN"
+    "http://struts.apache.org/dtds/struts-2.5.dtd">
+
+<struts>
+
+	<package name="integrationV2" namespace="/api/v2/integ" extends="v2Api">
+		<action name="addmobilesetting"  class="com.facilio.bmsconsole.actions.UserAction" method="v2addMobileSetting">
+			<!-- <param name="moduleName">setup</param>
+			<param name="permission">USER_MANAGEMENT</param> -->
+		</action>
+		<action name="removemobilesetting"  class="com.facilio.bmsconsole.actions.UserAction" method="v2removeMobileSetting">
+			<!-- <param name="moduleName">setup</param>
+			<param name="permission">USER_MANAGEMENT</param> -->
+		</action>
+	</package>
+	
+	<package name="pdfApiV2" namespace="/api/v2/integ/pdf" extends="attachmentPreviewApi">
+		<action name="create"  class="com.facilio.pdf.actions.PdfAction" method="createPdf">
+		</action>
+	</package>
+
+</struts>
