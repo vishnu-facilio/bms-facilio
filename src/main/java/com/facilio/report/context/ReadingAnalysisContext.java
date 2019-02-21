@@ -41,6 +41,14 @@ public class ReadingAnalysisContext {
 		this.parentId = parentId;
 	}
 	
+	private long predictedTime = -1;
+	public long getPredictedTime() {
+		return predictedTime;
+	}
+	public void setPredictedTime(long predictedTime) {
+		this.predictedTime = predictedTime;
+	}
+
 	private DataPointType type = DataPointType.MODULE;
 	public DataPointType getTypeEnum() {
 		return type;

@@ -179,7 +179,8 @@ public class FacilioModule implements Serializable {
 		SCHEDULED_FORMULA,
 		LIVE_FORMULA,
 		SYSTEM_SCHEDULED_FORMULA,
-		CUSTOM
+		CUSTOM,
+		PREDICTED_READING
 		;
 		
 		public int getValue() {

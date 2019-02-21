@@ -7,6 +7,7 @@ import java.util.Objects;
 import com.facilio.bmsconsole.modules.BooleanField;
 import com.facilio.bmsconsole.modules.EnumField;
 import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.FacilioModule.ModuleType;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.NumberField;
@@ -78,6 +79,7 @@ public class ReportFieldContext {
 			
 			if (field.getModule() != null) {
 				this.moduleName = field.getModule().getName();
+				this.predicted = field.getModule().getTypeEnum() == ModuleType.PREDICTED_READING;
 			}
 			
 			if (this.label == null) {
@@ -206,6 +208,14 @@ public class ReportFieldContext {
 	}
 	public void setEnumMap(Map<Integer, Object> enumMap) {
 		this.enumMap = enumMap;
+	}
+	
+	private boolean predicted;
+	public boolean isPredicted() {
+		return predicted;
+	}
+	public void setPredicted(boolean predicted) {
+		this.predicted = predicted;
 	}
 	
 	@Override

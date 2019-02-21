@@ -251,6 +251,11 @@ public class CreateReadingAnalyticsReportCommand implements Command {
 			Criteria criteria = new Criteria();
 			criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("parentId"), metric.getParentId(), NumberOperators.EQUALS));
 			dataPoint.setCriteria(criteria);
+			
+			if (metric.getPredictedTime() != -1) {
+				criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("predictedTime"), String.valueOf(metric.getPredictedTime()), NumberOperators.EQUALS));
+			}
+			
 			dataPoint.addMeta(FacilioConstants.ContextNames.PARENT_ID_LIST, metric.getParentId());
 		}
 	}
