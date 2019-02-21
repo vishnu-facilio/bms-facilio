@@ -20,6 +20,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.AddOrUpdateReportCommand;
 import com.facilio.bmsconsole.commands.ConstructReportData;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
+import com.facilio.bmsconsole.commands.ReportSpecialHandlingCommand;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.AlarmContext;
 import com.facilio.bmsconsole.context.DashboardWidgetContext;
@@ -546,6 +547,7 @@ public class V2ReportAction extends FacilioAction {
 			throw new Exception("Report not found");
 		}
 		context.put(FacilioConstants.ContextNames.REPORT, reportContext);
+		chain.addCommand(new ReportSpecialHandlingCommand());
 		chain.addCommand(ReadOnlyChainFactory.newFetchReportDataChain());
 		chain.addCommand(new GetModuleFromReportContextCommand());
 		chain.execute(context);
