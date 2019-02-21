@@ -44,6 +44,7 @@ public class ModuleFactory {
 		moduleMap.put(FacilioConstants.ContextNames.WORK_ORDER_REQUEST, getWorkOrderRequestsModule());
 		moduleMap.put(FacilioConstants.ContextNames.TASK, getTasksModule());
 		moduleMap.put(FacilioConstants.ContextNames.ALARM, getAlarmsModule());
+		moduleMap.put(FacilioConstants.ContextNames.ASSET, getAssetsModule());
 		moduleMap.put("jsontemplate", getJSONTemplateModule());
 		moduleMap.put("preventivemaintenance", getPreventiveMaintenancetModule());
 		moduleMap.put("connectedapp", getConnectedAppModule());

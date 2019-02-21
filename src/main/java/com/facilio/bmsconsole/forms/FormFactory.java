@@ -35,6 +35,7 @@ public class FormFactory {
 		forms.put("web_pm", getPMForm());
 		forms.put("approvalForm", getApprovalForm());
 		forms.put("inventory_form", getInventoryForm());
+		forms.put("assetForm", getAssetForm());
 		return forms;
 	}
 
@@ -52,6 +53,7 @@ public class FormFactory {
 				.put(FormType.WEB, ImmutableMultimap.<String, FacilioForm>builder()
 						.put(FacilioConstants.ContextNames.WORK_ORDER, getWebWorkOrderForm())
 						.put(FacilioConstants.ContextNames.WORK_ORDER_REQUEST, getWebWorkRequestForm())
+						.put(FacilioConstants.ContextNames.ASSET, getAssetForm())
 						.put(FacilioConstants.ContextNames.INVENTORY, getInventoryForm()).build())
 				.put(FormType.PORTAL, ImmutableMultimap.<String, FacilioForm>builder()
 						.put(FacilioConstants.ContextNames.WORK_ORDER_REQUEST, getServiceWorkRequestForm()).build())
@@ -240,6 +242,16 @@ public class FormFactory {
 		return form;
 	}
 	
+	private static FacilioForm getAssetForm() {
+		FacilioForm form = new FacilioForm();
+		form.setDisplayName("Asset");
+		form.setName("asset");
+		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.ASSET));
+		form.setLabelPosition(LabelPosition.LEFT);
+		form.setFormType(FormType.WEB);
+		form.setFields(getWebAssetFormFields());
+		return form;
+	}
 	private static FacilioForm getPMForm() {
 		FacilioForm form = new FacilioForm();
 		form.setDisplayName("PREVENTIVE MAINTENANCE");
@@ -290,6 +302,28 @@ public class FormFactory {
 		fields.add(new FormField("attachedFiles", FieldDisplayType.ATTACHMENT, "Attachments", Required.OPTIONAL, "attachment", 8, 1));
 		return fields;
 	}
+	
+	private static List<FormField> getWebAssetFormFields() {
+		List<FormField> fields = new ArrayList<>();
+		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.REQUIRED, "name", 1, 1));
+		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 2, 1));
+		fields.add(new FormField("category", FieldDisplayType.LOOKUP_SIMPLE, "Category", Required.OPTIONAL, "assetCategory", 3, 1));
+		fields.add(new FormField("department", FieldDisplayType.LOOKUP_SIMPLE, "Department", Required.OPTIONAL,"assetdepartment", 3, 2));
+		fields.add(new FormField("type", FieldDisplayType.LOOKUP_SIMPLE, "Type", Required.OPTIONAL,"assettype", 4, 2));
+		fields.add(new FormField("manufacturer", FieldDisplayType.TEXTBOX, "Manufacturer", Required.OPTIONAL, 5, 1));
+		fields.add(new FormField("supplier", FieldDisplayType.TEXTBOX, "Supplier", Required.OPTIONAL, 5, 2));
+		fields.add(new FormField("model", FieldDisplayType.TEXTBOX, "Model", Required.OPTIONAL, 6, 1));
+		fields.add(new FormField("serialNumber", FieldDisplayType.TEXTBOX, "Serial Number", Required.OPTIONAL, 6, 2));
+		fields.add(new FormField("tagNumber", FieldDisplayType.TEXTBOX, "Tag", Required.OPTIONAL, 7, 1));
+		fields.add(new FormField("partNumber", FieldDisplayType.TEXTBOX, "Part No.", Required.OPTIONAL, 7, 2));
+		fields.add(new FormField("purchasedDate", FieldDisplayType.DATE, "Purchased Date", Required.OPTIONAL, 8, 1));
+		fields.add(new FormField("retireDate", FieldDisplayType.DATE, "Retire Date", Required.OPTIONAL, 8, 2));
+		fields.add(new FormField("unitPrice", FieldDisplayType.TEXTBOX, "Unit Price", Required.OPTIONAL, 9, 1));
+		fields.add(new FormField("warrantyExpiryDate", FieldDisplayType.DATE, "Warranty Expiry Date", Required.OPTIONAL, 9, 2));
+		fields.add(new FormField("qrVal", FieldDisplayType.TEXTBOX, "QR Value", Required.OPTIONAL, 10, 1));
+		return fields;
+	}
+
 	
 	private static List<FormField> getWebApprovalFormFields() {
 		List<FormField> fields = new ArrayList<>();
