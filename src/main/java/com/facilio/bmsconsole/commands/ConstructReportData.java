@@ -59,6 +59,7 @@ public class ConstructReportData implements Command {
 		reportContext.setModuleId(module.getModuleId());
 		
 		JSONObject xAxisJSON = (JSONObject) context.get("x-axis");
+		JSONObject dateFieldJSON = (JSONObject) context.get("date-field");
 		JSONArray yAxisJSON = (JSONArray) context.get("y-axis");
 		JSONArray groupByJSONArray = (JSONArray) context.get("group-by");
 		Criteria criteria = (Criteria) context.get("criteria");
@@ -73,10 +74,10 @@ public class ConstructReportData implements Command {
 		}
 		
 		if (yAxisJSON == null || yAxisJSON.size() == 0) {
-			addDataPointContext(modBean, reportContext, xAxisJSON, null, groupByJSONArray, criteria, sortFields, sortOrder, limit);
+			addDataPointContext(modBean, reportContext, xAxisJSON, dateFieldJSON, null, groupByJSONArray, criteria, sortFields, sortOrder, limit);
 		} else {
 			for (int i = 0; i < yAxisJSON.size(); i++) {
-				addDataPointContext(modBean, reportContext, xAxisJSON, (Map) yAxisJSON.get(i), groupByJSONArray, criteria, sortFields, sortOrder, limit);
+				addDataPointContext(modBean, reportContext, xAxisJSON, dateFieldJSON, (Map) yAxisJSON.get(i), groupByJSONArray, criteria, sortFields, sortOrder, limit);
 			}
 		}
 		
@@ -85,7 +86,7 @@ public class ConstructReportData implements Command {
 		return false;
 	}
 	
-	private void addDataPointContext(ModuleBean modBean, ReportContext reportContext, JSONObject xAxisJSON, Map yMap, JSONArray groupByJSONArray, Criteria criteria, JSONArray sortFields, Integer sortOrder, Integer limit) throws Exception {
+	private void addDataPointContext(ModuleBean modBean, ReportContext reportContext, JSONObject xAxisJSON, JSONObject dateField, Map yMap, JSONArray groupByJSONArray, Criteria criteria, JSONArray sortFields, Integer sortOrder, Integer limit) throws Exception {
 		ReportDataPointContext dataPointContext = new ReportDataPointContext();
 		
 		ReportFieldContext xAxis = new ReportFieldContext();
@@ -99,15 +100,7 @@ public class ConstructReportData implements Command {
 			Integer xAggr = ((Number) xAxisJSON.get("aggr")).intValue();
 			AggregateOperator aggregateOperator = AggregateOperator.getAggregateOperator(xAggr);
 			if (aggregateOperator instanceof DateAggregateOperator && isDateField(xField)) {
-				reportContext.setxAggr(aggregateOperator);
-				
-				if (xAxisJSON.containsKey("operator") && xAxisJSON.containsKey("date_value")) {
-					Integer operator = ((Number) xAxisJSON.get("operator")).intValue();
-					reportContext.setDateOperator(operator);
-					reportContext.setDateValue((String) xAxisJSON.get("date_value"));
-					dataPointContext.setDateField(xField);
-				}
-				
+				reportContext.setxAggr(aggregateOperator);				
 			} else if (aggregateOperator instanceof SpaceAggregateOperator) {
 				reportContext.setxAggr(aggregateOperator);
 				if (xField instanceof LookupField) {
@@ -122,6 +115,15 @@ public class ConstructReportData implements Command {
 		}
 		xAxis.setField(xField);
 		dataPointContext.setxAxis(xAxis);
+		
+		
+		if (dateField != null && dateField.containsKey("operator") && dateField.containsKey("date_value")) {
+			Integer operator = ((Number) dateField.get("operator")).intValue();
+			reportContext.setDateOperator(operator);
+			reportContext.setDateValue((String) dateField.get("date_value"));
+			FacilioField field = modBean.getField((Long) dateField.get("field_id"));
+			dataPointContext.setDateField(field);
+		}
 		
 		ReportYAxisContext yAxis = new ReportYAxisContext();
 		FacilioField yField = null;

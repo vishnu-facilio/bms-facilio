@@ -444,6 +444,14 @@ public class V2ReportAction extends FacilioAction {
 	public void setxField(JSONObject xField) {
 		this.xField = xField;
 	}
+	private JSONObject dateField;
+	public JSONObject getDateField() {
+		return dateField;
+	}
+	public void setDateField(JSONObject dateField) {
+		this.dateField = dateField;
+	}
+
 	private JSONArray yField;
 	public JSONArray getyField() {
 		return yField;
@@ -497,6 +505,7 @@ public class V2ReportAction extends FacilioAction {
 	
 	private void updateContext(FacilioContext context) {
 		context.put("x-axis", xField);
+		context.put("date-field", dateField);
 		context.put("y-axis", yField);
 		context.put("group-by", groupBy);
 		context.put("criteria", criteria);
