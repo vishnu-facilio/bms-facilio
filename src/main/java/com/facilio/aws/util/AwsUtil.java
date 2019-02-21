@@ -153,6 +153,7 @@ public class AwsUtil
 	private static String anomalyPeriodicity;
 	private static String anomalyRefreshWaitTimeInSeconds;
 	private static String anomalyDetectWaitTimeInSeconds;
+	private static String anomalyPredictAPIURL;
 	
 	static {
 		loadProperties();
@@ -186,6 +187,7 @@ public class AwsUtil
 				anomalyPeriodicity = PROPERTIES.getProperty("anomalyPeriodicity","30");
 				anomalyRefreshWaitTimeInSeconds = PROPERTIES.getProperty("anomalyRefreshWaitTimeInSeconds","10");
 				anomalyDetectWaitTimeInSeconds = PROPERTIES.getProperty("anomalyDetectWaitTimeInSeconds","3");
+				anomalyPredictAPIURL = PROPERTIES.getProperty("anomalyPredictServiceURL","http://localhost:7444/api");
 						
 				PROPERTIES.put("clientapp.url", clientAppUrl);
 				URL resourceDir = AwsUtil.class.getClassLoader().getResource("");
@@ -925,5 +927,9 @@ public class AwsUtil
 
 	public static String getAnomalyDetectWaitTimeInSeconds() {
 		return anomalyDetectWaitTimeInSeconds;
+	}
+	
+	public static String getAnomalyPredictAPIURL() {
+		return anomalyPredictAPIURL;
 	}
 }

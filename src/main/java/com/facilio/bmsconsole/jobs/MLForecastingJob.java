@@ -151,7 +151,7 @@ public class MLForecastingJob extends FacilioJob
 		 postObj.put("meterInterval",pc.getDatainterval());
 		 postObj.put("data", pc.getPyData());
 		 
-		 String postURL = AwsUtil.getConfig("anomalyCheckServiceURL") + "/timeseriesmodel";
+		 String postURL=AwsUtil.getAnomalyPredictAPIURL() + "/timeseriesmodel";
 		 Map<String, String> headers = new HashMap<>();
 		 headers.put("Content-Type", "application/json");
 		 String result = AwsUtil.doHttpPost(postURL, headers, null, postObj.toString());
