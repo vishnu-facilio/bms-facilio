@@ -712,7 +712,21 @@ public enum ActionType {
 
 		@Override
 		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule, Object currentRecord) throws Exception {
-//			ReadingRuleAPI.addClearEvent(currentRecord, context, obj, (ReadingContext) currentRecord, (ReadingRuleContext)currentRule);
+			
+			Map<Long, ReadingRuleAlarmMeta> alarmMetaMap = (Map<Long, ReadingRuleAlarmMeta>) context.get(FacilioConstants.ContextNames.READING_RULE_ALARM_META);
+			if (alarmMetaMap == null) {
+				alarmMetaMap = ((ReadingRuleContext)currentRule).getAlarmMetaMap();
+			}
+			ReadingRuleAlarmMeta alarmMeta = alarmMetaMap != null ? alarmMetaMap.get(((ReadingContext) currentRecord).getParentId()) : null;
+			
+			if(alarmMeta != null) {
+				AlarmContext alarm = AlarmAPI.getAlarm(alarmMeta.getAlarmId());
+				;
+				if(alarm.getModifiedTime() == ((ReadingContext) currentRecord).getTtime()) {
+					return;
+				}
+				ReadingRuleAPI.addClearEvent(currentRecord, context, obj, (ReadingContext) currentRecord, (ReadingRuleContext)currentRule);
+			}
 		}
 	},
 	;

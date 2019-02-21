@@ -178,6 +178,7 @@ public class EventToAlarmCommand implements Command {
 		JSONObject alarm = new JSONObject();
 		List<Long> ids = new ArrayList<>();
 		ids.add(alarmId);
+		AlarmContext oldAlarmContext = AlarmAPI.getAlarm(alarmId);
 		alarm.put("severityString", event.getSeverity());
 		alarm.put("subject", event.getEventMessage());
 		alarm.put("orgId", event.getOrgId());
@@ -201,6 +202,18 @@ public class EventToAlarmCommand implements Command {
 						alarm.put("readingDataId", event.getAdditionInfo().get("readingDataId"));
 						alarm.put("readingVal", event.getAdditionInfo().get("readingVal"));
 						alarm.put("ruleId", event.getAdditionInfo().get("ruleId"));
+						
+						String possibleCauseString = "";
+						if(oldAlarmContext != null && oldAlarmContext.getPossibleCauses() != null) {
+							possibleCauseString += oldAlarmContext.getPossibleCauses();
+						}
+						if(event.getAdditionInfo().get("possibleCauses") != null && !possibleCauseString.contains(event.getAdditionInfo().get("possibleCauses").toString())) {
+							possibleCauseString = possibleCauseString + "\n" + event.getAdditionInfo().get("possibleCauses").toString();
+						}
+						if(!possibleCauseString.isEmpty()) {
+							alarm.put("possibleCauses", possibleCauseString);
+						}
+						
 						break;
 					default:
 						break;
