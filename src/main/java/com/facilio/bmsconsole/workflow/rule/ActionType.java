@@ -652,7 +652,12 @@ public enum ActionType {
 						switch (field.getDataTypeEnum()) {
 							case LOOKUP:
 								Object id = ((Map<String, Object>)val).get("id");
-								val = FieldUtil.getEmptyLookupVal((LookupField) field, FacilioUtil.parseLong(id));
+								if ( FacilioConstants.ContextNames.USERS.equals(((LookupField) field).getSpecialType()) && FacilioConstants.Criteria.LOGGED_IN_USER.equals(id)) {
+									val = AccountUtil.getCurrentUser();
+								}
+								else {
+									val = FieldUtil.getEmptyLookupVal((LookupField) field, FacilioUtil.parseLong(id));
+								}
 								break;
 							case DATE:
 							case DATE_TIME:

@@ -408,7 +408,7 @@ public class TemplateAPI {
 				List<Map<String, Object>> templates = getExtendedProps(ModuleFactory.getJSONTemplateModule(), FieldFactory.getJSONTemplateFields(), id);
 				if(templates != null && !templates.isEmpty()) {
 					templateMap.putAll(templates.get(0));
-					template = getJSONTemplateFromMap(templateMap);
+					 template = getJSONTemplateFromMap(templateMap);
 				}
 			}break;
 			default: break;
@@ -1184,7 +1184,7 @@ public class TemplateAPI {
 	}
 	
 	public static JSONArray getPlaceholders(Template template) throws Exception {
-		String formatSpecifier = "(\\$\\{([^\\:}]*))";
+		String formatSpecifier = "((?!\\$\\{LOGGED_USER\\})(?!\\$\\{LOGGED_USER_GROUP\\})\\$\\{([^\\:}]*))";
 		Pattern pattern = Pattern.compile(formatSpecifier);
 		JSONObject templateString = template.getOriginalTemplate();
 		if (templateString != null) {
