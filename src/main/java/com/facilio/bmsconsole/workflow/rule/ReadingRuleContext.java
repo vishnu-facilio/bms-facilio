@@ -553,11 +553,14 @@ public class ReadingRuleContext extends WorkflowRuleContext {
 	}
 	
 	private Object getMetric(ReadingContext reading) {
-		if (!isMatchingResource(reading)) {
-			return null;
+		if(reading != null) {
+			if (!isMatchingResource(reading)) {
+				return null;
+			}
+			Object currentMetric = FieldUtil.castOrParseValueAsPerType(readingField, reading.getReading(readingField.getName()));
+			return currentMetric;
 		}
-		Object currentMetric = FieldUtil.castOrParseValueAsPerType(readingField, reading.getReading(readingField.getName()));
-		return currentMetric;
+		return null;
 	}
 	
 	@Override
@@ -770,7 +773,7 @@ public class ReadingRuleContext extends WorkflowRuleContext {
 	public void executeFalseActions(Object record, Context context, Map<String, Object> placeHolders) throws Exception {
 		// TODO Auto-generated method stub
 		ReadingContext reading = (ReadingContext) record;
-		if (getMetric(reading) != null) {
+		if (getMetric(reading) != null || getEvent().getActivityTypeEnum().isPresent(ActivityType.SCHEDULED_READING_RULE.getValue())) {
 			if (clearAlarm()) {
 				ReadingRuleAPI.addClearEvent(record, context, placeHolders, reading, this);
 			}
