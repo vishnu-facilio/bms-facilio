@@ -34,8 +34,8 @@ public class FormFactory {
 		forms.put("loggedInServiceWorkRequest", getLoggedInServiceWorkRequest());
 		forms.put("web_pm", getPMForm());
 		forms.put("approvalForm", getApprovalForm());
-		forms.put("inventory_form", getInventoryForm());
 		forms.put("assetForm", getAssetForm());
+		forms.put("inventory_form", getInventryForm());
 		forms.put("store_room_form", getStoreRoomForm());
 		forms.put("items_form", getItemsForm());
 		forms.put("tools_form", getToolsForm());
@@ -310,6 +310,16 @@ public class FormFactory {
 		return form;
 	}
 	
+	public static FacilioForm getInventryForm() {
+		FacilioForm form = new FacilioForm();
+		form.setDisplayName("INVENTORY");
+		form.setName("web_default");
+		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.INVENTRY));
+		form.setLabelPosition(LabelPosition.TOP);
+		form.setFields(getInventryFormField());
+		form.setFormType(FormType.WEB);
+		return form;
+	}
 	private static List<FormField> getWebWorkOrderFormFields() {
 		List<FormField> fields = new ArrayList<>();
 		fields.add(new FormField("subject", FieldDisplayType.TEXTBOX, "Subject", Required.REQUIRED, 1, 1));
@@ -485,4 +495,15 @@ public class FormFactory {
 		return fields;
 	}
 
+	private static List<FormField> getInventryFormField() {
+		List<FormField> fields = new ArrayList<>();
+		fields.add(new FormField("item", FieldDisplayType.LOOKUP_SIMPLE, "Item", Required.REQUIRED, "items", 1, 1));
+		fields.add(new FormField("storeRoom", FieldDisplayType.LOOKUP_SIMPLE, "Store Room", Required.REQUIRED, "storeRoom", 2, 1));
+		fields.add(new FormField("status", FieldDisplayType.TEXTAREA, "Status", Required.OPTIONAL, "inventoryStatus", 3, 1));
+		fields.add(new FormField("costType", FieldDisplayType.TEXTBOX, "Cost Type", Required.OPTIONAL, 4, 1));
+		fields.add(new FormField("issuingUnit", FieldDisplayType.UNIT, "Issuing Unit", Required.OPTIONAL, 5, 1));
+		fields.add(new FormField("inventoryCost", FieldDisplayType.INVENTORYCOST, "Inventory Cost", Required.OPTIONAL, 6, 1));
+		
+		return fields;
+	}
 }
