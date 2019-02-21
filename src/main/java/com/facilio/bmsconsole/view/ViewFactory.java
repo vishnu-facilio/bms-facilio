@@ -105,6 +105,7 @@ public class ViewFactory {
 		views.put("approval_approved", getApprovedApproval().setOrder(order++));
 		views.put("approval_rejected", getRejectedApproval().setOrder(order++));
 		views.put("approval_all", getAllApproval().setOrder(order++));
+		views.put("approval_myrequests", getMyRequestWorkorders().setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.APPROVAL, views);
 
 		order = 1;
