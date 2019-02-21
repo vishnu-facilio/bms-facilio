@@ -547,6 +547,7 @@ public class V2ReportAction extends FacilioAction {
 		}
 		context.put(FacilioConstants.ContextNames.REPORT, reportContext);
 		chain.addCommand(ReadOnlyChainFactory.newFetchReportDataChain());
+		chain.addCommand(new GetModuleFromReportContextCommand());
 		chain.execute(context);
 
 		return setReportResult(context);
