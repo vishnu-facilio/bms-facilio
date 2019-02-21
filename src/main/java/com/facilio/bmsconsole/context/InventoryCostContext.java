@@ -13,7 +13,7 @@ public class InventoryCostContext extends ModuleBaseWithCustomFields{
 		this.inventory = inventory;
 	}
 	
-	private double unitcost;
+	private double unitcost=-1;
 	public double getUnitcost() {
 		return unitcost;
 	}
@@ -21,7 +21,7 @@ public class InventoryCostContext extends ModuleBaseWithCustomFields{
 		this.unitcost = unitcost;
 	}
 	
-	private double quantity;
+	private double quantity = -1;
 	public double getQuantity() {
 		return quantity;
 	}
@@ -29,7 +29,7 @@ public class InventoryCostContext extends ModuleBaseWithCustomFields{
 		this.quantity = quantity;
 	}
 	
-	private double currentQuantity;
+	private double currentQuantity = -1;
 	public double getCurrentQuantity() {
 		return currentQuantity;
 	}

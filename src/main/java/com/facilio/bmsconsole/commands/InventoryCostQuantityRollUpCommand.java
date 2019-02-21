@@ -109,7 +109,6 @@ public class InventoryCostQuantityRollUpCommand implements Command {
 
 		List<Map<String, Object>> rs = builder.get();
 		if (rs != null && rs.size() > 0) {
-			System.out.println((Double) rs.get(0).get("value"));
 			return (Double) rs.get(0).get("value");
 		}
 		return 0d;
