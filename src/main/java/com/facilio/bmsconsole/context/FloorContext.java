@@ -16,9 +16,8 @@ public class FloorContext extends BaseSpaceContext {
 	private BuildingContext building;
 	public BuildingContext getBuilding() {
 		if ((building == null || building.getId() == -1) && super.getBuildingId() != -1) {
-			BuildingContext building = new BuildingContext();
+			building = new BuildingContext();
 			building.setId(super.getBuildingId());
-			return building;
 		}
 		return building;
 	}

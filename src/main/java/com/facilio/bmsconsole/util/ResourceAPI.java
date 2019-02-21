@@ -100,7 +100,7 @@ public class ResourceAPI {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.RESOURCE);
 		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.RESOURCE);
-		FacilioField spaceField = FieldFactory.getAsMap(fields).get("spaceId");
+		FacilioField spaceField = FieldFactory.getAsMap(fields).get("space");
 		SelectRecordsBuilder<ResourceContext> resourceBuilder = new SelectRecordsBuilder<ResourceContext>()
 																		.select(fields)
 																		.module(module)

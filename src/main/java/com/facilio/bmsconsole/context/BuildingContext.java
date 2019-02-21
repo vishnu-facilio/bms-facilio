@@ -43,9 +43,8 @@ public class BuildingContext extends BaseSpaceContext {
 	private SiteContext site;
 	public SiteContext getSite() {
 		if ((site == null || site.getId() == -1) && super.getSiteId() != -1) {
-			SiteContext site = new SiteContext();
+			site = new SiteContext();
 			site.setId(super.getSiteId());
-			return site;
 		}
 		return site;
 	}

@@ -9,9 +9,8 @@ public class SpaceContext extends BaseSpaceContext {
 	private SiteContext site;
 	public SiteContext getSite() {
 		if ((site == null || site.getId() == -1) && super.getSiteId() != -1) {
-			SiteContext site = new SiteContext();
+			site = new SiteContext();
 			site.setId(super.getSiteId());
-			return site;
 		}
 		return site;
 	}
@@ -33,9 +32,8 @@ public class SpaceContext extends BaseSpaceContext {
 	private BuildingContext building;
 	public BuildingContext getBuilding() {
 		if ((building == null || building.getId() == -1) && super.getBuildingId() != -1) {
-			BuildingContext building = new BuildingContext();
+			building = new BuildingContext();
 			building.setId(super.getBuildingId());
-			return building;
 		}
 		return building;
 	}
@@ -56,9 +54,8 @@ public class SpaceContext extends BaseSpaceContext {
 	private FloorContext floor;
 	public FloorContext getFloor() {
 		if ((floor == null || floor.getId() == -1) && super.getFloorId() != -1) {
-			FloorContext floor = new FloorContext();
+			floor = new FloorContext();
 			floor.setId(super.getFloorId());
-			return floor;
 		}
 		return floor;
 	}
@@ -72,9 +69,8 @@ public class SpaceContext extends BaseSpaceContext {
 	private SpaceContext space1;
 	public SpaceContext getSpace1() {
 		if ((space1 == null || space1.getId() == -1) && super.getSpaceId1() > -1) {
-			SpaceContext space = new SpaceContext();
-			space.setId(super.getSpaceId1());
-			return space;
+			space1 = new SpaceContext();
+			space1.setId(super.getSpaceId1());
 		}
 		return space1;
 	}
@@ -88,9 +84,8 @@ public class SpaceContext extends BaseSpaceContext {
 	private SpaceContext space2;
 	public SpaceContext getSpace2() {
 		if ((space2 == null || space2.getId() == -1) && super.getSpaceId2() != -1) {
-			SpaceContext space = new SpaceContext();
-			space.setId(super.getSpaceId2());
-			return space;
+			space2 = new SpaceContext();
+			space2.setId(super.getSpaceId2());
 		}
 		return space2;
 	}
@@ -104,9 +99,8 @@ public class SpaceContext extends BaseSpaceContext {
 	private SpaceContext space3;
 	public SpaceContext getSpace3() {
 		if ((space3 == null || space3.getId() == -1) && super.getSpaceId3() != -1) {
-			SpaceContext space = new SpaceContext();
-			space.setId(super.getSpaceId3());
-			return space;
+			space3 = new SpaceContext();
+			space3.setId(super.getSpaceId3());
 		}
 		return space3;
 	}
@@ -120,9 +114,8 @@ public class SpaceContext extends BaseSpaceContext {
 	private SpaceContext space4;
 	public SpaceContext getSpace4() {
 		if ((space4 == null || space4.getId() == -1) && super.getSpaceId4() != -1) {
-			SpaceContext space = new SpaceContext();
-			space.setId(super.getSpaceId4());
-			return space;
+			space4 = new SpaceContext();
+			space4.setId(super.getSpaceId4());
 		}
 		return space4;
 	}

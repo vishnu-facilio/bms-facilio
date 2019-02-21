@@ -646,7 +646,7 @@ public static List<Map<String,Object>> getTopNCategoryOnAvgCompletionTime(String
 	idCountField.setName("count");
 	fields.add(idCountField);
 	
-	Criteria closedCriteria = ViewFactory.getClosedTicketsCriteria(workOrderModule);
+	Criteria closedCriteria = ViewFactory.getClosedTicketsCriteria();
 
 	SelectRecordsBuilder<WorkOrderContext> selectRecordsBuilderClosed = new SelectRecordsBuilder<WorkOrderContext>()
 																.module(workOrderModule)

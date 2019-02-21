@@ -40,7 +40,30 @@ public class ResourceContext extends ModuleBaseWithCustomFields {
 	}
 	public void setSpaceId(long spaceId) {
 		this.spaceId = spaceId;
+		if (spaceId > -1 && space == null) {
+			BaseSpaceContext space = new BaseSpaceContext();
+			space.setId(spaceId);
+			setSpace(space);
+		}
 	}
+	
+	private BaseSpaceContext space;
+	public void setSpace(BaseSpaceContext space) {
+		this.space = space;
+		if (this.space != null && getSpaceId() == -1) {
+			setSpaceId(this.space.getId());
+		}
+	}
+	public BaseSpaceContext getSpace() {
+		return this.space;
+	}
+	/*public BaseSpaceContext getSpace() {
+		if ((space == null || space.getId() == -1) && getSpaceId()!= -1) {
+			space = new BaseSpaceContext();
+			space.setId(getSpaceId());
+		}
+		return space;
+	}*/
 	
 	private ResourceType resourceType;
 	public ResourceType getResourceTypeEnum() {
