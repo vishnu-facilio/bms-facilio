@@ -113,7 +113,7 @@ public class GetVendorsListCommand implements Command {
 				}
 				Map<Long, LocationContext> locationMap = LocationAPI.getLocationMap(locatoionIds);
 				for (VendorContext vendor : records) {
-					if (vendor.getAddress().getId() != -1) {
+					if (vendor.getAddress() !=null && vendor.getAddress().getId() != -1) {
 						vendor.setAddress(locationMap.get(vendor.getAddress().getId()));
 					}
 				}
