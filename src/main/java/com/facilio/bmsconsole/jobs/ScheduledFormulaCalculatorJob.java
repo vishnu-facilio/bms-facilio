@@ -8,6 +8,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.chain.Chain;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -61,6 +62,9 @@ public class ScheduledFormulaCalculatorJob extends FacilioJob {
 							}
 							try {
 								List<ReadingContext> readings = new ArrayList<>();
+								if (AccountUtil.getCurrentOrg().getId() == 186l) {
+									LOGGER.info("Formula matched resources : "+StringUtils.join(formula.getMatchedResourcesIds(), ","));
+								}
 								for (Long resourceId : formula.getMatchedResourcesIds()) {
 									ReadingDataMeta meta = ReadingsAPI.getReadingDataMeta(resourceId, formula.getReadingField());
 									long startTime = getStartTime(formula, meta.getTtime());
