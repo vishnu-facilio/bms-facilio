@@ -14,6 +14,7 @@ import com.facilio.bmsconsole.exceptions.importExceptions.ImportParseException;
 import com.facilio.bmsconsole.exceptions.importExceptions.ImportTimeColumnParseException;
 import com.facilio.bmsconsole.util.ImportAPI;
 import com.facilio.chain.FacilioContext;
+import com.facilio.tasker.FacilioTimer;
 import com.facilio.tasker.job.InstantJob;
 import com.facilio.wms.endpoints.PubSubManager;
 import com.facilio.wms.message.WmsEvent;
@@ -43,6 +44,11 @@ public class ImportLogJob extends InstantJob{
 			}
 			else {
 				hasDuplicates.put("hasDuplicates", false);
+				
+				importProcessContext.setStatus(ImportProcessContext.ImportStatus.IN_PROGRESS.getValue());
+				ImportAPI.updateImportProcess(importProcessContext);
+				FacilioTimer.scheduleOneTimeJob(importProcessContext.getId(), "importReading", 5, "priority");
+
 			}
 			
 			
