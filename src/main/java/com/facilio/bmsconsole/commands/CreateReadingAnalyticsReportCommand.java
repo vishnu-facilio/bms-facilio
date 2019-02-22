@@ -230,7 +230,7 @@ public class CreateReadingAnalyticsReportCommand implements Command {
 						ResourceContext resource = resourceMap.get(parentId);
 						joiner.add(resource.getName());
 					}
-					return joiner.toString()+" ("+ yField.getLabel()+")";
+					return joiner.toString()+" ("+ yField.getLabel()+(metric.getPredictedTime() == -1 ? "" : ("_"+metric.getPredictedTime()))+")";
 				}
 			}
 		}
