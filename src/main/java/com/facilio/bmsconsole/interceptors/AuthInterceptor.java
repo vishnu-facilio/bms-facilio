@@ -74,7 +74,7 @@ public class AuthInterceptor extends AbstractInterceptor {
 					long orgId = Long.parseLong(decodedjwt.getSubject().split("_")[0].split("-")[0]);
 					long ouid = Long.parseLong(decodedjwt.getSubject().split("_")[0].split("-")[1]);
 					
-					Account currentAccount = new Account(AccountUtil.getOrgBean().getOrg(orgId), AccountUtil.getUserBean().getUserInternal(ouid));
+					Account currentAccount = new Account(AccountUtil.getOrgBean().getOrg(orgId), AccountUtil.getUserBean().getUserInternal(ouid, false));
 					
 					AccountUtil.cleanCurrentAccount();
 					AccountUtil.setCurrentAccount(currentAccount);

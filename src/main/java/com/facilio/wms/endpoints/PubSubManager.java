@@ -40,7 +40,7 @@ public class PubSubManager {
 	public void subscribe(Message message) {
 		
 		try {
-			long orgId = AccountUtil.getUserBean().getUserInternal(message.getTo()).getOrgId();
+			long orgId = AccountUtil.getUserBean().getUserInternal(message.getTo(), false).getOrgId();
 			
 			JSONObject content = message.getContent();
 			String topic = (String) content.get("topic");
@@ -135,7 +135,7 @@ public class PubSubManager {
 	public void unsubscribe(Message message) {
 		
 		try {
-			long orgId = AccountUtil.getUserBean().getUserInternal(message.getTo()).getOrgId();
+			long orgId = AccountUtil.getUserBean().getUserInternal(message.getTo(), false).getOrgId();
 			
 			JSONObject content = message.getContent();
 			String topic = (String) content.get("topic");

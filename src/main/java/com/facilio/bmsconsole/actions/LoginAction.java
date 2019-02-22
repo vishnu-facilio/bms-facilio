@@ -669,7 +669,7 @@ public class LoginAction extends FacilioAction {
 
 				account = new HashMap<>();
 				account.put("org", AccountUtil.getOrgBean().getOrg(orgId));
-				account.put("user", AccountUtil.getUserBean().getUserInternal(ouid));
+				account.put("user", AccountUtil.getUserBean().getUserInternal(ouid, false));
 				
 				return SUCCESS;
 			}

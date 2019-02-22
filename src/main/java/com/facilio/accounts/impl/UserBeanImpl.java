@@ -915,6 +915,11 @@ public class UserBeanImpl implements UserBean {
 	
 	@Override
 	public User getUserInternal(long ouid) throws Exception {
+		return getUserInternal(ouid, true);
+	}
+	
+	@Override
+	public User getUserInternal(long ouid, boolean withRole) throws Exception {
 		
 		List<FacilioField> fields = new ArrayList<>();
 		fields.addAll(AccountConstants.getUserFields());
@@ -929,7 +934,7 @@ public class UserBeanImpl implements UserBean {
 		
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
-			User user =  createUserFromProps(props.get(0), true, true, false);
+			User user =  createUserFromProps(props.get(0), withRole, true, false);
 			return user;
 		}
 		return null;
