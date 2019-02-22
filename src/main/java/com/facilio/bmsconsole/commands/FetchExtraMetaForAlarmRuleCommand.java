@@ -8,12 +8,14 @@ import java.util.Map;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.apache.commons.lang3.StringUtils;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.FormulaContext;
 import com.facilio.bmsconsole.context.ReadingAlarmContext;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.TicketStatusContext;
+import com.facilio.bmsconsole.context.TicketStatusContext.StatusType;
 import com.facilio.bmsconsole.criteria.CommonOperators;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.DateOperators;
@@ -42,12 +44,12 @@ public class FetchExtraMetaForAlarmRuleCommand implements Command {
 		int activeAlarmCount = getActiveAlarmCount(preRequsite);
 		int alarmsCreatedThusWeek = getAlarmsCountCreatedThisWeek(preRequsite);
 		Map<ResourceContext, Integer> resourceVsAlarmCount = getAllCriticalAssets(preRequsite);
-		Map<String, Double> wfSummaryRes = getWorkflowSummary(preRequsite);
+//		Map<String, Double> wfSummaryRes = getWorkflowSummary(preRequsite);
 		
 		context.put(FacilioConstants.ContextNames.ALARM_RULE_ACTIVE_ALARM, activeAlarmCount);
 		context.put(FacilioConstants.ContextNames.ALARM_RULE_THIS_WEEK, alarmsCreatedThusWeek);
 		context.put(FacilioConstants.ContextNames.ALARM_RULE_TOP_5_ASSETS, resourceVsAlarmCount);
-		context.put(FacilioConstants.ContextNames.ALARM_RULE_WO_SUMMARY, wfSummaryRes);
+//		context.put(FacilioConstants.ContextNames.ALARM_RULE_WO_SUMMARY, wfSummaryRes);
 		
 		return false;
 	}
@@ -64,18 +66,24 @@ public class FetchExtraMetaForAlarmRuleCommand implements Command {
 		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.READING_ALARM);
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 		
+		List<TicketStatusContext> openStatuses = TicketAPI.getStatusOfStatusType(StatusType.OPEN);
+		
+		List<Long> statusids = new ArrayList<>();
+		for(TicketStatusContext openStatus :openStatuses) {
+			statusids.add(openStatus.getId());
+		}
+		
+		
 		SelectRecordsBuilder<ReadingAlarmContext> selectBuilder = new SelectRecordsBuilder<ReadingAlarmContext>()
 				.select(fields)
 				.innerJoin(ticketModule.getTableName())
 				.on(ticketModule.getTableName()+".ID = Alarms.WO_ID")
-				.innerJoin(ticketStatusModule.getTableName())
-				.on(ticketStatusModule.getTableName()+".ID = "+ticketModule.getTableName()+".STATUS_ID")
 				.moduleName(FacilioConstants.ContextNames.READING_ALARM)
 				.beanClass(ReadingAlarmContext.class)
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("ruleId"), String.valueOf(rule.getId()), NumberOperators.EQUALS))
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("woId"), "", CommonOperators.IS_NOT_EMPTY))
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("createdTime"), "", DateOperators.CURRENT_WEEK))
-				.andCustomWhere(ticketStatusModule.getTableName()+".STATUS_TYPE = ?", TicketStatusContext.StatusType.OPEN.getIntVal())
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("status"), StringUtils.join(statusids, ","), NumberOperators.EQUALS))
 				;
 		 int woCreatedThisWeek = selectBuilder.get().size();
 		 

@@ -38,6 +38,7 @@ import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.context.TicketContext.SourceType;
 import com.facilio.bmsconsole.context.TicketPriorityContext;
 import com.facilio.bmsconsole.context.TicketStatusContext;
+import com.facilio.bmsconsole.context.TicketStatusContext.StatusType;
 import com.facilio.bmsconsole.context.TicketTypeContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.criteria.Condition;
@@ -224,6 +225,19 @@ public class TicketAPI {
 															.orderBy("ID");
 		List<TicketStatusContext> statuses = builder.get();
 		return statuses.get(0);
+	}
+	
+	public static List<TicketStatusContext> getStatusOfStatusType(StatusType statusType) throws Exception
+	{
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		SelectRecordsBuilder<TicketStatusContext> builder = new SelectRecordsBuilder<TicketStatusContext>()
+															.moduleName(FacilioConstants.ContextNames.TICKET_STATUS)
+															.beanClass(TicketStatusContext.class)
+															.select(modBean.getAllFields(FacilioConstants.ContextNames.TICKET_STATUS))
+															.andCustomWhere("STATUS = ?", statusType.getIntVal())
+															.orderBy("ID");
+		List<TicketStatusContext> statuses = builder.get();
+		return statuses;
 	}
 	
 	public static List<TicketPriorityContext> getPriorties(long orgId) throws Exception
