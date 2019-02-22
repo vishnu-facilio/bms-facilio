@@ -486,9 +486,11 @@ public class ReadingRuleAPI extends WorkflowRuleAPI {
 				alarmTriggerRules.add(alarmClear);
 			}
 			
+			int executionOrder = 1;
 			for(ReadingRuleContext alarmTriggerRule :alarmTriggerRules) {
 				
 				alarmTriggerRule.setOnSuccess(true);
+				alarmTriggerRule.setExecutionOrder(executionOrder++);
 				
 				alarmTriggerRule.setRuleGroupId(preRequsiteRule.getId());
 				alarmTriggerRule.setParentRuleId(preRequsiteRule.getId());
