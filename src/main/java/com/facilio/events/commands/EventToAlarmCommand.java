@@ -19,6 +19,7 @@ import com.facilio.bmsconsole.context.TicketContext.SourceType;
 import com.facilio.bmsconsole.criteria.CommonOperators;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.DateOperators;
+import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.criteria.StringOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
@@ -56,7 +57,7 @@ public class EventToAlarmCommand implements Command {
 					.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 					.andCondition(CriteriaAPI.getCondition(messageKeyField, event.getMessageKey(), StringOperators.IS))
 					.andCondition(CriteriaAPI.getCondition(alarmIdField, CommonOperators.IS_NOT_EMPTY))
-					.andCondition(CriteriaAPI.getCondition(createdTimeField, String.valueOf(event.getCreatedTime()), DateOperators.IS_BEFORE))
+					.andCondition(CriteriaAPI.getCondition(createdTimeField, String.valueOf(event.getCreatedTime()), NumberOperators.LESS_THAN_EQUAL))
 					.orderBy("CREATED_TIME DESC")
 					.limit(1)
 					;
