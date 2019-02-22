@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
@@ -11,6 +12,7 @@ import com.facilio.bmsconsole.context.BuildingContext;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
+import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
@@ -22,6 +24,7 @@ public class GetAllBuildingCommand implements Command{
 		// TODO Auto-generated method stub
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 		List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 		Long siteId = (Long) context.get(FacilioConstants.ContextNames.SITE_ID);
 		
 		//Connection conn = ((FacilioContext) context).getConnectionWithoutTransaction();
@@ -34,7 +37,7 @@ public class GetAllBuildingCommand implements Command{
 				.moduleName(moduleName)
 				.beanClass(BuildingContext.class)
 				.select(fields)
-				.orderBy(module.getTableName()+".ID");
+				.orderBy(fieldMap.get("name").getColumnName());
 
 		if (siteId != null && siteId > 0) {
 			builder.andCustomWhere("BaseSpace.SITE_ID = ?", siteId);

@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.commands;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
@@ -10,6 +11,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.constants.FacilioConstants;
 
@@ -22,7 +24,7 @@ public class GetAllCampusCommand implements Command{
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 		String dataTableName = (String) context.get(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME);
 		List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
-		
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 		
 		SelectRecordsBuilder<SiteContext> builder = new SelectRecordsBuilder<SiteContext>()
 				.table(dataTableName)
@@ -30,7 +32,7 @@ public class GetAllCampusCommand implements Command{
 				.beanClass(SiteContext.class)
 				.select(fields)
 				.maxLevel(2)
-				.orderBy("-BaseSpace.LOCAL_ID desc,ID");
+				.orderBy(fieldMap.get("name").getColumnName() + " ASC");
 		Criteria scopeCriteria = AccountUtil.getCurrentUser().scopeCriteria(moduleName);
 		if(scopeCriteria != null)
 		{
