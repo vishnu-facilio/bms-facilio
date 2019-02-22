@@ -41,80 +41,84 @@ public class AddOrUpdateWorkorderItemsCommand implements Command {
 			long parentId = workorderitems.get(0).getParentId();
 			for (WorkorderItemContext workorderitem : workorderitems) {
 				InventryContext inventry = getInventory(workorderitem.getInventory().getId());
-				List<InventoryCostContext> inventoryCosts = new ArrayList<>();
+				if (inventry.getQuantity() < workorderitem.getQuantityConsumed()) {
+					throw new IllegalStateException("Insufficient quantity in inventory!");
+				} else {
+					List<InventoryCostContext> inventoryCosts = new ArrayList<>();
 
-				if (inventry.getCostType() == 1) {
-					inventoryCosts = getInventoryCostList(inventry.getId(), " asc");
-				} else if (inventry.getCostType() == 2) {
-					inventoryCosts = getInventoryCostList(inventry.getId(), " desc");
-				}
+					if (inventry.getCostType() == 1) {
+						inventoryCosts = getInventoryCostList(inventry.getId(), " asc");
+					} else if (inventry.getCostType() == 2) {
+						inventoryCosts = getInventoryCostList(inventry.getId(), " desc");
+					}
 
-				if (inventoryCosts != null && !inventoryCosts.isEmpty()) {
-					InventoryCostContext invenCost = inventoryCosts.get(0);
-					if (workorderitem.getQuantityConsumed() <= invenCost.getCurrentQuantity()) {
-						double costOccured = 0;
-						if (invenCost.getUnitcost() >= 0) {
-							costOccured = invenCost.getUnitcost() * workorderitem.getQuantityConsumed();
-						}
-						workorderitem.setInventoryCost(invenCost);
-						workorderitem.setCost(costOccured);
-						workorderitem.setParentId(parentId);
-						workorderitem.setModifiedTime(System.currentTimeMillis());
-						if (workorderitem.getId() <= 0) {
-							// Insert
-							workorderItemslist.add(workorderitem);
-							itemToBeAdded.add(workorderitem);
-						} else {
-							// update
-							workorderItemslist.add(workorderitem);
-							updateWorkorderParts(workorderItemsModule, workorderItemFields, workorderitem);
-						}
-						break;
-					} else {
-						double requiredQuantity = workorderitem.getQuantityConsumed();
-						for (InventoryCostContext icosts : inventoryCosts) {
-							WorkorderItemContext item = new WorkorderItemContext();
+					if (inventoryCosts != null && !inventoryCosts.isEmpty()) {
+						InventoryCostContext invenCost = inventoryCosts.get(0);
+						if (workorderitem.getQuantityConsumed() <= invenCost.getCurrentQuantity()) {
 							double costOccured = 0;
-							double quantityUsedForTheCost = 0;
-							if (requiredQuantity <= icosts.getCurrentQuantity()) {
-								quantityUsedForTheCost = requiredQuantity;
-							} else {
-								quantityUsedForTheCost = icosts.getCurrentQuantity();
+							if (invenCost.getUnitcost() >= 0) {
+								costOccured = invenCost.getUnitcost() * workorderitem.getQuantityConsumed();
 							}
-							if (icosts.getUnitcost() >= 0) {
-								costOccured = icosts.getUnitcost() * quantityUsedForTheCost;
-							}
-							item.setCost(costOccured);
-							item.setModifiedTime(System.currentTimeMillis());
-							item.setInventoryCost(icosts);
-							item.setQuantityConsumed(quantityUsedForTheCost);
-							item.setInventory(inventry);
-							item.setParentId(parentId);
-							requiredQuantity -= quantityUsedForTheCost;
+							workorderitem.setInventoryCost(invenCost);
+							workorderitem.setCost(costOccured);
+							workorderitem.setParentId(parentId);
+							workorderitem.setModifiedTime(System.currentTimeMillis());
 							if (workorderitem.getId() <= 0) {
 								// Insert
-								workorderItemslist.add(item);
-								itemToBeAdded.add(item);
+								workorderItemslist.add(workorderitem);
+								itemToBeAdded.add(workorderitem);
 							} else {
 								// update
-								workorderItemslist.add(item);
-								updateWorkorderParts(workorderItemsModule, workorderItemFields, item);
+								workorderItemslist.add(workorderitem);
+								updateWorkorderParts(workorderItemsModule, workorderItemFields, workorderitem);
 							}
-							if (requiredQuantity <= 0) {
-								break;
+							break;
+						} else {
+							double requiredQuantity = workorderitem.getQuantityConsumed();
+							for (InventoryCostContext icosts : inventoryCosts) {
+								WorkorderItemContext item = new WorkorderItemContext();
+								double costOccured = 0;
+								double quantityUsedForTheCost = 0;
+								if (requiredQuantity <= icosts.getCurrentQuantity()) {
+									quantityUsedForTheCost = requiredQuantity;
+								} else {
+									quantityUsedForTheCost = icosts.getCurrentQuantity();
+								}
+								if (icosts.getUnitcost() >= 0) {
+									costOccured = icosts.getUnitcost() * quantityUsedForTheCost;
+								}
+								item.setCost(costOccured);
+								item.setModifiedTime(System.currentTimeMillis());
+								item.setInventoryCost(icosts);
+								item.setQuantityConsumed(quantityUsedForTheCost);
+								item.setInventory(inventry);
+								item.setParentId(parentId);
+								requiredQuantity -= quantityUsedForTheCost;
+								if (workorderitem.getId() <= 0) {
+									// Insert
+									workorderItemslist.add(item);
+									itemToBeAdded.add(item);
+								} else {
+									// update
+									workorderItemslist.add(item);
+									updateWorkorderParts(workorderItemsModule, workorderItemFields, item);
+								}
+								if (requiredQuantity <= 0) {
+									break;
+								}
 							}
 						}
 					}
 				}
+				if (itemToBeAdded != null && !itemToBeAdded.isEmpty()) {
+					addWorkorderParts(workorderItemsModule, workorderItemFields, itemToBeAdded);
+				}
+				context.put(FacilioConstants.ContextNames.PARENT_ID, workorderitems.get(0).getParentId());
+				context.put(FacilioConstants.ContextNames.INVENTORY_ID, workorderitems.get(0).getInventory().getId());
+				context.put(FacilioConstants.ContextNames.INVENTORY_IDS,
+						Collections.singletonList(workorderitems.get(0).getInventory().getId()));
+				context.put(FacilioConstants.ContextNames.RECORD_LIST, workorderItemslist);
 			}
-			if (itemToBeAdded != null && !itemToBeAdded.isEmpty()) {
-				addWorkorderParts(workorderItemsModule, workorderItemFields, itemToBeAdded);
-			}
-			context.put(FacilioConstants.ContextNames.PARENT_ID, workorderitems.get(0).getParentId());
-			context.put(FacilioConstants.ContextNames.INVENTORY_ID, workorderitems.get(0).getInventory().getId());
-			context.put(FacilioConstants.ContextNames.INVENTORY_IDS,
-					Collections.singletonList(workorderitems.get(0).getInventory().getId()));
-			context.put(FacilioConstants.ContextNames.RECORD_LIST, workorderItemslist);
 		}
 		return false;
 	}
