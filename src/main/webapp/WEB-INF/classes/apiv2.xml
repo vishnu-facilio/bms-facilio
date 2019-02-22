@@ -823,7 +823,7 @@
 	</package>
 
 	<package name="filePreviewApiv2" namespace="/api/v2/files/preview"
-		extends="filePreviewApi">
+		extends="attachmentPreviewApi">
 		<action name="*" class="com.facilio.bmsconsole.actions.FileAction"
 			method="previewFile">
 			<param name="permission">READ</param>
