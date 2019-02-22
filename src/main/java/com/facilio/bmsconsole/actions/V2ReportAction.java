@@ -498,7 +498,10 @@ public class V2ReportAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		updateContext(context);
 		
-		ReadOnlyChainFactory.constructAndFetchReportDataChain().execute(context);
+		Chain c = FacilioChain.getNonTransactionChain();
+		c.addCommand(new ConstructReportData());
+		c.addCommand(ReadOnlyChainFactory.constructAndFetchReportDataChain());
+		c.execute(context);
 
 		return setReportResult(context);
 	}
@@ -556,8 +559,12 @@ public class V2ReportAction extends FacilioAction {
 			throw new Exception("Report not found");
 		}
 		context.put(FacilioConstants.ContextNames.REPORT, reportContext);
-		chain.addCommand(new ReportSpecialHandlingCommand());
-		chain.addCommand(ReadOnlyChainFactory.newFetchReportDataChain());
+		
+		if (startTime != -1 && endTime != -1) {
+			reportContext.setDateRange(new DateRange(startTime, endTime));
+		}
+		
+		chain.addCommand(ReadOnlyChainFactory.constructAndFetchReportDataChain());
 		chain.addCommand(new GetModuleFromReportContextCommand());
 		chain.execute(context);
 

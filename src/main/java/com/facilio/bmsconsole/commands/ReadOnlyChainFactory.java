@@ -349,9 +349,9 @@ public class ReadOnlyChainFactory {
 	
 	public static Chain constructAndFetchReportDataChain() {
 		Chain c = getDefaultChain();
-		c.addCommand(new ConstructReportData());
-		c.addCommand(new ReportSpecialHandlingCommand());
+		c.addCommand(new ReportSpecialHandlingCommand(true));
 		c.addCommand(newFetchReportDataChain());
+		c.addCommand(new ReportSpecialHandlingCommand(false));
 		return c;
 	}
 	
