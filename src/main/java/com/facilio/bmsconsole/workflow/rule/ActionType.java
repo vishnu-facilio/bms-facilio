@@ -721,7 +721,7 @@ public enum ActionType {
 			
 			if(alarmMeta != null) {
 				AlarmContext alarm = AlarmAPI.getAlarm(alarmMeta.getAlarmId());
-				;
+
 				if(alarm.getModifiedTime() == ((ReadingContext) currentRecord).getTtime()) {
 					return;
 				}
