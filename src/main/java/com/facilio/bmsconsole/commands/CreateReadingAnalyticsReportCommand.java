@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -26,6 +27,7 @@ import com.facilio.bmsconsole.criteria.PickListOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldType;
+import com.facilio.bmsconsole.util.DateTimeUtil;
 import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -230,7 +232,7 @@ public class CreateReadingAnalyticsReportCommand implements Command {
 						ResourceContext resource = resourceMap.get(parentId);
 						joiner.add(resource.getName());
 					}
-					return joiner.toString()+" ("+ yField.getLabel()+(metric.getPredictedTime() == -1 ? "" : ("_"+metric.getPredictedTime()))+")";
+					return joiner.toString()+" ("+ yField.getLabel()+(metric.getPredictedTime() == -1 ? "" : (" @ "+DateTimeUtil.getDateTimeFormat("yyyy-MM-dd HH:mm").format(DateTimeUtil.getDateTime(metric.getPredictedTime()))))+")";
 				}
 			}
 		}
