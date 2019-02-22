@@ -242,7 +242,7 @@ public class AlarmAPI {
 		
 		if(sourceAlarm != destinationAlarm && destinationAlarm.getSeverity() != null) {
 			Map<Long, AlarmSeverityContext> severityMap = AlarmAPI.getAlarmSeverityMap(sourceAlarm.getSeverity().getId(), destinationAlarm.getSeverity().getId());
-			if (destinationAlarm.isForceSeverity() || severityMap.get(sourceAlarm.getSeverity().getId()).getCardinality() > severityMap.get(destinationAlarm.getSeverity().getId()).getCardinality()) { //Updating severity only if previous severity is lower
+			if (destinationAlarm.getSeverityString().equals(FacilioConstants.Alarm.CLEAR_SEVERITY) || destinationAlarm.isForceSeverity() || severityMap.get(sourceAlarm.getSeverity().getId()).getCardinality() > severityMap.get(destinationAlarm.getSeverity().getId()).getCardinality()) { //Updating severity only if previous severity is lower
 				destinationAlarm.setPreviousSeverity(sourceAlarm.getSeverity());
 			}
 			else {
