@@ -28,10 +28,10 @@ public class GetFormMetaCommand implements Command {
 			for (String formName: formNames) {
 				FacilioForm form = getFormFromDB(formName);
 				if (form == null) {
-					form = FormFactory.getForm(formName);
-					if (form == null) {
+					if (FormFactory.getForm(formName) == null) {
 						throw new IllegalArgumentException("Invalid Form " + formName);
 					}
+					form = new FacilioForm(FormFactory.getForm(formName));
 					List<FormField> fields = form.getFields();
 					ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 					String moduleName = form.getModule().getName();
@@ -42,6 +42,16 @@ public class GetFormMetaCommand implements Command {
 						FacilioField field = modBean.getField(fieldName, moduleName);
 						if (field != null) {
 							f.setFieldId(field.getFieldId());
+						}
+					}
+
+					int count = fields.size();
+
+					List<FacilioField> customFields = modBean.getAllCustomFields(moduleName);
+					if (customFields != null && !customFields.isEmpty()) {
+						for (FacilioField f: customFields) {
+							count = count + 1;
+							fields.add(new FormField(f.getName(), f.getDisplayType(), f.getDisplayName(), FormField.Required.OPTIONAL, count, 1));
 						}
 					}
 				}

@@ -161,7 +161,7 @@ public class FormFactory {
 		fields.add(new FormField("priority", FieldDisplayType.LOOKUP_SIMPLE, "Priority", Required.OPTIONAL, "ticketpriority", 6, 1));
 		fields.add(new FormField("urgency", FieldDisplayType.URGENCY, "Urgency", Required.OPTIONAL, "urgency" , 7, 1));
 		fields.add(new FormField("attachedFiles", FieldDisplayType.ATTACHMENT, "Attachment", Required.OPTIONAL, 8, 1));
-		return fields;
+		return Collections.unmodifiableList(fields);
 	}
 	
 	private static List<FormField> getMobileAssetFormFields() {
@@ -180,7 +180,7 @@ public class FormFactory {
 		fields.add(new FormField("purchasedDate", FieldDisplayType.DATE, "Purchased Date", Required.OPTIONAL, 12, 1));
 		fields.add(new FormField("retireDate", FieldDisplayType.DATE, "Retire Date", Required.OPTIONAL, 13, 1));
 		fields.add(new FormField("warrantyExpiryDate", FieldDisplayType.DATE, "Warranty Expiry Date", Required.OPTIONAL, 14, 1));
-		return fields;
+		return Collections.unmodifiableList(fields);
 	}
 	
 	public static List<FormField> getMetaFormFieldApprovals(List<FacilioField> allFields) throws Exception {
@@ -205,7 +205,7 @@ public class FormFactory {
 		if (facilioFields.size() > 0) {
 			fields.addAll(FormsAPI.getFacilioFieldsFromFormFields(facilioFields));
 		}
-		return fields;
+		return Collections.unmodifiableList(fields);
 	}
 	
 	private static List<FormField> getMobileWorkOrderFormFields() {
@@ -217,7 +217,7 @@ public class FormFactory {
 		fields.add(new FormField("assignment", FieldDisplayType.TEAMSTAFFASSIGNMENT, "Team/Staff", Required.REQUIRED, 5, 1));
 		fields.add(new FormField("priority", FieldDisplayType.LOOKUP_SIMPLE, "Priority", Required.OPTIONAL, "ticketpriority", 6, 1));
 		fields.add(new FormField("attachedFiles", FieldDisplayType.ATTACHMENT, "Attachment", Required.OPTIONAL, 7, 1));
-		return fields;
+		return Collections.unmodifiableList(fields);
 	}
 
 	public static FacilioForm getWebWorkOrderForm() {
@@ -286,7 +286,7 @@ public class FormFactory {
 		fields.add(new FormField("assignment", FieldDisplayType.TEAMSTAFFASSIGNMENT, "Team/Staff", Required.OPTIONAL, 7, 1));
 		fields.add(new FormField("attachedFiles", FieldDisplayType.ATTACHMENT, "Attachments", Required.OPTIONAL, "attachment", 8, 1));
 		fields.add(new FormField("tasks", FieldDisplayType.TASKS, "TASKS", Required.OPTIONAL, 9, 1));
-		return fields;
+		return Collections.unmodifiableList(fields);
 	}
 	
 	private static List<FormField> getWebPMFormFields() {
@@ -300,7 +300,7 @@ public class FormFactory {
 		fields.add(new FormField("duration", FieldDisplayType.DURATION, "Duration", Required.OPTIONAL, "duration", 6, 1));
 		fields.add(new FormField("groups",FieldDisplayType.LOOKUP_SIMPLE,"Team", Required.OPTIONAL, "groups", 7, 1));
 		fields.add(new FormField("attachedFiles", FieldDisplayType.ATTACHMENT, "Attachments", Required.OPTIONAL, "attachment", 8, 1));
-		return fields;
+		return Collections.unmodifiableList(fields);
 	}
 	
 	private static List<FormField> getWebAssetFormFields() {
@@ -321,7 +321,7 @@ public class FormFactory {
 		fields.add(new FormField("unitPrice", FieldDisplayType.TEXTBOX, "Unit Price", Required.OPTIONAL, 9, 1));
 		fields.add(new FormField("warrantyExpiryDate", FieldDisplayType.DATE, "Warranty Expiry Date", Required.OPTIONAL, 9, 2));
 		fields.add(new FormField("qrVal", FieldDisplayType.TEXTBOX, "QR Value", Required.OPTIONAL, 10, 1));
-		return fields;
+		return Collections.unmodifiableList(fields);
 	}
 
 	
@@ -337,7 +337,7 @@ public class FormFactory {
 		fields.add(new FormField("urgency", FieldDisplayType.URGENCY, "Urgency", Required.OPTIONAL, 7, 1));
 		fields.add(new FormField("assignment", FieldDisplayType.TEAMSTAFFASSIGNMENT, "Team/Staff", Required.OPTIONAL, 8, 1));
 		fields.add(new FormField("attachedFiles", FieldDisplayType.ATTACHMENT, "Attachments", Required.OPTIONAL, "attachment", 9, 1));
-		return fields;
+		return Collections.unmodifiableList(fields);
 	}
 
 	private static List<FormField> getLoggedInServiceWorkRequestFormFields() {
@@ -346,7 +346,7 @@ public class FormFactory {
 		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 2, 1));
 		fields.add(new FormField("urgency", FieldDisplayType.URGENCY, "Urgency", Required.OPTIONAL, 3, 1));
 		fields.add(new FormField("attachedFiles", FieldDisplayType.ATTACHMENT, "Attachment", Required.OPTIONAL, 4, 1));
-		return fields;
+		return Collections.unmodifiableList(fields);
 	}
 	
 	private static List<FormField> getServiceWorkRequestFormFields() {
@@ -357,7 +357,7 @@ public class FormFactory {
 		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 4, 1));
 		fields.add(new FormField("urgency", FieldDisplayType.URGENCY, "Urgency", Required.OPTIONAL, 5, 1));
 		fields.add(new FormField("attachedFiles", FieldDisplayType.ATTACHMENT, "Attachment", Required.OPTIONAL, 6, 1));
-		return fields;
+		return Collections.unmodifiableList(fields);
 	}
 	
 	private static List<FormField> getWebWorkRequestFormFields() {
@@ -370,7 +370,7 @@ public class FormFactory {
 		fields.add(new FormField("type",FieldDisplayType.LOOKUP_SIMPLE,"Maintenance Type", Required.OPTIONAL, 5, 1));
 		fields.add(new FormField("team", FieldDisplayType.TEAM, "Team", Required.REQUIRED, 6, 1));
 		fields.add(new FormField("attachedFiles", FieldDisplayType.ATTACHMENT, "Attachment", Required.OPTIONAL, 7, 1));
-		return fields;
+		return Collections.unmodifiableList(fields);
 	}
 	
 	private static List<FormField> getInventoryFormField() {
@@ -386,7 +386,7 @@ public class FormFactory {
 		fields.add(new FormField("vendor", FieldDisplayType.LOOKUP_SIMPLE, "Vendor", Required.OPTIONAL,"inventory_vendors", 9, 1));
 		fields.add(new FormField("space", FieldDisplayType.WOASSETSPACECHOOSER, "Location", Required.OPTIONAL, 10, 1));
 		fields.add(new FormField("qrVal", FieldDisplayType.TEXTBOX, "QR VALUE", Required.OPTIONAL, 11, 1));
-		return fields;
+		return Collections.unmodifiableList(fields);
 	}
 
 }

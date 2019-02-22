@@ -1,15 +1,29 @@
 package com.facilio.bmsconsole.forms;
 
 import java.io.Serializable;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import com.facilio.bmsconsole.modules.FacilioModule;
 
 public class FacilioForm implements Serializable {
-	
+	public FacilioForm () {}
+
+	public FacilioForm(long id, long orgId, String name, String displayName, long moduleId, List<FormField> fields, FacilioModule module, FormType formType, LabelPosition labelPosition) {
+		this.id = id;
+		this.orgId = orgId;
+		this.name = name;
+		this.displayName = displayName;
+		this.moduleId = moduleId;
+		this.fields = fields;
+		this.module = module;
+		this.formType = formType;
+		this.labelPosition = labelPosition;
+	}
+
+	public FacilioForm(FacilioForm form) {
+		this(form.id, form.orgId, form.name, form.displayName, form.moduleId, new ArrayList<>(form.fields), form.module, form.formType, form.labelPosition);
+	}
+
 	private static final long serialVersionUID = 1L;
 	
 	private long id = -1;
