@@ -18,11 +18,9 @@ import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
-import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldType;
-import com.facilio.constants.FacilioConstants;
 import com.facilio.transaction.FacilioConnectionPool;
 
 public class DBUtil {
@@ -66,6 +64,7 @@ public class DBUtil {
 		tablesWithoutOrgId.add("server_info");
 		tablesWithoutOrgId.add("faciliousers");
 		tablesWithoutOrgId.add("faciliorequestors");
+		tablesWithoutOrgId.add("SupportEmails");
 		tablesWithoutOrgId.add("Service");
 		tablesWithoutOrgId.add("ClientApp");
 		tablesWithoutOrgId.add("Organizations");
