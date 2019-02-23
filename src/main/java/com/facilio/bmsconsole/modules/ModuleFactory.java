@@ -1642,4 +1642,12 @@ public class ModuleFactory {
 		inventoryModule.setTableName("Inventory_cost");
 		return inventoryModule;
 	}
+	
+	public static FacilioModule getStockedToolsModule() {
+		FacilioModule inventoryModule = new FacilioModule();
+		inventoryModule.setName(FacilioConstants.ContextNames.STOCKED_TOOLS);
+		inventoryModule.setDisplayName("Stocked Tools");
+		inventoryModule.setTableName("Stocked_tools");
+		return inventoryModule;
+	}
 }

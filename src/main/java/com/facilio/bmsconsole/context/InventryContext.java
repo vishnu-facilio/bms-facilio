@@ -125,7 +125,7 @@ public class InventryContext extends ModuleBaseWithCustomFields {
 		this.modifiedTime = modifiedTime;
 	}
 	
-	private double quantity;
+	private double quantity=-1;
 	public double getQuantity() {
 		return quantity;
 	}

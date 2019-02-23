@@ -504,4 +504,23 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new GetWorkorderItemsListCommand());
 		return c;
 	}
+	
+	public static Chain fetchStockedToolsDetails() {
+		Chain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForStockedTools());
+		c.addCommand(new GenericGetModuleDataDetailCommand());
+		c.addCommand(new GetStockedToolsDetailsCommand());
+		return c;
+	}
+	
+	public static Chain getStockedToolsList() {
+		Chain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForStockedTools());
+		c.addCommand(new LoadAllFieldsCommand());
+		c.addCommand(new GenerateCriteriaFromFilterCommand());
+		c.addCommand(new GenerateSearchConditionCommand());
+		c.addCommand(new GetStockedToolsListCommand());
+		return c;
+	}
+	
 }

@@ -48,6 +48,8 @@ import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.bmsconsole.context.SkillContext;
 import com.facilio.bmsconsole.context.SpaceCategoryContext;
 import com.facilio.bmsconsole.context.SpaceContext;
+import com.facilio.bmsconsole.context.StockedToolsContext;
+import com.facilio.bmsconsole.context.StockedToolsStatusContext;
 import com.facilio.bmsconsole.context.StoreRoomContext;
 import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.TicketCategoryContext;
@@ -767,6 +769,12 @@ public class FacilioConstants {
 		public static final String WORKORDER_ITEMS = "workorderItem";
 		public static final String CONSUMABLES = "consumables";
 		
+		public static final String STOCKED_TOOL_LIST = "stockedToolsList";
+		public static final String STOCKED_TOOLS = "stockedTools";
+		public static final String STOCKED_TOOLS_ID = "stockedToolsId";
+		public static final String STOCKED_TOOLS_IDS = "stockedToolsIds";
+		public static final String STOCKED_TOOLS_STATUS = "stockedToolsStatus";
+		
 		private static Map<String, Class> classMap = Collections.unmodifiableMap(initClassMap());
 		private static Map<String, Class> initClassMap() {
 			Map<String, Class> classMap = new HashMap<>();
@@ -845,6 +853,8 @@ public class FacilioConstants {
 			classMap.put(INVENTORY_COST, InventoryCostContext.class);
 			classMap.put(WORKORDER_ITEMS, WorkorderItemContext.class);
 			classMap.put(CONSUMABLES, ConsumableContext.class);
+			classMap.put(STOCKED_TOOLS, StockedToolsContext.class);
+			classMap.put(STOCKED_TOOLS_STATUS, StockedToolsStatusContext.class);
 			return classMap;
 		}
 		

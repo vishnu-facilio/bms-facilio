@@ -135,6 +135,15 @@ public class ModuleBaseWithCustomFields implements Serializable {
 	public void setModifiedTime(long modifiedTime) {
 		this.modifiedTime = modifiedTime;
 	}
+	
+	private long sysModifiedTime = -1;
+	public long getSysModifiedTime() {
+		return sysModifiedTime;
+	}
+	public void setSysModifiedTime(long sysModifiedTime) {
+		this.sysModifiedTime = sysModifiedTime;
+	}
+	
 	@Override
 	public String toString() {
 		// TODO Auto-generated method stub

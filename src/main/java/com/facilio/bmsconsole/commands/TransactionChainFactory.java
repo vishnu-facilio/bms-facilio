@@ -1590,5 +1590,20 @@ public class TransactionChainFactory {
 			c.addCommand(getUpdateInventoryQuantityRollupChain());
 			return c;
 		}
+		
+		public static Chain getAddStockedToolsChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForStockedTools());
+			c.addCommand(new GenericAddModuleDataCommand());
+			c.addCommand(new ExecuteAllWorkflowsCommand());
+			return c;
+		}
+		
+		public static Chain getUpdateStockedToolsChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForStockedTools());
+			c.addCommand(new GenericUpdateModuleDataCommand());
+			return c;
+		}
 }
 

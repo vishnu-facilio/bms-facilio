@@ -240,6 +240,11 @@ public class ViewFactory {
 		views = new LinkedHashMap<>();
 		views.put("all", getAllInventry().setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.INVENTRY, views);
+		
+		order = 1;
+		views = new LinkedHashMap<>();
+		views.put("all", getAllStockedTools().setOrder(order++));
+		viewsMap.put(FacilioConstants.ContextNames.STOCKED_TOOLS, views);
 		return viewsMap;
 	}
 
@@ -2138,6 +2143,26 @@ public class ViewFactory {
 		FacilioView allView = new FacilioView();
 		allView.setName("all");
 		allView.setDisplayName("All Inventory");
+		allView.setSortFields(sortFields);
+
+		return allView;
+	}
+	
+	private static FacilioView getAllStockedTools() {
+
+		FacilioModule itemsModule = ModuleFactory.getStockedToolsModule();
+
+		FacilioField createdTime = new FacilioField();
+		createdTime.setName("sysCreatedTime");
+		createdTime.setDataType(FieldType.NUMBER);
+		createdTime.setColumnName("TTIME");
+		createdTime.setModule(itemsModule);
+
+		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));
+
+		FacilioView allView = new FacilioView();
+		allView.setName("all");
+		allView.setDisplayName("All Stocked Tools");
 		allView.setSortFields(sortFields);
 
 		return allView;
