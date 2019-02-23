@@ -17,6 +17,7 @@ import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
+import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.util.DashboardUtil;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.constants.FacilioConstants;
@@ -43,7 +44,7 @@ public class CustomReportCultfit1 implements CustomReport {
 		List<FacilioField> selectFields = new ArrayList<>();
 		
 		FacilioField countField = FormulaContext.CommonAggregateOperator.COUNT.getSelectField(statusField);
-		countField.setName("count");
+		countField.setName("value");
 		
 		ReportFieldContext reportFieldContext = new ReportFieldContext();
 		reportFieldContext.setModuleField(countField);
@@ -79,11 +80,11 @@ public class CustomReportCultfit1 implements CustomReport {
 			String statusString = (String) prop.get("status");
 			
 			if(statusString.equals("Open")) {
-				openCount += Integer.parseInt(prop.get("count").toString());
+				openCount += Integer.parseInt(prop.get("value").toString());
 			}
 			
 			if(statusString.equals("Closed")) {
-				closedCount += Integer.parseInt(prop.get("count").toString());
+				closedCount += Integer.parseInt(prop.get("value").toString());
 			}
 		}
 		
@@ -102,6 +103,8 @@ public class CustomReportCultfit1 implements CustomReport {
 		res.put("value", closedCount);
 		
 		ticketData.add(res);
+		
+		report.getxAxisField().getField().setDataType(FieldType.STRING);
 		
 		return ticketData;
 	}
