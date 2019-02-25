@@ -72,7 +72,7 @@ public class AddOrUpdateWorkorderItemsCommand implements Command {
 								workorderItemslist.add(workorderitem);
 								updateWorkorderParts(workorderItemsModule, workorderItemFields, workorderitem);
 							}
-							break;
+//							break;
 						} else {
 							double requiredQuantity = workorderitem.getQuantityConsumed();
 							for (InventoryCostContext icosts : inventoryCosts) {
