@@ -111,7 +111,7 @@ if (buildinfo == null) {
 	                Client Ver:
 	            </td>
 	            <td>
-	                <%= com.facilio.aws.util.AwsUtil.getClientVersion()%>
+	                <%= (String)com.facilio.aws.util.AwsUtil.getClientInfo().get("version")%>
 	            </td>
 	        </tr>
 	        <tr>

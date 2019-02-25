@@ -4,10 +4,11 @@
     <%
   	
   String version = request.getParameter("version");
+  boolean isNewClientBuild = request.getParameter("isNewClientBuild") != null;
     int aws;
     String user = null;
     if (version != null) {
-    	aws = AwsUtil.updateClientVersion(version);
+    	aws = AwsUtil.updateClientVersion(version, isNewClientBuild);
     	
     	AdminAction.reloadBrowser();
   	}
@@ -66,6 +67,9 @@ function init() {
 <h3> Update Client Version: </h3> 
 <div style="margin-top:30px">
 Client Version: <input style="margin-left: 10px"  type = "text" name = "version"  placeholder="version" />
+</div>
+<div style="margin-top: 30px">
+Is updated Client Setup: <input style="margin-left: 10px" type="checkbox" name="isNewClientBuild" />
 </div>
 <div style="margin-top:30px;" >
 <button  id="show" type="submit"  >Update</button>

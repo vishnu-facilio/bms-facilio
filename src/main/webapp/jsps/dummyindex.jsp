@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <%
-	String clientVersion = com.facilio.aws.util.AwsUtil.getClientVersion();
+	String clientVersion = (String)com.facilio.aws.util.AwsUtil.getClientInfo().get("version");
 	if (clientVersion != null && !clientVersion.startsWith("/")) {
 		clientVersion = "/" + clientVersion;
 	}

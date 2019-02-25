@@ -1,7 +1,9 @@
 <!DOCTYPE html>
 <%@ page import="org.json.simple.JSONObject" %>
 <%
-	String clientVersion = com.facilio.aws.util.AwsUtil.getClientVersion();
+	String clientVersion = (String)com.facilio.aws.util.AwsUtil.getClientInfo().get("version");
+	boolean isNewClientBuild=(Boolean)com.facilio.aws.util.AwsUtil.getClientInfo().get("isNewClientBuild");
+	
 	if (clientVersion != null && !clientVersion.startsWith("/")) {
 		clientVersion = "/" + clientVersion;
 	} else {
@@ -104,7 +106,15 @@ if(brandName != null && (brandName.indexOf("BuildingsTalk") != -1 )) {%>
         var rebrandInfo = <%=rebrandInfo%>;
         window.rebrandInfo = rebrandInfo;
   </script>
-  <link href="<%=staticUrl%>/app.css" rel="stylesheet">
+  
+<% if(isNewClientBuild) {%>
+<link href="<%=staticUrl%>/css/chunk-vendors.css" rel="stylesheet">
+<link href="<%=staticUrl%>/css/app.css" rel="stylesheet">
+	
+<% } else {%>
+	<link href="<%=staticUrl%>/app.css" rel="stylesheet">	
+<% }%>
+  
  </head>
 
   <body>
@@ -115,9 +125,18 @@ if(brandName != null && (brandName.indexOf("BuildingsTalk") != -1 )) {%>
               <div class="bounce3"></div>
           </div>
       </div>
-      <script type="text/javascript" charset="UTF-8" src="<%=staticUrl%>/js/manifest.js"></script>
+
+<% if(isNewClientBuild) {%>
+      <script type="text/javascript" charset="UTF-8" src="<%=staticUrl%>/js/chunk-vendors.js"></script>
+      <script type="text/javascript" charset="UTF-8" src="<%=staticUrl%>/js/app.js"></script>
+<% } else {%>
+		
+	  <script type="text/javascript" charset="UTF-8" src="<%=staticUrl%>/js/manifest.js"></script>
       <script type="text/javascript" charset="UTF-8" src="<%=staticUrl%>/js/vendor.js"></script>
       <script type="text/javascript" charset="UTF-8" src="<%=staticUrl%>/js/app.js"></script>
+<% }%> 	
+ 
+      
   </body>
   
   <script src="//unpkg.com/ckmeans@1.0.1/src/ckmeans.js"></script>

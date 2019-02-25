@@ -207,19 +207,23 @@ public class AwsUtil
     	return PROPERTIES.getProperty(name);
     }
 
-	public static String getClientVersion() {
+	public static Map<String, Object> getClientInfo() {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
 		ResultSet rs;
 		String clientVersion = null;
+		boolean isNewClientBuild=false;
+				
 		try {
 			if( environment != null ) {
 				conn = FacilioConnectionPool.INSTANCE.getConnection();
-				pstmt = conn.prepareStatement("SELECT version FROM ClientApp WHERE environment=?");
+				pstmt = conn.prepareStatement("SELECT * FROM ClientApp WHERE environment=?");
 				pstmt.setString(1, environment);
 				rs = pstmt.executeQuery();
 				if (rs.next()) {
 					clientVersion = rs.getString("version");
+					isNewClientBuild=rs.getBoolean("is_new_client_build");
+					
 				}
 			}
 		} catch(SQLException | RuntimeException e) {
@@ -227,10 +231,13 @@ public class AwsUtil
 		} finally {
 			DBUtil.closeAll(conn, pstmt);
 		}
-		return clientVersion;
+		Map<String, Object> clientInfo=new HashMap<String, Object>();
+		clientInfo.put("version",clientVersion);
+		clientInfo.put("isNewClientBuild", isNewClientBuild);
+		return clientInfo;
 	}
 
-	public static int updateClientVersion(String newVersion) {
+	public static int updateClientVersion(String newVersion,boolean isNewClientBuild) {
 		int updatedRows = 0;
 		if(newVersion != null) {
 			newVersion = newVersion.trim();
@@ -242,11 +249,13 @@ public class AwsUtil
 					com.facilio.accounts.dto.User currentUser = AccountUtil.getCurrentUser();
 					if (environment != null && currentUser != null) {
 						conn = FacilioConnectionPool.INSTANCE.getConnection();
-						pstmt = conn.prepareStatement("Update ClientApp set version=?, updatedTime=?, updatedBy=? WHERE environment=?");
+						pstmt = conn.prepareStatement("Update ClientApp set version=?, updatedTime=?, updatedBy=?, is_new_client_build=?  WHERE environment=?");
 						pstmt.setString(1, newVersion);
 						pstmt.setLong(2, System.currentTimeMillis());
 						pstmt.setLong(3, currentUser.getId());
-						pstmt.setString(4, environment);
+						pstmt.setBoolean(4, isNewClientBuild);
+						pstmt.setString(5, environment);
+
 						updatedRows = pstmt.executeUpdate();
 						if(updatedRows > 0) {
 						    LOGGER.info("Updated client version successfully");
@@ -270,6 +279,7 @@ public class AwsUtil
 			objectExists = s3Client.doesObjectExist(staticBucket, newVersion+"/app.css");
 		}
 		return objectExists;
+		
 	}
 
 	public static CreateKeysAndCertificateResult getCertificateResult()
