@@ -67,8 +67,6 @@ import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
 import com.facilio.timeseries.TimeSeriesAPI;
 
-import static com.facilio.bmsconsole.context.ResourceContext.ResourceType.ASSET;
-
 public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 
 	private static final Logger LOGGER = LogManager.getLogger(ModuleCRUDBeanImpl.class.getName());
@@ -102,9 +100,9 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 		return 0;
 	}
 
-	public ControllerContext getController(String deviceId) throws Exception{
-		if(deviceId != null) {
-			return ControllerAPI.getController(deviceId);
+	public ControllerContext getController(String deviceName, String deviceId) throws Exception{
+		if(deviceId != null && deviceName != null) {
+			return ControllerAPI.getController(deviceName, deviceId);
 		}
 		return null;
 	}

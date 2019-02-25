@@ -55,7 +55,7 @@ public interface ModuleCRUDBean {
 	
 	public List<EventRuleContext> getActiveEventRules() throws Exception;
 
-	public ControllerContext getController(String deviceId) throws Exception;
+	public ControllerContext getController(String deviceName, String deviceId) throws Exception;
 	
 	public ControllerContext addController(ControllerContext controllerContext) throws Exception;
 	

@@ -59,6 +59,7 @@ public class DBUtil {
 		List<String> tablesWithoutOrgId = new ArrayList<>();
 		
 		tablesWithoutOrgId.add("Users");
+		tablesWithoutOrgId.add("User_Mobile_Setting");
 		tablesWithoutOrgId.add("UserSessions");
 		tablesWithoutOrgId.add("TVPasscodes");
 		tablesWithoutOrgId.add("server_info");
