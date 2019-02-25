@@ -4884,6 +4884,7 @@ CREATE TABLE server_info (
      id bigint NOT NULL identity(1,1),
      environment varchar(50) NOT NULL,
      version varchar(20) NOT NULL,
+		 is_new_client_build BOOLEAN DEFAULT 0,
      updatedTime BIGINT DEFAULT NULL,
      updatedBy BIGINT DEFAULT NULL,
      PRIMARY KEY (id)
