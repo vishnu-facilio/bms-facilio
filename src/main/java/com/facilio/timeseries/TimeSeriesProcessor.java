@@ -108,7 +108,7 @@ public class TimeSeriesProcessor implements IRecordProcessor {
 		deviceDetailsModule = ModuleFactory.getDeviceDetailsModule();
 		//orgIdField.setModule(deviceDetailsModule);
 
-		//orgIdCondition.setField(orgIdField);
+		orgIdCondition.setField(FieldFactory.getOrgIdField(deviceDetailsModule));
 		orgIdCondition.setOperator(NumberOperators.EQUALS);
 		orgIdCondition.setValue(String.valueOf(orgId));
 
