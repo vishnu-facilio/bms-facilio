@@ -733,7 +733,6 @@ public class FacilioConstants {
 		public static final String CURRENT_CALENDAR_VIEW = "currentCalendarView";
 		public static final String ML_FORECASTING = "ml_forecasting";
 
-        private static Map<String, Class> classMap = Collections.unmodifiableMap(initClassMap());
 		
 		public static final String WORKORDER_PARTS = "workorderParts";
 		public static final String WORKORDER_PART = "workorderPart";

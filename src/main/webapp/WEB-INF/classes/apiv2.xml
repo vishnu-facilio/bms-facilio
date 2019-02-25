@@ -1108,7 +1108,7 @@
 		</action>
 	</package>
 	
-	<package name="storeRoomListApiv2" namespace="/api/v2/storeroom/view"
+	<package name="storeRoomListApiv2" namespace="/api/v2/storeRoom/view"
 		extends="v2Api">
 		<action name="*" class="com.facilio.bmsconsole.actions.StoreRoomAction"
 			method="storeRoomList">
