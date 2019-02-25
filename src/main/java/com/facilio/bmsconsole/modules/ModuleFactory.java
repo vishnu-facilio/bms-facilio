@@ -65,7 +65,8 @@ public class ModuleFactory {
 		moduleMap.put(FacilioConstants.ContextNames.INVENTRY, getInventryModule());
 		moduleMap.put(FacilioConstants.ContextNames.INVENTORY_STATUS, getInventoryStatusModule());
 		moduleMap.put(FacilioConstants.ContextNames.INVENTORY_COST, getInventoryCostModule());
-
+		moduleMap.put(FacilioConstants.ContextNames.STOCKED_TOOLS, getStockedToolsModule());
+		
 		return moduleMap;
 	}
 	
