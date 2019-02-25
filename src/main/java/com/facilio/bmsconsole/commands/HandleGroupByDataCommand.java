@@ -7,14 +7,12 @@ import java.util.Map;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
-import org.apache.commons.collections.CollectionUtils;
 import org.json.simple.JSONObject;
 
 import com.facilio.constants.FacilioConstants;
 import com.facilio.report.context.ReportContext;
 import com.facilio.report.context.ReportDataPointContext;
 import com.facilio.report.context.ReportGroupByField;
-import com.mysql.fabric.xmlrpc.base.Array;
 
 public class HandleGroupByDataCommand implements Command {
 

@@ -408,6 +408,8 @@ public class FetchReportDataCommand implements Command {
 				break;
 			case FLOOR:
 				spaceField = fieldMap.get("floorId").clone();
+			case SPACE:
+				spaceField = FieldFactory.getIdField(baseSpaceModule);
 				break;
 			default:
 				throw new RuntimeException("Cannot be here!!");

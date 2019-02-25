@@ -112,7 +112,7 @@ public class FormulaContext {
 	
 	public interface AggregateOperator {
 		
-		// Max Operator Code : 25 - Kindly change here if you add new operator
+		// Max Operator Code : 26 - Kindly change here if you add new operator
 		
 		public static AggregateOperator getAggregateOperator(int value) {
 			return AGGREGATE_OPERATOR_MAP.get(value);
@@ -379,7 +379,9 @@ public class FormulaContext {
 		
 		SITE(21,BaseSpaceContext.SpaceType.SITE.getStringVal(),"SITE_ID"),
 		BUILDING(22,BaseSpaceContext.SpaceType.BUILDING.getStringVal(),"BUILDING_ID"),
-		FLOOR(23,BaseSpaceContext.SpaceType.FLOOR.getStringVal(),"FLOOR_ID");
+		FLOOR(23,BaseSpaceContext.SpaceType.FLOOR.getStringVal(),"FLOOR_ID"),
+		SPACE(26,BaseSpaceContext.SpaceType.SPACE.getStringVal(),"ID")
+		;
 		
 		private int value;
 		private String stringValue;
