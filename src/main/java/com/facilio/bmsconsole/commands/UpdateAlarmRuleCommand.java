@@ -27,8 +27,10 @@ public class UpdateAlarmRuleCommand implements Command {
 		AlarmRuleContext oldAlarmRule = new AlarmRuleContext(ReadingRuleAPI.getReadingRules(alarmRule.getPreRequsite().getRuleGroupId()));
 
 		ReadingRuleContext preRequsiteRule = alarmRule.getPreRequsite();
-		WorkflowRuleAPI.updateWorkflowRule(preRequsiteRule);
-		WorkflowRuleAPI.updateExtendedRule(preRequsiteRule, ModuleFactory.getReadingRuleModule(), FieldFactory.getReadingRuleFields());
+		
+		preRequsiteRule.setRuleType(null); //Type is not allowed to be changed
+		
+		preRequsiteRule = ReadingRuleAPI.updateReadingRuleWithChildren(preRequsiteRule);
 		
 		deleteActions(oldAlarmRule);
 		
