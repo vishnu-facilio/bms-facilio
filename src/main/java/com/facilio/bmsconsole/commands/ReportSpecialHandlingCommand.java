@@ -58,18 +58,18 @@ public class ReportSpecialHandlingCommand implements Command {
 
 	private void preHandleSpecialCaseCriteria(Context context, ModuleBean modBean, FacilioModule module, List<ReportDataPointContext> dataPointContexts) throws Exception {
 		if (module.getName().equals("workorder")) {
-			Map<ReportDataPointContext, Criteria> criteriaMap = new HashMap<>();
-			FacilioField facilioField = modBean.getField("status", "workorder");
-			Condition specialCondition = CriteriaAPI.getCondition(facilioField, "3", NumberOperators.NOT_EQUALS);
-			for (ReportDataPointContext dataPointContext : dataPointContexts) {
-				Criteria criteria = dataPointContext.getCriteria();
-				criteriaMap.put(dataPointContext, criteria);
-				if (criteria == null) {
-					criteria = new Criteria();
-					dataPointContext.setCriteria(criteria);
-				}
-				criteria.addAndCondition(specialCondition);
-			}
+//			Map<ReportDataPointContext, Criteria> criteriaMap = new HashMap<>();
+//			FacilioField facilioField = modBean.getField("status", "workorder");
+//			Condition specialCondition = CriteriaAPI.getCondition(facilioField, "3", NumberOperators.NOT_EQUALS);
+//			for (ReportDataPointContext dataPointContext : dataPointContexts) {
+//				Criteria criteria = dataPointContext.getCriteria();
+//				criteriaMap.put(dataPointContext, criteria);
+//				if (criteria == null) {
+//					criteria = new Criteria();
+//					dataPointContext.setCriteria(criteria);
+//				}
+//				criteria.addAndCondition(specialCondition);
+//			}
 //			context.put("workorder_criteriaMap", criteriaMap);
 		}
 	}
