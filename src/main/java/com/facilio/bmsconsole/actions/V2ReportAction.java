@@ -20,7 +20,6 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.AddOrUpdateReportCommand;
 import com.facilio.bmsconsole.commands.ConstructReportData;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
-import com.facilio.bmsconsole.commands.ReportSpecialHandlingCommand;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.AlarmContext;
 import com.facilio.bmsconsole.context.DashboardWidgetContext;
@@ -143,7 +142,7 @@ public class V2ReportAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		setReportWithDataContext(context); //This could be moved to a command
 		
-		Chain fetchReadingDataChain = newFormat ? ReadOnlyChainFactory.newFetchReadingReportChain() : ReadOnlyChainFactory.fetchReportDataChain(); 
+		Chain fetchReadingDataChain = newFormat ? ReadOnlyChainFactory.newFetchReportDataChain() : ReadOnlyChainFactory.fetchReportDataChain(); 
 		fetchReadingDataChain.execute(context);
 		
 		return setReportResult(context);
