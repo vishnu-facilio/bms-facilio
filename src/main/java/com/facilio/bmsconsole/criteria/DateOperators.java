@@ -729,6 +729,70 @@ public enum DateOperators implements Operator<String> {
 		}
 	},
 	
+	TILL_NOW(72, "Till Now") {
+		@Override
+		public String getWhereClause(String columnName, String value) {
+			// TODO Auto-generated method stub
+			if(columnName != null && !columnName.isEmpty()) {
+				StringBuilder builder = new StringBuilder();
+				builder.append(columnName)
+						.append("<")
+						.append(DateTimeUtil.getCurrenTime());
+				return builder.toString();
+			}
+			return null;
+		}
+		
+		@Override
+		public boolean isDynamicOperator() {
+			return true;
+		}
+		
+		@Override
+		public FacilioModulePredicate getPredicate(String fieldName, String value) {
+			if(fieldName != null && !fieldName.isEmpty()) {
+				return new FacilioModulePredicate(fieldName, new Predicate() {
+					
+					@Override
+					public boolean evaluate(Object object) {
+						// TODO Auto-generated method stub
+						if(object != null && object instanceof Long) {
+							//Instant currentVal = Instant.ofEpochMilli((long) object).truncatedTo(ChronoUnit.MINUTES);
+							long currentVal = (long) object;
+							return currentVal < DateTimeUtil.getCurrenTime();
+						}
+						return false;
+					}
+				});
+			}
+			return null;
+		}
+
+		@Override
+		public DateRange getRange(String value) {
+			// TODO Auto-generated method stub
+			return new DateRange(-1, DateTimeUtil.getCurrenTime() - 1);
+		}
+
+		@Override
+		public boolean isBaseLineSupported() {
+			// TODO Auto-generated method stub
+			return false;
+		}
+		
+		@Override
+		public boolean isValueNeeded() {
+			// TODO Auto-generated method stub
+			return false;
+		}
+
+		@Override
+		public boolean isCurrentOperator() {
+			// TODO Auto-generated method stub
+			return false;
+		}
+	},
+	
 	LAST_MONTH(27, "Last Month") {
 		@Override
 		public String getWhereClause(String columnName, String value) {

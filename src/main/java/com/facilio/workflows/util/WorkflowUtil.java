@@ -38,10 +38,12 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.BaseLineContext;
 import com.facilio.bmsconsole.context.BaseLineContext.AdjustType;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
+import com.facilio.bmsconsole.criteria.CommonOperators;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.DateOperators;
+import com.facilio.bmsconsole.criteria.LookupOperator;
 import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.criteria.Operator;
 import com.facilio.bmsconsole.criteria.PickListOperators;
@@ -1276,6 +1278,15 @@ public class WorkflowUtil {
 				}
 				condition.setOperator(operator);
 				condition.setValue(conditionValue);
+				if(operator.equals(LookupOperator.LOOKUP)) {
+					Criteria criteria = new Criteria();
+					Condition condition2 = new Condition();
+					condition2.setComputedWhereClause(conditionValue);
+					condition2.setOperator(CommonOperators.IS_EMPTY);
+					criteria.addAndCondition(condition2);
+					
+					condition.setCriteriaValue(criteria);
+				}
 				if(matcher.group(3) != null && sequence != null) {
 					
 					if(operator instanceof DateOperators && ((DateOperators)operator).isBaseLineSupported()) {

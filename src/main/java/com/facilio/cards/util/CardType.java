@@ -4,6 +4,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.facilio.bmsconsole.context.TicketStatusContext;
+
 public enum CardType {
 	
 	READING_CARD(1,"readingcard","<workflow>\n" + 
@@ -323,7 +325,42 @@ public enum CardType {
 			"	</expression> \n" + 
 			"</workflow>",false),
 	READING_COMBO_CARD(10,"readingComboCard",null,false),
+	WORK_ORDER_SUMMARY(11,"workorderSummary","<workflow>\n" + 
+			"	<parameter name=\"orgId\" type=\"Number\" />"+
+			"    <expression name=\"dueToday\">\n" + 
+			"        <module name=\"workorder\" />\n" + 
+			"        <criteria pattern=\"(1 and 2)\">\n" + 
+			"            <condition sequence=\"1\">dueDate`Today`</condition>\n" + 
+			"            <condition sequence=\"2\">status`lookup`orgid = ${orgId} and STATUS_TYPE = "+TicketStatusContext.StatusType.OPEN.getIntVal()+"</condition>\n" + 
+			"        </criteria>\n" + 
+			"        <field aggregate=\"count\" name=\"subject\" />\n" + 
+			"    </expression>\n" + 
+			"    <expression name=\"unassigned\">\n" + 
+			"        <module name=\"workorder\" />\n" + 
+			"        <criteria pattern=\"(1 and 2)\">\n" + 
+			"            <condition sequence=\"1\">assignedTo`is empty`</condition>\n" + 
+			"            <condition sequence=\"2\">status`lookup`orgid = ${orgId} and STATUS_TYPE = "+TicketStatusContext.StatusType.OPEN.getIntVal()+"</condition>\n" + 
+			"        </criteria>\n" + 
+			"        <field aggregate=\"count\" name=\"subject\" />\n" + 
+			"    </expression>\n" + 
+			"    <expression name=\"open\">\n" + 
+			"        <module name=\"workorder\" />\n" + 
+			"        <criteria pattern=\"(1)\">\n" + 
+			"            <condition sequence=\"1\">status`lookup`orgid = ${orgId} and STATUS_TYPE = "+TicketStatusContext.StatusType.OPEN.getIntVal()+"</condition>\n" + 
+			"        </criteria>\n" + 
+			"        <field aggregate=\"count\" name=\"subject\" />\n" + 
+			"    </expression>\n" + 
+			"    <expression name=\"overdue\">\n" + 
+			"        <module name=\"workorder\" />\n" + 
+			"        <criteria pattern=\"(1 and 2)\">\n" + 
+			"            <condition sequence=\"1\">status`lookup`orgid = ${orgId} and STATUS_TYPE = "+TicketStatusContext.StatusType.OPEN.getIntVal()+"</condition>\n" + 
+			"            <condition sequence=\"2\">dueDate`Till Now`</condition>\n" + 
+			"        </criteria>\n" + 
+			"        <field aggregate=\"count\" name=\"subject\" />\n" + 
+			"    </expression>\n" + 
+			"</workflow>",false),
 	;
+	
 	
 	private Integer value;
 	private String name;

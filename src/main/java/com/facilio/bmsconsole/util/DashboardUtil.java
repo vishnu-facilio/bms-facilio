@@ -3607,6 +3607,10 @@ public static JSONObject getStandardVariance1(ReportContext report,JSONArray pro
 	
 	public static JSONObject getCardParams(JSONObject jsonObject) {
 		try {
+			if(jsonObject == null) {
+				jsonObject = new JSONObject();
+			}
+			jsonObject.put("orgId", AccountUtil.getCurrentOrg().getId());
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			if(jsonObject != null && jsonObject.containsKey("fieldId")) {
 				FacilioField field = modBean.getField((Long) jsonObject.get("fieldId"));
