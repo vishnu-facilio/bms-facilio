@@ -104,7 +104,9 @@ public class CustomReportCultfit1 implements CustomReport {
 		
 		ticketData.add(res);
 		
-		report.getxAxisField().getField().setDataType(FieldType.STRING);
+		FacilioField xAxisField = report.getxAxisField().getField().clone();
+		xAxisField.setDataType(FieldType.STRING);
+		report.getxAxisField().setModuleField(xAxisField);
 		
 		return ticketData;
 	}

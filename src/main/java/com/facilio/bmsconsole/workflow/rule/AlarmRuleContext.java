@@ -11,21 +11,21 @@ public class AlarmRuleContext {
 	List<ReadingRuleContext> alarmTriggerRules;
 	ReadingRuleContext alarmClearRule;
 	
-	boolean isAutoClear;			// set when autoclear without any condition.
-	
-	public boolean getIsAutoClear() {
-		return isAutoClear;
-	}
-	public void setIsAutoClear(boolean isAutoClear) {
-		this.isAutoClear = isAutoClear;
-	}
-	public boolean isAutoClear() {
-		return isAutoClear;
-	}
-
-	public void setAutoClear(boolean isAutoClear) {
-		this.isAutoClear = isAutoClear;
-	}
+//	boolean isAutoClear;			// set when autoclear without any condition.
+//	
+//	public boolean getIsAutoClear() {
+//		return isAutoClear;
+//	}
+//	public void setIsAutoClear(boolean isAutoClear) {
+//		this.isAutoClear = isAutoClear;
+//	}
+//	public boolean isAutoClear() {
+//		return isAutoClear;
+//	}
+//
+//	public void setAutoClear(boolean isAutoClear) {
+//		this.isAutoClear = isAutoClear;
+//	}
 	
 	boolean isClearAlarmOnPreRequsiteFail = true;
 	
@@ -51,9 +51,6 @@ public class AlarmRuleContext {
 			}
 			else if(rule.getRuleTypeEnum().equals(RuleType.ALARM_TRIGGER_RULE)) {
 				addAlarmTriggerRule(rule);
-				if(rule.getClearAlarm()) {
-					setIsAutoClear(true);
-				}
 			}
 		}
 	}
