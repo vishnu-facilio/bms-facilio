@@ -16,7 +16,6 @@ import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.ControllerContext;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
-import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.criteria.StringOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
@@ -148,7 +147,7 @@ public class TimeSeriesProcessor extends FacilioProcessor {
         String deviceId = instanceNumber+"_"+destinationAddress+"_"+networkNumber;
         if( ! deviceMap.containsKey(deviceId)) {
             ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", getOrgId());
-            ControllerContext controller = bean.getController(deviceId);
+            ControllerContext controller = bean.getController(deviceName, deviceId);
             if(controller == null) {
                 controller = new ControllerContext();
                 controller.setName(deviceName);
