@@ -1094,7 +1094,7 @@
 		</action>
 	</package>
 	
-	<package name="storeRoomApi" namespace="/api/v2/storeroom"
+	<package name="storeRoomApi" namespace="/api/v2/storeRoom"
 		extends="v2Api">
 		<action name="add"
 			class="com.facilio.bmsconsole.actions.StoreRoomAction" method="addStoreRoom">
