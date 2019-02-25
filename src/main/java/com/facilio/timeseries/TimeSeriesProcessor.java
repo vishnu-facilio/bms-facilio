@@ -230,7 +230,7 @@ public class TimeSeriesProcessor implements IRecordProcessor {
 		String deviceName = (String) payLoad.get("deviceName");
 		
 		String deviceId = instanceNumber+"_"+destinationAddress+"_"+networkNumber;
-		if( ! deviceMap.containsKey(deviceId)) {
+		if( ! deviceMap.containsKey(deviceName+'_'+deviceId)) {
 			ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", orgId);
             ControllerContext controller = bean.getController(deviceId);
             if(controller == null) {
@@ -249,6 +249,7 @@ public class TimeSeriesProcessor implements IRecordProcessor {
 				JSONArray points = (JSONArray)payLoad.get("points");
 				LOGGER.info("Device Points : "+points);
 				TimeSeriesAPI.addUnmodeledInstances(points, controllerSettingsId);
+				deviceMap.put(deviceName+'_'+deviceId, System.currentTimeMillis());
 			}
 		}
 	}
