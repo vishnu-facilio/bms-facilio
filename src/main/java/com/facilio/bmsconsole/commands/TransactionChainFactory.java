@@ -875,7 +875,6 @@ public class TransactionChainFactory {
 		public static Chain updateAlarmRuleChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(new UpdateAlarmRuleCommand());
-			c.addCommand(new DeleteOldAlarmRuleActionsCommand());
 			c.addCommand(new AddActionForAlarmRuleCommand());
 			c.addCommand(new AddJobEntryForScheduledReadingRuleCommand());
 			return c;

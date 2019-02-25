@@ -6,11 +6,15 @@ import java.util.List;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
+import com.facilio.bmsconsole.modules.FieldFactory;
+import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.bmsconsole.util.ActionAPI;
 import com.facilio.bmsconsole.util.ReadingRuleAPI;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.rule.ActivityType;
 import com.facilio.bmsconsole.workflow.rule.AlarmRuleContext;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
+import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.tasker.FacilioTimer;
 
@@ -22,9 +26,11 @@ public class UpdateAlarmRuleCommand implements Command {
 		
 		AlarmRuleContext oldAlarmRule = new AlarmRuleContext(ReadingRuleAPI.getReadingRules(alarmRule.getPreRequsite().getRuleGroupId()));
 
-		
 		ReadingRuleContext preRequsiteRule = alarmRule.getPreRequsite();
 		WorkflowRuleAPI.updateWorkflowRule(preRequsiteRule);
+		WorkflowRuleAPI.updateExtendedRule(preRequsiteRule, ModuleFactory.getReadingRuleModule(), FieldFactory.getReadingRuleFields());
+		
+		deleteActions(oldAlarmRule);
 		
 		deleteTriggerAndClearRuleOfGroup(oldAlarmRule);
 		
@@ -37,7 +43,7 @@ public class UpdateAlarmRuleCommand implements Command {
 		return false;
 	}
 
-	public void deleteTriggerAndClearRuleOfGroup(AlarmRuleContext alarmRule) throws Exception {
+	private void deleteTriggerAndClearRuleOfGroup(AlarmRuleContext alarmRule) throws Exception {
 		
 		List<Long> rulesToDelete = new ArrayList<>();
 		for(ReadingRuleContext triggerRule : alarmRule.getAlarmTriggerRules()) {
@@ -47,5 +53,17 @@ public class UpdateAlarmRuleCommand implements Command {
 			rulesToDelete.add(alarmRule.getAlarmClearRule().getId());
 		}
 		WorkflowRuleAPI.deleteWorkFlowRules(rulesToDelete);
+	}
+	
+	private void deleteActions(AlarmRuleContext alarmRule ) throws Exception {
+		List<ReadingRuleContext> rules = alarmRule.getAlarmTriggerRules();
+		
+		List<Long> ruleIds = new ArrayList<>();
+		if(rules != null && !rules.isEmpty()) {
+			for (WorkflowRuleContext rule : rules) {
+				ruleIds.add(rule.getId());
+			}
+			ActionAPI.deleteAllActionsFromWorkflowRules(ruleIds);
+		}
 	}
 }
