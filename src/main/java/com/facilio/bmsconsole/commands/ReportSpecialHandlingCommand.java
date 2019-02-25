@@ -48,8 +48,10 @@ public class ReportSpecialHandlingCommand implements Command {
 	private void postHandleSpecialCaseCriteria(Context context, ModuleBean modBean, FacilioModule module, List<ReportDataPointContext> dataPointContexts) throws Exception {
 		if (module.getName().equals("workorder")) {
 			Map<ReportDataPointContext, Criteria> criteriaMap = (Map<ReportDataPointContext, Criteria>) context.get("workorder_criteriaMap");
-			for (ReportDataPointContext dataPointContext : dataPointContexts) {
-				dataPointContext.setCriteria(criteriaMap.get(dataPointContext));
+			if (criteriaMap != null) {
+				for (ReportDataPointContext dataPointContext : dataPointContexts) {
+					dataPointContext.setCriteria(criteriaMap.get(dataPointContext));
+				}
 			}
 		}
 	}
@@ -68,7 +70,7 @@ public class ReportSpecialHandlingCommand implements Command {
 				}
 				criteria.addAndCondition(specialCondition);
 			}
-			context.put("workorder_criteriaMap", criteriaMap);
+//			context.put("workorder_criteriaMap", criteriaMap);
 		}
 	}
 }
