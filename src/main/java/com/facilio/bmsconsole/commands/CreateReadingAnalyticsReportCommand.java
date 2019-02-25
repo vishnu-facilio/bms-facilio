@@ -1,6 +1,5 @@
 package com.facilio.bmsconsole.commands;
 
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -22,9 +21,11 @@ import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.criteria.BuildingOperator;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.criteria.DateOperators;
 import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.criteria.PickListOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.FacilioModule.ModuleType;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.util.DateTimeUtil;
@@ -254,8 +255,13 @@ public class CreateReadingAnalyticsReportCommand implements Command {
 			criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("parentId"), metric.getParentId(), NumberOperators.EQUALS));
 			dataPoint.setCriteria(criteria);
 			
-			if (metric.getPredictedTime() != -1) {
-				criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("predictedTime"), String.valueOf(metric.getPredictedTime()), NumberOperators.EQUALS));
+			if (metric.getyAxis().getField().getModule().getTypeEnum() == ModuleType.PREDICTED_READING) {
+				if (metric.getPredictedTime() == -1) {
+					criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("predictedTime"), DateOperators.CURRENT_HOUR_START_TIME));
+				}
+				else {
+					criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("predictedTime"), String.valueOf(metric.getPredictedTime()), DateOperators.IS));
+				}
 			}
 			
 			dataPoint.addMeta(FacilioConstants.ContextNames.PARENT_ID_LIST, metric.getParentId());

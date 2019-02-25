@@ -3099,7 +3099,64 @@ public enum DateOperators implements Operator<String> {
 			// TODO Auto-generated method stub
 			return true;
 		}
-	};
+	},
+	CURRENT_HOUR_START_TIME(71, "Current Hour Start Time") {
+
+		@Override
+		public String getWhereClause(String columnName, String value) {
+			// TODO Auto-generated method stub
+			if (columnName != null && !columnName.isEmpty()) {
+				return columnName+" = "+DateTimeUtil.getHourStartTime();
+			}
+			return null;
+		}
+
+		@Override
+		public FacilioModulePredicate getPredicate(String fieldName, String value) {
+			// TODO Auto-generated method stub
+			if(fieldName != null && !fieldName.isEmpty() ) {
+				return new FacilioModulePredicate(fieldName, new Predicate() {
+					
+					@Override
+					public boolean evaluate(Object object) {
+						// TODO Auto-generated method stub
+						if(object != null && object instanceof Long) {
+							return (long) object == DateTimeUtil.getHourStartTime();
+						}
+						return false;
+					}
+				});
+			}
+			return null;
+		}
+
+		@Override
+		public DateRange getRange(String value) {
+			// TODO Auto-generated method stub
+			long currentHourStartTime = DateTimeUtil.getHourStartTime();
+			return new DateRange(currentHourStartTime, currentHourStartTime);
+		}
+		
+		@Override
+		public boolean isValueNeeded() {
+			// TODO Auto-generated method stub
+			return false;
+		}
+
+		@Override
+		public boolean isBaseLineSupported() {
+			// TODO Auto-generated method stub
+			return false;
+		}
+
+		@Override
+		public boolean isCurrentOperator() {
+			// TODO Auto-generated method stub
+			return false;
+		}
+		
+	}
+	;
 	
 	private static String greaterOrLessThan(String columnName, String operator, String value) {
 		if(columnName != null && !columnName.isEmpty() && value != null && !value.isEmpty()) {
