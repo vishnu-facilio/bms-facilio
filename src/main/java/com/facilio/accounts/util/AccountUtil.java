@@ -117,6 +117,7 @@ public class AccountUtil {
 	public static final int FEATURE_APPROVAL = 1024;
 	public static final int FEATURE_MOBILE_DASHBOARD = 2048;
 	public static final int FEATURE_CONTROL_ACTIONS = 4096;
+	public static final int FEATURE_INVENTORY = 8192;
 	
 	public static int getFeatureLicense() throws Exception {
 		long orgId = getCurrentOrg().getOrgId();

@@ -1586,7 +1586,6 @@ public class ModuleFactory {
 		mlForecastingFieldModule.setTableName("Ml_Forecasting_Fields");
 		return mlForecastingFieldModule;
 	}
-}
 	
 	public static FacilioModule getStoreRoomModule() {
 		FacilioModule inventoryModule = new FacilioModule();
