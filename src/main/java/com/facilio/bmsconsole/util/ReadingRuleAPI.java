@@ -349,9 +349,10 @@ public class ReadingRuleAPI extends WorkflowRuleAPI {
 		List<ReadingRuleContext> readingRuleContexts = null;
 		if(props != null && !props.isEmpty()) {
 			readingRuleContexts = new ArrayList<>();
-			for(Map<String, Object> prop :props) {
-				ReadingRuleContext readingRuleContext = FieldUtil.getAsBeanFromMap(prop, ReadingRuleContext.class);
-				readingRuleContexts.add(readingRuleContext);
+			
+			List<WorkflowRuleContext> workflowRuleContexts = getWorkFlowsFromMapList(props, false, true, true);
+			for(WorkflowRuleContext workflowRuleContext :workflowRuleContexts) {
+				readingRuleContexts.add((ReadingRuleContext)workflowRuleContext);
 			}
 		}
 		return readingRuleContexts;
