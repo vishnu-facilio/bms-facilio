@@ -249,7 +249,6 @@ public class TimeSeriesProcessor implements IRecordProcessor {
 				JSONArray points = (JSONArray)payLoad.get("points");
 				LOGGER.info("Device Points : "+points);
 				TimeSeriesAPI.addUnmodeledInstances(points, controllerSettingsId);
-				deviceMap.put(deviceName+'_'+deviceId, System.currentTimeMillis());
 			}
 		}
 	}
