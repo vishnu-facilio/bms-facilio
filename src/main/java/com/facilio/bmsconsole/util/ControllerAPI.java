@@ -81,10 +81,10 @@ public class ControllerAPI {
 	}
 	
 	public static ControllerContext getController (String macAddress) throws Exception {
-		return getController(macAddress, false);
+		return getController(null, macAddress, false);
 	}
 	
-	public static ControllerContext getController (String macAddress, boolean fetchBuilding) throws Exception {
+	public static ControllerContext getController (String deviceName, String macAddress, boolean fetchBuilding) throws Exception {
 		FacilioModule module = ModuleFactory.getControllerModule();
 		List<FacilioField> fields = FieldFactory.getControllerFields();
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields); 
@@ -96,6 +96,10 @@ public class ControllerAPI {
 				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 				.andCondition(CriteriaAPI.getCondition(macAddrField, macAddress, StringOperators.IS))
 				;
+		if(deviceName != null) {
+			FacilioField deviceNameField = fieldMap.get("name");
+			ruleBuilder = ruleBuilder.andCondition(CriteriaAPI.getCondition(deviceNameField, deviceName, StringOperators.IS));
+		}
 		
 		List<Map<String, Object>> controllerList = ruleBuilder.get();
 		List<ControllerContext> controllers = getControllerFromMapList(controllerList, fetchBuilding);
@@ -436,5 +440,8 @@ public class ControllerAPI {
 
 		return updateBuilder.update(prop);
 	}
-	
+
+	public static ControllerContext getController(String deviceName, String deviceId) throws Exception {
+		return getController(deviceName, deviceId, false);
+	}
 }
