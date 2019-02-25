@@ -8,12 +8,14 @@ import java.util.Map;
 
 import org.apache.commons.chain.Chain;
 import org.apache.commons.lang3.StringUtils;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.CommonReportUtil;
 import com.facilio.bmsconsole.commands.GetAllFieldsCommand;
+import com.facilio.bmsconsole.context.BaseLineContext;
 import com.facilio.bmsconsole.context.FormulaContext.AggregateOperator;
 import com.facilio.bmsconsole.context.WidgetChartContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
@@ -29,6 +31,7 @@ import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.LookupField;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.modules.NumberField;
+import com.facilio.bmsconsole.util.BaseLineAPI;
 import com.facilio.bmsconsole.util.DashboardUtil;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
@@ -463,5 +466,29 @@ public class ReportUtil {
 			map.put(name, list);
 		}
 		list.add(field);
+	}
+	
+	@SuppressWarnings("unchecked")
+	public static void setAliasForDataPoints(JSONArray dataPoints, long baselineId) throws Exception {
+		char lastAlias = 'A';
+		BaseLineContext bl = null;
+		if (baselineId > -1) {
+			bl = BaseLineAPI.getBaseLine(baselineId);
+		}
+		for(int i = 0; i < dataPoints.size(); i++) {
+			JSONObject pointObj = (JSONObject) dataPoints.get(i);
+			JSONObject aliasesObj = new JSONObject();
+			if (lastAlias == 'E' || lastAlias == 'X') {
+				++lastAlias;
+			}
+			aliasesObj.put(FacilioConstants.Reports.ACTUAL_DATA, String.valueOf(lastAlias++));
+			pointObj.put("aliases", aliasesObj);
+			if (bl != null) {
+				if (lastAlias == 'E' || lastAlias == 'X') {
+					++lastAlias;
+				}
+				aliasesObj.put(bl.getName(), String.valueOf(lastAlias++));
+			}
+		}
 	}
 }
