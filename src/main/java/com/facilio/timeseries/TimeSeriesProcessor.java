@@ -255,6 +255,10 @@ public class TimeSeriesProcessor implements IRecordProcessor {
 
 	private void updateDeviceTable(String deviceId) {
 		try {
+			LOGGER.info("Device ID : "+deviceId);
+			if (deviceId == null || deviceId.isEmpty()) {
+				return;
+			}
 			if( ! deviceMap.containsKey(deviceId)) {
 				addDeviceId(deviceId);
 			}

@@ -543,10 +543,7 @@ public class TicketAPI {
 	public static void updateTicketStatus(ActivityType activityType, TicketContext ticket, TicketContext oldTicket, boolean isWorkDurationChangeAllowed) throws Exception {
 		TicketStatusContext statusObj = ticket.getStatus();
 		if(statusObj != null && statusObj.getId() > 0) {
-			Organization org = AccountUtil.getCurrentOrg(); 
-			LOGGER.info("Current org : "+org);
-			long orgId = org.getOrgId();
-			statusObj = TicketAPI.getStatus(orgId, statusObj.getId());
+			statusObj = TicketAPI.getStatus(AccountUtil.getCurrentOrg().getId(), statusObj.getId());
 		}
 		else {
 			ticket.setStatus(TicketAPI.getStatus("Submitted"));
