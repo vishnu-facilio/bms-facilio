@@ -1605,5 +1605,17 @@ public class TransactionChainFactory {
 			c.addCommand(new GenericUpdateModuleDataCommand());
 			return c;
 		}
+		
+		public static Chain getAddOrUdpateWorkorderToolsChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForWorkorderTools());
+			c.addCommand(new AddOrUpdateWorkorderToolsCommand());
+			c.addCommand(new ExecuteAllWorkflowsCommand());
+//			c.addCommand(new InventoryCostQuantityRollUpCommand());
+//			c.addCommand(getUpdateInventoryQuantityRollupChain());
+//			c.addCommand(new UpdateWorkorderTotalCostCommand());
+//			c.addCommand(getUpdateWorkOrderChain());
+			return c;
+		}
 }
 

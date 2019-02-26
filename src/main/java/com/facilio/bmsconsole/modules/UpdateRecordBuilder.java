@@ -197,6 +197,7 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 			
 			if (!moduleProps.isEmpty()) {
 				updateLookupFields(moduleProps, fields);
+				moduleProps.put("sysModifiedTime", System.currentTimeMillis());
 				
 				if (withChangeSet) {
 					List<Long> ids = constructChangeSet(moduleProps);

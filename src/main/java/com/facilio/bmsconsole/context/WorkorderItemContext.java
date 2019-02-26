@@ -11,7 +11,7 @@ public class WorkorderItemContext extends ConsumableContext{
 		this.parentId = parentId;
 	}
 	
-	private double cost;
+	private double cost = -1;
 	public double getCost() {
 		return cost;
 	}

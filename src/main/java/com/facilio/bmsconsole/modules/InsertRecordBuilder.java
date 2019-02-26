@@ -139,7 +139,7 @@ public class InsertRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 			}
 			bean.setSysCreatedTime(System.currentTimeMillis());
 			bean.setTtime(System.currentTimeMillis());
-			bean.setModifiedTime(System.currentTimeMillis());
+			bean.setSysModifiedTime(System.currentTimeMillis());
 			beanProps.add(getAsProps(bean));
 		}
 		
