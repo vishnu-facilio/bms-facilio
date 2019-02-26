@@ -337,9 +337,10 @@ public enum CardType {
 			"    </expression>\n" + 
 			"    <expression name=\"unassigned\">\n" + 
 			"        <module name=\"workorder\" />\n" + 
-			"        <criteria pattern=\"(1 and 2)\">\n" + 
-			"            <condition sequence=\"1\">assignedTo`is empty`</condition>\n" + 
-			"            <condition sequence=\"2\">status`lookup`orgid = ${orgId} and STATUS_TYPE = "+TicketStatusContext.StatusType.OPEN.getIntVal()+"</condition>\n" + 
+			"        <criteria pattern=\"(1 and 2 and 3)\">\n" + 
+			"            <condition sequence=\"1\">assignedTo`is empty`</condition>\n" +
+			"            <condition sequence=\"2\">assignmentGroup`is empty`</condition>\n" +
+			"            <condition sequence=\"3\">status`lookup`orgid = ${orgId} and STATUS_TYPE = "+TicketStatusContext.StatusType.OPEN.getIntVal()+"</condition>\n" + 
 			"        </criteria>\n" + 
 			"        <field aggregate=\"count\" name=\"subject\" />\n" + 
 			"    </expression>\n" + 
