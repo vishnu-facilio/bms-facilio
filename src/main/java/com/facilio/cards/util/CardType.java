@@ -325,7 +325,7 @@ public enum CardType {
 			"	</expression> \n" + 
 			"</workflow>",false),
 	READING_COMBO_CARD(10,"readingComboCard",null,false),
-	WORK_ORDER_SUMMARY(11,"workordersummary","<workflow>\n" + 
+	WORK_ORDER_SUMMARY(11,"workorderSummary","<workflow>\n" + 
 			"	<parameter name=\"orgId\" type=\"Number\" />"+
 			"    <expression name=\"dueToday\">\n" + 
 			"        <module name=\"workorder\" />\n" + 
