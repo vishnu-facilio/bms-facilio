@@ -62,7 +62,7 @@ public class AddOrUpdateWorkorderItemsCommand implements Command {
 							workorderitem.setInventoryCost(invenCost);
 							workorderitem.setCost(costOccured);
 							workorderitem.setParentId(parentId);
-							workorderitem.setModifiedTime(System.currentTimeMillis());
+							workorderitem.setSysModifiedTime(System.currentTimeMillis());
 							if (workorderitem.getId() <= 0) {
 								// Insert
 								workorderItemslist.add(workorderitem);
@@ -88,7 +88,7 @@ public class AddOrUpdateWorkorderItemsCommand implements Command {
 									costOccured = icosts.getUnitcost() * quantityUsedForTheCost;
 								}
 								item.setCost(costOccured);
-								item.setModifiedTime(System.currentTimeMillis());
+								item.setSysModifiedTime(System.currentTimeMillis());
 								item.setInventoryCost(icosts);
 								item.setQuantityConsumed(quantityUsedForTheCost);
 								item.setInventory(inventry);

@@ -30,4 +30,25 @@ public class StoreroomApi {
 				.andCondition(CriteriaAPI.getIdCondition(id, module));
 		return selectBuilder.getAsMap();
 	}
+	
+	public static StoreRoomContext getStoreRoom(long id) throws Exception
+	{
+		if(id <= 0) {
+			return null;
+		}
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.STORE_ROOM);
+		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.STORE_ROOM);
+		SelectRecordsBuilder<StoreRoomContext> selectBuilder = new SelectRecordsBuilder<StoreRoomContext>()
+				.select(fields)
+				.table(module.getTableName())
+				.moduleName(module.getName())
+				.beanClass(StoreRoomContext.class)
+				.andCondition(CriteriaAPI.getIdCondition(id, module));
+		List<StoreRoomContext> storerooms =  selectBuilder.get();
+		if(storerooms!=null &&!storerooms.isEmpty()) {
+			return storerooms.get(0);
+		}
+		return null;
+	}
 }

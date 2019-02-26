@@ -7,6 +7,9 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.InventryContext;
+import com.facilio.bmsconsole.context.ItemsContext;
+import com.facilio.bmsconsole.context.StoreRoomContext;
 import com.facilio.bmsconsole.context.WorkorderItemContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.PickListOperators;
@@ -14,6 +17,8 @@ import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
+import com.facilio.bmsconsole.util.ItemsApi;
+import com.facilio.bmsconsole.util.StoreroomApi;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 
@@ -36,6 +41,17 @@ public class GetWorkorderItemsListCommand implements Command {
 							String.valueOf(parentId), PickListOperators.IS));
 
 			List<WorkorderItemContext> workorderItems = selectBuilder.get();
+			if (workorderItems != null && !workorderItems.isEmpty()) {
+				for (WorkorderItemContext woItems : workorderItems) {
+					InventryContext inventry = woItems.getInventory();
+					StoreRoomContext storeRoom = StoreroomApi
+							.getStoreRoom(inventry.getStoreRoom().getId());
+					inventry.setStoreRoom(storeRoom);
+					ItemsContext item = ItemsApi.getItem(inventry.getItem().getId());
+					inventry.setItem(item);
+					woItems.setInventory(inventry);
+				}
+			}
 			context.put(FacilioConstants.ContextNames.WORKORDER_ITEMS, workorderItems);
 		}
 		return false;

@@ -60,7 +60,7 @@ public class AddOrUpdateWorkorderToolsCommand implements Command {
 					workorderTool.setStockedTool(stockedTools);
 					workorderTool.setCost(costOccured);
 					workorderTool.setParentId(parentId);
-					workorderTool.setModifiedTime(System.currentTimeMillis());
+					workorderTool.setSysModifiedTime(System.currentTimeMillis());
 
 					if (workorderTool.getId() <= 0) {
 						// Insert
