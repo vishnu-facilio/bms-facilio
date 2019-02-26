@@ -68,6 +68,7 @@ public class DBUtil {
 		tablesWithoutOrgId.add("SupportEmails");
 		tablesWithoutOrgId.add("Service");
 		tablesWithoutOrgId.add("ClientApp");
+		tablesWithoutOrgId.add("Weather_Stations");
 		tablesWithoutOrgId.add("Organizations");
 		tablesWithoutOrgId.add("WorkOrderRequest_EMail");
 		
