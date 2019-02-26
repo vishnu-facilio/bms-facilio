@@ -256,11 +256,14 @@ public class CreateReadingAnalyticsReportCommand implements Command {
 			dataPoint.setCriteria(criteria);
 			
 			if (metric.getyAxis().getField().getModule().getTypeEnum() == ModuleType.PREDICTED_READING) {
-				if (metric.getPredictedTime() == -1) {
-					criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("predictedTime"), DateOperators.CURRENT_HOUR_START_TIME));
+				if (metric.getPredictedDuration() != -1) {
+					criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("predictedTime"), String.valueOf(metric.getPredictedDuration()), DateOperators.HOUR_START_TIME));
+				}
+				else if (metric.getPredictedTime() != -1) {
+					criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("predictedTime"), String.valueOf(metric.getPredictedTime()), DateOperators.IS));
 				}
 				else {
-					criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("predictedTime"), String.valueOf(metric.getPredictedTime()), DateOperators.IS));
+					criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("predictedTime"), "0", DateOperators.HOUR_START_TIME));
 				}
 			}
 			

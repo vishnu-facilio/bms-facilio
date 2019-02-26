@@ -3164,13 +3164,13 @@ public enum DateOperators implements Operator<String> {
 			return true;
 		}
 	},
-	CURRENT_HOUR_START_TIME(71, "Current Hour Start Time") {
+	HOUR_START_TIME(71, "Hour Start Time") {
 
 		@Override
 		public String getWhereClause(String columnName, String value) {
 			// TODO Auto-generated method stub
-			if (columnName != null && !columnName.isEmpty()) {
-				return columnName+" = "+DateTimeUtil.getHourStartTime();
+			if(columnName != null && !columnName.isEmpty() && value != null && !value.isEmpty()) {
+				return columnName+" = "+DateTimeUtil.getHourStartTime(Integer.parseInt(value));
 			}
 			return null;
 		}
@@ -3178,14 +3178,14 @@ public enum DateOperators implements Operator<String> {
 		@Override
 		public FacilioModulePredicate getPredicate(String fieldName, String value) {
 			// TODO Auto-generated method stub
-			if(fieldName != null && !fieldName.isEmpty() ) {
+			if(fieldName != null && !fieldName.isEmpty() && value != null && !value.isEmpty()) {
 				return new FacilioModulePredicate(fieldName, new Predicate() {
 					
 					@Override
 					public boolean evaluate(Object object) {
 						// TODO Auto-generated method stub
 						if(object != null && object instanceof Long) {
-							return (long) object == DateTimeUtil.getHourStartTime();
+							return (long) object == DateTimeUtil.getHourStartTime(Integer.parseInt(value));
 						}
 						return false;
 					}
@@ -3197,14 +3197,14 @@ public enum DateOperators implements Operator<String> {
 		@Override
 		public DateRange getRange(String value) {
 			// TODO Auto-generated method stub
-			long currentHourStartTime = DateTimeUtil.getHourStartTime();
+			long currentHourStartTime = DateTimeUtil.getHourStartTime(Integer.parseInt(value));
 			return new DateRange(currentHourStartTime, currentHourStartTime);
 		}
 		
 		@Override
 		public boolean isValueNeeded() {
 			// TODO Auto-generated method stub
-			return false;
+			return true;
 		}
 
 		@Override
