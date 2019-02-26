@@ -120,14 +120,6 @@ public class ModuleBaseWithCustomFields implements Serializable {
 		this.sysCreatedTime = sysCreatedTime;
 	}
 	
-	private long ttime = -1;
-	public void setTtime(long ttime) {
-		this.ttime = ttime;
-	}
-	public long getTtime() {
-		return ttime;
-	}	
-	
 	private long sysModifiedTime = -1;
 	public long getSysModifiedTime() {
 		return sysModifiedTime;
