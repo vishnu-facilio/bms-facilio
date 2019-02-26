@@ -276,7 +276,7 @@ public class AwsUtil
 		String staticBucket = AwsUtil.getConfig("static.bucket");
 		if(staticBucket != null) {
 			AmazonS3 s3Client = getAmazonS3Client();
-			objectExists = s3Client.doesObjectExist(staticBucket, newVersion+"/app.css");
+			objectExists = s3Client.doesObjectExist(staticBucket, newVersion+"/js/app.js");
 		}
 		return objectExists;
 		
