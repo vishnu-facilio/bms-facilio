@@ -183,11 +183,12 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 		return update(moduleProps);
 	}
 	
-	public int update(Map<String, Object> moduleProps) throws Exception {
+	public int update(Map<String, Object> props) throws Exception {
 		updated = true;
-		if(moduleProps != null) {
+		if(props != null) {
 			checkForNull();
 			
+			Map<String, Object> moduleProps = new HashMap<>(props);
 			moduleProps.remove("orgId");
 			moduleProps.remove("moduleId");
 			moduleProps.remove("id");
