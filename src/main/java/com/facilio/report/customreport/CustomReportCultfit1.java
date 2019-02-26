@@ -39,7 +39,9 @@ public class CustomReportCultfit1 implements CustomReport {
 		
 		TicketStatusContext closedStatus = TicketAPI.getStatus("Closed");
 		
-		FacilioField statusField = fieldsMap.get("status");
+		FacilioField statusFieldOrginal = fieldsMap.get("status");
+		
+		FacilioField statusField = statusFieldOrginal.clone();
 		
 		List<FacilioField> selectFields = new ArrayList<>();
 		
@@ -104,9 +106,8 @@ public class CustomReportCultfit1 implements CustomReport {
 		
 		ticketData.add(res);
 		
-		FacilioField xAxisField = report.getxAxisField().getField().clone();
-		xAxisField.setDataType(FieldType.STRING);
-		report.getxAxisField().setModuleField(xAxisField);
+		statusField.setDataType(FieldType.STRING);
+		report.getxAxisField().setModuleField(statusField);
 		
 		return ticketData;
 	}
