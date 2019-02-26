@@ -771,6 +771,9 @@ public class V2ReportAction extends FacilioAction {
 				this.endTime = range.getEndTime();
 			}
 			setxAggr(0);
+			if (newFormat) {
+				ReportUtil.setAliasForDataPoints(dataPoints, readingruleContext.getBaselineId());
+			}
 		}
 		fields =  dataPoints.toJSONString();
 	}
