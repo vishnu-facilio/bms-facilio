@@ -510,6 +510,9 @@ public class ExportUtil {
 		pagination.put("page", 1);
 		pagination.put("perPage", limit);
 		context.put(FacilioConstants.ContextNames.PAGINATION, pagination);
+		
+		context.put(FacilioConstants.ContextNames.MAX_LEVEL, 2);
+		
 		if (filters != null) {
 			JSONParser parser = new JSONParser();
 			JSONObject json = (JSONObject) parser.parse(filters);
