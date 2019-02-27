@@ -3796,7 +3796,7 @@ public static JSONObject getStandardVariance1(ReportContext report,JSONArray pro
 				rdmPairs.add(Pair.of((Long) prop.get("id"),fanStatusField));
 				rdmPairs.add(Pair.of((Long) prop.get("id"),valveFeedbackField));
 				rdmPairs.add(Pair.of((Long) prop.get("id"),returnTempField));
-				resourceSpaceMaps.put((Long) prop.get("id"), (Long) prop.get("space"));
+				resourceSpaceMaps.put((Long) prop.get("id"), (Long) prop.get("spaceId"));
 				resourceNameMaps.put((Long) prop.get("id"), (String) prop.get("name"));
 			}
 			LOGGER.severe("rdmPairs --- "+rdmPairs.size());
