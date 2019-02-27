@@ -372,6 +372,14 @@ public class ReportContext {
 		this.type = ReportType.valueOf(type);
 	}
 	
+	private int moduleType = -1;
+	public int getModuleType() {
+		return moduleType;
+	}
+	public void setModuleType(int moduleType) {
+		this.moduleType = moduleType;
+	}
+
 	private long moduleId = -1;
 	public long getModuleId() {
 		return moduleId;

@@ -989,6 +989,8 @@ public class FacilioConstants {
 	public static class Reports 
 
 	{
+		public static final String MODULE_TYPE = "module_type";
+		
 		public static final String ACTUAL_DATA = "actual";
 		
 		public static final String RANGE_FROM = "fromRange";

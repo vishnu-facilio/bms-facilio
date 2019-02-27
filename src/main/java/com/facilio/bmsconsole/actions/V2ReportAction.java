@@ -493,6 +493,14 @@ public class V2ReportAction extends FacilioAction {
 	public void setLimit(int limit) {
 		this.limit = limit;
 	}
+	private int moduleType = -1;
+	public int getModuleType() {
+		return moduleType;
+	}
+	public void setModuleType(int moduleType) {
+		this.moduleType = moduleType;
+	}
+
 	public String fetchReportData() throws Exception {
 		FacilioContext context = new FacilioContext();
 		updateContext(context);
@@ -514,6 +522,9 @@ public class V2ReportAction extends FacilioAction {
 		context.put("sort_fields", sortFields);
 		context.put("sort_order", sortOrder);
 		context.put("limit", limit);
+		
+		context.put(FacilioConstants.Reports.MODULE_TYPE, moduleType);
+		
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
 	}
 
@@ -527,6 +538,7 @@ public class V2ReportAction extends FacilioAction {
 		reportContext.setChartState(chartState);
 		reportContext.setTabularState(tabularState);
 		reportContext.setType(ReportType.WORKORDER_REPORT);
+		reportContext.setModuleType(moduleType);
 		
 		if (StringUtils.isEmpty(moduleName)) {
 			throw new Exception("Module name is mandatory");

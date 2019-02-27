@@ -217,8 +217,8 @@ public class FetchReportDataCommand implements Command {
 		}
 		
 		if (xValues == null) {
-			if (dp.getCriteria() != null) {
-				newSelectBuilder.andCriteria(dp.getCriteria());
+			if (dp.getAllCriteria() != null) {
+				newSelectBuilder.andCriteria(dp.getAllCriteria());
 			}
 			
 			boolean noMatch = applyFilters(report, dp, newSelectBuilder);
@@ -257,7 +257,11 @@ public class FetchReportDataCommand implements Command {
 				FacilioField gField = groupByField.getField();
 				
 				if (groupByField.getAggrEnum() != null) {
-					gField = groupByField.getAggrEnum().getSelectField(gField);
+					if (groupByField.getAggrEnum() instanceof SpaceAggregateOperator) {
+						gField = applySpaceAggregation(dp, groupByField.getAggrEnum(), selectBuilder, addedModules);
+					} else {
+						gField = groupByField.getAggrEnum().getSelectField(gField);
+					}
 				}
 				fields.add(gField);
 				

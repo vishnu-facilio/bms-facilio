@@ -4923,6 +4923,8 @@ public class FieldFactory {
 		
 		fields.add(getField("booleanSetting", "BOOLEAN_SETTINGS", module, FieldType.NUMBER));
 		fields.add(getField("transformClass", "TRANSFORM_CLASS", module, FieldType.STRING));
+		
+		fields.add(getField("moduleType", "MODULE_TYPE", module, FieldType.NUMBER));
 		return fields;
 	}
 	
