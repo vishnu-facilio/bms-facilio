@@ -1278,7 +1278,7 @@ public class DashboardAction extends FacilioAction {
 					
 					List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.RESOURCE);
 					
-					List newFieldList = new ArrayList<>(fields);
+					List<FacilioField> newFieldList = new ArrayList<>(fields);
 					
 					newFieldList.add(FieldFactory.getIdField(modBean.getModule(FacilioConstants.ContextNames.RESOURCE)));
 					
@@ -1289,45 +1289,10 @@ public class DashboardAction extends FacilioAction {
 					
 					List<Map<String, Object>> props = selectBuilder.get();
 					
-					LOGGER.severe("EMRILL CARD TEST LOGGERS emrilllevel1");
-					LOGGER.severe(selectBuilder +" ---- "+props.size());
-					
 					result.put("name", "Level 1");
 					
-					result.put("totalFcu", props.size());
+					DashboardUtil.getEmrillFCUWidgetResult(result, props);
 					
-					FacilioField fanStatusField = modBean.getField(453787l);
-					
-					LOGGER.severe("fanStatusField ---- "+fanStatusField);
-					
-					List<Pair<Long, FacilioField>> rdmPairs = new ArrayList<>();
-					
-					int runningCount = 0;
-					if(props != null && !props.isEmpty()) {
-						for(Map<String, Object> prop :props) {
-							rdmPairs.add(Pair.of((Long) prop.get("id"),fanStatusField));
-						}
-						List<ReadingDataMeta> rdms = ReadingsAPI.getReadingDataMetaList(rdmPairs);
-						
-						LOGGER.severe("rdms ---- "+rdms.size());
-						
-						for(ReadingDataMeta rdm :rdms) {
-							try {
-								Double runStatus = Double.valueOf(rdm.getValue().toString());
-								if(runStatus > 0) {
-									runningCount++;
-								}
-							}
-							catch(Exception e) {
-								LOGGER.log(Level.SEVERE, e.getMessage(), e);
-							}
-							
-						}
-						
-						result.put("runningFcu", runningCount);
-						
-						result.put("runningFcuPercentage", (runningCount/props.size()) * 100);
-					}
 					setCardResult(result);
 					return SUCCESS;
 				}
@@ -1337,7 +1302,7 @@ public class DashboardAction extends FacilioAction {
 					
 					List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.RESOURCE);
 					
-					List newFieldList = new ArrayList<>(fields);
+					List<FacilioField> newFieldList = new ArrayList<>(fields);
 					
 					newFieldList.add(FieldFactory.getIdField(modBean.getModule(FacilioConstants.ContextNames.RESOURCE)));
 					
@@ -1353,40 +1318,8 @@ public class DashboardAction extends FacilioAction {
 					
 					result.put("name", "Level 1");
 					
-					result.put("totalFcu", props.size());
+					DashboardUtil.getEmrillFCUWidgetResult(result, props);
 					
-					FacilioField fanStatusField = modBean.getField(453787l);
-					
-					LOGGER.severe("fanStatusField ---- "+fanStatusField);
-					
-					List<Pair<Long, FacilioField>> rdmPairs = new ArrayList<>();
-					
-					int runningCount = 0;
-					if(props != null && !props.isEmpty()) {
-						for(Map<String, Object> prop :props) {
-							rdmPairs.add(Pair.of((Long) prop.get("id"),fanStatusField));
-						}
-						List<ReadingDataMeta> rdms = ReadingsAPI.getReadingDataMetaList(rdmPairs);
-						
-						LOGGER.severe("rdms ---- "+rdms.size());
-						
-						for(ReadingDataMeta rdm :rdms) {
-							try {
-								Double runStatus = Double.valueOf(rdm.getValue().toString());
-								if(runStatus > 0) {
-									runningCount++;
-								}
-							}
-							catch(Exception e) {
-								LOGGER.log(Level.SEVERE, e.getMessage(), e);
-							}
-							
-						}
-						
-						result.put("runningFcu", runningCount);
-						
-						result.put("runningFcuPercentage", (runningCount/props.size()) * 100);
-					}
 					setCardResult(result);
 					return SUCCESS;
 				}
@@ -1396,7 +1329,7 @@ public class DashboardAction extends FacilioAction {
 					
 					List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.RESOURCE);
 					
-					List newFieldList = new ArrayList<>(fields);
+					List<FacilioField> newFieldList = new ArrayList<>(fields);
 					
 					newFieldList.add(FieldFactory.getIdField(modBean.getModule(FacilioConstants.ContextNames.RESOURCE)));
 					
@@ -1407,45 +1340,9 @@ public class DashboardAction extends FacilioAction {
 					
 					List<Map<String, Object>> props = selectBuilder.get();
 					
-					LOGGER.severe("EMRILL CARD TEST LOGGERS emrilllevel3");
-					LOGGER.severe(selectBuilder +" ---- "+props.size());
-					
 					result.put("name", "Level 1");
 					
-					result.put("totalFcu", props.size());
-					
-					FacilioField fanStatusField = modBean.getField(453787l);
-					
-					LOGGER.severe("fanStatusField ---- "+fanStatusField);
-					
-					List<Pair<Long, FacilioField>> rdmPairs = new ArrayList<>();
-					
-					int runningCount = 0;
-					if(props != null && !props.isEmpty()) {
-						for(Map<String, Object> prop :props) {
-							rdmPairs.add(Pair.of((Long) prop.get("id"),fanStatusField));
-						}
-						List<ReadingDataMeta> rdms = ReadingsAPI.getReadingDataMetaList(rdmPairs);
-						
-						LOGGER.severe("rdms ---- "+rdms.size());
-						
-						for(ReadingDataMeta rdm :rdms) {
-							try {
-								Double runStatus = Double.valueOf(rdm.getValue().toString());
-								if(runStatus > 0) {
-									runningCount++;
-								}
-							}
-							catch(Exception e) {
-								LOGGER.log(Level.SEVERE, e.getMessage(), e);
-							}
-							
-						}
-						
-						result.put("runningFcu", runningCount);
-						
-						result.put("runningFcuPercentage", (runningCount/props.size()) * 100);
-					}
+					DashboardUtil.getEmrillFCUWidgetResult(result, props);
 					setCardResult(result);
 					return SUCCESS;
 				}

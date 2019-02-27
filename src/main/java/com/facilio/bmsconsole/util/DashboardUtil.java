@@ -16,8 +16,10 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import org.apache.commons.chain.Chain;
+import org.apache.commons.collections.collection.AbstractCollectionDecorator;
 import org.apache.commons.collections.list.SetUniqueList;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.LogManager;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -47,6 +49,7 @@ import com.facilio.bmsconsole.context.FormulaContext.CommonAggregateOperator;
 import com.facilio.bmsconsole.context.FormulaContext.DateAggregateOperator;
 import com.facilio.bmsconsole.context.FormulaContext.NumberAggregateOperator;
 import com.facilio.bmsconsole.context.FormulaFieldContext;
+import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.context.FormulaFieldContext.ResourceType;
 import com.facilio.bmsconsole.context.ReadingDataMeta.ReadingInputType;
 import com.facilio.bmsconsole.context.ReportBenchmarkRelContext;
@@ -3729,5 +3732,48 @@ public static JSONObject getStandardVariance1(ReportContext report,JSONArray pro
 		updateDashboardChain.execute(context);
 	}
 
-	
+	public static void getEmrillFCUWidgetResult(Map<String,Object> result, List<Map<String, Object>> props) throws Exception {
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		result.put("totalFcu", props.size());
+		
+		FacilioField fanStatusField = modBean.getField(453787l);
+		
+		List<Pair<Long, FacilioField>> rdmPairs = new ArrayList<>();
+		
+		List<String> runningFcu = new ArrayList<>();
+		List<String> allFcu = new ArrayList<>();
+		
+		int runningCount = 0;
+		if(props != null && !props.isEmpty()) {
+			for(Map<String, Object> prop :props) {
+				rdmPairs.add(Pair.of((Long) prop.get("id"),fanStatusField));
+				allFcu.add(prop.get("id").toString());
+			}
+			List<ReadingDataMeta> rdms = ReadingsAPI.getReadingDataMetaList(rdmPairs);
+			
+			LOGGER.severe("rdms ---- "+rdms.size());
+			
+			for(ReadingDataMeta rdm :rdms) {
+				try {
+					Double runStatus = Double.valueOf(rdm.getValue().toString());
+					if(runStatus > 0) {
+						runningCount++;
+						runningFcu.add(rdm.getResourceId()+"");
+					}
+				}
+				catch(Exception e) {
+					LOGGER.log(Level.SEVERE, e.getMessage(), e);
+				}
+				
+			}
+			
+			result.put("runningFcu", runningCount);
+			
+			result.put("runningFcuList", runningFcu);
+			result.put("allFcuList", allFcu);
+			
+			result.put("runningFcuPercentage", (runningCount/props.size()) * 100);
+		}
+	}
 }

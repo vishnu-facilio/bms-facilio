@@ -39,7 +39,7 @@ public class DeviceMonitorJob extends FacilioJob {
 
         if(jc.getOrgId() != -1) {
             Condition orgIdCondition = new Condition();
-            /*orgIdCondition.setField(ORG_ID_FIELD);*/
+            orgIdCondition.setField(FieldFactory.getOrgIdField(DEVICE_DETAILS_MODULE));
             orgIdCondition.setOperator(NumberOperators.EQUALS);
             orgIdCondition.setValue(String.valueOf(jc.getOrgId()));
 

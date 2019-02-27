@@ -74,7 +74,10 @@ public class HandleGroupByDataCommand implements Command {
 							groupByField.getAlias();
 						}
 					}
-					lastMap.put(dataPointContext.getAliases().get("actual"), map.get(dataPointContext.getAliases().get("actual")));
+					for (String key: dataPointContext.getAliases().values()) {
+						lastMap.put(key, map.get(key));
+					}
+//					lastMap.put(dataPointContext.getAliases().get("actual"), map.get(dataPointContext.getAliases().get("actual")));
 				}
 			}
 			shouldIterate = true;
