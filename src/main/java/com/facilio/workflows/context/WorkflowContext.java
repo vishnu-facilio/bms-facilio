@@ -72,11 +72,11 @@ public class WorkflowContext implements Serializable {
 					workflowExpressionType = Integer.parseInt(workflowExp.get("workflowExpressionType").toString());
 				}
 				if(workflowExpressionType <= 0 || workflowExpressionType == WorkflowExpressionType.EXPRESSION.getValue()) {
-					workflowExpression = new ExpressionContext();
+					workflowExpression = null;
 					workflowExpression = FieldUtil.getAsBeanFromMap(workflowExp, ExpressionContext.class);
 				}
 				else if(workflowExpressionType == WorkflowExpressionType.ITERATION.getValue()) {
-					workflowExpression = new IteratorContext();
+					workflowExpression = null;
 					workflowExpression = FieldUtil.getAsBeanFromMap(workflowExp, IteratorContext.class);
 				}
 				addWorkflowExpression(workflowExpression);
