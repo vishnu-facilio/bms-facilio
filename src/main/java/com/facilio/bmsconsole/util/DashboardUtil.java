@@ -3741,14 +3741,14 @@ public static JSONObject getStandardVariance1(ReportContext report,JSONArray pro
 		
 		List<Pair<Long, FacilioField>> rdmPairs = new ArrayList<>();
 		
-		List<Long> runningFcu = new ArrayList<>();
-		List<Long> allFcu = new ArrayList<>();
+		List<String> runningFcu = new ArrayList<>();
+		List<String> allFcu = new ArrayList<>();
 		
 		int runningCount = 0;
 		if(props != null && !props.isEmpty()) {
 			for(Map<String, Object> prop :props) {
 				rdmPairs.add(Pair.of((Long) prop.get("id"),fanStatusField));
-				allFcu.add((Long) prop.get("id"));
+				allFcu.add(prop.get("id").toString());
 			}
 			List<ReadingDataMeta> rdms = ReadingsAPI.getReadingDataMetaList(rdmPairs);
 			
@@ -3759,7 +3759,7 @@ public static JSONObject getStandardVariance1(ReportContext report,JSONArray pro
 					Double runStatus = Double.valueOf(rdm.getValue().toString());
 					if(runStatus > 0) {
 						runningCount++;
-						runningFcu.add(rdm.getResourceId());
+						runningFcu.add(rdm.getResourceId()+"");
 					}
 				}
 				catch(Exception e) {
