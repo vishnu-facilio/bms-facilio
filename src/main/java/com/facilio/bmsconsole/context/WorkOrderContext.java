@@ -299,7 +299,7 @@ public class WorkOrderContext extends TicketContext {
 			return null;
 		}
 	}
-	private double totalCost;
+	private double totalCost=-1;
 	public double getTotalCost() {
 		return totalCost;
 	}

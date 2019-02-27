@@ -6,7 +6,7 @@ public class WorkorderCostContext extends ModuleBaseWithCustomFields {
 
 	private static final long serialVersionUID = 1L;
 	private long parentId, ttime, modifiedTime;
-	private double cost;
+	private double cost=-1;
 
 	public long getTtime() {
 		return ttime;

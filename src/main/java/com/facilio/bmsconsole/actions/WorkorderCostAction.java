@@ -76,9 +76,28 @@ public class WorkorderCostAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.RECORD_ID, workorderCost.getId());
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(workorderCost.getId()));
 		context.put(FacilioConstants.ContextNames.PARENT_ID, workorderCost.getParentId());
+		context.put(FacilioConstants.ContextNames.WORKORDER_COST_TYPE, 5);
 		
 		Chain addWorkorderPartChain = TransactionChainFactory.getUpdateWorkorderCostChain();
 		addWorkorderPartChain.execute(context);
+		setWorkordercostId((List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST));
+		setResult("workordercostId", workordercostId);
+		return SUCCESS;
+	}
+	
+	public String deleteWorkorderCosts() throws Exception {
+		FacilioContext context = new FacilioContext();
+		WorkorderItemContext workorderItem = new WorkorderItemContext();
+		workorderItem.setDeleted(true);
+
+		context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.DELETE);
+		context.put(FacilioConstants.ContextNames.RECORD, workorderItem);
+		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, workordercostId);
+		context.put(FacilioConstants.ContextNames.PARENT_ID, parentId);
+		context.put(FacilioConstants.ContextNames.WORKORDER_COST_TYPE, 5);
+
+		Chain deleteInventoryChain = TransactionChainFactory.getDeleteWorkorderCostChain();
+		deleteInventoryChain.execute(context);
 		setWorkordercostId((List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST));
 		setResult("workordercostId", workordercostId);
 		return SUCCESS;

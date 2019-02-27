@@ -1655,5 +1655,13 @@ public class TransactionChainFactory {
 			c.addCommand(new UpdateWorkorderTotalCostCommand());
 			return c;
 		}
+		
+		public static Chain getDeleteWorkorderCostChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForWorkOrderCosts());
+			c.addCommand(new GenericDeleteModuleDataCommand());
+			c.addCommand(new UpdateWorkorderTotalCostCommand());
+			return c;
+		}
 }
 

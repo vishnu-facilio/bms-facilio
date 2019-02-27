@@ -52,16 +52,13 @@ public class WorkorderItemsAction extends FacilioAction{
 	
 	public String deleteWorkorderItems() throws Exception {
 		FacilioContext context = new FacilioContext();
-		WorkorderItemContext workorderItem = new WorkorderItemContext();
-		workorderItem.setDeleted(true);
-
+	
 		context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.DELETE);
-		context.put(FacilioConstants.ContextNames.RECORD, workorderItem);
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, workorderItemsId);
 		context.put(FacilioConstants.ContextNames.PARENT_ID, parentId);
 		context.put(FacilioConstants.ContextNames.WORKORDER_COST_TYPE, 1);
 
-		Chain deleteInventoryChain = TransactionChainFactory.getDeleteWorkorderItemChain();
+		Chain deleteInventoryChain = TransactionChainFactory.getDeleteWorkorderCostChain();
 		deleteInventoryChain.execute(context);
 		setWorkorderItemsId((List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST));
 		setResult("workorderItemsId", workorderItemsId);

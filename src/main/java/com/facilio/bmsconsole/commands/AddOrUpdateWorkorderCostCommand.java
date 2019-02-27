@@ -17,11 +17,14 @@ import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.EnumOperators;
 import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.criteria.PickListOperators;
+import com.facilio.bmsconsole.modules.DeleteRecordBuilder;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.InsertRecordBuilder;
+import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
+import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
 import com.facilio.constants.FacilioConstants;
@@ -41,21 +44,16 @@ public class AddOrUpdateWorkorderCostCommand implements Command {
 
 		if (costType == 1) {
 			FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.WORKORDER_ITEMS);
-			List<FacilioField> fields = modBean
-					.getAllFields(FacilioConstants.ContextNames.WORKORDER_ITEMS);
-			Map<String, FacilioField> fieldsMap = FieldFactory
-					.getAsMap(fields);
+			List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.WORKORDER_ITEMS);
+			Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(fields);
 			cost = getTotalCost(parentId, module, fieldsMap);
-		}
-		else if(costType == 2) {
+		} else if (costType == 2) {
 			FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.WORKORDER_TOOLS);
-			List<FacilioField> fields = modBean
-					.getAllFields(FacilioConstants.ContextNames.WORKORDER_TOOLS);
-			Map<String, FacilioField> fieldsMap = FieldFactory
-					.getAsMap(fields);
+			List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.WORKORDER_TOOLS);
+			Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(fields);
 			cost = getTotalCost(parentId, module, fieldsMap);
 		}
-		
+
 		FacilioModule workorderCostsModule = modBean.getModule(FacilioConstants.ContextNames.WORKORDER_COST);
 		List<FacilioField> workorderCostsFields = modBean.getAllFields(FacilioConstants.ContextNames.WORKORDER_COST);
 		Map<String, FacilioField> workorderCostsFieldMap = FieldFactory.getAsMap(workorderCostsFields);
@@ -78,7 +76,7 @@ public class AddOrUpdateWorkorderCostCommand implements Command {
 					.module(workorderCostsModule).fields(modBean.getAllFields(workorderCostsModule.getName()))
 					.andCondition(CriteriaAPI.getIdCondition(workorderCost.getId(), workorderCostsModule));
 			updateBuilder.update(workorderCost);
-
+			// }
 		} else {
 			workorderCost.setCost(cost);
 			workorderCost.setParentId(parentId);
@@ -96,29 +94,30 @@ public class AddOrUpdateWorkorderCostCommand implements Command {
 
 		return false;
 	}
-	
-	
-	public static double getTotalCost(long id, FacilioModule module, Map<String, FacilioField> fieldsMap) throws Exception {
+
+	public static double getTotalCost(long id, FacilioModule module, Map<String, FacilioField> fieldsMap)
+			throws Exception {
 
 		if (id <= 0) {
 			return 0d;
 		}
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		
+
 		List<FacilioField> field = new ArrayList<>();
 		field.add(FieldFactory.getField("totalItemsCost", "sum(COST)", FieldType.DECIMAL));
-		
+
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder().table(module.getTableName())
 				.andCustomWhere(module.getTableName() + ".ORGID = " + AccountUtil.getCurrentOrg().getOrgId())
-				.andCondition(CriteriaAPI.getCondition(FieldFactory.getModuleIdField(module), String.valueOf(module.getModuleId()), NumberOperators.EQUALS));
+				.andCondition(CriteriaAPI.getCondition(FieldFactory.getModuleIdField(module),
+						String.valueOf(module.getModuleId()), NumberOperators.EQUALS));
 
 		builder.select(field);
 
 		builder.andCondition(CriteriaAPI.getCondition(FieldFactory.getModuleIdField(module),
 				String.valueOf(module.getModuleId()), NumberOperators.EQUALS));
-		
-		builder.andCondition(CriteriaAPI.getCondition(fieldsMap.get("parentId"), String.valueOf(id), NumberOperators.EQUALS));
-		
+
+		builder.andCondition(
+				CriteriaAPI.getCondition(fieldsMap.get("parentId"), String.valueOf(id), NumberOperators.EQUALS));
 
 		List<Map<String, Object>> rs = builder.get();
 		if (rs != null && rs.size() > 0) {

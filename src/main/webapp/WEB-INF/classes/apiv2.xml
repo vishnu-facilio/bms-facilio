@@ -1343,7 +1343,7 @@
 	<package name="workorderCostsApi" namespace="/api/v2/workorderCosts"
 		extends="v2Api">
 		<action name="delete"
-			class="com.facilio.bmsconsole.actions.WorkorderCostAction" method="deleteWorkorderTools">
+			class="com.facilio.bmsconsole.actions.WorkorderCostAction" method="deleteWorkorderCosts">
 			<param name="moduleName">asset</param>
 			<param name="permission">CREATE</param>
 		</action>
