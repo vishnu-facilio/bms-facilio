@@ -3847,7 +3847,7 @@ public static JSONObject getStandardVariance1(ReportContext report,JSONArray pro
 						resJson.put("valveFeedback", rdm.getValue());
 					}
 					else if (rdm.getFieldId() == returnTempField.getFieldId()) {
-						resJson.put("valveFeedback", rdm.getValue());
+						resJson.put("returnTemp", rdm.getValue());
 					}
 					
 				}
