@@ -26,6 +26,7 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.report.context.ReportContext;
 import com.facilio.report.context.ReportDataPointContext;
+import com.facilio.report.context.ReportFactory;
 import com.facilio.report.context.ReportFieldContext;
 import com.facilio.report.context.ReportGroupByField;
 import com.facilio.report.context.ReportYAxisContext;
@@ -93,9 +94,14 @@ public class ConstructReportData implements Command {
 		
 		FacilioField xField = null;
 		if (xAxisJSON.containsKey("field_id")) {
-			xField = modBean.getField((Long) xAxisJSON.get("field_id"));
+			Object fieldId = xAxisJSON.get("field_id");
+			if (fieldId instanceof Long) {
+				xField = modBean.getField((Long) fieldId);
+			} else if (fieldId instanceof String) {
+				xField = ReportFactory.getReportField((String) fieldId);
+			}
 		}
-		
+ 		
 		if (xAxisJSON.containsKey("aggr")) {
 			Integer xAggr = ((Number) xAxisJSON.get("aggr")).intValue();
 			AggregateOperator aggregateOperator = AggregateOperator.getAggregateOperator(xAggr);
@@ -111,7 +117,7 @@ public class ConstructReportData implements Command {
 			}
 		}
 		if (xField == null) {
-			throw new Exception("field_id should be mandatory");
+			throw new Exception("x field should be mandatory");
 		}
 		xAxis.setField(xField);
 		dataPointContext.setxAxis(xAxis);
@@ -138,7 +144,12 @@ public class ConstructReportData implements Command {
 				if (yMap.containsKey("aggr")) {
 					yAggr = AggregateOperator.getAggregateOperator(((Number) yMap.get("aggr")).intValue());
 				}
-				yField = modBean.getField((Long) yMap.get("field_id"));
+				Object fieldId = yMap.get("field_id");
+				if (fieldId instanceof Long) {
+					yField = modBean.getField((Long) fieldId);
+				} else if (fieldId instanceof String) {
+					yField = ReportFactory.getReportField((String) fieldId);
+				}
 			}
 		}
 
@@ -156,7 +167,13 @@ public class ConstructReportData implements Command {
 					throw new Exception("Field ID should be mandatory");
 				}
 				
-				FacilioField field = modBean.getField((long) groupByJSON.get("field_id"));
+				Object fieldId = groupByJSON.get("field_id");
+				FacilioField field = null;
+				if (fieldId instanceof Long) {
+					field = modBean.getField((long) fieldId);
+				} else if (fieldId instanceof String) {
+					field = ReportFactory.getReportField((String) fieldId);
+				}
 				groupByField.setField(field);
 				groupByField.setAlias(field.getName());
 

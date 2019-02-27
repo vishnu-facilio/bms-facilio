@@ -40,6 +40,7 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.report.context.ReportBaseLineContext;
 import com.facilio.report.context.ReportContext;
 import com.facilio.report.context.ReportDataPointContext;
+import com.facilio.report.context.ReportFactory;
 import com.facilio.report.context.ReportFieldContext;
 import com.facilio.report.context.ReportFilterContext;
 import com.facilio.report.context.ReportFolderContext;
@@ -452,6 +453,17 @@ public class ReportUtil {
 				addFieldInList(dimensionFieldMap, "time", field);
 			}
 		}
+		
+		if (moduleName.equals("workorder")) {
+			metricFields.add(ReportFactory.getReportField("firstresponsetime"));
+			
+			List<FacilioField> workorderFields = dimensionFieldMap.get(moduleName);
+			workorderFields.add(ReportFactory.getReportField("overvsclose"));
+			workorderFields.add(ReportFactory.getReportField("overdue_open"));
+			workorderFields.add(ReportFactory.getReportField("overdue_closed"));
+			workorderFields.add(ReportFactory.getReportField("plannedvsunplanned"));
+		}
+		
 		jsonObject.put("dimension", dimensionFieldMap);
 		jsonObject.put("metrics", metricFields);
 		
