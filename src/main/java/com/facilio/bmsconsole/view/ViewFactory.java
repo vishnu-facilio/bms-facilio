@@ -146,6 +146,11 @@ public class ViewFactory {
 
 		order = 1;
 		views = new LinkedHashMap<>();
+		views.put("all", getAllTenantsView().setOrder(order++));
+		viewsMap.put(FacilioConstants.ContextNames.TENANT, views);
+
+		order = 1;
+		views = new LinkedHashMap<>();
 		views.put("today", getEvents("Today").setOrder(order++));
 		views.put("yesterday", getEvents("Yesterday").setOrder(order++));
 		views.put("thisweek", getEvents("ThisWeek").setOrder(order++));
@@ -533,6 +538,21 @@ public class ViewFactory {
 		return allView;
 	}
 
+	private static FacilioView getAllTenantsView() {
+		FacilioField localId = new FacilioField();
+		localId.setName("localId");
+		localId.setColumnName("LOCAL_ID");
+		localId.setDataType(FieldType.NUMBER);
+		localId.setModule(ModuleFactory.getTenantsModule());
+
+		FacilioView allView = new FacilioView();
+		allView.setName("all");
+		allView.setDisplayName("All Tenants");
+		allView.setSortFields(Arrays.asList(new SortField(localId, false)));
+		return allView;
+	}
+
+	
 	private static FacilioView getAssets(String category) {
 
 		FacilioView assetView = new FacilioView();

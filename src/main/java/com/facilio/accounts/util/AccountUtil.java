@@ -39,7 +39,7 @@ public class AccountUtil {
 		Organization org = AccountUtil.getOrgBean().getOrg(orgId);
 		
 		if (org != null) {
-			
+
 			Account account = new Account(org, null);
 			setCurrentAccount(account);
 			User user = AccountUtil.getOrgBean().getSuperAdmin(org.getId());
@@ -103,7 +103,7 @@ public class AccountUtil {
 		RoleBean roleBean = (RoleBean) BeanFactory.lookup("RoleBean",orgId);
 		return roleBean;
 	}
-	
+
 	public static final int FEATURE_MAINTENANCE 			= 1;
 	public static final int FEATURE_ALARMS 				= 2;
 	public static final int FEATURE_ENERGY 				= 4;
@@ -119,7 +119,9 @@ public class AccountUtil {
 	public static final int FEATURE_CONTROL_ACTIONS = 4096;
 	public static final int FEATURE_INVENTORY = 8192;
 	public static final int FEATURE_SCHEDULED_WO = 16384;
-	
+	public static final int FEATURE_TENANTS = 32768;
+
+
 	public static int getFeatureLicense() throws Exception {
 		long orgId = getCurrentOrg().getOrgId();
 		int module = 0;

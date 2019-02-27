@@ -426,6 +426,23 @@ public class SpaceAPI {
 		
 		insertBuilder.save();
 	}
+
+	public static List<ZoneContext> getTenantZones() throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule("zone");
+		
+		List<FacilioField> fields = modBean.getAllFields("zone");
+		
+		SelectRecordsBuilder<ZoneContext> builder = new SelectRecordsBuilder<ZoneContext>()
+													.table(module.getTableName())
+													.moduleName("zone")
+													.beanClass(ZoneContext.class)
+													.select(fields)
+													.andCustomWhere(module.getTableName()+".TENANT_ZONE = ?", 1)
+													.orderBy("ID");
+		List<ZoneContext> zoneList = builder.get();
+		return zoneList;
+	}
 	public static void deleteZoneChildren(long zoneId) throws Exception {
 		FacilioModule mod = ModuleFactory.getZoneRelModule();
 		GenericDeleteRecordBuilder deleteBuilder = new GenericDeleteRecordBuilder()

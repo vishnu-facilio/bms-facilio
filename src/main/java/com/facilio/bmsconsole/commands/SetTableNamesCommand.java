@@ -56,6 +56,10 @@ public class SetTableNamesCommand implements Command {
 		return new SetTableNamesCommand("assetdepartment", "AssetDepartment");
 	}
 	
+	public static SetTableNamesCommand getForTenants() {
+		return new SetTableNamesCommand("tenant", "Tenants");
+	}
+	
 	public static SetTableNamesCommand getForAssetType() {
 		return new SetTableNamesCommand("assettype", "AssetType");
 	}

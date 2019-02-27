@@ -213,6 +213,10 @@ public class LoadViewCommand implements Command {
 			for(int i=0;i<view.getFields().size();i++) {
 			String modulesName;
 			String fieldsName;
+			ViewField f = view.getFields().get(i);
+			FacilioField ff = f.getField();
+			FacilioModule m = ff.getModule();
+			String n= m.getName();
 			modulesName = view.getFields().get(i).getField().getModule().getName();
 			fieldsName = view.getFields().get(i).getName();
 			fieldMap.put(fieldsName + modulesName, view.getFields().get(i));

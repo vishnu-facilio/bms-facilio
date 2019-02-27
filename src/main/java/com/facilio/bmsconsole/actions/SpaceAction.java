@@ -18,6 +18,8 @@ import com.facilio.bmsconsole.context.SpaceContext;
 import com.facilio.bmsconsole.context.ViewLayout;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.bmsconsole.tenant.TenantContext;
+import com.facilio.bmsconsole.util.TenantsAPI;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.opensymphony.xwork2.ActionContext;
@@ -184,6 +186,12 @@ public class SpaceAction extends ActionSupport {
 		return SUCCESS;
 	}
 	
+	public String getTenantForSpace() throws Exception
+	{
+		setTenant(TenantsAPI.fetchTenantForSpace(spaceId));
+		return SUCCESS;
+		
+	}
 	public List getFormlayout()
 	{
 		return FormLayout.getNewSpaceLayout(fields);
@@ -324,5 +332,15 @@ public class SpaceAction extends ActionSupport {
 	public SpaceContext getRecord() 
 	{
 		return space;
+	}
+	private TenantContext tenant;
+	public TenantContext getTenant() 
+	{
+		return tenant;
+	}
+	
+	public void setTenant(TenantContext tenant) 
+	{
+		this.tenant = tenant;
 	}
 }

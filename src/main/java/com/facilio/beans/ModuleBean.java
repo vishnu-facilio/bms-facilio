@@ -9,6 +9,7 @@ import org.json.simple.JSONObject;
 import com.facilio.bmsconsole.commands.data.ServicePortalInfo;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
+import com.facilio.bmsconsole.modules.FieldFactory;
 
 public interface ModuleBean extends RootBean {
 

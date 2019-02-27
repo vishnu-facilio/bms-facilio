@@ -43,6 +43,7 @@ public class ColumnFactory {
 		columnMap.put("alarm-default", getDefaultAlarmColumns());
 		columnMap.put("energy-default", getDefaultEnergyColumns());
 		columnMap.put("asset-default", getDefaultAssetsColumns());
+		columnMap.put("tenant-default", getDefaultTenantsColumns());
 		columnMap.put("inventory-default", getDefaultInventoryColumns());
 		columnMap.put("storeRoom-default", getDefaultStoreRoomColumns());
 		columnMap.put("itemTypes-default", getDefaultItemTypesColumns());
@@ -168,6 +169,18 @@ public class ColumnFactory {
 		columns.add(new ViewField("department", "Department"));
 //		columns.add(new ViewField("movable", "Movable"));		// TODO needs to handle parent field
 		
+		return columns;
+	}
+	
+	private static List<ViewField> getDefaultTenantsColumns() {
+		List<ViewField> columns = new ArrayList<ViewField>();
+		
+		columns.add(new ViewField("name", "Tenant Name"));
+		columns.add(new ViewField("description", "Description"));
+		columns.add(new ViewField("createdTime", "Created Time"));
+		columns.add(new ViewField("modifiedTime", "Modified Time"));
+		columns.add(new ViewField("contact", "Contact"));
+				
 		return columns;
 	}
 	

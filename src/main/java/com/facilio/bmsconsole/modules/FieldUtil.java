@@ -286,20 +286,21 @@ public class FieldUtil {
 	}
 	
 	public static void inti() {
-		
+
 	}
-	
+
 	private static final ObjectMapper NON_DEFAULT_MAPPER = new ObjectMapper()
 													.setSerializationInclusion(Include.NON_DEFAULT)
 													.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS)
 													.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
-	
+
 	static {
 		for (Class classObj : FacilioConstants.ContextNames.getAllClasses()) {
 			NON_DEFAULT_MAPPER.configOverride(classObj).setInclude(Value.construct(Include.NON_DEFAULT, Include.ALWAYS));
 		}
 	}
-	
+
+
 	public static ObjectMapper getMapper(Class<?> beanClass) {
 		MutableConfigOverride config = NON_DEFAULT_MAPPER.configOverride(beanClass);
 		if (config.getInclude() == null) {
@@ -346,17 +347,29 @@ public class FieldUtil {
 		return properties;
 	}
 	
-	public static JSONObject getAsJSON(Object bean) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+	public static <E extends ModuleBaseWithCustomFields> Map<Long,E> getAsMap(List<E> beans) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException
+	{
+
+		Map<Long,E> mapList = new HashMap<Long, E>();
+		for(E bean : beans) {
+			mapList.put(bean.getId(), bean);
+		}
+		return mapList;
+	}
+
+	public static JSONObject getAsJSON(Object bean) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException
+	{
 		JSONObject properties = null;
 		if(bean != null) {
 			ObjectMapper mapper = getMapper(bean.getClass());
 			properties = mapper.convertValue(bean, JSONObject.class);
-			
+
 		}
 		return properties;
 	}
 	
-	public static JSONArray getAsJSONArray(List<?> beans, Class<?> beanClass) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+	public static JSONArray getAsJSONArray(List<?> beans, Class<?> beanClass) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException
+	{
 		JSONArray array = null;
 		if(beans != null) {
 			ObjectMapper mapper = getMapper(beanClass);
@@ -364,7 +377,7 @@ public class FieldUtil {
 		}
 		return array;
 	}
-	
+
 	public static Map<String, Object> getLookupProp(LookupField lookupField, long id, int level) throws Exception {
 		Map<Long, Map<String, Object>> props = (Map<Long, Map<String, Object>>) getLookupProps(lookupField, Collections.singletonList(id), true, level);
 		if (props != null && !props.isEmpty()) {
@@ -372,14 +385,14 @@ public class FieldUtil {
 		}
 		return null;
 	}
-	
+
 	public static Map<Long, ? extends Object> getLookupProps(LookupField field, Collection<Long> ids, boolean isMap, int level) throws Exception {
 		if(CollectionUtils.isNotEmpty(ids)) {
 			if(LookupSpecialTypeUtil.isSpecialType(field.getSpecialType())) {
 				if (isMap) {
 					List<? extends Object> records = LookupSpecialTypeUtil.getRecords(field.getSpecialType(), ids);
 					if (CollectionUtils.isNotEmpty(records)) {
-						Map<Long, Map<String, Object>> props = new HashMap<>(); 
+						Map<Long, Map<String, Object>> props = new HashMap<>();
 						for (Object record : records) {
 							Map<String, Object> prop = FieldUtil.getAsProperties(record);
 							props.put((Long) prop.get("id"), prop);
@@ -405,13 +418,13 @@ public class FieldUtil {
 																						.andCondition(CriteriaAPI.getIdCondition(ids, module))
 																						.fetchDeleted()
 																						;
-					
+
 					if (field instanceof LookupFieldMeta && CollectionUtils.isNotEmpty(((LookupFieldMeta) field).getChildLookupFields())) {
 						for (LookupField lookupField : ((LookupFieldMeta) field).getChildLookupFields()) {
 							lookupBeanBuilder.fetchLookup(lookupField instanceof LookupFieldMeta ? (LookupFieldMeta) lookupField : new LookupFieldMeta(lookupField));
 						}
 					}
-					
+
 					if (isMap) {
 						return lookupBeanBuilder.getAsMapProps();
 					}
@@ -597,18 +610,18 @@ public class FieldUtil {
 			}
 		}*/
 	}
-	
+
 	private static final Set<String> SITE_ID_ALLOWED_MODULES = Collections.unmodifiableSet(
-			new HashSet<>(Arrays.asList("resource", "asset", "building", "floor", "space", "zone", "alarm", "ticket", "workorder", "workorderrequest", "task", "readingalarm", "inventory")));
-	
+			new HashSet<>(Arrays.asList("resource", "asset", "building", "floor", "space", "zone", "alarm", "ticket", "workorder", "workorderrequest", "task", "readingalarm", "inventory", "tenant")));
+
 	public static boolean isSiteIdFieldPresent(FacilioModule module) {
 		return SITE_ID_ALLOWED_MODULES.contains(module.getName()) || (module.getExtendModule() != null && module.getExtendModule().getName().equals("asset"));
 	}
-	
+
 	private static final Set<String> SYSTEM_FIELDS_ALLOWED_MODULES = Collections.unmodifiableSet(
 			new HashSet<>(Arrays.asList("assetactivity"))
 			);
-	
+
 	public static boolean isSystemFieldsPresent (FacilioModule module) {
 		return SYSTEM_FIELDS_ALLOWED_MODULES.contains(module.getName());
 	}

@@ -43,4 +43,12 @@ public class ZoneContext extends BaseSpaceContext {
 	public void setBuilding(BuildingContext building) {
 		this.building = building;
 	}
+	private boolean tenantZone;
+	public boolean getTenantZone() {
+		return tenantZone;
+	}
+	public void setTenantZone(boolean tenantZone) {
+		this.tenantZone = tenantZone;
+	}
+	
 }

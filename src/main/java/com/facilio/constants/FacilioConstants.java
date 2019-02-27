@@ -76,6 +76,7 @@ import com.facilio.bmsconsole.context.WorkorderItemContext;
 import com.facilio.bmsconsole.context.WorkorderPartsContext;
 import com.facilio.bmsconsole.context.WorkorderToolsContext;
 import com.facilio.bmsconsole.context.ZoneContext;
+import com.facilio.bmsconsole.tenant.TenantContext;
 
 public class FacilioConstants {
 	
@@ -150,7 +151,7 @@ public class FacilioConstants {
 		public static final String EVENT_TYPE_LIST = "eventTypeList";
 		public static final String IS_BULK_ACTION = "isBulkAction";
 		public static final String ACTIVITY_LIST = "activityList";
-		
+
 		public static final String USER_ID = "userId";
 		public static final String USER = "user";
 		public static final String USER_MOBILE_SETTING = "userMobileSetting";
@@ -270,11 +271,14 @@ public class FacilioConstants {
 		public static final String ATTACHMENT_FILE_NAME = "attachmentFileName";
 		public static final String ATTACHMENT_ID_LIST = "attachmentIds";
 		public static final String ATTACHMENT_MODULE_NAME = "attachmentModuleName";
-		
+
 		public static final String FILE = "file";
 		public static final String FILE_NAME = "fileName";
 		public static final String FILE_CONTENT_TYPE = "fileContentType";
 		public static final String FILE_CONTEXT_LIST = "fileContextList";
+
+
+		public static final String LOGO = "logo";
 
 		public static final String ACTION_FORM = "actionForm";
 		
@@ -424,7 +428,8 @@ public class FacilioConstants {
 		public static final String ZONE = "zone";
 		public static final String ZONE_LIST = "zones";
 		public static final String ZONE_ID = "zoneId";
-		
+		public static final String IS_TENANT_ZONE = "tenantzone";
+
 		public static final String SKILL = "skill";
 		public static final String SKILL_LIST = "skills";
 		
@@ -469,7 +474,7 @@ public class FacilioConstants {
 		public static final String BASE_SPACE_PHOTOS = "basespacephotos";
 		public static final String ASSET_PHOTOS = "assetphotos";
 		public static final String ASSET_ACTIVITY = "assetactivity";
-		
+
 		public static final String TICKET_NOTES = "ticketnotes";
 		public static final String BASE_SPACE_NOTES = "basespacenotes";
 		public static final String ASSET_NOTES = "assetnotes";
@@ -477,8 +482,10 @@ public class FacilioConstants {
 		public static final String ITEM_NOTES = "itemNotes";
 		public static final String TOOL_NOTES = "toolNotes";
 		public static final String TOOL_TYPES_NOTES = "toolTypesNotes";
+
+
 		public static final String STORE_ROOM_NOTES = "storeRoomNotes";
-		
+
 		public static final String TICKET_ATTACHMENTS = "ticketattachments";
 		public static final String BASE_SPACE_ATTACHMENTS = "basespaceattachments";
 		public static final String ASSET_ATTACHMENTS = "assetattachments";
@@ -487,7 +494,8 @@ public class FacilioConstants {
 		public static final String ITEM_TYPES_ATTACHMENTS = "itemTypesAttachments";
 		public static final String TOOL_TYPES_ATTACHMENTS = "toolTypesattachments";
 		public static final String STORE_ROOM_ATTACHMENTS = "storeRoomAttachments";
-		
+
+
 		public static final String PICKLIST = "pickList";
 		
 		public static final String USERS = "users";
@@ -565,7 +573,7 @@ public class FacilioConstants {
 		public static final String WO_LIST_COUNT = "woListCount";
 		public static final String WO_VIEW_COUNT = "woListAndCount";
 		public static final String IS_APPROVAL = "isApproval";
-		
+
 		public static final String CV_NAME = "cvName";
 		public static final String CUSTOM_VIEW = "customView";
 		public static final String NEW_CV = "newCV";
@@ -761,30 +769,31 @@ public class FacilioConstants {
 		public static final String WO_CONTEXTS = "woContexts";
 		public static final String SCHEDULED_WO_MAP_MAP = "scheduledWoMap";
 
-		
+
 		public static final String WORKORDER_PARTS = "workorderParts";
 		public static final String WORKORDER_PART = "workorderPart";
 		public static final String WORKORDER_PART_LIST = "workorderPartsList";
-		
+
 		public static final String WORKORDER_COST = "workorderCost";
 		public static final String WORKORDER_COST_TYPE = "workorderCostType";
-		
+
 		public static final String STORE_ROOM = "storeRoom";
 		public static final String STORE_ROOMS = "storeRooms";
 		public static final String STORE_ROOM_LIST = "storeRoomList";
-		
+
 		public static final String ITEM_TYPES = "itemTypes";
 		public static final String ITEM_TYPES_LIST = "itemTypesList";
 		public static final String ITEM_TYPES_CATEGORY = "itemTypesCategory";
 		public static final String ITEM_TYPES_STATUS = "itemTypesStatus";
 		public static final String ITEM_TYPES_ID = "itemTypesId";
-		
+
 		public static final String TOOL_TYPES = "toolTypes";
 		public static final String TOOL_TYPES_LIST = "toolTypesList";
 		public static final String TOOL_TYPES_STATUS = "toolTypesStatus";
 		public static final String TOOLS_TYPES_CATEGORY = "toolTypesCategory";
+
 		public static final String TOOL_TYPES_ID = "toolTypesId";
-		
+
 //		public static final String TOOL = "tool";
 		public static final String TOOLS = "tools";
 		public static final String TOOLS_STATUS = "toolsStatus";
@@ -793,7 +802,7 @@ public class FacilioConstants {
 		public static final String VENDOR = "vendor";
 		public static final String VENDORS = "vendors";
 		public static final String VENDOR_ID = "vendorsId";
-		
+
 		public static final String ITEM = "item";
 		public static final String ITEMS = "items";
 		public static final String ITEM_STATUS = "itemStatus";
@@ -803,7 +812,7 @@ public class FacilioConstants {
 		
 		public static final String WORKORDER_ITEMS = "workorderItem";
 		public static final String ITEM_TRANSACTIONS = "itemTransactions";
-		
+
 		public static final String TOOL_LIST = "toolList";
 		public static final String TOOL = "tool";
 		public static final String TOOL_ID = "toolId";
@@ -813,7 +822,12 @@ public class FacilioConstants {
 		public static final String WORKORDER_TOOLS = "workorderTools";
 		public static final String TOOL_TRANSACTIONS = "toolTransactions";
 		public static final String STOCKED_TOOLS_RETURN_TRACKING = "stockedToolsReturnTracking";
-		
+
+		public static final String TENANT = "tenant";
+		public static final String TENANT_CONTEXT = "tenantContext";
+
+
+
 		public static final String ITEM_VENDORS = "itemVendors";
 		public static final String TRANSACTION_TYPE = "transactionType";
 
@@ -822,6 +836,7 @@ public class FacilioConstants {
 		public static final String PURCHASED_ITEM_IS_USED = "purchasedItemIsUsed";
 
 		public static final String SKIP_WO_CREATION = "skipWOCreation";
+
 		private static Map<String, Class> classMap = Collections.unmodifiableMap(initClassMap());
 		private static Map<String, Class> initClassMap() {
 			Map<String, Class> classMap = new HashMap<>();
@@ -906,6 +921,7 @@ public class FacilioConstants {
 			classMap.put(STOCKED_TOOLS_RETURN_TRACKING, StockedToolsReturnTrackingContext.class);
 			classMap.put(ITEM_VENDORS, ItemTypesVendorsContext.class);
 			classMap.put(PURCHASED_TOOL, PurchasedToolContext.class);
+			classMap.put(TENANT, TenantContext.class);
 			return classMap;
 		}
 		
@@ -1022,7 +1038,7 @@ public class FacilioConstants {
 
 	{
 		public static final String MODULE_TYPE = "module_type";
-		
+
 		public static final String ACTUAL_DATA = "actual";
 		
 		public static final String RANGE_FROM = "fromRange";

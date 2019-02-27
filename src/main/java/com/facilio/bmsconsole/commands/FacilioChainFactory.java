@@ -600,6 +600,13 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
+	public static Chain getTenantReportCardsChain() {
+		Chain c = FacilioChain.getNonTransactionChain();
+		c.addCommand(SetTableNamesCommand.getForTenants());
+		c.addCommand(new GetTenantReportCards());
+		return c;
+	}
+	
 	public static Chain getAllBuildingChain() {
 		Chain c = FacilioChain.getNonTransactionChain();
 		c.addCommand(SetTableNamesCommand.getForBuilding());
@@ -1980,6 +1987,8 @@ public class FacilioChainFactory {
 	
 	public static Chain addTenantChain() {
 		Chain c = FacilioChain.getTransactionChain();
+		c.addCommand(SetTableNamesCommand.getForTenants());
+		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new AddTenantCommand());
 		c.addCommand(new AddTenantUserCommand());
 		return c;
@@ -2046,6 +2055,15 @@ public class FacilioChainFactory {
 	public static Chain getPermaLinkTokenChain() {
 		Chain c = FacilioChain.getTransactionChain();
 		c.addCommand(new GetPermaLinkTokenCommand());
+		return c;
+	}
+	
+	public static Chain getTenantListChain() {
+		Chain c = FacilioChain.getNonTransactionChain();
+		c.addCommand(new LoadViewCommand());
+		c.addCommand(new GenerateCriteriaFromFilterCommand());
+		c.addCommand(new GenerateSearchConditionCommand());
+		c.addCommand(new GetTenantListCommand());
 		return c;
 	}
 	

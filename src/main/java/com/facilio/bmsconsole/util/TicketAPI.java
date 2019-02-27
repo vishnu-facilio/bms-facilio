@@ -55,6 +55,9 @@ import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
+import com.facilio.bmsconsole.tenant.TenantContext;
+import com.facilio.bmsconsole.view.FacilioView;
+import com.facilio.bmsconsole.workflow.rule.ActivityType;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
@@ -654,6 +657,7 @@ public static Map<Long, TicketContext> getTickets(String ids) throws Exception {
 		loadTicketUsers(tickets);
 		loadTicketGroups(tickets);
 		loadTicketResources(tickets);
+		loadTicketTenants(tickets);
 	}
 	public static void loadWorkOrderLookups(Collection<? extends WorkOrderContext> workOrders) throws Exception {
 		loadTicketStatus(workOrders);
@@ -662,6 +666,8 @@ public static Map<Long, TicketContext> getTickets(String ids) throws Exception {
 		loadWorkOrdersUsers(workOrders);
 		loadTicketGroups(workOrders);
 		loadTicketResources(workOrders);
+		loadTicketTenants(workOrders);
+
 	}
 	
 	private static void loadTicketStatus(Collection<? extends TicketContext> tickets) throws Exception {
@@ -856,6 +862,31 @@ public static Map<Long, TicketContext> getTickets(String ids) throws Exception {
 		}
 	}
 	
+	private static void loadTicketTenants(Collection<? extends TicketContext> tickets) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.TENANT);
+
+		if(tickets != null && !tickets.isEmpty()) {
+			SelectRecordsBuilder<TenantContext> builder = new SelectRecordsBuilder<TenantContext>()
+														.module(module)
+														.beanClass(TenantContext.class)
+														.select(modBean.getAllFields(FacilioConstants.ContextNames.TENANT))
+														;
+			List<TenantContext> tenantList = builder.get();
+			TenantsAPI.loadTenantLookups(tenantList);
+			Map<Long, TenantContext> tenants = FieldUtil.getAsMap(tenantList);
+			for(TicketContext ticket : tickets) {
+				if (ticket != null) {
+					TenantContext tenant = ticket.getTenant();
+					if(tenant != null) {
+						TenantContext tenantDetail = tenants.get(tenant.getId());
+						ticket.setTenant(tenantDetail);
+					}
+				}
+			}
+		}
+	}
+
 	public static CalendarColorContext getCalendarColor() throws Exception {
 		FacilioModule module = ModuleFactory.getCalendarColorModule();
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()

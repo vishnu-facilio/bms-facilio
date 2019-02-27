@@ -13,6 +13,8 @@ import com.facilio.bmsconsole.context.RecordSummaryLayout;
 import com.facilio.bmsconsole.context.ViewLayout;
 import com.facilio.bmsconsole.context.ZoneContext;
 import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.tenant.TenantContext;
+import com.facilio.bmsconsole.util.TenantsAPI;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.opensymphony.xwork2.ActionContext;
@@ -53,6 +55,14 @@ public class ZoneAction extends ActionSupport {
 		
 		return SUCCESS;
 	}
+	
+	public String getTenantForZone() throws Exception
+	{
+		setTenant(TenantsAPI.fetchTenantForZone(zoneId));
+		return SUCCESS;
+		
+	}
+	
 	
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public String newZone() throws Exception 
@@ -236,5 +246,16 @@ public class ZoneAction extends ActionSupport {
 	public void setChildren(List<BaseSpaceContext> children) 
 	{
 		this.children = children;
+	}
+	
+	private TenantContext tenant;
+	public TenantContext getTenant() 
+	{
+		return tenant;
+	}
+	
+	public void setTenant(TenantContext tenant) 
+	{
+		this.tenant = tenant;
 	}
 }

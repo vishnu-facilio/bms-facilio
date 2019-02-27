@@ -19,8 +19,9 @@ public class AddTenantUserCommand implements Command {
 	
 	
 	public boolean execute(Context context) throws Exception {
-		User user = (User) context.get(FacilioConstants.ContextNames.USER);
-		TenantContext tenant = (TenantContext) context.get(TenantsAPI.TENANT_CONTEXT);
+		//TenantContext tenant = (TenantContext) context.get(TenantsAPI.TENANT_CONTEXT);
+		User user = (User)context.get(FacilioConstants.ContextNames.USER);
+		Long tenantId = (Long)context.get(FacilioConstants.ContextNames.RECORD_ID);
 		
 		long orgid = AccountUtil.getCurrentOrg().getOrgId();
 		user.setOrgId(orgid);
@@ -29,19 +30,17 @@ public class AddTenantUserCommand implements Command {
 		}
 
 		try {
-//			user.getId();
 			AccountUtil.getUserBean().inviteRequester(orgid, user);
-//			user.setOuid(user.getId());	
 		}
 		catch (Exception e) {
+			e.printStackTrace();
 		}
-		
+    
 		Map<String, Object> prop = new HashMap<>();
 		
-		prop.put("tenantId", tenant.getId());
+		prop.put("tenantId", tenantId);
 		prop.put("ouid", user.getId());
-		prop.put("orgId", orgid);
-		
+		prop.put("orgId", user.getOrgId());
 		
 		GenericInsertRecordBuilder insert = new GenericInsertRecordBuilder();
 		insert.table(ModuleFactory.getTenantsuserModule().getTableName());
