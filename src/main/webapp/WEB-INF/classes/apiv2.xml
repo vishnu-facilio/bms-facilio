@@ -355,8 +355,9 @@
 		extends="v2Api">
 		<action name="addNew"
 			class="com.facilio.bmsconsole.actions.WorkflowRuleAction" method="addNewReadingRule">
-			<param name="moduleName">alarm</param>
-			<param name="permission">READ,READ_TEAM,READ_OWN</param>
+		</action>
+		<action name="updateNew"
+			class="com.facilio.bmsconsole.actions.WorkflowRuleAction" method="updateNewReadingRule">
 		</action>
 		<action name="fetchRule"
 			class="com.facilio.bmsconsole.actions.WorkflowRuleAction" method="fetchWorkflowRuleNew">
