@@ -3,8 +3,11 @@ package com.facilio.bmsconsole.actions;
 import java.util.List;
 
 import org.apache.commons.chain.Chain;
+import org.apache.commons.chain.Command;
 
+import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsole.context.WorkorderItemContext;
 import com.facilio.bmsconsole.context.WorkorderToolsContext;
 import com.facilio.bmsconsole.workflow.rule.ActivityType;
 import com.facilio.chain.FacilioContext;
@@ -71,6 +74,31 @@ public class WorkorderToolsAction extends FacilioAction {
 		addWorkorderPartChain.execute(context);
 		setWorkorderToolsIds((List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST));
 		setResult("workorderToolsIds", workorderToolsIds);
+		return SUCCESS;
+	}
+	
+	public String deleteWorkorderTools() throws Exception {
+		FacilioContext context = new FacilioContext();
+	
+		context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.DELETE);
+		context.put(FacilioConstants.ContextNames.PARENT_ID, parentId);
+		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, workorderToolsIds);
+		context.put(FacilioConstants.ContextNames.WORKORDER_COST_TYPE, 2);
+
+		Chain deleteInventoryChain = TransactionChainFactory.getDeleteWorkorderToolsChain();
+		deleteInventoryChain.execute(context);
+		setWorkorderToolsIds((List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST));
+		setResult("workorderToolsIds", workorderToolsIds);
+		return SUCCESS;
+	}
+	
+	public String workorderToolsList() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.PARENT_ID, parentId);
+		Command getWorkorderPartsList = ReadOnlyChainFactory.getWorkorderToolsList();
+		getWorkorderPartsList.execute(context);
+		workorderToolsList = ((List<WorkorderToolsContext>) context.get(FacilioConstants.ContextNames.WORKORDER_TOOLS));
+		setResult(FacilioConstants.ContextNames.WORKORDER_TOOLS, workorderToolsList);
 		return SUCCESS;
 	}
 }

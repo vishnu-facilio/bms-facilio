@@ -46,7 +46,7 @@ public class WorkorderItemsAction extends FacilioAction{
 		Chain addWorkorderPartChain = TransactionChainFactory.getAddOrUdpateWorkorderItemsChain();
 		addWorkorderPartChain.execute(context);
 		setWorkorderItemsId((List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST));
-		setResult("workorderPartsId", workorderItemsId);
+		setResult("workorderItemsId", workorderItemsId);
 		return SUCCESS;
 	} 
 	
@@ -58,6 +58,8 @@ public class WorkorderItemsAction extends FacilioAction{
 		context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.DELETE);
 		context.put(FacilioConstants.ContextNames.RECORD, workorderItem);
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, workorderItemsId);
+		context.put(FacilioConstants.ContextNames.PARENT_ID, parentId);
+		context.put(FacilioConstants.ContextNames.WORKORDER_COST_TYPE, 1);
 
 		Chain deleteInventoryChain = TransactionChainFactory.getDeleteWorkorderItemChain();
 		deleteInventoryChain.execute(context);

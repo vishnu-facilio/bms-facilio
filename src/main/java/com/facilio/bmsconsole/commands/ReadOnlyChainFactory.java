@@ -523,4 +523,20 @@ public class ReadOnlyChainFactory {
 		return c;
 	}
 	
+	public static Chain getWorkorderToolsList(){
+		Chain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForWorkorderTools());
+		c.addCommand(new LoadAllFieldsCommand());
+		c.addCommand(new GetWorkorderToolsListCommand());
+		return c;
+	}
+	
+	public static Chain getWorkorderCostList(){
+		Chain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForWorkOrderCosts());
+		c.addCommand(new LoadAllFieldsCommand());
+		c.addCommand(new GetWorkorderCostListCommand());
+		return c;
+	}
+	
 }

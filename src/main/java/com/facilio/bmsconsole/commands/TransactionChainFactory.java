@@ -1330,6 +1330,7 @@ public class TransactionChainFactory {
 			Chain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForWorkOrderCosts());
 			c.addCommand(new GenericAddModuleDataCommand());
+			c.addCommand(new UpdateWorkorderTotalCostCommand());
 			return c;
 		}
 		
@@ -1577,8 +1578,9 @@ public class TransactionChainFactory {
 			c.addCommand(new ExecuteAllWorkflowsCommand());
 			c.addCommand(new InventoryCostQuantityRollUpCommand());
 			c.addCommand(getUpdateInventoryQuantityRollupChain());
-//			c.addCommand(new UpdateWorkorderTotalCostCommand());
-//			c.addCommand(getUpdateWorkOrderChain());
+			c.addCommand(new AddOrUpdateWorkorderCostCommand());
+			c.addCommand(new UpdateWorkorderTotalCostCommand());
+			c.addCommand(getUpdateWorkOrderChain());
 			return c;
 		}
 		
@@ -1588,6 +1590,9 @@ public class TransactionChainFactory {
 			c.addCommand(new GenericDeleteModuleDataCommand());
 			c.addCommand(new InventoryCostQuantityRollUpCommand());
 			c.addCommand(getUpdateInventoryQuantityRollupChain());
+			c.addCommand(new AddOrUpdateWorkorderCostCommand());
+			c.addCommand(new UpdateWorkorderTotalCostCommand());
+			c.addCommand(getUpdateWorkOrderChain());
 			return c;
 		}
 		
@@ -1611,10 +1616,43 @@ public class TransactionChainFactory {
 			c.addCommand(SetTableNamesCommand.getForWorkorderTools());
 			c.addCommand(new AddOrUpdateWorkorderToolsCommand());
 			c.addCommand(new ExecuteAllWorkflowsCommand());
-//			c.addCommand(new InventoryCostQuantityRollUpCommand());
-//			c.addCommand(getUpdateInventoryQuantityRollupChain());
-//			c.addCommand(new UpdateWorkorderTotalCostCommand());
-//			c.addCommand(getUpdateWorkOrderChain());
+			c.addCommand(new StockedToolsReturnQuantityRollupCommand());
+			c.addCommand(getUpdateStockedtoolsQuantityRollupChain());
+			c.addCommand(new AddOrUpdateWorkorderCostCommand());
+			c.addCommand(new UpdateWorkorderTotalCostCommand());
+			c.addCommand(getUpdateWorkOrderChain());
+			return c;
+		}
+		
+		public static Chain getUpdateStockedtoolsQuantityRollupChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new StockedToolQuantityRollUpCommand());
+			return c;
+		}
+		
+		public static Chain getDeleteWorkorderToolsChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForStockedToolsTranaction());
+			c.addCommand(new GenericDeleteModuleDataCommand());
+			c.addCommand(new StockedToolsReturnQuantityRollupCommand());
+			c.addCommand(getUpdateStockedtoolsQuantityRollupChain());
+			c.addCommand(new AddOrUpdateWorkorderCostCommand());
+			c.addCommand(new UpdateWorkorderTotalCostCommand());
+			c.addCommand(getUpdateWorkOrderChain());
+			return c;
+		}
+		public static Chain getAddOrUpdateWorkorderCostChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForWorkOrderCosts());
+			c.addCommand(new AddOrUpdateWorkorderCostCommand());
+			return c;
+		}
+		
+		public static Chain getUpdateWorkorderCostChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForWorkOrderCosts());
+			c.addCommand(new GenericUpdateModuleDataCommand());
+			c.addCommand(new UpdateWorkorderTotalCostCommand());
 			return c;
 		}
 }
