@@ -1,8 +1,6 @@
 package com.facilio.report.context;
 
-import java.text.MessageFormat;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,10 +15,8 @@ import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldType;
-import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.fw.BeanFactory;
-import com.facilio.util.FacilioUtil;
 
 public class ReportFactory {
 	public static final int STATUS_CLOSD = 1;
@@ -65,6 +61,10 @@ public class ReportFactory {
 	}
 	
 	public static class ReportFacilioField extends FacilioField {		
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 		private int type;
 		private Map<String, Object> config;
 		private Map<String, Object> data = new HashMap<>();
