@@ -1272,7 +1272,7 @@ public class DashboardAction extends FacilioAction {
 					return SUCCESS;
 					
 				}
-				else if(widgetStaticContext.getStaticKey().equals("emrilllevel1")) {
+				else if(widgetStaticContext.getStaticKey().contains("emrilllevel1")) {
 					
 					result = new HashMap<>();
 					
@@ -1290,13 +1290,18 @@ public class DashboardAction extends FacilioAction {
 					List<Map<String, Object>> props = selectBuilder.get();
 					
 					result.put("name", "Level 1");
-					
-					DashboardUtil.getEmrillFCUWidgetResult(result, props);
+					if(widgetStaticContext.getStaticKey().equals("emrilllevel1List")) {
+						JSONArray res = DashboardUtil.getEmrillFCUListWidgetResult(props);
+						result.put("resultList", res);
+					}
+					else {
+						DashboardUtil.getEmrillFCUWidgetResult(result, props);
+					}
 					
 					setCardResult(result);
 					return SUCCESS;
 				}
-				else if(widgetStaticContext.getStaticKey().equals("emrilllevel2")) {
+				else if(widgetStaticContext.getStaticKey().contains("emrilllevel2")) {
 					
 					result = new HashMap<>();
 					
@@ -1316,14 +1321,20 @@ public class DashboardAction extends FacilioAction {
 					LOGGER.severe("EMRILL CARD TEST LOGGERS emrilllevel2");
 					LOGGER.severe(selectBuilder +" ---- "+props.size());
 					
-					result.put("name", "Level 1");
+					result.put("name", "Level 2");
 					
-					DashboardUtil.getEmrillFCUWidgetResult(result, props);
+					if(widgetStaticContext.getStaticKey().equals("emrilllevel2List")) {
+						JSONArray res = DashboardUtil.getEmrillFCUListWidgetResult(props);
+						result.put("resultList", res);
+					}
+					else {
+						DashboardUtil.getEmrillFCUWidgetResult(result, props);
+					}
 					
 					setCardResult(result);
 					return SUCCESS;
 				}
-				else if(widgetStaticContext.getStaticKey().equals("emrilllevel3")) {
+				else if(widgetStaticContext.getStaticKey().contains("emrilllevel3")) {
 					
 					result = new HashMap<>();
 					
@@ -1340,9 +1351,15 @@ public class DashboardAction extends FacilioAction {
 					
 					List<Map<String, Object>> props = selectBuilder.get();
 					
-					result.put("name", "Level 1");
+					result.put("name", "Level 3");
 					
-					DashboardUtil.getEmrillFCUWidgetResult(result, props);
+					if(widgetStaticContext.getStaticKey().equals("emrilllevel3List")) {
+						JSONArray res = DashboardUtil.getEmrillFCUListWidgetResult(props);
+						result.put("resultList", res);
+					}
+					else {
+						DashboardUtil.getEmrillFCUWidgetResult(result, props);
+					}
 					setCardResult(result);
 					return SUCCESS;
 				}
