@@ -418,10 +418,11 @@ public class UserBeanImpl implements UserBean {
 	public static void main(String []args)
 	{
 		UserBeanImpl us = new UserBeanImpl();
-		User s = us.getUserFromToken("i7vGNs_rSB7a3iXEse68EJ_eeBuyxywpjJF2cXh18_fnEthdA0DRlGszbYy02UMq");
+		User s = us.getUserFromToken("Uwqdpnyarl7sicYMThD3pCWifE3j8vdkBFuw11pebAbgz3nSSxjM0YoRGOTYnYfA&portalid=139");
 		System.out.println(s.getEmail());
 		System.out.println(s.getUid());
 		System.out.println(s.getOuid());
+		System.out.println(s.getPortalId());
 
 		
 	}
@@ -550,6 +551,7 @@ public class UserBeanImpl implements UserBean {
 			try {
 				user = getUserWithPassword(user.getOuid());
 			} catch (Exception e) {
+				log.info("exception validating user invite "+ user, e);
 				user = null;
 			}
 		}
@@ -961,6 +963,7 @@ public class UserBeanImpl implements UserBean {
 			User user =  createUserFromProps(props.get(0), true, true, false);
 			return user;
 		}
+		log.info(selectBuilder.toString() + " query returned null");
 		return null;
 	}
 
