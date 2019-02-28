@@ -5581,7 +5581,7 @@ public class DashboardAction extends FacilioAction {
 			if (getIsHeatMap() || (report != null && report.getChartType() != null && report.getChartType() == ReportContext.ReportChartType.HEATMAP.getValue())) {
 				builder.orderBy("value");
 				String reportDataSQL = builder.constructSelectStatement();
-				this.calculateHeatMapRange(reportDataSQL, fields);
+//				this.calculateHeatMapRange(reportDataSQL, fields);
 			}
 		}
 		
