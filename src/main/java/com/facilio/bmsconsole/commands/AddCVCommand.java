@@ -82,7 +82,7 @@ public class AddCVCommand implements Command {
 			List<ViewSharingContext> viewSharingList = (List<ViewSharingContext>) context.get(FacilioConstants.ContextNames.VIEW_SHARING_LIST);
 			List<Long> orgUsersId = (List<Long>) viewSharingList.stream().filter(value -> (value.getSharingType() == SharingType.USER.getIntVal())).map(val -> val.getOrgUserId()).collect(Collectors.toList());
 			ViewSharingContext newViewSharingContext = new ViewSharingContext();
-			if (viewSharingList != null) {
+			if (viewSharingList != null && !viewSharingList.isEmpty()) {
 				if (!orgUsersId.contains(AccountUtil.getCurrentUser().getId())) {
 					((ViewSharingContext) newViewSharingContext).setOrgUserId(AccountUtil.getCurrentUser().getId());
 					((ViewSharingContext) newViewSharingContext).setSharingType(SharingType.USER.getIntVal());;
