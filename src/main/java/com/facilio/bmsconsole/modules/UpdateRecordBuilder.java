@@ -199,7 +199,10 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 			if (!moduleProps.isEmpty()) {
 				updateLookupFields(moduleProps, fields);
 				moduleProps.put("sysModifiedTime", System.currentTimeMillis());
-				moduleProps.put("sysModifiedBy", AccountUtil.getCurrentUser());
+				
+				if (AccountUtil.getCurrentUser() != null) {
+					moduleProps.put("sysModifiedBy", AccountUtil.getCurrentUser().getId());
+				}
 				
 				if (withChangeSet) {
 					List<Long> ids = constructChangeSet(moduleProps);
