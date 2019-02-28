@@ -25,7 +25,7 @@ import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.workflow.rule.ActionContext;
-import com.facilio.bmsconsole.workflow.rule.ActivityType;
+import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsole.workflow.rule.ApprovalRuleContext;
 import com.facilio.bmsconsole.workflow.rule.ApprovalState;
 import com.facilio.bmsconsole.workflow.rule.ApproverContext;
@@ -177,7 +177,7 @@ public class ApprovalRulesAPI extends WorkflowRuleAPI {
 	private static void updateEventAndCriteria(WorkflowRuleContext rule, ApprovalRuleContext approvalRule, boolean isApproval, ModuleBean modBean) throws Exception {
 		WorkflowEventContext event = new WorkflowEventContext();
 		event.setModuleId(approvalRule.getEvent().getModuleId());
-		event.setActivityType(ActivityType.FIELD_CHANGE);
+		event.setActivityType(EventType.FIELD_CHANGE);
 		rule.setEvent(event);
 		
 		FacilioModule module = modBean.getModule(event.getModuleId());

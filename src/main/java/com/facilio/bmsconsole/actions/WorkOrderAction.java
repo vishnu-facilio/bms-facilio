@@ -62,7 +62,7 @@ import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.bmsconsole.util.TemplateAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.view.FacilioView;
-import com.facilio.bmsconsole.workflow.rule.ActivityType;
+import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsole.workflow.rule.TicketActivity;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -1121,13 +1121,13 @@ public class WorkOrderAction extends FacilioAction {
 	public String assignWorkOrder() throws Exception {
 
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.ASSIGN_TICKET);
+		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.ASSIGN_TICKET);
 		return updateWorkOrder(context);
 	}
 
 	public String closeWorkOrder() throws Exception {
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.CLOSE_WORK_ORDER);
+		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.CLOSE_WORK_ORDER);
 		context.put(FacilioConstants.ContextNames.ACTUAL_TIMINGS, actualTimings);
 
 		workorder = new WorkOrderContext();
@@ -1143,7 +1143,7 @@ public class WorkOrderAction extends FacilioAction {
 
 	public String resolveWorkOrder() throws Exception {
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.SOLVE_WORK_ORDER);
+		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.SOLVE_WORK_ORDER);
 		context.put(FacilioConstants.ContextNames.ACTUAL_TIMINGS, actualTimings);
 
 		workorder = new WorkOrderContext();
@@ -1159,7 +1159,7 @@ public class WorkOrderAction extends FacilioAction {
 
 	public String deleteWorkOrder() throws Exception {
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.DELETE);
+		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.DELETE);
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, id);
 
 		Chain deleteWorkOrder = FacilioChainFactory.getDeleteWorkOrderChain();
@@ -1184,17 +1184,17 @@ public class WorkOrderAction extends FacilioAction {
 	}
 
 	private void setUpdateWorkorderContext(FacilioContext context) throws Exception {
-		ActivityType activityType = ActivityType.EDIT;
+		EventType activityType = EventType.EDIT;
 		if (workorder.getStatus() != null) {
-			ActivityType type = TicketAPI.getActivityTypeForTicketStatus(workorder.getStatus().getId());
+			EventType type = TicketAPI.getActivityTypeForTicketStatus(workorder.getStatus().getId());
 			if (type != null) {
 				activityType = type;
 			}
 		}
-		else if(!context.containsKey(FacilioConstants.ContextNames.ACTIVITY_TYPE) && ((workorder.getAssignedTo() != null && workorder.getAssignedTo().getId() > 0) || (workorder.getAssignmentGroup() != null && workorder.getAssignmentGroup().getId() > 0)) ) {
-			activityType = ActivityType.ASSIGN_TICKET;
+		else if(!context.containsKey(FacilioConstants.ContextNames.EVENT_TYPE) && ((workorder.getAssignedTo() != null && workorder.getAssignedTo().getId() > 0) || (workorder.getAssignmentGroup() != null && workorder.getAssignmentGroup().getId() > 0)) ) {
+			activityType = EventType.ASSIGN_TICKET;
 		}
-		context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, activityType);
+		context.put(FacilioConstants.ContextNames.EVENT_TYPE, activityType);
 		context.put(FacilioConstants.ContextNames.COMMENT, comment);
 	}
 

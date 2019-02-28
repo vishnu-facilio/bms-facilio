@@ -11,7 +11,6 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
-import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.AssetCategoryContext;
 import com.facilio.bmsconsole.context.AssetContext;
@@ -20,7 +19,7 @@ import com.facilio.bmsconsole.context.ReadingDataMeta.ReadingInputType;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.util.AssetsAPI;
-import com.facilio.bmsconsole.workflow.rule.ActivityType;
+import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 
@@ -63,7 +62,7 @@ public class AssetAction extends FacilioAction {
 
 	public String addAsset() throws Exception {
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.CREATE);
+		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.CREATE);
 		context.put(FacilioConstants.ContextNames.RECORD, asset);
 		context.put(FacilioConstants.ContextNames.CATEGORY_READING_PARENT_MODULE, ModuleFactory.getAssetCategoryReadingRelModule());
 		AssetCategoryContext assetCategory= asset.getCategory();
@@ -83,7 +82,7 @@ public class AssetAction extends FacilioAction {
 	
 	public String updateAsset() throws Exception {
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.EDIT);
+		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.EDIT);
 		context.put(FacilioConstants.ContextNames.RECORD, asset);
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(asset.getId()));
 		context.put(FacilioConstants.ContextNames.WITH_CHANGE_SET, true);
@@ -100,7 +99,7 @@ public class AssetAction extends FacilioAction {
 		AssetContext asset = new AssetContext();
 		asset.setDeleted(true);
 		
-		context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.DELETE);
+		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.DELETE);
 		context.put(FacilioConstants.ContextNames.RECORD, asset);
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, assetsId);
 		
@@ -427,12 +426,21 @@ public class AssetAction extends FacilioAction {
 	public void setValue(String value) {
 		this.value = value;
 	}
+	
+	private String location;
+	public String getLocation() {
+		return location;
+	}
+	public void setLocation(String location) {
+		this.location = location;
+	}
 
 	public String fetchAssetFromQR() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.QR_VALUE, value);
+		context.put(FacilioConstants.ContextNames.LOCATION, location);
 		
-		Chain getAssetChain = ReadOnlyChainFactory.getAssetFromQRChain();
+		Chain getAssetChain = TransactionChainFactory.getAssetFromQRChain();
 		getAssetChain.execute(context);
 		setResult("asset", context.get(FacilioConstants.ContextNames.ASSET));
 		

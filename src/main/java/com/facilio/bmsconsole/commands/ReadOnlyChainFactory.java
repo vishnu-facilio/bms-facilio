@@ -177,17 +177,6 @@ public class ReadOnlyChainFactory {
 		return c;
 	}
 	
-	
-	public static Chain getAssetFromQRChain() {
-		Chain c = getDefaultChain();
-		c.addCommand(new ParseQRValueCommand());
-		c.addCommand(new FetchAssetFromQRValCommand());
-		c.addCommand(new SetModuleForSpecialAssetsCommand());
-		c.addCommand(new LoadAssetFields());
-		c.addCommand(new GetAssetDetailCommand());
-		return c;
-	}
-	
 	public static Chain fetchWorkflowRulesOfTypeChain() {
 		Chain c = getDefaultChain();
 		c.addCommand(new GetWorkFlowOfRuleTypeCommand());
@@ -520,6 +509,22 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new GenerateCriteriaFromFilterCommand());
 		c.addCommand(new GenerateSearchConditionCommand());
 		c.addCommand(new GetStockedToolsListCommand());
+		return c;
+	}
+	
+	public static Chain getWorkorderToolsList(){
+		Chain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForWorkorderTools());
+		c.addCommand(new LoadAllFieldsCommand());
+		c.addCommand(new GetWorkorderToolsListCommand());
+		return c;
+	}
+	
+	public static Chain getWorkorderCostList(){
+		Chain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForWorkOrderCosts());
+		c.addCommand(new LoadAllFieldsCommand());
+		c.addCommand(new GetWorkorderCostListCommand());
 		return c;
 	}
 	

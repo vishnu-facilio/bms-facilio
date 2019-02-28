@@ -192,6 +192,14 @@ public class AssetContext extends ResourceContext {
 	public int getResourceType() {
 		return ResourceType.ASSET.getValue();
 	}
+	
+	private String geoLocation;
+	public String getGeoLocation() {
+		return geoLocation;
+	}
+	public void setGeoLocation(String geoLocation) {
+		this.geoLocation = geoLocation;
+	}
 
 	public static enum AssetState {
 		ACTIVE(1, "Active"),

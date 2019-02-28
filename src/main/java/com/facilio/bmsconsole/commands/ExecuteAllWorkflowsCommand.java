@@ -26,7 +26,7 @@ import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.bmsconsole.modules.UpdateChangeSet;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
-import com.facilio.bmsconsole.workflow.rule.ActivityType;
+import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.chain.FacilioContext;
@@ -91,9 +91,9 @@ public class ExecuteAllWorkflowsCommand implements SerializableCommand
 				LOGGER.log(Level.WARN, "Module Name / Records is null/ empty ==> "+moduleName+"==>"+entry.getValue());
 				continue;
 			}
-			List<ActivityType> activities = (List<ActivityType>) context.get(FacilioConstants.ContextNames.ACTIVITY_TYPE_LIST);
+			List<EventType> activities = (List<EventType>) context.get(FacilioConstants.ContextNames.EVENT_TYPE_LIST);
 			if (activities == null) {
-				ActivityType activityType = (ActivityType) context.get(FacilioConstants.ContextNames.ACTIVITY_TYPE);
+				EventType activityType = (EventType) context.get(FacilioConstants.ContextNames.EVENT_TYPE);
 				if (activityType != null) {
 					activities = new ArrayList<>();
 					activities.add(activityType);
@@ -102,7 +102,7 @@ public class ExecuteAllWorkflowsCommand implements SerializableCommand
 			if(activities != null) {
 				Map<Long, List<UpdateChangeSet>> currentChangeSet = changeSetMap == null ? null : changeSetMap.get(moduleName);
 				if (currentChangeSet != null && !currentChangeSet.isEmpty()) {
-					activities.add(ActivityType.FIELD_CHANGE);
+					activities.add(EventType.FIELD_CHANGE);
 				}
 				
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");

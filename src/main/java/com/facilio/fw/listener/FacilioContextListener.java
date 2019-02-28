@@ -32,6 +32,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+import com.facilio.activity.ActivityType;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.criteria.Operator;
 import com.facilio.bmsconsole.util.TemplateAPI;
@@ -90,6 +91,7 @@ public class FacilioContextListener implements ServletContextListener {
 		initDBConnectionPool();
 		Operator.OPERATOR_MAP.get(1);
 		TemplateAPI.getDefaultTemplate(1);
+		ActivityType.getActivityType(1);
 
 		try {
 			migrateSchemaChanges();

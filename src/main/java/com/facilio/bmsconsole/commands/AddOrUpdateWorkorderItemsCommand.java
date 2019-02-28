@@ -110,15 +110,16 @@ public class AddOrUpdateWorkorderItemsCommand implements Command {
 						}
 					}
 				}
-				if (itemToBeAdded != null && !itemToBeAdded.isEmpty()) {
-					addWorkorderParts(workorderItemsModule, workorderItemFields, itemToBeAdded);
-				}
+			}
+			if (itemToBeAdded != null && !itemToBeAdded.isEmpty()) {
+				addWorkorderParts(workorderItemsModule, workorderItemFields, itemToBeAdded);
 			}
 			context.put(FacilioConstants.ContextNames.PARENT_ID, workorderitems.get(0).getParentId());
 			context.put(FacilioConstants.ContextNames.INVENTORY_ID, workorderitems.get(0).getInventory().getId());
 			context.put(FacilioConstants.ContextNames.INVENTORY_IDS,
 					Collections.singletonList(workorderitems.get(0).getInventory().getId()));
 			context.put(FacilioConstants.ContextNames.RECORD_LIST, workorderItemslist);
+			context.put(FacilioConstants.ContextNames.WORKORDER_COST_TYPE, 1);
 		}
 		return false;
 	}

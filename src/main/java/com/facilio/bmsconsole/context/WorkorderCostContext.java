@@ -6,7 +6,7 @@ public class WorkorderCostContext extends ModuleBaseWithCustomFields {
 
 	private static final long serialVersionUID = 1L;
 	private long parentId, ttime, modifiedTime;
-	private double cost;
+	private double cost=-1;
 
 	public long getTtime() {
 		return ttime;
@@ -61,9 +61,52 @@ public class WorkorderCostContext extends ModuleBaseWithCustomFields {
 		this.costType = CostType.valueOf(costType);
 	}
 	
+	
+//	private String costName;
+	public String getCostName() {
+		if (costType != null) {
+			return costType.getDisplayName();
+		}
+		return null;
+	}
+	private String name;
+	public String getName() {
+		if (costType != null && costType.getValue()!=5) {
+			return costType.getDisplayName();
+		}
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	
 	public static enum CostType {
-		parts, technician;
-
+		items(1, "Items"),
+		tools(2,"Tools"),
+		labour(3,"Labour"),
+		service(4,"Service"),
+		custom(5,"Custom");
+		
+		int costId;
+		String displayName;
+		
+		private CostType(int costId, String displayName) {
+			this.costId = costId;
+			this.displayName = displayName;
+			
+		}
+		public int getCostId() {
+			return costId;
+		}
+		public void setCostOd(int costId) {
+			this.costId = costId;
+		}
+		public String getDisplayName() {
+			return displayName;
+		}
+		public void setDisplayName(String displayName) {
+			this.displayName = displayName;
+		}
 		public int getValue() {
 			return ordinal() + 1;
 		}

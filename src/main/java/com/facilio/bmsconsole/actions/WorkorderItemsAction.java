@@ -9,7 +9,7 @@ import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.WorkorderItemContext;
 import com.facilio.bmsconsole.context.WorkorderPartsContext;
-import com.facilio.bmsconsole.workflow.rule.ActivityType;
+import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 
@@ -41,23 +41,22 @@ public class WorkorderItemsAction extends FacilioAction{
 	
 	public String addOrUpdateWorkorderItems() throws Exception {
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.CREATE);
+		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.CREATE);
 		context.put(FacilioConstants.ContextNames.RECORD_LIST, workorderItems);
 		Chain addWorkorderPartChain = TransactionChainFactory.getAddOrUdpateWorkorderItemsChain();
 		addWorkorderPartChain.execute(context);
 		setWorkorderItemsId((List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST));
-		setResult("workorderPartsId", workorderItemsId);
+		setResult("workorderItemsId", workorderItemsId);
 		return SUCCESS;
 	} 
 	
 	public String deleteWorkorderItems() throws Exception {
 		FacilioContext context = new FacilioContext();
-		WorkorderItemContext workorderItem = new WorkorderItemContext();
-		workorderItem.setDeleted(true);
-
-		context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.DELETE);
-		context.put(FacilioConstants.ContextNames.RECORD, workorderItem);
+	
+		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.DELETE);
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, workorderItemsId);
+		context.put(FacilioConstants.ContextNames.PARENT_ID, parentId);
+		context.put(FacilioConstants.ContextNames.WORKORDER_COST_TYPE, 1);
 
 		Chain deleteInventoryChain = TransactionChainFactory.getDeleteWorkorderItemChain();
 		deleteInventoryChain.execute(context);

@@ -1319,7 +1319,7 @@
 	<package name="workorderToolsApi" namespace="/api/v2/workorderTools"
 		extends="v2Api">
 		<action name="delete"
-			class="com.facilio.bmsconsole.actions.WorkorderToolsAction" method="deleteWorkorderItems">
+			class="com.facilio.bmsconsole.actions.WorkorderToolsAction" method="deleteWorkorderTools">
 			<param name="moduleName">asset</param>
 			<param name="permission">CREATE</param>
 		</action>
@@ -1328,23 +1328,48 @@
 			<param name="moduleName">asset</param>
 			<param name="permission">CREATE</param>
 		</action>
+	</package>
+	
+	<package name="workorderToolsList" namespace="/api/v2/workorderToolsList/parent"
+		extends="v2Api">
 		<action name="*"
-			class="com.facilio.bmsconsole.actions.WorkorderToolsAction" method="workorderPartsList">
+			class="com.facilio.bmsconsole.actions.WorkorderToolsAction" method="workorderToolsList">
 			<param name="moduleName">asset</param>
 			<param name="permission">READ</param>
 			<param name = "parentId">{1}</param>
 		</action>
 	</package>
 	
-	<package name="workorderItemsList" namespace="/api/v2/workorderToolsList/parent"
+	<package name="workorderCostsApi" namespace="/api/v2/workorderCosts"
+		extends="v2Api">
+		<action name="delete"
+			class="com.facilio.bmsconsole.actions.WorkorderCostAction" method="deleteWorkorderCosts">
+			<param name="moduleName">asset</param>
+			<param name="permission">CREATE</param>
+		</action>
+		
+		<action name="update"
+			class="com.facilio.bmsconsole.actions.WorkorderCostAction" method="updateWorkorderCost">
+			<param name="moduleName">asset</param>
+			<param name="permission">CREATE</param>
+		</action>
+		<action name="add"
+			class="com.facilio.bmsconsole.actions.WorkorderCostAction" method="addWorkorderCost">
+			<param name="moduleName">asset</param>
+			<param name="permission">CREATE</param>
+		</action>
+	</package>
+	
+	<package name="workorderCostsList" namespace="/api/v2/workorderCostsList/parent"
 		extends="v2Api">
 		<action name="*"
-			class="com.facilio.bmsconsole.actions.WorkorderItemsAction" method="workorderItemsList">
+			class="com.facilio.bmsconsole.actions.WorkorderCostAction" method="workorderCostsList">
 			<param name="moduleName">asset</param>
 			<param name="permission">READ</param>
 			<param name = "parentId">{1}</param>
 		</action>
 	</package>
+	
 	
 	<!-- <package name="pageApiv2" namespace="/api/v2/pages" extends="v2Api"> 
 		<action name="*" class="com.facilio.bmsconsole.actions.PageAction" method="fetchPage"> 

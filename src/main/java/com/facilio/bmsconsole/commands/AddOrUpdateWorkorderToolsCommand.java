@@ -43,18 +43,30 @@ public class AddOrUpdateWorkorderToolsCommand implements Command {
 					throw new IllegalStateException("Insufficient quantity in inventory!");
 				} else {
 					double costOccured = 0;
-					long duration = 0;
-					if (workorderTool.getIssueTime() <= 0) {
-						workorderTool.setIssueTime(workorder.getEstimatedStart());
-					}
-					if (workorderTool.getReturnTime() <= 0) {
-						workorderTool.setReturnTime(workorder.getEstimatedEnd());
-					}
-					if (stockedTools.getRate() >= 0) {
-						duration = workorder.getEstimatedWorkDuration();
+					int duration = 0;
+
+					if (workorderTool.getDuration() <= 0) {
+						if (workorderTool.getIssueTime() <= 0) {
+							workorderTool.setIssueTime(workorder.getEstimatedStart());
+						}
+						if (workorderTool.getReturnTime() <= 0) {
+							workorderTool.setReturnTime(workorder.getEstimatedEnd());
+							if (workorderTool.getIssueTime() >= 0) {
+								duration = getEstimatedWorkDuration(workorderTool.getIssueTime(),workorderTool.getReturnTime());
+							} else {
+								duration = 0;
+							}
+						}
 					}
 
-					if(stockedTools.getRate()>0){
+					else {
+						duration = (int) (workorderTool.getDuration()/(1000 * 60 * 60));
+						if (workorderTool.getIssueTime() >= 0) {
+							workorderTool.setReturnTime(workorderTool.getIssueTime() + workorderTool.getDuration());
+						}
+					}
+
+					if (stockedTools.getRate() > 0) {
 						costOccured = stockedTools.getRate() * duration;
 					}
 					workorderTool.setStockedTool(stockedTools);
@@ -74,15 +86,16 @@ public class AddOrUpdateWorkorderToolsCommand implements Command {
 					// break;
 
 				}
-				if (toolsToBeAdded != null && !toolsToBeAdded.isEmpty()) {
-					addWorkorderTools(workorderToolsModule, workorderToolsFields, toolsToBeAdded);
-				}
+			}
+			if (toolsToBeAdded != null && !toolsToBeAdded.isEmpty()) {
+				addWorkorderTools(workorderToolsModule, workorderToolsFields, toolsToBeAdded);
 			}
 			context.put(FacilioConstants.ContextNames.PARENT_ID, workorderTools.get(0).getParentId());
 			context.put(FacilioConstants.ContextNames.STOCKED_TOOLS_ID, workorderTools.get(0).getStockedTool().getId());
 			context.put(FacilioConstants.ContextNames.STOCKED_TOOLS_IDS,
 					Collections.singletonList(workorderTools.get(0).getStockedTool().getId()));
 			context.put(FacilioConstants.ContextNames.RECORD_LIST, workorderToolslist);
+			context.put(FacilioConstants.ContextNames.WORKORDER_COST_TYPE, 2);
 		}
 
 		return false;
@@ -140,12 +153,12 @@ public class AddOrUpdateWorkorderToolsCommand implements Command {
 
 	}
 
-	public static long getEstimatedWorkDuration (long issueTime, long returnTime) {
+	public static int getEstimatedWorkDuration(long issueTime, long returnTime) {
 		long duration = -1;
-		long workEndInSec = returnTime/1000;
-		if (issueTime != -1) {
-			duration += (workEndInSec - (issueTime/1000));
+		if (issueTime != -1 && returnTime != -1) {
+			duration = returnTime - issueTime;
 		}
-		return duration;
+		int hours = (int) ((duration / (1000 * 60 * 60)));
+		return hours;
 	}
 }

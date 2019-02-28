@@ -604,6 +604,23 @@ public class FieldFactory {
 		}
 		return field;
 	}
+	
+	public static List<FacilioField> getSystemFields(FacilioModule module) {
+		List<FacilioField> fields = new ArrayList<>();
+		
+		fields.add(getField("sysCreatedTime", "SYS_CREATED_TIME", module, FieldType.DATE_TIME));
+		fields.add(getField("sysModifiedTime", "SYS_MODIFIED_TIME", module, FieldType.DATE_TIME));
+		
+		LookupField createdBy = (LookupField) getField("sysCreatedBy", "SYS_CREATED_BY", module, FieldType.LOOKUP);
+		createdBy.setSpecialType(FacilioConstants.ContextNames.USERS);
+		fields.add(createdBy);
+		
+		LookupField modifiedBy = (LookupField) getField("sysModifiedBy", "SYS_MODIFIED_BY", module, FieldType.LOOKUP);
+		modifiedBy.setSpecialType(FacilioConstants.ContextNames.USERS);
+		fields.add(modifiedBy);
+		
+		return fields;
+	}
 
 	public static FacilioField getKinesisField() {
 		return getKinesisField(null);

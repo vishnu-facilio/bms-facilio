@@ -34,7 +34,7 @@ import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.modules.UpdateChangeSet;
 import com.facilio.bmsconsole.workflow.rule.ActionContext;
-import com.facilio.bmsconsole.workflow.rule.ActivityType;
+import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsole.workflow.rule.ApprovalRuleContext;
 import com.facilio.bmsconsole.workflow.rule.FieldChangeFieldContext;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
@@ -121,10 +121,10 @@ public class WorkflowRuleAPI {
 		}
 		
 		if (rule.getEvent() != null) {
-			if (ActivityType.FIELD_CHANGE.isPresent(rule.getEvent().getActivityType())) {
+			if (EventType.FIELD_CHANGE.isPresent(rule.getEvent().getActivityType())) {
 				addFieldChangeFields(rule);
 			}
-			else if (ActivityType.SCHEDULED.isPresent(rule.getEvent().getActivityType())) {
+			else if (EventType.SCHEDULED.isPresent(rule.getEvent().getActivityType())) {
 				ScheduledRuleAPI.addScheduledRuleJob(rule);
 			}
 		}
@@ -158,7 +158,7 @@ public class WorkflowRuleAPI {
 			throw new IllegalArgumentException("Event ID cannot be null during addition for Workflow");
 		}
 		
-		if (rule.getEvent() != null && ActivityType.SCHEDULED.isPresent(rule.getEvent().getActivityType())) {
+		if (rule.getEvent() != null && EventType.SCHEDULED.isPresent(rule.getEvent().getActivityType())) {
 			ScheduledRuleAPI.validateScheduledRule(rule, false);
 		}
 	}
@@ -187,7 +187,7 @@ public class WorkflowRuleAPI {
 		}
 	}
 	
-	public static final WorkflowEventContext getWorkFlowEvent(ActivityType type, long moduleId) throws Exception {
+	public static final WorkflowEventContext getWorkFlowEvent(EventType type, long moduleId) throws Exception {
 		FacilioModule module = ModuleFactory.getWorkflowEventModule();
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 														.select(FieldFactory.getWorkflowEventFields())
@@ -242,7 +242,7 @@ public class WorkflowRuleAPI {
 		updateWorkflowRule(rule);
 		deleteChildIdsForWorkflow(oldRule, rule);
 		
-		if(ActivityType.SCHEDULED.isPresent(oldRule.getEvent().getActivityType())) {
+		if(EventType.SCHEDULED.isPresent(oldRule.getEvent().getActivityType())) {
 			if (rule.getTimeObj() != null) {
 				ScheduledRuleAPI.validateScheduledRule(rule, true);
 				ScheduledRuleAPI.updateScheduledRuleJob(rule);
@@ -510,7 +510,7 @@ public class WorkflowRuleAPI {
 		return getWorkFlowsFromMapList(builder.get(), fetchEvent, fetchChildren, true);
 	}
 	
-	public static List<WorkflowRuleContext> getActiveWorkflowRulesFromActivityAndRuleType(long moduleId, List<ActivityType> activityTypes,Criteria criteria, RuleType... ruleTypes) throws Exception {
+	public static List<WorkflowRuleContext> getActiveWorkflowRulesFromActivityAndRuleType(long moduleId, List<EventType> activityTypes,Criteria criteria, RuleType... ruleTypes) throws Exception {
 		FacilioModule module = ModuleFactory.getWorkflowRuleModule();
 		List<FacilioField> fields = FieldFactory.getWorkflowRuleFields();
 		fields.addAll(FieldFactory.getWorkflowEventFields());
@@ -543,7 +543,7 @@ public class WorkflowRuleAPI {
 		StringBuilder activityTypeWhere = new StringBuilder();
 		List<Integer> values = new ArrayList<>();
 		boolean first = true;
-		for (ActivityType type : activityTypes) {
+		for (EventType type : activityTypes) {
 			if(first) {
 				first = false;
 			}
@@ -676,7 +676,7 @@ public class WorkflowRuleAPI {
 				
 				if (fetchEvent) {
 					int activity = (int) prop.get("activityType");
-					if (ActivityType.FIELD_CHANGE.isPresent(activity)) {
+					if (EventType.FIELD_CHANGE.isPresent(activity)) {
 						fieldChangeRuleIds.add((Long) prop.get("id"));
 					}
 				}
@@ -735,10 +735,10 @@ public class WorkflowRuleAPI {
 					event.setModule(modBean.getModule(event.getModuleId()));
 					rule.setEvent(event);
 					
-					if (ActivityType.FIELD_CHANGE.isPresent(event.getActivityType())) {
+					if (EventType.FIELD_CHANGE.isPresent(event.getActivityType())) {
 						rule.setFields(ruleFieldsMap.get(rule.getId()));
 					}
-					else if (ActivityType.SCHEDULED.isPresent(event.getActivityType())) {
+					else if (EventType.SCHEDULED.isPresent(event.getActivityType())) {
 						rule.setDateField(modBean.getField(rule.getDateFieldId()));
 					}
 				}
@@ -778,7 +778,7 @@ public class WorkflowRuleAPI {
 					else {
 						deleteIds.add(rule.getId());
 					}
-					if (ActivityType.SCHEDULED.isPresent(rule.getEvent().getActivityType())) {
+					if (EventType.SCHEDULED.isPresent(rule.getEvent().getActivityType())) {
 						ScheduledRuleAPI.deleteScheduledRuleJob(rule);
 					}
 				}
@@ -823,7 +823,7 @@ public class WorkflowRuleAPI {
 	}
 	
 	private static boolean evalFieldChange(WorkflowRuleContext rule, List<UpdateChangeSet> changeSetList) {
-		if (rule.getEvent().getActivityTypeEnum() == ActivityType.FIELD_CHANGE) {
+		if (rule.getEvent().getActivityTypeEnum() == EventType.FIELD_CHANGE) {
 			if (changeSetList != null && !changeSetList.isEmpty()) {
 				for (FieldChangeFieldContext field : rule.getFields()) {
 					for (UpdateChangeSet changeSet : changeSetList) {

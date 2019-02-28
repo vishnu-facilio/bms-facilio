@@ -25,7 +25,7 @@ public class CardUtil {
 	
 	public static boolean isExtraCard(String key) {
 		
-		if(key.equals("readingWithGraphCard") || key.equals("emrilllevel1") || key.equals("emrilllevel2") || key.equals("emrilllevel3")) {
+		if(key.equals("readingWithGraphCard") || key.contains("emrilllevel1") || key.contains("emrilllevel2") || key.contains("emrilllevel3")) {
 			return true;
 		}
 		return false;

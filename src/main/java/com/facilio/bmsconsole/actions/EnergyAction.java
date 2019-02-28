@@ -15,7 +15,7 @@ import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.bmsconsole.util.DeviceAPI;
-import com.facilio.bmsconsole.workflow.rule.ActivityType;
+import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.opensymphony.xwork2.ActionSupport;
@@ -28,7 +28,7 @@ public class EnergyAction extends ActionSupport {
 	private static final long serialVersionUID = 1L;
 	public String addEnergyMeter() throws Exception {
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.CREATE);
+		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.CREATE);
 		context.put(FacilioConstants.ContextNames.SET_LOCAL_MODULE_ID, true);
 		context.put(FacilioConstants.ContextNames.RECORD, energyMeter);
 		//energyMeter.setName("test1");
@@ -41,7 +41,7 @@ public class EnergyAction extends ActionSupport {
 	
 	public String updateEnergyMeter() throws Exception {
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.CREATE);
+		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.CREATE);
 		context.put(FacilioConstants.ContextNames.RECORD, energyMeter);
 		
 		Chain updateChain = FacilioChainFactory.updateEnergyMeterChain();
@@ -58,7 +58,7 @@ public class EnergyAction extends ActionSupport {
 	
 	public String addEnergyMeterPurpose() throws Exception {
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.CREATE);
+		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.CREATE);
 		context.put(FacilioConstants.ContextNames.RECORD, energyMeterPurpose);
 		//energyMeterPurpose.setName("new name 1");
 		Chain addAssetChain = FacilioChainFactory.getAddEnergyMeterPurposeChain();
@@ -92,7 +92,7 @@ public String addEnergyData() throws Exception {
 		
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, "energydata");
 		context.put(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME, "Energy_Data");
-		context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.CREATE);
+		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.CREATE);
 		Chain getAddEnergyDataChain = FacilioChainFactory.getAddEnergyDataChain();
 		getAddEnergyDataChain.execute(context);
 		

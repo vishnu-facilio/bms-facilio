@@ -23,7 +23,7 @@ public class WorkorderToolsContext extends StockedToolsTransactionContext {
 		this.cost = cost;
 	}
 
-	private long issueTime=-1;
+	private long issueTime = -1;
 
 	public long getIssueTime() {
 		return issueTime;
@@ -33,7 +33,7 @@ public class WorkorderToolsContext extends StockedToolsTransactionContext {
 		this.issueTime = issueTime;
 	}
 
-	private long returnTime=-1;
+	private long returnTime = -1;
 
 	public long getReturnTime() {
 		return returnTime;
@@ -41,5 +41,15 @@ public class WorkorderToolsContext extends StockedToolsTransactionContext {
 
 	public void setReturnTime(long returnTime) {
 		this.returnTime = returnTime;
+	}
+
+	private long duration = -1;
+
+	public void setDuration(long duration) {
+		this.duration = duration;
+	}
+
+	public long getDuration() {
+		return duration;
 	}
 }

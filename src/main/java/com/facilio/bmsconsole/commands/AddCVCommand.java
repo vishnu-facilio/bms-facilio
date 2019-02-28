@@ -19,7 +19,7 @@ import com.facilio.bmsconsole.util.ViewAPI;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.FacilioView.ViewType;
 import com.facilio.bmsconsole.view.ViewFactory;
-import com.facilio.bmsconsole.workflow.rule.ActivityType;
+import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 
@@ -57,8 +57,8 @@ public class AddCVCommand implements Command {
 				} 
 				view.setModuleId(moduleObj.getModuleId());
 				
-				ActivityType activityType =  (ActivityType) context.get(FacilioConstants.ContextNames.ACTIVITY_TYPE);
-				if (( activityType == null ) || ( activityType == ActivityType.CREATE )) {
+				EventType activityType =  (EventType) context.get(FacilioConstants.ContextNames.EVENT_TYPE);
+				if (( activityType == null ) || ( activityType == EventType.CREATE )) {
 					if(view.getName() == null)
 					{
 						view.setName(view.getDisplayName().toLowerCase().replaceAll("[^a-zA-Z0-9]+",""));

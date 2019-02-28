@@ -16,7 +16,6 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import org.apache.commons.chain.Chain;
-import org.apache.commons.collections.collection.AbstractCollectionDecorator;
 import org.apache.commons.collections.list.SetUniqueList;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -49,8 +48,8 @@ import com.facilio.bmsconsole.context.FormulaContext.CommonAggregateOperator;
 import com.facilio.bmsconsole.context.FormulaContext.DateAggregateOperator;
 import com.facilio.bmsconsole.context.FormulaContext.NumberAggregateOperator;
 import com.facilio.bmsconsole.context.FormulaFieldContext;
-import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.context.FormulaFieldContext.ResourceType;
+import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.context.ReadingDataMeta.ReadingInputType;
 import com.facilio.bmsconsole.context.ReportBenchmarkRelContext;
 import com.facilio.bmsconsole.context.ReportColumnContext;
@@ -3776,4 +3775,97 @@ public static JSONObject getStandardVariance1(ReportContext report,JSONArray pro
 			result.put("runningFcuPercentage", (runningCount/props.size()) * 100);
 		}
 	}
+	
+	public static JSONArray getEmrillFCUListWidgetResult(List<Map<String, Object>> props) throws Exception {
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		
+		FacilioField fanStatusField = modBean.getField(453787l);
+		FacilioField valveFeedbackField = modBean.getField(446206l);
+		FacilioField returnTempField = modBean.getField(446196l);
+		
+		List<Pair<Long, FacilioField>> rdmPairs = new ArrayList<>();
+		
+		if(props != null && !props.isEmpty()) {
+			
+			Map<Long,Long> resourceSpaceMaps = new HashMap<>();
+			Map<Long,String> resourceNameMaps = new HashMap<>();
+			Map<Long,List<ReadingDataMeta>> rdmMap = new HashMap<>();
+			for(Map<String, Object> prop :props) {
+				
+				rdmPairs.add(Pair.of((Long) prop.get("id"),fanStatusField));
+				rdmPairs.add(Pair.of((Long) prop.get("id"),valveFeedbackField));
+				rdmPairs.add(Pair.of((Long) prop.get("id"),returnTempField));
+				resourceSpaceMaps.put((Long) prop.get("id"), (Long) prop.get("spaceId"));
+				resourceNameMaps.put((Long) prop.get("id"), (String) prop.get("name"));
+			}
+			LOGGER.severe("rdmPairs --- "+rdmPairs.size());
+			LOGGER.severe("resourceSpaceMaps --- "+resourceSpaceMaps.size());
+			LOGGER.severe("resourceNameMaps --- "+resourceNameMaps.size());
+			
+			List<ReadingDataMeta> rdms = ReadingsAPI.getReadingDataMetaList(rdmPairs);
+			
+			for(ReadingDataMeta rdm :rdms) {
+				
+				if(rdmMap.containsKey(rdm.getResourceId())) {
+					rdmMap.get(rdm.getResourceId()).add(rdm);
+				}
+				else {
+					List<ReadingDataMeta> rdmList = new ArrayList<>();
+					rdmList.add(rdm);
+					rdmMap.put(rdm.getResourceId(), rdmList);
+				}
+			}
+			LOGGER.severe("rdmMap --- "+rdmMap.size());
+			Map<Long, BaseSpaceContext> spaceMap = SpaceAPI.getBaseSpaceMap(resourceSpaceMaps.values());
+			
+			LOGGER.severe("spaceMap --- "+spaceMap.size());
+			
+			JSONArray runStatusOnArray = new JSONArray();
+			JSONArray runStatusOffArray = new JSONArray();
+			
+			for(Long resourceId :resourceSpaceMaps.keySet()) {
+				
+				JSONObject resJson = new JSONObject();
+				resJson.put("id", resourceId);
+				resJson.put("name", resourceNameMaps.get(resourceId));
+				resJson.put("spaceName", spaceMap.get(resourceSpaceMaps.get(resourceId)).getName());
+				
+				boolean isRunning = false;
+				
+				LOGGER.severe("rdmMap.get(resourceId) --- "+rdmMap.get(resourceId).size());
+				for(ReadingDataMeta rdm :rdmMap.get(resourceId)) {
+					
+					if(rdm.getFieldId() == fanStatusField.getFieldId()) {
+						resJson.put("fanStatus", rdm.getValue());
+						Double runStatus = Double.valueOf(rdm.getValue().toString());
+						if(runStatus > 0) {
+							isRunning = true;
+						}
+					}
+					else if (rdm.getFieldId() == valveFeedbackField.getFieldId()) {
+						resJson.put("valveFeedback", rdm.getValue());
+					}
+					else if (rdm.getFieldId() == returnTempField.getFieldId()) {
+						resJson.put("returnTemp", rdm.getValue());
+					}
+					
+				}
+				LOGGER.severe("resJson --- "+resJson);
+				if(isRunning) {
+					runStatusOnArray.add(resJson);
+				}
+				else {
+					runStatusOffArray.add(resJson);
+				}
+			}
+			LOGGER.severe("runStatusOnArray --- "+runStatusOnArray.size());
+			LOGGER.severe("runStatusOffArray --- "+runStatusOffArray.size());
+			runStatusOnArray.addAll(runStatusOffArray);
+			
+			return runStatusOnArray;
+		}
+		return null;
+	}
+	
 }

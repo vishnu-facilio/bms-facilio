@@ -11,7 +11,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 @JsonFormat(shape = JsonFormat.Shape.OBJECT)
 public enum Unit {
 	
-	// last id -- 99
+	// last id -- 100
 	
 	KWH(1,"Kilowatt Hour","kWh",Metric.ENERGY),
 	HECTOWH(76,"Hectowatt Hour","hWh",Metric.ENERGY,"si*10","this/10"),
@@ -130,6 +130,7 @@ public enum Unit {
 	CUBICFEETPERHOUR(91,"Cubic Feet per Hour","ft<sup>3</sup>/hr",Metric.FLOWRATE,"si*60","this/60"),
 	GALLONSPERMIN(92,"Gallons per Minute","gal/min",Metric.FLOWRATE,"si*7.48","this/7.48"),
 	LITRESPERMIN(93,"Litres per Minute","l/min",Metric.FLOWRATE,"si*28.316","this/28.316"),
+	CUBICMETERPERSECOND(100,"Cubic Meter per Second","m<sup>3</sup>/sec",Metric.FLOWRATE,"si/2118.88","this*2118.88"),
 	;
 	
 	int unitId;

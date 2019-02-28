@@ -13,7 +13,7 @@ import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.InsertRecordBuilder;
 import com.facilio.bmsconsole.util.TicketAPI;
-import com.facilio.bmsconsole.workflow.rule.ActivityType;
+import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsole.workflow.rule.ApprovalState;
 import com.facilio.constants.FacilioConstants;
 
@@ -73,18 +73,18 @@ public class AddWorkOrderCommand implements Command {
 				LOGGER.info("Added WO with id : "+workOrderId);
 			}
 			
-			if(context.get(FacilioConstants.ContextNames.ACTIVITY_TYPE) == null) {
-				List<ActivityType> activities = new ArrayList<>();
-				activities.add(ActivityType.CREATE);
+			if(context.get(FacilioConstants.ContextNames.EVENT_TYPE) == null) {
+				List<EventType> activities = new ArrayList<>();
+				activities.add(EventType.CREATE);
 				
 				//TODO remove single ACTIVITY_TYPE once handled in TicketActivity
-				context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.CREATE);
+				context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.CREATE);
 				
 				String status = workOrder.getStatus().getStatus();
 				if (status != null && status.equals("Assigned")) {
-					activities.add(ActivityType.ASSIGN_TICKET);
+					activities.add(EventType.ASSIGN_TICKET);
 				}
-				context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE_LIST, activities);
+				context.put(FacilioConstants.ContextNames.EVENT_TYPE_LIST, activities);
 			}
 			context.put(FacilioConstants.ContextNames.CHANGE_SET_MAP, Collections.singletonMap(FacilioConstants.ContextNames.WORK_ORDER, builder.getChangeSet()));
 			context.put(FacilioConstants.ContextNames.RECORD_MAP, Collections.singletonMap(FacilioConstants.ContextNames.WORK_ORDER, Collections.singletonList(workOrder)));

@@ -14,7 +14,7 @@ import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.InsertRecordBuilder;
 import com.facilio.bmsconsole.util.AlarmAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
-import com.facilio.bmsconsole.workflow.rule.ActivityType;
+import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.wms.message.WmsEvent;
 import com.facilio.wms.util.WmsApi;
@@ -60,7 +60,7 @@ public class AddAlarmCommand implements Command {
 			alarm.setId(alarmId);
 			context.put(FacilioConstants.ContextNames.RECORD, alarm);
 			context.put(FacilioConstants.ContextNames.RECORD_ID, alarmId);
-			context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.CREATE);
+			context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.CREATE);
 			
 			JSONObject record = new JSONObject();
 			record.put("id", alarmId);

@@ -17,7 +17,6 @@ import java.util.Set;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
-import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -31,6 +30,8 @@ import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.activity.ActivityContext;
+import com.facilio.activity.ActivityType;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
@@ -64,7 +65,6 @@ import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
-import com.facilio.chain.FacilioChainExceptionHandler;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
@@ -799,5 +799,27 @@ public class CommonCommandUtil {
 			operators.put(ftype.name(), ftype.getOperators());
 		}
 		return operators;
+	}
+	
+	public static void addActivityToContext(long parentId, long ttime, ActivityType type, JSONObject info, FacilioContext context) {
+		ActivityContext activity = new ActivityContext();
+		activity.setParentId(parentId);
+		
+		if (ttime == -1) {
+			activity.setTtime(System.currentTimeMillis());
+		}
+		else {
+			activity.setTtime(ttime);
+		}
+		activity.setType(type);
+		activity.setInfo(info);
+		activity.setDoneBy(AccountUtil.getCurrentUser());
+		
+		List<ActivityContext> activities = (List<ActivityContext>) context.get(FacilioConstants.ContextNames.ACTIVITY_LIST);
+		if (activities == null) {
+			activities = new ArrayList<>();
+			context.put(FacilioConstants.ContextNames.ACTIVITY_LIST, activities);
+		}
+		activities.add(activity);
 	}
 }

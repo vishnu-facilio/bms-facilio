@@ -106,7 +106,7 @@ public class FormFactory {
 		FacilioForm form = new FacilioForm();
 		form.setDisplayName("WORKORDER");
 		form.setName("workOrder");
-		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.WORK_ORDER_REQUEST));
+		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.WORK_ORDER));
 		form.setLabelPosition(LabelPosition.LEFT);
 		form.setFields(getWebWorkOrderFormFields());
 		form.setFormType(FormType.WEB);

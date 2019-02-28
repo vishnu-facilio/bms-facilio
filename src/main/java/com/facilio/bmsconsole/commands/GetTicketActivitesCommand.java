@@ -19,7 +19,7 @@ import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
-import com.facilio.bmsconsole.workflow.rule.ActivityType;
+import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsole.workflow.rule.TicketActivity;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.sql.GenericSelectRecordBuilder;
@@ -50,7 +50,7 @@ public class GetTicketActivitesCommand implements Command {
 				if( index > -1) {
 					con.setField(fields.get(index));
 					con.setOperator(StringOperators.IS);
-					con.setValue(ActivityType.CLOSE_WORK_ORDER.getValue() + "," + ActivityType.SOLVE_WORK_ORDER.getValue() + "," + ActivityType.ADD_TICKET_NOTE.getValue() + "," + ActivityType.EDIT.getValue());
+					con.setValue(EventType.CLOSE_WORK_ORDER.getValue() + "," + EventType.SOLVE_WORK_ORDER.getValue() + "," + EventType.ADD_TICKET_NOTE.getValue() + "," + EventType.EDIT.getValue());
 					selectBuilder.andCondition(con);
 				}
 			}
@@ -60,7 +60,7 @@ public class GetTicketActivitesCommand implements Command {
 				for(Map<String, Object> prop : activityProps) {
 					TicketActivity checkIsNotify = FieldUtil.getAsBeanFromMap(prop, TicketActivity.class);
 					if (portalID > 0) {
-						if (checkIsNotify.getActivityType() == ActivityType.ADD_TICKET_NOTE.getValue())
+						if (checkIsNotify.getActivityType() == EventType.ADD_TICKET_NOTE.getValue())
 						{
 							if (checkIsNotify.getInfo().get("notifyRequester") != null) {
 								if ((boolean) checkIsNotify.getInfo().get("notifyRequester")) {
