@@ -12,7 +12,7 @@ import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.InventryContext;
 import com.facilio.bmsconsole.context.StockedToolsContext;
-import com.facilio.bmsconsole.workflow.rule.ActivityType;
+import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 
@@ -64,7 +64,7 @@ public class StockedToolsAction extends FacilioAction{
 	
 	public String updateStockedTools() throws Exception {
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.EDIT);
+		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.EDIT);
 		context.put(FacilioConstants.ContextNames.RECORD, stockedTools);
 		context.put(FacilioConstants.ContextNames.ID, stockedTools.getId());
 		context.put(FacilioConstants.ContextNames.RECORD_ID, stockedTools.getId());

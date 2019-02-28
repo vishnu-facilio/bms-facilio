@@ -33,7 +33,7 @@ import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.util.AlarmAPI;
 import com.facilio.bmsconsole.util.TemplateAPI;
 import com.facilio.bmsconsole.view.FacilioView;
-import com.facilio.bmsconsole.workflow.rule.ActivityType;
+import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.sql.DBUtil;
@@ -121,7 +121,7 @@ public class AlarmAction extends FacilioAction {
 	}
 	public String deleteAlarm() throws Exception {
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.DELETE);
+		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.DELETE);
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, id);
 		
 		Chain deleteAlarm = FacilioChainFactory.getDeleteAlarmChain();

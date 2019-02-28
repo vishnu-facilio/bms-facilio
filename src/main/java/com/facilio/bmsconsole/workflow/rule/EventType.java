@@ -8,7 +8,7 @@ import org.json.simple.JSONObject;
 
 import com.facilio.constants.FacilioConstants;
 
-public enum ActivityType {
+public enum EventType {
 	/* Bitwise calculation
 	 * 
 	 * var workflowRule = currentWorkflowRule;
@@ -207,13 +207,13 @@ public enum ActivityType {
 	;
 
     private int eventType;
-    ActivityType(int eventType) {
+    EventType(int eventType) {
         this.eventType = eventType;
     }
     public int getValue() {
         return eventType;
     }
-    public static ActivityType valueOf(int eventTypeVal) {
+    public static EventType valueOf(int eventTypeVal) {
     	return TYPE_MAP.get(eventTypeVal);
     }
     
@@ -223,16 +223,16 @@ public enum ActivityType {
    
     public abstract String getMessage(JSONObject json);
     
-    private static final Map<Integer, ActivityType> TYPE_MAP = Collections.unmodifiableMap(initTypeMap());
-	private static Map<Integer, ActivityType> initTypeMap() {
-		Map<Integer, ActivityType> typeMap = new HashMap<>();
+    private static final Map<Integer, EventType> TYPE_MAP = Collections.unmodifiableMap(initTypeMap());
+	private static Map<Integer, EventType> initTypeMap() {
+		Map<Integer, EventType> typeMap = new HashMap<>();
 		
-		for(ActivityType type : values()) {
+		for(EventType type : values()) {
 			typeMap.put(type.getValue(), type);
 		}
 		return typeMap;
 	}
-	public Map<Integer, ActivityType> getAllTypes() {
+	public Map<Integer, EventType> getAllTypes() {
 		return TYPE_MAP;
 	}
 }

@@ -3781,7 +3781,7 @@ public static JSONObject getStandardVariance1(ReportContext report,JSONArray pro
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
 		FacilioField fanStatusField = modBean.getField(453787l);
-		FacilioField valveFeedbackField = modBean.getField(453787l);
+		FacilioField valveFeedbackField = modBean.getField(446206l);
 		FacilioField returnTempField = modBean.getField(446196l);
 		
 		List<Pair<Long, FacilioField>> rdmPairs = new ArrayList<>();

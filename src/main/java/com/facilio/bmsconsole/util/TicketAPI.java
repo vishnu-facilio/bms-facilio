@@ -55,7 +55,7 @@ import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
-import com.facilio.bmsconsole.workflow.rule.ActivityType;
+import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.constants.FacilioConstants;
@@ -540,7 +540,7 @@ public class TicketAPI {
 		updateTicketStatus(null, ticket, null, false);
 	}
 	
-	public static void updateTicketStatus(ActivityType activityType, TicketContext ticket, TicketContext oldTicket, boolean isWorkDurationChangeAllowed) throws Exception {
+	public static void updateTicketStatus(EventType activityType, TicketContext ticket, TicketContext oldTicket, boolean isWorkDurationChangeAllowed) throws Exception {
 		TicketStatusContext statusObj = ticket.getStatus();
 		if(statusObj != null && statusObj.getId() > 0) {
 			statusObj = TicketAPI.getStatus(AccountUtil.getCurrentOrg().getId(), statusObj.getId());
@@ -927,13 +927,13 @@ public static Map<Long, TicketContext> getTickets(String ids) throws Exception {
 		return null;
 	}
 	
-	public static ActivityType getActivityTypeForTicketStatus(long statusId) throws Exception {
+	public static EventType getActivityTypeForTicketStatus(long statusId) throws Exception {
 		TicketStatusContext status = TicketAPI.getStatus(AccountUtil.getCurrentOrg().getId(), statusId);
-		Map<String, ActivityType> statusVsActivityType = new HashMap<>();
-		statusVsActivityType.put("Resolved", ActivityType.SOLVE_WORK_ORDER);
-		statusVsActivityType.put("Closed", ActivityType.CLOSE_WORK_ORDER);
-		statusVsActivityType.put("Assigned", ActivityType.ASSIGN_TICKET);
-		statusVsActivityType.put("On Hold", ActivityType.HOLD_WORK_ORDER);
+		Map<String, EventType> statusVsActivityType = new HashMap<>();
+		statusVsActivityType.put("Resolved", EventType.SOLVE_WORK_ORDER);
+		statusVsActivityType.put("Closed", EventType.CLOSE_WORK_ORDER);
+		statusVsActivityType.put("Assigned", EventType.ASSIGN_TICKET);
+		statusVsActivityType.put("On Hold", EventType.HOLD_WORK_ORDER);
 		
 		if (statusVsActivityType.containsKey(status.getStatus())) {
 			return statusVsActivityType.get(status.getStatus());

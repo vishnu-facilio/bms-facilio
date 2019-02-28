@@ -10,7 +10,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.NotificationContext;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.util.NotificationAPI;
-import com.facilio.bmsconsole.workflow.rule.ActivityType;
+import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.constants.FacilioConstants;
 
 public class SendNotificationCommand implements Command 
@@ -24,9 +24,9 @@ public class SendNotificationCommand implements Command
 			long orgId = AccountUtil.getCurrentOrg().getOrgId();
 			long userId = AccountUtil.getCurrentUser().getId();
 			
-			ActivityType activityType = (ActivityType) context.get(FacilioConstants.ContextNames.ACTIVITY_TYPE);
+			EventType activityType = (EventType) context.get(FacilioConstants.ContextNames.EVENT_TYPE);
 			if (activityType != null) {
-				if (ActivityType.ASSIGN_TICKET == activityType) {
+				if (EventType.ASSIGN_TICKET == activityType) {
 					Map<String, Object> fields = FieldUtil.getAsProperties(record);
 					Long id = (Long) fields.get("id");
 					String name = (String) fields.get("subject");

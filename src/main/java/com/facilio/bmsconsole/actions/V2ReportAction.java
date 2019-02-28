@@ -42,7 +42,7 @@ import com.facilio.bmsconsole.util.AlarmAPI;
 import com.facilio.bmsconsole.util.DashboardUtil;
 import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
-import com.facilio.bmsconsole.workflow.rule.ActivityType;
+import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
@@ -1043,7 +1043,7 @@ public class V2ReportAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.SCHEDULE_INFO, reportInfo);
 		
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, ids);
-		context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.EDIT);
+		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.EDIT);
 		Chain mailReportChain = TransactionChainFactory.updateScheduledReportsChain();
 		mailReportChain.execute(context);
 		

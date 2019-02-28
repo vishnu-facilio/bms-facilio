@@ -22,7 +22,7 @@ import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.InsertRecordBuilder;
 import com.facilio.bmsconsole.util.TicketAPI;
-import com.facilio.bmsconsole.workflow.rule.ActivityType;
+import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
@@ -48,7 +48,7 @@ public class AddNotesCommand implements Command {
 			String ticketModule = null;
 			if (moduleName.equals(FacilioConstants.ContextNames.TICKET_NOTES)) {
 				ticketModule = (String) context.get(FacilioConstants.ContextNames.TICKET_MODULE);
-				context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.ADD_TICKET_NOTE);
+				context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.ADD_TICKET_NOTE);
 				if (ticketModule == null || ticketModule.isEmpty()) {
 					throw new IllegalArgumentException("Module name for ticket notes should be specified");
 				}

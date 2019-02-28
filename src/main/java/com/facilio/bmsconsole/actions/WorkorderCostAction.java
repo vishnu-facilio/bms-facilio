@@ -11,7 +11,7 @@ import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.WorkorderCostContext;
 import com.facilio.bmsconsole.context.WorkorderItemContext;
-import com.facilio.bmsconsole.workflow.rule.ActivityType;
+import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 
@@ -57,7 +57,7 @@ public class WorkorderCostAction extends FacilioAction {
 	
 	public String addWorkorderCost() throws Exception {
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.CREATE);
+		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.CREATE);
 		context.put(FacilioConstants.ContextNames.RECORD, workorderCost);
 		context.put(FacilioConstants.ContextNames.PARENT_ID, workorderCost.getParentId());
 		context.put(FacilioConstants.ContextNames.WORKORDER_COST_TYPE, 5);
@@ -71,7 +71,7 @@ public class WorkorderCostAction extends FacilioAction {
 	
 	public String updateWorkorderCost() throws Exception {
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.EDIT);
+		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.EDIT);
 		context.put(FacilioConstants.ContextNames.RECORD, workorderCost);
 		context.put(FacilioConstants.ContextNames.RECORD_ID, workorderCost.getId());
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(workorderCost.getId()));
@@ -90,7 +90,7 @@ public class WorkorderCostAction extends FacilioAction {
 		WorkorderItemContext workorderItem = new WorkorderItemContext();
 		workorderItem.setDeleted(true);
 
-		context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.DELETE);
+		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.DELETE);
 		context.put(FacilioConstants.ContextNames.RECORD, workorderItem);
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, workordercostId);
 		context.put(FacilioConstants.ContextNames.PARENT_ID, parentId);

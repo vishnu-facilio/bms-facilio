@@ -26,7 +26,7 @@ import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
 import com.facilio.bmsconsole.util.ShiftAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
-import com.facilio.bmsconsole.workflow.rule.ActivityType;
+import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 
@@ -51,7 +51,7 @@ public class UpdateTaskCommand implements Command {
 			if(recordIds.size() == 1) {
 				ReadingContext reading = (ReadingContext) context.get(FacilioConstants.ContextNames.READING);
 				if(reading != null) {
-					context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.ADD_TASK_INPUT);
+					context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.ADD_TASK_INPUT);
 					task.setReadingDataId(reading.getId());
 				}
 			}
@@ -63,18 +63,18 @@ public class UpdateTaskCommand implements Command {
 				throw new RuntimeException("The task was modified after the last sync");
 			}
 			
-			ActivityType taskActivity = null;
+			EventType taskActivity = null;
 			ReadingContext reading = (ReadingContext) context.get(FacilioConstants.ContextNames.READING);
 			if (recordIds.size() == 1 && reading != null) {
-				taskActivity = ActivityType.ADD_TASK_INPUT;
+				taskActivity = EventType.ADD_TASK_INPUT;
 			} else if (task != null && (task.getParentTicketId() != -1 || oldTasks != null)) {
 				if (context.get(FacilioConstants.ContextNames.IS_BULK_ACTION) != null) {
 					boolean bulkAction = (boolean) context.get(FacilioConstants.ContextNames.IS_BULK_ACTION);
 					if (bulkAction) {
-						taskActivity = ActivityType.CLOSE_ALL_TASK;
+						taskActivity = EventType.CLOSE_ALL_TASK;
 					}
 				} else {
-					taskActivity = ActivityType.ADD_TASK_INPUT;
+					taskActivity = EventType.ADD_TASK_INPUT;
 				}
 			} 
 			
@@ -116,7 +116,7 @@ public class UpdateTaskCommand implements Command {
 		return null;
 	}
 	
-	private void updateParentTicketStatus(Context context, ActivityType activityType, TaskContext task) throws Exception {
+	private void updateParentTicketStatus(Context context, EventType activityType, TaskContext task) throws Exception {
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		modBean.getModule(FacilioConstants.ContextNames.TASK);

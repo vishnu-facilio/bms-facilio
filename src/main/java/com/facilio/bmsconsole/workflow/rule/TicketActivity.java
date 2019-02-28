@@ -53,7 +53,7 @@ public class TicketActivity {
 		this.name = name;
 	}
 
-	private ActivityType activityType;
+	private EventType activityType;
 	public int getActivityType() {
 		if(activityType != null) {
 			return activityType.getValue();
@@ -61,9 +61,9 @@ public class TicketActivity {
 		return -1;
 	}
 	public void setActivityType(int activityType) {
-		this.activityType = ActivityType.valueOf(activityType);
+		this.activityType = EventType.valueOf(activityType);
 	}
-	public void setActivityType(ActivityType activityType) {
+	public void setActivityType(EventType activityType) {
 		this.activityType = activityType;
 	}
 	

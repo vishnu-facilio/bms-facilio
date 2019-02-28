@@ -22,7 +22,7 @@ import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
-import com.facilio.bmsconsole.workflow.rule.ActivityType;
+import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
@@ -56,7 +56,7 @@ public class ExecuteValidationRule implements Command {
 				continue;
 			}
 			
-			List<ActivityType> activities = Collections.singletonList(ActivityType.CREATE);
+			List<EventType> activities = Collections.singletonList(EventType.CREATE);
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			long moduleId = modBean.getModule(moduleName).getModuleId();
 			Map<String, FacilioField> fields = FieldFactory.getAsMap(FieldFactory.getWorkflowRuleFields());

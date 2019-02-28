@@ -17,7 +17,7 @@ import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
-import com.facilio.bmsconsole.workflow.rule.ActivityType;
+import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
@@ -343,7 +343,7 @@ public class ModuleAction extends FacilioAction {
 	
 	public String addModuleData() throws Exception {
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.CREATE);
+		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.CREATE);
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
 		
 		setModuleData();
@@ -369,7 +369,7 @@ public class ModuleAction extends FacilioAction {
 	
 	public String updateModuleData() throws Exception {
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.EDIT);
+		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.EDIT);
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
 		
 		setModuleData();
@@ -386,7 +386,7 @@ public class ModuleAction extends FacilioAction {
 	
 	public String deleteModuleData() throws Exception {
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.DELETE);
+		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.DELETE);
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, ids);
 		

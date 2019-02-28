@@ -18,7 +18,7 @@ import com.facilio.bmsconsole.util.ActionAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.rule.ActionContext;
-import com.facilio.bmsconsole.workflow.rule.ActivityType;
+import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
@@ -33,7 +33,7 @@ public class ExecuteNoteWorkflowCommand implements Command {
 			String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 			if(moduleName.equals(FacilioConstants.ContextNames.TICKET_NOTES)) {
 				String ticketModule = (String) context.get(FacilioConstants.ContextNames.TICKET_MODULE);
-				ActivityType eventType = (ActivityType) context.get(FacilioConstants.ContextNames.ACTIVITY_TYPE);
+				EventType eventType = (EventType) context.get(FacilioConstants.ContextNames.EVENT_TYPE);
 				
 				for (NoteContext note : notes) {
 					executeWorkflow(note, ticketModule, eventType, context);
@@ -43,9 +43,9 @@ public class ExecuteNoteWorkflowCommand implements Command {
 		return false;
 	}
 	
-	private void executeWorkflow(NoteContext note, String ticketModule, ActivityType eventType, Context context) throws Exception {
+	private void executeWorkflow(NoteContext note, String ticketModule, EventType eventType, Context context) throws Exception {
 		long parentId = note.getParentId();
-		if(parentId != -1 && eventType != null && eventType == ActivityType.ADD_TICKET_NOTE) {
+		if(parentId != -1 && eventType != null && eventType == EventType.ADD_TICKET_NOTE) {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 //			long moduleId = modBean.getModule(FacilioConstants.ContextNames.TICKET).getModuleId();
 			long moduleId = modBean.getModule(ticketModule).getModuleId();

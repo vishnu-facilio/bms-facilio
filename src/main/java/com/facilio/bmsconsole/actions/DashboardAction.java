@@ -135,7 +135,7 @@ import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.util.WorkOrderAPI;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
-import com.facilio.bmsconsole.workflow.rule.ActivityType;
+import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleAlarmMeta;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 import com.facilio.cards.util.CardType;
@@ -5581,7 +5581,7 @@ public class DashboardAction extends FacilioAction {
 			if (getIsHeatMap() || (report != null && report.getChartType() != null && report.getChartType() == ReportContext.ReportChartType.HEATMAP.getValue())) {
 				builder.orderBy("value");
 				String reportDataSQL = builder.constructSelectStatement();
-				this.calculateHeatMapRange(reportDataSQL, fields);
+//				this.calculateHeatMapRange(reportDataSQL, fields);
 			}
 		}
 		
@@ -7417,7 +7417,7 @@ public class DashboardAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.SCHEDULE_INFO, scheduleInfo);
 		
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, id);
-		context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.EDIT);
+		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.EDIT);
 		Chain mailReportChain = ReportsChainFactory.updateScheduledReportsChain();
 		mailReportChain.execute(context);
 		
