@@ -1,8 +1,5 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.Collections;
-import java.util.Map;
-
 import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.context.AssetContext;
@@ -20,8 +17,8 @@ public class GetAssetDetailCommand extends GenericGetModuleDataDetailCommand {
 			AssetContext assetContext = (AssetContext) context.get(FacilioConstants.ContextNames.RECORD);
 			if (assetContext != null && assetContext.getId() > 0) {
 				if (assetContext.getSpaceId() != -1) {
-					Map<Long, BaseSpaceContext> spaceMap = SpaceAPI.getBaseSpaceMap(Collections.singleton(assetContext.getSpaceId()));
-					assetContext.setSpace(spaceMap.get(assetContext.getSpaceId()));
+					BaseSpaceContext space = SpaceAPI.getBaseSpace(assetContext.getSpaceId());
+					assetContext.setSpace(space);
 				}
 				
 			}

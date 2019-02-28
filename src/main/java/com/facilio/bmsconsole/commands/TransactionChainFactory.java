@@ -2,8 +2,8 @@ package com.facilio.bmsconsole.commands;
 
 import org.apache.commons.chain.Chain;
 
+import com.facilio.activity.AddActivitiesCommand;
 import com.facilio.bmsconsole.commands.data.PopulateImportProcessCommand;
-import com.facilio.bmsconsole.context.ToolsStatusContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.chain.FacilioChain;
 
@@ -1661,6 +1661,18 @@ public class TransactionChainFactory {
 			c.addCommand(SetTableNamesCommand.getForWorkOrderCosts());
 			c.addCommand(new GenericDeleteModuleDataCommand());
 			c.addCommand(new UpdateWorkorderTotalCostCommand());
+			return c;
+		}
+		
+		public static Chain getAssetFromQRChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new ParseQRValueCommand());
+			c.addCommand(new FetchAssetFromQRValCommand());
+			c.addCommand(new SetModuleForSpecialAssetsCommand());
+			c.addCommand(new LoadAssetFields());
+			c.addCommand(new GetAssetDetailCommand());
+			c.addCommand(new UpdateGeoLocationCommand());
+			c.addCommand(new AddActivitiesCommand());
 			return c;
 		}
 }

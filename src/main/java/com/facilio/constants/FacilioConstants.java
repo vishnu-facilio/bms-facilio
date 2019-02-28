@@ -145,6 +145,7 @@ public class FacilioConstants {
 		public static final String EVENT_TYPE = "eventType";
 		public static final String EVENT_TYPE_LIST = "eventTypeList";
 		public static final String IS_BULK_ACTION = "isBulkAction";
+		public static final String ACTIVITY_LIST = "activityList";
 		
 		public static final String USER_ID = "userId";
 		public static final String USER = "user";

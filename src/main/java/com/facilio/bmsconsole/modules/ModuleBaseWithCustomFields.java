@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.facilio.accounts.dto.User;
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 
@@ -126,6 +127,22 @@ public class ModuleBaseWithCustomFields implements Serializable {
 	}
 	public void setSysModifiedTime(long sysModifiedTime) {
 		this.sysModifiedTime = sysModifiedTime;
+	}
+	
+	private User sysCreatedBy;
+	public User getSysCreatedBy() {
+		return sysCreatedBy;
+	}
+	public void setSysCreatedBy(User sysCreatedBy) {
+		this.sysCreatedBy = sysCreatedBy;
+	}
+	
+	private User sysModifiedBy;
+	public User getSysModifiedBy() {
+		return sysModifiedBy;
+	}
+	public void setSysModifiedBy(User sysModifiedBy) {
+		this.sysModifiedBy = sysModifiedBy;
 	}
 	
 	@Override

@@ -199,6 +199,7 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 			if (!moduleProps.isEmpty()) {
 				updateLookupFields(moduleProps, fields);
 				moduleProps.put("sysModifiedTime", System.currentTimeMillis());
+				moduleProps.put("sysModifiedBy", AccountUtil.getCurrentUser());
 				
 				if (withChangeSet) {
 					List<Long> ids = constructChangeSet(moduleProps);
@@ -305,6 +306,9 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 		updateFields.addAll(fields);
 		if (FieldUtil.isSiteIdFieldPresent(module) && AccountUtil.getCurrentSiteId() == -1) {
 			updateFields.add(FieldFactory.getSiteIdField(module));
+		}
+		if (FieldUtil.isSystemFieldsPresent(module)) {
+			updateFields.addAll(FieldFactory.getSystemFields(module));
 		}
 		
 		FacilioModule prevModule = module;

@@ -139,6 +139,8 @@ public class InsertRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 			}
 			bean.setSysCreatedTime(System.currentTimeMillis());
 			bean.setSysModifiedTime(System.currentTimeMillis());
+			bean.setSysCreatedBy(AccountUtil.getCurrentUser());
+			bean.setSysModifiedBy(AccountUtil.getCurrentUser());
 			beanProps.add(getAsProps(bean));
 		}
 		
@@ -156,6 +158,10 @@ public class InsertRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 				
 				if (FieldUtil.isSiteIdFieldPresent(currentModule)) {
 					currentFields.add(FieldFactory.getSiteIdField(currentModule));
+				}
+				
+				if (FieldUtil.isSystemFieldsPresent(currentModule)) {
+					currentFields.addAll(FieldFactory.getSystemFields(currentModule));
 				}
 				
 				GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
