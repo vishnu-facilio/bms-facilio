@@ -11,6 +11,7 @@ import com.facilio.bmsconsole.workflow.rule.ActionContext;
 import com.facilio.bmsconsole.workflow.rule.ActionType;
 import com.facilio.bmsconsole.workflow.rule.AlarmRuleContext;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
+import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.constants.FacilioConstants;
 
 public class AddActionForAlarmRuleCommand implements Command {
@@ -25,6 +26,17 @@ public class AddActionForAlarmRuleCommand implements Command {
 			if (rule.getActions() != null && !rule.getActions().isEmpty()) {
 				List<ActionContext> actions = ActionAPI.addActions(rule.getActions(), rule);
 				ActionAPI.addWorkflowRuleActionRel(rule.getId(), actions);
+			}
+			else if (rule.getRuleTypeEnum() == RuleType.ALARM_CLEAR_RULE) {
+				ActionContext actionContext = new ActionContext();
+				actionContext.setActionType(ActionType.CLEAR_ALARM);
+				actionContext.setStatus(true);
+				
+				List<ActionContext> actions = ActionAPI.addActions(Collections.singletonList(actionContext), rule);
+				
+				ActionAPI.addWorkflowRuleActionRel(rule.getId(), actions);
+				
+				rule.setActions(actions);
 			}
 		}
 		

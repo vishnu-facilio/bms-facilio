@@ -123,7 +123,9 @@ public class WorkflowRuleContext implements Serializable {
 		return time == null? null : time.toString();
 	}
 	public void setTime(String time) {
-		this.time = LocalTime.parse(time);
+		if(time != null) {
+			this.time = LocalTime.parse(time);
+		}
 	}
 	
 	private long siteId = -1;

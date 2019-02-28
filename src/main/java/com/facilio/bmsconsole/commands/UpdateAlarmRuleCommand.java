@@ -38,7 +38,8 @@ public class UpdateAlarmRuleCommand implements Command {
 		
 		ReadingRuleAPI.addTriggerAndClearRule(alarmRule);
 		
-		if(preRequsiteRule.getEvent().getActivityTypeEnum().equals(EventType.SCHEDULED_READING_RULE)) {
+
+		if(preRequsiteRule.getEvent() != null && preRequsiteRule.getEvent().getActivityTypeEnum().equals(EventType.SCHEDULED_READING_RULE)) {
 			FacilioTimer.deleteJob(preRequsiteRule.getId(), FacilioConstants.Job.SCHEDULED_READING_RULE_JOB_NAME);
 		}
 		
