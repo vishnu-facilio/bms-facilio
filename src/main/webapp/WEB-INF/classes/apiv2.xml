@@ -813,6 +813,12 @@
 			<param name="moduleName">asset</param>
 			<param name="permission">READ</param>
 		</action>
+		
+		<action name="activity" class="com.facilio.bmsconsole.actions.AssetAction"
+			method="fetchActivity">
+			<param name="moduleName">asset</param>
+			<param name="permission">READ</param>
+		</action>
 
 		<action name="cards" class="com.facilio.bmsconsole.actions.AssetAction"
 			method="reportCards">

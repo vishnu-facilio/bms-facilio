@@ -528,4 +528,12 @@ public class ReadOnlyChainFactory {
 		return c;
 	}
 	
+	public static Chain getActivitiesChain() {
+		Chain c = getDefaultChain();
+		c.addCommand(new ConstructCriteriaAndSetModuleNameForActivity());
+		c.addCommand(new LoadAllFieldsCommand());
+		c.addCommand(new GenericGetModuleDataListCommand());
+		return c;
+	}
+	
 }
