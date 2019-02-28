@@ -60,7 +60,7 @@ public class InventryAction extends FacilioAction{
 	
 	public String updateInventry() throws Exception {
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, EventType.EDIT);
+		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.EDIT);
 		context.put(FacilioConstants.ContextNames.RECORD, inventry);
 		context.put(FacilioConstants.ContextNames.INVENTORY_COST, inventry.getInventoryCost());
 		context.put(FacilioConstants.ContextNames.ID, inventry.getId());

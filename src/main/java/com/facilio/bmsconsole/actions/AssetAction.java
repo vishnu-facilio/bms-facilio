@@ -63,7 +63,7 @@ public class AssetAction extends FacilioAction {
 
 	public String addAsset() throws Exception {
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, EventType.CREATE);
+		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.CREATE);
 		context.put(FacilioConstants.ContextNames.RECORD, asset);
 		context.put(FacilioConstants.ContextNames.CATEGORY_READING_PARENT_MODULE, ModuleFactory.getAssetCategoryReadingRelModule());
 		AssetCategoryContext assetCategory= asset.getCategory();
@@ -83,7 +83,7 @@ public class AssetAction extends FacilioAction {
 	
 	public String updateAsset() throws Exception {
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, EventType.EDIT);
+		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.EDIT);
 		context.put(FacilioConstants.ContextNames.RECORD, asset);
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(asset.getId()));
 		context.put(FacilioConstants.ContextNames.WITH_CHANGE_SET, true);
@@ -100,7 +100,7 @@ public class AssetAction extends FacilioAction {
 		AssetContext asset = new AssetContext();
 		asset.setDeleted(true);
 		
-		context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, EventType.DELETE);
+		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.DELETE);
 		context.put(FacilioConstants.ContextNames.RECORD, asset);
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, assetsId);
 		

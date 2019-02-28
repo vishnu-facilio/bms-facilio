@@ -51,7 +51,7 @@ public class UpdateTaskCommand implements Command {
 			if(recordIds.size() == 1) {
 				ReadingContext reading = (ReadingContext) context.get(FacilioConstants.ContextNames.READING);
 				if(reading != null) {
-					context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, EventType.ADD_TASK_INPUT);
+					context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.ADD_TASK_INPUT);
 					task.setReadingDataId(reading.getId());
 				}
 			}

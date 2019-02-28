@@ -28,7 +28,7 @@ public class AddWOFromRequestCommand implements Command {
 	@Override
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
-		EventType eventType = (EventType) context.get(FacilioConstants.ContextNames.ACTIVITY_TYPE);
+		EventType eventType = (EventType) context.get(FacilioConstants.ContextNames.EVENT_TYPE);
 		List<Long> recordIds = (List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST);
 		if(EventType.APPROVE_WORK_ORDER_REQUEST == eventType && recordIds != null && !recordIds.isEmpty()) {
 			String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
@@ -74,7 +74,7 @@ public class AddWOFromRequestCommand implements Command {
 		context.put(FacilioConstants.ContextNames.INSERT_LEVEL, 2);
 		if (wo.getAssignedTo() != null || wo.getAssignmentGroup() != null) {
 			wo.setStatus(TicketAPI.getStatus("Assigned"));
-			context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, EventType.ASSIGN_TICKET);
+			context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.ASSIGN_TICKET);
 		}
 		else {
 			wo.setStatus(TicketAPI.getStatus("Submitted"));

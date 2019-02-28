@@ -90,10 +90,10 @@ public class UpdateAlarmCommand implements Command {
 			
 			if(alarm.getSeverity() != null) {
 				if(isCleared) {
-					context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, EventType.ALARM_CLEARED);
+					context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.ALARM_CLEARED);
 				}
 				else if (alarm.getPreviousSeverity() == null || (alarm.getPreviousSeverity().getId() != alarm.getSeverity().getId())) {
-					context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, EventType.UPDATED_ALARM_SEVERITY);
+					context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.UPDATED_ALARM_SEVERITY);
 				}
 			}
 			
@@ -122,7 +122,7 @@ public class UpdateAlarmCommand implements Command {
 			JSONObject record = new JSONObject();
 			record.put("id", recordIds.get(0));
 			
-			if(EventType.UPDATED_ALARM_SEVERITY.equals(context.get(FacilioConstants.ContextNames.ACTIVITY_TYPE)) && 
+			if(EventType.UPDATED_ALARM_SEVERITY.equals(context.get(FacilioConstants.ContextNames.EVENT_TYPE)) && 
 					(AccountUtil.getCurrentOrg().getOrgId() != 88 || alarm.getSeverity().getId() == AlarmAPI.getAlarmSeverity(FacilioConstants.Alarm.CRITICAL_SEVERITY).getId())) {
 				WmsEvent event = new WmsEvent();
 				event.setNamespace("alarm");

@@ -69,7 +69,7 @@ public class AddAttachmentRelationshipCommand implements Command {
 			
 			context.put(FacilioConstants.ContextNames.ATTACHMENT_LIST, AttachmentsAPI.getAttachments(moduleName, attachmentIds));
 			if(moduleName.equals(FacilioConstants.ContextNames.TICKET_ATTACHMENTS)) {
-				context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, EventType.ADD_TICKET_ATTACHMENTS);
+				context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.ADD_TICKET_ATTACHMENTS);
 			}
 		}
 		

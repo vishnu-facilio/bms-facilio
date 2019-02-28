@@ -33,7 +33,7 @@ public class ExecuteNoteWorkflowCommand implements Command {
 			String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 			if(moduleName.equals(FacilioConstants.ContextNames.TICKET_NOTES)) {
 				String ticketModule = (String) context.get(FacilioConstants.ContextNames.TICKET_MODULE);
-				EventType eventType = (EventType) context.get(FacilioConstants.ContextNames.ACTIVITY_TYPE);
+				EventType eventType = (EventType) context.get(FacilioConstants.ContextNames.EVENT_TYPE);
 				
 				for (NoteContext note : notes) {
 					executeWorkflow(note, ticketModule, eventType, context);

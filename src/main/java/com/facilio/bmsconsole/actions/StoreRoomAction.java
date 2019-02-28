@@ -51,7 +51,7 @@ public class StoreRoomAction extends FacilioAction{
 	
 	public String updateStoreRoom() throws Exception {
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, EventType.EDIT);
+		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.EDIT);
 		context.put(FacilioConstants.ContextNames.RECORD, storeRoom);
 		context.put(FacilioConstants.ContextNames.ID, storeRoom.getId());
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(storeRoom.getId()));

@@ -91,7 +91,7 @@ public class WorkflowRuleAction extends FacilioAction {
 		FacilioContext facilioContext = new FacilioContext();
 		facilioContext.put(FacilioConstants.ContextNames.RECORD_LIST, records);
 		facilioContext.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
-		facilioContext.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, EventType.CREATE);
+		facilioContext.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.CREATE);
 		
 		Chain runThroughFilters = FacilioChainFactory.runThroughFilters();
 		runThroughFilters.execute(facilioContext);

@@ -121,7 +121,7 @@ public class AlarmAction extends FacilioAction {
 	}
 	public String deleteAlarm() throws Exception {
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, EventType.DELETE);
+		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.DELETE);
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, id);
 		
 		Chain deleteAlarm = FacilioChainFactory.getDeleteAlarmChain();

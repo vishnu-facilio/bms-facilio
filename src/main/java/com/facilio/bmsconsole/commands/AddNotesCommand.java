@@ -48,7 +48,7 @@ public class AddNotesCommand implements Command {
 			String ticketModule = null;
 			if (moduleName.equals(FacilioConstants.ContextNames.TICKET_NOTES)) {
 				ticketModule = (String) context.get(FacilioConstants.ContextNames.TICKET_MODULE);
-				context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, EventType.ADD_TICKET_NOTE);
+				context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.ADD_TICKET_NOTE);
 				if (ticketModule == null || ticketModule.isEmpty()) {
 					throw new IllegalArgumentException("Module name for ticket notes should be specified");
 				}

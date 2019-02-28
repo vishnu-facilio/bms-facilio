@@ -18,7 +18,7 @@ public class InventoryVendorAction extends FacilioAction {
 
 	public String addInventoryVendor() throws Exception {
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, EventType.CREATE);
+		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.CREATE);
 		context.put(FacilioConstants.ContextNames.RECORD, inventoryVendor);
 		Chain addInventoryVendorChain = TransactionChainFactory.getAddInventoryVendorChain();
 		addInventoryVendorChain.execute(context);
@@ -29,7 +29,7 @@ public class InventoryVendorAction extends FacilioAction {
 
 	public String updateInventoryVendor() throws Exception {
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, EventType.EDIT);
+		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.EDIT);
 		context.put(FacilioConstants.ContextNames.RECORD, inventoryVendor);
 		context.put(FacilioConstants.ContextNames.ID, inventoryVendor.getId());
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(inventoryVendor.getId()));
@@ -63,7 +63,7 @@ public class InventoryVendorAction extends FacilioAction {
 		InventoryVendorContext inventoryVendors = new InventoryVendorContext();
 		inventoryVendors.setDeleted(true);
 
-		context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, EventType.DELETE);
+		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.DELETE);
 		context.put(FacilioConstants.ContextNames.RECORD, inventoryVendors);
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, inventoryVendorsId);
 

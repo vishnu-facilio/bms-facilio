@@ -91,9 +91,9 @@ public class ExecuteAllWorkflowsCommand implements SerializableCommand
 				LOGGER.log(Level.WARN, "Module Name / Records is null/ empty ==> "+moduleName+"==>"+entry.getValue());
 				continue;
 			}
-			List<EventType> activities = (List<EventType>) context.get(FacilioConstants.ContextNames.ACTIVITY_TYPE_LIST);
+			List<EventType> activities = (List<EventType>) context.get(FacilioConstants.ContextNames.EVENT_TYPE_LIST);
 			if (activities == null) {
-				EventType activityType = (EventType) context.get(FacilioConstants.ContextNames.ACTIVITY_TYPE);
+				EventType activityType = (EventType) context.get(FacilioConstants.ContextNames.EVENT_TYPE);
 				if (activityType != null) {
 					activities = new ArrayList<>();
 					activities.add(activityType);

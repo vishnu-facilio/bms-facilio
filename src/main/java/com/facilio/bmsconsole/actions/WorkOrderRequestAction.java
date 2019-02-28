@@ -92,7 +92,7 @@ public class WorkOrderRequestAction extends FacilioAction {
 		workorderrequest.setRequestStatus(WorkOrderRequestContext.RequestStatus.APPROVED);
 		FacilioContext context = new FacilioContext();
 		//set Event
-		context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, EventType.APPROVE_WORK_ORDER_REQUEST);
+		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.APPROVE_WORK_ORDER_REQUEST);
 		return updateWorkOrderRequest(context);
 	}
 	
@@ -103,7 +103,7 @@ public class WorkOrderRequestAction extends FacilioAction {
 		workorderrequest.setRequestStatus(WorkOrderRequestContext.RequestStatus.REJECTED);
 		FacilioContext context = new FacilioContext();
 		//set Event
-		context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, EventType.REJECT_WORK_ORDER_REQUEST);
+		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.REJECT_WORK_ORDER_REQUEST);
 		return updateWorkOrderRequest(context);
 	}
 	
@@ -114,7 +114,7 @@ public class WorkOrderRequestAction extends FacilioAction {
 		workorderrequest.setRequestStatus(WorkOrderRequestContext.RequestStatus.CLOSED);
 		FacilioContext context = new FacilioContext();
 		//set Event
-		context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, EventType.CLOSE_WORK_ORDER_REQUEST);
+		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.CLOSE_WORK_ORDER_REQUEST);
 		return updateWorkOrderRequest(context);
 	}
 	
@@ -140,7 +140,7 @@ public class WorkOrderRequestAction extends FacilioAction {
 	
 	public String deleteWorkOrderRequest() throws Exception {
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, EventType.DELETE);
+		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.DELETE);
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, id);
 		
 		Chain deleteWorkOrder = FacilioChainFactory.getDeleteWorkOrderRequestChain();

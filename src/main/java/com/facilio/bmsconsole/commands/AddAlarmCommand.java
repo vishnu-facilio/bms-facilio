@@ -60,7 +60,7 @@ public class AddAlarmCommand implements Command {
 			alarm.setId(alarmId);
 			context.put(FacilioConstants.ContextNames.RECORD, alarm);
 			context.put(FacilioConstants.ContextNames.RECORD_ID, alarmId);
-			context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, EventType.CREATE);
+			context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.CREATE);
 			
 			JSONObject record = new JSONObject();
 			record.put("id", alarmId);

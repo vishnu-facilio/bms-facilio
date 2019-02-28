@@ -64,8 +64,8 @@ public class DeleteScheduledReportsCommand implements Command {
 		List<Long> templateIds = reports.stream().map(ReportInfo::getTemplateId).collect(Collectors.toList());
 		
 		EventType type = null;
-		if (context.containsKey(FacilioConstants.ContextNames.ACTIVITY_TYPE)) {
-			type = (EventType) context.get(FacilioConstants.ContextNames.ACTIVITY_TYPE);
+		if (context.containsKey(FacilioConstants.ContextNames.EVENT_TYPE)) {
+			type = (EventType) context.get(FacilioConstants.ContextNames.EVENT_TYPE);
 		}
 		
 		if (type == null || type != EventType.EDIT) {

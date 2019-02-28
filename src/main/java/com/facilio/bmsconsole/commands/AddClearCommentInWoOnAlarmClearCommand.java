@@ -20,7 +20,7 @@ public class AddClearCommentInWoOnAlarmClearCommand implements SerializableComma
 	@Override
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
-		EventType activity = (EventType) context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, EventType.ALARM_CLEARED);
+		EventType activity = (EventType) context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.ALARM_CLEARED);
 		
 		if (activity == EventType.ALARM_CLEARED) {
 			AlarmContext alarm = (AlarmContext) context.get(FacilioConstants.ContextNames.RECORD);

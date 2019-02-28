@@ -33,7 +33,7 @@ public class ToolsAction extends FacilioAction{
 	
 	public String updateTool() throws Exception {
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, EventType.EDIT);
+		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.EDIT);
 		context.put(FacilioConstants.ContextNames.RECORD, tool);
 		context.put(FacilioConstants.ContextNames.ID, tool.getId());
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(tool.getId()));

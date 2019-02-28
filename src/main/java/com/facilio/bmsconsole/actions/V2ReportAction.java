@@ -1043,7 +1043,7 @@ public class V2ReportAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.SCHEDULE_INFO, reportInfo);
 		
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, ids);
-		context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, EventType.EDIT);
+		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.EDIT);
 		Chain mailReportChain = TransactionChainFactory.updateScheduledReportsChain();
 		mailReportChain.execute(context);
 		

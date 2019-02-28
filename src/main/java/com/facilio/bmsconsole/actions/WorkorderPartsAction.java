@@ -42,7 +42,7 @@ public class WorkorderPartsAction extends FacilioAction{
 	
 	public String addOrUpdateWorkorderParts() throws Exception {
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, EventType.CREATE);
+		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.CREATE);
 		context.put(FacilioConstants.ContextNames.RECORD_LIST, workorderPartsList);
 		Chain addWorkorderPartChain = TransactionChainFactory.getAddOrUdpateWorkorderPartChain();
 		addWorkorderPartChain.execute(context);
@@ -56,7 +56,7 @@ public class WorkorderPartsAction extends FacilioAction{
 		WorkorderPartsContext workorderPart = new WorkorderPartsContext();
 		workorderPart.setDeleted(true);
 
-		context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, EventType.DELETE);
+		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.DELETE);
 		context.put(FacilioConstants.ContextNames.RECORD, workorderPart);
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, workorderPartsId);
 

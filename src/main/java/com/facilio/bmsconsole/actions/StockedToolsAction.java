@@ -64,7 +64,7 @@ public class StockedToolsAction extends FacilioAction{
 	
 	public String updateStockedTools() throws Exception {
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, EventType.EDIT);
+		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.EDIT);
 		context.put(FacilioConstants.ContextNames.RECORD, stockedTools);
 		context.put(FacilioConstants.ContextNames.ID, stockedTools.getId());
 		context.put(FacilioConstants.ContextNames.RECORD_ID, stockedTools.getId());

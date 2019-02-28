@@ -45,7 +45,7 @@ public class AddTicketActivityCommand implements Command {
 		List<Long> ids = (List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST);
 		if(ids != null && !ids.isEmpty()) 
 		{
-			EventType activityType = (EventType) context.get(FacilioConstants.ContextNames.ACTIVITY_TYPE);
+			EventType activityType = (EventType) context.get(FacilioConstants.ContextNames.EVENT_TYPE);
 			
 			if(activityType != null) {
 				context.put(FacilioConstants.TicketActivity.MODIFIED_TIME, System.currentTimeMillis());
@@ -84,7 +84,7 @@ public class AddTicketActivityCommand implements Command {
 		List<Long> ids = (List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST);
 		long modifiedTime = (long) context.get(FacilioConstants.TicketActivity.MODIFIED_TIME);
 		long modifiedBy = (long) context.get(FacilioConstants.TicketActivity.MODIFIED_USER);
-		EventType activityType = (EventType) context.get(FacilioConstants.ContextNames.ACTIVITY_TYPE);
+		EventType activityType = (EventType) context.get(FacilioConstants.ContextNames.EVENT_TYPE);
 		
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");

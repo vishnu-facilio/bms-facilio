@@ -1121,13 +1121,13 @@ public class WorkOrderAction extends FacilioAction {
 	public String assignWorkOrder() throws Exception {
 
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, EventType.ASSIGN_TICKET);
+		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.ASSIGN_TICKET);
 		return updateWorkOrder(context);
 	}
 
 	public String closeWorkOrder() throws Exception {
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, EventType.CLOSE_WORK_ORDER);
+		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.CLOSE_WORK_ORDER);
 		context.put(FacilioConstants.ContextNames.ACTUAL_TIMINGS, actualTimings);
 
 		workorder = new WorkOrderContext();
@@ -1143,7 +1143,7 @@ public class WorkOrderAction extends FacilioAction {
 
 	public String resolveWorkOrder() throws Exception {
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, EventType.SOLVE_WORK_ORDER);
+		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.SOLVE_WORK_ORDER);
 		context.put(FacilioConstants.ContextNames.ACTUAL_TIMINGS, actualTimings);
 
 		workorder = new WorkOrderContext();
@@ -1159,7 +1159,7 @@ public class WorkOrderAction extends FacilioAction {
 
 	public String deleteWorkOrder() throws Exception {
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, EventType.DELETE);
+		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.DELETE);
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, id);
 
 		Chain deleteWorkOrder = FacilioChainFactory.getDeleteWorkOrderChain();
@@ -1191,10 +1191,10 @@ public class WorkOrderAction extends FacilioAction {
 				activityType = type;
 			}
 		}
-		else if(!context.containsKey(FacilioConstants.ContextNames.ACTIVITY_TYPE) && ((workorder.getAssignedTo() != null && workorder.getAssignedTo().getId() > 0) || (workorder.getAssignmentGroup() != null && workorder.getAssignmentGroup().getId() > 0)) ) {
+		else if(!context.containsKey(FacilioConstants.ContextNames.EVENT_TYPE) && ((workorder.getAssignedTo() != null && workorder.getAssignedTo().getId() > 0) || (workorder.getAssignmentGroup() != null && workorder.getAssignmentGroup().getId() > 0)) ) {
 			activityType = EventType.ASSIGN_TICKET;
 		}
-		context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, activityType);
+		context.put(FacilioConstants.ContextNames.EVENT_TYPE, activityType);
 		context.put(FacilioConstants.ContextNames.COMMENT, comment);
 	}
 

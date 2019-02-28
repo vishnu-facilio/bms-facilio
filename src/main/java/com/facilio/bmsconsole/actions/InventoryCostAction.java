@@ -46,7 +46,7 @@ public class InventoryCostAction extends FacilioAction{
 		double quantity = inventoryCost.getQuantity();
 		inventoryCost.setCurrentQuantity(quantity);
 		inventoryCost.setModifiedTime(System.currentTimeMillis());
-		context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, EventType.EDIT);
+		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.EDIT);
 		context.put(FacilioConstants.ContextNames.RECORD, inventoryCost);
 		context.put(FacilioConstants.ContextNames.ID, inventoryCost.getId());
 		context.put(FacilioConstants.ContextNames.INVENTORY_ID, inventoryId);
@@ -80,7 +80,7 @@ public class InventoryCostAction extends FacilioAction{
 		InventoryCostContext inventoryCost = new InventoryCostContext();
 		inventoryCost.setDeleted(true);
 
-		context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, EventType.DELETE);
+		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.DELETE);
 		context.put(FacilioConstants.ContextNames.RECORD, inventoryCost);
 		context.put(FacilioConstants.ContextNames.INVENTORY_ID, inventoryId);
 		context.put(FacilioConstants.ContextNames.INVENTORY_IDS, Collections.singletonList(inventoryId));

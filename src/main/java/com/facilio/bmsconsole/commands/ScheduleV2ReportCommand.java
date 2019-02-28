@@ -49,7 +49,7 @@ public class ScheduleV2ReportCommand implements Command {
 		FacilioModule module = ModuleFactory.getReportScheduleInfo();
 		List<FacilioField> fields = FieldFactory.getReportScheduleInfo1Fields();
 		
-		EventType type = (EventType) context.get(FacilioConstants.ContextNames.ACTIVITY_TYPE);
+		EventType type = (EventType) context.get(FacilioConstants.ContextNames.EVENT_TYPE);
 		
 		long jobId;
 		if (type != EventType.EDIT) {

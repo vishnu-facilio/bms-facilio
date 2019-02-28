@@ -62,7 +62,7 @@ public class DeleteTaskCommand implements Command {
 					.andCustomWhere(sql, recordIds.toArray());
 			
 			context.put(FacilioConstants.ContextNames.ROWS_UPDATED, builder.delete());
-			context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, EventType.DELETE);
+			context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.DELETE);
 			FacilioChain.addPostTrasanction(FacilioConstants.ContextNames.IDS_TO_UPDATE_TASK_COUNT, parentIds);
 			FacilioChain.addPostTrasanction(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
 		}

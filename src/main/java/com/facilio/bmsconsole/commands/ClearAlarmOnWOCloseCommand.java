@@ -32,7 +32,7 @@ public class ClearAlarmOnWOCloseCommand implements SerializableCommand {
 	@Override
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
-		EventType eventType = (EventType) context.get(FacilioConstants.ContextNames.ACTIVITY_TYPE);
+		EventType eventType = (EventType) context.get(FacilioConstants.ContextNames.EVENT_TYPE);
 		List<WorkOrderContext> workOrders = (List<WorkOrderContext>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
 		if(workOrders != null && !workOrders.isEmpty()) {
 			TicketStatusContext closeStatus = TicketAPI.getStatus("Closed");

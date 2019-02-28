@@ -343,7 +343,7 @@ public class ModuleAction extends FacilioAction {
 	
 	public String addModuleData() throws Exception {
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, EventType.CREATE);
+		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.CREATE);
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
 		
 		setModuleData();
@@ -369,7 +369,7 @@ public class ModuleAction extends FacilioAction {
 	
 	public String updateModuleData() throws Exception {
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, EventType.EDIT);
+		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.EDIT);
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
 		
 		setModuleData();
@@ -386,7 +386,7 @@ public class ModuleAction extends FacilioAction {
 	
 	public String deleteModuleData() throws Exception {
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, EventType.DELETE);
+		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.DELETE);
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, ids);
 		

@@ -60,7 +60,7 @@ public class UpdateWorkOrderCommand implements Command {
 			
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioModule module = modBean.getModule(moduleName);
-			EventType activityType = (EventType)context.get(FacilioConstants.ContextNames.ACTIVITY_TYPE);
+			EventType activityType = (EventType)context.get(FacilioConstants.ContextNames.EVENT_TYPE);
 			Map<Long, List<UpdateChangeSet>> changeSets = new HashMap<>();
 			
 			int rowsUpdated = 0;

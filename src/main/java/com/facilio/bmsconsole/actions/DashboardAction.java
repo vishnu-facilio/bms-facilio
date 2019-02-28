@@ -7417,7 +7417,7 @@ public class DashboardAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.SCHEDULE_INFO, scheduleInfo);
 		
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, id);
-		context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, EventType.EDIT);
+		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.EDIT);
 		Chain mailReportChain = ReportsChainFactory.updateScheduledReportsChain();
 		mailReportChain.execute(context);
 		

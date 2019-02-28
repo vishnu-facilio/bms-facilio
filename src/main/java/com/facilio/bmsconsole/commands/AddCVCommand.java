@@ -57,7 +57,7 @@ public class AddCVCommand implements Command {
 				} 
 				view.setModuleId(moduleObj.getModuleId());
 				
-				EventType activityType =  (EventType) context.get(FacilioConstants.ContextNames.ACTIVITY_TYPE);
+				EventType activityType =  (EventType) context.get(FacilioConstants.ContextNames.EVENT_TYPE);
 				if (( activityType == null ) || ( activityType == EventType.CREATE )) {
 					if(view.getName() == null)
 					{

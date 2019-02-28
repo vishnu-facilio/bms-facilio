@@ -88,7 +88,7 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 		// TODO Auto-generated method stub
 		if (id != null) {
 			FacilioContext context = new FacilioContext();
-			context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, EventType.DELETE);
+			context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.DELETE);
 			context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, id);
 
 			Chain deleteAlarmChain = FacilioChainFactory.getDeleteAlarmChain();

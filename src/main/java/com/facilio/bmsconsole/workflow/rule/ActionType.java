@@ -607,7 +607,7 @@ public enum ActionType {
 				WorkOrderContext wo = WorkOrderAPI.getWorkOrder(((AlarmContext) currentRecord).getId());
 				if (wo != null) {
 					FacilioContext updateContext = new FacilioContext();
-					updateContext.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, EventType.CLOSE_WORK_ORDER);
+					updateContext.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.CLOSE_WORK_ORDER);
 
 					WorkOrderContext workorder = new WorkOrderContext();
 					workorder.setStatus(TicketAPI.getStatus("Closed"));

@@ -30,7 +30,7 @@ public class AddNoteTicketActivityCommand implements Command {
 				
 				for (NoteContext note : notes) {
 					long parentId = note.getParentId();
-					EventType activityType = (EventType) context.get(FacilioConstants.ContextNames.ACTIVITY_TYPE);
+					EventType activityType = (EventType) context.get(FacilioConstants.ContextNames.EVENT_TYPE);
 					if(parentId != -1 && activityType != null && activityType == EventType.ADD_TICKET_NOTE) {
 						addActivity(note, activityType);
 					}

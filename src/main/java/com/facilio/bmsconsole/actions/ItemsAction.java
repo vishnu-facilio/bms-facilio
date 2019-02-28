@@ -54,7 +54,7 @@ public class ItemsAction extends FacilioAction{
 	
 	public String updateItem() throws Exception {
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, EventType.EDIT);
+		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.EDIT);
 		context.put(FacilioConstants.ContextNames.RECORD, item);
 		context.put(FacilioConstants.ContextNames.ID, item.getId());
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(item.getId()));

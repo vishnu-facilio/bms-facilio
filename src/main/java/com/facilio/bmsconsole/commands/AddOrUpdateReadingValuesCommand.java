@@ -79,7 +79,7 @@ public class AddOrUpdateReadingValuesCommand implements Command {
 		}
 		LOGGER.info("Time taken to add/update Readings data to DB : "+(System.currentTimeMillis() - startTime));
 		context.put(FacilioConstants.ContextNames.RECORD_MAP, readingMap);
-		context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, EventType.CREATE);
+		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.CREATE);
 		
 		return false;
 	}

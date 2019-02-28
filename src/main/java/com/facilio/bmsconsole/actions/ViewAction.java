@@ -104,7 +104,7 @@ public class ViewAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
 		context.put(FacilioConstants.ContextNames.FILTERS, view.getFilters());
-		context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, EventType.EDIT);
+		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.EDIT);
 		context.put(FacilioConstants.ContextNames.VIEWCOLUMNS, view.getFields());
 		context.put(FacilioConstants.ContextNames.NEW_CV, view);
 		context.put(FacilioConstants.ContextNames.VIEW_SHARING_LIST, viewSharing);
