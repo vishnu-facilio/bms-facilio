@@ -24,7 +24,7 @@ public class UpdateGeoLocationCommand implements Command {
 		AssetContext asset = (AssetContext) context.get(FacilioConstants.ContextNames.ASSET);
 		String location = (String) context.get(FacilioConstants.ContextNames.LOCATION);
 		
-		if (asset != null && StringUtils.isNotEmpty(location)) {
+		if (asset != null && asset.isGeoLocationEnabled() && StringUtils.isNotEmpty(location)) {
 			asset.setGeoLocation(location);
 			updateGeoLocation(asset.getId(), location);
 			JSONObject info = new JSONObject();
