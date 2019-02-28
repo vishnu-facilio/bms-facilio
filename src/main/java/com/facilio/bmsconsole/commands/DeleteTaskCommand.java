@@ -15,7 +15,7 @@ import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
-import com.facilio.bmsconsole.workflow.rule.ActivityType;
+import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
@@ -62,7 +62,7 @@ public class DeleteTaskCommand implements Command {
 					.andCustomWhere(sql, recordIds.toArray());
 			
 			context.put(FacilioConstants.ContextNames.ROWS_UPDATED, builder.delete());
-			context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.DELETE);
+			context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, EventType.DELETE);
 			FacilioChain.addPostTrasanction(FacilioConstants.ContextNames.IDS_TO_UPDATE_TASK_COUNT, parentIds);
 			FacilioChain.addPostTrasanction(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
 		}

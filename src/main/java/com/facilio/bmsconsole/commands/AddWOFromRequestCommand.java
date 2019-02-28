@@ -18,7 +18,7 @@ import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.util.TicketAPI;
-import com.facilio.bmsconsole.workflow.rule.ActivityType;
+import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
@@ -28,9 +28,9 @@ public class AddWOFromRequestCommand implements Command {
 	@Override
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
-		ActivityType eventType = (ActivityType) context.get(FacilioConstants.ContextNames.ACTIVITY_TYPE);
+		EventType eventType = (EventType) context.get(FacilioConstants.ContextNames.ACTIVITY_TYPE);
 		List<Long> recordIds = (List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST);
-		if(ActivityType.APPROVE_WORK_ORDER_REQUEST == eventType && recordIds != null && !recordIds.isEmpty()) {
+		if(EventType.APPROVE_WORK_ORDER_REQUEST == eventType && recordIds != null && !recordIds.isEmpty()) {
 			String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 			String dataTableName = (String) context.get(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME);
 			
@@ -74,7 +74,7 @@ public class AddWOFromRequestCommand implements Command {
 		context.put(FacilioConstants.ContextNames.INSERT_LEVEL, 2);
 		if (wo.getAssignedTo() != null || wo.getAssignmentGroup() != null) {
 			wo.setStatus(TicketAPI.getStatus("Assigned"));
-			context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.ASSIGN_TICKET);
+			context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, EventType.ASSIGN_TICKET);
 		}
 		else {
 			wo.setStatus(TicketAPI.getStatus("Submitted"));

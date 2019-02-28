@@ -26,7 +26,7 @@ import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.util.WorkOrderAPI;
 import com.facilio.bmsconsole.view.FacilioView;
-import com.facilio.bmsconsole.workflow.rule.ActivityType;
+import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.exception.ReadingValidationException;
@@ -149,19 +149,19 @@ public class TaskAction extends FacilioAction {
 	
 	public String assignTask() throws Exception {
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.ASSIGN_TICKET);
+		context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, EventType.ASSIGN_TICKET);
 		return updateTask(context);
 	}
 	
 	public String updateStatus() throws Exception {
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.EDIT);
+		context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, EventType.EDIT);
 		return updateTask(context);
 	}
 	
 	public String updateTask() throws Exception {
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.EDIT);
+		context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, EventType.EDIT);
 //		boolean doValidation = getDoValidation();
 		if (AccountUtil.getCurrentAccount().getDeviceType() != null) {
 			context.put(FacilioConstants.ContextNames.DO_VALIDTION, getDoValidation());
@@ -171,7 +171,7 @@ public class TaskAction extends FacilioAction {
 	}
 	public String addTaskInput() throws Exception {
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.ADD_TASK_INPUT);
+		context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, EventType.ADD_TASK_INPUT);
 		return updateTask(context);
 	}
 	
@@ -232,7 +232,7 @@ public class TaskAction extends FacilioAction {
 	
 	public String closeAllTask() throws Exception {
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.EDIT);
+		context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, EventType.EDIT);
 		if (taskIdList != null) {
 			TaskContext defaultClosedTaskObj = new TaskContext();
 			defaultClosedTaskObj.setParentTicketId(parentTicketId);
@@ -253,7 +253,7 @@ public class TaskAction extends FacilioAction {
 		for (TaskContext singleTask :taskContextList)
 		{
 			context.clear();
-			context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.EDIT);
+			context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, EventType.EDIT);
 			context.put(FacilioConstants.ContextNames.TASK, singleTask);
 			context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(singleTask.getId()));
 			if (AccountUtil.getCurrentAccount().getDeviceType() != null) {
@@ -520,7 +520,7 @@ public class TaskAction extends FacilioAction {
 				
 				FacilioContext context = new FacilioContext();
 				context.put(FacilioConstants.ContextNames.LAST_SYNC_TIME, lastSyncTime);
-				context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.EDIT);
+				context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, EventType.EDIT);
 				if (AccountUtil.getCurrentAccount().getDeviceType() != null) {
 					context.put(FacilioConstants.ContextNames.DO_VALIDTION, getDoValidation());
 				}

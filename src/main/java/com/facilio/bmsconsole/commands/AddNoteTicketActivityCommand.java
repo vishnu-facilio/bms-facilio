@@ -13,7 +13,7 @@ import com.facilio.bmsconsole.context.NoteContext;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
-import com.facilio.bmsconsole.workflow.rule.ActivityType;
+import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsole.workflow.rule.TicketActivity;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.sql.GenericInsertRecordBuilder;
@@ -30,8 +30,8 @@ public class AddNoteTicketActivityCommand implements Command {
 				
 				for (NoteContext note : notes) {
 					long parentId = note.getParentId();
-					ActivityType activityType = (ActivityType) context.get(FacilioConstants.ContextNames.ACTIVITY_TYPE);
-					if(parentId != -1 && activityType != null && activityType == ActivityType.ADD_TICKET_NOTE) {
+					EventType activityType = (EventType) context.get(FacilioConstants.ContextNames.ACTIVITY_TYPE);
+					if(parentId != -1 && activityType != null && activityType == EventType.ADD_TICKET_NOTE) {
 						addActivity(note, activityType);
 					}
 				}
@@ -40,7 +40,7 @@ public class AddNoteTicketActivityCommand implements Command {
 		return false;
 	}
 		
-	private void addActivity(NoteContext note, ActivityType activityType) throws SQLException, RuntimeException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+	private void addActivity(NoteContext note, EventType activityType) throws SQLException, RuntimeException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
 		
 		TicketActivity activity = new TicketActivity();
 		activity.setTicketId(note.getParentId());

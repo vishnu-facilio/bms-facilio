@@ -16,7 +16,7 @@ import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.util.TemplateAPI;
-import com.facilio.bmsconsole.workflow.rule.ActivityType;
+import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.sql.GenericDeleteRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
@@ -63,12 +63,12 @@ public class DeleteScheduledReportsCommand implements Command {
 		
 		List<Long> templateIds = reports.stream().map(ReportInfo::getTemplateId).collect(Collectors.toList());
 		
-		ActivityType type = null;
+		EventType type = null;
 		if (context.containsKey(FacilioConstants.ContextNames.ACTIVITY_TYPE)) {
-			type = (ActivityType) context.get(FacilioConstants.ContextNames.ACTIVITY_TYPE);
+			type = (EventType) context.get(FacilioConstants.ContextNames.ACTIVITY_TYPE);
 		}
 		
-		if (type == null || type != ActivityType.EDIT) {
+		if (type == null || type != EventType.EDIT) {
 			GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
 					.table(module.getTableName())
 					.andCondition(CriteriaAPI.getIdCondition(recordIds, module));

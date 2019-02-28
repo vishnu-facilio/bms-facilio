@@ -14,7 +14,7 @@ import com.facilio.bmsconsole.context.TicketStatusContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.util.AlarmAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
-import com.facilio.bmsconsole.workflow.rule.ActivityType;
+import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.events.constants.EventConstants;
@@ -32,7 +32,7 @@ public class ClearAlarmOnWOCloseCommand implements SerializableCommand {
 	@Override
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
-		ActivityType eventType = (ActivityType) context.get(FacilioConstants.ContextNames.ACTIVITY_TYPE);
+		EventType eventType = (EventType) context.get(FacilioConstants.ContextNames.ACTIVITY_TYPE);
 		List<WorkOrderContext> workOrders = (List<WorkOrderContext>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
 		if(workOrders != null && !workOrders.isEmpty()) {
 			TicketStatusContext closeStatus = TicketAPI.getStatus("Closed");

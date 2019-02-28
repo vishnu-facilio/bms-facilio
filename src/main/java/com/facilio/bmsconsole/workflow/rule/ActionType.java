@@ -217,7 +217,7 @@ public enum ActionType {
 						NotificationContext notification = new NotificationContext();
 						notification.setInfo((String) obj.get("message"));
 						int type = (int) obj.get("activityType");
-						notification.setNotificationType(ActivityType.valueOf(type));
+						notification.setNotificationType(EventType.valueOf(type));
 						NotificationAPI.sendNotification(reciepents, notification);
 					}
 				} catch (Exception e) {
@@ -607,7 +607,7 @@ public enum ActionType {
 				WorkOrderContext wo = WorkOrderAPI.getWorkOrder(((AlarmContext) currentRecord).getId());
 				if (wo != null) {
 					FacilioContext updateContext = new FacilioContext();
-					updateContext.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.CLOSE_WORK_ORDER);
+					updateContext.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, EventType.CLOSE_WORK_ORDER);
 
 					WorkOrderContext workorder = new WorkOrderContext();
 					workorder.setStatus(TicketAPI.getStatus("Closed"));

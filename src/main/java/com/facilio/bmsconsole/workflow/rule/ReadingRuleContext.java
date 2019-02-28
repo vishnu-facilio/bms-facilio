@@ -773,7 +773,7 @@ public class ReadingRuleContext extends WorkflowRuleContext {
 	public void executeFalseActions(Object record, Context context, Map<String, Object> placeHolders) throws Exception {
 		// TODO Auto-generated method stub
 		ReadingContext reading = (ReadingContext) record;
-		if (getMetric(reading) != null || getEvent().getActivityTypeEnum().isPresent(ActivityType.SCHEDULED_READING_RULE.getValue())) {
+		if (getMetric(reading) != null || getEvent().getActivityTypeEnum().isPresent(EventType.SCHEDULED_READING_RULE.getValue())) {
 			if (clearAlarm()) {
 				ReadingRuleAPI.addClearEvent(record, context, placeHolders, reading, this);
 			}

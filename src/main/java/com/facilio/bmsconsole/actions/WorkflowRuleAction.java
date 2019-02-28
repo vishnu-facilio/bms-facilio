@@ -23,7 +23,7 @@ import com.facilio.bmsconsole.templates.SLATemplate;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.rule.ActionContext;
 import com.facilio.bmsconsole.workflow.rule.ActionType;
-import com.facilio.bmsconsole.workflow.rule.ActivityType;
+import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsole.workflow.rule.AlarmRuleContext;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 import com.facilio.bmsconsole.workflow.rule.SLARuleContext;
@@ -91,7 +91,7 @@ public class WorkflowRuleAction extends FacilioAction {
 		FacilioContext facilioContext = new FacilioContext();
 		facilioContext.put(FacilioConstants.ContextNames.RECORD_LIST, records);
 		facilioContext.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
-		facilioContext.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.CREATE);
+		facilioContext.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, EventType.CREATE);
 		
 		Chain runThroughFilters = FacilioChainFactory.runThroughFilters();
 		runThroughFilters.execute(facilioContext);

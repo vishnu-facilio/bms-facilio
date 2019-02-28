@@ -4,14 +4,14 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 import com.facilio.bmsconsole.util.NotificationTemplate;
-import com.facilio.bmsconsole.workflow.rule.ActivityType;
+import com.facilio.bmsconsole.workflow.rule.EventType;
 
 public class NotificationContext {
 
 	private long id;
 	private long orgId;
 	private long userId;
-	private ActivityType notificationType;
+	private EventType notificationType;
 	private long actorId;
 	private String info;
 	private boolean isRead;
@@ -38,7 +38,7 @@ public class NotificationContext {
 	public void setUserId(long userId) {
 		this.userId = userId;
 	}
-	public ActivityType getNotificationType() {
+	public EventType getNotificationType() {
 		return notificationType;
 	}
 	public int getNotificationTypeVal() {
@@ -48,13 +48,13 @@ public class NotificationContext {
 		return -1;
 	}
 	public void setNotificationTypeVal(int notificationTypeVal) {
-		this.notificationType = ActivityType.valueOf(notificationTypeVal);
+		this.notificationType = EventType.valueOf(notificationTypeVal);
 	}
-	public void setNotificationType(ActivityType notificationType) {
+	public void setNotificationType(EventType notificationType) {
 		this.notificationType = notificationType;
 	}
 	public void setNotificationType(int notificationType) {
-		this.notificationType = ActivityType.valueOf(notificationType);
+		this.notificationType = EventType.valueOf(notificationType);
 	}
 	public long getActorId() {
 		return actorId;

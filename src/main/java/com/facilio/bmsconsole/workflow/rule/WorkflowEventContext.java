@@ -55,15 +55,15 @@ public class WorkflowEventContext {
 	}
 	public void setActivityType(int activityType) {
 		this.activity = activityType;
-		this.activityType = ActivityType.valueOf(activityType);
+		this.activityType = EventType.valueOf(activityType);
 	}
 	
-	private ActivityType activityType;
-	public void setActivityType(ActivityType activityType) {
+	private EventType activityType;
+	public void setActivityType(EventType activityType) {
 		this.activity = activityType.getValue();
 		this.activityType = activityType;
 	}
-	public ActivityType getActivityTypeEnum() {
+	public EventType getActivityTypeEnum() {
 		return activityType;
 	}
 }

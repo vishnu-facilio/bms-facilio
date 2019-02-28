@@ -27,7 +27,7 @@ import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
-import com.facilio.bmsconsole.workflow.rule.ActivityType;
+import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsole.workflow.rule.TicketActivity;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
@@ -45,7 +45,7 @@ public class AddTicketActivityCommand implements Command {
 		List<Long> ids = (List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST);
 		if(ids != null && !ids.isEmpty()) 
 		{
-			ActivityType activityType = (ActivityType) context.get(FacilioConstants.ContextNames.ACTIVITY_TYPE);
+			EventType activityType = (EventType) context.get(FacilioConstants.ContextNames.ACTIVITY_TYPE);
 			
 			if(activityType != null) {
 				context.put(FacilioConstants.TicketActivity.MODIFIED_TIME, System.currentTimeMillis());
@@ -84,7 +84,7 @@ public class AddTicketActivityCommand implements Command {
 		List<Long> ids = (List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST);
 		long modifiedTime = (long) context.get(FacilioConstants.TicketActivity.MODIFIED_TIME);
 		long modifiedBy = (long) context.get(FacilioConstants.TicketActivity.MODIFIED_USER);
-		ActivityType activityType = (ActivityType) context.get(FacilioConstants.ContextNames.ACTIVITY_TYPE);
+		EventType activityType = (EventType) context.get(FacilioConstants.ContextNames.ACTIVITY_TYPE);
 		
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");

@@ -10,7 +10,7 @@ import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.context.AttachmentContext;
 import com.facilio.bmsconsole.util.AttachmentsAPI;
-import com.facilio.bmsconsole.workflow.rule.ActivityType;
+import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 
@@ -69,7 +69,7 @@ public class AddAttachmentRelationshipCommand implements Command {
 			
 			context.put(FacilioConstants.ContextNames.ATTACHMENT_LIST, AttachmentsAPI.getAttachments(moduleName, attachmentIds));
 			if(moduleName.equals(FacilioConstants.ContextNames.TICKET_ATTACHMENTS)) {
-				context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.ADD_TICKET_ATTACHMENTS);
+				context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, EventType.ADD_TICKET_ATTACHMENTS);
 			}
 		}
 		

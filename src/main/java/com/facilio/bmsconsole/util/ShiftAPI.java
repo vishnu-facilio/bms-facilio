@@ -42,7 +42,7 @@ import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
-import com.facilio.bmsconsole.workflow.rule.ActivityType;
+import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericDeleteRecordBuilder;
@@ -309,7 +309,7 @@ public class ShiftAPI {
 		return value == 1 || value == 3 || value == 5;
 	}
 	
-	public static void pauseWorkOrderForUser(long userId, ActivityType activityType, long currentWOId, long now) throws Exception {
+	public static void pauseWorkOrderForUser(long userId, EventType activityType, long currentWOId, long now) throws Exception {
 		List<ReadingDataMeta> metaList = getUserWorkHoursRDM(Arrays.asList(userId));
 		if (metaList == null || metaList.isEmpty()) {
 			return;
@@ -342,19 +342,19 @@ public class ShiftAPI {
 		}
 	}
 	
-	public static List<ReadingContext> addUserWorkHoursReading(long assignedToUserId, long workOrderId, ActivityType activityType, String reading, long time) throws Exception {
+	public static List<ReadingContext> addUserWorkHoursReading(long assignedToUserId, long workOrderId, EventType activityType, String reading, long time) throws Exception {
 		return addUserWorkHoursReading(assignedToUserId, workOrderId, activityType, reading, time, false, false);
 	}
 	
-	public static List<ReadingContext> addInvalidatedUserWorkHoursReading(long assignedToUserId, long workOrderId, ActivityType activityType, String reading, long time) throws Exception {
+	public static List<ReadingContext> addInvalidatedUserWorkHoursReading(long assignedToUserId, long workOrderId, EventType activityType, String reading, long time) throws Exception {
 		return addUserWorkHoursReading(assignedToUserId, workOrderId, activityType, reading, time, false, true);
 	}
 	
-	public static List<ReadingContext> addUserWorkHoursReading(long assignedToUserId, long workOrderId, ActivityType activityType, String reading, long time, boolean skipCheck) throws Exception {
+	public static List<ReadingContext> addUserWorkHoursReading(long assignedToUserId, long workOrderId, EventType activityType, String reading, long time, boolean skipCheck) throws Exception {
 		return addUserWorkHoursReading(assignedToUserId, workOrderId, activityType, reading, time, skipCheck, false);
 	}
 	
-	public static List<ReadingContext> addUserWorkHoursReading(long assignedToUserId, long workOrderId, ActivityType activityType, String reading, long time, boolean skipCheck, boolean hasManualEntry) throws Exception {
+	public static List<ReadingContext> addUserWorkHoursReading(long assignedToUserId, long workOrderId, EventType activityType, String reading, long time, boolean skipCheck, boolean hasManualEntry) throws Exception {
 		if (!skipCheck) {
 			boolean addReading = allowAddReading(assignedToUserId, workOrderId, reading);
 			if (!addReading) {
@@ -599,11 +599,11 @@ public class ShiftAPI {
 		return res.setScale(2, RoundingMode.HALF_UP);
 	}
 	
-	public static List<ReadingContext> handleWorkHoursReading(ActivityType activityType, long assignedToUserId, long workOrderId, TicketStatusContext oldTicketStatus, TicketStatusContext newTicketStatus) throws Exception {
+	public static List<ReadingContext> handleWorkHoursReading(EventType activityType, long assignedToUserId, long workOrderId, TicketStatusContext oldTicketStatus, TicketStatusContext newTicketStatus) throws Exception {
 		return handleWorkHoursReading(activityType, assignedToUserId, workOrderId, oldTicketStatus, newTicketStatus, false); 
 	}
 
-	public static List<ReadingContext> handleWorkHoursReading(ActivityType activityType, long assignedToUserId, long workOrderId, TicketStatusContext oldTicketStatus, TicketStatusContext newTicketStatus, boolean invalidate) throws Exception {
+	public static List<ReadingContext> handleWorkHoursReading(EventType activityType, long assignedToUserId, long workOrderId, TicketStatusContext oldTicketStatus, TicketStatusContext newTicketStatus, boolean invalidate) throws Exception {
 		List<ReadingContext> readings = new ArrayList<>();
 		long now = System.currentTimeMillis();
 		if(newTicketStatus != null && newTicketStatus.getId() != -1) {
@@ -660,7 +660,7 @@ public class ShiftAPI {
 		updateBuilder.update(props);
 	}
 
-	public static List<ReadingContext> addActualWorkHoursReading(long assignedToUserId, long workOrderId, ActivityType activityType, List<List<Long>> actualTimings) throws Exception {
+	public static List<ReadingContext> addActualWorkHoursReading(long assignedToUserId, long workOrderId, EventType activityType, List<List<Long>> actualTimings) throws Exception {
 		List<ReadingContext> whreadings = new ArrayList<>();
 		if (actualTimings.size() == 1) {
 			List<Long> readings = actualTimings.get(0);

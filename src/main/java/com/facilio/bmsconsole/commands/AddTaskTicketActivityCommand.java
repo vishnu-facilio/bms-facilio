@@ -25,7 +25,7 @@ import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
-import com.facilio.bmsconsole.workflow.rule.ActivityType;
+import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsole.workflow.rule.TicketActivity;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
@@ -89,7 +89,7 @@ public class AddTaskTicketActivityCommand implements Command {
 				activity.setModifiedTime((long) context.get(FacilioConstants.TicketActivity.MODIFIED_TIME));
 				activity.setModifiedBy((long) context.get(FacilioConstants.TicketActivity.MODIFIED_USER));
 				activity.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
-				activity.setActivityType(ActivityType.CLOSE_ALL_TASK);
+				activity.setActivityType(EventType.CLOSE_ALL_TASK);
 				JSONObject info = new JSONObject();
 				JSONArray updatedFields = new JSONArray();
 				JSONObject taskJson = new JSONObject();
@@ -107,7 +107,7 @@ public class AddTaskTicketActivityCommand implements Command {
 					activity.setModifiedTime((long) context.get(FacilioConstants.TicketActivity.MODIFIED_TIME));
 					activity.setModifiedBy((long) context.get(FacilioConstants.TicketActivity.MODIFIED_USER));
 					activity.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
-					activity.setActivityType(ActivityType.UPDATE_TICKET_TASK);
+					activity.setActivityType(EventType.UPDATE_TICKET_TASK);
 					
 					Map<String, Object> oldTicketProps;
 					if (task.getId() == -1)
@@ -169,7 +169,7 @@ public class AddTaskTicketActivityCommand implements Command {
 				activity.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
 				
 				JSONObject info = new JSONObject();
-				activity.setActivityType(ActivityType.ADD_TICKET_TASKS);
+				activity.setActivityType(EventType.ADD_TICKET_TASKS);
 				info.put("task", task.getSubject());
 				activity.setInfo(info);
 				insertActivityBuilder.addRecord(FieldUtil.getAsProperties(activity));

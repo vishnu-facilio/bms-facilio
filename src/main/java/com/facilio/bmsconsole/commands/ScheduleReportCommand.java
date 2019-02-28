@@ -14,7 +14,7 @@ import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.templates.EMailTemplate;
 import com.facilio.bmsconsole.util.TemplateAPI;
-import com.facilio.bmsconsole.workflow.rule.ActivityType;
+import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
@@ -50,10 +50,10 @@ public class ScheduleReportCommand implements Command {
 			FacilioModule module = ModuleFactory.getReportScheduleInfoModule();
 			List<FacilioField> fields = FieldFactory.getReportScheduleInfoFields();
 			
-			ActivityType type = (ActivityType) context.get(FacilioConstants.ContextNames.ACTIVITY_TYPE);
+			EventType type = (EventType) context.get(FacilioConstants.ContextNames.ACTIVITY_TYPE);
 			
 			long jobId;
-			if (type != ActivityType.EDIT) {
+			if (type != EventType.EDIT) {
 				GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
 						.table(module.getTableName())
 						.fields(fields);

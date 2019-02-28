@@ -18,7 +18,7 @@ import com.facilio.bmsconsole.util.ActionAPI;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.rule.ActionContext;
 import com.facilio.bmsconsole.workflow.rule.ActionType;
-import com.facilio.bmsconsole.workflow.rule.ActivityType;
+import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsole.workflow.rule.WorkflowEventContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.constants.FacilioConstants;
@@ -69,7 +69,7 @@ public class AddPMTriggerCommand implements Command {
 					trigger.getWorkFlowRule().setName("PM_" + pm.getId());
 					trigger.getWorkFlowRule().setRuleType(RuleType.PM_ALARM_RULE);
 					WorkflowEventContext event = new WorkflowEventContext();
-					event.setActivityType(ActivityType.CREATE);
+					event.setActivityType(EventType.CREATE);
 					event.setModuleName("alarm");
 					trigger.getWorkFlowRule().setEvent(event);
 					ruleId = WorkflowRuleAPI.addWorkflowRule(trigger.getWorkFlowRule());
