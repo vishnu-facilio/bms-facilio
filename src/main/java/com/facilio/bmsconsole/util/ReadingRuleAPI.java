@@ -493,6 +493,9 @@ public class ReadingRuleAPI extends WorkflowRuleAPI {
 				alarmTriggerRule.setOnSuccess(true);
 				alarmTriggerRule.setExecutionOrder(executionOrder++);
 				
+				alarmTriggerRule.setCriteriaId(-1l);
+				alarmTriggerRule.setWorkflowId(-1l);
+				
 				alarmTriggerRule.setRuleGroupId(preRequsiteRule.getId());
 				alarmTriggerRule.setParentRuleId(preRequsiteRule.getId());
 				alarmTriggerRule.setStatus(true);
@@ -501,7 +504,12 @@ public class ReadingRuleAPI extends WorkflowRuleAPI {
 				WorkflowRuleAPI.addWorkflowRule(alarmTriggerRule);
 			}
 			
-			if(alarmRule.isClearAlarmOnPreRequsiteFail() && alarmClear != null) {
+			if(alarmRule.getAlarmClearRuleDuplicate() != null) {
+				alarmClear = alarmRule.getAlarmClearRuleDuplicate();
+				
+				alarmClear.setCriteriaId(-1l);
+				alarmClear.setWorkflowId(-1l);
+				
 				alarmClear.setId(-1);
 				alarmClear.setRuleType(WorkflowRuleContext.RuleType.ALARM_CLEAR_RULE);
 				alarmClear.setEventId(preRequsiteRule.getEventId());

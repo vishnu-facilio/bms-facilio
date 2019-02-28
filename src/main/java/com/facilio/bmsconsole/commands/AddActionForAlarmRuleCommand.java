@@ -27,29 +27,25 @@ public class AddActionForAlarmRuleCommand implements Command {
 				List<ActionContext> actions = ActionAPI.addActions(rule.getActions(), rule);
 				ActionAPI.addWorkflowRuleActionRel(rule.getId(), actions);
 			}
-			else if (rule.getRuleTypeEnum() == RuleType.ALARM_CLEAR_RULE) {
-				ActionContext actionContext = new ActionContext();
-				actionContext.setActionType(ActionType.CLEAR_ALARM);
-				actionContext.setStatus(true);
-				
-				List<ActionContext> actions = ActionAPI.addActions(Collections.singletonList(actionContext), rule);
-				
-				ActionAPI.addWorkflowRuleActionRel(rule.getId(), actions);
-				
-				rule.setActions(actions);
-			}
 		}
 		
+		ActionContext actionContext = new ActionContext();
+		actionContext.setActionType(ActionType.CLEAR_ALARM);
+		actionContext.setStatus(true);
+		List<ActionContext>  clearActions = ActionAPI.addActions(Collections.singletonList(actionContext), null);
+		
 		if(alarmRule.getAlarmClearRule() != null) {
-			ActionContext actionContext = new ActionContext();
-			actionContext.setActionType(ActionType.CLEAR_ALARM);
-			actionContext.setStatus(true);
 			
-			List<ActionContext> actions = ActionAPI.addActions(Collections.singletonList(actionContext), alarmRule.getAlarmClearRule());
+			ActionAPI.addWorkflowRuleActionRel(alarmRule.getAlarmClearRule().getId(), clearActions);
 			
-			ActionAPI.addWorkflowRuleActionRel(alarmRule.getAlarmClearRule().getId(), actions);
+			alarmRule.getAlarmClearRule().setActions(clearActions);
+		}
+		
+		if(alarmRule.getAlarmClearRuleDuplicate() != null) {
 			
-			alarmRule.getAlarmClearRule().setActions(actions);
+			ActionAPI.addWorkflowRuleActionRel(alarmRule.getAlarmClearRuleDuplicate().getId(), clearActions);
+			
+			alarmRule.getAlarmClearRuleDuplicate().setActions(clearActions);
 		}
 		
 		

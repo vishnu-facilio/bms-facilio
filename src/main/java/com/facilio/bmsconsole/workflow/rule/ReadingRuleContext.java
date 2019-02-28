@@ -43,7 +43,7 @@ import com.facilio.sql.GenericUpdateRecordBuilder;
 import com.facilio.tasker.FacilioTimer;
 import com.facilio.workflows.util.WorkflowUtil;
 
-public class ReadingRuleContext extends WorkflowRuleContext {
+public class ReadingRuleContext extends WorkflowRuleContext implements Cloneable {
 	/**
 	 * 
 	 */
@@ -51,6 +51,9 @@ public class ReadingRuleContext extends WorkflowRuleContext {
 
 	private static final Logger LOGGER = LogManager.getLogger(ReadingRuleContext.class.getName());
 	
+	public Object clone()throws CloneNotSupportedException{  
+		return super.clone();  
+	}  
 	private long startValue = -1;
 	public long getStartValue() {
 		return startValue;
