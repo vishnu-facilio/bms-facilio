@@ -892,19 +892,19 @@ public class ModuleBeanImpl implements ModuleBean {
 	
 	@Override
 	public void addSubModule(long parentModuleId, long childModuleId) throws Exception {
-		String sql = "INSERT INTO SubModulesRel (PARENT_MODULE_ID, CHILD_MODULE_ID) VALUES (?, ?)";
-		try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
-			pstmt.setLong(1, parentModuleId);
-			pstmt.setLong(2, childModuleId);
-			
-			if (pstmt.executeUpdate() < 1) {
-				throw new Exception("Unable to add Sub Module");
-			}
-		}
-		catch(Exception e) {
-			log.info("Exception occurred ", e);
-			throw e;
-		}
+		
+		Map<String, Object> prop = new HashMap<>();
+		prop.put("parentModuleId",parentModuleId);
+		prop.put("childModuleId", childModuleId);
+		
+		
+		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+				.table("SubModulesRel")
+				.fields(FieldFactory.getSubModuleRelFields());
+		
+		insertBuilder.addRecord(prop);
+		insertBuilder.save();
+		
 	}
 	
 	public ServicePortalInfo getServicePortalInfo() throws Exception

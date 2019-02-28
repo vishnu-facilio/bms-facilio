@@ -266,6 +266,34 @@ public class FieldFactory {
 
 		return fields;
 	}
+	
+	public static List<FacilioField> getSubModuleRelFields(){
+		return getSubModuleRelFields(null);
+	}
+	
+	public static List<FacilioField> getSubModuleRelFields(FacilioModule module ){
+		List<FacilioField> field = new ArrayList<>();
+		FacilioField  parentModuleId= new FacilioField();
+		parentModuleId.setName("parentModuleId");
+		parentModuleId.setDataType(FieldType.NUMBER);
+		parentModuleId.setColumnName("PARENT_MODULE_ID");
+		if(module!=null) {
+			parentModuleId.setModule(module);
+		}
+		field.add(parentModuleId);
+		
+		FacilioField  childModuleId= new FacilioField();
+		childModuleId.setName("childModuleId");
+		childModuleId.setDataType(FieldType.NUMBER);
+		childModuleId.setColumnName("CHILD_MODULE_ID");
+		if(module!=null) {
+			childModuleId.setModule(module);
+		}
+		field.add(childModuleId);
+		
+		
+		return field;
+	}
 
 	public static List<FacilioField> getLookupFieldFields() {
 		List<FacilioField> fields = new ArrayList<>();
