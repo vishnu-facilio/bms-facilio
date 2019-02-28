@@ -815,9 +815,9 @@ public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, 
 			fetchFileUrl(records, fileIds);
 		}
 
-		if(orgIdField != null) {
-			where = oldWhere;
-		}
+//		if(orgIdField != null) {
+//			where = oldWhere;
+//		}
 		return records;
 	}
 
