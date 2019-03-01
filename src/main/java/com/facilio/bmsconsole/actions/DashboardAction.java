@@ -1291,8 +1291,7 @@ public class DashboardAction extends FacilioAction {
 					
 					result.put("name", "Level 1");
 					if(widgetStaticContext.getStaticKey().equals("emrilllevel1List")) {
-						JSONArray res = DashboardUtil.getEmrillFCUListWidgetResult(props);
-						result.put("resultList", res);
+						JSONArray res = DashboardUtil.getEmrillFCUListWidgetResult(props,result);
 					}
 					else {
 						DashboardUtil.getEmrillFCUWidgetResult(result, props);
