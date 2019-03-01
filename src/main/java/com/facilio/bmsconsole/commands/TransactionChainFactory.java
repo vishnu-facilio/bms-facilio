@@ -1061,7 +1061,7 @@ public class TransactionChainFactory {
 			return c;
 		}
 		
-		private static void commonAddModuleChain(Chain c) {
+		public static void commonAddModuleChain(Chain c) {
 			c.addCommand(new AddModulesCommand());
 			c.addCommand(new SetColumnNameForNewCFsCommand());
 			c.addCommand(new AddFieldsCommand());
@@ -1069,6 +1069,7 @@ public class TransactionChainFactory {
 		
 		public static Chain getAddCategoryReadingChain() {
 			Chain c = getDefaultChain();
+			c.addCommand(new GetCategoryModuleCommand());
 			c.addCommand(getAddReadingsChain());
 			c.addCommand(new AddCategoryReadingRelCommand());
 			c.addCommand(new GetCategoryResourcesCommand());
@@ -1096,6 +1097,7 @@ public class TransactionChainFactory {
 		public static Chain addFormulaFieldChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(new CreateFormulaFieldDependenciesCommand());
+			c.addCommand(new GetCategoryModuleCommand());
 			c.addCommand(getAddReadingsChain());
 			c.addCommand(new AddResourceReadingRelCommand());
 			c.addCommand(new AddCategoryReadingRelCommand());

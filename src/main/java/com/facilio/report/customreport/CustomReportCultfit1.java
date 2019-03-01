@@ -54,7 +54,7 @@ public class CustomReportCultfit1 implements CustomReport {
 		
 		statusField.setColumnName("IF(STATUS_ID = "+closedStatus.getId()+",'Closed','Open')");
 		statusField.setModule(null);
-		statusField.setExtendedModule(null);
+//		statusField.setExtendedModule(null);
 		
 		selectFields.add(statusField);
 		selectFields.add(countField);

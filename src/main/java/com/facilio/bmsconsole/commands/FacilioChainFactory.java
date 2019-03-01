@@ -1831,6 +1831,9 @@ public class FacilioChainFactory {
 		c.addCommand(new LoadModuleNameCommand());
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new GenericAddModuleDataCommand());
+		c.addCommand(new AddAssetCategoryModule());
+		TransactionChainFactory.commonAddModuleChain(c);
+		c.addCommand(new UpdateCategoryAssetModuleIdCommand());
 		return c;
 	}
 	

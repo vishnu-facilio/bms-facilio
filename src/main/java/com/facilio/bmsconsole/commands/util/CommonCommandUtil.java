@@ -159,7 +159,7 @@ public class CommonCommandUtil {
 				
 				if(fields != null && !fields.isEmpty()) {
 					for(FacilioField field : fields) {
-						if(field.getDataTypeEnum() == FieldType.LOOKUP) {
+						if(field.getDataTypeEnum() == FieldType.LOOKUP && prefix.split("\\.").length < 5) {
 							Map<String, Object> props = (Map<String, Object>) beanMap.remove(field.getName());
 							if(props != null && !props.isEmpty() && props.get("id") != null) {
 								LookupField lookupField = (LookupField) field;

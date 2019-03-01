@@ -11,6 +11,7 @@ import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
+import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.sql.GenericInsertRecordBuilder;
 
@@ -20,7 +21,7 @@ public class AddCategoryReadingRelCommand implements Command {
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		FacilioModule categoryReadingRelModule = (FacilioModule) context.get(FacilioConstants.ContextNames.CATEGORY_READING_PARENT_MODULE);
-		if (categoryReadingRelModule != null) {
+		if (categoryReadingRelModule != null && !categoryReadingRelModule.equals(ModuleFactory.getAssetCategoryReadingRelModule())) { // Don't execute if its asset category reading module
 			List<FacilioField> fields = FieldFactory.getCategoryReadingsFields(categoryReadingRelModule);
 			long parentCategoryId = (long) context.get(FacilioConstants.ContextNames.PARENT_CATEGORY_ID);
 			

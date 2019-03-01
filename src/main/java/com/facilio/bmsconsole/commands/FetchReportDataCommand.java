@@ -410,13 +410,13 @@ public class FetchReportDataCommand implements Command {
 		FacilioField spaceField = null;
 		switch ((SpaceAggregateOperator)xAggr) {
 			case SITE:
-				spaceField = fieldMap.get("siteId").clone();
+				spaceField = fieldMap.get("site").clone();
 				break;
 			case BUILDING:
-				spaceField = fieldMap.get("buildingId").clone();
+				spaceField = fieldMap.get("building").clone();
 				break;
 			case FLOOR:
-				spaceField = fieldMap.get("floorId").clone();
+				spaceField = fieldMap.get("floor").clone();
 				break;
 			case SPACE:
 				spaceField = FieldFactory.getIdField(baseSpaceModule);
