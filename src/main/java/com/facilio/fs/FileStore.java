@@ -449,10 +449,18 @@ public abstract class FileStore {
 		return fileInfo;
 	}
 	
-	private String getUrl (long fileId, boolean isDownload, boolean isPortal, int width, int height) {
+	private String getUrl (long fileId, boolean isDownload, boolean isPortal, int width, int height) throws Exception {
 		StringBuilder url = new StringBuilder();
+		if (AccountUtil.getCurrentAccount() != null && AccountUtil.getCurrentAccount().isFromMobile()) {
+			FileStore fs = FileStoreFactory.getInstance().getFileStore();
+			if (isDownload) {
+				return fs.getOrgiDownloadUrl(fileId);
+			} else {
+				return fs.getFileUrl(fileId);
+			}
+		}
 		if (AwsUtil.isDevelopment()) {
-			url.append(AwsUtil.getConfig("clientapp.url"));
+			url.append(AwsUtil.getServerName());
 		}
 		url.append("/api/v2/");
 		
@@ -546,4 +554,7 @@ public abstract class FileStore {
 	
 	public abstract boolean renameFile(long fileId, String newName) throws Exception;
 
+	public abstract String getFileUrl(long fileId) throws Exception;
+	
+	public abstract String getOrgiDownloadUrl(long fileId) throws Exception;
 }

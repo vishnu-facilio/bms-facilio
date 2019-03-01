@@ -237,4 +237,16 @@ public class FacilioFileStore extends FileStore {
 			return resp;
 		}
 	}
+
+	@Override
+	public String getFileUrl(long fileId) throws Exception {
+		// TODO Auto-generated method stub
+		return getFileUrl(fileId, "perview");
+	}
+
+	@Override
+	public String getOrgiDownloadUrl(long fileId) throws Exception {
+		// TODO Auto-generated method stub
+		return getFileUrl(fileId, "download");
+	}
 }
