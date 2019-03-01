@@ -137,7 +137,6 @@ public class ModuleAction extends FacilioAction {
 	public String metadata() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, getModuleName());
-		new ArrayList();
 		context.put(FacilioConstants.ContextNames.RESOURCE_TYPE, getResourceType());
 		context.put(FacilioConstants.ContextNames.PARENT_CATEGORY_ID, getCategoryId());
 		Chain metaField = FacilioChainFactory.getAllFieldsChain();
@@ -148,7 +147,6 @@ public class ModuleAction extends FacilioAction {
 	public String metaFilterFields() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, getModuleName());
-		new ArrayList();
 		context.put(FacilioConstants.ContextNames.RESOURCE_TYPE, getResourceType());
 		context.put(FacilioConstants.ContextNames.PARENT_CATEGORY_ID, getCategoryId());
 		context.put(FacilioConstants.ContextNames.IS_FILTER, true);
