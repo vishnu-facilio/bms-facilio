@@ -1272,6 +1272,42 @@ public class DashboardAction extends FacilioAction {
 					return SUCCESS;
 					
 				}
+				else if(widgetStaticContext.getStaticKey().contains("emrillFcu")) {
+					
+					JSONObject json = widgetStaticContext.getParamsJson();
+					
+					Long buildingId = (Long)json.get("buildingId");
+					String levelString = (String) json.get("level");
+					
+					result = new HashMap<>();
+					
+					List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.RESOURCE);
+					
+					List<FacilioField> newFieldList = new ArrayList<>(fields);
+					
+					newFieldList.add(FieldFactory.getIdField(modBean.getModule(FacilioConstants.ContextNames.RESOURCE)));
+					
+					GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+							.select(newFieldList)
+							.table(modBean.getModule(FacilioConstants.ContextNames.RESOURCE).getTableName())
+							.innerJoin("Assets").on("Assets.ID = Resources.ID")
+							.innerJoin("BaseSpace").on("BaseSpace.ID = Resources.SPACE_ID")
+							.andCustomWhere("BaseSpace.BUILDING_ID = ?",buildingId)
+							.andCustomWhere("Resources.ORGID = ?",AccountUtil.getCurrentOrg().getId())
+							.andCustomWhere("Assets.STRING_CF2 = ?", levelString);
+					
+					List<Map<String, Object>> props = selectBuilder.get();
+					
+					if(widgetStaticContext.getStaticKey().equals("emrillFcuList")) {
+						DashboardUtil.getEmrillFCUListWidgetResult(props,result);
+					}
+					else {
+						DashboardUtil.getEmrillFCUWidgetResult(result, props);
+					}
+					
+					setCardResult(result);
+					return SUCCESS;
+				}
 				else if(widgetStaticContext.getStaticKey().contains("emrilllevel1")) {
 					
 					result = new HashMap<>();
