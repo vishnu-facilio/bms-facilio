@@ -49,11 +49,13 @@ import java.util.regex.Pattern;
 public class TemplateAPI {
 	private static Logger log = LogManager.getLogger(TemplateAPI.class.getName());
 
-	private static final String DEFAULT_TEMPLATES_FILE_PATH = "conf/templates/defaultTemplates_";
+	private static final String DEFAULT_TEMPLATES_FILE_PATH = "conf/templates/defaultTemplates";
 	private static final String[] LANG = new String[]{"en"};
-	private static final Map<String, Map<Integer,DefaultTemplate>> DEFAULT_TEMPLATES = Collections.unmodifiableMap(loadDefaultTemplates());
-	private static Map<String, Map<Integer,DefaultTemplate>> loadDefaultTemplates() {
+	private static final String[] TYPE = new String[]{"Action", "Rule"};
+	private static final Map<String, Map<String, Map<Integer,DefaultTemplate>>> DEFAULT_TEMPLATES = Collections.unmodifiableMap(loadDefaultTemplates());
+	private static  Map<String, Map<String, Map<Integer,DefaultTemplate>>> loadDefaultTemplates() {
 		try {
+			 Map<String, Map<String, Map<Integer,DefaultTemplate>>> typeDefaultTemplates = new HashMap<>();
 			Map<String, Map<Integer,DefaultTemplate>> defaultTemplates = new HashMap<>();
 			ClassLoader classLoader = TemplateAPI.class.getClassLoader();
 			
@@ -67,36 +69,40 @@ public class TemplateAPI {
 			}
 			
 			JSONParser parser = new JSONParser();
-			for (String lang : LANG) {
-				JSONObject templateJsons = (JSONObject) parser.parse(new FileReader(classLoader.getResource(DEFAULT_TEMPLATES_FILE_PATH+lang+".json").getFile()));
-				Map<Integer, DefaultTemplate> templates = new HashMap<>();
-				for (Object key : templateJsons.keySet()) {
-					Integer templateId = Integer.parseInt(key.toString());
-					JSONObject template = (JSONObject) templateJsons.get(key);
-					String name = (String) template.remove("name");
-					DefaultTemplate defaultTemplate = new DefaultTemplate();
-					defaultTemplate.setId(templateId);
-					defaultTemplate.setName(name);
-					defaultTemplate.setFtl(checkAndLoadFtl(template, classLoader));
-					defaultTemplate.setJson(template);
-					defaultTemplate.setPlaceholder(getPlaceholders(defaultTemplate));
-					
-					WorkflowContext defaultWorkflow = defaultWorkflows.get(templateId);
-					if (defaultWorkflow != null) {
-						defaultWorkflow = WorkflowUtil.getWorkflowContextFromString(defaultWorkflow.getWorkflowString());
-						if (!defaultTemplate.isFtl()) { //Temp fix
-							WorkflowUtil.parseExpression(defaultWorkflow);
+			for (String type : TYPE) {
+				String path = DEFAULT_TEMPLATES_FILE_PATH + type + '_';
+				for (String lang : LANG) {
+					JSONObject templateJsons = (JSONObject) parser.parse(new FileReader(classLoader.getResource(path+".json").getFile()));
+					Map<Integer, DefaultTemplate> templates = new HashMap<>();
+					for (Object key : templateJsons.keySet()) {
+						Integer templateId = Integer.parseInt(key.toString());
+						JSONObject template = (JSONObject) templateJsons.get(key);
+						String name = (String) template.remove("name");
+						DefaultTemplate defaultTemplate = new DefaultTemplate();
+						defaultTemplate.setId(templateId);
+						defaultTemplate.setName(name);
+						defaultTemplate.setFtl(checkAndLoadFtl(template, classLoader));
+						defaultTemplate.setJson(template);
+						defaultTemplate.setPlaceholder(getPlaceholders(defaultTemplate));
+						
+						WorkflowContext defaultWorkflow = defaultWorkflows.get(templateId);
+						if (defaultWorkflow != null) {
+							defaultWorkflow = WorkflowUtil.getWorkflowContextFromString(defaultWorkflow.getWorkflowString());
+							if (!defaultTemplate.isFtl()) { //Temp fix
+								WorkflowUtil.parseExpression(defaultWorkflow);
+							}
+							defaultTemplate.setWorkflow(defaultWorkflow);
 						}
-						defaultTemplate.setWorkflow(defaultWorkflow);
+						else {
+							throw new IllegalArgumentException("Workflow cannot be null for Default Template : "+templateId);
+						}
+						templates.put(templateId, defaultTemplate);
 					}
-					else {
-						throw new IllegalArgumentException("Workflow cannot be null for Default Template : "+templateId);
-					}
-					templates.put(templateId, defaultTemplate);
+					defaultTemplates.put(lang, templates);
 				}
-				defaultTemplates.put(lang, templates);
+				typeDefaultTemplates.put(type, defaultTemplates);
 			}
-			return defaultTemplates;
+			return typeDefaultTemplates;
 		}
 		catch (Exception e) {
 			log.log(Level.ERROR, "Error in Parsing default templates",e);
@@ -322,7 +328,7 @@ public class TemplateAPI {
 				List<Map<String, Object>> templates = getExtendedProps(ModuleFactory.getEMailTemplatesModule(), FieldFactory.getEMailTemplateFields(), id);
 				if(templates != null && !templates.isEmpty()) {
 					templateMap.putAll(templates.get(0));
-					template = getEMailTemplateFromMap(templateMap);
+//					template = getEMailTemplateFromMap(templateMap);
 				}
 			}break;
 			case SMS: {
