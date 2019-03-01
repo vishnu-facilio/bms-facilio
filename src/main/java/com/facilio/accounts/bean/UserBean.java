@@ -1,5 +1,6 @@
 package com.facilio.accounts.bean;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -7,7 +8,10 @@ import java.util.Map;
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.dto.UserMobileSetting;
+import com.facilio.accounts.util.AccountConstants;
 import com.facilio.bmsconsole.criteria.Criteria;
+import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.sql.GenericSelectRecordBuilder;
 
 public interface UserBean {
 	
@@ -116,6 +120,9 @@ public interface UserBean {
     public String generatePermalinkForURL(String url, User user) throws Exception;
     
     public boolean verifyPermalinkForURL(String token, List<String> url) throws Exception;
+
+    List<Long> getAccessibleSpaceList (long uid) throws Exception;
+    List<Long> getAccessibleGroupList (long uid) throws Exception;
 
 	//public void sendInvitation(long ouid, User user) throws Exception;
 
