@@ -12,7 +12,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.ConsumableContext;
+import com.facilio.bmsconsole.context.InventoryTransactionsContext;
 import com.facilio.bmsconsole.context.InventoryCostContext;
 import com.facilio.bmsconsole.context.InventryContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
@@ -36,8 +36,8 @@ public class InventoryCostQuantityRollUpCommand implements Command {
 		// TODO Auto-generated method stub
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 
-		FacilioModule consumableModule = modBean.getModule(FacilioConstants.ContextNames.CONSUMABLES);
-		List<FacilioField> consumableFields = modBean.getAllFields(FacilioConstants.ContextNames.CONSUMABLES);
+		FacilioModule consumableModule = modBean.getModule(FacilioConstants.ContextNames.INVENTORY_TRANSACTIONS);
+		List<FacilioField> consumableFields = modBean.getAllFields(FacilioConstants.ContextNames.INVENTORY_TRANSACTIONS);
 		Map<String, FacilioField> consumableFieldMap = FieldFactory.getAsMap(consumableFields);
 
 		List<FacilioField> fields = new ArrayList<FacilioField>();
@@ -47,13 +47,13 @@ public class InventoryCostQuantityRollUpCommand implements Command {
 		totalQuantityConsumedField.setColumnName("sum(" + consumableFieldMap.get("quantityConsumed") + ")");
 		fields.add(totalQuantityConsumedField);
 		
-		List<? extends ConsumableContext> consumables = (List<ConsumableContext>) context
+		List<? extends InventoryTransactionsContext> consumables = (List<InventoryTransactionsContext>) context
 				.get(FacilioConstants.ContextNames.RECORD_LIST);
 		Set<Long> uniqueCostIds = new HashSet<Long>();
 		Set<Long> uniqueInventoryIds = new HashSet<Long>();
 		int totalQuantityConsumed = 0;
 		if (consumables != null && !consumables.isEmpty()) {
-			for (ConsumableContext consumable : consumables) {
+			for (InventoryTransactionsContext consumable : consumables) {
 				uniqueCostIds.add(consumable.getInventoryCost().getId());
 				uniqueInventoryIds.add(consumable.getInventory().getId());
 			}
@@ -71,8 +71,7 @@ public class InventoryCostQuantityRollUpCommand implements Command {
 			List<InventoryCostContext> inventoryCosts = selectBuilder.get();
 			if (inventoryCosts != null && !inventoryCosts.isEmpty()) {
 				inventoryCost = inventoryCosts.get(0);
-				Double quantity = inventoryCost.getQuantity();
-				inventoryCost.setCurrentQuantity(quantity - totalConsumed);
+				inventoryCost.setCurrentQuantity(totalConsumed);
 				UpdateRecordBuilder<InventoryCostContext> updateBuilder = new UpdateRecordBuilder<InventoryCostContext>()
 						.module(inventoryCostModule).fields(modBean.getAllFields(inventoryCostModule.getName()))
 						.andCondition(CriteriaAPI.getIdCondition(id, inventoryCostModule));
@@ -91,8 +90,8 @@ public class InventoryCostQuantityRollUpCommand implements Command {
 	public static Double getTotalQuantityConsumed(long inventoryCostId) throws Exception {
 
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioModule consumableModule = modBean.getModule(FacilioConstants.ContextNames.CONSUMABLES);
-		List<FacilioField> consumableFields = modBean.getAllFields(FacilioConstants.ContextNames.CONSUMABLES);
+		FacilioModule consumableModule = modBean.getModule(FacilioConstants.ContextNames.INVENTORY_TRANSACTIONS);
+		List<FacilioField> consumableFields = modBean.getAllFields(FacilioConstants.ContextNames.INVENTORY_TRANSACTIONS);
 		Map<String, FacilioField> consumableFieldMap = FieldFactory.getAsMap(consumableFields);
 
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder().table(consumableModule.getTableName())
@@ -101,15 +100,19 @@ public class InventoryCostQuantityRollUpCommand implements Command {
 						String.valueOf(consumableModule.getModuleId()), NumberOperators.EQUALS));
 
 		List<FacilioField> fields = new ArrayList<>();
-		fields.add(FieldFactory.getField("value", "sum(QUANTITY_CONSUMED)", FieldType.DECIMAL));
+		fields.add(FieldFactory.getField("addition", "sum(case WHEN TRANSACTION_STATE = 1 THEN QUANTITY ELSE 0 END)", FieldType.DECIMAL));
+		fields.add(FieldFactory.getField("issues", "sum(case WHEN TRANSACTION_STATE = 2 THEN QUANTITY ELSE 0 END)", FieldType.DECIMAL));
+		fields.add(FieldFactory.getField("returns", "sum(case WHEN TRANSACTION_STATE = 3 THEN QUANTITY ELSE 0 END)", FieldType.DECIMAL));
 		builder.select(fields);
 
 		builder.andCondition(CriteriaAPI.getCondition(consumableFieldMap.get("inventoryCost"),
 				String.valueOf(inventoryCostId), PickListOperators.IS));
 
+		
 		List<Map<String, Object>> rs = builder.get();
 		if (rs != null && rs.size() > 0) {
-			return (Double) rs.get(0).get("value");
+			System.out.println(rs.get(0).get("addition") + " "+ rs.get(0).get("issues")+" " + rs.get(0).get("returns"));
+			return (((Double) rs.get(0).get("addition") + (Double) rs.get(0).get("returns")) - (Double) rs.get(0).get("issues"));
 		}
 		return 0d;
 	}

@@ -18,6 +18,7 @@ import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.InsertRecordBuilder;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
+import com.facilio.bmsconsole.util.TransactionType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 
@@ -72,6 +73,8 @@ public class GetAddInventoryCostCommand implements Command{
 		context.put(FacilioConstants.ContextNames.RECORD_LIST, inventoryCost);
 		context.put(FacilioConstants.ContextNames.INVENTORY_ID, inventoryId);
 		context.put(FacilioConstants.ContextNames.INVENTORY_IDS, Collections.singletonList(inventoryId));
+		context.put(FacilioConstants.ContextNames.TRANSACTION_TYPE, TransactionType.STOCK);
+
 		return false;
 	}
 	

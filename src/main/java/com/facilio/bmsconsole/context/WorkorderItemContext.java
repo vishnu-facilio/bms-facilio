@@ -1,15 +1,7 @@
 package com.facilio.bmsconsole.context;
 
-public class WorkorderItemContext extends ConsumableContext{
+public class WorkorderItemContext extends InventoryTransactionsContext{
 	private static final long serialVersionUID = 1L;
-	
-	private long parentId;
-	public long getParentId() {
-		return parentId;
-	}
-	public void setParentId(long parentId) {
-		this.parentId = parentId;
-	}
 	
 	private double cost = -1;
 	public double getCost() {
