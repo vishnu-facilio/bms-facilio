@@ -162,7 +162,7 @@ public enum FacilioConsumptionFunctions implements FacilioWorkflowFunctionInterf
 	             siteData.put("waterConsumption", siteWaterData.get("total_consumption"));
 	             siteData.put("waterUnit", "Litres");
 	             
-	             if( ((Number)siteWaterData.get("total_consumption")).doubleValue() < 0)
+	             if(siteWaterData.get("total_consumption")==null || ((Number)siteWaterData.get("total_consumption")).doubleValue() < 0)
 	             {
 	            	 siteData.put("waterConsumption","--");
 	            	 siteData.put("waterUnit","--");
