@@ -1323,7 +1323,7 @@ public class DashboardAction extends FacilioAction {
 					result.put("name", "Level 2");
 					
 					if(widgetStaticContext.getStaticKey().equals("emrilllevel2List")) {
-						JSONArray res = DashboardUtil.getEmrillFCUListWidgetResult(props);
+						JSONArray res = DashboardUtil.getEmrillFCUListWidgetResult(props,result);
 						result.put("resultList", res);
 					}
 					else {
@@ -1353,7 +1353,7 @@ public class DashboardAction extends FacilioAction {
 					result.put("name", "Level 3");
 					
 					if(widgetStaticContext.getStaticKey().equals("emrilllevel3List")) {
-						JSONArray res = DashboardUtil.getEmrillFCUListWidgetResult(props);
+						JSONArray res = DashboardUtil.getEmrillFCUListWidgetResult(props,result);
 						result.put("resultList", res);
 					}
 					else {
