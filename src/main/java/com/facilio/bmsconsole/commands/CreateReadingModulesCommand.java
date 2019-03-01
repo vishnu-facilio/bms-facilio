@@ -115,7 +115,7 @@ public class CreateReadingModulesCommand implements Command {
 		module.setDisplayName(readingName);
 		String tableName = (String) context.get(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME);
 		if (tableName == null || tableName.isEmpty()) {
-			module.setTableName("Readings");
+			module.setTableName("Readings_2"); //Readings created here after will be in Readings_2
 		}
 		else {
 			module.setTableName(tableName);
