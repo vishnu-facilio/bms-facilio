@@ -451,14 +451,14 @@ public abstract class FileStore {
 	
 	private String getUrl (long fileId, boolean isDownload, boolean isPortal, int width, int height) throws Exception {
 		StringBuilder url = new StringBuilder();
-		if (AccountUtil.getCurrentAccount() != null && AccountUtil.getCurrentAccount().isFromMobile()) {
-			FileStore fs = FileStoreFactory.getInstance().getFileStore();
-			if (isDownload) {
-				return fs.getOrgiDownloadUrl(fileId);
-			} else {
-				return fs.getFileUrl(fileId);
-			}
-		}
+//		if (AccountUtil.getCurrentAccount() != null && AccountUtil.getCurrentAccount().isFromMobile()) {
+//			FileStore fs = FileStoreFactory.getInstance().getFileStore();
+//			if (isDownload) {
+//				return fs.getOrgiDownloadUrl(fileId);
+//			} else {
+//				return fs.getFileUrl(fileId);
+//			}
+//		}
 		if (AwsUtil.isDevelopment()) {
 			url.append(AwsUtil.getServerName());
 		}
