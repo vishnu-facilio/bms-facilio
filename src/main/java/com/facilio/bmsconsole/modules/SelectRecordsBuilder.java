@@ -38,6 +38,7 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 	private String groupBy;
 	private WhereBuilder where = new WhereBuilder();
 	private StringBuilder joinBuilder = new StringBuilder();
+	private boolean isAggregation = false;
 	//Need where condition builder for custom field
 	
 	public SelectRecordsBuilder() {
@@ -214,6 +215,11 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 		return this;
 	}
 	
+	public SelectRecordsBuilder<E> setAggregation() {
+		isAggregation = true;
+		return this;
+	}
+	
 	@Override
 	public SelectRecordsBuilder<E> forUpdate() {
 		this.builder.forUpdate();
@@ -371,14 +377,16 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 		long currentSiteId = AccountUtil.getCurrentSiteId();
 
 		List<FacilioField> selectFields = new ArrayList<>();
-		selectFields.add(orgIdField);
-		selectFields.add(moduleIdField);
+		if (!isAggregation) {
+			selectFields.add(orgIdField);
+			selectFields.add(moduleIdField);
+		}
 		
-		if (FieldUtil.isSiteIdFieldPresent(module) && (currentSiteId > 0 || (groupBy == null || groupBy.isEmpty()) )) {
+		if (FieldUtil.isSiteIdFieldPresent(module) && (currentSiteId > 0 || (groupBy == null || groupBy.isEmpty()) ) && !isAggregation) {
 			selectFields.add(siteIdField);
 		}
 		
-		if (groupBy == null || groupBy.isEmpty()) {
+		if ((groupBy == null || groupBy.isEmpty()) && !isAggregation) {
 			selectFields.add(FieldFactory.getIdField(module));
 		}
 		else {

@@ -1706,7 +1706,7 @@
 		<action name="preventiveMaintenanceSummary" class="com.facilio.bmsconsole.actions.WorkOrderAction"
 			method="preventiveMaintenanceSummary">
 			<param name="moduleName">planned</param>
-			<param name="permission">UPDATE,UPDATE_TEAM,UPDATE_OWN</param>
+			<param name="permission">READ,READ_TEAM,READ_OWN</param>
 			<result name="success" type="json">
 				<param name="includeProperties">^preventivemaintenance.*,^workorder.*,taskList.*,sections.*,^reminders.*,^listOfTasks.*,^sectionTemplates.*</param>
 			</result>

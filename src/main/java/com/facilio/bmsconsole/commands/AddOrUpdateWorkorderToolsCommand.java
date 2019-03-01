@@ -39,7 +39,7 @@ public class AddOrUpdateWorkorderToolsCommand implements Command {
 			for (WorkorderToolsContext workorderTool : workorderTools) {
 				WorkOrderContext workorder = getWorkorder(parentId);
 				StockedToolsContext stockedTools = getStockedTools(workorderTool.getStockedTool().getId());
-				if (stockedTools.getQuantity() < workorderTool.getIssueQuantity()) {
+				if (stockedTools.getQuantity() < workorderTool.getQuantity()) {
 					throw new IllegalStateException("Insufficient quantity in inventory!");
 				} else {
 					double costOccured = 0;

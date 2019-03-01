@@ -1545,7 +1545,15 @@ public class TransactionChainFactory {
 			Chain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForInventoryCost());
 			c.addCommand(new GetAddInventoryCostCommand());
+			c.addCommand(getAddOrUpdateInventoryStockTransactionChain());
 //			c.addCommand(new GenericAddModuleDataListCommand());
+			return c;
+		}
+		
+		public static Chain getAddOrUpdateInventoryStockTransactionChain(){
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForInventoryTransactions());
+			c.addCommand(new AddOrUpdateInventoryStockTransactionsCommand());
 			return c;
 		}
 		
@@ -1586,7 +1594,7 @@ public class TransactionChainFactory {
 		
 		public static Chain getDeleteWorkorderItemChain() {
 			Chain c = getDefaultChain();
-			c.addCommand(SetTableNamesCommand.getForConsumables());
+			c.addCommand(SetTableNamesCommand.getForInventoryTransactions());
 			c.addCommand(new GenericDeleteModuleDataCommand());
 			c.addCommand(new InventoryCostQuantityRollUpCommand());
 			c.addCommand(getUpdateInventoryQuantityRollupChain());
@@ -1673,6 +1681,43 @@ public class TransactionChainFactory {
 			c.addCommand(new GetAssetDetailCommand());
 			c.addCommand(new UpdateGeoLocationCommand());
 			c.addCommand(new AddActivitiesCommand());
+			return c;
+		}
+
+		public static Chain getAddItemVendorsChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForItemVendors());
+			c.addCommand(new GenericAddModuleDataListCommand());
+			return c;
+		}
+		
+		public static Chain getUpdateItemVendorsChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForItemVendors());
+			c.addCommand(new GenericUpdateListModuleDataCommand());
+			return c;
+		}
+		
+		public static Chain getDeleteItemVendorsChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForItemVendors());
+			c.addCommand(new GenericDeleteModuleDataCommand());
+			return c;
+		}
+		
+		public static Chain getAddInventoryTransactionsChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForInventoryTransactions());
+			c.addCommand(new GenericAddModuleDataListCommand());
+			c.addCommand(new InventoryCostQuantityRollUpCommand());
+			return c;
+		}
+		
+		public static Chain getUpdateInventoryTransactionsChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForInventoryTransactions());
+			c.addCommand(new GenericUpdateListModuleDataCommand());
+			c.addCommand(new InventoryCostQuantityRollUpCommand());
 			return c;
 		}
 }

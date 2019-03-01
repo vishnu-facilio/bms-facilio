@@ -22,6 +22,8 @@ import com.facilio.bmsconsole.modules.InsertRecordBuilder;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
 import com.facilio.bmsconsole.util.InventoryApi;
+import com.facilio.bmsconsole.util.TransactionState;
+import com.facilio.bmsconsole.util.TransactionType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 
@@ -41,11 +43,10 @@ public class AddOrUpdateWorkorderItemsCommand implements Command {
 			long parentId = workorderitems.get(0).getParentId();
 			for (WorkorderItemContext workorderitem : workorderitems) {
 				InventryContext inventry = getInventory(workorderitem.getInventory().getId());
-				if (inventry.getQuantity() < workorderitem.getQuantityConsumed()) {
+				if (inventry.getQuantity() < workorderitem.getQuantity()) {
 					throw new IllegalStateException("Insufficient quantity in inventory!");
 				} else {
 					List<InventoryCostContext> inventoryCosts = new ArrayList<>();
-
 					if (inventry.getCostType() == 1) {
 						inventoryCosts = getInventoryCostList(inventry.getId(), " asc");
 					} else if (inventry.getCostType() == 2) {
@@ -54,11 +55,14 @@ public class AddOrUpdateWorkorderItemsCommand implements Command {
 
 					if (inventoryCosts != null && !inventoryCosts.isEmpty()) {
 						InventoryCostContext invenCost = inventoryCosts.get(0);
-						if (workorderitem.getQuantityConsumed() <= invenCost.getCurrentQuantity()) {
+						if (workorderitem.getQuantity() <= invenCost.getCurrentQuantity()) {
 							double costOccured = 0;
 							if (invenCost.getUnitcost() >= 0) {
-								costOccured = invenCost.getUnitcost() * workorderitem.getQuantityConsumed();
+								costOccured = invenCost.getUnitcost() * workorderitem.getQuantity();
 							}
+							workorderitem.setTransactionType(TransactionType.WORKORDER);
+							workorderitem.setTransactionState(TransactionState.ISSUE);
+							workorderitem.setIsReturnable(false);
 							workorderitem.setInventoryCost(invenCost);
 							workorderitem.setCost(costOccured);
 							workorderitem.setParentId(parentId);
@@ -72,9 +76,8 @@ public class AddOrUpdateWorkorderItemsCommand implements Command {
 								workorderItemslist.add(workorderitem);
 								updateWorkorderParts(workorderItemsModule, workorderItemFields, workorderitem);
 							}
-//							break;
 						} else {
-							double requiredQuantity = workorderitem.getQuantityConsumed();
+							double requiredQuantity = workorderitem.getQuantity();
 							for (InventoryCostContext icosts : inventoryCosts) {
 								WorkorderItemContext item = new WorkorderItemContext();
 								double costOccured = 0;
@@ -87,10 +90,13 @@ public class AddOrUpdateWorkorderItemsCommand implements Command {
 								if (icosts.getUnitcost() >= 0) {
 									costOccured = icosts.getUnitcost() * quantityUsedForTheCost;
 								}
+								item.setTransactionType(TransactionType.WORKORDER);
+								item.setTransactionState(TransactionState.ISSUE);
+								item.setIsReturnable(false);
 								item.setCost(costOccured);
 								item.setSysModifiedTime(System.currentTimeMillis());
 								item.setInventoryCost(icosts);
-								item.setQuantityConsumed(quantityUsedForTheCost);
+								item.setQuantity(quantityUsedForTheCost);
 								item.setInventory(inventry);
 								item.setParentId(parentId);
 								requiredQuantity -= quantityUsedForTheCost;
@@ -111,6 +117,7 @@ public class AddOrUpdateWorkorderItemsCommand implements Command {
 					}
 				}
 			}
+
 			if (itemToBeAdded != null && !itemToBeAdded.isEmpty()) {
 				addWorkorderParts(workorderItemsModule, workorderItemFields, itemToBeAdded);
 			}

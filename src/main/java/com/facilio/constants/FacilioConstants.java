@@ -22,7 +22,7 @@ import com.facilio.bmsconsole.context.ChillerCondenserPumpContext;
 import com.facilio.bmsconsole.context.ChillerContext;
 import com.facilio.bmsconsole.context.ChillerPrimaryPumpContext;
 import com.facilio.bmsconsole.context.ChillerSecondaryPumpContext;
-import com.facilio.bmsconsole.context.ConsumableContext;
+import com.facilio.bmsconsole.context.InventoryTransactionsContext;
 import com.facilio.bmsconsole.context.CoolingTowerContext;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.context.EnergyMeterPurposeContext;
@@ -37,6 +37,7 @@ import com.facilio.bmsconsole.context.InventoryVendorContext;
 import com.facilio.bmsconsole.context.InventryContext;
 import com.facilio.bmsconsole.context.ItemCategoryContext;
 import com.facilio.bmsconsole.context.ItemStatusContext;
+import com.facilio.bmsconsole.context.ItemVendorsContext;
 import com.facilio.bmsconsole.context.ItemsContext;
 import com.facilio.bmsconsole.context.LocationContext;
 import com.facilio.bmsconsole.context.MLAlarmContext;
@@ -754,6 +755,7 @@ public class FacilioConstants {
 		public static final String ITEMS = "items";
 		public static final String ITEM_CATEGORY = "itemCategory";
 		public static final String ITEM_STATUS = "itemStatus";
+		public static final String ITEM_ID = "itemId";
 		
 		public static final String TOOL = "tool";
 		public static final String TOOLS = "tools";
@@ -772,7 +774,7 @@ public class FacilioConstants {
 		public static final String INVENTORY_COSTS = "inventoryCosts";
 		
 		public static final String WORKORDER_ITEMS = "workorderItem";
-		public static final String CONSUMABLES = "consumables";
+		public static final String INVENTORY_TRANSACTIONS = "inventoryTransactions";
 		
 		public static final String STOCKED_TOOL_LIST = "stockedToolsList";
 		public static final String STOCKED_TOOLS = "stockedTools";
@@ -783,6 +785,9 @@ public class FacilioConstants {
 		public static final String WORKORDER_TOOLS = "workorderTools";
 		public static final String STOCKED_TOOLS_TRANSACTIONS = "stockedToolsTransactions";
 		public static final String STOCKED_TOOLS_RETURN_TRACKING = "stockedToolsReturnTracking";
+		
+		public static final String ITEM_VENDORS = "itemVendors";
+		public static final String TRANSACTION_TYPE = "transactionType";
 		
 		private static Map<String, Class> classMap = Collections.unmodifiableMap(initClassMap());
 		private static Map<String, Class> initClassMap() {
@@ -862,12 +867,13 @@ public class FacilioConstants {
 			classMap.put(INVENTORY_STATUS, InventoryStatusContext.class);
 			classMap.put(INVENTORY_COST, InventoryCostContext.class);
 			classMap.put(WORKORDER_ITEMS, WorkorderItemContext.class);
-			classMap.put(CONSUMABLES, ConsumableContext.class);
+			classMap.put(INVENTORY_TRANSACTIONS, InventoryTransactionsContext.class);
 			classMap.put(STOCKED_TOOLS, StockedToolsContext.class);
 			classMap.put(STOCKED_TOOLS_STATUS, StockedToolsStatusContext.class);
 			classMap.put(WORKORDER_TOOLS, WorkorderToolsContext.class);
 			classMap.put(STOCKED_TOOLS_TRANSACTIONS, StockedToolsTransactionContext.class);
 			classMap.put(STOCKED_TOOLS_RETURN_TRACKING, StockedToolsReturnTrackingContext.class);
+			classMap.put(ITEM_VENDORS, ItemVendorsContext.class);
 			return classMap;
 		}
 		

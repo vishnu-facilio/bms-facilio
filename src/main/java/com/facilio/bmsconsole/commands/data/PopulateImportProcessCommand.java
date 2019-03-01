@@ -2,9 +2,11 @@ package com.facilio.bmsconsole.commands.data;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
@@ -270,7 +272,6 @@ public class PopulateImportProcessCommand implements Command {
 }
 	
 	public static void updateNotNull(ImportProcessContext importProcessContext, List<ReadingContext> readingsEntireList ) throws Exception {
-		String moduleName = importProcessContext.getModule().getName();
 		int insertLimit = 10000;
 		int splitSize = (readingsEntireList.size()/insertLimit) +1;
 		LOGGER.severe("splitSize ----- "+splitSize);
@@ -284,13 +285,22 @@ public class PopulateImportProcessCommand implements Command {
 			List<ReadingContext> readingsList = readingsEntireList.subList(fromValue , toValue);
 			
 			ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			bean.getModule(importProcessContext.getModuleId());
+			FacilioModule module = bean.getModule(importProcessContext.getModuleId());
 			List<FacilioField> facilioFields = bean.getAllFields(importProcessContext.getModule().getName());
 			ArrayList<String> updateFields = new ArrayList<>();
 			JSONObject meta = importProcessContext.getImportJobMetaJson();
 			
 			if(meta.get(ImportAPI.ImportProcessConstants.UPDATE_FIELDS) != null) {
 				updateFields = (ArrayList<String>) meta.get(ImportAPI.ImportProcessConstants.UPDATE_FIELDS);
+				
+				Map<String, String> map = importProcessContext.getFieldMapping();
+				Map<String, String> swapped = map.entrySet().stream().collect(Collectors.toMap(Map.Entry::getValue, Map.Entry::getKey));
+
+				ArrayList<String> newUpdateList = new ArrayList<>();
+				for(String updateField :updateFields) {
+					newUpdateList.add(swapped.get(updateField).split("__")[1]);
+				}
+				updateFields = newUpdateList;
 			}
 			else {
 				updateFields.add("name");
@@ -316,7 +326,9 @@ public class PopulateImportProcessCommand implements Command {
 					updateBuilder.andCustomWhere(columnName+"= ?", readingsList.get(j).getData().get(facilioField.getName()));
 					}
 				
-				updateBuilder.table(moduleName).moduleName(moduleName).fields(tobeUpdated);
+				updateBuilder.table(module.getTableName())
+					.module(module)
+					.fields(tobeUpdated);
 				
 				updateBuilder.update(readingsList.get(j));
 				
