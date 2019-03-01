@@ -616,11 +616,7 @@
 		</action>
 		<action name="viewWorkorder" class="com.facilio.bmsconsole.actions.AlarmAction"
 			method="viewWorkorder">
-			<param name="moduleName">
-
-
-
-</param>
+			<param name="moduleName">workorder</param>
 			<param name="permission">READ,READ_TEAM,READ_OWN</param>
 			<result name="success" type="json">
 				<param name="includeProperties">workorderId</param>
