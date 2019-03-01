@@ -87,10 +87,11 @@ public class TemplateAPI {
 
 	private static final String DEFAULT_TEMPLATES_FILE_PATH = "conf/templates/defaultTemplates";
 	private static final String[] LANG = new String[]{"en"};
-	private static final Map<DefaultTemplateType, Map<String, Map<Integer,DefaultTemplate>>> DEFAULT_TEMPLATES = Collections.unmodifiableMap(loadDefaultTemplates());
-	private static  Map<DefaultTemplateType, Map<String, Map<Integer,DefaultTemplate>>> loadDefaultTemplates() {
+	private static final String[] TYPE = new String[]{"Action", "Rule"};
+	private static final Map<String, Map<String, Map<Integer,DefaultTemplate>>> DEFAULT_TEMPLATES = Collections.unmodifiableMap(loadDefaultTemplates());
+	private static  Map<String, Map<String, Map<Integer,DefaultTemplate>>> loadDefaultTemplates() {
 		try {
-			Map<DefaultTemplateType, Map<String, Map<Integer,DefaultTemplate>>> typeDefaultTemplates = new HashMap<>();
+			 Map<String, Map<String, Map<Integer,DefaultTemplate>>> typeDefaultTemplates = new HashMap<>();
 			Map<String, Map<Integer,DefaultTemplate>> defaultTemplates = new HashMap<>();
 			ClassLoader classLoader = TemplateAPI.class.getClassLoader();
 			
@@ -104,10 +105,9 @@ public class TemplateAPI {
 			}
 			
 			JSONParser parser = new JSONParser();
-			for (DefaultTemplateType defaultTemplateType : DefaultTemplateType.getAllDefaultTemplateType()) {
-				String path = DEFAULT_TEMPLATES_FILE_PATH + defaultTemplateType.getName() + '_';
+			for (String type : TYPE) {
+				String path = DEFAULT_TEMPLATES_FILE_PATH + type + '_';
 				for (String lang : LANG) {
-					path += lang;
 					JSONObject templateJsons = (JSONObject) parser.parse(new FileReader(classLoader.getResource(path+".json").getFile()));
 					Map<Integer, DefaultTemplate> templates = new HashMap<>();
 					for (Object key : templateJsons.keySet()) {
@@ -120,7 +120,7 @@ public class TemplateAPI {
 						defaultTemplate.setFtl(checkAndLoadFtl(template, classLoader));
 						defaultTemplate.setJson(template);
 						defaultTemplate.setPlaceholder(getPlaceholders(defaultTemplate));
-						defaultTemplate.setDefaultTemplateType(defaultTemplateType);
+						
 						WorkflowContext defaultWorkflow = defaultWorkflows.get(templateId);
 						if (defaultWorkflow != null) {
 							defaultWorkflow = WorkflowUtil.getWorkflowContextFromString(defaultWorkflow.getWorkflowString());
@@ -136,7 +136,7 @@ public class TemplateAPI {
 					}
 					defaultTemplates.put(lang, templates);
 				}
-				typeDefaultTemplates.put(defaultTemplateType, defaultTemplates);
+				typeDefaultTemplates.put(type, defaultTemplates);
 			}
 			return typeDefaultTemplates;
 		}
