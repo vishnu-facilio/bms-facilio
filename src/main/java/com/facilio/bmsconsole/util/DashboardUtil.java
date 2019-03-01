@@ -3776,7 +3776,7 @@ public static JSONObject getStandardVariance1(ReportContext report,JSONArray pro
 		}
 	}
 	
-	public static JSONArray getEmrillFCUListWidgetResult(List<Map<String, Object>> props) throws Exception {
+	public static JSONArray getEmrillFCUListWidgetResult(List<Map<String, Object>> props, Map<String, Object> result) throws Exception {
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
@@ -3799,9 +3799,6 @@ public static JSONObject getStandardVariance1(ReportContext report,JSONArray pro
 				resourceSpaceMaps.put((Long) prop.get("id"), (Long) prop.get("spaceId"));
 				resourceNameMaps.put((Long) prop.get("id"), (String) prop.get("name"));
 			}
-			LOGGER.severe("rdmPairs --- "+rdmPairs.size());
-			LOGGER.severe("resourceSpaceMaps --- "+resourceSpaceMaps.size());
-			LOGGER.severe("resourceNameMaps --- "+resourceNameMaps.size());
 			
 			List<ReadingDataMeta> rdms = ReadingsAPI.getReadingDataMetaList(rdmPairs);
 			
@@ -3816,10 +3813,7 @@ public static JSONObject getStandardVariance1(ReportContext report,JSONArray pro
 					rdmMap.put(rdm.getResourceId(), rdmList);
 				}
 			}
-			LOGGER.severe("rdmMap --- "+rdmMap.size());
 			Map<Long, BaseSpaceContext> spaceMap = SpaceAPI.getBaseSpaceMap(resourceSpaceMaps.values());
-			
-			LOGGER.severe("spaceMap --- "+spaceMap.size());
 			
 			JSONArray runStatusOnArray = new JSONArray();
 			JSONArray runStatusOffArray = new JSONArray();
@@ -3830,10 +3824,10 @@ public static JSONObject getStandardVariance1(ReportContext report,JSONArray pro
 				resJson.put("id", resourceId);
 				resJson.put("name", resourceNameMaps.get(resourceId));
 				resJson.put("spaceName", spaceMap.get(resourceSpaceMaps.get(resourceId)).getName());
+				resJson.put("spaceId", resourceSpaceMaps.get(resourceId));
 				
 				boolean isRunning = false;
 				
-				LOGGER.severe("rdmMap.get(resourceId) --- "+rdmMap.get(resourceId).size());
 				for(ReadingDataMeta rdm :rdmMap.get(resourceId)) {
 					
 					if(rdm.getFieldId() == fanStatusField.getFieldId()) {
@@ -3851,7 +3845,6 @@ public static JSONObject getStandardVariance1(ReportContext report,JSONArray pro
 					}
 					
 				}
-				LOGGER.severe("resJson --- "+resJson);
 				if(isRunning) {
 					runStatusOnArray.add(resJson);
 				}
@@ -3859,10 +3852,12 @@ public static JSONObject getStandardVariance1(ReportContext report,JSONArray pro
 					runStatusOffArray.add(resJson);
 				}
 			}
-			LOGGER.severe("runStatusOnArray --- "+runStatusOnArray.size());
-			LOGGER.severe("runStatusOffArray --- "+runStatusOffArray.size());
 			runStatusOnArray.addAll(runStatusOffArray);
 			
+			result.put("resultList", runStatusOnArray);
+			result.put("runStatusField", fanStatusField);
+			result.put("valveFeedbackField", valveFeedbackField);
+			result.put("returnTempField", returnTempField);
 			return runStatusOnArray;
 		}
 		return null;

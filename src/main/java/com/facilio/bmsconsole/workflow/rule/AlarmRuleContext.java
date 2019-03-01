@@ -3,6 +3,8 @@ package com.facilio.bmsconsole.workflow.rule;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.struts2.json.annotations.JSON;
+
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 
 public class AlarmRuleContext {
@@ -10,6 +12,8 @@ public class AlarmRuleContext {
 	private ReadingRuleContext preRequsite;
 	List<ReadingRuleContext> alarmTriggerRules;
 	ReadingRuleContext alarmClearRule;
+	
+	ReadingRuleContext alarmClearRuleDuplicate;
 	
 	boolean isClearAlarmOnPreRequsiteFail = true;
 	
@@ -58,8 +62,11 @@ public class AlarmRuleContext {
 	public void setPreRequsite(ReadingRuleContext preRequsite) {
 		this.preRequsite = preRequsite;
 	}
-	public void setAlarmClearRule(ReadingRuleContext alarmClearRule) {
+	public void setAlarmClearRule(ReadingRuleContext alarmClearRule) throws Exception {		// do not use this method anywhere in server
 		this.alarmClearRule = alarmClearRule;
+		if(alarmClearRule != null) {
+			this.alarmClearRuleDuplicate = (ReadingRuleContext) alarmClearRule.clone();
+		}
 	}
 	
 	public List<ReadingRuleContext> getAllRuleList() {
@@ -74,5 +81,12 @@ public class AlarmRuleContext {
 			}
 		}
 		return rules;
+	}
+	@JSON(serialize=false)
+	public ReadingRuleContext getAlarmClearRuleDuplicate() {
+		return alarmClearRuleDuplicate;
+	}
+	public void setAlarmClearRuleDuplicate(ReadingRuleContext alarmClearRuleDuplicate) {
+		this.alarmClearRuleDuplicate = alarmClearRuleDuplicate;
 	}
 }

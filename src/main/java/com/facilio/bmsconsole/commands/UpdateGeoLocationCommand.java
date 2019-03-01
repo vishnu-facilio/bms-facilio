@@ -6,7 +6,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.activity.AsssetActivityType;
+import com.facilio.bmsconsole.activity.AssetActivityType;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
@@ -24,12 +24,12 @@ public class UpdateGeoLocationCommand implements Command {
 		AssetContext asset = (AssetContext) context.get(FacilioConstants.ContextNames.ASSET);
 		String location = (String) context.get(FacilioConstants.ContextNames.LOCATION);
 		
-		if (asset != null && StringUtils.isNotEmpty(location)) {
+		if (asset != null && asset.isGeoLocationEnabled() && StringUtils.isNotEmpty(location)) {
 			asset.setGeoLocation(location);
 			updateGeoLocation(asset.getId(), location);
 			JSONObject info = new JSONObject();
 			info.put("value", location);
-			CommonCommandUtil.addActivityToContext(asset.getId(), -1, AsssetActivityType.LOCATION, info, (FacilioContext) context);
+			CommonCommandUtil.addActivityToContext(asset.getId(), -1, AssetActivityType.LOCATION, info, (FacilioContext) context);
 		}
 		return false;
 	}

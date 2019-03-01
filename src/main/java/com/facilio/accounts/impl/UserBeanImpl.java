@@ -266,7 +266,8 @@ public class UserBeanImpl implements UserBean {
 		user.setOrgId(orgId);
 		user.setUserType(AccountConstants.UserType.USER.getValue());
 		user.setUserStatus(true);
-		user.setAccessibleSpace(getAccessibleSpaceList(uid));
+		UserBean userBean = (UserBean)BeanFactory.lookup("UserBean", user.getOrgId());
+		user.setAccessibleSpace(userBean.getAccessibleSpaceList(user.getOuid()));
 		return addToORGUsers(user);
 	}
 	
@@ -418,10 +419,11 @@ public class UserBeanImpl implements UserBean {
 	public static void main(String []args)
 	{
 		UserBeanImpl us = new UserBeanImpl();
-		User s = us.getUserFromToken("i7vGNs_rSB7a3iXEse68EJ_eeBuyxywpjJF2cXh18_fnEthdA0DRlGszbYy02UMq");
+		User s = us.getUserFromToken("Uwqdpnyarl7sicYMThD3pCWifE3j8vdkBFuw11pebAbgz3nSSxjM0YoRGOTYnYfA&portalid=139");
 		System.out.println(s.getEmail());
 		System.out.println(s.getUid());
 		System.out.println(s.getOuid());
+		System.out.println(s.getPortalId());
 
 		
 	}
@@ -550,6 +552,7 @@ public class UserBeanImpl implements UserBean {
 			try {
 				user = getUserWithPassword(user.getOuid());
 			} catch (Exception e) {
+				log.info("exception validating user invite "+ user, e);
 				user = null;
 			}
 		}
@@ -961,6 +964,7 @@ public class UserBeanImpl implements UserBean {
 			User user =  createUserFromProps(props.get(0), true, true, false);
 			return user;
 		}
+		log.info(selectBuilder.toString() + " query returned null");
 		return null;
 	}
 
@@ -1602,25 +1606,25 @@ public class UserBeanImpl implements UserBean {
 		return Collections.emptyMap();
 	}
 
-	static List<Long> getAccessibleSpaceList (long uid) throws Exception {
-	GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-			.select(AccountConstants.getAccessbileSpaceFields())
-			.table(ModuleFactory.getAccessibleSpaceModule().getTableName())
-			.andCustomWhere("ORG_USER_ID = ?", uid);
+	public List<Long> getAccessibleSpaceList (long uid) throws Exception {
+        GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+                .select(AccountConstants.getAccessbileSpaceFields())
+                .table(ModuleFactory.getAccessibleSpaceModule().getTableName())
+                .andCustomWhere("ORG_USER_ID = ?", uid);
 
-	List<Map<String, Object>> props = selectBuilder.get();
-	if (props != null && !props.isEmpty()) {
-		List<Long> bsids = new ArrayList<>();
-		for(Map<String, Object> prop : props) {
-			bsids.add((Long) prop.get("bsid"));
-		}
-		return bsids;
-	}
-	return null;
+        List<Map<String, Object>> props = selectBuilder.get();
+        if (props != null && !props.isEmpty()) {
+            List<Long> bsids = new ArrayList<>();
+            for(Map<String, Object> prop : props) {
+                bsids.add((Long) prop.get("bsid"));
+            }
+            return bsids;
+        }
+        return null;
 
 	}
-	
-	static List<Long> getAccessibleGroupList (long uid) throws Exception {
+
+	public List<Long> getAccessibleGroupList (long uid) throws Exception {
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(AccountConstants.getGroupMemberFields())
 				.table(AccountConstants.getGroupMemberModule().getTableName())
@@ -1896,7 +1900,8 @@ public class UserBeanImpl implements UserBean {
 		
 		
 		if (fetchSpace) {
-			user.setAccessibleSpace(getAccessibleSpaceList(user.getOuid()));
+		    UserBean userBean = (UserBean) BeanFactory.lookup("UserBean", user.getOrgId());
+			user.setAccessibleSpace(userBean.getAccessibleSpaceList(user.getOuid()));
 		}
 		
 		return user;

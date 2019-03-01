@@ -137,10 +137,6 @@ public class InsertRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 			if(isWithLocalIdModule) {
 				bean.setLocalId(++localId);
 			}
-			bean.setSysCreatedTime(System.currentTimeMillis());
-			bean.setSysModifiedTime(System.currentTimeMillis());
-			bean.setSysCreatedBy(AccountUtil.getCurrentUser());
-			bean.setSysModifiedBy(AccountUtil.getCurrentUser());
 			beanProps.add(getAsProps(bean));
 		}
 		
@@ -265,7 +261,12 @@ public class InsertRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 	private Map<String, Object> getAsProps(E bean) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
 		Map<String, Object> moduleProps = FieldUtil.getAsProperties(bean);
 		moduleProps.put("orgId", AccountUtil.getCurrentOrg().getOrgId());
-		
+		moduleProps.put("sysCreatedTime", System.currentTimeMillis());
+		moduleProps.put("sysModifiedTime", System.currentTimeMillis());
+		if (AccountUtil.getCurrentUser() != null) {
+			moduleProps.put("sysCreatedBy", AccountUtil.getCurrentUser().getId());
+			moduleProps.put("sysModifiedBy", AccountUtil.getCurrentUser().getId());
+		}
 		for(FacilioField field : fields) {
 			if(field.getDataTypeEnum() == FieldType.LOOKUP) {
 				Object val = moduleProps.get(field.getName());

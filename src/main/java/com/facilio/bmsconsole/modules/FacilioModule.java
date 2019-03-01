@@ -173,12 +173,15 @@ public class FacilioModule implements Serializable {
 		BASE_ENTITY,
 		PICK_LIST,
 		READING,
+		
 		PHOTOS,
 		NOTES,
 		ATTACHMENTS,
+		
 		SCHEDULED_FORMULA,
 		LIVE_FORMULA,
 		SYSTEM_SCHEDULED_FORMULA,
+		
 		CUSTOM,
 		PREDICTED_READING,
 		ACTIVITY

@@ -4383,10 +4383,13 @@ public class FieldFactory {
 	}
 
 	public static List<FacilioField> getWeatherStationsFields() {
+		
+		FacilioModule module = ModuleFactory.getWeatherStationModule();
 		List<FacilioField> fields = new ArrayList<>();
-		fields.add(getField("name", "NAME", FieldType.STRING));
-		fields.add(getField("latitude", "LAT", FieldType.NUMBER));
-		fields.add(getField("longtitude", "LNG", FieldType.NUMBER));
+		fields.add(getIdField(module));
+		fields.add(getField("name","Name", "NAME",module, FieldType.STRING));
+		fields.add(getField("latitude","Latitude", "LAT",module, FieldType.NUMBER));
+		fields.add(getField("longtitude","Longtitude","LNG",module, FieldType.NUMBER));
 		return fields;
 	}
 

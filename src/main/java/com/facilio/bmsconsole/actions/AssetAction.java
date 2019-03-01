@@ -11,6 +11,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
+import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.AssetCategoryContext;
 import com.facilio.bmsconsole.context.AssetContext;
@@ -443,6 +444,18 @@ public class AssetAction extends FacilioAction {
 		Chain getAssetChain = TransactionChainFactory.getAssetFromQRChain();
 		getAssetChain.execute(context);
 		setResult("asset", context.get(FacilioConstants.ContextNames.ASSET));
+		
+		return SUCCESS;
+	}
+	
+	public String fetchActivity() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.PARENT_ID, assetId);
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.ASSET_ACTIVITY);
+		
+		Chain assetActivity = ReadOnlyChainFactory.getActivitiesChain();
+		assetActivity.execute(context);
+		setResult("activity", context.get(FacilioConstants.ContextNames.RECORD_LIST));
 		
 		return SUCCESS;
 	}

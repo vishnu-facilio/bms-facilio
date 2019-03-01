@@ -24,21 +24,20 @@ public class UpdateAlarmRuleCommand implements Command {
 	public boolean execute(Context context) throws Exception {
 		AlarmRuleContext alarmRule = (AlarmRuleContext) context.get(FacilioConstants.ContextNames.ALARM_RULE);
 		
-		AlarmRuleContext oldAlarmRule = new AlarmRuleContext(ReadingRuleAPI.getReadingRules(alarmRule.getPreRequsite().getRuleGroupId()));
-
+		List<ReadingRuleContext> oldRules = ReadingRuleAPI.getReadingRules(alarmRule.getPreRequsite().getRuleGroupId());
+		
 		ReadingRuleContext preRequsiteRule = alarmRule.getPreRequsite();
 		
 		preRequsiteRule.setRuleType(null); //Type is not allowed to be changed
 		
 		preRequsiteRule = ReadingRuleAPI.updateReadingRuleWithChildren(preRequsiteRule);
 		
-		deleteActions(oldAlarmRule);
+		deleteActions(oldRules);
 		
-		deleteTriggerAndClearRuleOfGroup(oldAlarmRule);
+		deleteTriggerAndClearRuleOfGroup(oldRules);
 		
 		ReadingRuleAPI.addTriggerAndClearRule(alarmRule);
 		
-
 		if(preRequsiteRule.getEvent() != null && preRequsiteRule.getEvent().getActivityTypeEnum().equals(EventType.SCHEDULED_READING_RULE)) {
 			FacilioTimer.deleteJob(preRequsiteRule.getId(), FacilioConstants.Job.SCHEDULED_READING_RULE_JOB_NAME);
 		}
@@ -46,25 +45,26 @@ public class UpdateAlarmRuleCommand implements Command {
 		return false;
 	}
 
-	private void deleteTriggerAndClearRuleOfGroup(AlarmRuleContext alarmRule) throws Exception {
+	private void deleteTriggerAndClearRuleOfGroup(List<ReadingRuleContext> oldRules) throws Exception {
 		
 		List<Long> rulesToDelete = new ArrayList<>();
-		for(ReadingRuleContext triggerRule : alarmRule.getAlarmTriggerRules()) {
-			rulesToDelete.add(triggerRule.getId());
-		}
-		if(alarmRule.getAlarmClearRule() != null) {
-			rulesToDelete.add(alarmRule.getAlarmClearRule().getId());
+		
+		for(ReadingRuleContext triggerRule : oldRules) {
+			if(triggerRule.getRuleGroupId() != triggerRule.getId()) {
+				rulesToDelete.add(triggerRule.getId());
+			}
 		}
 		WorkflowRuleAPI.deleteWorkFlowRules(rulesToDelete);
 	}
 	
-	private void deleteActions(AlarmRuleContext alarmRule ) throws Exception {
-		List<ReadingRuleContext> rules = alarmRule.getAlarmTriggerRules();
+	private void deleteActions(List<ReadingRuleContext> oldRules) throws Exception {
 		
 		List<Long> ruleIds = new ArrayList<>();
-		if(rules != null && !rules.isEmpty()) {
-			for (WorkflowRuleContext rule : rules) {
-				ruleIds.add(rule.getId());
+		if(oldRules != null && !oldRules.isEmpty()) {
+			for (ReadingRuleContext rule : oldRules) {
+				if(rule.getRuleGroupId() != rule.getId()) {
+					ruleIds.add(rule.getId());
+				}
 			}
 			ActionAPI.deleteAllActionsFromWorkflowRules(ruleIds);
 		}

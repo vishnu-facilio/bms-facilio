@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.accounts.bean.UserBean;
+import com.facilio.fw.BeanFactory;
 import org.apache.commons.chain.Chain;
 import org.apache.commons.lang3.StringUtils;
 
@@ -228,8 +230,7 @@ public class OrgBeanImpl implements OrgBean {
 		if (props != null && !props.isEmpty()) {
 			List<User> users = new ArrayList<>();
 			for(Map<String, Object> prop : props) {
-				User user = UserBeanImpl.createUserFromProps(prop, true, false, true);
-				user.setAccessibleSpace(UserBeanImpl.getAccessibleSpaceList(user.getOuid()));
+				User user = UserBeanImpl.createUserFromProps(prop, true, true, true);
 				user.setFacilioAuth(true);
 				users.add(user);
 			}
@@ -299,9 +300,9 @@ public class OrgBeanImpl implements OrgBean {
 		if (props != null && !props.isEmpty()) {
 			List<User> users = new ArrayList<>();
 			for(Map<String, Object> prop : props) {
-				User user = UserBeanImpl.createUserFromProps(prop, true, false, false);
-				user.setAccessibleSpace(UserBeanImpl.getAccessibleSpaceList(user.getOuid()));
-				user.setGroups(UserBeanImpl.getAccessibleGroupList(user.getOuid()));
+				User user = UserBeanImpl.createUserFromProps(prop, true, true, false);
+				UserBean userBean = (UserBean) BeanFactory.lookup("UserBean", user.getOrgId());
+				user.setGroups(userBean.getAccessibleGroupList(user.getOuid()));
 				users.add(user);
 			}
 			return users;

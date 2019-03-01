@@ -53,7 +53,7 @@ public class WeatherDataJob extends FacilioJob {
 				}
 				long siteId=site.getId();
 				Map<String,Object> currentWeather= (JSONObject)weatherData.get("currently");
-				ReadingContext reading=WeatherUtil.getHourlyReading(siteId,FacilioConstants.ContextNames.WEATHER_READING,currentWeather);
+				ReadingContext reading=WeatherUtil.getHourlyReadingOld(siteId,FacilioConstants.ContextNames.WEATHER_READING,currentWeather);
 				if(reading!=null) {
 					
 					WeatherUtil.populateMap(siteId, reading,siteCurrentReadings);

@@ -980,10 +980,13 @@ public static long getSitesCount() throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.BASE_SPACE);
 		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.BASE_SPACE);
-		
 		SelectRecordsBuilder<BaseSpaceContext> selectBuilder = new SelectRecordsBuilder<BaseSpaceContext>()
 																	.select(fields)
 																	.module(module)
+//																	.select Resources.ID, Resources.NAME from BaseSpace 
+//																	.innerJoin("Resources").on("BaseSpace.ID = Resources.ID")
+																	.leftJoin("Floor").on("Floor.ID = BaseSpace.ID")
+																	.andCustomWhere("BaseSpace.ORGID = ?", AccountUtil.getCurrentOrg().getId())
 																	.beanClass(BaseSpaceContext.class);
 		if (filterCriteria != null) {
 			selectBuilder.andCriteria(filterCriteria);
@@ -998,10 +1001,15 @@ public static long getSitesCount() throws Exception {
 				selectBuilder.andCriteria(scopeCriteria);
 			}
 		}
-		
+		String orderByFloors = null;
 		if (orderBy != null && !orderBy.isEmpty()) {
-			selectBuilder.orderBy(orderBy);
+			orderByFloors = orderBy;
+			orderByFloors += ",-Floor.FLOOR_LEVEL desc,Resources.ID asc";
 		}
+		else {
+			orderByFloors = "-Floor.FLOOR_LEVEL desc,Resources.ID asc";
+		}
+		selectBuilder.orderBy(orderByFloors);
 		if (pagination != null) {
 			int page = (int) pagination.get("page");
 			int perPage = (int) pagination.get("perPage");

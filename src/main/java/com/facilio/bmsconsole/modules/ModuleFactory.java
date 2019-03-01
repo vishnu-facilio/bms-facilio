@@ -1650,4 +1650,13 @@ public class ModuleFactory {
 		inventoryModule.setTableName("Stocked_tools");
 		return inventoryModule;
 	}
+	
+  	public static FacilioModule getWeatherStationModule() {
+		FacilioModule weatherStation = new FacilioModule();
+		weatherStation.setName("weatherStations");
+		weatherStation.setDisplayName("Weather Stations");
+		weatherStation.setTableName("Weather_Stations");
+
+		return weatherStation;
+	}
 }

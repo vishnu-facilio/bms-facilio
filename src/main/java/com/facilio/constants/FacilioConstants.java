@@ -8,6 +8,7 @@ import java.util.Map;
 
 import org.json.simple.JSONObject;
 
+import com.facilio.activity.ActivityContext;
 import com.facilio.bmsconsole.context.AHUContext;
 import com.facilio.bmsconsole.context.AlarmContext;
 import com.facilio.bmsconsole.context.AlarmSeverityContext;
@@ -456,6 +457,7 @@ public class FacilioConstants {
 		
 		public static final String BASE_SPACE_PHOTOS = "basespacephotos";
 		public static final String ASSET_PHOTOS = "assetphotos";
+		public static final String ASSET_ACTIVITY = "assetactivity";
 		
 		public static final String TICKET_NOTES = "ticketnotes";
 		public static final String BASE_SPACE_NOTES = "basespacenotes";
@@ -816,6 +818,7 @@ public class FacilioConstants {
 			classMap.put(ASSET_TYPE, AssetTypeContext.class);
 			classMap.put(ASSET_DEPARTMENT, AssetDepartmentContext.class);
 			classMap.put(ASSET_PHOTOS, PhotosContext.class);
+			classMap.put(ASSET_ACTIVITY, ActivityContext.class);
 			classMap.put(ENERGY_METER, EnergyMeterContext.class);
 			classMap.put(CHILLER, ChillerContext.class);
 			classMap.put(CHILLER_PRIMARY_PUMP, ChillerPrimaryPumpContext.class);
