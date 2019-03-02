@@ -739,6 +739,10 @@ public class FacilioConstants {
 		public static final String PAGE = "page";
 		public static final String CURRENT_CALENDAR_VIEW = "currentCalendarView";
 		public static final String ML_FORECASTING = "ml_forecasting";
+        public static final String CREATE_IN_PREOPEN = "crateInPreOpen";
+		public static final String PREOPEN_EXECUTION_TIMES = "preOpenExecTimes";
+		public static final String WO_CONTEXTS = "woContexts";
+		public static final String SCHEDULED_WO_MAP_MAP = "scheduledWoMap";
 
 		
 		public static final String WORKORDER_PARTS = "workorderParts";

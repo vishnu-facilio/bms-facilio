@@ -27,13 +27,13 @@ public class AddValidationRulesCommand implements Command {
 			return false; 
 		}
 		
-		Chain addChain = TransactionChainFactory.addWorkflowRuleChain();
-		Chain updateChain = TransactionChainFactory.updateWorkflowRuleChain();
-		
+
 		for (int i = 0; i < readingRules.size(); ++i) {
 			if (readingRules.get(i) == null) {
 				continue;
 			}
+			Chain addChain = TransactionChainFactory.addWorkflowRuleChain();
+			Chain updateChain = TransactionChainFactory.updateWorkflowRuleChain();
 			int len = readingRules.get(i).size();
 			for (int j = 0; j < len; ++j) {
 				ReadingRuleContext rule = readingRules.get(i).get(j);

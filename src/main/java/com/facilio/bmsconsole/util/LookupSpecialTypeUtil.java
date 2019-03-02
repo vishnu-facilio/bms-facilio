@@ -1,9 +1,6 @@
 package com.facilio.bmsconsole.util;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import com.facilio.accounts.dto.Group;
@@ -13,6 +10,7 @@ import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.BusinessHoursList;
+import com.facilio.bmsconsole.context.PMTriggerContext;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
@@ -39,6 +37,7 @@ public class LookupSpecialTypeUtil {
 				|| EventConstants.EventContextNames.EVENT.equals(specialType)
 				|| FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE.equals(specialType)
 				|| FacilioConstants.ContextNames.WORK_ORDER_TEMPLATE.equals(specialType)
+				|| "trigger".equals(specialType)
 				;
 	}
 	
@@ -125,6 +124,13 @@ public class LookupSpecialTypeUtil {
 		else if(EventConstants.EventContextNames.EVENT.equals(specialType)) {
 			return EventAPI.getEvent(id);
 		}
+		else if("trigger".equals(specialType)) {
+			Map<Long, List<PMTriggerContext>> pmMap = PreventiveMaintenanceAPI.getPMTriggers(Arrays.asList(id));
+			if (pmMap != null && !pmMap.isEmpty()) {
+				return pmMap.get(id).get(0);
+			}
+			return null;
+		}
 		return null;
 	}
 	
@@ -195,6 +201,11 @@ public class LookupSpecialTypeUtil {
 			EventContext event = new EventContext();
 			event.setId(id);
 			return event;
+		}
+		else if ("trigger".equals(specialType)) {
+			PMTriggerContext pmTriggerContext = new PMTriggerContext();
+			pmTriggerContext.setId(id);
+			return pmTriggerContext;
 		}
 		return null;
 	}
@@ -331,6 +342,9 @@ public class LookupSpecialTypeUtil {
 		else if(FacilioConstants.ContextNames.WORK_ORDER_TEMPLATE.equals(specialType)) {
 			return ModuleFactory.getWorkOrderTemplateModule();
 		}
+		else if("trigger".equals(specialType)) {
+			return ModuleFactory.getPMTriggersModule();
+		}
 		return null;
 	}
 	
@@ -363,6 +377,9 @@ public class LookupSpecialTypeUtil {
 		}
 		else if(FacilioConstants.ContextNames.READING_RULE_MODULE.equals(specialType)) {
 			return FieldFactory.getReadingRuleFields();
+		}
+		else if("trigger".equals(specialType)) {
+			return FieldFactory.getPMTriggerFields();
 		}
 		return null;
 	}

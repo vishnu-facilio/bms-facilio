@@ -1,7 +1,10 @@
 package com.facilio.bmsconsole.context;
 
-public class PMResourcePlannerReminderContext {
-	
+import java.io.Serializable;
+
+public class PMResourcePlannerReminderContext implements Serializable {
+
+	private static final long serialVersionUID = 7907073746844871162L;
 	Long pmId;
 	Long id;
 	Long resourcePlannerId;

@@ -2,8 +2,12 @@ package com.facilio.bmsconsole.context;
 
 import com.facilio.bmsconsole.workflow.rule.ActionContext;
 
-public class PMReminderAction {
-	
+import java.io.Serializable;
+
+public class PMReminderAction implements Serializable {
+
+	private static final long serialVersionUID = 8116099787158361603L;
+
 	long id = -1;
 	long orgId = -1;
 	long reminderId = -1;

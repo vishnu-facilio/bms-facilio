@@ -3759,6 +3759,31 @@ public class FieldFactory {
 		return fields;
 	}
 
+	public static List<FacilioField> getPMResourceScheduleRuleRelFields() {
+		List<FacilioField> fields = new ArrayList<>();
+		FacilioModule module = ModuleFactory.getPMResourceScheduleRuleRelModule();
+		fields.add(getIdField(module));
+
+		FacilioField pmId = new FacilioField();
+		pmId.setName("pmId");
+		pmId.setDataType(FieldType.NUMBER);
+		pmId.setColumnName("PM_ID");
+		pmId.setModule(module);
+		fields.add(pmId);
+
+		fields.add(getField("resourceId", "RESOURCE_ID", module, FieldType.LOOKUP));
+
+
+		FacilioField postScheduleRuleId = new FacilioField();
+		postScheduleRuleId.setName("scheduleRuleId");
+		postScheduleRuleId.setDataType(FieldType.NUMBER);
+		postScheduleRuleId.setColumnName("SCHEDULE_RULE_ID");
+		postScheduleRuleId.setModule(module);
+		fields.add(postScheduleRuleId);
+
+		return fields;
+	}
+
 	public static List<FacilioField> getPMReminderFields() {
 		List<FacilioField> fields = new ArrayList<>();
 		FacilioModule module = ModuleFactory.getPMReminderModule();
@@ -3788,6 +3813,13 @@ public class FieldFactory {
 		duration.setColumnName("DURATION");
 		duration.setModule(module);
 		fields.add(duration);
+
+		FacilioField postScheduleRuleId = new FacilioField();
+		postScheduleRuleId.setName("scheduleRuleId");
+		postScheduleRuleId.setDataType(FieldType.NUMBER);
+		postScheduleRuleId.setColumnName("SCHEDULE_RULE_ID");
+		postScheduleRuleId.setModule(module);
+		fields.add(postScheduleRuleId);
 
 		return fields;
 	}

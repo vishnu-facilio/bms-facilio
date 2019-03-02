@@ -9,7 +9,7 @@
              leakDetectionThreshold="45000"
              dataSource.implicitCachingEnabled="true"
              username="root"
-             password=""
+             password="root1234"
              poolName="faciliohikari"
              name="jdbc/pcmDB"
              registerMbeans="true"

@@ -617,4 +617,19 @@ public class FieldUtil {
 		}
 		return null;
 	}
+
+    public static List<UpdateChangeSet> constructChangeSet(long recordId, Map<String, Object> prop, Map<String, FacilioField> fieldMap) {
+        Set<String> fieldNames = fieldMap.keySet();
+        List<UpdateChangeSet> changeList = new ArrayList<>();
+        for (Map.Entry<String, Object> entry : prop.entrySet()) {
+            if (fieldNames.contains(entry.getKey())) {
+                UpdateChangeSet currentChange = new UpdateChangeSet();
+                currentChange.setFieldId(fieldMap.get(entry.getKey()).getFieldId());
+                currentChange.setNewValue(entry.getValue());
+                currentChange.setRecordId(recordId);
+                changeList.add(currentChange);
+            }
+        }
+        return changeList;
+    }
 }

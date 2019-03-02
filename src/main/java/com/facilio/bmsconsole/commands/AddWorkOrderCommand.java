@@ -36,7 +36,12 @@ public class AddWorkOrderCommand implements Command {
 			String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 			List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
 			workOrder.setCreatedBy(AccountUtil.getCurrentUser());
-			workOrder.setCreatedTime(System.currentTimeMillis());
+			if (workOrder.getScheduledStart() > 0) {
+				workOrder.setCreatedTime(workOrder.getScheduledStart());
+			} else {
+				workOrder.setCreatedTime(System.currentTimeMillis());
+			}
+
 			workOrder.setModifiedTime(workOrder.getCreatedTime());
 			workOrder.setScheduledStart(workOrder.getCreatedTime());
 			workOrder.setEstimatedStart(workOrder.getCreatedTime());
@@ -89,7 +94,6 @@ public class AddWorkOrderCommand implements Command {
 			context.put(FacilioConstants.ContextNames.CHANGE_SET_MAP, Collections.singletonMap(FacilioConstants.ContextNames.WORK_ORDER, builder.getChangeSet()));
 			context.put(FacilioConstants.ContextNames.RECORD_MAP, Collections.singletonMap(FacilioConstants.ContextNames.WORK_ORDER, Collections.singletonList(workOrder)));
 			context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(workOrderId));
-			
 		}
 		else {
 			throw new IllegalArgumentException("WorkOrder Object cannot be null");

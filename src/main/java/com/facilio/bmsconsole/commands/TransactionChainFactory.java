@@ -703,7 +703,37 @@ public class TransactionChainFactory {
 			c.addCommand(new RunThroughReadingRulesCommand());
 			return c;
 		}
-		
+
+		public static Chain getAddPreOpenedWorkOrderChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new PMSettingsCommand());
+			c.addCommand(new GetFormMetaCommand());
+			c.addCommand(new ValidateFormCommand());
+			c.addCommand(new AddRequesterCommand());
+			c.addCommand(SetTableNamesCommand.getForWorkOrder());
+			c.addCommand(new ValidateWorkOrderFieldsCommand());
+			c.addCommand(new LoadAllFieldsCommand());
+			c.addCommand(new AddWorkOrderCommand());
+			c.addCommand(new AddAttachmentCommand());
+			c.addCommand(new AttachmentContextCommand());
+			c.addCommand(new AddAttachmentRelationshipCommand());
+			c.addCommand(new AddTicketActivityCommand());
+			c.addCommand(getAddNewTasksChain());
+			return c;
+		}
+
+		public static Chain getWorkOrderWorkflowsChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.BUSSINESS_LOGIC_WORKORDER_RULE));
+			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.WORKORDER_CUSTOM_CHANGE));
+			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.ASSIGNMENT_RULE));
+			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.SLA_RULE));
+			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.APPROVAL_RULE, RuleType.CHILD_APPROVAL_RULE, RuleType.REQUEST_APPROVAL_RULE, RuleType.REQUEST_REJECT_RULE));
+			c.addCommand(new ForkChainToInstantJobCommand()
+					.addCommand(new ExecuteAllWorkflowsCommand(RuleType.WORKORDER_AGENT_NOTIFICATION_RULE, RuleType.WORKORDER_REQUESTER_NOTIFICATION_RULE, RuleType.CUSTOM_WORKORDER_NOTIFICATION_RULE))
+			);
+			return c;
+		}
 		public static Chain getAddWorkOrderChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(new PMSettingsCommand());
@@ -719,17 +749,24 @@ public class TransactionChainFactory {
 			c.addCommand(new AddAttachmentRelationshipCommand());
 			c.addCommand(new AddTicketActivityCommand());
 			c.addCommand(getAddTasksChain());
-			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.BUSSINESS_LOGIC_WORKORDER_RULE));
-			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.WORKORDER_CUSTOM_CHANGE));
-			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.ASSIGNMENT_RULE));
-			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.SLA_RULE));
-			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.APPROVAL_RULE, RuleType.CHILD_APPROVAL_RULE, RuleType.REQUEST_APPROVAL_RULE, RuleType.REQUEST_REJECT_RULE));
-			c.addCommand(new ForkChainToInstantJobCommand()
-				.addCommand(new ExecuteAllWorkflowsCommand(RuleType.WORKORDER_AGENT_NOTIFICATION_RULE, RuleType.WORKORDER_REQUESTER_NOTIFICATION_RULE, RuleType.CUSTOM_WORKORDER_NOTIFICATION_RULE))
-			);
+			c.addCommand(getWorkOrderWorkflowsChain());
 			return c;
 		}
-		
+
+		public static Chain getAddNewTasksChain() {
+			FacilioChain c = (FacilioChain) getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForTask());
+			c.addCommand(new ValidateNewTasksCommand());
+			c.addCommand(new LoadAllFieldsCommand());
+			c.addCommand(new AddTaskSectionsCommand());
+			c.addCommand(new AddTasksCommand());
+			c.addCommand(new AddTaskOptionsCommand());
+			c.addCommand(new UpdateReadingDataMetaCommand());
+			// c.addCommand(new AddTaskTicketActivityCommand());
+			c.setPostTransactionChain(TransactionChainFactory.getUpdateTaskCountChain());
+			return c;
+		}
+
 		public static Chain getAddTasksChain() {
 			FacilioChain c = (FacilioChain) getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForTask());
@@ -774,8 +811,6 @@ public class TransactionChainFactory {
 			return c;
 		}
 		
-		
-
 		public static Chain addOrUpdateReportChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(new AddOrUpdateReportCommand());
@@ -1159,8 +1194,23 @@ public class TransactionChainFactory {
 			c.addCommand(new scheduleBeforePMRemindersCommand(true));
 			return c;
 		}
-		
-		public static Chain getExecutePreventiveMaintenanceChain() {
+
+		public static Chain getChangeNewPreventiveMaintenanceStatusChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new ChangePreventiveMaintenanceStatusCommand());
+			c.addCommand(new DeletePMAndDependenciesCommand(false, true));
+			c.addCommand(new AddPMTriggerCommand(true));
+			c.addCommand(new AddPMReminderCommand(true));
+			c.addCommand(new SetMissingRelInResourcePlannersCommand());
+			c.addCommand(new AddPMRelFieldsCommand(true));
+			c.addCommand(new ForkChainToInstantJobCommand()
+				.addCommand(new ScheduleNewPMCommand(true))
+			);
+			return c;
+		}
+
+
+	public static Chain getExecutePreventiveMaintenanceChain() {
 			Chain c = getDefaultChain();
 			
 			c.addCommand(new ForkChainToInstantJobCommand()
@@ -1174,7 +1224,14 @@ public class TransactionChainFactory {
 			
 			return c;
 		}
-		
+
+		public static Chain getNewExecutePreventiveMaintenanceChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new PreparePMForMultipleAsset());
+			c.addCommand(new ExecutePMCommand());
+			return c;
+		}
+
 		public static Chain getExecutePMsChain() {		// from Bulk Execute
 			Chain c = getDefaultChain();
 			c.addCommand(new ExecutePMsCommand());

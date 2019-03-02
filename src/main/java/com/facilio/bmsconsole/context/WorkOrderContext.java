@@ -306,4 +306,50 @@ public class WorkOrderContext extends TicketContext {
 	public void setTotalCost(double totalCost) {
 		this.totalCost = totalCost;
 	}
+
+	public PMTriggerContext getTrigger() {
+		return trigger;
+	}
+
+	public void setTrigger(PMTriggerContext trigger) {
+		this.trigger = trigger;
+	}
+
+	private PMTriggerContext trigger;
+
+	private JobsStatus status;
+	public JobsStatus getJobStatusEnum() {
+		return status;
+	}
+	public void setJobStatus(JobsStatus status) {
+		this.status = status;
+	}
+	public int getJobStatus() {
+		if (status != null) {
+			return status.getValue();
+		}
+		return -1;
+	}
+	public void setJobStatus(int status) {
+		this.status = JobsStatus.valueOf(status);
+	}
+
+	public enum JobsStatus {
+		ACTIVE,
+		SCHEDULED,
+		COMPLETED,
+		IN_ACTIVE
+		;
+
+		public int getValue() {
+			return ordinal()+1;
+		}
+
+		public static JobsStatus valueOf(int value) {
+			if (value > 0 && value <= values().length) {
+				return values()[value - 1];
+			}
+			return null;
+		}
+	}
 }
