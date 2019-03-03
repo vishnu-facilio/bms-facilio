@@ -802,8 +802,13 @@ public class WorkOrderAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD_ID, id.get(0));
 
-		Chain pmSummary = FacilioChainFactory.getPreventiveMaintenanceSummaryChain();
-		pmSummary.execute(context);
+		if (AccountUtil.isFeatureEnabled(AccountUtil.FEATURE_SCHEDULED_WO)) {
+			Chain pmSummary = FacilioChainFactory.getNewPreventiveMaintenanceSummaryChain();
+			pmSummary.execute(context);
+		} else {
+			Chain pmSummary = FacilioChainFactory.getPreventiveMaintenanceSummaryChain();
+			pmSummary.execute(context);
+		}
 
 		setPreventivemaintenance((PreventiveMaintenance) context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE));
 		setWorkorder((WorkOrderContext) context.get(FacilioConstants.ContextNames.WORK_ORDER));

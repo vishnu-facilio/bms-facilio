@@ -1248,7 +1248,15 @@ public class FacilioChainFactory {
 		c.addCommand(new GetTaskInputDataCommand());
 		return c;
 	}
-	
+
+	public static Chain getNewPreventiveMaintenanceSummaryChain() {
+		Chain c = FacilioChain.getNonTransactionChain();
+		c.addCommand(new NewPreventiveMaintenanceSummaryCommand());
+		c.addCommand(new GetPMWorkOrders());
+		c.addCommand(new GetTaskInputDataCommand());
+		return c;
+	}
+
 	public static Chain getDeletePreventiveMaintenanceChain() {
 		Chain c = FacilioChain.getTransactionChain();
 		c.addCommand(new GetPreventiveMaintenanceCommand());

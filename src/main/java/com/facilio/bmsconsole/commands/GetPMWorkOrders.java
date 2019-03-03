@@ -1,5 +1,8 @@
 package com.facilio.bmsconsole.commands;
 
+import com.facilio.bmsconsole.context.TicketStatusContext;
+import com.facilio.bmsconsole.criteria.Criteria;
+import com.facilio.bmsconsole.util.TicketAPI;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
@@ -20,13 +23,16 @@ public class GetPMWorkOrders implements Command {
 		// TODO Auto-generated method stub
 		PreventiveMaintenance pm = (PreventiveMaintenance) context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE);
 		if(pm != null) {
+			TicketStatusContext ticketStatusContext = TicketAPI.getStatus("preopen");
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioField pmField = modBean.getField("pm", FacilioConstants.ContextNames.WORK_ORDER);
+			FacilioField status = modBean.getField("status", FacilioConstants.ContextNames.WORK_ORDER);
 			SelectRecordsBuilder<WorkOrderContext> selectBuilder = new SelectRecordsBuilder<WorkOrderContext>()
 																		.beanClass(WorkOrderContext.class)
 																		.moduleName(FacilioConstants.ContextNames.WORK_ORDER)
 																		.select(modBean.getAllFields(FacilioConstants.ContextNames.WORK_ORDER))
 																		.andCondition(CriteriaAPI.getCondition(pmField, String.valueOf(pm.getId()), PickListOperators.IS))
+																		.andCondition(CriteriaAPI.getCondition(status, String.valueOf(ticketStatusContext.getId()), PickListOperators.ISN_T))
 																		.orderBy("WorkOrders.CREATED_TIME DESC")
 																		;
 			

@@ -599,6 +599,35 @@ public class PreventiveMaintenanceAPI {
 		}
 		return pmWos;
 	}
+
+	public static Long getNextExecutionTime(long pmId) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule("workorder");
+		TicketStatusContext preopen = TicketAPI.getStatus("preopen");
+		List<FacilioField> fields = modBean.getAllFields("workorder");
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+		FacilioField minCreatedTime = FieldFactory.getField("minCreatedTime", "MIN(WorkOrders.CREATED_TIME)", FieldType.NUMBER);
+		GenericSelectRecordBuilder selectRecordsBuilder = new GenericSelectRecordBuilder();
+		selectRecordsBuilder.table(module.getTableName())
+				.select(Arrays.asList(minCreatedTime))
+				.innerJoin("Tickets")
+				.on("Tickets.ID=WorkOrders.ID")
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("status"), String.valueOf(preopen.getId()), NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("pm"), String.valueOf(pmId), NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module));
+		List<Map<String, Object>> props = selectRecordsBuilder.get();
+		if (props == null || props.isEmpty()) {
+			return null;
+		}
+
+		if (props.get(0).get("minCreatedTime") == null) {
+			return null;
+		}
+
+		return (Long) props.get(0).get("minCreatedTime");
+	}
+
+
 	public static Map<Long, List<Map<String, Object>>> getPMJobsFromPMIds(List<Long> pmIds, long startTime, long endTime) throws Exception {
 		FacilioModule pmJobsModule = ModuleFactory.getPMJobsModule();
 		List<FacilioField> fields = FieldFactory.getPMJobFields();

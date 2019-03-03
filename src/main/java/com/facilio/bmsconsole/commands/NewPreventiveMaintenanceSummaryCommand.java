@@ -1,31 +1,10 @@
 package com.facilio.bmsconsole.commands;
 
-import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.StringJoiner;
-import java.util.stream.Collectors;
-
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.bmsconsole.context.AttachmentContext;
-import com.facilio.bmsconsole.context.PMJobsContext;
-import com.facilio.bmsconsole.context.PMReminder;
-import com.facilio.bmsconsole.context.PMResourcePlannerContext;
-import com.facilio.bmsconsole.context.PMTriggerContext;
+import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.context.PMTriggerContext.TriggerExectionSource;
-import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.context.PreventiveMaintenance.TriggerType;
-import com.facilio.bmsconsole.context.TaskContext;
-import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
@@ -35,12 +14,7 @@ import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.templates.TaskSectionTemplate;
 import com.facilio.bmsconsole.templates.TaskTemplate;
 import com.facilio.bmsconsole.templates.WorkorderTemplate;
-import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
-import com.facilio.bmsconsole.util.ReadingRuleAPI;
-import com.facilio.bmsconsole.util.ResourceAPI;
-import com.facilio.bmsconsole.util.TemplateAPI;
-import com.facilio.bmsconsole.util.TicketAPI;
-import com.facilio.bmsconsole.util.WorkflowRuleAPI;
+import com.facilio.bmsconsole.util.*;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
@@ -52,8 +26,15 @@ import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.tasker.ScheduleInfo;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
 
-public class PreventiveMaintenanceSummaryCommand implements Command {
+import java.time.Instant;
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.stream.Collectors;
+
+public class NewPreventiveMaintenanceSummaryCommand implements Command {
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -70,35 +51,14 @@ public class PreventiveMaintenanceSummaryCommand implements Command {
 
 		List<Map<String, Object>> pmProps = selectRecordBuilder.get();
 		Map<String, Object> pmProp = pmProps.get(0);
-		
 		PreventiveMaintenance pm = FieldUtil.getAsBeanFromMap(pmProp, PreventiveMaintenance.class);
-		pm.setTriggers(PreventiveMaintenanceAPI.getPMTriggers(pm));
 
-		if(pm.hasTriggers()) {
-			for (PMTriggerContext trigger : pm.getTriggers()) {
-				PMJobsContext pmJob = PreventiveMaintenanceAPI.getNextPMJob(trigger.getId(), Instant.now().getEpochSecond(), true);
-				if (pmJob == null && pm.getTriggerTypeEnum() != TriggerType.NONE && trigger.getSchedule() != null && trigger.getSchedule().getFrequencyTypeEnum() != ScheduleInfo.FrequencyType.DO_NOT_REPEAT) {
-					PMJobsContext lastPMJob = PreventiveMaintenanceAPI.getLastPMJob(trigger);
-					if (lastPMJob != null) {
-						pmJob = PreventiveMaintenanceAPI.createPMJobOnce(pm, trigger, lastPMJob.getNextExecutionTime(),false);
-					}
-				}
-				if(pmJob != null && (pm.getNextExecutionTime() == -1 || pmJob.getNextExecutionTime() <= pm.getNextExecutionTime())) {
-					pm.setNextExecutionTime(pmJob.getNextExecutionTime()*1000);
-				}
-				if (trigger.getTriggerExecutionSourceEnum() == TriggerExectionSource.READING) {
-					ReadingRuleContext rule = (ReadingRuleContext) WorkflowRuleAPI.getWorkflowRule(trigger.getRuleId());
-					trigger.setReadingFieldId(rule.getReadingFieldId());
-					trigger.setReadingInterval(rule.getInterval());
-					trigger.setStartReading(rule.getStartValue());
-					trigger.setReadingRule(rule);
-				}
-				else if (trigger.getTriggerExecutionSourceEnum() == TriggerExectionSource.ALARMRULE) {
-					WorkflowRuleContext rule = WorkflowRuleAPI.getWorkflowRule(trigger.getRuleId());
-					trigger.setWorkFlowRule(rule);
-				}
-			}
+		Long nextExecution = PreventiveMaintenanceAPI.getNextExecutionTime(pmId);
+		if (nextExecution != null) {
+			pm.setNextExecutionTime(nextExecution);
 		}
+
+		pm.setTriggers(PreventiveMaintenanceAPI.getPMTriggers(pm));
 		
 		if(pm.getPmCreationTypeEnum() == PreventiveMaintenance.PMCreationType.MULTIPLE) {
 			pm.setPmIncludeExcludeResourceContexts(TemplateAPI.getPMIncludeExcludeList(pm.getId(), null, null));
