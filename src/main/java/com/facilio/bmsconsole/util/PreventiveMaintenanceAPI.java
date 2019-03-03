@@ -550,12 +550,14 @@ public class PreventiveMaintenanceAPI {
 		return null;
 	}
 
-	public static Map<Long, List<Map<String, Object>>> getPMScheduledWOsFromPMIds(long startTime, long endTime, Criteria filterCriteria) throws Exception {
+	public static Map<Long, List<Map<String, Object>>> getPMScheduledWOsFromPMIds(long startTimeInSeconds, long endTimeInSeconds, Criteria filterCriteria) throws Exception {
 		TicketStatusContext ticketStatusContext = TicketAPI.getStatus("preopen");
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER);
 		List<FacilioField> fields = modBean.getAllFields(module.getName());
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+		long startTime = startTimeInSeconds * 1000;
+		long endTime = endTimeInSeconds * 1000;
 		SelectRecordsBuilder<WorkOrderContext> builder = new SelectRecordsBuilder<>();
 		builder.module(module)
 				.beanClass(WorkOrderContext.class)
@@ -784,6 +786,8 @@ public class PreventiveMaintenanceAPI {
 		}
 		return null;
 	}
+
+
 	
 	public static List<PreventiveMaintenance> getAllActivePMs(Criteria filterCriteria) throws Exception {
 		return getActivePMs(null,filterCriteria);

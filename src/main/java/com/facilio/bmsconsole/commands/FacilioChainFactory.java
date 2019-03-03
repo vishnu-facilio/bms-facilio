@@ -1269,6 +1269,13 @@ public class FacilioChainFactory {
 		c.addCommand(new GetPMJobsCommand());
 		return c;
 	}
+
+	public static Chain getGetNewPMJobListChain() {
+		Chain c = FacilioChain.getNonTransactionChain();
+		c.addCommand(new GenerateCriteriaFromFilterCommand());
+		c.addCommand(new GetScheduledWOCommand());
+		return c;
+	}
 	
 	public static Chain getGetPreventiveMaintenanceListChain() {
 		Chain c = FacilioChain.getNonTransactionChain();

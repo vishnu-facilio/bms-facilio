@@ -963,7 +963,6 @@ public class WorkOrderAction extends FacilioAction {
 	}
 
 	public String getPMJobs() throws Exception {
-
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_STARTTIME, getStartTime());
 		context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_ENDTIME, getEndTime());
@@ -980,8 +979,13 @@ public class WorkOrderAction extends FacilioAction {
 			context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.WORK_ORDER);
 		}
 
-		Chain getPmchain = FacilioChainFactory.getGetPMJobListChain();
-		getPmchain.execute(context);
+		if (AccountUtil.isFeatureEnabled(AccountUtil.FEATURE_SCHEDULED_WO)) {
+			Chain getPmchain = FacilioChainFactory.getGetNewPMJobListChain();
+			getPmchain.execute(context);
+		} else {
+			Chain getPmchain = FacilioChainFactory.getGetPMJobListChain();
+			getPmchain.execute(context);
+		}
 
 		setPmMap((Map<Long, PreventiveMaintenance>) context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_LIST));
 		setPmJobList((List<Map<String, Object>>) context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_JOBS_LIST));
