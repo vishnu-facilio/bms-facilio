@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.jobs;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.*;
@@ -35,6 +36,9 @@ public class PMNewScheduler extends FacilioJob {
 	public void execute(JobContext jc) {
 		// TODO Auto-generated method stub
 		try {
+			if (!AccountUtil.isFeatureEnabled(AccountUtil.FEATURE_SCHEDULED_WO)) {
+				return;
+			}
 			FacilioModule pmTriggerModule = ModuleFactory.getPMTriggersModule();
 			FacilioModule pmModule = ModuleFactory.getPreventiveMaintenancetModule();
 			List<FacilioField> fields = FieldFactory.getPMTriggerFields();

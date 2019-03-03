@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.jobs;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.*;
@@ -24,6 +25,9 @@ public class ScheduleWOStatusChange extends FacilioJob {
     @Override
     public void execute(JobContext jc) throws Exception {
         try {
+            if (!AccountUtil.isFeatureEnabled(AccountUtil.FEATURE_SCHEDULED_WO)) {
+                return;
+            }
             ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
             FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER);
             List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.WORK_ORDER);
