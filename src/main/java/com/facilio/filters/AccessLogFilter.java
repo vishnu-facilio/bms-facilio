@@ -59,6 +59,8 @@ public class AccessLogFilter implements Filter {
 
         thread.setName(String.valueOf(THREAD_ID.getAndIncrement()));
 
+        filterChain.doFilter(servletRequest, response);
+
         long startTime = System.currentTimeMillis();
         String message = DUMMY_MSG;
         if(AccountUtil.getCurrentAccount() != null) {
@@ -85,8 +87,6 @@ public class AccessLogFilter implements Filter {
             queryString = DEFAULT_QUERY_STRING;
         }
         event.setProperty(QUERY, queryString);
-
-        filterChain.doFilter(servletRequest, response);
 
         Organization org = AccountUtil.getCurrentOrg();
         if(org != null) {
