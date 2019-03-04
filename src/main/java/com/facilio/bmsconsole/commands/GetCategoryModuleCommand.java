@@ -53,7 +53,7 @@ public class GetCategoryModuleCommand implements Command {
 				}
 				
 				if (assetModule == null) {
-					assetModule = modBean.getModule("asset");
+					throw new Exception("Cannot find module entry");
 				}
 				
 				context.put(FacilioConstants.ContextNames.PARENT_MODULE, assetModule.getName());
