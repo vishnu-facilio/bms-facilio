@@ -164,6 +164,21 @@ public class SpaceAPI {
 	}
 	
 	
+	public static List<SiteContext> getSiteSpace(String fieldName,Collection<Long> values) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.SITE);
+		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.SITE);
+		FacilioField whereField= modBean.getField(fieldName, module.getName());
+		
+		SelectRecordsBuilder<SiteContext> selectBuilder = new SelectRecordsBuilder<SiteContext>()
+																	.select(fields)
+																	.table(module.getTableName())
+																	.moduleName(module.getName())
+																	.beanClass(SiteContext.class)
+																	.andCondition(CriteriaAPI.getCondition(whereField,values,NumberOperators.EQUALS));
+		return selectBuilder.get();
+	}
+	
 	public static List<SiteContext> getSiteSpace(String spaceList) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.SITE);
