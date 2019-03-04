@@ -36,7 +36,7 @@ public class UpdateTaskCountCommand implements Command {
 		Collection<Long> parentIds = (Collection<Long>) context.get(FacilioConstants.ContextNames.IDS_TO_UPDATE_TASK_COUNT);
 		if (CollectionUtils.isNotEmpty(parentIds)) {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
+			String moduleName = "task";
 
 			LOGGER.log(Level.SEVERE, "module name: " + moduleName + " parentids: " + StringUtils.join(parentIds.toArray(), ", "));
 			
