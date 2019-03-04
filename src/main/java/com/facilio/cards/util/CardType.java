@@ -399,6 +399,49 @@ public enum CardType {
 			"        <field aggregate=\"count\" name=\"subject\" />\n" + 
 			"    </expression>\n" + 
 			"</workflow>",false),
+	OPEN_ALARMS(13,"openalarms","<workflow>\n" + 
+			"	<parameter name=\"orgId\" type=\"Number\" />\n" + 
+			"    <expression name=\"active\">\n" + 
+			"        <module name=\"alarm\" />\n" + 
+			"        <criteria pattern=\"(1 and 2)\">\n" + 
+			"            <condition sequence=\"1\">sourceType`!=`9</condition>\n" + 
+			"            <condition sequence=\"2\">severity`lookup`orgid = ${orgId} and Alarm_Severity.SEVERITY != 'Clear'</condition>\n" + 
+			"        </criteria>\n" + 
+			"        <field aggregate=\"count\" name=\"subject\" />\n" + 
+			"    </expression>\n" + 
+			"    <expression name=\"unacknowledged\">\n" + 
+			"        <module name=\"alarm\" />\n" + 
+			"        <criteria pattern=\"(1 and 2 and 3)\">\n" + 
+			"            <condition sequence=\"1\">sourceType`!=`9</condition>\n" + 
+			"            <condition sequence=\"2\">severity`lookup`orgid = ${orgId} and Alarm_Severity.SEVERITY != 'Clear'</condition>\n" + 
+			"            <condition sequence=\"3\">isAcknowledged`is`false</condition>\n" + 
+			"        </criteria>\n" + 
+			"        <field aggregate=\"count\" name=\"subject\" />\n" + 
+			"    </expression>\n" + 
+			"</workflow>",false),
+	BUILDING_OPEN_ALARMS(14,"buildingopenalarms","<workflow>\n" + 
+			"	<parameter name=\"orgId\" type=\"Number\" />\n" + 
+			"	<parameter name=\"buildingId\" type=\"Number\" />\n" + 
+			"    <expression name=\"active\">\n" + 
+			"        <module name=\"alarm\" />\n" + 
+			"        <criteria pattern=\"(1 and 2 and 3)\">\n" + 
+			"            <condition sequence=\"1\">sourceType`!=`9</condition>\n" + 
+			"            <condition sequence=\"2\">severity`lookup`orgid = ${orgId} and Alarm_Severity.SEVERITY != 'Clear'</condition>\n" + 
+			"            <condition sequence=\"3\">resource`building_is`${buildingId}</condition>\n" + 
+			"        </criteria>\n" + 
+			"        <field aggregate=\"count\" name=\"subject\" />\n" + 
+			"    </expression>\n" + 
+			"    <expression name=\"unacknowledged\">\n" + 
+			"        <module name=\"alarm\" />\n" + 
+			"        <criteria pattern=\"(1 and 2 and 3 and 4)\">\n" + 
+			"            <condition sequence=\"1\">sourceType`!=`9</condition>\n" + 
+			"            <condition sequence=\"2\">severity`lookup`orgid = ${orgId} and Alarm_Severity.SEVERITY != 'Clear'</condition>\n" + 
+			"            <condition sequence=\"3\">isAcknowledged`is`false</condition>\n" + 
+			"            <condition sequence=\"4\">resource`building_is`${buildingId}</condition>\n" + 
+			"        </criteria>\n" + 
+			"        <field aggregate=\"count\" name=\"subject\" />\n" + 
+			"    </expression>\n" + 
+			"</workflow>",false),
 	;
 	
 	
