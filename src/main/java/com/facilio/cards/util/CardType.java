@@ -360,6 +360,45 @@ public enum CardType {
 			"        <field aggregate=\"count\" name=\"subject\" />\n" + 
 			"    </expression>\n" + 
 			"</workflow>",false),
+	MY_WORK_ORDER_SUMMARY(12,"mywosummary","<workflow>\n" + 
+			"	<parameter name=\"orgId\" type=\"Number\" />"+
+			"	<parameter name=\"currentUserId\" type=\"Number\" />"+
+			"    <expression name=\"dueToday\">\n" + 
+			"        <module name=\"workorder\" />\n" + 
+			"        <criteria pattern=\"(1 and 2 and 3)\">\n" + 
+			"            <condition sequence=\"1\">dueDate`Today`</condition>\n" + 
+			"            <condition sequence=\"2\">status`lookup`orgid = ${orgId} and STATUS_TYPE = "+TicketStatusContext.StatusType.OPEN.getIntVal()+"</condition>\n" +
+			"            <condition sequence=\"3\">assignedTo`is`${currentUserId}</condition>\n" +
+			"        </criteria>\n" + 
+			"        <field aggregate=\"count\" name=\"subject\" />\n" + 
+			"    </expression>\n" + 
+			"    <expression name=\"openHighPriority\">\n" + 
+			"        <module name=\"workorder\" />\n" + 
+			"        <criteria pattern=\"(1 and 2 and 3)\">\n" + 
+			"            <condition sequence=\"1\">status`lookup`orgid = ${orgId} and STATUS_TYPE = "+TicketStatusContext.StatusType.OPEN.getIntVal()+"</condition>\n" +
+			"            <condition sequence=\"2\">assignedTo`is`${currentUserId}</condition>\n" +
+			"            <condition sequence=\"3\">priority`lookup`orgid = ${orgId} and PRIORITY = 'High'</condition>\n" +
+			"        </criteria>\n" + 
+			"        <field aggregate=\"count\" name=\"subject\" />\n" + 
+			"    </expression>\n" + 
+			"    <expression name=\"open\">\n" + 
+			"        <module name=\"workorder\" />\n" + 
+			"        <criteria pattern=\"(1 and 2)\">\n" + 
+			"            <condition sequence=\"1\">status`lookup`orgid = ${orgId} and STATUS_TYPE = "+TicketStatusContext.StatusType.OPEN.getIntVal()+"</condition>\n" +
+			"            <condition sequence=\"2\">assignedTo`is`${currentUserId}</condition>\n" +
+			"        </criteria>\n" + 
+			"        <field aggregate=\"count\" name=\"subject\" />\n" + 
+			"    </expression>\n" + 
+			"    <expression name=\"overdue\">\n" + 
+			"        <module name=\"workorder\" />\n" + 
+			"        <criteria pattern=\"(1 and 2 and 3)\">\n" + 
+			"            <condition sequence=\"1\">status`lookup`orgid = ${orgId} and STATUS_TYPE = "+TicketStatusContext.StatusType.OPEN.getIntVal()+"</condition>\n" + 
+			"            <condition sequence=\"2\">dueDate`Till Now`</condition>\n" + 
+			"            <condition sequence=\"3\">assignedTo`is`${currentUserId}</condition>\n" +
+			"        </criteria>\n" + 
+			"        <field aggregate=\"count\" name=\"subject\" />\n" + 
+			"    </expression>\n" + 
+			"</workflow>",false),
 	;
 	
 	
