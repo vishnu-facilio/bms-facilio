@@ -270,6 +270,7 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 				PreventiveMaintenanceAPI.updateResourceDetails(wo, taskMap);
 				Chain addWOChain = TransactionChainFactory.getAddWorkOrderChain();
 				addWOChain.execute(context);
+				context.clear();
 				
 				// if(pm.getPmCreationTypeEnum() == PreventiveMaintenance.PMCreationType.SINGLE) { //Need to be handled for multiple resources, it causes deadlock
 					// incrementPMCount(pm);
