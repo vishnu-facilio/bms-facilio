@@ -13,6 +13,33 @@ import com.facilio.bmsconsole.context.ViewField;
 import com.facilio.bmsconsole.criteria.Criteria;
 
 public class FacilioView {
+	
+	public FacilioView() {}
+
+	// Add all properties here as it will be used for cloning
+	public FacilioView(FacilioView view) {
+		this.orgId = view.orgId;
+		this.id = view.id;
+		this.includeParentCriteria = view.includeParentCriteria;
+		this.name = view.name;
+		this.displayName = view.displayName;
+		this.type = view.type;
+		this.moduleId = view.moduleId;
+		this.moduleName = view.moduleName;
+		this.criteriaId = view.criteriaId;
+		this.criteria = view.criteria;
+		this.isDefault = view.isDefault;
+		this.fields = view.fields;
+		this.sortFields = view.sortFields;
+		this.defaultModulefields = view.defaultModulefields;
+		this.lookupFields = view.lookupFields;
+		this.filters = view.filters;
+		this.sequenceNumber = view.sequenceNumber;
+		this.isHidden = view.isHidden;
+		this.primary = view.primary;
+		this.fieldDisplayNames = view.fieldDisplayNames;
+	}
+
 	private long orgId = -1;
 	public long getOrgId() {
 		return orgId;
