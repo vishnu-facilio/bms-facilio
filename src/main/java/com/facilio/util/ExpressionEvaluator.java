@@ -4,9 +4,12 @@ import java.util.Stack;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.struts2.json.annotations.JSON;
+
 public abstract class ExpressionEvaluator<E> {
 	
 	private Pattern regEx;
+	@JSON(serialize=false)
 	public Pattern getRegEx() {
 		return regEx;
 	}
