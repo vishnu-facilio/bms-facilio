@@ -86,7 +86,7 @@ public class AddPMTriggerCommand implements Command {
 				break;
 			case READING: {
 					trigger.getReadingRule().setName("PM_" + pm.getId());
-					trigger.getReadingRule();
+					trigger.getReadingRule().setRuleGroupId(-1);
 					ruleId = WorkflowRuleAPI.addWorkflowRule(trigger.getReadingRule());
 					trigger.setRuleId(ruleId);
 					
