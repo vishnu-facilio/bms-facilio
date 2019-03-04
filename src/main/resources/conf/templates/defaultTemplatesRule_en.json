@@ -1,2 +1,40 @@
 {
+	"1": {
+		"preRequsite": {
+			"name" : "preRequsite",
+			"description" : "desc",
+			"criteria" : {
+			},
+			"workflow" : {
+			}
+		},
+		"alarmTriggerRules": [
+			{
+				"name" : "triggerCondition1",
+				"description" : "desc",
+				"criteria" : {
+				},
+				"workflow" : {
+				}
+			},
+			{
+				"name" : "triggerCondition2",
+				"description" : "desc",
+				"criteria" : {
+				},
+				"workflow" : {
+				}
+			}
+		],
+		"alarmClearRule": {
+			"name" : "clearRule",
+			"description" : "desc",
+			"criteria" : {
+			},
+			"workflow" : {
+			}
+		}
+	},
+	"2": {
+	}
 }

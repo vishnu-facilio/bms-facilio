@@ -116,7 +116,7 @@ public class ActionAPI {
 					throw new IllegalArgumentException("Either template ID / default template has to be set for Action during addition");
 				}
 				
-				if (action.getTemplateId() == -1 && TemplateAPI.getDefaultTemplate(action.getDefaultTemplateId()) == null) {
+				if (action.getTemplateId() == -1 && TemplateAPI.getDefaultTemplate(DefaultTemplateType.ACTION,action.getDefaultTemplateId()) == null) {
 					throw new IllegalArgumentException("Invalid default template id for action during addition.");
 				}
 			}

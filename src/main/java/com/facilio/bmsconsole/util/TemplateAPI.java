@@ -1,5 +1,33 @@
 package com.facilio.bmsconsole.util;
 
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
+import java.nio.charset.StandardCharsets;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import javax.xml.bind.JAXBContext;
+
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+import org.apache.log4j.Level;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.billing.context.ExcelTemplate;
@@ -14,6 +42,11 @@ import com.facilio.bmsconsole.modules.*;
 import com.facilio.bmsconsole.templates.*;
 import com.facilio.bmsconsole.templates.DefaultTemplateWorkflowsConf.TemplateWorkflowConf;
 import com.facilio.bmsconsole.templates.Template.Type;
+
+import com.facilio.bmsconsole.workflow.rule.AlarmRuleContext;
+import com.facilio.bmsconsole.templates.WebNotificationTemplate;
+import com.facilio.bmsconsole.templates.WorkorderTemplate;
+import com.facilio.bmsconsole.templates.DefaultTemplate.DefaultTemplateType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fs.FileStore;
 import com.facilio.fs.FileStoreFactory;
@@ -51,11 +84,10 @@ public class TemplateAPI {
 
 	private static final String DEFAULT_TEMPLATES_FILE_PATH = "conf/templates/defaultTemplates";
 	private static final String[] LANG = new String[]{"en"};
-	private static final String[] TYPE = new String[]{"Action", "Rule"};
-	private static final Map<String, Map<String, Map<Integer,DefaultTemplate>>> DEFAULT_TEMPLATES = Collections.unmodifiableMap(loadDefaultTemplates());
-	private static  Map<String, Map<String, Map<Integer,DefaultTemplate>>> loadDefaultTemplates() {
+	private static final Map<DefaultTemplateType, Map<String, Map<Integer,DefaultTemplate>>> DEFAULT_TEMPLATES = Collections.unmodifiableMap(loadDefaultTemplates());
+	private static  Map<DefaultTemplateType, Map<String, Map<Integer,DefaultTemplate>>> loadDefaultTemplates() {
 		try {
-			 Map<String, Map<String, Map<Integer,DefaultTemplate>>> typeDefaultTemplates = new HashMap<>();
+			 Map<DefaultTemplateType, Map<String, Map<Integer,DefaultTemplate>>> typeDefaultTemplates = new HashMap<>();
 			Map<String, Map<Integer,DefaultTemplate>> defaultTemplates = new HashMap<>();
 			ClassLoader classLoader = TemplateAPI.class.getClassLoader();
 			
@@ -69,8 +101,8 @@ public class TemplateAPI {
 			}
 			
 			JSONParser parser = new JSONParser();
-			for (String type : TYPE) {
-				String path = DEFAULT_TEMPLATES_FILE_PATH + type + '_';
+			for (DefaultTemplateType defaultTemplateType : DefaultTemplateType.getAllDefaultTemplateType()) {
+				String path = DEFAULT_TEMPLATES_FILE_PATH + defaultTemplateType.getName() + '_';
 				for (String lang : LANG) {
 					JSONObject templateJsons = (JSONObject) parser.parse(new FileReader(classLoader.getResource(path+".json").getFile()));
 					Map<Integer, DefaultTemplate> templates = new HashMap<>();
@@ -84,6 +116,7 @@ public class TemplateAPI {
 						defaultTemplate.setFtl(checkAndLoadFtl(template, classLoader));
 						defaultTemplate.setJson(template);
 						defaultTemplate.setPlaceholder(getPlaceholders(defaultTemplate));
+						defaultTemplate.setDefaultTemplateType(defaultTemplateType);
 						
 						WorkflowContext defaultWorkflow = defaultWorkflows.get(templateId);
 						if (defaultWorkflow != null) {
@@ -100,7 +133,7 @@ public class TemplateAPI {
 					}
 					defaultTemplates.put(lang, templates);
 				}
-				typeDefaultTemplates.put(type, defaultTemplates);
+				typeDefaultTemplates.put(defaultTemplateType, defaultTemplates);
 			}
 			return typeDefaultTemplates;
 		}
@@ -129,8 +162,29 @@ public class TemplateAPI {
 		return "en"; //This has to be changed according to org from thread local
 	}
 	
-	public static DefaultTemplate getDefaultTemplate (int id) {
-		return DEFAULT_TEMPLATES.get(getLang()).get(id);
+	public static AlarmRuleContext getAlarmRuleFromDefaultTemplate(DefaultTemplate defaultTemplate) throws Exception {
+		
+		if(defaultTemplate.getDefaultTemplateType() == DefaultTemplateType.RULE) {
+			AlarmRuleContext alarmRuleContext = FieldUtil.getAsBeanFromJson(defaultTemplate.getJson(), AlarmRuleContext.class);
+			return alarmRuleContext;
+		}
+		return null;
+	}
+
+	public static DefaultTemplate getDefaultTemplate (DefaultTemplateType defaultTemplateType, int id) {
+		return DEFAULT_TEMPLATES.get(defaultTemplateType).get(getLang()).get(id);
+	}
+	
+	public static Collection<DefaultTemplate> getAllRuleLibraryTemplate () {
+		return DEFAULT_TEMPLATES.get(DefaultTemplateType.RULE).get(getLang()).values();
+	}
+	public static List<AlarmRuleContext> getAllRuleLibraryContext() throws Exception {
+		
+		List<AlarmRuleContext> alarmRuleContexts = new ArrayList<>();
+		for(DefaultTemplate defaultTemplate : getAllRuleLibraryTemplate()) {
+			alarmRuleContexts.add(getAlarmRuleFromDefaultTemplate(defaultTemplate));
+		}
+		return alarmRuleContexts;
 	}
 	
 	public static long addTemplate(Template template) throws Exception {
