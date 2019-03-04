@@ -94,7 +94,7 @@ public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, 
 	private boolean forUpdate = false;
 	private Connection conn = null;
 	private ArrayList<String> tables = new ArrayList<>();
-
+	private StringBuilder cacheQuery = new StringBuilder();
 
 
 	static {
@@ -743,6 +743,7 @@ public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, 
 				isExternalConnection = false;
 			}
 			String sql = constructSelectStatement();
+			cacheQuery.append(sql);
 			pstmt = conn.prepareStatement(sql);
 
 			Object[] whereValues = where.getValues();
@@ -750,6 +751,8 @@ public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, 
 				for(int i=0; i<whereValues.length; i++) {
 					Object value = whereValues[i];
 					pstmt.setObject(i+1, value);
+					cacheQuery.append(',');
+					cacheQuery.append(value);
 				}
 			}
 
@@ -855,24 +858,26 @@ public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, 
 			Map<String, Map<String, SelectQueryCache>> table = QUERY_CACHE.get(orgId);
 			List<Map<String, Object>> returnValue = new ArrayList<>();
 			if (table != null) {
-
 				Map<String, SelectQueryCache> tableCache = table.get(tableName);
-				SelectQueryCache cache = table.get(tableName).get(sql);
-				if (cache != null) {
-					for (String tablesInQuery : cache.getTables()) {
-						Object value = LRUCache.getQueryCache().get(getRedisKey(orgId, tablesInQuery));
-						if (value == null) {
-							tableCache.remove(sql);
-							LOGGER.info("cache miss for query " + sql);
-							returnValue = null;
-							break;
-						}
-					}
-					if (returnValue != null) {
-						LOGGER.info("cache hit for query " + sql);
-						return cache.getResult();
-					}
-				}
+				String queryToCache = getCacheQuery();
+				if(tableCache != null) {
+                    SelectQueryCache cache = tableCache.get(queryToCache);
+                    if (cache != null) {
+                        for (String tablesInQuery : cache.getTables()) {
+                            Object value = LRUCache.getQueryCache().get(getRedisKey(orgId, tablesInQuery));
+                            if (value == null) {
+                                tableCache.remove(queryToCache);
+                                LOGGER.debug("cache miss for query " + queryToCache);
+                                returnValue = null;
+                                break;
+                            }
+                        }
+                        if (returnValue != null) {
+                            LOGGER.debug("cache hit for query " + queryToCache);
+                            return cache.getResult();
+                        }
+                    }
+                }
 
 			}
 		}
@@ -883,16 +888,23 @@ public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, 
 		return  orgId+'_'+tableName;
 	}
 
+	private String getCacheQuery() {
+	    return cacheQuery.toString();
+    }
+
 	private void addToCache(long orgId, List<Map<String,Object>> records) {
 		if (orgId > 0) {
 			if(DBUtil.isQueryCacheEnabled(orgId, tableName)) {
 				long queryGetTime = System.currentTimeMillis();
 				Map<String, Map<String, SelectQueryCache>> table = QUERY_CACHE.getOrDefault(orgId, new HashMap<>());
 				Map<String, SelectQueryCache> query = table.getOrDefault(tableName, new HashMap<>());
-				query.put(sql, new SelectQueryCache(tables, records));
+				String queryToCache = getCacheQuery();
+				query.put(queryToCache, new SelectQueryCache(tables, records));
 				table.put(tableName, query);
-				LOGGER.info("building cache for query " + sql);
-				LRUCache.getQueryCache().put(getRedisKey(orgId, tableName), queryGetTime);
+				LOGGER.debug("building cache for query " + queryToCache);
+				for (String tablesInQuery : tables) {
+					LRUCache.getQueryCache().put(getRedisKey(orgId, tablesInQuery), queryGetTime);
+				}
 				QUERY_CACHE.put(orgId, table);
 			}
 		}
@@ -1007,7 +1019,7 @@ public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, 
 		private ArrayList<String> tables;
 		private List<Map<String, Object>> result;
 
-		public SelectQueryCache(ArrayList<String> tables, List<Map<String, Object>> result) {
+		SelectQueryCache(ArrayList<String> tables, List<Map<String, Object>> result) {
 			this.tables = tables;
 			this.result = result;
 		}

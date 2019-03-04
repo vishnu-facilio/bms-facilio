@@ -17,6 +17,7 @@ import com.facilio.bmsconsole.workflow.rule.*;
 import com.facilio.chain.FacilioContext;
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Context;
+import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
@@ -647,13 +648,20 @@ public class PreventiveMaintenanceAPI {
 
 		LOGGER.log(Level.SEVERE, "Number of PMS to be deactivated: ", pms.size());
 
-		deactivateAllPms(pms);
-		activateAllPms(pms);
+		Set<Long> skipList = deactivateAllPms(pms);
+		Set<Long> activateSkipList = activateAllPms(pms, skipList);
+		LOGGER.log(Level.SEVERE, "Deactivation skipped: ", StringUtils.join(skipList.toArray(), ", "));
+		LOGGER.log(Level.SEVERE, "Activation skipped: ", StringUtils.join(activateSkipList.toArray(), ", "));
 	}
 
-	private static void activateAllPms(List<PreventiveMaintenance> pms) throws Exception {
+	private static Set<Long> activateAllPms(List<PreventiveMaintenance> pms, Set<Long> skipList) throws Exception {
+		Set<Long> activateSkipList = new HashSet<>();
 		for (PreventiveMaintenance activePm: pms) {
 			try {
+				if (skipList.contains(activePm.getId())) {
+					LOGGER.log(Level.SEVERE, "Skipping activation: " + activePm.getId());
+					continue;
+				}
 				PreventiveMaintenance pm = new PreventiveMaintenance();
 				pm.setStatus(true);
 
@@ -661,18 +669,20 @@ public class PreventiveMaintenanceAPI {
 				context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Arrays.asList(activePm.getId()));
 				context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE, pm);
 
-				Chain addTemplate = TransactionChainFactory.getChangeNewPreventiveMaintenanceStatusChain();
+				Chain addTemplate = TransactionChainFactory.getChangeNewPreventiveMaintenanceStatusChainForMig();
 				addTemplate.execute(context);
 
-				LOGGER.log(Level.SEVERE, "Migrated: " + activePm.getId());
+				LOGGER.log(Level.SEVERE, "Activated: " + activePm.getId());
 			} catch (Exception e) {
-				LOGGER.log(Level.SEVERE, "Failed to deactivate PM: " + activePm.getId(), e);
-				throw e;
+				LOGGER.log(Level.SEVERE, "Failed to activate PM: " + activePm.getId(), e);
+				activateSkipList.add(activePm.getId());
 			}
 		}
+		return activateSkipList;
 	}
 
-	private static void deactivateAllPms(List<PreventiveMaintenance> pms) throws Exception {
+	private static Set<Long> deactivateAllPms(List<PreventiveMaintenance> pms) {
+		Set<Long> skipList = new HashSet<>();
 		for (PreventiveMaintenance activePm: pms) {
 			try {
 				PreventiveMaintenance pm = new PreventiveMaintenance();
@@ -681,15 +691,16 @@ public class PreventiveMaintenanceAPI {
 				context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Arrays.asList(activePm.getId()));
 				context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE, pm);
 
-				Chain addTemplate = TransactionChainFactory.getChangeNewPreventiveMaintenanceStatusChain();
+				Chain addTemplate = TransactionChainFactory.getChangeNewPreventiveMaintenanceStatusChainForMig();
 				addTemplate.execute(context);
 
-				LOGGER.log(Level.SEVERE, "Migrated: " + activePm.getId());
+				LOGGER.log(Level.SEVERE, "Deactivated: " + activePm.getId());
 			} catch (Exception e) {
-				LOGGER.log(Level.SEVERE, "Failed to active PM: " + activePm.getId());
-				throw e;
+				LOGGER.log(Level.SEVERE, "Failed to deactivate PM: " + activePm.getId(), e);
+				skipList.add(activePm.getId());
 			}
 		}
+		return skipList;
 	}
 
 

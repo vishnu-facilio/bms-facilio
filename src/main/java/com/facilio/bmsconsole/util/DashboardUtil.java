@@ -3613,6 +3613,7 @@ public static JSONObject getStandardVariance1(ReportContext report,JSONArray pro
 				jsonObject = new JSONObject();
 			}
 			jsonObject.put("orgId", AccountUtil.getCurrentOrg().getId());
+			jsonObject.put("currentUserId", AccountUtil.getCurrentUser().getId());
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			if(jsonObject != null && jsonObject.containsKey("fieldId")) {
 				FacilioField field = modBean.getField((Long) jsonObject.get("fieldId"));
