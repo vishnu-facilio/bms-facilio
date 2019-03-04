@@ -4792,10 +4792,14 @@ public class DashboardAction extends FacilioAction {
 		builder.andCondition(CriteriaAPI.getCondition("TTIME", "ttime", startTime+","+endTime, DateOperators.BETWEEN));
 		
 		List<Map<String, Object>> rs = builder.get();
+		Double res = 0d;
 		if (rs != null && rs.size() > 0) {
-			return (Double) rs.get(0).get("value");
+			Double res1 = (Double) rs.get(0).get("value");
+			if(res1 != null) {
+				res = res1;
+			}
 		}
-		return 0d;
+		return res;
 	}
 	
 	JSONArray booleanResultGrouping;
