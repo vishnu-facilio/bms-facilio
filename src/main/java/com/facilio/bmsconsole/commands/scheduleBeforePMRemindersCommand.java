@@ -108,15 +108,17 @@ public class scheduleBeforePMRemindersCommand implements Command {
 						
 						for(PMResourcePlannerReminderContext pmResourcePlannerReminderContext : resourcePlanner.getPmResourcePlannerReminderContexts()) {
 							PMReminder reminder = pmReminderMap.get(pmResourcePlannerReminderContext.getReminderId());
-							reminders.add(reminder);
+							if (reminder != null) {
+								reminders.add(reminder);
+							}
 						}
 					}
 					
 				}
-				if(reminders.isEmpty()) {
+				if(reminders.isEmpty() && pm.getReminders().get(0) != null) {
 					reminders.add(pm.getReminders().get(0));
 				}
-				if(pmTriggerContexts.isEmpty()) {
+				if(pmTriggerContexts.isEmpty() && pm.getReminders().get(0) != null) {
 					pmTriggerContexts.add(pm.getTriggers().get(0));
 				}
 				
