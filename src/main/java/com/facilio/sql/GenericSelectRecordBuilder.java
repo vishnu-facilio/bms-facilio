@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.fw.LRUCache;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -74,6 +75,7 @@ import java.util.*;
 public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, Object>> {
 	private static final Logger LOGGER = LogManager.getLogger(GenericSelectRecordBuilder.class.getName());
 	private static final int QUERY_TIME_THRESHOLD = 5000;
+	private static final Map<Long, Map<String, Map<String, SelectQueryCache>>> QUERY_CACHE = new HashMap<>();
 
 	private static Constructor<?> constructor;
 
@@ -91,6 +93,9 @@ public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, 
 	private int offset = -1;
 	private boolean forUpdate = false;
 	private Connection conn = null;
+	private ArrayList<String> tables = new ArrayList<>();
+
+
 
 	static {
 		String dbClass = AwsUtil.getDBClass();
@@ -122,6 +127,7 @@ public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, 
 		this.limit = selectBuilder.limit;
 		this.offset = selectBuilder.offset;
 		this.conn = selectBuilder.conn;
+		this.tables = selectBuilder.tables;
 
 		this.joinBuilder = new StringBuilder(selectBuilder.joinBuilder);
 		if (selectBuilder.selectFields != null) {
@@ -170,6 +176,7 @@ public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, 
 	 */
 	public GenericSelectRecordBuilder table(String tableName) {
 		this.tableName = tableName;
+		this.tables.add(tableName);
 		return this;
 	}
 
@@ -213,6 +220,7 @@ public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, 
 		joinBuilder.append(" INNER JOIN ")
 					.append(tableName)
 					.append(" ");
+		tables.add(tableName);
 		return new GenericJoinBuilder(this);
 	}
 
@@ -237,6 +245,7 @@ public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, 
 		joinBuilder.append(" LEFT JOIN ")
 					.append(tableName)
 					.append(" ");
+		tables.add(tableName);
 		return new GenericJoinBuilder(this);
 	}
 
@@ -261,6 +270,7 @@ public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, 
 		joinBuilder.append(" RIGHT JOIN ")
 					.append(tableName)
 					.append(" ");
+		tables.add(tableName);
 		return new GenericJoinBuilder(this);
 	}
 
@@ -284,6 +294,7 @@ public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, 
 		joinBuilder.append(" FULL JOIN ")
 					.append(tableName)
 					.append(" ");
+		tables.add(tableName);
 		return new GenericJoinBuilder(this);
 	}
 
@@ -714,6 +725,13 @@ public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, 
 		handleOrgId();
 		List<Long> fileIds = null;
 		List<Map<String, Object>> records = new ArrayList<>();
+		long orgId = -1;
+
+		if(AccountUtil.getCurrentOrg() != null) {
+			orgId = AccountUtil.getCurrentOrg().getId();
+		}
+
+
 
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
@@ -732,6 +750,15 @@ public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, 
 				for(int i=0; i<whereValues.length; i++) {
 					Object value = whereValues[i];
 					pstmt.setObject(i+1, value);
+				}
+			}
+
+			if(orgId > 0) {
+				records = getFromCache(orgId);
+				if(records !=  null) {
+					return records;
+				} else {
+					records = new ArrayList<>();
 				}
 			}
 
@@ -815,10 +842,60 @@ public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, 
 			fetchFileUrl(records, fileIds);
 		}
 
+		addToCache(orgId, records);
 //		if(orgIdField != null) {
 //			where = oldWhere;
 //		}
 		return records;
+	}
+
+	private List<Map<String,Object>> getFromCache(long orgId) {
+
+		if(DBUtil.isQueryCacheEnabled(orgId, tableName)) {
+			Map<String, Map<String, SelectQueryCache>> table = QUERY_CACHE.get(orgId);
+			List<Map<String, Object>> returnValue = new ArrayList<>();
+			if (table != null) {
+
+				Map<String, SelectQueryCache> tableCache = table.get(tableName);
+				SelectQueryCache cache = table.get(tableName).get(sql);
+				if (cache != null) {
+					for (String tablesInQuery : cache.getTables()) {
+						Object value = LRUCache.getQueryCache().get(getRedisKey(orgId, tablesInQuery));
+						if (value == null) {
+							tableCache.remove(sql);
+							LOGGER.info("cache miss for query " + sql);
+							returnValue = null;
+							break;
+						}
+					}
+					if (returnValue != null) {
+						LOGGER.info("cache hit for query " + sql);
+						return cache.getResult();
+					}
+				}
+
+			}
+		}
+		return null;
+	}
+
+	static String getRedisKey(long orgId, String tableName) {
+		return  orgId+'_'+tableName;
+	}
+
+	private void addToCache(long orgId, List<Map<String,Object>> records) {
+		if (orgId > 0) {
+			if(DBUtil.isQueryCacheEnabled(orgId, tableName)) {
+				long queryGetTime = System.currentTimeMillis();
+				Map<String, Map<String, SelectQueryCache>> table = QUERY_CACHE.getOrDefault(orgId, new HashMap<>());
+				Map<String, SelectQueryCache> query = table.getOrDefault(tableName, new HashMap<>());
+				query.put(sql, new SelectQueryCache(tables, records));
+				table.put(tableName, query);
+				LOGGER.info("building cache for query " + sql);
+				LRUCache.getQueryCache().put(getRedisKey(orgId, tableName), queryGetTime);
+				QUERY_CACHE.put(orgId, table);
+			}
+		}
 	}
 
 	/**
@@ -923,5 +1000,32 @@ public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, 
 			return parentBuilder;
 		}
 
+	}
+
+	private class SelectQueryCache {
+
+		private ArrayList<String> tables;
+		private List<Map<String, Object>> result;
+
+		public SelectQueryCache(ArrayList<String> tables, List<Map<String, Object>> result) {
+			this.tables = tables;
+			this.result = result;
+		}
+
+		public ArrayList<String> getTables() {
+			return tables;
+		}
+
+		public void setTables(ArrayList<String> tables) {
+			this.tables = tables;
+		}
+
+		public List<Map<String, Object>> getResult() {
+			return result;
+		}
+
+		public void setResult(List<Map<String, Object>> result) {
+			this.result = result;
+		}
 	}
 }

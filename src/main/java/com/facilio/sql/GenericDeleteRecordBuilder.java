@@ -1,9 +1,11 @@
 package com.facilio.sql;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.fw.LRUCache;
 import com.facilio.transaction.FacilioConnectionPool;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
@@ -14,6 +16,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.StringJoiner;
 
@@ -48,7 +51,7 @@ public class GenericDeleteRecordBuilder implements DeleteBuilderIfc<Map<String, 
 	private WhereBuilder where = new WhereBuilder();
 	private WhereBuilder oldWhere = null;
 	private StringBuilder joinBuilder = new StringBuilder();
-	private StringJoiner tablesToBeDeleted = new StringJoiner(",");
+	private ArrayList<String> tablesToBeDeleted = new ArrayList<>();
 	private Connection conn = null;
 	private static Constructor constructor;
 
@@ -95,7 +98,7 @@ public class GenericDeleteRecordBuilder implements DeleteBuilderIfc<Map<String, 
 	 * Returns tables that are to be deleted, multiple tables can be deleted usind different Joins.
 	 * @return the all the tables that are added to the TablesToBeDeleted.
 	 */
-	public StringJoiner getTablesToBeDeleted() {
+	public ArrayList<String> getTablesToBeDeleted() {
 		return tablesToBeDeleted;
 	}
 
@@ -410,6 +413,17 @@ public class GenericDeleteRecordBuilder implements DeleteBuilderIfc<Map<String, 
 
 			int rowCount = pstmt.executeUpdate();
 			System.out.println("Deleted "+rowCount+" records.");
+			long orgId = -1;
+			if(AccountUtil.getCurrentOrg() != null) {
+				orgId = AccountUtil.getCurrentOrg().getOrgId();
+				if(DBUtil.isQueryCacheEnabled(orgId, tableName)) {
+					LOGGER.info("cache invalidate for query " + sql);
+					for (String tablesInQuery : tablesToBeDeleted) {
+						LRUCache.getQueryCache().remove(GenericSelectRecordBuilder.getRedisKey(orgId, tablesInQuery));
+					}
+				}
+			}
+
 			return rowCount;
 		}
 		catch(SQLException e) {
