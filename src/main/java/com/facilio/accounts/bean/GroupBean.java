@@ -1,5 +1,6 @@
 package com.facilio.accounts.bean;
 
+import java.util.Collection;
 import java.util.List;
 
 import com.facilio.accounts.dto.Group;
@@ -32,6 +33,8 @@ public interface GroupBean {
 	public Group getGroup(long groupId) throws Exception;
 	
 	public Group getGroup(String groupName) throws Exception;
+	
+	public List<Group> getGroups(Collection<Long> ids) throws Exception;
 	
 	public List<Group> getGroups(Criteria criteria) throws Exception;
 

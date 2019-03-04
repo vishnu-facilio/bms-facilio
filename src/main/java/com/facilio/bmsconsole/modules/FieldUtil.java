@@ -9,6 +9,7 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -17,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
@@ -48,7 +50,7 @@ public class FieldUtil {
 	private static final Logger LOGGER = LogManager.getLogger(FieldUtil.class.getName());
 	
 	public static final String NUMBER_FIELD_UNIT_SUFFIX = "Unit";
-	public static Map<String, Object> getLookedUpProp(long id) {
+	public static Map<String, Object> getEmptyLookedUpProp(long id) {
 		Map<String, Object> prop = new HashMap<>();
 		prop.put("id", id);
 		return prop;
@@ -359,36 +361,64 @@ public class FieldUtil {
 	}
 	
 	public static Map<String, Object> getLookupProp(LookupField lookupField, long id, int level) throws Exception {
-		if(id > 0) {
-			if(LookupSpecialTypeUtil.isSpecialType(lookupField.getSpecialType())) {
-				return FieldUtil.getAsProperties(LookupSpecialTypeUtil.getLookedupObject(lookupField.getSpecialType(), id));
+		Map<Long, Map<String, Object>> props = (Map<Long, Map<String, Object>>) getLookupProps(lookupField, Collections.singletonList(id), true, level);
+		if (props != null && !props.isEmpty()) {
+			return props.values().stream().findFirst().get();
+		}
+		return null;
+	}
+	
+	public static Map<Long, ? extends Object> getLookupProps(LookupField field, Collection<Long> ids, boolean isMap, int level) throws Exception {
+		if(CollectionUtils.isNotEmpty(ids)) {
+			if(LookupSpecialTypeUtil.isSpecialType(field.getSpecialType())) {
+				if (isMap) {
+					List<? extends Object> records = LookupSpecialTypeUtil.getRecords(field.getSpecialType(), ids);
+					if (CollectionUtils.isNotEmpty(records)) {
+						Map<Long, Map<String, Object>> props = new HashMap<>(); 
+						for (Object record : records) {
+							Map<String, Object> prop = FieldUtil.getAsProperties(record);
+							props.put((Long) prop.get("id"), prop);
+						}
+						return props;
+					}
+					return null;
+				}
+				else {
+					return LookupSpecialTypeUtil.getRecordsAsMap(field.getSpecialType(), ids);
+				}
 			}
 			else {
-				Class<ModuleBaseWithCustomFields> moduleClass = FacilioConstants.ContextNames.getClassFromModuleName(lookupField.getLookupModule().getName());
+				Class<ModuleBaseWithCustomFields> moduleClass = FacilioConstants.ContextNames.getClassFromModuleName(field.getLookupModule().getName());
 				if(moduleClass != null) {
 					ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-					List<FacilioField> lookupBeanFields = modBean.getAllFields(lookupField.getLookupModule().getName());
+					List<FacilioField> lookupBeanFields = modBean.getAllFields(field.getLookupModule().getName());
+					FacilioModule module = modBean.getModule(field.getLookupModule().getName());
 					SelectRecordsBuilder<ModuleBaseWithCustomFields> lookupBeanBuilder = new SelectRecordsBuilder<>(level)
-																						.table(lookupField.getLookupModule().getTableName())
-																						.moduleName(lookupField.getLookupModule().getName())
+																						.module(module)
 																						.select(lookupBeanFields)
-																						.andCustomWhere(lookupField.getLookupModule().getTableName()+".ID = ?", id);
-					List<Map<String, Object>> records = lookupBeanBuilder.getAsProps();
-					if(records != null && records.size() > 0) {
-						return records.get(0);
+																						.beanClass(moduleClass)
+																						.andCondition(CriteriaAPI.getIdCondition(ids, module))
+																						;
+					
+					if (field instanceof LookupFieldMeta && CollectionUtils.isNotEmpty(((LookupFieldMeta) field).getChildLookupFields())) {
+						for (LookupField lookupField : ((LookupFieldMeta) field).getChildLookupFields()) {
+							lookupBeanBuilder.fetchLookup(lookupField instanceof LookupFieldMeta ? (LookupFieldMeta) lookupField : new LookupFieldMeta(lookupField));
+						}
+					}
+					
+					if (isMap) {
+						return lookupBeanBuilder.getAsMapProps();
 					}
 					else {
-						return null;
+						return lookupBeanBuilder.getAsMap();
 					}
 				}
 				else {
-					throw new IllegalArgumentException("Unknown Module Name in Lookup field "+lookupField);
+					throw new IllegalArgumentException("Unknown Module Name while fetching look props "+field.getLookupModule().getName());
 				}
 			}	
 		}
-		else {
-			return null;
-		}
+		return null;
 	}
 	
 	public static Object getEmptyLookupVal(LookupField lookupField, long id) throws Exception {

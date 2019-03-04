@@ -1,13 +1,14 @@
 package com.facilio.sql;
 
 import java.sql.Connection;
+import java.util.Collection;
 import java.util.List;
 
 import com.facilio.bmsconsole.modules.FacilioField;
 
 public interface SelectBuilderIfc<E> extends WhereBuilderIfc<SelectBuilderIfc<E>> {
 	
-	public SelectBuilderIfc<E> select(List<FacilioField> fields);
+	public SelectBuilderIfc<E> select(Collection<FacilioField> fields);
 	
 	public SelectBuilderIfc<E> table(String tableName);
 	

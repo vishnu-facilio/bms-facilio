@@ -81,7 +81,7 @@ public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, 
 	private static Constructor<?> constructor;
 
 
-	private List<FacilioField> selectFields;
+	private Collection<FacilioField> selectFields;
 	private FacilioField orgIdField=null;
 	private String tableName;
 	private StringBuilder joinBuilder = new StringBuilder();
@@ -157,7 +157,7 @@ public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, 
 	 *   </pre>
 	 * @return GenericSelectRecordBuilder object instance
 	 */
-	public GenericSelectRecordBuilder select(List<FacilioField> fields) {
+	public GenericSelectRecordBuilder select(Collection<FacilioField> fields) {
 		this.selectFields = fields;
 		return this;
 	}
@@ -610,7 +610,7 @@ public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, 
 	 * @return Fields that are selected in the GenericSelectRecordBuilder, null if no fields were selected.
 	 *
 	 */
-	public List<FacilioField> getSelectFields() {
+	public Collection<FacilioField> getSelectFields() {
 		return selectFields;
 	}
 

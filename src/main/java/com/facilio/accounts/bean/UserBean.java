@@ -61,7 +61,7 @@ public interface UserBean {
 	
 	public User getUserFromPhone(String phone) throws Exception;
 	
-	public List<User> getUsers(Criteria criteria, List<Long>... ouids) throws Exception;
+	public List<User> getUsers(Criteria criteria, Collection<Long>... ouids) throws Exception;
 	
 	public Map<Long, List<User>> getUsersWithRoleAsMap(Collection<Long> roleIds) throws Exception;
 	
@@ -69,7 +69,7 @@ public interface UserBean {
 	
 	public List<User> getUsersWithRoleAndAccessibleSpace (long roleId, long spaceId) throws Exception;
 	
-	public Map<Long, User> getUsersAsMap(Criteria criteria, List<Long>... ouids) throws Exception;
+	public Map<Long, User> getUsersAsMap(Criteria criteria, Collection<Long>... ouids) throws Exception;
 
 	public User getUser(long orgId, String email) throws Exception;
 	

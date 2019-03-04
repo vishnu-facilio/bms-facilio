@@ -916,7 +916,7 @@ public class PreventiveMaintenanceAPI {
 		return getPMs(ids, filterCriteria,null, null, requiredfields);
 	}
 	
-	public static List<PreventiveMaintenance> getPMsDetails(List<Long> ids) throws Exception {
+	public static List<PreventiveMaintenance> getPMsDetails(Collection<Long> ids) throws Exception {
 		return getPMs(ids, null, null, null, null,true, true);
 	}
 
@@ -954,7 +954,7 @@ public class PreventiveMaintenanceAPI {
 	}
 
 
-	public static List<PreventiveMaintenance> getPMs(List<Long> ids, Criteria criteria, String searchQuery, JSONObject pagination, List<FacilioField> fields, Boolean...fetchDependencies) throws Exception {
+	public static List<PreventiveMaintenance> getPMs(Collection<Long> ids, Criteria criteria, String searchQuery, JSONObject pagination, List<FacilioField> fields, Boolean...fetchDependencies) throws Exception {
 		FacilioModule module = ModuleFactory.getPreventiveMaintenancetModule();
 		if (fields == null || fields.isEmpty()) {
 			fields = FieldFactory.getPreventiveMaintenanceFields();

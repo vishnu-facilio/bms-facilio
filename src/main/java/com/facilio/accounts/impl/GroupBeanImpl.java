@@ -1,6 +1,7 @@
 package com.facilio.accounts.impl;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,6 +24,7 @@ import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
+import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.sql.GenericDeleteRecordBuilder;
@@ -285,6 +287,30 @@ public class GroupBeanImpl implements GroupBean {
 				.table(module.getTableName())
 				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 				.andCriteria(criteria);
+		
+		List<Map<String, Object>> props = selectBuilder.get();
+		if (props != null && !props.isEmpty()) {
+			List<Group> groups = new ArrayList<>();
+			for(Map<String, Object> prop : props) {
+				Group group = FieldUtil.getAsBeanFromMap(prop, Group.class);
+				populateGroupEmailAndPhone(group);
+				groups.add(group);
+			}
+			return groups;
+		}
+		return null;
+	}
+	
+	@Override
+	public List<Group> getGroups(Collection<Long> ids) throws Exception {
+		FacilioModule module = AccountConstants.getGroupModule();
+		List<FacilioField> fields = AccountConstants.getGroupFields(); 
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(fields)
+				.table(module.getTableName())
+				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+				.andCondition(CriteriaAPI.getCondition(FieldFactory.getAsMap(fields).get("groupId"), ids, NumberOperators.EQUALS))
+				;
 		
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {

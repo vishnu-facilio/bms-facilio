@@ -251,22 +251,22 @@ public class TaskTemplate extends Template {
 			taskProp.put("statusNew", getStatus());
 			
 			if (priorityId != -1) {
-				taskProp.put("priority", FieldUtil.getLookedUpProp(priorityId));
+				taskProp.put("priority", FieldUtil.getEmptyLookedUpProp(priorityId));
 			}
 			if (categoryId != -1) {
-				taskProp.put("category", FieldUtil.getLookedUpProp(categoryId));
+				taskProp.put("category", FieldUtil.getEmptyLookedUpProp(categoryId));
 			}
 			if (typeId != -1) {
-				taskProp.put("type", FieldUtil.getLookedUpProp(typeId));
+				taskProp.put("type", FieldUtil.getEmptyLookedUpProp(typeId));
 			}
 			if (assignmentGroupId != -1) {
-				taskProp.put("assignmentGroup", FieldUtil.getLookedUpProp(assignmentGroupId));
+				taskProp.put("assignmentGroup", FieldUtil.getEmptyLookedUpProp(assignmentGroupId));
 			}
 			if (assignedToId != -1) {
-				taskProp.put("assignedTo", FieldUtil.getLookedUpProp(assignedToId));
+				taskProp.put("assignedTo", FieldUtil.getEmptyLookedUpProp(assignedToId));
 			}
 			if (resourceId != -1) {
-				taskProp.put("resource", FieldUtil.getLookedUpProp(resourceId));
+				taskProp.put("resource", FieldUtil.getEmptyLookedUpProp(resourceId));
 			}
 			if (inputType != null) {
 				taskProp.put("inputType", inputType.getVal());

@@ -2,13 +2,13 @@ package com.facilio.sql;
 
 import java.sql.Connection;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
 
 import com.facilio.bmsconsole.modules.FacilioField;
 
 public abstract class DBSelectRecordBuilder {
 	
-	protected List<FacilioField> selectFields;
+	protected Collection<FacilioField> selectFields;
 	protected String tableName;
 	protected StringBuilder joinBuilder = new StringBuilder();
 	protected WhereBuilder where = new WhereBuilder();

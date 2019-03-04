@@ -1,7 +1,10 @@
 package com.facilio.bmsconsole.util;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
+
+import org.apache.commons.collections4.CollectionUtils;
 
 import com.facilio.accounts.dto.Group;
 import com.facilio.accounts.dto.Role;
@@ -164,7 +167,64 @@ public class LookupSpecialTypeUtil {
 		return null;
 	}
 	
+	public static Map<Long, ? extends Object> getRecordsAsMap (String specialType, Collection<Long> ids) throws Exception {
+		if(FacilioConstants.ContextNames.USERS.equals(specialType) || FacilioConstants.ContextNames.REQUESTER.equals(specialType)) {
+			return AccountUtil.getUserBean().getUsersAsMap(null, ids);
+		}
+		else if(FacilioConstants.ContextNames.GROUPS.equals(specialType)) {
+			List<Group> groups = AccountUtil.getGroupBean().getGroups(ids);
+			if (CollectionUtils.isNotEmpty(groups)) {
+				groups.stream().collect(Collectors.toMap(Group::getId, Function.identity()));
+			}
+			return null;
+		}
+		else if (FacilioConstants.ContextNames.ROLE.equals(specialType)) {
+			List<Role> roles = AccountUtil.getRoleBean().getRoles(ids);
+			if (CollectionUtils.isNotEmpty(roles)) {
+				roles.stream().collect(Collectors.toMap(Role::getId, Function.identity()));
+			}
+			return null;
+		}
+		else if(FacilioConstants.ContextNames.BUSINESS_HOUR.equals(specialType)) {
+			return null; //Returning null for now
+		}
+		else if(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE.equals(specialType)) {
+			List<PreventiveMaintenance> pms = PreventiveMaintenanceAPI.getPMsDetails(ids);
+			if (CollectionUtils.isNotEmpty(pms)) {
+				pms.stream().collect(Collectors.toMap(PreventiveMaintenance::getId, Function.identity()));
+			}
+		}
+		else if(EventConstants.EventContextNames.EVENT.equals(specialType)) {
+			List<EventContext> events = EventAPI.getEvents(ids);
+			if (CollectionUtils.isNotEmpty(events)) {
+				events.stream().collect(Collectors.toMap(EventContext::getId, Function.identity()));
+			}
+			return null;
+		}
+		return null;
+	}
 	
+	public static List<? extends Object> getRecords (String specialType, Collection<Long> ids) throws Exception {
+		if(FacilioConstants.ContextNames.USERS.equals(specialType) || FacilioConstants.ContextNames.REQUESTER.equals(specialType)) {
+			return AccountUtil.getUserBean().getUsers(null, ids);
+		}
+		else if(FacilioConstants.ContextNames.GROUPS.equals(specialType)) {
+			return AccountUtil.getGroupBean().getGroups(ids);
+		}
+		else if (FacilioConstants.ContextNames.ROLE.equals(specialType)) {
+			return AccountUtil.getRoleBean().getRoles(ids);
+		}
+		else if(FacilioConstants.ContextNames.BUSINESS_HOUR.equals(specialType)) {
+			return null; //Returning null for now
+		}
+		else if(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE.equals(specialType)) {
+			return PreventiveMaintenanceAPI.getPMsDetails(ids);
+		}
+		else if(EventConstants.EventContextNames.EVENT.equals(specialType)) {
+			return EventAPI.getEvents(ids);
+		}
+		return null;
+	}
 	
 	public static Object getEmptyLookedupObject(String specialType, long id) throws Exception {
 		if(FacilioConstants.ContextNames.USERS.equals(specialType)) {

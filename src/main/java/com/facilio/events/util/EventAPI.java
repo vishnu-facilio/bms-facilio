@@ -3,12 +3,15 @@ package com.facilio.events.util;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.chain.Chain;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
@@ -255,16 +258,24 @@ public class EventAPI {
 	}
 	
 	public static EventContext getEvent(long id) throws Exception {
+		List<EventContext> events = getEvents(Collections.singletonList(id));
+		if (CollectionUtils.isNotEmpty(events)) {
+			return events.get(0);
+		}
+		return null;
+	}
+	
+	public static List<EventContext> getEvents(Collection<Long> ids) throws Exception {
 		FacilioModule module = EventConstants.EventModuleFactory.getEventModule();
 		GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
 																.table(module.getTableName())
 																.select(EventConstants.EventFieldFactory.getEventFields())
 																.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
-																.andCondition(CriteriaAPI.getIdCondition(id, module));
+																.andCondition(CriteriaAPI.getIdCondition(ids, module));
 		
 		List<Map<String, Object>> props = selectRecordBuilder.get();
 		if(props != null && !props.isEmpty()) {
-			return FieldUtil.getAsBeanFromMap(props.get(0), EventContext.class);
+			return FieldUtil.getAsBeanListFromMapList(props, EventContext.class);
 		}
 		return null;
 	}

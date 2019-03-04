@@ -1,6 +1,7 @@
 package com.facilio.accounts.impl;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,8 +16,10 @@ import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
+import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.sql.GenericDeleteRecordBuilder;
 import com.facilio.sql.GenericInsertRecordBuilder;
@@ -253,6 +256,20 @@ public class RoleBeanImpl implements RoleBean {
 				.table(module.getTableName())
 				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 				.andCriteria(criteria);
+		
+		return getRolesFromProps(selectBuilder.get(), false);
+	}
+	
+	@Override
+	public List<Role> getRoles(Collection<Long> ids) throws Exception {
+		FacilioModule module = AccountConstants.getRoleModule();
+		List<FacilioField> fields = AccountConstants.getRoleFields();
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(fields)
+				.table(module.getTableName())
+				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+				.andCondition(CriteriaAPI.getCondition(FieldFactory.getAsMap(fields).get("roleId"), ids, NumberOperators.EQUALS))
+				;
 		
 		return getRolesFromProps(selectBuilder.get(), false);
 	}

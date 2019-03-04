@@ -1159,7 +1159,7 @@ public class UserBeanImpl implements UserBean {
 	
 	
 	@Override
-	public List<User> getUsers(Criteria criteria, List<Long>... ouids) throws Exception {
+	public List<User> getUsers(Criteria criteria, Collection<Long>... ouids) throws Exception {
 		
 		List<Map<String, Object>> props = fetchUserProps(criteria, ouids);
 		if (props != null && !props.isEmpty()) {
@@ -1265,7 +1265,7 @@ public class UserBeanImpl implements UserBean {
 	}
 	
 	@Override
-	public Map<Long, User> getUsersAsMap(Criteria criteria, List<Long>... ouids) throws Exception {
+	public Map<Long, User> getUsersAsMap(Criteria criteria, Collection<Long>... ouids) throws Exception {
 		List<Map<String, Object>> props = fetchUserProps(criteria, ouids);
 		if (props != null && !props.isEmpty()) {
 			Map<Long, User> users = new HashMap<>();
@@ -1278,7 +1278,7 @@ public class UserBeanImpl implements UserBean {
 		return null;
 	}
 	
-	private List<Map<String, Object>> fetchUserProps (Criteria criteria, List<Long>... ouids) throws Exception {
+	private List<Map<String, Object>> fetchUserProps (Criteria criteria, Collection<Long>... ouids) throws Exception {
 		List<FacilioField> fields = new ArrayList<>();
 		fields.addAll(AccountConstants.getUserFields());
 		List<FacilioField> orgUserFields = AccountConstants.getOrgUserFields();
