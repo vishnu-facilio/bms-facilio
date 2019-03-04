@@ -25,7 +25,7 @@ public class SetOrgIdConditionCommand implements Command{
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(moduleName);
 		Condition orgCondition = new Condition();
-		/*orgCondition.setField(FieldFactory.getOrgIdField(module));*/
+		orgCondition.setField(FieldFactory.getOrgIdField(module));
 		orgCondition.setOperator(NumberOperators.EQUALS);
 		orgCondition.setValue(String.valueOf(AccountUtil.getCurrentOrg().getOrgId()));
 
