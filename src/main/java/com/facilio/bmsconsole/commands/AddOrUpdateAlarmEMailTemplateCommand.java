@@ -7,6 +7,7 @@ import org.json.simple.JSONObject;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.templates.EMailTemplate;
 import com.facilio.bmsconsole.templates.Template;
+import com.facilio.bmsconsole.templates.DefaultTemplate.DefaultTemplateType;
 import com.facilio.bmsconsole.templates.Template.Type;
 import com.facilio.bmsconsole.util.TemplateAPI;
 import com.facilio.constants.FacilioConstants;
@@ -45,7 +46,7 @@ public class AddOrUpdateAlarmEMailTemplateCommand implements Command {
 	
 	private EMailTemplate addTemplate(String email) throws Exception {
 		EMailTemplate emailTemplate = new EMailTemplate();
-		JSONObject alarmMailJson = TemplateAPI.getDefaultTemplate(5).getOriginalTemplate(); //Default template id of ALARM_CREATION_EMAIL is 5
+		JSONObject alarmMailJson = TemplateAPI.getDefaultTemplate(DefaultTemplateType.ACTION,5).getOriginalTemplate(); //Default template id of ALARM_CREATION_EMAIL is 5
 		
 		emailTemplate.setName("New Alarm Raised");
 		emailTemplate.setType(Template.Type.EMAIL);

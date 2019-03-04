@@ -11,6 +11,7 @@ import org.json.simple.JSONObject;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.templates.Template;
+import com.facilio.bmsconsole.templates.DefaultTemplate.DefaultTemplateType;
 import com.facilio.bmsconsole.util.TemplateAPI;
 
 public class ActionContext implements Serializable {
@@ -61,7 +62,7 @@ public class ActionContext implements Serializable {
 		return defaultTemplateId;
 	}
 	public void setDefaultTemplateId(int defaultTemplateId) {
-		this.template = TemplateAPI.getDefaultTemplate(defaultTemplateId);
+		this.template = TemplateAPI.getDefaultTemplate(DefaultTemplateType.ACTION,defaultTemplateId);
 		this.defaultTemplateId = defaultTemplateId;
 	}
 	

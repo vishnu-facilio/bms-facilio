@@ -6,7 +6,6 @@ import java.util.Map;
 
 import org.apache.commons.chain.Chain;
 import org.apache.log4j.Logger;
-import org.apache.log4j.Priority;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
@@ -23,8 +22,8 @@ import com.facilio.bmsconsole.templates.SLATemplate;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.rule.ActionContext;
 import com.facilio.bmsconsole.workflow.rule.ActionType;
-import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsole.workflow.rule.AlarmRuleContext;
+import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 import com.facilio.bmsconsole.workflow.rule.SLARuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
@@ -40,7 +39,7 @@ public class WorkflowRuleAction extends FacilioAction {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private static final Logger LOGGER = Logger.getLogger(DashboardAction.class.getName());
+	private static final Logger LOGGER = Logger.getLogger(WorkflowRuleAction.class.getName());
 	public String execute() throws Exception 
 	{
 	    return SUCCESS;
