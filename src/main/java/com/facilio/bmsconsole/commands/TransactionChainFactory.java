@@ -1209,6 +1209,19 @@ public class TransactionChainFactory {
 			return c;
 		}
 
+		public static Chain getChangeNewPreventiveMaintenanceStatusChainForMig() {
+			Chain c = getDefaultChain();
+			c.addCommand(new ChangePreventiveMaintenanceStatusCommand());
+			c.addCommand(new DeletePMAndDependenciesCommand(false, true));
+			c.addCommand(new AddPMTriggerCommand(true));
+			c.addCommand(new AddPMReminderCommand(true));
+			c.addCommand(new SetMissingRelInResourcePlannersCommand());
+			c.addCommand(new AddPMRelFieldsCommand(true));
+			c.addCommand(new ScheduleNewPMCommand(true));
+			return c;
+		}
+
+
 
 	public static Chain getExecutePreventiveMaintenanceChain() {
 			Chain c = getDefaultChain();

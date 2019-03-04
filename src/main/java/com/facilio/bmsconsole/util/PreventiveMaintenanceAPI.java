@@ -661,12 +661,12 @@ public class PreventiveMaintenanceAPI {
 				context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Arrays.asList(activePm.getId()));
 				context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE, pm);
 
-				Chain addTemplate = TransactionChainFactory.getChangeNewPreventiveMaintenanceStatusChain();
+				Chain addTemplate = TransactionChainFactory.getChangeNewPreventiveMaintenanceStatusChainForMig();
 				addTemplate.execute(context);
 
-				LOGGER.log(Level.SEVERE, "Migrated: " + activePm.getId());
+				LOGGER.log(Level.SEVERE, "Activated: " + activePm.getId());
 			} catch (Exception e) {
-				LOGGER.log(Level.SEVERE, "Failed to deactivate PM: " + activePm.getId(), e);
+				LOGGER.log(Level.SEVERE, "Failed to activate PM: " + activePm.getId(), e);
 				throw e;
 			}
 		}
@@ -681,12 +681,12 @@ public class PreventiveMaintenanceAPI {
 				context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Arrays.asList(activePm.getId()));
 				context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE, pm);
 
-				Chain addTemplate = TransactionChainFactory.getChangeNewPreventiveMaintenanceStatusChain();
+				Chain addTemplate = TransactionChainFactory.getChangeNewPreventiveMaintenanceStatusChainForMig();
 				addTemplate.execute(context);
 
-				LOGGER.log(Level.SEVERE, "Migrated: " + activePm.getId());
+				LOGGER.log(Level.SEVERE, "Deactivated: " + activePm.getId());
 			} catch (Exception e) {
-				LOGGER.log(Level.SEVERE, "Failed to active PM: " + activePm.getId());
+				LOGGER.log(Level.SEVERE, "Failed to deactivate PM: " + activePm.getId());
 				throw e;
 			}
 		}
