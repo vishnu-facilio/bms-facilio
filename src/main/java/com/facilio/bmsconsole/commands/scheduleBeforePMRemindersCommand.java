@@ -126,6 +126,7 @@ public class scheduleBeforePMRemindersCommand implements Command {
 							PMJobsContext pmJob = scheduledPMJobMap.get(resourceId+"-"+pmTriggerContext.getId());
 							if (pmJob == null) {
 								CommonCommandUtil.emailAlert("Invalid State! pmjob should not be null", "scheduledPMJobMap = " + scheduledPMJobMap.toString() + " resourceid = " + resourceId + " TriggerId = " + pmTriggerContext.getId());
+								continue;
 							}
 							PreventiveMaintenanceAPI.schedulePrePMReminder(reminder, pmJob.getNextExecutionTime(), pmTriggerContext.getId(),resourceId);
 						}

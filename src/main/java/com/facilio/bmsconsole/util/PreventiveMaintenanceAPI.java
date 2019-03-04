@@ -646,12 +646,12 @@ public class PreventiveMaintenanceAPI {
 			return;
 		}
 
-		LOGGER.log(Level.SEVERE, "Number of PMS to be deactivated: ", pms.size());
+		LOGGER.log(Level.SEVERE, "Number of PMS to be deactivated: " + pms.size());
 
 		Set<Long> skipList = deactivateAllPms(pms);
 		Set<Long> activateSkipList = activateAllPms(pms, skipList);
-		LOGGER.log(Level.SEVERE, "Deactivation skipped: ", StringUtils.join(skipList.toArray(), ", "));
-		LOGGER.log(Level.SEVERE, "Activation skipped: ", StringUtils.join(activateSkipList.toArray(), ", "));
+		LOGGER.log(Level.SEVERE, "Deactivation skipped: "+ StringUtils.join(skipList.toArray(), ", "));
+		LOGGER.log(Level.SEVERE, "Activation skipped: "+ StringUtils.join(activateSkipList.toArray(), ", "));
 	}
 
 	private static Set<Long> activateAllPms(List<PreventiveMaintenance> pms, Set<Long> skipList) throws Exception {
