@@ -1,7 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
 import com.facilio.bmsconsole.context.TicketStatusContext;
-import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.util.TicketAPI;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
@@ -35,7 +34,6 @@ public class GetPMWorkOrders implements Command {
 																		.andCondition(CriteriaAPI.getCondition(status, String.valueOf(ticketStatusContext.getId()), PickListOperators.ISN_T))
 																		.orderBy("WorkOrders.CREATED_TIME DESC")
 																		;
-			
 			pm.setWorkorders(selectBuilder.get());
 		}
 		return false;

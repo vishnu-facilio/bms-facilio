@@ -64,7 +64,7 @@ public class GetPreventiveMaintenanceCommand implements Command {
 
 		JSONObject pagination = (JSONObject) context.get(FacilioConstants.ContextNames.PAGINATION);
 		
-		List<PreventiveMaintenance> pms = PreventiveMaintenanceAPI.getPMs(idsToSelect, criteria, query, pagination, true);
+		List<PreventiveMaintenance> pms = PreventiveMaintenanceAPI.getPMs(idsToSelect, criteria, query, pagination, null,true);
 		if (pms != null) {
 			context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_LIST, pms);
 		}

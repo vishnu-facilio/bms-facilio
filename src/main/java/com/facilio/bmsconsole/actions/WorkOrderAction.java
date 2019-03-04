@@ -418,7 +418,7 @@ public class WorkOrderAction extends FacilioAction {
 	}
 	
 	private FacilioContext executePMs (List<Long> ids) throws Exception {
-		List<PreventiveMaintenance> pms = PreventiveMaintenanceAPI.getActivePMs(ids, null);
+		List<PreventiveMaintenance> pms = PreventiveMaintenanceAPI.getActivePMs(ids, null, null);
 		if (pms != null && !pms.isEmpty()) {
 			FacilioContext context = new FacilioContext();
 			context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_LIST, pms);

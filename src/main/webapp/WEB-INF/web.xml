@@ -112,7 +112,10 @@
         <filter-name>struts2</filter-name>
         <url-pattern>/admin/*</url-pattern>
     </filter-mapping>
-    
+    <filter-mapping>
+        <filter-name>struts2</filter-name>
+        <url-pattern>/internalmig/*</url-pattern>
+    </filter-mapping>
 
     <servlet>
         <servlet-name>clientapp</servlet-name>

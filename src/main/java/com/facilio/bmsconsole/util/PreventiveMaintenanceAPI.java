@@ -4,14 +4,17 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.util.*;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.criteria.*;
 import com.facilio.bmsconsole.modules.*;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.workflow.rule.*;
+import com.facilio.chain.FacilioContext;
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONArray;
@@ -627,6 +630,68 @@ public class PreventiveMaintenanceAPI {
 		return (Long) props.get(0).get("minCreatedTime");
 	}
 
+	public static void initScheduledWO() throws Exception {
+		List<FacilioField> fields = FieldFactory.getPreventiveMaintenanceFields();
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+
+		if (AccountUtil.getCurrentOrg() == null || AccountUtil.getCurrentOrg().getOrgId() <= 0) {
+			LOGGER.log(Level.SEVERE, "Org is missing");
+			return;
+		}
+
+		List<PreventiveMaintenance> pms = PreventiveMaintenanceAPI.getAllActivePMs(null, Arrays.asList(fieldMap.get("id")));
+		if(pms == null || pms.isEmpty()) {
+			LOGGER.log(Level.SEVERE, "There are no PMS in the org "+ AccountUtil.getCurrentOrg().getOrgId());
+			return;
+		}
+
+		LOGGER.log(Level.SEVERE, "Number of PMS to be deactivated: ", pms.size());
+
+		deactivateAllPms(pms);
+		activateAllPms(pms);
+	}
+
+	private static void activateAllPms(List<PreventiveMaintenance> pms) throws Exception {
+		for (PreventiveMaintenance activePm: pms) {
+			try {
+				PreventiveMaintenance pm = new PreventiveMaintenance();
+				pm.setStatus(true);
+
+				FacilioContext context = new FacilioContext();
+				context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Arrays.asList(activePm.getId()));
+				context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE, pm);
+
+				Chain addTemplate = TransactionChainFactory.getChangeNewPreventiveMaintenanceStatusChain();
+				addTemplate.execute(context);
+
+				LOGGER.log(Level.SEVERE, "Migrated: ", activePm.getId());
+			} catch (Exception e) {
+				LOGGER.log(Level.SEVERE, "Failed to deactivate PM: ", activePm.getId());
+				throw e;
+			}
+		}
+	}
+
+	private static void deactivateAllPms(List<PreventiveMaintenance> pms) throws Exception {
+		for (PreventiveMaintenance activePm: pms) {
+			try {
+				PreventiveMaintenance pm = new PreventiveMaintenance();
+				pm.setStatus(false);
+				FacilioContext context = new FacilioContext();
+				context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Arrays.asList(activePm.getId()));
+				context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE, pm);
+
+				Chain addTemplate = TransactionChainFactory.getChangeNewPreventiveMaintenanceStatusChain();
+				addTemplate.execute(context);
+
+				LOGGER.log(Level.SEVERE, "Migrated: ", activePm.getId());
+			} catch (Exception e) {
+				LOGGER.log(Level.SEVERE, "Failed to active PM: ", activePm.getId());
+				throw e;
+			}
+		}
+	}
+
 
 	public static Map<Long, List<Map<String, Object>>> getPMJobsFromPMIds(List<Long> pmIds, long startTime, long endTime) throws Exception {
 		FacilioModule pmJobsModule = ModuleFactory.getPMJobsModule();
@@ -819,10 +884,14 @@ public class PreventiveMaintenanceAPI {
 
 	
 	public static List<PreventiveMaintenance> getAllActivePMs(Criteria filterCriteria) throws Exception {
-		return getActivePMs(null,filterCriteria);
+		return getActivePMs(null, filterCriteria, null);
 	}
-	
-	public static List<PreventiveMaintenance> getActivePMs(List<Long> ids, Criteria filterCriteria) throws Exception {
+
+	public static List<PreventiveMaintenance> getAllActivePMs(Criteria filterCriteria, List<FacilioField> fields) throws Exception {
+		return getActivePMs(null, filterCriteria, fields);
+	}
+
+	public static List<PreventiveMaintenance> getActivePMs(List<Long> ids, Criteria filterCriteria, List<FacilioField> requiredfields) throws Exception {
 		ModuleFactory.getPreventiveMaintenancetModule();
 		List<FacilioField> fields = FieldFactory.getPreventiveMaintenanceFields();
 		Map<String, FacilioField> pmFieldsMap = FieldFactory.getAsMap(fields);
@@ -833,13 +902,13 @@ public class PreventiveMaintenanceAPI {
 		
 		filterCriteria.addAndCondition(CriteriaAPI.getCondition(pmFieldsMap.get("status"), String.valueOf(true), BooleanOperators.IS));
 		
-		return getPMs(ids, filterCriteria,null, null);
-
+		return getPMs(ids, filterCriteria,null, null, requiredfields);
 	}
 	
 	public static List<PreventiveMaintenance> getPMsDetails(List<Long> ids) throws Exception {
-		return getPMs(ids, null, null, null, true, true);
+		return getPMs(ids, null, null, null, null,true, true);
 	}
+
 	public static List<PreventiveMaintenance> getAllPMs(Long orgid,boolean onlyActive) throws Exception {
 		
 		FacilioModule module = ModuleFactory.getPreventiveMaintenancetModule();
@@ -866,15 +935,22 @@ public class PreventiveMaintenanceAPI {
 				res.add(id);
 			}
 			
-			List<PreventiveMaintenance> pms = getPMs(res,null,null,null,true);
+			List<PreventiveMaintenance> pms = getPMs(res,null,null,null, null,true);
 			
 			return pms;
 		}
 		return null;
 	}
-	public static List<PreventiveMaintenance> getPMs(List<Long> ids, Criteria criteria, String searchQuery, JSONObject pagination, Boolean...fetchDependencies) throws Exception {
+
+
+	public static List<PreventiveMaintenance> getPMs(List<Long> ids, Criteria criteria, String searchQuery, JSONObject pagination, List<FacilioField> fields, Boolean...fetchDependencies) throws Exception {
 		FacilioModule module = ModuleFactory.getPreventiveMaintenancetModule();
-		List<FacilioField> fields = FieldFactory.getPreventiveMaintenanceFields();
+		if (fields == null || fields.isEmpty()) {
+			fields = FieldFactory.getPreventiveMaintenanceFields();
+		} else {
+			fields = new ArrayList<>(fields);
+		}
+
 		FacilioField pmSubjectField = FieldFactory.getAsMap(fields).get("title");
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 														.select(fields)
@@ -1639,11 +1715,13 @@ public class PreventiveMaintenanceAPI {
 
 		for (PreventiveMaintenance pm : pms) {
 			List<PMReminder> reminders = pm.getReminders();
+			if (pm.getReminders() == null || pm.getReminders().isEmpty()) {
+				continue;
+			}
 			if (pm.getPmCreationTypeEnum() == PreventiveMaintenance.PMCreationType.SINGLE) {
 				FacilioModule reminderModule = ModuleFactory.getPMReminderModule();
 				List<FacilioField> reminderFields = FieldFactory.getPMReminderFields();
 				Map<String, FacilioField> reminderFieldsMap = FieldFactory.getAsMap(reminderFields);
-
 				for (PMReminder reminder: reminders) {
 					long ruleId = -1;
 					Criteria criteria = new Criteria();
@@ -1680,19 +1758,21 @@ public class PreventiveMaintenanceAPI {
 					baseSpaceId = pm.getSiteId();
 				}
 				List<Long> resourceIds = getMultipleResourceToBeAddedFromPM(pm.getAssignmentTypeEnum(),baseSpaceId,pm.getSpaceCategoryId(),pm.getAssetCategoryId(),null,pm.getPmIncludeExcludeResourceContexts());
-				for(Long resourceId :resourceIds) {					// construct resource planner for default cases
-					if(!resourcePlanners.containsKey(resourceId)) {
-						PMResourcePlannerContext pmResourcePlannerContext = new PMResourcePlannerContext();
-						pmResourcePlannerContext.setResourceId(resourceId);
-						if(pmResourcePlannerContext.getResourceId() != null && pmResourcePlannerContext.getResourceId() > 0) {
-							pmResourcePlannerContext.setResource(ResourceAPI.getResource(pmResourcePlannerContext.getResourceId()));
-						}
-						pmResourcePlannerContext.setPmId(pm.getId());
-						pmResourcePlannerContext.setAssignedToId(-1l);
-						pmResourcePlannerContext.setTriggerContexts(new ArrayList<>());
-						pmResourcePlannerContext.setPmResourcePlannerReminderContexts(Collections.emptyList());
+				if (resourceIds != null && !resourceIds.isEmpty()) {
+					for(Long resourceId :resourceIds) {					// construct resource planner for default cases
+						if(!resourcePlanners.containsKey(resourceId)) {
+							PMResourcePlannerContext pmResourcePlannerContext = new PMResourcePlannerContext();
+							pmResourcePlannerContext.setResourceId(resourceId);
+							if(pmResourcePlannerContext.getResourceId() != null && pmResourcePlannerContext.getResourceId() > 0) {
+								pmResourcePlannerContext.setResource(ResourceAPI.getResource(pmResourcePlannerContext.getResourceId()));
+							}
+							pmResourcePlannerContext.setPmId(pm.getId());
+							pmResourcePlannerContext.setAssignedToId(-1l);
+							pmResourcePlannerContext.setTriggerContexts(new ArrayList<>());
+							pmResourcePlannerContext.setPmResourcePlannerReminderContexts(Collections.emptyList());
 
-						resourcePlanners.put(resourceId, pmResourcePlannerContext);
+							resourcePlanners.put(resourceId, pmResourcePlannerContext);
+						}
 					}
 				}
 

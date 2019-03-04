@@ -4,7 +4,39 @@
     "http://struts.apache.org/dtds/struts-2.5.dtd">
 
 <struts>
+	<package name="internalMig" strict-method-invocation="false"
+			 namespace="/internalmig" extends="struts-default,json-default">
+		<interceptors>
+			<interceptor name="cacheinterceptor"
+						 class="com.facilio.bmsconsole.interceptors.CacheInterceptor" />
+			<interceptor name="authinterceptor"
+						 class="com.facilio.bmsconsole.interceptors.AuthInterceptor" />
+			<interceptor-stack name="defaultInterceptor">
+				<interceptor-ref name="defaultStack" />
+				<interceptor-ref name="authinterceptor" />
+				<interceptor-ref name="cacheinterceptor" />
+				<interceptor-ref name="json">
+					<param name="enableSMD">true</param>
+				</interceptor-ref>
+			</interceptor-stack>
+		</interceptors>
 
+		<default-interceptor-ref name="defaultInterceptor" />
+		<global-results>
+			<result name="login" type="redirect">
+				<param name="location">/app/login</param>
+				<param name="parse">false</param>
+			</result>
+			<result name="unauthorized" type="redirect">
+				<param name="location">/jsps/unauthorized.jsp</param>
+				<param name="parse">false</param>
+			</result>
+		</global-results>
+
+		<action name="migration">
+			<result name="success">/jsps/pm/Migration.jsp</result>
+		</action>
+	</package>
 	<package name="homeApi" strict-method-invocation="false"
 		namespace="/api" extends="struts-default,json-default">
 		<result-types>

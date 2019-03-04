@@ -81,7 +81,7 @@ public class GetScheduledWOCommand implements Command {
 
 		Map<Long, List<PMTriggerContext>> pmTriggersMap = PreventiveMaintenanceAPI.getPMTriggers(pmIds);
 
-		List<PreventiveMaintenance> pms = PreventiveMaintenanceAPI.getActivePMs(pmIds, null);
+		List<PreventiveMaintenance> pms = PreventiveMaintenanceAPI.getActivePMs(pmIds, null, null);
 		if (pms == null || pms.isEmpty()) {
 			return false;
 		}

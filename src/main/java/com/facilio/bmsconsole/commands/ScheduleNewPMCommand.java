@@ -5,6 +5,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.*;
@@ -17,6 +19,7 @@ import com.facilio.constants.FacilioConstants;
 
 public class ScheduleNewPMCommand implements SerializableCommand {
 
+    private static final Logger LOGGER = Logger.getLogger(PreventiveMaintenanceAPI.class.getName());
     private boolean isBulkUpdate = false;
     private List<PMJobsContext> pmJobsToBeScheduled;
 
@@ -44,7 +47,13 @@ public class ScheduleNewPMCommand implements SerializableCommand {
 
         for(PreventiveMaintenance pm: pms) {
             if (pm.getTriggers() != null && pm.isActive()) {
-                schedulePM(pm, context);
+                try {
+                    schedulePM(pm, context);
+                } catch (Exception e) {
+                    LOGGER.log(Level.SEVERE, "Exception scheduling ", pm.getId());
+                    CommonCommandUtil.emailException("Exception scheduling ", "PM ID "+pm.getId(), e);
+                    throw e;
+                }
             }
         }
 
