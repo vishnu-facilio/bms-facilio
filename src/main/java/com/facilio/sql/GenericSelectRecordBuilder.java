@@ -867,13 +867,13 @@ public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, 
                             Object value = LRUCache.getQueryCache().get(getRedisKey(orgId, tablesInQuery));
                             if (value == null) {
                                 tableCache.remove(queryToCache);
-                                LOGGER.info("cache miss for query " + queryToCache);
+                                LOGGER.debug("cache miss for query " + queryToCache);
                                 returnValue = null;
                                 break;
                             }
                         }
                         if (returnValue != null) {
-                            LOGGER.info("cache hit for query " + queryToCache);
+                            LOGGER.debug("cache hit for query " + queryToCache);
                             return cache.getResult();
                         }
                     }
@@ -901,7 +901,7 @@ public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, 
 				String queryToCache = getCacheQuery();
 				query.put(queryToCache, new SelectQueryCache(tables, records));
 				table.put(tableName, query);
-				LOGGER.info("building cache for query " + queryToCache);
+				LOGGER.debug("building cache for query " + queryToCache);
 				for (String tablesInQuery : tables) {
 					LRUCache.getQueryCache().put(getRedisKey(orgId, tablesInQuery), queryGetTime);
 				}

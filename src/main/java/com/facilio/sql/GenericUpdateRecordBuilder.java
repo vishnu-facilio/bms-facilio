@@ -290,7 +290,7 @@ public class GenericUpdateRecordBuilder implements UpdateBuilderIfc<Map<String, 
 					if(AccountUtil.getCurrentOrg() != null) {
 						orgId = AccountUtil.getCurrentOrg().getOrgId();
 						if(DBUtil.isQueryCacheEnabled(orgId, tableName)) {
-							LOGGER.info("cache invalidate for query " + sql);
+							LOGGER.debug("cache invalidate for query " + sql);
 							for (String tablesInQuery : tablesToBeUpdated) {
 								LRUCache.getQueryCache().remove(GenericSelectRecordBuilder.getRedisKey(orgId, tablesInQuery));
 							}
