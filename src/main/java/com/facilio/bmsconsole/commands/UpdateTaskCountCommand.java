@@ -6,10 +6,13 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.MutablePair;
 
 import com.facilio.beans.ModuleBean;
@@ -26,6 +29,7 @@ import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
 
 public class UpdateTaskCountCommand implements Command {
+	private static final Logger LOGGER = Logger.getLogger(UpdateTaskCountCommand.class.getName());
 
 	@Override
 	public boolean execute(Context context) throws Exception {
@@ -33,6 +37,8 @@ public class UpdateTaskCountCommand implements Command {
 		if (CollectionUtils.isNotEmpty(parentIds)) {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
+
+			LOGGER.log(Level.SEVERE, "module name: " + moduleName + " parentids: " + StringUtils.join(parentIds.toArray(), ", "));
 			
 			FacilioField parentIdField = modBean.getField("parentTicketId", moduleName);
 			FacilioModule module = modBean.getModule(moduleName);
