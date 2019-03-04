@@ -50,7 +50,7 @@ public class ScheduleNewPMCommand implements SerializableCommand {
                 try {
                     schedulePM(pm, context);
                 } catch (Exception e) {
-                    LOGGER.log(Level.SEVERE, "Exception scheduling ", pm.getId());
+                    LOGGER.log(Level.SEVERE, "Exception scheduling " + pm.getId());
                     CommonCommandUtil.emailException("Exception scheduling ", "PM ID "+pm.getId(), e);
                     throw e;
                 }

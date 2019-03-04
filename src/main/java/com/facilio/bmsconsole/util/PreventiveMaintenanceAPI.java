@@ -664,9 +664,9 @@ public class PreventiveMaintenanceAPI {
 				Chain addTemplate = TransactionChainFactory.getChangeNewPreventiveMaintenanceStatusChain();
 				addTemplate.execute(context);
 
-				LOGGER.log(Level.SEVERE, "Migrated: ", activePm.getId());
+				LOGGER.log(Level.SEVERE, "Migrated: " + activePm.getId());
 			} catch (Exception e) {
-				LOGGER.log(Level.SEVERE, "Failed to deactivate PM: ", activePm.getId());
+				LOGGER.log(Level.SEVERE, "Failed to deactivate PM: " + activePm.getId(), e);
 				throw e;
 			}
 		}
@@ -684,9 +684,9 @@ public class PreventiveMaintenanceAPI {
 				Chain addTemplate = TransactionChainFactory.getChangeNewPreventiveMaintenanceStatusChain();
 				addTemplate.execute(context);
 
-				LOGGER.log(Level.SEVERE, "Migrated: ", activePm.getId());
+				LOGGER.log(Level.SEVERE, "Migrated: " + activePm.getId());
 			} catch (Exception e) {
-				LOGGER.log(Level.SEVERE, "Failed to active PM: ", activePm.getId());
+				LOGGER.log(Level.SEVERE, "Failed to active PM: " + activePm.getId());
 				throw e;
 			}
 		}
