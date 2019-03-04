@@ -18,9 +18,12 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class ValidateNewTasksCommand implements Command {
 
+	private static final java.util.logging.Logger LOGGER = Logger.getLogger(UpdateTaskCountCommand.class.getName());
 	@Override
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
@@ -102,19 +105,24 @@ public class ValidateNewTasksCommand implements Command {
 							FacilioField readingField = modBean.getField(task.getReadingFieldId());
 							if (task.getResource() != null) {
 								ReadingDataMeta meta = ReadingsAPI.getReadingDataMeta(task.getResource().getId(), readingField);
-								switch (meta.getInputTypeEnum()) {
-									case CONTROLLER_MAPPED:
-										throw new IllegalArgumentException("Readings that are mapped with controller cannot be used.");
-									case FORMULA_FIELD:
-									case HIDDEN_FORMULA_FIELD:
-										throw new IllegalArgumentException("Readings that are mapped with formula field cannot be used.");
-									case TASK:
-										if (!pmExecution && !updatePM) {//Temp fix
-											throw new IllegalArgumentException(readingField.getName()+" cannot be used as it is already used in another task.");
-										}
-									default:
-										metaList.add(meta);
-										break;
+								try {
+									switch (meta.getInputTypeEnum()) {
+										case CONTROLLER_MAPPED:
+											throw new IllegalArgumentException("Readings that are mapped with controller cannot be used.");
+										case FORMULA_FIELD:
+										case HIDDEN_FORMULA_FIELD:
+											throw new IllegalArgumentException("Readings that are mapped with formula field cannot be used.");
+										case TASK:
+											if (!pmExecution && !updatePM) {//Temp fix
+												throw new IllegalArgumentException(readingField.getName()+" cannot be used as it is already used in another task.");
+											}
+										default:
+											metaList.add(meta);
+											break;
+									}
+								} catch (NullPointerException e) {
+									LOGGER.log(Level.SEVERE, "resourceId: "+ task.getResource().getId() + " readingFieldId "+ task.getReadingFieldId());
+									throw e;
 								}
 							}
 							break;
