@@ -131,7 +131,9 @@ private List<PMJobsContext> pmJobsToBeScheduled;
 			}
 			if(triggers == null) {
 				triggers = new ArrayList<>();
-				triggers.add(PreventiveMaintenanceAPI.getDefaultTrigger(pm.getTriggers()));
+				if (PreventiveMaintenanceAPI.getDefaultTrigger(pm.getTriggers()) != null) {
+					triggers.add(PreventiveMaintenanceAPI.getDefaultTrigger(pm.getTriggers()));
+				}
 			}
 
 			if (triggers != null) {
