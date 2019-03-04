@@ -1,5 +1,14 @@
 package com.facilio.bmsconsole.actions;
 
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.chain.Chain;
+import org.apache.log4j.Logger;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
@@ -33,7 +42,7 @@ public class WorkflowRuleAction extends FacilioAction {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private static final Logger LOGGER = Logger.getLogger(DashboardAction.class.getName());
+	private static final Logger LOGGER = Logger.getLogger(WorkflowRuleAction.class.getName());
 	public String execute() throws Exception 
 	{
 	    return SUCCESS;

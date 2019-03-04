@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.commands;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.templates.SMSTemplate;
 import com.facilio.bmsconsole.templates.Template;
+import com.facilio.bmsconsole.templates.DefaultTemplate.DefaultTemplateType;
 import com.facilio.bmsconsole.templates.Template.Type;
 import com.facilio.bmsconsole.util.TemplateAPI;
 import com.facilio.constants.FacilioConstants;
@@ -44,7 +45,7 @@ public class AddOrUpdateAlarmSMSTemplateCommand implements Command {
 	
 	private SMSTemplate addTemplate(String phone) throws Exception {
 		SMSTemplate smsTemplate = new SMSTemplate();
-		JSONObject alarmSmsJson = TemplateAPI.getDefaultTemplate(6).getOriginalTemplate(); //Default template id of ALARM_CREATION_SMS is 6
+		JSONObject alarmSmsJson = TemplateAPI.getDefaultTemplate(DefaultTemplateType.ACTION,6).getOriginalTemplate(); //Default template id of ALARM_CREATION_SMS is 6
 		
 		smsTemplate.setName("New Alarm Raised");
 		smsTemplate.setType(Template.Type.SMS);

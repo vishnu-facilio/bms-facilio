@@ -4,6 +4,7 @@ import com.facilio.activity.ActivityType;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.criteria.Operator;
 import com.facilio.bmsconsole.modules.FieldUtil;
+import com.facilio.bmsconsole.templates.DefaultTemplate.DefaultTemplateType;
 import com.facilio.bmsconsole.util.TemplateAPI;
 import com.facilio.cache.RedisManager;
 import com.facilio.filters.HealthCheckFilter;
@@ -89,7 +90,7 @@ public class FacilioContextListener implements ServletContextListener {
 
 		initDBConnectionPool();
 		Operator.OPERATOR_MAP.get(1);
-		TemplateAPI.getDefaultTemplate(1);
+		TemplateAPI.getDefaultTemplate(DefaultTemplateType.ACTION,1);
 		ActivityType.getActivityType(1);
 		FieldUtil.inti();
 

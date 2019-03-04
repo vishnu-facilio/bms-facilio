@@ -14,6 +14,7 @@ import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.bmsconsole.templates.DefaultTemplate.DefaultTemplateType;
 import com.facilio.bmsconsole.util.AlarmAPI;
 import com.facilio.bmsconsole.util.TemplateAPI;
 import com.facilio.bmsconsole.view.FacilioView;
@@ -409,7 +410,7 @@ public class AlarmAction extends FacilioAction {
 				CommonCommandUtil.appendModuleNameInKey(null, "user", FieldUtil.getAsProperties(AccountUtil.getCurrentUser()), placeHolders);
 				
 				placeHolders.put("follower.email", value);
-				JSONObject mailJson = TemplateAPI.getDefaultTemplate(5).getTemplate(placeHolders); //Default template id of ALARM_CREATION_EMAIL is 5
+				JSONObject mailJson = TemplateAPI.getDefaultTemplate(DefaultTemplateType.ACTION,5).getTemplate(placeHolders); //Default template id of ALARM_CREATION_EMAIL is 5
 				
 				if(message != null && !message.isEmpty()) {
 					String body = (String) mailJson.get("message");
