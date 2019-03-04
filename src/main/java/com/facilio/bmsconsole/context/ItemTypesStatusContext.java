@@ -2,7 +2,7 @@ package com.facilio.bmsconsole.context;
 
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 
-public class InventoryStatusContext extends ModuleBaseWithCustomFields{
+public class ItemTypesStatusContext extends ModuleBaseWithCustomFields{
 private static final long serialVersionUID = 1L;
 	
 	private String name;

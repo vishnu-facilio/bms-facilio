@@ -1,6 +1,6 @@
 package com.facilio.bmsconsole.context;
 
-public class WorkorderItemContext extends InventoryTransactionsContext{
+public class WorkorderItemContext extends ItemTransactionsContext{
 	private static final long serialVersionUID = 1L;
 	
 	private double cost = -1;

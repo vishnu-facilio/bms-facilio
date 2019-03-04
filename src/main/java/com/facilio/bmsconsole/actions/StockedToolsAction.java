@@ -10,7 +10,7 @@ import org.json.simple.parser.JSONParser;
 
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
-import com.facilio.bmsconsole.context.InventryContext;
+import com.facilio.bmsconsole.context.ItemContext;
 import com.facilio.bmsconsole.context.StockedToolsContext;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.chain.FacilioContext;

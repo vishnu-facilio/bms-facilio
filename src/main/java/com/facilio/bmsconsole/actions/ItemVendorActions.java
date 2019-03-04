@@ -78,7 +78,7 @@ public class ItemVendorActions extends FacilioAction{
 	
 	public String itemVendorsList() throws Exception {
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.ITEM_ID, itemId);
+		context.put(FacilioConstants.ContextNames.ITEM_TYPES_ID, itemId);
 		Command getWorkorderPartsList = ReadOnlyChainFactory.getItemVendorsList();
 		getWorkorderPartsList.execute(context);
 		itemVendors = ((List<ItemVendorsContext>) context.get(FacilioConstants.ContextNames.ITEM_VENDORS));

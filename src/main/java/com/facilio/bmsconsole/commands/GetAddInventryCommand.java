@@ -13,7 +13,7 @@ public class GetAddInventryCommand extends GenericAddModuleDataCommand{
 			InventoryContext inventoryContext = (InventoryContext) context.get(FacilioConstants.ContextNames.RECORD);
 			inventoryContext.setModifiedTime(System.currentTimeMillis());
 			super.execute(context);
-			context.put(FacilioConstants.ContextNames.INVENTRY, inventoryContext);
+			context.put(FacilioConstants.ContextNames.ITEM, inventoryContext);
 		}
 		return false;
 	}

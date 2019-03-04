@@ -59,12 +59,12 @@ public class ModuleFactory {
 		moduleMap.put(FacilioConstants.ContextNames.INVENTORY, getInventoryModule());
 		moduleMap.put(FacilioConstants.ContextNames.INVENTORY_CATEGORY, getInventoryCategoryModule());
 		moduleMap.put(FacilioConstants.ContextNames.STORE_ROOM, getStoreRoomModule());
-		moduleMap.put(FacilioConstants.ContextNames.ITEMS, getItemsModule());
+		moduleMap.put(FacilioConstants.ContextNames.ITEM_TYPES, getItemTypesModule());
 		moduleMap.put(FacilioConstants.ContextNames.TOOLS, getToolsModule());
 		moduleMap.put(FacilioConstants.ContextNames.VENDORS, getVendorsModule());
-		moduleMap.put(FacilioConstants.ContextNames.INVENTRY, getInventryModule());
-		moduleMap.put(FacilioConstants.ContextNames.INVENTORY_STATUS, getInventoryStatusModule());
-		moduleMap.put(FacilioConstants.ContextNames.INVENTORY_COST, getInventoryCostModule());
+		moduleMap.put(FacilioConstants.ContextNames.ITEM, getInventryModule());
+		moduleMap.put(FacilioConstants.ContextNames.ITEM_STATUS, getInventoryStatusModule());
+		moduleMap.put(FacilioConstants.ContextNames.PURCHASED_ITEM, getPurchasedItemModule());
 		moduleMap.put(FacilioConstants.ContextNames.STOCKED_TOOLS, getStockedToolsModule());
 		
 		return moduleMap;
@@ -1621,11 +1621,11 @@ public class ModuleFactory {
 		return inventoryModule;
 	}
 	
-	public static FacilioModule getItemsModule() {
+	public static FacilioModule getItemTypesModule() {
 		FacilioModule inventoryModule = new FacilioModule();
-		inventoryModule.setName(FacilioConstants.ContextNames.ITEMS);
-		inventoryModule.setDisplayName("Items");
-		inventoryModule.setTableName("Items");
+		inventoryModule.setName(FacilioConstants.ContextNames.ITEM_TYPES);
+		inventoryModule.setDisplayName("itemTypes");
+		inventoryModule.setTableName("Item_Types");
 		return inventoryModule;
 	}
 	
@@ -1647,25 +1647,25 @@ public class ModuleFactory {
 	
 	public static FacilioModule getInventryModule() {
 		FacilioModule inventoryModule = new FacilioModule();
-		inventoryModule.setName(FacilioConstants.ContextNames.INVENTRY);
-		inventoryModule.setDisplayName("Inventory");
-		inventoryModule.setTableName("Inventry");
+		inventoryModule.setName(FacilioConstants.ContextNames.ITEM);
+		inventoryModule.setDisplayName("Item");
+		inventoryModule.setTableName("Item");
 		return inventoryModule;
 	}
 	
 	public static FacilioModule getInventoryStatusModule() {
 		FacilioModule inventoryModule = new FacilioModule();
-		inventoryModule.setName(FacilioConstants.ContextNames.INVENTORY_STATUS);
+		inventoryModule.setName(FacilioConstants.ContextNames.ITEM_STATUS);
 		inventoryModule.setDisplayName("Inventory Status");
 		inventoryModule.setTableName("Inventory_status");
 		return inventoryModule;
 	}
 	
-	public static FacilioModule getInventoryCostModule() {
+	public static FacilioModule getPurchasedItemModule() {
 		FacilioModule inventoryModule = new FacilioModule();
-		inventoryModule.setName(FacilioConstants.ContextNames.INVENTORY_COST);
-		inventoryModule.setDisplayName("Inventory Cost");
-		inventoryModule.setTableName("Inventory_cost");
+		inventoryModule.setName(FacilioConstants.ContextNames.PURCHASED_ITEM);
+		inventoryModule.setDisplayName("Purchased Items");
+		inventoryModule.setTableName("Purchased_Item");
 		return inventoryModule;
 	}
 	
@@ -1693,5 +1693,13 @@ public class ModuleFactory {
   		notificationLogger.setTableName("Notification_Logger");
   		
   		return notificationLogger;
-  	}
+	  }
+	  
+  	public static FacilioModule getItemStatusModule() {
+		FacilioModule inventoryModule = new FacilioModule();
+		inventoryModule.setName(FacilioConstants.ContextNames.ITEM_TYPES_STATUS);
+		inventoryModule.setDisplayName("itemStatus");
+		inventoryModule.setTableName("Item_status");
+		return inventoryModule;
+	}
 }

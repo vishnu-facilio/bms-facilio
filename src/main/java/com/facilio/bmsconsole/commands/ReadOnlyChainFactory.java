@@ -408,20 +408,20 @@ public class ReadOnlyChainFactory {
 		return c;
 	}
 	
-	public static Chain fetchItemDetails() {
+	public static Chain fetchItemTypesDetails() {
 		Chain c = getDefaultChain();
-		c.addCommand(SetTableNamesCommand.getForItems());
+		c.addCommand(SetTableNamesCommand.getForItemTypes());
 		c.addCommand(new GenericGetModuleDataDetailCommand());
 		return c;
 	}
 	
-	public static Chain getItemsList() {
+	public static Chain getItemTypessList() {
 		Chain c = getDefaultChain();
-		c.addCommand(SetTableNamesCommand.getForItems());
+		c.addCommand(SetTableNamesCommand.getForItemTypes());
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new GenerateCriteriaFromFilterCommand());
 		c.addCommand(new GenerateSearchConditionCommand());
-		c.addCommand(new GetItemsListCommand());
+		c.addCommand(new GetItemTypesListCommand());
 		return c;
 	}
 	
@@ -460,27 +460,27 @@ public class ReadOnlyChainFactory {
 		return c;
 	}
 	
-	public static Chain fetchInventryDetails() {
+	public static Chain fetchItemDetails() {
 		Chain c = getDefaultChain();
-		c.addCommand(SetTableNamesCommand.getForInventry());
+		c.addCommand(SetTableNamesCommand.getForItem());
 		c.addCommand(new GenericGetModuleDataDetailCommand());
-		c.addCommand(new GetInventryDetailsCommand());
+		c.addCommand(new GetItemDetailsCommand());
 		return c;
 	}
 	
-	public static Chain getInvenrtyList() {
+	public static Chain getItemList() {
 		Chain c = getDefaultChain();
-		c.addCommand(SetTableNamesCommand.getForInventry());
+		c.addCommand(SetTableNamesCommand.getForItem());
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new GenerateCriteriaFromFilterCommand());
 		c.addCommand(new GenerateSearchConditionCommand());
-		c.addCommand(new GetInvenrtyListCommand());
+		c.addCommand(new GetItemListCommand());
 		return c;
 	}
 	
 	public static Chain fetchInventoryCostDetails() {
 		Chain c = getDefaultChain();
-		c.addCommand(SetTableNamesCommand.getForInventoryCost());
+		c.addCommand(SetTableNamesCommand.getForPurchasedItem());
 		c.addCommand(new GenericGetModuleDataDetailCommand());
 		c.addCommand(new fetchInventoryCostDetailsCommand());
 		return c;
@@ -546,11 +546,11 @@ public class ReadOnlyChainFactory {
 	
 	public static Chain getInventoryTransactionsList() {
 		Chain c = getDefaultChain();
-		c.addCommand(SetTableNamesCommand.getForItems());
+		c.addCommand(SetTableNamesCommand.getForItemTypes());
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new GenerateCriteriaFromFilterCommand());
 		c.addCommand(new GenerateSearchConditionCommand());
-		c.addCommand(new GetItemsListCommand());
+		c.addCommand(new GetItemTypesListCommand());
 		return c;
 	}
 	

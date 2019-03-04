@@ -6,27 +6,17 @@ import com.facilio.bmsconsole.context.WorkorderCostContext.CostType;
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.unitconversion.Unit;
 
-public class InventryContext extends ModuleBaseWithCustomFields {
+public class ItemContext extends ModuleBaseWithCustomFields {
 	private static final long serialVersionUID = 1L;
 
-	private String name;
+	private ItemTypesContext itemType;
 
-	public String getName() {
-		return name;
+	public ItemTypesContext getItemType() {
+		return itemType;
 	}
 
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	private ItemsContext item;
-
-	public ItemsContext getItem() {
-		return item;
-	}
-
-	public void setItem(ItemsContext item) {
-		this.item = item;
+	public void setItemType(ItemTypesContext item) {
+		this.itemType = item;
 	}
 
 	private StoreRoomContext storeRoom;
@@ -39,13 +29,13 @@ public class InventryContext extends ModuleBaseWithCustomFields {
 		this.storeRoom = storeRoom;
 	}
 
-	private InventoryStatusContext status;
+	private ItemStatusContext status;
 
-	public InventoryStatusContext getStatus() {
+	public ItemStatusContext getStatus() {
 		return status;
 	}
 
-	public void setStatus(InventoryStatusContext status) {
+	public void setStatus(ItemStatusContext status) {
 		this.status = status;
 	}
 
@@ -70,7 +60,7 @@ public class InventryContext extends ModuleBaseWithCustomFields {
 	}
 
 	public static enum CostType {
-		fifo, lifo;
+		FIFO, LIFO;
 
 		public int getValue() {
 			return ordinal() + 1;
@@ -104,26 +94,6 @@ public class InventryContext extends ModuleBaseWithCustomFields {
 	public void setIssuingUnit(int issuingUnit) {
 		this.issuingUnit = Unit.valueOf(issuingUnit);
 	}
-
-	private long ttime;
-
-	public long getTtime() {
-		return ttime;
-	}
-
-	public void setTtime(long ttime) {
-		this.ttime = ttime;
-	}
-
-	private long modifiedTime;
-
-	public long getModifiedTime() {
-		return modifiedTime;
-	}
-
-	public void setModifiedTime(long modifiedTime) {
-		this.modifiedTime = modifiedTime;
-	}
 	
 	private double quantity=-1;
 	public double getQuantity() {
@@ -133,12 +103,23 @@ public class InventryContext extends ModuleBaseWithCustomFields {
 		this.quantity = quantity;
 	}
 	
-	private List<InventoryCostContext> inventoryCost;
-	public List<InventoryCostContext> getInventoryCost() {
-		return inventoryCost;
+	private List<PurchasedItemContext> purchasedItems;
+	public List<PurchasedItemContext> getPurchasedItems() {
+		return purchasedItems;
 	}
-	public void setInventoryCost(List<InventoryCostContext> inventoryCost) {
-		this.inventoryCost = inventoryCost;
+	public void setPurchasedItems(List<PurchasedItemContext> inventoryCost) {
+		this.purchasedItems = inventoryCost;
+	}
+	
+	@Override
+	public long getLocalId() {
+		// TODO Auto-generated method stub
+		return super.getLocalId();
+	}
+	@Override
+	public void setLocalId(long localId) {
+		// TODO Auto-generated method stub
+		super.setLocalId(localId);
 	}
 	
 }

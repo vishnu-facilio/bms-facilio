@@ -225,8 +225,8 @@ public class ViewFactory {
 		
 		order = 1;
 		views = new LinkedHashMap<>();
-		views.put("all", getAllItems().setOrder(order++));
-		viewsMap.put(FacilioConstants.ContextNames.ITEMS, views);
+		views.put("all", getAllItemTypes().setOrder(order++));
+		viewsMap.put(FacilioConstants.ContextNames.ITEM_TYPES, views);
 		
 		order = 1;
 		views = new LinkedHashMap<>();
@@ -241,7 +241,7 @@ public class ViewFactory {
 		order = 1;
 		views = new LinkedHashMap<>();
 		views.put("all", getAllInventry().setOrder(order++));
-		viewsMap.put(FacilioConstants.ContextNames.INVENTRY, views);
+		viewsMap.put(FacilioConstants.ContextNames.ITEM, views);
 		
 		order = 1;
 		views = new LinkedHashMap<>();
@@ -2070,9 +2070,9 @@ public class ViewFactory {
 		return allView;
 	}
 	
-	private static FacilioView getAllItems() {
+	private static FacilioView getAllItemTypes() {
 
-		FacilioModule itemsModule = ModuleFactory.getItemsModule();
+		FacilioModule itemsModule = ModuleFactory.getItemTypesModule();
 
 		FacilioField createdTime = new FacilioField();
 		createdTime.setName("sysCreatedTime");

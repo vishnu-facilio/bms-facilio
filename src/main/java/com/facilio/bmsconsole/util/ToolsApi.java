@@ -3,7 +3,7 @@ package com.facilio.bmsconsole.util;
 import java.util.List;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.InventoryCostContext;
+import com.facilio.bmsconsole.context.PurchasedItemContext;
 import com.facilio.bmsconsole.context.StockedToolsContext;
 import com.facilio.bmsconsole.context.ToolsContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;

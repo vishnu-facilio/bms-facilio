@@ -11,8 +11,8 @@ import org.apache.commons.chain.Context;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.InventoryTransactionsContext;
-import com.facilio.bmsconsole.context.InventoryCostContext;
+import com.facilio.bmsconsole.context.ItemTransactionsContext;
+import com.facilio.bmsconsole.context.PurchasedItemContext;
 import com.facilio.bmsconsole.context.StockedToolsReturnTrackingContext;
 import com.facilio.bmsconsole.context.StockedToolsTransactionContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;

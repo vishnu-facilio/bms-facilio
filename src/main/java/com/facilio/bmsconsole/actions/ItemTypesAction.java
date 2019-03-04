@@ -10,80 +10,78 @@ import org.json.simple.parser.JSONParser;
 
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
-import com.facilio.bmsconsole.context.ItemsContext;
+import com.facilio.bmsconsole.context.ItemTypesContext;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 
-public class ItemsAction extends FacilioAction{
+public class ItemTypesAction extends FacilioAction{
 
 	private static final long serialVersionUID = 1L;
-	private ItemsContext item;
-	public ItemsContext getItem() {
-		return item;
+	private ItemTypesContext itemTypes;
+	public ItemTypesContext getItemTypes() {
+		return itemTypes;
 	}
-	public void setItem(ItemsContext item) {
-		this.item = item;
+	public void setItemTypes(ItemTypesContext itemTypes) {
+		this.itemTypes = itemTypes;
 	}
-	private List<ItemsContext> items;
-	public List<ItemsContext> getItems() {
-		return items;
+	private List<ItemTypesContext> itemTypesList;
+	public List<ItemTypesContext> getItemTypesList() {
+		return itemTypesList;
 	}
-	public void setItems(List<ItemsContext> items) {
-		this.items = items;
-	}
-	
-	private long itemId;
-	public long getItemId() {
-		return itemId;
-	}
-	public void setItemId(long itemId) {
-		this.itemId = itemId;
+	public void setItemTypesList(List<ItemTypesContext> itemTypesList) {
+		this.itemTypesList = itemTypesList;
 	}
 	
-	public String addItem() throws Exception {
+	private long itemTypesId;
+	public long getItemTypesId() {
+		return itemTypesId;
+	}
+	public void setItemTypesId(long itemTypesId) {
+		this.itemTypesId = itemTypesId;
+	}
+	
+	public String addItemTypes() throws Exception {
 		FacilioContext context = new FacilioContext();
-		item.setTtime(System.currentTimeMillis());
-		item.setModifiedTime(System.currentTimeMillis());
-		context.put(FacilioConstants.ContextNames.RECORD, item);
-		Chain addItem = TransactionChainFactory.getAddItemChain();
+		context.put(FacilioConstants.ContextNames.RECORD, itemTypes);
+		Chain addItem = TransactionChainFactory.getAddItemTypesChain();
 		addItem.execute(context);
-		setResult(FacilioConstants.ContextNames.ITEM, item);
+		setResult(FacilioConstants.ContextNames.ITEM_TYPES, itemTypes);
 		return SUCCESS;
 	}
 	
-	public String updateItem() throws Exception {
+	public String updateItemTypes() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.EDIT);
-		context.put(FacilioConstants.ContextNames.RECORD, item);
-		context.put(FacilioConstants.ContextNames.ID, item.getId());
-		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(item.getId()));
+		context.put(FacilioConstants.ContextNames.RECORD, itemTypes);
+		context.put(FacilioConstants.ContextNames.ID, itemTypes.getId());
+		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(itemTypes.getId()));
 		context.put(FacilioConstants.ContextNames.WITH_CHANGE_SET, true);
 
-		Chain updateItemChain = TransactionChainFactory.getUpdateItemChain();
+		Chain updateItemChain = TransactionChainFactory.getUpdateItemTypesChain();
 		updateItemChain.execute(context);
-		setItemId(item.getId());
-		itemDetails();
-		setResult(FacilioConstants.ContextNames.ITEM, item);
+		setItemTypesId(itemTypes.getId());
+		itemTypesDetails();
+		setResult(FacilioConstants.ContextNames.ITEM_TYPES, itemTypes);
 		return SUCCESS;
 	}
 	
-	public String itemDetails() throws Exception {
+	public String itemTypesDetails() throws Exception {
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.ID, getItemId());
+		context.put(FacilioConstants.ContextNames.ID, getItemTypesId());
 
-		Chain itemDetailsChain = ReadOnlyChainFactory.fetchItemDetails();
+		Chain itemDetailsChain = ReadOnlyChainFactory.fetchItemTypesDetails();
 		itemDetailsChain.execute(context);
 
-		setItem((ItemsContext) context.get(FacilioConstants.ContextNames.RECORD));
-		setResult(FacilioConstants.ContextNames.ITEM, item);
+		setItemTypes((ItemTypesContext) context.get(FacilioConstants.ContextNames.RECORD));
+		setResult(FacilioConstants.ContextNames.ITEM_TYPES, itemTypes);
 		return SUCCESS;
 	}
 	
-	public String itemsList() throws Exception {
+	public String itemTypesList() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.CV_NAME, getViewName());
-		context.put(FacilioConstants.ContextNames.SORTING_QUERY, "Items.ID desc");
+		context.put(FacilioConstants.ContextNames.SORTING_QUERY, "Item_types.ID desc");
 		if (getFilters() != null) {
 			JSONParser parser = new JSONParser();
 			JSONObject json = (JSONObject) parser.parse(getFilters());
@@ -92,7 +90,7 @@ public class ItemsAction extends FacilioAction{
 		}
 		if (getSearch() != null) {
 			JSONObject searchObj = new JSONObject();
-			searchObj.put("fields", "items.name");
+			searchObj.put("fields", "itemTypes.name");
 			searchObj.put("query", getSearch());
 			context.put(FacilioConstants.ContextNames.SEARCH, searchObj);
 		}
@@ -108,18 +106,18 @@ public class ItemsAction extends FacilioAction{
 			context.put(FacilioConstants.ContextNames.PAGINATION, pagination);
 		}
 
-		Chain itemsListChain = ReadOnlyChainFactory.getItemsList();
+		Chain itemsListChain = ReadOnlyChainFactory.getItemTypessList();
 		itemsListChain.execute(context);
 		if (getCount()) {
-			setItemsCount((Long) context.get(FacilioConstants.ContextNames.RECORD_COUNT));
-			setResult("count", itemsCount);
+			setItemTypesCount((Long) context.get(FacilioConstants.ContextNames.RECORD_COUNT));
+			setResult("count", itemTypesCount);
 		} else {
-			items = (List<ItemsContext>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
+			itemTypesList = (List<ItemTypesContext>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
 			// Temp...needs to handle in client
-			if (items == null) {
-				items = new ArrayList<>();
+			if (itemTypesList == null) {
+				itemTypesList = new ArrayList<>();
 			}
-			setResult(FacilioConstants.ContextNames.ITEMS, items);
+			setResult(FacilioConstants.ContextNames.ITEM_TYPES, itemTypesList);
 		}
 		return SUCCESS;
 	}
@@ -146,12 +144,12 @@ public class ItemsAction extends FacilioAction{
 		this.count = count;
 	}
 	
-	private Long itemsCount;
-	public Long getItemsCount() {
-		return itemsCount;
+	private Long itemTypesCount;
+	public Long getItemTypesCount() {
+		return itemTypesCount;
 	}
-	public void setItemsCount(Long itemsCount) {
-		this.itemsCount = itemsCount;
+	public void setItemTypesCount(Long itemTypesCount) {
+		this.itemTypesCount = itemTypesCount;
 	}
 
 	

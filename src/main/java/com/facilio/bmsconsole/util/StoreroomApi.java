@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.ItemsContext;
+import com.facilio.bmsconsole.context.ItemTypesContext;
 import com.facilio.bmsconsole.context.StoreRoomContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.FacilioField;

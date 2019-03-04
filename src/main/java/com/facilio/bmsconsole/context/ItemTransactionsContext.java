@@ -4,23 +4,23 @@ import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.bmsconsole.util.TransactionState;
 import com.facilio.bmsconsole.util.TransactionType;
 
-public class InventoryTransactionsContext extends ModuleBaseWithCustomFields{
+public class ItemTransactionsContext extends ModuleBaseWithCustomFields{
 	private static final long serialVersionUID = 1L;
 	
-	private InventryContext inventory;
-	public InventryContext getInventory() {
-		return inventory;
+	private ItemContext item;
+	public ItemContext getItem() {
+		return item;
 	}
-	public void setInventory(InventryContext inventory) {
-		this.inventory = inventory;
+	public void setItem(ItemContext inventory) {
+		this.item = inventory;
 	}
 	
-	private InventoryCostContext inventoryCost;
-	public InventoryCostContext getInventoryCost() {
-		return inventoryCost;
+	private PurchasedItemContext purchasedItem;
+	public PurchasedItemContext getPurchasedItem() {
+		return purchasedItem;
 	}
-	public void setInventoryCost(InventoryCostContext inventoryCost) {
-		this.inventoryCost = inventoryCost;
+	public void setPurchasedItem(PurchasedItemContext inventoryCost) {
+		this.purchasedItem = inventoryCost;
 	}
 	
 	private double quantity=-1;

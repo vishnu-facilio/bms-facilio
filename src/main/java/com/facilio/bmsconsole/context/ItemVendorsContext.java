@@ -6,13 +6,13 @@ import com.facilio.unitconversion.Unit;
 public class ItemVendorsContext extends ModuleBaseWithCustomFields {
 	private static final long serialVersionUID = 1L;
 
-	private ItemsContext item;
+	private ItemTypesContext item;
 
-	public ItemsContext getItem() {
+	public ItemTypesContext getItem() {
 		return item;
 	}
 
-	public void setItem(ItemsContext item) {
+	public void setItem(ItemTypesContext item) {
 		this.item = item;
 	}
 

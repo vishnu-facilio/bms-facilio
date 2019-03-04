@@ -7,8 +7,8 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.InventryContext;
-import com.facilio.bmsconsole.context.ItemsContext;
+import com.facilio.bmsconsole.context.ItemContext;
+import com.facilio.bmsconsole.context.ItemTypesContext;
 import com.facilio.bmsconsole.context.StockedToolsContext;
 import com.facilio.bmsconsole.context.StoreRoomContext;
 import com.facilio.bmsconsole.context.ToolsContext;

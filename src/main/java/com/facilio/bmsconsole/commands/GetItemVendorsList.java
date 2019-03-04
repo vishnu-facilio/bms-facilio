@@ -34,7 +34,7 @@ public class GetItemVendorsList implements Command{
 			FacilioModule workorderItemsModule = modBean.getModule(moduleName);
 			List<FacilioField> workorderItemsFields = modBean.getAllFields(moduleName);
 			Map<String, FacilioField> workorderItemsFieldMap = FieldFactory.getAsMap(workorderItemsFields);
-			long itemId = (long) context.get(FacilioConstants.ContextNames.ITEM_ID);
+			long itemId = (long) context.get(FacilioConstants.ContextNames.ITEM_TYPES_ID);
 			SelectRecordsBuilder<ItemVendorsContext> selectBuilder = new SelectRecordsBuilder<ItemVendorsContext>()
 					.select(workorderItemsFields).table(workorderItemsModule.getTableName())
 					.moduleName(workorderItemsModule.getName()).beanClass(ItemVendorsContext.class)

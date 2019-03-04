@@ -164,16 +164,16 @@ public class SetTableNamesCommand implements Command {
 		return new SetTableNamesCommand("storeRoom", "Store_room");
 	}
 	
-	public static SetTableNamesCommand getForItemCategory() {
-		return new SetTableNamesCommand("itemCategory", "Item_category");
+	public static SetTableNamesCommand getForItemTypesCategory() {
+		return new SetTableNamesCommand("itemTypesCategory", "Item_Types_category");
 	}
 	
-	public static SetTableNamesCommand getForItemStatus() {
-		return new SetTableNamesCommand("itemStatus", "Item_status");
+	public static SetTableNamesCommand getForItemTypeStatus() {
+		return new SetTableNamesCommand("itemTypesStatus", "Item_Types_status");
 	}
 	
-	public static SetTableNamesCommand getForItems() {
-		return new SetTableNamesCommand("items", "Items");
+	public static SetTableNamesCommand getForItemTypes() {
+		return new SetTableNamesCommand("itemTypes", "Item_Types");
 	}
 		
 	public static SetTableNamesCommand getForToolsCategory() {
@@ -196,24 +196,24 @@ public class SetTableNamesCommand implements Command {
 		return new SetTableNamesCommand("vendors", "Vendors");
 	}
 	
-	public static SetTableNamesCommand getForInventoryStatus() {
-		return new SetTableNamesCommand("inventoryStatus", "Inventory_status");
+	public static SetTableNamesCommand getForItemStatus() {
+		return new SetTableNamesCommand("itemStatus", "Item_status");
 	}
 	
-	public static SetTableNamesCommand getForInventry() {
-		return new SetTableNamesCommand("inventry", "Inventry");
+	public static SetTableNamesCommand getForItem() {
+		return new SetTableNamesCommand("item", "Item");
 	}
 	
-	public static SetTableNamesCommand getForInventoryCost() {
-		return new SetTableNamesCommand("inventoryCost", "Inventory_cost");
+	public static SetTableNamesCommand getForPurchasedItem() {
+		return new SetTableNamesCommand("purchasedItem", "Purchased_Item");
 	}
 	
 	public static SetTableNamesCommand getForWorkorderItems() {
 		return new SetTableNamesCommand("workorderItem", "Workorder_items");
 	}
 	
-	public static SetTableNamesCommand getForInventoryTransactions() {
-		return new SetTableNamesCommand("inventoryTransactions", "Inventory_transactions");
+	public static SetTableNamesCommand getForItemTransactions() {
+		return new SetTableNamesCommand("itemTransactions", "Item_Transactions");
 	}
 	
 	public static SetTableNamesCommand getForStockedTools() {

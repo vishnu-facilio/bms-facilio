@@ -2,15 +2,15 @@ package com.facilio.bmsconsole.context;
 
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 
-public class InventoryCostContext extends ModuleBaseWithCustomFields{
+public class PurchasedItemContext extends ModuleBaseWithCustomFields{
 	private static final long serialVersionUID = 1L;
 
-	private InventryContext inventory;
-	public InventryContext getInventory() {
-		return inventory;
+	private ItemContext item;
+	public ItemContext getItem() {
+		return item;
 	}
-	public void setInventory(InventryContext inventory) {
-		this.inventory = inventory;
+	public void setItem(ItemContext inventory) {
+		this.item = inventory;
 	}
 	
 	private double unitcost=-1;
@@ -59,5 +59,27 @@ public class InventoryCostContext extends ModuleBaseWithCustomFields{
 	}
 	public void setModifiedTime(long modifiedTime) {
 		this.modifiedTime = modifiedTime;
+	}
+	
+	private String serialNumber;
+	public String getSerialNumber() {
+		return serialNumber;
+	}
+	public void setSerialNumber(String serialNumber) {
+		this.serialNumber = serialNumber;
+	}
+	
+	public Boolean isUsed;
+	public Boolean getIsUsed() {
+		return isUsed;
+	}
+	public void setIsUsed(Boolean individualTracking) {
+		this.isUsed = individualTracking;
+	}
+	public boolean isIndividualTracking() {
+		if(isUsed != null) {
+			return isUsed.booleanValue();
+		}
+		return false;
 	}
 }
