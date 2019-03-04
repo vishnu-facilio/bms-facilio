@@ -858,7 +858,6 @@ public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, 
 			Map<String, Map<String, SelectQueryCache>> table = QUERY_CACHE.get(orgId);
 			List<Map<String, Object>> returnValue = new ArrayList<>();
 			if (table != null) {
-
 				Map<String, SelectQueryCache> tableCache = table.get(tableName);
 				String queryToCache = getCacheQuery();
 				if(tableCache != null) {
@@ -903,7 +902,9 @@ public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, 
 				query.put(queryToCache, new SelectQueryCache(tables, records));
 				table.put(tableName, query);
 				LOGGER.info("building cache for query " + queryToCache);
-				LRUCache.getQueryCache().put(getRedisKey(orgId, tableName), queryGetTime);
+				for (String tablesInQuery : tables) {
+					LRUCache.getQueryCache().put(getRedisKey(orgId, tablesInQuery), queryGetTime);
+				}
 				QUERY_CACHE.put(orgId, table);
 			}
 		}
