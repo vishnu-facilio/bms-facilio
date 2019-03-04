@@ -23,7 +23,7 @@ import java.util.logging.Logger;
 
 public class ValidateNewTasksCommand implements Command {
 
-	private static final java.util.logging.Logger LOGGER = Logger.getLogger(UpdateTaskCountCommand.class.getName());
+	private static final java.util.logging.Logger LOGGER = Logger.getLogger(ValidateNewTasksCommand.class.getName());
 	@Override
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
@@ -121,7 +121,7 @@ public class ValidateNewTasksCommand implements Command {
 											break;
 									}
 								} catch (NullPointerException e) {
-									LOGGER.log(Level.SEVERE, "resourceId: "+ task.getResource().getId() + " readingFieldId "+ task.getReadingFieldId());
+									LOGGER.log(Level.SEVERE, "resourceId: " + task.getResource().getId() + " readingFieldId " + task.getReadingFieldId());
 									throw e;
 								}
 							}
