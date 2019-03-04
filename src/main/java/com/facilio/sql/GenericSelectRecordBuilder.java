@@ -1021,7 +1021,18 @@ public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, 
 
 		SelectQueryCache(ArrayList<String> tables, List<Map<String, Object>> result) {
 			this.tables = tables;
-			this.result = result;
+			this.result = deepCloneResult(result);
+		}
+		
+		private List<Map<String, Object>> deepCloneResult (List<Map<String, Object>> result) {
+			if (result != null) {
+				List<Map<String, Object>> newResult = new ArrayList<>();
+				for (Map<String, Object> prop : result) {
+					newResult.add(new HashMap<>(prop));
+				}
+				return newResult;
+			}
+			return null;
 		}
 
 		public ArrayList<String> getTables() {
@@ -1033,7 +1044,7 @@ public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, 
 		}
 
 		public List<Map<String, Object>> getResult() {
-			return result;
+			return deepCloneResult(result);
 		}
 
 		public void setResult(List<Map<String, Object>> result) {
