@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.Enumeration;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.facilio.accounts.util.AccountUtil;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -209,6 +210,10 @@ public class LRUCache<K, V>{
 
     private long getFromRedis(K key) {
 		if (redis != null) {
+			long startTime = System.currentTimeMillis();
+			if(AccountUtil.getCurrentAccount() != null) {
+				AccountUtil.getCurrentAccount().incrementRedisQueryCount(1);
+			}
 			try (Jedis jedis = redis.getJedis()) {
 				String value = jedis.get(getRedisKey((String) key));
 				if (value == null) {
@@ -221,6 +226,10 @@ public class LRUCache<K, V>{
 				}
 			} catch (Exception e) {
 				LOGGER.debug("Exception while getting key from Redis");
+			} finally {
+				if(AccountUtil.getCurrentAccount() != null) {
+					AccountUtil.getCurrentAccount().incrementRedisTime((System.currentTimeMillis()-startTime));
+				}
 			}
 		}
         return -1L;
@@ -259,20 +268,36 @@ public class LRUCache<K, V>{
 
     private void deleteInRedis(K key) {
 		if (redis != null) {
+			long startTime = System.currentTimeMillis();
+			if(AccountUtil.getCurrentAccount() != null) {
+				AccountUtil.getCurrentAccount().incrementRedisQueryCount(1);
+			}
 			try (Jedis jedis = redis.getJedis()) {
 				jedis.del(getRedisKey((String) key));
 			} catch (Exception e) {
 				LOGGER.debug("Exception while removing key in Redis. ");
+			} finally {
+				if(AccountUtil.getCurrentAccount() != null) {
+					AccountUtil.getCurrentAccount().incrementRedisTime((System.currentTimeMillis()-startTime));
+				}
 			}
 		}
     }
 
     private void putInRedis(K key, Node<K, V> node) {
 		if (redis != null) {
+			long startTime = System.currentTimeMillis();
+			if(AccountUtil.getCurrentAccount() != null) {
+				AccountUtil.getCurrentAccount().incrementRedisQueryCount(1);
+			}
 			try (Jedis jedis = redis.getJedis()) {
 				jedis.setnx(getRedisKey((String) key), String.valueOf(node.addedTime));
 			} catch (Exception e) {
 				LOGGER.debug("Exception while putting key in Redis. ");
+			} finally {
+				if(AccountUtil.getCurrentAccount() != null) {
+					AccountUtil.getCurrentAccount().incrementRedisTime((System.currentTimeMillis()-startTime));
+				}
 			}
 		}
     }

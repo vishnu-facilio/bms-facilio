@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.accounts.dto.Account;
 import com.facilio.fw.LRUCache;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
@@ -729,6 +730,7 @@ public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, 
 
 		if(AccountUtil.getCurrentOrg() != null) {
 			orgId = AccountUtil.getCurrentOrg().getId();
+            AccountUtil.getCurrentAccount().incrementSelectQueryCount(1);
 		}
 
 
@@ -823,8 +825,9 @@ public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, 
 			long mapTimeTaken = System.currentTimeMillis() - mapStartTime;
 			LOGGER.debug("Time taken to create map in GenericSelectBuilder : "+mapTimeTaken);
 
-			long timeTaken = System.currentTimeMillis() - startTime;
-			LOGGER.debug("Time taken to get records in GenericSelectBuilder : "+timeTaken);
+			// long timeTaken = System.currentTimeMillis() - startTime;
+
+			// LOGGER.debug("Time taken to get records in GenericSelectBuilder : "+timeTaken);
 
 		}
 		catch(SQLException e) {
@@ -832,6 +835,9 @@ public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, 
 			throw e;
 		}
 		finally {
+			if(AccountUtil.getCurrentAccount() != null) {
+				AccountUtil.getCurrentAccount().incrementSelectQueryTime((System.currentTimeMillis() - startTime));
+			}
 			if (isExternalConnection) {
 				DBUtil.closeAll(pstmt, rs);
 			}

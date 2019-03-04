@@ -12,6 +12,7 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.facilio.accounts.dto.Account;
 import org.apache.log4j.Appender;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
@@ -59,7 +60,16 @@ public class AccessLogFilter implements Filter {
         thread.setName(String.valueOf(THREAD_ID.getAndIncrement()));
 
         long startTime = System.currentTimeMillis();
-        LoggingEvent event = new LoggingEvent(LOGGER.getName(), LOGGER, Level.INFO, DUMMY_MSG, null);
+        String message = DUMMY_MSG;
+        if(AccountUtil.getCurrentAccount() != null) {
+            Account account = AccountUtil.getCurrentAccount();
+            message = "select: " + account.getSelectQueries() + " time: " + account.getSelectQueriesTime() +
+                    " update: " + account.getUpdateQueries() + " time: " + account.getUpdateQueriesTime() +
+                    " insert: " + account.getInsertQueries() + " time: " + account.getInsertQueriesTime() +
+                    " delete: " + account.getDeleteQueries() + " time: " + account.getDeleteQueriesTime() +
+                    " redis: " + account.getRedisQueries() + " time: " + account.getRedisTime();
+        }
+        LoggingEvent event = new LoggingEvent(LOGGER.getName(), LOGGER, Level.INFO, message, null);
         String remoteIp = request.getHeader(X_FORWARDED_FOR);
         if(remoteIp == null) {
             remoteIp = request.getRemoteAddr();

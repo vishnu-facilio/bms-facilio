@@ -388,6 +388,10 @@ public class GenericDeleteRecordBuilder implements DeleteBuilderIfc<Map<String, 
 	 * @return rowCount , which is the number of deleted rows. 0 if no rows deleted.
 	 */
 	public int delete() throws SQLException {
+	    long startTime = System.currentTimeMillis();
+        if(AccountUtil.getCurrentAccount() != null) {
+            AccountUtil.getCurrentAccount().incrementDeleteQueryCount(1);
+        }
 		checkForNull();
 		handleOrgId();
 		PreparedStatement pstmt = null;
@@ -431,6 +435,9 @@ public class GenericDeleteRecordBuilder implements DeleteBuilderIfc<Map<String, 
 			throw e;
 		}
 		finally {
+            if(AccountUtil.getCurrentAccount() != null) {
+                AccountUtil.getCurrentAccount().incrementDeleteQueryTime((System.currentTimeMillis()-startTime));
+            }
 			if (isExternalConnection) {
 				DBUtil.close(pstmt);
 			}

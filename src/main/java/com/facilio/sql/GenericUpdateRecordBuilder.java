@@ -225,12 +225,17 @@ public class GenericUpdateRecordBuilder implements UpdateBuilderIfc<Map<String, 
 	
 	@Override
 	public int update(Map<String, Object> value) throws SQLException {
+	    long startTime = System.currentTimeMillis();
+	    if(AccountUtil.getCurrentAccount() != null) {
+	        AccountUtil.getCurrentAccount().incrementUpdateQueryCount(1);
+        }
 		checkForNull();
 		handleOrgId();
 		splitFields();
 		if (value == null) {
 			return 0;
 		}
+
 		/*if (orgIdField != null) {
 			value.put(orgIdField.getName(), AccountUtil.getCurrentOrg().getId());
 		}*/
@@ -305,6 +310,9 @@ public class GenericUpdateRecordBuilder implements UpdateBuilderIfc<Map<String, 
 				throw e;
 			}
 			finally {
+                if(AccountUtil.getCurrentAccount() != null) {
+                    AccountUtil.getCurrentAccount().incrementUpdateQueryTime((System.currentTimeMillis()-startTime));
+                }
 				if (isExternalConnection) {
 					DBUtil.close(pstmt);
 				}

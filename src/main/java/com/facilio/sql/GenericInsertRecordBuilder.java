@@ -94,7 +94,11 @@ public class GenericInsertRecordBuilder implements InsertBuilderIfc<Map<String, 
 	
 	@Override
 	public void save() throws SQLException, RuntimeException {
-		
+
+	    long startTime = System.currentTimeMillis();
+	    if(AccountUtil.getCurrentAccount() != null ) {
+	        AccountUtil.getCurrentAccount().incrementInsertQueryCount(1);
+        }
 		if(values.isEmpty()) {
 			return;
 		}
@@ -194,6 +198,9 @@ public class GenericInsertRecordBuilder implements InsertBuilderIfc<Map<String, 
 				DBUtil.closeAll(conn, pstmt, rs);
 				conn = null;
 			}
+			if(AccountUtil.getCurrentAccount() != null) {
+			    AccountUtil.getCurrentAccount().incrementInsertQueryTime((System.currentTimeMillis() - startTime));
+            }
 		}
 		
 		if(orgIdField != null) {
