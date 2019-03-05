@@ -130,7 +130,8 @@ public class UpdateTaskCommand implements Command {
 				.module(woModule)
 				.beanClass(WorkOrderContext.class)
 				.andCondition(CriteriaAPI.getIdCondition(task.getParentTicketId(), woModule))
-				.maxLevel(1);
+//				.maxLevel(1)
+				;
 		
 		List<WorkOrderContext> tickets = builder.get();
 		if(tickets != null && !tickets.isEmpty()) {
