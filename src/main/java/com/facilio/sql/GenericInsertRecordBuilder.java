@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.aws.util.AwsUtil;
+import com.facilio.fw.LRUCache;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -92,7 +94,11 @@ public class GenericInsertRecordBuilder implements InsertBuilderIfc<Map<String, 
 	
 	@Override
 	public void save() throws SQLException, RuntimeException {
-		
+
+	    long startTime = System.currentTimeMillis();
+	    if(AccountUtil.getCurrentAccount() != null ) {
+	        AccountUtil.getCurrentAccount().incrementInsertQueryCount(1);
+        }
 		if(values.isEmpty()) {
 			return;
 		}
@@ -159,6 +165,15 @@ public class GenericInsertRecordBuilder implements InsertBuilderIfc<Map<String, 
 					}
 				}
 			}
+
+			long orgId = -1;
+			if(AccountUtil.getCurrentOrg() != null) {
+				orgId = AccountUtil.getCurrentOrg().getOrgId();
+				if(DBUtil.isQueryCacheEnabled(orgId, tableName)) {
+					LOGGER.debug("cache invalidate for query " + sql);
+					LRUCache.getQueryCache().remove(GenericSelectRecordBuilder.getRedisKey(orgId, tableName));
+				}
+			}
 			
 //			int[] executeBatch = pstmt.executeBatch();
 			
@@ -183,11 +198,17 @@ public class GenericInsertRecordBuilder implements InsertBuilderIfc<Map<String, 
 				DBUtil.closeAll(conn, pstmt, rs);
 				conn = null;
 			}
+			if(AccountUtil.getCurrentAccount() != null) {
+			    AccountUtil.getCurrentAccount().incrementInsertQueryTime((System.currentTimeMillis() - startTime));
+            }
 		}
 		
 		if(orgIdField != null) {
 			fields.remove(orgIdField);
 		}
+
+
+
 	}
 	
 //	public static Map<String, String> pkFields = new HashMap();

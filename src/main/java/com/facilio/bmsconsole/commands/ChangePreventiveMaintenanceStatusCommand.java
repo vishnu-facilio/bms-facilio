@@ -25,7 +25,6 @@ public class ChangePreventiveMaintenanceStatusCommand implements Command {
 		
 		List<Long> recordIds = (List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST);
 		if(recordIds != null && !recordIds.isEmpty()) {
-			
 			PreventiveMaintenance pm = (PreventiveMaintenance) context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE);
 			Map<String, Object> pmProps = FieldUtil.getAsProperties(pm);
 			
@@ -34,7 +33,6 @@ public class ChangePreventiveMaintenanceStatusCommand implements Command {
 					.table(module.getTableName())
 					.fields(FieldFactory.getPreventiveMaintenanceFields())
 					.andCondition(CriteriaAPI.getIdCondition(recordIds, module));
-			
 			builder.update(pmProps);
 			
 			List<PreventiveMaintenance> pms = PreventiveMaintenanceAPI.getPMsDetails(recordIds);

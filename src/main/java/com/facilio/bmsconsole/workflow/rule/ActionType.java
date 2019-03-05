@@ -8,6 +8,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.accounts.dto.Account;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Context;
@@ -440,8 +441,14 @@ public enum ActionType {
 					}
 					
 					pmContext.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE, pm);
-					Chain executePm = TransactionChainFactory.getExecutePreventiveMaintenanceChain();
-					executePm.execute(pmContext);
+					if (AccountUtil.isFeatureEnabled(AccountUtil.FEATURE_SCHEDULED_WO)) {
+						Chain executePm = TransactionChainFactory.getNewExecutePreventiveMaintenanceChain();
+						executePm.execute(pmContext);
+					} else {
+						Chain executePm = TransactionChainFactory.getExecutePreventiveMaintenanceChain();
+						executePm.execute(pmContext);
+					}
+
 					
 					WorkOrderContext wo = (WorkOrderContext) pmContext.get(FacilioConstants.ContextNames.WORK_ORDER);
 					if (context != null) {

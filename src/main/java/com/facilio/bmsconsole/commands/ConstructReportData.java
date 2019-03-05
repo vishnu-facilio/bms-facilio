@@ -7,21 +7,27 @@ import java.util.Map;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.TicketStatusContext;
 import com.facilio.bmsconsole.context.FormulaContext.AggregateOperator;
 import com.facilio.bmsconsole.context.FormulaContext.CommonAggregateOperator;
 import com.facilio.bmsconsole.context.FormulaContext.DateAggregateOperator;
 import com.facilio.bmsconsole.context.FormulaContext.SpaceAggregateOperator;
 import com.facilio.bmsconsole.criteria.Criteria;
+import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.criteria.NumberOperators;
+import com.facilio.bmsconsole.criteria.Operator;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.LookupField;
+import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.report.context.ReportContext;
@@ -33,10 +39,15 @@ import com.facilio.report.context.ReportYAxisContext;
 
 public class ConstructReportData implements Command {
 
+	private String moduleName;
+	private int moduleType = -1;
+
 	@Override
 	public boolean execute(Context context) throws Exception {
 		ReportContext reportContext = (ReportContext) context.get(FacilioConstants.ContextNames.REPORT);
-		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
+		moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
+		
+		moduleType = (int) context.get(FacilioConstants.Reports.MODULE_TYPE);
 		if (reportContext == null) {
 			reportContext = new ReportContext();
 		}
@@ -212,6 +223,25 @@ public class ConstructReportData implements Command {
 			dataPointContext.setLimit(limit);
 		}
 		
+		if (moduleName.equals("workorder")) {
+			SelectRecordsBuilder<TicketStatusContext> builder = new SelectRecordsBuilder<TicketStatusContext>()
+					.beanClass(TicketStatusContext.class)
+					.module(modBean.getModule("ticketstatus"))
+					.select(modBean.getAllFields("ticketstatus"))
+					.andCondition(CriteriaAPI.getCondition("STATUS_TYPE", "typeCode", "3", NumberOperators.EQUALS));
+			List<TicketStatusContext> list = builder.get();
+			if (CollectionUtils.isNotEmpty(list)) {
+				long id = list.get(0).getId();
+				Criteria c = new Criteria();
+				Operator operator = NumberOperators.NOT_EQUALS;
+				if (moduleType == 2) {
+					operator = NumberOperators.EQUALS;
+				}
+				c.addAndCondition(CriteriaAPI.getCondition("STATUS_ID", "status", String.valueOf(id), operator));
+				dataPointContext.setOtherCriteria(c);	
+			}
+		}
+				
 		Map<String, String> aliases = new HashMap<>();
 		aliases.put("actual", yField.getDisplayName());
 		dataPointContext.setAliases(aliases);

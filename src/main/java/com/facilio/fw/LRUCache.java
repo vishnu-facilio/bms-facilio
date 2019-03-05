@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.Enumeration;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.facilio.accounts.util.AccountUtil;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -47,6 +48,7 @@ public class LRUCache<K, V>{
 	private static LRUCache<String, Object> modulefieldCache = new LRUCache<>("moduleFieldCache", 2000);
 	private static LRUCache<String, Object> userSessionCache = new LRUCache<>("userSessionCache", 300);
 	private static LRUCache<String, Object> moduleCache = new LRUCache<>("moduleCache", 2000);
+	private static LRUCache<String, Long> queryCache = new LRUCache<>("queryCache", 500);
 
     private long hitcount = 0;
     private long misscount = 1;
@@ -75,6 +77,7 @@ public class LRUCache<K, V>{
 	public static LRUCache<String, Object> getModuleCache() {
 		return moduleCache;
 	}
+	public static LRUCache<String, Long> getQueryCache() { return queryCache;}
 
 	public String toString() {
 		double hitc =  ((hitcount*100d)/(hitcount+misscount) );
@@ -206,11 +209,13 @@ public class LRUCache<K, V>{
     }
 
     private long getFromRedis(K key) {
-		try {
-			if (redis != null) {
-				Jedis jedis = redis.getJedis();
+		if (redis != null) {
+			long startTime = System.currentTimeMillis();
+			if(AccountUtil.getCurrentAccount() != null) {
+				AccountUtil.getCurrentAccount().incrementRedisGetCount(1);
+			}
+			try (Jedis jedis = redis.getJedis()) {
 				String value = jedis.get(getRedisKey((String) key));
-				jedis.close();
 				if (value == null) {
 					return Long.MAX_VALUE;
 				}
@@ -219,9 +224,13 @@ public class LRUCache<K, V>{
 				} catch (NumberFormatException e) {
 					return Long.MAX_VALUE;
 				}
+			} catch (Exception e) {
+				LOGGER.debug("Exception while getting key from Redis");
+			} finally {
+				if(AccountUtil.getCurrentAccount() != null) {
+					AccountUtil.getCurrentAccount().incrementRedisGetTime((System.currentTimeMillis()-startTime));
+				}
 			}
-		} catch (Exception e) {
-			LOGGER.debug("Exception while getting key from Redis");
 		}
         return -1L;
     }
@@ -258,38 +267,48 @@ public class LRUCache<K, V>{
     }
 
     private void deleteInRedis(K key) {
-		try {
-			if (redis != null) {
-				Jedis jedis = redis.getJedis();
-				jedis.del(getRedisKey((String) key));
-				jedis.close();
+		if (redis != null) {
+			long startTime = System.currentTimeMillis();
+			if(AccountUtil.getCurrentAccount() != null) {
+				AccountUtil.getCurrentAccount().incrementRedisDeleteCount(1);
 			}
-		} catch (Exception e) {
-			LOGGER.debug("Exception while removing key in Redis. ");
+			try (Jedis jedis = redis.getJedis()) {
+				jedis.del(getRedisKey((String) key));
+			} catch (Exception e) {
+				LOGGER.debug("Exception while removing key in Redis. ");
+			} finally {
+				if(AccountUtil.getCurrentAccount() != null) {
+					AccountUtil.getCurrentAccount().incrementRedisDeleteTime((System.currentTimeMillis()-startTime));
+				}
+			}
 		}
     }
 
     private void putInRedis(K key, Node<K, V> node) {
-		try {
-			if (redis != null) {
-				Jedis jedis = redis.getJedis();
-				jedis.set(getRedisKey((String) key), String.valueOf(node.addedTime));
-				jedis.close();
+		if (redis != null) {
+			long startTime = System.currentTimeMillis();
+			if(AccountUtil.getCurrentAccount() != null) {
+				AccountUtil.getCurrentAccount().incrementRedisPutCount(1);
 			}
-		} catch (Exception e) {
-			LOGGER.debug("Exception while putting key in Redis. ");
+			try (Jedis jedis = redis.getJedis()) {
+				jedis.setnx(getRedisKey((String) key), String.valueOf(node.addedTime));
+			} catch (Exception e) {
+				LOGGER.debug("Exception while putting key in Redis. ");
+			} finally {
+				if(AccountUtil.getCurrentAccount() != null) {
+					AccountUtil.getCurrentAccount().incrementRedisPutTime((System.currentTimeMillis()-startTime));
+				}
+			}
 		}
     }
 
     private void purgeInRedis() {
-		try {
-			if (redis != null) {
-				Jedis jedis = redis.getJedis();
+		if (redis != null) {
+			try (Jedis jedis = redis.getJedis()) {
 				jedis.flushDB();
-				jedis.close();
+			} catch (Exception e) {
+				LOGGER.info("Exception while purging data in Redis. ", e);
 			}
-		} catch (Exception e) {
-			LOGGER.info("Exception while purging data in Redis. ", e);
 		}
 	}
 }

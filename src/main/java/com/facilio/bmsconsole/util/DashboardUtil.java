@@ -3613,6 +3613,7 @@ public static JSONObject getStandardVariance1(ReportContext report,JSONArray pro
 				jsonObject = new JSONObject();
 			}
 			jsonObject.put("orgId", AccountUtil.getCurrentOrg().getId());
+			jsonObject.put("currentUserId", AccountUtil.getCurrentUser().getId());
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			if(jsonObject != null && jsonObject.containsKey("fieldId")) {
 				FacilioField field = modBean.getField((Long) jsonObject.get("fieldId"));
@@ -3776,13 +3777,15 @@ public static JSONObject getStandardVariance1(ReportContext report,JSONArray pro
 		}
 	}
 	
-	public static JSONArray getEmrillFCUListWidgetResult(List<Map<String, Object>> props) throws Exception {
+	public static JSONArray getEmrillFCUListWidgetResult(List<Map<String, Object>> props, Map<String, Object> result) throws Exception {
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
 		FacilioField fanStatusField = modBean.getField(453787l);
 		FacilioField valveFeedbackField = modBean.getField(446206l);
 		FacilioField returnTempField = modBean.getField(446196l);
+		FacilioField setPointTempField = modBean.getField(446195l);
+		
 		
 		List<Pair<Long, FacilioField>> rdmPairs = new ArrayList<>();
 		
@@ -3796,12 +3799,11 @@ public static JSONObject getStandardVariance1(ReportContext report,JSONArray pro
 				rdmPairs.add(Pair.of((Long) prop.get("id"),fanStatusField));
 				rdmPairs.add(Pair.of((Long) prop.get("id"),valveFeedbackField));
 				rdmPairs.add(Pair.of((Long) prop.get("id"),returnTempField));
+				rdmPairs.add(Pair.of((Long) prop.get("id"),setPointTempField));
+				
 				resourceSpaceMaps.put((Long) prop.get("id"), (Long) prop.get("spaceId"));
 				resourceNameMaps.put((Long) prop.get("id"), (String) prop.get("name"));
 			}
-			LOGGER.severe("rdmPairs --- "+rdmPairs.size());
-			LOGGER.severe("resourceSpaceMaps --- "+resourceSpaceMaps.size());
-			LOGGER.severe("resourceNameMaps --- "+resourceNameMaps.size());
 			
 			List<ReadingDataMeta> rdms = ReadingsAPI.getReadingDataMetaList(rdmPairs);
 			
@@ -3816,10 +3818,7 @@ public static JSONObject getStandardVariance1(ReportContext report,JSONArray pro
 					rdmMap.put(rdm.getResourceId(), rdmList);
 				}
 			}
-			LOGGER.severe("rdmMap --- "+rdmMap.size());
 			Map<Long, BaseSpaceContext> spaceMap = SpaceAPI.getBaseSpaceMap(resourceSpaceMaps.values());
-			
-			LOGGER.severe("spaceMap --- "+spaceMap.size());
 			
 			JSONArray runStatusOnArray = new JSONArray();
 			JSONArray runStatusOffArray = new JSONArray();
@@ -3830,10 +3829,10 @@ public static JSONObject getStandardVariance1(ReportContext report,JSONArray pro
 				resJson.put("id", resourceId);
 				resJson.put("name", resourceNameMaps.get(resourceId));
 				resJson.put("spaceName", spaceMap.get(resourceSpaceMaps.get(resourceId)).getName());
+				resJson.put("spaceId", resourceSpaceMaps.get(resourceId));
 				
 				boolean isRunning = false;
 				
-				LOGGER.severe("rdmMap.get(resourceId) --- "+rdmMap.get(resourceId).size());
 				for(ReadingDataMeta rdm :rdmMap.get(resourceId)) {
 					
 					if(rdm.getFieldId() == fanStatusField.getFieldId()) {
@@ -3849,9 +3848,11 @@ public static JSONObject getStandardVariance1(ReportContext report,JSONArray pro
 					else if (rdm.getFieldId() == returnTempField.getFieldId()) {
 						resJson.put("returnTemp", rdm.getValue());
 					}
+					else if (rdm.getFieldId() == setPointTempField.getFieldId()) {
+						resJson.put("setPointTemp", rdm.getValue());
+					}
 					
 				}
-				LOGGER.severe("resJson --- "+resJson);
 				if(isRunning) {
 					runStatusOnArray.add(resJson);
 				}
@@ -3859,10 +3860,13 @@ public static JSONObject getStandardVariance1(ReportContext report,JSONArray pro
 					runStatusOffArray.add(resJson);
 				}
 			}
-			LOGGER.severe("runStatusOnArray --- "+runStatusOnArray.size());
-			LOGGER.severe("runStatusOffArray --- "+runStatusOffArray.size());
 			runStatusOnArray.addAll(runStatusOffArray);
 			
+			result.put("resultList", runStatusOnArray);
+			result.put("runStatusField", fanStatusField);
+			result.put("valveFeedbackField", valveFeedbackField);
+			result.put("returnTempField", returnTempField);
+			result.put("setPointTempField", setPointTempField);
 			return runStatusOnArray;
 		}
 		return null;

@@ -20,8 +20,8 @@ public enum Unit {
 	DECIWH(82,"Deciwatt Hour","DWh",Metric.ENERGY,"si*100","this/100"),
 	MWH(3,"Megawatt Hour","mWh",Metric.ENERGY,"si/1000","this*1000"),
 	
-	CELSIUS(4,"Celsius","&deg;C",Metric.TEMPERATURE),
-	FAHRENHEIT(5,"Fahrenheit","&deg;F",Metric.TEMPERATURE,"(si*1.8)+32","(this-32)/1.8"),
+	CELSIUS(4,"Celsius","\u00B0C",Metric.TEMPERATURE),
+	FAHRENHEIT(5,"Fahrenheit","\u2109F",Metric.TEMPERATURE,"(si*1.8)+32","(this-32)/1.8"),
 	KELWIN(6,"Kelvin","K",Metric.TEMPERATURE,"si+273.15","this-273.15"),
 	
 	METER(7,"Meter","m",Metric.LENGTH),
@@ -58,19 +58,19 @@ public enum Unit {
 	
 	VOLT(36,"Volt","V",Metric.VOLTAGE),
 	MILLIVOLT(37,"Millivolt","mV",Metric.VOLTAGE,"si*1000","this/1000"),
-	MICROVOLT(38,"Microvolt","&#x3BC;V",Metric.VOLTAGE,"si*1000000","this/1000000"),
+	MICROVOLT(38,"Microvolt","\u00B5V",Metric.VOLTAGE,"si*1000000","this/1000000"),
 	KILOVOLT(39,"Kilovolt","kV",Metric.VOLTAGE,"si/1000","this*1000"),
 	MEGAVOLT(40,"Megavolt","MV",Metric.VOLTAGE,"si/1000000","this*1000000"),
 	
 	AMPERE(41,"Ampere","A",Metric.CURRENT),
 	MILLIAMPERE(42,"Milliampere","mA",Metric.CURRENT,"si*1000","this/1000"),
-	MICROAMPERE(43,"Microampere","&#x3BC;A",Metric.CURRENT,"si*1000000","this/1000000"),
+	MICROAMPERE(43,"Microampere","\u00B5A",Metric.CURRENT,"si*1000000","this/1000000"),
 	KILOAMPERE(44,"Kiloampere","kA",Metric.CURRENT,"si/1000","this*1000"),
 	MEGAAMPERE(45,"Megaampere","MA",Metric.CURRENT,"si/1000000","this*1000000"),
 	
 	KILOWATT(46,"Kilowatt","kW",Metric.POWER),
 	MILLIWATT(47,"Milliwatt","mW",Metric.POWER,"si*1000000","this/1000000"),
-	MICROWATT(48,"Microwatt","&#x3BC;W",Metric.POWER,"si*1000000000","this/1000000000"),
+	MICROWATT(48,"Microwatt","\u00B5W",Metric.POWER,"si*1000000000","this/1000000000"),
 	WATT(49,"Watt","W",Metric.POWER,"si*1000","this/1000"),
 	MEGAWATT(50,"Megawatt","MW",Metric.POWER,"si/1000","this*1000"),
 	
@@ -78,7 +78,7 @@ public enum Unit {
 	MILLIHERTZ(52,"Millihertz","mHz",Metric.FREQUENCY,"si*1000","this/1000"),
 	DECAHERTZ(94,"Decahertz","daHz",Metric.FREQUENCY,"si/10","this*10"),
 	DECIHERTZ(95,"Decihertz","dHz",Metric.FREQUENCY,"si*10","this/10"),
-	MICROHERTZ(53,"Microhertz","&#x3BC;Hz",Metric.FREQUENCY,"si*1000000","this/1000000"),
+	MICROHERTZ(53,"Microhertz","\u00B5Hz",Metric.FREQUENCY,"si*1000000","this/1000000"),
 	KILOHERTZ(54,"Kilohertz","kHz",Metric.FREQUENCY,"si/1000","this*1000"),
 	MEGAHERTZ(55,"Megahertz","MHz",Metric.FREQUENCY,"si/1000000","this*1000000"),
 	GIGAHERTZ(56,"Gigahertz","GHz",Metric.FREQUENCY,"si/1000000000","this*1000000000"),

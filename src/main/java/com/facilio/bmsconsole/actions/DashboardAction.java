@@ -1181,7 +1181,6 @@ public class DashboardAction extends FacilioAction {
 		else {
 			widgetStaticContext = new WidgetStaticContext();
 			widgetStaticContext.setStaticKey(staticKey);
-			widgetStaticContext.setParamsJson(paramsJson);
 			widgetStaticContext.setBaseSpaceId(baseSpaceId);
 			
 			if(workflow != null) {
@@ -1199,6 +1198,9 @@ public class DashboardAction extends FacilioAction {
 				widgetStaticContext.setWidgetVsWorkflowContexts(workflowList);
 			}
 		}
+		if(paramsJson != null) {
+			widgetStaticContext.setParamsJson(paramsJson);
+		}
 		
 		if(widgetStaticContext != null) {
 			
@@ -1211,7 +1213,7 @@ public class DashboardAction extends FacilioAction {
 				CardType card = CardType.getCardType(widgetStaticContext.getStaticKey());
 				
 				if(DashboardUtil.isDynamicWFGeneratingCard(widgetStaticContext.getStaticKey())) {
-					card.setWorkflow(widgetStaticContext.getWidgetVsWorkflowContexts().get(0).getWorkflowString()); // check in pd7 org
+					card.setWorkflow(widgetStaticContext.getWidgetVsWorkflowContexts().get(0).getWorkflowString());
 				}
 				
 				if(widgetStaticContext.getStaticKey().equals(CardType.FAHU_STATUS_CARD_NEW.getName())) {
@@ -1272,7 +1274,12 @@ public class DashboardAction extends FacilioAction {
 					return SUCCESS;
 					
 				}
-				else if(widgetStaticContext.getStaticKey().contains("emrilllevel1")) {
+				else if(widgetStaticContext.getStaticKey().contains("emrillFcu")) {
+					
+					JSONObject json = widgetStaticContext.getParamsJson();
+					
+					Long buildingId = (Long)json.get("buildingId");
+					String levelString = (String) json.get("level");
 					
 					result = new HashMap<>();
 					
@@ -1285,81 +1292,21 @@ public class DashboardAction extends FacilioAction {
 					GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 							.select(newFieldList)
 							.table(modBean.getModule(FacilioConstants.ContextNames.RESOURCE).getTableName())
-							.andCustomWhere("ID between 1100395 and 1100431 or ID between 1100500 and 1100518");
+							.innerJoin("Assets").on("Assets.ID = Resources.ID")
+							.innerJoin("BaseSpace").on("BaseSpace.ID = Resources.SPACE_ID")
+							.andCustomWhere("BaseSpace.BUILDING_ID = ?",buildingId)
+							.andCustomWhere("Resources.ORGID = ?",AccountUtil.getCurrentOrg().getId())
+							.andCustomWhere("Assets.STRING_CF2 = ?", levelString);
 					
 					List<Map<String, Object>> props = selectBuilder.get();
 					
-					result.put("name", "Level 1");
-					if(widgetStaticContext.getStaticKey().equals("emrilllevel1List")) {
-						JSONArray res = DashboardUtil.getEmrillFCUListWidgetResult(props);
-						result.put("resultList", res);
+					if(widgetStaticContext.getStaticKey().equals("emrillFcuList")) {
+						DashboardUtil.getEmrillFCUListWidgetResult(props,result);
 					}
 					else {
 						DashboardUtil.getEmrillFCUWidgetResult(result, props);
 					}
 					
-					setCardResult(result);
-					return SUCCESS;
-				}
-				else if(widgetStaticContext.getStaticKey().contains("emrilllevel2")) {
-					
-					result = new HashMap<>();
-					
-					List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.RESOURCE);
-					
-					List<FacilioField> newFieldList = new ArrayList<>(fields);
-					
-					newFieldList.add(FieldFactory.getIdField(modBean.getModule(FacilioConstants.ContextNames.RESOURCE)));
-					
-					GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-							.select(newFieldList)
-							.table(modBean.getModule(FacilioConstants.ContextNames.RESOURCE).getTableName())
-							.andCustomWhere("ID between 1100432 and 1100471");
-					
-					List<Map<String, Object>> props = selectBuilder.get();
-					
-					LOGGER.severe("EMRILL CARD TEST LOGGERS emrilllevel2");
-					LOGGER.severe(selectBuilder +" ---- "+props.size());
-					
-					result.put("name", "Level 2");
-					
-					if(widgetStaticContext.getStaticKey().equals("emrilllevel2List")) {
-						JSONArray res = DashboardUtil.getEmrillFCUListWidgetResult(props);
-						result.put("resultList", res);
-					}
-					else {
-						DashboardUtil.getEmrillFCUWidgetResult(result, props);
-					}
-					
-					setCardResult(result);
-					return SUCCESS;
-				}
-				else if(widgetStaticContext.getStaticKey().contains("emrilllevel3")) {
-					
-					result = new HashMap<>();
-					
-					List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.RESOURCE);
-					
-					List<FacilioField> newFieldList = new ArrayList<>(fields);
-					
-					newFieldList.add(FieldFactory.getIdField(modBean.getModule(FacilioConstants.ContextNames.RESOURCE)));
-					
-					GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-							.select(newFieldList)
-							.table(modBean.getModule(FacilioConstants.ContextNames.RESOURCE).getTableName())
-							.andCustomWhere("ID between 1100472 and 1100499 or ID between 1100519 and 1100530");
-					
-					List<Map<String, Object>> props = selectBuilder.get();
-					
-					result.put("name", "Level 3");
-					
-					if(widgetStaticContext.getStaticKey().equals("emrilllevel3List")) {
-						JSONArray res = DashboardUtil.getEmrillFCUListWidgetResult(props);
-						result.put("resultList", res);
-					}
-					else {
-						DashboardUtil.getEmrillFCUWidgetResult(result, props);
-					}
 					setCardResult(result);
 					return SUCCESS;
 				}
@@ -4845,10 +4792,14 @@ public class DashboardAction extends FacilioAction {
 		builder.andCondition(CriteriaAPI.getCondition("TTIME", "ttime", startTime+","+endTime, DateOperators.BETWEEN));
 		
 		List<Map<String, Object>> rs = builder.get();
+		Double res = 0d;
 		if (rs != null && rs.size() > 0) {
-			return (Double) rs.get(0).get("value");
+			Double res1 = (Double) rs.get(0).get("value");
+			if(res1 != null) {
+				res = res1;
+			}
 		}
-		return 0d;
+		return res;
 	}
 	
 	JSONArray booleanResultGrouping;

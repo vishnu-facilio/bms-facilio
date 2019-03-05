@@ -41,6 +41,18 @@ public class InventoryCostAction extends FacilioAction{
 		this.inventoryId = inventoryId;
 	}
 	
+	public String addInventoryCost() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.RECORD, inventoryCost);
+		context.put(FacilioConstants.ContextNames.INVENTORY_ID, inventoryId);
+		context.put(FacilioConstants.ContextNames.INVENTORY_COST, Collections.singletonList(inventoryCost));
+		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(inventoryCost.getId()));
+		Chain addItem = TransactionChainFactory.getAddInventoryCostChain();
+		addItem.execute(context);
+		setResult(FacilioConstants.ContextNames.INVENTORY_COST, inventoryCost);
+		return SUCCESS;
+	}
+	
 	public String updateInventoryCost() throws Exception {
 		FacilioContext context = new FacilioContext();
 		double quantity = inventoryCost.getQuantity();

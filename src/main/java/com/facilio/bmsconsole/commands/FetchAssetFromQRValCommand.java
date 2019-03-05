@@ -1,17 +1,21 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.apache.commons.lang3.StringUtils;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.StringOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.FacilioModule;
+import com.facilio.bmsconsole.modules.LookupField;
+import com.facilio.bmsconsole.modules.LookupFieldMeta;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
-import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 
@@ -23,30 +27,34 @@ public class FetchAssetFromQRValCommand implements Command {
 		String qrValue = (String) context.get(FacilioConstants.ContextNames.QR_VALUE);
 		if (qrValue != null && !qrValue.isEmpty()) {
 			String id = (String) context.remove(FacilioConstants.ContextNames.ID);
-			AssetContext asset = null;
-			if (id != null && !id.isEmpty()) {
-				asset = AssetsAPI.getAssetInfo(Long.parseLong(id));
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			FacilioField qrValField = modBean.getField("qrVal", FacilioConstants.ContextNames.ASSET);
+			FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ASSET);
+			LookupFieldMeta fetchLookupMeta = new LookupFieldMeta((LookupField) modBean.getField("identifiedLocation", FacilioConstants.ContextNames.ASSET));
+			fetchLookupMeta.addChildLookupFIeld((LookupField) modBean.getField("location", FacilioConstants.ContextNames.SITE));
+			
+			SelectRecordsBuilder<AssetContext> selectBuilder = new SelectRecordsBuilder<AssetContext>()
+																	.select(modBean.getAllFields(FacilioConstants.ContextNames.ASSET))
+																	.module(module)
+																	.beanClass(AssetContext.class)
+																	.fetchLookup(fetchLookupMeta)
+																	;
+			
+			if (StringUtils.isNotEmpty(id)) {
+				selectBuilder.andCondition(CriteriaAPI.getIdCondition(id, module));
 			}
 			else {
-				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-				FacilioField qrValField = modBean.getField("qrVal", FacilioConstants.ContextNames.ASSET);
-				SelectRecordsBuilder<AssetContext> selectBuilder = new SelectRecordsBuilder<AssetContext>()
-																		.select(modBean.getAllFields(FacilioConstants.ContextNames.ASSET))
-																		.moduleName(FacilioConstants.ContextNames.ASSET)
-																		.beanClass(AssetContext.class)
-																		.andCondition(CriteriaAPI.getCondition(qrValField, qrValue, StringOperators.IS))
-																		;
-				
-				List<AssetContext> assets = selectBuilder.get();
-				if (assets != null && !assets.isEmpty()) {
-					asset = assets.get(0);
-				}
+				selectBuilder.andCondition(CriteriaAPI.getCondition(qrValField, qrValue, StringOperators.IS));
 			}
 			
-			if (asset != null) {
+			List<AssetContext> assets = selectBuilder.get();
+			if (assets != null && !assets.isEmpty()) {
+				AssetContext asset = assets.get(0);
+				
 				if (asset.getCategory() != null && asset.getCategory().getId() > 0) {
 					context.put(FacilioConstants.ContextNames.ID, asset.getId());
 					context.put(FacilioConstants.ContextNames.PARENT_CATEGORY_ID, asset.getCategory().getId());
+					context.put(FacilioConstants.ContextNames.LOOKUP_FIELD_META_LIST, Collections.singletonList(fetchLookupMeta));
 				}
 				else {
 					context.put(FacilioConstants.ContextNames.ASSET, asset);

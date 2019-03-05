@@ -813,6 +813,12 @@
 			<param name="moduleName">asset</param>
 			<param name="permission">READ</param>
 		</action>
+		
+		<action name="activity" class="com.facilio.bmsconsole.actions.AssetAction"
+			method="fetchActivity">
+			<param name="moduleName">asset</param>
+			<param name="permission">READ</param>
+		</action>
 
 		<action name="cards" class="com.facilio.bmsconsole.actions.AssetAction"
 			method="reportCards">
@@ -1255,6 +1261,11 @@
 			<param name="moduleName">asset</param>
 			<param name="permission">DELETE</param>
 		</action>
+		<action name="add" class="com.facilio.bmsconsole.actions.InventoryCostAction"
+			method="addInventoryCost">
+			<param name="moduleName">asset</param>
+			<param name="permission">DELETE</param>
+		</action>
 	</package>
 	
 	<package name="workorderItemsApi" namespace="/api/v2/workorderItems"
@@ -1367,6 +1378,66 @@
 			<param name="moduleName">asset</param>
 			<param name="permission">READ</param>
 			<param name = "parentId">{1}</param>
+		</action>
+	</package>
+	
+	<package name="itemVendorsApi" namespace="/api/v2/itemVendors"
+		extends="v2Api">
+		<action name="delete"
+			class="com.facilio.bmsconsole.actions.ItemVendorActions" method="deleteItemVendors">
+			<param name="moduleName">asset</param>
+			<param name="permission">CREATE</param>
+		</action>
+		
+		<action name="update"
+			class="com.facilio.bmsconsole.actions.ItemVendorActions" method="udpateItemVendors">
+			<param name="moduleName">asset</param>
+			<param name="permission">CREATE</param>
+		</action>
+		<action name="add"
+			class="com.facilio.bmsconsole.actions.ItemVendorActions" method="addItemVendors">
+			<param name="moduleName">asset</param>
+			<param name="permission">CREATE</param>
+		</action>
+	</package>
+	
+	<package name="itemVendorsList" namespace="/api/v2/itemVendors/item"
+		extends="v2Api">
+		<action name="*"
+			class="com.facilio.bmsconsole.actions.ItemVendorActions" method="itemVendorsList">
+			<param name="moduleName">asset</param>
+			<param name="permission">READ</param>
+			<param name = "itemId">{1}</param>
+		</action>
+	</package>
+	
+	<package name="inventoryTransactionsApi" namespace="/api/v2/inventoryTransactions"
+		extends="v2Api">
+		<action name="delete"
+			class="com.facilio.bmsconsole.actions.InventoryTransactionsAction" method="deleteItemVendors">
+			<param name="moduleName">asset</param>
+			<param name="permission">CREATE</param>
+		</action>
+		
+		<action name="update"
+			class="com.facilio.bmsconsole.actions.InventoryTransactionsAction" method="updateInventoryTransactions">
+			<param name="moduleName">asset</param>
+			<param name="permission">CREATE</param>
+		</action>
+		<action name="add"
+			class="com.facilio.bmsconsole.actions.InventoryTransactionsAction" method="addInventoryTransactions">
+			<param name="moduleName">asset</param>
+			<param name="permission">CREATE</param>
+		</action>
+	</package>
+	
+	<package name="itemVendorsList" namespace="/api/v2/itemVendors/item"
+		extends="v2Api">
+		<action name="*"
+			class="com.facilio.bmsconsole.actions.ItemVendorActions" method="itemVendorsList">
+			<param name="moduleName">asset</param>
+			<param name="permission">READ</param>
+			<param name = "itemId">{1}</param>
 		</action>
 	</package>
 	

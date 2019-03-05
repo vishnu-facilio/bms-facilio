@@ -11,7 +11,7 @@ import org.apache.commons.chain.Context;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.ConsumableContext;
+import com.facilio.bmsconsole.context.InventoryTransactionsContext;
 import com.facilio.bmsconsole.context.InventoryCostContext;
 import com.facilio.bmsconsole.context.StockedToolsReturnTrackingContext;
 import com.facilio.bmsconsole.context.StockedToolsTransactionContext;
@@ -52,7 +52,7 @@ public class StockedToolsReturnQuantityRollupCommand implements Command {
 				double totalReturnQuantity = getTotalReturnQuantity(stockedToolTransaction.getId());
 
 				uniqueStockedToolsIds.add(stockedToolTransaction.getStockedTool().getId());
-				stockedToolTransaction.setReturnQuantity(totalReturnQuantity);
+//				stockedToolTransaction.setReturnQuantity(totalReturnQuantity);
 				UpdateRecordBuilder<StockedToolsTransactionContext> updateBuilder = new UpdateRecordBuilder<StockedToolsTransactionContext>()
 						.module(stockedToolsTransactionModule)
 						.fields(modBean.getAllFields(stockedToolsTransactionModule.getName())).andCondition(CriteriaAPI

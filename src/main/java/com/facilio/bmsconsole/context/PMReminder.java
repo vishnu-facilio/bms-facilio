@@ -1,8 +1,12 @@
 package com.facilio.bmsconsole.context;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class PMReminder {
+public class PMReminder implements Serializable {
+
+	private static final long serialVersionUID = 5571385136172853735L;
+
 	private long id = -1;
 	public long getId() {
 		return id;

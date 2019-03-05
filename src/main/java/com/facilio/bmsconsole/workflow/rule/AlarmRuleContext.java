@@ -34,8 +34,11 @@ public class AlarmRuleContext {
 			if(rule.getRuleTypeEnum().equals(RuleType.READING_RULE)) {
 				preRequsite = rule;
 			}
-			else if(rule.getRuleTypeEnum().equals(RuleType.ALARM_CLEAR_RULE)) {
+			else if(rule.getRuleTypeEnum().equals(RuleType.ALARM_CLEAR_RULE) && rule.isOnSuccess()) {
 				alarmClearRule = rule;
+			}
+			else if(rule.getRuleTypeEnum().equals(RuleType.ALARM_CLEAR_RULE) && !rule.isOnSuccess()) {
+				alarmClearRuleDuplicate = rule;
 			}
 			else if(rule.getRuleTypeEnum().equals(RuleType.ALARM_TRIGGER_RULE)) {
 				addAlarmTriggerRule(rule);

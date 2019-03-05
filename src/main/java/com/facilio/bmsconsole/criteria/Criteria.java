@@ -167,10 +167,11 @@ public class Criteria extends ExpressionEvaluator<Predicate> implements Serializ
 	}
 	
 	private String[] tokenize() {
+		String pattern = "(" + this.pattern + ")";
 		List<String> tokens = new ArrayList<>();
 		String curr = "";
-		for (int i = 0; i < this.pattern.length(); i++) {
-			String c = Character.toString(this.pattern.charAt(i));
+		for (int i = 0; i < pattern.length(); i++) {
+			String c = Character.toString(pattern.charAt(i));
 			if (c.equals("(")) {
 				tokens.add(c);
 			} else if (c.equals(")")) {

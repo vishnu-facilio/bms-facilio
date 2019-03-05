@@ -1,8 +1,11 @@
 package com.facilio.bmsconsole.context;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class PMResourcePlannerContext {
+public class PMResourcePlannerContext implements Serializable {
+
+	private static final long serialVersionUID = 4413985679379315697L;
 
 	Long id;
 	Long pmId;

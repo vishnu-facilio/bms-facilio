@@ -82,6 +82,27 @@ public class ReportDataPointContext {
 	public void setCriteria(Criteria criteria) {
 		this.criteria = criteria;
 	}
+	
+	private Criteria otherCriteria;
+	public void setOtherCriteria(Criteria otherCriteria) {
+		this.otherCriteria = otherCriteria;
+	}
+	public Criteria getOtherCriteria() {
+		return otherCriteria;
+	}
+	
+	@JsonIgnore
+	public Criteria getAllCriteria() {
+		Criteria c = this.criteria;
+		if (otherCriteria != null) {
+			if (c == null) {
+				c = otherCriteria;
+			} else {
+				c.andCriteria(otherCriteria);
+			}
+		}
+		return c;
+	}
 
 	private long transformCriteriaId = -1;
 	public long getTransformCriteriaId() {

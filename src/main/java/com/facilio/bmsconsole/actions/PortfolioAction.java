@@ -50,17 +50,6 @@ public class PortfolioAction extends ActionSupport {
 		return SUCCESS;
 	}
 	
-	public String dashboardKey;
-	
-	public String getDashboardKey() {
-		return dashboardKey;
-	}
-
-	public void setDashboardKey(String dashboardKey) {
-		this.dashboardKey = dashboardKey;
-	}
-
-
 	@SuppressWarnings("unchecked")
 	
 	JSONArray chillerPlantsJson;
@@ -112,39 +101,13 @@ public class PortfolioAction extends ActionSupport {
 		return SUCCESS;
 	}
 	
-	public String getAllBuildings() throws Exception
+	public String getAllBuildings() throws Exception 
 	{
 		JSONObject result = new JSONObject();
 		long sitesCount = SpaceAPI.getSitesCount();
 		result.put("sitesCount", sitesCount);
 		
-//		List<EnergyMeterContext> energyMeters = DeviceAPI.getAllMainEnergyMeters();
-//		Map <Long, Long> buildingVsMeter = ReportsUtil.getBuildingVsMeter(energyMeters);
 		List<Long> siteIds = null;
-		if(dashboardKey != null) {
-			if(dashboardKey.equals("commercial")) {
-				List<SiteContext> sites = SpaceAPI.getAllSitesOfType(SiteType.COMMERCIAL.getIntVal());
-				if(sites != null) {
-					for(SiteContext site :sites) {
-						if(siteIds == null) {
-							siteIds = new ArrayList<>();
-						}
-						siteIds.add(site.getId());
-					}
-				}
-			}
-			else if (dashboardKey.equals("residential")) {
-				List<SiteContext> sites = SpaceAPI.getAllSitesOfType(SiteType.RESIDENTIAL.getIntVal());
-				if(sites != null) {
-					for(SiteContext site :sites) {
-						if(siteIds == null) {
-							siteIds = new ArrayList<>();
-						}
-						siteIds.add(site.getId());
-					}
-				}
-			}
-		}
 		Map <Long, Long> buildingVsMeter = DeviceAPI.getMainEnergyMeterForAllBuildings(siteIds);
 		String deviceList=StringUtils.join(buildingVsMeter.values(),",");
 		String buildingList=StringUtils.join(buildingVsMeter.keySet(),",");
@@ -160,8 +123,6 @@ public class PortfolioAction extends ActionSupport {
 		long currentStartTime=DateTimeUtil.getMonthStartTime();
 		long endTime=DateTimeUtil.getCurrenTime();
 		long previousEndTime=prevStartTime+(endTime-currentStartTime);
-		
-		System.out.println("deviceList --- "+deviceList);
 		
 		List<Map<String, Object>> prevResult = null;
 		prevResult = ReportsUtil.fetchMeterData(deviceList,prevStartTime,previousEndTime-1,true);

@@ -6,7 +6,7 @@ import java.util.Map;
 
 import org.json.simple.JSONObject;
 
-import com.facilio.bmsconsole.activity.AsssetActivityType;
+import com.facilio.bmsconsole.activity.AssetActivityType;
 import com.facilio.collections.UniqueMap;
 
 public interface ActivityType {
@@ -22,7 +22,7 @@ public interface ActivityType {
 	static Map<Integer, ActivityType> initActivityMap() {
 		Map<Integer, ActivityType> activityMap = new UniqueMap<>();
 		
-		for (ActivityType type : AsssetActivityType.values()) {
+		for (ActivityType type : AssetActivityType.values()) {
 			activityMap.put(type.getValue(), type);
 		}
 		

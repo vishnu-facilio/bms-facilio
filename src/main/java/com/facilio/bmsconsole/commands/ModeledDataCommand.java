@@ -16,6 +16,7 @@ import org.json.simple.JSONObject;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -58,8 +59,11 @@ public class ModeledDataCommand implements Command {
 				if(fieldId!=null && assetId!=null) {
 					ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 					FacilioField field =bean.getField(fieldId);
+					FieldType type = field.getDataTypeEnum();
 					String moduleName=field.getModule().getName();
-					if(instanceVal!=null && instanceVal.equalsIgnoreCase("NaN")) {
+					
+					if(instanceVal!=null && (instanceVal.equalsIgnoreCase("NaN")||
+							(type.equals(FieldType.DECIMAL) && instanceVal.equalsIgnoreCase("infinity")))) {
 						JSONObject json= new JSONObject();
 						json.put("resourceId", assetId);
 						json.put("message", "Invalid value received for "+field.getDisplayName());

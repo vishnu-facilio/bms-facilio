@@ -8,11 +8,7 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
@@ -30,6 +26,8 @@ public class DBUtil {
 	private static Boolean executeSingleStatement;
 	private static final Object LOCK = new Object();
 	private static final List<String> TABLES_WITHOUT_ORGID= Collections.unmodifiableList(initOrgIdNotRequired());
+	private static final HashSet<String> CACHE_ENABLED_TABLES = new HashSet<>();
+	private static final HashSet<Long> CACHE_ENABLED_ORG = new HashSet<>();
 
 	public static void close (Statement stmt) {
 		if(stmt != null) {
@@ -215,10 +213,45 @@ public class DBUtil {
 		if (resource != null) {
 			try (InputStream stream = resource.openStream()) {
 				PROPERTIES.load(stream);
+				addCacheEnabledOrgs();
+				addCacheEnabledTables();
+
+
 			} catch (IOException e) {
 				LOGGER.info("Exception while trying to load property file " + propertyFile);
 			}
 		}
 	}
-	
+
+	private static void addCacheEnabledTables() {
+		try {
+			String tables = PROPERTIES.getProperty("query.cache.tables");
+			LOGGER.info("Loaded cache enabled tables" + tables);
+			if (tables != null) {
+				CACHE_ENABLED_TABLES.addAll(Arrays.asList(tables.split(",")));
+			}
+		} catch (Exception e) {
+			LOGGER.info("Exception while trying to load query cache tables");
+		}
+	}
+
+	private static void addCacheEnabledOrgs() {
+		try {
+			String orgIds = PROPERTIES.getProperty("query.cache.orgId");
+			LOGGER.info("Loaded cache enabled orgs" + orgIds);
+			if (orgIds != null) {
+				Arrays.stream(orgIds.split(",")).forEach(orgId -> CACHE_ENABLED_ORG.add(Long.parseLong(orgId.trim())));
+			}
+		} catch (Exception e) {
+			LOGGER.info("Exception while trying to load query cache tables");
+		}
+	}
+
+	static boolean isQueryCacheEnabled(long orgId, String tableName) {
+		if(AwsUtil.isProduction()) {
+			return false;
+		}
+		return CACHE_ENABLED_ORG.contains(orgId) && CACHE_ENABLED_TABLES.contains(tableName);
+	}
+
 }

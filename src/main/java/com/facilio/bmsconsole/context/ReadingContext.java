@@ -175,4 +175,9 @@ public class ReadingContext extends ModuleBaseWithCustomFields {
 		}
 		return null;
 	}
+	
+	public ReadingContext clone() throws CloneNotSupportedException 
+	{ 
+		return (ReadingContext) super.clone(); 
+	} 
 } 

@@ -131,6 +131,7 @@ public class GetAllFieldsCommand implements Command {
 		
 		JSONObject meta = new JSONObject();
 		meta.put("name", moduleName);
+		meta.put("module", mod);
 		meta.put("displayName", displayName);
 		meta.put("fields", fields);
 		meta.put("operators", operators);

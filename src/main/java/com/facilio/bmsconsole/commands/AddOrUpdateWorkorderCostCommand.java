@@ -106,20 +106,14 @@ public class AddOrUpdateWorkorderCostCommand implements Command {
 		List<FacilioField> field = new ArrayList<>();
 		field.add(FieldFactory.getField("totalItemsCost", "sum(COST)", FieldType.DECIMAL));
 
-		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder().table(module.getTableName())
-				.andCustomWhere(module.getTableName() + ".ORGID = " + AccountUtil.getCurrentOrg().getOrgId())
-				.andCondition(CriteriaAPI.getCondition(FieldFactory.getModuleIdField(module),
-						String.valueOf(module.getModuleId()), NumberOperators.EQUALS));
-
-		builder.select(field);
-
-		builder.andCondition(CriteriaAPI.getCondition(FieldFactory.getModuleIdField(module),
-				String.valueOf(module.getModuleId()), NumberOperators.EQUALS));
-
-		builder.andCondition(
-				CriteriaAPI.getCondition(fieldsMap.get("parentId"), String.valueOf(id), NumberOperators.EQUALS));
-
-		List<Map<String, Object>> rs = builder.get();
+		SelectRecordsBuilder<WorkorderItemContext> builder = new SelectRecordsBuilder<WorkorderItemContext>()
+																.select(field)
+																.moduleName(FacilioConstants.ContextNames.WORKORDER_ITEMS)
+																.andCondition(CriteriaAPI.getCondition(fieldsMap.get("parentId"), String.valueOf(id), NumberOperators.EQUALS))
+																.setAggregation()
+																;
+		
+		List<Map<String, Object>> rs = builder.getAsProps();
 		if (rs != null && rs.size() > 0) {
 			double returnTotal = 0;
 			double issueTotal = 0;

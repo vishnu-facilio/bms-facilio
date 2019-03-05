@@ -3759,6 +3759,31 @@ public class FieldFactory {
 		return fields;
 	}
 
+	public static List<FacilioField> getPMResourceScheduleRuleRelFields() {
+		List<FacilioField> fields = new ArrayList<>();
+		FacilioModule module = ModuleFactory.getPMResourceScheduleRuleRelModule();
+		fields.add(getIdField(module));
+
+		FacilioField pmId = new FacilioField();
+		pmId.setName("pmId");
+		pmId.setDataType(FieldType.NUMBER);
+		pmId.setColumnName("PM_ID");
+		pmId.setModule(module);
+		fields.add(pmId);
+
+		fields.add(getField("resourceId", "RESOURCE_ID", module, FieldType.LOOKUP));
+
+
+		FacilioField postScheduleRuleId = new FacilioField();
+		postScheduleRuleId.setName("scheduleRuleId");
+		postScheduleRuleId.setDataType(FieldType.NUMBER);
+		postScheduleRuleId.setColumnName("SCHEDULE_RULE_ID");
+		postScheduleRuleId.setModule(module);
+		fields.add(postScheduleRuleId);
+
+		return fields;
+	}
+
 	public static List<FacilioField> getPMReminderFields() {
 		List<FacilioField> fields = new ArrayList<>();
 		FacilioModule module = ModuleFactory.getPMReminderModule();
@@ -3788,6 +3813,13 @@ public class FieldFactory {
 		duration.setColumnName("DURATION");
 		duration.setModule(module);
 		fields.add(duration);
+
+		FacilioField postScheduleRuleId = new FacilioField();
+		postScheduleRuleId.setName("scheduleRuleId");
+		postScheduleRuleId.setDataType(FieldType.NUMBER);
+		postScheduleRuleId.setColumnName("SCHEDULE_RULE_ID");
+		postScheduleRuleId.setModule(module);
+		fields.add(postScheduleRuleId);
 
 		return fields;
 	}
@@ -4383,10 +4415,13 @@ public class FieldFactory {
 	}
 
 	public static List<FacilioField> getWeatherStationsFields() {
+		
+		FacilioModule module = ModuleFactory.getWeatherStationModule();
 		List<FacilioField> fields = new ArrayList<>();
-		fields.add(getField("name", "NAME", FieldType.STRING));
-		fields.add(getField("latitude", "LAT", FieldType.NUMBER));
-		fields.add(getField("longtitude", "LNG", FieldType.NUMBER));
+		fields.add(getIdField(module));
+		fields.add(getField("name","Name", "NAME",module, FieldType.STRING));
+		fields.add(getField("latitude","Latitude", "LAT",module, FieldType.NUMBER));
+		fields.add(getField("longtitude","Longtitude","LNG",module, FieldType.NUMBER));
 		return fields;
 	}
 
@@ -4888,6 +4923,8 @@ public class FieldFactory {
 		
 		fields.add(getField("booleanSetting", "BOOLEAN_SETTINGS", module, FieldType.NUMBER));
 		fields.add(getField("transformClass", "TRANSFORM_CLASS", module, FieldType.STRING));
+		
+		fields.add(getField("moduleType", "MODULE_TYPE", module, FieldType.NUMBER));
 		return fields;
 	}
 	

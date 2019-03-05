@@ -13,6 +13,7 @@ import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
+import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericSelectRecordBuilder;
@@ -62,6 +63,9 @@ public class AddModulesCommand implements Command {
 				count = Integer.parseInt(dbModuleName.substring(dbModuleName.lastIndexOf('_') + 1));
 			}
 			module.setName(module.getName() + "_" + ++count);				
+		}
+		else if (LookupSpecialTypeUtil.isSpecialType(module.getName())) {
+			module.setName(module.getName() + "_" + 1);
 		}
 	}
 

@@ -4,7 +4,39 @@
     "http://struts.apache.org/dtds/struts-2.5.dtd">
 
 <struts>
+	<package name="internalMig" strict-method-invocation="false"
+			 namespace="/internalmig" extends="struts-default,json-default">
+		<interceptors>
+			<interceptor name="cacheinterceptor"
+						 class="com.facilio.bmsconsole.interceptors.CacheInterceptor" />
+			<interceptor name="authinterceptor"
+						 class="com.facilio.bmsconsole.interceptors.AuthInterceptor" />
+			<interceptor-stack name="defaultInterceptor">
+				<interceptor-ref name="defaultStack" />
+				<interceptor-ref name="authinterceptor" />
+				<interceptor-ref name="cacheinterceptor" />
+				<interceptor-ref name="json">
+					<param name="enableSMD">true</param>
+				</interceptor-ref>
+			</interceptor-stack>
+		</interceptors>
 
+		<default-interceptor-ref name="defaultInterceptor" />
+		<global-results>
+			<result name="login" type="redirect">
+				<param name="location">/app/login</param>
+				<param name="parse">false</param>
+			</result>
+			<result name="unauthorized" type="redirect">
+				<param name="location">/jsps/unauthorized.jsp</param>
+				<param name="parse">false</param>
+			</result>
+		</global-results>
+
+		<action name="migration">
+			<result name="success">/jsps/pm/Migration.jsp</result>
+		</action>
+	</package>
 	<package name="homeApi" strict-method-invocation="false"
 		namespace="/api" extends="struts-default,json-default">
 		<result-types>
@@ -1706,7 +1738,7 @@
 		<action name="preventiveMaintenanceSummary" class="com.facilio.bmsconsole.actions.WorkOrderAction"
 			method="preventiveMaintenanceSummary">
 			<param name="moduleName">planned</param>
-			<param name="permission">UPDATE,UPDATE_TEAM,UPDATE_OWN</param>
+			<param name="permission">READ,READ_TEAM,READ_OWN</param>
 			<result name="success" type="json">
 				<param name="includeProperties">^preventivemaintenance.*,^workorder.*,taskList.*,sections.*,^reminders.*,^listOfTasks.*,^sectionTemplates.*</param>
 			</result>

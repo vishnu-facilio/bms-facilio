@@ -269,7 +269,11 @@ public class ReportUtil {
 			return modBean.getField(fieldId);
 		}
 		else if (moduleName != null && !moduleName.isEmpty() && fieldName != null && !fieldName.isEmpty()) {
-			return modBean.getField(fieldName, moduleName);
+			FacilioField field = modBean.getField(fieldName, moduleName);
+			if (field == null) {
+				field = ReportFactory.getReportField(fieldName);
+			}
+			return field;
 		}
 		return null;
 	}

@@ -14,9 +14,11 @@ import java.util.logging.Logger;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections.CollectionUtils;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.FormulaContext.AggregateOperator;
 import com.facilio.bmsconsole.context.FormulaContext.CommonAggregateOperator;
 import com.facilio.bmsconsole.context.FormulaContext.DateAggregateOperator;
@@ -24,10 +26,12 @@ import com.facilio.bmsconsole.context.FormulaContext.NumberAggregateOperator;
 import com.facilio.bmsconsole.context.FormulaContext.SpaceAggregateOperator;
 import com.facilio.bmsconsole.criteria.BooleanOperators;
 import com.facilio.bmsconsole.criteria.Condition;
+import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.DateOperators;
 import com.facilio.bmsconsole.criteria.DateRange;
 import com.facilio.bmsconsole.criteria.EnumOperators;
+import com.facilio.bmsconsole.criteria.LookupOperator;
 import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.criteria.PickListOperators;
 import com.facilio.bmsconsole.criteria.StringOperators;
@@ -47,6 +51,7 @@ import com.facilio.report.context.ReportDataPointContext.DataPointType;
 import com.facilio.report.context.ReportDataPointContext.OrderByFunction;
 import com.facilio.report.context.ReportFilterContext;
 import com.facilio.report.context.ReportGroupByField;
+import com.facilio.sql.GenericSelectRecordBuilder;
 
 public class FetchReportDataCommand implements Command {
 
@@ -217,8 +222,8 @@ public class FetchReportDataCommand implements Command {
 		}
 		
 		if (xValues == null) {
-			if (dp.getCriteria() != null) {
-				newSelectBuilder.andCriteria(dp.getCriteria());
+			if (dp.getAllCriteria() != null) {
+				newSelectBuilder.andCriteria(dp.getAllCriteria());
 			}
 			
 			boolean noMatch = applyFilters(report, dp, newSelectBuilder);
@@ -257,7 +262,11 @@ public class FetchReportDataCommand implements Command {
 				FacilioField gField = groupByField.getField();
 				
 				if (groupByField.getAggrEnum() != null) {
-					gField = groupByField.getAggrEnum().getSelectField(gField);
+					if (groupByField.getAggrEnum() instanceof SpaceAggregateOperator) {
+						gField = applySpaceAggregation(dp, groupByField.getAggrEnum(), selectBuilder, addedModules);
+					} else {
+						gField = groupByField.getAggrEnum().getSelectField(gField);
+					}
 				}
 				fields.add(gField);
 				
@@ -408,12 +417,21 @@ public class FetchReportDataCommand implements Command {
 				break;
 			case FLOOR:
 				spaceField = fieldMap.get("floorId").clone();
+				break;
 			case SPACE:
 				spaceField = FieldFactory.getIdField(baseSpaceModule);
 				break;
 			default:
 				throw new RuntimeException("Cannot be here!!");
 		}
+		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+				.table(resourceModule.getTableName())
+				.select(Collections.singletonList(FieldFactory.getIdField(resourceModule)))
+				.andCondition(CriteriaAPI.getCondition("SYS_DELETED", "sysDeleted", "false", BooleanOperators.IS))
+				.andCondition(CriteriaAPI.getOrgIdCondition(AccountUtil.getCurrentOrg().getId(), resourceModule))
+				.andCondition(CriteriaAPI.getCondition("RESOURCE_TYPE", "resourceType", String.valueOf("1"), NumberOperators.EQUALS));
+		
+		selectBuilder.andCustomWhere(spaceField.getCompleteColumnName() + " in (" + builder.constructSelectStatement() + ")");
 		spaceField.setName(dp.getxAxis().getFieldName());
 		return spaceField;
 	}

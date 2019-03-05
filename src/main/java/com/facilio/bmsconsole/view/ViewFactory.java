@@ -65,8 +65,10 @@ public class ViewFactory {
 
 	public static Map<String, FacilioView> getModuleViews(String moduleName) {
 		Map<String, FacilioView> moduleViews = new LinkedHashMap<>();
-		if (views.containsKey(moduleName)) {
-			moduleViews.putAll(views.get(moduleName));
+		if (views.get(moduleName) != null) {
+			views.get(moduleName).forEach((name, view) -> {
+				moduleViews.put(name, new FacilioView(view));
+			});
 		}
 		return moduleViews;
 	}

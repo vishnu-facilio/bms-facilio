@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
 
@@ -39,6 +40,7 @@ import com.facilio.bmsconsole.modules.FacilioModule.ModuleType;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.InsertRecordBuilder;
+import com.facilio.bmsconsole.modules.LookupFieldMeta;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
@@ -163,6 +165,21 @@ public class SpaceAPI {
 		return null;
 	}
 	
+	
+	public static List<SiteContext> getSiteSpace(String fieldName,Collection<Long> values) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.SITE);
+		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.SITE);
+		FacilioField whereField= modBean.getField(fieldName, module.getName());
+		
+		SelectRecordsBuilder<SiteContext> selectBuilder = new SelectRecordsBuilder<SiteContext>()
+																	.select(fields)
+																	.table(module.getTableName())
+																	.moduleName(module.getName())
+																	.beanClass(SiteContext.class)
+																	.andCondition(CriteriaAPI.getCondition(whereField,values,NumberOperators.EQUALS));
+		return selectBuilder.get();
+	}
 	
 	public static List<SiteContext> getSiteSpace(String spaceList) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -772,6 +789,24 @@ public class SpaceAPI {
 		return sites;
 	}
 	
+	public static List<SiteContext> getAllSites(List<LookupFieldMeta> lookupFields) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.SITE);
+		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.SITE);
+		
+		SelectRecordsBuilder<SiteContext> selectBuilder = new SelectRecordsBuilder<SiteContext>()
+																	.select(fields)
+																	.module(module)
+																	.beanClass(SiteContext.class);
+		
+		if (CollectionUtils.isNotEmpty(lookupFields)) {
+			selectBuilder.fetchLookups(lookupFields);
+		}
+		
+		List<SiteContext> sites = selectBuilder.get();
+		return sites;
+	}
+	
 	public static List<SiteContext> getAllSitesOfType(int siteType) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.SITE);
@@ -980,10 +1015,13 @@ public static long getSitesCount() throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.BASE_SPACE);
 		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.BASE_SPACE);
-		
 		SelectRecordsBuilder<BaseSpaceContext> selectBuilder = new SelectRecordsBuilder<BaseSpaceContext>()
 																	.select(fields)
 																	.module(module)
+//																	.select Resources.ID, Resources.NAME from BaseSpace 
+//																	.innerJoin("Resources").on("BaseSpace.ID = Resources.ID")
+																	.leftJoin("Floor").on("Floor.ID = BaseSpace.ID")
+																	.andCustomWhere("BaseSpace.ORGID = ?", AccountUtil.getCurrentOrg().getId())
 																	.beanClass(BaseSpaceContext.class);
 		if (filterCriteria != null) {
 			selectBuilder.andCriteria(filterCriteria);
@@ -998,10 +1036,15 @@ public static long getSitesCount() throws Exception {
 				selectBuilder.andCriteria(scopeCriteria);
 			}
 		}
-		
+		String orderByFloors = null;
 		if (orderBy != null && !orderBy.isEmpty()) {
-			selectBuilder.orderBy(orderBy);
+			orderByFloors = orderBy;
+			orderByFloors += ",-Floor.FLOOR_LEVEL desc,Resources.ID asc";
 		}
+		else {
+			orderByFloors = "-Floor.FLOOR_LEVEL desc,Resources.ID asc";
+		}
+		selectBuilder.orderBy(orderByFloors);
 		if (pagination != null) {
 			int page = (int) pagination.get("page");
 			int perPage = (int) pagination.get("perPage");

@@ -3,16 +3,6 @@ package com.facilio.bmsconsole.context;
 public class WorkorderToolsContext extends StockedToolsTransactionContext {
 	private static final long serialVersionUID = 1L;
 
-	private long parentId;
-
-	public long getParentId() {
-		return parentId;
-	}
-
-	public void setParentId(long parentId) {
-		this.parentId = parentId;
-	}
-
 	private double cost = -1;
 
 	public double getCost() {

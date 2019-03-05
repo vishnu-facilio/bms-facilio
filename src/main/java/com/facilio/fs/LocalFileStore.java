@@ -49,6 +49,11 @@ select * from Virtual_Energy_Meter_Rel where VIRTUAL_METER_ID=ENERGYMETER_ID
 
 	*
 	 */
+	
+	@Override
+	public String getOrgiDownloadUrl(long fileId) throws Exception {
+		return null;
+	}
 	@Override
 	public long addFile(String fileName, File file, String contentType) throws Exception {
 		long fileId = addDummyFileEntry(fileName);
@@ -116,6 +121,10 @@ select * from Virtual_Energy_Meter_Rel where VIRTUAL_METER_ID=ENERGYMETER_ID
 	        os.close();
 	    }
 		return fileId;
+	}
+	@Override
+	public String getFileUrl(long fileId) {
+		return null;
 	}
 
 	@Override

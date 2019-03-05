@@ -8,6 +8,7 @@ import java.util.Map;
 
 import org.json.simple.JSONObject;
 
+import com.facilio.activity.ActivityContext;
 import com.facilio.bmsconsole.context.AHUContext;
 import com.facilio.bmsconsole.context.AlarmContext;
 import com.facilio.bmsconsole.context.AlarmSeverityContext;
@@ -21,7 +22,7 @@ import com.facilio.bmsconsole.context.ChillerCondenserPumpContext;
 import com.facilio.bmsconsole.context.ChillerContext;
 import com.facilio.bmsconsole.context.ChillerPrimaryPumpContext;
 import com.facilio.bmsconsole.context.ChillerSecondaryPumpContext;
-import com.facilio.bmsconsole.context.ConsumableContext;
+import com.facilio.bmsconsole.context.InventoryTransactionsContext;
 import com.facilio.bmsconsole.context.CoolingTowerContext;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.context.EnergyMeterPurposeContext;
@@ -36,6 +37,7 @@ import com.facilio.bmsconsole.context.InventoryVendorContext;
 import com.facilio.bmsconsole.context.InventryContext;
 import com.facilio.bmsconsole.context.ItemCategoryContext;
 import com.facilio.bmsconsole.context.ItemStatusContext;
+import com.facilio.bmsconsole.context.ItemVendorsContext;
 import com.facilio.bmsconsole.context.ItemsContext;
 import com.facilio.bmsconsole.context.LocationContext;
 import com.facilio.bmsconsole.context.MLAlarmContext;
@@ -380,6 +382,7 @@ public class FacilioConstants {
 		public static final String DEFAULT_FIELD = "defaultField";
 		public static final String MODULE_FIELD_IDS = "moduleFieldIds";
 		public static final String FIELD_ID = "fieldId";
+		public static final String LOOKUP_FIELD_META_LIST = "lookupFieldMetaList";
 		public static final String FETCH_FIELD_DISPLAY_NAMES = "fetchFieldDisplayNames";
 		
 		public static final String SITE = "site";
@@ -456,6 +459,7 @@ public class FacilioConstants {
 		
 		public static final String BASE_SPACE_PHOTOS = "basespacephotos";
 		public static final String ASSET_PHOTOS = "assetphotos";
+		public static final String ASSET_ACTIVITY = "assetactivity";
 		
 		public static final String TICKET_NOTES = "ticketnotes";
 		public static final String BASE_SPACE_NOTES = "basespacenotes";
@@ -736,6 +740,10 @@ public class FacilioConstants {
 		public static final String PAGE = "page";
 		public static final String CURRENT_CALENDAR_VIEW = "currentCalendarView";
 		public static final String ML_FORECASTING = "ml_forecasting";
+        public static final String CREATE_IN_PREOPEN = "crateInPreOpen";
+		public static final String PREOPEN_EXECUTION_TIMES = "preOpenExecTimes";
+		public static final String WO_CONTEXTS = "woContexts";
+		public static final String SCHEDULED_WO_MAP_MAP = "scheduledWoMap";
 
 		
 		public static final String WORKORDER_PARTS = "workorderParts";
@@ -752,6 +760,7 @@ public class FacilioConstants {
 		public static final String ITEMS = "items";
 		public static final String ITEM_CATEGORY = "itemCategory";
 		public static final String ITEM_STATUS = "itemStatus";
+		public static final String ITEM_ID = "itemId";
 		
 		public static final String TOOL = "tool";
 		public static final String TOOLS = "tools";
@@ -770,7 +779,7 @@ public class FacilioConstants {
 		public static final String INVENTORY_COSTS = "inventoryCosts";
 		
 		public static final String WORKORDER_ITEMS = "workorderItem";
-		public static final String CONSUMABLES = "consumables";
+		public static final String INVENTORY_TRANSACTIONS = "inventoryTransactions";
 		
 		public static final String STOCKED_TOOL_LIST = "stockedToolsList";
 		public static final String STOCKED_TOOLS = "stockedTools";
@@ -781,6 +790,9 @@ public class FacilioConstants {
 		public static final String WORKORDER_TOOLS = "workorderTools";
 		public static final String STOCKED_TOOLS_TRANSACTIONS = "stockedToolsTransactions";
 		public static final String STOCKED_TOOLS_RETURN_TRACKING = "stockedToolsReturnTracking";
+		
+		public static final String ITEM_VENDORS = "itemVendors";
+		public static final String TRANSACTION_TYPE = "transactionType";
 		
 		private static Map<String, Class> classMap = Collections.unmodifiableMap(initClassMap());
 		private static Map<String, Class> initClassMap() {
@@ -816,6 +828,7 @@ public class FacilioConstants {
 			classMap.put(ASSET_TYPE, AssetTypeContext.class);
 			classMap.put(ASSET_DEPARTMENT, AssetDepartmentContext.class);
 			classMap.put(ASSET_PHOTOS, PhotosContext.class);
+			classMap.put(ASSET_ACTIVITY, ActivityContext.class);
 			classMap.put(ENERGY_METER, EnergyMeterContext.class);
 			classMap.put(CHILLER, ChillerContext.class);
 			classMap.put(CHILLER_PRIMARY_PUMP, ChillerPrimaryPumpContext.class);
@@ -859,12 +872,13 @@ public class FacilioConstants {
 			classMap.put(INVENTORY_STATUS, InventoryStatusContext.class);
 			classMap.put(INVENTORY_COST, InventoryCostContext.class);
 			classMap.put(WORKORDER_ITEMS, WorkorderItemContext.class);
-			classMap.put(CONSUMABLES, ConsumableContext.class);
+			classMap.put(INVENTORY_TRANSACTIONS, InventoryTransactionsContext.class);
 			classMap.put(STOCKED_TOOLS, StockedToolsContext.class);
 			classMap.put(STOCKED_TOOLS_STATUS, StockedToolsStatusContext.class);
 			classMap.put(WORKORDER_TOOLS, WorkorderToolsContext.class);
 			classMap.put(STOCKED_TOOLS_TRANSACTIONS, StockedToolsTransactionContext.class);
 			classMap.put(STOCKED_TOOLS_RETURN_TRACKING, StockedToolsReturnTrackingContext.class);
+			classMap.put(ITEM_VENDORS, ItemVendorsContext.class);
 			return classMap;
 		}
 		
@@ -976,6 +990,8 @@ public class FacilioConstants {
 	public static class Reports 
 
 	{
+		public static final String MODULE_TYPE = "module_type";
+		
 		public static final String ACTUAL_DATA = "actual";
 		
 		public static final String RANGE_FROM = "fromRange";

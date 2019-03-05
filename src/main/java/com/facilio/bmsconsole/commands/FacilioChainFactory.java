@@ -1120,7 +1120,7 @@ public class FacilioChainFactory {
 		c.addCommand(new CreateTaskGroupTemplateCommand());
 		return c;
 	}
-	
+
 	public static Chain getAddPreventiveMaintenanceChain() {
 		Chain c = FacilioChain.getTransactionChain();
 		c.addCommand(new AddAttachmentCommand());
@@ -1143,11 +1143,43 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
+	public static Chain getAddNewPreventiveMaintenanceChain() {
+		Chain c = FacilioChain.getTransactionChain();
+		c.addCommand(new AddAttachmentCommand());
+		c.addCommand(new AttachmentContextCommand());
+		c.addCommand(new ValidatePMTriggersCommand());
+		c.addCommand(new ValidateNewTasksCommand());
+		c.addCommand(new AddPMReadingsForTasks());
+		c.addCommand(new CreateWorkorderTemplateCommand());	  // template addition
+		c.addCommand(new AddPreventiveMaintenanceCommand());  // PM addition
+		c.addCommand(new AddResourceReadingRelCommand());
+		c.addCommand(new InsertReadingDataMetaForNewResourceCommand());
+		c.addCommand(new AddPMReminderCommand());
+		c.addCommand(new AddPMTriggerCommand());
+		c.addCommand(new AddTaskSectionTriggersCommand());
+		c.addCommand(new AddPMRelFieldsCommand());
+		c.addCommand(new ForkChainToInstantJobCommand()
+				.addCommand(new ScheduleNewPMCommand())
+		);
+		// c.addCommand(new scheduleBeforePMRemindersCommand());
+		c.addCommand(new UpdateReadingDataMetaCommand());
+		c.addCommand(new AddValidationRulesCommand());
+		return c;
+	}
+
+	public static Chain getDeleteScheduledWorkOrderChain() {
+		Chain c = FacilioChain.getTransactionChain();
+		c.addCommand(SetTableNamesCommand.getForWorkOrder());
+		c.addCommand(new SplitDependentTicketsCommand());
+		c.addCommand(new DeleteTicketDependenciesCommand());
+		c.addCommand(new DeleteTicketCommand());
+		return c;
+	}
+
 	public static Chain getUpdatePreventiveMaintenanceChain() {
 		Chain c = FacilioChain.getTransactionChain();
 		c.addCommand(new AddAttachmentCommand());
 		c.addCommand(new AttachmentContextCommand());
-		
 		c.addCommand(new GetPreventiveMaintenanceCommand());
 		c.addCommand(new ValidatePMTriggersCommand());
 		c.addCommand(new ValidateTasksCommand());
@@ -1168,6 +1200,40 @@ public class FacilioChainFactory {
 		c.addCommand(new AddValidationRulesCommand());
 		return c;
 	}
+
+	public static Chain getUpdateNewPreventiveMaintenanceChain() {
+		Chain c = FacilioChain.getTransactionChain();
+		c.addCommand(new AddAttachmentCommand());
+		c.addCommand(new AttachmentContextCommand());
+		
+		c.addCommand(new GetPreventiveMaintenanceCommand());
+		c.addCommand(new ValidatePMTriggersCommand());
+		c.addCommand(new ValidateNewTasksCommand());
+		c.addCommand(new AddPMReadingsForTasks());
+		c.addCommand(new CreateWorkorderTemplateCommand());
+		c.addCommand(new UpdatePreventiveMaintenanceCommand());
+		c.addCommand(new AddResourceReadingRelCommand());
+		c.addCommand(new InsertReadingDataMetaForNewResourceCommand());
+		c.addCommand(new DeletePMAndDependenciesCommand(false));
+		c.addCommand(new AddPMTriggerCommand());
+//		c.addCommand(new DeletePMRemindersCommand());
+		c.addCommand(new AddTaskSectionTriggersCommand());
+		c.addCommand(new AddPMReminderCommand());
+		c.addCommand(new AddPMRelFieldsCommand());
+		c.addCommand(new ForkChainToInstantJobCommand()
+				.addCommand(new ScheduleNewPMCommand())
+		);
+		// c.addCommand(new scheduleBeforePMRemindersCommand());
+		c.addCommand(new UpdateReadingDataMetaCommand());
+		c.addCommand(new AddValidationRulesCommand());
+		return c;
+	}
+
+	public static Chain getUpdateNewPreventiveMaintenanceJobChain() {
+		Chain c = FacilioChain.getTransactionChain();
+		c.addCommand(new UpdateNewPreventiveMaintenanceJobCommand());
+		return c;
+	}
 	
 	public static Chain getUpdatePreventiveMaintenanceJobChain() {
 		Chain c = FacilioChain.getTransactionChain();
@@ -1182,7 +1248,15 @@ public class FacilioChainFactory {
 		c.addCommand(new GetTaskInputDataCommand());
 		return c;
 	}
-	
+
+	public static Chain getNewPreventiveMaintenanceSummaryChain() {
+		Chain c = FacilioChain.getNonTransactionChain();
+		c.addCommand(new NewPreventiveMaintenanceSummaryCommand());
+		c.addCommand(new GetPMWorkOrders());
+		c.addCommand(new GetTaskInputDataCommand());
+		return c;
+	}
+
 	public static Chain getDeletePreventiveMaintenanceChain() {
 		Chain c = FacilioChain.getTransactionChain();
 		c.addCommand(new GetPreventiveMaintenanceCommand());
@@ -1201,6 +1275,13 @@ public class FacilioChainFactory {
 		Chain c = FacilioChain.getNonTransactionChain();
 		c.addCommand(new GenerateCriteriaFromFilterCommand());
 		c.addCommand(new GetPMJobsCommand());
+		return c;
+	}
+
+	public static Chain getGetNewPMJobListChain() {
+		Chain c = FacilioChain.getNonTransactionChain();
+		c.addCommand(new GenerateCriteriaFromFilterCommand());
+		c.addCommand(new GetScheduledWOCommand());
 		return c;
 	}
 	

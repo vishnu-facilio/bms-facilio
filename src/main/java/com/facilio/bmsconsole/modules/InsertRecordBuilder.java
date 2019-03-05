@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
@@ -137,10 +136,6 @@ public class InsertRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 			if(isWithLocalIdModule) {
 				bean.setLocalId(++localId);
 			}
-			bean.setSysCreatedTime(System.currentTimeMillis());
-			bean.setSysModifiedTime(System.currentTimeMillis());
-			bean.setSysCreatedBy(AccountUtil.getCurrentUser());
-			bean.setSysModifiedBy(AccountUtil.getCurrentUser());
 			beanProps.add(getAsProps(bean));
 		}
 		
@@ -195,29 +190,14 @@ public class InsertRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 				records.get(itr).setId(id);
 				
 				if (withChangeSet) {
-					List<UpdateChangeSet> changeList = constructChangeSet(id, beanProp, fieldNameMap);
+					List<UpdateChangeSet> changeList = FieldUtil.constructChangeSet(id, beanProp, fieldNameMap);
 					changeSet.put(id, changeList);
 				}
 			}
 		}
 		
 	}
-	
-	private List<UpdateChangeSet> constructChangeSet(long recordId, Map<String, Object> prop, Map<String, FacilioField> fieldMap) {
-		Set<String> fieldNames = fieldMap.keySet();
-		List<UpdateChangeSet> changeList = new ArrayList<>();
-		for (Map.Entry<String, Object> entry : prop.entrySet()) {
-			if (fieldNames.contains(entry.getKey())) {
-				UpdateChangeSet currentChange = new UpdateChangeSet();
-				currentChange.setFieldId(fieldMap.get(entry.getKey()).getFieldId());
-				currentChange.setNewValue(entry.getValue());
-				currentChange.setRecordId(recordId);
-				changeList.add(currentChange);
-			}
-		}
-		return changeList;
-	}
-	
+
 	private long getLocalId (List<FacilioModule> modules) throws Exception {
 		long localId = -1;
 		if(isWithLocalIdModule) {
@@ -265,7 +245,12 @@ public class InsertRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 	private Map<String, Object> getAsProps(E bean) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
 		Map<String, Object> moduleProps = FieldUtil.getAsProperties(bean);
 		moduleProps.put("orgId", AccountUtil.getCurrentOrg().getOrgId());
-		
+		moduleProps.put("sysCreatedTime", System.currentTimeMillis());
+		moduleProps.put("sysModifiedTime", System.currentTimeMillis());
+		if (AccountUtil.getCurrentUser() != null) {
+			moduleProps.put("sysCreatedBy", AccountUtil.getCurrentUser().getId());
+			moduleProps.put("sysModifiedBy", AccountUtil.getCurrentUser().getId());
+		}
 		for(FacilioField field : fields) {
 			if(field.getDataTypeEnum() == FieldType.LOOKUP) {
 				Object val = moduleProps.get(field.getName());

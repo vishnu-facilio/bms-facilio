@@ -73,7 +73,7 @@ public class PreventiveMaintenanceSummaryCommand implements Command {
 		
 		PreventiveMaintenance pm = FieldUtil.getAsBeanFromMap(pmProp, PreventiveMaintenance.class);
 		pm.setTriggers(PreventiveMaintenanceAPI.getPMTriggers(pm));
-		
+
 		if(pm.hasTriggers()) {
 			for (PMTriggerContext trigger : pm.getTriggers()) {
 				PMJobsContext pmJob = PreventiveMaintenanceAPI.getNextPMJob(trigger.getId(), Instant.now().getEpochSecond(), true);

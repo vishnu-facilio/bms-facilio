@@ -939,6 +939,15 @@ public class ModuleFactory {
 		return pmJobs;
 	}
 
+	public static FacilioModule getPMResourceScheduleRuleRelModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName("pmResourceScheduleRuleRel");
+		module.setDisplayName("PM Resource Schedule Rule Rel");
+		module.setTableName("PM_Resource_Schedule_Rule_Rel");
+
+		return module;
+	}
+
 	public static FacilioModule getBeforePMRemindersTriggerRelModule() {
 		FacilioModule beforePMRemindersTriggerRel = new FacilioModule();
 		beforePMRemindersTriggerRel.setName("beforepmreminderstriggerrel");
@@ -1649,5 +1658,14 @@ public class ModuleFactory {
 		inventoryModule.setDisplayName("Stocked Tools");
 		inventoryModule.setTableName("Stocked_tools");
 		return inventoryModule;
+	}
+	
+  	public static FacilioModule getWeatherStationModule() {
+		FacilioModule weatherStation = new FacilioModule();
+		weatherStation.setName("weatherStations");
+		weatherStation.setDisplayName("Weather Stations");
+		weatherStation.setTableName("Weather_Stations");
+
+		return weatherStation;
 	}
 }

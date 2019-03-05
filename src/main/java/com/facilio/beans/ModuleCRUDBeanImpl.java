@@ -239,11 +239,13 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 						}
 					}
 				}
-				
+
+				PMTriggerContext pmTrigger = (PMTriggerContext) context.get(FacilioConstants.ContextNames.PM_CURRENT_TRIGGER);
+				wo.setTrigger(pmTrigger);
+
 				if(isNewPmType) {
 					Long woTemplateResourceId = wo.getResource() != null ? wo.getResource().getId() : -1;
 					if(woTemplateResourceId > 0) {
-						PMTriggerContext pmTrigger = (PMTriggerContext) context.get(FacilioConstants.ContextNames.PM_CURRENT_TRIGGER);
 						Long currentTriggerId = null;
 						if (pmTrigger != null) {
 							currentTriggerId = pmTrigger.getId();
@@ -254,7 +256,7 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 				if(taskMapForNewPmExecution != null) {
 					taskMap = taskMapForNewPmExecution;
 				}
-				
+
 				wo.setSourceType(TicketContext.SourceType.PREVENTIVE_MAINTENANCE);
 				wo.setPm(pm);
 				context.put(FacilioConstants.ContextNames.WORK_ORDER, wo);

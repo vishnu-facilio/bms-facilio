@@ -200,6 +200,28 @@ public class AssetContext extends ResourceContext {
 	public void setGeoLocation(String geoLocation) {
 		this.geoLocation = geoLocation;
 	}
+	
+	private SiteContext identifiedLocation;
+	public SiteContext getIdentifiedLocation() {
+		return identifiedLocation;
+	}
+	public void setIdentifiedLocation(SiteContext identifiedLocation) {
+		this.identifiedLocation = identifiedLocation;
+	}
+
+	private Boolean geoLocationEnabled;
+	public Boolean getGeoLocationEnabled() {
+		return geoLocationEnabled;
+	}
+	public void setGeoLocationEnabled(Boolean geoLocationEnabled) {
+		this.geoLocationEnabled = geoLocationEnabled;
+	}
+	public boolean isGeoLocationEnabled() {
+		if (geoLocationEnabled != null) {
+			return geoLocationEnabled.booleanValue();
+		}
+		return false;
+	}
 
 	public static enum AssetState {
 		ACTIVE(1, "Active"),

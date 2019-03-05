@@ -33,6 +33,7 @@ public class AddActivitiesCommand implements Command {
 			
 			if (CollectionUtils.isEmpty(subModules)) {
 				LOGGER.info("No Activity Module for module : "+moduleName+" and so not adding activities for that");
+				return false;
 			}
 			
 			FacilioModule activityModule = subModules.get(0);

@@ -40,12 +40,14 @@ import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
-import com.facilio.bmsconsole.modules.FieldType;
+import com.facilio.bmsconsole.modules.FieldUtil;
+import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericSelectRecordBuilder;
+import com.facilio.weather.context.WeatherStationContext;
 
 
 public class WeatherUtil {
@@ -181,14 +183,62 @@ public class WeatherUtil {
 		HttpURLConnection connection= WeatherUtil.getHttpURLConnection(weatherURL);
 		String response=WeatherUtil.getResponse(connection);
 		if(response==null){
-			System.err.println("The response is null from the weather server");
+			LOGGER.log(Level.INFO,"The response is null from the weather server");
 			return null;
 		}
+		JSONObject weatherData=null;
 		JSONParser parser = new JSONParser();
-		JSONObject weatherData= (JSONObject) parser.parse(response);
-		// return (JSONObject)weatherData.get("currently");
+		
+		try {
+		weatherData= (JSONObject) parser.parse(response);
+		}
+		catch(Exception e) {
+			throw new Exception(response, e);
+		}
 		return weatherData;
 		
+	}
+	
+	@SuppressWarnings("unchecked")
+	public static Map<String,Object>getWeatherData(WeatherStationContext weatherStation, Long time) throws Exception {
+		
+		
+		Double lat=weatherStation.getLat();
+		Double lng=weatherStation.getLng();
+		if(lat==null || lng==null) {
+			return null;
+		}
+		String weatherURL=WeatherUtil.getForecastURL(lat, lng,time);
+		HttpURLConnection connection= WeatherUtil.getHttpURLConnection(weatherURL);
+		String response=WeatherUtil.getResponse(connection);
+		if(response==null){
+			LOGGER.log(Level.INFO,"The response is null from the weather server");
+			return null;
+		}
+		JSONObject weatherData=null;
+		JSONParser parser = new JSONParser();
+		try {
+			weatherData= (JSONObject) parser.parse(response);
+		}
+		catch(Exception e) {
+			throw new Exception(response, e);
+		}
+		return weatherData;
+		
+	}
+	
+	@SuppressWarnings("unchecked")
+	public static Map<Long,Map<String,Object>>getWeatherDataMap(List<WeatherStationContext> weatherStations, Long time) throws Exception {
+		
+		Map<Long,Map<String,Object>> dataMap= new HashMap<Long,Map<String,Object>> ();
+		for(WeatherStationContext weatherStation:weatherStations) {
+			Long stationId=weatherStation.getId();
+			Map<String,Object> weatherData=  getWeatherData(weatherStation,time);
+			if(weatherData!=null) {
+				dataMap.put(stationId, weatherData);
+			}
+		}
+		return dataMap;
 	}
 	
 	public static Map<String, Object> getLocation(SiteContext site) throws Exception {
@@ -295,6 +345,23 @@ public static Map<Long,List<Map<String,Object>>> getReadings(String moduleName) 
 			
 	}
 	
+	
+	public static List<WeatherStationContext> getAllWeatherStations() throws Exception {
+
+		FacilioModule module = ModuleFactory.getWeatherStationModule();
+		List<FacilioField> fields = FieldFactory.getWeatherStationsFields();
+
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.table(module.getTableName())
+				.select(fields);
+		List<Map<String, Object>> props=selectBuilder.get();
+		List<WeatherStationContext> weatherStations= new ArrayList<WeatherStationContext>();
+		for (Map<String, Object> prop : props) {
+			WeatherStationContext station = FieldUtil.getAsBeanFromMap(prop, WeatherStationContext.class);
+			weatherStations.add(station);
+		}
+		return weatherStations;
+	}
 	
 	public static Map<Long,List<ReadingContext>> getWeatherReading(String moduleName, Map<Long,List<ReadingContext>> readingsMap ) throws Exception {
 		
@@ -424,7 +491,7 @@ public static List<ReadingContext> getDailyForecastReadings(long siteId,String m
         while(dataIterator.hasNext()) {
         
         	JSONObject dailyWeatherReading=	dataIterator.next();
-        	ReadingContext reading=WeatherUtil.getDailyReading(siteId,moduleName,dailyWeatherReading,forecast);
+        	ReadingContext reading=WeatherUtil.getDailyReadingOld(siteId,moduleName,dailyWeatherReading,forecast);
         	if(reading!=null) {
         		dailyForecastReadings.add(reading);
         	}
@@ -482,7 +549,7 @@ public static List<ReadingContext> getReadingList(Map<Long,List<ReadingContext>>
         while(dataIterator.hasNext()) {
         
         	JSONObject hourlyWeatherReading=dataIterator.next();
-        	ReadingContext reading=WeatherUtil.getHourlyReading(siteId,moduleName,hourlyWeatherReading);
+        	ReadingContext reading=WeatherUtil.getHourlyReadingOld(siteId,moduleName,hourlyWeatherReading);
         	if(reading!=null) {
         		hourlyForecastReadings.add(reading);
         	}
@@ -490,7 +557,7 @@ public static List<ReadingContext> getReadingList(Map<Long,List<ReadingContext>>
 		return hourlyForecastReadings;
 	}
 	
-	public static ReadingContext getHourlyReading(long siteId,String moduleName, Map<String,Object> hourlyWeather) {
+	public static ReadingContext getHourlyReadingOld(long siteId,String moduleName, Map<String,Object> hourlyWeather) {
 
 
 		if(hourlyWeather==null) {
@@ -526,7 +593,7 @@ public static List<ReadingContext> getReadingList(Map<Long,List<ReadingContext>>
 	}
 
 
-public static ReadingContext getDailyReading(long siteId,String moduleName, Map<String,Object> dailyWeather, boolean forecast) {
+public static ReadingContext getDailyReadingOld(long siteId,String moduleName, Map<String,Object> dailyWeather, boolean forecast) {
 		
 	
 	if(dailyWeather==null) {
@@ -577,6 +644,96 @@ public static ReadingContext getDailyReading(long siteId,String moduleName, Map<
 		reading.setTtime(ttime);
 	}
 	return reading;
+}
+
+
+public static ReadingContext getHourlyReading(String moduleName, Map<String,Object> hourlyWeather) {
+
+
+	if(hourlyWeather==null) {
+		return null;
+	}
+
+	ReadingContext reading= new ReadingContext();
+	//reading.setParentId(siteId);
+	reading.addReading("temperature", hourlyWeather.get("temperature"));
+	reading.addReading("icon", hourlyWeather.get("icon"));
+	reading.addReading("summary", hourlyWeather.get("summary"));
+	reading.addReading("humidity",hourlyWeather.get("humidity"));
+	reading.addReading("dewPoint", hourlyWeather.get("dewPoint"));
+	reading.addReading("pressure", hourlyWeather.get("pressure"));
+	reading.addReading("apparentTemperature", hourlyWeather.get("apparentTemperature"));
+	reading.addReading("precipitationIntensity", hourlyWeather.get("precipIntensity"));
+	reading.addReading("precipitationIntensityError", hourlyWeather.get("precipIntensityError"));
+	reading.addReading("precipitationProbability", hourlyWeather.get("precipProbability"));
+	reading.addReading("precipitationType", hourlyWeather.get("precipType"));		
+	reading.addReading("windSpeed", hourlyWeather.get("windSpeed"));
+	reading.addReading("windGust", hourlyWeather.get("windGust"));
+	reading.addReading("windBearing", hourlyWeather.get("windBearing"));
+	reading.addReading("cloudCover", hourlyWeather.get("cloudCover"));
+	reading.addReading("uvIndex", hourlyWeather.get("uvIndex"));
+	reading.addReading("visibility", hourlyWeather.get("visibility"));
+	reading.addReading("ozone", hourlyWeather.get("ozone"));
+	reading.addReading("nearestStormDistance", hourlyWeather.get("nearestStormDistance"));
+	reading.addReading("nearestStormBearing", hourlyWeather.get("nearestStormBearing"));
+	//will be used for forecast alone..
+	Long ttime=getAdjustedTtime(moduleName,(Long)hourlyWeather.get("time"));
+	reading.addReading("forecastTime", ttime);
+	return reading;
+}
+
+
+public static ReadingContext getDailyReading(String moduleName, Map<String,Object> dailyWeather, boolean forecast) {
+	
+
+if(dailyWeather==null) {
+	return null;
+}
+
+ReadingContext reading= new ReadingContext();
+//reading.setParentId(siteId);
+
+reading.addReading("icon", dailyWeather.get("icon"));
+reading.addReading("summary", dailyWeather.get("summary"));
+reading.addReading("humidity",dailyWeather.get("humidity"));
+reading.addReading("dewPoint", dailyWeather.get("dewPoint"));
+reading.addReading("pressure", dailyWeather.get("pressure"));
+reading.addReading("precipitationIntensity", dailyWeather.get("precipIntensity"));
+reading.addReading("precipitationIntensityError", dailyWeather.get("precipIntensityError"));
+reading.addReading("precipitationProbability", dailyWeather.get("precipProbability"));
+reading.addReading("precipitationType", dailyWeather.get("precipType"));
+reading.addReading("windSpeed", dailyWeather.get("windSpeed"));
+reading.addReading("windGust", dailyWeather.get("windGust"));
+reading.addReading("windBearing", dailyWeather.get("windBearing"));
+reading.addReading("cloudCover", dailyWeather.get("cloudCover"));
+reading.addReading("uvIndex", dailyWeather.get("uvIndex"));
+reading.addReading("visibility", dailyWeather.get("visibility"));
+reading.addReading("ozone", dailyWeather.get("ozone"));
+
+reading.addReading("moonPhase", dailyWeather.get("moonPhase"));
+reading.addReading("apparentTemperatureLow", dailyWeather.get("apparentTemperatureLow"));
+reading.addReading("apparentTemperatureHigh", dailyWeather.get("apparentTemperatureHigh"));
+reading.addReading("temperatureLow", dailyWeather.get("temperatureLow"));
+reading.addReading("temperatureHigh", dailyWeather.get("temperatureHigh"));
+reading.addReading("precipitationIntensityMax", dailyWeather.get("precipIntensityMax"));
+
+reading.addReading("apparentTemperatureLowTime", getTimeinMillis(dailyWeather.get("apparentTemperatureLowTime")));
+reading.addReading("apparentTemperatureHighTime", getTimeinMillis(dailyWeather.get("apparentTemperatureHighTime")));
+reading.addReading("temperatureLowTime", getTimeinMillis(dailyWeather.get("temperatureLowTime")));
+reading.addReading("temperatureHighTime", getTimeinMillis(dailyWeather.get("temperatureHighTime")));
+reading.addReading("precipitationIntensityMaxTime", getTimeinMillis(dailyWeather.get("precipIntensityMaxTime")));
+
+reading.addReading("sunriseTime", getTimeinMillis(dailyWeather.get("sunriseTime")));
+reading.addReading("sunsetTime", getTimeinMillis(dailyWeather.get("sunsetTime")));
+reading.addReading("windGustTime", getTimeinMillis(dailyWeather.get("windGustTime")));
+reading.addReading("uvIndexTime", getTimeinMillis(dailyWeather.get("uvIndexTime")));
+Long ttime=getAdjustedTtime(moduleName,(Long)dailyWeather.get("time"));
+//will be used for forecast alone..
+reading.addReading("forecastTime", ttime);
+if(!forecast) {
+	reading.setTtime(ttime);
+}
+return reading;
 }
 
 private static long getAdjustedTtime(String moduleName,Long ttime)  {

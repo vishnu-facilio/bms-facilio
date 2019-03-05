@@ -154,25 +154,25 @@ public class WorkorderTemplate extends Template {
 			woProp.put("duration", duration);
 			woProp.put("siteId", siteId);
 			if (statusId != -1) {
-				woProp.put("status", FieldUtil.getLookedUpProp(statusId));
+				woProp.put("status", FieldUtil.getEmptyLookedUpProp(statusId));
 			}
 			if (priorityId != -1) {
-				woProp.put("priority", FieldUtil.getLookedUpProp(priorityId));
+				woProp.put("priority", FieldUtil.getEmptyLookedUpProp(priorityId));
 			}
 			if (categoryId != -1) {
-				woProp.put("category", FieldUtil.getLookedUpProp(categoryId));
+				woProp.put("category", FieldUtil.getEmptyLookedUpProp(categoryId));
 			}
 			if (typeId != -1) {
-				woProp.put("type", FieldUtil.getLookedUpProp(typeId));
+				woProp.put("type", FieldUtil.getEmptyLookedUpProp(typeId));
 			}
 			if (assignmentGroupId != -1) {
-				woProp.put("assignmentGroup", FieldUtil.getLookedUpProp(assignmentGroupId));
+				woProp.put("assignmentGroup", FieldUtil.getEmptyLookedUpProp(assignmentGroupId));
 			}
 			if (assignedToId != -1) {
-				woProp.put("assignedTo", FieldUtil.getLookedUpProp(assignedToId));
+				woProp.put("assignedTo", FieldUtil.getEmptyLookedUpProp(assignedToId));
 			}
 			if (resourceId != -1) {
-				woProp.put("resource", FieldUtil.getLookedUpProp(resourceId));
+				woProp.put("resource", FieldUtil.getEmptyLookedUpProp(resourceId));
 			}
 			
 			if (additionInfo != null) {

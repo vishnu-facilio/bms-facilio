@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.facilio.fw.LRUCache;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -42,6 +43,7 @@ public class GenericUpdateRecordBuilder implements UpdateBuilderIfc<Map<String, 
 	private WhereBuilder where = new WhereBuilder();
 	private WhereBuilder oldWhere = null;
 	private Connection conn = null;
+	private ArrayList<String> tablesToBeUpdated = new ArrayList<>();
 	
 	public GenericUpdateRecordBuilder() {
 		// TODO Auto-generated constructor stub
@@ -53,6 +55,7 @@ public class GenericUpdateRecordBuilder implements UpdateBuilderIfc<Map<String, 
 		this.tableName = updateBuilder.tableName;
 		this.value = updateBuilder.value;
 		this.conn = updateBuilder.conn;
+		this.tablesToBeUpdated = updateBuilder.tablesToBeUpdated;
 		
 		this.joinBuilder = new StringBuilder(updateBuilder.joinBuilder);
 		if (updateBuilder.fields != null) {
@@ -65,6 +68,7 @@ public class GenericUpdateRecordBuilder implements UpdateBuilderIfc<Map<String, 
 
 	public GenericUpdateRecordBuilder table(String tableName) {
 		this.tableName = tableName;
+		tablesToBeUpdated.add(tableName);
 		return this;
 	}
 
@@ -125,6 +129,7 @@ public class GenericUpdateRecordBuilder implements UpdateBuilderIfc<Map<String, 
 		joinBuilder.append(" INNER JOIN ")
 					.append(tableName)
 					.append(" ");
+		tablesToBeUpdated.add(tableName);
 		return new GenericJoinBuilder(this);
 	}
 	
@@ -133,6 +138,7 @@ public class GenericUpdateRecordBuilder implements UpdateBuilderIfc<Map<String, 
 		joinBuilder.append(" LEFT JOIN ")
 					.append(tableName)
 					.append(" ");
+		tablesToBeUpdated.add(tableName);
 		return new GenericJoinBuilder(this);
 	}
 	
@@ -141,6 +147,7 @@ public class GenericUpdateRecordBuilder implements UpdateBuilderIfc<Map<String, 
 		joinBuilder.append(" RIGHT JOIN ")
 					.append(tableName)
 					.append(" ");
+		tablesToBeUpdated.add(tableName);
 		return new GenericJoinBuilder(this);
 	}
 	
@@ -149,6 +156,7 @@ public class GenericUpdateRecordBuilder implements UpdateBuilderIfc<Map<String, 
 		joinBuilder.append(" FULL JOIN ")
 					.append(tableName)
 					.append(" ");
+		tablesToBeUpdated.add(tableName);
 		return new GenericJoinBuilder(this);
 	}
 	
@@ -217,12 +225,17 @@ public class GenericUpdateRecordBuilder implements UpdateBuilderIfc<Map<String, 
 	
 	@Override
 	public int update(Map<String, Object> value) throws SQLException {
+	    long startTime = System.currentTimeMillis();
+	    if(AccountUtil.getCurrentAccount() != null) {
+	        AccountUtil.getCurrentAccount().incrementUpdateQueryCount(1);
+        }
 		checkForNull();
 		handleOrgId();
 		splitFields();
 		if (value == null) {
 			return 0;
 		}
+
 		/*if (orgIdField != null) {
 			value.put(orgIdField.getName(), AccountUtil.getCurrentOrg().getId());
 		}*/
@@ -278,6 +291,16 @@ public class GenericUpdateRecordBuilder implements UpdateBuilderIfc<Map<String, 
 					
 					int rowCount = pstmt.executeUpdate();
 					System.out.println("Updated "+rowCount+" records.");
+					long orgId = -1;
+					if(AccountUtil.getCurrentOrg() != null) {
+						orgId = AccountUtil.getCurrentOrg().getOrgId();
+						if(DBUtil.isQueryCacheEnabled(orgId, tableName)) {
+							LOGGER.debug("cache invalidate for query " + sql);
+							for (String tablesInQuery : tablesToBeUpdated) {
+								LRUCache.getQueryCache().remove(GenericSelectRecordBuilder.getRedisKey(orgId, tablesInQuery));
+							}
+						}
+					}
 					return rowCount;
 				}
 			}
@@ -287,6 +310,9 @@ public class GenericUpdateRecordBuilder implements UpdateBuilderIfc<Map<String, 
 				throw e;
 			}
 			finally {
+                if(AccountUtil.getCurrentAccount() != null) {
+                    AccountUtil.getCurrentAccount().incrementUpdateQueryTime((System.currentTimeMillis()-startTime));
+                }
 				if (isExternalConnection) {
 					DBUtil.close(pstmt);
 				}

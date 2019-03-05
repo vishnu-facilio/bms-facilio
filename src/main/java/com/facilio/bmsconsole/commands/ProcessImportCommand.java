@@ -31,6 +31,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.actions.ImportBuildingAction;
 import com.facilio.bmsconsole.actions.ImportFloorAction;
 import com.facilio.bmsconsole.actions.ImportProcessContext;
+import com.facilio.bmsconsole.actions.ImportProcessContext.ImportSetting;
 import com.facilio.bmsconsole.actions.ImportSiteAction;
 import com.facilio.bmsconsole.actions.ImportSpaceAction;
 import com.facilio.bmsconsole.commands.data.ProcessXLS;
@@ -182,20 +183,25 @@ public class ProcessImportCommand implements Command {
 
 					if (importProcessContext.getModule().getName().equals(FacilioConstants.ContextNames.ASSET) || (importProcessContext.getModule().getExtendModule() != null && importProcessContext.getModule().getExtendModule().getName().equals(FacilioConstants.ContextNames.ASSET))) {
 						Long spaceId = getSpaceID(importProcessContext, colVal, fieldMapping);
-						props.put("purposeSpace", spaceId);
+						if(spaceId != null) {
+							props.put("purposeSpace", spaceId);
 							
+							lookupHolder = new HashMap<>();
+							lookupHolder.put("id", spaceId);
+							props.put(ImportAPI.ImportProcessConstants.SPACE_FIELD, lookupHolder);
+						}
+						
 						props.put(ImportAPI.ImportProcessConstants.RESOURCE_TYPE, ResourceType.ASSET.getValue());
 						
-						lookupHolder = new HashMap<>();
-						lookupHolder.put("id", spaceId);
-						props.put(ImportAPI.ImportProcessConstants.SPACE_FIELD, lookupHolder);
-						
 						String siteName = (String) colVal.get(fieldMapping.get(importProcessContext.getModule().getName() + "__site"));
-						List<SiteContext> sites = SpaceAPI.getAllSites();
-						for (SiteContext site : sites) {
-							if (site.getName().trim().toLowerCase().equals(siteName.trim().toLowerCase())) {
-								props.put("siteId", site.getId());
-								break;
+						
+						if(!(importProcessContext.getImportSetting() == ImportSetting.UPDATE.getValue() || importProcessContext.getImportSetting() == ImportSetting.UPDATE_NOT_NULL.getValue())) {
+							List<SiteContext> sites = SpaceAPI.getAllSites();
+							for (SiteContext site : sites) {
+								if (site.getName().trim().toLowerCase().equals(siteName.trim().toLowerCase())) {
+									props.put("siteId", site.getId());
+									break;
+								}
 							}
 						}
 
