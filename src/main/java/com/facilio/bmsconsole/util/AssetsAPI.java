@@ -488,6 +488,7 @@ public class AssetsAPI {
 		List<FacilioField> fields = new ArrayList(modBean.getAllFields(FacilioConstants.ContextNames.ASSET));
 		FacilioModule readingsModule = ModuleFactory.getReadingDataMetaModule();
 		List<FacilioField> redingFields = FieldFactory.getReadingDataMetaFields();
+		redingFields.remove(0);
 		fields.addAll(redingFields);
 		Map<String, FacilioField> readingFieldsMap = FieldFactory.getAsMap(redingFields);
 		SelectRecordsBuilder<AssetContext> selectBuilder = new SelectRecordsBuilder<AssetContext>()
