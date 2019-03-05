@@ -2,7 +2,6 @@ package com.facilio.bmsconsole.commands;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.commons.chain.Command;
@@ -18,9 +17,6 @@ public class UpdateReadingDataMetaCommand implements Command {
 	@Override
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
-		if (context.get(FacilioConstants.ContextNames.MODULE_NAME) != null) {
-			LOGGER.log(Level.SEVERE, "context from update rdm" + context.get(FacilioConstants.ContextNames.MODULE_NAME));
-		}
 
 		List<ReadingDataMeta> metaList = (List<ReadingDataMeta>) context.get(FacilioConstants.ContextNames.READING_DATA_META_LIST);
 		if (metaList != null && !metaList.isEmpty()) {

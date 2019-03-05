@@ -38,8 +38,6 @@ public class UpdateTaskCountCommand implements Command {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			String moduleName = "task";
 
-			LOGGER.log(Level.SEVERE, "module name: " + moduleName + " parentids: " + StringUtils.join(parentIds.toArray(), ", "));
-			
 			FacilioField parentIdField = modBean.getField("parentTicketId", moduleName);
 			FacilioModule module = modBean.getModule(moduleName);
 			
