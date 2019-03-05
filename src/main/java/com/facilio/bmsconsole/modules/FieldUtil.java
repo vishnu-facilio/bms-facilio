@@ -398,6 +398,7 @@ public class FieldUtil {
 																						.select(lookupBeanFields)
 																						.beanClass(moduleClass)
 																						.andCondition(CriteriaAPI.getIdCondition(ids, module))
+																						.fetchDeleted()
 																						;
 					
 					if (field instanceof LookupFieldMeta && CollectionUtils.isNotEmpty(((LookupFieldMeta) field).getChildLookupFields())) {
