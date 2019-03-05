@@ -702,7 +702,7 @@ public class AssetsAPI {
 			AssetCategoryContext assetCategory = AssetsAPI.getCategoryForAsset(categoryId);
 			long assetModuleID = assetCategory.getAssetModuleID();
 			FacilioModule module = modBean.getModule(assetModuleID);
-			
+
 			if (module != null) {
 				moduleInfo.put(FacilioConstants.ContextNames.MODULE_NAME, module.getName());
 				moduleInfo.put(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME, module.getTableName());
@@ -744,5 +744,5 @@ public class AssetsAPI {
 			}
 		}
 	}
-	
+
 }
