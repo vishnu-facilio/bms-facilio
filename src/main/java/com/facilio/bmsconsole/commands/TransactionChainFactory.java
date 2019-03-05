@@ -1221,6 +1221,14 @@ public class TransactionChainFactory {
 			return c;
 		}
 
+		public static Chain getPMMigration(long pmId) {
+			Chain c = getDefaultChain();
+			c.addCommand(getChangeNewPreventiveMaintenanceStatusChainForMig());
+			c.addCommand(new ResetContext(pmId));
+			c.addCommand(getChangeNewPreventiveMaintenanceStatusChainForMig());
+			return c;
+		}
+
 
 
 	public static Chain getExecutePreventiveMaintenanceChain() {
