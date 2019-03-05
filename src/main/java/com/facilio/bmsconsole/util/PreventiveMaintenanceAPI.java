@@ -1860,7 +1860,7 @@ public class PreventiveMaintenanceAPI {
 										}
 										Criteria criteria = new Criteria();
 										criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("pm"), String.valueOf(pm.getId()),PickListOperators.IS));
-										criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("resource"), String.valueOf(resourcePlannerContext.getResourceId()), NumberOperators.EQUALS));
+										criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("resource"), String.valueOf(resourcePlannerContext.getResourceId()), PickListOperators.IS));
 										long ruleId = -1;
 										if (reminder.getTypeEnum() == ReminderType.BEFORE_EXECUTION) {
 											ruleId = addScheduleRule(createdTimeField, pm, reminder, criteria, WorkflowRuleContext.ScheduledRuleType.BEFORE);
