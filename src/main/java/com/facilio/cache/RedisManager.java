@@ -46,7 +46,7 @@ public class RedisManager {
 		// Create and set a JedisPoolConfig
 		JedisPoolConfig poolConfig = new JedisPoolConfig();
 		// Maximum active connections to Redis instance
-		poolConfig.setMaxTotal(20);
+		poolConfig.setMaxTotal(80);
 		// Tests whether connection is dead when connection
 		// retrieval method is called
 		poolConfig.setTestOnBorrow(true);
@@ -56,10 +56,10 @@ public class RedisManager {
 		poolConfig.setTestOnReturn(true);
 		// Number of connections to Redis that just sit there
 		// and do nothing
-		poolConfig.setMaxIdle(10);
+		poolConfig.setMaxIdle(70);
 		// Minimum number of idle connections to Redis
 		// These can be seen as always open and ready to serve
-		poolConfig.setMinIdle(5);
+		poolConfig.setMinIdle(70);
 		// Tests whether connections are dead during idle periods
 		poolConfig.setTestWhileIdle(true);
 		// Maximum number of connections to test in each idle check
