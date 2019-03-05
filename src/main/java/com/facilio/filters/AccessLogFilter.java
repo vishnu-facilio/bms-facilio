@@ -53,6 +53,7 @@ public class AccessLogFilter implements Filter {
 
         HttpServletRequest request = (HttpServletRequest) servletRequest;
         HttpServletResponse response = (HttpServletResponse) servletResponse;
+        long startTime = System.currentTimeMillis();
 
         Thread thread = Thread.currentThread();
         String threadName = thread.getName();
@@ -61,7 +62,6 @@ public class AccessLogFilter implements Filter {
 
         filterChain.doFilter(servletRequest, response);
 
-        long startTime = System.currentTimeMillis();
         String message = DUMMY_MSG;
         if(AccountUtil.getCurrentAccount() != null) {
             Account account = AccountUtil.getCurrentAccount();
