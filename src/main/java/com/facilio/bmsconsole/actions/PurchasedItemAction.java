@@ -150,6 +150,11 @@ public class PurchasedItemAction extends FacilioAction{
 	public boolean getIncludeParentFilter() {
 		return includeParentFilter;
 	}
+	
+	private boolean includeParentFilter;
+	public boolean getIncludeParentFilter() {
+		return includeParentFilter;
+	}
 
 	public void setIncludeParentFilter(boolean includeParentFilter) {
 		this.includeParentFilter = includeParentFilter;
