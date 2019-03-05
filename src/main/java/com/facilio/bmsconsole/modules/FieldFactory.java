@@ -5114,6 +5114,7 @@ public class FieldFactory {
 		fields.add(getField("assetid", "ASSET_ID", module, FieldType.NUMBER));
 		fields.add(getField("criteriaid","CRITERIA_ID",module,FieldType.NUMBER));
 		fields.add(getField("sourcemoduleid","SOURCE_MODULEID",module,FieldType.NUMBER));
+		fields.add(getField("predictedlogfieldid","PREDICTED_LOG_FIELDID",module,FieldType.NUMBER));
 		fields.add(getField("predictedfieldid","PREDICTED_FIELDID",module,FieldType.NUMBER));
 		fields.add(getField("predictioninterval","PREDICTION_INTERVAL",module,FieldType.NUMBER));
 		fields.add(getField("lastexecutiontime","LAST_EXECUTION_TIME",module,FieldType.NUMBER));
