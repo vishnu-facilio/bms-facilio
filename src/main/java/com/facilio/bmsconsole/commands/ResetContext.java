@@ -18,7 +18,7 @@ public class ResetContext implements Command {
     @Override
     public boolean execute(Context context) throws Exception {
         PreventiveMaintenance pm = new PreventiveMaintenance();
-        pm.setStatus(false);
+        pm.setStatus(true);
 
         context.clear();
         context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Arrays.asList(pmId));

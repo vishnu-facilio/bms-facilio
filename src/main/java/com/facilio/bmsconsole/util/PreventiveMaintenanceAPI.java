@@ -648,7 +648,7 @@ public class PreventiveMaintenanceAPI {
 
 		LOGGER.log(Level.SEVERE, "Number of PMS to be deactivated: " + pms.size());
 
-		List<Long> skipped = activateDeactivateAllPms(pms);
+		List<Long> skipped = deactivateActivateAllPms(pms);
 
 		//Set<Long> skipList = deactivateAllPms(pms);
 		//Set<Long> activateSkipList = activateAllPms(pms, skipList);
@@ -656,12 +656,12 @@ public class PreventiveMaintenanceAPI {
 		//LOGGER.log(Level.SEVERE, "Activation skipped: "+ StringUtils.join(activateSkipList.toArray(), ", "));
 	}
 
-	private static List<Long> activateDeactivateAllPms(List<PreventiveMaintenance> pms) throws Exception {
+	private static List<Long> deactivateActivateAllPms(List<PreventiveMaintenance> pms) throws Exception {
 		List<Long> skippedPms = new ArrayList<>();
 		for (PreventiveMaintenance activePm: pms) {
 			try {
 				PreventiveMaintenance pm = new PreventiveMaintenance();
-				pm.setStatus(true);
+				pm.setStatus(false);
 
 				FacilioContext context = new FacilioContext();
 				context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Arrays.asList(activePm.getId()));
