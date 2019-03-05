@@ -69,7 +69,9 @@ public class AccessLogFilter implements Filter {
                     " update: " + account.getUpdateQueries() + " time: " + account.getUpdateQueriesTime() +
                     " insert: " + account.getInsertQueries() + " time: " + account.getInsertQueriesTime() +
                     " delete: " + account.getDeleteQueries() + " time: " + account.getDeleteQueriesTime() +
-                    " redis: " + account.getRedisQueries() + " time: " + account.getRedisTime();
+                    " rget: " + account.getRedisGetCount() + " time: " + account.getRedisGetTime() +
+                    " rput: " + account.getRedisPutCount() + " time: " + account.getRedisPutTime() +
+                    " rdel: " + account.getRedisDeleteCount() + " time: " + account.getRedisDeleteTime();
         }
         LoggingEvent event = new LoggingEvent(LOGGER.getName(), LOGGER, Level.INFO, message, null);
         String remoteIp = request.getHeader(X_FORWARDED_FOR);

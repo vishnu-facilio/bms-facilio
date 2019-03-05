@@ -21,12 +21,18 @@ public class Account implements Serializable {
 	private int updateQueries = 0;
 	private int deleteQueries = 0;
 	private int redisQueries = 0;
+	private int redisGetCount = 0;
+	private int redisPutCount = 0;
+	private int redisDeleteCount = 0;
 	private long selectQueriesTime = 0L;
 	private long insertQueriesTime = 0L;
 	private long updateQueriesTime = 0L;
 	private long deleteQueriesTime = 0L;
 	private long redisTime = 0L;
-	
+	private long redisGetTime = 0L;
+	private long redisPutTime = 0L;
+	private long redisDeleteTime = 0L;
+
 	private RemoteScreenContext remoteScreen;
 	
 	public Account(Organization org, User user) {
@@ -47,7 +53,7 @@ public class Account implements Serializable {
 	public void setOrg(Organization org) {
 		this.org = org;
 	}
-	
+
 	public User getUser() {
 		return this.user;
 	}
@@ -179,4 +185,54 @@ public class Account implements Serializable {
 	public void incrementRedisTime(long redisTime) {
 		this.redisTime = this.redisTime + redisTime;
 	}
+
+	public int getRedisGetCount() {
+		return redisGetCount;
+	}
+
+	public int getRedisPutCount() {
+		return redisPutCount;
+	}
+
+	public int getRedisDeleteCount() {
+		return redisDeleteCount;
+	}
+
+	public long getRedisGetTime() {
+		return redisGetTime;
+	}
+
+	public long getRedisPutTime() {
+		return redisPutTime;
+	}
+
+	public long getRedisDeleteTime() {
+		return redisDeleteTime;
+	}
+
+	public void incrementRedisGetTime(long redisTime) {
+		this.redisGetTime = this.redisGetTime + redisTime;
+	}
+
+	public void incrementRedisPutTime(long redisTime) {
+		this.redisPutTime = this.redisPutTime + redisTime;
+	}
+
+	public void incrementRedisDeleteTime(long redisTime) {
+		this.redisDeleteTime = this.redisDeleteTime + redisTime;
+	}
+
+	public void incrementRedisGetCount(int redisQueries) {
+		this.redisGetCount = this.redisGetCount + redisQueries;
+	}
+
+	public void incrementRedisPutCount(int redisQueries) {
+		this.redisPutCount = this.redisPutCount + redisQueries;
+	}
+
+	public void incrementRedisDeleteCount(int redisQueries) {
+		this.redisDeleteCount = this.redisDeleteCount + redisQueries;
+	}
+
 }
+

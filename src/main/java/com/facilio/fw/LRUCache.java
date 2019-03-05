@@ -212,7 +212,7 @@ public class LRUCache<K, V>{
 		if (redis != null) {
 			long startTime = System.currentTimeMillis();
 			if(AccountUtil.getCurrentAccount() != null) {
-				AccountUtil.getCurrentAccount().incrementRedisQueryCount(1);
+				AccountUtil.getCurrentAccount().incrementRedisGetCount(1);
 			}
 			try (Jedis jedis = redis.getJedis()) {
 				String value = jedis.get(getRedisKey((String) key));
@@ -228,7 +228,7 @@ public class LRUCache<K, V>{
 				LOGGER.debug("Exception while getting key from Redis");
 			} finally {
 				if(AccountUtil.getCurrentAccount() != null) {
-					AccountUtil.getCurrentAccount().incrementRedisTime((System.currentTimeMillis()-startTime));
+					AccountUtil.getCurrentAccount().incrementRedisGetTime((System.currentTimeMillis()-startTime));
 				}
 			}
 		}
@@ -270,7 +270,7 @@ public class LRUCache<K, V>{
 		if (redis != null) {
 			long startTime = System.currentTimeMillis();
 			if(AccountUtil.getCurrentAccount() != null) {
-				AccountUtil.getCurrentAccount().incrementRedisQueryCount(1);
+				AccountUtil.getCurrentAccount().incrementRedisDeleteCount(1);
 			}
 			try (Jedis jedis = redis.getJedis()) {
 				jedis.del(getRedisKey((String) key));
@@ -278,7 +278,7 @@ public class LRUCache<K, V>{
 				LOGGER.debug("Exception while removing key in Redis. ");
 			} finally {
 				if(AccountUtil.getCurrentAccount() != null) {
-					AccountUtil.getCurrentAccount().incrementRedisTime((System.currentTimeMillis()-startTime));
+					AccountUtil.getCurrentAccount().incrementRedisDeleteTime((System.currentTimeMillis()-startTime));
 				}
 			}
 		}
@@ -288,7 +288,7 @@ public class LRUCache<K, V>{
 		if (redis != null) {
 			long startTime = System.currentTimeMillis();
 			if(AccountUtil.getCurrentAccount() != null) {
-				AccountUtil.getCurrentAccount().incrementRedisQueryCount(1);
+				AccountUtil.getCurrentAccount().incrementRedisPutCount(1);
 			}
 			try (Jedis jedis = redis.getJedis()) {
 				jedis.setnx(getRedisKey((String) key), String.valueOf(node.addedTime));
@@ -296,7 +296,7 @@ public class LRUCache<K, V>{
 				LOGGER.debug("Exception while putting key in Redis. ");
 			} finally {
 				if(AccountUtil.getCurrentAccount() != null) {
-					AccountUtil.getCurrentAccount().incrementRedisTime((System.currentTimeMillis()-startTime));
+					AccountUtil.getCurrentAccount().incrementRedisPutTime((System.currentTimeMillis()-startTime));
 				}
 			}
 		}
