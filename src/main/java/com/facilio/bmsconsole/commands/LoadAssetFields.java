@@ -25,12 +25,12 @@ public class LoadAssetFields implements Command {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		modBean.getModule(moduleName);
 		List<FacilioField> fields = new ArrayList(modBean.getAllFields(moduleName));
-		if (!moduleName.equals(FacilioConstants.ContextNames.ASSET)) {
-			List<FacilioField> customFields = modBean.getAllCustomFields("asset");
-			if (customFields != null) {
-				fields.addAll(modBean.getAllCustomFields("asset"));
-			}
-		}
+//		if (!moduleName.equals(FacilioConstants.ContextNames.ASSET)) {
+//			List<FacilioField> customFields = modBean.getAllCustomFields("asset");
+//			if (customFields != null) {
+//				fields.addAll(modBean.getAllCustomFields("asset"));
+//			}
+//		}
 		context.put(FacilioConstants.ContextNames.EXISTING_FIELD_LIST, fields);
 		long timeTaken = System.currentTimeMillis() - startTime;
 		LOGGER.debug("Time taken to execute LoadAssetFields : "+timeTaken);
