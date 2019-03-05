@@ -442,11 +442,11 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 	
 	private Object getLookupVal (LookupField field, long recordId, Map<String, Map<Long, ? extends Object>> lookedUpVals) {
 		Map<Long, ? extends Object> valueMap = lookedUpVals.get(field.getName());
-		if (AccountUtil.getCurrentOrg().getId() == 92) {
-			LOGGER.info("Lookup val map for field : "+field.getName()+" is "+valueMap);
-		}
 		if (valueMap != null) {
 			return valueMap.get(recordId);
+		}
+		else {
+			LOGGER.info("Lookup val map for field : "+field.getName()+" is null. This is not supposed to happen");
 		}
 		return null;
 	}
