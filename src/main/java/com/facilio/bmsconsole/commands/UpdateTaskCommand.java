@@ -22,6 +22,8 @@ import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
+import com.facilio.bmsconsole.modules.LookupField;
+import com.facilio.bmsconsole.modules.LookupFieldMeta;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
 import com.facilio.bmsconsole.util.ShiftAPI;
@@ -124,13 +126,14 @@ public class UpdateTaskCommand implements Command {
 		// Assuming that parent ticket will be always Workorder
 		FacilioModule woModule = modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER);
 		List<FacilioField> woFields = modBean.getAllFields(woModule.getName());
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(woFields);
 		
 		SelectRecordsBuilder<WorkOrderContext> builder = new SelectRecordsBuilder<WorkOrderContext>()
 				.select(woFields)
 				.module(woModule)
 				.beanClass(WorkOrderContext.class)
 				.andCondition(CriteriaAPI.getIdCondition(task.getParentTicketId(), woModule))
-				.maxLevel(1)
+				.fetchLookup(new LookupFieldMeta((LookupField) fieldMap.get("status")));
 				;
 		
 		List<WorkOrderContext> tickets = builder.get();
