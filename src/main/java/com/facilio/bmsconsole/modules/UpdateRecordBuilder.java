@@ -179,7 +179,7 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
  	
 	@Override
 	public int update(E bean) throws Exception {
-		Map<String, Object> moduleProps = FieldUtil.getAsProperties(bean, true);
+		Map<String, Object> moduleProps = FieldUtil.getAsProperties(bean);
 		return update(moduleProps);
 	}
 	

@@ -1321,7 +1321,7 @@ public class PreventiveMaintenanceAPI {
 	public static Map<String, List<TaskContext>> getTaskMapFromJson(JSONObject json) throws JsonParseException, JsonMappingException, IOException {
 		Map<String, List> tasksMap = FieldUtil.getAsBeanFromJson(json, Map.class);
 		Map<String, List<TaskContext>> tasks = new HashMap<>();
-		ObjectMapper mapper = FieldUtil.getMapper(TaskContext.class, false);
+		ObjectMapper mapper = FieldUtil.getMapper(TaskContext.class);
 		for (Map.Entry<String, List> entry : tasksMap.entrySet()) {
 			tasks.put(entry.getKey(), mapper.readValue(JSONArray.toJSONString(entry.getValue()), mapper.getTypeFactory().constructCollectionType(List.class, TaskContext.class)));
 		}

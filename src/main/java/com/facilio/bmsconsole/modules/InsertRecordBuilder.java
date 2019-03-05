@@ -243,7 +243,7 @@ public class InsertRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 	}
 	
 	private Map<String, Object> getAsProps(E bean) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
-		Map<String, Object> moduleProps = FieldUtil.getAsProperties(bean, false);
+		Map<String, Object> moduleProps = FieldUtil.getAsProperties(bean);
 		moduleProps.put("orgId", AccountUtil.getCurrentOrg().getOrgId());
 		moduleProps.put("sysCreatedTime", System.currentTimeMillis());
 		moduleProps.put("sysModifiedTime", System.currentTimeMillis());

@@ -50,7 +50,7 @@ public class DefaultTemplateWorkflowsConf {
 		}
 		public void setWorkflow(Element workflow) {
 			this.workflow = workflow;
-			workflowXml = FieldUtil.getMapper(String.class, false).convertValue(workflow, String.class);
+			workflowXml = FieldUtil.getMapper(String.class).convertValue(workflow, String.class);
 		}
 		
 		private String workflowXml;

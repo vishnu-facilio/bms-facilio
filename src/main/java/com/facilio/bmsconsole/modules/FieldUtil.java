@@ -289,43 +289,34 @@ public class FieldUtil {
 													.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS)
 													.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
 	
-	private static final ObjectMapper MAPPER = new ObjectMapper()
-													.setSerializationInclusion(Include.NON_DEFAULT)
-													.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS)
-													.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
-	
-	public static ObjectMapper getMapper(Class<?> beanClass, boolean ignoreDefault) {
-		
-		if (ignoreDefault) {
-			NON_DEFAULT_MAPPER.configOverride(beanClass)
-					.setInclude(Value.construct(Include.NON_DEFAULT, Include.ALWAYS));
-			return NON_DEFAULT_MAPPER;
-		}
-		return MAPPER;
+	public static ObjectMapper getMapper(Class<?> beanClass) {
+		NON_DEFAULT_MAPPER.configOverride(beanClass)
+				.setInclude(Value.construct(Include.NON_DEFAULT, Include.ALWAYS));
+		return NON_DEFAULT_MAPPER;
 	}
 	
 	public static <E> E getAsBeanFromJson(JSONObject content, Class<E> classObj) throws JsonParseException, JsonMappingException, IOException
 	{
-		ObjectMapper mapper = getMapper(classObj, false);
+		ObjectMapper mapper = getMapper(classObj);
 		return mapper.readValue(content.toJSONString(), classObj);
 	}
 	
 	public static <E> E getAsBeanFromMap(Map<String, Object> props, Class<E> classObj)
 	{
-		ObjectMapper mapper = getMapper(classObj, false);
+		ObjectMapper mapper = getMapper(classObj);
 		return mapper.convertValue(props, classObj);
 	}
 	public static <E> List<E> getAsBeanListFromJsonArray(JSONArray content, Class<E> classObj) throws JsonParseException, JsonMappingException, IOException
 	{
 		if (content != null) {
-			ObjectMapper mapper = getMapper(classObj, false);
+			ObjectMapper mapper = getMapper(classObj);
 			return mapper.readValue(content.toJSONString(), mapper.getTypeFactory().constructCollectionType(List.class, classObj));
 		}
 		return null;
 	}
 	public static <E> List<E> getAsBeanListFromMapList(List<Map<String, Object>> props, Class<E> classObj) {
 		if (props != null) {
-			ObjectMapper mapper = getMapper(classObj, false);
+			ObjectMapper mapper = getMapper(classObj);
 			return mapper.convertValue(props, mapper.getTypeFactory().constructCollectionType(List.class, classObj));
 		}
 		return null;
@@ -333,13 +324,9 @@ public class FieldUtil {
 	
 	@SuppressWarnings("unchecked")
 	public static Map<String, Object> getAsProperties(Object bean) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
-		return getAsProperties(bean, true);
-	}
-		
-	public static Map<String, Object> getAsProperties(Object bean, boolean ignoreDefault) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
 		Map<String, Object> properties = null;
 		if(bean != null) {
-			ObjectMapper mapper = getMapper(bean.getClass(), ignoreDefault);
+			ObjectMapper mapper = getMapper(bean.getClass());
 			properties = mapper.convertValue(bean, Map.class);
 		}
 		LOGGER.debug("######" + properties + "#####");
@@ -349,7 +336,7 @@ public class FieldUtil {
 	public static JSONObject getAsJSON(Object bean) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
 		JSONObject properties = null;
 		if(bean != null) {
-			ObjectMapper mapper = getMapper(bean.getClass(), true);
+			ObjectMapper mapper = getMapper(bean.getClass());
 			properties = mapper.convertValue(bean, JSONObject.class);
 			
 		}
@@ -359,7 +346,7 @@ public class FieldUtil {
 	public static JSONArray getAsJSONArray(List<?> beans, Class<?> beanClass) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
 		JSONArray array = null;
 		if(beans != null) {
-			ObjectMapper mapper = getMapper(beanClass, true);
+			ObjectMapper mapper = getMapper(beanClass);
 			array = mapper.convertValue(beans, JSONArray.class);
 		}
 		return array;
@@ -493,7 +480,7 @@ public class FieldUtil {
 	}
 	
 	public static <E> E cloneBean(Object bean, Class<E> classObj) {
-		ObjectMapper mapper = getMapper(classObj, false);
+		ObjectMapper mapper = getMapper(classObj);
 		Map<String, Object> properties = mapper.convertValue(bean, Map.class);
 		return mapper.convertValue(properties, classObj);
 	}
