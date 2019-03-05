@@ -783,10 +783,6 @@ public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, 
 
 			while(rs.next()) {
 				Map<String, Object> record = new HashMap<>();
-				if (orgIdField != null) {
-					record.put(orgIdField.getName(), AccountUtil.getCurrentOrg().getId());
-				}
-
 				for(FacilioField field : selectFields) {
 					Object val = FieldUtil.getObjectFromRS(field, rs);
 					if(field != null) {
@@ -818,6 +814,9 @@ public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, 
 					}
 				}
 				if(!record.isEmpty()) {
+					if (orgIdField != null) {
+						record.put(orgIdField.getName(), AccountUtil.getCurrentOrg().getId());
+					}
 					records.add(record);
 				}
 			}
