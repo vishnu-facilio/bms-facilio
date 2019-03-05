@@ -122,6 +122,13 @@ public class User implements Serializable {
 		return photoId;
 	}
 	
+	private String originalUrl;
+	public String getOriginalUrl() {
+		return originalUrl;
+	}
+	public void setOriginalUrl(String originalUrl) {
+		this.originalUrl = originalUrl;
+	}
 	private String avatarUrl;
 	public String getAvatarUrl() {
 		return avatarUrl;

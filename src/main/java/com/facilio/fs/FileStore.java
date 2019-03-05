@@ -456,7 +456,7 @@ public abstract class FileStore {
 //			if (isDownload) {
 //				return fs.getOrgiDownloadUrl(fileId);
 //			} else {
-//				return fs.getFileUrl(fileId);
+//				return fs.getOrgiFileUrl(fileId);
 //			}
 //		}
 		if (AwsUtil.isDevelopment()) {
@@ -543,6 +543,9 @@ public abstract class FileStore {
 		props.put("isDeleted", true);
 		return builder.update(props);
 	}
+	public String orginalFileUrl (long fileId) throws Exception {
+		return getOrgiDownloadUrl(fileId);
+	}
 	
 	public abstract InputStream readFile(long fileId) throws Exception;
 	
@@ -554,7 +557,7 @@ public abstract class FileStore {
 	
 	public abstract boolean renameFile(long fileId, String newName) throws Exception;
 
-	public abstract String getFileUrl(long fileId) throws Exception;
+	public abstract String getOrgiFileUrl(long fileId) throws Exception;
 	
 	public abstract String getOrgiDownloadUrl(long fileId) throws Exception;
 }
