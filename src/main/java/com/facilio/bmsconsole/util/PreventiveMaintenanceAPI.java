@@ -1133,6 +1133,23 @@ public class PreventiveMaintenanceAPI {
 		}
 		return null;
 	}
+
+	public static List<PMTriggerContext> getPMTriggersByTriggerIds(Collection<Long> triggerIds) throws Exception {
+		FacilioModule module = ModuleFactory.getPMTriggersModule();
+		FacilioField idField = FieldFactory.getIdField(module);
+
+		Criteria idCriteria = new Criteria();
+		idCriteria.addAndCondition(CriteriaAPI.getCondition(idField, triggerIds, NumberOperators.EQUALS));
+
+		List<Map<String, Object>> props = getPMTriggers(idCriteria);
+		List<PMTriggerContext> pmTriggerContexts = new ArrayList<>();
+		if (props != null && !props.isEmpty()) {
+			for (Map<String, Object> triggerProp: props) {
+				pmTriggerContexts.add(FieldUtil.getAsBeanFromMap(triggerProp, PMTriggerContext.class));
+			}
+		}
+		return pmTriggerContexts;
+	}
 	
 	public static void setPMInActive(long pmId) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException, SQLException {
 		PreventiveMaintenance updatePm = new PreventiveMaintenance();
@@ -1156,20 +1173,25 @@ public class PreventiveMaintenanceAPI {
 		return getPMTriggers(pmIdString);
 	}
 
-
-	private static Map<Long, List<PMTriggerContext>> getPMTriggers(String pmIds) throws Exception {
+	public static List<Map<String, Object>> getPMTriggers(Criteria filterCriteria) throws Exception {
 		FacilioModule module = ModuleFactory.getPMTriggersModule();
 		List<FacilioField> fields = FieldFactory.getPMTriggerFields();
-		FacilioField pmIdField = FieldFactory.getAsMap(fields).get("pmId");
-
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(fields)
 				.table(module.getTableName())
 				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
-				.andCondition(CriteriaAPI.getCondition(pmIdField, pmIds, NumberOperators.EQUALS))
-				;
+				.andCriteria(filterCriteria);
+		return selectBuilder.get();
+	}
 
-		List<Map<String, Object>> triggerProps = selectBuilder.get();
+	private static Map<Long, List<PMTriggerContext>> getPMTriggers(String pmIds) throws Exception {
+		List<FacilioField> fields = FieldFactory.getPMTriggerFields();
+		FacilioField pmIdField = FieldFactory.getAsMap(fields).get("pmId");
+
+		Criteria idCriteria = new Criteria();
+		idCriteria.addAndCondition(CriteriaAPI.getCondition(pmIdField, pmIds, NumberOperators.EQUALS));
+
+		List<Map<String, Object>> triggerProps = getPMTriggers(idCriteria);
 		Map<Long, List<PMTriggerContext>> pmTriggers = new HashMap<>();
 		for(Map<String, Object> triggerProp : triggerProps) {
 			PMTriggerContext trigger = FieldUtil.getAsBeanFromMap(triggerProp, PMTriggerContext.class);
