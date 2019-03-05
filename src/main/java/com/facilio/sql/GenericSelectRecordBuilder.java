@@ -730,7 +730,6 @@ public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, 
 
 		if(AccountUtil.getCurrentOrg() != null) {
 			orgId = AccountUtil.getCurrentOrg().getId();
-            AccountUtil.getCurrentAccount().incrementSelectQueryCount(1);
 		}
 
 
@@ -763,6 +762,7 @@ public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, 
 				if(records !=  null) {
 					return records;
 				} else {
+					AccountUtil.getCurrentAccount().incrementSelectQueryCount(1);
 					records = new ArrayList<>();
 				}
 			}
