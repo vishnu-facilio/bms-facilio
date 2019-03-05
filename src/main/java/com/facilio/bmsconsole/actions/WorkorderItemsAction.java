@@ -7,6 +7,7 @@ import org.apache.commons.chain.Command;
 
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsole.context.PurchasedItemContext;
 import com.facilio.bmsconsole.context.WorkorderItemContext;
 import com.facilio.bmsconsole.context.WorkorderPartsContext;
 import com.facilio.bmsconsole.workflow.rule.EventType;
@@ -43,6 +44,7 @@ public class WorkorderItemsAction extends FacilioAction{
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.CREATE);
 		context.put(FacilioConstants.ContextNames.RECORD_LIST, workorderItems);
+		context.put(FacilioConstants.ContextNames.PURCHASED_ITEM, purchasedItems);
 		Chain addWorkorderPartChain = TransactionChainFactory.getAddOrUdpateWorkorderItemsChain();
 		addWorkorderPartChain.execute(context);
 		setWorkorderItemsId((List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST));
@@ -75,4 +77,12 @@ public class WorkorderItemsAction extends FacilioAction{
 		return SUCCESS;
 	}
 
+	private List<Long> purchasedItems;
+	public List<Long> getPurchasedItems() {
+		return purchasedItems;
+	}
+	public void setPurchasedItems(List<Long> purchasedItems) {
+		this.purchasedItems = purchasedItems;
+	}
+	
 }

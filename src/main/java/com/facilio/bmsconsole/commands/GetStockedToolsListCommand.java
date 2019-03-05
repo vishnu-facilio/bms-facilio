@@ -13,7 +13,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.StockedToolsContext;
 import com.facilio.bmsconsole.context.StoreRoomContext;
-import com.facilio.bmsconsole.context.ToolsContext;
+import com.facilio.bmsconsole.context.ToolTypesContext;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.FacilioField;
@@ -109,7 +109,7 @@ public class GetStockedToolsListCommand implements Command{
 				Set<Long> locatoionIds = new HashSet<Long>();
 				for (StockedToolsContext stockedTools : records) {
 					if (stockedTools.getTool().getId() != -1) {
-						ToolsContext tool = ToolsApi.getTool(stockedTools.getTool().getId());
+						ToolTypesContext tool = ToolsApi.getTool(stockedTools.getTool().getId());
 						stockedTools.setTool(tool);
 					}
 					

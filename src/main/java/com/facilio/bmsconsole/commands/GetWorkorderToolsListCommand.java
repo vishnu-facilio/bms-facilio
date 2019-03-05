@@ -11,7 +11,7 @@ import com.facilio.bmsconsole.context.ItemContext;
 import com.facilio.bmsconsole.context.ItemTypesContext;
 import com.facilio.bmsconsole.context.StockedToolsContext;
 import com.facilio.bmsconsole.context.StoreRoomContext;
-import com.facilio.bmsconsole.context.ToolsContext;
+import com.facilio.bmsconsole.context.ToolTypesContext;
 import com.facilio.bmsconsole.context.WorkorderItemContext;
 import com.facilio.bmsconsole.context.WorkorderToolsContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
@@ -51,7 +51,7 @@ public class GetWorkorderToolsListCommand implements Command {
 					StoreRoomContext storeRoom = StoreroomApi
 							.getStoreRoom(stockedTool.getStoreRoom().getId());
 					stockedTool.setStoreRoom(storeRoom);
-					ToolsContext tool = ToolsApi.getTool(stockedTool.getTool().getId());
+					ToolTypesContext tool = ToolsApi.getTool(stockedTool.getTool().getId());
 					stockedTool.setTool(tool);
 					woTools.setStockedTool(stockedTool);
 				}

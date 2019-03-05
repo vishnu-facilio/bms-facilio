@@ -9,7 +9,7 @@ import com.facilio.bmsconsole.context.ItemContext;
 import com.facilio.bmsconsole.context.ItemTypesContext;
 import com.facilio.bmsconsole.context.StockedToolsContext;
 import com.facilio.bmsconsole.context.StoreRoomContext;
-import com.facilio.bmsconsole.context.ToolsContext;
+import com.facilio.bmsconsole.context.ToolTypesContext;
 import com.facilio.bmsconsole.context.ItemContext.CostType;
 import com.facilio.bmsconsole.util.ItemsApi;
 import com.facilio.bmsconsole.util.StoreroomApi;
@@ -25,7 +25,7 @@ public class GetStockedToolsDetailsCommand implements Command{
 			StockedToolsContext stockedTools = (StockedToolsContext) context.get(FacilioConstants.ContextNames.RECORD);
 			if (stockedTools != null && stockedTools.getId() > 0) {
 				if (stockedTools.getTool().getId() != -1) {
-					ToolsContext tool = ToolsApi.getTool(stockedTools.getTool().getId());
+					ToolTypesContext tool = ToolsApi.getTool(stockedTools.getTool().getId());
 					stockedTools.setTool(tool);
 				}
 				

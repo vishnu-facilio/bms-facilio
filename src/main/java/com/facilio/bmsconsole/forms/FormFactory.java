@@ -38,7 +38,7 @@ public class FormFactory {
 		forms.put("item_form", getItemForm());
 		forms.put("store_room_form", getStoreRoomForm());
 		forms.put("item_types_form", getItemTypesForm());
-		forms.put("tools_form", getToolsForm());
+		forms.put("tool_types_form", getTooltypesForm());
 		forms.put("vendors_form", getVendorsForm());
 		forms.put("stockedTools_form", getStockedToolsForm());
 		return forms;
@@ -309,13 +309,13 @@ public class FormFactory {
 		return form;
 	}
 	
-	public static FacilioForm getToolsForm() {
+	public static FacilioForm getTooltypesForm() {
 		FacilioForm form = new FacilioForm();
 		form.setDisplayName("TOOL");
 		form.setName("web_default");
-		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.TOOLS));
+		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.TOOL_TYPES));
 		form.setLabelPosition(LabelPosition.TOP);
-		form.setFields(getToolsFormField());
+		form.setFields(getToolTypesFormField());
 		form.setFormType(FormType.WEB);
 		return form;
 	}
@@ -324,7 +324,7 @@ public class FormFactory {
 		FacilioForm form = new FacilioForm();
 		form.setDisplayName("VENDOR");
 		form.setName("web_default");
-		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.TOOLS));
+		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.TOOL_TYPES));
 		form.setLabelPosition(LabelPosition.TOP);
 		form.setFields(getVendorsFormField());
 		form.setFormType(FormType.WEB);
@@ -503,14 +503,17 @@ public class FormFactory {
 		return fields;
 	}
 	
-	private static List<FormField> getToolsFormField() {
+	private static List<FormField> getToolTypesFormField() {
 		List<FormField> fields = new ArrayList<>();
-		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.REQUIRED, 1, 1));
+		
+		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.REQUIRED, 1, 2));
+		fields.add(new FormField("category", FieldDisplayType.LOOKUP_SIMPLE, "Category", Required.OPTIONAL, "toolTypesCategory", 1, 3));
 		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 2, 1));
-		fields.add(new FormField("category", FieldDisplayType.LOOKUP_SIMPLE, "Category", Required.OPTIONAL, "toolsCategory", 3, 1));
-		fields.add(new FormField("status", FieldDisplayType.LOOKUP_SIMPLE, "Status", Required.OPTIONAL, "toolsStatus", 4, 1));
+		fields.add(new FormField("unit", FieldDisplayType.UNIT, "Unit", Required.OPTIONAL, 3,2));
+		fields.add(new FormField("minimumQuantity", FieldDisplayType.TEXTBOX, "Minimum Quantity", Required.OPTIONAL, 4, 2));
+		fields.add(new FormField("status", FieldDisplayType.LOOKUP_SIMPLE, "Status", Required.OPTIONAL, "toolTypesStatus", 4, 3));
 		fields.add(new FormField("serialNumber", FieldDisplayType.TEXTBOX, "Serial Number", Required.OPTIONAL, 5,1));
-		fields.add(new FormField("issuingUnit", FieldDisplayType.UNIT, "Issuing Unit", Required.OPTIONAL, 6,1));
+		fields.add(new FormField("individualTracking", FieldDisplayType.DECISION_BOX, "individualTracking", Required.OPTIONAL, 6, 1));	
 		
 		return fields;
 	}

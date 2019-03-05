@@ -11,58 +11,56 @@ import org.json.simple.parser.JSONParser;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.ItemTypesContext;
-import com.facilio.bmsconsole.context.ToolsContext;
+import com.facilio.bmsconsole.context.ToolTypesContext;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 
-public class ToolsAction extends FacilioAction{
+public class ToolTypesAction extends FacilioAction{
 	
 	private static final long serialVersionUID = 1L;
 	
-	public String addTool() throws Exception {
+	public String addToolTypes() throws Exception {
 		FacilioContext context = new FacilioContext();
-		tool.setTtime(System.currentTimeMillis());
-		tool.setModifiedTime(System.currentTimeMillis());
-		context.put(FacilioConstants.ContextNames.RECORD, tool);
-		Chain addToolsChain = TransactionChainFactory.getAddToolChain();
+		context.put(FacilioConstants.ContextNames.RECORD, toolTypes);
+		Chain addToolsChain = TransactionChainFactory.getAddToolTypesChain();
 		addToolsChain.execute(context);
-		setResult(FacilioConstants.ContextNames.TOOL, tool);
+		setResult(FacilioConstants.ContextNames.TOOL_TYPES, toolTypes);
 		return SUCCESS;
 	}
 	
-	public String updateTool() throws Exception {
+	public String updateToolTypes() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.EDIT);
-		context.put(FacilioConstants.ContextNames.RECORD, tool);
-		context.put(FacilioConstants.ContextNames.ID, tool.getId());
-		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(tool.getId()));
+		context.put(FacilioConstants.ContextNames.RECORD, toolTypes);
+		context.put(FacilioConstants.ContextNames.ID, toolTypes.getId());
+		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(toolTypes.getId()));
 		context.put(FacilioConstants.ContextNames.WITH_CHANGE_SET, true);
 
-		Chain updateToolChain = TransactionChainFactory.getUpdateToolChain();
+		Chain updateToolChain = TransactionChainFactory.getUpdateToolTypesChain();
 		updateToolChain.execute(context);
-		setToolId(tool.getId());
-		toolDetails();
-		setResult(FacilioConstants.ContextNames.TOOL, tool);
+		setToolId(toolTypes.getId());
+		toolTypesDetails();
+		setResult(FacilioConstants.ContextNames.TOOL_TYPES, toolTypes);
 		return SUCCESS;
 	}
 	
-	public String toolDetails() throws Exception {
+	public String toolTypesDetails() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.ID, getToolId());
 
 		Chain toolDetailsChain = ReadOnlyChainFactory.fetchToolDetails();
 		toolDetailsChain.execute(context);
 
-		setTool((ToolsContext) context.get(FacilioConstants.ContextNames.RECORD));
-		setResult(FacilioConstants.ContextNames.TOOL, tool);
+		setToolTypes((ToolTypesContext) context.get(FacilioConstants.ContextNames.RECORD));
+		setResult(FacilioConstants.ContextNames.TOOL_TYPES, toolTypes);
 		return SUCCESS;
 	}
 	
-	public String toolsList() throws Exception {
+	public String toolTypesList() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.CV_NAME, getViewName());
-		context.put(FacilioConstants.ContextNames.SORTING_QUERY, "Tools.ID desc");
+		context.put(FacilioConstants.ContextNames.SORTING_QUERY, "Tool_types.ID desc");
 		if (getFilters() != null) {
 			JSONParser parser = new JSONParser();
 			JSONObject json = (JSONObject) parser.parse(getFilters());
@@ -71,7 +69,7 @@ public class ToolsAction extends FacilioAction{
 		}
 		if (getSearch() != null) {
 			JSONObject searchObj = new JSONObject();
-			searchObj.put("fields", "tools.name");
+			searchObj.put("fields", "toolTypes.name");
 			searchObj.put("query", getSearch());
 			context.put(FacilioConstants.ContextNames.SEARCH, searchObj);
 		}
@@ -93,30 +91,30 @@ public class ToolsAction extends FacilioAction{
 			setToolsCount((Long) context.get(FacilioConstants.ContextNames.RECORD_COUNT));
 			setResult("count", toolsCount);
 		} else {
-			tools = (List<ToolsContext>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
+			tools = (List<ToolTypesContext>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
 			// Temp...needs to handle in client
 			if (tools == null) {
 				tools = new ArrayList<>();
 			}
-			setResult(FacilioConstants.ContextNames.TOOLS, tools);
+			setResult(FacilioConstants.ContextNames.TOOL_TYPES, tools);
 		}
 		return SUCCESS;
 	}
 	
-	private ToolsContext tool;
-	public ToolsContext getTool() {
-		return tool;
+	private ToolTypesContext toolTypes;
+	public ToolTypesContext getToolTypes() {
+		return toolTypes;
 	}
-	public void setTools(ToolsContext tool) {
-		this.tool = tool;
+	public void setTools(ToolTypesContext tool) {
+		this.toolTypes = tool;
 	}
 
-	private List<ToolsContext> tools;
-	public List<ToolsContext> getTools() {
+	private List<ToolTypesContext> tools;
+	public List<ToolTypesContext> getTools() {
 		return tools;
 	}
-	public void setTool(ToolsContext tool) {
-		this.tool = tool;
+	public void setToolTypes(ToolTypesContext tool) {
+		this.toolTypes = tool;
 	}
 	
 	private long toolId;

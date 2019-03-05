@@ -10,7 +10,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ItemVendorsContext;
 import com.facilio.bmsconsole.context.StockedToolsContext;
 import com.facilio.bmsconsole.context.StoreRoomContext;
-import com.facilio.bmsconsole.context.ToolsContext;
+import com.facilio.bmsconsole.context.ToolTypesContext;
 import com.facilio.bmsconsole.context.VendorContext;
 import com.facilio.bmsconsole.context.WorkorderToolsContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;

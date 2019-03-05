@@ -9,7 +9,7 @@ import org.json.simple.JSONObject;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ItemTypesContext;
-import com.facilio.bmsconsole.context.ToolsContext;
+import com.facilio.bmsconsole.context.ToolTypesContext;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.FacilioField;
@@ -42,7 +42,7 @@ public class GetToolsListCommand implements Command{
 		}
 		FacilioView view = (FacilioView) context.get(FacilioConstants.ContextNames.CUSTOM_VIEW);
 		
-		SelectRecordsBuilder<ToolsContext> builder = new SelectRecordsBuilder<ToolsContext>()
+		SelectRecordsBuilder<ToolTypesContext> builder = new SelectRecordsBuilder<ToolTypesContext>()
 															.module(module)
 															.beanClass(FacilioConstants.ContextNames.getClassFromModuleName(moduleName))
 															.select(fields)
@@ -100,16 +100,16 @@ public class GetToolsListCommand implements Command{
 		}
 		
 		
-		List<ToolsContext> records = builder.get();
+		List<ToolTypesContext> records = builder.get();
 		
 		if (records != null && !records.isEmpty()) {
 			if (getCount != null && getCount) {
 				context.put(FacilioConstants.ContextNames.RECORD_COUNT, records.get(0).getData().get("count"));
 			}
 			else {
-				for(ToolsContext tool: records) {
-					if (tool.getIssuingUnit() > 0) {
-						tool.setIssuingUnit(Unit.valueOf(tool.getIssuingUnit()));
+				for(ToolTypesContext tool: records) {
+					if (tool.getUnit() > 0) {
+						tool.setUnit(Unit.valueOf(tool.getUnit()));
 					}
 				}				
 				context.put(FacilioConstants.ContextNames.RECORD_LIST, records);

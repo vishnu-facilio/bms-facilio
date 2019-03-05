@@ -62,7 +62,7 @@ import com.facilio.bmsconsole.context.TicketPriorityContext;
 import com.facilio.bmsconsole.context.TicketStatusContext;
 import com.facilio.bmsconsole.context.TicketTypeContext;
 import com.facilio.bmsconsole.context.ToolsCategoryContext;
-import com.facilio.bmsconsole.context.ToolsContext;
+import com.facilio.bmsconsole.context.ToolTypesContext;
 import com.facilio.bmsconsole.context.ToolsStatusContext;
 import com.facilio.bmsconsole.context.UtilityMeterContext;
 import com.facilio.bmsconsole.context.VendorContext;
@@ -764,10 +764,9 @@ public class FacilioConstants {
 		public static final String ITEM_TYPES_STATUS = "itemTypesStatus";
 		public static final String ITEM_TYPES_ID = "itemTypesId";
 		
-		public static final String TOOL = "tool";
-		public static final String TOOLS = "tools";
-		public static final String TOOLS_STATUS = "toolsStatus";
-		public static final String TOOLS_CATEGORY = "toolsCategory";
+		public static final String TOOL_TYPES = "toolTypes";
+		public static final String TOOL_TYPES_STATUS = "toolTypesStatus";
+		public static final String TOOLS_TYPES_CATEGORY = "toolTypesCategory";
 
 		public static final String VENDOR = "vendor";
 		public static final String VENDORS = "vendors";
@@ -862,10 +861,9 @@ public class FacilioConstants {
 			classMap.put(ITEM_TYPES, ItemTypesContext.class);
 			classMap.put(ITEM_TYPES_CATEGORY,ItemTypesCategoryContext.class);
 			classMap.put(ITEM_TYPES_STATUS, ItemTypesStatusContext.class);
-			classMap.put(TOOL, ToolsContext.class);
-			classMap.put(TOOLS, ToolsContext.class);
-			classMap.put(TOOLS_CATEGORY, ToolsCategoryContext.class);
-			classMap.put(TOOLS_STATUS, ToolsStatusContext.class);
+			classMap.put(TOOL_TYPES, ToolTypesContext.class);
+			classMap.put(TOOLS_TYPES_CATEGORY, ToolsCategoryContext.class);
+			classMap.put(TOOL_TYPES_STATUS, ToolsStatusContext.class);
 			classMap.put(VENDOR, VendorContext.class);
 			classMap.put(VENDORS, VendorContext.class);
 			classMap.put(ITEM, ItemContext.class);

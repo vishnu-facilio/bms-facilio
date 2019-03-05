@@ -176,20 +176,20 @@ public class SetTableNamesCommand implements Command {
 		return new SetTableNamesCommand("itemTypes", "Item_Types");
 	}
 		
-	public static SetTableNamesCommand getForToolsCategory() {
-		return new SetTableNamesCommand("toolsCategory", "Tools_category");
+	public static SetTableNamesCommand getForToolTypesCategory() {
+		return new SetTableNamesCommand("toolTypesCategory", "Tool_types_category");
 	}
 	
-	public static SetTableNamesCommand getForToolsStatus() {
-		return new SetTableNamesCommand("toolsStatus", "Tools_status");
+	public static SetTableNamesCommand getForToolTypesStatus() {
+		return new SetTableNamesCommand("toolTypesStatus", "Tool_types_status");
 	}
 	
 	public static SetTableNamesCommand getForStockedToolsStatus() {
 		return new SetTableNamesCommand("stockedToolsStatus", "Stocked_tools_status");
 	}
 	
-	public static SetTableNamesCommand getForTools() {
-		return new SetTableNamesCommand("tools", "Tools");
+	public static SetTableNamesCommand getForToolTypes() {
+		return new SetTableNamesCommand("toolTypes", "Tool_types");
 	}
 	
 	public static SetTableNamesCommand getForVendors() {

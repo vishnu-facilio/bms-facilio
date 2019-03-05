@@ -561,23 +561,23 @@
 			<action name="deleteItemTypesStatus" class="com.facilio.bmsconsole.actions.PickListAction"
 				method="deleteItemTypesStatus">
 			</action>
-			<action name="addToolsCategory" class="com.facilio.bmsconsole.actions.PickListAction"
-				method="addToolsCategory">
+			<action name="addToolTypesCategory" class="com.facilio.bmsconsole.actions.PickListAction"
+				method="addToolTypesCategory">
 			</action>
-			<action name="updateToolsCategory" class="com.facilio.bmsconsole.actions.PickListAction"
-				method="updateToolsCategory">
+			<action name="updateToolTypesCategory" class="com.facilio.bmsconsole.actions.PickListAction"
+				method="updateToolTypesCategory">
 			</action>
-			<action name="deleteToolsCategory" class="com.facilio.bmsconsole.actions.PickListAction"
-				method="deleteToolsCategory">
+			<action name="deleteToolTypesCategory" class="com.facilio.bmsconsole.actions.PickListAction"
+				method="deleteToolTypesCategory">
 			</action>
-			<action name="addToolsStatus" class="com.facilio.bmsconsole.actions.PickListAction"
-				method="addToolsStatus">
+			<action name="addToolTypesStatus" class="com.facilio.bmsconsole.actions.PickListAction"
+				method="addToolTypesStatus">
 			</action>
-			<action name="updateToolsStatus" class="com.facilio.bmsconsole.actions.PickListAction"
-				method="updateToolsStatus">
+			<action name="updateToolTypesStatus" class="com.facilio.bmsconsole.actions.PickListAction"
+				method="updateToolTypesStatus">
 			</action>
-			<action name="deleteToolsStatus" class="com.facilio.bmsconsole.actions.PickListAction"
-				method="deleteToolsStatus">
+			<action name="deleteToolTypesStatus" class="com.facilio.bmsconsole.actions.PickListAction"
+				method="deleteToolTypesStatus">
 			</action>
 			<action name="addStockedToolsStatus" class="com.facilio.bmsconsole.actions.PickListAction"
 				method="addStockedToolsStatus">
@@ -1158,30 +1158,30 @@
 		</action>
 	</package>
 
-	<package name="toolsApi" namespace="/api/v2/tools"
+	<package name="toolTypesApi" namespace="/api/v2/toolTypes"
 		extends="v2Api">
 		<action name="add"
-			class="com.facilio.bmsconsole.actions.ToolsAction" method="addTool">
+			class="com.facilio.bmsconsole.actions.ToolTypesAction" method="addToolTypes">
 			<param name="moduleName">asset</param>
 			<param name="permission">CREATE</param>
 		</action>
 		<action name="update"
-			class="com.facilio.bmsconsole.actions.ToolsAction" method="updateTool">
+			class="com.facilio.bmsconsole.actions.ToolTypesAction" method="updateToolTypes">
 			<param name="moduleName">asset</param>
 			<param name="permission">UPDATE</param>
 		</action> 
 		<action name="*"
-			class="com.facilio.bmsconsole.actions.ToolsAction" method="toolDetails">
+			class="com.facilio.bmsconsole.actions.ToolTypesAction" method="toolTypesDetails">
 			<param name="moduleName">asset</param>
 			<param name="permission">READ</param>
 			<param name = "toolId">{1}</param>
 		</action>
 	</package>
 	
-	<package name="toolsListApiv2" namespace="/api/v2/tools/view"
+	<package name="toolsListApiv2" namespace="/api/v2/toolTypes/view"
 		extends="v2Api">
-		<action name="*" class="com.facilio.bmsconsole.actions.ToolsAction"
-			method="toolsList">
+		<action name="*" class="com.facilio.bmsconsole.actions.ToolTypesAction"
+			method="toolTypesList">
 			<param name="moduleName">asset</param>
 			<param name="permission">READ</param>
 			<param name="viewName">{1}</param>
@@ -1271,10 +1271,20 @@
 		</action>
 	</package>
 	
+	<package name="purchasedItemsList" namespace="/api/v2/purchasedItemsList/item"
+		extends="v2Api">
+		<action name="*"
+			class="com.facilio.bmsconsole.actions.PurchasedItemAction" method="purchasedItemsList">
+			<param name="moduleName">asset</param>
+			<param name="permission">READ</param>
+			<param name = "itemId">{1}</param>
+		</action>
+	</package>
+	
 	<package name="workorderItemsApi" namespace="/api/v2/workorderItems"
 		extends="v2Api">
 		<action name="delete"
-			class="com.facilio.bmsconsole.actions.PurchasedItemAction" method="deleteWorkorderItems">
+			class="com.facilio.bmsconsole.actions.WorkorderItemsAction" method="deleteWorkorderItems">
 			<param name="moduleName">asset</param>
 			<param name="permission">CREATE</param>
 		</action>

@@ -6,13 +6,13 @@ import com.facilio.unitconversion.Unit;
 public class StockedToolsContext extends ModuleBaseWithCustomFields {
 	private static final long serialVersionUID = 1L;
 
-	private ToolsContext tool;
+	private ToolTypesContext tool;
 
-	public ToolsContext getTool() {
+	public ToolTypesContext getTool() {
 		return tool;
 	}
 
-	public void setTool(ToolsContext tool) {
+	public void setTool(ToolTypesContext tool) {
 		this.tool = tool;
 	}
 
