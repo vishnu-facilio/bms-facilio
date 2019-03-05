@@ -1,6 +1,11 @@
 package com.facilio.bmsconsole.util;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -174,14 +179,14 @@ public class LookupSpecialTypeUtil {
 		else if(FacilioConstants.ContextNames.GROUPS.equals(specialType)) {
 			List<Group> groups = AccountUtil.getGroupBean().getGroups(ids);
 			if (CollectionUtils.isNotEmpty(groups)) {
-				groups.stream().collect(Collectors.toMap(Group::getId, Function.identity()));
+				return groups.stream().collect(Collectors.toMap(Group::getId, Function.identity()));
 			}
 			return null;
 		}
 		else if (FacilioConstants.ContextNames.ROLE.equals(specialType)) {
 			List<Role> roles = AccountUtil.getRoleBean().getRoles(ids);
 			if (CollectionUtils.isNotEmpty(roles)) {
-				roles.stream().collect(Collectors.toMap(Role::getId, Function.identity()));
+				return roles.stream().collect(Collectors.toMap(Role::getId, Function.identity()));
 			}
 			return null;
 		}
@@ -191,13 +196,13 @@ public class LookupSpecialTypeUtil {
 		else if(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE.equals(specialType)) {
 			List<PreventiveMaintenance> pms = PreventiveMaintenanceAPI.getPMsDetails(ids);
 			if (CollectionUtils.isNotEmpty(pms)) {
-				pms.stream().collect(Collectors.toMap(PreventiveMaintenance::getId, Function.identity()));
+				return pms.stream().collect(Collectors.toMap(PreventiveMaintenance::getId, Function.identity()));
 			}
 		}
 		else if(EventConstants.EventContextNames.EVENT.equals(specialType)) {
 			List<EventContext> events = EventAPI.getEvents(ids);
 			if (CollectionUtils.isNotEmpty(events)) {
-				events.stream().collect(Collectors.toMap(EventContext::getId, Function.identity()));
+				return events.stream().collect(Collectors.toMap(EventContext::getId, Function.identity()));
 			}
 			return null;
 		}
