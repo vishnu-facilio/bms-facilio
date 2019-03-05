@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
 
@@ -39,6 +40,7 @@ import com.facilio.bmsconsole.modules.FacilioModule.ModuleType;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.InsertRecordBuilder;
+import com.facilio.bmsconsole.modules.LookupFieldMeta;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
@@ -783,6 +785,24 @@ public class SpaceAPI {
 																	.module(module)
 																	.maxLevel(lookupLevel)
 																	.beanClass(SiteContext.class);
+		List<SiteContext> sites = selectBuilder.get();
+		return sites;
+	}
+	
+	public static List<SiteContext> getAllSites(List<LookupFieldMeta> lookupFields) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.SITE);
+		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.SITE);
+		
+		SelectRecordsBuilder<SiteContext> selectBuilder = new SelectRecordsBuilder<SiteContext>()
+																	.select(fields)
+																	.module(module)
+																	.beanClass(SiteContext.class);
+		
+		if (CollectionUtils.isNotEmpty(lookupFields)) {
+			selectBuilder.fetchLookups(lookupFields);
+		}
+		
 		List<SiteContext> sites = selectBuilder.get();
 		return sites;
 	}

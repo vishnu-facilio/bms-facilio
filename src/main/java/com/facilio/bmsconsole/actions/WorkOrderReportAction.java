@@ -336,10 +336,10 @@ public class WorkOrderReportAction extends ActionSupport {
 						JSONObject location = new JSONObject();
 						location.put("city", locationCtxt.getCity());
 						location.put("street",locationCtxt.getStreet());
-						if(locationCtxt.getLat()!=null) {
+						if(locationCtxt.getLat()!=-1l) {
 							location.put("lat",locationCtxt.getLat());
 						}
-						if(locationCtxt.getLng()!=null) {
+						if(locationCtxt.getLng()!=-1) {
 							location.put("lng",locationCtxt.getLng());
 						}
 						buildingObj.put("location", location);

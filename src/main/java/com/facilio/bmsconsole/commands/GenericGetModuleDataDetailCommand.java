@@ -4,10 +4,13 @@ import java.util.List;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
+import com.facilio.bmsconsole.modules.LookupFieldMeta;
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.util.ResourceAPI;
@@ -41,8 +44,14 @@ public class GenericGetModuleDataDetailCommand implements Command {
 																	.module(module)
 																	.beanClass(beanClassName)
 																	.select(fields)
-																	.andCustomWhere(module.getTableName()+".ID = ?", recordId);
+																	.andCondition(CriteriaAPI.getIdCondition(recordId, module))
+																	;
 
+			List<LookupFieldMeta> fetchLookup = (List<LookupFieldMeta>) context.get(FacilioConstants.ContextNames.LOOKUP_FIELD_META_LIST);
+			if (CollectionUtils.isNotEmpty(fetchLookup)) {
+				builder.fetchLookups(fetchLookup);
+			}
+			
 			List<ModuleBaseWithCustomFields> records = builder.get();
 			if(records.size() > 0) {
 				ResourceAPI.loadModuleResources(records, fields);

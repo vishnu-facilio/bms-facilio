@@ -201,6 +201,14 @@ public class AssetContext extends ResourceContext {
 		this.geoLocation = geoLocation;
 	}
 	
+	private SiteContext identifiedLocation;
+	public SiteContext getIdentifiedLocation() {
+		return identifiedLocation;
+	}
+	public void setIdentifiedLocation(SiteContext identifiedLocation) {
+		this.identifiedLocation = identifiedLocation;
+	}
+
 	private Boolean geoLocationEnabled;
 	public Boolean getGeoLocationEnabled() {
 		return geoLocationEnabled;

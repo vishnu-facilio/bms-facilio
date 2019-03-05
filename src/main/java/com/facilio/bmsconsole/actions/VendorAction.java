@@ -73,7 +73,7 @@ public class VendorAction extends FacilioAction{
 		
 		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.EDIT);
 		
-		if(location != null && location.getLat() != null && location.getLng() != null)
+		if(location != null && location.getLat() != -1 && location.getLng() != -1)
 		{
 			location.setName(vendor.getName()+"_Location");
 			context.put(FacilioConstants.ContextNames.RECORD, location);

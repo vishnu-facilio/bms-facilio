@@ -69,7 +69,7 @@ public class CampusAction extends ActionSupport {
 		System.out.println("The campus is "+site);
 		
 		LocationContext location = site.getLocation();
-		if(location != null && location.getLat() != null && location.getLng() != null)
+		if(location != null && location.getLat() != -1 && location.getLng() != -1)
 		{
 			location.setName(site.getName()+"_Location");
 			context.put(FacilioConstants.ContextNames.RECORD, location);
@@ -91,7 +91,7 @@ public class CampusAction extends ActionSupport {
 	public String updateCampus() throws Exception {
 		FacilioContext context = new FacilioContext();
 		LocationContext location = site.getLocation();
-		if(location != null && location.getLat() != null && location.getLng() != null)
+		if(location != null && location.getLat() != -1 && location.getLng() != -1)
 		{
 			location.setName(site.getName()+"_Location");
 			context.put(FacilioConstants.ContextNames.RECORD, location);

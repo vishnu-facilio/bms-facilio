@@ -78,7 +78,7 @@ public class BuildingAction extends ActionSupport {
 	{
 		FacilioContext context = new FacilioContext();	
 		LocationContext location = building.getLocation();
-		if(location != null && location.getLat() != null && location.getLng() != null)
+		if(location != null && location.getLat() != -1 && location.getLng() != -1)
 		{
 			location.setName(building.getName()+"_Location");
 			context.put(FacilioConstants.ContextNames.RECORD, location);
@@ -102,7 +102,7 @@ public class BuildingAction extends ActionSupport {
 		
 		FacilioContext context = new FacilioContext();
 		LocationContext location = building.getLocation();
-		if(location != null && location.getLat() != null && location.getLng() != null)
+		if(location != null && location.getLat() != -1 && location.getLng() != -1)
 		{
 			location.setName(building.getName()+"_Location");
 			context.put(FacilioConstants.ContextNames.RECORD, location);
