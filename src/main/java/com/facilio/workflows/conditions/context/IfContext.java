@@ -1,5 +1,6 @@
 package com.facilio.workflows.conditions.context;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -14,14 +15,14 @@ import com.facilio.workflows.context.WorkflowExpression;
 import com.facilio.workflows.context.WorkflowExpression.WorkflowExpressionType;
 import com.facilio.workflows.util.WorkflowUtil;
 
-public class IfContext implements WorkflowCondition {
+public class IfContext implements Serializable,WorkflowCondition {
 
 	String criteria;
 
 	public String getCriteria() {
 		return criteria;
 	}
-
+	private static final long serialVersionUID = 1L;
 	public void setCriteria(String criteria) {
 		this.criteria = criteria;
 	}
