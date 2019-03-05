@@ -3784,6 +3784,8 @@ public static JSONObject getStandardVariance1(ReportContext report,JSONArray pro
 		FacilioField fanStatusField = modBean.getField(453787l);
 		FacilioField valveFeedbackField = modBean.getField(446206l);
 		FacilioField returnTempField = modBean.getField(446196l);
+		FacilioField setPointTempField = modBean.getField(446195l);
+		
 		
 		List<Pair<Long, FacilioField>> rdmPairs = new ArrayList<>();
 		
@@ -3797,6 +3799,8 @@ public static JSONObject getStandardVariance1(ReportContext report,JSONArray pro
 				rdmPairs.add(Pair.of((Long) prop.get("id"),fanStatusField));
 				rdmPairs.add(Pair.of((Long) prop.get("id"),valveFeedbackField));
 				rdmPairs.add(Pair.of((Long) prop.get("id"),returnTempField));
+				rdmPairs.add(Pair.of((Long) prop.get("id"),setPointTempField));
+				
 				resourceSpaceMaps.put((Long) prop.get("id"), (Long) prop.get("spaceId"));
 				resourceNameMaps.put((Long) prop.get("id"), (String) prop.get("name"));
 			}
@@ -3844,6 +3848,9 @@ public static JSONObject getStandardVariance1(ReportContext report,JSONArray pro
 					else if (rdm.getFieldId() == returnTempField.getFieldId()) {
 						resJson.put("returnTemp", rdm.getValue());
 					}
+					else if (rdm.getFieldId() == setPointTempField.getFieldId()) {
+						resJson.put("setPointTemp", rdm.getValue());
+					}
 					
 				}
 				if(isRunning) {
@@ -3859,6 +3866,7 @@ public static JSONObject getStandardVariance1(ReportContext report,JSONArray pro
 			result.put("runStatusField", fanStatusField);
 			result.put("valveFeedbackField", valveFeedbackField);
 			result.put("returnTempField", returnTempField);
+			result.put("setPointTempField", setPointTempField);
 			return runStatusOnArray;
 		}
 		return null;
