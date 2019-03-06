@@ -64,6 +64,14 @@ public class Organization implements Serializable {
 		this.logoUrl = logoUrl;
 	}
 	
+	private String originalUrl;
+	public String getOriginalUrl() {
+		return originalUrl;
+	}
+	public void setOriginalUrl(String originalUrl) {
+		this.originalUrl = originalUrl;
+	}
+	
 	public String getPhone() {
 		return phone;
 	}

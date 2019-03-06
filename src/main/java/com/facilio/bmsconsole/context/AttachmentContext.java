@@ -30,6 +30,7 @@ public class AttachmentContext extends ModuleBaseWithCustomFields {
 		this.fileId = fileId;
 		getPreviewUrl();
 		getDownloadUrl();
+		getOriginalUrl();
 	}
 	
 	private long createdTime = -1;
@@ -115,11 +116,23 @@ public class AttachmentContext extends ModuleBaseWithCustomFields {
 	public String getDownloadUrl() throws Exception {
 		if (this.downloadUrl == null && this.fileId > 0) {
 			FileStore fs = FileStoreFactory.getInstance().getFileStore();
-			downloadUrl = fs.getDownloadUrl(this.fileId);
+			if (AccountUtil.getCurrentAccount() != null && AccountUtil.getCurrentAccount().isFromMobile()) {
+				downloadUrl = fs.orginalFileUrl(this.fileId);
+			}
+			else {
+				downloadUrl = fs.getDownloadUrl(this.fileId);
+			}
 		}
 		return downloadUrl;
 	}
-	
+	public String getOriginalUrl() throws Exception {
+		if (this.originalUrl == null && this.fileId > 0) {
+			FileStore fs = FileStoreFactory.getInstance().getFileStore();
+			originalUrl = fs.orginalFileUrl(this.fileId);
+		}
+		return originalUrl;
+	}
+	private String originalUrl;
 	private String attachmentModule;
 	public void setAttachmentModule(String attachmentModule) {
 		this.attachmentModule = attachmentModule;

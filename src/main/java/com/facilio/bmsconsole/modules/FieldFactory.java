@@ -4323,6 +4323,7 @@ public class FieldFactory {
 		fields.add(getField("endTime", "END_TIME", module, FieldType.DATE_TIME));
 		fields.add(getField("isSystem", "IS_SYSTEM", module, FieldType.BOOLEAN));
 		fields.add(getField("historicalAlarm", "CALCULATE_HISTORICAL_ALARM", module, FieldType.BOOLEAN));
+		fields.add(getField("skipOptimisedWorkflow", "SKIP_OPTIMISED_WORKFLOW", module, FieldType.BOOLEAN));
 
 		return fields;
 	}
@@ -5078,7 +5079,7 @@ public class FieldFactory {
 		List<FacilioField> fields = new ArrayList<>();
 		
 		fields.add(getIdField(module));
-		//fields.add(getOrgIdField(module));
+		fields.add(getOrgIdField(module));
 		fields.add(getField("name", "NAME", module, FieldType.STRING));
 		fields.add(getField("screenId", "SCREEN_ID", module, FieldType.LOOKUP));
 		fields.add(getField("token", "TOKEN", module, FieldType.STRING));
@@ -5151,6 +5152,7 @@ public class FieldFactory {
 		fields.add(getField("assetid", "ASSET_ID", module, FieldType.NUMBER));
 		fields.add(getField("criteriaid","CRITERIA_ID",module,FieldType.NUMBER));
 		fields.add(getField("sourcemoduleid","SOURCE_MODULEID",module,FieldType.NUMBER));
+		fields.add(getField("predictedlogfieldid","PREDICTED_LOG_FIELDID",module,FieldType.NUMBER));
 		fields.add(getField("predictedfieldid","PREDICTED_FIELDID",module,FieldType.NUMBER));
 		fields.add(getField("predictioninterval","PREDICTION_INTERVAL",module,FieldType.NUMBER));
 		fields.add(getField("lastexecutiontime","LAST_EXECUTION_TIME",module,FieldType.NUMBER));
@@ -5168,7 +5170,19 @@ public class FieldFactory {
 		return fields;
 	}
 
-
+	public static List<FacilioField> getNotificationLoggerFields() {
+		FacilioModule module = ModuleFactory.getNotificationLoggerModule();
+		List<FacilioField> fields = new ArrayList<>();
+		
+		fields.add(getIdField(module));
+		fields.add(getField("type", "NOTIFICATION_TYPE", module, FieldType.NUMBER));
+		fields.add(getField("to", "TO_ADDR", module, FieldType.STRING));
+		fields.add(getField("info", "INFO", module, FieldType.STRING));
+		fields.add(getField("threadName", "THREAD_NAME", module, FieldType.STRING));
+		fields.add(getField("createdTime", "CREATED_TIME", module, FieldType.STRING));
+		
+		return fields;
+	}
 
 	public static FacilioField getField(String name, String colName, FacilioModule module, FieldType type) {
 		return getField(name, null, colName, module, type);

@@ -284,16 +284,15 @@ public class FieldUtil {
 		}
 	}
 	
+	private static final ObjectMapper NON_DEFAULT_MAPPER = new ObjectMapper()
+													.setSerializationInclusion(Include.NON_DEFAULT)
+													.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS)
+													.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+	
 	public static ObjectMapper getMapper(Class<?> beanClass) {
-		ObjectMapper mapper =  new ObjectMapper()
-					.setSerializationInclusion(Include.NON_DEFAULT)
-					.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS)
-					.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
-		
-		mapper.configOverride(beanClass)
+		NON_DEFAULT_MAPPER.configOverride(beanClass)
 				.setInclude(Value.construct(Include.NON_DEFAULT, Include.ALWAYS));
-		
-		return mapper;
+		return NON_DEFAULT_MAPPER;
 	}
 	
 	public static <E> E getAsBeanFromJson(JSONObject content, Class<E> classObj) throws JsonParseException, JsonMappingException, IOException
@@ -315,8 +314,7 @@ public class FieldUtil {
 		}
 		return null;
 	}
-	public static <E> List<E> getAsBeanListFromMapList(List<Map<String, Object>> props, Class<E> classObj) 
-	{
+	public static <E> List<E> getAsBeanListFromMapList(List<Map<String, Object>> props, Class<E> classObj) {
 		if (props != null) {
 			ObjectMapper mapper = getMapper(classObj);
 			return mapper.convertValue(props, mapper.getTypeFactory().constructCollectionType(List.class, classObj));
@@ -325,11 +323,9 @@ public class FieldUtil {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public static Map<String, Object> getAsProperties(Object bean) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException 
-	{
+	public static Map<String, Object> getAsProperties(Object bean) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
 		Map<String, Object> properties = null;
-		if(bean != null) 
-		{
+		if(bean != null) {
 			ObjectMapper mapper = getMapper(bean.getClass());
 			properties = mapper.convertValue(bean, Map.class);
 		}
@@ -337,11 +333,9 @@ public class FieldUtil {
 		return properties;
 	}
 	
-	public static JSONObject getAsJSON(Object bean) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException 
-	{
+	public static JSONObject getAsJSON(Object bean) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
 		JSONObject properties = null;
-		if(bean != null) 
-		{
+		if(bean != null) {
 			ObjectMapper mapper = getMapper(bean.getClass());
 			properties = mapper.convertValue(bean, JSONObject.class);
 			
@@ -349,11 +343,9 @@ public class FieldUtil {
 		return properties;
 	}
 	
-	public static JSONArray getAsJSONArray(List<?> beans, Class<?> beanClass) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException 
-	{
+	public static JSONArray getAsJSONArray(List<?> beans, Class<?> beanClass) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
 		JSONArray array = null;
-		if(beans != null) 
-		{
+		if(beans != null) {
 			ObjectMapper mapper = getMapper(beanClass);
 			array = mapper.convertValue(beans, JSONArray.class);
 		}

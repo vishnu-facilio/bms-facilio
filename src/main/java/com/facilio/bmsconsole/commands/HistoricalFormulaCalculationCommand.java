@@ -34,8 +34,12 @@ public class HistoricalFormulaCalculationCommand implements Command {
 		if (historicalAlarm == null) {
 			historicalAlarm = false;
 		}
+		Boolean skipOptimisedWorkflow = (Boolean) context.get(FacilioConstants.ContextNames.SKIP_OPTIMISED_WF);
+		if (skipOptimisedWorkflow == null) {
+			skipOptimisedWorkflow = false;
+		}
 		
-		FormulaFieldAPI.calculateHistoricalDataForSingleResource(formulaId, resourceId, range, false, historicalAlarm);
+		FormulaFieldAPI.calculateHistoricalDataForSingleResource(formulaId, resourceId, range, false, historicalAlarm,skipOptimisedWorkflow);
 		
 		return false;
 	}

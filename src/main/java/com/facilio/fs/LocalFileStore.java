@@ -123,7 +123,7 @@ select * from Virtual_Energy_Meter_Rel where VIRTUAL_METER_ID=ENERGYMETER_ID
 		return fileId;
 	}
 	@Override
-	public String getFileUrl(long fileId) {
+	public String getOrgiFileUrl(long fileId) {
 		return null;
 	}
 

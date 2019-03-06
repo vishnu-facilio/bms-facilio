@@ -32,13 +32,22 @@ public class SingleResourceHistoricalFormulaCalculatorJob extends FacilioJob {
 			if (prop.get("historicalAlarm") != null) {
 				historicalAlarm = (boolean) prop.get("historicalAlarm");
 			}
+			boolean skipOptimisedWorkflow = false;
+			if (prop.get("skipOptimisedWorkflow") != null) {
+				skipOptimisedWorkflow = (boolean) prop.get("skipOptimisedWorkflow");
+			}
 			
 			FormulaFieldContext formula = FormulaFieldAPI.getFormulaField(formulaId);
 			DateRange range = new DateRange(startTime, endTime);
 			
 			switch (formula.getTriggerTypeEnum()) {
 				case POST_LIVE_READING:
-					FormulaFieldAPI.optimisedHistoricalCalculation(formula, range, resourceId, isSystem, historicalAlarm);
+					if(skipOptimisedWorkflow) {
+						FormulaFieldAPI.historicalCalculation(formula, range, resourceId, isSystem, historicalAlarm);
+					}
+					else {
+						FormulaFieldAPI.optimisedHistoricalCalculation(formula, range, resourceId, isSystem, historicalAlarm);
+					}
 					break;
 				default:
 					FormulaFieldAPI.historicalCalculation(formula, range, resourceId, isSystem, historicalAlarm);

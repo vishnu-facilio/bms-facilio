@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.StringJoiner;
 
 import org.apache.commons.chain.Chain;
 import org.apache.log4j.Logger;
@@ -20,6 +21,7 @@ import com.facilio.bmsconsole.criteria.BooleanOperators;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.criteria.Operator;
 import com.facilio.bmsconsole.context.MlForecastingContext;
 import com.facilio.bmsconsole.modules.FacilioField;
@@ -31,6 +33,7 @@ import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
+import com.facilio.sql.GenericDeleteRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.tasker.job.FacilioJob;
 import com.facilio.tasker.job.JobContext;
@@ -43,14 +46,98 @@ public class MLForecastingJob extends FacilioJob
 	@Override
 	public void execute(JobContext jc) throws Exception 
 	{
-		LOGGER.info("Job started");
+		LOGGER.info("Job started"+jc.getOrgId());
 		
 		List<MlForecastingContext> pcList = getPredictionJobs(jc.getOrgId());
 		for(MlForecastingContext predictionContext : pcList)
 		{
+			calculateMSEForPreviousPrediction(predictionContext);
 			doPrediction(predictionContext, jc.getExecutionTime() * 1000);
 		}
-
+		
+	}
+	
+	private void calculateMSEForPreviousPrediction(MlForecastingContext predictionContext)
+	{
+		try
+		{	
+			//get Reading from Readings Table for this time stamp	
+			long currentTime = System.currentTimeMillis();
+			if( AwsUtil.getConfig("environment").equals("development")) 
+			{
+				// for dev testing purpose time is moved back 
+				currentTime = 1538677800000L + (60 * 60 * 1000);
+			}
+			long startTime = currentTime - (predictionContext.getPredictioninterval() * 60 * 1000);//prediction interval is in minutes
+			
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			FacilioModule module1 = modBean.getModule(predictionContext.getSourcemoduleid());
+			SelectRecordsBuilder<ReadingContext> selectBuilder = new SelectRecordsBuilder<ReadingContext>()
+																		.select(modBean.getAllFields(module1.getName()))
+																		.module(module1)
+																		.beanClass(ReadingContext.class)
+																		.orderBy("TTIME ASC")
+																		.andCustomWhere("TTIME >= ? AND TTIME < ? AND PARENT_ID=? ",
+																		startTime, currentTime, predictionContext.getAssetid());
+			
+			List<ReadingContext> props = selectBuilder.get();
+			Map<Long,ReadingContext> ttimeVsReading = new HashMap<Long,ReadingContext>();
+			props.forEach(readingContext->ttimeVsReading.put(readingContext.getTtime(), readingContext));
+			
+			
+			//get all data from Ml_Forecasting_Data from last predictionInterval
+			Condition parentCondition=CriteriaAPI.getCondition("PARENT_ID","parentId", String.valueOf(predictionContext.getAssetid()),NumberOperators.EQUALS);
+			Condition ttimeCondition=CriteriaAPI.getCondition("TTIME","ttime", getTtimeList(props),NumberOperators.EQUALS);
+			
+			FacilioField predictField = modBean.getField(predictionContext.getPredictedfieldid());
+			FacilioModule module = modBean.getModule(predictField.getModuleId());
+			List<FacilioField> fields = modBean.getAllFields(module.getName());
+			
+			String tableName=module.getTableName();
+			SelectRecordsBuilder<ReadingContext> newSelectBuilder = new SelectRecordsBuilder<ReadingContext>()
+																		.select(fields)
+																		.table(tableName)
+																		.moduleName(module.getName())
+																		.maxLevel(0)
+																		.beanClass(ReadingContext.class)
+																		.andCondition(parentCondition)
+																		.andCondition(ttimeCondition);
+			List<ReadingContext> newProps = newSelectBuilder.get();
+			List<ReadingContext> updatedList = new ArrayList<>();
+			
+			for(ReadingContext reading : newProps) 
+			{
+				Long ttime=reading.getTtime();
+				ReadingContext actualReading = ttimeVsReading.get(ttime);
+			
+				long diff = Math.round(Math.abs((double)actualReading.getReadings().get(module1.getName()) - (double)reading.getReadings().get(module.getName())));
+				
+				ReadingContext newReading = new ReadingContext();
+				newReading.setParentId(predictionContext.getAssetid());	   			
+				newReading.addReading("predictedactualdiff", diff);
+				newReading.setId(reading.getId());
+				updatedList.add(newReading);
+				
+			}
+			//update Ml_Forecasting_Data with actual diff
+			updateReading(module,updatedList);
+			
+			
+		}
+		catch(Exception e)
+		{
+			LOGGER.error("Error while calculating MSE for "+predictionContext.getAssetid(), e);
+		}
+	}
+	
+	private void updateReading(FacilioModule module,List<ReadingContext> readings) throws Exception
+	{
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, module.getName());
+		context.put(FacilioConstants.ContextNames.READINGS, readings);
+		context.put(FacilioConstants.ContextNames.READINGS_SOURCE, SourceType.ML);
+		Chain chain = TransactionChainFactory.onlyAddOrUpdateReadingsChain();
+		chain.execute(context);
 	}
 	
 	private List<MlForecastingContext> getPredictionJobs(long orgID) throws Exception
@@ -95,9 +182,12 @@ public class MLForecastingJob extends FacilioJob
 		{
 			getFields(pc);
 			getReadings(pc);
-			generateModel(pc);
-			addToDB(pc, predictionTime);
-			
+			if(!(pc.getPyData()==null || pc.getPyData().length()==0))
+			{
+				generateModel(pc);
+				addToDB(pc, predictionTime);
+			}
+
 		}
 		catch(Exception e)
 		{
@@ -110,9 +200,24 @@ public class MLForecastingJob extends FacilioJob
 		try
 		{
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			FacilioField field = modBean.getField(pc.getPredictedfieldid());
+			FacilioField logField = modBean.getField(pc.getPredictedlogfieldid());
+			FacilioField predictField = modBean.getField(pc.getPredictedfieldid());
+			
 			JSONArray mlArray = (JSONArray) new JSONObject(pc.getResult()).get("results");
-			List<ReadingContext> newList = new ArrayList<>();
+			
+			List<ReadingContext> logReadingList = new ArrayList<>();
+			List<ReadingContext> predictReadingList = new ArrayList<>(); 
+			if(mlArray.length()==0)
+			{
+				ReadingContext newReading = new ReadingContext();
+				newReading.setParentId(pc.getAssetid());
+				Object value = 0;
+				newReading.addReading(logField.getName(), value);	   			
+				newReading.setTtime(System.currentTimeMillis());
+				newReading.addReading("predictedTime", predictionTime);
+				logReadingList.add(newReading);
+				
+			}
 		 
 			 for(int i=0; i<mlArray.length(); i++)
 			 {
@@ -120,23 +225,48 @@ public class MLForecastingJob extends FacilioJob
 				 
 				 ReadingContext newReading = new ReadingContext();
 				 newReading.setParentId(pc.getAssetid());
-	   			
 				 Object value = readingObj.get("predicted");
-				 newReading.addReading(field.getName(), value);
-	   			
+				 newReading.addReading(logField.getName(), value);	   			
 				 newReading.setTtime((long)readingObj.get("ttime"));
-				 
 				 newReading.addReading("predictedTime", predictionTime);
+				 logReadingList.add(newReading);
 				 
-				 newList.add(newReading);
+				 ReadingContext predictReading = new ReadingContext();
+				 predictReading.setParentId(pc.getAssetid());
+				 predictReading.addReading(predictField.getName(), value);	   			
+				 predictReading.setTtime((long)readingObj.get("ttime"));
+				 predictReadingList.add(predictReading);
 			 }
-	   		
-			 FacilioContext context = new FacilioContext();
-			 context.put(FacilioConstants.ContextNames.MODULE_NAME, field.getModule().getName());
-			 context.put(FacilioConstants.ContextNames.READINGS, newList);
-			 context.put(FacilioConstants.ContextNames.READINGS_SOURCE, SourceType.ML);
-			 Chain chain = TransactionChainFactory.onlyAddOrUpdateReadingsChain();
-			 chain.execute(context);
+			 
+			 if(!predictReadingList.isEmpty())
+			 {
+				 
+				 try
+				 {
+					 updateExistingPredictReading(pc,predictField.getModule(),predictReadingList);
+					 FacilioContext context = new FacilioContext();
+					 context.put(FacilioConstants.ContextNames.MODULE_NAME, predictField.getModule().getName());
+					 context.put(FacilioConstants.ContextNames.READINGS, predictReadingList);
+					 context.put(FacilioConstants.ContextNames.READINGS_SOURCE, SourceType.ML);
+					 Chain chain = TransactionChainFactory.onlyAddOrUpdateReadingsChain();
+					 chain.execute(context);
+					 
+					 ReadingContext lastReading = predictReadingList.get(predictReadingList.size()-1);
+					 GenericDeleteRecordBuilder deleteRecordBuilder = new GenericDeleteRecordBuilder();
+					 deleteRecordBuilder.table(predictField.getModule().getTableName())
+		             .andCustomWhere("orgid = ?", pc.getOrgId())
+		             .andCustomWhere("parentId = ?",pc.getAssetid())
+		             .andCustomWhere("ttime > ?", lastReading.getTtime());
+
+		                deleteRecordBuilder.delete();
+				 }
+				 catch(Exception e)
+				 {
+					 LOGGER.error("Error while updating Predicted Reading", e);
+				 }
+			 }
+			 
+			 updateReading(logField.getModule(),logReadingList);
 		}
 		catch(Exception e)
 		{
@@ -145,9 +275,50 @@ public class MLForecastingJob extends FacilioJob
 		}
 	}
 	
+	private void updateExistingPredictReading(MlForecastingContext pc,FacilioModule module,List<ReadingContext> readingList) throws Exception
+	{
+		Condition parentCondition=CriteriaAPI.getCondition("PARENT_ID","parentId", String.valueOf(pc.getAssetid()),NumberOperators.EQUALS);
+		Condition ttimeCondition=CriteriaAPI.getCondition("TTIME","ttime", getTtimeList(readingList),NumberOperators.EQUALS);
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		List<FacilioField> fields = modBean.getAllFields(module.getName());
+		String tableName=module.getTableName();
+		SelectRecordsBuilder<ReadingContext> selectBuilder = new SelectRecordsBuilder<ReadingContext>()
+																	.select(fields)
+																	.table(tableName)
+																	.moduleName(module.getName())
+																	.maxLevel(0)
+																	.beanClass(ReadingContext.class)
+																	.andCondition(parentCondition)
+																	.andCondition(ttimeCondition);
+		List<ReadingContext> props = selectBuilder.get();
+		
+		Map<Long,ReadingContext> ttimeVsReading = new HashMap<Long,ReadingContext>();
+		props.forEach(readingContext->ttimeVsReading.put(readingContext.getTtime(), readingContext));
+
+		
+		if(!ttimeVsReading.isEmpty())
+		{
+			for (ReadingContext reading: readingList) 
+			{
+				ReadingContext ttimeReading = ttimeVsReading.get(reading.getTtime());
+				reading.setId(ttimeReading!=null ? ttimeReading.getId() : -1);
+			}
+		}
+	}
+	
+	private static String getTtimeList(List<ReadingContext> readingList) 
+	{
+		StringJoiner ttimeCriteria = new StringJoiner(",");
+		readingList.forEach(reading->ttimeCriteria.add(String.valueOf(reading.getTtime())));
+		return ttimeCriteria.toString();
+	}
+	
+	
+	
 	private void generateModel(MlForecastingContext pc) throws Exception
 	{
 		 JSONObject postObj = new JSONObject();
+		 postObj.put("predictedFieldID", pc.getPredictedfieldid());
 		 postObj.put("meterInterval",pc.getDatainterval());
 		 postObj.put("data", pc.getPyData());
 		 
@@ -222,13 +393,13 @@ public class MLForecastingJob extends FacilioJob
 		{
 			criteria = CriteriaAPI.getCriteria(pc.getOrgId(), pc.getCriteriaid());
 		}
-		boolean properData = true;
-		long lastTime = -1L;
+		boolean supplyStatus = true;
+		long lastTime = -1L;// to remove duplicates while predicting data
 		for(Map<String, Object> prop:props)
 		{
-			if(!isConditional(prop,criteria,properData))
+			if(!isConditional(prop,criteria,supplyStatus))
 			{
-				if(properData)
+				if(supplyStatus)
 				{
 					if((long)prop.get("ttime")>lastTime)
 					{
@@ -237,17 +408,15 @@ public class MLForecastingJob extends FacilioJob
 					}
 				}
 			}
-			/*Map<String,Condition> conditions =criteria.getConditions();
-			Map<Condition,Boolean> conditionsResult = new HashMap<Condition,Boolean>(conditions.size());
-			conditions.entrySet().stream().forEach( e -> conditionsResult.put(e.getValue(), true));
-			if(!isConditional(prop,conditions,conditionsResult,conditionalResult))
-			{
-				addDataField(pc,prop,array);
-			}*/
-			
 		}
-		
-		pc.setPyData(array);
+		if(supplyStatus)
+		{
+			pc.setPyData(array);
+		}
+		else
+		{
+			LOGGER.info("Prediction not called for "+pc.getId()+":"+pc.getAssetid()+" as supply Status is false for current period");
+		}
 	}
 	
 	private void addDataField(MlForecastingContext pc,Map<String,Object> prop,JSONArray data) throws JSONException
@@ -259,7 +428,7 @@ public class MLForecastingJob extends FacilioJob
 			{
 				JSONObject jsonObject = new JSONObject();
 				jsonObject.put("ttime", prop.get("ttime"));
-				jsonObject.put(field.getName(), prop.get(field.getName()));
+				jsonObject.put("metric", prop.get(field.getName()));//always use metric as this is a generic call
 				data.put(jsonObject);
 			}
 		}
@@ -267,10 +436,11 @@ public class MLForecastingJob extends FacilioJob
 	
 	private boolean isConditional(Map<String,Object> prop,Criteria criteria,boolean properData)
 	{
-		if(criteria==null)
+		if(criteria.isEmpty())
 		{
-			return false;
+			return true;
 		}
+		
 		Map<String,Condition> conditions = criteria.getConditions();
 		for(Condition condition: conditions.values())
 		{

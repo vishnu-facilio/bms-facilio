@@ -169,6 +169,9 @@ public class LookupSpecialTypeUtil {
 		else if(EventConstants.EventContextNames.EVENT.equals(specialType)) {
 			return EventAPI.getEvent(criteria);
 		}
+		else if ("trigger".equals(specialType)) {
+			return PreventiveMaintenanceAPI.getPMTriggers(criteria);
+		}
 		return null;
 	}
 	
@@ -206,6 +209,12 @@ public class LookupSpecialTypeUtil {
 			}
 			return null;
 		}
+		else if ("trigger".equals(specialType)) {
+			List<PMTriggerContext> triggers = PreventiveMaintenanceAPI.getPMTriggersByTriggerIds(ids);
+			if (CollectionUtils.isNotEmpty(triggers)) {
+				return triggers.stream().collect(Collectors.toMap(PMTriggerContext::getId, Function.identity()));
+			}
+		}
 		return null;
 	}
 	
@@ -227,6 +236,9 @@ public class LookupSpecialTypeUtil {
 		}
 		else if(EventConstants.EventContextNames.EVENT.equals(specialType)) {
 			return EventAPI.getEvents(ids);
+		}
+		else if ("trigger".equals(specialType)) {
+			return PreventiveMaintenanceAPI.getPMTriggersByTriggerIds(ids);
 		}
 		return null;
 	}

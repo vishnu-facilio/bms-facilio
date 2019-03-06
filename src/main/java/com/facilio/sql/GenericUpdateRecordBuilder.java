@@ -7,11 +7,12 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
-import com.facilio.fw.LRUCache;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -20,8 +21,6 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
-import com.facilio.bmsconsole.criteria.CriteriaAPI;
-import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.FieldUtil;
@@ -29,6 +28,7 @@ import com.facilio.bmsconsole.modules.FileField;
 import com.facilio.bmsconsole.modules.NumberField;
 import com.facilio.fs.FileStore;
 import com.facilio.fs.FileStoreFactory;
+import com.facilio.fw.LRUCache;
 import com.facilio.transaction.FacilioConnectionPool;
 
 public class GenericUpdateRecordBuilder implements UpdateBuilderIfc<Map<String, Object>> {
@@ -223,6 +223,16 @@ public class GenericUpdateRecordBuilder implements UpdateBuilderIfc<Map<String, 
 		}
 	}
 	
+	private void removeDefaultValues() {
+		Iterator<Entry<String, Object>> iter = value.entrySet().iterator();
+		while (iter.hasNext()) {
+		    Entry<String, Object> entry = iter.next();
+		    if(entry.getValue() == null || (entry.getValue() instanceof Number && ((Number)entry.getValue()).intValue() == -1)) {
+		        iter.remove();
+		    }
+		}
+	}
+	
 	@Override
 	public int update(Map<String, Object> value) throws SQLException {
 	    long startTime = System.currentTimeMillis();
@@ -241,6 +251,8 @@ public class GenericUpdateRecordBuilder implements UpdateBuilderIfc<Map<String, 
 		}*/
 		value.remove("id");
 		this.value = value;
+		removeDefaultValues();
+		
 		if(!value.isEmpty()) {
 			
 			handleFileFields();

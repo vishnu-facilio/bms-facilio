@@ -648,7 +648,7 @@ public class PreventiveMaintenanceAPI {
 
 		LOGGER.log(Level.SEVERE, "Number of PMS to be deactivated: " + pms.size());
 
-		List<Long> skipped = activateDeactivateAllPms(pms);
+		List<Long> skipped = deactivateActivateAllPms(pms);
 
 		//Set<Long> skipList = deactivateAllPms(pms);
 		//Set<Long> activateSkipList = activateAllPms(pms, skipList);
@@ -656,12 +656,12 @@ public class PreventiveMaintenanceAPI {
 		//LOGGER.log(Level.SEVERE, "Activation skipped: "+ StringUtils.join(activateSkipList.toArray(), ", "));
 	}
 
-	private static List<Long> activateDeactivateAllPms(List<PreventiveMaintenance> pms) throws Exception {
+	private static List<Long> deactivateActivateAllPms(List<PreventiveMaintenance> pms) throws Exception {
 		List<Long> skippedPms = new ArrayList<>();
 		for (PreventiveMaintenance activePm: pms) {
 			try {
 				PreventiveMaintenance pm = new PreventiveMaintenance();
-				pm.setStatus(true);
+				pm.setStatus(false);
 
 				FacilioContext context = new FacilioContext();
 				context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Arrays.asList(activePm.getId()));
@@ -1133,6 +1133,23 @@ public class PreventiveMaintenanceAPI {
 		}
 		return null;
 	}
+
+	public static List<PMTriggerContext> getPMTriggersByTriggerIds(Collection<Long> triggerIds) throws Exception {
+		FacilioModule module = ModuleFactory.getPMTriggersModule();
+		FacilioField idField = FieldFactory.getIdField(module);
+
+		Criteria idCriteria = new Criteria();
+		idCriteria.addAndCondition(CriteriaAPI.getCondition(idField, triggerIds, NumberOperators.EQUALS));
+
+		List<Map<String, Object>> props = getPMTriggers(idCriteria);
+		List<PMTriggerContext> pmTriggerContexts = new ArrayList<>();
+		if (props != null && !props.isEmpty()) {
+			for (Map<String, Object> triggerProp: props) {
+				pmTriggerContexts.add(FieldUtil.getAsBeanFromMap(triggerProp, PMTriggerContext.class));
+			}
+		}
+		return pmTriggerContexts;
+	}
 	
 	public static void setPMInActive(long pmId) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException, SQLException {
 		PreventiveMaintenance updatePm = new PreventiveMaintenance();
@@ -1156,20 +1173,25 @@ public class PreventiveMaintenanceAPI {
 		return getPMTriggers(pmIdString);
 	}
 
-
-	private static Map<Long, List<PMTriggerContext>> getPMTriggers(String pmIds) throws Exception {
+	public static List<Map<String, Object>> getPMTriggers(Criteria filterCriteria) throws Exception {
 		FacilioModule module = ModuleFactory.getPMTriggersModule();
 		List<FacilioField> fields = FieldFactory.getPMTriggerFields();
-		FacilioField pmIdField = FieldFactory.getAsMap(fields).get("pmId");
-
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(fields)
 				.table(module.getTableName())
 				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
-				.andCondition(CriteriaAPI.getCondition(pmIdField, pmIds, NumberOperators.EQUALS))
-				;
+				.andCriteria(filterCriteria);
+		return selectBuilder.get();
+	}
 
-		List<Map<String, Object>> triggerProps = selectBuilder.get();
+	private static Map<Long, List<PMTriggerContext>> getPMTriggers(String pmIds) throws Exception {
+		List<FacilioField> fields = FieldFactory.getPMTriggerFields();
+		FacilioField pmIdField = FieldFactory.getAsMap(fields).get("pmId");
+
+		Criteria idCriteria = new Criteria();
+		idCriteria.addAndCondition(CriteriaAPI.getCondition(pmIdField, pmIds, NumberOperators.EQUALS));
+
+		List<Map<String, Object>> triggerProps = getPMTriggers(idCriteria);
 		Map<Long, List<PMTriggerContext>> pmTriggers = new HashMap<>();
 		for(Map<String, Object> triggerProp : triggerProps) {
 			PMTriggerContext trigger = FieldUtil.getAsBeanFromMap(triggerProp, PMTriggerContext.class);
@@ -1838,7 +1860,7 @@ public class PreventiveMaintenanceAPI {
 										}
 										Criteria criteria = new Criteria();
 										criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("pm"), String.valueOf(pm.getId()),PickListOperators.IS));
-										criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("resource"), String.valueOf(resourcePlannerContext.getResourceId()), NumberOperators.EQUALS));
+										criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("resource"), String.valueOf(resourcePlannerContext.getResourceId()), PickListOperators.IS));
 										long ruleId = -1;
 										if (reminder.getTypeEnum() == ReminderType.BEFORE_EXECUTION) {
 											ruleId = addScheduleRule(createdTimeField, pm, reminder, criteria, WorkflowRuleContext.ScheduledRuleType.BEFORE);

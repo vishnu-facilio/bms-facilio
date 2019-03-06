@@ -15,7 +15,8 @@ public class MlForecastingContext extends ModuleBaseWithCustomFields
 	private  long assetid;
 	private long criteriaId;
 	private long sourceModuleId;
-	private long predictedModuleId;
+	private long predictedLogFieldId;
+	private long predictedFiedlId;
 	private int predictionInterval;
 	private long lastExecutionTime;
 	private int dataInterval;
@@ -52,14 +53,24 @@ public class MlForecastingContext extends ModuleBaseWithCustomFields
 		this.sourceModuleId = sourcemoduleid;
 	}
 
-	public long getPredictedfieldid()
+	public long getPredictedlogfieldid()
 	{
-		return predictedModuleId;
+		return predictedLogFieldId;
 	}
 
-	public void setPredictedfieldid(long predictedmoduleid) 
+	public void setPredictedlogfieldid(long predictedlogfieldid) 
 	{
-		this.predictedModuleId = predictedmoduleid;
+		this.predictedLogFieldId = predictedlogfieldid;
+	}
+	
+	public long getPredictedfieldid()
+	{
+		return predictedFiedlId;
+	}
+	
+	public void setPredictedfieldid(long predictedfieldid)
+	{
+		this.predictedFiedlId = predictedfieldid;
 	}
 
 	public int getPredictioninterval() 

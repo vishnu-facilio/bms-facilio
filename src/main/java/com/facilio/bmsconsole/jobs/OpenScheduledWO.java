@@ -60,7 +60,7 @@ public class OpenScheduledWO extends FacilioJob {
 
             UpdateRecordBuilder<WorkOrderContext> updateRecordBuilder = new UpdateRecordBuilder<>();
             updateRecordBuilder.module(module)
-                    .fields(Arrays.asList(fieldMap.get("status")))
+                    .fields(Arrays.asList(fieldMap.get("status"), fieldMap.get("jobStatus")))
                     .andCondition(CriteriaAPI.getIdCondition(woId, module));
             updateRecordBuilder.update(wo);
 

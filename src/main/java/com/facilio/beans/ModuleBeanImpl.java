@@ -669,7 +669,7 @@ public class ModuleBeanImpl implements ModuleBean {
 		insertBuilder.save();
 	}
 	
-	private void updateExtendedProps(FacilioModule module, List<FacilioField> fields, FacilioField field) throws Exception {
+	private int updateExtendedProps(FacilioModule module, List<FacilioField> fields, FacilioField field) throws Exception {
 		
 		long fieldId = field.getFieldId();
 		field.setFieldId(-1);
@@ -680,8 +680,9 @@ public class ModuleBeanImpl implements ModuleBean {
 				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 				.andCustomWhere("FIELDID = ?", fieldId);
 		
-		updateBuilder.update(props);
+		int count = updateBuilder.update(props);
 		field.setFieldId(fieldId);
+		return count;
 	}
 	
 	private void addEnumField(EnumField field) throws Exception {
@@ -735,19 +736,21 @@ public class ModuleBeanImpl implements ModuleBean {
 			int count = updateBuilder.update(FieldUtil.getAsProperties(field));
 			field.setFieldId(fieldId);
 			
+			int extendendPropsCount = 0;
+			
 			if (field instanceof NumberField) {
-				updateExtendedProps(ModuleFactory.getNumberFieldModule(), FieldFactory.getNumberFieldFields(), field);
+				extendendPropsCount = updateExtendedProps(ModuleFactory.getNumberFieldModule(), FieldFactory.getNumberFieldFields(), field);
 			}
 			else if (field instanceof BooleanField) {
-				updateExtendedProps(ModuleFactory.getBooleanFieldsModule(), FieldFactory.getBooleanFieldFields(), field);
+				extendendPropsCount = updateExtendedProps(ModuleFactory.getBooleanFieldsModule(), FieldFactory.getBooleanFieldFields(), field);
 			}
 			else if (field instanceof FileField) {
-				updateExtendedProps(ModuleFactory.getFileFieldModule(), FieldFactory.getFileFieldFields(), field);
+				extendendPropsCount = updateExtendedProps(ModuleFactory.getFileFieldModule(), FieldFactory.getFileFieldFields(), field);
 			}
 			else if (field instanceof EnumField) {
 				updateEnumField((EnumField) field);
 			}
-			return count;
+			return Math.max(count, extendendPropsCount);
 		}
 		else {
 			throw new IllegalArgumentException("Invalid field object for Updation");

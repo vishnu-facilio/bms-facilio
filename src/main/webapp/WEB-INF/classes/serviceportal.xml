@@ -108,6 +108,14 @@
 			</result>
 		</action>
 		
+		<action name="meta" class="com.facilio.bmsconsole.actions.ModuleAction"
+			method="metadata">
+			<result name="success" type="json">
+				<param name="enumAsBean">true</param>
+				<param name="includeProperties">meta.*</param>
+			</result>
+		</action>
+		
 		<action name="uploadUserAvatar" class="com.facilio.bmsconsole.actions.UserAction"
 			method="uploadUserAvatar">
 			<result name="success" type="json">
