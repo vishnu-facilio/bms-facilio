@@ -87,7 +87,7 @@ public class TemplateAPI {
 	private static final Map<DefaultTemplateType, Map<String, Map<Integer,DefaultTemplate>>> DEFAULT_TEMPLATES = Collections.unmodifiableMap(loadDefaultTemplates());
 	private static  Map<DefaultTemplateType, Map<String, Map<Integer,DefaultTemplate>>> loadDefaultTemplates() {
 		try {
-			 Map<DefaultTemplateType, Map<String, Map<Integer,DefaultTemplate>>> typeDefaultTemplates = new HashMap<>();
+			Map<DefaultTemplateType, Map<String, Map<Integer,DefaultTemplate>>> typeDefaultTemplates = new HashMap<>();
 			Map<String, Map<Integer,DefaultTemplate>> defaultTemplates = new HashMap<>();
 			ClassLoader classLoader = TemplateAPI.class.getClassLoader();
 			
@@ -104,6 +104,7 @@ public class TemplateAPI {
 			for (DefaultTemplateType defaultTemplateType : DefaultTemplateType.getAllDefaultTemplateType()) {
 				String path = DEFAULT_TEMPLATES_FILE_PATH + defaultTemplateType.getName() + '_';
 				for (String lang : LANG) {
+					path += lang;
 					JSONObject templateJsons = (JSONObject) parser.parse(new FileReader(classLoader.getResource(path+".json").getFile()));
 					Map<Integer, DefaultTemplate> templates = new HashMap<>();
 					for (Object key : templateJsons.keySet()) {
@@ -117,7 +118,6 @@ public class TemplateAPI {
 						defaultTemplate.setJson(template);
 						defaultTemplate.setPlaceholder(getPlaceholders(defaultTemplate));
 						defaultTemplate.setDefaultTemplateType(defaultTemplateType);
-						
 						WorkflowContext defaultWorkflow = defaultWorkflows.get(templateId);
 						if (defaultWorkflow != null) {
 							defaultWorkflow = WorkflowUtil.getWorkflowContextFromString(defaultWorkflow.getWorkflowString());
