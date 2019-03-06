@@ -1702,4 +1702,12 @@ public class ModuleFactory {
 		inventoryModule.setTableName("Item_status");
 		return inventoryModule;
 	}
+  	
+  	public static FacilioModule getItemTypeStatusModule() {
+		FacilioModule inventoryModule = new FacilioModule();
+		inventoryModule.setName(FacilioConstants.ContextNames.ITEM_TYPES_STATUS);
+		inventoryModule.setDisplayName("itemTypeStatus");
+		inventoryModule.setTableName("Item_Types_status");
+		return inventoryModule;
+	}
 }

@@ -418,6 +418,7 @@ public class ReadOnlyChainFactory {
 	public static Chain getItemTypessList() {
 		Chain c = getDefaultChain();
 		c.addCommand(SetTableNamesCommand.getForItemTypes());
+		c.addCommand(new LoadViewCommand());
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new GenerateCriteriaFromFilterCommand());
 		c.addCommand(new GenerateSearchConditionCommand());

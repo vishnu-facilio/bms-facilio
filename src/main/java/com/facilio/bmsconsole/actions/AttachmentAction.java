@@ -125,6 +125,14 @@ public class AttachmentAction  extends FacilioAction {
 				attachmentList.get(0).setAttachmentModule(FacilioConstants.ContextNames.INVENTORY_LIST);
 				attachmentList.get(0).setRecordId(recordId);
 			}
+			if (module.equals(FacilioConstants.ContextNames.ITEM_TYPES_ATTACHMENTS)) {
+				attachmentList.get(0).setAttachmentModule(FacilioConstants.ContextNames.ITEM_TYPES_LIST);
+				attachmentList.get(0).setRecordId(recordId);
+			}
+			if (module.equals(FacilioConstants.ContextNames.TOOL_TYPES_ATTACHMENTS)) {
+				attachmentList.get(0).setAttachmentModule(FacilioConstants.ContextNames.TOOL_TYPES_LIST);
+				attachmentList.get(0).setRecordId(recordId);
+			}
 		}
 		return SUCCESS;
 	}

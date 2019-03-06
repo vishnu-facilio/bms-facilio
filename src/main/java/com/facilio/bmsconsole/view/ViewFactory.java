@@ -226,6 +226,10 @@ public class ViewFactory {
 		order = 1;
 		views = new LinkedHashMap<>();
 		views.put("all", getAllItemTypes().setOrder(order++));
+		views.put("active", getItemTypesForStatus("active", "Active Items", "Active").setOrder(order++));
+		views.put("pending", getItemTypesForStatus("pending", "Pending Items", "Pending").setOrder(order++));
+		views.put("planning", getItemTypesForStatus("planning", "Planning Items", "Planning").setOrder(order++));
+		views.put("obsolete", getItemTypesForStatus("obsolete", "Obsolete Items", "Obsolete").setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.ITEM_TYPES, views);
 		
 		order = 1;
@@ -2077,7 +2081,7 @@ public class ViewFactory {
 		FacilioField createdTime = new FacilioField();
 		createdTime.setName("sysCreatedTime");
 		createdTime.setDataType(FieldType.NUMBER);
-		createdTime.setColumnName("TTIME");
+		createdTime.setColumnName("CREATED_TIME");
 		createdTime.setModule(itemsModule);
 
 		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));
@@ -2088,6 +2092,62 @@ public class ViewFactory {
 		allView.setSortFields(sortFields);
 
 		return allView;
+	}
+	
+	private static FacilioView getItemTypesForStatus(String viewName, String viewDisplayName, String status) {
+
+		FacilioModule itemsModule = ModuleFactory.getItemTypesModule();
+
+		FacilioField createdTime = new FacilioField();
+		createdTime.setName("sysCreatedTime");
+		createdTime.setDataType(FieldType.NUMBER);
+		createdTime.setColumnName("CREATED_TIME");
+		createdTime.setModule(itemsModule);
+
+		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));
+
+		Criteria criteria = getItemTypeStatusCriteria(itemsModule, status);
+		
+		FacilioView allView = new FacilioView();
+		allView.setName(viewName);
+		allView.setDisplayName(viewDisplayName);
+		allView.setSortFields(sortFields);
+		allView.setCriteria(criteria);
+
+		return allView;
+	}
+	
+	private static Criteria getItemTypeStatusCriteria(FacilioModule module, String status) {
+		
+		FacilioField itemStatusField = new FacilioField();
+		itemStatusField.setName("name");
+		itemStatusField.setColumnName("NAME");
+		itemStatusField.setDataType(FieldType.STRING);
+		itemStatusField.setModule(ModuleFactory.getItemTypeStatusModule());
+
+		Condition statusCond = new Condition();
+		statusCond.setField(itemStatusField);
+		statusCond.setOperator(StringOperators.IS);
+		statusCond.setValue(status);
+
+		Criteria itemTypeStatusCriteria = new Criteria();
+		itemTypeStatusCriteria.addAndCondition(statusCond);
+		
+		LookupField itemStatus = new LookupField();
+		itemStatus.setName("status");
+		itemStatus.setColumnName("STATUS");
+		itemStatus.setDataType(FieldType.LOOKUP);
+		itemStatus.setModule(module);
+		itemStatus.setLookupModule(ModuleFactory.getItemTypeStatusModule());
+
+		Condition statusFilter = new Condition();
+		statusFilter.setField(itemStatus);
+		statusFilter.setOperator(LookupOperator.LOOKUP);
+		statusFilter.setCriteriaValue(itemTypeStatusCriteria);
+
+		Criteria criteria = new Criteria();
+		criteria.addAndCondition(statusFilter);
+		return criteria;
 	}
 	
 	private static FacilioView getAllToolTypes() {

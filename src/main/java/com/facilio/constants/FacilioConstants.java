@@ -466,15 +466,18 @@ public class FacilioConstants {
 		public static final String TICKET_NOTES = "ticketnotes";
 		public static final String BASE_SPACE_NOTES = "basespacenotes";
 		public static final String ASSET_NOTES = "assetnotes";
-		public static final String INVENTORY_NOTES = "inventorynotes";
+		public static final String ITEM_TYPES_NOTES = "itemTypesNotes";
 		public static final String ITEM_NOTES = "itemNotes";
 		public static final String TOOL_NOTES = "toolNotes";
+		public static final String TOOL_TYPES_NOTES = "toolTypesNotes";
 		
 		public static final String TICKET_ATTACHMENTS = "ticketattachments";
 		public static final String BASE_SPACE_ATTACHMENTS = "basespaceattachments";
 		public static final String ASSET_ATTACHMENTS = "assetattachments";
 		public static final String TASK_ATTACHMENTS = "taskattachments";
 		public static final String INVENTORY_ATTACHMENTS = "inventoryattachments";
+		public static final String ITEM_TYPES_ATTACHMENTS = "itemTypesAttachments";
+		public static final String TOOL_TYPES_ATTACHMENTS = "toolTypesattachments";
 		
 		public static final String PICKLIST = "pickList";
 		
@@ -760,13 +763,20 @@ public class FacilioConstants {
 		public static final String STORE_ROOMS = "storeRooms";
 		
 		public static final String ITEM_TYPES = "itemTypes";
+		public static final String ITEM_TYPES_LIST = "itemTypesList";
 		public static final String ITEM_TYPES_CATEGORY = "itemTypesCategory";
 		public static final String ITEM_TYPES_STATUS = "itemTypesStatus";
 		public static final String ITEM_TYPES_ID = "itemTypesId";
 		
 		public static final String TOOL_TYPES = "toolTypes";
+		public static final String TOOL_TYPES_LIST = "toolTypesList";
 		public static final String TOOL_TYPES_STATUS = "toolTypesStatus";
 		public static final String TOOLS_TYPES_CATEGORY = "toolTypesCategory";
+		
+		public static final String TOOL = "tool";
+		public static final String TOOLS = "tools";
+		public static final String TOOLS_STATUS = "toolsStatus";
+		public static final String TOOLS_CATEGORY = "toolsCategory";
 
 		public static final String VENDOR = "vendor";
 		public static final String VENDORS = "vendors";
