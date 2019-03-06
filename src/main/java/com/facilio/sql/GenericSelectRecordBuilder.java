@@ -788,16 +788,7 @@ public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, 
 					if(field != null) {
 						if (field instanceof NumberField) {
 							NumberField numberField =  (NumberField)field;
-							if(numberField.getMetric() > 0) {
-
-								if(numberField.getUnitId() > 0) {
-									Unit siUnit = Unit.valueOf(Metric.valueOf(numberField.getMetric()).getSiUnitId());
-									val = UnitsUtil.convert(val, siUnit.getUnitId(), numberField.getUnitId());
-								}
-								else {
-									val = UnitsUtil.convertToOrgDisplayUnitFromSi(val, numberField.getMetric());
-								}
-							}
+							val = UnitsUtil.convertToDisplayUnit(val, numberField);
 						}
 						else if (field.getDataTypeEnum() == FieldType.FILE && val != null ) {
 							if (fileIds == null) {

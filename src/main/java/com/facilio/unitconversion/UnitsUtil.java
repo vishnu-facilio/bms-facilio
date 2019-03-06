@@ -14,6 +14,7 @@ import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.bmsconsole.modules.NumberField;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
 import com.udojava.evalex.Expression;
@@ -72,6 +73,21 @@ public class UnitsUtil {
 		}
 		Unit orgDisplayUnit = getOrgDisplayUnit(AccountUtil.getCurrentOrg().getOrgId(),from.getMetric().getMetricId());
 		return convert(value, from, orgDisplayUnit);
+	}
+	public static Object convertToDisplayUnit(Object value,NumberField numberField) throws Exception {
+
+		if(numberField.getMetric() > 0 && value != null) {
+			if(numberField.getUnitId() > 0) {
+				Unit siUnit = Unit.valueOf(Metric.valueOf(numberField.getMetric()).getSiUnitId());
+				value = UnitsUtil.convert(value, siUnit.getUnitId(), numberField.getUnitId());
+			}
+			else {
+				value = UnitsUtil.convertToOrgDisplayUnitFromSi(value, numberField.getMetric());
+			}
+			return Double.parseDouble(value.toString());
+		}
+		
+		return value;
 	}
 	
 	public static Double convertToOrgDisplayUnitFromSi(Object value,int metricId) throws Exception {
