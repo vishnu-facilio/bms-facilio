@@ -251,7 +251,7 @@ public class MLForecastingJob extends FacilioJob
 					 Chain chain = TransactionChainFactory.onlyAddOrUpdateReadingsChain();
 					 chain.execute(context);
 					 
-					 ReadingContext lastReading = predictReadingList.get(predictReadingList.size());
+					 ReadingContext lastReading = predictReadingList.get(predictReadingList.size()-1);
 					 GenericDeleteRecordBuilder deleteRecordBuilder = new GenericDeleteRecordBuilder();
 					 deleteRecordBuilder.table(predictField.getModule().getTableName())
 		             .andCustomWhere("orgid = ?", pc.getOrgId())
