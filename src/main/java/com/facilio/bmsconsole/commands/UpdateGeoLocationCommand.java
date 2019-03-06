@@ -34,29 +34,36 @@ public class UpdateGeoLocationCommand implements Command {
 		String location = (String) context.get(FacilioConstants.ContextNames.LOCATION);
 		
 		if (asset != null && asset.isGeoLocationEnabled() && StringUtils.isNotEmpty(location)) {
-			String[] latLng = location.trim().split("\\s*,\\s*");
-			double lat = Double.parseDouble(latLng[0]);
-			double lng = Double.parseDouble(latLng[1]);
-
 			JSONObject info = null;
-			String newLocation = null;
-			if (!asset.isDesignatedLocation() && !isWithInLocation(asset.getCurrentLocation(), lat, lng, asset.getBoundaryRadius())) {
-				newLocation = location;
-			}
-			
+			String newLocation = null, geoLocation = null;
 			Boolean isDesignatedLocation = null;
-			double distanceMoved = getDistance(asset.getGeoLocation(), lat, lng);
-			boolean isWithinGeoLocation = StringUtils.isNoneEmpty(asset.getGeoLocation()) && distanceMoved <= asset.getBoundaryRadius();
-			if (!asset.isDesignatedLocation()) {
-				if (isWithinGeoLocation) {
-					newLocation = asset.getGeoLocation();
-					isDesignatedLocation = true;
-					distanceMoved = -1;
-				}
-			}
-			else if (!isWithinGeoLocation) {
+			double distanceMoved = -1;
+			if (StringUtils.isEmpty(asset.getGeoLocation())) {
+				geoLocation = location;
 				newLocation = location;
-				isDesignatedLocation = false;
+			}
+			else {
+				String[] latLng = location.trim().split("\\s*,\\s*");
+				double lat = Double.parseDouble(latLng[0]);
+				double lng = Double.parseDouble(latLng[1]);
+	
+				if (!asset.isDesignatedLocation() && !isWithInLocation(asset.getCurrentLocation(), lat, lng, asset.getBoundaryRadius())) {
+					newLocation = location;
+				}
+				
+				distanceMoved = getDistance(asset.getGeoLocation(), lat, lng);
+				boolean isWithinGeoLocation = StringUtils.isNoneEmpty(asset.getGeoLocation()) && distanceMoved <= asset.getBoundaryRadius();
+				if (!asset.isDesignatedLocation()) {
+					if (isWithinGeoLocation) {
+						newLocation = asset.getGeoLocation();
+						isDesignatedLocation = true;
+						distanceMoved = -1;
+					}
+				}
+				else if (!isWithinGeoLocation) {
+					newLocation = location;
+					isDesignatedLocation = false;
+				}
 			}
 			
 			if (newLocation != null) {
@@ -68,7 +75,7 @@ public class UpdateGeoLocationCommand implements Command {
 				if (isDesignatedLocation != null) {
 					info.put("designatedLocation", isDesignatedLocation);
 				}
-				updateAsset(asset, newLocation, isDesignatedLocation);
+				updateAsset(asset, geoLocation, newLocation, isDesignatedLocation);
 				CommonCommandUtil.addActivityToContext(asset.getId(), -1, AssetActivityType.LOCATION, info, (FacilioContext) context);
 			}
 		}
@@ -115,16 +122,20 @@ public class UpdateGeoLocationCommand implements Command {
 		return FacilioUtil.calculateHaversineDistance(site.getLocation().getLat(), site.getLocation().getLng(), lat, lng) <= MAX_DISTANCE;
 	}
 	
-	private void updateAsset(AssetContext asset, String location, Boolean isDesignatedLocation) throws Exception {
+	private void updateAsset(AssetContext asset, String geoLocation, String newLocation, Boolean isDesignatedLocation) throws Exception {
 		AssetContext updateAsset = new AssetContext();
-		updateAsset.setCurrentLocation(location);
-		asset.setCurrentLocation(location);
+		updateAsset.setCurrentLocation(newLocation);
+		asset.setCurrentLocation(newLocation);
 		
+		if (geoLocation != null) {
+			updateAsset.setGeoLocation(geoLocation);
+			asset.setGeoLocation(geoLocation);
+			isDesignatedLocation = true;
+		}
 		if (isDesignatedLocation != null) {
 			updateAsset.setDesignatedLocation(isDesignatedLocation);
 			asset.setDesignatedLocation(isDesignatedLocation);
 		}
-		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ASSET);
 		UpdateRecordBuilder<AssetContext> updateBuilder = new UpdateRecordBuilder<AssetContext>()
