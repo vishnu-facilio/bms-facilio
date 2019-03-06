@@ -535,9 +535,9 @@ public class SpaceAPI {
 			List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.BASE_SPACE);
 			Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 			Criteria criteria = new Criteria();
-			criteria.addOrCondition(CriteriaAPI.getCondition(fieldMap.get("spaceId1"),spaceIDs , NumberOperators.EQUALS));
-			criteria.addOrCondition(CriteriaAPI.getCondition(fieldMap.get("spaceId2"),spaceIDs , NumberOperators.EQUALS));
-			criteria.addOrCondition(CriteriaAPI.getCondition(fieldMap.get("spaceId3"),spaceIDs , NumberOperators.EQUALS));
+			criteria.addOrCondition(CriteriaAPI.getCondition(fieldMap.get("space1"),spaceIDs , NumberOperators.EQUALS));
+			criteria.addOrCondition(CriteriaAPI.getCondition(fieldMap.get("space2"),spaceIDs , NumberOperators.EQUALS));
+			criteria.addOrCondition(CriteriaAPI.getCondition(fieldMap.get("space3"),spaceIDs , NumberOperators.EQUALS));
 			
 			
 			SelectRecordsBuilder<BaseSpaceContext> selectBuilder = new SelectRecordsBuilder<BaseSpaceContext>()

@@ -39,27 +39,4 @@ public class BuildingContext extends BaseSpaceContext {
 	public void setGrossFloorArea(double grossFloorArea) {
 		this.grossFloorArea = grossFloorArea;
 	}
-	
-	private SiteContext site;
-	public SiteContext getSite() {
-		if ((site == null || site.getId() == -1) && super.getSiteId() != -1) {
-			site = new SiteContext();
-			site.setId(super.getSiteId());
-		}
-		return site;
-	}
-	public void setSite(SiteContext site) {
-		this.site = site;
-		if(site != null) {
-			super.setSiteId(site.getId());
-		}
-	}
-	
-	@Override
-	public long getSiteId() {
-		if(site != null) {
-			return site.getId();
-		}
-		return super.getSiteId();
-	}
 }
