@@ -63,7 +63,7 @@ public class StockedToolsReturnQuantityRollupCommand implements Command {
 			}
 			List<Long> stockedToolsIds = new ArrayList<Long>();
 			stockedToolsIds.addAll(uniqueStockedToolsIds);
-			context.put(FacilioConstants.ContextNames.STOCKED_TOOLS_IDS, stockedToolsIds);
+			context.put(FacilioConstants.ContextNames.TOOL_IDS, stockedToolsIds);
 		}
 
 		return false;

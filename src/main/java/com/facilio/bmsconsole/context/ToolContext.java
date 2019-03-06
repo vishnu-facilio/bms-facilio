@@ -3,17 +3,17 @@ package com.facilio.bmsconsole.context;
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.unitconversion.Unit;
 
-public class StockedToolsContext extends ModuleBaseWithCustomFields {
+public class ToolContext extends ModuleBaseWithCustomFields {
 	private static final long serialVersionUID = 1L;
 
-	private ToolTypesContext tool;
+	private ToolTypesContext toolType;
 
-	public ToolTypesContext getTool() {
-		return tool;
+	public ToolTypesContext getToolType() {
+		return toolType;
 	}
 
-	public void setTool(ToolTypesContext tool) {
-		this.tool = tool;
+	public void setToolType(ToolTypesContext tool) {
+		this.toolType = tool;
 	}
 
 	private StoreRoomContext storeRoom;
@@ -26,13 +26,13 @@ public class StockedToolsContext extends ModuleBaseWithCustomFields {
 		this.storeRoom = storeRoom;
 	}
 
-	private StockedToolsStatusContext status;
+	private ToolStatusContext status;
 
-	public StockedToolsStatusContext getStatus() {
+	public ToolStatusContext getStatus() {
 		return status;
 	}
 
-	public void setStatus(StockedToolsStatusContext status) {
+	public void setStatus(ToolStatusContext status) {
 		this.status = status;
 	}
 

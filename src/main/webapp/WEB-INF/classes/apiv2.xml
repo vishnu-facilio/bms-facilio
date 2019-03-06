@@ -579,14 +579,14 @@
 			<action name="deleteToolTypesStatus" class="com.facilio.bmsconsole.actions.PickListAction"
 				method="deleteToolTypesStatus">
 			</action>
-			<action name="addStockedToolsStatus" class="com.facilio.bmsconsole.actions.PickListAction"
-				method="addStockedToolsStatus">
+			<action name="addToolStatus" class="com.facilio.bmsconsole.actions.PickListAction"
+				method="addToolStatus">
 			</action>
-			<action name="updateStockedToolsStatus" class="com.facilio.bmsconsole.actions.PickListAction"
-				method="updateStockedToolsStatus">
+			<action name="updateToolStatus" class="com.facilio.bmsconsole.actions.PickListAction"
+				method="updateToolStatus">
 			</action>
-			<action name="deleteStockedToolsStatus" class="com.facilio.bmsconsole.actions.PickListAction"
-				method="deleteStockedToolsStatus">
+			<action name="deleteToolStatus" class="com.facilio.bmsconsole.actions.PickListAction"
+				method="deleteToolStatus">
 			</action>
 			
 			<action name="addItemStatus" class="com.facilio.bmsconsole.actions.PickListAction"
@@ -1311,29 +1311,29 @@
 		</action>
 	</package>
 	
-	<package name="stockedToolsApi" namespace="/api/v2/stockedTools"
+	<package name="ToolApi" namespace="/api/v2/tool"
 		extends="v2Api">
 		<action name="add"
-			class="com.facilio.bmsconsole.actions.StockedToolsAction" method="addStockedTools">
+			class="com.facilio.bmsconsole.actions.ToolAction" method="addTool">
 			<param name="moduleName">asset</param>
 			<param name="permission">CREATE</param>
 		</action>
 		<action name="update"
-			class="com.facilio.bmsconsole.actions.StockedToolsAction" method="updateStockedTools">
+			class="com.facilio.bmsconsole.actions.ToolAction" method="updateTool">
 			<param name="moduleName">asset</param>
 			<param name="permission">UPDATE</param>
 		</action> 
 		<action name="*"
-			class="com.facilio.bmsconsole.actions.StockedToolsAction" method="stockedToolsDetails">
+			class="com.facilio.bmsconsole.actions.ToolAction" method="toolDetails">
 			<param name="moduleName">asset</param>
 			<param name="permission">READ</param>
-			<param name = "stockedToolId">{1}</param>
+			<param name = "toolId">{1}</param>
 		</action>
 	</package>
-	<package name="stockedToolsListApiv2" namespace="/api/v2/stockedTools/view"
+	<package name="toolListApiv2" namespace="/api/v2/tool/view"
 		extends="v2Api">
-		<action name="*" class="com.facilio.bmsconsole.actions.StockedToolsAction"
-			method="stockedToolsList">
+		<action name="*" class="com.facilio.bmsconsole.actions.ToolAction"
+			method="toolList">
 			<param name="moduleName">asset</param>
 			<param name="permission">READ</param>
 			<param name="viewName">{1}</param>
@@ -1394,33 +1394,33 @@
 		</action>
 	</package>
 	
-	<package name="itemVendorsApi" namespace="/api/v2/itemVendors"
+	<package name="itemTypesVendorsApi" namespace="/api/v2/itemTypesVendors"
 		extends="v2Api">
 		<action name="delete"
-			class="com.facilio.bmsconsole.actions.ItemVendorActions" method="deleteItemVendors">
+			class="com.facilio.bmsconsole.actions.ItemTypesVendorActions" method="deleteItemVendors">
 			<param name="moduleName">asset</param>
 			<param name="permission">CREATE</param>
 		</action>
 		
 		<action name="update"
-			class="com.facilio.bmsconsole.actions.ItemVendorActions" method="udpateItemVendors">
+			class="com.facilio.bmsconsole.actions.ItemTypesVendorActions" method="udpateItemVendors">
 			<param name="moduleName">asset</param>
 			<param name="permission">CREATE</param>
 		</action>
 		<action name="add"
-			class="com.facilio.bmsconsole.actions.ItemVendorActions" method="addItemVendors">
+			class="com.facilio.bmsconsole.actions.ItemTypesVendorActions" method="addItemVendors">
 			<param name="moduleName">asset</param>
 			<param name="permission">CREATE</param>
 		</action>
 	</package>
 	
-	<package name="itemVendorsList" namespace="/api/v2/itemVendors/item"
+	<package name="itemVendorsList" namespace="/api/v2/itemTypesVendors/item"
 		extends="v2Api">
 		<action name="*"
-			class="com.facilio.bmsconsole.actions.ItemVendorActions" method="itemVendorsList">
+			class="com.facilio.bmsconsole.actions.ItemTypesVendorActions" method="itemVendorsList">
 			<param name="moduleName">asset</param>
 			<param name="permission">READ</param>
-			<param name = "itemId">{1}</param>
+			<param name = "itemTypesId">{1}</param>
 		</action>
 	</package>
 	
@@ -1441,7 +1441,7 @@
 	<package name="itemTransactionsList" namespace="/api/v2/itemTransactions/item"
 		extends="v2Api">
 		<action name="*"
-			class="com.facilio.bmsconsole.actions.ItemVendorActions" method="itemVendorsList">
+			class="com.facilio.bmsconsole.actions.ItemTransactionsAction" method="itemVendorsList">
 			<param name="moduleName">asset</param>
 			<param name="permission">READ</param>
 			<param name = "itemId">{1}</param>

@@ -250,7 +250,7 @@ public class ViewFactory {
 		order = 1;
 		views = new LinkedHashMap<>();
 		views.put("all", getAllStockedTools().setOrder(order++));
-		viewsMap.put(FacilioConstants.ContextNames.STOCKED_TOOLS, views);
+		viewsMap.put(FacilioConstants.ContextNames.TOOL, views);
 		return viewsMap;
 	}
 

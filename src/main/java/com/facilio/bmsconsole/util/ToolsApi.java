@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.PurchasedItemContext;
-import com.facilio.bmsconsole.context.StockedToolsContext;
+import com.facilio.bmsconsole.context.ToolContext;
 import com.facilio.bmsconsole.context.ToolTypesContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.FacilioField;

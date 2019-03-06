@@ -7,8 +7,8 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.ItemVendorsContext;
-import com.facilio.bmsconsole.context.StockedToolsContext;
+import com.facilio.bmsconsole.context.ItemTypesVendorsContext;
+import com.facilio.bmsconsole.context.ToolContext;
 import com.facilio.bmsconsole.context.StoreRoomContext;
 import com.facilio.bmsconsole.context.ToolTypesContext;
 import com.facilio.bmsconsole.context.VendorContext;
@@ -35,15 +35,15 @@ public class GetItemVendorsList implements Command{
 			List<FacilioField> workorderItemsFields = modBean.getAllFields(moduleName);
 			Map<String, FacilioField> workorderItemsFieldMap = FieldFactory.getAsMap(workorderItemsFields);
 			long itemId = (long) context.get(FacilioConstants.ContextNames.ITEM_TYPES_ID);
-			SelectRecordsBuilder<ItemVendorsContext> selectBuilder = new SelectRecordsBuilder<ItemVendorsContext>()
+			SelectRecordsBuilder<ItemTypesVendorsContext> selectBuilder = new SelectRecordsBuilder<ItemTypesVendorsContext>()
 					.select(workorderItemsFields).table(workorderItemsModule.getTableName())
-					.moduleName(workorderItemsModule.getName()).beanClass(ItemVendorsContext.class)
-					.andCondition(CriteriaAPI.getCondition(workorderItemsFieldMap.get("item"),
+					.moduleName(workorderItemsModule.getName()).beanClass(ItemTypesVendorsContext.class)
+					.andCondition(CriteriaAPI.getCondition(workorderItemsFieldMap.get("itemType"),
 							String.valueOf(itemId), PickListOperators.IS));
 
-			List<ItemVendorsContext> ietmVendors = selectBuilder.get();
+			List<ItemTypesVendorsContext> ietmVendors = selectBuilder.get();
 			if (ietmVendors != null && !ietmVendors.isEmpty()) {
-				for (ItemVendorsContext itemVendor : ietmVendors) {
+				for (ItemTypesVendorsContext itemVendor : ietmVendors) {
 					VendorContext vendor = getVendor(itemVendor.getVendor().getId());
 					itemVendor.setVendor(vendor);
 				}

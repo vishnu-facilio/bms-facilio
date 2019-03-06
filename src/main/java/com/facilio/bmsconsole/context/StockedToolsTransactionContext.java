@@ -7,13 +7,13 @@ import com.facilio.bmsconsole.util.TransactionType;
 public class StockedToolsTransactionContext extends ModuleBaseWithCustomFields {
 	private static final long serialVersionUID = 1L;
 
-	private StockedToolsContext stockedTool;
+	private ToolContext stockedTool;
 
-	public StockedToolsContext getStockedTool() {
+	public ToolContext getStockedTool() {
 		return stockedTool;
 	}
 
-	public void setStockedTool(StockedToolsContext stockedTool) {
+	public void setStockedTool(ToolContext stockedTool) {
 		this.stockedTool = stockedTool;
 	}
 

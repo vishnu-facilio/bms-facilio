@@ -9,7 +9,7 @@ import org.apache.commons.chain.Context;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ItemContext;
 import com.facilio.bmsconsole.context.ItemTypesContext;
-import com.facilio.bmsconsole.context.StockedToolsContext;
+import com.facilio.bmsconsole.context.ToolContext;
 import com.facilio.bmsconsole.context.StoreRoomContext;
 import com.facilio.bmsconsole.context.ToolTypesContext;
 import com.facilio.bmsconsole.context.WorkorderItemContext;
@@ -47,12 +47,12 @@ public class GetWorkorderToolsListCommand implements Command {
 			List<WorkorderToolsContext> workorderTools = selectBuilder.get();
 			if (workorderTools != null && !workorderTools.isEmpty()) {
 				for (WorkorderToolsContext woTools : workorderTools) {
-					StockedToolsContext stockedTool = geStockedTools(woTools.getStockedTool().getId());
+					ToolContext stockedTool = geStockedTools(woTools.getStockedTool().getId());
 					StoreRoomContext storeRoom = StoreroomApi
 							.getStoreRoom(stockedTool.getStoreRoom().getId());
 					stockedTool.setStoreRoom(storeRoom);
-					ToolTypesContext tool = ToolsApi.getTool(stockedTool.getTool().getId());
-					stockedTool.setTool(tool);
+					ToolTypesContext tool = ToolsApi.getTool(stockedTool.getToolType().getId());
+					stockedTool.setToolType(tool);
 					woTools.setStockedTool(stockedTool);
 				}
 			}
@@ -61,21 +61,21 @@ public class GetWorkorderToolsListCommand implements Command {
 		return false;
 	}
 	
-	public static StockedToolsContext geStockedTools(long id) throws Exception
+	public static ToolContext geStockedTools(long id) throws Exception
 	{
 		if(id <= 0) {
 			return null;
 		}
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.STOCKED_TOOLS);
-		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.STOCKED_TOOLS);
-		SelectRecordsBuilder<StockedToolsContext> selectBuilder = new SelectRecordsBuilder<StockedToolsContext>()
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.TOOL);
+		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.TOOL);
+		SelectRecordsBuilder<ToolContext> selectBuilder = new SelectRecordsBuilder<ToolContext>()
 				.select(fields)
 				.table(module.getTableName())
 				.moduleName(module.getName())
-				.beanClass(StockedToolsContext.class)
+				.beanClass(ToolContext.class)
 				.andCondition(CriteriaAPI.getIdCondition(id, module));
-		List<StockedToolsContext> inventries =  selectBuilder.get();
+		List<ToolContext> inventries =  selectBuilder.get();
 		if(inventries!=null &&!inventries.isEmpty()) {
 			return inventries.get(0);
 		}

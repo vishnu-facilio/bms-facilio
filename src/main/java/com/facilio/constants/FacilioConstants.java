@@ -37,7 +37,7 @@ import com.facilio.bmsconsole.context.InventoryVendorContext;
 import com.facilio.bmsconsole.context.ItemContext;
 import com.facilio.bmsconsole.context.ItemTypesCategoryContext;
 import com.facilio.bmsconsole.context.ItemTypesStatusContext;
-import com.facilio.bmsconsole.context.ItemVendorsContext;
+import com.facilio.bmsconsole.context.ItemTypesVendorsContext;
 import com.facilio.bmsconsole.context.ItemTypesContext;
 import com.facilio.bmsconsole.context.LocationContext;
 import com.facilio.bmsconsole.context.MLAlarmContext;
@@ -50,9 +50,9 @@ import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.bmsconsole.context.SkillContext;
 import com.facilio.bmsconsole.context.SpaceCategoryContext;
 import com.facilio.bmsconsole.context.SpaceContext;
-import com.facilio.bmsconsole.context.StockedToolsContext;
+import com.facilio.bmsconsole.context.ToolContext;
 import com.facilio.bmsconsole.context.StockedToolsReturnTrackingContext;
-import com.facilio.bmsconsole.context.StockedToolsStatusContext;
+import com.facilio.bmsconsole.context.ToolStatusContext;
 import com.facilio.bmsconsole.context.StockedToolsTransactionContext;
 import com.facilio.bmsconsole.context.StoreRoomContext;
 import com.facilio.bmsconsole.context.TaskContext;
@@ -791,11 +791,11 @@ public class FacilioConstants {
 		public static final String WORKORDER_ITEMS = "workorderItem";
 		public static final String ITEM_TRANSACTIONS = "itemTransactions";
 		
-		public static final String STOCKED_TOOL_LIST = "stockedToolsList";
-		public static final String STOCKED_TOOLS = "stockedTools";
-		public static final String STOCKED_TOOLS_ID = "stockedToolsId";
-		public static final String STOCKED_TOOLS_IDS = "stockedToolsIds";
-		public static final String STOCKED_TOOLS_STATUS = "stockedToolsStatus";
+		public static final String TOOL_LIST = "toolList";
+		public static final String TOOL = "tool";
+		public static final String TOOL_ID = "toolId";
+		public static final String TOOL_IDS = "toolIds";
+		public static final String TOOL_STATUS = "toolStatus";
 		
 		public static final String WORKORDER_TOOLS = "workorderTools";
 		public static final String STOCKED_TOOLS_TRANSACTIONS = "stockedToolsTransactions";
@@ -881,12 +881,12 @@ public class FacilioConstants {
 			classMap.put(PURCHASED_ITEM, PurchasedItemContext.class);
 			classMap.put(WORKORDER_ITEMS, WorkorderItemContext.class);
 			classMap.put(ITEM_TRANSACTIONS, ItemTransactionsContext.class);
-			classMap.put(STOCKED_TOOLS, StockedToolsContext.class);
-			classMap.put(STOCKED_TOOLS_STATUS, StockedToolsStatusContext.class);
+			classMap.put(TOOL, ToolContext.class);
+			classMap.put(TOOL_STATUS, ToolStatusContext.class);
 			classMap.put(WORKORDER_TOOLS, WorkorderToolsContext.class);
 			classMap.put(STOCKED_TOOLS_TRANSACTIONS, StockedToolsTransactionContext.class);
 			classMap.put(STOCKED_TOOLS_RETURN_TRACKING, StockedToolsReturnTrackingContext.class);
-			classMap.put(ITEM_VENDORS, ItemVendorsContext.class);
+			classMap.put(ITEM_VENDORS, ItemTypesVendorsContext.class);
 			return classMap;
 		}
 		

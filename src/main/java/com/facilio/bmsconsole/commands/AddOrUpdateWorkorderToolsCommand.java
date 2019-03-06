@@ -8,7 +8,7 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.StockedToolsContext;
+import com.facilio.bmsconsole.context.ToolContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.context.WorkorderToolsContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
@@ -38,7 +38,7 @@ public class AddOrUpdateWorkorderToolsCommand implements Command {
 			long parentId = workorderTools.get(0).getParentId();
 			for (WorkorderToolsContext workorderTool : workorderTools) {
 				WorkOrderContext workorder = getWorkorder(parentId);
-				StockedToolsContext stockedTools = getStockedTools(workorderTool.getStockedTool().getId());
+				ToolContext stockedTools = getStockedTools(workorderTool.getStockedTool().getId());
 				if (stockedTools.getQuantity() < workorderTool.getQuantity()) {
 					throw new IllegalStateException("Insufficient quantity in inventory!");
 				} else {
@@ -91,8 +91,8 @@ public class AddOrUpdateWorkorderToolsCommand implements Command {
 				addWorkorderTools(workorderToolsModule, workorderToolsFields, toolsToBeAdded);
 			}
 			context.put(FacilioConstants.ContextNames.PARENT_ID, workorderTools.get(0).getParentId());
-			context.put(FacilioConstants.ContextNames.STOCKED_TOOLS_ID, workorderTools.get(0).getStockedTool().getId());
-			context.put(FacilioConstants.ContextNames.STOCKED_TOOLS_IDS,
+			context.put(FacilioConstants.ContextNames.TOOL_ID, workorderTools.get(0).getStockedTool().getId());
+			context.put(FacilioConstants.ContextNames.TOOL_IDS,
 					Collections.singletonList(workorderTools.get(0).getStockedTool().getId()));
 			context.put(FacilioConstants.ContextNames.RECORD_LIST, workorderToolslist);
 			context.put(FacilioConstants.ContextNames.WORKORDER_COST_TYPE, 2);
@@ -118,16 +118,16 @@ public class AddOrUpdateWorkorderToolsCommand implements Command {
 		return null;
 	}
 
-	public static StockedToolsContext getStockedTools(long id) throws Exception {
+	public static ToolContext getStockedTools(long id) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.STOCKED_TOOLS);
-		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.STOCKED_TOOLS);
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.TOOL);
+		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.TOOL);
 
-		SelectRecordsBuilder<StockedToolsContext> selectBuilder = new SelectRecordsBuilder<StockedToolsContext>()
+		SelectRecordsBuilder<ToolContext> selectBuilder = new SelectRecordsBuilder<ToolContext>()
 				.select(fields).table(module.getTableName()).moduleName(module.getName())
-				.beanClass(StockedToolsContext.class).andCustomWhere(module.getTableName() + ".ID = ?", id);
+				.beanClass(ToolContext.class).andCustomWhere(module.getTableName() + ".ID = ?", id);
 
-		List<StockedToolsContext> stockedTools = selectBuilder.get();
+		List<ToolContext> stockedTools = selectBuilder.get();
 
 		if (stockedTools != null && !stockedTools.isEmpty()) {
 			return stockedTools.get(0);

@@ -358,7 +358,7 @@ public class FormFactory {
 		FacilioForm form = new FacilioForm();
 		form.setDisplayName("STOCKED TOOLS");
 		form.setName("web_default");
-		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.STOCKED_TOOLS));
+		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.TOOL));
 		form.setLabelPosition(LabelPosition.TOP);
 		form.setFields(getStockedToolsFormField());
 		form.setFormType(FormType.WEB);

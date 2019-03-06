@@ -9,7 +9,7 @@ import org.apache.commons.chain.Context;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.StockedToolsContext;
+import com.facilio.bmsconsole.context.ToolContext;
 import com.facilio.bmsconsole.context.StockedToolsTransactionContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
@@ -31,28 +31,28 @@ public class StockedToolQuantityRollUpCommand implements Command{
 		// TODO Auto-generated method stub
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.STOCKED_TOOLS);
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.TOOL);
 		List<FacilioField> stockedToolsFields = modBean
-				.getAllFields(FacilioConstants.ContextNames.STOCKED_TOOLS);
+				.getAllFields(FacilioConstants.ContextNames.TOOL);
 		
-		List<Long> stockedToolsIds = (List<Long>) context.get(FacilioConstants.ContextNames.STOCKED_TOOLS_IDS);
+		List<Long> stockedToolsIds = (List<Long>) context.get(FacilioConstants.ContextNames.TOOL_IDS);
 		
 		if(stockedToolsIds!=null && !stockedToolsIds.isEmpty()) {
 			for(long stId: stockedToolsIds) {				
-				SelectRecordsBuilder<StockedToolsContext> selectBuilder = new SelectRecordsBuilder<StockedToolsContext>()
+				SelectRecordsBuilder<ToolContext> selectBuilder = new SelectRecordsBuilder<ToolContext>()
 						.select(stockedToolsFields).table(module.getTableName()).moduleName(module.getName())
-						.beanClass(StockedToolsContext.class)
+						.beanClass(ToolContext.class)
 						.andCondition(CriteriaAPI.getIdCondition(stId, module));
 				
-				List<StockedToolsContext> stockedTools = selectBuilder.get();
-				StockedToolsContext stools = new StockedToolsContext();
+				List<ToolContext> stockedTools = selectBuilder.get();
+				ToolContext stools = new ToolContext();
 				if (stockedTools != null && !stockedTools.isEmpty()) {
 					stools = stockedTools.get(0);
 					double availableQty = stools.getQuantity() - getTotalReturnQuantity(stId);
 					stools.setCurrentQuantity(availableQty);
 				}
 
-				UpdateRecordBuilder<StockedToolsContext> updateBuilder = new UpdateRecordBuilder<StockedToolsContext>()
+				UpdateRecordBuilder<ToolContext> updateBuilder = new UpdateRecordBuilder<ToolContext>()
 						.module(module).fields(modBean.getAllFields(module.getName()))
 						.andCondition(CriteriaAPI.getIdCondition(stools.getId(), module));
 				

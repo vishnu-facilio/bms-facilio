@@ -1529,24 +1529,24 @@ public class TransactionChainFactory {
 			return c;
 		}
 		
-		public static Chain getAddStockedToolsStatusChain() {
+		public static Chain getAddToolStatusChain() {
 			Chain c = getDefaultChain();
-			c.addCommand(SetTableNamesCommand.getForStockedToolsStatus());
+			c.addCommand(SetTableNamesCommand.getForToolStatus());
 			c.addCommand(new GenericAddModuleDataCommand());
 			c.addCommand(new ExecuteAllWorkflowsCommand());
 			return c;
 		}
 
-		public static Chain getUpdateStockedToolsStatusChain() {
+		public static Chain getUpdateToolStatusChain() {
 			Chain c = getDefaultChain();
-			c.addCommand(SetTableNamesCommand.getForStockedToolsStatus());
+			c.addCommand(SetTableNamesCommand.getForToolStatus());
 			c.addCommand(new GenericUpdateModuleDataCommand());
 			return c;
 		}
 
-		public static Chain getDeleteStockedToolsStatusChain() {
+		public static Chain getDeleteToolStatusChain() {
 			Chain c = getDefaultChain();
-			c.addCommand(SetTableNamesCommand.getForStockedToolsStatus());
+			c.addCommand(SetTableNamesCommand.getForToolStatus());
 			c.addCommand(new GenericDeleteModuleDataCommand());
 			return c;
 		}
@@ -1683,17 +1683,17 @@ public class TransactionChainFactory {
 			return c;
 		}
 		
-		public static Chain getAddStockedToolsChain() {
+		public static Chain getAddToolChain() {
 			Chain c = getDefaultChain();
-			c.addCommand(SetTableNamesCommand.getForStockedTools());
+			c.addCommand(SetTableNamesCommand.getForTool());
 			c.addCommand(new GenericAddModuleDataCommand());
 			c.addCommand(new ExecuteAllWorkflowsCommand());
 			return c;
 		}
 		
-		public static Chain getUpdateStockedToolsChain() {
+		public static Chain getUpdateToolChain() {
 			Chain c = getDefaultChain();
-			c.addCommand(SetTableNamesCommand.getForStockedTools());
+			c.addCommand(SetTableNamesCommand.getForTool());
 			c.addCommand(new GenericUpdateModuleDataCommand());
 			return c;
 		}
@@ -1763,23 +1763,23 @@ public class TransactionChainFactory {
 			return c;
 		}
 
-		public static Chain getAddItemVendorsChain() {
+		public static Chain getAddItemTypesVendorsChain() {
 			Chain c = getDefaultChain();
-			c.addCommand(SetTableNamesCommand.getForItemVendors());
+			c.addCommand(SetTableNamesCommand.getForItemTypesVendors());
 			c.addCommand(new GenericAddModuleDataListCommand());
 			return c;
 		}
 		
-		public static Chain getUpdateItemVendorsChain() {
+		public static Chain getUpdateItemTypesVendorsChain() {
 			Chain c = getDefaultChain();
-			c.addCommand(SetTableNamesCommand.getForItemVendors());
+			c.addCommand(SetTableNamesCommand.getForItemTypesVendors());
 			c.addCommand(new GenericUpdateListModuleDataCommand());
 			return c;
 		}
 		
-		public static Chain getDeleteItemVendorsChain() {
+		public static Chain getDeleteItemTypesVendorsChain() {
 			Chain c = getDefaultChain();
-			c.addCommand(SetTableNamesCommand.getForItemVendors());
+			c.addCommand(SetTableNamesCommand.getForItemTypesVendors());
 			c.addCommand(new GenericDeleteModuleDataCommand());
 			return c;
 		}

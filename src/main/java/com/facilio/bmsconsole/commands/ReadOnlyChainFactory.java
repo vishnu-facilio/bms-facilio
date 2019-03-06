@@ -497,7 +497,7 @@ public class ReadOnlyChainFactory {
 	
 	public static Chain fetchStockedToolsDetails() {
 		Chain c = getDefaultChain();
-		c.addCommand(SetTableNamesCommand.getForStockedTools());
+		c.addCommand(SetTableNamesCommand.getForTool());
 		c.addCommand(new GenericGetModuleDataDetailCommand());
 		c.addCommand(new GetStockedToolsDetailsCommand());
 		return c;
@@ -505,7 +505,7 @@ public class ReadOnlyChainFactory {
 	
 	public static Chain getStockedToolsList() {
 		Chain c = getDefaultChain();
-		c.addCommand(SetTableNamesCommand.getForStockedTools());
+		c.addCommand(SetTableNamesCommand.getForTool());
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new GenerateCriteriaFromFilterCommand());
 		c.addCommand(new GenerateSearchConditionCommand());
@@ -539,7 +539,7 @@ public class ReadOnlyChainFactory {
 
 	public static Chain getItemVendorsList(){
 		Chain c = getDefaultChain();
-		c.addCommand(SetTableNamesCommand.getForItemVendors());
+		c.addCommand(SetTableNamesCommand.getForItemTypesVendors());
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new GetItemVendorsList());
 		return c;

@@ -184,8 +184,8 @@ public class SetTableNamesCommand implements Command {
 		return new SetTableNamesCommand("toolTypesStatus", "Tool_types_status");
 	}
 	
-	public static SetTableNamesCommand getForStockedToolsStatus() {
-		return new SetTableNamesCommand("stockedToolsStatus", "Stocked_tools_status");
+	public static SetTableNamesCommand getForToolStatus() {
+		return new SetTableNamesCommand("toolStatus", "Tool_status");
 	}
 	
 	public static SetTableNamesCommand getForToolTypes() {
@@ -216,8 +216,8 @@ public class SetTableNamesCommand implements Command {
 		return new SetTableNamesCommand("itemTransactions", "Item_Transactions");
 	}
 	
-	public static SetTableNamesCommand getForStockedTools() {
-		return new SetTableNamesCommand("stockedTools", "Stocked_tools");
+	public static SetTableNamesCommand getForTool() {
+		return new SetTableNamesCommand("tool", "Tool");
 	}
 	
 	public static SetTableNamesCommand getForStockedToolsTranaction() {
@@ -228,7 +228,7 @@ public class SetTableNamesCommand implements Command {
 		return new SetTableNamesCommand("workorderTools", "Workorder_tools");
 	}
 	
-	public static SetTableNamesCommand getForItemVendors() {
+	public static SetTableNamesCommand getForItemTypesVendors() {
 		return new SetTableNamesCommand("itemVendors", "Item_vendors");
 	}
 	public static void setForModule (Context context, String moduleName) {
