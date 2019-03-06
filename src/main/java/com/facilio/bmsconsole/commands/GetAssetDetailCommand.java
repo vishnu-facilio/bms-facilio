@@ -14,6 +14,11 @@ public class GetAssetDetailCommand extends GenericGetModuleDataDetailCommand {
 	public boolean execute(Context context) throws Exception {
 		
 		if (context.get(FacilioConstants.ContextNames.ID) != null) {
+			String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
+			beanClassName = FacilioConstants.ContextNames.getClassFromModuleName(moduleName);
+			if (beanClassName == null) {
+				beanClassName = AssetContext.class;
+			}
 			super.execute(context);
 			AssetContext assetContext = (AssetContext) context.get(FacilioConstants.ContextNames.RECORD);
 			if (assetContext != null && assetContext.getId() > 0) {

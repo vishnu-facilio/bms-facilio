@@ -20,7 +20,7 @@ public class GetCategoryResourcesCommand implements Command {
 		// TODO Auto-generated method stub
 		
 		FacilioModule categoryReadingRelModule = (FacilioModule) context.get(FacilioConstants.ContextNames.CATEGORY_READING_PARENT_MODULE);
-		if (categoryReadingRelModule != null && !categoryReadingRelModule.equals(ModuleFactory.getAssetCategoryReadingRelModule())) { // Don't execute if its asset category reading module
+		if (categoryReadingRelModule != null) {
 			long category=(long)context.get(FacilioConstants.ContextNames.PARENT_CATEGORY_ID);
 			
 			List <? extends ResourceContext> resourceList= null;
@@ -29,6 +29,9 @@ public class GetCategoryResourcesCommand implements Command {
 				resourceList=SpaceAPI.getSpaceListOfCategory(category);
 			}
 			else if (categoryName.equals(FacilioConstants.ContextNames.ASSET_CATEGORY)) {
+				resourceList=AssetsAPI.getAssetListOfCategory(category);
+			}
+			else if (categoryReadingRelModule.equals(ModuleFactory.getAssetCategoryReadingRelModule())) {	// parent module will be asset module. so checking categoryreadingrelmodule
 				resourceList=AssetsAPI.getAssetListOfCategory(category);
 			}
 			

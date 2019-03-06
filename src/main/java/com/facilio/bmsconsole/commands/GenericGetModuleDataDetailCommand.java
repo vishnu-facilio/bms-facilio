@@ -19,6 +19,8 @@ import com.facilio.fw.BeanFactory;
 
 public class GenericGetModuleDataDetailCommand implements Command {
 
+	protected Class beanClassName;
+	
 	@SuppressWarnings("unchecked")
 	@Override
 	public boolean execute(Context context) throws Exception {
@@ -35,9 +37,11 @@ public class GenericGetModuleDataDetailCommand implements Command {
 			if (fields == null) {
 				fields = modBean.getAllFields(moduleName);
 			}
-			Class beanClassName = FacilioConstants.ContextNames.getClassFromModuleName(moduleName);
 			if (beanClassName == null) {
-				beanClassName = ModuleBaseWithCustomFields.class;
+				beanClassName = FacilioConstants.ContextNames.getClassFromModuleName(moduleName);
+				if (beanClassName == null) {
+					beanClassName = ModuleBaseWithCustomFields.class;
+				}
 			}
 			
 			SelectRecordsBuilder<ModuleBaseWithCustomFields> builder = new SelectRecordsBuilder<ModuleBaseWithCustomFields>()
