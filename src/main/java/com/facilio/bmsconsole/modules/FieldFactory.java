@@ -4323,6 +4323,7 @@ public class FieldFactory {
 		fields.add(getField("endTime", "END_TIME", module, FieldType.DATE_TIME));
 		fields.add(getField("isSystem", "IS_SYSTEM", module, FieldType.BOOLEAN));
 		fields.add(getField("historicalAlarm", "CALCULATE_HISTORICAL_ALARM", module, FieldType.BOOLEAN));
+		fields.add(getField("skipOptimisedWorkflow", "SKIP_OPTIMISED_WORKFLOW", module, FieldType.BOOLEAN));
 
 		return fields;
 	}

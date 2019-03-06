@@ -390,6 +390,10 @@ public class FormulaFieldAPI {
 	}
 	
 	public static void calculateHistoricalDataForSingleResource(long formulaId, long resourceId, DateRange range, boolean isSystem, boolean historicalAlarm) throws Exception {
+		calculateHistoricalDataForSingleResource(formulaId, resourceId, range, isSystem, historicalAlarm,false);
+	}
+	
+	public static void calculateHistoricalDataForSingleResource(long formulaId, long resourceId, DateRange range, boolean isSystem, boolean historicalAlarm,boolean skipOptimisedWorkflow) throws Exception {
 		Map<String, Object> prop = getFormulaFieldResourceJob(formulaId, resourceId, isSystem);
 		long id = -1;
 		if (prop == null) {
@@ -401,6 +405,7 @@ public class FormulaFieldAPI {
 			prop.put("endTime", range.getEndTime());
 			prop.put("isSystem", isSystem);
 			prop.put("historicalAlarm", historicalAlarm);
+			prop.put("skipOptimisedWorkflow", skipOptimisedWorkflow);
 			id = addFormulaFieldResourceJob(prop);
 		}
 		else {

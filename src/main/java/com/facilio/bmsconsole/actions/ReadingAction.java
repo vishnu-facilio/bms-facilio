@@ -894,6 +894,16 @@ public class ReadingAction extends FacilioAction {
 	public void setHistoricalAlarm(boolean historicalAlarm) {
 		this.historicalAlarm = historicalAlarm;
 	}
+	
+	private boolean skipOptimisedWorkflow = false;
+
+	public boolean isSkipOptimisedWorkflow() {
+		return skipOptimisedWorkflow;
+	}
+
+	public void setSkipOptimisedWorkflow(boolean skipOptimisedWorkflow) {
+		this.skipOptimisedWorkflow = skipOptimisedWorkflow;
+	}
 
 	public String calculateHistoryForFormula() throws Exception {
 		FacilioContext context = new FacilioContext();
@@ -901,6 +911,7 @@ public class ReadingAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.DATE_RANGE, new DateRange(startTime, endTime));
 		context.put(FacilioConstants.ContextNames.RESOURCE_ID, resourceId);
 		context.put(FacilioConstants.ContextNames.HISTORY_ALARM, historicalAlarm);
+		context.put(FacilioConstants.ContextNames.SKIP_OPTIMISED_WF, skipOptimisedWorkflow);
 		
 		Chain historicalCalculation = TransactionChainFactory.historicalFormulaCalculationChain();
 		historicalCalculation.execute(context);
