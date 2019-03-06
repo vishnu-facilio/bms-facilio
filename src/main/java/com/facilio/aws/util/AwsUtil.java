@@ -437,6 +437,7 @@ public class AwsUtil
 //			mailJson.put("subject", "Local - "+mailJson.get("subject"));
 			return;
 		}
+		logEmail(mailJson);
 		if(isSmtp()) {
 			EmailUtil.sendEmail(mailJson);
 		} else {
@@ -499,12 +500,7 @@ public class AwsUtil
 		}
 	}
 	
-	public static void sendEmail(JSONObject mailJson, Map<String,String> files) throws Exception  {
-		if(files == null || files.isEmpty()) {
-			sendEmail(mailJson);
-			return;
-		}
-		
+	private static void logEmail (JSONObject mailJson) throws Exception {
 		if (AccountUtil.getCurrentOrg() != null) {
 			String toAddress = (String)mailJson.get("to");
 			if (!"error+alert@facilio.com".equals(toAddress) && !"error@facilio.com".equals(toAddress)) {
@@ -514,7 +510,14 @@ public class AwsUtil
 				FacilioUtil.addNotificationLogger(NotificationType.EMAIL, toAddress, info);
 			}
 		}
-		
+	}
+	
+	public static void sendEmail(JSONObject mailJson, Map<String,String> files) throws Exception  {
+		if(files == null || files.isEmpty()) {
+			sendEmail(mailJson);
+			return;
+		}
+		logEmail(mailJson);
 		if(isSmtp()) {
 			EmailUtil.sendEmail(mailJson, files);
 		} else {
