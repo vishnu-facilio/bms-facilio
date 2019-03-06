@@ -32,6 +32,7 @@ public class UpdatePreventiveMaintenanceCommand implements Command{
 		if (newPm.getBaseSpaceId() == null || newPm.getBaseSpaceId() == -1) {
 			pmProps.put("baseSpaceId", -99);
 		}
+		newPm.setCreatedById(oldPm.getCreatedById()); //Temp fix
 		
 		FacilioModule module = ModuleFactory.getPreventiveMaintenancetModule();
 		LOGGER.log(Level.SEVERE, "created by id: "+ newPm.getCreatedById()+ " pm: "+oldPm.getId());
