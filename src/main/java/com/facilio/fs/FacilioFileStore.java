@@ -239,7 +239,7 @@ public class FacilioFileStore extends FileStore {
 	}
 
 	@Override
-	public String getFileUrl(long fileId) throws Exception {
+	public String getOrgiFileUrl(long fileId) throws Exception {
 		// TODO Auto-generated method stub
 		return getFileUrl(fileId, "perview");
 	}

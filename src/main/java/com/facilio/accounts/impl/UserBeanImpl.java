@@ -1883,6 +1883,7 @@ public class UserBeanImpl implements UserBean {
 		if (user.getPhotoId() > 0) {
 			FileStore fs = FileStoreFactory.getInstance().getFileStoreFromOrg(user.getOrgId(), user.getOuid());
 			user.setAvatarUrl(fs.getPrivateUrl(user.getPhotoId(), isPortalRequest));
+			user.setOriginalUrl(fs.orginalFileUrl(user.getPhotoId()));
 		}
 		
 		if (fetchRole) {

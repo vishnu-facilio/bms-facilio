@@ -60,6 +60,7 @@ public class DBUtil {
 		tablesWithoutOrgId.add("User_Mobile_Setting");
 		tablesWithoutOrgId.add("UserSessions");
 		tablesWithoutOrgId.add("TVPasscodes");
+		tablesWithoutOrgId.add("Remote_Screens"); // temp
 		tablesWithoutOrgId.add("server_info");
 		tablesWithoutOrgId.add("faciliousers");
 		tablesWithoutOrgId.add("faciliorequestors");

@@ -72,6 +72,14 @@ public class ResourceContext extends ModuleBaseWithCustomFields {
 		this.avatarUrl = avatarUrl;
 	}
 
+	public String getOriginalUrl() throws Exception {
+		if (this.originalUrl == null && this.photoId > 0) {
+			FileStore fs = FileStoreFactory.getInstance().getFileStore();
+			originalUrl = fs.orginalFileUrl(this.photoId);
+		}
+		return originalUrl;
+	}
+	private String originalUrl;
 	private long controllerId = -1;
 	public long getControllerId() {
 		return controllerId;

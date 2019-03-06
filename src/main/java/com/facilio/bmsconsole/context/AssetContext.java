@@ -201,14 +201,6 @@ public class AssetContext extends ResourceContext {
 		this.geoLocation = geoLocation;
 	}
 	
-	private SiteContext identifiedLocation;
-	public SiteContext getIdentifiedLocation() {
-		return identifiedLocation;
-	}
-	public void setIdentifiedLocation(SiteContext identifiedLocation) {
-		this.identifiedLocation = identifiedLocation;
-	}
-
 	private Boolean geoLocationEnabled;
 	public Boolean getGeoLocationEnabled() {
 		return geoLocationEnabled;
@@ -221,6 +213,44 @@ public class AssetContext extends ResourceContext {
 			return geoLocationEnabled.booleanValue();
 		}
 		return false;
+	}
+	
+	private String currentLocation;
+	public String getCurrentLocation() {
+		return currentLocation;
+	}
+	public void setCurrentLocation(String currentLocation) {
+		this.currentLocation = currentLocation;
+	}
+
+	private Boolean moved;
+	public Boolean getMoved() {
+		return moved;
+	}
+	public void setMoved(Boolean moved) {
+		this.moved = moved;
+	}
+	public boolean isMoved() {
+		if (moved != null) {
+			return moved.booleanValue();
+		}
+		return false;
+	}
+	
+	private int boundaryRadius = -1;
+	public int getBoundaryRadius() {
+		return boundaryRadius;
+	}
+	public void setBoundaryRadius(int boundaryRadius) {
+		this.boundaryRadius = boundaryRadius;
+	}
+	
+	private SiteContext identifiedLocation;
+	public SiteContext getIdentifiedLocation() {
+		return identifiedLocation;
+	}
+	public void setIdentifiedLocation(SiteContext identifiedLocation) {
+		this.identifiedLocation = identifiedLocation;
 	}
 
 	public static enum AssetState {

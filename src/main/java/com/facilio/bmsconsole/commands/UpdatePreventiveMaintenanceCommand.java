@@ -2,6 +2,8 @@ package com.facilio.bmsconsole.commands;
 
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
@@ -18,6 +20,7 @@ import com.facilio.sql.GenericUpdateRecordBuilder;
 
 public class UpdatePreventiveMaintenanceCommand implements Command{
 
+	private static final Logger LOGGER = Logger.getLogger(UpdatePreventiveMaintenanceCommand.class.getName());
 	@Override
 	public boolean execute(Context context) throws Exception {
 		
@@ -31,6 +34,8 @@ public class UpdatePreventiveMaintenanceCommand implements Command{
 		}
 		
 		FacilioModule module = ModuleFactory.getPreventiveMaintenancetModule();
+		LOGGER.log(Level.SEVERE, "created by id: "+ newPm.getCreatedById()+ " pm: "+oldPm.getId());
+
 		
 		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
 				.table(module.getTableName())

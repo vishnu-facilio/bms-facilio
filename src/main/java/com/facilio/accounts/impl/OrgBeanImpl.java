@@ -196,6 +196,7 @@ public class OrgBeanImpl implements OrgBean {
 		if (org.getLogoId() > 0) {
 			FileStore fs = FileStoreFactory.getInstance().getFileStoreFromOrg(org.getId());
 			org.setLogoUrl(fs.getPrivateUrl(org.getLogoId(), isPortalRequest));
+			org.setOriginalUrl(fs.orginalFileUrl(org.getLogoId()));
 		}
 		return org;
 	}
