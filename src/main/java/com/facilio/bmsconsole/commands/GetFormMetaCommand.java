@@ -41,6 +41,7 @@ public class GetFormMetaCommand implements Command {
 						String fieldName = f.getName();
 						FacilioField field = modBean.getField(fieldName, moduleName);
 						if (field != null) {
+							f.setField(field);
 							f.setFieldId(field.getFieldId());
 						}
 					}
@@ -51,7 +52,10 @@ public class GetFormMetaCommand implements Command {
 					if (customFields != null && !customFields.isEmpty()) {
 						for (FacilioField f: customFields) {
 							count = count + 1;
-							fields.add(new FormField(f.getName(), f.getDisplayType(), f.getDisplayName(), FormField.Required.OPTIONAL, count, 1));
+							FormField formFields = new FormField(f.getName(), f.getDisplayType(), f.getDisplayName(), FormField.Required.OPTIONAL, count, 1);
+							formFields.setField(f);
+							formFields.setFieldId(f.getFieldId());
+							fields.add(formFields);
 						}
 					}
 				}
