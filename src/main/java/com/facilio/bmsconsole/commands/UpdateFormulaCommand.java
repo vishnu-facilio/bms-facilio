@@ -20,6 +20,7 @@ import com.facilio.bmsconsole.modules.FacilioModule.ModuleType;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.bmsconsole.modules.NumberField;
 import com.facilio.bmsconsole.util.FormulaFieldAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
@@ -34,6 +35,7 @@ public class UpdateFormulaCommand implements Command {
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		FormulaFieldContext newFormula = (FormulaFieldContext) context.get(FacilioConstants.ContextNames.FORMULA_FIELD);
+		String formulaFieldUnit = (String) context.get(FacilioConstants.ContextNames.FORMULA_UNIT_STRING);
 		validateUpdate(newFormula);
 		FormulaFieldContext oldFormula = FormulaFieldAPI.getFormulaField(newFormula.getId());
 		if (newFormula.getWorkflow() != null && hasCyclicDependency(newFormula.getWorkflow(), oldFormula.getReadingField(), oldFormula.getTriggerTypeEnum())) {
@@ -41,9 +43,16 @@ public class UpdateFormulaCommand implements Command {
 		}
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = null;
-		if (newFormula.getName() != null && !newFormula.getName().isEmpty()) {
-			FacilioField field = new FacilioField();
-			field.setDisplayName(newFormula.getName());
+		if ((newFormula.getName() != null && !newFormula.getName().isEmpty()) || (formulaFieldUnit != null && !formulaFieldUnit.isEmpty())) {
+			FacilioField field = new NumberField();
+			
+			if((newFormula.getName() != null && !newFormula.getName().isEmpty())) {
+				field.setDisplayName(newFormula.getName());
+			}
+			if((formulaFieldUnit != null && !formulaFieldUnit.isEmpty())) {
+				((NumberField)field).setUnit(formulaFieldUnit);
+			}
+			
 			field.setId(oldFormula.getReadingFieldId());
 			modBean.updateField(field);
 			

@@ -731,6 +731,7 @@ public class ReadingAction extends FacilioAction {
 	public String editFormula() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.FORMULA_FIELD, formula);
+		context.put(FacilioConstants.ContextNames.FORMULA_UNIT_STRING, formulaFieldUnit);
 		WorkflowContext workflow = formula.getWorkflow();
 		if(workflow!= null && workflow.getExpressions() == null) {
 			WorkflowUtil.getWorkflowContextFromString(workflow.getWorkflowString(), workflow);
