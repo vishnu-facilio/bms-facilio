@@ -180,10 +180,10 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 	@Override
 	public int update(E bean) throws Exception {
 		Map<String, Object> moduleProps = FieldUtil.getAsProperties(bean);
-		return update(moduleProps);
+		return updateViaMap(moduleProps);
 	}
 	
-	public int update(Map<String, Object> props) throws Exception {
+	public int updateViaMap(Map<String, Object> props) throws Exception {
 		updated = true;
 		if(props != null) {
 			checkForNull();

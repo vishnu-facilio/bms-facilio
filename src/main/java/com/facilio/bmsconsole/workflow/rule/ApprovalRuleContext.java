@@ -232,7 +232,7 @@ public class ApprovalRuleContext extends WorkflowRuleContext {
 																			.module(event.getModule())
 																			.andCondition(CriteriaAPI.getIdCondition(((ModuleBaseWithCustomFields) record).getId(), event.getModule()))
 																			;
-		updateBuilder.update(prop);
+		updateBuilder.updateViaMap(prop);
 	}
 	
 	private int deletePreviousApprovalSteps(long id) throws Exception {
