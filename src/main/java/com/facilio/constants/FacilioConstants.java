@@ -773,7 +773,7 @@ public class FacilioConstants {
 		public static final String TOOL_TYPES_STATUS = "toolTypesStatus";
 		public static final String TOOLS_TYPES_CATEGORY = "toolTypesCategory";
 		
-		public static final String TOOL = "tool";
+//		public static final String TOOL = "tool";
 		public static final String TOOLS = "tools";
 		public static final String TOOLS_STATUS = "toolsStatus";
 		public static final String TOOLS_CATEGORY = "toolsCategory";

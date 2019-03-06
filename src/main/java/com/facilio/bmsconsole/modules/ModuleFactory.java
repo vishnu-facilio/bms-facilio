@@ -65,7 +65,7 @@ public class ModuleFactory {
 		moduleMap.put(FacilioConstants.ContextNames.ITEM, getInventryModule());
 		moduleMap.put(FacilioConstants.ContextNames.ITEM_STATUS, getInventoryStatusModule());
 		moduleMap.put(FacilioConstants.ContextNames.PURCHASED_ITEM, getPurchasedItemModule());
-		moduleMap.put(FacilioConstants.ContextNames.TOOL, getStockedToolsModule());
+		moduleMap.put(FacilioConstants.ContextNames.TOOL, getToolModule());
 		
 		return moduleMap;
 	}
@@ -1669,11 +1669,11 @@ public class ModuleFactory {
 		return inventoryModule;
 	}
 	
-	public static FacilioModule getStockedToolsModule() {
+	public static FacilioModule getToolModule() {
 		FacilioModule inventoryModule = new FacilioModule();
 		inventoryModule.setName(FacilioConstants.ContextNames.TOOL);
-		inventoryModule.setDisplayName("Stocked Tools");
-		inventoryModule.setTableName("Stocked_tools");
+		inventoryModule.setDisplayName("Tool");
+		inventoryModule.setTableName("Tools");
 		return inventoryModule;
 	}
 	

@@ -249,7 +249,7 @@ public class ViewFactory {
 		
 		order = 1;
 		views = new LinkedHashMap<>();
-		views.put("all", getAllStockedTools().setOrder(order++));
+		views.put("all", getAllTools().setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.TOOL, views);
 		return viewsMap;
 	}
@@ -2210,9 +2210,9 @@ public class ViewFactory {
 		return allView;
 	}
 	
-	private static FacilioView getAllStockedTools() {
+	private static FacilioView getAllTools() {
 
-		FacilioModule itemsModule = ModuleFactory.getStockedToolsModule();
+		FacilioModule itemsModule = ModuleFactory.getToolModule();
 
 		FacilioField createdTime = new FacilioField();
 		createdTime.setName("sysCreatedTime");
@@ -2224,7 +2224,7 @@ public class ViewFactory {
 
 		FacilioView allView = new FacilioView();
 		allView.setName("all");
-		allView.setDisplayName("All Stocked Tools");
+		allView.setDisplayName("All Tools");
 		allView.setSortFields(sortFields);
 
 		return allView;

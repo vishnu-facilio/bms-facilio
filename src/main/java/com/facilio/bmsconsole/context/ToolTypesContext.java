@@ -55,7 +55,7 @@ private static final long serialVersionUID = 1L;
 	}
 
 	private Unit unit;
-	public Unit getIssuingUnitEnum() {
+	public Unit getUnitEnum() {
 		return unit;
 	}
 
@@ -68,7 +68,7 @@ private static final long serialVersionUID = 1L;
 		}
 		return -1;
 	}
-	public void setIssuingUnit(int issuingUnit) {
+	public void setUnit(int issuingUnit) {
 		this.unit = Unit.valueOf(issuingUnit);
 	}
 

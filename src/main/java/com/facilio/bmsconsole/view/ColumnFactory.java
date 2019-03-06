@@ -46,7 +46,7 @@ public class ColumnFactory {
 		columnMap.put("inventory-default", getDefaultInventoryColumns());
 		columnMap.put("storeRoom-default", getDefaultStoreRoomColumns());
 		columnMap.put("itemTypes-default", getDefaultItemTypesColumns());
-		columnMap.put("tools-default", getDefaultToolsColumns());
+		columnMap.put("tool-types-default", getDefaultToolTypesColumns());
 		columnMap.put("vendors-default", getDefaultVendorsColumns());
 		columnMap.put("item-default", getDefaultItemColumns());
 		columnMap.put("stockedTools-default", getDefaultStockedToolsColumns());
@@ -238,7 +238,7 @@ public class ColumnFactory {
 		return columns;
 	}
 
-	private static List<ViewField> getDefaultToolsColumns() {
+	private static List<ViewField> getDefaultToolTypesColumns() {
 		List<ViewField> columns = new ArrayList<ViewField>();
 		
 		columns.add(new ViewField("name", "Name"));
