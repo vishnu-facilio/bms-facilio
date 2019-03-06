@@ -255,7 +255,7 @@ public class MLForecastingJob extends FacilioJob
 					 GenericDeleteRecordBuilder deleteRecordBuilder = new GenericDeleteRecordBuilder();
 					 deleteRecordBuilder.table(predictField.getModule().getTableName())
 		             .andCustomWhere("orgid = ?", pc.getOrgId())
-		             .andCustomWhere("parendId = ?",pc.getAssetid())
+		             .andCustomWhere("parentId = ?",pc.getAssetid())
 		             .andCustomWhere("ttime > ?", lastReading.getTtime());
 
 		                deleteRecordBuilder.delete();
@@ -318,6 +318,7 @@ public class MLForecastingJob extends FacilioJob
 	private void generateModel(MlForecastingContext pc) throws Exception
 	{
 		 JSONObject postObj = new JSONObject();
+		 postObj.put("predictedFieldID", pc.getPredictedfieldid());
 		 postObj.put("meterInterval",pc.getDatainterval());
 		 postObj.put("data", pc.getPyData());
 		 
