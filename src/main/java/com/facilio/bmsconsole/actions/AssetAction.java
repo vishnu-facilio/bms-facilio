@@ -201,7 +201,7 @@ public class AssetAction extends FacilioAction {
 		
 		setAsset((AssetContext) context.get(FacilioConstants.ContextNames.ASSET));
 		setRelationsCount((Map<String, Long>) context.get(FacilioConstants.ContextNames.RELATIONS_COUNT));
-		setResult(FacilioConstants.ContextNames.ASSET, asset);
+		setResult(FacilioConstants.ContextNames.ASSET, getAsset());
 		setResult("relationsCount", relationsCount);
 		return SUCCESS;
 	}

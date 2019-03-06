@@ -1,11 +1,8 @@
 package com.facilio.bmsconsole.commands;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
@@ -16,9 +13,6 @@ import org.json.simple.JSONObject;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AssetContext;
-import com.facilio.bmsconsole.context.AssetTypeContext;
-import com.facilio.bmsconsole.context.BaseSpaceContext;
-import com.facilio.bmsconsole.context.PhotosContext;
 import com.facilio.bmsconsole.context.ReadingDataMeta.ReadingInputType;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
@@ -27,7 +21,6 @@ import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.util.AssetsAPI;
-import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
@@ -145,34 +138,7 @@ public class GetAssetListCommand implements Command {
 				context.put(FacilioConstants.ContextNames.RECORD_COUNT, records.get(0).getData().get("count"));
 			}
 			else {
-				Set<Long> spaceIds = new HashSet<Long>();
-				Set<Long> typeIds = new HashSet<Long>();
-				List<Long> assetIds = new ArrayList<Long>();
-				for(AssetContext asset: records) {
-					assetIds.add(asset.getId());
-					if (asset.getSpaceId() > 0) {
-						spaceIds.add(asset.getSpaceId());
-					}
-					if (asset.getType() != null && asset.getType().getId() > 0) {
-						typeIds.add(asset.getType().getId());
-					}
-				}
-				Map<Long, BaseSpaceContext> spaceMap = SpaceAPI.getBaseSpaceMap(spaceIds);
-				Map<Long, AssetTypeContext> assetTypeMap = AssetsAPI.getAssetType(typeIds);
-				Map<Long, PhotosContext> assetPhotoMap = AssetsAPI.getAssetPhotoId(assetIds);
-				for(AssetContext asset: records) {
-					PhotosContext phot = assetPhotoMap.get(asset.getId());
-					if (phot != null) {
-						asset.setPhotoId(phot.getPhotoId());
-					}
-					if(asset.getSpaceId() != -1) {
-						asset.setSpace(spaceMap.get(asset.getSpaceId()));
-					}
-					if (asset.getType() != null && asset.getType().getId() > 0) {
-						asset.setType(assetTypeMap.get(asset.getType().getId()));
-					}
-				}
-				
+				AssetsAPI.loadAssetsLookups(records);
 				context.put(FacilioConstants.ContextNames.RECORD_LIST, records);
 			}
 		}
