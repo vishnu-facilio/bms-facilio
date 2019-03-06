@@ -690,24 +690,26 @@ public class AssetsAPI {
 	
 	public static Map<String,String> getAssetModuleName(Long categoryId) throws Exception{
 		Map<String,String> moduleInfo = new HashMap<String,String>();
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		if (categoryId == null || categoryId <= 0)
 		{	
-			moduleInfo.put(FacilioConstants.ContextNames.MODULE_NAME, "asset");
-			moduleInfo.put(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME, "Assets");
+			FacilioModule assetModule = modBean.getModule(FacilioConstants.ContextNames.ASSET);
+			moduleInfo.put(FacilioConstants.ContextNames.MODULE_NAME, assetModule.getName());
+			moduleInfo.put(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME, assetModule.getTableName());
 		}
 		else 
 		{
 			AssetCategoryContext assetCategory = AssetsAPI.getCategoryForAsset(categoryId);
 			long assetModuleID = assetCategory.getAssetModuleID();
-			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioModule module = modBean.getModule(assetModuleID);
 			
 			if (module != null) {
 				moduleInfo.put(FacilioConstants.ContextNames.MODULE_NAME, module.getName());
 				moduleInfo.put(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME, module.getTableName());
 			} else {
-				moduleInfo.put(FacilioConstants.ContextNames.MODULE_NAME, "asset");
-				moduleInfo.put(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME, "Assets");
+				FacilioModule assetModule = modBean.getModule(FacilioConstants.ContextNames.ASSET);
+				moduleInfo.put(FacilioConstants.ContextNames.MODULE_NAME, assetModule.getName());
+				moduleInfo.put(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME, assetModule.getTableName());
 			}
 		}
 		return moduleInfo;

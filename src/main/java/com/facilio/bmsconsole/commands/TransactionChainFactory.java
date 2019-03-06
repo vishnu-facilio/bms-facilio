@@ -933,10 +933,7 @@ public class TransactionChainFactory {
 		
 		public static Chain getAddAssetChain() {
 			Chain c = getDefaultChain();
-			//c.addCommand(SetTableNamesCommand.getForAsset());
 			c.addCommand(new SetModuleForSpecialAssetsCommand());
-//			c.addCommand(new LoadAllFieldsCommand());
-			c.addCommand(new LoadAssetFields());
 			c.addCommand(new GenericAddModuleDataCommand());
 			c.addCommand(new ExecuteAllWorkflowsCommand());
 			c.addCommand(FacilioChainFactory.getCategoryReadingsChain());
@@ -948,9 +945,6 @@ public class TransactionChainFactory {
 			Chain c = getDefaultChain();
 			c.addCommand(new AddCategoryOnAssetUpdateCommand());
 			c.addCommand(new SetModuleForSpecialAssetsCommand());
-//			c.addCommand(SetTableNamesCommand.getForAsset());
-			c.addCommand(new LoadAssetFields());
-//			c.addCommand(new LoadAllFieldsCommand());
 			c.addCommand(new GenericUpdateModuleDataCommand());
 			c.addCommand(new ExecuteAllWorkflowsCommand());
 			c.addCommand(FacilioChainFactory.getCategoryReadingsChain());
