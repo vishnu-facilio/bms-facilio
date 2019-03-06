@@ -223,20 +223,20 @@ public class AssetContext extends ResourceContext {
 		this.currentLocation = currentLocation;
 	}
 
-	private Boolean moved;
-	public Boolean getMoved() {
-		return moved;
+	private Boolean designatedLocation;
+	public Boolean getDesignatedLocation() {
+		return designatedLocation;
 	}
-	public void setMoved(Boolean moved) {
-		this.moved = moved;
+	public void setDesignatedLocation(Boolean designatedLocation) {
+		this.designatedLocation = designatedLocation;
 	}
-	public boolean isMoved() {
-		if (moved != null) {
-			return moved.booleanValue();
+	public boolean isDesignatedLocation() {
+		if (designatedLocation != null) {
+			return designatedLocation.booleanValue();
 		}
 		return false;
 	}
-	
+
 	private int boundaryRadius = -1;
 	public int getBoundaryRadius() {
 		return boundaryRadius;
@@ -245,6 +245,14 @@ public class AssetContext extends ResourceContext {
 		this.boundaryRadius = boundaryRadius;
 	}
 	
+	private double distanceMoved = -1;
+	public double getDistanceMoved() {
+		return distanceMoved;
+	}
+	public void setDistanceMoved(double distanceMoved) {
+		this.distanceMoved = distanceMoved;
+	}
+
 	private SiteContext identifiedLocation;
 	public SiteContext getIdentifiedLocation() {
 		return identifiedLocation;
