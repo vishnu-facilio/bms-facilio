@@ -513,7 +513,7 @@ public class ExpressionContext implements WorkflowExpression {
 				splitedPrints[i] = splitedPrints[i].substring(1, splitedPrints[i].length()-1);
 			}
 			else {
-				if(variableToExpresionMap1.containsKey(splitedPrints[i])) {
+				if(variableToExpresionMap1.containsKey(splitedPrints[i]) && variableToExpresionMap1.get(splitedPrints[i]) != null) {
 					splitedPrints[i] = variableToExpresionMap1.get(splitedPrints[i]).toString();
 				}
 				else {
