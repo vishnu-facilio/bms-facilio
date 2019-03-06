@@ -5169,7 +5169,19 @@ public class FieldFactory {
 		return fields;
 	}
 
-
+	public static List<FacilioField> getNotificationLoggerFields() {
+		FacilioModule module = ModuleFactory.getNotificationLoggerModule();
+		List<FacilioField> fields = new ArrayList<>();
+		
+		fields.add(getIdField(module));
+		fields.add(getField("type", "NOTIFICATION_TYPE", module, FieldType.NUMBER));
+		fields.add(getField("to", "TO_ADDR", module, FieldType.STRING));
+		fields.add(getField("info", "INFO", module, FieldType.STRING));
+		fields.add(getField("threadName", "THREAD_NAME", module, FieldType.STRING));
+		fields.add(getField("createdTime", "CREATED_TIME", module, FieldType.STRING));
+		
+		return fields;
+	}
 
 	public static FacilioField getField(String name, String colName, FacilioModule module, FieldType type) {
 		return getField(name, null, colName, module, type);

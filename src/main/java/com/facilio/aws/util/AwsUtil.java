@@ -95,6 +95,8 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.email.EmailUtil;
 import com.facilio.sql.DBUtil;
 import com.facilio.transaction.FacilioConnectionPool;
+import com.facilio.util.FacilioUtil;
+import com.facilio.util.FacilioUtil.NotificationType;
 
 public class AwsUtil 
 {
@@ -502,6 +504,17 @@ public class AwsUtil
 			sendEmail(mailJson);
 			return;
 		}
+		
+		if (AccountUtil.getCurrentOrg() != null) {
+			String toAddress = (String)mailJson.get("to");
+			if (!"error+alert@facilio.com".equals(toAddress) && !"error@facilio.com".equals(toAddress)) {
+				toAddress = toAddress == null ? "" : toAddress;
+				JSONObject info = new JSONObject();
+				info.put("subject", mailJson.get("subject"));
+				FacilioUtil.addNotificationLogger(NotificationType.EMAIL, toAddress, info);
+			}
+		}
+		
 		if(isSmtp()) {
 			EmailUtil.sendEmail(mailJson, files);
 		} else {

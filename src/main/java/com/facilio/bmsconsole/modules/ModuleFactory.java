@@ -1668,4 +1668,13 @@ public class ModuleFactory {
 
 		return weatherStation;
 	}
+  	
+  	public static FacilioModule getNotificationLoggerModule() {
+  		FacilioModule notificationLogger = new FacilioModule();
+  		notificationLogger.setName("notificationLogger");
+  		notificationLogger.setDisplayName("Notification Logger");
+  		notificationLogger.setTableName("Notification_Logger");
+  		
+  		return notificationLogger;
+  	}
 }
