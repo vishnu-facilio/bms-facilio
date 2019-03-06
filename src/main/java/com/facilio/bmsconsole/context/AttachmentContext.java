@@ -116,7 +116,12 @@ public class AttachmentContext extends ModuleBaseWithCustomFields {
 	public String getDownloadUrl() throws Exception {
 		if (this.downloadUrl == null && this.fileId > 0) {
 			FileStore fs = FileStoreFactory.getInstance().getFileStore();
-			downloadUrl = fs.getDownloadUrl(this.fileId);
+			if (AccountUtil.getCurrentAccount() != null && AccountUtil.getCurrentAccount().isFromMobile()) {
+				downloadUrl = fs.orginalFileUrl(this.fileId);
+			}
+			else {
+				downloadUrl = fs.getDownloadUrl(this.fileId);
+			}
 		}
 		return downloadUrl;
 	}
