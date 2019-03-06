@@ -740,6 +740,9 @@ public class FormulaFieldAPI {
 					LOGGER.debug("Matched");
 					long workflowStarttime = System.currentTimeMillis();
 					OptimisedFormulaCalculationWorkflow optimisedWorkflow = constructOptimisedWorkflowForHistoricalCalculation(formula.getWorkflow());
+					if(AccountUtil.getCurrentOrg().getId() == 191l) {
+						LOGGER.error("optimisedWorkflow to String -- "+ WorkflowUtil.getXmlStringFromWorkflow(optimisedWorkflow));
+					}
 					LOGGER.debug("Time taken to generate optimised workflow : "+(System.currentTimeMillis() - workflowStarttime));
 					int deletedData = deleteOlderData(range.getStartTime(), range.getEndTime(), Collections.singletonList(singleResourceId), formula.getReadingField().getModule().getName());
 					LOGGER.debug("Deleted rows for formula : "+formula.getName()+" between "+range+" is : "+deletedData);
