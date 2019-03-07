@@ -15,7 +15,9 @@ import org.json.simple.JSONObject;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
+import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.criteria.Operator;
+import com.facilio.bmsconsole.criteria.PickListOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
@@ -64,22 +66,47 @@ public class GenerateCriteriaFromFilterCommand implements Command {
 		if(moduleName.equals(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE)) {
 			moduleName = gePreventiveMaintenanceModule(fieldName);
 		}
+		
+		int operatorId;
+		String operatorName;
+		
+		boolean isOldField = false;
+		//TODO Remove the check once handled in mobile
+		if (OLD_FIELDS_MODULE.contains(moduleName) && OLD_FIELDS.contains(fieldName)) {
+			fieldName = fieldName.replace("Id", "");
+			isOldField = true;
+		}
+		
 		FacilioField field = modBean.getField(fieldName, moduleName);
+		
+		if (fieldJson.containsKey("operatorId")) {
+			operatorId = (int) (long) fieldJson.get("operatorId");
+			if (isOldField) {
+				if (operatorId == NumberOperators.EQUALS.getOperatorId()) {
+					operatorId = PickListOperators.IS.getOperatorId();
+				}
+				else if (operatorId == NumberOperators.NOT_EQUALS.getOperatorId()) {
+					operatorId = PickListOperators.ISN_T.getOperatorId();
+				}
+			}
+			operatorName = Operator.OPERATOR_MAP.get(operatorId).getOperator();
+		} else {
+			operatorName = (String) fieldJson.get("operator");
+			if (isOldField) {
+				if (operatorName.equals(NumberOperators.EQUALS.getOperator())) {
+					operatorName = PickListOperators.IS.getOperator();
+				}
+				else if (operatorName.equals(NumberOperators.NOT_EQUALS.getOperator())) {
+					operatorName = PickListOperators.ISN_T.getOperator();
+				}
+			}
+			operatorId = field.getDataTypeEnum().getOperator(operatorName).getOperatorId();
+		}
 		if (field == null) {
 			LOGGER.error("Field is not found for: " + fieldName + " : " + moduleName);
 			throw new Exception("Field is not found for: " + fieldName + " : " + moduleName);
 		}
 		JSONArray value = (JSONArray) fieldJson.get("value");
-		int operatorId;
-		String operatorName;
-		if (fieldJson.containsKey("operatorId")) {
-			operatorId = (int) (long) fieldJson.get("operatorId");
-			operatorName = Operator.OPERATOR_MAP.get(operatorId).getOperator();
-		} else {
-			operatorName = (String) fieldJson.get("operator");
-			operatorId = field.getDataTypeEnum().getOperator(operatorName).getOperatorId();
-		}
-		
 		if((value!=null && value.size() > 0) || (operatorName != null && !(operatorName.equals("is")) ) ) {
 			
 			Condition condition = new Condition();
@@ -132,6 +159,8 @@ public class GenerateCriteriaFromFilterCommand implements Command {
 	}
 	
 	private static final List<String> TEMPLATE_FIELDS = Arrays.asList("priorityId", "statusId", "categoryId", "typeId", "assignmentGroupId", "assignedToId", "resourceId");
+	private static final List<String> OLD_FIELDS = Arrays.asList("siteId", "spaceId", "buildingId", "floorId", "spaceId1", "spaceId2", "spaceId3", "spaceId4");
+	private static final List<String> OLD_FIELDS_MODULE = Arrays.asList(FacilioConstants.ContextNames.BASE_SPACE, FacilioConstants.ContextNames.RESOURCE, FacilioConstants.ContextNames.SPACE, FacilioConstants.ContextNames.ASSET, FacilioConstants.ContextNames.BUILDING, FacilioConstants.ContextNames.FLOOR);
 	private String gePreventiveMaintenanceModule(String fieldName) {
 		if (TEMPLATE_FIELDS.contains(fieldName)) {
 			return FacilioConstants.ContextNames.WORK_ORDER_TEMPLATE;
