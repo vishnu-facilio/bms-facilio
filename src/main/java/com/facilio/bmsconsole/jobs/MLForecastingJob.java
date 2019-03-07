@@ -51,7 +51,7 @@ public class MLForecastingJob extends FacilioJob
 		List<MlForecastingContext> pcList = getPredictionJobs(jc.getOrgId());
 		for(MlForecastingContext predictionContext : pcList)
 		{
-			calculateMSEForPreviousPrediction(predictionContext);
+			//calculateMSEForPreviousPrediction(predictionContext);
 			doPrediction(predictionContext, jc.getExecutionTime() * 1000);
 		}
 		
@@ -251,6 +251,7 @@ public class MLForecastingJob extends FacilioJob
 					 Chain chain = TransactionChainFactory.onlyAddOrUpdateReadingsChain();
 					 chain.execute(context);
 					 
+					 /*
 					 ReadingContext lastReading = predictReadingList.get(predictReadingList.size()-1);
 					 GenericDeleteRecordBuilder deleteRecordBuilder = new GenericDeleteRecordBuilder();
 					 deleteRecordBuilder.table(predictField.getModule().getTableName())
@@ -259,6 +260,7 @@ public class MLForecastingJob extends FacilioJob
 		             .andCustomWhere("ttime > ?", lastReading.getTtime());
 
 		                deleteRecordBuilder.delete();
+		                */
 				 }
 				 catch(Exception e)
 				 {
