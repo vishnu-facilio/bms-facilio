@@ -1710,4 +1710,12 @@ public class ModuleFactory {
 		inventoryModule.setTableName("Item_Types_status");
 		return inventoryModule;
 	}
+  	
+  	public static FacilioModule getToolTypeStatusModule() {
+		FacilioModule inventoryModule = new FacilioModule();
+		inventoryModule.setName(FacilioConstants.ContextNames.TOOL_TYPES_STATUS);
+		inventoryModule.setDisplayName("toolTypeStatus");
+		inventoryModule.setTableName("Tool_types_status");
+		return inventoryModule;
+	}
 }

@@ -46,7 +46,7 @@ public class ColumnFactory {
 		columnMap.put("inventory-default", getDefaultInventoryColumns());
 		columnMap.put("storeRoom-default", getDefaultStoreRoomColumns());
 		columnMap.put("itemTypes-default", getDefaultItemTypesColumns());
-		columnMap.put("tool-types-default", getDefaultToolTypesColumns());
+		columnMap.put("toolTypes-default", getDefaultToolTypesColumns());
 		columnMap.put("vendors-default", getDefaultVendorsColumns());
 		columnMap.put("item-default", getDefaultItemColumns());
 		columnMap.put("stockedTools-default", getDefaultStockedToolsColumns());

@@ -1116,6 +1116,12 @@
 			<param name="moduleName">asset</param>
 			<param name="permission">UPDATE</param>
 		</action>
+		<action name="*"
+			class="com.facilio.bmsconsole.actions.StoreRoomAction" method="storeRoomDetails">
+			<param name="moduleName">asset</param>
+			<param name="permission">READ</param>
+			<param name = "storeRoomId">{1}</param>
+		</action>
 	</package>
 	
 	<package name="storeRoomListApiv2" namespace="/api/v2/storeRoom/view"

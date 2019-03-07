@@ -436,6 +436,7 @@ public class ReadOnlyChainFactory {
 	public static Chain gettoolsList() {
 		Chain c = getDefaultChain();
 		c.addCommand(SetTableNamesCommand.getForToolTypes());
+		c.addCommand(new LoadViewCommand());
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new GenerateCriteriaFromFilterCommand());
 		c.addCommand(new GenerateSearchConditionCommand());
