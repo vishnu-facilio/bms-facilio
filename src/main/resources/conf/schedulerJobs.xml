@@ -28,8 +28,9 @@
 	 <job name='V1RefreshAnomalyModel' classname = 'com.facilio.bmsconsole.jobs.V1RefreshAnomalyModelJob' transactionTimeout='14400000'/>
 	 <job name='AnomalyDetector' classname = 'com.facilio.bmsconsole.jobs.AnomalyDetectorJob' transactionTimeout='1800000'/>
 	 <job name='RefreshAnomalyModel' classname = 'com.facilio.bmsconsole.jobs.RefreshAnomalyModelJob' transactionTimeout='14400000'/>
-	 <job name='HVACPressurePredictor' classname = 'com.facilio.bmsconsole.jobs.HVACPressurePredictorJob' transactionTimeout='1800000'/>
+	 <!--  job name='HVACPressurePredictor' classname = 'com.facilio.bmsconsole.jobs.HVACPressurePredictorJob' transactionTimeout='1800000'/-->
 	 <job name='MLForecasting' classname = 'com.facilio.bmsconsole.jobs.MLForecastingJob' transactionTimeout='1800000'/>
+	 <job name='MLHistoricalForecasting' classname = 'com.facilio.bmsconsole.jobs.MLHistoricalForecastingJob' transactionTimeout='1800000'/>
 	 <job name='importData' classname = 'com.facilio.bmsconsole.jobs.ImportDataJob' transactionTimeout='7200000'/>
 	 <job name='importReading' classname='com.facilio.bmsconsole.jobs.ImportReadingJob' transactionTimeout= '14400000' />
 	 <job name='assetActionJob' classname = 'com.facilio.bmsconsole.jobs.AssetActionJob' transactionTimeout='300000'/>
