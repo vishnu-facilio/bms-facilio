@@ -110,7 +110,7 @@ public class AssetsAPI {
 		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.RESOURCE);
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 		
-		FacilioField spaceField= fieldMap.get("spaceId");
+		FacilioField spaceField= fieldMap.get("space");
 		FacilioField categoryField= fieldMap.get("category");
 		
 		SelectRecordsBuilder<BaseSpaceContext> selectBuilder = new SelectRecordsBuilder<BaseSpaceContext>()
@@ -502,7 +502,7 @@ public class AssetsAPI {
 				.andCondition(CriteriaAPI.getCondition(readingFieldsMap.get("value"), CommonOperators.IS_NOT_EMPTY));
 
 		if (buildingIds != null && !buildingIds.isEmpty()) {
-			selectBuilder.andCondition(CriteriaAPI.getCondition("SPACE_ID", "spaceId", StringUtils.join(buildingIds, ","), BuildingOperator.BUILDING_IS));
+			selectBuilder.andCondition(CriteriaAPI.getCondition("SPACE_ID", "space", StringUtils.join(buildingIds, ","), BuildingOperator.BUILDING_IS));
 		}
 		
 		List<AssetContext> assets = selectBuilder.get();
@@ -612,7 +612,7 @@ public class AssetsAPI {
 				
 
 		if (buildingIds != null && !buildingIds.isEmpty()) {
-			builder.andCondition(CriteriaAPI.getCondition("SPACE_ID", "spaceId", StringUtils.join(buildingIds, ","), BuildingOperator.BUILDING_IS));
+			builder.andCondition(CriteriaAPI.getCondition("SPACE_ID", "space", StringUtils.join(buildingIds, ","), BuildingOperator.BUILDING_IS));
 		}
 		
 		if (searchText != null && !searchText.isEmpty()) {
