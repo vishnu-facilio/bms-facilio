@@ -414,7 +414,7 @@ public class OrgBeanImpl implements OrgBean {
 	@Override
 	public User getSuperAdmin(long orgId) throws Exception {
 		
-		Role superAdminRole = AccountUtil.getRoleBean().getRole(orgId, AccountConstants.DefaultRole.SUPER_ADMIN, false);
+		Role superAdminRole = AccountUtil.getRoleBean(orgId).getRole(orgId, AccountConstants.DefaultRole.SUPER_ADMIN, false);
 		
 		if(superAdminRole == null) {
 			return null;
