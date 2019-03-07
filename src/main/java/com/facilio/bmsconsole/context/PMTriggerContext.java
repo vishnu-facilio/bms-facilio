@@ -253,18 +253,5 @@ public class PMTriggerContext implements Serializable {
 	public FacilioFrequency getFrequencyEnum() {
 		return frequency;
 	}
-
-	private Boolean custom;
-	public Boolean getCustom() {
-		return custom;
-	}
-	public void setCustom(Boolean custom) {
-		this.custom = custom;
-	}
-	public boolean isCustom() {
-		if (custom != null) {
-			return custom.booleanValue();
-		}
-		return false;
-	}
+	
 }
