@@ -592,13 +592,16 @@ public class PreventiveMaintenanceAPI {
 				if (wo.getAssignedTo() != null) {
 					prop.put("assignedToId", wo.getAssignedTo().getId());
 				}
-				prop.put("pmTriggerId", wo.getTrigger().getId());
-				List<Map<String, Object>> woList = pmWos.get(wo.getTrigger().getId());
-				if (woList == null) {
-					woList = new ArrayList<>();
-					pmWos.put(wo.getTrigger().getId(), woList);
+				if (wo.getTrigger() != null) {
+					prop.put("pmTriggerId", wo.getTrigger().getId());
+					
+					List<Map<String, Object>> woList = pmWos.get(wo.getTrigger().getId());
+					if (woList == null) {
+						woList = new ArrayList<>();
+						pmWos.put(wo.getTrigger().getId(), woList);
+					}
+					woList.add(prop);
 				}
-				woList.add(prop);
 			}
 		}
 		return pmWos;
