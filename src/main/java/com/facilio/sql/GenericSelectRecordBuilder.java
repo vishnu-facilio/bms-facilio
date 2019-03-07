@@ -7,13 +7,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.facilio.accounts.dto.Account;
-import com.facilio.fw.LRUCache;
-import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -21,8 +19,6 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
-import com.facilio.bmsconsole.criteria.CriteriaAPI;
-import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.FieldUtil;
@@ -30,20 +26,9 @@ import com.facilio.bmsconsole.modules.NumberField;
 import com.facilio.fs.FileInfo;
 import com.facilio.fs.FileStore;
 import com.facilio.fs.FileStoreFactory;
+import com.facilio.fw.LRUCache;
 import com.facilio.transaction.FacilioConnectionPool;
-import com.facilio.unitconversion.Metric;
-import com.facilio.unitconversion.Unit;
 import com.facilio.unitconversion.UnitsUtil;
-import org.apache.log4j.Level;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-
-import java.lang.reflect.Constructor;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.*;
 
 /**
  * GenericSelectRecordBuilder class helps with building and execution of selection query in the database.<br>
@@ -743,7 +728,7 @@ public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, 
 				conn = FacilioConnectionPool.INSTANCE.getConnection();
 				isExternalConnection = false;
 			}
-			String sql = constructSelectStatement();
+			sql = constructSelectStatement();
 			cacheQuery.append(sql);
 			pstmt = conn.prepareStatement(sql);
 
@@ -821,7 +806,7 @@ public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, 
 
 		}
 		catch(SQLException e) {
-			LOGGER.log(Level.ERROR, "Exception " ,e);
+			LOGGER.error("Error occured in GenericSelectBuilder during execution of "+sql ,e);
 			throw e;
 		}
 		finally {
@@ -955,7 +940,7 @@ public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, 
 	public String constructSelectStatement() {
 		try {
 			DBSelectRecordBuilder selectRecordBuilder = getDBSelectRecordBuilder();
-			sql = selectRecordBuilder.constructSelectStatement();
+			String sql = selectRecordBuilder.constructSelectStatement();
 			return sql;
 		} catch (Exception e) {
 			e.printStackTrace();
