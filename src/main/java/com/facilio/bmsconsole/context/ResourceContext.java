@@ -64,7 +64,7 @@ public class ResourceContext extends ModuleBaseWithCustomFields {
 		}
 		return space;
 	}*/
-	
+
 	private ResourceType resourceType;
 	public ResourceType getResourceTypeEnum() {
 		return resourceType;

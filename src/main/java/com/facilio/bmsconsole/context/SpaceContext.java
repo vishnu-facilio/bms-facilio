@@ -1,12 +1,12 @@
 package com.facilio.bmsconsole.context;
 
 public class SpaceContext extends BaseSpaceContext {
-	
+
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
-	
+
 	
 	private SpaceContext parentSpace;
 	public SpaceContext getParentSpace() {
@@ -34,7 +34,7 @@ public class SpaceContext extends BaseSpaceContext {
 	private SpaceCategoryContext spaceCategory;
 	public SpaceCategoryContext getSpaceCategory() {
 		return spaceCategory;
-	} 
+	}
 	public void setSpaceCategory(SpaceCategoryContext spaceCategory) {
 		this.spaceCategory = spaceCategory;
 	}
