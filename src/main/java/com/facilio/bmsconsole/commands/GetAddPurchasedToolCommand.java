@@ -1,0 +1,119 @@
+package com.facilio.bmsconsole.commands;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
+
+import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.PurchasedToolContext;
+import com.facilio.bmsconsole.context.ToolContext;
+import com.facilio.bmsconsole.context.ToolTypesContext;
+import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.FacilioModule;
+import com.facilio.bmsconsole.modules.InsertRecordBuilder;
+import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
+import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
+import com.facilio.bmsconsole.util.TransactionType;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
+
+public class GetAddPurchasedToolCommand implements Command {
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public boolean execute(Context context) throws Exception {
+		// TODO Auto-generated method stub
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+
+		FacilioModule toolModule = modBean.getModule(FacilioConstants.ContextNames.TOOL);
+		List<FacilioField> toolFields = modBean.getAllFields(FacilioConstants.ContextNames.TOOL);
+
+		FacilioModule purchasedToolModule = modBean.getModule(FacilioConstants.ContextNames.PURCHASED_TOOL);
+		List<FacilioField> purchasedToolFields = modBean.getAllFields(FacilioConstants.ContextNames.PURCHASED_TOOL);
+		// Map<String, FacilioField> workorderCostsFieldMap =
+		// FieldFactory.getAsMap(inventoryCostFields);
+		long toolId = (long) context.get(FacilioConstants.ContextNames.RECORD_ID);
+		List<PurchasedToolContext> purchasedTool = (List<PurchasedToolContext>) context
+				.get(FacilioConstants.ContextNames.PURCHASED_TOOL);
+
+		FacilioModule toolTypesModule = modBean.getModule(FacilioConstants.ContextNames.TOOL_TYPES);
+		List<FacilioField> toolTypesFields = modBean.getAllFields(FacilioConstants.ContextNames.TOOL_TYPES);
+
+		SelectRecordsBuilder<ToolContext> itemselectBuilder = new SelectRecordsBuilder<ToolContext>().select(toolFields)
+				.table(toolModule.getTableName()).moduleName(toolModule.getName()).beanClass(ToolContext.class)
+				.andCondition(CriteriaAPI.getIdCondition(toolId, toolModule));
+
+		List<ToolContext> tools = itemselectBuilder.get();
+		ToolContext tool = new ToolContext();
+		if (tools != null && !tools.isEmpty()) {
+			tool = tools.get(0);
+		}
+		List<PurchasedToolContext> ptToBeAdded = new ArrayList<>();
+		List<PurchasedToolContext> purchaseToolsList = new ArrayList<>();
+		if (purchasedTool != null && !tools.isEmpty()) {
+
+			SelectRecordsBuilder<ToolTypesContext> itemTypesselectBuilder = new SelectRecordsBuilder<ToolTypesContext>()
+					.select(toolTypesFields).table(toolTypesModule.getTableName()).moduleName(toolTypesModule.getName())
+					.beanClass(ToolTypesContext.class)
+					.andCondition(CriteriaAPI.getIdCondition(tool.getToolType().getId(), toolTypesModule));
+
+			List<ToolTypesContext> toolTypes = itemTypesselectBuilder.get();
+			ToolTypesContext toolType = null;
+			if (toolTypes != null && !toolTypes.isEmpty()) {
+				toolType = toolTypes.get(0);
+			}
+
+			if (toolType == null) {
+				throw new IllegalArgumentException("No such tool found");
+			}
+
+			for (PurchasedToolContext pt : purchasedTool) {
+				pt.setTool(tool);
+				pt.setCostDate(System.currentTimeMillis());
+				pt.setIsUsed(false);
+				if (pt.getId() <= 0) {
+					// Insert
+					purchaseToolsList.add(pt);
+					ptToBeAdded.add(pt);
+				} else {
+					purchaseToolsList.add(pt);
+					updatePurchasedTool(purchasedToolModule, purchasedToolFields, pt);
+				}
+
+			}
+			if (ptToBeAdded != null && !ptToBeAdded.isEmpty()) {
+				addPurchasedTool(purchasedToolModule, purchasedToolFields, ptToBeAdded);
+			}
+		}
+		context.put(FacilioConstants.ContextNames.PURCHASED_TOOL, purchaseToolsList);
+		context.put(FacilioConstants.ContextNames.RECORD_LIST, purchaseToolsList);
+		context.put(FacilioConstants.ContextNames.TOOL_ID, toolId);
+		context.put(FacilioConstants.ContextNames.TOOL_IDS, Collections.singletonList(toolId));
+		context.put(FacilioConstants.ContextNames.TRANSACTION_TYPE, TransactionType.STOCK);
+
+		return false;
+	}
+
+	private void addPurchasedTool(FacilioModule module, List<FacilioField> fields, List<PurchasedToolContext> parts)
+			throws Exception {
+		InsertRecordBuilder<PurchasedToolContext> readingBuilder = new InsertRecordBuilder<PurchasedToolContext>()
+				.module(module).fields(fields).addRecords(parts);
+		readingBuilder.save();
+	}
+
+	private void updatePurchasedTool(FacilioModule module, List<FacilioField> fields, PurchasedToolContext part)
+			throws Exception {
+
+		UpdateRecordBuilder<PurchasedToolContext> updateBuilder = new UpdateRecordBuilder<PurchasedToolContext>()
+				.module(module).fields(fields).andCondition(CriteriaAPI.getIdCondition(part.getId(), module));
+		updateBuilder.update(part);
+
+		System.err.println(Thread.currentThread().getName() + "Exiting updateCosts in  AddorUpdateCommand#######  ");
+
+	}
+
+}

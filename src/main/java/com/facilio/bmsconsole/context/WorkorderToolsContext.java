@@ -1,6 +1,6 @@
 package com.facilio.bmsconsole.context;
 
-public class WorkorderToolsContext extends StockedToolsTransactionContext {
+public class WorkorderToolsContext extends ToolTransactionContext {
 	private static final long serialVersionUID = 1L;
 
 	private double cost = -1;

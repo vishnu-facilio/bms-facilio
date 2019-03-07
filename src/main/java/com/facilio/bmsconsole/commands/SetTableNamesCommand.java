@@ -220,8 +220,8 @@ public class SetTableNamesCommand implements Command {
 		return new SetTableNamesCommand("tool", "Tool");
 	}
 	
-	public static SetTableNamesCommand getForStockedToolsTranaction() {
-		return new SetTableNamesCommand("stockedToolsTransactions", "Stocked_tools_transactions");
+	public static SetTableNamesCommand getForToolTranaction() {
+		return new SetTableNamesCommand("toolTransactions", "Tool_transactions");
 	}
 	
 	public static SetTableNamesCommand getForWorkorderTools() {
@@ -231,6 +231,11 @@ public class SetTableNamesCommand implements Command {
 	public static SetTableNamesCommand getForItemTypesVendors() {
 		return new SetTableNamesCommand("itemVendors", "Item_vendors");
 	}
+	
+	public static SetTableNamesCommand getForPurchasedTool() {
+		return new SetTableNamesCommand("purchasedTool", "Purchased_Tool");
+	}
+	
 	public static void setForModule (Context context, String moduleName) {
 		//TODO handle all module and get from map
 		String tableName = "";

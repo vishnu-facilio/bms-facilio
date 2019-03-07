@@ -1688,6 +1688,8 @@ public class TransactionChainFactory {
 			c.addCommand(SetTableNamesCommand.getForTool());
 			c.addCommand(new GenericAddModuleDataCommand());
 			c.addCommand(new ExecuteAllWorkflowsCommand());
+			c.addCommand(getAddPurchasedToolChain());
+			c.addCommand(getUpdatetoolQuantityRollupChain());
 			return c;
 		}
 		
@@ -1703,26 +1705,24 @@ public class TransactionChainFactory {
 			c.addCommand(SetTableNamesCommand.getForWorkorderTools());
 			c.addCommand(new AddOrUpdateWorkorderToolsCommand());
 			c.addCommand(new ExecuteAllWorkflowsCommand());
-			c.addCommand(new StockedToolsReturnQuantityRollupCommand());
-			c.addCommand(getUpdateStockedtoolsQuantityRollupChain());
+			c.addCommand(getUpdatetoolQuantityRollupChain());
 			c.addCommand(new AddOrUpdateWorkorderCostCommand());
 			c.addCommand(new UpdateWorkorderTotalCostCommand());
 			c.addCommand(getUpdateWorkOrderChain());
 			return c;
 		}
 		
-		public static Chain getUpdateStockedtoolsQuantityRollupChain() {
+		public static Chain getUpdatetoolQuantityRollupChain() {
 			Chain c = getDefaultChain();
-			c.addCommand(new StockedToolQuantityRollUpCommand());
+			c.addCommand(new ToolQuantityRollUpCommand());
 			return c;
 		}
 		
 		public static Chain getDeleteWorkorderToolsChain() {
 			Chain c = getDefaultChain();
-			c.addCommand(SetTableNamesCommand.getForStockedToolsTranaction());
+			c.addCommand(SetTableNamesCommand.getForToolTranaction());
 			c.addCommand(new GenericDeleteModuleDataCommand());
-			c.addCommand(new StockedToolsReturnQuantityRollupCommand());
-			c.addCommand(getUpdateStockedtoolsQuantityRollupChain());
+			c.addCommand(getUpdatetoolQuantityRollupChain());
 			c.addCommand(new AddOrUpdateWorkorderCostCommand());
 			c.addCommand(new UpdateWorkorderTotalCostCommand());
 			c.addCommand(getUpdateWorkOrderChain());
@@ -1800,5 +1800,22 @@ public class TransactionChainFactory {
 			c.addCommand(new PurchasedItemsQuantityRollUpCommand());
 			return c;
 		}
+		
+		public static Chain getAddPurchasedToolChain(){
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForPurchasedTool());
+			c.addCommand(new GetAddPurchasedToolCommand());
+			c.addCommand(getAddOrUpdateToolStockTransactionChain());
+			return c;
+		}
+		
+		public static Chain getAddOrUpdateToolStockTransactionChain(){
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForToolTranaction());
+			c.addCommand(new AddOrUpdateToolStockTransactionsCommand());
+			c.addCommand(getUpdatetoolQuantityRollupChain());
+			return c;
+		}
+		
 }
 

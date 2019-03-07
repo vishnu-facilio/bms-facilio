@@ -14,7 +14,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ItemTransactionsContext;
 import com.facilio.bmsconsole.context.PurchasedItemContext;
 import com.facilio.bmsconsole.context.StockedToolsReturnTrackingContext;
-import com.facilio.bmsconsole.context.StockedToolsTransactionContext;
+import com.facilio.bmsconsole.context.ToolTransactionContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.criteria.PickListOperators;
@@ -36,24 +36,24 @@ public class StockedToolsReturnQuantityRollupCommand implements Command {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 
 		FacilioModule stockedToolsTransactionModule = modBean
-				.getModule(FacilioConstants.ContextNames.STOCKED_TOOLS_TRANSACTIONS);
+				.getModule(FacilioConstants.ContextNames.TOOL_TRANSACTIONS);
 		List<FacilioField> stockedToolsTransactionFields = modBean
-				.getAllFields(FacilioConstants.ContextNames.STOCKED_TOOLS_TRANSACTIONS);
+				.getAllFields(FacilioConstants.ContextNames.TOOL_TRANSACTIONS);
 		Map<String, FacilioField> stockedToolsTransactionFieldMap = FieldFactory
 				.getAsMap(stockedToolsTransactionFields);
 
 		List<FacilioField> fields = new ArrayList<FacilioField>();
-		List<? extends StockedToolsTransactionContext> stockedToolsTransactions = (List<StockedToolsTransactionContext>) context
+		List<? extends ToolTransactionContext> stockedToolsTransactions = (List<ToolTransactionContext>) context
 				.get(FacilioConstants.ContextNames.RECORD_LIST);
 		Set<Long> uniqueStockedToolsIds = new HashSet<Long>();
 		int totalQuantityConsumed = 0;
 		if (stockedToolsTransactions != null && !stockedToolsTransactions.isEmpty()) {
-			for (StockedToolsTransactionContext stockedToolTransaction : stockedToolsTransactions) {
+			for (ToolTransactionContext stockedToolTransaction : stockedToolsTransactions) {
 				double totalReturnQuantity = getTotalReturnQuantity(stockedToolTransaction.getId());
 
-				uniqueStockedToolsIds.add(stockedToolTransaction.getStockedTool().getId());
+				uniqueStockedToolsIds.add(stockedToolTransaction.getTool().getId());
 //				stockedToolTransaction.setReturnQuantity(totalReturnQuantity);
-				UpdateRecordBuilder<StockedToolsTransactionContext> updateBuilder = new UpdateRecordBuilder<StockedToolsTransactionContext>()
+				UpdateRecordBuilder<ToolTransactionContext> updateBuilder = new UpdateRecordBuilder<ToolTransactionContext>()
 						.module(stockedToolsTransactionModule)
 						.fields(modBean.getAllFields(stockedToolsTransactionModule.getName())).andCondition(CriteriaAPI
 								.getIdCondition(stockedToolTransaction.getId(), stockedToolsTransactionModule));

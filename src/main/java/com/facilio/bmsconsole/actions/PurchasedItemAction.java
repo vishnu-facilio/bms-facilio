@@ -110,13 +110,13 @@ public class PurchasedItemAction extends FacilioAction{
 		context.put(FacilioConstants.ContextNames.RECORD, inventoryCost);
 		context.put(FacilioConstants.ContextNames.ITEM_ID, itemId);
 		context.put(FacilioConstants.ContextNames.ITEM_IDS, Collections.singletonList(itemId));
-		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, inventoryCostsId);
+		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, purchasedItemsId);
 
 		Chain deleteInventoryChain = TransactionChainFactory.getDeleteInventoryCostChain();
 		deleteInventoryChain.execute(context);
-		setInventoryCostsId((List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST));
+		setPurchasedItemsId((List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST));
 		rowsUpdated = (int) context.get(FacilioConstants.ContextNames.ROWS_UPDATED);
-		setResult("inventoryCostsId", inventoryCostsId);
+		setResult("inventoryCostsId", purchasedItemsId);
 		return SUCCESS;
 	}
 	
@@ -138,12 +138,12 @@ public class PurchasedItemAction extends FacilioAction{
 		this.rowsUpdated = rowsUpdated;
 	}
 	
-	private List<Long> inventoryCostsId;
-	public List<Long> getInventoryCostsId() {
-		return inventoryCostsId;
+	private List<Long> purchasedItemsId;
+	public List<Long> getPurchasedItemsId() {
+		return purchasedItemsId;
 	}
-	public void setInventoryCostsId(List<Long> inventoryCostsId) {
-		this.inventoryCostsId = inventoryCostsId;
+	public void setPurchasedItemsId(List<Long> inventoryCostsId) {
+		this.purchasedItemsId = inventoryCostsId;
 	}
 	
 	private boolean includeParentFilter;

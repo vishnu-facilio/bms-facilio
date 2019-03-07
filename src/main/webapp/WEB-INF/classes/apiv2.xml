@@ -1454,6 +1454,41 @@
 		</action>
 	</package>
 	
+	<package name="purchasedToolApi" namespace="/api/v2/purchasedTool"
+		extends="v2Api">
+		<action name="update"
+			class="com.facilio.bmsconsole.actions.PurchasedToolAction" method="addPurchasedItem">
+			<param name="moduleName">asset</param>
+			<param name="permission">UPDATE</param>
+		</action> 
+		<action name="*"
+			class="com.facilio.bmsconsole.actions.PurchasedToolAction" method="purchasedItemDetails">
+			<param name="moduleName">asset</param>
+			<param name="permission">READ</param>
+			<param name = "inventryId">{1}</param>
+		</action>
+		<action name="delete" class="com.facilio.bmsconsole.actions.PurchasedToolAction"
+			method="deletePurchasedItem">
+			<param name="moduleName">asset</param>
+			<param name="permission">DELETE</param>
+		</action>
+		<action name="add" class="com.facilio.bmsconsole.actions.PurchasedToolAction"
+			method="addPurchasedItem">
+			<param name="moduleName">asset</param>
+			<param name="permission">DELETE</param>
+		</action>
+	</package>
+	
+	<package name="purchasedItemsList" namespace="com.facilio.bmsconsole.actions.PurchasedToolAction"
+		extends="v2Api">
+		<action name="*"
+			class="com.facilio.bmsconsole.actions.PurchasedItemAction" method="purchasedItemsList">
+			<param name="moduleName">asset</param>
+			<param name="permission">READ</param>
+			<param name = "itemId">{1}</param>
+		</action>
+	</package>
+	
 	
 	<!-- <package name="pageApiv2" namespace="/api/v2/pages" extends="v2Api"> 
 		<action name="*" class="com.facilio.bmsconsole.actions.PageAction" method="fetchPage"> 

@@ -47,13 +47,13 @@ public class GetWorkorderToolsListCommand implements Command {
 			List<WorkorderToolsContext> workorderTools = selectBuilder.get();
 			if (workorderTools != null && !workorderTools.isEmpty()) {
 				for (WorkorderToolsContext woTools : workorderTools) {
-					ToolContext stockedTool = geStockedTools(woTools.getStockedTool().getId());
+					ToolContext stockedTool = geStockedTools(woTools.getTool().getId());
 					StoreRoomContext storeRoom = StoreroomApi
 							.getStoreRoom(stockedTool.getStoreRoom().getId());
 					stockedTool.setStoreRoom(storeRoom);
 					ToolTypesContext tool = ToolsApi.getTool(stockedTool.getToolType().getId());
 					stockedTool.setToolType(tool);
-					woTools.setStockedTool(stockedTool);
+					woTools.setTool(stockedTool);
 				}
 			}
 			context.put(FacilioConstants.ContextNames.WORKORDER_TOOLS, workorderTools);

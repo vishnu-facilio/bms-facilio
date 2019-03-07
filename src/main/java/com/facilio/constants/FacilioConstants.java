@@ -32,6 +32,7 @@ import com.facilio.bmsconsole.context.HeatPumpContext;
 import com.facilio.bmsconsole.context.InventoryCategoryContext;
 import com.facilio.bmsconsole.context.InventoryContext;
 import com.facilio.bmsconsole.context.PurchasedItemContext;
+import com.facilio.bmsconsole.context.PurchasedToolContext;
 import com.facilio.bmsconsole.context.ItemStatusContext;
 import com.facilio.bmsconsole.context.InventoryVendorContext;
 import com.facilio.bmsconsole.context.ItemContext;
@@ -53,7 +54,7 @@ import com.facilio.bmsconsole.context.SpaceContext;
 import com.facilio.bmsconsole.context.ToolContext;
 import com.facilio.bmsconsole.context.StockedToolsReturnTrackingContext;
 import com.facilio.bmsconsole.context.ToolStatusContext;
-import com.facilio.bmsconsole.context.StockedToolsTransactionContext;
+import com.facilio.bmsconsole.context.ToolTransactionContext;
 import com.facilio.bmsconsole.context.StoreRoomContext;
 import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.TicketCategoryContext;
@@ -798,11 +799,13 @@ public class FacilioConstants {
 		public static final String TOOL_STATUS = "toolStatus";
 		
 		public static final String WORKORDER_TOOLS = "workorderTools";
-		public static final String STOCKED_TOOLS_TRANSACTIONS = "stockedToolsTransactions";
+		public static final String TOOL_TRANSACTIONS = "toolTransactions";
 		public static final String STOCKED_TOOLS_RETURN_TRACKING = "stockedToolsReturnTracking";
 		
 		public static final String ITEM_VENDORS = "itemVendors";
 		public static final String TRANSACTION_TYPE = "transactionType";
+		
+		public static final String PURCHASED_TOOL = "purchasedTool";
 		
 		private static Map<String, Class> classMap = Collections.unmodifiableMap(initClassMap());
 		private static Map<String, Class> initClassMap() {
@@ -884,9 +887,10 @@ public class FacilioConstants {
 			classMap.put(TOOL, ToolContext.class);
 			classMap.put(TOOL_STATUS, ToolStatusContext.class);
 			classMap.put(WORKORDER_TOOLS, WorkorderToolsContext.class);
-			classMap.put(STOCKED_TOOLS_TRANSACTIONS, StockedToolsTransactionContext.class);
+			classMap.put(TOOL_TRANSACTIONS, ToolTransactionContext.class);
 			classMap.put(STOCKED_TOOLS_RETURN_TRACKING, StockedToolsReturnTrackingContext.class);
 			classMap.put(ITEM_VENDORS, ItemTypesVendorsContext.class);
+			classMap.put(PURCHASED_TOOL, PurchasedToolContext.class);
 			return classMap;
 		}
 		

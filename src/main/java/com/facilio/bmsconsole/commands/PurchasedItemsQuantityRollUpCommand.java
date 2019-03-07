@@ -31,6 +31,7 @@ import com.facilio.sql.GenericSelectRecordBuilder;
 
 public class PurchasedItemsQuantityRollUpCommand implements Command {
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
