@@ -41,7 +41,7 @@ public class FormFactory {
 		forms.put("item_types_form", getItemTypesForm());
 		forms.put("tool_types_form", getTooltypesForm());
 		forms.put("vendors_form", getVendorsForm());
-		forms.put("stockedTools_form", getStockedToolsForm());
+		forms.put("tool_form", getStockedToolsForm());
 		return forms;
 	}
     public static List<FormField> getFormFields(String modName) {
@@ -356,11 +356,11 @@ public class FormFactory {
 	
 	public static FacilioForm getStockedToolsForm() {
 		FacilioForm form = new FacilioForm();
-		form.setDisplayName("STOCKED TOOLS");
+		form.setDisplayName("NEW TOOL");
 		form.setName("web_default");
 		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.TOOL));
 		form.setLabelPosition(LabelPosition.TOP);
-		form.setFields(getStockedToolsFormField());
+		form.setFields(getToolFormField());
 		form.setFormType(FormType.WEB);
 		return form;
 	}
@@ -568,12 +568,12 @@ public class FormFactory {
 		return fields;
 	}
 	
-	private static List<FormField> getStockedToolsFormField() {
+	private static List<FormField> getToolFormField() {
 		List<FormField> fields = new ArrayList<>();
-		fields.add(new FormField("tool", FieldDisplayType.LOOKUP_SIMPLE, "Tool", Required.REQUIRED, "tools", 1, 1));
+		fields.add(new FormField("toolType", FieldDisplayType.LOOKUP_SIMPLE, "Tool Type", Required.REQUIRED, "toolType", 1, 1));
 		fields.add(new FormField("storeRoom", FieldDisplayType.LOOKUP_SIMPLE, "Store Room", Required.REQUIRED, "storeRoom", 2, 1));
-		fields.add(new FormField("status", FieldDisplayType.LOOKUP_SIMPLE, "Status", Required.OPTIONAL, "stockedToolsStatus", 3, 1));
-		fields.add(new FormField("issuingUnit", FieldDisplayType.UNIT, "Issuing Unit", Required.OPTIONAL, 4, 1));
+		fields.add(new FormField("status", FieldDisplayType.LOOKUP_SIMPLE, "Status", Required.OPTIONAL, "toolStatus", 3, 1));
+		fields.add(new FormField("unit", FieldDisplayType.UNIT, "Unit", Required.OPTIONAL, 4, 1));
 		fields.add(new FormField("quantity", FieldDisplayType.DECIMAL, "Quantity", Required.OPTIONAL, 5, 1));
 		fields.add(new FormField("rate", FieldDisplayType.DECIMAL, "Rate", Required.OPTIONAL, 6, 1));
 		
