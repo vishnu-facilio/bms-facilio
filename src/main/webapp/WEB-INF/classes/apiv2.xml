@@ -604,6 +604,9 @@
 			method="loadApprovalFormFields">
 			<param name="moduleName">{1}</param>
 		</action>
+		<action name="allfields" class="com.facilio.bmsconsole.actions.FormAction"
+		     method="allFormFields">
+		</action>
 
 	</package>
 	<package name="templateApiv2" namespace="/api/v2/template"

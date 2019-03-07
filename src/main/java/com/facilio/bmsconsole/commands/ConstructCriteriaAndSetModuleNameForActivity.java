@@ -50,7 +50,7 @@ public class ConstructCriteriaAndSetModuleNameForActivity implements Command {
 			filterCriteria.addAndCondition(CriteriaAPI.getCondition(modBean.getField("parentId", activityModule.getName()), String.valueOf(parentId), PickListOperators.IS));
 			
 			context.put(FacilioConstants.ContextNames.FILTER_CRITERIA, filterCriteria);
-			context.put(FacilioConstants.ContextNames.SORTING_QUERY, modBean.getField("ttime", activityModule.getName()).getCompleteColumnName());
+			context.put(FacilioConstants.ContextNames.SORTING_QUERY, modBean.getField("ttime", activityModule.getName()).getCompleteColumnName()+" DESC");
 		}
 		return false;
 	}

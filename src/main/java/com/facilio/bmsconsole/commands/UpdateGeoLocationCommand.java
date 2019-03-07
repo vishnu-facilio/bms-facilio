@@ -81,7 +81,7 @@ public class UpdateGeoLocationCommand implements Command {
 					info.put("designatedLocation", isDesignatedLocation);
 				}
 				LOGGER.info("Asset Acitibity "+info.toJSONString());
-				updateAsset(asset, geoLocation, newLocation, isDesignatedLocation);
+				updateAsset(asset, geoLocation, newLocation, isDesignatedLocation, distanceMoved);
 				CommonCommandUtil.addActivityToContext(asset.getId(), -1, AssetActivityType.LOCATION, info, (FacilioContext) context);
 			}
 		}
@@ -131,7 +131,7 @@ public class UpdateGeoLocationCommand implements Command {
 		return FacilioUtil.calculateHaversineDistance(site.getLocation().getLat(), site.getLocation().getLng(), lat, lng) <= MAX_DISTANCE;
 	}
 	
-	private void updateAsset(AssetContext asset, String geoLocation, String newLocation, Boolean isDesignatedLocation) throws Exception {
+	private void updateAsset(AssetContext asset, String geoLocation, String newLocation, Boolean isDesignatedLocation, double distanceMoved) throws Exception {
 		AssetContext updateAsset = new AssetContext();
 		updateAsset.setCurrentLocation(newLocation);
 		asset.setCurrentLocation(newLocation);
@@ -145,6 +145,11 @@ public class UpdateGeoLocationCommand implements Command {
 			updateAsset.setDesignatedLocation(isDesignatedLocation);
 			asset.setDesignatedLocation(isDesignatedLocation);
 		}
+		if (distanceMoved != -1) {
+			updateAsset.setDistanceMoved(distanceMoved);
+			asset.setDistanceMoved(distanceMoved);
+		}
+		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ASSET);
 		UpdateRecordBuilder<AssetContext> updateBuilder = new UpdateRecordBuilder<AssetContext>()
