@@ -6,7 +6,6 @@ import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.templates.*;
 import com.facilio.bmsconsole.templates.Template.Type;
 import com.facilio.bmsconsole.templates.WebNotificationTemplate;
-import com.facilio.bmsconsole.templates.DefaultTemplate.DefaultTemplateType;
 import com.facilio.bmsconsole.util.TemplateAPI;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -98,11 +97,17 @@ public class TemplateAction  extends FacilioAction {
 	public String getDefaultTemplate() {
 		HashMap<Long, DefaultTemplate> templateMap = new HashMap<Long, DefaultTemplate>();
 		for (long id : ids) {
-			templateMap.put(id, TemplateAPI.getDefaultTemplate(DefaultTemplateType.ACTION,(int) id));
+			templateMap.put(id, TemplateAPI.getDefaultTemplate(DefaultTemplateType.ACTION, (int) id));
 		}
 		setResult(FacilioConstants.ContextNames.DEFAULT_TEMPLATE, templateMap);
 		return SUCCESS;
 	}
+	
+	public String getDefaultRuleTemplates() throws Exception {
+		setResult("templates", TemplateAPI.getAllRuleLibraryTemplate());
+		return SUCCESS;
+	}
+	
 	private TaskSectionTemplate taskGroup;
 	public TaskSectionTemplate getTaskGroup() {
 		return taskGroup;

@@ -17,10 +17,10 @@ public class AlarmRuleAction extends FacilioAction {
 	
 	private static final Logger LOGGER = Logger.getLogger(AlarmRuleAction.class.getName());
 	
-	public String fetchAlarmRuleLibrary() throws Exception {
+//	public String fetchAlarmRuleLibrary() throws Exception {
 		
-		List<AlarmRuleContext> alarmRules = TemplateAPI.getAllRuleLibraryContext();
-		setResult("rule", alarmRules);
-		return SUCCESS;
-	}
+//		List<AlarmRuleContext> alarmRuleTemplates = TemplateAPI.getAllRuleLibraryTemplate();
+//		setResult("template", alarmRuleTemplates);
+//		return SUCCESS;
+	
 }
