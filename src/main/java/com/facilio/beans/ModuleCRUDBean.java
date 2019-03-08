@@ -64,5 +64,7 @@ public interface ModuleCRUDBean {
 	public long addDeviceId (String deviceId) throws Exception;
 	
 	public Map<String, Long> getDeviceMap() throws Exception;
+
+	public  List<Map<String,Object>> getAgentDataMap() throws Exception;
 	
 }

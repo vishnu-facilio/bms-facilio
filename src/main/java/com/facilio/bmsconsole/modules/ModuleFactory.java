@@ -86,7 +86,16 @@ public class ModuleFactory {
 		formModule.setTableName("Forms");
 		return formModule;
 	}
-	
+
+	public static FacilioModule getAgentdataModule() {
+		FacilioModule AgentdataModul = new FacilioModule();
+		AgentdataModul.setName("agentdata");
+		AgentdataModul.setDisplayName("agentdata");
+		AgentdataModul.setTableName("agent_data");
+		return AgentdataModul;
+	}
+
+
 	public static FacilioModule getFormFieldsModule() {
 		FacilioModule formFieldsModule = new FacilioModule();
 		formFieldsModule.setName("formFields");

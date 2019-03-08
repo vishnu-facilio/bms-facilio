@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import com.facilio.agent.AgentProcessorFactory;
 import org.apache.log4j.LogManager;
 
 import com.amazonaws.services.kinesis.AmazonKinesis;
@@ -96,6 +97,7 @@ public class KinesisProcessor {
                 System.out.println("Starting kinesis processor for org : " + orgDomainName + " id " + orgId);
                 initiateProcessFactory(orgId, orgDomainName, "event");
                 initiateProcessFactory(orgId, orgDomainName, "timeSeries");
+                initiateProcessFactory(orgId, orgDomainName, "agent");
                 EXISTING_ORGS.add(orgDomainName);
             }
         } catch (ResourceNotFoundException e){
@@ -124,6 +126,9 @@ public class KinesisProcessor {
             }
             case "timeSeries" :{
                 return new TimeSeriesProcessorFactory(orgId, orgDomainName);
+            }
+            case "agent":{
+                return new AgentProcessorFactory(orgId,orgDomainName);
             }
     	}
     	return null;

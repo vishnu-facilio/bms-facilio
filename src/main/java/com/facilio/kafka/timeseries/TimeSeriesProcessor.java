@@ -101,12 +101,6 @@ public class TimeSeriesProcessor extends FacilioProcessor {
                     case "timeseries":
                         processTimeSeries(record);
                         break;
-                    case "devicepoints":
-                        processDevicePoints(payLoad);
-                        break;
-                    case "ack":
-                        processAck(payLoad);
-                        break;
                 }
             }
         } catch (Exception e) {
@@ -124,49 +118,6 @@ public class TimeSeriesProcessor extends FacilioProcessor {
     }
 
 
-    private void processAck(JSONObject payLoad) throws Exception {
-        Long msgId = (Long) payLoad.get("msgid");
-        ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", getOrgId());
-        bean.acknowledgePublishedMessage(msgId);
-    }
-
-    private void processDevicePoints (JSONObject payLoad) throws Exception {
-        long instanceNumber = (Long)payLoad.get("instanceNumber");
-        String destinationAddress = "";
-        if(payLoad.containsKey("macAddress")) {
-            destinationAddress = (String) payLoad.get("macAddress");
-        }
-        long subnetPrefix = (Long)payLoad.get("subnetPrefix");
-        long networkNumber = -1;
-        if(payLoad.containsKey("networkNumber")) {
-            networkNumber = (Long) payLoad.get("networkNumber");
-        }
-        String broadcastAddress = (String) payLoad.get("broadcastAddress");
-        String deviceName = (String) payLoad.get("deviceName");
-
-        String deviceId = instanceNumber+"_"+destinationAddress+"_"+networkNumber;
-        if( ! deviceMap.containsKey(deviceId)) {
-            ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", getOrgId());
-            ControllerContext controller = bean.getController(deviceName, deviceId);
-            if(controller == null) {
-                controller = new ControllerContext();
-                controller.setName(deviceName);
-                controller.setBroadcastIp(broadcastAddress);
-                controller.setDestinationId(destinationAddress);
-                controller.setInstanceNumber(instanceNumber);
-                controller.setNetworkNumber(networkNumber);
-                controller.setSubnetPrefix(Math.toIntExact(subnetPrefix));
-                controller.setMacAddr(deviceId);
-                controller = bean.addController(controller);
-            }
-            long controllerSettingsId = controller.getId();
-            if(controllerSettingsId > -1) {
-                JSONArray points = (JSONArray)payLoad.get("points");
-                LOGGER.info("Device Points : "+points);
-                TimeSeriesAPI.addUnmodeledInstances(points, controllerSettingsId);
-            }
-        }
-    }
     private void updateDeviceTable(String deviceId) {
         try {
             if( ! deviceMap.containsKey(deviceId)) {

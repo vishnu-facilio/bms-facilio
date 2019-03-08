@@ -156,15 +156,12 @@ public class TimeSeriesProcessor implements IRecordProcessor {
 						switch (dataType) {
 							case "timeseries":
 								processTimeSeries(record, payLoad, processRecordsInput, true);
-								break;
-							case "devicepoints":
-								processDevicePoints(payLoad);
-								break;
-							case "ack":
-								processAck(payLoad);
+								updateDeviceTable(record.getPartitionKey());
+
 								break;
 							case "cov":
 								processTimeSeries(record, payLoad, processRecordsInput, false);
+								updateDeviceTable(record.getPartitionKey());
 								break;
 						}
 						dataTypeLastMessageTime.put(dataType, lastMessageReceivedTime);
@@ -193,17 +190,9 @@ public class TimeSeriesProcessor implements IRecordProcessor {
             		+record.getSequenceNumber()+ " in TimeSeries ", e, data);
                  log.info("Exception occurred ", e);
             } finally {
-				updateDeviceTable(record.getPartitionKey());
 			}
 		}
 		LOGGER.info("TOTAL TIMESERIES DATA PROCESSED TIME::: ORGID::::::: "+orgId + "COMPLETED::TIME TAKEN : "+(System.currentTimeMillis() - processStartTime));
-	}
-	
-	private void processAck(JSONObject payLoad) throws Exception {
-		// TODO Auto-generated method stub
-		long msgId = (long) payLoad.get("msgid");
-		ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", orgId);
-		bean.acknowledgePublishedMessage(msgId);
 	}
 
 	private void processTimeSeries(Record record, JSONObject payLoad, ProcessRecordsInput processRecordsInput, boolean isTimeSeries) throws Exception {
@@ -213,44 +202,6 @@ public class TimeSeriesProcessor implements IRecordProcessor {
 		ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", orgId);
 		bean.processTimeSeries(timeStamp, payLoad, record, processRecordsInput.getCheckpointer(), isTimeSeries);
 		LOGGER.info("TIMESERIES DATA PROCESSED TIME::: ORGID::::::: "+orgId + "COMPLETED:::::::TIME TAKEN : "+(System.currentTimeMillis() - startTime));
-	}
-	
-	private void processDevicePoints (JSONObject payLoad) throws Exception {
-		long instanceNumber = (Long)payLoad.get("instanceNumber");
-		String destinationAddress = "";
-		if(payLoad.containsKey("macAddress")) {
-			destinationAddress = (String) payLoad.get("macAddress");
-		}
-		long subnetPrefix = (Long)payLoad.get("subnetPrefix");
-		long networkNumber = -1;
-		if(payLoad.containsKey("networkNumber")) {
-			networkNumber = (Long) payLoad.get("networkNumber");
-		}
-		String broadcastAddress = (String) payLoad.get("broadcastAddress");
-		String deviceName = (String) payLoad.get("deviceName");
-		
-		String deviceId = instanceNumber+"_"+destinationAddress+"_"+networkNumber;
-		if( ! deviceMap.containsKey(deviceName+'_'+deviceId)) {
-			ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", orgId);
-            ControllerContext controller = bean.getController(deviceName, deviceId);
-            if(controller == null) {
-                controller = new ControllerContext();
-                controller.setName(deviceName);
-                controller.setBroadcastIp(broadcastAddress);
-                controller.setDestinationId(destinationAddress);
-                controller.setInstanceNumber(instanceNumber);
-                controller.setNetworkNumber(networkNumber);
-                controller.setSubnetPrefix(Math.toIntExact(subnetPrefix));
-                controller.setMacAddr(deviceId);
-                controller = bean.addController(controller);
-            }
-			long controllerSettingsId = controller.getId();
-			if(controllerSettingsId > -1) {
-				JSONArray points = (JSONArray)payLoad.get("points");
-				LOGGER.info("Device Points : "+points);
-				TimeSeriesAPI.addUnmodeledInstances(points, controllerSettingsId);
-			}
-		}
 	}
 
 	private void updateDeviceTable(String deviceId) {

@@ -1,11 +1,13 @@
 package com.facilio.kafka;
 
+import java.sql.SQLException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
+import com.facilio.kafka.agent.AgentProcessor;
 import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.admin.KafkaAdminClient;
 import org.apache.kafka.clients.admin.ListTopicsResult;
@@ -101,6 +103,7 @@ public class KafkaProcessor {
                 System.out.println("Starting kafka processor for org : " + orgDomainName + " id " + orgId);
                 initiateProcessFactory(orgId, orgDomainName, "event");
                 initiateProcessFactory(orgId, orgDomainName, "timeSeries");
+                initiateProcessFactory(orgId,orgDomainName,"agent");
                 EXISTING_ORGS.add(orgDomainName);
             }
         } catch (Exception e){
@@ -119,7 +122,7 @@ public class KafkaProcessor {
 
     }
 
-    private static FacilioProcessor getProcessor(long orgId, String orgDomainName, String type) {
+    private static FacilioProcessor getProcessor(long orgId, String orgDomainName, String type) throws SQLException {
 
         switch(type){
             case "event" :{
@@ -127,6 +130,9 @@ public class KafkaProcessor {
             }
             case "timeSeries" :{
                 return new TimeSeriesProcessor(orgId, orgDomainName, type);
+            }
+            case "agent":{
+                return new AgentProcessor(orgId,orgDomainName,type);
             }
         }
         return null;

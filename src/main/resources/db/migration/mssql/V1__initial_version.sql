@@ -5606,3 +5606,22 @@ CREATE TABLE Notification_Logger (
 	CREATED_TIME BIGINT NOT NULL,
 	CONSTRAINT NOTIFICATION_LOGGER_FK_ORGID FOREIGN KEY (ORGID) REFERENCES Organizations(ORGID)
 );
+
+
+CREATE TABLE Agent_Data (
+    ID bigint IDENTITY PRIMARY KEY,
+        DEVICE_DETAILS varchar(500),
+        Conn_status bit,
+        MSGID bigint ,
+        DEVICE_ID varchar(20),
+        ORGID bigint,
+        NO_OF_CONTROLLERS int,
+        NAME varchar(20) UNIQUE,
+        DATA_INTERVAL bigint DEFAULT 600000 not null,
+        AGENT_TYPE Varchar(20),
+        VERSION varchar(20),
+        LAST_MODIFIED_TIME bigint,
+        CREATED_TIME bigint,
+        LAST_DATA_RECEIVED_TIME bigint,
+        STATE int
+);
