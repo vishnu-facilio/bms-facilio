@@ -479,11 +479,13 @@ public class ReadingRuleAPI extends WorkflowRuleAPI {
 				alarmTriggerRule.setId(-1);
 				alarmTriggerRule.setRuleType(WorkflowRuleContext.RuleType.ALARM_TRIGGER_RULE);
 				alarmTriggerRule.setEventId(preRequsiteRule.getEventId());
+				alarmTriggerRule.setAssetCategoryId(preRequsiteRule.getAssetCategoryId());
 			}
 			if(alarmClear != null) {
 				alarmClear.setId(-1);
 				alarmClear.setRuleType(WorkflowRuleContext.RuleType.ALARM_CLEAR_RULE);
 				alarmClear.setEventId(preRequsiteRule.getEventId());
+				alarmClear.setAssetCategoryId(preRequsiteRule.getAssetCategoryId());
 				alarmTriggerRules.add(alarmClear);
 			}
 			
@@ -513,7 +515,7 @@ public class ReadingRuleAPI extends WorkflowRuleAPI {
 				alarmClear.setId(-1);
 				alarmClear.setRuleType(WorkflowRuleContext.RuleType.ALARM_CLEAR_RULE);
 				alarmClear.setEventId(preRequsiteRule.getEventId());
-				
+				alarmClear.setAssetCategoryId(preRequsiteRule.getAssetCategoryId());
 				alarmClear.setOnSuccess(false);
 				
 				alarmClear.setRuleGroupId(preRequsiteRule.getId());
