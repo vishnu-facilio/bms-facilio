@@ -77,6 +77,7 @@ public class ScheduleNewPMCommand implements SerializableCommand {
         return false;
     }
     private void schedulePM(PreventiveMaintenance pm, Context context) throws Exception {
+        LOGGER.log(Level.SEVERE, "Generating work orders for PM: " + pm.getId());
         Map<Long, List<Long>> nextExecutionTimes = new HashMap<>();
         List<WorkOrderContext> wos = new ArrayList<>();
 

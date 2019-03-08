@@ -43,7 +43,27 @@ public class FormFactory {
 		forms.put("stockedTools_form", getStockedToolsForm());
 		return forms;
 	}
-
+    public static List<FormField> getFormFields(String modName) {
+    	List<FormField> fields=new ArrayList();
+    	if(modName.equals(FacilioConstants.ContextNames.WORK_ORDER))
+    	{
+    		fields.addAll(getWebWorkOrderFormFields());
+    	}
+    	else if(modName.equals(FacilioConstants.ContextNames.ASSET))
+    	{
+    		fields.addAll(getWebAssetFormFields());
+    	}
+    	else if(modName.equals(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE))
+    	{
+    		fields.addAll(getWebPMFormFields());
+    	}
+    	else if(modName.equals(FacilioConstants.ContextNames.APPROVAL))
+    	{
+    		 fields.addAll(getWebApprovalFormFields());
+    	}
+		return fields;
+    	
+    }
 	@SuppressWarnings("unchecked") // https://stackoverflow.com/a/11205178
 	public static Map<String, Set<FacilioForm>> getAllForms(FormType formtype) {
 		return (Map<String, Set<FacilioForm>>) (Map<?, ?>) Multimaps.asMap(ALL_FORMS.get(formtype));

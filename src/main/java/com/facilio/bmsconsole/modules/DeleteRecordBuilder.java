@@ -160,7 +160,7 @@ public class DeleteRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 		Map<String, Object> prop = Collections.singletonMap(isDeletedField.getName(), true);
 		updateBuilder.fields(Collections.singletonList(isDeletedField))
 						.andCustomWhere(where.getWhereClause(),  where.getValues());
-		return updateBuilder.update(prop);
+		return updateBuilder.updateViaMap(prop);
 	}
 	
 	private List<Long> getIds() throws Exception {

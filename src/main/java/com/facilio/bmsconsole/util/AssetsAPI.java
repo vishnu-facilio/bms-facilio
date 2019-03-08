@@ -764,4 +764,34 @@ public class AssetsAPI {
 		return moduleInfo;
 	}
 	
+	public static void loadAssetsLookups(List<AssetContext> assets) throws Exception {
+		Set<Long> spaceIds = new HashSet<Long>();
+		Set<Long> typeIds = new HashSet<Long>();
+		List<Long> assetIds = new ArrayList<Long>();
+		for(AssetContext asset: assets) {
+			assetIds.add(asset.getId());
+			if (asset.getSpaceId() > 0) {
+				spaceIds.add(asset.getSpaceId());
+			}
+			if (asset.getType() != null && asset.getType().getId() > 0) {
+				typeIds.add(asset.getType().getId());
+			}
+		}
+		Map<Long, BaseSpaceContext> spaceMap = SpaceAPI.getBaseSpaceMap(spaceIds);
+		Map<Long, AssetTypeContext> assetTypeMap = AssetsAPI.getAssetType(typeIds);
+		Map<Long, PhotosContext> assetPhotoMap = AssetsAPI.getAssetPhotoId(assetIds);
+		for(AssetContext asset: assets) {
+			PhotosContext phot = assetPhotoMap.get(asset.getId());
+			if (phot != null) {
+				asset.setPhotoId(phot.getPhotoId());
+			}
+			if(asset.getSpaceId() != -1) {
+				asset.setSpace(spaceMap.get(asset.getSpaceId()));
+			}
+			if (asset.getType() != null && asset.getType().getId() > 0) {
+				asset.setType(assetTypeMap.get(asset.getType().getId()));
+			}
+		}
+	}
+	
 }

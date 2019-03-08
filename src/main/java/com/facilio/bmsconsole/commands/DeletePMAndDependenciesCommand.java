@@ -93,7 +93,13 @@ public class DeletePMAndDependenciesCommand implements Command{
 		deletePMReminders(pmIds);
 		List<Long> recordIds = (List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST);
 		if (AccountUtil.isFeatureEnabled(AccountUtil.FEATURE_SCHEDULED_WO)) {
-			if (isPMDelete || (isStatusUpdate && newPm != null && !newPm.isActive())) {
+			if (isPMDelete) {
+				deleteScheduledWorkorders(context, recordIds);
+			} else if (isStatusUpdate) {
+				if (newPm != null && !newPm.isActive()) {
+					deleteScheduledWorkorders(context, recordIds);
+				}
+			} else {
 				deleteScheduledWorkorders(context, recordIds);
 			}
 			deleteMultiWoPMReminders(pmIds);

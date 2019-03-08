@@ -86,7 +86,16 @@ public class ModuleFactory {
 		formModule.setTableName("Forms");
 		return formModule;
 	}
-	
+
+	public static FacilioModule getAgentdataModule() {
+		FacilioModule AgentdataModul = new FacilioModule();
+		AgentdataModul.setName("agentdata");
+		AgentdataModul.setDisplayName("agentdata");
+		AgentdataModul.setTableName("agent_data");
+		return AgentdataModul;
+	}
+
+
 	public static FacilioModule getFormFieldsModule() {
 		FacilioModule formFieldsModule = new FacilioModule();
 		formFieldsModule.setName("formFields");
@@ -1580,6 +1589,14 @@ public class ModuleFactory {
 		return assetHeirarchy;
 	}
 
+	public static FacilioModule getMlForecastingLifetimeModule() {
+		FacilioModule mlForecastingModule = new FacilioModule();
+		mlForecastingModule.setName("mlforecastinglifetime");
+		mlForecastingModule.setDisplayName("Ml Forecasting Lifetime");
+		mlForecastingModule.setTableName("Ml_Forecasting_Lifetime");
+		return mlForecastingModule;
+	}
+	
 	public static FacilioModule getMlForecastingModule() {
 		FacilioModule mlForecastingModule = new FacilioModule();
 		mlForecastingModule.setName("mlforecasting");
@@ -1668,4 +1685,13 @@ public class ModuleFactory {
 
 		return weatherStation;
 	}
+  	
+  	public static FacilioModule getNotificationLoggerModule() {
+  		FacilioModule notificationLogger = new FacilioModule();
+  		notificationLogger.setName("notificationLogger");
+  		notificationLogger.setDisplayName("Notification Logger");
+  		notificationLogger.setTableName("Notification_Logger");
+  		
+  		return notificationLogger;
+  	}
 }

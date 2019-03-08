@@ -1123,6 +1123,7 @@ public class TransactionChainFactory {
 			c.addCommand(new AddOrUpdateReadingValuesCommand());
 			c.addCommand(new AddMarkedReadingValuesCommand());
 			c.addCommand(new SpaceBudIntegrationCommand());	//For RMZ-SpaceBud Integration
+			c.addCommand(new ReadingUnitConversionToDisplayUnit());
 			return c;
 		}
 		

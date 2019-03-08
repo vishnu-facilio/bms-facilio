@@ -9,6 +9,7 @@ import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.*;
 import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
+import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
@@ -65,8 +66,26 @@ public class OpenScheduledWO extends FacilioJob {
             updateRecordBuilder.update(wo);
 
             FacilioContext context = new FacilioContext();
+
+            List<EventType> activities = new ArrayList<>();
+            activities.add(EventType.CREATE);
+
+            //TODO remove single ACTIVITY_TYPE once handled in TicketActivity
+            context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.CREATE);
+
+            String status = wo.getStatus().getStatus();
+            if (status != null && status.equals("Assigned")) {
+                activities.add(EventType.ASSIGN_TICKET);
+            }
+            context.put(FacilioConstants.ContextNames.EVENT_TYPE_LIST, activities);
+
             List<UpdateChangeSet> changeSets = FieldUtil.constructChangeSet(wo.getId(), FieldUtil.getAsProperties(wo), fieldMap);
-            context.put(FacilioConstants.ContextNames.CHANGE_SET_MAP, Collections.singletonMap(FacilioConstants.ContextNames.WORK_ORDER, changeSets));
+            if (changeSets != null && !changeSets.isEmpty()) {
+                Map<Long, List<UpdateChangeSet>> changeSetMap = new HashMap<>();
+                changeSetMap.put(woId, changeSets);
+                context.put(FacilioConstants.ContextNames.CHANGE_SET_MAP, Collections.singletonMap(FacilioConstants.ContextNames.WORK_ORDER, changeSetMap));
+            }
+
             context.put(FacilioConstants.ContextNames.RECORD_MAP, Collections.singletonMap(FacilioConstants.ContextNames.WORK_ORDER, Collections.singletonList(wo)));
             context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(wo.getId()));
             Chain c = TransactionChainFactory.getWorkOrderWorkflowsChain();

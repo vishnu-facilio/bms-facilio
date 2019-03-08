@@ -42,6 +42,24 @@ public class FormsAPI {
 		}
 		return forms;
 	}
+	
+	public static List<FormField> getallFormFields(String modName) throws Exception {
+	List<FacilioField> customFields = new ArrayList();
+	List<FormField> fields = new ArrayList();
+	
+	fields.addAll(FormFactory.getFormFields(modName));
+	
+	ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+	
+	if(modName.equals("approval")) {
+		modName = "workorder";
+	}
+	customFields = modBean.getAllCustomFields(modName);
+	if(customFields != null && !customFields.isEmpty()) {
+    fields.addAll(FormsAPI.getFacilioFieldsFromFormFields(customFields));
+	}
+	return fields;
+	}
 
 	private static Map<String, Set<FacilioForm>> getAllFormsFromDB(FormType formtype) throws Exception {
 		Criteria formTypeCriteria = getFormTypeCriteria(formtype);

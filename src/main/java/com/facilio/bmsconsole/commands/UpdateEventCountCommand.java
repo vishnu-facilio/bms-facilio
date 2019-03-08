@@ -75,7 +75,7 @@ public class UpdateEventCountCommand implements Command {
 						.andCondition(CriteriaAPI.getIdCondition(id, module))
 						;
 				
-				updateRecordBuilder.update(updateMap);
+				updateRecordBuilder.updateViaMap(updateMap);
 			}
 		}
 		return false;

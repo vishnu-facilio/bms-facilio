@@ -71,7 +71,7 @@ public class UpdateNotesCountCommand implements Command {
 						.andCondition(CriteriaAPI.getIdCondition(id, tModule))
 						;
 				
-				updateRecordBuilder.update(updateMap);
+				updateRecordBuilder.updateViaMap(updateMap);
 			}
 		}
 		return false;

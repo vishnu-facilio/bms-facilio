@@ -7,6 +7,8 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
 import com.facilio.beans.ModuleBean;
@@ -27,6 +29,8 @@ import com.facilio.util.FacilioUtil;
 
 public class UpdateGeoLocationCommand implements Command {
 
+	private static final Logger LOGGER = LogManager.getLogger(UpdateGeoLocationCommand.class.getName());
+	
 	@Override
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
@@ -34,36 +38,50 @@ public class UpdateGeoLocationCommand implements Command {
 		String location = (String) context.get(FacilioConstants.ContextNames.LOCATION);
 		
 		if (asset != null && asset.isGeoLocationEnabled() && StringUtils.isNotEmpty(location)) {
-			String[] latLng = location.trim().split("\\s*,\\s*");
-			double lat = Double.parseDouble(latLng[0]);
-			double lng = Double.parseDouble(latLng[1]);
-
+			LOGGER.info("Received Location for asset "+asset.getId()+" is "+location);
 			JSONObject info = null;
-			String newLocation = null;
-			if (asset.isMoved() && !isWithInLocation(asset.getCurrentLocation(), lat, lng, asset.getBoundaryRadius())) {
+			String newLocation = null, geoLocation = null;
+			Boolean isDesignatedLocation = null;
+			double distanceMoved = -1;
+			if (StringUtils.isEmpty(asset.getGeoLocation())) {
+				geoLocation = location;
 				newLocation = location;
 			}
-			
-			Boolean isMoved = null;
-			boolean isWithinGeoLocation = isWithInLocation(asset.getGeoLocation(), lat, lng, asset.getBoundaryRadius());
-			if (asset.isMoved()) {
-				if (isWithinGeoLocation) {
-					newLocation = asset.getGeoLocation();
-					isMoved = false;
+			else {
+				String[] latLng = location.trim().split("\\s*,\\s*");
+				double lat = Double.parseDouble(latLng[0]);
+				double lng = Double.parseDouble(latLng[1]);
+	
+				if (!asset.isDesignatedLocation() && !isWithInLocation(asset.getCurrentLocation(), lat, lng, asset.getBoundaryRadius())) {
+					newLocation = location;
 				}
-			}
-			else if (!isWithinGeoLocation) {
-				newLocation = location;
-				isMoved = true;
+				
+				distanceMoved = getDistance(asset.getGeoLocation(), lat, lng);
+				boolean isWithinGeoLocation = StringUtils.isNoneEmpty(asset.getGeoLocation()) && distanceMoved <= asset.getBoundaryRadius();
+				if (!asset.isDesignatedLocation()) {
+					if (isWithinGeoLocation) {
+						newLocation = asset.getGeoLocation();
+						isDesignatedLocation = true;
+						distanceMoved = 0;
+					}
+				}
+				else if (!isWithinGeoLocation) {
+					newLocation = location;
+					isDesignatedLocation = false;
+				}
 			}
 			
 			if (newLocation != null) {
 				info = new JSONObject();
 				info.put("currentLocation", newLocation);
-				if (isMoved != null) {
-					info.put("moved", isMoved);
+				if (distanceMoved != 0 && distanceMoved != -1) {
+					info.put("distanceMoved", distanceMoved);
 				}
-				updateCurrentLocation(asset.getId(), newLocation, isMoved);
+				if (isDesignatedLocation != null) {
+					info.put("designatedLocation", isDesignatedLocation);
+				}
+				LOGGER.info("Asset Acitibity "+info.toJSONString());
+				updateAsset(asset, geoLocation, newLocation, isDesignatedLocation, distanceMoved);
 				CommonCommandUtil.addActivityToContext(asset.getId(), -1, AssetActivityType.LOCATION, info, (FacilioContext) context);
 			}
 		}
@@ -74,10 +92,20 @@ public class UpdateGeoLocationCommand implements Command {
 		if (StringUtils.isEmpty(location)) {
 			return false;
 		}
+		return getDistance(location, lat, lng) <= boundaryRadius;
+	}
+	
+	private double getDistance (String location, double lat, double lng) {
+		if (StringUtils.isEmpty(location)) {
+			return 0;
+		}
 		String[] latLng = location.trim().split("\\s*,\\s*");
 		double prevLat = Double.parseDouble(latLng[0]);
 		double prevLng = Double.parseDouble(latLng[1]);
-		return FacilioUtil.calculateHaversineDistance(prevLat, prevLng, lat, lng) <= boundaryRadius;
+		
+		double distance = FacilioUtil.calculateHaversineDistance(prevLat, prevLng, lat, lng);
+		LOGGER.info("Distance between ("+location+") and ("+lat+", "+lng+") is "+distance);
+		return distance;
 	}
 	
 	private SiteContext getNearestLocation(double lat, double lng) throws Exception {
@@ -103,18 +131,33 @@ public class UpdateGeoLocationCommand implements Command {
 		return FacilioUtil.calculateHaversineDistance(site.getLocation().getLat(), site.getLocation().getLng(), lat, lng) <= MAX_DISTANCE;
 	}
 	
-	private void updateCurrentLocation(long id, String location, Boolean isMoved) throws Exception {
-		AssetContext asset = new AssetContext();
-		asset.setCurrentLocation(location);
-		asset.setMoved(isMoved);
+	private void updateAsset(AssetContext asset, String geoLocation, String newLocation, Boolean isDesignatedLocation, double distanceMoved) throws Exception {
+		AssetContext updateAsset = new AssetContext();
+		updateAsset.setCurrentLocation(newLocation);
+		asset.setCurrentLocation(newLocation);
+		
+		if (geoLocation != null) {
+			updateAsset.setGeoLocation(geoLocation);
+			asset.setGeoLocation(geoLocation);
+			isDesignatedLocation = true;
+		}
+		if (isDesignatedLocation != null) {
+			updateAsset.setDesignatedLocation(isDesignatedLocation);
+			asset.setDesignatedLocation(isDesignatedLocation);
+		}
+		if (distanceMoved != -1) {
+			updateAsset.setDistanceMoved(distanceMoved);
+			asset.setDistanceMoved(distanceMoved);
+		}
+		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ASSET);
 		UpdateRecordBuilder<AssetContext> updateBuilder = new UpdateRecordBuilder<AssetContext>()
 																.fields(modBean.getAllFields(FacilioConstants.ContextNames.ASSET))
 																.module(module)
-																.andCondition(CriteriaAPI.getIdCondition(id, module))
+																.andCondition(CriteriaAPI.getIdCondition(asset.getId(), module))
 																;
-		updateBuilder.update(asset);
+		updateBuilder.update(updateAsset);
 	}
 
 }

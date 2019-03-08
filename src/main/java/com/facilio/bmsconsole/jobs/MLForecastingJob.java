@@ -51,7 +51,7 @@ public class MLForecastingJob extends FacilioJob
 		List<MlForecastingContext> pcList = getPredictionJobs(jc.getOrgId());
 		for(MlForecastingContext predictionContext : pcList)
 		{
-			calculateMSEForPreviousPrediction(predictionContext);
+			//calculateMSEForPreviousPrediction(predictionContext);
 			doPrediction(predictionContext, jc.getExecutionTime() * 1000);
 		}
 		
@@ -251,14 +251,16 @@ public class MLForecastingJob extends FacilioJob
 					 Chain chain = TransactionChainFactory.onlyAddOrUpdateReadingsChain();
 					 chain.execute(context);
 					 
+					 /*
 					 ReadingContext lastReading = predictReadingList.get(predictReadingList.size()-1);
 					 GenericDeleteRecordBuilder deleteRecordBuilder = new GenericDeleteRecordBuilder();
 					 deleteRecordBuilder.table(predictField.getModule().getTableName())
 		             .andCustomWhere("orgid = ?", pc.getOrgId())
-		             .andCustomWhere("parendId = ?",pc.getAssetid())
+		             .andCustomWhere("parentId = ?",pc.getAssetid())
 		             .andCustomWhere("ttime > ?", lastReading.getTtime());
 
 		                deleteRecordBuilder.delete();
+		                */
 				 }
 				 catch(Exception e)
 				 {
@@ -318,6 +320,7 @@ public class MLForecastingJob extends FacilioJob
 	private void generateModel(MlForecastingContext pc) throws Exception
 	{
 		 JSONObject postObj = new JSONObject();
+		 postObj.put("predictedFieldID", pc.getPredictedfieldid());
 		 postObj.put("meterInterval",pc.getDatainterval());
 		 postObj.put("data", pc.getPyData());
 		 

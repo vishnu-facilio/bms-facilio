@@ -13,6 +13,10 @@ import org.json.JSONException;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
+import com.facilio.bmsconsole.modules.FieldFactory;
+import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.sql.GenericInsertRecordBuilder;
+
 public class FacilioUtil {
 
     private static final Logger LOGGER = LogManager.getLogger(FacilioUtil.class.getName());
@@ -105,5 +109,39 @@ public class FacilioUtil {
 	    double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
 	    double d = RADIUS_OF_EARTH * c;
 	    return d * 1000; // meters
+	}
+	
+	public static void addNotificationLogger (NotificationType type, String to, JSONObject info) throws Exception {
+		Map<String, Object> props = new HashMap<>();
+		props.put("type", type.getValue());
+		props.put("to", to);
+		props.put("threadName", Thread.currentThread().getName());
+		props.put("createdTime", System.currentTimeMillis());
+		if (info != null) {
+			props.put("info", info.toJSONString());
+		}
+		
+		new GenericInsertRecordBuilder()
+				.table(ModuleFactory.getNotificationLoggerModule().getTableName())
+				.fields(FieldFactory.getNotificationLoggerFields())
+				.insert(props)
+				;
+	}
+	
+	public static enum NotificationType {
+		EMAIL,
+		SMS
+		;
+		
+		public int getValue() {
+			return ordinal() + 1;
+		}
+		
+		public static NotificationType valueOf (int value) {
+			if (value > 0 && value <= values().length) {
+				return values() [value - 1];
+			}
+			return null;
+		}
 	}
 }

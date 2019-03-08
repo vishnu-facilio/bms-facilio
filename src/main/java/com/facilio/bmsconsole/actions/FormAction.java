@@ -13,6 +13,7 @@ import com.facilio.bmsconsole.forms.FormFactory;
 import com.facilio.bmsconsole.forms.FormField;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldFactory;
+import com.facilio.bmsconsole.util.FormsAPI;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
@@ -121,6 +122,11 @@ public class FormAction extends FacilioAction {
 		setResult(FacilioConstants.ContextNames.FIELD_NAME_LIST, fields);
 		return SUCCESS;
 	}
+	
+	public String allFormFields() throws Exception {
+		setResult(FacilioConstants.ContextNames.FORM_FIELDS,FormsAPI.getallFormFields(moduleName));
+		return SUCCESS;
+	}	
 	
 	public String editForm() throws Exception {
 		Context context = new FacilioContext();
