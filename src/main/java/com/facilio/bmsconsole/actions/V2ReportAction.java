@@ -415,6 +415,8 @@ public class V2ReportAction extends FacilioAction {
 		getDataPointFromAlarm();
 		
 		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.REPORT_FROM_ALARM, true);
+		context.put(FacilioConstants.ContextNames.ALARM_RESOURCE, alarmResource);
 		setReadingsDataContext(context);
 		
 		Chain fetchReadingDataChain = newFormat ? ReadOnlyChainFactory.newFetchReadingReportChain() : ReadOnlyChainFactory.fetchReadingReportChain();
@@ -660,6 +662,13 @@ public class V2ReportAction extends FacilioAction {
 	public void setParentId(List<Long> parentId) {
 		this.parentId = parentId;
 	}
+	private ResourceContext alarmResource;
+	public ResourceContext getAlarmResource() {
+		return alarmResource;
+	}
+	public void setAlarmResource(ResourceContext alarmResource) {
+		this.alarmResource = alarmResource;
+	}
 
 	public boolean deleteWithWidget;
 	
@@ -697,6 +706,7 @@ public class V2ReportAction extends FacilioAction {
 		
 		if(readingruleContext != null) {
 			ResourceContext resource = ResourceAPI.getResource(alarm.getResource().getId());
+			this.alarmResource = resource;
 			ResourceContext currentResource = resource;
 			
 			if(readingruleContext.getThresholdType() == ReadingRuleContext.ThresholdType.ADVANCED.getValue()) {

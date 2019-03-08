@@ -341,6 +341,8 @@ public class FacilioConstants {
 		public static final String REPORT_Y_AGGR = "yAggr";
 		public static final String REPORT_DATA = "reportData";
 		public static final String REPORT_HANDLE_BOOLEAN = "reportHandleBoolean";
+		public static final String REPORT_FROM_ALARM = "reportFromAlarm";
+		public static final String ALARM_RESOURCE = "alarmResource";
 		public static final String CALCULATE_REPORT_AGGR_DATA = "calculateReportData";
 		public static final String REPORT_CARD_DATA = "reportCardData";
 		public static final String REPORT_VARIANCE_DATA = "reportVarianceData";
