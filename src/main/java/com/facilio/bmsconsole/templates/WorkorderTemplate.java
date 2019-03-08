@@ -184,7 +184,7 @@ public class WorkorderTemplate extends Template {
 				woProp.put("resource", FieldUtil.getEmptyLookedUpProp(resourceId));
 			}
 			if (tenantId != -1) {
-				woProp.put("tenant", FieldUtil.getLookedUpProp(tenantId));
+				woProp.put("tenant", FieldUtil.getEmptyLookedUpProp(tenantId));
 			}
 			
 			if (additionInfo != null) {

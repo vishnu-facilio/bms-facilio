@@ -347,6 +347,7 @@ public class FieldUtil {
 		return properties;
 	}
 	
+
 	public static <E extends ModuleBaseWithCustomFields> Map<Long,E> getAsMap(List<E> beans) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException
 	{
 
@@ -368,8 +369,7 @@ public class FieldUtil {
 		return properties;
 	}
 	
-	public static JSONArray getAsJSONArray(List<?> beans, Class<?> beanClass) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException
-	{
+	public static JSONArray getAsJSONArray(List<?> beans, Class<?> beanClass) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
 		JSONArray array = null;
 		if(beans != null) {
 			ObjectMapper mapper = getMapper(beanClass);

@@ -207,8 +207,9 @@ public static Map<String,Object> getTotalConsumptionBySites(Long startTime,Long 
         List<Map<String,Object>> totalConsumption = selectBuilder.get();
 		
         Map<String,Object> resp = new HashMap<String, Object>();
-		
+		if(totalConsumption.size() > 0) {
 		resp.put("energy",totalConsumption.get(0).get("total_consumption"));
+		}
 		return resp;
        
   }
@@ -247,9 +248,10 @@ public static Map<String,Object> getTotalConsumptionBySites(Long startTime,Long 
 	List<Map<String,Object>> totalConsumption = selectBuilder.get();
 		
         Map<String,Object> resp = new HashMap<String, Object>();
-		
-        resp.put("water",totalConsumption.get(0).get("total_consumption"));
-		return resp;
+        if(totalConsumption.size() > 0) {
+        	resp.put("water",totalConsumption.get(0).get("total_consumption"));
+    	}
+        return resp;
        
   }
   	

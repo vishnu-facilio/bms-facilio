@@ -629,7 +629,7 @@ public class TenantsAPI {
 														   .fields(modBean.getAllFields(FacilioConstants.ContextNames.TENANT))
 														   .andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 														   .andCondition(CriteriaAPI.getIdCondition(tenant.getId(), module));
-		int count = updateBuilder.update(FieldUtil.getAsProperties(tenant));
+		int count = updateBuilder.update(tenant);
 		
 		if (oldTenant != null) {
 			deleteTenantLogo(oldTenant.getLogoId());

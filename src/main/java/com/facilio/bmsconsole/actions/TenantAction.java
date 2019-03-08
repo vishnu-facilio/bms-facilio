@@ -10,6 +10,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
+import com.amazonaws.services.cloudfront.model.EventType;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
@@ -24,7 +25,6 @@ import com.facilio.bmsconsole.tenant.TenantContext;
 import com.facilio.bmsconsole.tenant.TenantUserContext;
 import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.TenantsAPI;
-import com.facilio.bmsconsole.workflow.rule.ActivityType;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.pdf.PdfUtil;
@@ -381,7 +381,7 @@ private Map<String, Double> readingData;
 		try {
 			
 			FacilioContext context = new FacilioContext();
-			context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.CREATE);
+			context.put(FacilioConstants.ContextNames.EVENT_TYPE, com.facilio.bmsconsole.workflow.rule.EventType.CREATE);
 			context.put(FacilioConstants.ContextNames.SET_LOCAL_MODULE_ID, true);
 			context.put(FacilioConstants.ContextNames.RECORD, tenant);
 			
@@ -413,7 +413,7 @@ private Map<String, Double> readingData;
 	public String updateTenant() {
 		try {
 			FacilioContext context = new FacilioContext();
-			context.put(FacilioConstants.ContextNames.ACTIVITY_TYPE, ActivityType.CREATE);
+			context.put(FacilioConstants.ContextNames.EVENT_TYPE, com.facilio.bmsconsole.workflow.rule.EventType.CREATE);
 			context.put(FacilioConstants.ContextNames.SET_LOCAL_MODULE_ID, true);
 			context.put(FacilioConstants.ContextNames.RECORD, tenant);
 			context.put(FacilioConstants.ContextNames.IS_TENANT_ZONE, tenantZone);
