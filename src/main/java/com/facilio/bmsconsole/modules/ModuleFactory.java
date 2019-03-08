@@ -1580,6 +1580,14 @@ public class ModuleFactory {
 		return assetHeirarchy;
 	}
 
+	public static FacilioModule getMlForecastingLifetimeModule() {
+		FacilioModule mlForecastingModule = new FacilioModule();
+		mlForecastingModule.setName("mlforecastinglifetime");
+		mlForecastingModule.setDisplayName("Ml Forecasting Lifetime");
+		mlForecastingModule.setTableName("Ml_Forecasting_Lifetime");
+		return mlForecastingModule;
+	}
+	
 	public static FacilioModule getMlForecastingModule() {
 		FacilioModule mlForecastingModule = new FacilioModule();
 		mlForecastingModule.setName("mlforecasting");
