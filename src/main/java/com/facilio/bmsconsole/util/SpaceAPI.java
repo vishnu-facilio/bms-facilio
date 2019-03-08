@@ -430,14 +430,13 @@ public class SpaceAPI {
 	public static List<ZoneContext> getTenantZones() throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule("zone");
-		
 		List<FacilioField> fields = modBean.getAllFields("zone");
 		
 		SelectRecordsBuilder<ZoneContext> builder = new SelectRecordsBuilder<ZoneContext>()
 													.table(module.getTableName())
 													.moduleName("zone")
-													.beanClass(ZoneContext.class)
 													.select(fields)
+													.beanClass(ZoneContext.class)
 													.andCustomWhere(module.getTableName()+".TENANT_ZONE = ?", 1)
 													.orderBy("ID");
 		List<ZoneContext> zoneList = builder.get();
@@ -527,7 +526,9 @@ public class SpaceAPI {
 							childSpaces = getSpaceChildren(parentSpace.getId());
 							break;
 					case ZONE:
-							childSpaces = getZoneChildren(parentSpace.getId());
+							List<Long> idList = new ArrayList<Long>();
+							idList.add(parentSpace.getId());
+							childSpaces = getZoneChildren(idList);
 							break;
 				}
 				if(childSpaces != null && !childSpaces.isEmpty()) {
@@ -908,13 +909,12 @@ public static long getSitesCount() throws Exception {
 		return null;
 	}
 	
-	public static List<BaseSpaceContext> getZoneChildren(long zoneId) throws Exception {
-		List<Long> zoneIds = new ArrayList<>();
-		zoneIds.add(zoneId);
+	public static List<BaseSpaceContext> getZoneChildren(List<Long> zoneIds) throws Exception {
 		return getZoneChildren(zoneIds, true);
 	}
 	
 	private static List<BaseSpaceContext> getZoneChildren(List<Long> zoneIds, Boolean isImmediate) throws Exception {
+		List<BaseSpaceContext> spaces = new ArrayList<BaseSpaceContext>();
 		if(zoneIds != null && !zoneIds.isEmpty()) {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.BASE_SPACE);
@@ -945,11 +945,13 @@ public static long getSitesCount() throws Exception {
 			if (isImmediate) {
 				selectBuilder.andCustomWhere("Zone_Space.IS_IMMEDIATE = ?", isImmediate);
 			}									
-			List<BaseSpaceContext> spaces = selectBuilder.get();
+			spaces = selectBuilder.get();
 			return spaces;
 		}
-		return null;
+		return spaces;
 	}
+	
+	
 	
 	public static List<BaseSpaceContext> getBaseSpaces(List<Long> idList) throws Exception
 	{

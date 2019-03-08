@@ -72,6 +72,14 @@ public class PreventiveMaintenance extends ResourceContext {
 	public void setCreatedById(long createdById) {
 		this.createdById = createdById;
 	}
+	
+	private long tenantId = -1;
+	public long getTenantId() {
+		return tenantId;
+	}
+	public void setTenantId(long tenantId) {
+		this.tenantId = tenantId;
+	}
 
 	private User modifiedBy;
 	public User getModifiedBy() {

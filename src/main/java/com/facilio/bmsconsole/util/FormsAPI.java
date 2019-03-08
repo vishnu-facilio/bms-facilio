@@ -151,9 +151,29 @@ public class FormsAPI {
 				else if (f.getDisplayTypeEnum() == FieldDisplayType.ATTACHMENT) {
 					f.setName("attachedFiles");
 				}
+				else if (f.getDisplayTypeEnum() == FieldDisplayType.TEXTBOX && f.getDisplayName().equals("Contact Name") ) {
+					f.setName("contact_name");
+				}
+				else if (f.getDisplayTypeEnum() == FieldDisplayType.TEXTBOX && f.getDisplayName().equals("Contact Email") ) {
+					f.setName("contact_email");
+				}
+				else if (f.getDisplayTypeEnum() == FieldDisplayType.LOGO ) {
+					f.setName("logo");
+				}
 				else if (f.getDisplayTypeEnum() == FieldDisplayType.LOOKUP_SIMPLE && f.getDisplayName().equals("Site")) {
 					f.setName("siteId");
 					f.setLookupModuleName("site");
+				}
+				else if (f.getDisplayTypeEnum() == FieldDisplayType.TEAM) {
+					f.setName("groups");
+					f.setDisplayType(FieldDisplayType.LOOKUP_SIMPLE);
+					f.setLookupModuleName("groups");
+				}
+				else if (f.getDisplayTypeEnum() == FieldDisplayType.SPACEMULTICHOOSER) {
+					f.setName("spaces");
+				}
+				else if (f.getDisplayTypeEnum() == FieldDisplayType.ASSETMULTICHOOSER) {
+					f.setName("utilityMeters");
 				}
 				fields.add(f);
 			}

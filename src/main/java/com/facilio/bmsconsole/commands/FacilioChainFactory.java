@@ -13,6 +13,7 @@ import com.facilio.accounts.exception.AccountException;
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.modules.FieldUtil;
+import com.facilio.bmsconsole.util.TenantsAPI;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.chain.FacilioChain;
 import com.facilio.leed.commands.AddConsumptionForLeed;
@@ -584,6 +585,12 @@ public class FacilioChainFactory {
 		c.addCommand(new GenericDeleteForSpaces());
 		return c;
 	}
+	public static Chain deleteTenantChain () {
+		Chain c = FacilioChain.getTransactionChain();
+		c.addCommand(new DeleteTenantCommand());
+		c.addCommand(new DeleteTenantZonesCommand());
+		return c;
+	}
 	public static Chain getCampusDetailsChain() {
 		Chain c = FacilioChain.getNonTransactionChain();
 		c.addCommand(SetTableNamesCommand.getForSite());
@@ -604,6 +611,13 @@ public class FacilioChainFactory {
 		Chain c = FacilioChain.getNonTransactionChain();
 		c.addCommand(SetTableNamesCommand.getForTenants());
 		c.addCommand(new GetTenantReportCards());
+		return c;
+	}
+	
+	public static Chain getTenantReadingCardsChain() {
+		Chain c = FacilioChain.getNonTransactionChain();
+		c.addCommand(SetTableNamesCommand.getForTenants());
+		c.addCommand(new GetTenantReadingCardsCommand());
 		return c;
 	}
 	

@@ -99,7 +99,7 @@ public class FacilioField implements Serializable {
 //	public void setExtendedModule(FacilioModule extendedModule) {
 //		this.extendedModule = extendedModule;
 //	}
-//	
+//
 //	public long getExtendedModuleId() {
 //		if(extendedModule != null) {
 //			return extendedModule.getModuleId();
@@ -132,7 +132,7 @@ public class FacilioField implements Serializable {
 		}
 		return null;
 	}
-	
+
 	public String getCompleteColumnName() {
 		String tableName = getTableName();
 		if (StringUtils.isNotEmpty(tableName)) {
@@ -419,6 +419,9 @@ public class FacilioField implements Serializable {
 		PURCHASEDITEMT(32,"purchasedItem"),
 		IMAGE(33, "image"),
 		PURCHASEDTOOL(32,"purchasedTool"),
+        ASSETMULTICHOOSER(35,"asset-multi-chooser"),
+        SPACEMULTICHOOSER(36,"space-multi-chooser"),
+		LOGO(37,"logo")
 		;
 		
 		private int intVal;

@@ -1,14 +1,17 @@
 package com.facilio.bmsconsole.commands;
 
+import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsole.actions.ZoneAction;
 import com.facilio.bmsconsole.context.InventoryContext;
 import com.facilio.bmsconsole.tenant.TenantContext;
 import com.facilio.bmsconsole.util.TenantsAPI;
+import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 
 public class AddTenantCommand extends GenericAddModuleDataCommand {
@@ -28,23 +31,17 @@ public class AddTenantCommand extends GenericAddModuleDataCommand {
 			user.setEmail(user.getMobile());
 		}
 
-		try {
-			AccountUtil.getUserBean().inviteRequester(orgid, user);
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-		}
-        
-			TenantsAPI.addTenantLogo(tenant);
-			super.execute(context);
-			tenant.setId((Long)context.get(FacilioConstants.ContextNames.RECORD_ID));
-			TenantsAPI.addUtilityMapping(tenant);
-			context.put(FacilioConstants.ContextNames.TENANT, tenant);
-			
-			context.put(FacilioConstants.ContextNames.USER, tenant.getContact());
-		}
-		return false;
+		long userId = AccountUtil.getUserBean().inviteRequester(orgid, user);
+	    tenant.getContact().setId(userId);
+    	TenantsAPI.addTenantLogo(tenant);
+		super.execute(context);
+		tenant.setId((Long)context.get(FacilioConstants.ContextNames.RECORD_ID));
+		TenantsAPI.addUtilityMapping(tenant);
+		context.put(FacilioConstants.ContextNames.TENANT, tenant);
 		
+		context.put(FacilioConstants.ContextNames.USER, tenant.getContact());
+	  }
+		 return false;
 	}
 
 }

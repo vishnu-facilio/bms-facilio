@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.apache.commons.lang3.StringUtils;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.criteria.Condition;
@@ -57,6 +58,16 @@ public class GetFormMetaCommand implements Command {
 							formFields.setField(f);
 							formFields.setFieldId(f.getFieldId());
 							fields.add(formFields);
+						}
+					}
+				}
+				else {
+					if (formName.equalsIgnoreCase("web_pm")) {
+						for (FormField f : form.getFields()) {
+							if (StringUtils.isNotEmpty(f.getName()) && f.getName().equalsIgnoreCase("siteid")) {
+								f.setName("site");
+								break;
+							}
 						}
 					}
 				}

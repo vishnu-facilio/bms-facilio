@@ -824,6 +824,7 @@ public class FacilioConstants {
 		public static final String STOCKED_TOOLS_RETURN_TRACKING = "stockedToolsReturnTracking";
 
 		public static final String TENANT = "tenant";
+		public static final String TENANT_UTILITY_IDS = "utilityIds";
 		public static final String TENANT_CONTEXT = "tenantContext";
 
 

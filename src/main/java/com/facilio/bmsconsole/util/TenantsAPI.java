@@ -332,7 +332,7 @@ public class TenantsAPI {
 												
 		List<Map<String,Object>> records = builder.get();
 	    if (records != null && !records.isEmpty()) {
-	    	TenantContext tenant = fetchTenantForZone((Long)records.get(0).get("zone_id"));
+	    	TenantContext tenant = fetchTenantForZone((Long)records.get(0).get("zoneId"));
 			return tenant;
 		}
 		return null;
@@ -491,11 +491,41 @@ public class TenantsAPI {
 //		return tenant;
 	}
 	
+	public static void addTenantContact(User user, Long tenantId) throws Exception{
+		long orgid = AccountUtil.getCurrentOrg().getOrgId();
+		user.setOrgId(orgid);
+		if(user.getEmail() == null || user.getEmail().isEmpty()) {
+			user.setEmail(user.getMobile());
+		}
+
+		try {
+			AccountUtil.getUserBean().inviteRequester(orgid, user);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+    
+		Map<String, Object> prop = new HashMap<>();
+		
+		prop.put("tenantId", tenantId);
+		prop.put("ouid", user.getId());
+		prop.put("orgId", user.getOrgId());
+				
+		
+		GenericInsertRecordBuilder insert = new GenericInsertRecordBuilder();
+		insert.table(ModuleFactory.getTenantsuserModule().getTableName());
+		insert.fields(FieldFactory.getTenantsUserFields());
+		insert.addRecord(prop);
+
+		insert.save(); 
+
+		
+	}
 	public static void addUtilityMapping(TenantContext tenant) throws Exception {
 		if (tenant.getUtilityAssets() == null || tenant.getUtilityAssets().isEmpty()) {
 			throw new IllegalArgumentException("Atleast one utility mapping should be present to add a Tenant");
 		}
-		
+		validateUtilityMapping(tenant);
 		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
 														.table(ModuleFactory.getTenantsUtilityMappingModule().getTableName())
 														.fields(FieldFactory.getTenantsUtilityMappingFields())
@@ -508,6 +538,56 @@ public class TenantsAPI {
 		insertBuilder.save();
 	}
 	
+	private static void validateUtilityMapping(TenantContext tenant) throws Exception {
+		StringJoiner idString = new StringJoiner(",");
+		for (UtilityAsset util : tenant.getUtilityAssets()) {
+			idString.add(String.valueOf(util.getAssetId()));
+		}	
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule utilityModule = ModuleFactory.getTenantsUtilityMappingModule();
+		FacilioModule tenantModule = modBean.getModule("tenant");
+		
+		List<FacilioField> fields = FieldFactory.getTenantsUtilityMappingFields();
+		
+		FacilioField assetIdFld = new FacilioField();
+		assetIdFld.setName("assetId");
+		assetIdFld.setColumnName("ASSET_ID");
+		assetIdFld.setModule(ModuleFactory.getTenantsUtilityMappingModule());
+		assetIdFld.setDataType(FieldType.NUMBER);
+		
+		FacilioField sysDeletedFld = new FacilioField();
+		sysDeletedFld.setName("sysDeleted");
+		sysDeletedFld.setColumnName("SYS_DELETED");
+		sysDeletedFld.setModule(tenantModule);
+		sysDeletedFld.setDataType(FieldType.NUMBER);
+	
+		
+		Condition assetIdCond = new Condition();
+		assetIdCond.setField(assetIdFld);
+		assetIdCond.setOperator(NumberOperators.EQUALS);
+		assetIdCond.setValue(idString.toString());
+	
+		Condition sysDeletedCond = new Condition();
+		sysDeletedCond.setField(sysDeletedFld);
+		sysDeletedCond.setOperator(NumberOperators.NOT_EQUALS);
+		sysDeletedCond.setValue("1");
+	
+		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+											.select(fields)
+											.table(utilityModule.getTableName())
+											.innerJoin(tenantModule.getTableName())
+											.on(utilityModule.getTableName()+".TENANT_ID = "+tenantModule.getTableName()+".ID")
+											.andCondition(assetIdCond)
+											.andCondition(sysDeletedCond);
+
+        List<Map<String, Object>> rs = builder.get();
+        if (rs.size() > 0) {
+        	Long alreadyPresentId = (Long) rs.get(0).get("assetId");
+        	throw new IllegalArgumentException("Asset"+" #"+alreadyPresentId+" is associated to another tenant");
+        }
+	}
+	
 	public static void addTenantLogo(TenantContext tenant) throws Exception {
 		if (tenant.getTenantLogo() != null) {
 			FileStore fs = FileStoreFactory.getInstance().getFileStore();
@@ -517,22 +597,13 @@ public class TenantsAPI {
 		}
 	}
 	
-	private static void deleteTenantLogo(long logoId) throws Exception {
+	public static void deleteTenantLogo(long logoId) throws Exception {
 		if (logoId != -1) {
 			FileStore fs = FileStoreFactory.getInstance().getFileStore();
 			fs.deleteFile(logoId);
 		}
 	}
 	
-	private static void deleteTenantZone(long zoneId) throws Exception {
-		if (zoneId != -1) {
-			FacilioContext context = new FacilioContext();
-			context.put(FacilioConstants.ContextNames.ID, zoneId);
-			context.put(FacilioConstants.ContextNames.MODULE_NAME, "zone");
-			Chain deleteZone = FacilioChainFactory.deleteSpaceChain();
-			deleteZone.execute(context);
-		}
-	}
 	
 	public static int updateTenant (TenantContext tenant) throws Exception {
 		if (tenant.getId() == -1) {
@@ -552,7 +623,7 @@ public class TenantsAPI {
 		
 	    ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.TENANT);
-	
+	    updateContactDetails(tenant.getContact(),tenant.getId());
 		UpdateRecordBuilder<TenantContext> updateBuilder = new UpdateRecordBuilder<TenantContext>()
 														   .module(module)
 														   .fields(modBean.getAllFields(FacilioConstants.ContextNames.TENANT))
@@ -567,6 +638,25 @@ public class TenantsAPI {
 		return count;
 	}
 	
+	private static void updateContactDetails(User contact,Long tenantId) throws Exception {
+		String email = contact.getEmail();
+		String name = contact.getName();
+		long id = contact.getId();
+		User oldUser = AccountUtil.getUserBean().getUser(id);
+		if (oldUser.getName().contentEquals(name) == false && oldUser.getEmail().contentEquals(email)) {
+		  oldUser.setName(name);
+		  AccountUtil.getUserBean().updateUser(oldUser);
+		}
+		else if (oldUser.getEmail().contentEquals(email) == false) {
+			long orgid = AccountUtil.getCurrentOrg().getOrgId();
+			contact.setOrgId(orgid);
+			if(contact.getEmail() == null || contact.getEmail().isEmpty()) {
+				contact.setEmail(contact.getMobile());
+			}
+			long userId = AccountUtil.getUserBean().inviteRequester(orgid, contact);
+			addTenantContact(contact, tenantId);
+		}
+	}
 	private static int deleteUtilityMapping(TenantContext tenant) throws SQLException {
 		FacilioModule module = ModuleFactory.getTenantsUtilityMappingModule();
 		List<FacilioField> fields = FieldFactory.getTenantsUtilityMappingFields();
@@ -580,28 +670,7 @@ public class TenantsAPI {
 		return deleteBuilder.delete();
 	}
 	
-	public static int deleteTenant (List<Long> ids) throws Exception {
-		
-		for(int i=0;i<ids.size();i++)
-		{
-			TenantContext oldTenant = getTenant(ids.get(i), true);
-			deleteTenantLogo(oldTenant.getLogoId());
-			deleteTenantZone(oldTenant.getZone().getId());
-
-		}
-		
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.TENANT);
-	
-		DeleteRecordBuilder<? extends TenantContext> deleteBuilder = new DeleteRecordBuilder<TenantContext>()
-																	.module(module)
-																	.andCondition(CriteriaAPI.getIdCondition(ids, module))
-																	;
-		int count = deleteBuilder.markAsDelete();
-		return count;
-	}
-	
-	public static List<RateCardContext> getAllRateCards() throws Exception {
+		public static List<RateCardContext> getAllRateCards() throws Exception {
 		FacilioModule module = ModuleFactory.getRateCardModule();
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 														.select(FieldFactory.getRateCardFields())
@@ -813,7 +882,6 @@ public class TenantsAPI {
 			FacilioModule zoneModule = modBean.getModule(FacilioConstants.ContextNames.ZONE);
 			List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.ZONE);
 			
-			try {
 				SelectRecordsBuilder<ZoneContext> selectBuilder = new SelectRecordsBuilder<ZoneContext>()
 																				.select(fields)
 																				.table(zoneModule.getTableName())
@@ -829,11 +897,7 @@ public class TenantsAPI {
 						}
 					}
 				}
-			}
-			catch(Exception e) {
-				LOGGER.error("Exception occurred ", e);
-				throw e;
-			}
+			
 		}
 	}
 	
@@ -915,7 +979,7 @@ public class TenantsAPI {
 		
 		FacilioField tenantIdFld = new FacilioField();
 		tenantIdFld.setName("tenantId");
-		tenantIdFld.setColumnName("TENANT");
+		tenantIdFld.setColumnName("TENANT_ID");
 		tenantIdFld.setModule(ModuleFactory.getTicketsModule());
 		tenantIdFld.setDataType(FieldType.NUMBER);
 
@@ -928,6 +992,7 @@ public class TenantsAPI {
 		FacilioModule workOrderModule = modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER);
 		
 		List<FacilioField> workorderFields = modBean.getAllFields(workOrderModule.getName());
+		
 
 		long orgId = AccountUtil.getCurrentOrg().getOrgId();
 		SelectRecordsBuilder<WorkOrderContext> builder = new SelectRecordsBuilder<WorkOrderContext>()
@@ -944,6 +1009,39 @@ public class TenantsAPI {
 		
 		return rs;
 	}
+
+    public static List<Map<String,Object>> getPmCount(long tenantId) throws Exception {
+		
+		
+		FacilioField tenantIdFld = new FacilioField();
+		tenantIdFld.setName("tenantId");
+		tenantIdFld.setColumnName("TENANT_ID");
+		tenantIdFld.setModule(ModuleFactory.getWorkOrderTemplateModule());
+		tenantIdFld.setDataType(FieldType.NUMBER);
+
+		Condition tenantCond = new Condition();
+		tenantCond.setField(tenantIdFld);
+		tenantCond.setOperator(NumberOperators.EQUALS);
+		tenantCond.setValue(tenantId+"");
+		
+		FacilioModule module = ModuleFactory.getPreventiveMaintenancetModule();
+		FacilioModule woTemplatemodule = ModuleFactory.getWorkOrderTemplateModule();
+		
+		List<FacilioField> fields = FieldFactory.getPreventiveMaintenanceFields();
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+														.select(fields)
+														.table(module.getTableName())
+														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+														.innerJoin(woTemplatemodule.getTableName())
+														.on("TEMPLATE_ID = "+woTemplatemodule.getTableName() +".ID")
+														.andCondition(tenantCond);
+									
+		List<Map<String,Object>> rs = selectBuilder.get();
+		
+		return rs;
+	}
+
 
 	
 	private static void validateRateCardService(RateCardServiceContext service) {

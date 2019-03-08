@@ -68,7 +68,9 @@ public class ModuleFactory {
 		moduleMap.put(FacilioConstants.ContextNames.PURCHASED_ITEM, getPurchasedItemModule());
 		moduleMap.put(FacilioConstants.ContextNames.TOOL, getToolModule());
 		moduleMap.put(FacilioConstants.ContextNames.LOCATION, getLocationsModule());
-		
+
+		moduleMap.put(FacilioConstants.ContextNames.TENANT, getTenantsModule());
+
 		return moduleMap;
 	}
 	
@@ -418,7 +420,7 @@ public class ModuleFactory {
 		eMailTemplatesModule.setExtendModule(getTemplatesModule());
 		return eMailTemplatesModule;
 	}
-	
+
 	public static FacilioModule getWorkflowTemplatesModule() {
 		FacilioModule eMailTemplatesModule = new FacilioModule();
 		eMailTemplatesModule.setName("workflowtemplates");
@@ -1616,7 +1618,7 @@ public class ModuleFactory {
 		mlForecastingModule.setTableName("Ml_Forecasting_Lifetime");
 		return mlForecastingModule;
 	}
-	
+
 	public static FacilioModule getMlForecastingModule() {
 		FacilioModule mlForecastingModule = new FacilioModule();
 		mlForecastingModule.setName("mlforecasting");
@@ -1696,7 +1698,7 @@ public class ModuleFactory {
 		inventoryModule.setTableName("Tools");
 		return inventoryModule;
 	}
-	
+
 	public static FacilioModule getLocationsModule() {
 		FacilioModule inventoryModule = new FacilioModule();
 		inventoryModule.setName(FacilioConstants.ContextNames.LOCATION);
@@ -1704,7 +1706,7 @@ public class ModuleFactory {
 		inventoryModule.setTableName("Locations");
 		return inventoryModule;
 	}
-	
+
   	public static FacilioModule getWeatherStationModule() {
 		FacilioModule weatherStation = new FacilioModule();
 		weatherStation.setName("weatherStations");
@@ -1722,7 +1724,7 @@ public class ModuleFactory {
   		
   		return notificationLogger;
 	  }
-	  
+
   	public static FacilioModule getItemStatusModule() {
 		FacilioModule inventoryModule = new FacilioModule();
 		inventoryModule.setName(FacilioConstants.ContextNames.ITEM_TYPES_STATUS);
@@ -1730,7 +1732,7 @@ public class ModuleFactory {
 		inventoryModule.setTableName("Item_status");
 		return inventoryModule;
 	}
-  	
+
   	public static FacilioModule getItemTypeStatusModule() {
 		FacilioModule inventoryModule = new FacilioModule();
 		inventoryModule.setName(FacilioConstants.ContextNames.ITEM_TYPES_STATUS);
@@ -1738,7 +1740,8 @@ public class ModuleFactory {
 		inventoryModule.setTableName("Item_Types_status");
 		return inventoryModule;
 	}
-  	
+
+
   	public static FacilioModule getItemCategoryModule() {
 		FacilioModule inventoryModule = new FacilioModule();
 		inventoryModule.setName(FacilioConstants.ContextNames.ITEM_TYPES_CATEGORY);
@@ -1746,7 +1749,7 @@ public class ModuleFactory {
 		inventoryModule.setTableName("Tool_types_category");
 		return inventoryModule;
 	}
-  	
+
   	public static FacilioModule getToolTypeStatusModule() {
 		FacilioModule inventoryModule = new FacilioModule();
 		inventoryModule.setName(FacilioConstants.ContextNames.TOOL_TYPES_STATUS);

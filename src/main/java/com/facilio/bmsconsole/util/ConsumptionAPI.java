@@ -168,6 +168,90 @@ public static Map<String,Object> getTotalConsumptionBySites(Long startTime,Long 
        return resp;
 	}
 
+  	public static Map<String,Object> getEnergyConsumptionByAssetsThisMonth(List<Long> asssetIds) throws Exception
+  	{
+  		
+  		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule dataModule = modBean.getModule("energydata");
+		FacilioModule energyPurposeModule = modBean.getModule(FacilioConstants.ContextNames.ENERGY_METER_PURPOSE);
+		FacilioModule energyMeterModule = modBean.getModule(FacilioConstants.ContextNames.ENERGY_METER);
+		FacilioField siteField = FieldFactory.getSiteIdField(energyMeterModule);
+		List<FacilioField> fields = new ArrayList<FacilioField>();
+		
+		List<FacilioField> energyFields = modBean.getAllFields(dataModule.getName());
+		Map<String, FacilioField> energyFieldMap = FieldFactory.getAsMap(energyFields);
+		FacilioField consumptionField = energyFieldMap.get("totalEnergyConsumptionDelta");
+		
+		FacilioField totalConsumptionField = new FacilioField();
+		totalConsumptionField.setName("total_consumption");
+		totalConsumptionField.setColumnName("sum(round("+consumptionField.getColumnName()+",2))");
+		fields.add(totalConsumptionField);
 
+		fields.add(siteField);
+		
+	
+        Long startTime = DateTimeUtil.getMonthStartTime(false);
+        Long endTime = System.currentTimeMillis();
+		
+        GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+														.select(fields)
+														.table(dataModule.getTableName())
+														.innerJoin(energyMeterModule.getTableName()).on(energyMeterModule.getTableName()+".ID = "+dataModule.getTableName()+".PARENT_METER_ID")
+														.innerJoin(energyPurposeModule.getTableName()).on(energyPurposeModule.getTableName()+".ID = "+energyMeterModule.getTableName()+".PURPOSE_ID")
+														.andCondition(CriteriaAPI.getCondition("TTIME", "ttime", startTime+","+endTime, DateOperators.BETWEEN))
+														.andCondition(CriteriaAPI.getCondition(dataModule.getTableName()+".ORGID", "orgId", ""+AccountUtil.getCurrentOrg().getOrgId(), NumberOperators.EQUALS))
+														.andCondition(CriteriaAPI.getCondition(energyMeterModule.getTableName()+".IS_ROOT", "root", ""+1, NumberOperators.EQUALS))
+														.andCondition(CriteriaAPI.getCondition(energyPurposeModule.getTableName()+".NAME", "name", "Main", StringOperators.IS))
+														.andCondition(CriteriaAPI.getCondition(FieldFactory.getIdField(energyMeterModule), asssetIds, NumberOperators.EQUALS))
+							                           ;
+        List<Map<String,Object>> totalConsumption = selectBuilder.get();
+		
+        Map<String,Object> resp = new HashMap<String, Object>();
+		
+		resp.put("energy",totalConsumption.get(0).get("total_consumption"));
+		return resp;
+       
+  }
+  	
+  	public static Map<String,Object> getWaterConsumptionByAssetsThisMonth(List<Long> asssetIds) throws Exception
+  	{
+  		
+  		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule dataModule = modBean.getModule("waterreading");
+		List<FacilioField> fields = new ArrayList<FacilioField>();
+		
+		List<FacilioField> waterFields = modBean.getAllFields(dataModule.getName());
+		Map<String, FacilioField> waterFieldMap = FieldFactory.getAsMap(waterFields);
+		FacilioField consumptionField = waterFieldMap.get("waterConsumptionDelta");
+		
+		FacilioField totalConsumptionField = new FacilioField();
+		totalConsumptionField.setName("total_consumption");
+		totalConsumptionField.setColumnName("sum(round("+consumptionField.getColumnName()+",2))");
+		fields.add(totalConsumptionField);
+
+		Long startTime = DateTimeUtil.getMonthStartTime(false);
+        Long endTime = System.currentTimeMillis();
+		
+    	FacilioModule waterMeterModule = modBean.getModule(FacilioConstants.ContextNames.WATER_METER);
+		FacilioField siteField = FieldFactory.getSiteIdField(waterMeterModule);
+		fields.add(siteField);
+		
+	    GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+											.select(fields)
+											.table(dataModule.getTableName())
+											.innerJoin(waterMeterModule.getTableName()).on(dataModule.getTableName()+".PARENT_ID = "+waterMeterModule.getTableName()+".ID")
+											.andCondition(CriteriaAPI.getCondition("TTIME", "ttime", startTime+","+endTime, DateOperators.BETWEEN))
+											.andCondition(CriteriaAPI.getCondition(dataModule.getTableName()+".ORGID", "orgId", ""+AccountUtil.getCurrentOrg().getOrgId(), NumberOperators.EQUALS))
+											.andCondition(CriteriaAPI.getCondition(FieldFactory.getIdField(waterMeterModule), asssetIds, NumberOperators.EQUALS))
+					                        ;
+	List<Map<String,Object>> totalConsumption = selectBuilder.get();
+		
+        Map<String,Object> resp = new HashMap<String, Object>();
+		
+        resp.put("water",totalConsumption.get(0).get("total_consumption"));
+		return resp;
+       
+  }
+  	
 
 }

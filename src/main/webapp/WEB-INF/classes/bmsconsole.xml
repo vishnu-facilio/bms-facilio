@@ -2642,6 +2642,14 @@
 				<param name="includeProperties">children,children\[\d+\],children\[\d+\].*</param>
 			</result>
 		</action>
+		<action name="allTenantZoneChildren" class="com.facilio.bmsconsole.actions.ZoneAction"
+			method="getAllTenantZoneChildrenList">
+			<param name="moduleName">space</param>
+			<param name="permission">READ</param>
+			<result name="success" type="json">
+				<param name="includeProperties">children,children\[\d+\],children\[\d+\].*</param>
+			</result>
+		</action>
 		<action name="*" class="com.facilio.bmsconsole.actions.ZoneAction"
 			method="viewZone">
 			<param name="moduleName">space</param>
@@ -2868,6 +2876,9 @@
 			<result name="success" type="json">
 				<param name="root">tenant</param>
 			</result>
+			<result name="error" type="json">
+				<param name="root">error</param>
+			</result>
 		</action>
 		
 		<action name="update" class="com.facilio.bmsconsole.actions.TenantAction"
@@ -2876,6 +2887,10 @@
 			<result name="success" type="json">
 				<param name="includeProperties">result</param>
 			</result>
+			<result name="error" type="json">
+				<param name="root">error</param>
+			</result>
+	
 		</action>
 		
 		<action name="delete" class="com.facilio.bmsconsole.actions.TenantAction"
@@ -2885,6 +2900,15 @@
 				<param name="includeProperties">result</param>
 			</result>
 		</action>
+		<action name="tenantCount" class="com.facilio.bmsconsole.actions.TenantAction"
+			method="tenantCount">
+			<param name="moduleName">tenant</param>
+			<param name="permission">READ,READ_TEAM,READ_OWN</param>
+			<result name="success" type="json">
+				<param name="includeProperties">tenantCount</param>
+			</result>
+		</action>
+	
 		<action name="getLogoUrl" class="com.facilio.bmsconsole.actions.TenantAction"
 			method="getTenantLogoUrl">
 			<!-- <param name="permission">WORKORDER_READ,TASK_READ</param> -->
@@ -2917,6 +2941,12 @@
 	</result>
 	</action>	
 	
+	<action name="getTenantReadingCards" class="com.facilio.bmsconsole.actions.TenantAction"
+	method="getTenantReadingCards">
+	<result name="success" type="json">
+	<param name="includeProperties">reports,reports\[\d+\],reports\[\d+\].*</param>
+	</result>
+	</action>	
 	
 	<action name="updateportalaccess" class="com.facilio.bmsconsole.actions.TenantAction"
 	method="updatePortalAccess">

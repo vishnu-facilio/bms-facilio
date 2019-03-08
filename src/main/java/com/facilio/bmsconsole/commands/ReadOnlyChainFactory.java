@@ -330,6 +330,14 @@ public class ReadOnlyChainFactory {
 		return c;
 	}
 	
+	public static Chain fetchTenantDetails() {
+		Chain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForTenants());
+		c.addCommand(new GetTenantDetailCommand());
+//		CommonCommandUtil.addCleanUpCommand(c);
+		return c;
+	}
+	
 	public static Chain sendNewReportMailChain() {
 		Chain c = getDefaultChain();
 		c.addCommand(getExportNewReportFileChain());

@@ -22,33 +22,7 @@ public class AddTenantUserCommand implements Command {
 		//TenantContext tenant = (TenantContext) context.get(TenantsAPI.TENANT_CONTEXT);
 		User user = (User)context.get(FacilioConstants.ContextNames.USER);
 		Long tenantId = (Long)context.get(FacilioConstants.ContextNames.RECORD_ID);
-		
-		long orgid = AccountUtil.getCurrentOrg().getOrgId();
-		user.setOrgId(orgid);
-		if(user.getEmail() == null || user.getEmail().isEmpty()) {
-			user.setEmail(user.getMobile());
-		}
-
-		try {
-			AccountUtil.getUserBean().inviteRequester(orgid, user);
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-		}
-    
-		Map<String, Object> prop = new HashMap<>();
-		
-		prop.put("tenantId", tenantId);
-		prop.put("ouid", user.getId());
-		prop.put("orgId", user.getOrgId());
-		
-		GenericInsertRecordBuilder insert = new GenericInsertRecordBuilder();
-		insert.table(ModuleFactory.getTenantsuserModule().getTableName());
-		insert.fields(FieldFactory.getTenantsUserFields());
-		insert.addRecord(prop);
-
-		insert.save(); 
-		
+		TenantsAPI.addTenantContact(user, tenantId);
 		return false;
 		
 		

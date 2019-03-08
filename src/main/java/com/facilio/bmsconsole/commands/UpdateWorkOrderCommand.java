@@ -33,7 +33,9 @@ import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.modules.UpdateChangeSet;
 import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
+import com.facilio.bmsconsole.tenant.TenantContext;
 import com.facilio.bmsconsole.util.ShiftAPI;
+import com.facilio.bmsconsole.util.TenantsAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsole.workflow.rule.ApprovalState;
@@ -122,6 +124,9 @@ public class UpdateWorkOrderCommand implements Command {
 		else if (workOrder.getSiteId() != -1 && AccountUtil.getCurrentSiteId() == -1) {
 			transferToAnotherSite(workOrder);
 		}
+		else if (workOrder.getTenant()!= null && workOrder.getTenant().getId() != -1) {
+			transferToAnotherTenant(workOrder);
+		}
 		
 		if (workOrder.getSiteId() == -1) {
 			TicketAPI.validateSiteSpecificData(workOrder, oldWos);
@@ -198,6 +203,35 @@ public class UpdateWorkOrderCommand implements Command {
 		workOrder.getAssignmentGroup().setId(-1);
 		workOrder.setResource(new ResourceContext());
 		workOrder.getResource().setId(-1);
+		workOrder.setTenant(new TenantContext());
+	}
+	
+	private void transferToAnotherTenant (WorkOrderContext workOrder) throws Exception {
+		
+		TenantContext tenant = TenantsAPI.fetchTenant(workOrder.getTenant().getId());
+		
+		List<Long> mySites = CommonCommandUtil.getMySiteIds();
+		if (mySites != null && !mySites.isEmpty()) {
+			boolean found = false;
+			for (long siteId: mySites) {
+				if (siteId == tenant.getSiteId()) {
+					found = true;
+					break;
+				}
+			}
+			if (!found) {
+				throw new IllegalArgumentException("The tenant site is not accessible.");
+			}
+		}
+		
+		//Creating multiple New WOs is unnecessary here 
+		workOrder.setAssignedTo(new User());
+		workOrder.getAssignedTo().setId(-1);
+		workOrder.setAssignmentGroup(new Group());
+		workOrder.getAssignmentGroup().setId(-1);
+		workOrder.setResource(new ResourceContext());
+		workOrder.getResource().setId(-1);
+		workOrder.setSiteId(tenant.getSiteId());
 	}
 	
 	private void validateCloseStatus (WorkOrderContext workOrder, List<WorkOrderContext> oldWos, List<WorkOrderContext> newWos, List<ReadingContext> userReadings, EventType activityType, FacilioContext context) throws Exception {

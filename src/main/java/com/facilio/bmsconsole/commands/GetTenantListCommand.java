@@ -49,13 +49,17 @@ public class GetTenantListCommand implements Command{
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
-		List<FacilioField> fields = null;
 		FacilioView view = (FacilioView) context.get(FacilioConstants.ContextNames.CUSTOM_VIEW);
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.TENANT);
+		Boolean getCount = (Boolean) context.get(FacilioConstants.ContextNames.FETCH_COUNT);
+		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.TENANT);
+		if (getCount != null && getCount) {
+			fields = FieldFactory.getCountField(module);
+		}
 		SelectRecordsBuilder<TenantContext> builder = new SelectRecordsBuilder<TenantContext>()
 														.module(module)
 														.beanClass(TenantContext.class)
-														.select(modBean.getAllFields(FacilioConstants.ContextNames.TENANT))
+														.select(fields)
 														;
 		String orderBy = (String) context.get(FacilioConstants.ContextNames.SORTING_QUERY);
 		if (orderBy != null && !orderBy.isEmpty()) {
@@ -86,8 +90,14 @@ public class GetTenantListCommand implements Command{
 			builder.limit(perPage);
 		}
 		List<TenantContext> records = builder.get();
-		TenantsAPI.loadTenantLookups(records);
-		context.put(FacilioConstants.ContextNames.RECORD_LIST, records);
+		if (getCount != null && getCount) {
+			context.put(FacilioConstants.ContextNames.RECORD_COUNT, records.get(0).getData().get("count"));
+		}
+		else {
+			context.put(FacilioConstants.ContextNames.RECORD_LIST, records);
+		    TenantsAPI.loadTenantLookups(records);
+		}
+		
  	return false;
 		
   }

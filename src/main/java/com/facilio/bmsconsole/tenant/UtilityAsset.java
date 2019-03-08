@@ -13,7 +13,11 @@ public class UtilityAsset {
 	private boolean showInPortal;
 	
 	public boolean isShowInPortal() {
-		return showInPortal;
+		
+		if(showInPortal) {
+			return showInPortal;
+		}
+		return false;
 	}
 	public void setShowInPortal(boolean showInPortal) {
 		this.showInPortal = showInPortal;

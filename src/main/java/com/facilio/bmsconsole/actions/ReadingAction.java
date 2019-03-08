@@ -607,6 +607,16 @@ public class ReadingAction extends FacilioAction {
 	public void setSpaces(Map<Long, BaseSpaceContext> spaces) {
 		this.spaces = spaces;
 	}
+	
+	private List<Long> spaceId;
+	public List<Long> getSpaceId() {
+		return spaceId;
+	}
+
+	public void setSpaceId(List<Long> spaceId) {
+		this.spaceId = spaceId;
+	}
+
 
 	public String getAllSpaceReadings() throws Exception {
 		
@@ -956,6 +966,21 @@ public class ReadingAction extends FacilioAction {
 	public String v2GetLatestReadingData() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.PARENT_ID, parentId);
+		context.put(FacilioConstants.ContextNames.EXCLUDE_EMPTY_FIELDS, excludeEmptyFields != null ? excludeEmptyFields : true);
+		context.put(FacilioConstants.ContextNames.FETCH_READING_INPUT_VALUES, fetchInputValues);
+		context.put(FacilioConstants.ContextNames.IS_FETCH_RDM_FROM_UI, true);
+		
+		Chain latestAssetData = ReadOnlyChainFactory.fetchLatestReadingDataChain();
+		latestAssetData.execute(context);
+		
+		setResult("readingValues", context.get(FacilioConstants.ContextNames.READING_DATA_META_LIST));
+		
+		return SUCCESS;
+	}
+	
+	public String v2GetLatestReadingDataForSpaces() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.PARENT_ID_LIST, spaceId);
 		context.put(FacilioConstants.ContextNames.EXCLUDE_EMPTY_FIELDS, excludeEmptyFields != null ? excludeEmptyFields : true);
 		context.put(FacilioConstants.ContextNames.FETCH_READING_INPUT_VALUES, fetchInputValues);
 		context.put(FacilioConstants.ContextNames.IS_FETCH_RDM_FROM_UI, true);

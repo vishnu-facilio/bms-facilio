@@ -58,16 +58,27 @@ public class GetTenantReportCards implements Command {
 			woCount.put("result",list);
 			woCount.put("data",list.size());
 			
+			JSONObject pmCount = new JSONObject();
+			pmCount.put("type", "count");
+			pmCount.put("name", "pm");
+			pmCount.put("label", "Planned Maintenance");
+			List pmList = TenantsAPI.getPmCount(tenantId);
+			pmCount.put("result",pmList);
+			pmCount.put("data",pmList.size());
+			
+			
 			JSONObject faCount = new JSONObject();
 			faCount.put("type", "count");
 			faCount.put("name", "fire_alarms");
 			faCount.put("label", "Alarms");
 			List<Map<String,Object>> alarmList = TenantsAPI.getFireAlarmsCount(assetIdList);
 			faCount.put("result", alarmList);
-			faCount.put("data",alarmList.size());
+			faCount.put("data",alarmList.size()); 
 			
+			List<Long> idList = new ArrayList<Long>();
+			idList.add(zoneId);
 			
-			List<BaseSpaceContext> zoneSpaces = SpaceAPI.getZoneChildren(zoneId);
+			List<BaseSpaceContext> zoneSpaces = SpaceAPI.getZoneChildren(idList);
 			JSONObject spaceCount= new JSONObject();
 			spaceCount.put("type", "count");
 			spaceCount.put("name", "spaces");
@@ -81,6 +92,7 @@ public class GetTenantReportCards implements Command {
 			reportCards.add(faCount);
 			reportCards.add(assetCount);
 			reportCards.add(spaceCount);
+			reportCards.add(pmCount);
 			
 			context.put(FacilioConstants.ContextNames.REPORTS, reports);
 			context.put(FacilioConstants.ContextNames.REPORT_CARDS, reportCards);

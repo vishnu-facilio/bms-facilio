@@ -4424,6 +4424,10 @@ public class FieldFactory {
 		categoryField.setLookupModule(ModuleFactory.getTicketCategoryModule());
 		fields.add(categoryField);
 
+		LookupField tenantField = (LookupField) getField("tenant", "TENANT_ID", module, FieldType.LOOKUP);
+		tenantField.setLookupModule(ModuleFactory.getTenantsModule());
+		fields.add(tenantField);
+
 		LookupField typeField = (LookupField) getField("typeId", "TYPE_ID", module, FieldType.LOOKUP);
 		typeField.setLookupModule(ModuleFactory.getTicketTypeModule());
 		fields.add(typeField);

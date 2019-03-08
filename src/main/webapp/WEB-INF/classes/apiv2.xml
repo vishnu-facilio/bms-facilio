@@ -667,6 +667,9 @@
 	</package>
 	<package name="assetLatestDataApiv2" namespace="/api/v2/reading/latestdata"
 		extends="v2Api">
+		<action name="getReadingsForSpaces" class="com.facilio.bmsconsole.actions.ReadingAction"
+			method="v2GetLatestReadingDataForSpaces">
+		</action>
 		<action name="*" class="com.facilio.bmsconsole.actions.ReadingAction"
 			method="v2GetLatestReadingData">
 			<param name="parentId">{1}</param>
