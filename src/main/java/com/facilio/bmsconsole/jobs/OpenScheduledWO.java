@@ -80,7 +80,12 @@ public class OpenScheduledWO extends FacilioJob {
             context.put(FacilioConstants.ContextNames.EVENT_TYPE_LIST, activities);
 
             List<UpdateChangeSet> changeSets = FieldUtil.constructChangeSet(wo.getId(), FieldUtil.getAsProperties(wo), fieldMap);
-            context.put(FacilioConstants.ContextNames.CHANGE_SET_MAP, Collections.singletonMap(FacilioConstants.ContextNames.WORK_ORDER, changeSets));
+            if (changeSets != null && !changeSets.isEmpty()) {
+                Map<Long, List<UpdateChangeSet>> changeSetMap = new HashMap<>();
+                changeSetMap.put(woId, changeSets);
+                context.put(FacilioConstants.ContextNames.CHANGE_SET_MAP, Collections.singletonMap(FacilioConstants.ContextNames.WORK_ORDER, changeSetMap));
+            }
+
             context.put(FacilioConstants.ContextNames.RECORD_MAP, Collections.singletonMap(FacilioConstants.ContextNames.WORK_ORDER, Collections.singletonList(wo)));
             context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(wo.getId()));
             Chain c = TransactionChainFactory.getWorkOrderWorkflowsChain();
