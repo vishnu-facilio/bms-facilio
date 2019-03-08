@@ -1,11 +1,56 @@
 {
 	"1": {
 		"preRequsite": {
-			"name" : "preRequsite",
-			"description" : "desc",
+			"name" : "All chillers in running state together",
+			"description" : "All the Chillers are turned ON",
+			"assetCategory": "Chiller",
+			"thresholdType": "1",
+			"operatorId": "9",
+			"percentage": "2",
+			"occurences": "2",
+			"consecutiveoroverperiod": "2",
+			"readingField" : {
+				"name": "runStatus",
+				"displayName": "Run Status",
+				"moduleName" : "chillerreading"
+			},
 			"criteria" : {
+			
 			},
 			"workflow" : {
+				"expressions": [{
+					"name": "a",
+					"aggregateString": "count",
+					"fieldName": "alarmStatus",
+					"moduleName": "chillerreading",
+					"criteria" : {
+						"pattern": "(1)",
+						"conditions": {
+							"1" : {
+								"fieldName": "parentId",
+								"operatorId": "9",
+								"sequence": "1",
+								"value": "${resourceId}"
+							}
+						}
+					},
+					"orderByFieldName": "ttime",
+					"sortBy": "desc",
+					"limit": "2",
+					"aggregateCondition": [{
+						"fieldName": "alarmStatus",
+						"operatorId": "9",
+						"sequence": "1",
+						"value": "4"
+		     		}]
+				}],
+				"resultEvaluator": "a==2",
+				"parameters": [
+					{
+						"name": "resourceId",
+						"typeString": "Number"
+					}
+				]
 			}
 		},
 		"alarmTriggerRules": [
