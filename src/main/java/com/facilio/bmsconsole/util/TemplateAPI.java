@@ -163,29 +163,12 @@ public class TemplateAPI {
 		return "en"; //This has to be changed according to org from thread local
 	}
 	
-	public static AlarmRuleContext getAlarmRuleFromDefaultTemplate(DefaultTemplate defaultTemplate) throws Exception {
-		
-		if(defaultTemplate.getDefaultTemplateType() == DefaultTemplateType.RULE) {
-			AlarmRuleContext alarmRuleContext = FieldUtil.getAsBeanFromJson(defaultTemplate.getJson(), AlarmRuleContext.class);
-			return alarmRuleContext;
-		}
-		return null;
-	}
-
 	public static DefaultTemplate getDefaultTemplate (DefaultTemplateType defaultTemplateType, int id) {
 		return DEFAULT_TEMPLATES.get(defaultTemplateType).get(getLang()).get(id);
 	}
 	
 	public static Collection<DefaultTemplate> getAllRuleLibraryTemplate () {
 		return DEFAULT_TEMPLATES.get(DefaultTemplateType.RULE).get(getLang()).values();
-	}
-	public static List<AlarmRuleContext> getAllRuleLibraryContext() throws Exception {
-		
-		List<AlarmRuleContext> alarmRuleContexts = new ArrayList<>();
-		for(DefaultTemplate defaultTemplate : getAllRuleLibraryTemplate()) {
-			alarmRuleContexts.add(getAlarmRuleFromDefaultTemplate(defaultTemplate));
-		}
-		return alarmRuleContexts;
 	}
 	
 	public static long addTemplate(Template template) throws Exception {
