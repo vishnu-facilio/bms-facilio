@@ -8,11 +8,14 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.FormulaContext.AggregateOperator;
 import com.facilio.bmsconsole.criteria.DateOperators;
 import com.facilio.bmsconsole.criteria.DateRange;
 import com.facilio.bmsconsole.criteria.Operator;
+import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldUtil;
+import com.facilio.fw.BeanFactory;
 import com.facilio.report.context.ReadingAnalysisContext.AnalyticsType;
 import com.facilio.workflows.context.WorkflowContext;
 
@@ -386,6 +389,19 @@ public class ReportContext {
 	}
 	public void setModuleId(long moduleId) {
 		this.moduleId = moduleId;
+	}
+	
+	private FacilioModule module;
+
+	public FacilioModule getModule() throws Exception {
+		if(module == null && moduleId > 0) {
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			module = modBean.getModule(moduleId);
+		}
+		return module;
+	}
+	public void setModule(FacilioModule module) {
+		this.module = module;
 	}
 
 	private Class<? extends TransformReportDataIfc> transformClass;

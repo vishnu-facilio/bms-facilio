@@ -204,16 +204,7 @@ public class EventToAlarmCommand implements Command {
 						alarm.put("readingVal", event.getAdditionInfo().get("readingVal"));
 						alarm.put("ruleId", event.getAdditionInfo().get("ruleId"));
 						
-						String possibleCauseString = "";
-						if(oldAlarmContext != null && oldAlarmContext.getPossibleCauses() != null) {
-							possibleCauseString += oldAlarmContext.getPossibleCauses();
-						}
-						if(event.getAdditionInfo().get("possibleCauses") != null && !possibleCauseString.contains(event.getAdditionInfo().get("possibleCauses").toString())) {
-							possibleCauseString = possibleCauseString + "\n" + event.getAdditionInfo().get("possibleCauses").toString();
-						}
-						if(!possibleCauseString.isEmpty()) {
-							alarm.put("possibleCauses", possibleCauseString);
-						}
+						appendMessage(oldAlarmContext, event, alarm);
 						
 						break;
 					default:
@@ -237,6 +228,41 @@ public class EventToAlarmCommand implements Command {
 
 		event.setAlarmId(alarmId);
 		event.setEventState(EventState.ALARM_UPDATED);
+	}
+	
+	private void appendMessage(AlarmContext oldAlarmContext,EventContext event,JSONObject alarm) {
+		String possibleCauseString = "";
+		if(oldAlarmContext != null && oldAlarmContext.getPossibleCauses() != null) {
+			possibleCauseString += oldAlarmContext.getPossibleCauses();
+		}
+		if(event.getAdditionInfo().get("possibleCauses") != null && !possibleCauseString.contains(event.getAdditionInfo().get("possibleCauses").toString())) {
+			possibleCauseString = possibleCauseString + "\n" + event.getAdditionInfo().get("possibleCauses").toString();
+		}
+		if(!possibleCauseString.isEmpty()) {
+			alarm.put("possibleCauses", possibleCauseString);
+		}
+		
+		String recommendation = "";
+		if(oldAlarmContext != null && oldAlarmContext.getRecommendation() != null) {
+			recommendation += oldAlarmContext.getRecommendation();
+		}
+		if(event.getAdditionInfo().get("recommendation") != null && !recommendation.contains(event.getAdditionInfo().get("recommendation").toString())) {
+			recommendation = recommendation + "\n" + event.getAdditionInfo().get("recommendation").toString();
+		}
+		if(!recommendation.isEmpty()) {
+			alarm.put("recommendation", recommendation);
+		}
+		
+		String problem = "";
+		if(oldAlarmContext != null && oldAlarmContext.getProblem() != null) {
+			problem += oldAlarmContext.getProblem();
+		}
+		if(event.getAdditionInfo().get("problem") != null && !problem.contains(event.getAdditionInfo().get("problem").toString())) {
+			problem = problem + "\n" + event.getAdditionInfo().get("problem").toString();
+		}
+		if(!problem.isEmpty()) {
+			alarm.put("problem", problem);
+		}
 	}
 	
 	@SuppressWarnings("unchecked")

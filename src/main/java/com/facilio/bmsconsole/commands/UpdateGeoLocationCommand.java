@@ -62,7 +62,7 @@ public class UpdateGeoLocationCommand implements Command {
 					if (isWithinGeoLocation) {
 						newLocation = asset.getGeoLocation();
 						isDesignatedLocation = true;
-						distanceMoved = -1;
+						distanceMoved = 0;
 					}
 				}
 				else if (!isWithinGeoLocation) {
@@ -74,7 +74,7 @@ public class UpdateGeoLocationCommand implements Command {
 			if (newLocation != null) {
 				info = new JSONObject();
 				info.put("currentLocation", newLocation);
-				if (distanceMoved != -1) {
+				if (distanceMoved != 0 && distanceMoved != -1) {
 					info.put("distanceMoved", distanceMoved);
 				}
 				if (isDesignatedLocation != null) {

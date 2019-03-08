@@ -14,7 +14,7 @@
              poolName="faciliohikari"
              registerMbeans="true"
              name="jdbc/pcmDB"
-             jdbcUrl="jdbc:mysql://stage1.cojqex4akzz6.us-west-2.rds.amazonaws.com:3306/bms"
+             jdbcUrl="jdbc:mysql://new-stage.cojqex4akzz6.us-west-2.rds.amazonaws.com:3306/bms"
              type="javax.sql.DataSource"
              transactionIsolation="TRANSACTION_READ_COMMITTED"
              />  
