@@ -1776,7 +1776,7 @@ public class PreventiveMaintenanceAPI {
 
 		for (PreventiveMaintenance pm : pms) {
 			List<PMReminder> reminders = pm.getReminders();
-			if (pm.getReminders() == null || pm.getReminders().isEmpty()) {
+			if (reminders == null || reminders.isEmpty()) {
 				continue;
 			}
 			if (pm.getPmCreationTypeEnum() == PreventiveMaintenance.PMCreationType.SINGLE) {
@@ -1846,9 +1846,33 @@ public class PreventiveMaintenanceAPI {
 					pm.setResourcePlanners(new ArrayList<>(resourcePlanners.values()));
 					boolean hasEntry = false;
 					List<PMResourcePlannerContext> resourcePlannerContexts = pm.getResourcePlanners();
+
+					if (resourcePlannerContexts != null && !resourcePlannerContexts.isEmpty()) {
+						for (int i = 0; i < resourcePlannerContexts.size(); i++) {
+							List<PMTriggerContext> triggerContexts = resourcePlannerContexts.get(i).getTriggerContexts();
+							if (triggerContexts == null || triggerContexts.isEmpty()) {
+								triggerContexts = new ArrayList<>();
+								triggerContexts.add(PreventiveMaintenanceAPI.getDefaultTrigger(pm.getTriggers()));
+							}
+							resourcePlannerContexts.get(i).setTriggerContexts(triggerContexts);
+							//NO entry in resource planner table
+							if (resourcePlannerContexts.get(i).getId() == null || resourcePlannerContexts.get(i).getId() <= 0) {
+								PMResourcePlannerReminderContext reminderContext = new PMResourcePlannerReminderContext();
+								reminderContext.setReminderName(reminders.get(0).getName());
+								reminderContext.setReminderId(reminders.get(0).getId());
+								resourcePlannerContexts.get(i).setPmResourcePlannerReminderContexts(Arrays.asList(reminderContext));
+							} else {
+								List<PMResourcePlannerReminderContext> rpReminderContexts = PreventiveMaintenanceAPI.getPmResourcePlannerReminderContext(resourcePlannerContexts.get(i).getId());
+								resourcePlannerContexts.get(i).setPmResourcePlannerReminderContexts(rpReminderContexts);
+							}
+						}
+					} else {
+						continue;
+					}
+
 					for (PMResourcePlannerContext resourcePlannerContext : resourcePlannerContexts) {
 						if (resourcePlannerContext.getTriggerContexts() != null && !resourcePlannerContext.getTriggerContexts().isEmpty()) {
-							List<PMResourcePlannerReminderContext> rpReminderContexts = PreventiveMaintenanceAPI.getPmResourcePlannerReminderContext(resourcePlannerContext.getId());
+							List<PMResourcePlannerReminderContext> rpReminderContexts = resourcePlannerContext.getPmResourcePlannerReminderContexts();
 							Set<Long> reminderIds = new HashSet<>();
 							if (rpReminderContexts != null && !rpReminderContexts.isEmpty()) {
 								rpReminderContexts.stream().forEach(i -> reminderIds.add(i.getReminderId()));
