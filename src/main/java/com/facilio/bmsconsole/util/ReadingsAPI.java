@@ -511,7 +511,7 @@ public class ReadingsAPI {
 					FacilioField fField = fieldMap.get(reading.getKey());
 					if (fField != null) {
 						Object val = FieldUtil.castOrParseValueAsPerType(fField, reading.getValue());
-						if (AccountUtil.getCurrentOrg().getId() == 104 && readingId == 490437) {
+						if ((AccountUtil.getCurrentOrg().getId() == 104 && fField.getFieldId() == 490437) || (AccountUtil.getCurrentOrg().getId() == 134 && fField.getFieldId() == 253635)) {
 							LOGGER.info("resourceId: " + resourceId + ", ttime: " + timeStamp + ", current: " + System.currentTimeMillis() + ", value: " + val);
 						}
 						if (val != null) {
@@ -558,6 +558,9 @@ public class ReadingsAPI {
 			}
 			
 			LOGGER.debug("Unique RDMs : "+uniqueRDMs);
+			if (AccountUtil.getCurrentOrg().getOrgId() == 104 || AccountUtil.getCurrentOrg().getOrgId() == 134) {
+				LOGGER.info("Unique RDMs : "+uniqueRDMs);
+			}
 			if (uniqueRDMs.size() == 0) {
 				return null;
 			}
