@@ -18,7 +18,6 @@ import java.util.stream.Collectors;
 import org.apache.commons.chain.Chain;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
-import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -512,6 +511,9 @@ public class ReadingsAPI {
 					FacilioField fField = fieldMap.get(reading.getKey());
 					if (fField != null) {
 						Object val = FieldUtil.castOrParseValueAsPerType(fField, reading.getValue());
+						if (AccountUtil.getCurrentOrg().getId() == 104 && readingId == 490437) {
+							LOGGER.info("resourceId: " + resourceId + ", ttime: " + timeStamp + ", current: " + System.currentTimeMillis() + ", value: " + val);
+						}
 						if (val != null) {
 							long fieldId = fField.getFieldId();
 							String uniqueKey = getRDMKey(resourceId, fField);
@@ -525,7 +527,10 @@ public class ReadingsAPI {
 											|| (lastReading != null 
 											&& lastTimeStamp != -1 
 											&& !"-1".equals(meta.getActualValue()) 
-											&& timeStamp < lastTimeStamp)) { 
+											&& timeStamp < lastTimeStamp)) {
+										if (AccountUtil.getCurrentOrg().getId() == 104) {
+											LOGGER.info("Not updating: time" + timeStamp + ", current: " + System.currentTimeMillis() + ", readingId: " + readingId + ", resourceId: "+ resourceId);
+										}
 										continue;
 									}
 								}
