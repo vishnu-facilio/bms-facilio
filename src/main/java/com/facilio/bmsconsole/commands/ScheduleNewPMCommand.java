@@ -133,12 +133,7 @@ public class ScheduleNewPMCommand implements SerializableCommand {
                                 }
                                 workorderTemplate.setResource(ResourceAPI.getResource(resourceId));
                                 if (trigger.getSchedule() != null) {
-                                    long startTime;
-                                    if (trigger.getStartTime() < System.currentTimeMillis()) {
-                                        startTime = PreventiveMaintenanceAPI.getStartTimeInSecond(System.currentTimeMillis());
-                                    } else {
-                                        startTime = PreventiveMaintenanceAPI.getStartTimeInSecond(trigger.getStartTime());
-                                    }
+                                    long startTime = PreventiveMaintenanceAPI.getStartTimeInSecond(trigger.getStartTime());
 
                                     switch (pm.getTriggerTypeEnum()) {
                                         case ONLY_SCHEDULE_TRIGGER:
@@ -181,12 +176,7 @@ public class ScheduleNewPMCommand implements SerializableCommand {
                 workorderTemplate.setResource(resource);
                 for (PMTriggerContext trigger : pm.getTriggers()) {
                     if (trigger.getSchedule() != null) {
-                        long startTime;
-                        if (trigger.getStartTime() < System.currentTimeMillis()) {
-                            startTime = PreventiveMaintenanceAPI.getStartTimeInSecond(System.currentTimeMillis());
-                        } else {
-                            startTime = PreventiveMaintenanceAPI.getStartTimeInSecond(trigger.getStartTime());
-                        }
+                        long startTime = PreventiveMaintenanceAPI.getStartTimeInSecond(trigger.getStartTime());
                         // PMJobsContext pmJob = null;
                         switch (pm.getTriggerTypeEnum()) {
                             case ONLY_SCHEDULE_TRIGGER:

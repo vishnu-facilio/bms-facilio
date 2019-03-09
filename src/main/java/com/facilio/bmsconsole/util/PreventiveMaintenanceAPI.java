@@ -9,6 +9,7 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.criteria.*;
 import com.facilio.bmsconsole.modules.*;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
@@ -245,8 +246,14 @@ public class PreventiveMaintenanceAPI {
 		List<WorkOrderContext> wos = new ArrayList<>();
 		TicketStatusContext status = TicketAPI.getStatus("preopen");
 		long endTime = DateTimeUtil.getDayStartTime(pmTrigger.getFrequencyEnum().getMaxSchedulingDays(), true) - 1;
-
+		long currentTime = System.currentTimeMillis();
+		boolean isScheduled = false;
 		while (nextExecutionTime <= endTime && (pm.getMaxCount() == -1 || currentCount < pm.getMaxCount()) && (pm.getEndTime() == -1 || nextExecutionTime <= pm.getEndTime())) {
+			if ((nextExecutionTime * 1000) < currentTime) {
+				LOGGER.log(Level.SEVERE, "Skipping : next: "+ nextExecutionTime * 1000 + " current: "+ currentTime);
+				nextExecutionTime = pmTrigger.getSchedule().nextExecutionTime(nextExecutionTime);
+				continue;
+			}
 			Map<String, List<TaskContext>> taskMap = null;
 
 			WorkOrderContext wo = woTemplate.getWorkorder();
@@ -313,6 +320,10 @@ public class PreventiveMaintenanceAPI {
 			if (pmTrigger.getSchedule().getFrequencyTypeEnum() == FrequencyType.DO_NOT_REPEAT) {
 				break;
 			}
+			isScheduled = true;
+		}
+		if (!isScheduled) {
+			CommonCommandUtil.emailAlert("No Work orders generated for pm", "PM "+ pm.getId() + " PM Trigger ID: "+pmTrigger.getId());
 		}
 		return wos;
 	}
