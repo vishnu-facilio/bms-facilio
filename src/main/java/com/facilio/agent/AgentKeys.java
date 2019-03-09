@@ -1,16 +1,5 @@
 package com.facilio.agent;
 
-import com.amazonaws.services.dynamodbv2.xspec.S;
-import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.FieldFactory;
-import com.facilio.events.tasker.tasks.EventProcessor;
-import org.apache.commons.beanutils.PropertyUtilsBean;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.apache.xmlbeans.impl.xb.xsdschema.impl.PublicImpl;
-
-import java.util.List;
-
 /**
  * This class is used to define static final variable references which will be used across agent package <br>
  *     any changes here will be reflected and reduces efforts.
