@@ -91,7 +91,7 @@ public class ModuleFactory {
 		FacilioModule AgentdataModul = new FacilioModule();
 		AgentdataModul.setName("agentdata");
 		AgentdataModul.setDisplayName("agentdata");
-		AgentdataModul.setTableName("agent_data");
+		AgentdataModul.setTableName("Agent_Data");
 		return AgentdataModul;
 	}
 
