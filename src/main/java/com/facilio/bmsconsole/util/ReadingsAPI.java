@@ -498,7 +498,6 @@ public class ReadingsAPI {
 		if(readingList == null || readingList.isEmpty()) {
 			return null;
 		}
-		String sql = null;
 		try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection()) {
 			Map<String,FacilioField>  fieldMap = FieldFactory.getAsMap(fieldsList);
 			Map<String, ReadingDataMeta> uniqueRDMs = new HashMap<>();
@@ -511,7 +510,7 @@ public class ReadingsAPI {
 					FacilioField fField = fieldMap.get(reading.getKey());
 					if (fField != null) {
 						Object val = FieldUtil.castOrParseValueAsPerType(fField, reading.getValue());
-						if ((AccountUtil.getCurrentOrg().getId() == 104 && fField.getFieldId() == 490437) || (AccountUtil.getCurrentOrg().getId() == 134 && fField.getFieldId() == 253635)) {
+						if ((AccountUtil.getCurrentOrg().getId() == 104 && fField.getFieldId() == 490437) || (AccountUtil.getCurrentOrg().getId() == 134)) {
 							LOGGER.info("resourceId: " + resourceId + ", ttime: " + timeStamp + ", current: " + System.currentTimeMillis() + ", value: " + val);
 						}
 						if (val != null) {
@@ -523,13 +522,14 @@ public class ReadingsAPI {
 								{
 									Object lastReading = meta.getValue();
 									long lastTimeStamp = meta.getTtime();
-									if (timeStamp > System.currentTimeMillis()
+									long currentTime = System.currentTimeMillis();
+									if (timeStamp > currentTime
 											|| (lastReading != null 
 											&& lastTimeStamp != -1 
 											&& !"-1".equals(meta.getActualValue()) 
 											&& timeStamp < lastTimeStamp)) {
-										if (AccountUtil.getCurrentOrg().getId() == 104) {
-											LOGGER.info("Not updating: time" + timeStamp + ", current: " + System.currentTimeMillis() + ", readingId: " + readingId + ", resourceId: "+ resourceId);
+										if (AccountUtil.getCurrentOrg().getId() == 104 || AccountUtil.getCurrentOrg().getId() == 134) {
+											LOGGER.info("Not updating: time" + timeStamp + ", current: " + currentTime + ", readingId: " + readingId + ", resourceId: "+ resourceId);
 										}
 										continue;
 									}
