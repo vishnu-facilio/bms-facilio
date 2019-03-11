@@ -12,7 +12,7 @@ import com.facilio.bmsconsole.context.VendorContext;
 import com.facilio.bmsconsole.util.LocationAPI;
 import com.facilio.constants.FacilioConstants;
 
-public class GetVendorDetailsCommand implements Command{
+public class GetVendorDetailsCommand implements Command {
 
 	@Override
 	public boolean execute(Context context) throws Exception {
@@ -20,7 +20,7 @@ public class GetVendorDetailsCommand implements Command{
 		if (context.get(FacilioConstants.ContextNames.ID) != null) {
 			VendorContext vendor = (VendorContext) context.get(FacilioConstants.ContextNames.RECORD);
 			if (vendor != null && vendor.getId() > 0) {
-				if (vendor.getAddress().getId() != -1) {
+				if (vendor.getAddress() != null && vendor.getAddress().getId() != -1) {
 					Map<Long, LocationContext> spaceMap = LocationAPI
 							.getLocationMap(Collections.singleton(vendor.getAddress().getId()));
 					vendor.setAddress(spaceMap.get(vendor.getAddress().getId()));
