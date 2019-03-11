@@ -706,7 +706,7 @@ public class ViewFactory {
 	}
 
 	private static Condition getMyRequestCondition() {
-		FacilioModule workOrderRequestsModule = ModuleFactory.getWorkOrderRequestsModule();
+		FacilioModule workOrderRequestsModule = ModuleFactory.getWorkOrdersModule();
 		LookupField userField = new LookupField();
 		userField.setName("requester");
 		userField.setColumnName("REQUESTER_ID");
