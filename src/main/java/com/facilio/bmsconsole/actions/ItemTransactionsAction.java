@@ -10,13 +10,16 @@ import org.json.simple.parser.JSONParser;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.ItemTransactionsContext;
-import com.facilio.bmsconsole.context.ItemTypesContext;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 
 public class ItemTransactionsAction extends FacilioAction{
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private List<ItemTransactionsContext> itemTransaction;
 	public List<ItemTransactionsContext> getItemTransaction() {
 		return itemTransaction;
