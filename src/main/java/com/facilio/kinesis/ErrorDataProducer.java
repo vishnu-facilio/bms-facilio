@@ -5,10 +5,13 @@ import com.facilio.timeseries.TimeSeriesProcessor;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.clients.producer.RecordMetadata;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import java.util.Properties;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 public class ErrorDataProducer {
 
@@ -38,7 +41,16 @@ public class ErrorDataProducer {
         return  props;
     }
 
-    public static void send(ProducerRecord<String, String> record) {
-        producer.send(record);
+    public static RecordMetadata send(ProducerRecord<String, String> record) {
+
+        Future<RecordMetadata> future = producer.send(record);
+        RecordMetadata recordMetadata = null;
+        try {
+            recordMetadata = future.get();
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
+        return recordMetadata;
+
     }
 }

@@ -4,10 +4,10 @@ import org.json.simple.JSONObject;
 
 public class FacilioRecord {
 
-    String partitionKey;
-    JSONObject data;
-    long timeStamp;
-    String id;
+    private String partitionKey;
+    private JSONObject data;
+    private long timeStamp;
+    private String id;
 
     public FacilioRecord(String partitionKey, JSONObject data) {
         this.data = data;
