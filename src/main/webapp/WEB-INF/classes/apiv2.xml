@@ -894,6 +894,11 @@
 			<param name="fileID">{1}</param>
 		</action>
 	</package>
+	<package name="addfile" namespace="/api/v2/files" extends="v2Api">
+		<action name="add" class="com.facilio.bmsconsole.actions.FileAction"
+			method="addFile">
+		</action>
+	</package>
 	<package name="fileDownloadApiv2" namespace="/api/v2/files/download"
 		extends="filePreviewApi">
 		<!-- <global-results> <result name="success" type="stream"> <param name="contentType">${contentType}</param> 

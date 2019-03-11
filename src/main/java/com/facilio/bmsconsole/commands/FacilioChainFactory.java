@@ -912,6 +912,13 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
+	public static Chain getAddFileChain() {
+		FacilioChain c = (FacilioChain) FacilioChain.getTransactionChain();
+		c.addCommand(new AddFileCommand());
+		c.addCommand(new FileContextCommand());
+		return c;
+	}
+	
 	public static Chain getAddEnergyMeterChain() {
 		Chain c = FacilioChain.getTransactionChain();
 		c.addCommand(SetTableNamesCommand.getForEnergyMeter());
