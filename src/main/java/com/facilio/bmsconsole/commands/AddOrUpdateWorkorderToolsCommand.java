@@ -50,7 +50,7 @@ public class AddOrUpdateWorkorderToolsCommand implements Command {
 				if (stockedTools.getQuantity() < workorderTool.getQuantity()) {
 					throw new IllegalStateException("Insufficient quantity in inventory!");
 				} else {
-					if (toolTypes.isIndividualTracking()) {
+					if (toolTypes.individualTracking()) {
 						List<Long> purchasedToolIds = (List<Long>) context
 								.get(FacilioConstants.ContextNames.PURCHASED_TOOL);
 						List<PurchasedToolContext> purchasedTool = getPurchasedToolsListFromId(purchasedToolIds);

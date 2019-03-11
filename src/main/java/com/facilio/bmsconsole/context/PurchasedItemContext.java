@@ -73,10 +73,10 @@ public class PurchasedItemContext extends ModuleBaseWithCustomFields{
 	public Boolean getIsUsed() {
 		return isUsed;
 	}
-	public void setIsUsed(Boolean individualTracking) {
-		this.isUsed = individualTracking;
+	public void setIsUsed(Boolean isUsed) {
+		this.isUsed = isUsed;
 	}
-	public boolean isIndividualTracking() {
+	public boolean isUsed() {
 		if(isUsed != null) {
 			return isUsed.booleanValue();
 		}

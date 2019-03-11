@@ -1658,7 +1658,7 @@ public class TransactionChainFactory {
 			Chain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForWorkorderItems());
 			c.addCommand(new AddOrUpdateWorkorderItemsCommand());
-			c.addCommand(new ExecuteAllWorkflowsCommand());
+//			c.addCommand(new ExecuteAllWorkflowsCommand());
 			c.addCommand(new PurchasedItemsQuantityRollUpCommand());
 			c.addCommand(getUpdateItemQuantityRollupChain());
 			c.addCommand(new AddOrUpdateWorkorderCostCommand());
@@ -1669,8 +1669,9 @@ public class TransactionChainFactory {
 		
 		public static Chain getDeleteWorkorderItemChain() {
 			Chain c = getDefaultChain();
-			c.addCommand(SetTableNamesCommand.getForItemTransactions());
+			c.addCommand(SetTableNamesCommand.getForWorkorderItems());
 			c.addCommand(new GenericDeleteModuleDataCommand());
+			c.addCommand(new GetDeleteWorkorderItemCommand());
 			c.addCommand(new PurchasedItemsQuantityRollUpCommand());
 			c.addCommand(getUpdateItemQuantityRollupChain());
 			c.addCommand(new AddOrUpdateWorkorderCostCommand());
@@ -1716,7 +1717,7 @@ public class TransactionChainFactory {
 		
 		public static Chain getDeleteWorkorderToolsChain() {
 			Chain c = getDefaultChain();
-			c.addCommand(SetTableNamesCommand.getForToolTranaction());
+			c.addCommand(SetTableNamesCommand.getForWorkorderTools());
 			c.addCommand(new GenericDeleteModuleDataCommand());
 			c.addCommand(getUpdatetoolQuantityRollupChain());
 			c.addCommand(new AddOrUpdateWorkorderCostCommand());

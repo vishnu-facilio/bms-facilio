@@ -90,7 +90,7 @@ public class ItemTypesContext extends ModuleBaseWithCustomFields {
 	public void setIndividualTracking(Boolean individualTracking) {
 		this.individualTracking = individualTracking;
 	}
-	public boolean isIndividualTracking() {
+	public boolean individualTracking() {
 		if(individualTracking != null) {
 			return individualTracking.booleanValue();
 		}

@@ -1292,6 +1292,16 @@
 		</action>
 	</package>
 	
+	<package name="unUsedPurchasedItemsList" namespace="/api/v2/unUsedPurchasedItemsList/item"
+		extends="v2Api">
+		<action name="*"
+			class="com.facilio.bmsconsole.actions.PurchasedItemAction" method="unUsedPurchasedItemsList">
+			<param name="moduleName">asset</param>
+			<param name="permission">READ</param>
+			<param name = "itemId">{1}</param>
+		</action>
+	</package>
+	
 	<package name="workorderItemsApi" namespace="/api/v2/workorderItems"
 		extends="v2Api">
 		<action name="delete"

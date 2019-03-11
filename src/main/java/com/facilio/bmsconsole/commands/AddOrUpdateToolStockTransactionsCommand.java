@@ -75,7 +75,7 @@ public class AddOrUpdateToolStockTransactionsCommand implements Command {
 
 		List<ToolTransactionContext> inventoryTransaction = new ArrayList<>();
 
-		if (toolType.isIndividualTracking()) {
+		if (toolType.individualTracking()) {
 
 			List<PurchasedToolContext> pts = (List<PurchasedToolContext>) context.get(FacilioConstants.ContextNames.PURCHASED_TOOL);
 

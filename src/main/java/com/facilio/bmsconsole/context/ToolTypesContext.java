@@ -88,7 +88,7 @@ public class ToolTypesContext extends ModuleBaseWithCustomFields {
 		this.individualTracking = individualTracking;
 	}
 
-	public boolean isIndividualTracking() {
+	public boolean individualTracking() {
 		if (individualTracking != null) {
 			return individualTracking.booleanValue();
 		}

@@ -49,7 +49,7 @@ public class AddOrUpdateWorkorderItemsCommand implements Command {
 				if (item.getQuantity() < workorderitem.getQuantity()) {
 					throw new IllegalStateException("Insufficient quantity in inventory!");
 				} else {
-					if (itemType.isIndividualTracking()) {
+					if (itemType.individualTracking()) {
 						List<Long> PurchasedItemsIds = (List<Long>) context
 								.get(FacilioConstants.ContextNames.PURCHASED_ITEM);
 						List<PurchasedItemContext> purchasedItem = getPurchasedItemsListFromId(PurchasedItemsIds);
@@ -250,6 +250,7 @@ public class AddOrUpdateWorkorderItemsCommand implements Command {
 				.beanClass(PurchasedItemContext.class)
 				.andCondition(
 						CriteriaAPI.getCondition(fieldMap.get("item"), String.valueOf(id), NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("currentQuantity"), String.valueOf(0), NumberOperators.GREATER_THAN))
 				.orderBy(fieldMap.get("costDate").getColumnName() + orderByType);
 
 		List<PurchasedItemContext> purchasedItemlist = selectBuilder.get();

@@ -76,7 +76,7 @@ public class GetAddPurchasedItemCommand implements Command {
 
 			for (PurchasedItemContext pi : purchasedItem) {
 				pi.setItem(item);
-				if (itemType.isIndividualTracking()) {
+				if (itemType.individualTracking()) {
 					if (pi.getQuantity() > 0) {
 						throw new IllegalArgumentException("Quantity cannot be set when individual Tracking is enabled");
 					}
