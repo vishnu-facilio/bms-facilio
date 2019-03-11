@@ -248,7 +248,7 @@ public enum ActionType {
 								AlarmAPI.addReadingAlarmProps(obj, (ReadingRuleContext) currentRule,(ReadingContext) currentRecord);
 								break;
 							case ML_RULE:
-								AlarmAPI.addMLAlarmProps(obj, (ReadingRuleContext) currentRule);
+								AlarmAPI.addMLAlarmProps(obj, (ReadingRuleContext) currentRule, context);
 								break;
 						}
 					}

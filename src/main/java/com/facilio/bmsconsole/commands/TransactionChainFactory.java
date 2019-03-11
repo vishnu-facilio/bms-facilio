@@ -703,6 +703,12 @@ public class TransactionChainFactory {
 			c.addCommand(new RunThroughReadingRulesCommand());
 			return c;
 		}
+		
+		public static Chain historicalScheduledRuleChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new AddHistoricalScheduledRuleJobCommand());
+			return c;
+		}
 
 		public static Chain getAddPreOpenedWorkOrderChain() {
 			Chain c = getDefaultChain();
