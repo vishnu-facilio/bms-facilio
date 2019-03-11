@@ -3801,7 +3801,7 @@ public static JSONObject getStandardVariance1(ReportContext report,JSONArray pro
 				rdmPairs.add(Pair.of((Long) prop.get("id"),returnTempField));
 				rdmPairs.add(Pair.of((Long) prop.get("id"),setPointTempField));
 				
-				resourceSpaceMaps.put((Long) prop.get("id"), (Long) prop.get("spaceId"));
+				resourceSpaceMaps.put((Long) prop.get("id"), (Long) prop.get("space"));
 				resourceNameMaps.put((Long) prop.get("id"), (String) prop.get("name"));
 			}
 			
