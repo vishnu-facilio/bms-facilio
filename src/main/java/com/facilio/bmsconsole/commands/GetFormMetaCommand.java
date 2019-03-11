@@ -33,8 +33,15 @@ public class GetFormMetaCommand implements Command {
 			for (String formName: formNames) {
 				FacilioForm form = getFormFromDB(formName);
 				if (form == null) {
-					if (FormFactory.getForm(formName) == null) {
-						throw new IllegalArgumentException("Invalid Form " + formName);
+					if (FormFactory.getForm(formName) == null && !(formName.startsWith("default"))) {
+//						throw new IllegalArgumentException("Invalid Form " + formName);
+					}
+					else if (FormFactory.getForm(formName) == null && formName.startsWith("default")) {
+						ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+						String modname = formName.replaceAll("default_", ""); 
+						FacilioModule module = bean.getModule(modname);
+						String extendedModName = module.getExtendModule().getName();
+						formName = "default_"+extendedModName;
 					}
 					form = new FacilioForm(FormFactory.getForm(formName));
 					List<FormField> fields = form.getFields();

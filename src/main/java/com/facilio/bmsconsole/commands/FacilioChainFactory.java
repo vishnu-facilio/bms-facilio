@@ -898,7 +898,7 @@ public class FacilioChainFactory {
 //		c.addCommand(SetTableNamesCommand.getForAsset());
 //		c.addCommand(new LoadModuleNameCommand());
 		c.addCommand(new SetModuleForSpecialAssetsCommand());
-		c.addCommand(new LoadAssetFields());
+//		c.addCommand(new LoadAssetFields());
 		c.addCommand(new LoadViewCommand());
 //		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new GenerateCriteriaFromFilterCommand());

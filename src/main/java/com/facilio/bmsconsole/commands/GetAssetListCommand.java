@@ -44,7 +44,7 @@ public class GetAssetListCommand implements Command {
 			fields = FieldFactory.getCountField(module);
 		}
 		else {
-			fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
+			fields = modBean.getAllFields(moduleName);
 			if (selectFields != null) {
 				Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(fields);
 				for (String fil : selectFields)

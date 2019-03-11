@@ -67,6 +67,19 @@ public class LoadViewCommand implements Command {
 				if(view != null && view.getFields() != null) {
 					ViewAPI.setViewFieldsProp(view.getFields(), moduleName);
 				}
+				ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+				FacilioModule module = bean.getModule(moduleName);
+				String extendedModName = module.getExtendModule().getName();
+				FacilioModule extendedMod = module.getExtendModule();
+				if (extendedModName.contains("asset")) {
+					FacilioView newView = new FacilioView();
+					FacilioModule moduleObject = bean.getModule(moduleName);
+					newView.setName(moduleObject.getName());
+					newView.setDisplayName(moduleObject.getName().toUpperCase());
+					newView.setModuleId(moduleObject.getModuleId());;
+					newView.setModuleName(moduleName);
+					view = newView;
+				}
 			}
 			
 			if(view != null) {
