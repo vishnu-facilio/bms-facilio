@@ -332,7 +332,6 @@ public class ModuleBeanImpl implements ModuleBean {
 	@Override
 	public FacilioField getPrimaryField(String moduleName) throws Exception {
 		FacilioModule module = getMod(moduleName);
-
 		List<Long> extendedModuleIds = getExtendedModuleIds(module);
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 														.select(FieldFactory.getSelectFieldFields())
@@ -530,23 +529,33 @@ public class ModuleBeanImpl implements ModuleBean {
 	}
 	
 	private List<Long> getExtendedModuleIds(FacilioModule module) throws Exception {
-		String extendModuleQuery = DBUtil.getQuery("module.extended.id");
-
-		Connection conn = getConnection();
+//		String extendModuleQuery = DBUtil.getQuery("module.extended.id");
+//
+//		Connection conn = getConnection();
+//		List<Long> moduleIds = new ArrayList<>();
+//		ResultSet resultSet = null;
+//		PreparedStatement preparedStatement = null;
+//		try {
+//			preparedStatement = conn.prepareStatement(extendModuleQuery);
+//			preparedStatement.setLong(1, getOrgId());
+//			preparedStatement.setLong(2, module.getModuleId());
+//			resultSet = preparedStatement.executeQuery();
+//
+//			while (resultSet.next()) {
+//				moduleIds.add(resultSet.getLong(1));
+//			}
+//		} finally {
+//			DBUtil.closeAll(conn, preparedStatement, resultSet);
+//		}
+//		return moduleIds;
+		
+		//Module will always have extended info
+		
 		List<Long> moduleIds = new ArrayList<>();
-		ResultSet resultSet = null;
-		PreparedStatement preparedStatement = null;
-		try {
-			preparedStatement = conn.prepareStatement(extendModuleQuery);
-			preparedStatement.setLong(1, getOrgId());
-			preparedStatement.setLong(2, module.getModuleId());
-			resultSet = preparedStatement.executeQuery();
-
-			while (resultSet.next()) {
-				moduleIds.add(resultSet.getLong(1));
-			}
-		} finally {
-			DBUtil.closeAll(conn, preparedStatement, resultSet);
+		FacilioModule currentModule = module;
+		while (currentModule != null) {
+			moduleIds.add(currentModule.getModuleId());
+			currentModule = currentModule.getExtendModule();
 		}
 		return moduleIds;
 	}
@@ -574,7 +583,6 @@ public class ModuleBeanImpl implements ModuleBean {
 	}
 	
 	@Override
-	@Deprecated
 	public FacilioField getField(long fieldId) throws Exception {
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 														.select(FieldFactory.getSelectFieldFields())
