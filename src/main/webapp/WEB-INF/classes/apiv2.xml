@@ -1445,6 +1445,15 @@
 		</action>
 	</package>
 	
+	<package name="itemTypesForVendorList" namespace="/api/v2/itemTypesForVendors/vendor"
+		extends="v2Api">
+		<action name="*"
+			class="com.facilio.bmsconsole.actions.ItemTypesVendorActions" method="itemTypesForVendorsList">
+			<param name="moduleName">asset</param>
+			<param name="permission">READ</param>
+			<param name = "vendorsId">{1}</param>
+		</action>
+	</package>
 	<package name="itemTransactionsApi" namespace="/api/v2/itemTransactions"
 		extends="v2Api">
 		<action name="update"

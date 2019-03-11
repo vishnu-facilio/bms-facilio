@@ -40,6 +40,14 @@ public class ItemTypesVendorActions extends FacilioAction{
 		this.itemTypesId = itemId;
 	}
 	
+	private long vendorsId;
+	public long getVendorsId() {
+		return vendorsId;
+	}
+	public void setVendorsId(long vendorsId) {
+		this.vendorsId = vendorsId;
+	}
+	
 	public String addItemVendors() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.CREATE);
@@ -80,6 +88,17 @@ public class ItemTypesVendorActions extends FacilioAction{
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.ITEM_TYPES_ID, itemTypesId);
 		Command getWorkorderPartsList = ReadOnlyChainFactory.getItemVendorsList();
+		getWorkorderPartsList.execute(context);
+		itemTypesVendors = ((List<ItemTypesVendorsContext>) context.get(FacilioConstants.ContextNames.ITEM_VENDORS));
+		setResult(FacilioConstants.ContextNames.ITEM_VENDORS, itemTypesVendors);
+		return SUCCESS;
+	}
+	
+	
+	public String itemTypesForVendorsList() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.VENDOR_ID, vendorsId);
+		Command getWorkorderPartsList = ReadOnlyChainFactory.GetItemTypesForVendorCommand();
 		getWorkorderPartsList.execute(context);
 		itemTypesVendors = ((List<ItemTypesVendorsContext>) context.get(FacilioConstants.ContextNames.ITEM_VENDORS));
 		setResult(FacilioConstants.ContextNames.ITEM_VENDORS, itemTypesVendors);

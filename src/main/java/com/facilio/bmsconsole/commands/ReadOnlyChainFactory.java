@@ -564,4 +564,12 @@ public class ReadOnlyChainFactory {
 		return c;
 	}
 	
+	public static Chain GetItemTypesForVendorCommand(){
+		Chain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForItemTypesVendors());
+		c.addCommand(new LoadAllFieldsCommand());
+		c.addCommand(new GetItemTypesForVendorCommand());
+		return c;
+	}
+	
 }

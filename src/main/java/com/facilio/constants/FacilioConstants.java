@@ -786,6 +786,7 @@ public class FacilioConstants {
 
 		public static final String VENDOR = "vendor";
 		public static final String VENDORS = "vendors";
+		public static final String VENDOR_ID = "vendorsId";
 		
 		public static final String ITEM = "item";
 		public static final String ITEMS = "items";
