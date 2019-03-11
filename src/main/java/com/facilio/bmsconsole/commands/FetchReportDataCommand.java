@@ -46,6 +46,7 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.report.context.ReportBaseLineContext;
 import com.facilio.report.context.ReportContext;
+import com.facilio.report.context.ReportContext.ReportType;
 import com.facilio.report.context.ReportDataContext;
 import com.facilio.report.context.ReportDataPointContext;
 import com.facilio.report.context.ReportDataPointContext.DataPointType;
@@ -124,11 +125,15 @@ public class FetchReportDataCommand implements Command {
 		
 		ReportDataPointContext dp = dataPointList.get(0); //Since order by, criteria are same for all dataPoints in a group, we can consider only one for the builder
 		
-		if (report.getModuleId() > 0) {
-			baseModule = modBean.getModule(report.getModuleId());
+		if (report.getTypeEnum() == ReportType.WORKORDER_REPORT) {
+			if (report.getModuleId() > 0) {
+				baseModule = modBean.getModule(report.getModuleId());
+			} else {
+				baseModule = dp.getxAxis().getModule();
+			} 
 		} else {
 			baseModule = dp.getxAxis().getModule();
-		} 
+		}
 		
 		SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder = new SelectRecordsBuilder<ModuleBaseWithCustomFields>()
 																				.module(baseModule) //Assuming X to be the base module
