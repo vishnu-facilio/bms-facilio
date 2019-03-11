@@ -49,6 +49,8 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.ALARM, alarmInfo);
 		
+		context.put(FacilioConstants.ContextNames.EVENT_TYPE,EventType.CREATE_OR_EDIT);
+		
 		Chain addAlarmChain = TransactionChainFactory.getAddAlarmFromEventChain();
 		addAlarmChain.execute(context);
 		AlarmContext alarm = (AlarmContext) context.get(FacilioConstants.ContextNames.ALARM);
@@ -143,6 +145,8 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.ALARM, alarmInfo);
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, ids);
+		
+		context.put(FacilioConstants.ContextNames.EVENT_TYPE,EventType.CREATE_OR_EDIT);
 
 		Chain updateAlarm = TransactionChainFactory.updateAlarmFromJsonChain();
 		updateAlarm.execute(context);
