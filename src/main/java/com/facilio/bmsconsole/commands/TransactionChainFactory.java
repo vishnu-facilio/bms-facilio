@@ -1202,9 +1202,8 @@ public class TransactionChainFactory {
 			c.addCommand(new AddPMReminderCommand(true));
 			c.addCommand(new SetMissingRelInResourcePlannersCommand());
 			c.addCommand(new AddPMRelFieldsCommand(true));
-			c.addCommand(new ForkChainToInstantJobCommand()
-				.addCommand(new ScheduleNewPMCommand(true))
-			);
+			c.addCommand(new BlockPMEditOnWOGeneration(true, true));
+			c.addCommand(new ScheduleCreateWOJob(true, true));
 			return c;
 		}
 

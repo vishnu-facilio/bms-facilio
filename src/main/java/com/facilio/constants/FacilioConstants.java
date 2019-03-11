@@ -810,11 +810,12 @@ public class FacilioConstants {
 		
 		public static final String ITEM_VENDORS = "itemVendors";
 		public static final String TRANSACTION_TYPE = "transactionType";
-		
+
 		public static final String PURCHASED_TOOL = "purchasedTool";
 		public static final String PURCHASED_TOOL_IS_USED = "purchasedToolIsUsed";
 		public static final String PURCHASED_ITEM_IS_USED = "purchasedItemIsUsed";
-		
+
+		public static final String SKIP_WO_CREATION = "skipWOCreation";
 		private static Map<String, Class> classMap = Collections.unmodifiableMap(initClassMap());
 		private static Map<String, Class> initClassMap() {
 			Map<String, Class> classMap = new HashMap<>();
