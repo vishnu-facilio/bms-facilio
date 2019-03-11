@@ -30,12 +30,12 @@ public class ReportFactory {
 			modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			
 			List<FacilioField> reportFields = new ArrayList<>();
-			reportFields.add(getField("overvsclose", modBean.getModule("workorder"), " CASE WHEN STATUS_ID = ? THEN 'Closed' ELSE 'Open' END ", FieldType.NUMBER, STATUS_CLOSD));
-			reportFields.add(getField("overdue_open", modBean.getModule("workorder"), " CASE WHEN DUE_DATE < " + System.currentTimeMillis() + " THEN 'Overdue' ELSE 'On Schedule' END ", FieldType.NUMBER));
-			reportFields.add(getField("overdue_closed", modBean.getModule("workorder"), " CASE WHEN DUE_DATE < ACTUAL_WORK_END THEN 'Overdue' ELSE 'Ontime' END ", FieldType.NUMBER));
-			reportFields.add(getField("plannedvsunplanned", modBean.getModule("workorder"), " CASE WHEN SOURCE_TYPE = 5 THEN 'Planned' ELSE 'Unplanned' END ", FieldType.NUMBER));
+			reportFields.add(getField("opervsclose", "Status Type", modBean.getModule("workorder"), " CASE WHEN STATUS_ID = ? THEN 'Closed' ELSE 'Open' END ", FieldType.NUMBER, STATUS_CLOSD));
+			reportFields.add(getField("overdue_open", "Open Due Status", modBean.getModule("workorder"), " CASE WHEN DUE_DATE < " + System.currentTimeMillis() + " THEN 'Overdue' ELSE 'On Schedule' END ", FieldType.NUMBER));
+			reportFields.add(getField("overdue_closed", "Closed Due Status", modBean.getModule("workorder"), " CASE WHEN DUE_DATE < ACTUAL_WORK_END THEN 'Overdue' ELSE 'Ontime' END ", FieldType.NUMBER));
+			reportFields.add(getField("plannedvsunplanned", "Planned Type", modBean.getModule("workorder"), " CASE WHEN SOURCE_TYPE = 5 THEN 'Planned' ELSE 'Unplanned' END ", FieldType.NUMBER));
 			
-			reportFields.add(getField("firstresponsetime", modBean.getModule("workorder"), "Tickets.ACTUAL_WORK_START - WorkOrders.CREATED_TIME", FieldType.NUMBER));
+			reportFields.add(getField("firstresponsetime", "Response Time", modBean.getModule("workorder"), "Tickets.ACTUAL_WORK_START - WorkOrders.CREATED_TIME", FieldType.NUMBER));
 			
 			fieldMap = FieldFactory.getAsMap(reportFields);
 		} catch (Exception e) {
@@ -43,13 +43,14 @@ public class ReportFactory {
 		}
 	}
 	
-	private static FacilioField getField(String name, FacilioModule module, String columnName, FieldType fieldType) {
-		return getField(name, module, columnName, fieldType, -1);
+	private static FacilioField getField(String name, String displayName, FacilioModule module, String columnName, FieldType fieldType) {
+		return getField(name, displayName, module, columnName, fieldType, -1);
 	}
 	
-	private static FacilioField getField(String name, FacilioModule module, String columnName, FieldType fieldType, int type) {
+	private static FacilioField getField(String name, String displayName, FacilioModule module, String columnName, FieldType fieldType, int type) {
 		ReportFacilioField f = new ReportFacilioField(type);
 		f.setName(name);
+		f.setDisplayName(displayName);
 		f.setModule(module);
 		f.setColumnName(columnName);
 		f.setDataType(fieldType);
