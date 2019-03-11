@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import com.facilio.kinesis.ErrorDataProducer;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
@@ -56,33 +57,13 @@ public class TimeSeriesProcessor implements IRecordProcessor {
 	private final HashMap<String, Long> deviceMap = new HashMap<>();
 	private FacilioModule deviceDetailsModule;
 	/*private final FacilioField orgIdField = FieldFactory.getOrgIdField();*/
-	private Producer<String, String> producer;
 	private HashMap<String, HashMap<String, Long>> deviceMessageTime = new HashMap<>();
 
 	TimeSeriesProcessor(long orgId, String orgDomainName){
         this.orgId = orgId;
         this.orgDomainName = orgDomainName;
         this.errorStream = orgDomainName + "-error";
-		try {
-			producer = new KafkaProducer<>(getKafkaProducerProperties());
-			log.info("Initialized kafka producer for stream " + errorStream);
-		} catch (Exception e) {
-			log.info("Exception while constructing kafka producer for stream "+ errorStream +" ", e);
-		}
     }
-
-	private Properties getKafkaProducerProperties() {
-		Properties props = new Properties();
-		props.put("bootstrap.servers", AwsUtil.getKafkaProducer());
-		props.put("acks", "all");
-		props.put("retries", 0);
-		props.put("batch.size", 16384);
-		props.put("linger.ms", 1);
-		props.put("buffer.memory", 33554432);
-		props.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
-		props.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
-		return  props;
-	}
 
 	private void sendToKafka(Record record, String data) {
 		JSONObject dataMap = new JSONObject();
@@ -91,7 +72,7 @@ public class TimeSeriesProcessor implements IRecordProcessor {
 			dataMap.put("key", record.getPartitionKey());
 			dataMap.put("data", data);
 			dataMap.put("sequenceNumber", record.getSequenceNumber());
-			producer.send(new ProducerRecord<>(errorStream, record.getPartitionKey(), dataMap.toString()));
+			ErrorDataProducer.send(new ProducerRecord<>(errorStream, record.getPartitionKey(), dataMap.toString()));
 		} catch (Exception e) {
 			log.info(errorStream + " : " + dataMap);
 			log.info("Exception while producing to kafka ", e);
