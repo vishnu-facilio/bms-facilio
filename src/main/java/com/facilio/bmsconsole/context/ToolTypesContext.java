@@ -3,10 +3,11 @@ package com.facilio.bmsconsole.context;
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.unitconversion.Unit;
 
-public class ToolTypesContext extends ModuleBaseWithCustomFields{
-private static final long serialVersionUID = 1L;
-	
+public class ToolTypesContext extends ModuleBaseWithCustomFields {
+	private static final long serialVersionUID = 1L;
+
 	private String name;
+
 	public String getName() {
 		return name;
 	}
@@ -36,6 +37,7 @@ private static final long serialVersionUID = 1L;
 	}
 
 	private ToolsCategoryContext category;
+
 	public ToolsCategoryContext getCategory() {
 		return category;
 	}
@@ -55,6 +57,7 @@ private static final long serialVersionUID = 1L;
 	}
 
 	private Unit unit;
+
 	public Unit getUnitEnum() {
 		return unit;
 	}
@@ -62,39 +65,55 @@ private static final long serialVersionUID = 1L;
 	public void setUnit(Unit issuingUnit) {
 		this.unit = issuingUnit;
 	}
+
 	public int getUnit() {
 		if (unit != null) {
 			return unit.getUnitId();
 		}
 		return -1;
 	}
+
 	public void setUnit(int issuingUnit) {
 		this.unit = Unit.valueOf(issuingUnit);
 	}
 
 	public Boolean individualTracking;
+
 	public Boolean getIndividualTracking() {
 		return individualTracking;
 	}
+
 	public void setIndividualTracking(Boolean individualTracking) {
 		this.individualTracking = individualTracking;
 	}
+
 	public boolean isIndividualTracking() {
-		if(individualTracking != null) {
+		if (individualTracking != null) {
 			return individualTracking.booleanValue();
 		}
 		return false;
 	}
-	
+
+	private long photoId;
+
+	public long getPhotoId() {
+		return photoId;
+	}
+
+	public void setPhotoId(long photoId) {
+		this.photoId = photoId;
+	}
+
 	@Override
-		public long getLocalId() {
-			// TODO Auto-generated method stub
-			return super.getLocalId();
-		}
+	public long getLocalId() {
+		// TODO Auto-generated method stub
+		return super.getLocalId();
+	}
+
 	@Override
-		public void setLocalId(long localId) {
-			// TODO Auto-generated method stub
-			super.setLocalId(localId);
-		}
-	
+	public void setLocalId(long localId) {
+		// TODO Auto-generated method stub
+		super.setLocalId(localId);
+	}
+
 }

@@ -96,6 +96,16 @@ public class ItemTypesContext extends ModuleBaseWithCustomFields {
 		return false;
 	}
 	
+	private long photoId;
+
+	public long getPhotoId() {
+		return photoId;
+	}
+
+	public void setPhotoId(long photoId) {
+		this.photoId = photoId;
+	}
+	
 	@Override
 	public long getLocalId() {
 		// TODO Auto-generated method stub

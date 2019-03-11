@@ -512,7 +512,7 @@ public class FormFactory {
 		fields.add(new FormField("status", FieldDisplayType.LOOKUP_SIMPLE, "Status", Required.OPTIONAL, "itemTypesStatus", 5, 1));
 //		fields.add(new FormField("serialNumber", FieldDisplayType.TEXTBOX, "Serial Number", Required.OPTIONAL, 6,1));
 		fields.add(new FormField("individualTracking", FieldDisplayType.DECISION_BOX, "Individual Tracking", Required.OPTIONAL, 7, 1));
-//		fields.add(new FormField("image", FieldDisplayType.IMAGE, "IMAGE", Required.OPTIONAL, 8, 1));	
+		fields.add(new FormField("photoId", FieldDisplayType.IMAGE, "IMAGE", Required.OPTIONAL, 8, 1));	
 		return fields;
 	}
 	
@@ -527,6 +527,8 @@ public class FormFactory {
 		fields.add(new FormField("status", FieldDisplayType.LOOKUP_SIMPLE, "Status", Required.OPTIONAL, "toolTypesStatus", 6, 1));
 //		fields.add(new FormField("serialNumber", FieldDisplayType.TEXTBOX, "Serial Number", Required.OPTIONAL, 5,1));
 		fields.add(new FormField("individualTracking", FieldDisplayType.DECISION_BOX, "Individual Tracking", Required.OPTIONAL, 7, 1));	
+		fields.add(new FormField("photoId", FieldDisplayType.IMAGE, "IMAGE", Required.OPTIONAL, 8, 1));	
+
 		
 		return fields;
 	}
