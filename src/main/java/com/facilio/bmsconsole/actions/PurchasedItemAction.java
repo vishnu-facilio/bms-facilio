@@ -146,10 +146,6 @@ public class PurchasedItemAction extends FacilioAction{
 		this.purchasedItemsId = inventoryCostsId;
 	}
 	
-	private boolean includeParentFilter;
-	public boolean getIncludeParentFilter() {
-		return includeParentFilter;
-	}
 	
 	private boolean includeParentFilter;
 	public boolean getIncludeParentFilter() {
