@@ -1235,6 +1235,17 @@ public class FieldFactory {
 		
 		return fields;
 	}
+	
+	public static List<FacilioField> getReadingAlarmRuleFields() {
+		List<FacilioField> fields = new ArrayList<>();
+		FacilioModule module = ModuleFactory.getReadingAlarmRuleModule();
+
+		fields.add(getIdField(module));
+		fields.add(getOrgIdField(module));
+		fields.add(getField("readingRuleGroupId", "READING_RULE_GROUP_ID", module, FieldType.LOOKUP));
+
+		return fields;
+	}
 
 	public static List<FacilioField> getReadingRuleInclusionsExclusionsFields() {
 		List<FacilioField> fields = new ArrayList<>();
@@ -1914,6 +1925,19 @@ public class FieldFactory {
 		emailBody.setColumnName("BODY_ID");
 		emailBody.setModule(module);
 		fields.add(emailBody);
+
+		return fields;
+	}
+	
+	public static List<FacilioField> getWorkflowTemplateFields() {
+		FacilioModule module = ModuleFactory.getWorkflowTemplatesModule();
+
+		List<FacilioField> fields = new ArrayList<>();
+
+		fields.add(getIdField(module));
+		fields.add(getOrgIdField(module));
+		fields.add(getField("resultWorkflowId", "WORKFLOW_ID", module, FieldType.LOOKUP));
+		fields.add(getField("meta", "META", module, FieldType.STRING));
 
 		return fields;
 	}
