@@ -65,6 +65,7 @@ public class AddOrUpdateWorkorderItemsCommand implements Command {
 									itemToBeAdded.add(woItem);
 								} else {
 									// update
+									woItem.setId(workorderitem.getId());
 									workorderItemslist.add(woItem);
 									updateWorkorderItems(workorderItemsModule, workorderItemFields, woItem);
 								}
@@ -83,15 +84,17 @@ public class AddOrUpdateWorkorderItemsCommand implements Command {
 						if (purchasedItem != null && !purchasedItem.isEmpty()) {
 							PurchasedItemContext pItem = purchasedItem.get(0);
 							if (workorderitem.getQuantity() <= pItem.getCurrentQuantity()) {
-								workorderitem = setWorkorderItemObj(pItem, workorderitem.getQuantity(), item, parentId);
+								WorkorderItemContext woItem = new WorkorderItemContext();
+								woItem = setWorkorderItemObj(pItem, workorderitem.getQuantity(), item, parentId);
 								if (workorderitem.getId() <= 0) {
 									// Insert
-									workorderItemslist.add(workorderitem);
-									itemToBeAdded.add(workorderitem);
+									workorderItemslist.add(woItem);
+									itemToBeAdded.add(woItem);
 								} else {
 									// update
-									workorderItemslist.add(workorderitem);
-									updateWorkorderItems(workorderItemsModule, workorderItemFields, workorderitem);
+									woItem.setId(workorderitem.getId());
+									workorderItemslist.add(woItem);
+									updateWorkorderItems(workorderItemsModule, workorderItemFields, woItem);
 								}
 							} else {
 								double requiredQuantity = workorderitem.getQuantity();
@@ -111,6 +114,7 @@ public class AddOrUpdateWorkorderItemsCommand implements Command {
 										itemToBeAdded.add(woItem);
 									} else {
 										// update
+										woItem.setId(workorderitem.getId());
 										workorderItemslist.add(woItem);
 										updateWorkorderItems(workorderItemsModule, workorderItemFields, woItem);
 									}
