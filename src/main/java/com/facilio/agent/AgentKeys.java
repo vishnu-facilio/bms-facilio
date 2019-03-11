@@ -26,5 +26,9 @@ public class AgentKeys
     public static final String LAST_DATA_RECEIVED_TIME = "lastDataReceivedTime";
     public static final String NUMBER_OF_CONTROLLERS = "numberOfControllers";
     public static final String IN_USE  = "inUse";
+    public static final String TIMESTAMP = "timestamp";
+    public static final String TIMESERIES = "timeseries";
+    public static final String COV = "cov";
+    public static final String EVENT = "event";
 }
 

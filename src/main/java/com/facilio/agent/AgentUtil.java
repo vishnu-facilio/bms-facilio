@@ -4,15 +4,12 @@ import com.facilio.beans.ModuleCRUDBean;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericInsertRecordBuilder;
-import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,12 +20,14 @@ import java.util.Map;
 public  class AgentUtil
 {
     private long orgId ;
+    private String orgDomainName;
     private static final long DEFAULT_TIME = 600000L;
     private Map<String, FacilioAgent> agentMap = new HashMap<>();
 
 
-    public AgentUtil(long orgId)  {
+    public AgentUtil(long orgId, String orgDomainName)  {
         this.orgId = orgId;
+        this.orgDomainName = orgDomainName;
         populateAgentContextMap();
     }
 
@@ -117,7 +116,7 @@ public  class AgentUtil
         String agentName = (String) payload.get(AgentKeys.AGENT);
         
         if (StringUtils.isEmpty(agentName)) { //Temp fix to avoid NPE
-        	return -1;
+        	agentName = orgDomainName;
         }
         
         if ( agentMap.containsKey(agentName) ) {
