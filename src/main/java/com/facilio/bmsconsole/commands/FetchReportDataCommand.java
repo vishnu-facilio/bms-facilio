@@ -268,6 +268,20 @@ public class FetchReportDataCommand implements Command {
 		return props;
 	}
 	
+	private boolean isAlreadyAdded(Set<FacilioModule> addedModules, FacilioModule module) {
+		if (CollectionUtils.isEmpty(addedModules)) {
+			return true;
+		}
+		
+		for (FacilioModule m : addedModules) {
+			if (m.isParentOrChildModule(module)) {
+				return true;
+			}
+		}
+		
+		return false;
+	}
+	
 	private void setYFieldsAndGroupByFields(List<ReportDataPointContext> dataPointList, List<FacilioField> fields, FacilioField xAggrField, StringJoiner groupBy, ReportDataPointContext dp, SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder, Set<FacilioModule> addedModules) throws Exception {
 		for (ReportDataPointContext dataPoint : dataPointList) {
 			applyYAggregation(dataPoint, fields);
@@ -297,7 +311,7 @@ public class FetchReportDataCommand implements Command {
 				fields.add(gField);
 				
 				FacilioModule groupByModule = groupByField.getModule();
-				if (!addedModules.contains(groupByModule)) {
+				if (!isAlreadyAdded(addedModules, groupByModule)) {
 					
 					applyJoin(groupByField.getJoinOn(), groupByModule, selectBuilder);
 					addedModules.add(groupByModule);
