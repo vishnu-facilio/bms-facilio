@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.context;
 
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
+import com.facilio.fs.FileStoreFactory;
 import com.facilio.unitconversion.Unit;
 
 public class ToolTypesContext extends ModuleBaseWithCustomFields {
@@ -95,6 +96,13 @@ public class ToolTypesContext extends ModuleBaseWithCustomFields {
 	}
 
 	private long photoId;
+	
+	public String getPhotoUrl() throws Exception {
+		if (this.photoId > 0) {
+			return FileStoreFactory.getInstance().getFileStore().getPrivateUrl(this.photoId);
+		}
+		return null;
+	}
 
 	public long getPhotoId() {
 		return photoId;

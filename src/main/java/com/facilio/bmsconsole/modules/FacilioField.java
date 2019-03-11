@@ -417,7 +417,8 @@ public class FacilioField implements Serializable {
 		USER(30,"user"),
 		GEO_LOCATION(31, "Geo Location"),
 		PURCHASEDITEMT(32,"purchasedItem"),
-		IMAGE(33, "image")
+		IMAGE(33, "image"),
+		PURCHASEDTOOL(32,"purchasedTool"),
 		;
 		
 		private int intVal;

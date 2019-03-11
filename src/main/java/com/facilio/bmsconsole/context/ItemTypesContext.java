@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.context;
 
 import com.facilio.bmsconsole.context.WorkorderCostContext.CostType;
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
+import com.facilio.fs.FileStoreFactory;
 import com.facilio.unitconversion.Unit;
 
 public class ItemTypesContext extends ModuleBaseWithCustomFields {
@@ -104,6 +105,13 @@ public class ItemTypesContext extends ModuleBaseWithCustomFields {
 
 	public void setPhotoId(long photoId) {
 		this.photoId = photoId;
+	}
+	
+	public String getPhotoUrl() throws Exception {
+		if (this.photoId > 0) {
+			return FileStoreFactory.getInstance().getFileStore().getPrivateUrl(this.photoId);
+		}
+		return null;
 	}
 	
 	@Override
