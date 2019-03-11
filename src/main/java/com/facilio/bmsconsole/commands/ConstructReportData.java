@@ -39,13 +39,13 @@ import com.facilio.report.context.ReportYAxisContext;
 
 public class ConstructReportData implements Command {
 
-	private String moduleName;
 	private int moduleType = -1;
+	private FacilioModule module;
 
 	@Override
 	public boolean execute(Context context) throws Exception {
 		ReportContext reportContext = (ReportContext) context.get(FacilioConstants.ContextNames.REPORT);
-		moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
+		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 		
 		moduleType = (int) context.get(FacilioConstants.Reports.MODULE_TYPE);
 		if (reportContext == null) {
@@ -53,7 +53,7 @@ public class ConstructReportData implements Command {
 		}
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioModule module = null;
+		module = null;
 		if (reportContext.getModuleId() > 0) {
 			module = modBean.getModule(reportContext.getModuleId());
 		} else if (StringUtils.isNotEmpty(moduleName)) {
@@ -130,7 +130,11 @@ public class ConstructReportData implements Command {
 		if (xField == null) {
 			throw new Exception("x field should be mandatory");
 		}
-		xAxis.setField(xField);
+		FacilioModule xAxisModule = null;
+		if (xAxisJSON.containsKey("module_id")) {
+			xAxisModule = modBean.getModule((Long) xAxisJSON.get("module_id"));
+		}
+		xAxis.setField(xAxisModule, xField);
 		dataPointContext.setxAxis(xAxis);
 		
 		
@@ -138,19 +142,28 @@ public class ConstructReportData implements Command {
 			Integer operator = ((Number) dateField.get("operator")).intValue();
 			reportContext.setDateOperator(operator);
 			reportContext.setDateValue((String) dateField.get("date_value"));
+			ReportFieldContext reportFieldContext = new ReportFieldContext();
 			FacilioField field = modBean.getField((Long) dateField.get("field_id"));
-			dataPointContext.setDateField(field);
+			long moduleId = -1;
+			if (dateField.containsKey("module_id")) {
+				moduleId = (long) dateField.get("module_id");
+			}
+			reportFieldContext.setField(modBean.getModule(moduleId), field);
+			dataPointContext.setDateField(reportFieldContext);
 		}
 		
 		ReportYAxisContext yAxis = new ReportYAxisContext();
 		FacilioField yField = null;
 
 		AggregateOperator yAggr = CommonAggregateOperator.COUNT;
+		FacilioModule yAxisModule = null;
 		if (yMap == null) {
-			yField = FieldFactory.getIdField(xField.getModule());
+			yField = FieldFactory.getIdField(module);
+			yAxisModule = module;
 		} else {
 			if (yMap == null || !(yMap.containsKey("field_id"))) {
 				yField = FieldFactory.getIdField(xField.getModule());
+				yAxisModule = module;
 			} else {
 				if (yMap.containsKey("aggr")) {
 					yAggr = AggregateOperator.getAggregateOperator(((Number) yMap.get("aggr")).intValue());
@@ -161,11 +174,14 @@ public class ConstructReportData implements Command {
 				} else if (fieldId instanceof String) {
 					yField = ReportFactory.getReportField((String) fieldId);
 				}
+				if (yMap.containsKey("module_id")) {
+					yAxisModule = modBean.getModule((Long) yMap.get("module_id"));
+				}
 			}
 		}
 
 		yAxis.setAggr(yAggr);
-		yAxis.setField(yField);
+		yAxis.setField(yAxisModule, yField);
 		dataPointContext.setyAxis(yAxis);
 		
 		if (groupByJSONArray != null) {
@@ -185,7 +201,11 @@ public class ConstructReportData implements Command {
 				} else if (fieldId instanceof String) {
 					field = ReportFactory.getReportField((String) fieldId);
 				}
-				groupByField.setField(field);
+				FacilioModule groupByModule = null;
+				if (groupByJSON.containsKey("module_id")) {
+					groupByModule = modBean.getModule((Long) groupByJSON.get("module_id"));
+				}
+				groupByField.setField(groupByModule, field);
 				groupByField.setAlias(field.getName());
 
 				if (groupByJSON.containsKey("aggr")) {
@@ -223,7 +243,7 @@ public class ConstructReportData implements Command {
 			dataPointContext.setLimit(limit);
 		}
 		
-		if (moduleName.equals("workorder")) {
+		if (module.getName().equals("workorder")) {
 			SelectRecordsBuilder<TicketStatusContext> builder = new SelectRecordsBuilder<TicketStatusContext>()
 					.beanClass(TicketStatusContext.class)
 					.module(modBean.getModule("ticketstatus"))

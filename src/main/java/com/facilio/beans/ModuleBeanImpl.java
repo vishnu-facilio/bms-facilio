@@ -566,9 +566,7 @@ public class ModuleBeanImpl implements ModuleBean {
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 														.select(FieldFactory.getSelectFieldFields())
 														.table("Fields")
-														.andCustomWhere("Fields.EXTENDED_MODULEID is null")
 														.andCondition(CriteriaAPI.getCondition("MODULEID", "moduleId", StringUtils.join(extendedModuleIds, ","), NumberOperators.EQUALS));
-//														.andCustomWhere("Fields.MODULEID in " + extendModuleQuery, getOrgId(), module.getModuleId());
 
 		List<Map<String, Object>> fieldProps = selectBuilder.get();
 		List<FacilioField> fields = getFieldFromPropList(fieldProps, moduleMap);
@@ -576,6 +574,7 @@ public class ModuleBeanImpl implements ModuleBean {
 	}
 	
 	@Override
+	@Deprecated
 	public FacilioField getField(long fieldId) throws Exception {
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 														.select(FieldFactory.getSelectFieldFields())
@@ -589,6 +588,57 @@ public class ModuleBeanImpl implements ModuleBean {
 			Map<Long, FacilioModule> moduleMap = splitModules(module);
 			List<FacilioField> fields = getFieldFromPropList(fieldProps, moduleMap);
 			return fields.get(0);
+		}
+		return null;
+	}
+	
+	@Override
+	public FacilioField getField(long fieldId, long moduleId) throws Exception {
+		return getField(getModule(moduleId), fieldId);
+	}
+	
+	private FacilioField getField(FacilioModule facilioModule, long fieldId) throws Exception {
+		List<Long> extendedModuleIds = getExtendedModuleIds(facilioModule);
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+														.select(FieldFactory.getSelectFieldFields())
+														.table("Fields")
+														.andCondition(CriteriaAPI.getCondition("MODULEID", "moduleId", StringUtils.join(extendedModuleIds, ","), NumberOperators.EQUALS))
+														.andCustomWhere("Fields.ORGID = ? AND Fields.FIELDID = ?", getOrgId(), fieldId);
+		List<Map<String, Object>> fieldProps = selectBuilder.get();
+		
+		if(fieldProps != null && !fieldProps.isEmpty()) {
+			Map<String, Object> fieldProp = fieldProps.get(0);
+			FacilioModule module = getMod((long)fieldProp.get("moduleId"));
+			Map<Long, FacilioModule> moduleMap = splitModules(module);
+			List<FacilioField> fields = getFieldFromPropList(fieldProps, moduleMap);
+			return fields.get(0);
+		}
+		return null;
+	}
+
+	@Override
+	public FacilioField getField(long fieldId, String moduleName) throws Exception {
+		return getField(getModule(moduleName), fieldId);
+	}
+	
+	@Override
+	public FacilioField getReadingField(long fieldId) throws Exception {
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+														.select(FieldFactory.getSelectFieldFields())
+														.table("Fields")
+														.andCustomWhere("Fields.ORGID = ? AND Fields.FIELDID = ?", getOrgId(), fieldId);
+		List<Map<String, Object>> fieldProps = selectBuilder.get();
+		
+		if(fieldProps != null && !fieldProps.isEmpty()) {
+			Map<String, Object> fieldProp = fieldProps.get(0);
+			FacilioModule module = getMod((long)fieldProp.get("moduleId"));
+			Map<Long, FacilioModule> moduleMap = splitModules(module);
+			List<FacilioField> fields = getFieldFromPropList(fieldProps, moduleMap);
+			FacilioField facilioField = fields.get(0);
+			if (facilioField.getModule().getTypeEnum() == ModuleType.READING) {
+				return facilioField;
+			}
 		}
 		return null;
 	}

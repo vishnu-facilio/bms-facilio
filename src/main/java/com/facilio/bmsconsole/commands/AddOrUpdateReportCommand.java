@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.commands;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.facilio.bmsconsole.modules.FacilioModule;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
@@ -40,20 +41,20 @@ public class AddOrUpdateReportCommand implements Command {
 			}
 			
 			if(dataPoint.getxAxis() != null)  {
-				reportFields.add(constructReportField(dataPoint.getxAxis().getField(), report.getId()));
+				reportFields.add(constructReportField(dataPoint.getxAxis().getModule(), dataPoint.getxAxis().getField(), report.getId()));
 			}
 			
 			if(dataPoint.getyAxis() != null) {
-				reportFields.add(constructReportField(dataPoint.getyAxis().getField(), report.getId()));
+				reportFields.add(constructReportField(dataPoint.getyAxis().getModule(), dataPoint.getyAxis().getField(), report.getId()));
 			}
 			
 			if(dataPoint.getDateField() != null) {
-				reportFields.add(constructReportField(dataPoint.getDateField(), report.getId()));
+				reportFields.add(constructReportField(dataPoint.getDateField().getModule(), dataPoint.getDateField().getField(), report.getId()));
 			}
 		}
 		if (report.getFilters() != null && !report.getFilters().isEmpty()) {
 			for (ReportFilterContext filter : report.getFilters()) {
-				reportFields.add(constructReportField(filter.getField(), report.getId()));
+				reportFields.add(constructReportField(filter.getModule(), filter.getField(), report.getId()));
 			}
 		}
 		
@@ -61,7 +62,7 @@ public class AddOrUpdateReportCommand implements Command {
 		return false;
 	}
 	
-	private ReportFieldContext constructReportField (FacilioField field, long reportId) {
+	private ReportFieldContext constructReportField (FacilioModule module, FacilioField field, long reportId) {
 		ReportFieldContext reportFieldContext = new ReportFieldContext();
 		reportFieldContext.setReportId(reportId);
 		
@@ -69,8 +70,8 @@ public class AddOrUpdateReportCommand implements Command {
 			reportFieldContext.setFieldId(field.getFieldId());
 		}
 		else if (field.getModule() != null && field.getModule().getName() != null && !field.getModule().getName().isEmpty() && field.getName() != null && !field.getName().isEmpty()){
-			reportFieldContext.setModuleName(field.getModule().getName());
-			reportFieldContext.setFieldName(field.getName());
+//			reportFieldContext.setModuleName(field.getModule().getName());
+			reportFieldContext.setField(module, field);
 		}
 		else {
 			throw new IllegalArgumentException("Invalid field object for ReportFields addition");

@@ -244,22 +244,39 @@ public class ReportUtil {
 				
 				if (report.getFilters() != null && !report.getFilters().isEmpty()) {
 					for (ReportFilterContext filter : report.getFilters()) {
-						filter.setField(getField(filter.getFieldId(), filter.getModuleName(), filter.getFieldName(), modBean));
+						filter.setField(getModule(filter.getModuleId(), filter.getModuleName(), modBean), getField(filter.getFieldId(), filter.getModuleName(), filter.getFieldName(), modBean));
 					}
 				}
 				
 				for (ReportDataPointContext dataPoint : report.getDataPoints()) {
 					ReportFieldContext xAxis = dataPoint.getxAxis();
-					xAxis.setField(getField(xAxis.getFieldId(), xAxis.getModuleName(), xAxis.getFieldName(), modBean));
+					xAxis.setField(getModule(xAxis.getModuleId(), xAxis.getModuleName(), modBean), getField(xAxis.getFieldId(), xAxis.getModuleName(), xAxis.getFieldName(), modBean));
 					
 					ReportYAxisContext yAxis = dataPoint.getyAxis();
-					yAxis.setField(getField(yAxis.getFieldId(), yAxis.getModuleName(), yAxis.getFieldName(), modBean));
-					
-					dataPoint.setDateField(getField(dataPoint.getDateFieldId(), dataPoint.getDateFieldModuleName(), dataPoint.getDateFieldName(), modBean));
+					yAxis.setField(getModule(xAxis.getModuleId(), xAxis.getModuleName(), modBean), getField(yAxis.getFieldId(), yAxis.getModuleName(), yAxis.getFieldName(), modBean));
+
+					ReportFieldContext dateReportField = dataPoint.getDateField();
+					if (dataPoint.getDateFieldId() > 0) {
+						if (dateReportField == null) {
+							dateReportField = new ReportFieldContext();
+						}
+						dateReportField.setField(null, getField(dataPoint.getDateFieldId(), dataPoint.getDateFieldModuleName(), dataPoint.getDateFieldName(), modBean));
+					}
+					dataPoint.setDateField(dateReportField);
 				}
 				reports.add(report);
 			}
 			return reports;
+		}
+		return null;
+	}
+
+	private static FacilioModule getModule(long moduleId, String moduleName, ModuleBean modBean) throws Exception {
+		if (moduleId != -1) {
+			return modBean.getModule(moduleId);
+		}
+		else if (StringUtils.isNotEmpty(moduleName)) {
+			return modBean.getModule(moduleName);
 		}
 		return null;
 	}

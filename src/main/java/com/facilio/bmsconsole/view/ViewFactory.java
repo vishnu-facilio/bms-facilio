@@ -1137,12 +1137,14 @@ public class ViewFactory {
 	}
 
 	private static FacilioView getOpenUnPlannedWorkOrders() {
+		FacilioModule workOrdersModule = ModuleFactory.getWorkOrdersModule();
+		FacilioModule ticketsModule = ModuleFactory.getTicketsModule();
+
 		FacilioField sourceType = new FacilioField();
 		sourceType.setName("sourceType");
 		sourceType.setColumnName("SOURCE_TYPE");
 		sourceType.setDataType(FieldType.NUMBER);
-		FacilioModule workOrdersModule = ModuleFactory.getWorkOrdersModule();
-		sourceType.setModule(workOrdersModule);
+		sourceType.setModule(ticketsModule);
 //		sourceType.setExtendedModule(ModuleFactory.getTicketsModule());
 
 		Condition sourceTypeCondition = new Condition();

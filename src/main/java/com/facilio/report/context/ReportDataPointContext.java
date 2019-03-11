@@ -184,7 +184,7 @@ public class ReportDataPointContext {
 	public void setDateFieldId(long dateFieldId) {
 		this.dateFieldId = dateFieldId;
 	}
-	
+
 	private String dateFieldModuleName;
 	public String getDateFieldModuleName() {
 		return dateFieldModuleName;
@@ -201,17 +201,14 @@ public class ReportDataPointContext {
 		this.dateFieldName = dateFieldName;
 	}
 
-	private FacilioField dateField;
-	
+	private ReportFieldContext dateField;
 	@JsonIgnore
-	public FacilioField getDateField() throws Exception {
+	public ReportFieldContext getDateField() {
 		return dateField;
 	}
-	public void setDateField(FacilioField dateField) {
-		if (dateField != null) {
-			dateFieldId = dateField.getFieldId();
-		}
-		this.dateField = dateField;
+
+	public void setDateField(ReportFieldContext dateReportField) {
+		this.dateField = dateReportField;
 	}
 	
 	private Map<String, String> aliases; 

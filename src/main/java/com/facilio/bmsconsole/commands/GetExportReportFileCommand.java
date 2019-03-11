@@ -84,7 +84,7 @@ public class GetExportReportFileCommand implements Command {
 			fileUrl = ExportUtil.exportData(fileFormat, "Report Data", table);
 		}
 		else {
-			StringBuilder url = getClientUrl(report.getDataPoints().get(0).getxAxis().getField().getModule().getName(), report.getId(), fileFormat);			
+			StringBuilder url = getClientUrl(report.getDataPoints().get(0).getxAxis().getModule().getName(), report.getId(), fileFormat);
 			String chartType = (String) context.get("chartType");
 			if (chartType != null) {
 				url.append("&charttype=").append(chartType);

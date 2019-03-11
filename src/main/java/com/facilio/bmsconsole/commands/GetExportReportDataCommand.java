@@ -133,7 +133,7 @@ public class GetExportReportDataCommand implements Command {
 			fileUrl = ExportUtil.exportData(fileFormat, "Report Data", table);
 		}
 		else {
-			StringBuilder url = getClientUrl(report.getDataPoints().get(0).getxAxis().getField().getModule().getName(), report.getId(), fileFormat)
+			StringBuilder url = getClientUrl(report.getDataPoints().get(0).getxAxis().getModule().getName(), report.getId(), fileFormat)
 					.append("?print=true");
 			if(report.getDateRange() != null) {
 				JSONObject dateRange = new JSONObject();

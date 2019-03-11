@@ -169,6 +169,33 @@ public class FacilioModule implements Serializable {
 					
 	}
 	
+	public boolean isParentOrChildModule(FacilioModule module) {
+		if (module == null) {
+			return false;
+		}
+		
+		if (checkHierarchy(this, module)) {
+			return true;
+		}
+		
+		if (checkHierarchy(module, this)) {
+			return true;
+		}
+		
+		return false;
+	}
+	
+	private static boolean checkHierarchy(FacilioModule derivedModule, FacilioModule baseModule) {
+		FacilioModule extendedModule = derivedModule;
+		while (extendedModule != null) {
+			if (extendedModule.equals(baseModule)) {
+				return true;
+			}
+			extendedModule = extendedModule.getExtendModule();
+		}
+		return false;
+	}
+	
 	public static enum ModuleType {
 		BASE_ENTITY,
 		PICK_LIST,
