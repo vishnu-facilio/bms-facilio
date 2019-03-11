@@ -6,6 +6,8 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
+
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
@@ -112,7 +114,12 @@ public  class AgentUtil
 
     }
     public int processAgent(JSONObject payload) {
-        String agentName = payload.get(AgentKeys.AGENT).toString();
+        String agentName = (String) payload.get(AgentKeys.AGENT);
+        
+        if (StringUtils.isEmpty(agentName)) { //Temp fix to avoid NPE
+        	return -1;
+        }
+        
         if ( agentMap.containsKey(agentName) ) {
          FacilioAgent agent = agentMap.get(agentName);
             GenericUpdateRecordBuilder genericUpdateRecordBuilder = new GenericUpdateRecordBuilder()
@@ -190,7 +197,6 @@ public  class AgentUtil
 
 
         }
-
         else {
             FacilioAgent agent = getFacilioAgentFromJson(payload);
             long currTime = System.currentTimeMillis();

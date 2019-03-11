@@ -617,7 +617,7 @@ public class AlarmAPI {
 		return msgBuilder.toString();
 	}
 	
-	private static void appendOccurences (StringBuilder msgBuilder, ReadingRuleContext rule) {
+	public static void appendOccurences (StringBuilder msgBuilder, ReadingRuleContext rule) {
 		WorkflowContext workflow = rule.getWorkflow();
 		if (workflow != null) {
 			ExpressionContext expression = (ExpressionContext) workflow.getExpressions().get(0);
@@ -632,7 +632,7 @@ public class AlarmAPI {
 	}
 	
 	private static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("#.##");
-	private static void appendSimpleMsg(StringBuilder msgBuilder, NumberOperators operator, ReadingRuleContext rule, ReadingContext reading) {
+	public static void appendSimpleMsg(StringBuilder msgBuilder, NumberOperators operator, ReadingRuleContext rule, ReadingContext reading) {
 		switch (operator) {
 			case EQUALS:
 				msgBuilder.append("was ");
@@ -675,7 +675,7 @@ public class AlarmAPI {
 		appendUnit(msgBuilder, rule);
 	}
 	
-	private static void appendBaseLineMsg (StringBuilder msgBuilder, NumberOperators operator, ReadingRuleContext rule) throws Exception {
+	public static void appendBaseLineMsg (StringBuilder msgBuilder, NumberOperators operator, ReadingRuleContext rule) throws Exception {
 		switch (operator) {
 			case EQUALS:
 				msgBuilder.append("was along ");
@@ -720,7 +720,7 @@ public class AlarmAPI {
 		}
 	}
 	
-	private static void appendFlappingMsg (StringBuilder msgBuilder, ReadingRuleContext rule) {
+	public static void appendFlappingMsg (StringBuilder msgBuilder, ReadingRuleContext rule) {
 		msgBuilder.append("flapped ")
 					.append(getInWords(rule.getFlapFrequency()));
 		

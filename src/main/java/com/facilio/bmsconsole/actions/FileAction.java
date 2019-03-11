@@ -4,12 +4,23 @@ import java.io.File;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.chain.Chain;
 import org.apache.struts2.ServletActionContext;
+
+import com.facilio.bmsconsole.commands.FacilioChainFactory;
+import com.facilio.bmsconsole.context.AttachmentContext;
+import com.facilio.bmsconsole.context.FileContext;
+import com.facilio.chain.FacilioContext;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.fs.FileInfo;
 import com.facilio.fs.FileStore;
 import com.facilio.fs.FileStoreFactory;
+import com.opensymphony.xwork2.ActionContext;
 
 public class FileAction extends FacilioAction {
 
@@ -131,4 +142,49 @@ public class FileAction extends FacilioAction {
 		throw new IllegalArgumentException("Cannot fetch file");
 	}
 	
+	public String addFile() throws Exception {
+		
+		FacilioContext context = new FacilioContext();
+		
+ 		context.put(FacilioConstants.ContextNames.FILE, this.fileContent);
+ 		context.put(FacilioConstants.ContextNames.FILE_NAME, this.fileContentFileName);
+ 		context.put(FacilioConstants.ContextNames.FILE_CONTENT_TYPE, this.fileContentContentType);
+ 		
+		Chain addFileChain = FacilioChainFactory.getAddFileChain();
+		addFileChain.execute(context);
+		
+		FileContext newFile = (FileContext) context.get(FacilioConstants.ContextNames.FILE_CONTEXT_LIST);
+		
+		setResult("fileInfo", newFile);
+		
+		return SUCCESS;
+	}
+	
+	private File fileContent;
+	private String fileContentFileName;
+	private String fileContentContentType;
+
+	public File getFileContent() {
+		return fileContent;
+	}
+
+	public void setFileContent(File fileContent) {
+		this.fileContent = fileContent;
+	}
+
+	public String getFileContentFileName() {
+		return fileContentFileName;
+	}
+
+	public void setFileContentFileName(String fileContentFileName) {
+		this.fileContentFileName = fileContentFileName;
+	}
+
+	public String getFileContentContentType() {
+		return fileContentContentType;
+	}
+
+	public void setFileContentContentType(String fileContentContentType) {
+		this.fileContentContentType = fileContentContentType;
+	}
 }

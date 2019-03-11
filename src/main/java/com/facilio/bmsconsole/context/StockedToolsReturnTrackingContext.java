@@ -5,13 +5,13 @@ import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 public class StockedToolsReturnTrackingContext extends ModuleBaseWithCustomFields {
 
 	private static final long serialVersionUID = 1L;
-	private StockedToolsTransactionContext StockedToolTransaction;
+	private ToolTransactionContext StockedToolTransaction;
 
-	public StockedToolsTransactionContext getStockedToolTransaction() {
+	public ToolTransactionContext getStockedToolTransaction() {
 		return StockedToolTransaction;
 	}
 
-	public void setStockedToolTransaction(StockedToolsTransactionContext stockedToolTransaction) {
+	public void setStockedToolTransaction(ToolTransactionContext stockedToolTransaction) {
 		StockedToolTransaction = stockedToolTransaction;
 	}
 

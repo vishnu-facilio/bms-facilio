@@ -60,12 +60,12 @@ public class StoreRoomAction extends FacilioAction{
 		Chain updatestoreroomChain = TransactionChainFactory.getUpdateStoreRoomChain();
 		updatestoreroomChain.execute(context);
 		setStoreRoomId(storeRoom.getId());
-		StoreRoomDetails();
+		storeRoomDetails();
 		setResult(FacilioConstants.ContextNames.STORE_ROOM, storeRoom);
 		return SUCCESS;
 	}
 	
-	public String StoreRoomDetails() throws Exception {
+	public String storeRoomDetails() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.ID, getStoreRoomId());
 

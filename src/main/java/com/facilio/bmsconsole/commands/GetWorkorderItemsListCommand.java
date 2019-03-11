@@ -7,8 +7,8 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.InventryContext;
-import com.facilio.bmsconsole.context.ItemsContext;
+import com.facilio.bmsconsole.context.ItemContext;
+import com.facilio.bmsconsole.context.ItemTypesContext;
 import com.facilio.bmsconsole.context.StoreRoomContext;
 import com.facilio.bmsconsole.context.WorkorderItemContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
@@ -43,13 +43,13 @@ public class GetWorkorderItemsListCommand implements Command {
 			List<WorkorderItemContext> workorderItems = selectBuilder.get();
 			if (workorderItems != null && !workorderItems.isEmpty()) {
 				for (WorkorderItemContext woItems : workorderItems) {
-					InventryContext inventry = getInventry(woItems.getInventory().getId());
+					ItemContext inventry = getInventry(woItems.getItem().getId());
 					StoreRoomContext storeRoom = StoreroomApi
 							.getStoreRoom(inventry.getStoreRoom().getId());
 					inventry.setStoreRoom(storeRoom);
-					ItemsContext item = ItemsApi.getItem(inventry.getItem().getId());
-					inventry.setItem(item);
-					woItems.setInventory(inventry);
+					ItemTypesContext item = ItemsApi.getItem(inventry.getItemType().getId());
+					inventry.setItemType(item);
+					woItems.setItem(inventry);
 				}
 			}
 			context.put(FacilioConstants.ContextNames.WORKORDER_ITEMS, workorderItems);
@@ -57,21 +57,21 @@ public class GetWorkorderItemsListCommand implements Command {
 		return false;
 	}
 	
-	public static InventryContext getInventry(long id) throws Exception
+	public static ItemContext getInventry(long id) throws Exception
 	{
 		if(id <= 0) {
 			return null;
 		}
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.INVENTRY);
-		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.INVENTRY);
-		SelectRecordsBuilder<InventryContext> selectBuilder = new SelectRecordsBuilder<InventryContext>()
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ITEM);
+		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.ITEM);
+		SelectRecordsBuilder<ItemContext> selectBuilder = new SelectRecordsBuilder<ItemContext>()
 				.select(fields)
 				.table(module.getTableName())
 				.moduleName(module.getName())
-				.beanClass(InventryContext.class)
+				.beanClass(ItemContext.class)
 				.andCondition(CriteriaAPI.getIdCondition(id, module));
-		List<InventryContext> inventries =  selectBuilder.get();
+		List<ItemContext> inventries =  selectBuilder.get();
 		if(inventries!=null &&!inventries.isEmpty()) {
 			return inventries.get(0);
 		}

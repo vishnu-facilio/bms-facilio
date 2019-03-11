@@ -2,7 +2,7 @@ package com.facilio.bmsconsole.context;
 
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 
-public class StockedToolsStatusContext extends ModuleBaseWithCustomFields{
+public class ToolStatusContext extends ModuleBaseWithCustomFields{
 private static final long serialVersionUID = 1L;
 	
 	private String name;
@@ -27,21 +27,5 @@ private static final long serialVersionUID = 1L;
 	}
 	public void setDescription(String description) {
 		this.description = description;
-	}
-	
-	private long ttime;
-	public long getTtime() {
-		return ttime;
-	}
-	public void setTtime(long ttime) {
-		this.ttime = ttime;
-	}
-	
-	private long modifiedTime;
-	public long getModifiedTime() {
-		return modifiedTime;
-	}
-	public void setModifiedTime(long modifiedTime) {
-		this.modifiedTime = modifiedTime;
 	}
 }

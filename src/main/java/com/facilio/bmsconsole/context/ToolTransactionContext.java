@@ -4,17 +4,25 @@ import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.bmsconsole.util.TransactionState;
 import com.facilio.bmsconsole.util.TransactionType;
 
-public class StockedToolsTransactionContext extends ModuleBaseWithCustomFields {
+public class ToolTransactionContext extends ModuleBaseWithCustomFields {
 	private static final long serialVersionUID = 1L;
 
-	private StockedToolsContext stockedTool;
+	private PurchasedToolContext purchasedTool;
+	public PurchasedToolContext getPurchasedTool() {
+		return purchasedTool;
+	}
+	public void setPurchasedTool(PurchasedToolContext purchasedTool) {
+		this.purchasedTool = purchasedTool;
+	}
+	
+	private ToolContext tool;
 
-	public StockedToolsContext getStockedTool() {
-		return stockedTool;
+	public ToolContext getTool() {
+		return tool;
 	}
 
-	public void setStockedTool(StockedToolsContext stockedTool) {
-		this.stockedTool = stockedTool;
+	public void setTool(ToolContext stockedTool) {
+		this.tool = stockedTool;
 	}
 
 	private double quantity = -1;
@@ -88,4 +96,19 @@ public class StockedToolsTransactionContext extends ModuleBaseWithCustomFields {
 	public void setTransactionState(int transactionState) {
 		this.transactionState = TransactionState.valueOf(transactionState);
 	}
+	
+	private Boolean isReturnable;
+	public Boolean getIsReturnable() {
+		return isReturnable;
+	}
+	public void setIsReturnable(Boolean isReturnable) {
+		this.isReturnable = isReturnable;
+	}
+	public boolean isReturnable() {
+		if(isReturnable != null) {
+			return isReturnable.booleanValue();
+		}
+		return false;
+	}
+	
 }

@@ -45,10 +45,10 @@ public class ColumnFactory {
 		columnMap.put("asset-default", getDefaultAssetsColumns());
 		columnMap.put("inventory-default", getDefaultInventoryColumns());
 		columnMap.put("storeRoom-default", getDefaultStoreRoomColumns());
-		columnMap.put("items-default", getDefaultItemsColumns());
-		columnMap.put("tools-default", getDefaultToolsColumns());
+		columnMap.put("itemTypes-default", getDefaultItemTypesColumns());
+		columnMap.put("toolTypes-default", getDefaultToolTypesColumns());
 		columnMap.put("vendors-default", getDefaultVendorsColumns());
-		columnMap.put("inventry-default", getDefaultInventryColumns());
+		columnMap.put("item-default", getDefaultItemColumns());
 		columnMap.put("stockedTools-default", getDefaultStockedToolsColumns());
 		// Default report columns 
 		columnMap.put("workorder-report", getWorkOrderReportColumns());
@@ -227,7 +227,7 @@ public class ColumnFactory {
 		return columns;
 	}
 	
-	private static List<ViewField> getDefaultItemsColumns() {
+	private static List<ViewField> getDefaultItemTypesColumns() {
 		List<ViewField> columns = new ArrayList<ViewField>();
 		
 		columns.add(new ViewField("name", "Name"));
@@ -238,7 +238,7 @@ public class ColumnFactory {
 		return columns;
 	}
 
-	private static List<ViewField> getDefaultToolsColumns() {
+	private static List<ViewField> getDefaultToolTypesColumns() {
 		List<ViewField> columns = new ArrayList<ViewField>();
 		
 		columns.add(new ViewField("name", "Name"));
@@ -258,10 +258,9 @@ public class ColumnFactory {
 		return columns;
 	}
 	
-	private static List<ViewField> getDefaultInventryColumns() {
+	private static List<ViewField> getDefaultItemColumns() {
 		List<ViewField> columns = new ArrayList<ViewField>();
 		
-		columns.add(new ViewField("item", "Item"));
 		columns.add(new ViewField("storeRoom", "Store Room"));
 		columns.add(new ViewField("status", "Status"));
 		columns.add(new ViewField("quantity", "Quantity"));

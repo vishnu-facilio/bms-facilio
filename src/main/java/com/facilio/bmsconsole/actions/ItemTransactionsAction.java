@@ -9,52 +9,49 @@ import org.json.simple.parser.JSONParser;
 
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
-import com.facilio.bmsconsole.context.InventoryTransactionsContext;
+import com.facilio.bmsconsole.context.ItemTransactionsContext;
+import com.facilio.bmsconsole.context.ItemTypesContext;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 
-public class InventoryTransactionsAction extends FacilioAction{
+public class ItemTransactionsAction extends FacilioAction{
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-	private List<InventoryTransactionsContext> inventoryActions;
-	public List<InventoryTransactionsContext> getInventoryActions() {
-		return inventoryActions;
+	private List<ItemTransactionsContext> itemTransaction;
+	public List<ItemTransactionsContext> getItemTransaction() {
+		return itemTransaction;
 	}
-	public void setInventoryActions(List<InventoryTransactionsContext> inventoryActions) {
-		this.inventoryActions = inventoryActions;
+	public void setItemTransaction(List<ItemTransactionsContext> inventoryActions) {
+		this.itemTransaction = inventoryActions;
 	}
 	
-	private List<Long> inventoryActionsId;
-	public void setInventoryActionsId(List<Long> inventoryActionsId) {
-		this.inventoryActionsId = inventoryActionsId;
+	private List<Long> itemTransactionsId;
+	public void setItemTransactionsId(List<Long> inventoryActionsId) {
+		this.itemTransactionsId = inventoryActionsId;
 	}
-	public List<Long> getInventoryActionsId() {
-		return inventoryActionsId;
+	public List<Long> getItemTransactionsId() {
+		return itemTransactionsId;
 	}
 	
-	public String addInventoryTransactions() throws Exception {
+	public String addItemTransactions() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.CREATE);
-		context.put(FacilioConstants.ContextNames.RECORD_LIST, inventoryActions);
+		context.put(FacilioConstants.ContextNames.RECORD_LIST, itemTransaction);
 		Chain addWorkorderPartChain = TransactionChainFactory.getAddInventoryTransactionsChain();
 		addWorkorderPartChain.execute(context);
-		setInventoryActionsId((List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST));
-		setResult("inventoryActionsId", inventoryActionsId);
+		setItemTransactionsId((List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST));
+		setResult("inventoryActionsId", itemTransactionsId);
 		return SUCCESS;
 	} 
 	
-	public String updateInventoryTransactions() throws Exception {
+	public String updateItemTransactions() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.CREATE);
-		context.put(FacilioConstants.ContextNames.RECORD_LIST, inventoryActions);
+		context.put(FacilioConstants.ContextNames.RECORD_LIST, itemTransaction);
 		Chain addWorkorderPartChain = TransactionChainFactory.getUpdateInventoryTransactionsChain();
 		addWorkorderPartChain.execute(context);
-		setInventoryActionsId((List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST));
-		setResult("inventoryActionsId", inventoryActionsId);
+		setItemTransactionsId((List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST));
+		setResult("inventoryActionsId", itemTransactionsId);
 		return SUCCESS;
 	} 
 	
@@ -86,18 +83,18 @@ public class InventoryTransactionsAction extends FacilioAction{
 			context.put(FacilioConstants.ContextNames.PAGINATION, pagination);
 		}
 
-		Chain itemsListChain = ReadOnlyChainFactory.getItemsList();
+		Chain itemsListChain = ReadOnlyChainFactory.getItemTypessList();
 		itemsListChain.execute(context);
 		if (getCount()) {
 			setItemsCount((Long) context.get(FacilioConstants.ContextNames.RECORD_COUNT));
 			setResult("count", itemsCount);
 		} else {
-			inventoryActions = (List<InventoryTransactionsContext>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
+			itemTransaction = (List<ItemTransactionsContext>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
 			// Temp...needs to handle in client
-			if (inventoryActions == null) {
-				inventoryActions = new ArrayList<>();
+			if (itemTransaction == null) {
+				itemTransaction = new ArrayList<>();
 			}
-			setResult(FacilioConstants.ContextNames.INVENTORY_TRANSACTIONS, inventoryActions);
+			setResult(FacilioConstants.ContextNames.ITEM_TRANSACTIONS, itemTransaction);
 		}
 		return SUCCESS;
 	}

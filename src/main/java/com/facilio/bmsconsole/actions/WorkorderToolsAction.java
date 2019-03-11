@@ -70,6 +70,7 @@ public class WorkorderToolsAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.CREATE);
 		context.put(FacilioConstants.ContextNames.RECORD_LIST, workorderToolsList);
+		context.put(FacilioConstants.ContextNames.PURCHASED_TOOL, purchasedTools);
 		Chain addWorkorderPartChain = TransactionChainFactory.getAddOrUdpateWorkorderToolsChain();
 		addWorkorderPartChain.execute(context);
 		setWorkorderToolsIds((List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST));
@@ -100,5 +101,13 @@ public class WorkorderToolsAction extends FacilioAction {
 		workorderToolsList = ((List<WorkorderToolsContext>) context.get(FacilioConstants.ContextNames.WORKORDER_TOOLS));
 		setResult(FacilioConstants.ContextNames.WORKORDER_TOOLS, workorderToolsList);
 		return SUCCESS;
+	}
+	
+	private List<Long> purchasedTools;
+	public List<Long> getPurchasedTools() {
+		return purchasedTools;
+	}
+	public void setPurchasedTools(List<Long> purchasedTools) {
+		this.purchasedTools = purchasedTools;
 	}
 }

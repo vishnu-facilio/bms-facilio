@@ -41,8 +41,12 @@ public class NoteAction extends FacilioAction {
 		return addNote(FacilioConstants.ContextNames.ASSET_NOTES);
 	}
 	
-	public String addInventoryNote() throws Exception {
-		return addNote(FacilioConstants.ContextNames.INVENTORY_NOTES);
+	public String addItemTypeNote() throws Exception {
+		return addNote(FacilioConstants.ContextNames.ITEM_TYPES_NOTES);
+	}
+	
+	public String addToolTypeNote() throws Exception {
+		return addNote(FacilioConstants.ContextNames.TOOL_TYPES_NOTES);
 	}
 	
 	public String addItemNote() throws Exception {
@@ -121,8 +125,12 @@ public class NoteAction extends FacilioAction {
 		return getNotesList(FacilioConstants.ContextNames.ASSET_NOTES);
 	}
 	
-	public String getInventoryNotes() throws Exception {
-		return getNotesList(FacilioConstants.ContextNames.INVENTORY_NOTES);
+	public String getItemTypeNotes() throws Exception {
+		return getNotesList(FacilioConstants.ContextNames.ITEM_TYPES_NOTES);
+	}
+	
+	public String getToolTypeNotes() throws Exception {
+		return getNotesList(FacilioConstants.ContextNames.TOOL_TYPES_NOTES);
 	}
 	
 	public String getItemNotes() throws Exception {

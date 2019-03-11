@@ -9,6 +9,7 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.criteria.*;
 import com.facilio.bmsconsole.modules.*;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
@@ -245,8 +246,14 @@ public class PreventiveMaintenanceAPI {
 		List<WorkOrderContext> wos = new ArrayList<>();
 		TicketStatusContext status = TicketAPI.getStatus("preopen");
 		long endTime = DateTimeUtil.getDayStartTime(pmTrigger.getFrequencyEnum().getMaxSchedulingDays(), true) - 1;
-
+		long currentTime = System.currentTimeMillis();
+		boolean isScheduled = false;
 		while (nextExecutionTime <= endTime && (pm.getMaxCount() == -1 || currentCount < pm.getMaxCount()) && (pm.getEndTime() == -1 || nextExecutionTime <= pm.getEndTime())) {
+			if ((nextExecutionTime * 1000) < currentTime) {
+				LOGGER.log(Level.SEVERE, "Skipping : next: "+ nextExecutionTime * 1000 + " current: "+ currentTime);
+				nextExecutionTime = pmTrigger.getSchedule().nextExecutionTime(nextExecutionTime);
+				continue;
+			}
 			Map<String, List<TaskContext>> taskMap = null;
 
 			WorkOrderContext wo = woTemplate.getWorkorder();
@@ -313,6 +320,10 @@ public class PreventiveMaintenanceAPI {
 			if (pmTrigger.getSchedule().getFrequencyTypeEnum() == FrequencyType.DO_NOT_REPEAT) {
 				break;
 			}
+			isScheduled = true;
+		}
+		if (!isScheduled) {
+			CommonCommandUtil.emailAlert("No Work orders generated for pm", "PM "+ pm.getId() + " PM Trigger ID: "+pmTrigger.getId());
 		}
 		return wos;
 	}
@@ -1776,7 +1787,7 @@ public class PreventiveMaintenanceAPI {
 
 		for (PreventiveMaintenance pm : pms) {
 			List<PMReminder> reminders = pm.getReminders();
-			if (pm.getReminders() == null || pm.getReminders().isEmpty()) {
+			if (reminders == null || reminders.isEmpty()) {
 				continue;
 			}
 			if (pm.getPmCreationTypeEnum() == PreventiveMaintenance.PMCreationType.SINGLE) {
@@ -1846,9 +1857,33 @@ public class PreventiveMaintenanceAPI {
 					pm.setResourcePlanners(new ArrayList<>(resourcePlanners.values()));
 					boolean hasEntry = false;
 					List<PMResourcePlannerContext> resourcePlannerContexts = pm.getResourcePlanners();
+
+					if (resourcePlannerContexts != null && !resourcePlannerContexts.isEmpty()) {
+						for (int i = 0; i < resourcePlannerContexts.size(); i++) {
+							List<PMTriggerContext> triggerContexts = resourcePlannerContexts.get(i).getTriggerContexts();
+							if (triggerContexts == null || triggerContexts.isEmpty()) {
+								triggerContexts = new ArrayList<>();
+								triggerContexts.add(PreventiveMaintenanceAPI.getDefaultTrigger(pm.getTriggers()));
+							}
+							resourcePlannerContexts.get(i).setTriggerContexts(triggerContexts);
+							//NO entry in resource planner table
+							if (resourcePlannerContexts.get(i).getId() == null || resourcePlannerContexts.get(i).getId() <= 0) {
+								PMResourcePlannerReminderContext reminderContext = new PMResourcePlannerReminderContext();
+								reminderContext.setReminderName(reminders.get(0).getName());
+								reminderContext.setReminderId(reminders.get(0).getId());
+								resourcePlannerContexts.get(i).setPmResourcePlannerReminderContexts(Arrays.asList(reminderContext));
+							} else {
+								List<PMResourcePlannerReminderContext> rpReminderContexts = PreventiveMaintenanceAPI.getPmResourcePlannerReminderContext(resourcePlannerContexts.get(i).getId());
+								resourcePlannerContexts.get(i).setPmResourcePlannerReminderContexts(rpReminderContexts);
+							}
+						}
+					} else {
+						continue;
+					}
+
 					for (PMResourcePlannerContext resourcePlannerContext : resourcePlannerContexts) {
 						if (resourcePlannerContext.getTriggerContexts() != null && !resourcePlannerContext.getTriggerContexts().isEmpty()) {
-							List<PMResourcePlannerReminderContext> rpReminderContexts = PreventiveMaintenanceAPI.getPmResourcePlannerReminderContext(resourcePlannerContext.getId());
+							List<PMResourcePlannerReminderContext> rpReminderContexts = resourcePlannerContext.getPmResourcePlannerReminderContexts();
 							Set<Long> reminderIds = new HashSet<>();
 							if (rpReminderContexts != null && !rpReminderContexts.isEmpty()) {
 								rpReminderContexts.stream().forEach(i -> reminderIds.add(i.getReminderId()));

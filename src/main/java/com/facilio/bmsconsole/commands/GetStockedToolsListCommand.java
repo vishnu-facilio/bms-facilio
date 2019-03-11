@@ -11,9 +11,9 @@ import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.StockedToolsContext;
+import com.facilio.bmsconsole.context.ToolContext;
 import com.facilio.bmsconsole.context.StoreRoomContext;
-import com.facilio.bmsconsole.context.ToolsContext;
+import com.facilio.bmsconsole.context.ToolTypesContext;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.FacilioField;
@@ -45,7 +45,7 @@ public class GetStockedToolsListCommand implements Command{
 		}
 		FacilioView view = (FacilioView) context.get(FacilioConstants.ContextNames.CUSTOM_VIEW);
 
-		SelectRecordsBuilder<StockedToolsContext> builder = new SelectRecordsBuilder<StockedToolsContext>().module(module)
+		SelectRecordsBuilder<ToolContext> builder = new SelectRecordsBuilder<ToolContext>().module(module)
 				.beanClass(FacilioConstants.ContextNames.getClassFromModuleName(moduleName)).select(fields);
 
 		String orderBy = (String) context.get(FacilioConstants.ContextNames.SORTING_QUERY);
@@ -99,7 +99,7 @@ public class GetStockedToolsListCommand implements Command{
 		}
 
 		long getStartTime = System.currentTimeMillis();
-		List<StockedToolsContext> records = builder.get();
+		List<ToolContext> records = builder.get();
 		long getTimeTaken = System.currentTimeMillis() - getStartTime;
 
 		if (records != null && !records.isEmpty()) {
@@ -107,10 +107,10 @@ public class GetStockedToolsListCommand implements Command{
 				context.put(FacilioConstants.ContextNames.RECORD_COUNT, records.get(0).getData().get("count"));
 			} else {
 				Set<Long> locatoionIds = new HashSet<Long>();
-				for (StockedToolsContext stockedTools : records) {
-					if (stockedTools.getTool().getId() != -1) {
-						ToolsContext tool = ToolsApi.getTool(stockedTools.getTool().getId());
-						stockedTools.setTool(tool);
+				for (ToolContext stockedTools : records) {
+					if (stockedTools.getToolType().getId() != -1) {
+						ToolTypesContext tool = ToolsApi.getTool(stockedTools.getToolType().getId());
+						stockedTools.setToolType(tool);
 					}
 					
 					if (stockedTools.getStoreRoom().getId() != -1) {

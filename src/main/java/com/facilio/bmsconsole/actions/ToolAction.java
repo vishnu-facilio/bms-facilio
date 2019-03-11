@@ -10,91 +10,83 @@ import org.json.simple.parser.JSONParser;
 
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
-import com.facilio.bmsconsole.context.InventryContext;
-import com.facilio.bmsconsole.context.StockedToolsContext;
+import com.facilio.bmsconsole.context.ItemContext;
+import com.facilio.bmsconsole.context.ToolContext;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 
-public class StockedToolsAction extends FacilioAction{
+public class ToolAction extends FacilioAction{
 	private static final long serialVersionUID = 1L;
 	
-	private StockedToolsContext stockedTools;
-	public StockedToolsContext getStockedTools() {
-		return stockedTools;
+	private ToolContext tool;
+	public ToolContext getTool() {
+		return tool;
 	}
-	public void setStockedTools(StockedToolsContext stockedTools) {
-		this.stockedTools = stockedTools;
-	}
-	
-	private List<StockedToolsContext> stockedToolsList;
-	public List<StockedToolsContext> getStockedToolsList() {
-		return stockedToolsList;
-	}
-	public void setStockedToolsList(List<StockedToolsContext> stockedToolsList) {
-		this.stockedToolsList = stockedToolsList;
+	public void setTool(ToolContext tool) {
+		this.tool = tool;
 	}
 	
-	private long stockedToolId;
-	public long getStockedToolId() {
-		return stockedToolId;
+	private List<ToolContext> tools;
+	public List<ToolContext> getTools() {
+		return tools;
 	}
-	public void setStockedToolId(long stockedToolId) {
-		this.stockedToolId = stockedToolId;
-	}
-	
-	private List<Long> stockedToolsIds;
-	public List<Long> getStockedToolsIds() {
-		return stockedToolsIds;
-	}
-	public void setStockedToolsIds(List<Long> stockedToolsIds) {
-		this.stockedToolsIds = stockedToolsIds;
+	public void setTools(List<ToolContext> stockedToolsList) {
+		this.tools = stockedToolsList;
 	}
 	
-	public String addStockedTools() throws Exception {
+	private long toolId;
+	public long getToolId() {
+		return toolId;
+	}
+	public void setToolId(long stockedToolId) {
+		this.toolId = stockedToolId;
+	}
+	
+	public String addTool() throws Exception {
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.RECORD, stockedTools);
-		Chain addStockedTool = TransactionChainFactory.getAddStockedToolsChain();
+		context.put(FacilioConstants.ContextNames.RECORD, tool);
+		Chain addStockedTool = TransactionChainFactory.getAddToolChain();
 		addStockedTool.execute(context);
-		setResult(FacilioConstants.ContextNames.STOCKED_TOOLS, stockedTools);
-		context.put(FacilioConstants.ContextNames.STOCKED_TOOLS_ID, stockedTools.getId());
-		context.put(FacilioConstants.ContextNames.STOCKED_TOOLS_IDS, Collections.singletonList(stockedTools.getId()));
+		setResult(FacilioConstants.ContextNames.TOOL, tool);
+		context.put(FacilioConstants.ContextNames.TOOL_ID, tool.getId());
+		context.put(FacilioConstants.ContextNames.TOOL_IDS, Collections.singletonList(tool.getId()));
 		return SUCCESS;
 	}
 	
-	public String updateStockedTools() throws Exception {
+	public String updateTool() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.EDIT);
-		context.put(FacilioConstants.ContextNames.RECORD, stockedTools);
-		context.put(FacilioConstants.ContextNames.ID, stockedTools.getId());
-		context.put(FacilioConstants.ContextNames.RECORD_ID, stockedTools.getId());
-		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(stockedTools.getId()));
+		context.put(FacilioConstants.ContextNames.RECORD, tool);
+		context.put(FacilioConstants.ContextNames.ID, tool.getId());
+		context.put(FacilioConstants.ContextNames.RECORD_ID, tool.getId());
+		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(tool.getId()));
 		context.put(FacilioConstants.ContextNames.WITH_CHANGE_SET, true);
 
-		Chain updateInventryChain = TransactionChainFactory.getUpdateStockedToolsChain();
+		Chain updateInventryChain = TransactionChainFactory.getUpdateToolChain();
 		updateInventryChain.execute(context);
-		setStockedToolId(stockedTools.getId());
-		stockedToolsDetails();
-		setResult(FacilioConstants.ContextNames.STOCKED_TOOLS, stockedTools);
+		setToolId(tool.getId());
+		toolDetails();
+		setResult(FacilioConstants.ContextNames.TOOL, tool);
 		return SUCCESS;
 	}
 	
-	public String stockedToolsDetails() throws Exception {
+	public String toolDetails() throws Exception {
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.ID, getStockedToolId());
+		context.put(FacilioConstants.ContextNames.ID, getToolId());
 
 		Chain inventryDetailsChain = ReadOnlyChainFactory.fetchStockedToolsDetails();
 		inventryDetailsChain.execute(context);
 
-		setStockedTools((StockedToolsContext) context.get(FacilioConstants.ContextNames.STOCKED_TOOLS));
-		setResult(FacilioConstants.ContextNames.STOCKED_TOOLS, stockedTools);
+		setTool((ToolContext) context.get(FacilioConstants.ContextNames.TOOL));
+		setResult(FacilioConstants.ContextNames.TOOL, tool);
 		return SUCCESS;
 	}
 	
-	public String stockedToolsList() throws Exception {
+	public String toolList() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.CV_NAME, getViewName());
-		context.put(FacilioConstants.ContextNames.SORTING_QUERY, "Stocked_tools.ID desc");
+		context.put(FacilioConstants.ContextNames.SORTING_QUERY, "Tool.ID desc");
 		if (getFilters() != null) {
 			JSONParser parser = new JSONParser();
 			JSONObject json = (JSONObject) parser.parse(getFilters());
@@ -103,7 +95,7 @@ public class StockedToolsAction extends FacilioAction{
 		}
 		if (getSearch() != null) {
 			JSONObject searchObj = new JSONObject();
-			searchObj.put("fields", "stockedTools.name");
+			searchObj.put("fields", "tool.name");
 			searchObj.put("query", getSearch());
 			context.put(FacilioConstants.ContextNames.SEARCH, searchObj);
 		}
@@ -125,12 +117,12 @@ public class StockedToolsAction extends FacilioAction{
 			setStockedToolsCount((Long) context.get(FacilioConstants.ContextNames.RECORD_COUNT));
 			setResult("count", stockedToolsCount);
 		} else {
-			stockedToolsList = (List<StockedToolsContext>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
+			tools = (List<ToolContext>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
 			// Temp...needs to handle in client
-			if (stockedToolsList == null) {
-				stockedToolsList = new ArrayList<>();
+			if (tools == null) {
+				tools = new ArrayList<>();
 			}
-			setResult(FacilioConstants.ContextNames.STOCKED_TOOLS, stockedToolsList);
+			setResult(FacilioConstants.ContextNames.TOOL, tools);
 		}
 		return SUCCESS;
 	}

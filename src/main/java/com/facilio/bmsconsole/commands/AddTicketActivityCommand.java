@@ -17,6 +17,7 @@ import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
+import com.facilio.bmsconsole.modules.EnumField;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
@@ -137,20 +138,20 @@ public class AddTicketActivityCommand implements Command {
 						for(Map.Entry<String, Object> entry : difference.entriesOnlyOnLeft().entrySet()) {
 							JSONObject fieldProp = new JSONObject();
 							fieldProp.put(FacilioConstants.ContextNames.MODULE_FIELD_NAME, entry.getKey());
-							fieldProp.put("oldValue", getFieldValue(lookupFields, entry.getKey(), entry.getValue()));
+							fieldProp.put("oldValue", getFieldValue(lookupFields, entry.getKey(), entry.getValue(), moduleName));
 							updatedFields.add(fieldProp);
 						}
 						for(Map.Entry<String, Object> entry : difference.entriesOnlyOnRight().entrySet()) {
 							JSONObject fieldProp = new JSONObject();
 							fieldProp.put(FacilioConstants.ContextNames.MODULE_FIELD_NAME, entry.getKey());
-							fieldProp.put("newValue", getFieldValue(lookupFields, entry.getKey(), entry.getValue()));
+							fieldProp.put("newValue", getFieldValue(lookupFields, entry.getKey(), entry.getValue(), moduleName));
 							updatedFields.add(fieldProp);
 						}
 						for(Map.Entry<String, ValueDifference<Object>> entry : difference.entriesDiffering().entrySet()) {
 							JSONObject fieldProp = new JSONObject();
 							fieldProp.put(FacilioConstants.ContextNames.MODULE_FIELD_NAME, entry.getKey());
-							fieldProp.put("oldValue", getFieldValue(lookupFields, entry.getKey(), entry.getValue().leftValue()));
-							fieldProp.put("newValue", getFieldValue(lookupFields, entry.getKey(), entry.getValue().rightValue()));
+							fieldProp.put("oldValue", getFieldValue(lookupFields, entry.getKey(), entry.getValue().leftValue(), moduleName));
+							fieldProp.put("newValue", getFieldValue(lookupFields, entry.getKey(), entry.getValue().rightValue(), moduleName));
 							updatedFields.add(fieldProp);
 						}
 						info.put("updatedFields", updatedFields);
@@ -166,7 +167,7 @@ public class AddTicketActivityCommand implements Command {
 							}
 							JSONObject fieldProp = new JSONObject();
 							fieldProp.put("fieldName", fieldsMap.get(entry.getKey()).getDisplayName());
-							fieldProp.put("newValue", getFieldValue(lookupFields, entry.getKey(), entry.getValue()));
+							fieldProp.put("newValue", getFieldValue(lookupFields, entry.getKey(), entry.getValue(), moduleName));
 							updatedFields.add(fieldProp);
 						}
 					}
@@ -178,7 +179,7 @@ public class AddTicketActivityCommand implements Command {
 		insertActivityBuilder.save();
 	}
 	
-	private Object getFieldValue(Map<String, LookupField> lookupFields, String fieldName, Object value) throws Exception {
+	private Object getFieldValue(Map<String, LookupField> lookupFields, String fieldName, Object value, String moduleName) throws Exception {
 		LookupField lookupField = lookupFields.get(fieldName);
 		if(lookupField != null) {
 			long recordId = (long) ((Map<String, Object>) value).get("id");
@@ -196,6 +197,12 @@ public class AddTicketActivityCommand implements Command {
 			}
 		}
 		else {
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			FacilioField fields = modBean.getField(fieldName, moduleName);
+				if (fields.getDataTypeEnum() == FieldType.ENUM) {
+					EnumField enums = (EnumField) fields;
+					return enums.getEnumMap().get(value);
+				}
 			return value;
 		}
 	}

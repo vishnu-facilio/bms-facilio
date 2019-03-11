@@ -3,17 +3,17 @@ package com.facilio.bmsconsole.context;
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.unitconversion.Unit;
 
-public class ItemVendorsContext extends ModuleBaseWithCustomFields {
+public class ItemTypesVendorsContext extends ModuleBaseWithCustomFields {
 	private static final long serialVersionUID = 1L;
 
-	private ItemsContext item;
+	private ItemTypesContext itemType;
 
-	public ItemsContext getItem() {
-		return item;
+	public ItemTypesContext getItemType() {
+		return itemType;
 	}
 
-	public void setItem(ItemsContext item) {
-		this.item = item;
+	public void setItemType(ItemTypesContext item) {
+		this.itemType = item;
 	}
 
 	private VendorContext vendor;

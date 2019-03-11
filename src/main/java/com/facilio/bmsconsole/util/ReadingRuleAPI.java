@@ -18,6 +18,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AlarmContext;
 import com.facilio.bmsconsole.context.AssetContext;
+import com.facilio.bmsconsole.context.BaseLineContext;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.criteria.Condition;
@@ -392,22 +393,23 @@ public class ReadingRuleAPI extends WorkflowRuleAPI {
 		}
 	}
 	
-	public static void getRuleConditionText(ReadingRuleContext rule) throws Exception {
+	public static String getRuleConditionText(ReadingRuleContext rule) throws Exception {
 		StringBuilder msgBuilder = new StringBuilder();
 		switch (rule.getThresholdTypeEnum()) {
 		case SIMPLE:
 			appendSimpleMsg(msgBuilder, rule);
-			appendOccurences(msgBuilder, rule);
+			AlarmAPI.appendOccurences(msgBuilder, rule);	// not working good bcs wf getting saved in different format from client.
 			break;
 		case AGGREGATION:
 			appendSimpleMsg(msgBuilder, rule);
 			break;
-//		case BASE_LINE:
-//			appendBaseLineMsg(msgBuilder, operator, rule);
-//			break;
-//		case FLAPPING:
-//			appendFlappingMsg(msgBuilder, rule);
-//			break;
+		case BASE_LINE:
+			NumberOperators operator = (NumberOperators) Operator.OPERATOR_MAP.get(rule.getOperatorId());
+			AlarmAPI.appendBaseLineMsg(msgBuilder, operator, rule);
+			break;
+		case FLAPPING:
+			AlarmAPI.appendFlappingMsg(msgBuilder, rule);
+			break;
 //		case ADVANCED:
 //			appendAdvancedMsg(msgBuilder, rule, reading);
 //			break;
@@ -415,18 +417,10 @@ public class ReadingRuleAPI extends WorkflowRuleAPI {
 //			appendFunctionMsg(msgBuilder, rule, reading);
 //			break;
 	}
+		return msgBuilder.toString();
 	}
 	
-	private static void appendOccurences(StringBuilder msgBuilder, ReadingRuleContext rule) {
-		WorkflowContext workflow = rule.getWorkflow();
-		if (workflow != null) {
-			ExpressionContext expression = (ExpressionContext) workflow.getExpressions().get(0);
-			if (expression.getAggregateCondition() != null && !expression.getAggregateCondition().isEmpty()) {
-				msgBuilder.append(" for "+rule.getPercentage()+ " time(s)");
-			}
-		}
-	}
-
+	
 	private static void appendSimpleMsg(StringBuilder msgBuilder, ReadingRuleContext rule) throws Exception {
 		
 		String fieldName = null;

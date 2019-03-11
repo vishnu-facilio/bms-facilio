@@ -400,9 +400,11 @@ public class FacilioField implements Serializable {
 		UNIT(26, "unit"),
 		UNITMETRIC(27, "unit-metric"),
 		ADDRESS(28, "address"),
-		INVENTORYCOST(29,"inventoryCost"),
+		PURCHASEDITEM(29,"purchasedItem"),
 		USER(30,"user"),
-		GEO_LOCATION(31, "Geo Location")
+		GEO_LOCATION(31, "Geo Location"),
+		PURCHASEDITEMT(32,"purchasedItem"),
+		IMAGE(33, "image")
 		;
 		
 		private int intVal;

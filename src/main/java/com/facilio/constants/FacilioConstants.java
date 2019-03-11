@@ -22,7 +22,7 @@ import com.facilio.bmsconsole.context.ChillerCondenserPumpContext;
 import com.facilio.bmsconsole.context.ChillerContext;
 import com.facilio.bmsconsole.context.ChillerPrimaryPumpContext;
 import com.facilio.bmsconsole.context.ChillerSecondaryPumpContext;
-import com.facilio.bmsconsole.context.InventoryTransactionsContext;
+import com.facilio.bmsconsole.context.ItemTransactionsContext;
 import com.facilio.bmsconsole.context.CoolingTowerContext;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.context.EnergyMeterPurposeContext;
@@ -31,14 +31,15 @@ import com.facilio.bmsconsole.context.FloorContext;
 import com.facilio.bmsconsole.context.HeatPumpContext;
 import com.facilio.bmsconsole.context.InventoryCategoryContext;
 import com.facilio.bmsconsole.context.InventoryContext;
-import com.facilio.bmsconsole.context.InventoryCostContext;
-import com.facilio.bmsconsole.context.InventoryStatusContext;
-import com.facilio.bmsconsole.context.InventoryVendorContext;
-import com.facilio.bmsconsole.context.InventryContext;
-import com.facilio.bmsconsole.context.ItemCategoryContext;
+import com.facilio.bmsconsole.context.PurchasedItemContext;
+import com.facilio.bmsconsole.context.PurchasedToolContext;
 import com.facilio.bmsconsole.context.ItemStatusContext;
-import com.facilio.bmsconsole.context.ItemVendorsContext;
-import com.facilio.bmsconsole.context.ItemsContext;
+import com.facilio.bmsconsole.context.InventoryVendorContext;
+import com.facilio.bmsconsole.context.ItemContext;
+import com.facilio.bmsconsole.context.ItemTypesCategoryContext;
+import com.facilio.bmsconsole.context.ItemTypesStatusContext;
+import com.facilio.bmsconsole.context.ItemTypesVendorsContext;
+import com.facilio.bmsconsole.context.ItemTypesContext;
 import com.facilio.bmsconsole.context.LocationContext;
 import com.facilio.bmsconsole.context.MLAlarmContext;
 import com.facilio.bmsconsole.context.MlForecastingContext;
@@ -50,10 +51,10 @@ import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.bmsconsole.context.SkillContext;
 import com.facilio.bmsconsole.context.SpaceCategoryContext;
 import com.facilio.bmsconsole.context.SpaceContext;
-import com.facilio.bmsconsole.context.StockedToolsContext;
+import com.facilio.bmsconsole.context.ToolContext;
 import com.facilio.bmsconsole.context.StockedToolsReturnTrackingContext;
-import com.facilio.bmsconsole.context.StockedToolsStatusContext;
-import com.facilio.bmsconsole.context.StockedToolsTransactionContext;
+import com.facilio.bmsconsole.context.ToolStatusContext;
+import com.facilio.bmsconsole.context.ToolTransactionContext;
 import com.facilio.bmsconsole.context.StoreRoomContext;
 import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.TicketCategoryContext;
@@ -62,7 +63,7 @@ import com.facilio.bmsconsole.context.TicketPriorityContext;
 import com.facilio.bmsconsole.context.TicketStatusContext;
 import com.facilio.bmsconsole.context.TicketTypeContext;
 import com.facilio.bmsconsole.context.ToolsCategoryContext;
-import com.facilio.bmsconsole.context.ToolsContext;
+import com.facilio.bmsconsole.context.ToolTypesContext;
 import com.facilio.bmsconsole.context.ToolsStatusContext;
 import com.facilio.bmsconsole.context.UtilityMeterContext;
 import com.facilio.bmsconsole.context.VendorContext;
@@ -269,6 +270,11 @@ public class FacilioConstants {
 		public static final String ATTACHMENT_ID_LIST = "attachmentIds";
 		public static final String ATTACHMENT_MODULE_NAME = "attachmentModuleName";
 		
+		public static final String FILE = "file";
+		public static final String FILE_NAME = "fileName";
+		public static final String FILE_CONTENT_TYPE = "fileContentType";
+		public static final String FILE_CONTEXT_LIST = "fileContextList";
+
 		public static final String ACTION_FORM = "actionForm";
 		
 		public static final String MODULE_NAME = "moduleName";
@@ -466,15 +472,18 @@ public class FacilioConstants {
 		public static final String TICKET_NOTES = "ticketnotes";
 		public static final String BASE_SPACE_NOTES = "basespacenotes";
 		public static final String ASSET_NOTES = "assetnotes";
-		public static final String INVENTORY_NOTES = "inventorynotes";
+		public static final String ITEM_TYPES_NOTES = "itemTypesNotes";
 		public static final String ITEM_NOTES = "itemNotes";
 		public static final String TOOL_NOTES = "toolNotes";
+		public static final String TOOL_TYPES_NOTES = "toolTypesNotes";
 		
 		public static final String TICKET_ATTACHMENTS = "ticketattachments";
 		public static final String BASE_SPACE_ATTACHMENTS = "basespaceattachments";
 		public static final String ASSET_ATTACHMENTS = "assetattachments";
 		public static final String TASK_ATTACHMENTS = "taskattachments";
 		public static final String INVENTORY_ATTACHMENTS = "inventoryattachments";
+		public static final String ITEM_TYPES_ATTACHMENTS = "itemTypesAttachments";
+		public static final String TOOL_TYPES_ATTACHMENTS = "toolTypesattachments";
 		
 		public static final String PICKLIST = "pickList";
 		
@@ -759,13 +768,18 @@ public class FacilioConstants {
 		public static final String STORE_ROOM = "storeRoom";
 		public static final String STORE_ROOMS = "storeRooms";
 		
-		public static final String ITEM = "item";
-		public static final String ITEMS = "items";
-		public static final String ITEM_CATEGORY = "itemCategory";
-		public static final String ITEM_STATUS = "itemStatus";
-		public static final String ITEM_ID = "itemId";
+		public static final String ITEM_TYPES = "itemTypes";
+		public static final String ITEM_TYPES_LIST = "itemTypesList";
+		public static final String ITEM_TYPES_CATEGORY = "itemTypesCategory";
+		public static final String ITEM_TYPES_STATUS = "itemTypesStatus";
+		public static final String ITEM_TYPES_ID = "itemTypesId";
 		
-		public static final String TOOL = "tool";
+		public static final String TOOL_TYPES = "toolTypes";
+		public static final String TOOL_TYPES_LIST = "toolTypesList";
+		public static final String TOOL_TYPES_STATUS = "toolTypesStatus";
+		public static final String TOOLS_TYPES_CATEGORY = "toolTypesCategory";
+		
+//		public static final String TOOL = "tool";
 		public static final String TOOLS = "tools";
 		public static final String TOOLS_STATUS = "toolsStatus";
 		public static final String TOOLS_CATEGORY = "toolsCategory";
@@ -773,29 +787,30 @@ public class FacilioConstants {
 		public static final String VENDOR = "vendor";
 		public static final String VENDORS = "vendors";
 		
-		public static final String INVENTRY = "inventry";
-		public static final String INVENTRIES = "inventries";
-		public static final String INVENTORY_STATUS = "inventoryStatus";
-		public static final String INVENTORY_ID = "inventoryId";
-		public static final String INVENTORY_IDS = "inventoryIds";
-		public static final String INVENTORY_COST = "inventoryCost";
-		public static final String INVENTORY_COSTS = "inventoryCosts";
+		public static final String ITEM = "item";
+		public static final String ITEMS = "items";
+		public static final String ITEM_STATUS = "itemStatus";
+		public static final String ITEM_ID = "itemId";
+		public static final String ITEM_IDS = "itemIds";
+		public static final String PURCHASED_ITEM = "purchasedItem";
 		
 		public static final String WORKORDER_ITEMS = "workorderItem";
-		public static final String INVENTORY_TRANSACTIONS = "inventoryTransactions";
+		public static final String ITEM_TRANSACTIONS = "itemTransactions";
 		
-		public static final String STOCKED_TOOL_LIST = "stockedToolsList";
-		public static final String STOCKED_TOOLS = "stockedTools";
-		public static final String STOCKED_TOOLS_ID = "stockedToolsId";
-		public static final String STOCKED_TOOLS_IDS = "stockedToolsIds";
-		public static final String STOCKED_TOOLS_STATUS = "stockedToolsStatus";
+		public static final String TOOL_LIST = "toolList";
+		public static final String TOOL = "tool";
+		public static final String TOOL_ID = "toolId";
+		public static final String TOOL_IDS = "toolIds";
+		public static final String TOOL_STATUS = "toolStatus";
 		
 		public static final String WORKORDER_TOOLS = "workorderTools";
-		public static final String STOCKED_TOOLS_TRANSACTIONS = "stockedToolsTransactions";
+		public static final String TOOL_TRANSACTIONS = "toolTransactions";
 		public static final String STOCKED_TOOLS_RETURN_TRACKING = "stockedToolsReturnTracking";
 		
 		public static final String ITEM_VENDORS = "itemVendors";
 		public static final String TRANSACTION_TYPE = "transactionType";
+		
+		public static final String PURCHASED_TOOL = "purchasedTool";
 		
 		private static Map<String, Class> classMap = Collections.unmodifiableMap(initClassMap());
 		private static Map<String, Class> initClassMap() {
@@ -861,27 +876,26 @@ public class FacilioConstants {
 			classMap.put(WORKORDER_COST, WorkorderCostContext.class);
 			classMap.put(STORE_ROOM, StoreRoomContext.class);
 			classMap.put(STORE_ROOMS, StoreRoomContext.class);
-			classMap.put(ITEM, ItemsContext.class);
-			classMap.put(ITEMS, ItemsContext.class);
-			classMap.put(ITEM_CATEGORY,ItemCategoryContext.class);
-			classMap.put(ITEM_STATUS, ItemStatusContext.class);
-			classMap.put(TOOL, ToolsContext.class);
-			classMap.put(TOOLS, ToolsContext.class);
-			classMap.put(TOOLS_CATEGORY, ToolsCategoryContext.class);
-			classMap.put(TOOLS_STATUS, ToolsStatusContext.class);
+			classMap.put(ITEM_TYPES, ItemTypesContext.class);
+			classMap.put(ITEM_TYPES_CATEGORY,ItemTypesCategoryContext.class);
+			classMap.put(ITEM_TYPES_STATUS, ItemTypesStatusContext.class);
+			classMap.put(TOOL_TYPES, ToolTypesContext.class);
+			classMap.put(TOOLS_TYPES_CATEGORY, ToolsCategoryContext.class);
+			classMap.put(TOOL_TYPES_STATUS, ToolsStatusContext.class);
 			classMap.put(VENDOR, VendorContext.class);
 			classMap.put(VENDORS, VendorContext.class);
-			classMap.put(INVENTRY, InventryContext.class);
-			classMap.put(INVENTORY_STATUS, InventoryStatusContext.class);
-			classMap.put(INVENTORY_COST, InventoryCostContext.class);
+			classMap.put(ITEM, ItemContext.class);
+			classMap.put(ITEM_STATUS, ItemStatusContext.class);
+			classMap.put(PURCHASED_ITEM, PurchasedItemContext.class);
 			classMap.put(WORKORDER_ITEMS, WorkorderItemContext.class);
-			classMap.put(INVENTORY_TRANSACTIONS, InventoryTransactionsContext.class);
-			classMap.put(STOCKED_TOOLS, StockedToolsContext.class);
-			classMap.put(STOCKED_TOOLS_STATUS, StockedToolsStatusContext.class);
+			classMap.put(ITEM_TRANSACTIONS, ItemTransactionsContext.class);
+			classMap.put(TOOL, ToolContext.class);
+			classMap.put(TOOL_STATUS, ToolStatusContext.class);
 			classMap.put(WORKORDER_TOOLS, WorkorderToolsContext.class);
-			classMap.put(STOCKED_TOOLS_TRANSACTIONS, StockedToolsTransactionContext.class);
+			classMap.put(TOOL_TRANSACTIONS, ToolTransactionContext.class);
 			classMap.put(STOCKED_TOOLS_RETURN_TRACKING, StockedToolsReturnTrackingContext.class);
-			classMap.put(ITEM_VENDORS, ItemVendorsContext.class);
+			classMap.put(ITEM_VENDORS, ItemTypesVendorsContext.class);
+			classMap.put(PURCHASED_TOOL, PurchasedToolContext.class);
 			return classMap;
 		}
 		

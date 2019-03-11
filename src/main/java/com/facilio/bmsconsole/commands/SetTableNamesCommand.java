@@ -164,73 +164,78 @@ public class SetTableNamesCommand implements Command {
 		return new SetTableNamesCommand("storeRoom", "Store_room");
 	}
 	
-	public static SetTableNamesCommand getForItemCategory() {
-		return new SetTableNamesCommand("itemCategory", "Item_category");
+	public static SetTableNamesCommand getForItemTypesCategory() {
+		return new SetTableNamesCommand("itemTypesCategory", "Item_Types_category");
 	}
 	
-	public static SetTableNamesCommand getForItemStatus() {
-		return new SetTableNamesCommand("itemStatus", "Item_status");
+	public static SetTableNamesCommand getForItemTypeStatus() {
+		return new SetTableNamesCommand("itemTypesStatus", "Item_Types_status");
 	}
 	
-	public static SetTableNamesCommand getForItems() {
-		return new SetTableNamesCommand("items", "Items");
+	public static SetTableNamesCommand getForItemTypes() {
+		return new SetTableNamesCommand("itemTypes", "Item_Types");
 	}
 		
-	public static SetTableNamesCommand getForToolsCategory() {
-		return new SetTableNamesCommand("toolsCategory", "Tools_category");
+	public static SetTableNamesCommand getForToolTypesCategory() {
+		return new SetTableNamesCommand("toolTypesCategory", "Tool_types_category");
 	}
 	
-	public static SetTableNamesCommand getForToolsStatus() {
-		return new SetTableNamesCommand("toolsStatus", "Tools_status");
+	public static SetTableNamesCommand getForToolTypesStatus() {
+		return new SetTableNamesCommand("toolTypesStatus", "Tool_types_status");
 	}
 	
-	public static SetTableNamesCommand getForStockedToolsStatus() {
-		return new SetTableNamesCommand("stockedToolsStatus", "Stocked_tools_status");
+	public static SetTableNamesCommand getForToolStatus() {
+		return new SetTableNamesCommand("toolStatus", "Tool_status");
 	}
 	
-	public static SetTableNamesCommand getForTools() {
-		return new SetTableNamesCommand("tools", "Tools");
+	public static SetTableNamesCommand getForToolTypes() {
+		return new SetTableNamesCommand("toolTypes", "Tool_types");
 	}
 	
 	public static SetTableNamesCommand getForVendors() {
 		return new SetTableNamesCommand("vendors", "Vendors");
 	}
 	
-	public static SetTableNamesCommand getForInventoryStatus() {
-		return new SetTableNamesCommand("inventoryStatus", "Inventory_status");
+	public static SetTableNamesCommand getForItemStatus() {
+		return new SetTableNamesCommand("itemStatus", "Item_status");
 	}
 	
-	public static SetTableNamesCommand getForInventry() {
-		return new SetTableNamesCommand("inventry", "Inventry");
+	public static SetTableNamesCommand getForItem() {
+		return new SetTableNamesCommand("item", "Item");
 	}
 	
-	public static SetTableNamesCommand getForInventoryCost() {
-		return new SetTableNamesCommand("inventoryCost", "Inventory_cost");
+	public static SetTableNamesCommand getForPurchasedItem() {
+		return new SetTableNamesCommand("purchasedItem", "Purchased_Item");
 	}
 	
 	public static SetTableNamesCommand getForWorkorderItems() {
 		return new SetTableNamesCommand("workorderItem", "Workorder_items");
 	}
 	
-	public static SetTableNamesCommand getForInventoryTransactions() {
-		return new SetTableNamesCommand("inventoryTransactions", "Inventory_transactions");
+	public static SetTableNamesCommand getForItemTransactions() {
+		return new SetTableNamesCommand("itemTransactions", "Item_Transactions");
 	}
 	
-	public static SetTableNamesCommand getForStockedTools() {
-		return new SetTableNamesCommand("stockedTools", "Stocked_tools");
+	public static SetTableNamesCommand getForTool() {
+		return new SetTableNamesCommand("tool", "Tool");
 	}
 	
-	public static SetTableNamesCommand getForStockedToolsTranaction() {
-		return new SetTableNamesCommand("stockedToolsTransactions", "Stocked_tools_transactions");
+	public static SetTableNamesCommand getForToolTranaction() {
+		return new SetTableNamesCommand("toolTransactions", "Tool_transactions");
 	}
 	
 	public static SetTableNamesCommand getForWorkorderTools() {
 		return new SetTableNamesCommand("workorderTools", "Workorder_tools");
 	}
 	
-	public static SetTableNamesCommand getForItemVendors() {
+	public static SetTableNamesCommand getForItemTypesVendors() {
 		return new SetTableNamesCommand("itemVendors", "Item_vendors");
 	}
+	
+	public static SetTableNamesCommand getForPurchasedTool() {
+		return new SetTableNamesCommand("purchasedTool", "Purchased_Tool");
+	}
+	
 	public static void setForModule (Context context, String moduleName) {
 		//TODO handle all module and get from map
 		String tableName = "";
