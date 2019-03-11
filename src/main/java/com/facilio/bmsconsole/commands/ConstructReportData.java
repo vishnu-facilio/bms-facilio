@@ -31,6 +31,7 @@ import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.report.context.ReportContext;
+import com.facilio.report.context.ReportContext.ReportType;
 import com.facilio.report.context.ReportDataPointContext;
 import com.facilio.report.context.ReportFactory;
 import com.facilio.report.context.ReportFieldContext;
@@ -50,6 +51,7 @@ public class ConstructReportData implements Command {
 		moduleType = (int) context.get(FacilioConstants.Reports.MODULE_TYPE);
 		if (reportContext == null) {
 			reportContext = new ReportContext();
+			reportContext.setType(ReportType.WORKORDER_REPORT);
 		}
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
