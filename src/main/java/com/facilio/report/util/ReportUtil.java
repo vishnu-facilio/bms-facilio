@@ -479,7 +479,7 @@ public class ReportUtil {
 			metricFields.add(ReportFactory.getReportField("firstresponsetime"));
 			
 			List<FacilioField> workorderFields = dimensionFieldMap.get(moduleName);
-			workorderFields.add(ReportFactory.getReportField("overvsclose"));
+			workorderFields.add(ReportFactory.getReportField("openvsclose"));
 			workorderFields.add(ReportFactory.getReportField("overdue_open"));
 			workorderFields.add(ReportFactory.getReportField("overdue_closed"));
 			workorderFields.add(ReportFactory.getReportField("plannedvsunplanned"));
