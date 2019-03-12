@@ -703,6 +703,12 @@ public class TransactionChainFactory {
 			c.addCommand(new RunThroughReadingRulesCommand());
 			return c;
 		}
+		
+		public static Chain historicalScheduledRuleChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new AddHistoricalScheduledRuleJobCommand());
+			return c;
+		}
 
 		public static Chain getAddPreOpenedWorkOrderChain() {
 			Chain c = getDefaultChain();
@@ -1002,6 +1008,7 @@ public class TransactionChainFactory {
 			c.addCommand(new AddAlarmCommand());
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.BUSSINESS_LOGIC_ALARM_RULE));
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.PM_ALARM_RULE));
+			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.READING_ALARM_RULE));
 			c.addCommand(new ForkChainToInstantJobCommand()
 				.addCommand(new ExecuteAllWorkflowsCommand(RuleType.ALARM_NOTIFICATION_RULE, RuleType.CUSTOM_ALARM_NOTIFICATION_RULE))
 			);
@@ -1024,6 +1031,7 @@ public class TransactionChainFactory {
 			c.addCommand(new UpdateAlarmCommand());
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.BUSSINESS_LOGIC_ALARM_RULE));
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.PM_ALARM_RULE));
+			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.READING_ALARM_RULE));
 			c.addCommand(new ForkChainToInstantJobCommand()
 				.addCommand(new ExecuteAllWorkflowsCommand(RuleType.ALARM_NOTIFICATION_RULE, RuleType.CUSTOM_ALARM_NOTIFICATION_RULE))
 				.addCommand(new AddClearCommentInWoOnAlarmClearCommand())
@@ -1200,9 +1208,8 @@ public class TransactionChainFactory {
 			c.addCommand(new AddPMReminderCommand(true));
 			c.addCommand(new SetMissingRelInResourcePlannersCommand());
 			c.addCommand(new AddPMRelFieldsCommand(true));
-			c.addCommand(new ForkChainToInstantJobCommand()
-				.addCommand(new ScheduleNewPMCommand(true))
-			);
+			c.addCommand(new BlockPMEditOnWOGeneration(true, true));
+			c.addCommand(new ScheduleCreateWOJob(true, true));
 			return c;
 		}
 

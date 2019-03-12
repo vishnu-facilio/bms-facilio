@@ -1960,4 +1960,21 @@ public class PreventiveMaintenanceAPI {
 		}
 		return actions;
 	}
+
+    public static void updateWorkOrderCreationStatus(List<Long> ids, boolean status) throws Exception {
+		if (ids == null || ids.isEmpty()) {
+			return;
+		}
+        FacilioModule module = ModuleFactory.getPreventiveMaintenancetModule();
+        List<FacilioField> fields = FieldFactory.getPreventiveMaintenanceFields();
+        Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+        Map<String, Object> props = new HashMap<>();
+        props.put("woGenerationStatus", status);
+        GenericUpdateRecordBuilder updateRecordBuilder = new GenericUpdateRecordBuilder();
+        updateRecordBuilder.fields(Arrays.asList(fieldMap.get("woGenerationStatus")))
+                .table(module.getTableName())
+                .andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+                .andCondition(CriteriaAPI.getCondition(fieldMap.get("id"), ids, NumberOperators.EQUALS));
+        updateRecordBuilder.update(props);
+    }
 }

@@ -243,6 +243,15 @@ public class ModuleFactory {
 
 		return readingRuleModule;
 	}
+	public static FacilioModule getReadingAlarmRuleModule() {
+		FacilioModule readingRuleModule = new FacilioModule();
+		readingRuleModule.setName("readingalarmrule");
+		readingRuleModule.setDisplayName("Reading Alarm Rule");
+		readingRuleModule.setTableName("Reading_Alarm_Rule");
+		readingRuleModule.setExtendModule(getWorkflowRuleModule());
+
+		return readingRuleModule;
+	}
 
 	public static FacilioModule getDeviceDetailsModule() {
 		FacilioModule deviceModule = new FacilioModule();
@@ -404,6 +413,15 @@ public class ModuleFactory {
 		eMailTemplatesModule.setName("emailtemplates");
 		eMailTemplatesModule.setDisplayName("EMail Templates");
 		eMailTemplatesModule.setTableName("EMail_Templates");
+		eMailTemplatesModule.setExtendModule(getTemplatesModule());
+		return eMailTemplatesModule;
+	}
+	
+	public static FacilioModule getWorkflowTemplatesModule() {
+		FacilioModule eMailTemplatesModule = new FacilioModule();
+		eMailTemplatesModule.setName("workflowtemplates");
+		eMailTemplatesModule.setDisplayName("Workflow Templates");
+		eMailTemplatesModule.setTableName("Workflow_Template");
 		eMailTemplatesModule.setExtendModule(getTemplatesModule());
 		return eMailTemplatesModule;
 	}

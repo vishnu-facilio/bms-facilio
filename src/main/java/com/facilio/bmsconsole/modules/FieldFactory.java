@@ -1235,6 +1235,17 @@ public class FieldFactory {
 		
 		return fields;
 	}
+	
+	public static List<FacilioField> getReadingAlarmRuleFields() {
+		List<FacilioField> fields = new ArrayList<>();
+		FacilioModule module = ModuleFactory.getReadingAlarmRuleModule();
+
+		fields.add(getIdField(module));
+		fields.add(getOrgIdField(module));
+		fields.add(getField("readingRuleGroupId", "READING_RULE_GROUP_ID", module, FieldType.LOOKUP));
+
+		return fields;
+	}
 
 	public static List<FacilioField> getReadingRuleInclusionsExclusionsFields() {
 		List<FacilioField> fields = new ArrayList<>();
@@ -1917,6 +1928,19 @@ public class FieldFactory {
 
 		return fields;
 	}
+	
+	public static List<FacilioField> getWorkflowTemplateFields() {
+		FacilioModule module = ModuleFactory.getWorkflowTemplatesModule();
+
+		List<FacilioField> fields = new ArrayList<>();
+
+		fields.add(getIdField(module));
+		fields.add(getOrgIdField(module));
+		fields.add(getField("resultWorkflowId", "WORKFLOW_ID", module, FieldType.LOOKUP));
+		fields.add(getField("meta", "META", module, FieldType.STRING));
+
+		return fields;
+	}
 
 	public static List<FacilioField> getSMSTemplateFields() {
 		return getSMSTemplateFields(true);
@@ -2216,6 +2240,7 @@ public class FieldFactory {
 		fields.add(getField("assetCategoryId", "ASSET_CATEGORY_ID", module, FieldType.LOOKUP));
 		fields.add(getField("assignmentType", "ASSIGNMENT_TYPE", module, FieldType.NUMBER));
 		fields.add(getField("pmCreationType", "PM_CREARTION_TYPE", module, FieldType.NUMBER));
+		fields.add(getField("woGenerationStatus", "WO_GENERATION_STATUS", module, FieldType.BOOLEAN));
 
 		return fields;
 	}

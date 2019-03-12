@@ -9,6 +9,7 @@ import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.modules.FacilioModule;
+import com.facilio.bmsconsole.util.DateTimeUtil;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowEventContext;
@@ -33,6 +34,7 @@ public class ExecuteScheduledReadingRuleCommand implements Command {
 		
 		Map<String, Object> placeHolders = WorkflowRuleAPI.getOrgPlaceHolders();
 		Map<String, Object> recordPlaceHolders = WorkflowRuleAPI.getRecordPlaceHolders(module.getName(), null, placeHolders);
+		recordPlaceHolders.put("executionTime", (long) context.get(FacilioConstants.ContextNames.CURRENT_EXECUTION_TIME));
 
 		List<WorkflowRuleContext> currentWorkflows = Collections.singletonList(rule);
 		while (currentWorkflows != null && !currentWorkflows.isEmpty()) {

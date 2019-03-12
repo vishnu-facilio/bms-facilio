@@ -1,10 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -12,12 +8,16 @@ import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.templates.WorkorderTemplate;
 import com.facilio.bmsconsole.util.*;
+import com.facilio.chain.FacilioContext;
 import com.facilio.serializable.SerializableCommand;
+import com.facilio.tasker.job.FacilioJob;
+import com.facilio.tasker.job.JobContext;
 import org.apache.commons.chain.Context;
 
 import com.facilio.constants.FacilioConstants;
 
-public class ScheduleNewPMCommand implements SerializableCommand {
+//Move to jobs package after migrations are completed and remove SerializableCommand interface
+public class ScheduleNewPMCommand extends FacilioJob implements SerializableCommand {
 
     private static final Logger LOGGER = Logger.getLogger(PreventiveMaintenanceAPI.class.getName());
     private boolean isBulkUpdate = false;
@@ -211,62 +211,14 @@ public class ScheduleNewPMCommand implements SerializableCommand {
         context.put(FacilioConstants.ContextNames.NEXT_EXECUTION_TIMES, nextExecutionTimes);
     }
 
-    public List<PMJobsContext> createPMJobsForMultipleResourceAndSchedule (PreventiveMaintenance pm , long endTime, boolean addToDb) throws Exception { //Both in seconds
-
-        List<PMJobsContext> pmJobs = new ArrayList<>();
-        pmJobsToBeScheduled = new ArrayList<>();
-
-        Long baseSpaceId = pm.getBaseSpaceId();
-        if (baseSpaceId == null || baseSpaceId < 0) {
-            baseSpaceId = pm.getSiteId();
-        }
-        List<Long> resourceIds = PreventiveMaintenanceAPI.getMultipleResourceToBeAddedFromPM(pm.getAssignmentTypeEnum(),baseSpaceId,pm.getSpaceCategoryId(),pm.getAssetCategoryId(),null,pm.getPmIncludeExcludeResourceContexts());
-
-        Map<Long, PMResourcePlannerContext> pmResourcePlanner = PreventiveMaintenanceAPI.getPMResourcesPlanner(pm.getId());
-        for(Long resourceId :resourceIds) {
-            List<PMTriggerContext> triggers  = null;
-            if(pmResourcePlanner.get(resourceId) != null) {
-                PMResourcePlannerContext currentResourcePlanner = pmResourcePlanner.get(resourceId);
-                triggers = new ArrayList<>();
-                for (PMTriggerContext trig: currentResourcePlanner.getTriggerContexts()) {
-                    if (pm.getTriggerMap() != null && pm.getTriggerMap().get(trig.getName()) != null) {
-                        triggers.add(pm.getTriggerMap().get(trig.getName()));
-                    }
-                }
-            }
-            if(triggers == null) {
-                triggers = new ArrayList<>();
-                triggers.add(PreventiveMaintenanceAPI.getDefaultTrigger(pm.getTriggers()));
-            }
-
-            if (triggers != null) {
-                for (PMTriggerContext trigger : triggers) {
-                    long startTime;
-                    if (trigger.getStartTime() < System.currentTimeMillis()) {
-                        startTime = PreventiveMaintenanceAPI.getStartTimeInSecond(System.currentTimeMillis());
-                    } else {
-                        startTime = PreventiveMaintenanceAPI.getStartTimeInSecond(trigger.getStartTime());
-                    }
-                    long nextExecutionTime = trigger.getSchedule().nextExecutionTime(startTime);
-
-                    boolean isFirst = true;
-                    while(nextExecutionTime <= endTime && (pm.getEndTime() == -1 || nextExecutionTime <= pm.getEndTime())) {
-                        PMJobsContext pmJob = PreventiveMaintenanceAPI.getpmJob(pm, trigger, resourceId, nextExecutionTime, addToDb);
-                        pmJobs.add(pmJob);
-                        if(isFirst) {
-                            pmJobsToBeScheduled.add(pmJob);
-                        }
-                        nextExecutionTime = trigger.getSchedule().nextExecutionTime(nextExecutionTime);
-                        isFirst = false;
-                    }
-                }
-            }
-        }
-
-        if(addToDb) {
-            PreventiveMaintenanceAPI.addPMJobs(pmJobs);
-        }
-        PreventiveMaintenanceAPI.schedulePMJob(pmJobsToBeScheduled);
-        return pmJobs;
+    @Override
+    public void execute(JobContext jc) throws Exception {
+        LOGGER.log(Level.INFO, "Creating jobs for pm: "+ jc.getJobId());
+        FacilioContext context = new FacilioContext();
+        List<PreventiveMaintenance> pms = PreventiveMaintenanceAPI.getPMsDetails(Arrays.asList(jc.getJobId()));
+        context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE, pms.get(0));
+        execute(context);
+        PreventiveMaintenanceAPI.updateWorkOrderCreationStatus(Arrays.asList(jc.getJobId()), false);
     }
+
 }

@@ -8,7 +8,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import com.facilio.accounts.dto.Account;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Context;
@@ -33,6 +32,7 @@ import com.facilio.bmsconsole.context.NoteContext;
 import com.facilio.bmsconsole.context.NotificationContext;
 import com.facilio.bmsconsole.context.PMTriggerContext;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
+import com.facilio.bmsconsole.context.ReadingAlarmContext;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.TicketContext.SourceType;
 import com.facilio.bmsconsole.context.TicketStatusContext;
@@ -65,6 +65,7 @@ import com.facilio.events.context.EventContext;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.util.FacilioUtil;
+import com.facilio.workflows.util.WorkflowUtil;
 
 public enum ActionType {
 
@@ -247,7 +248,7 @@ public enum ActionType {
 								AlarmAPI.addReadingAlarmProps(obj, (ReadingRuleContext) currentRule,(ReadingContext) currentRecord);
 								break;
 							case ML_RULE:
-								AlarmAPI.addMLAlarmProps(obj, (ReadingRuleContext) currentRule);
+								AlarmAPI.addMLAlarmProps(obj, (ReadingRuleContext) currentRule, context);
 								break;
 						}
 					}
@@ -735,6 +736,53 @@ public enum ActionType {
 				ReadingRuleAPI.addClearEvent(currentRecord, context, obj, (ReadingContext) currentRecord, (ReadingRuleContext)currentRule);
 			}
 		}
+	},
+	FORMULA_FIELD_CHANGE(16) {
+
+		@Override
+		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,Object currentRecord) throws Exception {
+			// TODO Auto-generated method stub
+			if (currentRule.getEvent() == null) {
+				currentRule.setEvent(WorkflowRuleAPI.getWorkflowEvent(currentRule.getEventId()));
+			}
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			WorkflowEventContext event = currentRule.getEvent();
+			List<FacilioField> fields = new ArrayList<>();
+			Map<String, Object> props = new HashMap<String, Object>();
+			
+			Map<String,Object> params = new HashMap<>();
+			Map<String,Object> currentRecordJson = null;
+			if(currentRecord instanceof ReadingAlarmContext) {
+				currentRecordJson = FieldUtil.getAsProperties(currentRecord);
+			}
+			params.put("record", currentRecordJson);
+			Map<String,Object> workflowResult = (Map<String,Object>) WorkflowUtil.getWorkflowExpressionResult((String)obj.get("WorkflowString"), params);
+			
+			JSONArray fieldsJsonArray = (JSONArray) obj.get("fields");
+			for (Object key : fieldsJsonArray) {
+				FacilioField field = modBean.getField((String) key, event.getModule().getName());
+				if (field != null) {
+					
+					fields.add(field);
+					Object val = workflowResult.get(field.getName());
+					props.put(field.getName(), val);
+					if (field.isDefault()) {
+						BeanUtils.setProperty(currentRecord, field.getName(), val);
+					}
+					else {
+						((ModuleBaseWithCustomFields) currentRecord).setDatum(field.getName(), val);
+					}
+				}
+			}
+			
+			UpdateRecordBuilder<ModuleBaseWithCustomFields> updateBuilder = new UpdateRecordBuilder<ModuleBaseWithCustomFields>()
+																				.fields(fields)
+																				.module(event.getModule())
+																				.andCondition(CriteriaAPI.getIdCondition(((ModuleBaseWithCustomFields) currentRecord).getId(), event.getModule()))
+																				;
+			updateBuilder.updateViaMap(props);
+		}
+		
 	},
 	;
 

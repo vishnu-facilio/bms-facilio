@@ -62,6 +62,7 @@ import com.facilio.bmsconsole.templates.TaskTemplate;
 import com.facilio.bmsconsole.templates.Template;
 import com.facilio.bmsconsole.templates.Template.Type;
 import com.facilio.bmsconsole.templates.WebNotificationTemplate;
+import com.facilio.bmsconsole.templates.WorkflowTemplate;
 import com.facilio.bmsconsole.templates.WorkorderTemplate;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fs.FileStore;
@@ -411,6 +412,14 @@ public class TemplateAPI {
 					 template = getJSONTemplateFromMap(templateMap);
 				}
 			}break;
+			case WORKFLOW:
+			{
+				List<Map<String, Object>> templates = getExtendedProps(ModuleFactory.getWorkflowTemplatesModule(), FieldFactory.getWorkflowTemplateFields(), id);
+				if(templates != null && !templates.isEmpty()) {
+					templateMap.putAll(templates.get(0));
+					template = getWorkflowTemplateFromMap(templateMap);
+				}
+			}break;
 			default: break;
 		}
 		
@@ -712,6 +721,11 @@ public class TemplateAPI {
 		woTemplate.setTasks(getTasksFromWOTemplate(woTemplate, sectionMap));
 		
 		return woTemplate;
+	}
+	
+	private static WorkflowTemplate getWorkflowTemplateFromMap(Map<String, Object> templateProps) throws Exception {
+		WorkflowTemplate wfTemplate = FieldUtil.getAsBeanFromMap(templateProps, WorkflowTemplate.class);
+		return wfTemplate;
 	}
 	
 	private static Map<Long, TaskSectionTemplate> getTaskSectionTemplatesFromWOTemplate(WorkorderTemplate woTemplate) throws Exception {

@@ -626,6 +626,15 @@
 			<param name="id">{1}</param>
 		</action>
 	</package>
+	<package name="historicalScheduledRuleApiV2" namespace="/api/v2/scheduled/rule/historicalrun"
+		extends="v2Api">
+		<action name="*" class="com.facilio.bmsconsole.actions.ReadingAction"
+			method="historicalScheduledRule">
+			<param name="moduleName">setup</param>
+			<param name="permission">ENERGY_ANALYTICS</param>
+			<param name="id">{1}</param>
+		</action>
+	</package>
 	<package name="formulaApiv2" namespace="/api/v2/reading/formula"
 		extends="v2Api">
 		<action name="*" class="com.facilio.bmsconsole.actions.ReadingAction"

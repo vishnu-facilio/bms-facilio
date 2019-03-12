@@ -934,6 +934,19 @@ public class ReadingAction extends FacilioAction {
 		return SUCCESS;
 	}
 	
+	public String historicalScheduledRule() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.WORKFLOW_RULE, id);
+		context.put(FacilioConstants.ContextNames.DATE_RANGE, new DateRange(startTime, endTime));
+		
+		Chain runThroughRuleChain = TransactionChainFactory.historicalScheduledRuleChain();
+		runThroughRuleChain.execute(context);
+		
+		setResult("success", "Historical run for the scheduled rule in the given period has been started");
+		
+		return SUCCESS;
+	}
+	
 	public String getFormulaFromReadingField () throws Exception {
 		formula = FormulaFieldAPI.getFormulaFieldFromReadingField(id);
 		setResult(FacilioConstants.ContextNames.FORMULA_FIELD, formula);			
