@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.apache.commons.chain.Chain;
 
+import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.PurchasedItemContext;
 import com.facilio.bmsconsole.context.PurchasedToolContext;
@@ -54,6 +55,28 @@ public class PurchasedToolAction extends FacilioAction{
 		Chain addPurchasedTool = TransactionChainFactory.getAddPurchasedToolChain();
 		addPurchasedTool.execute(context);
 		context.put(FacilioConstants.ContextNames.PURCHASED_TOOL, purchasedTools);
+		setResult(FacilioConstants.ContextNames.PURCHASED_TOOL, purchasedTools);
+		return SUCCESS;
+	}
+	
+	public String purchasedToolsList() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.PARENT_ID, toolId);
+		context.put(FacilioConstants.ContextNames.PURCHASED_TOOL_IS_USED, true);
+		Chain purchasedItemsListChain = ReadOnlyChainFactory.getPurchasdToolsList();
+		purchasedItemsListChain.execute(context);
+		purchasedTools = ((List<PurchasedToolContext>) context.get(FacilioConstants.ContextNames.PURCHASED_TOOL));
+		setResult(FacilioConstants.ContextNames.PURCHASED_TOOL, purchasedTools);
+		return SUCCESS;
+	}
+
+	public String unUsedPurchasedToolsList() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.PARENT_ID, toolId);
+		context.put(FacilioConstants.ContextNames.PURCHASED_TOOL_IS_USED, false);
+		Chain purchasedItemsListChain = ReadOnlyChainFactory.getPurchasdToolsList();
+		purchasedItemsListChain.execute(context);
+		purchasedTools = ((List<PurchasedToolContext>) context.get(FacilioConstants.ContextNames.PURCHASED_TOOL));
 		setResult(FacilioConstants.ContextNames.PURCHASED_TOOL, purchasedTools);
 		return SUCCESS;
 	}

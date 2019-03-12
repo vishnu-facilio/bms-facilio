@@ -572,4 +572,12 @@ public class ReadOnlyChainFactory {
 		return c;
 	}
 	
+	public static Chain getPurchasdToolsList() {
+		Chain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForPurchasedTool());
+		c.addCommand(new LoadAllFieldsCommand());
+		c.addCommand(new GetPurchasedToolsListCommand());
+		return c;
+	}
+	
 }

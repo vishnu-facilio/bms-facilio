@@ -1512,13 +1512,23 @@
 		</action>
 	</package>
 	
-	<package name="purchasedItemsList" namespace="com.facilio.bmsconsole.actions.PurchasedToolAction"
+	<package name="purchasedToolsList" namespace="/api/v2/purchasedToolsList/tool"
 		extends="v2Api">
 		<action name="*"
-			class="com.facilio.bmsconsole.actions.PurchasedItemAction" method="purchasedItemsList">
+			class="com.facilio.bmsconsole.actions.PurchasedToolAction" method="purchasedToolsList">
 			<param name="moduleName">asset</param>
 			<param name="permission">READ</param>
-			<param name = "itemId">{1}</param>
+			<param name = "toolId">{1}</param>
+		</action>
+	</package>
+	
+	<package name="unUsedPurchasedToolsList" namespace="/api/v2/unUsedPurchasedToolList/tool"
+		extends="v2Api">
+		<action name="*"
+			class="com.facilio.bmsconsole.actions.PurchasedToolAction" method="unUsedPurchasedToolsList">
+			<param name="moduleName">asset</param>
+			<param name="permission">READ</param>
+			<param name = "toolId">{1}</param>
 		</action>
 	</package>
 	
