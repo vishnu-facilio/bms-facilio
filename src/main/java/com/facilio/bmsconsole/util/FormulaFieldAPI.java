@@ -249,27 +249,30 @@ public class FormulaFieldAPI {
 					if (workflow.getWorkflowString() == null) {
 						workflow.setWorkflowString(WorkflowUtil.getXmlStringFromWorkflow(workflow));
 					}
-					Double resultVal = (Double) WorkflowUtil.getWorkflowExpressionResult(workflow.getWorkflowString(), params, null, ignoreNullValues, false);
-//					if (AccountUtil.getCurrentOrg().getId() == 135) {
-						LOGGER.debug("Result of Formula : "+fieldName+" for resource : "+resourceId+" : "+resultVal);
-//					}
-					if (resultVal != null) {
-						ReadingContext reading = new ReadingContext();
-						reading.setParentId(resourceId);
-						reading.addReading(fieldName, resultVal);
-						reading.addReading("startTime", iStartTime);
-						reading.setTtime(iEndTime);
-						readings.add(reading);
-						
-						if (addValue) {
-							FacilioContext context = new FacilioContext();
-							context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
-							context.put(FacilioConstants.ContextNames.READING, reading);
-	//						context.put(FacilioConstants.ContextNames.UPDATE_LAST_READINGS, false);
-							context.put(FacilioConstants.ContextNames.READINGS_SOURCE, SourceType.FORMULA);
+					Object workflowResult = WorkflowUtil.getWorkflowExpressionResult(workflow.getWorkflowString(), params, null, ignoreNullValues, false);
+					if(workflowResult != null) {
+						Double resultVal = Double.parseDouble(workflowResult.toString());
+//						if (AccountUtil.getCurrentOrg().getId() == 135) {
+							LOGGER.debug("Result of Formula : "+fieldName+" for resource : "+resourceId+" : "+resultVal);
+//						}
+						if (resultVal != null) {
+							ReadingContext reading = new ReadingContext();
+							reading.setParentId(resourceId);
+							reading.addReading(fieldName, resultVal);
+							reading.addReading("startTime", iStartTime);
+							reading.setTtime(iEndTime);
+							readings.add(reading);
 							
-							Chain addReadingChain = ReadOnlyChainFactory.getAddOrUpdateReadingValuesChain();
-							addReadingChain.execute(context);
+							if (addValue) {
+								FacilioContext context = new FacilioContext();
+								context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+								context.put(FacilioConstants.ContextNames.READING, reading);
+		//						context.put(FacilioConstants.ContextNames.UPDATE_LAST_READINGS, false);
+								context.put(FacilioConstants.ContextNames.READINGS_SOURCE, SourceType.FORMULA);
+								
+								Chain addReadingChain = ReadOnlyChainFactory.getAddOrUpdateReadingValuesChain();
+								addReadingChain.execute(context);
+							}
 						}
 					}
 					long timeTaken = System.currentTimeMillis() - startTime;
