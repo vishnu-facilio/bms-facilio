@@ -30,7 +30,7 @@ public class ReportFactory {
 			modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			
 			List<FacilioField> reportFields = new ArrayList<>();
-			reportFields.add(getField("opervsclose", "Status Type", modBean.getModule("workorder"), " CASE WHEN STATUS_ID = ? THEN 'Closed' ELSE 'Open' END ", FieldType.NUMBER, STATUS_CLOSD));
+			reportFields.add(getField("openvsclose", "Status Type", modBean.getModule("workorder"), " CASE WHEN STATUS_ID = ? THEN 'Closed' ELSE 'Open' END ", FieldType.NUMBER, STATUS_CLOSD));
 			reportFields.add(getField("overdue_open", "Open Due Status", modBean.getModule("workorder"), " CASE WHEN DUE_DATE < " + System.currentTimeMillis() + " THEN 'Overdue' ELSE 'On Schedule' END ", FieldType.NUMBER));
 			reportFields.add(getField("overdue_closed", "Closed Due Status", modBean.getModule("workorder"), " CASE WHEN DUE_DATE < ACTUAL_WORK_END THEN 'Overdue' ELSE 'Ontime' END ", FieldType.NUMBER));
 			reportFields.add(getField("plannedvsunplanned", "Planned Type", modBean.getModule("workorder"), " CASE WHEN SOURCE_TYPE = 5 THEN 'Planned' ELSE 'Unplanned' END ", FieldType.NUMBER));

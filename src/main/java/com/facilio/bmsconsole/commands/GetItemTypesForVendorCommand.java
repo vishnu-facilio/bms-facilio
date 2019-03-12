@@ -39,7 +39,7 @@ public class GetItemTypesForVendorCommand implements Command{
 			List<ItemTypesVendorsContext> ietmVendors = selectBuilder.get();
 			if (ietmVendors != null && !ietmVendors.isEmpty()) {
 				for (ItemTypesVendorsContext itemVendor : ietmVendors) {
-					ItemTypesContext itemTypes = getVendor(itemVendor.getVendor().getId());
+					ItemTypesContext itemTypes = getItemType(itemVendor.getItemType().getId());
 					itemVendor.setItemType(itemTypes);
 				}
 			}
@@ -49,7 +49,7 @@ public class GetItemTypesForVendorCommand implements Command{
 	}
 
 	
-	public static ItemTypesContext getVendor(long id) throws Exception
+	public static ItemTypesContext getItemType(long id) throws Exception
 	{
 		if(id <= 0) {
 			return null;
