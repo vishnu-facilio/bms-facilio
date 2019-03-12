@@ -93,7 +93,7 @@ public class PurchasedItemAction extends FacilioAction{
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.ID, getPurchasedItemId());
 
-		Chain inventryDetailsChain = ReadOnlyChainFactory.fetchInventoryCostDetails();
+		Chain inventryDetailsChain = ReadOnlyChainFactory.fetchPurchasesItemDetails();
 		inventryDetailsChain.execute(context);
 
 		setPurchasedItem((PurchasedItemContext) context.get(FacilioConstants.ContextNames.PURCHASED_ITEM));
@@ -103,11 +103,11 @@ public class PurchasedItemAction extends FacilioAction{
 	
 	public String deletePurchasedItem() throws Exception {
 		FacilioContext context = new FacilioContext();
-		PurchasedItemContext inventoryCost = new PurchasedItemContext();
-		inventoryCost.setDeleted(true);
+		PurchasedItemContext purchaseditem = new PurchasedItemContext();
+		purchaseditem.setDeleted(true);
 
 		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.DELETE);
-		context.put(FacilioConstants.ContextNames.RECORD, inventoryCost);
+		context.put(FacilioConstants.ContextNames.RECORD, purchaseditem);
 		context.put(FacilioConstants.ContextNames.ITEM_ID, itemId);
 		context.put(FacilioConstants.ContextNames.ITEM_IDS, Collections.singletonList(itemId));
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, purchasedItemsId);

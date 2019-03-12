@@ -21,7 +21,7 @@ import com.facilio.bmsconsole.util.StoreroomApi;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 
-public class fetchInventoryCostDetailsCommand implements Command{
+public class FetchPurchasedItemDetailsCommand implements Command{
 
 	@Override
 	public boolean execute(Context context) throws Exception {

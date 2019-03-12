@@ -67,6 +67,7 @@ public class AddOrUpdateWorkorderToolsCommand implements Command {
 									toolsToBeAdded.add(woTool);
 								} else {
 									// update
+									woTool.setId(workorderTool.getId());
 									workorderToolslist.add(woTool);
 									updateWorkorderTools(workorderToolsModule, workorderToolsFields, woTool);
 								}
@@ -81,6 +82,7 @@ public class AddOrUpdateWorkorderToolsCommand implements Command {
 							toolsToBeAdded.add(woTool);
 						} else {
 							// update
+							woTool.setId(workorderTool.getId());
 							workorderToolslist.add(woTool);
 							updateWorkorderTools(workorderToolsModule, workorderToolsFields, woTool);
 						}

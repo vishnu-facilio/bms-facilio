@@ -1490,7 +1490,7 @@
 	<package name="purchasedToolApi" namespace="/api/v2/purchasedTool"
 		extends="v2Api">
 		<action name="update"
-			class="com.facilio.bmsconsole.actions.PurchasedToolAction" method="addPurchasedItem">
+			class="com.facilio.bmsconsole.actions.PurchasedToolAction" method="addPurchasedTool">
 			<param name="moduleName">asset</param>
 			<param name="permission">UPDATE</param>
 		</action> 
@@ -1501,12 +1501,12 @@
 			<param name = "inventryId">{1}</param>
 		</action>
 		<action name="delete" class="com.facilio.bmsconsole.actions.PurchasedToolAction"
-			method="deletePurchasedItem">
+			method="deletePurchasedTool">
 			<param name="moduleName">asset</param>
 			<param name="permission">DELETE</param>
 		</action>
 		<action name="add" class="com.facilio.bmsconsole.actions.PurchasedToolAction"
-			method="addPurchasedItem">
+			method="addPurchasedTool">
 			<param name="moduleName">asset</param>
 			<param name="permission">DELETE</param>
 		</action>

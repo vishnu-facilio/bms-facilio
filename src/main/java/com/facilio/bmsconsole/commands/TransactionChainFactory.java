@@ -1813,6 +1813,16 @@ public class TransactionChainFactory {
 			return c;
 		}
 		
+		public static Chain getDeletePurchasedToolsChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForPurchasedTool());
+			c.addCommand(new GenericDeleteModuleDataCommand());
+			c.addCommand(getUpdatetoolQuantityRollupChain());
+			c.addCommand(new ExecuteAllWorkflowsCommand());
+			return c;
+		}
+		
+		
 		public static Chain getAddOrUpdateToolStockTransactionChain(){
 			Chain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForToolTranaction());

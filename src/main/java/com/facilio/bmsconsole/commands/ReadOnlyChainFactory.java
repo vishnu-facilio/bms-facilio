@@ -480,11 +480,11 @@ public class ReadOnlyChainFactory {
 		return c;
 	}
 	
-	public static Chain fetchInventoryCostDetails() {
+	public static Chain fetchPurchasesItemDetails() {
 		Chain c = getDefaultChain();
 		c.addCommand(SetTableNamesCommand.getForPurchasedItem());
 		c.addCommand(new GenericGetModuleDataDetailCommand());
-		c.addCommand(new fetchInventoryCostDetailsCommand());
+		c.addCommand(new FetchPurchasedItemDetailsCommand());
 		return c;
 	}
 	
