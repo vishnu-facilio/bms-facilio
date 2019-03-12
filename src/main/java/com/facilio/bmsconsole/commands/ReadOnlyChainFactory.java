@@ -393,6 +393,7 @@ public class ReadOnlyChainFactory {
 	public static Chain getStoreRoomList() {
 		Chain c = getDefaultChain();
 		c.addCommand(SetTableNamesCommand.getForStoreRoom());
+		c.addCommand(new LoadViewCommand());
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new GenerateCriteriaFromFilterCommand());
 		c.addCommand(new GenerateSearchConditionCommand());
