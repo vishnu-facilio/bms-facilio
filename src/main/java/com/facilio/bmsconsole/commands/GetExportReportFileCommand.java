@@ -35,7 +35,6 @@ import com.facilio.report.context.ReportDataPointContext.DataPointType;
 
 public class GetExportReportFileCommand implements Command {
 	
-	private static final String SERIES_X_HEADER = "Data Point";
 	private static final String ALIAS = "alias";
 	
 	private ReportContext report;
@@ -100,7 +99,7 @@ public class GetExportReportFileCommand implements Command {
 	
 	private List<Map<String, Object>> setDataMapAndGetColumns (Map<String, Object> tableState) {
 		List<String> currentHeaderKeys = new ArrayList<>();
-		currentHeaderKeys.add(report.getxAlias());
+		currentHeaderKeys.add(report.getxAlias() != null ? report.getxAlias() : "X");
 		
 		report.getDataPoints().forEach(dp -> {
 			String alias = dp.getAliases().get(FacilioConstants.Reports.ACTUAL_DATA);
