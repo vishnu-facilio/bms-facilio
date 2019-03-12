@@ -30,23 +30,27 @@ public class GetFormMetaCommand implements Command {
 		Long formId = (Long) context.get(FacilioConstants.ContextNames.FORM_ID);
 		List<FacilioForm> forms = new ArrayList<>();
 		if (formNames != null && formNames.length > 0) {
+			List<FacilioForm> forms = new ArrayList<>();
+			ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			 
 			for (String formName: formNames) {
+				String modname = formName.replaceAll("default_", "");
 				FacilioForm form = getFormFromDB(formName);
 				if (form == null) {
 					if (FormFactory.getForm(formName) == null && !(formName.startsWith("default"))) {
-//						throw new IllegalArgumentException("Invalid Form " + formName);
+						throw new IllegalArgumentException("Invalid Form " + formName);
 					}
 					else if (FormFactory.getForm(formName) == null && formName.startsWith("default")) {
-						ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-						String modname = formName.replaceAll("default_", ""); 
 						FacilioModule module = bean.getModule(modname);
 						String extendedModName = module.getExtendModule().getName();
-						formName = "default_"+extendedModName;
+						formName = "default_" +extendedModName ;
 					}
 					form = new FacilioForm(FormFactory.getForm(formName));
 					List<FormField> fields = form.getFields();
+					
 					ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 					String moduleName = form.getModule().getName();
+					
 					form.setModule(modBean.getModule(moduleName));
 					
 					for (FormField f : fields) {
@@ -66,6 +70,23 @@ public class GetFormMetaCommand implements Command {
 					} catch (Exception e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
+					}
+					
+					if (formName.startsWith("default")) {
+						FacilioModule module = bean.getModule(modname);
+						if (modname != "asset") {
+							List<FacilioField> field = bean.getAllFields(modname);
+							for (FacilioField f: field) {
+								if ((f.getModule().equals(module)) && (!f.isDefault())) {
+									count = count + 1;
+									FormField formFields = new FormField(f.getName(), f.getDisplayType(), f.getDisplayName(), FormField.Required.OPTIONAL, count, 1);
+									formFields.setField(f);
+									formFields.setFieldId(f.getFieldId());
+									fields.add(formFields);
+								}
+							}
+						}
+						moduleName = modname;
 					}
 					List<FacilioField> customFields = modBean.getAllCustomFields(moduleName);
 					if (customFields != null && !customFields.isEmpty()) {

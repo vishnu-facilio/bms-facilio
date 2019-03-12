@@ -73,24 +73,27 @@ public class GetViewListCommand implements Command {
 					groupViews = new ArrayList<>();
 					Map<String, Object> groupDetails = new HashMap<>();
 					if (moduleName.equals("asset")) {
-					groupDetails.put("name", "systemviews");
-					groupDetails.put("displayName", "System Views");
-					groupDetails.put("views", allViews.stream().filter(view -> view.getIsDefault() == null || view.getIsDefault()).collect(Collectors.toList()));
-					groupViews.add(groupDetails);
-//					groupViews.addAll(customViews);
-					}
+						List<FacilioView> systemViews = allViews.stream().filter(view -> view.getIsDefault() == null || view.getIsDefault()).collect(Collectors.toList());
+						if (!customViews.isEmpty() ) {
+							systemViews.addAll(customViews);
+						}
+						groupDetails.put("name", "systemviews");
+						groupDetails.put("displayName", "System Views");
+						groupDetails.put("views", systemViews);
+						groupViews.add(groupDetails);
+						}
 					else {
 						groupDetails.put("name", "systemviews");
 						groupDetails.put("displayName", "System Views");
 						groupDetails.put("views", allViews.stream().filter(view -> view.getIsDefault() == null || view.getIsDefault()).collect(Collectors.toList()));
 						groupViews.add(groupDetails);
-					}
-					if (!customViews.isEmpty() && moduleName.equals("asset")) {
-						groupDetails = new HashMap<>();
-						groupDetails.put("name", "customviews");
-						groupDetails.put("displayName", "Custom Views");
-						groupDetails.put("views", customViews);
-						groupViews.add(groupDetails);
+						if (!customViews.isEmpty() ) {
+							groupDetails = new HashMap<>();
+							groupDetails.put("name", "customviews");
+							groupDetails.put("displayName", "Custom Views");
+							groupDetails.put("views", customViews);
+							groupViews.add(groupDetails);
+						}
 					}
 					if (moduleName.equals("asset")) {
 						ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -102,6 +105,7 @@ public class GetViewListCommand implements Command {
 							categoryView.setModuleId(category.getAssetModuleID());;
 							categoryView.setModuleName(bean.getModule(category.getAssetModuleID()).getName());
 							List<FacilioView> dbViews1 = ViewAPI.getAllViews(categoryView.getModuleId());
+//							for (int i=0; i< dbViews1.size(); i++) {
 							dbViews1.add(categoryView);
 							viewMap.put(categoryView.getName(), categoryView);
 							if (!viewMap.isEmpty()) {

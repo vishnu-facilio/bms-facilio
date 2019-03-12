@@ -52,6 +52,10 @@ public class AddCVCommand implements Command {
 				
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 				FacilioModule moduleObj = modBean.getModule(moduleName);
+				String extendedModName = moduleObj.getExtendModule().getName();
+				if (extendedModName.contains("asset")) {	
+					view.setModuleName(moduleName);
+				}
 				if (LookupSpecialTypeUtil.isSpecialType(moduleName)) {
 					view.setModuleName(moduleName);
 				} 
