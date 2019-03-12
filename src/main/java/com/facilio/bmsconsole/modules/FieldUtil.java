@@ -329,7 +329,7 @@ public class FieldUtil {
 			ObjectMapper mapper = getMapper(bean.getClass());
 			properties = mapper.convertValue(bean, Map.class);
 		}
-		LOGGER.debug("######" + properties + "#####");
+//		LOGGER.debug("######" + properties + "#####");
 		return properties;
 	}
 	
