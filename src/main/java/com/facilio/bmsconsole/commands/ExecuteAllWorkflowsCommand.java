@@ -18,6 +18,7 @@ import com.facilio.accounts.dto.Account;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.bmsconsole.criteria.BooleanOperators;
 import com.facilio.bmsconsole.criteria.CommonOperators;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
@@ -113,7 +114,7 @@ public class ExecuteAllWorkflowsCommand implements SerializableCommand
 				FacilioField onSuccess = fields.get("onSuccess");
 				Criteria parentCriteria = new Criteria();
 				parentCriteria.addAndCondition(CriteriaAPI.getCondition(parentRule, CommonOperators.IS_EMPTY));
-				parentCriteria.addAndCondition(CriteriaAPI.getCondition(onSuccess, CommonOperators.IS_EMPTY));
+				parentCriteria.addAndCondition(CriteriaAPI.getCondition(onSuccess,Boolean.FALSE.toString(), BooleanOperators.IS));
 				List<WorkflowRuleContext> workflowRules = WorkflowRuleAPI.getActiveWorkflowRulesFromActivityAndRuleType(moduleId, activities, parentCriteria, ruleTypes);
 				
 //				if (AccountUtil.getCurrentOrg().getId() == 133 && FacilioConstants.ContextNames.ALARM.equals(moduleName)) {
