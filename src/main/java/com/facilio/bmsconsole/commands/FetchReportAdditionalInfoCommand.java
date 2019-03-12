@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -166,6 +167,11 @@ public class FetchReportAdditionalInfoCommand implements Command {
 	
 	private static final int MAX_ALARM_INFO_PER_WINDOW = 2;
 	private JSONArray splitAlarms (List<ReadingAlarmContext> allAlarms, DateRange range, Map<Long, ReadingAlarmContext> alarmMap) {
+		
+		if (CollectionUtils.isEmpty(allAlarms)) {
+			return null;
+		}
+		
 		Set<Long> times = new TreeSet<>(); //To get sorted set
 		
 		for (ReadingAlarmContext alarm : allAlarms) {
