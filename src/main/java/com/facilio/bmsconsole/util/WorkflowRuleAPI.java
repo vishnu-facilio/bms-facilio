@@ -511,15 +511,16 @@ public class WorkflowRuleAPI {
 	}
 	
 	public static List<WorkflowRuleContext> getActiveWorkflowRulesFromActivityAndRuleType(FacilioModule module, List<EventType> activityTypes,Criteria criteria, RuleType... ruleTypes) throws Exception {
+		FacilioModule ruleModule = ModuleFactory.getWorkflowRuleModule();
 		List<FacilioField> fields = FieldFactory.getWorkflowRuleFields();
 		fields.addAll(FieldFactory.getWorkflowEventFields());
 		
 		GenericSelectRecordBuilder ruleBuilder = new GenericSelectRecordBuilder()
-				.table(module.getTableName())
+				.table(ruleModule.getTableName())
 				.select(fields)
 				.innerJoin("Workflow_Event")
 				.on("Workflow_Rule.EVENT_ID = Workflow_Event.ID")
-				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(ruleModule))
 				.andCustomWhere("Workflow_Event.MODULEID = ? AND Workflow_Rule.STATUS = true", module.getModuleId())
 				.orderBy("EXECUTION_ORDER");
 		
