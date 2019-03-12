@@ -19,6 +19,7 @@ import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
@@ -58,14 +59,14 @@ public class ExecuteValidationRule implements Command {
 			
 			List<EventType> activities = Collections.singletonList(EventType.CREATE);
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			long moduleId = modBean.getModule(moduleName).getModuleId();
+			FacilioModule module = modBean.getModule(moduleName);
 			Map<String, FacilioField> fields = FieldFactory.getAsMap(FieldFactory.getWorkflowRuleFields());
 			FacilioField parentRule = fields.get("parentRuleId");
 			FacilioField onSuccess = fields.get("onSuccess");
 			Criteria parentCriteria = new Criteria();
 			parentCriteria.addAndCondition(CriteriaAPI.getCondition(parentRule, CommonOperators.IS_EMPTY));
 			parentCriteria.addAndCondition(CriteriaAPI.getCondition(onSuccess, CommonOperators.IS_EMPTY));
-			List<WorkflowRuleContext> workflowRules = WorkflowRuleAPI.getActiveWorkflowRulesFromActivityAndRuleType(moduleId, activities, parentCriteria, RuleType.VALIDATION_RULE);
+			List<WorkflowRuleContext> workflowRules = WorkflowRuleAPI.getActiveWorkflowRulesFromActivityAndRuleType(module, activities, parentCriteria, RuleType.VALIDATION_RULE);
 			if (workflowRules != null && !workflowRules.isEmpty()) {
 				Map<String, Object> placeHolders = new HashMap<>();
 				CommonCommandUtil.appendModuleNameInKey(null, "org", FieldUtil.getAsProperties(AccountUtil.getCurrentOrg()), placeHolders);
@@ -83,7 +84,7 @@ public class ExecuteValidationRule implements Command {
 						if (childCriteria == null) {
 							break;
 						}
-						currentWorkflows = WorkflowRuleAPI.getActiveWorkflowRulesFromActivityAndRuleType(moduleId, activities, childCriteria, RuleType.VALIDATION_RULE);
+						currentWorkflows = WorkflowRuleAPI.getActiveWorkflowRulesFromActivityAndRuleType(module, activities, childCriteria, RuleType.VALIDATION_RULE);
 					}
 				}
 			}

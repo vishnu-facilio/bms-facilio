@@ -18,11 +18,11 @@ import com.facilio.accounts.dto.Account;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.bmsconsole.criteria.BooleanOperators;
 import com.facilio.bmsconsole.criteria.CommonOperators;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.bmsconsole.modules.UpdateChangeSet;
@@ -107,19 +107,17 @@ public class ExecuteAllWorkflowsCommand implements SerializableCommand
 				}
 				
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-				long moduleId = modBean.getModule(moduleName).getModuleId();
+				FacilioModule module = modBean.getModule(moduleName);
 				
 				Map<String, FacilioField> fields = FieldFactory.getAsMap(FieldFactory.getWorkflowRuleFields());
 				FacilioField parentRule = fields.get("parentRuleId");
-				FacilioField onSuccess = fields.get("onSuccess");
 				Criteria parentCriteria = new Criteria();
 				parentCriteria.addAndCondition(CriteriaAPI.getCondition(parentRule, CommonOperators.IS_EMPTY));
-				parentCriteria.addAndCondition(CriteriaAPI.getCondition(onSuccess,Boolean.FALSE.toString(), BooleanOperators.IS));
-				List<WorkflowRuleContext> workflowRules = WorkflowRuleAPI.getActiveWorkflowRulesFromActivityAndRuleType(moduleId, activities, parentCriteria, ruleTypes);
+				List<WorkflowRuleContext> workflowRules = WorkflowRuleAPI.getActiveWorkflowRulesFromActivityAndRuleType(module, activities, parentCriteria, ruleTypes);
 				
 //				if (AccountUtil.getCurrentOrg().getId() == 133 && FacilioConstants.ContextNames.ALARM.equals(moduleName)) {
-					LOGGER.debug("Records : "+entry.getValue());
-					LOGGER.debug("Matching Rules : "+workflowRules);
+//					LOGGER.debug("Records : "+entry.getValue());
+//					LOGGER.debug("Matching Rules : "+workflowRules);
 //				}
 				
 				if (workflowRules != null && !workflowRules.isEmpty()) {
@@ -129,15 +127,8 @@ public class ExecuteAllWorkflowsCommand implements SerializableCommand
 					while (it.hasNext()) {
 						Object record = it.next();
 						List<UpdateChangeSet> changeSet = currentChangeSet == null ? null : currentChangeSet.get( ((ModuleBaseWithCustomFields)record).getId() );
-						Map<String, Object> recordPlaceHolders = WorkflowRuleAPI.getRecordPlaceHolders(moduleName, record, placeHolders);
-						List<WorkflowRuleContext> currentWorkflows = workflowRules;
-						while (currentWorkflows != null && !currentWorkflows.isEmpty()) {
-							Criteria childCriteria = WorkflowRuleAPI.executeWorkflowsAndGetChildRuleCriteria(currentWorkflows, moduleName, record, changeSet, it, recordPlaceHolders, context,propagateError);
-							if (childCriteria == null || childCriteria.isEmpty()) {
-								break;
-							}
-							currentWorkflows = WorkflowRuleAPI.getActiveWorkflowRulesFromActivityAndRuleType(moduleId, activities, childCriteria, ruleTypes);
-						}
+						Map<String, Object> recordPlaceHolders = WorkflowRuleAPI.getRecordPlaceHolders(module.getName(), record, placeHolders);
+						WorkflowRuleAPI.executeWorkflowsAndGetChildRuleCriteria(workflowRules, module, record, changeSet, it, recordPlaceHolders, context,propagateError);
 					}
 				}
 			}
