@@ -6,6 +6,7 @@ import com.facilio.activity.AddActivitiesCommand;
 import com.facilio.bmsconsole.commands.data.PopulateImportProcessCommand;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.chain.FacilioChain;
+import com.facilio.constants.FacilioConstants;
 
 public class TransactionChainFactory {
 
@@ -1763,7 +1764,7 @@ public class TransactionChainFactory {
 			c.addCommand(new LoadAssetFields());
 			c.addCommand(new GetAssetDetailCommand());
 			c.addCommand(new UpdateGeoLocationCommand());
-			c.addCommand(new AddActivitiesCommand());
+			c.addCommand(new AddActivitiesCommand(FacilioConstants.ContextNames.ASSET_ACTIVITY));
 			return c;
 		}
 
