@@ -1,60 +1,33 @@
 {
-	"1": {
-		"placeHolders": [
-			{"key":"preRequsiteLimit"},
-			{"key":"triggerCondition1Name"}
-		],
-		"preRequsite": {
+	"1": {	
+		 "preRequsite": {
 			"name" : "All chillers in running state together",
 			"description" : "All the Chillers are turned ON",
-			"assetCategory": "Chiller",
+			"assetCategory": "Chillers",
 			"thresholdType": "1",
 			"operatorId": "9",
 			"percentage": "2",
 			"occurences": "2",
-			"consecutiveoroverperiod": "2",
+			"prerequisteCondition": "Check whether Chiller is turned On",
+			"consecutiveoroverperiod": "${{preRequsiteConsecutiveoverperiod}}",
 			"readingField" : {
 				"name": "runStatus",
 				"displayName": "Run Status",
 				"moduleName" : "chillerreading"
 			},
 			"criteria" : {
+				"pattern" : "(1)",
+				"conditions": [{
+				 	"fieldName": "supplyTemperature",
+				 	"operatorId": "9",
+				 	"sequence": "1",
+				 	"value": "${{preRequsiteValue}}",
+				 	"isExpressionValue": "false"
+				}]
 			
 			},
 			"workflow" : {
-				"expressions": [{
-					"name": "a",
-					"aggregateString": "count",
-					"fieldName": "alarmStatus",
-					"moduleName": "chillerreading",
-					"criteria" : {
-						"pattern": "(1)",
-						"conditions": {
-							"1" : {
-								"fieldName": "parentId",
-								"operatorId": "9",
-								"sequence": "1",
-								"value": "${resourceId}"
-							}
-						}
-					},
-					"orderByFieldName": "ttime",
-					"sortBy": "desc",
-					"limit": "${{preRequsiteLimit}}",
-					"aggregateCondition": [{
-						"fieldName": "alarmStatus",
-						"operatorId": "9",
-						"sequence": "1",
-						"value": "4"
-		     		}]
-				}],
-				"resultEvaluator": "a==2",
-				"parameters": [
-					{
-						"name": "resourceId",
-						"typeString": "Number"
-					}
-				]
+
 			}
 		},
 		"alarmTriggerRules": [
@@ -69,6 +42,7 @@
 			{
 				"name" : "triggerCondition2",
 				"description" : "desc",
+				
 				"criteria" : {
 				},
 				"workflow" : {
@@ -82,6 +56,13 @@
 			},
 			"workflow" : {
 			}
-		}
+		},
+		"placeHolders": [{ "key" :"preRequsiteLimit",
+			"description" : "Specfic a limit when preRequestic has to be executed" },
+			{ "key":"triggerCondition1Name" } ,
+			{ "key": "preRequsiteValue", 
+			"description": "Specfic the Run Status Value for to pre satifies" },
+			{ "key" : "preRequsiteConsecutiveoverperiod", 
+			"description": "Specfic Consecutive time of Occurrences " }]
 	}
 }
