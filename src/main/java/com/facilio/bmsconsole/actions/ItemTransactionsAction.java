@@ -61,7 +61,7 @@ public class ItemTransactionsAction extends FacilioAction{
 	public String itemsList() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.CV_NAME, getViewName());
-		context.put(FacilioConstants.ContextNames.SORTING_QUERY, "Inventory_transactions.ID desc");
+		context.put(FacilioConstants.ContextNames.SORTING_QUERY, "Item_Transactions.ID desc");
 		if (getFilters() != null) {
 			JSONParser parser = new JSONParser();
 			JSONObject json = (JSONObject) parser.parse(getFilters());
@@ -70,7 +70,7 @@ public class ItemTransactionsAction extends FacilioAction{
 		}
 		if (getSearch() != null) {
 			JSONObject searchObj = new JSONObject();
-			searchObj.put("fields", "inventoryTransactions.inventory");
+			searchObj.put("fields", "itemTransactions.item");
 			searchObj.put("query", getSearch());
 			context.put(FacilioConstants.ContextNames.SEARCH, searchObj);
 		}
@@ -86,7 +86,7 @@ public class ItemTransactionsAction extends FacilioAction{
 			context.put(FacilioConstants.ContextNames.PAGINATION, pagination);
 		}
 
-		Chain itemsListChain = ReadOnlyChainFactory.getItemTypessList();
+		Chain itemsListChain = ReadOnlyChainFactory.getInventoryTransactionsList();
 		itemsListChain.execute(context);
 		if (getCount()) {
 			setItemsCount((Long) context.get(FacilioConstants.ContextNames.RECORD_COUNT));

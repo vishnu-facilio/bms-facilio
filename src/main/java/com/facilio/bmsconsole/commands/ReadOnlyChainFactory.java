@@ -549,11 +549,11 @@ public class ReadOnlyChainFactory {
 	
 	public static Chain getInventoryTransactionsList() {
 		Chain c = getDefaultChain();
-		c.addCommand(SetTableNamesCommand.getForItemTypes());
+		c.addCommand(SetTableNamesCommand.getForItemTransactions());
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new GenerateCriteriaFromFilterCommand());
 		c.addCommand(new GenerateSearchConditionCommand());
-		c.addCommand(new GetItemTypesListCommand());
+		c.addCommand(new GetItemTransactionsListCommand());
 		return c;
 	}
 	

@@ -1477,14 +1477,13 @@
 		</action>
 	</package>
 	
-	<package name="itemTransactionsList" namespace="/api/v2/itemTransactions/item"
+	<package name="itemTransactionsList" namespace="/api/v2/itemTransactions"
 		extends="v2Api">
-		<action name="*"
-			class="com.facilio.bmsconsole.actions.ItemTransactionsAction" method="itemVendorsList">
+		<action name="all"
+			class="com.facilio.bmsconsole.actions.ItemTransactionsAction" method="itemsList">
 			<param name="moduleName">asset</param>
 			<param name="permission">READ</param>
-			<param name = "itemId">{1}</param>
-		</action>
+			</action>
 	</package>
 	
 	<package name="purchasedToolApi" namespace="/api/v2/purchasedTool"
