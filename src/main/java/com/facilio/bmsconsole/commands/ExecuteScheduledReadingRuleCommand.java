@@ -1,19 +1,15 @@
 package com.facilio.bmsconsole.commands;
 
 import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
-import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.modules.FacilioModule;
-import com.facilio.bmsconsole.util.DateTimeUtil;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowEventContext;
-import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -21,6 +17,7 @@ import com.facilio.constants.FacilioConstants;
 public class ExecuteScheduledReadingRuleCommand implements Command {
 
 	private static RuleType[] ruleTypes = {RuleType.READING_RULE,RuleType.ALARM_TRIGGER_RULE,RuleType.ALARM_CLEAR_RULE};
+	
 	@Override
 	public boolean execute(Context context) throws Exception {
 		
@@ -35,15 +32,7 @@ public class ExecuteScheduledReadingRuleCommand implements Command {
 		Map<String, Object> placeHolders = WorkflowRuleAPI.getOrgPlaceHolders();
 		Map<String, Object> recordPlaceHolders = WorkflowRuleAPI.getRecordPlaceHolders(module.getName(), null, placeHolders);
 		recordPlaceHolders.put("executionTime", (long) context.get(FacilioConstants.ContextNames.CURRENT_EXECUTION_TIME));
-
-		List<WorkflowRuleContext> currentWorkflows = Collections.singletonList(rule);
-		while (currentWorkflows != null && !currentWorkflows.isEmpty()) {
-			Criteria childCriteria = WorkflowRuleAPI.executeWorkflowsAndGetChildRuleCriteria(currentWorkflows, module.getName(), null, null, null, recordPlaceHolders, (FacilioContext)context,true);
-			if (childCriteria == null || childCriteria.isEmpty()) {
-				break;
-			}
-			currentWorkflows = WorkflowRuleAPI.getActiveWorkflowRulesFromActivityAndRuleType(module.getModuleId(), Collections.singletonList(event.getActivityTypeEnum()), childCriteria, ruleTypes);
-		}
+		WorkflowRuleAPI.executeWorkflowsAndGetChildRuleCriteria(Collections.singletonList(rule), module, null, null, null, recordPlaceHolders, (FacilioContext)context,true);
 		
 		return false;
 	}

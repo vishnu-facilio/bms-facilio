@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.chain.Chain;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -285,14 +286,17 @@ public class ReportUtil {
 		if (fieldId != -1) {
 			return modBean.getField(fieldId);
 		}
-		else if (moduleName != null && !moduleName.isEmpty() && fieldName != null && !fieldName.isEmpty()) {
-			FacilioField field = modBean.getField(fieldName, moduleName);
-			if (field == null) {
-				field = ReportFactory.getReportField(fieldName);
+		FacilioField field = null;
+		if (moduleName != null && !moduleName.isEmpty() && fieldName != null && !fieldName.isEmpty()) {
+			field = modBean.getField(fieldName, moduleName);
+			if (field != null) {
+				return field;
 			}
-			return field;
 		}
-		return null;
+		if (field == null && StringUtils.isNotEmpty(fieldName)) {
+			field = ReportFactory.getReportField(fieldName);
+		}
+		return field;
 	}
 	
 	public static List<Map<String, Object>> getReportFromFolderId(long reportFolderId) throws Exception {

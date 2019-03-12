@@ -608,13 +608,6 @@ public class FieldFactory {
 		/*fields.add(getOrgIdField(module));*/
 		fields.add(getModuleIdField(module));
 
-		FacilioField extendedModuleId = new FacilioField();
-		extendedModuleId.setName("extendedModuleId");
-		extendedModuleId.setDataType(FieldType.NUMBER);
-		extendedModuleId.setColumnName("EXTENDED_MODULEID");
-		extendedModuleId.setModule(module);
-		fields.add(extendedModuleId);
-
 		fields.add(getNameField(module));
 
 		FacilioField displayName = new FacilioField();
