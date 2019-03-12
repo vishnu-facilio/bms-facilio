@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Logger;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
@@ -30,11 +31,12 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericSelectRecordBuilder;
 
 public class PurchasedItemsQuantityRollUpCommand implements Command {
-
+	private static final Logger LOGGER = Logger.getLogger(PurchasedItemsQuantityRollUpCommand.class.getName());
 	@SuppressWarnings("unchecked")
 	@Override
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
+		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 
 		FacilioModule itemTransactionsModule = modBean.getModule(FacilioConstants.ContextNames.ITEM_TRANSACTIONS);
@@ -76,7 +78,7 @@ public class PurchasedItemsQuantityRollUpCommand implements Command {
 				UpdateRecordBuilder<PurchasedItemContext> updateBuilder = new UpdateRecordBuilder<PurchasedItemContext>()
 						.module(purchasedItemsModule).fields(modBean.getAllFields(purchasedItemsModule.getName()))
 						.andCondition(CriteriaAPI.getIdCondition(id, purchasedItemsModule));
-
+				LOGGER.info("totalCost"+ inventoryCost.getCurrentQuantity());
 				updateBuilder.update(inventoryCost);
 			}
 
@@ -116,6 +118,7 @@ public class PurchasedItemsQuantityRollUpCommand implements Command {
 			addition = rs.get(0).get("addition")!=null ?(Double)  rs.get(0).get("addition") : 0;
 			issues=  rs.get(0).get("issues")!=null ? (Double) rs.get(0).get("issues") : 0;
 			returns = rs.get(0).get("returns")!=null ? (Double) rs.get(0).get("returns") : 0;
+			LOGGER.info(addition + " " + issues + " " + returns );
 			return ((addition+returns) - issues);
 		}
 		return 0d;
