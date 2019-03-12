@@ -27,74 +27,75 @@ public class GetAddPurchasedToolCommand implements Command {
 	@Override
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-
-		FacilioModule toolModule = modBean.getModule(FacilioConstants.ContextNames.TOOL);
-		List<FacilioField> toolFields = modBean.getAllFields(FacilioConstants.ContextNames.TOOL);
-
-		FacilioModule purchasedToolModule = modBean.getModule(FacilioConstants.ContextNames.PURCHASED_TOOL);
-		List<FacilioField> purchasedToolFields = modBean.getAllFields(FacilioConstants.ContextNames.PURCHASED_TOOL);
-		// Map<String, FacilioField> workorderCostsFieldMap =
-		// FieldFactory.getAsMap(inventoryCostFields);
-		long toolId = (long) context.get(FacilioConstants.ContextNames.RECORD_ID);
 		List<PurchasedToolContext> purchasedTool = (List<PurchasedToolContext>) context
 				.get(FacilioConstants.ContextNames.PURCHASED_TOOL);
+		if (purchasedTool != null && !purchasedTool.isEmpty()) {
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 
-		FacilioModule toolTypesModule = modBean.getModule(FacilioConstants.ContextNames.TOOL_TYPES);
-		List<FacilioField> toolTypesFields = modBean.getAllFields(FacilioConstants.ContextNames.TOOL_TYPES);
+			FacilioModule toolModule = modBean.getModule(FacilioConstants.ContextNames.TOOL);
+			List<FacilioField> toolFields = modBean.getAllFields(FacilioConstants.ContextNames.TOOL);
 
-		SelectRecordsBuilder<ToolContext> itemselectBuilder = new SelectRecordsBuilder<ToolContext>().select(toolFields)
-				.table(toolModule.getTableName()).moduleName(toolModule.getName()).beanClass(ToolContext.class)
-				.andCondition(CriteriaAPI.getIdCondition(toolId, toolModule));
+			FacilioModule purchasedToolModule = modBean.getModule(FacilioConstants.ContextNames.PURCHASED_TOOL);
+			List<FacilioField> purchasedToolFields = modBean.getAllFields(FacilioConstants.ContextNames.PURCHASED_TOOL);
+			// Map<String, FacilioField> workorderCostsFieldMap =
+			// FieldFactory.getAsMap(inventoryCostFields);
+			long toolId = (long) context.get(FacilioConstants.ContextNames.RECORD_ID);
 
-		List<ToolContext> tools = itemselectBuilder.get();
-		ToolContext tool = new ToolContext();
-		if (tools != null && !tools.isEmpty()) {
-			tool = tools.get(0);
-		}
-		List<PurchasedToolContext> ptToBeAdded = new ArrayList<>();
-		List<PurchasedToolContext> purchaseToolsList = new ArrayList<>();
-		if (purchasedTool != null && !tools.isEmpty()) {
+			FacilioModule toolTypesModule = modBean.getModule(FacilioConstants.ContextNames.TOOL_TYPES);
+			List<FacilioField> toolTypesFields = modBean.getAllFields(FacilioConstants.ContextNames.TOOL_TYPES);
 
-			SelectRecordsBuilder<ToolTypesContext> itemTypesselectBuilder = new SelectRecordsBuilder<ToolTypesContext>()
-					.select(toolTypesFields).table(toolTypesModule.getTableName()).moduleName(toolTypesModule.getName())
-					.beanClass(ToolTypesContext.class)
-					.andCondition(CriteriaAPI.getIdCondition(tool.getToolType().getId(), toolTypesModule));
+			SelectRecordsBuilder<ToolContext> itemselectBuilder = new SelectRecordsBuilder<ToolContext>()
+					.select(toolFields).table(toolModule.getTableName()).moduleName(toolModule.getName())
+					.beanClass(ToolContext.class).andCondition(CriteriaAPI.getIdCondition(toolId, toolModule));
 
-			List<ToolTypesContext> toolTypes = itemTypesselectBuilder.get();
-			ToolTypesContext toolType = null;
-			if (toolTypes != null && !toolTypes.isEmpty()) {
-				toolType = toolTypes.get(0);
+			List<ToolContext> tools = itemselectBuilder.get();
+			ToolContext tool = new ToolContext();
+			if (tools != null && !tools.isEmpty()) {
+				tool = tools.get(0);
 			}
+			List<PurchasedToolContext> ptToBeAdded = new ArrayList<>();
+			List<PurchasedToolContext> purchaseToolsList = new ArrayList<>();
+			if (purchasedTool != null && !tools.isEmpty()) {
 
-			if (toolType == null) {
-				throw new IllegalArgumentException("No such tool found");
-			}
+				SelectRecordsBuilder<ToolTypesContext> itemTypesselectBuilder = new SelectRecordsBuilder<ToolTypesContext>()
+						.select(toolTypesFields).table(toolTypesModule.getTableName())
+						.moduleName(toolTypesModule.getName()).beanClass(ToolTypesContext.class)
+						.andCondition(CriteriaAPI.getIdCondition(tool.getToolType().getId(), toolTypesModule));
 
-			for (PurchasedToolContext pt : purchasedTool) {
-				pt.setTool(tool);
-				pt.setCostDate(System.currentTimeMillis());
-				pt.setIsUsed(false);
-				if (pt.getId() <= 0) {
-					// Insert
-					purchaseToolsList.add(pt);
-					ptToBeAdded.add(pt);
-				} else {
-					purchaseToolsList.add(pt);
-					updatePurchasedTool(purchasedToolModule, purchasedToolFields, pt);
+				List<ToolTypesContext> toolTypes = itemTypesselectBuilder.get();
+				ToolTypesContext toolType = null;
+				if (toolTypes != null && !toolTypes.isEmpty()) {
+					toolType = toolTypes.get(0);
 				}
 
-			}
-			if (ptToBeAdded != null && !ptToBeAdded.isEmpty()) {
-				addPurchasedTool(purchasedToolModule, purchasedToolFields, ptToBeAdded);
-			}
-		}
-		context.put(FacilioConstants.ContextNames.PURCHASED_TOOL, purchaseToolsList);
-		context.put(FacilioConstants.ContextNames.RECORD_LIST, purchaseToolsList);
-		context.put(FacilioConstants.ContextNames.TOOL_ID, toolId);
-		context.put(FacilioConstants.ContextNames.TOOL_IDS, Collections.singletonList(toolId));
-		context.put(FacilioConstants.ContextNames.TRANSACTION_TYPE, TransactionType.STOCK);
+				if (toolType == null) {
+					throw new IllegalArgumentException("No such tool found");
+				}
 
+				for (PurchasedToolContext pt : purchasedTool) {
+					pt.setTool(tool);
+					pt.setCostDate(System.currentTimeMillis());
+					pt.setIsUsed(false);
+					if (pt.getId() <= 0) {
+						// Insert
+						purchaseToolsList.add(pt);
+						ptToBeAdded.add(pt);
+					} else {
+						purchaseToolsList.add(pt);
+						updatePurchasedTool(purchasedToolModule, purchasedToolFields, pt);
+					}
+
+				}
+				if (ptToBeAdded != null && !ptToBeAdded.isEmpty()) {
+					addPurchasedTool(purchasedToolModule, purchasedToolFields, ptToBeAdded);
+				}
+			}
+			context.put(FacilioConstants.ContextNames.PURCHASED_TOOL, purchaseToolsList);
+			context.put(FacilioConstants.ContextNames.RECORD_LIST, purchaseToolsList);
+			context.put(FacilioConstants.ContextNames.TOOL_ID, toolId);
+			context.put(FacilioConstants.ContextNames.TOOL_IDS, Collections.singletonList(toolId));
+			context.put(FacilioConstants.ContextNames.TRANSACTION_TYPE, TransactionType.STOCK);
+		}
 		return false;
 	}
 

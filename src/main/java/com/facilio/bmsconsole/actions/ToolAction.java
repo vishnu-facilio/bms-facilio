@@ -46,6 +46,7 @@ public class ToolAction extends FacilioAction{
 	public String addTool() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD, tool);
+		context.put(FacilioConstants.ContextNames.PURCHASED_TOOL, tool.getPurchasedTools());
 		Chain addStockedTool = TransactionChainFactory.getAddToolChain();
 		addStockedTool.execute(context);
 		setResult(FacilioConstants.ContextNames.TOOL, tool);
@@ -58,6 +59,7 @@ public class ToolAction extends FacilioAction{
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.EDIT);
 		context.put(FacilioConstants.ContextNames.RECORD, tool);
+		context.put(FacilioConstants.ContextNames.PURCHASED_TOOL, tool.getPurchasedTools());
 		context.put(FacilioConstants.ContextNames.ID, tool.getId());
 		context.put(FacilioConstants.ContextNames.RECORD_ID, tool.getId());
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(tool.getId()));

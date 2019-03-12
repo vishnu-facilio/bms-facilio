@@ -1,5 +1,7 @@
 package com.facilio.bmsconsole.context;
 
+import java.util.List;
+
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.unitconversion.Unit;
 
@@ -86,4 +88,13 @@ public class ToolContext extends ModuleBaseWithCustomFields {
 	public void setCurrentQuantity(double currentQuantity) {
 		this.currentQuantity = currentQuantity;
 	}
+	
+	private List<PurchasedToolContext> purchasedTools;
+	public List<PurchasedToolContext> getPurchasedTools() {
+		return purchasedTools;
+	}
+	public void setPurchasedTools(List<PurchasedToolContext> purchasedTools) {
+		this.purchasedTools = purchasedTools;
+	}
+	
 }
