@@ -1,5 +1,9 @@
 {
 	"1": {
+		"placeHolders": [
+			{"key":"preRequsiteLimit"},
+			{"key":"triggerCondition1Name"}
+		],
 		"preRequsite": {
 			"name" : "All chillers in running state together",
 			"description" : "All the Chillers are turned ON",
@@ -36,7 +40,7 @@
 					},
 					"orderByFieldName": "ttime",
 					"sortBy": "desc",
-					"limit": "2",
+					"limit": "${{preRequsiteLimit}}",
 					"aggregateCondition": [{
 						"fieldName": "alarmStatus",
 						"operatorId": "9",
@@ -55,7 +59,7 @@
 		},
 		"alarmTriggerRules": [
 			{
-				"name" : "triggerCondition1",
+				"name" : "${{triggerCondition1Name}}",
 				"description" : "desc",
 				"criteria" : {
 				},
