@@ -4,7 +4,8 @@
     <%
   	
   String version = request.getParameter("version");
-  boolean isNewClientBuild = request.getParameter("isNewClientBuild") != null;
+  boolean isNewClientBuild = true;
+  //hardcode to true , TO DO Revert all commites related to new build changes
     int aws;
     String user = null;
     if (version != null) {
@@ -68,9 +69,9 @@ function init() {
 <div style="margin-top:30px">
 Client Version: <input style="margin-left: 10px"  type = "text" name = "version"  placeholder="version" />
 </div>
-<div style="margin-top: 30px">
+<!-- <div style="margin-top: 30px">
 Is updated Client Setup: <input style="margin-left: 10px" type="checkbox" name="isNewClientBuild" />
-</div>
+</div> TODO : revert all this--> 
 <div style="margin-top:30px;" >
 <button  id="show" type="submit"  >Update</button>
 </div>
