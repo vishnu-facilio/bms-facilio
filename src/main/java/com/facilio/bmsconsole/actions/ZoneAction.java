@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.chain.Chain;
+import org.json.simple.JSONObject;
 
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.context.ActionForm;
@@ -132,14 +133,21 @@ public class ZoneAction extends ActionSupport {
 		
 		return SUCCESS;
 	}
-	public String deleteZone() throws Exception {
-		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.ID, zoneId);
-		context.put(FacilioConstants.ContextNames.MODULE_NAME, "zone");
-		Chain deleteZone = FacilioChainFactory.deleteSpaceChain();
-		deleteZone.execute(context);
-		setZoneId(zoneId);
-		return SUCCESS;
+	public String deleteZone() {
+		try {
+			FacilioContext context = new FacilioContext();
+			context.put(FacilioConstants.ContextNames.ID, zoneId);
+			context.put(FacilioConstants.ContextNames.MODULE_NAME, "zone");
+			Chain deleteZone = FacilioChainFactory.deleteSpaceChain();
+			deleteZone.execute(context);
+			setZoneId(zoneId);
+			return SUCCESS;
+			}
+		catch (Exception e) {
+			setError("error",e.getMessage());
+			return ERROR;
+		}
+	
 	}
 	public String getAllZoneChildren() throws Exception {
 		
@@ -320,5 +328,17 @@ public class ZoneAction extends ActionSupport {
 	public void setTenant(TenantContext tenant) 
 	{
 		this.tenant = tenant;
+	}
+	private JSONObject error;
+	public JSONObject getError() {
+		return error;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public void setError(String key, Object error) {
+		if (this.error == null) {
+			this.error = new JSONObject();
+		}
+		this.error.put(key, error);			
 	}
 }

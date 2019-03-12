@@ -200,7 +200,6 @@ public class ReadingAction extends FacilioAction {
 	}
 	public String getResourcesOccupantLatestReadingData() throws Exception {
 		FacilioContext context = new FacilioContext();
-		System.out.println("FIEL NAME " + fieldName);
 		context.put(FacilioConstants.ContextNames.RESOURCE_ID, resourcesId);
 		context.put(FacilioConstants.ContextNames.MODULE_FIELD_NAME, fieldName);
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);

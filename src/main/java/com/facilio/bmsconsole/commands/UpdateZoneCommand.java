@@ -56,6 +56,7 @@ public class UpdateZoneCommand implements Command {
 			UpdateRecordBuilder<ZoneContext> updateBuilder = new UpdateRecordBuilder<ZoneContext>()
 					.module(module)
 					.fields(fields)
+					.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 					.andCondition(CriteriaAPI.getIdCondition(zone.getId(), module));
 															
 			updateBuilder.update(zone);

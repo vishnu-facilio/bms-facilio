@@ -1,17 +1,11 @@
 package com.facilio.bmsconsole.commands;
 
-import org.apache.commons.chain.Chain;
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
-import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.bmsconsole.actions.ZoneAction;
-import com.facilio.bmsconsole.context.InventoryContext;
 import com.facilio.bmsconsole.tenant.TenantContext;
 import com.facilio.bmsconsole.util.TenantsAPI;
-import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 
 public class AddTenantCommand extends GenericAddModuleDataCommand {
@@ -24,7 +18,8 @@ public class AddTenantCommand extends GenericAddModuleDataCommand {
 		
 		TenantContext tenant = (TenantContext) context.get(FacilioConstants.ContextNames.RECORD);
 		User user = tenant.getContact();
-		
+		long currentOccupancy = (Long) context.get(FacilioConstants.ContextNames.TOTAL_CURRENT_OCCUPANCY);
+		tenant.setOccupancy(currentOccupancy);
 		long orgid = AccountUtil.getCurrentOrg().getOrgId();
 		user.setOrgId(orgid);
 		if(user.getEmail() == null || user.getEmail().isEmpty()) {

@@ -30,7 +30,7 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.pdf.PdfUtil;
 import com.opensymphony.xwork2.ActionSupport;
 
-public class TenantAction extends ActionSupport {
+public class TenantAction extends FacilioAction {
 	
 	/**
 	 * 
@@ -69,7 +69,7 @@ public class TenantAction extends ActionSupport {
 	public String getSearch() {
 		return this.search;
 	}
-
+	
 	private String filters;
 	public String getFilters() {
 		return filters;
@@ -227,13 +227,13 @@ public class TenantAction extends ActionSupport {
 		this.error.put(key, error);			
 	}
 	
-	private String result;
-	public String getResult() {
-		return result;
-	}
-	public void setResult(String result) {
-		this.result = result;
-	}
+//	private String result;
+//	public String getResult() {
+//		return result;
+//	}
+//	public void setResult(String result) {
+//		this.result = result;
+//	}
 	private TenantContext tenant;
 	public TenantContext getTenant() {
 		return tenant;
@@ -396,6 +396,7 @@ private Map<String, Double> readingData;
 			addZone.addCommand(FacilioChainFactory.addTenantChain());
 			addZone.execute(context);
 			tenant = (TenantContext)context.get(FacilioConstants.ContextNames.TENANT);
+			setResult("tenant", tenant);
 			return SUCCESS;
 		}
 		catch (Exception e) {
@@ -425,7 +426,23 @@ private Map<String, Double> readingData;
 			Chain updateZone = FacilioChainFactory.getUpdateZoneChain();
 			updateZone.addCommand(FacilioChainFactory.updateTenantChain());
 			updateZone.execute(context);
-			tenant = (TenantContext)context.get(FacilioConstants.ContextNames.TENANT);
+			setResult("rowsUpdated", context.get(FacilioConstants.ContextNames.ROWS_UPDATED));
+			return SUCCESS;
+		}
+		catch (Exception e) {
+			setError("error",e.getMessage());
+			return ERROR;
+		}
+	}
+	
+	public String markAsPrimaryContact() {
+		try {
+			FacilioContext context = new FacilioContext();
+			context.put(FacilioConstants.ContextNames.RECORD_ID, tenantId);
+			context.put(FacilioConstants.ContextNames.USER, user);
+			Chain updatePrimaryContact = FacilioChainFactory.updateTenantPrimaryContactChain();
+			updatePrimaryContact.execute(context);
+			setResult("rowsUpdated", context.get(FacilioConstants.ContextNames.ROWS_UPDATED));
 			return SUCCESS;
 		}
 		catch (Exception e) {
@@ -444,17 +461,25 @@ private Map<String, Double> readingData;
 		Chain tenantDetailChain = ReadOnlyChainFactory.fetchTenantDetails();
 		tenantDetailChain.execute(context);
 		tenant = (TenantContext )context.get(FacilioConstants.ContextNames.TENANT);
+		setResult("tenant", tenant);
 		return SUCCESS;
 	}
 	
-	public String deleteTenant() throws Exception {
-		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, tenantsId);
-		context.put(FacilioConstants.ContextNames.MODULE_NAME, "tenant");
-		Chain deleteTenant = FacilioChainFactory.deleteTenantChain();
-		deleteTenant.execute(context);
-		setResult(SUCCESS);
-		return SUCCESS;
+	public String deleteTenant() {
+        try {
+			FacilioContext context = new FacilioContext();
+			context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, tenantsId);
+			context.put(FacilioConstants.ContextNames.MODULE_NAME, "tenant");
+			Chain deleteTenant = FacilioChainFactory.deleteTenantChain();
+			deleteTenant.execute(context);
+			setResult("rowsUpdated", context.get(FacilioConstants.ContextNames.ROWS_UPDATED));
+			return SUCCESS;
+			
+      	}
+		catch (Exception e) {
+			setError("error",e.getMessage());
+			return ERROR;
+		}
 	}
 	
 	public String fetchAllTenants() throws Exception {
@@ -495,6 +520,7 @@ private Map<String, Double> readingData;
 	 		else {
 	 	    tenants =(List<TenantContext>)context.get(FacilioConstants.ContextNames.RECORD_LIST);
 			}
+		    setResult("tenants", tenants);
 		    return SUCCESS;
 	
 			}
@@ -643,7 +669,7 @@ private Map<String, Double> readingData;
 	    Chain addTenantUser = FacilioChainFactory.addTenantUserChain();
 	    FacilioContext context = new FacilioContext();
 	    context.put(FacilioConstants.ContextNames.USER, user);
-	    context.put(FacilioConstants.ContextNames.ID, id);
+	    context.put(FacilioConstants.ContextNames.RECORD_ID, id);
 	//    tenant = TenantsAPI.getTenant(id, true);
 	//	context.put(TenantsAPI.TENANT_CONTEXT, tenant);
 		addTenantUser.execute(context);

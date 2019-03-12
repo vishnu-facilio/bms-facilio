@@ -142,7 +142,8 @@
 		<param name="cache">org</param>
 		<result name="success" type="json">
 			<param name="includeProperties">users.*</param></result>
-		<result name="error" type="json"></result>
+		<result name="error" type="json">
+		  <param name="includeProperties">error.*</param></result>
 	</action>
 		<action name="groups" class="com.facilio.bmsconsole.actions.GroupAction" method="groupList">
 		<param name="moduleName">setup</param>

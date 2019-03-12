@@ -124,14 +124,21 @@ public class CampusAction extends ActionSupport {
 	public void setId(long id) {
 		this.id = id;
 	}
-	public String deleteCampus() throws Exception {
-		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.ID, id);
-		context.put(FacilioConstants.ContextNames.MODULE_NAME, "site");
-		Chain deleteCampus = FacilioChainFactory.deleteSpaceChain();
-		deleteCampus.execute(context);
-		setId(id);
-		return SUCCESS;
+	public String deleteCampus() {
+		try {
+			FacilioContext context = new FacilioContext();
+			context.put(FacilioConstants.ContextNames.ID, id);
+			context.put(FacilioConstants.ContextNames.MODULE_NAME, "site");
+			Chain deleteCampus = FacilioChainFactory.deleteSpaceChain();
+			deleteCampus.execute(context);
+			setId(id);
+			return SUCCESS;
+		}
+		catch (Exception e) {
+			setError("error",e.getMessage());
+			return ERROR;
+		}
+	
 	}
 	public String viewCampus() throws Exception 
 	{
@@ -257,5 +264,17 @@ public class CampusAction extends ActionSupport {
 	public SiteContext getRecord() 
 	{
 		return site;
-	}	
+	}
+	private JSONObject error;
+	public JSONObject getError() {
+		return error;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public void setError(String key, Object error) {
+		if (this.error == null) {
+			this.error = new JSONObject();
+		}
+		this.error.put(key, error);			
+	}
 }

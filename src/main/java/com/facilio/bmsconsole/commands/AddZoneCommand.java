@@ -2,17 +2,19 @@ package com.facilio.bmsconsole.commands;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.BaseSpaceContext.SpaceType;
+import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.context.ZoneContext;
 import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.InsertRecordBuilder;
 import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.constants.FacilioConstants;
@@ -25,6 +27,10 @@ public class AddZoneCommand implements Command {
 		// TODO Auto-generated method stub
 		
 		ZoneContext zone = (ZoneContext) context.get(FacilioConstants.ContextNames.ZONE);
+		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
+		String dataTableName = (String) context.get(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME);
+		List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
+		
 		List<Long> children = (List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST);
 		if(zone != null && children != null && !children.isEmpty()) 
 		{
@@ -33,6 +39,7 @@ public class AddZoneCommand implements Command {
 			if(isTenantZone) {
 				validateZoneChildren(children);
 				checkChildrenOccupancy(children);
+				computeTenantCurrentOccupancy(context,children);
 				zone.setTenantZone(true);
 			}
 			else {
@@ -45,9 +52,6 @@ public class AddZoneCommand implements Command {
 			
 			zone.setSpaceType(SpaceType.ZONE);
 			SpaceAPI.updateZoneInfo(zone, children);
-			String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
-			String dataTableName = (String) context.get(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME);
-			List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
 			
 			InsertRecordBuilder<ZoneContext> builder = new InsertRecordBuilder<ZoneContext>()
 															.moduleName(moduleName)
@@ -66,6 +70,28 @@ public class AddZoneCommand implements Command {
 		return false;
 	}
 	
+	private void computeTenantCurrentOccupancy(Context context,List<Long> resourceIds) throws Exception {
+		
+		context.put(FacilioConstants.ContextNames.RESOURCE_ID, resourceIds);
+		context.put(FacilioConstants.ContextNames.MODULE_FIELD_NAME, "currentoccupancy");
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, "currentoccupancyreading");
+		Chain occupantReadingValue = FacilioChainFactory.getResourcesOccupantReadingValuesChain();
+		occupantReadingValue.execute(context);
+		Map<String, ReadingDataMeta> occupantReadingValues = (Map<String, ReadingDataMeta>) context.get(FacilioConstants.ContextNames.READINGS);
+		long currentOccupancy = 0;
+		if(occupantReadingValues!=null) {
+			Iterator<Map.Entry<String, ReadingDataMeta>> itr = occupantReadingValues.entrySet().iterator(); 
+	         
+		        while(itr.hasNext()) 
+		        { 
+		            Map.Entry<String, ReadingDataMeta> entry = itr.next(); 
+		            ReadingDataMeta readingDataMeta = entry.getValue();
+		            currentOccupancy += Integer.parseInt(readingDataMeta.getActualValue());
+		        } 
+		}	
+	    context.put(FacilioConstants.ContextNames.TOTAL_CURRENT_OCCUPANCY, currentOccupancy);
+		
+	}
 	private void validateZoneChildren(List<Long> childrenIds) throws Exception {
 		List<BaseSpaceContext> children = SpaceAPI.getBaseSpaces(childrenIds);
 		for(BaseSpaceContext child : children) {

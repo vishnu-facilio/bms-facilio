@@ -39,6 +39,8 @@ public class DeleteTenantCommand implements Command {
 			DeleteRecordBuilder<? extends ResourceContext> deleteBuilder = new DeleteRecordBuilder<ResourceContext>()
 																				.module(module)
 																				.andCondition(CriteriaAPI.getIdCondition(recordIds, module))
+																				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+																				
 																				;
 			
 			context.put(FacilioConstants.ContextNames.ROWS_UPDATED, deleteBuilder.markAsDelete());

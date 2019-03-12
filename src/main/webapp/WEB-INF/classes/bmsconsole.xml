@@ -2364,6 +2364,10 @@
 			<result name="success" type="json">
 				<param name="includeProperties">id</param>
 			</result>
+			<result name="error" type="json">
+				<param name="root">error</param>
+			</result>
+		
 		</action>
 
 		<action name="reportcards" class="com.facilio.bmsconsole.actions.CampusAction"
@@ -2540,7 +2544,7 @@
 		<action name="getTenant" class="com.facilio.bmsconsole.actions.SpaceAction"
 			method="getTenantForSpace">
 			<param name="moduleName">space</param>
-			<param name="permission">UPDATE</param>
+			<param name="permission">READ</param>
 			<!-- <param name="permission">SPACEMANAGEMENT_ACCESS_ENABLE</param> -->
 			<result name="success" type="json">
 				<param name="includeProperties">tenant,tenant\[\d+\],tenant\[\d+\].*,^tenant.*</param>
@@ -2622,6 +2626,9 @@
 			<!-- <param name="permission">SPACEMANAGEMENT_ACCESS_ENABLE</param> -->
 			<result name="success" type="json">
 				<param name="includeProperties">zoneId</param>
+			</result>
+			<result name="error" type="json">
+				<param name="root">error</param>
 			</result>
 		</action>
 
@@ -2874,7 +2881,7 @@
 			method="addTenant">
 			<!-- <param name="permission">WORKORDER_READ,TASK_READ</param> -->
 			<result name="success" type="json">
-				<param name="root">tenant</param>
+				<param name="root">result</param>
 			</result>
 			<result name="error" type="json">
 				<param name="root">error</param>
@@ -2885,7 +2892,7 @@
 			method="updateTenant">
 			<!-- <param name="permission">WORKORDER_READ,TASK_READ</param> -->
 			<result name="success" type="json">
-				<param name="includeProperties">result</param>
+				<param name="root">result</param>
 			</result>
 			<result name="error" type="json">
 				<param name="root">error</param>
@@ -2897,7 +2904,10 @@
 			method="deleteTenant">
 			<!-- <param name="permission">WORKORDER_READ,TASK_READ</param> -->
 			<result name="success" type="json">
-				<param name="includeProperties">result</param>
+				<param name="root">result</param>
+			</result>
+			<result name="error" type="json">
+				<param name="root">error</param>
 			</result>
 		</action>
 		<action name="tenantCount" class="com.facilio.bmsconsole.actions.TenantAction"
@@ -2924,6 +2934,17 @@
 	<result name="success" type="json">
 	<param name="includeProperties">user.*</param>
 	</result>
+	</action>
+	
+	<action name="markAsPrimaryContact" class="com.facilio.bmsconsole.actions.TenantAction" 
+	method="markAsPrimaryContact">
+	<param name="moduleName">setup</param>
+		<result name="success" type="json">
+				<param name="root">result</param>
+			</result>
+			<result name="error" type="json">
+				<param name="root">error</param>
+			</result>
 	</action>
 	
 	<action name="getTenantUsers" class="com.facilio.bmsconsole.actions.TenantAction"
@@ -2981,7 +3002,7 @@
 			method="fetchTenant">
 			<!-- <param name="permission">WORKORDER_READ,TASK_READ</param> -->
 			<result name="success" type="json">
-				<param name="root">tenant</param>
+				<param name="root">result</param>
 			</result>
 		</action>
 		
@@ -2990,7 +3011,7 @@
 			<!-- <param name="permission">WORKORDER_READ,TASK_READ</param> -->
 			<param name="viewName">{1}</param>
 			<result name="success" type="json">
-				<param name="root">tenants</param>
+				<param name="root">result</param>
 			</result>
 		</action>
 		

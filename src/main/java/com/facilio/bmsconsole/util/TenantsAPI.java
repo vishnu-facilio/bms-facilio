@@ -160,7 +160,7 @@ public class TenantsAPI {
 		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
 				.table(module.getTableName())
 				.fields(FieldFactory.getTenantsUtilityMappingFields())
-//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module));
+				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 				.andCustomWhere("Tenants_Utility_Mapping.ASSET_ID = ?", tenantMeterId)
 				.andCustomWhere("Tenants_Utility_Mapping.TENANT_ID = ? ", tenantId);
 		
@@ -193,6 +193,7 @@ public class TenantsAPI {
 		GenericSelectRecordBuilder selectBuilde = new GenericSelectRecordBuilder()
 														.select(FieldFactory.getTenantsUtilityMappingFields())
 														.table(modulo.getTableName())
+														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(modulo))
 														.andCustomWhere("Tenants_Utility_Mapping.TENANT_ID = ?", value)
 														.andCustomWhere("Tenants_Utility_Mapping.SHOW_IN_PORTAL = ?", true);
 		List<Map<String, Object>> prop = selectBuilde.get();
@@ -223,6 +224,7 @@ public class TenantsAPI {
 		GenericSelectRecordBuilder selectBuilde = new GenericSelectRecordBuilder()
 														.select(FieldFactory.getOrgUserFields())
 														.table(modulo.getTableName())
+														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(modulo))
 														.andCustomWhere("ORG_Users.ORG_USERID = ?", ouiId);
 		List<Map<String, Object>> prop = selectBuilde.get();
 		
@@ -263,6 +265,7 @@ public class TenantsAPI {
 														.module(module)
 														.beanClass(TenantContext.class)
 														.select(modBean.getAllFields(FacilioConstants.ContextNames.TENANT))
+														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 														.andCondition(CriteriaAPI.getIdCondition(id, module));
 
 		List<TenantContext> tenants = builder.get();
@@ -284,6 +287,7 @@ public class TenantsAPI {
 														.module(module)
 														.beanClass(TenantContext.class)
 														.select(modBean.getAllFields(FacilioConstants.ContextNames.TENANT))
+														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 														.andCondition(CriteriaAPI.getIdCondition(id, module));
 		
 		
@@ -306,6 +310,7 @@ public class TenantsAPI {
 														.module(module)
 														.beanClass(TenantContext.class)
 														.select(modBean.getAllFields(FacilioConstants.ContextNames.TENANT))
+														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 														.andCondition(CriteriaAPI.getCondition("ZONE_ID", "zoneId", zoneId+"", NumberOperators.EQUALS))
 														;
 		
@@ -323,12 +328,27 @@ public class TenantsAPI {
 			return null;
 		}
 		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule resourceModule = modBean.getModule(FacilioConstants.ContextNames.RESOURCE);
 		FacilioModule module = ModuleFactory.getZoneRelModule();
+		
+		FacilioField isDeletedField = FieldFactory.getIsDeletedField();
+		isDeletedField.setModule(resourceModule);
+		
+		Condition isDeletedCond = new Condition();
+		isDeletedCond.setField(isDeletedField);
+		isDeletedCond.setOperator(NumberOperators.NOT_EQUALS);
+		isDeletedCond.setValue(""+1);
+
 		
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 														.select(FieldFactory.getZoneRelFields()).table(module.getTableName())
+														.innerJoin(resourceModule.getTableName())
+														.on(module.getTableName()+".ZONE_ID = "+resourceModule.getTableName()+".ID")
 														.andCondition(CriteriaAPI.getCondition(module.getTableName()+".BASE_SPACE_ID", "base_space_id" ,spaceId+"", StringOperators.STARTS_WITH))
-													    ;
+														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+														.andCondition(isDeletedCond)
+														;
 												
 		List<Map<String,Object>> records = builder.get();
 	    if (records != null && !records.isEmpty()) {
@@ -437,9 +457,90 @@ public class TenantsAPI {
 		}
 		return null;
 	}
+	public static boolean checkIfZoneOccupiedByTenant (Long zoneId) throws Exception {
+		
+	ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+	FacilioModule tenantModule = modBean.getModule(FacilioConstants.ContextNames.TENANT);
+	List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.TENANT);
+	Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+	FacilioField zone = fieldMap.get("zone");
+
+	Condition zoneIdCond = new Condition();
+	zoneIdCond.setField(zone);
+	zoneIdCond.setOperator(NumberOperators.EQUALS);
+	zoneIdCond.setValue(zoneId+"");
+	
+	
+	SelectRecordsBuilder<TenantContext> selectBuilder = new SelectRecordsBuilder<TenantContext>()
+														.select(fields)
+														.table(tenantModule.getTableName())
+														.moduleName(tenantModule.getName())
+														.beanClass(TenantContext.class)
+														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(tenantModule))
+														.andCondition(zoneIdCond)
+														
+														;
+	
+	List<TenantContext> records = selectBuilder.get();
+	if(records.size() > 0) {
+		throw new IllegalArgumentException("Zone is occupied by the tenant "+records.get(0).getName());
+	}
+	return false;
+		
+	}
+
+	public static boolean checkIfSpaceOccupiedByTenant (Long spaceId) throws Exception {
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule tenantModule = modBean.getModule(FacilioConstants.ContextNames.TENANT);
+		List<FacilioField> tenantFields = modBean.getAllFields(FacilioConstants.ContextNames.TENANT);
+		
+		
+		FacilioModule zoneRelModule = ModuleFactory.getZoneRelModule();
+		List<FacilioField> fields = FieldFactory.getZoneRelFields();
+		
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+		
+		
+		FacilioField baseSpaceField = fieldMap.get("basespaceId");
+
+		Condition spaceIdCond = new Condition();
+		spaceIdCond.setField(baseSpaceField);
+		spaceIdCond.setOperator(NumberOperators.EQUALS);
+		
+		List<BaseSpaceContext> childrenSpaces = SpaceAPI.getBaseSpaceWithChildren(spaceId);
+		StringJoiner idString = new StringJoiner(",");
+		for (int i = 0;i<childrenSpaces.size();i++) {
+			idString.add(String.valueOf(childrenSpaces.get(i).getId()));
+		}
+	    idString.add(spaceId+"");
+	    spaceIdCond.setValue(idString.toString());
+		
+		SelectRecordsBuilder<TenantContext> selectBuilder = new SelectRecordsBuilder<TenantContext>()
+															.select(tenantFields)
+															.table(tenantModule.getTableName())
+															.moduleName(tenantModule.getName())
+															.beanClass(TenantContext.class)
+															.innerJoin(zoneRelModule.getTableName())
+															.on(zoneRelModule.getTableName()+".ZONE_ID = "+tenantModule.getTableName()+".ZONE_ID")
+															.andCondition(CriteriaAPI.getCurrentOrgIdCondition(tenantModule))
+															.andCondition(spaceIdCond)
+															;
+		
+		List<TenantContext> records = selectBuilder.get();
+		if(records.size() > 0) {
+			throw new IllegalArgumentException("The space is occupied by the one or more tenants");
+		}
+		return false;
+			
+		}
+
 	
 	private static Map<Long, List<TenantUserContext>> getTenantUserDetails(Collection<Long> ids) throws Exception {
 		FacilioModule module = ModuleFactory.getTenantsuserModule();
+		FacilioModule portalUsersModule = AccountConstants.getPortalUserModule();
+		FacilioModule orgUserModule = AccountConstants.getOrgUserModule();
+			
 		List<FacilioField> fields = FieldFactory.getTenantsUserFields();
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 		FacilioField tenantId = fieldMap.get("tenantId");
@@ -447,6 +548,10 @@ public class TenantsAPI {
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 													.table(module.getTableName())
 													.select(fields)
+													.innerJoin(orgUserModule.getTableName())
+													.on(orgUserModule.getTableName()+".ORG_USERID = "+module.getTableName()+".ORG_USERID")
+													.innerJoin(portalUsersModule.getTableName())
+													.on(portalUsersModule.getTableName()+".USERID = "+orgUserModule.getTableName()+".USERID")
 													.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 													.andCondition(CriteriaAPI.getCondition(tenantId, ids, PickListOperators.IS))
 																					;
@@ -521,6 +626,30 @@ public class TenantsAPI {
 
 		
 	}
+
+	public static int updateTenantPrimaryContact(User user, Long tenantId) throws Exception{
+         
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.TENANT);
+		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.TENANT);
+		Map<String, FacilioField> tenantFieldMap = FieldFactory.getAsMap(fields);
+		List<FacilioField> updatedfields = new ArrayList<FacilioField>();
+		FacilioField contactField = tenantFieldMap.get("contact");
+		updatedfields.add(contactField);
+		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
+											.table(module.getTableName())
+											.fields(fields)
+											.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+											.andCondition(CriteriaAPI.getIdCondition(tenantId, module));
+									
+		Map<String, Object> value = new HashMap<>();
+		value.put("contact", user.getOuid());
+		int count = updateBuilder.update(value);
+		return count;
+			
+	}
+
+	
 	public static void addUtilityMapping(TenantContext tenant) throws Exception {
 		if (tenant.getUtilityAssets() == null || tenant.getUtilityAssets().isEmpty()) {
 			throw new IllegalArgumentException("Atleast one utility mapping should be present to add a Tenant");
@@ -579,6 +708,7 @@ public class TenantsAPI {
 											.innerJoin(tenantModule.getTableName())
 											.on(utilityModule.getTableName()+".TENANT_ID = "+tenantModule.getTableName()+".ID")
 											.andCondition(assetIdCond)
+											.andCondition(CriteriaAPI.getCurrentOrgIdCondition(utilityModule))
 											.andCondition(sysDeletedCond);
 
         List<Map<String, Object>> rs = builder.get();
@@ -613,6 +743,11 @@ public class TenantsAPI {
 		if (tenant.getUtilityAssets() != null && !tenant.getUtilityAssets().isEmpty()) {
 			deleteUtilityMapping(tenant);
 			addUtilityMapping(tenant);
+		}
+		else
+		{
+			throw new IllegalArgumentException("Atleast one utility mapping should be present");
+			
 		}
 		
 		TenantContext oldTenant = null;
@@ -886,7 +1021,9 @@ public class TenantsAPI {
 																				.select(fields)
 																				.table(zoneModule.getTableName())
 																				.moduleName(zoneModule.getName())
-																				.beanClass(ZoneContext.class);
+																				.beanClass(ZoneContext.class)
+																				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(zoneModule))
+																				;
 				Map<Long, ZoneContext> zones = selectBuilder.getAsMap();
 				
 				for(TenantContext tenant : tenants) {
@@ -967,7 +1104,9 @@ public class TenantsAPI {
 											.innerJoin("Tickets")
 											.on("Alarms.ID = Tickets.ID")
 											.andCondition(ViewFactory.getAlarmSeverityCondition(FacilioConstants.Alarm.CLEAR_SEVERITY, false))
-											.andCondition(resourceIdCond);
+											.andCondition(resourceIdCond)
+											.andCondition(CriteriaAPI.getCurrentOrgIdCondition(alarmModule))
+											;
 		
 		List<Map<String, Object>> rs = builder.get();
 	    return rs;
@@ -1002,6 +1141,7 @@ public class TenantsAPI {
 														  .innerJoin("TicketStatus")
 														  .on("Tickets.STATUS_ID = TicketStatus.ID")
 														  .andCustomWhere("TicketStatus.STATUS_TYPE = ?", TicketStatusContext.StatusType.OPEN.getIntVal())
+														  .andCondition(CriteriaAPI.getCurrentOrgIdCondition(workOrderModule))
 														  .andCondition(tenantCond);
 									
 		List<WorkOrderContext> rs = builder.get();
@@ -1035,6 +1175,7 @@ public class TenantsAPI {
 														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 														.innerJoin(woTemplatemodule.getTableName())
 														.on("TEMPLATE_ID = "+woTemplatemodule.getTableName() +".ID")
+														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 														.andCondition(tenantCond);
 									
 		List<Map<String,Object>> rs = selectBuilder.get();

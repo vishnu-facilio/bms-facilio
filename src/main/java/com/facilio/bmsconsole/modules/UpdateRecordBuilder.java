@@ -300,7 +300,7 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 	}
 	
 	private int update(WhereBuilder where, Map<String, Object> moduleProps) throws SQLException {
-		List<FacilioField> updateFields = new ArrayList<>();
+		Set<FacilioField> updateFields = new HashSet<>();
 		if (module.isTrashEnabled()) {
 			FacilioField isDeletedField = FieldFactory.getIsDeletedField(module.getParentModule());
 			updateFields.add(isDeletedField);

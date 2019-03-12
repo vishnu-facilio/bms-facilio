@@ -2020,6 +2020,12 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
+	public static Chain updateTenantPrimaryContactChain() {
+		Chain c = FacilioChain.getTransactionChain();
+		c.addCommand(new UpdatePrimaryContactCommand());
+		return c;
+	}
+	
 	public static Chain addRateCardChain() {
 		Chain c = FacilioChain.getTransactionChain();
 		c.addCommand(new AddRateCardCommand());

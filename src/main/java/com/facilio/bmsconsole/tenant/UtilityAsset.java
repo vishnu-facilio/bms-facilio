@@ -55,6 +55,10 @@ public class UtilityAsset {
 		this.utility = FacilioUtility.valueOf(utility);
 	}
 
+//	public void setUtility(long utility) {
+//		this.utility = FacilioUtility.valueOf(((Number) utility).intValue());
+//	}
+
 	private long assetId = -1;
 	public long getAssetId() {
 		return assetId;

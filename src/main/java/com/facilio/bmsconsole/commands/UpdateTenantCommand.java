@@ -5,12 +5,14 @@ import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.tenant.TenantContext;
 import com.facilio.bmsconsole.util.TenantsAPI;
+import com.facilio.constants.FacilioConstants;
 
 public class UpdateTenantCommand implements Command {
 
 	@Override
 	public boolean execute(Context context) throws Exception {
-		TenantsAPI.updateTenant((TenantContext) context.get(TenantsAPI.TENANT_CONTEXT));
+		int rowsUpdated = TenantsAPI.updateTenant((TenantContext) context.get(TenantsAPI.TENANT_CONTEXT));
+		context.put(FacilioConstants.ContextNames.ROWS_UPDATED,rowsUpdated);
 		return false;
 	}
 

@@ -209,21 +209,9 @@ public class UpdateWorkOrderCommand implements Command {
 	private void transferToAnotherTenant (WorkOrderContext workOrder) throws Exception {
 		
 		TenantContext tenant = TenantsAPI.fetchTenant(workOrder.getTenant().getId());
-		
-		List<Long> mySites = CommonCommandUtil.getMySiteIds();
-		if (mySites != null && !mySites.isEmpty()) {
-			boolean found = false;
-			for (long siteId: mySites) {
-				if (siteId == tenant.getSiteId()) {
-					found = true;
-					break;
-				}
-			}
-			if (!found) {
-				throw new IllegalArgumentException("The tenant site is not accessible.");
-			}
+		if (AccountUtil.getCurrentSiteId() != tenant.getSiteId()) {
+		  throw new IllegalArgumentException("The selected tenant belongs to another Site.");
 		}
-		
 		//Creating multiple New WOs is unnecessary here 
 		workOrder.setAssignedTo(new User());
 		workOrder.getAssignedTo().setId(-1);

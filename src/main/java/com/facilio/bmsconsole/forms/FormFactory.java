@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.forms.FacilioForm.FormType;
 import com.facilio.bmsconsole.forms.FacilioForm.LabelPosition;
 import com.facilio.bmsconsole.forms.FormField.Required;
@@ -66,7 +67,18 @@ public class FormFactory {
     	{
     		 fields.addAll(getWebApprovalFormFields());
     	}
-		return fields;
+    	else
+			try {
+				if(modName.equals(FacilioConstants.ContextNames.TENANT) && AccountUtil.isFeatureEnabled(AccountUtil.FEATURE_TENANTS)) {
+
+					fields.addAll(getTenantsFormField());
+				}
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+    	return fields;
     	
     }
 	@SuppressWarnings("unchecked") // https://stackoverflow.com/a/11205178
@@ -359,14 +371,14 @@ public class FormFactory {
 		form.setFormType(FormType.WEB);
 		return form;
 	}
-	
+
 
 	public static FacilioForm getTenantsForm() {
 		FacilioForm form = new FacilioForm();
 		form.setDisplayName("TENANT");
 		form.setName("web_default");
 		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.TENANT));
-		form.setLabelPosition(LabelPosition.TOP);
+		form.setLabelPosition(LabelPosition.LEFT);
 		form.setFields(getTenantsFormField());
 		form.setFormType(FormType.WEB);
 		return form;
@@ -427,7 +439,16 @@ public class FormFactory {
 		fields.add(new FormField("resource", FieldDisplayType.WOASSETSPACECHOOSER, "Space/Asset", Required.OPTIONAL, 6, 1));
 		fields.add(new FormField("assignment", FieldDisplayType.TEAMSTAFFASSIGNMENT, "Team/Staff", Required.OPTIONAL, 7, 1));
 		fields.add(new FormField("attachedFiles", FieldDisplayType.ATTACHMENT, "Attachments", Required.OPTIONAL, "attachment", 8, 1));
-		fields.add(new FormField("tenant", FieldDisplayType.LOOKUP_SIMPLE, "Tenant", Required.OPTIONAL, "tenant", 9, 1));
+
+		try {
+			if (AccountUtil.isFeatureEnabled(AccountUtil.FEATURE_TENANTS)) {
+			  fields.add(new FormField("tenant", FieldDisplayType.LOOKUP_SIMPLE, "Tenant", Required.OPTIONAL, "tenant", 9, 1));
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 		fields.add(new FormField("tasks", FieldDisplayType.TASKS, "TASKS", Required.OPTIONAL, 10, 1));
 		return Collections.unmodifiableList(fields);
 	}
@@ -456,7 +477,14 @@ public class FormFactory {
 		fields.add(new FormField("duration", FieldDisplayType.DURATION, "Duration", Required.OPTIONAL, "duration", 6, 1));
 		fields.add(new FormField("groups",FieldDisplayType.LOOKUP_SIMPLE,"Team", Required.OPTIONAL, "groups", 7, 1));
 		fields.add(new FormField("attachedFiles", FieldDisplayType.ATTACHMENT, "Attachments", Required.OPTIONAL, "attachment", 8, 1));
-		fields.add(new FormField("tenant", FieldDisplayType.LOOKUP_SIMPLE, "Tenant", Required.OPTIONAL, "tenant", 9, 1));
+		try {
+			if (AccountUtil.isFeatureEnabled(AccountUtil.FEATURE_TENANTS)) {
+				fields.add(new FormField("tenant", FieldDisplayType.LOOKUP_SIMPLE, "Tenant", Required.OPTIONAL, "tenant", 9, 1));
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		return Collections.unmodifiableList(fields);
 	}
 	
@@ -626,10 +654,10 @@ public class FormFactory {
 		fields.add(new FormField("spaces", FieldDisplayType.SPACEMULTICHOOSER, "Spaces", Required.REQUIRED, 5, 1));
 		fields.add(new FormField("contact_name", FieldDisplayType.TEXTBOX, "Contact Name", Required.REQUIRED, 6, 1));
 		fields.add(new FormField("contact_email", FieldDisplayType.TEXTBOX, "Contact Email", Required.REQUIRED, 7, 1));
-		fields.add(new FormField("inTime", FieldDisplayType.DATE, "In Time", Required.OPTIONAL, 8, 1));
-		fields.add(new FormField("outTime", FieldDisplayType.DATE, "Out Time", Required.OPTIONAL, 9, 1));
+		fields.add(new FormField("inTime", FieldDisplayType.DATE, "Lease Start Time", Required.OPTIONAL, 8, 1));
+		fields.add(new FormField("outTime", FieldDisplayType.DATE, "Lease End Time", Required.OPTIONAL, 9, 1));
 		fields.add(new FormField("logo", FieldDisplayType.LOGO, "Logo", Required.OPTIONAL, 1, 1));
-		fields.add(new FormField("utilityMeters", FieldDisplayType.ASSETMULTICHOOSER, "Utility Meters", Required.OPTIONAL, 10, 1));
+		fields.add(new FormField("utilityMeters", FieldDisplayType.ASSETMULTICHOOSER, "UTILITY METERS", Required.OPTIONAL, 10, 1));
 
 		return fields;
 	}
@@ -651,10 +679,10 @@ public class FormFactory {
 		fields.add(new FormField("storeRoom", FieldDisplayType.LOOKUP_SIMPLE, "Store Room", Required.REQUIRED, "storeRoom", 2, 1));
 		fields.add(new FormField("status", FieldDisplayType.LOOKUP_SIMPLE, "Status", Required.OPTIONAL, "itemStatus", 3, 1));
 		fields.add(new FormField("purchasedItems", FieldDisplayType.PURCHASEDITEMT, "Purchased Item", Required.OPTIONAL, 4, 1));
-		
+
 		return fields;
 	}
-	
+
 	private static List<FormField> getToolFormField() {
 		List<FormField> fields = new ArrayList<>();
 		fields.add(new FormField("toolType", FieldDisplayType.LOOKUP_SIMPLE, "Tool Type", Required.REQUIRED, "toolTypes", 1, 1));

@@ -37,14 +37,28 @@ import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.auth.cookie.FacilioCookie;
 import com.facilio.aws.util.AwsUtil;
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.SetupLayout;
+import com.facilio.bmsconsole.context.ZoneContext;
+import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.criteria.NumberOperators;
+import com.facilio.bmsconsole.criteria.PickListOperators;
+import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.FacilioModule;
+import com.facilio.bmsconsole.modules.FieldFactory;
+import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
+import com.facilio.bmsconsole.tenant.TenantContext;
+import com.facilio.bmsconsole.tenant.TenantUserContext;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fs.FileStore;
 import com.facilio.fs.FileStoreFactory;
+import com.facilio.fw.BeanFactory;
 import com.facilio.sql.DBUtil;
+import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.transaction.FacilioConnectionPool;
 import com.opensymphony.xwork2.ActionContext;
 
@@ -117,6 +131,9 @@ public class UserAction extends FacilioAction {
 		Connection conn = null;
 		Statement statement = null;
 		try	{
+			if (AccountUtil.isFeatureEnabled(AccountUtil.FEATURE_TENANTS)) {
+			  checkforTenantPrimaryContact(user.getEmail());
+			}
 			Organization org = AccountUtil.getOrgBean().getPortalOrg(AccountUtil.getCurrentOrg().getDomain());
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
 			statement = conn.createStatement();
@@ -125,13 +142,34 @@ public class UserAction extends FacilioAction {
 			statement.execute(sql);
 		} catch (SQLException | RuntimeException e) {
 			log.info("Exception occurred ", e);
-			error = "User cannot be deleted.";
+			error = e.getMessage();
 			return ERROR;
 		} finally {
 			DBUtil.closeAll(conn, statement);
 		}
 		portalUserList();
 		return SUCCESS;
+	}
+	
+	private void checkforTenantPrimaryContact(String email) throws Exception{
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule tenantModule = modBean.getModule(FacilioConstants.ContextNames.TENANT);
+		List<FacilioField> fields = modBean.getAllFields(tenantModule.getName());
+		
+		
+		User requestorToBeDeleted = AccountUtil.getUserBean().getUserFromEmail(email);
+		
+		SelectRecordsBuilder<TenantContext> selectBuilder = new SelectRecordsBuilder<TenantContext>()
+												.table(tenantModule.getTableName())
+												.module(tenantModule)
+												.select(fields)
+												.andCondition(CriteriaAPI.getCondition("CONTACT_ID", "contact_id", requestorToBeDeleted.getOuid()+"", NumberOperators.EQUALS))
+												.beanClass(TenantContext.class)
+												;								
+        List<TenantContext> records = selectBuilder.get();
+		if(selectBuilder.get().size() > 0) {
+			throw new IllegalArgumentException("Deletion not permitted as the requester is a primary contact for the tenant "+records.get(0).getName());
+		}
 	}
 	
 	public String userAgent() throws Exception{
