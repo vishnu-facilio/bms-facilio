@@ -208,8 +208,8 @@ public class ReportDataPointContext {
 	}
 
 	public void setDateField(ReportFieldContext dateReportField) {
-		if (dateField != null && dateField.getField() != null) {
-			dateFieldId = dateField.getField().getFieldId();
+		if (dateReportField != null) {
+			dateFieldId = dateReportField.getFieldId();
 		}
 		this.dateField = dateReportField;
 	}
