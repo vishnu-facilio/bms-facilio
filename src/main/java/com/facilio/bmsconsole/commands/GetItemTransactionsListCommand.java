@@ -97,8 +97,10 @@ public class GetItemTransactionsListCommand implements Command{
 				context.put(FacilioConstants.ContextNames.RECORD_COUNT, records.get(0).getData().get("count"));
 			} else {
 				for (ItemTransactionsContext itemTransactions : records) {
-					if (itemTransactions.getItem().getId() != -1) {
-						itemTransactions.setItem(ItemsApi.getItems(itemTransactions.getItem().getId()));
+					if (itemTransactions.getItem() != null && itemTransactions.getItem().getId() != -1) {
+//						itemTransactions.setItem(ItemsApi.getItem(itemTransactions.getItem().getId()));
+						
+						//Commenting to avoid compilation error
 					}
 				}
 

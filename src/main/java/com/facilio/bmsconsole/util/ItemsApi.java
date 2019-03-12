@@ -11,7 +11,6 @@ import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
-import com.facilio.sql.mssql.SelectRecordBuilder;
 
 public class ItemsApi {
 	public static Map<Long, ItemTypesContext> getItemsMap(long id) throws Exception {
