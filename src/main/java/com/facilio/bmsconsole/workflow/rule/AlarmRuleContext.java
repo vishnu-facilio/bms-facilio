@@ -1,7 +1,9 @@
 package com.facilio.bmsconsole.workflow.rule;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.struts2.json.annotations.JSON;
 
@@ -23,6 +25,19 @@ public class AlarmRuleContext {
 	public void setClearAlarmOnPreRequsiteFail(boolean isClearAlarmOnPreRequsiteFail) {
 		this.isClearAlarmOnPreRequsiteFail = isClearAlarmOnPreRequsiteFail;
 	}
+	
+	public Map<String, Long> getRuleNameVsIdMap() {
+		return ruleNameVsIdMap;
+	}
+	public void setRuleNameVsIdMap(Map<String, Long> ruleNameVsIdMap) {
+		this.ruleNameVsIdMap = ruleNameVsIdMap;
+	}
+	
+	public void addRuleNameVsIdMap(String name,Long id) {
+		this.ruleNameVsIdMap.put(name, id);
+	}
+
+	Map<String,Long> ruleNameVsIdMap = new HashMap<>();
 	
 	public AlarmRuleContext() {
 		
