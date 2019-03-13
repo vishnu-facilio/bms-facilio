@@ -274,7 +274,7 @@ public class FormFactory {
 		form.setDisplayName("PREVENTIVE MAINTENANCE");
 		form.setName("web_pm");
 		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.WORK_ORDER));
-		form.setLabelPosition(LabelPosition.TOP);
+		form.setLabelPosition(LabelPosition.LEFT);
 		form.setFormType(FormType.WEB);
 		form.setFields(getWebPMFormFields());
 		return form;
