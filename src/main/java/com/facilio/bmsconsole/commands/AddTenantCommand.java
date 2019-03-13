@@ -18,8 +18,6 @@ public class AddTenantCommand extends GenericAddModuleDataCommand {
 		
 		TenantContext tenant = (TenantContext) context.get(FacilioConstants.ContextNames.RECORD);
 		User user = tenant.getContact();
-		long currentOccupancy = (Long) context.get(FacilioConstants.ContextNames.TOTAL_CURRENT_OCCUPANCY);
-		tenant.setOccupancy(currentOccupancy);
 		long orgid = AccountUtil.getCurrentOrg().getOrgId();
 		user.setOrgId(orgid);
 		if(user.getEmail() == null || user.getEmail().isEmpty()) {

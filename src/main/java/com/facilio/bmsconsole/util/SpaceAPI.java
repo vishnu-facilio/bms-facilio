@@ -77,6 +77,19 @@ public class SpaceAPI {
 		return photos;
 	}
 	
+	public static double computeTenantZoneArea(long zoneId) throws Exception{
+		List<Long> ids = new ArrayList<Long>();
+		ids.add(zoneId);
+		double area = 0.0;
+		List<BaseSpaceContext> children = SpaceAPI.getZoneChildren(ids);
+		for(int i=0;i<children.size();i++)
+		{
+			area += children.get(i).getArea();
+		}
+	
+		return area;
+	}
+	
 	public static List<FacilioModule> getDefaultReadings(SpaceType type, boolean onlyReading) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		String moduleName = null;

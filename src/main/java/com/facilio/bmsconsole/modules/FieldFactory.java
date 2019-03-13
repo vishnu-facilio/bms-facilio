@@ -4944,8 +4944,7 @@ public class FieldFactory {
 		fields.add(getField("outTime", "OUT_TIME", module, FieldType.DATE));
 		fields.add(getField("sysCreatedTime", "CREATED_TIME", module, FieldType.DATE_TIME));
 		fields.add(getField("sysModifiedTime", "MODIFIED_TIME", module, FieldType.DATE_TIME));
-		fields.add(getField("occupancy", "OCCUPANCY", module, FieldType.NUMBER));
-
+	
 		return fields;
 	}
 	

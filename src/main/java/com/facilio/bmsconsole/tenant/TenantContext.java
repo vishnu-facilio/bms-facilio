@@ -164,16 +164,6 @@ public class TenantContext extends ModuleBaseWithCustomFields{
 		this.siteId = siteId;
 	}
 	
-	private long occupancy = -1;
-	
-	public long getOccupancy() {
-		return this.occupancy;
-	}
-	
-	public void setOccupancy(long occupancy) {
-		this.occupancy = occupancy;
-	}
-	
 	private List<TenantUserContext> tenantUsers;
 	public List<TenantUserContext> getTenantUsers() {
 		return tenantUsers;

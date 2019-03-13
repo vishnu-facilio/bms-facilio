@@ -39,7 +39,6 @@ public class AddZoneCommand implements Command {
 			if(isTenantZone) {
 				validateZoneChildren(children);
 				checkChildrenOccupancy(children);
-				computeTenantCurrentOccupancy(context,children);
 				zone.setTenantZone(true);
 			}
 			else {
@@ -70,28 +69,6 @@ public class AddZoneCommand implements Command {
 		return false;
 	}
 	
-	private void computeTenantCurrentOccupancy(Context context,List<Long> resourceIds) throws Exception {
-		
-		context.put(FacilioConstants.ContextNames.RESOURCE_ID, resourceIds);
-		context.put(FacilioConstants.ContextNames.MODULE_FIELD_NAME, "currentoccupancy");
-		context.put(FacilioConstants.ContextNames.MODULE_NAME, "currentoccupancyreading");
-		Chain occupantReadingValue = FacilioChainFactory.getResourcesOccupantReadingValuesChain();
-		occupantReadingValue.execute(context);
-		Map<String, ReadingDataMeta> occupantReadingValues = (Map<String, ReadingDataMeta>) context.get(FacilioConstants.ContextNames.READINGS);
-		long currentOccupancy = 0;
-		if(occupantReadingValues!=null) {
-			Iterator<Map.Entry<String, ReadingDataMeta>> itr = occupantReadingValues.entrySet().iterator(); 
-	         
-		        while(itr.hasNext()) 
-		        { 
-		            Map.Entry<String, ReadingDataMeta> entry = itr.next(); 
-		            ReadingDataMeta readingDataMeta = entry.getValue();
-		            currentOccupancy += Integer.parseInt(readingDataMeta.getActualValue());
-		        } 
-		}	
-	    context.put(FacilioConstants.ContextNames.TOTAL_CURRENT_OCCUPANCY, currentOccupancy);
-		
-	}
 	private void validateZoneChildren(List<Long> childrenIds) throws Exception {
 		List<BaseSpaceContext> children = SpaceAPI.getBaseSpaces(childrenIds);
 		for(BaseSpaceContext child : children) {
