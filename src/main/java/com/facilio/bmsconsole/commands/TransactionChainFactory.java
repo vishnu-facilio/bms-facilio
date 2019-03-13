@@ -1853,11 +1853,28 @@ public class TransactionChainFactory {
 			return c;
 		}
 		
-		
 		public static Chain getAddOrUpdateToolStockTransactionChain(){
 			Chain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForToolTranaction());
 			c.addCommand(new AddOrUpdateToolStockTransactionsCommand());
+			c.addCommand(getUpdatetoolQuantityRollupChain());
+			return c;
+		}
+		
+		public static Chain getAddOrUdpateToolTransactionsChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForToolTranaction());
+			c.addCommand(new AddOrUpdateManualToolTransactionsCommand());
+			c.addCommand(new ExecuteAllWorkflowsCommand());
+			c.addCommand(getUpdatetoolQuantityRollupChain());
+			return c;
+		}
+		
+		public static Chain getDeleteToolTransactChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForToolTranaction());
+			c.addCommand(new GenericDeleteModuleDataCommand());
+			c.addCommand(new DeleteToolTransactionCommand());
 			c.addCommand(getUpdatetoolQuantityRollupChain());
 			return c;
 		}

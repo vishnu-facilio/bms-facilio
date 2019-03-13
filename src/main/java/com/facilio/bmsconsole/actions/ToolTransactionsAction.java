@@ -8,8 +8,10 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
+import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.ItemTransactionsContext;
 import com.facilio.bmsconsole.context.ToolTransactionContext;
+import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 
@@ -31,6 +33,31 @@ public class ToolTransactionsAction extends FacilioAction{
 	
 	public void setToolTransactionsId(List<Long> toolTransactionsId) {
 		this.toolTransactionsId = toolTransactionsId;
+	}
+	
+	public String addOrUpdateToolTransactions() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.CREATE);
+		context.put(FacilioConstants.ContextNames.RECORD_LIST, toolTransaction);
+		context.put(FacilioConstants.ContextNames.PURCHASED_TOOL, purchasedTools);
+		Chain addWorkorderPartChain = TransactionChainFactory.getAddOrUdpateToolTransactionsChain();
+		addWorkorderPartChain.execute(context);
+		setToolTransactionsId((List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST));
+		setResult("toolTransactionsId", toolTransactionsId);
+		return SUCCESS;
+	} 
+	
+	public String deleteToolTransactions() throws Exception {
+		FacilioContext context = new FacilioContext();
+	
+		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.DELETE);
+		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, toolTransactionsId);
+
+		Chain deleteInventoryChain = TransactionChainFactory.getDeleteToolTransactChain();
+		deleteInventoryChain.execute(context);
+		setToolTransactionsId((List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST));
+		setResult("toolTransactionsId", toolTransactionsId);
+		return SUCCESS;
 	}
 	
 	public String toolsTransactionsList() throws Exception {
@@ -105,5 +132,13 @@ public class ToolTransactionsAction extends FacilioAction{
 	}
 	public void setItemsCount(Long itemsCount) {
 		this.itemsCount = itemsCount;
+	}
+	
+	private List<Long> purchasedTools;
+	public List<Long> getPurchasedTools() {
+		return purchasedTools;
+	}
+	public void setPurchasedTools(List<Long> purchasedItems) {
+		this.purchasedTools = purchasedItems;
 	}
 }

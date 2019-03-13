@@ -9,13 +9,10 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.PurchasedItemContext;
 import com.facilio.bmsconsole.context.PurchasedToolContext;
 import com.facilio.bmsconsole.context.ToolContext;
+import com.facilio.bmsconsole.context.ToolTransactionContext;
 import com.facilio.bmsconsole.context.ToolTypesContext;
-import com.facilio.bmsconsole.context.WorkOrderContext;
-import com.facilio.bmsconsole.context.WorkorderItemContext;
-import com.facilio.bmsconsole.context.WorkorderToolsContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
@@ -30,7 +27,7 @@ import com.facilio.bmsconsole.util.TransactionType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 
-public class AddOrUpdateWorkorderToolsCommand implements Command {
+public class AddOrUpdateManualToolTransactionsCommand implements Command {
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -38,47 +35,44 @@ public class AddOrUpdateWorkorderToolsCommand implements Command {
 		// TODO Auto-generated method stub
 
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioModule workorderToolsModule = modBean.getModule(FacilioConstants.ContextNames.WORKORDER_TOOLS);
-		List<FacilioField> workorderToolsFields = modBean.getAllFields(FacilioConstants.ContextNames.WORKORDER_TOOLS);
-		Map<String, FacilioField> toolFieldsMap = FieldFactory.getAsMap(workorderToolsFields);
+		FacilioModule toolTransactionsModule = modBean.getModule(FacilioConstants.ContextNames.TOOL_TRANSACTIONS);
+		List<FacilioField> toolTransactionsFields = modBean.getAllFields(FacilioConstants.ContextNames.TOOL_TRANSACTIONS);
+		Map<String, FacilioField> toolTransactionsFieldsMap = FieldFactory.getAsMap(toolTransactionsFields);
 		List<LookupFieldMeta> lookUpfields = new ArrayList<>();
-		lookUpfields.add(new LookupFieldMeta((LookupField) toolFieldsMap.get("tool")));
-		List<WorkorderToolsContext> workorderTools = (List<WorkorderToolsContext>) context
+		lookUpfields.add(new LookupFieldMeta((LookupField) toolTransactionsFieldsMap.get("tool")));
+		List<ToolTransactionContext> toolTransactions = (List<ToolTransactionContext>) context
 				.get(FacilioConstants.ContextNames.RECORD_LIST);
-		List<WorkorderToolsContext> workorderToolslist = new ArrayList<>();
-		List<WorkorderToolsContext> toolsToBeAdded = new ArrayList<>();
-
-		if (workorderTools != null) {
-			long parentId = workorderTools.get(0).getParentId();
-			for (WorkorderToolsContext workorderTool : workorderTools) {
-				WorkOrderContext workorder = getWorkorder(parentId);
-				ToolContext stockedTools = getStockedTools(workorderTool.getTool().getId());
-				ToolTypesContext toolTypes = getToolType(stockedTools.getToolType().getId());
-
-				if (workorderTool.getId() > 0) {
-					SelectRecordsBuilder<WorkorderToolsContext> selectBuilder = new SelectRecordsBuilder<WorkorderToolsContext>()
-							.select(workorderToolsFields).table(workorderToolsModule.getTableName())
-							.moduleName(workorderToolsModule.getName()).beanClass(WorkorderToolsContext.class)
-							.andCondition(CriteriaAPI.getIdCondition(workorderTool.getId(), workorderToolsModule))
+		List<ToolTransactionContext> toolTransactionslist = new ArrayList<>();
+		List<ToolTransactionContext> toolTransactionsToBeAdded = new ArrayList<>();
+		long toolTypesId = -1;
+		if (toolTransactions != null) {
+			for (ToolTransactionContext toolTransaction : toolTransactions) {
+				ToolContext tool = getStockedTools(toolTransaction.getTool().getId());
+				ToolTypesContext toolTypes = getToolType(tool.getToolType().getId());
+				toolTypesId = toolTypes.getId();
+				if (toolTransaction.getId() > 0) {
+					SelectRecordsBuilder<ToolTransactionContext> selectBuilder = new SelectRecordsBuilder<ToolTransactionContext>()
+							.select(toolTransactionsFields).table(toolTransactionsModule.getTableName())
+							.moduleName(toolTransactionsModule.getName()).beanClass(ToolTransactionContext.class)
+							.andCondition(CriteriaAPI.getIdCondition(toolTransaction.getId(), toolTransactionsModule))
 							.fetchLookups(lookUpfields);
-					;
-					List<WorkorderToolsContext> woIt = selectBuilder.get();
+							;
+					List<ToolTransactionContext> woIt = selectBuilder.get();
 					if (woIt != null) {
-						WorkorderToolsContext wTool = woIt.get(0);
-						if ((wTool.getQuantity() + wTool.getTool().getCurrentQuantity()) < workorderTool
+						ToolTransactionContext wTool = woIt.get(0);
+						if (toolTransaction.getTransactionStateEnum() == TransactionState.ISSUE && (wTool.getQuantity() + wTool.getTool().getCurrentQuantity()) < toolTransaction
 								.getQuantity()) {
 							throw new IllegalArgumentException("Insufficient quantity in inventory!");
 						} else {
-							wTool = setWorkorderItemObj(null, workorderTool.getQuantity(), stockedTools, parentId,
-									workorder, workorderTool);
+							wTool = setWorkorderItemObj(null, toolTransaction.getQuantity(), tool, toolTransaction);
 							// update
-							wTool.setId(workorderTool.getId());
-							workorderToolslist.add(wTool);
-							updateWorkorderTools(workorderToolsModule, workorderToolsFields, wTool);
+							wTool.setId(toolTransaction.getId());
+							toolTransactionslist.add(wTool);
+							updateWorkorderTools(toolTransactionsModule, toolTransactionsFields, wTool);
 						}
 					}
 				} else {
-					if (stockedTools.getCurrentQuantity() < workorderTool.getQuantity()) {
+					if (toolTransaction.getTransactionStateEnum() == TransactionState.ISSUE && tool.getCurrentQuantity() < toolTransaction.getQuantity()) {
 						throw new IllegalArgumentException("Insufficient quantity in inventory!");
 					} else {
 						if (toolTypes.individualTracking()) {
@@ -87,98 +81,58 @@ public class AddOrUpdateWorkorderToolsCommand implements Command {
 							List<PurchasedToolContext> purchasedTool = getPurchasedToolsListFromId(purchasedToolIds);
 							if (purchasedTool != null) {
 								for (PurchasedToolContext pTool : purchasedTool) {
-									WorkorderToolsContext woTool = new WorkorderToolsContext();
-									pTool.setIsUsed(true);
-									woTool = setWorkorderItemObj(pTool, 1, stockedTools, parentId, workorder,
-											workorderTool);
+									ToolTransactionContext woTool = new ToolTransactionContext();
+									if(toolTransaction.getTransactionStateEnum() == TransactionState.RETURN){
+										pTool.setIsUsed(false);
+									} else if (toolTransaction.getTransactionStateEnum() == TransactionState.ISSUE) {
+										pTool.setIsUsed(true);
+									}
+									woTool = setWorkorderItemObj(pTool, 1, tool, toolTransaction);
 									updatePurchasedTool(pTool);
-									workorderToolslist.add(woTool);
-									toolsToBeAdded.add(woTool);
+									toolTransactionslist.add(woTool);
+									toolTransactionsToBeAdded.add(woTool);
 								}
 							}
 						} else {
-							WorkorderToolsContext woTool = new WorkorderToolsContext();
-							woTool = setWorkorderItemObj(null, workorderTool.getQuantity(), stockedTools, parentId,
-									workorder, workorderTool);
-							workorderToolslist.add(woTool);
-							toolsToBeAdded.add(woTool);
+							ToolTransactionContext woTool = new ToolTransactionContext();
+							woTool = setWorkorderItemObj(null, toolTransaction.getQuantity(), tool, toolTransaction);
+							toolTransactionslist.add(woTool);
+							toolTransactionsToBeAdded.add(woTool);
 						}
 					}
 				}
 			}
-			if (toolsToBeAdded != null && !toolsToBeAdded.isEmpty()) {
-				addWorkorderTools(workorderToolsModule, workorderToolsFields, toolsToBeAdded);
+			if (toolTransactionsToBeAdded != null && !toolTransactionsToBeAdded.isEmpty()) {
+				addWorkorderTools(toolTransactionsModule, toolTransactionsFields, toolTransactionsToBeAdded);
 			}
-			context.put(FacilioConstants.ContextNames.PARENT_ID, workorderTools.get(0).getParentId());
-			context.put(FacilioConstants.ContextNames.TOOL_ID, workorderTools.get(0).getTool().getId());
+			context.put(FacilioConstants.ContextNames.PARENT_ID, toolTransactions.get(0).getParentId());
+			context.put(FacilioConstants.ContextNames.TOOL_ID, toolTransactions.get(0).getTool().getId());
 			context.put(FacilioConstants.ContextNames.TOOL_IDS,
-					Collections.singletonList(workorderTools.get(0).getTool().getId()));
-			context.put(FacilioConstants.ContextNames.RECORD_LIST, workorderToolslist);
-			context.put(FacilioConstants.ContextNames.WORKORDER_COST_TYPE, 2);
+					Collections.singletonList(toolTransactions.get(0).getTool().getId()));
+			context.put(FacilioConstants.ContextNames.RECORD_LIST, toolTransactionslist);
+			context.put(FacilioConstants.ContextNames.TOOL_TYPES_ID, toolTypesId);
 		}
 
 		return false;
 	}
 
-	private WorkorderToolsContext setWorkorderItemObj(PurchasedToolContext purchasedtool, double quantity,
-			ToolContext tool, long parentId, WorkOrderContext workorder, WorkorderToolsContext workorderTools) {
-		WorkorderToolsContext woTool = new WorkorderToolsContext();
-		woTool.setIssueTime(workorderTools.getIssueTime());
-		woTool.setReturnTime(workorderTools.getReturnTime());
-		woTool.setDuration(workorderTools.getDuration());
-		int duration = 0;
-		if (woTool.getDuration() <= 0) {
-			if (woTool.getIssueTime() <= 0) {
-				woTool.setIssueTime(workorder.getEstimatedStart());
-			}
-			if (woTool.getReturnTime() <= 0) {
-				woTool.setReturnTime(workorder.getEstimatedEnd());
-				if (woTool.getIssueTime() >= 0) {
-					duration = getEstimatedWorkDuration(woTool.getIssueTime(), woTool.getReturnTime());
-				} else {
-					duration = 0;
-				}
-			}
-		} else {
-			duration = (int) (woTool.getDuration() / (1000 * 60 * 60));
-			if (woTool.getIssueTime() >= 0) {
-				woTool.setReturnTime(woTool.getIssueTime() + woTool.getDuration());
-			}
-		}
-		woTool.setTransactionType(TransactionType.WORKORDER);
-		woTool.setTransactionState(TransactionState.ISSUE);
-		woTool.setIsReturnable(false);
+	private ToolTransactionContext setWorkorderItemObj(PurchasedToolContext purchasedtool, double quantity,
+			ToolContext tool, ToolTransactionContext toolTransaction) {
+		ToolTransactionContext woTool = new ToolTransactionContext();
+		
+		woTool.setTransactionType(TransactionType.MANUAL);
+		woTool.setTransactionState(toolTransaction.getTransactionStateEnum());
+		woTool.setIsReturnable(true);
 		if (purchasedtool != null) {
 			woTool.setPurchasedTool(purchasedtool);
 		}
-
 		woTool.setQuantity(quantity);
 		woTool.setTool(tool);
 		woTool.setSysModifiedTime(System.currentTimeMillis());
-		woTool.setParentId(parentId);
-		double costOccured = 0;
-		if (tool.getRate() > 0) {
-			costOccured = tool.getRate() * duration;
-		}
-		woTool.setCost(costOccured);
+		woTool.setParentId(toolTransaction.getParentId());
+		woTool.setParentTransactionId(toolTransaction.getParentTransactionId());
+		
 		return woTool;
-	}
-
-	public static WorkOrderContext getWorkorder(long id) throws Exception {
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER);
-		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.WORK_ORDER);
-
-		SelectRecordsBuilder<WorkOrderContext> selectBuilder = new SelectRecordsBuilder<WorkOrderContext>()
-				.select(fields).table(module.getTableName()).moduleName(module.getName())
-				.beanClass(WorkOrderContext.class).andCustomWhere(module.getTableName() + ".ID = ?", id);
-
-		List<WorkOrderContext> workorders = selectBuilder.get();
-
-		if (workorders != null && !workorders.isEmpty()) {
-			return workorders.get(0);
-		}
-		return null;
 	}
 
 	public static ToolContext getStockedTools(long id) throws Exception {
@@ -198,17 +152,17 @@ public class AddOrUpdateWorkorderToolsCommand implements Command {
 		return null;
 	}
 
-	private void addWorkorderTools(FacilioModule module, List<FacilioField> fields, List<WorkorderToolsContext> tools)
+	private void addWorkorderTools(FacilioModule module, List<FacilioField> fields, List<ToolTransactionContext> tools)
 			throws Exception {
-		InsertRecordBuilder<WorkorderToolsContext> readingBuilder = new InsertRecordBuilder<WorkorderToolsContext>()
+		InsertRecordBuilder<ToolTransactionContext> readingBuilder = new InsertRecordBuilder<ToolTransactionContext>()
 				.module(module).fields(fields).addRecords(tools);
 		readingBuilder.save();
 	}
 
-	private void updateWorkorderTools(FacilioModule module, List<FacilioField> fields, WorkorderToolsContext tool)
+	private void updateWorkorderTools(FacilioModule module, List<FacilioField> fields, ToolTransactionContext tool)
 			throws Exception {
 
-		UpdateRecordBuilder<WorkorderToolsContext> updateBuilder = new UpdateRecordBuilder<WorkorderToolsContext>()
+		UpdateRecordBuilder<ToolTransactionContext> updateBuilder = new UpdateRecordBuilder<ToolTransactionContext>()
 				.module(module).fields(fields).andCondition(CriteriaAPI.getIdCondition(tool.getId(), module));
 		updateBuilder.update(tool);
 
