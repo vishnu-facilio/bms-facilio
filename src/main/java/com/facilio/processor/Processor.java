@@ -135,60 +135,59 @@ public class Processor implements IRecordProcessor {
                     if (payLoad.containsKey(AgentKeys.DEVICE_ID)) {
                         deviceId = payLoad.get(AgentKeys.DEVICE_ID).toString();
                     }
+
                     long lastMessageReceivedTime = System.currentTimeMillis();
                     if (payLoad.containsKey(AgentKeys.TIMESTAMP)) {
                         Object lastTime = payLoad.get(AgentKeys.TIMESTAMP);
                         lastMessageReceivedTime = lastTime instanceof Long ? (Long) lastTime : Long.parseLong(lastTime.toString());
                     }
+
                     int i = 0;
-                    if( dataType != null ) {
-                        HashMap<String, Long> dataTypeLastMessageTime = deviceMessageTime.getOrDefault(deviceId, new HashMap<>());
-                        long deviceLastMessageTime = dataTypeLastMessageTime.getOrDefault(dataType, 0L);
 
-                        if(deviceLastMessageTime != lastMessageReceivedTime) {
-                            switch (dataType) {
-                                case AgentKeys.TIMESERIES:
-                                    processTimeSeries(record, payLoad, processRecordsInput, true);
-                                    updateDeviceTable(record.getPartitionKey());
-
-                                    break;
-                                case AgentKeys.COV:
-                                    processTimeSeries(record, payLoad, processRecordsInput, false);
-                                    updateDeviceTable(record.getPartitionKey());
-                                    break;
-                                case AgentKeys.AGENT:
-                                    i =  agentUtil.processAgent( payLoad);
-                                    break;
-                                case AgentKeys.DEVICE_POINTS:
-                                    devicePointsUtil.processDevicePoints(payLoad, orgId, deviceMap);
-                                    break;
-                                case AgentKeys.ACK:
-                                    ackUtil.processAck(payLoad, orgId);
-                                    break;
-                                case AgentKeys.EVENT:
-                                    boolean alarmCreated = eventUtil.processEvents(record.getApproximateArrivalTimestamp().getTime(), payLoad, record.getPartitionKey(),orgId,eventRules);
-                                    if (alarmCreated) {
-                                        processRecordsInput.getCheckpointer().checkpoint(record);
-                                    }
-                                    break;
-
-                            }
-                            dataTypeLastMessageTime.put(dataType, lastMessageReceivedTime);
-                            deviceMessageTime.put(deviceId, dataTypeLastMessageTime);
-                        } else {
-                            LOGGER.info("Duplicate message for device " + deviceId + " and type " + dataType);
-                        }
-//					Temp fix
-//					processRecordsInput.getCheckpointer().checkpoint(record);
-                    }
-                    if( ! payLoad.containsKey(EventUtil.DATA_TYPE)){
+                    if( dataType == null){
                         LOGGER.info("publish type is empty");
-                        boolean alarmCreated = eventUtil.processEvents(record.getApproximateArrivalTimestamp().getTime(), payLoad, record.getPartitionKey(),orgId,eventRules);
-                        if (alarmCreated) {
-                            processRecordsInput.getCheckpointer().checkpoint(record);
-                        }
+                        dataType = AgentKeys.EVENT;
                     }
-                    if(i == 0 ) {
+
+                    HashMap<String, Long> dataTypeLastMessageTime = deviceMessageTime.getOrDefault(deviceId, new HashMap<>());
+                    long deviceLastMessageTime = dataTypeLastMessageTime.getOrDefault(dataType, 0L);
+
+                    if(deviceLastMessageTime != lastMessageReceivedTime) {
+                        i =  agentUtil.processAgent( payLoad);
+                        switch (dataType) {
+                            case AgentKeys.TIMESERIES:
+                                processTimeSeries(record, payLoad, processRecordsInput, true);
+                                updateDeviceTable(record.getPartitionKey());
+                                break;
+                            case AgentKeys.COV:
+                                processTimeSeries(record, payLoad, processRecordsInput, false);
+                                updateDeviceTable(record.getPartitionKey());
+                                break;
+                            /*case AgentKeys.AGENT:
+                                i =  agentUtil.processAgent( payLoad);
+                                break;*/
+                            case AgentKeys.DEVICE_POINTS:
+                                devicePointsUtil.processDevicePoints(payLoad, orgId, deviceMap);
+                                break;
+                            case AgentKeys.ACK:
+                                ackUtil.processAck(payLoad, orgId);
+                                break;
+                            case AgentKeys.EVENT:
+                                boolean alarmCreated = eventUtil.processEvents(record.getApproximateArrivalTimestamp().getTime(), payLoad, record.getPartitionKey(),orgId,eventRules);
+                                if (alarmCreated) {
+                                    processRecordsInput.getCheckpointer().checkpoint(record);
+                                }
+                                break;
+
+                        }
+                        dataTypeLastMessageTime.put(dataType, lastMessageReceivedTime);
+                        deviceMessageTime.put(deviceId, dataTypeLastMessageTime);
+                    } else {
+                        LOGGER.info("Duplicate message for device " + deviceId + " and type " + dataType);
+                    }
+
+
+                    if ( i == 0 ) {
                         GenericUpdateRecordBuilder genericUpdateRecordBuilder = new GenericUpdateRecordBuilder().table(AgentKeys.TABLE_NAME).fields(FieldFactory.getAgentDataFields()).andCustomWhere( AgentKeys.NAME+"= '"+payLoad.get(AgentKeys.AGENT)+"'");
                         Map<String,Object> toUpdate = new HashMap<>();
                         toUpdate.put(AgentKeys.LAST_DATA_RECEIVED_TIME,System.currentTimeMillis());
@@ -200,11 +199,6 @@ public class Processor implements IRecordProcessor {
                         if(AwsUtil.isProduction()) {
                             LOGGER.info("Sending data to " + errorStream);
                             sendToKafka(record, data);
-						/*PutRecordResult recordResult = AwsUtil.getKinesisClient().putRecord(errorStream, ByteBuffer.wrap(data.getBytes(Charset.defaultCharset())), record.getPartitionKey());
-						int status = recordResult.getSdkHttpMetadata().getHttpStatusCode();
-						if (status != 200) {
-							log.info("Couldn't add data to " + errorStream + " " + record.getSequenceNumber());
-						}*/
                         }
                     } catch (Exception e1) {
                         LOGGER.info("Exception while sending data to " + errorStream, e1);
@@ -249,11 +243,6 @@ public class Processor implements IRecordProcessor {
 
         private Condition getDeviceIdCondition(String deviceId) {
             return  CriteriaAPI.getCondition("DEVICE_ID", "DEVICE_ID", deviceId, StringOperators.IS);
-		/*Condition condition = new Condition();
-		condition.setField(deviceIdField);
-		condition.setOperator(NumberOperators.EQUALS);
-		condition.setValue(deviceId);
-		return condition;*/
         }
 
         private Map<String, Long> getDeviceMap() {
@@ -273,8 +262,7 @@ public class Processor implements IRecordProcessor {
 
         @Override
         public void shutdown(ShutdownInput shutdownInput) {
-            System.out.println("Shutting down record processor for stream: "+ orgDomainName +" and shard: " + shardId);
-
+            // System.out.println("Shutting down record processor for stream: "+ orgDomainName +" and shard: " + shardId);
         }
 
     }
