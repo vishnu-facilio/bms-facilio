@@ -58,6 +58,12 @@ public class FormAction extends FacilioAction {
 		return SUCCESS;
 	}
 	
+	public String v2fetchFormMeta() throws Exception {
+		fetchFormMeta();
+		setResult("forms", forms);
+		return SUCCESS;
+	}
+	
 	private String moduleName;
 	
 	public void setModuleName(String name) {

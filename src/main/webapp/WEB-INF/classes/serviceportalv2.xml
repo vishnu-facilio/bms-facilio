@@ -37,6 +37,22 @@
 		<action name="account" class="com.facilio.bmsconsole.actions.LoginAction"
 			method="v2portalAccount"> 
 		</action>
+		<action name="getFormMeta" class="com.facilio.bmsconsole.actions.FormAction"
+			method="v2fetchFormMeta">
+		</action>	
+		
+		<action name="notelist" class="com.facilio.bmsconsole.actions.NoteAction"
+			method="v2getNotesList">
+		</action>	
+		
+		<action name="activities" class="com.facilio.bmsconsole.actions.WorkOrderRequestAction"
+			method="v2getActivitiesList">
+			<param name="moduleName">workorder</param>
+			<param name="permission">READ,READ_TEAM,READ_OWN</param>
+		</action>	
+		
+		<action name="attachment" class="com.facilio.bmsconsole.actions.AttachmentAction" method="v2attachmentList">
+		</action>
 		
 	</package>
 

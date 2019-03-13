@@ -312,6 +312,12 @@ public class WorkOrderRequestAction extends FacilioAction {
 	public void setRowsUpdated(int rowsUpdated) {
 		this.rowsUpdated = rowsUpdated;
 	}
+	
+	public String v2getActivitiesList() throws  Exception {
+		getActivitiesList();
+		setResult("activities", activities);
+		return SUCCESS;
+	}
 
 	public String getActivitiesList() throws Exception {
 		FacilioContext context = new FacilioContext();

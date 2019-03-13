@@ -153,6 +153,12 @@ public class NoteAction extends FacilioAction {
 		return getNotesList(module);
 	}
 	
+	public String v2getNotesList() throws Exception {
+		getNotesList();
+		setResult("notes", notes);
+		return SUCCESS;
+	}
+	
 	private String getNotesList(String moduleName) throws Exception {
 		
 		FacilioContext context = new FacilioContext();
