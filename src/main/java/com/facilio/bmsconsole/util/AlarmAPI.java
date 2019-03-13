@@ -12,10 +12,13 @@ import java.util.Map;
 
 import org.apache.commons.chain.Context;
 import org.apache.commons.text.WordUtils;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.commands.FetchReportAdditionalInfoCommand;
 import com.facilio.bmsconsole.context.AlarmContext;
 import com.facilio.bmsconsole.context.AlarmContext.AlarmType;
 import com.facilio.bmsconsole.context.AlarmSeverityContext;
@@ -55,7 +58,7 @@ import com.facilio.workflows.context.ExpressionContext;
 import com.facilio.workflows.context.WorkflowContext;
 
 public class AlarmAPI {
-	
+	private static final Logger LOGGER = LogManager.getLogger(AlarmAPI.class.getName());
 	public static JSONObject constructClearEvent(AlarmContext alarm, String msg) throws Exception {
 		return constructClearEvent(alarm, msg, -1);
 	}
@@ -453,8 +456,11 @@ public class AlarmAPI {
 																	.andCondition(CriteriaAPI.getCondition(fieldMap.get("resource"), resourceId, PickListOperators.IS))
 																	.andCondition(CriteriaAPI.getCondition(fieldMap.get("readingFieldId"), String.valueOf(fieldId), NumberOperators.EQUALS))
 																	;
-		
-		return selectBuilder.get();
+		List<ReadingAlarmContext> alarms = selectBuilder.get();
+		if (AccountUtil.getCurrentOrg().getId() == 75) {
+			LOGGER.info("Fetched Alarm Query : "+selectBuilder.toString());
+		}
+		return alarms;
 	}
 	
 	public static List<ReadingAlarmContext> getReadingAlarms (long entityId, long startTime, long endTime, boolean isWithAnomaly) throws Exception {
