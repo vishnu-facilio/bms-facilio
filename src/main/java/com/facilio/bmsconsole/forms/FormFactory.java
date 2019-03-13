@@ -291,7 +291,7 @@ public class FormFactory {
 	
 	public static FacilioForm getStoreRoomForm() {
 		FacilioForm form = new FacilioForm();
-		form.setDisplayName("STORE ROOM");
+		form.setDisplayName("NEW STORE ROOM");
 		form.setName("web_default");
 		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.STORE_ROOM));
 		form.setLabelPosition(LabelPosition.TOP);
@@ -302,7 +302,7 @@ public class FormFactory {
 	
 	public static FacilioForm getItemTypesForm() {
 		FacilioForm form = new FacilioForm();
-		form.setDisplayName("ITEM TYPES");
+		form.setDisplayName("NEW ITEM TYPE");
 		form.setName("web_default");
 		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.ITEM_TYPES));
 		form.setLabelPosition(LabelPosition.TOP);
@@ -313,7 +313,7 @@ public class FormFactory {
 	
 	public static FacilioForm getTooltypesForm() {
 		FacilioForm form = new FacilioForm();
-		form.setDisplayName("TOOL");
+		form.setDisplayName("NEW TOOL");
 		form.setName("web_default");
 		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.TOOL_TYPES));
 		form.setLabelPosition(LabelPosition.TOP);
@@ -324,7 +324,7 @@ public class FormFactory {
 	
 	public static FacilioForm getVendorsForm() {
 		FacilioForm form = new FacilioForm();
-		form.setDisplayName("VENDOR");
+		form.setDisplayName("NEW VENDOR");
 		form.setName("web_default");
 		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.TOOL_TYPES));
 		form.setLabelPosition(LabelPosition.TOP);
