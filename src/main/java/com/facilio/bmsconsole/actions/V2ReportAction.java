@@ -289,9 +289,8 @@ public class V2ReportAction extends FacilioAction {
 		}
 		return ERROR;
 	}
-	long alarmId;
 	
-	
+	long alarmId = -1;
 	public long getAlarmId() {
 		return alarmId;
 	}

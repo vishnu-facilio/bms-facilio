@@ -78,22 +78,22 @@ public class FetchReportAdditionalInfoCommand implements Command {
 						if (showAlarms) {
 							List<Long> parentIds = getParentIds(dp);
 							
-							if (AccountUtil.getCurrentOrg().getId() == 75) {
-								LOGGER.info("Parent IDs of alarms to be fetched : "+parentIds);
-							}
+//							if (AccountUtil.getCurrentOrg().getId() == 75) {
+//								LOGGER.info("Parent IDs of alarms to be fetched : "+parentIds);
+//							}
 							
 							if (parentIds != null) {
 								List<ReadingAlarmContext> alarms = null;
-								if (alarmId == null) {
+								if (alarmId == null || alarmId == -1) {
 									alarms = AlarmAPI.getReadingAlarms(parentIds, dp.getyAxis().getFieldId(), report.getDateRange().getStartTime(), report.getDateRange().getEndTime(), false);
 								}
 								else if (currentAlarm != null && currentAlarm.getReadingFieldId() == dp.getyAxis().getFieldId() && parentIds.contains(currentAlarm.getResource().getId())) {
 									alarms = AlarmAPI.getReadingAlarms(currentAlarm.getEntityId(), report.getDateRange().getStartTime(), report.getDateRange().getEndTime(), false);
 								}
 								
-								if (AccountUtil.getCurrentOrg().getId() == 75) {
-									LOGGER.info("Fetched Alarms : "+alarms);
-								}
+//								if (AccountUtil.getCurrentOrg().getId() == 75) {
+//									LOGGER.info("Fetched Alarms : "+alarms);
+//								}
 								
 								if (alarms != null && !alarms.isEmpty()) {
 									for (ReadingAlarmContext alarm : alarms) {
