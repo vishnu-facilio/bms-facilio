@@ -364,7 +364,7 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 		}
 		
 		if (module.isTrashEnabled()) {
-			FacilioField isDeletedField = FieldFactory.getIsDeletedField();
+			FacilioField isDeletedField = FieldFactory.getIsDeletedField(module.getParentModule());
 			
 			if (groupBy == null || groupBy.isEmpty()) {
 				selectFields.add(isDeletedField);
