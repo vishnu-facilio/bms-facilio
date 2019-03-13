@@ -722,10 +722,12 @@ public class SpaceAPI {
 			selectBuilder.andCriteria(scopeCriteria);
 		}
 		
-		Criteria permissionCriteria = AccountUtil.getCurrentUser().getRole().permissionCriteria(module.getName(),"read");
-		if (permissionCriteria != null) {
-			selectBuilder.andCriteria(permissionCriteria);
-		}
+		 if (AccountUtil.getCurrentUser().getRole() != null) {
+		 	Criteria permissionCriteria = AccountUtil.getCurrentUser().getRole().permissionCriteria(module.getName(),"read");
+		 	if (permissionCriteria != null) {
+		 		selectBuilder.andCriteria(permissionCriteria);
+		 	}
+		 }
 		
 		List<BuildingContext> buildings = selectBuilder.get();
 		return buildings;

@@ -5,6 +5,7 @@
 
 <struts>
 
+
 	<package name="servicePortalApiV2" namespace="/api/v2/service" extends="v2Api">
 	
 		<interceptors>
@@ -34,7 +35,43 @@
 		</action>
 		
 	</package>
-	
+
+	<!-- new service portal api will be open -->
+	<!-- <package name="servicePortalApiV2" namespace="/api/service/v2" extends="v2Api">
+
+		<interceptors>
+			<interceptor name="portalinterceptor" class="com.facilio.serviceportal.actions.PortalAuthInterceptor" />
+			<interceptor-stack name="defaultInterceptor">
+				<interceptor-ref name="defaultStack" />
+				<interceptor-ref name="portalinterceptor" />
+				<interceptor-ref name="json">
+					<param name="enableSMD">true</param>
+				</interceptor-ref>
+			</interceptor-stack>
+		</interceptors>
+
+		<default-interceptor-ref name="defaultInterceptor" />
+		<global-results>
+			<result name="login">/service/login.jsp</result>
+			<result name="unauthorized" type="redirect">
+				<param name="location">/jsps/serviceportal/unauthorized.jsp</param>
+				<param name="parse">false</param>
+			</result>
+		</global-results>
+
+		<action name="workorders" class="com.facilio.bmsconsole.actions.WorkOrderAction" method="v2workOrderList">
+			<param name="viewName">myrequests</param>
+			<param name="approval">true</param>
+		</action>
+		<action name="dashboard" class="com.facilio.bmsconsole.actions.DashboardAction" method="getDashboardList">
+			<result name="success" type="json">
+				<param name="includeProperties">dashboards,dashboards\[\d+\],dashboards\[\d+\].*</param>
+			</result>
+		</action>
+
+	</package> -->
+
+<!-- temp only -->
 	<package name="serviceWorkOrderApiV2" namespace="/api/v2/service/workorders" extends="servicePortalApiV2">
 		<action name="add" class="com.facilio.bmsconsole.actions.WorkOrderAction" method="addPortalOrders">
 		</action>
@@ -47,9 +84,31 @@
 			<param name="workOrderId">{1}</param>
 		</action>
 	</package>
-	
+
+<!-- new format  -->
+	<!-- <package name="serviceWorkOrderApiV2" namespace="/api/service/v2/workorders" extends="servicePortalApiV2">
+		<action name="add" class="com.facilio.bmsconsole.actions.WorkOrderAction" method="addPortalOrders">
+		</action>
+
+		<action name="update" class="com.facilio.bmsconsole.actions.WorkOrderAction" method="v2updateWorkOrder">
+			<param name="moduleName">workorder</param>
+			<param name="permission">UPDATE,UPDATE_TEAM,UPDATE_OWN</param>
+		</action>
+		<action name="workOrderCount" class="com.facilio.bmsconsole.actions.WorkOrderAction"
+			method="workOrderCount">
+			<param name="moduleName">workorder</param>
+			<param name="permission">READ,READ_TEAM,READ_OWN</param>
+			<result name="success" type="json">
+				<param name="includeProperties">woCount</param>
+			</result>
+		</action>
+		<action name="*" class="com.facilio.bmsconsole.actions.WorkOrderAction" method="v2viewWorkOrder">
+			<param name="workOrderId">{1}</param>
+		</action>
+	</package> -->
+
 	<package name="servicePreviewApiV2" namespace="/api/v2/service/files/preview" extends="servicePortalApiV2">
-	 <global-results>
+		<global-results>
 			<result name="success" type="stream">
 				<param name="contentType">${contentType}</param>
 				<param name="inputName">downloadStream</param>
@@ -61,9 +120,9 @@
 			<param name="fileID">{1}</param>
 		</action>
 	</package>
-	
+
 	<package name="serviceDownloadApiV2" namespace="/api/v2/service/files/download" extends="servicePortalApiV2">
-	 <global-results>
+		<global-results>
 			<result name="success" type="stream">
 				<param name="contentType">${contentType}</param>
 				<param name="contentDisposition">attachment;filename="${filename}"</param>
@@ -77,4 +136,51 @@
 			<param name="isDownload">true</param>
 		</action>
 	</package>
+	<package name="serviceReportApiv2" namespace="/api/service/v2/report" extends="servicePortalApiV2">
+		<action name="fetchReportData" class="com.facilio.bmsconsole.actions.V2ReportAction"
+			method="fetchReportData">
+		</action>
+		<action name="getReportFields" class="com.facilio.bmsconsole.actions.V2ReportAction"
+			method="getReportFields">
+		</action>
+		<action name="readingReport" class="com.facilio.bmsconsole.actions.V2ReportAction" method="fetchReadingsData">
+		</action>
+		<action name="fetchReadingsFromCard" class="com.facilio.bmsconsole.actions.V2ReportAction" method="fetchReadingsFromCard">
+		</action>
+		<action name="fetchReadingsFromAlarm" class="com.facilio.bmsconsole.actions.V2ReportAction" method="fetchReadingsFromAlarm">
+		</action>
+		<action name="workorderReport" class="com.facilio.bmsconsole.actions.V2ReportAction" method="fetchWorkorderData">
+		</action>
+		<action name="addReadingReport" class="com.facilio.bmsconsole.actions.V2ReportAction" method="addOrUpdateReadingReport">
+		</action>
+		<action name="addWorkOrderReport" class="com.facilio.bmsconsole.actions.V2ReportAction" method="addWorkOrderReport">
+		</action>
+		<action name="fetchReport" class="com.facilio.bmsconsole.actions.V2ReportAction" method="fetchReport">
+		</action>
+		<action name="export" class="com.facilio.bmsconsole.actions.V2ReportAction" method="exportReport">
+		</action>
+		<action name="sendMail" class="com.facilio.bmsconsole.actions.V2ReportAction" method="sendReportMail">
+		</action>
+		<action name="schedule" class="com.facilio.bmsconsole.actions.V2ReportAction" method="scheduleReport">
+		</action>
+		<action name="fetchReportFolders" class="com.facilio.bmsconsole.actions.V2ReportAction" method="fetchReportFolders">
+		</action>
+		<action name="addReportFolder" class="com.facilio.bmsconsole.actions.V2ReportAction" method="addReportFolder">
+		</action>
+		<action name="fetchReportWithData" class="com.facilio.bmsconsole.actions.V2ReportAction" method="fetchReportWithData">
+		</action>
+		<action name="deleteReport" class="com.facilio.bmsconsole.actions.V2ReportAction" method="deleteReport">
+		</action>
+		<action name="updateReportFolder" class="com.facilio.bmsconsole.actions.V2ReportAction" method="updateReportFolder">
+		</action>
+		<action name="deleteReportFolder" class="com.facilio.bmsconsole.actions.V2ReportAction" method="deleteReportFolder">
+		</action>
+		<action name="duplicateReport" class="com.facilio.bmsconsole.actions.V2ReportAction" method="duplicateReport">
+		</action>
+		<action name="moveReport" class="com.facilio.bmsconsole.actions.V2ReportAction" method="moveReport">
+		</action>
+		<action name="search" class="com.facilio.bmsconsole.actions.V2ReportAction" method="searchReportAndFolders">
+		</action>
+	</package>
+
 </struts>
