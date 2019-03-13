@@ -121,6 +121,21 @@ public class FacilioModule implements Serializable {
 		return false;
 	}
 	
+	private Boolean showAsView;
+	public Boolean getShowAsView() {
+		return showAsView;
+	}
+
+	public void setShowAsView(Boolean showAsView) {
+		this.showAsView = showAsView;
+	}
+	public boolean isShowAsView() {
+		if (showAsView != null) {
+			return showAsView.booleanValue();
+		}
+		return false;
+	}
+	
 	private int dataInterval = -1;
 	public int getDataInterval() {
 		return dataInterval;

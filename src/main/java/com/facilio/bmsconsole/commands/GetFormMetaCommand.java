@@ -37,16 +37,17 @@ public class GetFormMetaCommand implements Command {
 				String modname = formName.replaceAll("default_", "");
 				FacilioForm form = getFormFromDB(formName);
 				if (form == null) {
-					if (FormFactory.getForm(formName) == null && !(formName.startsWith("default"))) {
+					if (FormFactory.getForm(formName) == null && !(formName.startsWith("default_"))) {
 						throw new IllegalArgumentException("Invalid Form " + formName);
 					}
-					else if (FormFactory.getForm(formName) == null && formName.startsWith("default")) {
+					else if (FormFactory.getForm(formName) == null && formName.startsWith("default_")) {
 						FacilioModule module = bean.getModule(modname);
 						String extendedModName = module.getExtendModule().getName();
 						formName = "default_" +extendedModName ;
 					}
 					form = new FacilioForm(FormFactory.getForm(formName));
-					List<FormField> fields = form.getFields();
+					List<FormField> fields = new ArrayList<>(form.getFields());
+					form.setFields(fields);
 					
 					ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 					String moduleName = form.getModule().getName();
@@ -72,7 +73,7 @@ public class GetFormMetaCommand implements Command {
 						e.printStackTrace();
 					}
 					
-					if (formName.startsWith("default")) {
+					if (formName.startsWith("default_") && !modname.equals("asset")) {
 						FacilioModule module = bean.getModule(modname);
 						if (modname != "asset") {
 							List<FacilioField> field = bean.getAllFields(modname);
@@ -88,14 +89,16 @@ public class GetFormMetaCommand implements Command {
 						}
 						moduleName = modname;
 					}
-					List<FacilioField> customFields = modBean.getAllCustomFields(moduleName);
-					if (customFields != null && !customFields.isEmpty()) {
-						for (FacilioField f: customFields) {
-							count = count + 1;
-							FormField formFields = new FormField(f.getName(), f.getDisplayType(), f.getDisplayName(), FormField.Required.OPTIONAL, count, 1);
-							formFields.setField(f);
-							formFields.setFieldId(f.getFieldId());
-							fields.add(formFields);
+					else {
+						List<FacilioField> customFields = modBean.getAllCustomFields(moduleName);
+						if (customFields != null && !customFields.isEmpty()) {
+							for (FacilioField f: customFields) {
+								count = count + 1;
+								FormField formFields = new FormField(f.getName(), f.getDisplayType(), f.getDisplayName(), FormField.Required.OPTIONAL, count, 1);
+								formFields.setField(f);
+								formFields.setFieldId(f.getFieldId());
+								fields.add(formFields);
+							}
 						}
 					}
 					

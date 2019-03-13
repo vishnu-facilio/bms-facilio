@@ -76,6 +76,7 @@ public class ModuleBeanImpl implements ModuleBean {
 			currentModule.setTableName(rs.getString("TABLE_NAME"));
 			currentModule.setType(rs.getInt("MODULE_TYPE"));
 			currentModule.setTrashEnabled(rs.getBoolean("IS_TRASH_ENABLED"));
+			currentModule.setShowAsView(rs.getBoolean("SHOW_AS_VIEW"));
 			if(prevModule != null) {
 				prevModule.setExtendModule(currentModule);
 			}
@@ -337,6 +338,7 @@ public class ModuleBeanImpl implements ModuleBean {
 				currentModule.setTableName(rs.getString("TABLE_NAME"));
 				currentModule.setType(rs.getInt("MODULE_TYPE"));
 				currentModule.setTrashEnabled(rs.getBoolean("IS_TRASH_ENABLED"));
+				currentModule.setShowAsView(rs.getBoolean("SHOW_AS_VIEW"));
 				int dataInterval = rs.getInt("DATA_INTERVAL"); 
 				if (dataInterval != 0) {
 					currentModule.setDataInterval(dataInterval);
@@ -419,6 +421,10 @@ public class ModuleBeanImpl implements ModuleBean {
 		if (module.getTrashEnabled() != null) {
 			joiner.add("IS_TRASH_ENABLED = ?");
 			params.add(module.getTrashEnabled());
+		}
+		if (module.getShowAsView() != null) {
+			joiner.add("SHOW_AS_VIEW = ?");
+			params.add(module.getShowAsView());
 		}
 		
 		if (!params.isEmpty()) {

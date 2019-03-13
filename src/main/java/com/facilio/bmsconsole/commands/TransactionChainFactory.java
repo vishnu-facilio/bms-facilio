@@ -942,6 +942,7 @@ public class TransactionChainFactory {
 		
 		public static Chain getAddAssetChain() {
 			Chain c = getDefaultChain();
+			c.addCommand(new SetAssetCategoryCommand());
 			c.addCommand(new SetModuleForSpecialAssetsCommand());
 			c.addCommand(new GenericAddModuleDataCommand());
 			c.addCommand(new ExecuteAllWorkflowsCommand());

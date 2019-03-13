@@ -6,8 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.StringJoiner;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
@@ -64,21 +62,17 @@ public class LoadViewCommand implements Command {
 				if (view == null && parentViewName != null) {
 					view = ViewFactory.getView(moduleName, parentViewName);
 				}
+				else if (view == null) {
+					ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+					FacilioModule module = bean.getModule(moduleName);
+					String extendedModName = module.getExtendModule().getName();
+					if (extendedModName.contains("asset")) {
+						view = ViewFactory.getModuleView(module, extendedModName);
+					}
+				}
+				
 				if(view != null && view.getFields() != null) {
 					ViewAPI.setViewFieldsProp(view.getFields(), moduleName);
-				}
-				ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-				FacilioModule module = bean.getModule(moduleName);
-				String extendedModName = module.getExtendModule().getName();
-				FacilioModule extendedMod = module.getExtendModule();
-				if (extendedModName.contains("asset")) {
-					FacilioView newView = new FacilioView();
-					FacilioModule moduleObject = bean.getModule(moduleName);
-					newView.setName(moduleObject.getName());
-					newView.setDisplayName(moduleObject.getName().toUpperCase());
-					newView.setModuleId(moduleObject.getModuleId());;
-					newView.setModuleName(moduleName);
-					view = newView;
 				}
 			}
 			
