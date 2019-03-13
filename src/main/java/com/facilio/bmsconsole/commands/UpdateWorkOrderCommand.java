@@ -20,8 +20,10 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ResourceContext;
+import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.context.TicketStatusContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
+import com.facilio.bmsconsole.context.ResourceContext.ResourceType;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
@@ -125,7 +127,7 @@ public class UpdateWorkOrderCommand implements Command {
 			transferToAnotherSite(workOrder);
 		}
 		else if (workOrder.getTenant()!= null && workOrder.getTenant().getId() != -1) {
-			transferToAnotherTenant(workOrder);
+			transferToAnotherTenant(workOrder, oldWos);
 		}
 		
 		if (workOrder.getSiteId() == -1) {
@@ -207,12 +209,18 @@ public class UpdateWorkOrderCommand implements Command {
 		workOrder.getTenant().setId(-1);
 	}
 	
-	private void transferToAnotherTenant (WorkOrderContext workOrder) throws Exception {
+	public static <T extends TicketContext> void transferToAnotherTenant(WorkOrderContext workOrder, List<T> oldTickets) throws Exception {
 		
 		TenantContext tenant = TenantsAPI.fetchTenant(workOrder.getTenant().getId());
-		if (AccountUtil.getCurrentSiteId() != tenant.getSiteId()) {
-		  throw new IllegalArgumentException("The selected tenant belongs to another Site.");
-		}
+		
+		for(T oldWo: oldTickets) {
+			long siteId = oldWo.getSiteId();
+			if (tenant.getSiteId() != siteId) {
+				  throw new IllegalArgumentException("The selected tenant belongs to another Site.");
+			} 
+	
+		  }
+		
 		//Creating multiple New WOs is unnecessary here 
 		workOrder.setAssignedTo(new User());
 		workOrder.getAssignedTo().setId(-1);
