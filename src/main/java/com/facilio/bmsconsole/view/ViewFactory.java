@@ -138,8 +138,6 @@ public class ViewFactory {
 		order = 1;
 		views = new LinkedHashMap<>();
 		views.put("all", getAllAssetsView().setOrder(order++));
-		views.put("energy", getAssets("Energy").setOrder(order++));
-		views.put("hvac", getAssets("HVAC").setOrder(order++));
 		views.put("active", getAssetsByState("Active").setOrder(order++));
 		views.put("retired", getAssetsByState("Retired").setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.ASSET, views);

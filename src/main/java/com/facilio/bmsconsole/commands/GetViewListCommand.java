@@ -1,11 +1,8 @@
 package com.facilio.bmsconsole.commands;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -15,9 +12,7 @@ import org.apache.commons.chain.Context;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.AssetCategoryContext;
 import com.facilio.bmsconsole.modules.FacilioModule;
-import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.bmsconsole.util.ViewAPI;
 import com.facilio.bmsconsole.view.FacilioView;
@@ -77,8 +72,8 @@ public class GetViewListCommand implements Command {
 						if (!customViews.isEmpty() ) {
 							systemViews.addAll(customViews);
 						}
-						groupDetails.put("name", "systemviews");
-						groupDetails.put("displayName", "System Views");
+						groupDetails.put("name", "asset");
+						groupDetails.put("displayName", "Asset");
 						groupDetails.put("views", systemViews);
 						groupViews.add(groupDetails);
 						}
@@ -97,13 +92,13 @@ public class GetViewListCommand implements Command {
 					}
 					if (moduleName.equals("asset")) {
 						ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-						List<AssetCategoryContext> assetCategoryLists = AssetsAPI.getCategoryList();
-						for(AssetCategoryContext category: assetCategoryLists) {
+						List<FacilioModule> modules = bean.getChildModules(bean.getModule(moduleName));
+						for(FacilioModule childModule: modules) {
 							FacilioView categoryView = new FacilioView();
-							categoryView.setName(category.getName().toLowerCase());
-							categoryView.setDisplayName(category.getName());
-							categoryView.setModuleId(category.getAssetModuleID());;
-							categoryView.setModuleName(bean.getModule(category.getAssetModuleID()).getName());
+							categoryView.setName(childModule.getName());
+							categoryView.setDisplayName(childModule.getDisplayName());
+							categoryView.setModuleId(childModule.getModuleId());;
+							categoryView.setModuleName(childModule.getName());
 							List<FacilioView> dbViews1 = ViewAPI.getAllViews(categoryView.getModuleId());
 //							for (int i=0; i< dbViews1.size(); i++) {
 							dbViews1.add(categoryView);
@@ -111,7 +106,7 @@ public class GetViewListCommand implements Command {
 							if (!viewMap.isEmpty()) {
 								groupDetails = new HashMap<>();
 								groupDetails.put("name", categoryView.getName());
-								groupDetails.put("displayName", categoryView.getName().toUpperCase());
+								groupDetails.put("displayName", categoryView.getDisplayName());
 								groupDetails.put("views", dbViews1);
 								groupViews.add(groupDetails);
 							}
