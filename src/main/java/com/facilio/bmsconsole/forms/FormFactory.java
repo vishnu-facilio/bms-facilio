@@ -43,6 +43,8 @@ public class FormFactory {
 		forms.put("vendors_form", getVendorsForm());
 		forms.put("tool_form", getStockedToolsForm());
 		forms.put("tool_track_form", getToolWithIndTrackForm());
+		forms.put("item_category_form", getItemCategoryForm());
+		forms.put("location_form", getLocationForm());
 		return forms;
 	}
     public static List<FormField> getFormFields(String modName) {
@@ -311,6 +313,28 @@ public class FormFactory {
 		return form;
 	}
 	
+	public static FacilioForm getItemCategoryForm() {
+		FacilioForm form = new FacilioForm();
+		form.setDisplayName("NEW CATEGORY");
+		form.setName("web_default");
+		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.ITEM_TYPES_CATEGORY));
+		form.setLabelPosition(LabelPosition.TOP);
+		form.setFields(getItemCategoryFormField());
+		form.setFormType(FormType.WEB);
+		return form;
+	}
+	
+	public static FacilioForm getLocationForm() {
+		FacilioForm form = new FacilioForm();
+		form.setDisplayName("NEW LOCATION");
+		form.setName("web_default");
+		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.LOCATION));
+		form.setLabelPosition(LabelPosition.TOP);
+		form.setFields(getLocationFormField());
+		form.setFormType(FormType.WEB);
+		return form;
+	}
+	
 	public static FacilioForm getTooltypesForm() {
 		FacilioForm form = new FacilioForm();
 		form.setDisplayName("NEW TOOL");
@@ -509,7 +533,7 @@ public class FormFactory {
 		List<FormField> fields = new ArrayList<>();
 		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.REQUIRED, 1, 1));
 		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 2, 1));
-		fields.add(new FormField("location", FieldDisplayType.LOOKUP_SIMPLE, "Location", Required.OPTIONAL, "location", 3, 1));
+		fields.add(new FormField("location", FieldDisplayType.LOOKUP_SIMPLE, "Location", Required.OPTIONAL, "location", 3, 1).setAllowCreate(true).setCreateFormName("location_form"));
 		fields.add(new FormField("owner", FieldDisplayType.USER, "Owner", Required.OPTIONAL, 4, 1));
 		return fields;
 	}
@@ -518,13 +542,33 @@ public class FormFactory {
 		List<FormField> fields = new ArrayList<>();
 		fields.add(new FormField("photoId", FieldDisplayType.IMAGE, "IMAGE", Required.OPTIONAL, 1, 1));	
 		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.REQUIRED, 2, 1));
-		fields.add(new FormField("category", FieldDisplayType.LOOKUP_SIMPLE, "Category", Required.OPTIONAL, "itemTypesCategory", 3, 1));
 		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 4, 1));
-		fields.add(new FormField("unit", FieldDisplayType.UNIT, "Unit", Required.OPTIONAL, 5,1));
+		fields.add(new FormField("category", FieldDisplayType.LOOKUP_SIMPLE, "Category", Required.OPTIONAL, "itemTypesCategory", 3, 1).setAllowCreate(true).setCreateFormName("item_category_form"));
+		fields.add(new FormField("status", FieldDisplayType.LOOKUP_SIMPLE, "Status", Required.OPTIONAL, "itemTypesStatus", 6, 1));
 		fields.add(new FormField("minimumQuantity", FieldDisplayType.TEXTBOX, "Minimum Quantity", Required.OPTIONAL, 6, 1));
-		fields.add(new FormField("status", FieldDisplayType.LOOKUP_SIMPLE, "Status", Required.OPTIONAL, "itemTypesStatus", 7, 1));
-//		fields.add(new FormField("serialNumber", FieldDisplayType.TEXTBOX, "Serial Number", Required.OPTIONAL, 6,1));
 		fields.add(new FormField("individualTracking", FieldDisplayType.DECISION_BOX, "Individual Tracking", Required.OPTIONAL, 8, 1));
+		fields.add(new FormField("unit", FieldDisplayType.UNIT, "Unit", Required.OPTIONAL, 5,1));
+		return fields;
+	}
+	
+	private static List<FormField> getItemCategoryFormField() {
+		List<FormField> fields = new ArrayList<>();
+		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.OPTIONAL, 2, 1));
+		fields.add(new FormField("displayName", FieldDisplayType.TEXTBOX, "Display Name", Required.REQUIRED, 2, 1));
+		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 4, 1));
+		return fields;
+	}
+	
+	private static List<FormField> getLocationFormField() {
+		List<FormField> fields = new ArrayList<>();
+		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.REQUIRED, 1, 1));
+		fields.add(new FormField("street", FieldDisplayType.TEXTBOX, "Street", Required.OPTIONAL, 2, 1));
+		fields.add(new FormField("city", FieldDisplayType.TEXTBOX, "City", Required.OPTIONAL, 3, 1));
+		fields.add(new FormField("state", FieldDisplayType.TEXTBOX, "State / Province", Required.OPTIONAL, 4, 1));
+		fields.add(new FormField("zip", FieldDisplayType.TEXTBOX, "Zip / Postal Code", Required.OPTIONAL, 5, 1));
+		fields.add(new FormField("country", FieldDisplayType.SELECTBOX, "Country", Required.OPTIONAL, 6, 1));
+		fields.add(new FormField("lat", FieldDisplayType.DECIMAL, "Latitude", Required.OPTIONAL, 7, 1));
+		fields.add(new FormField("lng", FieldDisplayType.DECIMAL, "Longitude", Required.OPTIONAL, 8, 1));
 		return fields;
 	}
 	
@@ -533,7 +577,7 @@ public class FormFactory {
 		
 		fields.add(new FormField("photoId", FieldDisplayType.IMAGE, "IMAGE", Required.OPTIONAL, 1, 1));	
 		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.REQUIRED, 2, 1));
-		fields.add(new FormField("category", FieldDisplayType.LOOKUP_SIMPLE, "Category", Required.OPTIONAL, "toolTypesCategory", 3, 1));
+		fields.add(new FormField("category", FieldDisplayType.LOOKUP_SIMPLE, "Category", Required.OPTIONAL, "toolTypesCategory", 3, 1).setAllowCreate(true).setCreateFormName("item_category_form"));
 		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 4, 1));
 		fields.add(new FormField("unit", FieldDisplayType.UNIT, "Unit", Required.OPTIONAL, 5,1));
 		fields.add(new FormField("minimumQuantity", FieldDisplayType.TEXTBOX, "Minimum Quantity", Required.OPTIONAL, 6, 1));
@@ -559,8 +603,10 @@ public class FormFactory {
 	private static List<FormField> getItemFormField() {
 		List<FormField> fields = new ArrayList<>();
 		fields.add(new FormField("itemType", FieldDisplayType.LOOKUP_SIMPLE, "Item Type", Required.REQUIRED, "itemTypes", 1, 1));
-		fields.add(new FormField("storeRoom", FieldDisplayType.LOOKUP_SIMPLE, "Store Room", Required.REQUIRED, "storeRoom", 2, 1));
+		fields.add(new FormField("storeRoom", FieldDisplayType.LOOKUP_SIMPLE, "Store Room", Required.REQUIRED, "storeRoom", 2, 1).setAllowCreate(true).setCreateFormName("store_room_form"));
+//		fields.add(new FormField("site", FieldDisplayType.LOOKUP_SIMPLE, "Site", Required.REQUIRED, "site", 2, 2));
 		fields.add(new FormField("costType", FieldDisplayType.TEXTBOX, "Cost Type", Required.OPTIONAL, 3, 1));
+//		fields.add(new FormField("issuingUnit", FieldDisplayType.UNIT, "Issuing Unit", Required.OPTIONAL, 3, 2));
 		fields.add(new FormField("status", FieldDisplayType.LOOKUP_SIMPLE, "Status", Required.OPTIONAL, "itemStatus", 4, 1));
 		fields.add(new FormField("purchasedItems", FieldDisplayType.PURCHASEDITEM, "Purchased Item", Required.OPTIONAL, 5, 1));
 		
@@ -580,7 +626,7 @@ public class FormFactory {
 	private static List<FormField> getToolFormField() {
 		List<FormField> fields = new ArrayList<>();
 		fields.add(new FormField("toolType", FieldDisplayType.LOOKUP_SIMPLE, "Tool Type", Required.REQUIRED, "toolTypes", 1, 1));
-		fields.add(new FormField("storeRoom", FieldDisplayType.LOOKUP_SIMPLE, "Store Room", Required.REQUIRED, "storeRoom", 2, 1));
+		fields.add(new FormField("storeRoom", FieldDisplayType.LOOKUP_SIMPLE, "Store Room", Required.REQUIRED, "storeRoom", 2, 1).setAllowCreate(true).setCreateFormName("store_room_form"));
 		fields.add(new FormField("status", FieldDisplayType.LOOKUP_SIMPLE, "Status", Required.OPTIONAL, "toolStatus", 3, 1));
 		fields.add(new FormField("quantity", FieldDisplayType.DECIMAL, "Quantity", Required.OPTIONAL, 5, 1));
 		fields.add(new FormField("rate", FieldDisplayType.DECIMAL, "Rate", Required.OPTIONAL, 6, 1));

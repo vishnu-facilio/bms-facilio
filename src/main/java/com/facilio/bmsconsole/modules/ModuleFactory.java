@@ -60,12 +60,14 @@ public class ModuleFactory {
 		moduleMap.put(FacilioConstants.ContextNames.INVENTORY_CATEGORY, getInventoryCategoryModule());
 		moduleMap.put(FacilioConstants.ContextNames.STORE_ROOM, getStoreRoomModule());
 		moduleMap.put(FacilioConstants.ContextNames.ITEM_TYPES, getItemTypesModule());
+		moduleMap.put(FacilioConstants.ContextNames.ITEM_TYPES_CATEGORY, getItemCategoryModule());
 		moduleMap.put(FacilioConstants.ContextNames.TOOL_TYPES, getToolTypesModule());
 		moduleMap.put(FacilioConstants.ContextNames.VENDORS, getVendorsModule());
 		moduleMap.put(FacilioConstants.ContextNames.ITEM, getInventryModule());
 		moduleMap.put(FacilioConstants.ContextNames.ITEM_STATUS, getInventoryStatusModule());
 		moduleMap.put(FacilioConstants.ContextNames.PURCHASED_ITEM, getPurchasedItemModule());
 		moduleMap.put(FacilioConstants.ContextNames.TOOL, getToolModule());
+		moduleMap.put(FacilioConstants.ContextNames.LOCATION, getLocationsModule());
 		
 		return moduleMap;
 	}
@@ -1695,6 +1697,14 @@ public class ModuleFactory {
 		return inventoryModule;
 	}
 	
+	public static FacilioModule getLocationsModule() {
+		FacilioModule inventoryModule = new FacilioModule();
+		inventoryModule.setName(FacilioConstants.ContextNames.LOCATION);
+		inventoryModule.setDisplayName("Locations");
+		inventoryModule.setTableName("Locations");
+		return inventoryModule;
+	}
+	
   	public static FacilioModule getWeatherStationModule() {
 		FacilioModule weatherStation = new FacilioModule();
 		weatherStation.setName("weatherStations");
@@ -1726,6 +1736,14 @@ public class ModuleFactory {
 		inventoryModule.setName(FacilioConstants.ContextNames.ITEM_TYPES_STATUS);
 		inventoryModule.setDisplayName("itemTypeStatus");
 		inventoryModule.setTableName("Item_Types_status");
+		return inventoryModule;
+	}
+  	
+  	public static FacilioModule getItemCategoryModule() {
+		FacilioModule inventoryModule = new FacilioModule();
+		inventoryModule.setName(FacilioConstants.ContextNames.ITEM_TYPES_CATEGORY);
+		inventoryModule.setDisplayName("toolTypesCategory");
+		inventoryModule.setTableName("Tool_types_category");
 		return inventoryModule;
 	}
   	
