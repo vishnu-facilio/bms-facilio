@@ -37,6 +37,15 @@ public class WorkflowTemplate extends Template {
 		this.metaJson = metaJson;
 	}
 	
+	private WorkflowContext resultWorkflowContext;
+	
+	public WorkflowContext getResultWorkflowContext() {
+		return resultWorkflowContext;
+	}
+	public void setResultWorkflowContext(WorkflowContext resultWorkflowContext) {
+		this.resultWorkflowContext = resultWorkflowContext;
+	}
+
 	long resultWorkflowId = -1l;
 	@Override
 	public JSONObject getOriginalTemplate() throws Exception {

@@ -469,6 +469,9 @@ public class ReadingRuleAPI extends WorkflowRuleAPI {
 		ReadingRuleContext alarmClear = alarmRule.getAlarmClearRule();
 		ReadingRuleContext preRequsiteRule = alarmRule.getPreRequsite();
 		
+		Map<String,Long> ruleNameVsIdMap = new HashMap<>();
+		ruleNameVsIdMap.put(preRequsiteRule.getName(), preRequsiteRule.getId());
+		
 		if(alarmTriggerRules != null) {
 			
 			for(ReadingRuleContext alarmTriggerRule :alarmTriggerRules) {
@@ -496,7 +499,7 @@ public class ReadingRuleAPI extends WorkflowRuleAPI {
 				alarmTriggerRule.setRuleGroupId(preRequsiteRule.getId());
 				
 				if(alarmTriggerRule.getParentRuleName() != null) {
-					alarmTriggerRule.setParentRuleId(alarmRule.getRuleNameVsIdMap().get(alarmTriggerRule.getParentRuleName()));
+					alarmTriggerRule.setParentRuleId(ruleNameVsIdMap.get(alarmTriggerRule.getParentRuleName()));
 				}
 				else {
 					alarmTriggerRule.setParentRuleId(preRequsiteRule.getId());
@@ -506,7 +509,7 @@ public class ReadingRuleAPI extends WorkflowRuleAPI {
 				alarmTriggerRule.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
 				
 				WorkflowRuleAPI.addWorkflowRule(alarmTriggerRule);
-				alarmRule.addRuleNameVsIdMap(alarmTriggerRule.getName(), alarmTriggerRule.getId());
+				ruleNameVsIdMap.put(alarmTriggerRule.getName(), alarmTriggerRule.getId());
 			}
 			
 			if(alarmRule.getAlarmClearRuleDuplicate() != null) {

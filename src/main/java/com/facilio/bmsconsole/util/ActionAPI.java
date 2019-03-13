@@ -26,6 +26,7 @@ import com.facilio.bmsconsole.templates.JSONTemplate;
 import com.facilio.bmsconsole.templates.PushNotificationTemplate;
 import com.facilio.bmsconsole.templates.SMSTemplate;
 import com.facilio.bmsconsole.templates.Template;
+import com.facilio.bmsconsole.templates.WorkflowTemplate;
 import com.facilio.bmsconsole.templates.Template.Type;
 import com.facilio.bmsconsole.templates.WorkorderTemplate;
 import com.facilio.bmsconsole.workflow.rule.ActionContext;
@@ -37,6 +38,7 @@ import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
 import com.facilio.workflows.context.WorkflowContext;
+import com.facilio.workflows.util.WorkflowUtil;
 
 public class ActionAPI {
 
@@ -285,6 +287,8 @@ public class ActionAPI {
 							case CREATE_WORK_ORDER:
 								setJsonTemplate(action, rule, Type.JSON);
 								break;
+							case FORMULA_FIELD_CHANGE:
+								setWorkflowTemplate(action,rule,Type.WORKFLOW);
 							default:
 								break;
 						}
@@ -384,6 +388,22 @@ public class ActionAPI {
 		jsonTemplate.setType(templateType);
 		action.setTemplate(jsonTemplate);
 		checkAndSetWorkflow(action.getTemplateJson(), jsonTemplate);
+	}
+	
+	private static void setWorkflowTemplate(ActionContext action, WorkflowRuleContext rule, Type templateType) throws Exception {
+		
+		JSONObject workflowJson = (JSONObject) action.getTemplateJson().get("workflowContext");
+		WorkflowContext workflowContext = FieldUtil.getAsBeanFromJson(workflowJson, WorkflowContext.class);
+		
+		Long workflowId = WorkflowUtil.addWorkflow(workflowContext);
+		
+		WorkflowTemplate workflowTemplate = new WorkflowTemplate();
+		workflowTemplate.setName(rule.getName()+"_json_template");
+		workflowTemplate.setType(templateType);
+		workflowTemplate.setResultWorkflowId(workflowId);
+		workflowTemplate.setMetaJson((JSONObject) action.getTemplateJson().get("fieldsJson"));
+		
+		action.setTemplate(workflowTemplate);
 	}
 	
 	private static void setWorkorderTemplate(ActionContext action, WorkflowRuleContext rule) throws Exception {

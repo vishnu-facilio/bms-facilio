@@ -190,6 +190,9 @@ public class TemplateAPI {
 		else if (template instanceof WorkorderTemplate) {
 			id = TemplateAPI.addWorkOrderTemplate((WorkorderTemplate) template);
 		}
+		else if (template instanceof WorkflowTemplate) {
+			id = TemplateAPI.addWorkflowTemplate((WorkflowTemplate) template);
+		}
 		return id;
 	}
 	
@@ -963,6 +966,10 @@ public class TemplateAPI {
 	
 	public static long addWorkOrderTemplate (WorkorderTemplate template) throws Exception {
 		return addWorkOrderTemplate(template, Type.WORKORDER, Type.WO_TASK, Type.WO_TASK_SECTION);
+	}
+	
+	public static long addWorkflowTemplate (WorkflowTemplate template) throws Exception {
+		return insertTemplateWithExtendedProps(ModuleFactory.getWorkflowTemplatesModule(), FieldFactory.getWorkflowTemplateFields(), FieldUtil.getAsProperties(template)); //add tasks
 	}
 	
 	private static long addWorkOrderTemplate(WorkorderTemplate template, Type woType, Type taskType, Type sectionType) throws Exception {

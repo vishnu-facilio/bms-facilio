@@ -24,8 +24,6 @@ public class AddAlarmRuleCommand implements Command {
 		
 		long ruleId = WorkflowRuleAPI.addWorkflowRule(preRequsiteRule);
 		
-		alarmRule.addRuleNameVsIdMap(preRequsiteRule.getName(), preRequsiteRule.getId());
-		
 		preRequsiteRule.setRuleGroupId(ruleId);
 		WorkflowRuleAPI.updateWorkflowRule(preRequsiteRule);
 		

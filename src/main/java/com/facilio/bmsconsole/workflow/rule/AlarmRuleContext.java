@@ -11,13 +11,13 @@ import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 
 public class AlarmRuleContext {
 	
-	ReadingAlarmRuleContext readingAlarmRuleContext;
+	List<ReadingAlarmRuleContext> readingAlarmRuleContexts;
 	
-	public ReadingAlarmRuleContext getReadingAlarmRuleContext() {
-		return readingAlarmRuleContext;
+	public List<ReadingAlarmRuleContext> getReadingAlarmRuleContexts() {
+		return readingAlarmRuleContexts;
 	}
-	public void setReadingAlarmRuleContext(ReadingAlarmRuleContext readingAlarmRuleContext) {
-		this.readingAlarmRuleContext = readingAlarmRuleContext;
+	public void setReadingAlarmRuleContexts(List<ReadingAlarmRuleContext> readingAlarmRuleContexts) {
+		this.readingAlarmRuleContexts = readingAlarmRuleContexts;
 	}
 
 	private ReadingRuleContext preRequsite;
@@ -34,20 +34,7 @@ public class AlarmRuleContext {
 	public void setClearAlarmOnPreRequsiteFail(boolean isClearAlarmOnPreRequsiteFail) {
 		this.isClearAlarmOnPreRequsiteFail = isClearAlarmOnPreRequsiteFail;
 	}
-	
-	public Map<String, Long> getRuleNameVsIdMap() {
-		return ruleNameVsIdMap;
-	}
-	public void setRuleNameVsIdMap(Map<String, Long> ruleNameVsIdMap) {
-		this.ruleNameVsIdMap = ruleNameVsIdMap;
-	}
-	
-	public void addRuleNameVsIdMap(String name,Long id) {
-		this.ruleNameVsIdMap.put(name, id);
-	}
 
-	Map<String,Long> ruleNameVsIdMap = new HashMap<>();
-	
 	public AlarmRuleContext() {
 		
 	}
