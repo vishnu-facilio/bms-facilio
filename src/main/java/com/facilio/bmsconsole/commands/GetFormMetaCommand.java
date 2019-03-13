@@ -7,6 +7,7 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
@@ -14,7 +15,9 @@ import com.facilio.bmsconsole.criteria.StringOperators;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.forms.FormFactory;
 import com.facilio.bmsconsole.forms.FormField;
+import com.facilio.bmsconsole.forms.FormField.Required;
 import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.FacilioField.FieldDisplayType;
 import com.facilio.bmsconsole.util.FormsAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
@@ -49,7 +52,14 @@ public class GetFormMetaCommand implements Command {
 					}
 
 					int count = fields.size();
-
+					try {
+						if (AccountUtil.isFeatureEnabled(AccountUtil.FEATURE_TENANTS) && (formName.equalsIgnoreCase("workOrderForm") || formName.equalsIgnoreCase("web_pm"))) {
+						  fields.add(new FormField("tenant", FieldDisplayType.LOOKUP_SIMPLE, "Tenant", Required.OPTIONAL, "tenant", ++count, 1));
+						}
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 					List<FacilioField> customFields = modBean.getAllCustomFields(moduleName);
 					if (customFields != null && !customFields.isEmpty()) {
 						for (FacilioField f: customFields) {
@@ -60,6 +70,7 @@ public class GetFormMetaCommand implements Command {
 							fields.add(formFields);
 						}
 					}
+					
 				}
 				else {
 					if (formName.equalsIgnoreCase("web_pm")) {
