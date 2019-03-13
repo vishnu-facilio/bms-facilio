@@ -274,7 +274,7 @@ public class FormFactory {
 		form.setDisplayName("PREVENTIVE MAINTENANCE");
 		form.setName("web_pm");
 		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.WORK_ORDER));
-		form.setLabelPosition(LabelPosition.TOP);
+		form.setLabelPosition(LabelPosition.LEFT);
 		form.setFormType(FormType.WEB);
 		form.setFields(getWebPMFormFields());
 		return form;
@@ -447,19 +447,19 @@ public class FormFactory {
 		List<FormField> fields = new ArrayList<>();
 		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.REQUIRED, "name", 1, 1));
 		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 2, 1));
-		fields.add(new FormField("category", FieldDisplayType.LOOKUP_SIMPLE, "Category", Required.OPTIONAL, "assetCategory", 3, 1));
-		fields.add(new FormField("department", FieldDisplayType.LOOKUP_SIMPLE, "Department", Required.OPTIONAL,"assetdepartment", 3, 2));
-		fields.add(new FormField("type", FieldDisplayType.LOOKUP_SIMPLE, "Type", Required.OPTIONAL,"assettype", 4, 2));
-		fields.add(new FormField("manufacturer", FieldDisplayType.TEXTBOX, "Manufacturer", Required.OPTIONAL, 5, 1));
-		fields.add(new FormField("supplier", FieldDisplayType.TEXTBOX, "Supplier", Required.OPTIONAL, 5, 2));
-		fields.add(new FormField("model", FieldDisplayType.TEXTBOX, "Model", Required.OPTIONAL, 6, 1));
-		fields.add(new FormField("serialNumber", FieldDisplayType.TEXTBOX, "Serial Number", Required.OPTIONAL, 6, 2));
-		fields.add(new FormField("tagNumber", FieldDisplayType.TEXTBOX, "Tag", Required.OPTIONAL, 7, 1));
-		fields.add(new FormField("partNumber", FieldDisplayType.TEXTBOX, "Part No.", Required.OPTIONAL, 7, 2));
-		fields.add(new FormField("purchasedDate", FieldDisplayType.DATE, "Purchased Date", Required.OPTIONAL, 8, 1));
-		fields.add(new FormField("retireDate", FieldDisplayType.DATE, "Retire Date", Required.OPTIONAL, 8, 2));
-		fields.add(new FormField("unitPrice", FieldDisplayType.TEXTBOX, "Unit Price", Required.OPTIONAL, 9, 1));
-		fields.add(new FormField("warrantyExpiryDate", FieldDisplayType.DATE, "Warranty Expiry Date", Required.OPTIONAL, 9, 2));
+		fields.add(new FormField("category", FieldDisplayType.LOOKUP_SIMPLE, "Category", Required.OPTIONAL, "assetCategory", 3, 2));
+		fields.add(new FormField("department", FieldDisplayType.LOOKUP_SIMPLE, "Department", Required.OPTIONAL,"assetdepartment", 3, 3));
+		fields.add(new FormField("type", FieldDisplayType.LOOKUP_SIMPLE, "Type", Required.OPTIONAL,"assettype", 4, 1));
+		fields.add(new FormField("manufacturer", FieldDisplayType.TEXTBOX, "Manufacturer", Required.OPTIONAL, 5, 2));
+		fields.add(new FormField("supplier", FieldDisplayType.TEXTBOX, "Supplier", Required.OPTIONAL, 5, 3));
+		fields.add(new FormField("model", FieldDisplayType.TEXTBOX, "Model", Required.OPTIONAL, 6, 2));
+		fields.add(new FormField("serialNumber", FieldDisplayType.TEXTBOX, "Serial Number", Required.OPTIONAL, 6, 3));
+		fields.add(new FormField("tagNumber", FieldDisplayType.TEXTBOX, "Tag", Required.OPTIONAL, 7, 2));
+		fields.add(new FormField("partNumber", FieldDisplayType.TEXTBOX, "Part No.", Required.OPTIONAL, 7, 3));
+		fields.add(new FormField("purchasedDate", FieldDisplayType.DATE, "Purchased Date", Required.OPTIONAL, 8, 2));
+		fields.add(new FormField("retireDate", FieldDisplayType.DATE, "Retire Date", Required.OPTIONAL, 8, 3));
+		fields.add(new FormField("unitPrice", FieldDisplayType.TEXTBOX, "Unit Price", Required.OPTIONAL, 9, 2));
+		fields.add(new FormField("warrantyExpiryDate", FieldDisplayType.DATE, "Warranty Expiry Date", Required.OPTIONAL, 9, 3));
 		fields.add(new FormField("qrVal", FieldDisplayType.TEXTBOX, "QR Value", Required.OPTIONAL, 10, 1));
 		return Collections.unmodifiableList(fields);
 	}
@@ -543,11 +543,11 @@ public class FormFactory {
 		fields.add(new FormField("photoId", FieldDisplayType.IMAGE, "Image", Required.OPTIONAL, 1, 1));	
 		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.REQUIRED, 2, 1));
 		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 3, 1));
-		fields.add(new FormField("category", FieldDisplayType.LOOKUP_SIMPLE, "Category", Required.OPTIONAL, "itemTypesCategory", 3, 2).setAllowCreate(true).setCreateFormName("item_category_form"));
-		fields.add(new FormField("status", FieldDisplayType.LOOKUP_SIMPLE, "Status", Required.OPTIONAL, "itemTypesStatus", 3, 2));
-		fields.add(new FormField("unit", FieldDisplayType.UNIT, "Unit", Required.OPTIONAL, 4,1));
-		fields.add(new FormField("minimumQuantity", FieldDisplayType.TEXTBOX, "Minimum Quantity", Required.OPTIONAL, 5, 2));
-		fields.add(new FormField("individualTracking", FieldDisplayType.DECISION_BOX, "Individual Tracking", Required.OPTIONAL, 5, 2));
+		fields.add(new FormField("category", FieldDisplayType.LOOKUP_SIMPLE, "Category", Required.OPTIONAL, "itemTypesCategory", 4, 2).setAllowCreate(true).setCreateFormName("item_category_form"));
+		fields.add(new FormField("status", FieldDisplayType.LOOKUP_SIMPLE, "Status", Required.OPTIONAL, "itemTypesStatus", 4, 3));
+		fields.add(new FormField("unit", FieldDisplayType.UNIT, "Unit", Required.OPTIONAL, 5,1));
+		fields.add(new FormField("minimumQuantity", FieldDisplayType.TEXTBOX, "Minimum Quantity", Required.OPTIONAL, 6, 2));
+		fields.add(new FormField("individualTracking", FieldDisplayType.DECISION_BOX, "Individual Tracking", Required.OPTIONAL, 6, 3));
 		return fields;
 	}
 	

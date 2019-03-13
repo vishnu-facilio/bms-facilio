@@ -34,6 +34,10 @@
 			<param name="approval">true</param>
 		</action>
 		
+		<action name="account" class="com.facilio.bmsconsole.actions.LoginAction"
+			method="v2portalAccount"> 
+		</action>
+		
 	</package>
 
 	<!-- new service portal api will be open -->

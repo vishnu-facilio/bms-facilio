@@ -290,6 +290,12 @@ public class LoginAction extends FacilioAction {
 		account.put("data", data);
 		return SUCCESS;
 	}
+	
+	public String v2portalAccount() throws Exception {
+		portalAccount();
+		setResult("account", account);
+		return SUCCESS;
+	}
 
 	public String currentAccount() throws Exception {
 		
