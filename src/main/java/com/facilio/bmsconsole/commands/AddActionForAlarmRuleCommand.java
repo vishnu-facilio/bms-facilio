@@ -21,32 +21,29 @@ public class AddActionForAlarmRuleCommand implements Command {
 		
 		AlarmRuleContext alarmRule = (AlarmRuleContext) context.get(FacilioConstants.ContextNames.ALARM_RULE);
 		
-		for( ReadingRuleContext rule :alarmRule.getAlarmTriggerRules()) {
+		ReadingRuleContext alarmTriggerRule =  alarmRule.getAlarmTriggerRule();
+		
+			List<ActionContext> actions = ActionAPI.addActions(alarmTriggerRule.getActions(), alarmTriggerRule);
+			ActionAPI.addWorkflowRuleActionRel(alarmTriggerRule.getId(), actions);
+		
+		for( ReadingRuleContext rule :alarmRule.getAlarmRCARules()) {
 			
-			if (rule.getActions() != null && !rule.getActions().isEmpty()) {
-				List<ActionContext> actions = ActionAPI.addActions(rule.getActions(), rule);
-				ActionAPI.addWorkflowRuleActionRel(rule.getId(), actions);
-			}
+			actions = ActionAPI.addActions(rule.getActions(), rule);
+			ActionAPI.addWorkflowRuleActionRel(rule.getId(), actions);
 		}
 		
 		ActionContext actionContext = new ActionContext();
 		actionContext.setActionType(ActionType.CLEAR_ALARM);
 		actionContext.setStatus(true);
-		List<ActionContext>  clearActions = ActionAPI.addActions(Collections.singletonList(actionContext), null);
+		List<ActionContext> clearActions = ActionAPI.addActions(Collections.singletonList(actionContext), null);
 		
-		if(alarmRule.getAlarmClearRule() != null) {
-			
-			ActionAPI.addWorkflowRuleActionRel(alarmRule.getAlarmClearRule().getId(), clearActions);
-			
-			alarmRule.getAlarmClearRule().setActions(clearActions);
-		}
+		ActionAPI.addWorkflowRuleActionRel(alarmRule.getAlarmClearRule().getId(), clearActions);
 		
-		if(alarmRule.getAlarmClearRuleDuplicate() != null) {
-			
-			ActionAPI.addWorkflowRuleActionRel(alarmRule.getAlarmClearRuleDuplicate().getId(), clearActions);
-			
-			alarmRule.getAlarmClearRuleDuplicate().setActions(clearActions);
-		}
+		alarmRule.getAlarmClearRule().setActions(clearActions);
+		
+		ActionAPI.addWorkflowRuleActionRel(alarmRule.getAlarmClearRuleDuplicate().getId(), clearActions);
+		
+		alarmRule.getAlarmClearRuleDuplicate().setActions(clearActions);
 		
 		
 		return false;

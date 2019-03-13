@@ -19,10 +19,14 @@ public class GetActionListForAlarmRuleCommand implements Command {
 	public boolean execute(Context context) throws Exception {
 		AlarmRuleContext alarmRule = (AlarmRuleContext) context.get(FacilioConstants.ContextNames.ALARM_RULE);
 		
-		List<ReadingRuleContext> rules = alarmRule.getAlarmTriggerRules();
+		ReadingRuleContext alarmTriggerRule = alarmRule.getAlarmTriggerRule();
+		List<ActionContext> actions = ActionAPI.getAllActionsFromWorkflowRule(AccountUtil.getCurrentOrg().getId(), alarmTriggerRule.getId());
+		alarmTriggerRule.setActions(actions);
+		
+		List<ReadingRuleContext> rules = alarmRule.getAlarmRCARules();
 		if(rules != null && !rules.isEmpty()) {
 			for (WorkflowRuleContext rule : rules) {
-				List<ActionContext> actions = ActionAPI.getAllActionsFromWorkflowRule(AccountUtil.getCurrentOrg().getId(), rule.getId());
+				actions = ActionAPI.getAllActionsFromWorkflowRule(AccountUtil.getCurrentOrg().getId(), rule.getId());
 				rule.setActions(actions);
 			}
 		}

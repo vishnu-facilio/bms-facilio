@@ -20,7 +20,7 @@ public class AddAlarmRuleCommand implements Command {
 		
 		ReadingRuleContext preRequsiteRule = alarmRule.getPreRequsite();
 		
-		fillDefaultProps(preRequsiteRule);
+		fillDefaultPropsForPreRequsite(preRequsiteRule);
 		
 		long ruleId = WorkflowRuleAPI.addWorkflowRule(preRequsiteRule);
 		
@@ -31,7 +31,7 @@ public class AddAlarmRuleCommand implements Command {
 		return false;
 	}
 	
-	private void fillDefaultProps(ReadingRuleContext preRequsiteRule) {
+	private void fillDefaultPropsForPreRequsite(ReadingRuleContext preRequsiteRule) {
 		preRequsiteRule.setStatus(true);
 		preRequsiteRule.setRuleType(WorkflowRuleContext.RuleType.READING_RULE);
 		preRequsiteRule.setOrgId(AccountUtil.getCurrentOrg().getOrgId());

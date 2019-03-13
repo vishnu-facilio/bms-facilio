@@ -462,75 +462,68 @@ public class ReadingRuleAPI extends WorkflowRuleAPI {
 		}
 		
 	}
+	
+	private static void fillDefaultPropsForAlarmRule(ReadingRuleContext alarmRule,ReadingRuleContext preRequsiteRule,WorkflowRuleContext.RuleType ruleType,Long parentId) {
+		
+		alarmRule.setId(-1);
+		alarmRule.setCriteriaId(-1l);
+		alarmRule.setWorkflowId(-1l);
+		
+		alarmRule.setRuleType(ruleType);
+		alarmRule.setEventId(preRequsiteRule.getEventId());
+		alarmRule.setAssetCategoryId(preRequsiteRule.getAssetCategoryId());
+		alarmRule.setRuleGroupId(preRequsiteRule.getId());
+		alarmRule.setStatus(true);
+		alarmRule.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
+		
+		alarmRule.setParentRuleId(parentId);
+		
+	}
 
 	public static void addTriggerAndClearRule(AlarmRuleContext alarmRule) throws Exception {
-		List<ReadingRuleContext> alarmTriggerRules = alarmRule.getAlarmTriggerRules();
 		
-		ReadingRuleContext alarmClear = alarmRule.getAlarmClearRule();
 		ReadingRuleContext preRequsiteRule = alarmRule.getPreRequsite();
 		
 		Map<String,Long> ruleNameVsIdMap = new HashMap<>();
 		ruleNameVsIdMap.put(preRequsiteRule.getName(), preRequsiteRule.getId());
 		
-		if(alarmTriggerRules != null) {
-			
-			for(ReadingRuleContext alarmTriggerRule :alarmTriggerRules) {
-				alarmTriggerRule.setId(-1);
-				alarmTriggerRule.setRuleType(WorkflowRuleContext.RuleType.ALARM_TRIGGER_RULE);
-				alarmTriggerRule.setEventId(preRequsiteRule.getEventId());
-				alarmTriggerRule.setAssetCategoryId(preRequsiteRule.getAssetCategoryId());
-			}
-			if(alarmClear != null) {
-				alarmClear.setId(-1);
-				alarmClear.setRuleType(WorkflowRuleContext.RuleType.ALARM_CLEAR_RULE);
-				alarmClear.setEventId(preRequsiteRule.getEventId());
-				alarmClear.setAssetCategoryId(preRequsiteRule.getAssetCategoryId());
-				alarmTriggerRules.add(alarmClear);
-			}
+		
+		ReadingRuleContext alarmTriggerRule = alarmRule.getAlarmTriggerRule();
+		fillDefaultPropsForAlarmRule(alarmTriggerRule,preRequsiteRule,WorkflowRuleContext.RuleType.ALARM_TRIGGER_RULE,preRequsiteRule.getId());
+		WorkflowRuleAPI.addWorkflowRule(alarmTriggerRule);
+		ruleNameVsIdMap.put(alarmTriggerRule.getName(), alarmTriggerRule.getId());
+		
+		
+		List<ReadingRuleContext> alarmRCARules = alarmRule.getAlarmRCARules();
+		
+		if(alarmRCARules != null) {
 			
 			int executionOrder = 1;
-			for(ReadingRuleContext alarmTriggerRule :alarmTriggerRules) {
+			for(ReadingRuleContext alarmRCARule :alarmRCARules) {
 				
-				alarmTriggerRule.setExecutionOrder(executionOrder++);
+				alarmRCARule.setExecutionOrder(executionOrder++);
 				
-				alarmTriggerRule.setCriteriaId(-1l);
-				alarmTriggerRule.setWorkflowId(-1l);
+				Long parentId = alarmTriggerRule.getParentRuleName() != null ? ruleNameVsIdMap.get(alarmTriggerRule.getParentRuleName()) : alarmTriggerRule.getId();
+				fillDefaultPropsForAlarmRule(alarmRCARule,preRequsiteRule,WorkflowRuleContext.RuleType.ALARM_RCA_RULES,parentId);
 				
-				alarmTriggerRule.setRuleGroupId(preRequsiteRule.getId());
-				
-				if(alarmTriggerRule.getParentRuleName() != null) {
-					alarmTriggerRule.setParentRuleId(ruleNameVsIdMap.get(alarmTriggerRule.getParentRuleName()));
-				}
-				else {
-					alarmTriggerRule.setParentRuleId(preRequsiteRule.getId());
-				}
-				
-				alarmTriggerRule.setStatus(true);
-				alarmTriggerRule.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
-				
-				WorkflowRuleAPI.addWorkflowRule(alarmTriggerRule);
-				ruleNameVsIdMap.put(alarmTriggerRule.getName(), alarmTriggerRule.getId());
-			}
-			
-			if(alarmRule.getAlarmClearRuleDuplicate() != null) {
-				alarmClear = alarmRule.getAlarmClearRuleDuplicate();
-				
-				alarmClear.setCriteriaId(-1l);
-				alarmClear.setWorkflowId(-1l);
-				
-				alarmClear.setId(-1);
-				alarmClear.setRuleType(WorkflowRuleContext.RuleType.ALARM_CLEAR_RULE);
-				alarmClear.setEventId(preRequsiteRule.getEventId());
-				alarmClear.setAssetCategoryId(preRequsiteRule.getAssetCategoryId());
-				alarmClear.setOnSuccess(false);
-				
-				alarmClear.setRuleGroupId(preRequsiteRule.getId());
-				alarmClear.setParentRuleId(preRequsiteRule.getId());
-				alarmClear.setStatus(true);
-				alarmClear.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
-				
-				WorkflowRuleAPI.addWorkflowRule(alarmClear);
+				WorkflowRuleAPI.addWorkflowRule(alarmRCARule);
+				ruleNameVsIdMap.put(alarmRCARule.getName(), alarmRCARule.getId());
 			}
 		}
+		
+		
+		ReadingRuleContext alarmClearRule = alarmRule.getAlarmClearRule();
+		fillDefaultPropsForAlarmRule(alarmClearRule,preRequsiteRule,WorkflowRuleContext.RuleType.ALARM_CLEAR_RULE,alarmTriggerRule.getId());
+		alarmClearRule.setOnSuccess(false);
+		WorkflowRuleAPI.addWorkflowRule(alarmClearRule);
+		ruleNameVsIdMap.put(alarmClearRule.getName(), alarmClearRule.getId());
+		
+		
+		ReadingRuleContext alarmClearRuleDuplicate = alarmRule.getAlarmClearRuleDuplicate();
+		fillDefaultPropsForAlarmRule(alarmClearRuleDuplicate,preRequsiteRule,WorkflowRuleContext.RuleType.ALARM_CLEAR_RULE,preRequsiteRule.getId());
+		alarmClearRuleDuplicate.setOnSuccess(false);
+		WorkflowRuleAPI.addWorkflowRule(alarmClearRuleDuplicate);
+		ruleNameVsIdMap.put(alarmClearRuleDuplicate.getName(), alarmClearRuleDuplicate.getId());
+		
 	}
 }

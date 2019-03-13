@@ -431,8 +431,9 @@ public class WorkflowRuleContext implements Serializable {
 
 		BUSSINESS_LOGIC_WORKORDER_RULE,
 		PM_NOTIFICATION_RULE,
-		READING_ALARM_RULE				//24
+		READING_ALARM_RULE,			//24
 		
+		ALARM_RCA_RULES				
 		
 		;
 		//Always add at the end
