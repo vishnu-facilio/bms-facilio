@@ -226,4 +226,13 @@ public class FacilioModule implements Serializable {
 			return null;
 		}
 	}
+
+	@JsonIgnore
+	public FacilioModule getParentModule() {
+		FacilioModule module = this;
+		while (module.getExtendModule() != null) {
+			module = module.getExtendModule();
+		}
+		return module;
+	}
 }

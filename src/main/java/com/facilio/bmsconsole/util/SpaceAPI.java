@@ -1287,7 +1287,7 @@ public static long getSitesCount() throws Exception {
 				.select(fields)
 				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(assetModule))
 				.andCondition(spaceCond)
-				.andCondition(CriteriaAPI.getCondition(FieldFactory.getIsDeletedField(), String.valueOf(false), BooleanOperators.IS));
+				.andCondition(CriteriaAPI.getCondition(FieldFactory.getIsDeletedField(assetModule.getParentModule()), String.valueOf(false), BooleanOperators.IS));
 		
 		FacilioModule prevModule = assetModule;
 		FacilioModule extendedModule = assetModule.getExtendModule();
