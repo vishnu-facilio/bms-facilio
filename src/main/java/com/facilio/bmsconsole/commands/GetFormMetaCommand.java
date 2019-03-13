@@ -23,7 +23,7 @@ public class GetFormMetaCommand implements Command {
 	@Override
 	public boolean execute(Context context) throws Exception {
 		String[] formNames = (String[]) context.get(FacilioConstants.ContextNames.FORM_NAMES);
-		long formId = (long) context.get(FacilioConstants.ContextNames.FORM_ID);
+		Long formId = (Long) context.get(FacilioConstants.ContextNames.FORM_ID);
 		List<FacilioForm> forms = new ArrayList<>();
 		if (formNames != null && formNames.length > 0) {
 			for (String formName: formNames) {
@@ -64,7 +64,7 @@ public class GetFormMetaCommand implements Command {
 			}
 			context.put(FacilioConstants.ContextNames.FORMS, forms);
 		}
-		else {
+		else if(formId != null) {
 			FacilioForm form= FormsAPI.getFormFromDB(formId);
 			forms.add(form);
 			context.put(FacilioConstants.ContextNames.FORMS, forms);
