@@ -1,7 +1,9 @@
 package com.facilio.bmsconsole.workflow.rule;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.struts2.json.annotations.JSON;
 
@@ -9,6 +11,15 @@ import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 
 public class AlarmRuleContext {
 	
+	ReadingAlarmRuleContext readingAlarmRuleContext;
+	
+	public ReadingAlarmRuleContext getReadingAlarmRuleContext() {
+		return readingAlarmRuleContext;
+	}
+	public void setReadingAlarmRuleContext(ReadingAlarmRuleContext readingAlarmRuleContext) {
+		this.readingAlarmRuleContext = readingAlarmRuleContext;
+	}
+
 	private ReadingRuleContext preRequsite;
 	List<ReadingRuleContext> alarmTriggerRules;
 	ReadingRuleContext alarmClearRule;
@@ -23,6 +34,19 @@ public class AlarmRuleContext {
 	public void setClearAlarmOnPreRequsiteFail(boolean isClearAlarmOnPreRequsiteFail) {
 		this.isClearAlarmOnPreRequsiteFail = isClearAlarmOnPreRequsiteFail;
 	}
+	
+	public Map<String, Long> getRuleNameVsIdMap() {
+		return ruleNameVsIdMap;
+	}
+	public void setRuleNameVsIdMap(Map<String, Long> ruleNameVsIdMap) {
+		this.ruleNameVsIdMap = ruleNameVsIdMap;
+	}
+	
+	public void addRuleNameVsIdMap(String name,Long id) {
+		this.ruleNameVsIdMap.put(name, id);
+	}
+
+	Map<String,Long> ruleNameVsIdMap = new HashMap<>();
 	
 	public AlarmRuleContext() {
 		

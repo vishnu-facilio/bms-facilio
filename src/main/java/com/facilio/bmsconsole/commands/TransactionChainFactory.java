@@ -912,6 +912,7 @@ public class TransactionChainFactory {
 			c.addCommand(new AddAlarmRuleCommand());
 			c.addCommand(new AddActionForAlarmRuleCommand());
 			c.addCommand(new AddJobEntryForScheduledReadingRuleCommand());
+			c.addCommand(new AddReadingAlarmRuleCommand());
 			return c;
 		}
 		
@@ -920,6 +921,7 @@ public class TransactionChainFactory {
 			c.addCommand(new UpdateAlarmRuleCommand());
 			c.addCommand(new AddActionForAlarmRuleCommand());
 			c.addCommand(new AddJobEntryForScheduledReadingRuleCommand());
+			c.addCommand(new AddReadingAlarmRuleCommand());
 			return c;
 		}
 		

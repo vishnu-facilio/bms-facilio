@@ -156,7 +156,7 @@ public class DeleteRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 			throw new IllegalArgumentException("Trash is not enabled for this module and so cannot be marked as delete");
 		}
 		
-		FacilioField isDeletedField = FieldFactory.getIsDeletedField();
+		FacilioField isDeletedField = FieldFactory.getIsDeletedField(module.getParentModule());
 		Map<String, Object> prop = Collections.singletonMap(isDeletedField.getName(), true);
 		updateBuilder.fields(Collections.singletonList(isDeletedField))
 						.andCustomWhere(where.getWhereClause(),  where.getValues());

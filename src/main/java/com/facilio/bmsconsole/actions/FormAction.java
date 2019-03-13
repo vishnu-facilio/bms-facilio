@@ -48,6 +48,7 @@ public class FormAction extends FacilioAction {
 		Context context = new FacilioContext();
 		
 		context.put(FacilioConstants.ContextNames.FORM_NAMES, this.getFormNames());
+		context.put(FacilioConstants.ContextNames.FORM_ID, this.getFormId());
 		Chain c = FacilioChainFactory.getFormMetaChain();
 		c.execute(context);
 		
@@ -66,6 +67,8 @@ public class FormAction extends FacilioAction {
 	public String getModuleName() {
 		return this.moduleName;
 	}
+	
+    private long formId;
 	
 	private List<FormField> fields;
 	
@@ -128,6 +131,11 @@ public class FormAction extends FacilioAction {
 		return SUCCESS;
 	}	
 	
+    /* public String FormIdFields() throws Exception {
+		setResult(FacilioConstants.ContextNames.FORM_FIELDS,FormsAPI.getFormIdFields(formId));
+		return SUCCESS;
+	} */	
+	
 	public String editForm() throws Exception {
 		Context context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.FORM_NAMES, new String[]{this.getForm().getName()});
@@ -137,5 +145,13 @@ public class FormAction extends FacilioAction {
 		c.execute(context);
 		
 		return SUCCESS;
+	}
+
+	public long getFormId() {
+		return formId;
+	}
+
+	public void setFormId(long formId) {
+		this.formId = formId;
 	}
 }

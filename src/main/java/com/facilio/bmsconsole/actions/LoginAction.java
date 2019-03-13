@@ -279,10 +279,12 @@ public class LoginAction extends FacilioAction {
 		List<User> users = AccountUtil.getOrgBean().getAllOrgUsers(AccountUtil.getCurrentOrg().getOrgId());
 		Map<String, Object> data = new HashMap<>();
 		data.put("users", users);
-		data.put("ticketStatus", getTicketStatus());
+		data.put("ticketStatus", TicketAPI.getAllStatus(false));
 		data.put("ticketCategory", TicketAPI.getCategories(AccountUtil.getCurrentOrg().getOrgId()));
+		data.put("ticketPriority", TicketAPI.getPriorties(AccountUtil.getCurrentOrg().getOrgId()));
 		data.put("assetCategory", AssetsAPI.getCategoryList());
 		data.put("sites", SpaceAPI.getAllSites());
+		data.put("orgInfo", CommonCommandUtil.getOrgInfo());
 		int license = AccountUtil.getFeatureLicense();
 		account.put("License", license);
 		account.put("data", data);

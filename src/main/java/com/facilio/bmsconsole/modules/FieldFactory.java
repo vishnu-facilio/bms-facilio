@@ -921,9 +921,13 @@ public class FieldFactory {
 
 		return contactId;
 	}
+	
+	public static FacilioField getIsDeletedField(FacilioModule module) {
+		return getField("deleted", "SYS_DELETED", module, FieldType.BOOLEAN);
+	}
 
 	public static FacilioField getIsDeletedField() {
-		return getField("deleted", "SYS_DELETED", FieldType.BOOLEAN);
+		return getIsDeletedField(null);
 	}
 	
 	public static List<FacilioField> getCountField() {

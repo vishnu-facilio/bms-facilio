@@ -105,6 +105,10 @@ public  class AgentUtil
             agent.setAgentName(payload.get(AgentKeys.AGENT).toString());
         }
 
+        if (agent.getAgentName() == null) {
+            agent.setAgentName(orgDomainName);
+        }
+
         if(payload.containsKey(AgentKeys.AGENT_TYPE)){
             agent.setAgentType(payload.get(AgentKeys.AGENT_TYPE).toString());
         }
@@ -112,8 +116,9 @@ public  class AgentUtil
         return agent;
 
     }
-    public int processAgent(JSONObject payload) {
-        String agentName = (String) payload.get(AgentKeys.AGENT);
+
+    public int processAgent(JSONObject jsonObject) {
+        String agentName = (String) jsonObject.get(AgentKeys.AGENT);
         
         if (StringUtils.isEmpty(agentName)) { //Temp fix to avoid NPE
         	agentName = orgDomainName;
@@ -127,8 +132,8 @@ public  class AgentUtil
             try {
 
                 Map<String,Object> toUpdate = new HashMap<>();
-                if(payload.containsKey(AgentKeys.CONNECTION_STATUS)) {
-                    Boolean connectionStatus = Boolean.valueOf((payload.get(AgentKeys.CONNECTION_STATUS).toString()));
+                if(jsonObject.containsKey(AgentKeys.CONNECTION_STATUS)) {
+                    Boolean connectionStatus = Boolean.valueOf((jsonObject.get(AgentKeys.CONNECTION_STATUS).toString()));
                     if (agent.getAgentConnStatus() != connectionStatus) {
                         toUpdate.put(AgentKeys.CONNECTION_STATUS, connectionStatus);
                         agent.setAgentConnStatus(connectionStatus);
@@ -138,8 +143,8 @@ public  class AgentUtil
                     agent.setAgentConnStatus(false);
                 }
 
-                if(payload.containsKey(AgentKeys.STATE)) {
-                    Integer currStatus = Integer.parseInt(payload.get(AgentKeys.STATE).toString());
+                if(jsonObject.containsKey(AgentKeys.STATE)) {
+                    Integer currStatus = Integer.parseInt(jsonObject.get(AgentKeys.STATE).toString());
                     if (agent.getAgentState() != currStatus) {
                         toUpdate.put(AgentKeys.STATE, currStatus);
                         agent.setAgentState(currStatus);
@@ -150,8 +155,8 @@ public  class AgentUtil
                     agent.setAgentState(0);
                 }
 
-                if(payload.containsKey(AgentKeys.DATA_INTERVAL)) {
-                    Long currDataInterval = Long.parseLong(payload.get(AgentKeys.DATA_INTERVAL).toString());
+                if(jsonObject.containsKey(AgentKeys.DATA_INTERVAL)) {
+                    Long currDataInterval = Long.parseLong(jsonObject.get(AgentKeys.DATA_INTERVAL).toString());
                     if ( agent.getAgentDataInterval() != currDataInterval .intValue() ) {
                         toUpdate.put(AgentKeys.DATA_INTERVAL, currDataInterval);
                         agent.setAgentDataInterval(currDataInterval);
@@ -161,8 +166,8 @@ public  class AgentUtil
                     agent.setAgentDataInterval(DEFAULT_TIME);
                 }
 
-                if(payload.containsKey(AgentKeys.NUMBER_OF_CONTROLLERS)){
-                    Integer currNumberOfControllers = Integer.parseInt(payload.get(AgentKeys.NUMBER_OF_CONTROLLERS).toString());
+                if(jsonObject.containsKey(AgentKeys.NUMBER_OF_CONTROLLERS)){
+                    Integer currNumberOfControllers = Integer.parseInt(jsonObject.get(AgentKeys.NUMBER_OF_CONTROLLERS).toString());
                     if( (agent.getAgentNumberOfControllers().intValue() != currNumberOfControllers.intValue())){
                         toUpdate.put(AgentKeys.NUMBER_OF_CONTROLLERS,currNumberOfControllers);
                         agent.setAgentNumberOfControllers(currNumberOfControllers);
@@ -172,8 +177,8 @@ public  class AgentUtil
                     agent.setAgentNumberOfControllers(0);
                 }
 
-                if (payload.containsKey(AgentKeys.VERSION)) {
-                    Object currDeviceDetails = payload.get(AgentKeys.VERSION);
+                if (jsonObject.containsKey(AgentKeys.VERSION)) {
+                    Object currDeviceDetails = jsonObject.get(AgentKeys.VERSION);
                     String currDeviceDetailsString = currDeviceDetails.toString();
                     if (!(agent.getAgentDeviceDetails().equalsIgnoreCase(currDeviceDetailsString))) {
                         toUpdate.put(AgentKeys.DEVICE_DETAILS, currDeviceDetails);
@@ -184,10 +189,10 @@ public  class AgentUtil
                 if(!toUpdate.isEmpty()) {
                     toUpdate.put(AgentKeys.LAST_MODIFIED_TIME,System.currentTimeMillis());
                     toUpdate.put(AgentKeys.LAST_DATA_RECEIVED_TIME,System.currentTimeMillis());
+                    int n = genericUpdateRecordBuilder.update(toUpdate) ;
+                    return n;
                 }
-                int n = genericUpdateRecordBuilder.update(toUpdate) ;
-                return n;
-
+                return 0;
             }
             catch (Exception e) {
                 LOGGER.info("Exception occurred ", e);
@@ -197,7 +202,8 @@ public  class AgentUtil
 
         }
         else {
-            FacilioAgent agent = getFacilioAgentFromJson(payload);
+            FacilioAgent agent = getFacilioAgentFromJson(jsonObject);
+            JSONObject payload = new JSONObject();
             long currTime = System.currentTimeMillis();
             payload.put(AgentKeys.CREATED_TIME,currTime);
             payload.put(AgentKeys.LAST_MODIFIED_TIME, currTime);

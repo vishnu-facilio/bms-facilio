@@ -8,6 +8,7 @@ import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.ItemContext;
 import com.facilio.bmsconsole.context.ItemTransactionsContext;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
@@ -16,6 +17,7 @@ import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.util.ItemsApi;
+import com.facilio.bmsconsole.util.StoreroomApi;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
@@ -98,10 +100,11 @@ public class GetItemTransactionsListCommand implements Command{
 			} else {
 				for (ItemTransactionsContext itemTransactions : records) {
 					if (itemTransactions.getItem() != null && itemTransactions.getItem().getId() != -1) {
-//						itemTransactions.setItem(ItemsApi.getItem(itemTransactions.getItem().getId()));
-						
-						//Commenting to avoid compilation error
-					}
+						ItemContext item= ItemsApi.getItems(itemTransactions.getItem().getId());
+						item.setItemType(ItemsApi.getItemTypes(item.getItemType().getId()));
+						item.setStoreRoom(StoreroomApi.getStoreRoom(item.getStoreRoom().getId()));
+						itemTransactions.setItem(item);
+											}
 				}
 
 				context.put(FacilioConstants.ContextNames.RECORD_LIST, records);

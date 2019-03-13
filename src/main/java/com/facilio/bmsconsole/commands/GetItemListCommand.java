@@ -110,7 +110,7 @@ public class GetItemListCommand implements Command{
 				Set<Long> locatoionIds = new HashSet<Long>();
 				for (ItemContext inventry : records) {
 					if (inventry.getItemType().getId() != -1) {
-						Map<Long, ItemTypesContext> itemMap = ItemsApi.getItemsMap
+						Map<Long, ItemTypesContext> itemMap = ItemsApi.getItemTypesMap
 								((inventry.getItemType().getId()));
 						inventry.setItemType(itemMap.get(inventry.getItemType().getId()));
 					}

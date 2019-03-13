@@ -242,6 +242,15 @@ public class WorkflowRuleContext implements Serializable {
 		this.actions = this.actions == null ? new ArrayList<ActionContext>() : this.actions;
 		this.actions.add(action);
 	}
+	private String parentRuleName = null;
+	
+	public String getParentRuleName() {
+		return parentRuleName;
+	}
+	public void setParentRuleName(String parentRuleName) {
+		this.parentRuleName = parentRuleName;
+	}
+
 	private long parentRuleId = -1;
 	public long getParentRuleId() {
 		return parentRuleId;

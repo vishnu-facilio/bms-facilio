@@ -90,7 +90,7 @@ public class StoreRoomAction extends FacilioAction{
 		}
 		if (getSearch() != null) {
 			JSONObject searchObj = new JSONObject();
-			searchObj.put("fields", "store_room.name");
+			searchObj.put("fields", "storeRoom.name");
 			searchObj.put("query", getSearch());
 			context.put(FacilioConstants.ContextNames.SEARCH, searchObj);
 		}

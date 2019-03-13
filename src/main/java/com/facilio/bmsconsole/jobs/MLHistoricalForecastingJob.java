@@ -119,7 +119,7 @@ public class MLHistoricalForecastingJob extends FacilioJob
 							 Object value = readingObj.get("predicted");
 							 newReading.addReading(predictedLogField.getName(), value);	   			
 							 newReading.setTtime((long)readingObj.get("ttime"));
-							 newReading.addReading("predictedTime", System.currentTimeMillis());
+							 newReading.addReading("predictedTime", currentTime);
 							 logReadingList.add(newReading);
 							 
 							 ReadingContext predictReading = new ReadingContext();

@@ -48,7 +48,8 @@ public class VendorAction extends FacilioAction{
 		FacilioContext context = new FacilioContext();
 		LocationContext location = vendor.getAddress();
 		if(location!=null)
-		{
+		{	
+			location.setName(vendor.getName()+"_location");
 			context.put(FacilioConstants.ContextNames.RECORD, location);
 			Chain addLocation = FacilioChainFactory.addLocationChain();
 			addLocation.execute(context);

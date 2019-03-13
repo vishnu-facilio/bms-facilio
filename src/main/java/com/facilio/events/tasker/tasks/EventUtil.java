@@ -12,7 +12,6 @@ import java.util.Map;
     public class EventUtil {
 
         public static final String DATA_TYPE = "PUBLISH_TYPE";
-        //    private List<EventRule> eventRules = new ArrayList<>();
         private Map<String, Integer> eventCountMap = new HashMap<>();
         private long lastEventTime = System.currentTimeMillis();
 

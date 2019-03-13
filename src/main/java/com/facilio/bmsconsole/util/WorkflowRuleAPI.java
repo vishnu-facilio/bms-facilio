@@ -106,6 +106,9 @@ public class WorkflowRuleAPI {
 				addExtendedProps(ModuleFactory.getReadingRuleModule(), FieldFactory.getReadingRuleFields(), ruleProps);
 				ReadingRuleAPI.addReadingRuleInclusionsExlusions((ReadingRuleContext) rule);
 				break;
+			case READING_ALARM_RULE:
+				addExtendedProps(ModuleFactory.getReadingAlarmRuleModule(), FieldFactory.getReadingAlarmRuleFields(), ruleProps);
+				break;
 			case SLA_RULE:
 				addExtendedProps(ModuleFactory.getSLARuleModule(), FieldFactory.getSLARuleFields(), ruleProps);
 				break;

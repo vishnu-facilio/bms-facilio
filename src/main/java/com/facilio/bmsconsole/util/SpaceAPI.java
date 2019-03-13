@@ -722,10 +722,12 @@ public class SpaceAPI {
 			selectBuilder.andCriteria(scopeCriteria);
 		}
 		
-		Criteria permissionCriteria = AccountUtil.getCurrentUser().getRole().permissionCriteria(module.getName(),"read");
-		if (permissionCriteria != null) {
-			selectBuilder.andCriteria(permissionCriteria);
-		}
+		 if (AccountUtil.getCurrentUser().getRole() != null) {
+		 	Criteria permissionCriteria = AccountUtil.getCurrentUser().getRole().permissionCriteria(module.getName(),"read");
+		 	if (permissionCriteria != null) {
+		 		selectBuilder.andCriteria(permissionCriteria);
+		 	}
+		 }
 		
 		List<BuildingContext> buildings = selectBuilder.get();
 		return buildings;
@@ -1287,7 +1289,7 @@ public static long getSitesCount() throws Exception {
 				.select(fields)
 				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(assetModule))
 				.andCondition(spaceCond)
-				.andCondition(CriteriaAPI.getCondition(FieldFactory.getIsDeletedField(), String.valueOf(false), BooleanOperators.IS));
+				.andCondition(CriteriaAPI.getCondition(FieldFactory.getIsDeletedField(assetModule.getParentModule()), String.valueOf(false), BooleanOperators.IS));
 		
 		FacilioModule prevModule = assetModule;
 		FacilioModule extendedModule = assetModule.getExtendModule();

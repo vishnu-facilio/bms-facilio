@@ -47,7 +47,7 @@ public class GetWorkorderItemsListCommand implements Command {
 					StoreRoomContext storeRoom = StoreroomApi
 							.getStoreRoom(inventry.getStoreRoom().getId());
 					inventry.setStoreRoom(storeRoom);
-					ItemTypesContext item = ItemsApi.getItem(inventry.getItemType().getId());
+					ItemTypesContext item = ItemsApi.getItemTypes(inventry.getItemType().getId());
 					inventry.setItemType(item);
 					woItems.setItem(inventry);
 				}
