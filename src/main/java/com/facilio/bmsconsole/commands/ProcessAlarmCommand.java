@@ -76,6 +76,7 @@ public class ProcessAlarmCommand implements Command {
 		}
 		context.put(FacilioConstants.ContextNames.ALARM, alarm);
 		context.put(FacilioConstants.ContextNames.COMMENT, comment);
+		context.put(FacilioConstants.ContextNames.IS_NEW_EVENT, true);
 		
 		return false;
 	}

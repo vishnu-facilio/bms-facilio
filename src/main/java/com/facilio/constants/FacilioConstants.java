@@ -43,6 +43,7 @@ import com.facilio.bmsconsole.context.ItemTypesVendorsContext;
 import com.facilio.bmsconsole.context.ItemTypesContext;
 import com.facilio.bmsconsole.context.LocationContext;
 import com.facilio.bmsconsole.context.MLAlarmContext;
+import com.facilio.bmsconsole.context.MLAlarmOccurrenceContext;
 import com.facilio.bmsconsole.context.MlForecastingContext;
 import com.facilio.bmsconsole.context.PhotosContext;
 import com.facilio.bmsconsole.context.ReadingAlarmContext;
@@ -240,11 +241,13 @@ public class FacilioConstants {
 		public static final String ALARM = "alarm";
 		public static final String READING_ALARM = "readingalarm";
 		public static final String ML_ALARM = "mlalarm";
+		public static final String ML_ALARM_OCCURRENCE = "mlalarmoccurrence";
 		public static final String ALARM_LIST = "alarms";
 		public static final String ALARM_ENTITY_ID = "alarmentityid";
 		
 		
 		public static final String EVENT = "event";
+		public static final String IS_NEW_EVENT = "isNewEvent";
 		
 		public static final String INVENTORY = "inventory";
 		public static final String INVENTORY_LIST = "inventories";
@@ -856,6 +859,7 @@ public class FacilioConstants {
 			classMap.put(ALARM, AlarmContext.class);
 			classMap.put(READING_ALARM, ReadingAlarmContext.class);
 			classMap.put(ML_ALARM, MLAlarmContext.class);
+			classMap.put(ML_ALARM_OCCURRENCE, MLAlarmOccurrenceContext.class);
 			classMap.put(RESOURCE, ResourceContext.class);
 			classMap.put(BASE_SPACE, BaseSpaceContext.class);
 			classMap.put(ASSIGNED_OCCUPANCY_READING, ReadingContext.class);

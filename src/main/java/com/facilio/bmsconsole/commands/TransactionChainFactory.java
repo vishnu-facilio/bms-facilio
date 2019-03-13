@@ -1009,6 +1009,7 @@ public class TransactionChainFactory {
 			Chain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForAlarm());
 			c.addCommand(new AddAlarmCommand());
+			c.addCommand(new AddMLOccurrenceCommand());
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.BUSSINESS_LOGIC_ALARM_RULE));
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.PM_ALARM_RULE));
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.READING_ALARM_RULE));
@@ -1032,6 +1033,7 @@ public class TransactionChainFactory {
 			Chain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForAlarm());
 			c.addCommand(new UpdateAlarmCommand());
+			c.addCommand(new AddMLOccurrenceCommand());
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.BUSSINESS_LOGIC_ALARM_RULE));
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.PM_ALARM_RULE));
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.READING_ALARM_RULE));
