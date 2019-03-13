@@ -48,6 +48,10 @@ public class AlarmRuleContext {
 			}
 		}
 	}
+	public AlarmRuleContext(List<ReadingRuleContext> rules,List<ReadingAlarmRuleContext> readingAlarmRuleContexts) {
+		this(rules);
+		this.readingAlarmRuleContexts = readingAlarmRuleContexts;
+	}
 	
 	public ReadingRuleContext getAlarmTriggerRule() {
 		return alarmTriggerRule;

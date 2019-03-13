@@ -955,18 +955,4 @@ public class WorkflowRuleAPI {
 		return null;
 	}
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 }
