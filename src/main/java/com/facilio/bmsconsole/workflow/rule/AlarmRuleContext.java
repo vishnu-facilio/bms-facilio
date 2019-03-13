@@ -11,6 +11,15 @@ import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 
 public class AlarmRuleContext {
 	
+	ReadingAlarmRuleContext readingAlarmRuleContext;
+	
+	public ReadingAlarmRuleContext getReadingAlarmRuleContext() {
+		return readingAlarmRuleContext;
+	}
+	public void setReadingAlarmRuleContext(ReadingAlarmRuleContext readingAlarmRuleContext) {
+		this.readingAlarmRuleContext = readingAlarmRuleContext;
+	}
+
 	private ReadingRuleContext preRequsite;
 	List<ReadingRuleContext> alarmTriggerRules;
 	ReadingRuleContext alarmClearRule;
