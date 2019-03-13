@@ -33,6 +33,7 @@ public class AddOrUpdateItemQuantityCommand implements Command {
 		// long inventoryId = (long)
 		// context.get(FacilioConstants.ContextNames.INVENTORY_ID);
 		List<Long> inventoryIds = (List<Long>) context.get(FacilioConstants.ContextNames.ITEM_IDS);
+		long itemTypesId = -1;
 
 		if (inventoryIds != null && !inventoryIds.isEmpty()) {
 			for (long inventoryId : inventoryIds) {
@@ -42,10 +43,10 @@ public class AddOrUpdateItemQuantityCommand implements Command {
 						.andCondition(CriteriaAPI.getCondition(inventoryrCostsFieldMap.get("item"),
 								String.valueOf(inventoryId), PickListOperators.IS));
 
-				List<PurchasedItemContext> inventoryCosts = selectBuilder.get();
+				List<PurchasedItemContext> purchasedItems = selectBuilder.get();
 				int quantity = 0;
-				if (inventoryCosts != null && !inventoryCosts.isEmpty()) {
-					for (PurchasedItemContext invCost : inventoryCosts) {
+				if (purchasedItems != null && !purchasedItems.isEmpty()) {
+					for (PurchasedItemContext invCost : purchasedItems) {
 						quantity += invCost.getCurrentQuantity();
 					}
 				}
@@ -62,6 +63,7 @@ public class AddOrUpdateItemQuantityCommand implements Command {
 				ItemContext inven = new ItemContext();
 				if (inventory != null && !inventory.isEmpty()) {
 					inven = inventory.get(0);
+					itemTypesId = inven.getItemType().getId();
 					inven.setQuantity(quantity);
 				}
 
@@ -70,6 +72,8 @@ public class AddOrUpdateItemQuantityCommand implements Command {
 						.andCondition(CriteriaAPI.getIdCondition(inven.getId(), inventoryModule));
 
 				updateBuilder.update(inven);
+				
+				context.put(FacilioConstants.ContextNames.ITEM_TYPES_ID, itemTypesId);
 			}
 		}
 

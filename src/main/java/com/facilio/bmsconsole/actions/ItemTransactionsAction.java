@@ -36,16 +36,31 @@ public class ItemTransactionsAction extends FacilioAction{
 		return itemTransactionsId;
 	}
 	
-	public String addItemTransactions() throws Exception {
+	public String addOrUpdateItemTransactions() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.CREATE);
 		context.put(FacilioConstants.ContextNames.RECORD_LIST, itemTransaction);
-		Chain addWorkorderPartChain = TransactionChainFactory.getAddInventoryTransactionsChain();
+		context.put(FacilioConstants.ContextNames.PURCHASED_ITEM, purchasedItems);
+		Chain addWorkorderPartChain = TransactionChainFactory.getAddOrUpdateItemTransactionsChain();
 		addWorkorderPartChain.execute(context);
 		setItemTransactionsId((List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST));
-		setResult("inventoryActionsId", itemTransactionsId);
+		setResult("itemTransactionsId", itemTransactionsId);
 		return SUCCESS;
 	} 
+	
+	public String deleteItemTransactions() throws Exception {
+		FacilioContext context = new FacilioContext();
+	
+		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.DELETE);
+		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, itemTransactionsId);
+
+		Chain deleteInventoryChain = TransactionChainFactory.getDeleteItemTransactionsChain();
+		deleteInventoryChain.execute(context);
+		setItemTransactionsId((List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST));
+		setResult("itemTransactionsId", itemTransactionsId);
+		return SUCCESS;
+	}
+	
 	
 	public String updateItemTransactions() throws Exception {
 		FacilioContext context = new FacilioContext();
@@ -86,7 +101,7 @@ public class ItemTransactionsAction extends FacilioAction{
 			context.put(FacilioConstants.ContextNames.PAGINATION, pagination);
 		}
 
-		Chain itemsListChain = ReadOnlyChainFactory.getInventoryTransactionsList();
+		Chain itemsListChain = ReadOnlyChainFactory.getItemTransactionsList();
 		itemsListChain.execute(context);
 		if (getCount()) {
 			setItemsCount((Long) context.get(FacilioConstants.ContextNames.RECORD_COUNT));
@@ -130,5 +145,13 @@ public class ItemTransactionsAction extends FacilioAction{
 	}
 	public void setItemsCount(Long itemsCount) {
 		this.itemsCount = itemsCount;
+	}
+	
+	private List<Long> purchasedItems;
+	public List<Long> getPurchasedItems() {
+		return purchasedItems;
+	}
+	public void setPurchasedItems(List<Long> purchasedItems) {
+		this.purchasedItems = purchasedItems;
 	}
 }

@@ -133,6 +133,10 @@ public class AttachmentAction  extends FacilioAction {
 				attachmentList.get(0).setAttachmentModule(FacilioConstants.ContextNames.TOOL_TYPES_LIST);
 				attachmentList.get(0).setRecordId(recordId);
 			}
+			if (module.equals(FacilioConstants.ContextNames.STORE_ROOM_ATTACHMENTS)) {
+				attachmentList.get(0).setAttachmentModule(FacilioConstants.ContextNames.STORE_ROOM_LIST);
+				attachmentList.get(0).setRecordId(recordId);
+			}
 		}
 		return SUCCESS;
 	}

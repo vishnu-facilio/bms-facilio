@@ -1645,8 +1645,16 @@ public class TransactionChainFactory {
 		public static Chain getUpdateItemQuantityRollupChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(new AddOrUpdateItemQuantityCommand());
+			c.addCommand(getUpdateItemTypeQuantityRollupChain());
 			return c;
 		}
+		
+		public static Chain getUpdateItemTypeQuantityRollupChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new ItemTypeQuantityRollupCommand());
+			return c;
+		}
+		
 		public static Chain getUpdateInventoryCostChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForPurchasedItem());
@@ -1681,7 +1689,7 @@ public class TransactionChainFactory {
 			Chain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForWorkorderItems());
 			c.addCommand(new GenericDeleteModuleDataCommand());
-			c.addCommand(new GetDeleteWorkorderItemCommand());
+			c.addCommand(new DeleteWorkorderItemCommand());
 			c.addCommand(new PurchasedItemsQuantityRollUpCommand());
 			c.addCommand(getUpdateItemQuantityRollupChain());
 			c.addCommand(new AddOrUpdateWorkorderCostCommand());
@@ -1722,6 +1730,13 @@ public class TransactionChainFactory {
 		public static Chain getUpdatetoolQuantityRollupChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(new ToolQuantityRollUpCommand());
+			c.addCommand(getUpdateToolTypeQuantityRollupChain());
+			return c;
+		}
+		
+		public static Chain getUpdateToolTypeQuantityRollupChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new ToolTypeQuantityRollupCommand());
 			return c;
 		}
 		
@@ -1729,6 +1744,7 @@ public class TransactionChainFactory {
 			Chain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForWorkorderTools());
 			c.addCommand(new GenericDeleteModuleDataCommand());
+			c.addCommand(new DeleteWorkorderToolCommand());
 			c.addCommand(getUpdatetoolQuantityRollupChain());
 			c.addCommand(new AddOrUpdateWorkorderCostCommand());
 			c.addCommand(new UpdateWorkorderTotalCostCommand());
@@ -1791,10 +1807,20 @@ public class TransactionChainFactory {
 			return c;
 		}
 		
-		public static Chain getAddInventoryTransactionsChain() {
+		public static Chain getAddOrUpdateItemTransactionsChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForItemTransactions());
-			c.addCommand(new GenericAddModuleDataListCommand());
+			c.addCommand(new AddOrUpdateManualItemTransactionCommand());
+			c.addCommand(new PurchasedItemsQuantityRollUpCommand());
+			c.addCommand(getUpdateItemQuantityRollupChain());
+			return c;
+		}
+		
+		public static Chain getDeleteItemTransactionsChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForItemTransactions());
+			c.addCommand(new GenericDeleteModuleDataCommand());
+			c.addCommand(new DeleteItemTransactionCommand());
 			c.addCommand(new PurchasedItemsQuantityRollUpCommand());
 			c.addCommand(getUpdateItemQuantityRollupChain());
 			return c;

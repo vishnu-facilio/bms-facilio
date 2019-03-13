@@ -14,7 +14,7 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 
 public class ToolsApi {
-	public static ToolTypesContext getTool(long id) throws Exception {
+	public static ToolTypesContext getToolTypes(long id) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.TOOL_TYPES);
 		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.TOOL_TYPES);
@@ -24,6 +24,23 @@ public class ToolsApi {
 				.beanClass(ToolTypesContext.class).andCondition(CriteriaAPI.getIdCondition(id, module));
 
 		List<ToolTypesContext> tools = selectBuilder.get();
+
+		if (tools != null && !tools.isEmpty()) {
+			return tools.get(0);
+		}
+		return null;
+	}
+	
+	public static ToolContext getTool(long id) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.TOOL);
+		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.TOOL);
+
+		SelectRecordsBuilder<ToolContext> selectBuilder = new SelectRecordsBuilder<ToolContext>()
+				.select(fields).table(module.getTableName()).moduleName(module.getName())
+				.beanClass(ToolContext.class).andCondition(CriteriaAPI.getIdCondition(id, module));
+
+		List<ToolContext> tools = selectBuilder.get();
 
 		if (tools != null && !tools.isEmpty()) {
 			return tools.get(0);

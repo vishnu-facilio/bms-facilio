@@ -233,6 +233,7 @@ public class ColumnFactory {
 		columns.add(new ViewField("name", "Name"));
 		columns.add(new ViewField("category", "Category"));
 		columns.add(new ViewField("status", "Status"));
+		columns.add(new ViewField("currentQuantity", "Current Quantity"));
 		columns.add(new ViewField("minimumQuantity", "Minimum Quantity"));
 		
 		return columns;
@@ -243,6 +244,7 @@ public class ColumnFactory {
 		
 		columns.add(new ViewField("name", "Name"));
 		columns.add(new ViewField("category", "Category"));
+		columns.add(new ViewField("currentQuantity", "Current Quantity"));
 		columns.add(new ViewField("status", "Status"));
 		
 		return columns;

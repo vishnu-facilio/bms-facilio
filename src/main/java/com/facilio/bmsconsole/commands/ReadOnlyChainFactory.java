@@ -4,6 +4,7 @@ import org.apache.commons.chain.Chain;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
+import com.facilio.bmsconsole.actions.GetToolTransactionsListCommand;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.chain.FacilioChain;
 
@@ -549,7 +550,7 @@ public class ReadOnlyChainFactory {
 		return c;
 	}
 	
-	public static Chain getInventoryTransactionsList() {
+	public static Chain getItemTransactionsList() {
 		Chain c = getDefaultChain();
 		c.addCommand(SetTableNamesCommand.getForItemTransactions());
 		c.addCommand(new LoadAllFieldsCommand());
@@ -580,6 +581,16 @@ public class ReadOnlyChainFactory {
 		c.addCommand(SetTableNamesCommand.getForPurchasedTool());
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new GetPurchasedToolsListCommand());
+		return c;
+	}
+	
+	public static Chain getToolTransactionsList() {
+		Chain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForToolTranaction());
+		c.addCommand(new LoadAllFieldsCommand());
+		c.addCommand(new GenerateCriteriaFromFilterCommand());
+		c.addCommand(new GenerateSearchConditionCommand());
+		c.addCommand(new GetToolTransactionsListCommand());
 		return c;
 	}
 	

@@ -111,6 +111,16 @@ public class ToolTypesContext extends ModuleBaseWithCustomFields {
 	public void setPhotoId(long photoId) {
 		this.photoId = photoId;
 	}
+	
+	private double currentQuantity = -1;
+
+	public double getCurrentQuantity() {
+		return currentQuantity;
+	}
+
+	public void setCurrentQuantity(double currentQuantity) {
+		this.currentQuantity = currentQuantity;
+	}
 
 	@Override
 	public long getLocalId() {

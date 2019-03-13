@@ -65,21 +65,21 @@ public class PurchasedItemsQuantityRollUpCommand implements Command {
 		List<FacilioField> purchasedItemFields = modBean.getAllFields(FacilioConstants.ContextNames.PURCHASED_ITEM);
 		Map<String, FacilioField> purchasedItemFieldMap = FieldFactory.getAsMap(purchasedItemFields);
 		for (Long id : uniquepurchasedItemsIds) {
-			Double totalConsumed = getTotalQuantityConsumed(id);
-			PurchasedItemContext inventoryCost = new PurchasedItemContext();
+			double totalConsumed = getTotalQuantityConsumed(id);
+			PurchasedItemContext purchasedItem = new PurchasedItemContext();
 			SelectRecordsBuilder<PurchasedItemContext> selectBuilder = new SelectRecordsBuilder<PurchasedItemContext>()
 					.select(purchasedItemFields).table(purchasedItemsModule.getTableName())
 					.moduleName(purchasedItemsModule.getName()).beanClass(PurchasedItemContext.class)
 					.andCondition(CriteriaAPI.getIdCondition(id, purchasedItemsModule));
 			List<PurchasedItemContext> purchasedItems = selectBuilder.get();
 			if (purchasedItems != null && !purchasedItems.isEmpty()) {
-				inventoryCost = purchasedItems.get(0);
-				inventoryCost.setCurrentQuantity(totalConsumed);
+				purchasedItem = purchasedItems.get(0);
+				purchasedItem.setCurrentQuantity(totalConsumed);
 				UpdateRecordBuilder<PurchasedItemContext> updateBuilder = new UpdateRecordBuilder<PurchasedItemContext>()
 						.module(purchasedItemsModule).fields(modBean.getAllFields(purchasedItemsModule.getName()))
 						.andCondition(CriteriaAPI.getIdCondition(id, purchasedItemsModule));
-				LOGGER.info("totalCost"+ inventoryCost.getCurrentQuantity());
-				updateBuilder.update(inventoryCost);
+				LOGGER.info("totalCost"+ purchasedItem.getCurrentQuantity());
+				updateBuilder.update(purchasedItem);
 			}
 
 		}
@@ -90,7 +90,7 @@ public class PurchasedItemsQuantityRollUpCommand implements Command {
 		return false;
 	}
 
-	public static Double getTotalQuantityConsumed(long inventoryCostId) throws Exception {
+	public static double getTotalQuantityConsumed(long inventoryCostId) throws Exception {
 
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule consumableModule = modBean.getModule(FacilioConstants.ContextNames.ITEM_TRANSACTIONS);
@@ -115,9 +115,9 @@ public class PurchasedItemsQuantityRollUpCommand implements Command {
 		List<Map<String, Object>> rs = builder.get();
 		if (rs != null && rs.size() > 0) {
 			double addition = 0, issues = 0, returns = 0;
-			addition = rs.get(0).get("addition")!=null ?(Double)  rs.get(0).get("addition") : 0;
-			issues=  rs.get(0).get("issues")!=null ? (Double) rs.get(0).get("issues") : 0;
-			returns = rs.get(0).get("returns")!=null ? (Double) rs.get(0).get("returns") : 0;
+			addition = rs.get(0).get("addition")!=null ?(double)  rs.get(0).get("addition") : 0;
+			issues=  rs.get(0).get("issues")!=null ? (double) rs.get(0).get("issues") : 0;
+			returns = rs.get(0).get("returns")!=null ? (double) rs.get(0).get("returns") : 0;
 			LOGGER.info(addition + " " + issues + " " + returns );
 			return ((addition+returns) - issues);
 		}

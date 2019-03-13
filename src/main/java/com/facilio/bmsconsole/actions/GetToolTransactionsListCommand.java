@@ -1,9 +1,6 @@
-package com.facilio.bmsconsole.commands;
+package com.facilio.bmsconsole.actions;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
@@ -11,27 +8,28 @@ import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.ItemContext;
+import com.facilio.bmsconsole.context.ItemTransactionsContext;
 import com.facilio.bmsconsole.context.ToolContext;
-import com.facilio.bmsconsole.context.StoreRoomContext;
-import com.facilio.bmsconsole.context.ToolTypesContext;
+import com.facilio.bmsconsole.context.ToolTransactionContext;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
+import com.facilio.bmsconsole.util.ItemsApi;
 import com.facilio.bmsconsole.util.StoreroomApi;
 import com.facilio.bmsconsole.util.ToolsApi;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 
-public class GetStockedToolsListCommand implements Command{
+public class GetToolTransactionsListCommand implements Command {
 	@Override
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
 
-		long startTime = System.currentTimeMillis();
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(moduleName);
@@ -45,8 +43,9 @@ public class GetStockedToolsListCommand implements Command{
 		}
 		FacilioView view = (FacilioView) context.get(FacilioConstants.ContextNames.CUSTOM_VIEW);
 
-		SelectRecordsBuilder<ToolContext> builder = new SelectRecordsBuilder<ToolContext>().module(module)
-				.beanClass(FacilioConstants.ContextNames.getClassFromModuleName(moduleName)).select(fields);
+		SelectRecordsBuilder<ToolTransactionContext> builder = new SelectRecordsBuilder<ToolTransactionContext>()
+				.module(module).beanClass(FacilioConstants.ContextNames.getClassFromModuleName(moduleName))
+				.select(fields);
 
 		String orderBy = (String) context.get(FacilioConstants.ContextNames.SORTING_QUERY);
 		if (orderBy != null && !orderBy.isEmpty()) {
@@ -98,25 +97,17 @@ public class GetStockedToolsListCommand implements Command{
 			builder.limit(perPage);
 		}
 
-		long getStartTime = System.currentTimeMillis();
-		List<ToolContext> records = builder.get();
-		long getTimeTaken = System.currentTimeMillis() - getStartTime;
-
+		List<ToolTransactionContext> records = builder.get();
 		if (records != null && !records.isEmpty()) {
 			if (getCount != null && getCount) {
 				context.put(FacilioConstants.ContextNames.RECORD_COUNT, records.get(0).getData().get("count"));
 			} else {
-				Set<Long> locatoionIds = new HashSet<Long>();
-				for (ToolContext stockedTools : records) {
-					if (stockedTools.getToolType().getId() != -1) {
-						ToolTypesContext tool = ToolsApi.getToolTypes(stockedTools.getToolType().getId());
-						stockedTools.setToolType(tool);
-					}
-					
-					if (stockedTools.getStoreRoom().getId() != -1) {
-						Map<Long, StoreRoomContext> storeroomMap = StoreroomApi.getStoreRoomMap
-								((stockedTools.getStoreRoom().getId()));
-						stockedTools.setStoreRoom(storeroomMap.get(stockedTools.getStoreRoom().getId()));
+				for (ToolTransactionContext toolTransactions : records) {
+					if (toolTransactions.getTool() != null && toolTransactions.getTool().getId() != -1) {
+						ToolContext tool = ToolsApi.getTool(toolTransactions.getTool().getId());
+						tool.setToolType(ToolsApi.getToolTypes(tool.getToolType().getId()));
+						tool.setStoreRoom(StoreroomApi.getStoreRoom(tool.getStoreRoom().getId()));
+						toolTransactions.setTool(tool);
 					}
 				}
 
@@ -124,7 +115,6 @@ public class GetStockedToolsListCommand implements Command{
 			}
 		}
 
-		long timeTaken = System.currentTimeMillis() - startTime;
 		return false;
 	}
 }

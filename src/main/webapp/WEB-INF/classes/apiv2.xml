@@ -1466,21 +1466,22 @@
 			<param name = "vendorsId">{1}</param>
 		</action>
 	</package>
-	<package name="itemTransactionsApi" namespace="/api/v2/itemTransactions"
+	<package name="manualItemTransactionsApi" namespace="/api/v2/manualItemTransactions"
 		extends="v2Api">
-		<action name="update"
-			class="com.facilio.bmsconsole.actions.ItemTransactionsAction" method="updateItemTransactions">
+		<action name="addOrUpdate"
+			class="com.facilio.bmsconsole.actions.ItemTransactionsAction" method="addOrUpdateItemTransactions">
 			<param name="moduleName">asset</param>
 			<param name="permission">CREATE</param>
 		</action>
-		<action name="add"
-			class="com.facilio.bmsconsole.actions.ItemTransactionsAction" method="addItemTransactions">
+		
+		<action name="delete"
+			class="com.facilio.bmsconsole.actions.ItemTransactionsAction" method="deleteItemTransactions">
 			<param name="moduleName">asset</param>
 			<param name="permission">CREATE</param>
 		</action>
 	</package>
 	
-	<package name="itemTransactionsList" namespace="/api/v2/itemTransactions"
+	<package name="manualItemTransactionsList" namespace="/api/v2/manualItemTransactions"
 		extends="v2Api">
 		<action name="all"
 			class="com.facilio.bmsconsole.actions.ItemTransactionsAction" method="itemsList">
@@ -1534,7 +1535,14 @@
 		</action>
 	</package>
 	
-	
+	<package name="toolTransactionsList" namespace="/api/v2/toolTransactions"
+		extends="v2Api">
+		<action name="all"
+			class="com.facilio.bmsconsole.actions.ToolTransactionsAction" method="toolsTransactionsList">
+			<param name="moduleName">asset</param>
+			<param name="permission">READ</param>
+			</action>
+	</package>
 	<!-- <package name="pageApiv2" namespace="/api/v2/pages" extends="v2Api"> 
 		<action name="*" class="com.facilio.bmsconsole.actions.PageAction" method="fetchPage"> 
 		<param name="moduleName">asset</param> <param name="permission">READ</param> 

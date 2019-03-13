@@ -51,7 +51,7 @@ public class GetWorkorderToolsListCommand implements Command {
 					StoreRoomContext storeRoom = StoreroomApi
 							.getStoreRoom(stockedTool.getStoreRoom().getId());
 					stockedTool.setStoreRoom(storeRoom);
-					ToolTypesContext tool = ToolsApi.getTool(stockedTool.getToolType().getId());
+					ToolTypesContext tool = ToolsApi.getToolTypes(stockedTool.getToolType().getId());
 					stockedTool.setToolType(tool);
 					woTools.setTool(stockedTool);
 				}

@@ -477,6 +477,7 @@ public class FacilioConstants {
 		public static final String ITEM_NOTES = "itemNotes";
 		public static final String TOOL_NOTES = "toolNotes";
 		public static final String TOOL_TYPES_NOTES = "toolTypesNotes";
+		public static final String STORE_ROOM_NOTES = "storeRoomNotes";
 		
 		public static final String TICKET_ATTACHMENTS = "ticketattachments";
 		public static final String BASE_SPACE_ATTACHMENTS = "basespaceattachments";
@@ -485,6 +486,7 @@ public class FacilioConstants {
 		public static final String INVENTORY_ATTACHMENTS = "inventoryattachments";
 		public static final String ITEM_TYPES_ATTACHMENTS = "itemTypesAttachments";
 		public static final String TOOL_TYPES_ATTACHMENTS = "toolTypesattachments";
+		public static final String STORE_ROOM_ATTACHMENTS = "storeRoomAttachments";
 		
 		public static final String PICKLIST = "pickList";
 		
@@ -769,6 +771,7 @@ public class FacilioConstants {
 		
 		public static final String STORE_ROOM = "storeRoom";
 		public static final String STORE_ROOMS = "storeRooms";
+		public static final String STORE_ROOM_LIST = "storeRoomList";
 		
 		public static final String ITEM_TYPES = "itemTypes";
 		public static final String ITEM_TYPES_LIST = "itemTypesList";
@@ -780,6 +783,7 @@ public class FacilioConstants {
 		public static final String TOOL_TYPES_LIST = "toolTypesList";
 		public static final String TOOL_TYPES_STATUS = "toolTypesStatus";
 		public static final String TOOLS_TYPES_CATEGORY = "toolTypesCategory";
+		public static final String TOOL_TYPES_ID = "toolTypesId";
 		
 //		public static final String TOOL = "tool";
 		public static final String TOOLS = "tools";

@@ -1,0 +1,109 @@
+package com.facilio.bmsconsole.actions;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.commons.chain.Chain;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+
+import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
+import com.facilio.bmsconsole.context.ItemTransactionsContext;
+import com.facilio.bmsconsole.context.ToolTransactionContext;
+import com.facilio.chain.FacilioContext;
+import com.facilio.constants.FacilioConstants;
+
+public class ToolTransactionsAction extends FacilioAction{
+	private static final long serialVersionUID = 1L;
+	
+	private List<ToolTransactionContext> toolTransaction;
+	public List<ToolTransactionContext> getToolTransaction() {
+		return toolTransaction;
+	}
+	public void setToolTransaction(List<ToolTransactionContext> toolTransactions) {
+		this.toolTransaction = toolTransactions;
+	}
+	
+	private List<Long> toolTransactionsId;
+	public List<Long> getToolTransactionsId() {
+		return toolTransactionsId;
+	}
+	
+	public void setToolTransactionsId(List<Long> toolTransactionsId) {
+		this.toolTransactionsId = toolTransactionsId;
+	}
+	
+	public String toolsTransactionsList() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.CV_NAME, getViewName());
+		context.put(FacilioConstants.ContextNames.SORTING_QUERY, "Tool_transactions.ID desc");
+		if (getFilters() != null) {
+			JSONParser parser = new JSONParser();
+			JSONObject json = (JSONObject) parser.parse(getFilters());
+			context.put(FacilioConstants.ContextNames.FILTERS, json);
+			context.put(FacilioConstants.ContextNames.INCLUDE_PARENT_CRITERIA, getIncludeParentFilter());
+		}
+		if (getSearch() != null) {
+			JSONObject searchObj = new JSONObject();
+			searchObj.put("fields", "toolTransactions.tool");
+			searchObj.put("query", getSearch());
+			context.put(FacilioConstants.ContextNames.SEARCH, searchObj);
+		}
+		if (getCount()) { // only count
+			context.put(FacilioConstants.ContextNames.FETCH_COUNT, true);
+		} else {
+			JSONObject pagination = new JSONObject();
+			pagination.put("page", getPage());
+			pagination.put("perPage", getPerPage());
+			if (getPerPage() < 0) {
+				pagination.put("perPage", 5000);
+			}
+			context.put(FacilioConstants.ContextNames.PAGINATION, pagination);
+		}
+
+		Chain itemsListChain = ReadOnlyChainFactory.getToolTransactionsList();
+		itemsListChain.execute(context);
+		if (getCount()) {
+			setItemsCount((Long) context.get(FacilioConstants.ContextNames.RECORD_COUNT));
+			setResult("count", itemsCount);
+		} else {
+			toolTransaction = (List<ToolTransactionContext>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
+			// Temp...needs to handle in client
+			if (toolTransaction == null) {
+				toolTransaction = new ArrayList<>();
+			}
+			setResult(FacilioConstants.ContextNames.TOOL_TRANSACTIONS, toolTransaction);
+		}
+		return SUCCESS;
+	}
+	
+	private boolean includeParentFilter;
+
+	public boolean getIncludeParentFilter() {
+		return includeParentFilter;
+	}
+
+	public void setIncludeParentFilter(boolean includeParentFilter) {
+		this.includeParentFilter = includeParentFilter;
+	}
+	private Boolean count;
+
+	public Boolean getCount() {
+		if (count == null) {
+			return false;
+		}
+		return count;
+	}
+
+	public void setCount(Boolean count) {
+		this.count = count;
+	}
+	
+	private Long itemsCount;
+	public Long getItemsCount() {
+		return itemsCount;
+	}
+	public void setItemsCount(Long itemsCount) {
+		this.itemsCount = itemsCount;
+	}
+}
