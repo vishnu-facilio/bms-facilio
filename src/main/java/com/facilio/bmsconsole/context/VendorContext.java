@@ -4,7 +4,7 @@ import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 
 public class VendorContext extends ModuleBaseWithCustomFields {
 	private static final long serialVersionUID = 1L;
-	private String name, email, phone, website;
+	private String name, email, phone, website, description;
 	private long ttime, modifiedTime;
 
 	public String getWebsite() {
@@ -63,6 +63,13 @@ public class VendorContext extends ModuleBaseWithCustomFields {
 
 	public void setAddress(LocationContext address) {
 		this.address = address;
+	}
+	
+	public String getDescription() {
+		return description;
+	}
+	public void setDescription(String description) {
+		this.description = description;
 	}
 
 	private long getLocationId;
