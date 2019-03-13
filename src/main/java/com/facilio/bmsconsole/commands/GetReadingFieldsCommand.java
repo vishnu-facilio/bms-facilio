@@ -9,7 +9,10 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
@@ -29,6 +32,7 @@ import com.facilio.workflows.util.WorkflowUtil;
 
 public class GetReadingFieldsCommand implements Command {
 
+	private static Logger log = LogManager.getLogger(GetReadingFieldsCommand.class.getName());
 	@Override
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
@@ -38,6 +42,9 @@ public class GetReadingFieldsCommand implements Command {
 			for(FacilioModule reading : readings) {
 				Boolean excludeEmptyFields = (Boolean) context.get(FacilioConstants.ContextNames.EXCLUDE_EMPTY_FIELDS);
 				Long parentId = excludeEmptyFields != null && excludeEmptyFields ? (Long) context.get(FacilioConstants.ContextNames.PARENT_ID) : null;
+				if(AccountUtil.getCurrentOrg().getId() == 191l) {
+					log.error("Module Name with fields ---- "+reading.getName() +" Fields -- "+modBean.getAllFields(reading.getName()));
+				}
 				List<FacilioField> dataPoints = ReadingsAPI.excludeDefaultAndEmptyReadingFields(modBean.getAllFields(reading.getName()),parentId);
 				
 				StringJoiner j = new StringJoiner(",");
