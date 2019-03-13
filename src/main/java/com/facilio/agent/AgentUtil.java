@@ -105,6 +105,10 @@ public  class AgentUtil
             agent.setAgentName(payload.get(AgentKeys.AGENT).toString());
         }
 
+        if (agent.getAgentName() == null) {
+            agent.setAgentName(orgDomainName);
+        }
+
         if(payload.containsKey(AgentKeys.AGENT_TYPE)){
             agent.setAgentType(payload.get(AgentKeys.AGENT_TYPE).toString());
         }
