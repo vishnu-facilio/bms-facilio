@@ -22,7 +22,7 @@ public class GetItemDetailsCommand implements Command{
 			ItemContext inventry = (ItemContext) context.get(FacilioConstants.ContextNames.RECORD);
 			if (inventry != null && inventry.getId() > 0) {
 				if (inventry.getItemType().getId() != -1) {
-					Map<Long, ItemTypesContext> itemMap = ItemsApi.getItemsMap
+					Map<Long, ItemTypesContext> itemMap = ItemsApi.getItemTypesMap
 							((inventry.getItemType().getId()));
 					inventry.setItemType(itemMap.get(inventry.getItemType().getId()));
 				}
