@@ -110,8 +110,8 @@ public class Processor implements IRecordProcessor {
         @Override
         public void processRecords(ProcessRecordsInput processRecordsInput) {
 
-            long processStartTime = System.currentTimeMillis();
-            LOGGER.debug("TOTAL processor DATA PROCESSED TIME::: ORGID::::::: "+orgId + "RECORD SIZE::::::: "+processRecordsInput.getRecords().size());
+            // long processStartTime = System.currentTimeMillis();
+            // LOGGER.debug("TOTAL processor DATA PROCESSED TIME::: ORGID::::::: "+orgId + "RECORD SIZE::::::: "+processRecordsInput.getRecords().size());
             for (Record record : processRecordsInput.getRecords()) {
                 String data = "";
                 try {
@@ -208,21 +208,21 @@ public class Processor implements IRecordProcessor {
                     LOGGER.info("Exception occurred ", e);
                 }
             }
-            LOGGER.debug("TOTAL PROCESSOR DATA PROCESSED TIME::: ORGID::::::: "+orgId + "COMPLETED::TIME TAKEN : "+(System.currentTimeMillis() - processStartTime));
+            // LOGGER.debug("TOTAL PROCESSOR DATA PROCESSED TIME::: ORGID::::::: "+orgId + "COMPLETED::TIME TAKEN : "+(System.currentTimeMillis() - processStartTime));
         }
 
         private void processTimeSeries(Record record, JSONObject payLoad, ProcessRecordsInput processRecordsInput, boolean isTimeSeries) throws Exception {
             long timeStamp=	record.getApproximateArrivalTimestamp().getTime();
             long startTime = System.currentTimeMillis();
-            LOGGER.info("TIMESERIES DATA PROCESSED TIME::: ORGID::::::: "+orgId + " TIME::::" +timeStamp);
+            // LOGGER.info("TIMESERIES DATA PROCESSED TIME::: ORGID::::::: "+orgId + " TIME::::" +timeStamp);
             ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", orgId);
             bean.processTimeSeries(timeStamp, payLoad, record, processRecordsInput.getCheckpointer(), isTimeSeries);
-            LOGGER.info("TIMESERIES DATA PROCESSED TIME::: ORGID::::::: "+orgId + "COMPLETED:::::::TIME TAKEN : "+(System.currentTimeMillis() - startTime));
+            LOGGER.info("timetaken : "+(System.currentTimeMillis() - startTime));
         }
 
         private void updateDeviceTable(String deviceId) {
             try {
-                LOGGER.info("Device ID : "+deviceId);
+                // LOGGER.info("Device ID : "+deviceId);
                 if (deviceId == null || deviceId.isEmpty()) {
                     return;
                 }
