@@ -786,7 +786,7 @@ public class CommonCommandUtil {
 			for(Unit unit :units) {
 				unitsJson.add(unit);
 			}
-			metricswithUnits.put(metric, unitsJson);
+			metricswithUnits.put(metric.getMetricId(), unitsJson);
 		}
 		return metricswithUnits;
 	}
