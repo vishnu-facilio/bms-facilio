@@ -13,9 +13,12 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.ReadingAlarmContext;
 import com.facilio.bmsconsole.criteria.Condition;
@@ -28,7 +31,9 @@ import com.facilio.report.context.ReportContext.ReportType;
 import com.facilio.report.context.ReportDataPointContext;
 
 public class FetchReportAdditionalInfoCommand implements Command {
-
+	
+	private static final Logger LOGGER = LogManager.getLogger(FetchReportAdditionalInfoCommand.class.getName());
+	
 	@Override
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
@@ -72,6 +77,11 @@ public class FetchReportAdditionalInfoCommand implements Command {
 						
 						if (showAlarms) {
 							List<Long> parentIds = getParentIds(dp);
+							
+							if (AccountUtil.getCurrentOrg().getId() == 75) {
+								LOGGER.info("Parent IDs of alarms to be fetched : "+parentIds);
+							}
+							
 							if (parentIds != null) {
 								List<ReadingAlarmContext> alarms = null;
 								if (alarmId == null) {
@@ -79,6 +89,10 @@ public class FetchReportAdditionalInfoCommand implements Command {
 								}
 								else if (currentAlarm != null && currentAlarm.getReadingFieldId() == dp.getyAxis().getFieldId() && parentIds.contains(currentAlarm.getResource().getId())) {
 									alarms = AlarmAPI.getReadingAlarms(currentAlarm.getEntityId(), report.getDateRange().getStartTime(), report.getDateRange().getEndTime(), false);
+								}
+								
+								if (AccountUtil.getCurrentOrg().getId() == 75) {
+									LOGGER.info("Fetched Alarms : "+alarms);
 								}
 								
 								if (alarms != null && !alarms.isEmpty()) {
