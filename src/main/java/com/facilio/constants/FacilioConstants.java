@@ -2,6 +2,7 @@ package com.facilio.constants;
 
 import java.text.SimpleDateFormat;
 import java.time.format.DateTimeFormatter;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -905,6 +906,10 @@ public class FacilioConstants {
 		
 		public static Class getClassFromModuleName(String moduleName) {
 			return classMap.get(moduleName);
+		}
+		
+		public static Collection<Class> getAllClasses() {
+			return classMap.values();
 		}
 	}
 	

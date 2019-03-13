@@ -44,6 +44,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.cfg.MutableConfigOverride;
 
 public class FieldUtil {
 	
@@ -284,14 +285,26 @@ public class FieldUtil {
 		}
 	}
 	
+	public static void inti() {
+		
+	}
+	
 	private static final ObjectMapper NON_DEFAULT_MAPPER = new ObjectMapper()
 													.setSerializationInclusion(Include.NON_DEFAULT)
 													.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS)
 													.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
 	
+	static {
+		for (Class classObj : FacilioConstants.ContextNames.getAllClasses()) {
+			NON_DEFAULT_MAPPER.configOverride(classObj).setInclude(Value.construct(Include.NON_DEFAULT, Include.ALWAYS));
+		}
+	}
+	
 	public static ObjectMapper getMapper(Class<?> beanClass) {
-		NON_DEFAULT_MAPPER.configOverride(beanClass)
-				.setInclude(Value.construct(Include.NON_DEFAULT, Include.ALWAYS));
+		MutableConfigOverride config = NON_DEFAULT_MAPPER.configOverride(beanClass);
+		if (config.getInclude() == null) {
+			config.setInclude(Value.construct(Include.NON_DEFAULT, Include.ALWAYS));
+		}
 		return NON_DEFAULT_MAPPER;
 	}
 	
