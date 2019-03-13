@@ -260,6 +260,12 @@ public class AssetContext extends ResourceContext {
 	public void setIdentifiedLocation(SiteContext identifiedLocation) {
 		this.identifiedLocation = identifiedLocation;
 	}
+	
+	
+	public String getUrl() {
+		return "app/at/asset/all/" + getId() + "/overview";
+	}
+
 
 	public static enum AssetState {
 		ACTIVE(1, "Active"),
