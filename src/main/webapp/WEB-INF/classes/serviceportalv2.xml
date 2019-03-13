@@ -54,6 +54,11 @@
 		<action name="attachment" class="com.facilio.bmsconsole.actions.AttachmentAction" method="v2attachmentList">
 		</action>
 		
+		<action name="addNotes" class="com.facilio.bmsconsole.actions.NoteAction"
+			method="v2addNote">
+			<param name="permission">WORKORDER_READ,TASK_READ</param>
+		</action>	
+		
 	</package>
 
 	<!-- new service portal api will be open -->
