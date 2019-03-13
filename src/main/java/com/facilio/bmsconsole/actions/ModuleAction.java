@@ -348,7 +348,7 @@ public class ModuleAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.RECORD, moduleData);
 		
 		// TODO.... Temporary. Will be changed to counter field soon
-		context.put(FacilioConstants.ContextNames.SET_LOCAL_MODULE_ID, true);
+		context.put(FacilioConstants.ContextNames.SET_LOCAL_MODULE_ID, getWithLocalId());
 		
 		Chain addModuleDataChain = FacilioChainFactory.addModuleDataChain();
 		addModuleDataChain.execute(context);
@@ -363,6 +363,14 @@ public class ModuleAction extends FacilioAction {
 	}
 	public void setDataString(String dataString) {
 		this.dataString = dataString;
+	}
+	
+	private boolean withLocalId = true;
+	public boolean getWithLocalId() {
+		return withLocalId;
+	}
+	public void setWithLocalId(boolean withLocalId) {
+		this.withLocalId = withLocalId;
 	}
 	
 	public String updateModuleData() throws Exception {
