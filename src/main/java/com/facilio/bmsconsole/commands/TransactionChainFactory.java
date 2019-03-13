@@ -1259,6 +1259,7 @@ public class TransactionChainFactory {
 			Chain c = getDefaultChain();
 			c.addCommand(new PreparePMForMultipleAsset());
 			c.addCommand(new ExecutePMCommand());
+			c.addCommand(new ResetNewTriggersCommand());
 			return c;
 		}
 

@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.log4j.Level;
@@ -298,6 +299,7 @@ public class FieldUtil {
 		for (Class classObj : FacilioConstants.ContextNames.getAllClasses()) {
 			NON_DEFAULT_MAPPER.configOverride(classObj).setInclude(Value.construct(Include.NON_DEFAULT, Include.ALWAYS));
 		}
+		NON_DEFAULT_MAPPER.configOverride(PreventiveMaintenance.class).setInclude(Value.construct(Include.NON_DEFAULT, Include.ALWAYS));
 	}
 
 

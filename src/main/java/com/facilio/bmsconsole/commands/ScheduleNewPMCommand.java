@@ -195,7 +195,8 @@ public class ScheduleNewPMCommand extends FacilioJob implements SerializableComm
                                 break;
                             case FIXED:
                             case FLOATING:
-                                // pmJob = PreventiveMaintenanceAPI.createPMJobOnce(pm, trigger, startTime);
+                                WorkOrderContext wo = PreventiveMaintenanceAPI.createWOContextsFromPMOnce(context, pm, trigger, workorderTemplate, startTime);
+                                wos.add(wo);
                                 break;
                         }
                     }
