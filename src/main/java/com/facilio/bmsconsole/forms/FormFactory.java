@@ -44,7 +44,7 @@ public class FormFactory {
 		forms.put("tool_form", getStockedToolsForm());
 		forms.put("tool_track_form", getToolWithIndTrackForm());
 		forms.put("item_category_form", getItemCategoryForm());
-//		forms.put("location_form", getItemCategoryForm());
+		forms.put("location_form", getLocationForm());
 		return forms;
 	}
     public static List<FormField> getFormFields(String modName) {
@@ -324,6 +324,17 @@ public class FormFactory {
 		return form;
 	}
 	
+	public static FacilioForm getLocationForm() {
+		FacilioForm form = new FacilioForm();
+		form.setDisplayName("NEW LOCATION");
+		form.setName("web_default");
+		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.LOCATION));
+		form.setLabelPosition(LabelPosition.TOP);
+		form.setFields(getLocationFormField());
+		form.setFormType(FormType.WEB);
+		return form;
+	}
+	
 	public static FacilioForm getTooltypesForm() {
 		FacilioForm form = new FacilioForm();
 		form.setDisplayName("NEW TOOL");
@@ -522,8 +533,7 @@ public class FormFactory {
 		List<FormField> fields = new ArrayList<>();
 		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.REQUIRED, 1, 1));
 		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 2, 1));
-		fields.add(new FormField("location", FieldDisplayType.LOOKUP_SIMPLE, "Location", Required.OPTIONAL, "location", 3, 1));
-//		fields.add(new FormField("location", FieldDisplayType.LOOKUP_SIMPLE, "Location", Required.OPTIONAL, "location", 3, 1).setAllowCreate(true).setCreateFormName("location_form"));
+		fields.add(new FormField("location", FieldDisplayType.LOOKUP_SIMPLE, "Location", Required.OPTIONAL, "location", 3, 1).setAllowCreate(true).setCreateFormName("location_form"));
 		fields.add(new FormField("owner", FieldDisplayType.USER, "Owner", Required.OPTIONAL, 4, 1));
 		return fields;
 	}
@@ -546,6 +556,19 @@ public class FormFactory {
 		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.OPTIONAL, 2, 1));
 		fields.add(new FormField("displayName", FieldDisplayType.TEXTBOX, "Display Name", Required.REQUIRED, 2, 1));
 		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 4, 1));
+		return fields;
+	}
+	
+	private static List<FormField> getLocationFormField() {
+		List<FormField> fields = new ArrayList<>();
+		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.REQUIRED, 1, 1));
+		fields.add(new FormField("street", FieldDisplayType.TEXTBOX, "Street", Required.OPTIONAL, 2, 1));
+		fields.add(new FormField("city", FieldDisplayType.TEXTBOX, "City", Required.OPTIONAL, 3, 1));
+		fields.add(new FormField("state", FieldDisplayType.TEXTBOX, "State / Province", Required.OPTIONAL, 4, 1));
+		fields.add(new FormField("zip", FieldDisplayType.TEXTBOX, "Zip / Postal Code", Required.OPTIONAL, 5, 1));
+		fields.add(new FormField("country", FieldDisplayType.SELECTBOX, "Country", Required.OPTIONAL, 6, 1));
+		fields.add(new FormField("lat", FieldDisplayType.DECIMAL, "Latitude", Required.OPTIONAL, 7, 1));
+		fields.add(new FormField("lng", FieldDisplayType.DECIMAL, "Longitude", Required.OPTIONAL, 8, 1));
 		return fields;
 	}
 	
