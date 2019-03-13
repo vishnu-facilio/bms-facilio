@@ -412,6 +412,7 @@ public class ReadOnlyChainFactory {
 	public static Chain fetchItemTypesDetails() {
 		Chain c = getDefaultChain();
 		c.addCommand(SetTableNamesCommand.getForItemTypes());
+		c.addCommand(new GetItemTypesDetailsCommand());
 		c.addCommand(new GenericGetModuleDataDetailCommand());
 		return c;
 	}
@@ -430,6 +431,7 @@ public class ReadOnlyChainFactory {
 	public static Chain fetchToolDetails() {
 		Chain c = getDefaultChain();
 		c.addCommand(SetTableNamesCommand.getForToolTypes());
+		c.addCommand(new GetItemTypesDetailsCommand());
 		c.addCommand(new GenericGetModuleDataDetailCommand());
 		return c;
 	}
