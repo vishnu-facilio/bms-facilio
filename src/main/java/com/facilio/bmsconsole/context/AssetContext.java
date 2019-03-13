@@ -261,14 +261,11 @@ public class AssetContext extends ResourceContext {
 		this.identifiedLocation = identifiedLocation;
 	}
 	
-	private String url;
 	
 	public String getUrl() {
 		return "app/at/asset/all/" + getId() + "/overview";
 	}
-	public void setUrl(String url) {
-		this.url = url;
-	}
+
 
 	public static enum AssetState {
 		ACTIVE(1, "Active"),
