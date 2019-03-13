@@ -607,6 +607,9 @@
 		<action name="allfields" class="com.facilio.bmsconsole.actions.FormAction"
 		     method="allFormFields">
 		</action>
+		<action name="formidfields" class="com.facilio.bmsconsole.actions.FormAction"
+		     method="FormIdFields">
+		</action>
 
 	</package>
 	<package name="templateApiv2" namespace="/api/v2/template"
