@@ -37,6 +37,7 @@ import com.facilio.bmsconsole.workflow.rule.ActionContext;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsole.workflow.rule.ApprovalRuleContext;
 import com.facilio.bmsconsole.workflow.rule.FieldChangeFieldContext;
+import com.facilio.bmsconsole.workflow.rule.ReadingAlarmRuleContext;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowEventContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
@@ -931,4 +932,41 @@ public class WorkflowRuleAPI {
 			}
 		}
 	}
+	
+	public static List<ReadingAlarmRuleContext> getReadingAlarmRulesFromReadingRuleGroupId(long readingGroupId) throws Exception {
+		
+		List<FacilioField> fields = FieldFactory.getWorkflowRuleFields();
+		fields.addAll(FieldFactory.getReadingAlarmRuleFields());
+		
+		GenericSelectRecordBuilder select = new GenericSelectRecordBuilder();
+		select.table(ModuleFactory.getWorkflowRuleModule().getTableName())
+		.innerJoin(ModuleFactory.getReadingAlarmRuleModule().getTableName())
+		.on(ModuleFactory.getWorkflowRuleModule().getTableName()+".ID = "+ModuleFactory.getWorkflowRuleModule().getTableName()+".ID")
+		.select(fields)
+		.andCustomWhere("READING_RULE_GROUP_ID = ?", readingGroupId);
+		
+		List<Map<String, Object>> props = select.get();
+		
+		if(props!= null && !props.isEmpty()) {
+			
+			return FieldUtil.getAsBeanListFromMapList(props, ReadingAlarmRuleContext.class);
+		}
+		
+		return null;
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 }

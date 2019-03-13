@@ -12,6 +12,7 @@ import com.facilio.bmsconsole.util.ActionAPI;
 import com.facilio.bmsconsole.util.ReadingRuleAPI;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.rule.EventType;
+import com.facilio.bmsconsole.workflow.rule.ReadingAlarmRuleContext;
 import com.facilio.bmsconsole.workflow.rule.AlarmRuleContext;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
@@ -42,6 +43,10 @@ public class UpdateAlarmRuleCommand implements Command {
 			FacilioTimer.deleteJob(preRequsiteRule.getId(), FacilioConstants.Job.SCHEDULED_READING_RULE_JOB_NAME);
 		}
 		
+		List<ReadingAlarmRuleContext> readingAlarmRules = WorkflowRuleAPI.getReadingAlarmRulesFromReadingRuleGroupId(alarmRule.getPreRequsite().getRuleGroupId());
+		
+		deleteReadingAlarmRuleAndActions(readingAlarmRules);
+		
 		return false;
 	}
 
@@ -55,6 +60,17 @@ public class UpdateAlarmRuleCommand implements Command {
 			}
 		}
 		WorkflowRuleAPI.deleteWorkFlowRules(rulesToDelete);
+	}
+	
+	private void deleteReadingAlarmRuleAndActions(List<ReadingAlarmRuleContext> readingAlarmRules) throws Exception {
+		
+		List<Long> rulesToDelete = new ArrayList<>();
+		
+		for(ReadingAlarmRuleContext readingAlarmRule : readingAlarmRules) {
+			rulesToDelete.add(readingAlarmRule.getId());
+		}
+		WorkflowRuleAPI.deleteWorkFlowRules(rulesToDelete);
+		ActionAPI.deleteAllActionsFromWorkflowRules(rulesToDelete);
 	}
 	
 	private void deleteActions(List<ReadingRuleContext> oldRules) throws Exception {
