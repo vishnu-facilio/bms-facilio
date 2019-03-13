@@ -177,8 +177,8 @@ public class ColumnFactory {
 		
 		columns.add(new ViewField("name", "Tenant Name"));
 		columns.add(new ViewField("description", "Description"));
-		columns.add(new ViewField("createdTime", "Created Time"));
-		columns.add(new ViewField("modifiedTime", "Modified Time"));
+		columns.add(new ViewField("sysCreatedTime", "Created Time"));
+		columns.add(new ViewField("sysModifiedTime", "Modified Time"));
 		columns.add(new ViewField("contact", "Contact"));
 				
 		return columns;

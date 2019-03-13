@@ -872,6 +872,7 @@ public static Map<Long, TicketContext> getTickets(String ids) throws Exception {
 														.select(modBean.getAllFields(FacilioConstants.ContextNames.TENANT))
 														;
 			List<TenantContext> tenantList = builder.get();
+			if(tenantList.size() > 0) {
 			TenantsAPI.loadTenantLookups(tenantList);
 			Map<Long, TenantContext> tenants = FieldUtil.getAsMap(tenantList);
 			for(TicketContext ticket : tickets) {
@@ -883,7 +884,8 @@ public static Map<Long, TicketContext> getTickets(String ids) throws Exception {
 					}
 				}
 			}
-		}
+		  }
+	   }
 	}
 
 	public static CalendarColorContext getCalendarColor() throws Exception {

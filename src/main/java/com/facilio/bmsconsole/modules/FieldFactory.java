@@ -118,18 +118,6 @@ public class FieldFactory {
 			assetFieldsInclude.add("warrantyExpiryDate");
 		}
 
-
-		public static List<String> tenantFieldsInclude = new ArrayList<String>();
-		static {
-			tenantFieldsInclude.add("name");
-			tenantFieldsInclude.add("description");
-			tenantFieldsInclude.add("zone");
-			tenantFieldsInclude.add("contact");
-			tenantFieldsInclude.add("createdTime");
-			tenantFieldsInclude.add("modifiedTime");
-
-		}
-
 		public static List<String> approvalFormFields = new ArrayList<String>();
 		static {
 			approvalFormFields.add("assignmentGroup");
@@ -4954,6 +4942,9 @@ public class FieldFactory {
 		fields.add(getField("zoneId", "ZONE_ID", module, FieldType.LOOKUP));
 		fields.add(getField("inTime", "IN_TIME", module, FieldType.DATE));
 		fields.add(getField("outTime", "OUT_TIME", module, FieldType.DATE));
+		fields.add(getField("sysCreatedTime", "CREATED_TIME", module, FieldType.DATE_TIME));
+		fields.add(getField("sysModifiedTime", "MODIFIED_TIME", module, FieldType.DATE_TIME));
+		fields.add(getField("occupancy", "OCCUPANCY", module, FieldType.NUMBER));
 
 		return fields;
 	}
