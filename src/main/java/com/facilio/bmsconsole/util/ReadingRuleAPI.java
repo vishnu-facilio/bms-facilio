@@ -10,6 +10,7 @@ import java.util.Map;
 
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Context;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
@@ -323,8 +324,11 @@ public class ReadingRuleAPI extends WorkflowRuleAPI {
 			.update(prop)
 			;
 	}
-	public static List<ReadingRuleContext> getReadingRules(long ruleGroupId) throws Exception {
-		if (ruleGroupId <= 0) {
+	public static List<ReadingRuleContext> getReadingRulesList(long ruleGroupId) throws Exception {
+		return getReadingRulesList(Collections.singletonList(ruleGroupId));
+	}
+	public static List<ReadingRuleContext> getReadingRulesList(List<Long> ruleGroupIds) throws Exception {
+		if (ruleGroupIds == null || ruleGroupIds.isEmpty()) {
 			return null;
 		}
 		
@@ -347,7 +351,7 @@ public class ReadingRuleAPI extends WorkflowRuleAPI {
 													.innerJoin(readingRuleModule.getTableName())
 													.on(workflowRuleModule.getTableName()+".ID = "+readingRuleModule.getTableName()+".ID")
 													.andCondition(CriteriaAPI.getCurrentOrgIdCondition(workflowRuleModule))
-													.andCondition(CriteriaAPI.getCondition(ruleGroupIdField, Collections.singleton(ruleGroupId), NumberOperators.EQUALS));
+													.andCondition(CriteriaAPI.getCondition(ruleGroupIdField, StringUtils.join(ruleGroupIds, ","), NumberOperators.EQUALS));
 		ruleBuilder.select(fields);
 		List<Map<String, Object>> props = ruleBuilder.get();
 		List<ReadingRuleContext> readingRuleContexts = null;

@@ -21,7 +21,7 @@ public class FetchAlarmRuleCommand implements Command {
 			throw new IllegalArgumentException("Invalid ID to fetch workflow");
 		}
 		List<ReadingAlarmRuleContext> readingAlarmRules = WorkflowRuleAPI.getReadingAlarmRulesFromReadingRuleGroupId(id);
-		AlarmRuleContext alarmRule = new AlarmRuleContext(ReadingRuleAPI.getReadingRules(id),readingAlarmRules);
+		AlarmRuleContext alarmRule = new AlarmRuleContext(ReadingRuleAPI.getReadingRulesList(id),readingAlarmRules);
 		ReadingRuleAPI.setMatchedResources(alarmRule.getPreRequsite());
 		context.put(FacilioConstants.ContextNames.ALARM_RULE, alarmRule);
 		

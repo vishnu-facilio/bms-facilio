@@ -25,7 +25,7 @@ public class UpdateAlarmRuleCommand implements Command {
 	public boolean execute(Context context) throws Exception {
 		AlarmRuleContext alarmRule = (AlarmRuleContext) context.get(FacilioConstants.ContextNames.ALARM_RULE);
 		
-		List<ReadingRuleContext> oldRules = ReadingRuleAPI.getReadingRules(alarmRule.getPreRequsite().getRuleGroupId());
+		List<ReadingRuleContext> oldRules = ReadingRuleAPI.getReadingRulesList(alarmRule.getPreRequsite().getRuleGroupId());
 		
 		ReadingRuleContext preRequsiteRule = alarmRule.getPreRequsite();
 		
