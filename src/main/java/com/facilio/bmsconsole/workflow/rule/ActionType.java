@@ -58,6 +58,7 @@ import com.facilio.bmsconsole.util.SMSUtil;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.util.WorkOrderAPI;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
+import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext.ReadingRuleType;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.events.constants.EventConstants;
@@ -725,15 +726,22 @@ public enum ActionType {
 			if (alarmMetaMap == null) {
 				alarmMetaMap = ((ReadingRuleContext)currentRule).getAlarmMetaMap();
 			}
-			ReadingRuleAlarmMeta alarmMeta = alarmMetaMap != null ? alarmMetaMap.get(((ReadingContext) currentRecord).getParentId()) : null;
+			long resourceId = ((ReadingRuleContext) currentRule).getReadingRuleTypeEnum() == ReadingRuleType.THRESHOLD_RULE ? ((ReadingContext) currentRecord).getParentId() : ((ReadingRuleContext) currentRule).getResourceId(); 
+			ReadingRuleAlarmMeta alarmMeta = alarmMetaMap != null ? alarmMetaMap.get(resourceId) : null;
 			
 			if(alarmMeta != null) {
 				AlarmContext alarm = AlarmAPI.getAlarm(alarmMeta.getAlarmId());
-
-				if(alarm.getModifiedTime() == ((ReadingContext) currentRecord).getTtime()) {
+				long clearTime = ((ReadingRuleContext) currentRule).getReadingRuleTypeEnum() == ReadingRuleType.THRESHOLD_RULE ? ((ReadingContext) currentRecord).getTtime() : (long) context.get(FacilioConstants.ContextNames.CURRENT_EXECUTION_TIME);
+				if(alarm.getModifiedTime() == clearTime) {
 					return;
 				}
-				ReadingRuleAPI.addClearEvent(currentRecord, context, obj, (ReadingContext) currentRecord, (ReadingRuleContext)currentRule);
+				ReadingContext reading = (ReadingContext) currentRecord;
+				if (reading != null) {
+					ReadingRuleAPI.addClearEvent(context, obj, (ReadingRuleContext)currentRule, reading.getId(), ((ReadingRuleContext) currentRule).getMetric(reading), clearTime, resourceId);
+				}
+				else {
+					ReadingRuleAPI.addClearEvent(context, obj, (ReadingRuleContext)currentRule, -1, null, clearTime, resourceId);
+				}
 			}
 		}
 	},

@@ -21,6 +21,7 @@ import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.BaseLineContext;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ResourceContext;
+import com.facilio.bmsconsole.context.TicketContext.SourceType;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
@@ -39,6 +40,7 @@ import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext.ThresholdType;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.constants.FacilioConstants.Alarm;
 import com.facilio.events.constants.EventConstants;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
@@ -359,11 +361,8 @@ public class ReadingRuleAPI extends WorkflowRuleAPI {
 		}
 		return readingRuleContexts;
 	}
-	public static void addClearEvent(Object record, Context context, Map<String, Object> placeHolders,ReadingContext reading,ReadingRuleContext readingRuleContext) throws Exception {
+	public static void addClearEvent(Context context, Map<String, Object> placeHolders, ReadingRuleContext readingRuleContext, long readingDataId, Object readingVal, long ttime, long resourceId) throws Exception {
 		
-		if(reading == null) {
-			reading = (ReadingContext) record;
-		}
 		Map<Long, ReadingRuleAlarmMeta> alarmMetaMap = (Map<Long, ReadingRuleAlarmMeta>) context.get(FacilioConstants.ContextNames.READING_RULE_ALARM_META);
 		boolean isHistorical = true;
 		if (alarmMetaMap == null) {
@@ -371,20 +370,22 @@ public class ReadingRuleAPI extends WorkflowRuleAPI {
 			isHistorical = false;
 		}
 		
-		ReadingRuleAlarmMeta alarmMeta = alarmMetaMap != null ? alarmMetaMap.get(reading.getParentId()) : null;
+		ReadingRuleAlarmMeta alarmMeta = alarmMetaMap != null ? alarmMetaMap.get(resourceId) : null;
 		if (isHistorical) {
-			LOGGER.info("Alarm meta for rule : "+readingRuleContext.getId()+" for resource : "+reading.getParentId()+" at time : "+reading.getTtime()+"::"+alarmMeta);
+			LOGGER.info("Alarm meta for rule : "+readingRuleContext.getId()+" for resource : "+resourceId+" at time : "+ttime+"::"+alarmMeta);
 		}
 		if (alarmMeta != null && !alarmMeta.isClear()) {
 			alarmMeta.setClear(true);
 			AlarmContext alarm = AlarmAPI.getAlarm(alarmMeta.getAlarmId());
 			
-			JSONObject json = AlarmAPI.constructClearEvent(alarm, "System auto cleared Alarm because associated rule executed false for the associated resource", reading.getTtime());
-			json.put("readingDataId", reading.getId());
-			json.put("readingVal", reading.getReading(readingRuleContext.getReadingField().getName()));
+			JSONObject json = AlarmAPI.constructClearEvent(alarm, "System auto cleared Alarm because associated rule executed clear condition for the associated resource", ttime);
+			if (alarm.getSourceTypeEnum() == SourceType.THRESHOLD_ALARM) {
+				json.put("readingDataId", readingDataId);
+				json.put("readingVal", readingVal);
+			}
 			
 			if (isHistorical) {
-				LOGGER.info("Clearing alarm for rule : "+readingRuleContext.getId()+" for resource : "+reading.getParentId());
+				LOGGER.info("Clearing alarm for rule : "+readingRuleContext.getId()+" for resource : "+resourceId);
 			}
 			
 			FacilioContext addEventContext = new FacilioContext();

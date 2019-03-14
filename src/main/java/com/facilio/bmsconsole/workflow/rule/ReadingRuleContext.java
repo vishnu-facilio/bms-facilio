@@ -555,7 +555,7 @@ public class ReadingRuleContext extends WorkflowRuleContext implements Cloneable
 		}
 	}
 	
-	private Object getMetric(ReadingContext reading) {
+	public Object getMetric(ReadingContext reading) {
 		if(reading != null) {
 			if (!isMatchingResource(reading)) {
 				return null;
@@ -776,9 +776,10 @@ public class ReadingRuleContext extends WorkflowRuleContext implements Cloneable
 	public void executeFalseActions(Object record, Context context, Map<String, Object> placeHolders) throws Exception {
 		// TODO Auto-generated method stub
 		ReadingContext reading = (ReadingContext) record;
-		if (getMetric(reading) != null || getEvent().getActivityTypeEnum().isPresent(EventType.SCHEDULED_READING_RULE.getValue())) {
+		Object val = getMetric(reading);
+		if (val != null || getEvent().getActivityTypeEnum().isPresent(EventType.SCHEDULED_READING_RULE.getValue())) {
 			if (clearAlarm()) {
-				ReadingRuleAPI.addClearEvent(record, context, placeHolders, reading, this);
+				ReadingRuleAPI.addClearEvent(context, placeHolders, this, reading.getId(), val, reading.getTtime(), reading.getParentId());
 			}
 			
 			super.executeFalseActions(record, context, placeHolders);

@@ -320,7 +320,7 @@ public class MLForecastingJob extends FacilioJob
 	private void generateModel(MlForecastingContext pc) throws Exception
 	{
 		 JSONObject postObj = new JSONObject();
-		 postObj.put("predictedFieldID", pc.getPredictedfieldid());
+		 postObj.put("sourceFieldName", pc.getFields().get(0).getName());
 		 postObj.put("meterInterval",pc.getDatainterval());
 		 postObj.put("data", pc.getPyData());
 		 
