@@ -139,6 +139,7 @@ public class PMNewScheduler extends FacilioJob {
 						workorderTemplate.setResourceId(resourceId);
 						workorderTemplate.setResource(resourceMap.get(resourceId));
 					} else {
+						LOGGER.error("work order not generated PMID: " + pm.getId() + "ResourceId: " + resourceId);
 						CommonCommandUtil.emailAlert("work order not generated", "PMID: " + pm.getId() + "ResourceId: " + resourceId);
 					}
 

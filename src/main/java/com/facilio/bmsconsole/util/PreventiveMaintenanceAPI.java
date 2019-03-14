@@ -266,6 +266,7 @@ public class PreventiveMaintenanceAPI {
 			isScheduled = true;
 		}
 		if (!isScheduled) {
+			LOGGER.log(Level.SEVERE, "No Work orders generated for PM "+ pm.getId() + " PM Trigger ID: "+pmTrigger.getId());
 			CommonCommandUtil.emailAlert("No Work orders generated for pm", "PM "+ pm.getId() + " PM Trigger ID: "+pmTrigger.getId());
 		}
 		return wos;

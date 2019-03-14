@@ -129,6 +129,7 @@ public class ScheduleNewPMCommand extends FacilioJob implements SerializableComm
                                         workorderTemplate.setResourceId(workorderTemplate.getResource().getId());
                                     }
                                 } else {
+                                    LOGGER.log(Level.SEVERE,"work order not generated PMID: " + pm.getId() + "ResourceId: " + resourceId);
                                     CommonCommandUtil.emailAlert("work order not generated", "PMID: " + pm.getId() + "ResourceId: " + resourceId);
                                 }
                                 workorderTemplate.setResource(ResourceAPI.getResource(resourceId));
