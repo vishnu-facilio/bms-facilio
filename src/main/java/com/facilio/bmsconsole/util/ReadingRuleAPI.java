@@ -34,6 +34,7 @@ import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.bmsconsole.workflow.rule.ActionContext;
 import com.facilio.bmsconsole.workflow.rule.AlarmRuleContext;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleAlarmMeta;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
@@ -382,9 +383,9 @@ public class ReadingRuleAPI extends WorkflowRuleAPI {
 		List<ReadingRuleContext> readingRuleContexts = null;
 		if(props != null && !props.isEmpty()) {
 			readingRuleContexts = new ArrayList<>();
-			
 			List<WorkflowRuleContext> workflowRuleContexts = getWorkFlowsFromMapList(props, false, true, true);
 			for(WorkflowRuleContext workflowRuleContext :workflowRuleContexts) {
+				workflowRuleContext.setActions(ActionAPI.getActiveActionsFromWorkflowRule(workflowRuleContext.getId()));
 				readingRuleContexts.add((ReadingRuleContext)workflowRuleContext);
 			}
 		}
