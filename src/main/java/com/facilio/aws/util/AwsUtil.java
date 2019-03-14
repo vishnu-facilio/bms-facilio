@@ -433,11 +433,11 @@ public class AwsUtil
     }
 	
 	public static void sendEmail(JSONObject mailJson) throws Exception  {
+		logEmail(mailJson);
 		if(AwsUtil.isDevelopment()) {
 //			mailJson.put("subject", "Local - "+mailJson.get("subject"));
 			return;
 		}
-		logEmail(mailJson);
 		if(isSmtp()) {
 			EmailUtil.sendEmail(mailJson);
 		} else {
