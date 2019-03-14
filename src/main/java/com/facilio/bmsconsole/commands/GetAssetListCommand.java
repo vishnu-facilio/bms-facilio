@@ -60,9 +60,13 @@ public class GetAssetListCommand implements Command {
 		}
 		FacilioView view = (FacilioView) context.get(FacilioConstants.ContextNames.CUSTOM_VIEW);
 		
+		Class beanClassName = FacilioConstants.ContextNames.getClassFromModuleName(moduleName);
+		if (beanClassName == null) {
+			beanClassName = AssetContext.class;
+		}
 		SelectRecordsBuilder<AssetContext> builder = new SelectRecordsBuilder<AssetContext>()
 															.module(module)
-															.beanClass(FacilioConstants.ContextNames.getClassFromModuleName(moduleName))
+															.beanClass(beanClassName)
 															.select(specifiedfields)
 															;
 		String orderBy = (String) context.get(FacilioConstants.ContextNames.SORTING_QUERY);
