@@ -1,17 +1,30 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.apache.commons.lang3.StringUtils;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
 import com.facilio.bmsconsole.context.AlarmContext;
 import com.facilio.bmsconsole.context.ReadingAlarmContext;
+import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.FieldFactory;
+import com.facilio.bmsconsole.modules.FieldType;
+import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.util.ReadingRuleAPI;
 import com.facilio.bmsconsole.workflow.rule.AlarmRuleContext;
+import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.events.constants.EventConstants;
+import com.facilio.events.context.EventContext;
+import com.facilio.sql.GenericSelectRecordBuilder;
 
 public class GetReadingRuleDetailsCommand implements Command {
 
@@ -37,8 +50,54 @@ public class GetReadingRuleDetailsCommand implements Command {
 					if (alarm instanceof ReadingAlarmContext && ((ReadingAlarmContext) alarm).getRuleId() != -1) {
 						
 						ReadingAlarmContext readingAlarmContext = (ReadingAlarmContext) alarm;
-						readingAlarmContext.setAlarmRuleContext(alarmRuleContextMap.get(readingAlarmContext.getRuleId()));
+						AlarmRuleContext alarmRuleContext = alarmRuleContextMap.get(readingAlarmContext.getRuleId());
+						readingAlarmContext.setAlarmRuleContext(alarmRuleContext);
 						
+						if(alarmRuleContext.getAlarmRCARules() != null) {
+							List<Long> rcaIds = new ArrayList<>();
+							
+							JSONArray rcaJSONArray = new JSONArray();
+							for(ReadingRuleContext rcaRule :alarmRuleContext.getAlarmRCARules()) {
+								
+								rcaIds.add(rcaRule.getId());
+							}
+							List<FacilioField> fields = new ArrayList<>();
+							fields.addAll(EventConstants.EventFieldFactory.getEventFields());
+							
+							fields.add(FieldFactory.getField("max", "MAX(CREATED_TIME)", FieldType.NUMBER));
+							
+							GenericSelectRecordBuilder genericSelectRecordBuilder = new GenericSelectRecordBuilder();
+							genericSelectRecordBuilder.table(EventConstants.EventModuleFactory.getEventModule().getTableName());
+							genericSelectRecordBuilder.select(fields);
+							genericSelectRecordBuilder.andCustomWhere("SUB_RULE_ID IN (?)", StringUtils.join(rcaIds, ","));
+							genericSelectRecordBuilder.groupBy("SUB_RULE_ID");
+							
+							List<Map<String, Object>> props = genericSelectRecordBuilder.get();
+							
+							Map<Long,EventContext> eventMap = new HashMap<>();
+							if(props != null && props.isEmpty()) {
+								for(Map<String, Object> prop :props) {
+									
+									EventContext eventContext = FieldUtil.getAsBeanFromMap(prop, EventContext.class);
+									eventMap.put(eventContext.getSubRuleId(), eventContext);
+								}
+							}
+							for(ReadingRuleContext rcaRule :alarmRuleContext.getAlarmRCARules()) {
+								
+								JSONObject rcaJson = new JSONObject();
+								rcaJson.put("rcaRule", rcaRule);
+								EventContext event = eventMap.get(rcaRule.getId());
+								rcaJson.put("event", event);
+								
+								if(event != null && readingAlarmContext.getModifiedTime() == event.getCreatedTime()) {
+									rcaJson.put("isActive", true);
+								}
+								else {
+									rcaJson.put("isActive", false);
+								}
+								rcaJSONArray.add(rcaJson);
+							}
+						}
 					}
 				}
 			}
