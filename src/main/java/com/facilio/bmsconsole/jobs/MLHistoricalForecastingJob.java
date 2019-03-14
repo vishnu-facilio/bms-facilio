@@ -10,6 +10,7 @@ import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
@@ -45,7 +46,7 @@ public class MLHistoricalForecastingJob extends FacilioJob
 		long endTime = 1538677800000l;
 		runPrediction(startTime,endTime,15);
 		*/
-		/*
+		
 		long startTime = 1524783600000l;//Apr 27  04:30
 		long endTime = 1535482800000l;//Aug 29 00:30 
 		
@@ -57,7 +58,7 @@ public class MLHistoricalForecastingJob extends FacilioJob
 		{
 			e.printStackTrace();
 		}
-		*/
+		/*
 		long startTime = 1537633600000l;//Sep 22 2018 21:56
 		long endTime = 1550000000000l;//Feb 13 2019 01:03:20
 		try
@@ -67,10 +68,95 @@ public class MLHistoricalForecastingJob extends FacilioJob
 		catch(Exception e)
 		{
 			e.printStackTrace();
+		}*/
+		//long startTime = 1514800000000l;//Mon Jan 01 2018 15:16:40
+		/*long startTime = 1524852000000l;
+		long endTime = 1530450000000l;//Feb 13 2019 01:03:20
+		try
+		{
+			runLifeTimePrediction(startTime,endTime);
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+		*/
+	}
+	
+	private void runLifeTimePrediction(long startTime,long endTime) throws Exception
+	{
+		//long bagfilterFieldID = 253613;
+		//long supplyFanStatusFieldID = 253885;
+		//long ttimeFieldID = 253618;
+		
+		//long predictedLogFieldID=490426l;
+		//long predictedFieldID=490436l;
+		
+		
+		//long assetId=969283l;
+		long bagfilterFieldID = 1010;
+		long supplyFanStatusFieldID = 1019;
+		long ttimeFieldID = 1012;
+		
+		long predictedLogFieldID= 1028;
+		long assetId=3;
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioField predictedLogField = modBean.getField(predictedLogFieldID);
+		
+		long currentTime = startTime + 1728000000;
+		int count =0;
+		while(startTime < endTime)
+		{
+			count++;
+			try
+			{
+				JSONArray array = getReadings(assetId,bagfilterFieldID,supplyFanStatusFieldID,ttimeFieldID,startTime,currentTime);
+				if(array!=null)
+				{
+					JSONObject postObj = new JSONObject();
+					postObj.put("predictedFieldID",1095);
+					postObj.put("maximumDays", 180);
+					postObj.put("Threshold", 269);
+					postObj.put("Timezone", AccountUtil.getCurrentOrg().getTimezone());
+					postObj.put("meterInterval",60);
+					postObj.put("AssetDetails", array);
+					 
+					 String postURL=AwsUtil.getAnomalyPredictAPIURL() + "/predictlifetime";
+					 Map<String, String> headers = new HashMap<>();
+					 headers.put("Content-Type", "application/json");
+					 String result = AwsUtil.doHttpPost(postURL, headers, null, postObj.toString());
+					 
+					 
+					 if(!(result==null || result.isEmpty()))
+					 {
+						 JSONObject resultObj = new JSONObject(result);
+						 List<ReadingContext> predictedReadingList = new ArrayList<>(1);
+						 
+						 int  predictedFailureDays = (int)resultObj.get("result");
+						 ReadingContext newReading = new ReadingContext();
+						 newReading.setParentId(assetId);
+						 newReading.addReading(predictedLogField.getName(), predictedFailureDays);	   			
+						 newReading.setTtime(currentTime);
+						 newReading.addReading("predictedTime", currentTime);
+						 predictedReadingList.add(newReading);
+							
+						updateReading(predictedLogField.getModule(),predictedReadingList);
+						
+					 }
+					 LOGGER.info("JAVEED result is "+result);
+				}
+			}
+			catch(Exception e)
+			{
+				e.printStackTrace();
+			}
+			startTime = startTime+(24*3600*1000);
+			currentTime = startTime + 1728000000;
+			LOGGER.info("Count executed "+count+"::"+startTime+":::"+currentTime);
 		}
 		
 	}
-	
 	private void runPrediction(long startTime,long endTime,long dataInterval) throws Exception
 	{
 		long bagfilterFieldID = 253613;
@@ -187,6 +273,7 @@ public class MLHistoricalForecastingJob extends FacilioJob
 		
 		JSONArray array = new JSONArray();
 		Criteria criteria = CriteriaAPI.getCriteria(134, 10363);
+		//Criteria criteria = CriteriaAPI.getCriteria(1, 40);
 		
 
 		boolean supplyStatus = true;
@@ -200,10 +287,12 @@ public class MLHistoricalForecastingJob extends FacilioJob
 					if((long)prop.get("ttime")>lastTime)
 					{
 						if(prop.containsKey("bagfilterdifferentialpressure"))
+						//if(prop.containsKey("bagfilterdp"))
 						{
 							JSONObject jsonObject = new JSONObject();
 							jsonObject.put("ttime", prop.get("ttime"));
 							jsonObject.put("metric", prop.get("bagfilterdifferentialpressure"));//always use metric as this is a generic call
+							//jsonObject.put("metric", prop.get("bagfilterdp"));//always use metric as this is a generic call
 							array.put(jsonObject);
 						}
 						lastTime=(long) prop.get("ttime");
