@@ -18,6 +18,8 @@ import com.facilio.bmsconsole.forms.FormField;
 import com.facilio.bmsconsole.forms.FormField.Required;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioField.FieldDisplayType;
+import com.facilio.bmsconsole.modules.FacilioModule;
+import com.facilio.bmsconsole.modules.LookupField;
 import com.facilio.bmsconsole.util.FormsAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
@@ -30,8 +32,7 @@ public class GetFormMetaCommand implements Command {
 		Long formId = (Long) context.get(FacilioConstants.ContextNames.FORM_ID);
 		List<FacilioForm> forms = new ArrayList<>();
 		if (formNames != null && formNames.length > 0) {
-			List<FacilioForm> forms = new ArrayList<>();
-			ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			 
 			for (String formName: formNames) {
 				String modname = formName.replaceAll("default_", "");
@@ -41,7 +42,7 @@ public class GetFormMetaCommand implements Command {
 						throw new IllegalArgumentException("Invalid Form " + formName);
 					}
 					else if (FormFactory.getForm(formName) == null && formName.startsWith("default_")) {
-						FacilioModule module = bean.getModule(modname);
+						FacilioModule module = modBean.getModule(modname);
 						String extendedModName = module.getExtendModule().getName();
 						formName = "default_" +extendedModName ;
 					}
@@ -49,7 +50,6 @@ public class GetFormMetaCommand implements Command {
 					List<FormField> fields = new ArrayList<>(form.getFields());
 					form.setFields(fields);
 					
-					ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 					String moduleName = form.getModule().getName();
 					
 					form.setModule(modBean.getModule(moduleName));
@@ -74,31 +74,20 @@ public class GetFormMetaCommand implements Command {
 					}
 					
 					if (formName.startsWith("default_") && !modname.equals("asset")) {
-						FacilioModule module = bean.getModule(modname);
-						if (modname != "asset") {
-							List<FacilioField> field = bean.getAllFields(modname);
-							for (FacilioField f: field) {
-								if ((f.getModule().equals(module)) && (!f.isDefault())) {
-									count = count + 1;
-									FormField formFields = new FormField(f.getName(), f.getDisplayType(), f.getDisplayName(), FormField.Required.OPTIONAL, count, 1);
-									formFields.setField(f);
-									formFields.setFieldId(f.getFieldId());
-									fields.add(formFields);
-								}
+						FacilioModule module = modBean.getModule(modname);
+						List<FacilioField> facilioFields = modBean.getAllFields(modname);
+						for (FacilioField f: facilioFields) {
+							if ((f.getModule().equals(module)) || !f.isDefault()) {
+								count = count + 1;
+								fields.add(getFormFieldFromFacilioField(f, count));									
 							}
 						}
-						moduleName = modname;
 					}
-					else {
-						List<FacilioField> customFields = modBean.getAllCustomFields(moduleName);
-						if (customFields != null && !customFields.isEmpty()) {
-							for (FacilioField f: customFields) {
-								count = count + 1;
-								FormField formFields = new FormField(f.getName(), f.getDisplayType(), f.getDisplayName(), FormField.Required.OPTIONAL, count, 1);
-								formFields.setField(f);
-								formFields.setFieldId(f.getFieldId());
-								fields.add(formFields);
-							}
+					List<FacilioField> customFields = modBean.getAllCustomFields(moduleName);
+					if (customFields != null && !customFields.isEmpty()) {
+						for (FacilioField f: customFields) {
+							count = count + 1;
+							fields.add(getFormFieldFromFacilioField(f, count));
 						}
 					}
 					
@@ -139,6 +128,16 @@ public class GetFormMetaCommand implements Command {
 			return null;
 		}
 		return forms.get(0);
+	}
+	
+	private FormField getFormFieldFromFacilioField(FacilioField facilioField, int count) {
+		FormField formField = new FormField(facilioField.getName(), facilioField.getDisplayType(), facilioField.getDisplayName(), FormField.Required.OPTIONAL, count, 1);
+		formField.setField(facilioField);
+		formField.setFieldId(facilioField.getFieldId());
+		if (facilioField instanceof LookupField) {
+			formField.setLookupModuleName(((LookupField)facilioField).getLookupModule().getName());
+		}
+		return formField;
 	}
 
 }

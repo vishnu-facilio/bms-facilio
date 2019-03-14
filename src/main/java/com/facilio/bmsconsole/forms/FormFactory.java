@@ -279,7 +279,7 @@ public class FormFactory {
 		form.setDisplayName("Asset");
 		form.setName("asset");
 		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.ASSET));
-		form.setLabelPosition(LabelPosition.LEFT);
+		form.setLabelPosition(LabelPosition.TOP);
 		form.setFormType(FormType.WEB);
 		form.setFields(getWebAssetFormFields());
 		return form;
