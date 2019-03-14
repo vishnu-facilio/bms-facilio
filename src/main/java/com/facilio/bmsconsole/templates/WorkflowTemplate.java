@@ -27,7 +27,7 @@ public class WorkflowTemplate extends Template {
 		this.meta = meta;
 	}
 	public JSONObject getMetaJson() throws ParseException {
-		if(metaJson == null) {
+		if(metaJson == null && meta != null) {
 			JSONParser parser = new JSONParser();
 			this.metaJson = (JSONObject) parser.parse(meta);
 		}
@@ -35,6 +35,9 @@ public class WorkflowTemplate extends Template {
 	}
 	public void setMetaJson(JSONObject metaJson) {
 		this.metaJson = metaJson;
+		if(metaJson != null) {
+			setMeta(metaJson.toJSONString());
+		}
 	}
 	
 	private WorkflowContext resultWorkflowContext;
@@ -52,9 +55,12 @@ public class WorkflowTemplate extends Template {
 		
 		WorkflowContext workflowContext = WorkflowUtil.getWorkflowContext(resultWorkflowId);
 		JSONObject json = new JSONObject();
-		json.put("WorkflowString", workflowContext.getWorkflowString());
-		json.put("cost", 10);
-		json.putAll(getMetaJson());
+		if(workflowContext != null) {
+			json.put("WorkflowString", workflowContext.getWorkflowString());
+		}
+		if(getMetaJson() != null) {
+			json.putAll(getMetaJson());
+		}
 		return json;
 	}
 	public long getResultWorkflowId() {

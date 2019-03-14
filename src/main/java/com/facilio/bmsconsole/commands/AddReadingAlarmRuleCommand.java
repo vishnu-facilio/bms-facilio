@@ -12,6 +12,7 @@ import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.rule.ActionContext;
 import com.facilio.bmsconsole.workflow.rule.AlarmRuleContext;
 import com.facilio.bmsconsole.workflow.rule.ReadingAlarmRuleContext;
+import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.constants.FacilioConstants;
 
 public class AddReadingAlarmRuleCommand implements Command {
@@ -29,6 +30,8 @@ public class AddReadingAlarmRuleCommand implements Command {
 			
 			for(ReadingAlarmRuleContext readingAlarmRuleContext : alarmRule.getReadingAlarmRuleContexts()) {
 				readingAlarmRuleContext.setReadingRuleGroupId(alarmRule.getPreRequsite().getRuleGroupId());
+				
+				readingAlarmRuleContext.setRuleType(RuleType.READING_ALARM_RULE);
 				
 				if(readingAlarmRuleContext.getParentRuleName() != null) {
 					readingAlarmRuleContext.setParentRuleId(readingAlarmRuleNameVsIdMap.get(readingAlarmRuleContext.getParentRuleName()));
