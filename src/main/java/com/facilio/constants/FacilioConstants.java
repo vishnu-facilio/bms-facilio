@@ -844,6 +844,7 @@ public class FacilioConstants {
 
 		public static final String ITEM_VENDORS = "itemVendors";
 		public static final String TRANSACTION_TYPE = "transactionType";
+		public static final String TRANSACTION_STATE = "transactionState";
 
 		public static final String PURCHASED_TOOL = "purchasedTool";
 		public static final String PURCHASED_TOOL_IS_USED = "purchasedToolIsUsed";

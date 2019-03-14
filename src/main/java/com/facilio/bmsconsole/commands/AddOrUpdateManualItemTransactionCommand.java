@@ -161,6 +161,7 @@ public class AddOrUpdateManualItemTransactionCommand implements Command {
 					Collections.singletonList(itemTransactions.get(0).getItem().getId()));
 			context.put(FacilioConstants.ContextNames.RECORD_LIST, itemTransactionsList);
 			context.put(FacilioConstants.ContextNames.ITEM_TYPES_ID, itemTypeId);
+			context.put(FacilioConstants.ContextNames.TRANSACTION_STATE, itemTransactions.get(0).getTransactionStateEnum());
 		}
 		return false;
 	}

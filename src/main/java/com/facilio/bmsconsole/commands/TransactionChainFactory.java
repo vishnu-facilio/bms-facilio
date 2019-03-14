@@ -1816,17 +1816,25 @@ public class TransactionChainFactory {
 			Chain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForItemTransactions());
 			c.addCommand(new AddOrUpdateManualItemTransactionCommand());
+			c.addCommand(getItemTransactionRemainingQuantityRollupChain());
 			c.addCommand(new PurchasedItemsQuantityRollUpCommand());
 			c.addCommand(getUpdateItemQuantityRollupChain());
 			return c;
 		}
 		
+		public static Chain getItemTransactionRemainingQuantityRollupChain(){
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForItemTransactions());
+			c.addCommand(new ItemTransactionRemainingQuantityRollupCommand());
+			return c;
+		}
 		public static Chain getDeleteItemTransactionsChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForItemTransactions());
 			c.addCommand(new GenericDeleteModuleDataCommand());
 			c.addCommand(new DeleteItemTransactionCommand());
 			c.addCommand(new PurchasedItemsQuantityRollUpCommand());
+			c.addCommand(getItemTransactionRemainingQuantityRollupChain());
 			c.addCommand(getUpdateItemQuantityRollupChain());
 			return c;
 		}
@@ -1868,8 +1876,16 @@ public class TransactionChainFactory {
 			Chain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForToolTranaction());
 			c.addCommand(new AddOrUpdateManualToolTransactionsCommand());
+			c.addCommand(getToolTransactionRemainingQuantityRollupChain());
 			c.addCommand(new ExecuteAllWorkflowsCommand());
 			c.addCommand(getUpdatetoolQuantityRollupChain());
+			return c;
+		}
+		
+		public static Chain getToolTransactionRemainingQuantityRollupChain(){
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForToolTranaction());
+			c.addCommand(new ToolTransactionRemainingQuantityRollupCommand());
 			return c;
 		}
 		
@@ -1878,6 +1894,7 @@ public class TransactionChainFactory {
 			c.addCommand(SetTableNamesCommand.getForToolTranaction());
 			c.addCommand(new GenericDeleteModuleDataCommand());
 			c.addCommand(new DeleteToolTransactionCommand());
+			c.addCommand(getToolTransactionRemainingQuantityRollupChain());
 			c.addCommand(getUpdatetoolQuantityRollupChain());
 			return c;
 		}

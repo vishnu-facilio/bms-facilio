@@ -45,9 +45,9 @@ public class AddOrUpdateManualToolTransactionsCommand implements Command {
 		List<ToolTransactionContext> toolTransactionslist = new ArrayList<>();
 		List<ToolTransactionContext> toolTransactionsToBeAdded = new ArrayList<>();
 		long toolTypesId = -1;
-		if (toolTransactions != null) {
+		if (toolTransactions != null && !toolTransactions.isEmpty()) {
 			for (ToolTransactionContext toolTransaction : toolTransactions) {
-				ToolContext tool = getStockedTools(toolTransaction.getTool().getId());
+				ToolContext tool = getTool(toolTransaction.getTool().getId());
 				ToolTypesContext toolTypes = getToolType(tool.getToolType().getId());
 				toolTypesId = toolTypes.getId();
 				if (toolTransaction.getId() > 0) {
@@ -110,6 +110,7 @@ public class AddOrUpdateManualToolTransactionsCommand implements Command {
 					Collections.singletonList(toolTransactions.get(0).getTool().getId()));
 			context.put(FacilioConstants.ContextNames.RECORD_LIST, toolTransactionslist);
 			context.put(FacilioConstants.ContextNames.TOOL_TYPES_ID, toolTypesId);
+			context.put(FacilioConstants.ContextNames.TRANSACTION_STATE, toolTransactions.get(0).getTransactionStateEnum());
 		}
 
 		return false;
@@ -135,7 +136,7 @@ public class AddOrUpdateManualToolTransactionsCommand implements Command {
 		return woTool;
 	}
 
-	public static ToolContext getStockedTools(long id) throws Exception {
+	public static ToolContext getTool(long id) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.TOOL);
 		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.TOOL);
