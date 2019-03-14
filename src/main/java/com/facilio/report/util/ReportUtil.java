@@ -42,6 +42,7 @@ import com.facilio.report.context.ReportBaseLineContext;
 import com.facilio.report.context.ReportContext;
 import com.facilio.report.context.ReportDataPointContext;
 import com.facilio.report.context.ReportFactory;
+import com.facilio.report.context.ReportFactory.ModuleType;
 import com.facilio.report.context.ReportFieldContext;
 import com.facilio.report.context.ReportFilterContext;
 import com.facilio.report.context.ReportFolderContext;
@@ -479,6 +480,8 @@ public class ReportUtil {
 			}
 		}
 		
+		List<ModuleType> moduleTypes = new ArrayList<ModuleType>();
+		
 		if (moduleName.equals("workorder")) {
 			metricFields.add(ReportFactory.getReportField("firstresponsetime"));
 			
@@ -487,10 +490,14 @@ public class ReportUtil {
 			workorderFields.add(ReportFactory.getReportField("overdue_open"));
 			workorderFields.add(ReportFactory.getReportField("overdue_closed"));
 			workorderFields.add(ReportFactory.getReportField("plannedvsunplanned"));
+			
+			moduleTypes.add(new ModuleType("Workorders", 1));
+			moduleTypes.add(new ModuleType("Workrequests", 2));
 		}
 		
 		jsonObject.put("dimension", dimensionFieldMap);
 		jsonObject.put("metrics", metricFields);
+		jsonObject.put("moduleType", moduleTypes);
 		
 		System.out.println(context);
 		return jsonObject;

@@ -71,6 +71,29 @@ public class ReportFactory {
 		return fieldMap.get(fieldName);
 	}
 	
+	public static class ModuleType {
+		private String displayName;
+		private int type;
+		
+		public ModuleType(String displayName, int type) {
+			this.displayName = displayName;
+			this.type = type;
+		}
+
+		public String getDisplayName() {
+			return displayName;
+		}
+		public void setDisplayName(String displayName) {
+			this.displayName = displayName;
+		}
+		public int getType() {
+			return type;
+		}
+		public void setType(int type) {
+			this.type = type;
+		}
+	}
+	
 	public static class ReportFacilioField extends FacilioField {		
 		/**
 		 * 
