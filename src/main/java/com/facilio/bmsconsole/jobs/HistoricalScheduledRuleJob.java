@@ -35,9 +35,10 @@ public class HistoricalScheduledRuleJob extends FacilioJob {
 		long currentStartTime = rule.getSchedule().nextExecutionTime(startTime / 1000);
 		
 		while (currentStartTime <= endTime) {
+			LOGGER.info("Gonna run for time : "+currentStartTime);
 			FacilioContext context = new FacilioContext();
 			context.put(FacilioConstants.ContextNames.WORKFLOW_RULE_ID, rule.getId());
-			context.put(FacilioConstants.ContextNames.CURRENT_EXECUTION_TIME, DateTimeUtil.getHourStartTimeOf(currentStartTime)); //TODO hourStartTime should be changed to direct execution time later
+			context.put(FacilioConstants.ContextNames.CURRENT_EXECUTION_TIME, DateTimeUtil.getHourStartTimeOf(currentStartTime) * 1000); //TODO hourStartTime should be changed to direct execution time later
 			Chain scheduledChain = TransactionChainFactory.executeScheduledReadingRuleChain();
 			scheduledChain.execute(context);
 			
