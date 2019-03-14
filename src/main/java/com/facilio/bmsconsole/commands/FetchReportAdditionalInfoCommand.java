@@ -18,7 +18,6 @@ import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.ReadingAlarmContext;
 import com.facilio.bmsconsole.criteria.Condition;
@@ -228,8 +227,8 @@ public class FetchReportAdditionalInfoCommand implements Command {
 			
 			if (!currentAlarms.isEmpty()) {
 				List<Long> alarmIds = new ArrayList<>();
-				for (int i = 0; i < allAlarms.size(); i++) {
-					ReadingAlarmContext alarm = allAlarms.get(i);
+				for (int i = 0; i < currentAlarms.size(); i++) {
+					ReadingAlarmContext alarm = currentAlarms.get(i);
 					alarmIds.add(alarm.getId());
 					
 					if (i < MAX_ALARM_INFO_PER_WINDOW) {
