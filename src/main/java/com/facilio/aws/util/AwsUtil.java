@@ -156,6 +156,7 @@ public class AwsUtil
 	private static String anomalyRefreshWaitTimeInSeconds;
 	private static String anomalyDetectWaitTimeInSeconds;
 	private static String anomalyPredictAPIURL;
+	private static boolean sysLogEnabled;
 	
 	static {
 		loadProperties();
@@ -190,6 +191,7 @@ public class AwsUtil
 				anomalyRefreshWaitTimeInSeconds = PROPERTIES.getProperty("anomalyRefreshWaitTimeInSeconds","10");
 				anomalyDetectWaitTimeInSeconds = PROPERTIES.getProperty("anomalyDetectWaitTimeInSeconds","3");
 				anomalyPredictAPIURL = PROPERTIES.getProperty("anomalyPredictServiceURL","http://localhost:7444/api");
+				sysLogEnabled = "true".equals(PROPERTIES.getProperty("syslog.enabled", "false"));
 						
 				PROPERTIES.put("clientapp.url", clientAppUrl);
 				URL resourceDir = AwsUtil.class.getClassLoader().getResource("");
@@ -958,4 +960,8 @@ public class AwsUtil
 	public static String getAnomalyPredictAPIURL() {
 		return anomalyPredictAPIURL;
 	}
+
+    public static boolean isSysLogEnabled() {
+		return sysLogEnabled;
+    }
 }
