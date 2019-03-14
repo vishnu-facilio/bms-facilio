@@ -1,5 +1,8 @@
 package com.facilio.bmsconsole.context;
 
+import java.util.List;
+
+import com.facilio.accounts.dto.User;
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.bmsconsole.util.TransactionState;
 import com.facilio.bmsconsole.util.TransactionType;
@@ -124,6 +127,34 @@ public class ItemTransactionsContext extends ModuleBaseWithCustomFields {
 
 	public void setParentTransactionId(long parentTransactionId) {
 		this.parentTransactionId = parentTransactionId;
+	}
+	
+	private User issuedTo;
+
+	public User getIssuedTo() {
+		return issuedTo;
+	}
+
+	public void setIssuedTo(User owner) {
+		this.issuedTo = owner;
+	}
+
+	private double remainingQuantity = -1;
+
+	public double getRemainingQuantity() {
+		return remainingQuantity;
+	}
+
+	public void setRemainingQuantity(double remainingQuantity) {
+		this.remainingQuantity = remainingQuantity;
+	}
+	
+	private List<Long> purchasedItems;
+	public List<Long> getPurchasedItems() {
+		return purchasedItems;
+	}
+	public void setPurchasedItems(List<Long> purchasedItems) {
+		this.purchasedItems = purchasedItems;
 	}
 
 }

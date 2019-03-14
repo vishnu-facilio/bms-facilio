@@ -119,6 +119,7 @@ public class AddOrUpdateToolStockTransactionsCommand implements Command {
 			transaction.setParentId(tool.getId());
 			transaction.setIsReturnable(false);
 			transaction.setTransactionType(TransactionType.STOCK.getValue());
+			transaction.setToolType(toolType);
 
 			SelectRecordsBuilder<ToolTransactionContext> transactionsselectBuilder = new SelectRecordsBuilder<ToolTransactionContext>()
 					.select(fields).table(module.getTableName()).moduleName(module.getName())

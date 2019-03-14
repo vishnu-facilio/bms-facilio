@@ -88,8 +88,7 @@ public class AddOrUpdateWorkorderItemsCommand implements Command {
 						throw new IllegalArgumentException("Insufficient quantity in inventory!");
 					} else {
 						if (itemType.individualTracking()) {
-							List<Long> PurchasedItemsIds = (List<Long>) context
-									.get(FacilioConstants.ContextNames.PURCHASED_ITEM);
+							List<Long> PurchasedItemsIds = workorderitem.getPurchasedItems();
 							List<PurchasedItemContext> purchasedItem = getPurchasedItemsListFromId(PurchasedItemsIds,
 									purchasedItemModule, purchasedItemFields);
 							if (purchasedItem != null) {

@@ -9,7 +9,7 @@ import com.facilio.bmsconsole.util.TransactionType;
 
 public class ToolTransactionContext extends ModuleBaseWithCustomFields {
 	private static final long serialVersionUID = 1L;
-	
+
 	private ToolTypesContext toolType;
 
 	public ToolTypesContext getToolType() {
@@ -129,6 +129,26 @@ public class ToolTransactionContext extends ModuleBaseWithCustomFields {
 		return false;
 	}
 
+	private User issuedTo;
+
+	public User getIssuedTo() {
+		return issuedTo;
+	}
+
+	public void setIssuedTo(User owner) {
+		this.issuedTo = owner;
+	}
+
+	private double remainingQuantity = -1;
+
+	public double getRemainingQuantity() {
+		return remainingQuantity;
+	}
+
+	public void setRemainingQuantity(double remainingQuantity) {
+		this.remainingQuantity = remainingQuantity;
+	}
+	
 	private List<Long> purchasedTools;
 	public List<Long> getPurchasedTools() {
 		return purchasedTools;
