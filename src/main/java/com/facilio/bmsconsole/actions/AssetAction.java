@@ -65,6 +65,7 @@ public class AssetAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.CREATE);
 		context.put(FacilioConstants.ContextNames.RECORD, asset);
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
 		context.put(FacilioConstants.ContextNames.CATEGORY_READING_PARENT_MODULE, ModuleFactory.getAssetCategoryReadingRelModule());
 		AssetCategoryContext assetCategory= asset.getCategory();
 		long categoryId=-1;
@@ -115,6 +116,7 @@ public class AssetAction extends FacilioAction {
 	public String assetList() throws Exception {
 		FacilioContext context = new FacilioContext();
  		context.put(FacilioConstants.ContextNames.CV_NAME, getViewName());
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
  		context.put(FacilioConstants.ContextNames.SORTING_QUERY, "Assets.LOCAL_ID desc");
  		if(getFilters() != null)
  		{	
@@ -427,7 +429,15 @@ public class AssetAction extends FacilioAction {
 	public void setValue(String value) {
 		this.value = value;
 	}
-	
+	private String moduleName;
+	public String getModuleName() {
+		return moduleName;
+	}
+
+	public void setModuleName(String moduleName) {
+		this.moduleName = moduleName;
+	}
+
 	private String location;
 	public String getLocation() {
 		return location;

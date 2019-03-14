@@ -756,7 +756,7 @@ public enum ActionType {
 				currentRecordJson = FieldUtil.getAsProperties(currentRecord);
 			}
 			params.put("record", currentRecordJson);
-			Map<String,Object> workflowResult = (Map<String,Object>) WorkflowUtil.getWorkflowExpressionResult((String)obj.get("WorkflowString"), params);
+			Map<String,Object> workflowResult = WorkflowUtil.getExpressionResultMap((String)obj.get("WorkflowString"), params);
 			
 			JSONArray fieldsJsonArray = (JSONArray) obj.get("fields");
 			for (Object key : fieldsJsonArray) {

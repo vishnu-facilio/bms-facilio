@@ -10,6 +10,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.AlarmContext.AlarmType;
@@ -392,16 +393,15 @@ public class ActionAPI {
 	
 	private static void setWorkflowTemplate(ActionContext action, WorkflowRuleContext rule, Type templateType) throws Exception {
 		
-		JSONObject workflowJson = (JSONObject) action.getTemplateJson().get("workflowContext");
-		WorkflowContext workflowContext = FieldUtil.getAsBeanFromJson(workflowJson, WorkflowContext.class);
+		JSONObject workflowTemplateJson = action.getTemplateJson();
 		
-		Long workflowId = WorkflowUtil.addWorkflow(workflowContext);
+		WorkflowTemplate workflowTemplate = FieldUtil.getAsBeanFromJson(workflowTemplateJson, WorkflowTemplate.class);
 		
-		WorkflowTemplate workflowTemplate = new WorkflowTemplate();
+		Long workflowId = WorkflowUtil.addWorkflow(workflowTemplate.getResultWorkflowContext());
+		
 		workflowTemplate.setName(rule.getName()+"_json_template");
 		workflowTemplate.setType(templateType);
 		workflowTemplate.setResultWorkflowId(workflowId);
-		workflowTemplate.setMetaJson((JSONObject) action.getTemplateJson().get("fieldsJson"));
 		
 		action.setTemplate(workflowTemplate);
 	}

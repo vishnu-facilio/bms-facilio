@@ -367,6 +367,21 @@ public class ViewFactory {
 		groupVsViews.add(groupDetails);
 
 		moduleVsGroup.put(FacilioConstants.ContextNames.WORK_ORDER, groupVsViews);
+		
+		groupVsViews = new ArrayList<>();
+		ArrayList<String> asset = new ArrayList<String>();
+		asset.add("all");
+		asset.add("energy");
+		asset.add("hvac");
+		asset.add("active");
+		asset.add("retired");
+		
+		groupDetails.put("name", "assetviews");
+		groupDetails.put("displayName", "Asset");
+		groupDetails.put("views", asset);
+		groupVsViews.add(groupDetails);
+		
+		moduleVsGroup.put(FacilioConstants.ContextNames.ASSET, groupVsViews);
 
 		return moduleVsGroup;
 
@@ -525,16 +540,10 @@ public class ViewFactory {
 	}
 
 	private static FacilioView getAllAssetsView() {
-		FacilioField localId = new FacilioField();
-		localId.setName("localId");
-		localId.setColumnName("LOCAL_ID");
-		localId.setDataType(FieldType.NUMBER);
-		localId.setModule(ModuleFactory.getAssetsModule());
-
 		FacilioView allView = new FacilioView();
 		allView.setName("all");
 		allView.setDisplayName("All Assets");
-		allView.setSortFields(Arrays.asList(new SortField(localId, false)));
+		allView.setSortFields(getSortFields(FacilioConstants.ContextNames.ASSET));
 		return allView;
 	}
 
@@ -2307,5 +2316,45 @@ public class ViewFactory {
 		allView.setSortFields(sortFields);
 
 		return allView;
+	}
+	
+	public static List<SortField> getSortFields(String moduleName, FacilioModule...module) {
+		List<SortField> fields = new ArrayList<>();
+		switch (moduleName) {
+		case FacilioConstants.ContextNames.ASSET:
+			FacilioField localId = new FacilioField();
+			localId.setName("localId");
+			localId.setColumnName("LOCAL_ID");
+			localId.setDataType(FieldType.NUMBER);
+			localId.setModule(ModuleFactory.getAssetsModule());
+
+			fields = Arrays.asList(new SortField(localId, false));
+			break;
+		default:
+			if (module.length > 0) {
+				FacilioField createdTime = new FacilioField();
+				createdTime.setName("sysCreatedTime");
+				createdTime.setDataType(FieldType.NUMBER);
+				createdTime.setColumnName("CREATED_TIME");
+				createdTime.setModule(module[0]);
+
+				fields = Arrays.asList(new SortField(createdTime, false));
+			}
+			break;
+		}
+		return fields;
+	}
+	
+	public static FacilioView getModuleView(FacilioModule childModule, String parentModuleName) {
+		FacilioView moduleView = new FacilioView();
+		moduleView.setName(childModule.getName());
+		moduleView.setDisplayName("All " + childModule.getDisplayName() + "s");
+		moduleView.setModuleId(childModule.getModuleId());
+		moduleView.setModuleName(childModule.getName());
+		moduleView.setDefault(true);
+		
+		moduleView.setFields(ColumnFactory.getColumns(parentModuleName, "default"));
+		moduleView.setSortFields(getSortFields(parentModuleName));
+		return moduleView;
 	}
 }

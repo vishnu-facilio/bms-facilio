@@ -103,4 +103,16 @@ public class AlarmRuleContext {
 	public void setReadingAlarmRuleContexts(List<ReadingAlarmRuleContext> readingAlarmRuleContexts) {
 		this.readingAlarmRuleContexts = readingAlarmRuleContexts;
 	}
+	
+	boolean isAutoClear;
+
+	public boolean isAutoClear() {
+		return isAutoClear;
+	}
+	public void setAutoClear(boolean isAutoClear) {
+		this.isAutoClear = isAutoClear;
+	}
+	public void setIsAutoClear(boolean isAutoClear) {
+		this.isAutoClear = isAutoClear;
+	}
 }

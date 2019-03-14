@@ -1239,7 +1239,7 @@ public class FieldFactory {
 		FacilioModule module = ModuleFactory.getReadingAlarmRuleModule();
 
 		fields.add(getIdField(module));
-		fields.add(getOrgIdField(module));
+//		fields.add(getOrgIdField(module));
 		fields.add(getField("readingRuleGroupId", "READING_RULE_GROUP_ID", module, FieldType.LOOKUP));
 
 		return fields;
@@ -1933,7 +1933,7 @@ public class FieldFactory {
 		List<FacilioField> fields = new ArrayList<>();
 
 		fields.add(getIdField(module));
-		fields.add(getOrgIdField(module));
+//		fields.add(getOrgIdField(module));
 		fields.add(getField("resultWorkflowId", "WORKFLOW_ID", module, FieldType.LOOKUP));
 		fields.add(getField("meta", "META", module, FieldType.STRING));
 

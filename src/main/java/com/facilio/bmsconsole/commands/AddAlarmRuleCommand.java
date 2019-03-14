@@ -21,7 +21,7 @@ public class AddAlarmRuleCommand implements Command {
 		ReadingRuleContext preRequsiteRule = alarmRule.getPreRequsite();
 		
 		fillDefaultPropsForPreRequsite(preRequsiteRule);
-		
+		preRequsiteRule.setClearAlarm(alarmRule.isAutoClear());
 		long ruleId = WorkflowRuleAPI.addWorkflowRule(preRequsiteRule);
 		
 		preRequsiteRule.setRuleGroupId(ruleId);

@@ -799,8 +799,8 @@
 		</action>
 		<action name="assetCount" class="com.facilio.bmsconsole.actions.AssetAction"
 			method="assetCount">
-			<param name="moduleName">asset</param>
-			<param name="permission">READ,READ_TEAM,READ_OWN</param>
+<!-- 			<param name="moduleName">asset</param> -->		
+	<param name="permission">READ,READ_TEAM,READ_OWN</param>
 			<result name="success" type="json">
 				<param name="includeProperties">assetCount</param>
 			</result>
@@ -808,7 +808,7 @@
 	
 		<action name="add" class="com.facilio.bmsconsole.actions.AssetAction"
 			method="addAsset">
-			<param name="moduleName">asset</param>
+<!-- 			<param name="moduleName">asset</param>-->
 			<param name="permission">CREATE</param>
 			<result name="success" type="json">
 				<param name="includeProperties">assetId</param>
@@ -851,7 +851,6 @@
 
 		<action name="*" class="com.facilio.bmsconsole.actions.AssetAction"
 			method="assetList">
-			<param name="moduleName">asset</param>
 			<param name="permission">READ</param>
 			<param name="viewName">{1}</param>
 			<result name="success" type="json">

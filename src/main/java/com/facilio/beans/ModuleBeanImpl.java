@@ -76,6 +76,7 @@ public class ModuleBeanImpl implements ModuleBean {
 			currentModule.setTableName(rs.getString("TABLE_NAME"));
 			currentModule.setType(rs.getInt("MODULE_TYPE"));
 			currentModule.setTrashEnabled(rs.getBoolean("IS_TRASH_ENABLED"));
+			currentModule.setShowAsView(rs.getBoolean("SHOW_AS_VIEW"));
 			if(prevModule != null) {
 				prevModule.setExtendModule(currentModule);
 			}
@@ -308,6 +309,53 @@ public class ModuleBeanImpl implements ModuleBean {
 		return parentModule;
 	}
 	
+	@Override
+	public List<FacilioModule> getChildModules(FacilioModule parentModule) throws Exception {
+		if(LookupSpecialTypeUtil.isSpecialType(parentModule.getName())) {
+			return null;
+		}
+		PreparedStatement pstmt = null;
+		Connection conn  =null;
+		ResultSet rs = null;
+		try {
+			 conn = getConnection();
+			 
+			 String sql = DBUtil.getQuery("module.child.modules");
+			 pstmt = conn.prepareStatement(sql);
+
+			pstmt.setLong(1, getOrgId());
+			pstmt.setLong(2, parentModule.getModuleId());
+			
+			List<FacilioModule> modules = new ArrayList<>();
+			rs = pstmt.executeQuery();
+			
+			while(rs.next()) {
+				FacilioModule currentModule = new FacilioModule();
+				currentModule.setModuleId(rs.getLong("MODULEID"));
+				currentModule.setOrgId(rs.getLong("ORGID"));
+				currentModule.setName(rs.getString("NAME"));
+				currentModule.setDisplayName(rs.getString("DISPLAY_NAME"));
+				currentModule.setTableName(rs.getString("TABLE_NAME"));
+				currentModule.setType(rs.getInt("MODULE_TYPE"));
+				currentModule.setTrashEnabled(rs.getBoolean("IS_TRASH_ENABLED"));
+				currentModule.setShowAsView(rs.getBoolean("SHOW_AS_VIEW"));
+				int dataInterval = rs.getInt("DATA_INTERVAL"); 
+				if (dataInterval != 0) {
+					currentModule.setDataInterval(dataInterval);
+				}
+				modules.add(currentModule);
+			}
+			return modules;
+		}
+		catch(SQLException e) {
+			log.info("Exception occurred ", e);
+			throw e;
+		}
+		finally {
+			DBUtil.closeAll(conn,pstmt, rs);
+		}
+	}
+	
 	private FacilioModule getMod(String moduleName) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean", getOrgId());
 		return modBean.getModule(moduleName);
@@ -373,6 +421,10 @@ public class ModuleBeanImpl implements ModuleBean {
 		if (module.getTrashEnabled() != null) {
 			joiner.add("IS_TRASH_ENABLED = ?");
 			params.add(module.getTrashEnabled());
+		}
+		if (module.getShowAsView() != null) {
+			joiner.add("SHOW_AS_VIEW = ?");
+			params.add(module.getShowAsView());
 		}
 		
 		if (!params.isEmpty()) {
@@ -680,6 +732,10 @@ public class ModuleBeanImpl implements ModuleBean {
 		
 		if (fieldName.equals("id")) {
 			return FieldFactory.getIdField(module);
+		}
+		
+		if (fieldName.equals("siteId")) {
+			return FieldFactory.getSiteIdField(module);
 		}
 		
 		if(LookupSpecialTypeUtil.isSpecialType(moduleName)) {
