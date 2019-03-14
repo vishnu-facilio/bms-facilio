@@ -62,6 +62,22 @@ public class AlarmAction extends FacilioAction {
 	public void setWorkorder(WorkOrderContext workorder) {
 		this.workorder = workorder;
 	}
+	
+	public String fetchAlarmSummary() throws Exception {
+		
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, getId());
+		context.put(FacilioConstants.ContextNames.IS_FROM_SUMMARY, true);
+ 		
+ 		Chain alarmChain = ReadOnlyChainFactory.getAlarmDetailsChain();
+ 		alarmChain.execute(context);
+ 		
+		setModuleName((String) context.get(FacilioConstants.ContextNames.MODULE_DISPLAY_NAME));
+		setAlarms((List<AlarmContext>) context.get(FacilioConstants.ContextNames.ALARM_LIST));
+		
+		return SUCCESS;
+		
+	}
 
 	private String moduleName;
 	public String getModuleName() {
