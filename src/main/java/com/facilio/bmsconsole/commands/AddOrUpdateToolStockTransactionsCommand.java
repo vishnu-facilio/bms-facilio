@@ -42,6 +42,7 @@ public class AddOrUpdateToolStockTransactionsCommand implements Command {
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 		
 		long toolId = (long) context.get(FacilioConstants.ContextNames.RECORD_ID);
+		long toolTypeId = (long) context.get(FacilioConstants.ContextNames.TOOL_TYPES_ID);
 		FacilioModule Toolmodule = modBean.getModule(FacilioConstants.ContextNames.TOOL);
 		List<FacilioField> Toolfields = modBean.getAllFields(FacilioConstants.ContextNames.TOOL);
 
@@ -61,7 +62,7 @@ public class AddOrUpdateToolStockTransactionsCommand implements Command {
 		SelectRecordsBuilder<ToolTypesContext> toolTypesselectBuilder = new SelectRecordsBuilder<ToolTypesContext>()
 				.select(ToolTypefields).table(ToolTypemodule.getTableName()).moduleName(ToolTypemodule.getName())
 				.beanClass(ToolTypesContext.class)
-				.andCondition(CriteriaAPI.getIdCondition(tool.getToolType().getId(), ToolTypemodule));
+				.andCondition(CriteriaAPI.getIdCondition(toolTypeId, ToolTypemodule));
 
 		List<ToolTypesContext> toolTypes = toolTypesselectBuilder.get();
 		ToolTypesContext toolType = null;
@@ -89,6 +90,7 @@ public class AddOrUpdateToolStockTransactionsCommand implements Command {
 					transaction.setParentId(pt.getId());
 					transaction.setIsReturnable(false);
 					transaction.setTransactionType(TransactionType.STOCK.getValue());
+					transaction.setToolType(toolType);
 
 					SelectRecordsBuilder<ToolTransactionContext> transactionsselectBuilder = new SelectRecordsBuilder<ToolTransactionContext>()
 							.select(fields).table(module.getTableName()).moduleName(module.getName())
@@ -138,6 +140,7 @@ public class AddOrUpdateToolStockTransactionsCommand implements Command {
 		InsertRecordBuilder<ToolTransactionContext> readingBuilder = new InsertRecordBuilder<ToolTransactionContext>()
 				.module(module).fields(fields).addRecords(inventoryTransaction);
 		readingBuilder.save();
+		context.put(FacilioConstants.ContextNames.RECORD_LIST, inventoryTransaction);
 		return false;
 	}
 

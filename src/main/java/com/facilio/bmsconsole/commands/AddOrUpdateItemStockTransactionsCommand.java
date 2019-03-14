@@ -19,6 +19,7 @@ import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.InsertRecordBuilder;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
+import com.facilio.bmsconsole.util.ItemsApi;
 import com.facilio.bmsconsole.util.TransactionState;
 import com.facilio.bmsconsole.util.TransactionType;
 import com.facilio.constants.FacilioConstants;
@@ -39,10 +40,12 @@ public class AddOrUpdateItemStockTransactionsCommand implements Command {
 
 			List<ItemTransactionsContext> inventoryTransaction = new ArrayList<>();
 			for (PurchasedItemContext ic : purchasedItems) {
+				ItemContext item = ItemsApi.getItems(ic.getItem().getId());
 				ItemTransactionsContext transaction = new ItemTransactionsContext();
 				transaction.setTransactionState(TransactionState.ADDITION.getValue());
 				transaction.setPurchasedItem(ic);
 				transaction.setItem(ic.getItem());
+				transaction.setItemType(item.getItemType());
 				transaction.setQuantity(ic.getQuantity());
 				transaction.setParentId(ic.getId());
 				transaction.setIsReturnable(false);

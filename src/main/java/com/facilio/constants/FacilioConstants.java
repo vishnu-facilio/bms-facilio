@@ -827,6 +827,11 @@ public class FacilioConstants {
 		public static final String WORKORDER_TOOLS = "workorderTools";
 		public static final String TOOL_TRANSACTIONS = "toolTransactions";
 		public static final String STOCKED_TOOLS_RETURN_TRACKING = "stockedToolsReturnTracking";
+		
+		public static final String ITEM_TYPES_COUNT = "itemTypesCount";
+		public static final String ITEM_COUNT = "itemCount";
+		public static final String TOOL_TYPES_COUNT = "toolTypesCount";
+		public static final String TOOL_COUNT = "toolCount";
 
 		public static final String TENANT = "tenant";
 		public static final String TENANT_UTILITY_IDS = "utilityIds";

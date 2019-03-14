@@ -7,6 +7,16 @@ import com.facilio.bmsconsole.util.TransactionType;
 public class ItemTransactionsContext extends ModuleBaseWithCustomFields {
 	private static final long serialVersionUID = 1L;
 
+	private ItemTypesContext itemType;
+
+	public ItemTypesContext getItemType() {
+		return itemType;
+	}
+
+	public void setItemType(ItemTypesContext itemType) {
+		this.itemType = itemType;
+	}
+
 	private ItemContext item;
 
 	public ItemContext getItem() {
@@ -90,15 +100,18 @@ public class ItemTransactionsContext extends ModuleBaseWithCustomFields {
 	public TransactionState getTransactionStateEnum() {
 		return transactionState;
 	}
+
 	public void setTransactionState(TransactionState transactionState) {
 		this.transactionState = transactionState;
 	}
+
 	public int getTransactionState() {
 		if (transactionState != null) {
 			return transactionState.getValue();
 		}
 		return -1;
 	}
+
 	public void setTransactionState(int transactionState) {
 		this.transactionState = TransactionState.valueOf(transactionState);
 	}

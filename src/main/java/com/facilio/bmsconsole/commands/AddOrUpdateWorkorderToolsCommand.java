@@ -43,18 +43,20 @@ public class AddOrUpdateWorkorderToolsCommand implements Command {
 		Map<String, FacilioField> toolFieldsMap = FieldFactory.getAsMap(workorderToolsFields);
 		List<LookupFieldMeta> lookUpfields = new ArrayList<>();
 		lookUpfields.add(new LookupFieldMeta((LookupField) toolFieldsMap.get("tool")));
+		lookUpfields.add(new LookupFieldMeta((LookupField) toolFieldsMap.get("toolType")));
 		List<WorkorderToolsContext> workorderTools = (List<WorkorderToolsContext>) context
 				.get(FacilioConstants.ContextNames.RECORD_LIST);
 		List<WorkorderToolsContext> workorderToolslist = new ArrayList<>();
 		List<WorkorderToolsContext> toolsToBeAdded = new ArrayList<>();
-
+		long toolTypesId = -1;
 		if (workorderTools != null) {
 			long parentId = workorderTools.get(0).getParentId();
 			for (WorkorderToolsContext workorderTool : workorderTools) {
 				WorkOrderContext workorder = getWorkorder(parentId);
 				ToolContext stockedTools = getStockedTools(workorderTool.getTool().getId());
-				ToolTypesContext toolTypes = getToolType(stockedTools.getToolType().getId());
-
+				toolTypesId = stockedTools.getToolType().getId();
+				ToolTypesContext toolTypes = getToolType(toolTypesId);
+		
 				if (workorderTool.getId() > 0) {
 					SelectRecordsBuilder<WorkorderToolsContext> selectBuilder = new SelectRecordsBuilder<WorkorderToolsContext>()
 							.select(workorderToolsFields).table(workorderToolsModule.getTableName())
@@ -115,6 +117,7 @@ public class AddOrUpdateWorkorderToolsCommand implements Command {
 					Collections.singletonList(workorderTools.get(0).getTool().getId()));
 			context.put(FacilioConstants.ContextNames.RECORD_LIST, workorderToolslist);
 			context.put(FacilioConstants.ContextNames.WORKORDER_COST_TYPE, 2);
+			context.put(FacilioConstants.ContextNames.TOOL_TYPES_ID, toolTypesId);
 		}
 
 		return false;
@@ -154,6 +157,7 @@ public class AddOrUpdateWorkorderToolsCommand implements Command {
 
 		woTool.setQuantity(quantity);
 		woTool.setTool(tool);
+		woTool.setToolType(tool.getToolType());
 		woTool.setSysModifiedTime(System.currentTimeMillis());
 		woTool.setParentId(parentId);
 		double costOccured = 0;

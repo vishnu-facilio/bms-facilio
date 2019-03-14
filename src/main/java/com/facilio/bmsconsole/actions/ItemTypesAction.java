@@ -15,41 +15,49 @@ import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 
-public class ItemTypesAction extends FacilioAction{
+public class ItemTypesAction extends FacilioAction {
 
 	private static final long serialVersionUID = 1L;
 	private ItemTypesContext itemTypes;
+
 	public ItemTypesContext getItemTypes() {
 		return itemTypes;
 	}
+
 	public void setItemTypes(ItemTypesContext itemTypes) {
 		this.itemTypes = itemTypes;
 	}
+
 	private List<ItemTypesContext> itemTypesList;
+
 	public List<ItemTypesContext> getItemTypesList() {
 		return itemTypesList;
 	}
+
 	public void setItemTypesList(List<ItemTypesContext> itemTypesList) {
 		this.itemTypesList = itemTypesList;
 	}
-	
+
 	private long itemTypesId;
+
 	public long getItemTypesId() {
 		return itemTypesId;
 	}
+
 	public void setItemTypesId(long itemTypesId) {
 		this.itemTypesId = itemTypesId;
 	}
-	
+
 	public String addItemTypes() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD, itemTypes);
+		context.put(FacilioConstants.ContextNames.SET_LOCAL_MODULE_ID, true);
 		Chain addItem = TransactionChainFactory.getAddItemTypesChain();
 		addItem.execute(context);
 		setResult(FacilioConstants.ContextNames.ITEM_TYPES, itemTypes);
 		return SUCCESS;
 	}
-	
+
 	public String updateItemTypes() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.EDIT);
@@ -65,7 +73,7 @@ public class ItemTypesAction extends FacilioAction{
 		setResult(FacilioConstants.ContextNames.ITEM_TYPES, itemTypes);
 		return SUCCESS;
 	}
-	
+
 	public String itemTypesDetails() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.ID, getItemTypesId());
@@ -77,11 +85,11 @@ public class ItemTypesAction extends FacilioAction{
 		setResult(FacilioConstants.ContextNames.ITEM_TYPES, itemTypes);
 		return SUCCESS;
 	}
-	
+
 	public String itemTypesList() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.CV_NAME, getViewName());
-		context.put(FacilioConstants.ContextNames.SORTING_QUERY, "Item_types.ID desc");
+		context.put(FacilioConstants.ContextNames.SORTING_QUERY, "Item_types.LOCAL_ID desc");
 		if (getFilters() != null) {
 			JSONParser parser = new JSONParser();
 			JSONObject json = (JSONObject) parser.parse(getFilters());
@@ -121,7 +129,13 @@ public class ItemTypesAction extends FacilioAction{
 		}
 		return SUCCESS;
 	}
-	
+
+	public String itemTypesCount() throws Exception {
+		itemTypesList();
+		setResult(FacilioConstants.ContextNames.ITEM_TYPES_COUNT, itemTypesCount);
+		return SUCCESS;
+	}
+
 	private boolean includeParentFilter;
 
 	public boolean getIncludeParentFilter() {
@@ -131,6 +145,7 @@ public class ItemTypesAction extends FacilioAction{
 	public void setIncludeParentFilter(boolean includeParentFilter) {
 		this.includeParentFilter = includeParentFilter;
 	}
+
 	private Boolean count;
 
 	public Boolean getCount() {
@@ -143,14 +158,15 @@ public class ItemTypesAction extends FacilioAction{
 	public void setCount(Boolean count) {
 		this.count = count;
 	}
-	
+
 	private Long itemTypesCount;
+
 	public Long getItemTypesCount() {
 		return itemTypesCount;
 	}
+
 	public void setItemTypesCount(Long itemTypesCount) {
 		this.itemTypesCount = itemTypesCount;
 	}
 
-	
 }

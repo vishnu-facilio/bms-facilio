@@ -44,11 +44,13 @@ public class AddOrUpdateWorkorderItemsCommand implements Command {
 				.get(FacilioConstants.ContextNames.RECORD_LIST);
 		List<WorkorderItemContext> workorderItemslist = new ArrayList<>();
 		List<WorkorderItemContext> itemToBeAdded = new ArrayList<>();
+		long itemTypesId = -1;
 		if (workorderitems != null) {
 			long parentId = workorderitems.get(0).getParentId();
 			for (WorkorderItemContext workorderitem : workorderitems) {
 				ItemContext item = getItem(workorderitem.getItem().getId());
-				ItemTypesContext itemType = getItemType(item.getItemType().getId());
+				itemTypesId = item.getItemType().getId();
+				ItemTypesContext itemType = getItemType(itemTypesId);
 				if (workorderitem.getId() > 0) {
 					SelectRecordsBuilder<WorkorderItemContext> selectBuilder = new SelectRecordsBuilder<WorkorderItemContext>()
 							.select(workorderItemFields).table(workorderItemsModule.getTableName())
@@ -155,6 +157,7 @@ public class AddOrUpdateWorkorderItemsCommand implements Command {
 					Collections.singletonList(workorderitems.get(0).getItem().getId()));
 			context.put(FacilioConstants.ContextNames.RECORD_LIST, workorderItemslist);
 			context.put(FacilioConstants.ContextNames.WORKORDER_COST_TYPE, 1);
+			context.put(FacilioConstants.ContextNames.ITEM_TYPES_ID, itemTypesId);
 		}
 		return false;
 	}
@@ -168,6 +171,7 @@ public class AddOrUpdateWorkorderItemsCommand implements Command {
 		woItem.setPurchasedItem(purchasedItem);
 		woItem.setQuantity(quantity);
 		woItem.setItem(item);
+		woItem.setItemType(item.getItemType());
 		woItem.setSysModifiedTime(System.currentTimeMillis());
 		woItem.setParentId(parentId);
 		double costOccured = 0;

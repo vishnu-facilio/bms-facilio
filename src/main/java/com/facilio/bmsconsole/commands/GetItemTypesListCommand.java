@@ -38,8 +38,11 @@ public class GetItemTypesListCommand implements Command{
 		FacilioModule module = modBean.getModule(moduleName);
 		
 		Boolean getCount = (Boolean) context.get(FacilioConstants.ContextNames.FETCH_COUNT);
+		if (getCount == null) {
+			getCount = false;
+		}
 		List<FacilioField> fields;
-		if (getCount != null && getCount) {
+		if (getCount) {
 			fields = FieldFactory.getCountField(module);
 		}
 		else {
@@ -52,6 +55,10 @@ public class GetItemTypesListCommand implements Command{
 															.beanClass(FacilioConstants.ContextNames.getClassFromModuleName(moduleName))
 															.select(fields)
 															;
+		if (getCount) {
+			builder.setAggregation();
+		}
+		
 		
 		String orderBy = (String) context.get(FacilioConstants.ContextNames.SORTING_QUERY);
 		if (orderBy != null && !orderBy.isEmpty()) {

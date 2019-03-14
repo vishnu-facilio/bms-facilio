@@ -2,8 +2,18 @@ package com.facilio.bmsconsole.context;
 
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 
-public class PurchasedToolContext extends ModuleBaseWithCustomFields{
+public class PurchasedToolContext extends ModuleBaseWithCustomFields {
 	private static final long serialVersionUID = 1L;
+
+	private ToolTypesContext toolType;
+
+	public ToolTypesContext getToolType() {
+		return toolType;
+	}
+
+	public void setToolType(ToolTypesContext toolType) {
+		this.toolType = toolType;
+	}
 
 	private ToolContext tool;
 

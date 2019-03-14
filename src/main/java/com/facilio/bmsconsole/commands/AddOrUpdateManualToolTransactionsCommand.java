@@ -64,7 +64,7 @@ public class AddOrUpdateManualToolTransactionsCommand implements Command {
 								.getQuantity()) {
 							throw new IllegalArgumentException("Insufficient quantity in inventory!");
 						} else {
-							wTool = setWorkorderItemObj(null, toolTransaction.getQuantity(), tool, toolTransaction);
+							wTool = setWorkorderItemObj(null, toolTransaction.getQuantity(), tool, toolTransaction,toolTypes);
 							// update
 							wTool.setId(toolTransaction.getId());
 							toolTransactionslist.add(wTool);
@@ -87,7 +87,7 @@ public class AddOrUpdateManualToolTransactionsCommand implements Command {
 									} else if (toolTransaction.getTransactionStateEnum() == TransactionState.ISSUE) {
 										pTool.setIsUsed(true);
 									}
-									woTool = setWorkorderItemObj(pTool, 1, tool, toolTransaction);
+									woTool = setWorkorderItemObj(pTool, 1, tool, toolTransaction,toolTypes);
 									updatePurchasedTool(pTool);
 									toolTransactionslist.add(woTool);
 									toolTransactionsToBeAdded.add(woTool);
@@ -95,7 +95,7 @@ public class AddOrUpdateManualToolTransactionsCommand implements Command {
 							}
 						} else {
 							ToolTransactionContext woTool = new ToolTransactionContext();
-							woTool = setWorkorderItemObj(null, toolTransaction.getQuantity(), tool, toolTransaction);
+							woTool = setWorkorderItemObj(null, toolTransaction.getQuantity(), tool, toolTransaction,toolTypes);
 							toolTransactionslist.add(woTool);
 							toolTransactionsToBeAdded.add(woTool);
 						}
@@ -117,7 +117,7 @@ public class AddOrUpdateManualToolTransactionsCommand implements Command {
 	}
 
 	private ToolTransactionContext setWorkorderItemObj(PurchasedToolContext purchasedtool, double quantity,
-			ToolContext tool, ToolTransactionContext toolTransaction) {
+			ToolContext tool, ToolTransactionContext toolTransaction, ToolTypesContext toolTypes) {
 		ToolTransactionContext woTool = new ToolTransactionContext();
 		
 		woTool.setTransactionType(TransactionType.MANUAL);
@@ -128,6 +128,7 @@ public class AddOrUpdateManualToolTransactionsCommand implements Command {
 		}
 		woTool.setQuantity(quantity);
 		woTool.setTool(tool);
+		woTool.setToolType(toolTypes);
 		woTool.setSysModifiedTime(System.currentTimeMillis());
 		woTool.setParentId(toolTransaction.getParentId());
 		woTool.setParentTransactionId(toolTransaction.getParentTransactionId());

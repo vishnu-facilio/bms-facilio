@@ -47,6 +47,7 @@ public class ToolAction extends FacilioAction{
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD, tool);
 		context.put(FacilioConstants.ContextNames.PURCHASED_TOOL, tool.getPurchasedTools());
+		context.put(FacilioConstants.ContextNames.TOOL_TYPES_ID, tool.getToolType().getId());
 		Chain addStockedTool = TransactionChainFactory.getAddToolChain();
 		addStockedTool.execute(context);
 		setResult(FacilioConstants.ContextNames.TOOL, tool);

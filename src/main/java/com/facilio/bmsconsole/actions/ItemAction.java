@@ -48,6 +48,7 @@ public class ItemAction extends FacilioAction{
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD, item);
 		context.put(FacilioConstants.ContextNames.PURCHASED_ITEM, item.getPurchasedItems());
+		context.put(FacilioConstants.ContextNames.SET_LOCAL_MODULE_ID, true);
 		Chain addInventry = TransactionChainFactory.getAddItemChain();
 		addInventry.execute(context);
 		setResult(FacilioConstants.ContextNames.ITEM, item);
@@ -89,7 +90,7 @@ public class ItemAction extends FacilioAction{
 	public String itemList() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.CV_NAME, getViewName());
-		context.put(FacilioConstants.ContextNames.SORTING_QUERY, "Item.ID desc");
+		context.put(FacilioConstants.ContextNames.SORTING_QUERY, "Item.LOCAL_ID desc");
 		if (getFilters() != null) {
 			JSONParser parser = new JSONParser();
 			JSONObject json = (JSONObject) parser.parse(getFilters());
@@ -127,6 +128,12 @@ public class ItemAction extends FacilioAction{
 			}
 			setResult(FacilioConstants.ContextNames.ITEMS, items);
 		}
+		return SUCCESS;
+	}
+	
+	public String itemCount() throws Exception {
+		itemList();
+		setResult(FacilioConstants.ContextNames.ITEM_COUNT, itemCount);
 		return SUCCESS;
 	}
 	

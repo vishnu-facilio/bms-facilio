@@ -1172,6 +1172,13 @@
 			<param name="permission">READ</param>
 			<param name = "itemTypesId">{1}</param>
 		</action>
+		
+		<action name="count" class="com.facilio.bmsconsole.actions.ItemTypesAction"
+			method="itemTypesCount">
+			<param name="moduleName">asset</param>
+			<param name="permission">READ</param>
+		</action>
+		
 	</package>
 	
 	<package name="itemTypesListApiv2" namespace="/api/v2/itemTypes/view"
@@ -1260,6 +1267,11 @@
 			<param name="moduleName">asset</param>
 			<param name="permission">READ</param>
 			<param name = "itemId">{1}</param>
+		</action>
+		<action name="count" class="com.facilio.bmsconsole.actions.ItemAction"
+			method="itemCount">
+			<param name="moduleName">asset</param>
+			<param name="permission">READ</param>
 		</action>
 	</package>
 	<package name="itemListApiv2" namespace="/api/v2/item/view"

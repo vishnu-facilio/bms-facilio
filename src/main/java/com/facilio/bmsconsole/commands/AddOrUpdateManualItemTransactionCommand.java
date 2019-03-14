@@ -45,11 +45,13 @@ public class AddOrUpdateManualItemTransactionCommand implements Command {
 				.get(FacilioConstants.ContextNames.RECORD_LIST);
 		List<ItemTransactionsContext> itemTransactionsList = new ArrayList<>();
 		List<ItemTransactionsContext> itemTransactiosnToBeAdded = new ArrayList<>();
+		long itemTypeId = -1;
 		if (itemTransactions != null) {
 			long parentId = itemTransactions.get(0).getParentId();
 			for (ItemTransactionsContext itemTransaction : itemTransactions) {
 				ItemContext item = getItem(itemTransaction.getItem().getId());
-				ItemTypesContext itemType = getItemType(item.getItemType().getId());
+				itemTypeId = item.getItemType().getId();
+				ItemTypesContext itemType = getItemType(itemTypeId);
 				if (itemTransaction.getId() > 0) {
 					SelectRecordsBuilder<ItemTransactionsContext> selectBuilder = new SelectRecordsBuilder<ItemTransactionsContext>()
 							.select(itemTransactionsFields).table(itemTransactionsModule.getTableName())
@@ -71,9 +73,9 @@ public class AddOrUpdateManualItemTransactionCommand implements Command {
 								throw new IllegalArgumentException("Insufficient quantity in inventory!");
 							} else {
 								if (itemType.individualTracking()) {
-									wItem = setWorkorderItemObj(purchaseditem, 1, item, parentId, itemTransaction);
+									wItem = setWorkorderItemObj(purchaseditem, 1, item, parentId, itemTransaction, itemType);
 								} else {
-									wItem = setWorkorderItemObj(purchaseditem, itemTransaction.getQuantity(), item, parentId, itemTransaction);
+									wItem = setWorkorderItemObj(purchaseditem, itemTransaction.getQuantity(), item, parentId, itemTransaction, itemType);
 								}
 								updatePurchasedItem(purchaseditem);
 								wItem.setId(itemTransaction.getId());
@@ -99,7 +101,7 @@ public class AddOrUpdateManualItemTransactionCommand implements Command {
 									} else if (itemTransaction.getTransactionStateEnum() == TransactionState.ISSUE) {
 										pItem.setIsUsed(true);
 									}
-									woItem = setWorkorderItemObj(pItem, 1, item, parentId, itemTransaction);
+									woItem = setWorkorderItemObj(pItem, 1, item, parentId, itemTransaction, itemType);
 									updatePurchasedItem(pItem);
 									itemTransactionsList.add(woItem);
 									itemTransactiosnToBeAdded.add(woItem);
@@ -121,7 +123,7 @@ public class AddOrUpdateManualItemTransactionCommand implements Command {
 								PurchasedItemContext pItem = purchasedItem.get(0);
 								if (itemTransaction.getQuantity() <= pItem.getCurrentQuantity()) {
 									ItemTransactionsContext woItem = new ItemTransactionsContext();
-									woItem = setWorkorderItemObj(pItem, itemTransaction.getQuantity(), item, parentId, itemTransaction);
+									woItem = setWorkorderItemObj(pItem, itemTransaction.getQuantity(), item, parentId, itemTransaction, itemType);
 									itemTransactionsList.add(woItem);
 									itemTransactiosnToBeAdded.add(woItem);
 								} else {
@@ -135,7 +137,7 @@ public class AddOrUpdateManualItemTransactionCommand implements Command {
 											quantityUsedForTheCost = purchaseitem.getCurrentQuantity();
 										}
 										woItem = setWorkorderItemObj(purchaseitem, quantityUsedForTheCost, item,
-												parentId, itemTransaction);
+												parentId, itemTransaction, itemType);
 										requiredQuantity -= quantityUsedForTheCost;
 										itemTransactionsList.add(woItem);
 										itemTransactiosnToBeAdded.add(woItem);
@@ -159,12 +161,13 @@ public class AddOrUpdateManualItemTransactionCommand implements Command {
 			context.put(FacilioConstants.ContextNames.ITEM_IDS,
 					Collections.singletonList(itemTransactions.get(0).getItem().getId()));
 			context.put(FacilioConstants.ContextNames.RECORD_LIST, itemTransactionsList);
+			context.put(FacilioConstants.ContextNames.ITEM_TYPES_ID, itemTypeId);
 		}
 		return false;
 	}
 
 	private ItemTransactionsContext setWorkorderItemObj(PurchasedItemContext purchasedItem, double quantity,
-			ItemContext item, long parentId, ItemTransactionsContext itemTransactions) {
+			ItemContext item, long parentId, ItemTransactionsContext itemTransactions, ItemTypesContext itemTypes) {
 		ItemTransactionsContext woItem = new ItemTransactionsContext();
 		woItem.setTransactionType(TransactionType.MANUAL);
 		woItem.setTransactionState(itemTransactions.getTransactionStateEnum());
@@ -172,6 +175,7 @@ public class AddOrUpdateManualItemTransactionCommand implements Command {
 		woItem.setPurchasedItem(purchasedItem);
 		woItem.setQuantity(quantity);
 		woItem.setItem(item);
+		woItem.setItemType(itemTypes);
 		woItem.setSysModifiedTime(System.currentTimeMillis());
 		woItem.setParentId(parentId);
 		woItem.setParentTransactionId(itemTransactions.getParentTransactionId());

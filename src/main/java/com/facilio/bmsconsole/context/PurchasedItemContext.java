@@ -5,6 +5,16 @@ import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 public class PurchasedItemContext extends ModuleBaseWithCustomFields{
 	private static final long serialVersionUID = 1L;
 
+	private ItemTypesContext itemType;
+
+	public ItemTypesContext getItemType() {
+		return itemType;
+	}
+
+	public void setItemType(ItemTypesContext itemType) {
+		this.itemType = itemType;
+	}
+	
 	private ItemContext item;
 	public ItemContext getItem() {
 		return item;

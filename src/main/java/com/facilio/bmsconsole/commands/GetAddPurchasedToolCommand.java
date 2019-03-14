@@ -40,7 +40,7 @@ public class GetAddPurchasedToolCommand implements Command {
 			// Map<String, FacilioField> workorderCostsFieldMap =
 			// FieldFactory.getAsMap(inventoryCostFields);
 			long toolId = (long) context.get(FacilioConstants.ContextNames.RECORD_ID);
-
+			long toolTypeId = -1;
 			FacilioModule toolTypesModule = modBean.getModule(FacilioConstants.ContextNames.TOOL_TYPES);
 			List<FacilioField> toolTypesFields = modBean.getAllFields(FacilioConstants.ContextNames.TOOL_TYPES);
 
@@ -56,12 +56,12 @@ public class GetAddPurchasedToolCommand implements Command {
 			List<PurchasedToolContext> ptToBeAdded = new ArrayList<>();
 			List<PurchasedToolContext> purchaseToolsList = new ArrayList<>();
 			if (purchasedTool != null && !tools.isEmpty()) {
-
+				toolTypeId = tool.getToolType().getId();
 				SelectRecordsBuilder<ToolTypesContext> itemTypesselectBuilder = new SelectRecordsBuilder<ToolTypesContext>()
 						.select(toolTypesFields).table(toolTypesModule.getTableName())
 						.moduleName(toolTypesModule.getName()).beanClass(ToolTypesContext.class)
-						.andCondition(CriteriaAPI.getIdCondition(tool.getToolType().getId(), toolTypesModule));
-
+						.andCondition(CriteriaAPI.getIdCondition(toolTypeId, toolTypesModule));
+				
 				List<ToolTypesContext> toolTypes = itemTypesselectBuilder.get();
 				ToolTypesContext toolType = null;
 				if (toolTypes != null && !toolTypes.isEmpty()) {
@@ -74,6 +74,7 @@ public class GetAddPurchasedToolCommand implements Command {
 
 				for (PurchasedToolContext pt : purchasedTool) {
 					pt.setTool(tool);
+					pt.setToolType(toolType);
 					pt.setCostDate(System.currentTimeMillis());
 					pt.setIsUsed(false);
 					if (pt.getId() <= 0) {
@@ -95,6 +96,7 @@ public class GetAddPurchasedToolCommand implements Command {
 			context.put(FacilioConstants.ContextNames.TOOL_ID, toolId);
 			context.put(FacilioConstants.ContextNames.TOOL_IDS, Collections.singletonList(toolId));
 			context.put(FacilioConstants.ContextNames.TRANSACTION_TYPE, TransactionType.STOCK);
+			context.put(FacilioConstants.ContextNames.TOOL_TYPES_ID, toolTypeId);
 		}
 		return false;
 	}
