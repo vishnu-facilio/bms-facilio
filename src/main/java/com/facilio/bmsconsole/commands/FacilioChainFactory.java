@@ -1175,7 +1175,7 @@ public class FacilioChainFactory {
 		Chain c = FacilioChain.getTransactionChain();
 		c.addCommand(new AddAttachmentCommand());
 		c.addCommand(new AttachmentContextCommand());
-		c.addCommand(new ValidatePMTriggersCommand());
+		c.addCommand(new ValidateNewPMTriggersCommand());
 		c.addCommand(new ValidateNewTasksCommand());
 		c.addCommand(new AddPMReadingsForTasks());
 		c.addCommand(new CreateWorkorderTemplateCommand());	  // template addition
@@ -1233,7 +1233,7 @@ public class FacilioChainFactory {
 		c.addCommand(new AttachmentContextCommand());
 		
 		c.addCommand(new GetPreventiveMaintenanceCommand());
-		c.addCommand(new ValidatePMTriggersCommand());
+		c.addCommand(new ValidateNewPMTriggersCommand());
 		c.addCommand(new ValidateNewTasksCommand());
 		c.addCommand(new AddPMReadingsForTasks());
 		c.addCommand(new CreateWorkorderTemplateCommand());
