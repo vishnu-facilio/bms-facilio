@@ -217,6 +217,12 @@ public class ScheduleNewPMCommand extends FacilioJob implements SerializableComm
         LOGGER.log(Level.INFO, "Creating jobs for pm: "+ jc.getJobId());
         FacilioContext context = new FacilioContext();
         List<PreventiveMaintenance> pms = PreventiveMaintenanceAPI.getPMsDetails(Arrays.asList(jc.getJobId()));
+        Map<String,PMTriggerContext> triggerMap = new HashMap<>();
+        for (int i = 0; i < pms.get(0).getTriggers().size(); i++) {
+            PMTriggerContext triggerContext = pms.get(0).getTriggers().get(i);
+            triggerMap.put(triggerContext.getName(), triggerContext);
+        }
+        pms.get(0).setTriggerMap(triggerMap);
         context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE, pms.get(0));
         execute(context);
         PreventiveMaintenanceAPI.updateWorkOrderCreationStatus(Arrays.asList(jc.getJobId()), false);
