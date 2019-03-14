@@ -53,6 +53,7 @@ public class ConstructReportData implements Command {
 			reportContext = new ReportContext();
 			reportContext.setType(ReportType.WORKORDER_REPORT);
 		}
+		reportContext.setModuleType(moduleType);
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		module = null;
