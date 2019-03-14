@@ -4,9 +4,11 @@ import java.util.Collections;
 
 import org.apache.commons.chain.Context;
 
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
 
 public class GetAssetDetailCommand extends GenericGetModuleDataDetailCommand {
 
@@ -24,6 +26,8 @@ public class GetAssetDetailCommand extends GenericGetModuleDataDetailCommand {
 			if (assetContext != null && assetContext.getId() > 0) {
 				AssetsAPI.loadAssetsLookups(Collections.singletonList(assetContext));
 			}
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			assetContext.setModuleName(modBean.getModule(assetContext.getModuleId()).getName());
 			context.put(FacilioConstants.ContextNames.ASSET, assetContext);
 		}
 		return false;

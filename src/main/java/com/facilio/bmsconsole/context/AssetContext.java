@@ -33,6 +33,14 @@ public class AssetContext extends ResourceContext {
 		return null;
 	}
 	
+	private String moduleName;
+	public String getModuleName() {
+		return moduleName;
+	}
+	public void setModuleName(String moduleName) {
+		this.moduleName = moduleName;
+	}
+	
 	private AssetTypeContext type;
 	public AssetTypeContext getType() {
 		return type;
