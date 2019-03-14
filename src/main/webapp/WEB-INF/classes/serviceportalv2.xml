@@ -59,6 +59,15 @@
 			<param name="permission">WORKORDER_READ,TASK_READ</param>
 		</action>	
 		
+		<action name="removemobilesetting"  class="com.facilio.bmsconsole.actions.UserAction" method="v2removeMobileSetting">
+			<!-- <param name="moduleName">setup</param>
+			<param name="permission">USER_MANAGEMENT</param> -->
+		</action>
+		
+		<action name="addattachment" class="com.facilio.bmsconsole.actions.AttachmentAction"
+			method="v2addAttachment">
+		</action>       
+		
 	</package>
 
 	<!-- new service portal api will be open -->
