@@ -22,6 +22,12 @@ import com.facilio.fw.BeanFactory;
 public class ReportFactory {
 	
 	public interface WorkOrder {
+		String OPENVSCLOSE_COL = "openvsclose";
+		String OVERDUE_OPEN_COL = "overdue_open";
+		String OVERDUE_CLOSED_COL = "overdue_closed";
+		String PLANNED_VS_UNPLANNED_COL = "plannedvsunplanned";
+		String FIRST_RESPONSE_TIME_COL = "firstresponsetime";
+		
 		int OPENVSCLOSE = 1;
 		int OVERDUE_OPEN = 2;
 		int OVERDUE_CLOSED = 3;
@@ -38,14 +44,24 @@ public class ReportFactory {
 			modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			
 			List<FacilioField> reportFields = new ArrayList<>();
-			ReportFacilioField openVsCloseField = (ReportFacilioField) getField("openvsclose", "Status Type", modBean.getModule("workorder"), " CASE WHEN STATUS_ID = ? THEN 'Closed' ELSE 'Open' END ", FieldType.NUMBER, WorkOrder.OPENVSCLOSE);
-			openVsCloseField.addCondition("Open", CriteriaAPI.getCondition("STATUS_ID", "status", "?", NumberOperators.EQUALS));
+			ReportFacilioField openVsCloseField = (ReportFacilioField) getField(WorkOrder.OPENVSCLOSE_COL, "Status Type", modBean.getModule("workorder"), " CASE WHEN STATUS_ID = ? THEN 'Closed' ELSE 'Open' END ", FieldType.NUMBER, WorkOrder.OPENVSCLOSE);
+			openVsCloseField.addCondition("Open", CriteriaAPI.getCondition("STATUS_ID", "status", "?", NumberOperators.NOT_EQUALS));
+			openVsCloseField.addCondition("Closed", CriteriaAPI.getCondition("STATUS_ID", "status", "?", NumberOperators.EQUALS));
 			reportFields.add(openVsCloseField);
-			reportFields.add(getField("overdue_open", "Open Due Status", modBean.getModule("workorder"), " CASE WHEN DUE_DATE < " + System.currentTimeMillis() + " THEN 'Overdue' ELSE 'On Schedule' END ", FieldType.NUMBER, WorkOrder.OVERDUE_OPEN));
-			reportFields.add(getField("overdue_closed", "Closed Due Status", modBean.getModule("workorder"), " CASE WHEN DUE_DATE < ACTUAL_WORK_END THEN 'Overdue' ELSE 'Ontime' END ", FieldType.NUMBER, WorkOrder.OVERDUE_CLOSED));
-			reportFields.add(getField("plannedvsunplanned", "Planned Type", modBean.getModule("workorder"), " CASE WHEN SOURCE_TYPE = 5 THEN 'Planned' ELSE 'Unplanned' END ", FieldType.NUMBER, WorkOrder.PLANNED_VS_UNPLANNED));
 			
-			reportFields.add(getField("firstresponsetime", "Response Time", modBean.getModule("workorder"), "Tickets.ACTUAL_WORK_START - WorkOrders.CREATED_TIME", FieldType.NUMBER, WorkOrder.FIRST_RESPONSE_TIME));
+			ReportFacilioField overdueOpenField = (ReportFacilioField) getField(WorkOrder.OVERDUE_OPEN_COL, "Open Due Status", modBean.getModule("workorder"), " CASE WHEN DUE_DATE < ? THEN 'Overdue' ELSE 'On Schedule' END ", FieldType.NUMBER, WorkOrder.OVERDUE_OPEN);
+			overdueOpenField.addCondition("Overdue", CriteriaAPI.getCondition("DUE_DATE", "dueDate", "?", NumberOperators.LESS_THAN));
+			overdueOpenField.addCondition("Schedule", CriteriaAPI.getCondition("DUE_DATE", "dueDate", "?", NumberOperators.GREATER_THAN_EQUAL));
+			reportFields.add(overdueOpenField);
+			
+			ReportFacilioField overdueClosedField = (ReportFacilioField) getField(WorkOrder.OVERDUE_CLOSED_COL, "Closed Due Status", modBean.getModule("workorder"), " CASE WHEN DUE_DATE < ACTUAL_WORK_END THEN 'Overdue' ELSE 'Ontime' END ", FieldType.NUMBER, WorkOrder.OVERDUE_CLOSED);
+			overdueClosedField.addCondition("Overdue", CriteriaAPI.getCondition("DUE_DATE", "dueDate", "ACTUAL_WORK_END", NumberOperators.LESS_THAN));
+			overdueClosedField.addCondition("Ontime", CriteriaAPI.getCondition("DUE_DATE", "dueDate", "ACTUAL_WORK_END", NumberOperators.GREATER_THAN_EQUAL));
+			reportFields.add(overdueClosedField);
+			
+			reportFields.add(getField(WorkOrder.PLANNED_VS_UNPLANNED_COL, "Planned Type", modBean.getModule("workorder"), " CASE WHEN SOURCE_TYPE = 5 THEN 'Planned' ELSE 'Unplanned' END ", FieldType.NUMBER, WorkOrder.PLANNED_VS_UNPLANNED));
+			
+			reportFields.add(getField(WorkOrder.FIRST_RESPONSE_TIME_COL, "Response Time", modBean.getModule("workorder"), "Tickets.ACTUAL_WORK_START - WorkOrders.CREATED_TIME", FieldType.NUMBER, WorkOrder.FIRST_RESPONSE_TIME));
 			
 			fieldMap = FieldFactory.getAsMap(reportFields);
 		} catch (Exception e) {
@@ -127,10 +143,15 @@ public class ReportFactory {
 			return super.getColumnName();
 		}
 		
+		public Map<String, Condition> getConditions() {
+			return conditions;
+		}
+
 		private void processData() {
 			try {
 				switch (type) {
 				case WorkOrder.OPENVSCLOSE:
+				{
 					if (!data.containsKey("closed_status_id")) {
 						ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 						SelectRecordsBuilder<TicketStatusContext> builder = new SelectRecordsBuilder<TicketStatusContext>()
@@ -148,11 +169,25 @@ public class ReportFactory {
 					
 					for (Condition c : conditions.values()) {
 						String value = c.getValue();
-						System.out.println(value);
+						c.setValue(value.replace("?", arguments));
 					}
 					
 					setColumnName(getColumnName().replace("?", arguments));
 					break;
+				}
+					
+				case WorkOrder.OVERDUE_OPEN:
+				{
+					String arguments = String.valueOf(System.currentTimeMillis());
+					
+					for (Condition c : conditions.values()) {
+						String value = c.getValue();
+						c.setValue(value.replace("?", arguments));
+					}
+					
+					setColumnName(getColumnName().replace("?", arguments));
+					break;
+				}
 				}
 			} catch (Exception e) {
 				e.printStackTrace();

@@ -682,6 +682,10 @@ public class ModuleBeanImpl implements ModuleBean {
 			return FieldFactory.getIdField(module);
 		}
 		
+		if (fieldName.equals("siteId")) {
+			return FieldFactory.getSiteIdField(module);
+		}
+		
 		if(LookupSpecialTypeUtil.isSpecialType(moduleName)) {
 			return LookupSpecialTypeUtil.getField(fieldName, moduleName);
 		}
