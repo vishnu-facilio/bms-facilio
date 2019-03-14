@@ -76,8 +76,7 @@ public class AddOrUpdateManualToolTransactionsCommand implements Command {
 						throw new IllegalArgumentException("Insufficient quantity in inventory!");
 					} else {
 						if (toolTypes.individualTracking()) {
-							List<Long> purchasedToolIds = (List<Long>) context
-									.get(FacilioConstants.ContextNames.PURCHASED_TOOL);
+							List<Long> purchasedToolIds = toolTransaction.getPurchasedTools();
 							List<PurchasedToolContext> purchasedTool = getPurchasedToolsListFromId(purchasedToolIds);
 							if (purchasedTool != null) {
 								for (PurchasedToolContext pTool : purchasedTool) {
@@ -120,7 +119,7 @@ public class AddOrUpdateManualToolTransactionsCommand implements Command {
 			ToolContext tool, ToolTransactionContext toolTransaction, ToolTypesContext toolTypes) {
 		ToolTransactionContext woTool = new ToolTransactionContext();
 		
-		woTool.setTransactionType(TransactionType.MANUAL);
+		woTool.setTransactionType(toolTransaction.getTransactionTypeEnum());
 		woTool.setTransactionState(toolTransaction.getTransactionStateEnum());
 		woTool.setIsReturnable(true);
 		if (purchasedtool != null) {

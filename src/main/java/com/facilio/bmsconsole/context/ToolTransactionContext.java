@@ -1,5 +1,8 @@
 package com.facilio.bmsconsole.context;
 
+import java.util.List;
+
+import com.facilio.accounts.dto.User;
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.bmsconsole.util.TransactionState;
 import com.facilio.bmsconsole.util.TransactionType;
@@ -126,4 +129,11 @@ public class ToolTransactionContext extends ModuleBaseWithCustomFields {
 		return false;
 	}
 
+	private List<Long> purchasedTools;
+	public List<Long> getPurchasedTools() {
+		return purchasedTools;
+	}
+	public void setPurchasedTools(List<Long> purchasedTools) {
+		this.purchasedTools = purchasedTools;
+	}
 }
