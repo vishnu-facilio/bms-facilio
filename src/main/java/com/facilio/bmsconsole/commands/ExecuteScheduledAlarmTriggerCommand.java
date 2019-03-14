@@ -16,7 +16,7 @@ import com.facilio.constants.FacilioConstants;
 
 public class ExecuteScheduledAlarmTriggerCommand implements Command {
 
-	private static RuleType[] ruleTypes = {RuleType.READING_RULE,RuleType.ALARM_TRIGGER_RULE,RuleType.ALARM_CLEAR_RULE};
+	private static RuleType[] ruleTypes = {RuleType.READING_RULE,RuleType.ALARM_TRIGGER_RULE,RuleType.ALARM_CLEAR_RULE,RuleType.ALARM_RCA_RULES};
 	@Override
 	public boolean execute(Context context) throws Exception {
 		
