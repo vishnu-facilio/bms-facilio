@@ -64,9 +64,9 @@ import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.context.TicketPriorityContext;
 import com.facilio.bmsconsole.context.TicketStatusContext;
 import com.facilio.bmsconsole.context.TicketTypeContext;
-import com.facilio.bmsconsole.context.ToolsCategoryContext;
+import com.facilio.bmsconsole.context.ToolTypesCategoryContext;
 import com.facilio.bmsconsole.context.ToolTypesContext;
-import com.facilio.bmsconsole.context.ToolsStatusContext;
+import com.facilio.bmsconsole.context.ToolTypesStatusContext;
 import com.facilio.bmsconsole.context.UtilityMeterContext;
 import com.facilio.bmsconsole.context.VendorContext;
 import com.facilio.bmsconsole.context.WaterMeterContext;
@@ -832,6 +832,8 @@ public class FacilioConstants {
 		public static final String ITEM_COUNT = "itemCount";
 		public static final String TOOL_TYPES_COUNT = "toolTypesCount";
 		public static final String TOOL_COUNT = "toolCount";
+		public static final String VENDORS_COUNT = "vendorsCount";
+		public static final String STORE_ROOM_COUNT = "storeRoomCount";
 
 		public static final String TENANT = "tenant";
 		public static final String TENANT_UTILITY_IDS = "utilityIds";
@@ -917,8 +919,8 @@ public class FacilioConstants {
 			classMap.put(ITEM_TYPES_CATEGORY,ItemTypesCategoryContext.class);
 			classMap.put(ITEM_TYPES_STATUS, ItemTypesStatusContext.class);
 			classMap.put(TOOL_TYPES, ToolTypesContext.class);
-			classMap.put(TOOLS_TYPES_CATEGORY, ToolsCategoryContext.class);
-			classMap.put(TOOL_TYPES_STATUS, ToolsStatusContext.class);
+			classMap.put(TOOLS_TYPES_CATEGORY, ToolTypesCategoryContext.class);
+			classMap.put(TOOL_TYPES_STATUS, ToolTypesStatusContext.class);
 			classMap.put(VENDOR, VendorContext.class);
 			classMap.put(VENDORS, VendorContext.class);
 			classMap.put(ITEM, ItemContext.class);

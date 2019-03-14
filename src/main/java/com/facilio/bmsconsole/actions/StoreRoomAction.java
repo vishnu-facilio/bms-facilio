@@ -122,6 +122,12 @@ public class StoreRoomAction extends FacilioAction{
 		return SUCCESS;
 	}
 	
+	public String storeRoomCount() throws Exception {
+		storeRoomList();
+		setResult(FacilioConstants.ContextNames.STORE_ROOM_COUNT, storeRoomCount);
+		return SUCCESS;
+	}
+	
 	private boolean includeParentFilter;
 
 	public boolean getIncludeParentFilter() {

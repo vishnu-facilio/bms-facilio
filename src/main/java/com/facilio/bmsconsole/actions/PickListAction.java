@@ -23,8 +23,8 @@ import com.facilio.bmsconsole.context.ToolStatusContext;
 import com.facilio.bmsconsole.context.TicketCategoryContext;
 import com.facilio.bmsconsole.context.TicketPriorityContext;
 import com.facilio.bmsconsole.context.TicketTypeContext;
-import com.facilio.bmsconsole.context.ToolsCategoryContext;
-import com.facilio.bmsconsole.context.ToolsStatusContext;
+import com.facilio.bmsconsole.context.ToolTypesCategoryContext;
+import com.facilio.bmsconsole.context.ToolTypesStatusContext;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -589,11 +589,11 @@ public class PickListAction extends FacilioAction {
 		return SUCCESS;
 	}
 	
-	private ToolsCategoryContext toolTypesCategory;
-	public ToolsCategoryContext getToolTypesCategory() {
+	private ToolTypesCategoryContext toolTypesCategory;
+	public ToolTypesCategoryContext getToolTypesCategory() {
 		return toolTypesCategory;
 	}
-	public void setToolTypesCategory(ToolsCategoryContext toolsCategory) {
+	public void setToolTypesCategory(ToolTypesCategoryContext toolsCategory) {
 		this.toolTypesCategory = toolsCategory;
 	}
 	
@@ -640,12 +640,12 @@ public class PickListAction extends FacilioAction {
 		return SUCCESS;
 	}
 	
-	private ToolsStatusContext toolTypesStatus;
-	public ToolsStatusContext getToolTypesStatus() {
+	private ToolTypesStatusContext toolTypesStatus;
+	public ToolTypesStatusContext getToolTypesStatus() {
 		return toolTypesStatus;
 	}
 
-	public void setToolTypesStatus(ToolsStatusContext toolsStatus) {
+	public void setToolTypesStatus(ToolTypesStatusContext toolsStatus) {
 		this.toolTypesStatus = toolsStatus;
 	}
 

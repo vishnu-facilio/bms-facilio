@@ -38,7 +38,10 @@ public class GetStockedToolsListCommand implements Command{
 
 		Boolean getCount = (Boolean) context.get(FacilioConstants.ContextNames.FETCH_COUNT);
 		List<FacilioField> fields;
-		if (getCount != null && getCount) {
+		if (getCount == null) {
+			getCount = false;
+		}
+		if (getCount) {
 			fields = FieldFactory.getCountField(module);
 		} else {
 			fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
@@ -48,6 +51,10 @@ public class GetStockedToolsListCommand implements Command{
 		SelectRecordsBuilder<ToolContext> builder = new SelectRecordsBuilder<ToolContext>().module(module)
 				.beanClass(FacilioConstants.ContextNames.getClassFromModuleName(moduleName)).select(fields);
 
+		if (getCount) {
+			builder.setAggregation();
+		}
+		
 		String orderBy = (String) context.get(FacilioConstants.ContextNames.SORTING_QUERY);
 		if (orderBy != null && !orderBy.isEmpty()) {
 			builder.orderBy(orderBy);

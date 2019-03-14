@@ -1142,6 +1142,11 @@
 			<param name="permission">READ</param>
 			<param name = "storeRoomId">{1}</param>
 		</action>
+		<action name="count" class="com.facilio.bmsconsole.actions.StoreRoomAction"
+			method="storeRoomCount">
+			<param name="moduleName">asset</param>
+			<param name="permission">READ</param>
+		</action>
 	</package>
 	
 	<package name="storeRoomListApiv2" namespace="/api/v2/storeRoom/view"
@@ -1209,6 +1214,11 @@
 			<param name="permission">READ</param>
 			<param name = "toolId">{1}</param>
 		</action>
+		<action name="count" class="com.facilio.bmsconsole.actions.ToolTypesAction"
+			method="toolTypesCount">
+			<param name="moduleName">asset</param>
+			<param name="permission">READ</param>
+		</action>
 	</package>
 	
 	<package name="toolsListApiv2" namespace="/api/v2/toolTypes/view"
@@ -1238,6 +1248,11 @@
 			<param name="moduleName">asset</param>
 			<param name="permission">READ</param>
 			<param name = "vendorId">{1}</param>
+		</action>
+		<action name="count" class="com.facilio.bmsconsole.actions.VendorAction"
+			method="vendorsCount">
+			<param name="moduleName">asset</param>
+			<param name="permission">READ</param>
 		</action>
 	</package>
 	<package name="vendorsListApiv2" namespace="/api/v2/vendors/view"
@@ -1376,6 +1391,11 @@
 			<param name="moduleName">asset</param>
 			<param name="permission">READ</param>
 			<param name = "toolId">{1}</param>
+		</action>
+		<action name="count" class="com.facilio.bmsconsole.actions.ToolAction"
+			method="toolCount">
+			<param name="moduleName">asset</param>
+			<param name="permission">READ</param>
 		</action>
 	</package>
 	<package name="toolListApiv2" namespace="/api/v2/tool/view"

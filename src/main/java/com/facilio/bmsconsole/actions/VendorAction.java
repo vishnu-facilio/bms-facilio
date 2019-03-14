@@ -164,6 +164,12 @@ public class VendorAction extends FacilioAction{
 		return SUCCESS;
 	}
 	
+	public String vendorsCount() throws Exception {
+		vendorList();
+		setResult(FacilioConstants.ContextNames.VENDORS_COUNT, vendorsCount);
+		return SUCCESS;
+	}
+	
 	private boolean includeParentFilter;
 
 	public boolean getIncludeParentFilter() {

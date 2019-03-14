@@ -23,6 +23,7 @@ public class ToolTypesAction extends FacilioAction{
 	public String addToolTypes() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD, toolTypes);
+		context.put(FacilioConstants.ContextNames.SET_LOCAL_MODULE_ID, true);
 		Chain addToolsChain = TransactionChainFactory.getAddToolTypesChain();
 		addToolsChain.execute(context);
 		setResult(FacilioConstants.ContextNames.TOOL_TYPES, toolTypes);
@@ -60,7 +61,7 @@ public class ToolTypesAction extends FacilioAction{
 	public String toolTypesList() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.CV_NAME, getViewName());
-		context.put(FacilioConstants.ContextNames.SORTING_QUERY, "Tool_types.ID desc");
+		context.put(FacilioConstants.ContextNames.SORTING_QUERY, "Tool_types.LOCAL_ID desc");
 		if (getFilters() != null) {
 			JSONParser parser = new JSONParser();
 			JSONObject json = (JSONObject) parser.parse(getFilters());
@@ -98,6 +99,12 @@ public class ToolTypesAction extends FacilioAction{
 			}
 			setResult(FacilioConstants.ContextNames.TOOL_TYPES, tools);
 		}
+		return SUCCESS;
+	}
+	
+	public String toolTypesCount() throws Exception {
+		toolTypesList();
+		setResult(FacilioConstants.ContextNames.TOOL_TYPES_COUNT, toolsCount);
 		return SUCCESS;
 	}
 	

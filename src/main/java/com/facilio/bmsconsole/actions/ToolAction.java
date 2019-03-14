@@ -46,6 +46,7 @@ public class ToolAction extends FacilioAction{
 	public String addTool() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD, tool);
+		context.put(FacilioConstants.ContextNames.SET_LOCAL_MODULE_ID, true);
 		context.put(FacilioConstants.ContextNames.PURCHASED_TOOL, tool.getPurchasedTools());
 		context.put(FacilioConstants.ContextNames.TOOL_TYPES_ID, tool.getToolType().getId());
 		Chain addStockedTool = TransactionChainFactory.getAddToolChain();
@@ -89,7 +90,7 @@ public class ToolAction extends FacilioAction{
 	public String toolList() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.CV_NAME, getViewName());
-		context.put(FacilioConstants.ContextNames.SORTING_QUERY, "Tool.ID desc");
+		context.put(FacilioConstants.ContextNames.SORTING_QUERY, "Tool.LOCAL_ID desc");
 		if (getFilters() != null) {
 			JSONParser parser = new JSONParser();
 			JSONObject json = (JSONObject) parser.parse(getFilters());
@@ -130,6 +131,11 @@ public class ToolAction extends FacilioAction{
 		return SUCCESS;
 	}
 	
+	public String toolCount() throws Exception {
+		toolList();
+		setResult(FacilioConstants.ContextNames.TOOL_COUNT, stockedToolsCount);
+		return SUCCESS;
+	}
 	private boolean includeParentFilter;
 	public boolean getIncludeParentFilter() {
 		return includeParentFilter;
