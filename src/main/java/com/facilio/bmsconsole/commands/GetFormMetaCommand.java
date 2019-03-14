@@ -45,8 +45,12 @@ public class GetFormMetaCommand implements Command {
 						FacilioModule module = modBean.getModule(modname);
 						String extendedModName = module.getExtendModule().getName();
 						formName = "default_" +extendedModName ;
+						form = new FacilioForm(FormFactory.getForm(formName));
+						form.setDisplayName(module.getDisplayName());
 					}
-					form = new FacilioForm(FormFactory.getForm(formName));
+					else {
+						form = new FacilioForm(FormFactory.getForm(formName));
+					}
 					List<FormField> fields = new ArrayList<>(form.getFields());
 					form.setFields(fields);
 					

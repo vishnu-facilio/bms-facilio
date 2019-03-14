@@ -83,8 +83,8 @@ public class GetViewListCommand implements Command {
 							groupDetails.put("views",  new ArrayList<>(childViewMap.values()));
 							childViews.add(groupDetails);
 						}
+						Map<String, Object> group = new HashMap<>(groupViews.get(0));
 						if (!customViews.isEmpty() ) {
-							Map<String, Object> group = new HashMap<>(groupViews.get(0));
 							if (!childViews.isEmpty()) {
 								List<String> viewList = new ArrayList<>((List)group.get("views"));
 								viewList.addAll(customViews.stream().map(view -> view.getName()).collect(Collectors.toList()));
@@ -92,19 +92,20 @@ public class GetViewListCommand implements Command {
 							}
 							else {
 								group.put("displayName", "System Views");
-								if (!customViews.isEmpty() ) {
-									groupDetails = new HashMap<>();
-									groupDetails.put("name", "customviews");
-									groupDetails.put("displayName", "Custom Views");
-									groupDetails.put("views", customViews);
-									groupViews.add(groupDetails);
-								}
+								groupDetails = new HashMap<>();
+								groupDetails.put("name", "customviews");
+								groupDetails.put("displayName", "Custom Views");
+								groupDetails.put("views", customViews);
+								groupViews.add(groupDetails);
 							}
-							groupViews.set(0, group);
 						}
 						if (!childViews.isEmpty()) {
 							groupViews.addAll(childViews);
 						}
+						else if (customViews.isEmpty()){
+							group.put("displayName", "System Views");
+						}
+						groupViews.set(0, group);
 					}
 						
 					int groupSize = groupViews.size();
