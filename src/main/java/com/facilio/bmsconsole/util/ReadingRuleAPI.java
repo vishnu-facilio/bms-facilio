@@ -324,6 +324,31 @@ public class ReadingRuleAPI extends WorkflowRuleAPI {
 			.update(prop)
 			;
 	}
+	public static Map<Long, AlarmRuleContext> getAlarmRuleMap(List<Long> ruleGroupIds) throws Exception {
+		
+		List<ReadingRuleContext> readingRuleContexts = getReadingRulesList(ruleGroupIds);
+		
+		Map<Long,List<ReadingRuleContext>> readingRuleMap = new HashMap<>();
+		Map<Long,AlarmRuleContext> alarmRuleContextMap = new HashMap<>();
+		if(readingRuleContexts != null) {
+			for(ReadingRuleContext readingRuleContext :readingRuleContexts) {
+				
+				if(readingRuleMap.get(readingRuleContext.getRuleGroupId()) == null) {
+					List<ReadingRuleContext> readingRuleList = new ArrayList<>();
+					readingRuleMap.put(readingRuleContext.getRuleGroupId(), readingRuleList);
+				}
+				readingRuleMap.get(readingRuleContext.getRuleGroupId()).add(readingRuleContext);
+			}
+			
+			for(Long groupId :readingRuleMap.keySet()) {
+				AlarmRuleContext alarmRuleContext = new AlarmRuleContext(readingRuleMap.get(groupId));
+				alarmRuleContextMap.put(groupId, alarmRuleContext);
+			}
+		}
+		
+		return alarmRuleContextMap;
+	}
+	
 	public static List<ReadingRuleContext> getReadingRulesList(long ruleGroupId) throws Exception {
 		return getReadingRulesList(Collections.singletonList(ruleGroupId));
 	}
