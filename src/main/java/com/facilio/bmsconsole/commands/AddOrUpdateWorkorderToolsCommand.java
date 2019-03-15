@@ -161,7 +161,7 @@ public class AddOrUpdateWorkorderToolsCommand implements Command {
 		woTool.setParentId(parentId);
 		double costOccured = 0;
 		if (tool.getRate() > 0) {
-			costOccured = tool.getRate() * duration;
+			costOccured = tool.getRate() * duration * woTool.getQuantity();
 		}
 		woTool.setCost(costOccured);
 		return woTool;
