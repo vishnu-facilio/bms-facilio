@@ -20,6 +20,7 @@ import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
+import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
 import com.facilio.bmsconsole.util.AlarmAPI;
@@ -104,10 +105,12 @@ public class UpdateAlarmCommand implements Command {
 																		.module(module)
 																		.fields(fields)
 																		.andCondition(idCondition);
+//			LOGGER.info("Alarm Obj in update : "+FieldUtil.getAsJSON(alarm).toJSONString());
 			context.put(FacilioConstants.ContextNames.ROWS_UPDATED, updateBuilder.update(alarm));
 			if(recordIds.size() == 1) {
 				AlarmContext alarmObj = getAlarmObj(idCondition, moduleName, fields, true);
 				if(alarmObj != null) {
+//					LOGGER.info("Setting Alarm obj during updation : "+alarmObj.getClass());
 					context.put(FacilioConstants.ContextNames.RECORD, alarmObj);
 					
 					if (isCleared && AlarmAPI.isReadingRuleAlarm(alarmObj.getSourceTypeEnum())) {
@@ -122,9 +125,9 @@ public class UpdateAlarmCommand implements Command {
 			JSONObject record = new JSONObject();
 			record.put("id", recordIds.get(0));
 			
-			if(EventType.UPDATED_ALARM_SEVERITY.equals(context.get(FacilioConstants.ContextNames.EVENT_TYPE)) && 
-					(AccountUtil.getCurrentOrg().getOrgId() != 88 || alarm.getSeverity().getId() == AlarmAPI.getAlarmSeverity(FacilioConstants.Alarm.CRITICAL_SEVERITY).getId())) {
-				try {
+			try {
+				if(EventType.UPDATED_ALARM_SEVERITY.equals(context.get(FacilioConstants.ContextNames.EVENT_TYPE)) && 
+						(AccountUtil.getCurrentOrg().getOrgId() != 88 || alarm.getSeverity().getId() == AlarmAPI.getAlarmSeverity(FacilioConstants.Alarm.CRITICAL_SEVERITY).getId())) {
 					WmsEvent event = new WmsEvent();
 					event.setNamespace("alarm");
 					event.setAction("newAlarm");
@@ -136,9 +139,9 @@ public class UpdateAlarmCommand implements Command {
 					List<Long> recipients = users.stream().map(user -> user.getId()).collect(Collectors.toList());
 					WmsApi.sendEvent(recipients, event);
 				}
-				catch (Exception e) {
-					LOGGER.info("Exception occcurred while pushing Web notification during alarm updation ", e);
-				}
+			}
+			catch (Exception e) {
+				LOGGER.info("Exception occcurred while pushing Web notification during alarm updation ", e);
 			}
 		}
 		return false;

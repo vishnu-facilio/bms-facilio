@@ -2,6 +2,8 @@ package com.facilio.bmsconsole.commands;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AlarmContext;
@@ -12,6 +14,8 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 
 public class AddMLOccurrenceCommand implements Command {
+	
+	private static final Logger LOGGER = LogManager.getLogger(AddMLOccurrenceCommand.class.getName());
 
 	@Override
 	public boolean execute(Context context) throws Exception {
@@ -23,7 +27,11 @@ public class AddMLOccurrenceCommand implements Command {
 			isNewEvent = false;
 		}
 		
+		LOGGER.info("Adding MLOccurence COmmand");
+		
 		if(alarm != null && alarm instanceof MLAlarmContext && isNewEvent) {
+			LOGGER.info("Add occurrence for MLAlarm : "+alarm.getId());
+			
 			MLAlarmOccurrenceContext occurrence = new MLAlarmOccurrenceContext();
 			occurrence.setParentAlarm((MLAlarmContext) alarm);
 			occurrence.setTtime(alarm.getModifiedTime());
