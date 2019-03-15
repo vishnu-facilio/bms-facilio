@@ -53,6 +53,7 @@ public class AgentProcessor implements IRecordProcessor {
         this.orgDomainName = orgDomainName;
         this.errorStream = orgDomainName + "-error";
         agentUtil = new AgentUtil(orgId, orgDomainName);
+        agentUtil.populateAgentContextMap();
         devicePointsUtil = new DevicePointsUtil();
         ackUtil = new AckUtil();
     }

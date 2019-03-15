@@ -66,6 +66,7 @@ public class AgentProcessor extends FacilioProcessor
         setProducer(new FacilioKafkaProducer(getTopic()));
         LOGGER.info("agentUtil created for "+orgDomainName);
         agentUtil = new AgentUtil(orgId, orgDomainName);
+        agentUtil.populateAgentContextMap();
         devicePointsUtil = new DevicePointsUtil();
         ackUtil = new AckUtil();
         initializeModules();

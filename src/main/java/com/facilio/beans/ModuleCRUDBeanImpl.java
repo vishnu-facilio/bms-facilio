@@ -631,4 +631,35 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 
 	}
 
+	public List<Map<String,Object>> getAgentDetails() throws Exception{
+		GenericSelectRecordBuilder genericSelectRecordBuilder = new GenericSelectRecordBuilder().table(AgentKeys.TABLE_NAME);
+		List<FacilioField> fields = new ArrayList<>();
+		FacilioModule agentModule = ModuleFactory.getAgentdataModule();
+		fields.add(FieldFactory.getControllerIdCount(ModuleFactory.getControllerModule()));
+		fields.addAll(FieldFactory.getAgentDataFields());
+		genericSelectRecordBuilder.select(fields).innerJoin(AgentKeys.CONTROLLER_TABLE).on(AgentKeys.TABLE_NAME+".ID=Controller.Agent_Id").groupBy(AgentKeys.TABLE_NAME+".ID").andCondition(CriteriaAPI.getCurrentOrgIdCondition(agentModule));
+		List<Map<String,Object>> records = genericSelectRecordBuilder.get();
+
+		return  records;
+	}
+
+	@Override
+	public List<Map<String, Object>> getAgentControllerDetails(Long agentId) throws Exception {
+		FacilioModule controllerModule = ModuleFactory.getControllerModule();
+        List<FacilioField> fields = new ArrayList<>();
+        List<Map<String, Object>> records;
+        fields.add(FieldFactory.getField("configuredPointsCount","sum(if("+AgentKeys.UNMODELED_INSTANCE_TABLE+".IN_USE=1,1,0))", FieldType.NUMBER));
+        fields.add(FieldFactory.getField("subscribedPointsCount","sum(if("+AgentKeys.UNMODELED_INSTANCE_TABLE+".IS_SUBSCRIBED=1,1,0))", FieldType.NUMBER));
+        fields.addAll(FieldFactory.getControllerFields());
+        GenericSelectRecordBuilder genericSelectRecordBuilder = new GenericSelectRecordBuilder().table(AgentKeys.CONTROLLER_TABLE).select(fields)
+                .innerJoin(AgentKeys.UNMODELED_INSTANCE_TABLE).on("Controller.ID=" + AgentKeys.UNMODELED_INSTANCE_TABLE + ".CONTROLLER_ID")
+                .andCondition(CriteriaAPI.getCurrentOrgIdCondition(controllerModule)).orderBy(AgentKeys.AGENT_ID +" ASC")
+                .groupBy(AgentKeys.CONTROLLER_TABLE + ".ID");
+        if(agentId != null) {
+            genericSelectRecordBuilder.andCustomWhere(AgentKeys.AGENT_ID + "=" + agentId);
+        }
+		return genericSelectRecordBuilder.get();
+	}
+
+
 }

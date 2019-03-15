@@ -28,10 +28,9 @@ public  class AgentUtil
     public AgentUtil(long orgId, String orgDomainName)  {
         this.orgId = orgId;
         this.orgDomainName = orgDomainName;
-        populateAgentContextMap();
     }
 
-    private void populateAgentContextMap() {
+    public void populateAgentContextMap() {
         try {
             ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", orgId);
             List<Map<String, Object>> records = bean.getAgentDataMap();
@@ -112,6 +111,14 @@ public  class AgentUtil
         if(payload.containsKey(AgentKeys.AGENT_TYPE)){
             agent.setAgentType(payload.get(AgentKeys.AGENT_TYPE).toString());
         }
+        if(payload.containsKey(AgentKeys.DELETED_TIME)){
+            agent.setDeletedTime(Long.parseLong(payload.get(AgentKeys.DELETED_TIME).toString()));
+        }
+        if(payload.containsKey(AgentKeys.WRITABLE)){
+            agent.setWritable(Boolean.parseBoolean(payload.get(AgentKeys.WRITABLE).toString()));
+        }else {
+            agent.setWritable(false);
+        }
 
         return agent;
 
@@ -186,6 +193,20 @@ public  class AgentUtil
                         agent.setAgentDeviceDetails(currDeviceDetailsString);
                     }
                 }
+                if(jsonObject.containsKey(AgentKeys.WRITABLE)){
+                    Boolean currWriteble = Boolean.parseBoolean(jsonObject.get(AgentKeys.WRITABLE).toString());
+                    if(agent.getWritable() != currWriteble){
+                        toUpdate.put(AgentKeys.WRITABLE,currWriteble);
+                        agent.setWritable(currWriteble);
+                    }
+                }
+                if(jsonObject.containsKey(AgentKeys.DELETED_TIME)){
+                    Long currDeletedTime = Long.parseLong(jsonObject.get(AgentKeys.DELETED_TIME).toString());
+                    if(agent.getDeletedTime().longValue() != currDeletedTime.longValue()){
+                        agent.setDeletedTime(currDeletedTime);
+                        toUpdate.put(AgentKeys.DELETED_TIME,currDeletedTime);
+                    }
+                }
                 if(!toUpdate.isEmpty()) {
                     toUpdate.put(AgentKeys.LAST_MODIFIED_TIME,System.currentTimeMillis());
                     toUpdate.put(AgentKeys.LAST_DATA_RECEIVED_TIME,System.currentTimeMillis());
@@ -215,6 +236,7 @@ public  class AgentUtil
             payload.put(AgentKeys.DATA_INTERVAL,agent.getAgentDataInterval());
             payload.put(AgentKeys.CONNECTION_STATUS,agent.getAgentConnStatus());
             payload.put(AgentKeys.NUMBER_OF_CONTROLLERS,agent.getAgentNumberOfControllers());
+            payload.put(AgentKeys.WRITABLE,agent.getWritable());
             GenericInsertRecordBuilder genericInsertRecordBuilder = new GenericInsertRecordBuilder()
                     .table(AgentKeys.TABLE_NAME)
                     .fields(FieldFactory.getAgentDataFields());
@@ -240,6 +262,32 @@ public  class AgentUtil
     private String getVersion(Object payload) {
         JSONObject jsonObject2 = (JSONObject)payload;
         return jsonObject2.get(AgentKeys.FACILIO_MQTT_VERSION).toString();
+    }
+
+    public List<Map<String,Object>> agentDetailsAPI()
+    {
+        ModuleCRUDBean bean;
+        List<Map<String, Object>> records;
+        try {
+            bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", orgId);
+            records = bean.getAgentDetails();
+            return records;
+        } catch (Exception e) {
+            LOGGER.info("Exception occurred",e);
+        }
+        return null;
+    }
+    public List<Map<String,Object>> controllerDetailsAPI(Long agentId){
+        ModuleCRUDBean bean;
+        List<Map<String, Object>> records;
+        try {
+            bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", orgId);
+            records = bean.getAgentControllerDetails(agentId);
+            return records;
+        } catch (Exception e) {
+            LOGGER.info("Exception occured",e);
+        }
+        return null;
     }
 
 }

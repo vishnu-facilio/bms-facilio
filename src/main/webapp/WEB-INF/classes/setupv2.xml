@@ -156,6 +156,16 @@
 		</action>
 	</package>
 
+	<package name="agentApiV2" namespace="/api/v2/setup/agent" extends="setupApiV2">
+		<action name="list"  class="com.facilio.bmsconsole.actions.ControllerAction" method="agentAction">
+		</action>
+	</package>
+
+	<package name="controllerApiV2" namespace="/api/v2/setup/agent" extends="setupApiV2">
+		<action name="controller"  class="com.facilio.bmsconsole.actions.ControllerAction" method="fetchControllerDetails">
+		</action>
+	</package>
+
 	<package name="costSetupApiV2" namespace="/api/v2/setup/cost" extends="setupApiV2">
 	</package>
 </struts>

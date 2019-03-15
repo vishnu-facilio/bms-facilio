@@ -13,6 +13,17 @@ public class FacilioAgent
     private  String  agentType;
     private  Long lastModifiedTime;
     private Long lastDataRecievedTime;
+    private Long deletedTime;
+
+    public Long getDeletedTime() { return deletedTime; }
+
+    public void setDeletedTime(Long deletedTime) { this.deletedTime = deletedTime; }
+
+    public Boolean getWritable() { return writable; }
+
+    public void setWritable(Boolean writable) { this.writable = writable; }
+
+    private Boolean writable;
 
     public Long getLastModifiedTime() {
         return lastModifiedTime;
