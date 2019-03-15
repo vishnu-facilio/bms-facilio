@@ -510,9 +510,9 @@ public class ReadingsAPI {
 					FacilioField fField = fieldMap.get(reading.getKey());
 					if (fField != null) {
 						Object val = FieldUtil.castOrParseValueAsPerType(fField, reading.getValue());
-						if ((AccountUtil.getCurrentOrg().getId() == 104 && fField.getFieldId() == 490437) || (AccountUtil.getCurrentOrg().getId() == 134)) {
-							LOGGER.info("resourceId: " + resourceId + ", ttime: " + timeStamp + ", current: " + System.currentTimeMillis() + ", value: " + val);
-						}
+//						if ((AccountUtil.getCurrentOrg().getId() == 104 && fField.getFieldId() == 490437) || (AccountUtil.getCurrentOrg().getId() == 134)) {
+//							LOGGER.info("resourceId: " + resourceId + ", ttime: " + timeStamp + ", current: " + System.currentTimeMillis() + ", value: " + val);
+//						}
 						if (val != null) {
 							long fieldId = fField.getFieldId();
 							String uniqueKey = getRDMKey(resourceId, fField);
@@ -528,9 +528,9 @@ public class ReadingsAPI {
 											&& lastTimeStamp != -1 
 											&& !"-1".equals(meta.getActualValue()) 
 											&& timeStamp < lastTimeStamp)) {
-										if (AccountUtil.getCurrentOrg().getId() == 104 || AccountUtil.getCurrentOrg().getId() == 134) {
-											LOGGER.info("Not updating: time" + timeStamp + ", current: " + currentTime + ", readingId: " + readingId + ", resourceId: "+ resourceId);
-										}
+//										if (AccountUtil.getCurrentOrg().getId() == 104 || AccountUtil.getCurrentOrg().getId() == 134) {
+//											LOGGER.info("Not updating: time" + timeStamp + ", current: " + currentTime + ", readingId: " + readingId + ", resourceId: "+ resourceId);
+//										}
 										continue;
 									}
 								}
@@ -550,17 +550,17 @@ public class ReadingsAPI {
 								uniqueRDMs.put(uniqueKey, rdm);
 							}
 						}
-						else {
-							LOGGER.debug("Not updating RDM for "+fField.getName()+" from "+readingContext+" because after parsing, value is null");
-						}
+//						else {
+//							LOGGER.debug("Not updating RDM for "+fField.getName()+" from "+readingContext+" because after parsing, value is null");
+//						}
 					}
 				}
 			}
 			
-			LOGGER.debug("Unique RDMs : "+uniqueRDMs);
-			if (AccountUtil.getCurrentOrg().getOrgId() == 104 || AccountUtil.getCurrentOrg().getOrgId() == 134) {
-				LOGGER.info("Unique RDMs : "+uniqueRDMs);
-			}
+//			LOGGER.debug("Unique RDMs : "+uniqueRDMs);
+//			if (AccountUtil.getCurrentOrg().getOrgId() == 104 || AccountUtil.getCurrentOrg().getOrgId() == 134) {
+//				LOGGER.info("Unique RDMs : "+uniqueRDMs);
+//			}
 			if (uniqueRDMs.size() == 0) {
 				return null;
 			}
