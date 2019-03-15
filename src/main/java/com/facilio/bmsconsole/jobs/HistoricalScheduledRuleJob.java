@@ -27,15 +27,15 @@ public class HistoricalScheduledRuleJob extends FacilioJob {
 		WorkflowRuleContext rule = WorkflowRuleAPI.getWorkflowRule(jc.getJobId(), true);
 		
 		JSONObject props = BmsJobUtil.getJobProps(jc.getJobId(), jc.getJobName());
-		long startTime = (long) props.get("startTime");
-		long endTime = (long) props.get("endTime");
+		long startTime = (long) props.get("startTime") / 1000;
+		long endTime = (long) props.get("endTime") / 1000;
 		
 		LOGGER.info("Historical execution of rule : "+rule.getId());
 		
-		long currentStartTime = rule.getSchedule().nextExecutionTime(startTime / 1000);
+		long currentStartTime = rule.getSchedule().nextExecutionTime(startTime);
 		
 		while (currentStartTime <= endTime) {
-			LOGGER.info("Gonna run for time : "+currentStartTime);
+			LOGGER.info("Gonna run for time : "+currentStartTime+ DateTimeUtil.getDateTime(currentStartTime, true));
 			FacilioContext context = new FacilioContext();
 			context.put(FacilioConstants.ContextNames.WORKFLOW_RULE_ID, rule.getId());
 			context.put(FacilioConstants.ContextNames.CURRENT_EXECUTION_TIME, DateTimeUtil.getHourStartTimeOf(currentStartTime) * 1000); //TODO hourStartTime should be changed to direct execution time later
