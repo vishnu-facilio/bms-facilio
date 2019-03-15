@@ -50,11 +50,10 @@ public class GetCalendarWOsCommands implements Command {
 			if (AccountUtil.isFeatureEnabled(AccountUtil.FEATURE_SCHEDULED_WO) && AccountUtil.getCurrentOrg().getOrgId() == 75) { //Temp hack
 				Map<String, Condition> conditionMap = view.getCriteria().getConditions();
 				Set<Map.Entry<String, Condition>> conditions = conditionMap.entrySet();
-				Criteria statusCriteria = null;
 				for (Map.Entry<String, Condition> conditionEntry: conditions) {
 					Condition condition = conditionEntry.getValue();
 					if (condition.getColumnName().equals("Tickets.STATUS_ID")) {
-						statusCriteria = new Criteria();
+						Criteria statusCriteria = new Criteria();
 						statusCriteria.addAndCondition(condition);
 						statusCriteria.addOrCondition(ViewFactory.getPreOpenStatusCondition());
 						woBuilder.andCriteria(statusCriteria);
