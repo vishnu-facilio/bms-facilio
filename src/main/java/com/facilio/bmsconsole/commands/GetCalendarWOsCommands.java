@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.criteria.Condition;
@@ -28,6 +30,7 @@ import com.facilio.fw.BeanFactory;
 
 public class GetCalendarWOsCommands implements Command {
 
+	private static final Logger LOGGER = Logger.getLogger(GetCalendarWOsCommands.class.getName());
 	@Override
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
@@ -61,8 +64,10 @@ public class GetCalendarWOsCommands implements Command {
 				}
 				woBuilder.andCriteria(scheduledWoCriteria);
 				if (statusCriteria != null) {
+					LOGGER.log(Level.SEVERE, "Reached special criteria");
 					woBuilder.andCriteria(statusCriteria);
 				}
+
 			} else {
 				woBuilder.andCriteria(view.getCriteria());
 			}
@@ -88,7 +93,8 @@ public class GetCalendarWOsCommands implements Command {
 					.beanClass(WorkOrderContext.class);
 			context.put(FacilioConstants.ContextNames.WORK_ORDER_LIST, woBuilder.get());
 		}
-		
+
+		LOGGER.log(Level.SEVERE, "gen sql : " + woBuilder.toString());
 		
 		return false;
 	}
