@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.facilio.bmsconsole.context.AlarmContext.AlarmType;
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.AssetCategoryContext;
 import com.facilio.bmsconsole.context.AssetContext.AssetState;
 import com.facilio.bmsconsole.context.TicketContext;
@@ -46,7 +47,7 @@ public class ViewFactory {
 	private static Map<String, List<Map<String, Object>>> groupVsViews = Collections
 			.unmodifiableMap(initializeGroupVsViews());
 
-	public static FacilioView getView(String moduleName, String viewName) {
+	public static FacilioView getView(String moduleName, String viewName) throws Exception {
 		FacilioView view = null;
 		if (viewName != null) {
 			if (viewName.contains("approval_")) {

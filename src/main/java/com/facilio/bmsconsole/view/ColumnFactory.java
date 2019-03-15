@@ -7,10 +7,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.ViewField;
+import com.facilio.bmsconsole.forms.FormField;
+import com.facilio.bmsconsole.forms.FormField.Required;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.bmsconsole.modules.FacilioField.FieldDisplayType;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 
 public class ColumnFactory {
@@ -116,7 +120,6 @@ public class ColumnFactory {
 		columns.add(new ViewField("noOfTasks", "Tasks"));
 		columns.add(new ViewField("modifiedTime", "Last Updated Time"));
 		columns.add(new ViewField("actualWorkEnd", "Closed Time"));
-		
 		return columns;
 	}
 	

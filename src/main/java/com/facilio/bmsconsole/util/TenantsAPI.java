@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.chain.Chain;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.json.simple.JSONObject;
@@ -427,6 +428,9 @@ public class TenantsAPI {
 
 	
 	private static Map<Long, List<UtilityAsset>> getUtilityAssets(Collection<Long> ids) throws Exception {
+		if (CollectionUtils.isEmpty(ids)) {
+			return null;
+		}
 		FacilioModule module = ModuleFactory.getTenantsUtilityMappingModule();
 		List<FacilioField> fields = FieldFactory.getTenantsUtilityMappingFields();
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
@@ -537,6 +541,9 @@ public class TenantsAPI {
 
 	
 	private static Map<Long, List<TenantUserContext>> getTenantUserDetails(Collection<Long> ids) throws Exception {
+		if (CollectionUtils.isEmpty(ids)) {
+			return null;
+		}
 		FacilioModule module = ModuleFactory.getTenantsuserModule();
 		FacilioModule portalUsersModule = AccountConstants.getPortalUserModule();
 		FacilioModule orgUserModule = AccountConstants.getOrgUserModule();

@@ -8,6 +8,17 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.agent.AgentKeys;
+import com.facilio.bmsconsole.forms.FormField;
+import com.facilio.bmsconsole.forms.FormField.Required;
+import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.bmsconsole.modules.FacilioField.FieldDisplayType;
+
+import org.apache.commons.lang3.tuple.Pair;
+
+import com.facilio.constants.FacilioConstants;
+
 public class FieldFactory {
 
 	private static final Map<String, Pair<String, Boolean>> lookupModuleVsSortFieldName = Collections
@@ -82,7 +93,6 @@ public class FieldFactory {
 			workOrderFieldsInclude.add("status");
 			workOrderFieldsInclude.add("type");
 			workOrderFieldsInclude.add("sendForApproval");
-			workOrderFieldsInclude.add("tenant");
 		}
 
 		public static List<String> assetFieldsInclude = new ArrayList<String>();

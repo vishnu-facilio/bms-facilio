@@ -229,6 +229,11 @@ public class LoadViewCommand implements Command {
 		if (fields != null) {
 			fieldNames = new HashMap<> ();
 			for(FacilioField field : fields) {
+				if(field.getName().equals("tenant")) {
+					if(!AccountUtil.isFeatureEnabled(AccountUtil.FEATURE_TENANTS)) {
+						continue;
+					}
+				}
 				String displayName;
 				if (fieldMap != null && fieldMap.get(field.getName()) != null && fieldMap.get(field.getName()).getColumnDisplayName() != null) {
 					displayName = fieldMap.get(field.getName()).getColumnDisplayName();
