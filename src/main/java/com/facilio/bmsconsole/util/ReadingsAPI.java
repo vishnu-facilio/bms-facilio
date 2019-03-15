@@ -300,7 +300,7 @@ public class ReadingsAPI {
 		
 		if(resourceIds != null && !resourceIds.isEmpty()) {
 			FacilioField resourceIdField = readingFieldsMap.get("resourceId");
-			LOGGER.debug("Resource Ids in getRDMProps : "+resourceIds+"\nResource Field : "+resourceIdField);
+			// LOGGER.debug("Resource Ids in getRDMProps : "+resourceIds+"\nResource Field : "+resourceIdField);
 			builder.andCondition(CriteriaAPI.getCondition(resourceIdField, resourceIds, NumberOperators.EQUALS));
 		}
 		
