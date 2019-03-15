@@ -8,6 +8,7 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.apache.log4j.Priority;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
@@ -63,9 +64,18 @@ public class EventToAlarmCommand implements Command {
 					;
 
 			List<Map<String, Object>> props = eventSelectBuilder.get();
+			
+			if(AccountUtil.getCurrentOrg().getId() == 134l) {
+				LOGGER.error("2.event -- ID "+event.getId()+"--- "+event.getMessageKey() +" --- "+event.getInternalState() +" --- "+event.getSource()+" -- "+event.getAlarmId());
+				LOGGER.error("eventSelectBuilder "+eventSelectBuilder);
+			}
+			
 			if(props != null && !props.isEmpty())
 			{
 				long alarmId = (long) props.get(0).get("alarmId");
+				if(AccountUtil.getCurrentOrg().getId() == 134l) {
+					LOGGER.error("alarmId "+alarmId);
+				}
 				return alarmId;
 			}
 			else {
@@ -79,6 +89,9 @@ public class EventToAlarmCommand implements Command {
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		EventContext event = (EventContext) context.get(EventConstants.EventContextNames.EVENT);
+		if(AccountUtil.getCurrentOrg().getId() == 134l) {
+			LOGGER.error("1.event -- ID "+event.getId()+"--- "+event.getMessageKey() +" --- "+event.getInternalState() +" --- "+event.getSource()+" -- "+event.getAlarmId());
+		}
 		if(event.getEventStateEnum() != EventState.IGNORED) {
 			doFieldMapping(event);
 			if(event.getSeverity().equals(FacilioConstants.Alarm.INFO_SEVERITY)) {
@@ -86,6 +99,11 @@ public class EventToAlarmCommand implements Command {
 			}
 			else {
 				long alarmId = getAlarmId(event);
+				if(AccountUtil.getCurrentOrg().getId() == 134l) {
+					LOGGER.error("3.event -- ID "+event.getId()+"--- "+event.getMessageKey() +" --- "+event.getInternalState() +" --- "+event.getSource()+" -- "+event.getAlarmId());
+					
+					LOGGER.error("alarmId --- "+alarmId);
+				}
 				LOGGER.debug("Alarm ID for event : "+event.getId()+" : "+alarmId);
 				boolean createAlarm = true;
 				long entityId = -1;
@@ -104,13 +122,20 @@ public class EventToAlarmCommand implements Command {
 
 					List<AlarmContext> alarms = builder.get();
 					long severityId = alarms.get(0).getSeverity().getId();
+					if(AccountUtil.getCurrentOrg().getId() == 134l) {
+						LOGGER.error("4.event -- ID "+event.getId()+"--- "+event.getMessageKey() +" --- "+event.getInternalState() +" --- "+event.getSource()+" -- "+event.getAlarmId());
+						LOGGER.error("severityId "+severityId);
+					}
 					if(AlarmAPI.getAlarmSeverity(severityId).getSeverity().equals(FacilioConstants.Alarm.CLEAR_SEVERITY))
 					{
 						createAlarm = true;
 						entityId = alarms.get(0).getEntityId();
 					}
 				}
-				
+				if(AccountUtil.getCurrentOrg().getId() == 134l) {
+					LOGGER.error("5.event -- ID "+event.getId()+"--- "+event.getMessageKey() +" --- "+event.getInternalState() +" --- "+event.getSource()+" -- "+event.getAlarmId());
+					LOGGER.error("createAlarm ---  "+createAlarm);
+				}
 				if(!createAlarm) {
 					//TODO update alarm
 					updateAlarm(alarmId, event);
@@ -121,6 +146,9 @@ public class EventToAlarmCommand implements Command {
 			}
 			event.setInternalState(EventInternalState.COMPLETED);
 			context.put(EventConstants.EventContextNames.EVENT, event);
+			if(AccountUtil.getCurrentOrg().getId() == 134l) {
+				LOGGER.error("8.event -- ID "+event.getId()+"--- "+event.getMessageKey() +" --- "+event.getInternalState() +" --- "+event.getSource()+" -- "+event.getAlarmId());
+			}
 		}
 		return false;
 	}
@@ -324,7 +352,15 @@ public class EventToAlarmCommand implements Command {
 		
 		ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD");
 		AlarmContext alarm = bean.processAlarm(json);
+		
+		if(AccountUtil.getCurrentOrg().getId() == 134l) {
+			LOGGER.error("6.event -- ID "+event.getId()+"--- "+event.getMessageKey() +" --- "+event.getInternalState() +" --- "+event.getSource()+" -- "+event.getAlarmId());
+		}
 		event.setAlarmId(alarm.getId());
 		event.setEventState(EventState.ALARM_CREATED);
+		
+		if(AccountUtil.getCurrentOrg().getId() == 134l) {
+			LOGGER.error("7.event -- ID "+event.getId()+"--- "+event.getMessageKey() +" --- "+event.getInternalState() +" --- "+event.getSource()+" -- "+event.getAlarmId());
+		}
 	}
 }
