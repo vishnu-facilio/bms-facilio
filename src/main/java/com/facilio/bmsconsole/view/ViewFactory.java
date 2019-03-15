@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 
 import com.facilio.bmsconsole.context.AlarmContext.AlarmType;
-import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.AssetCategoryContext;
 import com.facilio.bmsconsole.context.AssetContext.AssetState;
 import com.facilio.bmsconsole.context.TicketContext;
@@ -2375,6 +2374,7 @@ public class ViewFactory {
 		moduleView.setModuleId(childModule.getModuleId());
 		moduleView.setModuleName(childModule.getName());
 		moduleView.setDefault(true);
+		moduleView.setOrder(1);
 		
 		moduleView.setFields(ColumnFactory.getColumns(parentModuleName, "default"));
 		moduleView.setSortFields(getSortFields(parentModuleName));

@@ -124,7 +124,7 @@ public class FormsAPI {
 			form.setModule(modBean.getModule(modid));
 			fieldSelectBuilder
 					.andCondition(CriteriaAPI.getCondition("FORMID", "formId", String.valueOf(prop.get("id")), NumberOperators.EQUALS))
-					.orderBy("SEQUENCE_NUMBER");
+					.orderBy("SEQUENCE_NUMBER, SPAN");
 			
 			List<Map<String, Object>> fieldprops = fieldSelectBuilder.get();
 			List<FormField> fields = new ArrayList<>();
