@@ -13,6 +13,7 @@ import org.json.simple.JSONObject;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.AlarmContext;
 import com.facilio.bmsconsole.context.AlarmSeverityContext;
 import com.facilio.bmsconsole.criteria.Condition;
@@ -20,13 +21,13 @@ import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
-import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
 import com.facilio.bmsconsole.util.AlarmAPI;
 import com.facilio.bmsconsole.util.ReadingRuleAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.workflow.rule.EventType;
+import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.wms.message.WmsEvent;
@@ -91,12 +92,13 @@ public class UpdateAlarmCommand implements Command {
 			
 			if(alarm.getSeverity() != null) {
 				if(isCleared) {
-					context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.ALARM_CLEARED);
+					CommonCommandUtil.addEventType(EventType.ALARM_CLEARED, (FacilioContext) context);
 				}
 				else if (alarm.getPreviousSeverity() == null || (alarm.getPreviousSeverity().getId() != alarm.getSeverity().getId())) {
-					context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.UPDATED_ALARM_SEVERITY);
+					CommonCommandUtil.addEventType(EventType.UPDATED_ALARM_SEVERITY, (FacilioContext) context);
 				}
 			}
+			CommonCommandUtil.addEventType(EventType.EDIT, (FacilioContext) context);
 			
 			TicketAPI.updateTicketAssignedBy(alarm);
 			TicketAPI.updateTicketStatus(alarm);

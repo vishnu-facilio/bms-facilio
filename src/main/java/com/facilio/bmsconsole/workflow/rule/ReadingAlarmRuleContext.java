@@ -5,7 +5,6 @@ import java.util.Map;
 import com.facilio.bmsconsole.context.MLAlarmContext;
 import com.facilio.bmsconsole.context.ReadingAlarmContext;
 import com.facilio.chain.FacilioContext;
-import com.facilio.constants.FacilioConstants.Alarm;
 
 public class ReadingAlarmRuleContext extends WorkflowRuleContext {
 	
