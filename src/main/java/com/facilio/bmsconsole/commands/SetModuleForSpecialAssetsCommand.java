@@ -27,7 +27,7 @@ public class SetModuleForSpecialAssetsCommand implements Command{
 		Integer bulkSetting = (Integer) context.get("bulkSetting");
 		long startTime = System.currentTimeMillis();
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
-		if (moduleName != null) {
+		if (moduleName != null && !moduleName.equals(FacilioConstants.ContextNames.ASSET)) {
 			return false;
 		}
 		
