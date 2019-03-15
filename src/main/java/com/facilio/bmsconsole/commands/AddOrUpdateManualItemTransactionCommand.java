@@ -179,6 +179,9 @@ public class AddOrUpdateManualItemTransactionCommand implements Command {
 		woItem.setSysModifiedTime(System.currentTimeMillis());
 		woItem.setParentId(parentId);
 		woItem.setParentTransactionId(itemTransactions.getParentTransactionId());
+		if(itemTransactions.getTransactionStateEnum() == TransactionState.ISSUE ) {
+			woItem.setRemainingQuantity(quantity);
+		}
 		return woItem;
 	}
 

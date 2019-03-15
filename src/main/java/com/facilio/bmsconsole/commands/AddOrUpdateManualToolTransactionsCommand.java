@@ -132,7 +132,9 @@ public class AddOrUpdateManualToolTransactionsCommand implements Command {
 		woTool.setSysModifiedTime(System.currentTimeMillis());
 		woTool.setParentId(toolTransaction.getParentId());
 		woTool.setParentTransactionId(toolTransaction.getParentTransactionId());
-		
+		if(toolTransaction.getTransactionStateEnum() == TransactionState.ISSUE ) {
+			woTool.setRemainingQuantity(quantity);
+		}
 		return woTool;
 	}
 
