@@ -50,7 +50,6 @@ public class GetCalendarWOsCommands implements Command {
 			if (AccountUtil.isFeatureEnabled(AccountUtil.FEATURE_SCHEDULED_WO) && AccountUtil.getCurrentOrg().getOrgId() == 75) { //Temp hack
 				Map<String, Condition> conditionMap = view.getCriteria().getConditions();
 				Set<Map.Entry<String, Condition>> conditions = conditionMap.entrySet();
-				Criteria scheduledWoCriteria = new Criteria();
 				Criteria statusCriteria = null;
 				for (Map.Entry<String, Condition> conditionEntry: conditions) {
 					Condition condition = conditionEntry.getValue();
@@ -58,16 +57,11 @@ public class GetCalendarWOsCommands implements Command {
 						statusCriteria = new Criteria();
 						statusCriteria.addAndCondition(condition);
 						statusCriteria.addOrCondition(ViewFactory.getPreOpenStatusCondition());
+						woBuilder.andCriteria(statusCriteria);
 					} else {
-						scheduledWoCriteria.addAndCondition(condition);
+						woBuilder.andCondition(condition);
 					}
 				}
-				woBuilder.andCriteria(scheduledWoCriteria);
-				if (statusCriteria != null) {
-					LOGGER.log(Level.SEVERE, "Reached special criteria");
-					woBuilder.andCriteria(statusCriteria);
-				}
-
 			} else {
 				woBuilder.andCriteria(view.getCriteria());
 			}
