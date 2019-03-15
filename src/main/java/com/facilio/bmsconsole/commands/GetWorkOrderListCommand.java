@@ -102,18 +102,18 @@ public class GetWorkOrderListCommand implements Command {
 			}
 		}
 
-		Criteria scopeCriteria = AccountUtil.getCurrentUser().scopeCriteria(moduleName);
-		if(scopeCriteria != null)
-		{
-			selectBuilder.andCriteria(scopeCriteria);
-		}
-
-		if (AccountUtil.getCurrentAccount().getUser().getUserType() != 2) {
-			Criteria permissionCriteria = AccountUtil.getCurrentUser().getRole().permissionCriteria(moduleName,"read");
-			if(permissionCriteria != null) {
-				selectBuilder.andCriteria(permissionCriteria);
-			}
-		}
+//		Criteria scopeCriteria = AccountUtil.getCurrentUser().scopeCriteria(moduleName);
+//		if(scopeCriteria != null)
+//		{
+//			selectBuilder.andCriteria(scopeCriteria);
+//		}
+//
+//		if (AccountUtil.getCurrentAccount().getUser().getUserType() != 2) {
+//			Criteria permissionCriteria = AccountUtil.getCurrentUser().getRole().permissionCriteria(moduleName,"read");
+//			if(permissionCriteria != null) {
+//				selectBuilder.andCriteria(permissionCriteria);
+//			}
+//		}
 
 		if(context.get(FacilioConstants.ContextNames.WO_DUE_STARTTIME) != null && (Long) context.get(FacilioConstants.ContextNames.WO_DUE_STARTTIME) != -1)
 		{

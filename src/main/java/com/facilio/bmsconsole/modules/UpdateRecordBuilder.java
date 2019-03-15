@@ -335,23 +335,26 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 		while (prevModule != null) {
 			GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder(builder);
 			for (FacilioField field : updateFields) {
-				if ((field.getModule() == null && prevModule.getExtendModule() != null)) {
-					continue;
-				}
+//				if ((field.getModule() == null && prevModule.getExtendModule() != null)) {
+//					continue;
+//				}
 				// TODO check this again
 				if (field.getModule() == null) {
 					continue;
 				}
-				if (((prevModule.getExtendModule() == null && field.getModule().getExtendModule() == null) || (field.getModule().equals(prevModule)) )) {
+				if (prevModule.equals(field.getModule())) {
 					f.add(field);
 				}
+//				if (((prevModule.getExtendModule() == null && field.getModule().getExtendModule() == null) || (field.getModule().equals(prevModule)) )) {
+//					f.add(field);
+//				}
 			}
 			updateBuilder.fields(f);
 			updateBuilder.table(prevModule.getTableName());
 			
 			prevModule = prevModule.getExtendModule();
 			if (!f.isEmpty()) {
-				updateCount += updateBuilder.update(moduleProps);
+				updateCount += updateBuilder.update(new HashMap<>(moduleProps));
 			}
 			f.clear();
 		}

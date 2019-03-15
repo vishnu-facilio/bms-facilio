@@ -22,6 +22,8 @@ import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
+import com.facilio.chain.FacilioContext;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.JoinBuilderIfc;
@@ -372,6 +374,21 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 			
 			if (!fetchDeleted) {
 				whereCondition.andCondition(CriteriaAPI.getCondition("SYS_DELETED", "deleted", String.valueOf(false), BooleanOperators.IS));
+			}
+		}
+		
+		if (module.getName().equals(FacilioConstants.ContextNames.WORK_ORDER)) {
+			Criteria scopeCriteria = AccountUtil.getCurrentUser().scopeCriteria(module.getName());
+			if(scopeCriteria != null)
+			{
+				builder.andCriteria(scopeCriteria);
+			}
+	
+			if (AccountUtil.getCurrentAccount().getUser().getUserType() != 2) {
+				Criteria permissionCriteria = AccountUtil.getCurrentUser().getRole().permissionCriteria(module.getName(),"read");
+				if(permissionCriteria != null) {
+					builder.andCriteria(permissionCriteria);
+				}
 			}
 		}
 		
