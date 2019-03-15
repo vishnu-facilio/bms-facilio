@@ -6,7 +6,7 @@ package com.facilio.agent;
  */
 public class AgentKeys
 {
-    public static final String ID = "Id";
+    public static final String ID = "id";
     public static final String DEVICE_POINTS="devicepoints";
     public static final String ACK = "ack";
     public static final String NAME = "name";
