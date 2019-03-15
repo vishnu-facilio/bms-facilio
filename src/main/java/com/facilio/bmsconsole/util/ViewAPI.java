@@ -539,16 +539,6 @@ public class ViewAPI {
 		} else {
 			viewId = view.getId();
 		}
-		
-		for(int i=0;i<columns.size();i++) {
-			if(columns.get(i).getName().equals("tenant")){
-				if(!AccountUtil.isFeatureEnabled(AccountUtil.FEATURE_TENANTS)) {
-					columns.remove(i);
-				}
-			break;
-			}
-		}
-		
 		if (columns != null && !columns.isEmpty()) {
 			customizeViewColumns(viewId, columns);
 			List<SortField> sortFields = view.getSortFields();
