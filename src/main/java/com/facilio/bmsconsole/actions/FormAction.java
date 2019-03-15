@@ -8,7 +8,9 @@ import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
+import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.forms.FacilioForm;
+import com.facilio.bmsconsole.forms.FacilioForm.FormType;
 import com.facilio.bmsconsole.forms.FormFactory;
 import com.facilio.bmsconsole.forms.FormField;
 import com.facilio.bmsconsole.modules.FacilioField;
@@ -16,6 +18,7 @@ import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.util.FormsAPI;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.fw.BeanFactory;
 
 public class FormAction extends FacilioAction {
@@ -150,6 +153,16 @@ public class FormAction extends FacilioAction {
 		Chain c = FacilioChainFactory.editFormChain();
 		c.execute(context);
 		
+		return SUCCESS;
+	}
+	
+	public String getServicePortalForms() throws Exception{
+		
+		Context context=new FacilioContext();
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, "workorder");
+		context.put(FacilioConstants.ContextNames.FORM_TYPE, FormType.PORTAL);
+		ReadOnlyChainFactory.getFormList().execute(context);
+		setResult("forms",context.get(ContextNames.FORMS));
 		return SUCCESS;
 	}
 

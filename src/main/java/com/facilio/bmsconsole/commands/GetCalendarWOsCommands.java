@@ -2,7 +2,15 @@ package com.facilio.bmsconsole.commands;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsole.criteria.Condition;
+import com.facilio.bmsconsole.criteria.Criteria;
+import com.facilio.bmsconsole.view.ViewFactory;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
@@ -22,6 +30,7 @@ import com.facilio.fw.BeanFactory;
 
 public class GetCalendarWOsCommands implements Command {
 
+	private static final Logger LOGGER = Logger.getLogger(GetCalendarWOsCommands.class.getName());
 	@Override
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
@@ -38,7 +47,30 @@ public class GetCalendarWOsCommands implements Command {
 																
 		FacilioView view = (FacilioView) context.get(FacilioConstants.ContextNames.CUSTOM_VIEW);
 		if (view.getCriteria() != null && !view.getCriteria().isEmpty()) {
-			woBuilder.andCriteria(view.getCriteria());
+			if (AccountUtil.isFeatureEnabled(AccountUtil.FEATURE_SCHEDULED_WO) && AccountUtil.getCurrentOrg().getOrgId() == 75) { //Temp hack
+				Map<String, Condition> conditionMap = view.getCriteria().getConditions();
+				Set<Map.Entry<String, Condition>> conditions = conditionMap.entrySet();
+				Criteria scheduledWoCriteria = new Criteria();
+				Criteria statusCriteria = null;
+				for (Map.Entry<String, Condition> conditionEntry: conditions) {
+					Condition condition = conditionEntry.getValue();
+					if (condition.getColumnName().equals("Tickets.STATUS_ID")) {
+						statusCriteria = new Criteria();
+						statusCriteria.addAndCondition(condition);
+						statusCriteria.addOrCondition(ViewFactory.getPreOpenStatusCondition());
+					} else {
+						scheduledWoCriteria.addAndCondition(condition);
+					}
+				}
+				woBuilder.andCriteria(scheduledWoCriteria);
+				if (statusCriteria != null) {
+					LOGGER.log(Level.SEVERE, "Reached special criteria");
+					woBuilder.andCriteria(statusCriteria);
+				}
+
+			} else {
+				woBuilder.andCriteria(view.getCriteria());
+			}
 		}
 		
 		boolean isCount = (boolean) context.get(FacilioConstants.ContextNames.COUNT);
@@ -61,7 +93,8 @@ public class GetCalendarWOsCommands implements Command {
 					.beanClass(WorkOrderContext.class);
 			context.put(FacilioConstants.ContextNames.WORK_ORDER_LIST, woBuilder.get());
 		}
-		
+
+		LOGGER.log(Level.SEVERE, "gen sql : " + woBuilder.toString());
 		
 		return false;
 	}

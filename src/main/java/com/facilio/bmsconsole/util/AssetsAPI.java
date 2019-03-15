@@ -376,6 +376,23 @@ public class AssetsAPI {
 		return null;
 	}
 	
+	public static AssetCategoryContext getCategoryByAssetModule(long moduleId) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(FacilioConstants.ContextNames.ASSET_CATEGORY));
+		SelectRecordsBuilder<AssetCategoryContext> selectBuilder = new SelectRecordsBuilder<AssetCategoryContext>()
+																		.select(modBean.getAllFields(FacilioConstants.ContextNames.ASSET_CATEGORY))
+																		.moduleName(FacilioConstants.ContextNames.ASSET_CATEGORY)
+																		.beanClass(AssetCategoryContext.class)
+																		.andCondition(CriteriaAPI.getCondition(fieldMap.get("assetModuleID"), String.valueOf(moduleId) ,NumberOperators.EQUALS));
+		
+		List<AssetCategoryContext> categories = selectBuilder.get();
+		
+		if(categories != null && !categories.isEmpty()) {
+			return categories.get(0);
+		}
+		return null;
+	}
+	
 	public static List<AssetCategoryContext> getCategoryList() throws Exception {
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");

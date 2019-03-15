@@ -603,4 +603,11 @@ public class ReadOnlyChainFactory {
 		return c;
 	}
 	
+	public static Chain getFormList()
+	{
+		Chain c=getDefaultChain();
+		c.addCommand(new GetFormListCommand());
+		return c;
+	}
+	
 }

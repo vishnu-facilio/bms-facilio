@@ -68,6 +68,8 @@
 			method="v2addAttachment">
 		</action>       
 		
+		<action name="getFormList" class="com.facilio.bmsconsole.actions.FormAction" method="getServicePortalForms"></action>
+		
 	</package>
 
 	<!-- new service portal api will be open -->

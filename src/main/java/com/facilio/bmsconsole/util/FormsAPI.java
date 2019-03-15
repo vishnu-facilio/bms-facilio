@@ -277,4 +277,21 @@ public class FormsAPI {
 		}
 		return formFields;
 	}
+	public static List<FacilioForm> getFormList(String moduleName,FormType formType) throws Exception{
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		long moduleId=modBean.getModule(moduleName).getModuleId();
+		
+	
+		GenericSelectRecordBuilder formListBuilder=new GenericSelectRecordBuilder()
+				.select(FieldFactory.getFormFields())
+				.table(ModuleFactory.getFormModule().getTableName())
+				.andCustomWhere("MODULEID = ?", moduleId)
+				.andCustomWhere("FORM_TYPE = ?", formType.getIntVal())
+				.andCustomWhere("ORGID = ?",AccountUtil.getCurrentOrg().getOrgId());
+		
+		return FieldUtil.getAsBeanListFromMapList(formListBuilder.get(), FacilioForm.class);
+				
+			
+	}
 }
