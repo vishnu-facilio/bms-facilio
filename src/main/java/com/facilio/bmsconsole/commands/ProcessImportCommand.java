@@ -4,6 +4,7 @@ import java.io.InputStream;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -12,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
@@ -53,11 +55,14 @@ import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.LookupField;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
+import com.facilio.bmsconsole.modules.FacilioModule.ModuleType;
 import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.DateTimeUtil;
 import com.facilio.bmsconsole.util.ImportAPI;
 import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.bmsconsole.util.SpaceAPI;
+import com.facilio.chain.FacilioChain;
+import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fs.FileStore;
 import com.facilio.fs.FileStoreFactory;
@@ -84,13 +89,11 @@ public class ProcessImportCommand implements Command {
 		List<ReadingContext> readingsList = new ArrayList<ReadingContext>();
 		InputStream ins = fs.readFile(importProcessContext.getFileId());
 		ArrayList<String> modulesPlusFields = new ArrayList(fieldMapping.keySet());
-		List<String> moduleNames = new ArrayList<>(groupedFields.keySet());
 		Map<String, Long> lookupHolder;
+		String module = importProcessContext.getModule().getName().toString();
 		
 		JSONObject importMeta = importProcessContext.getImportJobMetaJson();
 		JSONObject dateFormats = (JSONObject) importMeta.get(ImportAPI.ImportProcessConstants.DATE_FORMATS);
-//		importProcessContext.setStatus(ImportProcessContext.ImportStatus.IN_PROGRESS.getValue());
-//		ImportAPI.updateImportProcess(importProcessContext);
 
 		HashMap<Integer, String> headerIndex = new HashMap<Integer, String>();
 
@@ -177,8 +180,6 @@ public class ProcessImportCommand implements Command {
 
 				LOGGER.severe("row -- " + row_no + " colVal --- " + colVal);
 
-				for (String module : moduleNames) {
-					List<String> fields = new ArrayList(groupedFields.get(module));
 					HashMap<String, Object> props = new LinkedHashMap<String, Object>();
 
 					if (importProcessContext.getModule().getName().equals(FacilioConstants.ContextNames.ASSET) || (importProcessContext.getModule().getExtendModule() != null && importProcessContext.getModule().getExtendModule().getName().equals(FacilioConstants.ContextNames.ASSET))) {
@@ -276,7 +277,6 @@ public class ProcessImportCommand implements Command {
 						String key = modulesPlusFields.get(fieldIndex);
 						String[] fieldAndModule = key.split("__");
 						String field = fieldAndModule[(fieldAndModule.length) - 1];
-						if (fields.contains(field)) {
 							Object cellValue = colVal.get(fieldMapping.get(key));
 							boolean isfilledByLookup = false;
 
@@ -370,17 +370,12 @@ public class ProcessImportCommand implements Command {
 									props.put(field, cellValue);
 								}
 							}
-						} else {
-							continue;
-						}
 					}
 
 					LOGGER.severe("props -- " + props);
 					ReadingContext reading = FieldUtil.getAsBeanFromMap(props, ReadingContext.class);
 					readingsList.add(reading);
-					groupedContext.put(module, reading);
-
-				}
+					groupedContext.put(module, reading);	
 			}
 		}
 		c.put(ImportAPI.ImportProcessConstants.IMPORT_PROCESS_CONTEXT, importProcessContext);
@@ -434,9 +429,35 @@ public class ProcessImportCommand implements Command {
 				insertProps.put("orgId", AccountUtil.getCurrentOrg().getId());
 				insertProps.put("moduleId", lookupField.getLookupModule().getModuleId());
 
+				
+				
 				if (lookupField.getLookupModule().getName().equals(FacilioConstants.ContextNames.ASSET_CATEGORY)) {
+					FacilioModule module = new FacilioModule();
+					String name = value.toString();
+					
+					ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+					FacilioModule assetModule = modBean.getModule("asset");
+					
+					module.setName(name.toLowerCase().replaceAll("[^a-zA-Z0-9]+",""));
+					module.setDisplayName(name);
+					module.setTableName("AssetCustomModuleData");
+					module.setType(ModuleType.BASE_ENTITY);
+					module.setExtendModule(assetModule);
+					
+					FacilioContext context = new FacilioContext();
+					context.put(FacilioConstants.ContextNames.MODULE_LIST, Collections.singletonList(module));
+					
+					Chain addCategory = FacilioChain.getTransactionChain();
+					TransactionChainFactory.commonAddModuleChain(addCategory);
+					
+					addCategory.execute(context);
+					
+					FacilioModule AssetModuleId = (FacilioModule) ((List<FacilioModule>) context.get(FacilioConstants.ContextNames.MODULE_LIST)).get(0);
 					insertProps.put("type", AssetCategoryContext.AssetCategoryType.MISC.getIntVal());
+					insertProps.put("assetModuleID", AssetModuleId.getModuleId());
 				}
+				
+				
 				GenericInsertRecordBuilder insertRecordBuilder = new GenericInsertRecordBuilder()
 						.table(lookupField.getLookupModule().getTableName()).fields(fieldsList);
 
@@ -518,7 +539,6 @@ public class ProcessImportCommand implements Command {
 	}
 
 	public void fieldMapParsing(HashMap<String, String> fieldMapping) throws Exception {
-
 		groupedFields = ArrayListMultimap.create();
 		new HashMap<>();
 		List<String> fieldMappingKeys = new ArrayList<>(fieldMapping.keySet());
@@ -534,6 +554,7 @@ public class ProcessImportCommand implements Command {
 			} else {
 				moduleName = String.join("_", moduleNameList);
 			}
+			
 			groupedFields.put(moduleName, fieldName);
 		}
 		if (groupedFields.containsKey("sys")) {
