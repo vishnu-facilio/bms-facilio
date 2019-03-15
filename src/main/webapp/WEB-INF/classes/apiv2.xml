@@ -1523,6 +1523,11 @@
 			<param name="moduleName">asset</param>
 			<param name="permission">READ</param>
 			</action>
+			<action name="showItemTransactionListForReturn"
+			class="com.facilio.bmsconsole.actions.ItemTransactionsAction" method="showItemTransactionListForReturn">
+			<param name="moduleName">asset</param>
+			<param name="permission">READ</param>
+			</action>
 	</package>
 	
 	<package name="purchasedToolApi" namespace="/api/v2/purchasedTool"
@@ -1587,6 +1592,11 @@
 		extends="v2Api">
 		<action name="all"
 			class="com.facilio.bmsconsole.actions.ToolTransactionsAction" method="toolsTransactionsList">
+			<param name="moduleName">asset</param>
+			<param name="permission">READ</param>
+			</action>
+			<action name="showToolTransactionListForReturn"
+			class="com.facilio.bmsconsole.actions.ToolTransactionsAction" method="showToolTransactionListForReturn">
 			<param name="moduleName">asset</param>
 			<param name="permission">READ</param>
 			</action>

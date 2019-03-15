@@ -840,6 +840,8 @@ public class FacilioConstants {
 		public static final String TENANT_UTILITY_IDS = "utilityIds";
 		public static final String TENANT_CONTEXT = "tenantContext";
 
+		public static final String SHOW_TOOLS_FOR_RETURN = "showToolsForReturn";
+		public static final String SHOW_ITEMS_FOR_RETURN = "showItemsForReturn";
 
 
 		public static final String ITEM_VENDORS = "itemVendors";

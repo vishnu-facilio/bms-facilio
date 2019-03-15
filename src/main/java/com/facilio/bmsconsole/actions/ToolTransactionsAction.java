@@ -88,6 +88,9 @@ public class ToolTransactionsAction extends FacilioAction{
 			context.put(FacilioConstants.ContextNames.PAGINATION, pagination);
 		}
 
+		if(getShowToolsForReturn()) {
+			context.put(FacilioConstants.ContextNames.SHOW_TOOLS_FOR_RETURN, showToolsForReturn);
+		}
 		Chain itemsListChain = ReadOnlyChainFactory.getToolTransactionsList();
 		itemsListChain.execute(context);
 		if (getCount()) {
@@ -102,6 +105,11 @@ public class ToolTransactionsAction extends FacilioAction{
 			setResult(FacilioConstants.ContextNames.TOOL_TRANSACTIONS, toolTransaction);
 		}
 		return SUCCESS;
+	}
+	
+	public String showToolTransactionListForReturn() throws Exception {		
+		toolsTransactionsList();
+		return SUCCESS;		
 	}
 	
 	private boolean includeParentFilter;
@@ -140,5 +148,16 @@ public class ToolTransactionsAction extends FacilioAction{
 	}
 	public void setPurchasedTools(List<Long> purchasedItems) {
 		this.purchasedTools = purchasedItems;
+	}
+	
+	private Boolean showToolsForReturn;
+	public Boolean getShowToolsForReturn() {
+		if (showToolsForReturn == null) {
+			return false;
+		}
+		return showToolsForReturn;
+	}
+	public void setShowToolsForReturn(Boolean showToolsForReturn) {
+		this.showToolsForReturn = showToolsForReturn;
 	}
 }

@@ -100,7 +100,9 @@ public class ItemTransactionsAction extends FacilioAction{
 			}
 			context.put(FacilioConstants.ContextNames.PAGINATION, pagination);
 		}
-
+		if(getShowItemsForReturn()) {
+			context.put(FacilioConstants.ContextNames.SHOW_ITEMS_FOR_RETURN, showItemsForReturn);
+		}
 		Chain itemsListChain = ReadOnlyChainFactory.getItemTransactionsList();
 		itemsListChain.execute(context);
 		if (getCount()) {
@@ -116,7 +118,10 @@ public class ItemTransactionsAction extends FacilioAction{
 		}
 		return SUCCESS;
 	}
-	
+	public String showItemTransactionListForReturn() throws Exception {		
+		itemsList();
+		return SUCCESS;		
+	}
 	private boolean includeParentFilter;
 
 	public boolean getIncludeParentFilter() {
@@ -153,5 +158,16 @@ public class ItemTransactionsAction extends FacilioAction{
 	}
 	public void setPurchasedItems(List<Long> purchasedItems) {
 		this.purchasedItems = purchasedItems;
+	}
+	
+	private Boolean showItemsForReturn;
+	public Boolean getShowItemsForReturn() {
+		if (showItemsForReturn == null) {
+			return false;
+		}
+		return showItemsForReturn;
+	}
+	public void setShowItemsForReturn(Boolean showToolsForReturn) {
+		this.showItemsForReturn = showToolsForReturn;
 	}
 }
