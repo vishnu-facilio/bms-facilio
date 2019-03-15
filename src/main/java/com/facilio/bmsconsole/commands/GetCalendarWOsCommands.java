@@ -2,7 +2,13 @@ package com.facilio.bmsconsole.commands;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsole.criteria.Condition;
+import com.facilio.bmsconsole.criteria.Criteria;
+import com.facilio.bmsconsole.view.ViewFactory;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
@@ -39,6 +45,20 @@ public class GetCalendarWOsCommands implements Command {
 		FacilioView view = (FacilioView) context.get(FacilioConstants.ContextNames.CUSTOM_VIEW);
 		if (view.getCriteria() != null && !view.getCriteria().isEmpty()) {
 			woBuilder.andCriteria(view.getCriteria());
+			if (AccountUtil.isFeatureEnabled(AccountUtil.FEATURE_SCHEDULED_WO)) { //Temp hack
+				Map<String, Condition> conditionMap = view.getCriteria().getConditions();
+				Set<Map.Entry<String, Condition>> conditions = conditionMap.entrySet();
+				Criteria scheduledWoCriteria = new Criteria();
+				for (Map.Entry<String, Condition> conditionEntry: conditions) {
+					Condition condition = conditionEntry.getValue();
+					if (condition.getColumnName().equals("Tickets.STATUS_ID")) {
+						scheduledWoCriteria.addAndCondition(ViewFactory.getPreOpenStatusCondition());
+					} else {
+						scheduledWoCriteria.addAndCondition(condition);
+					}
+				}
+				woBuilder.orCriteria(scheduledWoCriteria);
+			}
 		}
 		
 		boolean isCount = (boolean) context.get(FacilioConstants.ContextNames.COUNT);
