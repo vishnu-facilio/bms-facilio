@@ -626,41 +626,6 @@ public class ViewFactory {
 		return criteria;
 	}
 
-	public static Criteria getPreOpenStatusCriteria() {
-		FacilioField statusTypeField = new FacilioField();
-		statusTypeField.setName("typeCode");
-		statusTypeField.setColumnName("STATUS_TYPE");
-		statusTypeField.setDataType(FieldType.NUMBER);
-		statusTypeField.setModule(ModuleFactory.getTicketStatusModule());
-
-		Condition statusOpen = new Condition();
-		statusOpen.setField(statusTypeField);
-		statusOpen.setOperator(NumberOperators.EQUALS);
-		statusOpen.setValue(String.valueOf(TicketStatusContext.StatusType.PRE_OPEN.getIntVal()));
-
-		Criteria criteria = new Criteria();
-		criteria.addAndCondition(statusOpen);
-
-		return criteria;
-	}
-
-	public static Condition getPreOpenStatusCondition() {
-		FacilioModule module = ModuleFactory.getTicketsModule();
-		LookupField statusField = new LookupField();
-		statusField.setName("status");
-		statusField.setColumnName("STATUS_ID");
-		statusField.setDataType(FieldType.LOOKUP);
-		statusField.setModule(module);
-		statusField.setLookupModule(ModuleFactory.getTicketStatusModule());
-
-		Condition open = new Condition();
-		open.setField(statusField);
-		open.setOperator(LookupOperator.LOOKUP);
-		open.setCriteriaValue(getPreOpenStatusCriteria());
-
-		return open;
-	}
-
 	public static Condition getOpenStatusCondition() {
 		FacilioModule module = ModuleFactory.getTicketsModule();
 		LookupField statusField = new LookupField();
