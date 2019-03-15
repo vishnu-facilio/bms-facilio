@@ -124,16 +124,21 @@ public class UpdateAlarmCommand implements Command {
 			
 			if(EventType.UPDATED_ALARM_SEVERITY.equals(context.get(FacilioConstants.ContextNames.EVENT_TYPE)) && 
 					(AccountUtil.getCurrentOrg().getOrgId() != 88 || alarm.getSeverity().getId() == AlarmAPI.getAlarmSeverity(FacilioConstants.Alarm.CRITICAL_SEVERITY).getId())) {
-				WmsEvent event = new WmsEvent();
-				event.setNamespace("alarm");
-				event.setAction("newAlarm");
-				event.setEventType(WmsEvent.WmsEventType.RECORD_UPDATE);
-				event.addData("record", record);
-				event.addData("sound", true);
-				
-				List<User> users = AccountUtil.getOrgBean().getActiveOrgUsers(AccountUtil.getCurrentOrg().getId());
-				List<Long> recipients = users.stream().map(user -> user.getId()).collect(Collectors.toList());
-				WmsApi.sendEvent(recipients, event);
+				try {
+					WmsEvent event = new WmsEvent();
+					event.setNamespace("alarm");
+					event.setAction("newAlarm");
+					event.setEventType(WmsEvent.WmsEventType.RECORD_UPDATE);
+					event.addData("record", record);
+					event.addData("sound", true);
+					
+					List<User> users = AccountUtil.getOrgBean().getActiveOrgUsers(AccountUtil.getCurrentOrg().getId());
+					List<Long> recipients = users.stream().map(user -> user.getId()).collect(Collectors.toList());
+					WmsApi.sendEvent(recipients, event);
+				}
+				catch (Exception e) {
+					LOGGER.info("Exception occcurred while pushing Web notification during alarm updation ", e);
+				}
 			}
 		}
 		return false;
