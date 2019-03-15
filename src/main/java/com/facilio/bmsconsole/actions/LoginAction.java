@@ -337,6 +337,13 @@ public class LoginAction extends FacilioAction {
 //		data.put("inventoryVendors", InventoryApi.getInventoryVendorList());
 //		data.put("inventoryCategory", InventoryApi.getInventoryCategoryList());
 		
+		data.put("itemTypesCategory", InventoryApi.getItemTypesCategoryList());
+		data.put("toolTypesCategory", InventoryApi.getToolTypesCategoryList());
+		data.put("itemTypesStatus", InventoryApi.getItemTypesStatusList());
+		data.put("toolTypesStatus", InventoryApi.getToolTypesStatusList());
+		data.put("itemStatus", InventoryApi.getItemStatusList());
+		data.put("toolStatus", InventoryApi.getToolStatusList());
+		 
 		data.put("serviceList", ReportsUtil.getPurposeMapping());
 		data.put("buildingList", ReportsUtil.getBuildingMap());
 		data.put("energyMeters", DeviceAPI.getAllMainEnergyMeters());
@@ -410,6 +417,13 @@ public class LoginAction extends FacilioAction {
 //		data.put("inventoryVendors", InventoryApi.getInventoryVendorList());
 //		data.put("inventoryCategory", InventoryApi.getInventoryCategoryList());
 
+		data.put("itemTypesCategory", InventoryApi.getItemTypesCategoryList());
+		data.put("toolTypesCategory", InventoryApi.getToolTypesCategoryList());
+		data.put("itemTypesStatus", InventoryApi.getItemTypesStatusList());
+		data.put("toolTypesStatus", InventoryApi.getToolTypesStatusList());
+		data.put("itemStatus", InventoryApi.getItemStatusList());
+		data.put("toolStatus", InventoryApi.getToolStatusList());
+		 
 		data.put("serviceList", ReportsUtil.getPurposeMapping());
 		data.put("buildingList", ReportsUtil.getBuildingMap());
 		data.put("ticketStatus", TicketAPI.getAllStatus(false));
