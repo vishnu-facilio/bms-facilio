@@ -2174,6 +2174,22 @@ public class FieldFactory {
 		return fields;
 	}
 
+	public static List<FacilioField> getWorkOrderTemplateFields() {
+		List<FacilioField> woTemplateFields = getWOrderTemplateFields();
+		try {
+			if(AccountUtil.isFeatureEnabled(AccountUtil.FEATURE_TENANTS)) {
+				LookupField tenantField = (LookupField) getField("tenant", "TENANT_ID",ModuleFactory.getWorkOrderTemplateModule(), FieldType.LOOKUP);
+				tenantField.setLookupModule(ModuleFactory.getTenantsModule());
+				woTemplateFields.add(tenantField);
+			}
+		} 
+		catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return woTemplateFields;
+	}
+
 	public static List<FacilioField> getPreventiveMaintenanceFields() {
 		FacilioModule module = ModuleFactory.getPreventiveMaintenancetModule();
 
@@ -4427,7 +4443,7 @@ public class FieldFactory {
 		return fields;
 	}
 
-	public static List<FacilioField> getWorkOrderTemplateFields() {
+	public static List<FacilioField> getWOrderTemplateFields() {
 		FacilioModule module = ModuleFactory.getWorkOrderTemplateModule();
 		List<FacilioField> fields = new ArrayList<>();
 
@@ -4446,10 +4462,6 @@ public class FieldFactory {
 		LookupField categoryField = (LookupField) getField("categoryId", "CATEGORY_ID", module, FieldType.LOOKUP);
 		categoryField.setLookupModule(ModuleFactory.getTicketCategoryModule());
 		fields.add(categoryField);
-
-		LookupField tenantField = (LookupField) getField("tenant", "TENANT_ID", module, FieldType.LOOKUP);
-		tenantField.setLookupModule(ModuleFactory.getTenantsModule());
-		fields.add(tenantField);
 
 		LookupField typeField = (LookupField) getField("typeId", "TYPE_ID", module, FieldType.LOOKUP);
 		typeField.setLookupModule(ModuleFactory.getTicketTypeModule());
