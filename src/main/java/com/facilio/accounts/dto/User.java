@@ -340,7 +340,7 @@ public class User implements Serializable {
 
 			Condition multiResourceCondition = new Condition();
 			multiResourceCondition.setColumnName("PM_Jobs.RESOURCE_ID");
-			multiResourceCondition.setColumnName("resourceId");
+			multiResourceCondition.setFieldName("resourceId");
 			multiResourceCondition.setOperator(BuildingOperator.BUILDING_IS);
 			multiResourceCondition.setValue(StringUtils.join(accessibleSpace, ","));
 
