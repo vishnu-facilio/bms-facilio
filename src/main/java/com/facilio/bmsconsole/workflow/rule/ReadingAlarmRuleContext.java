@@ -13,11 +13,9 @@ public class ReadingAlarmRuleContext extends WorkflowRuleContext {
 	 */
 	private static final long serialVersionUID = 1L;
 	long readingRuleGroupId = -1l;
-
 	public long getReadingRuleGroupId() {
 		return readingRuleGroupId;
 	}
-
 	public void setReadingRuleGroupId(long readingRuleGroupId) {
 		this.readingRuleGroupId = readingRuleGroupId;
 	}
