@@ -21,17 +21,11 @@ public class UpdateEventCommand implements Command {
 	public boolean execute(Context context) throws Exception {
 		
 		EventContext event = (EventContext) context.get(EventConstants.EventContextNames.EVENT);
-		if(AccountUtil.getCurrentOrg().getId() == 134l) {
-			LOGGER.error("10.event -- ID "+event.getId()+"--- "+event.getMessageKey() +" --- "+event.getInternalState() +" --- "+event.getSource()+" -- "+event.getAlarmId());
-		}
 		event.setInternalState(EventInternalState.COMPLETED);
 		EventAPI.updateEvent(event, AccountUtil.getCurrentOrg().getId());
 		
 		if (event.getAlarmId() != -1) {
 			FacilioChain.addPostTransactionListObject(FacilioConstants.ContextNames.ALARM_ID, event.getAlarmId());
-		}
-		if(AccountUtil.getCurrentOrg().getId() == 134l) {
-			LOGGER.error("11.event -- ID "+event.getId()+"--- "+event.getMessageKey() +" --- "+event.getInternalState() +" --- "+event.getSource()+" -- "+event.getAlarmId());
 		}
 		return false;
 	}
