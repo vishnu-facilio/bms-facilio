@@ -581,8 +581,8 @@ public class ReadingRuleContext extends WorkflowRuleContext implements Cloneable
 			if (currentMetric == null) {
 				return false;
 			}
-			
-			switch (thresholdType) {
+			if(thresholdType != null) {
+				switch (thresholdType) {
 				case FLAPPING:
 					boolean singleFlap = false;
 					Map<String, ReadingDataMeta> metaMap =(Map<String, ReadingDataMeta>)context.get(FacilioConstants.ContextNames.PREVIOUS_READING_DATA_META);
@@ -602,6 +602,7 @@ public class ReadingRuleContext extends WorkflowRuleContext implements Cloneable
 					return singleFlap && isFlappedNTimes(reading);
 				default:
 					break;
+				}
 			}
 		}
 		else if(this.getTriggerExecutePeriod() > 0) {
