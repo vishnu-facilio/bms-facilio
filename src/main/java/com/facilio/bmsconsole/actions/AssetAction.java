@@ -88,6 +88,7 @@ public class AssetAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.RECORD, asset);
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(asset.getId()));
 		context.put(FacilioConstants.ContextNames.WITH_CHANGE_SET, true);
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
 		
 		Chain updateAssetChain = TransactionChainFactory.getUpdateAssetChain();
 		updateAssetChain.execute(context);

@@ -7,14 +7,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.ViewField;
-import com.facilio.bmsconsole.forms.FormField;
-import com.facilio.bmsconsole.forms.FormField.Required;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.ModuleFactory;
-import com.facilio.bmsconsole.modules.FacilioField.FieldDisplayType;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 
 public class ColumnFactory {
@@ -166,7 +162,7 @@ public class ColumnFactory {
 	private static List<ViewField> getDefaultAssetsColumns() {
 		List<ViewField> columns = new ArrayList<ViewField>();
 		
-		columns.add(new ViewField("name", "Asset Name"));
+		columns.add(new ViewField("name", "Name"));
 		columns.add(new ViewField("type", "Type"));
 		columns.add(new ViewField("category", "Category"));
 		columns.add(new ViewField("department", "Department"));

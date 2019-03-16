@@ -373,6 +373,7 @@ public class ViewFactory {
 		asset.add("active");
 		asset.add("retired");
 		
+		groupDetails = new HashMap<>();
 		groupDetails.put("name", "assetviews");
 		groupDetails.put("displayName", "Asset");
 		groupDetails.put("views", asset);
