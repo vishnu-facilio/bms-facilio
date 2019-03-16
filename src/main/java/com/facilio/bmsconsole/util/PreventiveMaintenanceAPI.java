@@ -781,11 +781,10 @@ public class PreventiveMaintenanceAPI {
 	}
 
 
-	public static Map<Long, List<Map<String, Object>>> getPMJobsFromPMIds(List<Long> pmIds, long startTime, long endTime) throws Exception {
+	public static Map<Long, List<Map<String, Object>>> getPMJobs(long startTime, long endTime, Criteria filterCriteria) throws Exception {
 		FacilioModule pmJobsModule = ModuleFactory.getPMJobsModule();
 		List<FacilioField> fields = FieldFactory.getPMJobFields();
 		Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(fields);
-		FacilioField pmIdField = fieldsMap.get("pmId");
 		FacilioField nextExecutionField = fieldsMap.get("nextExecutionTime");
 
 		FacilioModule pmRPModule = ModuleFactory.getPMResourcePlannerModule();
@@ -797,15 +796,22 @@ public class PreventiveMaintenanceAPI {
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 														.select(fields)
 														.table(pmJobsModule.getTableName())
+														.innerJoin("Preventive_Maintenance")
+														.on("Preventive_Maintenance.ID=PM_Jobs.PM_ID")
+														.innerJoin("Workorder_Template")
+														.on("Workorder_Template.ID=Preventive_Maintenance.TEMPLATE_ID")
 														.leftJoin(pmRPModule.getTableName())
 														.on("PM_Resource_Planner.PM_ID=PM_Jobs.PM_ID AND PM_Resource_Planner.RESOURCE_ID=PM_Jobs.RESOURCE_ID")
-														.andCondition(CriteriaAPI.getCondition(pmIdField,pmIds, NumberOperators.EQUALS))
 														.andCondition(CriteriaAPI.getCondition(nextExecutionField, String.valueOf(startTime), NumberOperators.GREATER_THAN_EQUAL))
 														.andCondition(CriteriaAPI.getCondition(nextExecutionField, String.valueOf(endTime), NumberOperators.LESS_THAN))
+                										.andCondition(CriteriaAPI.getCurrentOrgIdCondition(pmJobsModule))
 														.orderBy("nextExecutionTime")
 														;
-		
-		
+
+		if (filterCriteria != null) {
+			selectBuilder.andCriteria(filterCriteria);
+		}
+
 		List<Map<String, Object>> jobProps = selectBuilder.get();
 		Map<Long, List<Map<String, Object>>> pmJobs = new HashMap<>();
 		if(jobProps != null && !jobProps.isEmpty()) {
@@ -944,7 +950,7 @@ public class PreventiveMaintenanceAPI {
 	}
 	
 	private static PreventiveMaintenance getPM(long id, boolean onlyActive, boolean fetchChildren) throws Exception {
-		FacilioModule module = ModuleFactory.getPreventiveMaintenancetModule();
+		FacilioModule module = ModuleFactory.getPreventiveMaintenanceModule();
 		List<FacilioField> fields = FieldFactory.getPreventiveMaintenanceFields();
 		Map<String, FacilioField> pmFieldsMap = FieldFactory.getAsMap(fields);
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
@@ -980,7 +986,7 @@ public class PreventiveMaintenanceAPI {
 	}
 
 	public static List<PreventiveMaintenance> getActivePMs(List<Long> ids, Criteria filterCriteria, List<FacilioField> requiredfields) throws Exception {
-		ModuleFactory.getPreventiveMaintenancetModule();
+		ModuleFactory.getPreventiveMaintenanceModule();
 		List<FacilioField> fields = FieldFactory.getPreventiveMaintenanceFields();
 		Map<String, FacilioField> pmFieldsMap = FieldFactory.getAsMap(fields);
 		
@@ -999,7 +1005,7 @@ public class PreventiveMaintenanceAPI {
 
 	public static List<PreventiveMaintenance> getAllPMs(Long orgid,boolean onlyActive) throws Exception {
 		
-		FacilioModule module = ModuleFactory.getPreventiveMaintenancetModule();
+		FacilioModule module = ModuleFactory.getPreventiveMaintenanceModule();
 		List<FacilioField> fields = FieldFactory.getPreventiveMaintenanceFields();
 		Map<String, FacilioField> pmFieldsMap = FieldFactory.getAsMap(fields);
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
@@ -1032,7 +1038,7 @@ public class PreventiveMaintenanceAPI {
 
 
 	public static List<PreventiveMaintenance> getPMs(Collection<Long> ids, Criteria criteria, String searchQuery, JSONObject pagination, List<FacilioField> fields, Boolean...fetchDependencies) throws Exception {
-		FacilioModule module = ModuleFactory.getPreventiveMaintenancetModule();
+		FacilioModule module = ModuleFactory.getPreventiveMaintenanceModule();
 		if (fields == null || fields.isEmpty()) {
 			fields = FieldFactory.getPreventiveMaintenanceFields();
 		} else {
@@ -1207,7 +1213,7 @@ public class PreventiveMaintenanceAPI {
 		PreventiveMaintenance updatePm = new PreventiveMaintenance();
 		updatePm.setStatus(false);
 		
-		FacilioModule module = ModuleFactory.getPreventiveMaintenancetModule();
+		FacilioModule module = ModuleFactory.getPreventiveMaintenanceModule();
 		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
 														.fields(FieldFactory.getPreventiveMaintenanceFields())
 														.table(module.getTableName())
@@ -1727,7 +1733,7 @@ public class PreventiveMaintenanceAPI {
 	}
 	
 	public static long getPMCount(List<FacilioField> conditionFields, List<Condition> conditions) throws Exception {
-		FacilioModule module = ModuleFactory.getPreventiveMaintenancetModule();
+		FacilioModule module = ModuleFactory.getPreventiveMaintenanceModule();
 		FacilioModule woTemplateModule = ModuleFactory.getWorkOrderTemplateModule();
 		FacilioField countField = FieldFactory.getField("count", "COUNT(*)", FieldType.NUMBER);
 		List<FacilioField> fields = new ArrayList<>();
@@ -2017,7 +2023,7 @@ public class PreventiveMaintenanceAPI {
 		if (ids == null || ids.isEmpty()) {
 			return;
 		}
-        FacilioModule module = ModuleFactory.getPreventiveMaintenancetModule();
+        FacilioModule module = ModuleFactory.getPreventiveMaintenanceModule();
         List<FacilioField> fields = FieldFactory.getPreventiveMaintenanceFields();
         Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
         Map<String, Object> props = new HashMap<>();

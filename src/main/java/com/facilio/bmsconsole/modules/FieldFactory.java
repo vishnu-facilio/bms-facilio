@@ -9,15 +9,6 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.agent.AgentKeys;
-import com.facilio.bmsconsole.forms.FormField;
-import com.facilio.bmsconsole.forms.FormField.Required;
-import com.facilio.bmsconsole.modules.ModuleFactory;
-import com.facilio.bmsconsole.modules.FacilioField.FieldDisplayType;
-
-import org.apache.commons.lang3.tuple.Pair;
-
-import com.facilio.constants.FacilioConstants;
 
 public class FieldFactory {
 
@@ -2191,7 +2182,7 @@ public class FieldFactory {
 	}
 
 	public static List<FacilioField> getPreventiveMaintenanceFields() {
-		FacilioModule module = ModuleFactory.getPreventiveMaintenancetModule();
+		FacilioModule module = ModuleFactory.getPreventiveMaintenanceModule();
 
 		List<FacilioField> fields = new ArrayList<>();
 

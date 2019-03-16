@@ -328,6 +328,24 @@ public class User implements Serializable {
 		if(getAccessibleSpace() == null) {
 			return null;
 		}
+		if (moduleName.equals("pmjobs")) {
+			Condition templateResourceCondition = new Condition();
+			templateResourceCondition.setColumnName("Workorder_Template.RESOURCE_ID");
+			templateResourceCondition.setFieldName("resourceId");
+			templateResourceCondition.setOperator(BuildingOperator.BUILDING_IS);
+			templateResourceCondition.setValue(StringUtils.join(accessibleSpace, ","));
+
+			criteria = new Criteria();
+			criteria.addAndCondition(templateResourceCondition);
+
+			Condition multiResourceCondition = new Condition();
+			multiResourceCondition.setColumnName("PM_Jobs.RESOURCE_ID");
+			multiResourceCondition.setColumnName("resourceId");
+			multiResourceCondition.setOperator(BuildingOperator.BUILDING_IS);
+			multiResourceCondition.setValue(StringUtils.join(accessibleSpace, ","));
+
+			criteria.addOrCondition(multiResourceCondition);
+		}
 		if(moduleName.equals("workorder") || moduleName.equals("workorderrequest") || moduleName.equals("planned") || moduleName.equals("alarm"))
 		{
 			Condition condition = new Condition();

@@ -59,7 +59,7 @@ public class BlockPMEditOnWOGeneration implements Command {
             throw new IllegalStateException("No PMs in list");
         }
 
-        FacilioModule module = ModuleFactory.getPreventiveMaintenancetModule();
+        FacilioModule module = ModuleFactory.getPreventiveMaintenanceModule();
         List<FacilioField> fields = FieldFactory.getPreventiveMaintenanceFields();
         Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 

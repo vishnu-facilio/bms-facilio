@@ -45,7 +45,7 @@ public class PMScheduler extends FacilioJob {
 				return;
 			}
 			FacilioModule pmTriggerModule = ModuleFactory.getPMTriggersModule();
-			FacilioModule pmModule = ModuleFactory.getPreventiveMaintenancetModule();
+			FacilioModule pmModule = ModuleFactory.getPreventiveMaintenanceModule();
 			List<FacilioField> fields = FieldFactory.getPMTriggerFields();
 			List<FacilioField> pmFields = FieldFactory.getPreventiveMaintenanceFields();
 			Map<String, FacilioField> pmFieldsMap = FieldFactory.getAsMap(pmFields);

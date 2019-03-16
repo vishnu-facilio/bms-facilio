@@ -271,7 +271,7 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 			props.put("status", false);
 		}
 		
-		FacilioModule module = ModuleFactory.getPreventiveMaintenancetModule();
+		FacilioModule module = ModuleFactory.getPreventiveMaintenanceModule();
 		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
 														.fields(FieldFactory.getPreventiveMaintenanceFields())
 														.table(module.getTableName())
@@ -286,7 +286,7 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 	{
 		System.out.println("___________>>>>>>>>>>OrgID: "+AccountUtil.getCurrentOrg().getId());
 		
-		FacilioModule module = ModuleFactory.getPreventiveMaintenancetModule();
+		FacilioModule module = ModuleFactory.getPreventiveMaintenanceModule();
 		List<FacilioField> fields = FieldFactory.getPreventiveMaintenanceFields();
 		
 		FieldFactory.getAsMap(fields);
@@ -398,7 +398,7 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 			Map<String, Object> pmProps = FieldUtil.getAsProperties(newPm);
 
 			GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
-					.table(ModuleFactory.getPreventiveMaintenancetModule().getTableName())
+					.table(ModuleFactory.getPreventiveMaintenanceModule().getTableName())
 					.fields(FieldFactory.getPreventiveMaintenanceFields()).addRecord(pmProps);
 			builder.save();
 			long id = (long) pmProps.get("id");

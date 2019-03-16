@@ -46,7 +46,7 @@ public class ModuleFactory {
 		moduleMap.put(FacilioConstants.ContextNames.ALARM, getAlarmsModule());
 		moduleMap.put(FacilioConstants.ContextNames.ASSET, getAssetsModule());
 		moduleMap.put("jsontemplate", getJSONTemplateModule());
-		moduleMap.put("preventivemaintenance", getPreventiveMaintenancetModule());
+		moduleMap.put("preventivemaintenance", getPreventiveMaintenanceModule());
 		moduleMap.put("connectedapp", getConnectedAppModule());
 		moduleMap.put("tabwidget", getTabWidgetModule());
 		moduleMap.put(FacilioConstants.ContextNames.SPACE_CATEGORY, getSpaceCategoryModule());
@@ -628,7 +628,7 @@ public class ModuleFactory {
 		return jsonTemplateModule;
 	}
 
-	public static FacilioModule getPreventiveMaintenancetModule() {
+	public static FacilioModule getPreventiveMaintenanceModule() {
 		FacilioModule alarmModule = new FacilioModule();
 		alarmModule.setName("preventivemaintenance");
 		alarmModule.setDisplayName("Preventive Maintenance");

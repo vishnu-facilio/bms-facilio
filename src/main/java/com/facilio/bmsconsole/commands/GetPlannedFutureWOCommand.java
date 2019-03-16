@@ -5,9 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.modules.*;
-import com.facilio.fw.BeanFactory;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
@@ -51,7 +49,7 @@ public class GetPlannedFutureWOCommand implements Command {
 //		Criteria transformedCriteria = transformCritera(view.getCriteria());
 		
 		FacilioModule pmJobsModule = ModuleFactory.getPMJobsModule();
-		FacilioModule pmModule = ModuleFactory.getPreventiveMaintenancetModule();
+		FacilioModule pmModule = ModuleFactory.getPreventiveMaintenanceModule();
 		FacilioModule woTemplateModule = ModuleFactory.getWorkOrderTemplateModule();
 		
 		List<FacilioField> fields = FieldFactory.getPMJobFields();

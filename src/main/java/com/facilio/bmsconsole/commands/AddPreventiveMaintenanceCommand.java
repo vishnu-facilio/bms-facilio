@@ -34,7 +34,7 @@ public class AddPreventiveMaintenanceCommand implements Command {
 			pmProps.put("woGenerationStatus", false);
 		}
 		GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
-				.table(ModuleFactory.getPreventiveMaintenancetModule().getTableName())
+				.table(ModuleFactory.getPreventiveMaintenanceModule().getTableName())
 				.fields(FieldFactory.getPreventiveMaintenanceFields()).addRecord(pmProps);
 
 		builder.save();
