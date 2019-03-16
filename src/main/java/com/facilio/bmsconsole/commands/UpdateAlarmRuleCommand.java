@@ -45,7 +45,9 @@ public class UpdateAlarmRuleCommand implements Command {
 		
 		List<ReadingAlarmRuleContext> readingAlarmRules = WorkflowRuleAPI.getReadingAlarmRulesFromReadingRuleGroupId(alarmRule.getPreRequsite().getRuleGroupId());
 		
-		deleteReadingAlarmRuleAndActions(readingAlarmRules);
+		if(readingAlarmRules != null) {
+			deleteReadingAlarmRuleAndActions(readingAlarmRules);
+		}
 		
 		return false;
 	}

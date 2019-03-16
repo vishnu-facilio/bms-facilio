@@ -23,14 +23,17 @@ public class AddActionForAlarmRuleCommand implements Command {
 		
 		ReadingRuleContext alarmTriggerRule =  alarmRule.getAlarmTriggerRule();
 		
-			List<ActionContext> actions = ActionAPI.addActions(alarmTriggerRule.getActions(), alarmTriggerRule);
-			ActionAPI.addWorkflowRuleActionRel(alarmTriggerRule.getId(), actions);
+		List<ActionContext> actions = ActionAPI.addActions(alarmTriggerRule.getActions(), alarmTriggerRule);
+		ActionAPI.addWorkflowRuleActionRel(alarmTriggerRule.getId(), actions);
 		
-		for( ReadingRuleContext rule :alarmRule.getAlarmRCARules()) {
-			
-			actions = ActionAPI.addActions(rule.getActions(), rule);
-			ActionAPI.addWorkflowRuleActionRel(rule.getId(), actions);
+		if(alarmRule.getAlarmRCARules() != null) {
+			for( ReadingRuleContext rule :alarmRule.getAlarmRCARules()) {
+				
+				actions = ActionAPI.addActions(rule.getActions(), rule);
+				ActionAPI.addWorkflowRuleActionRel(rule.getId(), actions);
+			}
 		}
+		
 		if(!alarmRule.isAutoClear()) {
 			ActionContext actionContext = new ActionContext();
 			actionContext.setActionType(ActionType.CLEAR_ALARM);
