@@ -241,7 +241,7 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new GetAlarmCommand());
 		c.addCommand(new GetReadingRuleNameCommand());
-//		c.addCommand(new GetReadingRuleDetailsCommand());
+		c.addCommand(new GetReadingRuleDetailsCommand());
 		return c;
 	}
 	

@@ -14,6 +14,8 @@ import org.json.simple.JSONObject;
 
 import com.facilio.bmsconsole.context.AlarmContext;
 import com.facilio.bmsconsole.context.ReadingAlarmContext;
+import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldType;
@@ -69,13 +71,13 @@ public class GetReadingRuleDetailsCommand implements Command {
 							GenericSelectRecordBuilder genericSelectRecordBuilder = new GenericSelectRecordBuilder();
 							genericSelectRecordBuilder.table(EventConstants.EventModuleFactory.getEventModule().getTableName());
 							genericSelectRecordBuilder.select(fields);
-							genericSelectRecordBuilder.andCustomWhere("SUB_RULE_ID IN (?)", StringUtils.join(rcaIds, ","));
-							genericSelectRecordBuilder.groupBy("SUB_RULE_ID");
+							genericSelectRecordBuilder.andCondition(CriteriaAPI.getConditionFromList("SUB_RULE_ID", "subRuleId", rcaIds, NumberOperators.EQUALS));
+							genericSelectRecordBuilder.groupBy("SUB_RULE_ID,ID");
 							
 							List<Map<String, Object>> props = genericSelectRecordBuilder.get();
 							
 							Map<Long,EventContext> eventMap = new HashMap<>();
-							if(props != null && props.isEmpty()) {
+							if(props != null && !props.isEmpty()) {
 								for(Map<String, Object> prop :props) {
 									
 									EventContext eventContext = FieldUtil.getAsBeanFromMap(prop, EventContext.class);
@@ -97,6 +99,7 @@ public class GetReadingRuleDetailsCommand implements Command {
 								}
 								rcaJSONArray.add(rcaJson);
 							}
+							alarm.addAdditionInfo("rcaJSONArray", rcaJSONArray);
 						}
 					}
 				}

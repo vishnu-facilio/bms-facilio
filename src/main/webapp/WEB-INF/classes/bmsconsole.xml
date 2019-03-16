@@ -632,6 +632,14 @@
 				<param name="includeProperties">formlayout,formlayout\[\d+\],formlayout\[\d+\].*</param>
 			</result>
 		</action>
+		<action name="fetchAlarmSummary" class="com.facilio.bmsconsole.actions.AlarmAction"
+			method="fetchAlarmSummary">
+			<param name="moduleName">alarm</param>
+			<param name="permission">READ,READ_TEAM,READ_OWN</param>
+			<result name="success" type="json">
+				<param name="includeProperties">alarms,alarms\[\d+\],alarms\[\d+\].*</param>
+			</result>
+		</action>
 		<action name="notify" class="com.facilio.bmsconsole.actions.AlarmAction"
 			method="notifyUser">
 			<param name="moduleName">alarm</param>
