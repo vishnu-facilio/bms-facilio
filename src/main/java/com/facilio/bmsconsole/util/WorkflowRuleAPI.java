@@ -943,23 +943,24 @@ public class WorkflowRuleAPI {
 	
 	public static List<ReadingAlarmRuleContext> getReadingAlarmRulesFromReadingRuleGroupId(long readingGroupId) throws Exception {
 		
-		List<FacilioField> fields = FieldFactory.getWorkflowRuleFields();
-		fields.addAll(FieldFactory.getReadingAlarmRuleFields());
-		
-		GenericSelectRecordBuilder select = new GenericSelectRecordBuilder();
-		select.table(ModuleFactory.getWorkflowRuleModule().getTableName())
-		.innerJoin(ModuleFactory.getReadingAlarmRuleModule().getTableName())
-		.on(ModuleFactory.getWorkflowRuleModule().getTableName()+".ID = "+ModuleFactory.getWorkflowRuleModule().getTableName()+".ID")
-		.select(fields)
-		.andCustomWhere("READING_RULE_GROUP_ID = ?", readingGroupId);
-		
-		List<Map<String, Object>> props = select.get();
-		
-		if(props!= null && !props.isEmpty()) {
+		if(readingGroupId > 0) {
+			List<FacilioField> fields = FieldFactory.getWorkflowRuleFields();
+			fields.addAll(FieldFactory.getReadingAlarmRuleFields());
 			
-			return FieldUtil.getAsBeanListFromMapList(props, ReadingAlarmRuleContext.class);
+			GenericSelectRecordBuilder select = new GenericSelectRecordBuilder();
+			select.table(ModuleFactory.getWorkflowRuleModule().getTableName())
+			.innerJoin(ModuleFactory.getReadingAlarmRuleModule().getTableName())
+			.on(ModuleFactory.getWorkflowRuleModule().getTableName()+".ID = "+ModuleFactory.getReadingAlarmRuleModule().getTableName()+".ID")
+			.select(fields)
+			.andCustomWhere("READING_RULE_GROUP_ID = ?", readingGroupId);
+			
+			List<Map<String, Object>> props = select.get();
+			
+			if(props!= null && !props.isEmpty()) {
+				
+				return FieldUtil.getAsBeanListFromMapList(props, ReadingAlarmRuleContext.class);
+			}
 		}
-		
 		return null;
 	}
 	
