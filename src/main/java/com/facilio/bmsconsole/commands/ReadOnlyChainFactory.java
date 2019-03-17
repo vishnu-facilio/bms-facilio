@@ -127,7 +127,6 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new LoadViewCommand());
 		c.addCommand(new GetCalendarWOsCommands());
 //		c.addCommand(new GetFutureWOsCommands());
-		c.addCommand(new GetPlannedFutureWOCommand());
 		return c;
 	}
 	
