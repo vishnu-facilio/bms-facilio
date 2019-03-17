@@ -377,17 +377,19 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 			}
 		}
 		
-		if (module.getName().equals(FacilioConstants.ContextNames.WORK_ORDER)) {
-			Criteria scopeCriteria = AccountUtil.getCurrentUser().scopeCriteria(module.getName());
-			if(scopeCriteria != null)
-			{
-				builder.andCriteria(scopeCriteria);
-			}
-	
-			if (AccountUtil.getCurrentAccount().getUser().getUserType() != 2) {
-				Criteria permissionCriteria = AccountUtil.getCurrentUser().getRole().permissionCriteria(module.getName(),"read");
-				if(permissionCriteria != null) {
-					builder.andCriteria(permissionCriteria);
+		if (AccountUtil.getCurrentUser() != null) {
+			if (module.getName().equals(FacilioConstants.ContextNames.WORK_ORDER)) {
+				Criteria scopeCriteria = AccountUtil.getCurrentUser().scopeCriteria(module.getName());
+				if(scopeCriteria != null)
+				{
+					builder.andCriteria(scopeCriteria);
+				}
+		
+				if (AccountUtil.getCurrentAccount().getUser().getUserType() != 2) {
+					Criteria permissionCriteria = AccountUtil.getCurrentUser().getRole().permissionCriteria(module.getName(),"read");
+					if(permissionCriteria != null) {
+						builder.andCriteria(permissionCriteria);
+					}
 				}
 			}
 		}
