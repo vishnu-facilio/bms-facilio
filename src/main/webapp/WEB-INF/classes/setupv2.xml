@@ -149,6 +149,32 @@
 		</action>
 	</package>
 	
+	<package name="assetSetupApiV2" namespace="/api/v2/setup/asset" extends="v2Api">
+		<action name="rules"  class="com.facilio.bmsconsole.actions.WorkflowRuleAction" method="fetchWorkflowRulesOfType">
+			<param name="moduleName">setup</param>
+            <param name="permission">ASSET_SETTINGS</param>
+		</action>
+	</package>
+	
+	<package name="assetRuleApiV2" namespace="/api/v2/setup/asset/rules" extends="v2Api">
+	
+		<action name="addcustom" class="com.facilio.bmsconsole.actions.WorkflowRuleAction" method="addWorkflowRule">
+			<param name="moduleName">setup</param>
+            <param name="permission">ASSET_SETTINGS</param>
+		</action>
+		
+		<action name="updatecustom" class="com.facilio.bmsconsole.actions.WorkflowRuleAction" method="updateWorkflowRule">
+			<param name="moduleName">setup</param>
+            <param name="permission">ASSET_SETTINGS</param>
+		</action>
+		
+		<action name="*"  class="com.facilio.bmsconsole.actions.WorkflowRuleAction" method="fetchWorkflow">
+			<param name="moduleName">setup</param>
+            <param name="permission">ASSET_SETTINGS</param>
+            <param name="ruleId">{1}</param>
+		</action>
+	</package>
+	
 	<package name="controllerSetupApiV2" namespace="/api/v2/setup/controllers" extends="setupApiV2">
 		<action name="delete"  class="com.facilio.bmsconsole.actions.ControllerAction" method="deleteController">
 			<param name="moduleName">setup</param>

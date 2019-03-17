@@ -30,21 +30,27 @@ public class ItemTransactionRemainingQuantityRollupCommand implements Command {
 		TransactionState transactionState = (TransactionState) context
 				.get(FacilioConstants.ContextNames.TRANSACTION_STATE);
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		List<ItemTransactionsContext> itemTransactions = (List<ItemTransactionsContext>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
+		List<ItemTransactionsContext> itemTransactions = (List<ItemTransactionsContext>) context
+				.get(FacilioConstants.ContextNames.RECORD_LIST);
 		FacilioModule itemTransactionsModule = modBean.getModule(FacilioConstants.ContextNames.ITEM_TRANSACTIONS);
-		List<FacilioField> itemTransactionsFields = modBean.getAllFields(FacilioConstants.ContextNames.ITEM_TRANSACTIONS);
+		List<FacilioField> itemTransactionsFields = modBean
+				.getAllFields(FacilioConstants.ContextNames.ITEM_TRANSACTIONS);
 		Map<String, FacilioField> itemTransactionsFieldsMap = FieldFactory.getAsMap(itemTransactionsFields);
 		if (itemTransactions != null && !itemTransactions.isEmpty()) {
 			if (itemTransactions.get(0).getTransactionStateEnum() == TransactionState.RETURN) {
-					long parentTransactionId = itemTransactions.get(0).getParentTransactionId();
-					ItemTransactionsContext itemTransaction = getItemTransaction(parentTransactionId, itemTransactionsModule, itemTransactionsFields, itemTransactionsFieldsMap);
-					double totalReturnQuantity = getTotalReturnQuantity(parentTransactionId, itemTransactionsModule, itemTransactionsFieldsMap, transactionState);
+				for (ItemTransactionsContext transaction : itemTransactions) {
+					ItemTransactionsContext itemTransaction = getItemTransaction(transaction.getParentTransactionId(),
+							itemTransactionsModule, itemTransactionsFields, itemTransactionsFieldsMap);
+					double totalReturnQuantity = getTotalReturnQuantity(transaction.getParentTransactionId(), itemTransactionsModule,
+							itemTransactionsFieldsMap, transactionState);
 					double totalRemainingQuantity = itemTransaction.getQuantity() - totalReturnQuantity;
 					itemTransaction.setRemainingQuantity(totalRemainingQuantity);
-					
+
 					UpdateRecordBuilder<ItemTransactionsContext> updateBuilder = new UpdateRecordBuilder<ItemTransactionsContext>()
-							.module(itemTransactionsModule).fields(itemTransactionsFields).andCondition(CriteriaAPI.getIdCondition(parentTransactionId, itemTransactionsModule));
+							.module(itemTransactionsModule).fields(itemTransactionsFields)
+							.andCondition(CriteriaAPI.getIdCondition(transaction.getParentTransactionId(), itemTransactionsModule));
 					updateBuilder.update(itemTransaction);
+				}
 			}
 		}
 		return false;
@@ -64,8 +70,8 @@ public class ItemTransactionRemainingQuantityRollupCommand implements Command {
 				.select(field).moduleName(module.getName())
 				.andCondition(CriteriaAPI.getCondition(fieldsMap.get("parentTransactionId"),
 						String.valueOf(parentTransactionId), NumberOperators.EQUALS))
-				.andCondition(CriteriaAPI.getCondition(fieldsMap.get("transactionState"),
-						String.valueOf(3), NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition(fieldsMap.get("transactionState"), String.valueOf(3),
+						NumberOperators.EQUALS))
 				.setAggregation();
 
 		List<Map<String, Object>> rs = builder.getAsProps();
@@ -86,9 +92,8 @@ public class ItemTransactionRemainingQuantityRollupCommand implements Command {
 		}
 
 		SelectRecordsBuilder<ItemTransactionsContext> builder = new SelectRecordsBuilder<ItemTransactionsContext>()
-													.select(fields).moduleName(module.getName())
-													.beanClass(ItemTransactionsContext.class)
-													.andCondition(CriteriaAPI.getIdCondition(parentTransactionId, module));
+				.select(fields).moduleName(module.getName()).beanClass(ItemTransactionsContext.class)
+				.andCondition(CriteriaAPI.getIdCondition(parentTransactionId, module));
 
 		List<ItemTransactionsContext> itemTransactions = builder.get();
 		if (itemTransactions != null && !itemTransactions.isEmpty()) {
