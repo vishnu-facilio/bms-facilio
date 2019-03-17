@@ -519,6 +519,7 @@ public class WorkflowRuleAPI {
 		FacilioModule ruleModule = ModuleFactory.getWorkflowRuleModule();
 		List<FacilioField> fields = FieldFactory.getWorkflowRuleFields();
 		fields.addAll(FieldFactory.getWorkflowEventFields());
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 		
 		GenericSelectRecordBuilder ruleBuilder = new GenericSelectRecordBuilder()
 				.table(ruleModule.getTableName())
@@ -526,7 +527,8 @@ public class WorkflowRuleAPI {
 				.innerJoin("Workflow_Event")
 				.on("Workflow_Rule.EVENT_ID = Workflow_Event.ID")
 				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(ruleModule))
-				.andCustomWhere("Workflow_Event.MODULEID = ? AND Workflow_Rule.STATUS = true", module.getModuleId())
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("moduleId"), module.getExtendedModuleIds(), NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("status"), Boolean.TRUE.toString(), BooleanOperators.IS))
 				.orderBy("EXECUTION_ORDER");
 		
 		if(ruleTypes != null && ruleTypes.length > 0) {

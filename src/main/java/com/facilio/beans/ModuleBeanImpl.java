@@ -380,7 +380,7 @@ public class ModuleBeanImpl implements ModuleBean {
 	@Override
 	public FacilioField getPrimaryField(String moduleName) throws Exception {
 		FacilioModule module = getMod(moduleName);
-		List<Long> extendedModuleIds = getExtendedModuleIds(module);
+		List<Long> extendedModuleIds = module.getExtendedModuleIds();
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 														.select(FieldFactory.getSelectFieldFields())
 														.table("Fields")
@@ -580,38 +580,6 @@ public class ModuleBeanImpl implements ModuleBean {
 		return propsMap;
 	}
 	
-	private List<Long> getExtendedModuleIds(FacilioModule module) throws Exception {
-//		String extendModuleQuery = DBUtil.getQuery("module.extended.id");
-//
-//		Connection conn = getConnection();
-//		List<Long> moduleIds = new ArrayList<>();
-//		ResultSet resultSet = null;
-//		PreparedStatement preparedStatement = null;
-//		try {
-//			preparedStatement = conn.prepareStatement(extendModuleQuery);
-//			preparedStatement.setLong(1, getOrgId());
-//			preparedStatement.setLong(2, module.getModuleId());
-//			resultSet = preparedStatement.executeQuery();
-//
-//			while (resultSet.next()) {
-//				moduleIds.add(resultSet.getLong(1));
-//			}
-//		} finally {
-//			DBUtil.closeAll(conn, preparedStatement, resultSet);
-//		}
-//		return moduleIds;
-		
-		//Module will always have extended info
-		
-		List<Long> moduleIds = new ArrayList<>();
-		FacilioModule currentModule = module;
-		while (currentModule != null) {
-			moduleIds.add(currentModule.getModuleId());
-			currentModule = currentModule.getExtendModule();
-		}
-		return moduleIds;
-	}
-
 	@Override
 	public List<FacilioField> getAllFields(String moduleName) throws Exception {
 		
@@ -622,7 +590,7 @@ public class ModuleBeanImpl implements ModuleBean {
 		FacilioModule module = getMod(moduleName);
 		Map<Long, FacilioModule> moduleMap = splitModules(module);
 
-		List<Long> extendedModuleIds = getExtendedModuleIds(module);
+		List<Long> extendedModuleIds = module.getExtendedModuleIds();
 
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 														.select(FieldFactory.getSelectFieldFields())
@@ -658,7 +626,7 @@ public class ModuleBeanImpl implements ModuleBean {
 	}
 	
 	private FacilioField getField(FacilioModule facilioModule, long fieldId) throws Exception {
-		List<Long> extendedModuleIds = getExtendedModuleIds(facilioModule);
+		List<Long> extendedModuleIds = facilioModule.getExtendedModuleIds();
 		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 														.select(FieldFactory.getSelectFieldFields())
@@ -742,7 +710,7 @@ public class ModuleBeanImpl implements ModuleBean {
 			return LookupSpecialTypeUtil.getField(fieldName, moduleName);
 		}
 		
-		List<Long> extendedModuleIds = getExtendedModuleIds(module);
+		List<Long> extendedModuleIds = module.getExtendedModuleIds();
 
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 														.select(FieldFactory.getSelectFieldFields())
