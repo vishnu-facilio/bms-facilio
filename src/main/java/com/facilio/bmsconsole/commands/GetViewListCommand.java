@@ -1,10 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import org.apache.commons.chain.Command;
@@ -50,11 +46,16 @@ public class GetViewListCommand implements Command {
 		Boolean fetchByGroup = (Boolean) context.get(FacilioConstants.ContextNames.GROUP_STATUS);
 		if (fetchByGroup != null && fetchByGroup) {
 			List<FacilioView> customViews = allViews.stream().filter(view -> view.getIsDefault() != null && !view.getIsDefault()).collect(Collectors.toList());
-			
+			Optional<FacilioView> upcomingView = allViews.stream()
+					.filter(view -> view.getIsDefault() != null && view.getIsDefault() && view.getName() != null && view.getName().equals("upcoming")).findFirst();
+
+			Optional<FacilioView> myupcomingView = allViews.stream()
+					.filter(view -> view.getIsDefault() != null && view.getIsDefault() && view.getName() != null && view.getName().equals("myupcoming")).findFirst();
+
 			// Temp...Needs to change in web client also
 			if ((AccountUtil.getCurrentAccount().isFromMobile()) || moduleName.equals("asset")) {
-				List<Map<String, Object>> groupViews = ViewFactory.getGroupVsViews(moduleName);
-				if (groupViews != null && !groupViews.isEmpty()) {
+				List<Map<String, Object>> groupViews = new ArrayList<>(ViewFactory.getGroupVsViews(moduleName));
+				if (!groupViews.isEmpty()) {
 					
 					if (moduleName.equals("asset")) {
 						ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -115,6 +116,24 @@ public class GetViewListCommand implements Command {
 						mutatedDetail.remove("type");
 						mutatedDetail.put("views", customViews);
 						groupViews.set(groupSize - 1, mutatedDetail);
+					}
+
+					if (AccountUtil.isFeatureEnabled(AccountUtil.FEATURE_SCHEDULED_WO)) {
+						if (upcomingView.isPresent()) {
+							Map<String, Object> groupDetails = new HashMap<>();
+							groupDetails.put("name", "upcoming");
+							groupDetails.put("displayName", "Upcoming Work Orders");
+							groupDetails.put("views", Arrays.asList(upcomingView.get()));
+							groupViews.add(groupDetails);
+						}
+
+						if (myupcomingView.isPresent()) {
+							Map<String, Object> groupDetails = new HashMap<>();
+							groupDetails.put("name", "myupcoming");
+							groupDetails.put("displayName", "My Upcoming Work Orders");
+							groupDetails.put("views", Arrays.asList(myupcomingView.get()));
+							groupViews.add(groupDetails);
+						}
 					}
 				}
 				else {
