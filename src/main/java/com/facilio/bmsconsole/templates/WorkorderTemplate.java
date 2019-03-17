@@ -146,12 +146,11 @@ public class WorkorderTemplate extends Template {
 		this.siteId = siteId;
 	}
 	private long tenantId = -1 ;
-	public long getTenant() {
-		return this.tenantId;
+	public long getTenantId() {
+		return tenantId;
 	}
-	
-	public void setTenant(long tenant) {
-		this.tenantId = tenant;
+	public void setTenantId(long tenantId) {
+		this.tenantId = tenantId;
 	}
 
 	public WorkOrderContext getWorkorder() {

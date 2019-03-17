@@ -2169,7 +2169,7 @@ public class FieldFactory {
 		List<FacilioField> woTemplateFields = getWOrderTemplateFields();
 		try {
 			if(AccountUtil.isFeatureEnabled(AccountUtil.FEATURE_TENANTS)) {
-				LookupField tenantField = (LookupField) getField("tenant", "TENANT_ID",ModuleFactory.getWorkOrderTemplateModule(), FieldType.LOOKUP);
+				LookupField tenantField = (LookupField) getField("tenantId", "TENANT_ID",ModuleFactory.getWorkOrderTemplateModule(), FieldType.LOOKUP);
 				tenantField.setLookupModule(ModuleFactory.getTenantsModule());
 				woTemplateFields.add(tenantField);
 			}
