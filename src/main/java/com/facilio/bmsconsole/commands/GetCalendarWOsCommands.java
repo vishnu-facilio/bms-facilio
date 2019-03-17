@@ -47,7 +47,7 @@ public class GetCalendarWOsCommands implements Command {
 																
 		FacilioView view = (FacilioView) context.get(FacilioConstants.ContextNames.CUSTOM_VIEW);
 		if (view.getCriteria() != null && !view.getCriteria().isEmpty()) {
-			if (AccountUtil.isFeatureEnabled(AccountUtil.FEATURE_SCHEDULED_WO)) { //Temp hack
+			/* if (AccountUtil.isFeatureEnabled(AccountUtil.FEATURE_SCHEDULED_WO)) { //Temp hack
 				Map<String, Condition> conditionMap = view.getCriteria().getConditions();
 				Set<Map.Entry<String, Condition>> conditions = conditionMap.entrySet();
 				for (Map.Entry<String, Condition> conditionEntry: conditions) {
@@ -61,9 +61,9 @@ public class GetCalendarWOsCommands implements Command {
 						woBuilder.andCondition(condition);
 					}
 				}
-			} else {
+			} else { */
 				woBuilder.andCriteria(view.getCriteria());
-			}
+			//}
 		}
 		
 		boolean isCount = (boolean) context.get(FacilioConstants.ContextNames.COUNT);
