@@ -385,7 +385,7 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 					builder.andCriteria(scopeCriteria);
 				}
 		
-				if (AccountUtil.getCurrentAccount().getUser().getUserType() != 2) {
+				if (AccountUtil.getCurrentAccount().getUser().getUserType() != 2 && AccountUtil.getCurrentUser().getRole() != null) {
 					Criteria permissionCriteria = AccountUtil.getCurrentUser().getRole().permissionCriteria(module.getName(),"read");
 					if(permissionCriteria != null) {
 						builder.andCriteria(permissionCriteria);
