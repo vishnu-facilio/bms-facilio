@@ -78,6 +78,16 @@ public class GenerateCriteriaFromFilterCommand implements Command {
 		}
 		
 		FacilioField field = modBean.getField(fieldName, moduleName);
+		if (field == null) {
+			// Temp handling...needs to check
+			if (fieldName.equals("site") && OLD_FIELDS_MODULE.contains(moduleName)) {
+				field = modBean.getField("siteId", moduleName);
+			}
+			if (field == null) {
+				LOGGER.error("Field is not found for: " + fieldName + " : " + moduleName);
+				throw new Exception("Field is not found for: " + fieldName + " : " + moduleName);
+			}
+		}
 		
 		if (fieldJson.containsKey("operatorId")) {
 			operatorId = (int) (long) fieldJson.get("operatorId");
@@ -101,10 +111,6 @@ public class GenerateCriteriaFromFilterCommand implements Command {
 				}
 			}
 			operatorId = field.getDataTypeEnum().getOperator(operatorName).getOperatorId();
-		}
-		if (field == null) {
-			LOGGER.error("Field is not found for: " + fieldName + " : " + moduleName);
-			throw new Exception("Field is not found for: " + fieldName + " : " + moduleName);
 		}
 		JSONArray value = (JSONArray) fieldJson.get("value");
 		if((value!=null && value.size() > 0) || (operatorName != null && !(operatorName.equals("is")) ) ) {
