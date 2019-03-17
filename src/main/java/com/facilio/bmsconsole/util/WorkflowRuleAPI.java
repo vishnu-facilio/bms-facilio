@@ -876,7 +876,7 @@ public class WorkflowRuleAPI {
 		return result;
 	}
 	
-	private static void executeRuleAndChildren (WorkflowRuleContext workflowRule, FacilioModule module, Object record, List<UpdateChangeSet> changeSet, Iterator itr, Map<String, Object> recordPlaceHolders, FacilioContext context,boolean propagateError, FacilioField parentRuleField, FacilioField onSuccessField, List<EventType> eventTypes, RuleType... ruleTypes) throws Exception {
+	private static boolean executeRuleAndChildren (WorkflowRuleContext workflowRule, FacilioModule module, Object record, List<UpdateChangeSet> changeSet, Iterator itr, Map<String, Object> recordPlaceHolders, FacilioContext context,boolean propagateError, FacilioField parentRuleField, FacilioField onSuccessField, List<EventType> eventTypes, RuleType... ruleTypes) throws Exception {
 		try {
 			long workflowStartTime = System.currentTimeMillis();
 			workflowRule.setTerminateExecution(false);
@@ -906,6 +906,7 @@ public class WorkflowRuleAPI {
 				
 			}
 			LOGGER.debug("Time taken to execute rule : "+workflowRule.getName()+" with id : "+workflowRule.getId()+" for module : "+module.getName()+" including child rule execution is "+(System.currentTimeMillis() - workflowStartTime));
+			return stopFurtherExecution;
 		}
 		catch (Exception e) {
 			StringBuilder builder = new StringBuilder("Error during execution of rule : ");
@@ -922,6 +923,7 @@ public class WorkflowRuleAPI {
 				throw e;
 			}
 		}
+		return false;
 	}
 	
 	public static void executeWorkflowsAndGetChildRuleCriteria(List<WorkflowRuleContext> workflowRules, FacilioModule module, Object record, List<UpdateChangeSet> changeSet, Iterator itr, Map<String, Object> recordPlaceHolders, FacilioContext context,boolean propagateError, List<EventType> eventTypes, RuleType... ruleTypes) throws Exception {
@@ -931,7 +933,10 @@ public class WorkflowRuleAPI {
 			FacilioField onSuccess = fields.get("onSuccess");
 			
 			for(WorkflowRuleContext workflowRule : workflowRules) {
-				executeRuleAndChildren(workflowRule, module, record, changeSet, itr, recordPlaceHolders, context, propagateError, parentRule, onSuccess, eventTypes, ruleTypes);
+				boolean stopFurtherExecution = executeRuleAndChildren(workflowRule, module, record, changeSet, itr, recordPlaceHolders, context, propagateError, parentRule, onSuccess, eventTypes, ruleTypes);
+				if(stopFurtherExecution) {
+					break;
+				}
 			}
 		}
 	}
