@@ -1278,7 +1278,7 @@ public class ViewFactory {
 		dueField.setName("dueDate");
 		dueField.setColumnName("DUE_DATE");
 		dueField.setDataType(FieldType.DATE_TIME);
-		dueField.setModule(ModuleFactory.getWorkOrdersModule());
+		dueField.setModule(ModuleFactory.getTicketsModule());
 //		dueField.setExtendedModule(ModuleFactory.getTicketsModule());
 
 		Condition overdue = new Condition();
