@@ -57,6 +57,7 @@ public class WorkflowTemplate extends Template {
 		JSONObject json = new JSONObject();
 		if(workflowContext != null) {
 			json.put("WorkflowString", workflowContext.getWorkflowString());
+			json.put("workflowContext", workflowContext);
 		}
 		if(getMetaJson() != null) {
 			json.putAll(getMetaJson());
