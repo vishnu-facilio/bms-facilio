@@ -2483,6 +2483,15 @@
 			</result>
 		</action>
 		
+		<action name="uploadFloorPlan" class="com.facilio.bmsconsole.actions.FloorAction"
+			method="uploadFloorPlan">
+			<param name="moduleName">space</param>
+			<param name="permission">UPDATE</param>
+			<result name="success" type="json">
+				<param name="includeProperties">^floor.*</param>
+			</result>
+		</action>
+		
 		<action name="delete" class="com.facilio.bmsconsole.actions.FloorAction"
 			method="deleteFloor">
 			<param name="moduleName">space</param>
