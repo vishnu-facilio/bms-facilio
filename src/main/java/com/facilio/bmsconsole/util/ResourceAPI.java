@@ -122,7 +122,7 @@ public class ResourceAPI {
 																		.beanClass(ResourceContext.class);
 		
 		List<ResourceContext> resources = resourceBuilder.get();
-		LOGGER.error("builder -- "+resourceBuilder);
+		// LOGGER.error("builder -- "+resourceBuilder);
 		return resources;									
 	}
 	

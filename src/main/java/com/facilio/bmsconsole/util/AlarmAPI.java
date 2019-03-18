@@ -456,9 +456,9 @@ public class AlarmAPI {
 																	.andCondition(CriteriaAPI.getCondition(fieldMap.get("readingFieldId"), String.valueOf(fieldId), NumberOperators.EQUALS))
 																	;
 		List<ReadingAlarmContext> alarms = selectBuilder.get();
-		if (AccountUtil.getCurrentOrg().getId() == 75) {
+		/*if (AccountUtil.getCurrentOrg().getId() == 75) {
 			LOGGER.info("Fetched Alarm Query : "+selectBuilder.toString());
-		}
+		}*/
 		return alarms;
 	}
 	

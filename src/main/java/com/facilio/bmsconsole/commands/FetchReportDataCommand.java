@@ -263,7 +263,7 @@ public class FetchReportDataCommand implements Command {
 		
 		List<Map<String, Object>> props = newSelectBuilder.getAsProps();
 		
-		LOGGER.severe("SELECT BUILDER --- "+ newSelectBuilder);
+		// LOGGER.severe("SELECT BUILDER --- "+ newSelectBuilder);
 //		LOGGER.info("DATE FROM QUERY : "+props);
 		return props;
 	}
