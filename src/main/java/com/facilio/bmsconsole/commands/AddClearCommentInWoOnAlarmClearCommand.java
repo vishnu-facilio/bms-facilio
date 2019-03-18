@@ -1,5 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.List;
+
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Context;
 
@@ -20,9 +22,9 @@ public class AddClearCommentInWoOnAlarmClearCommand implements SerializableComma
 	@Override
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
-		EventType activity = (EventType) context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.ALARM_CLEARED);
+		List<EventType> eventTypes = (List<EventType>) context.get(FacilioConstants.ContextNames.EVENT_TYPE_LIST);
 		
-		if (activity == EventType.ALARM_CLEARED) {
+		if (eventTypes != null && eventTypes.contains(EventType.ALARM_CLEARED)) {
 			AlarmContext alarm = (AlarmContext) context.get(FacilioConstants.ContextNames.RECORD);
 			if (alarm.getWoId() != -1) {
 				NoteContext note = new NoteContext();
