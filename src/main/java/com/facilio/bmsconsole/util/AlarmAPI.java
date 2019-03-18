@@ -58,6 +58,7 @@ import com.facilio.workflows.context.WorkflowContext;
 
 public class AlarmAPI {
 	private static final Logger LOGGER = LogManager.getLogger(AlarmAPI.class.getName());
+	public static final String ALARM_COST_FIELD_NAME = "alarmCost";
 	public static JSONObject constructClearEvent(AlarmContext alarm, String msg) throws Exception {
 		return constructClearEvent(alarm, msg, -1);
 	}

@@ -17,6 +17,7 @@ import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
+import com.amazonaws.transform.SimpleTypeCborUnmarshallers.DoubleCborUnmarshaller;
 import com.facilio.accounts.bean.UserBean;
 import com.facilio.accounts.dto.Group;
 import com.facilio.accounts.dto.User;
@@ -755,6 +756,12 @@ public enum ActionType {
 			}
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			WorkflowEventContext event = currentRule.getEvent();
+			FacilioModule module = event.getModule();
+			
+			if(obj.get("moduleName") != null) {
+				module = modBean.getModule((String) obj.get("moduleName"));
+			}
+			
 			List<FacilioField> fields = new ArrayList<>();
 			Map<String, Object> props = new HashMap<String, Object>();
 			
@@ -768,12 +775,93 @@ public enum ActionType {
 			
 			JSONArray fieldsJsonArray = (JSONArray) obj.get("fields");
 			for (Object key : fieldsJsonArray) {
-				FacilioField field = modBean.getField((String) key, event.getModule().getName());
+				FacilioField field = modBean.getField((String) key, module.getName());
 				if (field != null) {
 					
 					fields.add(field);
 					Object val = workflowResult.get(field.getName());
 					props.put(field.getName(), val);
+					if (field.isDefault()) {
+						BeanUtils.setProperty(currentRecord, field.getName(), val);
+					}
+					else {
+						((ModuleBaseWithCustomFields) currentRecord).setDatum(field.getName(), val);
+					}
+				}
+			}
+			
+			long id = -1l;
+			
+			if(obj.get("parentId") != null) {
+				id = (Long) obj.get("parentId");
+			}
+			else {
+				id = ((ModuleBaseWithCustomFields) currentRecord).getId();
+			}
+			
+			UpdateRecordBuilder<ModuleBaseWithCustomFields> updateBuilder = new UpdateRecordBuilder<ModuleBaseWithCustomFields>()
+																				.fields(fields)
+																				.module(module)
+																				.andCondition(CriteriaAPI.getIdCondition(id, module))
+																				;
+			updateBuilder.updateViaMap(props);
+		}
+		
+	},
+	ALARM_IMPACT_ACTION(17) {
+
+		@Override
+		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,Object currentRecord) throws Exception {
+			// TODO Auto-generated method stub
+			if (currentRule.getEvent() == null) {
+				currentRule.setEvent(WorkflowRuleAPI.getWorkflowEvent(currentRule.getEventId()));
+			}
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			WorkflowEventContext event = currentRule.getEvent();
+			List<FacilioField> fields = new ArrayList<>();
+			Map<String, Object> props = new HashMap<String, Object>();
+			
+			Map<String,Object> params = new HashMap<>();
+			Map<String,Object> currentRecordJson = null;
+			long alarmId = -1l;
+			if(currentRecord instanceof ReadingAlarmContext) {
+				currentRecordJson = FieldUtil.getAsProperties(currentRecord);
+				alarmId = (Long) currentRecordJson.get("id");
+			}
+			params.put("record", currentRecordJson);
+			Map<String,Object> workflowResult = WorkflowUtil.getExpressionResultMap((String)obj.get("WorkflowString"), params);
+			
+			JSONArray fieldsJsonArray = (JSONArray) obj.get("fields");
+			for (Object key : fieldsJsonArray) {
+				FacilioField field = modBean.getField((String) key, event.getModule().getName());
+				if (field != null) {
+					
+					fields.add(field);
+					Object val = workflowResult.get(field.getName());
+					
+					
+					
+					if(field.getName().equals(AlarmAPI.ALARM_COST_FIELD_NAME)) {
+						
+						Double currrentValue = null;
+						if(val != null) {
+							currrentValue = Double.parseDouble(val.toString());
+						}
+						
+						AlarmContext alarm = AlarmAPI.getAlarm(alarmId);
+						if(alarm != null) {
+							Object previousValue = alarm.getDatum(field.getName());
+							if(previousValue != null && currrentValue != null) {
+								Double previousValueDouble = Double.parseDouble(previousValue.toString());
+								
+								currrentValue = previousValueDouble+currrentValue;
+							}
+						}
+						props.put(field.getName(), currrentValue);
+					}
+					else {
+						props.put(field.getName(), val);
+					}
 					if (field.isDefault()) {
 						BeanUtils.setProperty(currentRecord, field.getName(), val);
 					}
