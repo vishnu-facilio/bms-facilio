@@ -758,8 +758,19 @@ public enum ActionType {
 			WorkflowEventContext event = currentRule.getEvent();
 			FacilioModule module = event.getModule();
 			
+			boolean sameRecord = true;
 			if(obj.get("moduleName") != null) {
 				module = modBean.getModule((String) obj.get("moduleName"));
+				sameRecord = false;
+			}
+			
+			long id = -1l;
+			if(obj.get("parentId") != null) {
+				id = (Long) obj.get("parentId");
+				sameRecord = false;
+			}
+			else {
+				id = ((ModuleBaseWithCustomFields) currentRecord).getId();
 			}
 			
 			List<FacilioField> fields = new ArrayList<>();
@@ -767,9 +778,7 @@ public enum ActionType {
 			
 			Map<String,Object> params = new HashMap<>();
 			Map<String,Object> currentRecordJson = null;
-			if(currentRecord instanceof ReadingAlarmContext) {
-				currentRecordJson = FieldUtil.getAsProperties(currentRecord);
-			}
+			currentRecordJson = FieldUtil.getAsProperties(currentRecord);
 			params.put("record", currentRecordJson);
 			Map<String,Object> workflowResult = WorkflowUtil.getExpressionResultMap((String)obj.get("WorkflowString"), params);
 			
@@ -777,26 +786,19 @@ public enum ActionType {
 			for (Object key : fieldsJsonArray) {
 				FacilioField field = modBean.getField((String) key, module.getName());
 				if (field != null) {
-					
 					fields.add(field);
 					Object val = workflowResult.get(field.getName());
 					props.put(field.getName(), val);
-					if (field.isDefault()) {
-						BeanUtils.setProperty(currentRecord, field.getName(), val);
-					}
-					else {
-						((ModuleBaseWithCustomFields) currentRecord).setDatum(field.getName(), val);
+					
+					if (sameRecord) {
+						if (field.isDefault()) {
+							BeanUtils.setProperty(currentRecord, field.getName(), val);
+						}
+						else {
+							((ModuleBaseWithCustomFields) currentRecord).setDatum(field.getName(), val);
+						}
 					}
 				}
-			}
-			
-			long id = -1l;
-			
-			if(obj.get("parentId") != null) {
-				id = (Long) obj.get("parentId");
-			}
-			else {
-				id = ((ModuleBaseWithCustomFields) currentRecord).getId();
 			}
 			
 			UpdateRecordBuilder<ModuleBaseWithCustomFields> updateBuilder = new UpdateRecordBuilder<ModuleBaseWithCustomFields>()
