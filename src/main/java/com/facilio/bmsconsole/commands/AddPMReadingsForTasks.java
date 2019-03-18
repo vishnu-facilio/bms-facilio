@@ -238,6 +238,7 @@ public class AddPMReadingsForTasks implements Command {
 		fields.add(FieldFactory.getField("woId", "Workorder ID", "WO_ID", null, FieldType.NUMBER));
 		fields.add(FieldFactory.getField("taskId", "Task ID", "TASK_ID", null, FieldType.NUMBER));
 		fields.add(FieldFactory.getField("taskUniqueId", "Task Unique ID", "TASK_UNIQUE_ID", null, FieldType.NUMBER));
+		fields.add(FieldFactory.getField("resourceId", "Resource ID", "RESOURCE_ID", null, FieldType.NUMBER));
 	}
 	
 	private void updateTaskFieldId(List<TaskContext> tasks) {
