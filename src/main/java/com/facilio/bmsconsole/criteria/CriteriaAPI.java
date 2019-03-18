@@ -5,8 +5,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -23,8 +21,7 @@ import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
 
 public class CriteriaAPI {
-
-	private static final Logger LOGGER = Logger.getLogger(CriteriaAPI.class.getName());
+	
 	public static long addCriteria(Criteria criteria, long orgId) throws Exception {
 		if(criteria != null) {
 			criteria.setCriteriaId(-1);
@@ -147,10 +144,6 @@ public class CriteriaAPI {
 															;
 		
 		List<Map<String, Object>> criteriaProps = criteriaBuilder.get();
-
-		if (AccountUtil.getCurrentOrg().getOrgId() == 146) {
-			LOGGER.log(Level.SEVERE, "Criteria Query: "+ criteriaBuilder.toString());
-		}
 		
 		Criteria criteria = null;
 		Map<String, Condition> conditions = new HashMap<>();
