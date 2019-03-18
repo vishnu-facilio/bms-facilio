@@ -17,7 +17,6 @@ import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-import com.amazonaws.transform.SimpleTypeCborUnmarshallers.DoubleCborUnmarshaller;
 import com.facilio.accounts.bean.UserBean;
 import com.facilio.accounts.dto.Group;
 import com.facilio.accounts.dto.User;
@@ -997,6 +996,7 @@ public enum ActionType {
 		}
 		
 		ids.add(alarm.getSeverity().getId());
+		LOGGER.info("Severities : "+ids);
 		Map<Long, AlarmSeverityContext> severityMap = AlarmAPI.getAlarmSeverityMap(ids);
 		
 		if (alarm.getPreviousSeverity() != null) {
@@ -1007,7 +1007,7 @@ public enum ActionType {
 	
 	private static String getNewAlarmCommentForUnClosedWO (AlarmContext alarm) {
 		if (alarm.getPreviousSeverity() == null) {
-			return "Alarm associated with this work order, previously Cleared, has been raised to "+alarm.getSeverity().getSeverity()+" at "+alarm.getModifiedTimeString();
+			return "Alarm associated with this work order has been raised to "+alarm.getSeverity().getSeverity()+" at "+alarm.getModifiedTimeString();
 		}
 		else {
 			return "Alarm associated with this work order updated from "+alarm.getPreviousSeverity().getSeverity()+" to "+alarm.getSeverity().getSeverity()+" at "+alarm.getModifiedTimeString();
