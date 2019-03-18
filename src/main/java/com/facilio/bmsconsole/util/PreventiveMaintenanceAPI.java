@@ -129,13 +129,23 @@ public class PreventiveMaintenanceAPI {
 			sectiontemplate = (TaskSectionTemplate)sectionTemplate;
 			
 			 List<Long> resourceIds = PreventiveMaintenanceAPI.getMultipleResourceToBeAddedFromPM(PMAssignmentType.valueOf(sectiontemplate.getAssignmentType()), woResourceId, sectiontemplate.getSpaceCategoryId(), sectiontemplate.getAssetCategoryId(),sectiontemplate.getResourceId(),sectiontemplate.getPmIncludeExcludeResourceContexts());
-			 
+			 Map<String, Integer> dupSectionNameCount = new HashMap<>();
 			 for(Long resourceId :resourceIds) {
 				 if(resourceId == null || resourceId < 0) {
 					 continue;
 				 }
 				 ResourceContext sectionResource = ResourceAPI.getResource(resourceId);
 				 String sectionName = sectionResource.getName() + " - " +sectiontemplate.getName();
+
+				 if (taskMap.containsKey(sectionName)) {
+					 Integer count = dupSectionNameCount.get(sectionName);
+					 if (count == null) {
+					 	count = 0;
+					 }
+					 count = count + 1;
+					 dupSectionNameCount.put(sectionName, count);
+					 sectionName += sectionName + " - " + count;
+				 }
 				 
 				 List<TaskTemplate> taskTemplates = sectiontemplate.getTaskTemplates();
 				 
