@@ -206,7 +206,7 @@ public class ReadOnlyChainFactory {
 		Chain c = getDefaultChain();
 		c.addCommand(new FetchAlarmRuleCommand());
 		c.addCommand(new GetActionListForAlarmRuleCommand());
-		c.addCommand(new FetchExtraMetaForAlarmRuleCommand());
+//		c.addCommand(new FetchExtraMetaForAlarmRuleCommand());
 		return c;
 	}
 	

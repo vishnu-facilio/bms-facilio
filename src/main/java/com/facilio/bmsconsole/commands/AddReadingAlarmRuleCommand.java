@@ -33,6 +33,8 @@ public class AddReadingAlarmRuleCommand implements Command {
 				
 				readingAlarmRuleContext.setRuleType(RuleType.READING_ALARM_RULE);
 				
+				readingAlarmRuleContext.setEventId(WorkflowRuleAPI.addOrGetWorkflowEvent(readingAlarmRuleContext.getEvent()));
+				
 				if(readingAlarmRuleContext.getParentRuleName() != null) {
 					readingAlarmRuleContext.setParentRuleId(readingAlarmRuleNameVsIdMap.get(readingAlarmRuleContext.getParentRuleName()));
 				}
