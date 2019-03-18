@@ -589,6 +589,7 @@ public enum ActionType {
 					NoteContext note = new NoteContext();
 					note.setBody(getNewAlarmCommentForUnClosedWO(alarm));
 					note.setParentId(wo.getId());
+					note.setCreatedTime(alarm.getModifiedTime());
 					
 					FacilioContext noteContext = new FacilioContext();
 					noteContext.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.TICKET_NOTES);
