@@ -150,21 +150,23 @@ public class FloorAction extends ActionSupport {
 	
 	public String uploadFloorPlan() throws Exception 
 	{
+		this.floor = new FloorContext();
+		floor.setId(getFloorId());
+		
 		if (this.floorPlanImage != null) {
 			long floorPlanId = FileStoreFactory.getInstance().getFileStore().addFile(floorPlanImageFileName, floorPlanImage, floorPlanImageContentType);
-			
-			this.floor = new FloorContext();
-			floor.setId(getFloorId());
+				
 			floor.setFloorPlanId(floorPlanId);
-			floor.setFloorPlanInfo(getFloorPlanInfo());
-			
-			FacilioContext context = new FacilioContext();
-			context.put(FacilioConstants.ContextNames.BASE_SPACE, floor);
-			context.put(FacilioConstants.ContextNames.SPACE_TYPE, "floor");
-			Chain updateCampus = FacilioChainFactory.getUpdateCampusChain();
-			updateCampus.execute(context);
-			setFloor(floor);
 		}
+		
+		floor.setFloorPlanInfo(getFloorPlanInfo());
+			
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.BASE_SPACE, floor);
+		context.put(FacilioConstants.ContextNames.SPACE_TYPE, "floor");
+		Chain updateCampus = FacilioChainFactory.getUpdateCampusChain();
+		updateCampus.execute(context);
+		setFloor(floor);
 		return SUCCESS;
 	}
 	
