@@ -473,6 +473,7 @@ public class FetchReportDataCommand implements Command {
 		
 		selectBuilder.andCustomWhere(spaceField.getCompleteColumnName() + " in (" + builder.constructSelectStatement() + ")");
 		spaceField.setName(dp.getxAxis().getFieldName());
+		spaceField.setDataType(FieldType.NUMBER);
 		return spaceField;
 	}
 	
