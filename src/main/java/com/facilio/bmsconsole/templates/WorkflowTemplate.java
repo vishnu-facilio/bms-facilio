@@ -4,6 +4,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
 
@@ -57,7 +58,7 @@ public class WorkflowTemplate extends Template {
 		JSONObject json = new JSONObject();
 		if(workflowContext != null) {
 			json.put("WorkflowString", workflowContext.getWorkflowString());
-			json.put("workflowContext", workflowContext);
+			json.put("workflowContext", WorkflowUtil.getWorkflowContext(workflowContext.getId(),true));
 		}
 		if(getMetaJson() != null) {
 			json.putAll(getMetaJson());
