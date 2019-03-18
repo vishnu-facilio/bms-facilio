@@ -1065,6 +1065,14 @@ public class ModuleFactory {
 		reportScheduleInfo.setTableName("Report_Schedule_Info");
 		return reportScheduleInfo;
 	}
+
+	public static FacilioModule getViewScheduleInfoModule() {
+		FacilioModule viewScheduleInfo = new FacilioModule();
+		viewScheduleInfo.setName("viewScheduleInfo");
+		viewScheduleInfo.setDisplayName("View Schedule Info");
+		viewScheduleInfo.setTableName("View_Schedule_Info");
+		return viewScheduleInfo;
+	}
 	
 	public static FacilioModule getReportScheduleInfo() {
 		FacilioModule reportScheduleInfo = new FacilioModule();

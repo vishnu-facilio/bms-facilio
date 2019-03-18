@@ -4353,6 +4353,18 @@ public class FieldFactory {
 		return fields;
 	}
 
+	public static List<FacilioField> getViewScheduleInfoFields() {
+		FacilioModule module = ModuleFactory.getViewSharingModule();
+		List<FacilioField> fields = new ArrayList<>();
+
+		fields.add(getIdField(module));
+		fields.add(getField("viewId", "VIEWID", module, FieldType.NUMBER));
+		fields.add(getField("fileFormat", "FILE_FORMAT", module, FieldType.NUMBER));
+		fields.add(getField("templateId", "TEMPLATEID", module, FieldType.NUMBER));
+
+		return fields;
+	}
+
 	public static List<FacilioField> getReportScheduleInfoFields() {
 		FacilioModule module = ModuleFactory.getReportScheduleInfoModule();
 		List<FacilioField> fields = new ArrayList<>();
