@@ -148,7 +148,7 @@ public class CriteriaAPI {
 		
 		List<Map<String, Object>> criteriaProps = criteriaBuilder.get();
 
-		if (AccountUtil.getCurrentOrg().getOrgId() == 146) {
+		if (AccountUtil.getCurrentOrg().getOrgId() == 146 && (id == 11871 || id == 11872 || id == 11873)) {
 			LOGGER.log(Level.SEVERE, "Criteria Query: "+ criteriaBuilder.toString());
 		}
 		
