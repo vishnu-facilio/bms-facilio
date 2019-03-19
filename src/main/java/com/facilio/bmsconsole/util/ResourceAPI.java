@@ -91,6 +91,8 @@ public class ResourceAPI {
 					return AssetsAPI.getAssetInfo(id);
 				case SPACE:
 					return SpaceAPI.getBaseSpace(id);
+				default:
+					return resource;
 			}
 		}
 		return null;									

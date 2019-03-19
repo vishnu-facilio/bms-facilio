@@ -574,9 +574,9 @@ public class FormFactory {
 		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 3, 1));
 		fields.add(new FormField("category", FieldDisplayType.LOOKUP_SIMPLE, "Category", Required.OPTIONAL, "itemTypesCategory", 4, 1).setAllowCreate(true).setCreateFormName("item_category_form"));
 //		fields.add(new FormField("status", FieldDisplayType.LOOKUP_SIMPLE, "Status", Required.OPTIONAL, "itemTypesStatus", 4, 3));
-		fields.add(new FormField("unit", FieldDisplayType.UNIT, "Unit", Required.OPTIONAL, 5,1));
-		fields.add(new FormField("minimumQuantity", FieldDisplayType.TEXTBOX, "Minimum Quantity", Required.OPTIONAL, 6, 2));
-		fields.add(new FormField("individualTracking", FieldDisplayType.DECISION_BOX, "Individual Tracking", Required.OPTIONAL, 6, 3));
+//		fields.add(new FormField("unit", FieldDisplayType.UNIT, "Unit", Required.OPTIONAL, 5,1));
+		fields.add(new FormField("minimumQuantity", FieldDisplayType.TEXTBOX, "Minimum Quantity", Required.OPTIONAL, 5, 2));
+		fields.add(new FormField("individualTracking", FieldDisplayType.DECISION_BOX, "Individual Tracking", Required.OPTIONAL, 5, 3));
 		return fields;
 	}
 
@@ -608,11 +608,11 @@ public class FormFactory {
 		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.REQUIRED, 2, 1));
 		fields.add(new FormField("category", FieldDisplayType.LOOKUP_SIMPLE, "Category", Required.OPTIONAL, "toolTypesCategory", 3, 1).setAllowCreate(true).setCreateFormName("item_category_form"));
 		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 4, 1));
-		fields.add(new FormField("unit", FieldDisplayType.UNIT, "Unit", Required.OPTIONAL, 5,1));
+//		fields.add(new FormField("unit", FieldDisplayType.UNIT, "Unit", Required.OPTIONAL, 5,1));
 //		fields.add(new FormField("minimumQuantity", FieldDisplayType.TEXTBOX, "Minimum Quantity", Required.OPTIONAL, 6, 1));
 //		fields.add(new FormField("status", FieldDisplayType.LOOKUP_SIMPLE, "Status", Required.OPTIONAL, "toolTypesStatus", 7, 1));
 //		fields.add(new FormField("serialNumber", FieldDisplayType.TEXTBOX, "Serial Number", Required.OPTIONAL, 5,1));
-		fields.add(new FormField("individualTracking", FieldDisplayType.DECISION_BOX, "Individual Tracking", Required.OPTIONAL, 8, 1));
+		fields.add(new FormField("individualTracking", FieldDisplayType.DECISION_BOX, "Individual Tracking", Required.OPTIONAL, 5, 1));
 
 
 		return fields;

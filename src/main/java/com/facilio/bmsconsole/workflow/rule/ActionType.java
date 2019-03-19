@@ -837,7 +837,8 @@ public enum ActionType {
 				alarmId = (Long) currentRecordJson.get("id");
 			}
 			params.put("record", currentRecordJson);
-			Map<String,Object> workflowResult = WorkflowUtil.getExpressionResultMap((String)obj.get("WorkflowString"), params);
+			
+			Object val = WorkflowUtil.getWorkflowExpressionResult((String)obj.get("WorkflowString"), params);
 			
 			JSONArray fieldsJsonArray = (JSONArray) obj.get("fields");
 			for (Object key : fieldsJsonArray) {
@@ -845,9 +846,6 @@ public enum ActionType {
 				if (field != null) {
 					
 					fields.add(field);
-					Object val = workflowResult.get(field.getName());
-					
-					
 					
 					if(field.getName().equals(AlarmAPI.ALARM_COST_FIELD_NAME)) {
 						
