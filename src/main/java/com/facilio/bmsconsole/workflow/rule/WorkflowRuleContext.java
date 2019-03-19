@@ -382,6 +382,9 @@ public class WorkflowRuleContext implements Serializable {
 		}
 		if(actions != null) {
 			for(ActionContext action : actions) {
+				if (this.getId() == 6448) {
+					LOGGER.info("Place holders during action : "+placeHolders);
+				}
 				action.executeAction(placeHolders, context, this, record);
 			}
 		}
