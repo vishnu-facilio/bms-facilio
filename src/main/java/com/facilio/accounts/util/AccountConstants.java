@@ -1369,6 +1369,13 @@ public class AccountConstants {
 		sessionInfo.setColumnName("SESSION_INFO");
 		sessionInfo.setModule(module);
 		fields.add(sessionInfo);
+		
+		FacilioField userType = new FacilioField();
+		userType.setName("userType");
+		userType.setDataType(FieldType.STRING);
+		userType.setColumnName("USER_TYPE");
+		userType.setModule(module);
+		fields.add(userType);
 	
 		return fields;
 	}

@@ -32,6 +32,7 @@ public class FormFactory {
 		forms.put("workOrderForm", getWorkOrderForm());
 		forms.put("serviceWorkRequest", getServiceWorkRequestForm());
 		forms.put("serviceWorkOrder", getServiceWorkOrderForm());
+		forms.put("mobileServiceWorkOrder", getMobileServiceWorkOrderForm());
 		forms.put("loggedInServiceWorkRequest", getLoggedInServiceWorkRequest());
 		forms.put("web_pm", getPMForm());
 		forms.put("approvalForm", getApprovalForm());
@@ -138,6 +139,16 @@ public class FormFactory {
 		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.WORK_ORDER));
 		form.setLabelPosition(LabelPosition.TOP);
 		form.setFields(getServiceWorkRequestFormFields());
+		form.setFormType(FormType.PORTAL);
+		return form;
+	}
+	public static FacilioForm getMobileServiceWorkOrderForm() {
+		FacilioForm form = new FacilioForm();
+		form.setDisplayName("SUBMIT A REQUEST");
+		form.setName("mobileServiceWorkOrder");
+		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.WORK_ORDER));
+		form.setLabelPosition(LabelPosition.TOP);
+		form.setFields(getMobileServiceWorkRequestFormFields());
 		form.setFormType(FormType.PORTAL);
 		return form;
 	}
@@ -526,6 +537,18 @@ public class FormFactory {
 		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 4, 1));
 		fields.add(new FormField("urgency", FieldDisplayType.URGENCY, "Urgency", Required.OPTIONAL, 5, 1));
 		fields.add(new FormField("attachedFiles", FieldDisplayType.ATTACHMENT, "Attachment", Required.OPTIONAL, 6, 1));
+		return Collections.unmodifiableList(fields);
+	}
+	
+	private static List<FormField> getMobileServiceWorkRequestFormFields() {
+		List<FormField> fields = new ArrayList<>();
+		fields.add(new FormField("name", FieldDisplayType.REQUESTER, "Requester Name", Required.REQUIRED, 1, 1));
+		fields.add(new FormField("email", FieldDisplayType.REQUESTER, "Requester Email", Required.REQUIRED, 2, 1));
+		fields.add(new FormField("siteId", FieldDisplayType.LOOKUP_SIMPLE, "Site", Required.REQUIRED, "site" ,3, 1));
+		fields.add(new FormField("subject", FieldDisplayType.TEXTBOX, "Subject", Required.OPTIONAL, 4, 1));
+		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 5, 1));
+		fields.add(new FormField("urgency", FieldDisplayType.URGENCY, "Urgency", Required.OPTIONAL, 6, 1));
+		fields.add(new FormField("attachedFiles", FieldDisplayType.ATTACHMENT, "Attachment", Required.OPTIONAL, 7, 1));
 		return Collections.unmodifiableList(fields);
 	}
 	

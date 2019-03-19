@@ -69,6 +69,10 @@
 		</action>       
 		
 		<action name="getFormList" class="com.facilio.bmsconsole.actions.FormAction" method="getServicePortalForms"></action>
+	
+	    <action name="apisignup" class="com.facilio.auth.actions.FacilioAuthAction"
+        method="v2SignupPortalUser">
+        </action>
 		
 	</package>
 

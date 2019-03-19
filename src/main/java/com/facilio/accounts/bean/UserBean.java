@@ -94,7 +94,7 @@ public interface UserBean {
     
     public User getPortalUser(long uid) throws Exception;
     
-    public long startUserSession(long uid, String email, String token, String ipAddress, String userAgent) throws Exception;
+    public long startUserSession(long uid, String email, String token, String ipAddress, String userAgent, String userType) throws Exception;
     
     public boolean endUserSession(long uid, String email, String token) throws Exception;
     

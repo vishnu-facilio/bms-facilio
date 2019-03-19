@@ -1761,7 +1761,7 @@ public class UserBeanImpl implements UserBean {
 	}*/
 	
 	@Override
-	public long startUserSession(long uid, String email, String token, String ipAddress, String userAgent) throws Exception {
+	public long startUserSession(long uid, String email, String token, String ipAddress, String userAgent, String userType) throws Exception {
 
 		List<FacilioField> fields = AccountConstants.getUserSessionFields();
 
@@ -1777,6 +1777,7 @@ public class UserBeanImpl implements UserBean {
 		props.put("isActive", true);
 		props.put("ipAddress", ipAddress);
 		props.put("userAgent", userAgent);
+		props.put("userType", userType);
 
 		insertBuilder.addRecord(props);
 		insertBuilder.save();

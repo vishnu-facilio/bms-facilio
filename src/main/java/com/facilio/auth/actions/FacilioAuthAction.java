@@ -26,10 +26,12 @@ import org.json.simple.JSONObject;
 
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
+import com.facilio.accounts.dto.Account;
 import com.facilio.accounts.impl.UserBeanImpl;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.auth.cookie.FacilioCookie;
 import com.facilio.aws.util.AwsUtil;
+import com.facilio.bmsconsole.actions.FacilioAction;
 import com.facilio.bmsconsole.actions.PortalInfoAction;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.PortalInfoContext;
@@ -41,7 +43,7 @@ import com.facilio.transaction.FacilioConnectionPool;
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionSupport;
 
-public class FacilioAuthAction extends ActionSupport {
+public class FacilioAuthAction extends FacilioAction {
 
     /**
 	 * 
@@ -315,7 +317,8 @@ public class FacilioAuthAction extends ActionSupport {
                     userAgent = userAgent != null ? userAgent : "";
                     String ipAddress = request.getHeader("X-Forwarded-For");
                     ipAddress = (ipAddress == null || "".equals(ipAddress.trim())) ? request.getRemoteAddr() : ipAddress;
-                    AccountUtil.getUserBean().startUserSession(uid, getUsername(), jwt, ipAddress, userAgent);
+                    String userType = (AccountUtil.getCurrentAccount().isFromMobile() ? "mobile" : "web");
+                    AccountUtil.getUserBean().startUserSession(uid, getUsername(), jwt, ipAddress, userAgent, userType);
                 }
             } catch (Exception e) {
                 LOGGER.log(Level.INFO, "Exception while validating password, ", e);
@@ -610,6 +613,13 @@ public class FacilioAuthAction extends ActionSupport {
         return addPortalUser(getUsername(), getPassword(), getEmailaddress(), portalId());
     }
 
+     public String v2SignupPortalUser() throws Exception	{
+        LOGGER.info("signupUser() : username :"+getUsername() +", password :"+password+", email : "+getEmailaddress() + "portal " + portalId() );
+        addPortalUser(getUsername(), getPassword(), getEmailaddress(), portalId());
+        setResult("message",this.jsonresponse.values());
+        return SUCCESS;
+    }
+
 
     private String addPortalUser(String username, String password, String emailaddress, long portalId) throws Exception {
         LOGGER.info("### addPortalUser() :"+emailaddress);
@@ -630,6 +640,7 @@ public class FacilioAuthAction extends ActionSupport {
         
         if(!opensignup) {
         	setJsonresponse("message", "Signup not allowed for this portal");
+        	setResponseCode(1);
 			return SUCCESS;
         }
         
@@ -650,6 +661,7 @@ public class FacilioAuthAction extends ActionSupport {
 			}
 			if (!anydomain_allowedforsignup && !whitelisteddomain  ) {
 				setJsonresponse("message", "Only whitelisted domains allowed");
+				setResponseCode(1);
 				return SUCCESS;
 			}
 
@@ -670,6 +682,7 @@ public class FacilioAuthAction extends ActionSupport {
                 Throwable e= ie.getTargetException();
                 if(e.getMessage()!=null && e.getMessage().equals("Email Already Registered")) {
                     setJsonresponse("message", "Email Already Registered");
+                    setResponseCode(1);
                     return SUCCESS;
                 } else {
                     throw ie;
@@ -700,8 +713,14 @@ public class FacilioAuthAction extends ActionSupport {
         setJsonresponse("status", "failure");
         return ERROR;
     }
+    
+    public String v2apiLogout() throws Exception { 
+    	apiLogout();
+    	return SUCCESS;
+    }
 
-    public String apiLogout() throws Exception {
+
+	public String apiLogout() throws Exception {
 
         HttpServletRequest request = ServletActionContext.getRequest();
         HttpServletResponse response = ServletActionContext.getResponse();
