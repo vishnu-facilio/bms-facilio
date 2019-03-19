@@ -46,7 +46,7 @@ public class MLHistoricalForecastingJob extends FacilioJob
 		long endTime = 1538677800000l;
 		runPrediction(startTime,endTime,15);
 		*/
-		
+		/*
 		long startTime = 1524783600000l;//Apr 27  04:30
 		long endTime = 1535482800000l;//Aug 29 00:30 
 		
@@ -58,6 +58,7 @@ public class MLHistoricalForecastingJob extends FacilioJob
 		{
 			e.printStackTrace();
 		}
+		*/
 		/*
 		long startTime = 1537633600000l;//Sep 22 2018 21:56
 		long endTime = 1550000000000l;//Feb 13 2019 01:03:20
@@ -70,7 +71,7 @@ public class MLHistoricalForecastingJob extends FacilioJob
 			e.printStackTrace();
 		}*/
 		//long startTime = 1514800000000l;//Mon Jan 01 2018 15:16:40
-		/*long startTime = 1524852000000l;
+		long startTime = 1524852000000l;//April 27 2018 23:30
 		long endTime = 1530450000000l;//Feb 13 2019 01:03:20
 		try
 		{
@@ -80,26 +81,26 @@ public class MLHistoricalForecastingJob extends FacilioJob
 		{
 			e.printStackTrace();
 		}
-		*/
+		
 	}
 	
 	private void runLifeTimePrediction(long startTime,long endTime) throws Exception
 	{
-		//long bagfilterFieldID = 253613;
-		//long supplyFanStatusFieldID = 253885;
-		//long ttimeFieldID = 253618;
+		long bagfilterFieldID = 253613;
+		long supplyFanStatusFieldID = 253885;
+		long ttimeFieldID = 253618;
 		
-		//long predictedLogFieldID=490426l;
+		long predictedLogFieldID=490426l;
 		//long predictedFieldID=490436l;
 		
 		
-		//long assetId=969283l;
-		long bagfilterFieldID = 1010;
-		long supplyFanStatusFieldID = 1019;
-		long ttimeFieldID = 1012;
+		long assetId=969283l;
+		//long bagfilterFieldID = 1010;
+		//long supplyFanStatusFieldID = 1019;
+		//long ttimeFieldID = 1012;
 		
-		long predictedLogFieldID= 1028;
-		long assetId=3;
+		//long predictedLogFieldID= 1028;
+		//long assetId=3;
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioField predictedLogField = modBean.getField(predictedLogFieldID);
