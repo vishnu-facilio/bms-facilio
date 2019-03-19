@@ -856,6 +856,8 @@ public class FacilioConstants {
 		public static final String PURCHASED_TOOL = "purchasedTool";
 		public static final String PURCHASED_TOOL_IS_USED = "purchasedToolIsUsed";
 		public static final String PURCHASED_ITEM_IS_USED = "purchasedItemIsUsed";
+		
+		public static final String IS_BULK_ITEM_ADD = "isBulkItemAdd";
 
 		public static final String SKIP_WO_CREATION = "skipWOCreation";
 

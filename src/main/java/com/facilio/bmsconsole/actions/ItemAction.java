@@ -68,6 +68,7 @@ public class ItemAction extends FacilioAction{
 	public String addBulkItem() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD_LIST, items);
+		context.put(FacilioConstants.ContextNames.IS_BULK_ITEM_ADD, true);
 		context.put(FacilioConstants.ContextNames.SET_LOCAL_MODULE_ID, true);
 		context.put(FacilioConstants.ContextNames.STORE_ROOM, storeRoom);
 		Chain addInventry = TransactionChainFactory.getAddBulkItemChain();

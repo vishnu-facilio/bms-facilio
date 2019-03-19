@@ -33,6 +33,8 @@ public class AddOrUpdateItemStockTransactionsCommand implements Command {
 		List<PurchasedItemContext> purchasedItems = (List<PurchasedItemContext>) context
 				.get(FacilioConstants.ContextNames.PURCHASED_ITEM);
 		if (purchasedItems != null) {
+			Boolean isBulkItemAdd = (Boolean) context.get(FacilioConstants.ContextNames.IS_BULK_ITEM_ADD);
+
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ITEM_TRANSACTIONS);
 			List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.ITEM_TRANSACTIONS);
@@ -51,21 +53,26 @@ public class AddOrUpdateItemStockTransactionsCommand implements Command {
 				transaction.setIsReturnable(false);
 				transaction.setTransactionType(TransactionType.STOCK.getValue());
 
-				SelectRecordsBuilder<ItemTransactionsContext> transactionsselectBuilder = new SelectRecordsBuilder<ItemTransactionsContext>()
-						.select(fields).table(module.getTableName()).moduleName(module.getName())
-						.beanClass(ItemTransactionsContext.class)
-						.andCondition(CriteriaAPI.getCondition(fieldMap.get("transactionState"),
-								String.valueOf(TransactionState.ADDITION.getValue()), EnumOperators.IS));
-				List<ItemTransactionsContext> transactions = transactionsselectBuilder.get();
-				if (transactions != null && !transactions.isEmpty()) {
-					ItemTransactionsContext it = transactions.get(0);
-					it.setQuantity(ic.getQuantity());
-					UpdateRecordBuilder<ItemTransactionsContext> updateBuilder = new UpdateRecordBuilder<ItemTransactionsContext>()
-							.module(module).fields(modBean.getAllFields(module.getName()))
-							.andCondition(CriteriaAPI.getIdCondition(it.getId(), module));
-					updateBuilder.update(it);
-				} else {
+				//if bulk insertion add stock transaction entry
+				if (isBulkItemAdd != null && isBulkItemAdd) {
 					inventoryTransaction.add(transaction);
+				} else {
+					SelectRecordsBuilder<ItemTransactionsContext> transactionsselectBuilder = new SelectRecordsBuilder<ItemTransactionsContext>()
+							.select(fields).table(module.getTableName()).moduleName(module.getName())
+							.beanClass(ItemTransactionsContext.class)
+							.andCondition(CriteriaAPI.getCondition(fieldMap.get("transactionState"),
+									String.valueOf(TransactionState.ADDITION.getValue()), EnumOperators.IS));
+					List<ItemTransactionsContext> transactions = transactionsselectBuilder.get();
+					if (transactions != null && !transactions.isEmpty()) {
+						ItemTransactionsContext it = transactions.get(0);
+						it.setQuantity(ic.getQuantity());
+						UpdateRecordBuilder<ItemTransactionsContext> updateBuilder = new UpdateRecordBuilder<ItemTransactionsContext>()
+								.module(module).fields(modBean.getAllFields(module.getName()))
+								.andCondition(CriteriaAPI.getIdCondition(it.getId(), module));
+						updateBuilder.update(it);
+					} else {
+						inventoryTransaction.add(transaction);
+					}
 				}
 			}
 
