@@ -2,8 +2,10 @@ package com.facilio.bmsconsole.commands;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
@@ -41,6 +43,8 @@ public class AddPurchasedItemsForBulkItemAddCommand implements Command {
 		long itemTypesId = -1;
 		List<Long> itemTypesIds = new ArrayList<>();
 		List<Long> itemIds = new ArrayList<>();
+		Set<Long> uniqueItemIds = new HashSet<Long>();
+		Set<Long> uniqueItemTypesIds = new HashSet<Long>();
 		List<PurchasedItemContext> purchasedItem = (List<PurchasedItemContext>) context
 				.get(FacilioConstants.ContextNames.PURCHASED_ITEM);
 
@@ -51,69 +55,34 @@ public class AddPurchasedItemsForBulkItemAddCommand implements Command {
 		List<ItemContext> items = (List<ItemContext>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
 		List<PurchasedItemContext> pcToBeAdded = new ArrayList<>();
 		List<PurchasedItemContext> purchaseItemsList = new ArrayList<>();
-		if (items != null && !items.isEmpty()) {
-			for (ItemContext item : items) {
-				itemIds.add(item.getId());
-				if (purchasedItem != null && !items.isEmpty()) {
-					
-//					SelectRecordsBuilder<ItemTypesContext> itemTypesselectBuilder = new SelectRecordsBuilder<ItemTypesContext>()
-//							.select(itemTypesFields).table(itemTypesModule.getTableName())
-//							.moduleName(itemTypesModule.getName()).beanClass(ItemTypesContext.class)
-//							.andCondition(CriteriaAPI.getIdCondition(item.getItemType().getId(), itemTypesModule));
-//
-//					List<ItemTypesContext> itemTypes = itemTypesselectBuilder.get();
-					ItemTypesContext itemType = null;
-//					if (itemTypes != null && !itemTypes.isEmpty()) {
-//						itemType = itemTypes.get(0);
-//					}
-					
-					if(item.getItemType()!=null && item.getItemType().getId()>0) {
-						itemTypesId = item.getItemType().getId();
-						itemType = item.getItemType();
-					}
-
-					if (itemType == null) {
-						itemTypesId = -1;
-						throw new IllegalArgumentException("No such item found");
-					}
-					
-					itemTypesIds.add(itemTypesId);
-
-					for (PurchasedItemContext pi : purchasedItem) {
-						pi.setItem(item);
-						pi.setItemType(itemType);
-						if (itemType.individualTracking()) {
-							if (pi.getQuantity() > 0) {
-								throw new IllegalArgumentException(
-										"Quantity cannot be set when individual Tracking is enabled");
-							}
-							pi.setQuantity(1);
-							pi.setCurrentQuantity(1);
-						} else {
-							if (pi.getQuantity() <= 0) {
-								throw new IllegalArgumentException("Quantity cannot be null");
-							}
-							double quantity = pi.getQuantity();
-							pi.setCurrentQuantity(quantity);
-						}
-						pi.setCostDate(System.currentTimeMillis());
-						if (pi.getId() <= 0) {
-							// Insert
-							purchaseItemsList.add(pi);
-							pcToBeAdded.add(pi);
-						} else {
-							purchaseItemsList.add(pi);
-							updateInventorycost(purchasedItemModule, purchasedItemFields, pi);
-						}
-
-					}
+		if (purchasedItem != null && !purchasedItem.isEmpty()) {
+			for (PurchasedItemContext pi : purchasedItem) {
+				uniqueItemIds.add(pi.getItem().getId());
+				uniqueItemTypesIds.add(pi.getItemType().getId());
+				if (pi.getQuantity() <= 0) {
+					throw new IllegalArgumentException("Quantity cannot be null");
 				}
+				double quantity = pi.getQuantity();
+				pi.setCurrentQuantity(quantity);
+
+				pi.setCostDate(System.currentTimeMillis());
+				if (pi.getId() <= 0) {
+					// Insert
+					purchaseItemsList.add(pi);
+					pcToBeAdded.add(pi);
+				} else {
+					purchaseItemsList.add(pi);
+					updateInventorycost(purchasedItemModule, purchasedItemFields, pi);
+				}
+
 			}
 
 			if (pcToBeAdded != null && !pcToBeAdded.isEmpty()) {
 				addInventorycost(purchasedItemModule, purchasedItemFields, pcToBeAdded);
 			}
 		}
+		itemIds.addAll(uniqueItemIds);
+		itemTypesIds.addAll(uniqueItemTypesIds);
 		context.put(FacilioConstants.ContextNames.PURCHASED_ITEM, purchaseItemsList);
 		context.put(FacilioConstants.ContextNames.RECORD_LIST, purchaseItemsList);
 		context.put(FacilioConstants.ContextNames.ITEM_IDS, itemIds);

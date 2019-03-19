@@ -55,14 +55,22 @@ public class BulkItemAdditionCommand implements Command {
 			} else {
 				item.setId(itemTypeVsItem.get(item.getItemType().getId()));
 			}
-			purchasedItems.addAll(item.getPurchasedItems());
-			item.setPurchasedItems(null);
 		}
 
 		if (itemToBeAdded != null && !itemToBeAdded.isEmpty()) {
 			addItem(itemModule, itemFields, itemToBeAdded);
 		}
 
+		for (ItemContext item : itemsList) {
+			if (item.getPurchasedItems() != null && !item.getPurchasedItems().isEmpty()) {
+				for (PurchasedItemContext pItem : item.getPurchasedItems()) {
+					pItem.setItem(item);
+					pItem.setItemType(item.getItemType());
+					purchasedItems.add(pItem);
+				}
+				item.setPurchasedItems(null);
+			}
+		}
 		context.put(FacilioConstants.ContextNames.PURCHASED_ITEM, purchasedItems);
 		context.put(FacilioConstants.ContextNames.RECORD_LIST, itemsList);
 		return false;
