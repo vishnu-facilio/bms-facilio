@@ -558,6 +558,9 @@ public class ReadingRuleContext extends WorkflowRuleContext implements Cloneable
 	public Object getMetric(ReadingContext reading) {
 		if(reading != null) {
 			if (!isMatchingResource(reading)) {
+				if (this.getId() == 6448) {
+					LOGGER.info("Parent didn't match and so returning metric as null");
+				}
 				return null;
 			}
 			if (this.getId() == 6448) {
@@ -625,11 +628,17 @@ public class ReadingRuleContext extends WorkflowRuleContext implements Cloneable
 	private boolean isMatchingResource(ReadingContext reading) {
 		if (matchedResources != null && !matchedResources.isEmpty()) {
 			if (this.getId() == 6448) {
-				LOGGER.info("Metched resources : "+matchedResources.keySet()+"\n Reading parent id : "+reading.getParentId());
+				LOGGER.info("Matched resources : "+matchedResources.keySet()+"\n Reading parent id : "+reading.getParentId());
 			}
 			ResourceContext parent = matchedResources.get(reading.getParentId());
+			if (this.getId() == 6448) {
+				LOGGER.info("Matched parent : "+parent);
+			}
 			if (parent != null) {
 				reading.setParent(parent);
+				if (this.getId() == 6448) {
+					LOGGER.info("Parent matched and so returning true");
+				}
 				return true;
 			}
 		}
