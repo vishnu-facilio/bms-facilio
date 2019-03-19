@@ -56,7 +56,7 @@ public class EventToAlarmCommand implements Command {
 					.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 					.andCondition(CriteriaAPI.getCondition(messageKeyField, event.getMessageKey(), StringOperators.IS))
 					.andCondition(CriteriaAPI.getCondition(alarmIdField, CommonOperators.IS_NOT_EMPTY))
-					.andCondition(CriteriaAPI.getCondition(createdTimeField, String.valueOf(event.getCreatedTime()), NumberOperators.LESS_THAN_EQUAL))
+//					.andCondition(CriteriaAPI.getCondition(createdTimeField, String.valueOf(event.getCreatedTime()), NumberOperators.LESS_THAN_EQUAL))
 					.orderBy("CREATED_TIME DESC")
 					.limit(1)
 					;
@@ -65,6 +65,13 @@ public class EventToAlarmCommand implements Command {
 			
 			if(props != null && !props.isEmpty())
 			{
+				if(props.get(0).get("createdTime") != null) {
+					long createdTime = (long) props.get(0).get("createdTime");
+					if(createdTime > event.getCreatedTime()) {
+						LOGGER.error("this alarm came before current alarm -- "+props);
+					}
+				}
+				
 				long alarmId = (long) props.get(0).get("alarmId");
 				return alarmId;
 			}
