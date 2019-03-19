@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.util;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.StringJoiner;
@@ -17,12 +18,28 @@ import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
+import com.facilio.bmsconsole.modules.FieldFactory;
+import com.facilio.bmsconsole.modules.FieldUtil;
+import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.fw.BeanFactory;
+import com.facilio.sql.GenericSelectRecordBuilder;
 
 public class MLUtil 
 {
 	private static final Logger LOGGER = Logger.getLogger(MLUtil.class.getName());
+	
+	public static MlForecastingContext getContext(long forecastingID) throws Exception
+	{
+		FacilioModule module = ModuleFactory.getMlForecastingModule();
+		GenericSelectRecordBuilder recordBuilder = new GenericSelectRecordBuilder()
+													.table(module.getTableName())
+													.select(FieldFactory.getMlForecastingFields())
+													.andCondition(CriteriaAPI.getIdCondition(forecastingID, module));
+		
+		List<Map<String, Object>> predictionListMap = recordBuilder.get();
+		return FieldUtil.getAsBeanFromMap(predictionListMap.get(0), MlForecastingContext.class);
+	}
 	
 	public static boolean checkValidPrediction(MlForecastingContext context,List<Long> predictedTimeArray)
 	{
