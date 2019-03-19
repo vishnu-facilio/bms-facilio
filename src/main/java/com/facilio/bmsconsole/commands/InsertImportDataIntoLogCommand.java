@@ -40,7 +40,7 @@ public class InsertImportDataIntoLogCommand implements Command {
 			ImportProcessLogContext logContext= new ImportProcessLogContext();
 			logContext.setImportMode(importProcessContext.getImportMode());
 			
-			if(importProcessContext.getImportMode() == ImportProcessContext.ImportMode.NORMAL.getValue()) {
+			if(importProcessContext.getImportMode() == ImportProcessContext.ImportMode.READING.getValue()) {
 				logContext.setParentId(groupedContext.get(uniqueString).get(0).getParentId());
 				logContext.setTtime(groupedContext.get(uniqueString).get(0).getTtime());
 				logContext.setTemplateId(importProcessContext.getTemplateId());
