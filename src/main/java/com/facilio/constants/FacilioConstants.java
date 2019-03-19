@@ -794,6 +794,8 @@ public class FacilioConstants {
 		public static final String ITEM_TYPES_CATEGORY = "itemTypesCategory";
 		public static final String ITEM_TYPES_STATUS = "itemTypesStatus";
 		public static final String ITEM_TYPES_ID = "itemTypesId";
+		public static final String ITEM_TYPES_IDS = "itemTypesIds";
+
 
 		public static final String TOOL_TYPES = "toolTypes";
 		public static final String TOOL_TYPES_LIST = "toolTypesList";
@@ -801,6 +803,7 @@ public class FacilioConstants {
 		public static final String TOOLS_TYPES_CATEGORY = "toolTypesCategory";
 
 		public static final String TOOL_TYPES_ID = "toolTypesId";
+		public static final String TOOL_TYPES_IDS = "toolTypesIds";
 
 //		public static final String TOOL = "tool";
 		public static final String TOOLS = "tools";

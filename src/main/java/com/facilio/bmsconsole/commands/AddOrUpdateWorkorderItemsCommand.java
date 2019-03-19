@@ -157,6 +157,7 @@ public class AddOrUpdateWorkorderItemsCommand implements Command {
 			context.put(FacilioConstants.ContextNames.RECORD_LIST, workorderItemslist);
 			context.put(FacilioConstants.ContextNames.WORKORDER_COST_TYPE, 1);
 			context.put(FacilioConstants.ContextNames.ITEM_TYPES_ID, itemTypesId);
+			context.put(FacilioConstants.ContextNames.ITEM_TYPES_IDS, Collections.singletonList(itemTypesId));
 		}
 		return false;
 	}

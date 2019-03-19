@@ -1621,6 +1621,16 @@ public class TransactionChainFactory {
 			return c;
 		}
 		
+		public static Chain getAddBulkItemChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForItem());
+			c.addCommand(new BulkItemAdditionCommand());
+			c.addCommand(new ExecuteAllWorkflowsCommand());
+			c.addCommand(getAddBulkPurchasedItemChain());
+			c.addCommand(getUpdateItemQuantityRollupChain());
+			return c;
+		}
+		
 		public static Chain getUpdateItemChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForItem());
@@ -1634,6 +1644,15 @@ public class TransactionChainFactory {
 			Chain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForPurchasedItem());
 			c.addCommand(new GetAddPurchasedItemCommand());
+			c.addCommand(getAddOrUpdateItemStockTransactionChain());
+			return c;
+		}
+		
+		
+		public static Chain getAddBulkPurchasedItemChain(){
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForPurchasedItem());
+			c.addCommand(new AddPurchasedItemsForBulkItemAddCommand());
 			c.addCommand(getAddOrUpdateItemStockTransactionChain());
 			return c;
 		}
