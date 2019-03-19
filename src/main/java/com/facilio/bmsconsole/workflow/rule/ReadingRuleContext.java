@@ -628,7 +628,7 @@ public class ReadingRuleContext extends WorkflowRuleContext implements Cloneable
 	private boolean isMatchingResource(ReadingContext reading) {
 		if (matchedResources != null && !matchedResources.isEmpty()) {
 			if (this.getId() == 6448) {
-				LOGGER.info("Matched resources : "+matchedResources.keySet()+"\n Reading parent id : "+reading.getParentId());
+				LOGGER.info("Matched resources : "+matchedResources.keySet()+"\n Reading parent id : "+reading.getParentId()+"\nMatched resource class : "+matchedResources.keySet().stream().findFirst().get().getClass());
 			}
 			ResourceContext parent = matchedResources.get(reading.getParentId());
 			if (this.getId() == 6448) {
