@@ -89,6 +89,7 @@ import com.facilio.workflows.functions.FacilioStringFunction;
 import com.facilio.workflows.functions.FacilioSystemFunctions;
 import com.facilio.workflows.functions.FacilioWorkOrderFunctions;
 import com.facilio.workflows.functions.FacilioWorkflowFunctionInterface;
+import com.facilio.workflows.functions.MLFunctions;
 import com.facilio.workflows.functions.ThermoPhysicalR134aFunctions;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
@@ -1545,7 +1546,7 @@ public class WorkflowUtil {
 					facilioWorkflowFunction = FacilioSystemFunctions.getFacilioSystemFunction(functionName);
 					break;
 				case ASSET:
-					facilioWorkflowFunction = FacilioAssetFunctions.getFacilioCostFunction(functionName);
+					facilioWorkflowFunction = FacilioAssetFunctions.getFacilioAssetFunction(functionName);
 					break;
 				case WORKORDER:
 					facilioWorkflowFunction = FacilioWorkOrderFunctions.getFacilioWorkOrderFunction(functionName);
@@ -1553,8 +1554,9 @@ public class WorkflowUtil {
 				case CONSUMPTION:
 					facilioWorkflowFunction = FacilioConsumptionFunctions.getFacilioConsumptionFunction(functionName);
 					break;
-		
-		
+				case ML:
+					facilioWorkflowFunction = MLFunctions.getFacilioMLFunction(functionName);
+					break;
 			}
 		}
 		return facilioWorkflowFunction;

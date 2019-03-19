@@ -35,7 +35,6 @@ public interface ModuleBean extends RootBean {
 	
 	public List<FacilioField> getAllCustomFields (String moduleName) throws Exception;
 	
-	@Deprecated
 	public FacilioField getField(long fieldId) throws Exception;
 	
 	public FacilioField getField(long fieldId, long moduleId) throws Exception;

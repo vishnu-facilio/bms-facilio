@@ -78,10 +78,11 @@ public enum FacilioAssetFunctions implements FacilioWorkflowFunctionInterface {
 		this.value = value;
 		this.functionName = functionName;
 	}
+	
 	public static Map<String, FacilioAssetFunctions> getAllFunctions() {
 		return ASSET_FUNCTIONS;
 	}
-	public static FacilioAssetFunctions getFacilioCostFunction(String functionName) {
+	public static FacilioAssetFunctions getFacilioAssetFunction(String functionName) {
 		return ASSET_FUNCTIONS.get(functionName);
 	}
 	static final Map<String, FacilioAssetFunctions> ASSET_FUNCTIONS = Collections.unmodifiableMap(initTypeMap());

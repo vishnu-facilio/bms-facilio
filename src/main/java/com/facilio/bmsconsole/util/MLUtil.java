@@ -1,6 +1,6 @@
 package com.facilio.bmsconsole.util;
 
-import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import java.util.SortedMap;
@@ -24,11 +24,11 @@ public class MLUtil
 {
 	private static final Logger LOGGER = Logger.getLogger(MLUtil.class.getName());
 	
-	public static boolean checkValidPrediction(MlForecastingContext context,long[] predictedTimeArray)
+	public static boolean checkValidPrediction(MlForecastingContext context,List<Long> predictedTimeArray)
 	{
 		try
 		{
-			long minTime = Arrays.stream(predictedTimeArray).min().getAsLong();
+			long minTime = predictedTimeArray.stream().min(Comparator.comparing(Long::valueOf)).get();
 			SortedMap<Long,ReadingContext> actualValues = new TreeMap<Long,ReadingContext>();
 			FacilioField actualField = context.getFields().get(0);
 			SelectRecordsBuilder<ReadingContext> selectBuilder = new SelectRecordsBuilder<ReadingContext>()
@@ -72,7 +72,7 @@ public class MLUtil
 					validCount++;
 				}
 			}
-			if(validCount>predictedTimeArray.length/2)
+			if(validCount>predictedTimeArray.size()/2)
 			{
 				return true;
 			}
