@@ -231,7 +231,8 @@ private static Logger log = LogManager.getLogger(Home.class.getName());
 				long uid = AccountUtil.getUserBean().getFacilioUser(username).getUid();
 				String userAgent = request.getHeader("User-Agent");
 				userAgent = userAgent != null ? userAgent : "";
-				AccountUtil.getUserBean().startUserSession(uid, username, jwt, request.getRemoteAddr(), userAgent);
+				String userType = (AccountUtil.getCurrentAccount().isFromMobile() ? "mobile" : "web");
+				AccountUtil.getUserBean().startUserSession(uid, username, jwt, request.getRemoteAddr(), userAgent, userType);
 			} catch (Exception e) {
 				log.info("Exception occurred ", e);
 				setJsonresponse("message", "Error while validating user name and password");

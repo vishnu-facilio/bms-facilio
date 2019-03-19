@@ -21,7 +21,6 @@ import com.facilio.bmsconsole.commands.AddOrUpdateReportCommand;
 import com.facilio.bmsconsole.commands.ConstructReportData;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
-import com.facilio.bmsconsole.context.AlarmContext;
 import com.facilio.bmsconsole.context.DashboardWidgetContext;
 import com.facilio.bmsconsole.context.FormulaContext.AggregateOperator;
 import com.facilio.bmsconsole.context.ReadingAlarmContext;
@@ -174,6 +173,7 @@ public class V2ReportAction extends FacilioAction {
 		}
 		
 		context.put(FacilioConstants.ContextNames.REPORT, reportContext);
+		context.put(FacilioConstants.ContextNames.REPORT_HANDLE_BOOLEAN, newFormat);
 	}
 	
 	private ReportFolderContext reportFolder;
@@ -247,6 +247,7 @@ public class V2ReportAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.REPORT_SHOW_ALARMS, showAlarms);
 		context.put(FacilioConstants.ContextNames.REPORT_SHOW_SAFE_LIMIT, showSafeLimit);
 		context.put(FacilioConstants.Workflow.WORKFLOW, transformWorkflow);
+		context.put(FacilioConstants.ContextNames.REPORT_HANDLE_BOOLEAN, newFormat);
 		
 		context.put(FacilioConstants.ContextNames.ALARM_ID, alarmId);
 	}
@@ -452,7 +453,6 @@ public class V2ReportAction extends FacilioAction {
 		}
 		FacilioContext context = new FacilioContext();
 		setReadingsDataContext(context);
-		context.put(FacilioConstants.ContextNames.REPORT_HANDLE_BOOLEAN, newFormat);
 		
 		Chain fetchReadingDataChain = newFormat ? ReadOnlyChainFactory.newFetchReadingReportChain() : ReadOnlyChainFactory.fetchReadingReportChain();
 		fetchReadingDataChain.execute(context);
@@ -1012,7 +1012,6 @@ public class V2ReportAction extends FacilioAction {
 			setReadingsDataContext(context);
 			context.put(FacilioConstants.ContextNames.TABULAR_STATE, tabularState);
 		}
-		context.put(FacilioConstants.ContextNames.REPORT_HANDLE_BOOLEAN, newFormat);
 		context.put(FacilioConstants.ContextNames.FILE_FORMAT, fileFormat);
 		context.put("chartType", chartType);	// Temp
 		
@@ -1046,7 +1045,6 @@ public class V2ReportAction extends FacilioAction {
 			setReadingsDataContext(context);
 			context.put(FacilioConstants.ContextNames.TABULAR_STATE, tabularState);
 		}
-		context.put(FacilioConstants.ContextNames.REPORT_HANDLE_BOOLEAN, newFormat);
 		context.put(FacilioConstants.ContextNames.FILE_FORMAT, fileFormat);
 		context.put(FacilioConstants.Workflow.TEMPLATE, emailTemplate);
 		context.put("chartType", chartType);	// Temp
