@@ -4927,6 +4927,7 @@ public class FieldFactory {
 		fields.add(getField("rowContextString" , "GROUPED_ROWS", module, FieldType.STRING));
 		fields.add(getField("error_resolved" , "ERROR_RESOLVED", module, FieldType.NUMBER));
 		fields.add(getField("correctedRowString","CORRECTED_ROW", module, FieldType.STRING));
+		fields.add(getField("importMode", "IMPORT_MODE", module, FieldType.NUMBER));
 		return fields;
 	}
 	public static List<FacilioField> getImportTemplateFields(){

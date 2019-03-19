@@ -42,6 +42,7 @@ import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.BuildingContext;
 import com.facilio.bmsconsole.context.FloorContext;
+import com.facilio.bmsconsole.context.ImportRowContext;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.ResourceContext.ResourceType;
@@ -96,88 +97,102 @@ public class ProcessImportCommand implements Command {
 		JSONObject dateFormats = (JSONObject) importMeta.get(ImportAPI.ImportProcessConstants.DATE_FORMATS);
 
 		HashMap<Integer, String> headerIndex = new HashMap<Integer, String>();
+		List<Map<String, Object>> allRows = ImportAPI.getValidatedRows(importProcessContext.getId());
+//		Workbook workbook = WorkbookFactory.create(ins);
 
-		Workbook workbook = WorkbookFactory.create(ins);
-
-		for (int i = 0; i < workbook.getNumberOfSheets(); i++) {
-			Sheet datatypeSheet = workbook.getSheetAt(i);
-
-			Iterator<Row> rowItr = datatypeSheet.iterator();
-			boolean heading = true;
-			int row_no = 0;
-			while (rowItr.hasNext()) {
-				row_no++;
-				LOGGER.severe("row_no -- " + row_no);
-				Row row = rowItr.next();
-
-				if (row.getPhysicalNumberOfCells() <= 0) {
-					break;
-				}
-				if (heading) {
-					Iterator<Cell> cellItr = row.cellIterator();
-					int cellIndex = 0;
-					while (cellItr.hasNext()) {
-						Cell cell = cellItr.next();
-						String cellValue = cell.getStringCellValue();
-						headerIndex.put(cellIndex, cellValue);
-						cellIndex++;
-					}
-					heading = false;
-					continue;
-				}
-
-				HashMap<String, Object> colVal = new HashMap<>();
-
-				Iterator<Cell> cellItr = row.cellIterator();
-				while (cellItr.hasNext()) {
-					Cell cell = cellItr.next();
-
-					String cellName = headerIndex.get(cell.getColumnIndex());
-					if (cellName == null) {
-						continue;
-					}
-
-					Object val = 0.0;
-					if (cell.getCellTypeEnum() == CellType.STRING) {
-
-						val = cell.getStringCellValue().trim();
-					} else if (cell.getCellTypeEnum() == CellType.NUMERIC
-							|| cell.getCellTypeEnum() == CellType.FORMULA) {
-						if (cell.getCellTypeEnum() == CellType.NUMERIC && HSSFDateUtil.isCellDateFormatted(cell)) {
-							Date date = cell.getDateCellValue();
-							Instant date1 = date.toInstant();
-							val = date1.getEpochSecond()*1000;
-						} 
-						else if(cell.getCellTypeEnum() == CellType.FORMULA) {
-							val = cell.getStringCellValue();
-						}
-						else {
-							val = cell.getNumericCellValue();
-						}
-					} else if (cell.getCellTypeEnum() == CellType.BOOLEAN) {
-						val = cell.getBooleanCellValue();
-					} else {
-						val = null;
-					}
-					colVal.put(cellName, val);
-
-				}
-
-				if (colVal.values() == null || colVal.values().isEmpty()) {
-					break;
-				} else {
-					boolean isAllNull = true;
-					for (Object value : colVal.values()) {
-						if (value != null) {
-							isAllNull = false;
-							break;
-						}
-					}
-					if (isAllNull) {
-						break;
-					}
-				}
-
+		for(Map<String, Object> row: allRows) {
+			ImportProcessLogContext rowLogContext = FieldUtil.getAsBeanFromMap(row, ImportProcessLogContext.class);
+			ImportRowContext rowContext = new ImportRowContext();
+			
+			if(rowLogContext.getError_resolved() == ImportProcessContext.ImportLogErrorStatus.NO_VALIDATION_REQUIRED.getValue()){
+				rowContext = rowLogContext.getRowContexts().get(0);
+			}
+			else if(rowLogContext.getError_resolved() == ImportProcessContext.ImportLogErrorStatus.RESOLVED.getValue()) {
+				rowContext = rowLogContext.getCorrectedRow();
+			}	
+			
+			int row_no = rowContext.getRowNumber();
+			HashMap<String, Object> colVal = rowContext.getColVal();
+			
+//		for (int i = 0; i < workbook.getNumberOfSheets(); i++) {
+//			Sheet datatypeSheet = workbook.getSheetAt(i);
+//
+//			Iterator<Row> rowItr = datatypeSheet.iterator();
+//			boolean heading = true;
+//			int row_no = 0;
+//			while (rowItr.hasNext()) {
+//				row_no++;
+//				LOGGER.severe("row_no -- " + row_no);
+//				Row row = rowItr.next();
+//
+//				if (row.getPhysicalNumberOfCells() <= 0) {
+//					break;
+//				}
+//				if (heading) {
+//					Iterator<Cell> cellItr = row.cellIterator();
+//					int cellIndex = 0;
+//					while (cellItr.hasNext()) {
+//						Cell cell = cellItr.next();
+//						String cellValue = cell.getStringCellValue();
+//						headerIndex.put(cellIndex, cellValue);
+//						cellIndex++;
+//					}
+//					heading = false;
+//					continue;
+//				}
+//
+//				HashMap<String, Object> colVal = new HashMap<>();
+//
+//				Iterator<Cell> cellItr = row.cellIterator();
+//				while (cellItr.hasNext()) {
+//					Cell cell = cellItr.next();
+//
+//					String cellName = headerIndex.get(cell.getColumnIndex());
+//					if (cellName == null) {
+//						continue;
+//					}
+//
+//					Object val = 0.0;
+//					if (cell.getCellTypeEnum() == CellType.STRING) {
+//
+//						val = cell.getStringCellValue().trim();
+//					} else if (cell.getCellTypeEnum() == CellType.NUMERIC
+//							|| cell.getCellTypeEnum() == CellType.FORMULA) {
+//						if (cell.getCellTypeEnum() == CellType.NUMERIC && HSSFDateUtil.isCellDateFormatted(cell)) {
+//							Date date = cell.getDateCellValue();
+//							Instant date1 = date.toInstant();
+//							val = date1.getEpochSecond()*1000;
+//						} 
+//						else if(cell.getCellTypeEnum() == CellType.FORMULA) {
+//							val = cell.getStringCellValue();
+//						}
+//						else {
+//							val = cell.getNumericCellValue();
+//						}
+//					} else if (cell.getCellTypeEnum() == CellType.BOOLEAN) {
+//						val = cell.getBooleanCellValue();
+//					} else {
+//						val = null;
+//					}
+//					colVal.put(cellName, val);
+//
+//				}
+//
+//				if (colVal.values() == null || colVal.values().isEmpty()) {
+//					break;
+//				} else {
+//					boolean isAllNull = true;
+//					for (Object value : colVal.values()) {
+//						if (value != null) {
+//							isAllNull = false;
+//							break;
+//						}
+//					}
+//					if (isAllNull) {
+//						break;
+//					}
+//				}
+			
 				LOGGER.severe("row -- " + row_no + " colVal --- " + colVal);
 
 					HashMap<String, Object> props = new LinkedHashMap<String, Object>();
@@ -377,7 +392,7 @@ public class ProcessImportCommand implements Command {
 					readingsList.add(reading);
 					groupedContext.put(module, reading);	
 			}
-		}
+		
 		c.put(ImportAPI.ImportProcessConstants.IMPORT_PROCESS_CONTEXT, importProcessContext);
 		c.put(ImportAPI.ImportProcessConstants.FIELDS_MAPPING, fieldMapping);
 		c.put(ImportAPI.ImportProcessConstants.GROUPED_FIELDS, groupedFields);

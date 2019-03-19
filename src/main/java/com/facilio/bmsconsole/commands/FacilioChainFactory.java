@@ -1043,6 +1043,13 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
+	public static Chain parseImportData() {
+		Chain c = FacilioChain.getTransactionChain();
+		c.addCommand(new DataParseForImportCommand());
+		c.addCommand(new InsertImportDataIntoLogCommand());
+		return c;
+	}
+	
 	public static Chain processImportData() {
 		Chain c = FacilioChain.getNonTransactionChain();
 		c.addCommand(SetTableNamesCommand.getForZone());

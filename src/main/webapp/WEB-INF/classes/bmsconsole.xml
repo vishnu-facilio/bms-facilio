@@ -3137,6 +3137,15 @@
 				<param name="includeProperties">^actionErrors.*,^fieldErrors.*</param>
 			</result>
 		</action>
+		<action name="importData" class="com.facilio.bmsconsole.actions.ImportDataAction" method="importData">
+			<result name="success" type="json">
+				<param name="statusCode">200</param>	
+				<param name="properties">importProcessContext.*</param>
+			</result>
+			<result name="error" type="json">
+				<param name="statusCode">500</param>
+			</result>
+		</action>
 		<action name="deleteFile" class="com.facilio.bmsconsole.actions.ImportDataAction" method="deleteFile">
 			<result name="success" type="json">
 				<param name="statusCode">200</param>
