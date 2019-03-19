@@ -465,49 +465,57 @@ public class ModuleBeanImpl implements ModuleBean {
 			Map<FieldType, Map<Long, Map<String, Object>>> extendedPropsMap = getTypeWiseExtendedProps(extendedIds);
 			
 			List<FacilioField> fields = new ArrayList<>();
-			for (Map<String, Object> prop : props) {
-				Long extendedModuleId = (Long) prop.get("extendedModuleId");
-				if(extendedModuleId != null) {
-					FacilioModule extendedModule = moduleMap.get(extendedModuleId);
-					if(extendedModule == null) {
-						throw new IllegalArgumentException("Invalid Extended module id in Field : "+prop.get("name")+"::Module Id : "+prop.get("moduleId"));
+			try {
+				for (Map<String, Object> prop : props) {
+					Long extendedModuleId = (Long) prop.get("extendedModuleId");
+					if(extendedModuleId != null) {
+						FacilioModule extendedModule = moduleMap.get(extendedModuleId);
+						if(extendedModule == null) {
+							throw new IllegalArgumentException("Invalid Extended module id in Field : "+prop.get("name")+"::Module Id : "+prop.get("moduleId"));
+						}
+						prop.put("extendedModule", extendedModule);
 					}
-					prop.put("extendedModule", extendedModule);
+					prop.put("module", moduleMap.get(prop.get("moduleId")));
+					
+					FieldType type = FieldType.getCFType((int) prop.get("dataType"));
+					switch(type) {
+						case NUMBER:
+						case DECIMAL:
+								prop.putAll(extendedPropsMap.get(type).get(prop.get("fieldId")));
+								fields.add(FieldUtil.getAsBeanFromMap(prop, NumberField.class));
+							break;
+						case BOOLEAN:
+								prop.putAll(extendedPropsMap.get(type).get(prop.get("fieldId")));
+								fields.add(FieldUtil.getAsBeanFromMap(prop, BooleanField.class));
+							break;
+						case LOOKUP:
+								prop.putAll(extendedPropsMap.get(type).get(prop.get("fieldId")));
+								Long lookupModuleId = (Long) prop.get("lookupModuleId");
+								if(lookupModuleId != null) {
+									FacilioModule lookupModule = getMod(lookupModuleId);
+									prop.put("lookupModule", lookupModule);
+								}
+								fields.add(FieldUtil.getAsBeanFromMap(prop, LookupField.class));
+							break;
+						case FILE:
+								prop.putAll(extendedPropsMap.get(type).get(prop.get("fieldId")));
+								fields.add(FieldUtil.getAsBeanFromMap(prop, FileField.class));
+							break;
+						case ENUM:
+								prop.putAll(extendedPropsMap.get(type).get(prop.get("fieldId")));
+								fields.add(FieldUtil.getAsBeanFromMap(prop, EnumField.class));
+							break;
+						default:
+							fields.add(FieldUtil.getAsBeanFromMap(prop, FacilioField.class));
+							break;
+					}
 				}
-				prop.put("module", moduleMap.get(prop.get("moduleId")));
-				
-				FieldType type = FieldType.getCFType((int) prop.get("dataType"));
-				switch(type) {
-					case NUMBER:
-					case DECIMAL:
-							prop.putAll(extendedPropsMap.get(type).get(prop.get("fieldId")));
-							fields.add(FieldUtil.getAsBeanFromMap(prop, NumberField.class));
-						break;
-					case BOOLEAN:
-							prop.putAll(extendedPropsMap.get(type).get(prop.get("fieldId")));
-							fields.add(FieldUtil.getAsBeanFromMap(prop, BooleanField.class));
-						break;
-					case LOOKUP:
-							prop.putAll(extendedPropsMap.get(type).get(prop.get("fieldId")));
-							Long lookupModuleId = (Long) prop.get("lookupModuleId");
-							if(lookupModuleId != null) {
-								FacilioModule lookupModule = getMod(lookupModuleId);
-								prop.put("lookupModule", lookupModule);
-							}
-							fields.add(FieldUtil.getAsBeanFromMap(prop, LookupField.class));
-						break;
-					case FILE:
-							prop.putAll(extendedPropsMap.get(type).get(prop.get("fieldId")));
-							fields.add(FieldUtil.getAsBeanFromMap(prop, FileField.class));
-						break;
-					case ENUM:
-							prop.putAll(extendedPropsMap.get(type).get(prop.get("fieldId")));
-							fields.add(FieldUtil.getAsBeanFromMap(prop, EnumField.class));
-						break;
-					default:
-						fields.add(FieldUtil.getAsBeanFromMap(prop, FacilioField.class));
-						break;
-				}
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				// e.printStackTrace();
+				log.fatal("Exception occurred "+extendedPropsMap +"\n" + props);
+				throw e;
+
 			}
 			return Collections.unmodifiableList(fields);
 		}
