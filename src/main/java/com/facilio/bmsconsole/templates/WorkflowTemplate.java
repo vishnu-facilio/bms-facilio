@@ -18,7 +18,7 @@ public class WorkflowTemplate extends Template {
 	private JSONObject metaJson;
 	public String getMeta() {
 		if(metaJson != null) {
-			metaJson.toJSONString();
+			return metaJson.toJSONString();
 		}
 		return null;
 	}
