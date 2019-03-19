@@ -4,4 +4,4 @@ JMX_EXPORTER_OPTS="-javaagent:/home/ubuntu/facmon/prometheus/jmx_prometheus_java
 JVM_OPTS="-Xms1G -Xmx2G -XX:+UseG1GC -server -XX:+UseStringDeduplication -XX:ParallelGCThreads=2 -XX:MaxGCPauseMillis=30"
 DATE=`date +%Y-%m-%d`
 JAVA_GC_OPTS="-XX:+UseGCLogFileRotation -XX:NumberOfGCLogFiles=5 -XX:GCLogFileSize=10M -Xloggc:/home/ubuntu/tomcat/logs/gc.%t.log -XX:+PrintGC -XX:+PrintGCDetails -XX:+PrintGCDateStamps"
-JAVA_OPTS="$FACILIO_OPTS $JVM_OPTS $JAVA_GC_OPTS"
+JAVA_OPTS="$FACILIO_OPTS $JMX_OPTS $JMX_EXPORTER_OPTS $JVM_OPTS $JAVA_GC_OPTS"
