@@ -155,9 +155,10 @@ public class OrgBeanImpl implements OrgBean {
 			Map<String, Object> result = props.get(0); 
 			org = createOrgFromProps(result, true);
 			if(result.get("customDomain") != null) {
-				org.setCustomDomain((String)result.get("customDomain"));
+				org.setDomain((String)result.get("customDomain"));
+			} else {
+				org.setDomain(result.get("domain") + "." + AwsUtil.getConfig("portal.domain"));
 			}
-			org.setDomain((String)result.get("domain")+"."+ AwsUtil.getConfig("portal.domain"));
 			
 		}
 		return org;
