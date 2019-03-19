@@ -108,7 +108,7 @@ public class PreventiveMaintenanceAPI {
 		}
 	}
 	public static Map<String, List<TaskContext>> getTaskMapForNewPMExecution(List<TaskSectionTemplate> sectiontemplates,Long woResourceId, Long triggerId) throws Exception {
-		Map<String, List<TaskContext>> taskMap = new LinkedHashMap<>();
+		Map<String, List<TaskContext>> taskMap = new HashMap<>();
 		for(TaskSectionTemplate sectiontemplate :sectiontemplates) {
 			if (triggerId != null && triggerId > -1) {
 				List<PMTriggerContext> triggerContexts = sectiontemplate.getPmTriggerContexts();
