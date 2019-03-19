@@ -222,7 +222,7 @@ public class FetchReportAdditionalInfoCommand implements Command {
 		if (allAlarms != null && !allAlarms.isEmpty()) { 
 			
 			List<ReadingAlarmContext> currentAlarms = allAlarms.stream()
-														.filter(a -> a.getCreatedTime() <= endTime && (a.getClearedTime() == -1 || a.getClearedTime() > startTime))
+														.filter(a -> a.getCreatedTime() < endTime && (a.getClearedTime() == -1 || a.getClearedTime() > startTime))
 														.collect(Collectors.toList());
 			
 			if (!currentAlarms.isEmpty()) {
