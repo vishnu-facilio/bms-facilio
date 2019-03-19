@@ -289,6 +289,7 @@ public class ActionAPI {
 								setJsonTemplate(action, rule, Type.JSON);
 								break;
 							case FORMULA_FIELD_CHANGE:
+							case ALARM_IMPACT_ACTION:
 								setWorkflowTemplate(action,rule,Type.WORKFLOW);
 							default:
 								break;
