@@ -277,7 +277,7 @@ public class WorkflowUtil {
 	}
 	
 	public static Object getWorkflowExpressionResult(String workflowString,Map<String,Object> paramMap) throws Exception {
-		return getWorkflowExpressionResult(workflowString, paramMap, null, true, false);
+		return getWorkflowExpressionResult(workflowString, paramMap, null, false, false);
 	}
 	
 	public static boolean getWorkflowExpressionResultAsBoolean(String workflowString,Map<String,Object> paramMap, Map<String, ReadingDataMeta> rdmCache, boolean ignoreNullExpressions, boolean ignoreMarked) throws Exception {
