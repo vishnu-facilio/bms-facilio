@@ -4356,7 +4356,7 @@ public class FieldFactory {
 	}
 
 	public static List<FacilioField> getViewScheduleInfoFields() {
-		FacilioModule module = ModuleFactory.getViewSharingModule();
+		FacilioModule module = ModuleFactory.getViewScheduleInfoModule();
 		List<FacilioField> fields = new ArrayList<>();
 
 		fields.add(getIdField(module));

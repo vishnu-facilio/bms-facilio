@@ -2,7 +2,9 @@ package com.facilio.bmsconsole.jobs;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
@@ -12,6 +14,7 @@ import com.facilio.bmsconsole.util.TemplateAPI;
 import com.facilio.bmsconsole.util.ViewAPI;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.fs.FileInfo;
+import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.tasker.job.FacilioJob;
 import com.facilio.tasker.job.JobContext;
@@ -46,6 +49,10 @@ public class ViewEmailScheduler extends FacilioJob {
 
 				Long viewId = (long) prop.get("viewId");
 				FacilioView view = ViewAPI.getView(viewId);
+
+				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+				FacilioModule viewModule = modBean.getModule(view.getModuleId());
+				view.setModuleName(viewModule.getName());
 
 				String fileUrl = ExportUtil.exportModule(FileInfo.FileFormat.getFileFormat((int) prop.get("fileFormat")), view.getModuleName(), view.getName(), null);
 				Map<String, String> files = new HashMap<>();
