@@ -763,14 +763,16 @@ public enum ActionType {
 			}
 			
 			boolean sameRecord = true;
-			if(obj.get("moduleName") != null) {
-				module = modBean.getModule((String) obj.get("moduleName"));
+			String moduleName = (String) obj.get("moduleName");
+			if(StringUtils.isNotEmpty(moduleName)) {
+				module = modBean.getModule(moduleName);
 				sameRecord = false;
 			}
 			
 			long id = -1l;
-			if(obj.get("parentId") != null) {
-				id = (Long) obj.get("parentId");
+			Object parentId = obj.get("parentId");
+			if(parentId != null) {
+				id = (long) FieldUtil.castOrParseValueAsPerType(FieldType.NUMBER, parentId);
 				sameRecord = false;
 			}
 			else {
