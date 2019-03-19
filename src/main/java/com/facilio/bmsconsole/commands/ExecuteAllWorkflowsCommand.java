@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -115,10 +116,11 @@ public class ExecuteAllWorkflowsCommand implements SerializableCommand
 				parentCriteria.addAndCondition(CriteriaAPI.getCondition(parentRule, CommonOperators.IS_EMPTY));
 				List<WorkflowRuleContext> workflowRules = WorkflowRuleAPI.getActiveWorkflowRulesFromActivityAndRuleType(module, activities, parentCriteria, ruleTypes);
 				
-//				if (AccountUtil.getCurrentOrg().getId() == 133 && FacilioConstants.ContextNames.ALARM.equals(moduleName)) {
-//					LOGGER.debug("Records : "+entry.getValue());
-//					LOGGER.debug("Matching Rules : "+workflowRules);
-//				}
+				if (AccountUtil.getCurrentOrg().getId() == 186 && "statusupdation".equals(moduleName)) {
+					LOGGER.info("Records : "+entry.getValue());
+					LOGGER.info("Matching Rules : "+workflowRules);
+					LOGGER.info("Rule Types : "+Arrays.toString(ruleTypes));
+				}
 				
 				if (workflowRules != null && !workflowRules.isEmpty()) {
 					Map<String, Object> placeHolders = WorkflowRuleAPI.getOrgPlaceHolders();

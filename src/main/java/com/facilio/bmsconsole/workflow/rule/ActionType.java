@@ -758,6 +758,10 @@ public enum ActionType {
 			WorkflowEventContext event = currentRule.getEvent();
 			FacilioModule module = event.getModule();
 			
+			if (AccountUtil.getCurrentOrg().getId() == 186) {
+				LOGGER.info("Template JSON in FOrmula Field Change : "+obj.toJSONString());
+			}
+			
 			boolean sameRecord = true;
 			if(obj.get("moduleName") != null) {
 				module = modBean.getModule((String) obj.get("moduleName"));
@@ -781,7 +785,9 @@ public enum ActionType {
 			currentRecordJson = FieldUtil.getAsProperties(currentRecord);
 			params.put("record", currentRecordJson);
 			Map<String,Object> workflowResult = WorkflowUtil.getExpressionResultMap((String)obj.get("WorkflowString"), params);
-			
+			if (AccountUtil.getCurrentOrg().getId() == 186) {
+				LOGGER.info("Workflow result in field change action : "+workflowResult);
+			}
 			JSONArray fieldsJsonArray = (JSONArray) obj.get("fields");
 			for (Object key : fieldsJsonArray) {
 				FacilioField field = modBean.getField((String) key, module.getName());

@@ -578,6 +578,11 @@ public class ReadingRuleContext extends WorkflowRuleContext implements Cloneable
 			}
 			
 			Object currentMetric = getMetric(reading);
+			
+			if (this.getId() == 6448) {
+				LOGGER.info("Metric obtained in misc of rule : "+currentMetric);
+			}
+			
 			if (currentMetric == null) {
 				return false;
 			}

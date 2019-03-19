@@ -871,6 +871,10 @@ public class WorkflowRuleAPI {
 			}
 		}
 		
+		if (AccountUtil.getCurrentOrg().getId() == 186 && workflowRule.getId() == 6448) {
+			LOGGER.info("Result of rule : "+workflowRule.getId()+" for record : "+record+" is \nSite ID : "+siteId+"\nField Change : "+fieldChangeFlag+"\nMisc Flag : "+miscFlag+"\nCriteria Flag : "+criteriaFlag+"\nWorkflow Flag : "+workflowFlag);
+		}
+		
 		boolean result = fieldChangeFlag && miscFlag && criteriaFlag && workflowFlag && siteId ;
 		if(result) {
 			workflowRule.executeTrueActions(record, context, rulePlaceHolders);
@@ -887,9 +891,9 @@ public class WorkflowRuleAPI {
 			workflowRule.setTerminateExecution(false);
 			boolean result = WorkflowRuleAPI.evaluateWorkflowAndExecuteActions(workflowRule, module.getName(), record, changeSet, recordPlaceHolders, context);
 			
-//			if (AccountUtil.getCurrentOrg().getId() == 133 && FacilioConstants.ContextNames.ALARM.equals(module.getName())) {
-//				LOGGER.info("Result of rule : "+workflowRule.getId()+" for record : "+record+" is "+result);
-//			}
+			if (AccountUtil.getCurrentOrg().getId() == 186 && workflowRule.getId() == 6448) {
+				LOGGER.info("Result of rule : "+workflowRule.getId()+" for record : "+record+" is "+result);
+			}
 			
 			boolean stopFurtherExecution = workflowRule.isTerminateExecution();
 			
