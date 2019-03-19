@@ -41,14 +41,16 @@ public class AddOrUpdateToolStockTransactionsCommand implements Command {
 		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.TOOL_TRANSACTIONS);
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 		
-		long toolId = (long) context.get(FacilioConstants.ContextNames.RECORD_ID);
+		long toolId = (long) context.get(FacilioConstants.ContextNames.TOOL_ID);
 		long toolTypeId = (long) context.get(FacilioConstants.ContextNames.TOOL_TYPES_ID);
+		List<Long> toolIds = (List<Long>) context.get(FacilioConstants.ContextNames.TOOL_IDS);
+		List<Long> toolTypesIds = (List<Long>) context.get(FacilioConstants.ContextNames.TOOL_TYPES_IDS);
 		FacilioModule Toolmodule = modBean.getModule(FacilioConstants.ContextNames.TOOL);
 		List<FacilioField> Toolfields = modBean.getAllFields(FacilioConstants.ContextNames.TOOL);
 
 		SelectRecordsBuilder<ToolContext> toolselectBuilder = new SelectRecordsBuilder<ToolContext>().select(Toolfields)
 				.table(Toolmodule.getTableName()).moduleName(Toolmodule.getName()).beanClass(ToolContext.class)
-				.andCondition(CriteriaAPI.getIdCondition(toolId, Toolmodule));
+				.andCondition(CriteriaAPI.getIdCondition(toolIds, Toolmodule));
 
 		List<ToolContext> tools = toolselectBuilder.get();
 		ToolContext tool = new ToolContext();
@@ -74,7 +76,7 @@ public class AddOrUpdateToolStockTransactionsCommand implements Command {
 			throw new IllegalArgumentException("No such tool found");
 		}
 
-		List<ToolTransactionContext> inventoryTransaction = new ArrayList<>();
+		List<ToolTransactionContext> toolTransaction = new ArrayList<>();
 
 		if (toolType.individualTracking()) {
 
@@ -107,7 +109,7 @@ public class AddOrUpdateToolStockTransactionsCommand implements Command {
 								.andCondition(CriteriaAPI.getIdCondition(it.getId(), module));
 						updateBuilder.update(it);
 					} else {
-						inventoryTransaction.add(transaction);
+						toolTransaction.add(transaction);
 					}
 				}
 			}
@@ -135,13 +137,13 @@ public class AddOrUpdateToolStockTransactionsCommand implements Command {
 						.andCondition(CriteriaAPI.getIdCondition(it.getId(), module));
 				updateBuilder.update(it);
 			} else {
-				inventoryTransaction.add(transaction);
+				toolTransaction.add(transaction);
 			}
 		}
 		InsertRecordBuilder<ToolTransactionContext> readingBuilder = new InsertRecordBuilder<ToolTransactionContext>()
-				.module(module).fields(fields).addRecords(inventoryTransaction);
+				.module(module).fields(fields).addRecords(toolTransaction);
 		readingBuilder.save();
-		context.put(FacilioConstants.ContextNames.RECORD_LIST, inventoryTransaction);
+		context.put(FacilioConstants.ContextNames.RECORD_LIST, toolTransaction);
 		return false;
 	}
 

@@ -97,6 +97,8 @@ public class GetAddPurchasedToolCommand implements Command {
 			context.put(FacilioConstants.ContextNames.TOOL_IDS, Collections.singletonList(toolId));
 			context.put(FacilioConstants.ContextNames.TRANSACTION_TYPE, TransactionType.STOCK);
 			context.put(FacilioConstants.ContextNames.TOOL_TYPES_ID, toolTypeId);
+			context.put(FacilioConstants.ContextNames.TOOL_TYPES_IDS, Collections.singletonList(toolTypeId));
+
 		}
 		return false;
 	}

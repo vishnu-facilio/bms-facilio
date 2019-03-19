@@ -50,6 +50,7 @@ public class ToolQuantityRollUpCommand implements Command{
 		
 //		List<Long> toolIds = (List<Long>) context.get(FacilioConstants.ContextNames.TOOL_IDS);
 		long toolTypeId = -1;
+		List<Long> toolTypesIds = new ArrayList<>();
 		if(uniqueToolIds!=null && !uniqueToolIds.isEmpty()) {
 			for(long stId: uniqueToolIds) {				
 				SelectRecordsBuilder<ToolContext> selectBuilder = new SelectRecordsBuilder<ToolContext>()
@@ -65,6 +66,7 @@ public class ToolQuantityRollUpCommand implements Command{
 					tool.setQuantity(getTotalQuantity(stId));
 					double availableQty = getTotalQuantityConsumed(stId);
 					tool.setCurrentQuantity(availableQty);
+					toolTypesIds.add(tool.getToolType().getId());
 				}
 
 				UpdateRecordBuilder<ToolContext> updateBuilder = new UpdateRecordBuilder<ToolContext>()
@@ -75,7 +77,7 @@ public class ToolQuantityRollUpCommand implements Command{
 				context.put(FacilioConstants.ContextNames.TOOL_TYPES_ID, toolTypeId);
 			}
 		}
-		
+		context.put(FacilioConstants.ContextNames.TOOL_TYPES_IDS, toolTypesIds);
 		return false;
 	}
 

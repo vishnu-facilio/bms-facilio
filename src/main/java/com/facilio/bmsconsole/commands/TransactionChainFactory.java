@@ -1732,6 +1732,16 @@ public class TransactionChainFactory {
 			return c;
 		}
 		
+		public static Chain getBulkAddToolChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForTool());
+			c.addCommand(new BulkToolAdditionCommand());
+			c.addCommand(new ExecuteAllWorkflowsCommand());
+			c.addCommand(new AddBulkToolStockTransactionsCommand());
+			c.addCommand(getUpdatetoolQuantityRollupChain());
+			return c;
+		}
+		
 		public static Chain getUpdateToolChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForTool());

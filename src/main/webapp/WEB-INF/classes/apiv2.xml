@@ -1386,6 +1386,12 @@
 			<param name="moduleName">asset</param>
 			<param name="permission">CREATE</param>
 		</action>
+		
+		<action name="addBulkTool"
+			class="com.facilio.bmsconsole.actions.ToolAction" method="addBulkTool">
+			<param name="moduleName">asset</param>
+			<param name="permission">CREATE</param>
+		</action>
 		<action name="update"
 			class="com.facilio.bmsconsole.actions.ToolAction" method="updateTool">
 			<param name="moduleName">asset</param>

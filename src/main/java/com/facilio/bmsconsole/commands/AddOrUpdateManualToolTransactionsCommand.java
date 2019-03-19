@@ -110,6 +110,7 @@ public class AddOrUpdateManualToolTransactionsCommand implements Command {
 					Collections.singletonList(toolTransactions.get(0).getTool().getId()));
 			context.put(FacilioConstants.ContextNames.RECORD_LIST, toolTransactionslist);
 			context.put(FacilioConstants.ContextNames.TOOL_TYPES_ID, toolTypesId);
+			context.put(FacilioConstants.ContextNames.TOOL_TYPES_IDS, Collections.singletonList(toolTypesId));
 			context.put(FacilioConstants.ContextNames.TRANSACTION_STATE, toolTransactions.get(0).getTransactionStateEnum());
 		}
 
