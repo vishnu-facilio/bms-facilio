@@ -49,7 +49,9 @@ public class MLHistoricalForecastingJob extends FacilioJob
 		/*
 		long startTime = 1524783600000l;//Apr 27  04:30
 		long endTime = 1535482800000l;//Aug 29 00:30 
-		
+		*/
+		long startTime = 1514783600000l;//Jan 01 2018 10:43:20
+		long endTime = 1524783600000l;//Apr 27  04:30
 		try
 		{
 			runPrediction(startTime , endTime,60);
@@ -58,7 +60,7 @@ public class MLHistoricalForecastingJob extends FacilioJob
 		{
 			e.printStackTrace();
 		}
-		*/
+		
 		/*
 		long startTime = 1537633600000l;//Sep 22 2018 21:56
 		long endTime = 1550000000000l;//Feb 13 2019 01:03:20
@@ -71,6 +73,7 @@ public class MLHistoricalForecastingJob extends FacilioJob
 			e.printStackTrace();
 		}*/
 		//long startTime = 1514800000000l;//Mon Jan 01 2018 15:16:40
+		/*
 		long startTime = 1524852000000l;//April 27 2018 23:30
 		long endTime = 1530450000000l;//Feb 13 2019 01:03:20
 		try
@@ -80,7 +83,7 @@ public class MLHistoricalForecastingJob extends FacilioJob
 		catch(Exception e)
 		{
 			e.printStackTrace();
-		}
+		}*/
 		
 	}
 	
