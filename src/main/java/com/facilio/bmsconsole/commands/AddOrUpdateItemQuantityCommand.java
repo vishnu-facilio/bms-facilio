@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -32,11 +33,12 @@ public class AddOrUpdateItemQuantityCommand implements Command {
 		Map<String, FacilioField> inventoryrCostsFieldMap = FieldFactory.getAsMap(inventoryCostFields);
 		// long inventoryId = (long)
 		// context.get(FacilioConstants.ContextNames.INVENTORY_ID);
-		List<Long> inventoryIds = (List<Long>) context.get(FacilioConstants.ContextNames.ITEM_IDS);
+		List<Long> itemIds = (List<Long>) context.get(FacilioConstants.ContextNames.ITEM_IDS);
 		long itemTypesId = -1;
+		List<Long> itemTypesIds = new ArrayList<>();
 
-		if (inventoryIds != null && !inventoryIds.isEmpty()) {
-			for (long inventoryId : inventoryIds) {
+		if (itemIds != null && !itemIds.isEmpty()) {
+			for (long inventoryId : itemIds) {
 				SelectRecordsBuilder<PurchasedItemContext> selectBuilder = new SelectRecordsBuilder<PurchasedItemContext>()
 						.select(inventoryCostFields).table(inventoryCostModule.getTableName())
 						.moduleName(inventoryCostModule.getName()).beanClass(PurchasedItemContext.class)
@@ -66,7 +68,8 @@ public class AddOrUpdateItemQuantityCommand implements Command {
 					itemTypesId = inven.getItemType().getId();
 					inven.setQuantity(quantity);
 				}
-
+				
+				itemTypesIds.add(itemTypesId);
 				UpdateRecordBuilder<ItemContext> updateBuilder = new UpdateRecordBuilder<ItemContext>()
 						.module(inventoryModule).fields(modBean.getAllFields(inventoryModule.getName()))
 						.andCondition(CriteriaAPI.getIdCondition(inven.getId(), inventoryModule));
@@ -75,6 +78,7 @@ public class AddOrUpdateItemQuantityCommand implements Command {
 				
 				context.put(FacilioConstants.ContextNames.ITEM_TYPES_ID, itemTypesId);
 			}
+			context.put(FacilioConstants.ContextNames.ITEM_TYPES_IDS, itemTypesIds);
 		}
 
 		return false;

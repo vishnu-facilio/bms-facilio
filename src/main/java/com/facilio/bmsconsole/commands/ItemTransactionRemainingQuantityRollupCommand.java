@@ -41,14 +41,14 @@ public class ItemTransactionRemainingQuantityRollupCommand implements Command {
 				for (ItemTransactionsContext transaction : itemTransactions) {
 					ItemTransactionsContext itemTransaction = getItemTransaction(transaction.getParentTransactionId(),
 							itemTransactionsModule, itemTransactionsFields, itemTransactionsFieldsMap);
-					double totalReturnQuantity = getTotalReturnQuantity(transaction.getParentTransactionId(), itemTransactionsModule,
-							itemTransactionsFieldsMap, transactionState);
+					double totalReturnQuantity = getTotalReturnQuantity(transaction.getParentTransactionId(),
+							itemTransactionsModule, itemTransactionsFieldsMap, transactionState);
 					double totalRemainingQuantity = itemTransaction.getQuantity() - totalReturnQuantity;
 					itemTransaction.setRemainingQuantity(totalRemainingQuantity);
 
 					UpdateRecordBuilder<ItemTransactionsContext> updateBuilder = new UpdateRecordBuilder<ItemTransactionsContext>()
-							.module(itemTransactionsModule).fields(itemTransactionsFields)
-							.andCondition(CriteriaAPI.getIdCondition(transaction.getParentTransactionId(), itemTransactionsModule));
+							.module(itemTransactionsModule).fields(itemTransactionsFields).andCondition(CriteriaAPI
+									.getIdCondition(transaction.getParentTransactionId(), itemTransactionsModule));
 					updateBuilder.update(itemTransaction);
 				}
 			}

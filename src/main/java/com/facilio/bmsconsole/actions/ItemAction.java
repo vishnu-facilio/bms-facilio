@@ -44,6 +44,14 @@ public class ItemAction extends FacilioAction{
 		this.itemId = inventryId;
 	}
 	
+	private long storeRoom;
+	public long getStoreRoom() {
+		return storeRoom;
+	}
+	public void setStoreRoom(long storeRoomId) {
+		this.storeRoom = storeRoomId;
+	}
+	
 	public String addItem() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD, item);
@@ -54,6 +62,18 @@ public class ItemAction extends FacilioAction{
 		setResult(FacilioConstants.ContextNames.ITEM, item);
 		context.put(FacilioConstants.ContextNames.ITEM_ID, item.getId());
 		context.put(FacilioConstants.ContextNames.ITEM_IDS, Collections.singletonList(item.getId()));
+		return SUCCESS;
+	}
+	
+	public String addBulkItem() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.RECORD_LIST, items);
+		context.put(FacilioConstants.ContextNames.SET_LOCAL_MODULE_ID, true);
+		context.put(FacilioConstants.ContextNames.STORE_ROOM, storeRoom);
+		Chain addInventry = TransactionChainFactory.getAddBulkItemChain();
+		addInventry.execute(context);
+		items = (List<ItemContext>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
+		setResult(FacilioConstants.ContextNames.ITEMS, items);
 		return SUCCESS;
 	}
 	
