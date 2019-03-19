@@ -6212,22 +6212,3 @@ CREATE TABLE IF NOT EXISTS Notification_Logger (
 	CREATED_TIME BIGINT NOT NULL,
 	CONSTRAINT NOTIFICATION_LOGGER_FK_ORGID FOREIGN KEY (ORGID) REFERENCES Organizations(ORGID)
 );
-
-CREATE TABLE IF NOT EXISTS Agent_Data (
-    ID bigint(20) AUTO_INCREMENT PRIMARY KEY,
-        DEVICE_DETAILS varchar(500),
-        Conn_status boolean,
-        MSGID bigint(20) ,
-        DEVICE_ID varchar(20),
-        ORGID bigint(20),
-        NO_OF_CONTROLLERS int(10),
-        NAME varchar(20) UNIQUE,
-        DATA_INTERVAL bigint DEFAULT 600000 not null,
-        AGENT_TYPE Varchar(20),
-        VERSION varchar(20),
-        LAST_MODIFIED_TIME bigint(20),
-        CREATED_TIME bigint(20),
-        LAST_DATA_RECEIVED_TIME bigint(30),
-        STATE int(1)
-);
-
