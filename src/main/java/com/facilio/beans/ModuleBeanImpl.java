@@ -465,18 +465,18 @@ public class ModuleBeanImpl implements ModuleBean {
 			Map<FieldType, Map<Long, Map<String, Object>>> extendedPropsMap = getTypeWiseExtendedProps(extendedIds);
 			
 			List<FacilioField> fields = new ArrayList<>();
-			try {
-				for (Map<String, Object> prop : props) {
-					Long extendedModuleId = (Long) prop.get("extendedModuleId");
-					if(extendedModuleId != null) {
-						FacilioModule extendedModule = moduleMap.get(extendedModuleId);
-						if(extendedModule == null) {
-							throw new IllegalArgumentException("Invalid Extended module id in Field : "+prop.get("name")+"::Module Id : "+prop.get("moduleId"));
-						}
-						prop.put("extendedModule", extendedModule);
+			for (Map<String, Object> prop : props) {
+				Long extendedModuleId = (Long) prop.get("extendedModuleId");
+				if(extendedModuleId != null) {
+					FacilioModule extendedModule = moduleMap.get(extendedModuleId);
+					if(extendedModule == null) {
+						throw new IllegalArgumentException("Invalid Extended module id in Field : "+prop.get("name")+"::Module Id : "+prop.get("moduleId"));
 					}
-					prop.put("module", moduleMap.get(prop.get("moduleId")));
-					
+					prop.put("extendedModule", extendedModule);
+				}
+				prop.put("module", moduleMap.get(prop.get("moduleId")));
+				
+				try {
 					FieldType type = FieldType.getCFType((int) prop.get("dataType"));
 					switch(type) {
 						case NUMBER:
@@ -509,13 +509,12 @@ public class ModuleBeanImpl implements ModuleBean {
 							fields.add(FieldUtil.getAsBeanFromMap(prop, FacilioField.class));
 							break;
 					}
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					// e.printStackTrace();
+					log.fatal("Exception occurred while fetching field for fieldid : "+prop.get("fieldId"), e);
+					throw e;
 				}
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				// e.printStackTrace();
-				log.fatal("Exception occurred "+extendedPropsMap +"\n" + props);
-				throw e;
-
 			}
 			return Collections.unmodifiableList(fields);
 		}
