@@ -14,6 +14,7 @@ import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.exceptions.importExceptions.ImportAssetMandatoryFieldsException;
+import com.facilio.bmsconsole.exceptions.importExceptions.ImportFieldValueMissingException;
 import com.facilio.bmsconsole.exceptions.importExceptions.ImportParseException;
 import com.facilio.bmsconsole.util.ImportAPI;
 import com.facilio.chain.FacilioContext;
@@ -67,6 +68,10 @@ public class ImportDataLogJob extends InstantJob{
 				ImportAssetMandatoryFieldsException importFieldException = (ImportAssetMandatoryFieldsException) e;
 				message = importFieldException.getClientMessage();
 			}
+			else if(e instanceof ImportFieldValueMissingException) {
+				ImportFieldValueMissingException importFieldException = (ImportFieldValueMissingException) e;
+				message = importFieldException.getClientMessage();
+			}
 			else {
 				message = e.getMessage();
 			}
@@ -83,7 +88,7 @@ public class ImportDataLogJob extends InstantJob{
 					importProcessContext.setImportJobMeta(meta.toJSONString());
 					importProcessContext.setStatus(ImportProcessContext.ImportStatus.PARSING_FAILED.getValue());
 					ImportAPI.updateImportProcess(importProcessContext);
-					LOGGER.severe("Import failed");
+					LOGGER.severe("Import failed: " + message);
 					}
 			} catch(Exception a) {
 				System.out.println(a);

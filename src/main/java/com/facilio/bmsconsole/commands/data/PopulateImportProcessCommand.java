@@ -20,6 +20,7 @@ import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ReadingContext.SourceType;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.TicketContext;
+import com.facilio.bmsconsole.modules.EnumField;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FacilioModule.ModuleType;
@@ -262,9 +263,23 @@ public class PopulateImportProcessCommand implements Command {
 						.moduleName(moduleName).
 						fields(bean.getAllFields(moduleName));
 				for(String updateField : updateFields) {
-					FacilioField facilioField = bean.getField(updateField, moduleName);
+					String modulePlusFields[] = updateField.split("__");
+					FacilioField facilioField = bean.getField(modulePlusFields[modulePlusFields.length - 1], moduleName);
 					String columnName = facilioField.getColumnName();
-					updateBuilder.andCustomWhere(columnName+"= ?", readingsList.get(j).getData().get(facilioField.getName()));
+					
+					if(facilioField.getDataType() == FieldType.LOOKUP.getTypeAsInt()) {
+						Map<String, Object> lookupField = (Map<String,Object>) readingsList.get(j).getData().get(facilioField.getName());
+						Long lookupId = (Long)lookupField.get("id");
+						updateBuilder.andCustomWhere(columnName + "=?", lookupId);
+					}
+					else if(facilioField.getDataType() == FieldType.ENUM.getTypeAsInt()) {
+						String enumString = (String) readingsList.get(j).getData().get(facilioField.getName());
+						EnumField enumField = (EnumField) facilioField;
+						updateBuilder.andCustomWhere(columnName + "=?", enumField.getIndex(enumString));
+					}
+					else {
+						updateBuilder.andCustomWhere(columnName+"= ?", readingsList.get(j).getData().get(facilioField.getName()));
+					}
 			}
 			updateBuilder.update(readingsList.get(j));
 				}
@@ -293,14 +308,14 @@ public class PopulateImportProcessCommand implements Command {
 			if(meta.get(ImportAPI.ImportProcessConstants.UPDATE_FIELDS) != null) {
 				updateFields = (ArrayList<String>) meta.get(ImportAPI.ImportProcessConstants.UPDATE_FIELDS);
 				
-				Map<String, String> map = importProcessContext.getFieldMapping();
-				Map<String, String> swapped = map.entrySet().stream().collect(Collectors.toMap(Map.Entry::getValue, Map.Entry::getKey));
-
-				ArrayList<String> newUpdateList = new ArrayList<>();
-				for(String updateField :updateFields) {
-					newUpdateList.add(swapped.get(updateField).split("__")[1]);
-				}
-				updateFields = newUpdateList;
+//				Map<String, String> map = importProcessContext.getFieldMapping();
+//				Map<String, String> swapped = map.entrySet().stream().collect(Collectors.toMap(Map.Entry::getValue, Map.Entry::getKey));
+//
+//				ArrayList<String> newUpdateList = new ArrayList<>();
+//				for(String updateField :updateFields) {
+//					newUpdateList.add(swapped.get(updateField).split("__")[1]);
+//				}
+//				updateFields = newUpdateList;
 			}
 			else {
 				updateFields.add("name");
@@ -321,9 +336,23 @@ public class PopulateImportProcessCommand implements Command {
 					} 
 				}
 				for(String field: updateFields) {
-					FacilioField facilioField = bean.getField(field, importProcessContext.getModule().getName());
+					String modulePlusFields[] = field.split("__");
+					FacilioField facilioField = bean.getField(modulePlusFields[modulePlusFields.length - 1], importProcessContext.getModule().getName());
 					String columnName = facilioField.getColumnName();
-					updateBuilder.andCustomWhere(columnName+"= ?", readingsList.get(j).getData().get(facilioField.getName()));
+					
+					if(facilioField.getDataType() == FieldType.LOOKUP.getTypeAsInt()) {
+						Map<String, Object> lookupField = (Map<String,Object>) readingsList.get(j).getData().get(facilioField.getName());
+						Long lookupId = (Long)lookupField.get("id");
+						updateBuilder.andCustomWhere(columnName + "=?", lookupId);
+					}
+					else if(facilioField.getDataType() == FieldType.ENUM.getTypeAsInt()) {
+						String enumString = (String) readingsList.get(j).getData().get(facilioField.getName());
+						EnumField enumField = (EnumField) facilioField;
+						updateBuilder.andCustomWhere(columnName + "=?", enumField.getIndex(enumString));
+					}
+					else {
+						updateBuilder.andCustomWhere(columnName+"= ?", readingsList.get(j).getData().get(facilioField.getName()));
+					}
 					}
 				
 				updateBuilder.table(module.getTableName())
@@ -418,7 +447,8 @@ public static ReadingContext getAssetNames(ImportProcessContext importProcessCon
 
 	List<FacilioField> fields = new ArrayList<>();
 	for(String field : fieldList) {
-		FacilioField name = modBean.getField(field,Module.getName());
+		String modulePlusFields [] = field.split("__");
+		FacilioField name = modBean.getField(modulePlusFields[modulePlusFields.length - 1],Module.getName());
 		fields.add(name);
 	}
 	

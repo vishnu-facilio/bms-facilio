@@ -18,11 +18,14 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.actions.ImportProcessContext;
 import com.facilio.bmsconsole.context.ImportRowContext;
 import com.facilio.bmsconsole.exceptions.importExceptions.ImportAssetMandatoryFieldsException;
+import com.facilio.bmsconsole.exceptions.importExceptions.ImportFieldValueMissingException;
 import com.facilio.bmsconsole.exceptions.importExceptions.ImportParseException;
 import com.facilio.bmsconsole.util.ImportAPI;
 import com.facilio.constants.FacilioConstants;
@@ -185,7 +188,29 @@ public class DataParseForImportCommand implements Command {
 					}
 				}
 				
-				
+				if(importProcessContext.getImportSetting() != ImportProcessContext.ImportSetting.INSERT.getValue()) {
+					String settingArrayName = getSettingString(importProcessContext);
+					LOGGER.severe("SETTINGS ARRAY NAME");
+					LOGGER.severe(settingArrayName);
+					ArrayList<String> fieldList = new ArrayList<String>();
+					LOGGER.severe("JSON META!!!!");
+					LOGGER.severe(importProcessContext.getImportJobMetaJson().toJSONString());
+					if(importProcessContext.getImportJobMetaJson() != null && 
+							 !importProcessContext.getImportJobMetaJson().isEmpty() &&
+							importProcessContext.getImportJobMetaJson().containsKey(settingArrayName)) {
+						
+						fieldList = (ArrayList<String>)importProcessContext.getImportJobMetaJson().get(settingArrayName);
+					}
+					
+					LOGGER.severe("!!!!THIS IS field lIST");
+					LOGGER.severe(fieldList.toString());
+					for(String field : fieldList) {
+						if(colVal.get(fieldMapping.get(field)) == null) {
+							throw new ImportFieldValueMissingException(row_no, fieldMapping.get(field), new Exception());
+						}
+					}
+					
+				}
 				StringBuilder uniqueString = new StringBuilder();
 				uniqueString.append(colVal.get(name) + "__" + colVal.get(site));
 				LOGGER.severe("UNIQUE STRING!!!!!!!!!");
@@ -208,6 +233,15 @@ public class DataParseForImportCommand implements Command {
 		LOGGER.severe("Data Parsing for Import " + importProcessContext.getId() + " is complete");
 		
 		return false;
+	}
+	
+	private String getSettingString(ImportProcessContext importProcessContext) {
+		if(importProcessContext.getImportSetting() == ImportProcessContext.ImportSetting.INSERT_SKIP.getValue()) {
+			return "insertBy";
+		}
+		else {
+			return "updateBy";
+		}
 	}
 		
 }
