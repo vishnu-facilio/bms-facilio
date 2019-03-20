@@ -842,6 +842,7 @@ public class FieldFactory {
 		field.setDisplayName("Site Id");
 		field.setDataType(FieldType.NUMBER);
 		field.setColumnName("SITE_ID");
+		field.setDefault(true);
 		if (module != null) {
 			field.setModule(module);
 		}
