@@ -93,6 +93,10 @@ public class ReportDataPointContext {
 	
 	@JsonIgnore
 	public Criteria getAllCriteria() {
+		if (this.criteria == null && this.otherCriteria == null) {
+			return null;
+		}
+		
 		Criteria c = new Criteria();
 		c.andCriteria(this.criteria);
 		c.andCriteria(this.otherCriteria);
