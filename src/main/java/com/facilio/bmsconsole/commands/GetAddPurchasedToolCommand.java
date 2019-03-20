@@ -29,6 +29,10 @@ public class GetAddPurchasedToolCommand implements Command {
 		// TODO Auto-generated method stub
 		List<PurchasedToolContext> purchasedTool = (List<PurchasedToolContext>) context
 				.get(FacilioConstants.ContextNames.PURCHASED_TOOL);
+		long toolId = (long) context.get(FacilioConstants.ContextNames.RECORD_ID);
+		List<PurchasedToolContext> ptToBeAdded = new ArrayList<>();
+		List<PurchasedToolContext> purchaseToolsList = new ArrayList<>();
+		long toolTypeId = -1;
 		if (purchasedTool != null && !purchasedTool.isEmpty()) {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 
@@ -39,8 +43,8 @@ public class GetAddPurchasedToolCommand implements Command {
 			List<FacilioField> purchasedToolFields = modBean.getAllFields(FacilioConstants.ContextNames.PURCHASED_TOOL);
 			// Map<String, FacilioField> workorderCostsFieldMap =
 			// FieldFactory.getAsMap(inventoryCostFields);
-			long toolId = (long) context.get(FacilioConstants.ContextNames.RECORD_ID);
-			long toolTypeId = -1;
+			
+			
 			FacilioModule toolTypesModule = modBean.getModule(FacilioConstants.ContextNames.TOOL_TYPES);
 			List<FacilioField> toolTypesFields = modBean.getAllFields(FacilioConstants.ContextNames.TOOL_TYPES);
 
@@ -53,8 +57,7 @@ public class GetAddPurchasedToolCommand implements Command {
 			if (tools != null && !tools.isEmpty()) {
 				tool = tools.get(0);
 			}
-			List<PurchasedToolContext> ptToBeAdded = new ArrayList<>();
-			List<PurchasedToolContext> purchaseToolsList = new ArrayList<>();
+			
 			if (purchasedTool != null && !tools.isEmpty()) {
 				toolTypeId = tool.getToolType().getId();
 				SelectRecordsBuilder<ToolTypesContext> itemTypesselectBuilder = new SelectRecordsBuilder<ToolTypesContext>()
@@ -100,6 +103,9 @@ public class GetAddPurchasedToolCommand implements Command {
 			context.put(FacilioConstants.ContextNames.TOOL_TYPES_IDS, Collections.singletonList(toolTypeId));
 
 		}
+		context.put(FacilioConstants.ContextNames.TOOL_ID, toolId);
+		context.put(FacilioConstants.ContextNames.TOOL_IDS, Collections.singletonList(toolId));
+		context.put(FacilioConstants.ContextNames.TRANSACTION_TYPE, TransactionType.STOCK);
 		return false;
 	}
 

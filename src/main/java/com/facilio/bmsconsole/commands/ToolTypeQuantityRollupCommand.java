@@ -29,7 +29,6 @@ public class ToolTypeQuantityRollupCommand implements Command {
 	@Override
 	public boolean execute(Context context) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		long toolTypeId = (long) context.get(FacilioConstants.ContextNames.TOOL_TYPES_ID);
 		List<Long> toolTypesIds = (List<Long>) context.get(FacilioConstants.ContextNames.TOOL_TYPES_IDS);
 		FacilioModule toolTypesModule = modBean.getModule(FacilioConstants.ContextNames.TOOL_TYPES);
 		

@@ -1614,6 +1614,15 @@
 			<param name="permission">CREATE</param>
 		</action>
 	</package>
+	<package name="approveOrRejectToolTransactionsApi" namespace="/api/v2/approveOrRejectTool"
+		extends="v2Api">
+		<action name="approveOrReject"
+			class="com.facilio.bmsconsole.actions.ToolTransactionsAction" method="approveOrRejectToolTransactions">
+			<param name="moduleName">asset</param>
+			<param name="permission">CREATE</param>
+		</action>
+		
+	</package>
 	<package name="toolTransactionsList" namespace="/api/v2/toolTransactions"
 		extends="v2Api">
 		<action name="all"

@@ -1974,5 +1974,17 @@ public class TransactionChainFactory {
 			c.addCommand(getUpdateWorkOrderChain());
 			return c;
 		}
+		
+		public static Chain getApproveRejectToolsChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForToolTranaction());
+			c.addCommand(new GenericUpdateListModuleDataCommand());
+			c.addCommand(new ApproveOrRejectToolCommand());
+			c.addCommand(getUpdatetoolQuantityRollupChain());
+			c.addCommand(new AddOrUpdateWorkorderCostCommand());
+			c.addCommand(new UpdateWorkorderTotalCostCommand());
+			c.addCommand(getUpdateWorkOrderChain());
+			return c;
+		}
 }
 
