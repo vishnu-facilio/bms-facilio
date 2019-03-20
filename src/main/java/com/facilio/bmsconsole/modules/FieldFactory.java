@@ -181,7 +181,6 @@ public class FieldFactory {
 		fields.add(getAgentIdField(module));
 		fields.add(getAgentDeviceDetailsField(module));
 		fields.add(getAgentConnectionStatusField(module));
-		fields.add(getNumberOfControllers(module));
 		fields.add(getAgentName(module));
 		fields.add(getAgentDataInterval(module));
 		fields.add(getAgentType(module));
