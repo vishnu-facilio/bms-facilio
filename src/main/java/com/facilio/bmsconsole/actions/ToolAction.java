@@ -61,7 +61,9 @@ public class ToolAction extends FacilioAction {
 
 	public String addTool() throws Exception {
 		FacilioContext context = new FacilioContext();
+		tool.setLastPurchasedDate(System.currentTimeMillis());
 		context.put(FacilioConstants.ContextNames.RECORD, tool);
+		context.put(FacilioConstants.ContextNames.STORE_ROOM, storeRoom);
 		context.put(FacilioConstants.ContextNames.SET_LOCAL_MODULE_ID, true);
 		context.put(FacilioConstants.ContextNames.PURCHASED_TOOL, tool.getPurchasedTools());
 		context.put(FacilioConstants.ContextNames.TOOL_TYPES_ID, tool.getToolType().getId());

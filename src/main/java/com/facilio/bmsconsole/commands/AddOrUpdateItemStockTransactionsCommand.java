@@ -22,6 +22,7 @@ import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
 import com.facilio.bmsconsole.util.ItemsApi;
 import com.facilio.bmsconsole.util.TransactionState;
 import com.facilio.bmsconsole.util.TransactionType;
+import com.facilio.bmsconsole.workflow.rule.ApprovalState;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 
@@ -52,6 +53,7 @@ public class AddOrUpdateItemStockTransactionsCommand implements Command {
 				transaction.setParentId(ic.getId());
 				transaction.setIsReturnable(false);
 				transaction.setTransactionType(TransactionType.STOCK.getValue());
+				transaction.setApprovedState(ApprovalState.YET_TO_BE_REQUESTED);
 
 				//if bulk insertion add stock transaction entry
 				if (isBulkItemAdd != null && isBulkItemAdd) {

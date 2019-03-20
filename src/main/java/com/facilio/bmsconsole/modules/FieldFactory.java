@@ -27,6 +27,10 @@ public class FieldFactory {
 		lookupModuleVsSortFieldName.put("users", Pair.of("name", true));
 		lookupModuleVsSortFieldName.put("resource", Pair.of("name", true));
 		lookupModuleVsSortFieldName.put("space", Pair.of("name", true));
+		lookupModuleVsSortFieldName.put("itemTypesStatus",  Pair.of("name", true));
+		lookupModuleVsSortFieldName.put("toolTypesStatus",  Pair.of("name", true));
+		lookupModuleVsSortFieldName.put("itemStatus",  Pair.of("name", true));
+		lookupModuleVsSortFieldName.put("toolStatus",  Pair.of("name", true));
 		return lookupModuleVsSortFieldName;
 	}
 

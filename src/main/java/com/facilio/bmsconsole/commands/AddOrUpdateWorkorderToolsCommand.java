@@ -111,6 +111,7 @@ public class AddOrUpdateWorkorderToolsCommand implements Command {
 				addWorkorderTools(workorderToolsModule, workorderToolsFields, toolsToBeAdded);
 			}
 			context.put(FacilioConstants.ContextNames.PARENT_ID, workorderTools.get(0).getParentId());
+			context.put(FacilioConstants.ContextNames.PARENT_ID_LIST, Collections.singletonList(workorderTools.get(0).getParentId()));
 			context.put(FacilioConstants.ContextNames.TOOL_ID, workorderTools.get(0).getTool().getId());
 			context.put(FacilioConstants.ContextNames.TOOL_IDS,
 					Collections.singletonList(workorderTools.get(0).getTool().getId()));

@@ -100,7 +100,10 @@ public class PurchasedItemsQuantityRollUpCommand implements Command {
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder().table(consumableModule.getTableName())
 				.andCustomWhere(consumableModule.getTableName() + ".ORGID = " + AccountUtil.getCurrentOrg().getOrgId())
 				.andCondition(CriteriaAPI.getCondition(FieldFactory.getModuleIdField(consumableModule),
-						String.valueOf(consumableModule.getModuleId()), NumberOperators.EQUALS));
+						String.valueOf(consumableModule.getModuleId()), NumberOperators.EQUALS))
+				.andCustomWhere("APPROVED_STATE = ? OR APPROVED_STATE = ? ", 1, 3);
+//				builder.andCondition(CriteriaAPI.getCondition(consumableFieldMap.get("approvedState"), String.valueOf(1), NumberOperators.EQUALS))
+//				.orCondition(CriteriaAPI.getCondition(consumableFieldMap.get("approvedState"), String.valueOf(3), NumberOperators.EQUALS));
 
 		List<FacilioField> fields = new ArrayList<>();
 		fields.add(FieldFactory.getField("addition", "sum(case WHEN TRANSACTION_STATE = 1 THEN QUANTITY ELSE 0 END)", FieldType.DECIMAL));

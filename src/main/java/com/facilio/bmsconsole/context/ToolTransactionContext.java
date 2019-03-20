@@ -6,6 +6,7 @@ import com.facilio.accounts.dto.User;
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.bmsconsole.util.TransactionState;
 import com.facilio.bmsconsole.util.TransactionType;
+import com.facilio.bmsconsole.workflow.rule.ApprovalState;
 
 public class ToolTransactionContext extends ModuleBaseWithCustomFields {
 	private static final long serialVersionUID = 1L;
@@ -155,5 +156,26 @@ public class ToolTransactionContext extends ModuleBaseWithCustomFields {
 	}
 	public void setPurchasedTools(List<Long> purchasedTools) {
 		this.purchasedTools = purchasedTools;
+	}
+	
+	private ApprovalState approvedState;
+
+	public ApprovalState getApprovedStateEnum() {
+		return approvedState;
+	}
+
+	public void setApprovedState(ApprovalState approvedState) {
+		this.approvedState = approvedState;
+	}
+
+	public int getApprovedState() {
+		if (approvedState != null) {
+			return approvedState.getValue();
+		}
+		return -1;
+	}
+	
+	public void setApprovedState(int approvedState) {
+		this.approvedState = ApprovalState.valueOf(approvedState);
 	}
 }

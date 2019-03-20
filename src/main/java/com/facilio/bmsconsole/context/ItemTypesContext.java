@@ -146,4 +146,51 @@ public class ItemTypesContext extends ModuleBaseWithCustomFields {
 		super.setLocalId(localId);
 	}
 
+	private long lastPurchasedDate = -1;
+
+	public long getLastPurchasedDate() {
+		return lastPurchasedDate;
+	}
+
+	public void setLastPurchasedDate(long lastPurchasedDate) {
+		this.lastPurchasedDate = lastPurchasedDate;
+	}
+
+	private double lastPurchasedPrice = -1;
+
+	public double getLastPurchasedPrice() {
+		return lastPurchasedPrice;
+	}
+
+	public void setLastPurchasedPrice(double lastPurchasedPrice) {
+		this.lastPurchasedPrice = lastPurchasedPrice;
+	}
+
+	private long lastIssuedDate = -1;
+
+	public long getLastIssuedDate() {
+		return lastIssuedDate;
+	}
+
+	public void setLastIssuedDate(long lastIssuedDate) {
+		this.lastIssuedDate = lastIssuedDate;
+	}
+
+	private Boolean isApprovalNeeded;
+
+	public Boolean getIsApprovalNeeded() {
+		return isApprovalNeeded;
+	}
+
+	public void setIsApprovalNeeded(Boolean isApprovalNeeded) {
+		this.isApprovalNeeded = isApprovalNeeded;
+	}
+
+	public boolean isApprovalNeeded() {
+		if (isApprovalNeeded != null) {
+			return isApprovalNeeded.booleanValue();
+		}
+		return false;
+	}
+
 }

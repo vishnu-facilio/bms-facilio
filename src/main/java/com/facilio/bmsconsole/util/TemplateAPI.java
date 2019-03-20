@@ -723,6 +723,9 @@ public class TemplateAPI {
 		Map<Long, TaskSectionTemplate> sectionMap = getTaskSectionTemplatesFromWOTemplate(woTemplate);
 		woTemplate.setTasks(getTasksFromWOTemplate(woTemplate, sectionMap));
 		
+		List<TaskSectionTemplate> templates = woTemplate.getSectionTemplates();
+		//FIXME this is temporary need to fix this by adding sequence number for task sections
+//		Collections.sort(templates, Comparator.comparing(i -> woTemplate.getTasks().get(i.getName()).get(0).getSequence()));
 		return woTemplate;
 	}
 	
@@ -823,6 +826,20 @@ public class TemplateAPI {
 				woTemplate.setSectionTemplates(new ArrayList<>(sectionMap.values()));
 			}
 			
+
+			Map<String, List<TaskContext>> orderedTasks = new HashMap<>();
+			for (Entry<String, List<TaskContext>> taskEntry: taskMap.entrySet()) {
+				List<TaskContext> taskContexts = taskEntry.getValue();
+				Collections.sort(taskContexts, Comparator.comparing(TaskContext::getSequence));
+				orderedTasks.put(taskEntry.getKey(), taskContexts);
+			}
+
+			Set<Entry<String, List<TaskContext>>> entries = orderedTasks.entrySet();
+			List<Entry<String, List<TaskContext>>> entryList = new ArrayList<>(entries);
+//			Collections.sort(entryList, Comparator.comparing(e -> e.getValue().get(0).getSequence()));
+
+			Map<String, List<TaskContext>> orderedTaskMap = new LinkedHashMap<>(entryList.size());
+			entryList.forEach(i -> orderedTaskMap.put(i.getKey(), i.getValue()));
 			return taskMap;
 		}
 		return null;
