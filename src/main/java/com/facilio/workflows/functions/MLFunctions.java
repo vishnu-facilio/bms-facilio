@@ -25,7 +25,7 @@ public enum MLFunctions implements FacilioWorkflowFunctionInterface {
 				throw new IllegalArgumentException("TTime list cannot be null");
 			}
 			List<Long> timeList = ttimes.stream().map(t -> (Long) t.get("ttime")).collect(Collectors.toList());
-			MlForecastingContext forecast = null;
+			MlForecastingContext forecast = MLUtil.getContext(mlForecastingId);
 			return MLUtil.checkValidPrediction(forecast, timeList);
 		}
 		
