@@ -566,6 +566,9 @@ public class ReadingRuleContext extends WorkflowRuleContext implements Cloneable
 			if (this.getId() == 6448) {
 				LOGGER.info("Reading field "+readingField);
 			}
+			if(readingField == null) {
+				return null;
+			}
 			Object currentMetric = FieldUtil.castOrParseValueAsPerType(readingField, reading.getReading(readingField.getName()));
 			return currentMetric;
 		}
@@ -579,7 +582,7 @@ public class ReadingRuleContext extends WorkflowRuleContext implements Cloneable
 		if(this.getTriggerExecutePeriod() <= 0 || (this.getTriggerExecutePeriod() > 0 && (Boolean) context.get(FacilioConstants.ContextNames.IS_READING_RULE_EXECUTE_FROM_JOB))) {
 			ReadingContext reading = (ReadingContext) record;
 			
-			if (reading == null) {
+			if (reading == null || readingField == null) {
 				return true;
 			}
 			
@@ -754,7 +757,7 @@ public class ReadingRuleContext extends WorkflowRuleContext implements Cloneable
 		// TODO Auto-generated method stub
 		Map<String, Object> rulePlaceHolders = super.constructPlaceHolders(moduleName, record, recordPlaceHolders, context);
 		
-		if (record != null) {
+		if (record != null && readingField != null) {
 			Map<String, ReadingDataMeta> metaMap =(Map<String, ReadingDataMeta>)context.get(FacilioConstants.ContextNames.PREVIOUS_READING_DATA_META);
 			ReadingDataMeta meta = metaMap.get(ReadingsAPI.getRDMKey(((ReadingContext)record).getParentId(), readingField));
 			if (meta != null) {
