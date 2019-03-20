@@ -479,6 +479,7 @@ public class FacilioConstants {
 		
 		public static final String BASE_SPACE_PHOTOS = "basespacephotos";
 		public static final String ASSET_PHOTOS = "assetphotos";
+		public static final String STORE_ROOM_PHOTOS = "storeroomphotos";
 		public static final String ASSET_ACTIVITY = "assetactivity";
 
 		public static final String TICKET_NOTES = "ticketnotes";
