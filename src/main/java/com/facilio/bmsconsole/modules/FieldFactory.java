@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.modules;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.agent.AgentKeys;
 import com.facilio.constants.FacilioConstants;
 import org.apache.commons.lang3.tuple.Pair;
@@ -7,8 +8,6 @@ import org.apache.commons.lang3.tuple.Pair;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-
-import com.facilio.accounts.util.AccountUtil;
 
 public class FieldFactory {
 
@@ -191,7 +190,7 @@ public class FieldFactory {
 		fields.add(getCreatedTime(module));
 		fields.add(getLastDataRecievedTime(module));
 		fields.add(getAgentState(module));
-		fields.add(getSiteIdField(module));
+		fields.add(getAgentSiteIdField(module));
 		fields.add(getWritableField(module));
 		fields.add(getDeletedTimeField(module));
 		return fields;
@@ -211,6 +210,22 @@ public class FieldFactory {
 		}
 		return field;
 	}
+
+	public static FacilioField getAgentSiteIdField() { return getOrgIdField(null);
+	}
+
+	public static FacilioField getAgentSiteIdField(FacilioModule module) {
+		FacilioField field = new FacilioField();
+		field.setName(AgentKeys.SITE_ID);
+		field.setDisplayName("site id");
+		field.setDataType(FieldType.NUMBER);
+		field.setColumnName("SITE_ID");
+		if (module != null) {
+			field.setModule(module);
+		}
+		return field;
+	}
+
 	public static FacilioField getWritableField() { return getOrgIdField(null);
 	}
 
@@ -304,8 +319,8 @@ public class FieldFactory {
 		FacilioField field = new FacilioField();
 		field.setName(AgentKeys.AGENT_TYPE);
 		field.setDisplayName("agent type");
-		field.setDataType(FieldType.STRING);
-		field.setColumnName("AGENT_TYPE");
+		field.setDataType(FieldType.NUMBER);
+		field.setColumnName("TYPE");
 		if (module != null) {
 			field.setModule(module);
 		}

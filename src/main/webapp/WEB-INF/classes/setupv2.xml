@@ -183,12 +183,20 @@
 	</package>
 
 	<package name="agentApiV2" namespace="/api/v2/setup/agent" extends="setupApiV2">
-		<action name="list"  class="com.facilio.bmsconsole.actions.ControllerAction" method="agentAction">
+		<action name="list"  class="com.facilio.bmsconsole.actions.ControllerAction" method="agentDetails">
+		</action>
+
+		<action name="delete"  class="com.facilio.bmsconsole.actions.ControllerAction" method="agentDelete">
+		</action>
+
+		<action name="edit"  class="com.facilio.bmsconsole.actions.ControllerAction" method="agentEdit">
 		</action>
 	</package>
 
-	<package name="controllerApiV2" namespace="/api/v2/setup/agent" extends="setupApiV2">
-		<action name="controller"  class="com.facilio.bmsconsole.actions.ControllerAction" method="fetchControllerDetails">
+	<package name="controllerApiV2" namespace="/api/v2/setup/controller" extends="setupApiV2">
+		<action name="list"  class="com.facilio.bmsconsole.actions.ControllerAction" method="fetchControllerDetails">
+		</action>
+		<action name="edit"  class="com.facilio.bmsconsole.actions.ControllerAction" method="controllerEdit">
 		</action>
 	</package>
 

@@ -1,15 +1,22 @@
 package com.facilio.agent;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleCRUDBean;
+import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
+import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericInsertRecordBuilder;
+import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -63,7 +70,12 @@ public  class AgentUtil
         } else{
             agent.setAgentState(0);
         }
-
+        if(payload.containsKey(AgentKeys.ID)){
+            agent.setId(Long.parseLong(payload.get(AgentKeys.ID).toString()));
+        }
+        if(payload.containsKey(AgentKeys.SITE_ID)){
+            agent.setSiteId(Long.parseLong(payload.get(AgentKeys.SITE_ID).toString()));
+        }
         if(payload.containsKey(AgentKeys.DEVICE_DETAILS)) {
             agent.setAgentDeviceDetails(payload.get(AgentKeys.DEVICE_DETAILS).toString());
 
@@ -109,7 +121,7 @@ public  class AgentUtil
         }
 
         if(payload.containsKey(AgentKeys.AGENT_TYPE)){
-            agent.setAgentType(payload.get(AgentKeys.AGENT_TYPE).toString());
+            agent.setAgentType(Integer.parseInt(payload.get(AgentKeys.AGENT_TYPE).toString()));
         }
         if(payload.containsKey(AgentKeys.DELETED_TIME)){
             agent.setDeletedTime(Long.parseLong(payload.get(AgentKeys.DELETED_TIME).toString()));
@@ -152,7 +164,7 @@ public  class AgentUtil
 
                 if(jsonObject.containsKey(AgentKeys.STATE)) {
                     Integer currStatus = Integer.parseInt(jsonObject.get(AgentKeys.STATE).toString());
-                    if (agent.getAgentState() != currStatus) {
+                    if (!agent.getAgentState().equals(currStatus)) {
                         toUpdate.put(AgentKeys.STATE, currStatus);
                         agent.setAgentState(currStatus);
 
@@ -164,7 +176,7 @@ public  class AgentUtil
 
                 if(jsonObject.containsKey(AgentKeys.DATA_INTERVAL)) {
                     Long currDataInterval = Long.parseLong(jsonObject.get(AgentKeys.DATA_INTERVAL).toString());
-                    if ( agent.getAgentDataInterval() != currDataInterval .intValue() ) {
+                    if ( agent.getAgentDataInterval().longValue() != currDataInterval.longValue() ) {
                         toUpdate.put(AgentKeys.DATA_INTERVAL, currDataInterval);
                         agent.setAgentDataInterval(currDataInterval);
                     }
@@ -210,8 +222,7 @@ public  class AgentUtil
                 if(!toUpdate.isEmpty()) {
                     toUpdate.put(AgentKeys.LAST_MODIFIED_TIME,System.currentTimeMillis());
                     toUpdate.put(AgentKeys.LAST_DATA_RECEIVED_TIME,System.currentTimeMillis());
-                    int n = genericUpdateRecordBuilder.update(toUpdate) ;
-                    return n;
+                    return genericUpdateRecordBuilder.update(toUpdate);
                 }
                 return 0;
             }
@@ -237,6 +248,8 @@ public  class AgentUtil
             payload.put(AgentKeys.CONNECTION_STATUS,agent.getAgentConnStatus());
             payload.put(AgentKeys.NUMBER_OF_CONTROLLERS,agent.getAgentNumberOfControllers());
             payload.put(AgentKeys.WRITABLE,agent.getWritable());
+            payload.put(AgentKeys.SITE_ID,agent.getSiteId());
+            payload.put(AgentKeys.AGENT_TYPE,agent.getAgentType());
             GenericInsertRecordBuilder genericInsertRecordBuilder = new GenericInsertRecordBuilder()
                     .table(AgentKeys.TABLE_NAME)
                     .fields(FieldFactory.getAgentDataFields());
@@ -264,30 +277,65 @@ public  class AgentUtil
         return jsonObject2.get(AgentKeys.FACILIO_MQTT_VERSION).toString();
     }
 
-    public List<Map<String,Object>> agentDetailsAPI()
+
+
+    //This method fetches Details of all the agent in the current Org and which aren't deleted.
+    public List<Map<String,Object>> agentDetails()
     {
-        ModuleCRUDBean bean;
-        List<Map<String, Object>> records;
+        List<FacilioField> fields = new ArrayList<>();
+        FacilioModule agentModule = ModuleFactory.getAgentdataModule();
+        fields.add(FieldFactory.getControllerIdCount(ModuleFactory.getControllerModule()));
+        fields.addAll(FieldFactory.getAgentDataFields());
+        GenericSelectRecordBuilder genericSelectRecordBuilder = new GenericSelectRecordBuilder().table(AgentKeys.TABLE_NAME)
+                .select(fields).leftJoin(AgentKeys.CONTROLLER_TABLE)
+                .on(AgentKeys.TABLE_NAME+".ID=Controller.Agent_Id")
+                .groupBy(AgentKeys.TABLE_NAME+".ID").andCustomWhere("Agent_Data.ORGID="+orgId)
+                .andCustomWhere(AgentKeys.TABLE_NAME+"."+AgentKeys.DELETED_TIME+" is NULL");
+
         try {
-            bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", orgId);
-            records = bean.getAgentDetails();
-            return records;
+            return genericSelectRecordBuilder.get();
         } catch (Exception e) {
-            LOGGER.info("Exception occurred",e);
-        }
-        return null;
-    }
-    public List<Map<String,Object>> controllerDetailsAPI(Long agentId){
-        ModuleCRUDBean bean;
-        List<Map<String, Object>> records;
-        try {
-            bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", orgId);
-            records = bean.getAgentControllerDetails(agentId);
-            return records;
-        } catch (Exception e) {
-            LOGGER.info("Exception occured",e);
+            LOGGER.info("Exception occured ",e);
         }
         return null;
     }
 
+    /**
+     * This method inserts system's current time to the specified agent's Deleted_Time column so that it will be considered deleted.
+     * @param payload this JSONObject contains agent's ID.
+     * @return true if the deletion process happens and false if account is null or deletion doesn't happen.
+     */
+    static boolean agentDelete(JSONObject payload) throws SQLException {
+        if(AccountUtil.getCurrentOrg()!= null) {
+            List<FacilioField> fields = new ArrayList<>();
+            fields.add(FieldFactory.getDeletedTimeField(ModuleFactory.getAgentdataModule()));
+            HashMap<String, Object> toUpdate = new HashMap<>();
+            toUpdate.put(AgentKeys.DELETED_TIME, System.currentTimeMillis());
+            GenericUpdateRecordBuilder genericUpdateRecordBuilder = new GenericUpdateRecordBuilder()
+                    .table(AgentKeys.TABLE_NAME)
+                    .fields(fields)
+                    .andCustomWhere(AgentKeys.ORG_ID + "=" + AccountUtil.getCurrentOrg().getOrgId());
+            if (payload.containsKey(AgentKeys.ID)) {
+                int deletedRows = genericUpdateRecordBuilder.andCustomWhere(AgentKeys.ID + "=" + Long.parseLong(payload.get(AgentKeys.ID).toString()))
+                        .update(toUpdate);
+                return (deletedRows > 0);
+            } else {
+                return false;
+            }
+        }
+        return false;
+    }
+
+    static boolean agentEdit(JSONObject payload) throws SQLException {
+        if(AccountUtil.getCurrentOrg() != null && payload.containsKey(AgentKeys.ID)) {
+            GenericUpdateRecordBuilder genericUpdateRecordBuilder = new GenericUpdateRecordBuilder()
+                    .table(AgentKeys.TABLE_NAME)
+                    .fields(FieldFactory.getAgentDataFields())
+                    .andCustomWhere(AgentKeys.ORG_ID + "=" + AccountUtil.getCurrentOrg().getOrgId())
+                    .andCustomWhere(AgentKeys.ID + "=" + Long.parseLong(payload.remove(AgentKeys.ID).toString()));
+            int updatedRows= genericUpdateRecordBuilder.update(payload);
+            return (updatedRows > 0);
+        }
+        return false;
+    }
 }

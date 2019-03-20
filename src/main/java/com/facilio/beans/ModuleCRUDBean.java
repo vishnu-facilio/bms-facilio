@@ -1,22 +1,17 @@
 package com.facilio.beans;
 
-import java.io.File;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.chain.Context;
-import org.json.simple.JSONObject;
-
 import com.amazonaws.services.kinesis.clientlibrary.interfaces.IRecordProcessorCheckpointer;
 import com.amazonaws.services.kinesis.model.Record;
-import com.facilio.bmsconsole.context.AlarmContext;
-import com.facilio.bmsconsole.context.ControllerContext;
-import com.facilio.bmsconsole.context.PreventiveMaintenance;
-import com.facilio.bmsconsole.context.WorkOrderContext;
-import com.facilio.bmsconsole.context.WorkOrderRequestContext;
+import com.facilio.bmsconsole.context.*;
 import com.facilio.events.context.EventRuleContext;
 import com.facilio.procon.consumer.FacilioConsumer;
 import com.facilio.procon.message.FacilioRecord;
+import org.apache.commons.chain.Context;
+import org.json.simple.JSONObject;
+
+import java.io.File;
+import java.util.List;
+import java.util.Map;
 
 public interface ModuleCRUDBean {
 	
@@ -66,8 +61,4 @@ public interface ModuleCRUDBean {
 	public Map<String, Long> getDeviceMap() throws Exception;
 
 	public  List<Map<String,Object>> getAgentDataMap() throws Exception;
-
-	public List<Map<String,Object>> getAgentDetails() throws Exception;
-
-	public List<Map<String,Object>> getAgentControllerDetails(Long agentId) throws Exception;
 }

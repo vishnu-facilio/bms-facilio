@@ -36,5 +36,6 @@ public class AgentKeys
     public static final String DELETED_TIME = "Deleted_Time";
     public static final String UNMODELED_INSTANCE_TABLE = "Unmodeled_Instance";
     public static final String WRITABLE = "writable";
+    public static final String SITE_ID = "siteId";
 }
 

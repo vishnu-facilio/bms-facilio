@@ -1147,7 +1147,7 @@ CREATE TABLE IF NOT EXISTS Agent_Data (
         NO_OF_CONTROLLERS int(10),
         NAME varchar(20) UNIQUE,
         DATA_INTERVAL bigint(20) DEFAULT 600000 not null,
-        AGENT_TYPE Varchar(20),
+        TYPE BIGINT(20),
         VERSION varchar(20),
         LAST_MODIFIED_TIME bigint(20),
         CREATED_TIME bigint(20),

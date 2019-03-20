@@ -1,12 +1,14 @@
 package com.facilio.bmsconsole.commands;
 
-import org.apache.commons.chain.Chain;
-
 import com.facilio.activity.AddActivitiesCommand;
+import com.facilio.agent.ConfigureAgentCommand;
+import com.facilio.agent.ConfigureControllerCommand;
+import com.facilio.agent.DeleteAgentCommand;
 import com.facilio.bmsconsole.commands.data.PopulateImportProcessCommand;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
+import org.apache.commons.chain.Chain;
 
 public class TransactionChainFactory {
 
@@ -849,7 +851,24 @@ public class TransactionChainFactory {
 			c.addCommand(new DeleteControllerCommand());
 			return c;
 		}
-		
+
+		public static Chain editAgent(){
+			Chain c = getDefaultChain();
+			c.addCommand(new ConfigureAgentCommand());
+			return c;
+		}
+
+		public static Chain deleteAgent(){
+			Chain c = getDefaultChain();
+			c.addCommand(new DeleteAgentCommand());
+			return c;
+		}
+
+		public static Chain controllerEdit(){
+			Chain c = getDefaultChain();
+			c.addCommand(new ConfigureControllerCommand());
+			return c;
+		}
 		public static Chain updateScheduledReportsChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(new AddTemplateCommand());
