@@ -15,6 +15,7 @@ import org.json.simple.JSONObject;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
+import com.facilio.bmsconsole.criteria.FieldOperator;
 import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.criteria.Operator;
 import com.facilio.bmsconsole.criteria.PickListOperators;
@@ -145,7 +146,12 @@ public class GenerateCriteriaFromFilterCommand implements Command {
 						values.append(obj);
 					}
 				}
-				condition.setValue(values.toString());
+				String valuesString = values.toString();
+				if (condition.getOperator() instanceof FieldOperator) {
+					condition.setValueField(modBean.getField(valuesString, moduleName));
+				} else {
+					condition.setValue(valuesString);
+				}
 				if (fieldJson.containsKey("orFilters")) {	// To have or condition for different fields..eg: (space=1 OR purposeSpace=1)
 					JSONArray orFilters = (JSONArray) fieldJson.get("orFilters");
 					for(int i=0;i<orFilters.size();i++) {

@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Objects;
 
 import org.apache.commons.collections.Predicate;
+import org.apache.commons.collections4.MapUtils;
 
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.util.FacilioExpressionWrapper;
@@ -106,6 +107,12 @@ public class Condition implements Serializable {
 		this.value = value;
 	}
 	
+	private FacilioField valueField;
+	public void setValueField(FacilioField valueField) {
+		this.valueField = valueField;
+		this.value = valueField.getName();
+	}
+	
 	private long criteriaValueId = -1;
 	public long getCriteriaValueId() {
 		return criteriaValueId;
@@ -131,6 +138,9 @@ public class Condition implements Serializable {
 			if(operator == LookupOperator.LOOKUP) {
 				updateFieldNameWithModule();
 				computedWhereClause = operator.getWhereClause(fieldName, criteriaValue);
+			} 
+			else if (operator instanceof FieldOperator) {
+				computedWhereClause = ((FieldOperator) operator).getWhereClause(getFieldNameWithModule(), getFieldValueWithModule());
 			}
 			else if (operator == EnumOperators.VALUE_IS || operator == EnumOperators.VALUE_ISN_T) {
 				updateFieldNameWithModule();
@@ -197,6 +207,12 @@ public class Condition implements Serializable {
 				updateFieldNameWithModule();
 				return operator.getPredicate(fieldName, criteriaValue);
 			}
+			else if (operator instanceof FieldOperator) {
+				if (MapUtils.isEmpty(placeHolders) || !placeHolders.containsKey(getValue())) {
+					return null;
+				}
+				return operator.getPredicate(getFieldName(), placeHolders.get(getValue()));
+			}
 			else if (operator == EnumOperators.VALUE_IS || operator == EnumOperators.VALUE_ISN_T) {
 				updateFieldNameWithModule();
 				return operator.getPredicate(fieldName, value);
@@ -216,6 +232,22 @@ public class Condition implements Serializable {
 			fieldName = field.getModule().getName()+"."+fieldName;
 			field = null;
 		}
+	}
+	
+	private String getFieldNameWithModule() {
+		String fieldName = this.fieldName;
+		if(field != null) {
+			fieldName = field.getModule().getName()+"."+field.getName();
+		}
+		return fieldName;
+	}
+	
+	private String getFieldValueWithModule() {
+		String fieldName = this.value;
+		if(valueField != null) {
+			fieldName = valueField.getModule().getName()+"."+valueField.getName();
+		}
+		return fieldName;
 	}
 	
 	@Override
