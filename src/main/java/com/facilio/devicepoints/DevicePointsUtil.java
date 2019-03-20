@@ -2,6 +2,7 @@ package com.facilio.devicepoints;
 
 import com.facilio.beans.ModuleCRUDBean;
 import com.facilio.bmsconsole.context.ControllerContext;
+import com.facilio.bmsconsole.util.ControllerAPI;
 import com.facilio.fw.BeanFactory;
 import com.facilio.timeseries.TimeSeriesAPI;
 import org.apache.log4j.LogManager;
@@ -9,7 +10,9 @@ import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * AgentProcessor is a dedicated Processor for processing payloads with PUBLISH_TYPE set to 'DevicePoints'.
@@ -17,7 +20,7 @@ import java.util.HashMap;
 public  class DevicePointsUtil {
     private static final Logger LOGGER = LogManager.getLogger(DevicePointsUtil.class.getName());
 
-    public  void processDevicePoints(JSONObject payLoad, long orgId, HashMap deviceMap) throws Exception {
+    public  void processDevicePoints(JSONObject payLoad, long orgId, HashMap deviceMap, Long agentId) throws Exception {
         LOGGER.info("in DevicePointsUtil.ProcessDevicePoints");
         long instanceNumber = (Long)payLoad.get(DevicePointsKeys.INSTANCE_NUMBER);
         String destinationAddress = "";
@@ -39,6 +42,7 @@ public  class DevicePointsUtil {
             if(controller == null) {
                 controller = new ControllerContext();
                 controller.setName(deviceName);
+                controller.setAgentId(agentId);
                 controller.setBroadcastIp(broadcastAddress);
                 controller.setDestinationId(destinationAddress);
                 controller.setInstanceNumber(instanceNumber);
@@ -46,6 +50,15 @@ public  class DevicePointsUtil {
                 controller.setSubnetPrefix(Math.toIntExact(subnetPrefix));
                 controller.setMacAddr(deviceId);
                 controller = bean.addController(controller);
+            } else {
+                if (controller.getAgentId() == -1 && controller.getId() > -1) {
+                    controller.setAgentId(agentId);
+                    Map<String, Object> prop = new HashMap<>();
+                    prop.put("agentId", agentId);
+                    prop.put("lastDataReceivedTime", System.currentTimeMillis());
+                    ControllerAPI.updateController(prop, Collections.singletonList(controller.getId()));
+
+                }
             }
             long controllerSettingsId = controller.getId();
             if(controllerSettingsId > -1) {

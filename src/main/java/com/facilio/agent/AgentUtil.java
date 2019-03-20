@@ -31,6 +31,7 @@ public  class AgentUtil
     private static final long DEFAULT_TIME = 600000L;
     private Map<String, FacilioAgent> agentMap = new HashMap<>();
 
+    private static final Logger LOGGER = LogManager.getLogger(AgentUtil.class.getName());
 
     public AgentUtil(long orgId, String orgDomainName)  {
         this.orgId = orgId;
@@ -55,7 +56,9 @@ public  class AgentUtil
         }
     }
 
-    private static final Logger LOGGER = LogManager.getLogger(AgentUtil.class.getName());
+    public FacilioAgent getFacilioAgent(String agentName) {
+        return agentMap.get(agentName);
+    }
 
     /**
      * This method writes data from the Agent to its table in database using {@link com.facilio.sql.GenericInsertRecordBuilder}<br>
@@ -136,7 +139,7 @@ public  class AgentUtil
 
     }
 
-    public int processAgent(JSONObject jsonObject) {
+    public long processAgent(JSONObject jsonObject) {
         String agentName = (String) jsonObject.get(AgentKeys.AGENT);
         
         if (StringUtils.isEmpty(agentName)) { //Temp fix to avoid NPE
@@ -220,7 +223,9 @@ public  class AgentUtil
                     }
                 }
                 if(!toUpdate.isEmpty()) {
-                    toUpdate.put(AgentKeys.LAST_MODIFIED_TIME,System.currentTimeMillis());
+                    toUpdate.put(AgentKeys.LAST_MODIFIED_TIME, System.currentTimeMillis());
+                }
+                if(!toUpdate.isEmpty()) {
                     toUpdate.put(AgentKeys.LAST_DATA_RECEIVED_TIME,System.currentTimeMillis());
                     return genericUpdateRecordBuilder.update(toUpdate);
                 }
@@ -229,47 +234,46 @@ public  class AgentUtil
             catch (Exception e) {
                 LOGGER.info("Exception occurred ", e);
             }
-
-
-
-        }
-        else {
+        } else {
             FacilioAgent agent = getFacilioAgentFromJson(jsonObject);
-            JSONObject payload = new JSONObject();
-            long currTime = System.currentTimeMillis();
-            payload.put(AgentKeys.CREATED_TIME,currTime);
-            payload.put(AgentKeys.LAST_MODIFIED_TIME, currTime);
-            payload.put(AgentKeys.STATE, agent.getAgentState());
-            payload.put(AgentKeys.NAME,agent.getAgentName());
-            payload.put(AgentKeys.DEVICE_DETAILS,agent.getAgentDeviceDetails());
-            payload.put(AgentKeys.VERSION,agent.getAgentVersion());
-            payload.put(AgentKeys.LAST_DATA_RECEIVED_TIME,currTime);
-            payload.put(AgentKeys.DATA_INTERVAL,agent.getAgentDataInterval());
-            payload.put(AgentKeys.CONNECTION_STATUS,agent.getAgentConnStatus());
-            payload.put(AgentKeys.NUMBER_OF_CONTROLLERS,agent.getAgentNumberOfControllers());
-            payload.put(AgentKeys.WRITABLE,agent.getWritable());
-            payload.put(AgentKeys.SITE_ID,agent.getSiteId());
-            payload.put(AgentKeys.AGENT_TYPE,agent.getAgentType());
-            GenericInsertRecordBuilder genericInsertRecordBuilder = new GenericInsertRecordBuilder()
-                    .table(AgentKeys.TABLE_NAME)
-                    .fields(FieldFactory.getAgentDataFields());
-
-            try {
-                int n = (int)genericInsertRecordBuilder.insert(payload);
-                if(n > 0)  {
-                    agentMap.put(agentName, agent);
-                }
-                return n;
-
-            } catch (Exception e) {
-                LOGGER.info("Exception occurred ", e);
-            }
-
+            return addAgent(agent);
         }
         return 0;
     }
 
 
+    public long addAgent(FacilioAgent agent) {
+        JSONObject payload = new JSONObject();
+        long currTime = System.currentTimeMillis();
+        payload.put(AgentKeys.NAME,  agent.getAgentName());
+        payload.put(AgentKeys.STATE, agent.getAgentState());
+        payload.put(AgentKeys.CONNECTION_STATUS, agent.getAgentConnStatus());
+        payload.put(AgentKeys.SITE_ID, agent.getSiteId());
+        payload.put(AgentKeys.AGENT_TYPE, agent.getAgentType());
+        payload.put(AgentKeys.DATA_INTERVAL, agent.getAgentDataInterval());
+        payload.put(AgentKeys.WRITABLE, agent.getWritable());
+        payload.put(AgentKeys.DEVICE_DETAILS, agent.getAgentDeviceDetails());
+        payload.put(AgentKeys.VERSION, agent.getAgentVersion());
+        payload.put(AgentKeys.CREATED_TIME, currTime);
+        payload.put(AgentKeys.LAST_MODIFIED_TIME, currTime);
+        payload.put(AgentKeys.LAST_DATA_RECEIVED_TIME, currTime);
+        GenericInsertRecordBuilder genericInsertRecordBuilder = new GenericInsertRecordBuilder()
+                .table(AgentKeys.TABLE_NAME)
+                .fields(FieldFactory.getAgentDataFields());
+
+        try {
+            long id = (int)genericInsertRecordBuilder.insert(payload);
+            agent.setId(id);
+            if(id > 0)  {
+                agentMap.put(agent.getAgentName(), agent);
+            }
+            return id;
+
+        } catch (Exception e) {
+            LOGGER.info("Exception occurred ", e);
+        }
+        return 0L;
+    }
 
 
     private String getVersion(Object payload) {

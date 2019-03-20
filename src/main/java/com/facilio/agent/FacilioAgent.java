@@ -1,5 +1,9 @@
 package com.facilio.agent;
 
+import com.facilio.bmsconsole.context.ControllerContext;
+
+import java.util.HashSet;
+
 public class FacilioAgent
 {
 
@@ -16,6 +20,7 @@ public class FacilioAgent
     private Long deletedTime;
     private Long siteId;
     private Long id;
+    private HashSet<ControllerContext> controllers;
 
     public Long getId() {
         return id;
@@ -135,13 +140,18 @@ public class FacilioAgent
         this.lastDataRecievedTime = lastDataRecievedTime;
     }
 
+    public HashSet<ControllerContext> getControllers() {
+        return controllers;
+    }
 
+    public void setControllers(HashSet<ControllerContext> controllers) {
+        this.controllers = controllers;
+    }
 
-
-
-
-
-
-
-
+    public void addController(ControllerContext controller) {
+        if(controllers == null) {
+            controllers = new HashSet<>();
+        }
+        controllers.add(controller);
+    }
 }

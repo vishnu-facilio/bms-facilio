@@ -29,6 +29,7 @@ public class ControllerUtil {
                  List<FacilioField> fields = new ArrayList<>();
                  fields.add(FieldFactory.getField("configuredPointsCount", "sum(if(" + AgentKeys.UNMODELED_INSTANCE_TABLE + ".IN_USE=1,1,0))", FieldType.NUMBER));
                  fields.add(FieldFactory.getField("subscribedPointsCount", "sum(if(" + AgentKeys.UNMODELED_INSTANCE_TABLE + ".IS_SUBSCRIBED=1,1,0))", FieldType.NUMBER));
+                 fields.add(FieldFactory.getField("availablePointsCount", "count(" + AgentKeys.UNMODELED_INSTANCE_TABLE + ".ID)", FieldType.NUMBER));
                  fields.addAll(FieldFactory.getControllerFields());
                  GenericSelectRecordBuilder genericSelectRecordBuilder = new GenericSelectRecordBuilder().table(AgentKeys.CONTROLLER_TABLE).select(fields)
                          .leftJoin(AgentKeys.UNMODELED_INSTANCE_TABLE)
