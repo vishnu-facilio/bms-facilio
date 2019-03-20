@@ -132,7 +132,7 @@ public class Condition implements Serializable {
 				updateFieldNameWithModule();
 				computedWhereClause = operator.getWhereClause(fieldName, criteriaValue);
 			}
-			else if (operator == EnumOperators.IS || operator == EnumOperators.ISN_T) {
+			else if (operator == EnumOperators.VALUE_IS || operator == EnumOperators.VALUE_ISN_T) {
 				updateFieldNameWithModule();
 				computedWhereClause = operator.getWhereClause(fieldName, value);
 			}
@@ -197,7 +197,7 @@ public class Condition implements Serializable {
 				updateFieldNameWithModule();
 				return operator.getPredicate(fieldName, criteriaValue);
 			}
-			else if (operator == EnumOperators.IS || operator == EnumOperators.ISN_T) {
+			else if (operator == EnumOperators.VALUE_IS || operator == EnumOperators.VALUE_ISN_T) {
 				updateFieldNameWithModule();
 				return operator.getPredicate(fieldName, value);
 			}

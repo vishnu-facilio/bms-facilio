@@ -371,7 +371,7 @@ public class FetchReportDataCommand implements Command {
 			case LOOKUP:
 				return CriteriaAPI.getCondition(field, value, PickListOperators.IS);
 			case ENUM:
-				return CriteriaAPI.getCondition(field, value, EnumOperators.IS);
+				return CriteriaAPI.getCondition(field, value, EnumOperators.VALUE_IS);
 			default:
 				return null;
 		}

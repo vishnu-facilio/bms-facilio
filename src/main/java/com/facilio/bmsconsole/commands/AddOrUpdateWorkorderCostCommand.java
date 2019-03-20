@@ -65,7 +65,7 @@ public class AddOrUpdateWorkorderCostCommand implements Command {
 				.andCondition(CriteriaAPI.getCondition(workorderCostsFieldMap.get("parentId"), String.valueOf(parentId),
 						PickListOperators.IS))
 				.andCondition(CriteriaAPI.getCondition(workorderCostsFieldMap.get("costType"), String.valueOf(cos),
-						EnumOperators.IS));
+						EnumOperators.VALUE_IS));
 
 		List<WorkorderCostContext> workorderCosts = workorderCostSetlectBuilder.get();
 		WorkorderCostContext workorderCost = new WorkorderCostContext();

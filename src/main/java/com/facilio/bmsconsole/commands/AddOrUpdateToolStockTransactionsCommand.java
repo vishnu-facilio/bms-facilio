@@ -98,7 +98,7 @@ public class AddOrUpdateToolStockTransactionsCommand implements Command {
 							.select(fields).table(module.getTableName()).moduleName(module.getName())
 							.beanClass(ToolTransactionContext.class)
 							.andCondition(CriteriaAPI.getCondition(fieldMap.get("transactionState"),
-									String.valueOf(TransactionState.ADDITION.getValue()), EnumOperators.IS))
+									String.valueOf(TransactionState.ADDITION.getValue()), EnumOperators.VALUE_IS))
 							.andCondition(CriteriaAPI.getCondition(fieldMap.get("purchasedTool"), String.valueOf(pt.getId()), PickListOperators.IS));
 					List<ToolTransactionContext> transactions = transactionsselectBuilder.get();
 					if (transactions != null && !transactions.isEmpty()) {
@@ -127,7 +127,7 @@ public class AddOrUpdateToolStockTransactionsCommand implements Command {
 					.select(fields).table(module.getTableName()).moduleName(module.getName())
 					.beanClass(ToolTransactionContext.class)
 					.andCondition(CriteriaAPI.getCondition(fieldMap.get("transactionState"),
-							String.valueOf(TransactionState.ADDITION.getValue()), EnumOperators.IS));
+							String.valueOf(TransactionState.ADDITION.getValue()), EnumOperators.VALUE_IS));
 			List<ToolTransactionContext> transactions = transactionsselectBuilder.get();
 			if (transactions != null && !transactions.isEmpty()) {
 				ToolTransactionContext it = transactions.get(0);
