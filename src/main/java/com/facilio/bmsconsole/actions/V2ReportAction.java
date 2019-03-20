@@ -829,7 +829,7 @@ public class V2ReportAction extends FacilioAction {
 				}
 			}
 		}
-		else {
+		else if(readingruleContext.getReadingFieldId() > 0) {
 			JSONObject dataPoint = new JSONObject();
 			
 			dataPoint.put("parentId", FacilioUtil.getSingleTonJsonArray(resource.getId()));
