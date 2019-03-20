@@ -15,6 +15,7 @@ import org.json.JSONObject;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsole.context.MlForecastingContext;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ReadingContext.SourceType;
 import com.facilio.bmsconsole.criteria.BooleanOperators;
@@ -23,17 +24,16 @@ import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.criteria.Operator;
-import com.facilio.bmsconsole.context.MlForecastingContext;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
+import com.facilio.bmsconsole.util.MLUtil;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
-import com.facilio.sql.GenericDeleteRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.tasker.job.FacilioJob;
 import com.facilio.tasker.job.JobContext;
@@ -180,7 +180,7 @@ public class MLForecastingJob extends FacilioJob
 	{
 		try
 		{
-			getFields(pc);
+			MLUtil.getFields(pc);
 			getReadings(pc);
 			if(!(pc.getPyData()==null || pc.getPyData().length()==0))
 			{
@@ -329,40 +329,6 @@ public class MLForecastingJob extends FacilioJob
 		 headers.put("Content-Type", "application/json");
 		 String result = AwsUtil.doHttpPost(postURL, headers, null, postObj.toString());
 		 pc.setResult(result);
-	}
-	private void getFields(MlForecastingContext pc) throws Exception
-	{
-		try
-		{
-			FacilioModule module = ModuleFactory.getMlForecastingFieldsModule();
-			GenericSelectRecordBuilder recordBuilder = new GenericSelectRecordBuilder()
-														.table(module.getTableName())
-														.select(FieldFactory.getMlForecastingFieldsFields())
-														.andCondition(CriteriaAPI.getIdCondition(pc.getId(), module));
-			
-			List<Map<String,Object>> predictionFieldMap = recordBuilder.get();
-			
-			List<FacilioField> columnFields = new ArrayList<>();
-			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			
-			for(Map<String,Object> fieldMap : predictionFieldMap)
-			{
-				FacilioField field = modBean.getField((Long)fieldMap.get("fieldid"));
-				if(columnFields.size()==0)
-				{
-					FacilioField ttimeField = modBean.getField("ttime", field.getModule().getName());
-					columnFields.add(ttimeField);
-				}
-				columnFields.add(field);
-			}
-			pc.setFields(columnFields);
-		}
-		catch(Exception e)
-		{
-			LOGGER.fatal("Error while getting fields for "+pc.getId(), e);
-			throw e;
-		}
-		
 	}
 	
 	private void getReadings(MlForecastingContext pc) throws Exception

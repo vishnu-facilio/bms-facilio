@@ -4,12 +4,12 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
 
 import com.facilio.bmsconsole.context.MlForecastingContext;
 import com.facilio.bmsconsole.util.MLUtil;
+import com.facilio.util.FacilioUtil;
 import com.facilio.workflows.exceptions.FunctionParamException;
 
 public enum MLFunctions implements FacilioWorkflowFunctionInterface {
@@ -19,14 +19,13 @@ public enum MLFunctions implements FacilioWorkflowFunctionInterface {
 		public Object execute(Object... objects) throws Exception {
 			// TODO Auto-generated method stub
 			checkParam(2, objects);
-			long mlForecastingId = (long) objects[0];
-			List<Map<String, Object>> ttimes = (List<Map<String, Object>>) objects[1];
+			long mlForecastingId = FacilioUtil.parseLong(objects[0]);
+			List<Long> ttimes = (List<Long>) objects[1];
 			if (CollectionUtils.isEmpty(ttimes)) {
 				throw new IllegalArgumentException("TTime list cannot be null");
 			}
-			List<Long> timeList = ttimes.stream().map(t -> (Long) t.get("ttime")).collect(Collectors.toList());
 			MlForecastingContext forecast = MLUtil.getContext(mlForecastingId);
-			return MLUtil.checkValidPrediction(forecast, timeList);
+			return MLUtil.checkValidPrediction(forecast, ttimes);
 		}
 		
 	}

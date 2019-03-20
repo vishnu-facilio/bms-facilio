@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.util;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -29,6 +30,41 @@ public class MLUtil
 {
 	private static final Logger LOGGER = Logger.getLogger(MLUtil.class.getName());
 	
+	public static void getFields(MlForecastingContext pc) throws Exception
+	{
+		try
+		{
+			FacilioModule module = ModuleFactory.getMlForecastingFieldsModule();
+			GenericSelectRecordBuilder recordBuilder = new GenericSelectRecordBuilder()
+														.table(module.getTableName())
+														.select(FieldFactory.getMlForecastingFieldsFields())
+														.andCondition(CriteriaAPI.getIdCondition(pc.getId(), module));
+			
+			List<Map<String,Object>> predictionFieldMap = recordBuilder.get();
+			
+			List<FacilioField> columnFields = new ArrayList<>();
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			
+			for(Map<String,Object> fieldMap : predictionFieldMap)
+			{
+				FacilioField field = modBean.getField((Long)fieldMap.get("fieldid"));
+				if(columnFields.size()==0)
+				{
+					FacilioField ttimeField = modBean.getField("ttime", field.getModule().getName());
+					columnFields.add(ttimeField);
+				}
+				columnFields.add(field);
+			}
+			pc.setFields(columnFields);
+		}
+		catch(Exception e)
+		{
+			LOGGER.fatal("Error while getting fields for "+pc.getId(), e);
+			throw e;
+		}
+		
+	}
+	
 	public static MlForecastingContext getContext(long forecastingID) throws Exception
 	{
 		FacilioModule module = ModuleFactory.getMlForecastingModule();
@@ -38,7 +74,9 @@ public class MLUtil
 													.andCondition(CriteriaAPI.getIdCondition(forecastingID, module));
 		
 		List<Map<String, Object>> predictionListMap = recordBuilder.get();
-		return FieldUtil.getAsBeanFromMap(predictionListMap.get(0), MlForecastingContext.class);
+		MlForecastingContext mlForecast = FieldUtil.getAsBeanFromMap(predictionListMap.get(0), MlForecastingContext.class);
+		getFields(mlForecast);
+		return mlForecast;
 	}
 	
 	public static boolean checkValidPrediction(MlForecastingContext context,List<Long> predictedTimeArray)
