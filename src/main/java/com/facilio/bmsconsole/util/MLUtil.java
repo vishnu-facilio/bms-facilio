@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.util;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -152,7 +153,16 @@ public class MLUtil
 		long errorPercentage = 15;
 		long wrongPredictionCount=0;
 		
-		Long[] keyList = (Long[]) actual.keySet().toArray();
+		//Long[] keyList = (Long[]) actual.keySet().toArray();
+		Long[] keyList = new Long[actual.size()];
+		Iterator<Long> itr = actual.keySet().iterator();
+		int i=0;
+		while(itr.hasNext())
+		{
+			keyList[i]= itr.next();
+			i++;
+		}
+		
 		Long midPoint = keyList[keyList.length/2];
 		
 		SortedMap<Long,ReadingContext> lastHalfPredicted = predicted.tailMap(midPoint);
