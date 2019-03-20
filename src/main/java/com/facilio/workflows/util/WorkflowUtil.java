@@ -267,7 +267,7 @@ public class WorkflowUtil {
 		    return (boolean) result;
 		}
 		else {
-		    double resultDouble = (double) result;
+		    double resultDouble = FacilioUtil.parseDouble(result);
 		    return resultDouble == 1;
 		}
 	}
