@@ -48,6 +48,7 @@ public class FormFactory {
 		forms.put("item_category_form", getInventoryCategoryForm());
 		forms.put("location_form", getLocationForm());
 		forms.put("tenantForm", getTenantsForm());
+		forms.put("labourForm", getLabourForm());
 		return forms;
 	}
     public static List<FormField> getFormFields(String modName) {
@@ -708,4 +709,31 @@ public class FormFactory {
 
 		return fields;
 	}
+	
+	public static FacilioForm getLabourForm() {
+		FacilioForm form = new FacilioForm();
+		form.setDisplayName("NEW LABOUR");
+		form.setName("web_default");
+		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.LABOUR));
+		form.setLabelPosition(LabelPosition.TOP);
+		form.setFields(getLabourFormFields());
+		form.setFormType(FormType.WEB);
+		return form;
+	}
+	
+	private static List<FormField> getLabourFormFields() {
+		List<FormField> fields = new ArrayList<>();
+		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.REQUIRED, 1, 1));
+		fields.add(new FormField("phone", FieldDisplayType.TEXTBOX, "Phone", Required.REQUIRED, 3, 1));
+		fields.add(new FormField("email", FieldDisplayType.TEXTBOX, "Email", Required.OPTIONAL, 4, 1));
+		fields.add(new FormField("address", FieldDisplayType.TEXTAREA, "Address", Required.OPTIONAL,5, 1));
+		fields.add(new FormField("unitType", FieldDisplayType.SELECTBOX, "Wage Type", Required.REQUIRED, 6, 1));
+		fields.add(new FormField("cost", FieldDisplayType.DECIMAL, "Cost", Required.REQUIRED, 7, 1));
+		fields.add(new FormField("siteId", FieldDisplayType.LOOKUP_SIMPLE, "Site", Required.REQUIRED, "site", 2, 1));
+		fields.add(new FormField("availability", FieldDisplayType.DECISION_BOX, "Availability", Required.REQUIRED, 8, 1));
+		
+		return fields;
+	}
+
+
 }

@@ -534,6 +534,14 @@ public class ReadOnlyChainFactory {
 		return c;
 	}
 	
+	public static Chain getWorkorderLabourList(){
+		Chain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForWorkorderLabour());
+		c.addCommand(new LoadAllFieldsCommand());
+		c.addCommand(new GetWorkOrderLabourListCommand());
+		return c;
+	}
+	
 	public static Chain getWorkorderCostList(){
 		Chain c = getDefaultChain();
 		c.addCommand(SetTableNamesCommand.getForWorkOrderCosts());
@@ -601,6 +609,22 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new GenerateCriteriaFromFilterCommand());
 		c.addCommand(new GenerateSearchConditionCommand());
 		c.addCommand(new GetToolTransactionsListCommand());
+		return c;
+	}
+	
+	public static Chain getLabourList(){
+		Chain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForLabour());
+		c.addCommand(new LoadAllFieldsCommand());
+		c.addCommand(new GetLabourListCommand());
+		return c;
+	}
+	
+	public static Chain fetchLabourDetails() {
+		Chain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForLabour());
+		c.addCommand(new GenericGetModuleDataDetailCommand());
+		c.addCommand(new GetLabourDetailsCommand());
 		return c;
 	}
 	

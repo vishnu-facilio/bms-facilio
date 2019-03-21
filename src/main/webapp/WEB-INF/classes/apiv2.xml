@@ -1632,6 +1632,37 @@
 			<param name="permission">READ</param>
 			</action>
 	</package>
+	
+	<package name="labourApi" namespace="/api/v2/labour"
+		extends="v2Api">
+		<action name="add"
+			class="com.facilio.bmsconsole.actions.LabourAction" method="addLabour">
+			<param name="moduleName">workorderlabour</param>
+		</action>
+		<action name="update"
+			class="com.facilio.bmsconsole.actions.LabourAction" method="updateLabour">
+			<param name="moduleName">workorderlabour</param>
+		</action> 
+		<action name="delete"
+			class="com.facilio.bmsconsole.actions.LabourAction" method="deleteLabour">
+			<param name="moduleName">workorderlabour</param>
+		</action> 
+	    <action name="labourList"
+			class="com.facilio.bmsconsole.actions.LabourAction" method="labourList">
+			<param name="moduleName">workorderlabour</param>
+		</action> 
+	
+		<action name="*"
+			class="com.facilio.bmsconsole.actions.LabourAction" method="labourDetails">
+			<param name="moduleName">workorderlabour</param>
+			<param name = "labourId">{1}</param>
+		</action>
+		<action name="count" class="com.facilio.bmsconsole.actions.ItemAction"
+			method="itemCount">
+			<param name="moduleName">asset</param>
+			<param name="permission">READ</param>
+		</action>
+	</package>
 	<!-- <package name="pageApiv2" namespace="/api/v2/pages" extends="v2Api"> 
 		<action name="*" class="com.facilio.bmsconsole.actions.PageAction" method="fetchPage"> 
 		<param name="moduleName">asset</param> <param name="permission">READ</param> 

@@ -71,7 +71,8 @@ public class ModuleFactory {
 		moduleMap.put(FacilioConstants.ContextNames.TOOL_TRANSACTIONS, getToolTransactionsModule());
 		moduleMap.put(FacilioConstants.ContextNames.ITEM_TRANSACTIONS, getItemTransactionsModule());
 		moduleMap.put(FacilioConstants.ContextNames.TENANT, getTenantsModule());
-
+		moduleMap.put(FacilioConstants.ContextNames.LABOUR, getLabourModule());
+	
 		return moduleMap;
 	}
 	
@@ -1350,6 +1351,14 @@ public class ModuleFactory {
 		tenants.setDisplayName("Tenants");
 		tenants.setTableName("Tenants");
 		return tenants;
+	}
+	
+	public static FacilioModule getLabourModule() {
+		FacilioModule labour = new FacilioModule();
+		labour.setName("labour");
+		labour.setDisplayName("Labour");
+		labour.setTableName("Labour");
+		return labour;
 	}
 	
 	public static FacilioModule getTenantsuserModule() {

@@ -9,6 +9,7 @@ import org.apache.commons.chain.Context;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.WorkOrderLabourContext;
 import com.facilio.bmsconsole.context.WorkorderCostContext;
 import com.facilio.bmsconsole.context.WorkorderCostContext.CostType;
 import com.facilio.bmsconsole.context.WorkorderItemContext;
@@ -46,17 +47,23 @@ public class AddOrUpdateWorkorderCostCommand implements Command {
 			CostType cos = CostType.valueOf(costType);
 			double cost = 0;
 
-			if (costType == 1) {
-				FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.WORKORDER_ITEMS);
-				List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.WORKORDER_ITEMS);
-				Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(fields);
-				cost = getTotalItemCost(parentId, module, fieldsMap);
-			} else if (costType == 2) {
-				FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.WORKORDER_TOOLS);
-				List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.WORKORDER_TOOLS);
-				Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(fields);
-				cost = getTotalToolCost(parentId, module, fieldsMap);
-			}
+		if (costType == 1) {
+			FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.WORKORDER_ITEMS);
+			List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.WORKORDER_ITEMS);
+			Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(fields);
+			cost = getTotalItemCost(parentId, module, fieldsMap);
+		} else if (costType == 2) {
+			FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.WORKORDER_TOOLS);
+			List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.WORKORDER_TOOLS);
+			Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(fields);
+			cost = getTotalToolCost(parentId, module, fieldsMap);
+		}
+		else if (costType == 3) {
+			FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.WO_LABOUR);
+			List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.WO_LABOUR);
+			Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(fields);
+			cost = getTotalLabourCost(parentId, module, fieldsMap);
+		}
 
 		FacilioModule workorderCostsModule = modBean.getModule(FacilioConstants.ContextNames.WORKORDER_COST);
 		List<FacilioField> workorderCostsFields = modBean.getAllFields(FacilioConstants.ContextNames.WORKORDER_COST);
@@ -135,8 +142,6 @@ public class AddOrUpdateWorkorderCostCommand implements Command {
 		if (id <= 0) {
 			return 0d;
 		}
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-
 		List<FacilioField> field = new ArrayList<>();
 		field.add(FieldFactory.getField("totalItemsCost", "sum(COST)", FieldType.DECIMAL));
 
@@ -157,4 +162,31 @@ public class AddOrUpdateWorkorderCostCommand implements Command {
 		}
 		return 0d;
 	}
+
+	public static double getTotalLabourCost(long id, FacilioModule module, Map<String, FacilioField> fieldsMap)
+			throws Exception {
+
+		if (id <= 0) {
+			return 0d;
+		}
+		List<FacilioField> field = new ArrayList<>();
+		field.add(FieldFactory.getField("totalLabourCost", "sum(COST)", FieldType.DECIMAL));
+
+		SelectRecordsBuilder<WorkOrderLabourContext> builder = new SelectRecordsBuilder<WorkOrderLabourContext>()
+																.select(field)
+																.moduleName(module.getName())
+																.andCondition(CriteriaAPI.getCondition(fieldsMap.get("parentId"), String.valueOf(id), NumberOperators.EQUALS))
+																.setAggregation()
+																;
+
+		List<Map<String, Object>> rs = builder.getAsProps();
+		if (rs != null && rs.size() > 0) {
+			if (rs.get(0).get("totalLabourCost") != null) {
+				return (double) rs.get(0).get("totalLabourCost");
+			}
+			return 0d;
+		}
+		return 0d;
+	}
+
 }

@@ -1783,7 +1783,19 @@ public class TransactionChainFactory {
 			c.addCommand(getUpdateWorkOrderChain());
 			return c;
 		}
-		
+
+		public static Chain getAddOrUdpateWorkorderLabourChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForWorkorderLabour());
+			c.addCommand(new AddOrUpdateWorkorderLabourCommand());
+			c.addCommand(new ExecuteAllWorkflowsCommand());
+			c.addCommand(new AddOrUpdateWorkorderCostCommand());
+			c.addCommand(new UpdateWorkorderTotalCostCommand());
+			c.addCommand(getUpdateWorkOrderChain());
+			return c;
+		}
+
+
 		public static Chain getUpdatetoolQuantityRollupChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(new ToolQuantityRollUpCommand());
@@ -1803,6 +1815,17 @@ public class TransactionChainFactory {
 			c.addCommand(new GenericDeleteModuleDataCommand());
 			c.addCommand(new DeleteWorkorderToolCommand());
 			c.addCommand(getUpdatetoolQuantityRollupChain());
+			c.addCommand(new AddOrUpdateWorkorderCostCommand());
+			c.addCommand(new UpdateWorkorderTotalCostCommand());
+			c.addCommand(getUpdateWorkOrderChain());
+			return c;
+		}
+
+		public static Chain getDeleteWorkorderLabourChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForWorkorderLabour());
+			c.addCommand(new GenericDeleteModuleDataCommand());
+			c.addCommand(new DeleteWorkorderLabourCommand());
 			c.addCommand(new AddOrUpdateWorkorderCostCommand());
 			c.addCommand(new UpdateWorkorderTotalCostCommand());
 			c.addCommand(getUpdateWorkOrderChain());
@@ -1956,7 +1979,7 @@ public class TransactionChainFactory {
 			c.addCommand(new SetItemAndToolTypeForStoreRoomCommand());
 			return c;
 		}
-		
+
 		public static Chain getApproveRejectItemsChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForItemTransactions());
@@ -1969,7 +1992,7 @@ public class TransactionChainFactory {
 			c.addCommand(getUpdateWorkOrderChain());
 			return c;
 		}
-		
+
 		public static Chain getApproveRejectToolsChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForToolTranaction());
@@ -1979,6 +2002,21 @@ public class TransactionChainFactory {
 			c.addCommand(new AddOrUpdateWorkorderCostCommand());
 			c.addCommand(new UpdateWorkorderTotalCostCommand());
 			c.addCommand(getUpdateWorkOrderChain());
+			return c;
+		}
+
+		public static Chain getAddLabourChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForLabour());
+			c.addCommand(new GenericAddModuleDataCommand());
+			c.addCommand(new ExecuteAllWorkflowsCommand());
+			return c;
+		}
+
+		public static Chain getUpdateLabourChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForLabour());
+			c.addCommand(new GenericUpdateModuleDataCommand());
 			return c;
 		}
 }
