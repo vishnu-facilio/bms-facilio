@@ -819,10 +819,9 @@ public class CommonCommandUtil {
 		List<ActivityContext> activities = (List<ActivityContext>) context.get(FacilioConstants.ContextNames.ACTIVITY_LIST);
 		if (activities == null) {
 			activities = new ArrayList<>();
+			context.put(FacilioConstants.ContextNames.ACTIVITY_LIST, activities);
 		}
 		activities.add(activity);
-		context.put(FacilioConstants.ContextNames.ACTIVITY_LIST, activities);
-
 	}
 	
 	public static void addEventType (EventType type, FacilioContext context) {

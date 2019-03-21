@@ -136,12 +136,6 @@
 			<param name="permission">CREATE</param>
 		</action>
 
-		<action name="activity" class="com.facilio.bmsconsole.actions.WorkOrderAction"
-			method="fetchActivity">
-			<param name="moduleName">workorder</param>
-			<param name="permission">READ</param>
-		</action>
-		
 		<action name="update" class="com.facilio.bmsconsole.actions.WorkOrderAction"
 			method="v2updateWorkOrder">
 			<param name="moduleName">workorder</param>

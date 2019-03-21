@@ -604,7 +604,6 @@ public class FacilioConstants {
 		public static final String WORKFLOW_RULE_ID = "workflowRuleID";
 		public static final String WORKFLOW_RULE_MODULE = "workflowrule";
 		public static final String READING_RULE_MODULE = "readingrule";
-		public static final String WORKORDER_ACTIVITY = "workorderactivity";
 		public static final String RULE_COUNT = "ruleCount";
 		public static final String RULES = "rules";
 		public static final String ALARM_RULE = "alarmRule";
@@ -899,7 +898,6 @@ public class FacilioConstants {
 			classMap.put(ASSET_DEPARTMENT, AssetDepartmentContext.class);
 			classMap.put(ASSET_PHOTOS, PhotosContext.class);
 			classMap.put(ASSET_ACTIVITY, ActivityContext.class);
-			classMap.put(WORKORDER_ACTIVITY, ActivityContext.class);
 			classMap.put(ENERGY_METER, EnergyMeterContext.class);
 			classMap.put(CHILLER, ChillerContext.class);
 			classMap.put(CHILLER_PRIMARY_PUMP, ChillerPrimaryPumpContext.class);

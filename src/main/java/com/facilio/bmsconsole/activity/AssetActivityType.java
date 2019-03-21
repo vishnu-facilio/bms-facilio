@@ -5,7 +5,7 @@ import org.json.simple.JSONObject;
 import com.facilio.activity.ActivityType;
 
 public enum AssetActivityType implements ActivityType {
-	UPDATE(7) {
+	LOCATION(1) {
 		@Override
 		public String constructMessage(JSONObject json) {
 			// TODO Auto-generated method stub

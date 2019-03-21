@@ -45,7 +45,6 @@ public class AddActivitiesCommand implements Command {
 																			.addRecords(activities)
 																			;
 				insertBuilder.save();
-				context.put(FacilioConstants.ContextNames.ACTIVITY_LIST, null);
 			}
 		}
 		

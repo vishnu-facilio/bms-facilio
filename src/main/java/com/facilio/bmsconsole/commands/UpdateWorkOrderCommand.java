@@ -12,13 +12,11 @@ import java.util.stream.Collectors;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
-import org.json.simple.JSONObject;
 
 import com.facilio.accounts.dto.Group;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.activity.WorkOrderActivityType;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ResourceContext;
@@ -66,7 +64,6 @@ public class UpdateWorkOrderCommand implements Command {
 			
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioModule module = modBean.getModule(moduleName);
-
 			EventType activityType = (EventType)context.get(FacilioConstants.ContextNames.EVENT_TYPE);
 			Map<Long, List<UpdateChangeSet>> changeSets = new HashMap<>();
 			
@@ -74,12 +71,12 @@ public class UpdateWorkOrderCommand implements Command {
 			Map<Long, WorkOrderContext> oldWoMap = oldWos.stream().collect(Collectors.toMap(WorkOrderContext::getId, Function.identity()));
 			if (newWos != null && !newWos.isEmpty()) {
 				for (WorkOrderContext wo : newWos) {
-					rowsUpdated += updateWorkOrders(wo, module, Collections.singletonList(oldWoMap.remove(wo.getId())), readings, activityType, changeSets, context, recordIds);
+					rowsUpdated += updateWorkOrders(wo, module, Collections.singletonList(oldWoMap.remove(wo.getId())), readings, activityType, changeSets, (FacilioContext) context);
 				}
 			}
 			
 			if (!oldWoMap.isEmpty()) {
-				rowsUpdated += updateWorkOrders(workOrder, module, oldWoMap.values().stream().collect(Collectors.toList()), readings, activityType, changeSets, context, recordIds);
+				rowsUpdated += updateWorkOrders(workOrder, module, oldWoMap.values().stream().collect(Collectors.toList()), readings, activityType, changeSets, (FacilioContext) context);
 			}
 			
 			if(TYPES.contains(activityType) || workOrder.getPriority() != null) {
@@ -96,20 +93,8 @@ public class UpdateWorkOrderCommand implements Command {
 			
 			context.put(FacilioConstants.ContextNames.ROWS_UPDATED, rowsUpdated);
 			
-			if (!changeSets.isEmpty() && (workOrder.getApprovalStateEnum() == null) && (workOrder.getStatus() == null) && (workOrder.getAssignedTo() == null)) {
+			if (!changeSets.isEmpty()) {
 				context.put(FacilioConstants.ContextNames.CHANGE_SET, changeSets);
-				FacilioField field = modBean.getField(UpdateChangeSet.getFieldId(), moduleName);
-				Object oldValue = UpdateChangeSet.getOldValue();
-				Object newValue = UpdateChangeSet.getNewValue();
-				context.put(FacilioConstants.ContextNames.CHANGE_SET, changeSets);
-				JSONObject info = new JSONObject();
-				info.put("field", field.getName().toString());
-				info.put("oldValue", oldValue);
-				info.put("newValue", newValue);
-				info.put("actype", "update");
-				JSONObject newinfo = new JSONObject();
-                newinfo.put("woupdate", info); 
-			CommonCommandUtil.addActivityToContext(recordIds.get(0), -1, WorkOrderActivityType.UPDATE, newinfo, (FacilioContext) context);	
 			}
 		}
 		
@@ -122,10 +107,9 @@ public class UpdateWorkOrderCommand implements Command {
 		return false;
 	}
 	
-	private int updateWorkOrders (WorkOrderContext workOrder, FacilioModule module, List<WorkOrderContext> oldWos, List<ReadingContext> readings, EventType activityType, Map<Long, List<UpdateChangeSet>> changeSets, Context context, List<Long> recordIds) throws Exception {
+	private int updateWorkOrders (WorkOrderContext workOrder, FacilioModule module, List<WorkOrderContext> oldWos, List<ReadingContext> readings, EventType activityType, Map<Long, List<UpdateChangeSet>> changeSets, FacilioContext context) throws Exception {
 		List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
 		Long lastSyncTime = (Long) context.get(FacilioConstants.ContextNames.LAST_SYNC_TIME);
-		
 		if (lastSyncTime != null && oldWos.get(0).getModifiedTime() > lastSyncTime ) {
 			throw new RuntimeException("The workorder was modified after the last sync");
 		}
@@ -134,10 +118,10 @@ public class UpdateWorkOrderCommand implements Command {
 		updateWODetails(workOrder);
 		
 		if (workOrder.getApprovalStateEnum() == ApprovalState.APPROVED || ((workOrder.getAssignedTo() != null && workOrder.getAssignedTo().getId() != -1) || (workOrder.getAssignmentGroup() != null && workOrder.getAssignmentGroup().getId() != -1)) ) {
-			updateStatus(workOrder, oldWos, newWos, readings, activityType, context, recordIds);
+			updateStatus(workOrder, oldWos, newWos, readings, activityType);
 		}
 		else if(workOrder.getStatus() != null) {
-			validateCloseStatus(workOrder, oldWos, newWos, readings, activityType, context, recordIds);
+			validateCloseStatus(workOrder, oldWos, newWos, readings, activityType, context);
 		}
 		else if (workOrder.getSiteId() != -1 && AccountUtil.getCurrentSiteId() == -1) {
 			transferToAnotherSite(workOrder);
@@ -149,25 +133,6 @@ public class UpdateWorkOrderCommand implements Command {
 		if (workOrder.getSiteId() == -1) {
 			TicketAPI.validateSiteSpecificData(workOrder, oldWos);
 		}
-
-		if (workOrder.getApprovalStateEnum()!=null && workOrder.getApprovalStateEnum().toString().equals("REJECTED")) {
-			JSONObject info = new JSONObject();
-			info.put("approvalStatus", workOrder.getApprovalStateEnum().toString());
-			info.put("actype", "rejected");
-			JSONObject newinfo = new JSONObject();
-            newinfo.put("approvalStatus", info); 
-
-		CommonCommandUtil.addActivityToContext(recordIds.get(0), -1, WorkOrderActivityType.REJECTED, newinfo, (FacilioContext) context);
-		}
-		
-		if (workOrder.getApprovalStateEnum()!=null && workOrder.getApprovalStateEnum().toString().equals("APPROVED")) {
-			JSONObject info = new JSONObject();
-			info.put("approvalStatus", workOrder.getApprovalStateEnum().toString());
-			info.put("actype", "approved");
-			JSONObject newinfo = new JSONObject();
-            newinfo.put("approvalStatus", info); 
-		CommonCommandUtil.addActivityToContext(recordIds.get(0), -1, WorkOrderActivityType.APPROVED, newinfo, (FacilioContext) context);
-		}
 		
 		if (newWos.isEmpty()) {
 			return bulkUpdate(module, fields, oldWos, workOrder, changeSets, context);
@@ -177,7 +142,7 @@ public class UpdateWorkOrderCommand implements Command {
 		}
 	}
 	
-	private int bulkUpdate(FacilioModule module, List<FacilioField> fields, List<WorkOrderContext> oldWos, WorkOrderContext wo, Map<Long, List<UpdateChangeSet>> changeSets, Context context) throws Exception {
+	private int bulkUpdate(FacilioModule module, List<FacilioField> fields, List<WorkOrderContext> oldWos, WorkOrderContext wo, Map<Long, List<UpdateChangeSet>> changeSets, FacilioContext context) throws Exception {
 		UpdateRecordBuilder<WorkOrderContext> updateBuilder = new UpdateRecordBuilder<WorkOrderContext>()
 				.module(module)
 				.fields(fields)
@@ -191,7 +156,7 @@ public class UpdateWorkOrderCommand implements Command {
 		return rowsUpdated;
 	}
 	
-	private int individualUpdate (FacilioModule module, List<FacilioField> fields, List<WorkOrderContext> oldWos, List<WorkOrderContext> newWos, Map<Long, List<UpdateChangeSet>> changeSets, Context context) throws Exception {
+	private int individualUpdate (FacilioModule module, List<FacilioField> fields, List<WorkOrderContext> oldWos, List<WorkOrderContext> newWos, Map<Long, List<UpdateChangeSet>> changeSets, FacilioContext context) throws Exception {
 		int rowsUpdated = 0;
 		Map<Long, WorkOrderContext> oldWoMap = oldWos.stream().collect(Collectors.toMap(WorkOrderContext::getId, Function.identity()));
 		for (WorkOrderContext wo : newWos) {
@@ -266,12 +231,9 @@ public class UpdateWorkOrderCommand implements Command {
 		workOrder.setSiteId(tenant.getSiteId());
 	}
 	
-	private void validateCloseStatus (WorkOrderContext workOrder, List<WorkOrderContext> oldWos, List<WorkOrderContext> newWos, List<ReadingContext> userReadings, EventType activityType, Context context, List<Long> recordIds) throws Exception {
-		WorkOrderContext oldwork = oldWos.get(0);
-		TicketStatusContext statusoldObj = TicketAPI.getStatus(AccountUtil.getCurrentOrg().getOrgId(), oldwork.getStatus().getId());
-        System.out.println(statusoldObj.getType());
+	private void validateCloseStatus (WorkOrderContext workOrder, List<WorkOrderContext> oldWos, List<WorkOrderContext> newWos, List<ReadingContext> userReadings, EventType activityType, FacilioContext context) throws Exception {
 		TicketStatusContext statusObj = TicketAPI.getStatus(AccountUtil.getCurrentOrg().getOrgId(), workOrder.getStatus().getId());
-        System.out.println(statusObj.getType());
+		
 		for(WorkOrderContext oldWo: oldWos) {
 			
 			if (!validateWorkorderStatus(statusObj, oldWo)) {
@@ -284,38 +246,6 @@ public class UpdateWorkOrderCommand implements Command {
 			WorkOrderContext newWo = FieldUtil.cloneBean(workOrder, WorkOrderContext.class);
 			newWo.setId(oldWo.getId());
 			newWos.add(newWo);
-			if (workOrder.getStatus().getStatus().equals("Resolved")) {
-				JSONObject info = new JSONObject();
-				info.put("status", workOrder.getStatus().getStatus());
-				info.put("actype", "update");
-				JSONObject newinfo = new JSONObject();
-	            newinfo.put("status", info);
-			CommonCommandUtil.addActivityToContext(recordIds.get(0), -1, WorkOrderActivityType.UPDATE, newinfo, (FacilioContext) context);
-			}
-			if (workOrder.getStatus().getStatus().equals("Closed")) {
-				JSONObject info = new JSONObject();
-				info.put("status", workOrder.getStatus().getStatus());
-				info.put("actype", "update");
-				JSONObject newinfo = new JSONObject();
-	            newinfo.put("status", info);
-			CommonCommandUtil.addActivityToContext(recordIds.get(0), -1, WorkOrderActivityType.UPDATE, newinfo, (FacilioContext) context);
-			}
-			if (statusoldObj.getStatus().equals("Resolved") && statusObj.getType().toString().equals("OPEN")) {
-				JSONObject info = new JSONObject();
-				info.put("status", "Reopened");
-				info.put("actype", "update");
-				JSONObject newinfo = new JSONObject();
-	            newinfo.put("status", info);
-			CommonCommandUtil.addActivityToContext(recordIds.get(0), -1, WorkOrderActivityType.UPDATE, newinfo, (FacilioContext) context);
-			}
-			if (statusObj.getStatus().equals("Work in Progress")) {
-				JSONObject info = new JSONObject();
-				info.put("status", "Started");
-				info.put("actype", "update");
-				JSONObject newinfo = new JSONObject();
-	            newinfo.put("status", info);
-			CommonCommandUtil.addActivityToContext(recordIds.get(0), -1, WorkOrderActivityType.UPDATE, newinfo, (FacilioContext) context);
-			}
 			
 			TicketAPI.updateTicketStatus(activityType, newWo, oldWo, newWo.isWorkDurationChangeAllowed() || (newWo.getIsWorkDurationChangeAllowed() == null && oldWo.isWorkDurationChangeAllowed()));
 			try {
@@ -342,7 +272,7 @@ public class UpdateWorkOrderCommand implements Command {
 		return newWo;
 	}
 	
-	private void updateStatus (WorkOrderContext workOrder, List<WorkOrderContext> oldWos, List<WorkOrderContext> newWos, List<ReadingContext> userReadings, EventType activityType, Context context, List<Long> recordIds) throws Exception {
+	private void updateStatus (WorkOrderContext workOrder, List<WorkOrderContext> oldWos, List<WorkOrderContext> newWos, List<ReadingContext> userReadings, EventType activityType) throws Exception {
 		Map<String, TicketStatusContext> allStatus = getAllTicketStatus();
 		TicketStatusContext preOpen = allStatus.get("preopen");
 		TicketStatusContext submittedStatus = allStatus.get("Submitted");
@@ -351,7 +281,6 @@ public class UpdateWorkOrderCommand implements Command {
 		TicketStatusContext wipStatus = allStatus.get("Work in Progress");
 		long submittedId = submittedStatus.getId();
 		long preOpenId = preOpen == null ? -1 : preOpen.getId();
-		
 		for (WorkOrderContext oldWo: oldWos) {
 			WorkOrderContext newWo = null;
 			if (workOrder.getApprovalStateEnum() == ApprovalState.APPROVED && oldWo.getStatus() != null && oldWo.getStatus().getId() == preOpenId) {
@@ -362,45 +291,15 @@ public class UpdateWorkOrderCommand implements Command {
 			
 			if ( ((workOrder.getAssignedTo() != null && workOrder.getAssignedTo().getId() != -1) || (workOrder.getAssignmentGroup() != null && workOrder.getAssignmentGroup().getId() != -1)) && oldWo.getStatus() != null) {
 				newWo = newWo == null ? cloneWO(workOrder, oldWo.getId(), newWos) : newWo;
-				if ( oldWo.getStatus() != null && oldWo.getStatus().getId() == submittedId) {
+				if (oldWo.getStatus().getId() == submittedId) {
 					newWo.setStatus(assignedStatus);
-
-					List<Long> parentId = (List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST);
-					JSONObject info = new JSONObject();
-					info.put("assignedTo", workOrder.getAssignedTo().getUid());
-					info.put("assignedBy", workOrder.getAssignedBy().getUid());
-					info.put("actype", "assign");
-					JSONObject newinfo = new JSONObject();
-                    newinfo.put("assigned", info);
-					CommonCommandUtil.addActivityToContext(parentId.get(0), -1, WorkOrderActivityType.ASSIGN, newinfo, (FacilioContext) context);
-				}
-				else {
+				} else {
 					if (workOrder.getAssignedTo() != null && oldWo.getAssignedTo() != null) {
 						if (workOrder.getAssignedTo().getOuid() == -1) {
 							userReadings.addAll(ShiftAPI.addUserWorkHoursReading(oldWo.getAssignedTo().getOuid(), oldWo.getId(), activityType, "Close", System.currentTimeMillis()));
 							newWo.setStatus(submittedStatus);
-
-							List<Long> parentId = (List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST);
-							JSONObject info = new JSONObject();
-							info.put("assignedTo", workOrder.getAssignedTo().getEmail().toString());
-							info.put("assignedBy", workOrder.getAssignedBy().getEmail().toString());
-							info.put("actype", "assign");
-							JSONObject newinfo = new JSONObject();
-		                    newinfo.put("assigned", info);
-
-							CommonCommandUtil.addActivityToContext(parentId.get(0), -1, WorkOrderActivityType.ASSIGN, newinfo, (FacilioContext) context);
-
 						} else if (oldWo.getAssignedTo().getOuid() != workOrder.getAssignedTo().getOuid()) {
 							try {
-								long parentId = (long) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST);
-								JSONObject info = new JSONObject();
-								info.put("assignedTo", workOrder.getAssignedTo().getEmail().toString());
-								info.put("assignedBy", workOrder.getAssignedBy().getEmail().toString());
-								info.put("actype", "assign");
-								JSONObject newinfo = new JSONObject();
-			                    newinfo.put("assigned", info);
-
-								CommonCommandUtil.addActivityToContext(parentId, -1, WorkOrderActivityType.ASSIGN, newinfo, (FacilioContext) context);
 								if (oldWo.getStatus().getId() == wipStatus.getId()) {
 									newWo.setStatus(onHoldStatus);
 									userReadings.addAll(ShiftAPI.addUserWorkHoursReading(oldWo.getAssignedTo().getOuid(), oldWo.getId(), activityType, "Pause", System.currentTimeMillis()));

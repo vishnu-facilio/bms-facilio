@@ -19,7 +19,6 @@ public class LoadAllFieldsCommand implements Command{
 		// TODO Auto-generated method stub
 		
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
-		context.put(FacilioConstants.ContextNames.WORKORDER_ACTIVITY, moduleName);
 		
 		if(moduleName != null && !moduleName.isEmpty()) {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
