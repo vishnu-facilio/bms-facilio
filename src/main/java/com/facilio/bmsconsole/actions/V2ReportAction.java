@@ -56,6 +56,7 @@ import com.facilio.report.context.ReadingAnalysisContext.ReportMode;
 import com.facilio.report.context.ReportBaseLineContext;
 import com.facilio.report.context.ReportContext;
 import com.facilio.report.context.ReportContext.ReportType;
+import com.facilio.report.context.ReportFactoryFields;
 import com.facilio.report.context.ReportFolderContext;
 import com.facilio.report.context.ReportYAxisContext;
 import com.facilio.report.context.WorkorderAnalysisContext;
@@ -607,7 +608,8 @@ public class V2ReportAction extends FacilioAction {
 	}
 	
 	public String getReportFields() throws Exception {
-		JSONObject reportFields = ReportUtil.getReportFields(moduleName);
+		JSONObject reportFields = ReportFactoryFields.getReportFields(moduleName);
+		// JSONObject reportFields = ReportUtil.getReportFields(moduleName);
 		
 		setResult("meta", reportFields);
 		return SUCCESS;
@@ -900,6 +902,10 @@ public class V2ReportAction extends FacilioAction {
 		if (module != null) {
 			setResult("module", module);
 		}
+		if(moduleType != -1) {
+			setResult("moduleType", ReportFactoryFields.addModuleTypes(module.getName()));
+		}
+		
 		resultContext = context;
 		
 		return SUCCESS;
