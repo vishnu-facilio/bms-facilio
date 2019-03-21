@@ -50,11 +50,13 @@ public class MLHistoricalForecastingJob extends FacilioJob
 		long startTime = 1524783600000l;//Apr 27  04:30
 		long endTime = 1535482800000l;//Aug 29 00:30 
 		*/
-		long startTime = 1514783600000l;//Jan 01 2018 10:43:20
-		long endTime = 1524783600000l;//Apr 27  04:30
+		//long startTime = 1514783600000l;//Jan 01 2018 10:43:20
+		//long endTime = 1524783600000l;//Apr 27  04:30
+		long startTime = 1546200000000l;//Dec 31 2018 01:30:00
+		long endTime = 1549000000000l;//Feb 01 2019 11:16:40
 		try
 		{
-			runPrediction(startTime , endTime,60);
+			runPrediction(startTime , endTime,10);
 		}
 		catch(Exception e)
 		{
@@ -212,11 +214,12 @@ public class MLHistoricalForecastingJob extends FacilioJob
 							 newReading.addReading("predictedTime", currentTime);
 							 logReadingList.add(newReading);
 							 
-							 ReadingContext predictReading = new ReadingContext();
+							 /*ReadingContext predictReading = new ReadingContext();
 							 predictReading.setParentId(assetId);
 							 predictReading.addReading(predictedField.getName(), value);	   			
 							 predictReading.setTtime((long)readingObj.get("ttime"));
 							 ttimeVsMap.put((long)readingObj.get("ttime"), predictReading);
+							 */
 						 }
 						 LOGGER.info("Size of TTIME MAP =>"+ttimeVsMap.size());
 						 updateReading(predictedLogField.getModule(),logReadingList);
@@ -230,7 +233,7 @@ public class MLHistoricalForecastingJob extends FacilioJob
 			startTime = startTime+(3600*1000);
 			currentTime = startTime + 259200000;
 		}
-		if(ttimeVsMap.size()>0)
+		/*if(ttimeVsMap.size()>0)
 		{
 			try
 			{
@@ -240,7 +243,7 @@ public class MLHistoricalForecastingJob extends FacilioJob
 			{
 				
 			}
-		}
+		}*/
 	}
 	
 	private void updateReading(FacilioModule module,List<ReadingContext> readings) throws Exception
