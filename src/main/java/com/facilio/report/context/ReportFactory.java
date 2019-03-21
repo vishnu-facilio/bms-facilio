@@ -60,7 +60,10 @@ public class ReportFactory {
 			overdueClosedField.addCondition("Ontime", CriteriaAPI.getCondition("DUE_DATE", "dueDate", "actualWorkEnd", FieldOperator.GREATER_THAN_EQUAL));
 			reportFields.add(overdueClosedField);
 			
-			reportFields.add(getField(WorkOrder.PLANNED_VS_UNPLANNED_COL, "Planned Type", modBean.getModule("workorder"), " CASE WHEN SOURCE_TYPE = 5 THEN 'Planned' ELSE 'Unplanned' END ", FieldType.NUMBER, WorkOrder.PLANNED_VS_UNPLANNED));
+			ReportFacilioField plannedVsUnplannedField = (ReportFacilioField) getField(WorkOrder.PLANNED_VS_UNPLANNED_COL, "Planned Type", modBean.getModule("workorder"), " CASE WHEN SOURCE_TYPE = 5 THEN 'Planned' ELSE 'Unplanned' END ", FieldType.NUMBER, WorkOrder.PLANNED_VS_UNPLANNED);
+			plannedVsUnplannedField.addCondition("Planned", CriteriaAPI.getCondition("SORUCE_TYPE", "sourceType", "5", NumberOperators.EQUALS));
+			plannedVsUnplannedField.addCondition("Unplanned", CriteriaAPI.getCondition("SORUCE_TYPE", "sourceType", "5", NumberOperators.NOT_EQUALS));
+			reportFields.add(plannedVsUnplannedField);
 			
 			reportFields.add(getField(WorkOrder.FIRST_RESPONSE_TIME_COL, "Response Time", modBean.getModule("workorder"), "Tickets.ACTUAL_WORK_START - WorkOrders.CREATED_TIME", FieldType.NUMBER, WorkOrder.FIRST_RESPONSE_TIME));
 			
