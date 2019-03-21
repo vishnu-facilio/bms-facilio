@@ -56,6 +56,7 @@ public class ViewEmailScheduler extends FacilioJob {
 				view.setModuleName(viewModule.getName());
 
 				String fileUrl = ExportUtil.exportModule(FileInfo.FileFormat.getFileFormat((int) prop.get("fileFormat")), view.getModuleName(), view.getName(), null);
+				fileUrl = AwsUtil.getClientAppUrl() + fileUrl;
 				Map<String, String> files = new HashMap<>();
 				String fileName = view.getDisplayName();
 				FileInfo.FileFormat fileFormat = FileInfo.FileFormat.getFileFormat((int) prop.get("fileFormat"));
@@ -81,8 +82,8 @@ public class ViewEmailScheduler extends FacilioJob {
 				log.error("email template " + emailTemplate.toJSONString());
 			}
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			log.info("Exception occurred ", e);
+			CommonCommandUtil.emailAlert("Exception occurred ViewEmailScheduler", "View ID: "+ jc.getJobId());
+			log.info("Exception occurred ViewEmailScheduler", e);
 		}
 		
 	}
