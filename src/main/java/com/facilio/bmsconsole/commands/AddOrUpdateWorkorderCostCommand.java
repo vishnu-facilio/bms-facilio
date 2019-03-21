@@ -113,8 +113,8 @@ public class AddOrUpdateWorkorderCostCommand implements Command {
 
 		SelectRecordsBuilder<WorkorderItemContext> builder = new SelectRecordsBuilder<WorkorderItemContext>()
 				.select(field).moduleName(module.getName())
-				.andCondition(
-						CriteriaAPI.getCondition(fieldsMap.get("parentId"), String.valueOf(id), NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition(fieldsMap.get("parentId"), String.valueOf(id), NumberOperators.EQUALS))
+				.andCustomWhere("APPROVED_STATE = ? OR APPROVED_STATE = ? ", 1, 3)
 				.setAggregation();
 
 		List<Map<String, Object>> rs = builder.getAsProps();
@@ -142,8 +142,8 @@ public class AddOrUpdateWorkorderCostCommand implements Command {
 
 		SelectRecordsBuilder<WorkorderToolsContext> builder = new SelectRecordsBuilder<WorkorderToolsContext>()
 				.select(field).moduleName(module.getName())
-				.andCondition(
-						CriteriaAPI.getCondition(fieldsMap.get("parentId"), String.valueOf(id), NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition(fieldsMap.get("parentId"), String.valueOf(id), NumberOperators.EQUALS))
+				.andCustomWhere("APPROVED_STATE = ? OR APPROVED_STATE = ? ", 1, 3)
 				.setAggregation();
 
 		List<Map<String, Object>> rs = builder.getAsProps();
