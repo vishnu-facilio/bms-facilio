@@ -37,6 +37,7 @@ public class ViewEmailScheduler extends FacilioJob {
 		
 		long jobId = jc.getJobId();
 		try {
+			log.error("Execution view email scheduling: " + jobId);
 			GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 					.table(ModuleFactory.getViewScheduleInfoModule().getTableName())
 					.select(FieldFactory.getViewScheduleInfoFields())
@@ -76,6 +77,8 @@ public class ViewEmailScheduler extends FacilioJob {
 
 				emailTemplate.replace("to", toList);
 				AwsUtil.sendEmail(emailTemplate, files);
+				log.error("to list: " + StringUtils.join(toList, ", "));
+				log.error("email template " + emailTemplate.toJSONString());
 			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
