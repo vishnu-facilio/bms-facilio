@@ -96,7 +96,7 @@ public class ToolTypesContext extends ModuleBaseWithCustomFields {
 	}
 
 	private long photoId;
-	
+
 	public String getPhotoUrl() throws Exception {
 		if (this.photoId > 0) {
 			return FileStoreFactory.getInstance().getFileStore().getPrivateUrl(this.photoId);
@@ -111,7 +111,7 @@ public class ToolTypesContext extends ModuleBaseWithCustomFields {
 	public void setPhotoId(long photoId) {
 		this.photoId = photoId;
 	}
-	
+
 	private double currentQuantity = -1;
 
 	public double getCurrentQuantity() {
@@ -132,6 +132,53 @@ public class ToolTypesContext extends ModuleBaseWithCustomFields {
 	public void setLocalId(long localId) {
 		// TODO Auto-generated method stub
 		super.setLocalId(localId);
+	}
+
+	private long lastPurchasedDate = -1;
+
+	public long getLastPurchasedDate() {
+		return lastPurchasedDate;
+	}
+
+	public void setLastPurchasedDate(long lastPurchasedDate) {
+		this.lastPurchasedDate = lastPurchasedDate;
+	}
+
+	private double lastPurchasedPrice = -1;
+
+	public double getLastPurchasedPrice() {
+		return lastPurchasedPrice;
+	}
+
+	public void setLastPurchasedPrice(double lastPurchasedPrice) {
+		this.lastPurchasedPrice = lastPurchasedPrice;
+	}
+
+	private long lastIssuedDate = -1;
+
+	public long getLastIssuedDate() {
+		return lastIssuedDate;
+	}
+
+	public void setLastIssuedDate(long lastIssuedDate) {
+		this.lastIssuedDate = lastIssuedDate;
+	}
+	
+	private Boolean isApprovalNeeded;
+
+	public Boolean getIsApprovalNeeded() {
+		return isApprovalNeeded;
+	}
+
+	public void setIsApprovalNeeded(Boolean isApprovalNeeded) {
+		this.isApprovalNeeded = isApprovalNeeded;
+	}
+
+	public boolean isApprovalNeeded() {
+		if (isApprovalNeeded != null) {
+			return isApprovalNeeded.booleanValue();
+		}
+		return false;
 	}
 
 }

@@ -47,6 +47,18 @@ public class ToolTransactionsAction extends FacilioAction{
 		return SUCCESS;
 	} 
 	
+	public String approveOrRejectToolTransactions() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.CREATE);
+		context.put(FacilioConstants.ContextNames.RECORD_LIST, toolTransaction);
+		context.put(FacilioConstants.ContextNames.WORKORDER_COST_TYPE, 2);
+		Chain addWorkorderPartChain = TransactionChainFactory.getApproveRejectToolsChain();
+		addWorkorderPartChain.execute(context);
+		setToolTransactionsId((List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST));
+		setResult("toolTransactionsId", toolTransactionsId);
+		return SUCCESS;
+	}
+	
 	public String deleteToolTransactions() throws Exception {
 		FacilioContext context = new FacilioContext();
 	

@@ -28,6 +28,7 @@ import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
 import com.facilio.bmsconsole.util.TransactionState;
 import com.facilio.bmsconsole.util.TransactionType;
+import com.facilio.bmsconsole.workflow.rule.ApprovalState;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 
@@ -41,10 +42,8 @@ public class AddOrUpdateToolStockTransactionsCommand implements Command {
 		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.TOOL_TRANSACTIONS);
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 		
-		long toolId = (long) context.get(FacilioConstants.ContextNames.TOOL_ID);
 		long toolTypeId = (long) context.get(FacilioConstants.ContextNames.TOOL_TYPES_ID);
 		List<Long> toolIds = (List<Long>) context.get(FacilioConstants.ContextNames.TOOL_IDS);
-		List<Long> toolTypesIds = (List<Long>) context.get(FacilioConstants.ContextNames.TOOL_TYPES_IDS);
 		FacilioModule Toolmodule = modBean.getModule(FacilioConstants.ContextNames.TOOL);
 		List<FacilioField> Toolfields = modBean.getAllFields(FacilioConstants.ContextNames.TOOL);
 
@@ -93,6 +92,7 @@ public class AddOrUpdateToolStockTransactionsCommand implements Command {
 					transaction.setIsReturnable(false);
 					transaction.setTransactionType(TransactionType.STOCK.getValue());
 					transaction.setToolType(toolType);
+					transaction.setApprovedState(ApprovalState.YET_TO_BE_REQUESTED);
 
 					SelectRecordsBuilder<ToolTransactionContext> transactionsselectBuilder = new SelectRecordsBuilder<ToolTransactionContext>()
 							.select(fields).table(module.getTableName()).moduleName(module.getName())
@@ -122,6 +122,7 @@ public class AddOrUpdateToolStockTransactionsCommand implements Command {
 			transaction.setIsReturnable(false);
 			transaction.setTransactionType(TransactionType.STOCK.getValue());
 			transaction.setToolType(toolType);
+			transaction.setApprovedState(ApprovalState.YET_TO_BE_REQUESTED);
 
 			SelectRecordsBuilder<ToolTransactionContext> transactionsselectBuilder = new SelectRecordsBuilder<ToolTransactionContext>()
 					.select(fields).table(module.getTableName()).moduleName(module.getName())

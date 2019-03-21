@@ -1642,6 +1642,7 @@ public class TransactionChainFactory {
 			c.addCommand(new ExecuteAllWorkflowsCommand());
 			c.addCommand(getAddPurchasedItemChain());
 			c.addCommand(getUpdateItemQuantityRollupChain());
+			c.addCommand(getSetItemAndToolTypeForStoreRoomChain());
 			return c;
 		}
 		
@@ -1652,6 +1653,7 @@ public class TransactionChainFactory {
 			c.addCommand(new ExecuteAllWorkflowsCommand());
 			c.addCommand(getAddBulkPurchasedItemChain());
 			c.addCommand(getUpdateItemQuantityRollupChain());
+			c.addCommand(getSetItemAndToolTypeForStoreRoomChain());
 			return c;
 		}
 		
@@ -1753,6 +1755,7 @@ public class TransactionChainFactory {
 			c.addCommand(getAddPurchasedToolChain());
 			c.addCommand(getAddOrUpdateToolStockTransactionChain());
 			c.addCommand(getUpdatetoolQuantityRollupChain());
+			c.addCommand(getSetItemAndToolTypeForStoreRoomChain());
 			return c;
 		}
 		
@@ -1763,6 +1766,7 @@ public class TransactionChainFactory {
 			c.addCommand(new ExecuteAllWorkflowsCommand());
 			c.addCommand(new AddBulkToolStockTransactionsCommand());
 			c.addCommand(getUpdatetoolQuantityRollupChain());
+			c.addCommand(getSetItemAndToolTypeForStoreRoomChain());
 			return c;
 		}
 		
@@ -1952,5 +1956,35 @@ public class TransactionChainFactory {
 			return c;
 		}
 		
+		public static Chain getSetItemAndToolTypeForStoreRoomChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new SetItemAndToolTypeForStoreRoomCommand());
+			return c;
+		}
+		
+		public static Chain getApproveRejectItemsChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForItemTransactions());
+			c.addCommand(new GenericUpdateListModuleDataCommand());
+			c.addCommand(new ApproveOrRejectItemCommand());
+			c.addCommand(new PurchasedItemsQuantityRollUpCommand());
+			c.addCommand(getUpdateItemQuantityRollupChain());
+			c.addCommand(new AddOrUpdateWorkorderCostCommand());
+			c.addCommand(new UpdateWorkorderTotalCostCommand());
+			c.addCommand(getUpdateWorkOrderChain());
+			return c;
+		}
+		
+		public static Chain getApproveRejectToolsChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForToolTranaction());
+			c.addCommand(new GenericUpdateListModuleDataCommand());
+			c.addCommand(new ApproveOrRejectToolCommand());
+			c.addCommand(getUpdatetoolQuantityRollupChain());
+			c.addCommand(new AddOrUpdateWorkorderCostCommand());
+			c.addCommand(new UpdateWorkorderTotalCostCommand());
+			c.addCommand(getUpdateWorkOrderChain());
+			return c;
+		}
 }
 

@@ -1533,6 +1533,15 @@
 		</action>
 	</package>
 	
+	<package name="approveOrRejectItemTransactionsApi" namespace="/api/v2/approveOrRejectItem"
+		extends="v2Api">
+		<action name="approveOrReject"
+			class="com.facilio.bmsconsole.actions.ItemTransactionsAction" method="approveOrRejectItemTransactions">
+			<param name="moduleName">asset</param>
+			<param name="permission">CREATE</param>
+		</action>
+		
+	</package>
 	<package name="itemTransactionsList" namespace="/api/v2/itemTransactions"
 		extends="v2Api">
 		<action name="all"
@@ -1604,6 +1613,15 @@
 			<param name="moduleName">asset</param>
 			<param name="permission">CREATE</param>
 		</action>
+	</package>
+	<package name="approveOrRejectToolTransactionsApi" namespace="/api/v2/approveOrRejectTool"
+		extends="v2Api">
+		<action name="approveOrReject"
+			class="com.facilio.bmsconsole.actions.ToolTransactionsAction" method="approveOrRejectToolTransactions">
+			<param name="moduleName">asset</param>
+			<param name="permission">CREATE</param>
+		</action>
+		
 	</package>
 	<package name="toolTransactionsList" namespace="/api/v2/toolTransactions"
 		extends="v2Api">
