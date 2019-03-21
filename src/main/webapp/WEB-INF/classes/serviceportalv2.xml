@@ -57,7 +57,12 @@
 		<action name="addNotes" class="com.facilio.bmsconsole.actions.NoteAction"
 			method="v2addNote">
 			<param name="permission">WORKORDER_READ,TASK_READ</param>
-		</action>	
+		</action>
+		
+		<action name="addmobilesetting"  class="com.facilio.bmsconsole.actions.UserAction" method="v2addMobileSetting">
+			<!-- <param name="moduleName">setup</param>
+			<param name="permission">USER_MANAGEMENT</param> -->
+		</action>
 		
 		<action name="removemobilesetting"  class="com.facilio.bmsconsole.actions.UserAction" method="v2removeMobileSetting">
 			<!-- <param name="moduleName">setup</param>
