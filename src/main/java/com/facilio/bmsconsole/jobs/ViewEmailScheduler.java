@@ -76,10 +76,11 @@ public class ViewEmailScheduler extends FacilioJob {
 					toList = (String) emailTemplate.get("to");
 				}
 
-				emailTemplate.replace("to", toList);
-				AwsUtil.sendEmail(emailTemplate, files);
 				log.error("to list: " + StringUtils.join(toList, ", "));
 				log.error("email template " + emailTemplate.toJSONString());
+				log.error(fileUrl);
+				emailTemplate.replace("to", toList);
+				AwsUtil.sendEmail(emailTemplate, files);
 			}
 		} catch (Exception e) {
 			CommonCommandUtil.emailAlert("Exception occurred ViewEmailScheduler", "View ID: "+ jc.getJobId());
