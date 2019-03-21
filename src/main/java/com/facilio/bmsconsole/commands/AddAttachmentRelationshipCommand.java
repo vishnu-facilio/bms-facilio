@@ -7,11 +7,16 @@ import java.util.logging.Logger;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
+import com.facilio.bmsconsole.activity.WorkOrderActivityType;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.AttachmentContext;
 import com.facilio.bmsconsole.util.AttachmentsAPI;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.chain.FacilioChain;
+import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 
 public class AddAttachmentRelationshipCommand implements Command {
@@ -71,6 +76,20 @@ public class AddAttachmentRelationshipCommand implements Command {
 			if(moduleName.equals(FacilioConstants.ContextNames.TICKET_ATTACHMENTS)) {
 				context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.ADD_TICKET_ATTACHMENTS);
 			}
+			List<AttachmentContext> attachment = (List<AttachmentContext>) context.get(FacilioConstants.ContextNames.ATTACHMENT_LIST);
+			long parentId = (long) context.get(FacilioConstants.ContextNames.RECORD_ID);
+			JSONObject info = new JSONObject();
+			JSONArray attachmentNames = new JSONArray();
+			
+			for(AttachmentContext attach : attachment) {
+				attachmentNames.add(attach.getFileName());
+			}
+			info.put("Attachment", attachmentNames.get(0));
+			info.put("actype", "add");
+			JSONObject newinfo = new JSONObject();
+			newinfo.put("Attachment", info);
+			CommonCommandUtil.addActivityToContext(parentId, -1, WorkOrderActivityType.ADD, newinfo, (FacilioContext) context);
+
 		}
 		
 		return false;

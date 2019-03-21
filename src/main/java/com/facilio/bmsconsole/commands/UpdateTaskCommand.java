@@ -1,6 +1,8 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -8,8 +10,12 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.activity.WorkOrderActivityType;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.TaskContext;
@@ -22,15 +28,24 @@ import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
+import com.facilio.bmsconsole.modules.FieldType;
+import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.LookupField;
 import com.facilio.bmsconsole.modules.LookupFieldMeta;
+import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
+import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.bmsconsole.util.ShiftAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.workflow.rule.EventType;
+import com.facilio.bmsconsole.workflow.rule.TicketActivity;
+import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
+import com.google.common.collect.MapDifference;
+import com.google.common.collect.Maps;
+import com.google.common.collect.MapDifference.ValueDifference;
 
 public class UpdateTaskCommand implements Command {
 	
@@ -58,8 +73,38 @@ public class UpdateTaskCommand implements Command {
 				}
 			}
 			
-			List<TaskContext> oldTasks = getTasks(recordIds);
 			
+			List<TaskContext> oldTasks = getTasks(recordIds);
+			if(recordIds.size() == 1) {
+				if(task.getInputValue() != null) {
+					JSONObject info = new JSONObject();
+					long newTaskId = task.getId();
+					TaskContext oldTask = oldTasks.get(0);
+					info.put("newvalue", task.getInputValue());
+					info.put("oldvalue", oldTask.getInputValue());
+					info.put("newTaskId", newTaskId);
+					info.put("actype", "update");
+					JSONObject newinfo = new JSONObject();
+                    newinfo.put("taskupdate", info); 
+                    CommonCommandUtil.addActivityToContext(task.getParentTicketId(), -1, WorkOrderActivityType.UPDATE, newinfo, (FacilioContext) context);
+				}
+			}
+			else if (recordIds.size()>1) {
+				for (Long recordId:recordIds) {
+					if(task.getInputValue() != null) {
+						JSONObject info = new JSONObject();
+						long newTaskId = task.getId();
+						TaskContext oldTask = oldTasks.get(0);
+						info.put("newvalue", task.getInputValue());
+						info.put("oldvalue", oldTask.getInputValue());
+						info.put("newTaskId", newTaskId);
+						info.put("actype", "update");
+						JSONObject newinfo = new JSONObject();
+                        newinfo.put("taskupdate", info); 
+						CommonCommandUtil.addActivityToContext(task.getParentTicketId(), -1, WorkOrderActivityType.UPDATE, newinfo, (FacilioContext) context);
+					}
+				}
+			}
 			Long lastSyncTime = (Long) context.get(FacilioConstants.ContextNames.LAST_SYNC_TIME);
 			if (lastSyncTime != null && oldTasks.get(0).getModifiedTime() > lastSyncTime ) {
 				throw new RuntimeException("The task was modified after the last sync");
@@ -69,19 +114,25 @@ public class UpdateTaskCommand implements Command {
 			ReadingContext reading = (ReadingContext) context.get(FacilioConstants.ContextNames.READING);
 			if (recordIds.size() == 1 && reading != null) {
 				taskActivity = EventType.ADD_TASK_INPUT;
-			} else if (task != null && (task.getParentTicketId() != -1 || oldTasks != null)) {
+				}
+			else if (task != null && (task.getParentTicketId() != -1 || oldTasks != null)) {
 				if (context.get(FacilioConstants.ContextNames.IS_BULK_ACTION) != null) {
 					boolean bulkAction = (boolean) context.get(FacilioConstants.ContextNames.IS_BULK_ACTION);
 					if (bulkAction) {
 						taskActivity = EventType.CLOSE_ALL_TASK;
-					}
+						JSONObject info = new JSONObject();
+						info.put("closetasks", recordIds);
+						info.put("actype", "closetask");
+						JSONObject newinfo = new JSONObject();
+                        newinfo.put("closetasks", info);
+						CommonCommandUtil.addActivityToContext(task.getParentTicketId(), -1, WorkOrderActivityType.CLOSE_ALL_TASK, newinfo, (FacilioContext) context);
+                     }
 				} else {
 					taskActivity = EventType.ADD_TASK_INPUT;
 				}
 			} 
 			
-			
-			updateParentTicketStatus(context, taskActivity, oldTasks.get(0));
+			updateParentTicketStatus(context,taskActivity, oldTasks.get(0));
 			
 			String ids = StringUtils.join(recordIds, ",");
 			Condition idCondition = new Condition();
@@ -101,7 +152,7 @@ public class UpdateTaskCommand implements Command {
 		}
 		return false;
 	}
-	
+		
 	private List<TaskContext> getTasks(List<Long> ids) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.TASK);

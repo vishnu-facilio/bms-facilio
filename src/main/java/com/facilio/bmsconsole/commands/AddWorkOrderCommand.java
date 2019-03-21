@@ -7,15 +7,22 @@ import java.util.logging.Logger;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.activity.WorkOrderActivityType;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.InsertRecordBuilder;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.workflow.rule.EventType;
+import com.facilio.chain.FacilioContext;
 import com.facilio.bmsconsole.workflow.rule.ApprovalState;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
 
 public class AddWorkOrderCommand implements Command {
 	
@@ -34,6 +41,8 @@ public class AddWorkOrderCommand implements Command {
 			TicketAPI.validateSiteSpecificData(workOrder);
 			
 			String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			FacilioModule module = modBean.getModule(moduleName);
 			List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
 			workOrder.setCreatedBy(AccountUtil.getCurrentUser());
 			if (workOrder.getScheduledStart() > 0) {
@@ -94,6 +103,13 @@ public class AddWorkOrderCommand implements Command {
 			context.put(FacilioConstants.ContextNames.CHANGE_SET_MAP, Collections.singletonMap(FacilioConstants.ContextNames.WORK_ORDER, builder.getChangeSet()));
 			context.put(FacilioConstants.ContextNames.RECORD_MAP, Collections.singletonMap(FacilioConstants.ContextNames.WORK_ORDER, Collections.singletonList(workOrder)));
 			context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(workOrderId));
+			JSONObject info = new JSONObject();
+			info.put("actype", "add");
+			info.put("WorkOrder", workOrder.getSubject());
+			JSONObject newinfo = new JSONObject();
+			newinfo.put("WorkOrder",info);
+			CommonCommandUtil.addActivityToContext(workOrder.getId(), -1, WorkOrderActivityType.ADD, newinfo, (FacilioContext) context);
+
 		}
 		else {
 			throw new IllegalArgumentException("WorkOrder Object cannot be null");

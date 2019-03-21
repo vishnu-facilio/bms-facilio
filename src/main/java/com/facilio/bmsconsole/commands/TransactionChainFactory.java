@@ -674,6 +674,7 @@ public class TransactionChainFactory {
 			c.addCommand(new ExecuteNoteWorkflowCommand());
 			c.addCommand(new AddNoteTicketActivityCommand());
 			c.setPostTransactionChain(getUpdateTicketNotesChain());
+			c.addCommand(new AddActivitiesCommand(FacilioConstants.ContextNames.WORKORDER_ACTIVITY));
 			return c;
 		}
 		
@@ -709,7 +710,7 @@ public class TransactionChainFactory {
 		
 		public static Chain historicalScheduledRuleChain() {
 			Chain c = getDefaultChain();
-			c.addCommand(new AddHistoricalScheduledRuleJobCommand());
+			//c.addCommand(new AddHistoricalScheduledRuleJobCommand());
 			return c;
 		}
 
@@ -759,6 +760,7 @@ public class TransactionChainFactory {
 			c.addCommand(new AddTicketActivityCommand());
 			c.addCommand(getAddTasksChain());
 			c.addCommand(getWorkOrderWorkflowsChain());
+			c.addCommand(new AddActivitiesCommand(FacilioConstants.ContextNames.WORKORDER_ACTIVITY));
 			return c;
 		}
 
@@ -787,6 +789,7 @@ public class TransactionChainFactory {
 			c.addCommand(new UpdateReadingDataMetaCommand());
 			// c.addCommand(new AddTaskTicketActivityCommand());
 			c.setPostTransactionChain(TransactionChainFactory.getUpdateTaskCountChain());
+			c.addCommand(new AddActivitiesCommand(FacilioConstants.ContextNames.WORKORDER_ACTIVITY));
 			return c;
 		}
 		
@@ -810,6 +813,7 @@ public class TransactionChainFactory {
 			);
 			c.addCommand(new ConstructTicketNotesCommand());
 			c.addCommand(getAddNotesChain());
+			c.addCommand(new AddActivitiesCommand(FacilioConstants.ContextNames.WORKORDER_ACTIVITY));
 			return c;
 		}
 		
@@ -1166,6 +1170,7 @@ public class TransactionChainFactory {
 			c.addCommand(new UpdateClosedTasksCounterCommand());
 			c.addCommand(new AddTaskTicketActivityCommand());
 			c.addCommand(new ExecuteAllWorkflowsCommand());
+			c.addCommand(new AddActivitiesCommand(FacilioConstants.ContextNames.WORKORDER_ACTIVITY));
 //			c.addCommand(getAddOrUpdateReadingValuesChain());
 			return c;
 		}
