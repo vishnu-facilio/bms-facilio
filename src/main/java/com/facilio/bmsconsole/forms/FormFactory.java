@@ -45,7 +45,7 @@ public class FormFactory {
 		forms.put("vendors_form", getVendorsForm());
 		forms.put("tool_form", getStockedToolsForm());
 		forms.put("tool_track_form", getToolWithIndTrackForm());
-		forms.put("item_category_form", getItemCategoryForm());
+		forms.put("item_category_form", getInventoryCategoryForm());
 		forms.put("location_form", getLocationForm());
 		forms.put("tenantForm", getTenantsForm());
 		return forms;
@@ -339,13 +339,13 @@ public class FormFactory {
 		return form;
 	}
 	
-	public static FacilioForm getItemCategoryForm() {
+	public static FacilioForm getInventoryCategoryForm() {
 		FacilioForm form = new FacilioForm();
 		form.setDisplayName("NEW CATEGORY");
 		form.setName("web_default");
-		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.ITEM_TYPES_CATEGORY));
+		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.INVENTORY_CATEGORY));
 		form.setLabelPosition(LabelPosition.TOP);
-		form.setFields(getItemCategoryFormField());
+		form.setFields(getInventoryCategoryFormField());
 		form.setFormType(FormType.WEB);
 		return form;
 	}
@@ -603,7 +603,7 @@ public class FormFactory {
 		return fields;
 	}
 
-	private static List<FormField> getItemCategoryFormField() {
+	private static List<FormField> getInventoryCategoryFormField() {
 		List<FormField> fields = new ArrayList<>();
 //		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.OPTIONAL, 1, 1));
 		fields.add(new FormField("displayName", FieldDisplayType.TEXTBOX, "Display Name", Required.REQUIRED, 1, 1));

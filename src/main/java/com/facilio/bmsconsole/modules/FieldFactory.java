@@ -31,6 +31,7 @@ public class FieldFactory {
 		lookupModuleVsSortFieldName.put("toolTypesStatus",  Pair.of("name", true));
 		lookupModuleVsSortFieldName.put("itemStatus",  Pair.of("name", true));
 		lookupModuleVsSortFieldName.put("toolStatus",  Pair.of("name", true));
+		lookupModuleVsSortFieldName.put("inventoryCategory",  Pair.of("displayName", true));
 		return lookupModuleVsSortFieldName;
 	}
 
