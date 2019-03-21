@@ -350,6 +350,7 @@ public class FormFactory {
 		return form;
 	}
 
+	
 	public static FacilioForm getLocationForm() {
 		FacilioForm form = new FacilioForm();
 		form.setDisplayName("NEW LOCATION");
@@ -587,6 +588,8 @@ public class FormFactory {
 		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 2, 1));
 		fields.add(new FormField("location", FieldDisplayType.LOOKUP_SIMPLE, "Location", Required.OPTIONAL, "location", 3, 1).setAllowCreate(true).setCreateFormName("location_form"));
 		fields.add(new FormField("owner", FieldDisplayType.USER, "Owner", Required.OPTIONAL, 4, 1));
+		fields.add(new FormField("isApprovalNeeded", FieldDisplayType.DECISION_BOX, "Approval Needed", Required.OPTIONAL, 5, 1));
+
 		return fields;
 	}
 	
@@ -595,17 +598,18 @@ public class FormFactory {
 		fields.add(new FormField("photoId", FieldDisplayType.IMAGE, "Photo", Required.OPTIONAL, 1, 1));
 		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.REQUIRED, 2, 1));
 		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 3, 1));
-		fields.add(new FormField("category", FieldDisplayType.LOOKUP_SIMPLE, "Category", Required.OPTIONAL, "itemTypesCategory", 4, 1).setAllowCreate(true).setCreateFormName("item_category_form"));
+		fields.add(new FormField("category", FieldDisplayType.LOOKUP_SIMPLE, "Category", Required.OPTIONAL, "inventoryCategory", 4, 2).setAllowCreate(true).setCreateFormName("item_category_form"));
 //		fields.add(new FormField("status", FieldDisplayType.LOOKUP_SIMPLE, "Status", Required.OPTIONAL, "itemTypesStatus", 4, 3));
 //		fields.add(new FormField("unit", FieldDisplayType.UNIT, "Unit", Required.OPTIONAL, 5,1));
-		fields.add(new FormField("minimumQuantity", FieldDisplayType.TEXTBOX, "Minimum Quantity", Required.OPTIONAL, 5, 2));
-		fields.add(new FormField("individualTracking", FieldDisplayType.DECISION_BOX, "Individual Tracking", Required.OPTIONAL, 5, 3));
+		fields.add(new FormField("minimumQuantity", FieldDisplayType.TEXTBOX, "Minimum Quantity", Required.OPTIONAL, 4, 3));
+		fields.add(new FormField("individualTracking", FieldDisplayType.DECISION_BOX, "Individual Tracking", Required.OPTIONAL, 5, 2));
+		fields.add(new FormField("isApprovalNeeded", FieldDisplayType.DECISION_BOX, "Approval Needed", Required.OPTIONAL, 5, 3));
 		return fields;
 	}
 
 	private static List<FormField> getInventoryCategoryFormField() {
 		List<FormField> fields = new ArrayList<>();
-//		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.OPTIONAL, 1, 1));
+		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.OPTIONAL, 1, 1));
 		fields.add(new FormField("displayName", FieldDisplayType.TEXTBOX, "Display Name", Required.REQUIRED, 1, 1));
 		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 2, 1));
 		return fields;
@@ -635,8 +639,8 @@ public class FormFactory {
 //		fields.add(new FormField("minimumQuantity", FieldDisplayType.TEXTBOX, "Minimum Quantity", Required.OPTIONAL, 6, 1));
 //		fields.add(new FormField("status", FieldDisplayType.LOOKUP_SIMPLE, "Status", Required.OPTIONAL, "toolTypesStatus", 7, 1));
 //		fields.add(new FormField("serialNumber", FieldDisplayType.TEXTBOX, "Serial Number", Required.OPTIONAL, 5,1));
-		fields.add(new FormField("individualTracking", FieldDisplayType.DECISION_BOX, "Individual Tracking", Required.OPTIONAL, 5, 1));
-
+		fields.add(new FormField("individualTracking", FieldDisplayType.DECISION_BOX, "Individual Tracking", Required.OPTIONAL, 5, 2));
+		fields.add(new FormField("isApprovalNeeded", FieldDisplayType.DECISION_BOX, "Approval Needed", Required.OPTIONAL, 5, 3));
 
 		return fields;
 	}
