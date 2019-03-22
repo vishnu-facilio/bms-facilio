@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.actions;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.chain.Chain;
@@ -81,6 +82,7 @@ public class WorkOrderLabourAction extends FacilioAction {
 	
 		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.DELETE);
 		context.put(FacilioConstants.ContextNames.PARENT_ID, parentId);
+		context.put(FacilioConstants.ContextNames.PARENT_ID_LIST, Collections.singletonList(parentId));
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, workorderLabourIds);
 		context.put(FacilioConstants.ContextNames.WORKORDER_COST_TYPE,3 );
 

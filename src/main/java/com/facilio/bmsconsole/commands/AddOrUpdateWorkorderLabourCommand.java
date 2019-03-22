@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -73,6 +74,7 @@ public class AddOrUpdateWorkorderLabourCommand implements Command {
 			}
 			
 			context.put(FacilioConstants.ContextNames.PARENT_ID, parentId);
+			context.put(FacilioConstants.ContextNames.PARENT_ID_LIST, Collections.singletonList(workorderLabours.get(0).getParentId()));
 			context.put(FacilioConstants.ContextNames.RECORD_LIST, workorderLabourlist);
 			context.put(FacilioConstants.ContextNames.WORKORDER_COST_TYPE, 3);
 		}
