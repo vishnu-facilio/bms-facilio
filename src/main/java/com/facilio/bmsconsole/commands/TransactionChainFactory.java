@@ -1633,7 +1633,7 @@ public class TransactionChainFactory {
 		public static Chain getAddItemChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForItem());
-			c.addCommand(new GenericAddModuleDataCommand());
+			c.addCommand(new AddItemCommand());
 			c.addCommand(new ExecuteAllWorkflowsCommand());
 			c.addCommand(getAddPurchasedItemChain());
 			c.addCommand(getUpdateItemQuantityRollupChain());
@@ -1745,7 +1745,7 @@ public class TransactionChainFactory {
 		public static Chain getAddToolChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForTool());
-			c.addCommand(new GenericAddModuleDataCommand());
+			c.addCommand(new AddToolCommand());
 			c.addCommand(new ExecuteAllWorkflowsCommand());
 			c.addCommand(getAddPurchasedToolChain());
 			c.addCommand(getAddOrUpdateToolStockTransactionChain());
