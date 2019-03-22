@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.facilio.accounts.dto.User;
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.bmsconsole.modules.FacilioField.FieldDisplayType;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -80,7 +81,14 @@ public class LabourContext extends ModuleBaseWithCustomFields {
 		}
 		return -1;
 	}
-	
+	private User user;
+	public User getUser() {
+		return user;
+	}
+	public void setUser(User user) {
+		this.user = user;
+	}
+
 	private String email;
 	private String address;
 	private String phone;

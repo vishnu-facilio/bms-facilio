@@ -57,6 +57,18 @@ public class LabourAction extends FacilioAction {
 		return SUCCESS;
 	}
 
+	public String deleteLabour() throws Exception {
+		FacilioContext context = new FacilioContext();
+		List<Long> idList = new ArrayList<Long>();
+		idList.add(labourId);
+		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, idList);
+		context.put(FacilioConstants.ContextNames.SET_LOCAL_MODULE_ID, true);
+		Chain deleteLabour = TransactionChainFactory.getDeleteLabourChain();
+		deleteLabour.execute(context);
+		setResult(FacilioConstants.ContextNames.LABOUR_ID, labourId);
+		return SUCCESS;
+	}
+
 	public String updateLabour() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD, labour);

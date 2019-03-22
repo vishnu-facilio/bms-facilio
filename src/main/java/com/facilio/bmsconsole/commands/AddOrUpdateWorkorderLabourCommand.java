@@ -6,10 +6,10 @@ import java.util.Map;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.LabourContext;
-import com.facilio.bmsconsole.context.PurchasedToolContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.context.WorkOrderLabourContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
@@ -37,15 +37,16 @@ public class AddOrUpdateWorkorderLabourCommand implements Command {
 		Map<String, FacilioField> labourFieldsMap = FieldFactory.getAsMap(workorderLabourFields);
 		List<LookupFieldMeta> lookUpfields = new ArrayList<>();
 		lookUpfields.add(new LookupFieldMeta((LookupField) labourFieldsMap.get("labour")));
-		List<WorkOrderLabourContext> workorderLabour = (List<WorkOrderLabourContext>) context
+		List<WorkOrderLabourContext> workorderLabours = (List<WorkOrderLabourContext>) context
 				.get(FacilioConstants.ContextNames.RECORD_LIST);
 		List<WorkOrderLabourContext> workorderLabourlist = new ArrayList<>();
 		List<WorkOrderLabourContext> labourToBeAdded = new ArrayList<>();
-		if (workorderLabour != null) {
-			long parentId = workorderLabour.get(0).getParentId();
-			for (WorkOrderLabourContext woLabour : workorderLabour) {
-				WorkOrderContext workorder = getWorkorder(parentId);
-				
+		if (CollectionUtils.isNotEmpty(workorderLabours)) {
+			long parentId = workorderLabours.get(0).getParentId();
+			WorkOrderContext workorder = getWorkorder(parentId);
+			
+			for (WorkOrderLabourContext woLabour : workorderLabours) {
+//				woLabour.calculate();
 				if (woLabour.getId() > 0) {
 					SelectRecordsBuilder<WorkOrderLabourContext> selectBuilder = new SelectRecordsBuilder<WorkOrderLabourContext>()
 							.select(workorderLabourFields).table(workorderLabourModule.getTableName())
@@ -60,9 +61,11 @@ public class AddOrUpdateWorkorderLabourCommand implements Command {
 				}
 				else
 				{
-					labourToBeAdded.add(woLabour);
-					workorderLabourlist.add(woLabour);
-					
+					if (woLabour.getLabour().getAvailability()) {
+						woLabour = setWorkorderItemObj(woLabour.getLabour(), parentId, workorder, woLabour);
+						labourToBeAdded.add(woLabour);
+						workorderLabourlist.add(woLabour);
+					}
 				}
 			}
 			if (labourToBeAdded != null && !labourToBeAdded.isEmpty()) {
@@ -79,34 +82,38 @@ public class AddOrUpdateWorkorderLabourCommand implements Command {
 
 	private WorkOrderLabourContext setWorkorderItemObj(LabourContext labour, long parentId, WorkOrderContext workorder, WorkOrderLabourContext workorderLabour) {
 		WorkOrderLabourContext woLabour = new WorkOrderLabourContext();
-		woLabour.setIssueTime(workorderLabour.getIssueTime());
-		woLabour.setReturnTime(workorderLabour.getReturnTime());
+		woLabour.setStartTime(workorderLabour.getStartTime());
+		woLabour.setEndTime(workorderLabour.getEndTime());
 		woLabour.setDuration(workorderLabour.getDuration());
+		woLabour.setId(workorderLabour.getId());
 		int duration = 0;
 		if (woLabour.getDuration() <= 0) {
-			if (woLabour.getIssueTime() <= 0) {
-				woLabour.setIssueTime(workorder.getEstimatedStart());
+			if (woLabour.getStartTime() <= 0) {
+				woLabour.setStartTime(workorder.getEstimatedStart());
 			}
-			if (woLabour.getReturnTime() <= 0) {
-				woLabour.setReturnTime(workorder.getEstimatedEnd());
-				if (woLabour.getIssueTime() >= 0) {
-					duration = getEstimatedWorkDuration(woLabour.getIssueTime(), woLabour.getReturnTime());
-				} else {
-					duration = 0;
-				}
+			if (woLabour.getEndTime() <= 0) {
+				woLabour.setEndTime(workorder.getEstimatedEnd());
+			}
+			if (woLabour.getStartTime() >= 0 && woLabour.getEndTime() >= 0) {
+				duration = getEstimatedWorkDuration(woLabour.getStartTime(), woLabour.getEndTime());
+			} else {
+				duration = 0;
 			}
 		} else {
-			duration = (int) (woLabour.getDuration() / (1000 * 60 * 60));
-			if (woLabour.getIssueTime() >= 0) {
-				woLabour.setReturnTime(woLabour.getIssueTime() + woLabour.getDuration());
+			duration = (int) (woLabour.getDuration());
+			if (woLabour.getStartTime() >= 0) {
+				woLabour.setEndTime(woLabour.getStartTime() + (woLabour.getDuration() * 60 * 60 * 1000));
 			}
 		}
+		
 		woLabour.setParentId(parentId);
 		double costOccured = 0;
 		if (labour.getCost() > 0) {
 			costOccured = labour.getCost() * duration;
 		}
 		woLabour.setCost(costOccured);
+		woLabour.setLabour(labour);
+		woLabour.setDuration(duration);
 		return woLabour;
 	}
 
@@ -127,31 +134,22 @@ public class AddOrUpdateWorkorderLabourCommand implements Command {
 		return null;
 	}
 
-	private void addWorkorderLabour(FacilioModule module, List<FacilioField> fields, List<WorkOrderLabourContext> labour)
+	private void addWorkorderLabour(FacilioModule module, List<FacilioField> fields, List<WorkOrderLabourContext> woLabours)
 			throws Exception {
 		InsertRecordBuilder<WorkOrderLabourContext> readingBuilder = new InsertRecordBuilder<WorkOrderLabourContext>()
-				.module(module).fields(fields).addRecords(labour);
+				.module(module).fields(fields).addRecords(woLabours);
 		readingBuilder.save();
 	}
 
-	private void updateWorkorderLabour(FacilioModule module, List<FacilioField> fields, WorkOrderLabourContext tool)
+	private void updateWorkorderLabour(FacilioModule module, List<FacilioField> fields, WorkOrderLabourContext labour)
 			throws Exception {
 
 		UpdateRecordBuilder<WorkOrderLabourContext> updateBuilder = new UpdateRecordBuilder<WorkOrderLabourContext>()
-				.module(module).fields(fields).andCondition(CriteriaAPI.getIdCondition(tool.getId(), module));
-		updateBuilder.update(tool);
-
-	}
-	private void updateLabour(LabourContext labour) throws Exception {
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.LABOUR);
-		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.LABOUR);
-		UpdateRecordBuilder<LabourContext> updateBuilder = new UpdateRecordBuilder<LabourContext>()
 				.module(module).fields(fields).andCondition(CriteriaAPI.getIdCondition(labour.getId(), module));
 		updateBuilder.update(labour);
 
 	}
-
+	
 	public static int getEstimatedWorkDuration(long issueTime, long returnTime) {
 		long duration = -1;
 		if (issueTime != -1 && returnTime != -1) {
@@ -161,14 +159,5 @@ public class AddOrUpdateWorkorderLabourCommand implements Command {
 		return hours;
 	}
 
-	private void updatePurchasedTool(PurchasedToolContext purchasedTool) throws Exception {
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.PURCHASED_TOOL);
-		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.PURCHASED_TOOL);
-		UpdateRecordBuilder<PurchasedToolContext> updateBuilder = new UpdateRecordBuilder<PurchasedToolContext>()
-				.module(module).fields(fields).andCondition(CriteriaAPI.getIdCondition(purchasedTool.getId(), module));
-		updateBuilder.update(purchasedTool);
-
-		System.err.println(Thread.currentThread().getName() + "Exiting updateReadings in  AddorUpdateCommand#######  ");
-	}
+	
 }

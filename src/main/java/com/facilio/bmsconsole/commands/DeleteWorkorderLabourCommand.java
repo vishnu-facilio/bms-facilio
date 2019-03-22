@@ -38,9 +38,9 @@ public class DeleteWorkorderLabourCommand implements Command {
 				FacilioModule labourModule = modBean.getModule(FacilioConstants.ContextNames.LABOUR);
 				List<FacilioField> labourFields = modBean.getAllFields(FacilioConstants.ContextNames.LABOUR);
 
-				Map<String, FacilioField> labourFieldsMap = FieldFactory.getAsMap(labourFields);
-				List<LookupFieldMeta> lookUpfields = new ArrayList<>();
-				lookUpfields.add(new LookupFieldMeta((LookupField) labourFieldsMap.get("toolType")));
+//				Map<String, FacilioField> labourFieldsMap = FieldFactory.getAsMap(labourFields);
+//				List<LookupFieldMeta> lookUpfields = new ArrayList<>();
+//				lookUpfields.add(new LookupFieldMeta((LookupField) labourFieldsMap.get("toolType")));
 
 				SelectRecordsBuilder<LabourContext> selectBuilder = new SelectRecordsBuilder<LabourContext>()
 								.select(labourFields).table(labourModule.getTableName()).moduleName(labourModule.getName())

@@ -20,6 +20,8 @@ import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
+import com.facilio.bmsconsole.modules.LookupField;
+import com.facilio.bmsconsole.modules.LookupFieldMeta;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.util.StoreroomApi;
 import com.facilio.bmsconsole.util.ToolsApi;
@@ -46,8 +48,12 @@ public class GetLabourListCommand implements Command{
 			fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
 		}
 	
-		SelectRecordsBuilder<LabourContext> builder = new SelectRecordsBuilder<LabourContext>().module(module)
-				.beanClass(FacilioConstants.ContextNames.getClassFromModuleName(moduleName)).select(fields);
+		LookupFieldMeta userLookField = new LookupFieldMeta((LookupField) modBean.getField("user", moduleName));
+		SelectRecordsBuilder<LabourContext> builder = new SelectRecordsBuilder<LabourContext>()
+				.module(module)
+				.beanClass(FacilioConstants.ContextNames.getClassFromModuleName(moduleName))
+				.select(fields)
+				.fetchLookup(userLookField);
 
 		if (getCount) {
 			builder.setAggregation();

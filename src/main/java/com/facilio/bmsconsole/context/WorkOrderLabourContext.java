@@ -15,24 +15,24 @@ public class WorkOrderLabourContext extends ModuleBaseWithCustomFields {
 		this.cost = cost;
 	}
 
-	private long issueTime = -1;
+	private long startTime = -1;
 
-	public long getIssueTime() {
-		return issueTime;
+	public long getStartTime() {
+		return startTime;
 	}
 
-	public void setIssueTime(long issueTime) {
-		this.issueTime = issueTime;
+	public void setStartTime(long startTime) {
+		this.startTime = startTime;
 	}
 
-	private long returnTime = -1;
+	private long endTime = -1;
 
-	public long getReturnTime() {
-		return returnTime;
+	public long getEndTime() {
+		return endTime;
 	}
 
-	public void setReturnTime(long returnTime) {
-		this.returnTime = returnTime;
+	public void setEndTime(long endTime) {
+		this.endTime = endTime;
 	}
 
 	private long duration = -1;
@@ -64,6 +64,20 @@ public class WorkOrderLabourContext extends ModuleBaseWithCustomFields {
 	}
 
 	private LabourContext labour ;
+
+	public void calculate() {
+		if (this.duration == -1) {
+			if (this.endTime == -1 || this.startTime == -1) {
+				this.duration = 0;
+			} else {
+				this.duration = this.endTime - this.startTime;
+			}
+		}
+		
+		if (this.labour != null) {
+			this.cost = (this.duration / 1000.0 / 60 / 60) * this.labour.getCost();
+		}
+	}
 	
 	
 	

@@ -72,6 +72,7 @@ import com.facilio.bmsconsole.context.UtilityMeterContext;
 import com.facilio.bmsconsole.context.VendorContext;
 import com.facilio.bmsconsole.context.WaterMeterContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
+import com.facilio.bmsconsole.context.WorkOrderLabourContext;
 import com.facilio.bmsconsole.context.WorkOrderRequestContext;
 import com.facilio.bmsconsole.context.WorkorderCostContext;
 import com.facilio.bmsconsole.context.WorkorderItemContext;
@@ -957,6 +958,7 @@ public class FacilioConstants {
 			classMap.put(PURCHASED_TOOL, PurchasedToolContext.class);
 			classMap.put(TENANT, TenantContext.class);
 			classMap.put(LABOUR, LabourContext.class);
+			classMap.put(WO_LABOUR, WorkOrderLabourContext.class);
 			return classMap;
 		}
 		
