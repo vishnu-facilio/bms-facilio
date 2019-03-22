@@ -17,6 +17,7 @@ import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.LookupField;
 import com.facilio.bmsconsole.modules.LookupFieldMeta;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
+import com.facilio.bmsconsole.workflow.rule.ApprovalState;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 
@@ -31,8 +32,8 @@ public class ApproveOrRejectToolCommand implements Command {
 				.getAllFields(FacilioConstants.ContextNames.TOOL_TRANSACTIONS);
 		Map<String, FacilioField> toolTransactionsFieldMap = FieldFactory.getAsMap(toolTransactionsFields);
 
-		List<Long> recordIds =  (List<Long>) context
-				.get(FacilioConstants.ContextNames.RECORD_ID);
+		List<Long> recordIds =  (List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID);
+		int approvedState = (int) context.get(FacilioConstants.ContextNames.ITEM_TRANSACTION_APPORVED_STATE);
 		List<Long> parentIds = new ArrayList<>();
 		List<LookupFieldMeta> lookUpfields = new ArrayList<>();
 		lookUpfields.add(new LookupFieldMeta((LookupField) toolTransactionsFieldMap.get("tool")));
@@ -46,6 +47,12 @@ public class ApproveOrRejectToolCommand implements Command {
 		
 		List<ToolTransactionContext> toolTransactions = selectBuilder.get();
 		for(ToolTransactionContext transactions : toolTransactions) {
+			
+			
+			if(approvedState == ApprovalState.APPROVED.getValue()) {
+			}
+			
+			
 			parentIds.add(transactions.getParentId());
 		}
 		context.put(FacilioConstants.ContextNames.RECORD_LIST, toolTransactions);

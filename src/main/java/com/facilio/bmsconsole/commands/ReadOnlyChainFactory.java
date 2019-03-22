@@ -604,6 +604,22 @@ public class ReadOnlyChainFactory {
 		return c;
 	}
 	
+	public static Chain getUnusedPurchasdToolsList() {
+		Chain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForPurchasedTool());
+		c.addCommand(new LoadAllFieldsCommand());
+		c.addCommand(new GetUnusedPurchasedToolsList());
+		return c;
+	}
+	
+	public static Chain getUnusedPurchasdItemsList() {
+		Chain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForPurchasedItem());
+		c.addCommand(new LoadAllFieldsCommand());
+		c.addCommand(new GetUnusedPurchasedItemsList());
+		return c;
+	}
+	
 	public static Chain getFormList()
 	{
 		Chain c=getDefaultChain();

@@ -55,6 +55,13 @@ public class PurchasedItemAction extends FacilioAction{
 		this.itemId = inventoryId;
 	}
 	
+	private List<Long> itemIds;
+	public List<Long> getItemIds() {
+		return itemIds;
+	}
+	public void setItemIds(List<Long> itemIds) {
+		this.itemIds = itemIds;
+	}
 	public String addPurchasedItem() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD, purchasedItems);
@@ -133,9 +140,9 @@ public class PurchasedItemAction extends FacilioAction{
 
 	public String unUsedPurchasedItemsList() throws Exception {
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.PARENT_ID, itemId);
+		context.put(FacilioConstants.ContextNames.PARENT_ID, itemIds);
 		context.put(FacilioConstants.ContextNames.PURCHASED_ITEM_IS_USED, false);
-		Chain purchasedItemsListChain = ReadOnlyChainFactory.getPurchasdItemsList();
+		Chain purchasedItemsListChain = ReadOnlyChainFactory.getUnusedPurchasdItemsList();
 		purchasedItemsListChain.execute(context);
 		purchasedItems = ((List<PurchasedItemContext>) context.get(FacilioConstants.ContextNames.PURCHASED_ITEM));
 		setResult(FacilioConstants.ContextNames.PURCHASED_ITEM, purchasedItems);

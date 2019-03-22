@@ -1960,7 +1960,7 @@ public class TransactionChainFactory {
 		public static Chain getApproveRejectItemsChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForItemTransactions());
-			c.addCommand(new GenericUpdateListModuleDataCommand());
+//			c.addCommand(new GenericUpdateListModuleDataCommand());
 			c.addCommand(new ApproveOrRejectItemCommand());
 			c.addCommand(new PurchasedItemsQuantityRollUpCommand());
 			c.addCommand(getUpdateItemQuantityRollupChain());

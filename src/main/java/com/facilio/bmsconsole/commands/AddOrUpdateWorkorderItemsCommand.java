@@ -108,7 +108,11 @@ public class AddOrUpdateWorkorderItemsCommand implements Command {
 							if (purchasedItem != null) {
 								for (PurchasedItemContext pItem : purchasedItem) {
 									WorkorderItemContext woItem = new WorkorderItemContext();
-									pItem.setIsUsed(true);
+									if (itemType.isApprovalNeeded() || storeRoom.isApprovalNeeded()) {
+										pItem.setIsUsed(false);
+									} else {
+										pItem.setIsUsed(true);
+									}
 									woItem = setWorkorderItemObj(pItem, 1, item, parentId, approvalState);
 									updatePurchasedItem(pItem);
 									workorderItemslist.add(woItem);
@@ -166,7 +170,8 @@ public class AddOrUpdateWorkorderItemsCommand implements Command {
 				addWorkorderParts(workorderItemsModule, workorderItemFields, itemToBeAdded);
 			}
 			context.put(FacilioConstants.ContextNames.PARENT_ID, workorderitems.get(0).getParentId());
-			context.put(FacilioConstants.ContextNames.PARENT_ID_LIST, Collections.singletonList(workorderitems.get(0).getParentId()));
+			context.put(FacilioConstants.ContextNames.PARENT_ID_LIST,
+					Collections.singletonList(workorderitems.get(0).getParentId()));
 			context.put(FacilioConstants.ContextNames.ITEM_ID, workorderitems.get(0).getItem().getId());
 			context.put(FacilioConstants.ContextNames.ITEM_IDS,
 					Collections.singletonList(workorderitems.get(0).getItem().getId()));

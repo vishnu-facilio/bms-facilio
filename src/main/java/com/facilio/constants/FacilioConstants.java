@@ -861,6 +861,9 @@ public class FacilioConstants {
 		public static final String IS_BULK_ITEM_ADD = "isBulkItemAdd";
 
 		public static final String SKIP_WO_CREATION = "skipWOCreation";
+		
+		public static final String ITEM_TRANSACTION_APPORVED_STATE = "itemTransactionApprovedState";
+		public static final String TOOL_TRANSACTION_APPORVED_STATE = "toolTransactionApprovedState";
 
 		private static Map<String, Class> classMap = Collections.unmodifiableMap(initClassMap());
 		private static Map<String, Class> initClassMap() {

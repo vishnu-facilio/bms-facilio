@@ -14,6 +14,8 @@ import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 
+import nl.basjes.shaded.org.antlr.v4.runtime.atn.SemanticContext.PrecedencePredicate;
+
 public class ItemTransactionsAction extends FacilioAction {
 
 	/**
@@ -40,6 +42,13 @@ public class ItemTransactionsAction extends FacilioAction {
 		return itemTransactionsId;
 	}
 
+	private int approvedState;
+	public int getApprovedState() {
+		return approvedState;
+	}
+	public void setApprovedState(int approvedState) {
+		this.approvedState = approvedState;
+	}
 	public String addOrUpdateItemTransactions() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.CREATE);
@@ -67,7 +76,7 @@ public class ItemTransactionsAction extends FacilioAction {
 
 	public String updateItemTransactions() throws Exception {
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.CREATE);
+		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.EDIT);
 		context.put(FacilioConstants.ContextNames.RECORD_LIST, itemTransaction);
 		Chain addWorkorderPartChain = TransactionChainFactory.getUpdateInventoryTransactionsChain();
 		addWorkorderPartChain.execute(context);
@@ -78,8 +87,9 @@ public class ItemTransactionsAction extends FacilioAction {
 
 	public String approveOrRejectItemTransactions() throws Exception {
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.CREATE);
-		context.put(FacilioConstants.ContextNames.RECORD_LIST, itemTransaction);
+		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.EDIT);
+		context.put(FacilioConstants.ContextNames.RECORD_ID, itemTransactionsId);
+		context.put(FacilioConstants.ContextNames.ITEM_TRANSACTION_APPORVED_STATE, approvedState);
 		context.put(FacilioConstants.ContextNames.WORKORDER_COST_TYPE, 1);
 		Chain addWorkorderPartChain = TransactionChainFactory.getApproveRejectItemsChain();
 		addWorkorderPartChain.execute(context);

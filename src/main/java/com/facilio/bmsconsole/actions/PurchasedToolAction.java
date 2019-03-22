@@ -13,50 +13,69 @@ import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 
-public class PurchasedToolAction extends FacilioAction{
+public class PurchasedToolAction extends FacilioAction {
 	private static final long serialVersionUID = 1L;
-	
+
 	private PurchasedToolContext purchasedTool;
+
 	public PurchasedToolContext getPurchasedTool() {
 		return purchasedTool;
 	}
+
 	public void setPurchasedTool(PurchasedToolContext purchasedTool) {
 		this.purchasedTool = purchasedTool;
 	}
-	
+
 	private List<PurchasedToolContext> purchasedTools;
+
 	public List<PurchasedToolContext> getPurchasedTools() {
 		return purchasedTools;
 	}
+
 	public void setPurchasedTools(List<PurchasedToolContext> purchasedTools) {
 		this.purchasedTools = purchasedTools;
 	}
-	
+
 	private long purchasedToolId;
+
 	public long getPurchasedToolId() {
 		return purchasedToolId;
 	}
+
 	public void setPurchasedToolId(long inventoryCostId) {
 		this.purchasedToolId = inventoryCostId;
 	}
-	
+
 	private long toolId;
+
 	public long getToolId() {
 		return toolId;
 	}
+
 	public void setToolId(long inventoryId) {
 		this.toolId = inventoryId;
 	}
-	
+
 	private List<Long> purchasedToolsId;
+
 	public List<Long> getPurchasedToolsId() {
 		return purchasedToolsId;
 	}
+
 	public void setPurchasedToolsId(List<Long> inventoryCostsId) {
 		this.purchasedToolsId = inventoryCostsId;
 	}
-	
-	
+
+	private List<Long> toolIds;
+
+	public List<Long> getToolIds() {
+		return toolIds;
+	}
+
+	public void setToolIds(List<Long> toolIds) {
+		this.toolIds = toolIds;
+	}
+
 	public String addPurchasedTool() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD, purchasedTools);
@@ -69,7 +88,7 @@ public class PurchasedToolAction extends FacilioAction{
 		setResult(FacilioConstants.ContextNames.PURCHASED_TOOL, purchasedTools);
 		return SUCCESS;
 	}
-	
+
 	public String deletePurchasedTool() throws Exception {
 		FacilioContext context = new FacilioContext();
 		PurchasedToolContext purchasedtool = new PurchasedToolContext();
@@ -88,7 +107,7 @@ public class PurchasedToolAction extends FacilioAction{
 		setResult("inventoryCostsId", purchasedToolsId);
 		return SUCCESS;
 	}
-	
+
 	public String purchasedToolsList() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.PARENT_ID, toolId);
@@ -102,16 +121,17 @@ public class PurchasedToolAction extends FacilioAction{
 
 	public String unUsedPurchasedToolsList() throws Exception {
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.PARENT_ID, toolId);
+		context.put(FacilioConstants.ContextNames.PARENT_ID, toolIds);
 		context.put(FacilioConstants.ContextNames.PURCHASED_TOOL_IS_USED, false);
-		Chain purchasedItemsListChain = ReadOnlyChainFactory.getPurchasdToolsList();
+		Chain purchasedItemsListChain = ReadOnlyChainFactory.getUnusedPurchasdToolsList();
 		purchasedItemsListChain.execute(context);
 		purchasedTools = ((List<PurchasedToolContext>) context.get(FacilioConstants.ContextNames.PURCHASED_TOOL));
 		setResult(FacilioConstants.ContextNames.PURCHASED_TOOL, purchasedTools);
 		return SUCCESS;
 	}
-	
+
 	private int rowsUpdated;
+
 	public int getRowsUpdated() {
 		return rowsUpdated;
 	}
