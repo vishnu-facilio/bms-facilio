@@ -107,6 +107,9 @@ public class AddOrUpdateWorkorderItemsCommand implements Command {
 									purchasedItemModule, purchasedItemFields);
 							if (purchasedItem != null) {
 								for (PurchasedItemContext pItem : purchasedItem) {
+									if(pItem.isUsed()) {
+										throw new IllegalArgumentException("Insufficient quantity in inventory!");
+									}
 									WorkorderItemContext woItem = new WorkorderItemContext();
 									if (itemType.isApprovalNeeded() || storeRoom.isApprovalNeeded()) {
 										pItem.setIsUsed(false);

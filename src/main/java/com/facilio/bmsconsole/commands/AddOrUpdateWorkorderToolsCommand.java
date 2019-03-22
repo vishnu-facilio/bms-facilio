@@ -98,6 +98,9 @@ public class AddOrUpdateWorkorderToolsCommand implements Command {
 							List<PurchasedToolContext> purchasedTool = getPurchasedToolsListFromId(purchasedToolIds);
 							if (purchasedTool != null) {
 								for (PurchasedToolContext pTool : purchasedTool) {
+									if(pTool.isUsed()) {
+										throw new IllegalArgumentException("Insufficient quantity in inventory!");
+									}
 									WorkorderToolsContext woTool = new WorkorderToolsContext();
 									if (toolTypes.isApprovalNeeded() || storeRoom.isApprovalNeeded()) {
 										pTool.setIsUsed(false);
