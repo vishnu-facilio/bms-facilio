@@ -65,7 +65,9 @@ public class ApproveOrRejectToolCommand implements Command {
 						throw new IllegalArgumentException("Insufficient quantity in inventory!");
 					}
 				}
+				transactions.setRemainingQuantity(transactions.getQuantity());
 			}
+			
 			transactions.setApprovedState(approvedStateVal);
 			updateWorkorderTools(toolTransactionsModule, toolTransactionsFields, transactions);
 			parentIds.add(transactions.getParentId());

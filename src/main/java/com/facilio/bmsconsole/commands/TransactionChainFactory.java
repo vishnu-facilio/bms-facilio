@@ -1748,7 +1748,7 @@ public class TransactionChainFactory {
 			c.addCommand(new AddToolCommand());
 			c.addCommand(new ExecuteAllWorkflowsCommand());
 			c.addCommand(getAddPurchasedToolChain());
-			c.addCommand(getAddOrUpdateToolStockTransactionChain());
+//			c.addCommand(getAddOrUpdateToolStockTransactionChain());
 			c.addCommand(getUpdatetoolQuantityRollupChain());
 			c.addCommand(getSetItemAndToolTypeForStoreRoomChain());
 			return c;

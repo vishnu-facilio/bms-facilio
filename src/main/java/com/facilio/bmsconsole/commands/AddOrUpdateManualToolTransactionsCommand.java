@@ -10,6 +10,7 @@ import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.PurchasedToolContext;
+import com.facilio.bmsconsole.context.StoreRoomContext;
 import com.facilio.bmsconsole.context.ToolContext;
 import com.facilio.bmsconsole.context.ToolTransactionContext;
 import com.facilio.bmsconsole.context.ToolTypesContext;
@@ -24,6 +25,7 @@ import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
 import com.facilio.bmsconsole.util.TransactionState;
 import com.facilio.bmsconsole.util.TransactionType;
+import com.facilio.bmsconsole.workflow.rule.ApprovalState;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 
@@ -36,7 +38,8 @@ public class AddOrUpdateManualToolTransactionsCommand implements Command {
 
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule toolTransactionsModule = modBean.getModule(FacilioConstants.ContextNames.TOOL_TRANSACTIONS);
-		List<FacilioField> toolTransactionsFields = modBean.getAllFields(FacilioConstants.ContextNames.TOOL_TRANSACTIONS);
+		List<FacilioField> toolTransactionsFields = modBean
+				.getAllFields(FacilioConstants.ContextNames.TOOL_TRANSACTIONS);
 		Map<String, FacilioField> toolTransactionsFieldsMap = FieldFactory.getAsMap(toolTransactionsFields);
 		List<LookupFieldMeta> lookUpfields = new ArrayList<>();
 		lookUpfields.add(new LookupFieldMeta((LookupField) toolTransactionsFieldsMap.get("tool")));
@@ -50,21 +53,28 @@ public class AddOrUpdateManualToolTransactionsCommand implements Command {
 				ToolContext tool = getTool(toolTransaction.getTool().getId());
 				ToolTypesContext toolTypes = getToolType(tool.getToolType().getId());
 				toolTypesId = toolTypes.getId();
+				StoreRoomContext storeRoom = tool.getStoreRoom();
 				if (toolTransaction.getId() > 0) {
 					SelectRecordsBuilder<ToolTransactionContext> selectBuilder = new SelectRecordsBuilder<ToolTransactionContext>()
 							.select(toolTransactionsFields).table(toolTransactionsModule.getTableName())
 							.moduleName(toolTransactionsModule.getName()).beanClass(ToolTransactionContext.class)
 							.andCondition(CriteriaAPI.getIdCondition(toolTransaction.getId(), toolTransactionsModule))
 							.fetchLookups(lookUpfields);
-							;
+					;
 					List<ToolTransactionContext> woIt = selectBuilder.get();
 					if (woIt != null) {
 						ToolTransactionContext wTool = woIt.get(0);
-						if (toolTransaction.getTransactionStateEnum() == TransactionState.ISSUE && (wTool.getQuantity() + wTool.getTool().getCurrentQuantity()) < toolTransaction
-								.getQuantity()) {
+						if (toolTransaction.getTransactionStateEnum() == TransactionState.ISSUE
+								&& (wTool.getQuantity() + wTool.getTool().getCurrentQuantity()) < toolTransaction
+										.getQuantity()) {
 							throw new IllegalArgumentException("Insufficient quantity in inventory!");
 						} else {
-							wTool = setWorkorderItemObj(null, toolTransaction.getQuantity(), tool, toolTransaction,toolTypes);
+							ApprovalState approvalState = ApprovalState.YET_TO_BE_REQUESTED;
+							if (toolTypes.isApprovalNeeded() || storeRoom.isApprovalNeeded()) {
+								approvalState = ApprovalState.REQUESTED;
+							}
+							wTool = setWorkorderItemObj(null, toolTransaction.getQuantity(), tool, toolTransaction,
+									toolTypes, approvalState);
 							// update
 							wTool.setId(toolTransaction.getId());
 							toolTransactionslist.add(wTool);
@@ -72,21 +82,48 @@ public class AddOrUpdateManualToolTransactionsCommand implements Command {
 						}
 					}
 				} else {
-					if (toolTransaction.getTransactionStateEnum() == TransactionState.ISSUE && tool.getCurrentQuantity() < toolTransaction.getQuantity()) {
+					if (toolTransaction.getTransactionStateEnum() == TransactionState.ISSUE
+							&& tool.getCurrentQuantity() < toolTransaction.getQuantity()) {
 						throw new IllegalArgumentException("Insufficient quantity in inventory!");
 					} else {
+						ApprovalState approvalState = ApprovalState.YET_TO_BE_REQUESTED;
+						if (toolTypes.isApprovalNeeded() || storeRoom.isApprovalNeeded()) {
+							approvalState = ApprovalState.REQUESTED;
+						}
 						if (toolTypes.individualTracking()) {
 							List<Long> purchasedToolIds = toolTransaction.getPurchasedTools();
 							List<PurchasedToolContext> purchasedTool = getPurchasedToolsListFromId(purchasedToolIds);
 							if (purchasedTool != null) {
 								for (PurchasedToolContext pTool : purchasedTool) {
-									ToolTransactionContext woTool = new ToolTransactionContext();
-									if(toolTransaction.getTransactionStateEnum() == TransactionState.RETURN){
-										pTool.setIsUsed(false);
-									} else if (toolTransaction.getTransactionStateEnum() == TransactionState.ISSUE) {
-										pTool.setIsUsed(true);
+									if (toolTransaction.getTransactionStateEnum() == TransactionState.ISSUE
+											&& pTool.isUsed()) {
+										throw new IllegalArgumentException("Insufficient quantity in inventory!");
 									}
-									woTool = setWorkorderItemObj(pTool, 1, tool, toolTransaction,toolTypes);
+									ToolTransactionContext woTool = new ToolTransactionContext();
+
+									if (toolTransaction.getTransactionStateEnum() == TransactionState.ISSUE
+											&& (toolTypes.isApprovalNeeded() || storeRoom.isApprovalNeeded())) {
+										pTool.setIsUsed(false);
+									} else {
+										if (toolTransaction.getTransactionStateEnum() == TransactionState.RETURN) {
+											pTool.setIsUsed(false);
+											approvalState = ApprovalState.YET_TO_BE_REQUESTED;
+										} else if (toolTransaction
+												.getTransactionStateEnum() == TransactionState.ISSUE) {
+											pTool.setIsUsed(true);
+										}
+									}
+
+									// if(toolTransaction.getTransactionStateEnum()
+									// == TransactionState.RETURN){
+									// pTool.setIsUsed(false);
+									// } else if
+									// (toolTransaction.getTransactionStateEnum()
+									// == TransactionState.ISSUE) {
+									// pTool.setIsUsed(true);
+									// }
+									woTool = setWorkorderItemObj(pTool, 1, tool, toolTransaction, toolTypes,
+											approvalState);
 									updatePurchasedTool(pTool);
 									toolTransactionslist.add(woTool);
 									toolTransactionsToBeAdded.add(woTool);
@@ -94,7 +131,8 @@ public class AddOrUpdateManualToolTransactionsCommand implements Command {
 							}
 						} else {
 							ToolTransactionContext woTool = new ToolTransactionContext();
-							woTool = setWorkorderItemObj(null, toolTransaction.getQuantity(), tool, toolTransaction,toolTypes);
+							woTool = setWorkorderItemObj(null, toolTransaction.getQuantity(), tool, toolTransaction,
+									toolTypes, approvalState);
 							toolTransactionslist.add(woTool);
 							toolTransactionsToBeAdded.add(woTool);
 						}
@@ -111,16 +149,18 @@ public class AddOrUpdateManualToolTransactionsCommand implements Command {
 			context.put(FacilioConstants.ContextNames.RECORD_LIST, toolTransactionslist);
 			context.put(FacilioConstants.ContextNames.TOOL_TYPES_ID, toolTypesId);
 			context.put(FacilioConstants.ContextNames.TOOL_TYPES_IDS, Collections.singletonList(toolTypesId));
-			context.put(FacilioConstants.ContextNames.TRANSACTION_STATE, toolTransactions.get(0).getTransactionStateEnum());
+			context.put(FacilioConstants.ContextNames.TRANSACTION_STATE,
+					toolTransactions.get(0).getTransactionStateEnum());
 		}
 
 		return false;
 	}
 
 	private ToolTransactionContext setWorkorderItemObj(PurchasedToolContext purchasedtool, double quantity,
-			ToolContext tool, ToolTransactionContext toolTransaction, ToolTypesContext toolTypes) {
+			ToolContext tool, ToolTransactionContext toolTransaction, ToolTypesContext toolTypes,
+			ApprovalState approvalState) {
 		ToolTransactionContext woTool = new ToolTransactionContext();
-		
+
 		woTool.setTransactionType(toolTransaction.getTransactionTypeEnum());
 		woTool.setTransactionState(toolTransaction.getTransactionStateEnum());
 		woTool.setIsReturnable(true);
@@ -133,9 +173,16 @@ public class AddOrUpdateManualToolTransactionsCommand implements Command {
 		woTool.setSysModifiedTime(System.currentTimeMillis());
 		woTool.setParentId(toolTransaction.getParentId());
 		woTool.setParentTransactionId(toolTransaction.getParentTransactionId());
-		if(toolTransaction.getTransactionStateEnum() == TransactionState.ISSUE ) {
+		woTool.setApprovedState(approvalState);
+		if (approvalState == ApprovalState.YET_TO_BE_REQUESTED) {
 			woTool.setRemainingQuantity(quantity);
+		} else {
+			woTool.setRemainingQuantity(0);
 		}
+		if(toolTransaction.getTransactionStateEnum() == TransactionState.RETURN) {
+			woTool.setApprovedState(ApprovalState.YET_TO_BE_REQUESTED);
+		}
+
 		return woTool;
 	}
 
@@ -143,10 +190,12 @@ public class AddOrUpdateManualToolTransactionsCommand implements Command {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.TOOL);
 		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.TOOL);
-
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+		List<LookupFieldMeta> lookUpfields = new ArrayList<>();
+		lookUpfields.add(new LookupFieldMeta((LookupField) fieldMap.get("storeRoom")));
 		SelectRecordsBuilder<ToolContext> selectBuilder = new SelectRecordsBuilder<ToolContext>().select(fields)
 				.table(module.getTableName()).moduleName(module.getName()).beanClass(ToolContext.class)
-				.andCustomWhere(module.getTableName() + ".ID = ?", id);
+				.andCustomWhere(module.getTableName() + ".ID = ?", id).fetchLookups(lookUpfields);
 
 		List<ToolContext> stockedTools = selectBuilder.get();
 

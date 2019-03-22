@@ -121,10 +121,7 @@ public class AddOrUpdateManualItemTransactionCommand implements Command {
 											&& (itemType.isApprovalNeeded() || storeRoom.isApprovalNeeded())) {
 										pItem.setIsUsed(false);
 									} else {
-										if ((itemTransaction.getApprovedStateEnum() == ApprovalState.APPROVED
-												|| itemTransaction.getApprovedStateEnum() == ApprovalState.YET_TO_BE_REQUESTED)
-												&& itemTransaction
-														.getTransactionStateEnum() == TransactionState.RETURN) {
+										if (itemTransaction.getTransactionStateEnum() == TransactionState.RETURN) {
 											pItem.setIsUsed(false);
 										} else if (itemTransaction
 												.getTransactionStateEnum() == TransactionState.ISSUE) {
@@ -222,6 +219,10 @@ public class AddOrUpdateManualItemTransactionCommand implements Command {
 			}
 		} else {
 			woItem.setRemainingQuantity(0);
+		}
+
+		if (itemTransactions.getTransactionStateEnum() == TransactionState.RETURN) {
+			woItem.setApprovedState(ApprovalState.YET_TO_BE_REQUESTED);
 		}
 
 		return woItem;
