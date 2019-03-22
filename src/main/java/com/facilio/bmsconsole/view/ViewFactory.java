@@ -232,10 +232,6 @@ public class ViewFactory {
 		views = new LinkedHashMap<>();
 		views.put("all", getAllItemTypes().setOrder(order++));
 		views.put("understocked", getUnderStockedItemTypeView().setOrder(order++));
-//		views.put("active", getItemTypesForStatus("active", "Active Items", "Active").setOrder(order++));
-//		views.put("pending", getItemTypesForStatus("pending", "Pending Items", "Pending").setOrder(order++));
-//		views.put("planning", getItemTypesForStatus("planning", "Planning Items", "Planning").setOrder(order++));
-//		views.put("obsolete", getItemTypesForStatus("obsolete", "Obsolete Items", "Obsolete").setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.ITEM_TYPES, views);
 		
 		order = 1;
