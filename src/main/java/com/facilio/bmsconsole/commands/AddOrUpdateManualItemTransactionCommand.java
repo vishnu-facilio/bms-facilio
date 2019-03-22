@@ -13,6 +13,7 @@ import com.facilio.bmsconsole.context.ItemContext;
 import com.facilio.bmsconsole.context.ItemTransactionsContext;
 import com.facilio.bmsconsole.context.ItemTypesContext;
 import com.facilio.bmsconsole.context.PurchasedItemContext;
+import com.facilio.bmsconsole.context.StoreRoomContext;
 import com.facilio.bmsconsole.context.ItemTransactionsContext;
 import com.facilio.bmsconsole.context.ItemContext.CostType;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
@@ -21,10 +22,13 @@ import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.InsertRecordBuilder;
+import com.facilio.bmsconsole.modules.LookupField;
+import com.facilio.bmsconsole.modules.LookupFieldMeta;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
 import com.facilio.bmsconsole.util.TransactionState;
 import com.facilio.bmsconsole.util.TransactionType;
+import com.facilio.bmsconsole.workflow.rule.ApprovalState;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 
@@ -36,7 +40,8 @@ public class AddOrUpdateManualItemTransactionCommand implements Command {
 		// TODO Auto-generated method stub
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule itemTransactionsModule = modBean.getModule(FacilioConstants.ContextNames.ITEM_TRANSACTIONS);
-		List<FacilioField> itemTransactionsFields = modBean.getAllFields(FacilioConstants.ContextNames.ITEM_TRANSACTIONS);
+		List<FacilioField> itemTransactionsFields = modBean
+				.getAllFields(FacilioConstants.ContextNames.ITEM_TRANSACTIONS);
 
 		FacilioModule purchasedItemModule = modBean.getModule(FacilioConstants.ContextNames.PURCHASED_ITEM);
 		List<FacilioField> purchasedItemFields = modBean.getAllFields(FacilioConstants.ContextNames.PURCHASED_ITEM);
@@ -52,6 +57,7 @@ public class AddOrUpdateManualItemTransactionCommand implements Command {
 				ItemContext item = getItem(itemTransaction.getItem().getId());
 				itemTypeId = item.getItemType().getId();
 				ItemTypesContext itemType = getItemType(itemTypeId);
+				StoreRoomContext storeRoom = item.getStoreRoom();
 				if (itemTransaction.getId() > 0) {
 					SelectRecordsBuilder<ItemTransactionsContext> selectBuilder = new SelectRecordsBuilder<ItemTransactionsContext>()
 							.select(itemTransactionsFields).table(itemTransactionsModule.getTableName())
@@ -69,13 +75,20 @@ public class AddOrUpdateManualItemTransactionCommand implements Command {
 						if (purchasedItemsList != null && !purchasedItemsList.isEmpty()) {
 							PurchasedItemContext purchaseditem = purchasedItemsList.get(0);
 							double q = wItem.getQuantity();
-							if (itemTransaction.getTransactionStateEnum() == TransactionState.ISSUE && (q + purchaseditem.getCurrentQuantity() < itemTransaction.getQuantity())) {
+							if (itemTransaction.getTransactionStateEnum() == TransactionState.ISSUE
+									&& (q + purchaseditem.getCurrentQuantity() < itemTransaction.getQuantity())) {
 								throw new IllegalArgumentException("Insufficient quantity in inventory!");
 							} else {
+								ApprovalState approvalState = ApprovalState.YET_TO_BE_REQUESTED;
+								if (itemType.isApprovalNeeded() || storeRoom.isApprovalNeeded()) {
+									approvalState = ApprovalState.REQUESTED;
+								}
 								if (itemType.individualTracking()) {
-									wItem = setWorkorderItemObj(purchaseditem, 1, item, parentId, itemTransaction, itemType);
+									wItem = setWorkorderItemObj(purchaseditem, 1, item, parentId, itemTransaction,
+											itemType, approvalState);
 								} else {
-									wItem = setWorkorderItemObj(purchaseditem, itemTransaction.getQuantity(), item, parentId, itemTransaction, itemType);
+									wItem = setWorkorderItemObj(purchaseditem, itemTransaction.getQuantity(), item,
+											parentId, itemTransaction, itemType, approvalState);
 								}
 								updatePurchasedItem(purchaseditem);
 								wItem.setId(itemTransaction.getId());
@@ -85,22 +98,36 @@ public class AddOrUpdateManualItemTransactionCommand implements Command {
 						}
 					}
 				} else {
-					if (itemTransaction.getTransactionStateEnum() == TransactionState.ISSUE && item.getQuantity() < itemTransaction.getQuantity()) {
+					if (itemTransaction.getTransactionStateEnum() == TransactionState.ISSUE
+							&& item.getQuantity() < itemTransaction.getQuantity()) {
 						throw new IllegalArgumentException("Insufficient quantity in inventory!");
 					} else {
+						ApprovalState approvalState = ApprovalState.YET_TO_BE_REQUESTED;
+						if (itemType.isApprovalNeeded() || storeRoom.isApprovalNeeded()) {
+							approvalState = ApprovalState.REQUESTED;
+						}
 						if (itemType.individualTracking()) {
 							List<Long> PurchasedItemsIds = itemTransaction.getPurchasedItems();
 							List<PurchasedItemContext> purchasedItem = getPurchasedItemsListFromId(PurchasedItemsIds,
 									purchasedItemModule, purchasedItemFields);
 							if (purchasedItem != null) {
 								for (PurchasedItemContext pItem : purchasedItem) {
-									ItemTransactionsContext woItem = new ItemTransactionsContext();
-									if(itemTransaction.getTransactionStateEnum() == TransactionState.RETURN){
-										pItem.setIsUsed(false);
-									} else if (itemTransaction.getTransactionStateEnum() == TransactionState.ISSUE) {
-										pItem.setIsUsed(true);
+									if (pItem.isUsed()) {
+										throw new IllegalArgumentException("Insufficient quantity in inventory!");
 									}
-									woItem = setWorkorderItemObj(pItem, 1, item, parentId, itemTransaction, itemType);
+									ItemTransactionsContext woItem = new ItemTransactionsContext();
+									if (itemType.isApprovalNeeded() || storeRoom.isApprovalNeeded()) {
+										pItem.setIsUsed(false);
+									} else {
+										if (itemTransaction.getTransactionStateEnum() == TransactionState.RETURN) {
+											pItem.setIsUsed(false);
+										} else if (itemTransaction
+												.getTransactionStateEnum() == TransactionState.ISSUE) {
+											pItem.setIsUsed(true);
+										}
+									}
+									woItem = setWorkorderItemObj(pItem, 1, item, parentId, itemTransaction, itemType,
+											approvalState);
 									updatePurchasedItem(pItem);
 									itemTransactionsList.add(woItem);
 									itemTransactiosnToBeAdded.add(woItem);
@@ -122,7 +149,8 @@ public class AddOrUpdateManualItemTransactionCommand implements Command {
 								PurchasedItemContext pItem = purchasedItem.get(0);
 								if (itemTransaction.getQuantity() <= pItem.getCurrentQuantity()) {
 									ItemTransactionsContext woItem = new ItemTransactionsContext();
-									woItem = setWorkorderItemObj(pItem, itemTransaction.getQuantity(), item, parentId, itemTransaction, itemType);
+									woItem = setWorkorderItemObj(pItem, itemTransaction.getQuantity(), item, parentId,
+											itemTransaction, itemType, approvalState);
 									itemTransactionsList.add(woItem);
 									itemTransactiosnToBeAdded.add(woItem);
 								} else {
@@ -136,7 +164,7 @@ public class AddOrUpdateManualItemTransactionCommand implements Command {
 											quantityUsedForTheCost = purchaseitem.getCurrentQuantity();
 										}
 										woItem = setWorkorderItemObj(purchaseitem, quantityUsedForTheCost, item,
-												parentId, itemTransaction, itemType);
+												parentId, itemTransaction, itemType, approvalState);
 										requiredQuantity -= quantityUsedForTheCost;
 										itemTransactionsList.add(woItem);
 										itemTransactiosnToBeAdded.add(woItem);
@@ -162,13 +190,15 @@ public class AddOrUpdateManualItemTransactionCommand implements Command {
 			context.put(FacilioConstants.ContextNames.RECORD_LIST, itemTransactionsList);
 			context.put(FacilioConstants.ContextNames.ITEM_TYPES_ID, itemTypeId);
 			context.put(FacilioConstants.ContextNames.ITEM_TYPES_IDS, Collections.singletonList(itemTypeId));
-			context.put(FacilioConstants.ContextNames.TRANSACTION_STATE, itemTransactions.get(0).getTransactionStateEnum());
+			context.put(FacilioConstants.ContextNames.TRANSACTION_STATE,
+					itemTransactions.get(0).getTransactionStateEnum());
 		}
 		return false;
 	}
 
 	private ItemTransactionsContext setWorkorderItemObj(PurchasedItemContext purchasedItem, double quantity,
-			ItemContext item, long parentId, ItemTransactionsContext itemTransactions, ItemTypesContext itemTypes) {
+			ItemContext item, long parentId, ItemTransactionsContext itemTransactions, ItemTypesContext itemTypes,
+			ApprovalState approvalState) {
 		ItemTransactionsContext woItem = new ItemTransactionsContext();
 		woItem.setTransactionType(TransactionType.MANUAL);
 		woItem.setTransactionState(itemTransactions.getTransactionStateEnum());
@@ -180,9 +210,15 @@ public class AddOrUpdateManualItemTransactionCommand implements Command {
 		woItem.setSysModifiedTime(System.currentTimeMillis());
 		woItem.setParentId(parentId);
 		woItem.setParentTransactionId(itemTransactions.getParentTransactionId());
-		if(itemTransactions.getTransactionStateEnum() == TransactionState.ISSUE ) {
-			woItem.setRemainingQuantity(quantity);
+		woItem.setApprovedState(approvalState);
+		if (approvalState == ApprovalState.YET_TO_BE_REQUESTED) {
+			if (itemTransactions.getTransactionStateEnum() == TransactionState.ISSUE) {
+				woItem.setRemainingQuantity(quantity);
+			}
+		} else {
+			woItem.setRemainingQuantity(0);
 		}
+
 		return woItem;
 	}
 
@@ -208,10 +244,12 @@ public class AddOrUpdateManualItemTransactionCommand implements Command {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ITEM);
 		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.ITEM);
-
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+		List<LookupFieldMeta> lookUpfields = new ArrayList<>();
+		lookUpfields.add(new LookupFieldMeta((LookupField) fieldMap.get("storeRoom")));
 		SelectRecordsBuilder<ItemContext> selectBuilder = new SelectRecordsBuilder<ItemContext>().select(fields)
 				.table(module.getTableName()).moduleName(module.getName()).beanClass(ItemContext.class)
-				.andCustomWhere(module.getTableName() + ".ID = ?", id);
+				.andCustomWhere(module.getTableName() + ".ID = ?", id).fetchLookups(lookUpfields);
 
 		List<ItemContext> inventories = selectBuilder.get();
 
