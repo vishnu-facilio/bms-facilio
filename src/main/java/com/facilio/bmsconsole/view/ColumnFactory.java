@@ -298,20 +298,20 @@ public class ColumnFactory {
 	private static List<ViewField> getDefaultToolTransactionsColumns() {
 		List<ViewField> columns = new ArrayList<ViewField>();
 		
-		columns.add(new ViewField("toolType", "Tool Type"));
-		columns.add(new ViewField("tool", "Tool"));
+//		columns.add(new ViewField("toolType", "Tool Type"));
+//		columns.add(new ViewField("tool", "Tool"));
 		columns.add(new ViewField("quantity", "Quantity"));
-		columns.add(new ViewField("issuedTo", "Issued To"));
+//		columns.add(new ViewField("issuedTo", "Issued To"));
 		return columns;
 	}
 	
 	private static List<ViewField> getDefaultItemTransactionsColumns() {
 		List<ViewField> columns = new ArrayList<ViewField>();
 		
-		columns.add(new ViewField("itemType", "Item Type"));
-		columns.add(new ViewField("item", "Item"));
+//		columns.add(new ViewField("itemType", "Item Type"));
+//		columns.add(new ViewField("item", "Item"));
 		columns.add(new ViewField("quantity", "Quantity"));
-		columns.add(new ViewField("issuedTo", "Issued To"));
+//		columns.add(new ViewField("issuedTo", "Issued To"));
 		return columns;
 	}
 }
