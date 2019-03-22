@@ -37,7 +37,7 @@ public class ViewEmailScheduler extends FacilioJob {
 		
 		long jobId = jc.getJobId();
 		try {
-			log.error("Execution view email scheduling: " + jobId);
+			log.error("asdfasf afExecution view email scheduling: " + jobId);
 			GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 					.table(ModuleFactory.getViewScheduleInfoModule().getTableName())
 					.select(FieldFactory.getViewScheduleInfoFields())
