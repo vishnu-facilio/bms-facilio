@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -31,6 +32,7 @@ import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.FieldUtil;
+import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.modules.UpdateChangeSet;
@@ -39,6 +41,7 @@ import com.facilio.bmsconsole.tenant.TenantContext;
 import com.facilio.bmsconsole.util.ShiftAPI;
 import com.facilio.bmsconsole.util.TenantsAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
+import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsole.workflow.rule.ApprovalState;
 import com.facilio.chain.FacilioContext;
@@ -93,8 +96,35 @@ public class UpdateWorkOrderCommand implements Command {
 			
 			context.put(FacilioConstants.ContextNames.ROWS_UPDATED, rowsUpdated);
 			
-			if (!changeSets.isEmpty()) {
+			if (!changeSets.isEmpty() && (workOrder.getApprovalStateEnum() == null) && (workOrder.getStatus() == null) && (workOrder.getAssignedTo() == null)) {
 				context.put(FacilioConstants.ContextNames.CHANGE_SET, changeSets);
+				context.put(FacilioConstants.ContextNames.CHANGE_SET, changeSets);
+				Map<String, Map<Long, List<UpdateChangeSet>>> changeSetMap = CommonCommandUtil.getChangeSetMap((FacilioContext) context);
+				Map<Long, List<UpdateChangeSet>> currentChangeSet = changeSetMap == null ? null : changeSetMap.get(moduleName);
+
+				Iterator it = recordIds.iterator();
+				List<UpdateChangeSet> changeSetList = null;
+				while (it.hasNext()) {
+					Object record = it.next();
+					 changeSetList = currentChangeSet == null ? null : currentChangeSet.get(record);
+				}
+			
+				for (UpdateChangeSet changeset : changeSetList) {
+				    long fieldid = changeset.getFieldId();
+					Object oldValue = changeset.getOldValue();
+					Object newValue = changeset.getNewValue();
+					FacilioField field = modBean.getField(fieldid, moduleName);
+					
+					JSONObject info = new JSONObject();
+					info.put("field", field.getName());
+					info.put("oldValue", oldValue);
+					info.put("newValue", newValue);
+					info.put("actype", "update");
+					JSONObject newinfo = new JSONObject();
+	                newinfo.put("woupdate", info); 
+				CommonCommandUtil.addActivityToContext(recordIds.get(0), -1, WorkOrderActivityType.UPDATE, newinfo, (FacilioContext) context);
+
+				}	
 			}
 		}
 		
@@ -298,6 +328,17 @@ public class UpdateWorkOrderCommand implements Command {
 						if (workOrder.getAssignedTo().getOuid() == -1) {
 							userReadings.addAll(ShiftAPI.addUserWorkHoursReading(oldWo.getAssignedTo().getOuid(), oldWo.getId(), activityType, "Close", System.currentTimeMillis()));
 							newWo.setStatus(submittedStatus);
+
+							List<Long> parentId = (List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST);
+							JSONObject info = new JSONObject();
+							info.put("assignedTo", workOrder.getAssignedTo().getUid());
+							info.put("assignedBy", workOrder.getAssignedBy().getUid());
+							info.put("actype", "assign");
+							JSONObject newinfo = new JSONObject();
+		                    newinfo.put("assigned", info);
+
+							CommonCommandUtil.addActivityToContext(parentId.get(0), -1, WorkOrderActivityType.ASSIGN, newinfo, (FacilioContext) context);
+
 						} else if (oldWo.getAssignedTo().getOuid() != workOrder.getAssignedTo().getOuid()) {
 							try {
 								if (oldWo.getStatus().getId() == wipStatus.getId()) {
