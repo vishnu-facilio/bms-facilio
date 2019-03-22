@@ -253,6 +253,19 @@ public class ViewFactory {
 		views = new LinkedHashMap<>();
 		views.put("all", getAllTools().setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.TOOL, views);
+		
+		order = 1;
+		views = new LinkedHashMap<>();
+		views.put("pending", getItemPendingApproval().setOrder(order++));
+		views.put("all", getAllItemApproval().setOrder(order++));
+		viewsMap.put(FacilioConstants.ContextNames.ITEM_TRANSACTIONS, views);
+		
+		order = 1;
+		views = new LinkedHashMap<>();
+		views.put("pending", getToolPendingApproval().setOrder(order++));
+		views.put("all", getAllToolApproval().setOrder(order++));
+		viewsMap.put(FacilioConstants.ContextNames.TOOL_TRANSACTIONS, views);
+		
 		return viewsMap;
 	}
 
@@ -2376,5 +2389,160 @@ public class ViewFactory {
 		moduleView.setFields(ColumnFactory.getColumns(parentModuleName, "default"));
 		moduleView.setSortFields(getSortFields(parentModuleName));
 		return moduleView;
+	}
+	
+	public static Criteria getItemApprovalStateCriteria(ApprovalState status) {
+
+		FacilioField field = new FacilioField();
+		field.setName("approvedState");
+		field.setColumnName("APPROVED_STATE");
+		field.setDataType(FieldType.NUMBER);
+		FacilioModule approvalStateModule = ModuleFactory.getItemTransactionsModule();
+		field.setModule(approvalStateModule);
+
+		Condition condition = new Condition();
+		condition.setField(field);
+		condition.setOperator(NumberOperators.EQUALS);
+		condition.setValue(String.valueOf(status.getValue()));
+
+		Criteria criteria = new Criteria();
+		criteria.addAndCondition(condition);
+
+		return criteria;
+	}
+	
+	private static FacilioView getItemPendingApproval() {
+
+		Criteria criteria = getItemApprovalStateCriteria(ApprovalState.REQUESTED);
+
+		FacilioField createdTime = new FacilioField();
+		createdTime.setName("createdTime");
+		createdTime.setDataType(FieldType.NUMBER);
+		createdTime.setColumnName("CREATED_TIME");
+		createdTime.setModule(ModuleFactory.getItemTransactionsModule());
+
+		FacilioView requestedItemApproval = new FacilioView();
+		requestedItemApproval.setName("pending");
+		requestedItemApproval.setDisplayName("Pending Item");
+		requestedItemApproval.setCriteria(criteria);
+		requestedItemApproval.setSortFields(Arrays.asList(new SortField(createdTime, false)));
+		return requestedItemApproval;
+	}
+	
+	private static FacilioView getAllItemApproval() {
+
+		Criteria criteria = getAllItemApprovalStateCriteria();
+
+		FacilioField createdTime = new FacilioField();
+		createdTime.setName("createdTime");
+		createdTime.setDataType(FieldType.NUMBER);
+		createdTime.setColumnName("CREATED_TIME");
+		createdTime.setModule(ModuleFactory.getItemTransactionsModule());
+
+		FacilioView rejectedApproval = new FacilioView();
+		rejectedApproval.setName("all");
+		rejectedApproval.setDisplayName("All Approval");
+		rejectedApproval.setCriteria(criteria);
+		rejectedApproval.setSortFields(Arrays.asList(new SortField(createdTime, false)));
+		return rejectedApproval;
+	}
+	
+	public static Criteria getAllToolApprovalStateCriteria() {
+		FacilioField field = new FacilioField();
+		field.setName("approvedState");
+		field.setColumnName("APPROVED_STATE");
+		field.setDataType(FieldType.NUMBER);
+		FacilioModule approvalStateModule = ModuleFactory.getToolTransactionsModule();
+		field.setModule(approvalStateModule);
+
+		Condition condition = new Condition();
+		condition.setField(field);
+		condition.setOperator(NumberOperators.EQUALS);
+		List<String> list = Arrays.asList(String.valueOf(ApprovalState.REQUESTED.getValue()),
+				String.valueOf(ApprovalState.REJECTED.getValue()), String.valueOf(ApprovalState.APPROVED.getValue()));
+		condition.setValue(String.join(", ", list));
+
+		Criteria criteria = new Criteria();
+		criteria.addAndCondition(condition);
+
+		return criteria;
+	}
+	
+	
+	public static Criteria getToolApprovalStateCriteria(ApprovalState status) {
+
+		FacilioField field = new FacilioField();
+		field.setName("approvedState");
+		field.setColumnName("APPROVED_STATE");
+		field.setDataType(FieldType.NUMBER);
+		FacilioModule approvalStateModule = ModuleFactory.getToolTransactionsModule();
+		field.setModule(approvalStateModule);
+
+		Condition condition = new Condition();
+		condition.setField(field);
+		condition.setOperator(NumberOperators.EQUALS);
+		condition.setValue(String.valueOf(status.getValue()));
+
+		Criteria criteria = new Criteria();
+		criteria.addAndCondition(condition);
+
+		return criteria;
+	}
+	
+	private static FacilioView getToolPendingApproval() {
+
+		Criteria criteria = getToolApprovalStateCriteria(ApprovalState.REQUESTED);
+
+		FacilioField createdTime = new FacilioField();
+		createdTime.setName("createdTime");
+		createdTime.setDataType(FieldType.NUMBER);
+		createdTime.setColumnName("CREATED_TIME");
+		createdTime.setModule(ModuleFactory.getToolTransactionsModule());
+
+		FacilioView requestedItemApproval = new FacilioView();
+		requestedItemApproval.setName("pending");
+		requestedItemApproval.setDisplayName("Pending Tool");
+		requestedItemApproval.setCriteria(criteria);
+		requestedItemApproval.setSortFields(Arrays.asList(new SortField(createdTime, false)));
+		return requestedItemApproval;
+	}
+	
+	private static FacilioView getAllToolApproval() {
+
+		Criteria criteria = getAllToolApprovalStateCriteria();
+
+		FacilioField createdTime = new FacilioField();
+		createdTime.setName("createdTime");
+		createdTime.setDataType(FieldType.NUMBER);
+		createdTime.setColumnName("CREATED_TIME");
+		createdTime.setModule(ModuleFactory.getToolTransactionsModule());
+
+		FacilioView rejectedApproval = new FacilioView();
+		rejectedApproval.setName("all");
+		rejectedApproval.setDisplayName("All Approval");
+		rejectedApproval.setCriteria(criteria);
+		rejectedApproval.setSortFields(Arrays.asList(new SortField(createdTime, false)));
+		return rejectedApproval;
+	}
+	
+	public static Criteria getAllItemApprovalStateCriteria() {
+		FacilioField field = new FacilioField();
+		field.setName("approvedState");
+		field.setColumnName("APPROVED_STATE");
+		field.setDataType(FieldType.NUMBER);
+		FacilioModule approvalStateModule = ModuleFactory.getItemTransactionsModule();
+		field.setModule(approvalStateModule);
+
+		Condition condition = new Condition();
+		condition.setField(field);
+		condition.setOperator(NumberOperators.EQUALS);
+		List<String> list = Arrays.asList(String.valueOf(ApprovalState.REQUESTED.getValue()),
+				String.valueOf(ApprovalState.REJECTED.getValue()), String.valueOf(ApprovalState.APPROVED.getValue()));
+		condition.setValue(String.join(", ", list));
+
+		Criteria criteria = new Criteria();
+		criteria.addAndCondition(condition);
+
+		return criteria;
 	}
 }

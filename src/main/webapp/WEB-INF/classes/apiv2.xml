@@ -1536,12 +1536,13 @@
 		</action>
 		
 	</package>
-	<package name="itemTransactionsList" namespace="/api/v2/itemTransactions"
+	<package name="itemTransactionsList" namespace="/api/v2/itemTransactions/view"
 		extends="v2Api">
-		<action name="all"
+		<action name="*"
 			class="com.facilio.bmsconsole.actions.ItemTransactionsAction" method="itemsList">
 			<param name="moduleName">asset</param>
 			<param name="permission">READ</param>
+			<param name="viewName">{1}</param>
 			</action>
 			<action name="showItemTransactionListForReturn"
 			class="com.facilio.bmsconsole.actions.ItemTransactionsAction" method="showItemTransactionListForReturn">
@@ -1617,12 +1618,13 @@
 		</action>
 		
 	</package>
-	<package name="toolTransactionsList" namespace="/api/v2/toolTransactions"
+	<package name="toolTransactionsList" namespace="/api/v2/toolTransactions/view"
 		extends="v2Api">
-		<action name="all"
+		<action name="*"
 			class="com.facilio.bmsconsole.actions.ToolTransactionsAction" method="toolsTransactionsList">
 			<param name="moduleName">asset</param>
 			<param name="permission">READ</param>
+			<param name="viewName">{1}</param>
 			</action>
 			<action name="showToolTransactionListForReturn"
 			class="com.facilio.bmsconsole.actions.ToolTransactionsAction" method="showToolTransactionListForReturn">

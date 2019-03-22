@@ -55,6 +55,8 @@ public class ColumnFactory {
 		columnMap.put("workorder-report", getWorkOrderReportColumns());
 		columnMap.put("alarm-report", getAlarmReportColumns());
 		columnMap.put("energydata-report", getDefaultEnergyColumns());
+		columnMap.put("toolTransactions-default", getDefaultToolTransactionsColumns());
+		columnMap.put("itemTransactions-default", getDefaultItemTransactionsColumns());
 		
 		// Special types
 		columnMap.put("preventivemaintenance-default", getPreventiveMaintenanceColumns());
@@ -290,6 +292,24 @@ public class ColumnFactory {
 		columns.add(new ViewField("status", "Status"));
 		columns.add(new ViewField("quantity", "Quantity"));
 		
+		return columns;
+	}
+	
+	private static List<ViewField> getDefaultToolTransactionsColumns() {
+		List<ViewField> columns = new ArrayList<ViewField>();
+		
+		columns.add(new ViewField("tool", "Tool"));
+		columns.add(new ViewField("quantity", "Quantity"));
+		columns.add(new ViewField("approvedState", "Approval State"));
+		return columns;
+	}
+	
+	private static List<ViewField> getDefaultItemTransactionsColumns() {
+		List<ViewField> columns = new ArrayList<ViewField>();
+		
+		columns.add(new ViewField("item", "Item"));
+		columns.add(new ViewField("quantity", "Quantity"));
+		columns.add(new ViewField("approvedState", "Approval State"));
 		return columns;
 	}
 }

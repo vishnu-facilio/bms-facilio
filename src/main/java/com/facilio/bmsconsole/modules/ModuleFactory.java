@@ -68,7 +68,8 @@ public class ModuleFactory {
 		moduleMap.put(FacilioConstants.ContextNames.PURCHASED_ITEM, getPurchasedItemModule());
 		moduleMap.put(FacilioConstants.ContextNames.TOOL, getToolModule());
 		moduleMap.put(FacilioConstants.ContextNames.LOCATION, getLocationsModule());
-
+		moduleMap.put(FacilioConstants.ContextNames.TOOL_TRANSACTIONS, getToolTransactionsModule());
+		moduleMap.put(FacilioConstants.ContextNames.ITEM_TRANSACTIONS, getItemTransactionsModule());
 		moduleMap.put(FacilioConstants.ContextNames.TENANT, getTenantsModule());
 
 		return moduleMap;
@@ -1763,6 +1764,22 @@ public class ModuleFactory {
 		inventoryModule.setName(FacilioConstants.ContextNames.TOOL_TYPES_STATUS);
 		inventoryModule.setDisplayName("toolTypeStatus");
 		inventoryModule.setTableName("Tool_types_status");
+		return inventoryModule;
+	}
+  	
+  	public static FacilioModule getItemTransactionsModule() {
+		FacilioModule inventoryModule = new FacilioModule();
+		inventoryModule.setName(FacilioConstants.ContextNames.ITEM_TRANSACTIONS);
+		inventoryModule.setDisplayName("itemTransactions");
+		inventoryModule.setTableName("Item_Transactions");
+		return inventoryModule;
+	}
+  	
+  	public static FacilioModule getToolTransactionsModule() {
+		FacilioModule inventoryModule = new FacilioModule();
+		inventoryModule.setName(FacilioConstants.ContextNames.TOOL_TRANSACTIONS);
+		inventoryModule.setDisplayName("toolTransactions");
+		inventoryModule.setTableName("Tool_transactions");
 		return inventoryModule;
 	}
 }
