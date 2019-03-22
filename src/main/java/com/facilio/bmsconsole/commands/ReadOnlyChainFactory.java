@@ -656,5 +656,13 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new GetFormListCommand());
 		return c;
 	}
+
+	public static Chain getPurchaseRequestListChain() {
+		Chain chain = getDefaultChain();
+		chain.addCommand(SetTableNamesCommand.getForPurchaseRequest());
+		chain.addCommand(new LoadAllFieldsCommand());
+		chain.addCommand(new GetPurchaseRequestListCommand());
+		return chain;
+	}
 	
 }

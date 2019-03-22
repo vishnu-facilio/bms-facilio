@@ -47,6 +47,7 @@ import com.facilio.bmsconsole.context.MLAlarmContext;
 import com.facilio.bmsconsole.context.MLAlarmOccurrenceContext;
 import com.facilio.bmsconsole.context.MlForecastingContext;
 import com.facilio.bmsconsole.context.PhotosContext;
+import com.facilio.bmsconsole.context.PurchaseRequestContext;
 import com.facilio.bmsconsole.context.ReadingAlarmContext;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ResourceContext;
@@ -872,7 +873,9 @@ public class FacilioConstants {
 		public static final String LABOUR_ID = "labourId";
 		public static final String LABOUR_IDS = "labourIds";
 		public static final String WO_LABOUR = "workorderLabour";
-		
+
+		public static final String PURCHASE_REQUEST = "purchaserequest";
+
 
 		private static Map<String, Class> classMap = Collections.unmodifiableMap(initClassMap());
 		private static Map<String, Class> initClassMap() {
@@ -962,6 +965,7 @@ public class FacilioConstants {
 			classMap.put(TENANT, TenantContext.class);
 			classMap.put(LABOUR, LabourContext.class);
 			classMap.put(WO_LABOUR, WorkOrderLabourContext.class);
+			classMap.put(PURCHASE_REQUEST, PurchaseRequestContext.class);
 			return classMap;
 		}
 		
