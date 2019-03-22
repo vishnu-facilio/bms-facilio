@@ -19,11 +19,12 @@ public class NewTransformReportDataCommand implements Command {
 		JSONObject reportData = (JSONObject) context.get(FacilioConstants.ContextNames.REPORT_DATA);
 		ReportContext report = (ReportContext) context.get(FacilioConstants.ContextNames.REPORT);
 		if (report != null && report.getTransformWorkflow() != null && reportData != null && !reportData.isEmpty()) {
+			String wfXmlString = WorkflowUtil.getXmlStringFromWorkflow(report.getTransformWorkflow());
 			Map<String,Object> params = new HashMap<>();
 			params.put(FacilioConstants.ContextNames.DATA_KEY, reportData.get(FacilioConstants.ContextNames.DATA_KEY));
 			params.put(FacilioConstants.ContextNames.AGGR_KEY, reportData.get(FacilioConstants.ContextNames.AGGR_KEY));
 			
-			Map<String, Object> transformedData =  WorkflowUtil.getExpressionResultMap(report.getTransformWorkflow(), params);
+			Map<String, Object> transformedData =  WorkflowUtil.getExpressionResultMap(wfXmlString, params);
 			JSONObject data = new JSONObject();
 			if (transformedData != null) {
 				data.put(FacilioConstants.ContextNames.DATA_KEY, transformedData.get(FacilioConstants.ContextNames.DATA_KEY));
