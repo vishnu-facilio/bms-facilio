@@ -42,13 +42,13 @@ import com.facilio.fw.BeanFactory;
 
 public class ExportUtil {
 	
-	public static String exportData(FileFormat fileFormat,FacilioModule facilioModule, List<ViewField> fields, List<? extends ModuleBaseWithCustomFields> records) throws Exception {
+	public static String exportData(FileFormat fileFormat,FacilioModule facilioModule, List<ViewField> fields, List<? extends ModuleBaseWithCustomFields> records, boolean isS3Url) throws Exception {
 		String fileUrl = null;
 		if(fileFormat == FileFormat.XLS){
-			fileUrl=ExportUtil.exportDataAsXLS(facilioModule, fields, records);
+			fileUrl=ExportUtil.exportDataAsXLS(facilioModule, fields, records, isS3Url);
 		}
 		else if(fileFormat == FileFormat.CSV){
-			fileUrl=ExportUtil.exportDataAsCSV(facilioModule, fields, records);
+			fileUrl=ExportUtil.exportDataAsCSV(facilioModule, fields, records, isS3Url);
 		}
 		return fileUrl;
 	}
@@ -65,7 +65,7 @@ public class ExportUtil {
 	}
 	
 	@SuppressWarnings("resource")
-	public static String exportDataAsXLS(FacilioModule facilioModule, List<ViewField> fields, List<? extends ModuleBaseWithCustomFields> records) throws Exception 
+	public static String exportDataAsXLS(FacilioModule facilioModule, List<ViewField> fields, List<? extends ModuleBaseWithCustomFields> records, boolean isS3Url) throws Exception
 	{
 		HSSFWorkbook workbook = new HSSFWorkbook();
 		HSSFSheet sheet = workbook.createSheet(facilioModule.getDisplayName());
@@ -120,6 +120,10 @@ public class ExportUtil {
 		File file = new File(fileName);
 		FileStore fs = FileStoreFactory.getInstance().getFileStore();
 		long fileId = fs.addFile(file.getPath(), file, "application/xls");
+
+		if (isS3Url) {
+			return fs.getOrgiDownloadUrl(fileId);
+		}
 
 		return fs.getDownloadUrl(fileId);
 	}
@@ -225,7 +229,7 @@ public class ExportUtil {
 		}
 	}
 	
-	public static String exportDataAsCSV(FacilioModule facilioModule, List<ViewField> fields, List<? extends ModuleBaseWithCustomFields> records) throws Exception
+	public static String exportDataAsCSV(FacilioModule facilioModule, List<ViewField> fields, List<? extends ModuleBaseWithCustomFields> records, boolean isS3Url) throws Exception
     {
 		String fileName = facilioModule.getDisplayName() + ".csv";
         	FileWriter writer = new FileWriter(fileName, false);
@@ -274,7 +278,10 @@ public class ExportUtil {
         	File file = new File(fileName);
 	    FileStore fs = FileStoreFactory.getInstance().getFileStore();
 	    long fileId = fs.addFile(file.getPath(), file, "application/csv");
-	    
+
+	    if (isS3Url) {
+	    	return fs.getOrgiDownloadUrl(fileId);
+		}
 	    return fs.getDownloadUrl(fileId);
     }
 	
@@ -494,7 +501,7 @@ public class ExportUtil {
 		return null;
 	}
 	
-	public static String exportModule(FileFormat fileFormat, String moduleName, String viewName, String filters) throws Exception {
+	public static String exportModule(FileFormat fileFormat, String moduleName, String viewName, String filters, boolean isS3Value) throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
 		context.put(FacilioConstants.ContextNames.CV_NAME, viewName);
@@ -551,7 +558,7 @@ public class ExportUtil {
 			noOfEvents.setField(modBean.getField("noOfEvents", moduleName));
 			viewFields.add(noOfEvents);
 		}
-		return exportData(fileFormat, modBean.getModule(moduleName), viewFields, records);
+		return exportData(fileFormat, modBean.getModule(moduleName), viewFields, records, isS3Value);
 	}
 	
 }
