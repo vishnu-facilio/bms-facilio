@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.actions;
 
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -44,12 +45,14 @@ import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.templates.EMailTemplate;
 import com.facilio.bmsconsole.util.AlarmAPI;
 import com.facilio.bmsconsole.util.DashboardUtil;
+import com.facilio.bmsconsole.util.DateTimeUtil;
 import com.facilio.bmsconsole.util.ReadingRuleAPI;
 import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.rule.AlarmRuleContext;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
+import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext.ReadingRuleType;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -67,6 +70,7 @@ import com.facilio.report.context.ReportUserFilterContext;
 import com.facilio.report.context.ReportYAxisContext;
 import com.facilio.report.context.WorkorderAnalysisContext;
 import com.facilio.report.util.ReportUtil;
+import com.facilio.time.SecondsChronoUnit;
 import com.facilio.util.FacilioUtil;
 import com.facilio.workflows.context.ExpressionContext;
 import com.facilio.workflows.context.WorkflowContext;
@@ -738,18 +742,19 @@ public class V2ReportAction extends FacilioAction {
 		ReadingAlarmContext readingAlarmContext = AlarmAPI.getReadingAlarmContext(alarmId);
 		
 		List<ReadingRuleContext> readingRules = new ArrayList<>();
-		if(isWithPrerequsite) {					// new 1st
+		if(isWithPrerequsite) {							// new 1st
 			
 			AlarmRuleContext alarmRuleContext = new AlarmRuleContext(ReadingRuleAPI.getReadingRulesList(readingAlarmContext.getRuleId()));
 			readingRules.add(alarmRuleContext.getAlarmTriggerRule());
 			readingRules.add(alarmRuleContext.getPreRequsite());
 			
 		}
-		else if(readingRuleId > 0) {					//new 2nd
+		else if(readingRuleId > 0) {					// new 2nd
+			
 			ReadingRuleContext readingruleContext = (ReadingRuleContext) WorkflowRuleAPI.getWorkflowRule(readingRuleId);
 			readingRules.add(readingruleContext);
 		}
-		else {									//old
+		else {											// old
 			ReadingRuleContext readingruleContext = (ReadingRuleContext) WorkflowRuleAPI.getWorkflowRule(readingAlarmContext.getRuleId());
 			readingRules.add(readingruleContext);
 		}
@@ -762,7 +767,7 @@ public class V2ReportAction extends FacilioAction {
 			
 			for(ReadingRuleContext readingRule :readingRules) {
 				if(readingRule != null) {
-					dataPoints.addAll(getDataPointsJSONFromRule(readingRule,resource));
+					dataPoints.addAll(getDataPointsJSONFromRule(readingRule,resource,readingAlarmContext));
 				}
 			}
 			
@@ -793,9 +798,91 @@ public class V2ReportAction extends FacilioAction {
 		fields =  dataPoints.toJSONString();
 	}
 	
-	private JSONArray getDataPointsJSONFromRule(ReadingRuleContext readingruleContext,ResourceContext resource) throws Exception {
-			
+	public static void main(String[] args) {
+		ZonedDateTime zdt = DateTimeUtil.getDateTime(System.currentTimeMillis());
+		zdt = zdt.truncatedTo(new SecondsChronoUnit(60 * 60));
+		System.out.println(DateTimeUtil.getMillis(zdt, true));
+	}
+	
+	private JSONArray getDataPointsJSONFromRule(ReadingRuleContext readingruleContext,ResourceContext resource,ReadingAlarmContext readingAlarmContext) throws Exception {
+		
 		JSONArray dataPoints = new JSONArray();
+		if(readingruleContext.getReadingRuleTypeEnum() == ReadingRuleType.ML_RULE) {
+			
+			if(readingruleContext.getId() == 5085l) {
+				JSONObject dataPoint = new JSONObject();
+				
+				dataPoint.put("parentId", FacilioUtil.getSingleTonJsonArray(resource.getId()));
+				
+				JSONObject yAxisJson = new JSONObject();
+				yAxisJson.put("fieldId", readingruleContext.getReadingFieldId());
+				yAxisJson.put("aggr", 0);
+				
+				dataPoint.put("yAxis", yAxisJson);
+				
+				dataPoint.put("type", 1);
+				
+				ZonedDateTime zdt = DateTimeUtil.getDateTime(readingAlarmContext.getCreatedTime());
+				zdt = zdt.truncatedTo(new SecondsChronoUnit(60 * 60));
+				DateTimeUtil.getMillis(zdt, true);
+				
+				dataPoint.put("predictedTime", DateTimeUtil.getMillis(zdt, true));
+				
+				dataPoints.add(dataPoint);
+				
+				dataPoint = new JSONObject();
+				
+				dataPoint.put("parentId", FacilioUtil.getSingleTonJsonArray(resource.getId()));
+				
+				yAxisJson = new JSONObject();
+				yAxisJson.put("fieldId", readingruleContext.getReadingFieldId());
+				yAxisJson.put("aggr", 0);
+				
+				dataPoint.put("yAxis", yAxisJson);
+				
+				dataPoint.put("type", 1);
+				
+				zdt = DateTimeUtil.getDateTime(readingAlarmContext.getModifiedTime());
+				if(readingAlarmContext.getClearedTime() > 0) {
+					zdt = zdt.truncatedTo(new SecondsChronoUnit(2 * 60 * 60));
+					dataPoint.put("predictedTime", DateTimeUtil.getMillis(zdt, true));
+				}
+				else {
+					zdt = zdt.truncatedTo(new SecondsChronoUnit(1 * 60 * 60));
+					dataPoint.put("predictedTime", DateTimeUtil.getMillis(zdt, true));
+				}
+				dataPoints.add(dataPoint);
+				
+				dataPoint = new JSONObject();
+				
+				dataPoint.put("parentId", FacilioUtil.getSingleTonJsonArray(resource.getId()));
+				
+				yAxisJson = new JSONObject();
+				yAxisJson.put("fieldId", 253613l);
+				yAxisJson.put("aggr", 0);
+				
+				dataPoint.put("yAxis", yAxisJson);
+				
+				dataPoint.put("type", 1);
+				
+				dataPoints.add(dataPoint);
+				
+				zdt = DateTimeUtil.getDateTime(readingAlarmContext.getCreatedTime());
+				zdt = zdt.truncatedTo(new SecondsChronoUnit(24 * 60 * 60));
+				this.startTime = DateTimeUtil.getMillis(zdt, true);
+				
+				zdt = DateTimeUtil.getDateTime(readingAlarmContext.getModifiedTime() +432000000);
+				zdt = zdt.truncatedTo(new SecondsChronoUnit(24 * 60 * 60));
+				this.endTime = DateTimeUtil.getMillis(zdt, true);
+				
+			}
+			LOGGER.error("dataPoints -- "+dataPoints);
+			LOGGER.error("startTime -- "+startTime);
+			LOGGER.error("startTime -- "+this.endTime);
+			return dataPoints;
+		}
+		
+		
 		ResourceContext currentResource = resource;
 		if(readingruleContext.getThresholdType() == ReadingRuleContext.ThresholdType.ADVANCED.getValue()) {
 			
