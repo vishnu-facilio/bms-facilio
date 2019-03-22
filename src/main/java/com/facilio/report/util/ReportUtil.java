@@ -258,7 +258,7 @@ public class ReportUtil {
 					}
 				}
 				if (report.getWorkflowId() != -1) {
-					report.setTransformWorkflow(WorkflowUtil.getWorkflowContext(report.getWorkflowId()));
+					report.setTransformWorkflow(WorkflowUtil.getWorkflowContext(report.getWorkflowId(), true));
 				}
 				
 				for (ReportDataPointContext dataPoint : report.getDataPoints()) {

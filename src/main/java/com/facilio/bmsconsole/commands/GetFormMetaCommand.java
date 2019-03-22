@@ -82,11 +82,13 @@ public class GetFormMetaCommand implements Command {
 							}
 						}
 					}
-					List<FacilioField> customFields = modBean.getAllCustomFields(moduleName);
-					if (customFields != null && !customFields.isEmpty()) {
-						for (FacilioField f: customFields) {
-							count = count + 1;
-							fields.add(getFormFieldFromFacilioField(f, count));
+					else {
+						List<FacilioField> customFields = modBean.getAllCustomFields(moduleName);
+						if (customFields != null && !customFields.isEmpty()) {
+							for (FacilioField f: customFields) {
+								count = count + 1;
+								fields.add(getFormFieldFromFacilioField(f, count));
+							}
 						}
 					}
 					

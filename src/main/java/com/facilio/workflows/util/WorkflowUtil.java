@@ -300,8 +300,16 @@ public class WorkflowUtil {
 		return getExpressionResultMap(workflowString, paramMap, null, true, false);
 	}
 	
+	public static Map<String, Object> getExpressionResultMap(WorkflowContext workflowContext,Map<String,Object> paramMap) throws Exception {
+		return getExpressionResultMap(workflowContext, paramMap, null, true, false);
+	}
+	
 	public static Map<String, Object> getExpressionResultMap(String workflowString,Map<String,Object> paramMap, Map<String, ReadingDataMeta> rdmCache, boolean ignoreNullExpressions, boolean ignoreMarked) throws Exception {
 		WorkflowContext workflowContext = getWorkflowContextFromString(workflowString);
+		return getExpressionResultMap(workflowContext, paramMap, rdmCache, ignoreNullExpressions, ignoreMarked);
+	}
+	
+	public static Map<String, Object> getExpressionResultMap(WorkflowContext workflowContext,Map<String,Object> paramMap, Map<String, ReadingDataMeta> rdmCache, boolean ignoreNullExpressions, boolean ignoreMarked) throws Exception {
 		workflowContext.setCachedRDM(rdmCache);
 		workflowContext.setIgnoreMarkedReadings(ignoreMarked);
 		List<ParameterContext> parameterContexts = validateAndGetParameters(workflowContext,paramMap);
