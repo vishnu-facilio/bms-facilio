@@ -44,7 +44,7 @@ public class ConstructReportDataCommand implements Command {
 		return new ArrayList<>();
 	}
 	
-	private Map<Long, Map<Long, Object>> labelMap = new HashMap<>();
+//	private Map<Long, Map<Long, Object>> labelMap = new HashMap<>();
 
 	@Override
 	public boolean execute(Context context) throws Exception {
@@ -71,7 +71,7 @@ public class ConstructReportDataCommand implements Command {
 		}
 		JSONObject data = new JSONObject();
 		data.put(FacilioConstants.ContextNames.DATA_KEY, transformedData);
-		data.put(FacilioConstants.ContextNames.LABEL_MAP, labelMap);
+//		data.put(FacilioConstants.ContextNames.LABEL_MAP, labelMap);
 		context.put(FacilioConstants.ContextNames.REPORT_SORT_ALIAS, getxAlias(report));
 		context.put(FacilioConstants.ContextNames.REPORT_DATA, data);
 		return false;
@@ -245,7 +245,7 @@ public class ConstructReportDataCommand implements Command {
 					lookupMap.put((Long) map.get("id"), (String) map.get(mainField.getName()));
 				}
 			}
-			labelMap.put(fieldId, lookupMap);
+//			labelMap.put(fieldId, lookupMap);
 			reportFieldContext.setLookupMap(lookupMap);
 		}
 	}

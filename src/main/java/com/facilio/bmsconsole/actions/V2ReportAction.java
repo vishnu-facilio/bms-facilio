@@ -8,6 +8,8 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.chain.Chain;
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -28,6 +30,7 @@ import com.facilio.bmsconsole.context.ReportInfo;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.WidgetChartContext;
 import com.facilio.bmsconsole.context.WidgetStaticContext;
+import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.DateOperators;
@@ -36,6 +39,8 @@ import com.facilio.bmsconsole.criteria.Operator;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldUtil;
+import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
+import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.templates.EMailTemplate;
 import com.facilio.bmsconsole.util.AlarmAPI;
 import com.facilio.bmsconsole.util.DashboardUtil;
@@ -58,6 +63,7 @@ import com.facilio.report.context.ReportContext;
 import com.facilio.report.context.ReportContext.ReportType;
 import com.facilio.report.context.ReportFactoryFields;
 import com.facilio.report.context.ReportFolderContext;
+import com.facilio.report.context.ReportUserFilterContext;
 import com.facilio.report.context.ReportYAxisContext;
 import com.facilio.report.context.WorkorderAnalysisContext;
 import com.facilio.report.util.ReportUtil;
@@ -525,7 +531,14 @@ public class V2ReportAction extends FacilioAction {
 	public void setModuleType(int moduleType) {
 		this.moduleType = moduleType;
 	}
-
+	private List<ReportUserFilterContext> userFilters;
+	public List<ReportUserFilterContext> getUserFilters() {
+		return userFilters;
+	}
+	public void setUserFilters(List<ReportUserFilterContext> userFilters) {
+		this.userFilters = userFilters;
+	}
+	
 	public String fetchReportData() throws Exception {
 		FacilioContext context = new FacilioContext();
 		updateContext(context);
@@ -547,6 +560,7 @@ public class V2ReportAction extends FacilioAction {
 		context.put("sort_fields", sortFields);
 		context.put("sort_order", sortOrder);
 		context.put("limit", limit);
+		context.put("user-filters", userFilters);
 		
 		context.put(FacilioConstants.Reports.MODULE_TYPE, moduleType);
 		
@@ -585,7 +599,7 @@ public class V2ReportAction extends FacilioAction {
 		setResult("report", reportContext);
 		return SUCCESS;
 	}
-
+	
 	public String executeReport() throws Exception {
 		Chain chain = FacilioChain.getNonTransactionChain();
 		FacilioContext context = new FacilioContext();
@@ -599,6 +613,7 @@ public class V2ReportAction extends FacilioAction {
 		if (startTime != -1 && endTime != -1) {
 			reportContext.setDateRange(new DateRange(startTime, endTime));
 		}
+		reportContext.setUserFilters(userFilters, true);
 		
 		chain.addCommand(ReadOnlyChainFactory.constructAndFetchReportDataChain());
 		chain.addCommand(new GetModuleFromReportContextCommand());
@@ -903,7 +918,7 @@ public class V2ReportAction extends FacilioAction {
 			setResult("module", module);
 		}
 		if(moduleType != -1) {
-			setResult("moduleType", ReportFactoryFields.addModuleTypes(module.getName()));
+			setResult("moduleTypes", ReportFactoryFields.addModuleTypes(module.getName()));
 		}
 		
 		resultContext = context;

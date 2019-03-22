@@ -54,6 +54,7 @@ import com.facilio.report.context.ReportDataPointContext.OrderByFunction;
 import com.facilio.report.context.ReportFieldContext;
 import com.facilio.report.context.ReportFilterContext;
 import com.facilio.report.context.ReportGroupByField;
+import com.facilio.report.context.ReportUserFilterContext;
 import com.facilio.sql.GenericSelectRecordBuilder;
 
 public class FetchReportDataCommand implements Command {
@@ -259,6 +260,15 @@ public class FetchReportDataCommand implements Command {
 		}
 		else {
 			newSelectBuilder.andCondition(getEqualsCondition(xAggrField, xValues));
+		}
+		
+		if (CollectionUtils.isNotEmpty(report.getUserFilters())) {
+			for (ReportUserFilterContext userFilter: report.getUserFilters()) {
+				Criteria criteria = userFilter.getCriteria();
+				if (criteria != null) {
+					newSelectBuilder.andCriteria(criteria);
+				}
+			}
 		}
 		
 		List<Map<String, Object>> props = newSelectBuilder.getAsProps();

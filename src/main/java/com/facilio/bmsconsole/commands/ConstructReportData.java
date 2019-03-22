@@ -36,6 +36,7 @@ import com.facilio.report.context.ReportDataPointContext;
 import com.facilio.report.context.ReportFactory;
 import com.facilio.report.context.ReportFieldContext;
 import com.facilio.report.context.ReportGroupByField;
+import com.facilio.report.context.ReportUserFilterContext;
 import com.facilio.report.context.ReportYAxisContext;
 
 public class ConstructReportData implements Command {
@@ -72,6 +73,14 @@ public class ConstructReportData implements Command {
 		reportContext.setxAggr(0);
 		reportContext.setxAlias("X");
 		reportContext.setModuleId(module.getModuleId());
+		
+		List<ReportUserFilterContext> userFilters = (List<ReportUserFilterContext>) context.get("user-filters");
+		if (CollectionUtils.isNotEmpty(userFilters)) {
+			for (ReportUserFilterContext userFilterContext : userFilters) {
+				userFilterContext.setField(modBean.getField(userFilterContext.getFieldId()));
+			}
+		}
+		reportContext.setUserFilters(userFilters);
 		
 		JSONObject xAxisJSON = (JSONObject) context.get("x-axis");
 		JSONObject dateFieldJSON = (JSONObject) context.get("date-field");
