@@ -1,23 +1,14 @@
 package com.facilio.bmsconsole.commands;
 
 import java.util.Collections;
-import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AssetCategoryContext;
-import com.facilio.bmsconsole.criteria.CriteriaAPI;
-import com.facilio.bmsconsole.criteria.NumberOperators;
-import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
-import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.FacilioModule.ModuleType;
-import com.facilio.bmsconsole.modules.FieldFactory;
-import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
-import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 
@@ -55,6 +46,7 @@ public class AddAssetCategoryModule implements Command {
 		module.setTableName("AssetCustomModuleData");
 		module.setType(ModuleType.BASE_ENTITY);
 		module.setExtendModule(assetModule);
+		module.setTrashEnabled(true);
 		
 		context.put(FacilioConstants.ContextNames.MODULE_LIST, Collections.singletonList(module));
 		return false;

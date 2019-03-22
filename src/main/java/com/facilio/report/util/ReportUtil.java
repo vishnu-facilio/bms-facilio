@@ -42,8 +42,8 @@ import com.facilio.report.context.ReportBaseLineContext;
 import com.facilio.report.context.ReportContext;
 import com.facilio.report.context.ReportDataPointContext;
 import com.facilio.report.context.ReportFactory;
-import com.facilio.report.context.ReportFactory.WorkOrder;
 import com.facilio.report.context.ReportFactory.ModuleType;
+import com.facilio.report.context.ReportFactory.WorkOrder;
 import com.facilio.report.context.ReportFieldContext;
 import com.facilio.report.context.ReportFilterContext;
 import com.facilio.report.context.ReportFolderContext;
@@ -54,6 +54,7 @@ import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
 import com.facilio.workflows.context.WorkflowContext;
+import com.facilio.workflows.util.WorkflowUtil;
 
 public class ReportUtil {
 	
@@ -222,7 +223,7 @@ public class ReportUtil {
 		return report;
 	}
 	
-	public static ReportContext getReport(long reportId) throws Exception {
+	public static ReportContext getReport(long reportId, Boolean...fetchReportOnly) throws Exception {
 		
 		FacilioModule module = ModuleFactory.getReportModule();
 		GenericSelectRecordBuilder select = new GenericSelectRecordBuilder()
@@ -232,24 +233,31 @@ public class ReportUtil {
 													.andCondition(CriteriaAPI.getIdCondition(reportId, module))
 													;
 		
-		List<ReportContext> reports = getReportsFromProps(select.get());
+		List<ReportContext> reports = getReportsFromProps(select.get(), fetchReportOnly);
 		if (reports != null && !reports.isEmpty()) {
 			return reports.get(0);
 		}
 		return null;
 	}
 	
-	private static List<ReportContext> getReportsFromProps(List<Map<String, Object>> props) throws Exception {
+	private static List<ReportContext> getReportsFromProps(List<Map<String, Object>> props, Boolean...fetchReportOnly) throws Exception {
 		if (props != null && !props.isEmpty()) {
 			List<ReportContext> reports = new ArrayList<>();
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			boolean fetchReportContextOnly = fetchReportOnly != null && fetchReportOnly.length > 0 && fetchReportOnly[0];
 			for (Map<String, Object> prop : props) {
 				ReportContext report = FieldUtil.getAsBeanFromMap(prop, ReportContext.class);
-				
+				if (fetchReportContextOnly) {
+					reports.add(report);
+					continue;
+				}
 				if (report.getFilters() != null && !report.getFilters().isEmpty()) {
 					for (ReportFilterContext filter : report.getFilters()) {
 						filter.setField(getModule(filter.getModuleId(), filter.getModuleName(), modBean), getField(filter.getFieldId(), filter.getModuleName(), filter.getFieldName(), modBean));
 					}
+				}
+				if (report.getWorkflowId() != -1) {
+					report.setTransformWorkflow(WorkflowUtil.getWorkflowContext(report.getWorkflowId()));
 				}
 				
 				for (ReportDataPointContext dataPoint : report.getDataPoints()) {
