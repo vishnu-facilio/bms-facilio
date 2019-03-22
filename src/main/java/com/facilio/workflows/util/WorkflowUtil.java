@@ -688,12 +688,23 @@ public class WorkflowUtil {
 	public static void parseExpression(WorkflowContext workflowContext) throws Exception {
 		new ArrayList<>();
 		if(workflowContext != null && workflowContext.getExpressions() != null) {
-			for(int i = 0; i < workflowContext.getExpressions().size(); i++) {
-				WorkflowExpression workflowExpression = workflowContext.getExpressions().get(i);
+			getExpressionParsedFromString(workflowContext.getExpressions());
+		}
+	}
+	
+	public static void getExpressionParsedFromString(List<WorkflowExpression> expressions) throws Exception {
+		
+		if(expressions != null && !expressions.isEmpty()) {
+			for(int i = 0; i < expressions.size(); i++) {
+				WorkflowExpression workflowExpression = expressions.get(i);
 				if(workflowExpression instanceof ExpressionContext) {
 					ExpressionContext expressionContext = (ExpressionContext)  workflowExpression;
 					expressionContext = getExpressionContextFromExpressionString(expressionContext.getExpressionString(),expressionContext);
-					workflowContext.getExpressions().set(i, expressionContext);
+					expressions.set(i, expressionContext);
+				}
+				else if(workflowExpression instanceof IteratorContext) {
+					IteratorContext iteratorContext = (IteratorContext) workflowExpression;
+					getExpressionParsedFromString(iteratorContext.getExpressions());
 				}
 			}
 		}
