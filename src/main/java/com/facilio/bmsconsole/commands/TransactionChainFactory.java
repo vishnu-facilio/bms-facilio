@@ -1934,7 +1934,7 @@ public class TransactionChainFactory {
 			Chain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForPurchasedTool());
 			c.addCommand(new GetAddPurchasedToolCommand());
-//			c.addCommand(getAddOrUpdateToolStockTransactionChain());
+			c.addCommand(getAddOrUpdateToolStockTransactionChain());
 			return c;
 		}
 		
@@ -2004,7 +2004,7 @@ public class TransactionChainFactory {
 		public static Chain getApproveRejectToolsChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForToolTranaction());
-			c.addCommand(new GenericUpdateListModuleDataCommand());
+//			c.addCommand(new GenericUpdateListModuleDataCommand());
 			c.addCommand(new ApproveOrRejectToolCommand());
 			c.addCommand(getUpdatetoolQuantityRollupChain());
 			c.addCommand(new AddOrUpdateWorkorderCostCommand());

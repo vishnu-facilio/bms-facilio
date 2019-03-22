@@ -55,7 +55,7 @@ public class PurchasedToolContext extends ModuleBaseWithCustomFields {
 		this.isUsed = individualTracking;
 	}
 
-	public boolean isIndividualTracking() {
+	public boolean isUsed() {
 		if (isUsed != null) {
 			return isUsed.booleanValue();
 		}

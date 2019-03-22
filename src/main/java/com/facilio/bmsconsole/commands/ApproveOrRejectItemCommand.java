@@ -53,15 +53,20 @@ public class ApproveOrRejectItemCommand implements Command {
 		List<ItemTransactionsContext> itemTransactions = selectBuilder.get();
 		for (ItemTransactionsContext transactions : itemTransactions) {
 			if (approvalState == ApprovalState.APPROVED) {
-				if (transactions.getPurchasedItem().getCurrentQuantity() < transactions.getQuantity()) {
-					throw new IllegalArgumentException("Insufficient quantity in inventory!");
-				} else {
-					if (transactions.getItemType().individualTracking()) {
+				if (transactions.getItemType().individualTracking()) {
+					if (transactions.getPurchasedItem().isUsed()) {
+						throw new IllegalArgumentException("Insufficient quantity in inventory!");
+					} else {
 						PurchasedItemContext pItem = transactions.getPurchasedItem();
 						pItem.setIsUsed(true);
 						updatePurchasedItem(pItem);
 					}
+				} else {
+					if (transactions.getPurchasedItem().getCurrentQuantity() < transactions.getQuantity()) {
+						throw new IllegalArgumentException("Insufficient quantity in inventory!");
+					}
 				}
+
 			}
 			transactions.setApprovedState(approvedStateVal);
 			updateWorkorderItems(itemTransactionsModule, itemTransactionsFields, transactions);

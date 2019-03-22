@@ -99,7 +99,12 @@ public class AddOrUpdateWorkorderToolsCommand implements Command {
 							if (purchasedTool != null) {
 								for (PurchasedToolContext pTool : purchasedTool) {
 									WorkorderToolsContext woTool = new WorkorderToolsContext();
-									pTool.setIsUsed(true);
+									if (toolTypes.isApprovalNeeded() || storeRoom.isApprovalNeeded()) {
+										pTool.setIsUsed(false);
+									}
+									else {
+										pTool.setIsUsed(true);
+									}
 									woTool = setWorkorderItemObj(pTool, 1, tool, parentId, workorder,
 											workorderTool, approvalState);
 									updatePurchasedTool(pTool);
