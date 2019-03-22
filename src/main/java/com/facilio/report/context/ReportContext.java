@@ -94,6 +94,14 @@ public class ReportContext {
 	public void setTransformWorkflow(WorkflowContext transformWorkflow) {
 		this.transformWorkflow = transformWorkflow;
 	}
+	
+	private long workflowId = -1;
+	public long getWorkflowId() {
+		return workflowId;
+	}
+	public void setWorkflowId(long workflowId) {
+		this.workflowId = workflowId;
+	}
 
 	private String tabularState;
 	public String getTabularState() {
