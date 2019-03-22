@@ -180,6 +180,15 @@ public class FieldFactory {
 		return fields;
 	}
 
+	private static FacilioField getDisplay_NameField(FacilioModule module) {
+		FacilioField displayName = new FacilioField();
+		displayName.setName("displayName");
+		displayName.setDataType(FieldType.STRING);
+		displayName.setColumnName("DISPLAY_NAME");
+		displayName.setModule(module);
+		return displayName;
+	}
+
 	public static List<FacilioField> getAgentDataFields(){
 		List<FacilioField> fields = new ArrayList<>();
 		FacilioModule module = ModuleFactory.getAgentdataModule();
@@ -187,6 +196,7 @@ public class FieldFactory {
 		fields.add(getAgentDeviceDetailsField(module));
 		fields.add(getAgentConnectionStatusField(module));
 		fields.add(getAgentName(module));
+		fields.add(getDisplay_NameField(module));
 		fields.add(getAgentDataInterval(module));
 		fields.add(getAgentType(module));
 		fields.add(getAgentVersion(module));
@@ -2903,7 +2913,7 @@ public class FieldFactory {
 		macAddr.setColumnName("MAC_ADDR");
 		macAddr.setModule(module);
 		fields.add(macAddr);
-
+		fields.add(getDisplay_NameField(module));
 		fields.add(getField("dataInterval", "DATA_INTERVAL", module, FieldType.NUMBER));
 		fields.add(getField("batchesPerCycle", "BATCHES_PER_CYCLE", module, FieldType.NUMBER));
 		fields.add(getField("agentId",AgentKeys.AGENT_ID,module,FieldType.NUMBER));

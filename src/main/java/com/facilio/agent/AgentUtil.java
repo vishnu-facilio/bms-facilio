@@ -165,6 +165,13 @@ public  class AgentUtil
                     agent.setAgentConnStatus(false);
                 }
 
+                if(jsonObject.containsKey(AgentKeys.DISPLAY_NAME)) {
+                    if( ! jsonObject.get(AgentKeys.DISPLAY_NAME).toString().equals(agent.getDisplayName())) {
+                        toUpdate.put(AgentKeys.DISPLAY_NAME, jsonObject.get(AgentKeys.DISPLAY_NAME));
+                        agent.setDisplayName(jsonObject.get(AgentKeys.DISPLAY_NAME).toString());
+                    }
+                }
+
                 if(jsonObject.containsKey(AgentKeys.STATE)) {
                     Integer currStatus = Integer.parseInt(jsonObject.get(AgentKeys.STATE).toString());
                     if (!agent.getAgentState().equals(currStatus)) {
@@ -246,6 +253,7 @@ public  class AgentUtil
         JSONObject payload = new JSONObject();
         long currTime = System.currentTimeMillis();
         payload.put(AgentKeys.NAME,  agent.getAgentName());
+        payload.put(AgentKeys.DISPLAY_NAME, agent.getDisplayName());
         payload.put(AgentKeys.STATE, agent.getAgentState());
         payload.put(AgentKeys.CONNECTION_STATUS, agent.getAgentConnStatus());
         payload.put(AgentKeys.SITE_ID, agent.getSiteId());

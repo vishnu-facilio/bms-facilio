@@ -4,7 +4,6 @@ import com.facilio.accounts.util.AccountConstants;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.kinesis.KinesisProcessor;
 import com.facilio.procon.processor.FacilioProcessor;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import org.apache.kafka.clients.admin.AdminClient;
@@ -19,7 +18,7 @@ import java.util.*;
 public class KafkaProcessor {
 
     private static final HashSet<String> STREAMS = new HashSet<>();
-    private static org.apache.log4j.Logger log = LogManager.getLogger(KinesisProcessor.class.getName());
+    private static org.apache.log4j.Logger log = LogManager.getLogger(KafkaProcessor.class.getName());
     private static final HashSet<String> EXISTING_ORGS = new HashSet<>();
 
 

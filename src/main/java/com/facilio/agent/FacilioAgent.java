@@ -21,6 +21,7 @@ public class FacilioAgent
     private Long siteId;
     private Long id;
     private HashSet<ControllerContext> controllers;
+    private String displayName;
 
     public Long getId() {
         return id;
@@ -153,5 +154,13 @@ public class FacilioAgent
             controllers = new HashSet<>();
         }
         controllers.add(controller);
+    }
+
+    public String getDisplayName() {
+        return displayName;
+    }
+
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
     }
 }
