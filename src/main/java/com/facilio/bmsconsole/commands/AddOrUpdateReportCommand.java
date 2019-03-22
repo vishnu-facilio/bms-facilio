@@ -32,14 +32,16 @@ public class AddOrUpdateReportCommand implements Command {
 			ReportUtil.addReport(report);
 		}
 		else {
+			long oldWorkflowId = -1; 
 			if (report.getTransformWorkflow() != null || report.getWorkflowId() == -99) {
 				ReportContext oldReport = ReportUtil.getReport(report.getId(), true);
-				if (oldReport.getWorkflowId() != -1) {
-					WorkflowUtil.deleteWorkflow(oldReport.getWorkflowId());
-				}
+				oldWorkflowId = oldReport.getWorkflowId();
 				addWorkflow(report);
 			}
 			ReportUtil.updateReport(report);
+			if (oldWorkflowId != -1) {
+				WorkflowUtil.deleteWorkflow(oldWorkflowId);
+			}
 			ReportUtil.deleteReportFields(report.getId());
 		}
 		
