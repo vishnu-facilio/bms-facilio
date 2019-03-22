@@ -40,6 +40,7 @@ import com.facilio.bmsconsole.context.ItemContext;
 import com.facilio.bmsconsole.context.ItemTypesCategoryContext;
 import com.facilio.bmsconsole.context.ItemTypesStatusContext;
 import com.facilio.bmsconsole.context.ItemTypesVendorsContext;
+import com.facilio.bmsconsole.context.LabourContext;
 import com.facilio.bmsconsole.context.ItemTypesContext;
 import com.facilio.bmsconsole.context.LocationContext;
 import com.facilio.bmsconsole.context.MLAlarmContext;
@@ -71,6 +72,7 @@ import com.facilio.bmsconsole.context.UtilityMeterContext;
 import com.facilio.bmsconsole.context.VendorContext;
 import com.facilio.bmsconsole.context.WaterMeterContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
+import com.facilio.bmsconsole.context.WorkOrderLabourContext;
 import com.facilio.bmsconsole.context.WorkOrderRequestContext;
 import com.facilio.bmsconsole.context.WorkorderCostContext;
 import com.facilio.bmsconsole.context.WorkorderItemContext;
@@ -864,6 +866,12 @@ public class FacilioConstants {
 		
 		public static final String ITEM_TRANSACTION_APPORVED_STATE = "itemTransactionApprovedState";
 		public static final String TOOL_TRANSACTION_APPORVED_STATE = "toolTransactionApprovedState";
+		public static final String LABOUR = "labour";
+		public static final String LABOURS = "labours";
+		public static final String LABOUR_ID = "labourId";
+		public static final String LABOUR_IDS = "labourIds";
+		public static final String WO_LABOUR = "workorderLabour";
+		
 
 		private static Map<String, Class> classMap = Collections.unmodifiableMap(initClassMap());
 		private static Map<String, Class> initClassMap() {
@@ -951,6 +959,8 @@ public class FacilioConstants {
 			classMap.put(ITEM_VENDORS, ItemTypesVendorsContext.class);
 			classMap.put(PURCHASED_TOOL, PurchasedToolContext.class);
 			classMap.put(TENANT, TenantContext.class);
+			classMap.put(LABOUR, LabourContext.class);
+			classMap.put(WO_LABOUR, WorkOrderLabourContext.class);
 			return classMap;
 		}
 		
