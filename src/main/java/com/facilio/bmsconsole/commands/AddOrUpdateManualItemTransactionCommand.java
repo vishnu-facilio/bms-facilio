@@ -112,14 +112,19 @@ public class AddOrUpdateManualItemTransactionCommand implements Command {
 									purchasedItemModule, purchasedItemFields);
 							if (purchasedItem != null) {
 								for (PurchasedItemContext pItem : purchasedItem) {
-									if (pItem.isUsed()) {
+									if (itemTransaction.getTransactionStateEnum() == TransactionState.ISSUE
+											&& pItem.isUsed()) {
 										throw new IllegalArgumentException("Insufficient quantity in inventory!");
 									}
 									ItemTransactionsContext woItem = new ItemTransactionsContext();
-									if (itemType.isApprovalNeeded() || storeRoom.isApprovalNeeded()) {
+									if (itemTransaction.getTransactionStateEnum() == TransactionState.ISSUE
+											&& (itemType.isApprovalNeeded() || storeRoom.isApprovalNeeded())) {
 										pItem.setIsUsed(false);
 									} else {
-										if (itemTransaction.getTransactionStateEnum() == TransactionState.RETURN) {
+										if ((itemTransaction.getApprovedStateEnum() == ApprovalState.APPROVED
+												|| itemTransaction.getApprovedStateEnum() == ApprovalState.YET_TO_BE_REQUESTED)
+												&& itemTransaction
+														.getTransactionStateEnum() == TransactionState.RETURN) {
 											pItem.setIsUsed(false);
 										} else if (itemTransaction
 												.getTransactionStateEnum() == TransactionState.ISSUE) {
