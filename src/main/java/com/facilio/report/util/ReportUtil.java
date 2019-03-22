@@ -48,6 +48,7 @@ import com.facilio.report.context.ReportFieldContext;
 import com.facilio.report.context.ReportFilterContext;
 import com.facilio.report.context.ReportFolderContext;
 import com.facilio.report.context.ReportGroupByField;
+import com.facilio.report.context.ReportUserFilterContext;
 import com.facilio.report.context.ReportYAxisContext;
 import com.facilio.sql.GenericDeleteRecordBuilder;
 import com.facilio.sql.GenericInsertRecordBuilder;
@@ -270,6 +271,12 @@ public class ReportUtil {
 					if (CollectionUtils.isNotEmpty(dataPoint.getGroupByFields())) {
 						for (ReportGroupByField groupByField : dataPoint.getGroupByFields()) {
 							groupByField.setField(getModule(groupByField.getModuleId(), groupByField.getModuleName(), modBean), getField(groupByField.getFieldId(), groupByField.getModuleName(), groupByField.getFieldName(), modBean));
+						}
+					}
+					
+					if (CollectionUtils.isNotEmpty(report.getUserFilters())) {
+						for (ReportUserFilterContext reportUserFilterContext : report.getUserFilters()) {
+							reportUserFilterContext.setField(modBean.getField(reportUserFilterContext.getFieldId()));
 						}
 					}
 

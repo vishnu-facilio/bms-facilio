@@ -5255,6 +5255,7 @@ public class FieldFactory {
 		fields.add(getField("transformClass", "TRANSFORM_CLASS", module, FieldType.STRING));
 		
 		fields.add(getField("moduleType", "MODULE_TYPE", module, FieldType.NUMBER));
+		fields.add(getField("userFiltersJson", "USER_FILTER_JSON", module, FieldType.STRING));
 		return fields;
 	}
 	

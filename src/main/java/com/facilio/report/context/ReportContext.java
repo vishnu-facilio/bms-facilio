@@ -3,6 +3,7 @@ package com.facilio.report.context;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.struts2.json.annotations.JSON;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -429,6 +430,57 @@ public class ReportContext {
 		this.transformClass = (Class<? extends TransformReportDataIfc>) Class.forName(transformClass);
 	}
 	
+	private List<ReportUserFilterContext> userFilters;
+	public List<ReportUserFilterContext> getUserFilters() {
+		return userFilters;
+	}
+	public void setUserFilters(List<ReportUserFilterContext> userFilters) {
+		this.userFilters = userFilters;
+	}
+	// called when setting from client
+	public void setUserFilters(List<ReportUserFilterContext> userFilters, boolean updateField) {
+		if (userFilters == null) {	// return if its null
+			return;
+		}
+		setUserFilters(userFilters);
+		if (updateField && CollectionUtils.isNotEmpty(userFilters)) {
+			for (ReportUserFilterContext userFilterContext : userFilters) {
+				try {
+					ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+					userFilterContext.setField(modBean.getField(userFilterContext.getFieldId()));
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	}
+	
+	public void setUserFiltersJson(String data) throws Exception {
+		JSONArray jsonarray = (JSONArray) parser.parse(data);
+		
+		List<ReportUserFilterContext> userFilters = null;
+		for( Object jsonObject :jsonarray) {
+			if (userFilters == null) {
+				userFilters = new ArrayList<>();
+			}
+			
+			JSONObject json = (JSONObject) jsonObject;
+			ReportUserFilterContext userFilter = FieldUtil.getAsBeanFromJson(json, ReportUserFilterContext.class);
+			
+			userFilters.add(userFilter);
+		}
+		setUserFilters(userFilters);
+	}
+	
+	@JSON(serialize=false)
+	public String getUserFiltersJson() throws Exception {
+		
+		if (userFilters != null) {
+			return FieldUtil.getAsJSONArray(userFilters, ReportUserFilterContext.class).toJSONString();
+		}
+		return null;
+	}
+
 	public static enum BooleanSettings {
 		SHOW_HIDE_ALARM("Alarm",1),
 		SHOW_HIDE_SAFELIMIT("Safe Limit",2),
