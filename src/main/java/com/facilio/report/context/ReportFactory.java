@@ -52,7 +52,7 @@ public class ReportFactory {
 			
 			ReportFacilioField overdueOpenField = (ReportFacilioField) getField(WorkOrder.OVERDUE_OPEN_COL, "Open Due Status", modBean.getModule("workorder"), " CASE WHEN DUE_DATE < ? THEN 'Overdue' ELSE 'On Schedule' END ", FieldType.NUMBER, WorkOrder.OVERDUE_OPEN);
 			overdueOpenField.addCondition("Overdue", CriteriaAPI.getCondition("DUE_DATE", "dueDate", "?", NumberOperators.LESS_THAN));
-			overdueOpenField.addCondition("Schedule", CriteriaAPI.getCondition("DUE_DATE", "dueDate", "?", NumberOperators.GREATER_THAN_EQUAL));
+			overdueOpenField.addCondition("OnSchedule", CriteriaAPI.getCondition("DUE_DATE", "dueDate", "?", NumberOperators.GREATER_THAN_EQUAL));
 			reportFields.add(overdueOpenField);
 			
 			ReportFacilioField overdueClosedField = (ReportFacilioField) getField(WorkOrder.OVERDUE_CLOSED_COL, "Closed Due Status", modBean.getModule("workorder"), " CASE WHEN DUE_DATE < ACTUAL_WORK_END THEN 'Overdue' ELSE 'Ontime' END ", FieldType.NUMBER, WorkOrder.OVERDUE_CLOSED);
