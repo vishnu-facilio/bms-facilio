@@ -24,8 +24,10 @@ import com.facilio.bmsconsole.commands.AddOrUpdateReportCommand;
 import com.facilio.bmsconsole.commands.ConstructReportData;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsole.context.AlarmContext;
 import com.facilio.bmsconsole.context.DashboardWidgetContext;
 import com.facilio.bmsconsole.context.FormulaContext.AggregateOperator;
+import com.facilio.bmsconsole.context.MLAlarmContext;
 import com.facilio.bmsconsole.context.ReadingAlarmContext;
 import com.facilio.bmsconsole.context.ReportInfo;
 import com.facilio.bmsconsole.context.ResourceContext;
@@ -739,11 +741,16 @@ public class V2ReportAction extends FacilioAction {
 	
 	private void getDataPointFromAlarm() throws Exception {
 
-		ReadingAlarmContext readingAlarmContext = AlarmAPI.getReadingAlarmContext(alarmId);
+		AlarmContext alarmContext = AlarmAPI.getReadingAlarmContext(alarmId);
+		
+		if(alarmContext == null) {
+			alarmContext = AlarmAPI.getMLAlarmContext(alarmId);
+		}
 		
 		List<ReadingRuleContext> readingRules = new ArrayList<>();
 		if(isWithPrerequsite) {							// new 1st
 			
+			ReadingAlarmContext readingAlarmContext = (ReadingAlarmContext)alarmContext;
 			AlarmRuleContext alarmRuleContext = new AlarmRuleContext(ReadingRuleAPI.getReadingRulesList(readingAlarmContext.getRuleId()));
 			readingRules.add(alarmRuleContext.getAlarmTriggerRule());
 			readingRules.add(alarmRuleContext.getPreRequsite());
@@ -755,19 +762,27 @@ public class V2ReportAction extends FacilioAction {
 			readingRules.add(readingruleContext);
 		}
 		else {											// old
-			ReadingRuleContext readingruleContext = (ReadingRuleContext) WorkflowRuleAPI.getWorkflowRule(readingAlarmContext.getRuleId());
+			long ruleId = -1;
+			
+			if(alarmContext instanceof ReadingAlarmContext) {
+				ruleId = ((ReadingAlarmContext)alarmContext).getRuleId();
+			}
+			else {
+				ruleId = ((MLAlarmContext)alarmContext).getRuleId();
+			}
+			ReadingRuleContext readingruleContext = (ReadingRuleContext) WorkflowRuleAPI.getWorkflowRule(ruleId);
 			readingRules.add(readingruleContext);
 		}
 		
 		JSONArray dataPoints = new JSONArray();
 		
 		if(readingRules != null && readingRules.get(0) != null) {
-			ResourceContext resource = ResourceAPI.getResource(readingAlarmContext.getResource().getId());
+			ResourceContext resource = ResourceAPI.getResource(alarmContext.getResource().getId());
 			this.alarmResource = resource;
 			
 			for(ReadingRuleContext readingRule :readingRules) {
 				if(readingRule != null) {
-					dataPoints.addAll(getDataPointsJSONFromRule(readingRule,resource,readingAlarmContext));
+					dataPoints.addAll(getDataPointsJSONFromRule(readingRule,resource,alarmContext));
 				}
 			}
 			
@@ -780,9 +795,9 @@ public class V2ReportAction extends FacilioAction {
 			}
 			
 			if(this.startTime <= 0 && this.endTime <= 0) {
-				long modifiedTime = readingAlarmContext.getCreatedTime();
-				if(readingAlarmContext.getModifiedTime() > 0) {
-					modifiedTime = readingAlarmContext.getModifiedTime();
+				long modifiedTime = alarmContext.getCreatedTime();
+				if(alarmContext.getModifiedTime() > 0) {
+					modifiedTime = alarmContext.getModifiedTime();
 				}
 				
 				DateRange range = DateOperators.CURRENT_N_DAY.getRange(""+modifiedTime);
@@ -804,7 +819,7 @@ public class V2ReportAction extends FacilioAction {
 		System.out.println(DateTimeUtil.getMillis(zdt, true));
 	}
 	
-	private JSONArray getDataPointsJSONFromRule(ReadingRuleContext readingruleContext,ResourceContext resource,ReadingAlarmContext readingAlarmContext) throws Exception {
+	private JSONArray getDataPointsJSONFromRule(ReadingRuleContext readingruleContext,ResourceContext resource,AlarmContext alarmContext) throws Exception {
 		
 		JSONArray dataPoints = new JSONArray();
 		if(readingruleContext.getReadingRuleTypeEnum() == ReadingRuleType.ML_RULE) {
@@ -822,7 +837,7 @@ public class V2ReportAction extends FacilioAction {
 				
 				dataPoint.put("type", 1);
 				
-				ZonedDateTime zdt = DateTimeUtil.getDateTime(readingAlarmContext.getCreatedTime());
+				ZonedDateTime zdt = DateTimeUtil.getDateTime(alarmContext.getCreatedTime());
 				zdt = zdt.truncatedTo(new SecondsChronoUnit(60 * 60));
 				DateTimeUtil.getMillis(zdt, true);
 				
@@ -842,8 +857,8 @@ public class V2ReportAction extends FacilioAction {
 				
 				dataPoint.put("type", 1);
 				
-				zdt = DateTimeUtil.getDateTime(readingAlarmContext.getModifiedTime());
-				if(readingAlarmContext.getClearedTime() > 0) {
+				zdt = DateTimeUtil.getDateTime(alarmContext.getModifiedTime());
+				if(alarmContext.getClearedTime() > 0) {
 					zdt = zdt.truncatedTo(new SecondsChronoUnit(2 * 60 * 60));
 					dataPoint.put("predictedTime", DateTimeUtil.getMillis(zdt, true));
 				}
@@ -867,11 +882,11 @@ public class V2ReportAction extends FacilioAction {
 				
 				dataPoints.add(dataPoint);
 				
-				zdt = DateTimeUtil.getDateTime(readingAlarmContext.getCreatedTime());
+				zdt = DateTimeUtil.getDateTime(alarmContext.getCreatedTime());
 				zdt = zdt.truncatedTo(new SecondsChronoUnit(24 * 60 * 60));
 				this.startTime = DateTimeUtil.getMillis(zdt, true);
 				
-				zdt = DateTimeUtil.getDateTime(readingAlarmContext.getModifiedTime() +432000000);
+				zdt = DateTimeUtil.getDateTime(alarmContext.getModifiedTime() +432000000);
 				zdt = zdt.truncatedTo(new SecondsChronoUnit(24 * 60 * 60));
 				this.endTime = DateTimeUtil.getMillis(zdt, true);
 				
