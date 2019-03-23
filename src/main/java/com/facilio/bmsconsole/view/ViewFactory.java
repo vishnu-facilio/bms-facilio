@@ -2423,7 +2423,7 @@ public class ViewFactory {
 
 		FacilioView requestedItemApproval = new FacilioView();
 		requestedItemApproval.setName("pending");
-		requestedItemApproval.setDisplayName("Pending Item");
+		requestedItemApproval.setDisplayName("Pending Approvals");
 		requestedItemApproval.setCriteria(criteria);
 		requestedItemApproval.setSortFields(Arrays.asList(new SortField(createdTime, false)));
 		return requestedItemApproval;
@@ -2441,7 +2441,7 @@ public class ViewFactory {
 
 		FacilioView rejectedApproval = new FacilioView();
 		rejectedApproval.setName("all");
-		rejectedApproval.setDisplayName("All Approval");
+		rejectedApproval.setDisplayName("All Approvals");
 		rejectedApproval.setCriteria(criteria);
 		rejectedApproval.setSortFields(Arrays.asList(new SortField(createdTime, false)));
 		return rejectedApproval;
@@ -2501,7 +2501,7 @@ public class ViewFactory {
 
 		FacilioView requestedItemApproval = new FacilioView();
 		requestedItemApproval.setName("pending");
-		requestedItemApproval.setDisplayName("Pending Tool");
+		requestedItemApproval.setDisplayName("Pending Approvals");
 		requestedItemApproval.setCriteria(criteria);
 		requestedItemApproval.setSortFields(Arrays.asList(new SortField(createdTime, false)));
 		return requestedItemApproval;
@@ -2519,7 +2519,7 @@ public class ViewFactory {
 
 		FacilioView rejectedApproval = new FacilioView();
 		rejectedApproval.setName("all");
-		rejectedApproval.setDisplayName("All Approval");
+		rejectedApproval.setDisplayName("All Approvals");
 		rejectedApproval.setCriteria(criteria);
 		rejectedApproval.setSortFields(Arrays.asList(new SortField(createdTime, false)));
 		return rejectedApproval;
