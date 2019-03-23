@@ -23,6 +23,7 @@ import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
 import com.facilio.bmsconsole.util.TransactionState;
 import com.facilio.bmsconsole.util.TransactionType;
+import com.facilio.bmsconsole.workflow.rule.ApprovalState;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 
@@ -57,7 +58,7 @@ public class AddBulkToolStockTransactionsCommand implements Command {
 				transaction.setIsReturnable(false);
 				transaction.setTransactionType(TransactionType.STOCK.getValue());
 				transaction.setToolType(tool.getToolType());
-
+				transaction.setApprovedState(ApprovalState.YET_TO_BE_REQUESTED);
 				toolTransaction.add(transaction);
 			}
 		}
