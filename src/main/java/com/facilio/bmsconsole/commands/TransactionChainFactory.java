@@ -2124,10 +2124,25 @@ public class TransactionChainFactory {
 			return c;
 		}
 
-		public static Chain getAddReceiptsChain() {
+		public static Chain getAddOrUpdateReceiptsChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForReceipt());
 			c.addCommand(new AddOrUpdateReceiptCommand());
+			return c;
+		}
+		
+		public static Chain getAddOrUpdateReceivablesChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForReceivables());
+			c.addCommand(new AddOrUpdateReceivablesCommand());
+			return c;
+		}
+
+		public static Chain getConvertPRToPOChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new ConvertPRToPOCommand());
+			c.addCommand(getAddPurchaseOrderChain());
+			c.addCommand(new AddPurchaseRequestOrderRelation());
 			return c;
 		}
 }

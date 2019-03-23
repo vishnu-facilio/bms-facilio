@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.context;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
@@ -91,5 +92,15 @@ public class PurchaseRequestContext extends ModuleBaseWithCustomFields {
 			}
 			return null;
 		}
+	}
+
+	public void addLineItem(PurchaseRequestLineItemContext lineItem) {
+		if (lineItem == null) {
+			return;
+		}
+		if (this.lineItems == null) {
+			this.lineItems = new ArrayList<PurchaseRequestLineItemContext>();
+		}
+		this.lineItems.add(lineItem);
 	}
 }

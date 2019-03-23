@@ -8,6 +8,13 @@ public class ReceiptContext extends ModuleBaseWithCustomFields {
 	private long receivableId = -1;
 	private long lineItemId = -1;
 	
+	private double quantity = -1;
+	public double getQuantity() {
+		return quantity;
+	}
+	public void setQuantity(double quantity) {
+		this.quantity = quantity;
+	}
 	public long getLineItemId() {
 		return lineItemId;
 	}

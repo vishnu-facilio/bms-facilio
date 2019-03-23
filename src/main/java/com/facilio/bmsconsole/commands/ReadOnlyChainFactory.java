@@ -691,10 +691,18 @@ public class ReadOnlyChainFactory {
 
 	public static Chain getAllReceiptsChain() {
 		Chain c = getDefaultChain();
-		c.addCommand(SetTableNamesCommand.getForPurchaseOrder());
+		c.addCommand(SetTableNamesCommand.getForReceipt());
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new GetReceiptsListCommand());
 		return c;
 	}
 
+	public static Chain getAllReceivablesChain() {
+		Chain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForReceivables());
+		c.addCommand(new LoadAllFieldsCommand());
+		c.addCommand(new GetReceivablesListCommand());
+		return c;
+	}
+	
 }

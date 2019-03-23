@@ -1,6 +1,9 @@
 package com.facilio.bmsconsole.context;
 
+import java.util.ArrayList;
 import java.util.List;
+
+import org.apache.commons.collections4.CollectionUtils;
 
 import com.facilio.bmsconsole.context.PurchaseRequestContext.Status;
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
@@ -105,18 +108,29 @@ public class PurchaseOrderContext extends ModuleBaseWithCustomFields {
 			}
 		 	
 			if(pr.getVendor() != null && pr.getVendor().getId() != vendorId) {
-				
 				throw new IllegalArgumentException("Cannot create single PO for multiple vendors");
 			}
 			if(pr.getStoreRoom() != null && pr.getStoreRoom().getId() != storeRoomId) {
-				
 				throw new IllegalArgumentException("Cannot create single PO for multiple storeroom items");
 			}
+			
+			purchaseOrderContext.addLineItems(PurchaseOrderLineItemContext.from(pr.getLineItems()));
 		}
 		
 		return purchaseOrderContext;
 	}
 	
+	public void addLineItems(List<PurchaseOrderLineItemContext> lineItems) {
+		if (CollectionUtils.isEmpty(lineItems)) {
+			return;
+		}
+		
+		if (this.lineItems == null) {
+			this.lineItems = new ArrayList<PurchaseOrderLineItemContext>();
+		}
+		this.lineItems.addAll(lineItems);
+	}
+
 	public static enum Status {
 		REQUESTED(),
 		APPROVED(),

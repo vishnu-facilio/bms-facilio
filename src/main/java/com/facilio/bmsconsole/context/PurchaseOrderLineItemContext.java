@@ -1,5 +1,10 @@
 package com.facilio.bmsconsole.context;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.commons.collections4.CollectionUtils;
+
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 
 public class PurchaseOrderLineItemContext extends ModuleBaseWithCustomFields{
@@ -8,12 +13,12 @@ public class PurchaseOrderLineItemContext extends ModuleBaseWithCustomFields{
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	private long poid = -1;
-	public long getPoid() {
-		return poid;
+	private long poId = -1;
+	public long getPoId() {
+		return poId;
 	}
-	public void setPoid(long poid) {
-		this.poid = poid;
+	public void setPoId(long poId) {
+		this.poId = poId;
 	}
 	
 	private InventoryType inventoryType;
@@ -73,20 +78,26 @@ public class PurchaseOrderLineItemContext extends ModuleBaseWithCustomFields{
 		this.cost = cost;
 	}
 	
-
-	public static enum InventoryType {
-		ITEM,
-		TOOL;
-		
-		public int getValue() {
-			return ordinal()+1;
-		}
-
-		public static InventoryType valueOf(int value) {
-			if (value > 0 && value <= values().length) {
-				return values()[value - 1];
+	public static List<PurchaseOrderLineItemContext> from(List<PurchaseRequestLineItemContext> lineItems) {
+		List<PurchaseOrderLineItemContext> items = new ArrayList<PurchaseOrderLineItemContext>();
+		if (CollectionUtils.isNotEmpty(lineItems)) {
+			for (PurchaseRequestLineItemContext prItem : lineItems) {
+				items.add(PurchaseOrderLineItemContext.from(prItem));
 			}
-			return null;
 		}
+		return items;
+	}
+	
+	public static PurchaseOrderLineItemContext from(PurchaseRequestLineItemContext prItem) {
+		PurchaseOrderLineItemContext poItem = null;
+		if (prItem != null) {
+			poItem = new PurchaseOrderLineItemContext();
+			poItem.setInventoryType(prItem.getInventoryType());
+			poItem.setItemType(prItem.getItemType());
+			poItem.setToolType(prItem.getToolType());
+			poItem.setQuantity(prItem.getQuantity());
+			poItem.setUnitPrice(prItem.getUnitPrice());
+		}
+		return poItem;
 	}
 }

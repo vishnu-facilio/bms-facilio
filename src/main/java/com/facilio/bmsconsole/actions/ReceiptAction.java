@@ -37,11 +37,11 @@ public class ReceiptAction extends FacilioAction {
 		this.receipt = receipt;
 	}
 	
-	public String addReceipts() throws Exception {
+	public String addOrUpdateReceipt() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD_LIST, receipts);
 		
-		Chain chain = TransactionChainFactory.getAddReceiptsChain();
+		Chain chain = TransactionChainFactory.getAddOrUpdateReceiptsChain();
 		chain.execute(context);
 		
 		setResult(FacilioConstants.ContextNames.RECEIPTS, context.get(FacilioConstants.ContextNames.RECORD_LIST));
@@ -50,7 +50,13 @@ public class ReceiptAction extends FacilioAction {
 	
 	private long receivableId = -1;
 	
-	public String getAllReceipts() throws Exception {
+	public long getReceivableId() {
+		return receivableId;
+	}
+	public void setReceivableId(long receivableId) {
+		this.receivableId = receivableId;
+	}
+	public String getAllReceiptsByReceivableId() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.PARENT_ID, receivableId);
 		

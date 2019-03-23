@@ -22,7 +22,7 @@ public class AddOrUpdatePurchaseOrderLineItemCommand implements Command {
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 		PurchaseOrderLineItemContext lineItemContext = (PurchaseOrderLineItemContext) context.get(FacilioConstants.ContextNames.RECORD);
 		if (lineItemContext != null) {
-			if (lineItemContext.getPoid() == -1) {
+			if (lineItemContext.getPoId() == -1) {
 				throw new Exception("Purchase Order cannot be null");
 			}
 			

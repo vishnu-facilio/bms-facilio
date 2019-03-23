@@ -73,21 +73,4 @@ public class PurchaseRequestLineItemContext extends ModuleBaseWithCustomFields {
 	public void setCost(double cost) {
 		this.cost = cost;
 	}
-	
-
-	public static enum InventoryType {
-		ITEM,
-		TOOL;
-		
-		public int getValue() {
-			return ordinal()+1;
-		}
-
-		public static InventoryType valueOf(int value) {
-			if (value > 0 && value <= values().length) {
-				return values()[value - 1];
-			}
-			return null;
-		}
-	}
 }

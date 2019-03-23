@@ -892,6 +892,10 @@ public class FacilioConstants {
 		public static final String RECEIPTS = "receipts";
 		
 		public static final String RECEIVABLE = "receivable";
+		public static final String RECEIVABLES = "receivables";
+		public static final String PO_ID = "poId";
+		
+		
 		private static final String RECEIPT_LINE_ITEMS = "receiptlineitems";
 
 		private static Map<String, Class> classMap = Collections.unmodifiableMap(initClassMap());

@@ -127,4 +127,24 @@ public class PurchaseOrderAction extends FacilioAction {
 		
 		return SUCCESS;
 	}
+	
+	private List<Long> recordIds;
+	public List<Long> getRecordIds() {
+		return recordIds;
+	}
+	public void setRecordIds(List<Long> recordIds) {
+		this.recordIds = recordIds;
+	}
+	
+	public String convertPRToPO() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, recordIds);
+		
+		Chain chain = TransactionChainFactory.getConvertPRToPOChain();
+		chain.execute(context);
+		
+		setResult(FacilioConstants.ContextNames.PURCHASE_ORDER, context.get(FacilioConstants.ContextNames.RECORD));
+		
+		return SUCCESS;
+	}
 }

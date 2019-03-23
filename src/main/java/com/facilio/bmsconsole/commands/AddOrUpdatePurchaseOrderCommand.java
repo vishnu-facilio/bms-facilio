@@ -39,6 +39,14 @@ public class AddOrUpdatePurchaseOrderCommand implements Command {
 			if (CollectionUtils.isEmpty(purchaseOrderContext.getLineItems())) {
 				throw new Exception("Line items cannot be empty");
 			}
+			
+			if (purchaseOrderContext.getVendor() == null) {
+				throw new Exception("Vendor cannot be empty");
+			}
+			
+			if (purchaseOrderContext.getStoreRoom() == null) {
+				throw new Exception("StoreRoom cannot be empty");
+			}
 
 			if (purchaseOrderContext.getId() > 0) {
 				updateRecord(purchaseOrderContext, module, fields);
@@ -66,7 +74,7 @@ public class AddOrUpdatePurchaseOrderCommand implements Command {
 
 	private void updateLineItems(PurchaseOrderContext purchaseOrderContext) {
 		for (PurchaseOrderLineItemContext lineItemContext : purchaseOrderContext.getLineItems()) {
-			lineItemContext.setPoid(purchaseOrderContext.getId());
+			lineItemContext.setPoId(purchaseOrderContext.getId());
 			updateLineItemCost(lineItemContext);
 		}
 	}

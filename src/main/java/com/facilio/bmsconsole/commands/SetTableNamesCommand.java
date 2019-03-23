@@ -268,6 +268,9 @@ public class SetTableNamesCommand implements Command {
 		return new SetTableNamesCommand("receipts", "Receipts");
 	}
 
+	public static SetTableNamesCommand getForReceivables() {
+		return new SetTableNamesCommand("receivable", "Receivables");
+	}
 	public static void setForModule (Context context, String moduleName) {
 		//TODO handle all module and get from map
 		String tableName = "";
