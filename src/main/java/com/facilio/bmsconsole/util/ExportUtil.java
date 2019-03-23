@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.commons.chain.Chain;
 import org.apache.commons.lang3.StringUtils;
@@ -25,6 +26,7 @@ import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.AlarmContext.AlarmType;
 import com.facilio.bmsconsole.context.TicketContext.SourceType;
+import com.facilio.bmsconsole.context.NoteContext;
 import com.facilio.bmsconsole.context.ViewField;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
@@ -501,7 +503,7 @@ public class ExportUtil {
 		return null;
 	}
 	
-	public static String exportModule(FileFormat fileFormat, String moduleName, String viewName, String filters, boolean isS3Value) throws Exception {
+	public static String exportModule(FileFormat fileFormat, String moduleName, String viewName, String filters, boolean isS3Value, boolean specialFields) throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
 		context.put(FacilioConstants.ContextNames.CV_NAME, viewName);
@@ -509,6 +511,7 @@ public class ExportUtil {
 		int limit = 5000;
 		Map<String, String> orgInfo = CommonCommandUtil.getOrgInfo(FacilioConstants.OrgInfoKeys.MODULE_EXPORT_LIMIT);
 		String orgLimit = orgInfo.get(FacilioConstants.OrgInfoKeys.MODULE_EXPORT_LIMIT);
+		
 		if (orgLimit != null && !orgLimit.isEmpty()) {
 			limit = Integer.parseInt(orgLimit);
 		}
@@ -535,7 +538,6 @@ public class ExportUtil {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
 		List<ViewField> viewFields = view.getFields();
-		
 		if(moduleName.equals("alarm")) {
 			Iterator<ViewField> it = viewFields.iterator();
 	        while (it.hasNext()) {
@@ -558,6 +560,45 @@ public class ExportUtil {
 			noOfEvents.setField(modBean.getField("noOfEvents", moduleName));
 			viewFields.add(noOfEvents);
 		}
+
+		if(specialFields) {
+		List<Long> ids = records.stream().map(a -> a.getId()).collect(Collectors.toList());
+		Map<Long, List<String>> map = new HashMap<>();
+		for (int j = 0; j < viewFields.size(); j++) { 
+			if (viewFields.get(j).getField().getName().equals("noOfNotes")) {
+				
+				viewFields.remove(viewFields.get(j));
+				
+          }
+		}
+		ViewField comment = new ViewField("comment", "Comment");
+		FacilioField commentField = new FacilioField();
+		commentField.setName("comment");
+		commentField.setDataType(FieldType.STRING);
+		commentField.setColumnName("COMMENTS");
+		commentField.setModule(modBean.getModule(moduleName));
+		comment.setField(commentField);
+		viewFields.add(comment);		
+		
+		if (ids.size() > 0) {
+		List<NoteContext> notes = NotesAPI.fetchNote(ids, moduleName);
+		if (!(notes.isEmpty())) {
+			for (int i = 0; i < records.size(); i++) {
+				long woId = records.get(i).getId();
+				List<String> result = notes.stream().filter(l -> ((l.getParentId()) == (woId))).map(NoteContext::getBody)
+						.collect(Collectors.toList());
+
+				map.put(records.get(i).getId(), result);
+				Map<String, Object> props = new HashMap<>();
+				if(result != null && !result.isEmpty()) {
+					props.put("comment", StringUtils.join(result, "\n"));
+					records.get(i).addData(props);
+				}		
+			}
+		}
+	}
+
+}	
 		return exportData(fileFormat, modBean.getModule(moduleName), viewFields, records, isS3Value);
 	}
 	

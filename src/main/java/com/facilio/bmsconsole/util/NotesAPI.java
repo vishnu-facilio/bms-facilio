@@ -2,12 +2,14 @@ package com.facilio.bmsconsole.util;
 
 import java.util.List;
 import java.util.Map;
+import java.util.StringJoiner;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.context.NoteContext;
 import com.facilio.bmsconsole.criteria.BooleanOperators;
 import com.facilio.bmsconsole.criteria.Criteria;
@@ -75,6 +77,26 @@ public class NotesAPI {
 			selectBuilder.andCriteria(cri);
 		}
 		return selectBuilder;
+	}
+	public static List<NoteContext> fetchNote (List<Long> parentIds, String moduleName) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		moduleName = "ticketnotes";
+		FacilioModule module = modBean.getModule(moduleName);
+		List<FacilioField> fields = modBean.getAllFields(moduleName);
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+		StringJoiner ids = new StringJoiner(",");
+		parentIds.stream().forEach(f -> ids.add(String.valueOf(f)));
+		
+		SelectRecordsBuilder<NoteContext> selectBuilder = new SelectRecordsBuilder<NoteContext>()
+				.select(fields)
+				.module(module)
+				.beanClass(NoteContext.class)
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("parentId"), ids.toString(), NumberOperators.EQUALS));
+		
+		List<NoteContext> props = selectBuilder.get();
+		System.out.println(selectBuilder);
+		
+		return props;
 	}
 
 }
