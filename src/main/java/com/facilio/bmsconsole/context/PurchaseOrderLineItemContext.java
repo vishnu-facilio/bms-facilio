@@ -2,19 +2,18 @@ package com.facilio.bmsconsole.context;
 
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 
-public class PurchaseRequestLineItemContext extends ModuleBaseWithCustomFields {
-
+public class PurchaseOrderLineItemContext extends ModuleBaseWithCustomFields{
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	private long prid = -1;
-	public long getPrid() {
-		return prid;
+	private long poid = -1;
+	public long getPoid() {
+		return poid;
 	}
-	public void setPrid(long prid) {
-		this.prid = prid;
+	public void setPoid(long poid) {
+		this.poid = poid;
 	}
 	
 	private InventoryType inventoryType;

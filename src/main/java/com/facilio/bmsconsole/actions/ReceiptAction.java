@@ -1,0 +1,65 @@
+package com.facilio.bmsconsole.actions;
+
+import java.util.List;
+
+import org.apache.commons.chain.Chain;
+
+import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
+import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsole.context.ReceiptContext;
+import com.facilio.chain.FacilioContext;
+import com.facilio.constants.FacilioConstants;
+
+public class ReceiptAction extends FacilioAction {
+	private static final long serialVersionUID = 1L;
+
+	private String moduleName;
+	public String getModuleName() {
+		return moduleName;
+	}
+	public void setModuleName(String moduleName) {
+		this.moduleName = moduleName;
+	}
+	
+	private List<ReceiptContext> receipts;
+	public List<ReceiptContext> getReceipts() {
+		return receipts;
+	}
+	public void setReceipts(List<ReceiptContext> receipts) {
+		this.receipts = receipts;
+	}
+	
+	private ReceiptContext receipt;
+	public ReceiptContext getReceipt() {
+		return receipt;
+	}
+	public void setReceipt(ReceiptContext receipt) {
+		this.receipt = receipt;
+	}
+	
+	public String addReceipts() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.RECORD_LIST, receipts);
+		
+		Chain chain = TransactionChainFactory.getAddReceiptsChain();
+		chain.execute(context);
+		
+		setResult(FacilioConstants.ContextNames.RECEIPTS, context.get(FacilioConstants.ContextNames.RECORD_LIST));
+		return SUCCESS;
+	}
+	
+	private long receivableId = -1;
+	
+	public String getAllReceipts() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.PARENT_ID, receivableId);
+		
+		Chain chain = ReadOnlyChainFactory.getAllReceiptsChain();
+		chain.execute(context);
+		
+		setResult(FacilioConstants.ContextNames.RECEIPTS, context.get(FacilioConstants.ContextNames.RECORD_LIST));
+		
+		return SUCCESS;
+	}
+	
+}

@@ -251,7 +251,23 @@ public class SetTableNamesCommand implements Command {
 	public static SetTableNamesCommand getForPurchaseRequest() {
 		return new SetTableNamesCommand("purchaserequest", "Purchase_Requests");
 	}
-	
+
+	public static SetTableNamesCommand getForPurchaseRequestLineItem() {
+		return new SetTableNamesCommand("purchaserequestlineitems", "PurchaseRequestLineItems");
+	}
+
+	public static SetTableNamesCommand getForPurchaseOrder() {
+		return new SetTableNamesCommand("purchaseorder", "Purchase_Orders");
+	}
+
+	public static SetTableNamesCommand getForPurchaseOrderLineItem() {
+		return new SetTableNamesCommand("purchaseorderlineitems", "PurchaseOrderLineItems");
+	}
+
+	public static SetTableNamesCommand getForReceipt() {
+		return new SetTableNamesCommand("receipts", "Receipts");
+	}
+
 	public static void setForModule (Context context, String moduleName) {
 		//TODO handle all module and get from map
 		String tableName = "";

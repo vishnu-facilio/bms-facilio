@@ -2067,5 +2067,68 @@ public class TransactionChainFactory {
 			c.addCommand(new GenericUpdateModuleDataCommand());
 			return c;
 		}
+
+		public static Chain getAddPurchaseRequestChain() {
+			Chain chain = getDefaultChain();
+			chain.addCommand(SetTableNamesCommand.getForPurchaseRequest());
+			chain.addCommand(new AddOrUpdatePurchaseRequestCommand());
+			return chain;
+		}
+
+		public static Chain getPurchaseRequestDeleteChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForPurchaseRequest());
+			c.addCommand(new DeletePurchaseRequestCommand());
+			return c;
+		}
+
+		public static Chain getAddPurchaseRequestLineItem() {
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForPurchaseRequestLineItem());
+			c.addCommand(new AddOrUpdatePurchaseRequestLineItemCommand());
+			return c;
+		}
+
+		public static Chain getDeletePurchaseRequestLineItem() {
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForPurchaseRequestLineItem());
+			c.addCommand(new DeletePurchaseRequestLineItemCommand());
+			return c;
+		}
+		
+		public static Chain getAddPurchaseOrderChain() {
+			Chain chain = getDefaultChain();
+			chain.addCommand(SetTableNamesCommand.getForPurchaseOrder());
+			chain.addCommand(new AddOrUpdatePurchaseOrderCommand());
+			return chain;
+		}
+
+		public static Chain getPurchaseOrderDeleteChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForPurchaseOrder());
+			c.addCommand(new DeletePurchaseOrderCommand());
+			return c;
+		}
+
+		public static Chain getAddPurchaseOrderLineItem() {
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForPurchaseOrderLineItem());
+			c.addCommand(new AddOrUpdatePurchaseOrderLineItemCommand());
+			return c;
+		}
+
+		public static Chain getDeletePurchaseOrderLineItem() {
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForPurchaseOrderLineItem());
+			c.addCommand(new DeletePurchaseOrderLineItemCommand());
+			return c;
+		}
+
+		public static Chain getAddReceiptsChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForReceipt());
+			c.addCommand(new AddOrUpdateReceiptCommand());
+			return c;
+		}
 }
 

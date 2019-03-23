@@ -1655,6 +1655,46 @@
 			<param name="permission">READ</param>
 			</action>
 	</package>
+	
+	<package name="purchaseRequestApi" namespace="/api/v2/purchaserequest" extends="v2Api">
+		<action name="list" class="com.facilio.bmsconsole.actions.PurchaseRequestAction" method="getPurchaseRequestList">
+			<param name="moduleName">purchaserequest</param>
+		</action>
+		<action name="add" class="com.facilio.bmsconsole.actions.PurchaseRequestAction" method="addPurchaseRequest">
+			<param name="moduleName">purchaserequest</param>
+		</action>
+		<action name="details" class="com.facilio.bmsconsole.actions.PurchaseRequestAction" method="getPurchaseRequestDetails">
+			<param name="moduleName">purchaserequest</param>
+		</action>
+		<action name="delete" class="com.facilio.bmsconsole.actions.PurchaseRequestAction" method="deletePurchaseRequest">
+			<param name="moduleName">purchaserequest</param>
+		</action>
+		<action name="addOrUpdateLineItem" class="com.facilio.bmsconsole.actions.PurchaseRequestAction" method="addOrUpdateLineItem">
+			<param name="moduleName">purchaserequestlineitems</param>
+		</action>
+		<action name="deleteLineItem" class="com.facilio.bmsconsole.actions.PurchaseRequestAction" method="deleteLineItem">
+			<param name="moduleName">purchaserequestlineitems</param>
+		</action>
+	</package>
+
+	<package name="purchaseOrderApi" namespace="/api/v2/purchaseorder" extends="v2Api">
+		<action name="list" class="com.facilio.bmsconsole.actions.PurchaseOrderAction" method="getPurchaseOrderList">
+			<param name="moduleName">purchaseorder</param>
+		</action>
+		<action name="add" class="com.facilio.bmsconsole.actions.PurchaseOrderAction" method="addPurchaseOrder">
+			<param name="moduleName">purchaseorder</param>
+		</action>
+		<action name="details" class="com.facilio.bmsconsole.actions.PurchaseOrderAction" method="getPurchaseOrderDetails">
+			<param name="moduleName">purchaseorder</param>
+		</action>
+		<action name="delete" class="com.facilio.bmsconsole.actions.PurchaseOrderAction" method="deletePurchaseOrder">
+			<param name="moduleName">purchaseorder</param>
+		</action>
+		<action name="addOrUpdateLineItem" class="com.facilio.bmsconsole.actions.PurchaseOrderAction" method="addOrUpdateLineItem">
+			<param name="moduleName">purchaseorderlineitems</param>
+		</action>
+		<action name="deleteLineItem" class="com.facilio.bmsconsole.actions.PurchaseOrderAction" method="deleteLineItem">
+			<param name="moduleName">purchaseorderlineitems</param>
 	<package name="toolTransactionsCountApi" namespace="/api/v2/toolTransactions"
 	extends="v2Api">
 		<action name="count"

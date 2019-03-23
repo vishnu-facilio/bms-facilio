@@ -1,5 +1,7 @@
 package com.facilio.bmsconsole.context;
 
+import java.util.List;
+
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 
 public class PurchaseRequestContext extends ModuleBaseWithCustomFields {
@@ -25,20 +27,20 @@ public class PurchaseRequestContext extends ModuleBaseWithCustomFields {
 		this.description = description;
 	}
 	
-	private VendorContext vendorContext;
-	public VendorContext getVendorContext() {
-		return vendorContext;
+	private VendorContext vendor;
+	public VendorContext getVendor() {
+		return vendor;
 	}
-	public void setVendorContext(VendorContext vendorContext) {
-		this.vendorContext = vendorContext;
+	public void setVendor(VendorContext vendor) {
+		this.vendor = vendor;
 	}
 	
-	private StoreRoomContext storeRoomContext;
-	public StoreRoomContext getStoreRoomContext() {
-		return storeRoomContext;
+	private StoreRoomContext storeRoom;
+	public StoreRoomContext getStoreRoom() {
+		return storeRoom;
 	}
-	public void setStoreRoomContext(StoreRoomContext storeRoomContext) {
-		this.storeRoomContext = storeRoomContext;
+	public void setStoreRoom(StoreRoomContext storeRoom) {
+		this.storeRoom = storeRoom;
 	}
 	
 	private Status status;
@@ -64,6 +66,14 @@ public class PurchaseRequestContext extends ModuleBaseWithCustomFields {
 	}
 	public double getTotalCost() {
 		return totalCost;
+	}
+	
+	private List<PurchaseRequestLineItemContext> lineItems;
+	public List<PurchaseRequestLineItemContext> getLineItems() {
+		return lineItems;
+	}
+	public void setLineItems(List<PurchaseRequestLineItemContext> lineItems) {
+		this.lineItems = lineItems;
 	}
 	
 	public static enum Status {

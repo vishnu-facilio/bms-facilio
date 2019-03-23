@@ -664,5 +664,37 @@ public class ReadOnlyChainFactory {
 		chain.addCommand(new GetPurchaseRequestListCommand());
 		return chain;
 	}
-	
+
+	public static Chain getPurchaseRequestDetailsChain() {
+		Chain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForPurchaseRequest());
+		c.addCommand(new GenericGetModuleDataDetailCommand());
+		c.addCommand(new FetchPurchaseRequestDetailsCommand());
+		return c;
+	}
+
+	public static Chain getPurchaseOrderListChain() {
+		Chain chain = getDefaultChain();
+		chain.addCommand(SetTableNamesCommand.getForPurchaseOrder());
+		chain.addCommand(new LoadAllFieldsCommand());
+		chain.addCommand(new GetPurchaseOrderListCommand());
+		return chain;
+	}
+
+	public static Chain getPurchaseOrderDetailsChain() {
+		Chain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForPurchaseOrder());
+		c.addCommand(new GenericGetModuleDataDetailCommand());
+		c.addCommand(new FetchPurchaseOrderDetailsCommand());
+		return c;
+	}
+
+	public static Chain getAllReceiptsChain() {
+		Chain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForPurchaseOrder());
+		c.addCommand(new LoadAllFieldsCommand());
+		c.addCommand(new GetReceiptsListCommand());
+		return c;
+	}
+
 }

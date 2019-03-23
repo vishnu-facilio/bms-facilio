@@ -7,13 +7,12 @@ import org.apache.commons.chain.Chain;
 
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
-import com.facilio.bmsconsole.context.PurchaseOrderContext;
-import com.facilio.bmsconsole.context.PurchaseOrderLineItemContext;
+import com.facilio.bmsconsole.context.PurchaseRequestContext;
+import com.facilio.bmsconsole.context.PurchaseRequestLineItemContext;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 
-public class PurchaseOrderAction extends FacilioAction {
-
+public class PurchaseRequestAction extends FacilioAction {
 	private static final long serialVersionUID = 1L;
 
 	private String moduleName;
@@ -32,12 +31,12 @@ public class PurchaseOrderAction extends FacilioAction {
 		this.fetchCount = fetchCount;
 	}
 	
-	private PurchaseOrderContext purchaseOrder;
-	public PurchaseOrderContext getPurchaseOrder() {
-		return purchaseOrder;
+	private PurchaseRequestContext purchaseRequest;
+	public PurchaseRequestContext getPurchaseRequest() {
+		return purchaseRequest;
 	}
-	public void setPurchaseOrder(PurchaseOrderContext purchaseOrder) {
-		this.purchaseOrder = purchaseOrder;
+	public void setPurchaseRequest(PurchaseRequestContext purchaseRequest) {
+		this.purchaseRequest = purchaseRequest;
 	}
 	
 	private long recordId = -1;
@@ -48,59 +47,59 @@ public class PurchaseOrderAction extends FacilioAction {
 		this.recordId = recordId;
 	}
 	
-	public String addPurchaseOrder() throws Exception {
+	public String addPurchaseRequest() throws Exception {
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.RECORD, purchaseOrder);
+		context.put(FacilioConstants.ContextNames.RECORD, purchaseRequest);
 		
-		Chain chain = TransactionChainFactory.getAddPurchaseOrderChain();
+		Chain chain = TransactionChainFactory.getAddPurchaseRequestChain();
 		chain.execute(context);
 		
-		setResult(FacilioConstants.ContextNames.PURCHASE_ORDER, context.get(FacilioConstants.ContextNames.RECORD));
+		setResult(FacilioConstants.ContextNames.PURCHASE_REQUEST, context.get(FacilioConstants.ContextNames.RECORD));
 		return SUCCESS;
 	}
 	
-	public String getPurchaseOrderList() throws Exception {
+	public String getPurchaseRequestList() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.FETCH_COUNT, getFetchCount());
 		
-		Chain chain = ReadOnlyChainFactory.getPurchaseOrderListChain();
+		Chain chain = ReadOnlyChainFactory.getPurchaseRequestListChain();
 		chain.execute(context);
 		
-		List<PurchaseOrderContext> purchaseOrders = (List<PurchaseOrderContext>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
-		setResult(FacilioConstants.ContextNames.PURCHASE_ORDERS, purchaseOrders);
+		List<PurchaseRequestContext> purchaseRequests = (List<PurchaseRequestContext>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
+		setResult(FacilioConstants.ContextNames.PURCHASE_REQUESTS, purchaseRequests);
 		
 		return SUCCESS;
 	}
 	
-	public String getPurchaseOrderDetails() throws Exception {
+	public String getPurchaseRequestDetails() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.ID, recordId);
 		
-		Chain chain = ReadOnlyChainFactory.getPurchaseOrderDetailsChain();
+		Chain chain = ReadOnlyChainFactory.getPurchaseRequestDetailsChain();
 		chain.execute(context);
 		
-		PurchaseOrderContext purchaseOrderContext = (PurchaseOrderContext) context.get(FacilioConstants.ContextNames.RECORD);
-		setResult(FacilioConstants.ContextNames.PURCHASE_ORDER, purchaseOrderContext);
+		PurchaseRequestContext purchaseRequestContext = (PurchaseRequestContext) context.get(FacilioConstants.ContextNames.RECORD);
+		setResult(FacilioConstants.ContextNames.PURCHASE_REQUEST, purchaseRequestContext);
 		
 		return SUCCESS;
 	}
 	
-	public String deletePurchaseOrder() throws Exception {
+	public String deletePurchaseRequest() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(recordId));
 		
-		Chain chain = TransactionChainFactory.getPurchaseOrderDeleteChain();
+		Chain chain = TransactionChainFactory.getPurchaseRequestDeleteChain();
 		chain.execute(context);
 		
 		setResult(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(recordId));
 		return SUCCESS;
 	}
 	
-	private PurchaseOrderLineItemContext lineItem;
-	public PurchaseOrderLineItemContext getLineItem() {
+	private PurchaseRequestLineItemContext lineItem;
+	public PurchaseRequestLineItemContext getLineItem() {
 		return lineItem;
 	}
-	public void setLineItem(PurchaseOrderLineItemContext lineItem) {
+	public void setLineItem(PurchaseRequestLineItemContext lineItem) {
 		this.lineItem = lineItem;
 	}
 	
@@ -108,7 +107,7 @@ public class PurchaseOrderAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD, getLineItem());
 		
-		Chain chain = TransactionChainFactory.getAddPurchaseOrderLineItem();
+		Chain chain = TransactionChainFactory.getAddPurchaseRequestLineItem();
 		chain.execute(context);
 		
 		setResult(FacilioConstants.ContextNames.RECORD, context.get(FacilioConstants.ContextNames.RECORD));
@@ -120,7 +119,7 @@ public class PurchaseOrderAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(recordId));
 		
-		Chain chain = TransactionChainFactory.getDeletePurchaseOrderLineItem();
+		Chain chain = TransactionChainFactory.getDeletePurchaseRequestLineItem();
 		chain.execute(context);
 		
 		setResult(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(recordId));
