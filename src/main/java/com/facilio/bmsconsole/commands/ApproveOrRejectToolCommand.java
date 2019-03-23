@@ -68,6 +68,15 @@ public class ApproveOrRejectToolCommand implements Command {
 				transactions.setRemainingQuantity(transactions.getQuantity());
 			}
 			
+			else if (approvalState == ApprovalState.REJECTED) {
+				if (transactions.getToolType().individualTracking()) {
+					PurchasedToolContext pTool = transactions.getPurchasedTool();
+					pTool.setIsUsed(false);
+					updatePurchasedTool(pTool);
+				}
+				transactions.setRemainingQuantity(0);
+			}
+			
 			transactions.setApprovedState(approvedStateVal);
 			updateWorkorderTools(toolTransactionsModule, toolTransactionsFields, transactions);
 			parentIds.add(transactions.getParentId());

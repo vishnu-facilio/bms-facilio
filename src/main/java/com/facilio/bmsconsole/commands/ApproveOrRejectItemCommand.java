@@ -20,6 +20,8 @@ import com.facilio.bmsconsole.modules.LookupField;
 import com.facilio.bmsconsole.modules.LookupFieldMeta;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
+import com.facilio.bmsconsole.util.TransactionState;
+import com.facilio.bmsconsole.util.TransactionType;
 import com.facilio.bmsconsole.workflow.rule.ApprovalState;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
@@ -67,6 +69,13 @@ public class ApproveOrRejectItemCommand implements Command {
 					}
 				}
 				transactions.setRemainingQuantity(transactions.getQuantity());
+			} else if (approvalState == ApprovalState.REJECTED) {
+				if (transactions.getItemType().individualTracking()) {
+					PurchasedItemContext pItem = transactions.getPurchasedItem();
+					pItem.setIsUsed(false);
+					updatePurchasedItem(pItem);
+				}
+				transactions.setRemainingQuantity(0);
 			}
 			transactions.setApprovedState(approvedStateVal);
 			updateWorkorderItems(itemTransactionsModule, itemTransactionsFields, transactions);

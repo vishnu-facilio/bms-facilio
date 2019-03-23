@@ -43,12 +43,25 @@ public class ItemTransactionsAction extends FacilioAction {
 	}
 
 	private int approvedState;
+
 	public int getApprovedState() {
 		return approvedState;
 	}
+
 	public void setApprovedState(int approvedState) {
 		this.approvedState = approvedState;
 	}
+
+	private int transactionType;
+
+	public int getTransactionType() {
+		return transactionType;
+	}
+
+	public void setTransactionType(int transactionType) {
+		this.transactionType = transactionType;
+	}
+
 	public String addOrUpdateItemTransactions() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.CREATE);
@@ -91,7 +104,12 @@ public class ItemTransactionsAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.RECORD_ID, itemTransactionsId);
 		context.put(FacilioConstants.ContextNames.ITEM_TRANSACTION_APPORVED_STATE, approvedState);
 		context.put(FacilioConstants.ContextNames.WORKORDER_COST_TYPE, 1);
-		Chain addWorkorderPartChain = TransactionChainFactory.getApproveRejectItemsChain();
+		Chain addWorkorderPartChain;
+		if (transactionType == 3) {
+			addWorkorderPartChain = TransactionChainFactory.getApproveRejectManualItemsChain();
+		} else {
+			addWorkorderPartChain = TransactionChainFactory.getApproveRejectWorkorderItemsChain();
+		}
 		addWorkorderPartChain.execute(context);
 		setItemTransactionsId((List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST));
 		setResult("itemTransactionsId", itemTransactionsId);

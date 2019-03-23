@@ -1988,7 +1988,7 @@ public class TransactionChainFactory {
 			return c;
 		}
 
-		public static Chain getApproveRejectItemsChain() {
+		public static Chain getApproveRejectWorkorderItemsChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForItemTransactions());
 //			c.addCommand(new GenericUpdateListModuleDataCommand());
@@ -2000,8 +2000,17 @@ public class TransactionChainFactory {
 			c.addCommand(getUpdateWorkOrderChain());
 			return c;
 		}
+		
+		public static Chain getApproveRejectManualItemsChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForItemTransactions());
+			c.addCommand(new ApproveOrRejectItemCommand());
+			c.addCommand(new PurchasedItemsQuantityRollUpCommand());
+			c.addCommand(getUpdateItemQuantityRollupChain());
+			return c;
+		}
 
-		public static Chain getApproveRejectToolsChain() {
+		public static Chain getApproveRejectWorkorderToolsChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForToolTranaction());
 //			c.addCommand(new GenericUpdateListModuleDataCommand());
@@ -2010,6 +2019,15 @@ public class TransactionChainFactory {
 			c.addCommand(new AddOrUpdateWorkorderCostCommand());
 			c.addCommand(new UpdateWorkorderTotalCostCommand());
 			c.addCommand(getUpdateWorkOrderChain());
+			return c;
+		}
+		
+		public static Chain getApproveRejectManualToolsChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForToolTranaction());
+//			c.addCommand(new GenericUpdateListModuleDataCommand());
+			c.addCommand(new ApproveOrRejectToolCommand());
+			c.addCommand(getUpdatetoolQuantityRollupChain());
 			return c;
 		}
 
