@@ -62,11 +62,10 @@ public class AddOrUpdateWorkorderLabourCommand implements Command {
 				}
 				else
 				{
-					if (woLabour.getLabour().getAvailability()) {
 						woLabour = setWorkorderItemObj(woLabour.getLabour(), parentId, workorder, woLabour);
 						labourToBeAdded.add(woLabour);
 						workorderLabourlist.add(woLabour);
-					}
+					
 				}
 			}
 			if (labourToBeAdded != null && !labourToBeAdded.isEmpty()) {

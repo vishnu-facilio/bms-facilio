@@ -1789,7 +1789,7 @@ public class TransactionChainFactory {
 			c.addCommand(SetTableNamesCommand.getForWorkorderLabour());
 			c.addCommand(new AddOrUpdateWorkorderLabourCommand());
 			c.addCommand(new ExecuteAllWorkflowsCommand());
-			c.addCommand(getUpdateAvailabilityRollupChain());
+			//c.addCommand(getUpdateAvailabilityRollupChain());
 			c.addCommand(new AddOrUpdateWorkorderCostCommand());
 			c.addCommand(new UpdateWorkorderTotalCostCommand());
 			c.addCommand(getUpdateWorkOrderChain());
@@ -1833,7 +1833,7 @@ public class TransactionChainFactory {
 			c.addCommand(SetTableNamesCommand.getForWorkorderLabour());
 			c.addCommand(new GenericDeleteModuleDataCommand());
 			c.addCommand(new DeleteWorkorderLabourCommand());
-			c.addCommand(getUpdateAvailabilityRollupChain());
+			//c.addCommand(getUpdateAvailabilityRollupChain());
 			c.addCommand(new AddOrUpdateWorkorderCostCommand());
 			c.addCommand(new UpdateWorkorderTotalCostCommand());
 			c.addCommand(getUpdateWorkOrderChain());
