@@ -141,8 +141,6 @@ public class ReportFactoryFields {
 		
 		switch (moduleName) {
 		case "workorder": {
-			moduleTypes.add(new ModuleType("Workorders", 1));
-			moduleTypes.add(new ModuleType("Workrequests", 2));
 			break;
 		}
 		}

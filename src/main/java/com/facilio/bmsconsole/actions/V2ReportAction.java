@@ -1045,7 +1045,7 @@ public class V2ReportAction extends FacilioAction {
 		if (module != null) {
 			setResult("module", module);
 		}
-		if(moduleType != -1) {
+		if(moduleType != -1 || reportContext.getModuleType() != -1) {
 			setResult("moduleTypes", ReportFactoryFields.addModuleTypes(module.getName()));
 		}
 		

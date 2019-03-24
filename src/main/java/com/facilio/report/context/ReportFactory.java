@@ -52,7 +52,7 @@ public class ReportFactory {
 			
 			ReportFacilioField overdueOpenField = (ReportFacilioField) getField(WorkOrder.OVERDUE_OPEN_COL, "Open Due Status", modBean.getModule("workorder"), " CASE WHEN DUE_DATE < ? THEN 'Overdue' ELSE 'On Schedule' END ", FieldType.NUMBER, WorkOrder.OVERDUE_OPEN);
 			overdueOpenField.addCondition("Overdue", CriteriaAPI.getCondition("DUE_DATE", "dueDate", "?", NumberOperators.LESS_THAN));
-			overdueOpenField.addCondition("OnSchedule", CriteriaAPI.getCondition("DUE_DATE", "dueDate", "?", NumberOperators.GREATER_THAN_EQUAL));
+			overdueOpenField.addCondition("On Schedule", CriteriaAPI.getCondition("DUE_DATE", "dueDate", "?", NumberOperators.GREATER_THAN_EQUAL));
 			reportFields.add(overdueOpenField);
 			
 			ReportFacilioField overdueClosedField = (ReportFacilioField) getField(WorkOrder.OVERDUE_CLOSED_COL, "Closed Due Status", modBean.getModule("workorder"), " CASE WHEN DUE_DATE < ACTUAL_WORK_END THEN 'Overdue' ELSE 'Ontime' END ", FieldType.NUMBER, WorkOrder.OVERDUE_CLOSED);
@@ -61,8 +61,8 @@ public class ReportFactory {
 			reportFields.add(overdueClosedField);
 			
 			ReportFacilioField plannedVsUnplannedField = (ReportFacilioField) getField(WorkOrder.PLANNED_VS_UNPLANNED_COL, "Planned Type", modBean.getModule("workorder"), " CASE WHEN SOURCE_TYPE = 5 THEN 'Planned' ELSE 'Unplanned' END ", FieldType.NUMBER, WorkOrder.PLANNED_VS_UNPLANNED);
-			plannedVsUnplannedField.addCondition("Planned", CriteriaAPI.getCondition("SORUCE_TYPE", "sourceType", "5", NumberOperators.EQUALS));
-			plannedVsUnplannedField.addCondition("Unplanned", CriteriaAPI.getCondition("SORUCE_TYPE", "sourceType", "5", NumberOperators.NOT_EQUALS));
+			plannedVsUnplannedField.addCondition("Planned", CriteriaAPI.getCondition("SOURCE_TYPE", "sourceType", "5", NumberOperators.EQUALS));
+			plannedVsUnplannedField.addCondition("Unplanned", CriteriaAPI.getCondition("SOURCE_TYPE", "sourceType", "5", NumberOperators.NOT_EQUALS));
 			reportFields.add(plannedVsUnplannedField);
 			
 			reportFields.add(getField(WorkOrder.FIRST_RESPONSE_TIME_COL, "Response Time", modBean.getModule("workorder"), "Tickets.ACTUAL_WORK_START - WorkOrders.CREATED_TIME", FieldType.NUMBER, WorkOrder.FIRST_RESPONSE_TIME));
