@@ -93,7 +93,7 @@ public class ToolQuantityRollUpCommand implements Command{
 				.andCustomWhere(toolTransactionsModule.getTableName() + ".ORGID = " + AccountUtil.getCurrentOrg().getOrgId())
 				.andCondition(CriteriaAPI.getCondition(FieldFactory.getModuleIdField(toolTransactionsModule),
 						String.valueOf(toolTransactionsModule.getModuleId()), NumberOperators.EQUALS))
-				.andCustomWhere("APPROVED_STATE = ? OR APPROVED_STATE = ? ", 1, 3);
+				.andCustomWhere("APPROVED_STATE = ? OR APPROVED_STATE = ? OR APPROVED_STATE = ?", 1, 3, -1);
 
 		List<FacilioField> fields = new ArrayList<>();
 		fields.add(FieldFactory.getField("addition", "sum(case WHEN TRANSACTION_STATE = 1 THEN QUANTITY ELSE 0 END)", FieldType.DECIMAL));
