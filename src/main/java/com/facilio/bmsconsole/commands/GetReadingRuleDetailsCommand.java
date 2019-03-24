@@ -8,6 +8,8 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
@@ -29,6 +31,8 @@ import com.facilio.events.context.EventContext;
 import com.facilio.sql.GenericSelectRecordBuilder;
 
 public class GetReadingRuleDetailsCommand implements Command {
+	
+	private static final Logger LOGGER = LogManager.getLogger(GetReadingRuleDetailsCommand.class.getName());
 
 	@Override
 	public boolean execute(Context context) throws Exception {
@@ -63,21 +67,26 @@ public class GetReadingRuleDetailsCommand implements Command {
 								
 								rcaIds.add(rcaRule.getId());
 							}
+							List<FacilioField> eventFields = EventConstants.EventFieldFactory.getEventFields();
+							Map<String, FacilioField> eventFieldsMap = FieldFactory.getAsMap(eventFields);
 							List<FacilioField> fields = new ArrayList<>();
-							fields.addAll(EventConstants.EventFieldFactory.getEventFields());
 							
-							fields.add(FieldFactory.getField("max", "MAX(CREATED_TIME)", FieldType.NUMBER));
+							fields.add(eventFieldsMap.get("subRuleId"));
 							
+							fields.add(FieldFactory.getField("createdTime", "MAX(CREATED_TIME)", FieldType.NUMBER));
+						
 							FacilioModule module = EventConstants.EventModuleFactory.getEventModule();
 							GenericSelectRecordBuilder genericSelectRecordBuilder = new GenericSelectRecordBuilder()
 																							.table(module.getTableName())
 																							.select(fields)
 																							.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 																							.andCondition(CriteriaAPI.getConditionFromList("SUB_RULE_ID", "subRuleId", rcaIds, NumberOperators.EQUALS))
-																							.groupBy("SUB_RULE_ID,ID")
+																							.groupBy("ORGID,SUB_RULE_ID")
 																							;
 							
 							List<Map<String, Object>> props = genericSelectRecordBuilder.get();
+							
+							LOGGER.error("genericSelectRecordBuilder --- "+genericSelectRecordBuilder);
 							
 							Map<Long,EventContext> eventMap = new HashMap<>();
 							if(props != null && !props.isEmpty()) {
