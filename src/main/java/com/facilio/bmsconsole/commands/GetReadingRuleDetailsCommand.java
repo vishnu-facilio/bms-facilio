@@ -8,7 +8,6 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
-import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
@@ -17,6 +16,7 @@ import com.facilio.bmsconsole.context.ReadingAlarmContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.FieldUtil;
@@ -68,11 +68,14 @@ public class GetReadingRuleDetailsCommand implements Command {
 							
 							fields.add(FieldFactory.getField("max", "MAX(CREATED_TIME)", FieldType.NUMBER));
 							
-							GenericSelectRecordBuilder genericSelectRecordBuilder = new GenericSelectRecordBuilder();
-							genericSelectRecordBuilder.table(EventConstants.EventModuleFactory.getEventModule().getTableName());
-							genericSelectRecordBuilder.select(fields);
-							genericSelectRecordBuilder.andCondition(CriteriaAPI.getConditionFromList("SUB_RULE_ID", "subRuleId", rcaIds, NumberOperators.EQUALS));
-							genericSelectRecordBuilder.groupBy("SUB_RULE_ID,ID");
+							FacilioModule module = EventConstants.EventModuleFactory.getEventModule();
+							GenericSelectRecordBuilder genericSelectRecordBuilder = new GenericSelectRecordBuilder()
+																							.table(module.getTableName())
+																							.select(fields)
+																							.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+																							.andCondition(CriteriaAPI.getConditionFromList("SUB_RULE_ID", "subRuleId", rcaIds, NumberOperators.EQUALS))
+																							.groupBy("SUB_RULE_ID,ID")
+																							;
 							
 							List<Map<String, Object>> props = genericSelectRecordBuilder.get();
 							
