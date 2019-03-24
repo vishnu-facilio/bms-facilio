@@ -29,6 +29,7 @@ public class AddOrUpdateReceiptCommand implements Command {
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 		List<ReceiptContext> receipts = (List<ReceiptContext>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
 		Set<Long> receivableIds = new HashSet<>();
+		Set<Long> lineitemIds = new HashSet<>();
 		if (!CollectionUtils.isEmpty(receipts)  && StringUtils.isNotEmpty(moduleName)) {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioModule module = modBean.getModule(moduleName);
@@ -38,6 +39,7 @@ public class AddOrUpdateReceiptCommand implements Command {
 			List<ReceiptContext> updateReceipts = new ArrayList<ReceiptContext>();
 			for (ReceiptContext receiptContext : receipts) {
 				receivableIds.add(receiptContext.getReceivableId());
+				lineitemIds.add(receiptContext.getLineItemId());
 				if (receiptContext.getId() > 0) {
 					updateReceipts.add(receiptContext);
 				} else {
@@ -48,6 +50,7 @@ public class AddOrUpdateReceiptCommand implements Command {
 			saveRecords(saveReceipts, module, fields);
 		}
 		context.put(FacilioConstants.ContextNames.RECEIVABLE_ID, receivableIds);
+		context.put(FacilioConstants.ContextNames.PURCHASE_ORDER_LINE_ITEMS_ID, lineitemIds);
 		return false;
 	}
 
