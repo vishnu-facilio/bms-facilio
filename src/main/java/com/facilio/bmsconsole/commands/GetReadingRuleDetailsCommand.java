@@ -85,19 +85,21 @@ public class GetReadingRuleDetailsCommand implements Command {
 								}
 							}
 							for(ReadingRuleContext rcaRule :alarmRuleContext.getAlarmRCARules()) {
-								
-								JSONObject rcaJson = new JSONObject();
-								rcaJson.put("rcaRule", rcaRule);
 								EventContext event = eventMap.get(rcaRule.getId());
-								rcaJson.put("event", event);
 								
-								if(event != null && readingAlarmContext.getModifiedTime() == event.getCreatedTime()) {
-									rcaJson.put("isActive", true);
+								if(event != null) {
+									JSONObject rcaJson = new JSONObject();
+									rcaJson.put("rcaRule", rcaRule);
+									rcaJson.put("event", event);
+									
+									if(readingAlarmContext.getModifiedTime() == event.getCreatedTime()) {
+										rcaJson.put("isActive", true);
+									}
+									else {
+										rcaJson.put("isActive", false);
+									}
+									rcaJSONArray.add(rcaJson);
 								}
-								else {
-									rcaJson.put("isActive", false);
-								}
-								rcaJSONArray.add(rcaJson);
 							}
 							alarm.addAdditionInfo("rcaJSONArray", rcaJSONArray);
 						}
