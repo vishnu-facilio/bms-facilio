@@ -122,6 +122,13 @@ public class ExecuteAllWorkflowsCommand implements SerializableCommand
 					LOGGER.info("Rule Types : "+Arrays.toString(ruleTypes));
 				}
 				
+				if (AccountUtil.getCurrentOrg().getId() == 134l && "supplyairtemperature".equals(moduleName)) {
+					LOGGER.error("EMMAR RULE DEBUGGING");
+					LOGGER.error("Records : "+entry.getValue());
+					LOGGER.error("Matching Rules : "+workflowRules);
+					LOGGER.error("Rule Types : "+Arrays.toString(ruleTypes));
+				}
+				
 				if (workflowRules != null && !workflowRules.isEmpty()) {
 					Map<String, Object> placeHolders = WorkflowRuleAPI.getOrgPlaceHolders();
 					List records = new LinkedList<>(entry.getValue());

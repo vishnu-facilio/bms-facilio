@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.util;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -897,6 +898,9 @@ public class WorkflowRuleAPI {
 			
 			if (AccountUtil.getCurrentOrg().getId() == 186 && workflowRule.getId() == 6448) {
 				LOGGER.info("Result of rule : "+workflowRule.getId()+" for record : "+record+" is "+result);
+			}
+			if (AccountUtil.getCurrentOrg().getId() == 134l && workflowRule instanceof ReadingRuleContext && ((ReadingRuleContext)workflowRule).getRuleGroupId() == 7186l) {
+				LOGGER.error("Result of rule : "+workflowRule.getId()+" for record : "+record+" is "+result);
 			}
 			
 			boolean stopFurtherExecution = workflowRule.isTerminateExecution();
