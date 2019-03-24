@@ -2072,6 +2072,7 @@ public class TransactionChainFactory {
 			Chain chain = getDefaultChain();
 			chain.addCommand(SetTableNamesCommand.getForPurchaseRequest());
 			chain.addCommand(new AddOrUpdatePurchaseRequestCommand());
+			chain.addCommand(getPurchaseRequestTotalCostChain()); //update purchase request total cost
 			return chain;
 		}
 
@@ -2086,6 +2087,7 @@ public class TransactionChainFactory {
 			Chain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForPurchaseRequestLineItem());
 			c.addCommand(new AddOrUpdatePurchaseRequestLineItemCommand());
+			c.addCommand(getPurchaseRequestTotalCostChain()); //update purchase request total cost
 			return c;
 		}
 
@@ -2100,6 +2102,7 @@ public class TransactionChainFactory {
 			Chain chain = getDefaultChain();
 			chain.addCommand(SetTableNamesCommand.getForPurchaseOrder());
 			chain.addCommand(new AddOrUpdatePurchaseOrderCommand());
+			chain.addCommand(getPurchaseOrderTotalCostChain()); //update purchase order total cost
 			return chain;
 		}
 
@@ -2114,6 +2117,7 @@ public class TransactionChainFactory {
 			Chain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForPurchaseOrderLineItem());
 			c.addCommand(new AddOrUpdatePurchaseOrderLineItemCommand());
+			c.addCommand(getPurchaseOrderTotalCostChain()); //update purchase order total cost
 			return c;
 		}
 
@@ -2143,6 +2147,17 @@ public class TransactionChainFactory {
 			c.addCommand(new ConvertPRToPOCommand());
 			c.addCommand(getAddPurchaseOrderChain());
 			c.addCommand(new AddPurchaseRequestOrderRelation());
+			return c;
+		}
+		public static Chain getPurchaseRequestTotalCostChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new PurchaseRequestTotalCostRollUpCommand());
+			return c;
+		}
+		
+		public static Chain getPurchaseOrderTotalCostChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new PurchaseOrderTotalCostRollUpCommand());
 			return c;
 		}
 }
