@@ -33,9 +33,9 @@ public class PurchaseOrderTotalCostRollUpCommand implements Command {
 			
 			//get total cost from line items
 			double totalCost = getTotalCost(purchaseOrder.getId());
-			
+			double totalQuantity = getTotalQuantity(purchaseOrder.getId());
 			purchaseOrder.setTotalCost(totalCost);
-			
+			purchaseOrder.setTotalQuantity(totalQuantity);
 			//update total cost for purchase order
 			UpdateRecordBuilder<PurchaseOrderContext> updateBuilder = new UpdateRecordBuilder<PurchaseOrderContext>()
 					.module(module).fields(modBean.getAllFields(module.getName()))
@@ -68,6 +68,35 @@ public class PurchaseOrderTotalCostRollUpCommand implements Command {
 		if (rs != null && rs.size() > 0) {
 			if (rs.get(0).get("totalItemsCost") != null) {
 				return (double) rs.get(0).get("totalItemsCost");
+			}
+			return 0d;
+		}
+		return 0d;
+	}
+	
+	private double getTotalQuantity(long id) throws Exception {
+		if (id <= 0) {
+			return 0d;
+		}
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		
+		FacilioModule lineModule = modBean.getModule(FacilioConstants.ContextNames.PURCHASE_ORDER_LINE_ITEMS);
+		List<FacilioField> linefields = modBean.getAllFields(FacilioConstants.ContextNames.PURCHASE_ORDER_LINE_ITEMS);
+		Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(linefields);
+		
+		List<FacilioField> field = new ArrayList<>();
+		field.add(FieldFactory.getField("totalItems", "sum(QUANTITY)", FieldType.DECIMAL));
+
+		SelectRecordsBuilder<PurchaseOrderLineItemContext> builder = new SelectRecordsBuilder<PurchaseOrderLineItemContext>()
+				.select(field).moduleName(lineModule.getName())
+				.andCondition(CriteriaAPI.getCondition(fieldsMap.get("poId"), String.valueOf(id), NumberOperators.EQUALS))
+				.setAggregation()
+				;
+
+		List<Map<String, Object>> rs = builder.getAsProps();
+		if (rs != null && rs.size() > 0) {
+			if (rs.get(0).get("totalItems") != null) {
+				return (double) rs.get(0).get("totalItems");
 			}
 			return 0d;
 		}

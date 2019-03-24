@@ -894,7 +894,7 @@ public class FacilioConstants {
 		public static final String RECEIVABLE = "receivable";
 		public static final String RECEIVABLES = "receivables";
 		public static final String PO_ID = "poId";
-		
+		public static final String RECEIVABLE_ID = "receivableId";
 		
 		private static final String RECEIPT_LINE_ITEMS = "receiptlineitems";
 

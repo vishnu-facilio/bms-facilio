@@ -100,4 +100,12 @@ public class PurchaseOrderLineItemContext extends ModuleBaseWithCustomFields{
 		}
 		return poItem;
 	}
+	
+	private double quantityReceived = -1;
+	public double getQuantityReceived() {
+		return quantityReceived;
+	}
+	public void setQuantityReceived(double quantityReceived) {
+		this.quantityReceived = quantityReceived;
+	}
 }

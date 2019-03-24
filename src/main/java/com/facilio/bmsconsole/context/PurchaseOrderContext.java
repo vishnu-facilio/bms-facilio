@@ -137,7 +137,8 @@ public class PurchaseOrderContext extends ModuleBaseWithCustomFields {
 		REJECTED(),
 		ORDERED(),
 		PARTIALLY_RECEIVED(),
-		RECEIVED_COMPLETED();
+		RECEIVED,
+		COMPLETED();
 		
 		public int getValue() {
 			return ordinal()+1;
@@ -149,5 +150,13 @@ public class PurchaseOrderContext extends ModuleBaseWithCustomFields {
 			}
 			return null;
 		}
+	}
+	
+	private double totalQuantity = -1;
+	public double getTotalQuantity() {
+		return totalQuantity;
+	}
+	public void setTotalQuantity(double totalQuantity) {
+		this.totalQuantity = totalQuantity;
 	}
 }

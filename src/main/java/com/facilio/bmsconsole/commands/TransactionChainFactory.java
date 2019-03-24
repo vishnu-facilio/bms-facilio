@@ -2132,6 +2132,7 @@ public class TransactionChainFactory {
 			Chain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForReceipt());
 			c.addCommand(new AddOrUpdateReceiptCommand());
+			c.addCommand(getPurchaseOrderQuantityRecievedRollUpChain());
 			return c;
 		}
 		
@@ -2158,6 +2159,12 @@ public class TransactionChainFactory {
 		public static Chain getPurchaseOrderTotalCostChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(new PurchaseOrderTotalCostRollUpCommand());
+			return c;
+		}
+		
+		public static Chain getPurchaseOrderQuantityRecievedRollUpChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new PurchaseOrderQuantityRecievedRollUpCommand());
 			return c;
 		}
 }

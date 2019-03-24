@@ -1,7 +1,9 @@
 package com.facilio.bmsconsole.commands;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
@@ -26,6 +28,7 @@ public class AddOrUpdateReceiptCommand implements Command {
 	public boolean execute(Context context) throws Exception {
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 		List<ReceiptContext> receipts = (List<ReceiptContext>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
+		Set<Long> receivableIds = new HashSet<>();
 		if (!CollectionUtils.isEmpty(receipts)  && StringUtils.isNotEmpty(moduleName)) {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioModule module = modBean.getModule(moduleName);
@@ -33,8 +36,8 @@ public class AddOrUpdateReceiptCommand implements Command {
 			
 			List<ReceiptContext> saveReceipts = new ArrayList<ReceiptContext>();
 			List<ReceiptContext> updateReceipts = new ArrayList<ReceiptContext>();
-			
 			for (ReceiptContext receiptContext : receipts) {
+				receivableIds.add(receiptContext.getReceivableId());
 				if (receiptContext.getId() > 0) {
 					updateReceipts.add(receiptContext);
 				} else {
@@ -44,6 +47,7 @@ public class AddOrUpdateReceiptCommand implements Command {
 			updateRecords(updateReceipts, module, fields);
 			saveRecords(saveReceipts, module, fields);
 		}
+		context.put(FacilioConstants.ContextNames.RECEIVABLE_ID, receivableIds);
 		return false;
 	}
 
