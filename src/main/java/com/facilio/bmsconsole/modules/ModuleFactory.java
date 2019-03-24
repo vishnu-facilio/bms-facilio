@@ -1791,4 +1791,20 @@ public class ModuleFactory {
 		inventoryModule.setTableName("Tool_transactions");
 		return inventoryModule;
 	}
+  	
+  	public static FacilioModule getPurchaseRequestModule() {
+		FacilioModule purchaseRequest = new FacilioModule();
+		purchaseRequest.setName("purchaserequest");
+		purchaseRequest.setDisplayName("Purchase Request");
+		purchaseRequest.setTableName("Purchase_Requests");
+		return purchaseRequest;
+	}
+  	
+  	public static FacilioModule getPurchaseOrderModule() {
+		FacilioModule purchaseOrder = new FacilioModule();
+		purchaseOrder.setName("purchaseorder");
+		purchaseOrder.setDisplayName("Purchase Order");
+		purchaseOrder.setTableName("Purchase_Orders");
+		return purchaseOrder;
+	}
 }

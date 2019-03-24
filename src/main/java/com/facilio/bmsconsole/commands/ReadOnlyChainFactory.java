@@ -661,6 +661,9 @@ public class ReadOnlyChainFactory {
 		Chain chain = getDefaultChain();
 		chain.addCommand(SetTableNamesCommand.getForPurchaseRequest());
 		chain.addCommand(new LoadAllFieldsCommand());
+		chain.addCommand(new LoadViewCommand());
+		chain.addCommand(new GenerateCriteriaFromFilterCommand());
+		chain.addCommand(new GenerateSearchConditionCommand());
 		chain.addCommand(new GetPurchaseRequestListCommand());
 		return chain;
 	}
@@ -677,6 +680,9 @@ public class ReadOnlyChainFactory {
 		Chain chain = getDefaultChain();
 		chain.addCommand(SetTableNamesCommand.getForPurchaseOrder());
 		chain.addCommand(new LoadAllFieldsCommand());
+		chain.addCommand(new LoadViewCommand());
+		chain.addCommand(new GenerateCriteriaFromFilterCommand());
+		chain.addCommand(new GenerateSearchConditionCommand());
 		chain.addCommand(new GetPurchaseOrderListCommand());
 		return chain;
 	}

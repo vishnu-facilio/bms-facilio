@@ -51,6 +51,9 @@ public class ColumnFactory {
 		columnMap.put("vendors-default", getDefaultVendorsColumns());
 		columnMap.put("item-default", getDefaultItemColumns());
 		columnMap.put("stockedTools-default", getDefaultStockedToolsColumns());
+		columnMap.put("purchaserequest-default", getDefaultPurchaseRequestColumns());
+		columnMap.put("purchaseorder-default", getDefaultPurchaseOrderColumns());
+		
 		// Default report columns 
 		columnMap.put("workorder-report", getWorkOrderReportColumns());
 		columnMap.put("alarm-report", getAlarmReportColumns());
@@ -313,6 +316,30 @@ public class ColumnFactory {
 		columns.add(new ViewField("quantity", "Requested Quantity"));
 		columns.add(new ViewField("sysCreatedTime", "Requested Time"));
 //		columns.add(new ViewField("issuedTo", "Issued To"));
+		return columns;
+	}
+	
+	private static List<ViewField> getDefaultPurchaseRequestColumns() {
+		List<ViewField> columns = new ArrayList<ViewField>();
+		
+		columns.add(new ViewField("name", "Purchase Request Name"));
+		columns.add(new ViewField("description", "Description"));
+		columns.add(new ViewField("sysCreatedTime", "Created Time"));
+		columns.add(new ViewField("status", "Status"));
+		columns.add(new ViewField("totalCost", "Total Cost"));
+				
+		return columns;
+	}
+	
+	private static List<ViewField> getDefaultPurchaseOrderColumns() {
+		List<ViewField> columns = new ArrayList<ViewField>();
+		
+		columns.add(new ViewField("name", "Purchase Order Name"));
+		columns.add(new ViewField("description", "Description"));
+		columns.add(new ViewField("sysCreatedTime", "Created Time"));
+		columns.add(new ViewField("status", "Status"));
+		columns.add(new ViewField("vendor", "Vendor"));
+		columns.add(new ViewField("totalCost", "Total Cost"));
 		return columns;
 	}
 }

@@ -1657,9 +1657,6 @@
 	</package>
 	
 	<package name="purchaseRequestApi" namespace="/api/v2/purchaserequest" extends="v2Api">
-		<action name="list" class="com.facilio.bmsconsole.actions.PurchaseRequestAction" method="getPurchaseRequestList">
-			<param name="moduleName">purchaserequest</param>
-		</action>
 		<action name="addOrUpdate" class="com.facilio.bmsconsole.actions.PurchaseRequestAction" method="addPurchaseRequest">
 			<param name="moduleName">purchaserequest</param>
 		</action>
@@ -1675,14 +1672,22 @@
 		<action name="deleteLineItem" class="com.facilio.bmsconsole.actions.PurchaseRequestAction" method="deleteLineItem">
 			<param name="moduleName">purchaserequestlineitems</param>
 		</action>
+		<action name="purchaseRequestCount" class="com.facilio.bmsconsole.actions.PurchaseRequestAction" method="purchaseRequestCount">
+			<param name="moduleName">purchaserequest</param>
+		</action>
+		<action name="list" class="com.facilio.bmsconsole.actions.PurchaseRequestAction" method="getPurchaseRequestList">
+			<param name="moduleName">purchaserequest</param>
+		</action>
+		<action name="*" class="com.facilio.bmsconsole.actions.PurchaseRequestAction" method="getPurchaseRequestList">
+			<param name="viewName">{1}</param>
+			<param name="moduleName">purchaserequest</param>
+		</action>
+		
 	</package>
 
 
 
 	<package name="purchaseOrderApi" namespace="/api/v2/purchaseorder" extends="v2Api">
-		<action name="list" class="com.facilio.bmsconsole.actions.PurchaseOrderAction" method="getPurchaseOrderList">
-			<param name="moduleName">purchaseorder</param>
-		</action>
 		<action name="addOrUpdate" class="com.facilio.bmsconsole.actions.PurchaseOrderAction" method="addPurchaseOrder">
 			<param name="moduleName">purchaseorder</param>
 		</action>
@@ -1701,6 +1706,17 @@
 		<action name="convertPrToPo" class="com.facilio.bmsconsole.actions.PurchaseOrderAction" method="convertPRToPO">
 			<param name="moduleName">purchaseorder</param>
 		</action>
+		<action name="purchaseOrderCount" class="com.facilio.bmsconsole.actions.PurchaseOrderAction" method="purchaseOrderCount">
+			<param name="moduleName">purchaseorder</param>
+		</action>
+		<action name="list" class="com.facilio.bmsconsole.actions.PurchaseOrderAction" method="getPurchaseOrderList">
+			<param name="moduleName">purchaseorder</param>
+		</action>
+	   <action name="*" class="com.facilio.bmsconsole.actions.PurchaseOrderAction" method="getPurchaseOrderList">
+			<param name="viewName">{1}</param>
+			<param name="moduleName">purchaseorder</param>
+		</action>
+	
 	</package>
 
 	<package name="receiptsApi" namespace="/api/v2/receipt" extends="v2Api">

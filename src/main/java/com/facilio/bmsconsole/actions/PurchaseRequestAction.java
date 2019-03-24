@@ -4,6 +4,8 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.chain.Chain;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
@@ -25,6 +27,9 @@ public class PurchaseRequestAction extends FacilioAction {
 	
 	private Boolean fetchCount;
 	public Boolean getFetchCount() {
+		if (fetchCount == null) {
+			return false;
+		}
 		return fetchCount;
 	}
 	public void setFetchCount(Boolean fetchCount) {
@@ -47,6 +52,7 @@ public class PurchaseRequestAction extends FacilioAction {
 		this.recordId = recordId;
 	}
 	
+		
 	public String addPurchaseRequest() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD, purchaseRequest);
@@ -61,13 +67,39 @@ public class PurchaseRequestAction extends FacilioAction {
 	public String getPurchaseRequestList() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.FETCH_COUNT, getFetchCount());
-		
+		context.put(FacilioConstants.ContextNames.CV_NAME, getViewName());
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, "purchaserequest");
+ 		
+ 		context.put(FacilioConstants.ContextNames.SORTING_QUERY, "Purchase_Requests.ID asc");
+ 		if(getFilters() != null)
+ 		{	
+	 		JSONParser parser = new JSONParser();
+	 		JSONObject json = (JSONObject) parser.parse(getFilters());
+	 		context.put(FacilioConstants.ContextNames.FILTERS, json);
+		}
+ 		if (getSearch() != null) {
+ 			JSONObject searchObj = new JSONObject();
+ 			searchObj.put("fields", "purchaserequest.name");
+ 			searchObj.put("query", getSearch());
+	 		context.put(FacilioConstants.ContextNames.SEARCH, searchObj);
+ 		}
+ 		JSONObject pagination = new JSONObject();
+ 	 	pagination.put("page", getPage());
+ 	 	pagination.put("perPage", getPerPage());
+ 	 	if (getPerPage() < 0) {
+ 	 		pagination.put("perPage", 5000);
+ 	 	}
+ 	 	
 		Chain chain = ReadOnlyChainFactory.getPurchaseRequestListChain();
 		chain.execute(context);
 		
-		List<PurchaseRequestContext> purchaseRequests = (List<PurchaseRequestContext>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
-		setResult(FacilioConstants.ContextNames.PURCHASE_REQUESTS, purchaseRequests);
-		
+		if (getFetchCount()) {
+			setResult(FacilioConstants.ContextNames.RECORD_COUNT,(Long) context.get(FacilioConstants.ContextNames.RECORD_COUNT));
+		}
+		else {
+			List<PurchaseRequestContext> purchaseRequests = (List<PurchaseRequestContext>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
+			setResult(FacilioConstants.ContextNames.PURCHASE_REQUESTS, purchaseRequests);
+		}
 		return SUCCESS;
 	}
 	
@@ -126,4 +158,9 @@ public class PurchaseRequestAction extends FacilioAction {
 		
 		return SUCCESS;
 	}
+	
+	public String purchaseRequestCount() throws Exception {
+		return getPurchaseRequestList();
+	}
+
 }
