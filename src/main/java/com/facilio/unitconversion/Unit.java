@@ -39,7 +39,7 @@ public enum Unit {
 	HOUR(18,"hour","h",Metric.DURATION),
 	MIN(19,"minute","m",Metric.DURATION,"si*60","this/60"),
 	SEC(20,"second","s",Metric.DURATION,"si*60*60","this/(60*60)"),
-	DAY(21,"day","d",Metric.DURATION,"si/24","this*24"),
+	DAY(21,"day","days",Metric.DURATION,"si/24","this*24"),
 	WEEK(22,"week","W",Metric.DURATION,"si/(24*7)","this*(24*7)"),
 	YEAR(24,"year","Y",Metric.DURATION,"si/(24*365)","this*(24*365)"),
 	MILLIS(80,"millisecond","ms",Metric.DURATION,"si*3600000","this/3600000"),

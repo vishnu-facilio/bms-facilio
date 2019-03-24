@@ -27,6 +27,7 @@ import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.AlarmContext;
 import com.facilio.bmsconsole.context.DashboardWidgetContext;
 import com.facilio.bmsconsole.context.FormulaContext.AggregateOperator;
+import com.facilio.bmsconsole.context.FormulaFieldContext;
 import com.facilio.bmsconsole.context.MLAlarmContext;
 import com.facilio.bmsconsole.context.ReadingAlarmContext;
 import com.facilio.bmsconsole.context.ReportInfo;
@@ -48,6 +49,8 @@ import com.facilio.bmsconsole.templates.EMailTemplate;
 import com.facilio.bmsconsole.util.AlarmAPI;
 import com.facilio.bmsconsole.util.DashboardUtil;
 import com.facilio.bmsconsole.util.DateTimeUtil;
+import com.facilio.bmsconsole.util.FacilioFrequency;
+import com.facilio.bmsconsole.util.FormulaFieldAPI;
 import com.facilio.bmsconsole.util.ReadingRuleAPI;
 import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
@@ -916,6 +919,8 @@ public class V2ReportAction extends FacilioAction {
 						if(exp.getFieldName() != null ) {
 							readingField = DashboardUtil.getField(exp.getModuleName(), exp.getFieldName());
 							
+							updateTimeRangeAsPerFieldType(readingField.getFieldId());
+							
 							JSONObject yAxisJson = new JSONObject();
 							yAxisJson.put("fieldId", readingField.getFieldId());
 							yAxisJson.put("aggr", 0);
@@ -955,6 +960,7 @@ public class V2ReportAction extends FacilioAction {
 			
 			JSONObject yAxisJson = new JSONObject();
 			yAxisJson.put("fieldId", readingruleContext.getReadingFieldId());
+			updateTimeRangeAsPerFieldType(readingruleContext.getReadingFieldId());
 			yAxisJson.put("aggr", 0);
 			
 			dataPoint.put("yAxis", yAxisJson);
@@ -965,6 +971,26 @@ public class V2ReportAction extends FacilioAction {
 		return dataPoints;
 	}
 	
+	private void updateTimeRangeAsPerFieldType(long fieldId) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioField readingField = modBean.getField(fieldId);
+		if(readingField != null) {
+			FormulaFieldContext formulaField = FormulaFieldAPI.getFormulaField(readingField);
+			
+			if(formulaField != null && formulaField.getFrequencyEnum() == FacilioFrequency.DAILY) {
+				this.startTime = DateTimeUtil.addDays(this.endTime, -10);
+			}
+			else if(formulaField != null && formulaField.getFrequencyEnum() == FacilioFrequency.MONTHLY) {
+				this.startTime = DateTimeUtil.addMonths(this.endTime, -3);
+			}
+			else if(formulaField != null && formulaField.getFrequencyEnum() == FacilioFrequency.WEEKLY) {
+				this.startTime = DateTimeUtil.addWeeks(this.endTime, -3);
+			}
+		}
+		LOGGER.error("1.this.startTime --- "+this.startTime);
+		LOGGER.error("2.this.endTime --- "+this.endTime);
+	}
+
 	private ReadingAnalysisContext.ReportMode mode = ReportMode.TIMESERIES;
 	public int getMode() {
 		if (mode != null) {
