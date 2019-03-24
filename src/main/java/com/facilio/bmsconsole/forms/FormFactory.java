@@ -49,6 +49,8 @@ public class FormFactory {
 		forms.put("location_form", getLocationForm());
 		forms.put("tenantForm", getTenantsForm());
 		forms.put("labourForm", getLabourForm());
+		forms.put("purchaseRequestForm", getPurchaseRequestForm());
+		
 		return forms;
 	}
     public static List<FormField> getFormFields(String modName) {
@@ -721,6 +723,17 @@ public class FormFactory {
 		return form;
 	}
 	
+	public static FacilioForm getPurchaseRequestForm() {
+		FacilioForm form = new FacilioForm();
+		form.setDisplayName("PURCHASE REQUEST");
+		form.setName("web_default");
+		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.PURCHASE_REQUEST));
+		form.setLabelPosition(LabelPosition.TOP);
+		form.setFields(getPurchaseRequestFormFields());
+		form.setFormType(FormType.WEB);
+		return form;
+	}
+	
 	private static List<FormField> getLabourFormFields() {
 		List<FormField> fields = new ArrayList<>();
 		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.REQUIRED, 1, 1));
@@ -737,5 +750,15 @@ public class FormFactory {
 		return fields;
 	}
 
+	private static List<FormField> getPurchaseRequestFormFields() {
+		List<FormField> fields = new ArrayList<>();
+		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.REQUIRED, 1, 1));
+		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 2, 1));
+		fields.add(new FormField("vendor", FieldDisplayType.LOOKUP_SIMPLE, "Vendor", Required.OPTIONAL, "vendors", 4, 2));
+		fields.add(new FormField("lineItems", FieldDisplayType.LINEITEMS, "LINE ITEMS", Required.OPTIONAL, 10, 1));
+		fields.add(new FormField("siteId", FieldDisplayType.LOOKUP_SIMPLE, "Site", Required.REQUIRED, "site", 2, 1));
+		return fields;
+	}
+	
 
 }
