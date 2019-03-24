@@ -9,6 +9,7 @@ import org.apache.commons.collections4.CollectionUtils;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.PurchaseRequestContext;
+import com.facilio.bmsconsole.context.PurchaseRequestContext.Status;
 import com.facilio.bmsconsole.context.PurchaseRequestLineItemContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
@@ -34,6 +35,7 @@ public class AddOrUpdatePurchaseRequestCommand implements Command {
 			
 			FacilioModule lineModule = modBean.getModule(FacilioConstants.ContextNames.PURCHASE_REQUEST_LINE_ITEMS);
 			
+			purchaseRequestContext.setStatus(Status.REQUESTED);
 			if (CollectionUtils.isEmpty(purchaseRequestContext.getLineItems())) {
 				throw new Exception("Line items cannot be empty");
 			}
