@@ -39,4 +39,18 @@ public class UserMobileSetting {
 	public void setCreatedTime(long createdTime) {
 		this.createdTime = createdTime;
 	}
+	
+	private Boolean fromPortal;
+	public Boolean getFromPortal() {
+		return fromPortal;
+	}
+	public void setFromPortal(Boolean fromPortal) {
+		this.fromPortal = fromPortal;
+	}
+	public boolean isFromPortal () {
+		if (fromPortal != null) {
+			return fromPortal.booleanValue();
+		}
+		return false;
+	}
 }

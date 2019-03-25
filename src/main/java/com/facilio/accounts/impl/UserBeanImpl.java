@@ -41,6 +41,7 @@ import com.facilio.bmsconsole.context.BaseSpaceContext.SpaceType;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.ResourceContext.ResourceType;
 import com.facilio.bmsconsole.context.ShiftUserRelContext;
+import com.facilio.bmsconsole.criteria.BooleanOperators;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
@@ -712,6 +713,7 @@ public class UserBeanImpl implements UserBean {
 		if (userMobileSetting.getCreatedTime() == -1) {
 			userMobileSetting.setCreatedTime(System.currentTimeMillis());
 		}
+		userMobileSetting.setFromPortal(AccountUtil.getCurrentAccount().getUser().isPortalUser());
 		
 		//Fetching and adding only if it's not present already
 		FacilioModule module = AccountConstants.getUserMobileSettingModule();
@@ -733,12 +735,14 @@ public class UserBeanImpl implements UserBean {
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 		FacilioField userIdField = fieldMap.get("userId");
 		FacilioField instanceField = fieldMap.get("mobileInstanceId");
+		boolean isPortal = AccountUtil.getCurrentAccount().getUser().isPortalUser();
 		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 														.table(module.getTableName())
 														.select(fields)
 														.andCondition(CriteriaAPI.getCondition(userIdField, String.valueOf(userId), PickListOperators.IS))
 														.andCondition(CriteriaAPI.getCondition(instanceField, instance, StringOperators.IS))
+														.andCondition(CriteriaAPI.getCondition(fieldMap.get("fromPortal"), String.valueOf(isPortal) , BooleanOperators.IS))
 														;
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
@@ -771,11 +775,14 @@ public class UserBeanImpl implements UserBean {
 	@Override
 	public void removeUserMobileSetting(String mobileInstanceId) throws Exception {
 		
+		boolean isPortal = AccountUtil.getCurrentAccount().getUser().isPortalUser();
+		
 		List<FacilioField> fields = AccountConstants.getUserMobileSettingFields();
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 		GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
 				.table(AccountConstants.getUserMobileSettingModule().getTableName())
-				.andCondition(CriteriaAPI.getCondition(fieldMap.get("mobileInstanceId"), mobileInstanceId, StringOperators.IS));
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("mobileInstanceId"), mobileInstanceId, StringOperators.IS))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("fromPortal"), String.valueOf(isPortal) , BooleanOperators.IS));
 		
 		builder.delete();
 	}

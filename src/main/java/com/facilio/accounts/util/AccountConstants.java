@@ -1120,6 +1120,8 @@ public class AccountConstants {
 		fields.add(mobileInstanceId);
 		
 		fields.add(FieldFactory.getField("createdTime", "CREATED_TIME", module, FieldType.DATE_TIME));
+		
+		fields.add(FieldFactory.getField("fromPortal", "IS_FROM_PORTAL", module, FieldType.BOOLEAN));
 
 		return fields;
 	}

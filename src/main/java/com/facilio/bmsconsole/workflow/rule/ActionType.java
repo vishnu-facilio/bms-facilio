@@ -7,11 +7,13 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
@@ -328,19 +330,19 @@ public enum ActionType {
 					String ids = (String) obj.get("id");
 
 					if (!StringUtils.isEmpty(ids)) {
-						List<String> mobileInstanceIds = getMobileInstanceIDs(ids);
+						List<Pair<String, Boolean>> mobileInstanceSettings = getMobileInstanceIDs(ids);
 						LOGGER.info("Sending push notifications for ids : "+ids);
-						LOGGER.info("Sending push notifications for mobileIds : "+mobileInstanceIds);
-						if (mobileInstanceIds != null && !mobileInstanceIds.isEmpty()) {
-							for (String mobileInstanceId : mobileInstanceIds) {
-								if (mobileInstanceId != null) {
+						if (mobileInstanceSettings != null && !mobileInstanceSettings.isEmpty()) {
+							LOGGER.info("Sending push notifications for mobileIds : "+mobileInstanceSettings.stream().map(pair -> pair.getLeft()).collect(Collectors.toList()));
+							for (Pair<String, Boolean> mobileInstanceSetting : mobileInstanceSettings) {
+								if (mobileInstanceSetting != null) {
 									// content.put("to",
 									// "exA12zxrItk:APA91bFzIR6XWcacYh24RgnTwtsyBDGa5oCs5DVM9h3AyBRk7GoWPmlZ51RLv4DxPt2Dq2J4HDTRxW6_j-RfxwAVl9RT9uf9-d9SzQchMO5DHCbJs7fLauLIuwA5XueDuk7p5P7k9PfV");
-									obj.put("to", mobileInstanceId);
+									obj.put("to", mobileInstanceSetting.getLeft());
 									
 									Map<String, String> headers = new HashMap<>();
 									headers.put("Content-Type", "application/json");
-									headers.put("Authorization", "key="+AwsUtil.getPushNotificationKey());
+									headers.put("Authorization", "key="+ (mobileInstanceSetting.getRight() ? AwsUtil.getPortalPushNotificationKey() : AwsUtil.getPushNotificationKey()));
 
 									String url = "https://fcm.googleapis.com/fcm/send";
 
@@ -357,8 +359,8 @@ public enum ActionType {
 			}
 		}
 
-		private List<String> getMobileInstanceIDs(String idList) throws Exception {
-			List<String> mobileInstanceIds = new ArrayList<String>();
+		private List<Pair<String, Boolean>> getMobileInstanceIDs(String idList) throws Exception {
+			List<Pair<String, Boolean>> mobileInstanceIds = new ArrayList<>();
 			List<FacilioField> fields = new ArrayList<>();
 
 			FacilioField email = new FacilioField();
@@ -368,12 +370,10 @@ public enum ActionType {
 			email.setModule(ModuleFactory.getUserModule());
 			fields.add(email);
 
-			FacilioField mobileInstanceId = new FacilioField();
-			mobileInstanceId.setName("mobileInstanceId");
-			mobileInstanceId.setColumnName("MOBILE_INSTANCE_ID");
-			mobileInstanceId.setDataType(FieldType.STRING);
-			mobileInstanceId.setModule(AccountConstants.getUserMobileSettingModule());
-			fields.add(mobileInstanceId);
+			Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(AccountConstants.getUserMobileSettingFields());
+
+			fields.add(fieldMap.get("mobileInstanceId"));
+			fields.add(fieldMap.get("fromPortal"));
 
 			// Condition condition = CriteriaAPI.getCondition("EMAIL", "email",
 			// StringUtils.join(emails, ","), StringOperators.IS);
@@ -389,7 +389,11 @@ public enum ActionType {
 			List<Map<String, Object>> props = selectBuilder.get();
 			if (props != null && !props.isEmpty()) {
 				for (Map<String, Object> prop : props) {
-					mobileInstanceIds.add((String) prop.get("mobileInstanceId"));
+					Boolean fromPortal = (Boolean)prop.get("fromPortal");
+					if (fromPortal == null) {
+						fromPortal = false;
+					}
+					mobileInstanceIds.add(Pair.of((String) prop.get("mobileInstanceId"), fromPortal));
 					// emailToMobileId.put((String) prop.get("email"), (String)
 					// prop.get("mobileInstanceId"));
 				}
