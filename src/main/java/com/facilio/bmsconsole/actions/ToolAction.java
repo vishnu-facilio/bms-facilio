@@ -77,7 +77,7 @@ public class ToolAction extends FacilioAction {
 
 	public String addBulkTool() throws Exception {
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.RECORD_LIST, tools);
+		context.put(FacilioConstants.ContextNames.TOOLS, tools);
 		context.put(FacilioConstants.ContextNames.STORE_ROOM, storeRoom);
 		context.put(FacilioConstants.ContextNames.SET_LOCAL_MODULE_ID, true);
 		Chain addStockedTool = TransactionChainFactory.getBulkAddToolChain();

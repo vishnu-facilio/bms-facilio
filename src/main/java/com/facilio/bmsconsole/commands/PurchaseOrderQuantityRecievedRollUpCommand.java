@@ -50,7 +50,7 @@ public class PurchaseOrderQuantityRecievedRollUpCommand implements Command {
 
 			Map<Long, Double> poIdVsQty = new HashMap<>();
 			List<Long> poIds = new ArrayList<>();
-
+			List<PurchaseOrderContext> receivedPOs = new ArrayList<>();
 			SelectRecordsBuilder<ReceivableContext> builder = new SelectRecordsBuilder<ReceivableContext>()
 					.module(module).select(fields).beanClass(ReceivableContext.class)
 					.andCondition(CriteriaAPI.getIdCondition(receivableIds, module));
@@ -66,14 +66,16 @@ public class PurchaseOrderQuantityRecievedRollUpCommand implements Command {
 						.module(pomodule).select(pofields).beanClass(PurchaseOrderContext.class)
 						.andCondition(CriteriaAPI.getIdCondition(entry.getKey(), pomodule));
 				List<PurchaseOrderContext> purchaseOrderlist = poBuilder.get();
+				
 				if (purchaseOrderlist != null && !purchaseOrderlist.isEmpty()) {
 					for (PurchaseOrderContext po : purchaseOrderlist) {
 						if (entry.getValue() < po.getTotalQuantity()) {
 							po.setStatus(Status.PARTIALLY_RECEIVED);
 						} else if (entry.getValue() == po.getTotalQuantity()) {
 							po.setStatus(Status.RECEIVED);
+							receivedPOs.add(po);
 						}
-
+						
 						UpdateRecordBuilder<PurchaseOrderContext> updateBuilder = new UpdateRecordBuilder<PurchaseOrderContext>()
 								.module(pomodule).fields(modBean.getAllFields(pomodule.getName()))
 								.andCondition(CriteriaAPI.getIdCondition(po.getId(), pomodule));
@@ -81,6 +83,7 @@ public class PurchaseOrderQuantityRecievedRollUpCommand implements Command {
 					}
 				}
 			}
+			context.put(FacilioConstants.ContextNames.PURCHASE_ORDERS, receivedPOs);
 		}
 		return false;
 	}

@@ -102,10 +102,33 @@ public class PurchaseOrderLineItemContext extends ModuleBaseWithCustomFields{
 	}
 	
 	private double quantityReceived = -1;
+
 	public double getQuantityReceived() {
 		return quantityReceived;
 	}
+
 	public void setQuantityReceived(double quantityReceived) {
 		this.quantityReceived = quantityReceived;
 	}
+
+	List<PurchasedItemContext> purchasedItems;
+
+	public List<PurchasedItemContext> getPurchasedItems() {
+		return purchasedItems;
+	}
+
+	public void setPurchasedItems(List<PurchasedItemContext> purchasedItems) {
+		this.purchasedItems = purchasedItems;
+	}
+
+	List<PurchasedToolContext> purchasedTools;
+
+	public List<PurchasedToolContext> getPurchasedTools() {
+		return purchasedTools;
+	}
+
+	public void setPurchasedTools(List<PurchasedToolContext> purchasedTools) {
+		this.purchasedTools = purchasedTools;
+	}
+
 }

@@ -4,6 +4,7 @@ import com.facilio.activity.AddActivitiesCommand;
 import com.facilio.agent.ConfigureAgentCommand;
 import com.facilio.agent.ConfigureControllerCommand;
 import com.facilio.agent.DeleteAgentCommand;
+import com.facilio.bmsconsole.actions.PurchaseOrderITCompleteCommand;
 import com.facilio.bmsconsole.commands.data.PopulateImportProcessCommand;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.chain.FacilioChain;
@@ -2134,6 +2135,7 @@ public class TransactionChainFactory {
 			c.addCommand(new AddOrUpdateReceiptCommand());
 			c.addCommand(getPurchaseOrderLieItemQuantityRecievedRollUpChain());
 			c.addCommand(getPurchaseOrderQuantityRecievedRollUpChain());
+			c.addCommand(getPurchaseOrderAutoCompleteChain());
 			return c;
 		}
 		
@@ -2172,6 +2174,22 @@ public class TransactionChainFactory {
 		public static Chain getPurchaseOrderLieItemQuantityRecievedRollUpChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(new PurchaseOrderLineItemQuantityRollUpCommand());
+			return c;
+		}
+		
+		public static Chain getPurchaseOrderAutoCompleteChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new PurchaseOrderAutoCompleteCommand());
+			c.addCommand(getBulkAddToolChain());
+			c.addCommand(getAddBulkItemChain());
+			return c;
+		}
+		
+		public static Chain getPurchaseOrderCompleteChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new PurchaseOrderITCompleteCommand());
+			c.addCommand(getBulkAddToolChain());
+			c.addCommand(getAddBulkItemChain());
 			return c;
 		}
 }

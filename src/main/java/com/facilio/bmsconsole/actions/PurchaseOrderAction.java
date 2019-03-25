@@ -14,6 +14,8 @@ import com.facilio.bmsconsole.context.PurchaseOrderLineItemContext;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 
+import freemarker.ext.beans.SingletonCustomizer;
+
 public class PurchaseOrderAction extends FacilioAction {
 
 	private static final long serialVersionUID = 1L;
@@ -182,6 +184,33 @@ public class PurchaseOrderAction extends FacilioAction {
 	
 	public String purchaseOrderCount() throws Exception {
 		return getPurchaseOrderList();
+	}
+	
+	private List<PurchaseOrderLineItemContext> purchaseOrdersLineItems;
+	public List<PurchaseOrderLineItemContext> getPurchaseOrdersLineItems() {
+		return purchaseOrdersLineItems;
+	}
+	public void setPurchaseOrdersLineItems(List<PurchaseOrderLineItemContext> lineItems) {
+		this.purchaseOrdersLineItems = lineItems;
+	}
+	
+	private long poId;
+	public long getPoId() {
+		return poId;
+	}
+	public void setPoId(long poId) {
+		this.poId = poId;
+	}
+	
+	public String completePurchaseOrder() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.PURCHASE_ORDERS, Collections.singletonList(poId));
+		context.put(FacilioConstants.ContextNames.PURCHASE_ORDER_LINE_ITEMS, purchaseOrdersLineItems);
+		Chain chain = TransactionChainFactory.getPurchaseOrderCompleteChain();
+		chain.execute(context);
+		
+		setResult(FacilioConstants.ContextNames.RECEIPT, context.get(FacilioConstants.ContextNames.RECORD));
+		return SUCCESS;
 	}
 
 }

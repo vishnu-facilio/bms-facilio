@@ -1716,7 +1716,9 @@
 			<param name="viewName">{1}</param>
 			<param name="moduleName">purchaseorder</param>
 		</action>
-	
+		<action name="completePurchaseOrder" class="com.facilio.bmsconsole.actions.PurchaseOrderAction" method="completePurchaseOrder">
+			<param name="moduleName">purchaseorder</param>
+		</action>
 	</package>
 
 	<package name="receiptsApi" namespace="/api/v2/receipt" extends="v2Api">
