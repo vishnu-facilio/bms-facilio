@@ -80,7 +80,6 @@ public class NotesAPI {
 	}
 	public static List<NoteContext> fetchNote (List<Long> parentIds, String moduleName) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		moduleName = "ticketnotes";
 		FacilioModule module = modBean.getModule(moduleName);
 		List<FacilioField> fields = modBean.getAllFields(moduleName);
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
@@ -94,8 +93,20 @@ public class NotesAPI {
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("parentId"), ids.toString(), NumberOperators.EQUALS));
 		
 		List<NoteContext> props = selectBuilder.get();
-		System.out.println(selectBuilder);
-		
+		List<Long> userIds = props.stream().map(note -> note.getCreatedBy().getId()).collect(Collectors.toList());
+		if (userIds.size() > 0) {
+			List<User> userList = AccountUtil.getUserBean().getUsers(null, userIds);
+			Map<Long, User> userMap = userList.stream().collect(Collectors.toMap(User::getId, Function.identity(), 
+											(prevValue, curValue) -> { return prevValue; }));
+			if (userList != null) {
+				for (NoteContext notess : props) {
+					notess.setCreatedBy(userMap.get(notess.getCreatedBy().getId()));
+				}
+			}
+			for (NoteContext notess : props) {
+				notess.setCreatedBy(userMap.get(notess.getCreatedBy().getId()));
+			}
+		}
 		return props;
 	}
 
