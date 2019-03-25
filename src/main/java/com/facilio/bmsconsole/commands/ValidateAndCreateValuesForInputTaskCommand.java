@@ -163,6 +163,7 @@ public class ValidateAndCreateValuesForInputTaskCommand implements Command {
 			context.put(FacilioConstants.ContextNames.READING, reading);
 			context.put(FacilioConstants.ContextNames.RECORD, reading);						
 			context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.CREATE);
+			context.put(FacilioConstants.ContextNames.ADJUST_READING_TTIME, false);
 		}
 	}
 	

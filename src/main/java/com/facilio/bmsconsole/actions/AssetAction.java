@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.actions;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -59,6 +60,29 @@ public class AssetAction extends FacilioAction {
 
 	public void setReadingId(long readingId) {
 		this.readingId = readingId;
+	}
+	
+	private Map<Long,String> mappedqr = new HashMap<Long, String>();
+	
+	private ArrayList<Long> assetQr;
+	
+	public void setAssetQr(ArrayList<Long> assetQr) {
+		this.assetQr=assetQr;
+	}
+	
+	public ArrayList<Long> getAssetQr() {
+		return this.assetQr;
+	}
+	
+ 	
+	public String generateQr() throws Exception {
+		FacilioContext context=new FacilioContext();
+		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST,id);
+		Chain updateQrChain = TransactionChainFactory.getUpdateQrChain();
+		updateQrChain.execute(context);
+		Map<Long,String> mappedqr =(Map<Long,String>) context.get(FacilioConstants.ContextNames.MAP_QR);
+		setResult("mappedqr",mappedqr);
+		return SUCCESS;
 	}
 
 	public String addAsset() throws Exception {

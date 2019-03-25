@@ -37,6 +37,7 @@ import com.facilio.bmsconsole.modules.UpdateChangeSet;
 import com.facilio.bmsconsole.workflow.rule.ActionContext;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsole.workflow.rule.ApprovalRuleContext;
+import com.facilio.bmsconsole.workflow.rule.ApproverContext;
 import com.facilio.bmsconsole.workflow.rule.FieldChangeFieldContext;
 import com.facilio.bmsconsole.workflow.rule.ReadingAlarmRuleContext;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
@@ -723,6 +724,9 @@ public class WorkflowRuleAPI {
 							prop.putAll(typeWiseExtendedProps.get(ruleType).get(prop.get("id")));
 							rule = ApprovalRulesAPI.constructApprovalRuleFromProps(prop, modBean);
 							break;
+						case READING_ALARM_RULE:
+							rule = constructReadingAlarmRuleFromProps(prop, modBean);
+							break;
 						default:
 							rule = FieldUtil.getAsBeanFromMap(prop, WorkflowRuleContext.class);
 							break;
@@ -760,6 +764,11 @@ public class WorkflowRuleAPI {
 			return workflows;
 		}
 		return null;
+	}
+	
+	protected static ReadingAlarmRuleContext constructReadingAlarmRuleFromProps(Map<String, Object> prop, ModuleBean modBean) throws Exception {
+		ReadingAlarmRuleContext readingRule = FieldUtil.getAsBeanFromMap(prop, ReadingAlarmRuleContext.class);
+		return readingRule;
 	}
 	
 	private static List<WorkflowEventContext> getWorkFlowEventsFromMapList(List<Map<String, Object>> props) throws Exception {
@@ -975,7 +984,13 @@ public class WorkflowRuleAPI {
 			
 			if(props!= null && !props.isEmpty()) {
 				
-				return FieldUtil.getAsBeanListFromMapList(props, ReadingAlarmRuleContext.class);
+				List<WorkflowRuleContext> workflowRuleContexts = getWorkFlowsFromMapList(props, false, true, true);
+				List<ReadingAlarmRuleContext> readingAlarmRuleContexts = new ArrayList<>();
+				for(WorkflowRuleContext workflowRuleContext :workflowRuleContexts) {
+					workflowRuleContext.setActions(ActionAPI.getActiveActionsFromWorkflowRule(workflowRuleContext.getId()));
+					readingAlarmRuleContexts.add((ReadingAlarmRuleContext)workflowRuleContext);
+				}
+				return readingAlarmRuleContexts;
 			}
 		}
 		return null;

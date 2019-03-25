@@ -5,6 +5,7 @@ import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -563,7 +564,6 @@ public class ExportUtil {
 
 		if(specialFields) {
 		List<Long> ids = records.stream().map(a -> a.getId()).collect(Collectors.toList());
-		Map<Long, List<String>> map = new HashMap<>();
 		for (int j = 0; j < viewFields.size(); j++) { 
 			if (viewFields.get(j).getField().getName().equals("noOfNotes")) {
 				
@@ -579,22 +579,28 @@ public class ExportUtil {
 		commentField.setModule(modBean.getModule(moduleName));
 		comment.setField(commentField);
 		viewFields.add(comment);		
-		
+		Map<Long, List<String>> map = new HashMap<>();
 		if (ids.size() > 0) {
-		List<NoteContext> notes = NotesAPI.fetchNote(ids, moduleName);
+		List<NoteContext> notes = NotesAPI.fetchNote(ids, "ticketnotes");
 		if (!(notes.isEmpty())) {
-			for (int i = 0; i < records.size(); i++) {
-				long woId = records.get(i).getId();
-				List<String> result = notes.stream().filter(l -> ((l.getParentId()) == (woId))).map(NoteContext::getBody)
-						.collect(Collectors.toList());
-
-				map.put(records.get(i).getId(), result);
-				Map<String, Object> props = new HashMap<>();
-				if(result != null && !result.isEmpty()) {
-					props.put("comment", StringUtils.join(result, "\n"));
-					records.get(i).addData(props);
-				}		
+			for (int j = 0; j < notes.size(); j++) {
+				if (!(notes.get(j).getCreatedBy().getEmail().matches("system+"))) {
+				if (map.containsKey(notes.get(j).getParentId())){
+					map.get(notes.get(j).getParentId()).add(notes.get(j).getBody());
+				}
+				else {
+					List<String> temp = new ArrayList<>();
+					temp.add(notes.get(j).getBody());
+					map.put(notes.get(j).getParentId(), temp);
+				}
+				}
 			}
+			for (int i = 0; i < records.size(); i++) {
+				Map<String, Object> props = new HashMap<>();
+				props.put("comment", StringUtils.join(map.get(records.get(i).getId()), "\n"));
+				records.get(i).addData(props);
+			}
+			
 		}
 	}
 

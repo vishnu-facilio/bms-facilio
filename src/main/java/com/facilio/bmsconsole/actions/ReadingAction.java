@@ -401,6 +401,7 @@ public class ReadingAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
 		context.put(FacilioConstants.ContextNames.READINGS, getReadingValues());
 		context.put(FacilioConstants.ContextNames.READINGS_SOURCE, SourceType.WEB_ACTION);
+		context.put(FacilioConstants.ContextNames.ADJUST_READING_TTIME, false);
 		Chain addCurrentOccupancy = ReadOnlyChainFactory.getAddOrUpdateReadingValuesChain();
 		addCurrentOccupancy.execute(context);
 		return SUCCESS;

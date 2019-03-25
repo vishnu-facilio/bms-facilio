@@ -759,6 +759,7 @@ public class FacilioConstants {
 		
 		
 		public static final String QR_VALUE = "qrValue";
+		public static final String MAP_QR = "mapqr";
 		
 		public static final String PUBLISH_DATA = "publishData";
 		public static final String PUBLISH_SUCCESS = "publishSucsess";

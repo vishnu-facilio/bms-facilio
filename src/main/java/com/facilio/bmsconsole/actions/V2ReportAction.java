@@ -21,6 +21,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.AddOrUpdateReportCommand;
 import com.facilio.bmsconsole.commands.ConstructReportData;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
+import com.facilio.bmsconsole.commands.SendReadingReportMailCommand;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.AlarmContext;
 import com.facilio.bmsconsole.context.DashboardWidgetContext;
@@ -555,6 +556,19 @@ public class V2ReportAction extends FacilioAction {
 		return setReportResult(context);
 	}
 	
+	private void getReport(FacilioContext context) throws Exception {
+		ReportContext reportContext = ReportUtil.getReport(reportId);
+		if (reportContext == null) {
+			throw new Exception("Report not found");
+		}
+		context.put(FacilioConstants.ContextNames.REPORT, reportContext);
+		
+		if (startTime != -1 && endTime != -1) {
+			reportContext.setDateRange(new DateRange(startTime, endTime));
+		}
+		reportContext.setUserFilters(userFilters, true);
+	}
+	
 	private void updateContext(FacilioContext context) {
 		context.put("x-axis", xField);
 		context.put("date-field", dateField);
@@ -608,16 +622,7 @@ public class V2ReportAction extends FacilioAction {
 		Chain chain = FacilioChain.getNonTransactionChain();
 		FacilioContext context = new FacilioContext();
 
-		ReportContext reportContext = ReportUtil.getReport(reportId);
-		if (reportContext == null) {
-			throw new Exception("Report not found");
-		}
-		context.put(FacilioConstants.ContextNames.REPORT, reportContext);
-		
-		if (startTime != -1 && endTime != -1) {
-			reportContext.setDateRange(new DateRange(startTime, endTime));
-		}
-		reportContext.setUserFilters(userFilters, true);
+		getReport(context);
 		
 		chain.addCommand(ReadOnlyChainFactory.constructAndFetchReportDataChain());
 		chain.addCommand(new GetModuleFromReportContextCommand());
@@ -1164,7 +1169,7 @@ public class V2ReportAction extends FacilioAction {
 		Chain exportChain = null;
 		if (reportId != -1) {
 			exportChain = ReadOnlyChainFactory.getExportNewModuleReportFileChain();
-			setReportWithDataContext(context);
+			getReport(context);
 		} else {
 			updateContext(context);
 			
@@ -1212,6 +1217,30 @@ public class V2ReportAction extends FacilioAction {
 		
 		setResult("fileUrl", context.get(FacilioConstants.ContextNames.FILE_URL));
 		
+		return SUCCESS;
+	}
+	
+	public String sendModuleReportMail() throws Exception {
+		FacilioContext context = new FacilioContext();
+		Chain mailReportChain = FacilioChain.getNonTransactionChain();
+		
+		if (reportId != -1) {
+			getReport(context);
+		} else {
+			updateContext(context);
+			
+			mailReportChain.addCommand(new ConstructReportData());
+		}
+		context.put(FacilioConstants.ContextNames.FILE_FORMAT, fileFormat);
+		context.put("chartType", chartType);	// Temp
+		context.put(FacilioConstants.Workflow.TEMPLATE, emailTemplate);
+
+		mailReportChain.addCommand(ReadOnlyChainFactory.getExportNewModuleReportFileChain());
+		mailReportChain.addCommand(new SendReadingReportMailCommand());
+		mailReportChain.execute(context);
+
+		setResult("fileUrl", context.get(FacilioConstants.ContextNames.FILE_URL));
+
 		return SUCCESS;
 	}
 	
