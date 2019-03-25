@@ -671,6 +671,7 @@ public class ReadOnlyChainFactory {
 	public static Chain getPurchaseRequestDetailsChain() {
 		Chain c = getDefaultChain();
 		c.addCommand(SetTableNamesCommand.getForPurchaseRequest());
+		c.addCommand(new PurchaseRequestPurchaseOrderLookUpsCommand());
 		c.addCommand(new GenericGetModuleDataDetailCommand());
 		c.addCommand(new FetchPurchaseRequestDetailsCommand());
 		return c;
@@ -690,6 +691,7 @@ public class ReadOnlyChainFactory {
 	public static Chain getPurchaseOrderDetailsChain() {
 		Chain c = getDefaultChain();
 		c.addCommand(SetTableNamesCommand.getForPurchaseOrder());
+		c.addCommand(new PurchaseRequestPurchaseOrderLookUpsCommand());
 		c.addCommand(new GenericGetModuleDataDetailCommand());
 		c.addCommand(new FetchPurchaseOrderDetailsCommand());
 		return c;

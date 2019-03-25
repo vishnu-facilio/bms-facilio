@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.facilio.bmsconsole.commands.GetReceiptsListCommand;
 import com.facilio.constants.FacilioConstants;
 
 public class ModuleFactory {
@@ -72,7 +73,10 @@ public class ModuleFactory {
 		moduleMap.put(FacilioConstants.ContextNames.ITEM_TRANSACTIONS, getItemTransactionsModule());
 		moduleMap.put(FacilioConstants.ContextNames.TENANT, getTenantsModule());
 		moduleMap.put(FacilioConstants.ContextNames.LABOUR, getLabourModule());
-	
+		moduleMap.put(FacilioConstants.ContextNames.PURCHASE_ORDER, getPurchaseRequestModule());
+		moduleMap.put(FacilioConstants.ContextNames.PURCHASE_REQUEST, getPurchaseOrderModule());
+		moduleMap.put(FacilioConstants.ContextNames.RECEIPT, getReceiptModule());
+		
 		return moduleMap;
 	}
 	
@@ -1805,6 +1809,14 @@ public class ModuleFactory {
 		purchaseOrder.setName("purchaseorder");
 		purchaseOrder.setDisplayName("Purchase Order");
 		purchaseOrder.setTableName("Purchase_Orders");
+		return purchaseOrder;
+	}
+  	
+	public static FacilioModule getReceiptModule() {
+		FacilioModule purchaseOrder = new FacilioModule();
+		purchaseOrder.setName("receipts");
+		purchaseOrder.setDisplayName("Receipts");
+		purchaseOrder.setTableName("Receipts");
 		return purchaseOrder;
 	}
 }
