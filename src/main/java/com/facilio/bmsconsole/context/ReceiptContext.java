@@ -6,8 +6,15 @@ public class ReceiptContext extends ModuleBaseWithCustomFields {
 	private static final long serialVersionUID = 1L;
 	
 	private long receivableId = -1;
-	private long lineItemId = -1;
+	private PurchaseOrderLineItemContext lineItem;
 	
+	public PurchaseOrderLineItemContext getLineItem() {
+		return lineItem;
+	}
+	public void setLineItem(PurchaseOrderLineItemContext lineItem) {
+		this.lineItem = lineItem;
+	}
+
 	private double quantity = -1;
 	public double getQuantity() {
 		return quantity;
@@ -15,12 +22,7 @@ public class ReceiptContext extends ModuleBaseWithCustomFields {
 	public void setQuantity(double quantity) {
 		this.quantity = quantity;
 	}
-	public long getLineItemId() {
-		return lineItemId;
-	}
-	public void setLineItemId(long lineItemId) {
-		this.lineItemId = lineItemId;
-	}
+	
 	public long getReceivableId() {
 		return receivableId;
 	}
