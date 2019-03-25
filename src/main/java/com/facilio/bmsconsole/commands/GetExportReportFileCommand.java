@@ -45,6 +45,11 @@ public class GetExportReportFileCommand implements Command {
 	@Override
 	public boolean execute(Context context) throws Exception {
 		
+		Boolean isS3Url = (Boolean) context.get("isS3Url");
+		if (isS3Url == null) {
+			isS3Url = false;
+		}
+		
 		report = (com.facilio.report.context.ReportContext) context.get(FacilioConstants.ContextNames.REPORT);
 		FileFormat fileFormat = (FileFormat) context.get(FacilioConstants.ContextNames.FILE_FORMAT);
 		String fileUrl = null;
@@ -80,7 +85,7 @@ public class GetExportReportFileCommand implements Command {
 			Map<String, Object> table = new HashMap<String, Object>();
 			table.put("headers", headers);
 			table.put("records", records);
-			fileUrl = ExportUtil.exportData(fileFormat, "Report Data", table, false);
+			fileUrl = ExportUtil.exportData(fileFormat, "Report Data", table, isS3Url);
 		}
 		else {
 			StringBuilder url = getClientUrl(report.getDataPoints().get(0).getxAxis().getModule().getName(), report.getId(), fileFormat);

@@ -1212,7 +1212,8 @@ public class V2ReportAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.FILE_FORMAT, fileFormat);
 		context.put(FacilioConstants.Workflow.TEMPLATE, emailTemplate);
 		context.put("chartType", chartType);	// Temp
-		
+		context.put("isS3Url", true);
+
 		mailReportChain.execute(context);
 		
 		setResult("fileUrl", context.get(FacilioConstants.ContextNames.FILE_URL));
@@ -1234,6 +1235,8 @@ public class V2ReportAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.FILE_FORMAT, fileFormat);
 		context.put("chartType", chartType);	// Temp
 		context.put(FacilioConstants.Workflow.TEMPLATE, emailTemplate);
+		
+		context.put("isS3Url", true);
 
 		mailReportChain.addCommand(ReadOnlyChainFactory.getExportNewModuleReportFileChain());
 		mailReportChain.addCommand(new SendReadingReportMailCommand());

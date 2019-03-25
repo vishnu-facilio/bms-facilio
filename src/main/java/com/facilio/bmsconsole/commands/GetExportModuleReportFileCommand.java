@@ -50,24 +50,15 @@ private static final String ALIAS = "alias";
 	@SuppressWarnings("unchecked")
 	@Override
 	public boolean execute(Context context) throws Exception {
+		Boolean isS3Url = (Boolean) context.get("isS3Url");
+		if (isS3Url == null) {
+			isS3Url = false;
+		}
 		
 		report = (com.facilio.report.context.ReportContext) context.get(FacilioConstants.ContextNames.REPORT);
 		FileFormat fileFormat = (FileFormat) context.get(FacilioConstants.ContextNames.FILE_FORMAT);
 		String fileUrl = null;
 		if(fileFormat != FileFormat.PDF && fileFormat != FileFormat.IMAGE) {
-			
-//			mode = (ReportMode)context.get(FacilioConstants.ContextNames.REPORT_MODE);
-//			if (mode == null) {
-//				String chartStateString = report.getChartState();
-//				JSONParser parser = new JSONParser();
-//				Map<String, Object> chartState = (Map<String, Object>) parser.parse(chartStateString);
-//				if (chartState != null && chartState.containsKey("common")) {
-//					Map<String, Object> common = (Map<String, Object>) chartState.get("common");
-//					mode = ReportMode.valueOf((int)(long) common.get("mode"));
-//				}
-//			}
-			
-//			List<Map<String, Object>> columns = setDataMapAndGetColumns();
 			List<String> headers = new ArrayList<>();
 			
 			JSONObject reportData = (JSONObject) context.get(FacilioConstants.ContextNames.REPORT_DATA);
@@ -76,7 +67,7 @@ private static final String ALIAS = "alias";
 			Map<String, Object> table = new HashMap<String, Object>();
 			table.put("headers", headers);
 			table.put("records", records);
-			fileUrl = ExportUtil.exportData(fileFormat, "Report Data", table, false);
+			fileUrl = ExportUtil.exportData(fileFormat, "Report Data", table, isS3Url);
 		}
 		else {
 			StringBuilder url = getClientUrl(report.getDataPoints().get(0).getxAxis().getModule().getName(), report.getId(), fileFormat);
