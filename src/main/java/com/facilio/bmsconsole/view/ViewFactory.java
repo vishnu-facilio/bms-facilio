@@ -129,6 +129,7 @@ public class ViewFactory {
 		views.put("report", getReportView().setOrder(order++));
 		views.put("myrequests", getMyRequestWorkorders().setOrder(order++));
 		views.put("upcomingThisWeek", getUpcomingWorkOrdersThisWeek().setOrder(order++));
+		views.put("upcomingNextWeek", getUpcomingWorkOrdersNextWeek().setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.WORK_ORDER, views);
 
 		order = 1;
@@ -298,6 +299,7 @@ public class ViewFactory {
 
 		ArrayList<String> upcoming = new ArrayList<>();
 		upcoming.add("upcomingThisWeek");
+		upcoming.add("upcomingNextWeek");
 
 		groupViews.put("OpenWorkOrders", open); // TODO change name to lower
 												// case..also in client
@@ -853,6 +855,28 @@ public class ViewFactory {
 		criteria.addAndCondition(condition);
 
 		return criteria;
+	}
+
+	private static FacilioView getUpcomingWorkOrdersNextWeek() {
+		FacilioField createdTime = new FacilioField();
+		createdTime.setName("createdTime");
+		createdTime.setDataType(FieldType.NUMBER);
+		createdTime.setColumnName("CREATED_TIME");
+		createdTime.setModule(ModuleFactory.getWorkOrdersModule());
+
+		Criteria criteria = new Criteria();
+		criteria.addAndCondition(getPreOpenStatusCondition());
+		criteria.addAndCondition(CriteriaAPI.getCondition(createdTime, DateOperators.NEXT_WEEK));
+
+		FacilioView preOpenTicketsView = new FacilioView();
+		preOpenTicketsView.setName("upcomingNextWeek");
+		preOpenTicketsView.setDisplayName("Upcoming Next Week");
+		preOpenTicketsView.setCriteria(criteria);
+
+		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));
+		preOpenTicketsView.setSortFields(sortFields);
+
+		return preOpenTicketsView;
 	}
 
 	private static FacilioView getUpcomingWorkOrdersThisWeek() {
