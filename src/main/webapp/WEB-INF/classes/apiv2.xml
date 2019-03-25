@@ -739,6 +739,10 @@
 		<action name="sendMail" class="com.facilio.bmsconsole.actions.V2ReportAction"
 			method="sendReportMail">
 		</action>
+		<action name="sendModuleReportMail" class="com.facilio.bmsconsole.actions.V2ReportAction"
+			method="sendModuleReportMail">
+		</action>
+		
 		<action name="schedule" class="com.facilio.bmsconsole.actions.V2ReportAction"
 			method="scheduleReport">
 		</action>
