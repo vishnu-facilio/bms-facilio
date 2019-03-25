@@ -1197,7 +1197,7 @@
 		</action>
 		
 		<action name="updatesetupreading" class="com.facilio.bmsconsole.actions.ReadingAction"
-			method="updateAssetCategoryReading">
+			method="updateReading">
 				<param name="moduleName">setup</param>
 				<param name="permission">ASSET_SETTINGS</param>
 			<result name="success" type="json">
@@ -2818,22 +2818,6 @@
 				<param name="includeProperties">^note.*</param>
 			</result>
 		</action>
-		
-		<action name="additemtypenote" class="com.facilio.bmsconsole.actions.NoteAction"
-			method="addItemTypeNote">
-			<!-- <param name="permission">WORKORDER_READ,TASK_READ</param> -->
-			<result name="success" type="json">
-				<param name="includeProperties">^note.*</param>
-			</result>
-		</action>
-		
-		<action name="addtooltypenote" class="com.facilio.bmsconsole.actions.NoteAction"
-			method="addToolTypeNote">
-			<!-- <param name="permission">WORKORDER_READ,TASK_READ</param> -->
-			<result name="success" type="json">
-				<param name="includeProperties">^note.*</param>
-			</result>
-		</action>
 
 		<action name="get" class="com.facilio.bmsconsole.actions.NoteAction"
 			method="getNotesList">
@@ -2861,22 +2845,6 @@
 
 		<action name="getassetnotes" class="com.facilio.bmsconsole.actions.NoteAction"
 			method="getAssetNotes">
-			<!-- <param name="permission">WORKORDER_READ,TASK_READ</param> -->
-			<result name="success" type="json">
-				<param name="root">notes</param>
-			</result>
-		</action>
-		
-		<action name="getitemtypenotes" class="com.facilio.bmsconsole.actions.NoteAction"
-			method="getItemTypeNotes">
-			<!-- <param name="permission">WORKORDER_READ,TASK_READ</param> -->
-			<result name="success" type="json">
-				<param name="root">notes</param>
-			</result>
-		</action>
-		
-		<action name="gettooltypenotes" class="com.facilio.bmsconsole.actions.NoteAction"
-			method="getToolTypeNotes">
 			<!-- <param name="permission">WORKORDER_READ,TASK_READ</param> -->
 			<result name="success" type="json">
 				<param name="root">notes</param>

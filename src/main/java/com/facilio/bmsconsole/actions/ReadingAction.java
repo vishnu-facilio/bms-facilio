@@ -129,7 +129,7 @@ public class ReadingAction extends FacilioAction {
 		return SUCCESS;
 	}
 	
-	public String updateAssetCategoryReading() throws Exception {
+	public String updateReading() throws Exception {
 		FacilioContext context = new FacilioContext();
 		
 		List<List<ReadingRuleContext>> readingRules = Arrays.asList(getField().getReadingRules());
