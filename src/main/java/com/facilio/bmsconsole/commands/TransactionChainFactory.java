@@ -981,6 +981,12 @@ public class TransactionChainFactory {
 			return c;
 		}
 		
+		public static Chain getUpdateQrChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new UpdateQrCommand());
+			return c;
+		}
+		
 		public static Chain getImportChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(new ProcessImportCommand());
@@ -1864,7 +1870,7 @@ public class TransactionChainFactory {
 		
 		public static Chain getAssetFromQRChain() {
 			Chain c = getDefaultChain();
-			c.addCommand(new ParseQRValueCommand());
+			//c.addCommand(new ParseQRValueCommand());
 			c.addCommand(new FetchAssetFromQRValCommand());
 			c.addCommand(new SetModuleForSpecialAssetsCommand());
 			c.addCommand(new LoadAssetFields());

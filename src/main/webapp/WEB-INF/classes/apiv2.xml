@@ -845,6 +845,11 @@
 			<param name="moduleName">asset</param>
 			<param name="permission">READ</param>
 		</action>
+		
+		<action name="generateqr" class="com.facilio.bmsconsole.actions.AssetAction"
+		method="generateQr">
+		<param name="moduleName">asset</param>
+		</action>
 
 		<action name="cards" class="com.facilio.bmsconsole.actions.AssetAction"
 			method="reportCards">
