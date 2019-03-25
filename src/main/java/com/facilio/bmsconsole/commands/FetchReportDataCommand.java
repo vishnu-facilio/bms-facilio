@@ -450,12 +450,16 @@ public class FetchReportDataCommand implements Command {
 		FacilioModule baseSpaceModule = modBean.getModule(FacilioConstants.ContextNames.BASE_SPACE);
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(FacilioConstants.ContextNames.BASE_SPACE));
 		
-		selectBuilder.innerJoin(resourceModule.getTableName())
-					.on(resourceModule.getTableName()+".ID = "+dp.getxAxis().getField().getCompleteColumnName())
-					.innerJoin(baseSpaceModule.getTableName())
-					.on(resourceModule.getTableName()+".SPACE_ID = "+baseSpaceModule.getTableName()+".ID");
-		addedModules.add(resourceModule);
-		addedModules.add(baseSpaceModule);
+		if (!isAlreadyAdded(addedModules, resourceModule)) {
+			selectBuilder.innerJoin(resourceModule.getTableName())
+						.on(resourceModule.getTableName()+".ID = "+dp.getxAxis().getField().getCompleteColumnName());
+			addedModules.add(resourceModule);
+		}
+		if (!isAlreadyAdded(addedModules, baseSpaceModule)) {
+			selectBuilder.innerJoin(baseSpaceModule.getTableName())
+						.on(resourceModule.getTableName()+".SPACE_ID = "+baseSpaceModule.getTableName()+".ID");
+			addedModules.add(baseSpaceModule);
+		}
 		
 		FacilioField spaceField = null;
 		switch ((SpaceAggregateOperator)xAggr) {
