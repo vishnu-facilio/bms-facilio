@@ -354,10 +354,11 @@ public class DashboardUtil {
 		buildingList.add(spaceID);
 		
 		List<BaseSpaceContext> baseSpaceContexts = SpaceAPI.getBaseSpaceWithChildren(buildingList);
-		for(BaseSpaceContext baseSpaceContext :baseSpaceContexts) {
-			resourceList.add(baseSpaceContext.getId());
+		if(baseSpaceContexts != null) {
+			for(BaseSpaceContext baseSpaceContext :baseSpaceContexts) {
+				resourceList.add(baseSpaceContext.getId());
+			}
 		}
-		
 		List<Long> assets = AssetsAPI.getAssetIdsFromBaseSpaceIds(resourceList);
 		
 		if(assets != null) {
