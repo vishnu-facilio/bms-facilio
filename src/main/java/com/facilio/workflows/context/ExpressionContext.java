@@ -1,5 +1,6 @@
 package com.facilio.workflows.context;
 
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -12,17 +13,20 @@ import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.criteria.DateOperators;
 import com.facilio.bmsconsole.criteria.FacilioModulePredicate;
 import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
+import com.facilio.bmsconsole.util.DateTimeUtil;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericSelectRecordBuilder;
+import com.facilio.time.SecondsChronoUnit;
 import com.facilio.workflows.util.ExpressionAggregateOperator;
 import com.facilio.workflows.util.WorkflowUtil;
 
@@ -289,7 +293,7 @@ public class ExpressionContext implements WorkflowExpression {
 		List<Map<String, Object>> props = null;
 		if (!LookupSpecialTypeUtil.isSpecialType(moduleName)) {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			FacilioModule module = modBean.getModule(moduleName); 
+			FacilioModule module = modBean.getModule(moduleName);
 			
 			selectBuilder = new GenericSelectRecordBuilder()
 					.table(module.getTableName())
@@ -336,6 +340,7 @@ public class ExpressionContext implements WorkflowExpression {
 							
 							selectBuilder.limit(1);
 							selectBuilder.orderBy("TTIME desc");
+							
 						}
 						else {
 							
@@ -356,8 +361,15 @@ public class ExpressionContext implements WorkflowExpression {
 							if(readingDataMeta == null) {
 								readingDataMeta = ReadingsAPI.getReadingDataMeta(Long.parseLong(parentIdString), select);
 							}
-							
-							exprResult = readingDataMeta.getValue();
+							long actualLastRecordedTime = getActualLastRecordedTime(module);
+							if(actualLastRecordedTime > 0) {
+								if(readingDataMeta.getTtime() >= actualLastRecordedTime) {
+									exprResult = readingDataMeta.getValue();
+								}
+							}
+							else {
+								exprResult = readingDataMeta.getValue();
+							}
 							return exprResult;
 						}
 					}
@@ -495,6 +507,17 @@ public class ExpressionContext implements WorkflowExpression {
 		return exprResult;
 	}
 	
+	private long getActualLastRecordedTime(FacilioModule module) {
+		try {
+			ZonedDateTime zdt = DateTimeUtil.getDateTime(DateTimeUtil.getCurrenTime());
+			zdt = zdt.truncatedTo(module.getDateIntervalUnit());
+			return DateTimeUtil.getMillis(zdt, true);
+		}
+		catch(Exception e) {
+			return -1l;
+		}
+	}
+
 	private boolean isManualAggregateQuery() {
 		if((getAggregateCondition() != null && !getAggregateCondition().isEmpty())) {
 			return true;
