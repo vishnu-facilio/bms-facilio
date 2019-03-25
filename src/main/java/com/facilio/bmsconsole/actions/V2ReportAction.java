@@ -9,8 +9,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.chain.Chain;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -34,7 +32,6 @@ import com.facilio.bmsconsole.context.ReportInfo;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.WidgetChartContext;
 import com.facilio.bmsconsole.context.WidgetStaticContext;
-import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.DateOperators;
@@ -43,8 +40,6 @@ import com.facilio.bmsconsole.criteria.Operator;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldUtil;
-import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
-import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.templates.EMailTemplate;
 import com.facilio.bmsconsole.util.AlarmAPI;
 import com.facilio.bmsconsole.util.DashboardUtil;
@@ -1159,6 +1154,22 @@ public class V2ReportAction extends FacilioAction {
 		
 		exportChain.execute(context);
 		
+		setResult("fileUrl", context.get(FacilioConstants.ContextNames.FILE_URL));
+		
+		return SUCCESS;
+	}
+	
+	public String exportModuleReport() throws Exception {
+		FacilioContext context = new FacilioContext();
+		Chain exportChain = null;
+		if (reportId != -1) {
+			exportChain = ReadOnlyChainFactory.getExportNewModuleReportFileChain();
+			setReportWithDataContext(context);
+		}
+		context.put(FacilioConstants.ContextNames.FILE_FORMAT, fileFormat);
+		context.put("chartType", chartType);	// Temp
+		
+		exportChain.execute(context);
 		setResult("fileUrl", context.get(FacilioConstants.ContextNames.FILE_URL));
 		
 		return SUCCESS;

@@ -323,6 +323,13 @@ public class ReadOnlyChainFactory {
 		return c;
 	}
 	
+	public static Chain getExportNewModuleReportFileChain() {
+		Chain c = getDefaultChain();
+		c.addCommand(newFetchReportDataChain());
+		c.addCommand(new GetExportModuleReportFileCommand());
+		return c;
+	}
+	
 	public static Chain sendNewAnalyticsMailChain() {
 		Chain c = getDefaultChain();
 		c.addCommand(getExportNewAnalyticsFileChain());

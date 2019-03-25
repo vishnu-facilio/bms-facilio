@@ -732,6 +732,10 @@
 		<action name="export" class="com.facilio.bmsconsole.actions.V2ReportAction"
 			method="exportReport">
 		</action>
+		<action name="exportModuleReport" class="com.facilio.bmsconsole.actions.V2ReportAction"
+			method="exportModuleReport">
+		</action>
+		
 		<action name="sendMail" class="com.facilio.bmsconsole.actions.V2ReportAction"
 			method="sendReportMail">
 		</action>
