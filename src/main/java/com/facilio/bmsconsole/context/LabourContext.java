@@ -120,6 +120,24 @@ public class LabourContext extends ModuleBaseWithCustomFields {
 		}
 	}
 
+	private LocationContext location;
+
+	public LocationContext getLocation() {
+		return location;
+	}
+
+	public void setLocation(LocationContext location) {
+		this.location = location;
+	}
+
+	public long getLocationId() {
+		// TODO Auto-generated method stub
+		if (location != null) {
+			return location.getId();
+		}
+		return -1;
+	}
+
 	
 	
 	

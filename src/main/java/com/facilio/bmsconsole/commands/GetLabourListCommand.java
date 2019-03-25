@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -12,9 +13,11 @@ import org.json.simple.JSONObject;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.LabourContext;
+import com.facilio.bmsconsole.context.LocationContext;
 import com.facilio.bmsconsole.context.StoreRoomContext;
 import com.facilio.bmsconsole.context.ToolContext;
 import com.facilio.bmsconsole.context.ToolTypesContext;
+import com.facilio.bmsconsole.context.VendorContext;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.FacilioField;
@@ -23,6 +26,7 @@ import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.LookupField;
 import com.facilio.bmsconsole.modules.LookupFieldMeta;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
+import com.facilio.bmsconsole.util.LocationAPI;
 import com.facilio.bmsconsole.util.StoreroomApi;
 import com.facilio.bmsconsole.util.ToolsApi;
 import com.facilio.constants.FacilioConstants;
@@ -48,12 +52,14 @@ public class GetLabourListCommand implements Command{
 			fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
 		}
 	
-		LookupFieldMeta userLookField = new LookupFieldMeta((LookupField) modBean.getField("user", moduleName));
+		List<LookupFieldMeta> lookUpFields = new ArrayList<LookupFieldMeta>();
+		lookUpFields.add(new LookupFieldMeta((LookupField) modBean.getField("user", moduleName)));
+		lookUpFields.add(new LookupFieldMeta((LookupField) modBean.getField("location", moduleName)));
 		SelectRecordsBuilder<LabourContext> builder = new SelectRecordsBuilder<LabourContext>()
 				.module(module)
 				.beanClass(FacilioConstants.ContextNames.getClassFromModuleName(moduleName))
 				.select(fields)
-				.fetchLookup(userLookField);
+				.fetchLookups(lookUpFields);
 
 		if (getCount) {
 			builder.setAggregation();

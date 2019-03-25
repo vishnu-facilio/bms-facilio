@@ -6,9 +6,11 @@ import java.util.List;
 
 import org.apache.commons.chain.Chain;
 
+import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.LabourContext;
+import com.facilio.bmsconsole.context.LocationContext;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -48,8 +50,20 @@ public class LabourAction extends FacilioAction {
 
 	public String addLabour() throws Exception {
 		FacilioContext context = new FacilioContext();
+		LocationContext location = labour.getLocation();
+		if(location!=null)
+		{	
+			location.setName(labour.getName()+"_location");
+			context.put(FacilioConstants.ContextNames.RECORD, location);
+			Chain addLocation = FacilioChainFactory.addLocationChain();
+			addLocation.execute(context);
+			long locationId = (long) context.get(FacilioConstants.ContextNames.RECORD_ID);
+			location.setId(locationId);
+		}
+		
 		context.put(FacilioConstants.ContextNames.RECORD, labour);
 		context.put(FacilioConstants.ContextNames.SET_LOCAL_MODULE_ID, true);
+		context.remove(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
 		Chain addLabour = TransactionChainFactory.getAddLabourChain();
 		addLabour.execute(context);
 		setResult(FacilioConstants.ContextNames.LABOUR, labour);
@@ -71,6 +85,33 @@ public class LabourAction extends FacilioAction {
 
 	public String updateLabour() throws Exception {
 		FacilioContext context = new FacilioContext();
+		
+		//update location
+		LocationContext location = labour.getLocation();
+		
+		if(location != null && location.getLat() != -1 && location.getLng() != -1)
+		{
+			location.setName(labour.getName()+"_Location");
+			context.put(FacilioConstants.ContextNames.RECORD, location);
+			if (location.getId() > 0) {
+				Chain editLocation = FacilioChainFactory.updateLocationChain();
+				editLocation.execute(context);
+				labour.setLocation(location);
+			}
+			else {
+				Chain addLocation = FacilioChainFactory.addLocationChain();
+				addLocation.execute(context);
+				long locationId = (long) context.get(FacilioConstants.ContextNames.RECORD_ID);
+				location.setId(locationId);
+			}
+		}
+		else {
+			labour.setAddress(null);
+		}
+		if(context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST) != null) {
+			context.remove(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
+		}
+		
 		context.put(FacilioConstants.ContextNames.RECORD, labour);
 		context.put(FacilioConstants.ContextNames.RECORD_ID, labour.getId());
 		context.put(FacilioConstants.ContextNames.ID, labour.getId());
