@@ -1,6 +1,9 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
@@ -14,6 +17,9 @@ import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
+import com.facilio.bmsconsole.modules.FieldUtil;
+import com.facilio.bmsconsole.modules.LookupField;
+import com.facilio.bmsconsole.modules.LookupFieldMeta;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.constants.FacilioConstants;
@@ -41,10 +47,15 @@ public class GetPurchaseRequestListCommand implements Command {
 			fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
 		}
 		
+		Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
+		
 		SelectRecordsBuilder<PurchaseRequestContext> builder = new SelectRecordsBuilder<PurchaseRequestContext>()
 				.module(module)
 				.beanClass(FacilioConstants.ContextNames.getClassFromModuleName(moduleName))
-				.select(fields);
+				.select(fields)
+				.fetchLookups(Arrays.asList(new LookupFieldMeta((LookupField) fieldsAsMap.get("vendor")), 
+						new LookupFieldMeta((LookupField) fieldsAsMap.get("storeRoom"))))
+				;
 
 		if (getCount) {
 			builder.setAggregation();
