@@ -119,7 +119,7 @@ public class GetWorkOrderListCommand implements Command {
 		{
 			selectBuilder.andCustomWhere("Tickets.DUE_DATE BETWEEN ? AND ?", (Long) context.get(FacilioConstants.ContextNames.WO_DUE_STARTTIME) * 1000, (Long) context.get(FacilioConstants.ContextNames.WO_DUE_ENDTIME) * 1000);
 		}
-		if (!isApproval) {
+		if (!isApproval && !isUpcomingGroup(view)) {
 			selectBuilder.andCondition(CriteriaAPI.getCondition("STATUS_ID", "status", TicketAPI.getStatus("preopen").getId()+"", NumberOperators.NOT_EQUALS));
 
 		}
@@ -156,6 +156,17 @@ public class GetWorkOrderListCommand implements Command {
 			TicketAPI.loadWorkOrderLookups(workOrders);
 			context.put(FacilioConstants.ContextNames.WORK_ORDER_LIST, workOrders);
 		}		
+		return false;
+	}
+
+	private static boolean isUpcomingGroup(FacilioView view) {
+		Map<String, List<String>> woGroup = ViewFactory.getGroupViews(FacilioConstants.ContextNames.WORK_ORDER);
+		List<String> viewList = woGroup.get("upcomingWorkorder");
+		for (String v: viewList) {
+			if (view.getName().equals(v)) {
+				return true;
+			}
+		}
 		return false;
 	}
 	

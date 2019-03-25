@@ -128,6 +128,7 @@ public class ViewFactory {
 		views.put("closed", getAllClosedWorkOrders().setOrder(order++));
 		views.put("report", getReportView().setOrder(order++));
 		views.put("myrequests", getMyRequestWorkorders().setOrder(order++));
+		views.put("upcomingThisWeek", getUpcomingWorkOrdersThisWeek().setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.WORK_ORDER, views);
 
 		order = 1;
@@ -295,12 +296,16 @@ public class ViewFactory {
 		ArrayList<String> all = new ArrayList<String>();
 		all.add("all");
 
+		ArrayList<String> upcoming = new ArrayList<>();
+		upcoming.add("upcomingThisWeek");
+
 		groupViews.put("OpenWorkOrders", open); // TODO change name to lower
 												// case..also in client
 		groupViews.put("MyopenWorkorders", myopen);
 		groupViews.put("ResolvedWorkorders", resolved);
 		groupViews.put("AllWorkorders", all);
 		groupViews.put("closeWorkorder", closed);
+		groupViews.put("upcomingWorkorder", upcoming);
 
 		viewsMap1.put(FacilioConstants.ContextNames.WORK_ORDER, groupViews);
 		return viewsMap1;
@@ -662,12 +667,12 @@ public class ViewFactory {
 		statusField.setModule(module);
 		statusField.setLookupModule(ModuleFactory.getTicketStatusModule());
 
-		Condition open = new Condition();
-		open.setField(statusField);
-		open.setOperator(LookupOperator.LOOKUP);
-		open.setCriteriaValue(getPreOpenStatusCriteria());
+		Condition preopen = new Condition();
+		preopen.setField(statusField);
+		preopen.setOperator(LookupOperator.LOOKUP);
+		preopen.setCriteriaValue(getPreOpenStatusCriteria());
 
-		return open;
+		return preopen;
 	}
 
 	public static Condition getOpenStatusCondition() {
@@ -848,6 +853,28 @@ public class ViewFactory {
 		criteria.addAndCondition(condition);
 
 		return criteria;
+	}
+
+	private static FacilioView getUpcomingWorkOrdersThisWeek() {
+		FacilioField createdTime = new FacilioField();
+		createdTime.setName("createdTime");
+		createdTime.setDataType(FieldType.NUMBER);
+		createdTime.setColumnName("CREATED_TIME");
+		createdTime.setModule(ModuleFactory.getWorkOrdersModule());
+
+		Criteria criteria = new Criteria();
+		criteria.addAndCondition(getPreOpenStatusCondition());
+		criteria.addAndCondition(CriteriaAPI.getCondition(createdTime, DateOperators.CURRENT_WEEK));
+
+		FacilioView preOpenTicketsView = new FacilioView();
+		preOpenTicketsView.setName("upcomingThisWeek");
+		preOpenTicketsView.setDisplayName("Upcoming This Week");
+		preOpenTicketsView.setCriteria(criteria);
+
+		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));
+		preOpenTicketsView.setSortFields(sortFields);
+
+		return preOpenTicketsView;
 	}
 
 	private static FacilioView getAllOpenWorkOrders() {
