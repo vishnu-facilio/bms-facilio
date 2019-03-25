@@ -210,7 +210,7 @@ public class EventToAlarmCommand implements Command {
 						alarm.put("readingVal", event.getAdditionInfo().get("readingVal"));
 						alarm.put("ruleId", event.getAdditionInfo().get("ruleId"));
 						
-						appendMessage(oldAlarmContext, event, alarm);
+//						appendMessage(oldAlarmContext, event, alarm);
 						
 						break;
 					default:

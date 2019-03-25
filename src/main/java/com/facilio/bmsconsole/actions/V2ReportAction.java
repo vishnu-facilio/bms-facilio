@@ -816,12 +816,6 @@ public class V2ReportAction extends FacilioAction {
 		fields =  dataPoints.toJSONString();
 	}
 	
-	public static void main(String[] args) {
-		ZonedDateTime zdt = DateTimeUtil.getDateTime(System.currentTimeMillis());
-		zdt = zdt.truncatedTo(new SecondsChronoUnit(60 * 60));
-		System.out.println(DateTimeUtil.getMillis(zdt, true));
-	}
-	
 	private JSONArray getDataPointsJSONFromRule(ReadingRuleContext readingruleContext,ResourceContext resource,AlarmContext alarmContext) throws Exception {
 		
 		JSONArray dataPoints = new JSONArray();
@@ -861,12 +855,11 @@ public class V2ReportAction extends FacilioAction {
 				dataPoint.put("type", 1);
 				
 				zdt = DateTimeUtil.getDateTime(alarmContext.getModifiedTime());
+				zdt = zdt.truncatedTo(new SecondsChronoUnit(1 * 60 * 60));
 				if(alarmContext.getClearedTime() > 0) {
-					zdt = zdt.truncatedTo(new SecondsChronoUnit(2 * 60 * 60));
-					dataPoint.put("predictedTime", DateTimeUtil.getMillis(zdt, true));
+					dataPoint.put("predictedTime", DateTimeUtil.getMillis(zdt, true)-3600000l);
 				}
 				else {
-					zdt = zdt.truncatedTo(new SecondsChronoUnit(1 * 60 * 60));
 					dataPoint.put("predictedTime", DateTimeUtil.getMillis(zdt, true));
 				}
 				dataPoints.add(dataPoint);
