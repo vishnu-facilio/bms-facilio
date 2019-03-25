@@ -43,7 +43,6 @@ public class ReportFactoryFields {
 		selectedFields.add(fields.get("type"));
 		selectedFields.add(fields.get("sourceType"));
 		selectedFields.add(fields.get("status"));
-		selectedFields.add(fields.get("resource"));
 		
 		if(customFields.size() != 0) {
 			for(String customFieldName: customFields.keySet()) {
@@ -72,7 +71,7 @@ public class ReportFactoryFields {
 		selectedFields.add(fields.get("purchasedDate"));
 		selectedFields.add(fields.get("retireDate"));
 		selectedFields.add(fields.get("warrantyExpiryDate"));
-		selectedFields.add(fields.get("space"));
+		
 		
 		if(customFields.size() != 0) {
 			for(String customFieldName: customFields.keySet()) {
@@ -106,7 +105,7 @@ public class ReportFactoryFields {
 		return fields;
 	}
 	
-	private static JSONObject rearrangeFields(List<FacilioField> fields, String module){
+	private static JSONObject rearrangeFields(List<FacilioField> fields, String module) throws Exception{
 		JSONObject fieldsObject = new JSONObject();
 		Map<String, List<FacilioField>> dimensionFieldMap = new HashMap<>();
 		List<FacilioField> metricFields = new ArrayList<>();
@@ -116,16 +115,15 @@ public class ReportFactoryFields {
 			if (field instanceof NumberField) {
 				metricFields.add(field);
 			} else if (field instanceof LookupField) {
-				if (((LookupField) field).getLookupModule() != null && ((LookupField) field).getLookupModule().equals(resourceModule)) {
-					addFieldInList(dimensionFieldMap, "resource_fields", field);
-				} else {
-					addFieldInList(dimensionFieldMap, module, field);
-				}
+				addFieldInList(dimensionFieldMap, module, field);
 			} else if (field.getDataTypeEnum() == FieldType.DATE || field.getDataTypeEnum() == FieldType.DATE_TIME) {
 				addFieldInList(dimensionFieldMap, "time", field);
 			}
 		}
-		
+		FacilioField resourceField = getModuleResourceField(module);
+		if(resourceField != null) {
+			addFieldInList(dimensionFieldMap, "resource_fields", resourceField);
+		}		
 		fieldsObject.put("dimension", dimensionFieldMap);
 		fieldsObject.put("metrics", metricFields);
 		fieldsObject.put("moduleType", addModuleTypes(module));
@@ -135,7 +133,26 @@ public class ReportFactoryFields {
 		return fieldsObject;
 	}
 	
-	
+	private static FacilioField getModuleResourceField(String moduleName) throws Exception{
+		ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		String moduleResourceFieldName = new String();
+		switch(moduleName){
+		case "workorder":
+			moduleResourceFieldName = "resource";
+			break;
+		case "asset":
+			moduleResourceFieldName = "space";
+			break;
+		case "alarm":
+			moduleResourceFieldName = "resource";
+			break;
+		}
+		FacilioField moduleResourceField = FieldFactory.getAsMap(bean.getAllFields(moduleName)).get(moduleResourceFieldName);
+		if(moduleResourceField == null) {
+			return null;
+		}
+		return moduleResourceField;
+	}
 	public static List<ModuleType> addModuleTypes(String moduleName){
 		List<ModuleType> moduleTypes = new ArrayList<ModuleType>();
 		
