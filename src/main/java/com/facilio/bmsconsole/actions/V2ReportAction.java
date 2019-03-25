@@ -1165,6 +1165,12 @@ public class V2ReportAction extends FacilioAction {
 		if (reportId != -1) {
 			exportChain = ReadOnlyChainFactory.getExportNewModuleReportFileChain();
 			setReportWithDataContext(context);
+		} else {
+			updateContext(context);
+			
+			exportChain = FacilioChain.getNonTransactionChain();
+			exportChain.addCommand(new ConstructReportData());
+			exportChain.addCommand(ReadOnlyChainFactory.getExportNewModuleReportFileChain());
 		}
 		context.put(FacilioConstants.ContextNames.FILE_FORMAT, fileFormat);
 		context.put("chartType", chartType);	// Temp

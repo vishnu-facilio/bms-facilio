@@ -44,7 +44,7 @@ public class GetExportModuleReportFileCommand implements Command {
 private static final String ALIAS = "alias";
 	
 	private ReportContext report;
-	private ReportMode mode;
+//	private ReportMode mode;
 //	private Map<String, Object> dataMap = new HashMap<>();
 
 	@SuppressWarnings("unchecked")
@@ -56,16 +56,16 @@ private static final String ALIAS = "alias";
 		String fileUrl = null;
 		if(fileFormat != FileFormat.PDF && fileFormat != FileFormat.IMAGE) {
 			
-			mode = (ReportMode)context.get(FacilioConstants.ContextNames.REPORT_MODE);
-			if (mode == null) {
-				String chartStateString = report.getChartState();
-				JSONParser parser = new JSONParser();
-				Map<String, Object> chartState = (Map<String, Object>) parser.parse(chartStateString);
-				if (chartState != null && chartState.containsKey("common")) {
-					Map<String, Object> common = (Map<String, Object>) chartState.get("common");
-					mode = ReportMode.valueOf((int)(long) common.get("mode"));
-				}
-			}
+//			mode = (ReportMode)context.get(FacilioConstants.ContextNames.REPORT_MODE);
+//			if (mode == null) {
+//				String chartStateString = report.getChartState();
+//				JSONParser parser = new JSONParser();
+//				Map<String, Object> chartState = (Map<String, Object>) parser.parse(chartStateString);
+//				if (chartState != null && chartState.containsKey("common")) {
+//					Map<String, Object> common = (Map<String, Object>) chartState.get("common");
+//					mode = ReportMode.valueOf((int)(long) common.get("mode"));
+//				}
+//			}
 			
 //			List<Map<String, Object>> columns = setDataMapAndGetColumns();
 			List<String> headers = new ArrayList<>();
@@ -155,77 +155,77 @@ private static final String ALIAS = "alias";
 		});
 	}
 	
-	private List<String> getTableHeaders(List<Map<String, Object>> columns) throws Exception {
-		List<String> headers = new ArrayList<>();
-		for(int i = 0, size = columns.size(); i < size; i++) {
-			Map<String, Object> col = columns.get(i);
-			if (i == 0) {
-				String name;
-				switch(mode) {
-					case SITE:
-						name = "Site";
-	    					break;
-					case BUILDING:
-						name = "Building";
-	    					break;
-					case RESOURCE:
-						name = "Asset";
-	    					break;
-					default:
-						name = report.getDataPoints().get(0).getxAxis().getLabel();
-							
-				}
-				headers.add(name);
-				col.put("header", name);
-				continue;
-			}
-			if ((String) col.get("displayName") != null) {
-				headers.add((String) col.get("displayName"));
-				col.put("header", col.get("displayName"));
-			}
-			else {
-//				ReportDataPointContext dataPoint;
-//				ReportBaseLineContext baseLine = null;
-//				Object pointObj = dataMap.get(col.get(ALIAS));
-//				if (pointObj instanceof ReportDataPointContext) {
-//					dataPoint = (ReportDataPointContext) pointObj;
+//	private List<String> getTableHeaders(List<Map<String, Object>> columns) throws Exception {
+//		List<String> headers = new ArrayList<>();
+//		for(int i = 0, size = columns.size(); i < size; i++) {
+//			Map<String, Object> col = columns.get(i);
+//			if (i == 0) {
+//				String name;
+//				switch(mode) {
+//					case SITE:
+//						name = "Site";
+//	    					break;
+//					case BUILDING:
+//						name = "Building";
+//	    					break;
+//					case RESOURCE:
+//						name = "Asset";
+//	    					break;
+//					default:
+//						name = report.getDataPoints().get(0).getxAxis().getLabel();
+//							
 //				}
-//				else {
-//					String alias = (String) ((Map<String, Object>) pointObj).get("dpAlias");
-//					dataPoint = (ReportDataPointContext) dataMap.get(alias);
-//					baseLine = (ReportBaseLineContext) ((Map<String, Object>) pointObj).get("baseline");
-//				}
-//				
-//				StringBuilder builder = new StringBuilder(dataPoint.getName());
-//				if (baseLine != null) {
-//					builder.append(" - ").append(baseLine.getBaseLine().getName());
-//				}
-//				String unit = dataPoint.getyAxis().getUnitStr();
-//				builder.append((unit != null && !unit.isEmpty() ? " (" + unit + ")" : ""));
-//				if ( (dataPoint.getyAxis().getDataTypeEnum() == FieldType.BOOLEAN || dataPoint.getyAxis().getDataTypeEnum() == FieldType.ENUM)){
-//					if (report.getxAggrEnum() != null && report.getxAggrEnum() != CommonAggregateOperator.ACTUAL) {
-//						if (col.containsKey("enumMode") && (int)col.get("enumMode") > 0 ) {
-//							EnumMode enumMode = EnumMode.valueOf((int)col.get("enumMode"));
-//							col.put("enumModeEnum", enumMode);
-//							if (enumMode == EnumMode.GRAPH) {
-//								col.put("enumModeEnum", EnumMode.DURATION);
-//							}
-//							else if (enumMode == EnumMode.PERCENT){
-//								builder.append(" (%)");
-//							}
-//						}
-//						else {
-//							col.put("enumModeEnum", EnumMode.DURATION);
-//						}
-//					}
-//				}
-//				String header = builder.toString();
-//				headers.add(header);
-//				col.put("header", header);
-			}
-		}
-		return headers;
-	}
+//				headers.add(name);
+//				col.put("header", name);
+//				continue;
+//			}
+//			if ((String) col.get("displayName") != null) {
+//				headers.add((String) col.get("displayName"));
+//				col.put("header", col.get("displayName"));
+//			}
+//			else {
+////				ReportDataPointContext dataPoint;
+////				ReportBaseLineContext baseLine = null;
+////				Object pointObj = dataMap.get(col.get(ALIAS));
+////				if (pointObj instanceof ReportDataPointContext) {
+////					dataPoint = (ReportDataPointContext) pointObj;
+////				}
+////				else {
+////					String alias = (String) ((Map<String, Object>) pointObj).get("dpAlias");
+////					dataPoint = (ReportDataPointContext) dataMap.get(alias);
+////					baseLine = (ReportBaseLineContext) ((Map<String, Object>) pointObj).get("baseline");
+////				}
+////				
+////				StringBuilder builder = new StringBuilder(dataPoint.getName());
+////				if (baseLine != null) {
+////					builder.append(" - ").append(baseLine.getBaseLine().getName());
+////				}
+////				String unit = dataPoint.getyAxis().getUnitStr();
+////				builder.append((unit != null && !unit.isEmpty() ? " (" + unit + ")" : ""));
+////				if ( (dataPoint.getyAxis().getDataTypeEnum() == FieldType.BOOLEAN || dataPoint.getyAxis().getDataTypeEnum() == FieldType.ENUM)){
+////					if (report.getxAggrEnum() != null && report.getxAggrEnum() != CommonAggregateOperator.ACTUAL) {
+////						if (col.containsKey("enumMode") && (int)col.get("enumMode") > 0 ) {
+////							EnumMode enumMode = EnumMode.valueOf((int)col.get("enumMode"));
+////							col.put("enumModeEnum", enumMode);
+////							if (enumMode == EnumMode.GRAPH) {
+////								col.put("enumModeEnum", EnumMode.DURATION);
+////							}
+////							else if (enumMode == EnumMode.PERCENT){
+////								builder.append(" (%)");
+////							}
+////						}
+////						else {
+////							col.put("enumModeEnum", EnumMode.DURATION);
+////						}
+////					}
+////				}
+////				String header = builder.toString();
+////				headers.add(header);
+////				col.put("header", header);
+//			}
+//		}
+//		return headers;
+//	}
 	
 	private List<Map<String, Object>> getTableData(JSONObject reportData, List<String> columns) {
 		List<Map<String, Object>> records = new ArrayList<>();
