@@ -731,7 +731,7 @@ public class FormFactory {
 		//fields.add(new FormField("unitType", FieldDisplayType.SELECTBOX, "Wage Type", Required.REQUIRED, 7, 1));
 		fields.add(new FormField("cost", FieldDisplayType.DECIMAL, "Rate Per Hour", Required.REQUIRED, 8, 1));
 		fields.add(new FormField("siteId", FieldDisplayType.LOOKUP_SIMPLE, "Site", Required.REQUIRED, "site", 2, 1));
-		fields.add(new FormField("availability", FieldDisplayType.DECISION_BOX, "Availability", Required.REQUIRED, 9, 1));
+		fields.add(new FormField("availability", FieldDisplayType.DECISION_BOX, "Active", Required.REQUIRED, 9, 1));
 		
 		return fields;
 	}
