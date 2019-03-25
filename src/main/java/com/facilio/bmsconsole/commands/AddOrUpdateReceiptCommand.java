@@ -39,7 +39,7 @@ public class AddOrUpdateReceiptCommand implements Command {
 			List<ReceiptContext> updateReceipts = new ArrayList<ReceiptContext>();
 			for (ReceiptContext receiptContext : receipts) {
 				receivableIds.add(receiptContext.getReceivableId());
-				lineitemIds.add(receiptContext.getLineItemId());
+				lineitemIds.add(receiptContext.getLineItem().getId());
 				if (receiptContext.getId() > 0) {
 					updateReceipts.add(receiptContext);
 				} else {
