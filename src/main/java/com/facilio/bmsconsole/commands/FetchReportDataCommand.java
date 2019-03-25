@@ -455,11 +455,9 @@ public class FetchReportDataCommand implements Command {
 						.on(resourceModule.getTableName()+".ID = "+dp.getxAxis().getField().getCompleteColumnName());
 			addedModules.add(resourceModule);
 		}
-		if (!isAlreadyAdded(addedModules, baseSpaceModule)) {
-			selectBuilder.innerJoin(baseSpaceModule.getTableName())
-						.on(resourceModule.getTableName()+".SPACE_ID = "+baseSpaceModule.getTableName()+".ID");
-			addedModules.add(baseSpaceModule);
-		}
+		selectBuilder.innerJoin(baseSpaceModule.getTableName())
+		.on(resourceModule.getTableName()+".SPACE_ID = "+baseSpaceModule.getTableName()+".ID");
+		addedModules.add(baseSpaceModule);
 		
 		FacilioField spaceField = null;
 		switch ((SpaceAggregateOperator)xAggr) {
