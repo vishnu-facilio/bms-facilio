@@ -50,17 +50,19 @@ public class GetPurchaseOrderListCommand implements Command {
 				.module(module)
 				.beanClass(FacilioConstants.ContextNames.getClassFromModuleName(moduleName))
 				.select(fields)
-				.fetchLookups(Arrays.asList(new LookupFieldMeta((LookupField) fieldsAsMap.get("vendor")), 
-						new LookupFieldMeta((LookupField) fieldsAsMap.get("storeRoom"))))
-		
 				;
 
 		if (getCount) {
 			builder.setAggregation();
 		}
+		else {
+			builder.fetchLookups(Arrays.asList(new LookupFieldMeta((LookupField) fieldsAsMap.get("vendor")), 
+					new LookupFieldMeta((LookupField) fieldsAsMap.get("storeRoom"))));
+	
+		}
 		
 		String orderBy = (String) context.get(FacilioConstants.ContextNames.SORTING_QUERY);
-		if (orderBy != null && !orderBy.isEmpty()) {
+		if (!getCount && orderBy != null && !orderBy.isEmpty()) {
 			builder.orderBy(orderBy);
 		}
 

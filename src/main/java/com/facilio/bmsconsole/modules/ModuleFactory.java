@@ -1812,6 +1812,15 @@ public class ModuleFactory {
 		return purchaseOrder;
 	}
   	
+	public static FacilioModule getReceivableModule() {
+		FacilioModule receivable = new FacilioModule();
+		receivable.setName("receivable");
+		receivable.setDisplayName("Receivables");
+		receivable.setTableName("Receivables");
+		return receivable;
+	}
+  	
+  	
 	public static FacilioModule getReceiptModule() {
 		FacilioModule purchaseOrder = new FacilioModule();
 		purchaseOrder.setName("receipts");

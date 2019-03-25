@@ -69,8 +69,8 @@ public class PurchaseRequestAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.FETCH_COUNT, getFetchCount());
 		context.put(FacilioConstants.ContextNames.CV_NAME, getViewName());
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, "purchaserequest");
+		context.put(FacilioConstants.ContextNames.SORTING_QUERY, "Purchase_Requests.ID asc");
  		
- 		context.put(FacilioConstants.ContextNames.SORTING_QUERY, "Purchase_Requests.ID asc");
  		if(getFilters() != null)
  		{	
 	 		JSONParser parser = new JSONParser();

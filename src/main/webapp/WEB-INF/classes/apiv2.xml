@@ -1741,6 +1741,13 @@
 			<action name="addOrUpdate" class="com.facilio.bmsconsole.actions.ReceivableAction" method="addOrUpdateReceivables">
 			<param name="moduleName">receivable</param>
 		</action>
+		<action name="receivableCount" class="com.facilio.bmsconsole.actions.ReceivableAction" method="receivableCount">
+			<param name="moduleName">receivable</param>
+		</action>
+		 <action name="*" class="com.facilio.bmsconsole.actions.ReceivableAction" method="getReceivableList">
+			<param name="viewName">{1}</param>
+			<param name="moduleName">receivable</param>
+		</action>
 
 	</package>
 

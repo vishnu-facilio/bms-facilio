@@ -50,7 +50,8 @@ public class FormFactory {
 		forms.put("tenantForm", getTenantsForm());
 		forms.put("labourForm", getLabourForm());
 		forms.put("purchaseRequestForm", getPurchaseRequestForm());
-		
+		forms.put("purchaseOrderForm", getPurchaseRequestForm());
+			
 		return forms;
 	}
     public static List<FormField> getFormFields(String modName) {
@@ -733,6 +734,16 @@ public class FormFactory {
 		form.setFormType(FormType.WEB);
 		return form;
 	}
+	public static FacilioForm getPurchaseOrderForm() {
+		FacilioForm form = new FacilioForm();
+		form.setDisplayName("PURCHASE ORDER");
+		form.setName("web_default");
+		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.PURCHASE_ORDER));
+		form.setLabelPosition(LabelPosition.TOP);
+		form.setFields(getPurchaseOrderFormFields());
+		form.setFormType(FormType.WEB);
+		return form;
+	}
 	
 	private static List<FormField> getLabourFormFields() {
 		List<FormField> fields = new ArrayList<>();
@@ -753,9 +764,21 @@ public class FormFactory {
 	private static List<FormField> getPurchaseRequestFormFields() {
 		List<FormField> fields = new ArrayList<>();
 		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.REQUIRED, 1, 1));
-		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 2, 1));
+		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 3, 1));
 		fields.add(new FormField("vendor", FieldDisplayType.LOOKUP_SIMPLE, "Vendor", Required.OPTIONAL, "vendors", 4, 2));
-		fields.add(new FormField("lineItems", FieldDisplayType.LINEITEMS, "LINE ITEMS", Required.OPTIONAL, 10, 1));
+		fields.add(new FormField("storeRoom", FieldDisplayType.LOOKUP_SIMPLE, "Store Room", Required.OPTIONAL, "storeRoom", 5, 2));
+		fields.add(new FormField("lineItems", FieldDisplayType.LINEITEMS, "LINE ITEMS", Required.REQUIRED, 6, 1));
+		fields.add(new FormField("siteId", FieldDisplayType.LOOKUP_SIMPLE, "Site", Required.REQUIRED, "site", 2, 1));
+		return fields;
+	}
+	
+	private static List<FormField> getPurchaseOrderFormFields() {
+		List<FormField> fields = new ArrayList<>();
+		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.REQUIRED, 1, 1));
+		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 3, 1));
+		fields.add(new FormField("vendor", FieldDisplayType.LOOKUP_SIMPLE, "Vendor", Required.REQUIRED, "vendors", 4, 2));
+		fields.add(new FormField("storeRoom", FieldDisplayType.LOOKUP_SIMPLE, "Store Room", Required.REQUIRED, "storeRoom", 5, 2));
+		fields.add(new FormField("lineItems", FieldDisplayType.LINEITEMS, "LINE ITEMS", Required.REQUIRED, 6, 1));
 		fields.add(new FormField("siteId", FieldDisplayType.LOOKUP_SIMPLE, "Site", Required.REQUIRED, "site", 2, 1));
 		return fields;
 	}

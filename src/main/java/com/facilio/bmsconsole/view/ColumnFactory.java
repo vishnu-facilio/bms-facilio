@@ -53,6 +53,7 @@ public class ColumnFactory {
 		columnMap.put("stockedTools-default", getDefaultStockedToolsColumns());
 		columnMap.put("purchaserequest-default", getDefaultPurchaseRequestColumns());
 		columnMap.put("purchaseorder-default", getDefaultPurchaseOrderColumns());
+		columnMap.put("receivable-default", getDefaultReceivableColumns());
 		
 		// Default report columns 
 		columnMap.put("workorder-report", getWorkOrderReportColumns());
@@ -340,6 +341,15 @@ public class ColumnFactory {
 		columns.add(new ViewField("status", "Status"));
 		columns.add(new ViewField("vendor", "Vendor"));
 		columns.add(new ViewField("totalCost", "Total Cost"));
+		return columns;
+	}
+	
+	private static List<ViewField> getDefaultReceivableColumns() {
+		List<ViewField> columns = new ArrayList<ViewField>();
+		
+		columns.add(new ViewField("poId", "Purchase Order ID"));
+		columns.add(new ViewField("status", "Status"));
+		columns.add(new ViewField("sysCreatedTime", "Created Time"));
 		return columns;
 	}
 }
