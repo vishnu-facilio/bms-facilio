@@ -6778,7 +6778,7 @@ public class DashboardAction extends FacilioAction {
 		if (reportContext.getReportChartType() == ReportContext.ReportChartType.TABULAR) {
 			getData();
 			Map<String,Object> table = ReportExportUtil.getTabularReportData(reportData, reportContext, reportColumns);
-			fileUrl = ExportUtil.exportData(FileFormat.getFileFormat(type), module.getDisplayName(), table);
+			fileUrl = ExportUtil.exportData(FileFormat.getFileFormat(type), module.getDisplayName(), table, false);
 		}
 		else {
 			/*FacilioContext context = new FacilioContext();
@@ -6799,7 +6799,7 @@ public class DashboardAction extends FacilioAction {
 			else {
 				getData();
 				Map<String,Object> table = ReportExportUtil.getDataInExportFormat(reportData, reportContext, baseLineComparisionDiff, reportSpaceFilterContext, dateFilter);
-				fileUrl = ExportUtil.exportData(FileFormat.getFileFormat(type), module.getDisplayName(), table);
+				fileUrl = ExportUtil.exportData(FileFormat.getFileFormat(type), module.getDisplayName(), table, false);
 //				fileUrl = ExportUtil.exportData(fileFormat, module, view.getFields(), records);
 			}
 		}
@@ -6817,7 +6817,7 @@ public class DashboardAction extends FacilioAction {
 		else {
 			analyticsConfig.put("dateFilter", dateFilter);
 			Map<String,Object> table = ReportExportUtil.getAnalyticsData(analyticsDataList, analyticsConfig);
-			fileUrl = ExportUtil.exportData(FileFormat.getFileFormat(type), (String) analyticsConfig.get("name"), table);
+			fileUrl = ExportUtil.exportData(FileFormat.getFileFormat(type), (String) analyticsConfig.get("name"), table, false);
 		}
 		
 		return SUCCESS;

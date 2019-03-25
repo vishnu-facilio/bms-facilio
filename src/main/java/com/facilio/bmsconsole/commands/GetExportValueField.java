@@ -84,7 +84,7 @@ public class GetExportValueField implements Command{
 		List<FacilioField> fieldsList = new ArrayList<FacilioField>();
 		fieldMap.values().forEach(fieldsList::addAll);
 		Map<String,Object> table = exportFormatObject(fieldsList, events, valueMap, parentId);
-		String fileUrl = ExportUtil.exportData(FileFormat.getFileFormat(type), "Alarm Summary", table);
+		String fileUrl = ExportUtil.exportData(FileFormat.getFileFormat(type), "Alarm Summary", table, false);
 		context.put(EventConstants.EventContextNames.FILEURL, fileUrl);
 		return false;
 	}

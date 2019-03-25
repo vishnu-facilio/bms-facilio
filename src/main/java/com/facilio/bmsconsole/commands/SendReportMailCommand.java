@@ -84,12 +84,12 @@ public class SendReportMailCommand implements Command {
 			String fileUrl = PdfUtil.exportUrlAsPdf(AccountUtil.getCurrentOrg().getOrgId(), AccountUtil.getCurrentUser().getEmail(),url, fileFormat);
 			files.put(fileName + fileFormat.getExtention(), fileUrl);
 			if (fileFormat == FileFormat.IMAGE) {
-				String fileUrl2 = ExportUtil.exportData(fileFormat, moduleName, table);
+				String fileUrl2 = ExportUtil.exportData(fileFormat, moduleName, table, true);
 				files.put(fileName + FileFormat.CSV.getExtention(), fileUrl2);
 			}
 		}
 		else {
-			String fileUrl = ExportUtil.exportData(fileFormat, moduleName, table);
+			String fileUrl = ExportUtil.exportData(fileFormat, moduleName, table, true);
 			files.put(fileName + fileFormat.getExtention(), fileUrl);
 		}
 		

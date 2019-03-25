@@ -76,7 +76,7 @@ private static final String ALIAS = "alias";
 			Map<String, Object> table = new HashMap<String, Object>();
 			table.put("headers", headers);
 			table.put("records", records);
-			fileUrl = ExportUtil.exportData(fileFormat, "Report Data", table);
+			fileUrl = ExportUtil.exportData(fileFormat, "Report Data", table, false);
 		}
 		else {
 			StringBuilder url = getClientUrl(report.getDataPoints().get(0).getxAxis().getModule().getName(), report.getId(), fileFormat);

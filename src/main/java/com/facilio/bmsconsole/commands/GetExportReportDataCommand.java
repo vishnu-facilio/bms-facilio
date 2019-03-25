@@ -130,7 +130,7 @@ public class GetExportReportDataCommand implements Command {
 		FileFormat fileFormat = (FileFormat) context.get(FacilioConstants.ContextNames.FILE_FORMAT);
 		String fileUrl = null;
 		if(fileFormat != FileFormat.PDF && fileFormat != FileFormat.IMAGE) {
-			fileUrl = ExportUtil.exportData(fileFormat, "Report Data", table);
+			fileUrl = ExportUtil.exportData(fileFormat, "Report Data", table, false);
 		}
 		else {
 			StringBuilder url = getClientUrl(report.getDataPoints().get(0).getxAxis().getModule().getName(), report.getId(), fileFormat)

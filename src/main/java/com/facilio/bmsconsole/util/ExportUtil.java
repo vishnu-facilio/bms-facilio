@@ -56,13 +56,13 @@ public class ExportUtil {
 		return fileUrl;
 	}
 
-	public static String exportData(FileFormat fileFormat,String name, Map<String,Object> table) throws Exception {
+	public static String exportData(FileFormat fileFormat,String name, Map<String,Object> table, boolean isS3Url) throws Exception {
 		String fileUrl = null;
 		if(fileFormat == FileFormat.XLS){
-			fileUrl=ExportUtil.exportDataAsXLS(name, table);
+			fileUrl=ExportUtil.exportDataAsXLS(name, table, isS3Url);
 		}
 		else if(fileFormat == FileFormat.CSV){
-			fileUrl=ExportUtil.exportDataAsCSV(name, table);
+			fileUrl=ExportUtil.exportDataAsCSV(name, table, isS3Url);
 		}
 		return fileUrl;
 	}
@@ -131,7 +131,7 @@ public class ExportUtil {
 		return fs.getDownloadUrl(fileId);
 	}
 	
-	public static String exportDataAsXLS(String name, Map<String,Object> table) throws Exception 
+	public static String exportDataAsXLS(String name, Map<String,Object> table, boolean isS3Url) throws Exception 
 	{
 		HSSFWorkbook workbook = new HSSFWorkbook();
 		HSSFSheet sheet = workbook.createSheet(name);
@@ -210,6 +210,11 @@ public class ExportUtil {
 		File file = new File(fileName);
 		FileStore fs = FileStoreFactory.getInstance().getFileStore();
 		long fileId = fs.addFile(file.getPath(), file, "application/xls");
+		
+		if (isS3Url) {
+			return fs.getOrgiDownloadUrl(fileId);
+		}
+
 		return fs.getDownloadUrl(fileId);
 	}
 	
@@ -289,7 +294,7 @@ public class ExportUtil {
     }
 	
 	@SuppressWarnings("unchecked")
-	public static String exportDataAsCSV(String name, Map<String,Object> table) throws Exception
+	public static String exportDataAsCSV(String name, Map<String,Object> table, boolean isS3Url) throws Exception
     {
 		String fileName = name + ".csv";
         	FileWriter writer = new FileWriter(fileName, false);
@@ -368,6 +373,9 @@ public class ExportUtil {
 	    FileStore fs = FileStoreFactory.getInstance().getFileStore();
 	    long fileId = fs.addFile(file.getPath(), file, "application/csv");
 	    
+	    if (isS3Url) {
+			return fs.getOrgiDownloadUrl(fileId);
+		}
 	    return fs.getDownloadUrl(fileId);
     }
 
