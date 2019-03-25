@@ -21,22 +21,29 @@ public class GetActionListForAlarmRuleCommand implements Command {
 		AlarmRuleContext alarmRule = (AlarmRuleContext) context.get(FacilioConstants.ContextNames.ALARM_RULE);
 		
 		ReadingRuleContext alarmTriggerRule = alarmRule.getAlarmTriggerRule();
-		List<ActionContext> actions = ActionAPI.getAllActionsFromWorkflowRule(AccountUtil.getCurrentOrg().getId(), alarmTriggerRule.getId());
-		alarmTriggerRule.setActions(actions);
+		if(alarmTriggerRule.getActions() == null || alarmTriggerRule.getActions().isEmpty()) {
+			List<ActionContext> actions = ActionAPI.getAllActionsFromWorkflowRule(AccountUtil.getCurrentOrg().getId(), alarmTriggerRule.getId());
+			alarmTriggerRule.setActions(actions);
+		}
 		
 		List<ReadingRuleContext> rules = alarmRule.getAlarmRCARules();
+		List<ActionContext> actions = null;
 		if(rules != null && !rules.isEmpty()) {
 			for (WorkflowRuleContext rule : rules) {
-				actions = ActionAPI.getAllActionsFromWorkflowRule(AccountUtil.getCurrentOrg().getId(), rule.getId());
-				rule.setActions(actions);
+				if(rule.getActions() == null || rule.getActions().isEmpty()) {
+					actions  = ActionAPI.getAllActionsFromWorkflowRule(AccountUtil.getCurrentOrg().getId(), rule.getId());
+					rule.setActions(actions);
+				}
 			}
 		}
 		
 		List<ReadingAlarmRuleContext> readingAlarmRuleContexts = alarmRule.getReadingAlarmRuleContexts();
 		if(readingAlarmRuleContexts != null && !readingAlarmRuleContexts.isEmpty()) {
 			for (WorkflowRuleContext rule : readingAlarmRuleContexts) {
-				actions = ActionAPI.getAllActionsFromWorkflowRule(AccountUtil.getCurrentOrg().getId(), rule.getId());
-				rule.setActions(actions);
+				if(rule.getActions() == null || rule.getActions().isEmpty()) {
+					actions = ActionAPI.getAllActionsFromWorkflowRule(AccountUtil.getCurrentOrg().getId(), rule.getId());
+					rule.setActions(actions);
+				}
 			}
 		}
 		return false;
