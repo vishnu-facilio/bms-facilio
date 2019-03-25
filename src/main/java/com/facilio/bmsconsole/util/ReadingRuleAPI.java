@@ -44,9 +44,11 @@ import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.Alarm;
 import com.facilio.events.constants.EventConstants;
+import com.facilio.sql.GenericDeleteRecordBuilder;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
+import com.facilio.sql.mysql.DeleteRecordBuilder;
 import com.facilio.workflows.context.ExpressionContext;
 import com.facilio.workflows.context.WorkflowContext;
 
@@ -98,7 +100,8 @@ public class ReadingRuleAPI extends WorkflowRuleAPI {
 		updateWorkflowRuleChildIds(rule);
 		updateExtendedRule(rule, ModuleFactory.getReadingRuleModule(), FieldFactory.getReadingRuleFields());
 		deleteChildIdsForWorkflow(oldRule, rule);
-		
+		deleteInclusionsExclusions(oldRule);
+		ReadingRuleAPI.addReadingRuleInclusionsExlusions((ReadingRuleContext) rule);
 		if (rule.getName() == null) {
 			rule.setName(oldRule.getName());
 		}
@@ -131,7 +134,17 @@ public class ReadingRuleAPI extends WorkflowRuleAPI {
 			}
 		}
 	}
-	
+	private static void deleteInclusionsExclusions (ReadingRuleContext readingRule) throws Exception {
+		
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getReadingRuleInclusionsExclusionsFields());
+		
+		GenericDeleteRecordBuilder deleteBuilder = new GenericDeleteRecordBuilder();
+		deleteBuilder.table(ModuleFactory.getReadingRuleInclusionsExclusionsModule().getTableName());
+		deleteBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("ruleGroupId"), readingRule.getRuleGroupId()+"", NumberOperators.EQUALS));
+		
+		deleteBuilder.delete();
+		
+	}
 	private static void fetchInclusionsExclusions (ReadingRuleContext readingRule) throws Exception {
 		FacilioModule module = ModuleFactory.getReadingRuleInclusionsExclusionsModule();
 		List<FacilioField> fields = FieldFactory.getReadingRuleInclusionsExclusionsFields();
@@ -500,6 +513,8 @@ public class ReadingRuleAPI extends WorkflowRuleAPI {
 		alarmRule.setId(-1);
 		alarmRule.setCriteriaId(-1l);
 		alarmRule.setWorkflowId(-1l);
+		alarmRule.setIncludedResources(null);
+		alarmRule.setExcludedResources(null);
 		
 		alarmRule.setRuleType(ruleType);
 		alarmRule.setEventId(preRequsiteRule.getEventId());
