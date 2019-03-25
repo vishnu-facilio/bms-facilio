@@ -18,7 +18,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.log4j.Level;
@@ -29,8 +28,11 @@ import org.json.simple.JSONObject;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
+import com.facilio.bmsconsole.view.FacilioView;
+import com.facilio.bmsconsole.view.SortField;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fs.FileStore;
 import com.facilio.fs.FileStoreFactory;
@@ -289,6 +291,15 @@ public class FieldUtil {
 	public static void inti() {
 
 	}
+	
+	private static List<Class> nonModuleClasses = Collections.unmodifiableList(initNonModuleClassMap());
+	private static List<Class> initNonModuleClassMap() {
+		List<Class> nonModuleClasses = new ArrayList<>();
+		nonModuleClasses.add(PreventiveMaintenance.class);
+		nonModuleClasses.add(SortField.class);
+		nonModuleClasses.add(FacilioView.class);
+		return nonModuleClasses;
+	}
 
 	private static final ObjectMapper NON_DEFAULT_MAPPER = new ObjectMapper()
 													.setSerializationInclusion(Include.NON_DEFAULT)
@@ -299,7 +310,9 @@ public class FieldUtil {
 		for (Class classObj : FacilioConstants.ContextNames.getAllClasses()) {
 			NON_DEFAULT_MAPPER.configOverride(classObj).setInclude(Value.construct(Include.NON_DEFAULT, Include.ALWAYS));
 		}
-		NON_DEFAULT_MAPPER.configOverride(PreventiveMaintenance.class).setInclude(Value.construct(Include.NON_DEFAULT, Include.ALWAYS));
+		for (Class classObj : nonModuleClasses) {
+			NON_DEFAULT_MAPPER.configOverride(classObj).setInclude(Value.construct(Include.NON_DEFAULT, Include.ALWAYS));
+		}
 	}
 
 
