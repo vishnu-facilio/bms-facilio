@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.criteria.Condition;
@@ -301,6 +302,10 @@ public class ExpressionContext implements WorkflowExpression {
 					.andCondition(CriteriaAPI.getCondition(FieldFactory.getModuleIdField(module), String.valueOf(module.getModuleId()), NumberOperators.EQUALS))
 					.andCriteria(criteria)
 					;
+			
+			if (FieldUtil.isSiteIdFieldPresent(module) && AccountUtil.getCurrentSiteId() > 0) {
+				selectBuilder.andCondition(CriteriaAPI.getCurrentSiteIdCondition(module));
+			}
 			
 			if(modBean.getModule(moduleName).getExtendModule() != null) {
 				selectBuilder.innerJoin(modBean.getModule(moduleName).getExtendModule().getTableName())
