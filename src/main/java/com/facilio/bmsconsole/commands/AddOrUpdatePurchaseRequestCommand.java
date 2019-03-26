@@ -35,7 +35,6 @@ public class AddOrUpdatePurchaseRequestCommand implements Command {
 			
 			FacilioModule lineModule = modBean.getModule(FacilioConstants.ContextNames.PURCHASE_REQUEST_LINE_ITEMS);
 			
-			purchaseRequestContext.setStatus(Status.REQUESTED);
 			if (CollectionUtils.isEmpty(purchaseRequestContext.getLineItems())) {
 				throw new Exception("Line items cannot be empty");
 			}
@@ -48,6 +47,7 @@ public class AddOrUpdatePurchaseRequestCommand implements Command {
 						.andCondition(CriteriaAPI.getCondition("PR_ID", "prid", String.valueOf(purchaseRequestContext.getId()), NumberOperators.EQUALS));
 				deleteBuilder.delete();
 			} else {
+				purchaseRequestContext.setStatus(Status.REQUESTED);
 				addRecord(Collections.singletonList(purchaseRequestContext), module, fields);
 			}
 			
