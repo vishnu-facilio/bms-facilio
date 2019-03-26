@@ -23,7 +23,9 @@ import com.facilio.bmsconsole.context.FormulaContext.AggregateOperator;
 import com.facilio.bmsconsole.context.FormulaContext.CommonAggregateOperator;
 import com.facilio.bmsconsole.context.FormulaContext.DateAggregateOperator;
 import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldType;
+import com.facilio.bmsconsole.modules.LookupField;
 import com.facilio.bmsconsole.reports.ReportsUtil;
 import com.facilio.bmsconsole.util.DateTimeUtil;
 import com.facilio.bmsconsole.util.ExportUtil;
@@ -218,13 +220,14 @@ private static final String ALIAS = "alias";
 //		return headers;
 //	}
 	
-	private List<Map<String, Object>> getTableData(JSONObject reportData, List<String> columns) {
+	private List<Map<String, Object>> getTableData(JSONObject reportData, List<String> columns) throws Exception {
 		List<Map<String, Object>> records = new ArrayList<>();
 		String format = "EEEE, MMMM dd, yyyy hh:mm a";
 		
 		String xAlias = report.getxAlias() != null ? report.getxAlias() : "X";
 		
 		ReportDataPointContext dataPoint = report.getDataPoints().get(0);
+		FacilioModule module = report.getModule();
 		ReportFieldContext xAxisReportField = dataPoint.getxAxis();
 		List<ReportGroupByField> groupByFields = dataPoint.getGroupByFields();
 		
@@ -242,7 +245,11 @@ private static final String ALIAS = "alias";
 				records.add(newRow);
 				
 				Object value = row.get(xAlias);
-				newRow.put(xAxisReportField.getLabel(), handleData(xAxisReportField, value, format));
+				if (value == null) {
+					continue;
+				}
+				
+				newRow.put(handleXAxisLabel(module, xAxisReportField), handleData(xAxisReportField, value, format));
 				
 				if (CollectionUtils.isNotEmpty(groupByFields)) {
 					for (ReportGroupByField groupByField : groupByFields) {
@@ -251,6 +258,9 @@ private static final String ALIAS = "alias";
 						for (Map<String, Object> map : list) {
 							Object groupByValue = map.get(groupByAlias);
 							groupByValue = handleData(groupByField, groupByValue, format);
+							if (groupByValue == null) {
+								continue;
+							}
 							addColumn(columns, String.valueOf(groupByValue));
 							
 							ReportYAxisContext getyAxis = dataPoint.getyAxis();
@@ -261,8 +271,9 @@ private static final String ALIAS = "alias";
 				} else {
 					ReportYAxisContext getyAxis = dataPoint.getyAxis();
 					String yAlias = dataPoint.getAliases().get(FacilioConstants.Reports.ACTUAL_DATA);
-					addColumn(columns, getyAxis.getLabel());
-					newRow.put(getyAxis.getLabel(), handleData(getyAxis, row.get(yAlias), format));
+					String yAxisLable = handleYAxisLabel(module, getyAxis);
+					addColumn(columns, yAxisLable);
+					newRow.put(yAxisLable, handleData(getyAxis, row.get(yAlias), format));
 				}
 			}
 			
@@ -278,6 +289,30 @@ private static final String ALIAS = "alias";
 		return records;
 	}
 	
+	private String handleXAxisLabel(FacilioModule facilioModule, ReportFieldContext reportField) {
+		if (reportField.getFieldName().equals("siteId")) {
+			return "Site";
+		} else if (reportField.getFieldName().equals("actualWorkStart")) {
+			return "Start Time";
+		} else if (reportField.getFieldName().equals("actualWorkDuration")) {
+			return "Work Duration";
+		} else if (reportField.getField() instanceof LookupField) {
+			FacilioModule lookupModule = ((LookupField) reportField.getField()).getLookupModule();
+			if (lookupModule.getName().equals("resource") || lookupModule.getName().equals("basespace")) {
+				return report.getxAggrEnum().getStringValue();
+			}
+		}
+		return reportField.getLabel();
+	}
+	
+	private String handleYAxisLabel(FacilioModule facilioModule, ReportYAxisContext getyAxis) {
+		if (getyAxis.getFieldName().toLowerCase().equals("id")) {
+			String displayName = facilioModule.getDisplayName();
+			return "Number of " + displayName;
+		}
+		return getyAxis.getLabel();
+	}
+
 	private void addColumn(List<String> columns, String groupByField) {
 		if (!columns.contains(groupByField)) {
 			columns.add(groupByField);
@@ -286,8 +321,8 @@ private static final String ALIAS = "alias";
 
 	private Object handleData(ReportFieldContext reportField, Object value, String format) {
 		// TODO Auto-generated method stub
-		FacilioField xField = reportField.getField();
-		switch (xField.getDataTypeEnum()) {
+		FacilioField field = reportField.getField();
+		switch (field.getDataTypeEnum()) {
 		case LOOKUP:
 			value = reportField.getLookupMap().get(value);
 			break;
@@ -301,11 +336,16 @@ private static final String ALIAS = "alias";
 		case DATE_TIME:
 			value = DateTimeUtil.getFormattedTime((long)value, format);
 			break;
+			
+		case NUMBER:
+			if (field.getName().equals("siteId")) {
+				value = reportField.getLookupMap().get(value);
+			}
+			break;
 
 		default:
 			break;
 		}
-//		newRow.put(key, value);
 		return value;
 	}
 
