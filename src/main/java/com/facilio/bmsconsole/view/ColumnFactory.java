@@ -347,7 +347,7 @@ public class ColumnFactory {
 	private static List<ViewField> getDefaultReceivableColumns() {
 		List<ViewField> columns = new ArrayList<ViewField>();
 		
-		columns.add(new ViewField("poId", "Purchase Order ID"));
+//		columns.add(new ViewField("poId", "Purchase Order ID"));
 		columns.add(new ViewField("status", "Status"));
 		columns.add(new ViewField("sysCreatedTime", "Created Time"));
 		return columns;
