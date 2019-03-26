@@ -55,6 +55,17 @@ public class PurchaseOrderAction extends FacilioAction {
 		this.recordId = recordId;
 	}
 	
+	private boolean includeParentFilter;
+
+	public boolean getIncludeParentFilter() {
+		return includeParentFilter;
+	}
+
+	public void setIncludeParentFilter(boolean includeParentFilter) {
+		this.includeParentFilter = includeParentFilter;
+	}
+
+	
 	public String addPurchaseOrder() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD, purchaseOrder);
@@ -78,6 +89,7 @@ public class PurchaseOrderAction extends FacilioAction {
 	 		JSONParser parser = new JSONParser();
 	 		JSONObject json = (JSONObject) parser.parse(getFilters());
 	 		context.put(FacilioConstants.ContextNames.FILTERS, json);
+	 		context.put(FacilioConstants.ContextNames.INCLUDE_PARENT_CRITERIA, getIncludeParentFilter());
 		}
  		if (getSearch() != null) {
  			JSONObject searchObj = new JSONObject();
