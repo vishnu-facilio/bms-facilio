@@ -306,6 +306,10 @@ public class ExpressionContext implements WorkflowExpression {
 			if (FieldUtil.isSiteIdFieldPresent(module) && AccountUtil.getCurrentSiteId() > 0) {
 				selectBuilder.andCondition(CriteriaAPI.getCurrentSiteIdCondition(module));
 			}
+			Criteria scopeCriteria = AccountUtil.getCurrentUser().scopeCriteria(module.getName());
+			if (scopeCriteria != null) {
+				selectBuilder.andCriteria(scopeCriteria);
+			}
 			
 			if(modBean.getModule(moduleName).getExtendModule() != null) {
 				selectBuilder.innerJoin(modBean.getModule(moduleName).getExtendModule().getTableName())
