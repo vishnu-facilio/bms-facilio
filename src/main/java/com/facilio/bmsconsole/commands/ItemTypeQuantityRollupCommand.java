@@ -11,6 +11,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ItemContext;
 import com.facilio.bmsconsole.context.ItemTransactionsContext;
 import com.facilio.bmsconsole.context.ItemTypesContext;
+import com.facilio.bmsconsole.context.StoreRoomContext;
 import com.facilio.bmsconsole.context.ToolContext;
 import com.facilio.bmsconsole.context.ToolTransactionContext;
 import com.facilio.bmsconsole.context.WorkorderToolsContext;
@@ -57,9 +58,11 @@ public class ItemTypeQuantityRollupCommand implements Command {
 					.orderBy("LAST_PURCHASED_DATE DESC");
 
 			List<ItemContext> items = builder.get();
+			long storeRoomId = -1;
 			ItemContext item;
 			if (items != null && !items.isEmpty()) {
 				item = items.get(0);
+				storeRoomId = item.getStoreRoom().getId();
 				lastPurchasedDate = item.getLastPurchasedDate();
 				lastPurchasedPrice = item.getLastPurchasedPrice();
 			}
@@ -89,6 +92,8 @@ public class ItemTypeQuantityRollupCommand implements Command {
 					.andCondition(CriteriaAPI.getIdCondition(itemType.getId(), itemTypesModule));
 
 			updateBuilder.update(itemType);
+			
+			updateStoreRoomLastPurchasedDate(storeRoomId, lastPurchasedDate);
 		}
 		return false;
 	}
@@ -116,6 +121,19 @@ public class ItemTypeQuantityRollupCommand implements Command {
 			return 0d;
 		}
 		return 0d;
+	}
+	
+	private void updateStoreRoomLastPurchasedDate(long storeRoomId, long lastPurchasedDate) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.STORE_ROOM);
+		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.STORE_ROOM);
+		StoreRoomContext storeRoom = new StoreRoomContext();
+		storeRoom.setId(storeRoomId);
+		storeRoom.setLastPurchasedDate(lastPurchasedDate);
+		UpdateRecordBuilder<StoreRoomContext> updateBuilder = new UpdateRecordBuilder<StoreRoomContext>()
+				.module(module).fields(fields)
+				.andCondition(CriteriaAPI.getIdCondition(storeRoomId, module));
+		updateBuilder.update(storeRoom);
 	}
 
 }

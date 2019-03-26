@@ -10,6 +10,7 @@ import org.apache.commons.chain.Context;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ItemContext;
 import com.facilio.bmsconsole.context.ItemTypesContext;
+import com.facilio.bmsconsole.context.StoreRoomContext;
 import com.facilio.bmsconsole.context.ToolContext;
 import com.facilio.bmsconsole.context.ToolTransactionContext;
 import com.facilio.bmsconsole.context.ToolTypesContext;
@@ -47,18 +48,19 @@ public class ToolTypeQuantityRollupCommand implements Command {
 		if (toolTypesIds != null && !toolTypesIds.isEmpty()) {
 			for (Long id : toolTypesIds) {
 				
-				SelectRecordsBuilder<ToolTransactionContext> stocktransactionbuilder = new SelectRecordsBuilder<ToolTransactionContext>().select(transactionFields)
-						.moduleName(transactionModule.getName())
-						.andCondition(CriteriaAPI.getCondition(transactionFieldMap.get("toolType"), String.valueOf(id), NumberOperators.EQUALS))
-						.andCondition(CriteriaAPI.getCondition(transactionFieldMap.get("transactionState"), String.valueOf(1), NumberOperators.EQUALS))
-						.beanClass(ToolTransactionContext.class)
-						.orderBy("CREATED_TIME DESC");
-
-				List<ToolTransactionContext> transactions = stocktransactionbuilder.get();
-				ToolTransactionContext transaction;
-				if (transactions != null && !transactions.isEmpty()) {
-					transaction = transactions.get(0);
-					lastPurchasedDate = transaction.getSysCreatedTime();
+				SelectRecordsBuilder<ToolContext> builder = new SelectRecordsBuilder<ToolContext>().select(toolFields)
+						.moduleName(toolModule.getName()).andCondition(CriteriaAPI
+								.getCondition(toolFieldMap.get("toolType"), String.valueOf(id), NumberOperators.EQUALS))
+						.beanClass(ToolContext.class)
+						.orderBy("LAST_PURCHASED_DATE DESC");
+				
+				List<ToolContext> tools = builder.get();
+				long storeRoomId = -1;
+				ToolContext tool;
+				if (tools != null && !tools.isEmpty()) {
+					tool = tools.get(0);
+					storeRoomId = tool.getStoreRoom().getId();
+					lastPurchasedDate = tool.getLastPurchasedDate();
 				}
 				
 				SelectRecordsBuilder<ToolTransactionContext> issuetransactionsbuilder = new SelectRecordsBuilder<ToolTransactionContext>().select(transactionFields)
@@ -68,7 +70,8 @@ public class ToolTypeQuantityRollupCommand implements Command {
 						.beanClass(ToolTransactionContext.class)
 						.orderBy("CREATED_TIME DESC");
 
-				transactions = issuetransactionsbuilder.get();
+				List<ToolTransactionContext> transactions = issuetransactionsbuilder.get();
+				ToolTransactionContext transaction;
 				if (transactions != null && !transactions.isEmpty()) {
 					transaction = transactions.get(0);
 					lastIssuedDate = transaction.getSysCreatedTime();
@@ -86,6 +89,7 @@ public class ToolTypeQuantityRollupCommand implements Command {
 						.andCondition(CriteriaAPI.getIdCondition(id, toolTypesModule));
 
 				updateBuilder.update(toolType);
+				updateStoreRoomLastPurchasedDate(storeRoomId, lastPurchasedDate);
 			}
 		}
 		context.put(FacilioConstants.ContextNames.TOOL_TYPES_IDS, toolTypesIds);
@@ -97,8 +101,6 @@ public class ToolTypeQuantityRollupCommand implements Command {
 		if (id <= 0) {
 			return 0d;
 		}
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-
 		
 		List<FacilioField> field = new ArrayList<>();
 		field.add(FieldFactory.getField("totalQuantity", "sum(CURRENT_QUANTITY)", FieldType.DECIMAL));
@@ -116,6 +118,19 @@ public class ToolTypeQuantityRollupCommand implements Command {
 			return 0d;
 		}
 		return 0d;
+	}
+	
+	private void updateStoreRoomLastPurchasedDate(long storeRoomId, long lastPurchasedDate) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.STORE_ROOM);
+		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.STORE_ROOM);
+		StoreRoomContext storeRoom = new StoreRoomContext();
+		storeRoom.setId(storeRoomId);
+		storeRoom.setLastPurchasedDate(lastPurchasedDate);
+		UpdateRecordBuilder<StoreRoomContext> updateBuilder = new UpdateRecordBuilder<StoreRoomContext>()
+				.module(module).fields(fields)
+				.andCondition(CriteriaAPI.getIdCondition(storeRoomId, module));
+		updateBuilder.update(storeRoom);
 	}
 
 }

@@ -52,10 +52,17 @@ public class AddOrUpdateItemQuantityCommand implements Command {
 				if (purchasedItems != null && !purchasedItems.isEmpty()) {
 					for (PurchasedItemContext purchaseditem : purchasedItems) {
 						quantity += purchaseditem.getCurrentQuantity();
-						lastPurchasedDate = purchaseditem.getCostDate();
-						lastPurchasedPrice = purchaseditem.getUnitcost();
 					}
 				}
+				
+				selectBuilder.orderBy("LAST_PURCHASED_DATE DESC");
+				List<PurchasedItemContext> pItems = selectBuilder.get();
+				if (pItems != null && !pItems.isEmpty()) {
+					PurchasedItemContext pitem = pItems.get(0);
+					lastPurchasedDate = pitem.getCostDate();
+					lastPurchasedPrice = pitem.getUnitcost();
+				}
+				
 				FacilioModule itemModule = modBean.getModule(FacilioConstants.ContextNames.ITEM);
 				List<FacilioField> itemFields = modBean.getAllFields(FacilioConstants.ContextNames.ITEM);
 

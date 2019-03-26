@@ -52,10 +52,10 @@ public class AddOrUpdateToolStockTransactionsCommand implements Command {
 				.andCondition(CriteriaAPI.getIdCondition(toolIds, Toolmodule));
 
 		List<ToolContext> tools = toolselectBuilder.get();
-		ToolContext tool = new ToolContext();
-		if (tools != null && !tools.isEmpty()) {
-			tool = tools.get(0);
-		}
+		ToolContext tool = (ToolContext) context.get(FacilioConstants.ContextNames.RECORD);
+//		if (tools != null && !tools.isEmpty()) {
+//			tool = tools.get(0);
+//		}
 
 		FacilioModule ToolTypemodule = modBean.getModule(FacilioConstants.ContextNames.TOOL_TYPES);
 		List<FacilioField> ToolTypefields = modBean.getAllFields(FacilioConstants.ContextNames.TOOL_TYPES);

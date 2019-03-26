@@ -18,6 +18,7 @@ import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.InsertRecordBuilder;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
+import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
 import com.facilio.bmsconsole.util.TransactionType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
@@ -49,6 +50,7 @@ public class AddToolCommand implements Command {
 		}
 
 		List<ToolContext> toolToBeAdded = new ArrayList<>();
+		tool_rec.setLastPurchasedDate(System.currentTimeMillis());
 		if (!toolTypesId.contains(tool_rec.getToolType().getId())) {
 			toolToBeAdded.add(tool_rec);
 		} else {
@@ -72,8 +74,20 @@ public class AddToolCommand implements Command {
 				purchasedTools.add(pTool);
 			}
 			tool_rec.setPurchasedTools(null);
-		}
-		
+		} 
+//		else {
+//			SelectRecordsBuilder<ToolContext> toolBuilder = new SelectRecordsBuilder<ToolContext>().select(toolFields)
+//					.table(toolModule.getTableName()).moduleName(toolModule.getName()).beanClass(ToolContext.class)
+//					.andCondition(CriteriaAPI.getIdCondition(tool_rec.getId(), toolModule));
+//			List<ToolContext> toolcontext = toolBuilder.get();
+//			if (toolcontext != null && !toolcontext.isEmpty()) {
+//				tool_rec.setQuantity(tool_rec.getQuantity() + toolcontext.get(0).getCurrentQuantity());
+//				tool_rec.setCurrentQuantity(tool_rec.getQuantity() + toolcontext.get(0).getCurrentQuantity());
+//				updateTool(toolModule, toolFields, tool_rec);
+//			}
+//
+//		}
+
 		context.put(FacilioConstants.ContextNames.RECORD, tool_rec);
 		context.put(FacilioConstants.ContextNames.RECORD_ID, tool_rec.getId());
 		context.put(FacilioConstants.ContextNames.PURCHASED_TOOL, purchasedTools);
@@ -87,6 +101,13 @@ public class AddToolCommand implements Command {
 		InsertRecordBuilder<ToolContext> readingBuilder = new InsertRecordBuilder<ToolContext>().module(module)
 				.fields(fields).addRecords(tool);
 		readingBuilder.save();
+	}
+
+	
+	private void updateTool(FacilioModule module, List<FacilioField> fields, ToolContext tool) throws Exception {
+		UpdateRecordBuilder<ToolContext> readingBuilder = new UpdateRecordBuilder<ToolContext>().module(module)
+				.fields(fields).andCondition(CriteriaAPI.getIdCondition(tool.getId(), module));
+		readingBuilder.update(tool);
 	}
 
 }

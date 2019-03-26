@@ -166,6 +166,12 @@ public class ItemTransactionsAction extends FacilioAction {
 		itemsList();
 		return SUCCESS;
 	}
+	
+	public String itemTransactionsCount() throws Exception {
+		itemsList();
+		setResult(FacilioConstants.ContextNames.COUNT, count);
+		return SUCCESS;
+	}
 
 	private boolean includeParentFilter;
 

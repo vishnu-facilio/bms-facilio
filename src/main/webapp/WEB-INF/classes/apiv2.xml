@@ -1562,7 +1562,14 @@
 			<param name="permission">READ</param>
 			</action>
 	</package>
-	
+	<package name="itemTransactionsCountApi" namespace="/api/v2/itemTransactions"
+	extends="v2Api">
+		<action name="count"
+			class="com.facilio.bmsconsole.actions.ItemTransactionsAction" method="itemTransactionsCount">
+			<param name="moduleName">asset</param>
+			<param name="permission">READ</param>
+		</action>
+	</package>
 	<package name="purchasedToolApi" namespace="/api/v2/purchasedTool"
 		extends="v2Api">
 		<action name="update"
@@ -1643,7 +1650,14 @@
 			<param name="permission">READ</param>
 			</action>
 	</package>
-	
+	<package name="toolTransactionsCountApi" namespace="/api/v2/toolTransactions"
+	extends="v2Api">
+		<action name="count"
+			class="com.facilio.bmsconsole.actions.ToolTransactionsAction" method="toolsTransactionsCount">
+			<param name="moduleName">asset</param>
+			<param name="permission">READ</param>
+		</action>
+	</package>
 	<package name="labourApi" namespace="/api/v2/labour"
 		extends="v2Api">
 		<action name="add"

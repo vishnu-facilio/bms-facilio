@@ -107,5 +107,12 @@ public class StoreRoomContext extends ModuleBaseWithCustomFields {
 		}
 		return false;
 	}
-
+	
+	private long lastPurchasedDate = -1;
+	public long getLastPurchasedDate() {
+		return lastPurchasedDate;
+	}
+	public void setLastPurchasedDate(long lastPurchasedDate) {
+		this.lastPurchasedDate = lastPurchasedDate;
+	}
 }

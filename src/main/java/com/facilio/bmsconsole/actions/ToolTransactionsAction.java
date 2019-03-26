@@ -149,6 +149,12 @@ public class ToolTransactionsAction extends FacilioAction{
 		return SUCCESS;		
 	}
 	
+	public String toolsTransactionsCount() throws Exception {
+		toolsTransactionsList();
+		setResult(FacilioConstants.ContextNames.COUNT, count);
+		return SUCCESS;
+	}
+	
 	private boolean includeParentFilter;
 
 	public boolean getIncludeParentFilter() {
