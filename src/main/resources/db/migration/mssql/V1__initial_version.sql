@@ -1083,7 +1083,7 @@ CREATE TABLE Agent_Data (
         ORGID bigint,
         NAME varchar(250) not null UNIQUE,
         DISPLAY_NAME varchar(250) DEFAULT null,
-        DATA_INTERVAL bigint DEFAULT 600000 not null,
+        DATA_INTERVAL bigint DEFAULT 10 not null,
         TYPE INT,
         VERSION varchar(20),
         LAST_MODIFIED_TIME bigint,

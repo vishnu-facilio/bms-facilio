@@ -1145,7 +1145,7 @@ CREATE TABLE IF NOT EXISTS Agent_Data (
         ORGID bigint(20),
         NAME varchar(250) NOT NULL UNIQUE,
         DISPLAY_NAME varchar(250) DEFAULT NULL,
-        DATA_INTERVAL bigint(20) DEFAULT 600000 not null,
+        DATA_INTERVAL bigint(20) DEFAULT 10 not null,
         TYPE INT,
         VERSION varchar(20),
         LAST_MODIFIED_TIME bigint(20),
