@@ -57,7 +57,7 @@ public class GetReceivablesListCommand implements Command {
 			}
 			
 			String orderBy = (String) context.get(FacilioConstants.ContextNames.SORTING_QUERY);
-			if (!getCount && orderBy != null && !orderBy.isEmpty()) {
+			if (getCount!=null && !getCount && orderBy != null && !orderBy.isEmpty()) {
 				builder.orderBy(orderBy);
 			}
 
