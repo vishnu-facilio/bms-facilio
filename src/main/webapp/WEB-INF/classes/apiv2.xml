@@ -1700,6 +1700,12 @@
 		<action name="addOrUpdateLineItem" class="com.facilio.bmsconsole.actions.PurchaseOrderAction" method="addOrUpdateLineItem">
 			<param name="moduleName">purchaseorderlineitems</param>
 		</action>
+		<action name="pendingPOLineItem" class="com.facilio.bmsconsole.actions.PurchaseOrderAction" method="getPendingLineItems">
+			<param name="moduleName">purchaseorderlineitems</param>
+		</action>
+		<action name="receivedPOLineItem" class="com.facilio.bmsconsole.actions.PurchaseOrderAction" method="getReceivedLineItems">
+			<param name="moduleName">purchaseorderlineitems</param>
+		</action>
 		<action name="deleteLineItem" class="com.facilio.bmsconsole.actions.PurchaseOrderAction" method="deleteLineItem">
 			<param name="moduleName">purchaseorderlineitems</param>
 		</action>
@@ -1712,11 +1718,11 @@
 		<action name="list" class="com.facilio.bmsconsole.actions.PurchaseOrderAction" method="getPurchaseOrderList">
 			<param name="moduleName">purchaseorder</param>
 		</action>
-	   <action name="*" class="com.facilio.bmsconsole.actions.PurchaseOrderAction" method="getPurchaseOrderList">
-			<param name="viewName">{1}</param>
+	   <action name="completePurchaseOrder" class="com.facilio.bmsconsole.actions.PurchaseOrderAction" method="completePurchaseOrder">
 			<param name="moduleName">purchaseorder</param>
 		</action>
-		<action name="completePurchaseOrder" class="com.facilio.bmsconsole.actions.PurchaseOrderAction" method="completePurchaseOrder">
+		<action name="*" class="com.facilio.bmsconsole.actions.PurchaseOrderAction" method="getPurchaseOrderList">
+			<param name="viewName">{1}</param>
 			<param name="moduleName">purchaseorder</param>
 		</action>
 	</package>

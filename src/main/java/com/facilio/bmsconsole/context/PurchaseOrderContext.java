@@ -91,13 +91,14 @@ public class PurchaseOrderContext extends ModuleBaseWithCustomFields {
 	
 	public static PurchaseOrderContext fromPurchaseRequest(List<PurchaseRequestContext> list) {
 		PurchaseOrderContext purchaseOrderContext = new PurchaseOrderContext();
-		purchaseOrderContext.setName("Sample");
 		purchaseOrderContext.setStatus(Status.REQUESTED);
-		purchaseOrderContext.setDescription("sample");
 		long vendorId = -1;
 		long storeRoomId = -1;
 		
 		for(PurchaseRequestContext pr : list) {
+			if(pr.getStatusEnum() != PurchaseRequestContext.Status.APPROVED) {
+				throw new IllegalArgumentException("Only Purchase Requests with Approved status can be converted to Purchase Order");
+			}
 			if(vendorId == -1 && pr.getVendor() != null) {
 				purchaseOrderContext.setVendor(pr.getVendor());
 				vendorId = 	pr.getVendor().getId();
@@ -106,8 +107,7 @@ public class PurchaseOrderContext extends ModuleBaseWithCustomFields {
 				purchaseOrderContext.setStoreRoom(pr.getStoreRoom());
 				storeRoomId = pr.getStoreRoom().getId();
 			}
-		 	
-			if(pr.getVendor() != null && pr.getVendor().getId() != vendorId) {
+		 	if(pr.getVendor() != null && pr.getVendor().getId() != vendorId) {
 				throw new IllegalArgumentException("Cannot create single PO for multiple vendors");
 			}
 			if(pr.getStoreRoom() != null && pr.getStoreRoom().getId() != storeRoomId) {

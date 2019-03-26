@@ -2192,5 +2192,17 @@ public class TransactionChainFactory {
 			c.addCommand(getAddBulkItemChain());
 			return c;
 		}
+		
+		public static Chain getPendingPOLineItemsChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new GetPendingPoLineItemsCommand());
+			return c;
+		}
+		
+		public static Chain getReceivedPOLineItemsChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new GetReceivedPoLineItemsCommand());
+			return c;
+		}
 }
 

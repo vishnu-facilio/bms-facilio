@@ -214,6 +214,7 @@ public class PurchaseOrderAction extends FacilioAction {
 		this.poId = poId;
 	}
 	
+	
 	public String completePurchaseOrder() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.PURCHASE_ORDERS, Collections.singletonList(poId));
@@ -223,6 +224,28 @@ public class PurchaseOrderAction extends FacilioAction {
 		
 		setResult(FacilioConstants.ContextNames.RECEIPT, context.get(FacilioConstants.ContextNames.RECORD));
 		return SUCCESS;
+	}
+	
+	public String getPendingLineItems() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.PO_ID, poId);
+		Chain chain = TransactionChainFactory.getPendingPOLineItemsChain();
+		chain.execute(context);
+		
+		setResult(FacilioConstants.ContextNames.PURCHASE_ORDER_LINE_ITEMS, context.get(FacilioConstants.ContextNames.PURCHASE_ORDER_LINE_ITEMS));
+		return SUCCESS;
+
+	}
+	
+	public String getReceivedLineItems() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.PO_ID, poId);
+		Chain chain = TransactionChainFactory.getReceivedPOLineItemsChain();
+		chain.execute(context);
+		
+		setResult(FacilioConstants.ContextNames.PURCHASE_ORDER_LINE_ITEMS, context.get(FacilioConstants.ContextNames.PURCHASE_ORDER_LINE_ITEMS));
+		return SUCCESS;
+
 	}
 
 }
