@@ -17,6 +17,7 @@ import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldType;
+import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.fw.BeanFactory;
 
@@ -35,37 +36,46 @@ public class ReportFactory {
 		int PLANNED_VS_UNPLANNED = 4;
 		int FIRST_RESPONSE_TIME = 5;
 	}
+	
+	public interface Alarm {
+		String FIRST_RESPONSE_TIME_COL = "al_firstresponsetime";
+		
+		int FIRST_RESPONSE_TIME = 6;
+	}
 
 	public static List<FacilioField> reportFields = new ArrayList<>();
 	private static Map<String, FacilioField> fieldMap;
 	
 	static {
-		ModuleBean modBean = null;
 		try {
-			modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			
+			// workorder fields
 			List<FacilioField> reportFields = new ArrayList<>();
-			ReportFacilioField openVsCloseField = (ReportFacilioField) getField(WorkOrder.OPENVSCLOSE_COL, "Status Type", modBean.getModule("workorder"), " CASE WHEN STATUS_ID = ? THEN 'Closed' ELSE 'Open' END ", FieldType.NUMBER, WorkOrder.OPENVSCLOSE);
+			ReportFacilioField openVsCloseField = (ReportFacilioField) getField(WorkOrder.OPENVSCLOSE_COL, "Status Type", ModuleFactory.getWorkOrdersModule(), " CASE WHEN STATUS_ID = ? THEN 'Closed' ELSE 'Open' END ", FieldType.NUMBER, WorkOrder.OPENVSCLOSE);
 			openVsCloseField.addCondition("Open", CriteriaAPI.getCondition("STATUS_ID", "status", "?", NumberOperators.NOT_EQUALS));
 			openVsCloseField.addCondition("Closed", CriteriaAPI.getCondition("STATUS_ID", "status", "?", NumberOperators.EQUALS));
 			reportFields.add(openVsCloseField);
 			
-			ReportFacilioField overdueOpenField = (ReportFacilioField) getField(WorkOrder.OVERDUE_OPEN_COL, "Open Due Status", modBean.getModule("workorder"), " CASE WHEN DUE_DATE IS NOT NULL THEN CASE WHEN DUE_DATE < ? THEN 'Overdue' ELSE 'On Schedule' END END ", FieldType.NUMBER, WorkOrder.OVERDUE_OPEN);
+			ReportFacilioField overdueOpenField = (ReportFacilioField) getField(WorkOrder.OVERDUE_OPEN_COL, "Open Due Status", ModuleFactory.getWorkOrdersModule(), " CASE WHEN DUE_DATE IS NOT NULL THEN CASE WHEN DUE_DATE < ? THEN 'Overdue' ELSE 'On Schedule' END END ", FieldType.NUMBER, WorkOrder.OVERDUE_OPEN);
 			overdueOpenField.addCondition("Overdue", CriteriaAPI.getCondition("DUE_DATE", "dueDate", "?", NumberOperators.LESS_THAN));
 			overdueOpenField.addCondition("On Schedule", CriteriaAPI.getCondition("DUE_DATE", "dueDate", "?", NumberOperators.GREATER_THAN_EQUAL));
 			reportFields.add(overdueOpenField);
 			
-			ReportFacilioField overdueClosedField = (ReportFacilioField) getField(WorkOrder.OVERDUE_CLOSED_COL, "Closed Due Status", modBean.getModule("workorder"), " CASE WHEN DUE_DATE IS NOT NULL AND ACTUAL_WORK_END IS NOT NULL THEN CASE WHEN DUE_DATE < ACTUAL_WORK_END THEN 'Overdue' ELSE 'Ontime' END END ", FieldType.NUMBER, WorkOrder.OVERDUE_CLOSED);
+			ReportFacilioField overdueClosedField = (ReportFacilioField) getField(WorkOrder.OVERDUE_CLOSED_COL, "Closed Due Status", ModuleFactory.getWorkOrdersModule(), " CASE WHEN DUE_DATE IS NOT NULL AND ACTUAL_WORK_END IS NOT NULL THEN CASE WHEN DUE_DATE < ACTUAL_WORK_END THEN 'Overdue' ELSE 'Ontime' END END ", FieldType.NUMBER, WorkOrder.OVERDUE_CLOSED);
 			overdueClosedField.addCondition("Overdue", CriteriaAPI.getCondition("DUE_DATE", "dueDate", "actualWorkEnd", FieldOperator.LESS_THAN));
 			overdueClosedField.addCondition("Ontime", CriteriaAPI.getCondition("DUE_DATE", "dueDate", "actualWorkEnd", FieldOperator.GREATER_THAN_EQUAL));
 			reportFields.add(overdueClosedField);
 			
-			ReportFacilioField plannedVsUnplannedField = (ReportFacilioField) getField(WorkOrder.PLANNED_VS_UNPLANNED_COL, "Planned Type", modBean.getModule("workorder"), " CASE WHEN SOURCE_TYPE = 5 THEN 'Planned' ELSE 'Unplanned' END ", FieldType.NUMBER, WorkOrder.PLANNED_VS_UNPLANNED);
+			ReportFacilioField plannedVsUnplannedField = (ReportFacilioField) getField(WorkOrder.PLANNED_VS_UNPLANNED_COL, "Planned Type", ModuleFactory.getWorkOrdersModule(), " CASE WHEN SOURCE_TYPE = 5 THEN 'Planned' ELSE 'Unplanned' END ", FieldType.NUMBER, WorkOrder.PLANNED_VS_UNPLANNED);
 			plannedVsUnplannedField.addCondition("Planned", CriteriaAPI.getCondition("SOURCE_TYPE", "sourceType", "5", NumberOperators.EQUALS));
 			plannedVsUnplannedField.addCondition("Unplanned", CriteriaAPI.getCondition("SOURCE_TYPE", "sourceType", "5", NumberOperators.NOT_EQUALS));
 			reportFields.add(plannedVsUnplannedField);
 			
-			reportFields.add(getField(WorkOrder.FIRST_RESPONSE_TIME_COL, "Response Time", modBean.getModule("workorder"), "Tickets.ACTUAL_WORK_START - WorkOrders.CREATED_TIME", FieldType.NUMBER, WorkOrder.FIRST_RESPONSE_TIME));
+			reportFields.add(getField(WorkOrder.FIRST_RESPONSE_TIME_COL, "Response Time", ModuleFactory.getWorkOrdersModule(), "Tickets.ACTUAL_WORK_START - WorkOrders.CREATED_TIME", FieldType.NUMBER, WorkOrder.FIRST_RESPONSE_TIME));
+			
+			// alarm fields
+			reportFields.add(getField(Alarm.FIRST_RESPONSE_TIME_COL, "Response Time", ModuleFactory.getAlarmsModule(), " (Alarms.ACKNOWLEDGED_TIME - Alarms.CREATED_TIME) ", FieldType.NUMBER, Alarm.FIRST_RESPONSE_TIME));
+//			reportFields.add(getField(Alarm.FIRST_RESPONSE_TIME_COL, "Response Time", ModuleFactory.getAlarmsModule(), " (Alarms.ACKNOWLEDGED_TIME - Alarms.CREATED_TIME) ", FieldType.NUMBER, Alarm.FIRST_RESPONSE_TIME));
+			
 			
 			fieldMap = FieldFactory.getAsMap(reportFields);
 		} catch (Exception e) {
