@@ -36,7 +36,7 @@ public  class DevicePointsUtil {
         String deviceName = (String) payLoad.get(DevicePointsKeys.DEVICE_NAME);
 
         String deviceId = instanceNumber+"_"+destinationAddress+"_"+networkNumber;
-        if( ! deviceMap.containsKey(deviceId)) {
+        // if( ! deviceMap.containsKey(deviceId)) {
             ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", orgId);
             ControllerContext controller = bean.getController(deviceName, deviceId);
             if(controller == null) {
@@ -66,7 +66,7 @@ public  class DevicePointsUtil {
                 LOGGER.info("Device Points : "+points);
                 TimeSeriesAPI.addUnmodeledInstances(points, controllerSettingsId);
             }
-        }
+        // }
     }
 }
 
