@@ -192,7 +192,7 @@ public class ExportUtil {
 					if(value instanceof Double) {
 						value = BigDecimal.valueOf((Double)value).toPlainString();
 					}
-					row.createCell((short) j).setCellValue(value.toString());
+					row.createCell((short) j).setCellValue(value != null ? value.toString() : "");
 	    			}
 			}
 			
