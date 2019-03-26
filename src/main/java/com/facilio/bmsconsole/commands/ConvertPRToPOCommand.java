@@ -74,7 +74,7 @@ public class ConvertPRToPOCommand implements Command {
 	
 	private void updatePurchaseRequestStatus (List<PurchaseRequestContext> list, FacilioModule module, List<FacilioField> fields) throws Exception {
 		for(PurchaseRequestContext pr : list) {
-			pr.setStatus(Status.APPROVED);
+			pr.setStatus(Status.COMPLETED);
 			UpdateRecordBuilder<ModuleBaseWithCustomFields> updateBuilder = new UpdateRecordBuilder<ModuleBaseWithCustomFields>()
 					.module(module)
 					.fields(fields)
