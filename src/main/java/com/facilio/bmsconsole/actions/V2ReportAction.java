@@ -857,7 +857,7 @@ public class V2ReportAction extends FacilioAction {
 				zdt = DateTimeUtil.getDateTime(alarmContext.getModifiedTime());
 				zdt = zdt.truncatedTo(new SecondsChronoUnit(1 * 60 * 60));
 				if(alarmContext.getClearedTime() > 0) {
-					dataPoint.put("predictedTime", DateTimeUtil.getMillis(zdt, true)-3600000l);
+					dataPoint.put("predictedTime", DateTimeUtil.getMillis(zdt, true)-(6 * 3600000));
 				}
 				else {
 					dataPoint.put("predictedTime", DateTimeUtil.getMillis(zdt, true));
