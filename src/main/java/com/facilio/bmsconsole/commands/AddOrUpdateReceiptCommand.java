@@ -48,9 +48,12 @@ public class AddOrUpdateReceiptCommand implements Command {
 			}
 			updateRecords(updateReceipts, module, fields);
 			saveRecords(saveReceipts, module, fields);
+			context.put(FacilioConstants.ContextNames.RECEIPTS, saveReceipts.size() > 0 ? saveReceipts : updateReceipts);
+
 		}
 		context.put(FacilioConstants.ContextNames.RECEIVABLE_ID, receivableIds);
 		context.put(FacilioConstants.ContextNames.PURCHASE_ORDER_LINE_ITEMS_ID, lineitemIds);
+	
 		return false;
 	}
 

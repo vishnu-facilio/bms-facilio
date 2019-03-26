@@ -44,7 +44,7 @@ public class ReceiptAction extends FacilioAction {
 		Chain chain = TransactionChainFactory.getAddOrUpdateReceiptsChain();
 		chain.execute(context);
 		
-		setResult(FacilioConstants.ContextNames.RECEIPTS, context.get(FacilioConstants.ContextNames.RECORD_LIST));
+		setResult(FacilioConstants.ContextNames.RECEIPTS, context.get(FacilioConstants.ContextNames.RECEIPTS));
 		return SUCCESS;
 	}
 	

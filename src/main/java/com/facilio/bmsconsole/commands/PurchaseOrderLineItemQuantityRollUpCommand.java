@@ -86,7 +86,7 @@ public class PurchaseOrderLineItemQuantityRollUpCommand implements Command{
 
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder().table(module.getTableName())
 				.andCustomWhere(module.getTableName() + ".ORGID = " + AccountUtil.getCurrentOrg().getOrgId())
-				.select(field).andCondition(CriteriaAPI.getCondition(fieldsMap.get("lineItemId"), String.valueOf(id),
+				.select(field).andCondition(CriteriaAPI.getCondition(fieldsMap.get("lineItem"), String.valueOf(id),
 						NumberOperators.EQUALS));
 
 		List<Map<String, Object>> rs = builder.get();
