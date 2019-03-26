@@ -73,8 +73,8 @@ public class ModuleFactory {
 		moduleMap.put(FacilioConstants.ContextNames.ITEM_TRANSACTIONS, getItemTransactionsModule());
 		moduleMap.put(FacilioConstants.ContextNames.TENANT, getTenantsModule());
 		moduleMap.put(FacilioConstants.ContextNames.LABOUR, getLabourModule());
-		moduleMap.put(FacilioConstants.ContextNames.PURCHASE_ORDER, getPurchaseRequestModule());
-		moduleMap.put(FacilioConstants.ContextNames.PURCHASE_REQUEST, getPurchaseOrderModule());
+		moduleMap.put(FacilioConstants.ContextNames.PURCHASE_ORDER, getPurchaseOrderModule());
+		moduleMap.put(FacilioConstants.ContextNames.PURCHASE_REQUEST, getPurchaseRequestModule());
 		moduleMap.put(FacilioConstants.ContextNames.RECEIPT, getReceiptModule());
 		
 		return moduleMap;

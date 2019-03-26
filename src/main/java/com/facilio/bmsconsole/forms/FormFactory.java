@@ -103,8 +103,13 @@ public class FormFactory {
 						.put(FacilioConstants.ContextNames.WORK_ORDER_REQUEST, getWebWorkRequestForm())
 						.put(FacilioConstants.ContextNames.ASSET, getAssetForm())
 						.put(FacilioConstants.ContextNames.TENANT, getTenantsForm())
+						.put(FacilioConstants.ContextNames.PURCHASE_REQUEST, getPurchaseRequestForm())
+						.put(FacilioConstants.ContextNames.PURCHASE_ORDER, getPurchaseOrderForm())
+						.put(FacilioConstants.ContextNames.RECEIPT, getReceiptForm())
+						.put(FacilioConstants.ContextNames.LABOUR, getLabourForm())
+							
 						.put(FacilioConstants.ContextNames.INVENTORY, getInventoryForm()).build())
-
+        			
 				.put(FormType.PORTAL, ImmutableMultimap.<String, FacilioForm>builder()
 						.put(FacilioConstants.ContextNames.WORK_ORDER_REQUEST, getServiceWorkRequestForm()).build())
 				.build();
