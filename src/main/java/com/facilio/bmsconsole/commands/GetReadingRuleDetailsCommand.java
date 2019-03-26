@@ -81,9 +81,9 @@ public class GetReadingRuleDetailsCommand implements Command {
 																							.select(fields)
 																							.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 																							.andCondition(CriteriaAPI.getConditionFromList("SUB_RULE_ID", "subRuleId", rcaIds, NumberOperators.EQUALS))
+																							.andCondition(CriteriaAPI.getCondition(eventFieldsMap.get("resourceId"), alarm.getResource().getId()+"", NumberOperators.EQUALS))
 																							.groupBy("ORGID,SUB_RULE_ID")
 																							;
-							
 							List<Map<String, Object>> props = genericSelectRecordBuilder.get();
 							
 							LOGGER.error("genericSelectRecordBuilder --- "+genericSelectRecordBuilder);
