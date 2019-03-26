@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
+import com.twilio.sdk.resource.conversations.v1.conversation.Completed;
 
 public class PurchaseRequestContext extends ModuleBaseWithCustomFields {
 
@@ -80,7 +81,9 @@ public class PurchaseRequestContext extends ModuleBaseWithCustomFields {
 	public static enum Status {
 		REQUESTED(),
 		APPROVED(),
-		REJECTED();
+		REJECTED(),
+		COMPLETED()
+		;
 		
 		public int getValue() {
 			return ordinal()+1;

@@ -40,15 +40,23 @@ public class AddOrUpdatePurchaseOrderCommand implements Command {
 				throw new Exception("Line items cannot be empty");
 			}
 			
-			if (purchaseOrderContext.getVendor() == null) {
-				throw new Exception("Vendor cannot be empty");
-			}
-			
-			if (purchaseOrderContext.getStoreRoom() == null) {
-				throw new Exception("StoreRoom cannot be empty");
-			}
+//			if (purchaseOrderContext.getVendor() == null) {
+//				throw new Exception("Vendor cannot be empty");
+//			}
+//			
+//			if (purchaseOrderContext.getStoreRoom() == null) {
+//				throw new Exception("StoreRoom cannot be empty");
+//			}
 
 			if (purchaseOrderContext.getId() > 0) {
+				if(purchaseOrderContext.getStatusEnum() == PurchaseOrderContext.Status.APPROVED) {
+					if(purchaseOrderContext.getVendor() == null || (purchaseOrderContext.getVendor()!=null && purchaseOrderContext.getVendor().getId() == -1)) {
+						throw new IllegalArgumentException("Vendor cannot be null for approved Purchase Order");
+					}
+					if(purchaseOrderContext.getStoreRoom() == null || (purchaseOrderContext.getStoreRoom()!=null && purchaseOrderContext.getStoreRoom().getId() == -1)) {
+						throw new IllegalArgumentException("Storeroom cannot be null for approved Purchase Order");
+					}
+				}
 				updateRecord(purchaseOrderContext, module, fields);
 				
 				DeleteRecordBuilder<PurchaseOrderLineItemContext> deleteBuilder = new DeleteRecordBuilder<PurchaseOrderLineItemContext>()
@@ -56,6 +64,7 @@ public class AddOrUpdatePurchaseOrderCommand implements Command {
 						.andCondition(CriteriaAPI.getCondition("PO_ID", "poid", String.valueOf(purchaseOrderContext.getId()), NumberOperators.EQUALS));
 				deleteBuilder.delete();
 			} else {
+				purchaseOrderContext.setStatus(PurchaseOrderContext.Status.REQUESTED);
 				addRecord(Collections.singletonList(purchaseOrderContext), module, fields);
 				FacilioModule receivableModule = modBean.getModule(FacilioConstants.ContextNames.RECEIVABLE);
 				ReceivableContext receivableContext = new ReceivableContext();
