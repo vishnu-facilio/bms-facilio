@@ -58,7 +58,7 @@ public class PurchaseOrderCompleteCommand implements Command {
 					if (lineItems != null && !lineItems.isEmpty()) {
 						for (PurchaseOrderLineItemContext lineItem : lineItems) {
 							if (lineItem.getInventoryTypeEnum() == InventoryType.ITEM) {
-								itemTypesVendors.add(new ItemTypesVendorsContext(lineItem.getItemType(), po.getVendor(), lineItem.getCost(), System.currentTimeMillis()));
+								itemTypesVendors.add(new ItemTypesVendorsContext(lineItem.getItemType(), po.getVendor(), lineItem.getCost(), po.getOrderedTime()));
 								ItemTypesContext itemtype = getItemType(lineItem.getItemType().getId());
 								if (itemtype.individualTracking()) {
 									containsIndividualTrackingItem = true;
