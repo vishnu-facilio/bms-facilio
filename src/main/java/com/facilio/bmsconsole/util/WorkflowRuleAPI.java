@@ -888,6 +888,9 @@ public class WorkflowRuleAPI {
 		if (AccountUtil.getCurrentOrg().getId() == 134l && (workflowRule.getId() == 4235l || workflowRule.getId() == 6793l)) {
 			LOGGER.error("Result of rule : "+workflowRule.getId()+" for record : "+record+" is \nSite ID : "+siteId+"\nField Change : "+fieldChangeFlag+"\nMisc Flag : "+miscFlag+"\nCriteria Flag : "+criteriaFlag+"\nWorkflow Flag : "+workflowFlag);
 		}
+		if (AccountUtil.getCurrentOrg().getId() == 88 && workflowRule.getId() == 7762l) {
+			LOGGER.info("Result of rule : "+workflowRule.getId()+" for record : "+record+" is \nSite ID : "+siteId+"\nField Change : "+fieldChangeFlag+"\nMisc Flag : "+miscFlag+"\nCriteria Flag : "+criteriaFlag+"\nWorkflow Flag : "+workflowFlag);
+		}
 		
 		boolean result = fieldChangeFlag && miscFlag && criteriaFlag && workflowFlag && siteId ;
 		if(result) {
@@ -909,6 +912,9 @@ public class WorkflowRuleAPI {
 				LOGGER.info("Result of rule : "+workflowRule.getId()+" for record : "+record+" is "+result);
 			}
 			if (AccountUtil.getCurrentOrg().getId() == 134l && workflowRule instanceof ReadingRuleContext && ((ReadingRuleContext)workflowRule).getRuleGroupId() == 7186l) {
+				LOGGER.error("Result of rule : "+workflowRule.getId()+" for record : "+record+" is "+result);
+			}
+			if (AccountUtil.getCurrentOrg().getId() == 88l && workflowRule.getId() == 7762l) {
 				LOGGER.error("Result of rule : "+workflowRule.getId()+" for record : "+record+" is "+result);
 			}
 			
