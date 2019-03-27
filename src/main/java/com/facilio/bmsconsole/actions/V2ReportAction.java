@@ -851,48 +851,49 @@ public class V2ReportAction extends FacilioAction {
 		JSONArray dataPoints = new JSONArray();
 		if(readingruleContext.getReadingRuleTypeEnum() == ReadingRuleType.ML_RULE) {
 			
-			if(readingruleContext.getId() == 5085l) {
-				JSONObject dataPoint = new JSONObject();
-				
-				dataPoint.put("parentId", FacilioUtil.getSingleTonJsonArray(resource.getId()));
-				
-				JSONObject yAxisJson = new JSONObject();
-				yAxisJson.put("fieldId", readingruleContext.getReadingFieldId());
-				yAxisJson.put("aggr", 0);
-				
-				dataPoint.put("yAxis", yAxisJson);
-				
-				dataPoint.put("type", 1);
-				
-				ZonedDateTime zdt = DateTimeUtil.getDateTime(alarmContext.getCreatedTime());
-				zdt = zdt.truncatedTo(new SecondsChronoUnit(60 * 60));
-				DateTimeUtil.getMillis(zdt, true);
-				
+			JSONObject dataPoint = new JSONObject();
+			
+			dataPoint.put("parentId", FacilioUtil.getSingleTonJsonArray(resource.getId()));
+			
+			JSONObject yAxisJson = new JSONObject();
+			yAxisJson.put("fieldId", readingruleContext.getReadingFieldId());
+			yAxisJson.put("aggr", 0);
+			
+			dataPoint.put("yAxis", yAxisJson);
+			
+			dataPoint.put("type", 1);
+			
+			ZonedDateTime zdt = DateTimeUtil.getDateTime(alarmContext.getCreatedTime());
+			zdt = zdt.truncatedTo(new SecondsChronoUnit(60 * 60));
+			DateTimeUtil.getMillis(zdt, true);
+			
+			dataPoint.put("predictedTime", DateTimeUtil.getMillis(zdt, true));
+			
+			dataPoints.add(dataPoint);
+			
+			dataPoint = new JSONObject();
+			
+			dataPoint.put("parentId", FacilioUtil.getSingleTonJsonArray(resource.getId()));
+			
+			yAxisJson = new JSONObject();
+			yAxisJson.put("fieldId", readingruleContext.getReadingFieldId());
+			yAxisJson.put("aggr", 0);
+			
+			dataPoint.put("yAxis", yAxisJson);
+			
+			dataPoint.put("type", 1);
+			
+			zdt = DateTimeUtil.getDateTime(alarmContext.getModifiedTime());
+			zdt = zdt.truncatedTo(new SecondsChronoUnit(1 * 60 * 60));
+			if(alarmContext.getClearedTime() > 0) {
+				dataPoint.put("predictedTime", DateTimeUtil.getMillis(zdt, true)-(6 * 3600000));
+			}
+			else {
 				dataPoint.put("predictedTime", DateTimeUtil.getMillis(zdt, true));
-				
-				dataPoints.add(dataPoint);
-				
-				dataPoint = new JSONObject();
-				
-				dataPoint.put("parentId", FacilioUtil.getSingleTonJsonArray(resource.getId()));
-				
-				yAxisJson = new JSONObject();
-				yAxisJson.put("fieldId", readingruleContext.getReadingFieldId());
-				yAxisJson.put("aggr", 0);
-				
-				dataPoint.put("yAxis", yAxisJson);
-				
-				dataPoint.put("type", 1);
-				
-				zdt = DateTimeUtil.getDateTime(alarmContext.getModifiedTime());
-				zdt = zdt.truncatedTo(new SecondsChronoUnit(1 * 60 * 60));
-				if(alarmContext.getClearedTime() > 0) {
-					dataPoint.put("predictedTime", DateTimeUtil.getMillis(zdt, true)-(6 * 3600000));
-				}
-				else {
-					dataPoint.put("predictedTime", DateTimeUtil.getMillis(zdt, true));
-				}
-				dataPoints.add(dataPoint);
+			}
+			dataPoints.add(dataPoint);
+			
+			if(readingruleContext.getId() == 5085l) {
 				
 				dataPoint = new JSONObject();
 				
@@ -908,15 +909,35 @@ public class V2ReportAction extends FacilioAction {
 				
 				dataPoints.add(dataPoint);
 				
-				zdt = DateTimeUtil.getDateTime(alarmContext.getCreatedTime());
-				zdt = zdt.truncatedTo(new SecondsChronoUnit(24 * 60 * 60));
-				this.startTime = DateTimeUtil.getMillis(zdt, true);
+			}
+			
+			if(readingruleContext.getId() == 7504l) {
 				
-				zdt = DateTimeUtil.getDateTime(alarmContext.getModifiedTime() +432000000);
-				zdt = zdt.truncatedTo(new SecondsChronoUnit(24 * 60 * 60));
-				this.endTime = DateTimeUtil.getMillis(zdt, true);
+				dataPoint = new JSONObject();
+				
+				dataPoint.put("parentId", FacilioUtil.getSingleTonJsonArray(resource.getId()));
+				
+				yAxisJson = new JSONObject();
+				yAxisJson.put("fieldId", 517774l);
+				yAxisJson.put("aggr", 0);
+				
+				dataPoint.put("yAxis", yAxisJson);
+				
+				dataPoint.put("type", 1);
+				
+				dataPoints.add(dataPoint);
 				
 			}
+			
+			zdt = DateTimeUtil.getDateTime(alarmContext.getCreatedTime());
+			zdt = zdt.truncatedTo(new SecondsChronoUnit(24 * 60 * 60));
+			this.startTime = DateTimeUtil.getMillis(zdt, true);
+			
+			zdt = DateTimeUtil.getDateTime(alarmContext.getModifiedTime() +432000000);
+			zdt = zdt.truncatedTo(new SecondsChronoUnit(24 * 60 * 60));
+			this.endTime = DateTimeUtil.getMillis(zdt, true);
+			
+			
 			LOGGER.error("dataPoints -- "+dataPoints);
 			LOGGER.error("startTime -- "+startTime);
 			LOGGER.error("startTime -- "+this.endTime);
