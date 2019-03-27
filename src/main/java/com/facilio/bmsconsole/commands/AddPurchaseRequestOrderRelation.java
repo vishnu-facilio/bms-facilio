@@ -31,9 +31,7 @@ public class AddPurchaseRequestOrderRelation implements Command {
 		FacilioModule purchaseRequestModule = modBean.getModule(FacilioConstants.ContextNames.PURCHASE_REQUEST);
 		List<FacilioField> prfields = modBean.getAllFields(FacilioConstants.ContextNames.PURCHASE_REQUEST);
 		PurchaseOrderContext purchaseOrder = (PurchaseOrderContext) context.get(FacilioConstants.ContextNames.RECORD);
-			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			FacilioModule purchaseRequestModule = modBean.getModule(FacilioConstants.ContextNames.PURCHASE_REQUEST);
-			List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.PURCHASE_REQUEST);
+		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.PURCHASE_REQUEST);
 
 		  for(PurchaseRequestContext pr : purchaseRequests) {
 					pr.setPurchaseOrder(purchaseOrder);
