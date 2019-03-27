@@ -788,7 +788,7 @@ public class V2ReportAction extends FacilioAction {
 		
 		JSONArray dataPoints = new JSONArray();
 		
-		if(readingRules != null && readingRules.get(0) != null) {
+		if(readingRules != null && !readingRules.isEmpty() && readingRules.get(0) != null) {
 			
 			for(ReadingRuleContext readingRule :readingRules) {
 				if(readingRule != null) {
