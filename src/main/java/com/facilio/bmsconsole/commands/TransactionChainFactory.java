@@ -1593,6 +1593,13 @@ public class TransactionChainFactory {
 			return c;
 		}
 		
+		public static Chain getBulkAddToolTypesChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForToolTypes());
+			c.addCommand(new GenericAddModuleDataListCommand());
+			return c;
+		}
+		
 		public static Chain getUpdateToolTypesChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForToolTypes());

@@ -1232,6 +1232,11 @@
 			<param name="moduleName">asset</param>
 			<param name="permission">READ</param>
 		</action>
+		<action name="bulkAdd"
+			class="com.facilio.bmsconsole.actions.ToolTypesAction" method="BulkAddToolTypes">
+			<param name="moduleName">asset</param>
+			<param name="permission">CREATE</param>
+		</action>
 	</package>
 	
 	<package name="toolsListApiv2" namespace="/api/v2/toolTypes/view"
