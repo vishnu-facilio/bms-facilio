@@ -55,7 +55,7 @@ public class AddOrUpdateItemQuantityCommand implements Command {
 					}
 				}
 				
-				selectBuilder.orderBy("LAST_PURCHASED_DATE DESC");
+				selectBuilder.orderBy("COST_DATE DESC");
 				List<PurchasedItemContext> pItems = selectBuilder.get();
 				if (pItems != null && !pItems.isEmpty()) {
 					PurchasedItemContext pitem = pItems.get(0);
