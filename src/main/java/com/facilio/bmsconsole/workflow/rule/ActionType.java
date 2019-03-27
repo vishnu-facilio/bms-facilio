@@ -835,16 +835,18 @@ public enum ActionType {
 			List<FacilioField> fields = new ArrayList<>();
 			Map<String, Object> props = new HashMap<String, Object>();
 			
-			Map<String,Object> params = new HashMap<>();
 			Map<String,Object> currentRecordJson = null;
 			long alarmId = -1l;
 			if(currentRecord instanceof ReadingAlarmContext) {
 				currentRecordJson = FieldUtil.getAsProperties(currentRecord);
 				alarmId = (Long) currentRecordJson.get("id");
 			}
-			params.put("record", currentRecordJson);
 			
-			Object val = WorkflowUtil.getWorkflowExpressionResult((String)obj.get("WorkflowString"), params);
+			if(AccountUtil.getCurrentOrg().getId() == 88l) {
+				LOGGER.error("currentRecordJson --- "+currentRecordJson);
+			}
+			
+			Object val = WorkflowUtil.getWorkflowExpressionResult((String)obj.get("WorkflowString"), currentRecordJson);
 			
 			JSONArray fieldsJsonArray = (JSONArray) obj.get("fields");
 			for (Object key : fieldsJsonArray) {
