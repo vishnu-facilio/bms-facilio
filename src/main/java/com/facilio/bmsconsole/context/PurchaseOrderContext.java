@@ -152,6 +152,60 @@ public class PurchaseOrderContext extends ModuleBaseWithCustomFields {
 		}
 	}
 	
+	private long orderedTime = -1;
+	public long getOrderedTime() {
+		return orderedTime;
+	}
+	public void setOrderedTime(long orderedTime) {
+		this.orderedTime = orderedTime;
+	}
+	
+	private long requiredTime = -1;
+	public long getRequiredTime() {
+		return requiredTime;
+	}
+	public void setRequiredTime(long requiredTime) {
+		this.requiredTime = requiredTime;
+	}
+	
+	private LocationContext shipToAddress;
+
+	public LocationContext getShipToAddress() {
+		return shipToAddress;
+	}
+
+	public void setShipToAddress(LocationContext location) {
+		this.shipToAddress = location;
+	}
+
+	public long getShipToAddressId() {
+		// TODO Auto-generated method stub
+		if (shipToAddress != null) {
+			return shipToAddress.getId();
+		}
+		return -1;
+	}
+
+	private LocationContext billToAddress;
+
+	public LocationContext getBillToAddress() {
+		return billToAddress;
+	}
+
+	public void setBillToAddress(LocationContext location) {
+		this.billToAddress = location;
+	}
+
+	public long getBillToAddressId() {
+		// TODO Auto-generated method stub
+		if (billToAddress != null) {
+			return billToAddress.getId();
+		}
+		return -1;
+	}
+
+
+	
 	private double totalQuantity = -1;
 	public double getTotalQuantity() {
 		return totalQuantity;

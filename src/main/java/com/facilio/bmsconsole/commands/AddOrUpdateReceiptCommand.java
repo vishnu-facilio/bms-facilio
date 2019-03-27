@@ -40,6 +40,10 @@ public class AddOrUpdateReceiptCommand implements Command {
 			for (ReceiptContext receiptContext : receipts) {
 				receivableIds.add(receiptContext.getReceivableId());
 				lineitemIds.add(receiptContext.getLineItem().getId());
+				if(receiptContext.getReceiptTime() == -1) {
+					receiptContext.setReceiptTime(System.currentTimeMillis());
+				}
+			
 				if (receiptContext.getId() > 0) {
 					updateReceipts.add(receiptContext);
 				} else {

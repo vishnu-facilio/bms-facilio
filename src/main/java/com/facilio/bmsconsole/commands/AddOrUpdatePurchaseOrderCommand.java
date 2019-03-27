@@ -3,13 +3,16 @@ package com.facilio.bmsconsole.commands;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.LocationContext;
 import com.facilio.bmsconsole.context.PurchaseOrderContext;
 import com.facilio.bmsconsole.context.PurchaseOrderLineItemContext;
+import com.facilio.bmsconsole.context.PurchaseRequestContext;
 import com.facilio.bmsconsole.context.ReceivableContext;
 import com.facilio.bmsconsole.context.ReceivableContext.Status;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
@@ -20,6 +23,7 @@ import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.InsertRecordBuilder;
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
+import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 
@@ -47,7 +51,11 @@ public class AddOrUpdatePurchaseOrderCommand implements Command {
 //			if (purchaseOrderContext.getStoreRoom() == null) {
 //				throw new Exception("StoreRoom cannot be empty");
 //			}
-
+            purchaseOrderContext.setShipToAddress(getLocation(purchaseOrderContext, purchaseOrderContext.getShipToAddress(), "SHIP_TO_Location"));
+            purchaseOrderContext.setBillToAddress(getLocation(purchaseOrderContext, purchaseOrderContext.getBillToAddress(), "BILL_TO_Location"));
+			if(purchaseOrderContext.getOrderedTime() == -1) {
+				purchaseOrderContext.setOrderedTime(System.currentTimeMillis());
+			}
 			if (purchaseOrderContext.getId() > 0) {
 				if(purchaseOrderContext.getStatusEnum() == PurchaseOrderContext.Status.APPROVED) {
 					if(purchaseOrderContext.getVendor() == null || (purchaseOrderContext.getVendor()!=null && purchaseOrderContext.getVendor().getId() == -1)) {
@@ -113,4 +121,41 @@ public class AddOrUpdatePurchaseOrderCommand implements Command {
 		}
 	}
 
+	private LocationContext getLocation (PurchaseOrderContext purchaseOrderContext, LocationContext locationContext, String locationName) throws Exception {
+		LocationContext location;
+		FacilioContext context = new FacilioContext();
+		
+		if(locationContext != null && locationContext.getLat() != -1 && locationContext.getLng() != -1) {
+			location = locationContext;
+			location.setName(locationName);
+			context.put(FacilioConstants.ContextNames.RECORD, location);
+			if (location.getId() > 0) {
+				Chain editLocation = FacilioChainFactory.updateLocationChain();
+				editLocation.execute(context);
+			}
+			else {
+				Chain addLocation = FacilioChainFactory.addLocationChain();
+				addLocation.execute(context);
+				long locationId = (long) context.get(FacilioConstants.ContextNames.RECORD_ID);
+				location.setId(locationId);
+			}
+		}
+		else {
+			location = new LocationContext();
+			if(purchaseOrderContext.getStoreRoom() != null) {
+				LocationContext storeRoomLocation = purchaseOrderContext.getStoreRoom().getLocation();
+				location.setName(locationName);
+				location.setStreet(storeRoomLocation.getStreet());
+				location.setState(storeRoomLocation.getState());
+				location.setZip(storeRoomLocation.getZip());
+				location.setCountry(storeRoomLocation.getCountry());
+				context.put(FacilioConstants.ContextNames.RECORD, location);
+				Chain addLocation = FacilioChainFactory.addLocationChain();
+				addLocation.execute(context);
+				long locationId = (long) context.get(FacilioConstants.ContextNames.RECORD_ID);
+				location.setId(locationId);		
+			}
+		}
+		return location;
+	}
 }

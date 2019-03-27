@@ -47,6 +47,14 @@ public class ReceiptContext extends ModuleBaseWithCustomFields {
 		this.status = Status.valueOf(status);
 	}
 	
+	private long receiptTime = -1;
+	public long getReceiptTime() {
+		return receiptTime;
+	}
+	public void setReceiptTime(long receiptTime) {
+		this.receiptTime = receiptTime;
+	}
+	
 	public static enum Status {
 		RECEIVED,
 		RETURNED;
