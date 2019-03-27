@@ -751,6 +751,7 @@ public class V2ReportAction extends FacilioAction {
 		}
 		
 		List<ReadingRuleContext> readingRules = new ArrayList<>();
+		boolean isAnomalyAlarm = false;
 		if(isWithPrerequsite) {							// new 1st
 			
 			ReadingAlarmContext readingAlarmContext = (ReadingAlarmContext)alarmContext;
@@ -770,18 +771,24 @@ public class V2ReportAction extends FacilioAction {
 			if(alarmContext instanceof ReadingAlarmContext) {
 				ruleId = ((ReadingAlarmContext)alarmContext).getRuleId();
 			}
-			else {
+			else if (alarmContext instanceof MLAlarmContext) {
 				ruleId = ((MLAlarmContext)alarmContext).getRuleId();
 			}
-			ReadingRuleContext readingruleContext = (ReadingRuleContext) WorkflowRuleAPI.getWorkflowRule(ruleId);
-			readingRules.add(readingruleContext);
+			if(ruleId > 0) {
+				ReadingRuleContext readingruleContext = (ReadingRuleContext) WorkflowRuleAPI.getWorkflowRule(ruleId);
+				readingRules.add(readingruleContext);
+			}
+			else {
+				isAnomalyAlarm = true;
+			}
 		}
+		
+		ResourceContext resource = ResourceAPI.getResource(alarmContext.getResource().getId());
+		this.alarmResource = resource;
 		
 		JSONArray dataPoints = new JSONArray();
 		
 		if(readingRules != null && readingRules.get(0) != null) {
-			ResourceContext resource = ResourceAPI.getResource(alarmContext.getResource().getId());
-			this.alarmResource = resource;
 			
 			for(ReadingRuleContext readingRule :readingRules) {
 				if(readingRule != null) {
@@ -797,22 +804,45 @@ public class V2ReportAction extends FacilioAction {
 				baseLines = baselineArray.toJSONString();
 			}
 			
-			if(this.startTime <= 0 && this.endTime <= 0) {
-				long modifiedTime = alarmContext.getCreatedTime();
-				if(alarmContext.getModifiedTime() > 0) {
-					modifiedTime = alarmContext.getModifiedTime();
-				}
-				
-				DateRange range = DateOperators.CURRENT_N_DAY.getRange(""+modifiedTime);
-				
-				this.startTime = range.getStartTime();
-				this.endTime = range.getEndTime();
-			}
-			setxAggr(0);
 			if (newFormat) {
 				ReportUtil.setAliasForDataPoints(dataPoints, readingRules.get(0).getBaselineId());
 			}
 		}
+		else if(isAnomalyAlarm){
+			
+			JSONObject dataPoint = new JSONObject();
+			
+			dataPoint.put("parentId", FacilioUtil.getSingleTonJsonArray(resource.getId()));
+			
+			JSONObject yAxisJson = new JSONObject();
+			ReadingAlarmContext readingAlarmContext = (ReadingAlarmContext) alarmContext;
+			yAxisJson.put("fieldId", readingAlarmContext.getReadingFieldId());
+			updateTimeRangeAsPerFieldType(readingAlarmContext.getReadingFieldId());
+			yAxisJson.put("aggr", 0);
+			
+			dataPoint.put("yAxis", yAxisJson);
+			
+			dataPoint.put("type", 1);
+			dataPoints.add(dataPoint);
+			
+			
+			if (newFormat) {
+				ReportUtil.setAliasForDataPoints(dataPoints,-1l);
+			}
+		}
+		if(this.startTime <= 0 && this.endTime <= 0) {
+			long modifiedTime = alarmContext.getCreatedTime();
+			if(alarmContext.getModifiedTime() > 0) {
+				modifiedTime = alarmContext.getModifiedTime();
+			}
+			
+			DateRange range = DateOperators.CURRENT_N_DAY.getRange(""+modifiedTime);
+			
+			this.startTime = range.getStartTime();
+			this.endTime = range.getEndTime();
+		}
+		
+		setxAggr(0);
 		fields =  dataPoints.toJSONString();
 	}
 	
