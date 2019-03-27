@@ -51,7 +51,7 @@ public  class DevicePointsUtil {
                 controller.setMacAddr(deviceId);
                 controller = bean.addController(controller);
             } else {
-                if (controller.getAgentId() == -1 && controller.getId() > -1) {
+                if (controller.getAgentId() < 1 && controller.getId() > -1) {
                     controller.setAgentId(agentId);
                     Map<String, Object> prop = new HashMap<>();
                     prop.put("agentId", agentId);
