@@ -7,6 +7,7 @@ import org.apache.commons.collections4.CollectionUtils;
 
 import com.facilio.bmsconsole.context.PurchaseRequestContext.Status;
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
+import com.facilio.bmsconsole.util.LocationAPI;
 
 public class PurchaseOrderContext extends ModuleBaseWithCustomFields {
 
@@ -89,7 +90,7 @@ public class PurchaseOrderContext extends ModuleBaseWithCustomFields {
 		this.receivableContext = receivableContext;
 	}
 	
-	public static PurchaseOrderContext fromPurchaseRequest(List<PurchaseRequestContext> list) {
+	public static PurchaseOrderContext fromPurchaseRequest(List<PurchaseRequestContext> list) throws Exception {
 		PurchaseOrderContext purchaseOrderContext = new PurchaseOrderContext();
 		purchaseOrderContext.setStatus(Status.REQUESTED);
 		long vendorId = -1;
@@ -114,11 +115,30 @@ public class PurchaseOrderContext extends ModuleBaseWithCustomFields {
 				throw new IllegalArgumentException("Cannot create single PO for multiple storeroom items");
 			}
 			
+			
 			purchaseOrderContext.addLineItems(PurchaseOrderLineItemContext.from(pr.getLineItems()));
 		}
 		
+		purchaseOrderContext.setShipToAddress(getLocationContext());
+		purchaseOrderContext.setBillToAddress(getLocationContext());
+	
+	
+		
 		return purchaseOrderContext;
 	}
+	
+	private static LocationContext getLocationContext() {
+		
+		LocationContext location = new LocationContext();
+		location.setCity(null);
+		location.setState(null);
+		location.setStreet(null);
+		location.setCountry(null);
+		location.setZip(null);
+		return location;
+	
+	}
+
 	
 	public void addLineItems(List<PurchaseOrderLineItemContext> lineItems) {
 		if (CollectionUtils.isEmpty(lineItems)) {

@@ -257,6 +257,10 @@ public class LocationAPI {
 	}
 	
 	public static LocationContext getLocation (Object obj, LocationContext locationContext, String locationName, boolean isShippingAddress) throws Exception {
+		if (locationContext == null) {
+			return null;
+		}
+		
 		LocationContext location = locationContext;
 		FacilioContext context = new FacilioContext();
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
