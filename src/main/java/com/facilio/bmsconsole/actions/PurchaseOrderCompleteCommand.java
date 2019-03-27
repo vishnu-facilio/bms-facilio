@@ -13,6 +13,7 @@ import com.facilio.bmsconsole.context.InventoryType;
 import com.facilio.bmsconsole.context.ItemContext;
 import com.facilio.bmsconsole.context.ItemContext.CostType;
 import com.facilio.bmsconsole.context.ItemTypesContext;
+import com.facilio.bmsconsole.context.ItemTypesVendorsContext;
 import com.facilio.bmsconsole.context.PurchaseOrderContext;
 import com.facilio.bmsconsole.context.PurchaseOrderLineItemContext;
 import com.facilio.bmsconsole.context.PurchasedItemContext;
@@ -29,7 +30,7 @@ import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 
-public class PurchaseOrderITCompleteCommand implements Command {
+public class PurchaseOrderCompleteCommand implements Command {
 
 	@Override
 	public boolean execute(Context context) throws Exception {
@@ -38,6 +39,7 @@ public class PurchaseOrderITCompleteCommand implements Command {
 				.get(FacilioConstants.ContextNames.PURCHASE_ORDER_LINE_ITEMS);
 		List<ItemContext> itemsTobeAdded = new ArrayList<>();
 		List<ToolContext> toolsToBeAdded = new ArrayList<>();
+		List<ItemTypesVendorsContext> itemTypesVendors = new ArrayList<>();	
 		boolean containsIndividualTrackingItem = false;
 		boolean containsIndividualTrackingTool = false;
 		long storeRoomId = -1;
@@ -54,6 +56,7 @@ public class PurchaseOrderITCompleteCommand implements Command {
 					if (lineItems != null && !lineItems.isEmpty()) {
 						for (PurchaseOrderLineItemContext lineItem : lineItems) {
 							if (lineItem.getInventoryTypeEnum() == InventoryType.ITEM) {
+								itemTypesVendors.add(new ItemTypesVendorsContext(lineItem.getItemType(), po.getVendor(), lineItem.getCost(), System.currentTimeMillis()));
 								ItemTypesContext itemtype = getItemType(lineItem.getItemType().getId());
 								if (itemtype.individualTracking()) {
 									containsIndividualTrackingItem = true;
@@ -84,6 +87,7 @@ public class PurchaseOrderITCompleteCommand implements Command {
 			}
 		}
 		context.put(FacilioConstants.ContextNames.STORE_ROOM, storeRoomId);
+		context.put(FacilioConstants.ContextNames.RECORD_LIST, itemTypesVendors);
 		context.put(FacilioConstants.ContextNames.ITEMS, itemsTobeAdded);
 		context.put(FacilioConstants.ContextNames.TOOLS, toolsToBeAdded);
 		return false;

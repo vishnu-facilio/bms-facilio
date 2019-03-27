@@ -4,7 +4,7 @@ import com.facilio.activity.AddActivitiesCommand;
 import com.facilio.agent.ConfigureAgentCommand;
 import com.facilio.agent.ConfigureControllerCommand;
 import com.facilio.agent.DeleteAgentCommand;
-import com.facilio.bmsconsole.actions.PurchaseOrderITCompleteCommand;
+import com.facilio.bmsconsole.actions.PurchaseOrderCompleteCommand;
 import com.facilio.bmsconsole.commands.data.PopulateImportProcessCommand;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.chain.FacilioChain;
@@ -2187,7 +2187,7 @@ public class TransactionChainFactory {
 		
 		public static Chain getPurchaseOrderCompleteChain() {
 			Chain c = getDefaultChain();
-			c.addCommand(new PurchaseOrderITCompleteCommand());
+			c.addCommand(new PurchaseOrderCompleteCommand());
 			c.addCommand(getBulkAddToolChain());
 			c.addCommand(getAddBulkItemChain());
 			return c;
