@@ -116,9 +116,8 @@ public class FacilioModule implements Serializable {
 		this.trashEnabled = trashEnabled;
 	}
 	public boolean isTrashEnabled() {
-		FacilioModule parentModule = getParentModule();
-		if (parentModule.trashEnabled != null) {
-			return parentModule.trashEnabled.booleanValue();
+		if (trashEnabled != null) {
+			return trashEnabled.booleanValue();
 		}
 		return false;
 	}
