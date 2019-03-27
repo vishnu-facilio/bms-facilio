@@ -611,6 +611,9 @@ public class WorkflowRuleAPI {
 				case SLA_RULE:
 					typeWiseProps.put(entry.getKey(), getExtendedProps(ModuleFactory.getSLARuleModule(), FieldFactory.getSLARuleFields(), entry.getValue()));
 					break;
+				case READING_ALARM_RULE:
+					typeWiseProps.put(entry.getKey(), getExtendedProps(ModuleFactory.getReadingAlarmRuleModule(), FieldFactory.getReadingAlarmRuleFields(), entry.getValue()));
+					break;
 				case APPROVAL_RULE:
 				case CHILD_APPROVAL_RULE:
 					typeWiseProps.put(entry.getKey(), getExtendedProps(ModuleFactory.getApprovalRulesModule(), FieldFactory.getApprovalRuleFields(), entry.getValue()));
@@ -725,6 +728,7 @@ public class WorkflowRuleAPI {
 							rule = ApprovalRulesAPI.constructApprovalRuleFromProps(prop, modBean);
 							break;
 						case READING_ALARM_RULE:
+							prop.putAll(typeWiseExtendedProps.get(ruleType).get(prop.get("id")));
 							rule = constructReadingAlarmRuleFromProps(prop, modBean);
 							break;
 						default:
