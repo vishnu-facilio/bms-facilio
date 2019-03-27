@@ -46,6 +46,41 @@ public enum WorkOrderActivityType implements ActivityType {
 			// TODO Auto-generated method stub
 			return " rejected Workorder ";
 		}
+	},
+	ADD_TASK(8) {
+		@Override
+		public String constructMessage(JSONObject json) {
+			// TODO Auto-generated method stub
+			return " added Task ";
+		}	
+	},
+	ADD_COMMENT(9) {
+		@Override
+		public String constructMessage(JSONObject json) {
+			// TODO Auto-generated method stub
+			return " added Comment ";
+		}	
+	},
+	ADD_ATTACHMENT(10) {
+		@Override
+		public String constructMessage(JSONObject json) {
+			// TODO Auto-generated method stub
+			return " added Attachment ";
+		}	
+	},
+	ADD_TASK_ATTACHMENT(11) {
+		@Override
+		public String constructMessage(JSONObject json) {
+			// TODO Auto-generated method stub
+			return " added Task Attachment";
+		}	
+	},
+	UPDATE_TASK(12) {
+		@Override
+		public String constructMessage(JSONObject json) {
+			// TODO Auto-generated method stub
+			return " updated Task";
+		}	
 	};
 	private int value;
 

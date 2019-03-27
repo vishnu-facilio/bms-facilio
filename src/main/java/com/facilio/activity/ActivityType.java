@@ -7,6 +7,7 @@ import java.util.Map;
 import org.json.simple.JSONObject;
 
 import com.facilio.bmsconsole.activity.AssetActivityType;
+import com.facilio.bmsconsole.activity.WorkOrderActivityType;
 import com.facilio.collections.UniqueMap;
 
 public interface ActivityType {
@@ -25,6 +26,11 @@ public interface ActivityType {
 		for (ActivityType type : AssetActivityType.values()) {
 			activityMap.put(type.getValue(), type);
 		}
+		for (ActivityType type : WorkOrderActivityType.values()) {
+			activityMap.put(type.getValue(), type);
+		}
+		
+		// Max number = 12
 		
 		return activityMap;
 	}

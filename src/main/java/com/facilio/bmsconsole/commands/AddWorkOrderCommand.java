@@ -2,21 +2,32 @@ package com.facilio.bmsconsole.commands;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.activity.WorkOrderActivityType;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.InsertRecordBuilder;
 import com.facilio.bmsconsole.util.TenantsAPI;
+import com.facilio.bmsconsole.modules.UpdateChangeSet;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.workflow.rule.EventType;
+import com.facilio.chain.FacilioContext;
 import com.facilio.bmsconsole.workflow.rule.ApprovalState;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
 
 public class AddWorkOrderCommand implements Command {
 	
@@ -26,6 +37,8 @@ public class AddWorkOrderCommand implements Command {
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		WorkOrderContext workOrder = (WorkOrderContext) context.get(FacilioConstants.ContextNames.WORK_ORDER);
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+
 		if(workOrder != null) {
 			if(workOrder.getRequester() == null || workOrder.getRequester().getId() == -1)
 			{
@@ -48,7 +61,7 @@ public class AddWorkOrderCommand implements Command {
 			workOrder.setEstimatedStart(workOrder.getCreatedTime());
 			workOrder.setApprovalState(ApprovalState.YET_TO_BE_REQUESTED);
 			
-			if (workOrder.getPriority() == null) {
+			if (workOrder.getPriority() == null || workOrder.getPriority().getId() == -1) {
 				workOrder.setPriority(TicketAPI.getPriority(AccountUtil.getCurrentOrg().getId(), "Low"));
 			}
 			
@@ -97,6 +110,44 @@ public class AddWorkOrderCommand implements Command {
 			context.put(FacilioConstants.ContextNames.CHANGE_SET_MAP, Collections.singletonMap(FacilioConstants.ContextNames.WORK_ORDER, builder.getChangeSet()));
 			context.put(FacilioConstants.ContextNames.RECORD_MAP, Collections.singletonMap(FacilioConstants.ContextNames.WORK_ORDER, Collections.singletonList(workOrder)));
 			context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(workOrderId));
+			Map<Long, List<UpdateChangeSet>> changeSets = new HashMap<>();
+			if (builder.getChangeSet() != null) {
+				changeSets.putAll(builder.getChangeSet());
+			}
+			
+			if (!changeSets.isEmpty()) {
+				context.put(FacilioConstants.ContextNames.CHANGE_SET, changeSets);
+				Map<String, Map<Long, List<UpdateChangeSet>>> changeSetMap = CommonCommandUtil.getChangeSetMap((FacilioContext) context);
+				Map<Long, List<UpdateChangeSet>> currentChangeSet = changeSetMap == null ? null : changeSetMap.get(moduleName);
+				List<Long> recordIds = (List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST); //All IDs (bulk and individual) of WOs to be updated
+				Iterator it = recordIds.iterator();
+				List<UpdateChangeSet> changeSetList = null;
+				while (it.hasNext()) {
+					Object record = it.next();
+					 changeSetList = currentChangeSet == null ? null : currentChangeSet.get(record);
+				}
+                JSONObject addWO = new JSONObject();
+                List<Object> wolist = new ArrayList<Object>();
+				for (UpdateChangeSet changeset : changeSetList) {
+				    long fieldid = changeset.getFieldId();
+					Object oldValue = changeset.getOldValue();
+					Object newValue = changeset.getNewValue();
+					FacilioField field = modBean.getField(fieldid, moduleName);
+					
+					JSONObject info = new JSONObject();
+					info.put("field", field.getName());
+					info.put("displayName", field.getDisplayName());
+					info.put("oldValue", oldValue);
+					info.put("newValue", newValue);
+	                wolist.add(info);
+
+				}	
+				addWO.put("addWO", wolist);
+
+				CommonCommandUtil.addActivityToContext(workOrder.getId(), -1, WorkOrderActivityType.ADD, addWO, (FacilioContext) context);
+
+			}
+
 		}
 		else {
 			throw new IllegalArgumentException("WorkOrder Object cannot be null");

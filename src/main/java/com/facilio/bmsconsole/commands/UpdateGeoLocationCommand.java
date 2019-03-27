@@ -80,9 +80,11 @@ public class UpdateGeoLocationCommand implements Command {
 				if (isDesignatedLocation != null) {
 					info.put("designatedLocation", isDesignatedLocation);
 				}
+				JSONObject newinfo = new JSONObject();
+                newinfo.put("Location",info);
 				LOGGER.info("Asset Acitibity "+info.toJSONString());
 				updateAsset(asset, geoLocation, newLocation, isDesignatedLocation, distanceMoved);
-				CommonCommandUtil.addActivityToContext(asset.getId(), -1, AssetActivityType.LOCATION, info, (FacilioContext) context);
+				CommonCommandUtil.addActivityToContext(asset.getId(), -1, AssetActivityType.LOCATION, newinfo, (FacilioContext) context);
 			}
 		}
 		return false;
