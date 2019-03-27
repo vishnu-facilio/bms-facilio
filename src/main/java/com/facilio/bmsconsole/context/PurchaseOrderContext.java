@@ -159,4 +159,12 @@ public class PurchaseOrderContext extends ModuleBaseWithCustomFields {
 	public void setTotalQuantity(double totalQuantity) {
 		this.totalQuantity = totalQuantity;
 	}
+	
+	private long completedTime = -1;
+	public long getCompletedTime() {
+		return completedTime;
+	}
+	public void setCompletedTime(long completedTime) {
+		this.completedTime = completedTime;
+	}
 }

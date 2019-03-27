@@ -79,7 +79,7 @@ public class PurchaseOrderAutoCompleteCommand implements Command {
 				}
 				if (!containsIndividualTrackingItem && !containsIndividualTrackingTool) {
 					po.setStatus(Status.COMPLETED);
-					
+					po.setCompletedTime(System.currentTimeMillis());
 					UpdateRecordBuilder<PurchaseOrderContext> updateBuilder = new UpdateRecordBuilder<PurchaseOrderContext>()
 							.module(pomodule).fields(modBean.getAllFields(pomodule.getName()))
 							.andCondition(CriteriaAPI.getIdCondition(po.getId(), pomodule));
