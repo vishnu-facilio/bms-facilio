@@ -276,6 +276,8 @@ public class UpdateWorkOrderCommand implements Command {
 	}
 	
 	private void validateCloseStatus (WorkOrderContext workOrder, List<WorkOrderContext> oldWos, List<WorkOrderContext> newWos, List<ReadingContext> userReadings, EventType activityType, Context context, List<Long> recordIds) throws Exception {
+		WorkOrderContext oldwork = oldWos.get(0);
+		TicketStatusContext statusoldObj = TicketAPI.getStatus(AccountUtil.getCurrentOrg().getOrgId(), oldwork.getStatus().getId());
 		TicketStatusContext statusObj = TicketAPI.getStatus(AccountUtil.getCurrentOrg().getOrgId(), workOrder.getStatus().getId());
 		
 		for(WorkOrderContext oldWo: oldWos) {
@@ -300,7 +302,7 @@ public class UpdateWorkOrderCommand implements Command {
 				info.put("status", workOrder.getStatus().getStatus());
 			CommonCommandUtil.addActivityToContext(recordIds.get(0), -1, WorkOrderActivityType.UPDATE, info, (FacilioContext) context);
 			}
-			if (statusObj.getStatus().equals("Resolved") && statusObj.getType().toString().equals("OPEN")) {
+			if (statusoldObj.getStatus().equals("Resolved") && statusObj.getType().toString().equals("OPEN")) {
 				JSONObject info = new JSONObject();
 				info.put("status", "Reopened");
 			CommonCommandUtil.addActivityToContext(recordIds.get(0), -1, WorkOrderActivityType.UPDATE, info, (FacilioContext) context);
