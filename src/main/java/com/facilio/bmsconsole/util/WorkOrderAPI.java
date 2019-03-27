@@ -116,7 +116,7 @@ public class WorkOrderAPI {
 			builder.andCondition(CriteriaAPI.getCondition("RESOURCE_ID", "resource", spaceId+"", BuildingOperator.BUILDING_IS));
 		}
 		List<WorkOrderContext> workOrders = builder.get();
-		LOGGER.log(Level.SEVERE, "builder1 - "+builder);
+		// LOGGER.log(Level.SEVERE, "builder1 - "+builder);
 		return workOrders;
 	}
 
@@ -329,7 +329,7 @@ public static List<Map<String,Object>> getWorkOrderStatusPercentageForWorkflow(S
 	fields.add(siteIdField);
 
 
-	Criteria closedCriteria = ViewFactory.getClosedTicketsCriteria(workOrderModule);
+	Criteria closedCriteria = ViewFactory.getClosedTicketsCriteria();
 
 	SelectRecordsBuilder<WorkOrderContext> closedSelectRecordsBuilder = new SelectRecordsBuilder<WorkOrderContext>()
 																	  .module(workOrderModule)
@@ -646,7 +646,7 @@ public static List<Map<String,Object>> getTopNCategoryOnAvgCompletionTime(String
 	idCountField.setName("count");
 	fields.add(idCountField);
 	
-	Criteria closedCriteria = ViewFactory.getClosedTicketsCriteria(workOrderModule);
+	Criteria closedCriteria = ViewFactory.getClosedTicketsCriteria();
 
 	SelectRecordsBuilder<WorkOrderContext> selectRecordsBuilderClosed = new SelectRecordsBuilder<WorkOrderContext>()
 																.module(workOrderModule)
@@ -1029,7 +1029,7 @@ public static List<Map<String,Object>> getTotalClosedWoCountBySite(Long startTim
 	FacilioField siteIdField = FieldFactory.getSiteIdField(workOrderModule);
 	fields.add(siteIdField);
 	
-	Criteria closedCriteria = ViewFactory.getClosedTicketsCriteria(workOrderModule);
+	Criteria closedCriteria = ViewFactory.getClosedTicketsCriteria();
 
 	SelectRecordsBuilder<WorkOrderContext> selectRecordsBuilder = new SelectRecordsBuilder<WorkOrderContext>()
 																  .module(workOrderModule)
@@ -1216,7 +1216,7 @@ public static List<Map<String,Object>> getTotalClosedWoCountBySite(Long startTim
 		Map<String, FacilioField> workorderFieldMap = FieldFactory.getAsMap(workorderFields);
 		Map<String, FacilioField> resourceFieldMap = FieldFactory.getAsMap(resourceFields);
 			
-		Criteria closedCriteria = ViewFactory.getClosedTicketsCriteria(workOrderModule);
+		Criteria closedCriteria = ViewFactory.getClosedTicketsCriteria();
 		List<FacilioField> fields = new ArrayList<FacilioField>();
 
 		FacilioField idCountField = new FacilioField();

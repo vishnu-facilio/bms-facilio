@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -19,6 +20,8 @@ import com.facilio.bmsconsole.criteria.PickListOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
+import com.facilio.bmsconsole.modules.LookupField;
+import com.facilio.bmsconsole.modules.LookupFieldMeta;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.util.ItemsApi;
 import com.facilio.bmsconsole.util.StoreroomApi;
@@ -37,12 +40,16 @@ public class GetWorkorderToolsListCommand implements Command {
 			FacilioModule workorderItemsModule = modBean.getModule(moduleName);
 			List<FacilioField> workorderItemsFields = modBean.getAllFields(moduleName);
 			Map<String, FacilioField> workorderItemsFieldMap = FieldFactory.getAsMap(workorderItemsFields);
+			List<LookupFieldMeta> lookUpfields = new ArrayList<>();
+			lookUpfields.add(new LookupFieldMeta((LookupField) workorderItemsFieldMap.get("purchasedTool")));
+			
 			long parentId = (long) context.get(FacilioConstants.ContextNames.PARENT_ID);
 			SelectRecordsBuilder<WorkorderToolsContext> selectBuilder = new SelectRecordsBuilder<WorkorderToolsContext>()
 					.select(workorderItemsFields).table(workorderItemsModule.getTableName())
 					.moduleName(workorderItemsModule.getName()).beanClass(WorkorderToolsContext.class)
 					.andCondition(CriteriaAPI.getCondition(workorderItemsFieldMap.get("parentId"),
-							String.valueOf(parentId), PickListOperators.IS));
+							String.valueOf(parentId), PickListOperators.IS))
+					.fetchLookups(lookUpfields);
 
 			List<WorkorderToolsContext> workorderTools = selectBuilder.get();
 			if (workorderTools != null && !workorderTools.isEmpty()) {
@@ -51,7 +58,7 @@ public class GetWorkorderToolsListCommand implements Command {
 					StoreRoomContext storeRoom = StoreroomApi
 							.getStoreRoom(stockedTool.getStoreRoom().getId());
 					stockedTool.setStoreRoom(storeRoom);
-					ToolTypesContext tool = ToolsApi.getTool(stockedTool.getToolType().getId());
+					ToolTypesContext tool = ToolsApi.getToolTypes(stockedTool.getToolType().getId());
 					stockedTool.setToolType(tool);
 					woTools.setTool(stockedTool);
 				}

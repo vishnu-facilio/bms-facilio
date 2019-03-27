@@ -50,6 +50,14 @@ public class AssetCategoryContext extends ModuleBaseWithCustomFields {
 		this.parentCategoryId = parentCategoryId;
 	}
 	
+	private long assetModuleID;
+	public long getAssetModuleID() {
+		return assetModuleID;
+	}
+	public void setAssetModuleID(long assetModuleID) {
+		this.assetModuleID = assetModuleID;
+	}
+
 	public static enum AssetCategoryType {
 		MISC(0, "Misc"),
 		HVAC(1, "HVAC"),

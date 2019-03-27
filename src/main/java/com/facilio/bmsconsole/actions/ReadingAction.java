@@ -129,7 +129,7 @@ public class ReadingAction extends FacilioAction {
 		return SUCCESS;
 	}
 	
-	public String updateAssetCategoryReading() throws Exception {
+	public String updateReading() throws Exception {
 		FacilioContext context = new FacilioContext();
 		
 		List<List<ReadingRuleContext>> readingRules = Arrays.asList(getField().getReadingRules());
@@ -200,7 +200,6 @@ public class ReadingAction extends FacilioAction {
 	}
 	public String getResourcesOccupantLatestReadingData() throws Exception {
 		FacilioContext context = new FacilioContext();
-		System.out.println("FIEL NAME " + fieldName);
 		context.put(FacilioConstants.ContextNames.RESOURCE_ID, resourcesId);
 		context.put(FacilioConstants.ContextNames.MODULE_FIELD_NAME, fieldName);
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
@@ -402,6 +401,7 @@ public class ReadingAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
 		context.put(FacilioConstants.ContextNames.READINGS, getReadingValues());
 		context.put(FacilioConstants.ContextNames.READINGS_SOURCE, SourceType.WEB_ACTION);
+		context.put(FacilioConstants.ContextNames.ADJUST_READING_TTIME, false);
 		Chain addCurrentOccupancy = ReadOnlyChainFactory.getAddOrUpdateReadingValuesChain();
 		addCurrentOccupancy.execute(context);
 		return SUCCESS;
@@ -607,6 +607,16 @@ public class ReadingAction extends FacilioAction {
 	public void setSpaces(Map<Long, BaseSpaceContext> spaces) {
 		this.spaces = spaces;
 	}
+	
+	private List<Long> spaceId;
+	public List<Long> getSpaceId() {
+		return spaceId;
+	}
+
+	public void setSpaceId(List<Long> spaceId) {
+		this.spaceId = spaceId;
+	}
+
 
 	public String getAllSpaceReadings() throws Exception {
 		
@@ -934,6 +944,19 @@ public class ReadingAction extends FacilioAction {
 		return SUCCESS;
 	}
 	
+	public String historicalScheduledRule() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.WORKFLOW_RULE, id);
+		context.put(FacilioConstants.ContextNames.DATE_RANGE, new DateRange(startTime, endTime));
+		
+		Chain runThroughRuleChain = TransactionChainFactory.historicalScheduledRuleChain();
+		runThroughRuleChain.execute(context);
+		
+		setResult("success", "Historical run for the scheduled rule in the given period has been started");
+		
+		return SUCCESS;
+	}
+	
 	public String getFormulaFromReadingField () throws Exception {
 		formula = FormulaFieldAPI.getFormulaFieldFromReadingField(id);
 		setResult(FacilioConstants.ContextNames.FORMULA_FIELD, formula);			
@@ -943,6 +966,21 @@ public class ReadingAction extends FacilioAction {
 	public String v2GetLatestReadingData() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.PARENT_ID, parentId);
+		context.put(FacilioConstants.ContextNames.EXCLUDE_EMPTY_FIELDS, excludeEmptyFields != null ? excludeEmptyFields : true);
+		context.put(FacilioConstants.ContextNames.FETCH_READING_INPUT_VALUES, fetchInputValues);
+		context.put(FacilioConstants.ContextNames.IS_FETCH_RDM_FROM_UI, true);
+		
+		Chain latestAssetData = ReadOnlyChainFactory.fetchLatestReadingDataChain();
+		latestAssetData.execute(context);
+		
+		setResult("readingValues", context.get(FacilioConstants.ContextNames.READING_DATA_META_LIST));
+		
+		return SUCCESS;
+	}
+	
+	public String v2GetLatestReadingDataForSpaces() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.PARENT_ID_LIST, spaceId);
 		context.put(FacilioConstants.ContextNames.EXCLUDE_EMPTY_FIELDS, excludeEmptyFields != null ? excludeEmptyFields : true);
 		context.put(FacilioConstants.ContextNames.FETCH_READING_INPUT_VALUES, fetchInputValues);
 		context.put(FacilioConstants.ContextNames.IS_FETCH_RDM_FROM_UI, true);

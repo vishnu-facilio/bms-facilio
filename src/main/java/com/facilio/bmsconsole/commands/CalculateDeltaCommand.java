@@ -51,7 +51,7 @@ public class CalculateDeltaCommand implements Command {
 							for (ReadingContext reading : readings) {
 								for (FacilioField field : counterFields) {
 									Object val = FieldUtil.castOrParseValueAsPerType(field, reading.getReading(field.getName()));
-									if (AccountUtil.getCurrentOrg().getId() == 168) {
+									if (AccountUtil.getCurrentOrg().getId() == 78) {
 										LOGGER.info("Value for "+field.getName()+" is : "+val);
 									}
 									if (val != null) {
@@ -60,7 +60,7 @@ public class CalculateDeltaCommand implements Command {
 										if (field.getDataTypeEnum() == FieldType.DECIMAL) {
 											Double prevVal = (Double) FieldUtil.castOrParseValueAsPerType(field, rdm.getValue());
 											if (prevVal != -1) {
-												if (AccountUtil.getCurrentOrg().getId() == 168) {
+												if (AccountUtil.getCurrentOrg().getId() == 78) {
 													LOGGER.info("Pre Value for "+field.getName()+" is : "+prevVal);
 												}
 												deltaVal = (Double) val - prevVal;
@@ -69,7 +69,7 @@ public class CalculateDeltaCommand implements Command {
 										else {
 											Long prevVal = (Long) FieldUtil.castOrParseValueAsPerType(field, rdm.getValue());
 											if (prevVal != -1) {
-												if (AccountUtil.getCurrentOrg().getId() == 168) {
+												if (AccountUtil.getCurrentOrg().getId() == 78) {
 													LOGGER.info("Pre Value for "+field.getName()+" is : "+prevVal);
 												}
 												deltaVal = (Long) val - prevVal;
@@ -80,7 +80,7 @@ public class CalculateDeltaCommand implements Command {
 											String fieldName = field.getName()+"Delta";
 											reading.addReading(fieldName, deltaVal);
 											newRdmPairs.add(Pair.of(reading.getParentId(), fieldMap.get(fieldName)));
-											if (AccountUtil.getCurrentOrg().getId() == 168) {
+											if (AccountUtil.getCurrentOrg().getId() == 78) {
 												LOGGER.info("Delta Value for "+fieldName+" is : "+deltaVal);
 											}
 										}

@@ -15,6 +15,7 @@ import java.util.logging.Logger;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
@@ -45,20 +46,27 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.report.context.ReportBaseLineContext;
 import com.facilio.report.context.ReportContext;
+import com.facilio.report.context.ReportContext.ReportType;
 import com.facilio.report.context.ReportDataContext;
 import com.facilio.report.context.ReportDataPointContext;
 import com.facilio.report.context.ReportDataPointContext.DataPointType;
 import com.facilio.report.context.ReportDataPointContext.OrderByFunction;
+import com.facilio.report.context.ReportFieldContext;
 import com.facilio.report.context.ReportFilterContext;
 import com.facilio.report.context.ReportGroupByField;
+import com.facilio.report.context.ReportUserFilterContext;
 import com.facilio.sql.GenericSelectRecordBuilder;
 
 public class FetchReportDataCommand implements Command {
 
 	private static final Logger LOGGER = Logger.getLogger(FetchReportDataCommand.class.getName());
+	private FacilioModule baseModule;
+	private ModuleBean modBean;
+	
 	@Override
 	public boolean execute(Context context) throws Exception {
-		// TODO Auto-generated method stub
+		modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+
 		ReportContext report = (ReportContext) context.get(FacilioConstants.ContextNames.REPORT);
 		
 		if (report.getDataPoints() == null || report.getDataPoints().isEmpty()) {
@@ -117,13 +125,25 @@ public class FetchReportDataCommand implements Command {
 		data.setDataPoints(dataPointList);
 		
 		ReportDataPointContext dp = dataPointList.get(0); //Since order by, criteria are same for all dataPoints in a group, we can consider only one for the builder
+		
+		if (report.getTypeEnum() == ReportType.WORKORDER_REPORT) {
+			if (report.getModuleId() > 0) {
+				baseModule = modBean.getModule(report.getModuleId());
+			} else {
+				baseModule = dp.getxAxis().getModule();
+			} 
+		} else {
+			baseModule = dp.getxAxis().getModule();
+		}
+		
 		SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder = new SelectRecordsBuilder<ModuleBaseWithCustomFields>()
-																				.module(dp.getxAxis().getField().getModule()) //Assuming X to be the base module
+																				.module(baseModule) //Assuming X to be the base module
 																				;
 		Set<FacilioModule> addedModules = new HashSet<>();
-		addedModules.add(dp.getxAxis().getField().getModule());
+		addedModules.add(baseModule);
 		
-		joinYModuleIfRequred(dp, selectBuilder, addedModules);
+		joinModuleIfRequred(dp.getxAxis(), selectBuilder, addedModules);
+		joinModuleIfRequred(dp.getyAxis(), selectBuilder, addedModules);
 		applyOrderByAndLimit(dp, selectBuilder);
 		List<FacilioField> fields = new ArrayList<>();
 		StringJoiner groupBy = new StringJoiner(",");
@@ -191,10 +211,17 @@ public class FetchReportDataCommand implements Command {
 		return false;
 	}
 	
-	private void joinYModuleIfRequred(ReportDataPointContext dp, SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder, Set<FacilioModule> addedModules) throws Exception {
-		if (!dp.getxAxis().getField().getModule().equals(dp.getyAxis().getField().getModule())) {
-			applyJoin(dp.getyAxis().getJoinOn(), dp.getyAxis().getField().getModule(), selectBuilder);
-			addedModules.add(dp.getyAxis().getField().getModule());
+	private void joinModuleIfRequred(ReportFieldContext axis, SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder, Set<FacilioModule> addedModules) throws Exception {
+		FacilioModule module;
+		if (StringUtils.isNotEmpty(axis.getModuleName())) {
+			module = modBean.getModule(axis.getModuleName());
+		} else {
+			module = axis.getModule();
+		}
+		
+		if (!baseModule.isParentOrChildModule(module)) {
+			applyJoin(axis.getJoinOn(), module, selectBuilder);
+			addedModules.add(module);
 		}
 	}
 	
@@ -235,11 +262,34 @@ public class FetchReportDataCommand implements Command {
 			newSelectBuilder.andCondition(getEqualsCondition(xAggrField, xValues));
 		}
 		
+		if (CollectionUtils.isNotEmpty(report.getUserFilters())) {
+			for (ReportUserFilterContext userFilter: report.getUserFilters()) {
+				Criteria criteria = userFilter.getCriteria();
+				if (criteria != null) {
+					newSelectBuilder.andCriteria(criteria);
+				}
+			}
+		}
+		
 		List<Map<String, Object>> props = newSelectBuilder.getAsProps();
 		
-		LOGGER.severe("SELECT BUILDER --- "+ newSelectBuilder);
+		// LOGGER.severe("SELECT BUILDER --- "+ newSelectBuilder);
 //		LOGGER.info("DATE FROM QUERY : "+props);
 		return props;
+	}
+	
+	private boolean isAlreadyAdded(Set<FacilioModule> addedModules, FacilioModule module) {
+		if (CollectionUtils.isEmpty(addedModules)) {
+			return true;
+		}
+		
+		for (FacilioModule m : addedModules) {
+			if (m.isParentOrChildModule(module)) {
+				return true;
+			}
+		}
+		
+		return false;
 	}
 	
 	private void setYFieldsAndGroupByFields(List<ReportDataPointContext> dataPointList, List<FacilioField> fields, FacilioField xAggrField, StringJoiner groupBy, ReportDataPointContext dp, SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder, Set<FacilioModule> addedModules) throws Exception {
@@ -256,7 +306,7 @@ public class FetchReportDataCommand implements Command {
 			for (ReportGroupByField groupByField : dp.getGroupByFields()) {
 				if (groupByField.getField() == null) {
 					ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-					groupByField.setField(modBean.getField(groupByField.getFieldId()));
+					groupByField.setField(groupByField.getModule(), modBean.getField(groupByField.getFieldId()));
 				}
 				
 				FacilioField gField = groupByField.getField();
@@ -270,8 +320,8 @@ public class FetchReportDataCommand implements Command {
 				}
 				fields.add(gField);
 				
-				FacilioModule groupByModule = groupByField.getField().getModule();
-				if (!addedModules.contains(groupByModule)) {
+				FacilioModule groupByModule = groupByField.getModule();
+				if (!isAlreadyAdded(addedModules, groupByModule)) {
 					
 					applyJoin(groupByField.getJoinOn(), groupByModule, selectBuilder);
 					addedModules.add(groupByModule);
@@ -309,10 +359,10 @@ public class FetchReportDataCommand implements Command {
 			}
 			
 			if (baseLine != null) {
-				selectBuilder.andCondition(CriteriaAPI.getCondition(dp.getDateField(), baseLine.getBaseLineRange().toString(), DateOperators.BETWEEN));
+				selectBuilder.andCondition(CriteriaAPI.getCondition(dp.getDateField().getField(), baseLine.getBaseLineRange().toString(), DateOperators.BETWEEN));
 			}
 			else {
-				selectBuilder.andCondition(CriteriaAPI.getCondition(dp.getDateField(), report.getDateRange().toString(), DateOperators.BETWEEN));
+				selectBuilder.andCondition(CriteriaAPI.getCondition(dp.getDateField().getField(), report.getDateRange().toString(), DateOperators.BETWEEN));
 			}
 		}
 	}
@@ -331,7 +381,7 @@ public class FetchReportDataCommand implements Command {
 			case LOOKUP:
 				return CriteriaAPI.getCondition(field, value, PickListOperators.IS);
 			case ENUM:
-				return CriteriaAPI.getCondition(field, value, EnumOperators.IS);
+				return CriteriaAPI.getCondition(field, value, EnumOperators.VALUE_IS);
 			default:
 				return null;
 		}
@@ -371,7 +421,7 @@ public class FetchReportDataCommand implements Command {
 		for (List<ReportDataPointContext> dataPointList : groupedList) {
 			ReportDataPointContext rdp = dataPointList.get(0);
 			if (rdp.getxAxis().getField().equals(dataPoint.getxAxis().getField()) &&									// xaxis should be same
-					rdp.getyAxis().getField().getModule().equals(dataPoint.getyAxis().getField().getModule()) &&		// yaxis Module should be same
+					rdp.getyAxis().getModule().equals(dataPoint.getyAxis().getModule()) &&		// yaxis Module should be same
 					Objects.equals(rdp.getOrderBy(), dataPoint.getOrderBy()) &&										// Order BY should be same
 					rdp.isHandleEnum() == dataPoint.isHandleEnum()											// Both should be of same type
 				) {											
@@ -400,23 +450,25 @@ public class FetchReportDataCommand implements Command {
 		FacilioModule baseSpaceModule = modBean.getModule(FacilioConstants.ContextNames.BASE_SPACE);
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(FacilioConstants.ContextNames.BASE_SPACE));
 		
-		selectBuilder.innerJoin(resourceModule.getTableName())
-					.on(resourceModule.getTableName()+".ID = "+dp.getxAxis().getField().getCompleteColumnName())
-					.innerJoin(baseSpaceModule.getTableName())
-					.on(resourceModule.getTableName()+".SPACE_ID = "+baseSpaceModule.getTableName()+".ID");
-		addedModules.add(resourceModule);
+		if (!isAlreadyAdded(addedModules, resourceModule)) {
+			selectBuilder.innerJoin(resourceModule.getTableName())
+						.on(resourceModule.getTableName()+".ID = "+dp.getxAxis().getField().getCompleteColumnName());
+			addedModules.add(resourceModule);
+		}
+		selectBuilder.innerJoin(baseSpaceModule.getTableName())
+		.on(resourceModule.getTableName()+".SPACE_ID = "+baseSpaceModule.getTableName()+".ID");
 		addedModules.add(baseSpaceModule);
 		
 		FacilioField spaceField = null;
 		switch ((SpaceAggregateOperator)xAggr) {
 			case SITE:
-				spaceField = fieldMap.get("siteId").clone();
+				spaceField = fieldMap.get("site").clone();
 				break;
 			case BUILDING:
-				spaceField = fieldMap.get("buildingId").clone();
+				spaceField = fieldMap.get("building").clone();
 				break;
 			case FLOOR:
-				spaceField = fieldMap.get("floorId").clone();
+				spaceField = fieldMap.get("floor").clone();
 				break;
 			case SPACE:
 				spaceField = FieldFactory.getIdField(baseSpaceModule);
@@ -433,6 +485,7 @@ public class FetchReportDataCommand implements Command {
 		
 		selectBuilder.andCustomWhere(spaceField.getCompleteColumnName() + " in (" + builder.constructSelectStatement() + ")");
 		spaceField.setName(dp.getxAxis().getFieldName());
+		spaceField.setDataType(FieldType.NUMBER);
 		return spaceField;
 	}
 	

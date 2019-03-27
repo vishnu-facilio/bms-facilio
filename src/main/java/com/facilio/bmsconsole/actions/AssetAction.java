@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.actions;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -60,11 +61,35 @@ public class AssetAction extends FacilioAction {
 	public void setReadingId(long readingId) {
 		this.readingId = readingId;
 	}
+	
+	private Map<Long,String> mappedqr = new HashMap<Long, String>();
+	
+	private ArrayList<Long> assetQr;
+	
+	public void setAssetQr(ArrayList<Long> assetQr) {
+		this.assetQr=assetQr;
+	}
+	
+	public ArrayList<Long> getAssetQr() {
+		return this.assetQr;
+	}
+	
+ 	
+	public String generateQr() throws Exception {
+		FacilioContext context=new FacilioContext();
+		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST,id);
+		Chain updateQrChain = TransactionChainFactory.getUpdateQrChain();
+		updateQrChain.execute(context);
+		Map<Long,String> mappedqr =(Map<Long,String>) context.get(FacilioConstants.ContextNames.MAP_QR);
+		setResult("mappedqr",mappedqr);
+		return SUCCESS;
+	}
 
 	public String addAsset() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.CREATE);
 		context.put(FacilioConstants.ContextNames.RECORD, asset);
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
 		context.put(FacilioConstants.ContextNames.CATEGORY_READING_PARENT_MODULE, ModuleFactory.getAssetCategoryReadingRelModule());
 		AssetCategoryContext assetCategory= asset.getCategory();
 		long categoryId=-1;
@@ -87,6 +112,7 @@ public class AssetAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.RECORD, asset);
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(asset.getId()));
 		context.put(FacilioConstants.ContextNames.WITH_CHANGE_SET, true);
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
 		
 		Chain updateAssetChain = TransactionChainFactory.getUpdateAssetChain();
 		updateAssetChain.execute(context);
@@ -115,6 +141,7 @@ public class AssetAction extends FacilioAction {
 	public String assetList() throws Exception {
 		FacilioContext context = new FacilioContext();
  		context.put(FacilioConstants.ContextNames.CV_NAME, getViewName());
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
  		context.put(FacilioConstants.ContextNames.SORTING_QUERY, "Assets.LOCAL_ID desc");
  		if(getFilters() != null)
  		{	
@@ -427,7 +454,15 @@ public class AssetAction extends FacilioAction {
 	public void setValue(String value) {
 		this.value = value;
 	}
-	
+	private String moduleName;
+	public String getModuleName() {
+		return moduleName;
+	}
+
+	public void setModuleName(String moduleName) {
+		this.moduleName = moduleName;
+	}
+
 	private String location;
 	public String getLocation() {
 		return location;

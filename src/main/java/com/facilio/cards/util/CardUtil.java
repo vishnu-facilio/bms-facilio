@@ -36,23 +36,28 @@ public class CardUtil {
 		if(params == null) {
 			return null;
 		}
-		int metricId = getMetic((String) params.get("moduleName"), (String) params.get("fieldName"));
-		
-		if(metricId <= 0) {
-			if(params.get("moduleName") != null && params.get("fieldName") != null) {
-				FacilioField field = getField((String) params.get("moduleName"), (String) params.get("fieldName"));
-				if(field instanceof NumberField) {
-					NumberField numberField = (NumberField) field;
-					if(numberField.getUnit() != null) {
-						return  Unit.getUnitFromSymbol(numberField.getUnit());
-					}
+		if(params.get("moduleName") != null && params.get("fieldName") != null) {
+			FacilioField field = getField((String) params.get("moduleName"), (String) params.get("fieldName"));
+			if(field instanceof NumberField) {
+				NumberField numberField = (NumberField) field;
+				if(numberField.getUnitId() > 0) {
+					return numberField.getUnitEnum();
 				}
 			}
-			return null;
+			int metricId = getMetic((String) params.get("moduleName"), (String) params.get("fieldName"));
+			
+			if(metricId > 0) {
+				return UnitsUtil.getOrgDisplayUnit(AccountUtil.getCurrentOrg().getId(), metricId);
+			}
+			if(field instanceof NumberField) {
+				NumberField numberField = (NumberField) field;
+				if(numberField.getUnit() != null) {
+					return Unit.getUnitFromSymbol(numberField.getUnit());
+				}
+			}
+			
 		}
-		Unit unit = UnitsUtil.getOrgDisplayUnit(AccountUtil.getCurrentOrg().getId(), metricId);
-		
-		return unit;
+		return null;
 	}
 	
 	public static int getMetic(String moduleName,String fieldName) throws Exception {

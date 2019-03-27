@@ -4,9 +4,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.facilio.bmsconsole.modules.BooleanField;
 import com.facilio.bmsconsole.modules.EnumField;
 import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FacilioModule.ModuleType;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.FieldUtil;
@@ -40,6 +43,29 @@ public class ReportFieldContext {
 	public void setReportId(long reportId) {
 		this.reportId = reportId;
 	}
+	
+	private long moduleId = -1;
+	public long getModuleId() {
+		return moduleId;
+	}
+	public void setModuleId(long moduleId) {
+		this.moduleId = moduleId;
+	}
+	
+	private FacilioModule module;
+	@JsonIgnore
+	public FacilioModule getModule() {
+		if (module != null) {
+			return module;
+		}
+		if (getField() == null) {
+			return null;
+		}
+		return getField().getModule();
+	}
+	public void setModule(FacilioModule module) {
+		this.module = module;
+	}
 
 	private String moduleName;
 	public String getModuleName() {
@@ -71,14 +97,19 @@ public class ReportFieldContext {
 	public FacilioField getField() {
 		return field;
 	}
-	public void setField(FacilioField field) {
+	public void setField(FacilioModule module, FacilioField field) {
+		if (module != null) {
+			this.moduleName = module.getName();
+			this.moduleId = module.getModuleId();
+			this.module = module;
+		}
+		
 		if (field != null) {
 			
 			this.fieldId = field.getId();
 			this.fieldName = field.getName();
 			
 			if (field.getModule() != null) {
-				this.moduleName = field.getModule().getName();
 				this.predicted = field.getModule().getTypeEnum() == ModuleType.PREDICTED_READING;
 			}
 			
@@ -210,6 +241,14 @@ public class ReportFieldContext {
 		this.enumMap = enumMap;
 	}
 	
+	private Map<Long, Object> lookupMap;
+	public Map<Long, Object> getLookupMap() {
+		return lookupMap;
+	}
+	public void setLookupMap(Map<Long, Object> lookupMap) {
+		this.lookupMap = lookupMap;
+	}
+
 	private boolean predicted;
 	public boolean isPredicted() {
 		return predicted;

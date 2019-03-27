@@ -138,7 +138,7 @@ public class LoadSelectFieldsCommand implements Command{
 		if(aggrColStr.length()>0) {
 			thisField.setColumnName(aggrColStr);
 			thisField.setModule(null);
-			thisField.setExtendedModule(null);
+//			thisField.setExtendedModule(null);
 		}
 	}
 }

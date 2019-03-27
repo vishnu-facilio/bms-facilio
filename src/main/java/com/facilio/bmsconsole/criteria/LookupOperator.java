@@ -50,7 +50,7 @@ public enum LookupOperator implements Operator<Criteria> {
 					FacilioModule lookupModule = lookupField.getLookupModule();
 					if(module != null) {
 						StringBuilder builder = new StringBuilder();
-						builder.append(lookupField.getExtendedModule().getTableName())
+						builder.append(lookupField.getTableName())
 								.append(".")
 								.append(lookupField.getColumnName())
 								.append(" IN (SELECT ID FROM ")

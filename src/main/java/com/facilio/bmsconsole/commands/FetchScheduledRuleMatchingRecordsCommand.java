@@ -30,7 +30,7 @@ public class FetchScheduledRuleMatchingRecordsCommand implements Command {
 		// TODO Auto-generated method stub
 		WorkflowRuleContext rule = (WorkflowRuleContext) context.get(FacilioConstants.ContextNames.WORKFLOW_RULE);
 		List<? extends ModuleBaseWithCustomFields> records = getRecords(rule, (JobContext) context.get(FacilioConstants.Job.JOB_CONTEXT));
-		LOGGER.info("Matching records of rule : "+rule.getId()+" is : "+records);
+		// LOGGER.info("Matching records of rule : "+rule.getId()+" is : "+records);
 		
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, rule.getEvent().getModule().getName());
 		context.put(FacilioConstants.ContextNames.RECORD_LIST, records);
@@ -67,8 +67,8 @@ public class FetchScheduledRuleMatchingRecordsCommand implements Command {
 		FacilioModule module = rule.getEvent().getModule();
 		FacilioField dateField = rule.getDateField();
 		DateRange range = getRange(rule, jc);
-		LOGGER.info("Range for rule : "+rule.getId()+" is "+range.toString());
-		LOGGER.info("Date field id : "+rule.getId()+" is "+rule.getDateFieldId());
+		// LOGGER.info("Range for rule : "+rule.getId()+" is "+range.toString());
+		// LOGGER.info("Date field id : "+rule.getId()+" is "+rule.getDateFieldId());
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
 		Class beanClassName = FacilioConstants.ContextNames.getClassFromModuleName(module.getName());
@@ -82,7 +82,7 @@ public class FetchScheduledRuleMatchingRecordsCommand implements Command {
 																				.beanClass(beanClassName)
 																				;
 		List<ModuleBaseWithCustomFields> records = selectBuilder.get();
-		LOGGER.info(selectBuilder.toString());
+		// LOGGER.info(selectBuilder.toString());
 		return records;
 	}
 }

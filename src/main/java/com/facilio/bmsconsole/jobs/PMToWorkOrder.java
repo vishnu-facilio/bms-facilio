@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.jobs;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.accounts.util.AccountUtil;
 import org.apache.commons.chain.Chain;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -34,6 +35,9 @@ public class PMToWorkOrder extends FacilioJob {
 	public void execute(JobContext jc) throws Exception {
 		// TODO Auto-generated method stub
 		try {
+			if (AccountUtil.isFeatureEnabled(AccountUtil.FEATURE_SCHEDULED_WO)) {
+				return;
+			}
 			long pmJobId = jc.getJobId();
 			
 			FacilioModule pmTriggerModule = ModuleFactory.getPMTriggersModule();

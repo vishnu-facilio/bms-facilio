@@ -251,6 +251,15 @@ public class EventContext {
 	public void setComment(String comment) {
 		this.comment = comment;
 	}
+	
+	private long subRuleId;
+
+	public long getSubRuleId() {
+		return subRuleId;
+	}
+	public void setSubRuleId(long subRuleId) {
+		this.subRuleId = subRuleId;
+	}
 
 	private static final EventInternalState[] INETERNAL_STATES = EventInternalState.values();
 	public static enum EventInternalState {

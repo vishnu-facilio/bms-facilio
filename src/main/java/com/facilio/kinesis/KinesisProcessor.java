@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import com.facilio.agent.AgentProcessorFactory;
+import com.facilio.processor.ProcessorFactory;
 import org.apache.log4j.LogManager;
 
 import com.amazonaws.services.kinesis.AmazonKinesis;
@@ -17,9 +17,7 @@ import com.facilio.accounts.util.AccountConstants;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.events.tasker.tasks.EventProcessorFactory;
 import com.facilio.sql.GenericSelectRecordBuilder;
-import com.facilio.timeseries.TimeSeriesProcessorFactory;
 
 public class KinesisProcessor {
 
@@ -95,9 +93,12 @@ public class KinesisProcessor {
         try {
             if(orgDomainName != null && STREAMS.contains(orgDomainName)) {
                 System.out.println("Starting kinesis processor for org : " + orgDomainName + " id " + orgId);
-                initiateProcessFactory(orgId, orgDomainName, "event");
+                initiateProcessFactory(orgId, orgDomainName,"processor");
+                /*initiateProcessFactory(orgId, orgDomainName, "event");
                 initiateProcessFactory(orgId, orgDomainName, "timeSeries");
-                initiateProcessFactory(orgId, orgDomainName, "agent");
+                initiateProcessFactory(orgId, orgDomainName, "agent");*/
+
+
                 EXISTING_ORGS.add(orgDomainName);
             }
         } catch (ResourceNotFoundException e){
@@ -120,7 +121,7 @@ public class KinesisProcessor {
 
     private static IRecordProcessorFactory getProcessorFactory(long orgId, String orgDomainName, String type) {
 
-    	switch(type){
+       /* switch(type){
             case "event" :{
                 return new EventProcessorFactory(orgId, orgDomainName);
             }
@@ -130,8 +131,9 @@ public class KinesisProcessor {
             case "agent":{
                 return new AgentProcessorFactory(orgId,orgDomainName);
             }
-    	}
-    	return null;
+        }
+        return null;*/
+        return new ProcessorFactory(orgId,orgDomainName);
     }
 
     public static void startKinesis() {

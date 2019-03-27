@@ -10,6 +10,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.AlarmContext.AlarmType;
@@ -27,6 +28,7 @@ import com.facilio.bmsconsole.templates.JSONTemplate;
 import com.facilio.bmsconsole.templates.PushNotificationTemplate;
 import com.facilio.bmsconsole.templates.SMSTemplate;
 import com.facilio.bmsconsole.templates.Template;
+import com.facilio.bmsconsole.templates.WorkflowTemplate;
 import com.facilio.bmsconsole.templates.Template.Type;
 import com.facilio.bmsconsole.templates.WorkorderTemplate;
 import com.facilio.bmsconsole.workflow.rule.ActionContext;
@@ -38,6 +40,7 @@ import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
 import com.facilio.workflows.context.WorkflowContext;
+import com.facilio.workflows.util.WorkflowUtil;
 
 public class ActionAPI {
 
@@ -286,6 +289,9 @@ public class ActionAPI {
 							case CREATE_WORK_ORDER:
 								setJsonTemplate(action, rule, Type.JSON);
 								break;
+							case FORMULA_FIELD_CHANGE:
+							case ALARM_IMPACT_ACTION:
+								setWorkflowTemplate(action,rule,Type.WORKFLOW);
 							default:
 								break;
 						}
@@ -385,6 +391,21 @@ public class ActionAPI {
 		jsonTemplate.setType(templateType);
 		action.setTemplate(jsonTemplate);
 		checkAndSetWorkflow(action.getTemplateJson(), jsonTemplate);
+	}
+	
+	private static void setWorkflowTemplate(ActionContext action, WorkflowRuleContext rule, Type templateType) throws Exception {
+		
+		JSONObject workflowTemplateJson = action.getTemplateJson();
+		
+		WorkflowTemplate workflowTemplate = FieldUtil.getAsBeanFromJson(workflowTemplateJson, WorkflowTemplate.class);
+		
+		Long workflowId = WorkflowUtil.addWorkflow(workflowTemplate.getResultWorkflowContext());
+		
+		workflowTemplate.setName(rule.getName()+"_json_template");
+		workflowTemplate.setType(templateType);
+		workflowTemplate.setResultWorkflowId(workflowId);
+		
+		action.setTemplate(workflowTemplate);
 	}
 	
 	private static void setWorkorderTemplate(ActionContext action, WorkflowRuleContext rule) throws Exception {

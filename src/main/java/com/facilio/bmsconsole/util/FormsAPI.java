@@ -124,7 +124,7 @@ public class FormsAPI {
 			form.setModule(modBean.getModule(modid));
 			fieldSelectBuilder
 					.andCondition(CriteriaAPI.getCondition("FORMID", "formId", String.valueOf(prop.get("id")), NumberOperators.EQUALS))
-					.orderBy("SEQUENCE_NUMBER");
+					.orderBy("SEQUENCE_NUMBER, SPAN");
 			
 			List<Map<String, Object>> fieldprops = fieldSelectBuilder.get();
 			List<FormField> fields = new ArrayList<>();
@@ -151,9 +151,29 @@ public class FormsAPI {
 				else if (f.getDisplayTypeEnum() == FieldDisplayType.ATTACHMENT) {
 					f.setName("attachedFiles");
 				}
+				else if (f.getDisplayTypeEnum() == FieldDisplayType.TEXTBOX && f.getDisplayName().equals("Contact Name") ) {
+					f.setName("contact_name");
+				}
+				else if (f.getDisplayTypeEnum() == FieldDisplayType.TEXTBOX && f.getDisplayName().equals("Contact Email") ) {
+					f.setName("contact_email");
+				}
+				else if (f.getDisplayTypeEnum() == FieldDisplayType.LOGO ) {
+					f.setName("logo");
+				}
 				else if (f.getDisplayTypeEnum() == FieldDisplayType.LOOKUP_SIMPLE && f.getDisplayName().equals("Site")) {
 					f.setName("siteId");
 					f.setLookupModuleName("site");
+				}
+				else if (f.getDisplayTypeEnum() == FieldDisplayType.TEAM) {
+					f.setName("groups");
+					f.setDisplayType(FieldDisplayType.LOOKUP_SIMPLE);
+					f.setLookupModuleName("groups");
+				}
+				else if (f.getDisplayTypeEnum() == FieldDisplayType.SPACEMULTICHOOSER) {
+					f.setName("spaces");
+				}
+				else if (f.getDisplayTypeEnum() == FieldDisplayType.ASSETMULTICHOOSER) {
+					f.setName("utilityMeters");
 				}
 				fields.add(f);
 			}
@@ -164,7 +184,7 @@ public class FormsAPI {
 		
 		return forms;
 	}
-
+	
 	public static long createForm(FacilioForm editedForm, FacilioModule parent)
 			throws Exception {
 		long orgId = AccountUtil.getCurrentOrg().getId();
@@ -256,5 +276,22 @@ public class FormsAPI {
 			formFields.add(forms);
 		}
 		return formFields;
+	}
+	public static List<FacilioForm> getFormList(String moduleName,FormType formType) throws Exception{
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		long moduleId=modBean.getModule(moduleName).getModuleId();
+		
+	
+		GenericSelectRecordBuilder formListBuilder=new GenericSelectRecordBuilder()
+				.select(FieldFactory.getFormFields())
+				.table(ModuleFactory.getFormModule().getTableName())
+				.andCustomWhere("MODULEID = ?", moduleId)
+				.andCustomWhere("FORM_TYPE = ?", formType.getIntVal())
+				.andCustomWhere("ORGID = ?",AccountUtil.getCurrentOrg().getOrgId());
+		
+		return FieldUtil.getAsBeanListFromMapList(formListBuilder.get(), FacilioForm.class);
+				
+			
 	}
 }

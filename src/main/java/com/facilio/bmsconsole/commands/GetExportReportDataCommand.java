@@ -42,6 +42,11 @@ public class GetExportReportDataCommand implements Command {
 	@Override
 	public boolean execute(Context context) throws Exception {
 		
+		Boolean isS3Url = (Boolean) context.get("isS3Url");
+		if (isS3Url == null) {
+			isS3Url = false;
+		}
+		
 		report = (com.facilio.report.context.ReportContext) context.get(FacilioConstants.ContextNames.REPORT);
 		Set<Object> xValues = (Set<Object>) context.get(FacilioConstants.ContextNames.REPORT_X_VALUES);
 		Map<String, Map<String, Map<Object, Object>>> reportData = (Map<String, Map<String, Map<Object, Object>>>) context.get(FacilioConstants.ContextNames.REPORT_DATA);
@@ -130,10 +135,10 @@ public class GetExportReportDataCommand implements Command {
 		FileFormat fileFormat = (FileFormat) context.get(FacilioConstants.ContextNames.FILE_FORMAT);
 		String fileUrl = null;
 		if(fileFormat != FileFormat.PDF && fileFormat != FileFormat.IMAGE) {
-			fileUrl = ExportUtil.exportData(fileFormat, "Report Data", table);
+			fileUrl = ExportUtil.exportData(fileFormat, "Report Data", table, isS3Url);
 		}
 		else {
-			StringBuilder url = getClientUrl(report.getDataPoints().get(0).getxAxis().getField().getModule().getName(), report.getId(), fileFormat)
+			StringBuilder url = getClientUrl(report.getDataPoints().get(0).getxAxis().getModule().getName(), report.getId(), fileFormat)
 					.append("?print=true");
 			if(report.getDateRange() != null) {
 				JSONObject dateRange = new JSONObject();

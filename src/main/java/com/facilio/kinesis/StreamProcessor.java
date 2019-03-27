@@ -33,13 +33,14 @@ public class StreamProcessor {
                                 .withKinesisEndpoint(AwsUtil.getConfig("kinesisEndpoint"))
                                 .withMaxLeaseRenewalThreads(3)
                                 .withInitialLeaseTableReadCapacity(1)
-                                .withInitialLeaseTableWriteCapacity(1);
-
+                                .withInitialLeaseTableWriteCapacity(1)
+                                .withMetricsLevel(MetricsLevel.NONE);
+/*
             if("production".equals(environment)) {
-                kinesisClientLibConfiguration = kinesisClientLibConfiguration.withMetricsLevel(MetricsLevel.SUMMARY);
+                kinesisClientLibConfiguration = kinesisClientLibConfiguration.withMetricsLevel(MetricsLevel.NONE);
             } else {
                 kinesisClientLibConfiguration = kinesisClientLibConfiguration.withMetricsLevel(MetricsLevel.NONE);
-            }
+            }*/
 
             //IRecordProcessorFactory recordProcessorFactory = new EventProcessorFactory(orgId, orgDomainName);
 

@@ -48,7 +48,8 @@ public class ImportDataJob extends FacilioJob {
 				importChain.execute(context);
 			}
 			else {
-				if(importProcessContext.getImportSetting() == ImportProcessContext.ImportSetting.UPDATE.getValue() || importProcessContext.getImportSetting() == ImportProcessContext.ImportSetting.UPDATE_NOT_NULL.getValue()
+				if(importProcessContext.getImportSetting() == ImportProcessContext.ImportSetting.INSERT_SKIP.getValue() ||
+						importProcessContext.getImportSetting() == ImportProcessContext.ImportSetting.UPDATE.getValue() || importProcessContext.getImportSetting() == ImportProcessContext.ImportSetting.UPDATE_NOT_NULL.getValue()
 						|| importProcessContext.getImportSetting() == ImportProcessContext.ImportSetting.BOTH.getValue() || importProcessContext.getImportSetting() == ImportProcessContext.ImportSetting.BOTH_NOT_NULL.getValue() ) {
 					FacilioContext context = new FacilioContext();
 					context.put(ImportAPI.ImportProcessConstants.IMPORT_PROCESS_CONTEXT, importProcessContext);
@@ -93,7 +94,7 @@ public class ImportDataJob extends FacilioJob {
 					importProcessContext.setImportJobMeta(meta.toJSONString());
 					importProcessContext.setStatus(ImportProcessContext.ImportStatus.FAILED.getValue());
 					ImportAPI.updateImportProcess(importProcessContext);
-					LOGGER.severe("Import failed");
+					LOGGER.severe("Import failed: " + message);
 					}
 			} catch(Exception a) {
 				System.out.println(a);

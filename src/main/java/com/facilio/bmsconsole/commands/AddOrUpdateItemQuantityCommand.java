@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -27,50 +28,69 @@ public class AddOrUpdateItemQuantityCommand implements Command {
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioModule inventoryCostModule = modBean.getModule(FacilioConstants.ContextNames.PURCHASED_ITEM);
-		List<FacilioField> inventoryCostFields = modBean.getAllFields(FacilioConstants.ContextNames.PURCHASED_ITEM);
-		Map<String, FacilioField> inventoryrCostsFieldMap = FieldFactory.getAsMap(inventoryCostFields);
+		FacilioModule purchaseItemsModule = modBean.getModule(FacilioConstants.ContextNames.PURCHASED_ITEM);
+		List<FacilioField> purchasedItemsFields = modBean.getAllFields(FacilioConstants.ContextNames.PURCHASED_ITEM);
+		Map<String, FacilioField> purchasedItemsFieldMap = FieldFactory.getAsMap(purchasedItemsFields);
 		// long inventoryId = (long)
 		// context.get(FacilioConstants.ContextNames.INVENTORY_ID);
-		List<Long> inventoryIds = (List<Long>) context.get(FacilioConstants.ContextNames.ITEM_IDS);
+		List<Long> itemIds = (List<Long>) context.get(FacilioConstants.ContextNames.ITEM_IDS);
+		long itemTypesId = -1;
+		List<Long> itemTypesIds = new ArrayList<>();
 
-		if (inventoryIds != null && !inventoryIds.isEmpty()) {
-			for (long inventoryId : inventoryIds) {
+		if (itemIds != null && !itemIds.isEmpty()) {
+			for (long itemId : itemIds) {
 				SelectRecordsBuilder<PurchasedItemContext> selectBuilder = new SelectRecordsBuilder<PurchasedItemContext>()
-						.select(inventoryCostFields).table(inventoryCostModule.getTableName())
-						.moduleName(inventoryCostModule.getName()).beanClass(PurchasedItemContext.class)
-						.andCondition(CriteriaAPI.getCondition(inventoryrCostsFieldMap.get("item"),
-								String.valueOf(inventoryId), PickListOperators.IS));
+						.select(purchasedItemsFields).table(purchaseItemsModule.getTableName())
+						.moduleName(purchaseItemsModule.getName()).beanClass(PurchasedItemContext.class)
+						.andCondition(CriteriaAPI.getCondition(purchasedItemsFieldMap.get("item"),
+								String.valueOf(itemId), PickListOperators.IS));
 
-				List<PurchasedItemContext> inventoryCosts = selectBuilder.get();
+				List<PurchasedItemContext> purchasedItems = selectBuilder.get();
 				int quantity = 0;
-				if (inventoryCosts != null && !inventoryCosts.isEmpty()) {
-					for (PurchasedItemContext invCost : inventoryCosts) {
-						quantity += invCost.getCurrentQuantity();
+				long lastPurchasedDate = -1;
+				double lastPurchasedPrice= -1;
+				if (purchasedItems != null && !purchasedItems.isEmpty()) {
+					for (PurchasedItemContext purchaseditem : purchasedItems) {
+						quantity += purchaseditem.getCurrentQuantity();
 					}
 				}
-				FacilioModule inventoryModule = modBean.getModule(FacilioConstants.ContextNames.ITEM);
-				List<FacilioField> inventoryFields = modBean.getAllFields(FacilioConstants.ContextNames.ITEM);
-				Map<String, FacilioField> inventoryFieldMap = FieldFactory.getAsMap(inventoryFields);
+				
+				selectBuilder.orderBy("COST_DATE DESC");
+				List<PurchasedItemContext> pItems = selectBuilder.get();
+				if (pItems != null && !pItems.isEmpty()) {
+					PurchasedItemContext pitem = pItems.get(0);
+					lastPurchasedDate = pitem.getCostDate();
+					lastPurchasedPrice = pitem.getUnitcost();
+				}
+				
+				FacilioModule itemModule = modBean.getModule(FacilioConstants.ContextNames.ITEM);
+				List<FacilioField> itemFields = modBean.getAllFields(FacilioConstants.ContextNames.ITEM);
 
 				SelectRecordsBuilder<ItemContext> inventoryselectBuilder = new SelectRecordsBuilder<ItemContext>()
-						.select(inventoryFields).table(inventoryModule.getTableName())
-						.moduleName(inventoryModule.getName()).beanClass(ItemContext.class)
-						.andCondition(CriteriaAPI.getIdCondition(inventoryId, inventoryModule));
+						.select(itemFields).table(itemModule.getTableName())
+						.moduleName(itemModule.getName()).beanClass(ItemContext.class)
+						.andCondition(CriteriaAPI.getIdCondition(itemId, itemModule));
 
-				List<ItemContext> inventory = inventoryselectBuilder.get();
-				ItemContext inven = new ItemContext();
-				if (inventory != null && !inventory.isEmpty()) {
-					inven = inventory.get(0);
-					inven.setQuantity(quantity);
+				List<ItemContext> items = inventoryselectBuilder.get();
+				ItemContext item = new ItemContext();
+				if (items != null && !items.isEmpty()) {
+					item = items.get(0);
+					itemTypesId = item.getItemType().getId();
+					item.setQuantity(quantity);
+					item.setLastPurchasedDate(lastPurchasedDate);
+					item.setLastPurchasedPrice(lastPurchasedPrice);
 				}
-
+				
+				itemTypesIds.add(itemTypesId);
 				UpdateRecordBuilder<ItemContext> updateBuilder = new UpdateRecordBuilder<ItemContext>()
-						.module(inventoryModule).fields(modBean.getAllFields(inventoryModule.getName()))
-						.andCondition(CriteriaAPI.getIdCondition(inven.getId(), inventoryModule));
+						.module(itemModule).fields(modBean.getAllFields(itemModule.getName()))
+						.andCondition(CriteriaAPI.getIdCondition(item.getId(), itemModule));
 
-				updateBuilder.update(inven);
+				updateBuilder.update(item);
+				
+				context.put(FacilioConstants.ContextNames.ITEM_TYPES_ID, itemTypesId);
 			}
+			context.put(FacilioConstants.ContextNames.ITEM_TYPES_IDS, itemTypesIds);
 		}
 
 		return false;

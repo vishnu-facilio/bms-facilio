@@ -43,6 +43,7 @@ public class ColumnFactory {
 		columnMap.put("alarm-default", getDefaultAlarmColumns());
 		columnMap.put("energy-default", getDefaultEnergyColumns());
 		columnMap.put("asset-default", getDefaultAssetsColumns());
+		columnMap.put("tenant-default", getDefaultTenantsColumns());
 		columnMap.put("inventory-default", getDefaultInventoryColumns());
 		columnMap.put("storeRoom-default", getDefaultStoreRoomColumns());
 		columnMap.put("itemTypes-default", getDefaultItemTypesColumns());
@@ -54,6 +55,8 @@ public class ColumnFactory {
 		columnMap.put("workorder-report", getWorkOrderReportColumns());
 		columnMap.put("alarm-report", getAlarmReportColumns());
 		columnMap.put("energydata-report", getDefaultEnergyColumns());
+		columnMap.put("toolTransactions-default", getDefaultToolTransactionsColumns());
+		columnMap.put("itemTransactions-default", getDefaultItemTransactionsColumns());
 		
 		// Special types
 		columnMap.put("preventivemaintenance-default", getPreventiveMaintenanceColumns());
@@ -115,7 +118,6 @@ public class ColumnFactory {
 		columns.add(new ViewField("noOfTasks", "Tasks"));
 		columns.add(new ViewField("modifiedTime", "Last Updated Time"));
 		columns.add(new ViewField("actualWorkEnd", "Closed Time"));
-		
 		return columns;
 	}
 	
@@ -162,12 +164,24 @@ public class ColumnFactory {
 	private static List<ViewField> getDefaultAssetsColumns() {
 		List<ViewField> columns = new ArrayList<ViewField>();
 		
-		columns.add(new ViewField("name", "Asset Name"));
+		columns.add(new ViewField("name", "Name"));
 		columns.add(new ViewField("type", "Type"));
 		columns.add(new ViewField("category", "Category"));
 		columns.add(new ViewField("department", "Department"));
 //		columns.add(new ViewField("movable", "Movable"));		// TODO needs to handle parent field
 		
+		return columns;
+	}
+	
+	private static List<ViewField> getDefaultTenantsColumns() {
+		List<ViewField> columns = new ArrayList<ViewField>();
+		
+		columns.add(new ViewField("name", "Tenant Name"));
+		columns.add(new ViewField("description", "Description"));
+		columns.add(new ViewField("sysCreatedTime", "Created Time"));
+		columns.add(new ViewField("sysModifiedTime", "Modified Time"));
+		columns.add(new ViewField("contact", "Contact"));
+				
 		return columns;
 	}
 	
@@ -232,8 +246,9 @@ public class ColumnFactory {
 		
 		columns.add(new ViewField("name", "Name"));
 		columns.add(new ViewField("category", "Category"));
-		columns.add(new ViewField("status", "Status"));
-		columns.add(new ViewField("minimumQuantity", "Minimum Quantity"));
+		columns.add(new ViewField("currentQuantity", "Current Quantity"));
+		columns.add(new ViewField("lastPurchasedPrice", "Last Purchased Price"));
+		columns.add(new ViewField("lastPurchasedDate", "Last Purchased Date"));
 		
 		return columns;
 	}
@@ -243,7 +258,8 @@ public class ColumnFactory {
 		
 		columns.add(new ViewField("name", "Name"));
 		columns.add(new ViewField("category", "Category"));
-		columns.add(new ViewField("status", "Status"));
+		columns.add(new ViewField("currentQuantity", "Current Quantity"));
+		columns.add(new ViewField("lastPurchasedDate", "Last Purchased Date"));
 		
 		return columns;
 	}
@@ -276,6 +292,27 @@ public class ColumnFactory {
 		columns.add(new ViewField("status", "Status"));
 		columns.add(new ViewField("quantity", "Quantity"));
 		
+		return columns;
+	}
+	
+	private static List<ViewField> getDefaultToolTransactionsColumns() {
+		List<ViewField> columns = new ArrayList<ViewField>();
+		
+//		columns.add(new ViewField("toolType", "Tool Type"));
+//		columns.add(new ViewField("tool", "Tool"));
+		columns.add(new ViewField("quantity", "Requested Quantity"));
+		columns.add(new ViewField("sysCreatedTime", "Requested Time"));
+//		columns.add(new ViewField("issuedTo", "Issued To"));
+		return columns;
+	}
+	
+	private static List<ViewField> getDefaultItemTransactionsColumns() {
+		List<ViewField> columns = new ArrayList<ViewField>();
+		
+//		columns.add(new ViewField("itemType", "Item Type"));
+		columns.add(new ViewField("quantity", "Requested Quantity"));
+		columns.add(new ViewField("sysCreatedTime", "Requested Time"));
+//		columns.add(new ViewField("issuedTo", "Issued To"));
 		return columns;
 	}
 }

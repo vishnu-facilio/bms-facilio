@@ -13,7 +13,11 @@ public class UtilityAsset {
 	private boolean showInPortal;
 	
 	public boolean isShowInPortal() {
-		return showInPortal;
+		
+		if(showInPortal) {
+			return showInPortal;
+		}
+		return false;
 	}
 	public void setShowInPortal(boolean showInPortal) {
 		this.showInPortal = showInPortal;
@@ -50,6 +54,10 @@ public class UtilityAsset {
 	public void setUtility(int utility) {
 		this.utility = FacilioUtility.valueOf(utility);
 	}
+
+//	public void setUtility(long utility) {
+//		this.utility = FacilioUtility.valueOf(((Number) utility).intValue());
+//	}
 
 	private long assetId = -1;
 	public long getAssetId() {

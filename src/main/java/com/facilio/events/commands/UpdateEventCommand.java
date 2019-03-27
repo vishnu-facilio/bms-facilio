@@ -19,6 +19,7 @@ public class UpdateEventCommand implements Command {
 
 	@Override
 	public boolean execute(Context context) throws Exception {
+		
 		EventContext event = (EventContext) context.get(EventConstants.EventContextNames.EVENT);
 		event.setInternalState(EventInternalState.COMPLETED);
 		EventAPI.updateEvent(event, AccountUtil.getCurrentOrg().getId());

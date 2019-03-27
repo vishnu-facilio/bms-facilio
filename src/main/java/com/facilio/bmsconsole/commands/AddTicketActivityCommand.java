@@ -199,7 +199,7 @@ public class AddTicketActivityCommand implements Command {
 		else {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioField fields = modBean.getField(fieldName, moduleName);
-				if (fields.getDataTypeEnum() == FieldType.ENUM) {
+				if (fields != null && fields.getDataTypeEnum() == FieldType.ENUM) {
 					EnumField enums = (EnumField) fields;
 					return enums.getEnumMap().get(value);
 				}

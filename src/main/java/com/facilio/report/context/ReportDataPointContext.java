@@ -93,14 +93,13 @@ public class ReportDataPointContext {
 	
 	@JsonIgnore
 	public Criteria getAllCriteria() {
-		Criteria c = this.criteria;
-		if (otherCriteria != null) {
-			if (c == null) {
-				c = otherCriteria;
-			} else {
-				c.andCriteria(otherCriteria);
-			}
+		if (this.criteria == null && this.otherCriteria == null) {
+			return null;
 		}
+		
+		Criteria c = new Criteria();
+		c.andCriteria(this.criteria);
+		c.andCriteria(this.otherCriteria);
 		return c;
 	}
 
@@ -184,7 +183,7 @@ public class ReportDataPointContext {
 	public void setDateFieldId(long dateFieldId) {
 		this.dateFieldId = dateFieldId;
 	}
-	
+
 	private String dateFieldModuleName;
 	public String getDateFieldModuleName() {
 		return dateFieldModuleName;
@@ -201,17 +200,17 @@ public class ReportDataPointContext {
 		this.dateFieldName = dateFieldName;
 	}
 
-	private FacilioField dateField;
-	
+	private ReportFieldContext dateField;
 	@JsonIgnore
-	public FacilioField getDateField() throws Exception {
+	public ReportFieldContext getDateField() {
 		return dateField;
 	}
-	public void setDateField(FacilioField dateField) {
-		if (dateField != null) {
-			dateFieldId = dateField.getFieldId();
+
+	public void setDateField(ReportFieldContext dateReportField) {
+		if (dateReportField != null) {
+			dateFieldId = dateReportField.getFieldId();
 		}
-		this.dateField = dateField;
+		this.dateField = dateReportField;
 	}
 	
 	private Map<String, String> aliases; 

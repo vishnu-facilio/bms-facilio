@@ -19,10 +19,9 @@ public class AddAlarmRuleCommand implements Command {
 		AlarmRuleContext alarmRule = (AlarmRuleContext) context.get(FacilioConstants.ContextNames.ALARM_RULE);
 		
 		ReadingRuleContext preRequsiteRule = alarmRule.getPreRequsite();
-		preRequsiteRule.setStatus(true);
-		preRequsiteRule.setRuleType(WorkflowRuleContext.RuleType.READING_RULE);
-		preRequsiteRule.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
 		
+		fillDefaultPropsForPreRequsite(preRequsiteRule);
+		preRequsiteRule.setClearAlarm(alarmRule.isAutoClear());
 		long ruleId = WorkflowRuleAPI.addWorkflowRule(preRequsiteRule);
 		
 		preRequsiteRule.setRuleGroupId(ruleId);
@@ -30,6 +29,12 @@ public class AddAlarmRuleCommand implements Command {
 		
 		ReadingRuleAPI.addTriggerAndClearRule(alarmRule);
 		return false;
+	}
+	
+	private void fillDefaultPropsForPreRequsite(ReadingRuleContext preRequsiteRule) {
+		preRequsiteRule.setStatus(true);
+		preRequsiteRule.setRuleType(WorkflowRuleContext.RuleType.READING_RULE);
+		preRequsiteRule.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
 	}
 
 }

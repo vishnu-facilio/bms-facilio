@@ -1,20 +1,36 @@
 package com.facilio.bmsconsole.context;
 
+import java.util.List;
+
+import com.facilio.accounts.dto.User;
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.bmsconsole.util.TransactionState;
 import com.facilio.bmsconsole.util.TransactionType;
+import com.facilio.bmsconsole.workflow.rule.ApprovalState;
 
 public class ToolTransactionContext extends ModuleBaseWithCustomFields {
 	private static final long serialVersionUID = 1L;
 
+	private ToolTypesContext toolType;
+
+	public ToolTypesContext getToolType() {
+		return toolType;
+	}
+
+	public void setToolType(ToolTypesContext toolType) {
+		this.toolType = toolType;
+	}
+
 	private PurchasedToolContext purchasedTool;
+
 	public PurchasedToolContext getPurchasedTool() {
 		return purchasedTool;
 	}
+
 	public void setPurchasedTool(PurchasedToolContext purchasedTool) {
 		this.purchasedTool = purchasedTool;
 	}
-	
+
 	private ToolContext tool;
 
 	public ToolContext getTool() {
@@ -96,19 +112,70 @@ public class ToolTransactionContext extends ModuleBaseWithCustomFields {
 	public void setTransactionState(int transactionState) {
 		this.transactionState = TransactionState.valueOf(transactionState);
 	}
-	
+
 	private Boolean isReturnable;
+
 	public Boolean getIsReturnable() {
 		return isReturnable;
 	}
+
 	public void setIsReturnable(Boolean isReturnable) {
 		this.isReturnable = isReturnable;
 	}
+
 	public boolean isReturnable() {
-		if(isReturnable != null) {
+		if (isReturnable != null) {
 			return isReturnable.booleanValue();
 		}
 		return false;
 	}
+
+	private User issuedTo;
+
+	public User getIssuedTo() {
+		return issuedTo;
+	}
+
+	public void setIssuedTo(User owner) {
+		this.issuedTo = owner;
+	}
+
+	private double remainingQuantity = -1;
+
+	public double getRemainingQuantity() {
+		return remainingQuantity;
+	}
+
+	public void setRemainingQuantity(double remainingQuantity) {
+		this.remainingQuantity = remainingQuantity;
+	}
 	
+	private List<Long> purchasedTools;
+	public List<Long> getPurchasedTools() {
+		return purchasedTools;
+	}
+	public void setPurchasedTools(List<Long> purchasedTools) {
+		this.purchasedTools = purchasedTools;
+	}
+	
+	private ApprovalState approvedState;
+
+	public ApprovalState getApprovedStateEnum() {
+		return approvedState;
+	}
+
+	public void setApprovedState(ApprovalState approvedState) {
+		this.approvedState = approvedState;
+	}
+
+	public int getApprovedState() {
+		if (approvedState != null) {
+			return approvedState.getValue();
+		}
+		return -1;
+	}
+	
+	public void setApprovedState(int approvedState) {
+		this.approvedState = ApprovalState.valueOf(approvedState);
+	}
 }

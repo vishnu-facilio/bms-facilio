@@ -10,7 +10,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.chain.Context;
 import org.apache.commons.text.WordUtils;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
@@ -54,7 +57,8 @@ import com.facilio.workflows.context.ExpressionContext;
 import com.facilio.workflows.context.WorkflowContext;
 
 public class AlarmAPI {
-	
+	private static final Logger LOGGER = LogManager.getLogger(AlarmAPI.class.getName());
+	public static final String ALARM_COST_FIELD_NAME = "alarmCost";
 	public static JSONObject constructClearEvent(AlarmContext alarm, String msg) throws Exception {
 		return constructClearEvent(alarm, msg, -1);
 	}
@@ -449,11 +453,14 @@ public class AlarmAPI {
 		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.READING_ALARM);
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 		SelectRecordsBuilder<ReadingAlarmContext> selectBuilder = getReadingAlarmsSelectBuilder(startTime, endTime, isWithAnomaly, fields, fieldMap)
-																	.andCondition(CriteriaAPI.getCondition(fieldMap.get("resource"), resourceId, NumberOperators.EQUALS))
+																	.andCondition(CriteriaAPI.getCondition(fieldMap.get("resource"), resourceId, PickListOperators.IS))
 																	.andCondition(CriteriaAPI.getCondition(fieldMap.get("readingFieldId"), String.valueOf(fieldId), NumberOperators.EQUALS))
 																	;
-		
-		return selectBuilder.get();
+		List<ReadingAlarmContext> alarms = selectBuilder.get();
+		/*if (AccountUtil.getCurrentOrg().getId() == 75) {
+			LOGGER.info("Fetched Alarm Query : "+selectBuilder.toString());
+		}*/
+		return alarms;
 	}
 	
 	public static List<ReadingAlarmContext> getReadingAlarms (long entityId, long startTime, long endTime, boolean isWithAnomaly) throws Exception {
@@ -490,6 +497,7 @@ public class AlarmAPI {
 		obj.put("readingVal", reading.getReading(rule.getReadingField().getName()));
 		obj.put("condition", rule.getName());
 		obj.put("ruleId", rule.getRuleGroupId());
+		obj.put("subRuleId", rule.getId());
 		if (rule.getBaselineId() != -1) {
 			obj.put("baselineId", rule.getBaselineId());
 		}
@@ -509,7 +517,7 @@ public class AlarmAPI {
 		obj.put("timestamp", reading.getTtime());
 	}
 	
-	public static void addMLAlarmProps (JSONObject obj, ReadingRuleContext rule) throws Exception {
+	public static void addMLAlarmProps (JSONObject obj, ReadingRuleContext rule, Context context) throws Exception {
 		obj.put("sourceType", SourceType.ML_ALARM.getIntVal());
 		obj.put("resourceId", rule.getResourceId());
 		
@@ -519,7 +527,7 @@ public class AlarmAPI {
 		}
 		
 		obj.put("siteId", rule.getSiteId());
-		obj.put("timestamp", DateTimeUtil.getHourStartTime());
+		obj.put("timestamp", context.get(FacilioConstants.ContextNames.CURRENT_EXECUTION_TIME));
 		obj.put("ruleId", rule.getRuleGroupId());
 		obj.put("readingFieldId", rule.getReadingFieldId());
 		obj.put("condition", rule.getName());

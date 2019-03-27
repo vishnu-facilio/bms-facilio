@@ -40,7 +40,7 @@ public class PMNewScheduler extends FacilioJob {
 				return;
 			}
 			FacilioModule pmTriggerModule = ModuleFactory.getPMTriggersModule();
-			FacilioModule pmModule = ModuleFactory.getPreventiveMaintenancetModule();
+			FacilioModule pmModule = ModuleFactory.getPreventiveMaintenanceModule();
 			List<FacilioField> fields = FieldFactory.getPMTriggerFields();
 			List<FacilioField> pmFields = FieldFactory.getPreventiveMaintenanceFields();
 			Map<String, FacilioField> pmFieldsMap = FieldFactory.getAsMap(pmFields);
@@ -139,6 +139,7 @@ public class PMNewScheduler extends FacilioJob {
 						workorderTemplate.setResourceId(resourceId);
 						workorderTemplate.setResource(resourceMap.get(resourceId));
 					} else {
+						LOGGER.error("work order not generated PMID: " + pm.getId() + "ResourceId: " + resourceId);
 						CommonCommandUtil.emailAlert("work order not generated", "PMID: " + pm.getId() + "ResourceId: " + resourceId);
 					}
 

@@ -42,7 +42,7 @@ import com.facilio.tasker.job.JobContext;
 public class MLForecastingLifetimePredictionJob extends FacilioJob 
 {
 
-	private static final Logger LOGGER = Logger.getLogger(MLForecastingJob.class.getName());
+	private static final Logger LOGGER = Logger.getLogger(MLForecastingLifetimePredictionJob.class.getName());
 	@Override
 	public void execute(JobContext jc) throws Exception 
 	{

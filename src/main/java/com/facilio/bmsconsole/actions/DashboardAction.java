@@ -4225,9 +4225,10 @@ public class DashboardAction extends FacilioAction {
 			if(xAxisField.getModule().getName().equals(FacilioConstants.ContextNames.ASSET) || xAxisField.getModule().getName().equals(FacilioConstants.ContextNames.RESOURCE)) {
 				builder.innerJoin(xAxisField.getModule().getTableName())
 				.on(xAxisField.getModule().getTableName()+".ID = Tickets.RESOURCE_ID");
-				if(!xAxisField.getExtendedModule().getName().equals(xAxisField.getModule().getName())) {
-					builder.innerJoin(xAxisField.getExtendedModule().getTableName())
-					.on(xAxisField.getModule().getTableName()+".ID = "+xAxisField.getExtendedModule().getTableName()+".ID");
+				FacilioModule facilioModule = xAxisField.getModule();
+				if(!facilioModule.getExtendModule().getName().equals(xAxisField.getModule().getName())) {
+					builder.innerJoin(facilioModule.getExtendModule().getTableName())
+					.on(xAxisField.getModule().getTableName()+".ID = "+facilioModule.getExtendModule().getTableName()+".ID");
 				}
 			}
 		}
@@ -5297,7 +5298,7 @@ public class DashboardAction extends FacilioAction {
 					
 					List<EnergyMeterContext> props = builder12.get();
 					
-					LOGGER.severe("builder12 -- "+builder12);
+					// LOGGER.severe("builder12 -- "+builder12);
 					List<Long> meterIds = new ArrayList<Long>();
 					if(props != null && !props.isEmpty()) {
 						for(EnergyMeterContext energyMeterContext:props) {
@@ -5317,8 +5318,8 @@ public class DashboardAction extends FacilioAction {
 							meterIds.add(em.getId());
 						}
 					}
-					LOGGER.severe("energyMeterMap -- "+energyMeterMap);
-					LOGGER.severe("meterIds -- "+meterIds);
+					// LOGGER.severe("energyMeterMap -- "+energyMeterMap);
+					// LOGGER.severe("meterIds -- "+meterIds);
 					if(!meterIds.isEmpty()) {
 						String meterIdStr = StringUtils.join(meterIds, ",");
 						energyMeterValue = meterIdStr;
@@ -5521,7 +5522,7 @@ public class DashboardAction extends FacilioAction {
 		}
 		List<Map<String, Object>> rs = null;
 		
-		LOGGER.severe("buildingCondition 1 -- "+buildingCondition);
+		// LOGGER.severe("buildingCondition 1 -- "+buildingCondition);
 		if((subBuilder != null || report.getReportSpaceFilterContext() != null) && buildingCondition == null) {
 //			dont query return null;
 			rs  = new ArrayList<>();
@@ -5537,7 +5538,7 @@ public class DashboardAction extends FacilioAction {
 		}
 		
 //		LOGGER.severe("builder --- "+reportContext.getId() +"   "+baseLineId);
-		LOGGER.severe("builder --- "+builder);
+		// LOGGER.severe("builder --- "+builder);
 		
 		if (report.getCriteria() != null) {
 			criteria = report.getCriteria();
@@ -5604,7 +5605,7 @@ public class DashboardAction extends FacilioAction {
 			if (report.getReportSpaceFilterContext() != null && report.getReportSpaceFilterContext().getBuildingId() != null && "floor".equalsIgnoreCase(report.getReportSpaceFilterContext().getGroupBy())) {
 				List<String> lables = getDistinctLabel(rs);
 				JSONArray totalconsumptionBySpace = new JSONArray();
-				LOGGER.severe("lables -- "+lables);
+				// LOGGER.severe("lables -- "+lables);
 				if(!energyMeterMap.isEmpty()) {
 					for(String label:lables) {
 						JSONArray temp = new JSONArray();
@@ -5643,7 +5644,7 @@ public class DashboardAction extends FacilioAction {
 						totalconsumptionBySpace.add(temp1);
 					}
 				}
-				LOGGER.severe("totalconsumptionBySpace -- "+totalconsumptionBySpace);
+				// LOGGER.severe("totalconsumptionBySpace -- "+totalconsumptionBySpace);
 				readingData = totalconsumptionBySpace;
 			}
 			else {
@@ -6036,7 +6037,7 @@ public class DashboardAction extends FacilioAction {
 			}
 			
 			AlarmAction alarmAction = new AlarmAction();
-			LOGGER.severe("filterJson.toJSONString() -- "+filterJson.toJSONString());
+			// LOGGER.severe("filterJson.toJSONString() -- "+filterJson.toJSONString());
 			alarmAction.setFilters(filterJson.toJSONString());
 			
 			alarmAction.fetchReadingAlarms();
@@ -6213,15 +6214,15 @@ public class DashboardAction extends FacilioAction {
 			int compliance = 0,nonCompliance = 0,repeatFinding = 0;
 			for(WorkOrderContext workorder:workorders) {
 				
-				LOGGER.log(Level.SEVERE, "buildingId --- "+buildingId);
+				// LOGGER.log(Level.SEVERE, "buildingId --- "+buildingId);
 				if(workorder.getResource() != null) {
 					LOGGER.log(Level.SEVERE, "workorder.getResource().getId() --- "+workorder.getResource().getId());
 				}
 				if(buildingId != null && workorder.getResource() != null && workorder.getResource().getId() != buildingId) {
 					continue;
 				}
-				LOGGER.log(Level.SEVERE, "dateFilter --- "+dateFilter);
-				LOGGER.log(Level.SEVERE, "workorder.getResource().getId() --- "+workorder.getCreatedTime());
+				// LOGGER.log(Level.SEVERE, "dateFilter --- "+dateFilter);
+				// LOGGER.log(Level.SEVERE, "workorder.getResource().getId() --- "+workorder.getCreatedTime());
 				if(dateFilter != null && !((Long)dateFilter.get(0) < workorder.getCreatedTime() && workorder.getCreatedTime() < (Long)dateFilter.get(1))) {
 					continue;
 				}
@@ -6357,7 +6358,7 @@ public class DashboardAction extends FacilioAction {
 			}
 			for(WorkOrderContext workorder:workorders) {
 				
-				LOGGER.log(Level.SEVERE, "buildingId --- "+buildingId);
+				// LOGGER.log(Level.SEVERE, "buildingId --- "+buildingId);
 				if(workorder.getResource() != null) {
 					LOGGER.log(Level.SEVERE, "workorder.getResource().getId() --- "+workorder.getResource().getId());
 				}
@@ -6366,8 +6367,8 @@ public class DashboardAction extends FacilioAction {
 					continue;
 				}
 				
-				LOGGER.log(Level.SEVERE, "dateFilter --- "+dateFilter);
-				LOGGER.log(Level.SEVERE, "workorder.getResource().getId() --- "+workorder.getCreatedTime());
+				// LOGGER.log(Level.SEVERE, "dateFilter --- "+dateFilter);
+				// LOGGER.log(Level.SEVERE, "workorder.getResource().getId() --- "+workorder.getCreatedTime());
 				
 				if(dateFilter != null && !((Long)dateFilter.get(0) < workorder.getCreatedTime() && workorder.getCreatedTime() < (Long)dateFilter.get(1))) {
 					continue;
@@ -6777,7 +6778,7 @@ public class DashboardAction extends FacilioAction {
 		if (reportContext.getReportChartType() == ReportContext.ReportChartType.TABULAR) {
 			getData();
 			Map<String,Object> table = ReportExportUtil.getTabularReportData(reportData, reportContext, reportColumns);
-			fileUrl = ExportUtil.exportData(FileFormat.getFileFormat(type), module.getDisplayName(), table);
+			fileUrl = ExportUtil.exportData(FileFormat.getFileFormat(type), module.getDisplayName(), table, false);
 		}
 		else {
 			/*FacilioContext context = new FacilioContext();
@@ -6798,7 +6799,7 @@ public class DashboardAction extends FacilioAction {
 			else {
 				getData();
 				Map<String,Object> table = ReportExportUtil.getDataInExportFormat(reportData, reportContext, baseLineComparisionDiff, reportSpaceFilterContext, dateFilter);
-				fileUrl = ExportUtil.exportData(FileFormat.getFileFormat(type), module.getDisplayName(), table);
+				fileUrl = ExportUtil.exportData(FileFormat.getFileFormat(type), module.getDisplayName(), table, false);
 //				fileUrl = ExportUtil.exportData(fileFormat, module, view.getFields(), records);
 			}
 		}
@@ -6816,7 +6817,7 @@ public class DashboardAction extends FacilioAction {
 		else {
 			analyticsConfig.put("dateFilter", dateFilter);
 			Map<String,Object> table = ReportExportUtil.getAnalyticsData(analyticsDataList, analyticsConfig);
-			fileUrl = ExportUtil.exportData(FileFormat.getFileFormat(type), (String) analyticsConfig.get("name"), table);
+			fileUrl = ExportUtil.exportData(FileFormat.getFileFormat(type), (String) analyticsConfig.get("name"), table, false);
 		}
 		
 		return SUCCESS;
@@ -7096,7 +7097,7 @@ public class DashboardAction extends FacilioAction {
 		return SUCCESS;
 	}
 	public String getPortalDashboardFolder() throws Exception {
-		dashboardFolders = DashboardUtil.getPortalDashboardFolder();
+		dashboardFolders = DashboardUtil.getDashboardListWithFolder(getOnlyMobileDashboard,true);
 		return SUCCESS;
 	}
 	public String updateDashboardFolder() throws Exception {

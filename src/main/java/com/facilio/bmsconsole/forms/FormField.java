@@ -171,4 +171,26 @@ public class FormField implements Serializable {
 	public FieldDisplayType getDisplayTypeEnum() {
 		return displayType;
 	}
+	
+	private Boolean allowCreate = false;
+	
+	public Boolean getAllowCreate() {
+		return allowCreate;
+	}
+
+	public FormField setAllowCreate(Boolean allowCreate) {
+		this.allowCreate = allowCreate;
+		return this;
+	}
+	
+	private String createFormName;
+
+	public String getCreateFormName() {
+		return createFormName;
+	}
+
+	public FormField setCreateFormName(String createFormName) {
+		this.createFormName = createFormName;
+		return this;
+	}
 }

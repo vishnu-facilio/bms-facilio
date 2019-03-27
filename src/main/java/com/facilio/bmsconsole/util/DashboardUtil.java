@@ -354,10 +354,11 @@ public class DashboardUtil {
 		buildingList.add(spaceID);
 		
 		List<BaseSpaceContext> baseSpaceContexts = SpaceAPI.getBaseSpaceWithChildren(buildingList);
-		for(BaseSpaceContext baseSpaceContext :baseSpaceContexts) {
-			resourceList.add(baseSpaceContext.getId());
+		if(baseSpaceContexts != null) {
+			for(BaseSpaceContext baseSpaceContext :baseSpaceContexts) {
+				resourceList.add(baseSpaceContext.getId());
+			}
 		}
-		
 		List<Long> assets = AssetsAPI.getAssetIdsFromBaseSpaceIds(resourceList);
 		
 		if(assets != null) {
@@ -1240,6 +1241,46 @@ public static JSONObject getStandardVariance1(ReportContext report,JSONArray pro
 		return null;
 	}
 	
+	public static List<DashboardFolderContext> getDashboardListWithFolder(boolean getOnlyMobileDashboard,boolean isfromPortal) throws Exception {
+	
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(FieldFactory.getDashboardFields())
+				.table(ModuleFactory.getDashboardModule().getTableName())
+				.andCustomWhere("ORGID = ?", AccountUtil.getCurrentOrg().getOrgId())
+				.andCustomWhere("BASE_SPACE_ID IS NULL");
+		
+		if(getOnlyMobileDashboard) {
+			selectBuilder.andCondition(CriteriaAPI.getCondition("SHOW_HIDE_MOBILE", "mobileEnabled", "true", BooleanOperators.IS));
+		}
+		
+		List<Map<String, Object>> props = selectBuilder.get();
+		
+		List<Long> dashboardIds = new ArrayList<>();
+		if (props != null && !props.isEmpty()) {
+			Map<Long, DashboardContext> dashboardMap = new HashMap<Long, DashboardContext>();
+			for (Map<String, Object> prop : props) {
+				DashboardContext dashboard = FieldUtil.getAsBeanFromMap(prop, DashboardContext.class);
+				dashboard.setSpaceFilteredDashboardSettings(getSpaceFilteredDashboardSettings(dashboard.getId()));
+				dashboard.setReportSpaceFilterContext(getDashboardSpaceFilter(dashboard.getId()));
+				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+				
+				FacilioModule module = modBean.getModule(dashboard.getModuleId());
+				dashboard.setModuleName(module.getName());
+				dashboardMap.put(dashboard.getId(), dashboard);
+				dashboardIds.add(dashboard.getId());
+			}
+			List<DashboardContext> dashboards = getFilteredDashboards(dashboardMap, dashboardIds,isfromPortal);
+			
+			if(getOnlyMobileDashboard) {
+				splitBuildingDashboardForMobile(dashboards);
+			}
+			
+			return sortDashboardByFolder(dashboards);
+		}
+		return null;
+	}
+	
 	
 	private static void splitBuildingDashboardForMobile(List<DashboardContext> dashboards) throws Exception {
 		
@@ -1503,8 +1544,10 @@ public static JSONObject getStandardVariance1(ReportContext report,JSONArray pro
 		}
 		return dashboardFolderContexts;
 	}
-	
 	public static List<DashboardContext> getFilteredDashboards(Map<Long, DashboardContext> dashboardMap, List<Long> dashboardIds) throws Exception {
+		return getFilteredDashboards(dashboardMap,dashboardIds,false);
+	}
+	public static List<DashboardContext> getFilteredDashboards(Map<Long, DashboardContext> dashboardMap, List<Long> dashboardIds,boolean isFromPortal) throws Exception {
 		
 		List<DashboardContext> dashboardList = new ArrayList<DashboardContext>();
 		if (!dashboardMap.isEmpty()) {
@@ -1513,6 +1556,14 @@ public static JSONObject getStandardVariance1(ReportContext report,JSONArray pro
 					.table(ModuleFactory.getDashboardSharingModule().getTableName())
 					.andCustomWhere("ORGID = ?", AccountUtil.getCurrentOrg().getOrgId())
 					.andCondition(CriteriaAPI.getCondition("Dashboard_Sharing.DASHBOARD_ID", "dashboardId", StringUtils.join(dashboardIds, ","), NumberOperators.EQUALS));
+			
+			if(!isFromPortal) {
+				selectBuilder.andCustomWhere("Dashboard_Sharing.Sharing_type != ? ", DashboardSharingContext.SharingType.PORTAL.getIntVal());
+			}
+			else {
+				selectBuilder.andCustomWhere("Dashboard_Sharing.Sharing_type = ? ", DashboardSharingContext.SharingType.PORTAL.getIntVal());
+			}
+			
 			
 			List<Map<String, Object>> props = selectBuilder.get();
 			
@@ -1537,14 +1588,29 @@ public static JSONObject getStandardVariance1(ReportContext report,JSONArray pro
 								}
 							}
 						}
+						else if (dashboardSharing.getSharingTypeEnum().equals(SharingType.PORTAL)) {
+							System.out.println("dashboard folders account userid ====>" + AccountUtil.getCurrentAccount().getUser().getOuid() + "dashboardsharing id ==>" + dashboardSharing.getOrgUserId());
+							if(dashboardSharing.getOrgUserId() > 0) {
+								if(dashboardSharing.getOrgUserId() == AccountUtil.getCurrentAccount().getUser().getOuid()) {
+									dashboardList.add(dashboardMap.get(dashboardSharing.getDashboardId()));
+								}
+							}
+							else {
+								dashboardList.add(dashboardMap.get(dashboardSharing.getDashboardId()));
+							}
+						}
 					}
 				}
-				for (Long dashboardId : dashboardIds) {
-					dashboardList.add(dashboardMap.get(dashboardId));
+				if(AccountUtil.getCurrentAccount().getUser().getUserType() != 2) {
+					for (Long dashboardId : dashboardIds) {
+						dashboardList.add(dashboardMap.get(dashboardId));
+					}
 				}
 			}
 			else {
-				dashboardList.addAll(dashboardMap.values());
+				if(AccountUtil.getCurrentAccount().getUser().getUserType() != 2) { 
+					dashboardList.addAll(dashboardMap.values());
+				}
 			}
 		}
 		return dashboardList;
@@ -3334,40 +3400,7 @@ public static JSONObject getStandardVariance1(ReportContext report,JSONArray pro
 		}
 		 
 		return dashboardFolderContexts;
-	}
-	
-	public static List<DashboardFolderContext> getPortalDashboardFolder() throws Exception {
-		
-			GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-				.select(FieldFactory.getDashboardFields())
-				.table(ModuleFactory.getDashboardModule().getTableName())
-				.innerJoin(ModuleFactory.getDashboardSharingModule().getTableName())
-				.on("Dashboard.ID = Dashboard_Sharing.DASHBOARD_ID")
-				.andCustomWhere("Dashboard_Sharing.ORG_USERID=" + AccountUtil.getCurrentUser().getOuid());
-		
-		
-		List<Map<String, Object>> props = selectBuilder.get();
-
-		List<Long> dashboardIds = new ArrayList<>();
-		if (props != null && !props.isEmpty()) {
-			Map<Long, DashboardContext> dashboardMap = new HashMap<Long, DashboardContext>();
-			for (Map<String, Object> prop : props) {
-				DashboardContext dashboard = FieldUtil.getAsBeanFromMap(prop, DashboardContext.class);
-				dashboard.setSpaceFilteredDashboardSettings(getSpaceFilteredDashboardSettings(dashboard.getId()));
-				dashboard.setReportSpaceFilterContext(getDashboardSpaceFilter(dashboard.getId()));
-				dashboardMap.put(dashboard.getId(), dashboard);
-				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-				
-				FacilioModule module = modBean.getModule(dashboard.getModuleId());
-				dashboard.setModuleName(module.getName());
-				dashboardIds.add(dashboard.getId());
-			}
-			List<DashboardContext> dashboards = getFilteredDashboards(dashboardMap, dashboardIds);
-			
-			return sortDashboardByFolder(dashboards);
-		}
-		return null;
-	}
+	}	
 	
 	public static DashboardFolderContext getorAddDashboardFolder(String moduleName,String dashboardFolderName) throws Exception {
 		
@@ -3386,13 +3419,14 @@ public static JSONObject getStandardVariance1(ReportContext report,JSONArray pro
 		if (props != null && !props.isEmpty()) {
 			
 			dashboardFolderContext = FieldUtil.getAsBeanFromMap(props.get(0), DashboardFolderContext.class);
+			
 		}
 		else {
 			dashboardFolderContext = new DashboardFolderContext();
 			dashboardFolderContext.setModuleId(module.getModuleId());
 			dashboardFolderContext.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
-			dashboardFolderContext.setName(dashboardFolderName);
 			
+			dashboardFolderContext.setName(dashboardFolderName);
 			addDashboardFolder(dashboardFolderContext);
 		}
 		return dashboardFolderContext;
@@ -3801,7 +3835,7 @@ public static JSONObject getStandardVariance1(ReportContext report,JSONArray pro
 				rdmPairs.add(Pair.of((Long) prop.get("id"),returnTempField));
 				rdmPairs.add(Pair.of((Long) prop.get("id"),setPointTempField));
 				
-				resourceSpaceMaps.put((Long) prop.get("id"), (Long) prop.get("spaceId"));
+				resourceSpaceMaps.put((Long) prop.get("id"), (Long) prop.get("space"));
 				resourceNameMaps.put((Long) prop.get("id"), (String) prop.get("name"));
 			}
 			

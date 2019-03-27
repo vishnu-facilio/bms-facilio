@@ -1,16 +1,24 @@
 package com.facilio.bmsconsole.commands;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections.CollectionUtils;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.AssetCategoryContext;
+import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
+import com.facilio.bmsconsole.modules.FieldType;
+import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericSelectRecordBuilder;
@@ -35,32 +43,83 @@ public class GetCategoryReadingsCommand implements Command {
 		List<FacilioField> fields = FieldFactory.getCategoryReadingsFields(categoryReadingRelModule);
 		
 		if(parentCategoryId != -1) {
-			GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-															.select(fields)
-															.table(categoryReadingRelModule.getTableName())
-															.andCustomWhere("PARENT_CATEGORY_ID = ?", parentCategoryId);
-			
-			List<Map<String, Object>> props = selectBuilder.get();
-			
-			List<FacilioModule> readings = null;
-			readings = new ArrayList<>();
-			
-			if(props != null && !props.isEmpty()) {
-				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-				for(Map<String, Object> prop : props) {
-					readings.add(modBean.getModule((long) prop.get("readingModuleId")));
-				}
-			}
-			
-			List<FacilioModule> existingReadings = (List<FacilioModule>) context.get(FacilioConstants.ContextNames.MODULE_LIST);
-			if (existingReadings == null) {
-				context.put(FacilioConstants.ContextNames.MODULE_LIST, readings);
-			}
-			else {
-				existingReadings.addAll(readings);
+			if (categoryReadingRelModule.equals(ModuleFactory.getAssetCategoryReadingRelModule())) {
+				assetCategoryRel(context, parentCategoryId);
+			} else {
+				relModuleImplementation(context, categoryReadingRelModule, fields, parentCategoryId);
 			}
 		}
 		return false;
+	}
+
+	private void assetCategoryRel(Context context, long parentCategoryId) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		
+		FacilioModule assetCategoryModule = modBean.getModule("assetcategory");
+		SelectRecordsBuilder<AssetCategoryContext> builder = new SelectRecordsBuilder<AssetCategoryContext>()
+				.beanClass(AssetCategoryContext.class)
+				.module(assetCategoryModule)
+				.select(modBean.getAllFields("assetcategory"))
+				.andCondition(CriteriaAPI.getIdCondition(parentCategoryId, assetCategoryModule));
+		List<AssetCategoryContext> list = builder.get();
+
+		List<FacilioModule> readings = new ArrayList<>();
+
+		if (CollectionUtils.isNotEmpty(list)) {
+			AssetCategoryContext assetCategoryContext = list.get(0);
+			
+			List<FacilioField> subModuleRelFields = new ArrayList<>();
+			subModuleRelFields.add(FieldFactory.getField("parentModuleId", "PARENT_MODULE_ID", FieldType.NUMBER));
+			subModuleRelFields.add(FieldFactory.getField("childModuleId", "CHILD_MODULE_ID", FieldType.NUMBER));
+			
+			GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
+					.table("SubModulesRel")
+					.select(subModuleRelFields)
+					.andCondition(CriteriaAPI.getCondition("PARENT_MODULE_ID", "parentModuleId", String.valueOf(assetCategoryContext.getAssetModuleID()), NumberOperators.EQUALS));
+			List<Map<String, Object>> props = selectRecordBuilder.get();
+			
+			if (CollectionUtils.isNotEmpty(props)) {
+				for(Map<String, Object> prop : props) {
+					FacilioModule readingModule = modBean.getModule((long) prop.get("childModuleId"));
+					readings.add(readingModule);
+				}
+			}
+		}
+		
+		List<FacilioModule> existingReadings = (List<FacilioModule>) context.get(FacilioConstants.ContextNames.MODULE_LIST);
+		if (existingReadings == null) {
+			context.put(FacilioConstants.ContextNames.MODULE_LIST, readings);
+		}
+		else {
+			existingReadings.addAll(readings);
+		}
+	}
+
+	private void relModuleImplementation(Context context, FacilioModule categoryReadingRelModule, List<FacilioField> fields, long parentCategoryId) throws Exception {
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(fields)
+				.table(categoryReadingRelModule.getTableName())
+				.andCustomWhere("PARENT_CATEGORY_ID = ?", parentCategoryId);
+
+		List<Map<String, Object>> props = selectBuilder.get();
+		
+		List<FacilioModule> readings = null;
+		readings = new ArrayList<>();
+		
+		if(props != null && !props.isEmpty()) {
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			for(Map<String, Object> prop : props) {
+				readings.add(modBean.getModule((long) prop.get("readingModuleId")));
+			}
+		}
+		
+		List<FacilioModule> existingReadings = (List<FacilioModule>) context.get(FacilioConstants.ContextNames.MODULE_LIST);
+		if (existingReadings == null) {
+			context.put(FacilioConstants.ContextNames.MODULE_LIST, readings);
+		}
+		else {
+			existingReadings.addAll(readings);
+		}
 	}
 	
 }

@@ -1,14 +1,17 @@
 package com.facilio.bmsconsole.commands;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.ItemTransactionsContext;
 import com.facilio.bmsconsole.context.ToolContext;
 import com.facilio.bmsconsole.context.ToolTransactionContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
@@ -31,14 +34,25 @@ public class ToolQuantityRollUpCommand implements Command{
 		// TODO Auto-generated method stub
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		List<? extends ToolTransactionContext> toolTransactions = (List<ToolTransactionContext>) context
+				.get(FacilioConstants.ContextNames.RECORD_LIST);
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.TOOL);
 		List<FacilioField> toolFields = modBean
 				.getAllFields(FacilioConstants.ContextNames.TOOL);
 		
-		List<Long> toolIds = (List<Long>) context.get(FacilioConstants.ContextNames.TOOL_IDS);
+		Set<Long> uniqueToolIds = new HashSet<Long>();
+		int totalQuantityConsumed = 0;
+		if (toolTransactions != null && !toolTransactions.isEmpty()) {
+			for (ToolTransactionContext consumable : toolTransactions) {
+				uniqueToolIds.add(consumable.getTool().getId());
+			}
+		}
 		
-		if(toolIds!=null && !toolIds.isEmpty()) {
-			for(long stId: toolIds) {				
+//		List<Long> toolIds = (List<Long>) context.get(FacilioConstants.ContextNames.TOOL_IDS);
+		long toolTypeId = -1;
+		List<Long> toolTypesIds = new ArrayList<>();
+		if(uniqueToolIds!=null && !uniqueToolIds.isEmpty()) {
+			for(long stId: uniqueToolIds) {				
 				SelectRecordsBuilder<ToolContext> selectBuilder = new SelectRecordsBuilder<ToolContext>()
 						.select(toolFields).table(module.getTableName()).moduleName(module.getName())
 						.beanClass(ToolContext.class)
@@ -48,9 +62,11 @@ public class ToolQuantityRollUpCommand implements Command{
 				ToolContext tool = new ToolContext();
 				if (tools != null && !tools.isEmpty()) {
 					tool = tools.get(0);
+					toolTypeId = tool.getToolType().getId();
 					tool.setQuantity(getTotalQuantity(stId));
-					double availableQty = getTotalQuantity(stId) - getTotalQuantityConsumed(stId);
+					double availableQty = getTotalQuantityConsumed(stId);
 					tool.setCurrentQuantity(availableQty);
+					toolTypesIds.add(tool.getToolType().getId());
 				}
 
 				UpdateRecordBuilder<ToolContext> updateBuilder = new UpdateRecordBuilder<ToolContext>()
@@ -58,14 +74,15 @@ public class ToolQuantityRollUpCommand implements Command{
 						.andCondition(CriteriaAPI.getIdCondition(tool.getId(), module));
 				
 				updateBuilder.update(tool);
+				context.put(FacilioConstants.ContextNames.TOOL_TYPES_ID, toolTypeId);
 			}
 		}
-		
+		context.put(FacilioConstants.ContextNames.TOOL_TYPES_IDS, toolTypesIds);
 		return false;
 	}
 
 	
-	public static Double getTotalQuantityConsumed(long toolId) throws Exception {
+	public static double getTotalQuantityConsumed(long toolId) throws Exception {
 
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule toolTransactionsModule = modBean.getModule(FacilioConstants.ContextNames.TOOL_TRANSACTIONS);
@@ -75,7 +92,8 @@ public class ToolQuantityRollUpCommand implements Command{
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder().table(toolTransactionsModule.getTableName())
 				.andCustomWhere(toolTransactionsModule.getTableName() + ".ORGID = " + AccountUtil.getCurrentOrg().getOrgId())
 				.andCondition(CriteriaAPI.getCondition(FieldFactory.getModuleIdField(toolTransactionsModule),
-						String.valueOf(toolTransactionsModule.getModuleId()), NumberOperators.EQUALS));
+						String.valueOf(toolTransactionsModule.getModuleId()), NumberOperators.EQUALS))
+				.andCustomWhere("APPROVED_STATE = ? OR APPROVED_STATE = ? OR APPROVED_STATE = ?", 1, 3, -1);
 
 		List<FacilioField> fields = new ArrayList<>();
 		fields.add(FieldFactory.getField("addition", "sum(case WHEN TRANSACTION_STATE = 1 THEN QUANTITY ELSE 0 END)", FieldType.DECIMAL));
@@ -90,15 +108,15 @@ public class ToolQuantityRollUpCommand implements Command{
 		List<Map<String, Object>> rs = builder.get();
 		if (rs != null && rs.size() > 0) {
 			double addition = 0, issues = 0, returns = 0;
-			addition = rs.get(0).get("addition")!=null ?(Double)  rs.get(0).get("addition") : 0;
-			issues=  rs.get(0).get("issues")!=null ? (Double) rs.get(0).get("issues") : 0;
-			returns = rs.get(0).get("returns")!=null ? (Double) rs.get(0).get("returns") : 0;
+			addition = rs.get(0).get("addition")!=null ?(double)  rs.get(0).get("addition") : 0;
+			issues=  rs.get(0).get("issues")!=null ? (double) rs.get(0).get("issues") : 0;
+			returns = rs.get(0).get("returns")!=null ? (double) rs.get(0).get("returns") : 0;
 			return ((addition+returns) - issues);
 		}
 		return 0d;
 	}
 	
-	public static Double getTotalQuantity(long toolId) throws Exception {
+	public static double getTotalQuantity(long toolId) throws Exception {
 
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule toolTransactionsModule = modBean.getModule(FacilioConstants.ContextNames.TOOL_TRANSACTIONS);
@@ -121,7 +139,7 @@ public class ToolQuantityRollUpCommand implements Command{
 		List<Map<String, Object>> rs = builder.get();
 		if (rs != null && rs.size() > 0) {
 			double addition = 0;
-			addition = rs.get(0).get("addition")!=null ?(Double)  rs.get(0).get("addition") : 0;
+			addition = rs.get(0).get("addition")!=null ?(double)  rs.get(0).get("addition") : 0;
 			return (addition);
 		}
 		return 0d;

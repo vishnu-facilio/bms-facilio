@@ -539,7 +539,6 @@ public class ViewAPI {
 		} else {
 			viewId = view.getId();
 		}
-		
 		if (columns != null && !columns.isEmpty()) {
 			customizeViewColumns(viewId, columns);
 			List<SortField> sortFields = view.getSortFields();

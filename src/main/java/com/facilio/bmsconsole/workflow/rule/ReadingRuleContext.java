@@ -427,7 +427,7 @@ public class ReadingRuleContext extends WorkflowRuleContext implements Cloneable
 		try {
 			boolean workflowFlag = true;
 			if (getWorkflow() != null) {
-				workflowFlag = WorkflowUtil.getWorkflowExpressionResultAsBoolean(getWorkflow().getWorkflowString(), placeHolders, currentRDM, true, true);
+				workflowFlag = WorkflowUtil.getWorkflowExpressionResultAsBoolean(getWorkflow().getWorkflowString(), placeHolders, currentRDM, false, true);
 			}
 			return workflowFlag;
 		}
@@ -555,9 +555,18 @@ public class ReadingRuleContext extends WorkflowRuleContext implements Cloneable
 		}
 	}
 	
-	private Object getMetric(ReadingContext reading) {
+	public Object getMetric(ReadingContext reading) {
 		if(reading != null) {
 			if (!isMatchingResource(reading)) {
+				if (this.getId() == 6448) {
+					LOGGER.info("Parent didn't match and so returning metric as null");
+				}
+				return null;
+			}
+			if (this.getId() == 6448) {
+				LOGGER.info("Reading field "+readingField);
+			}
+			if(readingField == null) {
 				return null;
 			}
 			Object currentMetric = FieldUtil.castOrParseValueAsPerType(readingField, reading.getReading(readingField.getName()));
@@ -573,16 +582,21 @@ public class ReadingRuleContext extends WorkflowRuleContext implements Cloneable
 		if(this.getTriggerExecutePeriod() <= 0 || (this.getTriggerExecutePeriod() > 0 && (Boolean) context.get(FacilioConstants.ContextNames.IS_READING_RULE_EXECUTE_FROM_JOB))) {
 			ReadingContext reading = (ReadingContext) record;
 			
-			if (reading == null) {
+			if (reading == null || readingField == null) {
 				return true;
 			}
 			
 			Object currentMetric = getMetric(reading);
+			
+			if (this.getId() == 6448) {
+				LOGGER.info("Metric obtained in misc of rule : "+currentMetric);
+			}
+			
 			if (currentMetric == null) {
 				return false;
 			}
-			
-			switch (thresholdType) {
+			if(thresholdType != null) {
+				switch (thresholdType) {
 				case FLAPPING:
 					boolean singleFlap = false;
 					Map<String, ReadingDataMeta> metaMap =(Map<String, ReadingDataMeta>)context.get(FacilioConstants.ContextNames.PREVIOUS_READING_DATA_META);
@@ -602,6 +616,7 @@ public class ReadingRuleContext extends WorkflowRuleContext implements Cloneable
 					return singleFlap && isFlappedNTimes(reading);
 				default:
 					break;
+				}
 			}
 		}
 		else if(this.getTriggerExecutePeriod() > 0) {
@@ -615,9 +630,18 @@ public class ReadingRuleContext extends WorkflowRuleContext implements Cloneable
 	
 	private boolean isMatchingResource(ReadingContext reading) {
 		if (matchedResources != null && !matchedResources.isEmpty()) {
+			if (this.getId() == 6448) {
+				LOGGER.info("Matched resources : "+matchedResources.keySet()+"\n Reading parent id : "+reading.getParentId()+"\nMatched resource class : "+matchedResources.keySet().stream().findFirst().get().getClass());
+			}
 			ResourceContext parent = matchedResources.get(reading.getParentId());
+			if (this.getId() == 6448) {
+				LOGGER.info("Matched parent : "+parent);
+			}
 			if (parent != null) {
 				reading.setParent(parent);
+				if (this.getId() == 6448) {
+					LOGGER.info("Parent matched and so returning true");
+				}
 				return true;
 			}
 		}
@@ -733,7 +757,7 @@ public class ReadingRuleContext extends WorkflowRuleContext implements Cloneable
 		// TODO Auto-generated method stub
 		Map<String, Object> rulePlaceHolders = super.constructPlaceHolders(moduleName, record, recordPlaceHolders, context);
 		
-		if (record != null) {
+		if (record != null && readingField != null) {
 			Map<String, ReadingDataMeta> metaMap =(Map<String, ReadingDataMeta>)context.get(FacilioConstants.ContextNames.PREVIOUS_READING_DATA_META);
 			ReadingDataMeta meta = metaMap.get(ReadingsAPI.getRDMKey(((ReadingContext)record).getParentId(), readingField));
 			if (meta != null) {
@@ -776,9 +800,10 @@ public class ReadingRuleContext extends WorkflowRuleContext implements Cloneable
 	public void executeFalseActions(Object record, Context context, Map<String, Object> placeHolders) throws Exception {
 		// TODO Auto-generated method stub
 		ReadingContext reading = (ReadingContext) record;
-		if (getMetric(reading) != null || getEvent().getActivityTypeEnum().isPresent(EventType.SCHEDULED_READING_RULE.getValue())) {
+		Object val = getMetric(reading);
+		if (val != null || getEvent().getActivityTypeEnum().isPresent(EventType.SCHEDULED_READING_RULE.getValue())) {
 			if (clearAlarm()) {
-				ReadingRuleAPI.addClearEvent(record, context, placeHolders, reading, this);
+				ReadingRuleAPI.addClearEvent(context, placeHolders, this, reading.getId(), val, reading.getTtime(), reading.getParentId());
 			}
 			
 			super.executeFalseActions(record, context, placeHolders);

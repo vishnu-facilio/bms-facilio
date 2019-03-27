@@ -278,8 +278,8 @@ public class FacilioExpressionParser {
 				List<FacilioField> selectFields = new ArrayList<>();
 				
 				FacilioField select = fieldMap.get(selectField);
-				select.setColumnName(select.getExtendedModule().getTableName()+"."+select.getColumnName());
-				select.setExtendedModule(null);
+				select.setColumnName(select.getTableName()+"."+select.getColumnName());
+//				select.setExtendedModule(null);
 				select.setModule(null);
 				select.setName(RESULT_STRING);
 

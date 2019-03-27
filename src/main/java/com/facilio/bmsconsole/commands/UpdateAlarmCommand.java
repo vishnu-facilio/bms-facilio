@@ -13,6 +13,7 @@ import org.json.simple.JSONObject;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.AlarmContext;
 import com.facilio.bmsconsole.context.AlarmSeverityContext;
 import com.facilio.bmsconsole.criteria.Condition;
@@ -26,6 +27,7 @@ import com.facilio.bmsconsole.util.AlarmAPI;
 import com.facilio.bmsconsole.util.ReadingRuleAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.workflow.rule.EventType;
+import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.wms.message.WmsEvent;
@@ -90,12 +92,13 @@ public class UpdateAlarmCommand implements Command {
 			
 			if(alarm.getSeverity() != null) {
 				if(isCleared) {
-					context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.ALARM_CLEARED);
+					CommonCommandUtil.addEventType(EventType.ALARM_CLEARED, (FacilioContext) context);
 				}
 				else if (alarm.getPreviousSeverity() == null || (alarm.getPreviousSeverity().getId() != alarm.getSeverity().getId())) {
-					context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.UPDATED_ALARM_SEVERITY);
+					CommonCommandUtil.addEventType(EventType.UPDATED_ALARM_SEVERITY, (FacilioContext) context);
 				}
 			}
+			CommonCommandUtil.addEventType(EventType.EDIT, (FacilioContext) context);
 			
 			TicketAPI.updateTicketAssignedBy(alarm);
 			TicketAPI.updateTicketStatus(alarm);
@@ -104,10 +107,12 @@ public class UpdateAlarmCommand implements Command {
 																		.module(module)
 																		.fields(fields)
 																		.andCondition(idCondition);
+//			LOGGER.info("Alarm Obj in update : "+FieldUtil.getAsJSON(alarm).toJSONString());
 			context.put(FacilioConstants.ContextNames.ROWS_UPDATED, updateBuilder.update(alarm));
 			if(recordIds.size() == 1) {
 				AlarmContext alarmObj = getAlarmObj(idCondition, moduleName, fields, true);
 				if(alarmObj != null) {
+//					LOGGER.info("Setting Alarm obj during updation : "+alarmObj.getClass());
 					context.put(FacilioConstants.ContextNames.RECORD, alarmObj);
 					
 					if (isCleared && AlarmAPI.isReadingRuleAlarm(alarmObj.getSourceTypeEnum())) {
@@ -122,18 +127,23 @@ public class UpdateAlarmCommand implements Command {
 			JSONObject record = new JSONObject();
 			record.put("id", recordIds.get(0));
 			
-			if(EventType.UPDATED_ALARM_SEVERITY.equals(context.get(FacilioConstants.ContextNames.EVENT_TYPE)) && 
-					(AccountUtil.getCurrentOrg().getOrgId() != 88 || alarm.getSeverity().getId() == AlarmAPI.getAlarmSeverity(FacilioConstants.Alarm.CRITICAL_SEVERITY).getId())) {
-				WmsEvent event = new WmsEvent();
-				event.setNamespace("alarm");
-				event.setAction("newAlarm");
-				event.setEventType(WmsEvent.WmsEventType.RECORD_UPDATE);
-				event.addData("record", record);
-				event.addData("sound", true);
-				
-				List<User> users = AccountUtil.getOrgBean().getActiveOrgUsers(AccountUtil.getCurrentOrg().getId());
-				List<Long> recipients = users.stream().map(user -> user.getId()).collect(Collectors.toList());
-				WmsApi.sendEvent(recipients, event);
+			try {
+				if(EventType.UPDATED_ALARM_SEVERITY.equals(context.get(FacilioConstants.ContextNames.EVENT_TYPE)) && 
+						(AccountUtil.getCurrentOrg().getOrgId() != 88 || alarm.getSeverity().getId() == AlarmAPI.getAlarmSeverity(FacilioConstants.Alarm.CRITICAL_SEVERITY).getId())) {
+					WmsEvent event = new WmsEvent();
+					event.setNamespace("alarm");
+					event.setAction("newAlarm");
+					event.setEventType(WmsEvent.WmsEventType.RECORD_UPDATE);
+					event.addData("record", record);
+					event.addData("sound", true);
+					
+					List<User> users = AccountUtil.getOrgBean().getActiveOrgUsers(AccountUtil.getCurrentOrg().getId());
+					List<Long> recipients = users.stream().map(user -> user.getId()).collect(Collectors.toList());
+					WmsApi.sendEvent(recipients, event);
+				}
+			}
+			catch (Exception e) {
+				LOGGER.info("Exception occcurred while pushing Web notification during alarm updation ", e);
 			}
 		}
 		return false;

@@ -1,33 +1,24 @@
 package com.facilio.kafka;
 
-import java.sql.SQLException;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
-
-import com.facilio.kafka.agent.AgentProcessor;
+import com.facilio.accounts.util.AccountConstants;
+import com.facilio.aws.util.AwsUtil;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.procon.processor.FacilioProcessor;
+import com.facilio.sql.GenericSelectRecordBuilder;
 import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.admin.KafkaAdminClient;
 import org.apache.kafka.clients.admin.ListTopicsResult;
 import org.apache.kafka.common.KafkaFuture;
 import org.apache.log4j.LogManager;
 
-import com.facilio.accounts.util.AccountConstants;
-import com.facilio.aws.util.AwsUtil;
-import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.kafka.event.EventProcessor;
-import com.facilio.kafka.timeseries.TimeSeriesProcessor;
-import com.facilio.kinesis.KinesisProcessor;
-import com.facilio.procon.processor.FacilioProcessor;
-import com.facilio.sql.GenericSelectRecordBuilder;
+import java.sql.SQLException;
+import java.util.*;
 
 public class KafkaProcessor {
 
     private static final HashSet<String> STREAMS = new HashSet<>();
-    private static org.apache.log4j.Logger log = LogManager.getLogger(KinesisProcessor.class.getName());
+    private static org.apache.log4j.Logger log = LogManager.getLogger(KafkaProcessor.class.getName());
     private static final HashSet<String> EXISTING_ORGS = new HashSet<>();
 
 
@@ -101,9 +92,10 @@ public class KafkaProcessor {
         try {
             if(orgDomainName != null && STREAMS.contains(orgDomainName)) {
                 System.out.println("Starting kafka processor for org : " + orgDomainName + " id " + orgId);
-                initiateProcessFactory(orgId, orgDomainName, "event");
+                initiateProcessFactory(orgId,orgDomainName,"processor");
+                /*initiateProcessFactory(orgId, orgDomainName, "event");
                 initiateProcessFactory(orgId, orgDomainName, "timeSeries");
-                initiateProcessFactory(orgId,orgDomainName,"agent");
+                initiateProcessFactory(orgId,orgDomainName,"agent");*/
                 EXISTING_ORGS.add(orgDomainName);
             }
         } catch (Exception e){
@@ -124,7 +116,7 @@ public class KafkaProcessor {
 
     private static FacilioProcessor getProcessor(long orgId, String orgDomainName, String type) throws SQLException {
 
-        switch(type){
+        /*switch(type){
             case "event" :{
                 return new EventProcessor(orgId, orgDomainName, type);
             }
@@ -134,8 +126,8 @@ public class KafkaProcessor {
             case "agent":{
                 return new AgentProcessor(orgId,orgDomainName,type);
             }
-        }
-        return null;
+        }*/
+        return new Processor(orgId,orgDomainName);
     }
 
     public static void start() {

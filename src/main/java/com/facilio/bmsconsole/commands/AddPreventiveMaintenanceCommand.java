@@ -27,8 +27,14 @@ public class AddPreventiveMaintenanceCommand implements Command {
 		addDefaultProps(pm, context);
 		addResource(pm);
 		Map<String, Object> pmProps = FieldUtil.getAsProperties(pm);
+		if (AccountUtil.isFeatureEnabled(AccountUtil.FEATURE_SCHEDULED_WO) && pm.getTriggers() != null && !pm.getTriggers().isEmpty()) {
+			pmProps.put("woGenerationStatus", true);
+		} else {
+			context.put(FacilioConstants.ContextNames.SKIP_WO_CREATION, true);
+			pmProps.put("woGenerationStatus", false);
+		}
 		GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
-				.table(ModuleFactory.getPreventiveMaintenancetModule().getTableName())
+				.table(ModuleFactory.getPreventiveMaintenanceModule().getTableName())
 				.fields(FieldFactory.getPreventiveMaintenanceFields()).addRecord(pmProps);
 
 		builder.save();

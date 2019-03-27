@@ -55,6 +55,8 @@ import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
+import com.facilio.bmsconsole.tenant.TenantContext;
+import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
@@ -654,6 +656,7 @@ public static Map<Long, TicketContext> getTickets(String ids) throws Exception {
 		loadTicketUsers(tickets);
 		loadTicketGroups(tickets);
 		loadTicketResources(tickets);
+		loadTicketTenants(tickets);
 	}
 	public static void loadWorkOrderLookups(Collection<? extends WorkOrderContext> workOrders) throws Exception {
 		loadTicketStatus(workOrders);
@@ -662,6 +665,8 @@ public static Map<Long, TicketContext> getTickets(String ids) throws Exception {
 		loadWorkOrdersUsers(workOrders);
 		loadTicketGroups(workOrders);
 		loadTicketResources(workOrders);
+		loadTicketTenants(workOrders);
+
 	}
 	
 	private static void loadTicketStatus(Collection<? extends TicketContext> tickets) throws Exception {
@@ -856,6 +861,33 @@ public static Map<Long, TicketContext> getTickets(String ids) throws Exception {
 		}
 	}
 	
+	private static void loadTicketTenants(Collection<? extends TicketContext> tickets) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.TENANT);
+
+		if(tickets != null && !tickets.isEmpty()) {
+			SelectRecordsBuilder<TenantContext> builder = new SelectRecordsBuilder<TenantContext>()
+														.module(module)
+														.beanClass(TenantContext.class)
+														.select(modBean.getAllFields(FacilioConstants.ContextNames.TENANT))
+														;
+			List<TenantContext> tenantList = builder.get();
+			if(tenantList.size() > 0) {
+			TenantsAPI.loadTenantLookups(tenantList);
+			Map<Long, TenantContext> tenants = FieldUtil.getAsMap(tenantList);
+			for(TicketContext ticket : tickets) {
+				if (ticket != null) {
+					TenantContext tenant = ticket.getTenant();
+					if(tenant != null) {
+						TenantContext tenantDetail = tenants.get(tenant.getId());
+						ticket.setTenant(tenantDetail);
+					}
+				}
+			}
+		  }
+	   }
+	}
+
 	public static CalendarColorContext getCalendarColor() throws Exception {
 		FacilioModule module = ModuleFactory.getCalendarColorModule();
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
@@ -1046,7 +1078,7 @@ public static Map<Long, TicketContext> getTickets(String ids) throws Exception {
 			Group assignmentGroup = ticket.getAssignmentGroup();
 			long groupSiteId = -1;
 			Set<Long> userSiteIds = new HashSet<>();
-			if (ticket.getAssignedTo() != null && assignedTo.getOuid() != -1) {
+			if (ticket.getAssignedTo() != null && assignedTo.getOuid() > 0) {
 				assignedTo = AccountUtil.getUserBean().getUser(assignedTo.getOuid());
 				List<Long> accessibleSpace = assignedTo.getAccessibleSpace();
 				Map<Long, BaseSpaceContext> idVsBaseSpace = SpaceAPI.getBaseSpaceMap(accessibleSpace);
@@ -1061,7 +1093,7 @@ public static Map<Long, TicketContext> getTickets(String ids) throws Exception {
 					}
 				}
 			} 
-			if (assignmentGroup != null && assignmentGroup.getGroupId() != -1) {
+			if (assignmentGroup != null && assignmentGroup.getGroupId() > 0) {
 				assignmentGroup = AccountUtil.getGroupBean().getGroup(assignmentGroup.getGroupId());
 				groupSiteId = assignmentGroup.getSiteId();
 			}

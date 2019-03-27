@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.context;
 
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
+import com.facilio.fs.FileStoreFactory;
 import com.facilio.unitconversion.Unit;
 
 public class ToolTypesContext extends ModuleBaseWithCustomFields {
@@ -36,23 +37,23 @@ public class ToolTypesContext extends ModuleBaseWithCustomFields {
 		this.serialNumber = serialNumber;
 	}
 
-	private ToolsCategoryContext category;
+	private ToolTypesCategoryContext category;
 
-	public ToolsCategoryContext getCategory() {
+	public ToolTypesCategoryContext getCategory() {
 		return category;
 	}
 
-	public void setCategory(ToolsCategoryContext category) {
+	public void setCategory(ToolTypesCategoryContext category) {
 		this.category = category;
 	}
 
-	private ToolsStatusContext status;
+	private ToolTypesStatusContext status;
 
-	public ToolsStatusContext getStatus() {
+	public ToolTypesStatusContext getStatus() {
 		return status;
 	}
 
-	public void setStatus(ToolsStatusContext status) {
+	public void setStatus(ToolTypesStatusContext status) {
 		this.status = status;
 	}
 
@@ -87,7 +88,7 @@ public class ToolTypesContext extends ModuleBaseWithCustomFields {
 		this.individualTracking = individualTracking;
 	}
 
-	public boolean isIndividualTracking() {
+	public boolean individualTracking() {
 		if (individualTracking != null) {
 			return individualTracking.booleanValue();
 		}
@@ -96,12 +97,29 @@ public class ToolTypesContext extends ModuleBaseWithCustomFields {
 
 	private long photoId;
 
+	public String getPhotoUrl() throws Exception {
+		if (this.photoId > 0) {
+			return FileStoreFactory.getInstance().getFileStore().getPrivateUrl(this.photoId);
+		}
+		return null;
+	}
+
 	public long getPhotoId() {
 		return photoId;
 	}
 
 	public void setPhotoId(long photoId) {
 		this.photoId = photoId;
+	}
+
+	private double currentQuantity = -1;
+
+	public double getCurrentQuantity() {
+		return currentQuantity;
+	}
+
+	public void setCurrentQuantity(double currentQuantity) {
+		this.currentQuantity = currentQuantity;
 	}
 
 	@Override
@@ -114,6 +132,53 @@ public class ToolTypesContext extends ModuleBaseWithCustomFields {
 	public void setLocalId(long localId) {
 		// TODO Auto-generated method stub
 		super.setLocalId(localId);
+	}
+
+	private long lastPurchasedDate = -1;
+
+	public long getLastPurchasedDate() {
+		return lastPurchasedDate;
+	}
+
+	public void setLastPurchasedDate(long lastPurchasedDate) {
+		this.lastPurchasedDate = lastPurchasedDate;
+	}
+
+	private double lastPurchasedPrice = -1;
+
+	public double getLastPurchasedPrice() {
+		return lastPurchasedPrice;
+	}
+
+	public void setLastPurchasedPrice(double lastPurchasedPrice) {
+		this.lastPurchasedPrice = lastPurchasedPrice;
+	}
+
+	private long lastIssuedDate = -1;
+
+	public long getLastIssuedDate() {
+		return lastIssuedDate;
+	}
+
+	public void setLastIssuedDate(long lastIssuedDate) {
+		this.lastIssuedDate = lastIssuedDate;
+	}
+	
+	private Boolean isApprovalNeeded;
+
+	public Boolean getIsApprovalNeeded() {
+		return isApprovalNeeded;
+	}
+
+	public void setIsApprovalNeeded(Boolean isApprovalNeeded) {
+		this.isApprovalNeeded = isApprovalNeeded;
+	}
+
+	public boolean isApprovalNeeded() {
+		if (isApprovalNeeded != null) {
+			return isApprovalNeeded.booleanValue();
+		}
+		return false;
 	}
 
 }

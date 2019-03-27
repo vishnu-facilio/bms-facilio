@@ -21,7 +21,7 @@ public class DeletePreventiveMaintenanceCommand implements Command {
 		List<Long> recordIds = (List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST);
 		if(recordIds != null && !recordIds.isEmpty()) {
 			
-			FacilioModule module = ModuleFactory.getPreventiveMaintenancetModule();
+			FacilioModule module = ModuleFactory.getPreventiveMaintenanceModule();
 			GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
 					.table("Preventive_Maintenance")
 					.andCondition(CriteriaAPI.getIdCondition(recordIds, module));

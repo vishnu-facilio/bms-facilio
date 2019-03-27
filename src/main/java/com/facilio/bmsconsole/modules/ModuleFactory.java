@@ -46,7 +46,7 @@ public class ModuleFactory {
 		moduleMap.put(FacilioConstants.ContextNames.ALARM, getAlarmsModule());
 		moduleMap.put(FacilioConstants.ContextNames.ASSET, getAssetsModule());
 		moduleMap.put("jsontemplate", getJSONTemplateModule());
-		moduleMap.put("preventivemaintenance", getPreventiveMaintenancetModule());
+		moduleMap.put("preventivemaintenance", getPreventiveMaintenanceModule());
 		moduleMap.put("connectedapp", getConnectedAppModule());
 		moduleMap.put("tabwidget", getTabWidgetModule());
 		moduleMap.put(FacilioConstants.ContextNames.SPACE_CATEGORY, getSpaceCategoryModule());
@@ -60,13 +60,19 @@ public class ModuleFactory {
 		moduleMap.put(FacilioConstants.ContextNames.INVENTORY_CATEGORY, getInventoryCategoryModule());
 		moduleMap.put(FacilioConstants.ContextNames.STORE_ROOM, getStoreRoomModule());
 		moduleMap.put(FacilioConstants.ContextNames.ITEM_TYPES, getItemTypesModule());
+		moduleMap.put(FacilioConstants.ContextNames.ITEM_TYPES_CATEGORY, getItemCategoryModule());
 		moduleMap.put(FacilioConstants.ContextNames.TOOL_TYPES, getToolTypesModule());
 		moduleMap.put(FacilioConstants.ContextNames.VENDORS, getVendorsModule());
 		moduleMap.put(FacilioConstants.ContextNames.ITEM, getInventryModule());
 		moduleMap.put(FacilioConstants.ContextNames.ITEM_STATUS, getInventoryStatusModule());
 		moduleMap.put(FacilioConstants.ContextNames.PURCHASED_ITEM, getPurchasedItemModule());
 		moduleMap.put(FacilioConstants.ContextNames.TOOL, getToolModule());
-		
+		moduleMap.put(FacilioConstants.ContextNames.LOCATION, getLocationsModule());
+		moduleMap.put(FacilioConstants.ContextNames.TOOL_TRANSACTIONS, getToolTransactionsModule());
+		moduleMap.put(FacilioConstants.ContextNames.ITEM_TRANSACTIONS, getItemTransactionsModule());
+		moduleMap.put(FacilioConstants.ContextNames.TENANT, getTenantsModule());
+		moduleMap.put(FacilioConstants.ContextNames.LABOUR, getLabourModule());
+	
 		return moduleMap;
 	}
 	
@@ -243,6 +249,15 @@ public class ModuleFactory {
 
 		return readingRuleModule;
 	}
+	public static FacilioModule getReadingAlarmRuleModule() {
+		FacilioModule readingRuleModule = new FacilioModule();
+		readingRuleModule.setName("readingalarmrule");
+		readingRuleModule.setDisplayName("Reading Alarm Rule");
+		readingRuleModule.setTableName("Reading_Alarm_Rule");
+		readingRuleModule.setExtendModule(getWorkflowRuleModule());
+
+		return readingRuleModule;
+	}
 
 	public static FacilioModule getDeviceDetailsModule() {
 		FacilioModule deviceModule = new FacilioModule();
@@ -404,6 +419,15 @@ public class ModuleFactory {
 		eMailTemplatesModule.setName("emailtemplates");
 		eMailTemplatesModule.setDisplayName("EMail Templates");
 		eMailTemplatesModule.setTableName("EMail_Templates");
+		eMailTemplatesModule.setExtendModule(getTemplatesModule());
+		return eMailTemplatesModule;
+	}
+
+	public static FacilioModule getWorkflowTemplatesModule() {
+		FacilioModule eMailTemplatesModule = new FacilioModule();
+		eMailTemplatesModule.setName("workflowtemplates");
+		eMailTemplatesModule.setDisplayName("Workflow Templates");
+		eMailTemplatesModule.setTableName("Workflow_Template");
 		eMailTemplatesModule.setExtendModule(getTemplatesModule());
 		return eMailTemplatesModule;
 	}
@@ -606,7 +630,7 @@ public class ModuleFactory {
 		return jsonTemplateModule;
 	}
 
-	public static FacilioModule getPreventiveMaintenancetModule() {
+	public static FacilioModule getPreventiveMaintenanceModule() {
 		FacilioModule alarmModule = new FacilioModule();
 		alarmModule.setName("preventivemaintenance");
 		alarmModule.setDisplayName("Preventive Maintenance");
@@ -1043,6 +1067,14 @@ public class ModuleFactory {
 		reportScheduleInfo.setTableName("Report_Schedule_Info");
 		return reportScheduleInfo;
 	}
+
+	public static FacilioModule getViewScheduleInfoModule() {
+		FacilioModule viewScheduleInfo = new FacilioModule();
+		viewScheduleInfo.setName("viewScheduleInfo");
+		viewScheduleInfo.setDisplayName("View Schedule Info");
+		viewScheduleInfo.setTableName("View_Schedule_Info");
+		return viewScheduleInfo;
+	}
 	
 	public static FacilioModule getReportScheduleInfo() {
 		FacilioModule reportScheduleInfo = new FacilioModule();
@@ -1321,6 +1353,14 @@ public class ModuleFactory {
 		return tenants;
 	}
 	
+	public static FacilioModule getLabourModule() {
+		FacilioModule labour = new FacilioModule();
+		labour.setName("labour");
+		labour.setDisplayName("Labour");
+		labour.setTableName("Labour");
+		return labour;
+	}
+	
 	public static FacilioModule getTenantsuserModule() {
 		FacilioModule tenants = new FacilioModule();
 		tenants.setName("tenant_users");
@@ -1596,7 +1636,7 @@ public class ModuleFactory {
 		mlForecastingModule.setTableName("Ml_Forecasting_Lifetime");
 		return mlForecastingModule;
 	}
-	
+
 	public static FacilioModule getMlForecastingModule() {
 		FacilioModule mlForecastingModule = new FacilioModule();
 		mlForecastingModule.setName("mlforecasting");
@@ -1676,7 +1716,15 @@ public class ModuleFactory {
 		inventoryModule.setTableName("Tools");
 		return inventoryModule;
 	}
-	
+
+	public static FacilioModule getLocationsModule() {
+		FacilioModule inventoryModule = new FacilioModule();
+		inventoryModule.setName(FacilioConstants.ContextNames.LOCATION);
+		inventoryModule.setDisplayName("Locations");
+		inventoryModule.setTableName("Locations");
+		return inventoryModule;
+	}
+
   	public static FacilioModule getWeatherStationModule() {
 		FacilioModule weatherStation = new FacilioModule();
 		weatherStation.setName("weatherStations");
@@ -1694,7 +1742,7 @@ public class ModuleFactory {
   		
   		return notificationLogger;
 	  }
-	  
+
   	public static FacilioModule getItemStatusModule() {
 		FacilioModule inventoryModule = new FacilioModule();
 		inventoryModule.setName(FacilioConstants.ContextNames.ITEM_TYPES_STATUS);
@@ -1702,7 +1750,7 @@ public class ModuleFactory {
 		inventoryModule.setTableName("Item_status");
 		return inventoryModule;
 	}
-  	
+
   	public static FacilioModule getItemTypeStatusModule() {
 		FacilioModule inventoryModule = new FacilioModule();
 		inventoryModule.setName(FacilioConstants.ContextNames.ITEM_TYPES_STATUS);
@@ -1710,12 +1758,37 @@ public class ModuleFactory {
 		inventoryModule.setTableName("Item_Types_status");
 		return inventoryModule;
 	}
-  	
+
+
+  	public static FacilioModule getItemCategoryModule() {
+		FacilioModule inventoryModule = new FacilioModule();
+		inventoryModule.setName(FacilioConstants.ContextNames.ITEM_TYPES_CATEGORY);
+		inventoryModule.setDisplayName("toolTypesCategory");
+		inventoryModule.setTableName("Tool_types_category");
+		return inventoryModule;
+	}
+
   	public static FacilioModule getToolTypeStatusModule() {
 		FacilioModule inventoryModule = new FacilioModule();
 		inventoryModule.setName(FacilioConstants.ContextNames.TOOL_TYPES_STATUS);
 		inventoryModule.setDisplayName("toolTypeStatus");
 		inventoryModule.setTableName("Tool_types_status");
+		return inventoryModule;
+	}
+  	
+  	public static FacilioModule getItemTransactionsModule() {
+		FacilioModule inventoryModule = new FacilioModule();
+		inventoryModule.setName(FacilioConstants.ContextNames.ITEM_TRANSACTIONS);
+		inventoryModule.setDisplayName("itemTransactions");
+		inventoryModule.setTableName("Item_Transactions");
+		return inventoryModule;
+	}
+  	
+  	public static FacilioModule getToolTransactionsModule() {
+		FacilioModule inventoryModule = new FacilioModule();
+		inventoryModule.setName(FacilioConstants.ContextNames.TOOL_TRANSACTIONS);
+		inventoryModule.setDisplayName("toolTransactions");
+		inventoryModule.setTableName("Tool_transactions");
 		return inventoryModule;
 	}
 }

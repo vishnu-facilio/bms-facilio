@@ -32,7 +32,7 @@ public class AddWOFromAlarmCommand implements Command {
 			JSONObject woJson = FieldUtil.mergeBean(oldAlarm, newObj);
 			
 			WorkOrderContext wo = FieldUtil.getAsBeanFromJson(woJson, WorkOrderContext.class);
-			wo.setCreatedTime(System.currentTimeMillis());
+			wo.setScheduledStart(oldAlarm.getModifiedTime());
 			wo.setId(-1);
 			
 			context.put(FacilioConstants.ContextNames.WORK_ORDER, wo);

@@ -792,6 +792,45 @@ public enum DateOperators implements Operator<String> {
 			return false;
 		}
 	},
+
+	UPCOMING(73, "Upcoming") {
+		@Override
+		public String getWhereClause(String columnName, String value) {
+			if(columnName != null && !columnName.isEmpty()) {
+				StringBuilder builder = new StringBuilder();
+				builder.append(columnName)
+						.append(">")
+						.append(DateTimeUtil.getCurrenTime());
+				return builder.toString();
+			}
+			return null;
+		}
+
+		@Override
+		public FacilioModulePredicate getPredicate(String fieldName, String value) {
+			return null;
+		}
+
+		@Override
+		public boolean isValueNeeded() {
+			return false;
+		}
+
+		@Override
+		public DateRange getRange(String value) {
+			return new DateRange(DateTimeUtil.getCurrenTime() - 1, -1);
+		}
+
+		@Override
+		public boolean isBaseLineSupported() {
+			return false;
+		}
+
+		@Override
+		public boolean isCurrentOperator() {
+			return false;
+		}
+	},
 	
 	LAST_MONTH(27, "Last Month") {
 		@Override
@@ -1985,17 +2024,19 @@ public enum DateOperators implements Operator<String> {
 	},
 	
 	NEXT_HOURS(41, "Next N Hours") {
+		
 		@Override
 		public String getWhereClause(String columnName, String value) {
 			if(columnName != null && !columnName.isEmpty() && value != null && !value.isEmpty()) {
+				DateRange range = getRange(value);
 				StringBuilder builder = new StringBuilder();
-				builder.append(DateTimeUtil.getHourStartTime())
+				builder.append(range.getStartTime())
 						.append("<=")
 						.append(columnName)
 						.append(" AND ")
 						.append(columnName)
 						.append("<=")
-						.append(DateTimeUtil.getHourStartTime(Integer.parseInt(value)));
+						.append(range.getEndTime());
 				return builder.toString();
 			}
 			return null;
@@ -2009,8 +2050,9 @@ public enum DateOperators implements Operator<String> {
 					@Override
 					public boolean evaluate(Object object) {
 						if(object != null && object instanceof Long) {
+							DateRange range = getRange(value);
 							long currentVal = (long) object;
-							return DateTimeUtil.getHourStartTime() <= currentVal && currentVal <= DateTimeUtil.getHourStartTime(Integer.parseInt(value));
+							return range.getStartTime() <= currentVal && currentVal <= range.getEndTime();
 						}
 						return false;
 					}
@@ -2022,7 +2064,18 @@ public enum DateOperators implements Operator<String> {
 		@Override
 		public DateRange getRange(String value) {
 			// TODO Auto-generated method stub
-			return new DateRange( DateTimeUtil.getHourStartTime(), DateTimeUtil.getHourStartTime(Integer.parseInt(value)));
+			long startTime = -1, duration = -1;
+			if (value.contains(",")) {
+				String[] values = value.trim().split("\\s*,\\s*");
+				duration = Long.parseLong(values[0]);
+				startTime = DateTimeUtil.getHourStartTimeOf(Long.parseLong(values[1]));
+			}
+			else {
+				duration = Long.parseLong(value);
+				startTime = DateTimeUtil.getHourStartTime();
+			}
+			long endTime = startTime + (duration * 3600 * 1000);
+			return new DateRange(startTime, endTime - 1);
 		}
 		
 		@Override

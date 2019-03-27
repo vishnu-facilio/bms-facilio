@@ -310,7 +310,7 @@ public class DataParseForReadingsCommand implements Command {
 		}
 		
 		List<? extends ModuleBaseWithCustomFields> props = selectRecordBuilder.get();
-		LOGGER.severe("selectRecord" + selectRecordBuilder.toString());
+		// LOGGER.severe("selectRecord" + selectRecordBuilder.toString());
 		if(!props.isEmpty()) {
 			Long Id = props.get(0).getId();
 			LOGGER.severe("id -- " + Id);

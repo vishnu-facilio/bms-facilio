@@ -42,11 +42,11 @@ import com.facilio.bmsconsole.modules.DeleteRecordBuilder;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FacilioModule.ModuleType;
-import com.facilio.chain.FacilioContext;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
+import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericInsertRecordBuilder;
@@ -249,27 +249,30 @@ public class FormulaFieldAPI {
 					if (workflow.getWorkflowString() == null) {
 						workflow.setWorkflowString(WorkflowUtil.getXmlStringFromWorkflow(workflow));
 					}
-					Double resultVal = (Double) WorkflowUtil.getWorkflowExpressionResult(workflow.getWorkflowString(), params, null, ignoreNullValues, false);
-//					if (AccountUtil.getCurrentOrg().getId() == 135) {
-						LOGGER.debug("Result of Formula : "+fieldName+" for resource : "+resourceId+" : "+resultVal);
-//					}
-					if (resultVal != null) {
-						ReadingContext reading = new ReadingContext();
-						reading.setParentId(resourceId);
-						reading.addReading(fieldName, resultVal);
-						reading.addReading("startTime", iStartTime);
-						reading.setTtime(iEndTime);
-						readings.add(reading);
-						
-						if (addValue) {
-							FacilioContext context = new FacilioContext();
-							context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
-							context.put(FacilioConstants.ContextNames.READING, reading);
-	//						context.put(FacilioConstants.ContextNames.UPDATE_LAST_READINGS, false);
-							context.put(FacilioConstants.ContextNames.READINGS_SOURCE, SourceType.FORMULA);
+					Object workflowResult = WorkflowUtil.getWorkflowExpressionResult(workflow.getWorkflowString(), params, null, ignoreNullValues, false);
+					if(workflowResult != null) {
+						Double resultVal = Double.parseDouble(workflowResult.toString());
+//						if (AccountUtil.getCurrentOrg().getId() == 135) {
+							LOGGER.debug("Result of Formula : "+fieldName+" for resource : "+resourceId+" : "+resultVal);
+//						}
+						if (resultVal != null) {
+							ReadingContext reading = new ReadingContext();
+							reading.setParentId(resourceId);
+							reading.addReading(fieldName, resultVal);
+							reading.addReading("startTime", iStartTime);
+							reading.setTtime(iEndTime);
+							readings.add(reading);
 							
-							Chain addReadingChain = ReadOnlyChainFactory.getAddOrUpdateReadingValuesChain();
-							addReadingChain.execute(context);
+							if (addValue) {
+								FacilioContext context = new FacilioContext();
+								context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+								context.put(FacilioConstants.ContextNames.READING, reading);
+		//						context.put(FacilioConstants.ContextNames.UPDATE_LAST_READINGS, false);
+								context.put(FacilioConstants.ContextNames.READINGS_SOURCE, SourceType.FORMULA);
+								
+								Chain addReadingChain = ReadOnlyChainFactory.getAddOrUpdateReadingValuesChain();
+								addReadingChain.execute(context);
+							}
 						}
 					}
 					long timeTaken = System.currentTimeMillis() - startTime;
@@ -1143,6 +1146,33 @@ public class FormulaFieldAPI {
 			// TODO Auto-generated method stub
 			return paramName+"::"+moduleName+"::"+fieldName+"::"+resourceId;
 		}
+	}
+	
+	public static int getDataInterval(FormulaFieldContext formula) {
+		switch (formula.getTriggerTypeEnum()) {
+			case SCHEDULE:
+				switch (formula.getFrequencyEnum()) {
+					case HOURLY:
+						return 60;
+					case DAILY:
+					case WEEKLY:
+					case MONTHLY:
+					case QUARTERTLY:
+					case HALF_YEARLY:
+					case ANNUALLY:
+						return 24 * 60;
+					default:
+						return -1;
+				}
+			case POST_LIVE_READING:
+				if (formula.getInterval() > (24 * 60)) {
+					return 24 * 60;
+				}
+				return formula.getInterval();
+			case PRE_LIVE_READING:
+				break;
+		}
+		return -1;
 	}
 
 }

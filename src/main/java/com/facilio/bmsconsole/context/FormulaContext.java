@@ -447,7 +447,7 @@ public class FormulaContext {
 			selectField.setColumnName(getcolumnName());
 			selectField.setModule(baseSpaceModule);
 			selectField.setFieldId(field.getFieldId());
-			selectField.setExtendedModule(null);
+//			selectField.setExtendedModule(null);
 			
 			return selectField;
 		}

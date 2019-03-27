@@ -113,14 +113,50 @@ public class BaseSpaceContext extends ResourceContext {
 	}
 	public void setSiteId(long siteId) {
 		this.siteId = siteId;
+		if (siteId > -1) {
+			if (site == null) {
+				site = new SiteContext();
+			}
+			site.setId(siteId);
+		}
+		else {
+			site = null;
+		}
 	}
 	
+	private SiteContext site;
+	public SiteContext getSite() {
+		return site;
+	}
+	public void setSite(SiteContext site) {
+		this.site = site;
+		this.siteId = site != null ? site.getId() : -1;
+	}
+
 	private long buildingId = -1;
 	public long getBuildingId() {
 		return buildingId;
 	}
 	public void setBuildingId(long buildingId) {
 		this.buildingId = buildingId;
+		if (buildingId > -1) {
+			if (building == null) {
+				building = new BuildingContext();
+			}
+			building.setId(buildingId);
+		}
+		else {
+			building = null;
+		}
+	}
+	
+	private BuildingContext building;
+	public BuildingContext getBuilding() {
+		return building;
+	}
+	public void setBuilding(BuildingContext building) {
+		this.building = building;
+		this.buildingId = building != null ? building.getId() : -1;
 	}
 	
 	private long floorId = -1;
@@ -129,13 +165,48 @@ public class BaseSpaceContext extends ResourceContext {
 	}
 	public void setFloorId(long floorId) {
 		this.floorId = floorId;
+		if (floorId > -1) {
+			if (floor == null) {
+				floor = new FloorContext();
+			}
+			floor.setId(floorId);
+		}
+		else {
+			floor = null;
+		}
 	}
+	private FloorContext floor;
+	public FloorContext getFloor() {
+		return floor;
+	}
+	public void setFloor(FloorContext floor) {
+		this.floor = floor;
+		this.floorId = floor != null ? floor.getId() : -1;
+	}
+
 	private  long spaceId1 = -1;
 	public long getSpaceId1() {
 		return spaceId1;
 	}
 	public void setSpaceId1(long spaceId1) {
 		this.spaceId1 = spaceId1;
+		if (spaceId1 > -1) {
+			if (space1 == null) {
+				space1 = new SpaceContext();
+			}
+			space1.setId(spaceId1);
+		}
+		else {
+			space1 = null;
+		}
+	}
+	private SpaceContext space1;
+	public SpaceContext getSpace1() {
+		return space1;
+	}
+	public void setSpace1(SpaceContext space1) {
+		this.space1 = space1;
+		this.spaceId1 = space1 != null ? space1.getId() : -1;
 	}
 
 	private  long spaceId2 = -1;
@@ -144,24 +215,76 @@ public class BaseSpaceContext extends ResourceContext {
 	}
 	public void setSpaceId2(long spaceId2) {
 		this.spaceId2 = spaceId2;
+		if (spaceId2 > -1) {
+			if (space2 == null) {
+				space2 = new SpaceContext();
+			}
+			space2.setId(spaceId2);
+		}
+		else {
+			space2 = null;
+		}
 	}
+	private SpaceContext space2;
+	public SpaceContext getSpace2() {
+		return space2;
+	}
+	public void setSpace2(SpaceContext space2) {
+		this.space2 = space2;
+		this.spaceId2 = space2 != null ? space2.getId() : -1;
+	}
+
+	private  long spaceId3 = -1;
 	public long getSpaceId3() {
 		return spaceId3;
 	}
 	public void setSpaceId3(long spaceId3) {
 		this.spaceId3 = spaceId3;
+		if (spaceId3 > -1) {
+			if (space3 == null) {
+				space3 = new SpaceContext();
+			}
+			space3.setId(spaceId3);
+		}
+		else {
+			space3 = null;
+		}
 	}
+	private SpaceContext space3;
+	public SpaceContext getSpace3() {
+		return space3;
+	}
+	public void setSpace3(SpaceContext space3) {
+		this.space3 = space3;
+		this.spaceId3 = space3 != null ? space3.getId() : -1;
+	}
+	
+	private  long spaceId4 = -1;
 	public long getSpaceId4() {
 		return spaceId4;
 	}
 	public void setSpaceId4(long spaceId4) {
 		this.spaceId4 = spaceId4;
+		if (spaceId4 > -1) {
+			if (space4 == null) {
+				space4 = new SpaceContext();
+			}
+			space4.setId(spaceId4);
+		}
+		else {
+			space4 = null;
+		}
 	}
-
-	private  long spaceId3 = -1;
-	private  long spaceId4 = -1;
-
+	private SpaceContext space4;
+	public SpaceContext getSpace4() {
+		return space4;
+	}
+	public void setSpace4(SpaceContext space4) {
+		this.space4 = space4;
+		this.spaceId4 = space4 != null ? space4.getId() : -1;
+	}
 	
+
 	@Override
 	public ResourceType getResourceTypeEnum() {
 		return ResourceType.SPACE;

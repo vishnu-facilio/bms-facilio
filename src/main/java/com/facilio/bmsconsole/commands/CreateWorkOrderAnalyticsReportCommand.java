@@ -50,7 +50,7 @@ public class CreateWorkOrderAnalyticsReportCommand implements Command {
 				
 				FacilioField xField = modBean.getField(metric.getxFieldId());
 				ReportFieldContext xAxis = new ReportFieldContext();
-				xAxis.setField(xField);
+				xAxis.setField(xField.getModule(), xField);
 				List<FacilioField> fields = modBean.getAllFields(xField.getModule().getName());
 				Map<Long, FacilioField> xfieldIdMap = FieldFactory.getAsIdMap(fields);
 				Map<String, LookupField> xlookupFields = getLookupFields(fields);
@@ -75,7 +75,7 @@ public class CreateWorkOrderAnalyticsReportCommand implements Command {
 	
 	private void createReportGroupByAndDateFields(ModuleBean modBean, WorkorderAnalysisContext metric, ReportDataPointContext dataPoint, Map<Long, FacilioField> xFieldIdMap, Map<String, LookupField> xLookupFields) throws Exception {
 		if ((metric.getGroupBy() != null && !metric.getGroupBy().isEmpty()) || metric.getDateFieldId() != -1) {
-			List<FacilioField> yFields = modBean.getAllFields(dataPoint.getyAxis().getField().getModule().getName());
+			List<FacilioField> yFields = modBean.getAllFields(dataPoint.getyAxis().getModule().getName());
 			Map<Long, FacilioField> yFieldIdMap = FieldFactory.getAsIdMap(yFields);
 			
 			if (metric.getGroupBy() != null && !metric.getGroupBy().isEmpty()) {
@@ -98,7 +98,7 @@ public class CreateWorkOrderAnalyticsReportCommand implements Command {
 							reportGroupBy.setJoinOn(getJoinOn(lookupField));
 						}
 					}
-					reportGroupBy.setField(groupByField);
+					reportGroupBy.setField(groupByField.getModule(), groupByField);
 					groupBy.add(reportGroupBy);
 				}
 				dataPoint.setGroupByFields(groupBy);
@@ -113,7 +113,9 @@ public class CreateWorkOrderAnalyticsReportCommand implements Command {
 				if (dateField == null) {
 					throw new IllegalArgumentException("Date Field is not one of X Axis Module or Y Axis Module fields");
 				}
-				dataPoint.setDateField(dateField);
+				ReportFieldContext dateFieldContext = new ReportFieldContext();
+				dateFieldContext.setField(dateField.getModule(), dateField);
+				dataPoint.setDateField(dateFieldContext);
 			}
 		}
 	}
@@ -130,7 +132,7 @@ public class CreateWorkOrderAnalyticsReportCommand implements Command {
 			yAxis.setJoinOn(getJoinOn(lookupField));
 			
 		}
-		yAxis.setField(yField);
+		yAxis.setField(yField.getModule(), yField);
 		yAxis.setAggr(metric.getyAggrEnum());
 		dataPoint.setyAxis(yAxis);
 	}

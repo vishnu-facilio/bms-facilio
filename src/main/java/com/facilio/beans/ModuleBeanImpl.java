@@ -76,6 +76,7 @@ public class ModuleBeanImpl implements ModuleBean {
 			currentModule.setTableName(rs.getString("TABLE_NAME"));
 			currentModule.setType(rs.getInt("MODULE_TYPE"));
 			currentModule.setTrashEnabled(rs.getBoolean("IS_TRASH_ENABLED"));
+			currentModule.setShowAsView(rs.getBoolean("SHOW_AS_VIEW"));
 			if(prevModule != null) {
 				prevModule.setExtendModule(currentModule);
 			}
@@ -308,6 +309,53 @@ public class ModuleBeanImpl implements ModuleBean {
 		return parentModule;
 	}
 	
+	@Override
+	public List<FacilioModule> getChildModules(FacilioModule parentModule) throws Exception {
+		if(LookupSpecialTypeUtil.isSpecialType(parentModule.getName())) {
+			return null;
+		}
+		PreparedStatement pstmt = null;
+		Connection conn  =null;
+		ResultSet rs = null;
+		try {
+			 conn = getConnection();
+			 
+			 String sql = DBUtil.getQuery("module.child.modules");
+			 pstmt = conn.prepareStatement(sql);
+
+			pstmt.setLong(1, getOrgId());
+			pstmt.setLong(2, parentModule.getModuleId());
+			
+			List<FacilioModule> modules = new ArrayList<>();
+			rs = pstmt.executeQuery();
+			
+			while(rs.next()) {
+				FacilioModule currentModule = new FacilioModule();
+				currentModule.setModuleId(rs.getLong("MODULEID"));
+				currentModule.setOrgId(rs.getLong("ORGID"));
+				currentModule.setName(rs.getString("NAME"));
+				currentModule.setDisplayName(rs.getString("DISPLAY_NAME"));
+				currentModule.setTableName(rs.getString("TABLE_NAME"));
+				currentModule.setType(rs.getInt("MODULE_TYPE"));
+				currentModule.setTrashEnabled(rs.getBoolean("IS_TRASH_ENABLED"));
+				currentModule.setShowAsView(rs.getBoolean("SHOW_AS_VIEW"));
+				int dataInterval = rs.getInt("DATA_INTERVAL"); 
+				if (dataInterval != 0) {
+					currentModule.setDataInterval(dataInterval);
+				}
+				modules.add(currentModule);
+			}
+			return modules;
+		}
+		catch(SQLException e) {
+			log.info("Exception occurred ", e);
+			throw e;
+		}
+		finally {
+			DBUtil.closeAll(conn,pstmt, rs);
+		}
+	}
+	
 	private FacilioModule getMod(String moduleName) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean", getOrgId());
 		return modBean.getModule(moduleName);
@@ -332,10 +380,13 @@ public class ModuleBeanImpl implements ModuleBean {
 	@Override
 	public FacilioField getPrimaryField(String moduleName) throws Exception {
 		FacilioModule module = getMod(moduleName);
+		List<Long> extendedModuleIds = module.getExtendedModuleIds();
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 														.select(FieldFactory.getSelectFieldFields())
 														.table("Fields")
-														.andCustomWhere("Fields.ORGID = ? AND Fields.MODULEID = ? AND IS_MAIN_FIELD = true", getOrgId(), module.getModuleId());
+														.andCustomWhere("Fields.ORGID = ? AND IS_MAIN_FIELD = true", getOrgId())
+														.andCondition(CriteriaAPI.getCondition("MODULEID", "moduleId", StringUtils.join(extendedModuleIds, ","), NumberOperators.EQUALS));
+
 		List<Map<String, Object>> fieldProps = selectBuilder.get();
 		
 		Map<Long, FacilioModule> moduleMap = splitModules(module);
@@ -370,6 +421,10 @@ public class ModuleBeanImpl implements ModuleBean {
 		if (module.getTrashEnabled() != null) {
 			joiner.add("IS_TRASH_ENABLED = ?");
 			params.add(module.getTrashEnabled());
+		}
+		if (module.getShowAsView() != null) {
+			joiner.add("SHOW_AS_VIEW = ?");
+			params.add(module.getShowAsView());
 		}
 		
 		if (!params.isEmpty()) {
@@ -421,37 +476,44 @@ public class ModuleBeanImpl implements ModuleBean {
 				}
 				prop.put("module", moduleMap.get(prop.get("moduleId")));
 				
-				FieldType type = FieldType.getCFType((int) prop.get("dataType"));
-				switch(type) {
-					case NUMBER:
-					case DECIMAL:
-							prop.putAll(extendedPropsMap.get(type).get(prop.get("fieldId")));
-							fields.add(FieldUtil.getAsBeanFromMap(prop, NumberField.class));
-						break;
-					case BOOLEAN:
-							prop.putAll(extendedPropsMap.get(type).get(prop.get("fieldId")));
-							fields.add(FieldUtil.getAsBeanFromMap(prop, BooleanField.class));
-						break;
-					case LOOKUP:
-							prop.putAll(extendedPropsMap.get(type).get(prop.get("fieldId")));
-							Long lookupModuleId = (Long) prop.get("lookupModuleId");
-							if(lookupModuleId != null) {
-								FacilioModule lookupModule = getMod(lookupModuleId);
-								prop.put("lookupModule", lookupModule);
-							}
-							fields.add(FieldUtil.getAsBeanFromMap(prop, LookupField.class));
-						break;
-					case FILE:
-							prop.putAll(extendedPropsMap.get(type).get(prop.get("fieldId")));
-							fields.add(FieldUtil.getAsBeanFromMap(prop, FileField.class));
-						break;
-					case ENUM:
-							prop.putAll(extendedPropsMap.get(type).get(prop.get("fieldId")));
-							fields.add(FieldUtil.getAsBeanFromMap(prop, EnumField.class));
-						break;
-					default:
-						fields.add(FieldUtil.getAsBeanFromMap(prop, FacilioField.class));
-						break;
+				try {
+					FieldType type = FieldType.getCFType((int) prop.get("dataType"));
+					switch(type) {
+						case NUMBER:
+						case DECIMAL:
+								prop.putAll(extendedPropsMap.get(type).get(prop.get("fieldId")));
+								fields.add(FieldUtil.getAsBeanFromMap(prop, NumberField.class));
+							break;
+						case BOOLEAN:
+								prop.putAll(extendedPropsMap.get(type).get(prop.get("fieldId")));
+								fields.add(FieldUtil.getAsBeanFromMap(prop, BooleanField.class));
+							break;
+						case LOOKUP:
+								prop.putAll(extendedPropsMap.get(type).get(prop.get("fieldId")));
+								Long lookupModuleId = (Long) prop.get("lookupModuleId");
+								if(lookupModuleId != null) {
+									FacilioModule lookupModule = getMod(lookupModuleId);
+									prop.put("lookupModule", lookupModule);
+								}
+								fields.add(FieldUtil.getAsBeanFromMap(prop, LookupField.class));
+							break;
+						case FILE:
+								prop.putAll(extendedPropsMap.get(type).get(prop.get("fieldId")));
+								fields.add(FieldUtil.getAsBeanFromMap(prop, FileField.class));
+							break;
+						case ENUM:
+								prop.putAll(extendedPropsMap.get(type).get(prop.get("fieldId")));
+								fields.add(FieldUtil.getAsBeanFromMap(prop, EnumField.class));
+							break;
+						default:
+							fields.add(FieldUtil.getAsBeanFromMap(prop, FacilioField.class));
+							break;
+					}
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					// e.printStackTrace();
+					log.fatal("Exception occurred while fetching field for fieldid : "+prop.get("fieldId"), e);
+					throw e;
 				}
 			}
 			return Collections.unmodifiableList(fields);
@@ -534,10 +596,14 @@ public class ModuleBeanImpl implements ModuleBean {
 		
 		FacilioModule module = getMod(moduleName);
 		Map<Long, FacilioModule> moduleMap = splitModules(module);
+
+		List<Long> extendedModuleIds = module.getExtendedModuleIds();
+
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 														.select(FieldFactory.getSelectFieldFields())
 														.table("Fields")
-															.andCustomWhere("Fields.ORGID = ? AND Fields.MODULEID = ?", getOrgId(), module.getModuleId());
+														.andCondition(CriteriaAPI.getCondition("MODULEID", "moduleId", StringUtils.join(extendedModuleIds, ","), NumberOperators.EQUALS));
+
 		List<Map<String, Object>> fieldProps = selectBuilder.get();
 		List<FacilioField> fields = getFieldFromPropList(fieldProps, moduleMap);
 		return fields;
@@ -557,6 +623,57 @@ public class ModuleBeanImpl implements ModuleBean {
 			Map<Long, FacilioModule> moduleMap = splitModules(module);
 			List<FacilioField> fields = getFieldFromPropList(fieldProps, moduleMap);
 			return fields.get(0);
+		}
+		return null;
+	}
+	
+	@Override
+	public FacilioField getField(long fieldId, long moduleId) throws Exception {
+		return getField(getModule(moduleId), fieldId);
+	}
+	
+	private FacilioField getField(FacilioModule facilioModule, long fieldId) throws Exception {
+		List<Long> extendedModuleIds = facilioModule.getExtendedModuleIds();
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+														.select(FieldFactory.getSelectFieldFields())
+														.table("Fields")
+														.andCondition(CriteriaAPI.getCondition("MODULEID", "moduleId", StringUtils.join(extendedModuleIds, ","), NumberOperators.EQUALS))
+														.andCustomWhere("Fields.ORGID = ? AND Fields.FIELDID = ?", getOrgId(), fieldId);
+		List<Map<String, Object>> fieldProps = selectBuilder.get();
+		
+		if(fieldProps != null && !fieldProps.isEmpty()) {
+			Map<String, Object> fieldProp = fieldProps.get(0);
+			FacilioModule module = getMod((long)fieldProp.get("moduleId"));
+			Map<Long, FacilioModule> moduleMap = splitModules(module);
+			List<FacilioField> fields = getFieldFromPropList(fieldProps, moduleMap);
+			return fields.get(0);
+		}
+		return null;
+	}
+
+	@Override
+	public FacilioField getField(long fieldId, String moduleName) throws Exception {
+		return getField(getModule(moduleName), fieldId);
+	}
+	
+	@Override
+	public FacilioField getReadingField(long fieldId) throws Exception {
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+														.select(FieldFactory.getSelectFieldFields())
+														.table("Fields")
+														.andCustomWhere("Fields.ORGID = ? AND Fields.FIELDID = ?", getOrgId(), fieldId);
+		List<Map<String, Object>> fieldProps = selectBuilder.get();
+		
+		if(fieldProps != null && !fieldProps.isEmpty()) {
+			Map<String, Object> fieldProp = fieldProps.get(0);
+			FacilioModule module = getMod((long)fieldProp.get("moduleId"));
+			Map<Long, FacilioModule> moduleMap = splitModules(module);
+			List<FacilioField> fields = getFieldFromPropList(fieldProps, moduleMap);
+			FacilioField facilioField = fields.get(0);
+			if (facilioField.getModule().getTypeEnum() == ModuleType.READING) {
+				return facilioField;
+			}
 		}
 		return null;
 	}
@@ -592,14 +709,22 @@ public class ModuleBeanImpl implements ModuleBean {
 			return FieldFactory.getIdField(module);
 		}
 		
+		if (fieldName.equals("siteId")) {
+			return FieldFactory.getSiteIdField(module);
+		}
+		
 		if(LookupSpecialTypeUtil.isSpecialType(moduleName)) {
 			return LookupSpecialTypeUtil.getField(fieldName, moduleName);
 		}
 		
+		List<Long> extendedModuleIds = module.getExtendedModuleIds();
+
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 														.select(FieldFactory.getSelectFieldFields())
 														.table("Fields")
-														.andCustomWhere("Fields.ORGID = ? AND Fields.NAME = ? AND Fields.MODULEID = ?", getOrgId(),fieldName, module.getModuleId());
+														.andCustomWhere("Fields.ORGID = ? AND Fields.NAME = ?", getOrgId(),fieldName)
+														.andCondition(CriteriaAPI.getCondition("MODULEID", "moduleId", StringUtils.join(extendedModuleIds, ","), NumberOperators.EQUALS));
+
 		List<Map<String, Object>> fieldProps = selectBuilder.get();
 		Map<Long, FacilioModule> moduleMap = splitModules(module);
 		List<FacilioField> fields = getFieldFromPropList(fieldProps, moduleMap);

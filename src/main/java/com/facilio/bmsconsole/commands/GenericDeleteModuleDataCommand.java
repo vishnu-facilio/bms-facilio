@@ -7,13 +7,13 @@ import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.modules.DeleteRecordBuilder;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
-import com.facilio.sql.GenericDeleteRecordBuilder;
 
 public class GenericDeleteModuleDataCommand implements Command {
 
@@ -31,10 +31,9 @@ public class GenericDeleteModuleDataCommand implements Command {
 			}
 			context.put(FacilioConstants.ContextNames.RECORD_LIST, getRecords(module, recordIds, fields));
 			
-			GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
-														.table(module.getTableName())
-														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
-														.andCondition(CriteriaAPI.getIdCondition(recordIds, module));
+			DeleteRecordBuilder<ModuleBaseWithCustomFields> builder = new DeleteRecordBuilder<ModuleBaseWithCustomFields>()
+																		.module(module)
+																		.andCondition(CriteriaAPI.getIdCondition(recordIds, module));
 			
 			context.put(FacilioConstants.ContextNames.ROWS_UPDATED, builder.delete());
 		}

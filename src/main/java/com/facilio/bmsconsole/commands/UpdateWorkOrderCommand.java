@@ -20,8 +20,10 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ResourceContext;
+import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.context.TicketStatusContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
+import com.facilio.bmsconsole.context.ResourceContext.ResourceType;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
@@ -33,7 +35,9 @@ import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.modules.UpdateChangeSet;
 import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
+import com.facilio.bmsconsole.tenant.TenantContext;
 import com.facilio.bmsconsole.util.ShiftAPI;
+import com.facilio.bmsconsole.util.TenantsAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsole.workflow.rule.ApprovalState;
@@ -122,6 +126,9 @@ public class UpdateWorkOrderCommand implements Command {
 		else if (workOrder.getSiteId() != -1 && AccountUtil.getCurrentSiteId() == -1) {
 			transferToAnotherSite(workOrder);
 		}
+		else if (workOrder.getTenant()!= null && workOrder.getTenant().getId() != -1) {
+			transferToAnotherTenant(workOrder, oldWos);
+		}
 		
 		if (workOrder.getSiteId() == -1) {
 			TicketAPI.validateSiteSpecificData(workOrder, oldWos);
@@ -198,6 +205,30 @@ public class UpdateWorkOrderCommand implements Command {
 		workOrder.getAssignmentGroup().setId(-1);
 		workOrder.setResource(new ResourceContext());
 		workOrder.getResource().setId(-1);
+		workOrder.setTenant(new TenantContext());
+		workOrder.getTenant().setId(-1);
+	}
+	
+	public static <T extends TicketContext> void transferToAnotherTenant(WorkOrderContext workOrder, List<T> oldTickets) throws Exception {
+		
+		TenantContext tenant = TenantsAPI.fetchTenant(workOrder.getTenant().getId());
+		
+		for(T oldWo: oldTickets) {
+			long siteId = oldWo.getSiteId();
+			if (tenant.getSiteId() != siteId) {
+				  throw new IllegalArgumentException("The selected tenant belongs to another Site.");
+			} 
+	
+		  }
+		
+		//Creating multiple New WOs is unnecessary here 
+		workOrder.setAssignedTo(new User());
+		workOrder.getAssignedTo().setId(-1);
+		workOrder.setAssignmentGroup(new Group());
+		workOrder.getAssignmentGroup().setId(-1);
+		workOrder.setResource(new ResourceContext());
+		workOrder.getResource().setId(-1);
+		workOrder.setSiteId(tenant.getSiteId());
 	}
 	
 	private void validateCloseStatus (WorkOrderContext workOrder, List<WorkOrderContext> oldWos, List<WorkOrderContext> newWos, List<ReadingContext> userReadings, EventType activityType, FacilioContext context) throws Exception {

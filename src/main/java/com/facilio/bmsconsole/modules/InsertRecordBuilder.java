@@ -230,11 +230,17 @@ public class InsertRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 	private Map<Long, List<FacilioField>> splitFields() {
 		Map<Long, List<FacilioField>> fieldMap = new HashMap<>();
 		
+		// TODO check this again
 		for(FacilioField field : fields) {
-			List<FacilioField> moduleFields = fieldMap.get(field.getExtendedModule().getModuleId());
+			FacilioModule module = field.getModule();
+			long moduleId = -1;
+			if (module != null) {
+				moduleId = module.getModuleId();
+			}
+			List<FacilioField> moduleFields = fieldMap.get(moduleId);
 			if(moduleFields == null) {
 				moduleFields = new ArrayList<>();
-				fieldMap.put(field.getExtendedModule().getModuleId(), moduleFields);
+				fieldMap.put(moduleId, moduleFields);
 			}
 			moduleFields.add(field);
 		}
@@ -252,14 +258,28 @@ public class InsertRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 			moduleProps.put("sysModifiedBy", AccountUtil.getCurrentUser().getId());
 		}
 		for(FacilioField field : fields) {
-			if(field.getDataTypeEnum() == FieldType.LOOKUP) {
-				Object val = moduleProps.get(field.getName());
-				if(val != null && val instanceof Map) {
-					Map<String, Object> lookupProps = (Map<String, Object>) val; 
-					if(lookupProps != null) {
-						moduleProps.put(field.getName(), lookupProps.get("id"));
+			switch (field.getDataTypeEnum()) {
+				case LOOKUP:
+					Object val = moduleProps.get(field.getName());
+					if(val != null && val instanceof Map) {
+						Map<String, Object> lookupProps = (Map<String, Object>) val; 
+						if(lookupProps != null) {
+							moduleProps.put(field.getName(), lookupProps.get("id"));
+						}
 					}
-				}
+					break;
+				case ENUM:
+					if (!field.isDefault()) {
+						val = moduleProps.get(field.getName());
+						if (val != null) {
+							val = FieldUtil.castOrParseValueAsPerType(field, val);
+							moduleProps.put(field.getName(), val);
+							bean.setDatum(field.getName(), val); //This is for workflow rules to work
+						}
+					}
+					break;
+				default:
+					break;
 			}
 		}
 		return moduleProps;

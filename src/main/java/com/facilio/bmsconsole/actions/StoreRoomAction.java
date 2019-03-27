@@ -90,7 +90,7 @@ public class StoreRoomAction extends FacilioAction{
 		}
 		if (getSearch() != null) {
 			JSONObject searchObj = new JSONObject();
-			searchObj.put("fields", "store_room.name");
+			searchObj.put("fields", "storeRoom.name");
 			searchObj.put("query", getSearch());
 			context.put(FacilioConstants.ContextNames.SEARCH, searchObj);
 		}
@@ -119,6 +119,12 @@ public class StoreRoomAction extends FacilioAction{
 			}
 			setResult(FacilioConstants.ContextNames.STORE_ROOMS, storerooms);
 		}
+		return SUCCESS;
+	}
+	
+	public String storeRoomCount() throws Exception {
+		storeRoomList();
+		setResult(FacilioConstants.ContextNames.STORE_ROOM_COUNT, storeRoomCount);
 		return SUCCESS;
 	}
 	

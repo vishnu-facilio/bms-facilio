@@ -56,6 +56,10 @@ public class SetTableNamesCommand implements Command {
 		return new SetTableNamesCommand("assetdepartment", "AssetDepartment");
 	}
 	
+	public static SetTableNamesCommand getForTenants() {
+		return new SetTableNamesCommand("tenant", "Tenants");
+	}
+	
 	public static SetTableNamesCommand getForAssetType() {
 		return new SetTableNamesCommand("assettype", "AssetType");
 	}
@@ -228,12 +232,20 @@ public class SetTableNamesCommand implements Command {
 		return new SetTableNamesCommand("workorderTools", "Workorder_tools");
 	}
 	
+	public static SetTableNamesCommand getForWorkorderLabour() {
+		return new SetTableNamesCommand("workorderLabour", "Workorder_labour");
+	}
+	
 	public static SetTableNamesCommand getForItemTypesVendors() {
 		return new SetTableNamesCommand("itemVendors", "Item_vendors");
 	}
 	
 	public static SetTableNamesCommand getForPurchasedTool() {
 		return new SetTableNamesCommand("purchasedTool", "Purchased_Tool");
+	}
+	
+	public static SetTableNamesCommand getForLabour() {
+		return new SetTableNamesCommand("labour", "Labour");
 	}
 	
 	public static void setForModule (Context context, String moduleName) {

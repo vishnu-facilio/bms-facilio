@@ -157,7 +157,7 @@ public class OrgBeanImpl implements OrgBean {
 			if(result.get("customDomain") != null) {
 				org.setDomain((String)result.get("customDomain"));
 			} else {
-				org.setDomain((String)result.get("domain")+"."+ AwsUtil.getConfig("portal.domain"));
+				org.setDomain(result.get("domain") + "." + AwsUtil.getConfig("portal.domain"));
 			}
 			
 		}

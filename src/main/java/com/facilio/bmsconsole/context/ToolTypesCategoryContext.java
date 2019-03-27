@@ -2,7 +2,7 @@ package com.facilio.bmsconsole.context;
 
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 
-public class ToolsCategoryContext extends ModuleBaseWithCustomFields{
+public class ToolTypesCategoryContext extends ModuleBaseWithCustomFields{
 private static final long serialVersionUID = 1L;
 	
 	private String name;

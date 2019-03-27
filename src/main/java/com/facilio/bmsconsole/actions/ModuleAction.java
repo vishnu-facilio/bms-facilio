@@ -10,6 +10,7 @@ import org.apache.commons.chain.Chain;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
@@ -186,6 +187,12 @@ public class ModuleAction extends FacilioAction {
 				{
 					continue;
 				}
+				if(field.getName().equals("tenant")) {
+					if(AccountUtil.isFeatureEnabled(AccountUtil.FEATURE_TENANTS)) {
+					workorderFields.add(field);
+					}
+					continue;
+				}
 				workorderFields.add(field);
 			}
 			setFields(workorderFields);
@@ -348,7 +355,7 @@ public class ModuleAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.RECORD, moduleData);
 		
 		// TODO.... Temporary. Will be changed to counter field soon
-		context.put(FacilioConstants.ContextNames.SET_LOCAL_MODULE_ID, true);
+		context.put(FacilioConstants.ContextNames.SET_LOCAL_MODULE_ID, getWithLocalId());
 		
 		Chain addModuleDataChain = FacilioChainFactory.addModuleDataChain();
 		addModuleDataChain.execute(context);
@@ -363,6 +370,14 @@ public class ModuleAction extends FacilioAction {
 	}
 	public void setDataString(String dataString) {
 		this.dataString = dataString;
+	}
+	
+	private boolean withLocalId = true;
+	public boolean getWithLocalId() {
+		return withLocalId;
+	}
+	public void setWithLocalId(boolean withLocalId) {
+		this.withLocalId = withLocalId;
 	}
 	
 	public String updateModuleData() throws Exception {

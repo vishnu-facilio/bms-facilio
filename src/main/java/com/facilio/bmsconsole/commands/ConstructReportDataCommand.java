@@ -10,6 +10,9 @@ import java.util.StringJoiner;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
 
 import com.facilio.beans.ModuleBean;
@@ -21,6 +24,9 @@ import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.LookupField;
+import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
+import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
@@ -38,7 +44,7 @@ public class ConstructReportDataCommand implements Command {
 		return new ArrayList<>();
 	}
 	
-	private Map<Long, Map<Long, Object>> labelMap = new HashMap<>();
+//	private Map<Long, Map<Long, Object>> labelMap = new HashMap<>();
 
 	@Override
 	public boolean execute(Context context) throws Exception {
@@ -65,7 +71,7 @@ public class ConstructReportDataCommand implements Command {
 		}
 		JSONObject data = new JSONObject();
 		data.put(FacilioConstants.ContextNames.DATA_KEY, transformedData);
-		data.put(FacilioConstants.ContextNames.LABEL_MAP, labelMap);
+//		data.put(FacilioConstants.ContextNames.LABEL_MAP, labelMap);
 		context.put(FacilioConstants.ContextNames.REPORT_SORT_ALIAS, getxAlias(report));
 		context.put(FacilioConstants.ContextNames.REPORT_DATA, data);
 		return false;
@@ -77,14 +83,14 @@ public class ConstructReportDataCommand implements Command {
 				Object xVal = prop.get(dataPoint.getxAxis().getField().getName());
 				if (xVal != null) {
 					xVal = getBaseLineAdjustedXVal(xVal, dataPoint.getxAxis(), baseLine);
-					Object formattedxVal = formatVal(dataPoint.getxAxis().getField(), report.getxAggrEnum(), xVal, null, false);
+					Object formattedxVal = formatVal(dataPoint.getxAxis(), report.getxAggrEnum(), xVal, null, false);
 					Object yVal = prop.get(dataPoint.getyAxis().getField().getName());
 					Object minYVal = null, maxYVal = null;
 					if (yVal != null) {
-						yVal = formatVal(dataPoint.getyAxis().getField(), dataPoint.getyAxis().getAggrEnum(), yVal, xVal, dataPoint.isHandleEnum());
+						yVal = formatVal(dataPoint.getyAxis(), dataPoint.getyAxis().getAggrEnum(), yVal, xVal, dataPoint.isHandleEnum());
 						if (dataPoint.getyAxis().isFetchMinMax()) {
-							minYVal = formatVal(dataPoint.getyAxis().getField(), NumberAggregateOperator.MIN, prop.get(dataPoint.getyAxis().getField().getName()+"_min"), xVal, dataPoint.isHandleEnum());
-							maxYVal = formatVal(dataPoint.getyAxis().getField(), NumberAggregateOperator.MAX, prop.get(dataPoint.getyAxis().getField().getName()+"_max"), xVal, dataPoint.isHandleEnum());
+							minYVal = formatVal(dataPoint.getyAxis(), NumberAggregateOperator.MIN, prop.get(dataPoint.getyAxis().getField().getName()+"_min"), xVal, dataPoint.isHandleEnum());
+							maxYVal = formatVal(dataPoint.getyAxis(), NumberAggregateOperator.MAX, prop.get(dataPoint.getyAxis().getField().getName()+"_max"), xVal, dataPoint.isHandleEnum());
 						}
 
 						StringJoiner key = new StringJoiner("|");
@@ -95,7 +101,7 @@ public class ConstructReportDataCommand implements Command {
 							for (ReportGroupByField groupBy : dataPoint.getGroupByFields()) {
 								FacilioField field = groupBy.getField();
 								Object groupByVal = prop.get(field.getName());
-								groupByVal = formatVal(field, null, groupByVal, xVal, dataPoint.isHandleEnum());
+								groupByVal = formatVal(groupBy, null, groupByVal, xVal, dataPoint.isHandleEnum());
 								data.put(groupBy.getAlias(), groupByVal);
 								key.add(groupBy.getAlias()+"_"+groupByVal.toString());
 							}
@@ -156,7 +162,8 @@ public class ConstructReportDataCommand implements Command {
 	}
 	
 	private static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("#.##");
-	private Object formatVal(FacilioField field, AggregateOperator aggr, Object val, Object actualxVal, boolean handleEnum) throws Exception {
+	private Object formatVal(ReportFieldContext reportFieldContext, AggregateOperator aggr, Object val, Object actualxVal, boolean handleEnum) throws Exception {
+		FacilioField field = reportFieldContext.getField();
 		if (val == null) {
 			return "";
 		}
@@ -187,49 +194,60 @@ public class ConstructReportDataCommand implements Command {
 					val = ((DateAggregateOperator)aggr).getAdjustedTimestamp((long) val);
 				}
 				break;
+			case NUMBER:
+				if (StringUtils.isNotEmpty(field.getName()) && field.getName().equals("siteId")) {
+					ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+					updateLookupMap(reportFieldContext, field.getFieldId(), null, modBean.getModule("site"));
+				}
+				break;
 			case LOOKUP:
 				LookupField lookupField = (LookupField) field;
-				if (!labelMap.containsKey(lookupField.getFieldId())) {
-					String moduleName = null;
-					if (LookupSpecialTypeUtil.isSpecialType(lookupField.getSpecialType())) {
-						moduleName = lookupField.getSpecialType();
-					} else {
-						moduleName = lookupField.getLookupModule().getName();
-					}
-					
-					Map<Long, Object> lookupMap = labelMap.get(lookupField.getFieldId());
-					if (LookupSpecialTypeUtil.isSpecialType(lookupField.getSpecialType())) {
-						List list = LookupSpecialTypeUtil.getObjects(lookupField.getSpecialType(), null);
-						lookupMap = LookupSpecialTypeUtil.getPrimaryFieldValues(lookupField.getSpecialType(), list);
-					} else {
-						FacilioModule lookupModule = lookupField.getLookupModule();
-						ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-						FacilioField mainField = modBean.getPrimaryField(moduleName);
-						
-						List<FacilioField> selectFields = new ArrayList<>();
-						selectFields.add(mainField);
-						selectFields.add(FieldFactory.getIdField(lookupModule));
-						GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
-								.select(selectFields)
-								.table(lookupModule.getTableName())
-								.andCondition(CriteriaAPI.getCurrentOrgIdCondition(lookupModule));
-	
-						List<Map<String,Object>> asProps = builder.get();
-						lookupMap = new HashMap<>();
-						for (Map<String, Object> map : asProps) {
-							lookupMap.put((Long) map.get("id"), (String) map.get(mainField.getName()));
-						}
-					}
-					labelMap.put(lookupField.getFieldId(), lookupMap);
-				}
+				updateLookupMap(reportFieldContext, lookupField.getFieldId(), lookupField.getSpecialType(), lookupField.getLookupModule());
 				if (val instanceof Map) {
-					return ((Map) val).get("id");
+					val = ((Map) val).get("id");
 				}
 				break;
 			default:
 				break;
 		}
 		return val;
+	}
+	
+	private void updateLookupMap(ReportFieldContext reportFieldContext, long fieldId, String specialType, FacilioModule lookupModule) throws Exception {
+		if (MapUtils.isEmpty(reportFieldContext.getLookupMap())) {
+			String moduleName = null;
+			if (LookupSpecialTypeUtil.isSpecialType(specialType)) {
+				moduleName = specialType;
+			} else {
+				moduleName = lookupModule.getName();
+			}
+			
+			Map<Long, Object> lookupMap;
+			if (LookupSpecialTypeUtil.isSpecialType(specialType)) {
+				List list = LookupSpecialTypeUtil.getObjects(specialType, null);
+				lookupMap = LookupSpecialTypeUtil.getPrimaryFieldValues(specialType, list);
+			} else {
+				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+				FacilioField mainField = modBean.getPrimaryField(moduleName);
+				
+				List<FacilioField> selectFields = new ArrayList<>();
+				selectFields.add(mainField);
+				selectFields.add(FieldFactory.getIdField(lookupModule));
+				SelectRecordsBuilder<? extends ModuleBaseWithCustomFields> builder = new SelectRecordsBuilder()
+						.beanClass(FacilioConstants.ContextNames.getClassFromModuleName(lookupModule.getName()))
+						.select(selectFields)
+						.module(lookupModule)
+						.andCondition(CriteriaAPI.getCurrentOrgIdCondition(lookupModule));
+
+				List<Map<String,Object>> asProps = builder.getAsProps();
+				lookupMap = new HashMap<>();
+				for (Map<String, Object> map : asProps) {
+					lookupMap.put((Long) map.get("id"), (String) map.get(mainField.getName()));
+				}
+			}
+//			labelMap.put(fieldId, lookupMap);
+			reportFieldContext.setLookupMap(lookupMap);
+		}
 	}
 
 }

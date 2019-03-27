@@ -39,7 +39,10 @@ public class GetItemListCommand implements Command{
 
 		Boolean getCount = (Boolean) context.get(FacilioConstants.ContextNames.FETCH_COUNT);
 		List<FacilioField> fields;
-		if (getCount != null && getCount) {
+		if (getCount == null) {
+			getCount = false;
+		}
+		if (getCount) {
 			fields = FieldFactory.getCountField(module);
 		} else {
 			fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
@@ -48,6 +51,10 @@ public class GetItemListCommand implements Command{
 
 		SelectRecordsBuilder<ItemContext> builder = new SelectRecordsBuilder<ItemContext>().module(module)
 				.beanClass(FacilioConstants.ContextNames.getClassFromModuleName(moduleName)).select(fields);
+		
+		if (getCount) {
+			builder.setAggregation();
+		}
 
 		String orderBy = (String) context.get(FacilioConstants.ContextNames.SORTING_QUERY);
 		if (orderBy != null && !orderBy.isEmpty()) {
@@ -110,7 +117,7 @@ public class GetItemListCommand implements Command{
 				Set<Long> locatoionIds = new HashSet<Long>();
 				for (ItemContext inventry : records) {
 					if (inventry.getItemType().getId() != -1) {
-						Map<Long, ItemTypesContext> itemMap = ItemsApi.getItemsMap
+						Map<Long, ItemTypesContext> itemMap = ItemsApi.getItemTypesMap
 								((inventry.getItemType().getId()));
 						inventry.setItemType(itemMap.get(inventry.getItemType().getId()));
 					}

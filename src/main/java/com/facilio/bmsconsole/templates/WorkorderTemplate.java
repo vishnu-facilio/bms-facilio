@@ -13,6 +13,7 @@ import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.modules.FieldUtil;
+import com.facilio.bmsconsole.tenant.TenantContext;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class WorkorderTemplate extends Template {
@@ -144,6 +145,13 @@ public class WorkorderTemplate extends Template {
 	public void setSiteId(long siteId) {
 		this.siteId = siteId;
 	}
+	private long tenantId = -1 ;
+	public long getTenantId() {
+		return tenantId;
+	}
+	public void setTenantId(long tenantId) {
+		this.tenantId = tenantId;
+	}
 
 	public WorkOrderContext getWorkorder() {
 		if (getName() != null && !getName().isEmpty()) {
@@ -173,6 +181,9 @@ public class WorkorderTemplate extends Template {
 			}
 			if (resourceId != -1) {
 				woProp.put("resource", FieldUtil.getEmptyLookedUpProp(resourceId));
+			}
+			if (tenantId != -1) {
+				woProp.put("tenant", FieldUtil.getEmptyLookedUpProp(tenantId));
 			}
 			
 			if (additionInfo != null) {
@@ -223,6 +234,9 @@ public class WorkorderTemplate extends Template {
 			if (workorder.getSiteId() != -1) {
 				siteId = workorder.getSiteId();
 			}
+			if (workorder.getTenant() != null) {
+				tenantId = workorder.getTenant().getId();
+			}
 			
 			Map<String, Object> prop = FieldUtil.getAsProperties(workorder);
 			prop.remove("id");
@@ -237,6 +251,7 @@ public class WorkorderTemplate extends Template {
 			prop.remove("assignedTo");
 			prop.remove("resource");
 			prop.remove("siteId");
+			prop.remove("tenant");
 			additionInfo = new JSONObject();
 			additionInfo.putAll(prop);
 		}

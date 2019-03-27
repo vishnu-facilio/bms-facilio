@@ -8,6 +8,7 @@ import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.modules.FacilioModule;
+import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.constants.FacilioConstants;
@@ -28,6 +29,9 @@ public class GetCategoryResourcesCommand implements Command {
 				resourceList=SpaceAPI.getSpaceListOfCategory(category);
 			}
 			else if (categoryName.equals(FacilioConstants.ContextNames.ASSET_CATEGORY)) {
+				resourceList=AssetsAPI.getAssetListOfCategory(category);
+			}
+			else if (categoryReadingRelModule.equals(ModuleFactory.getAssetCategoryReadingRelModule())) {	// parent module will be asset module. so checking categoryreadingrelmodule
 				resourceList=AssetsAPI.getAssetListOfCategory(category);
 			}
 			

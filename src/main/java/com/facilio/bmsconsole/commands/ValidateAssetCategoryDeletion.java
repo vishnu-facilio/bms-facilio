@@ -2,17 +2,25 @@ package com.facilio.bmsconsole.commands;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections.CollectionUtils;
 
+import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.AssetCategoryContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
+import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericSelectRecordBuilder;
 
 public class ValidateAssetCategoryDeletion implements Command {
@@ -62,21 +70,27 @@ public class ValidateAssetCategoryDeletion implements Command {
 			stopChain = true;
 			moduleNames.add(assetCategoryModule.getDisplayName());
 		}
-		
-		FacilioModule assetReadingModule = ModuleFactory.getAssetCategoryReadingRelModule();
-		GenericSelectRecordBuilder assetReadingModuleSelectBuilder = new GenericSelectRecordBuilder()
-				.select(FieldFactory.getAssetCategoryReadingRelFields())
-				.table(assetReadingModule.getTableName())
-				.andCustomWhere("PARENT_CATEGORY_ID = ?", recordID)
-				.limit(1);
-		result = assetReadingModuleSelectBuilder.get();
-		
-		if (!result.isEmpty()) {
-			stopChain = true;
-			moduleNames.add(assetReadingModule.getDisplayName());
+
+		// TODO - check this
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		SelectRecordsBuilder<AssetCategoryContext> selectRecordsBuilder = new SelectRecordsBuilder<AssetCategoryContext>()
+				.beanClass(AssetCategoryContext.class)
+				.moduleName(assetCategoryModule.getName())
+				.select(modBean.getAllFields(assetCategoryModule.getName()))
+				.andCondition(CriteriaAPI.getIdCondition(recordID, assetCategoryModule));
+		List<AssetCategoryContext> list = selectRecordsBuilder.get();
+		if (CollectionUtils.isNotEmpty(list)) {
+			long assetModuleId = list.get(0).getAssetModuleID();
+			GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+					.table("SubModulesRel")
+					.select(Collections.singletonList(FieldFactory.getField("parentModuleId", "PARENT_MODULE_ID", FieldType.NUMBER)))
+					.andCondition(CriteriaAPI.getCondition("PARENT_MODULE_ID", "parentModuleId", String.valueOf(assetModuleId), NumberOperators.EQUALS));
+			result = builder.get();
+			if (!result.isEmpty()) {
+				stopChain = true;
+				moduleNames.add("Asset Readings");
+			}
 		}
-				
-		
 		
 		context.put(FacilioConstants.ContextNames.MODULE_NAMES, moduleNames);
 		return stopChain;

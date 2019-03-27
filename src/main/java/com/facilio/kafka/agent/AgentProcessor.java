@@ -18,7 +18,6 @@ import com.facilio.procon.message.FacilioRecord;
 import com.facilio.procon.processor.FacilioProcessor;
 import com.facilio.server.ServerInfo;
 import com.facilio.sql.GenericInsertRecordBuilder;
-import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
 import com.facilio.util.AckUtil;
 import org.apache.log4j.LogManager;
@@ -26,14 +25,13 @@ import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
 import java.sql.DriverManager;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 /**
- * AgentProcessor is a dedicated Processor for processing payloads with PUBLISH_TYPE set to 'agent', 'devicepoints' and 'ack'.
+ * AgentProcessor is a dedicated processor for processing payloads with PUBLISH_TYPE set to 'agent', 'devicepoints' and 'ack'.
  *
  */
 public class AgentProcessor extends FacilioProcessor
@@ -67,7 +65,8 @@ public class AgentProcessor extends FacilioProcessor
         setConsumer(new FacilioKafkaConsumer(ServerInfo.getHostname(), consumerGroup, getTopic()));
         setProducer(new FacilioKafkaProducer(getTopic()));
         LOGGER.info("agentUtil created for "+orgDomainName);
-        agentUtil = new AgentUtil(orgId);
+        agentUtil = new AgentUtil(orgId, orgDomainName);
+        agentUtil.populateAgentContextMap();
         devicePointsUtil = new DevicePointsUtil();
         ackUtil = new AckUtil();
         initializeModules();
@@ -130,10 +129,10 @@ public class AgentProcessor extends FacilioProcessor
              if(dataType != null ) {
                 switch (dataType) {
                     case AgentKeys.AGENT:
-                        numberOfRows = agentUtil.processAgent(payLoad);
+                        // numberOfRows = agentUtil.processAgent(payLoad);
                         break;
                     case AgentKeys.DEVICE_POINTS:
-                        devicePointsUtil.processDevicePoints(payLoad,getOrgId(),deviceMap);
+                        // devicePointsUtil.processDevicePoints(payLoad,getOrgId(),deviceMap);
                         break;
                     case AgentKeys.ACK:
                         ackUtil.processAck(payLoad,getOrgId());

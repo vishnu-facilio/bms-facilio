@@ -57,7 +57,7 @@ public class AssetsAPI {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.RESOURCE);
 		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.RESOURCE);
-		FacilioField spaceField= FieldFactory.getAsMap(fields).get("spaceId");
+		FacilioField spaceField= FieldFactory.getAsMap(fields).get("space");
 		
 		SelectRecordsBuilder<BaseSpaceContext> selectBuilder = new SelectRecordsBuilder<BaseSpaceContext>()
 				.select(fields)
@@ -110,7 +110,7 @@ public class AssetsAPI {
 		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.RESOURCE);
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 		
-		FacilioField spaceField= fieldMap.get("spaceId");
+		FacilioField spaceField= fieldMap.get("space");
 		FacilioField categoryField= fieldMap.get("category");
 		
 		SelectRecordsBuilder<BaseSpaceContext> selectBuilder = new SelectRecordsBuilder<BaseSpaceContext>()
@@ -376,6 +376,23 @@ public class AssetsAPI {
 		return null;
 	}
 	
+	public static AssetCategoryContext getCategoryByAssetModule(long moduleId) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(FacilioConstants.ContextNames.ASSET_CATEGORY));
+		SelectRecordsBuilder<AssetCategoryContext> selectBuilder = new SelectRecordsBuilder<AssetCategoryContext>()
+																		.select(modBean.getAllFields(FacilioConstants.ContextNames.ASSET_CATEGORY))
+																		.moduleName(FacilioConstants.ContextNames.ASSET_CATEGORY)
+																		.beanClass(AssetCategoryContext.class)
+																		.andCondition(CriteriaAPI.getCondition(fieldMap.get("assetModuleID"), String.valueOf(moduleId) ,NumberOperators.EQUALS));
+		
+		List<AssetCategoryContext> categories = selectBuilder.get();
+		
+		if(categories != null && !categories.isEmpty()) {
+			return categories.get(0);
+		}
+		return null;
+	}
+	
 	public static List<AssetCategoryContext> getCategoryList() throws Exception {
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -502,7 +519,7 @@ public class AssetsAPI {
 				.andCondition(CriteriaAPI.getCondition(readingFieldsMap.get("value"), CommonOperators.IS_NOT_EMPTY));
 
 		if (buildingIds != null && !buildingIds.isEmpty()) {
-			selectBuilder.andCondition(CriteriaAPI.getCondition("SPACE_ID", "spaceId", StringUtils.join(buildingIds, ","), BuildingOperator.BUILDING_IS));
+			selectBuilder.andCondition(CriteriaAPI.getCondition("SPACE_ID", "space", StringUtils.join(buildingIds, ","), BuildingOperator.BUILDING_IS));
 		}
 		
 		List<AssetContext> assets = selectBuilder.get();
@@ -612,7 +629,7 @@ public class AssetsAPI {
 				
 
 		if (buildingIds != null && !buildingIds.isEmpty()) {
-			builder.andCondition(CriteriaAPI.getCondition("SPACE_ID", "spaceId", StringUtils.join(buildingIds, ","), BuildingOperator.BUILDING_IS));
+			builder.andCondition(CriteriaAPI.getCondition("SPACE_ID", "space", StringUtils.join(buildingIds, ","), BuildingOperator.BUILDING_IS));
 		}
 		
 		if (searchText != null && !searchText.isEmpty()) {
@@ -690,75 +707,26 @@ public class AssetsAPI {
 	
 	public static Map<String,String> getAssetModuleName(Long categoryId) throws Exception{
 		Map<String,String> moduleInfo = new HashMap<String,String>();
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		if (categoryId == null || categoryId <= 0)
 		{	
-			moduleInfo.put(FacilioConstants.ContextNames.MODULE_NAME, "asset");
-			moduleInfo.put(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME, "Assets");
+			FacilioModule assetModule = modBean.getModule(FacilioConstants.ContextNames.ASSET);
+			moduleInfo.put(FacilioConstants.ContextNames.MODULE_NAME, assetModule.getName());
+			moduleInfo.put(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME, assetModule.getTableName());
 		}
 		else 
 		{
 			AssetCategoryContext assetCategory = AssetsAPI.getCategoryForAsset(categoryId);
-			String assetCategoryName = assetCategory.getName();
-			if(assetCategoryName.trim().equalsIgnoreCase("Energy Meter"))
-			{
-				moduleInfo.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.ENERGY_METER);
-				moduleInfo.put(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME, "Energy_Meter");
-			}
-			else if(assetCategoryName.trim().equalsIgnoreCase("Water Meter"))
-			{
-				moduleInfo.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.WATER_METER);
-				moduleInfo.put(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME, "Water_Meter");
-			}
-			else if(assetCategoryName.trim().equalsIgnoreCase("Chiller"))
-			{
-				moduleInfo.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.CHILLER);
-				moduleInfo.put(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME, "Chiller");
-			}
-			else if(assetCategoryName.trim().equalsIgnoreCase("Primary Pump"))
-			{
-				moduleInfo.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.CHILLER_PRIMARY_PUMP);
-				moduleInfo.put(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME, "Chiller_Primary_Pump");
-			}
-			else if(assetCategoryName.trim().equalsIgnoreCase("Secondary Pump"))
-			{
-				moduleInfo.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.CHILLER_SECONDARY_PUMP);
-				moduleInfo.put(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME, "Chiller_Secondary_Pump");
-			}
-			else if(assetCategoryName.trim().equalsIgnoreCase("Condenser Pump"))
-			{
-				moduleInfo.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.CHILLER_CONDENSER_PUMP);
-				moduleInfo.put(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME, "Chiller_Condenser_Pump");
-			}
-			else if(assetCategoryName.trim().equalsIgnoreCase("AHU"))
-			{
-				moduleInfo.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.AHU);
-				moduleInfo.put(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME, "AHU");
-			}
-			else if(assetCategoryName.trim().equalsIgnoreCase("Cooling Tower"))
-			{
-				moduleInfo.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.COOLING_TOWER);
-				moduleInfo.put(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME, "Cooling_Tower");
-			}
-			else if(assetCategoryName.trim().equalsIgnoreCase("FCU"))
-			{
-				moduleInfo.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.FCU);
-				moduleInfo.put(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME, "FCU");
-			}
-			else if(assetCategoryName.trim().equalsIgnoreCase("Heat Pump"))
-			{
-				moduleInfo.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.HEAT_PUMP);
-				moduleInfo.put(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME, "Heat_Pump");
-			}
-			else if(assetCategoryName.trim().equalsIgnoreCase("Utility Meter"))
-			{
-				moduleInfo.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.UTILITY_METER);
-				moduleInfo.put(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME, "Utility_Meters");
-			}
-			// Add the class for new category in classMap in FacilioConstants 
-			else
-			{
-				moduleInfo.put(FacilioConstants.ContextNames.MODULE_NAME, "asset");
-				moduleInfo.put(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME, "Assets");
+			long assetModuleID = assetCategory.getAssetModuleID();
+			FacilioModule module = modBean.getModule(assetModuleID);
+
+			if (module != null) {
+				moduleInfo.put(FacilioConstants.ContextNames.MODULE_NAME, module.getName());
+				moduleInfo.put(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME, module.getTableName());
+			} else {
+				FacilioModule assetModule = modBean.getModule(FacilioConstants.ContextNames.ASSET);
+				moduleInfo.put(FacilioConstants.ContextNames.MODULE_NAME, assetModule.getName());
+				moduleInfo.put(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME, assetModule.getTableName());
 			}
 		}
 		return moduleInfo;
@@ -793,5 +761,5 @@ public class AssetsAPI {
 			}
 		}
 	}
-	
+
 }

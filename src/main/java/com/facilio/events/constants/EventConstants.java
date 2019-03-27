@@ -340,6 +340,8 @@ public class EventConstants {
 			additionalInfo.setModule(module);
 			fields.add(additionalInfo);
 			
+			fields.add(FieldFactory.getField("subRuleId", "Sub Rule Id", "SUB_RULE_ID", module, FieldType.LOOKUP));
+			
 			return fields;
 		}
 		

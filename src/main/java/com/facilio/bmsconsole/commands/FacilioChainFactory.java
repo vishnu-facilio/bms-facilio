@@ -13,6 +13,7 @@ import com.facilio.accounts.exception.AccountException;
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.modules.FieldUtil;
+import com.facilio.bmsconsole.util.TenantsAPI;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.chain.FacilioChain;
 import com.facilio.leed.commands.AddConsumptionForLeed;
@@ -584,6 +585,12 @@ public class FacilioChainFactory {
 		c.addCommand(new GenericDeleteForSpaces());
 		return c;
 	}
+	public static Chain deleteTenantChain () {
+		Chain c = FacilioChain.getTransactionChain();
+		c.addCommand(new DeleteTenantCommand());
+		c.addCommand(new DeleteTenantZonesCommand());
+		return c;
+	}
 	public static Chain getCampusDetailsChain() {
 		Chain c = FacilioChain.getNonTransactionChain();
 		c.addCommand(SetTableNamesCommand.getForSite());
@@ -597,6 +604,20 @@ public class FacilioChainFactory {
 		Chain c = FacilioChain.getNonTransactionChain();
 		c.addCommand(SetTableNamesCommand.getForSite());
 		c.addCommand(new GetSiteReportCards());
+		return c;
+	}
+	
+	public static Chain getTenantReportCardsChain() {
+		Chain c = FacilioChain.getNonTransactionChain();
+		c.addCommand(SetTableNamesCommand.getForTenants());
+		c.addCommand(new GetTenantReportCards());
+		return c;
+	}
+	
+	public static Chain getTenantReadingCardsChain() {
+		Chain c = FacilioChain.getNonTransactionChain();
+		c.addCommand(SetTableNamesCommand.getForTenants());
+		c.addCommand(new GetTenantReadingCardsCommand());
 		return c;
 	}
 	
@@ -877,7 +898,7 @@ public class FacilioChainFactory {
 //		c.addCommand(SetTableNamesCommand.getForAsset());
 //		c.addCommand(new LoadModuleNameCommand());
 		c.addCommand(new SetModuleForSpecialAssetsCommand());
-		c.addCommand(new LoadAssetFields());
+//		c.addCommand(new LoadAssetFields());
 		c.addCommand(new LoadViewCommand());
 //		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new GenerateCriteriaFromFilterCommand());
@@ -1022,6 +1043,13 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
+	public static Chain parseImportData() {
+		Chain c = FacilioChain.getTransactionChain();
+		c.addCommand(new DataParseForImportCommand());
+		c.addCommand(new InsertImportDataIntoLogCommand());
+		return c;
+	}
+	
 	public static Chain processImportData() {
 		Chain c = FacilioChain.getNonTransactionChain();
 		c.addCommand(SetTableNamesCommand.getForZone());
@@ -1154,7 +1182,7 @@ public class FacilioChainFactory {
 		Chain c = FacilioChain.getTransactionChain();
 		c.addCommand(new AddAttachmentCommand());
 		c.addCommand(new AttachmentContextCommand());
-		c.addCommand(new ValidatePMTriggersCommand());
+		c.addCommand(new ValidateNewPMTriggersCommand());
 		c.addCommand(new ValidateNewTasksCommand());
 		c.addCommand(new AddPMReadingsForTasks());
 		c.addCommand(new CreateWorkorderTemplateCommand());	  // template addition
@@ -1165,9 +1193,7 @@ public class FacilioChainFactory {
 		c.addCommand(new AddPMTriggerCommand());
 		c.addCommand(new AddTaskSectionTriggersCommand());
 		c.addCommand(new AddPMRelFieldsCommand());
-		c.addCommand(new ForkChainToInstantJobCommand()
-				.addCommand(new ScheduleNewPMCommand())
-		);
+		c.addCommand(new ScheduleCreateWOJob());
 		// c.addCommand(new scheduleBeforePMRemindersCommand());
 		c.addCommand(new UpdateReadingDataMetaCommand());
 		c.addCommand(new AddValidationRulesCommand());
@@ -1214,7 +1240,7 @@ public class FacilioChainFactory {
 		c.addCommand(new AttachmentContextCommand());
 		
 		c.addCommand(new GetPreventiveMaintenanceCommand());
-		c.addCommand(new ValidatePMTriggersCommand());
+		c.addCommand(new ValidateNewPMTriggersCommand());
 		c.addCommand(new ValidateNewTasksCommand());
 		c.addCommand(new AddPMReadingsForTasks());
 		c.addCommand(new CreateWorkorderTemplateCommand());
@@ -1227,9 +1253,8 @@ public class FacilioChainFactory {
 		c.addCommand(new AddTaskSectionTriggersCommand());
 		c.addCommand(new AddPMReminderCommand());
 		c.addCommand(new AddPMRelFieldsCommand());
-		c.addCommand(new ForkChainToInstantJobCommand()
-				.addCommand(new ScheduleNewPMCommand())
-		);
+		c.addCommand(new BlockPMEditOnWOGeneration());
+		c.addCommand(new ScheduleCreateWOJob());
 		// c.addCommand(new scheduleBeforePMRemindersCommand());
 		c.addCommand(new UpdateReadingDataMetaCommand());
 		c.addCommand(new AddValidationRulesCommand());
@@ -1267,6 +1292,7 @@ public class FacilioChainFactory {
 	public static Chain getDeletePreventiveMaintenanceChain() {
 		Chain c = FacilioChain.getTransactionChain();
 		c.addCommand(new GetPreventiveMaintenanceCommand());
+		c.addCommand(new BlockPMEditOnWOGeneration(true, false));
 		c.addCommand(new DeletePMAndDependenciesCommand(true));
 		return c;
 	}
@@ -1831,6 +1857,9 @@ public class FacilioChainFactory {
 		c.addCommand(new LoadModuleNameCommand());
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new GenericAddModuleDataCommand());
+		c.addCommand(new AddAssetCategoryModule());
+		TransactionChainFactory.commonAddModuleChain(c);
+		c.addCommand(new UpdateCategoryAssetModuleIdCommand());
 		return c;
 	}
 	
@@ -1979,6 +2008,8 @@ public class FacilioChainFactory {
 	
 	public static Chain addTenantChain() {
 		Chain c = FacilioChain.getTransactionChain();
+		c.addCommand(SetTableNamesCommand.getForTenants());
+		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new AddTenantCommand());
 		c.addCommand(new AddTenantUserCommand());
 		return c;
@@ -1993,6 +2024,12 @@ public class FacilioChainFactory {
 	public static Chain updateTenantChain() {
 		Chain c = FacilioChain.getTransactionChain();
 		c.addCommand(new UpdateTenantCommand());
+		return c;
+	}
+	
+	public static Chain updateTenantPrimaryContactChain() {
+		Chain c = FacilioChain.getTransactionChain();
+		c.addCommand(new UpdatePrimaryContactCommand());
 		return c;
 	}
 	
@@ -2045,6 +2082,15 @@ public class FacilioChainFactory {
 	public static Chain getPermaLinkTokenChain() {
 		Chain c = FacilioChain.getTransactionChain();
 		c.addCommand(new GetPermaLinkTokenCommand());
+		return c;
+	}
+	
+	public static Chain getTenantListChain() {
+		Chain c = FacilioChain.getNonTransactionChain();
+		c.addCommand(new LoadViewCommand());
+		c.addCommand(new GenerateCriteriaFromFilterCommand());
+		c.addCommand(new GenerateSearchConditionCommand());
+		c.addCommand(new GetTenantListCommand());
 		return c;
 	}
 	

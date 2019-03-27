@@ -54,9 +54,9 @@ public class AddOrUpdateReadingValuesCommand implements Command {
 		}
 		
 		SourceType sourceType = (SourceType) context.get(FacilioConstants.ContextNames.READINGS_SOURCE);
-		if (AccountUtil.getCurrentOrg().getId() == 134) {
-			LOGGER.info("Adding readings from source : "+sourceType);
-		}
+//		if (AccountUtil.getCurrentOrg().getId() == 134) {
+//			LOGGER.info("Adding readings from source : "+sourceType);
+//		}
 		
 		Map<String, ReadingDataMeta> lastReadingMap =(Map<String, ReadingDataMeta>)context.get(FacilioConstants.ContextNames.PREVIOUS_READING_DATA_META);
 		if (readingMap != null && !readingMap.isEmpty()) {
@@ -133,6 +133,9 @@ public class AddOrUpdateReadingValuesCommand implements Command {
 		
 //		System.err.println( Thread.currentThread().getName()+"Inside addReadings in  AddorUpdateCommand#######  "+readings);
 
+		if (AccountUtil.getCurrentOrg().getId() == 78 && module.getName().equals(FacilioConstants.ContextNames.WATER_READING)) {
+			LOGGER.info("Adding readings : "+readings);
+		}
 		InsertRecordBuilder<ReadingContext> readingBuilder = new InsertRecordBuilder<ReadingContext>()
 																	.module(module)
 																	.fields(fields)

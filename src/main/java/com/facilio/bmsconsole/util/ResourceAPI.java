@@ -91,6 +91,8 @@ public class ResourceAPI {
 					return AssetsAPI.getAssetInfo(id);
 				case SPACE:
 					return SpaceAPI.getBaseSpace(id);
+				default:
+					return resource;
 			}
 		}
 		return null;									
@@ -100,7 +102,7 @@ public class ResourceAPI {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.RESOURCE);
 		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.RESOURCE);
-		FacilioField spaceField = FieldFactory.getAsMap(fields).get("spaceId");
+		FacilioField spaceField = FieldFactory.getAsMap(fields).get("space");
 		SelectRecordsBuilder<ResourceContext> resourceBuilder = new SelectRecordsBuilder<ResourceContext>()
 																		.select(fields)
 																		.module(module)
@@ -122,7 +124,7 @@ public class ResourceAPI {
 																		.beanClass(ResourceContext.class);
 		
 		List<ResourceContext> resources = resourceBuilder.get();
-		LOGGER.error("builder -- "+resourceBuilder);
+		// LOGGER.error("builder -- "+resourceBuilder);
 		return resources;									
 	}
 	

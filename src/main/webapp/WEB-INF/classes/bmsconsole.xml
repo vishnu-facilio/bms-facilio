@@ -317,12 +317,6 @@
 			</result>
 		</action>		
 		
-		<action name="tenants" class="com.facilio.bmsconsole.actions.TenantAction" method="fetchAllTenants">
-			<result name="success" type="json">
-				<param name="root">tenants</param>
-			</result>
-		</action>
-		
 		<action name="ratecards" class="com.facilio.bmsconsole.actions.TenantAction" method="fetchAllRateCards">
 			<result name="success" type="json">
 				<param name="root">rateCards</param>
@@ -638,6 +632,14 @@
 				<param name="includeProperties">formlayout,formlayout\[\d+\],formlayout\[\d+\].*</param>
 			</result>
 		</action>
+		<action name="fetchAlarmSummary" class="com.facilio.bmsconsole.actions.AlarmAction"
+			method="fetchAlarmSummary">
+			<param name="moduleName">alarm</param>
+			<param name="permission">READ,READ_TEAM,READ_OWN</param>
+			<result name="success" type="json">
+				<param name="includeProperties">alarms,alarms\[\d+\],alarms\[\d+\].*</param>
+			</result>
+		</action>
 		<action name="notify" class="com.facilio.bmsconsole.actions.AlarmAction"
 			method="notifyUser">
 			<param name="moduleName">alarm</param>
@@ -805,8 +807,8 @@
 		</action>
 		<action name="assetCount" class="com.facilio.bmsconsole.actions.AssetAction"
 			method="assetCount">
-			<param name="moduleName">asset</param>
-			<param name="permission">READ,READ_TEAM,READ_OWN</param>
+<!-- 			<param name="moduleName">asset</param> -->		
+	<param name="permission">READ,READ_TEAM,READ_OWN</param>
 			<result name="success" type="json">
 				<param name="includeProperties">assetCount</param>
 			</result>
@@ -814,7 +816,7 @@
 	
 		<action name="add" class="com.facilio.bmsconsole.actions.AssetAction"
 			method="addAsset">
-			<param name="moduleName">asset</param>
+<!-- 			<param name="moduleName">asset</param>-->
 			<param name="permission">CREATE</param>
 			<result name="success" type="json">
 				<param name="includeProperties">assetId</param>
@@ -857,7 +859,6 @@
 
 		<action name="*" class="com.facilio.bmsconsole.actions.AssetAction"
 			method="assetList">
-			<param name="moduleName">asset</param>
 			<param name="permission">READ</param>
 			<param name="viewName">{1}</param>
 			<result name="success" type="json">
@@ -1196,7 +1197,7 @@
 		</action>
 		
 		<action name="updatesetupreading" class="com.facilio.bmsconsole.actions.ReadingAction"
-			method="updateAssetCategoryReading">
+			method="updateReading">
 				<param name="moduleName">setup</param>
 				<param name="permission">ASSET_SETTINGS</param>
 			<result name="success" type="json">
@@ -2370,6 +2371,10 @@
 			<result name="success" type="json">
 				<param name="includeProperties">id</param>
 			</result>
+			<result name="error" type="json">
+				<param name="root">error</param>
+			</result>
+		
 		</action>
 
 		<action name="reportcards" class="com.facilio.bmsconsole.actions.CampusAction"
@@ -2478,6 +2483,15 @@
 			</result>
 		</action>
 		
+		<action name="uploadFloorPlan" class="com.facilio.bmsconsole.actions.FloorAction"
+			method="uploadFloorPlan">
+			<param name="moduleName">space</param>
+			<param name="permission">UPDATE</param>
+			<result name="success" type="json">
+				<param name="includeProperties">^floor.*</param>
+			</result>
+		</action>
+		
 		<action name="delete" class="com.facilio.bmsconsole.actions.FloorAction"
 			method="deleteFloor">
 			<param name="moduleName">space</param>
@@ -2542,6 +2556,17 @@
 				<param name="includeProperties">^space.*</param>
 			</result>
 		</action>
+		
+		<action name="getTenant" class="com.facilio.bmsconsole.actions.SpaceAction"
+			method="getTenantForSpace">
+			<param name="moduleName">space</param>
+			<param name="permission">READ</param>
+			<!-- <param name="permission">SPACEMANAGEMENT_ACCESS_ENABLE</param> -->
+			<result name="success" type="json">
+				<param name="includeProperties">tenant,tenant\[\d+\],tenant\[\d+\].*,^tenant.*</param>
+			</result>
+		</action>
+		
 		<action name="delete" class="com.facilio.bmsconsole.actions.SpaceAction"
 			method="deleteSpace">
 			<param name="moduleName">space</param>
@@ -2618,10 +2643,30 @@
 			<result name="success" type="json">
 				<param name="includeProperties">zoneId</param>
 			</result>
+			<result name="error" type="json">
+				<param name="root">error</param>
+			</result>
 		</action>
 
+
+        <action name="getTenant" class="com.facilio.bmsconsole.actions.ZoneAction"
+			method="getTenantForZone">
+			<param name="moduleName">space</param>
+			<param name="permission">READ</param>
+			<result name="success" type="json">
+				<param name="includeProperties">tenant,tenant\[\d+\],tenant\[\d+\].*,^tenant.*</param>
+			</result>
+		</action>
 		<action name="children" class="com.facilio.bmsconsole.actions.ZoneAction"
 			method="zoneChildrenList">
+			<param name="moduleName">space</param>
+			<param name="permission">READ</param>
+			<result name="success" type="json">
+				<param name="includeProperties">children,children\[\d+\],children\[\d+\].*</param>
+			</result>
+		</action>
+		<action name="allTenantZoneChildren" class="com.facilio.bmsconsole.actions.ZoneAction"
+			method="getAllTenantZoneChildrenList">
 			<param name="moduleName">space</param>
 			<param name="permission">READ</param>
 			<result name="success" type="json">
@@ -2773,22 +2818,6 @@
 				<param name="includeProperties">^note.*</param>
 			</result>
 		</action>
-		
-		<action name="additemtypenote" class="com.facilio.bmsconsole.actions.NoteAction"
-			method="addItemTypeNote">
-			<!-- <param name="permission">WORKORDER_READ,TASK_READ</param> -->
-			<result name="success" type="json">
-				<param name="includeProperties">^note.*</param>
-			</result>
-		</action>
-		
-		<action name="addtooltypenote" class="com.facilio.bmsconsole.actions.NoteAction"
-			method="addToolTypeNote">
-			<!-- <param name="permission">WORKORDER_READ,TASK_READ</param> -->
-			<result name="success" type="json">
-				<param name="includeProperties">^note.*</param>
-			</result>
-		</action>
 
 		<action name="get" class="com.facilio.bmsconsole.actions.NoteAction"
 			method="getNotesList">
@@ -2821,23 +2850,14 @@
 				<param name="root">notes</param>
 			</result>
 		</action>
-		
-		<action name="getitemtypenotes" class="com.facilio.bmsconsole.actions.NoteAction"
-			method="getItemTypeNotes">
-			<!-- <param name="permission">WORKORDER_READ,TASK_READ</param> -->
-			<result name="success" type="json">
-				<param name="root">notes</param>
-			</result>
-		</action>
-		
-		<action name="gettooltypenotes" class="com.facilio.bmsconsole.actions.NoteAction"
-			method="getToolTypeNotes">
-			<!-- <param name="permission">WORKORDER_READ,TASK_READ</param> -->
-			<result name="success" type="json">
-				<param name="root">notes</param>
-			</result>
-		</action>
 
+		<action name="getStoreRoomNotes" class="com.facilio.bmsconsole.actions.NoteAction"
+			method="getStoreRoomNotes">
+			<!-- <param name="permission">WORKORDER_READ,TASK_READ</param> -->
+			<result name="success" type="json">
+				<param name="root">notes</param>
+			</result>
+		</action>
 	</package>
 	
 	<package name="tenant" namespace="/api/tenant" extends="homeApi">
@@ -2845,7 +2865,10 @@
 			method="addTenant">
 			<!-- <param name="permission">WORKORDER_READ,TASK_READ</param> -->
 			<result name="success" type="json">
-				<param name="root">tenant</param>
+				<param name="root">result</param>
+			</result>
+			<result name="error" type="json">
+				<param name="root">error</param>
 			</result>
 		</action>
 		
@@ -2853,18 +2876,40 @@
 			method="updateTenant">
 			<!-- <param name="permission">WORKORDER_READ,TASK_READ</param> -->
 			<result name="success" type="json">
-				<param name="includeProperties">result</param>
+				<param name="root">result</param>
 			</result>
+			<result name="error" type="json">
+				<param name="root">error</param>
+			</result>
+	
 		</action>
 		
 		<action name="delete" class="com.facilio.bmsconsole.actions.TenantAction"
 			method="deleteTenant">
 			<!-- <param name="permission">WORKORDER_READ,TASK_READ</param> -->
 			<result name="success" type="json">
-				<param name="includeProperties">result</param>
+				<param name="root">result</param>
+			</result>
+			<result name="error" type="json">
+				<param name="root">error</param>
 			</result>
 		</action>
-		
+		<action name="tenantCount" class="com.facilio.bmsconsole.actions.TenantAction"
+			method="tenantCount">
+			<param name="moduleName">tenant</param>
+			<param name="permission">READ,READ_TEAM,READ_OWN</param>
+			<result name="success" type="json">
+				<param name="includeProperties">tenantCount</param>
+			</result>
+		</action>
+	
+		<action name="getLogoUrl" class="com.facilio.bmsconsole.actions.TenantAction"
+			method="getTenantLogoUrl">
+			<!-- <param name="permission">WORKORDER_READ,TASK_READ</param> -->
+			<result name="success" type="json">
+				<param name="includeProperties">logoUrl</param>
+			</result>
+		</action>
 		
 	<action name="addTenantUser" class="com.facilio.bmsconsole.actions.TenantAction" 
 	method="addTenantUser">
@@ -2875,6 +2920,17 @@
 	</result>
 	</action>
 	
+	<action name="markAsPrimaryContact" class="com.facilio.bmsconsole.actions.TenantAction" 
+	method="markAsPrimaryContact">
+	<param name="moduleName">setup</param>
+		<result name="success" type="json">
+				<param name="root">result</param>
+			</result>
+			<result name="error" type="json">
+				<param name="root">error</param>
+			</result>
+	</action>
+	
 	<action name="getTenantUsers" class="com.facilio.bmsconsole.actions.TenantAction"
 	method="getTenantUsers">
 	<result name="success" type="json">
@@ -2882,6 +2938,20 @@
 	</result>
 	</action>	
 	
+	
+	<action name="getTenantReportCards" class="com.facilio.bmsconsole.actions.TenantAction"
+	method="getTenantReportCards">
+	<result name="success" type="json">
+	<param name="includeProperties">reports,reports\[\d+\],reports\[\d+\].*,reportcards,reportcards\[\d+\],reportcards\[\d+\].*</param>
+	</result>
+	</action>	
+	
+	<action name="getTenantReadingCards" class="com.facilio.bmsconsole.actions.TenantAction"
+	method="getTenantReadingCards">
+	<result name="success" type="json">
+	<param name="includeProperties">reports,reports\[\d+\],reports\[\d+\].*</param>
+	</result>
+	</action>	
 	
 	<action name="updateportalaccess" class="com.facilio.bmsconsole.actions.TenantAction"
 	method="updatePortalAccess">
@@ -2912,14 +2982,25 @@
 			</result>
 		</action>
 		
-		<action name="*" class="com.facilio.bmsconsole.actions.TenantAction"
+		<action name="details" class="com.facilio.bmsconsole.actions.TenantAction"
 			method="fetchTenant">
 			<!-- <param name="permission">WORKORDER_READ,TASK_READ</param> -->
-			<param name="id">{1}</param>
 			<result name="success" type="json">
-				<param name="root">tenant</param>
+				<param name="root">result</param>
 			</result>
 		</action>
+		
+		<action name="*" class="com.facilio.bmsconsole.actions.TenantAction"
+			method="fetchAllTenants">
+			<!-- <param name="permission">WORKORDER_READ,TASK_READ</param> -->
+			<param name="viewName">{1}</param>
+			<result name="success" type="json">
+				<param name="root">result</param>
+			</result>
+		</action>
+		
+		
+		
 	</package>
 	
 	<package name="ratecard" namespace="/api/ratecard" extends="homeApi">
@@ -3022,6 +3103,15 @@
 				<param name="statusCode">500</param>
 				<param name="ignoreHierarchy">false</param>
 				<param name="includeProperties">^actionErrors.*,^fieldErrors.*</param>
+			</result>
+		</action>
+		<action name="importData" class="com.facilio.bmsconsole.actions.ImportDataAction" method="importData">
+			<result name="success" type="json">
+				<param name="statusCode">200</param>	
+				<param name="properties">importProcessContext.*</param>
+			</result>
+			<result name="error" type="json">
+				<param name="statusCode">500</param>
 			</result>
 		</action>
 		<action name="deleteFile" class="com.facilio.bmsconsole.actions.ImportDataAction" method="deleteFile">

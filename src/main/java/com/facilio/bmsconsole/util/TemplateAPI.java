@@ -2,19 +2,12 @@ package com.facilio.bmsconsole.util;
 
 import java.io.File;
 import java.io.FileReader;
-import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -64,6 +57,7 @@ import com.facilio.bmsconsole.templates.Template;
 import com.facilio.bmsconsole.templates.Template.Type;
 import com.facilio.bmsconsole.workflow.rule.AlarmRuleContext;
 import com.facilio.bmsconsole.templates.WebNotificationTemplate;
+import com.facilio.bmsconsole.templates.WorkflowTemplate;
 import com.facilio.bmsconsole.templates.WorkorderTemplate;
 import com.facilio.bmsconsole.templates.DefaultTemplate.DefaultTemplateType;
 import com.facilio.constants.FacilioConstants;
@@ -201,6 +195,9 @@ public class TemplateAPI {
 		}
 		else if (template instanceof WorkorderTemplate) {
 			id = TemplateAPI.addWorkOrderTemplate((WorkorderTemplate) template);
+		}
+		else if (template instanceof WorkflowTemplate) {
+			id = TemplateAPI.addWorkflowTemplate((WorkflowTemplate) template);
 		}
 		return id;
 	}
@@ -422,6 +419,14 @@ public class TemplateAPI {
 				if(templates != null && !templates.isEmpty()) {
 					templateMap.putAll(templates.get(0));
 					 template = getJSONTemplateFromMap(templateMap);
+				}
+			}break;
+			case WORKFLOW:
+			{
+				List<Map<String, Object>> templates = getExtendedProps(ModuleFactory.getWorkflowTemplatesModule(), FieldFactory.getWorkflowTemplateFields(), id);
+				if(templates != null && !templates.isEmpty()) {
+					templateMap.putAll(templates.get(0));
+					template = getWorkflowTemplateFromMap(templateMap);
 				}
 			}break;
 			default: break;
@@ -723,8 +728,28 @@ public class TemplateAPI {
 		
 		Map<Long, TaskSectionTemplate> sectionMap = getTaskSectionTemplatesFromWOTemplate(woTemplate);
 		woTemplate.setTasks(getTasksFromWOTemplate(woTemplate, sectionMap));
-		
+		List<TaskSectionTemplate> templates = woTemplate.getSectionTemplates();
+		//FIXME this is temporary need to fix this by adding sequence number for task sections
+		if (templates != null) {
+			Collections.sort(templates, Comparator.comparing(i -> {
+					if (woTemplate.getTasks() == null || woTemplate.getTasks().isEmpty()) {
+						return -1;
+					}
+
+					if (woTemplate.getTasks().get(i.getName()) == null || woTemplate.getTasks().get(i.getName()).isEmpty()) {
+						return -1;
+					}
+
+					return woTemplate.getTasks().get(i.getName()).get(0).getSequence();
+				})
+			);
+		}
 		return woTemplate;
+	}
+	
+	private static WorkflowTemplate getWorkflowTemplateFromMap(Map<String, Object> templateProps) throws Exception {
+		WorkflowTemplate wfTemplate = FieldUtil.getAsBeanFromMap(templateProps, WorkflowTemplate.class);
+		return wfTemplate;
 	}
 	
 	private static Map<Long, TaskSectionTemplate> getTaskSectionTemplatesFromWOTemplate(WorkorderTemplate woTemplate) throws Exception {
@@ -818,7 +843,27 @@ public class TemplateAPI {
 			if(sectionMap != null) {
 				woTemplate.setSectionTemplates(new ArrayList<>(sectionMap.values()));
 			}
-			
+
+			Map<String, List<TaskContext>> orderedTasks = new HashMap<>();
+			if (!taskMap.isEmpty()) {
+				for (Entry<String, List<TaskContext>> taskEntry: taskMap.entrySet()) {
+					List<TaskContext> taskContexts = taskEntry.getValue();
+					Collections.sort(taskContexts, Comparator.comparing(TaskContext::getSequence));
+					orderedTasks.put(taskEntry.getKey(), taskContexts);
+				}
+			}
+			Set<Entry<String, List<TaskContext>>> entries = orderedTasks.entrySet();
+			List<Entry<String, List<TaskContext>>> entryList = new ArrayList<>(entries);
+			Collections.sort(entryList, Comparator.comparing(e -> {
+					if (e.getValue() == null || e.getValue().isEmpty()) {
+						return -1;
+					}
+					return e.getValue().get(0).getSequence();
+				})
+			);
+
+			Map<String, List<TaskContext>> orderedTaskMap = new LinkedHashMap<>(entryList.size());
+			entryList.forEach(i -> orderedTaskMap.put(i.getKey(), i.getValue()));
 			return taskMap;
 		}
 		return null;
@@ -962,6 +1007,10 @@ public class TemplateAPI {
 	
 	public static long addWorkOrderTemplate (WorkorderTemplate template) throws Exception {
 		return addWorkOrderTemplate(template, Type.WORKORDER, Type.WO_TASK, Type.WO_TASK_SECTION);
+	}
+	
+	public static long addWorkflowTemplate (WorkflowTemplate template) throws Exception {
+		return insertTemplateWithExtendedProps(ModuleFactory.getWorkflowTemplatesModule(), FieldFactory.getWorkflowTemplateFields(), FieldUtil.getAsProperties(template)); //add tasks
 	}
 	
 	private static long addWorkOrderTemplate(WorkorderTemplate template, Type woType, Type taskType, Type sectionType) throws Exception {

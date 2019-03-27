@@ -40,7 +40,7 @@ public class UpdatePreventiveMaintenanceJobCommand implements Command {
 		
 		if(resourceId != -1) {
 			List<FacilioField> fields = FieldFactory.getPreventiveMaintenanceFields();
-			FacilioModule module = ModuleFactory.getPreventiveMaintenancetModule();
+			FacilioModule module = ModuleFactory.getPreventiveMaintenanceModule();
 			GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
 																.select(fields)
 																.table(module.getTableName())

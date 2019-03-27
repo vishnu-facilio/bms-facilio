@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.actions;
 
+import java.io.File;
 import java.util.List;
 import java.util.Map;
 
@@ -17,6 +18,7 @@ import com.facilio.bmsconsole.context.ViewLayout;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.fs.FileStoreFactory;
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionSupport;
 
@@ -106,6 +108,65 @@ public class FloorAction extends ActionSupport {
 		
 		setFloor((FloorContext) context.get(FacilioConstants.ContextNames.FLOOR));
 		
+		return SUCCESS;
+	}
+	
+	private File floorPlanImage;
+	private String floorPlanImageFileName;
+	private String floorPlanImageContentType;
+	private String floorPlanInfo;
+
+	public File getFloorPlanImage() {
+		return floorPlanImage;
+	}
+
+	public void setFloorPlanImage(File floorPlanImage) {
+		this.floorPlanImage = floorPlanImage;
+	}
+
+	public String getFloorPlanImageFileName() {
+		return floorPlanImageFileName;
+	}
+
+	public void setFloorPlanImageFileName(String floorPlanImageFileName) {
+		this.floorPlanImageFileName = floorPlanImageFileName;
+	}
+
+	public String getFloorPlanImageContentType() {
+		return floorPlanImageContentType;
+	}
+
+	public void setFloorPlanImageContentType(String floorPlanImageContentType) {
+		this.floorPlanImageContentType = floorPlanImageContentType;
+	}
+	
+	public String getFloorPlanInfo() {
+		return floorPlanInfo;
+	}
+
+	public void setFloorPlanInfo(String floorPlanInfo) {
+		this.floorPlanInfo = floorPlanInfo;
+	}
+	
+	public String uploadFloorPlan() throws Exception 
+	{
+		this.floor = new FloorContext();
+		floor.setId(getFloorId());
+		
+		if (this.floorPlanImage != null) {
+			long floorPlanId = FileStoreFactory.getInstance().getFileStore().addFile(floorPlanImageFileName, floorPlanImage, floorPlanImageContentType);
+				
+			floor.setFloorPlanId(floorPlanId);
+		}
+		
+		floor.setFloorPlanInfo(getFloorPlanInfo());
+			
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.BASE_SPACE, floor);
+		context.put(FacilioConstants.ContextNames.SPACE_TYPE, "floor");
+		Chain updateCampus = FacilioChainFactory.getUpdateCampusChain();
+		updateCampus.execute(context);
+		setFloor(floor);
 		return SUCCESS;
 	}
 	

@@ -1,9 +1,11 @@
 package com.facilio.bmsconsole.actions;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.chain.Chain;
+import org.json.simple.JSONObject;
 
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.context.ActionForm;
@@ -13,6 +15,9 @@ import com.facilio.bmsconsole.context.RecordSummaryLayout;
 import com.facilio.bmsconsole.context.ViewLayout;
 import com.facilio.bmsconsole.context.ZoneContext;
 import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.tenant.TenantContext;
+import com.facilio.bmsconsole.util.SpaceAPI;
+import com.facilio.bmsconsole.util.TenantsAPI;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.opensymphony.xwork2.ActionContext;
@@ -43,7 +48,9 @@ public class ZoneAction extends ActionSupport {
 	public String zoneChildrenList() throws Exception 
 	{
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.ZONE_ID, getZoneId());
+		List<Long> idList = new ArrayList<Long>();
+		idList.add(getZoneId());
+		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, idList);
 		
 		Chain getAllZone = FacilioChainFactory.getAllZoneChildrenChain();
 		getAllZone.execute(context);
@@ -53,6 +60,31 @@ public class ZoneAction extends ActionSupport {
 		
 		return SUCCESS;
 	}
+	
+	@SuppressWarnings("unchecked")
+	public String getAllZoneChildrenList() throws Exception 
+	{
+		FacilioContext context = new FacilioContext();
+		List<Long> idList = new ArrayList<Long>();
+		idList.add(getZoneId());
+		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, idList);
+		
+		Chain getAllZone = FacilioChainFactory.getAllZoneChildrenChain();
+		getAllZone.execute(context);
+		
+		setModuleName((String) context.get(FacilioConstants.ContextNames.MODULE_DISPLAY_NAME));
+		setChildren((List<BaseSpaceContext>) context.get(FacilioConstants.ContextNames.BASE_SPACE_LIST));
+		
+		return SUCCESS;
+	}
+	
+	public String getTenantForZone() throws Exception
+	{
+		setTenant(TenantsAPI.fetchTenantForZone(zoneId));
+		return SUCCESS;
+		
+	}
+	
 	
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public String newZone() throws Exception 
@@ -101,15 +133,54 @@ public class ZoneAction extends ActionSupport {
 		
 		return SUCCESS;
 	}
-	public String deleteZone() throws Exception {
+	public String deleteZone() {
+		try {
+			FacilioContext context = new FacilioContext();
+			context.put(FacilioConstants.ContextNames.ID, zoneId);
+			context.put(FacilioConstants.ContextNames.MODULE_NAME, "zone");
+			Chain deleteZone = FacilioChainFactory.deleteSpaceChain();
+			deleteZone.execute(context);
+			setZoneId(zoneId);
+			return SUCCESS;
+			}
+		catch (Exception e) {
+			setError("error",e.getMessage());
+			return ERROR;
+		}
+	
+	}
+	public String getAllZoneChildren() throws Exception {
+		
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.ID, zoneId);
-		context.put(FacilioConstants.ContextNames.MODULE_NAME, "zone");
-		Chain deleteZone = FacilioChainFactory.deleteSpaceChain();
-		deleteZone.execute(context);
-		setZoneId(zoneId);
+		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, getZoneIds());
+		
+		Chain getAllZone = FacilioChainFactory.getAllZoneChildrenChain();
+		getAllZone.execute(context);
+		
+		setModuleName((String) context.get(FacilioConstants.ContextNames.MODULE_DISPLAY_NAME));
+		setChildren((List<BaseSpaceContext>) context.get(FacilioConstants.ContextNames.BASE_SPACE_LIST));
+		
 		return SUCCESS;
 	}
+    public String getAllTenantZoneChildren() throws Exception {
+		
+		FacilioContext context = new FacilioContext();
+		List<ZoneContext> tenantZones = SpaceAPI.getTenantZones();
+		List<Long> zoneIds = new ArrayList<Long>();
+		for(int j=0;j<tenantZones.size();j++) {
+			zoneIds.add(tenantZones.get(j).getId());
+		}
+		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST,zoneIds);
+		
+		Chain getAllZone = FacilioChainFactory.getAllZoneChildrenChain();
+		getAllZone.execute(context);
+		
+		setModuleName((String) context.get(FacilioConstants.ContextNames.MODULE_DISPLAY_NAME));
+		setChildren((List<BaseSpaceContext>) context.get(FacilioConstants.ContextNames.BASE_SPACE_LIST));
+		
+		return SUCCESS;
+	}
+	
 	private List<Long> spaceId;
 	public List<Long> getSpaceId() {
 		return spaceId;
@@ -187,6 +258,16 @@ public class ZoneAction extends ActionSupport {
 		this.zoneId = zoneId;
 	}
 	
+	private List<Long> zoneIds;
+	public List<Long> getZoneIds() 
+	{
+		return zoneIds;
+	}
+	public void setZoneIds(List<Long> zoneIds) 
+	{
+		this.zoneIds = zoneIds;
+	}
+	
 	private List<ZoneContext> zones;
 	public List<ZoneContext> getZones() 
 	{
@@ -236,5 +317,28 @@ public class ZoneAction extends ActionSupport {
 	public void setChildren(List<BaseSpaceContext> children) 
 	{
 		this.children = children;
+	}
+	
+	private TenantContext tenant;
+	public TenantContext getTenant() 
+	{
+		return tenant;
+	}
+	
+	public void setTenant(TenantContext tenant) 
+	{
+		this.tenant = tenant;
+	}
+	private JSONObject error;
+	public JSONObject getError() {
+		return error;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public void setError(String key, Object error) {
+		if (this.error == null) {
+			this.error = new JSONObject();
+		}
+		this.error.put(key, error);			
 	}
 }

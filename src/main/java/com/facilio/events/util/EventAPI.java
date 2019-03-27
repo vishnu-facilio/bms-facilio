@@ -81,7 +81,7 @@ public class EventAPI {
 	public static EventContext processPayload(long timestamp, JSONObject payload, long orgId) throws Exception 
 	{
 		if (orgId == 75) {
-			LOGGER.info("EventSyncJob Payload:::" + payload);
+			LOGGER.debug("EventSyncJob Payload:::" + payload);
 		}
 	    EventContext event = new EventContext();
 	    Iterator<String> iterator = payload.keySet().iterator();

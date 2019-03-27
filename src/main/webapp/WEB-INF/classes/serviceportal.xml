@@ -254,5 +254,650 @@
 			</result>
 		</action>
 	</package>
-	
+	<package name="dashboardApi" namespace="/api/service/dashboard" extends="serviceportal">
+			<action name="populateDefaultReports" class="com.facilio.bmsconsole.actions.DashboardAction" method="populateDefaultReports">
+		</action>
+		<action name="add" class="com.facilio.bmsconsole.actions.DashboardAction" method="addDashboard">
+			<result name="success" type="json">
+				<param name="includeProperties">^dashboard.*</param>
+			</result>
+		</action>
+		<action name="getDashboardFolder" class="com.facilio.bmsconsole.actions.DashboardAction" method="getDashboardFolder">
+			<result name="success" type="json">
+				<param name="includeProperties">dashboardFolders,dashboardFolders\[\d+\],dashboardFolders\[\d+\].*</param>
+			</result>
+		</action>
+		<action name="update" class="com.facilio.bmsconsole.actions.DashboardAction" method="updateDashboard">
+			<result name="success" type="json">
+				<param name="includeProperties">^dashboard.*</param>
+			</result>
+		</action>
+		<action name="supportedmodules" class="com.facilio.bmsconsole.actions.DashboardAction" method="getSupportedModules">
+			<result name="success" type="json">
+				<param name="includeProperties">modules,modules\[\d+\],modules\[\d+\].*</param>
+			</result>
+		</action>
+		<action name="addWidget" class="com.facilio.bmsconsole.actions.DashboardAction" method="addWidget">
+			<result name="success" type="json">
+				<param name="includeProperties">^dashboardWidget.*</param>
+			</result>
+		</action>
+		<action name="deleteDashboard" class="com.facilio.bmsconsole.actions.DashboardAction" method="deleteDashboard">
+			<result name="success" type="json">
+				<param name="includeProperties">dashboardId</param>
+			</result>
+			<result name="error" type="json">
+				<param name="statusCode">400</param>
+				<param name="includeProperties">errorString</param>
+			</result>
+		</action>
+		<action name="getReportFields" class="com.facilio.bmsconsole.actions.DashboardAction" method="getReportFields">
+			<result name="success" type="json">
+				<param name="includeProperties">^reportFields.*</param>
+			</result>
+		</action>
+		<action name="getData" class="com.facilio.bmsconsole.actions.DashboardAction" method="getData">
+			<result name="success" type="json">
+				<param name="enumAsBean">true</param>
+				<param name="includeProperties">^reportData.*,^reportContext.*,^baseLineComparisionDiff.*,^entityName.*,^meterIds.*,^readingAlarms.*,^reportColumns.*,^reportFieldLabelMap.*,^variance.*,^safelimit.*,^benchmarks.*,^heatMapRange.*,^booleanResultGrouping.*,^booleanResultOptions.*</param>
+			</result>
+		</action>
+		<action name="getAswaqData" class="com.facilio.bmsconsole.actions.DashboardAction" method="getAswaqData">
+			<result name="success" type="json">
+				<param name="enumAsBean">true</param>
+				<param name="includeProperties">^resultJSON.*</param>
+			</result>
+		</action>
+		<action name="getUTCData" class="com.facilio.bmsconsole.actions.DashboardAction" method="getUTCData">
+			<result name="success" type="json">
+				<param name="enumAsBean">true</param>
+				<param name="includeProperties">^resultJSON.*</param>
+			</result>
+		</action>
+		<action name="getReport" class="com.facilio.bmsconsole.actions.DashboardAction" method="getReport">
+			<result name="success" type="json">
+				<param name="enumAsBean">true</param>
+				<param name="includeProperties">^reportContext.*</param>
+			</result>
+		</action>
+		<action name="getReportMetaForAlarms" class="com.facilio.bmsconsole.actions.DashboardAction" method="getReportMetaForAlarms">
+			<result name="success" type="json">
+				<param name="includeProperties">^reportMeta.*</param>
+			</result>
+		</action>
+		<action name="updateReport" class="com.facilio.bmsconsole.actions.DashboardAction" method="updateReport">
+			<result name="success" type="json">
+				<param name="includeProperties">^reportContext.*</param>
+			</result>
+		</action>
+		<action name="getCardData" class="com.facilio.bmsconsole.actions.DashboardAction" method="getCardData">
+			<result name="success" type="json">
+				<param name="enumAsBean">true</param>
+				<param name="includeProperties">^cardResult.*</param>
+			</result>
+		</action>
+		<action name="getReadingReportData" class="com.facilio.bmsconsole.actions.DashboardAction" method="getReadingReportData">
+			<result name="success" type="json">
+				<param name="enumAsBean">true</param>
+				<param name="includeProperties">^reportData.*,^reportContext.*,^baseLineComparisionDiff.*,^entityName.*,^readingAlarms.*,^heatMapRange.*</param>
+			</result>
+		</action>
+		<action name="getTabularData" class="com.facilio.bmsconsole.actions.DashboardAction" method="getTabularData">
+			<result name="success" type="json">
+				<param name="enumAsBean">true</param>
+				<param name="includeProperties">^reportData.*,^reportColumns.*</param>
+			</result>
+		</action>
+		<action name="getUnderlyingData" class="com.facilio.bmsconsole.actions.DashboardAction" method="getUnderlyingData">
+			<result name="success" type="json">
+				<param name="excludeProperties">reportData.*\.orgId,reportData.*\.moduleId,reportData.*\.data,reportData.*\.readings.*\.(date|week|hour|month|day)</param>
+				<param name="includeProperties">^reportData.*,displayFields,displayFields\[\d+\],displayFields\[\d+\].*,</param>
+			</result>
+		</action>
+		<action name="getSubMeters" class="com.facilio.bmsconsole.actions.DashboardAction" method="getSubMeters">
+			<result name="success" type="json">
+				<param name="includeProperties">energyMeters,energyMeters\[\d+\],energyMeters\[\d+\].*</param>
+			</result>
+		</action>
+		<action name="export" class="com.facilio.bmsconsole.actions.DashboardAction" method="exportData">
+			<result name="success" type="json">
+				<param name="includeProperties">fileUrl</param>
+			</result>
+		</action>
+		<action name="exportAnalytics" class="com.facilio.bmsconsole.actions.DashboardAction" method="exportAnalyticsData">
+			<result name="success" type="json">
+				<param name="includeProperties">fileUrl</param>
+			</result>
+		</action>
+		<action name="updateDashboardPublishStatus" class="com.facilio.bmsconsole.actions.DashboardAction" method="updateDashboardPublishStatus">
+			<result name="success" type="json">
+				<param name="includeProperties">^dashboard.*</param>
+			</result>
+		</action>
+		<action name="addReportFolder" class="com.facilio.bmsconsole.actions.DashboardAction" method="addReportFolder">
+			<result name="success" type="json">
+				<param name="includeProperties">^reportFolderContext.*</param>
+			</result>
+		</action>
+		<action name="addDashboardFolder" class="com.facilio.bmsconsole.actions.DashboardAction" method="addDashboardFolder">
+			<result name="success" type="json">
+				<param name="includeProperties">^dashboardFolderContext.*</param>
+			</result>
+		</action>
+		<action name="updateDashboardFolder" class="com.facilio.bmsconsole.actions.DashboardAction" method="updateDashboardFolder">
+			<result name="success" type="json">
+				<param name="includeProperties">^dashboardFolderContext.*</param>
+			</result>
+		</action>
+		<action name="deleteDashboardFolder" class="com.facilio.bmsconsole.actions.DashboardAction" method="deleteDashboardFolder">
+			<result name="success" type="json">
+				<param name="includeProperties">^dashboardFolderContext.*</param>
+			</result>
+		</action>
+		<action name="addReport" class="com.facilio.bmsconsole.actions.DashboardAction" method="addReport">
+			<result name="success" type="json">
+				<param name="includeProperties">^reportContext.*</param>
+			</result>
+		</action>
+		<action name="addTabularReport" class="com.facilio.bmsconsole.actions.DashboardAction" method="addTabularReport">
+			<result name="success" type="json">
+				<param name="includeProperties">^reportContext.*</param>
+			</result>
+		</action>
+		
+		<action name="updateTabularSequence" class="com.facilio.bmsconsole.actions.DashboardAction" method="updateSequence">
+			<result name="success" type="json">
+				<param name="includeProperties">result</param>
+			</result>
+		</action>
+		
+		<action name="deleteReport" class="com.facilio.bmsconsole.actions.DashboardAction" method="deleteReport">
+			<result name="success" type="json">
+				<param name="includeProperties">^reportContext.*</param>
+			</result>
+			<result name="error" type="json">
+				<param name="statusCode">400</param>
+				<param name="includeProperties">^errorString.*</param>
+			</result>
+		</action>
+		<action name="deleteWidgetFromDashboard" class="com.facilio.bmsconsole.actions.DashboardAction" method="deleteWidgetFromDashboard">
+			<result name="success" type="json">
+				<param name="includeProperties">^reportContext.*</param>
+			</result>
+		</action>
+		<action name="addComparisionReport" class="com.facilio.bmsconsole.actions.DashboardAction" method="addComparisionReport">
+			<result name="success" type="json">
+				<param name="includeProperties">^reportContext.*</param>
+			</result>
+		</action>
+		<action name="updateChartType" class="com.facilio.bmsconsole.actions.DashboardAction" method="updateChartType">
+			<result name="success" type="json">
+				<param name="includeProperties">^reportContext.*</param>
+			</result>
+		</action>
+		<action name="updateComboChart" class="com.facilio.bmsconsole.actions.DashboardAction" method="updateComboChart">
+			<result name="success" type="json">
+				<param name="includeProperties">^reportContext.*</param>
+			</result>
+		</action>
+		<action name="updateRefreshInterval" class="com.facilio.bmsconsole.actions.DashboardAction" method="updateRefreshInterval">
+			<result name="success" type="json">
+				<param name="includeProperties">^reportContext.*</param>
+			</result>
+		</action>
+		<action name="sendReportMail" class="com.facilio.bmsconsole.actions.DashboardAction" method="sendReportMail">
+			<result name="success" type="json">
+				<param name="includeProperties">reportId</param>
+			</result>
+		</action>
+		<action name="scheduleReport" class="com.facilio.bmsconsole.actions.DashboardAction" method="scheduleReport">
+			<result name="success" type="json">
+				<param name="includeProperties">reportId</param>
+			</result>
+		</action>
+		<action name="scheduledList" class="com.facilio.bmsconsole.actions.DashboardAction" method="scheduledList">
+			<result name="success" type="json">
+				<param name="includeProperties">^scheduledReports.*</param>
+			</result>
+		</action>
+		<action name="deleteScheduledReport" class="com.facilio.bmsconsole.actions.DashboardAction" method="deleteScheduledReport">
+			<result name="success" type="json">
+				<param name="includeProperties">rowsUpdated</param>
+			</result>
+		</action>
+		<action name="editScheduledReport" class="com.facilio.bmsconsole.actions.DashboardAction" method="editScheduledReport">
+			<result name="success" type="json">
+				<param name="includeProperties">rowsUpdated</param>
+			</result>
+		</action>
+		<action name="updateDashboardOrder" class="com.facilio.bmsconsole.actions.DashboardAction" method="updateDashboardOrder">
+			<result name="success" type="json">
+				<param name="includeProperties">dashboards</param>
+			</result>
+		</action>
+		<action name="toggleMobileDashboard" class="com.facilio.bmsconsole.actions.DashboardAction" method="toggleMobileDashboard">
+			<result name="success" type="json">
+				<param name="includeProperties">dashboard</param>
+			</result>
+		</action>
+		<action name="addDerivation" class="com.facilio.bmsconsole.actions.DashboardAction" method="addDerivation">
+			<result name="success" type="json">
+				<param name="includeProperties">^derivation.*</param>
+			</result>
+		</action>
+		<action name="updateDerivation" class="com.facilio.bmsconsole.actions.DashboardAction" method="updateDerivation">
+			<result name="success" type="json">
+				<param name="includeProperties">^derivation.*</param>
+			</result>
+		</action>
+		<action name="deleteDerivation" class="com.facilio.bmsconsole.actions.DashboardAction" method="deleteDerivation">
+			<result name="success" type="json">
+				<param name="includeProperties">rowsUpdated</param>
+			</result>
+		</action>
+		<action name="derivationList" class="com.facilio.bmsconsole.actions.DashboardAction" method="derivationList">
+			<result name="success" type="json">
+				<param name="includeProperties">^derivations.*</param>
+			</result>
+		</action>
+		<action name="calculateBenchmark" class="com.facilio.bmsconsole.actions.DashboardAction" method="calculateBenchmarkValue">
+			<result name="success" type="json">
+				<param name="includeProperties">value</param>
+			</result>
+		</action>
+		<action name="*" class="com.facilio.bmsconsole.actions.DashboardAction" method="viewDashboard">
+			<param name="linkName">{1}</param>
+			<result name="success" type="json">
+				<param name="includeProperties">^dashboardJson.*</param>
+			</result>
+		</action>
+	</package>
+	<package name="serviceTemplateApi" namespace="/api/service/template" extends="serviceportal">
+		<action name="gettemplates" class="com.facilio.bmsconsole.actions.TemplateAction" method="fetchTemplates">
+			<param name="moduleName">setup</param>
+			<param name="permission">WORKORDER_SETTINGS</param>
+			<result name="success" type="json">
+				<param name="root">templates</param>
+			</result>
+		</action>
+		
+		<action name="*" class="com.facilio.bmsconsole.actions.TemplateAction" method="fetchTemplate">
+			<param name="moduleName">setup</param>
+			<param name="permission">WORKORDER_SETTINGS</param>
+			<param name="id">{1}</param>
+			<result name="success" type="json">
+				<param name="root">template</param>
+				<param name="excludeProperties">taskTemplates, sectionTemplates</param>
+			</result>
+		</action>	
+		
+		<action name="deletetemplate" class="com.facilio.bmsconsole.actions.TemplateAction"
+			method="deleteTemplate">
+			<param name="moduleName">workorder</param>
+			<param name="permission">CREATE</param>
+			<result name="success" type="json">
+				<param name="includeProperties">result</param>
+			</result>
+		</action>
+		
+		<action name="addemail" class="com.facilio.bmsconsole.actions.TemplateAction"
+			method="addEmail">
+			<param name="moduleName">setup</param>
+			<param name="permission">GENERAL</param>
+			<result name="success" type="json">
+				<param name="includeProperties">templateId</param>
+			</result>
+		</action>
+		
+		<action name="addwotemplate" class="com.facilio.bmsconsole.actions.TemplateAction"
+			method="addWorkOrderTemplate">
+			<param name="moduleName">workorder</param>
+			<param name="permission">CREATE</param>
+			<result name="success" type="json">
+				<param name="includeProperties">id</param>
+			</result>
+		</action>
+		
+		<action name="updatewotemplate" class="com.facilio.bmsconsole.actions.TemplateAction"
+			method="updateWorkOrderTemplate">
+			<param name="moduleName">workorder</param>
+			<param name="permission">CREATE</param>
+			<result name="success" type="json">
+				<param name="includeProperties">id</param>
+			</result>
+		</action>
+		
+		<action name="addtaskgrouptemplate" class="com.facilio.bmsconsole.actions.TemplateAction"
+			method="addTaskGroupTemplate">
+			<param name="moduleName">workorder</param>
+			<param name="permission">CREATE</param>
+			<result name="success" type="json">
+				<param name="includeProperties">id</param>
+			</result>
+		</action>
+		
+		<action name="updatetaskgrouptemplate" class="com.facilio.bmsconsole.actions.TemplateAction"
+			method="updateTaskGroupTemplate">
+			<param name="moduleName">workorder</param>
+			<param name="permission">CREATE</param>
+			<result name="success" type="json">
+				<param name="includeProperties">id</param>
+			</result>
+		</action>
+
+		<action name="addsms" class="com.facilio.bmsconsole.actions.TemplateAction"
+			method="addSms">
+			<param name="moduleName">setup</param>
+			<param name="permission">GENERAL</param>
+			<result name="success" type="json">
+				<param name="includeProperties">templateId</param>
+			</result>
+		</action>
+		
+		<action name="addPushNotification" class="com.facilio.bmsconsole.actions.TemplateAction"
+			method="addPushNotification">
+			<param name="moduleName">setup</param>
+			<param name="permission">GENERAL</param>
+			<result name="success" type="json">
+				<param name="includeProperties">templateId</param>
+			</result>
+		</action>
+		
+		<action name="addWebNotification" class="com.facilio.bmsconsole.actions.TemplateAction"
+			method="addWebNotification">
+			<param name="moduleName">setup</param>
+			<param name="permission">GENERAL</param>
+			<result name="success" type="json">
+				<param name="includeProperties">templateId</param>
+			</result>
+		</action>
+	</package>
+	<package name="serviceViewApi" namespace="/api/service/view" extends="serviceportal">
+			<action name="add" class="com.facilio.bmsconsole.actions.ViewAction"
+				method="addView">
+				<!-- <param name="permission">WORKORDER_CREATE</param> -->
+			<result name="success" type="json">
+				<param name="root">view</param>
+			</result>
+		</action>
+		<action name="delete" class="com.facilio.bmsconsole.actions.ViewAction"
+			method="deleteView">
+			<!-- <param name="permission">WORKORDER_CREATE</param> -->
+			<result name="success" type="json">
+				<param name="root">view</param>
+			</result>
+		</action>
+		<action name="customize" class="com.facilio.bmsconsole.actions.ViewAction"
+			method="customizeView">
+			<result name="success" type="json">
+				<param name="includeProperties">views.*</param>
+			</result>
+		</action>
+		<action name="customizeColumns" class="com.facilio.bmsconsole.actions.ViewAction"
+			method="customizeColumns">
+			<result name="success" type="json">
+				<param name="includeProperties">fields.*</param>
+			</result>
+		</action>
+		<action name="customizeSortColumns" class="com.facilio.bmsconsole.actions.ViewAction"
+			method="customizeSortColumns">
+			<result name="success" type="json">
+				<param name="includeProperties">sortFields.*</param>
+			</result>
+		</action>
+		<action name="*" class="com.facilio.bmsconsole.actions.ViewAction"
+			method="getViewDetail">
+			<param name="viewName">{1}</param>
+			<result name="success" type="json">
+				<param name="root">view</param>
+				<param name="excludeProperties">criteria.conditions.*\.computedWhereClause</param>
+			</result>
+		</action>
+	</package>
+	<package name="serviceWorkOrderApi" namespace="/api/service/workorder" extends="serviceportal">
+		<action name="layout" class="com.facilio.bmsconsole.actions.WorkOrderAction"
+			method="newWorkOrder">
+			<param name="moduleName">workorder</param>
+			<param name="permission">CREATE</param>
+			<result name="success" type="json">
+				<param name="includeProperties">formlayout,formlayout\[\d+\],formlayout\[\d+\].*</param>
+			</result>
+		</action>
+
+		<action name="add" class="com.facilio.bmsconsole.actions.WorkOrderAction"
+			method="addWorkOrder">
+			<param name="moduleName">workorder</param>
+			<param name="permission">CREATE</param>
+			<result name="success" type="json">
+				<param name="includeProperties">^workorder.*</param>
+			</result>
+		</action>
+
+		<action name="addFromTemplate" class="com.facilio.bmsconsole.actions.WorkOrderAction"
+			method="addWorkOrderFromTemplate">
+			<param name="moduleName">workorder</param>
+			<param name="permission">CREATE</param>
+			<result name="success" type="json">
+				<param name="includeProperties">^workorder.*</param>
+			</result>
+		</action>
+
+		<action name="addPreventiveMaintenance" class="com.facilio.bmsconsole.actions.WorkOrderAction"
+			method="addPreventiveMaintenance">
+			<param name="moduleName">planned</param>
+			<param name="permission">CREATE</param>
+			<result name="success" type="json">
+				<param name="includeProperties">^workorder.*</param>
+			</result>
+		</action>
+		
+		<action name="addNewPreventiveMaintenance" class="com.facilio.bmsconsole.actions.WorkOrderAction"
+			method="addNewPreventiveMaintenance">
+			<param name="moduleName">planned</param>
+			<param name="permission">CREATE</param>
+			<result name="success" type="json">
+				<param name="includeProperties">^workorder.*</param>
+			</result>
+		</action>
+		
+		<action name="getMultiplePMResources" class="com.facilio.bmsconsole.actions.WorkOrderAction"
+			method="getMultiplePMResources">
+			<param name="moduleName">planned</param>
+			<param name="permission">CREATE</param>
+			<result name="success" type="json">
+				<param name="includeProperties">multiPmResourceIds,multiPmResourceIds\[\d+\],multiPmResourceIds\[\d+\].*,multiPmResources,multiPmResources\[\d+\],multiPmResources\[\d+\].*,^preventivemaintenance.*</param>
+			</result>
+		</action>
+		
+		<action name="getScopeFilteredValuesForPM" class="com.facilio.bmsconsole.actions.WorkOrderAction"
+			method="getScopeFilteredValuesForPM">
+			<param name="moduleName">planned</param>
+			<param name="permission">CREATE</param>
+			<result name="success" type="json">
+				<param name="includeProperties">spaceCategoryIds,spaceCategoryIds\[\d+\],spaceCategoryIds\[\d+\].*,assetCategoryIds,assetCategoryIds\[\d+\],assetCategoryIds\[\d+\].*,^hasFloor.*</param>
+				<!-- <param name="includeProperties">spaceCategoryIds,spaceCategoryIds\[\d+\],spaceCategoryIds\[\d+\].*</param>
+				<param name="includeProperties"></param> -->
+			</result>
+		</action>
+		
+		<action name="addBulkPreventiveMaintenance" class="com.facilio.bmsconsole.actions.WorkOrderAction"
+			method="addBulkPreventiveMaintenance">
+			<param name="moduleName">planned</param>
+			<param name="permission">CREATE</param>
+			<result name="success" type="json">
+				<param name="includeProperties">^workorder.*</param>
+			</result>
+		</action>
+
+		<action name="updatePreventiveMaintenance" class="com.facilio.bmsconsole.actions.WorkOrderAction"
+			method="updatePreventiveMaintenance">
+			<param name="moduleName">planned</param>
+			<param name="permission">UPDATE,UPDATE_TEAM,UPDATE_OWN</param>
+			<result name="success" type="json">
+				<param name="includeProperties">^workorder.*</param>
+			</result>
+		</action>
+		
+		<action name="updateNewPreventiveMaintenance" class="com.facilio.bmsconsole.actions.WorkOrderAction"
+			method="updateNewPreventiveMaintenance">
+			<param name="moduleName">planned</param>
+			<param name="permission">UPDATE,UPDATE_TEAM,UPDATE_OWN</param>
+			<result name="success" type="json">
+				<param name="includeProperties">^workorder.*</param>
+			</result>
+		</action>
+		
+		<action name="deletepm" class="com.facilio.bmsconsole.actions.WorkOrderAction"
+			method="deletePreventiveMaintenance">
+			<param name="moduleName">planned</param>
+			<param name="permission">DELETE,DELETE_TEAM,DELETE_OWN</param>
+			<result name="success" type="json">
+				<param name="includeProperties">rowsUpdated</param>
+			</result>
+		</action>
+
+		<action name="updatePreventiveMaintenanceJob" class="com.facilio.bmsconsole.actions.WorkOrderAction"
+			method="updatePreventiveMaintenanceJob">
+			<param name="moduleName">planned</param>
+			<param name="permission">UPDATE,UPDATE_TEAM,UPDATE_OWN</param>
+			<result name="success" type="json">
+				<param name="includeProperties">^pmJob.*</param>
+			</result>
+		</action>
+		
+		<action name="executePreventiveMaintenance" class="com.facilio.bmsconsole.actions.WorkOrderAction"
+			method="executePM">
+			<param name="moduleName">planned</param>
+			<param name="permission">CREATE</param>
+			<result name="success" type="json">
+				<param name="includeProperties">^workorder.*</param>
+			</result>
+		</action>
+		
+		<action name="bulkExecutePM" class="com.facilio.bmsconsole.actions.WorkOrderAction"
+			method="executePMs">
+			<param name="moduleName">planned</param>
+			<param name="permission">CREATE</param>
+			<result name="success" type="json">
+				<param name="root">id</param>
+			</result>
+		</action>
+
+		<action name="preventiveMaintenanceSummary" class="com.facilio.bmsconsole.actions.WorkOrderAction"
+			method="preventiveMaintenanceSummary">
+			<param name="moduleName">planned</param>
+			<param name="permission">UPDATE,UPDATE_TEAM,UPDATE_OWN</param>
+			<result name="success" type="json">
+				<param name="includeProperties">^preventivemaintenance.*,^workorder.*,taskList.*,sections.*,^reminders.*,^listOfTasks.*,^sectionTemplates.*</param>
+			</result>
+		</action>
+
+		<action name="changePreventiveMaintenanceStatus" class="com.facilio.bmsconsole.actions.WorkOrderAction"
+			method="changePreventiveMaintenanceStatus">
+			<param name="moduleName">planned</param>
+			<param name="permission">CREATE</param>
+			<result name="success" type="json">
+				<param name="root">preventivemaintenance</param>
+			</result>
+		</action>
+		
+		<action name="getUpcomingPreventiveMaintenance" class="com.facilio.bmsconsole.actions.WorkOrderAction"
+			method="getUpcomingPreventiveMaintenance">
+			<param name="moduleName">planned</param>
+			<param name="permission">READ,READ_TEAM,READ_OWN</param>
+			<result name="success" type="json">
+				<param name="includeProperties">pmJobs,pmJobs\[\d+\],pmJobs\[\d+\].*,^pmTriggerMap.*,^pmResourcesMap.*, ^pmMap.*</param>
+			</result>
+		</action>
+		
+		<action name="getPMJobs" class="com.facilio.bmsconsole.actions.WorkOrderAction"
+			method="getPMJobs">
+			<param name="moduleName">planned</param>
+			<param name="permission">READ,READ_TEAM,READ_OWN</param>
+			<result name="success" type="json">
+				<param name="includeProperties">pmJobList,pmJobList\[\d+\],pmJobList\[\d+\].*,^pmTriggerMap.*,^pmResourcesMap.*, ^pmMap.*,^pmTriggerTimeBasedGroupedMap.*</param>
+			</result>
+		</action>
+
+		<action name="assign" class="com.facilio.bmsconsole.actions.WorkOrderAction"
+			method="assignWorkOrder">
+			<param name="moduleName">workorder</param>
+			<param name="permission">CHANGE_OWNERSHIP</param>
+			<result name="success" type="json">
+				<param name="includeProperties">rowsUpdated</param>
+			</result>
+		</action>
+
+		<action name="update" class="com.facilio.bmsconsole.actions.WorkOrderAction"
+			method="updateWorkOrder">
+			<param name="moduleName">workorder</param>
+			<param name="permission">UPDATE,UPDATE_TEAM,UPDATE_OWN</param>
+			<result name="success" type="json">
+				<param name="includeProperties">rowsUpdated</param>
+			</result>
+		</action>
+
+		<action name="close" class="com.facilio.bmsconsole.actions.WorkOrderAction"
+			method="closeWorkOrder">
+			<param name="moduleName">workorder</param>
+			<param name="permission">CLOSE_WORK_ORDER</param>
+			<result name="success" type="json">
+				<param name="includeProperties">rowsUpdated</param>
+			</result>
+		</action>
+		
+		<action name="resolve" class="com.facilio.bmsconsole.actions.WorkOrderAction"
+			method="resolveWorkOrder">
+			<param name="moduleName">workorder</param>
+			<param name="permission">UPDATE,UPDATE_TEAM,UPDATE_OWN</param>
+			<result name="success" type="json">
+				<param name="includeProperties">rowsUpdated</param>
+			</result>
+		</action>
+
+		<action name="delete" class="com.facilio.bmsconsole.actions.WorkOrderAction"
+			method="deleteWorkOrder">
+			<param name="moduleName">workorder</param>
+			<param name="permission">DELETE,DELETE_TEAM,DELETE_OWN</param>
+			<result name="success" type="json">
+				<param name="includeProperties">rowsUpdated</param>
+			</result>
+		</action>
+
+		<action name="*" class="com.facilio.bmsconsole.actions.WorkOrderAction"
+			method="workOrderList">
+			<param name="moduleName">workorder</param>
+			<param name="permission">READ,READ_TEAM,READ_OWN</param>
+			<param name="viewName">{1}</param>
+			<result name="success" type="json">
+				<param name="includeProperties">workOrders,workOrders\[\d+\],workOrders\[\d+\].*</param>
+			</result>
+		</action>
+		
+		<action name="workOrderCount" class="com.facilio.bmsconsole.actions.WorkOrderAction"
+			method="workOrderCount">
+			<param name="moduleName">workorder</param>
+			<param name="permission">READ,READ_TEAM,READ_OWN</param>
+			<result name="success" type="json">
+				<param name="includeProperties">woCount</param>
+			</result>
+		</action>
+		<action name="activities" class="com.facilio.bmsconsole.actions.WorkOrderAction"
+			method="getActivitiesList">
+			<param name="moduleName">workorder</param>
+			<param name="permission">READ,READ_TEAM,READ_OWN</param>
+			<result name="success" type="json">
+				<param name="root">activities</param>
+			</result>
+		</action> 
+		
+		<action name="getEstimatedWorkDuration" class="com.facilio.bmsconsole.actions.WorkOrderAction" method="getEstimatedWorkDuration">
+			<param name="moduleName">workorder</param>
+			<param name="permission">READ,READ_TEAM,READ_OWN</param>
+			<result name="success" type="json">
+				<param name="includeProperties">estimatedDuration</param>
+			</result>
+		</action>
+		
+	</package>
 </struts>

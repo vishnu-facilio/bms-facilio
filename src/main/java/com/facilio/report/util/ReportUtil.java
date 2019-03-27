@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.chain.Chain;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -41,15 +42,20 @@ import com.facilio.report.context.ReportBaseLineContext;
 import com.facilio.report.context.ReportContext;
 import com.facilio.report.context.ReportDataPointContext;
 import com.facilio.report.context.ReportFactory;
+import com.facilio.report.context.ReportFactory.ModuleType;
+import com.facilio.report.context.ReportFactory.WorkOrder;
 import com.facilio.report.context.ReportFieldContext;
 import com.facilio.report.context.ReportFilterContext;
 import com.facilio.report.context.ReportFolderContext;
+import com.facilio.report.context.ReportGroupByField;
+import com.facilio.report.context.ReportUserFilterContext;
 import com.facilio.report.context.ReportYAxisContext;
 import com.facilio.sql.GenericDeleteRecordBuilder;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
 import com.facilio.workflows.context.WorkflowContext;
+import com.facilio.workflows.util.WorkflowUtil;
 
 public class ReportUtil {
 	
@@ -218,7 +224,7 @@ public class ReportUtil {
 		return report;
 	}
 	
-	public static ReportContext getReport(long reportId) throws Exception {
+	public static ReportContext getReport(long reportId, Boolean...fetchReportOnly) throws Exception {
 		
 		FacilioModule module = ModuleFactory.getReportModule();
 		GenericSelectRecordBuilder select = new GenericSelectRecordBuilder()
@@ -228,38 +234,74 @@ public class ReportUtil {
 													.andCondition(CriteriaAPI.getIdCondition(reportId, module))
 													;
 		
-		List<ReportContext> reports = getReportsFromProps(select.get());
+		List<ReportContext> reports = getReportsFromProps(select.get(), fetchReportOnly);
 		if (reports != null && !reports.isEmpty()) {
 			return reports.get(0);
 		}
 		return null;
 	}
 	
-	private static List<ReportContext> getReportsFromProps(List<Map<String, Object>> props) throws Exception {
+	private static List<ReportContext> getReportsFromProps(List<Map<String, Object>> props, Boolean...fetchReportOnly) throws Exception {
 		if (props != null && !props.isEmpty()) {
 			List<ReportContext> reports = new ArrayList<>();
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			boolean fetchReportContextOnly = fetchReportOnly != null && fetchReportOnly.length > 0 && fetchReportOnly[0];
 			for (Map<String, Object> prop : props) {
 				ReportContext report = FieldUtil.getAsBeanFromMap(prop, ReportContext.class);
-				
+				if (fetchReportContextOnly) {
+					reports.add(report);
+					continue;
+				}
 				if (report.getFilters() != null && !report.getFilters().isEmpty()) {
 					for (ReportFilterContext filter : report.getFilters()) {
-						filter.setField(getField(filter.getFieldId(), filter.getModuleName(), filter.getFieldName(), modBean));
+						filter.setField(getModule(filter.getModuleId(), filter.getModuleName(), modBean), getField(filter.getFieldId(), filter.getModuleName(), filter.getFieldName(), modBean));
 					}
+				}
+				if (report.getWorkflowId() != -1) {
+					report.setTransformWorkflow(WorkflowUtil.getWorkflowContext(report.getWorkflowId(), true));
 				}
 				
 				for (ReportDataPointContext dataPoint : report.getDataPoints()) {
 					ReportFieldContext xAxis = dataPoint.getxAxis();
-					xAxis.setField(getField(xAxis.getFieldId(), xAxis.getModuleName(), xAxis.getFieldName(), modBean));
+					xAxis.setField(getModule(xAxis.getModuleId(), xAxis.getModuleName(), modBean), getField(xAxis.getFieldId(), xAxis.getModuleName(), xAxis.getFieldName(), modBean));
 					
 					ReportYAxisContext yAxis = dataPoint.getyAxis();
-					yAxis.setField(getField(yAxis.getFieldId(), yAxis.getModuleName(), yAxis.getFieldName(), modBean));
+					yAxis.setField(getModule(xAxis.getModuleId(), xAxis.getModuleName(), modBean), getField(yAxis.getFieldId(), yAxis.getModuleName(), yAxis.getFieldName(), modBean));
 					
-					dataPoint.setDateField(getField(dataPoint.getDateFieldId(), dataPoint.getDateFieldModuleName(), dataPoint.getDateFieldName(), modBean));
+					if (CollectionUtils.isNotEmpty(dataPoint.getGroupByFields())) {
+						for (ReportGroupByField groupByField : dataPoint.getGroupByFields()) {
+							groupByField.setField(getModule(groupByField.getModuleId(), groupByField.getModuleName(), modBean), getField(groupByField.getFieldId(), groupByField.getModuleName(), groupByField.getFieldName(), modBean));
+						}
+					}
+					
+					if (CollectionUtils.isNotEmpty(report.getUserFilters())) {
+						for (ReportUserFilterContext reportUserFilterContext : report.getUserFilters()) {
+							reportUserFilterContext.setField(modBean.getField(reportUserFilterContext.getFieldId()));
+						}
+					}
+
+					ReportFieldContext dateReportField = dataPoint.getDateField();
+					if (dataPoint.getDateFieldId() > 0) {
+						if (dateReportField == null) {
+							dateReportField = new ReportFieldContext();
+						}
+						dateReportField.setField(null, getField(dataPoint.getDateFieldId(), dataPoint.getDateFieldModuleName(), dataPoint.getDateFieldName(), modBean));
+					}
+					dataPoint.setDateField(dateReportField);
 				}
 				reports.add(report);
 			}
 			return reports;
+		}
+		return null;
+	}
+
+	private static FacilioModule getModule(long moduleId, String moduleName, ModuleBean modBean) throws Exception {
+		if (moduleId != -1) {
+			return modBean.getModule(moduleId);
+		}
+		else if (StringUtils.isNotEmpty(moduleName)) {
+			return modBean.getModule(moduleName);
 		}
 		return null;
 	}
@@ -268,14 +310,17 @@ public class ReportUtil {
 		if (fieldId != -1) {
 			return modBean.getField(fieldId);
 		}
-		else if (moduleName != null && !moduleName.isEmpty() && fieldName != null && !fieldName.isEmpty()) {
-			FacilioField field = modBean.getField(fieldName, moduleName);
-			if (field == null) {
-				field = ReportFactory.getReportField(fieldName);
+		FacilioField field = null;
+		if (moduleName != null && !moduleName.isEmpty() && fieldName != null && !fieldName.isEmpty()) {
+			field = modBean.getField(fieldName, moduleName);
+			if (field != null) {
+				return field;
 			}
-			return field;
 		}
-		return null;
+		if (field == null && StringUtils.isNotEmpty(fieldName)) {
+			field = ReportFactory.getReportField(fieldName);
+		}
+		return field;
 	}
 	
 	public static List<Map<String, Object>> getReportFromFolderId(long reportFolderId) throws Exception {
@@ -458,19 +503,25 @@ public class ReportUtil {
 			}
 		}
 		
+		List<ModuleType> moduleTypes = new ArrayList<ModuleType>();
+
 		if (moduleName.equals("workorder")) {
-			metricFields.add(ReportFactory.getReportField("firstresponsetime"));
+			metricFields.add(ReportFactory.getReportField(WorkOrder.FIRST_RESPONSE_TIME_COL));
 			
 			List<FacilioField> workorderFields = dimensionFieldMap.get(moduleName);
-			workorderFields.add(ReportFactory.getReportField("overvsclose"));
-			workorderFields.add(ReportFactory.getReportField("overdue_open"));
-			workorderFields.add(ReportFactory.getReportField("overdue_closed"));
-			workorderFields.add(ReportFactory.getReportField("plannedvsunplanned"));
+			workorderFields.add(ReportFactory.getReportField(WorkOrder.OPENVSCLOSE_COL));
+			workorderFields.add(ReportFactory.getReportField(WorkOrder.OVERDUE_OPEN_COL));
+			workorderFields.add(ReportFactory.getReportField(WorkOrder.OVERDUE_CLOSED_COL));
+			workorderFields.add(ReportFactory.getReportField(WorkOrder.PLANNED_VS_UNPLANNED_COL));
+
+			moduleTypes.add(new ModuleType("Workorders", 1));
+			moduleTypes.add(new ModuleType("Workrequests", 2));
 		}
 		
 		jsonObject.put("dimension", dimensionFieldMap);
 		jsonObject.put("metrics", metricFields);
-		
+		jsonObject.put("moduleType", moduleTypes);
+
 		System.out.println(context);
 		return jsonObject;
 	}

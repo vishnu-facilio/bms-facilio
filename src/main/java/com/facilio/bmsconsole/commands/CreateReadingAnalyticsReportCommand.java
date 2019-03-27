@@ -149,7 +149,7 @@ public class CreateReadingAnalyticsReportCommand implements Command {
 		dataPoint.setDefaultSortPoint(metric.isDefaultSortPoint());
 		ReportYAxisContext yAxis = metric.getyAxis();
 		FacilioField yField = modBean.getField(metric.getyAxis().getFieldId());
-		yAxis.setField(yField);
+		yAxis.setField(yField.getModule(), yField);
 		dataPoint.setyAxis(yAxis);
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(yField.getModule().getName()));
 		setXAndDateFields(dataPoint, mode, fieldMap);
@@ -165,7 +165,9 @@ public class CreateReadingAnalyticsReportCommand implements Command {
 		ReportDataPointContext dataPoint = new ReportDataPointContext();
 		dataPoint.setMetaData(metric.getMetaData());
 		ReportFieldContext xAxis = new ReportFieldContext();
-		xAxis.setField(getDerivedDPXField(dataPoint, mode));
+		
+		FacilioField field = getDerivedDPXField(dataPoint, mode);
+		xAxis.setField(field.getModule(), field);
 		dataPoint.setxAxis(xAxis);
 		dataPoint.setyAxis(metric.getyAxis());
 		if (dataPoint.isFetchResource()) {
@@ -212,9 +214,12 @@ public class CreateReadingAnalyticsReportCommand implements Command {
 				break;
 		}
 		ReportFieldContext xAxis = new ReportFieldContext();
-		xAxis.setField(xField);
+		xAxis.setField(xField.getModule(), xField);
 		dataPoint.setxAxis(xAxis);
-		dataPoint.setDateField(fieldMap.get("ttime"));
+		
+		ReportFieldContext dateField = new ReportFieldContext();
+		dateField.setField(fieldMap.get("ttime").getModule(), fieldMap.get("ttime"));
+		dataPoint.setDateField(dateField);
 	}
 	
 	private String getName(ReportYAxisContext yField, ReportMode mode, ReportFilterMode filterMode, Map<Long, ResourceContext> resourceMap, ReadingAnalysisContext metric, FacilioContext context) throws Exception {
@@ -265,7 +270,7 @@ public class CreateReadingAnalyticsReportCommand implements Command {
 			criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("parentId"), metric.getParentId(), NumberOperators.EQUALS));
 			dataPoint.setCriteria(criteria);
 			
-			if (metric.getyAxis().getField().getModule().getTypeEnum() == ModuleType.PREDICTED_READING) {
+			if (metric.getyAxis().getModule().getTypeEnum() == ModuleType.PREDICTED_READING) {
 				if (metric.getPredictedDuration() != -1) {
 					criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("predictedTime"), String.valueOf(metric.getPredictedDuration()), DateOperators.HOUR_START_TIME));
 				}
@@ -299,7 +304,9 @@ public class CreateReadingAnalyticsReportCommand implements Command {
 	private ReportFilterContext getBasicReadingReportFilter(ModuleBean modBean) throws Exception {
 		ReportFilterContext filter = new ReportFilterContext();
 		filter.setFilterFieldName("parentId");
-		filter.setField(modBean.getField("id", FacilioConstants.ContextNames.ASSET));
+		
+		FacilioField field = modBean.getField("id", FacilioConstants.ContextNames.ASSET);
+		filter.setField(field.getModule(), field);
 		return filter;
 	}
 	

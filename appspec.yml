@@ -17,6 +17,8 @@ files:
     destination: /home/ubuntu
   - source: /awsprops-scheduler.properties
     destination: /home/ubuntu/deployment-files/
+  - source: /awsprops-kinesis.properties
+    destination: /home/ubuntu/deployment-files/
   - source: /awsprops-stage.properties
     destination: /home/ubuntu/deployment-files/
   - source: /awsprops-user.properties
@@ -26,6 +28,8 @@ files:
   - source: /log4j-stage.properties
     destination: /home/ubuntu/deployment-files/
   - source: /log4j-scheduler.properties
+    destination: /home/ubuntu/deployment-files/
+  - source: /log4j-kinesis.properties
     destination: /home/ubuntu/deployment-files/
   - source: /context-production.xml
     destination: /home/ubuntu/deployment-files/

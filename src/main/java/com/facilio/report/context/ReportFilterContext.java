@@ -4,24 +4,8 @@ import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.Operator;
 import com.facilio.bmsconsole.modules.FacilioField;
 
-public class ReportFilterContext {
+public class ReportFilterContext extends ReportFieldContext {
 
-	private String moduleName;
-	public String getModuleName() {
-		return moduleName;
-	}
-	public void setModuleName(String moduleName) {
-		this.moduleName = moduleName;
-	}
-	
-	private long fieldId = -1;
-	public long getFieldId() {
-		return fieldId;
-	}
-	public void setFieldId(long fieldId) {
-		this.fieldId = fieldId;
-	}
-	
 	private String filterFieldName;
 	public String getFilterFieldName() {
 		return filterFieldName;
@@ -55,29 +39,6 @@ public class ReportFilterContext {
 	}
 	public void setFilterValue(String filterValue) {
 		this.filterValue = filterValue;
-	}
-
-	private String fieldName;
-	public String getFieldName() {
-		return fieldName;
-	}
-	public void setFieldName(String fieldName) {
-		this.fieldName = fieldName;
-	}
-
-	private FacilioField field;
-	public FacilioField getField() {
-		return field;
-	}
-	public void setField(FacilioField field) {
-		this.field = field;
-		
-		this.fieldId = field.getId();
-		this.fieldName = field.getName();
-		
-		if (field.getModule() != null) {
-			this.moduleName = field.getModule().getName();
-		}
 	}
 
 	private long criteriaId = -1;

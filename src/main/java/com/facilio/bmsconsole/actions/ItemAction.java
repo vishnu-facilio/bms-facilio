@@ -44,15 +44,38 @@ public class ItemAction extends FacilioAction{
 		this.itemId = inventryId;
 	}
 	
+	private long storeRoom;
+	public long getStoreRoom() {
+		return storeRoom;
+	}
+	public void setStoreRoom(long storeRoomId) {
+		this.storeRoom = storeRoomId;
+	}
+	
 	public String addItem() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD, item);
+		context.put(FacilioConstants.ContextNames.STORE_ROOM, storeRoom);
 		context.put(FacilioConstants.ContextNames.PURCHASED_ITEM, item.getPurchasedItems());
+		context.put(FacilioConstants.ContextNames.SET_LOCAL_MODULE_ID, true);
 		Chain addInventry = TransactionChainFactory.getAddItemChain();
 		addInventry.execute(context);
 		setResult(FacilioConstants.ContextNames.ITEM, item);
 		context.put(FacilioConstants.ContextNames.ITEM_ID, item.getId());
 		context.put(FacilioConstants.ContextNames.ITEM_IDS, Collections.singletonList(item.getId()));
+		return SUCCESS;
+	}
+	
+	public String addBulkItem() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.RECORD_LIST, items);
+		context.put(FacilioConstants.ContextNames.IS_BULK_ITEM_ADD, true);
+		context.put(FacilioConstants.ContextNames.SET_LOCAL_MODULE_ID, true);
+		context.put(FacilioConstants.ContextNames.STORE_ROOM, storeRoom);
+		Chain addInventry = TransactionChainFactory.getAddBulkItemChain();
+		addInventry.execute(context);
+		items = (List<ItemContext>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
+		setResult(FacilioConstants.ContextNames.ITEMS, items);
 		return SUCCESS;
 	}
 	
@@ -89,7 +112,7 @@ public class ItemAction extends FacilioAction{
 	public String itemList() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.CV_NAME, getViewName());
-		context.put(FacilioConstants.ContextNames.SORTING_QUERY, "Item.ID desc");
+		context.put(FacilioConstants.ContextNames.SORTING_QUERY, "Item.LOCAL_ID desc");
 		if (getFilters() != null) {
 			JSONParser parser = new JSONParser();
 			JSONObject json = (JSONObject) parser.parse(getFilters());
@@ -127,6 +150,12 @@ public class ItemAction extends FacilioAction{
 			}
 			setResult(FacilioConstants.ContextNames.ITEMS, items);
 		}
+		return SUCCESS;
+	}
+	
+	public String itemCount() throws Exception {
+		itemList();
+		setResult(FacilioConstants.ContextNames.ITEM_COUNT, itemCount);
 		return SUCCESS;
 	}
 	

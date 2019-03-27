@@ -9,7 +9,11 @@ import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.ZoneContext;
+import com.facilio.bmsconsole.criteria.CommonOperators;
+import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.constants.FacilioConstants;
@@ -23,13 +27,17 @@ public class GetAllZoneCommand implements Command{
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 		String dataTableName = (String) context.get(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME);
 		List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+		FacilioField isTenantZone = fieldMap.get("tenantZone");
 		
 		SelectRecordsBuilder<ZoneContext> builder = new SelectRecordsBuilder<ZoneContext>()
 				.table(dataTableName)
 				.moduleName(moduleName)
 				.beanClass(ZoneContext.class)
 				.select(fields)
-				.orderBy("ID");
+				.orderBy("ID")
+				.andCondition(CriteriaAPI.getCondition(isTenantZone,""+1, NumberOperators.NOT_EQUALS));
+			
 		List<Long> spaceId = new ArrayList<Long>();
 		List<ZoneContext> zones = builder.get();
 		for (ZoneContext zoeCont : zones) {

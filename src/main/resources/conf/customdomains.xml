@@ -5,6 +5,6 @@
 <domain host="facilio.me" orgdomain="facilio"/>
 <domain host="babu.com:9090" orgdomain="test1"/>
 <domain host="customvelu.com:9090" orgdomain="velu"/>
-<domain host="wiproenergy.com" orgdomain="spinfo"/>
-<domain host="facilio.wiproenergy.com" orgdomain="spinfo"/>
+<domain host="wiproenergy.com" orgdomain="demo"/>
+<domain host="facilio.wiproenergy.com" orgdomain="demo"/>
 </domains>

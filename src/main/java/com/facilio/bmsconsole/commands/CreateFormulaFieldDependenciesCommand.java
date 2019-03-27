@@ -38,6 +38,7 @@ public class CreateFormulaFieldDependenciesCommand implements Command {
 				((NumberField) field).setUnit(formulaUnit);
 			}
 			formulaField.setReadingField(field);
+			formulaField.setInterval(FormulaFieldAPI.getDataInterval(formulaField));
 			
 			if (formulaField.getTriggerTypeEnum() == TriggerType.PRE_LIVE_READING) {
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -50,39 +51,12 @@ public class CreateFormulaFieldDependenciesCommand implements Command {
 			else {
 				context.put(FacilioConstants.ContextNames.READING_NAME, formulaField.getName());
 				context.put(FacilioConstants.ContextNames.MODULE_FIELD, formulaField.getReadingField());
-				context.put(FacilioConstants.ContextNames.MODULE_DATA_INTERVAL, getDataInterval(formulaField));
+				context.put(FacilioConstants.ContextNames.MODULE_DATA_INTERVAL, formulaField.getInterval());
 				context.put(FacilioConstants.ContextNames.MODULE_TYPE, FormulaFieldAPI.getModuleTypeFromTrigger(formulaField.getTriggerTypeEnum()));
 				setReadingParent(formulaField, context);
 			}
 		}
 		return false;
-	}
-	
-	private int getDataInterval(FormulaFieldContext formula) {
-		switch (formula.getTriggerTypeEnum()) {
-			case SCHEDULE:
-				switch (formula.getFrequencyEnum()) {
-					case HOURLY:
-						return 60;
-					case DAILY:
-					case WEEKLY:
-					case MONTHLY:
-					case QUARTERTLY:
-					case HALF_YEARLY:
-					case ANNUALLY:
-						return 24 * 60;
-					default:
-						return -1;
-				}
-			case POST_LIVE_READING:
-				if (formula.getInterval() > (24 * 60)) {
-					return 24 * 60;
-				}
-				return formula.getInterval();
-			case PRE_LIVE_READING:
-				break;
-		}
-		return -1;
 	}
 	
 	private void setReadingParent(FormulaFieldContext formulaField, Context context) throws Exception {

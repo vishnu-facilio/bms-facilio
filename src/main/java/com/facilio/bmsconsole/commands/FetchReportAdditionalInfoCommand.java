@@ -11,7 +11,10 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
@@ -27,7 +30,9 @@ import com.facilio.report.context.ReportContext.ReportType;
 import com.facilio.report.context.ReportDataPointContext;
 
 public class FetchReportAdditionalInfoCommand implements Command {
-
+	
+	private static final Logger LOGGER = LogManager.getLogger(FetchReportAdditionalInfoCommand.class.getName());
+	
 	@Override
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
@@ -71,14 +76,23 @@ public class FetchReportAdditionalInfoCommand implements Command {
 						
 						if (showAlarms) {
 							List<Long> parentIds = getParentIds(dp);
+							
+//							if (AccountUtil.getCurrentOrg().getId() == 75) {
+//								LOGGER.info("Parent IDs of alarms to be fetched : "+parentIds);
+//							}
+							
 							if (parentIds != null) {
 								List<ReadingAlarmContext> alarms = null;
-								if (alarmId == null) {
+								if (alarmId == null || alarmId == -1) {
 									alarms = AlarmAPI.getReadingAlarms(parentIds, dp.getyAxis().getFieldId(), report.getDateRange().getStartTime(), report.getDateRange().getEndTime(), false);
 								}
 								else if (currentAlarm != null && currentAlarm.getReadingFieldId() == dp.getyAxis().getFieldId() && parentIds.contains(currentAlarm.getResource().getId())) {
 									alarms = AlarmAPI.getReadingAlarms(currentAlarm.getEntityId(), report.getDateRange().getStartTime(), report.getDateRange().getEndTime(), false);
 								}
+								
+//								if (AccountUtil.getCurrentOrg().getId() == 75) {
+//									LOGGER.info("Fetched Alarms : "+alarms);
+//								}
 								
 								if (alarms != null && !alarms.isEmpty()) {
 									for (ReadingAlarmContext alarm : alarms) {
@@ -166,6 +180,11 @@ public class FetchReportAdditionalInfoCommand implements Command {
 	
 	private static final int MAX_ALARM_INFO_PER_WINDOW = 2;
 	private JSONArray splitAlarms (List<ReadingAlarmContext> allAlarms, DateRange range, Map<Long, ReadingAlarmContext> alarmMap) {
+		
+		if (CollectionUtils.isEmpty(allAlarms)) {
+			return null;
+		}
+		
 		Set<Long> times = new TreeSet<>(); //To get sorted set
 		
 		for (ReadingAlarmContext alarm : allAlarms) {
@@ -203,13 +222,13 @@ public class FetchReportAdditionalInfoCommand implements Command {
 		if (allAlarms != null && !allAlarms.isEmpty()) { 
 			
 			List<ReadingAlarmContext> currentAlarms = allAlarms.stream()
-														.filter(a -> a.getCreatedTime() < endTime && (a.getClearedTime() == -1 || a.getClearedTime() >= startTime))
+														.filter(a -> a.getCreatedTime() < endTime && (a.getClearedTime() == -1 || a.getClearedTime() > startTime))
 														.collect(Collectors.toList());
 			
 			if (!currentAlarms.isEmpty()) {
 				List<Long> alarmIds = new ArrayList<>();
-				for (int i = 0; i < allAlarms.size(); i++) {
-					ReadingAlarmContext alarm = allAlarms.get(i);
+				for (int i = 0; i < currentAlarms.size(); i++) {
+					ReadingAlarmContext alarm = currentAlarms.get(i);
 					alarmIds.add(alarm.getId());
 					
 					if (i < MAX_ALARM_INFO_PER_WINDOW) {

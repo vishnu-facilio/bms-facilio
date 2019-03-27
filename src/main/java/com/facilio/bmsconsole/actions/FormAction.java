@@ -8,7 +8,9 @@ import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
+import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.forms.FacilioForm;
+import com.facilio.bmsconsole.forms.FacilioForm.FormType;
 import com.facilio.bmsconsole.forms.FormFactory;
 import com.facilio.bmsconsole.forms.FormField;
 import com.facilio.bmsconsole.modules.FacilioField;
@@ -16,6 +18,7 @@ import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.util.FormsAPI;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.fw.BeanFactory;
 
 public class FormAction extends FacilioAction {
@@ -48,12 +51,19 @@ public class FormAction extends FacilioAction {
 		Context context = new FacilioContext();
 		
 		context.put(FacilioConstants.ContextNames.FORM_NAMES, this.getFormNames());
+		context.put(FacilioConstants.ContextNames.FORM_ID, this.getFormId());
 		Chain c = FacilioChainFactory.getFormMetaChain();
 		c.execute(context);
 		
 		List<FacilioForm> forms = (List<FacilioForm>) context.get(FacilioConstants.ContextNames.FORMS);
 		this.setForms(forms);
 		
+		return SUCCESS;
+	}
+	
+	public String v2fetchFormMeta() throws Exception {
+		fetchFormMeta();
+		setResult("forms", forms);
 		return SUCCESS;
 	}
 	
@@ -66,6 +76,8 @@ public class FormAction extends FacilioAction {
 	public String getModuleName() {
 		return this.moduleName;
 	}
+	
+    private long formId;
 	
 	private List<FormField> fields;
 	
@@ -128,6 +140,11 @@ public class FormAction extends FacilioAction {
 		return SUCCESS;
 	}	
 	
+    /* public String FormIdFields() throws Exception {
+		setResult(FacilioConstants.ContextNames.FORM_FIELDS,FormsAPI.getFormIdFields(formId));
+		return SUCCESS;
+	} */	
+	
 	public String editForm() throws Exception {
 		Context context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.FORM_NAMES, new String[]{this.getForm().getName()});
@@ -137,5 +154,23 @@ public class FormAction extends FacilioAction {
 		c.execute(context);
 		
 		return SUCCESS;
+	}
+	
+	public String getServicePortalForms() throws Exception{
+		
+		Context context=new FacilioContext();
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, "workorder");
+		context.put(FacilioConstants.ContextNames.FORM_TYPE, FormType.PORTAL);
+		ReadOnlyChainFactory.getFormList().execute(context);
+		setResult("forms",context.get(ContextNames.FORMS));
+		return SUCCESS;
+	}
+
+	public long getFormId() {
+		return formId;
+	}
+
+	public void setFormId(long formId) {
+		this.formId = formId;
 	}
 }

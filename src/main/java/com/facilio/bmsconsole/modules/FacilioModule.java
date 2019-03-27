@@ -1,6 +1,7 @@
 	package com.facilio.bmsconsole.modules;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -115,8 +116,24 @@ public class FacilioModule implements Serializable {
 		this.trashEnabled = trashEnabled;
 	}
 	public boolean isTrashEnabled() {
-		if (trashEnabled != null) {
-			return trashEnabled.booleanValue();
+		FacilioModule parentModule = getParentModule();
+		if (parentModule.trashEnabled != null) {
+			return parentModule.trashEnabled.booleanValue();
+		}
+		return false;
+	}
+	
+	private Boolean showAsView;
+	public Boolean getShowAsView() {
+		return showAsView;
+	}
+
+	public void setShowAsView(Boolean showAsView) {
+		this.showAsView = showAsView;
+	}
+	public boolean isShowAsView() {
+		if (showAsView != null) {
+			return showAsView.booleanValue();
 		}
 		return false;
 	}
@@ -169,6 +186,33 @@ public class FacilioModule implements Serializable {
 					
 	}
 	
+	public boolean isParentOrChildModule(FacilioModule module) {
+		if (module == null) {
+			return false;
+		}
+		
+		if (checkHierarchy(this, module)) {
+			return true;
+		}
+		
+		if (checkHierarchy(module, this)) {
+			return true;
+		}
+		
+		return false;
+	}
+	
+	private static boolean checkHierarchy(FacilioModule derivedModule, FacilioModule baseModule) {
+		FacilioModule extendedModule = derivedModule;
+		while (extendedModule != null) {
+			if (extendedModule.equals(baseModule)) {
+				return true;
+			}
+			extendedModule = extendedModule.getExtendModule();
+		}
+		return false;
+	}
+	
 	public static enum ModuleType {
 		BASE_ENTITY,
 		PICK_LIST,
@@ -198,5 +242,47 @@ public class FacilioModule implements Serializable {
 			}
 			return null;
 		}
+	}
+
+	@JsonIgnore
+	public FacilioModule getParentModule() {
+		FacilioModule module = this;
+		while (module.getExtendModule() != null) {
+			module = module.getExtendModule();
+		}
+		return module;
+	}
+	
+	@JsonIgnore
+	public List<Long> getExtendedModuleIds() throws Exception {
+//		String extendModuleQuery = DBUtil.getQuery("module.extended.id");
+//
+//		Connection conn = getConnection();
+//		List<Long> moduleIds = new ArrayList<>();
+//		ResultSet resultSet = null;
+//		PreparedStatement preparedStatement = null;
+//		try {
+//			preparedStatement = conn.prepareStatement(extendModuleQuery);
+//			preparedStatement.setLong(1, getOrgId());
+//			preparedStatement.setLong(2, module.getModuleId());
+//			resultSet = preparedStatement.executeQuery();
+//
+//			while (resultSet.next()) {
+//				moduleIds.add(resultSet.getLong(1));
+//			}
+//		} finally {
+//			DBUtil.closeAll(conn, preparedStatement, resultSet);
+//		}
+//		return moduleIds;
+		
+		//Module will always have extended info
+		
+		List<Long> moduleIds = new ArrayList<>();
+		FacilioModule currentModule = this;
+		while (currentModule != null) {
+			moduleIds.add(currentModule.getModuleId());
+			currentModule = currentModule.getExtendModule();
+		}
+		return moduleIds;
 	}
 }

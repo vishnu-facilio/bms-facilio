@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.facilio.aws.util.AwsUtil;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
@@ -30,6 +31,14 @@ public class AssetContext extends ResourceContext {
 			return state.getStringVal();
 		}
 		return null;
+	}
+	
+	private String moduleName;
+	public String getModuleName() {
+		return moduleName;
+	}
+	public void setModuleName(String moduleName) {
+		this.moduleName = moduleName;
 	}
 	
 	private AssetTypeContext type;
@@ -260,6 +269,12 @@ public class AssetContext extends ResourceContext {
 	public void setIdentifiedLocation(SiteContext identifiedLocation) {
 		this.identifiedLocation = identifiedLocation;
 	}
+	
+	
+	public String getUrl() {
+		return AwsUtil.getConfig("clientapp.url") + "/app/at/asset/all/" + getId() + "/overview";
+	}
+
 
 	public static enum AssetState {
 		ACTIVE(1, "Active"),

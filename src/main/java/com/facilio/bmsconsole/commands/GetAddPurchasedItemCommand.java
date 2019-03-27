@@ -39,6 +39,7 @@ public class GetAddPurchasedItemCommand implements Command {
 		// Map<String, FacilioField> workorderCostsFieldMap =
 		// FieldFactory.getAsMap(inventoryCostFields);
 		long itemId = (long) context.get(FacilioConstants.ContextNames.RECORD_ID);
+		long itemTypesId = -1;
 		List<PurchasedItemContext> purchasedItem = (List<PurchasedItemContext>) context
 				.get(FacilioConstants.ContextNames.PURCHASED_ITEM);
 
@@ -58,7 +59,7 @@ public class GetAddPurchasedItemCommand implements Command {
 		List<PurchasedItemContext> pcToBeAdded = new ArrayList<>();
 		List<PurchasedItemContext> purchaseItemsList = new ArrayList<>();
 		if (purchasedItem != null && !items.isEmpty()) {
-
+			itemTypesId = item.getItemType().getId();	
 			SelectRecordsBuilder<ItemTypesContext> itemTypesselectBuilder = new SelectRecordsBuilder<ItemTypesContext>()
 					.select(itemTypesFields).table(itemTypesModule.getTableName()).moduleName(itemTypesModule.getName())
 					.beanClass(ItemTypesContext.class)
@@ -76,7 +77,8 @@ public class GetAddPurchasedItemCommand implements Command {
 
 			for (PurchasedItemContext pi : purchasedItem) {
 				pi.setItem(item);
-				if (itemType.isIndividualTracking()) {
+				pi.setItemType(itemType);
+				if (itemType.individualTracking()) {
 					if (pi.getQuantity() > 0) {
 						throw new IllegalArgumentException("Quantity cannot be set when individual Tracking is enabled");
 					}
@@ -109,6 +111,8 @@ public class GetAddPurchasedItemCommand implements Command {
 		context.put(FacilioConstants.ContextNames.ITEM_ID, itemId);
 		context.put(FacilioConstants.ContextNames.ITEM_IDS, Collections.singletonList(itemId));
 		context.put(FacilioConstants.ContextNames.TRANSACTION_TYPE, TransactionType.STOCK);
+		context.put(FacilioConstants.ContextNames.ITEM_TYPES_ID, itemTypesId);
+		context.put(FacilioConstants.ContextNames.ITEM_TYPES_IDS, Collections.singletonList(itemTypesId));
 
 		return false;
 	}

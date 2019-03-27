@@ -18,7 +18,6 @@ import com.facilio.bmsconsole.context.AlarmContext.AlarmType;
 import com.facilio.bmsconsole.context.TicketContext.SourceType;
 import com.facilio.bmsconsole.criteria.CommonOperators;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
-import com.facilio.bmsconsole.criteria.DateOperators;
 import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.criteria.StringOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
@@ -57,14 +56,22 @@ public class EventToAlarmCommand implements Command {
 					.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 					.andCondition(CriteriaAPI.getCondition(messageKeyField, event.getMessageKey(), StringOperators.IS))
 					.andCondition(CriteriaAPI.getCondition(alarmIdField, CommonOperators.IS_NOT_EMPTY))
-					.andCondition(CriteriaAPI.getCondition(createdTimeField, String.valueOf(event.getCreatedTime()), NumberOperators.LESS_THAN_EQUAL))
+//					.andCondition(CriteriaAPI.getCondition(createdTimeField, String.valueOf(event.getCreatedTime()), NumberOperators.LESS_THAN_EQUAL))
 					.orderBy("CREATED_TIME DESC")
 					.limit(1)
 					;
 
 			List<Map<String, Object>> props = eventSelectBuilder.get();
+			
 			if(props != null && !props.isEmpty())
 			{
+				if(props.get(0).get("createdTime") != null) {
+					long createdTime = (long) props.get(0).get("createdTime");
+					if(createdTime > event.getCreatedTime()) {
+						LOGGER.error("this alarm came before current alarm -- "+props);
+					}
+				}
+				
 				long alarmId = (long) props.get(0).get("alarmId");
 				return alarmId;
 			}
@@ -110,7 +117,6 @@ public class EventToAlarmCommand implements Command {
 						entityId = alarms.get(0).getEntityId();
 					}
 				}
-				
 				if(!createAlarm) {
 					//TODO update alarm
 					updateAlarm(alarmId, event);
@@ -204,10 +210,11 @@ public class EventToAlarmCommand implements Command {
 						alarm.put("readingVal", event.getAdditionInfo().get("readingVal"));
 						alarm.put("ruleId", event.getAdditionInfo().get("ruleId"));
 						
-						appendMessage(oldAlarmContext, event, alarm);
+//						appendMessage(oldAlarmContext, event, alarm);
 						
 						break;
 					default:
+						alarm.put("sourceType", sourceType);
 						break;
 				}
 			}
@@ -324,7 +331,9 @@ public class EventToAlarmCommand implements Command {
 		
 		ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD");
 		AlarmContext alarm = bean.processAlarm(json);
+		
 		event.setAlarmId(alarm.getId());
 		event.setEventState(EventState.ALARM_CREATED);
+		
 	}
 }

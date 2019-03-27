@@ -33,7 +33,7 @@ public class UpdatePreventiveMaintenanceCommand implements Command{
 			pmProps.put("baseSpaceId", -99);
 		}
 		
-		FacilioModule module = ModuleFactory.getPreventiveMaintenancetModule();
+		FacilioModule module = ModuleFactory.getPreventiveMaintenanceModule();
 		LOGGER.log(Level.SEVERE, "created by id: "+ newPm.getCreatedById()+ " pm: "+oldPm.getId());
 
 		

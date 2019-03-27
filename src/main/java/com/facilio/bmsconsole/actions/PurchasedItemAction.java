@@ -55,6 +55,13 @@ public class PurchasedItemAction extends FacilioAction{
 		this.itemId = inventoryId;
 	}
 	
+	private List<Long> itemIds;
+	public List<Long> getItemIds() {
+		return itemIds;
+	}
+	public void setItemIds(List<Long> itemIds) {
+		this.itemIds = itemIds;
+	}
 	public String addPurchasedItem() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD, purchasedItems);
@@ -93,7 +100,7 @@ public class PurchasedItemAction extends FacilioAction{
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.ID, getPurchasedItemId());
 
-		Chain inventryDetailsChain = ReadOnlyChainFactory.fetchInventoryCostDetails();
+		Chain inventryDetailsChain = ReadOnlyChainFactory.fetchPurchasesItemDetails();
 		inventryDetailsChain.execute(context);
 
 		setPurchasedItem((PurchasedItemContext) context.get(FacilioConstants.ContextNames.PURCHASED_ITEM));
@@ -103,11 +110,11 @@ public class PurchasedItemAction extends FacilioAction{
 	
 	public String deletePurchasedItem() throws Exception {
 		FacilioContext context = new FacilioContext();
-		PurchasedItemContext inventoryCost = new PurchasedItemContext();
-		inventoryCost.setDeleted(true);
+		PurchasedItemContext purchaseditem = new PurchasedItemContext();
+		purchaseditem.setDeleted(true);
 
 		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.DELETE);
-		context.put(FacilioConstants.ContextNames.RECORD, inventoryCost);
+		context.put(FacilioConstants.ContextNames.RECORD, purchaseditem);
 		context.put(FacilioConstants.ContextNames.ITEM_ID, itemId);
 		context.put(FacilioConstants.ContextNames.ITEM_IDS, Collections.singletonList(itemId));
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, purchasedItemsId);
@@ -123,11 +130,24 @@ public class PurchasedItemAction extends FacilioAction{
 	public String purchasedItemsList() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.PARENT_ID, itemId);
+		context.put(FacilioConstants.ContextNames.PURCHASED_ITEM_IS_USED, true);
 		Chain purchasedItemsListChain = ReadOnlyChainFactory.getPurchasdItemsList();
 		purchasedItemsListChain.execute(context);
 		purchasedItems = ((List<PurchasedItemContext>) context.get(FacilioConstants.ContextNames.PURCHASED_ITEM));
 		setResult(FacilioConstants.ContextNames.PURCHASED_ITEM, purchasedItems);
-		return SUCCESS;	}
+		return SUCCESS;
+	}
+
+	public String unUsedPurchasedItemsList() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.PARENT_ID, itemIds);
+		context.put(FacilioConstants.ContextNames.PURCHASED_ITEM_IS_USED, false);
+		Chain purchasedItemsListChain = ReadOnlyChainFactory.getUnusedPurchasdItemsList();
+		purchasedItemsListChain.execute(context);
+		purchasedItems = ((List<PurchasedItemContext>) context.get(FacilioConstants.ContextNames.PURCHASED_ITEM));
+		setResult(FacilioConstants.ContextNames.PURCHASED_ITEM, purchasedItems);
+		return SUCCESS;
+	}
 	
 	private int rowsUpdated;
 	public int getRowsUpdated() {

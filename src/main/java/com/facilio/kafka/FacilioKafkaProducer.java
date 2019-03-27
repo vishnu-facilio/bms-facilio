@@ -4,6 +4,7 @@ import java.util.Properties;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
+import com.facilio.kinesis.ErrorDataProducer;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 
@@ -16,22 +17,15 @@ public class FacilioKafkaProducer implements FacilioProducer {
 
     private String topic;
 
-    private KafkaProducer<String, String> producer;
+    // private KafkaProducer<String, String> producer;
 
     public FacilioKafkaProducer (String topic) {
         this.topic = topic;
-        producer = new KafkaProducer<>(getProducerProperties());
+        // producer = new KafkaProducer<>(getProducerProperties());
     }
 
     public RecordMetadata putRecord(FacilioRecord record) {
-        Future<RecordMetadata> future = producer.send(new ProducerRecord<>(topic, record.getPartitionKey(), record.getData().toJSONString()));
-        RecordMetadata recordMetadata = null;
-        try {
-            recordMetadata = future.get();
-        } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
-        }
-        return recordMetadata;
+        return ErrorDataProducer.send(new ProducerRecord<>(topic, record.getPartitionKey(), record.getData().toJSONString()));
     }
 
     private Properties getProducerProperties() {
@@ -48,6 +42,6 @@ public class FacilioKafkaProducer implements FacilioProducer {
     }
 
     public void close() {
-        producer.close();
+        //producer.close();
     }
 }

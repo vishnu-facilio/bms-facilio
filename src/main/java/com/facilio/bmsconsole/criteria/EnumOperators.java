@@ -17,7 +17,7 @@ import com.facilio.bmsconsole.modules.EnumField;
 import com.facilio.fw.BeanFactory;
 
 public enum EnumOperators implements Operator<String> {
-	IS(52, "is") {
+	VALUE_IS(52, "value is") {
 		@Override
 		public String getWhereClause(String fieldName, String value) {
 			// TODO Auto-generated method stub
@@ -33,7 +33,7 @@ public enum EnumOperators implements Operator<String> {
 			return null;
 		}
 	},
-	ISN_T(53, "isn't") {
+	VALUE_ISN_T(53, "value isn't") {
 		@Override
 		public String getWhereClause(String fieldName, String value) {
 			// TODO Auto-generated method stub
@@ -49,7 +49,7 @@ public enum EnumOperators implements Operator<String> {
 			return null;
 		}
 	},
-	VALUE_IS(54, "value is") {
+	IS(54, "is") {
 		@Override
 		public String getWhereClause(String columnName, String value) {
 			// TODO Auto-generated method stub
@@ -68,7 +68,7 @@ public enum EnumOperators implements Operator<String> {
 			return null;
 		}
 	},
-	VALUE_ISN_T(55, "value isn't") {
+	ISN_T(55, "isn't") {
 		@Override
 		public String getWhereClause(String columnName, String value) {
 			// TODO Auto-generated method stub
@@ -151,7 +151,7 @@ public enum EnumOperators implements Operator<String> {
 					String values = splitAndReturnValues(enumField, value);
 					if(values != null && !values.isEmpty()) {
 						StringBuilder builder = new StringBuilder();
-						builder.append(enumField.getExtendedModule().getTableName())
+						builder.append(enumField.getTableName())
 								.append(".")
 								.append(enumField.getColumnName());
 								if (isNot) {

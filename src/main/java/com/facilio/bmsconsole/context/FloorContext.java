@@ -13,27 +13,22 @@ public class FloorContext extends BaseSpaceContext {
 	public void setFloorlevel(int floorlevel) {
 		this.floorlevel = floorlevel;
 	}
-	private BuildingContext building;
-	public BuildingContext getBuilding() {
-		if ((building == null || building.getId() == -1) && super.getBuildingId() != -1) {
-			BuildingContext building = new BuildingContext();
-			building.setId(super.getBuildingId());
-			return building;
-		}
-		return building;
+	
+	private long floorPlanId;
+
+	public long getFloorPlanId() {
+		return floorPlanId;
 	}
-	public void setBuilding(BuildingContext building) {
-		this.building = building;
-		if(building != null) {
-			super.setBuildingId(building.getId());
-		}
+	public void setFloorPlanId(long floorPlanId) {
+		this.floorPlanId = floorPlanId;
 	}
 	
-	@Override
-	public long getBuildingId() {
-		if(building != null) {
-			return building.getId();
-		}
-		return super.getBuildingId();
+	private String floorPlanInfo;
+	
+	public String getFloorPlanInfo() {
+		return floorPlanInfo;
+	}
+	public void setFloorPlanInfo(String floorPlanInfo) {
+		this.floorPlanInfo = floorPlanInfo;
 	}
 }

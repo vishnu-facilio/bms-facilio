@@ -1,9 +1,11 @@
 package com.facilio.bmsconsole.actions;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.chain.Chain;
+import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
@@ -50,7 +52,7 @@ public class CommonAction extends FacilioAction {
 		return SUCCESS;
 	}
 	public String exportModule() throws Exception {
-		fileUrl = ExportUtil.exportModule(FileFormat.getFileFormat(type), moduleName, viewName, filters);
+		fileUrl = ExportUtil.exportModule(FileFormat.getFileFormat(type), moduleName, viewName, filters, false, specialFields);
 		return SUCCESS;
 	}
 	
@@ -127,7 +129,16 @@ public class CommonAction extends FacilioAction {
 	public void setViewName(String viewName) {
 		this.viewName = viewName;
 	}
+
+	private boolean specialFields;
+	public boolean getSpecialFields() {
+		return specialFields;
+	}
+	public void setSpecialFields(boolean specialFields) {
+		this.specialFields = specialFields;
+	}
 	
+
 	private EMailTemplate emailTemplate;
 	public EMailTemplate getEmailTemplate() {
 		return emailTemplate;

@@ -89,6 +89,7 @@ import com.facilio.workflows.functions.FacilioStringFunction;
 import com.facilio.workflows.functions.FacilioSystemFunctions;
 import com.facilio.workflows.functions.FacilioWorkOrderFunctions;
 import com.facilio.workflows.functions.FacilioWorkflowFunctionInterface;
+import com.facilio.workflows.functions.MLFunctions;
 import com.facilio.workflows.functions.ThermoPhysicalR134aFunctions;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
@@ -266,7 +267,7 @@ public class WorkflowUtil {
 		    return (boolean) result;
 		}
 		else {
-		    double resultDouble = (double) result;
+		    double resultDouble = FacilioUtil.parseDouble(result);
 		    return resultDouble == 1;
 		}
 	}
@@ -277,7 +278,7 @@ public class WorkflowUtil {
 	}
 	
 	public static Object getWorkflowExpressionResult(String workflowString,Map<String,Object> paramMap) throws Exception {
-		return getWorkflowExpressionResult(workflowString, paramMap, null, true, false);
+		return getWorkflowExpressionResult(workflowString, paramMap, null, false, false);
 	}
 	
 	public static boolean getWorkflowExpressionResultAsBoolean(String workflowString,Map<String,Object> paramMap, Map<String, ReadingDataMeta> rdmCache, boolean ignoreNullExpressions, boolean ignoreMarked) throws Exception {
@@ -687,12 +688,23 @@ public class WorkflowUtil {
 	public static void parseExpression(WorkflowContext workflowContext) throws Exception {
 		new ArrayList<>();
 		if(workflowContext != null && workflowContext.getExpressions() != null) {
-			for(int i = 0; i < workflowContext.getExpressions().size(); i++) {
-				WorkflowExpression workflowExpression = workflowContext.getExpressions().get(i);
+			getExpressionParsedFromString(workflowContext.getExpressions());
+		}
+	}
+	
+	public static void getExpressionParsedFromString(List<WorkflowExpression> expressions) throws Exception {
+		
+		if(expressions != null && !expressions.isEmpty()) {
+			for(int i = 0; i < expressions.size(); i++) {
+				WorkflowExpression workflowExpression = expressions.get(i);
 				if(workflowExpression instanceof ExpressionContext) {
 					ExpressionContext expressionContext = (ExpressionContext)  workflowExpression;
 					expressionContext = getExpressionContextFromExpressionString(expressionContext.getExpressionString(),expressionContext);
-					workflowContext.getExpressions().set(i, expressionContext);
+					expressions.set(i, expressionContext);
+				}
+				else if(workflowExpression instanceof IteratorContext) {
+					IteratorContext iteratorContext = (IteratorContext) workflowExpression;
+					getExpressionParsedFromString(iteratorContext.getExpressions());
 				}
 			}
 		}
@@ -1545,7 +1557,7 @@ public class WorkflowUtil {
 					facilioWorkflowFunction = FacilioSystemFunctions.getFacilioSystemFunction(functionName);
 					break;
 				case ASSET:
-					facilioWorkflowFunction = FacilioAssetFunctions.getFacilioCostFunction(functionName);
+					facilioWorkflowFunction = FacilioAssetFunctions.getFacilioAssetFunction(functionName);
 					break;
 				case WORKORDER:
 					facilioWorkflowFunction = FacilioWorkOrderFunctions.getFacilioWorkOrderFunction(functionName);
@@ -1553,8 +1565,9 @@ public class WorkflowUtil {
 				case CONSUMPTION:
 					facilioWorkflowFunction = FacilioConsumptionFunctions.getFacilioConsumptionFunction(functionName);
 					break;
-		
-		
+				case ML:
+					facilioWorkflowFunction = MLFunctions.getFacilioMLFunction(functionName);
+					break;
 			}
 		}
 		return facilioWorkflowFunction;

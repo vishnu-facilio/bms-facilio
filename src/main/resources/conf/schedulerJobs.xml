@@ -18,6 +18,7 @@
 	 <job name='TestVMCalculation' classname = 'com.facilio.bmsconsole.jobs.DummyVMCalculator' transactionTimeout='300000'/>
 	 <job name='ReportScheduler' classname = 'com.facilio.bmsconsole.jobs.ReportScheduler' transactionTimeout='300000'/>
 	 <job name='ReportEmailScheduler' classname = 'com.facilio.bmsconsole.jobs.ReportEmailScheduler' transactionTimeout='300000'/>
+	 <job name='ViewEmailScheduler' classname = 'com.facilio.bmsconsole.jobs.ViewEmailScheduler' transactionTimeout='300000'/>
 	 <job name='ScheduledFormulaCalculator' classname = 'com.facilio.bmsconsole.jobs.ScheduledFormulaCalculatorJob' transactionTimeout='300000'/>
 	 <job name='HistoricalFormulaFieldCalculator' classname = 'com.facilio.bmsconsole.jobs.HistoricalFormulaFieldCalculatorJob' transactionTimeout='900000'/>
 	 <job name='SingleResourceHistoricalFormulaFieldCalculator' classname = 'com.facilio.bmsconsole.jobs.SingleResourceHistoricalFormulaCalculatorJob' transactionTimeout='900000'/>
@@ -47,8 +48,11 @@
 	 <job name='EndShift' classname= 'com.facilio.bmsconsole.jobs.ShiftEndJob' transactionTimeout='300000'/>
 	 <job name='EndShiftOTJ' classname= 'com.facilio.bmsconsole.jobs.ShiftEndOneTimeJob' transactionTimeout='300000'/>
 	 <job name='DeviceMonitor' classname= 'com.facilio.bmsconsole.jobs.DeviceMonitorJob' transactionTimeout='300000'/>
-	 
+	 <job name='ScheduleNewPM' classname= 'com.facilio.bmsconsole.commands.ScheduleNewPMCommand' transactionTimeout='900000'/>
+
 	 <!-- Shift jobs -->
 	 <job name='scheduledReadingRule' classname= 'com.facilio.bmsconsole.jobs.ScheduledReadingRuleJob' transactionTimeout='300000'/>
 	 <job name='scheduledAlarmTriggerRule' classname= 'com.facilio.bmsconsole.jobs.ScheduledAlarmTriggerJob' transactionTimeout='300000'/>
+	 
+	 <job name='HistoricalScheduledRule' classname='com.facilio.bmsconsole.jobs.HistoricalScheduledRuleJob' transactionTimeout='7200000' />
 </scheduler>
