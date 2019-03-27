@@ -102,7 +102,7 @@ public class AddOrUpdateWorkorderLabourCommand implements Command {
 			}
 		} else {
 			duration = (int) (woLabour.getDuration());
-			if (woLabour.getStartTime() >= 0) {
+			if (woLabour.getStartTime() > 0) {
 				woLabour.setEndTime(woLabour.getStartTime() + (woLabour.getDuration() * 60 * 60 * 1000));
 			}
 		}
