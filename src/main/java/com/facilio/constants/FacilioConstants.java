@@ -898,6 +898,7 @@ public class FacilioConstants {
 		public static final String PURCHASE_ORDER_LINE_ITEMS_ID = "purchaseorderlineitemsId";
 		
 		private static final String RECEIPT_LINE_ITEMS = "receiptlineitems";
+		public static final String ITEM_VENDORS_LIST = "itemTypesVendorsList";
 
 		private static Map<String, Class> classMap = Collections.unmodifiableMap(initClassMap());
 		private static Map<String, Class> initClassMap() {

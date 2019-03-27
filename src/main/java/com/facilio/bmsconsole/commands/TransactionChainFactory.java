@@ -2180,6 +2180,7 @@ public class TransactionChainFactory {
 		public static Chain getPurchaseOrderAutoCompleteChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(new PurchaseOrderAutoCompleteCommand());
+			c.addCommand(getAddOrUpdateItemTypeVendorChain());
 			c.addCommand(getBulkAddToolChain());
 			c.addCommand(getAddBulkItemChain());
 			return c;
@@ -2188,6 +2189,7 @@ public class TransactionChainFactory {
 		public static Chain getPurchaseOrderCompleteChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(new PurchaseOrderCompleteCommand());
+			c.addCommand(getAddOrUpdateItemTypeVendorChain());
 			c.addCommand(getBulkAddToolChain());
 			c.addCommand(getAddBulkItemChain());
 			return c;
@@ -2202,6 +2204,12 @@ public class TransactionChainFactory {
 		public static Chain getReceivedPOLineItemsChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(new GetReceivedPoLineItemsCommand());
+			return c;
+		}
+		
+		public static Chain getAddOrUpdateItemTypeVendorChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new AddOrUpdateItemTypeVendorCommand());
 			return c;
 		}
 }

@@ -71,7 +71,7 @@ public class PurchaseOrderQuantityRecievedRollUpCommand implements Command {
 					for (PurchaseOrderContext po : purchaseOrderlist) {
 						if (entry.getValue() < po.getTotalQuantity()) {
 							po.setStatus(Status.PARTIALLY_RECEIVED);
-						} else if (entry.getValue() == po.getTotalQuantity()) {
+						} else if (entry.getValue() >= po.getTotalQuantity()) {
 							po.setStatus(Status.RECEIVED);
 							receivedPOs.add(po);
 						}

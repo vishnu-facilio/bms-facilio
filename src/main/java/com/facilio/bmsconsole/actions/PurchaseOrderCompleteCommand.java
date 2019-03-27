@@ -43,12 +43,14 @@ public class PurchaseOrderCompleteCommand implements Command {
 		boolean containsIndividualTrackingItem = false;
 		boolean containsIndividualTrackingTool = false;
 		long storeRoomId = -1;
+		long vendorId = -1;
 		List<PurchaseOrderContext> purchaseOrders = getPurchaseOrderContext(purchaseOrdersIds);
 		if (purchaseOrders != null && !purchaseOrders.isEmpty()) {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioModule pomodule = modBean.getModule(FacilioConstants.ContextNames.PURCHASE_ORDER);
 			for (PurchaseOrderContext po : purchaseOrders) {
 				storeRoomId = po.getStoreRoom().getId();
+				vendorId = po.getVendor().getId();
 					if (lineItems == null) {
 						lineItems = getLineItemsForPO(po.getId());
 					}
@@ -87,7 +89,8 @@ public class PurchaseOrderCompleteCommand implements Command {
 			}
 		}
 		context.put(FacilioConstants.ContextNames.STORE_ROOM, storeRoomId);
-		context.put(FacilioConstants.ContextNames.RECORD_LIST, itemTypesVendors);
+		context.put(FacilioConstants.ContextNames.VENDOR_ID, vendorId);
+		context.put(FacilioConstants.ContextNames.ITEM_VENDORS_LIST, itemTypesVendors);
 		context.put(FacilioConstants.ContextNames.ITEMS, itemsTobeAdded);
 		context.put(FacilioConstants.ContextNames.TOOLS, toolsToBeAdded);
 		return false;

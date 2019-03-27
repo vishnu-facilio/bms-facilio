@@ -62,7 +62,7 @@ public class ConvertPRToPOCommand implements Command {
 				}
 			}
 			
-			updatePurchaseRequestStatus(list,purchaseRequestModule, fields);
+			
 			context.put(FacilioConstants.ContextNames.PURCHASE_REQUESTS, list);
 			
 			PurchaseOrderContext purchaseOrderContext = PurchaseOrderContext.fromPurchaseRequest(list);
