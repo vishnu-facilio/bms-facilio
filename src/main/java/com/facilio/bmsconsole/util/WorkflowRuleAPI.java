@@ -565,7 +565,12 @@ public class WorkflowRuleAPI {
 			values.add(type.getValue());
 		}
 		ruleBuilder.andCustomWhere(activityTypeWhere.toString(), values.toArray());
-		return getWorkFlowsFromMapList(ruleBuilder.get(), true, true, true);
+		List<Map<String, Object>> props = ruleBuilder.get();
+		if(AccountUtil.getCurrentOrg().getId() == 88l && module.getName().equals("alarm")) {
+			LOGGER.error("wokrlfow rule propssss --- "+props);
+			LOGGER.error("wokrlfow rule querry --- "+ruleBuilder);
+		}
+		return getWorkFlowsFromMapList(props, true, true, true);
 	}
 	
 	protected static void deleteChildIdsForWorkflow(WorkflowRuleContext oldRule, WorkflowRuleContext newRule) throws Exception {
