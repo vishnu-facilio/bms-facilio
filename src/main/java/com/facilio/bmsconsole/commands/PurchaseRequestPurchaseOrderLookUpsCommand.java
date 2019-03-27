@@ -33,7 +33,7 @@ public class PurchaseRequestPurchaseOrderLookUpsCommand implements Command  {
 		Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
 		
 		List<LookupFieldMeta> fetchLookup = Arrays.asList(new LookupFieldMeta((LookupField) fieldsAsMap.get("vendor")), 
-				new LookupFieldMeta((LookupField) fieldsAsMap.get("storeRoom")));
+				new LookupFieldMeta((LookupField) fieldsAsMap.get("storeRoom")),new LookupFieldMeta((LookupField) fieldsAsMap.get("shipToAddress")),new LookupFieldMeta((LookupField) fieldsAsMap.get("billToAddress")));
 		context.put(FacilioConstants.ContextNames.LOOKUP_FIELD_META_LIST,fetchLookup);
 		return false;
 	}

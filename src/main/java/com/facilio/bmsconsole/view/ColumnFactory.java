@@ -323,9 +323,11 @@ public class ColumnFactory {
 	private static List<ViewField> getDefaultPurchaseRequestColumns() {
 		List<ViewField> columns = new ArrayList<ViewField>();
 		
+		columns.add(new ViewField("localId", "Purchase Request Id"));
 		columns.add(new ViewField("name", "Purchase Request Name"));
 		columns.add(new ViewField("description", "Description"));
-		columns.add(new ViewField("sysCreatedTime", "Created Time"));
+		columns.add(new ViewField("requestedTime", "Requested Time"));
+		columns.add(new ViewField("requiredTime", "Required Time"));
 		columns.add(new ViewField("status", "Status"));
 		columns.add(new ViewField("totalCost", "Total Cost"));
 				
@@ -335,9 +337,11 @@ public class ColumnFactory {
 	private static List<ViewField> getDefaultPurchaseOrderColumns() {
 		List<ViewField> columns = new ArrayList<ViewField>();
 		
+		columns.add(new ViewField("localId", "Purchase Order Id"));
 		columns.add(new ViewField("name", "Purchase Order Name"));
 		columns.add(new ViewField("description", "Description"));
-		columns.add(new ViewField("sysCreatedTime", "Created Time"));
+		columns.add(new ViewField("orderedTime", "Ordered Time"));
+		columns.add(new ViewField("requiredTime", "Required Time"));
 		columns.add(new ViewField("status", "Status"));
 		columns.add(new ViewField("vendor", "Vendor"));
 		columns.add(new ViewField("totalCost", "Total Cost"));
@@ -346,8 +350,8 @@ public class ColumnFactory {
 	
 	private static List<ViewField> getDefaultReceivableColumns() {
 		List<ViewField> columns = new ArrayList<ViewField>();
-		
-//		columns.add(new ViewField("poId", "Purchase Order ID"));
+		columns.add(new ViewField("localId", "Receivable Id"));
+		columns.add(new ViewField("poId", "Purchase Order ID"));
 		columns.add(new ViewField("status", "Status"));
 		columns.add(new ViewField("sysCreatedTime", "Created Time"));
 		return columns;
