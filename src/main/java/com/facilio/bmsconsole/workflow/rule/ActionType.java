@@ -839,6 +839,9 @@ public enum ActionType {
 			long alarmId = -1l;
 			if(currentRecord instanceof ReadingAlarmContext) {
 				currentRecordJson = FieldUtil.getAsProperties(currentRecord);
+				if(currentRecordJson.get("resource") != null) {
+					currentRecordJson.put("resourceId", ((Map)currentRecordJson.get("resource")).get("id"));
+				}
 				alarmId = (Long) currentRecordJson.get("id");
 			}
 			
