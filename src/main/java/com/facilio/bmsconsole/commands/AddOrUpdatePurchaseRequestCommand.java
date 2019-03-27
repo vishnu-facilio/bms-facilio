@@ -252,7 +252,7 @@ public class AddOrUpdatePurchaseRequestCommand implements Command {
 		LocationContext location;
 		FacilioContext context = new FacilioContext();
 		
-		if(locationContext != null && locationContext.getLat() != -1 && locationContext.getLng() != -1) {
+		if(locationContext != null && locationContext.getLat() != 1.1 && locationContext.getLng() != 1.1) {
 			location = locationContext;
 			location.setName(locationName);
 			context.put(FacilioConstants.ContextNames.RECORD, location);

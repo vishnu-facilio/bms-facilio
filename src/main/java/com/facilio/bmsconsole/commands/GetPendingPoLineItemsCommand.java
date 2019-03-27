@@ -37,7 +37,7 @@ public class GetPendingPoLineItemsCommand implements Command{
 																	.select(fields)
 																	.beanClass(FacilioConstants.ContextNames.getClassFromModuleName(lineItemModuleName))
 																	.andCondition(CriteriaAPI.getCondition("PO_ID", "poid", String.valueOf(poId), NumberOperators.EQUALS))
-															        .andCustomWhere("QUANTITY_RECEIVED < QUANTITY");
+															        .andCustomWhere("(QUANTITY_RECEIVED < QUANTITY) OR (QUANTITY_RECEIVED IS NULL) ");
 															        ;
 		Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
 		List<LookupFieldMeta> fetchLookup = Arrays.asList(new LookupFieldMeta((LookupField) fieldsAsMap.get("toolType")), 
