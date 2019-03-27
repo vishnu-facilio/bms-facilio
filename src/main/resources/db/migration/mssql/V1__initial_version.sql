@@ -1080,7 +1080,7 @@ CREATE TABLE Agent_Data (
         ID bigint IDENTITY(1,1) PRIMARY KEY,
         DEVICE_DETAILS varchar(500),
         Conn_status tinyint,
-        ORGID bigint,
+        ORGID bigint not null,
         NAME varchar(250) not null UNIQUE,
         DISPLAY_NAME varchar(250) DEFAULT null,
         DATA_INTERVAL bigint DEFAULT 10 not null,

@@ -1142,7 +1142,7 @@ CREATE TABLE IF NOT EXISTS Agent_Data (
         ID bigint(20) AUTO_INCREMENT PRIMARY KEY,
         DEVICE_DETAILS varchar(500),
         Conn_status tinyint(1),
-        ORGID bigint(20),
+        ORGID bigint(20) NOT NULL,
         NAME varchar(250) NOT NULL UNIQUE,
         DISPLAY_NAME varchar(250) DEFAULT NULL,
         DATA_INTERVAL bigint(20) DEFAULT 10 not null,
