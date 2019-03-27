@@ -235,6 +235,8 @@ public class AddOrUpdatePurchaseRequestCommand implements Command {
 				location.setState(storeRoomLocation.getState());
 				location.setZip(storeRoomLocation.getZip());
 				location.setCountry(storeRoomLocation.getCountry());
+				location.setLat(1.1);
+				location.setLng(1.1);
 				context.put(FacilioConstants.ContextNames.RECORD, location);
 				Chain addLocation = FacilioChainFactory.addLocationChain();
 				addLocation.execute(context);
