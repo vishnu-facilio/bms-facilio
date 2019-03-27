@@ -13,11 +13,10 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.LocationContext;
 import com.facilio.bmsconsole.context.PurchaseOrderContext;
 import com.facilio.bmsconsole.context.PurchaseOrderLineItemContext;
-import com.facilio.bmsconsole.context.PurchaseRequestContext;
 import com.facilio.bmsconsole.context.ReceivableContext;
+import com.facilio.bmsconsole.context.ReceivableContext.Status;
 import com.facilio.bmsconsole.context.StoreRoomContext;
 import com.facilio.bmsconsole.context.VendorContext;
-import com.facilio.bmsconsole.context.ReceivableContext.Status;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.DeleteRecordBuilder;
@@ -28,9 +27,9 @@ import com.facilio.bmsconsole.modules.InsertRecordBuilder;
 import com.facilio.bmsconsole.modules.LookupField;
 import com.facilio.bmsconsole.modules.LookupFieldMeta;
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
-import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
+import com.facilio.bmsconsole.util.LocationAPI;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
@@ -59,8 +58,8 @@ public class AddOrUpdatePurchaseOrderCommand implements Command {
 //			if (purchaseOrderContext.getStoreRoom() == null) {
 //				throw new Exception("StoreRoom cannot be empty");
 //			}
-            purchaseOrderContext.setShipToAddress(getStoreRoomLocation(purchaseOrderContext, purchaseOrderContext.getShipToAddress(), "SHIP_TO_Location"));
-            purchaseOrderContext.setBillToAddress(getVendorLocation(purchaseOrderContext, purchaseOrderContext.getBillToAddress(), "BILL_TO_Location"));
+            purchaseOrderContext.setShipToAddress(LocationAPI.getLocation(purchaseOrderContext.getStoreRoom(), purchaseOrderContext.getShipToAddress(), "SHIP_TO_Location", true));
+            purchaseOrderContext.setBillToAddress(LocationAPI.getLocation(purchaseOrderContext.getVendor(), purchaseOrderContext.getBillToAddress(), "BILL_TO_Location", false));
 			
 			if (purchaseOrderContext.getId() > 0) {
 				if(purchaseOrderContext.getStatusEnum() == PurchaseOrderContext.Status.APPROVED) {
@@ -130,124 +129,4 @@ public class AddOrUpdatePurchaseOrderCommand implements Command {
 			lineItemContext.setCost(0);	
 		}
 	}
-
-	private LocationContext getStoreRoomLocation (PurchaseOrderContext purchaseOrderContext, LocationContext locationContext, String locationName) throws Exception {
-		LocationContext location;
-		FacilioContext context = new FacilioContext();
-		
-		if(locationContext != null && locationContext.getLat() != -1 && locationContext.getLng() != -1) {
-			location = locationContext;
-			location.setName(locationName);
-			context.put(FacilioConstants.ContextNames.RECORD, location);
-			if (location.getId() > 0) {
-				Chain editLocation = FacilioChainFactory.updateLocationChain();
-				editLocation.execute(context);
-			}
-			else {
-				Chain addLocation = FacilioChainFactory.addLocationChain();
-				addLocation.execute(context);
-				long locationId = (long) context.get(FacilioConstants.ContextNames.RECORD_ID);
-				location.setId(locationId);
-			}
-		}
-		else {
-			location = new LocationContext();
-			if(purchaseOrderContext.getStoreRoom() != null) {
-				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-				FacilioModule module = modBean.getModule("storeRoom");
-				
-				Long storeRoomId = purchaseOrderContext.getStoreRoom().getId();
-				List<FacilioField> fields = modBean.getAllFields(module.getName());
-				Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
-				
-				SelectRecordsBuilder<StoreRoomContext> builder = new SelectRecordsBuilder<StoreRoomContext>()
-																.module(module)
-																.beanClass(FacilioConstants.ContextNames.getClassFromModuleName(module.getName()))
-																.select(fields)
-																.fetchLookup(new LookupFieldMeta((LookupField) fieldsAsMap.get("location")))
-																.andCondition(CriteriaAPI.getIdCondition(storeRoomId, module))
-																;
-                List<StoreRoomContext> storeRooms = builder.get();
-                if(CollectionUtils.isEmpty(storeRooms)) {
-                	
-                	return location;
-                }
-				LocationContext storeRoomLocation =storeRooms.get(0).getLocation();
-				location.setName(locationName);
-				location.setStreet(storeRoomLocation.getStreet());
-				location.setState(storeRoomLocation.getState());
-				location.setLat(1.1);
-				location.setLng(1.1);
-				location.setZip(storeRoomLocation.getZip());
-				location.setCountry(storeRoomLocation.getCountry());
-				context.put(FacilioConstants.ContextNames.RECORD, location);
-				Chain addLocation = FacilioChainFactory.addLocationChain();
-				addLocation.execute(context);
-				long locationId = (long) context.get(FacilioConstants.ContextNames.RECORD_ID);
-				location.setId(locationId);		
-			}
-		}
-		return location;
-	}
-
-
-	private LocationContext getVendorLocation (PurchaseOrderContext purchaseOrderContext, LocationContext locationContext, String locationName) throws Exception {
-		LocationContext location;
-		FacilioContext context = new FacilioContext();
-		
-		if(locationContext != null && locationContext.getLat() != 1.1 && locationContext.getLng() != 1.1) {
-			location = locationContext;
-			location.setName(locationName);
-			context.put(FacilioConstants.ContextNames.RECORD, location);
-			if (location.getId() > 0) {
-				Chain editLocation = FacilioChainFactory.updateLocationChain();
-				editLocation.execute(context);
-			}
-			else {
-				Chain addLocation = FacilioChainFactory.addLocationChain();
-				addLocation.execute(context);
-				long locationId = (long) context.get(FacilioConstants.ContextNames.RECORD_ID);
-				location.setId(locationId);
-			}
-		}
-		else {
-			location = new LocationContext();
-			if(purchaseOrderContext.getVendor() != null) {
-				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-				FacilioModule module = modBean.getModule("vendors");
-				
-				Long vendorId = purchaseOrderContext.getVendor().getId();
-				List<FacilioField> fields = modBean.getAllFields(module.getName());
-				Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
-				
-				SelectRecordsBuilder<VendorContext> builder = new SelectRecordsBuilder<VendorContext>()
-																.module(module)
-																.beanClass(FacilioConstants.ContextNames.getClassFromModuleName(module.getName()))
-																.select(fields)
-																.fetchLookup(new LookupFieldMeta((LookupField) fieldsAsMap.get("address")))
-																.andCondition(CriteriaAPI.getIdCondition(vendorId, module))
-																;
-                List<VendorContext> vendors = builder.get();
-                if(CollectionUtils.isEmpty(vendors)) {
-                	
-                	return location;
-                }
-				LocationContext vendorLocation = vendors.get(0).getAddress();
-				location.setName(locationName);
-				location.setStreet(vendorLocation.getStreet());
-				location.setState(vendorLocation.getState());
-				location.setZip(vendorLocation.getZip());
-				location.setCountry(vendorLocation.getCountry());
-				location.setLat(1.1);
-				location.setLng(1.1);
-				context.put(FacilioConstants.ContextNames.RECORD, location);
-				Chain addLocation = FacilioChainFactory.addLocationChain();
-				addLocation.execute(context);
-				long locationId = (long) context.get(FacilioConstants.ContextNames.RECORD_ID);
-				location.setId(locationId);		
-			}
-		}
-		return location;
-	}
-
 }

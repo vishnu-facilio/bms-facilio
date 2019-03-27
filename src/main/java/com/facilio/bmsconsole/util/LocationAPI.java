@@ -12,14 +12,25 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.chain.Chain;
+import org.apache.commons.collections4.CollectionUtils;
+
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.LocationContext;
+import com.facilio.bmsconsole.context.PurchaseOrderContext;
+import com.facilio.bmsconsole.context.StoreRoomContext;
+import com.facilio.bmsconsole.context.VendorContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
+import com.facilio.bmsconsole.modules.FieldFactory;
+import com.facilio.bmsconsole.modules.LookupField;
+import com.facilio.bmsconsole.modules.LookupFieldMeta;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
+import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.DBUtil;
@@ -243,5 +254,79 @@ public class LocationAPI {
 				.beanClass(LocationContext.class)
 				.andCondition(CriteriaAPI.getIdCondition(idList, module));
 		return selectBuilder.getAsMap();
+	}
+	
+	public static LocationContext getLocation (Object obj, LocationContext locationContext, String locationName, boolean isShippingAddress) throws Exception {
+		LocationContext location = locationContext;
+		FacilioContext context = new FacilioContext();
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		location.setName(locationName);
+		context.put(FacilioConstants.ContextNames.RECORD, location);
+		if (location.getId() > 0) {
+			Chain editLocation = FacilioChainFactory.updateLocationChain();
+			editLocation.execute(context);
+		}
+		else {
+			if(location.isEmpty()) {
+				LocationContext locationObj = null;
+				if (obj != null) {
+					if(isShippingAddress) {
+						long storeRoomId = ((StoreRoomContext) obj).getId();
+		                StoreRoomContext storeRoom = getLocationObj(modBean, "storeRoom", "location", storeRoomId);
+		                if (storeRoom != null) {
+		                	locationObj = storeRoom.getLocation();
+		                }
+					}
+					else {
+						long vendorId = ((VendorContext) obj).getId();
+						VendorContext vendorContext = getLocationObj(modBean, "vendors", "address", vendorId);
+		                if (vendorContext != null) {
+		                	locationObj = vendorContext.getAddress();
+		                }
+	    			}
+				}
+				
+				if (locationObj == null) {
+					location.setName(locationName);
+                	location.setLat(1.1);
+    				location.setLng(1.1);
+				} else {
+					location.setName(locationName);
+					location.setStreet(locationObj.getStreet());
+					location.setState(locationObj.getState());
+					location.setLat(1.1);
+					location.setLng(1.1);
+					location.setZip(locationObj.getZip());
+					location.setCity(locationObj.getCity());
+					location.setCountry(locationObj.getCountry());
+				}
+			}
+			
+			Chain addLocation = FacilioChainFactory.addLocationChain();
+			addLocation.execute(context);
+			long locationId = (long) context.get(FacilioConstants.ContextNames.RECORD_ID);
+			location.setId(locationId);
+		}
+		
+		return location;
+	}
+		
+	private static <E> E getLocationObj(ModuleBean modBean, String moduleName, String locationFieldName, long id) throws Exception {
+		FacilioModule module = modBean.getModule(moduleName);
+		List<FacilioField> fields = modBean.getAllFields(module.getName());
+		Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
+		
+		SelectRecordsBuilder<StoreRoomContext> builder = new SelectRecordsBuilder<StoreRoomContext>()
+					.module(module)
+					.beanClass(FacilioConstants.ContextNames.getClassFromModuleName(module.getName()))
+					.select(fields)
+					.fetchLookup(new LookupFieldMeta((LookupField) fieldsAsMap.get(locationFieldName)))
+					.andCondition(CriteriaAPI.getIdCondition(id, module));
+					;
+        List<StoreRoomContext> list = builder.get();
+        if (!CollectionUtils.isEmpty(list)) {
+        	return (E) list.get(0);
+        }
+        return null;
 	}
 }
