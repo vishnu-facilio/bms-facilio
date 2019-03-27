@@ -804,7 +804,7 @@ public class FormFactory {
 		fields.add(new FormField("lineItems", FieldDisplayType.LINEITEMS, "LINE ITEMS", Required.REQUIRED, 9, 1));
 		fields.add(new FormField("shipToAddress", FieldDisplayType.ADDRESS, "Ship To Address", Required.OPTIONAL, 5, 1));
 		fields.add(new FormField("billToAddress", FieldDisplayType.ADDRESS, "Bill To Address", Required.OPTIONAL, 6, 1));
-		fields.add(new FormField("requestedTime", FieldDisplayType.DATETIME, "Requested Time", Required.OPTIONAL, 7, 1));
+		fields.add(new FormField("orderedTime", FieldDisplayType.DATETIME, "Ordered Time", Required.OPTIONAL, 7, 1));
 		fields.add(new FormField("requiredTime", FieldDisplayType.DATETIME, "Required Time", Required.OPTIONAL, 8, 1));
 //	fields.add(new FormField("status", FieldDisplayType.SELECTBOX, "Status", Required.REQUIRED, 7, 1));
 		//fields.add(new FormField("siteId", FieldDisplayType.LOOKUP_SIMPLE, "Site", Required.REQUIRED, "site", 2, 1));
