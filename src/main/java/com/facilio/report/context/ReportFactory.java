@@ -39,8 +39,10 @@ public class ReportFactory {
 	
 	public interface Alarm {
 		String FIRST_RESPONSE_TIME_COL = "al_firstresponsetime";
+		String ALARM_DURATION_COL = "al_duration";
 		
 		int FIRST_RESPONSE_TIME = 6;
+		int ALARM_DURATION = 7;
 	}
 
 	public static List<FacilioField> reportFields = new ArrayList<>();
@@ -74,7 +76,7 @@ public class ReportFactory {
 			
 			// alarm fields
 			reportFields.add(getField(Alarm.FIRST_RESPONSE_TIME_COL, "Response Time", ModuleFactory.getAlarmsModule(), " (Alarms.ACKNOWLEDGED_TIME - Alarms.CREATED_TIME) ", FieldType.NUMBER, Alarm.FIRST_RESPONSE_TIME));
-//			reportFields.add(getField(Alarm.FIRST_RESPONSE_TIME_COL, "Response Time", ModuleFactory.getAlarmsModule(), " (Alarms.ACKNOWLEDGED_TIME - Alarms.CREATED_TIME) ", FieldType.NUMBER, Alarm.FIRST_RESPONSE_TIME));
+			reportFields.add(getField(Alarm.ALARM_DURATION_COL, "Alarm Duration", ModuleFactory.getAlarmsModule(), "(CASE WHEN Alarms.CLEARED_TIME IS NOT NULL THEN Alarms.CLEARED_TIME - Alarms.CREATED_TIME ELSE ? - Alarms.CREATED_TIME END) ", FieldType.NUMBER, Alarm.ALARM_DURATION));
 			
 			
 			fieldMap = FieldFactory.getAsMap(reportFields);
@@ -202,6 +204,9 @@ public class ReportFactory {
 					setColumnName(getColumnName().replace("?", arguments));
 					break;
 				}
+				case Alarm.ALARM_DURATION:
+					String arguments = String.valueOf(System.currentTimeMillis());
+					setColumnName(getColumnName().replace("?", arguments));
 				}
 			} catch (Exception e) {
 				e.printStackTrace();

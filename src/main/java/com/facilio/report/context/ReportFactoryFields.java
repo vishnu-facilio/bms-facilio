@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.reflect.FieldUtils;
 import org.json.simple.JSONObject;
 
 import com.facilio.beans.ModuleBean;
@@ -12,10 +13,12 @@ import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldType;
+import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.LookupField;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.modules.NumberField;
 import com.facilio.fw.BeanFactory;
+import com.facilio.report.context.ReportFactory.Alarm;
 import com.facilio.report.context.ReportFactory.ModuleType;
 import com.facilio.report.context.ReportFactory.WorkOrder;
 import com.mysql.fabric.xmlrpc.base.Array;
@@ -58,7 +61,7 @@ public class ReportFactoryFields {
 		
 		
 		Map<String, FacilioField> customFields = new HashMap<String, FacilioField>();
-		if(bean.getAllCustomFields("workorder") != null) {
+		if(bean.getAllCustomFields("asset") != null) {
 			customFields = FieldFactory.getAsMap(bean.getAllCustomFields("asset"));
 		}
 		
@@ -83,7 +86,30 @@ public class ReportFactoryFields {
 	
 	public static JSONObject getAlarmReportFields() throws Exception{
 		ModuleBean bean = (ModuleBean)BeanFactory.lookup("ModuleBean");
-		return rearrangeFields(bean.getAllFields("alarm"), "alarm");	
+		Map<String, FacilioField> fields = FieldFactory.getAsMap(bean.getAllFields("alarm"));
+		
+		List<FacilioField> selectedFields = new ArrayList<FacilioField>();
+		
+		Map<String, FacilioField> customFields = new HashMap<String, FacilioField>();
+		if(bean.getAllCustomFields("alarm") != null) {
+			customFields = FieldFactory.getAsMap(bean.getAllCustomFields("alarm"));
+		}
+		
+		selectedFields.add(fields.get("createdTime"));
+		selectedFields.add(fields.get("modifiedTime"));
+		selectedFields.add(fields.get("clearedTime"));
+		selectedFields.add(fields.get("acknowledgedTime"));
+		selectedFields.add(fields.get("acknowledgedBy"));
+		selectedFields.add(fields.get("severity"));
+		selectedFields.add(fields.get("isWoCreated"));
+		
+		if(customFields.size() != 0) {
+			for(String customFieldName: customFields.keySet()) {
+				selectedFields.add(customFields.get(customFieldName));
+			}
+		}
+		
+		return rearrangeFields(selectedFields, "alarm");	
 	}
 	
 	public static JSONObject getReportFields(String moduleName) throws Exception {
@@ -177,6 +203,10 @@ public class ReportFactoryFields {
 			workorderFields.add(ReportFactory.getReportField(WorkOrder.OVERDUE_CLOSED_COL));
 			workorderFields.add(ReportFactory.getReportField(WorkOrder.PLANNED_VS_UNPLANNED_COL));
 			
+		}
+		else if(module.equals("alarm")) {
+			metricFields.add(ReportFactory.getReportField(Alarm.FIRST_RESPONSE_TIME_COL));
+			metricFields.add(ReportFactory.getReportField(Alarm.ALARM_DURATION_COL));
 		}
 		
 		fieldsObject.put("metrics", metricFields);
