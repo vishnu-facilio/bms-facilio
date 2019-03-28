@@ -67,21 +67,35 @@ public class ExecuteAllWorkflowsCommand implements SerializableCommand
 	
 	@Override
 	public boolean execute(Context context) throws Exception {
-		long startTime = System.currentTimeMillis();
-		Boolean historyReading = (Boolean) context.get(FacilioConstants.ContextNames.HISTORY_READINGS);
-		if (historyReading != null && historyReading==true) {
-			return false;
+		Map<String, List> recordMap = null;
+		try {
+			long startTime = System.currentTimeMillis();
+			Boolean historyReading = (Boolean) context.get(FacilioConstants.ContextNames.HISTORY_READINGS);
+			if (historyReading != null && historyReading==true) {
+				return false;
+			}
+			recordMap = CommonCommandUtil.getRecordMap((FacilioContext) context);
+			Map<String, Map<Long, List<UpdateChangeSet>>> changeSetMap = CommonCommandUtil.getChangeSetMap((FacilioContext) context);
+			if(recordMap != null && !recordMap.isEmpty()) {
+				if (recordsPerThread == -1) {
+					fetchAndExecuteRules(recordMap, changeSetMap, (FacilioContext) context);
+				}
+				else {
+					new ParallalWorkflowExecution(AccountUtil.getCurrentAccount(), recordMap, changeSetMap, (FacilioContext) context).invoke();
+				}
+				LOGGER.debug("Time taken to Execute workflows for modules : "+recordMap.keySet()+" is "+(System.currentTimeMillis() - startTime));
+			}
 		}
-		Map<String, List> recordMap = CommonCommandUtil.getRecordMap((FacilioContext) context);
-		Map<String, Map<Long, List<UpdateChangeSet>>> changeSetMap = CommonCommandUtil.getChangeSetMap((FacilioContext) context);
-		if(recordMap != null && !recordMap.isEmpty()) {
-			if (recordsPerThread == -1) {
-				fetchAndExecuteRules(recordMap, changeSetMap, (FacilioContext) context);
+		catch(Exception e) {
+			StringBuilder builder = new StringBuilder("Error during execution of rule : ");
+			builder.append(" for Record : "+recordMap)
+			.append(" this.propagateError " +this.propagateError)
+			.append(" for this.ruleTypes "+this.ruleTypes);
+			LOGGER.error(builder.toString(), e);
+			CommonCommandUtil.emailException("RULE EXECUTION FAILED - "+AccountUtil.getCurrentOrg().getId(),builder.toString(), e);
+			if (propagateError) {
+				throw e;
 			}
-			else {
-				new ParallalWorkflowExecution(AccountUtil.getCurrentAccount(), recordMap, changeSetMap, (FacilioContext) context).invoke();
-			}
-			LOGGER.debug("Time taken to Execute workflows for modules : "+recordMap.keySet()+" is "+(System.currentTimeMillis() - startTime));
 		}
 		return false;
 	}
