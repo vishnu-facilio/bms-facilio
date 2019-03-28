@@ -57,26 +57,24 @@ public class PurchaseOrderCompleteCommand implements Command {
 
 				if (lineItems != null && !lineItems.isEmpty()) {
 					for (PurchaseOrderLineItemContext lineItem : lineItems) {
-						if (lineItem.getInventoryTypeEnum() == InventoryType.ITEM) {
-							itemTypesVendors.add(new ItemTypesVendorsContext(lineItem.getItemType(), po.getVendor(),
-									lineItem.getCost(), po.getOrderedTime()));
-							ItemTypesContext itemtype = getItemType(lineItem.getItemType().getId());
-							if (itemtype.individualTracking()) {
-								containsIndividualTrackingItem = true;
-							} else {
-								containsIndividualTrackingItem = false;
-							}
-							if (lineItem.getQuantityReceived() > 0) {
+						if (lineItem.getQuantityReceived() > 0) {
+							if (lineItem.getInventoryTypeEnum() == InventoryType.ITEM) {
+								itemTypesVendors.add(new ItemTypesVendorsContext(lineItem.getItemType(), po.getVendor(),
+										lineItem.getCost(), po.getOrderedTime()));
+								ItemTypesContext itemtype = getItemType(lineItem.getItemType().getId());
+								if (itemtype.individualTracking()) {
+									containsIndividualTrackingItem = true;
+								} else {
+									containsIndividualTrackingItem = false;
+								}
 								itemsTobeAdded.add(createItem(po, lineItem, containsIndividualTrackingItem));
-							}
-						} else if (lineItem.getInventoryTypeEnum() == InventoryType.TOOL) {
-							ToolTypesContext toolType = getToolType(lineItem.getToolType().getId());
-							if (toolType.individualTracking()) {
-								containsIndividualTrackingTool = true;
-							} else {
-								containsIndividualTrackingTool = false;
-							}
-							if (lineItem.getQuantityReceived() > 0) {
+							} else if (lineItem.getInventoryTypeEnum() == InventoryType.TOOL) {
+								ToolTypesContext toolType = getToolType(lineItem.getToolType().getId());
+								if (toolType.individualTracking()) {
+									containsIndividualTrackingTool = true;
+								} else {
+									containsIndividualTrackingTool = false;
+								}
 								toolsToBeAdded.add(createTool(po, lineItem, containsIndividualTrackingTool));
 							}
 						}
