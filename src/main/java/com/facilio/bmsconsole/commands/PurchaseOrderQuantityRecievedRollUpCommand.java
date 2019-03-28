@@ -46,7 +46,6 @@ public class PurchaseOrderQuantityRecievedRollUpCommand implements Command {
 
 			FacilioModule pomodule = modBean.getModule(FacilioConstants.ContextNames.PURCHASE_ORDER);
 			List<FacilioField> pofields = modBean.getAllFields(FacilioConstants.ContextNames.PURCHASE_ORDER);
-			Map<String, FacilioField> pofieldsMap = FieldFactory.getAsMap(pofields);
 
 			Map<Long, Double> poIdVsQty = new HashMap<>();
 			List<Long> poIds = new ArrayList<>();
@@ -66,20 +65,21 @@ public class PurchaseOrderQuantityRecievedRollUpCommand implements Command {
 						.module(pomodule).select(pofields).beanClass(PurchaseOrderContext.class)
 						.andCondition(CriteriaAPI.getIdCondition(entry.getKey(), pomodule));
 				List<PurchaseOrderContext> purchaseOrderlist = poBuilder.get();
-				
+				ReceivableContext receivable = new ReceivableContext();
 				if (purchaseOrderlist != null && !purchaseOrderlist.isEmpty()) {
 					for (PurchaseOrderContext po : purchaseOrderlist) {
+						receivable.setPoId(po.getId());
 						if (entry.getValue() < po.getTotalQuantity()) {
 							po.setStatus(Status.PARTIALLY_RECEIVED);
+							receivable.setStatus(com.facilio.bmsconsole.context.ReceivableContext.Status.PARTIALLY_RECEIVED);
 						} else if (entry.getValue() >= po.getTotalQuantity()) {
 							po.setStatus(Status.RECEIVED);
+							receivable.setStatus(com.facilio.bmsconsole.context.ReceivableContext.Status.RECEIVED);
 							receivedPOs.add(po);
 						}
 						
-						UpdateRecordBuilder<PurchaseOrderContext> updateBuilder = new UpdateRecordBuilder<PurchaseOrderContext>()
-								.module(pomodule).fields(modBean.getAllFields(pomodule.getName()))
-								.andCondition(CriteriaAPI.getIdCondition(po.getId(), pomodule));
-						updateBuilder.update(po);
+						updatePurchaseOrder(po, pomodule, pofields);
+						updateReceivables(receivable, module, fields, fieldsMap);
 					}
 				}
 			}
@@ -121,6 +121,20 @@ public class PurchaseOrderQuantityRecievedRollUpCommand implements Command {
 			return (received - returns);
 		}
 		return 0d;
+	}
+	
+	private void updatePurchaseOrder(PurchaseOrderContext po, FacilioModule pomodule, List<FacilioField> pofields) throws Exception{
+		UpdateRecordBuilder<PurchaseOrderContext> updateBuilder = new UpdateRecordBuilder<PurchaseOrderContext>()
+				.module(pomodule).fields(pofields)
+				.andCondition(CriteriaAPI.getIdCondition(po.getId(), pomodule));
+		updateBuilder.update(po);
+	}
+	
+	private void updateReceivables(ReceivableContext receivable, FacilioModule module, List<FacilioField> fields, Map<String, FacilioField> fieldsMap) throws Exception{
+		UpdateRecordBuilder<ReceivableContext> updateBuilder = new UpdateRecordBuilder<ReceivableContext>()
+				.module(module).fields(fields)
+				.andCondition(CriteriaAPI.getCondition(fieldsMap.get("poId"),String.valueOf(receivable.getPoId()), NumberOperators.EQUALS));
+		updateBuilder.update(receivable);
 	}
 
 }

@@ -483,7 +483,7 @@ public enum ActionType {
 			assignedToUserId = (long) obj.get("assignedUserId");
 			assignGroupId = (long) obj.get("assignedGroupId");
 
-			WorkOrderContext workOrder = (WorkOrderContext) context.get(FacilioConstants.ContextNames.WORK_ORDER);
+			WorkOrderContext workOrder = (WorkOrderContext) currentRecord;
 			WorkOrderContext updateWO = new WorkOrderContext();
 
 			if (assignedToUserId != -1  && (workOrder.getAssignedTo() == null || workOrder.getAssignedTo().getOuid() == -1)) {

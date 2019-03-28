@@ -11,6 +11,8 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.WorkOrderContext;
@@ -20,12 +22,15 @@ import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
+import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericSelectRecordBuilder;
 
 public class UpdateNotesCountCommand implements Command {
 
+	private static final Logger LOGGER = LogManager.getLogger(WorkflowRuleAPI.class.getName());
+	
 	@Override
 	public boolean execute(Context context) throws Exception {
 		
@@ -40,6 +45,10 @@ public class UpdateNotesCountCommand implements Command {
 			FacilioModule module = modBean.getModule(moduleString);
 			
 			FacilioField parentIdField = modBean.getField("parentId", moduleString);
+			if (parentIdField == null) {
+				// log for testing, will remove it once its fixed
+				LOGGER.error("moduleString inside UpdateNotesCountCommand: " + moduleString);
+			}
 	
 			List<FacilioField> fields = new ArrayList<>();
 			fields.add(parentIdField);

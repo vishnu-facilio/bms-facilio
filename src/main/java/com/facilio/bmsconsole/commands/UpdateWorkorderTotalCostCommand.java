@@ -61,11 +61,13 @@ public class UpdateWorkorderTotalCostCommand implements Command {
 				workorder.setTotalCost(totalcost);
 			}
 
-			UpdateRecordBuilder<WorkOrderContext> updateBuilder = new UpdateRecordBuilder<WorkOrderContext>()
-					.module(workorderModule).fields(modBean.getAllFields(workorderModule.getName()))
-					.andCondition(CriteriaAPI.getIdCondition(workorder.getId(), workorderModule));
-
-			updateBuilder.update(workorder);
+			context.put(FacilioConstants.ContextNames.WORK_ORDER, workorder);
+			context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, parentIds);
+//			UpdateRecordBuilder<WorkOrderContext> updateBuilder = new UpdateRecordBuilder<WorkOrderContext>()
+//					.module(workorderModule).fields(modBean.getAllFields(workorderModule.getName()))
+//					.andCondition(CriteriaAPI.getIdCondition(workorder.getId(), workorderModule));
+//
+//			updateBuilder.update(workorder);
 
 			System.out.println("totalcost" + totalcost);
 		}

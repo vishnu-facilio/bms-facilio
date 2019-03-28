@@ -5497,6 +5497,11 @@ public class DashboardAction extends FacilioAction {
 				fields.add(markedField);
 			}
 		}
+		if (module != null && "energydata".equalsIgnoreCase(module.getName())) {
+			FacilioField markedField = modBean.getField("marked", module.getName());
+			builder.andCondition(CriteriaAPI.getCondition(markedField, "false", BooleanOperators.IS));
+		}
+				
 		builder.select(fields);
 		if(buildingCondition != null) {
 			builder.andCondition(buildingCondition);
@@ -5532,7 +5537,6 @@ public class DashboardAction extends FacilioAction {
 			
 			if (getIsHeatMap() || (report != null && report.getChartType() != null && report.getChartType() == ReportContext.ReportChartType.HEATMAP.getValue())) {
 				builder.orderBy("value");
-				String reportDataSQL = builder.constructSelectStatement();
 //				this.calculateHeatMapRange(reportDataSQL, fields);
 			}
 		}

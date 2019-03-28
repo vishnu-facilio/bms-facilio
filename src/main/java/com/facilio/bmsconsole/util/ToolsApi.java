@@ -1,6 +1,8 @@
 package com.facilio.bmsconsole.util;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.PurchasedItemContext;
@@ -44,6 +46,26 @@ public class ToolsApi {
 
 		if (tools != null && !tools.isEmpty()) {
 			return tools.get(0);
+		}
+		return null;
+	}
+	
+	public static Map<String, Long> getToolTypesMap() throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.TOOL_TYPES);
+		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.TOOL_TYPES);
+
+		SelectRecordsBuilder<ToolTypesContext> selectBuilder = new SelectRecordsBuilder<ToolTypesContext>()
+				.select(fields).table(module.getTableName()).moduleName(module.getName())
+				.beanClass(ToolTypesContext.class);
+
+		List<ToolTypesContext> tools = selectBuilder.get();
+		Map<String, Long> toolNameVsIdMap = new HashMap<>();
+		if (tools != null && !tools.isEmpty()) {
+			for(ToolTypesContext toolType : tools) {
+				toolNameVsIdMap.put(toolType.getName(), toolType.getId());
+			}
+			return toolNameVsIdMap;
 		}
 		return null;
 	}

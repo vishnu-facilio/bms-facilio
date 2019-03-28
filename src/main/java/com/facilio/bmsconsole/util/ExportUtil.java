@@ -577,6 +577,9 @@ public class ExportUtil {
 				viewFields.remove(viewFields.get(j));
 				
           }
+			if (viewFields.get(j).getField().getName().equals("noOfTasks")) {		
+				viewFields.remove(viewFields.get(j));		
+          }
 		}
 		ViewField comment = new ViewField("comment", "Comment");
 		FacilioField commentField = new FacilioField();
@@ -591,7 +594,7 @@ public class ExportUtil {
 		List<NoteContext> notes = NotesAPI.fetchNote(ids, "ticketnotes");
 		if (!(notes.isEmpty())) {
 			for (int j = 0; j < notes.size(); j++) {
-				if (!(notes.get(j).getCreatedBy().getEmail().matches("system+"))) {
+				if (!(notes.get(j).getCreatedBy().getEmail().contains("system+"))) {
 				if (map.containsKey(notes.get(j).getParentId())){
 					map.get(notes.get(j).getParentId()).add(notes.get(j).getBody());
 				}
@@ -603,6 +606,9 @@ public class ExportUtil {
 				}
 			}
 			for (int i = 0; i < records.size(); i++) {
+				
+
+				
 				Map<String, Object> props = new HashMap<>();
 				props.put("comment", StringUtils.join(map.get(records.get(i).getId()), "\n"));
 				records.get(i).addData(props);

@@ -43,7 +43,7 @@ public class PurchaseOrderLineItemQuantityRollUpCommand implements Command{
 			
 			FacilioModule pomodule = modBean.getModule(FacilioConstants.ContextNames.PURCHASE_ORDER_LINE_ITEMS);
 			
-			Set<Long> lineItemId = new HashSet();
+			Set<Long> lineItemId = new HashSet<>();
 			
 			for (long id : lineItemIds) {
 				double quantity = getTotalReceivedQuantity(id, receiptsmodule, receiptsfieldsMap);

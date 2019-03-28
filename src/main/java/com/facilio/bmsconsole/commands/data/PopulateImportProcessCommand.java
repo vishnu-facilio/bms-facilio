@@ -422,7 +422,11 @@ public class PopulateImportProcessCommand implements Command {
 					readingBuilder.withLocalId();
 				}
 				readingBuilder.save();
-				Thread.sleep(10000L);
+				
+				if(splitSize > 100) {
+					Thread.sleep(10000L);
+				}
+				
 				
 				for( ReadingContext readingContext : readingsList) {
 					Long id = readingContext.getId();

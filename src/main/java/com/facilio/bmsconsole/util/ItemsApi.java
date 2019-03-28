@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.util;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -21,9 +22,9 @@ public class ItemsApi {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ITEM_TYPES);
 		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.ITEM_TYPES);
-		SelectRecordsBuilder<ItemTypesContext> selectBuilder = new SelectRecordsBuilder<ItemTypesContext>().select(fields)
-				.table(module.getTableName()).moduleName(module.getName()).beanClass(ItemTypesContext.class)
-				.andCondition(CriteriaAPI.getIdCondition(id, module));
+		SelectRecordsBuilder<ItemTypesContext> selectBuilder = new SelectRecordsBuilder<ItemTypesContext>()
+				.select(fields).table(module.getTableName()).moduleName(module.getName())
+				.beanClass(ItemTypesContext.class).andCondition(CriteriaAPI.getIdCondition(id, module));
 		return selectBuilder.getAsMap();
 	}
 
@@ -34,16 +35,16 @@ public class ItemsApi {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ITEM_TYPES);
 		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.ITEM_TYPES);
-		SelectRecordsBuilder<ItemTypesContext> selectBuilder = new SelectRecordsBuilder<ItemTypesContext>().select(fields)
-				.table(module.getTableName()).moduleName(module.getName()).beanClass(ItemTypesContext.class)
-				.andCondition(CriteriaAPI.getIdCondition(id, module));
+		SelectRecordsBuilder<ItemTypesContext> selectBuilder = new SelectRecordsBuilder<ItemTypesContext>()
+				.select(fields).table(module.getTableName()).moduleName(module.getName())
+				.beanClass(ItemTypesContext.class).andCondition(CriteriaAPI.getIdCondition(id, module));
 		List<ItemTypesContext> items = selectBuilder.get();
 		if (items != null && !items.isEmpty()) {
 			return items.get(0);
 		}
 		return null;
 	}
-	
+
 	public static ItemContext getItems(long id) throws Exception {
 		if (id <= 0) {
 			return null;
@@ -57,6 +58,24 @@ public class ItemsApi {
 		List<ItemContext> items = selectBuilder.get();
 		if (items != null && !items.isEmpty()) {
 			return items.get(0);
+		}
+		return null;
+	}
+
+	public static Map<String, Long> getAllItemTypes() throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ITEM_TYPES);
+		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.ITEM_TYPES);
+		SelectRecordsBuilder<ItemTypesContext> selectBuilder = new SelectRecordsBuilder<ItemTypesContext>()
+				.select(fields).table(module.getTableName()).moduleName(module.getName())
+				.beanClass(ItemTypesContext.class);
+		List<ItemTypesContext> items = selectBuilder.get();
+		Map<String, Long> itemNameVsIdMap = new HashMap<>();
+		if (items != null && !items.isEmpty()) {
+			for (ItemTypesContext item : items) {
+				itemNameVsIdMap.put(item.getName(), item.getId());
+			}
+			return itemNameVsIdMap;
 		}
 		return null;
 	}
