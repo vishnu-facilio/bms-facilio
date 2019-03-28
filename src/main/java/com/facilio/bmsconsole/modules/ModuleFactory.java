@@ -1837,4 +1837,12 @@ public class ModuleFactory {
 		purchaseOrder.setTableName("Receipts");
 		return purchaseOrder;
 	}
+
+	public static FacilioModule getControlActionTemplateModule() {
+		FacilioModule controlActionTemplate = new FacilioModule();
+		controlActionTemplate.setName("controlActionTemplate");
+		controlActionTemplate.setDisplayName("Control Action Template");
+		controlActionTemplate.setTableName("Control_Action_Template");
+		return controlActionTemplate;
+	}
 }

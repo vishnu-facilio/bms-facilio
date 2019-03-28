@@ -2149,6 +2149,19 @@ public class FieldFactory {
 		return fields;
 	}
 
+	public static List<FacilioField> getControlActionTemplateFields() {
+		List<FacilioField> fields = new ArrayList<>();
+		FacilioModule module = ModuleFactory.getControlActionTemplateModule();
+
+		fields.add(getIdField(module));
+		fields.add(getOrgIdField(module));
+		fields.add(getField("metric", "METRIC", module, FieldType.STRING));
+		fields.add(getField("resource", "RESOURCE", module, FieldType.STRING));
+		fields.add(getField("val", "VAL", module, FieldType.STRING));
+
+		return fields;
+	}
+
 	public static List<FacilioField> getTenantFields() {
 		List<FacilioField> fields = new ArrayList<>();
 		FacilioModule module = ModuleFactory.getTenantModule();
