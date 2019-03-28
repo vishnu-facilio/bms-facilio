@@ -1071,6 +1071,9 @@ public static Map<Long, TicketContext> getTickets(String ids) throws Exception {
 							}
 						}
 					}
+				
+					associateTenant(ticket);
+				
 				}
 			}
 		} else if(ticket.getAssignedTo() != null || ticket.getAssignmentGroup() != null) {
@@ -1219,5 +1222,16 @@ public static Map<Long, TicketContext> getTickets(String ids) throws Exception {
 			throw new IllegalArgumentException("The User does not belong to current site.");
 		}
 		
+	}
+	public static void associateTenant (TicketContext ticket) throws Exception {
+		if (AccountUtil.isFeatureEnabled(AccountUtil.FEATURE_TENANTS)) {
+			ResourceContext resource = ResourceAPI.getResource(ticket.getResource().getId());
+			if(resource.getResourceTypeEnum() ==  ResourceType.ASSET) {
+				ticket.setTenant(TenantsAPI.getTenantForAsset(ticket.getResource().getId()));
+			}
+			else if(resource.getResourceTypeEnum() ==  ResourceType.SPACE) {
+				ticket.setTenant(TenantsAPI.getTenantForSpace(ticket.getResource().getId()));
+			}
+		}
 	}
 }

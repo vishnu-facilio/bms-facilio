@@ -12,6 +12,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.InsertRecordBuilder;
+import com.facilio.bmsconsole.util.TenantsAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsole.workflow.rule.ApprovalState;
@@ -56,6 +57,8 @@ public class AddWorkOrderCommand implements Command {
 			}
 			workOrder.setEstimatedEnd(workOrder.getDueDate());
 			
+			//associate Tenant
+			TicketAPI.associateTenant(workOrder);
 			TicketAPI.updateTicketAssignedBy(workOrder);
 			TicketAPI.updateTicketStatus(workOrder);
 			

@@ -21,6 +21,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.actions.DashboardAction;
 import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
+import com.facilio.bmsconsole.context.LabourContext;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.TicketStatusContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
@@ -1146,22 +1147,86 @@ public class TenantsAPI {
 		return rs;
 	}
 
-    public static List<Map<String,Object>> getPmCount(long tenantId) throws Exception {
+	public static TenantContext getTenantForSpace(long spaceId) throws Exception{
+		if(spaceId != -1) {
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			FacilioModule zoneRelModule = ModuleFactory.getZoneRelModule();
+			FacilioModule tenantModule = modBean.getModule("tenant");
+			FacilioModule zoneModule = ModuleFactory.getZoneModule();
+			
+			List<FacilioField> tenantFields = modBean.getAllFields(tenantModule.getName());
+			SelectRecordsBuilder<TenantContext> builder = new SelectRecordsBuilder<TenantContext>()
+															.module(tenantModule)
+															.beanClass(TenantContext.class)
+															.select(tenantFields)
+															.innerJoin(zoneModule.getTableName())
+															.on(tenantModule.getTableName()+".ZONE_ID = "+zoneModule.getTableName()+".ID")
+														    .innerJoin(zoneRelModule.getTableName())
+															.on(zoneRelModule.getTableName()+".ZONE_ID = "+zoneModule.getTableName()+".ID")
+														    .andCondition(CriteriaAPI.getCondition(zoneRelModule.getTableName()+".BASE_SPACE_ID","baseSpaceId",""+spaceId,NumberOperators.EQUALS))
+															;
+			List<TenantContext> tenantList = builder.get();
+			if(!CollectionUtils.isEmpty(tenantList)) {
+				return tenantList.get(0);
+			}
+		}
+		TenantContext tenant = new TenantContext();
+		tenant.setId(-99);
+		return tenant;
 		
+	}
+	
+	public static TenantContext getTenantForAsset(long assetId) throws Exception{
+		if(assetId != -1) {
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			FacilioModule tenantUtilityModule = ModuleFactory.getTenantsUtilityMappingModule();
+			FacilioModule tenantModule = modBean.getModule("tenant");
+			
+			List<FacilioField> tenantFields = modBean.getAllFields(tenantModule.getName());
+			SelectRecordsBuilder<TenantContext> builder = new SelectRecordsBuilder<TenantContext>()
+															.module(tenantModule)
+															.beanClass(TenantContext.class)
+															.select(tenantFields)
+															.innerJoin(tenantUtilityModule.getTableName())
+															.on(tenantUtilityModule.getTableName()+".TENANT_ID = "+tenantModule.getTableName()+".ID")
+														    .andCondition(CriteriaAPI.getCondition(tenantUtilityModule.getTableName()+".ASSET_ID","assetId",""+assetId,NumberOperators.EQUALS))
+															;
+			List<TenantContext> tenantList = builder.get();
+			if(!CollectionUtils.isEmpty(tenantList)) {
+				return tenantList.get(0);
+			}
+		}
+		TenantContext tenant = new TenantContext();
+		tenant.setId(-99);
+		return tenant;
 		
+	}
+    public static List<Map<String,Object>> getPmCount(long zoneId,List<Long> assetIdList) throws Exception {
+		
+    	List<Long> zoneList = new ArrayList<Long>();
+		zoneList.add(zoneId);
+		
+		StringJoiner assetIdString = new StringJoiner(",");
+		for(Long id : assetIdList) {
+			assetIdString.add(String.valueOf(id));
+		}
+		List<BaseSpaceContext> spaces = SpaceAPI.getZoneChildren(zoneList);
+		StringJoiner idString = new StringJoiner(",");
+		for(BaseSpaceContext space:spaces) {
+			idString.add(String.valueOf(space.getId()));
+		}
+		idString.add(assetIdString.toString());
 		FacilioField tenantIdFld = new FacilioField();
 		tenantIdFld.setName("tenantId");
 		tenantIdFld.setColumnName("TENANT_ID");
 		tenantIdFld.setModule(ModuleFactory.getWorkOrderTemplateModule());
 		tenantIdFld.setDataType(FieldType.NUMBER);
 
-		Condition tenantCond = new Condition();
-		tenantCond.setField(tenantIdFld);
-		tenantCond.setOperator(NumberOperators.EQUALS);
-		tenantCond.setValue(tenantId+"");
 		
 		FacilioModule module = ModuleFactory.getPreventiveMaintenanceModule();
 		FacilioModule woTemplatemodule = ModuleFactory.getWorkOrderTemplateModule();
+		
+		
 		
 		List<FacilioField> fields = FieldFactory.getPreventiveMaintenanceFields();
 		
@@ -1172,7 +1237,7 @@ public class TenantsAPI {
 														.innerJoin(woTemplatemodule.getTableName())
 														.on("TEMPLATE_ID = "+woTemplatemodule.getTableName() +".ID")
 														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
-														.andCondition(tenantCond);
+														.andCondition(CriteriaAPI.getCondition(woTemplatemodule.getTableName()+".RESOURCE_ID", "resourceId", idString.toString(), NumberOperators.EQUALS));
 									
 		List<Map<String,Object>> rs = selectBuilder.get();
 		

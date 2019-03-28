@@ -206,7 +206,7 @@ public class UpdateWorkOrderCommand implements Command {
 		workOrder.setResource(new ResourceContext());
 		workOrder.getResource().setId(-1);
 		workOrder.setTenant(new TenantContext());
-		workOrder.getTenant().setId(-1);
+		workOrder.getTenant().setId(-99);
 	}
 	
 	public static <T extends TicketContext> void transferToAnotherTenant(WorkOrderContext workOrder, List<T> oldTickets) throws Exception {

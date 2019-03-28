@@ -726,6 +726,15 @@ public class ModuleFactory {
 
 		return zoneRelModule;
 	}
+	
+	public static FacilioModule getZoneModule() {
+		FacilioModule zoneRelModule = new FacilioModule();
+		zoneRelModule.setName("zone");
+		zoneRelModule.setDisplayName("Zone");
+		zoneRelModule.setTableName("Zone");
+
+		return zoneRelModule;
+	}
 
 	public static FacilioModule getAssetCategoryModule() {
 		FacilioModule fieldModule = new FacilioModule();
