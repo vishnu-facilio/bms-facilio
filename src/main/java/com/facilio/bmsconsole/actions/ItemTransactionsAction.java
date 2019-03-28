@@ -14,50 +14,108 @@ import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 
-public class ItemTransactionsAction extends FacilioAction{
+import nl.basjes.shaded.org.antlr.v4.runtime.atn.SemanticContext.PrecedencePredicate;
+
+public class ItemTransactionsAction extends FacilioAction {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 	private List<ItemTransactionsContext> itemTransaction;
+
 	public List<ItemTransactionsContext> getItemTransaction() {
 		return itemTransaction;
 	}
+
 	public void setItemTransaction(List<ItemTransactionsContext> inventoryActions) {
 		this.itemTransaction = inventoryActions;
 	}
-	
+
 	private List<Long> itemTransactionsId;
+
 	public void setItemTransactionsId(List<Long> inventoryActionsId) {
 		this.itemTransactionsId = inventoryActionsId;
 	}
+
 	public List<Long> getItemTransactionsId() {
 		return itemTransactionsId;
 	}
-	
-	public String addItemTransactions() throws Exception {
+
+	private int approvedState;
+
+	public int getApprovedState() {
+		return approvedState;
+	}
+
+	public void setApprovedState(int approvedState) {
+		this.approvedState = approvedState;
+	}
+
+	private int transactionType;
+
+	public int getTransactionType() {
+		return transactionType;
+	}
+
+	public void setTransactionType(int transactionType) {
+		this.transactionType = transactionType;
+	}
+
+	public String addOrUpdateItemTransactions() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.CREATE);
 		context.put(FacilioConstants.ContextNames.RECORD_LIST, itemTransaction);
-		Chain addWorkorderPartChain = TransactionChainFactory.getAddInventoryTransactionsChain();
+		context.put(FacilioConstants.ContextNames.PURCHASED_ITEM, purchasedItems);
+		Chain addWorkorderPartChain = TransactionChainFactory.getAddOrUpdateItemTransactionsChain();
 		addWorkorderPartChain.execute(context);
 		setItemTransactionsId((List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST));
-		setResult("inventoryActionsId", itemTransactionsId);
+		setResult("itemTransactionsId", itemTransactionsId);
 		return SUCCESS;
-	} 
-	
+	}
+
+	public String deleteItemTransactions() throws Exception {
+		FacilioContext context = new FacilioContext();
+
+		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.DELETE);
+		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, itemTransactionsId);
+
+		Chain deleteInventoryChain = TransactionChainFactory.getDeleteItemTransactionsChain();
+		deleteInventoryChain.execute(context);
+		setItemTransactionsId((List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST));
+		setResult("itemTransactionsId", itemTransactionsId);
+		return SUCCESS;
+	}
+
 	public String updateItemTransactions() throws Exception {
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.CREATE);
+		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.EDIT);
 		context.put(FacilioConstants.ContextNames.RECORD_LIST, itemTransaction);
 		Chain addWorkorderPartChain = TransactionChainFactory.getUpdateInventoryTransactionsChain();
 		addWorkorderPartChain.execute(context);
 		setItemTransactionsId((List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST));
 		setResult("inventoryActionsId", itemTransactionsId);
 		return SUCCESS;
-	} 
-	
+	}
+
+	public String approveOrRejectItemTransactions() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.EDIT);
+		context.put(FacilioConstants.ContextNames.RECORD_ID, itemTransactionsId);
+		context.put(FacilioConstants.ContextNames.ITEM_TRANSACTION_APPORVED_STATE, approvedState);
+		context.put(FacilioConstants.ContextNames.WORKORDER_COST_TYPE, 1);
+		Chain addWorkorderPartChain;
+		if (transactionType == 3) {
+			addWorkorderPartChain = TransactionChainFactory.getApproveRejectManualItemsChain();
+		} else {
+			addWorkorderPartChain = TransactionChainFactory.getApproveRejectWorkorderItemsChain();
+		}
+		addWorkorderPartChain.execute(context);
+		setItemTransactionsId((List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST));
+		setResult("itemTransactionsId", itemTransactionsId);
+		return SUCCESS;
+	}
+
 	public String itemsList() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.CV_NAME, getViewName());
@@ -85,8 +143,10 @@ public class ItemTransactionsAction extends FacilioAction{
 			}
 			context.put(FacilioConstants.ContextNames.PAGINATION, pagination);
 		}
-
-		Chain itemsListChain = ReadOnlyChainFactory.getInventoryTransactionsList();
+		if (getShowItemsForReturn()) {
+			context.put(FacilioConstants.ContextNames.SHOW_ITEMS_FOR_RETURN, showItemsForReturn);
+		}
+		Chain itemsListChain = ReadOnlyChainFactory.getItemTransactionsList();
 		itemsListChain.execute(context);
 		if (getCount()) {
 			setItemsCount((Long) context.get(FacilioConstants.ContextNames.RECORD_COUNT));
@@ -101,7 +161,18 @@ public class ItemTransactionsAction extends FacilioAction{
 		}
 		return SUCCESS;
 	}
+
+	public String showItemTransactionListForReturn() throws Exception {
+		itemsList();
+		return SUCCESS;
+	}
 	
+	public String itemTransactionsCount() throws Exception {
+		itemsList();
+		setResult(FacilioConstants.ContextNames.COUNT, count);
+		return SUCCESS;
+	}
+
 	private boolean includeParentFilter;
 
 	public boolean getIncludeParentFilter() {
@@ -111,6 +182,7 @@ public class ItemTransactionsAction extends FacilioAction{
 	public void setIncludeParentFilter(boolean includeParentFilter) {
 		this.includeParentFilter = includeParentFilter;
 	}
+
 	private Boolean count;
 
 	public Boolean getCount() {
@@ -123,12 +195,37 @@ public class ItemTransactionsAction extends FacilioAction{
 	public void setCount(Boolean count) {
 		this.count = count;
 	}
-	
+
 	private Long itemsCount;
+
 	public Long getItemsCount() {
 		return itemsCount;
 	}
+
 	public void setItemsCount(Long itemsCount) {
 		this.itemsCount = itemsCount;
+	}
+
+	private List<Long> purchasedItems;
+
+	public List<Long> getPurchasedItems() {
+		return purchasedItems;
+	}
+
+	public void setPurchasedItems(List<Long> purchasedItems) {
+		this.purchasedItems = purchasedItems;
+	}
+
+	private Boolean showItemsForReturn;
+
+	public Boolean getShowItemsForReturn() {
+		if (showItemsForReturn == null) {
+			return false;
+		}
+		return showItemsForReturn;
+	}
+
+	public void setShowItemsForReturn(Boolean showToolsForReturn) {
+		this.showItemsForReturn = showToolsForReturn;
 	}
 }

@@ -1,5 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.List;
+
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
@@ -12,11 +14,8 @@ public class GetAllZoneChildrenCommand implements Command{
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		
-		Long zoneId = (Long) context.get(FacilioConstants.ContextNames.ZONE_ID); 
-		
-		if (zoneId != null) {
-			context.put(FacilioConstants.ContextNames.BASE_SPACE_LIST, SpaceAPI.getZoneChildren(zoneId));
-		}
+		List<Long> zoneIds = (List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST); 
+		context.put(FacilioConstants.ContextNames.BASE_SPACE_LIST, SpaceAPI.getZoneChildren(zoneIds));
 		
 		return false;
 	}

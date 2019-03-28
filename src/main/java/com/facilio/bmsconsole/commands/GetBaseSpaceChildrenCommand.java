@@ -63,7 +63,7 @@ public class GetBaseSpaceChildrenCommand implements Command{
 			selectBuilder.andCustomWhere("BaseSpace.FLOOR_ID = ? AND BaseSpace.SPACE_TYPE = ?", spaceId, SpaceType.ZONE.getIntVal());
 		}
 		List<BaseSpaceContext> spaces = selectBuilder.get();
-		System.out.println(selectBuilder.toString());
+		// System.out.println(selectBuilder.toString());
 		context.put(FacilioConstants.ContextNames.BASE_SPACE_LIST, spaces);
 		
 		return false;

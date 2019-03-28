@@ -1,7 +1,6 @@
 package com.facilio.kinesis;
 
 import com.facilio.aws.util.AwsUtil;
-import com.facilio.timeseries.TimeSeriesProcessor;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
@@ -15,7 +14,7 @@ import java.util.concurrent.Future;
 
 public class ErrorDataProducer {
 
-    private static final Logger LOGGER = LogManager.getLogger(TimeSeriesProcessor.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger(ErrorDataProducer.class.getName());
 
     private static Producer<String, String> producer;
 

@@ -667,6 +667,9 @@
 	</package>
 	<package name="assetLatestDataApiv2" namespace="/api/v2/reading/latestdata"
 		extends="v2Api">
+		<action name="getReadingsForSpaces" class="com.facilio.bmsconsole.actions.ReadingAction"
+			method="v2GetLatestReadingDataForSpaces">
+		</action>
 		<action name="*" class="com.facilio.bmsconsole.actions.ReadingAction"
 			method="v2GetLatestReadingData">
 			<param name="parentId">{1}</param>
@@ -729,9 +732,17 @@
 		<action name="export" class="com.facilio.bmsconsole.actions.V2ReportAction"
 			method="exportReport">
 		</action>
+		<action name="exportModuleReport" class="com.facilio.bmsconsole.actions.V2ReportAction"
+			method="exportModuleReport">
+		</action>
+		
 		<action name="sendMail" class="com.facilio.bmsconsole.actions.V2ReportAction"
 			method="sendReportMail">
 		</action>
+		<action name="sendModuleReportMail" class="com.facilio.bmsconsole.actions.V2ReportAction"
+			method="sendModuleReportMail">
+		</action>
+		
 		<action name="schedule" class="com.facilio.bmsconsole.actions.V2ReportAction"
 			method="scheduleReport">
 		</action>
@@ -833,6 +844,11 @@
 			method="fetchActivity">
 			<param name="moduleName">asset</param>
 			<param name="permission">READ</param>
+		</action>
+		
+		<action name="generateqr" class="com.facilio.bmsconsole.actions.AssetAction"
+		method="generateQr">
+		<param name="moduleName">asset</param>
 		</action>
 
 		<action name="cards" class="com.facilio.bmsconsole.actions.AssetAction"
@@ -1139,6 +1155,11 @@
 			<param name="permission">READ</param>
 			<param name = "storeRoomId">{1}</param>
 		</action>
+		<action name="count" class="com.facilio.bmsconsole.actions.StoreRoomAction"
+			method="storeRoomCount">
+			<param name="moduleName">asset</param>
+			<param name="permission">READ</param>
+		</action>
 	</package>
 	
 	<package name="storeRoomListApiv2" namespace="/api/v2/storeRoom/view"
@@ -1169,6 +1190,13 @@
 			<param name="permission">READ</param>
 			<param name = "itemTypesId">{1}</param>
 		</action>
+		
+		<action name="count" class="com.facilio.bmsconsole.actions.ItemTypesAction"
+			method="itemTypesCount">
+			<param name="moduleName">asset</param>
+			<param name="permission">READ</param>
+		</action>
+		
 	</package>
 	
 	<package name="itemTypesListApiv2" namespace="/api/v2/itemTypes/view"
@@ -1198,6 +1226,16 @@
 			<param name="moduleName">asset</param>
 			<param name="permission">READ</param>
 			<param name = "toolId">{1}</param>
+		</action>
+		<action name="count" class="com.facilio.bmsconsole.actions.ToolTypesAction"
+			method="toolTypesCount">
+			<param name="moduleName">asset</param>
+			<param name="permission">READ</param>
+		</action>
+		<action name="bulkAdd"
+			class="com.facilio.bmsconsole.actions.ToolTypesAction" method="BulkAddToolTypes">
+			<param name="moduleName">asset</param>
+			<param name="permission">CREATE</param>
 		</action>
 	</package>
 	
@@ -1229,6 +1267,11 @@
 			<param name="permission">READ</param>
 			<param name = "vendorId">{1}</param>
 		</action>
+		<action name="count" class="com.facilio.bmsconsole.actions.VendorAction"
+			method="vendorsCount">
+			<param name="moduleName">asset</param>
+			<param name="permission">READ</param>
+		</action>
 	</package>
 	<package name="vendorsListApiv2" namespace="/api/v2/vendors/view"
 		extends="v2Api">
@@ -1247,6 +1290,11 @@
 			<param name="moduleName">asset</param>
 			<param name="permission">CREATE</param>
 		</action>
+		<action name="addBulkItem"
+			class="com.facilio.bmsconsole.actions.ItemAction" method="addBulkItem">
+			<param name="moduleName">asset</param>
+			<param name="permission">CREATE</param>
+		</action>
 		<action name="update"
 			class="com.facilio.bmsconsole.actions.ItemAction" method="updateItem">
 			<param name="moduleName">asset</param>
@@ -1257,6 +1305,11 @@
 			<param name="moduleName">asset</param>
 			<param name="permission">READ</param>
 			<param name = "itemId">{1}</param>
+		</action>
+		<action name="count" class="com.facilio.bmsconsole.actions.ItemAction"
+			method="itemCount">
+			<param name="moduleName">asset</param>
+			<param name="permission">READ</param>
 		</action>
 	</package>
 	<package name="itemListApiv2" namespace="/api/v2/item/view"
@@ -1306,11 +1359,10 @@
 	
 	<package name="unUsedPurchasedItemsList" namespace="/api/v2/unUsedPurchasedItemsList/item"
 		extends="v2Api">
-		<action name="*"
+		<action name="all"
 			class="com.facilio.bmsconsole.actions.PurchasedItemAction" method="unUsedPurchasedItemsList">
 			<param name="moduleName">asset</param>
 			<param name="permission">READ</param>
-			<param name = "itemId">{1}</param>
 		</action>
 	</package>
 	
@@ -1351,6 +1403,12 @@
 			<param name="moduleName">asset</param>
 			<param name="permission">CREATE</param>
 		</action>
+		
+		<action name="addBulkTool"
+			class="com.facilio.bmsconsole.actions.ToolAction" method="addBulkTool">
+			<param name="moduleName">asset</param>
+			<param name="permission">CREATE</param>
+		</action>
 		<action name="update"
 			class="com.facilio.bmsconsole.actions.ToolAction" method="updateTool">
 			<param name="moduleName">asset</param>
@@ -1361,6 +1419,11 @@
 			<param name="moduleName">asset</param>
 			<param name="permission">READ</param>
 			<param name = "toolId">{1}</param>
+		</action>
+		<action name="count" class="com.facilio.bmsconsole.actions.ToolAction"
+			method="toolCount">
+			<param name="moduleName">asset</param>
+			<param name="permission">READ</param>
 		</action>
 	</package>
 	<package name="toolListApiv2" namespace="/api/v2/tool/view"
@@ -1466,29 +1529,52 @@
 			<param name = "vendorsId">{1}</param>
 		</action>
 	</package>
-	<package name="itemTransactionsApi" namespace="/api/v2/itemTransactions"
+	<package name="manualItemTransactionsApi" namespace="/api/v2/manualItemTransactions"
 		extends="v2Api">
-		<action name="update"
-			class="com.facilio.bmsconsole.actions.ItemTransactionsAction" method="updateItemTransactions">
+		<action name="addOrUpdate"
+			class="com.facilio.bmsconsole.actions.ItemTransactionsAction" method="addOrUpdateItemTransactions">
 			<param name="moduleName">asset</param>
 			<param name="permission">CREATE</param>
 		</action>
-		<action name="add"
-			class="com.facilio.bmsconsole.actions.ItemTransactionsAction" method="addItemTransactions">
+		
+		<action name="delete"
+			class="com.facilio.bmsconsole.actions.ItemTransactionsAction" method="deleteItemTransactions">
 			<param name="moduleName">asset</param>
 			<param name="permission">CREATE</param>
 		</action>
 	</package>
 	
-	<package name="itemTransactionsList" namespace="/api/v2/itemTransactions"
+	<package name="approveOrRejectItemTransactionsApi" namespace="/api/v2/approveOrRejectItem"
 		extends="v2Api">
-		<action name="all"
+		<action name="approveOrReject"
+			class="com.facilio.bmsconsole.actions.ItemTransactionsAction" method="approveOrRejectItemTransactions">
+			<param name="moduleName">asset</param>
+			<param name="permission">CREATE</param>
+		</action>
+		
+	</package>
+	<package name="itemTransactionsList" namespace="/api/v2/itemTransactions/view"
+		extends="v2Api">
+		<action name="*"
 			class="com.facilio.bmsconsole.actions.ItemTransactionsAction" method="itemsList">
+			<param name="moduleName">asset</param>
+			<param name="permission">READ</param>
+			<param name="viewName">{1}</param>
+			</action>
+			<action name="showItemTransactionListForReturn"
+			class="com.facilio.bmsconsole.actions.ItemTransactionsAction" method="showItemTransactionListForReturn">
 			<param name="moduleName">asset</param>
 			<param name="permission">READ</param>
 			</action>
 	</package>
-	
+	<package name="itemTransactionsCountApi" namespace="/api/v2/itemTransactions"
+	extends="v2Api">
+		<action name="count"
+			class="com.facilio.bmsconsole.actions.ItemTransactionsAction" method="itemTransactionsCount">
+			<param name="moduleName">asset</param>
+			<param name="permission">READ</param>
+		</action>
+	</package>
 	<package name="purchasedToolApi" namespace="/api/v2/purchasedTool"
 		extends="v2Api">
 		<action name="update"
@@ -1526,13 +1612,204 @@
 	
 	<package name="unUsedPurchasedToolsList" namespace="/api/v2/unUsedPurchasedToolList/tool"
 		extends="v2Api">
-		<action name="*"
+		<action name="all"
 			class="com.facilio.bmsconsole.actions.PurchasedToolAction" method="unUsedPurchasedToolsList">
 			<param name="moduleName">asset</param>
 			<param name="permission">READ</param>
-			<param name = "toolId">{1}</param>
 		</action>
 	</package>
+	<package name="manualToolTransactionsApi" namespace="/api/v2/manualToolTransactions"
+		extends="v2Api">
+		<action name="addOrUpdate"
+			class="com.facilio.bmsconsole.actions.ToolTransactionsAction" method="addOrUpdateToolTransactions">
+			<param name="moduleName">asset</param>
+			<param name="permission">CREATE</param>
+		</action>
+		
+		<action name="delete"
+			class="com.facilio.bmsconsole.actions.ToolTransactionsAction" method="deleteToolTransactions">
+			<param name="moduleName">asset</param>
+			<param name="permission">CREATE</param>
+		</action>
+	</package>
+	<package name="approveOrRejectToolTransactionsApi" namespace="/api/v2/approveOrRejectTool"
+		extends="v2Api">
+		<action name="approveOrReject"
+			class="com.facilio.bmsconsole.actions.ToolTransactionsAction" method="approveOrRejectToolTransactions">
+			<param name="moduleName">asset</param>
+			<param name="permission">CREATE</param>
+		</action>
+		
+	</package>
+	<package name="toolTransactionsList" namespace="/api/v2/toolTransactions/view"
+		extends="v2Api">
+		<action name="*"
+			class="com.facilio.bmsconsole.actions.ToolTransactionsAction" method="toolsTransactionsList">
+			<param name="moduleName">asset</param>
+			<param name="permission">READ</param>
+			<param name="viewName">{1}</param>
+			</action>
+			<action name="showToolTransactionListForReturn"
+			class="com.facilio.bmsconsole.actions.ToolTransactionsAction" method="showToolTransactionListForReturn">
+			<param name="moduleName">asset</param>
+			<param name="permission">READ</param>
+			</action>
+	</package>
+	
+	<package name="purchaseRequestApi" namespace="/api/v2/purchaserequest" extends="v2Api">
+		<action name="addOrUpdate" class="com.facilio.bmsconsole.actions.PurchaseRequestAction" method="addPurchaseRequest">
+			<param name="moduleName">purchaserequest</param>
+		</action>
+		<action name="details" class="com.facilio.bmsconsole.actions.PurchaseRequestAction" method="getPurchaseRequestDetails">
+			<param name="moduleName">purchaserequest</param>
+		</action>
+		<action name="delete" class="com.facilio.bmsconsole.actions.PurchaseRequestAction" method="deletePurchaseRequest">
+			<param name="moduleName">purchaserequest</param>
+		</action>
+		<action name="addOrUpdateLineItem" class="com.facilio.bmsconsole.actions.PurchaseRequestAction" method="addOrUpdateLineItem">
+			<param name="moduleName">purchaserequestlineitems</param>
+		</action>
+		<action name="deleteLineItem" class="com.facilio.bmsconsole.actions.PurchaseRequestAction" method="deleteLineItem">
+			<param name="moduleName">purchaserequestlineitems</param>
+		</action>
+		<action name="purchaseRequestCount" class="com.facilio.bmsconsole.actions.PurchaseRequestAction" method="purchaseRequestCount">
+			<param name="moduleName">purchaserequest</param>
+		</action>
+		<action name="list" class="com.facilio.bmsconsole.actions.PurchaseRequestAction" method="getPurchaseRequestList">
+			<param name="moduleName">purchaserequest</param>
+		</action>
+		<action name="*" class="com.facilio.bmsconsole.actions.PurchaseRequestAction" method="getPurchaseRequestList">
+			<param name="viewName">{1}</param>
+			<param name="moduleName">purchaserequest</param>
+		</action>
+		
+	</package>
+
+
+
+	<package name="purchaseOrderApi" namespace="/api/v2/purchaseorder" extends="v2Api">
+		<action name="addOrUpdate" class="com.facilio.bmsconsole.actions.PurchaseOrderAction" method="addPurchaseOrder">
+			<param name="moduleName">purchaseorder</param>
+		</action>
+		<action name="details" class="com.facilio.bmsconsole.actions.PurchaseOrderAction" method="getPurchaseOrderDetails">
+			<param name="moduleName">purchaseorder</param>
+		</action>
+		<action name="delete" class="com.facilio.bmsconsole.actions.PurchaseOrderAction" method="deletePurchaseOrder">
+			<param name="moduleName">purchaseorder</param>
+		</action>
+		<action name="addOrUpdateLineItem" class="com.facilio.bmsconsole.actions.PurchaseOrderAction" method="addOrUpdateLineItem">
+			<param name="moduleName">purchaseorderlineitems</param>
+		</action>
+		<action name="pendingPOLineItem" class="com.facilio.bmsconsole.actions.PurchaseOrderAction" method="getPendingLineItems">
+			<param name="moduleName">purchaseorderlineitems</param>
+		</action>
+		<action name="receivedPOLineItem" class="com.facilio.bmsconsole.actions.PurchaseOrderAction" method="getReceivedLineItems">
+			<param name="moduleName">purchaseorderlineitems</param>
+		</action>
+		<action name="deleteLineItem" class="com.facilio.bmsconsole.actions.PurchaseOrderAction" method="deleteLineItem">
+			<param name="moduleName">purchaseorderlineitems</param>
+		</action>
+		<action name="convertPrToPo" class="com.facilio.bmsconsole.actions.PurchaseOrderAction" method="convertPRToPO">
+			<param name="moduleName">purchaseorder</param>
+		</action>
+		<action name="purchaseOrderCount" class="com.facilio.bmsconsole.actions.PurchaseOrderAction" method="purchaseOrderCount">
+			<param name="moduleName">purchaseorder</param>
+		</action>
+		<action name="list" class="com.facilio.bmsconsole.actions.PurchaseOrderAction" method="getPurchaseOrderList">
+			<param name="moduleName">purchaseorder</param>
+		</action>
+	   <action name="completePurchaseOrder" class="com.facilio.bmsconsole.actions.PurchaseOrderAction" method="completePurchaseOrder">
+			<param name="moduleName">purchaseorder</param>
+		</action>
+		<action name="*" class="com.facilio.bmsconsole.actions.PurchaseOrderAction" method="getPurchaseOrderList">
+			<param name="viewName">{1}</param>
+			<param name="moduleName">purchaseorder</param>
+		</action>
+	</package>
+
+	<package name="receiptsApi" namespace="/api/v2/receipt" extends="v2Api">
+		<action name="listByReceivableId" class="com.facilio.bmsconsole.actions.ReceiptAction" method="getAllReceiptsByReceivableId">
+			<param name="moduleName">receipts</param>
+		</action>
+		<action name="addOrUpdate" class="com.facilio.bmsconsole.actions.ReceiptAction" method="addOrUpdateReceipt">
+			<param name="moduleName">receipts</param>
+		</action>
+	</package>
+
+	<package name="receivablesApi" namespace="/api/v2/receivable" extends="v2Api">
+		<action name="list" class="com.facilio.bmsconsole.actions.ReceivableAction" method="getReceivableList">
+			<param name="moduleName">receivable</param>
+		</action>
+		<action name="getByPoId" class="com.facilio.bmsconsole.actions.ReceivableAction" method="getReceivableByPoId">
+			<param name="moduleName">receivable</param>
+		</action>
+			<action name="getById" class="com.facilio.bmsconsole.actions.ReceivableAction" method="getReceivableById">
+			<param name="moduleName">receivable</param>
+		</action>
+			<action name="addOrUpdate" class="com.facilio.bmsconsole.actions.ReceivableAction" method="addOrUpdateReceivables">
+			<param name="moduleName">receivable</param>
+		</action>
+		<action name="receivableCount" class="com.facilio.bmsconsole.actions.ReceivableAction" method="receivableCount">
+			<param name="moduleName">receivable</param>
+		</action>
+		 <action name="*" class="com.facilio.bmsconsole.actions.ReceivableAction" method="getReceivableList">
+			<param name="viewName">{1}</param>
+			<param name="moduleName">receivable</param>
+		</action>
+
+	</package>
+
+
+	<package name="labourApi" namespace="/api/v2/labour"
+		extends="v2Api">
+		<action name="add"
+			class="com.facilio.bmsconsole.actions.LabourAction" method="addLabour">
+			<param name="moduleName">labour</param>
+		</action>
+		<action name="update"
+			class="com.facilio.bmsconsole.actions.LabourAction" method="updateLabour">
+			<param name="moduleName">labour</param>
+		</action> 
+		<action name="delete"
+			class="com.facilio.bmsconsole.actions.LabourAction" method="deleteLabour">
+			<param name="moduleName">labour</param>
+		</action> 
+	    <action name="labourList"
+			class="com.facilio.bmsconsole.actions.LabourAction" method="labourList">
+			<param name="moduleName">labour</param>
+		</action> 
+	
+		<action name="*"
+			class="com.facilio.bmsconsole.actions.LabourAction" method="labourDetails">
+			<param name="moduleName">labour</param>
+			<param name = "labourId">{1}</param>
+		</action>
+		<action name="count" class="com.facilio.bmsconsole.actions.ItemAction"
+			method="itemCount">
+			<param name="moduleName">asset</param>
+			<param name="permission">READ</param>
+		</action>
+	</package>
+	
+	<package name="workorderLabourApi" namespace="/api/v2/workorderLabour"
+		extends="v2Api">
+		<action name="delete"
+			class="com.facilio.bmsconsole.actions.WorkOrderLabourAction" method="deleteWorkorderLabour">
+		</action>
+		<action name="addOrUpdate"
+			class="com.facilio.bmsconsole.actions.WorkOrderLabourAction" method="addOrUpdateWorkorderLabour">
+		</action>
+	</package>
+	
+	<package name="workorderLabourList" namespace="/api/v2/workorderLabourList/parent"
+		extends="v2Api">
+		<action name="*"
+			class="com.facilio.bmsconsole.actions.WorkOrderLabourAction" method="workorderLabourList">
+			<param name = "parentId">{1}</param>
+		</action>
+	</package>
+	
+	
 	
 	
 	<!-- <package name="pageApiv2" namespace="/api/v2/pages" extends="v2Api"> 

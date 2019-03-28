@@ -10,6 +10,7 @@ import org.apache.commons.chain.Chain;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
@@ -184,6 +185,12 @@ public class ModuleAction extends FacilioAction {
 				|| field.getName().equals("assignmentGroup")
 				|| field.getName().equals("createdTime"))
 				{
+					continue;
+				}
+				if(field.getName().equals("tenant")) {
+					if(AccountUtil.isFeatureEnabled(AccountUtil.FEATURE_TENANTS)) {
+					workorderFields.add(field);
+					}
 					continue;
 				}
 				workorderFields.add(field);

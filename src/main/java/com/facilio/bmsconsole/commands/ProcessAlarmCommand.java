@@ -11,6 +11,8 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
 import com.facilio.bmsconsole.context.AlarmContext;
@@ -21,6 +23,8 @@ import com.facilio.bmsconsole.util.AlarmAPI;
 import com.facilio.constants.FacilioConstants;
 
 public class ProcessAlarmCommand implements Command {
+	
+	private static final Logger LOGGER = LogManager.getLogger(ProcessAlarmCommand.class.getName());
 	
 	private static final List<String> EVENT_INTERNAL_PROPS = Collections.unmodifiableList(initDefaultEventProps());
 	private static List<String> initDefaultEventProps() {
@@ -74,8 +78,10 @@ public class ProcessAlarmCommand implements Command {
 		if (!additionalInfo.isEmpty()) {
 			alarm.setAdditionInfo(additionalInfo);
 		}
+//		LOGGER.info("Alarm Obj : "+FieldUtil.getAsJSON(alarm).toJSONString());
 		context.put(FacilioConstants.ContextNames.ALARM, alarm);
 		context.put(FacilioConstants.ContextNames.COMMENT, comment);
+		context.put(FacilioConstants.ContextNames.IS_NEW_EVENT, true);
 		
 		return false;
 	}

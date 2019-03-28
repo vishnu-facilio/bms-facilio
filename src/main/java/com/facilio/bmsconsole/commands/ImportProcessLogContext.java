@@ -14,6 +14,15 @@ import com.facilio.bmsconsole.util.AssetsAPI;
 public class ImportProcessLogContext {
 	Long id, orgId, importId, templateId,parentId;
 	String assetName;
+	Integer importMode;
+	
+	public Integer getImportMode() {
+		return importMode;
+	}
+	public void setImportMode(Integer importMode) {
+		this.importMode = importMode;
+	}
+	
 	public String getAssetName(){
 		return this.assetName;
 	}

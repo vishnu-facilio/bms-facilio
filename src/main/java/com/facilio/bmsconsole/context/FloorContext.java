@@ -13,4 +13,22 @@ public class FloorContext extends BaseSpaceContext {
 	public void setFloorlevel(int floorlevel) {
 		this.floorlevel = floorlevel;
 	}
+	
+	private long floorPlanId;
+
+	public long getFloorPlanId() {
+		return floorPlanId;
+	}
+	public void setFloorPlanId(long floorPlanId) {
+		this.floorPlanId = floorPlanId;
+	}
+	
+	private String floorPlanInfo;
+	
+	public String getFloorPlanInfo() {
+		return floorPlanInfo;
+	}
+	public void setFloorPlanInfo(String floorPlanInfo) {
+		this.floorPlanInfo = floorPlanInfo;
+	}
 }

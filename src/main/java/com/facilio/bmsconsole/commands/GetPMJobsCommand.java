@@ -1,15 +1,13 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
+import com.facilio.bmsconsole.modules.FacilioModule;
+import com.facilio.bmsconsole.modules.ModuleFactory;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
@@ -46,31 +44,43 @@ public class GetPMJobsCommand implements Command {
 		Criteria filterCriteria = (Criteria) context.get(FacilioConstants.ContextNames.FILTER_CRITERIA);
 		List<FacilioField> fields = FieldFactory.getPreventiveMaintenanceFields();
 		FacilioField triggerField = FieldFactory.getAsMap(fields).get("triggerType");
+
+		Criteria scopeCriteria = AccountUtil.getCurrentUser().scopeCriteria("pmjobs");
+
+		long startTime = (Long) context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_STARTTIME);
+		long endTime = (Long) context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_ENDTIME);
+
+		Map<Long, List<Map<String, Object>>> pmJobsMap = PreventiveMaintenanceAPI.getPMJobs(startTime, endTime, scopeCriteria);
+
+		List<PreventiveMaintenance> pms = null;
 		Condition triggerCondition = CriteriaAPI.getCondition(triggerField, String.valueOf(TriggerType.NONE.getVal()), NumberOperators.NOT_EQUALS);
 		if(filterCriteria == null) {
 			filterCriteria = new Criteria();
 		}
 		filterCriteria.addAndCondition(triggerCondition);
-		Criteria scopeCriteria = AccountUtil.getCurrentUser().scopeCriteria("planned");
-		if(scopeCriteria != null) {
-			filterCriteria.andCriteria(scopeCriteria);
-		}
-		
 		Criteria permissionCriteria = AccountUtil.getCurrentUser().getRole().permissionCriteria("planned","read");
 		if(permissionCriteria != null) {
 			filterCriteria.andCriteria(permissionCriteria);
 		}
-		
-		List<PreventiveMaintenance> pms = PreventiveMaintenanceAPI.getAllActivePMs(filterCriteria);
+		if (pmJobsMap != null) {
+			Collection<List<Map<String, Object>>> pmJobs = pmJobsMap.values();
+			List<Long> pmIds = new ArrayList<>();
+			for (List<Map<String, Object>> props: pmJobs) {
+				for (Map<String, Object> prop: props) {
+					pmIds.add((Long) prop.get("pmId"));
+				}
+			}
+			FacilioModule pmModule = ModuleFactory.getPreventiveMaintenanceModule();
+			Criteria pmIdCriteria = new Criteria();
+			pmIdCriteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getIdField(pmModule), pmIds, NumberOperators.EQUALS));
+			filterCriteria.andCriteria(pmIdCriteria);
+			pms = PreventiveMaintenanceAPI.getAllActivePMs(filterCriteria);
+		}
+
 		if(pms != null && !pms.isEmpty()) 
 		{
 			Map<Long, PreventiveMaintenance> pmMap = pms.stream().collect(Collectors.toMap(PreventiveMaintenance::getId, Function.identity()));
 			Map<Long, List<PMTriggerContext>> pmTriggersMap = PreventiveMaintenanceAPI.getPMTriggers(pms);
-			
-			long startTime = (Long) context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_STARTTIME);
-			long endTime = (Long) context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_ENDTIME);
-			
-			Map<Long, List<Map<String, Object>>> pmJobsMap = PreventiveMaintenanceAPI.getPMJobsFromPMIds(new ArrayList<>(pmTriggersMap.keySet()), startTime, endTime);
 			
 			Map<Long, PMTriggerContext> pmTriggerMap = new HashMap<>();
 			

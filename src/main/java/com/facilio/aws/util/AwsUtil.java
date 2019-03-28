@@ -1,6 +1,11 @@
 package com.facilio.aws.util;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
@@ -144,6 +149,7 @@ public class AwsUtil
 	private static String appDomain;
 	private static String clientAppUrl;
 	private static String pushNotificationKey;
+	private static String portalPushNotificationKey;
 	private static String environment;
 	private static String kafkaProducer;
 	private static String kafkaConsumer;
@@ -156,6 +162,7 @@ public class AwsUtil
 	private static String anomalyRefreshWaitTimeInSeconds;
 	private static String anomalyDetectWaitTimeInSeconds;
 	private static String anomalyPredictAPIURL;
+	private static boolean sysLogEnabled;
 	
 	static {
 		loadProperties();
@@ -178,6 +185,7 @@ public class AwsUtil
 				dbClass = PROPERTIES.getProperty("db.class");
 				appDomain = PROPERTIES.getProperty("app.domain");
 				pushNotificationKey = PROPERTIES.getProperty("push.notification.key");
+				portalPushNotificationKey = PROPERTIES.getProperty("portal.push.notification.key");
 				clientAppUrl = "https://"+appDomain;
 				kafkaProducer = PROPERTIES.getProperty("kafka.producer");
 				kafkaConsumer = PROPERTIES.getProperty("kafka.consumer");
@@ -190,6 +198,7 @@ public class AwsUtil
 				anomalyRefreshWaitTimeInSeconds = PROPERTIES.getProperty("anomalyRefreshWaitTimeInSeconds","10");
 				anomalyDetectWaitTimeInSeconds = PROPERTIES.getProperty("anomalyDetectWaitTimeInSeconds","3");
 				anomalyPredictAPIURL = PROPERTIES.getProperty("anomalyPredictServiceURL","http://localhost:7444/api");
+				sysLogEnabled = "true".equals(PROPERTIES.getProperty("syslog.enabled", "false"));
 						
 				PROPERTIES.put("clientapp.url", clientAppUrl);
 				URL resourceDir = AwsUtil.class.getClassLoader().getResource("");
@@ -433,11 +442,11 @@ public class AwsUtil
     }
 	
 	public static void sendEmail(JSONObject mailJson) throws Exception  {
+		logEmail(mailJson);
 		if(AwsUtil.isDevelopment()) {
 //			mailJson.put("subject", "Local - "+mailJson.get("subject"));
 			return;
 		}
-		logEmail(mailJson);
 		if(isSmtp()) {
 			EmailUtil.sendEmail(mailJson);
 		} else {
@@ -910,6 +919,10 @@ public class AwsUtil
 		return pushNotificationKey;
 	}
 
+	public static String getPortalPushNotificationKey() {
+		return portalPushNotificationKey;
+	}
+
 	public static String getKafkaProducer() {
 		return kafkaProducer;
 	}
@@ -958,4 +971,8 @@ public class AwsUtil
 	public static String getAnomalyPredictAPIURL() {
 		return anomalyPredictAPIURL;
 	}
+
+    public static boolean isSysLogEnabled() {
+		return sysLogEnabled;
+    }
 }

@@ -1,5 +1,7 @@
 package com.facilio.bmsconsole.context;
 
+import com.facilio.bmsconsole.workflow.rule.AlarmRuleContext;
+
 public class ReadingAlarmContext extends AlarmContext {
 	
 	/**
@@ -61,7 +63,14 @@ public class ReadingAlarmContext extends AlarmContext {
 	public void setReadingMessage(String readingMessage) {
 		this.readingMessage = readingMessage;
 	}
-	
+	AlarmRuleContext alarmRuleContext;
+	public AlarmRuleContext getAlarmRuleContext() {
+		return alarmRuleContext;
+	}
+	public void setAlarmRuleContext(AlarmRuleContext alarmRuleContext) {
+		this.alarmRuleContext = alarmRuleContext;
+	}
+
 	private long ruleId = -1;
 	public long getRuleId() {
 		return ruleId;

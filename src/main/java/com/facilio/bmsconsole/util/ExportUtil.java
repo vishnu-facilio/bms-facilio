@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.commons.chain.Chain;
 import org.apache.commons.lang3.StringUtils;
@@ -24,6 +25,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.AlarmContext.AlarmType;
+import com.facilio.bmsconsole.context.NoteContext;
 import com.facilio.bmsconsole.context.TicketContext.SourceType;
 import com.facilio.bmsconsole.context.ViewField;
 import com.facilio.bmsconsole.modules.FacilioField;
@@ -42,30 +44,30 @@ import com.facilio.fw.BeanFactory;
 
 public class ExportUtil {
 	
-	public static String exportData(FileFormat fileFormat,FacilioModule facilioModule, List<ViewField> fields, List<? extends ModuleBaseWithCustomFields> records) throws Exception {
+	public static String exportData(FileFormat fileFormat,FacilioModule facilioModule, List<ViewField> fields, List<? extends ModuleBaseWithCustomFields> records, boolean isS3Url) throws Exception {
 		String fileUrl = null;
 		if(fileFormat == FileFormat.XLS){
-			fileUrl=ExportUtil.exportDataAsXLS(facilioModule, fields, records);
+			fileUrl=ExportUtil.exportDataAsXLS(facilioModule, fields, records, isS3Url);
 		}
 		else if(fileFormat == FileFormat.CSV){
-			fileUrl=ExportUtil.exportDataAsCSV(facilioModule, fields, records);
+			fileUrl=ExportUtil.exportDataAsCSV(facilioModule, fields, records, isS3Url);
 		}
 		return fileUrl;
 	}
 
-	public static String exportData(FileFormat fileFormat,String name, Map<String,Object> table) throws Exception {
+	public static String exportData(FileFormat fileFormat,String name, Map<String,Object> table, boolean isS3Url) throws Exception {
 		String fileUrl = null;
 		if(fileFormat == FileFormat.XLS){
-			fileUrl=ExportUtil.exportDataAsXLS(name, table);
+			fileUrl=ExportUtil.exportDataAsXLS(name, table, isS3Url);
 		}
 		else if(fileFormat == FileFormat.CSV){
-			fileUrl=ExportUtil.exportDataAsCSV(name, table);
+			fileUrl=ExportUtil.exportDataAsCSV(name, table, isS3Url);
 		}
 		return fileUrl;
 	}
 	
 	@SuppressWarnings("resource")
-	public static String exportDataAsXLS(FacilioModule facilioModule, List<ViewField> fields, List<? extends ModuleBaseWithCustomFields> records) throws Exception 
+	public static String exportDataAsXLS(FacilioModule facilioModule, List<ViewField> fields, List<? extends ModuleBaseWithCustomFields> records, boolean isS3Url) throws Exception
 	{
 		HSSFWorkbook workbook = new HSSFWorkbook();
 		HSSFSheet sheet = workbook.createSheet(facilioModule.getDisplayName());
@@ -121,10 +123,14 @@ public class ExportUtil {
 		FileStore fs = FileStoreFactory.getInstance().getFileStore();
 		long fileId = fs.addFile(file.getPath(), file, "application/xls");
 
+		if (isS3Url) {
+			return fs.getOrgiDownloadUrl(fileId);
+		}
+
 		return fs.getDownloadUrl(fileId);
 	}
 	
-	public static String exportDataAsXLS(String name, Map<String,Object> table) throws Exception 
+	public static String exportDataAsXLS(String name, Map<String,Object> table, boolean isS3Url) throws Exception 
 	{
 		HSSFWorkbook workbook = new HSSFWorkbook();
 		HSSFSheet sheet = workbook.createSheet(name);
@@ -186,7 +192,7 @@ public class ExportUtil {
 					if(value instanceof Double) {
 						value = BigDecimal.valueOf((Double)value).toPlainString();
 					}
-					row.createCell((short) j).setCellValue(value.toString());
+					row.createCell((short) j).setCellValue(value != null ? value.toString() : "");
 	    			}
 			}
 			
@@ -203,6 +209,11 @@ public class ExportUtil {
 		File file = new File(fileName);
 		FileStore fs = FileStoreFactory.getInstance().getFileStore();
 		long fileId = fs.addFile(file.getPath(), file, "application/xls");
+		
+		if (isS3Url) {
+			return fs.getOrgiDownloadUrl(fileId);
+		}
+
 		return fs.getDownloadUrl(fileId);
 	}
 	
@@ -225,7 +236,7 @@ public class ExportUtil {
 		}
 	}
 	
-	public static String exportDataAsCSV(FacilioModule facilioModule, List<ViewField> fields, List<? extends ModuleBaseWithCustomFields> records) throws Exception
+	public static String exportDataAsCSV(FacilioModule facilioModule, List<ViewField> fields, List<? extends ModuleBaseWithCustomFields> records, boolean isS3Url) throws Exception
     {
 		String fileName = facilioModule.getDisplayName() + ".csv";
         	FileWriter writer = new FileWriter(fileName, false);
@@ -274,12 +285,15 @@ public class ExportUtil {
         	File file = new File(fileName);
 	    FileStore fs = FileStoreFactory.getInstance().getFileStore();
 	    long fileId = fs.addFile(file.getPath(), file, "application/csv");
-	    
+
+	    if (isS3Url) {
+	    	return fs.getOrgiDownloadUrl(fileId);
+		}
 	    return fs.getDownloadUrl(fileId);
     }
 	
 	@SuppressWarnings("unchecked")
-	public static String exportDataAsCSV(String name, Map<String,Object> table) throws Exception
+	public static String exportDataAsCSV(String name, Map<String,Object> table, boolean isS3Url) throws Exception
     {
 		String fileName = name + ".csv";
         	FileWriter writer = new FileWriter(fileName, false);
@@ -358,6 +372,9 @@ public class ExportUtil {
 	    FileStore fs = FileStoreFactory.getInstance().getFileStore();
 	    long fileId = fs.addFile(file.getPath(), file, "application/csv");
 	    
+	    if (isS3Url) {
+			return fs.getOrgiDownloadUrl(fileId);
+		}
 	    return fs.getDownloadUrl(fileId);
     }
 
@@ -494,7 +511,7 @@ public class ExportUtil {
 		return null;
 	}
 	
-	public static String exportModule(FileFormat fileFormat, String moduleName, String viewName, String filters) throws Exception {
+	public static String exportModule(FileFormat fileFormat, String moduleName, String viewName, String filters, boolean isS3Value, boolean specialFields) throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
 		context.put(FacilioConstants.ContextNames.CV_NAME, viewName);
@@ -502,6 +519,7 @@ public class ExportUtil {
 		int limit = 5000;
 		Map<String, String> orgInfo = CommonCommandUtil.getOrgInfo(FacilioConstants.OrgInfoKeys.MODULE_EXPORT_LIMIT);
 		String orgLimit = orgInfo.get(FacilioConstants.OrgInfoKeys.MODULE_EXPORT_LIMIT);
+		
 		if (orgLimit != null && !orgLimit.isEmpty()) {
 			limit = Integer.parseInt(orgLimit);
 		}
@@ -528,7 +546,6 @@ public class ExportUtil {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
 		List<ViewField> viewFields = view.getFields();
-		
 		if(moduleName.equals("alarm")) {
 			Iterator<ViewField> it = viewFields.iterator();
 	        while (it.hasNext()) {
@@ -551,7 +568,51 @@ public class ExportUtil {
 			noOfEvents.setField(modBean.getField("noOfEvents", moduleName));
 			viewFields.add(noOfEvents);
 		}
-		return exportData(fileFormat, modBean.getModule(moduleName), viewFields, records);
+
+		if(specialFields) {
+		List<Long> ids = records.stream().map(a -> a.getId()).collect(Collectors.toList());
+		for (int j = 0; j < viewFields.size(); j++) { 
+			if (viewFields.get(j).getField().getName().equals("noOfNotes")) {
+				
+				viewFields.remove(viewFields.get(j));
+				
+          }
+		}
+		ViewField comment = new ViewField("comment", "Comment");
+		FacilioField commentField = new FacilioField();
+		commentField.setName("comment");
+		commentField.setDataType(FieldType.STRING);
+		commentField.setColumnName("COMMENTS");
+		commentField.setModule(modBean.getModule(moduleName));
+		comment.setField(commentField);
+		viewFields.add(comment);		
+		Map<Long, List<String>> map = new HashMap<>();
+		if (ids.size() > 0) {
+		List<NoteContext> notes = NotesAPI.fetchNote(ids, "ticketnotes");
+		if (!(notes.isEmpty())) {
+			for (int j = 0; j < notes.size(); j++) {
+				if (!(notes.get(j).getCreatedBy().getEmail().matches("system+"))) {
+				if (map.containsKey(notes.get(j).getParentId())){
+					map.get(notes.get(j).getParentId()).add(notes.get(j).getBody());
+				}
+				else {
+					List<String> temp = new ArrayList<>();
+					temp.add(notes.get(j).getBody());
+					map.put(notes.get(j).getParentId(), temp);
+				}
+				}
+			}
+			for (int i = 0; i < records.size(); i++) {
+				Map<String, Object> props = new HashMap<>();
+				props.put("comment", StringUtils.join(map.get(records.get(i).getId()), "\n"));
+				records.get(i).addData(props);
+			}
+			
+		}
+	}
+
+}	
+		return exportData(fileFormat, modBean.getModule(moduleName), viewFields, records, isS3Value);
 	}
 	
 }

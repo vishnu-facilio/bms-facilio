@@ -1120,6 +1120,8 @@ public class AccountConstants {
 		fields.add(mobileInstanceId);
 		
 		fields.add(FieldFactory.getField("createdTime", "CREATED_TIME", module, FieldType.DATE_TIME));
+		
+		fields.add(FieldFactory.getField("fromPortal", "IS_FROM_PORTAL", module, FieldType.BOOLEAN));
 
 		return fields;
 	}
@@ -1369,6 +1371,13 @@ public class AccountConstants {
 		sessionInfo.setColumnName("SESSION_INFO");
 		sessionInfo.setModule(module);
 		fields.add(sessionInfo);
+		
+		FacilioField userType = new FacilioField();
+		userType.setName("userType");
+		userType.setDataType(FieldType.STRING);
+		userType.setColumnName("USER_TYPE");
+		userType.setModule(module);
+		fields.add(userType);
 	
 		return fields;
 	}

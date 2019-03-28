@@ -57,8 +57,13 @@ public class ValidateFormCommand implements Command {
 			boolean customFieldPresent = false;
 			if (formObject instanceof ModuleBaseWithCustomFields) {
 				ModuleBaseWithCustomFields obj = (ModuleBaseWithCustomFields) formObject;
-				if (obj.getData() != null && obj.getData().containsKey(f.getName())) {
+				if (f.getField()!=null && (f.getField().getDefault() == null)) {
+					if(obj.getData() != null) {
 					value = obj.getData().get(f.getName());
+					}
+					else {
+						value=null;
+					}
 					customFieldPresent = true;
 				}
 			} 

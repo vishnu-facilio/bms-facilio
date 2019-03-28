@@ -24,7 +24,16 @@ public class Organization implements Serializable {
 	private String currency;
 	private long createdTime;
 	private long portalId;
+	private String customDomain;
 	
+	
+	
+	public String getCustomDomain() {
+		return customDomain;
+	}
+	public void setCustomDomain(String customDomain) {
+		this.customDomain = customDomain;
+	}
 	public long getOrgId() {
 		return orgId;
 	}

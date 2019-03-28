@@ -56,6 +56,10 @@ public class SetTableNamesCommand implements Command {
 		return new SetTableNamesCommand("assetdepartment", "AssetDepartment");
 	}
 	
+	public static SetTableNamesCommand getForTenants() {
+		return new SetTableNamesCommand("tenant", "Tenants");
+	}
+	
 	public static SetTableNamesCommand getForAssetType() {
 		return new SetTableNamesCommand("assettype", "AssetType");
 	}
@@ -228,6 +232,10 @@ public class SetTableNamesCommand implements Command {
 		return new SetTableNamesCommand("workorderTools", "Workorder_tools");
 	}
 	
+	public static SetTableNamesCommand getForWorkorderLabour() {
+		return new SetTableNamesCommand("workorderLabour", "Workorder_labour");
+	}
+	
 	public static SetTableNamesCommand getForItemTypesVendors() {
 		return new SetTableNamesCommand("itemVendors", "Item_vendors");
 	}
@@ -236,6 +244,33 @@ public class SetTableNamesCommand implements Command {
 		return new SetTableNamesCommand("purchasedTool", "Purchased_Tool");
 	}
 	
+	public static SetTableNamesCommand getForLabour() {
+		return new SetTableNamesCommand("labour", "Labour");
+	}
+	
+	public static SetTableNamesCommand getForPurchaseRequest() {
+		return new SetTableNamesCommand("purchaserequest", "Purchase_Requests");
+	}
+
+	public static SetTableNamesCommand getForPurchaseRequestLineItem() {
+		return new SetTableNamesCommand("purchaserequestlineitems", "PurchaseRequestLineItems");
+	}
+
+	public static SetTableNamesCommand getForPurchaseOrder() {
+		return new SetTableNamesCommand("purchaseorder", "Purchase_Orders");
+	}
+
+	public static SetTableNamesCommand getForPurchaseOrderLineItem() {
+		return new SetTableNamesCommand("purchaseorderlineitems", "PurchaseOrderLineItems");
+	}
+
+	public static SetTableNamesCommand getForReceipt() {
+		return new SetTableNamesCommand("receipts", "Receipts");
+	}
+
+	public static SetTableNamesCommand getForReceivables() {
+		return new SetTableNamesCommand("receivable", "Receivables");
+	}
 	public static void setForModule (Context context, String moduleName) {
 		//TODO handle all module and get from map
 		String tableName = "";

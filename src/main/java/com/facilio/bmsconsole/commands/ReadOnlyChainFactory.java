@@ -4,6 +4,7 @@ import org.apache.commons.chain.Chain;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
+import com.facilio.bmsconsole.actions.GetToolTransactionsListCommand;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.chain.FacilioChain;
 
@@ -126,7 +127,6 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new LoadViewCommand());
 		c.addCommand(new GetCalendarWOsCommands());
 //		c.addCommand(new GetFutureWOsCommands());
-		c.addCommand(new GetPlannedFutureWOCommand());
 		return c;
 	}
 	
@@ -206,7 +206,7 @@ public class ReadOnlyChainFactory {
 		Chain c = getDefaultChain();
 		c.addCommand(new FetchAlarmRuleCommand());
 		c.addCommand(new GetActionListForAlarmRuleCommand());
-		c.addCommand(new FetchExtraMetaForAlarmRuleCommand());
+//		c.addCommand(new FetchExtraMetaForAlarmRuleCommand());
 		return c;
 	}
 	
@@ -240,6 +240,7 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new GetAlarmCommand());
 		c.addCommand(new GetReadingRuleNameCommand());
+		c.addCommand(new GetReadingRuleDetailsCommand());
 		return c;
 	}
 	
@@ -251,7 +252,7 @@ public class ReadOnlyChainFactory {
 	
 	public static Chain executeWorkflowsForReadingChain() {
 		Chain c = getDefaultChain();
-		c.addCommand(new ExecuteAllWorkflowsCommand(false, RuleType.READING_RULE, RuleType.PM_READING_RULE, RuleType.VALIDATION_RULE,RuleType.ALARM_TRIGGER_RULE,RuleType.ALARM_CLEAR_RULE));
+		c.addCommand(new ExecuteAllWorkflowsCommand(false, RuleType.READING_RULE, RuleType.PM_READING_RULE, RuleType.VALIDATION_RULE,RuleType.ALARM_TRIGGER_RULE,RuleType.ALARM_CLEAR_RULE,RuleType.ALARM_RCA_RULES, RuleType.PM_READING_TRIGGER));
 		return c;
 	}
 	
@@ -322,10 +323,25 @@ public class ReadOnlyChainFactory {
 		return c;
 	}
 	
+	public static Chain getExportNewModuleReportFileChain() {
+		Chain c = getDefaultChain();
+		c.addCommand(newFetchReportDataChain());
+		c.addCommand(new GetExportModuleReportFileCommand());
+		return c;
+	}
+	
 	public static Chain sendNewAnalyticsMailChain() {
 		Chain c = getDefaultChain();
 		c.addCommand(getExportNewAnalyticsFileChain());
 		c.addCommand(new SendReadingReportMailCommand());
+		return c;
+	}
+	
+	public static Chain fetchTenantDetails() {
+		Chain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForTenants());
+		c.addCommand(new GetTenantDetailCommand());
+//		CommonCommandUtil.addCleanUpCommand(c);
 		return c;
 	}
 	
@@ -525,6 +541,14 @@ public class ReadOnlyChainFactory {
 		return c;
 	}
 	
+	public static Chain getWorkorderLabourList(){
+		Chain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForWorkorderLabour());
+		c.addCommand(new LoadAllFieldsCommand());
+		c.addCommand(new GetWorkOrderLabourListCommand());
+		return c;
+	}
+	
 	public static Chain getWorkorderCostList(){
 		Chain c = getDefaultChain();
 		c.addCommand(SetTableNamesCommand.getForWorkOrderCosts());
@@ -549,9 +573,10 @@ public class ReadOnlyChainFactory {
 		return c;
 	}
 	
-	public static Chain getInventoryTransactionsList() {
+	public static Chain getItemTransactionsList() {
 		Chain c = getDefaultChain();
 		c.addCommand(SetTableNamesCommand.getForItemTransactions());
+		c.addCommand(new LoadViewCommand());
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new GenerateCriteriaFromFilterCommand());
 		c.addCommand(new GenerateSearchConditionCommand());
@@ -580,6 +605,111 @@ public class ReadOnlyChainFactory {
 		c.addCommand(SetTableNamesCommand.getForPurchasedTool());
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new GetPurchasedToolsListCommand());
+		return c;
+	}
+	
+	public static Chain getToolTransactionsList() {
+		Chain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForToolTranaction());
+		c.addCommand(new LoadViewCommand());
+		c.addCommand(new LoadAllFieldsCommand());
+		c.addCommand(new GenerateCriteriaFromFilterCommand());
+		c.addCommand(new GenerateSearchConditionCommand());
+		c.addCommand(new GetToolTransactionsListCommand());
+		return c;
+	}
+	
+	public static Chain getUnusedPurchasdToolsList() {
+		Chain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForPurchasedTool());
+		c.addCommand(new LoadAllFieldsCommand());
+		c.addCommand(new GetUnusedPurchasedToolsList());
+		return c;
+	}
+	
+	public static Chain getUnusedPurchasdItemsList() {
+		Chain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForPurchasedItem());
+		c.addCommand(new LoadAllFieldsCommand());
+		c.addCommand(new GetUnusedPurchasedItemsList());
+		return c;
+	}
+	public static Chain getLabourList(){
+		Chain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForLabour());
+		c.addCommand(new LoadAllFieldsCommand());
+		c.addCommand(new GetLabourListCommand());
+		return c;
+	}
+	
+	public static Chain fetchLabourDetails() {
+		Chain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForLabour());
+		c.addCommand(new GenericGetModuleDataDetailCommand());
+		c.addCommand(new GetLabourDetailsCommand());
+		return c;
+	}
+	
+	public static Chain getFormList()
+	{
+		Chain c=getDefaultChain();
+		c.addCommand(new GetFormListCommand());
+		return c;
+	}
+
+	public static Chain getPurchaseRequestListChain() {
+		Chain chain = getDefaultChain();
+		chain.addCommand(SetTableNamesCommand.getForPurchaseRequest());
+		chain.addCommand(new LoadAllFieldsCommand());
+		chain.addCommand(new LoadViewCommand());
+		chain.addCommand(new GenerateCriteriaFromFilterCommand());
+		chain.addCommand(new GenerateSearchConditionCommand());
+		chain.addCommand(new GetPurchaseRequestListCommand());
+		return chain;
+	}
+
+	public static Chain getPurchaseRequestDetailsChain() {
+		Chain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForPurchaseRequest());
+		c.addCommand(new PurchaseRequestPurchaseOrderLookUpsCommand());
+		c.addCommand(new GenericGetModuleDataDetailCommand());
+		c.addCommand(new FetchPurchaseRequestDetailsCommand());
+		return c;
+	}
+
+	public static Chain getPurchaseOrderListChain() {
+		Chain chain = getDefaultChain();
+		chain.addCommand(SetTableNamesCommand.getForPurchaseOrder());
+		chain.addCommand(new LoadAllFieldsCommand());
+		chain.addCommand(new LoadViewCommand());
+		chain.addCommand(new GenerateCriteriaFromFilterCommand());
+		chain.addCommand(new GenerateSearchConditionCommand());
+		chain.addCommand(new GetPurchaseOrderListCommand());
+		return chain;
+	}
+
+	public static Chain getPurchaseOrderDetailsChain() {
+		Chain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForPurchaseOrder());
+		c.addCommand(new PurchaseRequestPurchaseOrderLookUpsCommand());
+		c.addCommand(new GenericGetModuleDataDetailCommand());
+		c.addCommand(new FetchPurchaseOrderDetailsCommand());
+		return c;
+	}
+
+	public static Chain getAllReceiptsChain() {
+		Chain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForReceipt());
+		c.addCommand(new LoadAllFieldsCommand());
+		c.addCommand(new GetReceiptsListCommand());
+		return c;
+	}
+
+	public static Chain getAllReceivablesChain() {
+		Chain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForReceivables());
+		c.addCommand(new LoadAllFieldsCommand());
+		c.addCommand(new GetReceivablesListCommand());
 		return c;
 	}
 	

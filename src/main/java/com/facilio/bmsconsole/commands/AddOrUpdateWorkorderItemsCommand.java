@@ -13,6 +13,7 @@ import com.facilio.bmsconsole.context.ItemContext;
 import com.facilio.bmsconsole.context.ItemContext.CostType;
 import com.facilio.bmsconsole.context.ItemTypesContext;
 import com.facilio.bmsconsole.context.PurchasedItemContext;
+import com.facilio.bmsconsole.context.StoreRoomContext;
 import com.facilio.bmsconsole.context.WorkorderItemContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
@@ -20,10 +21,13 @@ import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.InsertRecordBuilder;
+import com.facilio.bmsconsole.modules.LookupField;
+import com.facilio.bmsconsole.modules.LookupFieldMeta;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
 import com.facilio.bmsconsole.util.TransactionState;
 import com.facilio.bmsconsole.util.TransactionType;
+import com.facilio.bmsconsole.workflow.rule.ApprovalState;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 
@@ -37,112 +41,153 @@ public class AddOrUpdateWorkorderItemsCommand implements Command {
 		FacilioModule workorderItemsModule = modBean.getModule(FacilioConstants.ContextNames.WORKORDER_ITEMS);
 		List<FacilioField> workorderItemFields = modBean.getAllFields(FacilioConstants.ContextNames.WORKORDER_ITEMS);
 
+		FacilioModule purchasedItemModule = modBean.getModule(FacilioConstants.ContextNames.PURCHASED_ITEM);
+		List<FacilioField> purchasedItemFields = modBean.getAllFields(FacilioConstants.ContextNames.PURCHASED_ITEM);
+
 		List<WorkorderItemContext> workorderitems = (List<WorkorderItemContext>) context
 				.get(FacilioConstants.ContextNames.RECORD_LIST);
 		List<WorkorderItemContext> workorderItemslist = new ArrayList<>();
 		List<WorkorderItemContext> itemToBeAdded = new ArrayList<>();
+		long itemTypesId = -1;
 		if (workorderitems != null) {
 			long parentId = workorderitems.get(0).getParentId();
 			for (WorkorderItemContext workorderitem : workorderitems) {
 				ItemContext item = getItem(workorderitem.getItem().getId());
-				ItemTypesContext itemType = getItemType(item.getItemType().getId());
-				if (item.getQuantity() < workorderitem.getQuantity()) {
-					throw new IllegalStateException("Insufficient quantity in inventory!");
-				} else {
-					if (itemType.individualTracking()) {
-						List<Long> PurchasedItemsIds = (List<Long>) context
-								.get(FacilioConstants.ContextNames.PURCHASED_ITEM);
-						List<PurchasedItemContext> purchasedItem = getPurchasedItemsListFromId(PurchasedItemsIds);
-						if (purchasedItem != null) {
-							for (PurchasedItemContext pItem : purchasedItem) {
-								WorkorderItemContext woItem = new WorkorderItemContext();
-								pItem.setIsUsed(true);
-								woItem = setWorkorderItemObj(pItem, 1, item, parentId);
-								updatePurchasedItem(pItem);
-								if (workorderitem.getId() <= 0) {
-									// Insert
-									workorderItemslist.add(woItem);
-									itemToBeAdded.add(woItem);
-								} else {
-									// update
-									woItem.setId(workorderitem.getId());
-									workorderItemslist.add(woItem);
-									updateWorkorderItems(workorderItemsModule, workorderItemFields, woItem);
+				itemTypesId = item.getItemType().getId();
+				ItemTypesContext itemType = getItemType(itemTypesId);
+				StoreRoomContext storeRoom = item.getStoreRoom();
+				if (workorderitem.getId() > 0) {
+					SelectRecordsBuilder<WorkorderItemContext> selectBuilder = new SelectRecordsBuilder<WorkorderItemContext>()
+							.select(workorderItemFields).table(workorderItemsModule.getTableName())
+							.moduleName(workorderItemsModule.getName()).beanClass(WorkorderItemContext.class)
+							.andCondition(CriteriaAPI.getIdCondition(workorderitem.getId(), workorderItemsModule));
+					List<WorkorderItemContext> woIt = selectBuilder.get();
+					if (woIt != null) {
+						WorkorderItemContext wItem = woIt.get(0);
+						SelectRecordsBuilder<PurchasedItemContext> purchasedItemSelectBuilder = new SelectRecordsBuilder<PurchasedItemContext>()
+								.select(purchasedItemFields).table(purchasedItemModule.getTableName())
+								.moduleName(purchasedItemModule.getName()).beanClass(PurchasedItemContext.class)
+								.andCondition(CriteriaAPI.getIdCondition(wItem.getPurchasedItem().getId(),
+										purchasedItemModule));
+						List<PurchasedItemContext> purchasedItemsList = purchasedItemSelectBuilder.get();
+						if (purchasedItemsList != null && !purchasedItemsList.isEmpty()) {
+							PurchasedItemContext purchaseditem = purchasedItemsList.get(0);
+							double q = wItem.getQuantity();
+							if ((q + purchaseditem.getCurrentQuantity() < workorderitem.getQuantity())) {
+								throw new IllegalArgumentException("Insufficient quantity in inventory!");
+							} else {
+								ApprovalState approvalState = ApprovalState.YET_TO_BE_REQUESTED;
+								if (itemType.isApprovalNeeded() || storeRoom.isApprovalNeeded()) {
+									approvalState = ApprovalState.REQUESTED;
 								}
+								if (itemType.individualTracking()) {
+									wItem = setWorkorderItemObj(purchaseditem, 1, item, parentId, approvalState);
+								} else {
+									wItem = setWorkorderItemObj(purchaseditem, workorderitem.getQuantity(), item,
+											parentId, approvalState);
+								}
+								updatePurchasedItem(purchaseditem);
+								wItem.setId(workorderitem.getId());
+								workorderItemslist.add(wItem);
+								updateWorkorderItems(workorderItemsModule, workorderItemFields, wItem);
 							}
 						}
+					}
+				} else {
+					if (item.getQuantity() < workorderitem.getQuantity()) {
+						throw new IllegalArgumentException("Insufficient quantity in inventory!");
 					} else {
-						List<PurchasedItemContext> purchasedItem = new ArrayList<>();
-
-						if (item.getCostTypeEnum() == null || item.getCostType() <= 0
-								|| item.getCostTypeEnum() == CostType.FIFO) {
-							purchasedItem = getPurchasedItemList(item.getId(), " asc");
-						} else if (item.getCostTypeEnum() == CostType.LIFO) {
-							purchasedItem = getPurchasedItemList(item.getId(), " desc");
+						ApprovalState approvalState = ApprovalState.YET_TO_BE_REQUESTED;
+						if (itemType.isApprovalNeeded() || storeRoom.isApprovalNeeded()) {
+							approvalState = ApprovalState.REQUESTED;
 						}
+						if (itemType.individualTracking()) {
+							List<Long> PurchasedItemsIds = workorderitem.getPurchasedItems();
+							List<PurchasedItemContext> purchasedItem = getPurchasedItemsListFromId(PurchasedItemsIds,
+									purchasedItemModule, purchasedItemFields);
+							if (purchasedItem != null) {
+								for (PurchasedItemContext pItem : purchasedItem) {
+									if(pItem.isUsed()) {
+										throw new IllegalArgumentException("Insufficient quantity in inventory!");
+									}
+									WorkorderItemContext woItem = new WorkorderItemContext();
+									if (itemType.isApprovalNeeded() || storeRoom.isApprovalNeeded()) {
+										pItem.setIsUsed(false);
+									} else {
+										pItem.setIsUsed(true);
+									}
+									woItem = setWorkorderItemObj(pItem, 1, item, parentId, approvalState);
+									updatePurchasedItem(pItem);
+									workorderItemslist.add(woItem);
+									itemToBeAdded.add(woItem);
+								}
+							}
+						} else {
+							List<PurchasedItemContext> purchasedItem = new ArrayList<>();
 
-						if (purchasedItem != null && !purchasedItem.isEmpty()) {
-							PurchasedItemContext pItem = purchasedItem.get(0);
-							if (workorderitem.getQuantity() <= pItem.getCurrentQuantity()) {
-								WorkorderItemContext woItem = new WorkorderItemContext();
-								woItem = setWorkorderItemObj(pItem, workorderitem.getQuantity(), item, parentId);
-								if (workorderitem.getId() <= 0) {
-									// Insert
+							if (item.getCostTypeEnum() == null || item.getCostType() <= 0
+									|| item.getCostTypeEnum() == CostType.FIFO) {
+								purchasedItem = getPurchasedItemList(item.getId(), " asc", purchasedItemModule,
+										purchasedItemFields);
+							} else if (item.getCostTypeEnum() == CostType.LIFO) {
+								purchasedItem = getPurchasedItemList(item.getId(), " desc", purchasedItemModule,
+										purchasedItemFields);
+							}
+
+							if (purchasedItem != null && !purchasedItem.isEmpty()) {
+								PurchasedItemContext pItem = purchasedItem.get(0);
+								if (workorderitem.getQuantity() <= pItem.getCurrentQuantity()) {
+									WorkorderItemContext woItem = new WorkorderItemContext();
+									woItem = setWorkorderItemObj(pItem, workorderitem.getQuantity(), item, parentId,
+											approvalState);
 									workorderItemslist.add(woItem);
 									itemToBeAdded.add(woItem);
 								} else {
-									// update
-									woItem.setId(workorderitem.getId());
-									workorderItemslist.add(woItem);
-									updateWorkorderItems(workorderItemsModule, workorderItemFields, woItem);
-								}
-							} else {
-								double requiredQuantity = workorderitem.getQuantity();
-								for (PurchasedItemContext purchaseitem : purchasedItem) {
-									WorkorderItemContext woItem = new WorkorderItemContext();
-									double quantityUsedForTheCost = 0;
-									if (requiredQuantity <= purchaseitem.getCurrentQuantity()) {
-										quantityUsedForTheCost = requiredQuantity;
-									} else {
-										quantityUsedForTheCost = purchaseitem.getCurrentQuantity();
-									}
-									woItem = setWorkorderItemObj(purchaseitem, quantityUsedForTheCost, item, parentId);
-									requiredQuantity -= quantityUsedForTheCost;
-									if (workorderitem.getId() <= 0) {
-										// Insert
+									double requiredQuantity = workorderitem.getQuantity();
+									for (PurchasedItemContext purchaseitem : purchasedItem) {
+										WorkorderItemContext woItem = new WorkorderItemContext();
+										double quantityUsedForTheCost = 0;
+										if (requiredQuantity <= purchaseitem.getCurrentQuantity()) {
+											quantityUsedForTheCost = requiredQuantity;
+										} else {
+											quantityUsedForTheCost = purchaseitem.getCurrentQuantity();
+										}
+										woItem = setWorkorderItemObj(purchaseitem, quantityUsedForTheCost, item,
+												parentId, approvalState);
+										requiredQuantity -= quantityUsedForTheCost;
 										workorderItemslist.add(woItem);
 										itemToBeAdded.add(woItem);
-									} else {
-										// update
-										woItem.setId(workorderitem.getId());
-										workorderItemslist.add(woItem);
-										updateWorkorderItems(workorderItemsModule, workorderItemFields, woItem);
-									}
-									if (requiredQuantity <= 0) {
-										break;
+										if (requiredQuantity <= 0) {
+											break;
+										}
 									}
 								}
 							}
 						}
 					}
 				}
+
 			}
 
 			if (itemToBeAdded != null && !itemToBeAdded.isEmpty()) {
 				addWorkorderParts(workorderItemsModule, workorderItemFields, itemToBeAdded);
 			}
 			context.put(FacilioConstants.ContextNames.PARENT_ID, workorderitems.get(0).getParentId());
+			context.put(FacilioConstants.ContextNames.PARENT_ID_LIST,
+					Collections.singletonList(workorderitems.get(0).getParentId()));
 			context.put(FacilioConstants.ContextNames.ITEM_ID, workorderitems.get(0).getItem().getId());
 			context.put(FacilioConstants.ContextNames.ITEM_IDS,
 					Collections.singletonList(workorderitems.get(0).getItem().getId()));
 			context.put(FacilioConstants.ContextNames.RECORD_LIST, workorderItemslist);
 			context.put(FacilioConstants.ContextNames.WORKORDER_COST_TYPE, 1);
+			context.put(FacilioConstants.ContextNames.ITEM_TYPES_ID, itemTypesId);
+			context.put(FacilioConstants.ContextNames.ITEM_TYPES_IDS, Collections.singletonList(itemTypesId));
 		}
 		return false;
 	}
 
 	private WorkorderItemContext setWorkorderItemObj(PurchasedItemContext purchasedItem, double quantity,
-			ItemContext item, long parentId) {
+			ItemContext item, long parentId, ApprovalState approvalState) {
 		WorkorderItemContext woItem = new WorkorderItemContext();
 		woItem.setTransactionType(TransactionType.WORKORDER);
 		woItem.setTransactionState(TransactionState.ISSUE);
@@ -150,8 +195,15 @@ public class AddOrUpdateWorkorderItemsCommand implements Command {
 		woItem.setPurchasedItem(purchasedItem);
 		woItem.setQuantity(quantity);
 		woItem.setItem(item);
+		woItem.setItemType(item.getItemType());
 		woItem.setSysModifiedTime(System.currentTimeMillis());
 		woItem.setParentId(parentId);
+		woItem.setApprovedState(approvalState);
+		if (approvalState == ApprovalState.YET_TO_BE_REQUESTED) {
+			woItem.setRemainingQuantity(quantity);
+		} else {
+			woItem.setRemainingQuantity(0);
+		}
 		double costOccured = 0;
 		if (purchasedItem.getUnitcost() >= 0) {
 			costOccured = purchasedItem.getUnitcost() * quantity;
@@ -182,10 +234,13 @@ public class AddOrUpdateWorkorderItemsCommand implements Command {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ITEM);
 		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.ITEM);
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+		List<LookupFieldMeta> lookUpfields = new ArrayList<>();
+		lookUpfields.add(new LookupFieldMeta((LookupField) fieldMap.get("storeRoom")));
 
 		SelectRecordsBuilder<ItemContext> selectBuilder = new SelectRecordsBuilder<ItemContext>().select(fields)
 				.table(module.getTableName()).moduleName(module.getName()).beanClass(ItemContext.class)
-				.andCustomWhere(module.getTableName() + ".ID = ?", id);
+				.andCustomWhere(module.getTableName() + ".ID = ?", id).fetchLookups(lookUpfields);
 
 		List<ItemContext> inventories = selectBuilder.get();
 
@@ -240,17 +295,17 @@ public class AddOrUpdateWorkorderItemsCommand implements Command {
 		return null;
 	}
 
-	public static List<PurchasedItemContext> getPurchasedItemList(long id, String orderByType) throws Exception {
+	public static List<PurchasedItemContext> getPurchasedItemList(long id, String orderByType, FacilioModule module,
+			List<FacilioField> fields) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.PURCHASED_ITEM);
-		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.PURCHASED_ITEM);
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 		SelectRecordsBuilder<PurchasedItemContext> selectBuilder = new SelectRecordsBuilder<PurchasedItemContext>()
 				.select(fields).table(module.getTableName()).moduleName(module.getName())
 				.beanClass(PurchasedItemContext.class)
 				.andCondition(
 						CriteriaAPI.getCondition(fieldMap.get("item"), String.valueOf(id), NumberOperators.EQUALS))
-				.andCondition(CriteriaAPI.getCondition(fieldMap.get("currentQuantity"), String.valueOf(0), NumberOperators.GREATER_THAN))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("currentQuantity"), String.valueOf(0),
+						NumberOperators.GREATER_THAN))
 				.orderBy(fieldMap.get("costDate").getColumnName() + orderByType);
 
 		List<PurchasedItemContext> purchasedItemlist = selectBuilder.get();
@@ -261,16 +316,12 @@ public class AddOrUpdateWorkorderItemsCommand implements Command {
 		return null;
 	}
 
-	public static List<PurchasedItemContext> getPurchasedItemsListFromId(List<Long> id) throws Exception {
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.PURCHASED_ITEM);
-		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.PURCHASED_ITEM);
-		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+	public static List<PurchasedItemContext> getPurchasedItemsListFromId(List<Long> id, FacilioModule module,
+			List<FacilioField> fields) throws Exception {
 		SelectRecordsBuilder<PurchasedItemContext> selectBuilder = new SelectRecordsBuilder<PurchasedItemContext>()
 				.select(fields).table(module.getTableName()).moduleName(module.getName())
-				.beanClass(PurchasedItemContext.class)
-				.andCondition(CriteriaAPI.getIdCondition(id, module));
-		
+				.beanClass(PurchasedItemContext.class).andCondition(CriteriaAPI.getIdCondition(id, module));
+
 		List<PurchasedItemContext> purchasedItemlist = selectBuilder.get();
 
 		if (purchasedItemlist != null && !purchasedItemlist.isEmpty()) {

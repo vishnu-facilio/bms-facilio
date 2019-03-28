@@ -21,7 +21,13 @@ public class DashboardFolderContext {
 	public void setModuleId(long moduleId) {
 		this.moduleId = moduleId;
 	}
-	
+	String moduleName;
+	public String getModuleName() {
+		return moduleName;
+	}
+	public void setModuleName(String string) {
+		this.moduleName = string;
+	}
 	private long id = -1;
 	public long getId() {
 		return id;

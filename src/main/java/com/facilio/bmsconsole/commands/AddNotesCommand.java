@@ -64,7 +64,9 @@ public class AddNotesCommand implements Command {
 			
 			Set<Long> parentIds = new HashSet<>();
 			for (NoteContext note : notes) {
-				note.setCreatedTime(System.currentTimeMillis());
+				if (note.getCreatedTime() == -1) {
+					note.setCreatedTime(System.currentTimeMillis());
+				}
 				note.setCreatedBy(AccountUtil.getCurrentUser());
 				
 				parentIds.add(note.getParentId());

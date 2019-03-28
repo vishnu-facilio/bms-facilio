@@ -15,6 +15,7 @@ import org.json.simple.JSONObject;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
+import com.facilio.bmsconsole.criteria.FieldOperator;
 import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.criteria.Operator;
 import com.facilio.bmsconsole.criteria.PickListOperators;
@@ -78,6 +79,16 @@ public class GenerateCriteriaFromFilterCommand implements Command {
 		}
 		
 		FacilioField field = modBean.getField(fieldName, moduleName);
+		if (field == null) {
+			// Temp handling...needs to check
+			if (fieldName.equals("site") && OLD_FIELDS_MODULE.contains(moduleName)) {
+				field = modBean.getField("siteId", moduleName);
+			}
+			if (field == null) {
+				LOGGER.error("Field is not found for: " + fieldName + " : " + moduleName);
+				throw new Exception("Field is not found for: " + fieldName + " : " + moduleName);
+			}
+		}
 		
 		if (fieldJson.containsKey("operatorId")) {
 			operatorId = (int) (long) fieldJson.get("operatorId");
@@ -101,10 +112,6 @@ public class GenerateCriteriaFromFilterCommand implements Command {
 				}
 			}
 			operatorId = field.getDataTypeEnum().getOperator(operatorName).getOperatorId();
-		}
-		if (field == null) {
-			LOGGER.error("Field is not found for: " + fieldName + " : " + moduleName);
-			throw new Exception("Field is not found for: " + fieldName + " : " + moduleName);
 		}
 		JSONArray value = (JSONArray) fieldJson.get("value");
 		if((value!=null && value.size() > 0) || (operatorName != null && !(operatorName.equals("is")) ) ) {
@@ -139,7 +146,12 @@ public class GenerateCriteriaFromFilterCommand implements Command {
 						values.append(obj);
 					}
 				}
-				condition.setValue(values.toString());
+				String valuesString = values.toString();
+				if (condition.getOperator() instanceof FieldOperator) {
+					condition.setValueField(modBean.getField(valuesString, moduleName));
+				} else {
+					condition.setValue(valuesString);
+				}
 				if (fieldJson.containsKey("orFilters")) {	// To have or condition for different fields..eg: (space=1 OR purposeSpace=1)
 					JSONArray orFilters = (JSONArray) fieldJson.get("orFilters");
 					for(int i=0;i<orFilters.size();i++) {
@@ -158,7 +170,7 @@ public class GenerateCriteriaFromFilterCommand implements Command {
 		}
 	}
 	
-	private static final List<String> TEMPLATE_FIELDS = Arrays.asList("priorityId", "statusId", "categoryId", "typeId", "assignmentGroupId", "assignedToId", "resourceId");
+	private static final List<String> TEMPLATE_FIELDS = Arrays.asList("priorityId", "statusId", "categoryId", "typeId", "assignmentGroupId", "assignedToId", "resourceId", "tenantId");
 	private static final List<String> OLD_FIELDS = Arrays.asList("siteId", "spaceId", "buildingId", "floorId", "spaceId1", "spaceId2", "spaceId3", "spaceId4");
 	private static final List<String> OLD_FIELDS_MODULE = Arrays.asList(FacilioConstants.ContextNames.BASE_SPACE, FacilioConstants.ContextNames.RESOURCE, FacilioConstants.ContextNames.SPACE, FacilioConstants.ContextNames.ASSET, FacilioConstants.ContextNames.BUILDING, FacilioConstants.ContextNames.FLOOR);
 	private String gePreventiveMaintenanceModule(String fieldName) {

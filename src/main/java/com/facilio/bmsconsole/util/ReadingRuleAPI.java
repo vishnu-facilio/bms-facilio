@@ -10,6 +10,7 @@ import java.util.Map;
 
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Context;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
@@ -21,6 +22,7 @@ import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.BaseLineContext;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ResourceContext;
+import com.facilio.bmsconsole.context.TicketContext.SourceType;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
@@ -32,16 +34,21 @@ import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.bmsconsole.workflow.rule.ActionContext;
 import com.facilio.bmsconsole.workflow.rule.AlarmRuleContext;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleAlarmMeta;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
+import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext.ThresholdType;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.constants.FacilioConstants.Alarm;
 import com.facilio.events.constants.EventConstants;
+import com.facilio.sql.GenericDeleteRecordBuilder;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
+import com.facilio.sql.mysql.DeleteRecordBuilder;
 import com.facilio.workflows.context.ExpressionContext;
 import com.facilio.workflows.context.WorkflowContext;
 
@@ -93,7 +100,8 @@ public class ReadingRuleAPI extends WorkflowRuleAPI {
 		updateWorkflowRuleChildIds(rule);
 		updateExtendedRule(rule, ModuleFactory.getReadingRuleModule(), FieldFactory.getReadingRuleFields());
 		deleteChildIdsForWorkflow(oldRule, rule);
-		
+		deleteInclusionsExclusions(oldRule);
+		ReadingRuleAPI.addReadingRuleInclusionsExlusions((ReadingRuleContext) rule);
 		if (rule.getName() == null) {
 			rule.setName(oldRule.getName());
 		}
@@ -126,7 +134,17 @@ public class ReadingRuleAPI extends WorkflowRuleAPI {
 			}
 		}
 	}
-	
+	private static void deleteInclusionsExclusions (ReadingRuleContext readingRule) throws Exception {
+		
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getReadingRuleInclusionsExclusionsFields());
+		
+		GenericDeleteRecordBuilder deleteBuilder = new GenericDeleteRecordBuilder();
+		deleteBuilder.table(ModuleFactory.getReadingRuleInclusionsExclusionsModule().getTableName());
+		deleteBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("ruleGroupId"), readingRule.getRuleGroupId()+"", NumberOperators.EQUALS));
+		
+		deleteBuilder.delete();
+		
+	}
 	private static void fetchInclusionsExclusions (ReadingRuleContext readingRule) throws Exception {
 		FacilioModule module = ModuleFactory.getReadingRuleInclusionsExclusionsModule();
 		List<FacilioField> fields = FieldFactory.getReadingRuleInclusionsExclusionsFields();
@@ -320,8 +338,36 @@ public class ReadingRuleAPI extends WorkflowRuleAPI {
 			.update(prop)
 			;
 	}
-	public static List<ReadingRuleContext> getReadingRules(long ruleGroupId) throws Exception {
-		if (ruleGroupId <= 0) {
+	public static Map<Long, AlarmRuleContext> getAlarmRuleMap(List<Long> ruleGroupIds) throws Exception {
+		
+		List<ReadingRuleContext> readingRuleContexts = getReadingRulesList(ruleGroupIds);
+		
+		Map<Long,List<ReadingRuleContext>> readingRuleMap = new HashMap<>();
+		Map<Long,AlarmRuleContext> alarmRuleContextMap = new HashMap<>();
+		if(readingRuleContexts != null) {
+			for(ReadingRuleContext readingRuleContext :readingRuleContexts) {
+				
+				if(readingRuleMap.get(readingRuleContext.getRuleGroupId()) == null) {
+					List<ReadingRuleContext> readingRuleList = new ArrayList<>();
+					readingRuleMap.put(readingRuleContext.getRuleGroupId(), readingRuleList);
+				}
+				readingRuleMap.get(readingRuleContext.getRuleGroupId()).add(readingRuleContext);
+			}
+			
+			for(Long groupId :readingRuleMap.keySet()) {
+				AlarmRuleContext alarmRuleContext = new AlarmRuleContext(readingRuleMap.get(groupId));
+				alarmRuleContextMap.put(groupId, alarmRuleContext);
+			}
+		}
+		
+		return alarmRuleContextMap;
+	}
+	
+	public static List<ReadingRuleContext> getReadingRulesList(long ruleGroupId) throws Exception {
+		return getReadingRulesList(Collections.singletonList(ruleGroupId));
+	}
+	public static List<ReadingRuleContext> getReadingRulesList(List<Long> ruleGroupIds) throws Exception {
+		if (ruleGroupIds == null || ruleGroupIds.isEmpty()) {
 			return null;
 		}
 		
@@ -344,25 +390,22 @@ public class ReadingRuleAPI extends WorkflowRuleAPI {
 													.innerJoin(readingRuleModule.getTableName())
 													.on(workflowRuleModule.getTableName()+".ID = "+readingRuleModule.getTableName()+".ID")
 													.andCondition(CriteriaAPI.getCurrentOrgIdCondition(workflowRuleModule))
-													.andCondition(CriteriaAPI.getCondition(ruleGroupIdField, Collections.singleton(ruleGroupId), NumberOperators.EQUALS));
+													.andCondition(CriteriaAPI.getCondition(ruleGroupIdField, StringUtils.join(ruleGroupIds, ","), NumberOperators.EQUALS));
 		ruleBuilder.select(fields);
 		List<Map<String, Object>> props = ruleBuilder.get();
 		List<ReadingRuleContext> readingRuleContexts = null;
 		if(props != null && !props.isEmpty()) {
 			readingRuleContexts = new ArrayList<>();
-			
 			List<WorkflowRuleContext> workflowRuleContexts = getWorkFlowsFromMapList(props, false, true, true);
 			for(WorkflowRuleContext workflowRuleContext :workflowRuleContexts) {
+				workflowRuleContext.setActions(ActionAPI.getActiveActionsFromWorkflowRule(workflowRuleContext.getId()));
 				readingRuleContexts.add((ReadingRuleContext)workflowRuleContext);
 			}
 		}
 		return readingRuleContexts;
 	}
-	public static void addClearEvent(Object record, Context context, Map<String, Object> placeHolders,ReadingContext reading,ReadingRuleContext readingRuleContext) throws Exception {
+	public static void addClearEvent(Context context, Map<String, Object> placeHolders, ReadingRuleContext readingRuleContext, long readingDataId, Object readingVal, long ttime, long resourceId) throws Exception {
 		
-		if(reading == null) {
-			reading = (ReadingContext) record;
-		}
 		Map<Long, ReadingRuleAlarmMeta> alarmMetaMap = (Map<Long, ReadingRuleAlarmMeta>) context.get(FacilioConstants.ContextNames.READING_RULE_ALARM_META);
 		boolean isHistorical = true;
 		if (alarmMetaMap == null) {
@@ -370,20 +413,22 @@ public class ReadingRuleAPI extends WorkflowRuleAPI {
 			isHistorical = false;
 		}
 		
-		ReadingRuleAlarmMeta alarmMeta = alarmMetaMap != null ? alarmMetaMap.get(reading.getParentId()) : null;
+		ReadingRuleAlarmMeta alarmMeta = alarmMetaMap != null ? alarmMetaMap.get(resourceId) : null;
 		if (isHistorical) {
-			LOGGER.info("Alarm meta for rule : "+readingRuleContext.getId()+" for resource : "+reading.getParentId()+" at time : "+reading.getTtime()+"::"+alarmMeta);
+			LOGGER.info("Alarm meta for rule : "+readingRuleContext.getId()+" for resource : "+resourceId+" at time : "+ttime+"::"+alarmMeta);
 		}
 		if (alarmMeta != null && !alarmMeta.isClear()) {
 			alarmMeta.setClear(true);
 			AlarmContext alarm = AlarmAPI.getAlarm(alarmMeta.getAlarmId());
 			
-			JSONObject json = AlarmAPI.constructClearEvent(alarm, "System auto cleared Alarm because associated rule executed false for the associated resource", reading.getTtime());
-			json.put("readingDataId", reading.getId());
-			json.put("readingVal", reading.getReading(readingRuleContext.getReadingField().getName()));
+			JSONObject json = AlarmAPI.constructClearEvent(alarm, "System auto cleared Alarm because associated rule executed clear condition for the associated resource", ttime);
+			if (alarm.getSourceTypeEnum() == SourceType.THRESHOLD_ALARM) {
+				json.put("readingDataId", readingDataId);
+				json.put("readingVal", readingVal);
+			}
 			
 			if (isHistorical) {
-				LOGGER.info("Clearing alarm for rule : "+readingRuleContext.getId()+" for resource : "+reading.getParentId());
+				LOGGER.info("Clearing alarm for rule : "+readingRuleContext.getId()+" for resource : "+resourceId);
 			}
 			
 			FacilioContext addEventContext = new FacilioContext();
@@ -462,72 +507,80 @@ public class ReadingRuleAPI extends WorkflowRuleAPI {
 		}
 		
 	}
+	
+	private static void fillDefaultPropsForAlarmRule(ReadingRuleContext alarmRule,ReadingRuleContext preRequsiteRule,WorkflowRuleContext.RuleType ruleType,Long parentId) {
+		
+		alarmRule.setId(-1);
+		alarmRule.setCriteriaId(-1l);
+		alarmRule.setWorkflowId(-1l);
+		alarmRule.setIncludedResources(null);
+		alarmRule.setExcludedResources(null);
+		
+		alarmRule.setRuleType(ruleType);
+		alarmRule.setEventId(preRequsiteRule.getEventId());
+		alarmRule.setAssetCategoryId(preRequsiteRule.getAssetCategoryId());
+		alarmRule.setRuleGroupId(preRequsiteRule.getId());
+		alarmRule.setStatus(true);
+		alarmRule.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
+		
+		alarmRule.setParentRuleId(parentId);
+		
+	}
 
 	public static void addTriggerAndClearRule(AlarmRuleContext alarmRule) throws Exception {
-		List<ReadingRuleContext> alarmTriggerRules = alarmRule.getAlarmTriggerRules();
 		
-		ReadingRuleContext alarmClear = alarmRule.getAlarmClearRule();
 		ReadingRuleContext preRequsiteRule = alarmRule.getPreRequsite();
 		
-		if(alarmTriggerRules != null) {
-			
-			for(ReadingRuleContext alarmTriggerRule :alarmTriggerRules) {
-				alarmTriggerRule.setId(-1);
-				alarmTriggerRule.setRuleType(WorkflowRuleContext.RuleType.ALARM_TRIGGER_RULE);
-				alarmTriggerRule.setEventId(preRequsiteRule.getEventId());
-				alarmTriggerRule.setAssetCategoryId(preRequsiteRule.getAssetCategoryId());
-			}
-			if(alarmClear != null) {
-				alarmClear.setId(-1);
-				alarmClear.setRuleType(WorkflowRuleContext.RuleType.ALARM_CLEAR_RULE);
-				alarmClear.setEventId(preRequsiteRule.getEventId());
-				alarmClear.setAssetCategoryId(preRequsiteRule.getAssetCategoryId());
-				alarmTriggerRules.add(alarmClear);
-			}
+		Map<String,Long> ruleNameVsIdMap = new HashMap<>();
+		ruleNameVsIdMap.put(preRequsiteRule.getName(), preRequsiteRule.getId());
+		
+		
+		ReadingRuleContext alarmTriggerRule = alarmRule.getAlarmTriggerRule();
+		fillDefaultPropsForAlarmRule(alarmTriggerRule,preRequsiteRule,WorkflowRuleContext.RuleType.ALARM_TRIGGER_RULE,preRequsiteRule.getId());
+		alarmTriggerRule.setOnSuccess(true);
+		alarmTriggerRule.setClearAlarm(alarmRule.isAutoClear());
+		WorkflowRuleAPI.addWorkflowRule(alarmTriggerRule);
+		ruleNameVsIdMap.put(alarmTriggerRule.getName(), alarmTriggerRule.getId());
+		
+		
+		List<ReadingRuleContext> alarmRCARules = alarmRule.getAlarmRCARules();
+		
+		if(alarmRCARules != null) {
 			
 			int executionOrder = 1;
-			for(ReadingRuleContext alarmTriggerRule :alarmTriggerRules) {
+			for(ReadingRuleContext alarmRCARule :alarmRCARules) {
 				
-				alarmTriggerRule.setExecutionOrder(executionOrder++);
+				alarmRCARule.setExecutionOrder(executionOrder++);
 				
-				alarmTriggerRule.setCriteriaId(-1l);
-				alarmTriggerRule.setWorkflowId(-1l);
-				
-				alarmTriggerRule.setRuleGroupId(preRequsiteRule.getId());
-				
-				if(alarmTriggerRule.getParentRuleName() != null) {
-					alarmTriggerRule.setParentRuleId(alarmRule.getRuleNameVsIdMap().get(alarmTriggerRule.getParentRuleName()));
+				Long parentId = alarmRCARule.getParentRuleName() != null ? ruleNameVsIdMap.get(alarmRCARule.getParentRuleName()) : alarmTriggerRule.getId();
+				if(alarmRCARule.getParentRuleName() == null) {
+					alarmRCARule.setOnSuccess(true);
 				}
-				else {
-					alarmTriggerRule.setParentRuleId(preRequsiteRule.getId());
-				}
+				alarmRCARule.setClearAlarm(false);
+				fillDefaultPropsForAlarmRule(alarmRCARule,preRequsiteRule,WorkflowRuleContext.RuleType.ALARM_RCA_RULES,parentId);
 				
-				alarmTriggerRule.setStatus(true);
-				alarmTriggerRule.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
-				
-				WorkflowRuleAPI.addWorkflowRule(alarmTriggerRule);
-				alarmRule.addRuleNameVsIdMap(alarmTriggerRule.getName(), alarmTriggerRule.getId());
+				WorkflowRuleAPI.addWorkflowRule(alarmRCARule);
+				ruleNameVsIdMap.put(alarmRCARule.getName(), alarmRCARule.getId());
 			}
+		}
+		
+		if(!alarmRule.isAutoClear()) {
+			ReadingRuleContext alarmClearRule = alarmRule.getAlarmClearRule();
+			alarmClearRule.setThresholdType(ThresholdType.SIMPLE);
+			fillDefaultPropsForAlarmRule(alarmClearRule,preRequsiteRule,WorkflowRuleContext.RuleType.ALARM_CLEAR_RULE,alarmTriggerRule.getId());
+			alarmClearRule.setOnSuccess(false);
+			alarmClearRule.setClearAlarm(false);
+			WorkflowRuleAPI.addWorkflowRule(alarmClearRule);
+			ruleNameVsIdMap.put(alarmClearRule.getName(), alarmClearRule.getId());
 			
-			if(alarmRule.getAlarmClearRuleDuplicate() != null) {
-				alarmClear = alarmRule.getAlarmClearRuleDuplicate();
-				
-				alarmClear.setCriteriaId(-1l);
-				alarmClear.setWorkflowId(-1l);
-				
-				alarmClear.setId(-1);
-				alarmClear.setRuleType(WorkflowRuleContext.RuleType.ALARM_CLEAR_RULE);
-				alarmClear.setEventId(preRequsiteRule.getEventId());
-				alarmClear.setAssetCategoryId(preRequsiteRule.getAssetCategoryId());
-				alarmClear.setOnSuccess(false);
-				
-				alarmClear.setRuleGroupId(preRequsiteRule.getId());
-				alarmClear.setParentRuleId(preRequsiteRule.getId());
-				alarmClear.setStatus(true);
-				alarmClear.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
-				
-				WorkflowRuleAPI.addWorkflowRule(alarmClear);
-			}
+			
+			ReadingRuleContext alarmClearRuleDuplicate = alarmRule.getAlarmClearRuleDuplicate();
+			alarmClearRuleDuplicate.setThresholdType(ThresholdType.SIMPLE);
+			fillDefaultPropsForAlarmRule(alarmClearRuleDuplicate,preRequsiteRule,WorkflowRuleContext.RuleType.ALARM_CLEAR_RULE,preRequsiteRule.getId());
+			alarmClearRuleDuplicate.setOnSuccess(false);
+			alarmClearRuleDuplicate.setClearAlarm(false);
+			WorkflowRuleAPI.addWorkflowRule(alarmClearRuleDuplicate);
+			ruleNameVsIdMap.put(alarmClearRuleDuplicate.getName(), alarmClearRuleDuplicate.getId());
 		}
 	}
 }

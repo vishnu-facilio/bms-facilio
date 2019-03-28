@@ -9,6 +9,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.ViewField;
 import com.facilio.bmsconsole.criteria.Criteria;
 
@@ -165,7 +166,7 @@ public class FacilioView {
 	}
 	
 	private Map<String, ViewField> defaultModulefields;
-	public void setDefaultModuleFields(String moduleName, String parentViewName) {
+	public void setDefaultModuleFields(String moduleName, String parentViewName) throws Exception {
 		List<ViewField> fields = null;
 		if(parentViewName != null && !parentViewName.isEmpty()) {
 			fields = ColumnFactory.getColumns(moduleName, parentViewName);
@@ -177,6 +178,11 @@ public class FacilioView {
  		if (fields != null && !fields.isEmpty()) {
 			defaultModulefields = new HashMap<>();
 			for(ViewField vf : fields) {
+				if(vf.getName().equals("tenant")){
+					if(!AccountUtil.isFeatureEnabled(AccountUtil.FEATURE_TENANTS)) {
+						continue;
+					}
+				}
 				defaultModulefields.put(vf.getName(),vf);
 			}
 		}

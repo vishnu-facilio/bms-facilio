@@ -63,6 +63,7 @@ import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.bmsconsole.util.ReadingRuleAPI;
 import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
+import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.chain.FacilioContext;
@@ -821,5 +822,19 @@ public class CommonCommandUtil {
 			context.put(FacilioConstants.ContextNames.ACTIVITY_LIST, activities);
 		}
 		activities.add(activity);
+	}
+	
+	public static void addEventType (EventType type, FacilioContext context) {
+		List<EventType> eventTypes = (List<EventType>) context.get(FacilioConstants.ContextNames.EVENT_TYPE_LIST);
+		if (eventTypes == null) {
+			eventTypes = new ArrayList<>();
+			EventType eventType = (EventType) context.get(FacilioConstants.ContextNames.EVENT_TYPE);
+			if (eventType != null) {
+				eventTypes.add(eventType);
+			}
+		}
+		eventTypes = eventTypes instanceof ArrayList ? eventTypes : new ArrayList<>(eventTypes);
+		eventTypes.add(type);
+		context.put(FacilioConstants.ContextNames.EVENT_TYPE_LIST, eventTypes);
 	}
 }

@@ -19,8 +19,10 @@ import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.InsertRecordBuilder;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
+import com.facilio.bmsconsole.util.ItemsApi;
 import com.facilio.bmsconsole.util.TransactionState;
 import com.facilio.bmsconsole.util.TransactionType;
+import com.facilio.bmsconsole.workflow.rule.ApprovalState;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 
@@ -32,6 +34,8 @@ public class AddOrUpdateItemStockTransactionsCommand implements Command {
 		List<PurchasedItemContext> purchasedItems = (List<PurchasedItemContext>) context
 				.get(FacilioConstants.ContextNames.PURCHASED_ITEM);
 		if (purchasedItems != null) {
+			Boolean isBulkItemAdd = (Boolean) context.get(FacilioConstants.ContextNames.IS_BULK_ITEM_ADD);
+
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ITEM_TRANSACTIONS);
 			List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.ITEM_TRANSACTIONS);
@@ -39,30 +43,38 @@ public class AddOrUpdateItemStockTransactionsCommand implements Command {
 
 			List<ItemTransactionsContext> inventoryTransaction = new ArrayList<>();
 			for (PurchasedItemContext ic : purchasedItems) {
+				ItemContext item = ItemsApi.getItems(ic.getItem().getId());
 				ItemTransactionsContext transaction = new ItemTransactionsContext();
 				transaction.setTransactionState(TransactionState.ADDITION.getValue());
 				transaction.setPurchasedItem(ic);
 				transaction.setItem(ic.getItem());
+				transaction.setItemType(item.getItemType());
 				transaction.setQuantity(ic.getQuantity());
 				transaction.setParentId(ic.getId());
 				transaction.setIsReturnable(false);
 				transaction.setTransactionType(TransactionType.STOCK.getValue());
+				transaction.setApprovedState(ApprovalState.YET_TO_BE_REQUESTED);
 
-				SelectRecordsBuilder<ItemTransactionsContext> transactionsselectBuilder = new SelectRecordsBuilder<ItemTransactionsContext>()
-						.select(fields).table(module.getTableName()).moduleName(module.getName())
-						.beanClass(ItemTransactionsContext.class)
-						.andCondition(CriteriaAPI.getCondition(fieldMap.get("transactionState"),
-								String.valueOf(TransactionState.ADDITION.getValue()), EnumOperators.IS));
-				List<ItemTransactionsContext> transactions = transactionsselectBuilder.get();
-				if (transactions != null && !transactions.isEmpty()) {
-					ItemTransactionsContext it = transactions.get(0);
-					it.setQuantity(ic.getQuantity());
-					UpdateRecordBuilder<ItemTransactionsContext> updateBuilder = new UpdateRecordBuilder<ItemTransactionsContext>()
-							.module(module).fields(modBean.getAllFields(module.getName()))
-							.andCondition(CriteriaAPI.getIdCondition(it.getId(), module));
-					updateBuilder.update(it);
-				} else {
+				//if bulk insertion add stock transaction entry
+				if (isBulkItemAdd != null && isBulkItemAdd) {
 					inventoryTransaction.add(transaction);
+				} else {
+					SelectRecordsBuilder<ItemTransactionsContext> transactionsselectBuilder = new SelectRecordsBuilder<ItemTransactionsContext>()
+							.select(fields).table(module.getTableName()).moduleName(module.getName())
+							.beanClass(ItemTransactionsContext.class)
+							.andCondition(CriteriaAPI.getCondition(fieldMap.get("transactionState"),
+									String.valueOf(TransactionState.ADDITION.getValue()), EnumOperators.VALUE_IS));
+					List<ItemTransactionsContext> transactions = transactionsselectBuilder.get();
+					if (transactions != null && !transactions.isEmpty()) {
+						ItemTransactionsContext it = transactions.get(0);
+						it.setQuantity(ic.getQuantity());
+						UpdateRecordBuilder<ItemTransactionsContext> updateBuilder = new UpdateRecordBuilder<ItemTransactionsContext>()
+								.module(module).fields(modBean.getAllFields(module.getName()))
+								.andCondition(CriteriaAPI.getIdCondition(it.getId(), module));
+						updateBuilder.update(it);
+					} else {
+						inventoryTransaction.add(transaction);
+					}
 				}
 			}
 

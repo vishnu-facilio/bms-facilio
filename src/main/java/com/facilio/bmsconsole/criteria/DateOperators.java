@@ -792,6 +792,45 @@ public enum DateOperators implements Operator<String> {
 			return false;
 		}
 	},
+
+	UPCOMING(73, "Upcoming") {
+		@Override
+		public String getWhereClause(String columnName, String value) {
+			if(columnName != null && !columnName.isEmpty()) {
+				StringBuilder builder = new StringBuilder();
+				builder.append(columnName)
+						.append(">")
+						.append(DateTimeUtil.getCurrenTime());
+				return builder.toString();
+			}
+			return null;
+		}
+
+		@Override
+		public FacilioModulePredicate getPredicate(String fieldName, String value) {
+			return null;
+		}
+
+		@Override
+		public boolean isValueNeeded() {
+			return false;
+		}
+
+		@Override
+		public DateRange getRange(String value) {
+			return new DateRange(DateTimeUtil.getCurrenTime() - 1, -1);
+		}
+
+		@Override
+		public boolean isBaseLineSupported() {
+			return false;
+		}
+
+		@Override
+		public boolean isCurrentOperator() {
+			return false;
+		}
+	},
 	
 	LAST_MONTH(27, "Last Month") {
 		@Override

@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.jobs;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.facilio.accounts.util.AccountUtil;
 import org.apache.commons.chain.Chain;
 
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
@@ -18,6 +19,9 @@ public class PostPMReminderJob extends FacilioJob {
 	public void execute(JobContext jc) {
 		// TODO Auto-generated method stub
 		try {
+			if (AccountUtil.isFeatureEnabled(AccountUtil.FEATURE_SCHEDULED_WO)) {
+				return;
+			}
 			FacilioContext context = new FacilioContext();
 			context.put(FacilioConstants.ContextNames.ONLY_POST_REMINDER_TYPE, true);
 			context.put(FacilioConstants.ContextNames.ID, jc.getJobId());

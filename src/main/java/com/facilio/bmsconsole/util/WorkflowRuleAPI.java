@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.util;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -36,7 +37,9 @@ import com.facilio.bmsconsole.modules.UpdateChangeSet;
 import com.facilio.bmsconsole.workflow.rule.ActionContext;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsole.workflow.rule.ApprovalRuleContext;
+import com.facilio.bmsconsole.workflow.rule.ApproverContext;
 import com.facilio.bmsconsole.workflow.rule.FieldChangeFieldContext;
+import com.facilio.bmsconsole.workflow.rule.ReadingAlarmRuleContext;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowEventContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
@@ -91,6 +94,8 @@ public class WorkflowRuleAPI {
 			case VALIDATION_RULE:
 			case ALARM_TRIGGER_RULE:
 			case ALARM_CLEAR_RULE:
+			case ALARM_RCA_RULES:
+			case PM_READING_TRIGGER:
 				if (((ReadingRuleContext) rule).getClearAlarm() == null) {
 					ruleProps.put("clearAlarm", true);
 				}
@@ -517,6 +522,7 @@ public class WorkflowRuleAPI {
 		FacilioModule ruleModule = ModuleFactory.getWorkflowRuleModule();
 		List<FacilioField> fields = FieldFactory.getWorkflowRuleFields();
 		fields.addAll(FieldFactory.getWorkflowEventFields());
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 		
 		GenericSelectRecordBuilder ruleBuilder = new GenericSelectRecordBuilder()
 				.table(ruleModule.getTableName())
@@ -524,7 +530,8 @@ public class WorkflowRuleAPI {
 				.innerJoin("Workflow_Event")
 				.on("Workflow_Rule.EVENT_ID = Workflow_Event.ID")
 				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(ruleModule))
-				.andCustomWhere("Workflow_Event.MODULEID = ? AND Workflow_Rule.STATUS = true", module.getModuleId())
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("moduleId"), module.getExtendedModuleIds(), NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("status"), Boolean.TRUE.toString(), BooleanOperators.IS))
 				.orderBy("EXECUTION_ORDER");
 		
 		if(ruleTypes != null && ruleTypes.length > 0) {
@@ -558,7 +565,12 @@ public class WorkflowRuleAPI {
 			values.add(type.getValue());
 		}
 		ruleBuilder.andCustomWhere(activityTypeWhere.toString(), values.toArray());
-		return getWorkFlowsFromMapList(ruleBuilder.get(), true, true, true);
+		List<Map<String, Object>> props = ruleBuilder.get();
+		if(AccountUtil.getCurrentOrg().getId() == 88l && module.getName().equals("alarm")) {
+			LOGGER.error("wokrlfow rule propssss --- "+props);
+			LOGGER.error("wokrlfow rule querry --- "+ruleBuilder);
+		}
+		return getWorkFlowsFromMapList(props, true, true, true);
 	}
 	
 	protected static void deleteChildIdsForWorkflow(WorkflowRuleContext oldRule, WorkflowRuleContext newRule) throws Exception {
@@ -597,10 +609,15 @@ public class WorkflowRuleAPI {
 				case VALIDATION_RULE:
 				case ALARM_TRIGGER_RULE:
 				case ALARM_CLEAR_RULE:
+				case ALARM_RCA_RULES:
+				case PM_READING_TRIGGER:
 					typeWiseProps.put(entry.getKey(), getExtendedProps(ModuleFactory.getReadingRuleModule(), FieldFactory.getReadingRuleFields(), entry.getValue()));
 					break;
 				case SLA_RULE:
 					typeWiseProps.put(entry.getKey(), getExtendedProps(ModuleFactory.getSLARuleModule(), FieldFactory.getSLARuleFields(), entry.getValue()));
+					break;
+				case READING_ALARM_RULE:
+					typeWiseProps.put(entry.getKey(), getExtendedProps(ModuleFactory.getReadingAlarmRuleModule(), FieldFactory.getReadingAlarmRuleFields(), entry.getValue()));
 					break;
 				case APPROVAL_RULE:
 				case CHILD_APPROVAL_RULE:
@@ -701,6 +718,8 @@ public class WorkflowRuleAPI {
 						case VALIDATION_RULE:
 						case ALARM_TRIGGER_RULE:
 						case ALARM_CLEAR_RULE:
+						case ALARM_RCA_RULES:
+						case PM_READING_TRIGGER:
 							prop.putAll(typeWiseExtendedProps.get(ruleType).get(prop.get("id")));
 							rule = ReadingRuleAPI.constructReadingRuleFromProps(prop, modBean, fetchChildren);
 							break;
@@ -712,6 +731,10 @@ public class WorkflowRuleAPI {
 						case CHILD_APPROVAL_RULE:
 							prop.putAll(typeWiseExtendedProps.get(ruleType).get(prop.get("id")));
 							rule = ApprovalRulesAPI.constructApprovalRuleFromProps(prop, modBean);
+							break;
+						case READING_ALARM_RULE:
+							prop.putAll(typeWiseExtendedProps.get(ruleType).get(prop.get("id")));
+							rule = constructReadingAlarmRuleFromProps(prop, modBean);
 							break;
 						default:
 							rule = FieldUtil.getAsBeanFromMap(prop, WorkflowRuleContext.class);
@@ -750,6 +773,11 @@ public class WorkflowRuleAPI {
 			return workflows;
 		}
 		return null;
+	}
+	
+	protected static ReadingAlarmRuleContext constructReadingAlarmRuleFromProps(Map<String, Object> prop, ModuleBean modBean) throws Exception {
+		ReadingAlarmRuleContext readingRule = FieldUtil.getAsBeanFromMap(prop, ReadingAlarmRuleContext.class);
+		return readingRule;
 	}
 	
 	private static List<WorkflowEventContext> getWorkFlowEventsFromMapList(List<Map<String, Object>> props) throws Exception {
@@ -862,6 +890,17 @@ public class WorkflowRuleAPI {
 			}
 		}
 		
+		if (AccountUtil.getCurrentOrg().getId() == 186 && workflowRule.getId() == 6448) {
+			LOGGER.info("Result of rule : "+workflowRule.getId()+" for record : "+record+" is \nSite ID : "+siteId+"\nField Change : "+fieldChangeFlag+"\nMisc Flag : "+miscFlag+"\nCriteria Flag : "+criteriaFlag+"\nWorkflow Flag : "+workflowFlag);
+		}
+		
+		if (AccountUtil.getCurrentOrg().getId() == 134l && (workflowRule.getId() == 4235l || workflowRule.getId() == 6793l)) {
+			LOGGER.error("Result of rule : "+workflowRule.getId()+" for record : "+record+" is \nSite ID : "+siteId+"\nField Change : "+fieldChangeFlag+"\nMisc Flag : "+miscFlag+"\nCriteria Flag : "+criteriaFlag+"\nWorkflow Flag : "+workflowFlag);
+		}
+		if (AccountUtil.getCurrentOrg().getId() == 88 && workflowRule.getId() == 7762l) {
+			LOGGER.info("Result of rule : "+workflowRule.getId()+" for record : "+record+" is \nSite ID : "+siteId+"\nField Change : "+fieldChangeFlag+"\nMisc Flag : "+miscFlag+"\nCriteria Flag : "+criteriaFlag+"\nWorkflow Flag : "+workflowFlag);
+		}
+		
 		boolean result = fieldChangeFlag && miscFlag && criteriaFlag && workflowFlag && siteId ;
 		if(result) {
 			workflowRule.executeTrueActions(record, context, rulePlaceHolders);
@@ -872,15 +911,21 @@ public class WorkflowRuleAPI {
 		return result;
 	}
 	
-	private static void executeRuleAndChildren (WorkflowRuleContext workflowRule, FacilioModule module, Object record, List<UpdateChangeSet> changeSet, Iterator itr, Map<String, Object> recordPlaceHolders, FacilioContext context,boolean propagateError, FacilioField parentRuleField, FacilioField onSuccessField, RuleType... ruleTypes) throws Exception {
+	private static boolean executeRuleAndChildren (WorkflowRuleContext workflowRule, FacilioModule module, Object record, List<UpdateChangeSet> changeSet, Iterator itr, Map<String, Object> recordPlaceHolders, FacilioContext context,boolean propagateError, FacilioField parentRuleField, FacilioField onSuccessField, List<EventType> eventTypes, RuleType... ruleTypes) throws Exception {
 		try {
 			long workflowStartTime = System.currentTimeMillis();
 			workflowRule.setTerminateExecution(false);
 			boolean result = WorkflowRuleAPI.evaluateWorkflowAndExecuteActions(workflowRule, module.getName(), record, changeSet, recordPlaceHolders, context);
 			
-//			if (AccountUtil.getCurrentOrg().getId() == 133 && FacilioConstants.ContextNames.ALARM.equals(module.getName())) {
-//				LOGGER.info("Result of rule : "+workflowRule.getId()+" for record : "+record+" is "+result);
-//			}
+			if (AccountUtil.getCurrentOrg().getId() == 186 && workflowRule.getId() == 6448) {
+				LOGGER.info("Result of rule : "+workflowRule.getId()+" for record : "+record+" is "+result);
+			}
+			if (AccountUtil.getCurrentOrg().getId() == 134l && workflowRule instanceof ReadingRuleContext && ((ReadingRuleContext)workflowRule).getRuleGroupId() == 7186l) {
+				LOGGER.error("Result of rule : "+workflowRule.getId()+" for record : "+record+" is "+result);
+			}
+			if (AccountUtil.getCurrentOrg().getId() == 88l && workflowRule.getId() == 7762l) {
+				LOGGER.error("Result of rule : "+workflowRule.getId()+" for record : "+record+" is "+result);
+			}
 			
 			boolean stopFurtherExecution = workflowRule.isTerminateExecution();
 			
@@ -897,11 +942,12 @@ public class WorkflowRuleAPI {
 				currentCriteria.addAndCondition(CriteriaAPI.getCondition(parentRuleField, String.valueOf(workflowRule.getId()), NumberOperators.EQUALS));
 				currentCriteria.addAndCondition(CriteriaAPI.getCondition(onSuccessField, String.valueOf(result), BooleanOperators.IS));
 				
-				List<WorkflowRuleContext> currentWorkflows = WorkflowRuleAPI.getActiveWorkflowRulesFromActivityAndRuleType(workflowRule.getEvent().getModule(), Collections.singletonList(workflowRule.getEvent().getActivityTypeEnum()), currentCriteria, ruleTypes);
-				executeWorkflowsAndGetChildRuleCriteria(currentWorkflows, module, record, changeSet, itr, recordPlaceHolders, context, propagateError, ruleTypes);
+				List<WorkflowRuleContext> currentWorkflows = WorkflowRuleAPI.getActiveWorkflowRulesFromActivityAndRuleType(workflowRule.getEvent().getModule(), eventTypes, currentCriteria, ruleTypes);
+				executeWorkflowsAndGetChildRuleCriteria(currentWorkflows, module, record, changeSet, itr, recordPlaceHolders, context, propagateError, eventTypes, ruleTypes);
 				
 			}
 			LOGGER.debug("Time taken to execute rule : "+workflowRule.getName()+" with id : "+workflowRule.getId()+" for module : "+module.getName()+" including child rule execution is "+(System.currentTimeMillis() - workflowStartTime));
+			return stopFurtherExecution;
 		}
 		catch (Exception e) {
 			StringBuilder builder = new StringBuilder("Error during execution of rule : ");
@@ -918,17 +964,51 @@ public class WorkflowRuleAPI {
 				throw e;
 			}
 		}
+		return false;
 	}
 	
-	public static void executeWorkflowsAndGetChildRuleCriteria(List<WorkflowRuleContext> workflowRules, FacilioModule module, Object record, List<UpdateChangeSet> changeSet, Iterator itr, Map<String, Object> recordPlaceHolders, FacilioContext context,boolean propagateError, RuleType... ruleTypes) throws Exception {
+	public static void executeWorkflowsAndGetChildRuleCriteria(List<WorkflowRuleContext> workflowRules, FacilioModule module, Object record, List<UpdateChangeSet> changeSet, Iterator itr, Map<String, Object> recordPlaceHolders, FacilioContext context,boolean propagateError, List<EventType> eventTypes, RuleType... ruleTypes) throws Exception {
 		if(workflowRules != null && !workflowRules.isEmpty()) {
 			Map<String, FacilioField> fields = FieldFactory.getAsMap(FieldFactory.getWorkflowRuleFields());
 			FacilioField parentRule = fields.get("parentRuleId");
 			FacilioField onSuccess = fields.get("onSuccess");
 			
 			for(WorkflowRuleContext workflowRule : workflowRules) {
-				executeRuleAndChildren(workflowRule, module, record, changeSet, itr, recordPlaceHolders, context, propagateError, parentRule, onSuccess, ruleTypes);
+				boolean stopFurtherExecution = executeRuleAndChildren(workflowRule, module, record, changeSet, itr, recordPlaceHolders, context, propagateError, parentRule, onSuccess, eventTypes, ruleTypes);
+				if(stopFurtherExecution) {
+					break;
+				}
 			}
 		}
 	}
+	
+	public static List<ReadingAlarmRuleContext> getReadingAlarmRulesFromReadingRuleGroupId(long readingGroupId) throws Exception {
+		
+		if(readingGroupId > 0) {
+			List<FacilioField> fields = FieldFactory.getWorkflowRuleFields();
+			fields.addAll(FieldFactory.getReadingAlarmRuleFields());
+			
+			GenericSelectRecordBuilder select = new GenericSelectRecordBuilder();
+			select.table(ModuleFactory.getWorkflowRuleModule().getTableName())
+			.innerJoin(ModuleFactory.getReadingAlarmRuleModule().getTableName())
+			.on(ModuleFactory.getWorkflowRuleModule().getTableName()+".ID = "+ModuleFactory.getReadingAlarmRuleModule().getTableName()+".ID")
+			.select(fields)
+			.andCustomWhere("READING_RULE_GROUP_ID = ?", readingGroupId);
+			
+			List<Map<String, Object>> props = select.get();
+			
+			if(props!= null && !props.isEmpty()) {
+				
+				List<WorkflowRuleContext> workflowRuleContexts = getWorkFlowsFromMapList(props, false, true, true);
+				List<ReadingAlarmRuleContext> readingAlarmRuleContexts = new ArrayList<>();
+				for(WorkflowRuleContext workflowRuleContext :workflowRuleContexts) {
+					workflowRuleContext.setActions(ActionAPI.getActiveActionsFromWorkflowRule(workflowRuleContext.getId()));
+					readingAlarmRuleContexts.add((ReadingAlarmRuleContext)workflowRuleContext);
+				}
+				return readingAlarmRuleContexts;
+			}
+		}
+		return null;
+	}
+	
 }

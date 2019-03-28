@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -115,10 +116,24 @@ public class ExecuteAllWorkflowsCommand implements SerializableCommand
 				parentCriteria.addAndCondition(CriteriaAPI.getCondition(parentRule, CommonOperators.IS_EMPTY));
 				List<WorkflowRuleContext> workflowRules = WorkflowRuleAPI.getActiveWorkflowRulesFromActivityAndRuleType(module, activities, parentCriteria, ruleTypes);
 				
-//				if (AccountUtil.getCurrentOrg().getId() == 133 && FacilioConstants.ContextNames.ALARM.equals(moduleName)) {
-//					LOGGER.debug("Records : "+entry.getValue());
-//					LOGGER.debug("Matching Rules : "+workflowRules);
-//				}
+				if (AccountUtil.getCurrentOrg().getId() == 186 && "statusupdation".equals(moduleName)) {
+					LOGGER.info("Records : "+entry.getValue());
+					LOGGER.info("Matching Rules : "+workflowRules);
+					LOGGER.info("Rule Types : "+Arrays.toString(ruleTypes));
+				}
+				
+				if (AccountUtil.getCurrentOrg().getId() == 134l && "supplyairtemperature".equals(moduleName)) {
+					LOGGER.error("EMMAR RULE DEBUGGING");
+					LOGGER.error("Records : "+entry.getValue());
+					LOGGER.error("Matching Rules : "+workflowRules);
+					LOGGER.error("Rule Types : "+Arrays.toString(ruleTypes));
+				}
+				if (AccountUtil.getCurrentOrg().getId() == 88l && "alarm".equals(moduleName)) {
+					LOGGER.error("ALSEEF DEBUGGING");
+					LOGGER.error("Records : "+entry.getValue());
+					LOGGER.error("Matching Rules : "+workflowRules);
+					LOGGER.error("Rule Types : "+Arrays.toString(ruleTypes));
+				}
 				
 				if (workflowRules != null && !workflowRules.isEmpty()) {
 					Map<String, Object> placeHolders = WorkflowRuleAPI.getOrgPlaceHolders();
@@ -128,7 +143,7 @@ public class ExecuteAllWorkflowsCommand implements SerializableCommand
 						Object record = it.next();
 						List<UpdateChangeSet> changeSet = currentChangeSet == null ? null : currentChangeSet.get( ((ModuleBaseWithCustomFields)record).getId() );
 						Map<String, Object> recordPlaceHolders = WorkflowRuleAPI.getRecordPlaceHolders(module.getName(), record, placeHolders);
-						WorkflowRuleAPI.executeWorkflowsAndGetChildRuleCriteria(workflowRules, module, record, changeSet, it, recordPlaceHolders, context,propagateError);
+						WorkflowRuleAPI.executeWorkflowsAndGetChildRuleCriteria(workflowRules, module, record, changeSet, it, recordPlaceHolders, context,propagateError, activities);
 					}
 				}
 			}

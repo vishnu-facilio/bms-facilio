@@ -382,6 +382,9 @@ public class WorkflowRuleContext implements Serializable {
 		}
 		if(actions != null) {
 			for(ActionContext action : actions) {
+				if (this.getId() == 6448) {
+					LOGGER.info("Place holders during action : "+placeHolders);
+				}
 				action.executeAction(placeHolders, context, this, record);
 			}
 		}
@@ -431,9 +434,11 @@ public class WorkflowRuleContext implements Serializable {
 
 		BUSSINESS_LOGIC_WORKORDER_RULE,
 		PM_NOTIFICATION_RULE,
-		READING_ALARM_RULE				//24
+		READING_ALARM_RULE,			//24
 		
-		
+		ALARM_RCA_RULES,
+		ASSET_NOTIFICATION_RULE,
+		PM_READING_TRIGGER			// 27
 		;
 		//Always add at the end
 		

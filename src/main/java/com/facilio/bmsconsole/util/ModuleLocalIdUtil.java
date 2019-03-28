@@ -39,7 +39,13 @@ public class ModuleLocalIdUtil {
 		modulesWithLocalId.add(FacilioConstants.ContextNames.ALARM);
 		modulesWithLocalId.add(FacilioConstants.ContextNames.READING_ALARM);
 		modulesWithLocalId.add(FacilioConstants.ContextNames.INVENTORY);
-		
+		modulesWithLocalId.add(FacilioConstants.ContextNames.TOOL_TYPES);
+		modulesWithLocalId.add(FacilioConstants.ContextNames.ITEM_TYPES);
+		modulesWithLocalId.add(FacilioConstants.ContextNames.ITEM);
+		modulesWithLocalId.add(FacilioConstants.ContextNames.TOOL);
+		modulesWithLocalId.add(FacilioConstants.ContextNames.LABOUR);
+		modulesWithLocalId.add(FacilioConstants.ContextNames.TENANT);
+
 		return modulesWithLocalId;
 	}
 	

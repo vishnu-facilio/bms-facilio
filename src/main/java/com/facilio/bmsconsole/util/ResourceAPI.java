@@ -91,6 +91,8 @@ public class ResourceAPI {
 					return AssetsAPI.getAssetInfo(id);
 				case SPACE:
 					return SpaceAPI.getBaseSpace(id);
+				default:
+					return resource;
 			}
 		}
 		return null;									
@@ -122,7 +124,7 @@ public class ResourceAPI {
 																		.beanClass(ResourceContext.class);
 		
 		List<ResourceContext> resources = resourceBuilder.get();
-		LOGGER.error("builder -- "+resourceBuilder);
+		// LOGGER.error("builder -- "+resourceBuilder);
 		return resources;									
 	}
 	

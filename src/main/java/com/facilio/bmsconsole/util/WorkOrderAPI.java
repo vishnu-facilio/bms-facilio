@@ -116,7 +116,7 @@ public class WorkOrderAPI {
 			builder.andCondition(CriteriaAPI.getCondition("RESOURCE_ID", "resource", spaceId+"", BuildingOperator.BUILDING_IS));
 		}
 		List<WorkOrderContext> workOrders = builder.get();
-		LOGGER.log(Level.SEVERE, "builder1 - "+builder);
+		// LOGGER.log(Level.SEVERE, "builder1 - "+builder);
 		return workOrders;
 	}
 

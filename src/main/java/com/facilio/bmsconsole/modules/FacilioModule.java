@@ -1,6 +1,7 @@
 	package com.facilio.bmsconsole.modules;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -121,6 +122,21 @@ public class FacilioModule implements Serializable {
 		return false;
 	}
 	
+	private Boolean showAsView;
+	public Boolean getShowAsView() {
+		return showAsView;
+	}
+
+	public void setShowAsView(Boolean showAsView) {
+		this.showAsView = showAsView;
+	}
+	public boolean isShowAsView() {
+		if (showAsView != null) {
+			return showAsView.booleanValue();
+		}
+		return false;
+	}
+	
 	private int dataInterval = -1;
 	public int getDataInterval() {
 		return dataInterval;
@@ -234,5 +250,38 @@ public class FacilioModule implements Serializable {
 			module = module.getExtendModule();
 		}
 		return module;
+	}
+	
+	@JsonIgnore
+	public List<Long> getExtendedModuleIds() throws Exception {
+//		String extendModuleQuery = DBUtil.getQuery("module.extended.id");
+//
+//		Connection conn = getConnection();
+//		List<Long> moduleIds = new ArrayList<>();
+//		ResultSet resultSet = null;
+//		PreparedStatement preparedStatement = null;
+//		try {
+//			preparedStatement = conn.prepareStatement(extendModuleQuery);
+//			preparedStatement.setLong(1, getOrgId());
+//			preparedStatement.setLong(2, module.getModuleId());
+//			resultSet = preparedStatement.executeQuery();
+//
+//			while (resultSet.next()) {
+//				moduleIds.add(resultSet.getLong(1));
+//			}
+//		} finally {
+//			DBUtil.closeAll(conn, preparedStatement, resultSet);
+//		}
+//		return moduleIds;
+		
+		//Module will always have extended info
+		
+		List<Long> moduleIds = new ArrayList<>();
+		FacilioModule currentModule = this;
+		while (currentModule != null) {
+			moduleIds.add(currentModule.getModuleId());
+			currentModule = currentModule.getExtendModule();
+		}
+		return moduleIds;
 	}
 }

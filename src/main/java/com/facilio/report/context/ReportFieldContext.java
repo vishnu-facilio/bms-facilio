@@ -241,6 +241,14 @@ public class ReportFieldContext {
 		this.enumMap = enumMap;
 	}
 	
+	private Map<Long, Object> lookupMap;
+	public Map<Long, Object> getLookupMap() {
+		return lookupMap;
+	}
+	public void setLookupMap(Map<Long, Object> lookupMap) {
+		this.lookupMap = lookupMap;
+	}
+
 	private boolean predicted;
 	public boolean isPredicted() {
 		return predicted;

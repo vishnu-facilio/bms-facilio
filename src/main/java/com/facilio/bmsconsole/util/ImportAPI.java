@@ -35,6 +35,7 @@ import com.facilio.bmsconsole.actions.ImportProcessContext;
 import com.facilio.bmsconsole.actions.ImportProcessContext.ImportStatus;
 import com.facilio.bmsconsole.actions.ImportSiteAction;
 import com.facilio.bmsconsole.actions.ImportSpaceAction;
+import com.facilio.bmsconsole.commands.ImportProcessLogContext;
 import com.facilio.bmsconsole.commands.data.ProcessXLS;
 import com.facilio.bmsconsole.context.BuildingContext;
 import com.facilio.bmsconsole.context.FloorContext;
@@ -149,6 +150,15 @@ public class ImportAPI {
 		}
 		return importProcessContext;
 		
+	}
+	
+	public static List<ImportProcessLogContext> setAssetName(ImportProcessContext importProcessContext, FacilioModule module, List<ImportProcessLogContext> logContexts) throws Exception{
+		String nameField = importProcessContext.getFieldMapping().get(module.getName()+ "__name");
+		for(ImportProcessLogContext logContext: logContexts) {
+			String name= (String) logContext.getRowContexts().get(0).getColVal().get(nameField);
+			logContext.setAssetName(name);
+		}
+		return logContexts;
 	}
 	
 	public static String constructWarning(HashMap<Integer, ArrayList<String>> missingColumns) {

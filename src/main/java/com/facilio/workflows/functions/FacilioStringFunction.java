@@ -1,3 +1,4 @@
+
 package com.facilio.workflows.functions;
 
 import java.util.Collections;
@@ -119,7 +120,7 @@ public enum FacilioStringFunction implements FacilioWorkflowFunctionInterface {
 	;
 	private Integer value;
 	private String functionName;
-	private String namespace = "date";
+	private String namespace = "string";
 	private String params;
 	private FacilioFunctionNameSpace nameSpaceEnum = FacilioFunctionNameSpace.STRING;
 	

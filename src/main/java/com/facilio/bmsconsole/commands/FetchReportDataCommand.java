@@ -54,6 +54,7 @@ import com.facilio.report.context.ReportDataPointContext.OrderByFunction;
 import com.facilio.report.context.ReportFieldContext;
 import com.facilio.report.context.ReportFilterContext;
 import com.facilio.report.context.ReportGroupByField;
+import com.facilio.report.context.ReportUserFilterContext;
 import com.facilio.sql.GenericSelectRecordBuilder;
 
 public class FetchReportDataCommand implements Command {
@@ -261,9 +262,18 @@ public class FetchReportDataCommand implements Command {
 			newSelectBuilder.andCondition(getEqualsCondition(xAggrField, xValues));
 		}
 		
+		if (CollectionUtils.isNotEmpty(report.getUserFilters())) {
+			for (ReportUserFilterContext userFilter: report.getUserFilters()) {
+				Criteria criteria = userFilter.getCriteria();
+				if (criteria != null) {
+					newSelectBuilder.andCriteria(criteria);
+				}
+			}
+		}
+		
 		List<Map<String, Object>> props = newSelectBuilder.getAsProps();
 		
-		LOGGER.severe("SELECT BUILDER --- "+ newSelectBuilder);
+		// LOGGER.severe("SELECT BUILDER --- "+ newSelectBuilder);
 //		LOGGER.info("DATE FROM QUERY : "+props);
 		return props;
 	}
@@ -371,7 +381,7 @@ public class FetchReportDataCommand implements Command {
 			case LOOKUP:
 				return CriteriaAPI.getCondition(field, value, PickListOperators.IS);
 			case ENUM:
-				return CriteriaAPI.getCondition(field, value, EnumOperators.IS);
+				return CriteriaAPI.getCondition(field, value, EnumOperators.VALUE_IS);
 			default:
 				return null;
 		}
@@ -440,11 +450,13 @@ public class FetchReportDataCommand implements Command {
 		FacilioModule baseSpaceModule = modBean.getModule(FacilioConstants.ContextNames.BASE_SPACE);
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(FacilioConstants.ContextNames.BASE_SPACE));
 		
-		selectBuilder.innerJoin(resourceModule.getTableName())
-					.on(resourceModule.getTableName()+".ID = "+dp.getxAxis().getField().getCompleteColumnName())
-					.innerJoin(baseSpaceModule.getTableName())
-					.on(resourceModule.getTableName()+".SPACE_ID = "+baseSpaceModule.getTableName()+".ID");
-		addedModules.add(resourceModule);
+		if (!isAlreadyAdded(addedModules, resourceModule)) {
+			selectBuilder.innerJoin(resourceModule.getTableName())
+						.on(resourceModule.getTableName()+".ID = "+dp.getxAxis().getField().getCompleteColumnName());
+			addedModules.add(resourceModule);
+		}
+		selectBuilder.innerJoin(baseSpaceModule.getTableName())
+		.on(resourceModule.getTableName()+".SPACE_ID = "+baseSpaceModule.getTableName()+".ID");
 		addedModules.add(baseSpaceModule);
 		
 		FacilioField spaceField = null;
@@ -473,6 +485,7 @@ public class FetchReportDataCommand implements Command {
 		
 		selectBuilder.andCustomWhere(spaceField.getCompleteColumnName() + " in (" + builder.constructSelectStatement() + ")");
 		spaceField.setName(dp.getxAxis().getFieldName());
+		spaceField.setDataType(FieldType.NUMBER);
 		return spaceField;
 	}
 	

@@ -153,12 +153,17 @@ public class ValidateAndCreateValuesForInputTaskCommand implements Command {
 				reading.addReading("woId", oldTask.getParentTicketId());
 				reading.addReading("taskId", oldTask.getId());
 				reading.addReading("taskUniqueId", oldTask.getUniqueId());
+				
+				if (oldTask.getResource() != null && oldTask.getResource().getId() > 0) {
+					reading.addReading("resourceId", oldTask.getResource().getId());
+				}
 			}
 			
 			context.put(FacilioConstants.ContextNames.MODULE_NAME, readingModule.getName());
 			context.put(FacilioConstants.ContextNames.READING, reading);
 			context.put(FacilioConstants.ContextNames.RECORD, reading);						
 			context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.CREATE);
+			context.put(FacilioConstants.ContextNames.ADJUST_READING_TTIME, false);
 		}
 	}
 	

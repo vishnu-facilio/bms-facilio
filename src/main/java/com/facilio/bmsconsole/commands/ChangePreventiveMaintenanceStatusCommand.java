@@ -28,7 +28,7 @@ public class ChangePreventiveMaintenanceStatusCommand implements Command {
 			PreventiveMaintenance pm = (PreventiveMaintenance) context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE);
 			Map<String, Object> pmProps = FieldUtil.getAsProperties(pm);
 			
-			FacilioModule module = ModuleFactory.getPreventiveMaintenancetModule();
+			FacilioModule module = ModuleFactory.getPreventiveMaintenanceModule();
 			GenericUpdateRecordBuilder builder = new GenericUpdateRecordBuilder()
 					.table(module.getTableName())
 					.fields(FieldFactory.getPreventiveMaintenanceFields())

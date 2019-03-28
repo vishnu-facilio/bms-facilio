@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.forms.FacilioForm.FormType;
 import com.facilio.bmsconsole.forms.FacilioForm.LabelPosition;
 import com.facilio.bmsconsole.forms.FormField.Required;
@@ -31,10 +32,11 @@ public class FormFactory {
 		forms.put("workOrderForm", getWorkOrderForm());
 		forms.put("serviceWorkRequest", getServiceWorkRequestForm());
 		forms.put("serviceWorkOrder", getServiceWorkOrderForm());
+		forms.put("mobileServiceWorkOrder", getMobileServiceWorkOrderForm());
 		forms.put("loggedInServiceWorkRequest", getLoggedInServiceWorkRequest());
 		forms.put("web_pm", getPMForm());
 		forms.put("approvalForm", getApprovalForm());
-		forms.put("assetForm", getAssetForm());
+		forms.put("default_asset", getAssetForm());
 		forms.put("item_form", getItemForm());
 		forms.put("item_track_form", getItemWithIndTrackForm());
 		forms.put("store_room_form", getStoreRoomForm());
@@ -43,8 +45,14 @@ public class FormFactory {
 		forms.put("vendors_form", getVendorsForm());
 		forms.put("tool_form", getStockedToolsForm());
 		forms.put("tool_track_form", getToolWithIndTrackForm());
-		forms.put("item_category_form", getItemCategoryForm());
+		forms.put("item_category_form", getInventoryCategoryForm());
 		forms.put("location_form", getLocationForm());
+		forms.put("tenantForm", getTenantsForm());
+		forms.put("labourForm", getLabourForm());
+		forms.put("purchaseRequestForm", getPurchaseRequestForm());
+		forms.put("purchaseOrderForm", getPurchaseOrderForm());
+		forms.put("receiptForm", getReceiptForm());
+			
 		return forms;
 	}
     public static List<FormField> getFormFields(String modName) {
@@ -65,7 +73,18 @@ public class FormFactory {
     	{
     		 fields.addAll(getWebApprovalFormFields());
     	}
-		return fields;
+    	else
+			try {
+				if(modName.equals(FacilioConstants.ContextNames.TENANT) && AccountUtil.isFeatureEnabled(AccountUtil.FEATURE_TENANTS)) {
+
+					fields.addAll(getTenantsFormField());
+				}
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+    	return fields;
     	
     }
 	@SuppressWarnings("unchecked") // https://stackoverflow.com/a/11205178
@@ -83,7 +102,14 @@ public class FormFactory {
 						.put(FacilioConstants.ContextNames.WORK_ORDER, getWebWorkOrderForm())
 						.put(FacilioConstants.ContextNames.WORK_ORDER_REQUEST, getWebWorkRequestForm())
 						.put(FacilioConstants.ContextNames.ASSET, getAssetForm())
+						.put(FacilioConstants.ContextNames.TENANT, getTenantsForm())
+						.put(FacilioConstants.ContextNames.PURCHASE_REQUEST, getPurchaseRequestForm())
+						.put(FacilioConstants.ContextNames.PURCHASE_ORDER, getPurchaseOrderForm())
+						.put(FacilioConstants.ContextNames.RECEIPT, getReceiptForm())
+						.put(FacilioConstants.ContextNames.LABOUR, getLabourForm())
+							
 						.put(FacilioConstants.ContextNames.INVENTORY, getInventoryForm()).build())
+        			
 				.put(FormType.PORTAL, ImmutableMultimap.<String, FacilioForm>builder()
 						.put(FacilioConstants.ContextNames.WORK_ORDER_REQUEST, getServiceWorkRequestForm()).build())
 				.build();
@@ -123,6 +149,16 @@ public class FormFactory {
 		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.WORK_ORDER));
 		form.setLabelPosition(LabelPosition.TOP);
 		form.setFields(getServiceWorkRequestFormFields());
+		form.setFormType(FormType.PORTAL);
+		return form;
+	}
+	public static FacilioForm getMobileServiceWorkOrderForm() {
+		FacilioForm form = new FacilioForm();
+		form.setDisplayName("SUBMIT A REQUEST");
+		form.setName("mobileServiceWorkOrder");
+		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.WORK_ORDER));
+		form.setLabelPosition(LabelPosition.TOP);
+		form.setFields(getMobileServiceWorkRequestFormFields());
 		form.setFormType(FormType.PORTAL);
 		return form;
 	}
@@ -264,7 +300,7 @@ public class FormFactory {
 		form.setDisplayName("Asset");
 		form.setName("asset");
 		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.ASSET));
-		form.setLabelPosition(LabelPosition.LEFT);
+		form.setLabelPosition(LabelPosition.TOP);
 		form.setFormType(FormType.WEB);
 		form.setFields(getWebAssetFormFields());
 		return form;
@@ -274,7 +310,7 @@ public class FormFactory {
 		form.setDisplayName("PREVENTIVE MAINTENANCE");
 		form.setName("web_pm");
 		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.WORK_ORDER));
-		form.setLabelPosition(LabelPosition.TOP);
+		form.setLabelPosition(LabelPosition.LEFT);
 		form.setFormType(FormType.WEB);
 		form.setFields(getWebPMFormFields());
 		return form;
@@ -313,16 +349,17 @@ public class FormFactory {
 		return form;
 	}
 	
-	public static FacilioForm getItemCategoryForm() {
+	public static FacilioForm getInventoryCategoryForm() {
 		FacilioForm form = new FacilioForm();
 		form.setDisplayName("NEW CATEGORY");
 		form.setName("web_default");
-		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.ITEM_TYPES_CATEGORY));
+		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.INVENTORY_CATEGORY));
 		form.setLabelPosition(LabelPosition.TOP);
-		form.setFields(getItemCategoryFormField());
+		form.setFields(getInventoryCategoryFormField());
 		form.setFormType(FormType.WEB);
 		return form;
 	}
+
 	
 	public static FacilioForm getLocationForm() {
 		FacilioForm form = new FacilioForm();
@@ -334,10 +371,10 @@ public class FormFactory {
 		form.setFormType(FormType.WEB);
 		return form;
 	}
-	
+
 	public static FacilioForm getTooltypesForm() {
 		FacilioForm form = new FacilioForm();
-		form.setDisplayName("NEW TOOL");
+		form.setDisplayName("NEW TOOL TYPE");
 		form.setName("web_default");
 		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.TOOL_TYPES));
 		form.setLabelPosition(LabelPosition.TOP);
@@ -356,8 +393,20 @@ public class FormFactory {
 		form.setFormType(FormType.WEB);
 		return form;
 	}
-	
-	public static FacilioForm getItemForm() {
+
+
+	public static FacilioForm getTenantsForm() {
+		FacilioForm form = new FacilioForm();
+		form.setDisplayName("TENANT");
+		form.setName("web_default");
+		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.TENANT));
+		form.setLabelPosition(LabelPosition.LEFT);
+		form.setFields(getTenantsFormField());
+		form.setFormType(FormType.WEB);
+		return form;
+	}
+
+    public static FacilioForm getItemForm() {
 		FacilioForm form = new FacilioForm();
 		form.setDisplayName("NEW ITEM");
 		form.setName("web_default");
@@ -367,7 +416,7 @@ public class FormFactory {
 		form.setFormType(FormType.WEB);
 		return form;
 	}
-	
+
 	public static FacilioForm getItemWithIndTrackForm() {
 		FacilioForm form = new FacilioForm();
 		form.setDisplayName("NEW ITEM");
@@ -389,7 +438,7 @@ public class FormFactory {
 		form.setFormType(FormType.WEB);
 		return form;
 	}
-	
+
 	public static FacilioForm getToolWithIndTrackForm() {
 		FacilioForm form = new FacilioForm();
 		form.setDisplayName("NEW TOOL");
@@ -412,7 +461,7 @@ public class FormFactory {
 		fields.add(new FormField("resource", FieldDisplayType.WOASSETSPACECHOOSER, "Space/Asset", Required.OPTIONAL, 6, 1));
 		fields.add(new FormField("assignment", FieldDisplayType.TEAMSTAFFASSIGNMENT, "Team/Staff", Required.OPTIONAL, 7, 1));
 		fields.add(new FormField("attachedFiles", FieldDisplayType.ATTACHMENT, "Attachments", Required.OPTIONAL, "attachment", 8, 1));
-		fields.add(new FormField("tasks", FieldDisplayType.TASKS, "TASKS", Required.OPTIONAL, 9, 1));
+		fields.add(new FormField("tasks", FieldDisplayType.TASKS, "TASKS", Required.OPTIONAL, 10, 1));
 		return Collections.unmodifiableList(fields);
 	}
 
@@ -447,20 +496,22 @@ public class FormFactory {
 		List<FormField> fields = new ArrayList<>();
 		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.REQUIRED, "name", 1, 1));
 		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 2, 1));
-		fields.add(new FormField("category", FieldDisplayType.LOOKUP_SIMPLE, "Category", Required.OPTIONAL, "assetCategory", 3, 1));
-		fields.add(new FormField("department", FieldDisplayType.LOOKUP_SIMPLE, "Department", Required.OPTIONAL,"assetdepartment", 3, 2));
-		fields.add(new FormField("type", FieldDisplayType.LOOKUP_SIMPLE, "Type", Required.OPTIONAL,"assettype", 4, 2));
-		fields.add(new FormField("manufacturer", FieldDisplayType.TEXTBOX, "Manufacturer", Required.OPTIONAL, 5, 1));
-		fields.add(new FormField("supplier", FieldDisplayType.TEXTBOX, "Supplier", Required.OPTIONAL, 5, 2));
-		fields.add(new FormField("model", FieldDisplayType.TEXTBOX, "Model", Required.OPTIONAL, 6, 1));
-		fields.add(new FormField("serialNumber", FieldDisplayType.TEXTBOX, "Serial Number", Required.OPTIONAL, 6, 2));
-		fields.add(new FormField("tagNumber", FieldDisplayType.TEXTBOX, "Tag", Required.OPTIONAL, 7, 1));
-		fields.add(new FormField("partNumber", FieldDisplayType.TEXTBOX, "Part No.", Required.OPTIONAL, 7, 2));
-		fields.add(new FormField("purchasedDate", FieldDisplayType.DATE, "Purchased Date", Required.OPTIONAL, 8, 1));
-		fields.add(new FormField("retireDate", FieldDisplayType.DATE, "Retire Date", Required.OPTIONAL, 8, 2));
-		fields.add(new FormField("unitPrice", FieldDisplayType.TEXTBOX, "Unit Price", Required.OPTIONAL, 9, 1));
-		fields.add(new FormField("warrantyExpiryDate", FieldDisplayType.DATE, "Warranty Expiry Date", Required.OPTIONAL, 9, 2));
-		fields.add(new FormField("qrVal", FieldDisplayType.TEXTBOX, "QR Value", Required.OPTIONAL, 10, 1));
+		fields.add(new FormField("siteId", FieldDisplayType.LOOKUP_SIMPLE, "Site", Required.REQUIRED, "site", 3, 2));
+		fields.add(new FormField("category", FieldDisplayType.LOOKUP_SIMPLE, "Category", Required.REQUIRED, "assetcategory", 4, 2));
+		fields.add(new FormField("department", FieldDisplayType.LOOKUP_SIMPLE, "Department", Required.OPTIONAL,"assetdepartment", 4, 3));
+		fields.add(new FormField("space", FieldDisplayType.SPACECHOOSER, "Asset Location", Required.OPTIONAL, 5, 2));
+		fields.add(new FormField("type", FieldDisplayType.LOOKUP_SIMPLE, "Type", Required.OPTIONAL,"assettype", 5, 3));
+		fields.add(new FormField("manufacturer", FieldDisplayType.TEXTBOX, "Manufacturer", Required.OPTIONAL, 6, 2));
+		fields.add(new FormField("supplier", FieldDisplayType.TEXTBOX, "Supplier", Required.OPTIONAL, 6, 3));
+		fields.add(new FormField("model", FieldDisplayType.TEXTBOX, "Model", Required.OPTIONAL, 7, 2));
+		fields.add(new FormField("serialNumber", FieldDisplayType.TEXTBOX, "Serial Number", Required.OPTIONAL, 7, 3));
+		fields.add(new FormField("tagNumber", FieldDisplayType.TEXTBOX, "Tag", Required.OPTIONAL, 8, 2));
+		fields.add(new FormField("partNumber", FieldDisplayType.TEXTBOX, "Part No.", Required.OPTIONAL, 8, 3));
+		fields.add(new FormField("purchasedDate", FieldDisplayType.DATE, "Purchased Date", Required.OPTIONAL, 9, 2));
+		fields.add(new FormField("retireDate", FieldDisplayType.DATE, "Retire Date", Required.OPTIONAL, 9, 3));
+		fields.add(new FormField("unitPrice", FieldDisplayType.TEXTBOX, "Unit Price", Required.OPTIONAL, 10, 2));
+		fields.add(new FormField("warrantyExpiryDate", FieldDisplayType.DATE, "Warranty Expiry Date", Required.OPTIONAL, 10, 3));
+		fields.add(new FormField("qrVal", FieldDisplayType.TEXTBOX, "QR Value", Required.OPTIONAL, 11, 2));
 		return Collections.unmodifiableList(fields);
 	}
 
@@ -500,6 +551,18 @@ public class FormFactory {
 		return Collections.unmodifiableList(fields);
 	}
 	
+	private static List<FormField> getMobileServiceWorkRequestFormFields() {
+		List<FormField> fields = new ArrayList<>();
+		fields.add(new FormField("name", FieldDisplayType.REQUESTER, "Requester Name", Required.REQUIRED, 1, 1));
+		fields.add(new FormField("email", FieldDisplayType.REQUESTER, "Requester Email", Required.REQUIRED, 2, 1));
+		fields.add(new FormField("siteId", FieldDisplayType.LOOKUP_SIMPLE, "Site", Required.REQUIRED, "site" ,3, 1));
+		fields.add(new FormField("subject", FieldDisplayType.TEXTBOX, "Subject", Required.OPTIONAL, 4, 1));
+		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 5, 1));
+		fields.add(new FormField("urgency", FieldDisplayType.URGENCY, "Urgency", Required.OPTIONAL, 6, 1));
+		fields.add(new FormField("attachedFiles", FieldDisplayType.ATTACHMENT, "Attachment", Required.OPTIONAL, 7, 1));
+		return Collections.unmodifiableList(fields);
+	}
+	
 	private static List<FormField> getWebWorkRequestFormFields() {
 		List<FormField> fields = new ArrayList<>();
 		fields.add(new FormField("subject", FieldDisplayType.TEXTBOX, "Subject", Required.OPTIONAL, 1, 1));
@@ -535,30 +598,31 @@ public class FormFactory {
 		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 2, 1));
 		fields.add(new FormField("location", FieldDisplayType.LOOKUP_SIMPLE, "Location", Required.OPTIONAL, "location", 3, 1).setAllowCreate(true).setCreateFormName("location_form"));
 		fields.add(new FormField("owner", FieldDisplayType.USER, "Owner", Required.OPTIONAL, 4, 1));
+		fields.add(new FormField("isApprovalNeeded", FieldDisplayType.DECISION_BOX, "Approval Needed", Required.OPTIONAL, 5, 1));
+
 		return fields;
 	}
 	
 	private static List<FormField> getItemTypesFormField() {
 		List<FormField> fields = new ArrayList<>();
-		fields.add(new FormField("photoId", FieldDisplayType.IMAGE, "IMAGE", Required.OPTIONAL, 1, 1));	
+		fields.add(new FormField("photoId", FieldDisplayType.IMAGE, "Photo", Required.OPTIONAL, 1, 1));
 		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.REQUIRED, 2, 1));
-		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 4, 1));
-		fields.add(new FormField("category", FieldDisplayType.LOOKUP_SIMPLE, "Category", Required.OPTIONAL, "itemTypesCategory", 3, 1).setAllowCreate(true).setCreateFormName("item_category_form"));
-		fields.add(new FormField("status", FieldDisplayType.LOOKUP_SIMPLE, "Status", Required.OPTIONAL, "itemTypesStatus", 6, 1));
-		fields.add(new FormField("minimumQuantity", FieldDisplayType.TEXTBOX, "Minimum Quantity", Required.OPTIONAL, 6, 1));
-		fields.add(new FormField("individualTracking", FieldDisplayType.DECISION_BOX, "Individual Tracking", Required.OPTIONAL, 8, 1));
-		fields.add(new FormField("unit", FieldDisplayType.UNIT, "Unit", Required.OPTIONAL, 5,1));
+		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 3, 1));
+		fields.add(new FormField("category", FieldDisplayType.LOOKUP_SIMPLE, "Category", Required.OPTIONAL, "inventoryCategory", 4, 2).setAllowCreate(true).setCreateFormName("item_category_form"));
+		fields.add(new FormField("minimumQuantity", FieldDisplayType.TEXTBOX, "Minimum Quantity", Required.OPTIONAL, 4, 3));
+		fields.add(new FormField("individualTracking", FieldDisplayType.DECISION_BOX, "Individual Tracking", Required.OPTIONAL, 5, 2));
+		fields.add(new FormField("isApprovalNeeded", FieldDisplayType.DECISION_BOX, "Approval Needed", Required.OPTIONAL, 5, 3));
 		return fields;
 	}
-	
-	private static List<FormField> getItemCategoryFormField() {
+
+	private static List<FormField> getInventoryCategoryFormField() {
 		List<FormField> fields = new ArrayList<>();
-		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.OPTIONAL, 2, 1));
-		fields.add(new FormField("displayName", FieldDisplayType.TEXTBOX, "Display Name", Required.REQUIRED, 2, 1));
-		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 4, 1));
+//		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.OPTIONAL, 1, 1));
+		fields.add(new FormField("displayName", FieldDisplayType.TEXTBOX, "Display Name", Required.REQUIRED, 1, 1));
+		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 2, 1));
 		return fields;
 	}
-	
+
 	private static List<FormField> getLocationFormField() {
 		List<FormField> fields = new ArrayList<>();
 		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.REQUIRED, 1, 1));
@@ -575,15 +639,12 @@ public class FormFactory {
 	private static List<FormField> getToolTypesFormField() {
 		List<FormField> fields = new ArrayList<>();
 		
-		fields.add(new FormField("photoId", FieldDisplayType.IMAGE, "IMAGE", Required.OPTIONAL, 1, 1));	
+		fields.add(new FormField("photoId", FieldDisplayType.IMAGE, "Photo", Required.OPTIONAL, 1, 1));
 		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.REQUIRED, 2, 1));
-		fields.add(new FormField("category", FieldDisplayType.LOOKUP_SIMPLE, "Category", Required.OPTIONAL, "toolTypesCategory", 3, 1).setAllowCreate(true).setCreateFormName("item_category_form"));
+		fields.add(new FormField("category", FieldDisplayType.LOOKUP_SIMPLE, "Category", Required.OPTIONAL, "inventoryCategory", 3, 1).setAllowCreate(true).setCreateFormName("item_category_form"));
 		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 4, 1));
-		fields.add(new FormField("unit", FieldDisplayType.UNIT, "Unit", Required.OPTIONAL, 5,1));
-		fields.add(new FormField("minimumQuantity", FieldDisplayType.TEXTBOX, "Minimum Quantity", Required.OPTIONAL, 6, 1));
-		fields.add(new FormField("status", FieldDisplayType.LOOKUP_SIMPLE, "Status", Required.OPTIONAL, "toolTypesStatus", 7, 1));
-//		fields.add(new FormField("serialNumber", FieldDisplayType.TEXTBOX, "Serial Number", Required.OPTIONAL, 5,1));
-		fields.add(new FormField("individualTracking", FieldDisplayType.DECISION_BOX, "Individual Tracking", Required.OPTIONAL, 8, 1));	
+		fields.add(new FormField("individualTracking", FieldDisplayType.DECISION_BOX, "Individual Tracking", Required.OPTIONAL, 5, 2));
+		fields.add(new FormField("isApprovalNeeded", FieldDisplayType.DECISION_BOX, "Approval Needed", Required.OPTIONAL, 5, 3));
 
 		return fields;
 	}
@@ -600,47 +661,166 @@ public class FormFactory {
 		return fields;
 	}
 
-	private static List<FormField> getItemFormField() {
+	private static List<FormField> getTenantsFormField() {
 		List<FormField> fields = new ArrayList<>();
-		fields.add(new FormField("itemType", FieldDisplayType.LOOKUP_SIMPLE, "Item Type", Required.REQUIRED, "itemTypes", 1, 1));
-		fields.add(new FormField("storeRoom", FieldDisplayType.LOOKUP_SIMPLE, "Store Room", Required.REQUIRED, "storeRoom", 2, 1).setAllowCreate(true).setCreateFormName("store_room_form"));
-//		fields.add(new FormField("site", FieldDisplayType.LOOKUP_SIMPLE, "Site", Required.REQUIRED, "site", 2, 2));
-		fields.add(new FormField("costType", FieldDisplayType.TEXTBOX, "Cost Type", Required.OPTIONAL, 3, 1));
-//		fields.add(new FormField("issuingUnit", FieldDisplayType.UNIT, "Issuing Unit", Required.OPTIONAL, 3, 2));
-		fields.add(new FormField("status", FieldDisplayType.LOOKUP_SIMPLE, "Status", Required.OPTIONAL, "itemStatus", 4, 1));
-		fields.add(new FormField("purchasedItems", FieldDisplayType.PURCHASEDITEM, "Purchased Item", Required.OPTIONAL, 5, 1));
-		
+		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.REQUIRED, 2, 1));
+		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 3, 1));
+		fields.add(new FormField("siteId", FieldDisplayType.LOOKUP_SIMPLE, "Site", Required.REQUIRED, "site", 4, 1));
+		fields.add(new FormField("spaces", FieldDisplayType.SPACEMULTICHOOSER, "Spaces", Required.REQUIRED, 5, 1));
+		fields.add(new FormField("contact_name", FieldDisplayType.TEXTBOX, "Contact Name", Required.REQUIRED, 6, 1));
+		fields.add(new FormField("contact_email", FieldDisplayType.TEXTBOX, "Contact Email", Required.REQUIRED, 7, 1));
+		fields.add(new FormField("inTime", FieldDisplayType.DATE, "Lease Start Time", Required.OPTIONAL, 8, 1));
+		fields.add(new FormField("outTime", FieldDisplayType.DATE, "Lease End Time", Required.OPTIONAL, 9, 1));
+		fields.add(new FormField("logo", FieldDisplayType.LOGO, "Logo", Required.OPTIONAL, 1, 1));
+		fields.add(new FormField("utilityMeters", FieldDisplayType.ASSETMULTICHOOSER, "UTILITY METERS", Required.OPTIONAL, 10, 1));
+
 		return fields;
 	}
-	
+
+	private static List<FormField> getItemFormField() {
+		List<FormField> fields = new ArrayList<>();
+		fields.add(new FormField("itemType", FieldDisplayType.LOOKUP_SIMPLE, "Item Type", Required.REQUIRED, "itemTypes", 1, 2));
+		fields.add(new FormField("storeRoom", FieldDisplayType.LOOKUP_SIMPLE, "Store Room", Required.REQUIRED, "storeRoom", 1, 3));
+		fields.add(new FormField("costType", FieldDisplayType.SELECTBOX, "Cost Type", Required.OPTIONAL, 2, 2));
+		fields.add(new FormField("status", FieldDisplayType.LOOKUP_SIMPLE, "Status", Required.OPTIONAL, "itemStatus", 2, 3));
+		fields.add(new FormField("purchasedItems", FieldDisplayType.PURCHASEDITEM, "Purchased Item", Required.OPTIONAL, 3, 1));
+
+		return fields;
+	}
+
 	private static List<FormField> getItemWithIndTrackFormField() {
 		List<FormField> fields = new ArrayList<>();
 		fields.add(new FormField("itemType", FieldDisplayType.LOOKUP_SIMPLE, "Item Type", Required.REQUIRED, "itemTypes", 1, 1));
 		fields.add(new FormField("storeRoom", FieldDisplayType.LOOKUP_SIMPLE, "Store Room", Required.REQUIRED, "storeRoom", 2, 1));
 		fields.add(new FormField("status", FieldDisplayType.LOOKUP_SIMPLE, "Status", Required.OPTIONAL, "itemStatus", 3, 1));
 		fields.add(new FormField("purchasedItems", FieldDisplayType.PURCHASEDITEMT, "Purchased Item", Required.OPTIONAL, 4, 1));
-		
+
 		return fields;
 	}
-	
+
 	private static List<FormField> getToolFormField() {
 		List<FormField> fields = new ArrayList<>();
 		fields.add(new FormField("toolType", FieldDisplayType.LOOKUP_SIMPLE, "Tool Type", Required.REQUIRED, "toolTypes", 1, 1));
 		fields.add(new FormField("storeRoom", FieldDisplayType.LOOKUP_SIMPLE, "Store Room", Required.REQUIRED, "storeRoom", 2, 1).setAllowCreate(true).setCreateFormName("store_room_form"));
 		fields.add(new FormField("status", FieldDisplayType.LOOKUP_SIMPLE, "Status", Required.OPTIONAL, "toolStatus", 3, 1));
 		fields.add(new FormField("quantity", FieldDisplayType.DECIMAL, "Quantity", Required.OPTIONAL, 5, 1));
-		fields.add(new FormField("rate", FieldDisplayType.DECIMAL, "Rate", Required.OPTIONAL, 6, 1));
+		fields.add(new FormField("rate", FieldDisplayType.DECIMAL, "Rate/Hour", Required.OPTIONAL, 6, 1));
 		
 		return fields;
 	}
-	
+
 	private static List<FormField> getToolTrackWithIndFormField() {
 		List<FormField> fields = new ArrayList<>();
 		fields.add(new FormField("toolType", FieldDisplayType.LOOKUP_SIMPLE, "Tool Type", Required.REQUIRED, "toolTypes", 1, 1));
 		fields.add(new FormField("storeRoom", FieldDisplayType.LOOKUP_SIMPLE, "Store Room", Required.REQUIRED, "storeRoom", 2, 1));
 		fields.add(new FormField("status", FieldDisplayType.LOOKUP_SIMPLE, "Status", Required.OPTIONAL, "toolStatus", 3, 1));
 		fields.add(new FormField("purchasedTools", FieldDisplayType.PURCHASEDTOOL, "Purchased Tool", Required.OPTIONAL, 4, 1));
+
+		return fields;
+	}
+	
+	public static FacilioForm getLabourForm() {
+		FacilioForm form = new FacilioForm();
+		form.setDisplayName("LABOUR");
+		form.setName("web_default");
+		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.LABOUR));
+		form.setLabelPosition(LabelPosition.TOP);
+		form.setFields(getLabourFormFields());
+		form.setFormType(FormType.WEB);
+		return form;
+	}
+	
+	public static FacilioForm getPurchaseRequestForm() {
+		FacilioForm form = new FacilioForm();
+		form.setDisplayName("PURCHASE REQUEST");
+		form.setName("web_default");
+		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.PURCHASE_REQUEST));
+		form.setLabelPosition(LabelPosition.TOP);
+		form.setFields(getPurchaseRequestFormFields());
+		form.setFormType(FormType.WEB);
+		return form;
+	}
+	public static FacilioForm getPurchaseOrderForm() {
+		FacilioForm form = new FacilioForm();
+		form.setDisplayName("PURCHASE ORDER");
+		form.setName("web_default");
+		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.PURCHASE_ORDER));
+		form.setLabelPosition(LabelPosition.TOP);
+		form.setFields(getPurchaseOrderFormFields());
+		form.setFormType(FormType.WEB);
+		return form;
+	}
+	
+	public static FacilioForm getReceiptForm() {
+		FacilioForm form = new FacilioForm();
+		form.setDisplayName("RECEIVABLE RECEIPT");
+		form.setName("web_default");
+		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.RECEIPT));
+		form.setLabelPosition(LabelPosition.TOP);
+		form.setFields(getReceiptFormFields());
+		form.setFormType(FormType.WEB);
+		return form;
+	}
+	
+	private static List<FormField> getLabourFormFields() {
+		List<FormField> fields = new ArrayList<>();
+		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.REQUIRED, 1, 1));
+		fields.add(new FormField("phone", FieldDisplayType.TEXTBOX, "Phone", Required.REQUIRED, 3, 1));
+		fields.add(new FormField("email", FieldDisplayType.TEXTBOX, "Email", Required.OPTIONAL, 4, 1));
+		//fields.add(new FormField("address", FieldDisplayType.TEXTAREA, "Address", Required.OPTIONAL,5, 1));
+		fields.add(new FormField("location", FieldDisplayType.ADDRESS, "Address", Required.OPTIONAL,5, 1));
+		fields.add(new FormField("user", FieldDisplayType.USER, "User", Required.OPTIONAL, 6, 1));
+		//fields.add(new FormField("unitType", FieldDisplayType.SELECTBOX, "Wage Type", Required.REQUIRED, 7, 1));
+		fields.add(new FormField("cost", FieldDisplayType.DECIMAL, "Rate Per Hour", Required.REQUIRED, 8, 1));
+		fields.add(new FormField("siteId", FieldDisplayType.LOOKUP_SIMPLE, "Site", Required.REQUIRED, "site", 2, 1));
+		fields.add(new FormField("availability", FieldDisplayType.DECISION_BOX, "Active", Required.REQUIRED, 9, 1));
 		
 		return fields;
 	}
+
+	private static List<FormField> getPurchaseRequestFormFields() {
+		List<FormField> fields = new ArrayList<>();
+		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.OPTIONAL, 1, 1));
+		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 3, 1));
+		fields.add(new FormField("vendor", FieldDisplayType.LOOKUP_SIMPLE, "Vendor", Required.OPTIONAL, "vendors", 4, 2));
+		fields.add(new FormField("storeRoom", FieldDisplayType.LOOKUP_SIMPLE, "Store Room", Required.OPTIONAL, "storeRoom", 5, 2));
+		fields.add(new FormField("lineItems", FieldDisplayType.LINEITEMS, "LINE ITEMS", Required.REQUIRED, 9, 1));
+		fields.add(new FormField("shipToAddress", FieldDisplayType.ADDRESS, "Ship To Address", Required.OPTIONAL, 5, 1));
+		fields.add(new FormField("billToAddress", FieldDisplayType.ADDRESS, "Bill To Address", Required.OPTIONAL, 6, 1));
+		fields.add(new FormField("requestedTime", FieldDisplayType.DATETIME, "Requested Time", Required.OPTIONAL, 7, 1));
+		fields.add(new FormField("requiredTime", FieldDisplayType.DATETIME, "Required Time", Required.OPTIONAL, 8, 1));
+
+		//	fields.add(new FormField("status", FieldDisplayType.SELECTBOX, "Status", Required.REQUIRED, 7, 1));
+		//fields.add(new FormField("siteId", FieldDisplayType.LOOKUP_SIMPLE, "Site", Required.REQUIRED, "site", 2, 1));
+		return fields;
+	}
+	
+	private static List<FormField> getPurchaseOrderFormFields() {
+		List<FormField> fields = new ArrayList<>();
+		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.OPTIONAL, 1, 1));
+		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 3, 1));
+		fields.add(new FormField("vendor", FieldDisplayType.LOOKUP_SIMPLE, "Vendor", Required.OPTIONAL, "vendors", 4, 2));
+		fields.add(new FormField("storeRoom", FieldDisplayType.LOOKUP_SIMPLE, "Store Room", Required.OPTIONAL, "storeRoom", 5, 2));
+		fields.add(new FormField("lineItems", FieldDisplayType.LINEITEMS, "LINE ITEMS", Required.REQUIRED, 9, 1));
+		fields.add(new FormField("shipToAddress", FieldDisplayType.ADDRESS, "Ship To Address", Required.OPTIONAL, 5, 1));
+		fields.add(new FormField("billToAddress", FieldDisplayType.ADDRESS, "Bill To Address", Required.OPTIONAL, 6, 1));
+		fields.add(new FormField("orderedTime", FieldDisplayType.DATETIME, "Ordered Time", Required.OPTIONAL, 7, 1));
+		fields.add(new FormField("requiredTime", FieldDisplayType.DATETIME, "Required Time", Required.OPTIONAL, 8, 1));
+//	fields.add(new FormField("status", FieldDisplayType.SELECTBOX, "Status", Required.REQUIRED, 7, 1));
+		//fields.add(new FormField("siteId", FieldDisplayType.LOOKUP_SIMPLE, "Site", Required.REQUIRED, "site", 2, 1));
+		return fields;
+	}
+	
+	private static List<FormField> getReceiptFormFields() {
+		List<FormField> fields = new ArrayList<>();
+		fields.add(new FormField("lineItemId", FieldDisplayType.RECEIPT_LINE_ITEMS, "Line Item", Required.REQUIRED, 1, 1));
+		fields.add(new FormField("quantity", FieldDisplayType.NUMBER, "QUANTITY", Required.REQUIRED, 2, 1));
+		fields.add(new FormField("receiptTime", FieldDisplayType.DATETIME, "Receipt Time", Required.OPTIONAL, 3, 1));
+		//fields.add(new FormField("status", FieldDisplayType.LOOKUP_SIMPLE, "Status", Required.REQUIRED, 3, 1));
+		//fields.add(new FormField("siteId", FieldDisplayType.LOOKUP_SIMPLE, "Site", Required.REQUIRED, "site", 4, 1));
+		return fields;
+	}
+
+	
+
 }

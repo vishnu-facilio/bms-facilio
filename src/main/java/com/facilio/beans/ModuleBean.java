@@ -9,6 +9,7 @@ import org.json.simple.JSONObject;
 import com.facilio.bmsconsole.commands.data.ServicePortalInfo;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
+import com.facilio.bmsconsole.modules.FieldFactory;
 
 public interface ModuleBean extends RootBean {
 
@@ -34,7 +35,6 @@ public interface ModuleBean extends RootBean {
 	
 	public List<FacilioField> getAllCustomFields (String moduleName) throws Exception;
 	
-	@Deprecated
 	public FacilioField getField(long fieldId) throws Exception;
 	
 	public FacilioField getField(long fieldId, long moduleId) throws Exception;
@@ -66,4 +66,6 @@ public interface ModuleBean extends RootBean {
 	public ServicePortalInfo getServicePortalInfo() throws Exception;
 	
 	public JSONObject getStateFlow(String module) throws  Exception;
+
+	public List<FacilioModule> getChildModules(FacilioModule parentModule) throws Exception;
 }

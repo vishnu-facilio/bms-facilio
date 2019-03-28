@@ -61,6 +61,7 @@ public class UpdateFormulaCommand implements Command {
 		}
 		
 		if (newFormula.getInterval() != -1) {
+			newFormula.setInterval(FormulaFieldAPI.getDataInterval(newFormula));
 			if (module == null) {
 				module = new FacilioModule();
 			}

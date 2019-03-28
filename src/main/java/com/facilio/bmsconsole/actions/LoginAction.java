@@ -279,13 +279,21 @@ public class LoginAction extends FacilioAction {
 		List<User> users = AccountUtil.getOrgBean().getAllOrgUsers(AccountUtil.getCurrentOrg().getOrgId());
 		Map<String, Object> data = new HashMap<>();
 		data.put("users", users);
-		data.put("ticketStatus", getTicketStatus());
+		data.put("ticketStatus", TicketAPI.getAllStatus(false));
 		data.put("ticketCategory", TicketAPI.getCategories(AccountUtil.getCurrentOrg().getOrgId()));
+		data.put("ticketPriority", TicketAPI.getPriorties(AccountUtil.getCurrentOrg().getOrgId()));
 		data.put("assetCategory", AssetsAPI.getCategoryList());
 		data.put("sites", SpaceAPI.getAllSites());
+		data.put("orgInfo", CommonCommandUtil.getOrgInfo());
 		int license = AccountUtil.getFeatureLicense();
 		account.put("License", license);
 		account.put("data", data);
+		return SUCCESS;
+	}
+	
+	public String v2portalAccount() throws Exception {
+		portalAccount();
+		setResult("account", account);
 		return SUCCESS;
 	}
 
@@ -329,6 +337,16 @@ public class LoginAction extends FacilioAction {
 //		data.put("inventoryVendors", InventoryApi.getInventoryVendorList());
 //		data.put("inventoryCategory", InventoryApi.getInventoryCategoryList());
 		
+		try {
+		data.put("inventoryCategory", InventoryApi.getInventoryCategoryList());
+		data.put("itemTypesStatus", InventoryApi.getItemTypesStatusList());
+		data.put("toolTypesStatus", InventoryApi.getToolTypesStatusList());
+		data.put("itemStatus", InventoryApi.getItemStatusList());
+		data.put("toolStatus", InventoryApi.getToolStatusList());
+		}catch (Exception e) {
+			// TODO: handle exception
+		}
+		 
 		data.put("serviceList", ReportsUtil.getPurposeMapping());
 		data.put("buildingList", ReportsUtil.getBuildingMap());
 		data.put("energyMeters", DeviceAPI.getAllMainEnergyMeters());
@@ -402,6 +420,17 @@ public class LoginAction extends FacilioAction {
 //		data.put("inventoryVendors", InventoryApi.getInventoryVendorList());
 //		data.put("inventoryCategory", InventoryApi.getInventoryCategoryList());
 
+		try {
+		data.put("itemTypesCategory", InventoryApi.getItemTypesCategoryList());
+		data.put("toolTypesCategory", InventoryApi.getToolTypesCategoryList());
+		data.put("itemTypesStatus", InventoryApi.getItemTypesStatusList());
+		data.put("toolTypesStatus", InventoryApi.getToolTypesStatusList());
+		data.put("itemStatus", InventoryApi.getItemStatusList());
+		data.put("toolStatus", InventoryApi.getToolStatusList());
+		}catch (Exception e) {
+			// TODO: handle exception
+		}
+		 
 		data.put("serviceList", ReportsUtil.getPurposeMapping());
 		data.put("buildingList", ReportsUtil.getBuildingMap());
 		data.put("ticketStatus", TicketAPI.getAllStatus(false));

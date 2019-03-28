@@ -38,24 +38,42 @@ public class InsertImportDataIntoLogCommand implements Command {
 		
 		for(String uniqueString : groupedContext.keySet()) {
 			ImportProcessLogContext logContext= new ImportProcessLogContext();
-			logContext.setParentId(groupedContext.get(uniqueString).get(0).getParentId());
-			logContext.setTtime(groupedContext.get(uniqueString).get(0).getTtime());
+			logContext.setImportMode(importProcessContext.getImportMode());
+			
+			if(importProcessContext.getImportMode() == ImportProcessContext.ImportMode.READING.getValue()) {
+				logContext.setParentId(groupedContext.get(uniqueString).get(0).getParentId());
+				logContext.setTtime(groupedContext.get(uniqueString).get(0).getTtime());
+				logContext.setTemplateId(importProcessContext.getTemplateId());
+			}
+			
 			logContext.setImportId(importProcessContext.getId());
 			logContext.setOrgId(importProcessContext.getOrgId());
-			logContext.setTemplateId(importProcessContext.getTemplateId());
 			logContext.setTotal_rows(row_count);
-			if(logContext.getParentId() == null || logContext.getParentId() < 0) {
-				logContext.setError_resolved(ImportProcessContext.ImportLogErrorStatus.OTHER_ERRORS.getValue());
-			}
-			else if(groupedContext.get(uniqueString).size() == 1) {
-				logContext.setError_resolved(ImportProcessContext.ImportLogErrorStatus.NO_VALIDATION_REQUIRED.getValue());
+			
+			
+			if(importProcessContext.getImportMode() == ImportProcessContext.ImportMode.NORMAL.getValue()) {
+				if(groupedContext.get(uniqueString).size() > 1) {
+					logContext.setError_resolved(ImportProcessContext.ImportLogErrorStatus.UNRESOLVED.getValue());
+				}
+				else {
+					logContext.setError_resolved(ImportProcessContext.ImportLogErrorStatus.NO_VALIDATION_REQUIRED.getValue());
+				}
 			}
 			else {
-				logContext.setError_resolved(ImportProcessContext.ImportLogErrorStatus.UNRESOLVED.getValue());
+				if(logContext.getParentId() == null || logContext.getParentId() < 0) {
+					logContext.setError_resolved(ImportProcessContext.ImportLogErrorStatus.OTHER_ERRORS.getValue());
+				}
+				else if(groupedContext.get(uniqueString).size() == 1) {
+					logContext.setError_resolved(ImportProcessContext.ImportLogErrorStatus.NO_VALIDATION_REQUIRED.getValue());
+				}
+				else {
+					logContext.setError_resolved(ImportProcessContext.ImportLogErrorStatus.UNRESOLVED.getValue());
+				}
 			}
+			
 			logContext.setRowContexts(groupedContext.get(uniqueString));
 			if(hasDuplicates == false) {
-				hasDuplicates = hasDuplicate(logContext);
+				hasDuplicates = hasDuplicate(logContext, importProcessContext);
 			}
 			JSONObject props = FieldUtil.getAsJSON(logContext);
 			LOGGER.severe("props" + props.toString());
@@ -71,15 +89,26 @@ public class InsertImportDataIntoLogCommand implements Command {
 		return false;
 	}
 	
-	private boolean hasDuplicate(ImportProcessLogContext logContext) throws Exception {
+	private boolean hasDuplicate(ImportProcessLogContext logContext, ImportProcessContext importProcessContext) throws Exception {
 		// TODO Auto-generated method stub
 		if(logContext.getRowContexts().size() > 1) {
-			if(logContext.getParentId() < 0 || logContext.getParentId() == null) {
-				return false;
+			if(importProcessContext.getImportMode() == ImportProcessContext.ImportMode.NORMAL.getValue()) {
+				if(logContext.getRowContexts().size() > 1) {
+					return true;
+				}
+				else {
+					return false;
+				}
 			}
 			else {
-				return true;
+				if(logContext.getParentId() < 0 || logContext.getParentId() == null) {
+					return false;
+				}
+				else {
+					return true;
+				}
 			}
+			
 		}
 		return false;
 	}

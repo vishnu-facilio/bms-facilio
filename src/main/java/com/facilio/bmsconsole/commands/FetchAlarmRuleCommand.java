@@ -1,10 +1,14 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.List;
+
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.util.ReadingRuleAPI;
+import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.rule.AlarmRuleContext;
+import com.facilio.bmsconsole.workflow.rule.ReadingAlarmRuleContext;
 import com.facilio.constants.FacilioConstants;
 
 public class FetchAlarmRuleCommand implements Command {
@@ -16,7 +20,8 @@ public class FetchAlarmRuleCommand implements Command {
 		if (id == null || id == -1) {
 			throw new IllegalArgumentException("Invalid ID to fetch workflow");
 		}
-		AlarmRuleContext alarmRule = new AlarmRuleContext(ReadingRuleAPI.getReadingRules(id));
+		List<ReadingAlarmRuleContext> readingAlarmRules = WorkflowRuleAPI.getReadingAlarmRulesFromReadingRuleGroupId(id);
+		AlarmRuleContext alarmRule = new AlarmRuleContext(ReadingRuleAPI.getReadingRulesList(id),readingAlarmRules);
 		ReadingRuleAPI.setMatchedResources(alarmRule.getPreRequsite());
 		context.put(FacilioConstants.ContextNames.ALARM_RULE, alarmRule);
 		

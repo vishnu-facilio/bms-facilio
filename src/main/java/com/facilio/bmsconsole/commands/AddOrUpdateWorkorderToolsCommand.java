@@ -9,20 +9,26 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.PurchasedItemContext;
 import com.facilio.bmsconsole.context.PurchasedToolContext;
+import com.facilio.bmsconsole.context.StoreRoomContext;
 import com.facilio.bmsconsole.context.ToolContext;
 import com.facilio.bmsconsole.context.ToolTypesContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
+import com.facilio.bmsconsole.context.WorkorderItemContext;
 import com.facilio.bmsconsole.context.WorkorderToolsContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.InsertRecordBuilder;
+import com.facilio.bmsconsole.modules.LookupField;
+import com.facilio.bmsconsole.modules.LookupFieldMeta;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
 import com.facilio.bmsconsole.util.TransactionState;
 import com.facilio.bmsconsole.util.TransactionType;
+import com.facilio.bmsconsole.workflow.rule.ApprovalState;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 
@@ -36,122 +42,110 @@ public class AddOrUpdateWorkorderToolsCommand implements Command {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule workorderToolsModule = modBean.getModule(FacilioConstants.ContextNames.WORKORDER_TOOLS);
 		List<FacilioField> workorderToolsFields = modBean.getAllFields(FacilioConstants.ContextNames.WORKORDER_TOOLS);
+		Map<String, FacilioField> toolFieldsMap = FieldFactory.getAsMap(workorderToolsFields);
+		List<LookupFieldMeta> lookUpfields = new ArrayList<>();
+		lookUpfields.add(new LookupFieldMeta((LookupField) toolFieldsMap.get("tool")));
+		lookUpfields.add(new LookupFieldMeta((LookupField) toolFieldsMap.get("toolType")));
 		List<WorkorderToolsContext> workorderTools = (List<WorkorderToolsContext>) context
 				.get(FacilioConstants.ContextNames.RECORD_LIST);
 		List<WorkorderToolsContext> workorderToolslist = new ArrayList<>();
 		List<WorkorderToolsContext> toolsToBeAdded = new ArrayList<>();
-
+		long toolTypesId = -1;
 		if (workorderTools != null) {
 			long parentId = workorderTools.get(0).getParentId();
 			for (WorkorderToolsContext workorderTool : workorderTools) {
 				WorkOrderContext workorder = getWorkorder(parentId);
-				ToolContext stockedTools = getStockedTools(workorderTool.getTool().getId());
-				ToolTypesContext toolTypes = getToolType(stockedTools.getToolType().getId());
-				if (stockedTools.getQuantity() < workorderTool.getQuantity()) {
-					throw new IllegalStateException("Insufficient quantity in inventory!");
-				} else {
-					if (toolTypes.individualTracking()) {
-						List<Long> purchasedToolIds = (List<Long>) context
-								.get(FacilioConstants.ContextNames.PURCHASED_TOOL);
-						List<PurchasedToolContext> purchasedTool = getPurchasedToolsListFromId(purchasedToolIds);
-						if (purchasedTool != null) {
-							for (PurchasedToolContext pTool : purchasedTool) {
-								WorkorderToolsContext woTool = new WorkorderToolsContext();
-								pTool.setIsUsed(true);
-								woTool = setWorkorderItemObj(pTool, 1, stockedTools, parentId, workorder,
-										workorderTool);
-								updatePurchasedTool(pTool);
-								if (workorderTool.getId() <= 0) {
-									// Insert
-									workorderToolslist.add(woTool);
-									toolsToBeAdded.add(woTool);
-								} else {
-									// update
-									woTool.setId(workorderTool.getId());
-									workorderToolslist.add(woTool);
-									updateWorkorderTools(workorderToolsModule, workorderToolsFields, woTool);
-								}
-							}
-						}
-					} else {
-						WorkorderToolsContext woTool = new WorkorderToolsContext();
-						woTool = setWorkorderItemObj(null, 1, stockedTools, parentId, workorder, workorderTool);
-						if (workorderTool.getId() <= 0) {
-							// Insert
-							workorderToolslist.add(woTool);
-							toolsToBeAdded.add(woTool);
+				ToolContext tool = getStockedTools(workorderTool.getTool().getId());
+				toolTypesId = tool.getToolType().getId();
+				ToolTypesContext toolTypes = getToolType(toolTypesId);
+				StoreRoomContext storeRoom = tool.getStoreRoom();
+				if (workorderTool.getId() > 0) {
+					SelectRecordsBuilder<WorkorderToolsContext> selectBuilder = new SelectRecordsBuilder<WorkorderToolsContext>()
+							.select(workorderToolsFields).table(workorderToolsModule.getTableName())
+							.moduleName(workorderToolsModule.getName()).beanClass(WorkorderToolsContext.class)
+							.andCondition(CriteriaAPI.getIdCondition(workorderTool.getId(), workorderToolsModule))
+							.fetchLookups(lookUpfields);
+					;
+					List<WorkorderToolsContext> woIt = selectBuilder.get();
+					if (woIt != null) {
+						WorkorderToolsContext wTool = woIt.get(0);
+						if ((wTool.getQuantity() + wTool.getTool().getCurrentQuantity()) < workorderTool
+								.getQuantity()) {
+							throw new IllegalArgumentException("Insufficient quantity in inventory!");
 						} else {
+							ApprovalState approvalState = ApprovalState.YET_TO_BE_REQUESTED;
+							if (toolTypes.isApprovalNeeded() || storeRoom.isApprovalNeeded()) {
+								approvalState = ApprovalState.REQUESTED;
+							}
+							wTool = setWorkorderItemObj(null, workorderTool.getQuantity(), tool, parentId,
+									workorder, workorderTool, approvalState);
 							// update
-							woTool.setId(workorderTool.getId());
-							workorderToolslist.add(woTool);
-							updateWorkorderTools(workorderToolsModule, workorderToolsFields, woTool);
+							wTool.setId(workorderTool.getId());
+							workorderToolslist.add(wTool);
+							updateWorkorderTools(workorderToolsModule, workorderToolsFields, wTool);
 						}
 					}
-
-					// double costOccured = 0;
-					// int duration = 0;
-					//
-					// if (workorderTool.getDuration() <= 0) {
-					// if (workorderTool.getIssueTime() <= 0) {
-					// workorderTool.setIssueTime(workorder.getEstimatedStart());
-					// }
-					// if (workorderTool.getReturnTime() <= 0) {
-					// workorderTool.setReturnTime(workorder.getEstimatedEnd());
-					// if (workorderTool.getIssueTime() >= 0) {
-					// duration =
-					// getEstimatedWorkDuration(workorderTool.getIssueTime(),
-					// workorderTool.getReturnTime());
-					// } else {
-					// duration = 0;
-					// }
-					// }
-					// } else {
-					// duration = (int) (workorderTool.getDuration() / (1000 *
-					// 60 * 60));
-					// if (workorderTool.getIssueTime() >= 0) {
-					// workorderTool.setReturnTime(workorderTool.getIssueTime()
-					// + workorderTool.getDuration());
-					// }
-					// }
-					//
-					// if (stockedTools.getRate() > 0) {
-					// costOccured = stockedTools.getRate() * duration;
-					// }
-					// workorderTool.setTool(stockedTools);
-					// workorderTool.setCost(costOccured);
-					// workorderTool.setParentId(parentId);
-					// workorderTool.setSysModifiedTime(System.currentTimeMillis());
-					//
-					// if (workorderTool.getId() <= 0) {
-					// // Insert
-					// workorderToolslist.add(workorderTool);
-					// toolsToBeAdded.add(workorderTool);
-					// } else {
-					// // update
-					// workorderToolslist.add(workorderTool);
-					// updateWorkorderTools(workorderToolsModule,
-					// workorderToolsFields, workorderTool);
-					// }
-					// break;
-
+				} else {
+					if (tool.getCurrentQuantity() < workorderTool.getQuantity()) {
+						throw new IllegalArgumentException("Insufficient quantity in inventory!");
+					} else {
+						ApprovalState approvalState = ApprovalState.YET_TO_BE_REQUESTED;
+						if (toolTypes.isApprovalNeeded() || storeRoom.isApprovalNeeded()) {
+							approvalState = ApprovalState.REQUESTED;
+						}
+						if (toolTypes.individualTracking()) {
+							List<Long> purchasedToolIds = workorderTool.getPurchasedTools();
+							List<PurchasedToolContext> purchasedTool = getPurchasedToolsListFromId(purchasedToolIds);
+							if (purchasedTool != null) {
+								for (PurchasedToolContext pTool : purchasedTool) {
+									if(pTool.isUsed()) {
+										throw new IllegalArgumentException("Insufficient quantity in inventory!");
+									}
+									WorkorderToolsContext woTool = new WorkorderToolsContext();
+									if (toolTypes.isApprovalNeeded() || storeRoom.isApprovalNeeded()) {
+										pTool.setIsUsed(false);
+									}
+									else {
+										pTool.setIsUsed(true);
+									}
+									woTool = setWorkorderItemObj(pTool, 1, tool, parentId, workorder,
+											workorderTool, approvalState);
+									updatePurchasedTool(pTool);
+									workorderToolslist.add(woTool);
+									toolsToBeAdded.add(woTool);
+								}
+							}
+						} else {
+							WorkorderToolsContext woTool = new WorkorderToolsContext();
+							woTool = setWorkorderItemObj(null, workorderTool.getQuantity(), tool, parentId,
+									workorder, workorderTool, approvalState);
+							workorderToolslist.add(woTool);
+							toolsToBeAdded.add(woTool);
+						}
+					}
 				}
 			}
 			if (toolsToBeAdded != null && !toolsToBeAdded.isEmpty()) {
 				addWorkorderTools(workorderToolsModule, workorderToolsFields, toolsToBeAdded);
 			}
 			context.put(FacilioConstants.ContextNames.PARENT_ID, workorderTools.get(0).getParentId());
+			context.put(FacilioConstants.ContextNames.PARENT_ID_LIST,
+					Collections.singletonList(workorderTools.get(0).getParentId()));
 			context.put(FacilioConstants.ContextNames.TOOL_ID, workorderTools.get(0).getTool().getId());
 			context.put(FacilioConstants.ContextNames.TOOL_IDS,
 					Collections.singletonList(workorderTools.get(0).getTool().getId()));
 			context.put(FacilioConstants.ContextNames.RECORD_LIST, workorderToolslist);
 			context.put(FacilioConstants.ContextNames.WORKORDER_COST_TYPE, 2);
+			context.put(FacilioConstants.ContextNames.TOOL_TYPES_ID, toolTypesId);
+			context.put(FacilioConstants.ContextNames.TOOL_TYPES_IDS, Collections.singletonList(toolTypesId));
 		}
 
 		return false;
 	}
 
 	private WorkorderToolsContext setWorkorderItemObj(PurchasedToolContext purchasedtool, double quantity,
-			ToolContext tool, long parentId, WorkOrderContext workorder, WorkorderToolsContext workorderTools) {
+			ToolContext tool, long parentId, WorkOrderContext workorder, WorkorderToolsContext workorderTools,
+			ApprovalState approvalState) {
 		WorkorderToolsContext woTool = new WorkorderToolsContext();
 		woTool.setIssueTime(workorderTools.getIssueTime());
 		woTool.setReturnTime(workorderTools.getReturnTime());
@@ -181,14 +175,20 @@ public class AddOrUpdateWorkorderToolsCommand implements Command {
 		if (purchasedtool != null) {
 			woTool.setPurchasedTool(purchasedtool);
 		}
-
+		woTool.setApprovedState(approvalState);
+		if (approvalState == ApprovalState.YET_TO_BE_REQUESTED) {
+			woTool.setRemainingQuantity(quantity);
+		} else {
+			woTool.setRemainingQuantity(0);
+		}
 		woTool.setQuantity(quantity);
 		woTool.setTool(tool);
+		woTool.setToolType(tool.getToolType());
 		woTool.setSysModifiedTime(System.currentTimeMillis());
 		woTool.setParentId(parentId);
 		double costOccured = 0;
 		if (tool.getRate() > 0) {
-			costOccured = tool.getRate() * duration;
+			costOccured = tool.getRate() * duration * woTool.getQuantity();
 		}
 		woTool.setCost(costOccured);
 		return woTool;
@@ -215,10 +215,13 @@ public class AddOrUpdateWorkorderToolsCommand implements Command {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.TOOL);
 		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.TOOL);
-
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+		List<LookupFieldMeta> lookUpfields = new ArrayList<>();
+		lookUpfields.add(new LookupFieldMeta((LookupField) fieldMap.get("storeRoom")));
 		SelectRecordsBuilder<ToolContext> selectBuilder = new SelectRecordsBuilder<ToolContext>().select(fields)
 				.table(module.getTableName()).moduleName(module.getName()).beanClass(ToolContext.class)
-				.andCustomWhere(module.getTableName() + ".ID = ?", id);
+				.andCustomWhere(module.getTableName() + ".ID = ?", id)
+				.fetchLookups(lookUpfields);
 
 		List<ToolContext> stockedTools = selectBuilder.get();
 

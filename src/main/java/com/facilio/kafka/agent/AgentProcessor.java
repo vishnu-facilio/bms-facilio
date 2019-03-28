@@ -66,6 +66,7 @@ public class AgentProcessor extends FacilioProcessor
         setProducer(new FacilioKafkaProducer(getTopic()));
         LOGGER.info("agentUtil created for "+orgDomainName);
         agentUtil = new AgentUtil(orgId, orgDomainName);
+        agentUtil.populateAgentContextMap();
         devicePointsUtil = new DevicePointsUtil();
         ackUtil = new AckUtil();
         initializeModules();
@@ -128,10 +129,10 @@ public class AgentProcessor extends FacilioProcessor
              if(dataType != null ) {
                 switch (dataType) {
                     case AgentKeys.AGENT:
-                        numberOfRows = agentUtil.processAgent(payLoad);
+                        // numberOfRows = agentUtil.processAgent(payLoad);
                         break;
                     case AgentKeys.DEVICE_POINTS:
-                        devicePointsUtil.processDevicePoints(payLoad,getOrgId(),deviceMap);
+                        // devicePointsUtil.processDevicePoints(payLoad,getOrgId(),deviceMap);
                         break;
                     case AgentKeys.ACK:
                         ackUtil.processAck(payLoad,getOrgId());

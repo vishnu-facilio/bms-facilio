@@ -1,12 +1,15 @@
 package com.facilio.bmsconsole.commands;
 
-import org.apache.commons.chain.Chain;
-
 import com.facilio.activity.AddActivitiesCommand;
+import com.facilio.agent.ConfigureAgentCommand;
+import com.facilio.agent.ConfigureControllerCommand;
+import com.facilio.agent.DeleteAgentCommand;
+import com.facilio.bmsconsole.actions.PurchaseOrderCompleteCommand;
 import com.facilio.bmsconsole.commands.data.PopulateImportProcessCommand;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
+import org.apache.commons.chain.Chain;
 
 public class TransactionChainFactory {
 
@@ -849,7 +852,24 @@ public class TransactionChainFactory {
 			c.addCommand(new DeleteControllerCommand());
 			return c;
 		}
-		
+
+		public static Chain editAgent(){
+			Chain c = getDefaultChain();
+			c.addCommand(new ConfigureAgentCommand());
+			return c;
+		}
+
+		public static Chain deleteAgent(){
+			Chain c = getDefaultChain();
+			c.addCommand(new DeleteAgentCommand());
+			return c;
+		}
+
+		public static Chain controllerEdit(){
+			Chain c = getDefaultChain();
+			c.addCommand(new ConfigureControllerCommand());
+			return c;
+		}
 		public static Chain updateScheduledReportsChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(new AddTemplateCommand());
@@ -942,6 +962,7 @@ public class TransactionChainFactory {
 		
 		public static Chain getAddAssetChain() {
 			Chain c = getDefaultChain();
+			c.addCommand(new SetAssetCategoryCommand());
 			c.addCommand(new SetModuleForSpecialAssetsCommand());
 			c.addCommand(new GenericAddModuleDataCommand());
 			c.addCommand(new ExecuteAllWorkflowsCommand());
@@ -958,6 +979,12 @@ public class TransactionChainFactory {
 			c.addCommand(new ExecuteAllWorkflowsCommand());
 			c.addCommand(FacilioChainFactory.getCategoryReadingsChain());
 			c.addCommand(new InsertReadingDataMetaForNewResourceCommand());
+			return c;
+		}
+		
+		public static Chain getUpdateQrChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new UpdateQrCommand());
 			return c;
 		}
 		
@@ -1009,9 +1036,10 @@ public class TransactionChainFactory {
 			Chain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForAlarm());
 			c.addCommand(new AddAlarmCommand());
-			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.BUSSINESS_LOGIC_ALARM_RULE));
-			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.PM_ALARM_RULE));
-			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.READING_ALARM_RULE));
+			c.addCommand(new AddMLOccurrenceCommand());
+			c.addCommand(new ExecuteAllWorkflowsCommand(false,RuleType.READING_ALARM_RULE));
+			c.addCommand(new ExecuteAllWorkflowsCommand(false,RuleType.BUSSINESS_LOGIC_ALARM_RULE));
+			c.addCommand(new ExecuteAllWorkflowsCommand(false,RuleType.PM_ALARM_RULE));
 			c.addCommand(new ForkChainToInstantJobCommand()
 				.addCommand(new ExecuteAllWorkflowsCommand(RuleType.ALARM_NOTIFICATION_RULE, RuleType.CUSTOM_ALARM_NOTIFICATION_RULE))
 			);
@@ -1032,6 +1060,7 @@ public class TransactionChainFactory {
 			Chain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForAlarm());
 			c.addCommand(new UpdateAlarmCommand());
+			c.addCommand(new AddMLOccurrenceCommand());
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.BUSSINESS_LOGIC_ALARM_RULE));
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.PM_ALARM_RULE));
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.READING_ALARM_RULE));
@@ -1257,6 +1286,7 @@ public class TransactionChainFactory {
 			Chain c = getDefaultChain();
 			c.addCommand(new PreparePMForMultipleAsset());
 			c.addCommand(new ExecutePMCommand());
+			c.addCommand(new ResetNewTriggersCommand());
 			return c;
 		}
 
@@ -1564,6 +1594,13 @@ public class TransactionChainFactory {
 			return c;
 		}
 		
+		public static Chain getBulkAddToolTypesChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForToolTypes());
+			c.addCommand(new GenericAddModuleDataListCommand());
+			return c;
+		}
+		
 		public static Chain getUpdateToolTypesChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForToolTypes());
@@ -1610,10 +1647,22 @@ public class TransactionChainFactory {
 		public static Chain getAddItemChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForItem());
-			c.addCommand(new GenericAddModuleDataCommand());
+			c.addCommand(new AddItemCommand());
 			c.addCommand(new ExecuteAllWorkflowsCommand());
 			c.addCommand(getAddPurchasedItemChain());
 			c.addCommand(getUpdateItemQuantityRollupChain());
+			c.addCommand(getSetItemAndToolTypeForStoreRoomChain());
+			return c;
+		}
+		
+		public static Chain getAddBulkItemChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForItem());
+			c.addCommand(new BulkItemAdditionCommand());
+			c.addCommand(new ExecuteAllWorkflowsCommand());
+			c.addCommand(getAddBulkPurchasedItemChain());
+			c.addCommand(getUpdateItemQuantityRollupChain());
+			c.addCommand(getSetItemAndToolTypeForStoreRoomChain());
 			return c;
 		}
 		
@@ -1634,6 +1683,15 @@ public class TransactionChainFactory {
 			return c;
 		}
 		
+		
+		public static Chain getAddBulkPurchasedItemChain(){
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForPurchasedItem());
+			c.addCommand(new AddPurchasedItemsForBulkItemAddCommand());
+			c.addCommand(getAddOrUpdateItemStockTransactionChain());
+			return c;
+		}
+		
 		public static Chain getAddOrUpdateItemStockTransactionChain(){
 			Chain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForItemTransactions());
@@ -1645,8 +1703,16 @@ public class TransactionChainFactory {
 		public static Chain getUpdateItemQuantityRollupChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(new AddOrUpdateItemQuantityCommand());
+			c.addCommand(getUpdateItemTypeQuantityRollupChain());
 			return c;
 		}
+		
+		public static Chain getUpdateItemTypeQuantityRollupChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new ItemTypeQuantityRollupCommand());
+			return c;
+		}
+		
 		public static Chain getUpdateInventoryCostChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForPurchasedItem());
@@ -1681,7 +1747,7 @@ public class TransactionChainFactory {
 			Chain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForWorkorderItems());
 			c.addCommand(new GenericDeleteModuleDataCommand());
-			c.addCommand(new GetDeleteWorkorderItemCommand());
+			c.addCommand(new DeleteWorkorderItemCommand());
 			c.addCommand(new PurchasedItemsQuantityRollUpCommand());
 			c.addCommand(getUpdateItemQuantityRollupChain());
 			c.addCommand(new AddOrUpdateWorkorderCostCommand());
@@ -1693,10 +1759,23 @@ public class TransactionChainFactory {
 		public static Chain getAddToolChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForTool());
-			c.addCommand(new GenericAddModuleDataCommand());
+			c.addCommand(new AddToolCommand());
 			c.addCommand(new ExecuteAllWorkflowsCommand());
 			c.addCommand(getAddPurchasedToolChain());
+//			c.addCommand(getAddOrUpdateToolStockTransactionChain());
 			c.addCommand(getUpdatetoolQuantityRollupChain());
+			c.addCommand(getSetItemAndToolTypeForStoreRoomChain());
+			return c;
+		}
+		
+		public static Chain getBulkAddToolChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForTool());
+			c.addCommand(new BulkToolAdditionCommand());
+			c.addCommand(new ExecuteAllWorkflowsCommand());
+			c.addCommand(new AddBulkToolStockTransactionsCommand());
+			c.addCommand(getUpdatetoolQuantityRollupChain());
+			c.addCommand(getSetItemAndToolTypeForStoreRoomChain());
 			return c;
 		}
 		
@@ -1718,10 +1797,36 @@ public class TransactionChainFactory {
 			c.addCommand(getUpdateWorkOrderChain());
 			return c;
 		}
-		
+
+		public static Chain getAddOrUdpateWorkorderLabourChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForWorkorderLabour());
+			c.addCommand(new AddOrUpdateWorkorderLabourCommand());
+			c.addCommand(new ExecuteAllWorkflowsCommand());
+			//c.addCommand(getUpdateAvailabilityRollupChain());
+			c.addCommand(new AddOrUpdateWorkorderCostCommand());
+			c.addCommand(new UpdateWorkorderTotalCostCommand());
+			c.addCommand(getUpdateWorkOrderChain());
+			return c;
+		}
+
+
 		public static Chain getUpdatetoolQuantityRollupChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(new ToolQuantityRollUpCommand());
+			c.addCommand(getUpdateToolTypeQuantityRollupChain());
+			return c;
+		}
+
+		public static Chain getUpdateAvailabilityRollupChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new LabourAvailabilityRollUpCommand());
+			return c;
+		}
+
+		public static Chain getUpdateToolTypeQuantityRollupChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new ToolTypeQuantityRollupCommand());
 			return c;
 		}
 		
@@ -1729,7 +1834,20 @@ public class TransactionChainFactory {
 			Chain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForWorkorderTools());
 			c.addCommand(new GenericDeleteModuleDataCommand());
+			c.addCommand(new DeleteWorkorderToolCommand());
 			c.addCommand(getUpdatetoolQuantityRollupChain());
+			c.addCommand(new AddOrUpdateWorkorderCostCommand());
+			c.addCommand(new UpdateWorkorderTotalCostCommand());
+			c.addCommand(getUpdateWorkOrderChain());
+			return c;
+		}
+
+		public static Chain getDeleteWorkorderLabourChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForWorkorderLabour());
+			c.addCommand(new GenericDeleteModuleDataCommand());
+			c.addCommand(new DeleteWorkorderLabourCommand());
+			//c.addCommand(getUpdateAvailabilityRollupChain());
 			c.addCommand(new AddOrUpdateWorkorderCostCommand());
 			c.addCommand(new UpdateWorkorderTotalCostCommand());
 			c.addCommand(getUpdateWorkOrderChain());
@@ -1760,7 +1878,7 @@ public class TransactionChainFactory {
 		
 		public static Chain getAssetFromQRChain() {
 			Chain c = getDefaultChain();
-			c.addCommand(new ParseQRValueCommand());
+			//c.addCommand(new ParseQRValueCommand());
 			c.addCommand(new FetchAssetFromQRValCommand());
 			c.addCommand(new SetModuleForSpecialAssetsCommand());
 			c.addCommand(new LoadAssetFields());
@@ -1791,11 +1909,29 @@ public class TransactionChainFactory {
 			return c;
 		}
 		
-		public static Chain getAddInventoryTransactionsChain() {
+		public static Chain getAddOrUpdateItemTransactionsChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForItemTransactions());
-			c.addCommand(new GenericAddModuleDataListCommand());
+			c.addCommand(new AddOrUpdateManualItemTransactionCommand());
+			c.addCommand(getItemTransactionRemainingQuantityRollupChain());
 			c.addCommand(new PurchasedItemsQuantityRollUpCommand());
+			c.addCommand(getUpdateItemQuantityRollupChain());
+			return c;
+		}
+		
+		public static Chain getItemTransactionRemainingQuantityRollupChain(){
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForItemTransactions());
+			c.addCommand(new ItemTransactionRemainingQuantityRollupCommand());
+			return c;
+		}
+		public static Chain getDeleteItemTransactionsChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForItemTransactions());
+			c.addCommand(new GenericDeleteModuleDataCommand());
+			c.addCommand(new DeleteItemTransactionCommand());
+			c.addCommand(new PurchasedItemsQuantityRollUpCommand());
+			c.addCommand(getItemTransactionRemainingQuantityRollupChain());
 			c.addCommand(getUpdateItemQuantityRollupChain());
 			return c;
 		}
@@ -1825,7 +1961,6 @@ public class TransactionChainFactory {
 			return c;
 		}
 		
-		
 		public static Chain getAddOrUpdateToolStockTransactionChain(){
 			Chain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForToolTranaction());
@@ -1834,5 +1969,248 @@ public class TransactionChainFactory {
 			return c;
 		}
 		
+		public static Chain getAddOrUdpateToolTransactionsChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForToolTranaction());
+			c.addCommand(new AddOrUpdateManualToolTransactionsCommand());
+			c.addCommand(getToolTransactionRemainingQuantityRollupChain());
+			c.addCommand(new ExecuteAllWorkflowsCommand());
+			c.addCommand(getUpdatetoolQuantityRollupChain());
+			return c;
+		}
+		
+		public static Chain getToolTransactionRemainingQuantityRollupChain(){
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForToolTranaction());
+			c.addCommand(new ToolTransactionRemainingQuantityRollupCommand());
+			return c;
+		}
+		
+		public static Chain getDeleteToolTransactChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForToolTranaction());
+			c.addCommand(new GenericDeleteModuleDataCommand());
+			c.addCommand(new DeleteToolTransactionCommand());
+			c.addCommand(getToolTransactionRemainingQuantityRollupChain());
+			c.addCommand(getUpdatetoolQuantityRollupChain());
+			return c;
+		}
+		
+		public static Chain getSetItemAndToolTypeForStoreRoomChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new SetItemAndToolTypeForStoreRoomCommand());
+			return c;
+		}
+
+		public static Chain getApproveRejectWorkorderItemsChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForItemTransactions());
+//			c.addCommand(new GenericUpdateListModuleDataCommand());
+			c.addCommand(new ApproveOrRejectItemCommand());
+			c.addCommand(new PurchasedItemsQuantityRollUpCommand());
+			c.addCommand(getUpdateItemQuantityRollupChain());
+			c.addCommand(new AddOrUpdateWorkorderCostCommand());
+			c.addCommand(new UpdateWorkorderTotalCostCommand());
+			c.addCommand(getUpdateWorkOrderChain());
+			return c;
+		}
+		
+		public static Chain getApproveRejectManualItemsChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForItemTransactions());
+			c.addCommand(new ApproveOrRejectItemCommand());
+			c.addCommand(new PurchasedItemsQuantityRollUpCommand());
+			c.addCommand(getUpdateItemQuantityRollupChain());
+			return c;
+		}
+
+		public static Chain getApproveRejectWorkorderToolsChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForToolTranaction());
+//			c.addCommand(new GenericUpdateListModuleDataCommand());
+			c.addCommand(new ApproveOrRejectToolCommand());
+			c.addCommand(getUpdatetoolQuantityRollupChain());
+			c.addCommand(new AddOrUpdateWorkorderCostCommand());
+			c.addCommand(new UpdateWorkorderTotalCostCommand());
+			c.addCommand(getUpdateWorkOrderChain());
+			return c;
+		}
+		
+		public static Chain getApproveRejectManualToolsChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForToolTranaction());
+//			c.addCommand(new GenericUpdateListModuleDataCommand());
+			c.addCommand(new ApproveOrRejectToolCommand());
+			c.addCommand(getUpdatetoolQuantityRollupChain());
+			return c;
+		}
+
+		public static Chain getAddLabourChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForLabour());
+			c.addCommand(new GenericAddModuleDataCommand());
+			c.addCommand(new ExecuteAllWorkflowsCommand());
+			return c;
+		}
+
+		public static Chain getDeleteLabourChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForLabour());
+			c.addCommand(new DeleteLabourCommand());
+			c.addCommand(new ExecuteAllWorkflowsCommand());
+			return c;
+		}
+
+
+		public static Chain getUpdateLabourChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForLabour());
+			c.addCommand(new GenericUpdateModuleDataCommand());
+			return c;
+		}
+
+		public static Chain getAddPurchaseRequestChain() {
+			Chain chain = getDefaultChain();
+			chain.addCommand(SetTableNamesCommand.getForPurchaseRequest());
+			chain.addCommand(new AddOrUpdatePurchaseRequestCommand());
+			chain.addCommand(getPurchaseRequestTotalCostChain()); //update purchase request total cost
+			return chain;
+		}
+
+		public static Chain getPurchaseRequestDeleteChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForPurchaseRequest());
+			c.addCommand(new DeletePurchaseRequestCommand());
+			return c;
+		}
+
+		public static Chain getAddPurchaseRequestLineItem() {
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForPurchaseRequestLineItem());
+			c.addCommand(new AddOrUpdatePurchaseRequestLineItemCommand());
+			c.addCommand(getPurchaseRequestTotalCostChain()); //update purchase request total cost
+			return c;
+		}
+
+		public static Chain getDeletePurchaseRequestLineItem() {
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForPurchaseRequestLineItem());
+			c.addCommand(new DeletePurchaseRequestLineItemCommand());
+			return c;
+		}
+		
+		public static Chain getAddPurchaseOrderChain() {
+			Chain chain = getDefaultChain();
+			chain.addCommand(SetTableNamesCommand.getForPurchaseOrder());
+			chain.addCommand(new AddOrUpdatePurchaseOrderCommand());
+			chain.addCommand(getPurchaseOrderTotalCostChain()); //update purchase order total cost
+			return chain;
+		}
+
+		public static Chain getPurchaseOrderDeleteChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForPurchaseOrder());
+			c.addCommand(new DeletePurchaseOrderCommand());
+			return c;
+		}
+
+		public static Chain getAddPurchaseOrderLineItem() {
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForPurchaseOrderLineItem());
+			c.addCommand(new AddOrUpdatePurchaseOrderLineItemCommand());
+			c.addCommand(getPurchaseOrderTotalCostChain()); //update purchase order total cost
+			return c;
+		}
+
+		public static Chain getDeletePurchaseOrderLineItem() {
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForPurchaseOrderLineItem());
+			c.addCommand(new DeletePurchaseOrderLineItemCommand());
+			return c;
+		}
+
+		public static Chain getAddOrUpdateReceiptsChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForReceipt());
+			c.addCommand(new AddOrUpdateReceiptCommand());
+			c.addCommand(getPurchaseOrderLineItemQuantityRecievedRollUpChain());
+			c.addCommand(getPurchaseOrderQuantityRecievedRollUpChain());
+			c.addCommand(getPurchaseOrderAutoCompleteChain());
+			return c;
+		}
+		
+		public static Chain getAddOrUpdateReceivablesChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForReceivables());
+			c.addCommand(new AddOrUpdateReceivablesCommand());
+			return c;
+		}
+
+		public static Chain getConvertPRToPOChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new ConvertPRToPOCommand());
+			c.addCommand(getAddPurchaseOrderChain());
+			c.addCommand(new AddPurchaseRequestOrderRelation());
+			return c;
+		}
+		public static Chain getPurchaseRequestTotalCostChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new PurchaseRequestTotalCostRollUpCommand());
+			return c;
+		}
+		
+		public static Chain getPurchaseOrderTotalCostChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new PurchaseOrderTotalCostRollUpCommand());
+			return c;
+		}
+		
+		public static Chain getPurchaseOrderQuantityRecievedRollUpChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new PurchaseOrderQuantityRecievedRollUpCommand());
+			return c;
+		}
+		
+		public static Chain getPurchaseOrderLineItemQuantityRecievedRollUpChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new PurchaseOrderLineItemQuantityRollUpCommand());
+			return c;
+		}
+		
+		public static Chain getPurchaseOrderAutoCompleteChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new PurchaseOrderAutoCompleteCommand());
+			c.addCommand(getAddOrUpdateItemTypeVendorChain());
+			c.addCommand(getBulkAddToolChain());
+			c.addCommand(getAddBulkItemChain());
+			return c;
+		}
+		
+		public static Chain getPurchaseOrderCompleteChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new PurchaseOrderCompleteCommand());
+			c.addCommand(getAddOrUpdateItemTypeVendorChain());
+			c.addCommand(getBulkAddToolChain());
+			c.addCommand(getAddBulkItemChain());
+			return c;
+		}
+		
+		public static Chain getPendingPOLineItemsChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new GetPendingPoLineItemsCommand());
+			return c;
+		}
+		
+		public static Chain getReceivedPOLineItemsChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new GetReceivedPoLineItemsCommand());
+			return c;
+		}
+		
+		public static Chain getAddOrUpdateItemTypeVendorChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new AddOrUpdateItemTypeVendorCommand());
+			return c;
+		}
 }
 

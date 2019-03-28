@@ -12,9 +12,7 @@
 </context-param>
 
 <session-config>
- <cookie-config>
-  <secure>true</secure>
- </cookie-config>
+ <cookie-config><secure>true</secure></cookie-config>
 </session-config>
 
 <listener>

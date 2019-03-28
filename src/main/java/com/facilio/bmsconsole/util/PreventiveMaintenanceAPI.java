@@ -108,7 +108,7 @@ public class PreventiveMaintenanceAPI {
 		}
 	}
 	public static Map<String, List<TaskContext>> getTaskMapForNewPMExecution(List<TaskSectionTemplate> sectiontemplates,Long woResourceId, Long triggerId) throws Exception {
-		Map<String, List<TaskContext>> taskMap = new HashMap<>();
+		Map<String, List<TaskContext>> taskMap = new LinkedHashMap<>();
 		for(TaskSectionTemplate sectiontemplate :sectiontemplates) {
 			if (triggerId != null && triggerId > -1) {
 				List<PMTriggerContext> triggerContexts = sectiontemplate.getPmTriggerContexts();
@@ -129,13 +129,23 @@ public class PreventiveMaintenanceAPI {
 			sectiontemplate = (TaskSectionTemplate)sectionTemplate;
 			
 			 List<Long> resourceIds = PreventiveMaintenanceAPI.getMultipleResourceToBeAddedFromPM(PMAssignmentType.valueOf(sectiontemplate.getAssignmentType()), woResourceId, sectiontemplate.getSpaceCategoryId(), sectiontemplate.getAssetCategoryId(),sectiontemplate.getResourceId(),sectiontemplate.getPmIncludeExcludeResourceContexts());
-			 
+			 Map<String, Integer> dupSectionNameCount = new HashMap<>();
 			 for(Long resourceId :resourceIds) {
 				 if(resourceId == null || resourceId < 0) {
 					 continue;
 				 }
 				 ResourceContext sectionResource = ResourceAPI.getResource(resourceId);
 				 String sectionName = sectionResource.getName() + " - " +sectiontemplate.getName();
+
+				 if (taskMap.containsKey(sectionName)) {
+					 Integer count = dupSectionNameCount.get(sectionName);
+					 if (count == null) {
+					 	count = 0;
+					 }
+					 count = count + 1;
+					 dupSectionNameCount.put(sectionName, count);
+					 sectionName += sectionName + " - " + count;
+				 }
 				 
 				 List<TaskTemplate> taskTemplates = sectiontemplate.getTaskTemplates();
 				 
@@ -244,7 +254,6 @@ public class PreventiveMaintenanceAPI {
 		long nextExecutionTime = pmTrigger.getSchedule().nextExecutionTime(startTime);
 		int currentCount = pm.getCurrentExecutionCount();
 		List<WorkOrderContext> wos = new ArrayList<>();
-		TicketStatusContext status = TicketAPI.getStatus("preopen");
 		long endTime = DateTimeUtil.getDayStartTime(pmTrigger.getFrequencyEnum().getMaxSchedulingDays(), true) - 1;
 		long currentTime = System.currentTimeMillis();
 		boolean isScheduled = false;
@@ -254,64 +263,8 @@ public class PreventiveMaintenanceAPI {
 				nextExecutionTime = pmTrigger.getSchedule().nextExecutionTime(nextExecutionTime);
 				continue;
 			}
-			Map<String, List<TaskContext>> taskMap = null;
 
-			WorkOrderContext wo = woTemplate.getWorkorder();
-			wo.setScheduledStart(nextExecutionTime * 1000);
-			if (woTemplate.getResourceId() > 0) {
-				if (woTemplate.getResource() != null && woTemplate.getResource().getId() > 0) {
-					wo.setResource(woTemplate.getResource());
-				} else {
-					woTemplate.setResource(ResourceAPI.getResource(woTemplate.getResourceId()));
-				}
-			}
-
-			wo.setPm(pm);
-			wo.setStatus(status);
-			wo.setTrigger(pmTrigger);
-			wo.setJobStatus(WorkOrderContext.JobsStatus.ACTIVE);
-
-			Map<String, List<TaskContext>> taskMapForNewPmExecution = null;	// should be handled in above if too
-
-			boolean isNewPmType = false;
-
-			if(woTemplate.getSectionTemplates() != null) {
-				for(TaskSectionTemplate sectiontemplate : woTemplate.getSectionTemplates()) {// for new pm_Type section should be present and every section should have a AssignmentType
-					if(sectiontemplate.getAssignmentType() < 0) {
-						isNewPmType =  false;
-						break;
-					}
-					else {
-						isNewPmType = true;
-					}
-				}
-			}
-
-			if(isNewPmType) {
-				Long woTemplateResourceId = wo.getResource() != null ? wo.getResource().getId() : -1;
-				if(woTemplateResourceId > 0) {
-					Long currentTriggerId = pmTrigger.getId();
-					taskMapForNewPmExecution = PreventiveMaintenanceAPI.getTaskMapForNewPMExecution(woTemplate.getSectionTemplates(), woTemplateResourceId, currentTriggerId);
-				}
-			}
-
-			if(taskMapForNewPmExecution != null) {
-				taskMap = taskMapForNewPmExecution;
-			}
-
-			wo.setSourceType(TicketContext.SourceType.PREVENTIVE_MAINTENANCE);
-			wo.setPm(pm);
-			context.put(FacilioConstants.ContextNames.WORK_ORDER, wo);
-			context.put(FacilioConstants.ContextNames.REQUESTER, wo.getRequester());
-			context.put(FacilioConstants.ContextNames.TASK_MAP, taskMap);
-			context.put(FacilioConstants.ContextNames.IS_PM_EXECUTION, true);
-			context.put(FacilioConstants.ContextNames.ATTACHMENT_MODULE_NAME, FacilioConstants.ContextNames.TICKET_ATTACHMENTS);
-			context.put(FacilioConstants.ContextNames.ATTACHMENT_CONTEXT_LIST, wo.getAttachments());
-
-			//Temp fix. Have to be removed eventually
-			PreventiveMaintenanceAPI.updateResourceDetails(wo, taskMap);
-			Chain addWOChain = TransactionChainFactory.getAddPreOpenedWorkOrderChain();
-			addWOChain.execute(context);
+			WorkOrderContext wo = createWoContextFromPM(context, pm, pmTrigger, woTemplate, nextExecutionTime);
 
 			wos.add(wo);
 
@@ -323,9 +276,74 @@ public class PreventiveMaintenanceAPI {
 			isScheduled = true;
 		}
 		if (!isScheduled) {
+			LOGGER.log(Level.SEVERE, "No Work orders generated for PM "+ pm.getId() + " PM Trigger ID: "+pmTrigger.getId());
 			CommonCommandUtil.emailAlert("No Work orders generated for pm", "PM "+ pm.getId() + " PM Trigger ID: "+pmTrigger.getId());
 		}
 		return wos;
+	}
+
+	public static WorkOrderContext createWoContextFromPM(Context context, PreventiveMaintenance pm, PMTriggerContext pmTrigger, WorkorderTemplate woTemplate, long nextExecutionTime) throws Exception {
+		Map<String, List<TaskContext>> taskMap = null;
+
+		TicketStatusContext status = TicketAPI.getStatus("preopen");
+		WorkOrderContext wo = woTemplate.getWorkorder();
+		wo.setScheduledStart(nextExecutionTime * 1000);
+		if (woTemplate.getResourceId() > 0) {
+			if (woTemplate.getResource() != null && woTemplate.getResource().getId() > 0) {
+				wo.setResource(woTemplate.getResource());
+			} else {
+				woTemplate.setResource(ResourceAPI.getResource(woTemplate.getResourceId()));
+			}
+		}
+
+		wo.setPm(pm);
+		wo.setStatus(status);
+		wo.setTrigger(pmTrigger);
+		wo.setJobStatus(WorkOrderContext.JobsStatus.ACTIVE);
+
+		Map<String, List<TaskContext>> taskMapForNewPmExecution = null;	// should be handled in above if too
+
+		boolean isNewPmType = false;
+
+		if(woTemplate.getSectionTemplates() != null) {
+			for(TaskSectionTemplate sectiontemplate : woTemplate.getSectionTemplates()) {// for new pm_Type section should be present and every section should have a AssignmentType
+				if(sectiontemplate.getAssignmentType() < 0) {
+					isNewPmType =  false;
+					break;
+				}
+				else {
+					isNewPmType = true;
+				}
+			}
+		}
+
+		if(isNewPmType) {
+			Long woTemplateResourceId = wo.getResource() != null ? wo.getResource().getId() : -1;
+			if(woTemplateResourceId > 0) {
+				Long currentTriggerId = pmTrigger.getId();
+				taskMapForNewPmExecution = PreventiveMaintenanceAPI.getTaskMapForNewPMExecution(woTemplate.getSectionTemplates(), woTemplateResourceId, currentTriggerId);
+			}
+		}
+
+		if(taskMapForNewPmExecution != null) {
+			taskMap = taskMapForNewPmExecution;
+		}
+
+		wo.setSourceType(TicketContext.SourceType.PREVENTIVE_MAINTENANCE);
+		wo.setPm(pm);
+		context.put(FacilioConstants.ContextNames.WORK_ORDER, wo);
+		context.put(FacilioConstants.ContextNames.REQUESTER, wo.getRequester());
+		context.put(FacilioConstants.ContextNames.TASK_MAP, taskMap);
+		context.put(FacilioConstants.ContextNames.IS_PM_EXECUTION, true);
+		context.put(FacilioConstants.ContextNames.ATTACHMENT_MODULE_NAME, FacilioConstants.ContextNames.TICKET_ATTACHMENTS);
+		context.put(FacilioConstants.ContextNames.ATTACHMENT_CONTEXT_LIST, wo.getAttachments());
+
+		//Temp fix. Have to be removed eventually
+		PreventiveMaintenanceAPI.updateResourceDetails(wo, taskMap);
+		Chain addWOChain = TransactionChainFactory.getAddPreOpenedWorkOrderChain();
+		addWOChain.execute(context);
+
+		return wo;
 	}
 
 	public static List<PMJobsContext> createPMJobs (PreventiveMaintenance pm, PMTriggerContext pmTrigger,Long resourceId, long startTime, long endTime, boolean addToDb) throws Exception { //Both in seconds
@@ -458,6 +476,36 @@ public class PreventiveMaintenanceAPI {
 		updatedJob.setId(id);
 		updatedJob.setStatus(status);
 		updatePMJob(updatedJob);
+	}
+
+	public static WorkOrderContext getNextPMWorkOrderContext(long pmTriggerID, long currentTime, boolean onlyActive) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER);
+		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.WORK_ORDER);
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+		FacilioField pmTriggerField = fieldMap.get("trigger");
+		FacilioField nextExecutionField = fieldMap.get("createdTime");
+		FacilioField isActive = fieldMap.get("jobStatus");
+		SelectRecordsBuilder<WorkOrderContext> selectRecordsBuilder = new SelectRecordsBuilder<>();
+		selectRecordsBuilder.select(fields)
+				.module(module)
+				.beanClass(WorkOrderContext.class)
+				.andCondition(CriteriaAPI.getCondition(pmTriggerField, String.valueOf(pmTriggerID), NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition(nextExecutionField, String.valueOf(currentTime * 1000), NumberOperators.GREATER_THAN))
+				.andCondition(CriteriaAPI.getCondition(isActive, String.valueOf(WorkOrderContext.JobsStatus.COMPLETED.getValue()), NumberOperators.NOT_EQUALS))
+				.andCondition(CriteriaAPI.getCondition(isActive, CommonOperators.IS_NOT_EMPTY))
+				.orderBy(nextExecutionField.getColumnName())
+				.limit(1);
+		if (onlyActive) {
+			selectRecordsBuilder.andCondition(CriteriaAPI.getCondition(isActive, String.valueOf(PMJobsStatus.IN_ACTIVE.getValue()), NumberOperators.NOT_EQUALS));
+		}
+
+		List<WorkOrderContext> workOrders = selectRecordsBuilder.get();
+		if(workOrders != null && !workOrders.isEmpty()) {
+			return workOrders.get(0);
+		}
+		return null;
+
 	}
 	
 	public static PMJobsContext getNextPMJob(long pmTriggerId, long currentTime, boolean onlyActive) throws Exception {
@@ -743,11 +791,10 @@ public class PreventiveMaintenanceAPI {
 	}
 
 
-	public static Map<Long, List<Map<String, Object>>> getPMJobsFromPMIds(List<Long> pmIds, long startTime, long endTime) throws Exception {
+	public static Map<Long, List<Map<String, Object>>> getPMJobs(long startTime, long endTime, Criteria filterCriteria) throws Exception {
 		FacilioModule pmJobsModule = ModuleFactory.getPMJobsModule();
 		List<FacilioField> fields = FieldFactory.getPMJobFields();
 		Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(fields);
-		FacilioField pmIdField = fieldsMap.get("pmId");
 		FacilioField nextExecutionField = fieldsMap.get("nextExecutionTime");
 
 		FacilioModule pmRPModule = ModuleFactory.getPMResourcePlannerModule();
@@ -759,15 +806,22 @@ public class PreventiveMaintenanceAPI {
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 														.select(fields)
 														.table(pmJobsModule.getTableName())
+														.innerJoin("Preventive_Maintenance")
+														.on("Preventive_Maintenance.ID=PM_Jobs.PM_ID")
+														.innerJoin("Workorder_Template")
+														.on("Workorder_Template.ID=Preventive_Maintenance.TEMPLATE_ID")
 														.leftJoin(pmRPModule.getTableName())
 														.on("PM_Resource_Planner.PM_ID=PM_Jobs.PM_ID AND PM_Resource_Planner.RESOURCE_ID=PM_Jobs.RESOURCE_ID")
-														.andCondition(CriteriaAPI.getCondition(pmIdField,pmIds, NumberOperators.EQUALS))
 														.andCondition(CriteriaAPI.getCondition(nextExecutionField, String.valueOf(startTime), NumberOperators.GREATER_THAN_EQUAL))
 														.andCondition(CriteriaAPI.getCondition(nextExecutionField, String.valueOf(endTime), NumberOperators.LESS_THAN))
+                										.andCondition(CriteriaAPI.getCurrentOrgIdCondition(pmJobsModule))
 														.orderBy("nextExecutionTime")
 														;
-		
-		
+
+		if (filterCriteria != null) {
+			selectBuilder.andCriteria(filterCriteria);
+		}
+
 		List<Map<String, Object>> jobProps = selectBuilder.get();
 		Map<Long, List<Map<String, Object>>> pmJobs = new HashMap<>();
 		if(jobProps != null && !jobProps.isEmpty()) {
@@ -906,7 +960,7 @@ public class PreventiveMaintenanceAPI {
 	}
 	
 	private static PreventiveMaintenance getPM(long id, boolean onlyActive, boolean fetchChildren) throws Exception {
-		FacilioModule module = ModuleFactory.getPreventiveMaintenancetModule();
+		FacilioModule module = ModuleFactory.getPreventiveMaintenanceModule();
 		List<FacilioField> fields = FieldFactory.getPreventiveMaintenanceFields();
 		Map<String, FacilioField> pmFieldsMap = FieldFactory.getAsMap(fields);
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
@@ -942,7 +996,7 @@ public class PreventiveMaintenanceAPI {
 	}
 
 	public static List<PreventiveMaintenance> getActivePMs(List<Long> ids, Criteria filterCriteria, List<FacilioField> requiredfields) throws Exception {
-		ModuleFactory.getPreventiveMaintenancetModule();
+		ModuleFactory.getPreventiveMaintenanceModule();
 		List<FacilioField> fields = FieldFactory.getPreventiveMaintenanceFields();
 		Map<String, FacilioField> pmFieldsMap = FieldFactory.getAsMap(fields);
 		
@@ -961,7 +1015,7 @@ public class PreventiveMaintenanceAPI {
 
 	public static List<PreventiveMaintenance> getAllPMs(Long orgid,boolean onlyActive) throws Exception {
 		
-		FacilioModule module = ModuleFactory.getPreventiveMaintenancetModule();
+		FacilioModule module = ModuleFactory.getPreventiveMaintenanceModule();
 		List<FacilioField> fields = FieldFactory.getPreventiveMaintenanceFields();
 		Map<String, FacilioField> pmFieldsMap = FieldFactory.getAsMap(fields);
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
@@ -994,7 +1048,7 @@ public class PreventiveMaintenanceAPI {
 
 
 	public static List<PreventiveMaintenance> getPMs(Collection<Long> ids, Criteria criteria, String searchQuery, JSONObject pagination, List<FacilioField> fields, Boolean...fetchDependencies) throws Exception {
-		FacilioModule module = ModuleFactory.getPreventiveMaintenancetModule();
+		FacilioModule module = ModuleFactory.getPreventiveMaintenanceModule();
 		if (fields == null || fields.isEmpty()) {
 			fields = FieldFactory.getPreventiveMaintenanceFields();
 		} else {
@@ -1169,7 +1223,7 @@ public class PreventiveMaintenanceAPI {
 		PreventiveMaintenance updatePm = new PreventiveMaintenance();
 		updatePm.setStatus(false);
 		
-		FacilioModule module = ModuleFactory.getPreventiveMaintenancetModule();
+		FacilioModule module = ModuleFactory.getPreventiveMaintenanceModule();
 		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
 														.fields(FieldFactory.getPreventiveMaintenanceFields())
 														.table(module.getTableName())
@@ -1209,6 +1263,20 @@ public class PreventiveMaintenanceAPI {
 		Map<Long, List<PMTriggerContext>> pmTriggers = new HashMap<>();
 		for(Map<String, Object> triggerProp : triggerProps) {
 			PMTriggerContext trigger = FieldUtil.getAsBeanFromMap(triggerProp, PMTriggerContext.class);
+
+			if (trigger.getRuleId() != -1) {
+				if (trigger.getTriggerExecutionSourceEnum() == TriggerExectionSource.ALARMRULE) {
+					WorkflowRuleContext rule = WorkflowRuleAPI.getWorkflowRule(trigger.getRuleId());
+					trigger.setWorkFlowRule(rule);
+				}
+				else if (trigger.getTriggerExecutionSourceEnum() == TriggerExectionSource.READING) {
+					ReadingRuleContext rule = (ReadingRuleContext) WorkflowRuleAPI.getWorkflowRule(trigger.getRuleId());
+					trigger.setReadingFieldId(rule.getReadingFieldId());
+					trigger.setReadingInterval(rule.getInterval());
+					trigger.setStartReading(rule.getStartValue());
+					trigger.setReadingRule(rule);
+				}
+			}
 
 			List<PMTriggerContext> triggerList = pmTriggers.get(trigger.getPmId());
 			if(triggerList == null) {
@@ -1675,7 +1743,7 @@ public class PreventiveMaintenanceAPI {
 	}
 	
 	public static long getPMCount(List<FacilioField> conditionFields, List<Condition> conditions) throws Exception {
-		FacilioModule module = ModuleFactory.getPreventiveMaintenancetModule();
+		FacilioModule module = ModuleFactory.getPreventiveMaintenanceModule();
 		FacilioModule woTemplateModule = ModuleFactory.getWorkOrderTemplateModule();
 		FacilioField countField = FieldFactory.getField("count", "COUNT(*)", FieldType.NUMBER);
 		List<FacilioField> fields = new ArrayList<>();
@@ -1965,7 +2033,7 @@ public class PreventiveMaintenanceAPI {
 		if (ids == null || ids.isEmpty()) {
 			return;
 		}
-        FacilioModule module = ModuleFactory.getPreventiveMaintenancetModule();
+        FacilioModule module = ModuleFactory.getPreventiveMaintenanceModule();
         List<FacilioField> fields = FieldFactory.getPreventiveMaintenanceFields();
         Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
         Map<String, Object> props = new HashMap<>();
@@ -1977,4 +2045,17 @@ public class PreventiveMaintenanceAPI {
                 .andCondition(CriteriaAPI.getCondition(fieldMap.get("id"), ids, NumberOperators.EQUALS));
         updateRecordBuilder.update(props);
     }
+
+	public static WorkOrderContext createWOContextsFromPMOnce(Context context, PreventiveMaintenance pm, PMTriggerContext trigger,  WorkorderTemplate woTemplate,  long startTime) throws Exception{
+		long nextExecutionTime = trigger.getSchedule().nextExecutionTime(startTime);
+		int currentCount = pm.getCurrentExecutionCount();
+		long currentTime = System.currentTimeMillis() / 1000;
+		while (nextExecutionTime < currentTime) {
+			nextExecutionTime = trigger.getSchedule().nextExecutionTime(startTime);
+		}
+		if((pm.getMaxCount() == -1 || currentCount < pm.getMaxCount()) && (pm.getEndTime() == -1 || nextExecutionTime <= pm.getEndTime())) {
+			return createWoContextFromPM(context, pm, trigger, woTemplate, nextExecutionTime);
+		}
+		return null;
+	}
 }

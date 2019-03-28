@@ -25,7 +25,7 @@ public class GetStockedToolsDetailsCommand implements Command{
 			ToolContext stockedTools = (ToolContext) context.get(FacilioConstants.ContextNames.RECORD);
 			if (stockedTools != null && stockedTools.getId() > 0) {
 				if (stockedTools.getToolType().getId() != -1) {
-					ToolTypesContext tool = ToolsApi.getTool(stockedTools.getToolType().getId());
+					ToolTypesContext tool = ToolsApi.getToolTypes(stockedTools.getToolType().getId());
 					stockedTools.setToolType(tool);
 				}
 				

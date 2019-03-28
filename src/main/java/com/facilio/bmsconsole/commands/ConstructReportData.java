@@ -13,11 +13,11 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.TicketStatusContext;
 import com.facilio.bmsconsole.context.FormulaContext.AggregateOperator;
 import com.facilio.bmsconsole.context.FormulaContext.CommonAggregateOperator;
 import com.facilio.bmsconsole.context.FormulaContext.DateAggregateOperator;
 import com.facilio.bmsconsole.context.FormulaContext.SpaceAggregateOperator;
+import com.facilio.bmsconsole.context.TicketStatusContext;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
@@ -36,6 +36,7 @@ import com.facilio.report.context.ReportDataPointContext;
 import com.facilio.report.context.ReportFactory;
 import com.facilio.report.context.ReportFieldContext;
 import com.facilio.report.context.ReportGroupByField;
+import com.facilio.report.context.ReportUserFilterContext;
 import com.facilio.report.context.ReportYAxisContext;
 
 public class ConstructReportData implements Command {
@@ -53,6 +54,7 @@ public class ConstructReportData implements Command {
 			reportContext = new ReportContext();
 			reportContext.setType(ReportType.WORKORDER_REPORT);
 		}
+		reportContext.setModuleType(moduleType);
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		module = null;
@@ -71,6 +73,14 @@ public class ConstructReportData implements Command {
 		reportContext.setxAggr(0);
 		reportContext.setxAlias("X");
 		reportContext.setModuleId(module.getModuleId());
+		
+		List<ReportUserFilterContext> userFilters = (List<ReportUserFilterContext>) context.get("user-filters");
+		if (CollectionUtils.isNotEmpty(userFilters)) {
+			for (ReportUserFilterContext userFilterContext : userFilters) {
+				userFilterContext.setField(modBean.getField(userFilterContext.getFieldId()));
+			}
+		}
+		reportContext.setUserFilters(userFilters);
 		
 		JSONObject xAxisJSON = (JSONObject) context.get("x-axis");
 		JSONObject dateFieldJSON = (JSONObject) context.get("date-field");
@@ -108,11 +118,7 @@ public class ConstructReportData implements Command {
 		FacilioField xField = null;
 		if (xAxisJSON.containsKey("field_id")) {
 			Object fieldId = xAxisJSON.get("field_id");
-			if (fieldId instanceof Long) {
-				xField = modBean.getField((Long) fieldId);
-			} else if (fieldId instanceof String) {
-				xField = ReportFactory.getReportField((String) fieldId);
-			}
+			xField = getField(modBean, fieldId);
 		}
  		
 		if (xAxisJSON.containsKey("aggr")) {
@@ -171,11 +177,7 @@ public class ConstructReportData implements Command {
 					yAggr = AggregateOperator.getAggregateOperator(((Number) yMap.get("aggr")).intValue());
 				}
 				Object fieldId = yMap.get("field_id");
-				if (fieldId instanceof Long) {
-					yField = modBean.getField((Long) fieldId);
-				} else if (fieldId instanceof String) {
-					yField = ReportFactory.getReportField((String) fieldId);
-				}
+				yField = getField(modBean, fieldId);
 				if (yMap.containsKey("module_id")) {
 					yAxisModule = modBean.getModule((Long) yMap.get("module_id"));
 				}
@@ -197,12 +199,8 @@ public class ConstructReportData implements Command {
 				}
 				
 				Object fieldId = groupByJSON.get("field_id");
-				FacilioField field = null;
-				if (fieldId instanceof Long) {
-					field = modBean.getField((long) fieldId);
-				} else if (fieldId instanceof String) {
-					field = ReportFactory.getReportField((String) fieldId);
-				}
+				FacilioField field = getField(modBean, fieldId);
+				
 				FacilioModule groupByModule = null;
 				if (groupByJSON.containsKey("module_id")) {
 					groupByModule = modBean.getModule((Long) groupByJSON.get("module_id"));
@@ -270,6 +268,19 @@ public class ConstructReportData implements Command {
 		dataPointContext.setName(xField.getName());
 		
 		reportContext.addDataPoint(dataPointContext);
+	}
+	
+	private FacilioField getField(ModuleBean modBean, Object fieldId) throws Exception {
+		FacilioField xField = null;
+		if (fieldId instanceof Long) {
+			xField = modBean.getField((Long) fieldId);
+		} else if (fieldId instanceof String) {
+			xField = modBean.getField((String) fieldId, module.getName());
+			if (xField == null) {
+				xField = ReportFactory.getReportField((String) fieldId);
+			}
+		}
+		return xField;
 	}
 
 	private boolean isDateField(FacilioField field) {

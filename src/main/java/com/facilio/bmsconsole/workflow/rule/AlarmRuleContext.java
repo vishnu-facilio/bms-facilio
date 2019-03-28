@@ -11,17 +11,9 @@ import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 
 public class AlarmRuleContext {
 	
-	ReadingAlarmRuleContext readingAlarmRuleContext;
-	
-	public ReadingAlarmRuleContext getReadingAlarmRuleContext() {
-		return readingAlarmRuleContext;
-	}
-	public void setReadingAlarmRuleContext(ReadingAlarmRuleContext readingAlarmRuleContext) {
-		this.readingAlarmRuleContext = readingAlarmRuleContext;
-	}
-
 	private ReadingRuleContext preRequsite;
-	List<ReadingRuleContext> alarmTriggerRules;
+	ReadingRuleContext alarmTriggerRule;
+	List<ReadingRuleContext> alarmRCARules;
 	ReadingRuleContext alarmClearRule;
 	
 	ReadingRuleContext alarmClearRuleDuplicate;
@@ -34,20 +26,7 @@ public class AlarmRuleContext {
 	public void setClearAlarmOnPreRequsiteFail(boolean isClearAlarmOnPreRequsiteFail) {
 		this.isClearAlarmOnPreRequsiteFail = isClearAlarmOnPreRequsiteFail;
 	}
-	
-	public Map<String, Long> getRuleNameVsIdMap() {
-		return ruleNameVsIdMap;
-	}
-	public void setRuleNameVsIdMap(Map<String, Long> ruleNameVsIdMap) {
-		this.ruleNameVsIdMap = ruleNameVsIdMap;
-	}
-	
-	public void addRuleNameVsIdMap(String name,Long id) {
-		this.ruleNameVsIdMap.put(name, id);
-	}
 
-	Map<String,Long> ruleNameVsIdMap = new HashMap<>();
-	
 	public AlarmRuleContext() {
 		
 	}
@@ -58,27 +37,39 @@ public class AlarmRuleContext {
 			if(rule.getRuleTypeEnum().equals(RuleType.READING_RULE)) {
 				preRequsite = rule;
 			}
-			else if(rule.getRuleTypeEnum().equals(RuleType.ALARM_CLEAR_RULE) && rule.isOnSuccess()) {
+			else if(rule.getRuleTypeEnum().equals(RuleType.ALARM_CLEAR_RULE) && !rule.isOnSuccess()) {
 				alarmClearRule = rule;
 			}
-			else if(rule.getRuleTypeEnum().equals(RuleType.ALARM_CLEAR_RULE) && !rule.isOnSuccess()) {
-				alarmClearRuleDuplicate = rule;
-			}
 			else if(rule.getRuleTypeEnum().equals(RuleType.ALARM_TRIGGER_RULE)) {
-				addAlarmTriggerRule(rule);
+				alarmTriggerRule = rule;
+			}
+			else if(rule.getRuleTypeEnum().equals(RuleType.ALARM_RCA_RULES)) {
+				addAlarmRCARules(rule);
 			}
 		}
 	}
+	public AlarmRuleContext(List<ReadingRuleContext> rules,List<ReadingAlarmRuleContext> readingAlarmRuleContexts) {
+		this(rules);
+		this.readingAlarmRuleContexts = readingAlarmRuleContexts;
+	}
 	
-	public List<ReadingRuleContext> getAlarmTriggerRules() {
-		return alarmTriggerRules;
+	public ReadingRuleContext getAlarmTriggerRule() {
+		return alarmTriggerRule;
 	}
-	public void setAlarmTriggerRules(List<ReadingRuleContext> alarmTriggerRules) {
-		this.alarmTriggerRules = alarmTriggerRules;
+	public void setAlarmTriggerRule(ReadingRuleContext alarmTriggerRule) {
+		this.alarmTriggerRule = alarmTriggerRule;
 	}
-	public void addAlarmTriggerRule(ReadingRuleContext alarmTriggerRule) {
-		this.alarmTriggerRules = this.alarmTriggerRules == null ? new ArrayList<>() : this.alarmTriggerRules;
-		this.alarmTriggerRules.add(alarmTriggerRule);
+	public List<ReadingRuleContext> getAlarmRCARules() {
+		return alarmRCARules;
+	}
+	public void setAlarmRCARules(List<ReadingRuleContext> alarmRCARules) {
+		this.alarmRCARules = alarmRCARules;
+	}
+	public void addAlarmRCARules(ReadingRuleContext alarmRCARules) {
+		if(this.alarmRCARules == null) {
+			this.alarmRCARules = new ArrayList<>();
+		}
+		this.alarmRCARules.add(alarmRCARules);
 	}
 	public ReadingRuleContext getAlarmClearRule() {
 		return alarmClearRule;
@@ -96,24 +87,32 @@ public class AlarmRuleContext {
 		}
 	}
 	
-	public List<ReadingRuleContext> getAllRuleList() {
-		List<ReadingRuleContext> rules = new ArrayList<>();
-		if(preRequsite != null) {
-			rules.add(preRequsite);
-			if(alarmTriggerRules != null) {
-				rules.addAll(alarmTriggerRules);
-				if(alarmClearRule != null) {
-					rules.add(alarmClearRule);
-				}
-			}
-		}
-		return rules;
-	}
 	@JSON(serialize=false)
 	public ReadingRuleContext getAlarmClearRuleDuplicate() {
 		return alarmClearRuleDuplicate;
 	}
 	public void setAlarmClearRuleDuplicate(ReadingRuleContext alarmClearRuleDuplicate) {
 		this.alarmClearRuleDuplicate = alarmClearRuleDuplicate;
+	}
+	
+	List<ReadingAlarmRuleContext> readingAlarmRuleContexts;
+	
+	public List<ReadingAlarmRuleContext> getReadingAlarmRuleContexts() {
+		return readingAlarmRuleContexts;
+	}
+	public void setReadingAlarmRuleContexts(List<ReadingAlarmRuleContext> readingAlarmRuleContexts) {
+		this.readingAlarmRuleContexts = readingAlarmRuleContexts;
+	}
+	
+	boolean isAutoClear;
+
+	public boolean isAutoClear() {
+		return isAutoClear;
+	}
+	public void setAutoClear(boolean isAutoClear) {
+		this.isAutoClear = isAutoClear;
+	}
+	public void setIsAutoClear(boolean isAutoClear) {
+		this.isAutoClear = isAutoClear;
 	}
 }

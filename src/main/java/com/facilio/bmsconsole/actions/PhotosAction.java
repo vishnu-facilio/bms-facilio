@@ -31,6 +31,10 @@ public class PhotosAction extends ActionSupport {
 		return addPhotos(FacilioConstants.ContextNames.ASSET_PHOTOS);
 	}
 	
+	public String addStoreRoomPhotos() throws Exception {
+		return addPhotos(FacilioConstants.ContextNames.STORE_ROOM_PHOTOS);
+	}
+	
 	public String addPhotos() throws Exception {
 		return addPhotos(module);
 	}
@@ -52,6 +56,10 @@ public class PhotosAction extends ActionSupport {
 	
 	public String getAssetPhotos() throws Exception {
 		return getPhotos(FacilioConstants.ContextNames.ASSET_PHOTOS);
+	}
+	
+	public String getStoreRoomPhotos() throws Exception {
+		return getPhotos(FacilioConstants.ContextNames.STORE_ROOM_PHOTOS);
 	}
 	
 	public String getPhotosList() throws Exception {
@@ -101,6 +109,10 @@ public class PhotosAction extends ActionSupport {
 	
 	public String uploadAssetPhotos() throws Exception {
 		return uploadPhotos(FacilioConstants.ContextNames.ASSET_PHOTOS);
+	}
+	
+	public String uploadStoreRoomPhotos() throws Exception {
+		return uploadPhotos(FacilioConstants.ContextNames.STORE_ROOM_PHOTOS);
 	}
 	
 	public String uploadPhotos() throws Exception {

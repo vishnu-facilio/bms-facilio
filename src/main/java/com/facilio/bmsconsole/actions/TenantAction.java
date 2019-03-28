@@ -6,28 +6,54 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.chain.Chain;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 
+import com.amazonaws.services.cloudfront.model.EventType;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
+import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
+import com.facilio.bmsconsole.context.AssetContext;
+import com.facilio.bmsconsole.context.FileContext;
 import com.facilio.bmsconsole.context.ResourceContext;
+import com.facilio.bmsconsole.context.ZoneContext;
 import com.facilio.bmsconsole.tenant.RateCardContext;
 import com.facilio.bmsconsole.tenant.TenantContext;
 import com.facilio.bmsconsole.tenant.TenantUserContext;
+import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.TenantsAPI;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.pdf.PdfUtil;
 import com.opensymphony.xwork2.ActionSupport;
 
-public class TenantAction extends ActionSupport {
+public class TenantAction extends FacilioAction {
 	
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 
+	
+	private int responseCode = 0;
+	public int getResponseCode() {
+		return responseCode;
+	}
+	public void setResponseCode(int responseCode) {
+		this.responseCode = responseCode;
+	}
+	
+	private String message;
+	public String getMessage() {
+		return message;
+	}
+	private void setMessage(String message) {
+		this.message = message;
+	}
+	
 	private long id = -1;
 	public long getId() {
 		return id;
@@ -36,6 +62,57 @@ public class TenantAction extends ActionSupport {
 		this.id = id;
 	}
 	
+	private String search;
+	public void setSearch(String search) {
+		this.search = search;
+	}
+	public String getSearch() {
+		return this.search;
+	}
+	
+	private String filters;
+	public String getFilters() {
+		return filters;
+	}
+	public void setFilters(String filters) {
+		this.filters = filters;
+	}
+	private boolean includeParentFilter;
+
+	public boolean getIncludeParentFilter() {
+		return includeParentFilter;
+	}
+
+	public void setIncludeParentFilter(boolean includeParentFilter) {
+		this.includeParentFilter = includeParentFilter;
+	}
+
+
+	private String viewName;
+	public String getViewName() {
+		return viewName;
+	}
+	public void setViewName(String viewName) {
+		this.viewName = viewName;
+	}
+	
+	private int page;
+	public void setPage(int page) {
+		this.page = page;
+	}
+	
+	public int getPage() {
+		return this.page;
+	}
+	
+	private int perPage = -1;
+	public void setPerPage(int perPage) {
+		this.perPage = perPage;
+	}
+	
+	public int getPerPage() {
+		return this.perPage;
+	}
 	
 	private long userId = -1;
 	public long getUserId() {
@@ -55,6 +132,27 @@ public class TenantAction extends ActionSupport {
 		this.orgId = orgId;
 	}
 	
+	private long zoneId = -1;
+
+	public long getZoneId() {
+		return zoneId;
+	}
+	public void setZoneId(long zoneId) {
+		this.zoneId = zoneId;
+	}
+	private Long tenantCount;
+	public Long getTenantCount() {
+		if (tenantCount == null) {
+			tenantCount = 0L;
+		}
+		return tenantCount;
+	}
+
+	public void setTenantCount(Long tenantCount) {
+		this.tenantCount = tenantCount;
+	}
+
+	
 	List<ResourceContext> item = new ArrayList<>();
 	
 	public List<ResourceContext> getItem() {
@@ -63,7 +161,24 @@ public class TenantAction extends ActionSupport {
 	public void setItem(List<ResourceContext> item) {
 		this.item = item;
 	}
-
+	
+    String logoUrl;
+	
+	public String getLogoUrl() {
+		return logoUrl;
+	}
+	public void setLogoUrl(String logoUrl) {
+		this.logoUrl = logoUrl;
+	}
+	private long logoId = -1;
+	
+	public long getLogoId() {
+		return logoId;
+	}
+	public void setLogoId(long logoId) {
+		this.logoId = logoId;
+	}
+	
 
 	private long usersId = -1;
 	
@@ -99,14 +214,26 @@ public class TenantAction extends ActionSupport {
 	}
 
 
-	private String result;
-	public String getResult() {
-		return result;
-	}
-	public void setResult(String result) {
-		this.result = result;
+	private JSONObject error;
+	public JSONObject getError() {
+		return error;
 	}
 	
+	@SuppressWarnings("unchecked")
+	public void setError(String key, Object error) {
+		if (this.error == null) {
+			this.error = new JSONObject();
+		}
+		this.error.put(key, error);			
+	}
+	
+//	private String result;
+//	public String getResult() {
+//		return result;
+//	}
+//	public void setResult(String result) {
+//		this.result = result;
+//	}
 	private TenantContext tenant;
 	public TenantContext getTenant() {
 		return tenant;
@@ -123,6 +250,43 @@ public class TenantAction extends ActionSupport {
 		this.tenants = tenants;
 	}
 	
+	private boolean tenantZone;
+	
+	public boolean getTenantZone() {
+		return tenantZone;
+	}
+	public void setTenantZone(boolean isTenantZone) {
+		this.tenantZone = isTenantZone;
+	}
+
+	private ZoneContext zone;
+	public ZoneContext getZone() {
+		return zone;
+	}
+	public void setZone(ZoneContext zone) {
+		this.zone = zone;
+	}
+	
+	
+	private List<Long> spaceId;
+	public List<Long> getSpaceId() {
+		return spaceId;
+	}
+
+	public void setSpaceId(List<Long> spaceId) {
+		this.spaceId = spaceId;
+	}
+
+	private List<Long> tenantsId;
+	public List<Long> getTenantsId() {
+		return tenantsId;
+	}
+
+	public void setTenantsId(List<Long> tenantsId) {
+		this.tenantsId = tenantsId;
+	}
+
+	
 	private List<TenantUserContext> tenantsUser;
 	
 	
@@ -132,6 +296,17 @@ public class TenantAction extends ActionSupport {
 //	public void setTenantUsers(List<TenantUserContext> tenants) {
 //		this.tenantUsers = tenantUsers;
 //	}
+	
+	private Boolean count;
+	public Boolean getCount() {
+		if (count == null) {
+			return false;
+		}
+		return count;
+	}
+	public void setCount(Boolean count) {
+		this.count = count;
+	}
 
 private Map<String, Double> readingData;
 	
@@ -178,14 +353,56 @@ private Map<String, Double> readingData;
 		this.rateCards = rateCards;
 	}
 	
-	public String addTenant() throws Exception {
-		
-		FacilioContext context = new FacilioContext();
-		context.put(TenantsAPI.TENANT_CONTEXT, tenant);
-		Chain newTenant = FacilioChainFactory.addTenantChain();
-		newTenant.execute(context);
-//		addTenantUser();
-		return SUCCESS;
+	private JSONObject reports;
+	public JSONObject getReports() {
+		return reports;
+	}
+	public void setReports(JSONObject reports) {
+		this.reports = reports;
+	}
+	
+	private JSONObject readings;
+	public JSONObject getReadings() {
+		return readings;
+	}
+	public void setReadings(JSONObject readings) {
+		this.readings = readings;
+	}
+	
+	private JSONArray reportcards;
+	public JSONArray getReportcards() {
+		return reportcards;
+	}
+	public void setReportcards(JSONArray reportcards) {
+		this.reportcards = reportcards;
+	}
+
+	public String addTenant() {
+		try {
+			
+			FacilioContext context = new FacilioContext();
+			context.put(FacilioConstants.ContextNames.EVENT_TYPE, com.facilio.bmsconsole.workflow.rule.EventType.CREATE);
+			context.put(FacilioConstants.ContextNames.SET_LOCAL_MODULE_ID, true);
+			context.put(FacilioConstants.ContextNames.RECORD, tenant);
+			
+			context.put(FacilioConstants.ContextNames.IS_TENANT_ZONE, tenantZone);
+			context.put(FacilioConstants.ContextNames.ZONE, zone);
+			context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, spaceId);
+	
+			context.put(FacilioConstants.ContextNames.MODULE_NAME, "tenant");
+			tenant.setZone(zone);
+			
+			Chain addZone = FacilioChainFactory.getAddZoneChain();
+			addZone.addCommand(FacilioChainFactory.addTenantChain());
+			addZone.execute(context);
+			tenant = (TenantContext)context.get(FacilioConstants.ContextNames.TENANT);
+			setResult("tenant", tenant);
+			return SUCCESS;
+		}
+		catch (Exception e) {
+			setError("error",e.getMessage());
+			return ERROR;
+		}
 	}
 	private User user;
 	public User getUser() {
@@ -194,35 +411,121 @@ private Map<String, Double> readingData;
 	public void setUser(User user) {
 		this.user = user;
 	}
-	public String updateTenant() throws Exception {
-
-		FacilioContext context = new FacilioContext();
-		context.put(TenantsAPI.TENANT_CONTEXT, tenant);
-		Chain updateTenant = FacilioChainFactory.updateTenantChain();
-		updateTenant.execute(context);
+	public String updateTenant() {
+		try {
+			FacilioContext context = new FacilioContext();
+			context.put(FacilioConstants.ContextNames.EVENT_TYPE, com.facilio.bmsconsole.workflow.rule.EventType.CREATE);
+			context.put(FacilioConstants.ContextNames.SET_LOCAL_MODULE_ID, true);
+			context.put(FacilioConstants.ContextNames.RECORD, tenant);
+			context.put(FacilioConstants.ContextNames.IS_TENANT_ZONE, tenantZone);
+			context.put(FacilioConstants.ContextNames.ZONE, zone);
+			context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, spaceId);
+			tenant.setZone(zone);
 		
-		result = SUCCESS;
-		return SUCCESS;
+			context.put(TenantsAPI.TENANT_CONTEXT, tenant);
+			Chain updateZone = FacilioChainFactory.getUpdateZoneChain();
+			updateZone.addCommand(FacilioChainFactory.updateTenantChain());
+			updateZone.execute(context);
+			setResult("rowsUpdated", context.get(FacilioConstants.ContextNames.ROWS_UPDATED));
+			return SUCCESS;
+		}
+		catch (Exception e) {
+			setError("error",e.getMessage());
+			return ERROR;
+		}
 	}
 	
+	public String markAsPrimaryContact() {
+		try {
+			FacilioContext context = new FacilioContext();
+			context.put(FacilioConstants.ContextNames.RECORD_ID, tenantId);
+			context.put(FacilioConstants.ContextNames.USER, user);
+			Chain updatePrimaryContact = FacilioChainFactory.updateTenantPrimaryContactChain();
+			updatePrimaryContact.execute(context);
+			setResult("rowsUpdated", context.get(FacilioConstants.ContextNames.ROWS_UPDATED));
+			return SUCCESS;
+		}
+		catch (Exception e) {
+			setError("error",e.getMessage());
+			return ERROR;
+		}
+	}
+	public String tenantCount () throws Exception {
+		return fetchAllTenants();
+	}
+
 	public String fetchTenant() throws Exception {
-		tenant = TenantsAPI.getTenant(id);
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.ID, getId());
+	
+		Chain tenantDetailChain = ReadOnlyChainFactory.fetchTenantDetails();
+		tenantDetailChain.execute(context);
+		tenant = (TenantContext )context.get(FacilioConstants.ContextNames.TENANT);
+		setResult("tenant", tenant);
 		return SUCCESS;
 	}
 	
-	public String deleteTenant() throws Exception {
-		TenantsAPI.deleteTenant(id);
-		result = SUCCESS;
-		return SUCCESS;
+	public String deleteTenant() {
+        try {
+			FacilioContext context = new FacilioContext();
+			context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, tenantsId);
+			context.put(FacilioConstants.ContextNames.MODULE_NAME, "tenant");
+			Chain deleteTenant = FacilioChainFactory.deleteTenantChain();
+			deleteTenant.execute(context);
+			setResult("rowsUpdated", context.get(FacilioConstants.ContextNames.ROWS_UPDATED));
+			return SUCCESS;
+			
+      	}
+		catch (Exception e) {
+			setError("error",e.getMessage());
+			return ERROR;
+		}
 	}
 	
 	public String fetchAllTenants() throws Exception {
-		tenants = TenantsAPI.getAllTenants();
-		return SUCCESS;
-	}
+	
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.CV_NAME, getViewName());
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, "tenant");
+ 		
+ 		context.put(FacilioConstants.ContextNames.SORTING_QUERY, "Tenants.ID asc");
+ 		if(getFilters() != null)
+ 		{	
+	 		JSONParser parser = new JSONParser();
+	 		JSONObject json = (JSONObject) parser.parse(getFilters());
+	 		context.put(FacilioConstants.ContextNames.FILTERS, json);
+	 		context.put(FacilioConstants.ContextNames.INCLUDE_PARENT_CRITERIA, getIncludeParentFilter());
+ 		}
+ 		if (getSearch() != null) {
+ 			JSONObject searchObj = new JSONObject();
+ 			searchObj.put("fields", "tenant.name");
+ 			searchObj.put("query", getSearch());
+	 		context.put(FacilioConstants.ContextNames.SEARCH, searchObj);
+ 		}
+ 		if (getCount()) {	// only count
+			context.put(FacilioConstants.ContextNames.FETCH_COUNT, true);
+		}
+ 			JSONObject pagination = new JSONObject();
+ 	 		pagination.put("page", getPage());
+ 	 		pagination.put("perPage", getPerPage());
+ 	 		if (getPerPage() < 0) {
+ 	 			pagination.put("perPage", 5000);
+ 	 		}
+ 	 		context.put(FacilioConstants.ContextNames.PAGINATION, pagination);
+ 		    Chain fetchTenants = FacilioChainFactory.getTenantListChain();
+		    fetchTenants.execute(context);
+		    if (getCount()) {
+				setTenantCount((Long) context.get(FacilioConstants.ContextNames.RECORD_COUNT));
+			}
+	 		else {
+	 	    tenants =(List<TenantContext>)context.get(FacilioConstants.ContextNames.RECORD_LIST);
+			}
+		    setResult("tenants", tenants);
+		    return SUCCESS;
+	
+			}
 	
 	public String getTenantUsers() throws Exception {
-		System.out.println("@@@@@@@@@@@@@@@@@@@@ tenantId : "+tenantId);
 		tenantsUsers = TenantsAPI.getAllTenantsUsers(tenantId);
 		
 		return SUCCESS;
@@ -248,7 +551,6 @@ private Map<String, Double> readingData;
 		item = TenantsAPI.getUsersTenantId(usersId,orgId);
 		return SUCCESS;
 	}
-
 	public String addRateCard() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(TenantsAPI.RATECARD_CONTEXT, rateCard);
@@ -263,7 +565,6 @@ private Map<String, Double> readingData;
 		Chain updateTenant = FacilioChainFactory.updateRateCardChain();
 		updateTenant.execute(context);
 		
-		result = SUCCESS;
 		return SUCCESS;
 	}
 	
@@ -272,9 +573,36 @@ private Map<String, Double> readingData;
 		return SUCCESS;
 	}
 	
+    public String getTenantReportCards() throws Exception {
+		
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.ID, id);
+		context.put(FacilioConstants.ContextNames.ZONE_ID, zoneId);
+	    	
+		Chain getReportCardsChain = FacilioChainFactory.getTenantReportCardsChain();
+		getReportCardsChain.execute(context);
+		
+		setReports((JSONObject) context.get(FacilioConstants.ContextNames.REPORTS));
+		setReportcards((JSONArray) context.get(FacilioConstants.ContextNames.REPORT_CARDS));
+		
+		return SUCCESS;
+	}
+    
+    public String getTenantReadingCards() throws Exception {
+		
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.TENANT_UTILITY_IDS, meterId);
+			
+		Chain getReportCardsChain = FacilioChainFactory.getTenantReadingCardsChain();
+		getReportCardsChain.execute(context);
+		
+		setReports((JSONObject) context.get(FacilioConstants.ContextNames.REPORT));
+		
+		return SUCCESS;
+	}
+	
 	public String deleteRateCard() throws Exception {
 		TenantsAPI.deleteRateCard(id);
-		result = SUCCESS;
 		return SUCCESS;
 	}
 	
@@ -334,17 +662,25 @@ private Map<String, Double> readingData;
 		this.fileUrl = url;
 	}
 	
-public String addTenantUser() throws Exception {
+	
+	
+	public String addTenantUser() throws Exception {
 		
 	    Chain addTenantUser = FacilioChainFactory.addTenantUserChain();
 	    FacilioContext context = new FacilioContext();
 	    context.put(FacilioConstants.ContextNames.USER, user);
-	    tenant = TenantsAPI.getTenant(id, true);
-		context.put(TenantsAPI.TENANT_CONTEXT, tenant);
+	    context.put(FacilioConstants.ContextNames.RECORD_ID, id);
+	//    tenant = TenantsAPI.getTenant(id, true);
+	//	context.put(TenantsAPI.TENANT_CONTEXT, tenant);
 		addTenantUser.execute(context);
 		return SUCCESS;
 	}
 
+	public String getTenantLogoUrl() throws Exception {
+		
+	    setLogoUrl(TenantsAPI.getLogoUrl(logoId));
+		return SUCCESS;
+	}
 	
 	@SuppressWarnings("unchecked")
 	public String generateBill() throws Exception {

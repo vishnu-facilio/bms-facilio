@@ -7,6 +7,7 @@ import com.amazonaws.services.kinesis.clientlibrary.types.ShutdownInput;
 import com.amazonaws.services.kinesis.model.Record;
 import com.facilio.agent.AgentKeys;
 import com.facilio.agent.AgentUtil;
+import com.facilio.agent.FacilioAgent;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleCRUDBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
@@ -64,6 +65,7 @@ public class Processor implements IRecordProcessor {
             this.orgDomainName = orgDomainName;
             this.errorStream = orgDomainName + "-error";
             agentUtil = new AgentUtil(orgId, orgDomainName);
+            agentUtil.populateAgentContextMap();
             devicePointsUtil = new DevicePointsUtil();
             ackUtil = new AckUtil();
             eventUtil = new EventUtil();
@@ -110,8 +112,6 @@ public class Processor implements IRecordProcessor {
         @Override
         public void processRecords(ProcessRecordsInput processRecordsInput) {
 
-            long processStartTime = System.currentTimeMillis();
-            LOGGER.debug("TOTAL processor DATA PROCESSED TIME::: ORGID::::::: "+orgId + "RECORD SIZE::::::: "+processRecordsInput.getRecords().size());
             for (Record record : processRecordsInput.getRecords()) {
                 String data = "";
                 try {
@@ -129,11 +129,20 @@ public class Processor implements IRecordProcessor {
 
                     JSONParser parser = new JSONParser();
                     JSONObject payLoad = (JSONObject) parser.parse(data);
-                    String dataType = (String)payLoad.remove(EventUtil.DATA_TYPE);
+
+                    String dataType = AgentKeys.EVENT;
+                    if(payLoad.containsKey(EventUtil.DATA_TYPE)) {
+                        dataType = (String)payLoad.remove(EventUtil.DATA_TYPE);
+                    }
+
+                    String agentName = orgDomainName;
+                    if ( payLoad.containsKey(AgentKeys.AGENT)) {
+                       agentName = (String)payLoad.remove(AgentKeys.AGENT);
+                    }
 
                     String deviceId = orgDomainName;
                     if (payLoad.containsKey(AgentKeys.DEVICE_ID)) {
-                        deviceId = payLoad.get(AgentKeys.DEVICE_ID).toString();
+                        deviceId = (String) payLoad.remove(AgentKeys.DEVICE_ID);
                     }
 
                     long lastMessageReceivedTime = System.currentTimeMillis();
@@ -142,18 +151,18 @@ public class Processor implements IRecordProcessor {
                         lastMessageReceivedTime = lastTime instanceof Long ? (Long) lastTime : Long.parseLong(lastTime.toString());
                     }
 
-                    int i = 0;
-
-                    if( dataType == null){
-                        LOGGER.info("publish type is empty");
-                        dataType = AgentKeys.EVENT;
+                    FacilioAgent agent = agentUtil.getFacilioAgent(agentName);
+                    if (agent == null && ! AgentKeys.AGENT.equals(dataType)) {
+                        agent = getFacilioAgent(agentName);
+                        agentUtil.addAgent(agent);
                     }
+
+                    long i = 0;
 
                     HashMap<String, Long> dataTypeLastMessageTime = deviceMessageTime.getOrDefault(deviceId, new HashMap<>());
                     long deviceLastMessageTime = dataTypeLastMessageTime.getOrDefault(dataType, 0L);
 
                     if(deviceLastMessageTime != lastMessageReceivedTime) {
-                        i =  agentUtil.processAgent( payLoad);
                         switch (dataType) {
                             case AgentKeys.TIMESERIES:
                                 processTimeSeries(record, payLoad, processRecordsInput, true);
@@ -163,11 +172,11 @@ public class Processor implements IRecordProcessor {
                                 processTimeSeries(record, payLoad, processRecordsInput, false);
                                 updateDeviceTable(record.getPartitionKey());
                                 break;
-                            /*case AgentKeys.AGENT:
+                            case AgentKeys.AGENT:
                                 i =  agentUtil.processAgent( payLoad);
-                                break;*/
+                                break;
                             case AgentKeys.DEVICE_POINTS:
-                                devicePointsUtil.processDevicePoints(payLoad, orgId, deviceMap);
+                                devicePointsUtil.processDevicePoints(payLoad, orgId, deviceMap, agent.getId());
                                 break;
                             case AgentKeys.ACK:
                                 ackUtil.processAck(payLoad, orgId);
@@ -185,15 +194,16 @@ public class Processor implements IRecordProcessor {
                     } else {
                         LOGGER.info("Duplicate message for device " + deviceId + " and type " + dataType);
                     }
-
-
                     if ( i == 0 ) {
-                        GenericUpdateRecordBuilder genericUpdateRecordBuilder = new GenericUpdateRecordBuilder().table(AgentKeys.TABLE_NAME).fields(FieldFactory.getAgentDataFields()).andCustomWhere( AgentKeys.NAME+"= '"+payLoad.get(AgentKeys.AGENT)+"'");
+                        GenericUpdateRecordBuilder genericUpdateRecordBuilder = new GenericUpdateRecordBuilder().table(AgentKeys.TABLE_NAME).fields(FieldFactory.getAgentDataFields()).andCustomWhere( AgentKeys.NAME+"= '"+agentName+"'");
                         Map<String,Object> toUpdate = new HashMap<>();
-                        toUpdate.put(AgentKeys.LAST_DATA_RECEIVED_TIME,System.currentTimeMillis());
+                        toUpdate.put(AgentKeys.CONNECTION_STATUS, Boolean.TRUE);
+                        toUpdate.put(AgentKeys.STATE, 1);
+                        toUpdate.put(AgentKeys.LAST_DATA_RECEIVED_TIME, lastMessageReceivedTime);
                         genericUpdateRecordBuilder.update(toUpdate);
 
                     }
+
                 } catch (Exception e) {
                     try {
                         if(AwsUtil.isProduction()) {
@@ -208,21 +218,30 @@ public class Processor implements IRecordProcessor {
                     LOGGER.info("Exception occurred ", e);
                 }
             }
-            LOGGER.debug("TOTAL PROCESSOR DATA PROCESSED TIME::: ORGID::::::: "+orgId + "COMPLETED::TIME TAKEN : "+(System.currentTimeMillis() - processStartTime));
+            // LOGGER.debug("TOTAL PROCESSOR DATA PROCESSED TIME::: ORGID::::::: "+orgId + "COMPLETED::TIME TAKEN : "+(System.currentTimeMillis() - processStartTime));
         }
 
-        private void processTimeSeries(Record record, JSONObject payLoad, ProcessRecordsInput processRecordsInput, boolean isTimeSeries) throws Exception {
+    private FacilioAgent getFacilioAgent(String agentName) {
+        FacilioAgent agent = new FacilioAgent();
+        agent.setAgentName(agentName);
+        agent.setAgentConnStatus(Boolean.TRUE);
+        agent.setAgentState(1);
+        agent.setAgentDataInterval(900000L);
+        return agent;
+    }
+
+    private void processTimeSeries(Record record, JSONObject payLoad, ProcessRecordsInput processRecordsInput, boolean isTimeSeries) throws Exception {
             long timeStamp=	record.getApproximateArrivalTimestamp().getTime();
             long startTime = System.currentTimeMillis();
-            LOGGER.info("TIMESERIES DATA PROCESSED TIME::: ORGID::::::: "+orgId + " TIME::::" +timeStamp);
+            // LOGGER.info("TIMESERIES DATA PROCESSED TIME::: ORGID::::::: "+orgId + " TIME::::" +timeStamp);
             ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", orgId);
             bean.processTimeSeries(timeStamp, payLoad, record, processRecordsInput.getCheckpointer(), isTimeSeries);
-            LOGGER.info("TIMESERIES DATA PROCESSED TIME::: ORGID::::::: "+orgId + "COMPLETED:::::::TIME TAKEN : "+(System.currentTimeMillis() - startTime));
+            LOGGER.info("timetaken : "+(System.currentTimeMillis() - startTime));
         }
 
         private void updateDeviceTable(String deviceId) {
             try {
-                LOGGER.info("Device ID : "+deviceId);
+                // LOGGER.info("Device ID : "+deviceId);
                 if (deviceId == null || deviceId.isEmpty()) {
                     return;
                 }

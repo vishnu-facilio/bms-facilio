@@ -1,9 +1,14 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 
@@ -17,7 +22,19 @@ public class LoadAllFieldsCommand implements Command{
 		
 		if(moduleName != null && !moduleName.isEmpty()) {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			context.put(FacilioConstants.ContextNames.EXISTING_FIELD_LIST, modBean.getAllFields(moduleName));
+			List<FacilioField> fields = modBean.getAllFields(moduleName);
+			List<FacilioField> restrictedFields = new ArrayList<FacilioField>();
+			for(int i=0;i<fields.size();i++) {
+				if(fields.get(i).getName().equals("tenant")) {
+					if(!AccountUtil.isFeatureEnabled(AccountUtil.FEATURE_TENANTS)) {
+					  continue;
+					}
+						
+				}
+				restrictedFields.add(fields.get(i));
+			}
+			
+			context.put(FacilioConstants.ContextNames.EXISTING_FIELD_LIST, restrictedFields);
 		}
 		return false;
 	}

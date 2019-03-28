@@ -1,5 +1,8 @@
 package com.facilio.bmsconsole.jobs;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.commons.chain.Chain;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -10,6 +13,8 @@ import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.util.BmsJobUtil;
 import com.facilio.bmsconsole.util.DateTimeUtil;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
+import com.facilio.bmsconsole.workflow.rule.ReadingRuleAlarmMeta;
+import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -27,17 +32,22 @@ public class HistoricalScheduledRuleJob extends FacilioJob {
 		WorkflowRuleContext rule = WorkflowRuleAPI.getWorkflowRule(jc.getJobId(), true);
 		
 		JSONObject props = BmsJobUtil.getJobProps(jc.getJobId(), jc.getJobName());
-		long startTime = (long) props.get("startTime");
-		long endTime = (long) props.get("endTime");
+		long startTime = (long) props.get("startTime") / 1000;
+		long endTime = (long) props.get("endTime") / 1000;
 		
 		LOGGER.info("Historical execution of rule : "+rule.getId());
 		
-		long currentStartTime = rule.getSchedule().nextExecutionTime(startTime / 1000);
+		long currentStartTime = rule.getSchedule().nextExecutionTime(startTime);
 		
+		Map<Long, ReadingRuleAlarmMeta> alarmMetaMap = new HashMap<>();
 		while (currentStartTime <= endTime) {
+			LOGGER.info("Gonna run for time : "+currentStartTime + " :: " + DateTimeUtil.getDateTime(currentStartTime, true));
 			FacilioContext context = new FacilioContext();
+			if (rule instanceof ReadingRuleContext) {
+				context.put(FacilioConstants.ContextNames.READING_RULE_ALARM_META, alarmMetaMap);
+			}
 			context.put(FacilioConstants.ContextNames.WORKFLOW_RULE_ID, rule.getId());
-			context.put(FacilioConstants.ContextNames.CURRENT_EXECUTION_TIME, DateTimeUtil.getHourStartTimeOf(currentStartTime)); //TODO hourStartTime should be changed to direct execution time later
+			context.put(FacilioConstants.ContextNames.CURRENT_EXECUTION_TIME, DateTimeUtil.getHourStartTimeOf(currentStartTime * 1000)); //TODO hourStartTime should be changed to direct execution time later
 			Chain scheduledChain = TransactionChainFactory.executeScheduledReadingRuleChain();
 			scheduledChain.execute(context);
 			

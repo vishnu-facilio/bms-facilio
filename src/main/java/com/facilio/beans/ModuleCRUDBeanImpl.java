@@ -49,8 +49,6 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.ALARM, alarmInfo);
 		
-		context.put(FacilioConstants.ContextNames.EVENT_TYPE,EventType.CREATE_OR_EDIT);
-		
 		Chain addAlarmChain = TransactionChainFactory.getAddAlarmFromEventChain();
 		addAlarmChain.execute(context);
 		AlarmContext alarm = (AlarmContext) context.get(FacilioConstants.ContextNames.ALARM);
@@ -146,8 +144,6 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 		context.put(FacilioConstants.ContextNames.ALARM, alarmInfo);
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, ids);
 		
-		context.put(FacilioConstants.ContextNames.EVENT_TYPE,EventType.CREATE_OR_EDIT);
-
 		Chain updateAlarm = TransactionChainFactory.updateAlarmFromJsonChain();
 		updateAlarm.execute(context);
 
@@ -275,7 +271,7 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 			props.put("status", false);
 		}
 		
-		FacilioModule module = ModuleFactory.getPreventiveMaintenancetModule();
+		FacilioModule module = ModuleFactory.getPreventiveMaintenanceModule();
 		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
 														.fields(FieldFactory.getPreventiveMaintenanceFields())
 														.table(module.getTableName())
@@ -290,7 +286,7 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 	{
 		System.out.println("___________>>>>>>>>>>OrgID: "+AccountUtil.getCurrentOrg().getId());
 		
-		FacilioModule module = ModuleFactory.getPreventiveMaintenancetModule();
+		FacilioModule module = ModuleFactory.getPreventiveMaintenanceModule();
 		List<FacilioField> fields = FieldFactory.getPreventiveMaintenanceFields();
 		
 		FieldFactory.getAsMap(fields);
@@ -402,7 +398,7 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 			Map<String, Object> pmProps = FieldUtil.getAsProperties(newPm);
 
 			GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
-					.table(ModuleFactory.getPreventiveMaintenancetModule().getTableName())
+					.table(ModuleFactory.getPreventiveMaintenanceModule().getTableName())
 					.fields(FieldFactory.getPreventiveMaintenanceFields()).addRecord(pmProps);
 			builder.save();
 			long id = (long) pmProps.get("id");
@@ -625,7 +621,9 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 	public  List<Map<String,Object>> getAgentDataMap() throws Exception{
 		FacilioModule agentDataModule = ModuleFactory.getAgentdataModule();
 		GenericSelectRecordBuilder genericSelectRecordBuilder = new GenericSelectRecordBuilder()
-				.table(AgentKeys.TABLE_NAME).select(FieldFactory.getAgentDataFields()).andCondition(CriteriaAPI.getCurrentOrgIdCondition(agentDataModule));
+																.table(AgentKeys.TABLE_NAME).select(FieldFactory.getAgentDataFields())
+																.andCondition(CriteriaAPI.getCurrentOrgIdCondition(agentDataModule))
+																.andCustomWhere(AgentKeys.DELETED_TIME+" is NULL");
 		List<Map<String, Object>> records = genericSelectRecordBuilder.get();
 			return  records;
 

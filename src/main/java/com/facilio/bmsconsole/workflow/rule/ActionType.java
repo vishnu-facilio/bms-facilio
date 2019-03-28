@@ -7,11 +7,13 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
@@ -58,6 +60,7 @@ import com.facilio.bmsconsole.util.SMSUtil;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.util.WorkOrderAPI;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
+import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext.ReadingRuleType;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.events.constants.EventConstants;
@@ -327,19 +330,19 @@ public enum ActionType {
 					String ids = (String) obj.get("id");
 
 					if (!StringUtils.isEmpty(ids)) {
-						List<String> mobileInstanceIds = getMobileInstanceIDs(ids);
+						List<Pair<String, Boolean>> mobileInstanceSettings = getMobileInstanceIDs(ids);
 						LOGGER.info("Sending push notifications for ids : "+ids);
-						LOGGER.info("Sending push notifications for mobileIds : "+mobileInstanceIds);
-						if (mobileInstanceIds != null && !mobileInstanceIds.isEmpty()) {
-							for (String mobileInstanceId : mobileInstanceIds) {
-								if (mobileInstanceId != null) {
+						if (mobileInstanceSettings != null && !mobileInstanceSettings.isEmpty()) {
+							LOGGER.info("Sending push notifications for mobileIds : "+mobileInstanceSettings.stream().map(pair -> pair.getLeft()).collect(Collectors.toList()));
+							for (Pair<String, Boolean> mobileInstanceSetting : mobileInstanceSettings) {
+								if (mobileInstanceSetting != null) {
 									// content.put("to",
 									// "exA12zxrItk:APA91bFzIR6XWcacYh24RgnTwtsyBDGa5oCs5DVM9h3AyBRk7GoWPmlZ51RLv4DxPt2Dq2J4HDTRxW6_j-RfxwAVl9RT9uf9-d9SzQchMO5DHCbJs7fLauLIuwA5XueDuk7p5P7k9PfV");
-									obj.put("to", mobileInstanceId);
+									obj.put("to", mobileInstanceSetting.getLeft());
 									
 									Map<String, String> headers = new HashMap<>();
 									headers.put("Content-Type", "application/json");
-									headers.put("Authorization", "key="+AwsUtil.getPushNotificationKey());
+									headers.put("Authorization", "key="+ (mobileInstanceSetting.getRight() ? AwsUtil.getPortalPushNotificationKey() : AwsUtil.getPushNotificationKey()));
 
 									String url = "https://fcm.googleapis.com/fcm/send";
 
@@ -356,8 +359,8 @@ public enum ActionType {
 			}
 		}
 
-		private List<String> getMobileInstanceIDs(String idList) throws Exception {
-			List<String> mobileInstanceIds = new ArrayList<String>();
+		private List<Pair<String, Boolean>> getMobileInstanceIDs(String idList) throws Exception {
+			List<Pair<String, Boolean>> mobileInstanceIds = new ArrayList<>();
 			List<FacilioField> fields = new ArrayList<>();
 
 			FacilioField email = new FacilioField();
@@ -367,12 +370,10 @@ public enum ActionType {
 			email.setModule(ModuleFactory.getUserModule());
 			fields.add(email);
 
-			FacilioField mobileInstanceId = new FacilioField();
-			mobileInstanceId.setName("mobileInstanceId");
-			mobileInstanceId.setColumnName("MOBILE_INSTANCE_ID");
-			mobileInstanceId.setDataType(FieldType.STRING);
-			mobileInstanceId.setModule(AccountConstants.getUserMobileSettingModule());
-			fields.add(mobileInstanceId);
+			Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(AccountConstants.getUserMobileSettingFields());
+
+			fields.add(fieldMap.get("mobileInstanceId"));
+			fields.add(fieldMap.get("fromPortal"));
 
 			// Condition condition = CriteriaAPI.getCondition("EMAIL", "email",
 			// StringUtils.join(emails, ","), StringOperators.IS);
@@ -388,7 +389,11 @@ public enum ActionType {
 			List<Map<String, Object>> props = selectBuilder.get();
 			if (props != null && !props.isEmpty()) {
 				for (Map<String, Object> prop : props) {
-					mobileInstanceIds.add((String) prop.get("mobileInstanceId"));
+					Boolean fromPortal = (Boolean)prop.get("fromPortal");
+					if (fromPortal == null) {
+						fromPortal = false;
+					}
+					mobileInstanceIds.add(Pair.of((String) prop.get("mobileInstanceId"), fromPortal));
 					// emailToMobileId.put((String) prop.get("email"), (String)
 					// prop.get("mobileInstanceId"));
 				}
@@ -478,7 +483,7 @@ public enum ActionType {
 			assignedToUserId = (long) obj.get("assignedUserId");
 			assignGroupId = (long) obj.get("assignedGroupId");
 
-			WorkOrderContext workOrder = (WorkOrderContext) context.get(FacilioConstants.ContextNames.WORK_ORDER);
+			WorkOrderContext workOrder = (WorkOrderContext) currentRecord;
 			WorkOrderContext updateWO = new WorkOrderContext();
 
 			if (assignedToUserId != -1  && (workOrder.getAssignedTo() == null || workOrder.getAssignedTo().getOuid() == -1)) {
@@ -587,6 +592,7 @@ public enum ActionType {
 					NoteContext note = new NoteContext();
 					note.setBody(getNewAlarmCommentForUnClosedWO(alarm));
 					note.setParentId(wo.getId());
+					note.setCreatedTime(alarm.getModifiedTime());
 					
 					FacilioContext noteContext = new FacilioContext();
 					noteContext.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.TICKET_NOTES);
@@ -725,15 +731,22 @@ public enum ActionType {
 			if (alarmMetaMap == null) {
 				alarmMetaMap = ((ReadingRuleContext)currentRule).getAlarmMetaMap();
 			}
-			ReadingRuleAlarmMeta alarmMeta = alarmMetaMap != null ? alarmMetaMap.get(((ReadingContext) currentRecord).getParentId()) : null;
+			long resourceId = ((ReadingRuleContext) currentRule).getReadingRuleTypeEnum() == ReadingRuleType.THRESHOLD_RULE ? ((ReadingContext) currentRecord).getParentId() : ((ReadingRuleContext) currentRule).getResourceId(); 
+			ReadingRuleAlarmMeta alarmMeta = alarmMetaMap != null ? alarmMetaMap.get(resourceId) : null;
 			
 			if(alarmMeta != null) {
 				AlarmContext alarm = AlarmAPI.getAlarm(alarmMeta.getAlarmId());
-
-				if(alarm.getModifiedTime() == ((ReadingContext) currentRecord).getTtime()) {
+				long clearTime = ((ReadingRuleContext) currentRule).getReadingRuleTypeEnum() == ReadingRuleType.THRESHOLD_RULE ? ((ReadingContext) currentRecord).getTtime() : (long) context.get(FacilioConstants.ContextNames.CURRENT_EXECUTION_TIME);
+				if(alarm.getModifiedTime() == clearTime) {
 					return;
 				}
-				ReadingRuleAPI.addClearEvent(currentRecord, context, obj, (ReadingContext) currentRecord, (ReadingRuleContext)currentRule);
+				ReadingContext reading = (ReadingContext) currentRecord;
+				if (reading != null) {
+					ReadingRuleAPI.addClearEvent(context, obj, (ReadingRuleContext)currentRule, reading.getId(), ((ReadingRuleContext) currentRule).getMetric(reading), clearTime, resourceId);
+				}
+				else {
+					ReadingRuleAPI.addClearEvent(context, obj, (ReadingRuleContext)currentRule, -1, null, clearTime, resourceId);
+				}
 			}
 		}
 	},
@@ -747,16 +760,96 @@ public enum ActionType {
 			}
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			WorkflowEventContext event = currentRule.getEvent();
+			FacilioModule module = event.getModule();
+			
+			if (AccountUtil.getCurrentOrg().getId() == 186) {
+				LOGGER.info("Template JSON in FOrmula Field Change : "+obj.toJSONString());
+			}
+			
+			boolean sameRecord = true;
+			String moduleName = (String) obj.get("moduleName");
+			if(StringUtils.isNotEmpty(moduleName)) {
+				module = modBean.getModule(moduleName);
+				sameRecord = false;
+			}
+			
+			long id = -1l;
+			Object parentId = obj.get("parentId");
+			if(parentId != null) {
+				id = (long) FieldUtil.castOrParseValueAsPerType(FieldType.NUMBER, parentId);
+				sameRecord = false;
+			}
+			else {
+				id = ((ModuleBaseWithCustomFields) currentRecord).getId();
+			}
+			
 			List<FacilioField> fields = new ArrayList<>();
 			Map<String, Object> props = new HashMap<String, Object>();
 			
 			Map<String,Object> params = new HashMap<>();
 			Map<String,Object> currentRecordJson = null;
+			currentRecordJson = FieldUtil.getAsProperties(currentRecord);
+			params.put("record", currentRecordJson);
+			Map<String,Object> workflowResult = WorkflowUtil.getExpressionResultMap((String)obj.get("WorkflowString"), params);
+			if (AccountUtil.getCurrentOrg().getId() == 186) {
+				LOGGER.info("Workflow result in field change action : "+workflowResult);
+			}
+			JSONArray fieldsJsonArray = (JSONArray) obj.get("fields");
+			for (Object key : fieldsJsonArray) {
+				FacilioField field = modBean.getField((String) key, module.getName());
+				if (field != null) {
+					fields.add(field);
+					Object val = workflowResult.get(field.getName());
+					props.put(field.getName(), val);
+					
+					if (sameRecord) {
+						if (field.isDefault()) {
+							BeanUtils.setProperty(currentRecord, field.getName(), val);
+						}
+						else {
+							((ModuleBaseWithCustomFields) currentRecord).setDatum(field.getName(), val);
+						}
+					}
+				}
+			}
+			
+			UpdateRecordBuilder<ModuleBaseWithCustomFields> updateBuilder = new UpdateRecordBuilder<ModuleBaseWithCustomFields>()
+																				.fields(fields)
+																				.module(module)
+																				.andCondition(CriteriaAPI.getIdCondition(id, module))
+																				;
+			updateBuilder.updateViaMap(props);
+		}
+		
+	},
+	ALARM_IMPACT_ACTION(17) {
+
+		@Override
+		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,Object currentRecord) throws Exception {
+			// TODO Auto-generated method stub
+			if (currentRule.getEvent() == null) {
+				currentRule.setEvent(WorkflowRuleAPI.getWorkflowEvent(currentRule.getEventId()));
+			}
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			WorkflowEventContext event = currentRule.getEvent();
+			List<FacilioField> fields = new ArrayList<>();
+			Map<String, Object> props = new HashMap<String, Object>();
+			
+			Map<String,Object> currentRecordJson = null;
+			long alarmId = -1l;
 			if(currentRecord instanceof ReadingAlarmContext) {
 				currentRecordJson = FieldUtil.getAsProperties(currentRecord);
+				if(currentRecordJson.get("resource") != null) {
+					currentRecordJson.put("resourceId", ((Map)currentRecordJson.get("resource")).get("id"));
+				}
+				alarmId = (Long) currentRecordJson.get("id");
 			}
-			params.put("record", currentRecordJson);
-			Map<String,Object> workflowResult = (Map<String,Object>) WorkflowUtil.getWorkflowExpressionResult((String)obj.get("WorkflowString"), params);
+			
+			if(AccountUtil.getCurrentOrg().getId() == 88l) {
+				LOGGER.error("currentRecordJson --- "+currentRecordJson);
+			}
+			
+			Object val = WorkflowUtil.getWorkflowExpressionResult((String)obj.get("WorkflowString"), currentRecordJson);
 			
 			JSONArray fieldsJsonArray = (JSONArray) obj.get("fields");
 			for (Object key : fieldsJsonArray) {
@@ -764,8 +857,28 @@ public enum ActionType {
 				if (field != null) {
 					
 					fields.add(field);
-					Object val = workflowResult.get(field.getName());
-					props.put(field.getName(), val);
+					
+					if(field.getName().equals(AlarmAPI.ALARM_COST_FIELD_NAME)) {
+						
+						Double currrentValue = null;
+						if(val != null) {
+							currrentValue = Double.parseDouble(val.toString());
+						}
+						
+						AlarmContext alarm = AlarmAPI.getAlarm(alarmId);
+						if(alarm != null) {
+							Object previousValue = alarm.getDatum(field.getName());
+							if(previousValue != null && currrentValue != null) {
+								Double previousValueDouble = Double.parseDouble(previousValue.toString());
+								
+								currrentValue = previousValueDouble+currrentValue;
+							}
+						}
+						props.put(field.getName(), currrentValue);
+					}
+					else {
+						props.put(field.getName(), val);
+					}
 					if (field.isDefault()) {
 						BeanUtils.setProperty(currentRecord, field.getName(), val);
 					}
@@ -900,6 +1013,7 @@ public enum ActionType {
 		}
 		
 		ids.add(alarm.getSeverity().getId());
+		LOGGER.info("Severities : "+ids);
 		Map<Long, AlarmSeverityContext> severityMap = AlarmAPI.getAlarmSeverityMap(ids);
 		
 		if (alarm.getPreviousSeverity() != null) {
@@ -910,7 +1024,7 @@ public enum ActionType {
 	
 	private static String getNewAlarmCommentForUnClosedWO (AlarmContext alarm) {
 		if (alarm.getPreviousSeverity() == null) {
-			return "Alarm associated with this work order, previously Cleared, has been raised to "+alarm.getSeverity().getSeverity()+" at "+alarm.getModifiedTimeString();
+			return "Alarm associated with this work order has been raised to "+alarm.getSeverity().getSeverity()+" at "+alarm.getModifiedTimeString();
 		}
 		else {
 			return "Alarm associated with this work order updated from "+alarm.getPreviousSeverity().getSeverity()+" to "+alarm.getSeverity().getSeverity()+" at "+alarm.getModifiedTimeString();

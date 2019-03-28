@@ -3,12 +3,12 @@ package com.facilio.bmsconsole.commands;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.facilio.bmsconsole.modules.FacilioModule;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.report.context.ReportContext;
 import com.facilio.report.context.ReportDataPointContext;
@@ -16,6 +16,7 @@ import com.facilio.report.context.ReportDataPointContext.DataPointType;
 import com.facilio.report.context.ReportFieldContext;
 import com.facilio.report.context.ReportFilterContext;
 import com.facilio.report.util.ReportUtil;
+import com.facilio.workflows.util.WorkflowUtil;
 
 public class AddOrUpdateReportCommand implements Command {
 
@@ -27,10 +28,20 @@ public class AddOrUpdateReportCommand implements Command {
 		report.setOrgId(AccountUtil.getCurrentOrg().getId());
 		
 		if(report.getId() <= 0) {
+			addWorkflow(report);
 			ReportUtil.addReport(report);
 		}
 		else {
+			long oldWorkflowId = -1; 
+			if (report.getTransformWorkflow() != null || report.getWorkflowId() == -99) {
+				ReportContext oldReport = ReportUtil.getReport(report.getId(), true);
+				oldWorkflowId = oldReport.getWorkflowId();
+				addWorkflow(report);
+			}
 			ReportUtil.updateReport(report);
+			if (oldWorkflowId != -1) {
+				WorkflowUtil.deleteWorkflow(oldWorkflowId);
+			}
 			ReportUtil.deleteReportFields(report.getId());
 		}
 		
@@ -77,6 +88,13 @@ public class AddOrUpdateReportCommand implements Command {
 			throw new IllegalArgumentException("Invalid field object for ReportFields addition");
 		}
 		return reportFieldContext;
+	}
+	
+	private void addWorkflow(ReportContext report) throws Exception {
+		if (report.getTransformWorkflow() != null) {
+			long workflowId = WorkflowUtil.addWorkflow(report.getTransformWorkflow());
+			report.setWorkflowId(workflowId);
+		}
 	}
 
 }

@@ -14,6 +14,8 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.ImportProcessLogContext;
 import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
+import com.facilio.bmsconsole.context.ImportRowContext;
+import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
@@ -248,9 +250,22 @@ public class ImportDataAction extends ActionSupport {
 				.andCondition(CriteriaAPI.getCondition("ERROR_RESOLVED", "error_resolved", ImportProcessContext.ImportLogErrorStatus.UNRESOLVED.getStringValue(), NumberOperators.EQUALS));
 		
 		records = selectRecordBuilder.get();
-		unvalidatedRecords = FieldUtil.getAsBeanListFromMapList(records, ImportProcessLogContext.class);
+		if(importProcessContext.importMode == ImportProcessContext.ImportMode.NORMAL.getValue()) {
+			if(importProcessContext.getModule().getParentModule().getName().equals("resource") 
+				|| importProcessContext.getModule().getParentModule().getName().equals("asset") 
+					) {
+				unvalidatedRecords = ImportAPI.setAssetName(importProcessContext, importProcessContext.getModule().getParentModule(), FieldUtil.getAsBeanListFromMapList(records, ImportProcessLogContext.class));
+			}
+			else {
+				unvalidatedRecords = ImportAPI.setAssetName(importProcessContext, importProcessContext.getModule(), FieldUtil.getAsBeanListFromMapList(records, ImportProcessLogContext.class));
+			}
+		}
+		else {
+			unvalidatedRecords = FieldUtil.getAsBeanListFromMapList(records, ImportProcessLogContext.class);
+		}
 		return SUCCESS;
 	}
+	
 	
 	public String importReading() throws Exception{
 		importProcessContext.setStatus(ImportProcessContext.ImportStatus.IN_PROGRESS.getValue());
@@ -260,6 +275,16 @@ public class ImportDataAction extends ActionSupport {
 	}
 	public String processImport() throws Exception
 	{	
+		importProcessContext.setStatus(ImportProcessContext.ImportStatus.PARSING_IN_PROGRESS.getValue());
+		ImportAPI.updateImportProcess(importProcessContext);
+		FacilioContext context = new FacilioContext();
+		context.put(ImportAPI.ImportProcessConstants.IMPORT_PROCESS_CONTEXT, importProcessContext);
+		FacilioTimer.scheduleInstantJob("ImportDataLogJob", context);
+		
+		return SUCCESS;
+	}
+	
+	public String importData() throws Exception{
 		if(assetId > 0) {
 			importProcessContext.setAssetId(assetId);
 			

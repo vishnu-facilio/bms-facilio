@@ -23,6 +23,7 @@ public enum FacilioFunctionNameSpace {
 	ASSET(15, "asset"),
 	WORKORDER(16, "workorder"),
 	CONSUMPTION(17, "consumption"),
+	ML(18,"ml")
 	
 	;
 	

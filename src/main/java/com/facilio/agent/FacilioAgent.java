@@ -1,5 +1,9 @@
 package com.facilio.agent;
 
+import com.facilio.bmsconsole.context.ControllerContext;
+
+import java.util.HashSet;
+
 public class FacilioAgent
 {
 
@@ -10,9 +14,40 @@ public class FacilioAgent
     private  Boolean agentConnStatus ;
     private  Long agentDataInterval ;
     private  Integer agentNumberOfControllers;
-    private  String  agentType;
+    private  Integer  agentType;
     private  Long lastModifiedTime;
     private Long lastDataRecievedTime;
+    private Long deletedTime;
+    private Long siteId;
+    private Long id;
+    private HashSet<ControllerContext> controllers;
+    private String displayName;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Long getSiteId() {
+        return siteId;
+    }
+
+    public void setSiteId(Long siteId) {
+        this.siteId = siteId;
+    }
+
+    public Long getDeletedTime() { return deletedTime; }
+
+    public void setDeletedTime(Long deletedTime) { this.deletedTime = deletedTime; }
+
+    public Boolean getWritable() { return writable; }
+
+    public void setWritable(Boolean writable) { this.writable = writable; }
+
+    private Boolean writable;
 
     public Long getLastModifiedTime() {
         return lastModifiedTime;
@@ -88,11 +123,11 @@ public class FacilioAgent
         this.agentNumberOfControllers = agentNumberOfControllers;
     }
 
-    public String getAgentType() {
+    public Integer getAgentType() {
         return agentType;
     }
 
-    public void setAgentType(String agentType) {
+    public void setAgentType(Integer agentType) {
         this.agentType = agentType;
     }
 
@@ -106,13 +141,26 @@ public class FacilioAgent
         this.lastDataRecievedTime = lastDataRecievedTime;
     }
 
+    public HashSet<ControllerContext> getControllers() {
+        return controllers;
+    }
 
+    public void setControllers(HashSet<ControllerContext> controllers) {
+        this.controllers = controllers;
+    }
 
+    public void addController(ControllerContext controller) {
+        if(controllers == null) {
+            controllers = new HashSet<>();
+        }
+        controllers.add(controller);
+    }
 
+    public String getDisplayName() {
+        return displayName;
+    }
 
-
-
-
-
-
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
+    }
 }

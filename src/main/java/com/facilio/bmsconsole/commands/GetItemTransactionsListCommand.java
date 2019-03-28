@@ -1,6 +1,8 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
@@ -10,11 +12,15 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ItemContext;
 import com.facilio.bmsconsole.context.ItemTransactionsContext;
+import com.facilio.bmsconsole.criteria.BooleanOperators;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
+import com.facilio.bmsconsole.modules.LookupField;
+import com.facilio.bmsconsole.modules.LookupFieldMeta;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.util.ItemsApi;
 import com.facilio.bmsconsole.util.StoreroomApi;
@@ -38,6 +44,7 @@ public class GetItemTransactionsListCommand implements Command{
 		} else {
 			fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
 		}
+		Map<String, FacilioField> itemTransactionsFieldsMap = FieldFactory.getAsMap(fields);
 		FacilioView view = (FacilioView) context.get(FacilioConstants.ContextNames.CUSTOM_VIEW);
 
 		SelectRecordsBuilder<ItemTransactionsContext> builder = new SelectRecordsBuilder<ItemTransactionsContext>().module(module)
@@ -78,6 +85,17 @@ public class GetItemTransactionsListCommand implements Command{
 		if (scopeCriteria != null) {
 			builder.andCriteria(scopeCriteria);
 		}
+		
+		Boolean getShowItemsForReturn = (Boolean) context.get(FacilioConstants.ContextNames.SHOW_ITEMS_FOR_RETURN);
+		if(getShowItemsForReturn!=null && getShowItemsForReturn) {
+			List<LookupFieldMeta> lookUpfields = new ArrayList<>();
+			lookUpfields.add(new LookupFieldMeta((LookupField) itemTransactionsFieldsMap.get("purchasedItem")));
+			builder.andCondition(CriteriaAPI.getCondition(itemTransactionsFieldsMap.get("remainingQuantity"), String.valueOf(0), NumberOperators.GREATER_THAN));
+			builder.andCondition(CriteriaAPI.getCondition(itemTransactionsFieldsMap.get("isReturnable"), String.valueOf(true), BooleanOperators.IS));
+			builder.andCondition(CriteriaAPI.getCondition(itemTransactionsFieldsMap.get("transactionState"), String.valueOf(2), NumberOperators.EQUALS));
+			builder.fetchLookups(lookUpfields);
+		}
+		
 
 		JSONObject pagination = (JSONObject) context.get(FacilioConstants.ContextNames.PAGINATION);
 		if (pagination != null) {

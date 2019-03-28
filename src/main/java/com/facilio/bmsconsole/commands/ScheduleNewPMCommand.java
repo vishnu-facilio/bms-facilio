@@ -129,6 +129,7 @@ public class ScheduleNewPMCommand extends FacilioJob implements SerializableComm
                                         workorderTemplate.setResourceId(workorderTemplate.getResource().getId());
                                     }
                                 } else {
+                                    LOGGER.log(Level.SEVERE,"work order not generated PMID: " + pm.getId() + "ResourceId: " + resourceId);
                                     CommonCommandUtil.emailAlert("work order not generated", "PMID: " + pm.getId() + "ResourceId: " + resourceId);
                                 }
                                 workorderTemplate.setResource(ResourceAPI.getResource(resourceId));
@@ -195,7 +196,8 @@ public class ScheduleNewPMCommand extends FacilioJob implements SerializableComm
                                 break;
                             case FIXED:
                             case FLOATING:
-                                // pmJob = PreventiveMaintenanceAPI.createPMJobOnce(pm, trigger, startTime);
+                                WorkOrderContext wo = PreventiveMaintenanceAPI.createWOContextsFromPMOnce(context, pm, trigger, workorderTemplate, startTime);
+                                wos.add(wo);
                                 break;
                         }
                     }
@@ -216,6 +218,12 @@ public class ScheduleNewPMCommand extends FacilioJob implements SerializableComm
         LOGGER.log(Level.INFO, "Creating jobs for pm: "+ jc.getJobId());
         FacilioContext context = new FacilioContext();
         List<PreventiveMaintenance> pms = PreventiveMaintenanceAPI.getPMsDetails(Arrays.asList(jc.getJobId()));
+        Map<String,PMTriggerContext> triggerMap = new HashMap<>();
+        for (int i = 0; i < pms.get(0).getTriggers().size(); i++) {
+            PMTriggerContext triggerContext = pms.get(0).getTriggers().get(i);
+            triggerMap.put(triggerContext.getName(), triggerContext);
+        }
+        pms.get(0).setTriggerMap(triggerMap);
         context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE, pms.get(0));
         execute(context);
         PreventiveMaintenanceAPI.updateWorkOrderCreationStatus(Arrays.asList(jc.getJobId()), false);

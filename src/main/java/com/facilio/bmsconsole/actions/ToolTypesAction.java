@@ -23,6 +23,7 @@ public class ToolTypesAction extends FacilioAction{
 	public String addToolTypes() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD, toolTypes);
+		context.put(FacilioConstants.ContextNames.SET_LOCAL_MODULE_ID, true);
 		Chain addToolsChain = TransactionChainFactory.getAddToolTypesChain();
 		addToolsChain.execute(context);
 		setResult(FacilioConstants.ContextNames.TOOL_TYPES, toolTypes);
@@ -60,7 +61,7 @@ public class ToolTypesAction extends FacilioAction{
 	public String toolTypesList() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.CV_NAME, getViewName());
-		context.put(FacilioConstants.ContextNames.SORTING_QUERY, "Tool_types.ID desc");
+		context.put(FacilioConstants.ContextNames.SORTING_QUERY, "Tool_types.LOCAL_ID desc");
 		if (getFilters() != null) {
 			JSONParser parser = new JSONParser();
 			JSONObject json = (JSONObject) parser.parse(getFilters());
@@ -91,13 +92,29 @@ public class ToolTypesAction extends FacilioAction{
 			setToolsCount((Long) context.get(FacilioConstants.ContextNames.RECORD_COUNT));
 			setResult("count", toolsCount);
 		} else {
-			tools = (List<ToolTypesContext>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
+			toolTypesList = (List<ToolTypesContext>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
 			// Temp...needs to handle in client
-			if (tools == null) {
-				tools = new ArrayList<>();
+			if (toolTypesList == null) {
+				toolTypesList = new ArrayList<>();
 			}
-			setResult(FacilioConstants.ContextNames.TOOL_TYPES, tools);
+			setResult(FacilioConstants.ContextNames.TOOL_TYPES, toolTypesList);
 		}
+		return SUCCESS;
+	}
+	
+	public String toolTypesCount() throws Exception {
+		toolTypesList();
+		setResult(FacilioConstants.ContextNames.TOOL_TYPES_COUNT, toolsCount);
+		return SUCCESS;
+	}
+	
+	public String BulkAddToolTypes() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.RECORD_LIST, toolTypesList);
+		context.put(FacilioConstants.ContextNames.SET_LOCAL_MODULE_ID, true);
+		Chain addToolsChain = TransactionChainFactory.getBulkAddToolTypesChain();
+		addToolsChain.execute(context);
+		setResult(FacilioConstants.ContextNames.TOOL_TYPES, toolTypesList);
 		return SUCCESS;
 	}
 	
@@ -105,16 +122,18 @@ public class ToolTypesAction extends FacilioAction{
 	public ToolTypesContext getToolTypes() {
 		return toolTypes;
 	}
-	public void setTools(ToolTypesContext tool) {
-		this.toolTypes = tool;
-	}
-
-	private List<ToolTypesContext> tools;
-	public List<ToolTypesContext> getTools() {
-		return tools;
-	}
+	
 	public void setToolTypes(ToolTypesContext tool) {
 		this.toolTypes = tool;
+	}
+	
+	private List<ToolTypesContext> toolTypesList;
+	public List<ToolTypesContext> getToolTypesList() {
+		return toolTypesList;
+	}
+	
+	public void setToolTypesList(List<ToolTypesContext> tool) {
+		this.toolTypesList = tool;
 	}
 	
 	private long toolId;

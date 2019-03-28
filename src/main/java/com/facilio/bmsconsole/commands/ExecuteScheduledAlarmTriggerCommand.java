@@ -16,7 +16,7 @@ import com.facilio.constants.FacilioConstants;
 
 public class ExecuteScheduledAlarmTriggerCommand implements Command {
 
-	private static RuleType[] ruleTypes = {RuleType.READING_RULE,RuleType.ALARM_TRIGGER_RULE,RuleType.ALARM_CLEAR_RULE};
+	private static RuleType[] ruleTypes = {RuleType.READING_RULE,RuleType.ALARM_TRIGGER_RULE,RuleType.ALARM_CLEAR_RULE,RuleType.ALARM_RCA_RULES,RuleType.PM_READING_TRIGGER};
 	@Override
 	public boolean execute(Context context) throws Exception {
 		
@@ -35,7 +35,7 @@ public class ExecuteScheduledAlarmTriggerCommand implements Command {
 		Map<String, Object> placeHolders = WorkflowRuleAPI.getOrgPlaceHolders();
 		Map<String, Object> recordPlaceHolders = WorkflowRuleAPI.getRecordPlaceHolders(module.getName(), null, placeHolders);
 		
-		WorkflowRuleAPI.executeWorkflowsAndGetChildRuleCriteria(Collections.singletonList(rule), module, null, null, null, recordPlaceHolders, (FacilioContext)context,true);
+		WorkflowRuleAPI.executeWorkflowsAndGetChildRuleCriteria(Collections.singletonList(rule), module, null, null, null, recordPlaceHolders, (FacilioContext)context,true, Collections.singletonList(rule.getEvent().getActivityTypeEnum()));
 		return false;
 	}
 

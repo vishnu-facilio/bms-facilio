@@ -10,6 +10,7 @@ import org.apache.commons.chain.Chain;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.apache.tiles.request.collection.CollectionUtil;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
@@ -33,6 +34,7 @@ import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleAlarmMeta;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
+import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.events.constants.EventConstants;
@@ -126,12 +128,6 @@ public class HistoricalRunForReadingRule extends FacilioJob {
 			context.put(FacilioConstants.ContextNames.READING_RULE_ALARM_META, alarmMetaMap);
 			ReadingDataMeta prevRDM = null;			
 			int itr = 0;
-			/*for (; itr < readings.size(); itr++) {
-				prevRDM = getRDM(readings.get(itr), readingRule.getReadingField());
-				if (prevRDM != null) {
-					break;
-				}
-			}*/
 			
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			List<FacilioField> allFields = modBean.getAllFields(readingRule.getReadingField().getModule().getName());
@@ -151,14 +147,16 @@ public class HistoricalRunForReadingRule extends FacilioJob {
 						LOGGER.info("Current RDMs : "+rdmCache);
 						getOtherRDMs(reading.getParentId(), reading.getTtime(), supportFieldsRDM, rdmCache, lastItr, fields);
 						LOGGER.info("After other RDM : "+rdmCache);
-//						LOGGER.info("Current RDM : "+rdmCache.keySet());
-//						LOGGER.info("Current RDM Size : "+rdmCache.size());
 						
 						context.put(FacilioConstants.ContextNames.CURRRENT_READING_DATA_META, rdmCache);
 						
 						Map<String, Object> recordPlaceHolders = new HashMap<>(placeHolders);
 						CommonCommandUtil.appendModuleNameInKey(readingRule.getReadingField().getModule().getName(), readingRule.getReadingField().getModule().getName(), FieldUtil.getAsProperties(reading), recordPlaceHolders);
-						WorkflowRuleAPI.evaluateWorkflowAndExecuteActions(readingRule, readingRule.getReadingField().getModule().getName(), reading, null, recordPlaceHolders, context);
+//						WorkflowRuleAPI.evaluateWorkflowAndExecuteActions(readingRule, readingRule.getReadingField().getModule().getName(), reading, null, recordPlaceHolders, context);
+						
+						RuleType[] ruleTypes = {RuleType.READING_RULE,RuleType.ALARM_TRIGGER_RULE,RuleType.ALARM_CLEAR_RULE,RuleType.ALARM_RCA_RULES};
+						
+						WorkflowRuleAPI.executeWorkflowsAndGetChildRuleCriteria(Collections.singletonList(readingRule), readingRule.getReadingField().getModule(), reading, null, null, recordPlaceHolders, context, false, Collections.singletonList(readingRule.getEvent().getActivityTypeEnum()), ruleTypes);
 						
 						prevRDM = currentRDM;
 					}

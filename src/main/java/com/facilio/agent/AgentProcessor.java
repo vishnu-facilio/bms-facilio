@@ -53,6 +53,7 @@ public class AgentProcessor implements IRecordProcessor {
         this.orgDomainName = orgDomainName;
         this.errorStream = orgDomainName + "-error";
         agentUtil = new AgentUtil(orgId, orgDomainName);
+        agentUtil.populateAgentContextMap();
         devicePointsUtil = new DevicePointsUtil();
         ackUtil = new AckUtil();
     }
@@ -126,10 +127,10 @@ public class AgentProcessor implements IRecordProcessor {
                     if(deviceLastMessageTime != lastMessageReceivedTime) {
                         switch (dataType) {
                             case AgentKeys.AGENT:
-                                i =  agentUtil.processAgent( payLoad);
+                                // i =  agentUtil.processAgent( payLoad);
                                 break;
                             case AgentKeys.DEVICE_POINTS:
-                                devicePointsUtil.processDevicePoints(payLoad, orgId, deviceMap);
+                                // devicePointsUtil.processDevicePoints(payLoad, orgId, deviceMap);
                                 break;
                             case AgentKeys.ACK:
                                  ackUtil.processAck(payLoad, orgId);

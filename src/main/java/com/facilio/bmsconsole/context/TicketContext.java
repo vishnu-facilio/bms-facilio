@@ -12,6 +12,7 @@ import org.apache.log4j.Logger;
 import com.facilio.accounts.dto.Group;
 import com.facilio.accounts.dto.User;
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
+import com.facilio.bmsconsole.tenant.TenantContext;
 import com.facilio.bmsconsole.util.DateTimeUtil;
 import com.facilio.constants.FacilioConstants;
 import com.opensymphony.xwork2.conversion.annotations.TypeConversion;
@@ -47,6 +48,14 @@ public class TicketContext extends ModuleBaseWithCustomFields {
 	public void setAssignmentGroup(Group assignmentGroup) {
 		this.assignmentGroup = assignmentGroup;
 	}
+	private  TenantContext tenant;
+	public TenantContext getTenant() {
+		return tenant;
+	}
+	public void setTenant(TenantContext tenant) {
+		this.tenant = tenant;
+	}
+	
 	
 	private User assignedTo;
 	public User getAssignedTo() {

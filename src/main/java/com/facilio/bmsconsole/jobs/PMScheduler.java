@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
+import com.facilio.accounts.util.AccountUtil;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -40,8 +41,11 @@ public class PMScheduler extends FacilioJob {
 	public void execute(JobContext jc) {
 		// TODO Auto-generated method stub
 		try {
+			if (AccountUtil.isFeatureEnabled(AccountUtil.FEATURE_SCHEDULED_WO)) {
+				return;
+			}
 			FacilioModule pmTriggerModule = ModuleFactory.getPMTriggersModule();
-			FacilioModule pmModule = ModuleFactory.getPreventiveMaintenancetModule();
+			FacilioModule pmModule = ModuleFactory.getPreventiveMaintenanceModule();
 			List<FacilioField> fields = FieldFactory.getPMTriggerFields();
 			List<FacilioField> pmFields = FieldFactory.getPreventiveMaintenanceFields();
 			Map<String, FacilioField> pmFieldsMap = FieldFactory.getAsMap(pmFields);

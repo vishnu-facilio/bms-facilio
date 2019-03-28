@@ -88,7 +88,7 @@ public class SysOutLogger extends PrintStream {
     }
 
     public void println(String x) {
-        if(AwsUtil.isDevelopment()) {
+        if(AwsUtil.isSysLogEnabled()) {
         		logger.log(Level.INFO, x);
         }
     }

@@ -4,7 +4,7 @@
 
 <%
     long orgId = AccountUtil.getCurrentOrg().getOrgId();
-    if (orgId == 155 || (!AwsUtil.isProduction() && orgId == 135) || orgId == 78) {
+    if (orgId == 183) {
         PreventiveMaintenanceAPI.initScheduledWO();
     }
 %>

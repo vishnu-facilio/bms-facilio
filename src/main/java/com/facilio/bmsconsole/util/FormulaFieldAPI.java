@@ -42,11 +42,11 @@ import com.facilio.bmsconsole.modules.DeleteRecordBuilder;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FacilioModule.ModuleType;
-import com.facilio.chain.FacilioContext;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
+import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericInsertRecordBuilder;
@@ -1146,6 +1146,33 @@ public class FormulaFieldAPI {
 			// TODO Auto-generated method stub
 			return paramName+"::"+moduleName+"::"+fieldName+"::"+resourceId;
 		}
+	}
+	
+	public static int getDataInterval(FormulaFieldContext formula) {
+		switch (formula.getTriggerTypeEnum()) {
+			case SCHEDULE:
+				switch (formula.getFrequencyEnum()) {
+					case HOURLY:
+						return 60;
+					case DAILY:
+					case WEEKLY:
+					case MONTHLY:
+					case QUARTERTLY:
+					case HALF_YEARLY:
+					case ANNUALLY:
+						return 24 * 60;
+					default:
+						return -1;
+				}
+			case POST_LIVE_READING:
+				if (formula.getInterval() > (24 * 60)) {
+					return 24 * 60;
+				}
+				return formula.getInterval();
+			case PRE_LIVE_READING:
+				break;
+		}
+		return -1;
 	}
 
 }
