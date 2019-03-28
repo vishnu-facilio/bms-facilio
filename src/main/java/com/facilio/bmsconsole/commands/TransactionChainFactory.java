@@ -2212,5 +2212,12 @@ public class TransactionChainFactory {
 			c.addCommand(new AddOrUpdateItemTypeVendorCommand());
 			return c;
 		}
+		
+		public static  Chain getImportItemChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new ImportItemCommand());
+			c.addCommand(new BulkItemAdditionCommand());
+			return c;
+		}
 }
 
