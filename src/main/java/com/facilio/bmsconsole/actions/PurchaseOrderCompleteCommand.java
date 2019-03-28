@@ -39,7 +39,7 @@ public class PurchaseOrderCompleteCommand implements Command {
 				.get(FacilioConstants.ContextNames.PURCHASE_ORDER_LINE_ITEMS);
 		List<ItemContext> itemsTobeAdded = new ArrayList<>();
 		List<ToolContext> toolsToBeAdded = new ArrayList<>();
-		List<ItemTypesVendorsContext> itemTypesVendors = new ArrayList<>();	
+		List<ItemTypesVendorsContext> itemTypesVendors = new ArrayList<>();
 		boolean containsIndividualTrackingItem = false;
 		boolean containsIndividualTrackingTool = false;
 		long storeRoomId = -1;
@@ -51,41 +51,43 @@ public class PurchaseOrderCompleteCommand implements Command {
 			for (PurchaseOrderContext po : purchaseOrders) {
 				storeRoomId = po.getStoreRoom().getId();
 				vendorId = po.getVendor().getId();
-					if (lineItems == null) {
-						lineItems = getLineItemsForPO(po.getId());
-					}
+				if (lineItems == null) {
+					lineItems = getLineItemsForPO(po.getId());
+				}
 
-					if (lineItems != null && !lineItems.isEmpty()) {
-						for (PurchaseOrderLineItemContext lineItem : lineItems) {
-							if (lineItem.getInventoryTypeEnum() == InventoryType.ITEM) {
-								itemTypesVendors.add(new ItemTypesVendorsContext(lineItem.getItemType(), po.getVendor(), lineItem.getCost(), po.getOrderedTime()));
-								ItemTypesContext itemtype = getItemType(lineItem.getItemType().getId());
-								if (itemtype.individualTracking()) {
-									containsIndividualTrackingItem = true;
-								}
-								else {
-									containsIndividualTrackingItem = false;
-								}
-								 itemsTobeAdded.add(createItem(po, lineItem,
-								 containsIndividualTrackingItem));
-							} else if (lineItem.getInventoryTypeEnum() == InventoryType.TOOL) {
-								ToolTypesContext toolType = getToolType(lineItem.getToolType().getId());
-								if (toolType.individualTracking()) {
-									containsIndividualTrackingTool = true;
-								}
-								else {
-									containsIndividualTrackingTool = false;
-								}
+				if (lineItems != null && !lineItems.isEmpty()) {
+					for (PurchaseOrderLineItemContext lineItem : lineItems) {
+						if (lineItem.getInventoryTypeEnum() == InventoryType.ITEM) {
+							itemTypesVendors.add(new ItemTypesVendorsContext(lineItem.getItemType(), po.getVendor(),
+									lineItem.getCost(), po.getOrderedTime()));
+							ItemTypesContext itemtype = getItemType(lineItem.getItemType().getId());
+							if (itemtype.individualTracking()) {
+								containsIndividualTrackingItem = true;
+							} else {
+								containsIndividualTrackingItem = false;
+							}
+							if (lineItem.getQuantityReceived() > 0) {
+								itemsTobeAdded.add(createItem(po, lineItem, containsIndividualTrackingItem));
+							}
+						} else if (lineItem.getInventoryTypeEnum() == InventoryType.TOOL) {
+							ToolTypesContext toolType = getToolType(lineItem.getToolType().getId());
+							if (toolType.individualTracking()) {
+								containsIndividualTrackingTool = true;
+							} else {
+								containsIndividualTrackingTool = false;
+							}
+							if (lineItem.getQuantityReceived() > 0) {
 								toolsToBeAdded.add(createTool(po, lineItem, containsIndividualTrackingTool));
 							}
 						}
 					}
-					po.setStatus(Status.COMPLETED);
-					po.setCompletedTime(System.currentTimeMillis());
-					UpdateRecordBuilder<PurchaseOrderContext> updateBuilder = new UpdateRecordBuilder<PurchaseOrderContext>()
-							.module(pomodule).fields(modBean.getAllFields(pomodule.getName()))
-							.andCondition(CriteriaAPI.getIdCondition(po.getId(), pomodule));
-					updateBuilder.update(po);
+				}
+				po.setStatus(Status.COMPLETED);
+				po.setCompletedTime(System.currentTimeMillis());
+				UpdateRecordBuilder<PurchaseOrderContext> updateBuilder = new UpdateRecordBuilder<PurchaseOrderContext>()
+						.module(pomodule).fields(modBean.getAllFields(pomodule.getName()))
+						.andCondition(CriteriaAPI.getIdCondition(po.getId(), pomodule));
+				updateBuilder.update(po);
 			}
 		}
 		context.put(FacilioConstants.ContextNames.STORE_ROOM, storeRoomId);
@@ -171,7 +173,7 @@ public class PurchaseOrderCompleteCommand implements Command {
 			item.setPurchasedItems(lineItem.getPurchasedItems());
 		} else {
 			PurchasedItemContext purchasedItem = new PurchasedItemContext();
-			purchasedItem.setQuantity(lineItem.getQuantity());
+			purchasedItem.setQuantity(lineItem.getQuantityReceived());
 			purchasedItem.setUnitcost(lineItem.getUnitPrice());
 			item.setPurchasedItems(Collections.singletonList(purchasedItem));
 		}
@@ -183,7 +185,7 @@ public class PurchaseOrderCompleteCommand implements Command {
 		ToolContext tool = new ToolContext();
 		tool.setStoreRoom(po.getStoreRoom());
 		tool.setToolType(lineItem.getToolType());
-		tool.setQuantity(lineItem.getQuantity());
+		tool.setQuantity(lineItem.getQuantityReceived());
 		tool.setRate(lineItem.getCost());
 		if (isIndividualTracking) {
 			tool.setPurchasedTools(lineItem.getPurchasedTools());
