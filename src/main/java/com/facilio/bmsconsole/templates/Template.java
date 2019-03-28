@@ -143,7 +143,7 @@ public abstract class Template implements Serializable {
 			}
 			else {
 				String jsonStr = json.toJSONString();
-				if (AccountUtil.getCurrentOrg().getId() == 186) {
+				if (AccountUtil.getCurrentOrg().getId() == 186 || getId() == 334300) {
 					LOGGER.info("JSON : "+jsonStr);
 					LOGGER.info("Params : "+params);
 				}

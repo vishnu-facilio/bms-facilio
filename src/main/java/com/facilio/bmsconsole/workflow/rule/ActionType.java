@@ -901,10 +901,10 @@ public enum ActionType {
 	CONTROL_ACTION (18) {
 		@Override
 		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule, Object currentRecord) throws Exception {
+			LOGGER.info("Performing Control action : "+obj.toJSONString());
 			long fieldId = FacilioUtil.parseLong(obj.get("metric"));
 			long resourceId = FacilioUtil.parseLong(obj.get("resource"));
 			String val = (String) obj.get("val");
-			LOGGER.info("Performing Control action : "+obj.toJSONString());
 			TimeSeriesAPI.setControlValue(resourceId, fieldId, val);
 		}
 	}
