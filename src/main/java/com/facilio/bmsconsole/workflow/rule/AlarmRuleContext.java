@@ -12,6 +12,8 @@ import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 public class AlarmRuleContext {
 	
 	private ReadingRuleContext preRequsite;
+	List<ReadingRuleContext> alarmTriggerRuleVersionHistory;
+	Map<Long,List<ReadingRuleContext>> alarmRCARulesVersionHistory;
 	ReadingRuleContext alarmTriggerRule;
 	List<ReadingRuleContext> alarmRCARules;
 	ReadingRuleContext alarmClearRule;
@@ -30,6 +32,29 @@ public class AlarmRuleContext {
 	public AlarmRuleContext() {
 		
 	}
+	public List<ReadingRuleContext> getAlarmTriggerRuleVersionHistory() {
+		return alarmTriggerRuleVersionHistory;
+	}
+	public void setAlarmTriggerRuleVersionHistory(List<ReadingRuleContext> alarmTriggerRuleVersionHistory) {
+		this.alarmTriggerRuleVersionHistory = alarmTriggerRuleVersionHistory;
+	}
+	public void addAlarmTriggerRuleVersionHistory(ReadingRuleContext alarmTriggerRule) {
+		this.alarmTriggerRuleVersionHistory = this.alarmTriggerRuleVersionHistory == null ? new ArrayList<>() : this.alarmTriggerRuleVersionHistory;
+		this.alarmTriggerRuleVersionHistory.add(alarmTriggerRule);
+	}
+	public Map<Long, List<ReadingRuleContext>> getAlarmRCARulesVersionHistory() {
+		return alarmRCARulesVersionHistory;
+	}
+	public void setAlarmRCARulesVersionHistory(Map<Long, List<ReadingRuleContext>> alarmRCARulesVersionHistory) {
+		this.alarmRCARulesVersionHistory = alarmRCARulesVersionHistory;
+	}
+	public void addAlarmRCARulesVersionHistory(Long parentRuleId, ReadingRuleContext alarmRCARule) {
+		this.alarmRCARulesVersionHistory = this.alarmRCARulesVersionHistory == null ? new HashMap<>() : this.alarmRCARulesVersionHistory;
+		List<ReadingRuleContext> list = alarmRCARulesVersionHistory.containsKey(parentRuleId) ? alarmRCARulesVersionHistory.get(parentRuleId) : new ArrayList<>();
+		list.add(alarmRCARule);
+		this.alarmRCARulesVersionHistory.put(parentRuleId, list);
+	}
+	
 
 	public AlarmRuleContext(List<ReadingRuleContext> rules) {
 		for(ReadingRuleContext rule :rules) {
@@ -41,10 +66,21 @@ public class AlarmRuleContext {
 				alarmClearRule = rule;
 			}
 			else if(rule.getRuleTypeEnum().equals(RuleType.ALARM_TRIGGER_RULE)) {
-				alarmTriggerRule = rule;
+				if(rule.isActive()) {
+					alarmTriggerRule = rule;
+				}
+				else {
+					addAlarmTriggerRuleVersionHistory(rule);
+				}
 			}
 			else if(rule.getRuleTypeEnum().equals(RuleType.ALARM_RCA_RULES)) {
-				addAlarmRCARules(rule);
+				
+				if(rule.isActive()) {
+					addAlarmRCARules(rule);
+				}
+				else {
+					addAlarmRCARulesVersionHistory(rule.getVersionGroupId(),rule);
+				}
 			}
 		}
 	}
@@ -114,5 +150,19 @@ public class AlarmRuleContext {
 	}
 	public void setIsAutoClear(boolean isAutoClear) {
 		this.isAutoClear = isAutoClear;
+	}
+	
+	public Map<String,Long> getNameVsIdMap() {
+		Map<String,Long> ruleNameVsIdMap = new HashMap<>();
+		
+		if(alarmTriggerRule != null) {
+			ruleNameVsIdMap.put(alarmTriggerRule.getName(), alarmTriggerRule.getId());
+		}
+		if(alarmRCARules != null) {
+			for(ReadingRuleContext alarmRCARule :alarmRCARules) {
+				ruleNameVsIdMap.put(alarmRCARule.getName(), alarmRCARule.getId());
+			}
+		}
+		return ruleNameVsIdMap;
 	}
 }

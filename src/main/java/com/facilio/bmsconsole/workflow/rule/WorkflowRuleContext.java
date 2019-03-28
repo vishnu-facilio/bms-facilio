@@ -307,6 +307,15 @@ public class WorkflowRuleContext implements Serializable {
 		this.versionGroupId = versionGroupId;
 	}
 	
+	int versionNumber = -1;
+	
+	public int getVersionNumber() {
+		return versionNumber;
+	}
+	public void setVersionNumber(int versionNumber) {
+		this.versionNumber = versionNumber;
+	}
+
 	private Boolean latestVersion;
 	public Boolean getLatestVersion() {
 		return latestVersion;
@@ -426,7 +435,7 @@ public class WorkflowRuleContext implements Serializable {
 		
 		CHILD_APPROVAL_RULE(true),
 		PM_ALARM_RULE,
-		ALARM_TRIGGER_RULE(false,false,true), //18
+		ALARM_TRIGGER_RULE(false,true,true), //18
 		
 		ALARM_CLEAR_RULE(false,false,true),
 		WORKORDER_CUSTOM_CHANGE,
@@ -436,7 +445,7 @@ public class WorkflowRuleContext implements Serializable {
 		PM_NOTIFICATION_RULE,
 		READING_ALARM_RULE,			//24
 		
-		ALARM_RCA_RULES,
+		ALARM_RCA_RULES(false,true,true),
 		ASSET_NOTIFICATION_RULE,
 		PM_READING_TRIGGER			// 27
 		;

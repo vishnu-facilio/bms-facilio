@@ -17,6 +17,7 @@ import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.AlarmContext;
 import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.BaseLineContext;
@@ -508,9 +509,8 @@ public class ReadingRuleAPI extends WorkflowRuleAPI {
 		
 	}
 	
-	private static void fillDefaultPropsForAlarmRule(ReadingRuleContext alarmRule,ReadingRuleContext preRequsiteRule,WorkflowRuleContext.RuleType ruleType,Long parentId) {
+	public static void fillDefaultPropsForAlarmRule(ReadingRuleContext alarmRule,ReadingRuleContext preRequsiteRule,WorkflowRuleContext.RuleType ruleType,Long parentId) {
 		
-		alarmRule.setId(-1);
 		alarmRule.setCriteriaId(-1l);
 		alarmRule.setWorkflowId(-1l);
 		alarmRule.setIncludedResources(null);
