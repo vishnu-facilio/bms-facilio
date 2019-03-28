@@ -32,10 +32,9 @@ public class UpdateWorkflowRuleCommand implements Command {
 			}
 			else {
 				updateRule.setVersionGroupId(oldRule.getVersionGroupId());
-				updateRule.setVersionNumber(oldRule.getVersionNumber()+1);
 			}
 			rule.setVersionGroupId(updateRule.getVersionGroupId());
-			rule.setVersionNumber(updateRule.getVersionNumber()+1);
+			rule.setVersionNumber(oldRule.getVersionNumber()+1);
 			rule.setId(-1);
 			WorkflowRuleAPI.updateWorkflowRule(updateRule);
 		}

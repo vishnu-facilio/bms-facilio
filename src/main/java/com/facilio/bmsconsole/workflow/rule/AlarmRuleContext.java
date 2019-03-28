@@ -35,9 +35,9 @@ public class AlarmRuleContext {
 	public List<ReadingRuleContext> getAlarmTriggerRuleVersionHistory() {
 		return alarmTriggerRuleVersionHistory;
 	}
-	public void setAlarmTriggerRuleVersionHistory(List<ReadingRuleContext> alarmTriggerRuleVersionHistory) {
-		this.alarmTriggerRuleVersionHistory = alarmTriggerRuleVersionHistory;
-	}
+//	public void setAlarmTriggerRuleVersionHistory(List<ReadingRuleContext> alarmTriggerRuleVersionHistory) {
+//		this.alarmTriggerRuleVersionHistory = alarmTriggerRuleVersionHistory;
+//	}
 	public void addAlarmTriggerRuleVersionHistory(ReadingRuleContext alarmTriggerRule) {
 		this.alarmTriggerRuleVersionHistory = this.alarmTriggerRuleVersionHistory == null ? new ArrayList<>() : this.alarmTriggerRuleVersionHistory;
 		this.alarmTriggerRuleVersionHistory.add(alarmTriggerRule);
@@ -45,9 +45,9 @@ public class AlarmRuleContext {
 	public Map<Long, List<ReadingRuleContext>> getAlarmRCARulesVersionHistory() {
 		return alarmRCARulesVersionHistory;
 	}
-	public void setAlarmRCARulesVersionHistory(Map<Long, List<ReadingRuleContext>> alarmRCARulesVersionHistory) {
-		this.alarmRCARulesVersionHistory = alarmRCARulesVersionHistory;
-	}
+//	public void setAlarmRCARulesVersionHistory(Map<Long, List<ReadingRuleContext>> alarmRCARulesVersionHistory) {
+//		this.alarmRCARulesVersionHistory = alarmRCARulesVersionHistory;
+//	}
 	public void addAlarmRCARulesVersionHistory(Long parentRuleId, ReadingRuleContext alarmRCARule) {
 		this.alarmRCARulesVersionHistory = this.alarmRCARulesVersionHistory == null ? new HashMap<>() : this.alarmRCARulesVersionHistory;
 		List<ReadingRuleContext> list = alarmRCARulesVersionHistory.containsKey(parentRuleId) ? alarmRCARulesVersionHistory.get(parentRuleId) : new ArrayList<>();
