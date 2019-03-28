@@ -12,8 +12,8 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import com.amazonaws.services.kinesis.model.PutRecordResult;
-import com.facilio.accounts.dto.Account;
 import com.facilio.aws.util.AwsUtil;
+import com.facilio.bmsconsole.util.IoTMessageAPI;
 import org.apache.commons.chain.Chain;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -666,7 +666,7 @@ public class TimeSeriesAPI {
 		return getUnmodeledInstances(null, null, null, ids);
 	}
 	
-	public static Map<String, Object> getUnmodeledInstance (String device, String instance, long controllerId) throws Exception {
+	public static Map<String, Object> getInstance(String device, String instance, long controllerId) throws Exception {
 		List<Map<String, Object>> instances = getUnmodeledInstances(device, Collections.singletonList(instance), controllerId, null);
 		if (instances != null && !instances.isEmpty()) {
 			return instances.get(0);
@@ -715,13 +715,23 @@ public class TimeSeriesAPI {
 		return builder.get();
 	}
 	
-	public static Map<String, Object> getUnmodeledInstance (long assetId, long fieldId) throws Exception {
+	public static Map<String, Object> getInstance(long assetId, long fieldId) throws Exception {
 		Map<String, Object> mappedInstance = getMappedInstance(assetId, fieldId);
 		if (mappedInstance != null) {
 			String instance = (String) mappedInstance.get("instance");
-			return getUnmodeledInstance((String)mappedInstance.get("device"), instance, (long) mappedInstance.get("controllerId"));
+			return getInstance((String)mappedInstance.get("device"), instance, (long) mappedInstance.get("controllerId"));
 		}
 		return null;
+	}
+
+	public static void setControlValue (long resourceId, long fieldId, String value) throws Exception {
+		Map<String, Object> instance = getInstance(resourceId, fieldId);
+		if (instance != null) {
+			instance.put("value", value);
+			instance.put("fieldId", fieldId);
+			LOGGER.info("Pusblishing message for control action : "+instance);
+			IoTMessageAPI.publishIotMessage(Collections.singletonList(instance), IoTMessageAPI.IotCommandType.SET);
+		}
 	}
 	
 	public static int markUnmodeledInstancesAsUsed(List<Long> ids) throws Exception {
@@ -748,7 +758,7 @@ public class TimeSeriesAPI {
 		
 		FacilioModule module = ModuleFactory.getUnmodeledDataModule();
 		
-		Map<String, Object> unmodeledInstance = getUnmodeledInstance(device, instance, controllerId);
+		Map<String, Object> unmodeledInstance = getInstance(device, instance, controllerId);
 		if (unmodeledInstance == null) {
 			LOGGER.info("Unmodelled Instance null check, device: " + device + ",instance: " + instance + ", controllerId: " + controllerId);
 		}

@@ -178,7 +178,8 @@ public abstract class Template implements Serializable {
 		PM_TASK_SECTION(15),
 		WO_TASK(16),
 		WO_TASK_SECTION(17),
-		WORKFLOW(18)
+		WORKFLOW(18),
+		CONTROL_ACTION(19)
 		;
 
 		

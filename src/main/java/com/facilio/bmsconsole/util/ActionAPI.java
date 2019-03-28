@@ -1,12 +1,15 @@
 package com.facilio.bmsconsole.util;
 
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.bmsconsole.templates.*;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
@@ -22,14 +25,7 @@ import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
-import com.facilio.bmsconsole.templates.EMailTemplate;
-import com.facilio.bmsconsole.templates.JSONTemplate;
-import com.facilio.bmsconsole.templates.PushNotificationTemplate;
-import com.facilio.bmsconsole.templates.SMSTemplate;
-import com.facilio.bmsconsole.templates.Template;
-import com.facilio.bmsconsole.templates.WorkflowTemplate;
 import com.facilio.bmsconsole.templates.Template.Type;
-import com.facilio.bmsconsole.templates.WorkorderTemplate;
 import com.facilio.bmsconsole.workflow.rule.ActionContext;
 import com.facilio.bmsconsole.workflow.rule.ActionType;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
@@ -291,6 +287,9 @@ public class ActionAPI {
 							case FORMULA_FIELD_CHANGE:
 							case ALARM_IMPACT_ACTION:
 								setWorkflowTemplate(action,rule,Type.WORKFLOW);
+								break;
+							case CONTROL_ACTION:
+								setControlActionTemplate(action, rule);
 							default:
 								break;
 						}
@@ -305,7 +304,16 @@ public class ActionAPI {
 		}
 		return actions;
 	}
-	
+
+	private static void setControlActionTemplate (ActionContext action, WorkflowRuleContext rule) throws IOException {
+		ControlActionTemplate template = FieldUtil.getAsBeanFromJson(action.getTemplateJson(), ControlActionTemplate.class);
+		if (StringUtils.isEmpty(template.getName())) {
+			template.setName(rule.getName()+"_Control_Action_Template");
+		}
+		action.setTemplate(template);
+		checkAndSetWorkflow(action.getTemplateJson(), template);
+	}
+
 	private static void setEmailTemplate(ActionContext action) {
 		EMailTemplate emailTemplate = new EMailTemplate();
 		emailTemplate.setFrom("noreply@${org.domain}.facilio.com");
