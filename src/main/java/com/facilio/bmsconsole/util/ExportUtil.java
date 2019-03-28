@@ -577,6 +577,9 @@ public class ExportUtil {
 				viewFields.remove(viewFields.get(j));
 				
           }
+			if (viewFields.get(j).getField().getName().equals("noOfTasks")) {		
+				viewFields.remove(viewFields.get(j));		
+          }
 		}
 		ViewField comment = new ViewField("comment", "Comment");
 		FacilioField commentField = new FacilioField();
@@ -603,6 +606,9 @@ public class ExportUtil {
 				}
 			}
 			for (int i = 0; i < records.size(); i++) {
+				
+
+				
 				Map<String, Object> props = new HashMap<>();
 				props.put("comment", StringUtils.join(map.get(records.get(i).getId()), "\n"));
 				records.get(i).addData(props);
