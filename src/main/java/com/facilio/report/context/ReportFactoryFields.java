@@ -45,6 +45,7 @@ public class ReportFactoryFields {
 		selectedFields.add(fields.get("assignmentGroup"));
 		selectedFields.add(fields.get("type"));
 		selectedFields.add(fields.get("sourceType"));
+		selectedFields.add(fields.get("totalCost"));
 		selectedFields.add(fields.get("status"));
 		
 		if(customFields.size() != 0) {
