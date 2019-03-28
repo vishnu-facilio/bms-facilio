@@ -26,7 +26,7 @@ public class BulkItemAdditionCommand implements Command {
 	@Override
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
-		List<ItemContext> itemsList = (List<ItemContext>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
+		List<ItemContext> itemsList = (List<ItemContext>) context.get(FacilioConstants.ContextNames.ITEMS);
 		long storeRoomId = (long) context.get(FacilioConstants.ContextNames.STORE_ROOM);
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule itemModule = modBean.getModule(FacilioConstants.ContextNames.ITEM);

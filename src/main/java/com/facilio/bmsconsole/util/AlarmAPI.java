@@ -550,7 +550,13 @@ public class AlarmAPI {
 					}
 					else {
 						Condition condition = expression.getCriteria().getConditions().get("2");
-						range = ((DateOperators) condition.getOperator()).getRange(condition.getValue());
+						if(condition != null) {
+							range = ((DateOperators) condition.getOperator()).getRange(condition.getValue());
+						}
+						else {
+							range = new DateRange();
+							range.setStartTime(reading.getTtime());
+						}
 					}
 				}
 				break;

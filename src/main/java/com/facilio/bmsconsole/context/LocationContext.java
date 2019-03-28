@@ -1,5 +1,7 @@
 package com.facilio.bmsconsole.context;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.facilio.accounts.dto.User;
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 
@@ -95,5 +97,13 @@ public class LocationContext extends ModuleBaseWithCustomFields {
 	}
 	public void setFaxPhone(String faxPhone) {
 		this.faxPhone = faxPhone;
+	}
+	
+	public boolean isEmpty() {
+		if(StringUtils.isEmpty(street) && StringUtils.isEmpty(state) && StringUtils.isEmpty(country)
+				&& StringUtils.isEmpty(city) && StringUtils.isEmpty(zip)) {
+			return true;
+		}
+		return false;
 	}
 }

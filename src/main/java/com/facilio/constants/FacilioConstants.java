@@ -23,7 +23,6 @@ import com.facilio.bmsconsole.context.ChillerCondenserPumpContext;
 import com.facilio.bmsconsole.context.ChillerContext;
 import com.facilio.bmsconsole.context.ChillerPrimaryPumpContext;
 import com.facilio.bmsconsole.context.ChillerSecondaryPumpContext;
-import com.facilio.bmsconsole.context.ItemTransactionsContext;
 import com.facilio.bmsconsole.context.CoolingTowerContext;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.context.EnergyMeterPurposeContext;
@@ -32,32 +31,37 @@ import com.facilio.bmsconsole.context.FloorContext;
 import com.facilio.bmsconsole.context.HeatPumpContext;
 import com.facilio.bmsconsole.context.InventoryCategoryContext;
 import com.facilio.bmsconsole.context.InventoryContext;
-import com.facilio.bmsconsole.context.PurchasedItemContext;
-import com.facilio.bmsconsole.context.PurchasedToolContext;
-import com.facilio.bmsconsole.context.ItemStatusContext;
 import com.facilio.bmsconsole.context.InventoryVendorContext;
 import com.facilio.bmsconsole.context.ItemContext;
+import com.facilio.bmsconsole.context.ItemStatusContext;
+import com.facilio.bmsconsole.context.ItemTransactionsContext;
 import com.facilio.bmsconsole.context.ItemTypesCategoryContext;
+import com.facilio.bmsconsole.context.ItemTypesContext;
 import com.facilio.bmsconsole.context.ItemTypesStatusContext;
 import com.facilio.bmsconsole.context.ItemTypesVendorsContext;
 import com.facilio.bmsconsole.context.LabourContext;
-import com.facilio.bmsconsole.context.ItemTypesContext;
 import com.facilio.bmsconsole.context.LocationContext;
 import com.facilio.bmsconsole.context.MLAlarmContext;
 import com.facilio.bmsconsole.context.MLAlarmOccurrenceContext;
 import com.facilio.bmsconsole.context.MlForecastingContext;
 import com.facilio.bmsconsole.context.PhotosContext;
+import com.facilio.bmsconsole.context.PurchaseOrderContext;
+import com.facilio.bmsconsole.context.PurchaseOrderLineItemContext;
+import com.facilio.bmsconsole.context.PurchaseRequestContext;
+import com.facilio.bmsconsole.context.PurchaseRequestLineItemContext;
+import com.facilio.bmsconsole.context.PurchasedItemContext;
+import com.facilio.bmsconsole.context.PurchasedToolContext;
 import com.facilio.bmsconsole.context.ReadingAlarmContext;
 import com.facilio.bmsconsole.context.ReadingContext;
+import com.facilio.bmsconsole.context.ReceiptContext;
+import com.facilio.bmsconsole.context.ReceiptLineItemContext;
+import com.facilio.bmsconsole.context.ReceivableContext;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.bmsconsole.context.SkillContext;
 import com.facilio.bmsconsole.context.SpaceCategoryContext;
 import com.facilio.bmsconsole.context.SpaceContext;
-import com.facilio.bmsconsole.context.ToolContext;
 import com.facilio.bmsconsole.context.StockedToolsReturnTrackingContext;
-import com.facilio.bmsconsole.context.ToolStatusContext;
-import com.facilio.bmsconsole.context.ToolTransactionContext;
 import com.facilio.bmsconsole.context.StoreRoomContext;
 import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.TicketCategoryContext;
@@ -65,6 +69,9 @@ import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.context.TicketPriorityContext;
 import com.facilio.bmsconsole.context.TicketStatusContext;
 import com.facilio.bmsconsole.context.TicketTypeContext;
+import com.facilio.bmsconsole.context.ToolContext;
+import com.facilio.bmsconsole.context.ToolStatusContext;
+import com.facilio.bmsconsole.context.ToolTransactionContext;
 import com.facilio.bmsconsole.context.ToolTypesCategoryContext;
 import com.facilio.bmsconsole.context.ToolTypesContext;
 import com.facilio.bmsconsole.context.ToolTypesStatusContext;
@@ -872,7 +879,26 @@ public class FacilioConstants {
 		public static final String LABOUR_ID = "labourId";
 		public static final String LABOUR_IDS = "labourIds";
 		public static final String WO_LABOUR = "workorderLabour";
+
+		public static final String PURCHASE_REQUEST = "purchaserequest";
+		public static final String PURCHASE_REQUESTS = "purchaserequests";
+		public static final String PURCHASE_REQUEST_LINE_ITEMS = "purchaserequestlineitems";
+
+		public static final String PURCHASE_ORDER = "purchaseorder";
+		public static final String PURCHASE_ORDERS = "purchaseorders";
+		public static final String PURCHASE_ORDER_LINE_ITEMS = "purchaseorderlineitems";
 		
+		public static final String RECEIPT = "receipt";
+		public static final String RECEIPTS = "receipts";
+		
+		public static final String RECEIVABLE = "receivable";
+		public static final String RECEIVABLES = "receivables";
+		public static final String PO_ID = "poId";
+		public static final String RECEIVABLE_ID = "receivableId";
+		public static final String PURCHASE_ORDER_LINE_ITEMS_ID = "purchaseorderlineitemsId";
+		
+		private static final String RECEIPT_LINE_ITEMS = "receiptlineitems";
+		public static final String ITEM_VENDORS_LIST = "itemTypesVendorsList";
 
 		private static Map<String, Class> classMap = Collections.unmodifiableMap(initClassMap());
 		private static Map<String, Class> initClassMap() {
@@ -962,6 +988,14 @@ public class FacilioConstants {
 			classMap.put(TENANT, TenantContext.class);
 			classMap.put(LABOUR, LabourContext.class);
 			classMap.put(WO_LABOUR, WorkOrderLabourContext.class);
+			classMap.put(PURCHASE_REQUEST, PurchaseRequestContext.class);
+			classMap.put(PURCHASE_REQUEST_LINE_ITEMS, PurchaseRequestLineItemContext.class);
+			classMap.put(PURCHASE_ORDER, PurchaseOrderContext.class);
+			classMap.put(PURCHASE_ORDER_LINE_ITEMS, PurchaseOrderLineItemContext.class);
+			
+			classMap.put(RECEIVABLE, ReceivableContext.class);
+			classMap.put(RECEIPT, ReceiptContext.class);
+			classMap.put(RECEIPT_LINE_ITEMS, ReceiptLineItemContext.class);
 			return classMap;
 		}
 		

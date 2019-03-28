@@ -268,6 +268,21 @@ public class ViewFactory {
 		views.put("all", getAllToolApproval().setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.TOOL_TRANSACTIONS, views);
 		
+		order = 1;
+		views = new LinkedHashMap<>();
+		views.put("all", getAllPurchaseRequestView().setOrder(order++));
+		viewsMap.put(FacilioConstants.ContextNames.PURCHASE_REQUEST, views);
+
+		order = 1;
+		views = new LinkedHashMap<>();
+		views.put("all", getAllPurchaseOrderView().setOrder(order++));
+		viewsMap.put(FacilioConstants.ContextNames.PURCHASE_ORDER, views);
+
+		order = 1;
+		views = new LinkedHashMap<>();
+		views.put("all", getAllReceivableView().setOrder(order++));
+		viewsMap.put(FacilioConstants.ContextNames.RECEIVABLE, views);
+
 		return viewsMap;
 	}
 
@@ -2596,4 +2611,47 @@ public class ViewFactory {
 
 		return criteria;
 	}
+	
+	private static FacilioView getAllPurchaseRequestView() {
+		FacilioField localId = new FacilioField();
+		localId.setName("localId");
+		localId.setColumnName("LOCAL_ID");
+		localId.setDataType(FieldType.NUMBER);
+		localId.setModule(ModuleFactory.getPurchaseRequestModule());
+
+		FacilioView allView = new FacilioView();
+		allView.setName("all");
+		allView.setDisplayName("All Purchase Requests");
+		allView.setSortFields(Arrays.asList(new SortField(localId, false)));
+		return allView;
+	}
+	
+	private static FacilioView getAllPurchaseOrderView() {
+		FacilioField localId = new FacilioField();
+		localId.setName("localId");
+		localId.setColumnName("LOCAL_ID");
+		localId.setDataType(FieldType.NUMBER);
+		localId.setModule(ModuleFactory.getPurchaseOrderModule());
+
+		FacilioView allView = new FacilioView();
+		allView.setName("all");
+		allView.setDisplayName("All Purchase Orders");
+		allView.setSortFields(Arrays.asList(new SortField(localId, false)));
+		return allView;
+	}
+
+	private static FacilioView getAllReceivableView() {
+		FacilioField localId = new FacilioField();
+		localId.setName("localId");
+		localId.setColumnName("LOCAL_ID");
+		localId.setDataType(FieldType.NUMBER);
+		localId.setModule(ModuleFactory.getReceivableModule());
+
+		FacilioView allView = new FacilioView();
+		allView.setName("all");
+		allView.setDisplayName("All Receivables");
+		allView.setSortFields(Arrays.asList(new SortField(localId, false)));
+		return allView;
+	}
+
 }

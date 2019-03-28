@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.facilio.bmsconsole.commands.GetReceiptsListCommand;
 import com.facilio.constants.FacilioConstants;
 
 public class ModuleFactory {
@@ -72,7 +73,10 @@ public class ModuleFactory {
 		moduleMap.put(FacilioConstants.ContextNames.ITEM_TRANSACTIONS, getItemTransactionsModule());
 		moduleMap.put(FacilioConstants.ContextNames.TENANT, getTenantsModule());
 		moduleMap.put(FacilioConstants.ContextNames.LABOUR, getLabourModule());
-	
+		moduleMap.put(FacilioConstants.ContextNames.PURCHASE_ORDER, getPurchaseOrderModule());
+		moduleMap.put(FacilioConstants.ContextNames.PURCHASE_REQUEST, getPurchaseRequestModule());
+		moduleMap.put(FacilioConstants.ContextNames.RECEIPT, getReceiptModule());
+		
 		return moduleMap;
 	}
 	
@@ -1790,5 +1794,38 @@ public class ModuleFactory {
 		inventoryModule.setDisplayName("toolTransactions");
 		inventoryModule.setTableName("Tool_transactions");
 		return inventoryModule;
+	}
+  	
+  	public static FacilioModule getPurchaseRequestModule() {
+		FacilioModule purchaseRequest = new FacilioModule();
+		purchaseRequest.setName("purchaserequest");
+		purchaseRequest.setDisplayName("Purchase Request");
+		purchaseRequest.setTableName("Purchase_Requests");
+		return purchaseRequest;
+	}
+  	
+  	public static FacilioModule getPurchaseOrderModule() {
+		FacilioModule purchaseOrder = new FacilioModule();
+		purchaseOrder.setName("purchaseorder");
+		purchaseOrder.setDisplayName("Purchase Order");
+		purchaseOrder.setTableName("Purchase_Orders");
+		return purchaseOrder;
+	}
+  	
+	public static FacilioModule getReceivableModule() {
+		FacilioModule receivable = new FacilioModule();
+		receivable.setName("receivable");
+		receivable.setDisplayName("Receivables");
+		receivable.setTableName("Receivables");
+		return receivable;
+	}
+  	
+  	
+	public static FacilioModule getReceiptModule() {
+		FacilioModule purchaseOrder = new FacilioModule();
+		purchaseOrder.setName("receipts");
+		purchaseOrder.setDisplayName("Receipts");
+		purchaseOrder.setTableName("Receipts");
+		return purchaseOrder;
 	}
 }

@@ -67,4 +67,15 @@ public class ItemTypesVendorsContext extends ModuleBaseWithCustomFields {
 		this.dateOrdered = dateOrdered;
 	}
 
+	public ItemTypesVendorsContext(ItemTypesContext itemType, VendorContext vendor, double price, long dateOrdered) {
+		super();
+		this.itemType = itemType;
+		this.vendor = vendor;
+		this.price = price;
+		this.dateOrdered = dateOrdered;
+	}
+	public ItemTypesVendorsContext() {
+		// TODO Auto-generated constructor stub
+	}
+
 }

@@ -422,7 +422,9 @@ public class FacilioField implements Serializable {
         ASSETMULTICHOOSER(35,"asset-multi-chooser"),
         SPACEMULTICHOOSER(36,"space-multi-chooser"),
 		LOGO(37,"logo"),
-		BUILDINGCHOOSER(38, "building-chooser")
+		BUILDINGCHOOSER(38, "building-chooser"),
+		LINEITEMS(39, "line-items"),
+		RECEIPT_LINE_ITEMS(40, "receipt-line-items")
 		;
 		
 		private int intVal;
