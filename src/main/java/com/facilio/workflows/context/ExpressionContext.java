@@ -348,7 +348,6 @@ public class ExpressionContext implements WorkflowExpression {
 						if(isLastValueWithTimeRange) {
 							
 							selectBuilder.limit(1);
-							selectBuilder.andCustomWhere("TTIME <= ?", DateTimeUtil.getCurrenTime());
 							selectBuilder.orderBy("TTIME desc");
 							
 						}
