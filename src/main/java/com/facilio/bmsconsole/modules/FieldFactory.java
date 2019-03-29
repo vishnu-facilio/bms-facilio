@@ -2155,6 +2155,7 @@ public class FieldFactory {
 
 		fields.add(getIdField(module));
 		fields.add(getOrgIdField(module));
+		fields.add(getField("assetCategory", "ASSET_CATEGORY", module, FieldType.NUMBER));
 		fields.add(getField("metric", "METRIC", module, FieldType.STRING));
 		fields.add(getField("resource", "RESOURCE", module, FieldType.STRING));
 		fields.add(getField("val", "VAL", module, FieldType.STRING));

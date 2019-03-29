@@ -9,6 +9,14 @@ public class ControlActionTemplate extends Template {
      */
     private static final long serialVersionUID = 1L;
 
+    private long assetCategory = -1;
+    public long getAssetCategory() {
+        return assetCategory;
+    }
+    public void setAssetCategory(long assetCategory) {
+        this.assetCategory = assetCategory;
+    }
+
     private String metric;
     public String getMetric() {
         return metric;
