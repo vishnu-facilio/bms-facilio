@@ -75,6 +75,7 @@ public class AddBulkToolStockTransactionsCommand implements Command {
 							transaction.setTransactionType(TransactionType.STOCK.getValue());
 							transaction.setToolType(tool.getToolType());
 							transaction.setPurchasedTool(purchaseTool);
+							transaction.setApprovedState(ApprovalState.YET_TO_BE_REQUESTED);
 							toolTransaction.add(transaction);
 						}
 					}
@@ -86,6 +87,7 @@ public class AddBulkToolStockTransactionsCommand implements Command {
 					transaction.setIsReturnable(false);
 					transaction.setTransactionType(TransactionType.STOCK.getValue());
 					transaction.setToolType(tool.getToolType());
+					transaction.setApprovedState(ApprovalState.YET_TO_BE_REQUESTED);
 					toolTransaction.add(transaction);
 				}
 			}

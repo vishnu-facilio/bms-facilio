@@ -93,6 +93,8 @@ public class PurchaseOrderContext extends ModuleBaseWithCustomFields {
 	public static PurchaseOrderContext fromPurchaseRequest(List<PurchaseRequestContext> list) throws Exception {
 		PurchaseOrderContext purchaseOrderContext = new PurchaseOrderContext();
 		purchaseOrderContext.setStatus(Status.REQUESTED);
+		purchaseOrderContext.setName("");
+		purchaseOrderContext.setDescription("");
 		long vendorId = -1;
 		long storeRoomId = -1;
 		

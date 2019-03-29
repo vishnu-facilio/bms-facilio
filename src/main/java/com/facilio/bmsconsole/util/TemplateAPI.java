@@ -13,6 +13,7 @@ import java.util.regex.Pattern;
 
 import javax.xml.bind.JAXBContext;
 
+import com.facilio.bmsconsole.templates.*;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Level;
@@ -42,22 +43,8 @@ import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
-import com.facilio.bmsconsole.templates.AssignmentTemplate;
-import com.facilio.bmsconsole.templates.DefaultTemplate;
-import com.facilio.bmsconsole.templates.DefaultTemplateWorkflowsConf;
 import com.facilio.bmsconsole.templates.DefaultTemplateWorkflowsConf.TemplateWorkflowConf;
-import com.facilio.bmsconsole.templates.EMailTemplate;
-import com.facilio.bmsconsole.templates.JSONTemplate;
-import com.facilio.bmsconsole.templates.PushNotificationTemplate;
-import com.facilio.bmsconsole.templates.SLATemplate;
-import com.facilio.bmsconsole.templates.SMSTemplate;
-import com.facilio.bmsconsole.templates.TaskSectionTemplate;
-import com.facilio.bmsconsole.templates.TaskTemplate;
-import com.facilio.bmsconsole.templates.Template;
 import com.facilio.bmsconsole.templates.Template.Type;
-import com.facilio.bmsconsole.templates.WebNotificationTemplate;
-import com.facilio.bmsconsole.templates.WorkflowTemplate;
-import com.facilio.bmsconsole.templates.WorkorderTemplate;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fs.FileStore;
 import com.facilio.fs.FileStoreFactory;
@@ -187,6 +174,9 @@ public class TemplateAPI {
 		else if (template instanceof WorkflowTemplate) {
 			id = TemplateAPI.addWorkflowTemplate((WorkflowTemplate) template);
 		}
+		else if (template instanceof  ControlActionTemplate) {
+			id = addControlActionTemplate((ControlActionTemplate) template);
+		}
 		return id;
 	}
 	
@@ -243,6 +233,10 @@ public class TemplateAPI {
 				return AssignmentTemplate.class;
 			case SLA:
 				return SLATemplate.class;
+			case WORKFLOW:
+				return WorkflowTemplate.class;
+			case CONTROL_ACTION:
+				return ControlActionTemplate.class;
 			default:
 				return null;
 		}
@@ -409,12 +403,18 @@ public class TemplateAPI {
 					 template = getJSONTemplateFromMap(templateMap);
 				}
 			}break;
-			case WORKFLOW:
-			{
+			case WORKFLOW: {
 				List<Map<String, Object>> templates = getExtendedProps(ModuleFactory.getWorkflowTemplatesModule(), FieldFactory.getWorkflowTemplateFields(), id);
 				if(templates != null && !templates.isEmpty()) {
 					templateMap.putAll(templates.get(0));
 					template = getWorkflowTemplateFromMap(templateMap);
+				}
+			}break;
+			case CONTROL_ACTION: {
+				List<Map<String, Object>> templates = getExtendedProps(ModuleFactory.getControlActionTemplateModule(), FieldFactory.getControlActionTemplateFields(), id);
+				if(templates != null && !templates.isEmpty()) {
+					templateMap.putAll(templates.get(0));
+					template = getControllerActionTemplateFromMap(templateMap);
 				}
 			}break;
 			default: break;
@@ -425,6 +425,10 @@ public class TemplateAPI {
 		}
 		
 		return template;
+	}
+
+	private static ControlActionTemplate getControllerActionTemplateFromMap (Map<String, Object> templateMap) {
+		return FieldUtil.getAsBeanFromMap(templateMap, ControlActionTemplate.class);
 	}
  	
 	private static List<Map<String, Object>> getExtendedProps(FacilioModule module, List<FacilioField> fields, long id) throws Exception {
@@ -998,7 +1002,11 @@ public class TemplateAPI {
 	}
 	
 	public static long addWorkflowTemplate (WorkflowTemplate template) throws Exception {
-		return insertTemplateWithExtendedProps(ModuleFactory.getWorkflowTemplatesModule(), FieldFactory.getWorkflowTemplateFields(), FieldUtil.getAsProperties(template)); //add tasks
+		return insertTemplateWithExtendedProps(ModuleFactory.getWorkflowTemplatesModule(), FieldFactory.getWorkflowTemplateFields(), FieldUtil.getAsProperties(template));
+	}
+
+	public static long addControlActionTemplate (ControlActionTemplate template) throws Exception {
+		return insertTemplateWithExtendedProps(ModuleFactory.getControlActionTemplateModule(), FieldFactory.getControlActionTemplateFields(), FieldUtil.getAsProperties(template));
 	}
 	
 	private static long addWorkOrderTemplate(WorkorderTemplate template, Type woType, Type taskType, Type sectionType) throws Exception {

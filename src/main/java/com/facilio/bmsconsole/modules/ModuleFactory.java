@@ -726,6 +726,15 @@ public class ModuleFactory {
 
 		return zoneRelModule;
 	}
+	
+	public static FacilioModule getZoneModule() {
+		FacilioModule zoneRelModule = new FacilioModule();
+		zoneRelModule.setName("zone");
+		zoneRelModule.setDisplayName("Zone");
+		zoneRelModule.setTableName("Zone");
+
+		return zoneRelModule;
+	}
 
 	public static FacilioModule getAssetCategoryModule() {
 		FacilioModule fieldModule = new FacilioModule();
@@ -1827,5 +1836,13 @@ public class ModuleFactory {
 		purchaseOrder.setDisplayName("Receipts");
 		purchaseOrder.setTableName("Receipts");
 		return purchaseOrder;
+	}
+
+	public static FacilioModule getControlActionTemplateModule() {
+		FacilioModule controlActionTemplate = new FacilioModule();
+		controlActionTemplate.setName("controlActionTemplate");
+		controlActionTemplate.setDisplayName("Control Action Template");
+		controlActionTemplate.setTableName("Control_Action_Template");
+		return controlActionTemplate;
 	}
 }

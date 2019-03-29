@@ -28,7 +28,7 @@ public  class AgentUtil
 {
     private long orgId ;
     private String orgDomainName;
-    private static final long DEFAULT_TIME = 600000L;
+    private static final long DEFAULT_TIME = 10L;
     private Map<String, FacilioAgent> agentMap = new HashMap<>();
 
     private static final Logger LOGGER = LogManager.getLogger(AgentUtil.class.getName());

@@ -1173,6 +1173,8 @@ public class WorkOrderAction extends FacilioAction {
 		workorder.setStatus(TicketAPI.getStatus("Closed")); // We shouldn't
 															// allow close to be
 															// edited
+		context.put(FacilioConstants.ContextNames.WORK_ORDER, workorder);
+
 		if (actualWorkDuration != -1) {
 			workorder.setActualWorkDuration(actualWorkDuration);
 		}
@@ -1192,6 +1194,7 @@ public class WorkOrderAction extends FacilioAction {
 		if (actualWorkDuration != -1) {
 			workorder.setActualWorkDuration(actualWorkDuration);
 		}
+		context.put(FacilioConstants.ContextNames.WORK_ORDER, workorder);
 
 		return updateWorkOrder(context);
 	}
@@ -1263,6 +1266,18 @@ public class WorkOrderAction extends FacilioAction {
 		return SUCCESS;
 	}
 
+	public String fetchActivity() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.PARENT_ID, workOrderId);
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.WORKORDER_ACTIVITY);
+		
+		Chain workOrderActivity = ReadOnlyChainFactory.getActivitiesChain();
+		workOrderActivity.execute(context);
+		setResult("activity", context.get(FacilioConstants.ContextNames.RECORD_LIST));
+		
+		return SUCCESS;
+	}
+	
 	private WorkorderTemplate workorderTemplate;
 
 	public WorkorderTemplate getWorkorderTemplate() {

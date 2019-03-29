@@ -62,7 +62,7 @@ public class GetTenantReportCards implements Command {
 			pmCount.put("type", "count");
 			pmCount.put("name", "pm");
 			pmCount.put("label", "Planned Maintenance");
-			List pmList = TenantsAPI.getPmCount(tenantId);
+			List pmList = TenantsAPI.getPmCount(zoneId,assetIdList);
 			pmCount.put("result",pmList);
 			pmCount.put("data",pmList.size());
 			

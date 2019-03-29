@@ -675,6 +675,7 @@ public class TransactionChainFactory {
 			c.addCommand(new ExecuteNoteWorkflowCommand());
 			c.addCommand(new AddNoteTicketActivityCommand());
 			c.setPostTransactionChain(getUpdateTicketNotesChain());
+			c.addCommand(new AddActivitiesCommand(FacilioConstants.ContextNames.WORKORDER_ACTIVITY));
 			return c;
 		}
 		
@@ -760,6 +761,7 @@ public class TransactionChainFactory {
 			c.addCommand(new AddTicketActivityCommand());
 			c.addCommand(getAddTasksChain());
 			c.addCommand(getWorkOrderWorkflowsChain());
+			c.addCommand(new AddActivitiesCommand(FacilioConstants.ContextNames.WORKORDER_ACTIVITY));
 			return c;
 		}
 
@@ -788,6 +790,7 @@ public class TransactionChainFactory {
 			c.addCommand(new UpdateReadingDataMetaCommand());
 			// c.addCommand(new AddTaskTicketActivityCommand());
 			c.setPostTransactionChain(TransactionChainFactory.getUpdateTaskCountChain());
+			c.addCommand(new AddActivitiesCommand(FacilioConstants.ContextNames.WORKORDER_ACTIVITY));
 			return c;
 		}
 		
@@ -811,6 +814,7 @@ public class TransactionChainFactory {
 			);
 			c.addCommand(new ConstructTicketNotesCommand());
 			c.addCommand(getAddNotesChain());
+			c.addCommand(new AddActivitiesCommand(FacilioConstants.ContextNames.WORKORDER_ACTIVITY));
 			return c;
 		}
 		
@@ -1061,9 +1065,9 @@ public class TransactionChainFactory {
 			c.addCommand(SetTableNamesCommand.getForAlarm());
 			c.addCommand(new UpdateAlarmCommand());
 			c.addCommand(new AddMLOccurrenceCommand());
-			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.BUSSINESS_LOGIC_ALARM_RULE));
-			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.PM_ALARM_RULE));
-			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.READING_ALARM_RULE));
+			c.addCommand(new ExecuteAllWorkflowsCommand(false,RuleType.BUSSINESS_LOGIC_ALARM_RULE));
+			c.addCommand(new ExecuteAllWorkflowsCommand(false,RuleType.PM_ALARM_RULE));
+			c.addCommand(new ExecuteAllWorkflowsCommand(false,RuleType.READING_ALARM_RULE));
 			c.addCommand(new ForkChainToInstantJobCommand()
 				.addCommand(new ExecuteAllWorkflowsCommand(RuleType.ALARM_NOTIFICATION_RULE, RuleType.CUSTOM_ALARM_NOTIFICATION_RULE))
 				.addCommand(new AddClearCommentInWoOnAlarmClearCommand())
@@ -1173,6 +1177,7 @@ public class TransactionChainFactory {
 			c.addCommand(new UpdateClosedTasksCounterCommand());
 			c.addCommand(new AddTaskTicketActivityCommand());
 			c.addCommand(new ExecuteAllWorkflowsCommand());
+			c.addCommand(new AddActivitiesCommand(FacilioConstants.ContextNames.WORKORDER_ACTIVITY));
 //			c.addCommand(getAddOrUpdateReadingValuesChain());
 			return c;
 		}
@@ -2210,6 +2215,20 @@ public class TransactionChainFactory {
 		public static Chain getAddOrUpdateItemTypeVendorChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(new AddOrUpdateItemTypeVendorCommand());
+			return c;
+		}
+		
+		public static  Chain getImportItemChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new ImportItemCommand());
+			c.addCommand(getAddBulkItemChain());
+			return c;
+		}
+		
+		public static  Chain getImportToolChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new ImportToolCommand());
+			c.addCommand(getBulkAddToolChain());
 			return c;
 		}
 }

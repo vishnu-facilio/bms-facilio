@@ -14,6 +14,8 @@ import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.activity.WorkOrderActivityType;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.NoteContext;
 import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
@@ -24,8 +26,12 @@ import com.facilio.bmsconsole.modules.InsertRecordBuilder;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.chain.FacilioChain;
+import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.bmsconsole.activity.WorkOrderActivityType;
+
 
 public class AddNotesCommand implements Command {
 
@@ -70,6 +76,9 @@ public class AddNotesCommand implements Command {
 				note.setCreatedBy(AccountUtil.getCurrentUser());
 				
 				parentIds.add(note.getParentId());
+				JSONObject info = new JSONObject();
+				info.put("Comment", note.getBody());
+				CommonCommandUtil.addActivityToContext(note.getParentId(), -1, WorkOrderActivityType.ADD_COMMENT, info, (FacilioContext) context);
 				
 				noteBuilder.addRecord(note);
 				if(moduleName.equals(FacilioConstants.ContextNames.TICKET_NOTES)) {

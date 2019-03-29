@@ -962,6 +962,7 @@ public class WorkflowRuleAPI {
 						.append(" of module : ")
 						.append(module.getName());
 			}
+			CommonCommandUtil.emailException("RULE EXECUTION FAILED - "+AccountUtil.getCurrentOrg().getId(),builder.toString(), e);
 			LOGGER.error(builder.toString(), e);
 			
 			if (propagateError) {

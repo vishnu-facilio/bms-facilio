@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -7,9 +8,12 @@ import java.util.logging.Logger;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.activity.WorkOrderActivityType;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.TaskContext.TaskStatus;
 import com.facilio.bmsconsole.context.TaskSectionContext;
@@ -18,6 +22,7 @@ import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.InsertRecordBuilder;
 import com.facilio.chain.FacilioChain;
+import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 
@@ -62,8 +67,22 @@ public class AddTasksCommand implements Command {
 			
 			builder.save();
 			context.put(FacilioConstants.ContextNames.TASK_LIST, builder.getRecords());
+			WorkOrderContext workOrdernew = (WorkOrderContext) context.get(FacilioConstants.ContextNames.WORK_ORDER);
  			FacilioChain.addPostTrasanction(FacilioConstants.ContextNames.IDS_TO_UPDATE_TASK_COUNT, Collections.singletonList(workOrder.getId()));
 			FacilioChain.addPostTrasanction(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+//			List<TaskContext> tasks = (List<TaskContext>) context.get(FacilioConstants.ContextNames.TASK_LIST);
+//            List<Object> tasklist = new ArrayList<Object>();
+//			if (!tasks.isEmpty()) {
+//				for(TaskContext task:tasks) {
+//					JSONObject info = new JSONObject();
+//				info.put("Task", task.getSubject().toString());
+//				tasklist.add(info);
+//
+//				}
+//				JSONObject newinfo = new JSONObject();
+//                newinfo.put("Task",tasklist);
+//			CommonCommandUtil.addActivityToContext(tasks.get(0).getParentTicketId(), -1, WorkOrderActivityType.ADD_TASK, newinfo, (FacilioContext) context);
+//			}
 		}
 		else {
 //			throw new IllegalArgumentException("Task list cannot be null/ empty");

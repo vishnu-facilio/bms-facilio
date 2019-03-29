@@ -255,6 +255,7 @@ public class TaskAction extends FacilioAction {
 			context.clear();
 			context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.EDIT);
 			context.put(FacilioConstants.ContextNames.TASK, singleTask);
+			context.put(FacilioConstants.ContextNames.TASK_LIST, Collections.singletonList(singleTask));
 			context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(singleTask.getId()));
 			if (AccountUtil.getCurrentAccount().getDeviceType() != null) {
 				context.put(FacilioConstants.ContextNames.DO_VALIDTION, getDoValidation());

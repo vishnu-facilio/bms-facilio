@@ -72,7 +72,12 @@ public class ActivityContext extends ModuleBaseWithCustomFields {
 	}
 	public void setInfoJsonStr(String infoStr) throws ParseException {
 		JSONParser parser = new JSONParser();
-		info = (JSONObject) parser.parse(infoStr);
+		try {
+			info = (JSONObject) parser.parse(infoStr);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		System.out.println(info);
 	}
 	
 	@JsonIgnore

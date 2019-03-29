@@ -271,16 +271,31 @@ public class ViewFactory {
 		order = 1;
 		views = new LinkedHashMap<>();
 		views.put("all", getAllPurchaseRequestView().setOrder(order++));
+		views.put("open", getOpenPurchaseRequest().setOrder(order++));
+		views.put("pending", getPurchaseRequestForStatus("pending", "Pending Purchase Requests", 1).setOrder(order++));
+		views.put("overdue", getOverDuePurchaseRequest().setOrder(order++));
+		views.put("approved", getPurchaseRequestForStatus("approved", "Approved Purchase Requests", 2).setOrder(order++));
+		views.put("rejected", getPurchaseRequestForStatus("rejected", "Rejected Purchase Requests", 3).setOrder(order++));
+		views.put("completed", getPurchaseRequestForStatus("completed", "Completed Purchase Requests", 4).setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.PURCHASE_REQUEST, views);
 
 		order = 1;
 		views = new LinkedHashMap<>();
 		views.put("all", getAllPurchaseOrderView().setOrder(order++));
+		views.put("open", getOpenPurchaseOrder().setOrder(order++));
+		views.put("pending", getPurchaseOrderForStatus("pending", "Pending Purchase Orders", 1).setOrder(order++));
+		views.put("overdue", getOverDuePurchaseOrder().setOrder(order++));
+		views.put("approved", getPurchaseOrderForStatus("approved", "Approved Purchase Orders", 2).setOrder(order++));
+		views.put("rejected", getPurchaseOrderForStatus("rejected", "Rejected Purchase Orders", 3).setOrder(order++));
+		views.put("completed", getPurchaseOrderForStatus("completed", "Completed Purchase Orders", 7).setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.PURCHASE_ORDER, views);
 
 		order = 1;
 		views = new LinkedHashMap<>();
 		views.put("all", getAllReceivableView().setOrder(order++));
+		views.put("pending", getReceivableForStatus("pending", "Pending Receivables", 1).setOrder(order++));
+		views.put("partial", getReceivableForStatus("partial", "Partially Received", 2).setOrder(order++));
+		views.put("received", getReceivableForStatus("received", "Received", 3).setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.RECEIVABLE, views);
 
 		return viewsMap;
@@ -879,8 +894,15 @@ public class ViewFactory {
 		createdTime.setColumnName("CREATED_TIME");
 		createdTime.setModule(ModuleFactory.getWorkOrdersModule());
 
+		FacilioField pm = new FacilioField();
+		pm.setName("pm");
+		pm.setDataType(FieldType.NUMBER);
+		pm.setColumnName("PM_ID");
+		pm.setModule(ModuleFactory.getWorkOrdersModule());
+
 		Criteria criteria = new Criteria();
 		criteria.addAndCondition(getPreOpenStatusCondition());
+		criteria.addAndCondition(CriteriaAPI.getCondition(pm, CommonOperators.IS_NOT_EMPTY));
 		criteria.addAndCondition(CriteriaAPI.getCondition(createdTime, DateOperators.NEXT_WEEK));
 
 		FacilioView preOpenTicketsView = new FacilioView();
@@ -901,8 +923,15 @@ public class ViewFactory {
 		createdTime.setColumnName("CREATED_TIME");
 		createdTime.setModule(ModuleFactory.getWorkOrdersModule());
 
+		FacilioField pm = new FacilioField();
+		pm.setName("pm");
+		pm.setDataType(FieldType.NUMBER);
+		pm.setColumnName("PM_ID");
+		pm.setModule(ModuleFactory.getWorkOrdersModule());
+
 		Criteria criteria = new Criteria();
 		criteria.addAndCondition(getPreOpenStatusCondition());
+		criteria.addAndCondition(CriteriaAPI.getCondition(pm, CommonOperators.IS_NOT_EMPTY));
 		criteria.addAndCondition(CriteriaAPI.getCondition(createdTime, DateOperators.CURRENT_WEEK));
 
 		FacilioView preOpenTicketsView = new FacilioView();
@@ -2626,6 +2655,123 @@ public class ViewFactory {
 		return allView;
 	}
 	
+	private static FacilioView getPurchaseRequestForStatus(String viewName, String viewDisplayName, int status) {
+		FacilioModule prModule = ModuleFactory.getPurchaseRequestModule();
+
+		FacilioField createdTime = new FacilioField();
+		createdTime.setName("sysCreatedTime");
+		createdTime.setDataType(FieldType.NUMBER);
+		createdTime.setColumnName("SYS_CREATED_TIME");
+		createdTime.setModule(prModule);
+
+		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));
+
+		Criteria criteria = getPurchaseRequestStatusCriteria(prModule, status);
+		
+		FacilioView statusView = new FacilioView();
+		statusView.setName(viewName);
+		statusView.setDisplayName(viewDisplayName);
+		statusView.setSortFields(sortFields);
+		statusView.setCriteria(criteria);
+
+		return statusView;
+	}
+	
+	private static Criteria getPurchaseRequestStatusCriteria(FacilioModule module, int status) {
+		
+		FacilioField prStatusField = new FacilioField();
+		prStatusField.setName("status");
+		prStatusField.setColumnName("STATUS");
+		prStatusField.setDataType(FieldType.NUMBER);
+		prStatusField.setModule(ModuleFactory.getPurchaseRequestModule());
+		
+		Condition statusCond = new Condition();
+		statusCond.setField(prStatusField);
+		statusCond.setOperator(NumberOperators.EQUALS);
+		statusCond.setValue(String.valueOf(status));
+
+		Criteria purchaseRequestStatusCriteria = new Criteria();
+		purchaseRequestStatusCriteria.addAndCondition(statusCond);
+		return purchaseRequestStatusCriteria;
+	}
+	
+	private static FacilioView getOpenPurchaseRequest() {
+		FacilioModule prModule = ModuleFactory.getPurchaseRequestModule();
+
+		FacilioField createdTime = new FacilioField();
+		createdTime.setName("sysCreatedTime");
+		createdTime.setDataType(FieldType.NUMBER);
+		createdTime.setColumnName("SYS_CREATED_TIME");
+		createdTime.setModule(prModule);
+
+		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));
+
+		Criteria criteria = getOpenPurchaseRequestCriteria(prModule);
+		
+		FacilioView statusView = new FacilioView();
+		statusView.setName("open");
+		statusView.setDisplayName("Open Purchase Requests");
+		statusView.setSortFields(sortFields);
+		statusView.setCriteria(criteria);
+
+		return statusView;
+	}
+	
+	private static Criteria getOpenPurchaseRequestCriteria(FacilioModule module) {
+		
+		FacilioField prStatusField = new FacilioField();
+		prStatusField.setName("status");
+		prStatusField.setColumnName("STATUS");
+		prStatusField.setDataType(FieldType.NUMBER);
+		prStatusField.setModule(ModuleFactory.getPurchaseRequestModule());
+		
+		Condition statusCond = new Condition();
+		statusCond.setField(prStatusField);
+		statusCond.setOperator(NumberOperators.LESS_THAN);
+		statusCond.setValue(String.valueOf(3+""));
+
+		Criteria purchaseRequestStatusCriteria = new Criteria();
+		purchaseRequestStatusCriteria.addAndCondition(statusCond);
+		return purchaseRequestStatusCriteria;
+	}
+	
+	private static FacilioView getOverDuePurchaseRequest() {
+		Criteria criteria = getOverDuePurchaseRequestCriteria(ModuleFactory.getPurchaseRequestModule());
+
+		FacilioField createdTime = new FacilioField();
+		createdTime.setName("sysCreatedTime");
+		createdTime.setDataType(FieldType.NUMBER);
+		createdTime.setColumnName("SYS_CREATED_TIME");
+		createdTime.setModule(ModuleFactory.getPurchaseRequestModule());
+
+		FacilioView overDueRequest = new FacilioView();
+		overDueRequest.setName("overdue");
+		overDueRequest.setDisplayName("Overdue Purchase Requests");
+		overDueRequest.setCriteria(criteria);
+		overDueRequest.setSortFields(Arrays.asList(new SortField(createdTime, false)));
+		return overDueRequest;
+		
+	}
+	
+	private static Criteria getOverDuePurchaseRequestCriteria (FacilioModule module) {
+		NumberField requiredTime = new NumberField();
+		requiredTime.setName("requiredTime");
+		requiredTime.setColumnName("REQUIRED_TIME");
+		requiredTime.setDataType(FieldType.NUMBER);
+		requiredTime.setModule(module);
+
+		Long currTime = DateTimeUtil.getCurrenTime();
+
+		Condition overDueRequest = new Condition();
+		overDueRequest.setField(requiredTime);
+		overDueRequest.setOperator(NumberOperators.LESS_THAN);
+		overDueRequest.setValue(currTime + "");
+
+		Criteria criteria = new Criteria();
+		criteria.addAndCondition(overDueRequest);
+		return criteria;
+	}
+	
 	private static FacilioView getAllPurchaseOrderView() {
 		FacilioField localId = new FacilioField();
 		localId.setName("localId");
@@ -2639,6 +2785,131 @@ public class ViewFactory {
 		allView.setSortFields(Arrays.asList(new SortField(localId, false)));
 		return allView;
 	}
+	
+	private static FacilioView getPurchaseOrderForStatus(String viewName, String viewDisplayName, int status) {
+		FacilioModule poModule = ModuleFactory.getPurchaseOrderModule();
+
+		FacilioField createdTime = new FacilioField();
+		createdTime.setName("sysCreatedTime");
+		createdTime.setDataType(FieldType.NUMBER);
+		createdTime.setColumnName("SYS_CREATED_TIME");
+		createdTime.setModule(poModule);
+
+		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));
+
+		Criteria criteria = getPurchaseOrderStatusCriteria(poModule, status);
+		
+		FacilioView statusView = new FacilioView();
+		statusView.setName(viewName);
+		statusView.setDisplayName(viewDisplayName);
+		statusView.setSortFields(sortFields);
+		statusView.setCriteria(criteria);
+
+		return statusView;
+	}
+	
+	private static Criteria getPurchaseOrderStatusCriteria(FacilioModule module, int status) {
+		
+		FacilioField poStatusField = new FacilioField();
+		poStatusField.setName("status");
+		poStatusField.setColumnName("STATUS");
+		poStatusField.setDataType(FieldType.NUMBER);
+		poStatusField.setModule(ModuleFactory.getPurchaseOrderModule());
+		
+		Condition statusCond = new Condition();
+		statusCond.setField(poStatusField);
+		statusCond.setOperator(NumberOperators.EQUALS);
+		statusCond.setValue(String.valueOf(status));
+
+		Criteria purchaseOrderStatusCriteria = new Criteria();
+		purchaseOrderStatusCriteria.addAndCondition(statusCond);
+		return purchaseOrderStatusCriteria;
+	}
+	
+	private static FacilioView getOpenPurchaseOrder() {
+		FacilioModule poModule = ModuleFactory.getPurchaseOrderModule();
+
+		FacilioField createdTime = new FacilioField();
+		createdTime.setName("sysCreatedTime");
+		createdTime.setDataType(FieldType.NUMBER);
+		createdTime.setColumnName("SYS_CREATED_TIME");
+		createdTime.setModule(poModule);
+
+		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));
+
+		Criteria criteria = getOpenPurchaseOrderCriteria(poModule);
+		
+		FacilioView statusView = new FacilioView();
+		statusView.setName("open");
+		statusView.setDisplayName("Open Purchase Orders");
+		statusView.setSortFields(sortFields);
+		statusView.setCriteria(criteria);
+
+		return statusView;
+	}
+	
+	private static Criteria getOpenPurchaseOrderCriteria(FacilioModule module) {
+		
+		FacilioField poStatusField = new FacilioField();
+		poStatusField.setName("status");
+		poStatusField.setColumnName("STATUS");
+		poStatusField.setDataType(FieldType.NUMBER);
+		poStatusField.setModule(ModuleFactory.getPurchaseOrderModule());
+		
+		Condition statusCond = new Condition();
+		statusCond.setField(poStatusField);
+		statusCond.setOperator(NumberOperators.LESS_THAN);
+		statusCond.setValue(String.valueOf(7+""));
+		
+
+		Condition rejCond = new Condition();
+		rejCond.setField(poStatusField);
+		rejCond.setOperator(NumberOperators.NOT_EQUALS);
+		rejCond.setValue(String.valueOf(3+""));
+		
+		Criteria purchaseOrderStatusCriteria = new Criteria();
+		purchaseOrderStatusCriteria.addAndCondition(statusCond);
+		purchaseOrderStatusCriteria.addAndCondition(rejCond);
+		return purchaseOrderStatusCriteria;
+	}
+	
+	private static FacilioView getOverDuePurchaseOrder() {
+		Criteria criteria = getOverDuePurchaseOrderCriteria(ModuleFactory.getPurchaseOrderModule());
+
+		FacilioField createdTime = new FacilioField();
+		createdTime.setName("sysCreatedTime");
+		createdTime.setDataType(FieldType.NUMBER);
+		createdTime.setColumnName("SYS_CREATED_TIME");
+		createdTime.setModule(ModuleFactory.getPurchaseOrderModule());
+
+		FacilioView overDueOrder = new FacilioView();
+		overDueOrder.setName("overdue");
+		overDueOrder.setDisplayName("Overdue Purchase Orders");
+		overDueOrder.setCriteria(criteria);
+		overDueOrder.setSortFields(Arrays.asList(new SortField(createdTime, false)));
+		return overDueOrder;
+		
+	}
+	
+	private static Criteria getOverDuePurchaseOrderCriteria (FacilioModule module) {
+		NumberField requiredTime = new NumberField();
+		requiredTime.setName("requiredTime");
+		requiredTime.setColumnName("REQUIRED_TIME");
+		requiredTime.setDataType(FieldType.NUMBER);
+		requiredTime.setModule(module);
+
+		Long currTime = DateTimeUtil.getCurrenTime();
+
+		Condition overDueOrder = new Condition();
+		overDueOrder.setField(requiredTime);
+		overDueOrder.setOperator(NumberOperators.LESS_THAN);
+		overDueOrder.setValue(currTime + "");
+
+		Criteria criteria = new Criteria();
+		criteria.addAndCondition(overDueOrder);
+		return criteria;
+	}
+
 
 	private static FacilioView getAllReceivableView() {
 		FacilioField localId = new FacilioField();
@@ -2652,6 +2923,47 @@ public class ViewFactory {
 		allView.setDisplayName("All Receivables");
 		allView.setSortFields(Arrays.asList(new SortField(localId, false)));
 		return allView;
+	}
+
+
+	private static FacilioView getReceivableForStatus(String viewName, String viewDisplayName, int status) {
+		FacilioModule receivableModule = ModuleFactory.getReceivableModule();
+
+		FacilioField createdTime = new FacilioField();
+		createdTime.setName("sysCreatedTime");
+		createdTime.setDataType(FieldType.NUMBER);
+		createdTime.setColumnName("SYS_CREATED_TIME");
+		createdTime.setModule(receivableModule);
+
+		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));
+
+		Criteria criteria = getReceivableStatusCriteria(receivableModule, status);
+		
+		FacilioView statusView = new FacilioView();
+		statusView.setName(viewName);
+		statusView.setDisplayName(viewDisplayName);
+		statusView.setSortFields(sortFields);
+		statusView.setCriteria(criteria);
+
+		return statusView;
+	}
+	
+	private static Criteria getReceivableStatusCriteria(FacilioModule module, int status) {
+		
+		FacilioField receivableStatusField = new FacilioField();
+		receivableStatusField.setName("status");
+		receivableStatusField.setColumnName("STATUS");
+		receivableStatusField.setDataType(FieldType.NUMBER);
+		receivableStatusField.setModule(ModuleFactory.getReceivableModule());
+		
+		Condition statusCond = new Condition();
+		statusCond.setField(receivableStatusField);
+		statusCond.setOperator(NumberOperators.EQUALS);
+		statusCond.setValue(String.valueOf(status));
+
+		Criteria receivableStatusCriteria = new Criteria();
+		receivableStatusCriteria.addAndCondition(statusCond);
+		return receivableStatusCriteria;
 	}
 
 }

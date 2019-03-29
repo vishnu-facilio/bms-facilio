@@ -4,6 +4,8 @@ import java.util.List;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
@@ -16,13 +18,14 @@ import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
+import com.facilio.bmsconsole.util.TemplateAPI;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.unitconversion.Unit;
 
 public class GetToolsListCommand implements Command{
-
+	private static Logger log = LogManager.getLogger(TemplateAPI.class.getName());
 	@Override
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
@@ -110,6 +113,11 @@ public class GetToolsListCommand implements Command{
 		List<ToolTypesContext> records = builder.get();
 		
 		if (records != null && !records.isEmpty()) {
+			if(AccountUtil.getCurrentOrg().getOrgId() == 75) {
+				log.info("records" + records);
+				log.info("filterCriteria" + filterCriteria);
+				log.info("filters" + filters);
+			}
 			if (getCount != null && getCount) {
 				context.put(FacilioConstants.ContextNames.RECORD_COUNT, records.get(0).getData().get("count"));
 			}

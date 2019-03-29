@@ -45,6 +45,7 @@ public class ReportFactoryFields {
 		selectedFields.add(fields.get("assignmentGroup"));
 		selectedFields.add(fields.get("type"));
 		selectedFields.add(fields.get("sourceType"));
+		selectedFields.add(fields.get("totalCost"));
 		selectedFields.add(fields.get("status"));
 		
 		if(customFields.size() != 0) {
@@ -138,12 +139,14 @@ public class ReportFactoryFields {
 		FacilioModule resourceModule = ModuleFactory.getResourceModule();
 		
 		for (FacilioField field : fields) {
-			if (field instanceof NumberField) {
-				metricFields.add(field);
-			} else if (field instanceof LookupField) {
-				addFieldInList(dimensionFieldMap, module, field);
-			} else if (field.getDataTypeEnum() == FieldType.DATE || field.getDataTypeEnum() == FieldType.DATE_TIME) {
-				addFieldInList(dimensionFieldMap, "time", field);
+			if(field != null) {
+				if (field instanceof NumberField) {
+					metricFields.add(field);
+				} else if (field instanceof LookupField) {
+					addFieldInList(dimensionFieldMap, module, field);
+				} else if (field.getDataTypeEnum() == FieldType.DATE || field.getDataTypeEnum() == FieldType.DATE_TIME) {
+					addFieldInList(dimensionFieldMap, "time", field);
+				}
 			}
 		}
 		FacilioField resourceField = getModuleResourceField(module);

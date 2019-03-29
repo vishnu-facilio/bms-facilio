@@ -9,6 +9,8 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
+import com.facilio.accounts.util.AccountConstants;
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.LocationContext;
 import com.facilio.bmsconsole.context.PurchaseOrderContext;
@@ -50,6 +52,8 @@ public class AddOrUpdatePurchaseRequestCommand implements Command {
 			if (CollectionUtils.isEmpty(purchaseRequestContext.getLineItems())) {
 				throw new Exception("Line items cannot be empty");
 			}
+			// setting current user to requestedBy
+			purchaseRequestContext.setRequestedBy(AccountUtil.getCurrentUser());
             purchaseRequestContext.setShipToAddress(LocationAPI.getLocation(purchaseRequestContext.getStoreRoom(), purchaseRequestContext.getShipToAddress(), "SHIP_TO_Location", true));
             purchaseRequestContext.setBillToAddress(LocationAPI.getLocation(purchaseRequestContext.getVendor(), purchaseRequestContext.getBillToAddress(), "BILL_TO_Location", false));
             if (purchaseRequestContext.getId() > 0) {
