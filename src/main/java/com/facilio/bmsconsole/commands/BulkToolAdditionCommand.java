@@ -72,13 +72,15 @@ public class BulkToolAdditionCommand implements Command {
 			tool.setToolType(ToolsApi.getToolTypes(tool.getToolType().getId()));
 			toolIds.add(tool.getId());
 			toolTypesIds.add(tool.getToolType().getId());
+			tool.setLastPurchasedDate(System.currentTimeMillis());
 			List<PurchasedToolContext> pTools = new ArrayList<>();
 			if (tool.getPurchasedTools() != null && !tool.getPurchasedTools().isEmpty()) {
-				for (PurchasedToolContext pItem : tool.getPurchasedTools()) {
-					pItem.setTool(tool);
-					pItem.setToolType(tool.getToolType());
-					pTools.add(pItem);
-					purchasedTools.add(pItem);
+				for (PurchasedToolContext pTool : tool.getPurchasedTools()) {
+					pTool.setTool(tool);
+					pTool.setToolType(tool.getToolType());
+					pTool.setCostDate(System.currentTimeMillis());
+					pTools.add(pTool);
+					purchasedTools.add(pTool);
 				}
 				tool.setPurchasedTools(null);
 				toolVsPurchaseTool.put(tool.getId(), pTools);

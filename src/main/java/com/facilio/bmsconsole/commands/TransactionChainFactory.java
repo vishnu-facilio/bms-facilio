@@ -2216,14 +2216,14 @@ public class TransactionChainFactory {
 		public static  Chain getImportItemChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(new ImportItemCommand());
-			c.addCommand(new BulkItemAdditionCommand());
+			c.addCommand(getAddBulkItemChain());
 			return c;
 		}
 		
 		public static  Chain getImportToolChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(new ImportToolCommand());
-			c.addCommand(new BulkToolAdditionCommand());
+			c.addCommand(getBulkAddToolChain());
 			return c;
 		}
 }
