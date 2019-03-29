@@ -1,10 +1,10 @@
 package com.facilio.cards.util;
 
+import com.facilio.bmsconsole.context.TicketStatusContext;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-
-import com.facilio.bmsconsole.context.TicketStatusContext;
 
 public enum CardType {
 	

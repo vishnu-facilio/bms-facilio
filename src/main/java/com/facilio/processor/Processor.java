@@ -18,6 +18,7 @@ import com.facilio.bmsconsole.criteria.StringOperators;
 import com.facilio.bmsconsole.modules.*;
 import com.facilio.devicepoints.DevicePointsUtil;
 import com.facilio.events.context.EventRuleContext;
+import com.facilio.events.tasker.tasks.EventUtil;
 import com.facilio.fw.BeanFactory;
 import com.facilio.kinesis.ErrorDataProducer;
 import com.facilio.sql.GenericUpdateRecordBuilder;
@@ -34,7 +35,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import com.facilio.events.tasker.tasks.EventUtil;
 
 public class Processor implements IRecordProcessor {
 

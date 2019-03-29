@@ -1,11 +1,11 @@
 package com.facilio.accounts.bean;
 
-import java.util.List;
-import java.util.Map;
-
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
 import com.facilio.bmsconsole.criteria.Criteria;
+
+import java.util.List;
+import java.util.Map;
 
 public interface OrgBean {
 

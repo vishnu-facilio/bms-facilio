@@ -1,18 +1,17 @@
 package com.facilio.bmsconsole.commands;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-
+import com.facilio.bmsconsole.context.SpaceCategoryContext;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.sql.DBUtil;
+import com.facilio.transaction.FacilioConnectionPool;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
-import com.facilio.bmsconsole.context.SpaceCategoryContext;
-import com.facilio.constants.FacilioConstants;
-import com.facilio.sql.DBUtil;
-import com.facilio.transaction.FacilioConnectionPool;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 
 public class EditSpaceCategoryCommand implements Command {
 	private static Logger log = LogManager.getLogger(EditSpaceCategoryCommand.class.getName());

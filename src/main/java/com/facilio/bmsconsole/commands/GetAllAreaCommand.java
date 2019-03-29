@@ -1,13 +1,12 @@
 package com.facilio.bmsconsole.commands;
 
 
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.json.simple.JSONObject;
-
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.constants.FacilioConstants;
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
+import org.json.simple.JSONObject;
 
 public class GetAllAreaCommand implements Command{
 

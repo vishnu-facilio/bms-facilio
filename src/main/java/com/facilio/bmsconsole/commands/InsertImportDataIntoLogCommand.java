@@ -1,13 +1,5 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.logging.Logger;
-
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.json.simple.JSONObject;
-
 import com.facilio.bmsconsole.actions.ImportProcessContext;
 import com.facilio.bmsconsole.context.ImportRowContext;
 import com.facilio.bmsconsole.modules.FieldFactory;
@@ -15,6 +7,13 @@ import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.util.ImportAPI;
 import com.facilio.sql.GenericInsertRecordBuilder;
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
+import org.json.simple.JSONObject;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.logging.Logger;
 
 public class InsertImportDataIntoLogCommand implements Command {
 

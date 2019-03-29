@@ -1,17 +1,16 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.Iterator;
-import java.util.List;
-
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-
 import com.amazonaws.services.rekognition.model.TextDetection;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.image.ImageRecognitionUtil;
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
+
+import java.util.Iterator;
+import java.util.List;
 
 public class FilterReadingsFromImageCommand implements Command {
 

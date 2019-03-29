@@ -1,8 +1,8 @@
 package com.facilio.bmsconsole.context;
 
-import java.util.List;
-
 import com.facilio.accounts.dto.GroupMember;
+
+import java.util.List;
 
 public class SingleSharingContext {
 	

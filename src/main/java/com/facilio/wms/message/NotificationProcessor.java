@@ -1,13 +1,5 @@
 package com.facilio.wms.message;
 
-import java.nio.charset.Charset;
-import java.nio.charset.CharsetDecoder;
-
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-
 import com.amazonaws.services.kinesis.clientlibrary.interfaces.v2.IRecordProcessor;
 import com.amazonaws.services.kinesis.clientlibrary.interfaces.v2.IRecordProcessorFactory;
 import com.amazonaws.services.kinesis.clientlibrary.lib.worker.KinesisClientLibConfiguration;
@@ -21,6 +13,13 @@ import com.facilio.aws.util.AwsUtil;
 import com.facilio.server.ServerInfo;
 import com.facilio.wms.endpoints.SessionManager;
 import com.facilio.wms.util.WmsApi;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+
+import java.nio.charset.Charset;
+import java.nio.charset.CharsetDecoder;
 
 
 public class NotificationProcessor implements IRecordProcessor {

@@ -8,12 +8,11 @@
  */
 package com.facilio.bmsconsole.interceptors;
 
-import java.io.IOException;
-import java.io.OutputStream;
-
 import javax.servlet.ServletOutputStream;
 import javax.servlet.WriteListener;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.OutputStream;
 
 public class CacheResponseStream extends ServletOutputStream {
   protected boolean closed = false;

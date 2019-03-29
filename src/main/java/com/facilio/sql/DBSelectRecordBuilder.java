@@ -1,10 +1,10 @@
 package com.facilio.sql;
 
+import com.facilio.bmsconsole.modules.FacilioField;
+
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Collection;
-
-import com.facilio.bmsconsole.modules.FacilioField;
 
 public abstract class DBSelectRecordBuilder {
 	

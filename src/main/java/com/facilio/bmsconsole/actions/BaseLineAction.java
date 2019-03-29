@@ -1,14 +1,13 @@
 package com.facilio.bmsconsole.actions;
 
-import java.util.List;
-
-import org.apache.commons.chain.Chain;
-
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.context.BaseLineContext;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.opensymphony.xwork2.ActionSupport;
+import org.apache.commons.chain.Chain;
+
+import java.util.List;
 
 public class BaseLineAction extends ActionSupport {
 	/**

@@ -1,13 +1,12 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.Calendar;
-
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-
 import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.constants.FacilioConstants;
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
+
+import java.util.Calendar;
 
 public class ValidateWorkOrderFieldsCommand implements Command {
 

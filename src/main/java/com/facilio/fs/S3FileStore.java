@@ -1,25 +1,5 @@
 package com.facilio.fs;
 
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-import java.net.URLEncoder;
-import java.security.Security;
-import java.security.spec.InvalidKeySpecException;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-
-import javax.imageio.ImageIO;
-
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-
 import com.amazonaws.HttpMethod;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.cloudfront.CloudFrontUrlSigner;
@@ -32,6 +12,19 @@ import com.amazonaws.services.s3.model.ResponseHeaderOverrides;
 import com.amazonaws.services.s3.model.S3Object;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.util.ImageScaleUtil;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.*;
+import java.net.URL;
+import java.net.URLEncoder;
+import java.security.Security;
+import java.security.spec.InvalidKeySpecException;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
 
 public class S3FileStore extends FileStore {
 

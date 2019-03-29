@@ -1,21 +1,16 @@
 package com.facilio.bmsconsole.criteria;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Stack;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
+import com.facilio.util.ExpressionEvaluator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.google.common.base.Objects;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.collections.PredicateUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import com.facilio.util.ExpressionEvaluator;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.google.common.base.Objects;
+import java.io.Serializable;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Criteria extends ExpressionEvaluator<Predicate> implements Serializable {
 	

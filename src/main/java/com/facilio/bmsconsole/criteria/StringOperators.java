@@ -1,13 +1,9 @@
 package com.facilio.bmsconsole.criteria;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.collections.PredicateUtils;
+
+import java.util.*;
 
 public enum StringOperators implements Operator<String> {
 	IS(3, "is") {

@@ -1,12 +1,11 @@
 package com.facilio.events.commands;
 
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.events.constants.EventConstants;
 import com.facilio.events.util.EventAPI;
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
 
 public class UpdateSourceToResourceMappingCommand implements Command {
 

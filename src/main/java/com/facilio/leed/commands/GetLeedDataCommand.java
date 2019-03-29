@@ -1,19 +1,18 @@
 package com.facilio.leed.commands;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import com.facilio.leed.context.ArcContext;
+import com.facilio.leed.util.LeedAPI;
+import com.facilio.leed.util.LeedIntegrator;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-import com.facilio.leed.context.ArcContext;
-import com.facilio.leed.util.LeedAPI;
-import com.facilio.leed.util.LeedIntegrator;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class GetLeedDataCommand {
 	

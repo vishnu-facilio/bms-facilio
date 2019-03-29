@@ -1,15 +1,14 @@
 package com.facilio.bmsconsole.util;
 
-import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.Map;
-
+import com.facilio.bmsconsole.modules.FieldFactory;
+import com.facilio.sql.GenericInsertRecordBuilder;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
-import com.facilio.bmsconsole.modules.FieldFactory;
-import com.facilio.sql.GenericInsertRecordBuilder;
+import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Map;
 
 public class WorkOrderRequestAPI {
 	

@@ -1,12 +1,12 @@
 package com.facilio.wms.message;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.PublishData;
 import com.facilio.wms.util.WmsApi;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class WmsPublishResponse extends Message {
 

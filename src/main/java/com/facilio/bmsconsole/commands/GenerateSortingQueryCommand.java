@@ -1,13 +1,12 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.List;
-
+import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.constants.FacilioConstants;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
-import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.constants.FacilioConstants;
+import java.util.List;
 
 public class GenerateSortingQueryCommand implements Command {
 

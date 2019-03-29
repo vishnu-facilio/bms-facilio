@@ -1,18 +1,17 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.List;
-import java.util.Map;
-
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.bmsconsole.context.ControllerContext;
+import com.facilio.bmsconsole.context.ReadingContext;
+import com.facilio.constants.FacilioConstants;
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
-import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.bmsconsole.context.ControllerContext;
-import com.facilio.bmsconsole.context.ReadingContext;
-import com.facilio.constants.FacilioConstants;
+import java.util.List;
+import java.util.Map;
 
 public class AddOrUpdateReadingsCommand implements Command {
 

@@ -1,12 +1,11 @@
 package com.facilio.bmsconsole.commands;
 
+import com.facilio.bmsconsole.util.SpaceAPI;
+import com.facilio.constants.FacilioConstants;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
-
-import com.facilio.bmsconsole.util.SpaceAPI;
-import com.facilio.constants.FacilioConstants;
 
 public class GetBuildingReportCards implements Command {
 

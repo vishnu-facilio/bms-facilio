@@ -1,10 +1,9 @@
 package com.facilio.events.context;
 
-import java.util.List;
-
+import com.facilio.bmsconsole.criteria.Criteria;
 import org.json.simple.JSONObject;
 
-import com.facilio.bmsconsole.criteria.Criteria;
+import java.util.List;
 
 public class EventRule {
 	

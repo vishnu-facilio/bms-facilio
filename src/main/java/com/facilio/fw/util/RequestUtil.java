@@ -1,8 +1,8 @@
 package com.facilio.fw.util;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.apache.struts2.ServletActionContext;
+
+import javax.servlet.http.HttpServletRequest;
 
 public class RequestUtil {
 

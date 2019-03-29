@@ -1,19 +1,13 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
+import com.facilio.bmsconsole.util.ConsumptionAPI;
+import com.facilio.constants.FacilioConstants;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
-import com.facilio.bmsconsole.util.ConsumptionAPI;
-import com.facilio.bmsconsole.util.WorkOrderAPI;
-import com.facilio.constants.FacilioConstants;
+import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class GetTotalConsumptionBySiteCommand implements Command{
 	

@@ -1,20 +1,5 @@
 package com.facilio.sql;
 
-import java.lang.reflect.Constructor;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.criteria.Condition;
@@ -29,6 +14,15 @@ import com.facilio.fs.FileStoreFactory;
 import com.facilio.fw.LRUCache;
 import com.facilio.transaction.FacilioConnectionPool;
 import com.facilio.unitconversion.UnitsUtil;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
+import java.lang.reflect.Constructor;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.*;
 
 /**
  * GenericSelectRecordBuilder class helps with building and execution of selection query in the database.<br>

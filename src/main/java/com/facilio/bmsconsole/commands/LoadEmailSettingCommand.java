@@ -1,18 +1,17 @@
  package com.facilio.bmsconsole.commands;
 
-import java.util.List;
-import java.util.Map;
+ import com.facilio.accounts.util.AccountUtil;
+ import com.facilio.bmsconsole.context.EmailSettingContext;
+ import com.facilio.bmsconsole.modules.FacilioField;
+ import com.facilio.bmsconsole.modules.FieldFactory;
+ import com.facilio.bmsconsole.modules.FieldUtil;
+ import com.facilio.constants.FacilioConstants;
+ import com.facilio.sql.GenericSelectRecordBuilder;
+ import org.apache.commons.chain.Command;
+ import org.apache.commons.chain.Context;
 
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-
-import com.facilio.accounts.util.AccountUtil;
-import com.facilio.bmsconsole.context.EmailSettingContext;
-import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.FieldFactory;
-import com.facilio.bmsconsole.modules.FieldUtil;
-import com.facilio.constants.FacilioConstants;
-import com.facilio.sql.GenericSelectRecordBuilder;
+ import java.util.List;
+ import java.util.Map;
 
 public class LoadEmailSettingCommand implements Command {
 

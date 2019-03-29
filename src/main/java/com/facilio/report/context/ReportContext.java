@@ -1,14 +1,5 @@
 package com.facilio.report.context;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.struts2.json.annotations.JSON;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.FormulaContext.AggregateOperator;
 import com.facilio.bmsconsole.criteria.DateOperators;
@@ -19,6 +10,14 @@ import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.fw.BeanFactory;
 import com.facilio.report.context.ReadingAnalysisContext.AnalyticsType;
 import com.facilio.workflows.context.WorkflowContext;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.struts2.json.annotations.JSON;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class ReportContext {
 

@@ -1,34 +1,17 @@
 package com.facilio.bmsconsole.util;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Logger;
-
-import org.apache.commons.lang3.StringUtils;
-
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.AnalyticsAnomalyConfigContext;
-import com.facilio.bmsconsole.context.AnalyticsAnomalyContext;
-import com.facilio.bmsconsole.context.AnomalyAssetConfigurationContext;
-import com.facilio.bmsconsole.context.AssetTreeContext;
-import com.facilio.bmsconsole.context.EnergyMeterContext;
-import com.facilio.bmsconsole.context.ReadingContext;
-import com.facilio.bmsconsole.context.TemperatureContext;
-import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.FacilioModule;
-import com.facilio.bmsconsole.modules.FieldFactory;
-import com.facilio.bmsconsole.modules.FieldUtil;
-import com.facilio.bmsconsole.modules.ModuleFactory;
-import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
+import com.facilio.bmsconsole.context.*;
+import com.facilio.bmsconsole.modules.*;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericSelectRecordBuilder;
+import org.apache.commons.lang3.StringUtils;
+
+import java.io.File;
+import java.util.*;
+import java.util.logging.Logger;
 
 public class AssetAnomalyUtil {
 	private static final long ORG_LEVEL_METERID=-1;

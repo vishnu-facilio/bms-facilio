@@ -1,21 +1,20 @@
 package com.facilio.bmsconsole.commands;
 
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsole.context.SpaceCategoryContext;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.sql.DBUtil;
+import com.facilio.transaction.FacilioConnectionPool;
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
+import org.apache.log4j.LogManager;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.apache.log4j.LogManager;
-
-import com.facilio.accounts.util.AccountUtil;
-import com.facilio.bmsconsole.context.SpaceCategoryContext;
-import com.facilio.constants.FacilioConstants;
-import com.facilio.sql.DBUtil;
-import com.facilio.transaction.FacilioConnectionPool;
 
 public class GetSpaceCategoriesCommand implements Command {
 

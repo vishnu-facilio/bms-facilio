@@ -1,16 +1,10 @@
 package com.facilio.bmsconsole.context;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
-import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
-import com.facilio.bmsconsole.util.DashboardUtil;
+import java.util.*;
 
 public class DashboardContext extends ModuleBaseWithCustomFields implements Cloneable {
 

@@ -1,20 +1,14 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.Collections;
-import java.util.Map;
-
+import com.facilio.bmsconsole.context.LocationContext;
+import com.facilio.bmsconsole.context.StoreRoomContext;
+import com.facilio.bmsconsole.util.LocationAPI;
+import com.facilio.constants.FacilioConstants;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
-import com.facilio.bmsconsole.context.BaseSpaceContext;
-import com.facilio.bmsconsole.context.InventoryContext;
-import com.facilio.bmsconsole.context.InventoryVendorContext;
-import com.facilio.bmsconsole.context.LocationContext;
-import com.facilio.bmsconsole.context.StoreRoomContext;
-import com.facilio.bmsconsole.util.InventoryApi;
-import com.facilio.bmsconsole.util.LocationAPI;
-import com.facilio.bmsconsole.util.SpaceAPI;
-import com.facilio.constants.FacilioConstants;
+import java.util.Collections;
+import java.util.Map;
 
 public class GetStoreRoomDetailsCommand implements Command{
 

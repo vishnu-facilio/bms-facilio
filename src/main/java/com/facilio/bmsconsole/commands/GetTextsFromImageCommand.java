@@ -1,12 +1,11 @@
 package com.facilio.bmsconsole.commands;
 
-import java.io.File;
-
+import com.facilio.constants.FacilioConstants;
+import com.facilio.image.ImageRecognitionUtil;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
-import com.facilio.constants.FacilioConstants;
-import com.facilio.image.ImageRecognitionUtil;
+import java.io.File;
 
 public class GetTextsFromImageCommand implements Command {
 

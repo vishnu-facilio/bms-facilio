@@ -1,27 +1,17 @@
 package com.facilio.report.context;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.lang.reflect.FieldUtils;
-import org.json.simple.JSONObject;
-
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.FacilioModule;
-import com.facilio.bmsconsole.modules.FieldFactory;
-import com.facilio.bmsconsole.modules.FieldType;
-import com.facilio.bmsconsole.modules.FieldUtil;
-import com.facilio.bmsconsole.modules.LookupField;
-import com.facilio.bmsconsole.modules.ModuleFactory;
-import com.facilio.bmsconsole.modules.NumberField;
+import com.facilio.bmsconsole.modules.*;
 import com.facilio.fw.BeanFactory;
 import com.facilio.report.context.ReportFactory.Alarm;
 import com.facilio.report.context.ReportFactory.ModuleType;
 import com.facilio.report.context.ReportFactory.WorkOrder;
-import com.mysql.fabric.xmlrpc.base.Array;
+import org.json.simple.JSONObject;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class ReportFactoryFields {
 	

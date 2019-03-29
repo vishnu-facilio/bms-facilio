@@ -1,16 +1,15 @@
 package com.facilio.report.customreport;
 
-import java.util.Iterator;
-import java.util.logging.Logger;
-
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-
 import com.facilio.bmsconsole.actions.DashboardAction;
 import com.facilio.bmsconsole.context.ReportContext;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.fw.BeanFactory;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+
+import java.util.Iterator;
+import java.util.logging.Logger;
 
 public class CustomReportUTC3 implements CustomReport {	//Score by Criteria
 

@@ -1,8 +1,5 @@
 package com.facilio.bmsconsole.util;
 
-import java.util.List;
-import java.util.Map;
-
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.ExpressionContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
@@ -13,6 +10,9 @@ import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
+
+import java.util.List;
+import java.util.Map;
 
 public class ExpressionAPI {
 	

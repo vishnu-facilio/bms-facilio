@@ -1,9 +1,9 @@
 package com.facilio.tasker.tasks;
 
-import java.util.logging.Logger;
-
 import com.facilio.tasker.job.FacilioJob;
 import com.facilio.tasker.job.JobContext;
+
+import java.util.logging.Logger;
 
 public class IotConnectorJob extends FacilioJob{
 

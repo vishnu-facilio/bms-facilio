@@ -1,18 +1,13 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
+import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.FacilioModule;
+import com.facilio.constants.FacilioConstants;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
-import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.FacilioModule;
-import com.facilio.bmsconsole.util.ReadingsAPI;
-import com.facilio.bmsconsole.util.WorkOrderAPI;
-import com.facilio.constants.FacilioConstants;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class GetSiteSpecificReadingsCommand implements Command{
 

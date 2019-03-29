@@ -1,24 +1,12 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
-import javax.mail.Store;
-
-import org.apache.commons.chain.Chain;
+import com.facilio.bmsconsole.actions.ImportProcessContext;
+import com.facilio.bmsconsole.context.ReadingContext;
+import com.facilio.bmsconsole.util.ImportAPI;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
-import org.apache.commons.lang.reflect.FieldUtils;
-import org.json.simple.JSONObject;
 
-import com.facilio.bmsconsole.actions.ImportProcessContext;
-import com.facilio.bmsconsole.context.PurchasedItemContext;
-import com.facilio.bmsconsole.context.PurchasedToolContext;
-import com.facilio.bmsconsole.context.ReadingContext;
-import com.facilio.bmsconsole.modules.FieldUtil;
-import com.facilio.bmsconsole.util.ImportAPI;
-import com.facilio.constants.FacilioConstants;
+import java.util.List;
 
 public class SwitchToAddResourceChain implements Command {
 

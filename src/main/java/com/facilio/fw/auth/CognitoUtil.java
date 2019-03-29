@@ -1,12 +1,5 @@
 package com.facilio.fw.auth;
 
-import java.io.File;
-import java.io.UnsupportedEncodingException;
-import java.util.Iterator;
-
-import org.apache.log4j.LogManager;
-import org.json.simple.JSONObject;
-
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTCreator;
 import com.auth0.jwt.JWTVerifier;
@@ -25,6 +18,12 @@ import com.nimbusds.jose.proc.JWSVerificationKeySelector;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.proc.ConfigurableJWTProcessor;
 import com.nimbusds.jwt.proc.DefaultJWTProcessor;
+import org.apache.log4j.LogManager;
+import org.json.simple.JSONObject;
+
+import java.io.File;
+import java.io.UnsupportedEncodingException;
+import java.util.Iterator;
 
 public class CognitoUtil {
 

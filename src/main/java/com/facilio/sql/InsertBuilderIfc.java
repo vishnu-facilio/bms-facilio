@@ -1,9 +1,9 @@
 package com.facilio.sql;
 
+import com.facilio.bmsconsole.modules.FacilioField;
+
 import java.sql.Connection;
 import java.util.List;
-
-import com.facilio.bmsconsole.modules.FacilioField;
 
 public interface InsertBuilderIfc<E> {
 	

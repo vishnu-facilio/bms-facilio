@@ -1,13 +1,12 @@
 package com.facilio.transaction;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
+import javax.transaction.SystemException;
 import java.util.Map;
 import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
-
-import javax.transaction.SystemException;
-
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
 
 public class TransactionMonitor extends TimerTask {
 

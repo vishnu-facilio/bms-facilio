@@ -1,16 +1,15 @@
 package com.facilio.bmsconsole.criteria;
 
+import com.facilio.bmsconsole.util.DateTimeUtil;
+import org.apache.commons.collections.Predicate;
+import org.apache.commons.collections.PredicateUtils;
+
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.apache.commons.collections.Predicate;
-import org.apache.commons.collections.PredicateUtils;
-
-import com.facilio.bmsconsole.util.DateTimeUtil;
 
 public enum DateOperators implements Operator<String> {
 	

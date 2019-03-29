@@ -1,19 +1,16 @@
 package com.facilio.chain;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.transaction.Transaction;
-import javax.transaction.TransactionManager;
-
+import com.facilio.transaction.FacilioTransactionManager;
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Context;
 import org.apache.commons.chain.impl.ChainBase;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
-import com.facilio.aws.util.AwsUtil;
-import com.facilio.transaction.FacilioTransactionManager;
+import javax.transaction.Transaction;
+import javax.transaction.TransactionManager;
+import java.util.ArrayList;
+import java.util.List;
 
 public class FacilioChain extends ChainBase {
 	private static final ThreadLocal<FacilioChain> rootChain = new ThreadLocal<>();

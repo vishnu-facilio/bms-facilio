@@ -1,10 +1,9 @@
 package com.facilio.tasker.config;
 
-import java.util.Set;
-
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.util.Set;
 
 @XmlRootElement(name="executors")
 public class ExecutorsConf {

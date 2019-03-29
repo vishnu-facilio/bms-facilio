@@ -1,12 +1,12 @@
 package com.facilio.bmsconsole.context;
 
+import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
+import com.facilio.bmsconsole.util.DateTimeUtil;
+
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoField;
 import java.util.HashMap;
 import java.util.Map;
-
-import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
-import com.facilio.bmsconsole.util.DateTimeUtil;
 
 public class ReadingContext extends ModuleBaseWithCustomFields {
 

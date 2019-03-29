@@ -1,19 +1,18 @@
 
 package com.facilio.bmsconsole.criteria;
 
+import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.util.FacilioExpressionWrapper;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.apache.commons.collections.Predicate;
+import org.apache.commons.collections4.MapUtils;
+
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-
-import org.apache.commons.collections.Predicate;
-import org.apache.commons.collections4.MapUtils;
-
-import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.util.FacilioExpressionWrapper;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class Condition implements Serializable {
 	

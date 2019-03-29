@@ -1,11 +1,11 @@
 package com.facilio.bmsconsole.util;
 
+import freemarker.template.Configuration;
+import freemarker.template.Template;
+
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.Map;
-
-import freemarker.template.Configuration;
-import freemarker.template.Template;
 
 public class FreeMarkerAPI {
 	

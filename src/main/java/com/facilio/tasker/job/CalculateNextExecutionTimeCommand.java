@@ -1,9 +1,9 @@
 package com.facilio.tasker.job;
 
-import java.time.Instant;
-
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+
+import java.time.Instant;
 
 public class CalculateNextExecutionTimeCommand implements Command {
 

@@ -1,10 +1,10 @@
 package com.facilio.bmsconsole.context;
 
+import com.facilio.accounts.dto.User;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-
-import com.facilio.accounts.dto.User;
 
 public class SiteContext extends BaseSpaceContext {
 

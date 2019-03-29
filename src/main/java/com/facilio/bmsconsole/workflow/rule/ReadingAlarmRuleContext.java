@@ -1,10 +1,10 @@
 package com.facilio.bmsconsole.workflow.rule;
 
-import java.util.Map;
-
 import com.facilio.bmsconsole.context.MLAlarmContext;
 import com.facilio.bmsconsole.context.ReadingAlarmContext;
 import com.facilio.chain.FacilioContext;
+
+import java.util.Map;
 
 public class ReadingAlarmRuleContext extends WorkflowRuleContext {
 	

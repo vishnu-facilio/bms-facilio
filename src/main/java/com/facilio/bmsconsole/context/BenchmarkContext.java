@@ -1,11 +1,11 @@
 package com.facilio.bmsconsole.context;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.facilio.bmsconsole.util.FacilioFrequency;
 import com.facilio.unitconversion.Metric;
 import com.facilio.unitconversion.Unit;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class BenchmarkContext {
 	
