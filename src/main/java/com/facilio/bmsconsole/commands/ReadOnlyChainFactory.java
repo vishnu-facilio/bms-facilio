@@ -709,6 +709,9 @@ public class ReadOnlyChainFactory {
 		Chain c = getDefaultChain();
 		c.addCommand(SetTableNamesCommand.getForReceivables());
 		c.addCommand(new LoadAllFieldsCommand());
+		c.addCommand(new LoadViewCommand());
+		c.addCommand(new GenerateCriteriaFromFilterCommand());
+		c.addCommand(new GenerateSearchConditionCommand());
 		c.addCommand(new GetReceivablesListCommand());
 		return c;
 	}
