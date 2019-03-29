@@ -348,7 +348,6 @@ public class ExpressionContext implements WorkflowExpression {
 						if(isLastValueWithTimeRange) {
 							
 							selectBuilder.limit(1);
-							selectBuilder.andCustomWhere("TTIME <= ?", DateTimeUtil.getCurrenTime());
 							selectBuilder.orderBy("TTIME desc");
 							
 						}
@@ -430,6 +429,9 @@ public class ExpressionContext implements WorkflowExpression {
 				selectBuilder.groupBy(groupByField.getColumnName());
 			}
 			
+			if(module != null && module.getName().equals("weather")) {
+				selectBuilder.andCustomWhere("TTIME <= ?", DateTimeUtil.getCurrenTime());
+			}
 			props = selectBuilder.get();
 			
 		}
