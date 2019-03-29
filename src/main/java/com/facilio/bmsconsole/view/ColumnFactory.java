@@ -325,11 +325,11 @@ public class ColumnFactory {
 		
 //		columns.add(new ViewField("localId", "Purchase Request Id"));
 //		columns.add(new ViewField("name", "Purchase Request Name"));
-//		columns.add(new ViewField("description", "Description"));
+		columns.add(new ViewField("description", "Description"));
+//		columns.add(new ViewField("vendor", "Vendor"));
+		columns.add(new ViewField("requestedTime", "Requested Date"));
+		columns.add(new ViewField("requiredTime", "Required Date"));
 		columns.add(new ViewField("status", "Status"));
-		columns.add(new ViewField("vendor", "Vendor"));
-		columns.add(new ViewField("requestedTime", "Requested Time"));
-		columns.add(new ViewField("requiredTime", "Required Time"));
 		columns.add(new ViewField("totalCost", "Total Cost"));
 				
 		return columns;
@@ -341,10 +341,10 @@ public class ColumnFactory {
 //		columns.add(new ViewField("localId", "Purchase Order Id"));
 //		columns.add(new ViewField("name", "Purchase Order Name"));
 //		columns.add(new ViewField("description", "Description"));
-		columns.add(new ViewField("status", "Status"));
 		columns.add(new ViewField("vendor", "Vendor"));
-		columns.add(new ViewField("orderedTime", "Ordered Time"));
-		columns.add(new ViewField("requiredTime", "Required Time"));
+		columns.add(new ViewField("orderedTime", "Ordered Date"));
+		columns.add(new ViewField("requiredTime", "Required Date"));
+		columns.add(new ViewField("status", "Status"));
 		columns.add(new ViewField("totalCost", "Total Cost"));
 		return columns;
 	}
