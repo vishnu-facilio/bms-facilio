@@ -2219,5 +2219,12 @@ public class TransactionChainFactory {
 			c.addCommand(new BulkItemAdditionCommand());
 			return c;
 		}
+		
+		public static  Chain getImportToolChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new ImportToolCommand());
+			c.addCommand(new BulkToolAdditionCommand());
+			return c;
+		}
 }
 
