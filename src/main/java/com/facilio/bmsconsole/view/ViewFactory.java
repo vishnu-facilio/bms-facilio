@@ -879,8 +879,15 @@ public class ViewFactory {
 		createdTime.setColumnName("CREATED_TIME");
 		createdTime.setModule(ModuleFactory.getWorkOrdersModule());
 
+		FacilioField pm = new FacilioField();
+		createdTime.setName("pm");
+		createdTime.setDataType(FieldType.NUMBER);
+		createdTime.setColumnName("PM_ID");
+		createdTime.setModule(ModuleFactory.getWorkOrdersModule());
+
 		Criteria criteria = new Criteria();
 		criteria.addAndCondition(getPreOpenStatusCondition());
+		criteria.addAndCondition(CriteriaAPI.getCondition(pm, CommonOperators.IS_NOT_EMPTY));
 		criteria.addAndCondition(CriteriaAPI.getCondition(createdTime, DateOperators.NEXT_WEEK));
 
 		FacilioView preOpenTicketsView = new FacilioView();
@@ -901,8 +908,15 @@ public class ViewFactory {
 		createdTime.setColumnName("CREATED_TIME");
 		createdTime.setModule(ModuleFactory.getWorkOrdersModule());
 
+		FacilioField pm = new FacilioField();
+		createdTime.setName("pm");
+		createdTime.setDataType(FieldType.NUMBER);
+		createdTime.setColumnName("PM_ID");
+		createdTime.setModule(ModuleFactory.getWorkOrdersModule());
+
 		Criteria criteria = new Criteria();
 		criteria.addAndCondition(getPreOpenStatusCondition());
+		criteria.addAndCondition(CriteriaAPI.getCondition(pm, CommonOperators.IS_NOT_EMPTY));
 		criteria.addAndCondition(CriteriaAPI.getCondition(createdTime, DateOperators.CURRENT_WEEK));
 
 		FacilioView preOpenTicketsView = new FacilioView();
