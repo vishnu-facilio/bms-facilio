@@ -784,8 +784,8 @@ public class FormFactory {
 		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 2, 1));
 		fields.add(new FormField("vendor", FieldDisplayType.LOOKUP_SIMPLE, "Vendor", Required.OPTIONAL, "vendors", 3, 2).setAllowCreate(true).setCreateFormName("vendors_form"));
 		fields.add(new FormField("storeRoom", FieldDisplayType.LOOKUP_SIMPLE, "Storeroom", Required.OPTIONAL, "storeRoom", 3, 3));
-		fields.add(new FormField("requestedTime", FieldDisplayType.DATETIME, "Requested Date", Required.OPTIONAL, 4, 2));
-		fields.add(new FormField("requiredTime", FieldDisplayType.DATETIME, "Required Date", Required.OPTIONAL, 4, 3));
+		fields.add(new FormField("requestedTime", FieldDisplayType.DATE, "Requested Date", Required.OPTIONAL, 4, 2));
+		fields.add(new FormField("requiredTime", FieldDisplayType.DATE, "Required Date", Required.OPTIONAL, 4, 3));
 		fields.add(new FormField("billToAddress", FieldDisplayType.ADDRESS, "Billing Address", Required.OPTIONAL, 5, 2));
 		fields.add(new FormField("shipToAddress", FieldDisplayType.ADDRESS, "Shipping Address", Required.OPTIONAL, 5, 3));
 		fields.add(new FormField("lineItems", FieldDisplayType.LINEITEMS, "LINE ITEMS", Required.REQUIRED, 6, 1));
@@ -800,8 +800,8 @@ public class FormFactory {
 		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 2, 1));
 		fields.add(new FormField("vendor", FieldDisplayType.LOOKUP_SIMPLE, "Vendor", Required.REQUIRED, "vendors", 3, 2).setAllowCreate(true).setCreateFormName("vendors_form"));
 		fields.add(new FormField("storeRoom", FieldDisplayType.LOOKUP_SIMPLE, "Storeroom", Required.REQUIRED, "storeRoom", 3, 3));
-		fields.add(new FormField("orderedTime", FieldDisplayType.DATETIME, "Ordered Date", Required.OPTIONAL, 4, 2));
-		fields.add(new FormField("requiredTime", FieldDisplayType.DATETIME, "Required Date", Required.OPTIONAL, 4, 3));
+		fields.add(new FormField("orderedTime", FieldDisplayType.DATE, "Ordered Date", Required.OPTIONAL, 4, 2));
+		fields.add(new FormField("requiredTime", FieldDisplayType.DATE, "Required Date", Required.OPTIONAL, 4, 3));
 		fields.add(new FormField("lineItems", FieldDisplayType.LINEITEMS, "LINE ITEMS", Required.REQUIRED, 6, 1));
 		fields.add(new FormField("billToAddress", FieldDisplayType.ADDRESS, "Billing Address", Required.OPTIONAL, 5, 2));
 		fields.add(new FormField("shipToAddress", FieldDisplayType.ADDRESS, "Shipping Address", Required.OPTIONAL, 5, 3));

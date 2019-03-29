@@ -52,10 +52,14 @@ public class GetReceivablesListCommand implements Command {
 				fields = modBean.getAllFields(moduleName);
 			}
 			
+			Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
+			
 			SelectRecordsBuilder<ReceivableContext> builder = new SelectRecordsBuilder<ReceivableContext>()
 					.module(module)
 					.select(fields)
-					.beanClass(ReceivableContext.class);
+					.beanClass(ReceivableContext.class)
+					.fetchLookup(new LookupFieldMeta((LookupField)fieldsAsMap.get("poId")))
+					;
 			
 
 			if (getCount) {
