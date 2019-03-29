@@ -880,10 +880,10 @@ public class ViewFactory {
 		createdTime.setModule(ModuleFactory.getWorkOrdersModule());
 
 		FacilioField pm = new FacilioField();
-		createdTime.setName("pm");
-		createdTime.setDataType(FieldType.NUMBER);
-		createdTime.setColumnName("PM_ID");
-		createdTime.setModule(ModuleFactory.getWorkOrdersModule());
+		pm.setName("pm");
+		pm.setDataType(FieldType.NUMBER);
+		pm.setColumnName("PM_ID");
+		pm.setModule(ModuleFactory.getWorkOrdersModule());
 
 		Criteria criteria = new Criteria();
 		criteria.addAndCondition(getPreOpenStatusCondition());
@@ -909,10 +909,10 @@ public class ViewFactory {
 		createdTime.setModule(ModuleFactory.getWorkOrdersModule());
 
 		FacilioField pm = new FacilioField();
-		createdTime.setName("pm");
-		createdTime.setDataType(FieldType.NUMBER);
-		createdTime.setColumnName("PM_ID");
-		createdTime.setModule(ModuleFactory.getWorkOrdersModule());
+		pm.setName("pm");
+		pm.setDataType(FieldType.NUMBER);
+		pm.setColumnName("PM_ID");
+		pm.setModule(ModuleFactory.getWorkOrdersModule());
 
 		Criteria criteria = new Criteria();
 		criteria.addAndCondition(getPreOpenStatusCondition());
