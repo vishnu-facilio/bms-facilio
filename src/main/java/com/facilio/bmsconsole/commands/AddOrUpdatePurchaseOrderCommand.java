@@ -74,7 +74,7 @@ public class AddOrUpdatePurchaseOrderCommand implements Command {
 				addRecord(Collections.singletonList(purchaseOrderContext), module, fields);
 				FacilioModule receivableModule = modBean.getModule(FacilioConstants.ContextNames.RECEIVABLE);
 				ReceivableContext receivableContext = new ReceivableContext();
-				receivableContext.setPoId(purchaseOrderContext.getId());
+				receivableContext.setPoId(purchaseOrderContext);
 				receivableContext.setStatus(Status.YET_TO_RECEIVE);
 				addRecord(Collections.singletonList(receivableContext), receivableModule, modBean.getAllFields(receivableModule.getName()));
 			}

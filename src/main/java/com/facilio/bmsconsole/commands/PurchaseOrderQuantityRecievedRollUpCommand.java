@@ -57,8 +57,8 @@ public class PurchaseOrderQuantityRecievedRollUpCommand implements Command {
 			List<ReceivableContext> receivableContexts = builder.get();
 			for (ReceivableContext receivables : receivableContexts) {
 				double quantity = getTotalReceivedQuantity(receivables.getId(), receiptsmodule, receiptsfieldsMap);
-				poIdVsQty.put(receivables.getPoId(), quantity);
-				poIds.add(receivables.getPoId());
+				poIdVsQty.put(receivables.getPoId().getId(), quantity);
+				poIds.add(receivables.getPoId().getId());
 			}
 			for (Map.Entry<Long, Double> entry : poIdVsQty.entrySet()) {
 				SelectRecordsBuilder<PurchaseOrderContext> poBuilder = new SelectRecordsBuilder<PurchaseOrderContext>()
@@ -68,7 +68,7 @@ public class PurchaseOrderQuantityRecievedRollUpCommand implements Command {
 				ReceivableContext receivable = new ReceivableContext();
 				if (purchaseOrderlist != null && !purchaseOrderlist.isEmpty()) {
 					for (PurchaseOrderContext po : purchaseOrderlist) {
-						receivable.setPoId(po.getId());
+						receivable.setPoId(po);
 						if (entry.getValue() < po.getTotalQuantity()) {
 							po.setStatus(Status.PARTIALLY_RECEIVED);
 							receivable.setStatus(com.facilio.bmsconsole.context.ReceivableContext.Status.PARTIALLY_RECEIVED);
