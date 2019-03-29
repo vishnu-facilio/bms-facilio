@@ -90,11 +90,15 @@ public class ReportUserFilterContext {
 		if (CollectionUtils.isNotEmpty(getValues())) {
 			return getValues();
 		}
-		return getDefaultValues();
+		else if (CollectionUtils.isNotEmpty(getDefaultValues())) {
+			return getDefaultValues();
+		} else if (chooseValue != null && CollectionUtils.isNotEmpty(chooseValue.getValues())) {
+			return chooseValue.getValues();
+		}
+		return null;
 	}
 	
 	@JsonIgnore
-	@JSON(serialize=false)
 	public Criteria getCriteria() {
 		List<String> data = getData();
 		if (CollectionUtils.isEmpty(data)) {
