@@ -139,12 +139,14 @@ public class ReportFactoryFields {
 		FacilioModule resourceModule = ModuleFactory.getResourceModule();
 		
 		for (FacilioField field : fields) {
-			if (field instanceof NumberField) {
-				metricFields.add(field);
-			} else if (field instanceof LookupField) {
-				addFieldInList(dimensionFieldMap, module, field);
-			} else if (field.getDataTypeEnum() == FieldType.DATE || field.getDataTypeEnum() == FieldType.DATE_TIME) {
-				addFieldInList(dimensionFieldMap, "time", field);
+			if(field != null) {
+				if (field instanceof NumberField) {
+					metricFields.add(field);
+				} else if (field instanceof LookupField) {
+					addFieldInList(dimensionFieldMap, module, field);
+				} else if (field.getDataTypeEnum() == FieldType.DATE || field.getDataTypeEnum() == FieldType.DATE_TIME) {
+					addFieldInList(dimensionFieldMap, "time", field);
+				}
 			}
 		}
 		FacilioField resourceField = getModuleResourceField(module);
