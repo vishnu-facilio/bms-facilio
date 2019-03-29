@@ -607,11 +607,22 @@ public class ExportUtil {
 			}
 			for (int i = 0; i < records.size(); i++) {
 				
-
-				
-				Map<String, Object> props = new HashMap<>();
-				props.put("comment", StringUtils.join(map.get(records.get(i).getId()), "\n"));
-				records.get(i).addData(props);
+				if (fileFormat == FileFormat.CSV && map.containsKey(records.get(i).getId())) {
+					Map<String, Object> props = new HashMap<>();
+					if (map.get(records.get(i).getId()).size() > 1) {
+						props.put("comment", "\"" + StringUtils.join(map.get(records.get(i).getId()), "\n") + "\"");
+					}
+					else {
+						props.put("comment", StringUtils.join(map.get(records.get(i).getId()), "\n"));
+					}
+					
+					records.get(i).addData(props);	
+				}
+				else {
+					Map<String, Object> props = new HashMap<>();
+					props.put("comment", StringUtils.join(map.get(records.get(i).getId()), "\n"));
+					records.get(i).addData(props);	
+				}
 			}
 			
 		}
