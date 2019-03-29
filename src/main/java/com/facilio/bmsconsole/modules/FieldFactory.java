@@ -1206,6 +1206,8 @@ public class FieldFactory {
 		fields.add(getField("scheduleType", "SCHEDULE_TYPE", module, FieldType.NUMBER));
 		fields.add(getField("interval", "TIME_INTERVAL", module, FieldType.NUMBER));
 		fields.add(getField("versionNumber", "VERSION_NO", module, FieldType.NUMBER));
+		fields.add(getField("createdTime", "CREATED_TIME", module, FieldType.NUMBER));
+		fields.add(getField("modifiedTime", "MODIFIED_TIME", module, FieldType.NUMBER));
 		fields.add(getField("time", "JOB_TIME", module, FieldType.STRING));
 
 		return fields;

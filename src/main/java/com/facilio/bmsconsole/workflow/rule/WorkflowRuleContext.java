@@ -40,7 +40,21 @@ public class WorkflowRuleContext implements Serializable {
 	public void setOrgId(long orgId) {
 		this.orgId = orgId;
 	}
+	private long createdTime = -1l;
+	private long modifiedTime = -1l;
 	
+	public long getModifiedTime() {
+		return modifiedTime;
+	}
+	public long getCreatedTime() {
+		return createdTime;
+	}
+	public void setCreatedTime(long createdTime) {
+		this.createdTime = createdTime;
+	}
+	public void setModifiedTime(long modifiedTime) {
+		this.modifiedTime = modifiedTime;
+	}
 	private boolean terminateExecution = false;
 	
 	public boolean isTerminateExecution() {
