@@ -429,7 +429,7 @@ public class ExpressionContext implements WorkflowExpression {
 				selectBuilder.groupBy(groupByField.getColumnName());
 			}
 			
-			if(module != null && module.getName().equals("weather")) {
+			if(module != null && module.getName().equals("weather")) {						// temp handling must be removed (predicted weather data will be stored in same table with same module)
 				selectBuilder.andCustomWhere("TTIME <= ?", DateTimeUtil.getCurrenTime());
 			}
 			props = selectBuilder.get();
