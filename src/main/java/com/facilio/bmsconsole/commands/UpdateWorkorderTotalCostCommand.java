@@ -45,21 +45,10 @@ public class UpdateWorkorderTotalCostCommand implements Command {
 				totalcost += wo.getCost();
 			}
 
-			FacilioModule workorderModule = modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER);
-			List<FacilioField> workorderFields = modBean.getAllFields(FacilioConstants.ContextNames.WORK_ORDER);
-			Map<String, FacilioField> workorderFieldMap = FieldFactory.getAsMap(workorderFields);
 
-			SelectRecordsBuilder<WorkOrderContext> workorderSetlectBuilder = new SelectRecordsBuilder<WorkOrderContext>()
-					.select(workorderFields).table(workorderModule.getTableName()).moduleName(workorderModule.getName())
-					.beanClass(WorkOrderContext.class)
-					.andCondition(CriteriaAPI.getIdCondition(parentId, workorderModule));
-
-			List<WorkOrderContext> workorderList = workorderSetlectBuilder.get();
 			WorkOrderContext workorder = new WorkOrderContext();
-			if (workorderList != null && !workorderList.isEmpty()) {
-				workorder = workorderList.get(0);
-				workorder.setTotalCost(totalcost);
-			}
+			workorder.setId(parentId);
+			workorder.setTotalCost(totalcost);
 
 			context.put(FacilioConstants.ContextNames.WORK_ORDER, workorder);
 			context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, parentIds);
