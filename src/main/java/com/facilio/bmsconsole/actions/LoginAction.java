@@ -49,7 +49,6 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
 import com.auth0.jwt.interfaces.DecodedJWT;
-import com.facilio.accounts.dto.Account;
 import com.facilio.accounts.dto.Group;
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.Role;
@@ -62,6 +61,7 @@ import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.TicketStatusContext;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.forms.FacilioForm.FormType;
+import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.reports.ReportsUtil;
 import com.facilio.bmsconsole.util.AlarmAPI;
 import com.facilio.bmsconsole.util.AssetsAPI;
@@ -310,6 +310,12 @@ public class LoginAction extends FacilioAction {
 		account = new HashMap<>();
 		account.put("org", AccountUtil.getCurrentOrg());
 		account.put("user", AccountUtil.getCurrentUser());
+		// Temp....will be removed
+		if (AccountUtil.getCurrentAccount().isFromIos() && AccountUtil.getCurrentOrg().getOrgId() == 134l) {
+			User user = FieldUtil.cloneBean(AccountUtil.getCurrentUser(), User.class);
+			user.setEmail(user.getEmail().toLowerCase());
+			account.put("user", user);
+		}
 		//log.info(AccountUtil.getCurrentUser().getEmail()+"))(()()()(((((())))))");
 		//log.info(AccountUtil.getCurrentAccount().getOrg().getDomain()+"$$$$$$$$$$$$$$$$$$$$$");
 		List<User> users = AccountUtil.getOrgBean().getAllOrgUsers(AccountUtil.getCurrentOrg().getOrgId());
