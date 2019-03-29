@@ -18,6 +18,7 @@ import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.InsertRecordBuilder;
 import com.facilio.bmsconsole.util.ItemsApi;
+import com.facilio.bmsconsole.util.StoreroomApi;
 import com.facilio.bmsconsole.util.ToolsApi;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
@@ -52,6 +53,7 @@ public class ImportToolCommand implements Command {
 					toolType.setId(insertToolType(modBean, toolType));
 				}
 				tool.setToolType(toolType);
+				tool.setStoreRoom(StoreroomApi.getStoreRoom(storeRoomId));
 				toolsList.add(tool);
 			}
 			context.put(FacilioConstants.ContextNames.TOOLS, toolsList);

@@ -16,6 +16,7 @@ import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.InsertRecordBuilder;
 import com.facilio.bmsconsole.util.ItemsApi;
+import com.facilio.bmsconsole.util.StoreroomApi;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 
@@ -46,6 +47,7 @@ public class ImportItemCommand implements Command {
 					itemType.setId(insertItemType(modBean, itemType));
 				}
 				item.setItemType(itemType);
+				item.setStoreRoom(StoreroomApi.getStoreRoom(storeRoomId));
 				item.setPurchasedItems(Collections.singletonList(purchasedItem));
 				itemsList.add(item);
 			}
