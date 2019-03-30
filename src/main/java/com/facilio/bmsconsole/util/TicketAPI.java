@@ -1224,7 +1224,7 @@ public static Map<Long, TicketContext> getTickets(String ids) throws Exception {
 		
 	}
 	public static void associateTenant (TicketContext ticket) throws Exception {
-		if (AccountUtil.isFeatureEnabled(AccountUtil.FEATURE_TENANTS)) {
+		if (AccountUtil.isFeatureEnabled(AccountUtil.FEATURE_TENANTS) && ticket.getResource() != null && ticket.getResource().getId() != -1) {
 			ResourceContext resource = ResourceAPI.getResource(ticket.getResource().getId());
 			if(resource.getResourceTypeEnum() ==  ResourceType.ASSET) {
 				ticket.setTenant(TenantsAPI.getTenantForAsset(ticket.getResource().getId()));
