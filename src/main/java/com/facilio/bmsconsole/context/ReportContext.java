@@ -1,17 +1,12 @@
 package com.facilio.bmsconsole.context;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.json.simple.JSONObject;
-
 import com.facilio.bmsconsole.context.FormulaContext.AggregateOperator;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.bmsconsole.util.DashboardUtil;
+import org.json.simple.JSONObject;
+
+import java.util.*;
 
 
 public class ReportContext extends ModuleBaseWithCustomFields {

@@ -1,19 +1,7 @@
 package com.facilio.bmsconsole.actions;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.chain.Chain;
-import org.json.simple.JSONObject;
-
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
-import com.facilio.bmsconsole.context.ActionForm;
-import com.facilio.bmsconsole.context.BaseSpaceContext;
-import com.facilio.bmsconsole.context.FormLayout;
-import com.facilio.bmsconsole.context.RecordSummaryLayout;
-import com.facilio.bmsconsole.context.ViewLayout;
-import com.facilio.bmsconsole.context.ZoneContext;
+import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.tenant.TenantContext;
 import com.facilio.bmsconsole.util.SpaceAPI;
@@ -22,6 +10,12 @@ import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionSupport;
+import org.apache.commons.chain.Chain;
+import org.json.simple.JSONObject;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 @SuppressWarnings("serial")
 public class ZoneAction extends ActionSupport {

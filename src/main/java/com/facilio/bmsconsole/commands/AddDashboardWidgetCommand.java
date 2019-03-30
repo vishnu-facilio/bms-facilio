@@ -1,14 +1,13 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.List;
-
+import com.facilio.bmsconsole.context.DashboardContext;
+import com.facilio.bmsconsole.context.DashboardWidgetContext;
+import com.facilio.constants.FacilioConstants;
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
-import com.facilio.bmsconsole.context.DashboardContext;
-import com.facilio.bmsconsole.context.DashboardWidgetContext;
-import com.facilio.constants.FacilioConstants;
+import java.util.List;
 
 public class AddDashboardWidgetCommand implements Command {
 

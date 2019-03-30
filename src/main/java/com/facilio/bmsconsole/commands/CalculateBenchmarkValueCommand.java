@@ -1,24 +1,19 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.bmsconsole.context.BaseSpaceContext;
-import com.facilio.bmsconsole.context.BenchmarkContext;
-import com.facilio.bmsconsole.context.BenchmarkUnit;
-import com.facilio.bmsconsole.context.BuildingContext;
+import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.context.FormulaContext.DateAggregateOperator;
-import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.bmsconsole.util.BenchmarkAPI;
 import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.unitconversion.Metric;
 import com.facilio.unitconversion.Unit;
 import com.facilio.unitconversion.UnitsUtil;
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class CalculateBenchmarkValueCommand implements Command {
 

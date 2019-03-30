@@ -1,12 +1,11 @@
 package com.facilio.license;
 
+import com.facilio.aws.util.AwsUtil;
+import org.json.simple.JSONObject;
+
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-
-import org.json.simple.JSONObject;
-
-import com.facilio.aws.util.AwsUtil;
 
 public class FreshsalesUtil {
 

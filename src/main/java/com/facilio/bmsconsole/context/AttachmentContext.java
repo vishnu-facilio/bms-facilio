@@ -1,12 +1,11 @@
 package com.facilio.bmsconsole.context;
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.struts2.ServletActionContext;
-
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.fs.FileStore;
 import com.facilio.fs.FileStoreFactory;
+import org.apache.commons.lang.StringUtils;
+import org.apache.struts2.ServletActionContext;
 
 public class AttachmentContext extends ModuleBaseWithCustomFields {
 	

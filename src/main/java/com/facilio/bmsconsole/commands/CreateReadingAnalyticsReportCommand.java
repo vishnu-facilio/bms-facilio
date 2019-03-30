@@ -1,29 +1,11 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.StringJoiner;
-
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.apache.commons.lang3.StringUtils;
-import org.json.simple.JSONArray;
-
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.FormulaContext.AggregateOperator;
 import com.facilio.bmsconsole.context.FormulaContext.CommonAggregateOperator;
 import com.facilio.bmsconsole.context.FormulaContext.SpaceAggregateOperator;
 import com.facilio.bmsconsole.context.ResourceContext;
-import com.facilio.bmsconsole.criteria.BuildingOperator;
-import com.facilio.bmsconsole.criteria.Criteria;
-import com.facilio.bmsconsole.criteria.CriteriaAPI;
-import com.facilio.bmsconsole.criteria.DateOperators;
-import com.facilio.bmsconsole.criteria.NumberOperators;
-import com.facilio.bmsconsole.criteria.PickListOperators;
+import com.facilio.bmsconsole.criteria.*;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule.ModuleType;
 import com.facilio.bmsconsole.modules.FieldFactory;
@@ -33,18 +15,19 @@ import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
-import com.facilio.report.context.ReadingAnalysisContext;
+import com.facilio.report.context.*;
 import com.facilio.report.context.ReadingAnalysisContext.ReportFilterMode;
 import com.facilio.report.context.ReadingAnalysisContext.ReportMode;
-import com.facilio.report.context.ReportContext;
 import com.facilio.report.context.ReportContext.ReportType;
-import com.facilio.report.context.ReportDataPointContext;
 import com.facilio.report.context.ReportDataPointContext.DataPointType;
 import com.facilio.report.context.ReportDataPointContext.OrderByFunction;
-import com.facilio.report.context.ReportFieldContext;
-import com.facilio.report.context.ReportFilterContext;
-import com.facilio.report.context.ReportYAxisContext;
 import com.facilio.report.util.ReportUtil;
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
+import org.apache.commons.lang3.StringUtils;
+import org.json.simple.JSONArray;
+
+import java.util.*;
 
 public class CreateReadingAnalyticsReportCommand implements Command {
 	

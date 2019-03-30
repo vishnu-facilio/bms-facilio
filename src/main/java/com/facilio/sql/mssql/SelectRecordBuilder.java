@@ -1,14 +1,10 @@
 package com.facilio.sql.mssql;
 
-import java.util.Arrays;
-import java.util.List;
-
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.sql.DBSelectRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 public class SelectRecordBuilder extends DBSelectRecordBuilder {
 	private static final Logger LOGGER = LogManager.getLogger(SelectRecordBuilder.class.getName());

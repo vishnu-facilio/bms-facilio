@@ -1,13 +1,10 @@
 package com.facilio.bmsconsole.context;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import org.apache.commons.collections4.CollectionUtils;
 
-import com.facilio.bmsconsole.context.PurchaseRequestContext.Status;
-import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
-import com.facilio.bmsconsole.util.LocationAPI;
+import java.util.ArrayList;
+import java.util.List;
 
 public class PurchaseOrderContext extends ModuleBaseWithCustomFields {
 

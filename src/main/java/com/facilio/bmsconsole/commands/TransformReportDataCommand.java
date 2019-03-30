@@ -1,19 +1,5 @@
 package com.facilio.bmsconsole.commands;
 
-import java.text.DecimalFormat;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
-
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-
 import com.facilio.bmsconsole.context.FormulaContext.AggregateOperator;
 import com.facilio.bmsconsole.context.FormulaContext.DateAggregateOperator;
 import com.facilio.bmsconsole.context.FormulaContext.SpaceAggregateOperator;
@@ -21,11 +7,14 @@ import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.report.context.ReportBaseLineContext;
-import com.facilio.report.context.ReportContext;
-import com.facilio.report.context.ReportDataContext;
-import com.facilio.report.context.ReportDataPointContext;
-import com.facilio.report.context.ReportFieldContext;
+import com.facilio.report.context.*;
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
+import java.text.DecimalFormat;
+import java.util.*;
 
 public class TransformReportDataCommand implements Command {
 

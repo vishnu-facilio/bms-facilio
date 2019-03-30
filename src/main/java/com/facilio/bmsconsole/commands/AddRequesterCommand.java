@@ -1,11 +1,5 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-
 import com.facilio.accounts.dto.Account;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountConstants;
@@ -16,6 +10,11 @@ import com.facilio.bmsconsole.criteria.StringOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.constants.FacilioConstants;
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
+
+import java.util.List;
+import java.util.Map;
 
 public class AddRequesterCommand implements Command {
 

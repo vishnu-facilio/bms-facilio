@@ -1,12 +1,12 @@
 package com.facilio.accounts.bean;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-
 import com.facilio.accounts.dto.Permissions;
 import com.facilio.accounts.dto.Role;
 import com.facilio.bmsconsole.criteria.Criteria;
+
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
 public interface RoleBean {
 

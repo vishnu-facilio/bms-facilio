@@ -1,16 +1,15 @@
 package com.facilio.workflows.functions;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.collections4.CollectionUtils;
-
 import com.facilio.bmsconsole.context.MlForecastingContext;
 import com.facilio.bmsconsole.util.MLUtil;
 import com.facilio.util.FacilioUtil;
 import com.facilio.workflows.exceptions.FunctionParamException;
+import org.apache.commons.collections4.CollectionUtils;
+
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public enum MLFunctions implements FacilioWorkflowFunctionInterface {
 	CHECK_IF_VALID_PREDICTION (1, "isPredictionValid") {

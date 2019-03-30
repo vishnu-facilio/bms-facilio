@@ -1,17 +1,16 @@
 package com.facilio.bmsconsole.view;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsole.context.ViewField;
+import com.facilio.bmsconsole.criteria.Criteria;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import com.facilio.accounts.util.AccountUtil;
-import com.facilio.bmsconsole.context.ViewField;
-import com.facilio.bmsconsole.criteria.Criteria;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class FacilioView {
 	

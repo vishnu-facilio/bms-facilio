@@ -1,19 +1,18 @@
 package com.facilio.workflows.context;
 
+import com.facilio.bmsconsole.context.ReadingDataMeta;
+import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.FieldUtil;
+import com.facilio.workflows.context.WorkflowExpression.WorkflowExpressionType;
+import com.facilio.workflows.util.WorkflowUtil;
+import org.json.simple.JSONArray;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
-
-import org.json.simple.JSONArray;
-
-import com.facilio.bmsconsole.context.ReadingDataMeta;
-import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.FieldUtil;
-import com.facilio.workflows.context.WorkflowExpression.WorkflowExpressionType;
-import com.facilio.workflows.util.WorkflowUtil;
 
 public class WorkflowContext implements Serializable {
 	

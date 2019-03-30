@@ -1,12 +1,11 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.List;
-
+import com.facilio.constants.FacilioConstants;
+import com.facilio.sql.GenericDeleteRecordBuilder;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
-import com.facilio.constants.FacilioConstants;
-import com.facilio.sql.GenericDeleteRecordBuilder;
+import java.util.List;
 
 public class DeleteWorkOrderCommand implements Command {
 

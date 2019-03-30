@@ -1,16 +1,15 @@
 package com.facilio.bmsconsole.commands;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-
 import com.facilio.bmsconsole.context.PhotosContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fs.FileStore;
 import com.facilio.fs.FileStoreFactory;
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 public class UploadPhotosCommand implements Command {
 

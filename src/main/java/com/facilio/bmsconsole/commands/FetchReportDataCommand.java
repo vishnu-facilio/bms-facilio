@@ -1,61 +1,24 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-import java.util.StringJoiner;
-import java.util.logging.Logger;
-
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.FormulaContext.*;
+import com.facilio.bmsconsole.criteria.*;
+import com.facilio.bmsconsole.modules.*;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
+import com.facilio.report.context.*;
+import com.facilio.report.context.ReportContext.ReportType;
+import com.facilio.report.context.ReportDataPointContext.DataPointType;
+import com.facilio.report.context.ReportDataPointContext.OrderByFunction;
+import com.facilio.sql.GenericSelectRecordBuilder;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import com.facilio.accounts.util.AccountUtil;
-import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.ResourceContext;
-import com.facilio.bmsconsole.context.FormulaContext.AggregateOperator;
-import com.facilio.bmsconsole.context.FormulaContext.CommonAggregateOperator;
-import com.facilio.bmsconsole.context.FormulaContext.DateAggregateOperator;
-import com.facilio.bmsconsole.context.FormulaContext.NumberAggregateOperator;
-import com.facilio.bmsconsole.context.FormulaContext.SpaceAggregateOperator;
-import com.facilio.bmsconsole.criteria.BooleanOperators;
-import com.facilio.bmsconsole.criteria.Condition;
-import com.facilio.bmsconsole.criteria.Criteria;
-import com.facilio.bmsconsole.criteria.CriteriaAPI;
-import com.facilio.bmsconsole.criteria.DateOperators;
-import com.facilio.bmsconsole.criteria.DateRange;
-import com.facilio.bmsconsole.criteria.EnumOperators;
-import com.facilio.bmsconsole.criteria.LookupOperator;
-import com.facilio.bmsconsole.criteria.NumberOperators;
-import com.facilio.bmsconsole.criteria.PickListOperators;
-import com.facilio.bmsconsole.criteria.StringOperators;
-import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.FacilioModule;
-import com.facilio.bmsconsole.modules.FieldFactory;
-import com.facilio.bmsconsole.modules.FieldType;
-import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
-import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
-import com.facilio.constants.FacilioConstants;
-import com.facilio.fw.BeanFactory;
-import com.facilio.report.context.ReportBaseLineContext;
-import com.facilio.report.context.ReportContext;
-import com.facilio.report.context.ReportContext.ReportType;
-import com.facilio.report.context.ReportDataContext;
-import com.facilio.report.context.ReportDataPointContext;
-import com.facilio.report.context.ReportDataPointContext.DataPointType;
-import com.facilio.report.context.ReportDataPointContext.OrderByFunction;
-import com.facilio.report.context.ReportFieldContext;
-import com.facilio.report.context.ReportFilterContext;
-import com.facilio.report.context.ReportGroupByField;
-import com.facilio.report.context.ReportUserFilterContext;
-import com.facilio.sql.GenericSelectRecordBuilder;
+import java.util.*;
+import java.util.logging.Logger;
 
 public class FetchReportDataCommand implements Command {
 

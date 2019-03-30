@@ -1,21 +1,20 @@
 package com.facilio.bmsconsole.context;
 
-import java.time.Duration;
-import java.time.ZonedDateTime;
-import java.time.temporal.TemporalAdjusters;
-import java.time.temporal.WeekFields;
-
-import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.apache.commons.lang3.tuple.Pair;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.DateOperators;
 import com.facilio.bmsconsole.criteria.DateRange;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.util.DateTimeUtil;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
+import java.time.Duration;
+import java.time.ZonedDateTime;
+import java.time.temporal.TemporalAdjusters;
+import java.time.temporal.WeekFields;
 
 public class BaseLineContext {
 	private static final Logger LOGGER = LogManager.getLogger(BaseLineContext.class.getName());

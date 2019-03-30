@@ -1,14 +1,13 @@
 package com.facilio.tasker.job;
 
-import java.sql.SQLException;
-
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.chain.FacilioContext;
 import com.facilio.tasker.executor.Executor;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
+import java.sql.SQLException;
 
 public abstract class FacilioJob implements Runnable {
 

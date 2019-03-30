@@ -1,16 +1,11 @@
 package com.facilio.bmsconsole.context;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
+import java.util.*;
 
 public abstract class DashboardWidgetContext extends ModuleBaseWithCustomFields{
 

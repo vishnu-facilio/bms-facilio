@@ -1,10 +1,10 @@
 package com.facilio.bmsconsole.context;
 
-import java.time.DayOfWeek;
-import java.time.LocalTime;
-
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
+
+import java.time.DayOfWeek;
+import java.time.LocalTime;
 
 public class BusinessHourContext {
 	

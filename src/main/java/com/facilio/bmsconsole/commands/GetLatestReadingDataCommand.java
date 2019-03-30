@@ -1,17 +1,16 @@
 package com.facilio.bmsconsole.commands;
 
+import com.facilio.bmsconsole.context.ReadingDataMeta;
+import com.facilio.bmsconsole.util.ReadingsAPI;
+import com.facilio.constants.FacilioConstants;
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
+
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-
-import com.facilio.bmsconsole.context.ReadingDataMeta;
-import com.facilio.bmsconsole.util.ReadingsAPI;
-import com.facilio.constants.FacilioConstants;
 
 public class GetLatestReadingDataCommand implements Command {
 

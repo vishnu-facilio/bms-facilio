@@ -1,11 +1,10 @@
 package com.facilio.bmsconsole.modules;
 
+import com.facilio.constants.FacilioConstants;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-
-import com.facilio.bmsconsole.commands.GetReceiptsListCommand;
-import com.facilio.constants.FacilioConstants;
 
 public class ModuleFactory {
 

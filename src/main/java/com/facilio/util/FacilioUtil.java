@@ -1,21 +1,19 @@
 package com.facilio.util;
 
-import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
+import com.facilio.bmsconsole.modules.FieldFactory;
+import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.sql.GenericInsertRecordBuilder;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.JSONException;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
-import com.facilio.bmsconsole.modules.FieldFactory;
-import com.facilio.bmsconsole.modules.ModuleFactory;
-import com.facilio.sql.GenericInsertRecordBuilder;
+import java.text.DecimalFormat;
+import java.util.*;
 
 public class FacilioUtil {
 
@@ -97,6 +95,20 @@ public class FacilioUtil {
 			return (double) val;
 		}
 		return new Double(val.toString());
+	}
+
+	private static JSONParser parser = new JSONParser();
+    public static  JSONObject parseJson (String jsonStr) throws ParseException {
+    	if (StringUtils.isEmpty(jsonStr)) {
+    		return null;
+		}
+		return  (JSONObject) parser.parse(jsonStr);
+	}
+	public static  JSONArray parseJsonArray (String str) throws ParseException {
+		if (StringUtils.isEmpty(str)) {
+			return null;
+		}
+    	return (JSONArray) parser.parse(str);
 	}
 	
 	public static final double RADIUS_OF_EARTH = 6378.137; // Radius of earth in KM

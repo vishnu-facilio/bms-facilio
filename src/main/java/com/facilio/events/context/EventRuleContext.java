@@ -3,7 +3,6 @@ package com.facilio.events.context;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.templates.JSONTemplate;
 import com.facilio.workflows.context.WorkflowContext;
-
 import net.minidev.json.JSONObject;
 
 public class EventRuleContext {

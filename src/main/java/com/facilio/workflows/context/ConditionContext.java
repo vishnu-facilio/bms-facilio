@@ -1,12 +1,12 @@
 package com.facilio.workflows.context;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-
 import com.facilio.workflows.conditions.context.ElseContext;
 import com.facilio.workflows.conditions.context.ElseIfContext;
 import com.facilio.workflows.conditions.context.IfContext;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ConditionContext implements Serializable,WorkflowExpression {
 

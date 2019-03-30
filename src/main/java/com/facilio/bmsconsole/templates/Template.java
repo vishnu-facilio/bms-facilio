@@ -1,10 +1,9 @@
 package com.facilio.bmsconsole.templates;
 
-import java.io.Serializable;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsole.util.FreeMarkerAPI;
+import com.facilio.workflows.context.WorkflowContext;
+import com.facilio.workflows.util.WorkflowUtil;
 import org.apache.commons.text.StringSubstitutor;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -13,10 +12,10 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import com.facilio.accounts.util.AccountUtil;
-import com.facilio.bmsconsole.util.FreeMarkerAPI;
-import com.facilio.workflows.context.WorkflowContext;
-import com.facilio.workflows.util.WorkflowUtil;
+import java.io.Serializable;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 public abstract class Template implements Serializable {
 

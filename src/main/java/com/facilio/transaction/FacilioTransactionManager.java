@@ -1,9 +1,9 @@
 package com.facilio.transaction;
 
-import javax.transaction.TransactionManager;
-
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+
+import javax.transaction.TransactionManager;
 
 
 public enum FacilioTransactionManager {

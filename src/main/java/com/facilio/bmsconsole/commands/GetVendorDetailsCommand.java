@@ -1,16 +1,14 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.Collections;
-import java.util.Map;
-
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-
 import com.facilio.bmsconsole.context.LocationContext;
-import com.facilio.bmsconsole.context.StoreRoomContext;
 import com.facilio.bmsconsole.context.VendorContext;
 import com.facilio.bmsconsole.util.LocationAPI;
 import com.facilio.constants.FacilioConstants;
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
+
+import java.util.Collections;
+import java.util.Map;
 
 public class GetVendorDetailsCommand implements Command {
 

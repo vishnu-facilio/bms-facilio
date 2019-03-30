@@ -1,19 +1,14 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.Map;
-
+import com.facilio.bmsconsole.modules.FieldUtil;
+import com.facilio.bmsconsole.templates.*;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.workflows.context.WorkflowContext;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
-import com.facilio.bmsconsole.modules.FieldUtil;
-import com.facilio.bmsconsole.templates.EMailTemplate;
-import com.facilio.bmsconsole.templates.PushNotificationTemplate;
-import com.facilio.bmsconsole.templates.SMSTemplate;
-import com.facilio.bmsconsole.templates.Template;
-import com.facilio.bmsconsole.templates.WebNotificationTemplate;
-import com.facilio.constants.FacilioConstants;
-import com.facilio.workflows.context.WorkflowContext;
+import java.util.Map;
 
 public class CreateActionTemplateForWorkflowCommand implements Command {
 

@@ -1,13 +1,5 @@
 package com.facilio.bmsconsole.criteria;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.BaseLineContext;
 import com.facilio.bmsconsole.modules.FacilioField;
@@ -17,6 +9,14 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.workflows.util.ExpressionAggregateOperator;
 import com.udojava.evalex.Expression;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class FacilioExpressionParser {
 

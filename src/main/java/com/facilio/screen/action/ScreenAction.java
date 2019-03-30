@@ -1,8 +1,5 @@
 package com.facilio.screen.action;
 
-import java.util.List;
-import java.util.Map;
-
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.screen.context.RemoteScreenContext;
 import com.facilio.screen.context.ScreenContext;
@@ -10,6 +7,9 @@ import com.facilio.screen.util.ScreenUtil;
 import com.facilio.wms.message.WmsRemoteScreenMessage;
 import com.facilio.wms.util.WmsApi;
 import com.opensymphony.xwork2.ActionSupport;
+
+import java.util.List;
+import java.util.Map;
 
 public class ScreenAction extends ActionSupport {
 

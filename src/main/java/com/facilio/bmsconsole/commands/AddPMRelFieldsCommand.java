@@ -1,22 +1,17 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.*;
-
 import com.facilio.accounts.util.AccountUtil;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-
-import com.facilio.bmsconsole.context.PMReminder;
-import com.facilio.bmsconsole.context.PMResourcePlannerContext;
-import com.facilio.bmsconsole.context.PMResourcePlannerReminderContext;
-import com.facilio.bmsconsole.context.PMTriggerContext;
-import com.facilio.bmsconsole.context.PreventiveMaintenance;
+import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.util.TemplateAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.sql.GenericInsertRecordBuilder;
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
+
+import java.util.*;
 
 public class AddPMRelFieldsCommand implements Command {
 	

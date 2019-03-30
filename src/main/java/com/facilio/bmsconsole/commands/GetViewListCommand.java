@@ -1,11 +1,5 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.*;
-import java.util.stream.Collectors;
-
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.modules.FacilioModule;
@@ -15,6 +9,11 @@ import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.ViewFactory;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
+
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class GetViewListCommand implements Command {
 

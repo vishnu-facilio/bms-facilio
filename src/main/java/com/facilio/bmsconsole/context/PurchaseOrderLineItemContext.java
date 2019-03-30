@@ -1,11 +1,10 @@
 package com.facilio.bmsconsole.context;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import org.apache.commons.collections4.CollectionUtils;
 
-import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
+import java.util.ArrayList;
+import java.util.List;
 
 public class PurchaseOrderLineItemContext extends ModuleBaseWithCustomFields{
 	/**

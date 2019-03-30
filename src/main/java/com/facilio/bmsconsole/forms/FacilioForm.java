@@ -1,9 +1,9 @@
 package com.facilio.bmsconsole.forms;
 
+import com.facilio.bmsconsole.modules.FacilioModule;
+
 import java.io.Serializable;
 import java.util.*;
-
-import com.facilio.bmsconsole.modules.FacilioModule;
 
 public class FacilioForm implements Serializable {
 	public FacilioForm () {}

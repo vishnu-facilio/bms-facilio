@@ -1,18 +1,17 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.List;
-
-import org.apache.commons.chain.Chain;
-import org.apache.commons.chain.Context;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-
 import com.facilio.bmsconsole.context.AlarmContext;
 import com.facilio.bmsconsole.context.NoteContext;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.serializable.SerializableCommand;
+import org.apache.commons.chain.Chain;
+import org.apache.commons.chain.Context;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
+import java.util.List;
 
 public class AddClearCommentInWoOnAlarmClearCommand implements SerializableCommand {
 

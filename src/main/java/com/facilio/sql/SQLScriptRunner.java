@@ -1,24 +1,14 @@
 package com.facilio.sql;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.LineNumberReader;
-import java.io.Reader;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.Map;
-
+import com.facilio.transaction.FacilioConnectionPool;
 import org.apache.commons.text.StringSubstitutor;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
-import com.facilio.transaction.FacilioConnectionPool;
+import java.io.*;
+import java.sql.*;
+import java.util.Map;
 
 public class SQLScriptRunner {
 

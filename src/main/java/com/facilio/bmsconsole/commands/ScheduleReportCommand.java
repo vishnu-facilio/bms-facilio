@@ -1,12 +1,5 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
@@ -20,6 +13,12 @@ import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
 import com.facilio.tasker.FacilioTimer;
 import com.facilio.tasker.ScheduleInfo;
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class ScheduleReportCommand implements Command {
 

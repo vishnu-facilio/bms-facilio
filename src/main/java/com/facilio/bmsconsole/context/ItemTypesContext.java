@@ -1,6 +1,5 @@
 package com.facilio.bmsconsole.context;
 
-import com.facilio.bmsconsole.context.WorkorderCostContext.CostType;
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.fs.FileStoreFactory;
 import com.facilio.unitconversion.Unit;

@@ -19,8 +19,6 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.kinesis.ErrorDataProducer;
 import com.facilio.sql.GenericUpdateRecordBuilder;
 import com.facilio.util.AckUtil;
-import org.apache.kafka.clients.producer.KafkaProducer;
-import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -29,7 +27,10 @@ import org.json.simple.parser.JSONParser;
 
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class AgentProcessor implements IRecordProcessor {
     private static final Logger LOGGER = LogManager.getLogger(AgentProcessor.class.getName());

@@ -1,19 +1,18 @@
 package com.facilio.events.commands;
 
-import java.util.HashMap;
-import java.util.List;
-
+import com.facilio.chain.FacilioContext;
+import com.facilio.events.constants.EventConstants;
+import com.facilio.events.context.EventRuleContext;
+import com.facilio.events.util.EventAPI;
+import com.facilio.events.util.EventRulesAPI;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
-import com.facilio.chain.FacilioContext;
-import com.facilio.events.constants.EventConstants;
-import com.facilio.events.context.EventRuleContext;
-import com.facilio.events.util.EventAPI;
-import com.facilio.events.util.EventRulesAPI;
+import java.util.HashMap;
+import java.util.List;
 
 public class ProcessEventCommand implements Command {
 

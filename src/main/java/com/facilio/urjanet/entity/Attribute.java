@@ -1,9 +1,8 @@
 package com.facilio.urjanet.entity;
 
-import org.json.simple.JSONObject;
-
 import com.facilio.urjanet.Entity;
 import com.facilio.urjanet.UrjanetConnection.EntityType;
+import org.json.simple.JSONObject;
 
 public class Attribute implements Entity {
 

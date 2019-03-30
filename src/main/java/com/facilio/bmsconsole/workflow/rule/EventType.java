@@ -1,12 +1,11 @@
 package com.facilio.bmsconsole.workflow.rule;
 
+import com.facilio.constants.FacilioConstants;
+import org.json.simple.JSONObject;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-
-import org.json.simple.JSONObject;
-
-import com.facilio.constants.FacilioConstants;
 
 public enum EventType {
 	/* Bitwise calculation

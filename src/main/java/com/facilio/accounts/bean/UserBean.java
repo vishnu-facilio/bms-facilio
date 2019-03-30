@@ -1,17 +1,13 @@
 package com.facilio.accounts.bean;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.dto.UserMobileSetting;
-import com.facilio.accounts.util.AccountConstants;
 import com.facilio.bmsconsole.criteria.Criteria;
-import com.facilio.bmsconsole.modules.ModuleFactory;
-import com.facilio.sql.GenericSelectRecordBuilder;
+
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
 public interface UserBean {
 	

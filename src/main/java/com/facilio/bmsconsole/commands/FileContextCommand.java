@@ -1,16 +1,11 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.logging.Logger;
-
+import com.facilio.bmsconsole.context.FileContext;
+import com.facilio.constants.FacilioConstants;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
-import com.facilio.bmsconsole.context.AttachmentContext;
-import com.facilio.bmsconsole.context.AttachmentContext.AttachmentType;
-import com.facilio.bmsconsole.context.FileContext;
-import com.facilio.constants.FacilioConstants;
+import java.util.logging.Logger;
 
 public class FileContextCommand implements Command {
 	private static Logger LOGGER = Logger.getLogger(AttachmentContextCommand.class.getName());

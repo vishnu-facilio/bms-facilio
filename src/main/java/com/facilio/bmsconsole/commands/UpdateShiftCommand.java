@@ -1,11 +1,5 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.Map;
-import java.util.stream.Collectors;
-
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.BusinessHourContext;
 import com.facilio.bmsconsole.context.BusinessHoursList;
@@ -19,6 +13,11 @@ import com.facilio.bmsconsole.util.BusinessHoursAPI;
 import com.facilio.bmsconsole.util.ShiftAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.sql.GenericUpdateRecordBuilder;
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
+
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class UpdateShiftCommand implements Command {
 

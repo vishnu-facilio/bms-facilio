@@ -1,45 +1,13 @@
 package com.facilio.bmsconsole.actions;
 
-import java.sql.Connection;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.chain.Chain;
-import org.apache.commons.chain.impl.ChainBase;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.commands.FacilioChainFactory;
-import com.facilio.bmsconsole.commands.FacilioReportContext;
-import com.facilio.bmsconsole.commands.GetUpcomingPreventiveMaintenanceCommand;
-import com.facilio.bmsconsole.commands.ReportsChainFactory;
-import com.facilio.bmsconsole.commands.SetOrderByCommand;
-import com.facilio.bmsconsole.commands.SetTopNReportCommand;
-import com.facilio.bmsconsole.context.BuildingContext;
-import com.facilio.bmsconsole.context.LocationContext;
-import com.facilio.bmsconsole.context.PreventiveMaintenance;
-import com.facilio.bmsconsole.context.ReportContext;
-import com.facilio.bmsconsole.context.ReportFolderContext;
-import com.facilio.bmsconsole.context.TicketContext;
-import com.facilio.bmsconsole.context.TicketPriorityContext;
-import com.facilio.bmsconsole.context.TicketStatusContext;
+import com.facilio.bmsconsole.commands.*;
+import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.Operator;
-import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.FacilioModule;
-import com.facilio.bmsconsole.modules.FieldFactory;
-import com.facilio.bmsconsole.modules.FieldUtil;
-import com.facilio.bmsconsole.modules.ModuleFactory;
-import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
+import com.facilio.bmsconsole.modules.*;
 import com.facilio.bmsconsole.reports.ReportsUtil;
 import com.facilio.bmsconsole.util.DashboardUtil;
 import com.facilio.bmsconsole.util.DateTimeUtil;
@@ -50,6 +18,16 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.transaction.FacilioConnectionPool;
 import com.opensymphony.xwork2.ActionSupport;
+import org.apache.commons.chain.Chain;
+import org.apache.commons.chain.impl.ChainBase;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+
+import java.sql.Connection;
+import java.util.*;
 
 public class WorkOrderReportAction extends ActionSupport {
 

@@ -1,10 +1,5 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.Map;
-
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-
 import com.facilio.accounts.dto.Role;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
@@ -12,6 +7,10 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.license.LicenseApi;
 import com.facilio.license.LicenseContext;
 import com.facilio.license.LicenseContext.FacilioLicense;
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
+
+import java.util.Map;
 
 public class ValidateLicenseCommand implements Command{
 

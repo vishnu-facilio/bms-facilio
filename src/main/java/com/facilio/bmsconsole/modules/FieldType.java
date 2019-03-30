@@ -1,16 +1,10 @@
 package com.facilio.bmsconsole.modules;
 
+import com.facilio.bmsconsole.criteria.*;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-
-import com.facilio.bmsconsole.criteria.BooleanOperators;
-import com.facilio.bmsconsole.criteria.DateOperators;
-import com.facilio.bmsconsole.criteria.EnumOperators;
-import com.facilio.bmsconsole.criteria.LookupOperator;
-import com.facilio.bmsconsole.criteria.NumberOperators;
-import com.facilio.bmsconsole.criteria.Operator;
-import com.facilio.bmsconsole.criteria.StringOperators;
 
 public enum FieldType {
 	MISC(0, "Misc", null, null),

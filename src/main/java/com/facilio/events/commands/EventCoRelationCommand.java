@@ -1,8 +1,5 @@
 package com.facilio.events.commands;
 
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.util.TemplateAPI;
 import com.facilio.events.constants.EventConstants;
@@ -12,6 +9,8 @@ import com.facilio.events.context.EventContext.EventState;
 import com.facilio.events.context.EventRule;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
 
 public class EventCoRelationCommand implements Command {
 

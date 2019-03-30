@@ -1,9 +1,9 @@
 package com.facilio.sql;
 
+import com.facilio.bmsconsole.modules.FacilioField;
+
 import java.sql.Connection;
 import java.util.List;
-
-import com.facilio.bmsconsole.modules.FacilioField;
 
 public interface UpdateBuilderIfc<E> extends WhereBuilderIfc<UpdateBuilderIfc<E>> {
 	public UpdateBuilderIfc<E> table(String tableName);

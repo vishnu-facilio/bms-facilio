@@ -1,13 +1,12 @@
 package com.facilio.cache;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import com.facilio.aws.util.AwsUtil;
-
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class RedisManager {
 	

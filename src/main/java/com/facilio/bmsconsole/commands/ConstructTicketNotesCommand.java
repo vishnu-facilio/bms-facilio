@@ -1,14 +1,13 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
+import com.facilio.bmsconsole.context.NoteContext;
+import com.facilio.constants.FacilioConstants;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
-import com.facilio.bmsconsole.context.NoteContext;
-import com.facilio.constants.FacilioConstants;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class ConstructTicketNotesCommand implements Command {
 

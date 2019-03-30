@@ -1,15 +1,13 @@
 package com.facilio.beans;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-
-import org.json.simple.JSONObject;
-
 import com.facilio.bmsconsole.commands.data.ServicePortalInfo;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
-import com.facilio.bmsconsole.modules.FieldFactory;
+import org.json.simple.JSONObject;
+
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
 public interface ModuleBean extends RootBean {
 

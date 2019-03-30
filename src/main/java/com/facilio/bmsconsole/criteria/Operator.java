@@ -1,11 +1,11 @@
 package com.facilio.bmsconsole.criteria;
 
+import com.facilio.collections.UniqueMap;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-
-import com.facilio.collections.UniqueMap;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public interface Operator<E> {
 	public int getOperatorId();

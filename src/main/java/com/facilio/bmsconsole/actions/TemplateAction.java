@@ -1,25 +1,18 @@
 package com.facilio.bmsconsole.actions;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.chain.Chain;
-
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
-import com.facilio.bmsconsole.templates.DefaultTemplate;
-import com.facilio.bmsconsole.templates.EMailTemplate;
-import com.facilio.bmsconsole.templates.PushNotificationTemplate;
-import com.facilio.bmsconsole.templates.SMSTemplate;
-import com.facilio.bmsconsole.templates.TaskSectionTemplate;
-import com.facilio.bmsconsole.templates.Template;
+import com.facilio.bmsconsole.templates.*;
 import com.facilio.bmsconsole.templates.Template.Type;
-import com.facilio.bmsconsole.templates.WebNotificationTemplate;
 import com.facilio.bmsconsole.util.TemplateAPI;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import org.apache.commons.chain.Chain;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class TemplateAction  extends FacilioAction {
 	
