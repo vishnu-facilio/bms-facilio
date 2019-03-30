@@ -2741,9 +2741,21 @@ public class ViewFactory {
 		overDueRequest.setField(requiredTime);
 		overDueRequest.setOperator(NumberOperators.LESS_THAN);
 		overDueRequest.setValue(currTime + "");
+		
+		FacilioField prStatusField = new FacilioField();
+		prStatusField.setName("status");
+		prStatusField.setColumnName("STATUS");
+		prStatusField.setDataType(FieldType.NUMBER);
+		prStatusField.setModule(ModuleFactory.getPurchaseRequestModule());
+		
+		Condition statusCond = new Condition();
+		statusCond.setField(prStatusField);
+		statusCond.setOperator(NumberOperators.LESS_THAN);
+		statusCond.setValue(String.valueOf(3));
 
 		Criteria criteria = new Criteria();
 		criteria.addAndCondition(overDueRequest);
+		criteria.addAndCondition(statusCond);
 		return criteria;
 	}
 	
@@ -2879,9 +2891,27 @@ public class ViewFactory {
 		overDueOrder.setField(requiredTime);
 		overDueOrder.setOperator(NumberOperators.LESS_THAN);
 		overDueOrder.setValue(currTime + "");
+		
+		FacilioField poStatusField = new FacilioField();
+		poStatusField.setName("status");
+		poStatusField.setColumnName("STATUS");
+		poStatusField.setDataType(FieldType.NUMBER);
+		poStatusField.setModule(ModuleFactory.getPurchaseOrderModule());
+		
+		Condition statusCond = new Condition();
+		statusCond.setField(poStatusField);
+		statusCond.setOperator(NumberOperators.LESS_THAN);
+		statusCond.setValue(String.valueOf(7+""));
 
+		Condition rejCond = new Condition();
+		rejCond.setField(poStatusField);
+		rejCond.setOperator(NumberOperators.NOT_EQUALS);
+		rejCond.setValue(String.valueOf(3+""));
+		
 		Criteria criteria = new Criteria();
 		criteria.addAndCondition(overDueOrder);
+		criteria.addAndCondition(statusCond);
+		criteria.addAndCondition(rejCond);
 		return criteria;
 	}
 
