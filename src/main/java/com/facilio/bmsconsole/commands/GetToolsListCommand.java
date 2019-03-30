@@ -23,7 +23,7 @@ import org.json.simple.JSONObject;
 import java.util.List;
 
 public class GetToolsListCommand implements Command{
-	private static Logger log = LogManager.getLogger(TemplateAPI.class.getName());
+	private static Logger log = LogManager.getLogger(GetToolsListCommand.class.getName());
 	@Override
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub

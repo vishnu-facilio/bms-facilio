@@ -121,7 +121,7 @@ public class PurchaseOrderQuantityRecievedRollUpCommand implements Command {
 	private void updateReceivables(ReceivableContext receivable, FacilioModule module, List<FacilioField> fields, Map<String, FacilioField> fieldsMap) throws Exception{
 		UpdateRecordBuilder<ReceivableContext> updateBuilder = new UpdateRecordBuilder<ReceivableContext>()
 				.module(module).fields(fields)
-				.andCondition(CriteriaAPI.getCondition(fieldsMap.get("poId"),String.valueOf(receivable.getPoId()), NumberOperators.EQUALS));
+				.andCondition(CriteriaAPI.getCondition(fieldsMap.get("poId"), String.valueOf(receivable.getPoId().getId()), NumberOperators.EQUALS));
 		updateBuilder.update(receivable);
 	}
 
