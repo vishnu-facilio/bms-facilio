@@ -1,7 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -35,10 +34,6 @@ public class UpdateAlarmRuleCommand implements Command {
 		
 		preRequsiteRule = ReadingRuleAPI.updateReadingRuleWithChildren(preRequsiteRule);
 		
-//		deleteActions(oldRules);
-		
-//		deleteTriggerAndClearRuleOfGroup(oldRules);
-		
 		updateTriggerAndClearRule(alarmRule,oldRule,context);
 		
 		if(preRequsiteRule.getEvent() != null && preRequsiteRule.getEvent().getActivityTypeEnum().equals(EventType.SCHEDULED_READING_RULE)) {
@@ -54,17 +49,6 @@ public class UpdateAlarmRuleCommand implements Command {
 		return false;
 	}
 
-	private void deleteTriggerAndClearRuleOfGroup(List<ReadingRuleContext> oldRules) throws Exception {
-		
-		List<Long> rulesToDelete = new ArrayList<>();
-		
-		for(ReadingRuleContext triggerRule : oldRules) {
-			if(triggerRule.getRuleGroupId() != triggerRule.getId()) {
-				rulesToDelete.add(triggerRule.getId());
-			}
-		}
-		WorkflowRuleAPI.deleteWorkFlowRules(rulesToDelete);
-	}
 	
 	private void deleteReadingAlarmRuleAndActions(List<ReadingAlarmRuleContext> readingAlarmRules) throws Exception {
 		
@@ -77,18 +61,6 @@ public class UpdateAlarmRuleCommand implements Command {
 		ActionAPI.deleteAllActionsFromWorkflowRules(rulesToDelete);
 	}
 	
-	private void deleteActions(List<ReadingRuleContext> oldRules) throws Exception {
-		
-		List<Long> ruleIds = new ArrayList<>();
-		if(oldRules != null && !oldRules.isEmpty()) {
-			for (ReadingRuleContext rule : oldRules) {
-				if(rule.getRuleGroupId() != rule.getId()) {
-					ruleIds.add(rule.getId());
-				}
-			}
-			ActionAPI.deleteAllActionsFromWorkflowRules(ruleIds);
-		}
-	}
 	
 	private void updateTriggerAndClearRule(AlarmRuleContext alarmRule,AlarmRuleContext oldRule, Context context) throws Exception {
 		
@@ -133,6 +105,12 @@ public class UpdateAlarmRuleCommand implements Command {
 				}
 				
 				ruleNameVsIdMap.put(alarmRCARule.getName(), alarmRCARule.getId());
+			}
+		}
+		
+		if(alarmRule.getDeletedAlarmRCARules() != null) {
+			for(ReadingRuleContext deletedRcaRule : alarmRule.getDeletedAlarmRCARules()) {
+				WorkflowRuleAPI.deleteWorkflowRule(deletedRcaRule.getId());
 			}
 		}
 		
