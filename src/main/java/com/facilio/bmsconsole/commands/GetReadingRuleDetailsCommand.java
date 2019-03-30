@@ -67,6 +67,12 @@ public class GetReadingRuleDetailsCommand implements Command {
 								
 								rcaIds.add(rcaRule.getId());
 							}
+							for(Long versionId :alarmRuleContext.getAlarmRCARulesVersionHistory().keySet()) {
+								
+								for(ReadingRuleContext rcaRule : alarmRuleContext.getAlarmRCARulesVersionHistory().get(versionId)) {
+									rcaIds.add(rcaRule.getId());
+								}
+							}
 							List<FacilioField> eventFields = EventConstants.EventFieldFactory.getEventFields();
 							Map<String, FacilioField> eventFieldsMap = FieldFactory.getAsMap(eventFields);
 							List<FacilioField> fields = new ArrayList<>();
