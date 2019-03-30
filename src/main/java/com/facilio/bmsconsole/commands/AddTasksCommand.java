@@ -1,19 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Logger;
-
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.json.simple.JSONObject;
-
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.activity.WorkOrderActivityType;
-import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.TaskContext.TaskStatus;
 import com.facilio.bmsconsole.context.TaskSectionContext;
@@ -22,9 +10,15 @@ import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.InsertRecordBuilder;
 import com.facilio.chain.FacilioChain;
-import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Logger;
 
 
 public class AddTasksCommand implements Command {

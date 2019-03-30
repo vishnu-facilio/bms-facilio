@@ -1,15 +1,5 @@
 package com.facilio.bmsconsole.actions;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.chain.Chain;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
@@ -22,6 +12,11 @@ import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
+import org.apache.commons.chain.Chain;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+
+import java.util.*;
 
 public class ModuleAction extends FacilioAction {
 	

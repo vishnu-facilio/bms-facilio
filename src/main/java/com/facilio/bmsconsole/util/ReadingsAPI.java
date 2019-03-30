@@ -1,52 +1,15 @@
 package com.facilio.bmsconsole.util;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.StringJoiner;
-import java.util.stream.Collectors;
-
-import org.apache.commons.chain.Chain;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.Pair;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.bmsconsole.context.ControllerContext;
-import com.facilio.bmsconsole.context.EnergyMeterContext;
-import com.facilio.bmsconsole.context.ReadingContext;
-import com.facilio.bmsconsole.context.ReadingDataMeta;
+import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.context.ReadingDataMeta.ReadingInputType;
 import com.facilio.bmsconsole.context.ReadingDataMeta.ReadingType;
-import com.facilio.bmsconsole.context.ResourceContext;
-import com.facilio.bmsconsole.criteria.CommonOperators;
-import com.facilio.bmsconsole.criteria.Criteria;
-import com.facilio.bmsconsole.criteria.CriteriaAPI;
-import com.facilio.bmsconsole.criteria.NumberOperators;
-import com.facilio.bmsconsole.criteria.PickListOperators;
-import com.facilio.bmsconsole.criteria.StringOperators;
-import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.FacilioModule;
+import com.facilio.bmsconsole.criteria.*;
+import com.facilio.bmsconsole.modules.*;
 import com.facilio.bmsconsole.modules.FacilioModule.ModuleType;
-import com.facilio.bmsconsole.modules.FieldFactory;
-import com.facilio.bmsconsole.modules.FieldType;
-import com.facilio.bmsconsole.modules.FieldUtil;
-import com.facilio.bmsconsole.modules.ModuleFactory;
-import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
-import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
@@ -59,6 +22,18 @@ import com.facilio.transaction.FacilioConnectionPool;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.context.WorkflowFieldContext;
 import com.facilio.workflows.util.WorkflowUtil;
+import org.apache.commons.chain.Chain;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class ReadingsAPI {
 	private static final Logger LOGGER = LogManager.getLogger(ReadingsAPI.class.getName());

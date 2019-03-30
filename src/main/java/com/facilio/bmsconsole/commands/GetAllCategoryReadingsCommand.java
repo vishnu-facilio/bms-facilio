@@ -1,31 +1,25 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
-
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AssetCategoryContext;
 import com.facilio.bmsconsole.context.BaseSpaceContext.SpaceType;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.criteria.PickListOperators;
-import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.FacilioModule;
-import com.facilio.bmsconsole.modules.FieldFactory;
-import com.facilio.bmsconsole.modules.FieldType;
-import com.facilio.bmsconsole.modules.ModuleFactory;
-import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
+import com.facilio.bmsconsole.modules.*;
 import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericSelectRecordBuilder;
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class GetAllCategoryReadingsCommand implements Command {
 

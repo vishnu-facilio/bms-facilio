@@ -1,10 +1,9 @@
 package com.facilio.bmsconsole.templates;
 
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
 public class WebNotificationTemplate extends Template{
 

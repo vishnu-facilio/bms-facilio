@@ -1,18 +1,5 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import org.apache.commons.chain.Chain;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.json.simple.JSONObject;
-
 import com.facilio.bmsconsole.actions.ImportProcessContext;
 import com.facilio.bmsconsole.actions.ImportTemplateContext;
 import com.facilio.bmsconsole.context.ReadingContext;
@@ -20,6 +7,14 @@ import com.facilio.bmsconsole.context.ReadingContext.SourceType;
 import com.facilio.bmsconsole.util.ImportAPI;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import org.apache.commons.chain.Chain;
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
+import org.json.simple.JSONObject;
+
+import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class InsertReadingCommand implements Command {
 

@@ -1,24 +1,19 @@
 package com.facilio.image;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.util.List;
-
-import org.apache.commons.io.IOUtils;
-
-import com.amazonaws.services.rekognition.model.DetectTextRequest;
-import com.amazonaws.services.rekognition.model.DetectTextResult;
-import com.amazonaws.services.rekognition.model.Image;
-import com.amazonaws.services.rekognition.model.S3Object;
-import com.amazonaws.services.rekognition.model.TextDetection;
+import com.amazonaws.services.rekognition.model.*;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.fs.FileInfo;
 import com.facilio.fs.FileStoreFactory;
 import com.facilio.fs.S3FileStore;
+import org.apache.commons.io.IOUtils;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.util.List;
 
 public class ImageRecognitionUtil {
 	public static final float MINIMUM_CONFIDENCE = 70;

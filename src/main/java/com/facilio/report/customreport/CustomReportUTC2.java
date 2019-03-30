@@ -1,30 +1,25 @@
 package com.facilio.report.customreport;
 
-import java.text.DecimalFormat;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import org.apache.commons.chain.Command;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
-import com.facilio.bmsconsole.context.ReportContext;
-import com.facilio.bmsconsole.context.TaskContext;
-import com.facilio.bmsconsole.context.TaskSectionContext;
-import com.facilio.bmsconsole.context.TicketCategoryContext;
-import com.facilio.bmsconsole.context.WorkOrderContext;
+import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.util.WorkOrderAPI;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
+import org.apache.commons.chain.Command;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+
+import java.text.DecimalFormat;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class CustomReportUTC2 implements CustomReport {
 

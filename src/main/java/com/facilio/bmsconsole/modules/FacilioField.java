@@ -1,16 +1,15 @@
 package com.facilio.bmsconsole.modules;
 
+import com.facilio.bmsconsole.workflow.rule.ActionContext;
+import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.apache.commons.lang3.StringUtils;
+
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.apache.commons.lang3.StringUtils;
-
-import com.facilio.bmsconsole.workflow.rule.ActionContext;
-import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class FacilioField implements Serializable {
 	

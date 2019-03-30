@@ -1,13 +1,5 @@
 package com.facilio.tasker.executor;
 
-import java.util.List;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
-
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.chain.FacilioContext;
 import com.facilio.queue.ObjectMessage;
@@ -15,6 +7,13 @@ import com.facilio.queue.ObjectQueue;
 import com.facilio.tasker.FacilioScheduler;
 import com.facilio.tasker.config.InstantJobConf;
 import com.facilio.tasker.job.InstantJob;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
+import java.util.List;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 public enum InstantJobExecutor implements Runnable {
 	INSTANCE;

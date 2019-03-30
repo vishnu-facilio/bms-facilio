@@ -1,8 +1,5 @@
 package com.facilio.bmsconsole.commands;
 
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AssetCategoryContext;
 import com.facilio.bmsconsole.context.AssetContext;
@@ -10,6 +7,8 @@ import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
 
 public class SetAssetCategoryCommand implements Command {
 

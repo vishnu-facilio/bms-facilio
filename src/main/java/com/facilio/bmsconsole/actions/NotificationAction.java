@@ -1,13 +1,5 @@
 package com.facilio.bmsconsole.actions;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import org.apache.commons.chain.Chain;
-import org.apache.commons.chain.Command;
-import org.json.simple.JSONObject;
-
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
@@ -24,6 +16,13 @@ import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.opensymphony.xwork2.ActionSupport;
+import org.apache.commons.chain.Chain;
+import org.apache.commons.chain.Command;
+import org.json.simple.JSONObject;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class NotificationAction extends ActionSupport {
 	

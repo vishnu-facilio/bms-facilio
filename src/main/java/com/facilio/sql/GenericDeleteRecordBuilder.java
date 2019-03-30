@@ -18,7 +18,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Map;
-import java.util.StringJoiner;
 
 /**
  * GenericDeleteRecordBuilder class helps in building delete queries and execute it.<br>

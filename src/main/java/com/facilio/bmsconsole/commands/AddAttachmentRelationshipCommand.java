@@ -1,17 +1,5 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Logger;
-
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.activity.WorkOrderActivityType;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
@@ -26,6 +14,13 @@ import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+
+import java.util.*;
+import java.util.logging.Logger;
 
 public class AddAttachmentRelationshipCommand implements Command {
 

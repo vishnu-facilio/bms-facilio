@@ -1,15 +1,5 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.json.simple.JSONObject;
-
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
@@ -18,11 +8,7 @@ import com.facilio.bmsconsole.context.AlarmContext;
 import com.facilio.bmsconsole.context.AlarmSeverityContext;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.NumberOperators;
-import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.FacilioModule;
-import com.facilio.bmsconsole.modules.FieldFactory;
-import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
-import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
+import com.facilio.bmsconsole.modules.*;
 import com.facilio.bmsconsole.util.AlarmAPI;
 import com.facilio.bmsconsole.util.ReadingRuleAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
@@ -32,6 +18,15 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.wms.message.WmsEvent;
 import com.facilio.wms.util.WmsApi;
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.json.simple.JSONObject;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class UpdateAlarmCommand implements Command {
 

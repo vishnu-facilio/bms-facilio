@@ -1,11 +1,11 @@
 package com.facilio.report.context;
 
-import java.util.List;
-import java.util.Map;
-
 import com.facilio.report.context.ReportDataPointContext.DataPointType;
 import com.facilio.report.context.ReportDataPointContext.OrderByFunction;
 import com.facilio.workflows.context.WorkflowContext;
+
+import java.util.List;
+import java.util.Map;
 
 public class ReadingAnalysisContext {
 	

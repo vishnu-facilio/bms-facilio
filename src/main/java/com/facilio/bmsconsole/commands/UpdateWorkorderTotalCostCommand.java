@@ -1,11 +1,5 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.context.WorkorderCostContext;
@@ -15,9 +9,13 @@ import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
-import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
+
+import java.util.List;
+import java.util.Map;
 
 public class UpdateWorkorderTotalCostCommand implements Command {
 
@@ -45,21 +43,10 @@ public class UpdateWorkorderTotalCostCommand implements Command {
 				totalcost += wo.getCost();
 			}
 
-			FacilioModule workorderModule = modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER);
-			List<FacilioField> workorderFields = modBean.getAllFields(FacilioConstants.ContextNames.WORK_ORDER);
-			Map<String, FacilioField> workorderFieldMap = FieldFactory.getAsMap(workorderFields);
 
-			SelectRecordsBuilder<WorkOrderContext> workorderSetlectBuilder = new SelectRecordsBuilder<WorkOrderContext>()
-					.select(workorderFields).table(workorderModule.getTableName()).moduleName(workorderModule.getName())
-					.beanClass(WorkOrderContext.class)
-					.andCondition(CriteriaAPI.getIdCondition(parentId, workorderModule));
-
-			List<WorkOrderContext> workorderList = workorderSetlectBuilder.get();
 			WorkOrderContext workorder = new WorkOrderContext();
-			if (workorderList != null && !workorderList.isEmpty()) {
-				workorder = workorderList.get(0);
-				workorder.setTotalCost(totalcost);
-			}
+			workorder.setId(parentId);
+			workorder.setTotalCost(totalcost);
 
 			context.put(FacilioConstants.ContextNames.WORK_ORDER, workorder);
 			context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, parentIds);

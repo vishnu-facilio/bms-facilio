@@ -1,13 +1,12 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.List;
-
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-
 import com.facilio.bmsconsole.util.ViewAPI;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.constants.FacilioConstants;
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
+
+import java.util.List;
 
 public class CustomizeViewCommand implements Command{
 

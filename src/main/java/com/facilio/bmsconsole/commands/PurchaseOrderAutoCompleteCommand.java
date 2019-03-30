@@ -1,37 +1,20 @@
 package com.facilio.bmsconsole.commands;
 
+import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.*;
+import com.facilio.bmsconsole.context.PurchaseOrderContext.Status;
+import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.criteria.NumberOperators;
+import com.facilio.bmsconsole.modules.*;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-
-import javax.tools.Tool;
-
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-
-import com.amazonaws.services.iot.model.transform.GetTopicRuleRequestProtocolMarshaller;
-import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.InventoryType;
-import com.facilio.bmsconsole.context.ItemContext;
-import com.facilio.bmsconsole.context.ItemTypesContext;
-import com.facilio.bmsconsole.context.ItemTypesVendorsContext;
-import com.facilio.bmsconsole.context.PurchaseOrderContext;
-import com.facilio.bmsconsole.context.PurchaseOrderContext.Status;
-import com.facilio.bmsconsole.criteria.CriteriaAPI;
-import com.facilio.bmsconsole.criteria.NumberOperators;
-import com.facilio.bmsconsole.context.PurchaseOrderLineItemContext;
-import com.facilio.bmsconsole.context.PurchasedItemContext;
-import com.facilio.bmsconsole.context.ToolContext;
-import com.facilio.bmsconsole.context.ToolTypesContext;
-import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.FacilioModule;
-import com.facilio.bmsconsole.modules.FieldFactory;
-import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
-import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
-import com.facilio.constants.FacilioConstants;
-import com.facilio.fw.BeanFactory;
-import com.google.zxing.LuminanceSource;
 
 public class PurchaseOrderAutoCompleteCommand implements Command {
 

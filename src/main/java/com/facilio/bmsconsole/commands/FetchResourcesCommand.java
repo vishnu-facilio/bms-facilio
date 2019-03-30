@@ -1,18 +1,17 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
+import com.facilio.bmsconsole.context.ResourceContext;
+import com.facilio.bmsconsole.util.ResourceAPI;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.report.context.ReportContext;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-import com.facilio.bmsconsole.context.ResourceContext;
-import com.facilio.bmsconsole.util.ResourceAPI;
-import com.facilio.constants.FacilioConstants;
-import com.facilio.report.context.ReportContext;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 public class FetchResourcesCommand implements Command {
 

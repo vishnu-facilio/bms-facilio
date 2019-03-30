@@ -1,11 +1,10 @@
 package com.facilio.leed.commands;
 
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-
 import com.facilio.constants.FacilioConstants;
 import com.facilio.leed.context.LeedConfigurationContext;
 import com.facilio.leed.util.LeedAPI;
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
 
 public class LeedBuildingDetailsCommand implements Command {
 

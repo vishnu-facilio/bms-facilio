@@ -1,21 +1,5 @@
 package com.facilio.fs;
 
-import java.io.File;
-import java.io.InputStream;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-
-import org.apache.struts2.ServletActionContext;
-
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
@@ -27,6 +11,14 @@ import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.sql.DBUtil;
 import com.facilio.sql.GenericUpdateRecordBuilder;
 import com.facilio.transaction.FacilioConnectionPool;
+
+import java.io.File;
+import java.io.InputStream;
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public abstract class FileStore {
 

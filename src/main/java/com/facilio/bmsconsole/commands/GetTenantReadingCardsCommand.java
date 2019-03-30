@@ -1,14 +1,13 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.List;
-import java.util.Map;
-
+import com.facilio.bmsconsole.util.ConsumptionAPI;
+import com.facilio.constants.FacilioConstants;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
-import com.facilio.bmsconsole.util.ConsumptionAPI;
-import com.facilio.constants.FacilioConstants;
+import java.util.List;
+import java.util.Map;
 
 public class GetTenantReadingCardsCommand implements Command {
 

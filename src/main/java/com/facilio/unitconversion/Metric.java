@@ -1,11 +1,11 @@
 package com.facilio.unitconversion;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-
-import com.fasterxml.jackson.annotation.JsonFormat;
 
 @JsonFormat(shape = JsonFormat.Shape.OBJECT)
 public enum Metric {

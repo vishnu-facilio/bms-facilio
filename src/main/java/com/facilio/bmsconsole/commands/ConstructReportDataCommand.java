@@ -1,42 +1,24 @@
 package com.facilio.bmsconsole.commands;
 
-import java.text.DecimalFormat;
-import java.util.AbstractMap.SimpleEntry;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.StringJoiner;
-
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections4.MapUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.json.simple.JSONObject;
-
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.FormulaContext.AggregateOperator;
 import com.facilio.bmsconsole.context.FormulaContext.DateAggregateOperator;
 import com.facilio.bmsconsole.context.FormulaContext.NumberAggregateOperator;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
-import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.FacilioModule;
-import com.facilio.bmsconsole.modules.FieldFactory;
-import com.facilio.bmsconsole.modules.LookupField;
-import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
-import com.facilio.bmsconsole.modules.ModuleFactory;
-import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
+import com.facilio.bmsconsole.modules.*;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
-import com.facilio.report.context.ReportBaseLineContext;
-import com.facilio.report.context.ReportContext;
-import com.facilio.report.context.ReportDataContext;
-import com.facilio.report.context.ReportDataPointContext;
-import com.facilio.report.context.ReportFieldContext;
-import com.facilio.report.context.ReportGroupByField;
-import com.facilio.sql.GenericSelectRecordBuilder;
+import com.facilio.report.context.*;
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.json.simple.JSONObject;
+
+import java.text.DecimalFormat;
+import java.util.AbstractMap.SimpleEntry;
+import java.util.*;
 
 public class ConstructReportDataCommand implements Command {
 

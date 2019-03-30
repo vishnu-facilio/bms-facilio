@@ -1,11 +1,10 @@
 package com.facilio.bmsconsole.context;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
+import com.facilio.report.util.ReportUtil;
 import org.json.simple.JSONObject;
 
-import com.facilio.report.util.ReportUtil;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class WidgetChartContext extends DashboardWidgetContext {
 

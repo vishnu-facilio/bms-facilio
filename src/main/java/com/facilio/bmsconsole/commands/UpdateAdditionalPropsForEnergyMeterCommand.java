@@ -1,10 +1,5 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.Collections;
-
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-
 import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
@@ -14,6 +9,10 @@ import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.sql.GenericDeleteRecordBuilder;
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
+
+import java.util.Collections;
 
 public class UpdateAdditionalPropsForEnergyMeterCommand implements Command {
 

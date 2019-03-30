@@ -1,20 +1,19 @@
 package com.facilio.bmsconsole.commands;
 
+import com.facilio.constants.FacilioConstants;
+import com.facilio.report.context.ReportContext;
+import com.facilio.report.context.ReportDataPointContext;
+import com.facilio.report.context.ReportDataPointContext.DataPointType;
+import com.facilio.workflows.util.WorkflowUtil;
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-
-import com.facilio.constants.FacilioConstants;
-import com.facilio.report.context.ReportContext;
-import com.facilio.report.context.ReportDataPointContext;
-import com.facilio.report.context.ReportDataPointContext.DataPointType;
-import com.facilio.workflows.util.WorkflowUtil;
 
 public class CalculateDerivationCommand implements Command {
 

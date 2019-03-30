@@ -1,9 +1,8 @@
 package com.facilio.bmsconsole.commands;
 
-import org.apache.commons.chain.Context;
-
 import com.facilio.bmsconsole.context.InventoryContext;
 import com.facilio.constants.FacilioConstants;
+import org.apache.commons.chain.Context;
 
 public class AddInventoryCommand extends GenericAddModuleDataCommand{
 	@Override

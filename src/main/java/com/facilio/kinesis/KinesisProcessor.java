@@ -1,13 +1,5 @@
 package com.facilio.kinesis;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-
-import com.facilio.processor.ProcessorFactory;
-import org.apache.log4j.LogManager;
-
 import com.amazonaws.services.kinesis.AmazonKinesis;
 import com.amazonaws.services.kinesis.clientlibrary.interfaces.v2.IRecordProcessorFactory;
 import com.amazonaws.services.kinesis.model.LimitExceededException;
@@ -17,7 +9,14 @@ import com.facilio.accounts.util.AccountConstants;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.processor.ProcessorFactory;
 import com.facilio.sql.GenericSelectRecordBuilder;
+import org.apache.log4j.LogManager;
+
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 
 public class KinesisProcessor {
 

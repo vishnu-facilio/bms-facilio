@@ -1,16 +1,15 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-
+import com.facilio.constants.FacilioConstants;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
-import com.facilio.constants.FacilioConstants;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 public class ProcessDataCommand implements Command {
 	private static final Logger LOGGER = LogManager.getLogger(ProcessDataCommand.class.getName());

@@ -1,16 +1,15 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.Collections;
-import java.util.Map;
-
-import org.apache.commons.chain.Context;
-
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.InventoryContext;
 import com.facilio.bmsconsole.context.InventoryVendorContext;
 import com.facilio.bmsconsole.util.InventoryApi;
 import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.constants.FacilioConstants;
+import org.apache.commons.chain.Context;
+
+import java.util.Collections;
+import java.util.Map;
 
 public class GetInventoryDetailsCommand extends GenericGetModuleDataDetailCommand{
 	@Override

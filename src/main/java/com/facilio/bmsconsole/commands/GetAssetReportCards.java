@@ -1,15 +1,5 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.TicketStatusContext;
 import com.facilio.bmsconsole.criteria.Condition;
@@ -23,6 +13,15 @@ import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
 import com.facilio.bmsconsole.view.ViewFactory;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.sql.GenericSelectRecordBuilder;
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 public class GetAssetReportCards implements Command {
 

@@ -1,8 +1,8 @@
 package com.facilio.bmsconsole.context;
 
-import java.util.ArrayList;
-
 import com.facilio.bmsconsole.modules.FacilioField;
+
+import java.util.ArrayList;
 
 public class NewPanel {
 public enum Type {

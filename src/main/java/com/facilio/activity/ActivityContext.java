@@ -1,12 +1,11 @@
 package com.facilio.activity;
 
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
-
 import com.facilio.accounts.dto.User;
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
+import com.facilio.util.FacilioUtil;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.ParseException;
 
 public class ActivityContext extends ModuleBaseWithCustomFields {
 
@@ -71,13 +70,7 @@ public class ActivityContext extends ModuleBaseWithCustomFields {
 		return null;
 	}
 	public void setInfoJsonStr(String infoStr) throws ParseException {
-		JSONParser parser = new JSONParser();
-		try {
-			info = (JSONObject) parser.parse(infoStr);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		System.out.println(info);
+		info = FacilioUtil.parseJson(infoStr);
 	}
 	
 	@JsonIgnore

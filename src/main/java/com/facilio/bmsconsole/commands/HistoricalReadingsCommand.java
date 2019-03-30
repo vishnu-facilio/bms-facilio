@@ -1,14 +1,13 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import com.facilio.bmsconsole.util.ReadingsAPI;
+import com.facilio.constants.FacilioConstants;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
-import com.facilio.bmsconsole.util.ReadingsAPI;
-import com.facilio.constants.FacilioConstants;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class HistoricalReadingsCommand implements Command {
 

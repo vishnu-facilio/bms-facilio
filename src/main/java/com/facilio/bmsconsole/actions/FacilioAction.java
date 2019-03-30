@@ -1,16 +1,13 @@
 package com.facilio.bmsconsole.actions;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import com.facilio.aws.util.AwsUtil;
+import com.facilio.constants.FacilioConstants;
+import com.opensymphony.xwork2.ActionSupport;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.log4j.LogManager;
 import org.json.simple.JSONObject;
 
-import com.facilio.aws.util.AwsUtil;
-import com.facilio.constants.FacilioConstants;
-import com.mysql.fabric.xmlrpc.base.Array;
-import com.opensymphony.xwork2.ActionSupport;
+import java.util.List;
 
 public class FacilioAction extends ActionSupport {
 	

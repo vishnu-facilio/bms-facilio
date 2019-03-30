@@ -1,11 +1,5 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.List;
-
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.apache.commons.lang3.StringUtils;
-
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
@@ -15,6 +9,11 @@ import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
+import org.apache.commons.lang3.StringUtils;
+
+import java.util.List;
 
 public class FetchAssetFromQRValCommand implements Command {
 

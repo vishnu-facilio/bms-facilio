@@ -1,20 +1,16 @@
 package com.facilio.bmsconsole.criteria;
 
+import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.modules.*;
+import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.FacilioModule;
-import com.facilio.bmsconsole.modules.FieldFactory;
-import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
-import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
-import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
-import com.facilio.constants.FacilioConstants;
-import com.facilio.fw.BeanFactory;
 
 public class FacilioConditionParser {
 	public String moduleName;

@@ -1,8 +1,5 @@
 package com.facilio.bmsconsole.actions;
 
-import java.util.HashMap;
-import java.util.List;
-
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.BaseSpaceContext.SpaceType;
 import com.facilio.bmsconsole.context.FloorContext;
@@ -15,6 +12,9 @@ import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
+
+import java.util.HashMap;
+import java.util.List;
 
 public class ImportFloorAction {
 	private String name;

@@ -1,10 +1,10 @@
 package com.facilio.bmsconsole.workflow.rule;
 
-import java.util.Map;
-
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.chain.FacilioContext;
+
+import java.util.Map;
 
 public class SLARuleContext extends WorkflowRuleContext {
 	

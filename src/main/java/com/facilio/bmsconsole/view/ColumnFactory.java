@@ -1,17 +1,12 @@
 package com.facilio.bmsconsole.view;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import com.facilio.bmsconsole.context.ViewField;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
+
+import java.util.*;
 
 public class ColumnFactory {
 	

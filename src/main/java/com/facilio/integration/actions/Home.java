@@ -1,24 +1,5 @@
 package com.facilio.integration.actions;
 
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.apache.struts2.ServletActionContext;
-import org.json.simple.JSONObject;
-
 import com.facilio.accounts.bean.UserBean;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
@@ -30,6 +11,23 @@ import com.facilio.sql.DBUtil;
 import com.facilio.transaction.FacilioConnectionPool;
 import com.mysql.jdbc.exceptions.MySQLIntegrityConstraintViolationException;
 import com.opensymphony.xwork2.ActionSupport;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.apache.struts2.ServletActionContext;
+import org.json.simple.JSONObject;
+
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Home extends ActionSupport {
 /**

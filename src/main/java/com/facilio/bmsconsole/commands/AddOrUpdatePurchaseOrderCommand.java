@@ -1,12 +1,5 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.Collections;
-import java.util.List;
-
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.apache.commons.collections4.CollectionUtils;
-
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.PurchaseOrderContext;
 import com.facilio.bmsconsole.context.PurchaseOrderLineItemContext;
@@ -14,15 +7,16 @@ import com.facilio.bmsconsole.context.ReceivableContext;
 import com.facilio.bmsconsole.context.ReceivableContext.Status;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
-import com.facilio.bmsconsole.modules.DeleteRecordBuilder;
-import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.FacilioModule;
-import com.facilio.bmsconsole.modules.InsertRecordBuilder;
-import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
-import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
+import com.facilio.bmsconsole.modules.*;
 import com.facilio.bmsconsole.util.LocationAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
+
+import java.util.Collections;
+import java.util.List;
 
 public class AddOrUpdatePurchaseOrderCommand implements Command {
 
@@ -74,7 +68,7 @@ public class AddOrUpdatePurchaseOrderCommand implements Command {
 				addRecord(Collections.singletonList(purchaseOrderContext), module, fields);
 				FacilioModule receivableModule = modBean.getModule(FacilioConstants.ContextNames.RECEIVABLE);
 				ReceivableContext receivableContext = new ReceivableContext();
-				receivableContext.setPoId(purchaseOrderContext.getId());
+				receivableContext.setPoId(purchaseOrderContext);
 				receivableContext.setStatus(Status.YET_TO_RECEIVE);
 				addRecord(Collections.singletonList(receivableContext), receivableModule, modBean.getAllFields(receivableModule.getName()));
 			}

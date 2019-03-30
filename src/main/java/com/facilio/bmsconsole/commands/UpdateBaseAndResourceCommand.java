@@ -1,15 +1,5 @@
 package com.facilio.bmsconsole.commands;
 
-import java.io.Serializable;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.logging.Logger;
-
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
@@ -18,8 +8,16 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.transaction.FacilioConnectionPool;
 import com.google.common.collect.ArrayListMultimap;
-
 import nl.basjes.shaded.org.springframework.util.StringUtils;
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
+
+import java.io.Serializable;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Logger;
 
 public class UpdateBaseAndResourceCommand implements Command,Serializable {
 	/**

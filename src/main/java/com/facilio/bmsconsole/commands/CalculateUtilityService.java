@@ -1,22 +1,17 @@
 package com.facilio.bmsconsole.commands;
 
+import com.facilio.bmsconsole.reports.ReportsUtil;
+import com.facilio.bmsconsole.tenant.*;
+import com.facilio.bmsconsole.util.TenantsAPI;
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-
-import com.facilio.bmsconsole.reports.ReportsUtil;
-import com.facilio.bmsconsole.tenant.FacilioUtility;
-import com.facilio.bmsconsole.tenant.RateCardContext;
-import com.facilio.bmsconsole.tenant.RateCardServiceContext;
-import com.facilio.bmsconsole.tenant.TenantContext;
-import com.facilio.bmsconsole.tenant.UtilityAsset;
-import com.facilio.bmsconsole.util.TenantsAPI;
 
 public class CalculateUtilityService implements Command {
 

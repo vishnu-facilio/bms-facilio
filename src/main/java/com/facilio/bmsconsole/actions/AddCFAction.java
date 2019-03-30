@@ -1,21 +1,19 @@
 package com.facilio.bmsconsole.actions;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-
+import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.chain.FacilioContext;
+import com.facilio.constants.FacilioConstants;
+import com.opensymphony.xwork2.ActionSupport;
 import org.apache.commons.chain.Command;
 import org.apache.struts2.ServletActionContext;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
-import com.facilio.bmsconsole.commands.TransactionChainFactory;
-import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.chain.FacilioContext;
-import com.facilio.constants.FacilioConstants;
-import com.opensymphony.xwork2.ActionSupport;
+import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
+import java.util.List;
 
 public class AddCFAction extends ActionSupport {
 	/**

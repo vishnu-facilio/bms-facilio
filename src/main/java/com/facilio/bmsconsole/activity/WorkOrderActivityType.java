@@ -1,8 +1,7 @@
 package com.facilio.bmsconsole.activity;
 
-import org.json.simple.JSONObject;
-
 import com.facilio.activity.ActivityType;
+import org.json.simple.JSONObject;
 
 public enum WorkOrderActivityType implements ActivityType {
 	CLOSE_ALL_TASK(2) {

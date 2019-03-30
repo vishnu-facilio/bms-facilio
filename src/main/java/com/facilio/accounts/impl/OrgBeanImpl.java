@@ -1,16 +1,7 @@
 package com.facilio.accounts.impl;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import com.facilio.accounts.bean.UserBean;
-import com.facilio.fw.BeanFactory;
-import org.apache.commons.chain.Chain;
-import org.apache.commons.lang3.StringUtils;
-
 import com.facilio.accounts.bean.OrgBean;
+import com.facilio.accounts.bean.UserBean;
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.Role;
 import com.facilio.accounts.dto.User;
@@ -24,19 +15,23 @@ import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
-import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.FacilioModule;
-import com.facilio.bmsconsole.modules.FieldFactory;
-import com.facilio.bmsconsole.modules.FieldType;
-import com.facilio.bmsconsole.modules.FieldUtil;
+import com.facilio.bmsconsole.modules.*;
 import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fs.FileStore;
 import com.facilio.fs.FileStoreFactory;
+import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
+import org.apache.commons.chain.Chain;
+import org.apache.commons.lang3.StringUtils;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class OrgBeanImpl implements OrgBean {
 

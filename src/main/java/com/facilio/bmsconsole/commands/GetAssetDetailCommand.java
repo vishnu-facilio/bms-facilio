@@ -1,17 +1,16 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.Collections;
-
-import org.apache.commons.chain.Context;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
+import org.apache.commons.chain.Context;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
+import java.util.Collections;
 
 public class GetAssetDetailCommand extends GenericGetModuleDataDetailCommand {
 	

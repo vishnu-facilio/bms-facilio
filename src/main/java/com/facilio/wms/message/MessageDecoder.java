@@ -1,12 +1,11 @@
 package com.facilio.wms.message;
 
-import java.util.logging.Logger;
+import com.google.gson.Gson;
 
 import javax.websocket.DecodeException;
 import javax.websocket.Decoder;
 import javax.websocket.EndpointConfig;
-
-import com.google.gson.Gson;
+import java.util.logging.Logger;
 
 /**
  * Created by Shivaraj on 16/05/2017.

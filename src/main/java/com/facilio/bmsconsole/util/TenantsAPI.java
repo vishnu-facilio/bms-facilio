@@ -1,17 +1,5 @@
 package com.facilio.bmsconsole.util;
 
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.json.simple.JSONObject;
-
 import com.chargebee.internal.StringJoiner;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.impl.UserBeanImpl;
@@ -19,34 +7,10 @@ import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.actions.DashboardAction;
-import com.facilio.bmsconsole.context.AssetContext;
-import com.facilio.bmsconsole.context.BaseSpaceContext;
-import com.facilio.bmsconsole.context.LabourContext;
-import com.facilio.bmsconsole.context.ResourceContext;
-import com.facilio.bmsconsole.context.TicketStatusContext;
-import com.facilio.bmsconsole.context.WorkOrderContext;
-import com.facilio.bmsconsole.context.ZoneContext;
-import com.facilio.bmsconsole.criteria.Condition;
-import com.facilio.bmsconsole.criteria.CriteriaAPI;
-import com.facilio.bmsconsole.criteria.DateOperators;
-import com.facilio.bmsconsole.criteria.DateRange;
-import com.facilio.bmsconsole.criteria.NumberOperators;
-import com.facilio.bmsconsole.criteria.PickListOperators;
-import com.facilio.bmsconsole.criteria.StringOperators;
-import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.FacilioModule;
-import com.facilio.bmsconsole.modules.FieldFactory;
-import com.facilio.bmsconsole.modules.FieldType;
-import com.facilio.bmsconsole.modules.FieldUtil;
-import com.facilio.bmsconsole.modules.InsertRecordBuilder;
-import com.facilio.bmsconsole.modules.ModuleFactory;
-import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
-import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
-import com.facilio.bmsconsole.tenant.RateCardContext;
-import com.facilio.bmsconsole.tenant.RateCardServiceContext;
-import com.facilio.bmsconsole.tenant.TenantContext;
-import com.facilio.bmsconsole.tenant.TenantUserContext;
-import com.facilio.bmsconsole.tenant.UtilityAsset;
+import com.facilio.bmsconsole.context.*;
+import com.facilio.bmsconsole.criteria.*;
+import com.facilio.bmsconsole.modules.*;
+import com.facilio.bmsconsole.tenant.*;
 import com.facilio.bmsconsole.view.ViewFactory;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fs.FileStore;
@@ -58,7 +22,13 @@ import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
+import org.json.simple.JSONObject;
+
+import java.sql.SQLException;
+import java.util.*;
 
 
 public class TenantsAPI {
@@ -1201,44 +1171,49 @@ public class TenantsAPI {
 		return tenant;
 		
 	}
-    public static List<Map<String,Object>> getPmCount(long zoneId,List<Long> assetIdList) throws Exception {
+    public static List<Map<String,Object>> getPmCount(long tenantId) throws Exception {
 		
-    	List<Long> zoneList = new ArrayList<Long>();
-		zoneList.add(zoneId);
-		
-		StringJoiner assetIdString = new StringJoiner(",");
-		for(Long id : assetIdList) {
-			assetIdString.add(String.valueOf(id));
-		}
-		List<BaseSpaceContext> spaces = SpaceAPI.getZoneChildren(zoneList);
-		StringJoiner idString = new StringJoiner(",");
-		for(BaseSpaceContext space:spaces) {
-			idString.add(String.valueOf(space.getId()));
-		}
-		idString.add(assetIdString.toString());
-		FacilioField tenantIdFld = new FacilioField();
+    	
+    	FacilioField tenantIdFld = new FacilioField();
 		tenantIdFld.setName("tenantId");
 		tenantIdFld.setColumnName("TENANT_ID");
-		tenantIdFld.setModule(ModuleFactory.getWorkOrderTemplateModule());
+		tenantIdFld.setModule(ModuleFactory.getTicketsModule());
 		tenantIdFld.setDataType(FieldType.NUMBER);
 
+		Condition tenantCond = new Condition();
+		tenantCond.setField(tenantIdFld);
+		tenantCond.setOperator(NumberOperators.EQUALS);
+		tenantCond.setValue(tenantId+"");
 		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule workOrderModule = modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER);
+		FacilioModule ticketModule = modBean.getModule(FacilioConstants.ContextNames.TICKET);
+				
 		FacilioModule module = ModuleFactory.getPreventiveMaintenanceModule();
-		FacilioModule woTemplatemodule = ModuleFactory.getWorkOrderTemplateModule();
-		
-		
-		
 		List<FacilioField> fields = FieldFactory.getPreventiveMaintenanceFields();
+		
+	   FacilioField pmId = new FacilioField();
+	   pmId.setModule(workOrderModule);
+	   pmId.setName("pm");
+	   pmId.setColumnName("PM_ID");
+	   List<FacilioField> selectFields = new ArrayList<FacilioField>();
+	   selectFields.add(pmId);
+	   GenericSelectRecordBuilder workOrderQuery = new GenericSelectRecordBuilder()
+													.table(workOrderModule.getTableName())
+													.select(selectFields)
+													.innerJoin(ticketModule.getTableName())
+													.on(ticketModule.getTableName()+".ID = "+workOrderModule.getTableName()+".ID")
+													.innerJoin("TicketStatus")
+													.on("Tickets.STATUS_ID = TicketStatus.ID")
+													.andCustomWhere("TicketStatus.STATUS_TYPE = "+TicketStatusContext.StatusType.PRE_OPEN.getIntVal())
+													.andCondition(CriteriaAPI.getCurrentOrgIdCondition(workOrderModule))
+													.andCondition(tenantCond);
+							            		
 		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 														.select(fields)
 														.table(module.getTableName())
-														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
-														.innerJoin(woTemplatemodule.getTableName())
-														.on("TEMPLATE_ID = "+woTemplatemodule.getTableName() +".ID")
-														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
-														.andCondition(CriteriaAPI.getCondition(woTemplatemodule.getTableName()+".RESOURCE_ID", "resourceId", idString.toString(), NumberOperators.EQUALS));
-									
+														.andCustomWhere(FieldFactory.getIdField(module).getCompleteColumnName() + " in (" + workOrderQuery.constructSelectStatement() + ")");
 		List<Map<String,Object>> rs = selectBuilder.get();
 		
 		return rs;

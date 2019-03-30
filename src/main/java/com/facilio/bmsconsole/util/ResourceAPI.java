@@ -1,18 +1,5 @@
 package com.facilio.bmsconsole.util;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
@@ -21,17 +8,15 @@ import com.facilio.bmsconsole.context.ResourceContext.ResourceType;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.criteria.PickListOperators;
-import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.FacilioModule;
-import com.facilio.bmsconsole.modules.FieldFactory;
-import com.facilio.bmsconsole.modules.FieldType;
-import com.facilio.bmsconsole.modules.LookupField;
-import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
-import com.facilio.bmsconsole.modules.ModuleFactory;
-import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
+import com.facilio.bmsconsole.modules.*;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericSelectRecordBuilder;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class ResourceAPI {
 	

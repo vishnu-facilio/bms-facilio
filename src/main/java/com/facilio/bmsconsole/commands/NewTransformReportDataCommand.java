@@ -1,15 +1,14 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.HashMap;
-import java.util.Map;
-
+import com.facilio.constants.FacilioConstants;
+import com.facilio.report.context.ReportContext;
+import com.facilio.workflows.util.WorkflowUtil;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
-import com.facilio.constants.FacilioConstants;
-import com.facilio.report.context.ReportContext;
-import com.facilio.workflows.util.WorkflowUtil;
+import java.util.HashMap;
+import java.util.Map;
 
 public class NewTransformReportDataCommand implements Command {
 

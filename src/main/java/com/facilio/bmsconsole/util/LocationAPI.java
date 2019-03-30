@@ -1,40 +1,23 @@
 package com.facilio.bmsconsole.util;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.sql.Types;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.chain.Chain;
-import org.apache.commons.collections4.CollectionUtils;
-
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
-import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.LocationContext;
-import com.facilio.bmsconsole.context.PurchaseOrderContext;
 import com.facilio.bmsconsole.context.StoreRoomContext;
 import com.facilio.bmsconsole.context.VendorContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
-import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.FacilioModule;
-import com.facilio.bmsconsole.modules.FieldFactory;
-import com.facilio.bmsconsole.modules.LookupField;
-import com.facilio.bmsconsole.modules.LookupFieldMeta;
-import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
+import com.facilio.bmsconsole.modules.*;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.DBUtil;
 import com.facilio.transaction.FacilioConnectionPool;
+import org.apache.commons.chain.Chain;
+import org.apache.commons.collections4.CollectionUtils;
+
+import java.sql.*;
+import java.util.*;
 
 public class LocationAPI {
 	

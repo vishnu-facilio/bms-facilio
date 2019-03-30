@@ -1,11 +1,11 @@
 package com.facilio.logging;
 
+import com.facilio.aws.util.AwsUtil;
+
 import java.io.FileNotFoundException;
 import java.io.PrintStream;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import com.facilio.aws.util.AwsUtil;
 
 public class SysOutLogger extends PrintStream {
 

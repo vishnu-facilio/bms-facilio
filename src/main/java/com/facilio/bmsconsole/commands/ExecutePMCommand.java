@@ -1,24 +1,11 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.Collections;
-import java.util.List;
-
-import org.apache.commons.chain.Chain;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-
 import com.facilio.beans.ModuleBean;
 import com.facilio.beans.ModuleCRUDBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.bmsconsole.context.NoteContext;
-import com.facilio.bmsconsole.context.PMJobsContext;
+import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.context.PMJobsContext.PMJobsStatus;
-import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.context.PreventiveMaintenance.TriggerType;
-import com.facilio.bmsconsole.context.TicketStatusContext;
-import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.PickListOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
@@ -29,6 +16,14 @@ import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
+import org.apache.commons.chain.Chain;
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
+import java.util.Collections;
+import java.util.List;
 
 public class ExecutePMCommand implements Command {
 

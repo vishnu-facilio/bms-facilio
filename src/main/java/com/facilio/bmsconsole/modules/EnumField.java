@@ -1,11 +1,11 @@
 package com.facilio.bmsconsole.modules;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class EnumField extends FacilioField {
 	/**

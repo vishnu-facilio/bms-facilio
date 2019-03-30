@@ -1,16 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.List;
-
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.json.simple.JSONObject;
-
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.ItemTypesContext;
 import com.facilio.bmsconsole.context.ToolTypesContext;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
@@ -23,9 +14,16 @@ import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.unitconversion.Unit;
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.json.simple.JSONObject;
+
+import java.util.List;
 
 public class GetToolsListCommand implements Command{
-	private static Logger log = LogManager.getLogger(TemplateAPI.class.getName());
+	private static Logger log = LogManager.getLogger(GetToolsListCommand.class.getName());
 	@Override
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub

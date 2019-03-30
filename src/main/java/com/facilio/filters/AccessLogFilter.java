@@ -1,27 +1,20 @@
 package com.facilio.filters;
 
-import java.io.IOException;
-import java.util.concurrent.atomic.AtomicInteger;
-
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import com.facilio.accounts.dto.Account;
+import com.facilio.accounts.dto.Organization;
+import com.facilio.accounts.dto.User;
+import com.facilio.accounts.util.AccountUtil;
 import org.apache.log4j.Appender;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.apache.log4j.spi.LoggingEvent;
 
-import com.facilio.accounts.dto.Organization;
-import com.facilio.accounts.dto.User;
-import com.facilio.accounts.util.AccountUtil;
+import javax.servlet.*;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class AccessLogFilter implements Filter {
 

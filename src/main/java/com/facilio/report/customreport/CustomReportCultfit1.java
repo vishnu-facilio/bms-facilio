@@ -1,12 +1,5 @@
 package com.facilio.report.customreport;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.FormulaContext;
@@ -23,6 +16,12 @@ import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericSelectRecordBuilder;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 public class CustomReportCultfit1 implements CustomReport {
 

@@ -1,8 +1,9 @@
 package com.facilio.billing.context;
-import java.util.List;
 
 import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.context.ZoneContext;
+
+import java.util.List;
 
 public class Tenant {
 	

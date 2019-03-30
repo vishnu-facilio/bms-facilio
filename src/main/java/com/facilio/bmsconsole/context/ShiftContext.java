@@ -1,9 +1,9 @@
 package com.facilio.bmsconsole.context;
 
+import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
+
 import java.time.LocalTime;
 import java.util.List;
-
-import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 
 public class ShiftContext extends ModuleBaseWithCustomFields {
 	/**

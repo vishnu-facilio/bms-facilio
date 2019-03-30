@@ -1,60 +1,25 @@
 package com.facilio.bmsconsole.util;
 
-import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.sql.SQLException;
-import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.stream.Collectors;
-
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.bmsconsole.criteria.*;
-import com.facilio.bmsconsole.modules.*;
-import com.facilio.bmsconsole.commands.TransactionChainFactory;
-import com.facilio.bmsconsole.context.*;
-import com.facilio.bmsconsole.workflow.rule.*;
-import com.facilio.chain.FacilioContext;
-import org.apache.commons.chain.Chain;
-import org.apache.commons.chain.Context;
-import org.apache.commons.lang3.StringUtils;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.AssetContext;
-import com.facilio.bmsconsole.context.BaseSpaceContext;
-import com.facilio.bmsconsole.context.PMIncludeExcludeResourceContext;
-import com.facilio.bmsconsole.context.PMJobsContext;
+import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.context.PMJobsContext.PMJobsStatus;
-import com.facilio.bmsconsole.context.PMReminder;
 import com.facilio.bmsconsole.context.PMReminder.ReminderType;
-import com.facilio.bmsconsole.context.PMReminderAction;
-import com.facilio.bmsconsole.context.PMResourcePlannerContext;
-import com.facilio.bmsconsole.context.PMResourcePlannerReminderContext;
-import com.facilio.bmsconsole.context.PMTriggerContext;
 import com.facilio.bmsconsole.context.PMTriggerContext.TriggerExectionSource;
 import com.facilio.bmsconsole.context.PMTriggerContext.TriggerType;
-import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.context.PreventiveMaintenance.PMAssignmentType;
-import com.facilio.bmsconsole.context.ResourceContext;
-import com.facilio.bmsconsole.context.SpaceContext;
-import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.TaskContext.InputType;
-import com.facilio.bmsconsole.context.TicketContext;
-import com.facilio.bmsconsole.context.WorkOrderContext;
-import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.FacilioModule;
-import com.facilio.bmsconsole.modules.FieldFactory;
-import com.facilio.bmsconsole.modules.FieldType;
-import com.facilio.bmsconsole.modules.FieldUtil;
-import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.bmsconsole.criteria.*;
+import com.facilio.bmsconsole.modules.*;
 import com.facilio.bmsconsole.templates.TaskSectionTemplate;
 import com.facilio.bmsconsole.templates.TaskTemplate;
 import com.facilio.bmsconsole.templates.TaskTemplate.AttachmentRequiredEnum;
 import com.facilio.bmsconsole.templates.Template;
 import com.facilio.bmsconsole.templates.WorkorderTemplate;
+import com.facilio.bmsconsole.workflow.rule.*;
+import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericDeleteRecordBuilder;
@@ -68,6 +33,19 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
+import org.apache.commons.chain.Chain;
+import org.apache.commons.chain.Context;
+import org.apache.commons.lang3.StringUtils;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.sql.SQLException;
+import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 public class PreventiveMaintenanceAPI {
 	

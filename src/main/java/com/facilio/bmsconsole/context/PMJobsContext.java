@@ -1,8 +1,8 @@
 package com.facilio.bmsconsole.context;
 
-import java.io.Serializable;
-
 import com.facilio.bmsconsole.templates.WorkorderTemplate;
+
+import java.io.Serializable;
 
 public class PMJobsContext implements Serializable {
 	

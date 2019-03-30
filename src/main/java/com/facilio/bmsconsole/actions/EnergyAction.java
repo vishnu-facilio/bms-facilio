@@ -1,12 +1,5 @@
 package com.facilio.bmsconsole.actions;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.chain.Chain;
-import org.json.simple.JSONObject;
-
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
@@ -19,6 +12,12 @@ import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.opensymphony.xwork2.ActionSupport;
+import org.apache.commons.chain.Chain;
+import org.json.simple.JSONObject;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class EnergyAction extends ActionSupport {
 	

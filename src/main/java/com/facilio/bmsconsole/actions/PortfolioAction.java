@@ -1,30 +1,19 @@
 package com.facilio.bmsconsole.actions;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Logger;
-
-import org.apache.commons.lang3.StringUtils;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-
 import com.facilio.bmsconsole.context.AssetCategoryContext;
 import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.BuildingContext;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
-import com.facilio.bmsconsole.context.SiteContext;
-import com.facilio.bmsconsole.context.SiteContext.SiteType;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.reports.ReportsUtil;
-import com.facilio.bmsconsole.util.AssetsAPI;
-import com.facilio.bmsconsole.util.DashboardUtil;
-import com.facilio.bmsconsole.util.DateTimeUtil;
-import com.facilio.bmsconsole.util.DeviceAPI;
-import com.facilio.bmsconsole.util.SpaceAPI;
+import com.facilio.bmsconsole.util.*;
 import com.opensymphony.xwork2.ActionSupport;
+import org.apache.commons.lang3.StringUtils;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+
+import java.util.*;
+import java.util.logging.Logger;
 
 public class PortfolioAction extends ActionSupport {
 	

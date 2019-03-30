@@ -1,14 +1,13 @@
 	package com.facilio.bmsconsole.modules;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+    import com.facilio.time.SecondsChronoUnit;
+    import com.fasterxml.jackson.annotation.JsonIgnore;
+    import org.apache.struts2.json.annotations.JSON;
 
-import org.apache.struts2.json.annotations.JSON;
-
-import com.facilio.time.SecondsChronoUnit;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+    import java.io.Serializable;
+    import java.util.ArrayList;
+    import java.util.List;
+    import java.util.Objects;
 
 public class FacilioModule implements Serializable {
 	

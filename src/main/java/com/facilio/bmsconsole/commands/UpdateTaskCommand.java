@@ -1,52 +1,26 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
+import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.activity.WorkOrderActivityType;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.bmsconsole.context.*;
+import com.facilio.bmsconsole.criteria.Condition;
+import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.criteria.NumberOperators;
+import com.facilio.bmsconsole.modules.*;
+import com.facilio.bmsconsole.util.ShiftAPI;
+import com.facilio.bmsconsole.util.TicketAPI;
+import com.facilio.bmsconsole.workflow.rule.EventType;
+import com.facilio.chain.FacilioContext;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-import com.facilio.accounts.util.AccountUtil;
-import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.activity.WorkOrderActivityType;
-import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.bmsconsole.context.ReadingContext;
-import com.facilio.bmsconsole.context.TaskContext;
-import com.facilio.bmsconsole.context.TicketContext;
-import com.facilio.bmsconsole.context.TicketStatusContext;
-import com.facilio.bmsconsole.context.WorkOrderContext;
-import com.facilio.bmsconsole.criteria.Condition;
-import com.facilio.bmsconsole.criteria.CriteriaAPI;
-import com.facilio.bmsconsole.criteria.NumberOperators;
-import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.FacilioModule;
-import com.facilio.bmsconsole.modules.FieldFactory;
-import com.facilio.bmsconsole.modules.FieldType;
-import com.facilio.bmsconsole.modules.FieldUtil;
-import com.facilio.bmsconsole.modules.LookupField;
-import com.facilio.bmsconsole.modules.LookupFieldMeta;
-import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
-import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
-import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
-import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
-import com.facilio.bmsconsole.util.ShiftAPI;
-import com.facilio.bmsconsole.util.TicketAPI;
-import com.facilio.bmsconsole.workflow.rule.EventType;
-import com.facilio.bmsconsole.workflow.rule.TicketActivity;
-import com.facilio.chain.FacilioContext;
-import com.facilio.constants.FacilioConstants;
-import com.facilio.fw.BeanFactory;
-import com.google.common.collect.MapDifference;
-import com.google.common.collect.Maps;
-import com.google.common.collect.MapDifference.ValueDifference;
+import java.util.*;
 
 public class UpdateTaskCommand implements Command {
 	

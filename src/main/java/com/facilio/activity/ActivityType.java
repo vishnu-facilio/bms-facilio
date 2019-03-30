@@ -1,14 +1,12 @@
 package com.facilio.activity;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-
-import org.json.simple.JSONObject;
-
 import com.facilio.bmsconsole.activity.AssetActivityType;
 import com.facilio.bmsconsole.activity.WorkOrderActivityType;
 import com.facilio.collections.UniqueMap;
+import org.json.simple.JSONObject;
+
+import java.util.Collections;
+import java.util.Map;
 
 public interface ActivityType {
 	public int getValue();

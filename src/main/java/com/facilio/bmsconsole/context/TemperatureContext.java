@@ -1,10 +1,10 @@
 package com.facilio.bmsconsole.context;
 
+import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
-import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 
 public class TemperatureContext extends ModuleBaseWithCustomFields {
 	/**

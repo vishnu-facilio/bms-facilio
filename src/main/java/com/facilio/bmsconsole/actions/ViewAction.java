@@ -1,10 +1,5 @@
 package com.facilio.bmsconsole.actions;
 
-import java.util.List;
-
-import org.apache.commons.chain.Chain;
-import org.json.simple.JSONObject;
-
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.ViewField;
@@ -14,6 +9,10 @@ import com.facilio.bmsconsole.view.SortField;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import org.apache.commons.chain.Chain;
+import org.json.simple.JSONObject;
+
+import java.util.List;
 
 public class ViewAction extends FacilioAction {
 	

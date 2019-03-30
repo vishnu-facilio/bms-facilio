@@ -1,18 +1,13 @@
 package com.facilio.queue;
 
+import com.amazonaws.services.sqs.AmazonSQS;
+import com.amazonaws.services.sqs.model.*;
+import com.facilio.aws.util.AwsUtil;
+import com.facilio.tasker.config.InstantJobConf;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
-
-import com.amazonaws.services.sqs.AmazonSQS;
-import com.amazonaws.services.sqs.model.ChangeMessageVisibilityResult;
-import com.amazonaws.services.sqs.model.GetQueueUrlResult;
-import com.amazonaws.services.sqs.model.Message;
-import com.amazonaws.services.sqs.model.ReceiveMessageRequest;
-import com.amazonaws.services.sqs.model.ReceiveMessageResult;
-import com.amazonaws.services.sqs.model.SendMessageResult;
-import com.facilio.aws.util.AwsUtil;
-import com.facilio.tasker.config.InstantJobConf;
 
 public class SQSQueue  implements FacilioQueue {
 

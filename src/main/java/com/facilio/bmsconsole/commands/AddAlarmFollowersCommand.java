@@ -1,18 +1,18 @@
 package com.facilio.bmsconsole.commands;
 
 //import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.context.AlarmContext;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.sql.GenericInsertRecordBuilder;
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
+
+import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class AddAlarmFollowersCommand implements Command {
 

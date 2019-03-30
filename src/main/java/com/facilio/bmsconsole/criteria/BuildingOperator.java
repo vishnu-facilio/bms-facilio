@@ -1,24 +1,19 @@
 package com.facilio.bmsconsole.criteria;
 
-import java.lang.reflect.InvocationTargetException;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
+import com.facilio.bmsconsole.context.BaseSpaceContext;
+import com.facilio.bmsconsole.context.ResourceContext;
+import com.facilio.bmsconsole.util.ResourceAPI;
+import com.facilio.bmsconsole.util.SpaceAPI;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.collections.PredicateUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 
-import com.facilio.bmsconsole.context.BaseSpaceContext;
-import com.facilio.bmsconsole.context.ResourceContext;
-import com.facilio.bmsconsole.util.ResourceAPI;
-import com.facilio.bmsconsole.util.SpaceAPI;
+import java.lang.reflect.InvocationTargetException;
+import java.sql.SQLException;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public enum BuildingOperator implements Operator<String> {
 	

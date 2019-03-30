@@ -1,23 +1,12 @@
 package com.facilio.bmsconsole.actions;
 
-import java.io.File;
-import java.io.InputStream;
-import java.util.List;
-
-import org.apache.commons.chain.Chain;
-import org.apache.log4j.LogManager;
-
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.commands.data.ServicePortalInfo;
-import com.facilio.bmsconsole.context.CalendarColorContext;
-import com.facilio.bmsconsole.context.ControllerContext;
-import com.facilio.bmsconsole.context.EmailSettingContext;
-import com.facilio.bmsconsole.context.SetupLayout;
-import com.facilio.bmsconsole.context.SupportEmailContext;
+import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.util.ControllerAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
@@ -31,6 +20,12 @@ import com.facilio.fs.FileStoreFactory;
 import com.facilio.fw.BeanFactory;
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionSupport;
+import org.apache.commons.chain.Chain;
+import org.apache.log4j.LogManager;
+
+import java.io.File;
+import java.io.InputStream;
+import java.util.List;
 
 public class SetupActions<T> extends ActionSupport {
 

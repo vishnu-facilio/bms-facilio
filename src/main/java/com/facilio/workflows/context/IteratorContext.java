@@ -1,15 +1,14 @@
 package com.facilio.workflows.context;
 
+import com.facilio.bmsconsole.commands.CalculateDerivationCommand;
+import com.facilio.bmsconsole.modules.FieldUtil;
+import org.json.simple.JSONArray;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
-
-import org.json.simple.JSONArray;
-
-import com.facilio.bmsconsole.commands.CalculateDerivationCommand;
-import com.facilio.bmsconsole.modules.FieldUtil;
 
 public class IteratorContext implements WorkflowExpression {
 

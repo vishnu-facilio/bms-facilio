@@ -1,20 +1,19 @@
 package com.facilio.leed.commands;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-
 import com.facilio.bmsconsole.context.BaseSpaceContext.SpaceType;
 import com.facilio.bmsconsole.context.LocationContext;
 import com.facilio.leed.context.ArcContext;
 import com.facilio.leed.context.LeedConfigurationContext;
 import com.facilio.leed.util.LeedAPI;
 import com.facilio.leed.util.LeedIntegrator;
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 public class FetchArcAssetsCommand implements Command {
 

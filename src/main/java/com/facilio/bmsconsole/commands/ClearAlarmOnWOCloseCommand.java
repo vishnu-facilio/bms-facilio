@@ -1,13 +1,5 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.commons.chain.Chain;
-import org.apache.commons.chain.Context;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.AlarmContext;
 import com.facilio.bmsconsole.context.TicketStatusContext;
@@ -19,6 +11,13 @@ import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.events.constants.EventConstants;
 import com.facilio.serializable.SerializableCommand;
+import org.apache.commons.chain.Chain;
+import org.apache.commons.chain.Context;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class ClearAlarmOnWOCloseCommand implements SerializableCommand {
 

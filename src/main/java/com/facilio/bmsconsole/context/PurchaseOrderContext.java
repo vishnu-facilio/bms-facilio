@@ -1,13 +1,10 @@
 package com.facilio.bmsconsole.context;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import org.apache.commons.collections4.CollectionUtils;
 
-import com.facilio.bmsconsole.context.PurchaseRequestContext.Status;
-import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
-import com.facilio.bmsconsole.util.LocationAPI;
+import java.util.ArrayList;
+import java.util.List;
 
 public class PurchaseOrderContext extends ModuleBaseWithCustomFields {
 
@@ -93,8 +90,10 @@ public class PurchaseOrderContext extends ModuleBaseWithCustomFields {
 	public static PurchaseOrderContext fromPurchaseRequest(List<PurchaseRequestContext> list) throws Exception {
 		PurchaseOrderContext purchaseOrderContext = new PurchaseOrderContext();
 		purchaseOrderContext.setStatus(Status.REQUESTED);
-		purchaseOrderContext.setName("");
-		purchaseOrderContext.setDescription("");
+		if(!CollectionUtils.isEmpty(list)) {
+			purchaseOrderContext.setName(list.get(0).getName());
+			purchaseOrderContext.setDescription("");
+		}
 		long vendorId = -1;
 		long storeRoomId = -1;
 		

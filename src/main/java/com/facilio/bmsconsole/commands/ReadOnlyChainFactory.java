@@ -1,12 +1,11 @@
 package com.facilio.bmsconsole.commands;
 
-import org.apache.commons.chain.Chain;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-
 import com.facilio.bmsconsole.actions.GetToolTransactionsListCommand;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.chain.FacilioChain;
+import org.apache.commons.chain.Chain;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 public class ReadOnlyChainFactory {
 	private static Logger LOGGER = LogManager.getLogger(ReadOnlyChainFactory.class.getName());
@@ -709,6 +708,9 @@ public class ReadOnlyChainFactory {
 		Chain c = getDefaultChain();
 		c.addCommand(SetTableNamesCommand.getForReceivables());
 		c.addCommand(new LoadAllFieldsCommand());
+		c.addCommand(new LoadViewCommand());
+		c.addCommand(new GenerateCriteriaFromFilterCommand());
+		c.addCommand(new GenerateSearchConditionCommand());
 		c.addCommand(new GetReceivablesListCommand());
 		return c;
 	}

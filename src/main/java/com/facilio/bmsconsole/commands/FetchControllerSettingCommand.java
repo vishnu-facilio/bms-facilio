@@ -1,11 +1,10 @@
 package com.facilio.bmsconsole.commands;
 
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-
 import com.facilio.bmsconsole.context.ControllerContext;
 import com.facilio.bmsconsole.util.ControllerAPI;
 import com.facilio.constants.FacilioConstants;
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
 
 public class FetchControllerSettingCommand implements Command{
 

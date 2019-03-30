@@ -1,15 +1,13 @@
 package com.facilio.bmsconsole.templates;
 
-import java.util.List;
+import com.facilio.bmsconsole.modules.FieldUtil;
+import org.w3c.dom.Element;
 
 import javax.xml.bind.annotation.XmlAnyElement;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-
-import org.w3c.dom.Element;
-
-import com.facilio.bmsconsole.modules.FieldUtil;
+import java.util.List;
 
 @XmlRootElement(name="workflows")
 public class DefaultTemplateWorkflowsConf {

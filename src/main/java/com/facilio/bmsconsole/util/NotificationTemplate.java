@@ -1,19 +1,18 @@
 package com.facilio.bmsconsole.util;
 
-import java.util.HashMap;
-import java.util.Map;
-
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.bmsconsole.context.NotificationContext;
+import com.facilio.bmsconsole.modules.FieldUtil;
+import com.facilio.bmsconsole.workflow.rule.EventType;
 import org.apache.commons.text.StringSubstitutor;
 import org.apache.log4j.LogManager;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import com.facilio.accounts.util.AccountUtil;
-import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.bmsconsole.context.NotificationContext;
-import com.facilio.bmsconsole.modules.FieldUtil;
-import com.facilio.bmsconsole.workflow.rule.EventType;
+import java.util.HashMap;
+import java.util.Map;
 
 public class NotificationTemplate {
 	private static org.apache.log4j.Logger log = LogManager.getLogger(NotificationTemplate.class.getName());

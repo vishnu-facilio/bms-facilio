@@ -1,28 +1,18 @@
 package com.facilio.sql;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
-import com.facilio.aws.util.AwsUtil;
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.bmsconsole.modules.*;
 import com.facilio.fw.LRUCache;
+import com.facilio.transaction.FacilioConnectionPool;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
-import com.facilio.accounts.util.AccountUtil;
-import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.FieldType;
-import com.facilio.bmsconsole.modules.FieldUtil;
-import com.facilio.bmsconsole.modules.FileField;
-import com.facilio.bmsconsole.modules.NumberField;
-import com.facilio.transaction.FacilioConnectionPool;
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 public class GenericInsertRecordBuilder implements InsertBuilderIfc<Map<String, Object>> {
 	private static final Logger LOGGER = LogManager.getLogger(GenericInsertRecordBuilder.class.getName());

@@ -1,10 +1,10 @@
 //$Id$
 package com.facilio.fw.auth;
 
+import org.json.simple.JSONObject;
+
 import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
-
-import org.json.simple.JSONObject;
 
 public class SAMLAttribute {
 

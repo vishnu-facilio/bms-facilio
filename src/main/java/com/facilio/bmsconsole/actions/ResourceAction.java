@@ -1,10 +1,10 @@
 package com.facilio.bmsconsole.actions;
 
-import java.util.List;
-
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.constants.FacilioConstants;
+
+import java.util.List;
 
 public class ResourceAction extends FacilioAction {
 	/**
