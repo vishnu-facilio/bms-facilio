@@ -563,6 +563,7 @@ public class ExpressionContext implements WorkflowExpression {
 		result = result +"field -- "+getFieldName() +"\n";
 		result = result +"aggregate -- "+getAggregateString() +"\n";
 		result = result +"constant -- "+getConstant() +"\n";
+		result = result +"criteria -- "+getCriteria() +"\n";
 		return result;
 	}
 
