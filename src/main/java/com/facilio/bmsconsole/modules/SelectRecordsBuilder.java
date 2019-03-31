@@ -236,30 +236,41 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 	@Override
 	public List<E> get() throws Exception {
 		checkForNull(true);
-		long getStartTime = System.currentTimeMillis();
-		List<Map<String, Object>> propList = getAsJustProps(false);
-		long getTimeTaken = System.currentTimeMillis() - getStartTime;
-		LOGGER.debug("Time Taken to get props in SelectBuilder : "+getTimeTaken);
-		
-		long startTime = System.currentTimeMillis();
-		List<E> beans = FieldUtil.getAsBeanListFromMapList(propList, beanClass);
-		long timeTaken = System.currentTimeMillis() - startTime;
-		LOGGER.debug("Time Taken to convert to bean list in SelectBuilder : "+timeTaken);
-		return beans;
+		try {
+			long getStartTime = System.currentTimeMillis();
+			List<Map<String, Object>> propList = getAsJustProps(false);
+			long getTimeTaken = System.currentTimeMillis() - getStartTime;
+			LOGGER.debug("Time Taken to get props in SelectBuilder : "+getTimeTaken);
+			
+			long startTime = System.currentTimeMillis();
+			List<E> beans = FieldUtil.getAsBeanListFromMapList(propList, beanClass);
+			long timeTaken = System.currentTimeMillis() - startTime;
+			LOGGER.debug("Time Taken to convert to bean list in SelectBuilder : "+timeTaken);
+			return beans;
+		}
+		catch (Exception e) {
+			LOGGER.error("Error occurred in selecting records for module : "+module);
+			throw e;
+		}
 	}
 	
 	public Map<Long, E> getAsMap() throws Exception {
 		checkForNull(true);
-		List<Map<String, Object>> propList = getAsJustProps(false);
-		
-		Map<Long, E> beanMap = new HashMap<>();
-		if(propList != null && propList.size() > 0) {
-			for(Map<String, Object> props : propList) {
-				E bean = FieldUtil.getAsBeanFromMap(props, beanClass);
-				beanMap.put(bean.getId(), bean);
+		try {
+			List<Map<String, Object>> propList = getAsJustProps(false);
+			Map<Long, E> beanMap = new HashMap<>();
+			if(propList != null && propList.size() > 0) {
+				for(Map<String, Object> props : propList) {
+					E bean = FieldUtil.getAsBeanFromMap(props, beanClass);
+					beanMap.put(bean.getId(), bean);
+				}
 			}
+			return beanMap;
 		}
-		return beanMap;
+		catch (Exception e) {
+			LOGGER.error("Error occurred in selecting records as map for module : "+module);
+			throw e;
+		}
 	}
 	
 	public Map<Long, Map<String, Object>> getAsMapProps() throws Exception {
@@ -336,8 +347,7 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 		if (AccountUtil.getCurrentUser() != null) {
 			if (module.getName().equals(FacilioConstants.ContextNames.WORK_ORDER)) {
 				Criteria scopeCriteria = AccountUtil.getCurrentUser().scopeCriteria(module.getName());
-				if(scopeCriteria != null)
-				{
+				if(scopeCriteria != null) {
 					builder.andCriteria(scopeCriteria);
 				}
 
@@ -355,7 +365,7 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 		FacilioField orgIdField = FieldFactory.getOrgIdField(module);
 		FacilioField moduleIdField = FieldFactory.getModuleIdField(module);
 		FacilioField siteIdField = null;
-		if (FieldUtil.isSystemFieldsPresent(module)) {
+		if (FieldUtil.isSiteIdFieldPresent(module)) {
 			siteIdField = FieldFactory.getSiteIdField(module);
 		}
 		FacilioField isDeletedField = null;
