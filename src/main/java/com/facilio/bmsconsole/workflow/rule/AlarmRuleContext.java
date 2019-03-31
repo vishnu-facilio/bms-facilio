@@ -1,10 +1,13 @@
 package com.facilio.bmsconsole.workflow.rule;
 
-import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.struts2.json.annotations.JSON;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 
 public class AlarmRuleContext {
 	
