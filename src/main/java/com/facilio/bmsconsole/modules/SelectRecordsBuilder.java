@@ -429,7 +429,7 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 		if(propList != null && propList.size() > 0) {
 			Map<String, LookupField> lookupFields = getLookupFields();
 			if(lookupFields.size() > 0) {
-				Map<String, LookupFieldMeta> lookups = fetchLookup.isEmpty() ? Collections.EMPTY_MAP : fetchLookup.stream().collect(Collectors.toMap(LookupFieldMeta::getName, Function.identity()));
+				Map<String, LookupFieldMeta> lookups = CollectionUtils.isEmpty(fetchLookup) ? Collections.EMPTY_MAP : fetchLookup.stream().collect(Collectors.toMap(LookupFieldMeta::getName, Function.identity()));
 				lookupFields.putAll(lookups);
 				Map<String, Set<Long>> lookupIds = new HashMap<>();
 				for(Map<String, Object> props : propList) {
