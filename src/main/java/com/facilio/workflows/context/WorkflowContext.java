@@ -19,6 +19,13 @@ public class WorkflowContext implements Serializable {
 	/**
 	 * 
 	 */
+	
+	public WorkflowContext() {
+		
+	}
+	public WorkflowContext(String workflowString) {
+		this.workflowString = workflowString;
+	}
 	private static final long serialVersionUID = 1L;
 
 	private static final Logger LOGGER = Logger.getLogger(WorkflowContext.class.getName());
@@ -47,7 +54,7 @@ public class WorkflowContext implements Serializable {
 		cachedData.put(name, data);
 	}
 
-	Long id;
+	long id = -1l;
 	Long orgId;
 	String workflowString;
 	List<ParameterContext> parameters;
@@ -160,11 +167,11 @@ public class WorkflowContext implements Serializable {
 		}
 		this.variableResultMap.put(key, value);
 	}
-	public Long getId() {
+	public long getId() {
 		return id;
 	}
 
-	public void setId(Long id) {
+	public void setId(long id) {
 		this.id = id;
 	}
 
@@ -223,7 +230,7 @@ public class WorkflowContext implements Serializable {
 	public void setWorkflowUIMode(int workflowUIMode) {
 		this.workflowUIMode = WorkflowUIMode.valueOf(workflowUIMode);
 	}
-	public Object executeWorkflow(boolean ignoreNullValues) throws Exception {
+	public Object executeWorkflow() throws Exception {
 		
 		Object result = null;
 		
@@ -245,14 +252,8 @@ public class WorkflowContext implements Serializable {
 			return 0;
 		}
 		
-//		if (AccountUtil.getCurrentOrg().getId() == 135/* || (AccountUtil.getCurrentOrg().getId() == 88 && (getResultEvaluator().equals("(a)*(c-d)") || getResultEvaluator().equals("(a)*(c-d)*(e)*(f)") || getResultEvaluator().equals("(a)*(c-d)*(e)*(f)")))*/) {
-//			LOGGER.info("variableToExpresionMap --- "+variableResultMap+" \n\n"+"expString --- "+getResultEvaluator());
-//		}
 		
-		result =  WorkflowUtil.evaluateExpression(getResultEvaluator(),variableResultMap, ignoreNullValues);
-//		if (AccountUtil.getCurrentOrg().getId() == 135/* || (AccountUtil.getCurrentOrg().getId() == 88)*/) {
-//			LOGGER.info("result --- "+result);
-//		}
+		result =  WorkflowUtil.evaluateExpression(getResultEvaluator(),variableResultMap, isIgnoreNullParams);
 		return result;
 	}
 	

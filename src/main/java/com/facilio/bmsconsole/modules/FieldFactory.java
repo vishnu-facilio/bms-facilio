@@ -4086,6 +4086,21 @@ public class FieldFactory {
 
 		return fields;
 	}
+	
+	public static List<FacilioField> getWorkflowLogFields() {
+		List<FacilioField> fields = new ArrayList<>();
+		FacilioModule module = ModuleFactory.getWorkflowLogModule();
+
+		fields.add(getIdField(module));
+
+		fields.add(getField("workflowId", "WORKFLOW_ID", module, FieldType.LOOKUP));
+		fields.add(getField("executionTime", "EXECUTION_TIME", module, FieldType.NUMBER));
+		fields.add(getField("input", "INPUT_PARAMS", module, FieldType.STRING));
+		fields.add(getField("variableMap", "VARIABLE_MAP", module, FieldType.STRING));
+		fields.add(getField("result", "RESULT", module, FieldType.STRING));
+
+		return fields;
+	}
 
 	public static List<FacilioField> getPMResourceScheduleRuleRelFields() {
 		List<FacilioField> fields = new ArrayList<>();
