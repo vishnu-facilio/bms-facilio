@@ -9,6 +9,7 @@ import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.JoinBuilderIfc;
 import com.facilio.sql.SelectBuilderIfc;
 import com.facilio.sql.WhereBuilder;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -25,6 +26,8 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 	private GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder();
 	private Class<E> beanClass;
 	private Collection<FacilioField> select;
+	private List<FacilioField> aggrFields = null;
+	private List<LookupFieldMeta> fetchLookup = null;
 	private int level = 0;
 	private int maxLevel = LEVEL;
 	private String moduleName;
@@ -34,7 +37,6 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 	private WhereBuilder where = new WhereBuilder();
 	private StringBuilder joinBuilder = new StringBuilder();
 	private boolean isAggregation = false;
-	private List<LookupFieldMeta> fetchLookup = new ArrayList<>();
 	//Need where condition builder for custom field
 	
 	public SelectRecordsBuilder() {
@@ -224,12 +226,28 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 	}
 	
 	public SelectRecordsBuilder<E> fetchLookup(LookupFieldMeta field) {
-		this.fetchLookup.add(field);
+		if (fetchLookup == null) {
+			fetchLookup = new ArrayList<>();
+		}
+		fetchLookup.add(field);
 		return this;
 	}
 	
 	public SelectRecordsBuilder<E> fetchLookups(Collection<LookupFieldMeta> fields) {
+		if (fetchLookup == null) {
+			fetchLookup = new ArrayList<>();
+		}
 		this.fetchLookup.addAll(fields);
+		return this;
+	}
+
+	public SelectRecordsBuilder<E> aggregate (AggregateOperator aggr, FacilioField field) throws Exception {
+		FacilioField aggrField = aggr.getSelectField(field);
+		if (aggrFields == null) {
+			aggrFields = new ArrayList<>();
+		}
+		aggrFields.add(aggrField);
+		isAggregation = true;
 		return this;
 	}
 	
@@ -375,10 +393,15 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 		
 		Set<FacilioField> selectFields = getDefaultFields(orgIdField, moduleIdField, siteIdField, isDeletedField);
 		builder.groupBy(groupBy);
+
 		selectFields.addAll(select);
-		if (!fetchLookup.isEmpty()) {
+		if (CollectionUtils.isNotEmpty(fetchLookup)) {
 			selectFields.addAll(fetchLookup);
 		}
+		if (CollectionUtils.isNotEmpty(aggrFields)) {
+			selectFields.addAll(aggrFields);
+		}
+
 		builder.select(selectFields);
 
 		builder.table(module.getTableName());
@@ -474,7 +497,7 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 			}
 		}
 		
-		if(select == null || select.size() <= 0) {
+		if(CollectionUtils.isEmpty(select) && CollectionUtils.isEmpty(aggrFields)) {
 			throw new IllegalArgumentException("Select Fields cannot be null or empty");
 		}
 		
