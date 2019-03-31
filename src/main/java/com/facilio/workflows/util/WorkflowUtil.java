@@ -207,6 +207,8 @@ public class WorkflowUtil {
 		return moduleName+"-"+resourceId;
 	}
 	
+	// workflow Result Fetching block starts
+	
 	private static boolean evalWorkflowResultForBoolean (Object result) {
 		if (result == null) {
 		    return false;
@@ -220,45 +222,61 @@ public class WorkflowUtil {
 		}
 	}
 	
-	public static boolean getWorkflowExpressionResultAsBoolean(String workflowString,Map<String,Object> paramMap) throws Exception {
-		Object result = getWorkflowExpressionResult(workflowString, paramMap);
-		return evalWorkflowResultForBoolean(result);
+	public static Object getResult(Long workflowId,Map<String,Object> paramMap)  throws Exception  {
+		return getResult(workflowId, paramMap, false);
 	}
-	
-	public static Object getWorkflowExpressionResult(String workflowString,Map<String,Object> paramMap) throws Exception {
-		return getWorkflowExpressionResult(workflowString, paramMap, null, false, false);
+
+	public static Object getResult(Long workflowId,Map<String,Object> paramMap, boolean ignoreNullExpressions)  throws Exception  {
+		WorkflowContext workflowContext = getWorkflowContext(workflowId);
+		return getWorkflowResult(workflowContext,paramMap, null, ignoreNullExpressions, false,false);
 	}
-	
-	public static boolean getWorkflowExpressionResultAsBoolean(String workflowString,Map<String,Object> paramMap, Map<String, ReadingDataMeta> rdmCache, boolean ignoreNullExpressions, boolean ignoreMarked) throws Exception {
-		Object result = getWorkflowExpressionResult(workflowString, paramMap, rdmCache, ignoreNullExpressions, ignoreMarked);
-		return evalWorkflowResultForBoolean(result);
-	}
-	
-	public static Object getWorkflowExpressionResult(String workflowString,Map<String,Object> paramMap, Map<String, ReadingDataMeta> rdmCache, boolean ignoreNullExpressions, boolean ignoreMarked) throws Exception {
-		return getWorkflowResult(workflowString, paramMap, rdmCache, ignoreNullExpressions, ignoreMarked, false);
-	}
-	
-	public static Map<String, Object> getExpressionResultMap(String workflowString,Map<String,Object> paramMap) throws Exception {
-		return getExpressionResultMap(workflowString, paramMap, null, true, false);
-	}
-	
-	public static Map<String, Object> getExpressionResultMap(String workflowString,Map<String,Object> paramMap, Map<String, ReadingDataMeta> rdmCache, boolean ignoreNullExpressions, boolean ignoreMarked) throws Exception {
-		return (Map<String, Object>) getWorkflowResult(workflowString, paramMap, rdmCache, ignoreNullExpressions, ignoreMarked, true);
-	}
-	
 	public static Map<String, Object> getExpressionResultMap(Long workflowId,Map<String,Object> paramMap)  throws Exception  {
 		WorkflowContext workflowContext = getWorkflowContext(workflowId);
-		return getExpressionResultMap(workflowContext.getWorkflowString(),paramMap);
+		return getExpressionResultMap(workflowContext,paramMap);
 	}
 	
-	private static Object getWorkflowResult(String workflowString,Map<String,Object> paramMap, Map<String, ReadingDataMeta> rdmCache, boolean ignoreNullExpressions, boolean ignoreMarked, boolean isVariableMapNeeded) throws Exception {
-		WorkflowContext workflowContext = getWorkflowContextFromString(workflowString);
+	
+	public static Object getWorkflowExpressionResult(String workflowString,Map<String,Object> paramMap) throws Exception {
+		return getWorkflowResult(new WorkflowContext(workflowString),paramMap, null, false, false,false);
+	}
+	public static Object getWorkflowExpressionResult(WorkflowContext workflowContext,Map<String,Object> paramMap) throws Exception {
+		return getWorkflowResult(workflowContext,paramMap, null, false, false,false);
+	}
+	
+	
+	public static Map<String, Object> getExpressionResultMap(String workflowContext,Map<String,Object> paramMap) throws Exception {
+		return (Map<String, Object>) getWorkflowResult(new WorkflowContext(workflowContext),paramMap, null, false, false,true);
+	}
+	public static Map<String, Object> getExpressionResultMap(WorkflowContext workflowContext,Map<String,Object> paramMap) throws Exception {
+		return (Map<String, Object>) getWorkflowResult(workflowContext,paramMap, null, false, false,true);
+	}
+	
+	
+	public static boolean getWorkflowExpressionResultAsBoolean(WorkflowContext workflowContext,Map<String,Object> paramMap) throws Exception {
+		Object result = getWorkflowResult(workflowContext,paramMap, null, false, false,false);
+		return evalWorkflowResultForBoolean(result);
+	}
+	
+	public static boolean getWorkflowExpressionResultAsBoolean(WorkflowContext workflowContext,Map<String,Object> paramMap, Map<String, ReadingDataMeta> rdmCache, boolean ignoreNullExpressions, boolean ignoreMarked) throws Exception {
+		Object result = getWorkflowResult(workflowContext, paramMap, rdmCache, ignoreNullExpressions, ignoreMarked, false);
+		return evalWorkflowResultForBoolean(result);
+	}
+	
+	public static Object getWorkflowExpressionResult(WorkflowContext workflowContext,Map<String,Object> paramMap, Map<String, ReadingDataMeta> rdmCache, boolean ignoreNullExpressions, boolean ignoreMarked) throws Exception {
+		return getWorkflowResult(workflowContext, paramMap, rdmCache, ignoreNullExpressions, ignoreMarked, false);
+	}
+	
+	private static Object getWorkflowResult(WorkflowContext workflowContext,Map<String,Object> paramMap, Map<String, ReadingDataMeta> rdmCache, boolean ignoreNullExpressions, boolean ignoreMarked, boolean isVariableMapNeeded) throws Exception {
+		workflowContext = getWorkflowContextFromString(workflowContext.getWorkflowString(),workflowContext);
 		workflowContext.setCachedRDM(rdmCache);
 		workflowContext.setIgnoreMarkedReadings(ignoreMarked);
 		List<ParameterContext> parameterContexts = validateAndGetParameters(workflowContext,paramMap);
 		workflowContext.setParameters(parameterContexts);
 		workflowContext.setIgnoreNullParams(ignoreNullExpressions);
-		Object result = workflowContext.executeWorkflow(ignoreNullExpressions);
+		
+		Object result = workflowContext.executeWorkflow();
+		
+		WorkflowLogUtil.addWorkflowLog(workflowContext,paramMap,result);
 		
 		if(isVariableMapNeeded) {
 			return workflowContext.getVariableResultMap();
@@ -267,6 +285,8 @@ public class WorkflowUtil {
 			return result;
 		}
 	}
+	
+	// workflow Result Fetching block starts
 	
 	public static void deleteWorkflow(long id) throws Exception {
 		deleteWorkflows(Collections.singletonList(id));
@@ -432,7 +452,7 @@ public class WorkflowUtil {
 						workflowFieldContext.setModuleId(module.getModuleId());
 						workflowFieldContext.setFieldId(field.getId());
 						workflowFieldContext.setField(field);
-						if (workflowContext.getId() != null) {
+						if (workflowContext.getId() > 0) {
 							workflowFieldContext.setWorkflowId(workflowContext.getId());
 						}
 						Long parentId = null;
@@ -608,20 +628,6 @@ public class WorkflowUtil {
 				}
 			}
 		}
-	}
-	
-	public static Object getResult(Long workflowId,Map<String,Object> paramMap)  throws Exception  {
-		return getResult(workflowId, paramMap, true);
-	}
-	public static Object getResult(Long workflowId,JSONObject paramMapJSON)  throws Exception  {
-		
-		Map<String, Object> paramMap = FacilioUtil.getAsMap(paramMapJSON);
-		return getResult(workflowId, paramMap, true);
-	}
-	public static Object getResult(Long workflowId,Map<String,Object> paramMap, boolean ignoreNullExpressions)  throws Exception  {
-		LOGGER.fine("getResult() -- workflowid - "+workflowId+" params -- "+paramMap);
-		WorkflowContext workflowContext = getWorkflowContext(workflowId);
-		return getWorkflowExpressionResult(workflowContext.getWorkflowString(),paramMap, null, ignoreNullExpressions, false);
 	}
 	
 	public static List<ParameterContext> validateAndGetParameters(WorkflowContext workflowContext,Map<String,Object> paramMap) throws Exception {
@@ -1535,10 +1541,6 @@ public class WorkflowUtil {
 	private static final DecimalFormat DEFAULT_DECIMAL_FORMAT = getDefaultDecimalFormat();
 	
 	public static Object evaluateExpression(String exp,Map<String,Object> variablesMap, boolean ignoreNullValues) throws Exception {
-		if (AccountUtil.getCurrentOrg().getOrgId() == 186l) {
-			LOGGER.info("EXPRESSION STRING IS -- "+exp+" variablesMap -- "+variablesMap);
-		}
-		LOGGER.fine("EXPRESSION STRING IS -- "+exp+" variablesMap -- "+variablesMap);
 		if(exp == null) {
 			return null;
 		}

@@ -25,7 +25,7 @@ public class EventCoRelationCommand implements Command {
 				if (workflowId != -1) {
 					WorkflowContext workflow = WorkflowUtil.getWorkflowContext(workflowId);
 					if(workflow.isBooleanReturnWorkflow()) {
-						boolean resultBoolean = WorkflowUtil.getWorkflowExpressionResultAsBoolean(workflow.getWorkflowString(), FieldUtil.getAsProperties(event));
+						boolean resultBoolean = WorkflowUtil.getWorkflowExpressionResultAsBoolean(workflow, FieldUtil.getAsProperties(event));
 						if(resultBoolean) {
 							switch(rule.getColRelActionEnum()) {
 								case IGNORE:
