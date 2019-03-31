@@ -30,10 +30,10 @@ public class ApproveOrRejectToolCommand implements Command {
 		int approvedStateVal = (int) context.get(FacilioConstants.ContextNames.TOOL_TRANSACTION_APPORVED_STATE);
 		ApprovalState approvalState = ApprovalState.valueOf(approvedStateVal);
 		List<Long> parentIds = new ArrayList<>();
-		List<LookupFieldMeta> lookUpfields = new ArrayList<>();
-		lookUpfields.add(new LookupFieldMeta((LookupField) toolTransactionsFieldMap.get("tool")));
-		lookUpfields.add(new LookupFieldMeta((LookupField) toolTransactionsFieldMap.get("purchasedTool")));
-		lookUpfields.add(new LookupFieldMeta((LookupField) toolTransactionsFieldMap.get("toolType")));
+		List<LookupField>lookUpfields = new ArrayList<>();
+		lookUpfields.add((LookupField) toolTransactionsFieldMap.get("tool"));
+		lookUpfields.add((LookupField) toolTransactionsFieldMap.get("purchasedTool"));
+		lookUpfields.add((LookupField) toolTransactionsFieldMap.get("toolType"));
 
 		SelectRecordsBuilder<ToolTransactionContext> selectBuilder = new SelectRecordsBuilder<ToolTransactionContext>()
 				.select(toolTransactionsFields).table(toolTransactionsModule.getTableName())

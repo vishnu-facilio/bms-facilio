@@ -27,7 +27,7 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 	private Class<E> beanClass;
 	private Collection<FacilioField> select;
 	private List<FacilioField> aggrFields = null;
-	private List<LookupFieldMeta> fetchLookup = null;
+	private List<LookupField> fetchLookup = null;
 	private int level = 0;
 	private int maxLevel = LEVEL;
 	private String moduleName;
@@ -225,7 +225,7 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 		return this;
 	}
 	
-	public SelectRecordsBuilder<E> fetchLookup(LookupFieldMeta field) {
+	public SelectRecordsBuilder<E> fetchLookup(LookupField field) {
 		if (fetchLookup == null) {
 			fetchLookup = new ArrayList<>();
 		}
@@ -233,7 +233,7 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 		return this;
 	}
 	
-	public SelectRecordsBuilder<E> fetchLookups(Collection<LookupFieldMeta> fields) {
+	public SelectRecordsBuilder<E> fetchLookups(Collection<? extends  LookupField> fields) {
 		if (fetchLookup == null) {
 			fetchLookup = new ArrayList<>();
 		}
@@ -320,7 +320,7 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 		return lookupFields;
 	}
 
-	private Set<FacilioField> getDefaultFields(FacilioField orgIdField, FacilioField moduleIdField, FacilioField siteIdField, FacilioField isDeletedField) {
+	private Set<FacilioField> computeFields(FacilioField orgIdField, FacilioField moduleIdField, FacilioField siteIdField, FacilioField isDeletedField) {
 		Set<FacilioField> selectFields = new HashSet<>();
 		if (!isAggregation) {
 			selectFields.add(orgIdField);
@@ -335,6 +335,16 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 			if (module.isTrashEnabled()) {
 				selectFields.add(isDeletedField);
 			}
+		}
+
+		if (CollectionUtils.isNotEmpty(select)) {
+			selectFields.addAll(select);
+		}
+		if (CollectionUtils.isNotEmpty(fetchLookup)) {
+			selectFields.addAll(fetchLookup);
+		}
+		if (CollectionUtils.isNotEmpty(aggrFields)) {
+			selectFields.addAll(aggrFields);
 		}
 		return selectFields;
 	}
@@ -391,18 +401,10 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 			isDeletedField = FieldFactory.getIsDeletedField(module.getParentModule());
 		}
 		
-		Set<FacilioField> selectFields = getDefaultFields(orgIdField, moduleIdField, siteIdField, isDeletedField);
-		builder.groupBy(groupBy);
-
-		selectFields.addAll(select);
-		if (CollectionUtils.isNotEmpty(fetchLookup)) {
-			selectFields.addAll(fetchLookup);
-		}
-		if (CollectionUtils.isNotEmpty(aggrFields)) {
-			selectFields.addAll(aggrFields);
-		}
-
+		Set<FacilioField> selectFields = computeFields(orgIdField, moduleIdField, siteIdField, isDeletedField);
 		builder.select(selectFields);
+
+		builder.groupBy(groupBy);
 
 		builder.table(module.getTableName());
 
@@ -429,14 +431,14 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 		if(propList != null && propList.size() > 0) {
 			Map<String, LookupField> lookupFields = getLookupFields();
 			if(lookupFields.size() > 0) {
-				Map<String, LookupFieldMeta> lookups = CollectionUtils.isEmpty(fetchLookup) ? Collections.EMPTY_MAP : fetchLookup.stream().collect(Collectors.toMap(LookupFieldMeta::getName, Function.identity()));
+				Map<String, LookupField> lookups = CollectionUtils.isEmpty(fetchLookup) ? Collections.EMPTY_MAP : fetchLookup.stream().collect(Collectors.toMap(LookupField::getName, Function.identity()));
 				lookupFields.putAll(lookups);
 				Map<String, Set<Long>> lookupIds = new HashMap<>();
 				for(Map<String, Object> props : propList) {
 					for(LookupField lookupField : lookupFields.values()) {
 						Long recordId = (Long) props.get(lookupField.getName());
 						if (recordId != null) {
-							if(level < maxLevel || lookupField instanceof LookupFieldMeta) {
+							if(level < maxLevel || lookups.containsKey(lookupField.getName())) {
 								addToLookupIds(lookupField, recordId, lookupIds);
 							}
 							else {
@@ -458,7 +460,7 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 							LookupField lookupField = lookupFields.get(fieldName);
 							Long recordId = (Long) props.get(lookupField.getName());
 							if (recordId != null) {
-								if(level < maxLevel || lookupField instanceof LookupFieldMeta) {
+								if(level < maxLevel || lookups.containsKey(lookupField.getName())) {
 									props.put(lookupField.getName(), getLookupVal(lookupField, recordId, lookedUpVals));
 								}
 							}
@@ -497,7 +499,7 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 			}
 		}
 		
-		if(CollectionUtils.isEmpty(select) && CollectionUtils.isEmpty(aggrFields)) {
+		if(CollectionUtils.isEmpty(select) && CollectionUtils.isEmpty(aggrFields) && CollectionUtils.isEmpty(fetchLookup)) {
 			throw new IllegalArgumentException("Select Fields cannot be null or empty");
 		}
 		

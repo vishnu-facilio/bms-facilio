@@ -31,8 +31,8 @@ public class FetchPurchaseRequestDetailsCommand implements Command {
 					.select(fields)
 					.beanClass(FacilioConstants.ContextNames.getClassFromModuleName(lineItemModuleName))
 					.andCondition(CriteriaAPI.getCondition("PR_ID", "prid", String.valueOf(purchaseRequestContext.getId()), NumberOperators.EQUALS))
-					.fetchLookups(Arrays.asList(new LookupFieldMeta((LookupField) fieldsAsMap.get("itemType")), 
-					new LookupFieldMeta((LookupField) fieldsAsMap.get("toolType"))));
+					.fetchLookups(Arrays.asList((LookupField) fieldsAsMap.get("itemType"),
+					(LookupField) fieldsAsMap.get("toolType")));
 		
 			List<PurchaseRequestLineItemContext> list = builder.get();
 			purchaseRequestContext.setLineItems(list);

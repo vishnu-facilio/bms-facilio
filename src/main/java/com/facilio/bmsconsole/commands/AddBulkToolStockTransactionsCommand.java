@@ -31,15 +31,15 @@ public class AddBulkToolStockTransactionsCommand implements Command {
 		FacilioModule ptmodule = modBean.getModule(FacilioConstants.ContextNames.PURCHASED_TOOL);
 		List<FacilioField> ptfields = modBean.getAllFields(FacilioConstants.ContextNames.PURCHASED_TOOL);
 		Map<String, FacilioField> ptoolsFieldMap = FieldFactory.getAsMap(ptfields);
-		List<LookupFieldMeta> ptlookUpfields = new ArrayList<>();
-		ptlookUpfields.add(new LookupFieldMeta((LookupField) ptoolsFieldMap.get("toolType")));
+		List<LookupField>ptlookUpfields = new ArrayList<>();
+		ptlookUpfields.add((LookupField) ptoolsFieldMap.get("toolType"));
 
 		List<Long> toolIds = (List<Long>) context.get(FacilioConstants.ContextNames.TOOL_IDS);
 		FacilioModule Toolmodule = modBean.getModule(FacilioConstants.ContextNames.TOOL);
 		List<FacilioField> Toolfields = modBean.getAllFields(FacilioConstants.ContextNames.TOOL);
 		Map<String, FacilioField> toolsFieldMap = FieldFactory.getAsMap(Toolfields);
-		List<LookupFieldMeta> lookUpfields = new ArrayList<>();
-		lookUpfields.add(new LookupFieldMeta((LookupField) toolsFieldMap.get("toolType")));
+		List<LookupField>lookUpfields = new ArrayList<>();
+		lookUpfields.add((LookupField) toolsFieldMap.get("toolType"));
 
 		List<ToolTransactionContext> toolTransaction = new ArrayList<>();
 

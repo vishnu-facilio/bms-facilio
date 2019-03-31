@@ -223,8 +223,8 @@ public class AddOrUpdateWorkorderItemsCommand implements Command {
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ITEM);
 		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.ITEM);
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
-		List<LookupFieldMeta> lookUpfields = new ArrayList<>();
-		lookUpfields.add(new LookupFieldMeta((LookupField) fieldMap.get("storeRoom")));
+		List<LookupField>lookUpfields = new ArrayList<>();
+		lookUpfields.add((LookupField) fieldMap.get("storeRoom"));
 
 		SelectRecordsBuilder<ItemContext> selectBuilder = new SelectRecordsBuilder<ItemContext>().select(fields)
 				.table(module.getTableName()).moduleName(module.getName()).beanClass(ItemContext.class)

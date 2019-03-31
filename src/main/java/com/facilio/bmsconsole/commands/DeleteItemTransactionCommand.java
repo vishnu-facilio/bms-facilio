@@ -30,8 +30,8 @@ public class DeleteItemTransactionCommand implements Command {
 				List<FacilioField> itemFields = modBean.getAllFields(FacilioConstants.ContextNames.ITEM);
 
 				Map<String, FacilioField> itemFieldsMap = FieldFactory.getAsMap(itemFields);
-				List<LookupFieldMeta> lookUpfields = new ArrayList<>();
-				lookUpfields.add(new LookupFieldMeta((LookupField) itemFieldsMap.get("itemType")));
+				List<LookupField>lookUpfields = new ArrayList<>();
+				lookUpfields.add((LookupField) itemFieldsMap.get("itemType"));
 
 				SelectRecordsBuilder<ItemContext> itemSelectBuilder = new SelectRecordsBuilder<ItemContext>()
 						.select(itemFields).table(itemModule.getTableName()).moduleName(itemModule.getName())

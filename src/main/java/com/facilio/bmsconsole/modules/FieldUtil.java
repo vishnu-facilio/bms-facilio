@@ -425,9 +425,10 @@ public class FieldUtil {
 																						;
 
 					if (field instanceof LookupFieldMeta && CollectionUtils.isNotEmpty(((LookupFieldMeta) field).getChildLookupFields())) {
-						for (LookupField lookupField : ((LookupFieldMeta) field).getChildLookupFields()) {
-							lookupBeanBuilder.fetchLookup(lookupField instanceof LookupFieldMeta ? (LookupFieldMeta) lookupField : new LookupFieldMeta(lookupField));
-						}
+						lookupBeanBuilder.fetchLookups(((LookupFieldMeta) field).getChildLookupFields());
+//						for (LookupField lookupField : ((LookupFieldMeta) field).getChildLookupFields()) {
+////							lookupBeanBuilder.fetchLookup(lookupField instanceof LookupFieldMeta ? (LookupFieldMeta) lookupField : new LookupFieldMeta(lookupField));
+//						}
 					}
 
 					if (isMap) {

@@ -816,7 +816,7 @@ public class SpaceAPI {
 		return sites;
 	}
 	
-	public static List<SiteContext> getAllSites(List<LookupFieldMeta> lookupFields) throws Exception {
+	public static List<SiteContext> getAllSites(List<? extends LookupField> lookupFields) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.SITE);
 		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.SITE);
