@@ -235,13 +235,7 @@ public class WorkflowUtil {
 	}
 	
 	public static Object getWorkflowExpressionResult(String workflowString,Map<String,Object> paramMap, Map<String, ReadingDataMeta> rdmCache, boolean ignoreNullExpressions, boolean ignoreMarked) throws Exception {
-		WorkflowContext workflowContext = getWorkflowContextFromString(workflowString);
-		workflowContext.setCachedRDM(rdmCache);
-		workflowContext.setIgnoreMarkedReadings(ignoreMarked);
-		List<ParameterContext> parameterContexts = validateAndGetParameters(workflowContext,paramMap);
-		workflowContext.setParameters(parameterContexts);
-		workflowContext.setIgnoreNullParams(ignoreNullExpressions);
-		return workflowContext.executeWorkflow(ignoreNullExpressions);
+		return getWorkflowResult(workflowString, paramMap, rdmCache, ignoreNullExpressions, ignoreMarked, false);
 	}
 	
 	public static Map<String, Object> getExpressionResultMap(String workflowString,Map<String,Object> paramMap) throws Exception {
@@ -249,14 +243,7 @@ public class WorkflowUtil {
 	}
 	
 	public static Map<String, Object> getExpressionResultMap(String workflowString,Map<String,Object> paramMap, Map<String, ReadingDataMeta> rdmCache, boolean ignoreNullExpressions, boolean ignoreMarked) throws Exception {
-		WorkflowContext workflowContext = getWorkflowContextFromString(workflowString);
-		workflowContext.setCachedRDM(rdmCache);
-		workflowContext.setIgnoreMarkedReadings(ignoreMarked);
-		List<ParameterContext> parameterContexts = validateAndGetParameters(workflowContext,paramMap);
-		workflowContext.setParameters(parameterContexts);
-		workflowContext.setIgnoreNullParams(ignoreNullExpressions);
-		workflowContext.executeWorkflow(ignoreNullExpressions);
-		return workflowContext.getVariableResultMap();
+		return (Map<String, Object>) getWorkflowResult(workflowString, paramMap, rdmCache, ignoreNullExpressions, ignoreMarked, true);
 	}
 	
 	public static Map<String, Object> getExpressionResultMap(Long workflowId,Map<String,Object> paramMap)  throws Exception  {
@@ -264,21 +251,25 @@ public class WorkflowUtil {
 		return getExpressionResultMap(workflowContext.getWorkflowString(),paramMap);
 	}
 	
-	public static Long addWorkflow(String workflowString) throws Exception {
-		WorkflowContext workflowContext = new WorkflowContext();
-		workflowContext.setWorkflowString(workflowString);
-		return addWorkflow(workflowContext);
+	private static Object getWorkflowResult(String workflowString,Map<String,Object> paramMap, Map<String, ReadingDataMeta> rdmCache, boolean ignoreNullExpressions, boolean ignoreMarked, boolean isVariableMapNeeded) throws Exception {
+		WorkflowContext workflowContext = getWorkflowContextFromString(workflowString);
+		workflowContext.setCachedRDM(rdmCache);
+		workflowContext.setIgnoreMarkedReadings(ignoreMarked);
+		List<ParameterContext> parameterContexts = validateAndGetParameters(workflowContext,paramMap);
+		workflowContext.setParameters(parameterContexts);
+		workflowContext.setIgnoreNullParams(ignoreNullExpressions);
+		Object result = workflowContext.executeWorkflow(ignoreNullExpressions);
+		
+		if(isVariableMapNeeded) {
+			return workflowContext.getVariableResultMap();
+		}
+		else {
+			return result;
+		}
 	}
 	
 	public static void deleteWorkflow(long id) throws Exception {
-		FacilioModule module = ModuleFactory.getWorkflowModule();
-		
-		GenericDeleteRecordBuilder deleteBuilder = new GenericDeleteRecordBuilder()
-														.table(module.getTableName())
-														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
-														.andCondition(CriteriaAPI.getIdCondition(id, module));
-		
-		deleteBuilder.delete();
+		deleteWorkflows(Collections.singletonList(id));
 	}
 	
 	public static void deleteWorkflows(Collection<Long> ids) throws Exception {
@@ -298,7 +289,13 @@ public class WorkflowUtil {
 		checkDuplicateParams(workflow);
 	}
 	
-	public static void checkDuplicateParams(WorkflowContext workflow) throws Exception {
+	public static Long addWorkflow(String workflowString) throws Exception {
+		WorkflowContext workflowContext = new WorkflowContext();
+		workflowContext.setWorkflowString(workflowString);
+		return addWorkflow(workflowContext);
+	}
+	
+	private static void checkDuplicateParams(WorkflowContext workflow) throws Exception {
 		
 		List<String> params = new ArrayList<String>();
 		
@@ -311,22 +308,8 @@ public class WorkflowUtil {
 				params.add(parameter.getName());
 			}
 		}
-		/*for(ExpressionContext expressionContext : workflow.getExpressions()) {
-			
-			String expString = expressionContext.getExpressionString();
-			
-			int nameStartIndex = expString.indexOf("<expression name=\"")+"<expression name=\"".length();
-			String name = expString.substring(nameStartIndex, expString.indexOf('"', nameStartIndex));
-			
-			if(params.contains(name)) {
-				throw new IllegalArgumentException("param - "+name+" is declared more than once");
-			}
-			else {
-				params.add(name);
-			}
-		}*/
 	}
-	public static void checkParamsDeclaration(WorkflowContext workflow) throws Exception {
+	private static void checkParamsDeclaration(WorkflowContext workflow) throws Exception {
 		
 		List<String> params = new ArrayList<String>();
 		
@@ -407,7 +390,7 @@ public class WorkflowUtil {
 		
 		workflowContext = WorkflowUtil.getWorkflowContext(workflowContext.getId(), true);
 		
-		List<WorkflowFieldContext> workflowFields = getWorkflowFields(workflowContext);
+		List<WorkflowFieldContext> workflowFields = getWorkflowField(workflowContext);
 		
 		if (workflowFields != null && !workflowFields.isEmpty()) {
 			for(WorkflowFieldContext workflowField :workflowFields) {
@@ -418,62 +401,6 @@ public class WorkflowUtil {
 
 		insertBuilder.save();
 		return workflowContext.getId();
-	}
-	
-	public static List<WorkflowFieldContext> getWorkflowFields(WorkflowContext workflowContext) throws Exception {
-		
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		
-		List<WorkflowFieldContext> workflowFieldContexts = null;
-		for(WorkflowExpression workflowExpression :workflowContext.getExpressions()) {
-			
-			if(workflowExpression instanceof ExpressionContext) {
-				ExpressionContext expression = (ExpressionContext)  workflowExpression;
-				String fieldName = expression.getFieldName();
-				String moduleName = expression.getModuleName();
-				
-				if(moduleName != null && fieldName != null && !moduleName.startsWith("$")) {
-					LOGGER.fine("moduleName -- "+moduleName +" fieldName -- "+fieldName);
-					FacilioModule module = modBean.getModule(moduleName);
-					FacilioField field = modBean.getField(fieldName, moduleName);
-					if(field != null) {
-						WorkflowFieldContext workflowFieldContext = new WorkflowFieldContext();
-						
-						workflowFieldContext.setOrgId(module.getOrgId());
-						workflowFieldContext.setModuleId(module.getModuleId());
-						workflowFieldContext.setFieldId(field.getId());
-						workflowFieldContext.setWorkflowId(workflowContext.getId());
-						
-						Long parentId = null;
-						if(expression.getCriteria() != null ) {
-							Map<String, Condition> conditions = expression.getCriteria().getConditions();
-							for(Condition condition :conditions.values()) {
-								if(condition.getFieldName().equals("parentId") && !condition.getValue().equals("${resourceId}")) {
-									if(condition.getValue() != null && !condition.getValue().contains("${")) {
-										parentId = Long.parseLong(condition.getValue());
-									}
-								}
-							}
-						}
-						if(parentId != null) {
-							workflowFieldContext.setResourceId(parentId);
-						}
-						if(expression.getAggregateOpperator() != null) {
-							workflowFieldContext.setAggregation(expression.getAggregateOpperator());
-						}
-						
-						if(workflowFieldContexts == null) {
-							workflowFieldContexts = new ArrayList<>();
-						}
-						
-						if(!workflowFieldContexts.contains(workflowFieldContext)) {
-							workflowFieldContexts.add(workflowFieldContext);
-						}
-					}
-				}
-			}
-		}
-		return workflowFieldContexts;
 	}
 	
 	public static List<WorkflowFieldContext>  getWorkflowField(WorkflowContext workflowContext) throws Exception {
@@ -513,14 +440,22 @@ public class WorkflowUtil {
 							Map<String, Condition> conditions = expression.getCriteria().getConditions();
 							for(Condition condition :conditions.values()) {
 								if(condition.getFieldName().equals("parentId") && !condition.getValue().equals("${resourceId}")) {
-									parentId = Long.parseLong(condition.getValue());
+									if(condition.getValue() != null && !condition.getValue().contains("${")) {
+										parentId = Long.parseLong(condition.getValue());
+									}
 								}
 							}
 						}
 						if(parentId != null) {
 							workflowFieldContext.setResourceId(parentId);
 						}
-						workflowFieldList.add(workflowFieldContext);
+						if(expression.getAggregateOpperator() != null) {
+							workflowFieldContext.setAggregation(expression.getAggregateOpperator());
+						}
+						
+						if(!workflowFieldList.contains(workflowFieldContext)) {
+							workflowFieldList.add(workflowFieldContext);
+						}
 					}
 				}
 			}
@@ -640,7 +575,7 @@ public class WorkflowUtil {
 		}
 	}
 	
-	public static void getExpressionParsedFromString(List<WorkflowExpression> expressions) throws Exception {
+	public static void getExpressionParsedFromString(List<WorkflowExpression> expressions) throws Exception {	// need to fix this method. 
 		
 		if(expressions != null && !expressions.isEmpty()) {
 			for(int i = 0; i < expressions.size(); i++) {
@@ -1577,6 +1512,9 @@ public class WorkflowUtil {
 					break;
 				case CONSUMPTION:
 					facilioWorkflowFunction = new ArrayList<>( FacilioConsumptionFunctions.getAllFunctions().values());
+					break;
+				case ML:
+					facilioWorkflowFunction = new ArrayList<>( MLFunctions.getAllFunctions().values());
 					break;
 		
 			}
