@@ -7,10 +7,7 @@ import com.facilio.bmsconsole.context.ReportContext;
 import com.facilio.bmsconsole.context.ReportFieldContext;
 import com.facilio.bmsconsole.context.TicketStatusContext;
 import com.facilio.bmsconsole.criteria.Condition;
-import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.FacilioModule;
-import com.facilio.bmsconsole.modules.FieldFactory;
-import com.facilio.bmsconsole.modules.FieldType;
+import com.facilio.bmsconsole.modules.*;
 import com.facilio.bmsconsole.util.DashboardUtil;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.constants.FacilioConstants;
@@ -44,7 +41,7 @@ public class CustomReportCultfit1 implements CustomReport {
 		
 		List<FacilioField> selectFields = new ArrayList<>();
 		
-		FacilioField countField = FormulaContext.CommonAggregateOperator.COUNT.getSelectField(statusField);
+		FacilioField countField = AggregateOperator.CommonAggregateOperator.COUNT.getSelectField(statusField);
 		countField.setName("value");
 		
 		ReportFieldContext reportFieldContext = new ReportFieldContext();

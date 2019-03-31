@@ -2,8 +2,8 @@ package com.facilio.bmsconsole.commands;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
-import com.facilio.bmsconsole.context.FormulaContext.AggregateOperator;
-import com.facilio.bmsconsole.context.FormulaContext.DateAggregateOperator;
+import com.facilio.bmsconsole.modules.AggregateOperator;
+import com.facilio.bmsconsole.modules.AggregateOperator.DateAggregateOperator;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.LookupField;

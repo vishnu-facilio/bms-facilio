@@ -2,7 +2,6 @@ package com.facilio.bmsconsole.commands;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.FormulaContext;
 import com.facilio.bmsconsole.modules.*;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.rule.WorkflowEventContext;
@@ -82,11 +81,11 @@ public class GetAllFieldsCommand implements Command {
 		}
 		
 		JSONObject reportOperators = new JSONObject();
-		reportOperators.put("DateAggregateOperator", FormulaContext.DateAggregateOperator.values());
-		reportOperators.put("NumberAggregateOperator", FormulaContext.NumberAggregateOperator.values());
-		reportOperators.put("StringAggregateOperator", FormulaContext.StringAggregateOperator.values());
-		reportOperators.put("SpaceAggregateOperator", FormulaContext.SpaceAggregateOperator.values());
-		reportOperators.put("EnergyPurposeAggregateOperator", FormulaContext.EnergyPurposeAggregateOperator.values());
+		reportOperators.put("DateAggregateOperator", AggregateOperator.DateAggregateOperator.values());
+		reportOperators.put("NumberAggregateOperator", AggregateOperator.NumberAggregateOperator.values());
+		reportOperators.put("StringAggregateOperator", AggregateOperator.StringAggregateOperator.values());
+		reportOperators.put("SpaceAggregateOperator", AggregateOperator.SpaceAggregateOperator.values());
+		reportOperators.put("EnergyPurposeAggregateOperator", AggregateOperator.EnergyPurposeAggregateOperator.values());
 		
 		long orgId = AccountUtil.getCurrentOrg().getOrgId();
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean", orgId);

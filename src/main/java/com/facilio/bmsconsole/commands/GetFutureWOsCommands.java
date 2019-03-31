@@ -1,6 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
-import com.facilio.bmsconsole.context.FormulaContext.DateAggregateOperator;
+import com.facilio.bmsconsole.modules.AggregateOperator.DateAggregateOperator;
 import com.facilio.bmsconsole.context.PMJobsContext;
 import com.facilio.bmsconsole.context.PMTriggerContext;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;

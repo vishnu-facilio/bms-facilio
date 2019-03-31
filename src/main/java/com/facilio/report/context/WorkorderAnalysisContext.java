@@ -1,6 +1,6 @@
 package com.facilio.report.context;
 
-import com.facilio.bmsconsole.context.FormulaContext.AggregateOperator;
+import com.facilio.bmsconsole.modules.AggregateOperator;
 import com.facilio.bmsconsole.criteria.Criteria;
 
 import java.util.List;
