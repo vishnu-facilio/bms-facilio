@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.modules.FacilioField;
@@ -9,6 +10,8 @@ import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.events.constants.EventConstants;
 import com.facilio.fw.BeanFactory;
+import com.facilio.timeseries.TimeSeriesAPI;
+
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
@@ -31,8 +34,55 @@ public class ModeledDataCommand implements Command {
 		Map<String,List<ReadingContext>> moduleVsReading = new HashMap<String,List<ReadingContext>> ();
 		Map<String,ReadingContext> iModuleVsReading = new HashMap<String,ReadingContext> ();
 		Long controllerId=(Long) context.get(FacilioConstants.ContextNames.CONTROLLER_ID);
+		List<Map<String , Object>> pointsData= TimeSeriesAPI.getPointsData();
+		List<Map<String, Object>> insertNewPointsData= new ArrayList< >();
+		List<Map<String,Object>>  dataPoints= null;
+		long orgId = AccountUtil.getCurrentOrg().getOrgId();
+
 		
 		LOGGER.debug("Inside ModeledDataCommand####### deviceData: "+deviceData);
+		for(Map.Entry<String, Map<String,String>> data:deviceData.entrySet()) {
+
+			String deviceName=data.getKey();
+			Map<String,String> instanceMap= data.getValue();
+			Iterator<String> instanceList = instanceMap.keySet().iterator();
+			while(instanceList.hasNext()) {
+				String instanceName=instanceList.next();
+				if(deviceName ==null || instanceName==null) {
+					continue;
+				}
+				dataPoints= getValueContainsPointsData( deviceName,  instanceName, controllerId , pointsData);
+				
+				if(dataPoints==null) {
+
+					Map<String, Object> value=new HashMap<String,Object>();
+					value.put("orgId", orgId);
+					value.put("device",deviceName);
+					value.put("instance", instanceName);
+					value.put("createdTime", System.currentTimeMillis());
+					if(controllerId!=null) {
+						//this will ensure the new inserts after addition of controller gets proper controller id
+						value.put("controllerId", controllerId);
+					}
+					insertNewPointsData.add(value);
+					continue;
+				}
+				else {
+					Map<String, Object> stat =dataPoints.get(0);
+					Long assetId= (Long) stat.get("assetId");
+					Long fieldId= (Long) stat.get("fieldId");
+					if(fieldId!=null && assetId!=null){
+						pointsData.remove(stat);
+					}
+					
+				}
+			}
+		}	
+		TimeSeriesAPI.insertPoints(insertNewPointsData);
+		pointsData.addAll(insertNewPointsData);
+			
+		
+		//oldPublish data
 		for(Map.Entry<String, Map<String,String>> data:deviceData.entrySet()) {
 			
 			
@@ -102,9 +152,23 @@ public class ModeledDataCommand implements Command {
 
 		context.put(FacilioConstants.ContextNames.READINGS_MAP,moduleVsReading);
 		context.put(FacilioConstants.ContextNames.HISTORY_READINGS, false);
+		context.put("POINTS_DATA_RECORD", pointsData);
+		
 		
 		return false;
 	}
+	private List<Map<String,Object>> getValueContainsPointsData(String deviceName, String instanceName,Long controllerId ,List<Map<String , Object>> points_Data) throws Exception{
 
+		for (Map<String, Object> map : points_Data) {
+			if((map.containsValue(deviceName) && map.containsValue(instanceName)&& map.containsValue(controllerId))){
+				List<Map<String, Object>> stat= new ArrayList< >();
+				stat.add(map);			
+				return stat;
+
+			}
+		}
+		return null;
+	}
+	
 	
 }

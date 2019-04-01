@@ -1577,6 +1577,14 @@ public class ModuleFactory {
 		return syncModule;
 	}
 	
+	public static FacilioModule getPointsModule() {
+		FacilioModule syncModule = new FacilioModule();
+		syncModule.setName("points");
+		syncModule.setDisplayName("Points");
+		syncModule.setTableName("Points");
+		return syncModule;
+	}
+	
 	public static FacilioModule getUnmodeledDataModule() {
 		FacilioModule syncModule = new FacilioModule();
 		syncModule.setName("unmodeledData");

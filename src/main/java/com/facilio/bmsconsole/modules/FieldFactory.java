@@ -4739,6 +4739,7 @@ public class FieldFactory {
 		
 		List<FacilioField> fields = new ArrayList<>();
 		fields.add(getField("instanceId", "INSTANCE_ID", module, FieldType.NUMBER));
+		fields.add(getField("newInstanceId", "NEW_INSTANCE_ID" ,module , FieldType.NUMBER ));
 		fields.add(getField("ttime", "TTIME", module, FieldType.NUMBER));
 		fields.add(getField("value", "VALUE", module, FieldType.STRING));
 		return fields;
@@ -4757,6 +4758,27 @@ public class FieldFactory {
         fields.add(getField("subscribed", "IS_SUBSCRIBED", module, FieldType.BOOLEAN));
         fields.add(getField("thresholdJson", "THRESHOLD_JSON", module, FieldType.STRING));
         fields.add(getField("createdTime", "CREATED_TIME", module, FieldType.NUMBER));
+		return fields;
+	}
+	
+	public static List<FacilioField>  getPointsFields() {
+		FacilioModule module = ModuleFactory.getPointsModule();
+		List<FacilioField> fields = new ArrayList<>();
+		fields.add(getField("assetId", "ASSET_ID", module, FieldType.NUMBER));
+		fields.add(getField("categoryId", "ASSET_CATEGORY_ID", module, FieldType.NUMBER));
+		fields.add(getField("fieldId", "FIELD_ID", module, FieldType.NUMBER));
+        fields.add(getField("mappedTime", "MAPPED_TIME", module, FieldType.NUMBER));
+		fields.add(getField("device", "DEVICE_NAME", module, FieldType.STRING));
+		fields.add(getField("instance", "INSTANCE_NAME", module, FieldType.STRING));
+        fields.add(getField("controllerId", "CONTROLLER_ID", module, FieldType.NUMBER));
+        fields.add(getField("objectInstanceNumber", "OBJECT_INSTANCE_NUMBER", module, FieldType.NUMBER));
+        fields.add(getField("instanceDescription", "INSTANCE_DESCRIPTION", module, FieldType.STRING));
+        fields.add(getField("instanceType", "INSTANCE_TYPE", module, FieldType.NUMBER));
+        fields.add(getField("inUse", "IN_USE", module, FieldType.BOOLEAN));
+        fields.add(getField("subscribed", "IS_SUBSCRIBED", module, FieldType.BOOLEAN));
+        fields.add(getField("thresholdJson", "THRESHOLD_JSON", module, FieldType.STRING));
+        fields.add(getField("createdTime", "CREATED_TIME", module, FieldType.NUMBER));
+        fields.add(getField("unit", "UNIT", module, FieldType.NUMBER));
 		return fields;
 	}
 
