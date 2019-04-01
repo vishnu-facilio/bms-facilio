@@ -9,6 +9,7 @@ import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.JoinBuilderIfc;
 import com.facilio.sql.SelectBuilderIfc;
 import com.facilio.sql.WhereBuilder;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -25,6 +26,8 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 	private GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder();
 	private Class<E> beanClass;
 	private Collection<FacilioField> select;
+	private List<FacilioField> aggrFields = null;
+	private List<LookupField> fetchLookup = null;
 	private int level = 0;
 	private int maxLevel = LEVEL;
 	private String moduleName;
@@ -34,7 +37,6 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 	private WhereBuilder where = new WhereBuilder();
 	private StringBuilder joinBuilder = new StringBuilder();
 	private boolean isAggregation = false;
-	private List<LookupFieldMeta> fetchLookup = new ArrayList<>();
 	//Need where condition builder for custom field
 	
 	public SelectRecordsBuilder() {
@@ -164,6 +166,7 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 	@Override
 	public SelectRecordsBuilder<E> groupBy(String groupBy) {
 		this.groupBy = groupBy;
+		this.isAggregation = true;
 		return this;
 	}
 	
@@ -222,43 +225,70 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 		return this;
 	}
 	
-	public SelectRecordsBuilder<E> fetchLookup(LookupFieldMeta field) {
-		this.fetchLookup.add(field);
+	public SelectRecordsBuilder<E> fetchLookup(LookupField field) {
+		if (fetchLookup == null) {
+			fetchLookup = new ArrayList<>();
+		}
+		fetchLookup.add(field);
 		return this;
 	}
 	
-	public SelectRecordsBuilder<E> fetchLookups(Collection<LookupFieldMeta> fields) {
+	public SelectRecordsBuilder<E> fetchLookups(Collection<? extends  LookupField> fields) {
+		if (fetchLookup == null) {
+			fetchLookup = new ArrayList<>();
+		}
 		this.fetchLookup.addAll(fields);
+		return this;
+	}
+
+	public SelectRecordsBuilder<E> aggregate (AggregateOperator aggr, FacilioField field) throws Exception {
+		FacilioField aggrField = aggr.getSelectField(field);
+		if (aggrFields == null) {
+			aggrFields = new ArrayList<>();
+		}
+		aggrFields.add(aggrField);
+		isAggregation = true;
 		return this;
 	}
 	
 	@Override
 	public List<E> get() throws Exception {
 		checkForNull(true);
-		long getStartTime = System.currentTimeMillis();
-		List<Map<String, Object>> propList = getAsJustProps(false);
-		long getTimeTaken = System.currentTimeMillis() - getStartTime;
-		LOGGER.debug("Time Taken to get props in SelectBuilder : "+getTimeTaken);
-		
-		long startTime = System.currentTimeMillis();
-		List<E> beans = FieldUtil.getAsBeanListFromMapList(propList, beanClass);
-		long timeTaken = System.currentTimeMillis() - startTime;
-		LOGGER.debug("Time Taken to convert to bean list in SelectBuilder : "+timeTaken);
-		return beans;
+		try {
+			long getStartTime = System.currentTimeMillis();
+			List<Map<String, Object>> propList = getAsJustProps(false);
+			long getTimeTaken = System.currentTimeMillis() - getStartTime;
+			LOGGER.debug("Time Taken to get props in SelectBuilder : "+getTimeTaken);
+			
+			long startTime = System.currentTimeMillis();
+			List<E> beans = FieldUtil.getAsBeanListFromMapList(propList, beanClass);
+			long timeTaken = System.currentTimeMillis() - startTime;
+			LOGGER.debug("Time Taken to convert to bean list in SelectBuilder : "+timeTaken);
+			return beans;
+		}
+		catch (Exception e) {
+			LOGGER.error("Error occurred in selecting records for module : "+module);
+			throw e;
+		}
 	}
 	
 	public Map<Long, E> getAsMap() throws Exception {
 		checkForNull(true);
-		List<Map<String, Object>> propList = getAsJustProps(false);
-		
-		Map<Long, E> beanMap = new HashMap<>();
-		if(propList != null && propList.size() > 0) {
-			for(Map<String, Object> props : propList) {
-				E bean = FieldUtil.getAsBeanFromMap(props, beanClass);
-				beanMap.put(bean.getId(), bean);
+		try {
+			List<Map<String, Object>> propList = getAsJustProps(false);
+			Map<Long, E> beanMap = new HashMap<>();
+			if(propList != null && propList.size() > 0) {
+				for(Map<String, Object> props : propList) {
+					E bean = FieldUtil.getAsBeanFromMap(props, beanClass);
+					beanMap.put(bean.getId(), bean);
+				}
 			}
+			return beanMap;
 		}
-		return beanMap;
+		catch (Exception e) {
+			LOGGER.error("Error occurred in selecting records as map for module : "+module);
+			throw e;
+		}
 	}
 	
 	public Map<Long, Map<String, Object>> getAsMapProps() throws Exception {
@@ -289,89 +319,66 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 		}
 		return lookupFields;
 	}
-	
-	private List<Map<String, Object>> getAsJustProps(boolean isMap) throws Exception {
-		FacilioField orgIdField = FieldFactory.getOrgIdField(module);
-		FacilioField moduleIdField = FieldFactory.getModuleIdField(module);
-		FacilioField siteIdField = FieldFactory.getSiteIdField(module);
-		
-		long currentSiteId = AccountUtil.getCurrentSiteId();
 
+	private Set<FacilioField> computeFields(FacilioField orgIdField, FacilioField moduleIdField, FacilioField siteIdField, FacilioField isDeletedField) {
 		Set<FacilioField> selectFields = new HashSet<>();
 		if (!isAggregation) {
 			selectFields.add(orgIdField);
 			selectFields.add(moduleIdField);
-		}
-		
-		if (FieldUtil.isSiteIdFieldPresent(module) && (currentSiteId > 0 || (groupBy == null || groupBy.isEmpty()) ) && !isAggregation) {
-			selectFields.add(siteIdField);
-		}
-		
-		if ((groupBy == null || groupBy.isEmpty()) && !isAggregation) {
-			selectFields.add(FieldFactory.getIdField(module));
-		}
-		else {
-			StringBuilder moduleGroupBy = new StringBuilder();
-
-			moduleGroupBy.append(orgIdField.getCompleteColumnName())
-							.append(",")
-							.append(moduleIdField.getCompleteColumnName())
-							.append(",");
-
-			if (FieldUtil.isSiteIdFieldPresent(module) && currentSiteId > 0) {
-				moduleGroupBy.append(siteIdField.getCompleteColumnName())
-					.append(",");
+			if (FieldUtil.isSiteIdFieldPresent(module)) {
+				selectFields.add(siteIdField);
 			}
-			moduleGroupBy.append(groupBy);
-
-//			moduleGroupBy.append(moduleIdField.getCompleteColumnName())
-//						.append(",")
-//						.append(groupBy);
-
-			
-			builder.groupBy(moduleGroupBy.toString());
+			selectFields.add(FieldFactory.getIdField(module));
+			if (FieldUtil.isSystemFieldsPresent(module)) {
+				selectFields.addAll(FieldFactory.getSystemFields(module));
+			}
+			if (module.isTrashEnabled()) {
+				selectFields.add(isDeletedField);
+			}
 		}
-		
-		selectFields.addAll(select);
-		
-		if (!fetchLookup.isEmpty()) {
+
+		if (CollectionUtils.isNotEmpty(select)) {
+			selectFields.addAll(select);
+		}
+		if (CollectionUtils.isNotEmpty(fetchLookup)) {
 			selectFields.addAll(fetchLookup);
 		}
-		
-		builder.select(selectFields);
-		
+		if (CollectionUtils.isNotEmpty(aggrFields)) {
+			selectFields.addAll(aggrFields);
+		}
+		return selectFields;
+	}
+
+	private WhereBuilder computeWhere (FacilioField orgIdField, FacilioField moduleIdField, FacilioField siteIdField) {
 		WhereBuilder whereCondition = new WhereBuilder();
 		Condition orgCondition = CriteriaAPI.getCondition(orgIdField, String.valueOf(AccountUtil.getCurrentOrg().getOrgId()), NumberOperators.EQUALS);
 		whereCondition.andCondition(orgCondition);
-		
+
 		Condition moduleCondition = CriteriaAPI.getCondition(moduleIdField, String.valueOf(module.getModuleId()), NumberOperators.EQUALS);
 		whereCondition.andCondition(moduleCondition);
 
+		long currentSiteId = AccountUtil.getCurrentSiteId();
 		if (FieldUtil.isSiteIdFieldPresent(module) && currentSiteId > 0) {
 			Condition siteCondition = CriteriaAPI.getCondition(siteIdField, String.valueOf(currentSiteId), NumberOperators.EQUALS);
 			whereCondition.andCondition(siteCondition);
 		}
-		
-		if (module.isTrashEnabled()) {
-			FacilioField isDeletedField = FieldFactory.getIsDeletedField(module.getParentModule());
-			
-			if ((groupBy == null || groupBy.isEmpty()) && !isAggregation) {
-				selectFields.add(isDeletedField);
-			}
-			
-			if (!fetchDeleted) {
-				whereCondition.andCondition(CriteriaAPI.getCondition("SYS_DELETED", "deleted", String.valueOf(false), BooleanOperators.IS));
-			}
+
+		if (module.isTrashEnabled() && !fetchDeleted) {
+			whereCondition.andCondition(CriteriaAPI.getCondition("SYS_DELETED", "deleted", String.valueOf(false), BooleanOperators.IS));
 		}
-		
+
+		whereCondition.andCustomWhere(where.getWhereClause(), where.getValues());
+		return whereCondition;
+	}
+
+	private void handlePermissionAndScope() {
 		if (AccountUtil.getCurrentUser() != null) {
 			if (module.getName().equals(FacilioConstants.ContextNames.WORK_ORDER)) {
 				Criteria scopeCriteria = AccountUtil.getCurrentUser().scopeCriteria(module.getName());
-				if(scopeCriteria != null)
-				{
+				if(scopeCriteria != null) {
 					builder.andCriteria(scopeCriteria);
 				}
-		
+
 				if (AccountUtil.getCurrentAccount().getUser().getUserType() != 2 && AccountUtil.getCurrentUser().getRole() != null) {
 					Criteria permissionCriteria = AccountUtil.getCurrentUser().getRole().permissionCriteria(module.getName(),"read");
 					if(permissionCriteria != null) {
@@ -380,10 +387,30 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 				}
 			}
 		}
+	}
+	
+	private List<Map<String, Object>> getAsJustProps(boolean isMap) throws Exception {
+		FacilioField orgIdField = FieldFactory.getOrgIdField(module);
+		FacilioField moduleIdField = FieldFactory.getModuleIdField(module);
+		FacilioField siteIdField = null;
+		if (FieldUtil.isSiteIdFieldPresent(module)) {
+			siteIdField = FieldFactory.getSiteIdField(module);
+		}
+		FacilioField isDeletedField = null;
+		if (module.isTrashEnabled()) {
+			isDeletedField = FieldFactory.getIsDeletedField(module.getParentModule());
+		}
 		
-		whereCondition.andCustomWhere(where.getWhereClause(), where.getValues());
-		
+		Set<FacilioField> selectFields = computeFields(orgIdField, moduleIdField, siteIdField, isDeletedField);
+		builder.select(selectFields);
+
+		builder.groupBy(groupBy);
+
 		builder.table(module.getTableName());
+
+		WhereBuilder whereCondition = computeWhere(orgIdField, moduleIdField, siteIdField);
+		builder.andCustomWhere(whereCondition.getWhereClause(), whereCondition.getValues());
+		handlePermissionAndScope();
 		
 		FacilioModule prevModule = module;
 		FacilioModule extendedModule = module.getExtendModule();
@@ -393,10 +420,8 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 			prevModule = extendedModule;
 			extendedModule = extendedModule.getExtendModule();
 		}
-		
 		builder.getJoinBuilder().append(joinBuilder.toString());
 		
-		builder.andCustomWhere(whereCondition.getWhereClause(), whereCondition.getValues());
 		List<Map<String, Object>> props = builder.get();
 		handleLookup(props, isMap);
 		return props;
@@ -406,14 +431,14 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 		if(propList != null && propList.size() > 0) {
 			Map<String, LookupField> lookupFields = getLookupFields();
 			if(lookupFields.size() > 0) {
-				Map<String, LookupFieldMeta> lookups = fetchLookup.isEmpty() ? Collections.EMPTY_MAP : fetchLookup.stream().collect(Collectors.toMap(LookupFieldMeta::getName, Function.identity()));
+				Map<String, LookupField> lookups = CollectionUtils.isEmpty(fetchLookup) ? Collections.EMPTY_MAP : fetchLookup.stream().collect(Collectors.toMap(LookupField::getName, Function.identity()));
 				lookupFields.putAll(lookups);
 				Map<String, Set<Long>> lookupIds = new HashMap<>();
 				for(Map<String, Object> props : propList) {
 					for(LookupField lookupField : lookupFields.values()) {
 						Long recordId = (Long) props.get(lookupField.getName());
 						if (recordId != null) {
-							if(level < maxLevel || lookupField instanceof LookupFieldMeta) {
+							if(level < maxLevel || lookups.containsKey(lookupField.getName())) {
 								addToLookupIds(lookupField, recordId, lookupIds);
 							}
 							else {
@@ -435,7 +460,7 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 							LookupField lookupField = lookupFields.get(fieldName);
 							Long recordId = (Long) props.get(lookupField.getName());
 							if (recordId != null) {
-								if(level < maxLevel || lookupField instanceof LookupFieldMeta) {
+								if(level < maxLevel || lookups.containsKey(lookupField.getName())) {
 									props.put(lookupField.getName(), getLookupVal(lookupField, recordId, lookedUpVals));
 								}
 							}
@@ -474,7 +499,7 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 			}
 		}
 		
-		if(select == null || select.size() <= 0) {
+		if(CollectionUtils.isEmpty(select) && CollectionUtils.isEmpty(aggrFields) && CollectionUtils.isEmpty(fetchLookup)) {
 			throw new IllegalArgumentException("Select Fields cannot be null or empty");
 		}
 		

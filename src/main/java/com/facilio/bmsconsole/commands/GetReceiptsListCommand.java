@@ -40,7 +40,7 @@ public class GetReceiptsListCommand implements Command {
 					.select(fields)
 					.beanClass(ReceiptContext.class)
 					.andCondition(CriteriaAPI.getCondition("RECEIVABLE_ID", "receivableId", String.valueOf(receivableId), NumberOperators.EQUALS))
-			        .fetchLookup(new LookupFieldMeta((LookupField) fieldsAsMap.get("lineItem")))
+			        .fetchLookup((LookupField) fieldsAsMap.get("lineItem"))
 			        ;
 
 			List<ReceiptContext> list = builder.get();

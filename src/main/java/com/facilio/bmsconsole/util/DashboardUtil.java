@@ -10,10 +10,6 @@ import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.context.BaseLineContext.RangeType;
 import com.facilio.bmsconsole.context.DashboardSharingContext.SharingType;
 import com.facilio.bmsconsole.context.DashboardWidgetContext.WidgetType;
-import com.facilio.bmsconsole.context.FormulaContext.AggregateOperator;
-import com.facilio.bmsconsole.context.FormulaContext.CommonAggregateOperator;
-import com.facilio.bmsconsole.context.FormulaContext.DateAggregateOperator;
-import com.facilio.bmsconsole.context.FormulaContext.NumberAggregateOperator;
 import com.facilio.bmsconsole.context.FormulaFieldContext.ResourceType;
 import com.facilio.bmsconsole.context.ReadingDataMeta.ReadingInputType;
 import com.facilio.bmsconsole.context.ReportContext.LegendMode;
@@ -52,6 +48,8 @@ import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
+
+import com.facilio.bmsconsole.modules.AggregateOperator.*;
 
 public class DashboardUtil {
 	
@@ -1776,13 +1774,13 @@ public static JSONObject getStandardVariance1(ReportContext report,JSONArray pro
 				ReportFieldContext reportXAxisField = DashboardUtil.getReportField(reportContext.getxAxisField());
 				reportContext.setxAxisField(reportXAxisField);
 				if(reportContext.getxAxisaggregateFunction() == null) {
-					reportContext.setxAxisaggregateFunction(FormulaContext.CommonAggregateOperator.COUNT.getValue());
+					reportContext.setxAxisaggregateFunction(CommonAggregateOperator.COUNT.getValue());
 				}
 				if(reportContext.getY1Axis() != null || reportContext.getY1AxisField() != null ) {
 					ReportFieldContext reportY1AxisField = DashboardUtil.getReportField(reportContext.getY1AxisField());
 					reportContext.setY1AxisField(reportY1AxisField);
 					if(reportContext.getY1AxisaggregateFunction() == null) {
-						reportContext.setY1AxisaggregateFunction(FormulaContext.CommonAggregateOperator.COUNT.getValue());
+						reportContext.setY1AxisaggregateFunction(CommonAggregateOperator.COUNT.getValue());
 					}
 				}
 				if(reportContext.getGroupBy() != null) {
@@ -2261,12 +2259,12 @@ public static JSONObject getStandardVariance1(ReportContext report,JSONArray pro
 
 			reportContext.setxAxis(DashboardUtil.addOrGetReportfield(reportContext.getxAxisField(), reportContext.getModuleName()).getId());
 			if(reportContext.getxAxisaggregateFunction() == null) {
-				reportContext.setxAxisaggregateFunction(FormulaContext.CommonAggregateOperator.COUNT.getValue());
+				reportContext.setxAxisaggregateFunction(CommonAggregateOperator.COUNT.getValue());
 			}
 			if(reportContext.getY1AxisField() != null && reportContext.getY1AxisField().getModuleField() != null) {
 				reportContext.setY1Axis(DashboardUtil.addOrGetReportfield(reportContext.getY1AxisField(), reportContext.getModuleName()).getId());
 				if(reportContext.getY1AxisaggregateFunction() == null) {
-					reportContext.setxAxisaggregateFunction(FormulaContext.CommonAggregateOperator.COUNT.getValue());
+					reportContext.setxAxisaggregateFunction(CommonAggregateOperator.COUNT.getValue());
 				}
 			}
 			if(reportContext.getGroupByField() != null && reportContext.getGroupByField().getModuleField() != null) {
@@ -2733,13 +2731,13 @@ public static JSONObject getStandardVariance1(ReportContext report,JSONArray pro
 		ReportFieldContext xAxisFld = new ReportFieldContext();
 		xAxisFld.setModuleFieldId(ttimeFld.getId());
 		highResReport.setxAxisField(xAxisFld);
-		highResReport.setxAxisaggregateFunction(FormulaContext.CommonAggregateOperator.ACTUAL.getValue());
+		highResReport.setxAxisaggregateFunction(CommonAggregateOperator.ACTUAL.getValue());
 		highResReport.setxAxisLabel("Time");
 		
 		ReportFieldContext y1AxisFld = new ReportFieldContext();
 		y1AxisFld.setModuleFieldId(modBean.getField("totalEnergyConsumptionDelta", module.getName()).getId());
 		highResReport.setY1AxisField(y1AxisFld);
-		highResReport.setY1AxisaggregateFunction(FormulaContext.NumberAggregateOperator.SUM.getValue());
+		highResReport.setY1AxisaggregateFunction(NumberAggregateOperator.SUM.getValue());
 		highResReport.setY1AxisLabel("Energy Consumption");
 		highResReport.setY1AxisUnit("kw");
 		
@@ -2767,13 +2765,13 @@ public static JSONObject getStandardVariance1(ReportContext report,JSONArray pro
 		ReportFieldContext endUseXAxisFld = new ReportFieldContext();
 		endUseXAxisFld.setModuleFieldId(ttimeFld.getId());
 		endUseBreakdown.setxAxisField(endUseXAxisFld);
-		endUseBreakdown.setxAxisaggregateFunction(FormulaContext.DateAggregateOperator.FULLDATE.getValue());
+		endUseBreakdown.setxAxisaggregateFunction(DateAggregateOperator.FULLDATE.getValue());
 		endUseBreakdown.setxAxisLabel("Date");
 		
 		ReportFieldContext endUseY1AxisFld = new ReportFieldContext();
 		endUseY1AxisFld.setModuleFieldId(modBean.getField("totalEnergyConsumptionDelta", module.getName()).getId());
 		endUseBreakdown.setY1AxisField(endUseY1AxisFld);
-		endUseBreakdown.setY1AxisaggregateFunction(FormulaContext.NumberAggregateOperator.SUM.getValue());
+		endUseBreakdown.setY1AxisaggregateFunction(NumberAggregateOperator.SUM.getValue());
 		endUseBreakdown.setY1AxisLabel("Energy Consumption");
 		endUseBreakdown.setY1AxisUnit("kwh");
 		
@@ -2802,13 +2800,13 @@ public static JSONObject getStandardVariance1(ReportContext report,JSONArray pro
 		ReportFieldContext costUseXAxisFld = new ReportFieldContext();
 		costUseXAxisFld.setModuleFieldId(ttimeFld.getId());
 		costUseBreakdown.setxAxisField(costUseXAxisFld);
-		costUseBreakdown.setxAxisaggregateFunction(FormulaContext.DateAggregateOperator.FULLDATE.getValue());
+		costUseBreakdown.setxAxisaggregateFunction(DateAggregateOperator.FULLDATE.getValue());
 		costUseBreakdown.setxAxisLabel("Date");
 		
 		ReportFieldContext costUseY1AxisFld = new ReportFieldContext();
 		costUseY1AxisFld.setModuleFieldId(modBean.getField("totalEnergyConsumptionDelta", module.getName()).getId());
 		costUseBreakdown.setY1AxisField(costUseY1AxisFld);
-		costUseBreakdown.setY1AxisaggregateFunction(FormulaContext.NumberAggregateOperator.SUM.getValue());
+		costUseBreakdown.setY1AxisaggregateFunction(NumberAggregateOperator.SUM.getValue());
 		costUseBreakdown.setY1AxisLabel("Cost Usage");
 		costUseBreakdown.setY1AxisUnit("cost");
 		
@@ -2837,13 +2835,13 @@ public static JSONObject getStandardVariance1(ReportContext report,JSONArray pro
 		ReportFieldContext dailyXAxisFld = new ReportFieldContext();
 		dailyXAxisFld.setModuleFieldId(ttimeFld.getId());
 		dailyBreakdown.setxAxisField(dailyXAxisFld);
-		dailyBreakdown.setxAxisaggregateFunction(FormulaContext.DateAggregateOperator.FULLDATE.getValue());
+		dailyBreakdown.setxAxisaggregateFunction(DateAggregateOperator.FULLDATE.getValue());
 		dailyBreakdown.setxAxisLabel("Date");
 		
 		ReportFieldContext dailyY1AxisFld = new ReportFieldContext();
 		dailyY1AxisFld.setModuleFieldId(modBean.getField("totalEnergyConsumptionDelta", module.getName()).getId());
 		dailyBreakdown.setY1AxisField(dailyY1AxisFld);
-		dailyBreakdown.setY1AxisaggregateFunction(FormulaContext.NumberAggregateOperator.SUM.getValue());
+		dailyBreakdown.setY1AxisaggregateFunction(NumberAggregateOperator.SUM.getValue());
 		dailyBreakdown.setY1AxisLabel("Energy Consumption");
 		dailyBreakdown.setY1AxisUnit("kwh");
 		

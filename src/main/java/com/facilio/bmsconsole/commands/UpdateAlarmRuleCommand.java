@@ -15,11 +15,6 @@ import org.apache.commons.chain.Context;
 import java.util.ArrayList;
 import java.util.List;
 
-import java.util.Map;
-import org.apache.commons.chain.Chain;
-import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext.ThresholdType;
-import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
-
 public class UpdateAlarmRuleCommand implements Command {
 
 	@Override

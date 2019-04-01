@@ -28,9 +28,9 @@ public class AddOrUpdateWorkorderToolsCommand implements Command {
 		FacilioModule workorderToolsModule = modBean.getModule(FacilioConstants.ContextNames.WORKORDER_TOOLS);
 		List<FacilioField> workorderToolsFields = modBean.getAllFields(FacilioConstants.ContextNames.WORKORDER_TOOLS);
 		Map<String, FacilioField> toolFieldsMap = FieldFactory.getAsMap(workorderToolsFields);
-		List<LookupFieldMeta> lookUpfields = new ArrayList<>();
-		lookUpfields.add(new LookupFieldMeta((LookupField) toolFieldsMap.get("tool")));
-		lookUpfields.add(new LookupFieldMeta((LookupField) toolFieldsMap.get("toolType")));
+		List<LookupField>lookUpfields = new ArrayList<>();
+		lookUpfields.add((LookupField) toolFieldsMap.get("tool"));
+		lookUpfields.add((LookupField) toolFieldsMap.get("toolType"));
 		List<WorkorderToolsContext> workorderTools = (List<WorkorderToolsContext>) context
 				.get(FacilioConstants.ContextNames.RECORD_LIST);
 		List<WorkorderToolsContext> workorderToolslist = new ArrayList<>();
@@ -201,8 +201,8 @@ public class AddOrUpdateWorkorderToolsCommand implements Command {
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.TOOL);
 		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.TOOL);
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
-		List<LookupFieldMeta> lookUpfields = new ArrayList<>();
-		lookUpfields.add(new LookupFieldMeta((LookupField) fieldMap.get("storeRoom")));
+		List<LookupField>lookUpfields = new ArrayList<>();
+		lookUpfields.add((LookupField) fieldMap.get("storeRoom"));
 		SelectRecordsBuilder<ToolContext> selectBuilder = new SelectRecordsBuilder<ToolContext>().select(fields)
 				.table(module.getTableName()).moduleName(module.getName()).beanClass(ToolContext.class)
 				.andCustomWhere(module.getTableName() + ".ID = ?", id)

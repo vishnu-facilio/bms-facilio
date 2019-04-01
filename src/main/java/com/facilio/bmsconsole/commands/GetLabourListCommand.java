@@ -35,9 +35,9 @@ public class GetLabourListCommand implements Command{
 			fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
 		}
 	
-		List<LookupFieldMeta> lookUpFields = new ArrayList<LookupFieldMeta>();
-		lookUpFields.add(new LookupFieldMeta((LookupField) modBean.getField("user", moduleName)));
-		lookUpFields.add(new LookupFieldMeta((LookupField) modBean.getField("location", moduleName)));
+		List<LookupField>lookUpFields = new ArrayList<>();
+		lookUpFields.add((LookupField) modBean.getField("user", moduleName));
+		lookUpFields.add((LookupField) modBean.getField("location", moduleName));
 		SelectRecordsBuilder<LabourContext> builder = new SelectRecordsBuilder<LabourContext>()
 				.module(module)
 				.beanClass(FacilioConstants.ContextNames.getClassFromModuleName(moduleName))

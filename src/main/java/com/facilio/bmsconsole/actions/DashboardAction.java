@@ -12,7 +12,6 @@ import com.facilio.bmsconsole.context.BaseLineContext.AdjustType;
 import com.facilio.bmsconsole.context.BaseLineContext.RangeType;
 import com.facilio.bmsconsole.context.BaseSpaceContext.SpaceType;
 import com.facilio.bmsconsole.context.DashboardContext.DashboardPublishStatus;
-import com.facilio.bmsconsole.context.FormulaContext.*;
 import com.facilio.bmsconsole.context.ReportContext.LegendMode;
 import com.facilio.bmsconsole.context.ReportContext.ReportChartType;
 import com.facilio.bmsconsole.context.TicketStatusContext.StatusType;
@@ -68,6 +67,8 @@ import java.time.temporal.ChronoField;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import com.facilio.bmsconsole.modules.AggregateOperator.*;
 
 //import com.facilio.workflows.context.WorkflowExpression;
 
@@ -4143,7 +4144,7 @@ public class DashboardAction extends FacilioAction {
 		Multimap<Long, Long> spaceResourceMap = ArrayListMultimap.create();
 		
 		if(xAxisField.getName().equals("resource")) {
-			if(reportContext.getxAxisaggregateFunction().equals(FormulaContext.SpaceAggregateOperator.BUILDING.getValue())) {
+			if(reportContext.getxAxisaggregateFunction().equals(SpaceAggregateOperator.BUILDING.getValue())) {
 				
 				for(BuildingContext building:SpaceAPI.getAllBuildings()) {
 					List<Long> resourceList = DashboardUtil.getAllResources(building.getId());
@@ -4152,7 +4153,7 @@ public class DashboardAction extends FacilioAction {
 				report.getxAxisField().getField().setDisplayName("Building");
 				report.getxAxisField().getField().setName("building");
 			}
-			else if(reportContext.getxAxisaggregateFunction().equals(FormulaContext.SpaceAggregateOperator.SITE.getValue())) {
+			else if(reportContext.getxAxisaggregateFunction().equals(SpaceAggregateOperator.SITE.getValue())) {
 				
 				for( SiteContext site:SpaceAPI.getAllSites()) {
 					List<Long> resourceList = DashboardUtil.getAllResources(site.getId());
@@ -4168,7 +4169,7 @@ public class DashboardAction extends FacilioAction {
 			FacilioField dummyField = new FacilioField();
 			dummyField.setColumnName(xAxisField.getColumnName());
 			dummyField.setName("dummyField");
-			if (report.getXAxisAggregateOpperator() == FormulaContext.CommonAggregateOperator.ACTUAL) {
+			if (report.getXAxisAggregateOpperator() == CommonAggregateOperator.ACTUAL) {
 				dummyField = CommonAggregateOperator.ACTUAL.getSelectField(dummyField);
 			}
 			else {
@@ -4186,16 +4187,16 @@ public class DashboardAction extends FacilioAction {
 				int oprId =  dateFilter != null ? DashboardUtil.predictDateOpperator(dateFilter) : report.getDateFilter().getOperatorId();
 				
 				if (oprId == DateOperators.TODAY.getOperatorId() || oprId == DateOperators.YESTERDAY.getOperatorId()) {
-					xAggregateOpperator = FormulaContext.DateAggregateOperator.HOURSOFDAY;
+					xAggregateOpperator = DateAggregateOperator.HOURSOFDAY;
 				}
 				else if (oprId == DateOperators.CURRENT_WEEK.getOperatorId() || oprId == DateOperators.LAST_WEEK.getOperatorId() || oprId == DateOperators.CURRENT_WEEK_UPTO_NOW.getOperatorId()) {
-					xAggregateOpperator = FormulaContext.DateAggregateOperator.WEEKDAY;
+					xAggregateOpperator = DateAggregateOperator.WEEKDAY;
 				}
 				else if (oprId == DateOperators.CURRENT_MONTH.getOperatorId() || oprId == DateOperators.LAST_MONTH.getOperatorId() || oprId == DateOperators.CURRENT_MONTH_UPTO_NOW.getOperatorId() || oprId == DateOperators.LAST_N_DAYS.getOperatorId()) {
-					xAggregateOpperator = FormulaContext.DateAggregateOperator.DAYSOFMONTH;
+					xAggregateOpperator = DateAggregateOperator.DAYSOFMONTH;
 				}
 				else if (oprId == DateOperators.CURRENT_YEAR.getOperatorId() || oprId == DateOperators.LAST_YEAR.getOperatorId() || oprId == DateOperators.CURRENT_YEAR_UPTO_NOW.getOperatorId()) {
-					xAggregateOpperator = FormulaContext.DateAggregateOperator.MONTHANDYEAR;
+					xAggregateOpperator = DateAggregateOperator.MONTHANDYEAR;
 				}
 				report.setxAxisaggregateFunction(xAggregateOpperator.getValue());
 				
@@ -4284,7 +4285,7 @@ public class DashboardAction extends FacilioAction {
 			groupByString = groupByString + ",groupBy";
 		}
 			
-		if (report.getY1AxisAggregateOpperator() != FormulaContext.CommonAggregateOperator.ACTUAL) {
+		if (report.getY1AxisAggregateOpperator() != CommonAggregateOperator.ACTUAL) {
 			builder.groupBy(groupByString);
 		}
 		
@@ -4435,7 +4436,7 @@ public class DashboardAction extends FacilioAction {
 			Multimap<Object, JSONObject> res = ArrayListMultimap.create();
 			HashMap<String, Object> labelMapping = new HashMap<>();
 			HashMap<Long, JSONObject> buildingRes = new HashMap<>();
-			if(reportContext.getxAxisaggregateFunction().equals(FormulaContext.SpaceAggregateOperator.BUILDING.getValue()) || reportContext.getxAxisaggregateFunction().equals(FormulaContext.SpaceAggregateOperator.SITE.getValue())) {
+			if(reportContext.getxAxisaggregateFunction().equals(SpaceAggregateOperator.BUILDING.getValue()) || reportContext.getxAxisaggregateFunction().equals(SpaceAggregateOperator.SITE.getValue())) {
 				for(int i=0;i<rs.size();i++) {
 					Map<String, Object> thisMap = rs.get(i);
 					if(thisMap.get("label") != null) {
@@ -4494,7 +4495,7 @@ public class DashboardAction extends FacilioAction {
 								value.put("label", jsonKey);
 				 				value.put("value", json.get(jsonKey));
 				 				
-				 				if(reportContext.getxAxisaggregateFunction().equals(FormulaContext.SpaceAggregateOperator.SITE.getValue())) {
+				 				if(reportContext.getxAxisaggregateFunction().equals(SpaceAggregateOperator.SITE.getValue())) {
 				 					SiteContext site = SpaceAPI.getSiteSpace(buildingId);
 				 					res.put(site.getName(), value);
 				 				}
@@ -4548,7 +4549,7 @@ public class DashboardAction extends FacilioAction {
 
 				Map<String, Object> thisMap = rs.get(i);
 				JSONObject component = new JSONObject();
-				if(reportContext.getxAxisaggregateFunction().equals(FormulaContext.SpaceAggregateOperator.BUILDING.getValue()) || reportContext.getxAxisaggregateFunction().equals(FormulaContext.SpaceAggregateOperator.SITE.getValue())) {
+				if(reportContext.getxAxisaggregateFunction().equals(SpaceAggregateOperator.BUILDING.getValue()) || reportContext.getxAxisaggregateFunction().equals(SpaceAggregateOperator.SITE.getValue())) {
 					
 					Object label = thisMap.get("label");
 					Object value = thisMap.get("value");
@@ -4609,7 +4610,7 @@ public class DashboardAction extends FacilioAction {
 			for( Long key:buildingResult.keySet()) {
 				JSONObject component = new JSONObject();
 				Object key1 = key;
-				if(reportContext.getxAxisaggregateFunction().equals(FormulaContext.SpaceAggregateOperator.SITE.getValue())) {
+				if(reportContext.getxAxisaggregateFunction().equals(SpaceAggregateOperator.SITE.getValue())) {
 					SiteContext site = SpaceAPI.getSiteSpace(key);
 					if(site != null) {
 						key1 = site.getName();
@@ -4788,7 +4789,7 @@ public class DashboardAction extends FacilioAction {
 			FacilioField dummyField = new FacilioField();
 			dummyField.setColumnName(xAxisField.getColumnName());
 			dummyField.setName("dummyField");
-			if (report.getXAxisAggregateOpperator() == FormulaContext.CommonAggregateOperator.ACTUAL) {
+			if (report.getXAxisAggregateOpperator() == CommonAggregateOperator.ACTUAL) {
 				dummyField = CommonAggregateOperator.ACTUAL.getSelectField(dummyField);
 			}
 			else {
@@ -4810,30 +4811,30 @@ public class DashboardAction extends FacilioAction {
 				
 				boolean isRegression = (reportContext.getChartType() != null && reportContext.getChartType().equals(ReportChartType.REGRESSION.getValue()));
 				if (isRegression) {
-					xAggregateOpperator = FormulaContext.DateAggregateOperator.FULLDATE;
+					xAggregateOpperator = DateAggregateOperator.FULLDATE;
 				}
 				else if(getIsHeatMap() || (reportContext.getChartType() != null && reportContext.getChartType().equals(ReportChartType.HEATMAP.getValue()))) {
-					xAggregateOpperator = FormulaContext.DateAggregateOperator.HOURSOFDAYONLY;
+					xAggregateOpperator = DateAggregateOperator.HOURSOFDAYONLY;
 					report.setChartType(ReportChartType.HEATMAP.getValue());
 				}
 				else if (oprId == DateOperators.TODAY.getOperatorId() || oprId == DateOperators.YESTERDAY.getOperatorId() || oprId == DateOperators.TODAY_UPTO_NOW.getOperatorId()) {
-					xAggregateOpperator = FormulaContext.DateAggregateOperator.HOURSOFDAY;
+					xAggregateOpperator = DateAggregateOperator.HOURSOFDAY;
 				}
 				else if (oprId == DateOperators.CURRENT_WEEK.getOperatorId() || oprId == DateOperators.LAST_WEEK.getOperatorId() || oprId == DateOperators.CURRENT_WEEK_UPTO_NOW.getOperatorId()) {
-					if(!(xAggregateOpperator.equals(FormulaContext.DateAggregateOperator.WEEKDAY) || xAggregateOpperator.equals(FormulaContext.DateAggregateOperator.FULLDATE) )) {
-						xAggregateOpperator = FormulaContext.DateAggregateOperator.WEEKDAY;
+					if(!(xAggregateOpperator.equals(DateAggregateOperator.WEEKDAY) || xAggregateOpperator.equals(DateAggregateOperator.FULLDATE) )) {
+						xAggregateOpperator = DateAggregateOperator.WEEKDAY;
 					}
 				}
 				else if (oprId == DateOperators.CURRENT_MONTH.getOperatorId() || oprId == DateOperators.LAST_MONTH.getOperatorId() || oprId == DateOperators.CURRENT_MONTH_UPTO_NOW.getOperatorId() || oprId == DateOperators.LAST_N_DAYS.getOperatorId()) {
 					
-					if(!(xAggregateOpperator.equals(FormulaContext.DateAggregateOperator.WEEK) || xAggregateOpperator.equals(FormulaContext.DateAggregateOperator.WEEKANDYEAR) || xAggregateOpperator.equals(FormulaContext.DateAggregateOperator.WEEKDAY) || xAggregateOpperator.equals(FormulaContext.DateAggregateOperator.DAYSOFMONTH) || xAggregateOpperator.equals(FormulaContext.DateAggregateOperator.FULLDATE))) {
-						xAggregateOpperator = FormulaContext.DateAggregateOperator.DAYSOFMONTH;
+					if(!(xAggregateOpperator.equals(DateAggregateOperator.WEEK) || xAggregateOpperator.equals(DateAggregateOperator.WEEKANDYEAR) || xAggregateOpperator.equals(DateAggregateOperator.WEEKDAY) || xAggregateOpperator.equals(DateAggregateOperator.DAYSOFMONTH) || xAggregateOpperator.equals(DateAggregateOperator.FULLDATE))) {
+						xAggregateOpperator = DateAggregateOperator.DAYSOFMONTH;
 					}
 				}
 				else if (oprId == DateOperators.CURRENT_YEAR.getOperatorId() || oprId == DateOperators.LAST_YEAR.getOperatorId() || oprId == DateOperators.CURRENT_YEAR_UPTO_NOW.getOperatorId()) {
 					
-					if(!(xAggregateOpperator.equals(FormulaContext.DateAggregateOperator.MONTH) || xAggregateOpperator.equals(FormulaContext.DateAggregateOperator.WEEK) || xAggregateOpperator.equals(FormulaContext.DateAggregateOperator.MONTHANDYEAR) || xAggregateOpperator.equals(FormulaContext.DateAggregateOperator.WEEKANDYEAR) || xAggregateOpperator.equals(FormulaContext.DateAggregateOperator.WEEKDAY) || xAggregateOpperator.equals(FormulaContext.DateAggregateOperator.DAYSOFMONTH) || xAggregateOpperator.equals(FormulaContext.DateAggregateOperator.FULLDATE))) {
-						xAggregateOpperator = FormulaContext.DateAggregateOperator.MONTHANDYEAR;
+					if(!(xAggregateOpperator.equals(DateAggregateOperator.MONTH) || xAggregateOpperator.equals(DateAggregateOperator.WEEK) || xAggregateOpperator.equals(DateAggregateOperator.MONTHANDYEAR) || xAggregateOpperator.equals(DateAggregateOperator.WEEKANDYEAR) || xAggregateOpperator.equals(DateAggregateOperator.WEEKDAY) || xAggregateOpperator.equals(DateAggregateOperator.DAYSOFMONTH) || xAggregateOpperator.equals(DateAggregateOperator.FULLDATE))) {
+						xAggregateOpperator = DateAggregateOperator.MONTHANDYEAR;
 					}
 				}
 				dateAggr = (DateAggregateOperator) xAggregateOpperator;
@@ -4959,7 +4960,7 @@ public class DashboardAction extends FacilioAction {
 			groupByString = groupByString + ",groupBy";
 		}
 			
-		if (report.getY1AxisAggregateOpperator() != FormulaContext.CommonAggregateOperator.ACTUAL) {
+		if (report.getY1AxisAggregateOpperator() != CommonAggregateOperator.ACTUAL) {
 			builder.groupBy(groupByString);
 		}
 		

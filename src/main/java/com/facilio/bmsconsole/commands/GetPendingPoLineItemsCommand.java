@@ -34,8 +34,8 @@ public class GetPendingPoLineItemsCommand implements Command{
 															        .andCustomWhere("(QUANTITY_RECEIVED < QUANTITY) OR (QUANTITY_RECEIVED IS NULL) ");
 															        ;
 		Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
-		List<LookupFieldMeta> fetchLookup = Arrays.asList(new LookupFieldMeta((LookupField) fieldsAsMap.get("toolType")), 
-																			new LookupFieldMeta((LookupField) fieldsAsMap.get("itemType")));
+		List<LookupField>fetchLookup = Arrays.asList((LookupField) fieldsAsMap.get("toolType"),
+																			(LookupField) fieldsAsMap.get("itemType"));
 		
 		builder.fetchLookups(fetchLookup);
 		List<PurchaseOrderLineItemContext> pendingItems = builder.get();	

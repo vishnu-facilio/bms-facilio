@@ -82,8 +82,8 @@ public class GetItemTransactionsListCommand implements Command{
 		
 		Boolean getShowItemsForReturn = (Boolean) context.get(FacilioConstants.ContextNames.SHOW_ITEMS_FOR_RETURN);
 		if(getShowItemsForReturn!=null && getShowItemsForReturn) {
-			List<LookupFieldMeta> lookUpfields = new ArrayList<>();
-			lookUpfields.add(new LookupFieldMeta((LookupField) itemTransactionsFieldsMap.get("purchasedItem")));
+			List<LookupField>lookUpfields = new ArrayList<>();
+			lookUpfields.add((LookupField) itemTransactionsFieldsMap.get("purchasedItem"));
 			builder.andCondition(CriteriaAPI.getCondition(itemTransactionsFieldsMap.get("remainingQuantity"), String.valueOf(0), NumberOperators.GREATER_THAN));
 			builder.andCondition(CriteriaAPI.getCondition(itemTransactionsFieldsMap.get("isReturnable"), String.valueOf(true), BooleanOperators.IS));
 			builder.andCondition(CriteriaAPI.getCondition(itemTransactionsFieldsMap.get("transactionState"), String.valueOf(2), NumberOperators.EQUALS));
