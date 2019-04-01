@@ -276,7 +276,7 @@ public class WorkflowUtil {
 		
 		Object result = workflowContext.executeWorkflow();
 		
-		WorkflowLogUtil.addWorkflowLog(workflowContext,paramMap,result);
+//		WorkflowLogUtil.addWorkflowLog(workflowContext,paramMap,result);
 		
 		if(isVariableMapNeeded) {
 			return workflowContext.getVariableResultMap();
