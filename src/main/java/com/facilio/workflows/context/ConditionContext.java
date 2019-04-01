@@ -21,10 +21,9 @@ public class ConditionContext implements Serializable,WorkflowExpression {
 	IfContext IfContext;
 	List<ElseIfContext> elseIfContexts;
 	ElseContext elseContext;
-	WorkflowContext workflowContext;
 	
 	@Override
-	public Object execute() throws Exception {
+	public Object execute(WorkflowContext workflowContext) throws Exception {
 		
 		if(IfContext.evalCriteriaAndExecute(workflowContext)) {
 			return null;
@@ -71,14 +70,6 @@ public class ConditionContext implements Serializable,WorkflowExpression {
 
 	public void setElseContext(ElseContext elseContext) {
 		this.elseContext = elseContext;
-	}
-
-	public WorkflowContext getWorkflowContext() {
-		return workflowContext;
-	}
-
-	public void setWorkflowContext(WorkflowContext workflowContext) {
-		this.workflowContext = workflowContext;
 	}
 
 	@Override
