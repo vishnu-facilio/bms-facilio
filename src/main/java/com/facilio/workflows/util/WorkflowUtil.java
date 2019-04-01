@@ -286,7 +286,7 @@ public class WorkflowUtil {
 		}
 	}
 	
-	// workflow Result Fetching block starts
+	// workflow Result Fetching block ends
 	
 	public static void deleteWorkflow(long id) throws Exception {
 		deleteWorkflows(Collections.singletonList(id));
