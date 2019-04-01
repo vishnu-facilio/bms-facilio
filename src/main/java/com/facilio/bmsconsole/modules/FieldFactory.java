@@ -170,6 +170,7 @@ public class FieldFactory {
 		fields.add(getNameField(module));
 		fields.add(getDisplayNameField(module));
 		fields.add(getModuleIdField(module));
+		fields.add(getDescriptionField(module));
 	
 		FacilioField formType = new FacilioField();
 		formType.setName("formType");

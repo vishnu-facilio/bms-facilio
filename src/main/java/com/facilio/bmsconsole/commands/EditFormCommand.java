@@ -1,5 +1,12 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
+
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
@@ -14,12 +21,6 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.sql.GenericDeleteRecordBuilder;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
 public class EditFormCommand implements Command {
 
@@ -27,9 +28,8 @@ public class EditFormCommand implements Command {
 	public boolean execute(Context context) throws Exception {
 		FacilioForm oldForm = ((List<FacilioForm>) context.get(FacilioConstants.ContextNames.FORMS)).get(0);
 		FacilioForm editedForm = (FacilioForm) context.get(FacilioConstants.ContextNames.EDITED_FORM);
-		FacilioModule parent = oldForm.getModule();
 		if (oldForm.getId() == -1) {
-			FormsAPI.createForm(editedForm, parent);
+			FormsAPI.createForm(editedForm, oldForm.getModule());
 		} else {
 			editedForm.setId(oldForm.getId());
 			Map<String, Object> props = FieldUtil.getAsProperties(editedForm);

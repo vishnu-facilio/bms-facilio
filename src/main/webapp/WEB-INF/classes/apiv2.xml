@@ -83,10 +83,6 @@
 		<action name="sendMail" class="com.facilio.bmsconsole.actions.CommonAction"
 			method="mailExportModule">
 		</action>
-		
-		<action name="forms" class="com.facilio.bmsconsole.actions.FormAction"
-			method="formList">
-		</action>
 
 	</package>
 
@@ -622,6 +618,14 @@
 		</action>
 
 	</package>
+	<package name="formApiv2" namespace="/api/v2/forms" extends="v2Api">
+		<action name="add" class="com.facilio.bmsconsole.actions.FormAction" method="addForm">
+		</action>
+		<action name="*" class="com.facilio.bmsconsole.actions.FormAction" method="formList">
+			<param name="moduleName">{1}</param>
+		</action>
+	</package>
+	
 	<package name="templateApiv2" namespace="/api/v2/template"
 		extends="v2Api">
 		<action name="defaultTemplate" class="com.facilio.bmsconsole.actions.TemplateAction"

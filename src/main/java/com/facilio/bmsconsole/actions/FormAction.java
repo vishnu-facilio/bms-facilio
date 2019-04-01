@@ -9,6 +9,7 @@ import org.apache.commons.chain.Context;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
+import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.forms.FacilioForm.FormType;
 import com.facilio.bmsconsole.forms.FormFactory;
@@ -172,6 +173,16 @@ public class FormAction extends FacilioAction {
 		ReadOnlyChainFactory.getFormList().execute(context);
 		setResult("forms",context.get(ContextNames.FORMS));
 		
+		return SUCCESS;
+	}
+	
+	public String addForm() throws Exception {
+		Context context=new FacilioContext();
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+		context.put(FacilioConstants.ContextNames.FORM, form);
+		
+		TransactionChainFactory.getAddFormCommand().execute(context);
+		setResult(ContextNames.FORM_ID, form.getId());
 		return SUCCESS;
 	}
 	

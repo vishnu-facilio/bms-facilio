@@ -177,47 +177,63 @@ public class FormsAPI {
 		form.setFields(fields);
 	}
 	
-	public static long createForm(FacilioForm editedForm, FacilioModule parent)
-			throws Exception {
+	public static long createForm(FacilioForm form, FacilioModule module) throws Exception {
 		long orgId = AccountUtil.getCurrentOrg().getId();
-		editedForm.setOrgId(orgId);
-		editedForm.setModule(parent);
-		Map<String, Object> props = FieldUtil.getAsProperties(editedForm);
+		form.setOrgId(orgId);
+		form.setModule(module);
+		
+		Map<String, Object> props = FieldUtil.getAsProperties(form);
 		FacilioModule formModule = ModuleFactory.getFormModule();
 		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
 				.table(formModule.getTableName())
 				.fields(FieldFactory.getFormFields());
 		
 		long id = insertBuilder.insert(props);
+		form.setId(id);
 		
-		List<Map<String, Object>> fieldProps = new ArrayList<>();
+		addFormFields(id, form.getFields());
 		
-		int i = 1;
-		
-		for (FormField f: editedForm.getFields()) {
-			f.setFormId(id);
-			f.setOrgId(orgId);
-			f.setSequenceNumber(i);
-			if (f.getSpan() == -1) {
-				f.setSpan(1);
-			}
-			Map<String, Object> prop = FieldUtil.getAsProperties(f);
-			if (prop.get("required") == null) {
-				prop.put("required", false);
-			}
-			fieldProps.add(prop);
-			++i;
-		}
-		
-		FacilioModule formFieldModule = ModuleFactory.getFormFieldsModule();
-		GenericInsertRecordBuilder fieldInsertBuilder = new GenericInsertRecordBuilder()
-				.table(formFieldModule.getTableName())
-				.fields(FieldFactory.getFormFieldsFields())
-				.addRecords(fieldProps);
-		
-		fieldInsertBuilder.save();
-		editedForm.setId(id);
 		return id;
+	}
+	
+	public static void addFormFields (long formId, List<FormField> fields) throws Exception {
+		if (fields != null) {
+			long orgId = AccountUtil.getCurrentOrg().getId();
+			int i = 1;
+			List<Map<String, Object>> fieldProps = new ArrayList<>();
+			for (FormField f: fields) {
+				f.setFormId(formId);
+				f.setOrgId(orgId);
+				f.setSequenceNumber(i);
+				if (f.getSpan() == -1) {
+					f.setSpan(1);
+				}
+				Map<String, Object> prop = FieldUtil.getAsProperties(f);
+				if (prop.get("required") == null) {
+					prop.put("required", false);
+				}
+				fieldProps.add(prop);
+				++i;
+			}
+			
+			FacilioModule formFieldModule = ModuleFactory.getFormFieldsModule();
+			GenericInsertRecordBuilder fieldInsertBuilder = new GenericInsertRecordBuilder()
+					.table(formFieldModule.getTableName())
+					.fields(FieldFactory.getFormFieldsFields())
+					.addRecords(fieldProps);
+			
+			fieldInsertBuilder.save();
+		}
+	}
+	
+	private static int deleteFormFields(long formId) throws Exception {
+		FacilioModule module = ModuleFactory.getFormFieldsModule();
+		GenericDeleteRecordBuilder deleteBuilder = new GenericDeleteRecordBuilder()
+														.table(module.getTableName())
+														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+														.andCondition(CriteriaAPI.getIdCondition(formId, module))
+														;
+		return deleteBuilder.delete();
 	}
 	
 	public static List<FacilioForm> getFromsFromDB(Collection<Long> ids) throws Exception {

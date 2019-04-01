@@ -1,9 +1,13 @@
 package com.facilio.bmsconsole.forms;
 
-import com.facilio.bmsconsole.modules.FacilioModule;
-
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import com.facilio.bmsconsole.modules.FacilioModule;
 
 public class FacilioForm implements Serializable {
 	public FacilioForm () {}
@@ -143,6 +147,14 @@ public class FacilioForm implements Serializable {
 			return this.labelPosition.getStringVal();
 		}
 		return null;
+	}
+	
+	private String description;
+	public String getDescription() {
+		return description;
+	}
+	public void setDescription(String description) {
+		this.description = description;
 	}
 
 	public enum FormType {
