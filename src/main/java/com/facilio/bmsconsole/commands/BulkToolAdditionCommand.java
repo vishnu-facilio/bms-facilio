@@ -46,6 +46,7 @@ public class BulkToolAdditionCommand implements Command {
 
 		List<ToolContext> toolToBeAdded = new ArrayList<>();
 		for (ToolContext tool : toolsList) {
+			tool.setLastPurchasedDate(System.currentTimeMillis());
 			if (!toolTypesId.contains(tool.getToolType().getId())) {
 				toolToBeAdded.add(tool);
 			} else {
