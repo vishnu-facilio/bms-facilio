@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.actions;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.chain.Chain;
@@ -28,12 +29,12 @@ public class FormAction extends FacilioAction {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private String[] formNames;
-	public void setFormNames(String[] formNames) {
+	private String formNames;
+	public void setFormNames(String formNames) {
 		this.formNames = formNames;
 	}
 	
-	public String[] getFormNames() {
+	public String getFormNames() {
 		return this.formNames;
 	}
 	
@@ -51,20 +52,22 @@ public class FormAction extends FacilioAction {
 	public String fetchFormMeta() throws Exception {
 		Context context = new FacilioContext();
 		
-		context.put(FacilioConstants.ContextNames.FORM_NAMES, this.getFormNames());
+		context.put(FacilioConstants.ContextNames.FORM_NAME, this.getFormNames());
 		context.put(FacilioConstants.ContextNames.FORM_ID, this.getFormId());
 		Chain c = FacilioChainFactory.getFormMetaChain();
 		c.execute(context);
 		
-		List<FacilioForm> forms = (List<FacilioForm>) context.get(FacilioConstants.ContextNames.FORMS);
-		this.setForms(forms);
+		FacilioForm form = (FacilioForm) context.get(FacilioConstants.ContextNames.FORM);
+		this.setForms(Collections.singletonList(form));	// TODO remove
+		this.setForm(form);
 		
 		return SUCCESS;
 	}
 	
 	public String v2fetchFormMeta() throws Exception {
 		fetchFormMeta();
-		setResult("forms", forms);
+		setResult(FacilioConstants.ContextNames.FORMS, forms); // TODO remove
+		setResult(FacilioConstants.ContextNames.FORM, form);
 		return SUCCESS;
 	}
 	
@@ -148,7 +151,7 @@ public class FormAction extends FacilioAction {
 	
 	public String editForm() throws Exception {
 		Context context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.FORM_NAMES, new String[]{this.getForm().getName()});
+		context.put(FacilioConstants.ContextNames.FORM_NAME, this.getForm().getName());
 		context.put(FacilioConstants.ContextNames.EDITED_FORM, this.getForm());
 		
 		Chain c = FacilioChainFactory.editFormChain();

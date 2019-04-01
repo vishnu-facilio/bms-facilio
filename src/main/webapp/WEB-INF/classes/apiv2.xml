@@ -620,8 +620,10 @@
 	</package>
 	<package name="formApiv2" namespace="/api/v2/forms" extends="v2Api">
 		<action name="add" class="com.facilio.bmsconsole.actions.FormAction" method="addForm">
+			<param name="permission">CREATE</param>
 		</action>
 		<action name="*" class="com.facilio.bmsconsole.actions.FormAction" method="formList">
+			<param name="permission">READ</param>
 			<param name="moduleName">{1}</param>
 		</action>
 	</package>
