@@ -71,6 +71,10 @@ public class IfContext implements Serializable,WorkflowCondition {
 	public boolean evalCriteriaAndExecute(WorkflowContext workflowContext) throws Exception {
 		
 		Object result = WorkflowUtil.evaluateExpression(criteria, workflowContext.getVariableResultMap(), workflowContext.isIgnoreNullParams());
+		
+		if(result == null) {
+			throw new Exception("Result value is null for criteria- "+criteria+" with params - "+workflowContext.getVariableResultMap());
+		}
 		boolean isPassed;
 		 if(result instanceof Boolean) {
 			 isPassed = (Boolean) result;
