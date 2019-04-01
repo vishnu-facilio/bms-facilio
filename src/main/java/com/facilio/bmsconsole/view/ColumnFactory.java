@@ -177,9 +177,9 @@ public class ColumnFactory {
 		
 		columns.add(new ViewField("name", "Tenant Name"));
 		columns.add(new ViewField("description", "Description"));
-		columns.add(new ViewField("sysCreatedTime", "Created Time"));
-		columns.add(new ViewField("sysModifiedTime", "Modified Time"));
 		columns.add(new ViewField("contact", "Contact"));
+		columns.add(new ViewField("inTime", "Lease Start Time"));
+		columns.add(new ViewField("outTime", "Lease End Time"));
 				
 		return columns;
 	}
@@ -349,7 +349,7 @@ public class ColumnFactory {
 //		columns.add(new ViewField("localId", "Receivable Id"));
 //		columns.add(new ViewField("poId", "Purchase Order ID"));
 		columns.add(new ViewField("status", "Status"));
-	//	columns.add(new ViewField("sysCreatedTime", "Created Time"));
+		columns.add(new ViewField("sysCreatedTime", "Created Time"));
 		return columns;
 	}
 }

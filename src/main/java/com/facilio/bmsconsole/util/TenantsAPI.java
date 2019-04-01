@@ -1193,9 +1193,8 @@ public class TenantsAPI {
 		List<FacilioField> fields = FieldFactory.getPreventiveMaintenanceFields();
 		
 	   FacilioField pmId = new FacilioField();
-	   pmId.setModule(workOrderModule);
 	   pmId.setName("pm");
-	   pmId.setColumnName("PM_ID");
+	   pmId.setColumnName("DISTINCT PM_ID");
 	   List<FacilioField> selectFields = new ArrayList<FacilioField>();
 	   selectFields.add(pmId);
 	   GenericSelectRecordBuilder workOrderQuery = new GenericSelectRecordBuilder()
