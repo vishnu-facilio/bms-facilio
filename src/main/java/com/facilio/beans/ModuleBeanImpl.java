@@ -674,7 +674,8 @@ public class ModuleBeanImpl implements ModuleBean {
 		}
 		return null;
 	}
-	
+
+
 	@Override
 	public FacilioField getField(String fieldName, String moduleName) throws Exception {
 		FacilioModule module = getMod(moduleName);
@@ -685,6 +686,15 @@ public class ModuleBeanImpl implements ModuleBean {
 		
 		if (fieldName.equals("siteId")) {
 			return FieldFactory.getSiteIdField(module);
+		}
+
+		if (FieldFactory.isSystemField(fieldName)) {
+			if (FieldUtil.isSystemFieldsPresent(module)) {
+				return FieldFactory.getSystemField(fieldName, module);
+			}
+			else {
+				return null;
+			}
 		}
 		
 		if(LookupSpecialTypeUtil.isSpecialType(moduleName)) {

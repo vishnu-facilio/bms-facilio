@@ -875,18 +875,35 @@ public class FieldFactory {
 	public static List<FacilioField> getSystemFields(FacilioModule module) {
 		List<FacilioField> fields = new ArrayList<>();
 		
-		fields.add(getField("sysCreatedTime", "SYS_CREATED_TIME", module, FieldType.DATE_TIME));
-		fields.add(getField("sysModifiedTime", "SYS_MODIFIED_TIME", module, FieldType.DATE_TIME));
-		
-		LookupField createdBy = (LookupField) getField("sysCreatedBy", "SYS_CREATED_BY", module, FieldType.LOOKUP);
-		createdBy.setSpecialType(FacilioConstants.ContextNames.USERS);
-		fields.add(createdBy);
-		
-		LookupField modifiedBy = (LookupField) getField("sysModifiedBy", "SYS_MODIFIED_BY", module, FieldType.LOOKUP);
-		modifiedBy.setSpecialType(FacilioConstants.ContextNames.USERS);
-		fields.add(modifiedBy);
+		fields.add(getSystemField("sysCreatedTime", module));
+		fields.add(getSystemField("sysModifiedTime", module));
+		fields.add(getSystemField("sysCreatedBy", module));
+		fields.add(getSystemField("sysModifiedBy", module));
 		
 		return fields;
+	}
+
+	private static final List<String> systemFields = FieldFactory.getSystemFields(null).stream().map(FacilioField::getName).collect(Collectors.toList());
+	public static boolean isSystemField (String fieldName) {
+		return systemFields.contains(fieldName);
+	}
+
+	public static FacilioField getSystemField (String fieldName, FacilioModule module) {
+		switch (fieldName) {
+			case "sysCreatedTime":
+				return getField("sysCreatedTime", "SYS_CREATED_TIME", module, FieldType.DATE_TIME);
+			case "sysModifiedTime":
+				return getField("sysModifiedTime", "SYS_MODIFIED_TIME", module, FieldType.DATE_TIME);
+			case "sysCreatedBy":
+				LookupField createdBy = (LookupField) getField("sysCreatedBy", "SYS_CREATED_BY", module, FieldType.LOOKUP);
+				createdBy.setSpecialType(FacilioConstants.ContextNames.USERS);
+				return createdBy;
+			case "sysModifiedBy":
+				LookupField modifiedBy = (LookupField) getField("sysModifiedBy", "SYS_MODIFIED_BY", module, FieldType.LOOKUP);
+				modifiedBy.setSpecialType(FacilioConstants.ContextNames.USERS);
+				return modifiedBy;
+		}
+		return null;
 	}
 
 	public static FacilioField getKinesisField() {
@@ -5581,22 +5598,22 @@ public class FieldFactory {
 			FieldType type) {
 		FacilioField columnFld = null;
 		switch (type) {
-		case NUMBER:
-		case DECIMAL:
-			columnFld = new NumberField();
-			break;
-		case BOOLEAN:
-			columnFld = new BooleanField();
-			break;
-		case LOOKUP:
-			columnFld = new LookupField();
-			break;
-		case ENUM:
-			columnFld = new EnumField();
-			break;
-		default:
-			columnFld = new FacilioField();
-			break;
+			case NUMBER:
+			case DECIMAL:
+				columnFld = new NumberField();
+				break;
+			case BOOLEAN:
+				columnFld = new BooleanField();
+				break;
+			case LOOKUP:
+				columnFld = new LookupField();
+				break;
+			case ENUM:
+				columnFld = new EnumField();
+				break;
+			default:
+				columnFld = new FacilioField();
+				break;
 		}
 		columnFld.setName(name);
 		if (displayName != null) {
