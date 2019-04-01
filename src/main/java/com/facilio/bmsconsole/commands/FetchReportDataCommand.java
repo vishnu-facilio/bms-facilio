@@ -102,6 +102,7 @@ public class FetchReportDataCommand implements Command {
 		
 		SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder = new SelectRecordsBuilder<ModuleBaseWithCustomFields>()
 																				.module(baseModule) //Assuming X to be the base module
+																				.setAggregation()
 																				;
 		Set<FacilioModule> addedModules = new HashSet<>();
 		addedModules.add(baseModule);
