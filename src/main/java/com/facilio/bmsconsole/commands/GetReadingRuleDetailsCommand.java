@@ -58,9 +58,13 @@ public class GetReadingRuleDetailsCommand implements Command {
 							List<Long> rcaIds = new ArrayList<>();
 							
 							JSONArray rcaJSONArray = new JSONArray();
+							
+							List<ReadingRuleContext> allRcaRules = new ArrayList<>();
+							
 							for(ReadingRuleContext rcaRule :alarmRuleContext.getAlarmRCARules()) {
 								
 								rcaIds.add(rcaRule.getId());
+								allRcaRules.add(rcaRule);
 							}
 							if(alarmRuleContext.getAlarmRCARulesVersionHistory() !=  null) {
 								
@@ -68,6 +72,7 @@ public class GetReadingRuleDetailsCommand implements Command {
 									
 									for(ReadingRuleContext rcaRule : alarmRuleContext.getAlarmRCARulesVersionHistory().get(versionId)) {
 										rcaIds.add(rcaRule.getId());
+										allRcaRules.add(rcaRule);
 									}
 								}
 							}
@@ -101,7 +106,8 @@ public class GetReadingRuleDetailsCommand implements Command {
 									eventMap.put(eventContext.getSubRuleId(), eventContext);
 								}
 							}
-							for(ReadingRuleContext rcaRule :alarmRuleContext.getAlarmRCARules()) {
+							
+							for(ReadingRuleContext rcaRule :allRcaRules) {
 								EventContext event = eventMap.get(rcaRule.getId());
 								
 								if(event != null) {
