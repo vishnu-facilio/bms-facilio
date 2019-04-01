@@ -1595,6 +1595,7 @@ public class WorkOrderAction extends FacilioAction {
 		JSONObject pagination = new JSONObject();
 		pagination.put("page", getPage());
 		pagination.put("perPage", getPerPage());
+
 		context.put(FacilioConstants.ContextNames.PAGINATION, pagination);
 		
 		Chain workOrderListChain = ReadOnlyChainFactory.getWorkOrderListChain();
