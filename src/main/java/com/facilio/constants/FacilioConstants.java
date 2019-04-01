@@ -94,6 +94,7 @@ import com.facilio.bmsconsole.context.WorkorderPartsContext;
 import com.facilio.bmsconsole.context.WorkorderToolsContext;
 import com.facilio.bmsconsole.context.ZoneContext;
 import com.facilio.bmsconsole.tenant.TenantContext;
+import com.facilio.bmsconsole.workflow.rule.StateContext;
 
 public class FacilioConstants {
 	
@@ -435,7 +436,7 @@ public class FacilioConstants {
 		public static final String LOOKUP_FIELD_META_LIST = "lookupFieldMetaList";
 		public static final String FETCH_FIELD_DISPLAY_NAMES = "fetchFieldDisplayNames";
 		public static final String ALLOW_SAME_FIELD_DISPLAY_NAME = "changeFieldDisplayName";
-		
+
 		public static final String SITE = "site";
 		public static final String SITE_LIST = "sites";
 		public static final String SITE_ID = "siteId";
@@ -940,6 +941,7 @@ public class FacilioConstants {
 		public static final String ITEM_VENDORS_LIST = "itemTypesVendorsList";
 		
 		public static final String SITES_FOR_STORE_ROOM = "sitesForStoreRoom";
+		public static final String STATE = "state";
 
 		public static final String PURCHASE_CONTRACTS = "purchasecontracts";
 		public static final String PURCHASE_CONTRACT = "purchasecontract";
@@ -956,10 +958,10 @@ public class FacilioConstants {
 		public static final String TOTAL_COST = "totalCost";
 		public static final String TOTAL_QUANTITY = "totalQuantity";
 		public static final String WO_TOTAL_COST = "woTotalCost";
-		
+
 		public static final String GATE_PASS = "gatePass";
 		public static final String GATE_PASS_LINE_ITEMS = "gatePassLineItems";
-		
+
 		private static Map<String, Class> classMap = Collections.unmodifiableMap(initClassMap());
 		private static Map<String, Class> initClassMap() {
 			Map<String, Class> classMap = new HashMap<>();
@@ -1064,6 +1066,7 @@ public class FacilioConstants {
 			classMap.put(PO_LINE_ITEMS_SERIAL_NUMBERS, PoLineItemsSerialNumberContext.class);
 			classMap.put(GATE_PASS, GatePassContext.class);
 			classMap.put(GATE_PASS_LINE_ITEMS, GatePassLineItemsContext.class);
+			classMap.put(STATE, StateContext.class);
 			return classMap;
 		}
 		

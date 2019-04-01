@@ -100,6 +100,11 @@
 			<interceptor-ref name="defaultStack" />
 		</action>
 	</package>
+	
+	<package name="stateFlow" namespace="/api/v2/state" extends="v2Api">
+		<action name="update"
+			class="com.facilio.bmsconsole.actions.StateFlowAction" method="updateStage" />
+	</package>
 
 	<package name="importTemplate" namespace="/api/v2/importTemplate"
 		extends="v2Api">

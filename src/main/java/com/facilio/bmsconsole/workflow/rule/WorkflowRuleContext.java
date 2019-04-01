@@ -467,7 +467,9 @@ public class WorkflowRuleContext implements Serializable {
 		
 		ALARM_RCA_RULES(false,true,true),
 		ASSET_NOTIFICATION_RULE,
-		PM_READING_TRIGGER			// 27
+		PM_READING_TRIGGER,			// 27
+		
+		STAGE_RULE,
 		;
 		//Always add at the end
 		

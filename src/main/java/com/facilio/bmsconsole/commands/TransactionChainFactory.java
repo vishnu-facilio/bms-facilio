@@ -13,7 +13,7 @@ import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 
 public class TransactionChainFactory {
-	
+
 	private static Chain getDefaultChain() {
 		return FacilioChain.getTransactionChain();
     }
@@ -1003,7 +1003,7 @@ public class TransactionChainFactory {
 			c.addCommand(new SwitchToAddResourceChain());
 			return c;
 		}
-		
+
 		public static Chain getAssetImportChain() {
 			Chain c= getDefaultChain();
 			c.addCommand(new PopulateImportProcessCommand());
@@ -1334,7 +1334,7 @@ public class TransactionChainFactory {
 			return c;
 		}
 		
-	    
+
 	    public static Chain getAddWidgetChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(new AddWidgetCommand());
@@ -2137,11 +2137,11 @@ public class TransactionChainFactory {
 			chain.addCommand(getPurchaseRequestTotalCostChain()); //update purchase request total cost
 			return chain;
 		}
-		
+
 		public static Chain getUpdatePurchaseRequestStatusChain() {
 			Chain chain = getDefaultChain();
 			chain.addCommand(SetTableNamesCommand.getForPurchaseRequest());
-			chain.addCommand(new UpdateBulkPurchaseRequestStatusCommand()); 
+			chain.addCommand(new UpdateBulkPurchaseRequestStatusCommand());
 			return chain;
 		}
 
@@ -2195,7 +2195,7 @@ public class TransactionChainFactory {
 		public static Chain getUpdatePurchaseOrderStatusChain() {
 			Chain chain = getDefaultChain();
 			chain.addCommand(SetTableNamesCommand.getForPurchaseOrder());
-			chain.addCommand(new UpdateBulkPurchaseOrderStatusCommand()); 
+			chain.addCommand(new UpdateBulkPurchaseOrderStatusCommand());
 			return chain;
 		}
 
@@ -2287,8 +2287,8 @@ public class TransactionChainFactory {
 			c.addCommand(new GetPurchaseOrdersListOnInventoryTypeIdCommand());
 			return c;
 		}
-		
-		
+
+
 		public static Chain getAddOrUpdateItemTypeVendorChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(new AddOrUpdateItemTypeVendorCommand());
@@ -2308,43 +2308,43 @@ public class TransactionChainFactory {
 			c.addCommand(getBulkAddToolChain());
 			return c;
 		}
-		
+
 		public static  Chain getAddFormCommand() {
 			Chain c = getDefaultChain();
 			c.addCommand(new AddFormCommand());
 			return c;
 		}
-		
+
 		public static Chain getUpdateFormChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(new EditFormCommand());
 			return c;
 		}
-		
+
 		public static Chain getUpdateFormFieldChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(new UpdateFormFieldCommand());
 			return c;
 		}
-		
+
 		public static Chain getUpdateFormFieldsChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(new UpdateFormFieldsCommand());
 			return c;
 		}
-		
+
 		public static Chain getUpdateFormSectionChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(new UpdateFormSectionCommand());
 			return c;
 		}
-		
+
 		public static Chain getDeleteFormChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(new DeleteFormCommand());
 			return c;
 		}
-		
+
 		public static Chain getAddPurchaseContractChain() {
 			Chain chain = getDefaultChain();
 			chain.addCommand(SetTableNamesCommand.getForPurchaseContract());
@@ -2352,14 +2352,14 @@ public class TransactionChainFactory {
 		    chain.addCommand(getPurchaseContractTotalCostChain()); //roll up for calculating total cost
 			return chain;
 		}
-		
+
 		public static Chain getPurchaseContractDeleteChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForPurchaseContract());
 			c.addCommand(new DeletePurchaseContractCommand());
 			return c;
 		}
-		
+
 		public static Chain getAddPurchaseContractLineItem() {
 			Chain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForPurchaseContractLineItem());
@@ -2367,7 +2367,7 @@ public class TransactionChainFactory {
 			c.addCommand(getPurchaseContractTotalCostChain()); //roll up for calculating total cost
 			return c;
 		}
-		
+
 		public static Chain getDeletePurchaseContractLineItemChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForPurchaseContractLineItem());
@@ -2383,14 +2383,14 @@ public class TransactionChainFactory {
 		    //rollup might be needed to update purchase contract total cost -- need to be discussed
 			return chain;
 		}
-		
+
 		public static Chain getLabourContractDeleteChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForLabourContract());
 			c.addCommand(new DeleteLabourContractCommand());
 			return c;
 		}
-		
+
 		public static Chain getAddLabourContractLineItem() {
 			Chain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForLabourContractLineItem());
@@ -2398,7 +2398,7 @@ public class TransactionChainFactory {
 			//rollup might be needed to update contract total cost -- need to be discussed
 			return c;
 		}
-		
+
 		public static Chain getDeleteLabourContractLineItemChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForLabourContractLineItem());
@@ -2408,22 +2408,22 @@ public class TransactionChainFactory {
 		public static Chain getUpdatePurchaseContractStatusChain() {
 			Chain chain = getDefaultChain();
 			chain.addCommand(SetTableNamesCommand.getForPurchaseContract());
-			chain.addCommand(new UpdateBulkPurchaseContractStatusCommand()); 
+			chain.addCommand(new UpdateBulkPurchaseContractStatusCommand());
 			return chain;
 		}
 		public static Chain getUpdateLabourContractStatusChain() {
 			Chain chain = getDefaultChain();
 			chain.addCommand(SetTableNamesCommand.getForLabourContract());
-			chain.addCommand(new UpdateBulkLabourContractStatusCommand()); 
+			chain.addCommand(new UpdateBulkLabourContractStatusCommand());
 			return chain;
 		}
-		
+
 		public static Chain getPurchaseContractTotalCostChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(new PurchaseContractTotalCostRollupCommand());
 			return c;
 		}
-		
+
 		public static Chain getAddPoLineItemSerialNumbersChain () {
 			Chain chain = getDefaultChain();
 			chain.addCommand(SetTableNamesCommand.getForPoLineItemSerialNumber());
@@ -2431,7 +2431,7 @@ public class TransactionChainFactory {
 			chain.addCommand(new GenericAddModuleDataListCommand());
 			return chain;
 		}
-		
+
 		public static Chain getUpdatePoLineItemSerialNumbersChain () {
 			Chain chain = getDefaultChain();
 			chain.addCommand(SetTableNamesCommand.getForPoLineItemSerialNumber());
@@ -2444,8 +2444,7 @@ public class TransactionChainFactory {
 			c.addCommand(new GenericDeleteModuleDataCommand());
 			return c;
 		}
-		
-		
+	
 		public static Chain getAddGatePassChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForGatePass());
@@ -2454,6 +2453,13 @@ public class TransactionChainFactory {
 			c.addCommand(new AddGatePassLineItemsCommand());
 			return c;
 		}
-		
+
+		public static Chain getUpdateStageChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new GenericGetModuleDataDetailCommand());
+			c.addCommand(new UpdateStageCommand());
+			c.addCommand(new GenericUpdateModuleDataCommand());
+			return c;
+		}
 }
 

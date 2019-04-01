@@ -78,7 +78,7 @@ public class ModuleFactory {
 		moduleMap.put(FacilioConstants.ContextNames.RECEIPT, getReceiptModule());
 		moduleMap.put(FacilioConstants.ContextNames.PURCHASE_CONTRACTS, getPurchaseContractModule());
 		moduleMap.put(FacilioConstants.ContextNames.LABOUR_CONTRACTS, getLabourContractModule());
-		
+
 		return moduleMap;
 	}
 	
@@ -130,7 +130,7 @@ public class ModuleFactory {
 		formFieldsModule.setTableName("Form_Fields");
 		return formFieldsModule;
 	}
-	
+
 	public static FacilioModule getFormSectionModule() {
 		FacilioModule formFieldsModule = new FacilioModule();
 		formFieldsModule.setName("formSection");
@@ -138,7 +138,7 @@ public class ModuleFactory {
 		formFieldsModule.setTableName("Form_Section");
 		return formFieldsModule;
 	}
-	
+
 
 	public static FacilioModule getFieldsModule() {
 		FacilioModule fieldModule = new FacilioModule();
@@ -1093,7 +1093,7 @@ public class ModuleFactory {
 		dashboardWigetModule.setTableName("Workflow");
 		return dashboardWigetModule;
 	}
-	
+
 	public static FacilioModule getWorkflowLogModule() {
 		FacilioModule dashboardWigetModule = new FacilioModule();
 		dashboardWigetModule.setTableName("Workflow_Log");
@@ -1616,7 +1616,7 @@ public class ModuleFactory {
 		syncModule.setTableName("Unmodeled_Instance");
 		return syncModule;
 	}
-	
+
 	public static FacilioModule getPointsModule() {
 		FacilioModule syncModule = new FacilioModule();
 		syncModule.setName("points");
@@ -1624,7 +1624,7 @@ public class ModuleFactory {
 		syncModule.setTableName("Points");
 		return syncModule;
 	}
-	
+
 	public static FacilioModule getUnmodeledDataModule() {
 		FacilioModule syncModule = new FacilioModule();
 		syncModule.setName("unmodeledData");
@@ -1909,7 +1909,7 @@ public class ModuleFactory {
 		controlActionTemplate.setExtendModule(getTemplatesModule());
 		return controlActionTemplate;
 	}
-	
+
 	public static FacilioModule getSitesForStoreRoomModule() {
 		FacilioModule accessbileSpaceModule = new FacilioModule();
 		accessbileSpaceModule.setName(FacilioConstants.ContextNames.SITES_FOR_STORE_ROOM);
@@ -1917,7 +1917,7 @@ public class ModuleFactory {
 		accessbileSpaceModule.setTableName("Storeroom_Sites");
 		return accessbileSpaceModule;
 	}
-	
+
 	public static FacilioModule getPoLineItemsSerialNumberModule() {
 		FacilioModule tenants = new FacilioModule();
 		tenants.setName("poLineItemSerialNumbers");
@@ -1932,5 +1932,14 @@ public class ModuleFactory {
 		gatePass.setDisplayName("Gate Pass");
 		gatePass.setTableName("Gate_Pass");
 		return gatePass;
+	}
+
+	public static FacilioModule getStageRuleModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName("stateruleWorkflow");
+		module.setDisplayName("State Rule Workflow");
+		module.setTableName("StateflowRule");
+		module.setExtendModule(getWorkflowRuleModule());
+		return module;
 	}
 }

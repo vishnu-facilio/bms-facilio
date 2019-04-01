@@ -5542,4 +5542,15 @@ public class FieldFactory {
 					return prevValue;
 				}));
 	}
+
+	public static List<FacilioField> getStageRuleFields() {
+		FacilioModule stageRuleModule = ModuleFactory.getStageRuleModule();
+		List<FacilioField> list = new ArrayList<>();
+		
+		list.add(getIdField(stageRuleModule));
+		list.add(getField("fromStateId", "FROM_STATE_ID", stageRuleModule, FieldType.NUMBER));
+		list.add(getField("toStateId", "TO_STATE_ID", stageRuleModule, FieldType.NUMBER));
+		list.add(getField("formId", "FORM_ID", stageRuleModule, FieldType.NUMBER));
+		return list;
+	}
 }
