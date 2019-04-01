@@ -91,6 +91,10 @@ public class LabourAction extends FacilioAction {
 		{
 			location.setName(labour.getName()+"_Location");
 			context.put(FacilioConstants.ContextNames.RECORD, location);
+			context.put(FacilioConstants.ContextNames.RECORD, location);
+			context.put(FacilioConstants.ContextNames.RECORD_ID, location.getId());
+			context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(location.getId()));
+		
 			if (location.getId() > 0) {
 				Chain editLocation = FacilioChainFactory.updateLocationChain();
 				editLocation.execute(context);
@@ -104,7 +108,7 @@ public class LabourAction extends FacilioAction {
 			}
 		}
 		else {
-			labour.setAddress(null);
+			labour.setLocation(null);
 		}
 		if(context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST) != null) {
 			context.remove(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);

@@ -35,24 +35,16 @@ public class AddOrUpdatePurchaseOrderCommand implements Command {
 				throw new Exception("Line items cannot be empty");
 			}
 			
-//			if (purchaseOrderContext.getVendor() == null) {
-//				throw new Exception("Vendor cannot be empty");
-//			}
-//			
-//			if (purchaseOrderContext.getStoreRoom() == null) {
-//				throw new Exception("StoreRoom cannot be empty");
-//			}
-			purchaseOrderContext.setShipToAddress(LocationAPI.getLocation(purchaseOrderContext.getStoreRoom(), purchaseOrderContext.getShipToAddress(), "SHIP_TO_Location", true));
-			purchaseOrderContext.setBillToAddress(LocationAPI.getLocation(purchaseOrderContext.getVendor(), purchaseOrderContext.getBillToAddress(), "BILL_TO_Location", false));
+			if (purchaseOrderContext.getVendor() == null) {
+				throw new Exception("Vendor cannot be empty");
+			}
+			
+			if (purchaseOrderContext.getStoreRoom() == null) {
+				throw new Exception("StoreRoom cannot be empty");
+			}
+			purchaseOrderContext.setShipToAddress(LocationAPI.getPoPrLocation(purchaseOrderContext.getStoreRoom(), purchaseOrderContext.getShipToAddress(), "SHIP_TO_Location", true));
+			purchaseOrderContext.setBillToAddress(LocationAPI.getPoPrLocation(purchaseOrderContext.getVendor(), purchaseOrderContext.getBillToAddress(), "BILL_TO_Location", false));
 			if (purchaseOrderContext.getId() > 0) {
-				if(purchaseOrderContext.getStatusEnum() == PurchaseOrderContext.Status.APPROVED) {
-					if(purchaseOrderContext.getVendor() == null || (purchaseOrderContext.getVendor()!=null && purchaseOrderContext.getVendor().getId() == -1)) {
-						throw new IllegalArgumentException("Vendor cannot be null for approved Purchase Order");
-					}
-					if(purchaseOrderContext.getStoreRoom() == null || (purchaseOrderContext.getStoreRoom()!=null && purchaseOrderContext.getStoreRoom().getId() == -1)) {
-						throw new IllegalArgumentException("Storeroom cannot be null for approved Purchase Order");
-					}
-				}
 				updateRecord(purchaseOrderContext, module, fields);
 				
 				DeleteRecordBuilder<PurchaseOrderLineItemContext> deleteBuilder = new DeleteRecordBuilder<PurchaseOrderLineItemContext>()

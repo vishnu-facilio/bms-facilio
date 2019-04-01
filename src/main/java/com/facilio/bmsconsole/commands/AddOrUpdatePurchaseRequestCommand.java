@@ -39,8 +39,8 @@ public class AddOrUpdatePurchaseRequestCommand implements Command {
 			}
 			// setting current user to requestedBy
 			purchaseRequestContext.setRequestedBy(AccountUtil.getCurrentUser());
-            purchaseRequestContext.setShipToAddress(LocationAPI.getLocation(purchaseRequestContext.getStoreRoom(), purchaseRequestContext.getShipToAddress(), "SHIP_TO_Location", true));
-            purchaseRequestContext.setBillToAddress(LocationAPI.getLocation(purchaseRequestContext.getVendor(), purchaseRequestContext.getBillToAddress(), "BILL_TO_Location", false));
+            purchaseRequestContext.setShipToAddress(LocationAPI.getPoPrLocation(purchaseRequestContext.getStoreRoom(), purchaseRequestContext.getShipToAddress(), "SHIP_TO_Location", true));
+            purchaseRequestContext.setBillToAddress(LocationAPI.getPoPrLocation(purchaseRequestContext.getVendor(), purchaseRequestContext.getBillToAddress(), "BILL_TO_Location", false));
             if (purchaseRequestContext.getId() > 0) {
 				updateRecord(purchaseRequestContext, module, fields);
 				
