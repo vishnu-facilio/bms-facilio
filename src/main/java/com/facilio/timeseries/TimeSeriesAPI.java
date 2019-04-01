@@ -30,6 +30,9 @@ import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
 import com.facilio.tasker.FacilioTimer;
+
+import java.sql.SQLException;
+
 import org.apache.commons.chain.Chain;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -229,22 +232,32 @@ public class TimeSeriesAPI {
 	}
 	
 	
-	public static void insertInstanceAssetMapping(String deviceName, long assetId, long categoryId, Long controllerId, Map<String,Long> instanceFieldMap) throws Exception {
+public static void insertInstanceAssetMapping(String deviceName, long assetId, long categoryId, Long controllerId, Map<String,Long> instanceFieldMap) throws Exception {
 		
 		List<Map<String, Object>> instanceDetails = getUnmodeledInstances(deviceName, instanceFieldMap.keySet(), controllerId, null);
+		//List<Map<String, Object>> instancePointsDetails = getPoinstUnmodeledInstances(deviceName, instanceFieldMap.keySet(), controllerId, null);
 		Map<String,Map<String, Object>> instanceMap = instanceDetails.stream().collect(Collectors.toMap(instance -> (String) instance.get("instance"), Function.identity()));
+		//Map<String,Map<String, Object>> instancepointsMap = instancePointsDetails.stream().collect(Collectors.toMap(instance -> (String) instance.get("instance"), Function.identity()));
 		
 		List<ReadingDataMeta> writableReadingList = new ArrayList<>();
 		List<ReadingDataMeta> remainingReadingList = new ArrayList<>();
 		
 		Map<String, ReadingDataMeta> metaMap = getMetaMap(assetId, instanceFieldMap);
 		List<Map<String, Object>> records = new ArrayList<>();
+		
+		
 		long orgId = AccountUtil.getCurrentOrg().getOrgId();
+		
 		
 		for (Map.Entry<String, Long> entry : instanceFieldMap.entrySet()) {
 			String instanceName = entry.getKey();
 			long fieldId = entry.getValue();
+			
 			checkForInputType(assetId, fieldId, instanceName, metaMap);
+			Map<String, Object> pointsRecord = (Map<String, Object>) getNewPointsData(assetId,categoryId,fieldId);
+			
+			updatePointsData(deviceName, instanceName, pointsRecord);
+			
 			Map<String, Object> record = new HashMap<String,Object>();
 			record.put("orgId", orgId);
 			record.put("device", deviceName);
@@ -274,19 +287,33 @@ public class TimeSeriesAPI {
 			else {
 				remainingReadingList.add(meta);
 			}
-		};
+		};		
 		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
 				.fields(FieldFactory.getInstanceMappingFields())
 				.table("Instance_To_Asset_Mapping")
 				.addRecords(records);
 		insertBuilder.save();
-		
 		if (!writableReadingList.isEmpty()) {
 			ReadingsAPI.updateReadingDataMetaInputType(writableReadingList, ReadingInputType.CONTROLLER_MAPPED, ReadingType.WRITE);
 		}
 		if (!remainingReadingList.isEmpty()){
 			ReadingsAPI.updateReadingDataMetaInputType(remainingReadingList, ReadingInputType.CONTROLLER_MAPPED, null);
 		}
+	}
+
+	private static void updatePointsData(String deviceName, String instanceName, Map<String, Object> pointsRecord)
+			throws SQLException {
+		FacilioModule module = ModuleFactory.getPointsModule();
+		List<FacilioField> fields = FieldFactory.getPointsFields();
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+		GenericUpdateRecordBuilder builderPoints = new GenericUpdateRecordBuilder()
+				.fields(FieldFactory.getPointsFields())
+				.table("Points")
+				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("device"), deviceName, StringOperators.IS))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("instance"), instanceName, StringOperators.IS))
+				;
+		builderPoints.update(pointsRecord);
 	}
 	
 	public static int updateInstanceAssetMapping(String deviceName, long assetId, long categoryId, String instanceName, long fieldId, Map<String, Object> oldData) throws Exception {
@@ -308,15 +335,13 @@ public class TimeSeriesAPI {
 			throw new IllegalArgumentException("Field cannot be changed. Please contact the support");
 		}
 		
-		Map<String, Object> prop = new HashMap<>();
-		prop.put("assetId", assetId);
-		prop.put("categoryId", categoryId);
-		prop.put("fieldId", fieldId);
-		prop.put("mappedTime", System.currentTimeMillis());
+		Map<String, Object> prop = (Map<String, Object>) getNewPointsData(assetId,categoryId,fieldId);
 		
 		FacilioModule module = ModuleFactory.getInstanceMappingModule();
 		List<FacilioField> fields = FieldFactory.getInstanceMappingFields();
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+		
+		
 		
 		GenericUpdateRecordBuilder builder = new GenericUpdateRecordBuilder()
 				.fields(fields)
@@ -325,7 +350,7 @@ public class TimeSeriesAPI {
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("device"), deviceName, StringOperators.IS))
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("instance"), instanceName, StringOperators.IS))
 				;
-		
+		updatePointsData(deviceName, instanceName,prop );
 		int count = builder.update(prop);
 		
 		FacilioContext context = new FacilioContext();
@@ -761,6 +786,37 @@ public class TimeSeriesAPI {
 			return stats; 
 		}
 		return null;
+	}
+	public static List<Map<String, Object>> getPointsData() throws Exception {
+		// TODO Auto-generated method stub
+		FacilioModule module = ModuleFactory.getPointsModule();
+		List<FacilioField> fields = FieldFactory.getPointsFields();
+		fields.add(FieldFactory.getIdField(module));
+
+		long orgId = AccountUtil.getCurrentOrg().getOrgId();
+		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+				.select(fields)
+				.table(module.getTableName())
+				.andCondition(CriteriaAPI.getOrgIdCondition(orgId, module))
+				;
+		return builder.get();
+	}
+	
+	public static void insertPoints(List<Map<String, Object>> insertNewPointsData) throws SQLException {
+		FacilioModule module = ModuleFactory.getPointsModule();
+		GenericInsertRecordBuilder insertBuilderPoints = new GenericInsertRecordBuilder()
+				.fields(FieldFactory.getPointsFields())
+				.table(module.getTableName())
+				.addRecords(insertNewPointsData);
+		insertBuilderPoints.save();
+	}
+	public static Map<String, Object> getNewPointsData(long assetId,long categoryId,long fieldId) throws Exception {
+		Map<String, Object> pointsRecord = new HashMap<String,Object>();
+		pointsRecord.put("assetId", assetId);
+		pointsRecord.put("categoryId", categoryId);
+		pointsRecord.put("fieldId", fieldId);
+		pointsRecord.put("mappedTime", System.currentTimeMillis());
+		return pointsRecord;
 	}
 	
 }
