@@ -26,7 +26,6 @@ public class WorkflowLogUtil {
 			
 			value.put("workflowId", workflowContext.getId());
 			value.put("executionTime", DateTimeUtil.getCurrenTime());
-			value.put("input", paramMap);
 			value.put("variableMap", workflowContext.getVariableResultMap());
 			value.put("result", result);
 			
