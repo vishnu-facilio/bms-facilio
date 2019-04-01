@@ -504,6 +504,8 @@ public class FieldFactory {
 		span.setColumnName("SPAN");
 		span.setModule(module);
 		
+		fields.add(getField("defaultValue", "DEFAULT_VALUE", module, FieldType.STRING));
+		
 		fields.add(span);
 		return fields;
 	}

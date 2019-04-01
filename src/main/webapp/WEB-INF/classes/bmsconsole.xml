@@ -3756,7 +3756,7 @@
 				<param name="includeProperties">fields.*</param>
 			</result>
 		</action>
-		<action name="edit" class="com.facilio.bmsconsole.actions.FormAction" method="editForm">
+		<action name="edit" class="com.facilio.bmsconsole.actions.FormAction" method="updateForm">
 			<result name="success" type="json">
 				<param name="includeProperties">res</param>
 			</result>

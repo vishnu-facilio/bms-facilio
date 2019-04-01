@@ -83,6 +83,9 @@
 		<action name="sendMail" class="com.facilio.bmsconsole.actions.CommonAction"
 			method="mailExportModule">
 		</action>
+		
+		<action name="forms" class="com.facilio.bmsconsole.actions.FormAction" method="formList">
+		</action>
 
 	</package>
 
@@ -622,9 +625,13 @@
 		<action name="add" class="com.facilio.bmsconsole.actions.FormAction" method="addForm">
 			<param name="permission">CREATE</param>
 		</action>
-		<action name="*" class="com.facilio.bmsconsole.actions.FormAction" method="formList">
-			<param name="permission">READ</param>
-			<param name="moduleName">{1}</param>
+		<action name="update" class="com.facilio.bmsconsole.actions.FormAction" method="updateForm">
+		</action>
+	</package>
+	<package name="formFieldApiv2" namespace="/api/v2/forms/fields" extends="v2Api">
+		<action name="update" class="com.facilio.bmsconsole.actions.FormAction" method="updateFormField">
+		</action>
+		<action name="init" class="com.facilio.bmsconsole.actions.FormAction" method="updateFormFields">
 		</action>
 	</package>
 	

@@ -762,8 +762,8 @@ public class FacilioConstants {
 		public static final String FORM_ID = "formId";
 		public static final String FORM = "form";
 		public static final String FORMS = "forms";
+		public static final String FORM_FIELD = "formField";
 		public static final String FORM_FIELDS = "formFields";
-		public static final String EDITED_FORM = "editedFrom";
 		public static final String FORM_OBJECT = "formObject";
 		public static final String FORM_TYPE = "formType";
 		

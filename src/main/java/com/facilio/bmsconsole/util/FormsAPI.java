@@ -202,6 +202,7 @@ public class FormsAPI {
 			int i = 1;
 			List<Map<String, Object>> fieldProps = new ArrayList<>();
 			for (FormField f: fields) {
+				f.setId(-1);
 				f.setFormId(formId);
 				f.setOrgId(orgId);
 				f.setSequenceNumber(i);
@@ -226,12 +227,13 @@ public class FormsAPI {
 		}
 	}
 	
-	private static int deleteFormFields(long formId) throws Exception {
+	public static int deleteFormFields(long formId) throws Exception {
 		FacilioModule module = ModuleFactory.getFormFieldsModule();
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getFormFieldsFields());
 		GenericDeleteRecordBuilder deleteBuilder = new GenericDeleteRecordBuilder()
 														.table(module.getTableName())
 														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
-														.andCondition(CriteriaAPI.getIdCondition(formId, module))
+														.andCondition(CriteriaAPI.getCondition(fieldMap.get("formId"), String.valueOf(formId), NumberOperators.EQUALS))
 														;
 		return deleteBuilder.delete();
 	}

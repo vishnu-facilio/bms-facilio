@@ -114,16 +114,14 @@ public class FormAction extends FacilioAction {
 		return this.form;
 	}
 	
-	private String res;
-	
-	public String getRes() {
-		return this.res;
+	private FormField formField;
+	public FormField getFormField() {
+		return formField;
 	}
-	
-	public void setResult(String result) {
-		this.res = result;
+	public void setFormField(FormField formField) {
+		this.formField = formField;
 	}
-	
+
 	public String loadApprovalFormFields() throws Exception {
 		List<FacilioField> allFields = new ArrayList();
 		List<FacilioField> fields = new ArrayList();
@@ -149,13 +147,41 @@ public class FormAction extends FacilioAction {
 		return SUCCESS;
 	} */	
 	
-	public String editForm() throws Exception {
+	public String updateForm() throws Exception {
 		Context context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.FORM_NAME, this.getForm().getName());
-		context.put(FacilioConstants.ContextNames.EDITED_FORM, this.getForm());
+		context.put(FacilioConstants.ContextNames.FORM, this.getForm());
 		
-		Chain c = FacilioChainFactory.editFormChain();
+		Chain c = TransactionChainFactory.getUpdateFormChain();
 		c.execute(context);
+		
+		setResult("result", "success");
+		
+		return SUCCESS;
+	}
+	
+	public String updateFormField() throws Exception {
+		Context context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.FORM_FIELD, getFormField());
+		
+		Chain c = TransactionChainFactory.getUpdateFormFieldChain();
+		c.execute(context);
+		
+		setResult("result", "success");
+		
+		return SUCCESS;
+	}
+	
+	public String updateFormFields() throws Exception {
+		Context context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.FORM, this.getForm());
+		
+		Chain c = TransactionChainFactory.getUpdateFormFieldsChain();
+		c.execute(context);
+		
+		setFormId(getForm().getId());
+		fetchFormMeta();
+		
+		setResult(ContextNames.FORM, form);
 		
 		return SUCCESS;
 	}
@@ -185,7 +211,11 @@ public class FormAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.FORM, form);
 		
 		TransactionChainFactory.getAddFormCommand().execute(context);
-		setResult(ContextNames.FORM_ID, form.getId());
+		
+		setFormNames(form.getName());
+		fetchFormMeta();
+		
+		setResult(ContextNames.FORM, form);
 		return SUCCESS;
 	}
 	

@@ -1,5 +1,11 @@
 package com.facilio.accounts.util;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.util.List;
+import java.util.Map;
+
 import com.facilio.accounts.bean.GroupBean;
 import com.facilio.accounts.bean.OrgBean;
 import com.facilio.accounts.bean.RoleBean;
@@ -9,18 +15,16 @@ import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
 import com.facilio.bmsconsole.context.PortalInfoContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
-import com.facilio.bmsconsole.modules.*;
+import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.FacilioModule;
+import com.facilio.bmsconsole.modules.FieldFactory;
+import com.facilio.bmsconsole.modules.FieldUtil;
+import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.fw.BeanFactory;
 import com.facilio.fw.TransactionBeanFactory;
 import com.facilio.sql.DBUtil;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.transaction.FacilioConnectionPool;
-
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.util.List;
-import java.util.Map;
 
 public class AccountUtil {
 
@@ -116,6 +120,7 @@ public class AccountUtil {
 	public static final int FEATURE_INVENTORY = 8192;
 	public static final int FEATURE_SCHEDULED_WO = 16384;
 	public static final int FEATURE_TENANTS = 32768;
+	public static final int FEATURE_NEW_FORM = 65536;
 
 
 	public static int getFeatureLicense() throws Exception {

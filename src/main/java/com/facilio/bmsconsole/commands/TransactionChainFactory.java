@@ -2240,5 +2240,23 @@ public class TransactionChainFactory {
 			c.addCommand(new AddFormCommand());
 			return c;
 		}
+		
+		public static Chain getUpdateFormChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new EditFormCommand());
+			return c;
+		}
+		
+		public static Chain getUpdateFormFieldChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new UpdateFormFieldCommand());
+			return c;
+		}
+		
+		public static Chain getUpdateFormFieldsChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new UpdateFormFieldsCommand());
+			return c;
+		}
 }
 
