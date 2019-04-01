@@ -83,8 +83,8 @@ public class GetToolTransactionsListCommand implements Command {
 
 		Boolean getShowToolsForReturn = (Boolean) context.get(FacilioConstants.ContextNames.SHOW_TOOLS_FOR_RETURN);
 		if(getShowToolsForReturn!=null && getShowToolsForReturn) {
-			List<LookupFieldMeta> lookUpfields = new ArrayList<>();
-			lookUpfields.add(new LookupFieldMeta((LookupField) toolTransactionsFieldsMap.get("purchasedTool")));
+			List<LookupField>lookUpfields = new ArrayList<>();
+			lookUpfields.add((LookupField) toolTransactionsFieldsMap.get("purchasedTool"));
 			builder.andCondition(CriteriaAPI.getCondition(toolTransactionsFieldsMap.get("remainingQuantity"), String.valueOf(0), NumberOperators.GREATER_THAN));
 //			builder.andCondition(CriteriaAPI.getCondition(toolTransactionsFieldsMap.get("isReturnable"), String.valueOf(true), BooleanOperators.IS));
 			builder.andCondition(CriteriaAPI.getCondition(toolTransactionsFieldsMap.get("transactionState"), String.valueOf(2), NumberOperators.EQUALS));

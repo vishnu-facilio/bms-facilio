@@ -50,7 +50,7 @@ public class GetReceivablesListCommand implements Command {
 					.module(module)
 					.select(fields)
 					.beanClass(ReceivableContext.class)
-					.fetchLookup(new LookupFieldMeta((LookupField)fieldsAsMap.get("poId")))
+					.fetchLookup((LookupField)fieldsAsMap.get("poId"))
 					;
 			
 

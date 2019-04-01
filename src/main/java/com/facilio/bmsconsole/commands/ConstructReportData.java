@@ -1,10 +1,9 @@
 package com.facilio.bmsconsole.commands;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.FormulaContext.AggregateOperator;
-import com.facilio.bmsconsole.context.FormulaContext.CommonAggregateOperator;
-import com.facilio.bmsconsole.context.FormulaContext.DateAggregateOperator;
-import com.facilio.bmsconsole.context.FormulaContext.SpaceAggregateOperator;
+import com.facilio.bmsconsole.modules.AggregateOperator.CommonAggregateOperator;
+import com.facilio.bmsconsole.modules.AggregateOperator.DateAggregateOperator;
+import com.facilio.bmsconsole.modules.AggregateOperator.SpaceAggregateOperator;
 import com.facilio.bmsconsole.context.TicketStatusContext;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;

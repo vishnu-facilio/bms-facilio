@@ -151,7 +151,7 @@ public class UpdateTaskCommand implements Command {
 				.module(woModule)
 				.beanClass(WorkOrderContext.class)
 				.andCondition(CriteriaAPI.getIdCondition(task.getParentTicketId(), woModule))
-				.fetchLookup(new LookupFieldMeta((LookupField) fieldMap.get("status")));
+				.fetchLookup((LookupField) fieldMap.get("status"));
 				;
 		
 		List<WorkOrderContext> tickets = builder.get();

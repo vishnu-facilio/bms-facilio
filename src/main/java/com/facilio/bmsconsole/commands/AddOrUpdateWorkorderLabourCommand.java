@@ -28,8 +28,8 @@ public class AddOrUpdateWorkorderLabourCommand implements Command {
 		FacilioModule workorderLabourModule = modBean.getModule(FacilioConstants.ContextNames.WO_LABOUR);
 		List<FacilioField> workorderLabourFields = modBean.getAllFields(FacilioConstants.ContextNames.WO_LABOUR);
 		Map<String, FacilioField> labourFieldsMap = FieldFactory.getAsMap(workorderLabourFields);
-		List<LookupFieldMeta> lookUpfields = new ArrayList<>();
-		lookUpfields.add(new LookupFieldMeta((LookupField) labourFieldsMap.get("labour")));
+		List<LookupField>lookUpfields = new ArrayList<>();
+		lookUpfields.add((LookupField) labourFieldsMap.get("labour"));
 		List<WorkOrderLabourContext> workorderLabours = (List<WorkOrderLabourContext>) context
 				.get(FacilioConstants.ContextNames.RECORD_LIST);
 		List<WorkOrderLabourContext> workorderLabourlist = new ArrayList<>();

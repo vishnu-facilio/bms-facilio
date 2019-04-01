@@ -1,8 +1,8 @@
 package com.facilio.bmsconsole.commands;
 
-import com.facilio.bmsconsole.context.FormulaContext.AggregateOperator;
-import com.facilio.bmsconsole.context.FormulaContext.DateAggregateOperator;
-import com.facilio.bmsconsole.context.FormulaContext.SpaceAggregateOperator;
+import com.facilio.bmsconsole.modules.AggregateOperator;
+import com.facilio.bmsconsole.modules.AggregateOperator.DateAggregateOperator;
+import com.facilio.bmsconsole.modules.AggregateOperator.SpaceAggregateOperator;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.util.ResourceAPI;

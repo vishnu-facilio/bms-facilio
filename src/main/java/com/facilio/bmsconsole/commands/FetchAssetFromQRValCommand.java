@@ -26,7 +26,7 @@ public class FetchAssetFromQRValCommand implements Command {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioField qrValField = modBean.getField("qrVal", FacilioConstants.ContextNames.ASSET);
 			FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ASSET);
-//			LookupFieldMeta fetchLookupMeta = new LookupFieldMeta((LookupField) modBean.getField("identifiedLocation", FacilioConstants.ContextNames.ASSET));
+//			LookupFieldMeta fetchLookupMeta = (LookupField) modBean.getField("identifiedLocation", FacilioConstants.ContextNames.ASSET);
 //			fetchLookupMeta.addChildLookupFIeld((LookupField) modBean.getField("location", FacilioConstants.ContextNames.SITE));
 			
 			SelectRecordsBuilder<AssetContext> selectBuilder = new SelectRecordsBuilder<AssetContext>()

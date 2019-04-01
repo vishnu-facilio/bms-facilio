@@ -8,7 +8,6 @@ import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.LookupField;
-import com.facilio.bmsconsole.modules.LookupFieldMeta;
 import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
 import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.chain.FacilioContext;
@@ -111,7 +110,7 @@ public class UpdateGeoLocationCommand implements Command {
 	
 	private SiteContext getNearestLocation(double lat, double lng) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		List<SiteContext> sites = SpaceAPI.getAllSites(Collections.singletonList(new LookupFieldMeta((LookupField) modBean.getField("location", FacilioConstants.ContextNames.SITE))));
+		List<SiteContext> sites = SpaceAPI.getAllSites(Collections.singletonList((LookupField) modBean.getField("location", FacilioConstants.ContextNames.SITE)));
 		
 		if (CollectionUtils.isNotEmpty(sites)) {
 			for (SiteContext site : sites) {

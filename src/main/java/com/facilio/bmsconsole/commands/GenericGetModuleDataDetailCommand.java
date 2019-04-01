@@ -46,7 +46,7 @@ public class GenericGetModuleDataDetailCommand implements Command {
 																	.andCondition(CriteriaAPI.getIdCondition(recordId, module))
 																	;
 
-			List<LookupFieldMeta> fetchLookup = (List<LookupFieldMeta>) context.get(FacilioConstants.ContextNames.LOOKUP_FIELD_META_LIST);
+			List<LookupField>fetchLookup = (List<LookupField>) context.get(FacilioConstants.ContextNames.LOOKUP_FIELD_META_LIST);
 			if (CollectionUtils.isNotEmpty(fetchLookup)) {
 				builder.fetchLookups(fetchLookup);
 			}

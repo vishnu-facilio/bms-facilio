@@ -995,6 +995,7 @@ public class TemplateAPI {
 	}
 
 	public static long addControlActionTemplate (ControlActionTemplate template) throws Exception {
+		addDefaultProps(template);
 		return insertTemplateWithExtendedProps(ModuleFactory.getControlActionTemplateModule(), FieldFactory.getControlActionTemplateFields(), FieldUtil.getAsProperties(template));
 	}
 	

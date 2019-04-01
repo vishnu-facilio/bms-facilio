@@ -1,10 +1,10 @@
 package com.facilio.bmsconsole.modules;
 
-import com.facilio.constants.FacilioConstants;
-
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+
+import com.facilio.constants.FacilioConstants;
 
 public class ModuleFactory {
 
@@ -1848,6 +1848,7 @@ public class ModuleFactory {
 		controlActionTemplate.setName("controlActionTemplate");
 		controlActionTemplate.setDisplayName("Control Action Template");
 		controlActionTemplate.setTableName("Control_Action_Template");
+		controlActionTemplate.setExtendModule(getTemplatesModule());
 		return controlActionTemplate;
 	}
 }

@@ -1,5 +1,12 @@
 package com.facilio.bmsconsole.jobs;
 
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.chain.Chain;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
@@ -16,12 +23,6 @@ import com.facilio.report.util.ReportUtil;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.tasker.job.FacilioJob;
 import com.facilio.tasker.job.JobContext;
-import org.apache.commons.chain.Chain;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-
-import java.util.List;
-import java.util.Map;
 
 public class ReportEmailScheduler extends FacilioJob {
 	
@@ -50,6 +51,7 @@ public class ReportEmailScheduler extends FacilioJob {
 				ReportContext reportContext = ReportUtil.getReport(reportId);
 				
 				context.put(FacilioConstants.ContextNames.REPORT, reportContext);
+				context.put("isS3Url", true);
 				
 				Chain mailReportChain = ReadOnlyChainFactory.sendReportMailChain();
 				mailReportChain.execute(context);				

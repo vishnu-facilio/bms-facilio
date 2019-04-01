@@ -20,9 +20,9 @@ public class GetItemTypesDetailsCommand implements Command{
 		FacilioModule module = modBean.getModule(moduleName);
 		List<FacilioField> fields = modBean.getAllFields(moduleName);
 		Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(fields);
-		List<LookupFieldMeta> lookUpfields = new ArrayList<>();
-		lookUpfields.add(new LookupFieldMeta((LookupField) fieldsMap.get("status")));
-		lookUpfields.add(new LookupFieldMeta((LookupField) fieldsMap.get("category")));
+		List<LookupField>lookUpfields = new ArrayList<>();
+		lookUpfields.add((LookupField) fieldsMap.get("status"));
+		lookUpfields.add((LookupField) fieldsMap.get("category"));
 		
 		context.put(FacilioConstants.ContextNames.LOOKUP_FIELD_META_LIST, lookUpfields);
 		return false;

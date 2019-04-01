@@ -84,7 +84,7 @@ public class AddAttachmentRelationshipCommand implements Command {
 			JSONArray attachmentNames = new JSONArray();
      		JSONObject attach = new JSONObject();
 			List<Object> attachmentActivity = new ArrayList<>();
-     		long parentId = (long) context.get(FacilioConstants.ContextNames.RECORD_ID);
+     		long parentId = (long) recordId;
      		
      		List<Long> singlerecordId = new ArrayList<>();
      		if(recordIds == null || recordIds.isEmpty()) {

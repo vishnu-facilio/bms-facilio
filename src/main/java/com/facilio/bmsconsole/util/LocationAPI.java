@@ -239,7 +239,7 @@ public class LocationAPI {
 		return selectBuilder.getAsMap();
 	}
 	
-	public static LocationContext getLocation (Object obj, LocationContext locationContext, String locationName, boolean isShippingAddress) throws Exception {
+	public static LocationContext getPoPrLocation (Object obj, LocationContext locationContext, String locationName, boolean isShippingAddress) throws Exception {
 		if (locationContext == null) {
 			return null;
 		}
@@ -249,6 +249,9 @@ public class LocationAPI {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		location.setName(locationName);
 		context.put(FacilioConstants.ContextNames.RECORD, location);
+		context.put(FacilioConstants.ContextNames.RECORD_ID, location.getId());
+		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(location.getId()));
+	
 		if (location.getId() > 0) {
 			Chain editLocation = FacilioChainFactory.updateLocationChain();
 			editLocation.execute(context);
@@ -307,7 +310,7 @@ public class LocationAPI {
 					.module(module)
 					.beanClass(FacilioConstants.ContextNames.getClassFromModuleName(module.getName()))
 					.select(fields)
-					.fetchLookup(new LookupFieldMeta((LookupField) fieldsAsMap.get(locationFieldName)))
+					.fetchLookup((LookupField) fieldsAsMap.get(locationFieldName))
 					.andCondition(CriteriaAPI.getIdCondition(id, module));
 					;
         List<StoreRoomContext> list = builder.get();

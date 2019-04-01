@@ -31,12 +31,6 @@ public class LabourContext extends ModuleBaseWithCustomFields {
 	public void setEmail(String email) {
 		this.email = email;
 	}
-	public String getAddress() {
-		return address;
-	}
-	public void setAddress(String address) {
-		this.address = address;
-	}
 	public String getPhone() {
 		return phone;
 	}
@@ -88,7 +82,6 @@ public class LabourContext extends ModuleBaseWithCustomFields {
 	}
 
 	private String email;
-	private String address;
 	private String phone;
 	private double cost = -1;
 	

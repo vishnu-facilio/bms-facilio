@@ -5,7 +5,6 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.CommonReportUtil;
 import com.facilio.bmsconsole.commands.GetAllFieldsCommand;
 import com.facilio.bmsconsole.context.BaseLineContext;
-import com.facilio.bmsconsole.context.FormulaContext.AggregateOperator;
 import com.facilio.bmsconsole.context.WidgetChartContext;
 import com.facilio.bmsconsole.criteria.*;
 import com.facilio.bmsconsole.modules.*;

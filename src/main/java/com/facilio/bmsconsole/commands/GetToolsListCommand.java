@@ -9,7 +9,6 @@ import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
-import com.facilio.bmsconsole.util.TemplateAPI;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;

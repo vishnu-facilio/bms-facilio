@@ -31,10 +31,10 @@ public class ApproveOrRejectItemCommand implements Command {
 		int approvedStateVal = (int) context.get(FacilioConstants.ContextNames.ITEM_TRANSACTION_APPORVED_STATE);
 		ApprovalState approvalState = ApprovalState.valueOf(approvedStateVal);
 		List<Long> parentIds = new ArrayList<>();
-		List<LookupFieldMeta> lookUpfields = new ArrayList<>();
-		lookUpfields.add(new LookupFieldMeta((LookupField) itemTransactionsFieldMap.get("item")));
-		lookUpfields.add(new LookupFieldMeta((LookupField) itemTransactionsFieldMap.get("purchasedItem")));
-		lookUpfields.add(new LookupFieldMeta((LookupField) itemTransactionsFieldMap.get("itemType")));
+		List<LookupField>lookUpfields = new ArrayList<>();
+		lookUpfields.add((LookupField) itemTransactionsFieldMap.get("item"));
+		lookUpfields.add((LookupField) itemTransactionsFieldMap.get("purchasedItem"));
+		lookUpfields.add((LookupField) itemTransactionsFieldMap.get("itemType"));
 
 		SelectRecordsBuilder<ItemTransactionsContext> selectBuilder = new SelectRecordsBuilder<ItemTransactionsContext>()
 				.select(itemTransactionsFields).table(itemTransactionsModule.getTableName())

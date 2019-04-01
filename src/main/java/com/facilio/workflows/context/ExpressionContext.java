@@ -314,6 +314,11 @@ public class ExpressionContext implements WorkflowExpression {
 				List<FacilioField> selectFields = new ArrayList<>();
 				
 				FacilioField select = modBean.getField(fieldName, moduleName);
+				
+				if(select == null) {
+					throw new Exception("Field is null for FieldName - "+fieldName +" moduleName - "+moduleName);
+				}
+				
 				select.setColumnName(select.getTableName()+"."+select.getColumnName());
 //				select.setExtendedModule(null);
 				select.setModule(null);

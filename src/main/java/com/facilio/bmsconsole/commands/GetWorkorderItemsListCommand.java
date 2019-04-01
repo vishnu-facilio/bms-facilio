@@ -30,8 +30,8 @@ public class GetWorkorderItemsListCommand implements Command {
 			FacilioModule workorderItemsModule = modBean.getModule(moduleName);
 			List<FacilioField> workorderItemsFields = modBean.getAllFields(moduleName);
 			Map<String, FacilioField> workorderItemsFieldMap = FieldFactory.getAsMap(workorderItemsFields);
-			List<LookupFieldMeta> lookUpfields = new ArrayList<>();
-			lookUpfields.add(new LookupFieldMeta((LookupField) workorderItemsFieldMap.get("purchasedItem")));
+			List<LookupField>lookUpfields = new ArrayList<>();
+			lookUpfields.add((LookupField) workorderItemsFieldMap.get("purchasedItem"));
 			
 			long parentId = (long) context.get(FacilioConstants.ContextNames.PARENT_ID);
 			SelectRecordsBuilder<WorkorderItemContext> selectBuilder = new SelectRecordsBuilder<WorkorderItemContext>()

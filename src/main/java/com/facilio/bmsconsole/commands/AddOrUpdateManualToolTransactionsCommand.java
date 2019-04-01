@@ -28,8 +28,8 @@ public class AddOrUpdateManualToolTransactionsCommand implements Command {
 		List<FacilioField> toolTransactionsFields = modBean
 				.getAllFields(FacilioConstants.ContextNames.TOOL_TRANSACTIONS);
 		Map<String, FacilioField> toolTransactionsFieldsMap = FieldFactory.getAsMap(toolTransactionsFields);
-		List<LookupFieldMeta> lookUpfields = new ArrayList<>();
-		lookUpfields.add(new LookupFieldMeta((LookupField) toolTransactionsFieldsMap.get("tool")));
+		List<LookupField>lookUpfields = new ArrayList<>();
+		lookUpfields.add((LookupField) toolTransactionsFieldsMap.get("tool"));
 		List<ToolTransactionContext> toolTransactions = (List<ToolTransactionContext>) context
 				.get(FacilioConstants.ContextNames.RECORD_LIST);
 		List<ToolTransactionContext> toolTransactionslist = new ArrayList<>();
@@ -178,8 +178,8 @@ public class AddOrUpdateManualToolTransactionsCommand implements Command {
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.TOOL);
 		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.TOOL);
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
-		List<LookupFieldMeta> lookUpfields = new ArrayList<>();
-		lookUpfields.add(new LookupFieldMeta((LookupField) fieldMap.get("storeRoom")));
+		List<LookupField>lookUpfields = new ArrayList<>();
+		lookUpfields.add((LookupField) fieldMap.get("storeRoom"));
 		SelectRecordsBuilder<ToolContext> selectBuilder = new SelectRecordsBuilder<ToolContext>().select(fields)
 				.table(module.getTableName()).moduleName(module.getName()).beanClass(ToolContext.class)
 				.andCustomWhere(module.getTableName() + ".ID = ?", id).fetchLookups(lookUpfields);

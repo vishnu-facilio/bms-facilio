@@ -50,8 +50,8 @@ public class GetPurchaseOrderListCommand implements Command {
 			builder.setAggregation();
 		}
 		else {
-			builder.fetchLookups(Arrays.asList(new LookupFieldMeta((LookupField) fieldsAsMap.get("vendor")), 
-					new LookupFieldMeta((LookupField) fieldsAsMap.get("storeRoom"))));
+			builder.fetchLookups(Arrays.asList((LookupField) fieldsAsMap.get("vendor"),
+					(LookupField) fieldsAsMap.get("storeRoom")));
 	
 		}
 		

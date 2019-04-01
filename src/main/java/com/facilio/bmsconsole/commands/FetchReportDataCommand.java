@@ -2,7 +2,6 @@ package com.facilio.bmsconsole.commands;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.FormulaContext.*;
 import com.facilio.bmsconsole.criteria.*;
 import com.facilio.bmsconsole.modules.*;
 import com.facilio.constants.FacilioConstants;
@@ -16,6 +15,8 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+
+import com.facilio.bmsconsole.modules.AggregateOperator.*;
 
 import java.util.*;
 import java.util.logging.Logger;
