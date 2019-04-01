@@ -119,7 +119,7 @@ public abstract class Template implements Serializable {
 	public final JSONObject getTemplate(Map<String, Object> parameters) throws Exception {
 		JSONObject json = getOriginalTemplate();
 		if (json != null && workflow != null) {
-			Map<String, Object> params = WorkflowUtil.getExpressionResultMap(workflow.getWorkflowString(), parameters);
+			Map<String, Object> params = WorkflowUtil.getExpressionResultMap(workflow, parameters);
 			
 			JSONObject parsedJson = null;
 			if (isFtl()) {

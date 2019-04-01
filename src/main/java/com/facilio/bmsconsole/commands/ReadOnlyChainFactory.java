@@ -458,7 +458,7 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new GenerateCriteriaFromFilterCommand());
 		c.addCommand(new GenerateSearchConditionCommand());
-		c.addCommand(new GetToolsListCommand());
+		c.addCommand(new GetToolTypesListCommand());
 		return c;
 	}
 	
@@ -528,7 +528,7 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new GenerateCriteriaFromFilterCommand());
 		c.addCommand(new GenerateSearchConditionCommand());
-		c.addCommand(new GetStockedToolsListCommand());
+		c.addCommand(new GetToolsListCommand());
 		return c;
 	}
 	

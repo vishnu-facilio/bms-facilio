@@ -25,6 +25,7 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.timeseries.TimeSeriesAPI;
 import com.facilio.util.FacilioUtil;
+import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.chain.Chain;
@@ -760,7 +761,10 @@ public enum ActionType {
 			Map<String,Object> currentRecordJson = null;
 			currentRecordJson = FieldUtil.getAsProperties(currentRecord);
 			params.put("record", currentRecordJson);
-			Map<String,Object> workflowResult = WorkflowUtil.getExpressionResultMap((String)obj.get("WorkflowString"), params);
+			
+			WorkflowContext workflowContext = WorkflowUtil.getWorkflowContext((Long)obj.get("resultWorkflowId"));
+			
+			Map<String,Object> workflowResult = WorkflowUtil.getExpressionResultMap(workflowContext, params);
 			if (AccountUtil.getCurrentOrg().getId() == 186) {
 				LOGGER.info("Workflow result in field change action : "+workflowResult);
 			}
@@ -819,7 +823,9 @@ public enum ActionType {
 				LOGGER.error("currentRecordJson --- "+currentRecordJson);
 			}
 			
-			Object val = WorkflowUtil.getWorkflowExpressionResult((String)obj.get("WorkflowString"), currentRecordJson);
+			WorkflowContext workflowContext = WorkflowUtil.getWorkflowContext((Long)obj.get("resultWorkflowId"));
+			
+			Object val = WorkflowUtil.getWorkflowExpressionResult(workflowContext, currentRecordJson);
 			
 			JSONArray fieldsJsonArray = (JSONArray) obj.get("fields");
 			for (Object key : fieldsJsonArray) {

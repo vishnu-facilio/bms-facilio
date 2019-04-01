@@ -51,6 +51,7 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 		this.module = selectBuilder.module;
 		this.fetchDeleted = selectBuilder.fetchDeleted;
 		this.groupBy = selectBuilder.groupBy;
+		this.isAggregation = selectBuilder.isAggregation;
 		
 		if (selectBuilder.builder != null) {
 			this.builder = new GenericSelectRecordBuilder(selectBuilder.builder);
@@ -310,9 +311,9 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 		return propList;
 	}
 	
-	private Map<String, LookupField> getLookupFields() {
+	private Map<String, LookupField> getLookupFields(Collection<FacilioField> selectFields) {
 		Map<String, LookupField> lookupFields = new HashMap<>();
-		for(FacilioField field : select) {
+		for(FacilioField field : selectFields) {
 			if(field.getDataTypeEnum() == FieldType.LOOKUP) {
 				lookupFields.put(field.getName(), (LookupField) field);
 			}
@@ -423,13 +424,13 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 		builder.getJoinBuilder().append(joinBuilder.toString());
 		
 		List<Map<String, Object>> props = builder.get();
-		handleLookup(props, isMap);
+		handleLookup(selectFields, props, isMap);
 		return props;
 	}
 	
-	private void handleLookup (List<Map<String, Object>> propList, boolean isMap) throws Exception {
+	private void handleLookup (Collection<FacilioField> selectFields, List<Map<String, Object>> propList, boolean isMap) throws Exception {
 		if(propList != null && propList.size() > 0) {
-			Map<String, LookupField> lookupFields = getLookupFields();
+			Map<String, LookupField> lookupFields = getLookupFields(selectFields);
 			if(lookupFields.size() > 0) {
 				Map<String, LookupField> lookups = CollectionUtils.isEmpty(fetchLookup) ? Collections.EMPTY_MAP : fetchLookup.stream().collect(Collectors.toMap(LookupField::getName, Function.identity()));
 				lookupFields.putAll(lookups);

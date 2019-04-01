@@ -98,7 +98,7 @@ public class CalculatePreFormulaCommand implements Command {
 				formula.getWorkflow().setIgnoreNullParams(true);
 				if (formula.getMatchedResourcesIds().contains(reading.getParentId())) {
 					try {
-						Object resultVal = WorkflowUtil.getWorkflowExpressionResult(formula.getWorkflow().getWorkflowString(), params, null, false, false);
+						Object resultVal = WorkflowUtil.getWorkflowExpressionResult(formula.getWorkflow(), params, null, false, false);
 						if (resultVal != null) {
 							isChanged = true;
 							resultVal = FieldUtil.castOrParseValueAsPerType(formula.getReadingField(), resultVal);

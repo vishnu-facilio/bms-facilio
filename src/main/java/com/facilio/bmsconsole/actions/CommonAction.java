@@ -33,7 +33,7 @@ public class CommonAction extends FacilioAction {
 		if (workflow.getWorkflowString() == null) {
 			workflow.setWorkflowString(WorkflowUtil.getXmlStringFromWorkflow(workflow));
 		}
-		setResult("workflowResult", WorkflowUtil.getWorkflowExpressionResult(workflow.getWorkflowString(), null));
+		setResult("workflowResult", WorkflowUtil.getWorkflowExpressionResult(workflow, null));
 		return SUCCESS;
 	}
 	public String mailExportModule () throws Exception {
@@ -78,7 +78,7 @@ public class CommonAction extends FacilioAction {
 		if (this.parameters != null) {
 			parameters.putAll(this.parameters);
 		}
-		Map<String, Object> params = WorkflowUtil.getExpressionResultMap(workflow.getWorkflowString(), parameters);
+		Map<String, Object> params = WorkflowUtil.getExpressionResultMap(workflow, parameters);
 		
 		setResult("parsedFtl", FreeMarkerAPI.processTemplate(ftl, params));
 		setResult("workflowResultMap", params);

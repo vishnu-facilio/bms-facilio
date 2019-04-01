@@ -49,6 +49,8 @@ public class WorkflowRuleAPI {
 		rule.setOrgId(AccountUtil.getCurrentOrg().getId());
 		rule.setStatus(true);
 		rule.setLatestVersion(true);
+		rule.setCreatedTime(DateTimeUtil.getCurrenTime());
+		rule.setModifiedTime(rule.getCreatedTime());
 		updateWorkflowRuleChildIds(rule);
 		
 		validateWorkflowRule(rule);
@@ -246,6 +248,7 @@ public class WorkflowRuleAPI {
 	
 	public static int updateWorkflowRule(WorkflowRuleContext rule) throws Exception {
 		FacilioModule module = ModuleFactory.getWorkflowRuleModule();
+		rule.setModifiedTime(DateTimeUtil.getCurrenTime());
 		Map<String, Object> ruleProps = FieldUtil.getAsProperties(rule);
 		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
 													.table(module.getTableName())
@@ -809,6 +812,7 @@ public class WorkflowRuleAPI {
 				Map<String, Object> ruleProps = new HashMap<>();
 				ruleProps.put("latestVersion", false);
 				ruleProps.put("status", false);
+				ruleProps.put("modifiedTime", DateTimeUtil.getCurrenTime());
 				GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
 															.table(module.getTableName())
 															.fields(FieldFactory.getWorkflowRuleFields())

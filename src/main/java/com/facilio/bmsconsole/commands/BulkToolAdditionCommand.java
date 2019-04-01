@@ -46,9 +46,11 @@ public class BulkToolAdditionCommand implements Command {
 
 		List<ToolContext> toolToBeAdded = new ArrayList<>();
 		for (ToolContext tool : toolsList) {
+			tool.setLastPurchasedDate(System.currentTimeMillis());
 			if (!toolTypesId.contains(tool.getToolType().getId())) {
 				toolToBeAdded.add(tool);
 			} else {
+				updateTool(toolModule, toolFields, tool);
 				tool.setId(toolTypeVsTool.get(tool.getToolType().getId()));
 			}
 		}
@@ -65,7 +67,6 @@ public class BulkToolAdditionCommand implements Command {
 			tool.setToolType(ToolsApi.getToolTypes(tool.getToolType().getId()));
 			toolIds.add(tool.getId());
 			toolTypesIds.add(tool.getToolType().getId());
-			tool.setLastPurchasedDate(System.currentTimeMillis());
 			List<PurchasedToolContext> pTools = new ArrayList<>();
 			if (tool.getPurchasedTools() != null && !tool.getPurchasedTools().isEmpty()) {
 				for (PurchasedToolContext pTool : tool.getPurchasedTools()) {
@@ -95,6 +96,12 @@ public class BulkToolAdditionCommand implements Command {
 		InsertRecordBuilder<ToolContext> readingBuilder = new InsertRecordBuilder<ToolContext>().module(module)
 				.fields(fields).addRecords(tool);
 		readingBuilder.save();
+	}
+	
+	private void updateTool(FacilioModule module, List<FacilioField> fields, ToolContext tool) throws Exception {
+		UpdateRecordBuilder<ToolContext> updateBuilder = new UpdateRecordBuilder<ToolContext>().module(module)
+				.fields(fields).andCondition(CriteriaAPI.getIdCondition(tool.getId(), module));
+		updateBuilder.update(tool);
 	}
 	
 	private void addPurchasedTool(List<PurchasedToolContext> tool) throws Exception {

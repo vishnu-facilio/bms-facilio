@@ -39,7 +39,21 @@ public class WorkflowRuleContext implements Serializable {
 	public void setOrgId(long orgId) {
 		this.orgId = orgId;
 	}
+	private long createdTime = -1l;
+	private long modifiedTime = -1l;
 	
+	public long getModifiedTime() {
+		return modifiedTime;
+	}
+	public long getCreatedTime() {
+		return createdTime;
+	}
+	public void setCreatedTime(long createdTime) {
+		this.createdTime = createdTime;
+	}
+	public void setModifiedTime(long modifiedTime) {
+		this.modifiedTime = modifiedTime;
+	}
 	private boolean terminateExecution = false;
 	
 	public boolean isTerminateExecution() {
@@ -306,6 +320,15 @@ public class WorkflowRuleContext implements Serializable {
 		this.versionGroupId = versionGroupId;
 	}
 	
+	int versionNumber = -1;
+	
+	public int getVersionNumber() {
+		return versionNumber;
+	}
+	public void setVersionNumber(int versionNumber) {
+		this.versionNumber = versionNumber;
+	}
+
 	private Boolean latestVersion;
 	public Boolean getLatestVersion() {
 		return latestVersion;
@@ -355,7 +378,7 @@ public class WorkflowRuleContext implements Serializable {
 		try {
 			boolean workflowFlag = true;
 			if (workflow != null) {
-				workflowFlag = WorkflowUtil.getWorkflowExpressionResultAsBoolean(workflow.getWorkflowString(), placeHolders);
+				workflowFlag = WorkflowUtil.getWorkflowExpressionResultAsBoolean(workflow, placeHolders);
 			}
 			return workflowFlag;
 		}
@@ -425,7 +448,7 @@ public class WorkflowRuleContext implements Serializable {
 		
 		CHILD_APPROVAL_RULE(true),
 		PM_ALARM_RULE,
-		ALARM_TRIGGER_RULE(false,false,true), //18
+		ALARM_TRIGGER_RULE(false,true,true), //18
 		
 		ALARM_CLEAR_RULE(false,false,true),
 		WORKORDER_CUSTOM_CHANGE,
@@ -435,7 +458,7 @@ public class WorkflowRuleContext implements Serializable {
 		PM_NOTIFICATION_RULE,
 		READING_ALARM_RULE,			//24
 		
-		ALARM_RCA_RULES,
+		ALARM_RCA_RULES(false,true,true),
 		ASSET_NOTIFICATION_RULE,
 		PM_READING_TRIGGER			// 27
 		;

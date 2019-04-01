@@ -1059,6 +1059,12 @@ public class ModuleFactory {
 		dashboardWigetModule.setTableName("Workflow");
 		return dashboardWigetModule;
 	}
+	
+	public static FacilioModule getWorkflowLogModule() {
+		FacilioModule dashboardWigetModule = new FacilioModule();
+		dashboardWigetModule.setTableName("Workflow_Log");
+		return dashboardWigetModule;
+	}
 
 	public static FacilioModule getWorkflowFieldModule() {
 		FacilioModule dashboardWigetModule = new FacilioModule();

@@ -10,6 +10,7 @@ import com.facilio.bmsconsole.criteria.DateOperators;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.templates.AssignmentTemplate;
 import com.facilio.bmsconsole.templates.SLATemplate;
+import com.facilio.bmsconsole.util.ReadingRuleAPI;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.rule.*;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
@@ -168,6 +169,11 @@ public class WorkflowRuleAction extends FacilioAction {
 		FacilioContext facilioContext = new FacilioContext();
 
 		facilioContext.put(FacilioConstants.ContextNames.ALARM_RULE, alarmRule);
+
+		AlarmRuleContext oldAlarmRuleContext = new AlarmRuleContext(ReadingRuleAPI.getReadingRulesList(alarmRule.getPreRequsite().getId()));
+		
+		facilioContext.put(FacilioConstants.ContextNames.OLD_ALARM_RULE, oldAlarmRuleContext);
+		
 		Chain addRule = TransactionChainFactory.updateAlarmRuleChain();
 		addRule.execute(facilioContext);
 		

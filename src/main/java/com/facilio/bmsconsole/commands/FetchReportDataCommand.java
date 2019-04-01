@@ -102,6 +102,7 @@ public class FetchReportDataCommand implements Command {
 		
 		SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder = new SelectRecordsBuilder<ModuleBaseWithCustomFields>()
 																				.module(baseModule) //Assuming X to be the base module
+																				.setAggregation()
 																				;
 		Set<FacilioModule> addedModules = new HashSet<>();
 		addedModules.add(baseModule);
@@ -237,7 +238,7 @@ public class FetchReportDataCommand implements Command {
 		
 		List<Map<String, Object>> props = newSelectBuilder.getAsProps();
 		
-		// LOGGER.severe("SELECT BUILDER --- "+ newSelectBuilder);
+		 LOGGER.severe("SELECT BUILDER --- "+ newSelectBuilder);
 //		LOGGER.info("DATE FROM QUERY : "+props);
 		return props;
 	}

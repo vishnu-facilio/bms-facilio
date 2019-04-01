@@ -222,7 +222,7 @@ public class FormulaFieldAPI {
 					if (workflow.getWorkflowString() == null) {
 						workflow.setWorkflowString(WorkflowUtil.getXmlStringFromWorkflow(workflow));
 					}
-					Object workflowResult = WorkflowUtil.getWorkflowExpressionResult(workflow.getWorkflowString(), params, null, ignoreNullValues, false);
+					Object workflowResult = WorkflowUtil.getWorkflowExpressionResult(workflow, params, null, ignoreNullValues, false);
 					if(workflowResult != null) {
 						Double resultVal = Double.parseDouble(workflowResult.toString());
 //						if (AccountUtil.getCurrentOrg().getId() == 135) {
@@ -777,7 +777,7 @@ public class FormulaFieldAPI {
 		LOGGER.debug("Meta -- "+workflow.getMetas());
 		LOGGER.debug("wfParams :: "+params);
 		long workflowExecutionStartTime = System.currentTimeMillis();
-		Map<Object, Object> result = (Map<Object,Object>) WorkflowUtil.getWorkflowExpressionResult(wfXmlString, params, null, false, false);
+		Map<Object, Object> result = (Map<Object,Object>) WorkflowUtil.getWorkflowExpressionResult(wfXmlString, params);
 		LOGGER.debug("Time taken for optimised workflow execution : "+(System.currentTimeMillis() - workflowExecutionStartTime));
 		
 		long readingsStartTime = System.currentTimeMillis();
