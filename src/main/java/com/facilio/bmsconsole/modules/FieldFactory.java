@@ -462,6 +462,7 @@ public class FieldFactory {
 		fields.add(getIdField(module));
 		/*fields.add(getOrgIdField(module));*/
 		fields.add(getDisplayNameField(module));
+		fields.add(getNameField(module));
 		
 		FacilioField formId = new FacilioField();
 		formId.setName("formId");

@@ -613,14 +613,8 @@
 			method="loadApprovalFormFields">
 			<param name="moduleName">{1}</param>
 		</action>
-		<action name="allfields" class="com.facilio.bmsconsole.actions.FormAction"
-		     method="allFormFields">
-		</action>
-		<action name="formidfields" class="com.facilio.bmsconsole.actions.FormAction"
-		     method="FormIdFields">
-		</action>
-
 	</package>
+	
 	<package name="formApiv2" namespace="/api/v2/forms" extends="v2Api">
 		<action name="add" class="com.facilio.bmsconsole.actions.FormAction" method="addForm">
 			<param name="permission">CREATE</param>
@@ -632,6 +626,8 @@
 		<action name="update" class="com.facilio.bmsconsole.actions.FormAction" method="updateFormField">
 		</action>
 		<action name="init" class="com.facilio.bmsconsole.actions.FormAction" method="updateFormFields">
+		</action>
+		<action name="unusedlist" class="com.facilio.bmsconsole.actions.FormAction" method="formUnusedFieldList">
 		</action>
 	</package>
 	

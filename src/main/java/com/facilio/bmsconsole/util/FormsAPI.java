@@ -11,6 +11,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
@@ -44,24 +46,6 @@ public class FormsAPI {
 		return forms;
 	}
 	
-	public static List<FormField> getallFormFields(String modName) throws Exception {
-		List<FacilioField> customFields = new ArrayList();
-		List<FormField> fields = new ArrayList();
-
-		fields.addAll(FormFactory.getFormFields(modName));
-
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-
-		if(modName.equals("approval")) {
-			modName = "workorder";
-		}
-		customFields = modBean.getAllCustomFields(modName);
-		if(customFields != null && !customFields.isEmpty()) {
-			fields.addAll(FormsAPI.getFacilioFieldsFromFormFields(customFields));
-		}
-		return fields;
-	}
-
 	private static Map<String, Set<FacilioForm>> getAllFormsFromDB(FormType formtype) throws Exception {
 		Criteria formTypeCriteria = getFormTypeCriteria(formtype);
 		List<FacilioForm> forms = getFormFromDB(formTypeCriteria);
@@ -209,6 +193,9 @@ public class FormsAPI {
 				if (f.getSpan() == -1) {
 					f.setSpan(1);
 				}
+				if(f.getFieldId() != -1) {
+					f.setName(null);
+				}
 				Map<String, Object> prop = FieldUtil.getAsProperties(f);
 				if (prop.get("required") == null) {
 					prop.put("required", false);
@@ -275,17 +262,23 @@ public class FormsAPI {
 		return deleteBuilder.delete();
 	}
 	
-	public static List<FormField> getFacilioFieldsFromFormFields (List<FacilioField> fields) throws SQLException {
+	public static List<FormField> getFormFieldsFromFacilioFields (List<FacilioField> fields, int count) throws SQLException {
 		List<FormField> formFields = new ArrayList<FormField>();
 		for(FacilioField field: fields) {
-			FormField forms = new FormField();
-			forms.setDisplayName(field.getDisplayName());
-			forms.setName(field.getName());
-			forms.setFieldId(field.getFieldId());
-			forms.setDisplayType(field.getDisplayType());
-			formFields.add(forms);
+			FormField formField = getFormFieldFromFacilioField(field, ++count);
+			formFields.add(formField);
 		}
 		return formFields;
+	}
+	
+	public static FormField getFormFieldFromFacilioField(FacilioField facilioField, int count) {
+		FormField formField = new FormField(facilioField.getName(), facilioField.getDisplayType(), facilioField.getDisplayName(), FormField.Required.OPTIONAL, count, 1);
+		formField.setField(facilioField);
+		formField.setFieldId(facilioField.getFieldId());
+		if (facilioField instanceof LookupField) {
+			formField.setLookupModuleName(((LookupField)facilioField).getLookupModule().getName());
+		}
+		return formField;
 	}
 	
 	public static Map<String, FacilioForm> getFormsAsMap (String moduleName,FormType formType) throws Exception {
@@ -323,7 +316,28 @@ public class FormsAPI {
 		}
 		
 		return FieldUtil.getAsBeanListFromMapList(formListBuilder.get(), FacilioForm.class);
-				
 			
+	}
+	
+	public static Map<String, List<FormField>> getFormUnusedFields(String moduleName, long formId) throws Exception {
+		FacilioForm form = getFormFromDB(formId);
+		Map<String, FormField> formFieldMap = form.getFields().stream().collect(Collectors.toMap(FormField::getName, Function.identity()));
+		
+		FacilioForm defaultForm = FormFactory.getDefaultForm(moduleName, form);
+		List<FormField> defaultFields = defaultForm.getFields().stream().filter(field -> !formFieldMap.containsKey(field.getName())).collect(Collectors.toList());
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		List<FacilioField> customFields = modBean.getAllCustomFields(moduleName);
+		
+		List<FormField> customFormFields = new ArrayList<>();
+		if(customFields != null && !customFields.isEmpty()) {
+			customFields = customFields.stream().filter(field -> !formFieldMap.containsKey(field.getName())).collect(Collectors.toList());
+			customFormFields = getFormFieldsFromFacilioFields(customFields, 0);
+		}
+		
+		Map<String, List<FormField>> formMap = new HashMap<>();
+		formMap.put("systemFields", defaultFields);
+		formMap.put("customFields", customFormFields);
+		return formMap;
 	}
 }

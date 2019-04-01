@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.actions;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Context;
@@ -137,16 +138,6 @@ public class FormAction extends FacilioAction {
 		return SUCCESS;
 	}
 	
-	public String allFormFields() throws Exception {
-		setResult(FacilioConstants.ContextNames.FORM_FIELDS,FormsAPI.getallFormFields(moduleName));
-		return SUCCESS;
-	}	
-	
-    /* public String FormIdFields() throws Exception {
-		setResult(FacilioConstants.ContextNames.FORM_FIELDS,FormsAPI.getFormIdFields(formId));
-		return SUCCESS;
-	} */	
-	
 	public String updateForm() throws Exception {
 		Context context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.FORM, this.getForm());
@@ -201,6 +192,13 @@ public class FormAction extends FacilioAction {
 		
 		ReadOnlyChainFactory.getFormList().execute(context);
 		setResult("forms",context.get(ContextNames.FORMS));
+		
+		return SUCCESS;
+	}
+	
+	public String formUnusedFieldList() throws Exception {
+		Map<String, List<FormField>> fields = FormsAPI.getFormUnusedFields(moduleName, formId);
+		setResult("fields", fields);
 		
 		return SUCCESS;
 	}

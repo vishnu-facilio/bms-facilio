@@ -34,7 +34,7 @@ public class AddFormCommand implements Command {
 		}
 		
 		if (form.getFields() == null) {
-			FacilioForm defaultForm = FormFactory.getForm(moduleName, "default_"+moduleName+"_"+form.getFormTypeVal());
+			FacilioForm defaultForm = FormFactory.getDefaultForm(moduleName, form);
 			List<FormField> formFields = new ArrayList<>();
 			for (FormField f : defaultForm.getFields()) {
 				FormField formField = FieldUtil.cloneBean(f, FormField.class);

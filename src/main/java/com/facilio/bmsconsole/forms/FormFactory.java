@@ -9,21 +9,20 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.forms.FacilioForm.FormType;
 import com.facilio.bmsconsole.forms.FacilioForm.LabelPosition;
 import com.facilio.bmsconsole.forms.FormField.Required;
 import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.FacilioField.FieldDisplayType;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.ModuleFactory;
-import com.facilio.bmsconsole.modules.FacilioField.FieldDisplayType;
 import com.facilio.bmsconsole.util.FormsAPI;
 import com.facilio.constants.FacilioConstants;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableMap.Builder;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Multimaps;
-import com.google.common.collect.ImmutableMap.Builder;
 
 public class FormFactory {
 	
@@ -60,38 +59,7 @@ public class FormFactory {
 			
 		return forms;
 	}
-    public static List<FormField> getFormFields(String modName) {
-    	List<FormField> fields=new ArrayList();
-    	if(modName.equals(FacilioConstants.ContextNames.WORK_ORDER))
-    	{
-    		fields.addAll(getWebWorkOrderFormFields());
-    	}
-    	else if(modName.equals(FacilioConstants.ContextNames.ASSET))
-    	{
-    		fields.addAll(getWebAssetFormFields());
-    	}
-    	else if(modName.equals(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE))
-    	{
-    		fields.addAll(getWebPMFormFields());
-    	}
-    	else if(modName.equals(FacilioConstants.ContextNames.APPROVAL))
-    	{
-    		 fields.addAll(getWebApprovalFormFields());
-    	}
-    	else
-			try {
-				if(modName.equals(FacilioConstants.ContextNames.TENANT) && AccountUtil.isFeatureEnabled(AccountUtil.FEATURE_TENANTS)) {
-
-					fields.addAll(getTenantsFormField());
-				}
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-
-    	return fields;
-    	
-    }
+    
 	@SuppressWarnings("unchecked") // https://stackoverflow.com/a/11205178
 	public static Map<String, Set<FacilioForm>> getAllForms(FormType formtype) {
 		return (Map<String, Set<FacilioForm>>) (Map<?, ?>) Multimaps.asMap(ALL_FORMS.get(formtype));
@@ -128,6 +96,10 @@ public class FormFactory {
 	
 	public static Map<String, FacilioForm> getForms(String moduleName) {
 		return FORMS_LIST.get(moduleName);
+	}
+	
+	public static FacilioForm getDefaultForm(String moduleName, FacilioForm form) {
+		return getForms(moduleName).get( "default_"+moduleName+"_"+form.getFormTypeVal());
 	}
 	
 	public static FacilioForm getForm(String moduleName, String formName) {
@@ -303,7 +275,7 @@ public class FormFactory {
 		}
 		fields.add(new FormField("comment", FieldDisplayType.TICKETNOTES, "Comment", Required.OPTIONAL, "ticketnotes",6, 1));
 		if (facilioFields.size() > 0) {
-			fields.addAll(FormsAPI.getFacilioFieldsFromFormFields(facilioFields));
+			fields.addAll(FormsAPI.getFormFieldsFromFacilioFields(facilioFields, i));
 		}
 		return Collections.unmodifiableList(fields);
 	}
@@ -311,7 +283,7 @@ public class FormFactory {
 	public static FacilioForm getWebWorkOrderForm() {
 		FacilioForm form = new FacilioForm();
 		form.setDisplayName("SUBMIT WORKORDER");
-		form.setName("web_default");
+		form.setName("default_workorder_web");
 		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.WORK_ORDER));
 		form.setLabelPosition(LabelPosition.LEFT);
 		form.setFields(getWebWorkOrderFormFields());

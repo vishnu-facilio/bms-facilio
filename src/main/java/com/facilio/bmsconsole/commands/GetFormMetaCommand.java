@@ -16,7 +16,6 @@ import com.facilio.bmsconsole.forms.FormFactory;
 import com.facilio.bmsconsole.forms.FormField;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
-import com.facilio.bmsconsole.modules.LookupField;
 import com.facilio.bmsconsole.util.FormsAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
@@ -73,7 +72,7 @@ public class GetFormMetaCommand implements Command {
 					for (FacilioField f: facilioFields) {
 						if ((f.getModule().equals(module)) || !f.isDefault()) {
 							count = count + 1;
-							fields.add(getFormFieldFromFacilioField(f, count));									
+							fields.add(FormsAPI.getFormFieldFromFacilioField(f, count));									
 						}
 					}
 				}
@@ -82,7 +81,7 @@ public class GetFormMetaCommand implements Command {
 					if (customFields != null && !customFields.isEmpty()) {
 						for (FacilioField f: customFields) {
 							count = count + 1;
-							fields.add(getFormFieldFromFacilioField(f, count));
+							fields.add(FormsAPI.getFormFieldFromFacilioField(f, count));
 						}
 					}
 				}
@@ -121,16 +120,6 @@ public class GetFormMetaCommand implements Command {
 			return null;
 		}
 		return forms.get(0);
-	}
-	
-	private FormField getFormFieldFromFacilioField(FacilioField facilioField, int count) {
-		FormField formField = new FormField(facilioField.getName(), facilioField.getDisplayType(), facilioField.getDisplayName(), FormField.Required.OPTIONAL, count, 1);
-		formField.setField(facilioField);
-		formField.setFieldId(facilioField.getFieldId());
-		if (facilioField instanceof LookupField) {
-			formField.setLookupModuleName(((LookupField)facilioField).getLookupModule().getName());
-		}
-		return formField;
 	}
 
 }
