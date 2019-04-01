@@ -165,6 +165,14 @@
 			<param name="fileID">{1}</param>
 		</action>
 	</package>
+	
+	<package name="assetApiV2" namespace="/api/v2/service/assets" extends="v2Api">
+		<action name="qr" class="com.facilio.bmsconsole.actions.AssetAction"
+			method="fetchAssetFromQR">
+			<param name="moduleName">asset</param>
+			<param name="permission">READ</param>
+		</action>
+	</package>
 
 	<package name="serviceDownloadApiV2" namespace="/api/v2/service/files/download" extends="servicePortalApiV2">
 		<global-results>
