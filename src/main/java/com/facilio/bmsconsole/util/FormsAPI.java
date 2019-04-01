@@ -1,5 +1,17 @@
 package com.facilio.bmsconsole.util;
 
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.criteria.Condition;
@@ -10,15 +22,17 @@ import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.forms.FacilioForm.FormType;
 import com.facilio.bmsconsole.forms.FormFactory;
 import com.facilio.bmsconsole.forms.FormField;
-import com.facilio.bmsconsole.modules.*;
+import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioField.FieldDisplayType;
+import com.facilio.bmsconsole.modules.FacilioModule;
+import com.facilio.bmsconsole.modules.FieldFactory;
+import com.facilio.bmsconsole.modules.FieldUtil;
+import com.facilio.bmsconsole.modules.LookupField;
+import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericDeleteRecordBuilder;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
-
-import java.sql.SQLException;
-import java.util.*;
 
 public class FormsAPI {
 	public static Map<String, Set<FacilioForm>> getAllForms(FormType formtype) throws Exception {
@@ -31,21 +45,21 @@ public class FormsAPI {
 	}
 	
 	public static List<FormField> getallFormFields(String modName) throws Exception {
-	List<FacilioField> customFields = new ArrayList();
-	List<FormField> fields = new ArrayList();
-	
-	fields.addAll(FormFactory.getFormFields(modName));
-	
-	ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-	
-	if(modName.equals("approval")) {
-		modName = "workorder";
-	}
-	customFields = modBean.getAllCustomFields(modName);
-	if(customFields != null && !customFields.isEmpty()) {
-    fields.addAll(FormsAPI.getFacilioFieldsFromFormFields(customFields));
-	}
-	return fields;
+		List<FacilioField> customFields = new ArrayList();
+		List<FormField> fields = new ArrayList();
+
+		fields.addAll(FormFactory.getFormFields(modName));
+
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+
+		if(modName.equals("approval")) {
+			modName = "workorder";
+		}
+		customFields = modBean.getAllCustomFields(modName);
+		if(customFields != null && !customFields.isEmpty()) {
+			fields.addAll(FormsAPI.getFacilioFieldsFromFormFields(customFields));
+		}
+		return fields;
 	}
 
 	private static Map<String, Set<FacilioForm>> getAllFormsFromDB(FormType formtype) throws Exception {
@@ -82,94 +96,85 @@ public class FormsAPI {
 	}
 
 	public static List<FacilioForm> getFormFromDB(Criteria criteria) throws Exception {
-		FacilioModule formModule = ModuleFactory.getFormModule();
-		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-				.table(formModule.getTableName())
-				.select(FieldFactory.getFormFields())
-				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(formModule));
-		if (criteria != null) {
-			selectBuilder.andCriteria(criteria);
-		}
-		
-		List<Map<String, Object>> props = selectBuilder.get();
-		if (props == null || props.isEmpty()) {
+		List<FacilioForm> forms = getDBFormList(null, null, criteria);
+		if (forms == null || forms.isEmpty()) {
 			return null;
 		}
-		
-		List<FacilioForm> forms = new ArrayList<>();
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioModule fieldsModule = ModuleFactory.getFormFieldsModule();
 	
-		for (Map<String, Object> prop: props) {
-			GenericSelectRecordBuilder fieldSelectBuilder = new GenericSelectRecordBuilder()
-					.table(fieldsModule.getTableName())
-					.select(FieldFactory.getFormFieldsFields())
-					.andCondition(CriteriaAPI.getCurrentOrgIdCondition(fieldsModule));
-			
-			FacilioForm form = FieldUtil.getAsBeanFromMap(prop, FacilioForm.class);
-			long modid = form.getModuleId();
-			form.setModule(modBean.getModule(modid));
-			fieldSelectBuilder
-					.andCondition(CriteriaAPI.getCondition("FORMID", "formId", String.valueOf(prop.get("id")), NumberOperators.EQUALS))
-					.orderBy("SEQUENCE_NUMBER, SPAN");
-			
-			List<Map<String, Object>> fieldprops = fieldSelectBuilder.get();
-			List<FormField> fields = new ArrayList<>();
-			for (Map<String, Object> p: fieldprops) {
-				FormField f = FieldUtil.getAsBeanFromMap(p, FormField.class);
-				if (f.getFieldId() != -1) {
-					FacilioField field =  modBean.getField(f.getFieldId());
-					f.setField(field);
-					if (field instanceof LookupField) {
-						FacilioModule lookupMod = ((LookupField) field).getLookupModule();
-						if (lookupMod != null) {
-							f.setLookupModuleName(lookupMod.getName());
-						}
-					}
-					f.setName(field.getName());
-				}
-				/***
-				 * Temp handling to set name for form fields if fieldId is empty 
-				 * Should introduce name column in Form Fields 
-				 */
-				else if (f.getDisplayTypeEnum() == FieldDisplayType.TICKETNOTES){
-					f.setName("comment");
-				}
-				else if (f.getDisplayTypeEnum() == FieldDisplayType.ATTACHMENT) {
-					f.setName("attachedFiles");
-				}
-				else if (f.getDisplayTypeEnum() == FieldDisplayType.TEXTBOX && f.getDisplayName().equals("Contact Name") ) {
-					f.setName("contact_name");
-				}
-				else if (f.getDisplayTypeEnum() == FieldDisplayType.TEXTBOX && f.getDisplayName().equals("Contact Email") ) {
-					f.setName("contact_email");
-				}
-				else if (f.getDisplayTypeEnum() == FieldDisplayType.LOGO ) {
-					f.setName("logo");
-				}
-				else if (f.getDisplayTypeEnum() == FieldDisplayType.LOOKUP_SIMPLE && f.getDisplayName().equals("Site")) {
-					f.setName("siteId");
-					f.setLookupModuleName("site");
-				}
-				else if (f.getDisplayTypeEnum() == FieldDisplayType.TEAM) {
-					f.setName("groups");
-					f.setDisplayType(FieldDisplayType.LOOKUP_SIMPLE);
-					f.setLookupModuleName("groups");
-				}
-				else if (f.getDisplayTypeEnum() == FieldDisplayType.SPACEMULTICHOOSER) {
-					f.setName("spaces");
-				}
-				else if (f.getDisplayTypeEnum() == FieldDisplayType.ASSETMULTICHOOSER) {
-					f.setName("utilityMeters");
-				}
-				fields.add(f);
-			}
-			
-			form.setFields(fields);
-			forms.add(form);
+		for (FacilioForm form: forms) {
+			setFormFields(form);
 		}
 		
 		return forms;
+	}
+	
+	public static void setFormFields (FacilioForm form) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule fieldsModule = ModuleFactory.getFormFieldsModule();
+		
+		GenericSelectRecordBuilder fieldSelectBuilder = new GenericSelectRecordBuilder()
+				.table(fieldsModule.getTableName())
+				.select(FieldFactory.getFormFieldsFields())
+				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(fieldsModule));
+		
+		long modid = form.getModuleId();
+		form.setModule(modBean.getModule(modid));
+		fieldSelectBuilder
+				.andCondition(CriteriaAPI.getCondition("FORMID", "formId", String.valueOf(form.getId()), NumberOperators.EQUALS))
+				.orderBy("SEQUENCE_NUMBER, SPAN");
+		
+		List<Map<String, Object>> fieldprops = fieldSelectBuilder.get();
+		List<FormField> fields = new ArrayList<>();
+		for (Map<String, Object> p: fieldprops) {
+			FormField f = FieldUtil.getAsBeanFromMap(p, FormField.class);
+			if (f.getFieldId() != -1) {
+				FacilioField field =  modBean.getField(f.getFieldId());
+				f.setField(field);
+				if (field instanceof LookupField) {
+					FacilioModule lookupMod = ((LookupField) field).getLookupModule();
+					if (lookupMod != null) {
+						f.setLookupModuleName(lookupMod.getName());
+					}
+				}
+				f.setName(field.getName());
+			}
+			/***
+			 * Temp handling to set name for form fields if fieldId is empty 
+			 * Should introduce name column in Form Fields 
+			 */
+			else if (f.getDisplayTypeEnum() == FieldDisplayType.TICKETNOTES){
+				f.setName("comment");
+			}
+			else if (f.getDisplayTypeEnum() == FieldDisplayType.ATTACHMENT) {
+				f.setName("attachedFiles");
+			}
+			else if (f.getDisplayTypeEnum() == FieldDisplayType.TEXTBOX && f.getDisplayName().equals("Contact Name") ) {
+				f.setName("contact_name");
+			}
+			else if (f.getDisplayTypeEnum() == FieldDisplayType.TEXTBOX && f.getDisplayName().equals("Contact Email") ) {
+				f.setName("contact_email");
+			}
+			else if (f.getDisplayTypeEnum() == FieldDisplayType.LOGO ) {
+				f.setName("logo");
+			}
+			else if (f.getDisplayTypeEnum() == FieldDisplayType.LOOKUP_SIMPLE && f.getDisplayName().equals("Site")) {
+				f.setName("siteId");
+				f.setLookupModuleName("site");
+			}
+			else if (f.getDisplayTypeEnum() == FieldDisplayType.TEAM) {
+				f.setName("groups");
+				f.setDisplayType(FieldDisplayType.LOOKUP_SIMPLE);
+				f.setLookupModuleName("groups");
+			}
+			else if (f.getDisplayTypeEnum() == FieldDisplayType.SPACEMULTICHOOSER) {
+				f.setName("spaces");
+			}
+			else if (f.getDisplayTypeEnum() == FieldDisplayType.ASSETMULTICHOOSER) {
+				f.setName("utilityMeters");
+			}
+			fields.add(f);
+		}
+		form.setFields(fields);
 	}
 	
 	public static long createForm(FacilioForm editedForm, FacilioModule parent)
@@ -264,18 +269,40 @@ public class FormsAPI {
 		}
 		return formFields;
 	}
-	public static List<FacilioForm> getFormList(String moduleName,FormType formType) throws Exception{
+	
+	public static Map<String, FacilioForm> getFormsAsMap (String moduleName,FormType formType) throws Exception {
+		List<FacilioForm> forms = getDBFormList(moduleName, formType, null);
+		Map<String, FacilioForm> formMap = new LinkedHashMap<>();
+		if (forms != null && !forms.isEmpty()) {
+			for(FacilioForm form: forms) {
+				formMap.put(form.getName(), form);
+			}
+		}
+		return null;
+	}
+	
+	public static List<FacilioForm> getDBFormList(String moduleName,FormType formType, Criteria criteria) throws Exception{
 		
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		long moduleId=modBean.getModule(moduleName).getModuleId();
+		FacilioModule formModule = ModuleFactory.getFormModule();
 		
+		List<FacilioField> fields = FieldFactory.getFormFields();
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 	
 		GenericSelectRecordBuilder formListBuilder=new GenericSelectRecordBuilder()
-				.select(FieldFactory.getFormFields())
-				.table(ModuleFactory.getFormModule().getTableName())
-				.andCustomWhere("MODULEID = ?", moduleId)
-				.andCustomWhere("FORM_TYPE = ?", formType.getIntVal())
-				.andCustomWhere("ORGID = ?",AccountUtil.getCurrentOrg().getOrgId());
+				.select(fields)
+				.table(formModule.getTableName())
+				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(formModule));
+		if (moduleName != null) {
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			long moduleId=modBean.getModule(moduleName).getModuleId();
+			formListBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("moduleId"), String.valueOf(moduleId), NumberOperators.EQUALS));
+		}
+		if (formType != null) {
+			formListBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("formType"), String.valueOf(formType.getIntVal()), NumberOperators.EQUALS));
+		}
+		if (criteria != null) {
+			formListBuilder.andCriteria(criteria);
+		}
 		
 		return FieldUtil.getAsBeanListFromMapList(formListBuilder.get(), FacilioForm.class);
 				

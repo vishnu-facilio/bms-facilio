@@ -1,5 +1,11 @@
 package com.facilio.bmsconsole.actions;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.commons.chain.Chain;
+import org.apache.commons.chain.Context;
+
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
@@ -14,11 +20,6 @@ import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.fw.BeanFactory;
-import org.apache.commons.chain.Chain;
-import org.apache.commons.chain.Context;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class FormAction extends FacilioAction {
 	
@@ -157,12 +158,32 @@ public class FormAction extends FacilioAction {
 	
 	public String getServicePortalForms() throws Exception{
 		
+		setModuleName(ContextNames.WORK_ORDER);
+		setFormType(FormType.PORTAL);
+		
+		return formList();
+	}
+	
+	public String formList() throws Exception {
 		Context context=new FacilioContext();
-		context.put(FacilioConstants.ContextNames.MODULE_NAME, "workorder");
-		context.put(FacilioConstants.ContextNames.FORM_TYPE, FormType.PORTAL);
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+		context.put(FacilioConstants.ContextNames.FORM_TYPE, formType);
+		
 		ReadOnlyChainFactory.getFormList().execute(context);
 		setResult("forms",context.get(ContextNames.FORMS));
+		
 		return SUCCESS;
+	}
+	
+	private FormType formType;
+	public FormType getFormTypeEnum() {
+		return formType;
+	}
+	public void setFormType(int type) {
+		this.formType = FormType.getFormType(type);
+	}
+	public void setFormType(FormType type) {
+		this.formType = type;
 	}
 
 	public long getFormId() {

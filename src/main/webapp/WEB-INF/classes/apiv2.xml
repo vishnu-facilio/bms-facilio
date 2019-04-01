@@ -83,6 +83,10 @@
 		<action name="sendMail" class="com.facilio.bmsconsole.actions.CommonAction"
 			method="mailExportModule">
 		</action>
+		
+		<action name="forms" class="com.facilio.bmsconsole.actions.FormAction"
+			method="formList">
+		</action>
 
 	</package>
 
