@@ -36,6 +36,7 @@ public class AddFormCommand implements Command {
 		if (form.getFields() == null) {
 			FacilioForm defaultForm = FormFactory.getDefaultForm(moduleName, form);
 			List<FormField> formFields = new ArrayList<>();
+			int count = 0;
 			for (FormField f : defaultForm.getFields()) {
 				FormField formField = FieldUtil.cloneBean(f, FormField.class);
 				FacilioField field = modBean.getField(formField.getName(), moduleName);
@@ -43,6 +44,12 @@ public class AddFormCommand implements Command {
 					f.setFieldId(field.getFieldId());
 				}
 				formFields.add(formField);
+				count++;
+			}
+			List<FacilioField> customFields = modBean.getAllCustomFields(moduleName);
+			if (customFields != null && !customFields.isEmpty()) {
+				List<FormField> customFormFields = FormsAPI.getFormFieldsFromFacilioFields(customFields, count);
+				formFields.addAll(customFormFields);
 			}
 			form.setFields(formFields);
 		}
