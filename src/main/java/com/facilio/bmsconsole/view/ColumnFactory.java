@@ -349,7 +349,7 @@ public class ColumnFactory {
 //		columns.add(new ViewField("localId", "Receivable Id"));
 //		columns.add(new ViewField("poId", "Purchase Order ID"));
 		columns.add(new ViewField("status", "Status"));
-		columns.add(new ViewField("sysCreatedTime", "Created Time"));
+//		columns.add(new ViewField("sysCreatedTime", "Created Time"));
 		return columns;
 	}
 }
