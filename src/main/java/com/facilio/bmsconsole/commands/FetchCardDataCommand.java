@@ -175,6 +175,8 @@ public class FetchCardDataCommand implements Command {
 //					paramsJson.put("parentId", 4l);
 //					paramsJson.put("dateOperator", 31);
 					
+					paramsJson = widgetStaticContext.getParamsJson();
+					
 					long parentId = (long) paramsJson.get("parentId");
 					int dateOperator = (int) paramsJson.get("dateOperator");
 					String dateValue = (String) paramsJson.get("dateValue");
