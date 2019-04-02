@@ -1336,33 +1336,6 @@ public class DashboardAction extends FacilioAction {
 			LOGGER.severe("result --- "+result);
 			setCardResult(result);
 		}
-//		else if(staticKey != null) {
-//			
-//			Map<String,Object> result = null;
-//			paramsJson = DashboardUtil.getCardParams(paramsJson);
-//			
-//			if(CardUtil.isGetDataFromEnum(staticKey)) {}
-//			else if(CardUtil.isExtraCard(staticKey)) {}
-//			
-//			
-//			List<WidgetVsWorkflowContext> workflowList = DashboardUtil.getCardWorkflowBasedOnStaticKey(staticKey);
-//			
-//			if(workflowList != null) {
-//				
-//				result = new HashMap<>();
-//				
-//				for(WidgetVsWorkflowContext widgetVsWorkflowContext : workflowList) {
-//					
-//					widgetVsWorkflowContext.setBaseSpaceId(baseSpaceId);
-//					
-//					if(staticKey.equals("profilemini")) {}
-//					else {}
-//				}
-//			}
-//			LOGGER.severe("result --- "+result);
-//			setCardResult(result);
-//			
-//		}
 		return SUCCESS;
 	}
 	public JSONObject getParamsJson() {
