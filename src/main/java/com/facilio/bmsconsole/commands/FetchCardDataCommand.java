@@ -350,8 +350,8 @@ public class FetchCardDataCommand implements Command {
 		Map<Long, ReadingAlarmContext> alarmMap = new HashMap<>();
 		
 		JSONArray json = FetchReportAdditionalInfoCommand.splitAlarms(allAlarms, dateRange, alarmMap);
-		result.put("alarm", json);
-		result.put("alarmMap", alarmMap);
+		result.put("alarms", json);
+		result.put("alarmInfo", alarmMap);
 		
 		return result;
 	}
