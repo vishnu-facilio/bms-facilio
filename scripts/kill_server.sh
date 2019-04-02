@@ -14,7 +14,7 @@ sudo killall -9 java
 # sh bin/shutdown.sh
 sh /home/ubuntu/move_logs.sh
 aws s3 mv $APP_HOME/logs/catalina.out s3://$logsBucket/$servername/$ipAddress/catalinaout.$today.log
-
+sudo rm -rf $APP_HOME/logs/*
 rm -rf webapps/ROOT
 rm -rf webapps/ROOT.war
 

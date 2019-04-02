@@ -44,6 +44,7 @@ public class Processor extends FacilioProcessor {
     private HashMap<String, HashMap<String, Long>> deviceMessageTime = new HashMap<>();
     private long orgId;
     private String orgDomainName;
+    private JSONParser parser = new JSONParser();
 
 
     private static final Logger LOGGER = LogManager.getLogger(Processor.class.getName());
@@ -101,9 +102,7 @@ public class Processor extends FacilioProcessor {
                     eventRules = ruleList;
                 }
 
-                JSONParser parser = new JSONParser();
                 JSONObject payLoad = (JSONObject) parser.parse(data);
-
 
                 String dataType = AgentKeys.EVENT;
                 if (payLoad.containsKey(EventUtil.DATA_TYPE)) {

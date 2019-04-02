@@ -18,6 +18,10 @@ public class ErrorDataProducer {
 
     private static Producer<String, String> producer;
 
+    static {
+        new ErrorDataProducer();
+    }
+
     private ErrorDataProducer() {
         try {
             producer = new KafkaProducer<>(getKafkaProducerProperties());
