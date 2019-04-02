@@ -31,6 +31,9 @@ public class UpdateTaskCommand implements Command {
 		// TODO Auto-generated method stub
 		TaskContext task = (TaskContext) context.get(FacilioConstants.ContextNames.TASK);
 		List<TaskContext> tasks = (List<TaskContext>) context.get(FacilioConstants.ContextNames.TASK_LIST);
+		if(tasks == null) {
+			tasks = Collections.singletonList(task);
+		}
 		List<Long> recordIds = (List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST);
 		if(task != null && recordIds != null && !recordIds.isEmpty()) {
 			String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
@@ -64,10 +67,12 @@ public class UpdateTaskCommand implements Command {
 						updatetask.add(info);
 					}
 				}
+				if(task.getStatusNewEnum()==null) {
 				JSONObject newinfo = new JSONObject();
                 newinfo.put("taskupdate", updatetask); 
 				CommonCommandUtil.addActivityToContext(task.getParentTicketId(), -1, WorkOrderActivityType.UPDATE_TASK, newinfo, (FacilioContext) context);
-
+			      
+				}
 			}
 			Long lastSyncTime = (Long) context.get(FacilioConstants.ContextNames.LAST_SYNC_TIME);
 			if (lastSyncTime != null && oldTasks.get(0).getModifiedTime() > lastSyncTime ) {
