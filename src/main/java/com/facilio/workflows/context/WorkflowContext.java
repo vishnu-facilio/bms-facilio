@@ -64,6 +64,14 @@ public class WorkflowContext implements Serializable {
 		return expressions;
 	}
 	
+	boolean isLogNeeded;
+	
+	public boolean isLogNeeded() {
+		return isLogNeeded;
+	}
+	public void setLogNeeded(boolean isLogNeeded) {
+		this.isLogNeeded = isLogNeeded;
+	}
 	// only from client
 	public void setExpressions(JSONArray workflowExpressions) throws Exception {
 		if(workflowExpressions != null) {

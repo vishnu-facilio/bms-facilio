@@ -23,6 +23,7 @@ import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
 import com.facilio.tasker.FacilioTimer;
+import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
@@ -417,7 +418,9 @@ public class ReadingRuleContext extends WorkflowRuleContext implements Cloneable
 		try {
 			boolean workflowFlag = true;
 			if (getWorkflow() != null) {
-				workflowFlag = WorkflowUtil.getWorkflowExpressionResultAsBoolean(getWorkflow(), placeHolders, currentRDM, false, true);
+				WorkflowContext workflowContext = getWorkflow();
+				workflowContext.setLogNeeded(true);
+				workflowFlag = WorkflowUtil.getWorkflowExpressionResultAsBoolean(workflowContext, placeHolders, currentRDM, false, true);
 			}
 			return workflowFlag;
 		}
