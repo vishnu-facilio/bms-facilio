@@ -365,6 +365,9 @@ public class ExpressionContext implements WorkflowExpression {
 							if(readingDataMeta == null) {
 								readingDataMeta = ReadingsAPI.getReadingDataMeta(Long.parseLong(parentIdString), select);
 							}
+							if(readingDataMeta == null) {
+								throw new Exception("readingDataMeta is null for FieldName - "+fieldName +" moduleName - "+moduleName+" parentId - "+parentIdString);
+							}
 							long actualLastRecordedTime = getActualLastRecordedTime(module);
 							if(actualLastRecordedTime > 0) {
 								if(readingDataMeta.getTtime() >= actualLastRecordedTime) {
