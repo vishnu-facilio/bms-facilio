@@ -5593,6 +5593,7 @@ public class FieldFactory {
 		fields.add(getField("lastexecutiontime","LAST_EXECUTION_TIME",module,FieldType.NUMBER));
 		fields.add(getField("datainterval","DATA_INTERVAL",module,FieldType.NUMBER));
 		fields.add(getField("modelsamplinginterval","MODEL_SAMPLING_INTERVAL",module,FieldType.NUMBER));
+		fields.add(getField("ruleId", "RULE_ID", module, FieldType.NUMBER));
 
 		return fields;
 	}
