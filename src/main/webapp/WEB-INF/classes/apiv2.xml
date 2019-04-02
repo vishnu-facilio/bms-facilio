@@ -1127,12 +1127,12 @@
 		</action>
 	</package>
 	
-	<!-- <package name="pageApiv2" namespace="/api/v2/pages" extends="v2Api">
+	<package name="pageApiv2" namespace="/api/v2/pages" extends="v2Api">
 		<action name="*" class="com.facilio.bmsconsole.actions.PageAction" method="fetchPage">
 			<param name="moduleName">{1}</param>
 			<param name="permission">READ,READ_TEAM,READ_OWN</param>
 		</action>
-	</package> -->
+	</package>
 		
 	<package name="workorderPartsApi" namespace="/api/v2/workorderParts"
 		extends="v2Api">

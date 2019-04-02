@@ -358,6 +358,12 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new ReportSpecialHandlingCommand(false));
 		return c;
 	}
+
+	public static Chain getPageChain() {
+		Chain c = getDefaultChain();
+		c.addCommand(new GetPageCommand());
+		return c;
+	}
 	
 	private static Chain getDefaultChain() {
 		return FacilioChain.getNonTransactionChain();
