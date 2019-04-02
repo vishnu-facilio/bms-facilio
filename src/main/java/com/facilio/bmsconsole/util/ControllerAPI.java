@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.util;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.context.ControllerActivityWatcherContext;
 import com.facilio.bmsconsole.context.ControllerContext;
 import com.facilio.bmsconsole.context.MultiModuleReadingData;
@@ -88,6 +89,10 @@ public class ControllerAPI {
 		
 		List<Map<String, Object>> controllerList = ruleBuilder.get();
 		List<ControllerContext> controllers = getControllerFromMapList(controllerList, fetchBuilding);
+		if(!AwsUtil.isProduction() && AccountUtil.getCurrentOrg().getOrgId()==75) {
+			
+			LOGGER.info("#####Mac Address:  "+macAddress+"  ControllerList: "+controllerList+"  Controllers: "+controllers);
+		}
 		if (controllers != null && !controllers.isEmpty()) {
 			return controllers.get(0);
 		}
