@@ -1628,7 +1628,14 @@
 			<param name = "toolId">{1}</param>
 		</action>
 	</package>
-	
+	<package name="toolTransactionsCountApi" namespace="/api/v2/toolTransactions"
+	extends="v2Api">
+		<action name="count"
+			class="com.facilio.bmsconsole.actions.ToolTransactionsAction" method="toolsTransactionsCount">
+			<param name="moduleName">asset</param>
+			<param name="permission">READ</param>
+		</action>
+	</package>
 	<package name="unUsedPurchasedToolsList" namespace="/api/v2/unUsedPurchasedToolList/tool"
 		extends="v2Api">
 		<action name="all"
