@@ -184,6 +184,7 @@ public class FetchCardDataCommand implements Command {
 					DateOperators operator = (DateOperators)Operator.OPERATOR_MAP.get(dateOperator);
 					result = getResourceAlarmBar(parentId,operator.getRange(dateValue));
 					context.put(FacilioConstants.ContextNames.RESULT, result);
+					return false;
 				}
 				else if(widgetStaticContext.getStaticKey().contains("emrillFcu")) {
 					
