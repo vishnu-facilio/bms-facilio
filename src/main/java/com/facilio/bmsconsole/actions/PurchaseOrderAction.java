@@ -7,6 +7,7 @@ import com.facilio.bmsconsole.context.PurchaseOrderLineItemContext;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import org.apache.commons.chain.Chain;
+import org.apache.commons.collections4.CollectionUtils;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
@@ -66,6 +67,10 @@ public class PurchaseOrderAction extends FacilioAction {
 	public String addPurchaseOrder() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD, purchaseOrder);
+		
+		if(!CollectionUtils.isEmpty(prIds)) {
+			context.put(FacilioConstants.ContextNames.PR_IDS, prIds);
+		}
 		
 		Chain chain = TransactionChainFactory.getAddPurchaseOrderChain();
 		chain.execute(context);
@@ -211,7 +216,14 @@ public class PurchaseOrderAction extends FacilioAction {
 		this.poId = poId;
 	}
 	
+	private List<Long> prIds;
 	
+	public List<Long> getPrIds() {
+		return prIds;
+	}
+	public void setPrIds(List<Long> prIds) {
+		this.prIds = prIds;
+	}
 	public String completePurchaseOrder() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.PURCHASE_ORDERS, Collections.singletonList(poId));

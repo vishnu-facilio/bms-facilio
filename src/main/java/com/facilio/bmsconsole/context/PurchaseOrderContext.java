@@ -4,7 +4,9 @@ import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class PurchaseOrderContext extends ModuleBaseWithCustomFields {
 
@@ -97,6 +99,10 @@ public class PurchaseOrderContext extends ModuleBaseWithCustomFields {
 		long vendorId = -1;
 		long storeRoomId = -1;
 		
+		Map<Long,PurchaseOrderLineItemContext> toolTypeItems = new HashMap<Long, PurchaseOrderLineItemContext>();
+		Map<Long,PurchaseOrderLineItemContext> itemTypeItems = new HashMap<Long, PurchaseOrderLineItemContext>();
+		double quantity = 0.0;
+	
 		for(PurchaseRequestContext pr : list) {
 			if(pr.getStatusEnum() != PurchaseRequestContext.Status.APPROVED) {
 				throw new IllegalArgumentException("Only Purchase Requests with Approved status can be converted to Purchase Order");
@@ -115,11 +121,37 @@ public class PurchaseOrderContext extends ModuleBaseWithCustomFields {
 			if(pr.getStoreRoom() != null && pr.getStoreRoom().getId() != storeRoomId) {
 				throw new IllegalArgumentException("Cannot create single PO for multiple storeroom items");
 			}
+			if (CollectionUtils.isNotEmpty(pr.getLineItems())) {
+				for (PurchaseRequestLineItemContext prItem : pr.getLineItems()) {
+					if(prItem.getInventoryTypeEnum() == InventoryType.ITEM) {
+						if(!itemTypeItems.containsKey(prItem.getItemType().getId())) {
+							itemTypeItems.put(prItem.getItemType().getId(), PurchaseOrderLineItemContext.from(prItem));
+						}
+						else {
+							PurchaseOrderLineItemContext itemTypeLineItem = itemTypeItems.get(prItem.getItemType().getId());
+							quantity = itemTypeLineItem.getQuantity() + prItem.getQuantity(); 
+							itemTypeLineItem.setQuantity(quantity);
+						}
+					}
+					else {
+						if(!toolTypeItems.containsKey(prItem.getToolType().getId())) {
+							toolTypeItems.put(prItem.getToolType().getId(), PurchaseOrderLineItemContext.from(prItem));
+						}
+						else {
+							PurchaseOrderLineItemContext toolTypeLineItem = toolTypeItems.get(prItem.getToolType().getId());
+							quantity = toolTypeLineItem.getQuantity() + prItem.getQuantity(); 
+							toolTypeLineItem.setQuantity(quantity);
+						}
+					}
+					
+				}
+			}
 			
-			
-			purchaseOrderContext.addLineItems(PurchaseOrderLineItemContext.from(pr.getLineItems()));
 		}
 		
+		List<PurchaseOrderLineItemContext> poLineItems = new ArrayList(itemTypeItems.values());
+		poLineItems.addAll(new ArrayList(toolTypeItems.values()));
+		purchaseOrderContext.setLineItems(poLineItems);
 		purchaseOrderContext.setShipToAddress(getLocationContext());
 		purchaseOrderContext.setBillToAddress(getLocationContext());
 	

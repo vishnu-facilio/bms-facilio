@@ -2109,6 +2109,7 @@ public class TransactionChainFactory {
 			chain.addCommand(SetTableNamesCommand.getForPurchaseOrder());
 			chain.addCommand(new AddOrUpdatePurchaseOrderCommand());
 			chain.addCommand(getPurchaseOrderTotalCostChain()); //update purchase order total cost
+			chain.addCommand(new AddPurchaseRequestOrderRelation());
 			return chain;
 		}
 
@@ -2154,8 +2155,6 @@ public class TransactionChainFactory {
 		public static Chain getConvertPRToPOChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(new ConvertPRToPOCommand());
-			c.addCommand(getAddPurchaseOrderChain());
-			c.addCommand(new AddPurchaseRequestOrderRelation());
 			return c;
 		}
 		public static Chain getPurchaseRequestTotalCostChain() {

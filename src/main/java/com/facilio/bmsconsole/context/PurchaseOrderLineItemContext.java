@@ -1,10 +1,13 @@
 package com.facilio.bmsconsole.context;
 
-import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.collections4.CollectionUtils;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 
 public class PurchaseOrderLineItemContext extends ModuleBaseWithCustomFields{
 	/**
@@ -75,16 +78,6 @@ public class PurchaseOrderLineItemContext extends ModuleBaseWithCustomFields{
 	}
 	public void setCost(double cost) {
 		this.cost = cost;
-	}
-	
-	public static List<PurchaseOrderLineItemContext> from(List<PurchaseRequestLineItemContext> lineItems) {
-		List<PurchaseOrderLineItemContext> items = new ArrayList<PurchaseOrderLineItemContext>();
-		if (CollectionUtils.isNotEmpty(lineItems)) {
-			for (PurchaseRequestLineItemContext prItem : lineItems) {
-				items.add(PurchaseOrderLineItemContext.from(prItem));
-			}
-		}
-		return items;
 	}
 	
 	public static PurchaseOrderLineItemContext from(PurchaseRequestLineItemContext prItem) {
