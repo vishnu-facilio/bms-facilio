@@ -1,31 +1,54 @@
 package com.facilio.bmsconsole.commands;
 
-import com.facilio.accounts.util.AccountUtil;
-import com.facilio.bmsconsole.actions.DashboardAction;
-import com.facilio.bmsconsole.actions.V2ReportAction;
-import com.facilio.bmsconsole.context.*;
-import com.facilio.bmsconsole.context.BaseLineContext.AdjustType;
-import com.facilio.bmsconsole.context.BaseLineContext.RangeType;
-import com.facilio.bmsconsole.criteria.DateOperators;
-import com.facilio.bmsconsole.criteria.DateRange;
-import com.facilio.bmsconsole.reports.ReportsUtil;
-import com.facilio.bmsconsole.util.*;
-import com.facilio.bmsconsole.workflow.rule.ReadingRuleAlarmMeta;
-import com.facilio.cards.util.CardType;
-import com.facilio.cards.util.CardUtil;
-import com.facilio.chain.FacilioContext;
-import com.facilio.constants.FacilioConstants;
-import com.facilio.workflows.util.WorkflowUtil;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.json.simple.JSONObject;
-
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
+
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
+import org.json.simple.JSONObject;
+
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.actions.DashboardAction;
+import com.facilio.bmsconsole.actions.V2ReportAction;
+import com.facilio.bmsconsole.context.AlarmContext;
+import com.facilio.bmsconsole.context.BaseLineContext;
+import com.facilio.bmsconsole.context.BaseLineContext.AdjustType;
+import com.facilio.bmsconsole.context.BaseLineContext.RangeType;
+import com.facilio.bmsconsole.context.BaseSpaceContext;
+import com.facilio.bmsconsole.context.BuildingContext;
+import com.facilio.bmsconsole.context.DashboardWidgetContext;
+import com.facilio.bmsconsole.context.EnergyMeterContext;
+import com.facilio.bmsconsole.context.PhotosContext;
+import com.facilio.bmsconsole.context.ReportSpaceFilterContext;
+import com.facilio.bmsconsole.context.WidgetStaticContext;
+import com.facilio.bmsconsole.context.WidgetVsWorkflowContext;
+import com.facilio.bmsconsole.criteria.DateOperators;
+import com.facilio.bmsconsole.criteria.DateRange;
+import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.FieldFactory;
+import com.facilio.bmsconsole.reports.ReportsUtil;
+import com.facilio.bmsconsole.util.AlarmAPI;
+import com.facilio.bmsconsole.util.BaseLineAPI;
+import com.facilio.bmsconsole.util.DashboardUtil;
+import com.facilio.bmsconsole.util.DateTimeUtil;
+import com.facilio.bmsconsole.util.DeviceAPI;
+import com.facilio.bmsconsole.util.ReadingRuleAPI;
+import com.facilio.bmsconsole.util.SpaceAPI;
+import com.facilio.bmsconsole.workflow.rule.ReadingRuleAlarmMeta;
+import com.facilio.cards.util.CardType;
+import com.facilio.cards.util.CardUtil;
+import com.facilio.chain.FacilioContext;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
+import com.facilio.sql.GenericSelectRecordBuilder;
+import com.facilio.workflows.context.WorkflowContext;
+import com.facilio.workflows.util.WorkflowUtil;
 
 public class FetchCardDataCommand implements Command {
 
@@ -33,12 +56,47 @@ public class FetchCardDataCommand implements Command {
 	@Override
 	public boolean execute(Context context) throws Exception {
 		
-		WidgetStaticContext widgetStaticContext = (WidgetStaticContext) context.get(FacilioConstants.ContextNames.WIDGET_STATIC_CONTEXT);
-		ReportSpaceFilterContext reportSpaceFilterContext = (ReportSpaceFilterContext) context.get(FacilioConstants.ContextNames.REPORT_SPACE_FILTER_CONTEXT);
+		WidgetStaticContext widgetStaticContext = null;
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
-		Map<String,Object> result = null;
+		Long widgetId = (Long) context.get(FacilioConstants.ContextNames.WIDGET_ID);
+		String staticKey = (String) context.get(FacilioConstants.ContextNames.WIDGET_STATIC_KEY);
+		Long baseSpaceId = (Long) context.get(FacilioConstants.ContextNames.WIDGET_BASESPACE_ID);
+		WorkflowContext workflow = (WorkflowContext) context.get(FacilioConstants.ContextNames.WIDGET_WORKFLOW);
+		JSONObject paramsJson = (JSONObject) context.get(FacilioConstants.ContextNames.WIDGET_PARAMJSON);
+		ReportSpaceFilterContext reportSpaceFilterContext = (ReportSpaceFilterContext)  context.get(FacilioConstants.ContextNames.WIDGET_REPORT_SPACE_FILTER_CONTEXT);
+		
+		if(widgetId != null) {
+			DashboardWidgetContext dashboardWidgetContext =  DashboardUtil.getWidget(widgetId);
+			widgetStaticContext = (WidgetStaticContext) dashboardWidgetContext;
+		}
+		else {
+			widgetStaticContext = new WidgetStaticContext();
+			widgetStaticContext.setStaticKey(staticKey);
+			widgetStaticContext.setBaseSpaceId(baseSpaceId);
+			
+			if(workflow != null) {
+				WidgetVsWorkflowContext widgetVsWorkflowContext = new WidgetVsWorkflowContext();
+				widgetVsWorkflowContext.setWorkflow(workflow);
+				widgetStaticContext.addWidgetVsWorkflowContexts(widgetVsWorkflowContext);
+			}
+			else {
+				List<WidgetVsWorkflowContext> workflowList = DashboardUtil.getCardWorkflowBasedOnStaticKey(staticKey);
+				if(workflowList != null) {
+					for(WidgetVsWorkflowContext workflow1 :workflowList) {
+						workflow1.setBaseSpaceId(baseSpaceId);
+					}
+				}
+				widgetStaticContext.setWidgetVsWorkflowContexts(workflowList);
+			}
+		}
+		if(paramsJson != null) {
+			widgetStaticContext.setParamsJson(paramsJson);
+		}
+		
 		if(widgetStaticContext != null) {
 			
+			Map<String,Object> result = null;
 			widgetStaticContext.setParamsJson(DashboardUtil.getCardParams(widgetStaticContext.getParamsJson()));
 			if(CardUtil.isGetDataFromEnum(widgetStaticContext.getStaticKey())) {
 				
@@ -47,7 +105,7 @@ public class FetchCardDataCommand implements Command {
 				CardType card = CardType.getCardType(widgetStaticContext.getStaticKey());
 				
 				if(DashboardUtil.isDynamicWFGeneratingCard(widgetStaticContext.getStaticKey())) {
-					card.setWorkflow(widgetStaticContext.getWidgetVsWorkflowContexts().get(0).getWorkflowString()); // check in pd7 org
+					card.setWorkflow(widgetStaticContext.getWidgetVsWorkflowContexts().get(0).getWorkflowString());
 				}
 				
 				if(widgetStaticContext.getStaticKey().equals(CardType.FAHU_STATUS_CARD_NEW.getName())) {
@@ -70,26 +128,28 @@ public class FetchCardDataCommand implements Command {
 					result.put("result", expResult);
 				}
 				result.put("widget", widgetStaticContext);
+				context.put(FacilioConstants.ContextNames.RESULT, result);
+				return false;
 			}
 			
-			else if(CardUtil.isExtraCard(widgetStaticContext.getStaticKey())) {
+			else if(CardUtil.isExtraCard(widgetStaticContext.getStaticKey())) { // check in stage
 				
 				result = new HashMap<>();
 				
 				if(widgetStaticContext.getStaticKey().equals("readingWithGraphCard")) {
 					
 					V2ReportAction reportAction = new V2ReportAction();
-					if(widgetStaticContext.getId() > 0) {
-						reportAction.setCardWidgetId(widgetStaticContext.getId() );
+					if(widgetId != null) {
+						reportAction.setCardWidgetId(widgetId);
 					}
 					else {
 						reportAction.setCardParamJson(widgetStaticContext.getParamsJson());
 					}
 					reportAction.fetchReadingsFromCard();
 					
-					FacilioContext facilioContext = reportAction.getResultContext();
+					FacilioContext context1 = reportAction.getResultContext();
 					
-					result.put("result", facilioContext);
+					result.put("result", context1);
 					
 					JSONObject params = widgetStaticContext.getParamsJson();
 					
@@ -102,6 +162,45 @@ public class FetchCardDataCommand implements Command {
 					result.put("unit", CardUtil.getUnit(params));
 					
 					result.put("widget", widgetStaticContext);
+					context.put(FacilioConstants.ContextNames.RESULT, result);
+					return false;
+					
+				}
+				else if(widgetStaticContext.getStaticKey().contains("emrillFcu")) {
+					
+					JSONObject json = widgetStaticContext.getParamsJson();
+					
+					Long buildingId = (Long)json.get("buildingId");
+					String levelString = (String) json.get("level");
+					
+					result = new HashMap<>();
+					
+					List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.RESOURCE);
+					
+					List<FacilioField> newFieldList = new ArrayList<>(fields);
+					
+					newFieldList.add(FieldFactory.getIdField(modBean.getModule(FacilioConstants.ContextNames.RESOURCE)));
+					
+					GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+							.select(newFieldList)
+							.table(modBean.getModule(FacilioConstants.ContextNames.RESOURCE).getTableName())
+							.innerJoin("Assets").on("Assets.ID = Resources.ID")
+							.innerJoin("BaseSpace").on("BaseSpace.ID = Resources.SPACE_ID")
+							.andCustomWhere("BaseSpace.BUILDING_ID = ?",buildingId)
+							.andCustomWhere("Resources.ORGID = ?",AccountUtil.getCurrentOrg().getId())
+							.andCustomWhere("Assets.STRING_CF2 = ?", levelString);
+					
+					List<Map<String, Object>> props = selectBuilder.get();
+					
+					if(widgetStaticContext.getStaticKey().equals("emrillFcuList")) {
+						DashboardUtil.getEmrillFCUListWidgetResult(props,result);
+					}
+					else {
+						DashboardUtil.getEmrillFCUWidgetResult(result, props);
+					}
+					
+					context.put(FacilioConstants.ContextNames.RESULT, result);
+					return false;
 				}
 			}
 			if(widgetStaticContext.getWidgetVsWorkflowContexts() != null) {

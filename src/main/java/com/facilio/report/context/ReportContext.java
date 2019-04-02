@@ -9,6 +9,7 @@ import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.fw.BeanFactory;
 import com.facilio.report.context.ReadingAnalysisContext.AnalyticsType;
+import com.facilio.util.FacilioUtil;
 import com.facilio.workflows.context.WorkflowContext;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.struts2.json.annotations.JSON;
@@ -21,7 +22,6 @@ import java.util.List;
 
 public class ReportContext {
 
-	private JSONParser parser = new JSONParser();
 	private long id = -1;
 	
 	int booleanSetting;
@@ -226,7 +226,7 @@ public class ReportContext {
 		return null;
 	}
 	public void setDateRangeJson(String dateRange) throws Exception {
-		JSONObject json = (JSONObject) parser.parse(dateRange);
+		JSONObject json = FacilioUtil.parseJson(dateRange);
 		this.dateRange = FieldUtil.getAsBeanFromJson(json, DateRange.class);
 	}
 	
@@ -247,7 +247,7 @@ public class ReportContext {
 	
 	public void setDataPointJson(String dataPointJson) throws Exception {
 		
-		JSONArray jsonarray = (JSONArray) parser.parse(dataPointJson);
+		JSONArray jsonarray = FacilioUtil.parseJsonArray(dataPointJson);
 		
 		for( Object jsonObject :jsonarray) {
 			
@@ -289,7 +289,7 @@ public class ReportContext {
 	}
 	
 	public void setBaselineJson(String baselineJson) throws Exception {
-		JSONArray jsonarray = (JSONArray) parser.parse(baselineJson);
+		JSONArray jsonarray = FacilioUtil.parseJsonArray(baselineJson);
 		for( Object jsonObject :jsonarray) {
 			JSONObject json = (JSONObject) jsonObject;
 			ReportBaseLineContext dataPoint = FieldUtil.getAsBeanFromJson(json, ReportBaseLineContext.class);
@@ -320,7 +320,7 @@ public class ReportContext {
 		return null;
 	}
 	public void setFiltersJson(String filtersJson) throws Exception {
-		JSONArray json = (JSONArray) parser.parse(filtersJson);
+		JSONArray json = FacilioUtil.parseJsonArray(filtersJson);
 		this.filters = FieldUtil.getAsBeanListFromJsonArray(json, ReportFilterContext.class);
 	}
 	
@@ -455,7 +455,7 @@ public class ReportContext {
 	}
 	
 	public void setUserFiltersJson(String data) throws Exception {
-		JSONArray jsonarray = (JSONArray) parser.parse(data);
+		JSONArray jsonarray = FacilioUtil.parseJsonArray(data);
 		
 		List<ReportUserFilterContext> userFilters = null;
 		for( Object jsonObject :jsonarray) {

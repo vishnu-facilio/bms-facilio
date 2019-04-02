@@ -64,6 +64,14 @@ public class WorkflowContext implements Serializable {
 		return expressions;
 	}
 	
+	boolean isLogNeeded;
+	
+	public boolean isLogNeeded() {
+		return isLogNeeded;
+	}
+	public void setLogNeeded(boolean isLogNeeded) {
+		this.isLogNeeded = isLogNeeded;
+	}
 	// only from client
 	public void setExpressions(JSONArray workflowExpressions) throws Exception {
 		if(workflowExpressions != null) {
@@ -269,22 +277,19 @@ public class WorkflowContext implements Serializable {
 				ExpressionContext expressionContext = (ExpressionContext) wokflowExpresion;
 				expressionContext = WorkflowUtil.fillParamterAndParseExpressionContext(expressionContext,variableResultMap1);
 				expressionContext.setVariableToExpresionMap(variableResultMap1);
-				expressionContext.setWorkflowContext(workflowContext);
 				
-				Object res = expressionContext.execute();
+				Object res = expressionContext.execute(workflowContext);
 				variableResultMap1.put(expressionContext.getName(), res);
 			}
 			else if(wokflowExpresion instanceof IteratorContext) {
 		
 				IteratorContext iteratorContext = (IteratorContext) wokflowExpresion;
-				iteratorContext.setWorkflowContext(workflowContext);
-				iteratorContext.execute();
+				iteratorContext.execute(workflowContext);
 			}
 			else if(wokflowExpresion instanceof ConditionContext) {
 				
 				ConditionContext conditionContext = (ConditionContext) wokflowExpresion;
-				conditionContext.setWorkflowContext(workflowContext);
-				conditionContext.execute();
+				conditionContext.execute(workflowContext);
 			}
 		}
 	}

@@ -40,8 +40,8 @@ public class WmsApi
 
 		if(! AwsUtil.isDevelopment()) {
 			kinesisNotificationTopic = AwsUtil.getConfig("environment") + "-" + kinesisNotificationTopic;
-			LOGGER.info("Initialized Kafka Producer");
 			producer = new FacilioKafkaProducer(kinesisNotificationTopic);
+			LOGGER.info("Initialized Kafka Producer");
 		}
 	}
 

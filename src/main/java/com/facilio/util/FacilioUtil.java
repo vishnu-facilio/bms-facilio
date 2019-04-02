@@ -102,12 +102,14 @@ public class FacilioUtil {
     	if (StringUtils.isEmpty(jsonStr)) {
     		return null;
 		}
+		JSONParser parser = new JSONParser();
 		return  (JSONObject) parser.parse(jsonStr);
 	}
 	public static  JSONArray parseJsonArray (String str) throws ParseException {
 		if (StringUtils.isEmpty(str)) {
 			return null;
 		}
+		JSONParser parser = new JSONParser();
     	return (JSONArray) parser.parse(str);
 	}
 	

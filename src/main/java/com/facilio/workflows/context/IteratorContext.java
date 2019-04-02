@@ -64,9 +64,8 @@ public class IteratorContext implements WorkflowExpression {
 		
 		expressions.add(expression);
 	}
-	WorkflowContext workflowContext;
 	
-	public Object execute() throws Exception {
+	public Object execute(WorkflowContext workflowContext) throws Exception {
 		
 		Map<String, Object> variableToExpresionMap = workflowContext.getVariableResultMap();
 		if(iteratableVariable == null || variableToExpresionMap.get(iteratableVariable) == null || !isIteratableVariable(variableToExpresionMap.get(iteratableVariable))) {
@@ -130,12 +129,6 @@ public class IteratorContext implements WorkflowExpression {
 	}
 	public void setIteratableVariable(String iteratableVariable) {
 		this.iteratableVariable = iteratableVariable;
-	}
-	public WorkflowContext getWorkflowContext() {
-		return workflowContext;
-	}
-	public void setWorkflowContext(WorkflowContext workflowContext) {
-		this.workflowContext = workflowContext;
 	}
 	@Override
 	public int getWorkflowExpressionType(){

@@ -247,28 +247,28 @@ public class ViewFactory {
 		views = new LinkedHashMap<>();
 		views.put("all", getAllPurchaseRequestView().setOrder(order++));
 		views.put("open", getOpenPurchaseRequest().setOrder(order++));
-		views.put("pending", getPurchaseRequestForStatus("pending", "Pending Purchase Requests", 1).setOrder(order++));
+		views.put("pending", getPurchaseRequestForStatus("pending", "Pending", 1).setOrder(order++));
 		views.put("overdue", getOverDuePurchaseRequest().setOrder(order++));
-		views.put("approved", getPurchaseRequestForStatus("approved", "Approved Purchase Requests", 2).setOrder(order++));
-		views.put("rejected", getPurchaseRequestForStatus("rejected", "Rejected Purchase Requests", 3).setOrder(order++));
-		views.put("completed", getPurchaseRequestForStatus("completed", "Completed Purchase Requests", 4).setOrder(order++));
+		views.put("approved", getPurchaseRequestForStatus("approved", "Approved", 2).setOrder(order++));
+		views.put("rejected", getPurchaseRequestForStatus("rejected", "Rejected", 3).setOrder(order++));
+		views.put("completed", getPurchaseRequestForStatus("completed", "Completed", 4).setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.PURCHASE_REQUEST, views);
 
 		order = 1;
 		views = new LinkedHashMap<>();
 		views.put("all", getAllPurchaseOrderView().setOrder(order++));
 		views.put("open", getOpenPurchaseOrder().setOrder(order++));
-		views.put("pending", getPurchaseOrderForStatus("pending", "Pending Purchase Orders", 1).setOrder(order++));
+		views.put("pending", getPurchaseOrderForStatus("pending", "Pending", 1).setOrder(order++));
 		views.put("overdue", getOverDuePurchaseOrder().setOrder(order++));
-		views.put("approved", getPurchaseOrderForStatus("approved", "Approved Purchase Orders", 2).setOrder(order++));
-		views.put("rejected", getPurchaseOrderForStatus("rejected", "Rejected Purchase Orders", 3).setOrder(order++));
-		views.put("completed", getPurchaseOrderForStatus("completed", "Completed Purchase Orders", 7).setOrder(order++));
+		views.put("approved", getPurchaseOrderForStatus("approved", "Approved", 2).setOrder(order++));
+		views.put("rejected", getPurchaseOrderForStatus("rejected", "Rejected", 3).setOrder(order++));
+		views.put("completed", getPurchaseOrderForStatus("completed", "Completed", 7).setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.PURCHASE_ORDER, views);
 
 		order = 1;
 		views = new LinkedHashMap<>();
 		views.put("all", getAllReceivableView().setOrder(order++));
-		views.put("pending", getReceivableForStatus("pending", "Pending Receivables", 1).setOrder(order++));
+		views.put("pending", getReceivableForStatus("pending", "Pending", 1).setOrder(order++));
 		views.put("partial", getReceivableForStatus("partial", "Partially Received", 2).setOrder(order++));
 		views.put("received", getReceivableForStatus("received", "Received", 3).setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.RECEIVABLE, views);
@@ -2625,7 +2625,7 @@ public class ViewFactory {
 
 		FacilioView allView = new FacilioView();
 		allView.setName("all");
-		allView.setDisplayName("All Purchase Requests");
+		allView.setDisplayName("All");
 		allView.setSortFields(Arrays.asList(new SortField(localId, false)));
 		return allView;
 	}
@@ -2685,7 +2685,7 @@ public class ViewFactory {
 		
 		FacilioView statusView = new FacilioView();
 		statusView.setName("open");
-		statusView.setDisplayName("Open Purchase Requests");
+		statusView.setDisplayName("Open");
 		statusView.setSortFields(sortFields);
 		statusView.setCriteria(criteria);
 
@@ -2721,7 +2721,7 @@ public class ViewFactory {
 
 		FacilioView overDueRequest = new FacilioView();
 		overDueRequest.setName("overdue");
-		overDueRequest.setDisplayName("Overdue Purchase Requests");
+		overDueRequest.setDisplayName("Overdue");
 		overDueRequest.setCriteria(criteria);
 		overDueRequest.setSortFields(Arrays.asList(new SortField(createdTime, false)));
 		return overDueRequest;
@@ -2768,7 +2768,7 @@ public class ViewFactory {
 
 		FacilioView allView = new FacilioView();
 		allView.setName("all");
-		allView.setDisplayName("All Purchase Orders");
+		allView.setDisplayName("All");
 		allView.setSortFields(Arrays.asList(new SortField(localId, false)));
 		return allView;
 	}
@@ -2828,7 +2828,7 @@ public class ViewFactory {
 		
 		FacilioView statusView = new FacilioView();
 		statusView.setName("open");
-		statusView.setDisplayName("Open Purchase Orders");
+		statusView.setDisplayName("Open");
 		statusView.setSortFields(sortFields);
 		statusView.setCriteria(criteria);
 
@@ -2871,7 +2871,7 @@ public class ViewFactory {
 
 		FacilioView overDueOrder = new FacilioView();
 		overDueOrder.setName("overdue");
-		overDueOrder.setDisplayName("Overdue Purchase Orders");
+		overDueOrder.setDisplayName("Overdue");
 		overDueOrder.setCriteria(criteria);
 		overDueOrder.setSortFields(Arrays.asList(new SortField(createdTime, false)));
 		return overDueOrder;
@@ -2925,7 +2925,7 @@ public class ViewFactory {
 
 		FacilioView allView = new FacilioView();
 		allView.setName("all");
-		allView.setDisplayName("All Receivables");
+		allView.setDisplayName("All");
 		allView.setSortFields(Arrays.asList(new SortField(localId, false)));
 		return allView;
 	}

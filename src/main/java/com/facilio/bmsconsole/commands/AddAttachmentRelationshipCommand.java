@@ -16,6 +16,7 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections.CollectionUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
@@ -75,24 +76,18 @@ public class AddAttachmentRelationshipCommand implements Command {
 				attachmentIds.add(ac.getId());
 			}
 
-			
-			context.put(FacilioConstants.ContextNames.ATTACHMENT_LIST, AttachmentsAPI.getAttachments(moduleName, attachmentIds));
+			attachments = AttachmentsAPI.getAttachments(moduleName, attachmentIds);
+			context.put(FacilioConstants.ContextNames.ATTACHMENT_LIST, attachments);
 			if(moduleName.equals(FacilioConstants.ContextNames.TICKET_ATTACHMENTS)) {
 				context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.ADD_TICKET_ATTACHMENTS);
 			}
-			List<AttachmentContext> attachment = (List<AttachmentContext>) context.get(FacilioConstants.ContextNames.ATTACHMENT_LIST);
 			JSONArray attachmentNames = new JSONArray();
      		JSONObject attach = new JSONObject();
 			List<Object> attachmentActivity = new ArrayList<>();
-     		long parentId = (long) recordId;
      		
-     		List<Long> singlerecordId = new ArrayList<>();
-     		if(recordIds == null || recordIds.isEmpty()) {
-     			 singlerecordId = Collections.singletonList(recordId);
-     		}
      		
-     		if(moduleName.equals("ticketattachments")) {
-			for(AttachmentContext attaches : attachment) {
+     		if(moduleName.equals(FacilioConstants.ContextNames.TICKET_ATTACHMENTS)) {
+			for(AttachmentContext attaches : attachments) {
 				attachmentNames.add(attaches.getFileName());
 		  		JSONObject info = new JSONObject();
 						info.put("Filename", attaches.getFileName());
@@ -100,33 +95,22 @@ public class AddAttachmentRelationshipCommand implements Command {
 						attachmentActivity.add(info);
 			}
 			attach.put("attachment", attachmentActivity);
-			 CommonCommandUtil.addActivityToContext(parentId, -1, WorkOrderActivityType.ADD_ATTACHMENT, attach, (FacilioContext) context);
+			 CommonCommandUtil.addActivityToContext(recordId, -1, WorkOrderActivityType.ADD_ATTACHMENT, attach, (FacilioContext) context);
      		}
-     		else if(moduleName.equals("taskattachments")) {
-    			List<TaskContext> oldTasks = getTasks(singlerecordId);
-    			Map<Long, TaskContext> oldTicketMap = new HashMap<>();
-    			if(oldTasks != null && !oldTasks.isEmpty()) {
-    				for(TaskContext oldTask : oldTasks) {
-    					oldTicketMap.put(oldTask.getId(), oldTask);
-    				}
-    			}
-    		
-					TaskContext oldTask = oldTicketMap.get(singlerecordId.get(0));
-    			long parentAttachmentId = oldTask.getParentTicketId();
-     			for(AttachmentContext attaches : attachment) {
+     		else if(moduleName.equals(FacilioConstants.ContextNames.TASK_ATTACHMENTS)) {
+    			TaskContext task = getTask(recordId);
+    			long parentAttachmentId = task.getParentTicketId();
+     			for(AttachmentContext attaches : attachments) {
     				attachmentNames.add(attaches.getFileName());
     		  		JSONObject info = new JSONObject();
-					long TaskId = attaches.getParentId();
-					List<Long> taskid = Collections.singletonList(TaskId);
-        			List<TaskContext> Task = getTasks(taskid);
-					info.put("subject", Task.get(0).getSubject());
-    						info.put("Filename", attaches.getFileName());
-    						info.put("Url", attaches.getPreviewUrl());
-    						info.put("type", attaches.getType());
-    						attachmentActivity.add(info);
+					info.put("subject", task.getSubject());
+					info.put("Filename", attaches.getFileName());
+					info.put("Url", attaches.getPreviewUrl());
+					info.put("type", attaches.getType());
+					attachmentActivity.add(info);
     			}
     			attach.put("taskattachment", attachmentActivity);
-    			 CommonCommandUtil.addActivityToContext(parentAttachmentId, -1, WorkOrderActivityType.ADD_TASK_ATTACHMENT, attach, (FacilioContext) context);
+    			CommonCommandUtil.addActivityToContext(parentAttachmentId, -1, WorkOrderActivityType.ADD_TASK_ATTACHMENT, attach, (FacilioContext) context);
      		} 
 
 		}
@@ -134,18 +118,18 @@ public class AddAttachmentRelationshipCommand implements Command {
 		return false;
 	}
 	
-	private List<TaskContext> getTasks(List<Long> ids) throws Exception {
+	private TaskContext getTask(long id) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.TASK);
 		SelectRecordsBuilder<TaskContext> builder = new SelectRecordsBuilder<TaskContext>()
 														.module(module)
 														.beanClass(TaskContext.class)
 														.select(modBean.getAllFields(FacilioConstants.ContextNames.TASK))
-														.andCondition(CriteriaAPI.getIdCondition(ids, module));
+														.andCondition(CriteriaAPI.getIdCondition(id, module));
 		
 		List<TaskContext> tasks = builder.get();
-		if(tasks != null && !tasks.isEmpty()) {
-			return tasks;
+		if(CollectionUtils.isNotEmpty(tasks)) {
+			return tasks.get(0);
 		}
 		return null;
 	}

@@ -1,9 +1,21 @@
 package com.facilio.workflows.context;
 
+import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
-import com.facilio.bmsconsole.criteria.*;
+import com.facilio.bmsconsole.criteria.Condition;
+import com.facilio.bmsconsole.criteria.Criteria;
+import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.criteria.FacilioModulePredicate;
+import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
@@ -16,14 +28,6 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.workflows.util.ExpressionAggregateOperator;
 import com.facilio.workflows.util.WorkflowUtil;
-
-import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class ExpressionContext implements WorkflowExpression {
 	
@@ -55,7 +59,6 @@ public class ExpressionContext implements WorkflowExpression {
 	String limit;
 	String groupBy;
 	Map<Integer,Long> conditionSeqVsBaselineId;
-	WorkflowContext workflowContext;
 	String expr;
 	
 	public String getExpr() {
@@ -65,10 +68,7 @@ public class ExpressionContext implements WorkflowExpression {
 	public void setExpr(String expr) {
 		this.expr = expr;
 	}
-
-	public WorkflowContext getWorkflowContext() {
-		return workflowContext;
-	}
+	
 	
 	public String getPrintStatement() {
 		return printStatement;
@@ -76,10 +76,6 @@ public class ExpressionContext implements WorkflowExpression {
 
 	public void setPrintStatement(String printStatement) {
 		this.printStatement = printStatement;
-	}
-
-	public void setWorkflowContext(WorkflowContext workflowContext) {
-		this.workflowContext = workflowContext;
 	}
 
 	boolean isCustomFunctionResultEvaluator;
@@ -243,7 +239,7 @@ public class ExpressionContext implements WorkflowExpression {
 		this.variableToExpresionMap = variableToExpresionMap;
 	}
 
-	public Object execute() throws Exception {
+	public Object execute(WorkflowContext workflowContext) throws Exception {
 		
 		GenericSelectRecordBuilder selectBuilder = null;
 		if(isCustomFunctionResultEvaluator) {
@@ -260,11 +256,11 @@ public class ExpressionContext implements WorkflowExpression {
 			printStatement(getPrintStatement(),variableToExpresionMap);
 			return null;
 		}
-		if(getWorkflowContext() != null && getWorkflowContext().isGetDataFromCache() && this.getWorkflowContext().getCachedData() != null) {
+		if(workflowContext != null && workflowContext.isGetDataFromCache() && workflowContext.getCachedData() != null) {
 			
 			String parentId = WorkflowUtil.getParentIdFromCriteria(criteria);
 			
-			List<Map<String, Object>> cachedDatas = this.getWorkflowContext().getCachedData().get(WorkflowUtil.getCacheKey(moduleName, parentId));
+			List<Map<String, Object>> cachedDatas = workflowContext.getCachedData().get(WorkflowUtil.getCacheKey(moduleName, parentId));
 
 			if (cachedDatas != null && !cachedDatas.isEmpty()) {
 				List<Map<String, Object>> passedData = new ArrayList<>();
@@ -368,6 +364,9 @@ public class ExpressionContext implements WorkflowExpression {
 							}
 							if(readingDataMeta == null) {
 								readingDataMeta = ReadingsAPI.getReadingDataMeta(Long.parseLong(parentIdString), select);
+							}
+							if(readingDataMeta == null) {
+								throw new Exception("readingDataMeta is null for FieldName - "+fieldName +" moduleName - "+moduleName+" parentId - "+parentIdString);
 							}
 							long actualLastRecordedTime = getActualLastRecordedTime(module);
 							if(actualLastRecordedTime > 0) {

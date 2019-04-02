@@ -1,5 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
+import org.apache.commons.chain.Chain;
+
 import com.facilio.activity.AddActivitiesCommand;
 import com.facilio.agent.ConfigureAgentCommand;
 import com.facilio.agent.ConfigureControllerCommand;
@@ -9,9 +11,12 @@ import com.facilio.bmsconsole.commands.data.PopulateImportProcessCommand;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
-import org.apache.commons.chain.Chain;
 
 public class TransactionChainFactory {
+	
+	private static Chain getDefaultChain() {
+		return FacilioChain.getTransactionChain();
+    }
 
 //	public static Chain getOrgSignupChain() {
 //		Chain c = getDefaultChain();
@@ -1321,9 +1326,7 @@ public class TransactionChainFactory {
 			return c;
 		}
 		
-	    private static Chain getDefaultChain() {
-	    	return FacilioChain.getTransactionChain();
-	    }
+	    
 	    public static Chain getAddWidgetChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(new AddWidgetCommand());
@@ -2228,6 +2231,30 @@ public class TransactionChainFactory {
 			Chain c = getDefaultChain();
 			c.addCommand(new ImportToolCommand());
 			c.addCommand(getBulkAddToolChain());
+			return c;
+		}
+		
+		public static  Chain getAddFormCommand() {
+			Chain c = getDefaultChain();
+			c.addCommand(new AddFormCommand());
+			return c;
+		}
+		
+		public static Chain getUpdateFormChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new EditFormCommand());
+			return c;
+		}
+		
+		public static Chain getUpdateFormFieldChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new UpdateFormFieldCommand());
+			return c;
+		}
+		
+		public static Chain getUpdateFormFieldsChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new UpdateFormFieldsCommand());
 			return c;
 		}
 }

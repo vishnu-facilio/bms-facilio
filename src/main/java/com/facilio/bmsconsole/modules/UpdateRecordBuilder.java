@@ -174,19 +174,25 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 		return updateViaMap(moduleProps);
 	}
 	
+	private void removeSystemProps (Map<String, Object> moduleProps) {
+		moduleProps.remove("orgId");
+		moduleProps.remove("moduleId");
+		moduleProps.remove("id");
+		if (FieldUtil.isSiteIdFieldPresent(module) && AccountUtil.getCurrentSiteId() != -1) {
+			moduleProps.remove("siteId");
+		}
+		if (FieldUtil.isSystemFieldsPresent(module)) {
+			moduleProps.keySet().removeAll(FieldFactory.getSystemFieldNames());
+		}
+		
+	}
+	
 	public int updateViaMap(Map<String, Object> props) throws Exception {
 		updated = true;
 		if(props != null) {
 			checkForNull();
-			
 			Map<String, Object> moduleProps = new HashMap<>(props);
-			moduleProps.remove("orgId");
-			moduleProps.remove("moduleId");
-			moduleProps.remove("id");
-			if (FieldUtil.isSiteIdFieldPresent(module) && AccountUtil.getCurrentSiteId() != -1) {
-				moduleProps.remove("siteId");
-			}
-			
+			removeSystemProps(moduleProps);
 			if (!moduleProps.isEmpty()) {
 				updateLookupFields(moduleProps, fields);
 				moduleProps.put("sysModifiedTime", System.currentTimeMillis());

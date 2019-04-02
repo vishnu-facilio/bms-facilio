@@ -29,6 +29,7 @@ import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
+import java.io.StringReader;
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
 import java.util.ArrayList;
@@ -58,9 +59,11 @@ public class Processor implements IRecordProcessor {
 
         public static final String DATA_TYPE = "PUBLISH_TYPE";
         private List<EventRuleContext> eventRules = new ArrayList<>();
+        private JSONParser parser = new JSONParser();
 
 
-        Processor(long orgId, String orgDomainName){
+
+    Processor(long orgId, String orgDomainName){
             this.orgId = orgId;
             this.orgDomainName = orgDomainName;
             this.errorStream = orgDomainName + "-error";
@@ -114,6 +117,7 @@ public class Processor implements IRecordProcessor {
 
             for (Record record : processRecordsInput.getRecords()) {
                 String data = "";
+                StringReader reader = null;
                 try {
 
                     data = decoder.decode(record.getData()).toString();
@@ -127,8 +131,8 @@ public class Processor implements IRecordProcessor {
                         eventRules = ruleList;
                     }
 
-                    JSONParser parser = new JSONParser();
-                    JSONObject payLoad = (JSONObject) parser.parse(data);
+                    reader = new StringReader(data);
+                    JSONObject payLoad = (JSONObject) parser.parse(reader);
 
                     String dataType = AgentKeys.EVENT;
                     if(payLoad.containsKey(EventUtil.DATA_TYPE)) {

@@ -179,7 +179,7 @@ public class FetchReportAdditionalInfoCommand implements Command {
 		}
 		
 		Set<Long> times = new TreeSet<>(); //To get sorted set
-		
+		long currentTime = System.currentTimeMillis();
 		for (ReadingAlarmContext alarm : allAlarms) {
 			if (alarm.getCreatedTime() < range.getStartTime()) {
 				times.add(range.getStartTime());
@@ -189,7 +189,7 @@ public class FetchReportAdditionalInfoCommand implements Command {
 			}
 			
 			if (alarm.getClearedTime() == -1 || alarm.getCreatedTime() > range.getEndTime()) {
-				times.add(range.getEndTime());
+				times.add(range.getEndTime() > currentTime ? currentTime : range.getEndTime());
 			}
 			else {
 				times.add(alarm.getClearedTime());

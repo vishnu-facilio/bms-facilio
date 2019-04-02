@@ -1,16 +1,92 @@
 package com.facilio.constants;
 
-import com.facilio.activity.ActivityContext;
-import com.facilio.bmsconsole.context.*;
-import com.facilio.bmsconsole.tenant.TenantContext;
-import org.json.simple.JSONObject;
-
 import java.text.SimpleDateFormat;
 import java.time.format.DateTimeFormatter;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+
+import org.json.simple.JSONObject;
+
+import com.facilio.activity.ActivityContext;
+import com.facilio.bmsconsole.context.AHUContext;
+import com.facilio.bmsconsole.context.AlarmContext;
+import com.facilio.bmsconsole.context.AlarmSeverityContext;
+import com.facilio.bmsconsole.context.AssetCategoryContext;
+import com.facilio.bmsconsole.context.AssetContext;
+import com.facilio.bmsconsole.context.AssetDepartmentContext;
+import com.facilio.bmsconsole.context.AssetTypeContext;
+import com.facilio.bmsconsole.context.BaseSpaceContext;
+import com.facilio.bmsconsole.context.BuildingContext;
+import com.facilio.bmsconsole.context.ChillerCondenserPumpContext;
+import com.facilio.bmsconsole.context.ChillerContext;
+import com.facilio.bmsconsole.context.ChillerPrimaryPumpContext;
+import com.facilio.bmsconsole.context.ChillerSecondaryPumpContext;
+import com.facilio.bmsconsole.context.CoolingTowerContext;
+import com.facilio.bmsconsole.context.EnergyMeterContext;
+import com.facilio.bmsconsole.context.EnergyMeterPurposeContext;
+import com.facilio.bmsconsole.context.FCUContext;
+import com.facilio.bmsconsole.context.FloorContext;
+import com.facilio.bmsconsole.context.HeatPumpContext;
+import com.facilio.bmsconsole.context.InventoryCategoryContext;
+import com.facilio.bmsconsole.context.InventoryContext;
+import com.facilio.bmsconsole.context.InventoryVendorContext;
+import com.facilio.bmsconsole.context.ItemContext;
+import com.facilio.bmsconsole.context.ItemStatusContext;
+import com.facilio.bmsconsole.context.ItemTransactionsContext;
+import com.facilio.bmsconsole.context.ItemTypesCategoryContext;
+import com.facilio.bmsconsole.context.ItemTypesContext;
+import com.facilio.bmsconsole.context.ItemTypesStatusContext;
+import com.facilio.bmsconsole.context.ItemTypesVendorsContext;
+import com.facilio.bmsconsole.context.LabourContext;
+import com.facilio.bmsconsole.context.LocationContext;
+import com.facilio.bmsconsole.context.MLAlarmContext;
+import com.facilio.bmsconsole.context.MLAlarmOccurrenceContext;
+import com.facilio.bmsconsole.context.MlForecastingContext;
+import com.facilio.bmsconsole.context.PhotosContext;
+import com.facilio.bmsconsole.context.PurchaseOrderContext;
+import com.facilio.bmsconsole.context.PurchaseOrderLineItemContext;
+import com.facilio.bmsconsole.context.PurchaseRequestContext;
+import com.facilio.bmsconsole.context.PurchaseRequestLineItemContext;
+import com.facilio.bmsconsole.context.PurchasedItemContext;
+import com.facilio.bmsconsole.context.PurchasedToolContext;
+import com.facilio.bmsconsole.context.ReadingAlarmContext;
+import com.facilio.bmsconsole.context.ReadingContext;
+import com.facilio.bmsconsole.context.ReceiptContext;
+import com.facilio.bmsconsole.context.ReceiptLineItemContext;
+import com.facilio.bmsconsole.context.ReceivableContext;
+import com.facilio.bmsconsole.context.ResourceContext;
+import com.facilio.bmsconsole.context.SiteContext;
+import com.facilio.bmsconsole.context.SkillContext;
+import com.facilio.bmsconsole.context.SpaceCategoryContext;
+import com.facilio.bmsconsole.context.SpaceContext;
+import com.facilio.bmsconsole.context.StockedToolsReturnTrackingContext;
+import com.facilio.bmsconsole.context.StoreRoomContext;
+import com.facilio.bmsconsole.context.TaskContext;
+import com.facilio.bmsconsole.context.TicketCategoryContext;
+import com.facilio.bmsconsole.context.TicketContext;
+import com.facilio.bmsconsole.context.TicketPriorityContext;
+import com.facilio.bmsconsole.context.TicketStatusContext;
+import com.facilio.bmsconsole.context.TicketTypeContext;
+import com.facilio.bmsconsole.context.ToolContext;
+import com.facilio.bmsconsole.context.ToolStatusContext;
+import com.facilio.bmsconsole.context.ToolTransactionContext;
+import com.facilio.bmsconsole.context.ToolTypesCategoryContext;
+import com.facilio.bmsconsole.context.ToolTypesContext;
+import com.facilio.bmsconsole.context.ToolTypesStatusContext;
+import com.facilio.bmsconsole.context.UtilityMeterContext;
+import com.facilio.bmsconsole.context.VendorContext;
+import com.facilio.bmsconsole.context.WaterMeterContext;
+import com.facilio.bmsconsole.context.WorkOrderContext;
+import com.facilio.bmsconsole.context.WorkOrderLabourContext;
+import com.facilio.bmsconsole.context.WorkOrderRequestContext;
+import com.facilio.bmsconsole.context.WorkorderCostContext;
+import com.facilio.bmsconsole.context.WorkorderItemContext;
+import com.facilio.bmsconsole.context.WorkorderPartsContext;
+import com.facilio.bmsconsole.context.WorkorderToolsContext;
+import com.facilio.bmsconsole.context.ZoneContext;
+import com.facilio.bmsconsole.tenant.TenantContext;
 
 public class FacilioConstants {
 	
@@ -267,6 +343,15 @@ public class FacilioConstants {
 		public static final String WIDGET_STATIC_CONTEXT = "widgetStaticContext";
 		public static final String REPORT_SPACE_FILTER_CONTEXT = "reportSpaceFilterContext";
 		public static final String WIDGET_TYPE = "widgetType";
+		
+		
+		public static final String WIDGET_ID = "widgetId";
+		public static final String WIDGET_STATIC_KEY = "widgetStaticKey";
+		public static final String WIDGET_BASESPACE_ID = "widgetbasespaceId";
+		public static final String WIDGET_WORKFLOW = "widgetWorkflow";
+		public static final String WIDGET_PARAMJSON = "widgetparamsJson";
+		public static final String WIDGET_REPORT_SPACE_FILTER_CONTEXT = "widgetReportSpaceFilterContext";
+		
 		
 		public static final String REPORT = "report";
 		public static final String REPORT_SAFE_LIMIT = "reportSafeLimit";
@@ -682,11 +767,12 @@ public class FacilioConstants {
 		
 		public static final String LAST_SYNC_TIME = "lastSyncTime";
 		public static final String CUSTOM_OBJECT = "customObject";
-		public static final String FORM_NAMES = "formName";
+		public static final String FORM_NAME = "formName";
 		public static final String FORM_ID = "formId";
-		public static final String FORMS = "form";
+		public static final String FORM = "form";
+		public static final String FORMS = "forms";
+		public static final String FORM_FIELD = "formField";
 		public static final String FORM_FIELDS = "formFields";
-		public static final String EDITED_FORM = "editedFrom";
 		public static final String FORM_OBJECT = "formObject";
 		public static final String FORM_TYPE = "formType";
 		

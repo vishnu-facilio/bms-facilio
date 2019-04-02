@@ -134,14 +134,12 @@
 		<action name="logout" class="com.facilio.bmsconsole.actions.LoginAction"
 			method="apiLogout">
 			<result name="success" type="json">
-				<param name="enumAsBean">true</param>
 				<param name="includeProperties">^account.*</param>
 			</result>
 		</action>
 		<action name="account" class="com.facilio.bmsconsole.actions.LoginAction"
 			method="currentAccount">
 			<result name="success" type="json">
-				<param name="enumAsBean">true</param>
 				<param name="includeProperties">^account.*</param>
 			</result>
 		</action>
@@ -3756,7 +3754,7 @@
 				<param name="includeProperties">fields.*</param>
 			</result>
 		</action>
-		<action name="edit" class="com.facilio.bmsconsole.actions.FormAction" method="editForm">
+		<action name="edit" class="com.facilio.bmsconsole.actions.FormAction" method="updateForm">
 			<result name="success" type="json">
 				<param name="includeProperties">res</param>
 			</result>

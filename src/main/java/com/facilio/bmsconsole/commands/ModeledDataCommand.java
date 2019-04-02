@@ -80,7 +80,7 @@ public class ModeledDataCommand implements Command {
 		}	
 		TimeSeriesAPI.insertPoints(insertNewPointsData);
 		pointsData.addAll(insertNewPointsData);
-			
+				
 		
 		//oldPublish data
 		for(Map.Entry<String, Map<String,String>> data:deviceData.entrySet()) {

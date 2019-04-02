@@ -130,13 +130,19 @@ public class GetWorkOrderListCommand implements Command {
 				int page = (int) pagination.get("page");
 				int perPage = (int) pagination.get("perPage");
 
-				int offset = ((page-1) * perPage);
-				if (offset < 0) {
-					offset = 0;
+				if (perPage != -1) {
+					int offset = ((page-1) * perPage);
+					if (offset < 0) {
+						offset = 0;
+					}
+
+					selectBuilder.offset(offset);
+					selectBuilder.limit(perPage);
 				}
 
-				selectBuilder.offset(offset);
-				selectBuilder.limit(perPage);
+				if (perPage == -1 && (filters == null || !filters.containsKey("createdTime"))) {
+					throw new IllegalArgumentException("createdTime filter is mandatory");
+				}
 			}
 		}
 		List<WorkOrderContext> workOrders = selectBuilder.get();

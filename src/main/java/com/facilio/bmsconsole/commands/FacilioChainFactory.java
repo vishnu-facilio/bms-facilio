@@ -1,5 +1,13 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.Map;
+
+import org.apache.commons.chain.Chain;
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.exception.AccountException;
 import com.facilio.accounts.util.AccountConstants;
@@ -14,13 +22,6 @@ import com.facilio.leed.commands.AddEnergyMeterCommand;
 import com.facilio.leed.commands.FetchArcAssetsCommand;
 import com.facilio.leed.commands.LeedBuildingDetailsCommand;
 import com.facilio.sql.GenericInsertRecordBuilder;
-import org.apache.commons.chain.Chain;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-
-import java.util.Map;
 
 public class FacilioChainFactory {
     private static Logger LOGGER = LogManager.getLogger(FacilioChainFactory.class.getName());
@@ -2065,12 +2066,6 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
-	public static Chain editFormChain() {
-		Chain c = FacilioChain.getTransactionChain();
-		c.addCommand(new GetFormMetaCommand());
-		c.addCommand(new EditFormCommand());
-		return c;
-	}
 	
 	public static Chain getNewInventoryChain() {
 		Chain c = FacilioChain.getTransactionChain();

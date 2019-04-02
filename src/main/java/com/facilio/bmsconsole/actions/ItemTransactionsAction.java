@@ -166,7 +166,7 @@ public class ItemTransactionsAction extends FacilioAction {
 	
 	public String itemTransactionsCount() throws Exception {
 		itemsList();
-		setResult(FacilioConstants.ContextNames.COUNT, count);
+		setResult(FacilioConstants.ContextNames.COUNT, itemsCount);
 		return SUCCESS;
 	}
 

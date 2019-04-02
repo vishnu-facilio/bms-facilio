@@ -77,8 +77,11 @@ public class VendorAction extends FacilioAction{
 			location.setName(vendor.getName()+"_Location");
 			context.put(FacilioConstants.ContextNames.RECORD, location);
 			if (location.getId() > 0) {
+				context.put(FacilioConstants.ContextNames.RECORD_ID, location.getId());
 				context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, java.util.Collections.singletonList(location.getId()));
-				vendor.setAddress(null);
+				Chain editLocation = FacilioChainFactory.updateLocationChain();
+				editLocation.execute(context);
+				vendor.setAddress(location);
 			}
 			else {
 				Chain addLocation = FacilioChainFactory.addLocationChain();

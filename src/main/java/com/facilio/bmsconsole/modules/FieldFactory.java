@@ -170,6 +170,7 @@ public class FieldFactory {
 		fields.add(getNameField(module));
 		fields.add(getDisplayNameField(module));
 		fields.add(getModuleIdField(module));
+		fields.add(getDescriptionField(module));
 	
 		FacilioField formType = new FacilioField();
 		formType.setName("formType");
@@ -461,6 +462,7 @@ public class FieldFactory {
 		fields.add(getIdField(module));
 		/*fields.add(getOrgIdField(module));*/
 		fields.add(getDisplayNameField(module));
+		fields.add(getNameField(module));
 		
 		FacilioField formId = new FacilioField();
 		formId.setName("formId");
@@ -502,6 +504,8 @@ public class FieldFactory {
 		span.setDataType(FieldType.NUMBER);
 		span.setColumnName("SPAN");
 		span.setModule(module);
+		
+		fields.add(getField("defaultValue", "DEFAULT_VALUE", module, FieldType.STRING));
 		
 		fields.add(span);
 		return fields;
@@ -883,9 +887,12 @@ public class FieldFactory {
 		return fields;
 	}
 
-	private static final List<String> systemFields = FieldFactory.getSystemFields(null).stream().map(FacilioField::getName).collect(Collectors.toList());
+	private static final List<String> systemFields = Collections.unmodifiableList(FieldFactory.getSystemFields(null).stream().map(FacilioField::getName).collect(Collectors.toList()));
 	public static boolean isSystemField (String fieldName) {
 		return systemFields.contains(fieldName);
+	}
+	public static List<String> getSystemFieldNames () {
+		return systemFields;
 	}
 
 	public static FacilioField getSystemField (String fieldName, FacilioModule module) {
