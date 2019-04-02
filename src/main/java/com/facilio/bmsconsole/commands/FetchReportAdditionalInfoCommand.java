@@ -172,7 +172,7 @@ public class FetchReportAdditionalInfoCommand implements Command {
 	}
 	
 	private static final int MAX_ALARM_INFO_PER_WINDOW = 2;
-	private JSONArray splitAlarms (List<ReadingAlarmContext> allAlarms, DateRange range, Map<Long, ReadingAlarmContext> alarmMap) {
+	static JSONArray splitAlarms (List<ReadingAlarmContext> allAlarms, DateRange range, Map<Long, ReadingAlarmContext> alarmMap) {
 		
 		if (CollectionUtils.isEmpty(allAlarms)) {
 			return null;
@@ -208,7 +208,7 @@ public class FetchReportAdditionalInfoCommand implements Command {
 		return alarmMetaList;
 	}
 
-	private JSONObject getAlarmMeta (long startTime, long endTime, List<ReadingAlarmContext> allAlarms, Map<Long, ReadingAlarmContext> alarmMap) {
+	private static JSONObject getAlarmMeta (long startTime, long endTime, List<ReadingAlarmContext> allAlarms, Map<Long, ReadingAlarmContext> alarmMap) {
 		JSONObject json = new JSONObject();
 		json.put("time", startTime);
 		

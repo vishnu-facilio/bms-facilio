@@ -422,8 +422,10 @@ public class AlarmAPI {
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 		SelectRecordsBuilder<ReadingAlarmContext> selectBuilder = getReadingAlarmsSelectBuilder(startTime, endTime, isWithAnomaly, fields, fieldMap)
 																	.andCondition(CriteriaAPI.getCondition(fieldMap.get("resource"), resourceId, PickListOperators.IS))
-																	.andCondition(CriteriaAPI.getCondition(fieldMap.get("readingFieldId"), String.valueOf(fieldId), NumberOperators.EQUALS))
 																	;
+		if(fieldId > 0) {
+			selectBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("readingFieldId"), String.valueOf(fieldId), NumberOperators.EQUALS));
+		}
 		List<ReadingAlarmContext> alarms = selectBuilder.get();
 		/*if (AccountUtil.getCurrentOrg().getId() == 75) {
 			LOGGER.info("Fetched Alarm Query : "+selectBuilder.toString());

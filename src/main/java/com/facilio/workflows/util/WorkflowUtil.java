@@ -280,11 +280,11 @@ public class WorkflowUtil {
 		
 		Object result = workflowContext.executeWorkflow();
 		
-		if(!AwsUtil.isProduction()) {
-			if(workflowContext.isLogNeeded()) {
-				WorkflowLogUtil.addWorkflowLog(workflowContext,paramMap,result);
-			}
-		}
+//		if(!AwsUtil.isProduction()) {
+//			if(workflowContext.isLogNeeded()) {
+//				WorkflowLogUtil.addWorkflowLog(workflowContext,paramMap,result);
+//			}
+//		}
 		
 		if(isVariableMapNeeded) {
 			return workflowContext.getVariableResultMap();

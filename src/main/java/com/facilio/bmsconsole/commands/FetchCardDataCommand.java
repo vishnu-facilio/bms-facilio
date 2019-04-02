@@ -10,6 +10,7 @@ import java.util.logging.Logger;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
@@ -25,11 +26,13 @@ import com.facilio.bmsconsole.context.BuildingContext;
 import com.facilio.bmsconsole.context.DashboardWidgetContext;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.context.PhotosContext;
+import com.facilio.bmsconsole.context.ReadingAlarmContext;
 import com.facilio.bmsconsole.context.ReportSpaceFilterContext;
 import com.facilio.bmsconsole.context.WidgetStaticContext;
 import com.facilio.bmsconsole.context.WidgetVsWorkflowContext;
 import com.facilio.bmsconsole.criteria.DateOperators;
 import com.facilio.bmsconsole.criteria.DateRange;
+import com.facilio.bmsconsole.criteria.Operator;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.reports.ReportsUtil;
@@ -132,7 +135,7 @@ public class FetchCardDataCommand implements Command {
 				return false;
 			}
 			
-			else if(CardUtil.isExtraCard(widgetStaticContext.getStaticKey())) { // check in stage
+			else if(CardUtil.isExtraCard(widgetStaticContext.getStaticKey())) {
 				
 				result = new HashMap<>();
 				
@@ -165,6 +168,20 @@ public class FetchCardDataCommand implements Command {
 					context.put(FacilioConstants.ContextNames.RESULT, result);
 					return false;
 					
+				}
+				else if(widgetStaticContext.getStaticKey().equals("resourceAlarmBar")) {
+					
+//					paramsJson = new JSONObject();
+//					paramsJson.put("parentId", 4l);
+//					paramsJson.put("dateOperator", 31);
+					
+					long parentId = (long) paramsJson.get("parentId");
+					int dateOperator = (int) paramsJson.get("dateOperator");
+					String dateValue = (String) paramsJson.get("dateValue");
+					
+					DateOperators operator = (DateOperators)Operator.OPERATOR_MAP.get(dateOperator);
+					result = getResourceAlarmBar(parentId,operator.getRange(dateValue));
+					context.put(FacilioConstants.ContextNames.RESULT, result);
 				}
 				else if(widgetStaticContext.getStaticKey().contains("emrillFcu")) {
 					
@@ -321,6 +338,19 @@ public class FetchCardDataCommand implements Command {
 			context.put(FacilioConstants.ContextNames.RESULT, result);
 		}
 		return false;
+	}
+	private Map<String,Object> getResourceAlarmBar(Long resourceId,DateRange dateRange) throws Exception {
+		
+		Map<String,Object> result = new HashMap<>();
+		List<ReadingAlarmContext> allAlarms = AlarmAPI.getReadingAlarms(Collections.singletonList(resourceId), -1, dateRange.getStartTime(), dateRange.getEndTime(), false);
+		
+		Map<Long, ReadingAlarmContext> alarmMap = new HashMap<>();
+		
+		JSONArray json = FetchReportAdditionalInfoCommand.splitAlarms(allAlarms, dateRange, alarmMap);
+		result.put("alarm", json);
+		result.put("alarmMap", alarmMap);
+		
+		return result;
 	}
 
 }

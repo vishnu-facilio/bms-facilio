@@ -24,7 +24,7 @@ public class CardUtil {
 	
 	public static boolean isExtraCard(String key) {
 		
-		if(key.equals("readingWithGraphCard") || key.contains("emrill")) {
+		if(key.equals("readingWithGraphCard") || key.contains("emrill") || key.equals("resourceAlarmBar")) {
 			return true;
 		}
 		return false;
