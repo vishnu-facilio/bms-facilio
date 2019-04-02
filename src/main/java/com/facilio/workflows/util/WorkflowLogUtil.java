@@ -27,6 +27,7 @@ public class WorkflowLogUtil {
 			value.put("workflowId", workflowContext.getId());
 			value.put("executionTime", DateTimeUtil.getCurrenTime());
 			value.put("variableMap", workflowContext.getVariableResultMap());
+			value.put("input", paramMap);
 			value.put("result", result);
 			
 			GenericInsertRecordBuilder insertRecordBuilder = new GenericInsertRecordBuilder();
@@ -37,6 +38,7 @@ public class WorkflowLogUtil {
 			insertRecordBuilder.save();
 		}
 		catch(Exception e) {
+			LOGGER.log(Level.SEVERE, "workflowContext -- "+workflowContext.getId() +" paramMap -- "+paramMap);
 			LOGGER.log(Level.SEVERE, e.getMessage(), e);
 		}
 	}

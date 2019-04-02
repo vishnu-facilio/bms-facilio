@@ -1,6 +1,7 @@
 package com.facilio.workflows.util;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.BaseLineContext;
 import com.facilio.bmsconsole.context.BaseLineContext.AdjustType;
@@ -271,12 +272,17 @@ public class WorkflowUtil {
 		workflowContext.setCachedRDM(rdmCache);
 		workflowContext.setIgnoreMarkedReadings(ignoreMarked);
 		List<ParameterContext> parameterContexts = validateAndGetParameters(workflowContext,paramMap);
+		
+		paramMap = workflowContext.getVariableResultMap();
+		
 		workflowContext.setParameters(parameterContexts);
 		workflowContext.setIgnoreNullParams(ignoreNullExpressions);
 		
 		Object result = workflowContext.executeWorkflow();
 		
-//		WorkflowLogUtil.addWorkflowLog(workflowContext,paramMap,result);
+		if(!AwsUtil.isProduction()) {
+			WorkflowLogUtil.addWorkflowLog(workflowContext,paramMap,result);
+		}
 		
 		if(isVariableMapNeeded) {
 			return workflowContext.getVariableResultMap();

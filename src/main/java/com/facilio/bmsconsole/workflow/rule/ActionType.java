@@ -819,10 +819,6 @@ public enum ActionType {
 				alarmId = (Long) currentRecordJson.get("id");
 			}
 			
-			if(AccountUtil.getCurrentOrg().getId() == 88l) {
-				LOGGER.error("currentRecordJson --- "+currentRecordJson);
-			}
-			
 			WorkflowContext workflowContext = WorkflowUtil.getWorkflowContext((Long)obj.get("resultWorkflowId"));
 			
 			Object val = WorkflowUtil.getWorkflowExpressionResult(workflowContext, currentRecordJson);
