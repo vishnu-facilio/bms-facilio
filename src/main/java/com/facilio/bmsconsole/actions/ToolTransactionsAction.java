@@ -149,7 +149,7 @@ public class ToolTransactionsAction extends FacilioAction{
 	
 	public String toolsTransactionsCount() throws Exception {
 		toolsTransactionsList();
-		setResult(FacilioConstants.ContextNames.COUNT, count);
+		setResult(FacilioConstants.ContextNames.COUNT, itemsCount);
 		return SUCCESS;
 	}
 	
