@@ -80,6 +80,13 @@ public enum WorkOrderActivityType implements ActivityType {
 			// TODO Auto-generated method stub
 			return " updated Task";
 		}	
+	},
+	CLOSE_TASK(23) {
+		@Override
+		public String constructMessage(JSONObject json) {
+			// TODO Auto-generated method stub
+			return " closed a task ";
+		}
 	};
 	private int value;
 
