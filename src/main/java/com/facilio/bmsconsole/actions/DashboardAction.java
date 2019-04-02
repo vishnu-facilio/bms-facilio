@@ -4,6 +4,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
+import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.ReportsChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
@@ -1080,6 +1081,28 @@ public class DashboardAction extends FacilioAction {
 	
 	public String getCardData() throws Exception {
 		
+		boolean isNewExecution =false;
+		
+		if(!AwsUtil.isProduction()) {
+			isNewExecution = true;
+		}
+		if(isNewExecution) {
+			Chain fetchCardData = ReadOnlyChainFactory.fetchCardDataChain();
+			FacilioContext context = new FacilioContext();
+			
+			context.put(FacilioConstants.ContextNames.WIDGET_ID, widgetId);
+			context.put(FacilioConstants.ContextNames.WIDGET_STATIC_KEY, staticKey);
+			context.put(FacilioConstants.ContextNames.WIDGET_BASESPACE_ID, baseSpaceId);
+			context.put(FacilioConstants.ContextNames.WIDGET_WORKFLOW, workflow);
+			context.put(FacilioConstants.ContextNames.WIDGET_PARAMJSON, paramsJson);
+			context.put(FacilioConstants.ContextNames.WIDGET_REPORT_SPACE_FILTER_CONTEXT, reportSpaceFilterContext);
+			
+			fetchCardData.execute(context);
+			
+			setCardResult(context.get(FacilioConstants.ContextNames.RESULT));
+		}
+		else {
+			
 		WidgetStaticContext widgetStaticContext = null;
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		if(widgetId != null) {
@@ -1335,6 +1358,7 @@ public class DashboardAction extends FacilioAction {
 			} 
 			LOGGER.severe("result --- "+result);
 			setCardResult(result);
+		}
 		}
 		return SUCCESS;
 	}

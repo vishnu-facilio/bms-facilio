@@ -134,7 +134,6 @@
 		<action name="logout" class="com.facilio.bmsconsole.actions.LoginAction"
 			method="apiLogout">
 			<result name="success" type="json">
-				<param name="enumAsBean">true</param>
 				<param name="includeProperties">^account.*</param>
 			</result>
 		</action>

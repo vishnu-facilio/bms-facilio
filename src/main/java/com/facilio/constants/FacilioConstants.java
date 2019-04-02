@@ -344,6 +344,15 @@ public class FacilioConstants {
 		public static final String REPORT_SPACE_FILTER_CONTEXT = "reportSpaceFilterContext";
 		public static final String WIDGET_TYPE = "widgetType";
 		
+		
+		public static final String WIDGET_ID = "widgetId";
+		public static final String WIDGET_STATIC_KEY = "widgetStaticKey";
+		public static final String WIDGET_BASESPACE_ID = "widgetbasespaceId";
+		public static final String WIDGET_WORKFLOW = "widgetWorkflow";
+		public static final String WIDGET_PARAMJSON = "widgetparamsJson";
+		public static final String WIDGET_REPORT_SPACE_FILTER_CONTEXT = "widgetReportSpaceFilterContext";
+		
+		
 		public static final String REPORT = "report";
 		public static final String REPORT_SAFE_LIMIT = "reportSafeLimit";
 		public static final String REPORT_ALARMS = "reportAlarms";
