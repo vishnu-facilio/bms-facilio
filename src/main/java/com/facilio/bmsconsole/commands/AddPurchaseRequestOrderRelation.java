@@ -1,18 +1,23 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
+
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.PurchaseOrderContext;
 import com.facilio.bmsconsole.context.PurchaseRequestContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
+import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-
-import java.util.List;
 
 public class AddPurchaseRequestOrderRelation implements Command {
 
@@ -25,18 +30,19 @@ public class AddPurchaseRequestOrderRelation implements Command {
 			List<Long> purchaseRequestsIds = (List<Long>) context.get(FacilioConstants.ContextNames.PR_IDS);
 			FacilioModule purchaseRequestModule = modBean.getModule(FacilioConstants.ContextNames.PURCHASE_REQUEST);
 			PurchaseOrderContext purchaseOrder = (PurchaseOrderContext) context.get(FacilioConstants.ContextNames.RECORD);
-			List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.PURCHASE_REQUEST);
-	
-			  for(Long prId : purchaseRequestsIds) {
-				        PurchaseRequestContext pr = new PurchaseRequestContext();
-						pr.setPurchaseOrder(purchaseOrder);
-						pr.setStatus(PurchaseRequestContext.Status.COMPLETED);
-						UpdateRecordBuilder<PurchaseRequestContext> updateBuilder = new UpdateRecordBuilder<PurchaseRequestContext>()
-								.module(purchaseRequestModule)
-								.fields(fields)
-								.andCondition(CriteriaAPI.getIdCondition(prId,purchaseRequestModule));
-						updateBuilder.update(pr);
-			  }
+			Map<String, Object> updateMap = new HashMap<>();
+			FacilioField statusField = modBean.getField("status", purchaseRequestModule.getName());
+			FacilioField poField = modBean.getField("purchaseOrder", purchaseRequestModule.getName());
+			updateMap.put("status", PurchaseRequestContext.Status.COMPLETED);
+			updateMap.put("purchaseOrder", FieldUtil.getAsProperties(purchaseOrder));
+			List<FacilioField> updatedfields = new ArrayList<FacilioField>();
+			updatedfields.add(poField);
+			updatedfields.add(statusField);
+			UpdateRecordBuilder<PurchaseRequestContext> updateBuilder = new UpdateRecordBuilder<PurchaseRequestContext>()
+							.module(purchaseRequestModule)
+							.fields(updatedfields)
+							.andCondition(CriteriaAPI.getIdCondition(purchaseRequestsIds,purchaseRequestModule));
+		     updateBuilder.updateViaMap(updateMap);
 		}
 		return false;
 	}
