@@ -887,9 +887,12 @@ public class FieldFactory {
 		return fields;
 	}
 
-	private static final List<String> systemFields = FieldFactory.getSystemFields(null).stream().map(FacilioField::getName).collect(Collectors.toList());
+	private static final List<String> systemFields = Collections.unmodifiableList(FieldFactory.getSystemFields(null).stream().map(FacilioField::getName).collect(Collectors.toList()));
 	public static boolean isSystemField (String fieldName) {
 		return systemFields.contains(fieldName);
+	}
+	public static List<String> getSystemFieldNames () {
+		return systemFields;
 	}
 
 	public static FacilioField getSystemField (String fieldName, FacilioModule module) {
