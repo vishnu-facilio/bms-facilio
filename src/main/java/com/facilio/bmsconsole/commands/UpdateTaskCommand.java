@@ -77,6 +77,8 @@ public class UpdateTaskCommand implements Command {
 			List<Object> closedtask = new ArrayList<>();
 			EventType taskActivity = null;
 			ReadingContext reading = (ReadingContext) context.get(FacilioConstants.ContextNames.READING);
+			
+			
 			if (recordIds.size() == 1 && reading != null) {
 				taskActivity = EventType.ADD_TASK_INPUT;
 			} else if (task != null && (task.getParentTicketId() != -1 || oldTasks != null)) {
@@ -94,6 +96,16 @@ public class UpdateTaskCommand implements Command {
 						CommonCommandUtil.addActivityToContext(task.getParentTicketId(), -1, WorkOrderActivityType.CLOSE_ALL_TASK, newinfo, (FacilioContext) context);
                      }
 				} else {
+				   if(task.getStatusNewEnum()!=null) {
+					if(task.getStatusNewEnum().toString() == "CLOSED") {
+						long TaskId = task.getId();
+						List<Long> taskid = Collections.singletonList(TaskId);
+						List<TaskContext> Task = getTasks(taskid);
+						JSONObject newinfo = new JSONObject();
+						newinfo.put("closeTask", Task.get(0).getSubject());
+						CommonCommandUtil.addActivityToContext(task.getParentTicketId(), -1, WorkOrderActivityType.CLOSE_TASK, newinfo, (FacilioContext) context);
+					}
+				  }
 					taskActivity = EventType.ADD_TASK_INPUT;
 				}
 			} 
