@@ -166,7 +166,7 @@
 		</action>
 	</package>
 	
-	<package name="assetApiV2" namespace="/api/v2/service/assets" extends="servicePortalApiV2">
+	<package name="assetServiceApiV2" namespace="/api/v2/service/assets" extends="servicePortalApiV2">
 		<action name="qr" class="com.facilio.bmsconsole.actions.AssetAction"
 			method="fetchAssetFromQR">
 			<param name="moduleName">asset</param>
@@ -174,7 +174,7 @@
 		</action>
 	</package>
 	
-	<package name="workflowApiv2" namespace="/api/v2/service/workflow"
+	<package name="workflowServiceApiv2" namespace="/api/v2/service/workflow"
 		extends="servicePortalApiV2">
 		<action name="execute" class="com.facilio.bmsconsole.actions.CommonAction"
 			method="executeWorkflow">
