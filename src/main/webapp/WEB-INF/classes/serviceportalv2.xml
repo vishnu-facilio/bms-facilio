@@ -173,6 +173,13 @@
 			<param name="permission">READ</param>
 		</action>
 	</package>
+	
+	<package name="workflowApiv2" namespace="/api/v2/service/workflow"
+		extends="v2Api">
+		<action name="execute" class="com.facilio.bmsconsole.actions.CommonAction"
+			method="executeWorkflow">
+		</action>
+	</package>
 
 	<package name="serviceDownloadApiV2" namespace="/api/v2/service/files/download" extends="servicePortalApiV2">
 		<global-results>
