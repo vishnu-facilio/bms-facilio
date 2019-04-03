@@ -45,11 +45,12 @@ public class SendEmailCommand implements Command,Serializable{
 				JSONObject emailJSON = template.getOriginalTemplate();
 				emailJSON.put("mailType", "html");
 				AwsUtil.sendEmail(emailJSON);
+				LOGGER.info("Import email sent for importJob:" + importProcessContext.getId() + "to" + user.getEmail());
 			}
 			else {
 				emailMessage.delete(0, emailMessage.length());
 			}
-			LOGGER.info("Import email sent for importJob:" + importProcessContext.getId());
+			LOGGER.info("Import email sent for import" + importProcessContext.getId());
 		}
 		catch(Exception e) {
 			LOGGER.log(Level.SEVERE, e.getMessage(), e);

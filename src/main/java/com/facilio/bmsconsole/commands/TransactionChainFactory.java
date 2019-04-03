@@ -1000,6 +1000,12 @@ public class TransactionChainFactory {
 		public static Chain getImportChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(new ProcessImportCommand());
+			c.addCommand(new SwitchToAddResourceChain());
+			return c;
+		}
+		
+		public static Chain getAssetImportChain() {
+			Chain c= getDefaultChain();
 			c.addCommand(new PopulateImportProcessCommand());
 			c.addCommand(new UpdateBaseAndResourceCommand());
 			c.addCommand(new InsertReadingDataMetaForImport());

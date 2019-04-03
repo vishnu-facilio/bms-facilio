@@ -572,18 +572,19 @@ public class ImportAPI {
 		
 		try {
 			ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			FacilioModule facilioModule = bean.getModule(module);
-			List<FacilioField> fieldsList= bean.getAllFields(module);
+			FacilioModule facilioModule =  bean.getModule(module);
 
-			for(FacilioField field : fieldsList)
-			{
-				if(!ImportAPI.isRemovableFieldOnImport(field.getName()))
-				{
-					fields.add(field.getName());
-				}
-			}
 			if(facilioModule.getName().equals(FacilioConstants.ContextNames.ASSET) || (facilioModule.getExtendModule() != null && facilioModule.getExtendModule().getName().equals(FacilioConstants.ContextNames.ASSET))) {
-				
+					List<FacilioField> fieldsList= bean.getAllFields(module);
+					LOGGER.severe(fieldsList.toString());
+					for(FacilioField field : fieldsList)
+					{
+						if(!ImportAPI.isRemovableFieldOnImport(field.getName()))
+						{
+							LOGGER.severe(field.getName());
+							fields.add(field.getName());
+						}
+					}
 				fields.remove("space");
 				fields.remove("localId");
 				fields.remove("resourceType");
@@ -600,6 +601,26 @@ public class ImportAPI {
 				fields.add("subspace2");
 				fields.add("subspace3");
 			}
+			}
+			else if(facilioModule.getName().equals(FacilioConstants.ContextNames.TOOL)
+					|| facilioModule.getName().equals(FacilioConstants.ContextNames.PURCHASED_TOOL)
+					|| facilioModule.getName().equals(FacilioConstants.ContextNames.TOOL_TYPES)
+					|| facilioModule.getName().equals(FacilioConstants.ContextNames.PURCHASED_ITEM)
+					|| facilioModule.getName().equals(FacilioConstants.ContextNames.ITEM)
+					|| facilioModule.getName().equals(FacilioConstants.ContextNames.ITEM_TYPES)		
+					) {
+//				for(FacilioField field : fieldsList) {
+//					if(field.getDataType() == FieldType.LOOKUP.getTypeAsInt() && !ImportAPI.isRemovableFieldOnImport(field.getName())) {
+//						LookupField lookupField = (LookupField) field;
+//						fields.remove(field.getName());
+//						List<FacilioField> lookupModuleFields = bean.getAllFields(lookupField.getLookupModule().getName());
+//						for(FacilioField lkField : lookupModuleFields) {
+//							fields.add(lkField.getName());
+//						}
+//					}
+//				}
+				
+				fields.addAll(ImportFieldFactory.getImportFieldNames(facilioModule.getName()));
 			}
 		}
 		catch(Exception e) {
@@ -638,6 +659,8 @@ public class ImportAPI {
 		}
 		return fieldMap;
 	}
+	
+	
 	public static class  ImportProcessConstants{
 		public static final String IMPORT_PROCESS_CONTEXT = "importprocessContext";
 		public static final String READINGS_LIST = "readingsList";
@@ -680,6 +703,7 @@ public class ImportAPI {
 		public static final String NULL_COUNT = "nullCount";
 		public static final String PARSING_ERROR="parsingError";
 		public static final String PARSING_ERROR_MESSAGE="parsingErrorMessage";
+		public static final String MODULE_STATIC_FIELDS = "moduleStaticFields";
 	}
 	
 	
