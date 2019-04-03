@@ -64,23 +64,22 @@ public class UpdateTaskCommand implements Command {
 			}
 				
 			List<TaskContext> oldTasks = getTasks(recordIds);
-			Map<Long, TaskContext> taskMap = oldTasks.stream().collect(Collectors.toMap(TaskContext::getId, Function.identity()));		
-					if(task.getInputValue() != null) {
-						JSONObject info = new JSONObject();
-						long newTaskId = task.getId();
-						info.put("subject", taskMap.get(newTaskId).getSubject());
-						info.put("newvalue", task.getInputValue());
-						JSONObject newinfo = new JSONObject();
-						newinfo.put("taskupdate", info);
-						try {
-							CommonCommandUtil.addActivityToContext(oldTasks.get(0).getParentTicketId(), -1, WorkOrderActivityType.UPDATE_TASK, newinfo, (FacilioContext) context);
-						}
-						catch(Exception e) {
-							log.error("Error on task update", e);
-							log.info("Error on task update info" + StringUtils.join(recordIds, ",") + oldTasks.size());
-						}
-					}
-
+			Map<Long, TaskContext> taskMap = oldTasks.stream().collect(Collectors.toMap(TaskContext::getId, Function.identity()));
+			try {
+				if(task.getInputValue() != null) {
+					JSONObject info = new JSONObject();
+					long newTaskId = task.getId();
+					info.put("subject", taskMap.get(newTaskId).getSubject());
+					info.put("newvalue", task.getInputValue());
+					JSONObject newinfo = new JSONObject();
+					newinfo.put("taskupdate", info);
+					CommonCommandUtil.addActivityToContext(oldTasks.get(0).getParentTicketId(), -1, WorkOrderActivityType.UPDATE_TASK, newinfo, (FacilioContext) context);
+				}
+			}
+			catch(Exception e) {
+				log.error("Error on task update", e);
+				log.info("Error on task update info" + StringUtils.join(recordIds, ",") + oldTasks.size());
+			}
 			Long lastSyncTime = (Long) context.get(FacilioConstants.ContextNames.LAST_SYNC_TIME);
 			if (lastSyncTime != null && oldTasks.get(0).getModifiedTime() > lastSyncTime ) {
 				throw new RuntimeException("The task was modified after the last sync");
@@ -112,8 +111,13 @@ public class UpdateTaskCommand implements Command {
 					if(task.getStatusNewEnum().toString() == "CLOSED") {
 						JSONObject info = new JSONObject();
 						long newTaskId = task.getId();
-						info.put("subject", taskMap.get(newTaskId).getSubject());
-						CommonCommandUtil.addActivityToContext(taskMap.get(recordIds.get(0)).getParentTicketId(), -1, WorkOrderActivityType.CLOSE_TASK, info, (FacilioContext) context);
+						try {
+							info.put("subject", taskMap.get(newTaskId).getSubject());
+							CommonCommandUtil.addActivityToContext(taskMap.get(recordIds.get(0)).getParentTicketId(), -1, WorkOrderActivityType.CLOSE_TASK, info, (FacilioContext) context);
+						}
+						catch(Exception e) {
+							log.info("Exception occurred adding activity for closed task", e);
+						}
 					}
 				  }
 					taskActivity = EventType.ADD_TASK_INPUT;
