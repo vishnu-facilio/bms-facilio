@@ -95,6 +95,7 @@ public class ResourceContext extends ModuleBaseWithCustomFields {
 		this.avatarUrl = avatarUrl;
 	}
 
+	@JsonIgnore //Have to check with Benitta
 	public String getOriginalUrl() throws Exception {
 		if (this.originalUrl == null && this.photoId > 0) {
 			FileStore fs = FileStoreFactory.getInstance().getFileStore();
