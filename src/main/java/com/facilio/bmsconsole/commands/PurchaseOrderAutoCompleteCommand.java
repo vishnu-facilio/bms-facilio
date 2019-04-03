@@ -69,7 +69,7 @@ public class PurchaseOrderAutoCompleteCommand implements Command {
 					updateBuilder.update(po);
 				}
 			}
-			if (containsIndividualTrackingItem && containsIndividualTrackingTool) {
+			if (containsIndividualTrackingItem || containsIndividualTrackingTool) {
 				itemsTobeAdded = null;
 				toolsToBeAdded = null;
 			}

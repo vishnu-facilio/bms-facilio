@@ -27,7 +27,7 @@ public class AddOrUpdateItemStockTransactionsCommand implements Command {
 		// TODO Auto-generated method stub
 		List<PurchasedItemContext> purchasedItems = (List<PurchasedItemContext>) context
 				.get(FacilioConstants.ContextNames.PURCHASED_ITEM);
-		if (purchasedItems != null) {
+		if (purchasedItems != null && !purchasedItems.isEmpty()) {
 			Boolean isBulkItemAdd = (Boolean) context.get(FacilioConstants.ContextNames.IS_BULK_ITEM_ADD);
 
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");

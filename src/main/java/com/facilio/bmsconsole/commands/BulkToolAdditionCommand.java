@@ -20,75 +20,78 @@ import java.util.Map;
 
 public class BulkToolAdditionCommand implements Command {
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		List<ToolContext> toolsList = (List<ToolContext>) context.get(FacilioConstants.ContextNames.TOOLS);
-		long storeRoomId = (long) context.get(FacilioConstants.ContextNames.STORE_ROOM);
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioModule toolModule = modBean.getModule(FacilioConstants.ContextNames.TOOL);
-		List<FacilioField> toolFields = modBean.getAllFields(FacilioConstants.ContextNames.TOOL);
-		Map<String, FacilioField> toolFieldMap = FieldFactory.getAsMap(toolFields);
-		List<Long> toolTypesId = new ArrayList<>();
-		Map<Long, Long> toolTypeVsTool = new HashMap<>();
-		SelectRecordsBuilder<ToolContext> toolselectBuilder = new SelectRecordsBuilder<ToolContext>().select(toolFields)
-				.table(toolModule.getTableName()).moduleName(toolModule.getName()).beanClass(ToolContext.class)
-				.andCondition(CriteriaAPI.getCondition(toolFieldMap.get("storeRoom"), String.valueOf(storeRoomId),
-						NumberOperators.EQUALS));
+		if (toolsList != null && !toolsList.isEmpty()) {
+			long storeRoomId = (long) context.get(FacilioConstants.ContextNames.STORE_ROOM);
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			FacilioModule toolModule = modBean.getModule(FacilioConstants.ContextNames.TOOL);
+			List<FacilioField> toolFields = modBean.getAllFields(FacilioConstants.ContextNames.TOOL);
+			Map<String, FacilioField> toolFieldMap = FieldFactory.getAsMap(toolFields);
+			List<Long> toolTypesId = new ArrayList<>();
+			Map<Long, Long> toolTypeVsTool = new HashMap<>();
+			SelectRecordsBuilder<ToolContext> toolselectBuilder = new SelectRecordsBuilder<ToolContext>()
+					.select(toolFields).table(toolModule.getTableName()).moduleName(toolModule.getName())
+					.beanClass(ToolContext.class).andCondition(CriteriaAPI.getCondition(toolFieldMap.get("storeRoom"),
+							String.valueOf(storeRoomId), NumberOperators.EQUALS));
 
-		List<ToolContext> tools = toolselectBuilder.get();
-		if (tools != null && !tools.isEmpty()) {
-			for (ToolContext tool : tools) {
-				toolTypesId.add(tool.getToolType().getId());
-				toolTypeVsTool.put(tool.getToolType().getId(), tool.getId());
-			}
-		}
-
-		List<ToolContext> toolToBeAdded = new ArrayList<>();
-		for (ToolContext tool : toolsList) {
-			tool.setLastPurchasedDate(System.currentTimeMillis());
-			if (!toolTypesId.contains(tool.getToolType().getId())) {
-				toolToBeAdded.add(tool);
-			} else {
-				updateTool(toolModule, toolFields, tool);
-				tool.setId(toolTypeVsTool.get(tool.getToolType().getId()));
-			}
-		}
-
-		if (toolToBeAdded != null && !toolToBeAdded.isEmpty()) {
-			addTool(toolModule, toolFields, toolToBeAdded);
-		}
-		
-		List<Long> toolIds = new ArrayList<>();
-		List<Long> toolTypesIds = new ArrayList<>();
-		List<PurchasedToolContext> purchasedTools = new ArrayList<>();
-		Map<Long, List<PurchasedToolContext>> toolVsPurchaseTool = new HashMap<>();
-		for (ToolContext tool : toolsList) {
-			tool.setToolType(ToolsApi.getToolTypes(tool.getToolType().getId()));
-			toolIds.add(tool.getId());
-			toolTypesIds.add(tool.getToolType().getId());
-			List<PurchasedToolContext> pTools = new ArrayList<>();
-			if (tool.getPurchasedTools() != null && !tool.getPurchasedTools().isEmpty()) {
-				for (PurchasedToolContext pTool : tool.getPurchasedTools()) {
-					pTool.setTool(tool);
-					pTool.setToolType(tool.getToolType());
-					pTool.setCostDate(System.currentTimeMillis());
-					pTools.add(pTool);
-					purchasedTools.add(pTool);
+			List<ToolContext> tools = toolselectBuilder.get();
+			if (tools != null && !tools.isEmpty()) {
+				for (ToolContext tool : tools) {
+					toolTypesId.add(tool.getToolType().getId());
+					toolTypeVsTool.put(tool.getToolType().getId(), tool.getId());
 				}
-				tool.setPurchasedTools(null);
-				toolVsPurchaseTool.put(tool.getId(), pTools);
 			}
+
+			List<ToolContext> toolToBeAdded = new ArrayList<>();
+			for (ToolContext tool : toolsList) {
+				tool.setLastPurchasedDate(System.currentTimeMillis());
+				if (!toolTypesId.contains(tool.getToolType().getId())) {
+					toolToBeAdded.add(tool);
+				} else {
+					updateTool(toolModule, toolFields, tool);
+					tool.setId(toolTypeVsTool.get(tool.getToolType().getId()));
+				}
+			}
+
+			if (toolToBeAdded != null && !toolToBeAdded.isEmpty()) {
+				addTool(toolModule, toolFields, toolToBeAdded);
+			}
+
+			List<Long> toolIds = new ArrayList<>();
+			List<Long> toolTypesIds = new ArrayList<>();
+			List<PurchasedToolContext> purchasedTools = new ArrayList<>();
+			Map<Long, List<PurchasedToolContext>> toolVsPurchaseTool = new HashMap<>();
+			for (ToolContext tool : toolsList) {
+				tool.setToolType(ToolsApi.getToolTypes(tool.getToolType().getId()));
+				toolIds.add(tool.getId());
+				toolTypesIds.add(tool.getToolType().getId());
+				List<PurchasedToolContext> pTools = new ArrayList<>();
+				if (tool.getPurchasedTools() != null && !tool.getPurchasedTools().isEmpty()) {
+					for (PurchasedToolContext pTool : tool.getPurchasedTools()) {
+						pTool.setTool(tool);
+						pTool.setToolType(tool.getToolType());
+						pTool.setCostDate(System.currentTimeMillis());
+						pTools.add(pTool);
+						purchasedTools.add(pTool);
+					}
+					tool.setPurchasedTools(null);
+					toolVsPurchaseTool.put(tool.getId(), pTools);
+				}
+			}
+			if (purchasedTools != null && !purchasedTools.isEmpty()) {
+				addPurchasedTool(purchasedTools);
+			}
+
+			context.put(FacilioConstants.ContextNames.RECORD_LIST, toolsList);
+			context.put(FacilioConstants.ContextNames.TOOL_IDS, toolIds);
+			context.put(FacilioConstants.ContextNames.TRANSACTION_TYPE, TransactionType.STOCK);
+			context.put(FacilioConstants.ContextNames.TOOL_TYPES_IDS, toolTypesIds);
+			context.put(FacilioConstants.ContextNames.PURCHASED_TOOL, toolVsPurchaseTool);
 		}
-		if(purchasedTools!=null && !purchasedTools.isEmpty()) {
-			addPurchasedTool(purchasedTools);
-		}
-		
-		context.put(FacilioConstants.ContextNames.RECORD_LIST, toolsList);
-		context.put(FacilioConstants.ContextNames.TOOL_IDS, toolIds);
-		context.put(FacilioConstants.ContextNames.TRANSACTION_TYPE, TransactionType.STOCK);
-		context.put(FacilioConstants.ContextNames.TOOL_TYPES_IDS, toolTypesIds);
-		context.put(FacilioConstants.ContextNames.PURCHASED_TOOL, toolVsPurchaseTool);
 		return false;
 	}
 
@@ -97,19 +100,19 @@ public class BulkToolAdditionCommand implements Command {
 				.fields(fields).addRecords(tool);
 		readingBuilder.save();
 	}
-	
+
 	private void updateTool(FacilioModule module, List<FacilioField> fields, ToolContext tool) throws Exception {
 		UpdateRecordBuilder<ToolContext> updateBuilder = new UpdateRecordBuilder<ToolContext>().module(module)
 				.fields(fields).andCondition(CriteriaAPI.getIdCondition(tool.getId(), module));
 		updateBuilder.update(tool);
 	}
-	
+
 	private void addPurchasedTool(List<PurchasedToolContext> tool) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.PURCHASED_TOOL);
 		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.PURCHASED_TOOL);
-		InsertRecordBuilder<PurchasedToolContext> readingBuilder = new InsertRecordBuilder<PurchasedToolContext>().module(module)
-				.fields(fields).addRecords(tool);
+		InsertRecordBuilder<PurchasedToolContext> readingBuilder = new InsertRecordBuilder<PurchasedToolContext>()
+				.module(module).fields(fields).addRecords(tool);
 		readingBuilder.save();
 	}
 }
