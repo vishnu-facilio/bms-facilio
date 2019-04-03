@@ -264,11 +264,11 @@ public static void insertInstanceAssetMapping(String deviceName, long assetId, l
 			long fieldId = entry.getValue();
 			
 			checkForInputType(assetId, fieldId, instanceName, metaMap);
-		
+			/*
 			Map<String, Object> pointsRecord = (Map<String, Object>) getNewPointsData(assetId,categoryId,fieldId);
 			
 			updatePointsData(deviceName, instanceName, pointsRecord);
-		
+			*/
 			
 			Map<String, Object> record = new HashMap<String,Object>();
 			record.put("orgId", orgId);
