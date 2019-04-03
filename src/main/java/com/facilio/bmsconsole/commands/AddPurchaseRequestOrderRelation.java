@@ -33,7 +33,7 @@ public class AddPurchaseRequestOrderRelation implements Command {
 			Map<String, Object> updateMap = new HashMap<>();
 			FacilioField statusField = modBean.getField("status", purchaseRequestModule.getName());
 			FacilioField poField = modBean.getField("purchaseOrder", purchaseRequestModule.getName());
-			updateMap.put("status", PurchaseRequestContext.Status.COMPLETED);
+			updateMap.put("status", PurchaseRequestContext.Status.COMPLETED.ordinal()+1);
 			updateMap.put("purchaseOrder", FieldUtil.getAsProperties(purchaseOrder));
 			List<FacilioField> updatedfields = new ArrayList<FacilioField>();
 			updatedfields.add(poField);

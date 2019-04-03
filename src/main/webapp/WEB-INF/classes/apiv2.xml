@@ -1686,6 +1686,9 @@
 		<action name="addOrUpdate" class="com.facilio.bmsconsole.actions.PurchaseRequestAction" method="addPurchaseRequest">
 			<param name="moduleName">purchaserequest</param>
 		</action>
+		<action name="changeStatus" class="com.facilio.bmsconsole.actions.PurchaseRequestAction" method="bulkStatusUpdate">
+			<param name="moduleName">purchaserequest</param>
+		</action>
 		<action name="details" class="com.facilio.bmsconsole.actions.PurchaseRequestAction" method="getPurchaseRequestDetails">
 			<param name="moduleName">purchaserequest</param>
 		</action>
@@ -1717,6 +1720,9 @@
 		<action name="addOrUpdate" class="com.facilio.bmsconsole.actions.PurchaseOrderAction" method="addPurchaseOrder">
 			<param name="moduleName">purchaseorder</param>
 		</action>
+		<action name="changeStatus" class="com.facilio.bmsconsole.actions.PurchaseOrderAction" method="bulkStatusUpdate">
+			<param name="moduleName">purchaseorder</param>
+		</action>
 		<action name="details" class="com.facilio.bmsconsole.actions.PurchaseOrderAction" method="getPurchaseOrderDetails">
 			<param name="moduleName">purchaseorder</param>
 		</action>
@@ -1745,6 +1751,9 @@
 			<param name="moduleName">purchaseorder</param>
 		</action>
 	   <action name="completePurchaseOrder" class="com.facilio.bmsconsole.actions.PurchaseOrderAction" method="completePurchaseOrder">
+			<param name="moduleName">purchaseorder</param>
+		</action>
+		 <action name="filterPO" class="com.facilio.bmsconsole.actions.PurchaseOrderAction" method="filterPoOnInventoryTypeId">
 			<param name="moduleName">purchaseorder</param>
 		</action>
 		<action name="*" class="com.facilio.bmsconsole.actions.PurchaseOrderAction" method="getPurchaseOrderList">

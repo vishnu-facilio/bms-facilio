@@ -2084,6 +2084,13 @@ public class TransactionChainFactory {
 			chain.addCommand(getPurchaseRequestTotalCostChain()); //update purchase request total cost
 			return chain;
 		}
+		
+		public static Chain getUpdatePurchaseRequestStatusChain() {
+			Chain chain = getDefaultChain();
+			chain.addCommand(SetTableNamesCommand.getForPurchaseRequest());
+			chain.addCommand(new UpdateBulkPurchaseRequestStatusCommand()); 
+			return chain;
+		}
 
 		public static Chain getPurchaseRequestDeleteChain() {
 			Chain c = getDefaultChain();
@@ -2120,6 +2127,7 @@ public class TransactionChainFactory {
 			Chain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForPurchaseOrder());
 			c.addCommand(new DeletePurchaseOrderCommand());
+			c.addCommand(new DeleteReceivableByPoIdCommand());
 			return c;
 		}
 
@@ -2129,6 +2137,13 @@ public class TransactionChainFactory {
 			c.addCommand(new AddOrUpdatePurchaseOrderLineItemCommand());
 			c.addCommand(getPurchaseOrderTotalCostChain()); //update purchase order total cost
 			return c;
+		}
+
+		public static Chain getUpdatePurchaseOrderStatusChain() {
+			Chain chain = getDefaultChain();
+			chain.addCommand(SetTableNamesCommand.getForPurchaseOrder());
+			chain.addCommand(new UpdateBulkPurchaseOrderStatusCommand()); 
+			return chain;
 		}
 
 		public static Chain getDeletePurchaseOrderLineItem() {
@@ -2213,6 +2228,13 @@ public class TransactionChainFactory {
 			c.addCommand(new GetReceivedPoLineItemsCommand());
 			return c;
 		}
+		
+		public static Chain getPOOnInventoryTypeIdChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new GetPurchaseOrdersListOnInventoryTypeIdCommand());
+			return c;
+		}
+		
 		
 		public static Chain getAddOrUpdateItemTypeVendorChain() {
 			Chain c = getDefaultChain();

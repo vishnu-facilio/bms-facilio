@@ -63,7 +63,22 @@ public class PurchaseOrderAction extends FacilioAction {
 		this.includeParentFilter = includeParentFilter;
 	}
 
+	private int inventoryType;
 	
+	public int getInventoryType() {
+		return inventoryType;
+	}
+	public void setInventoryType(int inventoryType) {
+		this.inventoryType = inventoryType;
+	}
+	
+	private long id;
+	public long getId() {
+		return id;
+	}
+	public void setId(long id) {
+		this.id = id;
+	}
 	public String addPurchaseOrder() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD, purchaseOrder);
@@ -77,6 +92,28 @@ public class PurchaseOrderAction extends FacilioAction {
 		
 		setResult(FacilioConstants.ContextNames.PURCHASE_ORDER, context.get(FacilioConstants.ContextNames.RECORD));
 		return SUCCESS;
+	}
+	
+	public String bulkStatusUpdate() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, recordIds);
+		context.put(FacilioConstants.ContextNames.STATUS, getStatus());
+		
+		Chain chain = TransactionChainFactory.getUpdatePurchaseOrderStatusChain();
+		chain.execute(context);
+		
+		setResult(FacilioConstants.ContextNames.ROWS_UPDATED, context.get(FacilioConstants.ContextNames.ROWS_UPDATED));
+		
+		return SUCCESS;
+	}
+	
+	private int status;
+	
+	public int getStatus() {
+		return status;
+	}
+	public void setStatus(int status) {
+		this.status = status;
 	}
 	
 	public String getPurchaseOrderList() throws Exception {
@@ -135,12 +172,12 @@ public class PurchaseOrderAction extends FacilioAction {
 	
 	public String deletePurchaseOrder() throws Exception {
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(recordId));
+		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, recordId != -1 ? Collections.singletonList(recordId) : recordIds);
 		
 		Chain chain = TransactionChainFactory.getPurchaseOrderDeleteChain();
 		chain.execute(context);
 		
-		setResult(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(recordId));
+		setResult(FacilioConstants.ContextNames.RECORD_ID_LIST, recordId != -1 ? Collections.singletonList(recordId) : recordIds);
 		return SUCCESS;
 	}
 	
@@ -255,6 +292,20 @@ public class PurchaseOrderAction extends FacilioAction {
 		setResult(FacilioConstants.ContextNames.PURCHASE_ORDER_LINE_ITEMS, context.get(FacilioConstants.ContextNames.PURCHASE_ORDER_LINE_ITEMS));
 		return SUCCESS;
 
+	}
+	
+	public String filterPoOnInventoryTypeId () throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.INVENTORY_CATEGORY, getInventoryType() );
+		context.put(FacilioConstants.ContextNames.ID, getId() );
+		
+		Chain chain = TransactionChainFactory.getPOOnInventoryTypeIdChain();
+		chain.execute(context);
+		
+		setResult(FacilioConstants.ContextNames.PURCHASE_ORDERS, context.get(FacilioConstants.ContextNames.PURCHASE_ORDERS));
+		return SUCCESS;
+
+		
 	}
 
 }

@@ -163,6 +163,7 @@ public class FacilioConstants {
 		public static final String IS_BULK_ACTION = "isBulkAction";
 		public static final String ACTIVITY_LIST = "activityList";
 
+		public static final String TENANT_STATUS = "tenantStatus";
 		public static final String USER_ID = "userId";
 		public static final String USER = "user";
 		public static final String USER_MOBILE_SETTING = "userMobileSetting";
@@ -895,6 +896,7 @@ public class FacilioConstants {
 		public static final String PURCHASE_REQUEST = "purchaserequest";
 		public static final String PURCHASE_REQUESTS = "purchaserequests";
 		public static final String PURCHASE_REQUEST_LINE_ITEMS = "purchaserequestlineitems";
+		public static final String STATUS = "status";
 
 		public static final String PURCHASE_ORDER = "purchaseorder";
 		public static final String PURCHASE_ORDERS = "purchaseorders";
