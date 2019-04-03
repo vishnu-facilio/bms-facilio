@@ -400,6 +400,7 @@ public class ActionAPI {
 		
 		WorkflowTemplate workflowTemplate = FieldUtil.getAsBeanFromJson(workflowTemplateJson, WorkflowTemplate.class);
 		
+		workflowTemplate.getResultWorkflowContext().setWorkflowString(null);
 		Long workflowId = WorkflowUtil.addWorkflow(workflowTemplate.getResultWorkflowContext());
 		
 		workflowTemplate.setName(rule.getName()+"_json_template");
