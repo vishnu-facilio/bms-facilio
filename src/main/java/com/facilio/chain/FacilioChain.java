@@ -157,13 +157,9 @@ public class FacilioChain extends ChainBase {
 					rootChain.remove();
 //					postTransactionContext.remove();
 				}
-//				else {
-//					if (root.getPostTransactionChain() != null) {
-//						root.getPostTransactionChain().addCommand(this.postTransactionChain);
-//					} else {
-//						root.setPostTransactionChain(this.postTransactionChain);
-//					}
-//				}
+				else {
+					root.addPostTransaction(this.postTransactionChains);
+				}
 			}
 
 			return status;
