@@ -1,16 +1,63 @@
 package com.facilio.bmsconsole.actions;
 
+import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.apache.commons.chain.Chain;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.commands.*;
-import com.facilio.bmsconsole.context.*;
+import com.facilio.bmsconsole.commands.AddOrUpdateReportCommand;
+import com.facilio.bmsconsole.commands.ConstructReportData;
+import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
+import com.facilio.bmsconsole.commands.SendReadingReportMailCommand;
+import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsole.context.AlarmContext;
+import com.facilio.bmsconsole.context.DashboardWidgetContext;
+import com.facilio.bmsconsole.context.FormulaFieldContext;
+import com.facilio.bmsconsole.context.MLAlarmContext;
+import com.facilio.bmsconsole.context.PreventiveMaintenance;
+import com.facilio.bmsconsole.context.ReadingAlarmContext;
+import com.facilio.bmsconsole.context.ReportInfo;
+import com.facilio.bmsconsole.context.ResourceContext;
+import com.facilio.bmsconsole.context.WidgetChartContext;
+import com.facilio.bmsconsole.context.WidgetStaticContext;
+import com.facilio.bmsconsole.criteria.Condition;
+import com.facilio.bmsconsole.criteria.Criteria;
+import com.facilio.bmsconsole.criteria.DateOperators;
+import com.facilio.bmsconsole.criteria.DateRange;
+import com.facilio.bmsconsole.criteria.Operator;
 import com.facilio.bmsconsole.modules.AggregateOperator;
-import com.facilio.bmsconsole.criteria.*;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.templates.EMailTemplate;
-import com.facilio.bmsconsole.util.*;
+import com.facilio.bmsconsole.templates.TaskSectionTemplate;
+import com.facilio.bmsconsole.templates.TaskTemplate;
+import com.facilio.bmsconsole.templates.Template;
+import com.facilio.bmsconsole.templates.WorkorderTemplate;
+import com.facilio.bmsconsole.util.AlarmAPI;
+import com.facilio.bmsconsole.util.DashboardUtil;
+import com.facilio.bmsconsole.util.DateTimeUtil;
+import com.facilio.bmsconsole.util.FacilioFrequency;
+import com.facilio.bmsconsole.util.FormulaFieldAPI;
+import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
+import com.facilio.bmsconsole.util.ReadingRuleAPI;
+import com.facilio.bmsconsole.util.ResourceAPI;
+import com.facilio.bmsconsole.util.TemplateAPI;
+import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.rule.AlarmRuleContext;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
@@ -20,13 +67,17 @@ import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fs.FileInfo.FileFormat;
 import com.facilio.fw.BeanFactory;
-import com.facilio.report.context.*;
+import com.facilio.report.context.ReadingAnalysisContext;
 import com.facilio.report.context.ReadingAnalysisContext.ReportFilterMode;
-import com.facilio.report.context.ReportContext;
 import com.facilio.report.context.ReadingAnalysisContext.ReportMode;
+import com.facilio.report.context.ReportBaseLineContext;
+import com.facilio.report.context.ReportContext;
+import com.facilio.report.context.ReportContext.ReportType;
+import com.facilio.report.context.ReportFactoryFields;
 import com.facilio.report.context.ReportFolderContext;
 import com.facilio.report.context.ReportUserFilterContext;
-import com.facilio.report.context.ReportContext.ReportType;
+import com.facilio.report.context.ReportYAxisContext;
+import com.facilio.report.context.WorkorderAnalysisContext;
 import com.facilio.report.util.ReportUtil;
 import com.facilio.time.SecondsChronoUnit;
 import com.facilio.util.FacilioUtil;
@@ -34,16 +85,6 @@ import com.facilio.workflows.context.ExpressionContext;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.context.WorkflowExpression;
 import com.facilio.workflows.util.WorkflowUtil;
-import org.apache.commons.chain.Chain;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-
-import java.time.ZonedDateTime;
-import java.util.*;
 
 public class V2ReportAction extends FacilioAction {
 	
@@ -510,18 +551,42 @@ public class V2ReportAction extends FacilioAction {
 	public void setUserFilters(List<ReportUserFilterContext> userFilters) {
 		this.userFilters = userFilters;
 	}
+	private long pmId = -1;
 	
+	public long getPmId() {
+		return pmId;
+	}
+	public void setPmId(long pmId) {
+		this.pmId = pmId;
+	}
+	
+	private long resourceId = -1;
+	
+	public long getResourceId() {
+		return resourceId;
+	}
+	public void setResourceId(long resourceId) {
+		this.resourceId = resourceId;
+	}
 	public String fetchReportData() throws Exception {
 		FacilioContext context = new FacilioContext();
-		updateContext(context);
-		
 		Chain c = FacilioChain.getNonTransactionChain();
-		c.addCommand(new ConstructReportData());
+		if(pmId != -1) {
+			context.put("pmId", pmId);
+			context.put("resourceId", resourceId);
+			c.addCommand(new ConstructReportDataForPM());
+		}
+		else {
+			updateContext(context);
+			c.addCommand(new ConstructReportData());
+		}
+		
 		c.addCommand(ReadOnlyChainFactory.constructAndFetchReportDataChain());
 		c.execute(context);
 
 		return setReportResult(context);
 	}
+	
 	
 	private void getReport(FacilioContext context) throws Exception {
 		ReportContext reportContext = ReportUtil.getReport(reportId);
@@ -771,9 +836,6 @@ public class V2ReportAction extends FacilioAction {
 				baseLines = baselineArray.toJSONString();
 			}
 			
-			if (newFormat) {
-				ReportUtil.setAliasForDataPoints(dataPoints, readingRules.get(0).getBaselineId());
-			}
 		}
 		else if(isAnomalyAlarm){
 			
@@ -790,13 +852,46 @@ public class V2ReportAction extends FacilioAction {
 			dataPoint.put("yAxis", yAxisJson);
 			
 			dataPoint.put("type", 1);
+			
 			dataPoints.add(dataPoint);
 			
-			
-			if (newFormat) {
-				ReportUtil.setAliasForDataPoints(dataPoints,-1l);
-			}
 		}
+		String additionalDataPointString = "anomalyreadings";
+		if(alarmContext != null && alarmContext.getAdditionInfo() != null && alarmContext.getAdditionInfo().containsKey(additionalDataPointString)) {
+			
+			JSONArray points = FacilioUtil.parseJsonArray(alarmContext.getAdditionInfo().get(additionalDataPointString).toString());
+			
+			for(int i=0;i<points.size();i++) {
+				long fieldId = Long.parseLong(points.get(i).toString());
+				
+				JSONObject dataPoint = new JSONObject();
+				
+				dataPoint.put("parentId", FacilioUtil.getSingleTonJsonArray(resource.getId()));
+				
+				JSONObject yAxisJson = new JSONObject();
+				yAxisJson.put("fieldId", fieldId);
+				yAxisJson.put("aggr", 0);
+				
+				dataPoint.put("yAxis", yAxisJson);
+				
+				dataPoint.put("type", 1);
+				
+				dataPoints.add(dataPoint);
+			}
+			
+		}
+		if(alarmId == 890083l) {
+			LOGGER.error("new data point json -- "+dataPoints);
+		}
+		if (newFormat) {
+			long baselineId = -1l;
+			if(readingRules != null && !readingRules.isEmpty() && readingRules.get(0) != null) {
+				baselineId = readingRules.get(0).getBaselineId();
+			}
+			ReportUtil.setAliasForDataPoints(dataPoints, baselineId);
+		}
+		
+		
 		if(this.startTime <= 0 && this.endTime <= 0) {
 			long modifiedTime = alarmContext.getCreatedTime();
 			if(alarmContext.getModifiedTime() > 0) {
@@ -1181,6 +1276,7 @@ public class V2ReportAction extends FacilioAction {
 		
 		return SUCCESS;
 	}
+	
 	
 	public String exportModuleReport() throws Exception {
 		FacilioContext context = new FacilioContext();

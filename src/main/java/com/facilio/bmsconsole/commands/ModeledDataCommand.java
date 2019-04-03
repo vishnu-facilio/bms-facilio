@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.modules.FacilioField;
@@ -38,7 +39,10 @@ public class ModeledDataCommand implements Command {
 		List<Map<String, Object>> insertNewPointsData= new ArrayList< >();
 		List<Map<String,Object>>  dataPoints= null;
 		long orgId = AccountUtil.getCurrentOrg().getOrgId();
-
+		if(!AwsUtil.isProduction() && orgId==75) {
+			
+			LOGGER.info("#####Controller Id:  "+controllerId);
+		}	
 		
 		LOGGER.debug("Inside ModeledDataCommand####### deviceData: "+deviceData);
 		for(Map.Entry<String, Map<String,String>> data:deviceData.entrySet()) {
@@ -52,7 +56,6 @@ public class ModeledDataCommand implements Command {
 					continue;
 				}
 				dataPoints= getValueContainsPointsData( deviceName,  instanceName, controllerId , pointsData);
-				
 				if(dataPoints==null) {
 
 					Map<String, Object> value=new HashMap<String,Object>();

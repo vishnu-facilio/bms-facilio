@@ -8,6 +8,7 @@ import com.facilio.bmsconsole.modules.*;
 import com.facilio.bmsconsole.workflow.rule.*;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.chain.FacilioContext;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericDeleteRecordBuilder;
 import com.facilio.sql.GenericInsertRecordBuilder;
@@ -985,6 +986,15 @@ public class WorkflowRuleAPI {
 			}
 		}
 		return null;
+	}
+
+	public static void executeScheduledRule (WorkflowRuleContext rule, long executionTime, FacilioContext context) throws Exception {
+		WorkflowEventContext event = rule.getEvent();
+		FacilioModule module = event.getModule();
+		Map<String, Object> placeHolders = WorkflowRuleAPI.getOrgPlaceHolders();
+		Map<String, Object> recordPlaceHolders = WorkflowRuleAPI.getRecordPlaceHolders(module.getName(), null, placeHolders);
+		recordPlaceHolders.put("executionTime", executionTime);
+		WorkflowRuleAPI.executeWorkflowsAndGetChildRuleCriteria(Collections.singletonList(rule), module, null, null, null, recordPlaceHolders, (FacilioContext)context,true, Collections.singletonList(rule.getEvent().getActivityTypeEnum()));
 	}
 	
 }

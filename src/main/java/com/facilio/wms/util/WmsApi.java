@@ -54,8 +54,7 @@ public class WmsApi
 			}
 			dataMap.put("timestamp", System.currentTimeMillis());
 			dataMap.put("data", data);
-			Future<RecordMetadata> future = (Future<RecordMetadata>)producer.putRecord(new FacilioRecord(partitionKey, dataMap));
-			RecordMetadata metadata = future.get();
+			RecordMetadata future = (RecordMetadata)producer.putRecord(new FacilioRecord(partitionKey, dataMap));
 		} catch (Exception e) {
 			LOGGER.info(kinesisNotificationTopic + " : " + dataMap);
 			LOGGER.log(Level.INFO, "Exception while producing to kafka ", e);

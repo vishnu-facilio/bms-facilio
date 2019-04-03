@@ -9,6 +9,8 @@ import com.facilio.bmsconsole.context.ReadingContext.SourceType;
 import com.facilio.bmsconsole.criteria.*;
 import com.facilio.bmsconsole.modules.*;
 import com.facilio.bmsconsole.util.MLUtil;
+import com.facilio.bmsconsole.util.WorkflowRuleAPI;
+import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
@@ -38,8 +40,16 @@ public class MLForecastingJob extends FacilioJob
 		{
 			//calculateMSEForPreviousPrediction(predictionContext);
 			doPrediction(predictionContext, jc.getExecutionTime() * 1000);
+			runRule(predictionContext.getRuleId(), jc.getExecutionTime() * 1000);
 		}
 		
+	}
+
+	private void runRule(long ruleId, long currentExecutionTime) throws Exception {
+		WorkflowRuleContext rule = WorkflowRuleAPI.getWorkflowRule(ruleId,true,true,true);
+		if (rule != null && rule.isActive()) {
+			WorkflowRuleAPI.executeScheduledRule(rule, currentExecutionTime, new FacilioContext());
+		}
 	}
 	
 	private void calculateMSEForPreviousPrediction(MlForecastingContext predictionContext)

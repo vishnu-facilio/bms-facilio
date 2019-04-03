@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.jobs;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.activity.WorkOrderActivityType;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
@@ -20,6 +21,7 @@ import com.facilio.tasker.job.JobContext;
 import org.apache.commons.chain.Chain;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.json.simple.JSONObject;
 
 import java.util.*;
 
@@ -68,7 +70,7 @@ public class OpenScheduledWO extends FacilioJob {
             updateRecordBuilder.update(wo);
 
             FacilioContext context = new FacilioContext();
-
+            
             List<EventType> activities = new ArrayList<>();
             activities.add(EventType.CREATE);
 
@@ -87,7 +89,45 @@ public class OpenScheduledWO extends FacilioJob {
                 changeSetMap.put(woId, changeSets);
                 context.put(FacilioConstants.ContextNames.CHANGE_SET_MAP, Collections.singletonMap(FacilioConstants.ContextNames.WORK_ORDER, changeSetMap));
             }
+			if (!changeSets.isEmpty()) {
+				context.put(FacilioConstants.ContextNames.CHANGE_SET, changeSets);
+				Map<String, Map<Long, List<UpdateChangeSet>>> changeSetMap = CommonCommandUtil.getChangeSetMap((FacilioContext) context);
+				Map<Long, List<UpdateChangeSet>> currentChangeSet = changeSetMap == null ? null : changeSetMap.get("workorder");
+				List<Long> recordIds = (List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST); //All IDs (bulk and individual) of WOs to be updated
+				Iterator it = recordIds.iterator();
+				List<UpdateChangeSet> changeSetList = null;
+				while (it.hasNext()) {
+					Object record = it.next();
+					 changeSetList = currentChangeSet == null ? null : currentChangeSet.get(record);
+				}
+                JSONObject addWO = new JSONObject();
+                List<Object> wolist = new ArrayList<Object>();
+               
+					JSONObject newinfo = new JSONObject();
+					newinfo.put("pmid", wo.getPm().getId());
+	                wolist.add(newinfo);
 
+
+    				for (UpdateChangeSet changeset : changeSetList) {
+    				    long fieldid = changeset.getFieldId();
+    					Object oldValue = changeset.getOldValue();
+    					Object newValue = changeset.getNewValue();
+    					FacilioField field = modBean.getField(fieldid, "workorder");
+    					
+    					JSONObject info = new JSONObject();
+    					info.put("field", field.getName());
+    					info.put("displayName", field.getDisplayName());
+    					info.put("oldValue", oldValue);
+    					info.put("newValue", newValue);
+    	                wolist.add(info);
+    				}	
+
+    				addWO.put("addWO", wolist);
+
+    				CommonCommandUtil.addActivityToContext(wo.getId(), -1, WorkOrderActivityType.ADD_PM_WO, addWO, (FacilioContext) context);
+                
+
+			}
             context.put(FacilioConstants.ContextNames.RECORD_MAP, Collections.singletonMap(FacilioConstants.ContextNames.WORK_ORDER, Collections.singletonList(wo)));
             context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(wo.getId()));
             Chain c = TransactionChainFactory.getWorkOrderWorkflowsChain();

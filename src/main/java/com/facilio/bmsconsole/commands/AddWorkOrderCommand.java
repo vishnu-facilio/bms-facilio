@@ -120,6 +120,9 @@ public class AddWorkOrderCommand implements Command {
 				}
                 JSONObject addWO = new JSONObject();
                 List<Object> wolist = new ArrayList<Object>();
+                Boolean pm_exec= (Boolean) context.get(FacilioConstants.ContextNames.IS_PM_EXECUTION);
+              
+                if(pm_exec == null) {
 				for (UpdateChangeSet changeset : changeSetList) {
 				    long fieldid = changeset.getFieldId();
 					Object oldValue = changeset.getOldValue();
@@ -137,6 +140,31 @@ public class AddWorkOrderCommand implements Command {
 				addWO.put("addWO", wolist);
 
 				CommonCommandUtil.addActivityToContext(workOrder.getId(), -1, WorkOrderActivityType.ADD, addWO, (FacilioContext) context);
+            }
+                else if(pm_exec)  {
+					JSONObject newinfo = new JSONObject();
+					newinfo.put("pmid", workOrder.getPm().getId());
+	                wolist.add(newinfo);
+
+    				for (UpdateChangeSet changeset : changeSetList) {
+    				    long fieldid = changeset.getFieldId();
+    					Object oldValue = changeset.getOldValue();
+    					Object newValue = changeset.getNewValue();
+    					FacilioField field = modBean.getField(fieldid, moduleName);
+    					
+    					JSONObject info = new JSONObject();
+    					info.put("field", field.getName());
+    					info.put("displayName", field.getDisplayName());
+    					info.put("oldValue", oldValue);
+    					info.put("newValue", newValue);
+    	                wolist.add(info);
+    				}	
+
+    				addWO.put("addWO", wolist);
+
+    				CommonCommandUtil.addActivityToContext(workOrder.getId(), -1, WorkOrderActivityType.ADD_PM_WO, addWO, (FacilioContext) context);
+                }
+               
 
 			}
 

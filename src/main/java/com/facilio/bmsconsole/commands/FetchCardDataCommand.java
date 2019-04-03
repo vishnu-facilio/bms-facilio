@@ -175,13 +175,16 @@ public class FetchCardDataCommand implements Command {
 //					paramsJson.put("parentId", 4l);
 //					paramsJson.put("dateOperator", 31);
 					
+					paramsJson = widgetStaticContext.getParamsJson();
+					
 					long parentId = (long) paramsJson.get("parentId");
-					int dateOperator = (int) paramsJson.get("dateOperator");
+					int dateOperator = Integer.parseInt(paramsJson.get("dateOperator").toString());
 					String dateValue = (String) paramsJson.get("dateValue");
 					
 					DateOperators operator = (DateOperators)Operator.OPERATOR_MAP.get(dateOperator);
 					result = getResourceAlarmBar(parentId,operator.getRange(dateValue));
 					context.put(FacilioConstants.ContextNames.RESULT, result);
+					return false;
 				}
 				else if(widgetStaticContext.getStaticKey().contains("emrillFcu")) {
 					
@@ -347,8 +350,8 @@ public class FetchCardDataCommand implements Command {
 		Map<Long, ReadingAlarmContext> alarmMap = new HashMap<>();
 		
 		JSONArray json = FetchReportAdditionalInfoCommand.splitAlarms(allAlarms, dateRange, alarmMap);
-		result.put("alarm", json);
-		result.put("alarmMap", alarmMap);
+		result.put("alarms", json);
+		result.put("alarmInfo", alarmMap);
 		
 		return result;
 	}

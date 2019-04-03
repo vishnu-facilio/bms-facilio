@@ -11,9 +11,13 @@ import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
+
+import io.jsonwebtoken.lang.Collections;
+
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -50,6 +54,7 @@ public class UpdateWorkorderTotalCostCommand implements Command {
 
 			context.put(FacilioConstants.ContextNames.WORK_ORDER, workorder);
 			context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, parentIds);
+			context.put(FacilioConstants.ContextNames.RECORD_LIST, java.util.Collections.singletonList(workorder));
 //			UpdateRecordBuilder<WorkOrderContext> updateBuilder = new UpdateRecordBuilder<WorkOrderContext>()
 //					.module(workorderModule).fields(modBean.getAllFields(workorderModule.getName()))
 //					.andCondition(CriteriaAPI.getIdCondition(workorder.getId(), workorderModule));
