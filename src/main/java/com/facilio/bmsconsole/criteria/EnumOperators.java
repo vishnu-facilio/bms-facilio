@@ -253,6 +253,7 @@ public enum EnumOperators implements Operator<String> {
 		for(Operator operator : values()) {
 			operatorMap.put(operator.getOperator(), operator);
 		}
+		operatorMap.putAll(CommonOperators.getAllOperators());
 		return operatorMap;
 	}
 	public static Map<String, Operator> getAllOperators() {
