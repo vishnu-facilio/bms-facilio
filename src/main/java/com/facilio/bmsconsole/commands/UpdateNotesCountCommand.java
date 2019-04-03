@@ -1,5 +1,19 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
@@ -12,14 +26,6 @@ import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericSelectRecordBuilder;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-
-import java.util.*;
 
 public class UpdateNotesCountCommand implements Command {
 
@@ -31,6 +37,7 @@ public class UpdateNotesCountCommand implements Command {
 		String ticketModule = (String) context.get("ticketmodule");
 		String moduleString = (String) context.get("moduleName");
 		Collection<Long> parentIds = (Collection<Long>) context.get(FacilioConstants.ContextNames.IDS_TO_UPDATE_COUNT);
+		try {
 		
 		if (StringUtils.isNoneEmpty(ticketModule) && CollectionUtils.isNotEmpty(parentIds)) {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -76,6 +83,10 @@ public class UpdateNotesCountCommand implements Command {
 				
 				updateRecordBuilder.updateViaMap(updateMap);
 			}
+		}
+		}
+		catch(Exception e) {
+			LOGGER.error("Exception in UpdateNotesCountCommand: moduleString" + moduleString + ", ticketModule:" + ticketModule + ",parentIds: "+ parentIds);
 		}
 		return false;
 	}
