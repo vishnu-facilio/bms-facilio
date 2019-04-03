@@ -847,6 +847,10 @@ public class V2ReportAction extends FacilioAction {
 			dataPoint.put("type", 1);
 			dataPoints.add(dataPoint);
 			
+			if(alarmId == 890083l) {
+				LOGGER.error("dataPoint -- "+dataPoint);
+				LOGGER.error("dataPoints -- "+dataPoints);
+			}
 			
 			if (newFormat) {
 				ReportUtil.setAliasForDataPoints(dataPoints,-1l);
