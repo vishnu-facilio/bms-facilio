@@ -14,6 +14,7 @@ import com.facilio.bmsconsole.context.WorkOrderRequestContext;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.InsertRecordBuilder;
+import com.facilio.bmsconsole.util.NotesAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.chain.FacilioChain;
@@ -30,7 +31,11 @@ import java.util.List;
 import java.util.Set;
 
 
-public class AddNotesCommand implements Command {
+public class AddNotesCommand implements Command, PostTransactionCommand {
+
+	private Set<Long> idsToUpdateCount;
+	private String ticketModuleName;
+	private String moduleName;
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -82,11 +87,20 @@ public class AddNotesCommand implements Command {
 					sendEmail(moduleName, ticketModule, note);
 				}
 			}
-			FacilioChain.addPostTrasanction(FacilioConstants.ContextNames.IDS_TO_UPDATE_COUNT, parentIds);
-			FacilioChain.addPostTrasanction(FacilioConstants.ContextNames.TICKET_MODULE, context.get(FacilioConstants.ContextNames.TICKET_MODULE));
-			FacilioChain.addPostTrasanction(FacilioConstants.ContextNames.MODULE_NAME, context.get(FacilioConstants.ContextNames.MODULE_NAME));
+			idsToUpdateCount = parentIds;
+			this.ticketModuleName = (String) context.get(FacilioConstants.ContextNames.TICKET_MODULE);
+			this.moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
+//			FacilioChain.addPostTrasanction(FacilioConstants.ContextNames.IDS_TO_UPDATE_COUNT, parentIds);
+//			FacilioChain.addPostTrasanction(FacilioConstants.ContextNames.TICKET_MODULE, context.get(FacilioConstants.ContextNames.TICKET_MODULE));
+//			FacilioChain.addPostTrasanction(FacilioConstants.ContextNames.MODULE_NAME, context.get(FacilioConstants.ContextNames.MODULE_NAME));
 			noteBuilder.save();
 		}
+		return false;
+	}
+	
+	@Override
+	public boolean postExecute() throws Exception {
+		NotesAPI.updateNotesCount(idsToUpdateCount, ticketModuleName, moduleName);
 		return false;
 	}
 	

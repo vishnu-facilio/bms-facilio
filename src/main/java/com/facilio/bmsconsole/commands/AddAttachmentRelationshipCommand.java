@@ -23,9 +23,11 @@ import org.json.simple.JSONObject;
 import java.util.*;
 import java.util.logging.Logger;
 
-public class AddAttachmentRelationshipCommand implements Command {
+public class AddAttachmentRelationshipCommand implements Command, PostTransactionCommand {
 
 	private static Logger LOGGER = Logger.getLogger(AddAttachmentRelationshipCommand.class.getName());
+	private List<Long> idsToUpdateChain;
+	private String moduleName;
 	
 	@Override
 	public boolean execute(Context context) throws Exception {
@@ -52,8 +54,11 @@ public class AddAttachmentRelationshipCommand implements Command {
 		if(recordId == null || recordId == -1) {
 			throw new IllegalArgumentException("Invalid record id during addition of attachments");
 		}
-		FacilioChain.addPostTrasanction(FacilioConstants.ContextNames.IDS_TO_UPDATE_COUNT, Collections.singletonList(recordId));
-		FacilioChain.addPostTrasanction(FacilioConstants.ContextNames.MODULE_NAME, context.get(FacilioConstants.ContextNames.MODULE_NAME));
+		
+		idsToUpdateChain = Collections.singletonList(recordId);
+		this.moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
+//		FacilioChain.addPostTrasanction(FacilioConstants.ContextNames.IDS_TO_UPDATE_COUNT, Collections.singletonList(recordId));
+//		FacilioChain.addPostTrasanction(FacilioConstants.ContextNames.MODULE_NAME, context.get(FacilioConstants.ContextNames.MODULE_NAME));
 		
 		List<AttachmentContext> attachments = (List<AttachmentContext>) context.get(FacilioConstants.ContextNames.ATTACHMENT_CONTEXT_LIST);
 		if(attachments != null && !attachments.isEmpty()) {
@@ -115,6 +120,12 @@ public class AddAttachmentRelationshipCommand implements Command {
 
 		}
 		
+		return false;
+	}
+	
+	@Override
+	public boolean postExecute() throws Exception {
+		AttachmentsAPI.updateAttachmentCount(idsToUpdateChain, moduleName);
 		return false;
 	}
 	

@@ -679,7 +679,7 @@ public class TransactionChainFactory {
 			c.addCommand(new AddNotesCommand());
 			c.addCommand(new ExecuteNoteWorkflowCommand());
 			c.addCommand(new AddNoteTicketActivityCommand());
-			c.setPostTransactionChain(getUpdateTicketNotesChain());
+//			c.setPostTransactionChain(getUpdateTicketNotesChain());
 			c.addCommand(new AddActivitiesCommand(FacilioConstants.ContextNames.WORKORDER_ACTIVITY));
 			return c;
 		}
@@ -780,7 +780,7 @@ public class TransactionChainFactory {
 			c.addCommand(new AddTaskOptionsCommand());
 			c.addCommand(new UpdateReadingDataMetaCommand());
 			// c.addCommand(new AddTaskTicketActivityCommand());
-			c.setPostTransactionChain(TransactionChainFactory.getUpdateTaskCountChain());
+//			c.setPostTransactionChain(TransactionChainFactory.getUpdateTaskCountChain());
 			return c;
 		}
 
@@ -794,7 +794,7 @@ public class TransactionChainFactory {
 			c.addCommand(new AddTaskOptionsCommand());
 			c.addCommand(new UpdateReadingDataMetaCommand());
 			// c.addCommand(new AddTaskTicketActivityCommand());
-			c.setPostTransactionChain(TransactionChainFactory.getUpdateTaskCountChain());
+//			c.setPostTransactionChain(TransactionChainFactory.getUpdateTaskCountChain());
 			c.addCommand(new AddActivitiesCommand(FacilioConstants.ContextNames.WORKORDER_ACTIVITY));
 			return c;
 		}
