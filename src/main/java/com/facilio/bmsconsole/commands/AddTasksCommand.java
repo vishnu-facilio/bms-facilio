@@ -62,7 +62,7 @@ public class AddTasksCommand implements Command {
 			builder.save();
 			context.put(FacilioConstants.ContextNames.TASK_LIST, builder.getRecords());
 			WorkOrderContext workOrdernew = (WorkOrderContext) context.get(FacilioConstants.ContextNames.WORK_ORDER);
- 			FacilioChain.addPostTrasanction(FacilioConstants.ContextNames.IDS_TO_UPDATE_TASK_COUNT, Collections.singletonList(workOrder.getId()));
+ 			FacilioChain.addPostTransactionListObject(FacilioConstants.ContextNames.IDS_TO_UPDATE_TASK_COUNT, workOrder.getId());
 			FacilioChain.addPostTrasanction(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
 //			List<TaskContext> tasks = (List<TaskContext>) context.get(FacilioConstants.ContextNames.TASK_LIST);
 //            List<Object> tasklist = new ArrayList<Object>();

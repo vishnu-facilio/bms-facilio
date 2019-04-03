@@ -45,7 +45,7 @@ public class AddTaskCommand implements Command {
 //			JSONObject info = new JSONObject();
 			context.put(FacilioConstants.ContextNames.RECORD_ID, taskId);
 //			context.put(FacilioConstants.ContextNames.IDS_TO_UPDATE_TASK_COUNT, Collections.singletonList(task.getParentTicketId()));
-			FacilioChain.addPostTrasanction(FacilioConstants.ContextNames.IDS_TO_UPDATE_TASK_COUNT, Collections.singletonList(task.getParentTicketId()));
+			FacilioChain.addPostTransactionListObject(FacilioConstants.ContextNames.IDS_TO_UPDATE_TASK_COUNT, task.getParentTicketId());
 			FacilioChain.addPostTrasanction(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
 //			if (task != null) {
 //				info.put("Task", task.getSubject().toString());
