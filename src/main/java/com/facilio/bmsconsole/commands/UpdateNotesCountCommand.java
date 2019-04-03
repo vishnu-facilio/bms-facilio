@@ -14,7 +14,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
@@ -22,14 +24,13 @@ import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
-import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericSelectRecordBuilder;
 
 public class UpdateNotesCountCommand implements Command {
 
-	private static final Logger LOGGER = LogManager.getLogger(WorkflowRuleAPI.class.getName());
+	private static final Logger LOGGER = LogManager.getLogger(UpdateNotesCountCommand.class.getName());
 	
 	@Override
 	public boolean execute(Context context) throws Exception {
@@ -86,7 +87,8 @@ public class UpdateNotesCountCommand implements Command {
 		}
 		}
 		catch(Exception e) {
-			LOGGER.error("Exception in UpdateNotesCountCommand: moduleString" + moduleString + ", ticketModule:" + ticketModule + ",parentIds: "+ parentIds);
+			LOGGER.error("Exception in UpdateNotesCountCommand: moduleString" + moduleString + ", ticketModule:" + ticketModule + ",parentIds: "+ parentIds, e);
+			CommonCommandUtil.emailException("UpdateNotesCountCommand", "Exception in UpdateNotesCountCommand - " + AccountUtil.getCurrentOrg().getId(), e);
 		}
 		return false;
 	}
