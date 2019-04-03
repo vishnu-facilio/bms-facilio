@@ -6,6 +6,7 @@ import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
+import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
@@ -17,7 +18,10 @@ import org.apache.commons.chain.Context;
 
 import java.util.*;
 
-public class DeleteTaskCommand implements Command {
+public class DeleteTaskCommand implements Command, PostTransactionCommand {
+
+	private Set<Long> idsToUpdateTaskCount;
+	private String moduleName;
 
 	@Override
 	public boolean execute(Context context) throws Exception {
@@ -58,11 +62,20 @@ public class DeleteTaskCommand implements Command {
 			
 			context.put(FacilioConstants.ContextNames.ROWS_UPDATED, builder.delete());
 			context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.DELETE);
-			for (Long parentId : parentIds) {
-				FacilioChain.addPostTransactionListObject(FacilioConstants.ContextNames.IDS_TO_UPDATE_TASK_COUNT, parentId);
-			}
-			FacilioChain.addPostTrasanction(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+			
+			idsToUpdateTaskCount = parentIds;
+			this.moduleName = moduleName;
+//			for (Long parentId : parentIds) {
+//				FacilioChain.addPostTransactionListObject(FacilioConstants.ContextNames.IDS_TO_UPDATE_TASK_COUNT, parentId);
+//			}
+//			FacilioChain.addPostTrasanction(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
 		}
+		return false;
+	}
+	
+	@Override
+	public boolean postExecute() throws Exception {
+		TicketAPI.updateTaskCount(idsToUpdateTaskCount);
 		return false;
 	}
 }

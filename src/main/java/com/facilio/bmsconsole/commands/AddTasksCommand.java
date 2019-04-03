@@ -9,6 +9,7 @@ import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.InsertRecordBuilder;
+import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
@@ -21,9 +22,11 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 
-public class AddTasksCommand implements Command {
+public class AddTasksCommand implements Command, PostTransactionCommand {
 	
 	private static final Logger LOGGER = Logger.getLogger(AddTasksCommand.class.getName());
+	private List<Long> idsToUpdateTaskCount;
+	private String moduleName;
 	
 	@Override
 	public boolean execute(Context context) throws Exception {
@@ -62,8 +65,13 @@ public class AddTasksCommand implements Command {
 			builder.save();
 			context.put(FacilioConstants.ContextNames.TASK_LIST, builder.getRecords());
 			WorkOrderContext workOrdernew = (WorkOrderContext) context.get(FacilioConstants.ContextNames.WORK_ORDER);
- 			FacilioChain.addPostTransactionListObject(FacilioConstants.ContextNames.IDS_TO_UPDATE_TASK_COUNT, workOrder.getId());
-			FacilioChain.addPostTrasanction(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+			
+			idsToUpdateTaskCount = Collections.singletonList(workOrder.getId());
+			this.moduleName = moduleName;
+			
+// 			FacilioChain.addPostTransactionListObject(FacilioConstants.ContextNames.IDS_TO_UPDATE_TASK_COUNT, workOrder.getId());
+//			FacilioChain.addPostTrasanction(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+			
 //			List<TaskContext> tasks = (List<TaskContext>) context.get(FacilioConstants.ContextNames.TASK_LIST);
 //            List<Object> tasklist = new ArrayList<Object>();
 //			if (!tasks.isEmpty()) {
@@ -81,6 +89,12 @@ public class AddTasksCommand implements Command {
 		else {
 //			throw new IllegalArgumentException("Task list cannot be null/ empty");
 		}
+		return false;
+	}
+	
+	@Override
+	public boolean postExecute() throws Exception {
+		TicketAPI.updateTaskCount(idsToUpdateTaskCount);
 		return false;
 	}
 }

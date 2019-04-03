@@ -376,7 +376,7 @@ public class FacilioChainFactory {
 		c.addCommand(new AddTaskOptionsCommand());
 		c.addCommand(new UpdateReadingDataMetaCommand());
 		c.addCommand(new AddTaskTicketActivityCommand());
-		c.setPostTransactionChain(TransactionChainFactory.getUpdateTaskCountChain());
+//		c.setPostTransactionChain(TransactionChainFactory.getUpdateTaskCountChain());
 		c.addCommand(new AddActivitiesCommand(FacilioConstants.ContextNames.WORKORDER_ACTIVITY));
 		return c;
 	}
@@ -385,7 +385,7 @@ public class FacilioChainFactory {
 		FacilioChain c = (FacilioChain) FacilioChain.getTransactionChain();
 		c.addCommand(SetTableNamesCommand.getForTask());
 		c.addCommand(new DeleteTaskCommand());
-		c.setPostTransactionChain(TransactionChainFactory.getUpdateTaskCountChain());
+//		c.setPostTransactionChain(TransactionChainFactory.getUpdateTaskCountChain());
 		return c;
 	}
 	
@@ -931,7 +931,7 @@ public class FacilioChainFactory {
 		c.addCommand(new AttachmentContextCommand());
 		c.addCommand(new AddAttachmentRelationshipCommand());
 		c.addCommand(new AddAttachmentTicketActivityCommand());
-		c.setPostTransactionChain(TransactionChainFactory.getUpdateAttachmentCountChain());
+//		c.setPostTransactionChain(TransactionChainFactory.getUpdateAttachmentCountChain());
 		c.addCommand(new AddActivitiesCommand(FacilioConstants.ContextNames.WORKORDER_ACTIVITY));
 		return c;
 	}
@@ -1010,7 +1010,7 @@ public class FacilioChainFactory {
 	public static Chain getDeleteAttachmentChain() {
 		FacilioChain c = (FacilioChain) FacilioChain.getTransactionChain();
 		c.addCommand(new DeleteAttachmentCommand());
-		c.setPostTransactionChain(TransactionChainFactory.getUpdateAttachmentCountChain());
+//		c.setPostTransactionChain(TransactionChainFactory.getUpdateAttachmentCountChain());
 		return c;
 	}
 	
