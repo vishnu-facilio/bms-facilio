@@ -2,6 +2,7 @@ package com.facilio.activity;
 
 import com.facilio.bmsconsole.activity.AssetActivityType;
 import com.facilio.bmsconsole.activity.WorkOrderActivityType;
+import com.facilio.bmsconsole.activity.ItemActivityType;
 import com.facilio.collections.UniqueMap;
 import org.json.simple.JSONObject;
 
@@ -29,6 +30,10 @@ public interface ActivityType {
 		}
 		
 		// Max number = 12
+		
+		for (ActivityType type : ItemActivityType.values()) {
+			activityMap.put(type.getValue(), type);
+		}
 		
 		return activityMap;
 	}

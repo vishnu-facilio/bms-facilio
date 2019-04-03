@@ -169,6 +169,7 @@ public class FacilioConstants {
 		public static final String EVENT_TYPE_LIST = "eventTypeList";
 		public static final String IS_BULK_ACTION = "isBulkAction";
 		public static final String ACTIVITY_LIST = "activityList";
+		public static final String CURRENT_ACTIVITY = "currentActivity";
 
 		public static final String TENANT_STATUS = "tenantStatus";
 		public static final String USER_ID = "userId";
@@ -835,6 +836,7 @@ public class FacilioConstants {
 		public static final String ITEM_TYPES_IDS = "itemTypesIds";
 
 
+
 		public static final String TOOL_TYPES = "toolTypes";
 		public static final String TOOL_TYPES_LIST = "toolTypesList";
 		public static final String TOOL_TYPES_STATUS = "toolTypesStatus";
@@ -858,6 +860,8 @@ public class FacilioConstants {
 		public static final String ITEM_ID = "itemId";
 		public static final String ITEM_IDS = "itemIds";
 		public static final String PURCHASED_ITEM = "purchasedItem";
+		public static final String ITEM_ACTIVITY = "itemtypeactivity";
+
 		
 		public static final String WORKORDER_ITEMS = "workorderItem";
 		public static final String ITEM_TRANSACTIONS = "itemTransactions";
@@ -1022,6 +1026,7 @@ public class FacilioConstants {
 			classMap.put(ITEM_TYPES_CATEGORY,ItemTypesCategoryContext.class);
 			classMap.put(ITEM_TYPES_STATUS, ItemTypesStatusContext.class);
 			classMap.put(TOOL_TYPES, ToolTypesContext.class);
+			classMap.put(ITEM_ACTIVITY, ActivityContext.class);
 			classMap.put(TOOLS_TYPES_CATEGORY, ToolTypesCategoryContext.class);
 			classMap.put(TOOL_TYPES_STATUS, ToolTypesStatusContext.class);
 			classMap.put(VENDOR, VendorContext.class);

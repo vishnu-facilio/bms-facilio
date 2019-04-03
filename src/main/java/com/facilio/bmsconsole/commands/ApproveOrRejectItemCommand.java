@@ -1,12 +1,15 @@
 package com.facilio.bmsconsole.commands;
-
+import org.json.simple.JSONObject;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.ItemContext;
 import com.facilio.bmsconsole.context.ItemTransactionsContext;
+import com.facilio.bmsconsole.context.ItemTypesContext;
 import com.facilio.bmsconsole.context.PurchasedItemContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.*;
 import com.facilio.bmsconsole.util.TransactionType;
 import com.facilio.bmsconsole.workflow.rule.ApprovalState;
+import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import org.apache.commons.chain.Command;
@@ -15,6 +18,9 @@ import org.apache.commons.chain.Context;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import com.facilio.bmsconsole.activity.ItemActivityType;
+import com.facilio.bmsconsole.commands.AddOrUpdateWorkorderItemsCommand;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 
 public class ApproveOrRejectItemCommand implements Command {
 
@@ -44,7 +50,15 @@ public class ApproveOrRejectItemCommand implements Command {
 					.fetchLookups(lookUpfields);
 
 			List<ItemTransactionsContext> itemTransactions = selectBuilder.get();
+			List<Object> woitemactivity = new ArrayList<>();
 			for (ItemTransactionsContext transactions : itemTransactions) {
+				ItemContext item = AddOrUpdateWorkorderItemsCommand.getItem(transactions.getItem().getId());
+				Long itemTypesId = item.getItemType().getId();
+				ItemTypesContext itemType = AddOrUpdateWorkorderItemsCommand.getItemType(itemTypesId);
+				JSONObject info = new JSONObject();
+				info.put("itemid", item.getId());
+				info.put("itemtype", itemType.getName());
+				info.put("quantity", transactions.getQuantity());
 				if (approvalState == ApprovalState.APPROVED) {
 					if (transactions.getItemType().individualTracking()) {
 						if (transactions.getPurchasedItem().isUsed()) {
@@ -53,10 +67,17 @@ public class ApproveOrRejectItemCommand implements Command {
 							PurchasedItemContext pItem = transactions.getPurchasedItem();
 							pItem.setIsUsed(true);
 							updatePurchasedItem(pItem);
+							info.put("serialno", pItem.getSerialNumber());
+							info.put("issuedToId", transactions.getParentId());
+							woitemactivity.add(info);
 						}
 					} else {
 						if (transactions.getPurchasedItem().getCurrentQuantity() < transactions.getQuantity()) {
 							throw new IllegalArgumentException("Insufficient quantity in inventory!");
+						}
+						else {
+							info.put("issuedToId", transactions.getParentId());
+							woitemactivity.add(info);
 						}
 					}
 					transactions.setRemainingQuantity(transactions.getQuantity());
@@ -65,7 +86,9 @@ public class ApproveOrRejectItemCommand implements Command {
 						PurchasedItemContext pItem = transactions.getPurchasedItem();
 						pItem.setIsUsed(false);
 						updatePurchasedItem(pItem);
+						info.put("serialno", pItem.getSerialNumber());
 					}
+					woitemactivity.add(info);
 					transactions.setRemainingQuantity(0);
 				}
 				transactions.setApprovedState(approvedStateVal);
@@ -74,6 +97,15 @@ public class ApproveOrRejectItemCommand implements Command {
 				if (transactions.getTransactionTypeEnum() == TransactionType.WORKORDER) {
 					parentIds.add(transactions.getParentId());
 				}
+			}
+			JSONObject newinfo = new JSONObject();
+			if (approvalState == ApprovalState.REJECTED) {
+				newinfo.put("rejected", woitemactivity);
+				CommonCommandUtil.addActivityToContext(itemTypesId, -1, ItemActivityType.ITEM_REJECTED, newinfo, (FacilioContext) context);
+			}
+			else if (approvalState == ApprovalState.APPROVED) {
+				newinfo.put("approved", woitemactivity);
+				CommonCommandUtil.addActivityToContext(itemTypesId, -1, ItemActivityType.ITEM_APPROVED, newinfo, (FacilioContext) context);
 			}
 			context.put(FacilioConstants.ContextNames.RECORD_LIST, itemTransactions);
 			context.put(FacilioConstants.ContextNames.PARENT_ID_LIST, parentIds);

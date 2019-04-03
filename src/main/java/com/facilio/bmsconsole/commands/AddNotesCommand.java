@@ -5,6 +5,7 @@ import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.activity.ItemActivityType;
 import com.facilio.bmsconsole.activity.WorkOrderActivityType;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.NoteContext;
@@ -85,7 +86,14 @@ public class AddNotesCommand implements Command, PostTransactionCommand {
 				parentIds.add(note.getParentId());
 				JSONObject info = new JSONObject();
 				info.put("Comment", note.getBody());
+	     		if(moduleName.equals(FacilioConstants.ContextNames.TICKET_NOTES)) {
 				CommonCommandUtil.addActivityToContext(note.getParentId(), -1, WorkOrderActivityType.ADD_COMMENT, info, (FacilioContext) context);
+	     		}
+	     		else if(moduleName.equals(FacilioConstants.ContextNames.ITEM_TYPES_NOTES)) {
+				CommonCommandUtil.addActivityToContext(note.getParentId(), -1, ItemActivityType.ITEM_NOTES, info, (FacilioContext) context);
+	     		}
+	     		else if(moduleName.equals(FacilioConstants.ContextNames.ASSET_NOTES)) {
+	     		}
 				
 				noteBuilder.addRecord(note);
 				if(moduleName.equals(FacilioConstants.ContextNames.TICKET_NOTES)) {

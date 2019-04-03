@@ -680,7 +680,7 @@ public class TransactionChainFactory {
 			c.addCommand(new ExecuteNoteWorkflowCommand());
 			c.addCommand(new AddNoteTicketActivityCommand());
 //			c.setPostTransactionChain(getUpdateTicketNotesChain());
-			c.addCommand(new AddActivitiesCommand(FacilioConstants.ContextNames.WORKORDER_ACTIVITY));
+			c.addCommand(new AddActivitiesCommand());
 			return c;
 		}
 		
@@ -766,7 +766,7 @@ public class TransactionChainFactory {
 			c.addCommand(new AddTicketActivityCommand());
 			c.addCommand(getAddTasksChain());
 			c.addCommand(getWorkOrderWorkflowsChain());
-			c.addCommand(new AddActivitiesCommand(FacilioConstants.ContextNames.WORKORDER_ACTIVITY));
+			c.addCommand(new AddActivitiesCommand());
 			return c;
 		}
 
@@ -795,7 +795,7 @@ public class TransactionChainFactory {
 			c.addCommand(new UpdateReadingDataMetaCommand());
 			// c.addCommand(new AddTaskTicketActivityCommand());
 //			c.setPostTransactionChain(TransactionChainFactory.getUpdateTaskCountChain());
-			c.addCommand(new AddActivitiesCommand(FacilioConstants.ContextNames.WORKORDER_ACTIVITY));
+			c.addCommand(new AddActivitiesCommand());
 			return c;
 		}
 		
@@ -819,7 +819,7 @@ public class TransactionChainFactory {
 			);
 			c.addCommand(new ConstructTicketNotesCommand());
 			c.addCommand(getAddNotesChain());
-			c.addCommand(new AddActivitiesCommand(FacilioConstants.ContextNames.WORKORDER_ACTIVITY));
+			c.addCommand(new AddActivitiesCommand());
 			return c;
 		}
 		
@@ -1189,7 +1189,7 @@ public class TransactionChainFactory {
 			c.addCommand(new UpdateClosedTasksCounterCommand());
 			c.addCommand(new AddTaskTicketActivityCommand());
 			c.addCommand(new ExecuteAllWorkflowsCommand());
-			c.addCommand(new AddActivitiesCommand(FacilioConstants.ContextNames.WORKORDER_ACTIVITY));
+			c.addCommand(new AddActivitiesCommand());
 //			c.addCommand(getAddOrUpdateReadingValuesChain());
 			return c;
 		}
@@ -1311,6 +1311,7 @@ public class TransactionChainFactory {
 			Chain c = getDefaultChain();
 			c.addCommand(new ExecutePMsCommand());
 			c.addCommand(new SchedulePostPMRemindersCommandForBulkExecutePm());
+			c.addCommand(new AddActivitiesCommand());
 			return c;
 		}
 		
@@ -1537,6 +1538,7 @@ public class TransactionChainFactory {
 			Chain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForItemTypes());
 			c.addCommand(new GenericUpdateModuleDataCommand());
+			c.addCommand(new AddActivitiesCommand());
 			return c;
 		}
 		
@@ -1671,6 +1673,7 @@ public class TransactionChainFactory {
 			c.addCommand(getAddPurchasedItemChain());
 			c.addCommand(getUpdateItemQuantityRollupChain());
 			c.addCommand(getSetItemAndToolTypeForStoreRoomChain());
+			c.addCommand(new AddActivitiesCommand());
 			return c;
 		}
 		
@@ -1691,6 +1694,7 @@ public class TransactionChainFactory {
 			c.addCommand(new GenericUpdateModuleDataCommand());
 			c.addCommand(getAddPurchasedItemChain());
 			c.addCommand(getUpdateItemQuantityRollupChain());
+			c.addCommand(new AddActivitiesCommand());
 			return c;
 		}
 		
@@ -1759,6 +1763,7 @@ public class TransactionChainFactory {
 			c.addCommand(new AddOrUpdateWorkorderCostCommand());
 			c.addCommand(new UpdateWorkorderTotalCostCommand());
 //			c.addCommand(getUpdateWorkOrderChain());
+			c.addCommand(new AddActivitiesCommand());
 			return c;
 		}
 		
@@ -1903,7 +1908,7 @@ public class TransactionChainFactory {
 			c.addCommand(new LoadAssetFields());
 			c.addCommand(new GetAssetDetailCommand());
 			c.addCommand(new UpdateGeoLocationCommand());
-			c.addCommand(new AddActivitiesCommand(FacilioConstants.ContextNames.ASSET_ACTIVITY));
+			c.addCommand(new AddActivitiesCommand());
 			return c;
 		}
 
@@ -1935,6 +1940,8 @@ public class TransactionChainFactory {
 			c.addCommand(getItemTransactionRemainingQuantityRollupChain());
 			c.addCommand(new PurchasedItemsQuantityRollUpCommand());
 			c.addCommand(getUpdateItemQuantityRollupChain());
+			c.addCommand(new AddActivitiesCommand());
+
 			return c;
 		}
 		
@@ -2031,6 +2038,8 @@ public class TransactionChainFactory {
 			c.addCommand(new AddOrUpdateWorkorderCostCommand());
 			c.addCommand(new UpdateWorkorderTotalCostCommand());
 //			c.addCommand(getUpdateWorkOrderChain());
+			c.addCommand(new AddActivitiesCommand());
+
 			return c;
 		}
 		
@@ -2040,6 +2049,7 @@ public class TransactionChainFactory {
 			c.addCommand(new ApproveOrRejectItemCommand());
 			c.addCommand(new PurchasedItemsQuantityRollUpCommand());
 			c.addCommand(getUpdateItemQuantityRollupChain());
+			c.addCommand(new AddActivitiesCommand());
 			return c;
 		}
 

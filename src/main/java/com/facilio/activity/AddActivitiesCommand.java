@@ -24,6 +24,7 @@ public class AddActivitiesCommand implements Command {
 	
 	public AddActivitiesCommand() {
 		// TODO Auto-generated constructor stub
+		
 	}
 	
 	public AddActivitiesCommand(String activityModule) {
@@ -67,6 +68,10 @@ public class AddActivitiesCommand implements Command {
 			}
 			
 			return module;
+		}
+		String currentActivity = (String) context.get(FacilioConstants.ContextNames.CURRENT_ACTIVITY);
+		if (StringUtils.isNoneEmpty(currentActivity)) {
+			return modBean.getModule(currentActivity);
 		}
 		
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);

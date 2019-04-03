@@ -137,7 +137,7 @@ public class TaskAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.TASK, task);
 		context.put(FacilioConstants.ContextNames.ATTACHMENT_ID_LIST, getAttachmentId());
-		
+	    context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.WORKORDER_ACTIVITY);
 		Chain addTask = FacilioChainFactory.getAddTaskChain();
 		addTask.execute(context);
 		
@@ -212,6 +212,7 @@ public class TaskAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.TASK, task);
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, id);
 		context.put(FacilioConstants.ContextNames.SKIP_LAST_READING_CHECK, true);
+		context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.WORKORDER_ACTIVITY);
 		Map<Long, Map<String, String>> errorMap = new HashMap<>();
 		Chain updateTask = TransactionChainFactory.getUpdateTaskChain();
 		try {
@@ -276,6 +277,7 @@ public class TaskAction extends FacilioAction {
 			context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, taskIdList);
 			context.put(FacilioConstants.ContextNames.IS_BULK_ACTION, true);
 			context.put(FacilioConstants.ContextNames.PARENT_ID, parentTicketId);
+			context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.WORKORDER_ACTIVITY);
 			Chain updateTask = TransactionChainFactory.getUpdateTaskChain();
 			updateTask.execute(context);
 			rowsUpdated += (int) context.get(FacilioConstants.ContextNames.ROWS_UPDATED);
@@ -299,8 +301,8 @@ public class TaskAction extends FacilioAction {
 			context.clear();
 			context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.EDIT);
 			context.put(FacilioConstants.ContextNames.TASK, singleTask);
-			context.put(FacilioConstants.ContextNames.TASK_LIST, Collections.singletonList(singleTask));
 			context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(singleTask.getId()));
+			context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.WORKORDER_ACTIVITY);
 			if (AccountUtil.getCurrentAccount().getDeviceType() != null) {
 				context.put(FacilioConstants.ContextNames.DO_VALIDTION, getDoValidation());
 			}

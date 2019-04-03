@@ -97,14 +97,12 @@ public class UpdateWorkOrderCommand implements Command {
 			
 			if (!changeSets.isEmpty() && (workOrder.getApprovalStateEnum() == null) && (workOrder.getStatus() == null) && (workOrder.getAssignedTo() == null)) {
 				context.put(FacilioConstants.ContextNames.CHANGE_SET, changeSets);
-				Map<String, Map<Long, List<UpdateChangeSet>>> changeSetMap = CommonCommandUtil.getChangeSetMap((FacilioContext) context);
-				Map<Long, List<UpdateChangeSet>> currentChangeSet = changeSetMap == null ? null : changeSetMap.get(moduleName);
 
 				Iterator it = recordIds.iterator();
 				List<UpdateChangeSet> changeSetList = null;
 				while (it.hasNext()) {
 					Object record = it.next();
-					 changeSetList = currentChangeSet == null ? null : currentChangeSet.get(record);
+					 changeSetList = changeSets == null ? null : changeSets.get(record);
 				}
                 JSONObject woupdate = new JSONObject();
                 List<Object> wolist = new ArrayList<Object>();

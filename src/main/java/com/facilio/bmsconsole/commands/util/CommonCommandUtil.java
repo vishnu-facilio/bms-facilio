@@ -835,7 +835,6 @@ public class CommonCommandUtil {
 		}
 		activities.add(activity);
 		context.put(FacilioConstants.ContextNames.ACTIVITY_LIST, activities);
-
 	}
 	
 	public static void addEventType (EventType type, FacilioContext context) {

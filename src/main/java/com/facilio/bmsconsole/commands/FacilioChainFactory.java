@@ -377,7 +377,7 @@ public class FacilioChainFactory {
 		c.addCommand(new UpdateReadingDataMetaCommand());
 		c.addCommand(new AddTaskTicketActivityCommand());
 //		c.setPostTransactionChain(TransactionChainFactory.getUpdateTaskCountChain());
-		c.addCommand(new AddActivitiesCommand(FacilioConstants.ContextNames.WORKORDER_ACTIVITY));
+		c.addCommand(new AddActivitiesCommand());
 		return c;
 	}
 	
@@ -932,7 +932,7 @@ public class FacilioChainFactory {
 		c.addCommand(new AddAttachmentRelationshipCommand());
 		c.addCommand(new AddAttachmentTicketActivityCommand());
 //		c.setPostTransactionChain(TransactionChainFactory.getUpdateAttachmentCountChain());
-		c.addCommand(new AddActivitiesCommand(FacilioConstants.ContextNames.WORKORDER_ACTIVITY));
+		c.addCommand(new AddActivitiesCommand());
 		return c;
 	}
 	
