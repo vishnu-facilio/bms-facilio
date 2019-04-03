@@ -12,6 +12,11 @@ import org.json.simple.JSONObject;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
+import com.facilio.bmsconsole.criteria.Condition;
+import com.facilio.bmsconsole.criteria.Criteria;
+import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.criteria.DateOperators;
+import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.AggregateOperator;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
@@ -36,6 +41,11 @@ public class ConstructReportDataForPM implements Command {
 		// TODO Auto-generated method stub
 		
 		long pmId = (long) context.get("pmId");
+		long resourceId = (long) context.get("resourceId");
+		
+		if(resourceId == -1) {
+			throw new Exception("Resource Id cannot be empty");
+		}
 		ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule pmModule = bean.getModule(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE);
 		ReportContext reportContext = new ReportContext();
@@ -46,9 +56,12 @@ public class ConstructReportDataForPM implements Command {
 		reportContext.setxAlias("X");
 		reportContext.setModule(pmModule);
 		reportContext.setType(ReportType.WORKORDER_REPORT);
-		
+		reportContext.setDateOperator(DateOperators.CURRENT_MONTH);
 		
 		PreventiveMaintenance pm  = PreventiveMaintenanceAPI.getPM(pmId, true);
+		if(pm == null) {
+			throw new Exception("The corresponding PM does not exist");
+		}
 		Template template = TemplateAPI.getTemplate(pm.getTemplateId());
 		WorkorderTemplate woTemplate = (WorkorderTemplate) template;
 		List<TaskSectionTemplate> taskSectionTemplate = woTemplate.getSectionTemplates();
@@ -69,29 +82,57 @@ public class ConstructReportDataForPM implements Command {
 		JSONArray yField = new JSONArray();
 		for(TaskTemplate taskTemplate : taskTemplates) {
 			JSONObject y_Field = new JSONObject();
-			addDataPoints(bean, reportContext, taskTemplate);
+			addDataPoints(bean, reportContext, taskTemplate, resourceId);
 		}
+		
+		
 		
 		context.put(FacilioConstants.ContextNames.REPORT, reportContext);
 		
 		return false;
 	}
 	
-	private void addDataPoints(ModuleBean modBean, ReportContext reportContext, TaskTemplate taskTemplate) throws Exception{
+	private void addDataPoints(ModuleBean modBean, ReportContext reportContext, TaskTemplate taskTemplate, long resourceId) throws Exception{
+		
 		FacilioField readingField = modBean.getField(taskTemplate.getReadingFieldId());
 		FacilioModule module = readingField.getModule();
+		
+		List<FacilioField> fields = modBean.getAllFields(module.getName());
+		FacilioField parentIdField = new FacilioField();
+		Criteria criteria = new Criteria();
+		
+		for(FacilioField field: fields) {
+			if(field.getName().equals(FacilioConstants.ContextNames.PARENT_ID)) {
+				parentIdField = field;
+				break;
+			}
+		}
+		
+		if(parentIdField.getFieldId() != -1) {
+			Condition condition = new Condition();
+			condition.setField(parentIdField);
+			condition.setOperator(NumberOperators.EQUALS);
+			condition.setValue(new Long(resourceId).toString());
+			
+			criteria.addAndCondition(condition);
+		}
 		
 		ReportDataPointContext dataPointContext = new ReportDataPointContext();
 		ReportFieldContext xAxis = new ReportFieldContext();
 		ReportYAxisContext yAxis = new ReportYAxisContext();
-		
+		ReportFieldContext dateField = new ReportFieldContext();
 		FacilioField tTimeField = modBean.getField("ttime", module.getName());
+		
+		dateField.setField(module, tTimeField);
+		dataPointContext.setDateField(dateField);
+		dataPointContext.setCriteria(criteria);
 		
 		xAxis.setField(module, tTimeField);
 		yAxis.setField(module, readingField);
 		yAxis.setAggr(AggregateOperator.NumberAggregateOperator.SUM.getValue());
 		dataPointContext.setxAxis(xAxis);
 		dataPointContext.setyAxis(yAxis);
+		
 		
 		Map<String, String> aliases = new HashMap<>();
 		aliases.put("actual", readingField.getDisplayName());

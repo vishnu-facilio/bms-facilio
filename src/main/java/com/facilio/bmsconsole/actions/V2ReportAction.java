@@ -559,11 +559,21 @@ public class V2ReportAction extends FacilioAction {
 	public void setPmId(long pmId) {
 		this.pmId = pmId;
 	}
+	
+	private long resourceId = -1;
+	
+	public long getResourceId() {
+		return resourceId;
+	}
+	public void setResourceId(long resourceId) {
+		this.resourceId = resourceId;
+	}
 	public String fetchReportData() throws Exception {
 		FacilioContext context = new FacilioContext();
 		Chain c = FacilioChain.getNonTransactionChain();
 		if(pmId != -1) {
 			context.put("pmId", pmId);
+			context.put("resourceId", resourceId);
 			c.addCommand(new ConstructReportDataForPM());
 		}
 		else {
