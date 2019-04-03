@@ -859,7 +859,7 @@ public class V2ReportAction extends FacilioAction {
 		String additionalDataPointString = "anomalyreadings";
 		if(alarmContext != null && alarmContext.getAdditionInfo() != null && alarmContext.getAdditionInfo().containsKey(additionalDataPointString)) {
 			
-			this.startTime = alarmContext.getCreatedTime();
+			this.startTime = DateOperators.CURRENT_N_DAY.getRange(alarmContext.getCreatedTime()+"").getStartTime();
 			dataPoints = new JSONArray();
 			
 			JSONArray points = FacilioUtil.parseJsonArray(alarmContext.getAdditionInfo().get(additionalDataPointString).toString());
