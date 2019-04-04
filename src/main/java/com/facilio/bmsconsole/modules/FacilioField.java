@@ -424,7 +424,8 @@ public class FacilioField implements Serializable {
 		BUILDINGCHOOSER(38, "building-chooser"),
 		LINEITEMS(39, "line-items"),
 		RECEIPT_LINE_ITEMS(40, "receipt-line-items"),
-		QR(41, "qr")
+		QR(41, "qr"),
+		SADDRESS(42, "address"),
 		;
 		
 		private int intVal;
