@@ -745,6 +745,7 @@ public class TransactionChainFactory {
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.ASSIGNMENT_RULE));
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.SLA_RULE));
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.APPROVAL_RULE, RuleType.CHILD_APPROVAL_RULE, RuleType.REQUEST_APPROVAL_RULE, RuleType.REQUEST_REJECT_RULE));
+			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.STATE_FLOW));
 			c.addCommand(new ForkChainToInstantJobCommand()
 					.addCommand(new ExecuteAllWorkflowsCommand(RuleType.WORKORDER_AGENT_NOTIFICATION_RULE, RuleType.WORKORDER_REQUESTER_NOTIFICATION_RULE, RuleType.CUSTOM_WORKORDER_NOTIFICATION_RULE))
 			);
@@ -2453,12 +2454,32 @@ public class TransactionChainFactory {
 			c.addCommand(new AddGatePassLineItemsCommand());
 			return c;
 		}
-
-		public static Chain getUpdateStageChain() {
+		
+		public static Chain getUpdateStateChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(new GenericGetModuleDataDetailCommand());
-			c.addCommand(new UpdateStageCommand());
+			c.addCommand(new UpdateStateCommand());
 			c.addCommand(new GenericUpdateModuleDataCommand());
+			return c;
+		}
+
+		public static Chain getAvailableState() {
+			Chain c = getDefaultChain();
+			c.addCommand(new GenericGetModuleDataDetailCommand());
+			c.addCommand(new GetAvailableStateCommand());
+			return c;
+		}
+
+		public static Chain getAddStateFlowTransistion() {
+			Chain c = getDefaultChain();
+			c.addCommand(new ConstructStateFlowTransistionCommand());
+			c.addCommand(addWorkflowRuleChain());
+			return c;
+		}
+
+		public static Chain getAddOrUpdateStateFlow() {
+			Chain c = getDefaultChain();
+			c.addCommand(new AddOrUpdateStateFlowCommand());
 			return c;
 		}
 }

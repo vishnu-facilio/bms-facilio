@@ -27,6 +27,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsole.commands.UpdateStateCommand;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.AlarmContext;
 import com.facilio.bmsconsole.context.AlarmSeverityContext;
@@ -61,6 +62,7 @@ import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.util.WorkOrderAPI;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext.ReadingRuleType;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.events.constants.EventConstants;
@@ -71,6 +73,20 @@ import com.facilio.timeseries.TimeSeriesAPI;
 import com.facilio.util.FacilioUtil;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
+import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.chain.Chain;
+import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+
+import java.time.Instant;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public enum ActionType {
 
@@ -914,6 +930,33 @@ public enum ActionType {
 			String val = (String) obj.get("val");
 			TimeSeriesAPI.setControlValue(resourceId, fieldId, val);
 		}
+	},
+	CHANGE_STATE (19) {
+		@Override
+		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,
+				Object currentRecord) throws Exception {
+			System.out.println(obj);
+			StateContext state = ((ModuleBaseWithCustomFields) currentRecord).getStateFlow();
+			long oldStateId = -1;
+			if (state != null) {
+				oldStateId = state.getId();
+			}
+			Object newState = obj.get("new_state");
+			long newStateId = newState != null ? Long.parseLong(newState.toString()) : -1;
+			
+			String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
+			FacilioContext c = new FacilioContext();
+			c.put(FacilioConstants.ContextNames.RECORD, currentRecord);
+			c.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+			List<WorkflowRuleContext> availableState = StateFlowRulesAPI.getAvailableState(oldStateId, newStateId, moduleName, (ModuleBaseWithCustomFields) currentRecord, context);
+			if (CollectionUtils.isNotEmpty(availableState)) {
+				c.put("transistion_id", availableState.get(0).getId());
+			}
+			Chain chain = FacilioChain.getTransactionChain();
+			chain.addCommand(new UpdateStateCommand());
+			chain.execute(c);
+		}
+		
 	}
 	;
 

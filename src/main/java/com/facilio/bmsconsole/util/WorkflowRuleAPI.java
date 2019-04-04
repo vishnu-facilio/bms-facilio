@@ -99,6 +99,12 @@ public class WorkflowRuleAPI {
 				addExtendedProps(ModuleFactory.getApprovalRulesModule(), FieldFactory.getApprovalRuleFields(), FieldUtil.getAsProperties(rule));
 				ApprovalRulesAPI.addApprovers((ApprovalRuleContext) rule);
 				break;
+			case STATE_RULE:
+				addExtendedProps(ModuleFactory.getStateRuleTransistionModule(), FieldFactory.getStateRuleTransistionFields(), ruleProps);
+				break;
+			case STATE_FLOW:
+				addExtendedProps(ModuleFactory.getStateFlowRuleModule(), FieldFactory.getStateFlowRuleFields(), ruleProps);
+				break;
 			default:
 				break;
 		}
@@ -599,8 +605,11 @@ public class WorkflowRuleAPI {
 				case CHILD_APPROVAL_RULE:
 					typeWiseProps.put(entry.getKey(), getExtendedProps(ModuleFactory.getApprovalRulesModule(), FieldFactory.getApprovalRuleFields(), entry.getValue()));
 					break;
-				case STAGE_RULE:
-					typeWiseProps.put(entry.getKey(), getExtendedProps(ModuleFactory.getStageRuleModule(), FieldFactory.getStageRuleFields(), entry.getValue()));
+				case STATE_RULE:
+					typeWiseProps.put(entry.getKey(), getExtendedProps(ModuleFactory.getStateRuleTransistionModule(), FieldFactory.getStateRuleTransistionFields(), entry.getValue()));
+					break;
+				case STATE_FLOW:
+					typeWiseProps.put(entry.getKey(), getExtendedProps(ModuleFactory.getStateFlowRuleModule(), FieldFactory.getStateFlowRuleFields(), entry.getValue()));
 					break;
 				default:
 					break;
@@ -715,9 +724,13 @@ public class WorkflowRuleAPI {
 							prop.putAll(typeWiseExtendedProps.get(ruleType).get(prop.get("id")));
 							rule = constructReadingAlarmRuleFromProps(prop, modBean);
 							break;
-						case STAGE_RULE:
+						case STATE_RULE:
 							prop.putAll(typeWiseExtendedProps.get(ruleType).get(prop.get("id")));
-							rule = StateRulesAPI.constructStateRuleFromProps(prop, modBean);
+							rule = StateFlowRulesAPI.constructStateRuleFromProps(prop, modBean);
+							break;
+						case STATE_FLOW:
+							prop.putAll(typeWiseExtendedProps.get(ruleType).get(prop.get("id")));
+							rule = FieldUtil.getAsBeanFromMap(prop, StateFlowRuleContext.class);
 							break;
 						default:
 							rule = FieldUtil.getAsBeanFromMap(prop, WorkflowRuleContext.class);
@@ -857,6 +870,10 @@ public class WorkflowRuleAPI {
 	}
 	
 	public static boolean evaluateWorkflowAndExecuteActions(WorkflowRuleContext workflowRule, String moduleName, Object record, List<UpdateChangeSet> changeSet, Map<String, Object> recordPlaceHolders, FacilioContext context) throws Exception {
+		return evaluateWorkflowAndExecuteActions(workflowRule, moduleName, record, changeSet, recordPlaceHolders, context, true);
+	}
+	
+	public static boolean evaluateWorkflowAndExecuteActions(WorkflowRuleContext workflowRule, String moduleName, Object record, List<UpdateChangeSet> changeSet, Map<String, Object> recordPlaceHolders, FacilioContext context, boolean shouldExecute) throws Exception {
 		Map<String, Object> rulePlaceHolders = workflowRule.constructPlaceHolders(moduleName, record, recordPlaceHolders, context);
 		boolean fieldChangeFlag = false, miscFlag = false, criteriaFlag = false, workflowFlag = false , siteId = false;
 		
@@ -886,11 +903,13 @@ public class WorkflowRuleAPI {
 		}
 		
 		boolean result = fieldChangeFlag && miscFlag && criteriaFlag && workflowFlag && siteId ;
-		if(result) {
-			workflowRule.executeTrueActions(record, context, rulePlaceHolders);
-		}
-		else {
-			workflowRule.executeFalseActions(record, context, rulePlaceHolders);
+		if (shouldExecute) {
+			if(result) {
+				workflowRule.executeTrueActions(record, context, rulePlaceHolders);
+			}
+			else {
+				workflowRule.executeFalseActions(record, context, rulePlaceHolders);
+			}
 		}
 		return result;
 	}

@@ -14,6 +14,8 @@ import com.facilio.fs.FileStoreFactory;
 import com.facilio.fw.LRUCache;
 import com.facilio.transaction.FacilioConnectionPool;
 import com.facilio.unitconversion.UnitsUtil;
+
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -1025,5 +1027,13 @@ public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, 
 		public void setResult(List<Map<String, Object>> result) {
 			this.result = result;
 		}
+	}
+
+	public Map<String, Object> fetchFirst() throws Exception {
+		List<Map<String, Object>> list = get();
+		if (CollectionUtils.isNotEmpty(list)) {
+			return list.get(0);
+		}
+		return null;
 	}
 }

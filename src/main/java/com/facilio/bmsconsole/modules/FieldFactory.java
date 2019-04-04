@@ -5543,14 +5543,38 @@ public class FieldFactory {
 				}));
 	}
 
-	public static List<FacilioField> getStageRuleFields() {
-		FacilioModule stageRuleModule = ModuleFactory.getStageRuleModule();
+	public static List<FacilioField> getStateRuleTransistionFields() {
+		FacilioModule stageRuleModule = ModuleFactory.getStateRuleTransistionModule();
 		List<FacilioField> list = new ArrayList<>();
 		
-		list.add(getIdField(stageRuleModule));
 		list.add(getField("fromStateId", "FROM_STATE_ID", stageRuleModule, FieldType.NUMBER));
 		list.add(getField("toStateId", "TO_STATE_ID", stageRuleModule, FieldType.NUMBER));
+		list.add(getField("stateFlowId", "STATE_FLOW_ID", stageRuleModule, FieldType.NUMBER));
 		list.add(getField("formId", "FORM_ID", stageRuleModule, FieldType.NUMBER));
+		return list;
+	}
+	
+	public static List<FacilioField> getStateFlowFields() {
+		FacilioModule stateFlowModule = ModuleFactory.getStateFlowModule();
+		List<FacilioField> list = new ArrayList<>();
+		
+		list.add(getIdField(stateFlowModule));
+		list.add(getField("name", "NAME", stateFlowModule, FieldType.STRING));
+		list.add(getField("description", "DESCRIPTION", stateFlowModule, FieldType.STRING));
+		list.add(getField("criteriaId", "CRITERIA_ID", stateFlowModule, FieldType.NUMBER));
+		list.add(getField("sequence", "SEQUENCE", stateFlowModule, FieldType.NUMBER));
+		list.add(getField("defaultStateId", "DEFAULT_STATE_ID", FieldType.NUMBER));
+		list.add(getField("parentModuleId", "PARENT_MODULE_ID", FieldType.NUMBER));
+		list.add(getField("stateFlowRuleId", "STATEFLOW_RULE_ID", FieldType.NUMBER));
+		return list;
+	}
+
+	public static List<FacilioField> getStateFlowRuleFields() {
+		FacilioModule module = ModuleFactory.getStateFlowRuleModule();
+		List<FacilioField> list = new ArrayList<>();
+		
+		list.add(getIdField(module));
+		list.add(getField("stateFlowId", "STATE_FLOW_ID", module, FieldType.NUMBER));
 		return list;
 	}
 }

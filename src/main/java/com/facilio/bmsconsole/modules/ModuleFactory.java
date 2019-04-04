@@ -1935,10 +1935,28 @@ public class ModuleFactory {
 	}
 
 	public static FacilioModule getStageRuleModule() {
+	public static FacilioModule getStateRuleTransistionModule() {
 		FacilioModule module = new FacilioModule();
-		module.setName("stateruleWorkflow");
-		module.setDisplayName("State Rule Workflow");
-		module.setTableName("StateflowRule");
+		module.setName("stateruleTransistionWorkflow");
+		module.setDisplayName("State Rule Transistion Workflow");
+		module.setTableName("StateFlowTransistion");
+		module.setExtendModule(getWorkflowRuleModule());
+		return module;
+	}
+
+	public static FacilioModule getStateFlowModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName("stateflow");
+		module.setDisplayName("State Flow");
+		module.setTableName("StateFlow");
+		return module;
+	}
+
+	public static FacilioModule getStateFlowRuleModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName("stateFlowRuleWorkflow");
+		module.setDisplayName("State Flow Rule Workflow");
+		module.setTableName("StateFlowRule");
 		module.setExtendModule(getWorkflowRuleModule());
 		return module;
 	}
