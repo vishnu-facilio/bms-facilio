@@ -1468,6 +1468,8 @@ public class TransactionChainFactory {
 			Chain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForStoreRoom());
 			c.addCommand(new GenericAddModuleDataCommand());
+			c.addCommand(new DeleteSitesForStoreRoomCommad());
+			c.addCommand(new AddSitesForStoreRoomCommand());
 			return c;
 		}
 		
@@ -1475,6 +1477,8 @@ public class TransactionChainFactory {
 			Chain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForStoreRoom());
 			c.addCommand(new GenericUpdateModuleDataCommand());
+			c.addCommand(new DeleteSitesForStoreRoomCommad());
+			c.addCommand(new AddSitesForStoreRoomCommand());
 			return c;
 		}
 		

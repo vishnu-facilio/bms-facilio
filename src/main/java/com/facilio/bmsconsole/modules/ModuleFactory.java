@@ -1875,4 +1875,12 @@ public class ModuleFactory {
 		controlActionTemplate.setExtendModule(getTemplatesModule());
 		return controlActionTemplate;
 	}
+	
+	public static FacilioModule getSitesForStoreRoomModule() {
+		FacilioModule accessbileSpaceModule = new FacilioModule();
+		accessbileSpaceModule.setName(FacilioConstants.ContextNames.SITES_FOR_STORE_ROOM);
+		accessbileSpaceModule.setDisplayName("Store Room Sites");
+		accessbileSpaceModule.setTableName("Storeroom_Sites");
+		return accessbileSpaceModule;
+	}
 }

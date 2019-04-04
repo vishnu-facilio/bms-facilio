@@ -5620,6 +5620,18 @@ public class FieldFactory {
 		return fields;
 	}
 
+	public static List<FacilioField> getSitesForStoreRoomFields() {
+		FacilioModule module = ModuleFactory.getSitesForStoreRoomModule();
+		List<FacilioField> fields = new ArrayList<>();
+		
+		fields.add(getIdField(module));
+		fields.add(getField("storeRoomId", "STORE_ROOM_ID", module, FieldType.NUMBER));
+		fields.add(getField("siteId", "SITE_ID", module, FieldType.NUMBER));
+		
+		return fields;
+	}
+	
+	
 	public static FacilioField getField(String name, String colName, FacilioModule module, FieldType type) {
 		return getField(name, null, colName, module, type);
 	}

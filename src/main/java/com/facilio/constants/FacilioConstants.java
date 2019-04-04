@@ -918,6 +918,8 @@ public class FacilioConstants {
 		
 		private static final String RECEIPT_LINE_ITEMS = "receiptlineitems";
 		public static final String ITEM_VENDORS_LIST = "itemTypesVendorsList";
+		
+		public static final String SITES_FOR_STORE_ROOM = "sitesForStoreRoom";
 
 		public static final String PURCHASE_CONTRACTS = "purchasecontracts";
 		public static final String PURCHASE_CONTRACT = "purchasecontract";
