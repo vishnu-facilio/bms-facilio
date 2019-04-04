@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.commands;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ItemContext;
 import com.facilio.bmsconsole.context.PurchasedItemContext;
+import com.facilio.bmsconsole.context.ItemContext.CostType;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.*;
@@ -47,9 +48,13 @@ public class BulkItemAdditionCommand implements Command {
 			List<PurchasedItemContext> purchasedItems = new ArrayList<>();
 			for (ItemContext item : itemsList) {
 				if (!itemTypesId.contains(item.getItemType().getId())) {
+					if(item.getCostType()<=0) {
+						item.setCostType(CostType.FIFO);
+					}
 					itemToBeAdded.add(item);
 				} else {
 					item.setId(itemTypeVsItem.get(item.getItemType().getId()));
+					updateItem(itemModule, itemFields, item);
 				}
 			}
 
@@ -77,5 +82,11 @@ public class BulkItemAdditionCommand implements Command {
 		InsertRecordBuilder<ItemContext> readingBuilder = new InsertRecordBuilder<ItemContext>().module(module)
 				.fields(fields).addRecords(parts);
 		readingBuilder.save();
+	}
+	
+	private void updateItem(FacilioModule module, List<FacilioField> fields, ItemContext item) throws Exception {
+		UpdateRecordBuilder<ItemContext> readingBuilder = new UpdateRecordBuilder<ItemContext>().module(module)
+				.fields(fields).andCondition(CriteriaAPI.getIdCondition(item.getId(), module));
+		readingBuilder.update(item);
 	}
 }
