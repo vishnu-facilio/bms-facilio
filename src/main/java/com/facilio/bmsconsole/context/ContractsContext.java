@@ -1,0 +1,101 @@
+package com.facilio.bmsconsole.context;
+
+import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
+
+public class ContractsContext extends ModuleBaseWithCustomFields{
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	private String name;
+	private String description;
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	public String getDescription() {
+		return description;
+	}
+	public void setDescription(String description) {
+		this.description = description;
+	}
+	public VendorContext getVendor() {
+		return vendor;
+	}
+	public void setVendor(VendorContext vendor) {
+		this.vendor = vendor;
+	}
+	public double getTotalCost() {
+		return totalCost;
+	}
+	public void setTotalCost(double totalCost) {
+		this.totalCost = totalCost;
+	}
+	public long getFromDate() {
+		return fromDate;
+	}
+	public void setFromDate(long fromDate) {
+		this.fromDate = fromDate;
+	}
+	public long getEndDate() {
+		return endDate;
+	}
+	public void setEndDate(long endDate) {
+		this.endDate = endDate;
+	}
+	public long getRenewalDate() {
+		return renewalDate;
+	}
+	public void setRenewalDate(long renewalDate) {
+		this.renewalDate = renewalDate;
+	}
+	private VendorContext vendor;
+	
+	private Status status;
+	public Status getStatusEnum() {
+		return status;
+	}
+	public int getStatus() {
+		if (status != null) {
+			return status.getValue();
+		}
+		return -1;
+	}
+	public void setStatus(Status status) {
+		this.status = status;
+	}
+	public void setStatus(int status) {
+		this.status = Status.valueOf(status);
+	}
+	private double totalCost = -1;
+	
+	public static enum Status {
+		WAITING_FOR_APPROVAL(),
+		APPROVED(),
+		CLOSED(),
+		CANCELLED(),
+		SUSPENDED()
+		;
+		
+		public int getValue() {
+			return ordinal()+1;
+		}
+
+		public static Status valueOf(int value) {
+			if (value > 0 && value <= values().length) {
+				return values()[value - 1];
+			}
+			return null;
+		}
+	}
+	
+	private long fromDate = -1;
+	private long endDate = -1;
+	private long renewalDate = -1;
+	
+	
+}

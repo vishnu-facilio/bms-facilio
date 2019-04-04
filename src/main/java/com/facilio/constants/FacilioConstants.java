@@ -40,11 +40,15 @@ import com.facilio.bmsconsole.context.ItemTypesContext;
 import com.facilio.bmsconsole.context.ItemTypesStatusContext;
 import com.facilio.bmsconsole.context.ItemTypesVendorsContext;
 import com.facilio.bmsconsole.context.LabourContext;
+import com.facilio.bmsconsole.context.LabourContractContext;
+import com.facilio.bmsconsole.context.LabourContractLineItemContext;
 import com.facilio.bmsconsole.context.LocationContext;
 import com.facilio.bmsconsole.context.MLAlarmContext;
 import com.facilio.bmsconsole.context.MLAlarmOccurrenceContext;
 import com.facilio.bmsconsole.context.MlForecastingContext;
 import com.facilio.bmsconsole.context.PhotosContext;
+import com.facilio.bmsconsole.context.PurchaseContractContext;
+import com.facilio.bmsconsole.context.PurchaseContractLineItemContext;
 import com.facilio.bmsconsole.context.PurchaseOrderContext;
 import com.facilio.bmsconsole.context.PurchaseOrderLineItemContext;
 import com.facilio.bmsconsole.context.PurchaseRequestContext;
@@ -915,6 +919,16 @@ public class FacilioConstants {
 		private static final String RECEIPT_LINE_ITEMS = "receiptlineitems";
 		public static final String ITEM_VENDORS_LIST = "itemTypesVendorsList";
 
+		public static final String PURCHASE_CONTRACTS = "purchasecontracts";
+		public static final String PURCHASE_CONTRACT = "purchasecontract";
+		public static final String PURCHASE_CONTRACTS_LINE_ITEMS = "purchasecontractlineitems";
+		public static final String CONTRACTS = "contracts";
+		
+		public static final String LABOUR_CONTRACTS = "labourcontracts";
+		public static final String LABOUR_CONTRACT = "labourcontract";
+		public static final String LABOUR_CONTRACTS_LINE_ITEMS = "labourcontractlineitems";
+	
+		
 		private static Map<String, Class> classMap = Collections.unmodifiableMap(initClassMap());
 		private static Map<String, Class> initClassMap() {
 			Map<String, Class> classMap = new HashMap<>();
@@ -1008,7 +1022,11 @@ public class FacilioConstants {
 			classMap.put(PURCHASE_REQUEST_LINE_ITEMS, PurchaseRequestLineItemContext.class);
 			classMap.put(PURCHASE_ORDER, PurchaseOrderContext.class);
 			classMap.put(PURCHASE_ORDER_LINE_ITEMS, PurchaseOrderLineItemContext.class);
-			
+			classMap.put(PURCHASE_CONTRACTS, PurchaseContractContext.class);
+			classMap.put(PURCHASE_CONTRACTS_LINE_ITEMS, PurchaseContractLineItemContext.class);
+			classMap.put(LABOUR_CONTRACTS, LabourContractContext.class);
+			classMap.put(LABOUR_CONTRACTS_LINE_ITEMS, LabourContractLineItemContext.class);
+				
 			classMap.put(RECEIVABLE, ReceivableContext.class);
 			classMap.put(RECEIPT, ReceiptContext.class);
 			classMap.put(RECEIPT_LINE_ITEMS, ReceiptLineItemContext.class);

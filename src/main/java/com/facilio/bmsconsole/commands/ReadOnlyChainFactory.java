@@ -715,4 +715,44 @@ public class ReadOnlyChainFactory {
 		return c;
 	}
 	
+	public static Chain getPurchaseContractListChain() {
+		Chain chain = getDefaultChain();
+		chain.addCommand(SetTableNamesCommand.getForPurchaseContract());
+		chain.addCommand(new LoadAllFieldsCommand());
+		chain.addCommand(new LoadViewCommand());
+		chain.addCommand(new GenerateCriteriaFromFilterCommand());
+		chain.addCommand(new GenerateSearchConditionCommand());
+		chain.addCommand(new GetPurchaseContractListCommand());
+		return chain;
+	}
+
+	public static Chain getPurchaseContractDetailsChain() {
+		Chain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForPurchaseContract());
+		c.addCommand(new LoadContractLookUpCommand());
+		c.addCommand(new GenericGetModuleDataDetailCommand());
+		c.addCommand(new FetchPurchaseContractDetailsCommand());
+		return c;
+	}
+	public static Chain getLabourContractListChain() {
+		Chain chain = getDefaultChain();
+		chain.addCommand(SetTableNamesCommand.getForLabourContract());
+		chain.addCommand(new LoadAllFieldsCommand());
+		chain.addCommand(new LoadViewCommand());
+		chain.addCommand(new GenerateCriteriaFromFilterCommand());
+		chain.addCommand(new GenerateSearchConditionCommand());
+		chain.addCommand(new GetLabourContractListCommand());
+		return chain;
+	}
+	
+	public static Chain getLabourContractDetailsChain() {
+		Chain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForLabourContract());
+		c.addCommand(new LoadContractLookUpCommand());
+		c.addCommand(new GenericGetModuleDataDetailCommand());
+		c.addCommand(new FetchLabourContractDetailsCommand());
+		return c;
+	}
+
+	
 }

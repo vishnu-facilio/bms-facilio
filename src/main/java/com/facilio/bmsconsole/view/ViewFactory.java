@@ -273,6 +273,17 @@ public class ViewFactory {
 		views.put("received", getReceivableForStatus("received", "Received", 3).setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.RECEIVABLE, views);
 
+		order = 1;
+		views = new LinkedHashMap<>();
+		views.put("all", getAllPurchaseContractView().setOrder(order++));
+		viewsMap.put(FacilioConstants.ContextNames.PURCHASE_CONTRACTS, views);
+
+	
+		order = 1;
+		views = new LinkedHashMap<>();
+		views.put("all", getAllLabourContractView().setOrder(order++));
+		viewsMap.put(FacilioConstants.ContextNames.LABOUR_CONTRACTS, views);
+
 		return viewsMap;
 	}
 
@@ -2931,6 +2942,7 @@ public class ViewFactory {
 	}
 
 
+	
 	private static FacilioView getReceivableForStatus(String viewName, String viewDisplayName, int status) {
 		FacilioModule receivableModule = ModuleFactory.getReceivableModule();
 
@@ -2970,5 +2982,34 @@ public class ViewFactory {
 		receivableStatusCriteria.addAndCondition(statusCond);
 		return receivableStatusCriteria;
 	}
+
+	private static FacilioView getAllPurchaseContractView() {
+		FacilioField localId = new FacilioField();
+		localId.setName("localId");
+		localId.setColumnName("LOCAL_ID");
+		localId.setDataType(FieldType.NUMBER);
+		localId.setModule(ModuleFactory.getPurchaseContractModule());
+
+		FacilioView allView = new FacilioView();
+		allView.setName("all");
+		allView.setDisplayName("All");
+		allView.setSortFields(Arrays.asList(new SortField(localId, false)));
+		return allView;
+	}
+
+	private static FacilioView getAllLabourContractView() {
+		FacilioField localId = new FacilioField();
+		localId.setName("localId");
+		localId.setColumnName("LOCAL_ID");
+		localId.setDataType(FieldType.NUMBER);
+		localId.setModule(ModuleFactory.getLabourContractModule());
+
+		FacilioView allView = new FacilioView();
+		allView.setName("all");
+		allView.setDisplayName("All");
+		allView.setSortFields(Arrays.asList(new SortField(localId, false)));
+		return allView;
+	}
+
 
 }

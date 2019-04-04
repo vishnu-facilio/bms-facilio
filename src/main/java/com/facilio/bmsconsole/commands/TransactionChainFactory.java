@@ -2286,5 +2286,80 @@ public class TransactionChainFactory {
 			c.addCommand(new UpdateFormFieldsCommand());
 			return c;
 		}
+		
+		public static Chain getAddPurchaseContractChain() {
+			Chain chain = getDefaultChain();
+			chain.addCommand(SetTableNamesCommand.getForPurchaseContract());
+			chain.addCommand(new AddOrUpdatePurchaseContractCommand());
+		    //rollup might be needed to update purchase contract total cost -- need to be discussed
+			return chain;
+		}
+		
+		public static Chain getPurchaseContractDeleteChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForPurchaseContract());
+			c.addCommand(new DeletePurchaseContractCommand());
+			return c;
+		}
+		
+		public static Chain getAddPurchaseContractLineItem() {
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForPurchaseContractLineItem());
+			c.addCommand(new AddOrUpdatePurchaseContractLineItemCommand());
+			//rollup might be needed to update contract total cost -- need to be discussed
+			return c;
+		}
+		
+		public static Chain getDeletePurchaseContractLineItemChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForPurchaseContractLineItem());
+			c.addCommand(new DeletePurchaseContractLineItemCommand());
+			return c;
+		}
+		public static Chain getAddLabourContractChain() {
+			Chain chain = getDefaultChain();
+			chain.addCommand(SetTableNamesCommand.getForLabourContract());
+			chain.addCommand(new AddOrUpdateLabourContractCommand());
+			//rollup to update the cost per hour in the actual labour module
+			chain.addCommand(new UpdateLabourCostRollUpCommand());
+		    //rollup might be needed to update purchase contract total cost -- need to be discussed
+			return chain;
+		}
+		
+		public static Chain getLabourContractDeleteChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForLabourContract());
+			c.addCommand(new DeleteLabourContractCommand());
+			return c;
+		}
+		
+		public static Chain getAddLabourContractLineItem() {
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForLabourContractLineItem());
+			c.addCommand(new AddOrUpdateLabourContractLineItemCommand());
+			//rollup might be needed to update contract total cost -- need to be discussed
+			return c;
+		}
+		
+		public static Chain getDeleteLabourContractLineItemChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForLabourContractLineItem());
+			c.addCommand(new DeleteLabourContractLineItemCommand());
+			return c;
+		}
+		public static Chain getUpdatePurchaseContractStatusChain() {
+			Chain chain = getDefaultChain();
+			chain.addCommand(SetTableNamesCommand.getForPurchaseContract());
+			chain.addCommand(new UpdateBulkPurchaseContractStatusCommand()); 
+			return chain;
+		}
+		public static Chain getUpdateLabourContractStatusChain() {
+			Chain chain = getDefaultChain();
+			chain.addCommand(SetTableNamesCommand.getForLabourContract());
+			chain.addCommand(new UpdateBulkLabourContractStatusCommand()); 
+			return chain;
+		}
+		
+		
 }
 

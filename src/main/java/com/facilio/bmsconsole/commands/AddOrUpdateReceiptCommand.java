@@ -45,7 +45,7 @@ public class AddOrUpdateReceiptCommand implements Command {
 				}
 			}
 			updateRecords(updateReceipts, module, fields);
-			saveRecords(saveReceipts, module, fields);
+			saveRecords(true, saveReceipts, module, fields);
 			context.put(FacilioConstants.ContextNames.RECEIPTS, saveReceipts.size() > 0 ? saveReceipts : updateReceipts);
 
 		}
@@ -55,10 +55,13 @@ public class AddOrUpdateReceiptCommand implements Command {
 		return false;
 	}
 
-	private void saveRecords(List<ReceiptContext> receiptContext, FacilioModule module, List<FacilioField> fields) throws Exception {
+	private void saveRecords(boolean isLocalIdNeeded, List<ReceiptContext> receiptContext, FacilioModule module, List<FacilioField> fields) throws Exception {
 		InsertRecordBuilder insertRecordBuilder = new InsertRecordBuilder<>()
 				.module(module)
 				.fields(fields);
+		if(isLocalIdNeeded) {
+			insertRecordBuilder.withLocalId();
+		}
 		insertRecordBuilder.addRecords(receiptContext);
 		insertRecordBuilder.save();
 	}

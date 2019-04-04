@@ -54,11 +54,11 @@ public class AddOrUpdatePurchaseRequestCommand implements Command {
 				}
 				
 				purchaseRequestContext.setStatus(Status.REQUESTED);
-				addRecord(Collections.singletonList(purchaseRequestContext), module, fields);
+				addRecord(true, Collections.singletonList(purchaseRequestContext), module, fields);
 			}
 			
 			updateLineItems(purchaseRequestContext);
-			addRecord(purchaseRequestContext.getLineItems(), lineModule, modBean.getAllFields(lineModule.getName()));
+			addRecord(false, purchaseRequestContext.getLineItems(), lineModule, modBean.getAllFields(lineModule.getName()));
 			
 			context.put(FacilioConstants.ContextNames.RECORD, purchaseRequestContext);
 		}
@@ -72,10 +72,13 @@ public class AddOrUpdatePurchaseRequestCommand implements Command {
 		}
 	}
 	
-	private void addRecord(List<? extends ModuleBaseWithCustomFields> list, FacilioModule module, List<FacilioField> fields) throws Exception {
+	private void addRecord(boolean isLocalIdNeeded, List<? extends ModuleBaseWithCustomFields> list, FacilioModule module, List<FacilioField> fields) throws Exception {
 		InsertRecordBuilder insertRecordBuilder = new InsertRecordBuilder<>()
 				.module(module)
 				.fields(fields);
+		if(isLocalIdNeeded) {
+			insertRecordBuilder.withLocalId();
+		}
 		insertRecordBuilder.addRecords(list);
 		insertRecordBuilder.save();
 	}

@@ -49,6 +49,8 @@ public class ColumnFactory {
 		columnMap.put("purchaserequest-default", getDefaultPurchaseRequestColumns());
 		columnMap.put("purchaseorder-default", getDefaultPurchaseOrderColumns());
 		columnMap.put("receivable-default", getDefaultReceivableColumns());
+		columnMap.put("purchasecontracte-default", getDefaultContractColumns());
+		columnMap.put("labourcontract-default", getDefaultContractColumns());
 		
 		// Default report columns 
 		columnMap.put("workorder-report", getWorkOrderReportColumns());
@@ -350,6 +352,16 @@ public class ColumnFactory {
 //		columns.add(new ViewField("poId", "Purchase Order ID"));
 		columns.add(new ViewField("status", "Status"));
 		columns.add(new ViewField("sysCreatedTime", "Created Time"));
+		return columns;
+	}
+	private static List<ViewField> getDefaultContractColumns() {
+		List<ViewField> columns = new ArrayList<ViewField>();
+		columns.add(new ViewField("vendor", "Vendor"));
+		columns.add(new ViewField("status", "Status"));
+		columns.add(new ViewField("fromDate", "Valid From"));
+		columns.add(new ViewField("endDate", "Valid Till"));
+		columns.add(new ViewField("totalCost", "Total Cost"));
+
 		return columns;
 	}
 }

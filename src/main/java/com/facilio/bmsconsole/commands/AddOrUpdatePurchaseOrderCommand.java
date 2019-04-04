@@ -57,16 +57,16 @@ public class AddOrUpdatePurchaseOrderCommand implements Command {
 					purchaseOrderContext.setOrderedTime(System.currentTimeMillis());
 				}
 				purchaseOrderContext.setStatus(PurchaseOrderContext.Status.REQUESTED);
-				addRecord(Collections.singletonList(purchaseOrderContext), module, fields);
+				addRecord(true,Collections.singletonList(purchaseOrderContext), module, fields);
 				FacilioModule receivableModule = modBean.getModule(FacilioConstants.ContextNames.RECEIVABLE);
 				ReceivableContext receivableContext = new ReceivableContext();
 				receivableContext.setPoId(purchaseOrderContext);
 				receivableContext.setStatus(Status.YET_TO_RECEIVE);
-				addRecord(Collections.singletonList(receivableContext), receivableModule, modBean.getAllFields(receivableModule.getName()));
+				addRecord(true,Collections.singletonList(receivableContext), receivableModule, modBean.getAllFields(receivableModule.getName()));
 			}
 			
 			updateLineItems(purchaseOrderContext);
-			addRecord(purchaseOrderContext.getLineItems(), lineModule, modBean.getAllFields(lineModule.getName()));
+			addRecord(false,purchaseOrderContext.getLineItems(), lineModule, modBean.getAllFields(lineModule.getName()));
 			
 			context.put(FacilioConstants.ContextNames.RECORD, purchaseOrderContext);
 		}
@@ -80,10 +80,13 @@ public class AddOrUpdatePurchaseOrderCommand implements Command {
 		}
 	}
 	
-	private void addRecord(List<? extends ModuleBaseWithCustomFields> list, FacilioModule module, List<FacilioField> fields) throws Exception {
+	private void addRecord(boolean isLocalIdNeeded, List<? extends ModuleBaseWithCustomFields> list, FacilioModule module, List<FacilioField> fields) throws Exception {
 		InsertRecordBuilder insertRecordBuilder = new InsertRecordBuilder<>()
 				.module(module)
 				.fields(fields);
+		if(isLocalIdNeeded) {
+			insertRecordBuilder.withLocalId();
+		}
 		insertRecordBuilder.addRecords(list);
 		insertRecordBuilder.save();
 	}

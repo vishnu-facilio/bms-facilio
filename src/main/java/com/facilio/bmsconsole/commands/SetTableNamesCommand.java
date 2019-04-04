@@ -270,6 +270,23 @@ public class SetTableNamesCommand implements Command {
 	public static SetTableNamesCommand getForReceivables() {
 		return new SetTableNamesCommand("receivable", "Receivables");
 	}
+	
+	public static SetTableNamesCommand getForPurchaseContract() {
+		return new SetTableNamesCommand("purchasecontracts", "Purchase_Contracts");
+	}
+	
+	public static SetTableNamesCommand getForPurchaseContractLineItem() {
+		return new SetTableNamesCommand("purchasecontractlineitems", "PurchaseContractLineItems");
+	}
+
+	public static SetTableNamesCommand getForLabourContract() {
+		return new SetTableNamesCommand("labourcontracts", "Labour_Contracts");
+	}
+	
+	public static SetTableNamesCommand getForLabourContractLineItem() {
+		return new SetTableNamesCommand("labourcontractlineitems", "LabourContractLineItems");
+	}
+
 	public static void setForModule (Context context, String moduleName) {
 		//TODO handle all module and get from map
 		String tableName = "";

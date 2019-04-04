@@ -1793,6 +1793,58 @@
 		</action>
 
 	</package>
+	
+	<package name="purchaseContractsApi" namespace="/api/v2/purchasecontract" extends="v2Api">
+		<action name="list" class="com.facilio.bmsconsole.actions.PurchaseContractsAction" method="getPurchaseContractList">
+			<param name="moduleName">purchasecontracts</param>
+		</action>
+		<action name="getById" class="com.facilio.bmsconsole.actions.PurchaseContractsAction" method="getPurchaseContractDetails">
+			<param name="moduleName">purchasecontracts</param>
+		</action>
+			<action name="addOrUpdate" class="com.facilio.bmsconsole.actions.PurchaseContractsAction" method="addPurchaseContract">
+			<param name="moduleName">purchasecontracts</param>
+		</action>
+			<action name="changeStatus" class="com.facilio.bmsconsole.actions.PurchaseContractsAction" method="bulkStatusUpdate">
+			<param name="moduleName">purchasecontract</param>
+		</action>
+		<action name="purchaseContractCount" class="com.facilio.bmsconsole.actions.PurchaseContractsAction" method="purchaseContractCount">
+			<param name="moduleName">purchasecontracts</param>
+		</action>
+		<action name="delete" class="com.facilio.bmsconsole.actions.PurchaseContractsAction" method="deletePurchaseContract">
+			<param name="moduleName">purchasecontracts</param>
+		</action>
+		 <action name="*" class="com.facilio.bmsconsole.actions.PurchaseContractsAction" method="getPurchaseContractList">
+			<param name="viewName">{1}</param>
+			<param name="moduleName">purchasecontracts</param>
+		</action>
+
+	</package>
+	
+	<package name="labourContractsApi" namespace="/api/v2/labourcontract" extends="v2Api">
+		<action name="list" class="com.facilio.bmsconsole.actions.LabourContractAction" method="getLabourContractList">
+			<param name="moduleName">labourcontracts</param>
+		</action>
+		<action name="getById" class="com.facilio.bmsconsole.actions.LabourContractAction" method="getLabourContractDetails">
+			<param name="moduleName">labourcontracts</param>
+		</action>
+			<action name="addOrUpdate" class="com.facilio.bmsconsole.actions.LabourContractAction" method="addLabourContract">
+			<param name="moduleName">labourcontracts</param>
+		</action>
+			<action name="changeStatus" class="com.facilio.bmsconsole.actions.LabourContractAction" method="bulkStatusUpdate">
+			<param name="moduleName">labourcontracts</param>
+		</action>
+		<action name="labourContractCount" class="com.facilio.bmsconsole.actions.LabourContractAction" method="labourContractCount">
+			<param name="moduleName">labourcontracts</param>
+		</action>
+		<action name="delete" class="com.facilio.bmsconsole.actions.LabourContractAction" method="deleteLabourContract">
+			<param name="moduleName">labourcontracts</param>
+		</action>
+		 <action name="*" class="com.facilio.bmsconsole.actions.LabourContractAction" method="getLabourContractList">
+			<param name="viewName">{1}</param>
+			<param name="moduleName">labourcontracts</param>
+		</action>
+
+	</package>
 
 
 	<package name="labourApi" namespace="/api/v2/labour"

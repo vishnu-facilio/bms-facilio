@@ -1851,6 +1851,22 @@ public class ModuleFactory {
 		return purchaseOrder;
 	}
 
+	public static FacilioModule getPurchaseContractModule() {
+		FacilioModule purchasecontract = new FacilioModule();
+		purchasecontract.setName("purchasecontracts");
+		purchasecontract.setDisplayName("Purchase Contracts");
+		purchasecontract.setTableName("Purchase_Contracts");
+		return purchasecontract;
+	}
+
+	public static FacilioModule getLabourContractModule() {
+		FacilioModule labourcontract = new FacilioModule();
+		labourcontract.setName("labourcontracts");
+		labourcontract.setDisplayName("Labour Contracts");
+		labourcontract.setTableName("Labour_Contracts");
+		return labourcontract;
+	}
+
 	public static FacilioModule getControlActionTemplateModule() {
 		FacilioModule controlActionTemplate = new FacilioModule();
 		controlActionTemplate.setName("controlActionTemplate");

@@ -56,6 +56,8 @@ public class FormFactory {
 		forms.put("purchaseRequestForm", getPurchaseRequestForm());
 		forms.put("purchaseOrderForm", getPurchaseOrderForm());
 		forms.put("receiptForm", getReceiptForm());
+		forms.put("purchaseContractForm", getPurchaseContractForm());
+		forms.put("labourContractForm", getLabourContractForm());
 			
 		return forms;
 	}
@@ -81,6 +83,8 @@ public class FormFactory {
 						.put(FacilioConstants.ContextNames.PURCHASE_ORDER, getPurchaseOrderForm())
 						.put(FacilioConstants.ContextNames.RECEIPT, getReceiptForm())
 						.put(FacilioConstants.ContextNames.LABOUR, getLabourForm())
+						.put(FacilioConstants.ContextNames.PURCHASE_CONTRACTS, getPurchaseContractForm())
+						.put(FacilioConstants.ContextNames.LABOUR_CONTRACTS, getLabourContractForm())
 							
 						.put(FacilioConstants.ContextNames.INVENTORY, getInventoryForm()).build())
         			
@@ -769,7 +773,26 @@ public class FormFactory {
 		form.setFormType(FormType.WEB);
 		return form;
 	}
-	
+	public static FacilioForm getPurchaseContractForm() {
+		FacilioForm form = new FacilioForm();
+		form.setDisplayName("PURCHASE CONTRACT");
+		form.setName("web_default");
+		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.PURCHASE_CONTRACTS));
+		form.setLabelPosition(LabelPosition.TOP);
+		form.setFields(getPurchaseContractFormFields());
+		form.setFormType(FormType.WEB);
+		return form;
+	}
+	public static FacilioForm getLabourContractForm() {
+		FacilioForm form = new FacilioForm();
+		form.setDisplayName("LABOUR CONTRACT");
+		form.setName("web_default");
+		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.LABOUR_CONTRACTS));
+		form.setLabelPosition(LabelPosition.TOP);
+		form.setFields(getLabourContractFormFields());
+		form.setFormType(FormType.WEB);
+		return form;
+	}
 	private static List<FormField> getLabourFormFields() {
 		List<FormField> fields = new ArrayList<>();
 		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.REQUIRED, 1, 1));
@@ -827,7 +850,36 @@ public class FormFactory {
 		//fields.add(new FormField("siteId", FieldDisplayType.LOOKUP_SIMPLE, "Site", Required.REQUIRED, "site", 4, 1));
 		return fields;
 	}
-
+	
+	private static List<FormField> getPurchaseContractFormFields() {
+		List<FormField> fields = new ArrayList<>();
+		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.REQUIRED, 1, 1));
+		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 2, 1));
+		fields.add(new FormField("vendor", FieldDisplayType.LOOKUP_SIMPLE, "Vendor", Required.REQUIRED, "vendors", 3, 2).setAllowCreate(true).setCreateFormName("vendors_form"));
+		fields.add(new FormField("fromDate", FieldDisplayType.DATE, "From Date", Required.OPTIONAL, 4, 2));
+		fields.add(new FormField("endDate", FieldDisplayType.DATE, "End Date", Required.OPTIONAL, 5, 3));
+		fields.add(new FormField("renewalDate", FieldDisplayType.DATE, "Renewal Date", Required.OPTIONAL, 6, 3));
+		fields.add(new FormField("totalCost", FieldDisplayType.DECIMAL, "Total Cost", Required.OPTIONAL, 7, 3));
+		fields.add(new FormField("lineItems", FieldDisplayType.LINEITEMS, "LINE ITEMS", Required.REQUIRED, 8, 1));
+		
+		return fields;
+	}
+	
+	private static List<FormField> getLabourContractFormFields() {
+		List<FormField> fields = new ArrayList<>();
+		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.REQUIRED, 1, 1));
+		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 2, 1));
+		fields.add(new FormField("vendor", FieldDisplayType.LOOKUP_SIMPLE, "Vendor", Required.REQUIRED, "vendors", 3, 2).setAllowCreate(true).setCreateFormName("vendors_form"));
+		fields.add(new FormField("fromDate", FieldDisplayType.DATE, "From Date", Required.OPTIONAL, 4, 2));
+		fields.add(new FormField("endDate", FieldDisplayType.DATE, "End Date", Required.OPTIONAL, 5, 3));
+		fields.add(new FormField("renewalDate", FieldDisplayType.DATE, "Renewal Date", Required.OPTIONAL, 6, 3));
+		fields.add(new FormField("totalCost", FieldDisplayType.DECIMAL, "Total Cost", Required.OPTIONAL, 7, 3));
+		fields.add(new FormField("lineItems", FieldDisplayType.LABOUR_LINE_ITEMS, "LABOUR RECORDS", Required.REQUIRED, 8, 1));
+		
+		return fields;
+	}
+	
+	
 	
 
 }
