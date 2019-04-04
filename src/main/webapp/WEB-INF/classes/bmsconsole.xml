@@ -2874,7 +2874,18 @@
 		
 		<action name="update" class="com.facilio.bmsconsole.actions.TenantAction"
 			method="updateTenant">
-			<!-- <param name="permission">WORKORDER_READ,TASK_READ</param> -->
+			<result name="success" type="json">
+				<param name="root">result</param>
+			</result>
+			<result name="error" type="json">
+				<param name="root">error</param>
+			</result>
+	
+		</action>
+	
+		<action name="toggleStatus" class="com.facilio.bmsconsole.actions.TenantAction"
+			method="toggleStatus">
+			<param name="moduleName">tenant</param>
 			<result name="success" type="json">
 				<param name="root">result</param>
 			</result>

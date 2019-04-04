@@ -10,7 +10,11 @@ public class UpdateTenantCommand implements Command {
 
 	@Override
 	public boolean execute(Context context) throws Exception {
-		int rowsUpdated = TenantsAPI.updateTenant((TenantContext) context.get(TenantsAPI.TENANT_CONTEXT));
+		TenantContext tenant = (TenantContext) context.get(TenantsAPI.TENANT_CONTEXT);
+		if(tenant.getStatusEnum() != TenantContext.Status.ACTIVE) {
+			throw new IllegalArgumentException("Cannot update an inactive tenant");
+		}
+		int rowsUpdated = TenantsAPI.updateTenant(tenant);
 		context.put(FacilioConstants.ContextNames.ROWS_UPDATED,rowsUpdated);
 		return false;
 	}

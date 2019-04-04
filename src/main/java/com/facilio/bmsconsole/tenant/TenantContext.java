@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.tenant;
 import com.facilio.accounts.dto.User;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.ZoneContext;
+import com.facilio.bmsconsole.context.PurchaseOrderContext.Status;
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 
 import java.io.File;
@@ -163,5 +164,40 @@ public class TenantContext extends ModuleBaseWithCustomFields{
 	public void setTenantUsers(List<TenantUserContext> users) {
 		this.tenantUsers = users;
 	}
+	
+    private Status status;
+	public Status getStatusEnum() {
+		return status;
+	}
+	public int getStatus() {
+		if (status != null) {
+			return status.getValue();
+		}
+		return -1;
+	}
+	public void setStatus(Status status) {
+		this.status = status;
+	}
+	public void setStatus(int status) {
+		this.status = Status.valueOf(status);
+	}
+	
+	public static enum Status {
+		ACTIVE(),
+		EXPIRED();
+		
+		public int getValue() {
+			return ordinal()+1;
+		}
 
+		public static Status valueOf(int value) {
+			if (value > 0 && value <= values().length) {
+				return values()[value - 1];
+			}
+			return null;
+		}
+	}
+	
+	
+	
 }

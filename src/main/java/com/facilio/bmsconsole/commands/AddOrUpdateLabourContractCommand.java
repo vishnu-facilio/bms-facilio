@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
@@ -14,8 +13,6 @@ import com.facilio.bmsconsole.context.LabourContext;
 import com.facilio.bmsconsole.context.LabourContractContext;
 import com.facilio.bmsconsole.context.LabourContractLineItemContext;
 import com.facilio.bmsconsole.context.LocationContext;
-import com.facilio.bmsconsole.context.PurchaseContractContext;
-import com.facilio.bmsconsole.context.PurchaseContractLineItemContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.DeleteRecordBuilder;

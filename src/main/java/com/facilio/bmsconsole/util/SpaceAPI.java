@@ -424,6 +424,16 @@ public class SpaceAPI {
 	public static List<ZoneContext> getTenantZones() throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule("zone");
+		FacilioModule tenantModule = modBean.getModule("tenant");
+		
+		FacilioField isDeletedField = FieldFactory.getIsDeletedField(tenantModule);
+		
+		Condition isDeletedCond = new Condition();
+		isDeletedCond.setField(isDeletedField);
+		isDeletedCond.setOperator(NumberOperators.NOT_EQUALS);
+		isDeletedCond.setValue(""+1);
+
+		
 		List<FacilioField> fields = modBean.getAllFields("zone");
 		
 		SelectRecordsBuilder<ZoneContext> builder = new SelectRecordsBuilder<ZoneContext>()
@@ -431,7 +441,11 @@ public class SpaceAPI {
 													.moduleName("zone")
 													.select(fields)
 													.beanClass(ZoneContext.class)
+													.innerJoin(tenantModule.getTableName())
+													.on(tenantModule.getTableName()+".ZONE_ID = "+module.getTableName()+".ID")
 													.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+													.andCondition(isDeletedCond)
+													.andCustomWhere(tenantModule.getTableName()+".STATUS = ?", 1)
 													.andCustomWhere(module.getTableName()+".TENANT_ZONE = ?", 1)
 													.orderBy("ID");
 		List<ZoneContext> zoneList = builder.get();
