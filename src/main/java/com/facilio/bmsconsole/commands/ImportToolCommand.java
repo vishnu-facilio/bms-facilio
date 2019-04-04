@@ -50,6 +50,7 @@ public class ImportToolCommand implements Command {
 				}
 				if ((purchasedTool.getSerialNumber() == null
 						|| purchasedTool.getSerialNumber().equalsIgnoreCase("null"))) {
+					tool.setQuantity(purchasedTool.getTool().getQuantity());
 					tool.setPurchasedTools(null);
 				} else {
 					tool.setPurchasedTools(Collections.singletonList(purchasedTool));
