@@ -1713,12 +1713,14 @@ public class FacilioChainFactory {
 	public static Chain getAllFormulasOfTypeChain() {
 		Chain c = FacilioChain.getNonTransactionChain();
 		c.addCommand(new GetAllFormulasOfTypeCommand());
+		c.addCommand(new GetReadingFieldsCommand());
 		return c;
 	}
 	
 	public static Chain updateFormulaChain() {
 		Chain c = FacilioChain.getTransactionChain();
 		c.addCommand(new UpdateFormulaCommand());
+		c.addCommand(new AddValidationRulesCommand());
 		return c;
 	}
 	

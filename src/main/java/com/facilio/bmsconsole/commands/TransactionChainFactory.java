@@ -1147,6 +1147,7 @@ public class TransactionChainFactory {
 			c.addCommand(new GetCategoryResourcesCommand());
 			c.addCommand(new InsertReadingDataMetaForNewReadingCommand());
 			c.addCommand(new AddFormulaFieldCommand());
+			c.addCommand(new AddValidationRulesCommand());
 			return c;
 		}
 		

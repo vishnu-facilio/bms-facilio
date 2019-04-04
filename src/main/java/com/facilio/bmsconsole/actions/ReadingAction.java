@@ -707,16 +707,27 @@ public class ReadingAction extends FacilioAction {
 	public void setFormulaFieldUnit(String formulaFieldUnit) {
 		this.formulaFieldUnit = formulaFieldUnit;
 	}
+	
+	private List<ReadingRuleContext> readingRules;
+	public List<ReadingRuleContext> getReadingRules() {
+		return readingRules;
+	}
+
+	public void setReadingRules(List<ReadingRuleContext> readingRules) {
+		this.readingRules = readingRules;
+	}
+	
 
 	public String addFormulaField() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.FORMULA_FIELD, formula);
 		context.put(FacilioConstants.ContextNames.FORMULA_UNIT_STRING, formulaFieldUnit);
+		context.put(FacilioConstants.ContextNames.READING_RULES_LIST,readingRules);		
 		if (formula.getInterval() == -1) {
 			int interval = ReadingsAPI.getDataInterval(formula.getWorkflow());
 			formula.setInterval(interval);
 		}
-		
+
 		Chain addEnpiChain = TransactionChainFactory.addFormulaFieldChain();
 		addEnpiChain.execute(context);
 		
@@ -727,6 +738,17 @@ public class ReadingAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.FORMULA_FIELD, formula);
 		context.put(FacilioConstants.ContextNames.FORMULA_UNIT_STRING, formulaFieldUnit);
+			
+	    List<List<ReadingRuleContext>> readingRules = Arrays.asList(getReadingRules());
+	    List<List<List<ActionContext>>> actionsList = readingRules.stream().map(l -> {return l.stream().map(ReadingRuleContext::getActions).collect(Collectors.toList());}).collect(Collectors.toList());
+		   readingRules.stream().flatMap(List::stream).forEach((r) -> {
+			// r.setReadingFieldId(getField().getFieldId());
+			r.getEvent().setModuleId(getModuleId());
+		});
+		context.put(FacilioConstants.ContextNames.READING_RULES_LIST, readingRules);
+		context.put(FacilioConstants.ContextNames.ACTIONS_LIST, actionsList);
+		context.put(FacilioConstants.ContextNames.DEL_READING_RULE_IDS, getDelReadingRulesIds());
+		
 		WorkflowContext workflow = formula.getWorkflow();
 		if(workflow!= null && workflow.getExpressions() == null) {
 			WorkflowUtil.getWorkflowContextFromString(workflow.getWorkflowString(), workflow);
@@ -1045,4 +1067,5 @@ public class ReadingAction extends FacilioAction {
 	public void setValue(String value) {
 		this.value = value;
 	}
- }
+
+}
