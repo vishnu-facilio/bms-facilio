@@ -91,7 +91,12 @@ public class WorkOrderAction extends FacilioAction {
 			fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
 		}
 		catch (Exception e) {
-			sendtMail(e);
+			JSONObject inComingDetails = new JSONObject();
+			inComingDetails.put("moduleName", getModuleName());
+			inComingDetails.put("ActionForm", getActionForm());
+			inComingDetails.put("fields", fields);
+			inComingDetails.put("orgId", AccountUtil.getCurrentAccount().getUser().getOuid());
+			sendtMail(e, inComingDetails);
 			throw e;
 		}
 		return SUCCESS;
@@ -103,7 +108,10 @@ public class WorkOrderAction extends FacilioAction {
     		setResult(FacilioConstants.ContextNames.WORK_ORDER_COUNT, woCount);
 		}
 		catch (Exception e) {
-			sendtMail(e);
+			JSONObject inComingDetails = new JSONObject();
+			inComingDetails.put("woCount", woCount);
+			inComingDetails.put("orgId", AccountUtil.getCurrentAccount().getUser().getOuid());
+			sendtMail(e, inComingDetails);
 			throw e;
 		}
 		
@@ -156,7 +164,10 @@ public class WorkOrderAction extends FacilioAction {
 			}
 		}
 		catch (Exception e) {
-			sendtMail(e);
+			JSONObject inComingDetails = new JSONObject();
+			inComingDetails.put("addWorkOrder", "While adding Workorder");
+			inComingDetails.put("orgId", AccountUtil.getCurrentAccount().getUser().getOuid());
+			sendtMail(e, inComingDetails);
 			throw e;
 		}
 		
@@ -195,7 +206,15 @@ public class WorkOrderAction extends FacilioAction {
 		setWorkOrderId(workorder.getId());
 		}
 		catch (Exception e) {
-			sendtMail(e);
+			JSONObject inComingDetails = new JSONObject();
+			inComingDetails.put("workorder", workorder);
+			inComingDetails.put("tasks", tasks);
+			inComingDetails.put("attachedFiles", this.attachedFiles);
+			inComingDetails.put("attachedFilesFileName", this.attachedFilesFileName);
+			inComingDetails.put("attachedFilesContentType", this.attachedFilesContentType);
+			inComingDetails.put("attachmentType", this.attachmentType);
+			inComingDetails.put("orgId", AccountUtil.getCurrentAccount().getUser().getOuid());
+			sendtMail(e, inComingDetails);
 			throw e;
 		}
 		return SUCCESS;
@@ -221,7 +240,10 @@ public class WorkOrderAction extends FacilioAction {
 			WorkOrderContext workorder = FieldUtil.getAsBeanFromJson(content, WorkOrderContext.class);
 		}
 		catch (Exception e) {
-			sendtMail(e);
+			JSONObject inComingDetails = new JSONObject();
+			inComingDetails.put("addWorkOrderFromTemplate, WorkorderObject", workorder);
+			inComingDetails.put("orgId", AccountUtil.getCurrentAccount().getUser().getOuid());
+			sendtMail(e, inComingDetails);
 			throw e;
 		}
 		
@@ -1197,7 +1219,10 @@ public class WorkOrderAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.ASSIGN_TICKET);
 		}
 		catch (Exception e) {
-			sendtMail(e);
+			JSONObject inComingDetails = new JSONObject();
+			inComingDetails.put("Event Type, assignWorkOrder", EventType.ASSIGN_TICKET);
+			inComingDetails.put("orgId", AccountUtil.getCurrentAccount().getUser().getOuid());
+			sendtMail(e, inComingDetails);
 			throw e;
 		}
 		return updateWorkOrder(context);
@@ -1221,7 +1246,12 @@ public class WorkOrderAction extends FacilioAction {
 		}
 	}
 		catch (Exception e) {
-			sendtMail(e);
+			JSONObject inComingDetails = new JSONObject();
+			inComingDetails.put("Event Type, closeWorkOrder", EventType.CLOSE_WORK_ORDER);
+			inComingDetails.put("actualTimings", actualTimings);
+			inComingDetails.put("workorder", workorder);
+			inComingDetails.put("orgId", AccountUtil.getCurrentAccount().getUser().getOuid());
+			sendtMail(e, inComingDetails);
 			throw e;
 		}
 		return updateWorkOrder(context);
@@ -1243,7 +1273,12 @@ public class WorkOrderAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.WORK_ORDER, workorder);
 	}
 		catch (Exception e) {
-			sendtMail(e);
+			JSONObject inComingDetails = new JSONObject();
+			inComingDetails.put("Event Type, resolveWorkOrder", EventType.SOLVE_WORK_ORDER);
+			inComingDetails.put("actualTimings", actualTimings);
+			inComingDetails.put("workorder", workorder);
+			inComingDetails.put("orgId", AccountUtil.getCurrentAccount().getUser().getOuid());
+			sendtMail(e, inComingDetails);
 			throw e;
 		}
 		return updateWorkOrder(context);
@@ -1260,7 +1295,11 @@ public class WorkOrderAction extends FacilioAction {
 		rowsUpdated = (int) context.get(FacilioConstants.ContextNames.ROWS_UPDATED);
 	}
 	catch (Exception e) {
-		sendtMail(e);
+		JSONObject inComingDetails = new JSONObject();
+		inComingDetails.put("Event Type, deleteWorkOrder", EventType.DELETE);
+		inComingDetails.put("RECORD_ID_LIST", id);
+		inComingDetails.put("orgId", AccountUtil.getCurrentAccount().getUser().getOuid());
+		sendtMail(e, inComingDetails);
 		throw e;
 	}
 		return SUCCESS;
@@ -1272,7 +1311,10 @@ public class WorkOrderAction extends FacilioAction {
 			setUpdateWorkorderContext(context);
 		}
 		catch (Exception e) {
-			sendtMail(e);
+			JSONObject inComingDetails = new JSONObject();
+			inComingDetails.put("updateWorkOrder", "updateWorkOrder");
+			inComingDetails.put("orgId", AccountUtil.getCurrentAccount().getUser().getOuid());
+			sendtMail(e, inComingDetails);
 			throw e;
 		}
 		
@@ -1312,7 +1354,11 @@ public class WorkOrderAction extends FacilioAction {
 		rowsUpdated = (int) context.get(FacilioConstants.ContextNames.ROWS_UPDATED);
 	}
 	catch (Exception e) {
-		sendtMail(e);
+		JSONObject inComingDetails = new JSONObject();
+		inComingDetails.put("workorder", workorder);
+		inComingDetails.put("RECORD_ID_LIST", id);
+		inComingDetails.put("orgId", AccountUtil.getCurrentAccount().getUser().getOuid());
+		sendtMail(e, inComingDetails);
 		throw e;
 	}
 		return SUCCESS;
@@ -1331,7 +1377,10 @@ public class WorkOrderAction extends FacilioAction {
 		setActionForm((ActionForm) context.get(FacilioConstants.ContextNames.ACTION_FORM));
 	}
 	catch (Exception e) {
-		sendtMail(e);
+		JSONObject inComingDetails = new JSONObject();
+		inComingDetails.put("WorkOrderId", getWorkOrderId());
+		inComingDetails.put("orgId", AccountUtil.getCurrentAccount().getUser().getOuid());
+		sendtMail(e, inComingDetails);
 		throw e;
 	}
 		return SUCCESS;
@@ -1348,7 +1397,10 @@ public class WorkOrderAction extends FacilioAction {
 		setResult("activity", context.get(FacilioConstants.ContextNames.RECORD_LIST));
 	}
 	catch (Exception e) {
-		sendtMail(e);
+		JSONObject inComingDetails = new JSONObject();
+		inComingDetails.put("PARENT_ID", workOrderId);
+		inComingDetails.put("orgId", AccountUtil.getCurrentAccount().getUser().getOuid());
+		sendtMail(e, inComingDetails);
 		throw e;
 	}
 		return SUCCESS;
@@ -1436,26 +1488,32 @@ public class WorkOrderAction extends FacilioAction {
 			workOrderList();
 		}
 		catch (Exception e) {
-			sendtMail(e);
+			JSONObject inComingDetails = new JSONObject();
+			inComingDetails.put("orgId", AccountUtil.getCurrentAccount().getUser().getOuid());
+			sendtMail(e, inComingDetails);
 			throw e;
 		}
 		return SUCCESS;
 	}
-	private void sendtMail(Exception e) throws Exception {
+	private void sendtMail(Exception e, JSONObject inComingDetails) throws Exception {
 		// TODO Auto-generated method stub
 		String errorTrace = null;
 		StringBuilder body = new StringBuilder();
 		if (e != null) {
 			errorTrace = ExceptionUtils.getStackTrace(e);
 			body.append("\n\nStackTrace : \n--------\n")
-				.append(errorTrace);
+				.append(errorTrace)
+				.append("Device Type: ")
+				.append(AccountUtil.getCurrentAccount().getDeviceType())
+				.append("\n\n-----------------\n\n");
+			body.append("\n\nDetails : \n--------\n")
+			.append(inComingDetails.toString());
 			String message = e.getMessage();
 			JSONObject mailJson = new JSONObject();
 			mailJson.put("sender", "noreply@facilio.com");
 			mailJson.put("to", "shaan@facilio.com, tharani@facilio.com, aravind@facilio.com");
 			mailJson.put("subject", "Workorder Exception");
 			mailJson.put("message", body.toString());
-			System.out.println("123455" + mailJson);
 			AwsUtil.sendEmail(mailJson);
 		}
 	}
@@ -1755,7 +1813,13 @@ public class WorkOrderAction extends FacilioAction {
 		}
 		}
 		catch (Exception e) {
-			sendtMail(e);
+			JSONObject inComingDetails = new JSONObject();
+			inComingDetails.put("ViewName", getViewName());
+			inComingDetails.put("StartTime", getStartTime());
+			inComingDetails.put("EndTime", getEndTime());
+			inComingDetails.put("isApproval", isApproval());
+			inComingDetails.put("orgId", AccountUtil.getCurrentAccount().getUser().getOuid());
+			sendtMail(e, inComingDetails);
 			throw e;
 		}
 		return SUCCESS;
@@ -1980,7 +2044,10 @@ public class WorkOrderAction extends FacilioAction {
 		setActivities((List<TicketActivity>) context.get(FacilioConstants.TicketActivity.TICKET_ACTIVITIES));
 		}
 		catch (Exception e) {
-			sendtMail(e);
+			JSONObject inComingDetails = new JSONObject();
+			inComingDetails.put("workOrderId", workOrderId);
+			inComingDetails.put("orgId", AccountUtil.getCurrentAccount().getUser().getOuid());
+			sendtMail(e, inComingDetails);
 			throw e;
 		}
 
@@ -2144,7 +2211,10 @@ public class WorkOrderAction extends FacilioAction {
 		setResult(FacilioConstants.ContextNames.WORK_ORDER, workorder);
 	}
 		catch (Exception e) {
-			sendtMail(e);
+			JSONObject inComingDetails = new JSONObject();
+			inComingDetails.put("workorder", workorder);
+			inComingDetails.put("orgId", AccountUtil.getCurrentAccount().getUser().getOuid());
+			sendtMail(e, inComingDetails);
 			throw e;
 		}
 		return SUCCESS;
@@ -2157,7 +2227,10 @@ public class WorkOrderAction extends FacilioAction {
 		setResult(FacilioConstants.ContextNames.WORK_ORDER, workorder);
 	}
 		catch (Exception e) {
-			sendtMail(e);
+			JSONObject inComingDetails = new JSONObject();
+			inComingDetails.put("workorder", workorder);
+			inComingDetails.put("orgId", AccountUtil.getCurrentAccount().getUser().getOuid());
+			sendtMail(e, inComingDetails);
 			throw e;
 		}
 		return SUCCESS;
@@ -2169,7 +2242,9 @@ public class WorkOrderAction extends FacilioAction {
 		setResult(FacilioConstants.ContextNames.ROWS_UPDATED, rowsUpdated);
 		}
 		catch (Exception e) {
-			sendtMail(e);
+			JSONObject inComingDetails = new JSONObject();
+			inComingDetails.put("orgId", AccountUtil.getCurrentAccount().getUser().getOuid());
+			sendtMail(e, inComingDetails);
 			throw e;
 		}
 		return SUCCESS;
@@ -2181,7 +2256,9 @@ public class WorkOrderAction extends FacilioAction {
 		setResult(FacilioConstants.ContextNames.ROWS_UPDATED, rowsUpdated);
 		}
 		catch (Exception e) {
-			sendtMail(e);
+			JSONObject inComingDetails = new JSONObject();
+			inComingDetails.put("orgId", AccountUtil.getCurrentAccount().getUser().getOuid());
+			sendtMail(e, inComingDetails);
 			throw e;
 		}
 		return SUCCESS;
@@ -2200,7 +2277,10 @@ public class WorkOrderAction extends FacilioAction {
 		setResult(FacilioConstants.ContextNames.WORK_ORDER_LIST, workOrders);
 		}
 		catch (Exception e) {
-			sendtMail(e);
+			JSONObject inComingDetails = new JSONObject();
+			inComingDetails.put("orgId", AccountUtil.getCurrentAccount().getUser().getOuid());
+			inComingDetails.put("workOrders", workOrders);
+			sendtMail(e, inComingDetails);
 			throw e;
 		}
 		return SUCCESS;
