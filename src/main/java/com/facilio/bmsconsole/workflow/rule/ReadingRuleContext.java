@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.workflow.rule;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
@@ -419,7 +420,9 @@ public class ReadingRuleContext extends WorkflowRuleContext implements Cloneable
 			boolean workflowFlag = true;
 			if (getWorkflow() != null) {
 				WorkflowContext workflowContext = getWorkflow();
-//				workflowContext.setLogNeeded(true);
+				if(AwsUtil.isDevelopment()) {
+					workflowContext.setLogNeeded(true);
+				}
 				workflowFlag = WorkflowUtil.getWorkflowExpressionResultAsBoolean(workflowContext, placeHolders, currentRDM, false, true);
 			}
 			return workflowFlag;

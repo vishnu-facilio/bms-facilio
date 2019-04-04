@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.workflow.rule;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.modules.FacilioField;
@@ -378,7 +379,9 @@ public class WorkflowRuleContext implements Serializable {
 		try {
 			boolean workflowFlag = true;
 			if (workflow != null) {
-//				workflow.setLogNeeded(true);
+				if(AwsUtil.isDevelopment()) {
+					workflow.setLogNeeded(true);
+				}
 				workflowFlag = WorkflowUtil.getWorkflowExpressionResultAsBoolean(workflow, placeHolders);
 			}
 			return workflowFlag;
