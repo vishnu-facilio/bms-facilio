@@ -75,8 +75,10 @@ public class GetItemTypesListCommand implements Command{
 			builder.andCriteria(filterCriteria);
 		} 
 		if (( filters == null || includeParentCriteria) && view != null) {
-		Criteria criteria = view.getCriteria();
-		builder.andCriteria(criteria);
+			Criteria criteria = view.getCriteria();
+			if (criteria != null && !criteria.isEmpty()) {
+				builder.andCriteria(criteria);
+			}
 		}
 		
 		Criteria searchCriteria = (Criteria) context.get(FacilioConstants.ContextNames.SEARCH_CRITERIA);
