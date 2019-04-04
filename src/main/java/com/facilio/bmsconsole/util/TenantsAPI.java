@@ -273,6 +273,8 @@ public class TenantsAPI {
 														.select(modBean.getAllFields(FacilioConstants.ContextNames.TENANT))
 														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 														.andCondition(CriteriaAPI.getCondition("ZONE_ID", "zoneId", zoneId+"", NumberOperators.EQUALS))
+														.andCustomWhere(module.getTableName()+".STATUS = ?", 1)
+														
 														;
 		
 		List<TenantContext> records = builder.get();
@@ -313,8 +315,13 @@ public class TenantsAPI {
 												
 		List<Map<String,Object>> records = builder.get();
 	    if (records != null && !records.isEmpty()) {
-	    	TenantContext tenant = fetchTenantForZone((Long)records.get(0).get("zoneId"));
-			return tenant;
+	    	for(Map<String,Object> map: records) {
+	    		TenantContext tenant = fetchTenantForZone((Long)map.get("zoneId"));
+	    		if(tenant != null) {
+	    			return tenant;
+	    		}
+	    	}
+			
 		}
 		return null;
 	}
@@ -616,6 +623,28 @@ public class TenantsAPI {
 			
 	}
 
+	public static int updateTenantStatus(Long tenantId,int status) throws Exception{
+        
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.TENANT);
+		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.TENANT);
+		Map<String, FacilioField> tenantFieldMap = FieldFactory.getAsMap(fields);
+		List<FacilioField> updatedfields = new ArrayList<FacilioField>();
+		FacilioField statusField = tenantFieldMap.get("status");
+		updatedfields.add(statusField);
+		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
+											.table(module.getTableName())
+											.fields(updatedfields)
+											.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+											.andCondition(CriteriaAPI.getIdCondition(tenantId, module));
+									
+		Map<String, Object> value = new HashMap<>();
+		value.put("status", status);
+		int count = updateBuilder.update(value);
+		return count;
+			
+	}
+
 	
 	public static void addUtilityMapping(TenantContext tenant) throws Exception {
 		if (tenant.getUtilityAssets() == null || tenant.getUtilityAssets().isEmpty()) {
@@ -676,7 +705,9 @@ public class TenantsAPI {
 											.on(utilityModule.getTableName()+".TENANT_ID = "+tenantModule.getTableName()+".ID")
 											.andCondition(assetIdCond)
 											.andCondition(CriteriaAPI.getCurrentOrgIdCondition(utilityModule))
-											.andCondition(sysDeletedCond);
+											.andCondition(sysDeletedCond)
+											.andCustomWhere(tenantModule.getTableName()+".STATUS = ?", 1);
+												 
 
         List<Map<String, Object>> rs = builder.get();
         if (rs.size() > 0) {
@@ -1134,7 +1165,8 @@ public class TenantsAPI {
 														    .innerJoin(zoneRelModule.getTableName())
 															.on(zoneRelModule.getTableName()+".ZONE_ID = "+zoneModule.getTableName()+".ID")
 														    .andCondition(CriteriaAPI.getCondition(zoneRelModule.getTableName()+".BASE_SPACE_ID","baseSpaceId",""+spaceId,NumberOperators.EQUALS))
-															;
+														    .andCustomWhere(tenantModule.getTableName()+".STATUS = ?", 1)
+														    ;
 			List<TenantContext> tenantList = builder.get();
 			if(!CollectionUtils.isEmpty(tenantList)) {
 				return tenantList.get(0);
@@ -1160,6 +1192,7 @@ public class TenantsAPI {
 															.innerJoin(tenantUtilityModule.getTableName())
 															.on(tenantUtilityModule.getTableName()+".TENANT_ID = "+tenantModule.getTableName()+".ID")
 														    .andCondition(CriteriaAPI.getCondition(tenantUtilityModule.getTableName()+".ASSET_ID","assetId",""+assetId,NumberOperators.EQUALS))
+														    .andCustomWhere(tenantModule.getTableName()+".STATUS = ?", 1)
 															;
 			List<TenantContext> tenantList = builder.get();
 			if(!CollectionUtils.isEmpty(tenantList)) {

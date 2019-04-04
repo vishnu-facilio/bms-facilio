@@ -2038,6 +2038,12 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
+	public static Chain toggleStatusChain() {
+		Chain c = FacilioChain.getTransactionChain();
+		c.addCommand(new ToggleTenantStatusCommand());
+		return c;
+	}
+	
 	public static Chain addRateCardChain() {
 		Chain c = FacilioChain.getTransactionChain();
 		c.addCommand(new AddRateCardCommand());

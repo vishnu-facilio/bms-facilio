@@ -350,7 +350,7 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 		return selectFields;
 	}
 
-	private WhereBuilder computeWhere (FacilioField orgIdField, FacilioField moduleIdField, FacilioField siteIdField) {
+	private WhereBuilder computeWhere (FacilioField orgIdField, FacilioField moduleIdField, FacilioField siteIdField, FacilioField isDeletedField) {
 		WhereBuilder whereCondition = new WhereBuilder();
 		Condition orgCondition = CriteriaAPI.getCondition(orgIdField, String.valueOf(AccountUtil.getCurrentOrg().getOrgId()), NumberOperators.EQUALS);
 		whereCondition.andCondition(orgCondition);
@@ -365,7 +365,11 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 		}
 
 		if (module.isTrashEnabled() && !fetchDeleted) {
-			whereCondition.andCondition(CriteriaAPI.getCondition("SYS_DELETED", "deleted", String.valueOf(false), BooleanOperators.IS));
+//			if (isDeletedField != null) {
+			whereCondition.andCondition(CriteriaAPI.getCondition(isDeletedField, String.valueOf(false), BooleanOperators.IS));
+//			} else {
+//				whereCondition.andCondition(CriteriaAPI.getCondition("SYS_DELETED", "deleted", String.valueOf(false), BooleanOperators.IS));
+//			}
 		}
 
 		whereCondition.andCustomWhere(where.getWhereClause(), where.getValues());
@@ -409,7 +413,7 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 
 		builder.table(module.getTableName());
 
-		WhereBuilder whereCondition = computeWhere(orgIdField, moduleIdField, siteIdField);
+		WhereBuilder whereCondition = computeWhere(orgIdField, moduleIdField, siteIdField, isDeletedField);
 		builder.andCustomWhere(whereCondition.getWhereClause(), whereCondition.getValues());
 		handlePermissionAndScope();
 		
