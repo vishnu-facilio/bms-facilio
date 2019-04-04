@@ -127,8 +127,8 @@ public class ReportFieldContext {
 					enumMap.put(0, boolField.getFalseVal());
 				}
 				else {
-					enumMap.put(1, 1);
-					enumMap.put(0, 0);
+					enumMap.put(1, "True");
+					enumMap.put(0, "False");
 				}
 			}
 			else if (field instanceof EnumField) {
