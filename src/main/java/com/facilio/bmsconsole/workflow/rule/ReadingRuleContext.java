@@ -419,7 +419,7 @@ public class ReadingRuleContext extends WorkflowRuleContext implements Cloneable
 			boolean workflowFlag = true;
 			if (getWorkflow() != null) {
 				WorkflowContext workflowContext = getWorkflow();
-				workflowContext.setLogNeeded(true);
+//				workflowContext.setLogNeeded(true);
 				workflowFlag = WorkflowUtil.getWorkflowExpressionResultAsBoolean(workflowContext, placeHolders, currentRDM, false, true);
 			}
 			return workflowFlag;

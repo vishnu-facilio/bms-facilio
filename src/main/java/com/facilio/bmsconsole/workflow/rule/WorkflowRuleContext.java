@@ -378,7 +378,7 @@ public class WorkflowRuleContext implements Serializable {
 		try {
 			boolean workflowFlag = true;
 			if (workflow != null) {
-				workflow.setLogNeeded(true);
+//				workflow.setLogNeeded(true);
 				workflowFlag = WorkflowUtil.getWorkflowExpressionResultAsBoolean(workflow, placeHolders);
 			}
 			return workflowFlag;
