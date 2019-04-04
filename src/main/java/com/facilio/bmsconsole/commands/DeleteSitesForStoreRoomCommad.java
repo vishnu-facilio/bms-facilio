@@ -11,7 +11,7 @@ public class DeleteSitesForStoreRoomCommad implements Command{
 
 	@Override
 	public boolean execute(Context context) throws Exception {
-		long storeRoomId = (long) context.get(FacilioConstants.ContextNames.ID);
+		long storeRoomId = (long) context.get(FacilioConstants.ContextNames.RECORD_ID);
 		if (storeRoomId > 0){
 		GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
 				.table(ModuleFactory.getSitesForStoreRoomModule().getTableName())

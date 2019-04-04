@@ -2295,7 +2295,7 @@ public class TransactionChainFactory {
 			Chain chain = getDefaultChain();
 			chain.addCommand(SetTableNamesCommand.getForPurchaseContract());
 			chain.addCommand(new AddOrUpdatePurchaseContractCommand());
-		    //rollup might be needed to update purchase contract total cost -- need to be discussed
+		    chain.addCommand(getPurchaseContractTotalCostChain()); //roll up for calculating total cost
 			return chain;
 		}
 		
@@ -2310,7 +2310,7 @@ public class TransactionChainFactory {
 			Chain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForPurchaseContractLineItem());
 			c.addCommand(new AddOrUpdatePurchaseContractLineItemCommand());
-			//rollup might be needed to update contract total cost -- need to be discussed
+			c.addCommand(getPurchaseContractTotalCostChain()); //roll up for calculating total cost
 			return c;
 		}
 		
@@ -2364,6 +2364,11 @@ public class TransactionChainFactory {
 			return chain;
 		}
 		
+		public static Chain getPurchaseContractTotalCostChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new PurchaseContractTotalCostRollupCommand());
+			return c;
+		}
 		
 }
 
