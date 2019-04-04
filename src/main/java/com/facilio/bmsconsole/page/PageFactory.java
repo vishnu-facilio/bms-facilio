@@ -58,10 +58,10 @@ public class PageFactory {
 
 		PageWidget workorderWidget = getCountModuleWidget(FacilioConstants.ContextNames.WORK_ORDER);
 		group2.addWidget(workorderWidget);
-		PageWidget alarmWidget = getCountModuleWidget(FacilioConstants.ContextNames.ALARM);
-		group2.addWidget(alarmWidget);
 		PageWidget pmWidget = getListModuleWidget(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE);
 		group2.addWidget(pmWidget);
+		PageWidget alarmWidget = getCountModuleWidget(FacilioConstants.ContextNames.ALARM);
+		group2.addWidget(alarmWidget);
 		PageWidget readingWidget = getListModuleWidget(FacilioConstants.ContextNames.READING);
 		group2.addWidget(readingWidget);
 		// PageWidget activityWidget = new PageWidget(WidgetType.ACTIVITY);

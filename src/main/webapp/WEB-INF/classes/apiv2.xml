@@ -917,6 +917,15 @@
 			<param name="viewName">{1}</param>
 		</action>
 	</package>
+	
+	<package name="assetCardApiv2" namespace="/api/v2/assets/cards" extends="v2Api">
+		<action name="*" class="com.facilio.bmsconsole.actions.AssetAction"
+			method="fetchModuleCards">
+			<param name="moduleName">asset</param>
+			<param name="permission">READ</param>
+			<param name="moduleName">{1}</param>
+		</action>
+	</package>
 
 	<package name="attachmentPreviewApi" namespace="/api/v2/preview" extends="v2Api">
 		<global-results>
