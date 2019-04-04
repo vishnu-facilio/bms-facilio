@@ -180,7 +180,6 @@ public class ImportFieldFactory {
 		}
 		else {
 			options.put(ImportProcessContext.ImportSetting.INSERT.toString(),ImportProcessContext.ImportSetting.INSERT.getValue());
-			options.put(ImportProcessContext.ImportSetting.INSERT_SKIP.toString(),ImportProcessContext.ImportSetting.INSERT_SKIP.getValue());
 		}
 		return options;
 	}
