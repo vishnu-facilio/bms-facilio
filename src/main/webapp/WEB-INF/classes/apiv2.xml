@@ -87,6 +87,9 @@
 		<action name="forms" class="com.facilio.bmsconsole.actions.FormAction" method="formList">
 		</action>
 
+		<action name="errors" class="com.facilio.bmsconsole.actions.ClientErrorAction" method="logClientError">
+		</action>
+
 	</package>
 
 	<package name="internalV2" namespace="/v2/internal" extends="v2Api">
