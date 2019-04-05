@@ -158,7 +158,7 @@ public class PurchaseOrderCompleteCommand implements Command {
 		item.setCostType(CostType.FIFO);
 		if (isIndividualTracking) {
 			List<String> serialNumbers = getLineItemSerialNumbers(lineItem.getId());
-			if (serialNumbers.size() < lineItem.getQuantity()) {
+			if (serialNumbers.size() < lineItem.getQuantityReceived()) {
 				throw new IllegalArgumentException("Please fill all the serial numbers of item");
 			} else {
 				List<PurchasedItemContext> purchasedItems = setPurchasedItemContext(serialNumbers,
@@ -183,7 +183,7 @@ public class PurchaseOrderCompleteCommand implements Command {
 		tool.setRate(lineItem.getCost());
 		if (isIndividualTracking) {
 			List<String> serialNumbers = getLineItemSerialNumbers(lineItem.getId());
-			if (serialNumbers.size() < lineItem.getQuantity()) {
+			if (serialNumbers.size() < lineItem.getQuantityReceived()) {
 				throw new IllegalArgumentException("Please fill all the serial numbers of tool");
 			} else {
 				List<PurchasedToolContext> purchasedTools = setPurchasedToolsContext(serialNumbers, lineItem.getCost());
