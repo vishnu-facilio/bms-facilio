@@ -126,19 +126,21 @@ public class AddPurchasedItemsForBulkItemAddCommand implements Command {
 		System.err.println(Thread.currentThread().getName() + "Exiting updateCosts in  AddorUpdateCommand#######  ");
 
 	}
-	
+
 	private void setImportProcessContext(Context c, int size) throws ParseException {
-		ImportProcessContext importProcessContext = (ImportProcessContext) c.get(ImportAPI.ImportProcessConstants.IMPORT_PROCESS_CONTEXT);
-		JSONObject meta = new JSONObject();	
-		if(!importProcessContext.getImportJobMetaJson().isEmpty()) {
-			meta = importProcessContext.getFieldMappingJSON();
-			meta.put("Inserted", size+"");
+		ImportProcessContext importProcessContext = (ImportProcessContext) c
+				.get(ImportAPI.ImportProcessConstants.IMPORT_PROCESS_CONTEXT);
+		if (importProcessContext != null) {
+			JSONObject meta = new JSONObject();
+			if (!importProcessContext.getImportJobMetaJson().isEmpty()) {
+				meta = importProcessContext.getFieldMappingJSON();
+				meta.put("Inserted", size + "");
+			} else {
+				meta.put("Inserted", size + "");
+			}
+			importProcessContext.setImportJobMeta(meta.toJSONString());
 		}
-		else {
-			meta.put("Inserted", size+"");
-		}
-		importProcessContext.setImportJobMeta(meta.toJSONString());
-		
+
 	}
 
 }

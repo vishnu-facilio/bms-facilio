@@ -47,6 +47,7 @@ import com.facilio.bmsconsole.context.MLAlarmContext;
 import com.facilio.bmsconsole.context.MLAlarmOccurrenceContext;
 import com.facilio.bmsconsole.context.MlForecastingContext;
 import com.facilio.bmsconsole.context.PhotosContext;
+import com.facilio.bmsconsole.context.PoLineItemsSerialNumberContext;
 import com.facilio.bmsconsole.context.PurchaseContractContext;
 import com.facilio.bmsconsole.context.PurchaseContractLineItemContext;
 import com.facilio.bmsconsole.context.PurchaseOrderContext;
@@ -930,7 +931,9 @@ public class FacilioConstants {
 		public static final String LABOUR_CONTRACTS = "labourcontracts";
 		public static final String LABOUR_CONTRACT = "labourcontract";
 		public static final String LABOUR_CONTRACTS_LINE_ITEMS = "labourcontractlineitems";
-	
+
+		public static final String PO_LINE_ITEMS_SERIAL_NUMBERS = "poLineItemSerialNumbers";
+		public static final String SERIAL_NUMBERS = "serialNumbers";
 		
 		private static Map<String, Class> classMap = Collections.unmodifiableMap(initClassMap());
 		private static Map<String, Class> initClassMap() {
@@ -1029,10 +1032,10 @@ public class FacilioConstants {
 			classMap.put(PURCHASE_CONTRACTS_LINE_ITEMS, PurchaseContractLineItemContext.class);
 			classMap.put(LABOUR_CONTRACTS, LabourContractContext.class);
 			classMap.put(LABOUR_CONTRACTS_LINE_ITEMS, LabourContractLineItemContext.class);
-				
 			classMap.put(RECEIVABLE, ReceivableContext.class);
 			classMap.put(RECEIPT, ReceiptContext.class);
 			classMap.put(RECEIPT_LINE_ITEMS, ReceiptLineItemContext.class);
+			classMap.put(PO_LINE_ITEMS_SERIAL_NUMBERS, PoLineItemsSerialNumberContext.class);
 			return classMap;
 		}
 		

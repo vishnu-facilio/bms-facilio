@@ -1901,4 +1901,12 @@ public class ModuleFactory {
 		accessbileSpaceModule.setTableName("Storeroom_Sites");
 		return accessbileSpaceModule;
 	}
+	
+	public static FacilioModule getPoLineItemsSerialNumberModule() {
+		FacilioModule tenants = new FacilioModule();
+		tenants.setName("poLineItemSerialNumbers");
+		tenants.setDisplayName("Serial Numbers");
+		tenants.setTableName("PO_Line_Item_Serial_Numbers");
+		return tenants;
+	}
 }

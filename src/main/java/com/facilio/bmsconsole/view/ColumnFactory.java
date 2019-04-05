@@ -51,13 +51,15 @@ public class ColumnFactory {
 		columnMap.put("receivable-default", getDefaultReceivableColumns());
 		columnMap.put("purchasecontracts-default", getDefaultContractColumns());
 		columnMap.put("labourcontracts-default", getDefaultContractColumns());
-		
+		columnMap.put("poLineItemSerialNumbers-default", getDefaultPoLineItemsSerialNumberColumns());
 		// Default report columns 
 		columnMap.put("workorder-report", getWorkOrderReportColumns());
 		columnMap.put("alarm-report", getAlarmReportColumns());
 		columnMap.put("energydata-report", getDefaultEnergyColumns());
 		columnMap.put("toolTransactions-default", getDefaultToolTransactionsColumns());
 		columnMap.put("itemTransactions-default", getDefaultItemTransactionsColumns());
+		
+		
 		
 		// Special types
 		columnMap.put("preventivemaintenance-default", getPreventiveMaintenanceColumns());
@@ -362,6 +364,13 @@ public class ColumnFactory {
 		columns.add(new ViewField("endDate", "Valid Till"));
 		columns.add(new ViewField("totalCost", "Total Cost"));
 
+		return columns;
+	}
+	
+	private static List<ViewField> getDefaultPoLineItemsSerialNumberColumns() {
+		List<ViewField> columns = new ArrayList<ViewField>();
+		columns.add(new ViewField("serialNumber", "Serial Number"));
+	
 		return columns;
 	}
 }

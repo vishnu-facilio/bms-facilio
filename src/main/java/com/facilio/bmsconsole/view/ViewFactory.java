@@ -292,6 +292,12 @@ public class ViewFactory {
 		views.put("all", getAllLabourContractView().setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.LABOUR_CONTRACTS, views);
 
+		order = 1;
+		views = new LinkedHashMap<>();
+		views.put("all", getAllPoLineItemsSerialNumeberView().setOrder(order++));
+		viewsMap.put(FacilioConstants.ContextNames.PO_LINE_ITEMS_SERIAL_NUMBERS, views);
+
+		
 		return viewsMap;
 	}
 
@@ -3019,5 +3025,18 @@ public class ViewFactory {
 		return allView;
 	}
 
+	private static FacilioView getAllPoLineItemsSerialNumeberView() {
+		FacilioField createdTime = new FacilioField();
+		createdTime.setName("sysCreatedTime");
+		createdTime.setDataType(FieldType.NUMBER);
+		createdTime.setColumnName("SYS_CREATED_TIME");
+		createdTime.setModule(ModuleFactory.getPoLineItemsSerialNumberModule());
+
+		FacilioView allView = new FacilioView();
+		allView.setName("all");
+		allView.setDisplayName("All Serial Numbers");
+		allView.setSortFields(Arrays.asList(new SortField(createdTime, false)));
+		return allView;
+	}
 
 }

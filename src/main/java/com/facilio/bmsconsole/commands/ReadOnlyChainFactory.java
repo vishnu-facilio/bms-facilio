@@ -755,5 +755,15 @@ public class ReadOnlyChainFactory {
 		return c;
 	}
 
+	public static Chain getPoLineItemsSerialNumberList() {
+		Chain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForPoLineItemSerialNumber());
+		c.addCommand(new LoadViewCommand());
+		c.addCommand(new LoadAllFieldsCommand());
+		c.addCommand(new GenerateCriteriaFromFilterCommand());
+		c.addCommand(new GenerateSearchConditionCommand());
+		c.addCommand(new GenericGetModuleDataListCommand());
+		return c;
+	}
 	
 }
