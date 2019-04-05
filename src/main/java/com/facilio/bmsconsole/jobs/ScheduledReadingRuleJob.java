@@ -22,6 +22,8 @@ public class ScheduledReadingRuleJob extends FacilioJob {
 		try {
 			Long readingRuleId = jc.getJobId();
 			
+			LOGGER.info("ScheduledReadingRuleJob called for -- ruleid -- "+ readingRuleId);
+			
 			FacilioContext context = new FacilioContext();
 			
 			context.put(FacilioConstants.ContextNames.WORKFLOW_RULE_ID, readingRuleId);
@@ -30,9 +32,11 @@ public class ScheduledReadingRuleJob extends FacilioJob {
 			Chain scheduledChain = TransactionChainFactory.executeScheduledReadingRuleChain();
 			
 			scheduledChain.execute(context);
+			
+			LOGGER.info("ScheduledReadingRuleJob completed for -- ruleid -- "+ readingRuleId);
 		}
 		catch(Exception e) {
-			LOGGER.info("Exception occurred ", e);
+			LOGGER.error("Exception occurred ", e);
 			CommonCommandUtil.emailException("ScheduledReadingRuleJob", "rule Calculation job failed for orgid : "+jc.getOrgId() +" id -- "+jc.getJobId(), e);
 		}
 	}
