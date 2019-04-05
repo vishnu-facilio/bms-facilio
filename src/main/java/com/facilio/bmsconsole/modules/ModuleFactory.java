@@ -1,10 +1,11 @@
 package com.facilio.bmsconsole.modules;
 
+import com.facilio.agent.AgentKeys;
+import com.facilio.constants.FacilioConstants;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-
-import com.facilio.constants.FacilioConstants;
 
 public class ModuleFactory {
 
@@ -98,14 +99,29 @@ public class ModuleFactory {
 		return formModule;
 	}
 
-	public static FacilioModule getAgentdataModule() {
-		FacilioModule AgentdataModul = new FacilioModule();
-		AgentdataModul.setName("agentdata");
-		AgentdataModul.setDisplayName("agentdata");
-		AgentdataModul.setTableName("Agent_Data");
-		return AgentdataModul;
+	public static FacilioModule getAgentDataModule() {
+		FacilioModule agentDataModule = new FacilioModule();
+		agentDataModule.setName("agentData");
+		agentDataModule.setDisplayName("agentData");
+		agentDataModule.setTableName(AgentKeys.AGENT_TABLE);
+		return agentDataModule;
 	}
 
+	public static FacilioModule getAgentMetricsModule() {
+		FacilioModule agentMetricsModule = new FacilioModule();
+		agentMetricsModule.setName("addAgentMetrics");
+        agentMetricsModule.setDisplayName("addAgentMetrics");
+        agentMetricsModule.setTableName(AgentKeys.METRICS_TABLE);
+		return agentMetricsModule;
+	}
+
+	public static FacilioModule getAgentLogModule() {
+		FacilioModule agentLogModule = new FacilioModule();
+		agentLogModule.setName("agentLog");
+		agentLogModule.setDisplayName("agentLog");
+		agentLogModule.setTableName(AgentKeys.AGENT_LOG_TABLE);
+		return agentLogModule;
+	}
 
 	public static FacilioModule getFormFieldsModule() {
 		FacilioModule formFieldsModule = new FacilioModule();

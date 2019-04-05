@@ -3,6 +3,7 @@ package com.facilio.kafka;
 import com.facilio.agent.AgentKeys;
 import com.facilio.agent.AgentUtil;
 import com.facilio.agent.FacilioAgent;
+import com.facilio.agent.PublishType;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleCRUDBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
@@ -31,6 +32,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.facilio.agent.PublishType.event;
+
 public class Processor extends FacilioProcessor {
     private final List<FacilioField> fields = new ArrayList<>();
     private final FacilioField deviceIdField = new FacilioField();
@@ -44,6 +47,7 @@ public class Processor extends FacilioProcessor {
     private HashMap<String, HashMap<String, Long>> deviceMessageTime = new HashMap<>();
     private long orgId;
     private String orgDomainName;
+    private Boolean isStage = !AwsUtil.isProduction();
     private JSONParser parser = new JSONParser();
 
 
@@ -60,7 +64,7 @@ public class Processor extends FacilioProcessor {
         setConsumer(new FacilioKafkaConsumer(ServerInfo.getHostname(), consumerGroup, getTopic()));
         setProducer(new FacilioKafkaProducer(getTopic()));
         agentUtil = new AgentUtil(orgId, orgDomainName);
-        agentUtil.populateAgentContextMap();
+        agentUtil.populateAgentContextMap(null);
         devicePointsUtil = new DevicePointsUtil();
         ackUtil = new AckUtil();
         eventUtil = new EventUtil();
@@ -104,14 +108,15 @@ public class Processor extends FacilioProcessor {
 
                 JSONObject payLoad = (JSONObject) parser.parse(data);
 
-                String dataType = AgentKeys.EVENT;
+
+                String dataType = event.getValue();
                 if (payLoad.containsKey(EventUtil.DATA_TYPE)) {
                     dataType = (String) payLoad.remove(EventUtil.DATA_TYPE);
                 }
-
-                String agentName = orgDomainName;
-                if (payLoad.containsKey(AgentKeys.AGENT)) {
-                    agentName = payLoad.remove(AgentKeys.AGENT).toString();
+                PublishType publishType = PublishType.valueOf(dataType);
+                String agentName = orgDomainName.trim();
+                if (payLoad.containsKey(PublishType.agent.getValue())) {
+                    agentName = payLoad.remove(PublishType.agent.getValue()).toString().trim();
                 }
 
                 String deviceId = orgDomainName;
@@ -126,9 +131,12 @@ public class Processor extends FacilioProcessor {
                 }
 
                 FacilioAgent agent = agentUtil.getFacilioAgent(agentName);
-                if (agent == null && !AgentKeys.AGENT.equals(dataType)) {
+                if (agent == null ) {
                     agent = getFacilioAgent(agentName);
                     agentUtil.addAgent(agent);
+                }
+                if(isStage && agent != null) {
+                    AgentUtil.addAgentMetrics(data.length(), agent.getId(), publishType.getKey());
                 }
 
                 HashMap<String, Long> dataTypeLastMessageTime = deviceMessageTime.getOrDefault(deviceId, new HashMap<>());
@@ -139,20 +147,23 @@ public class Processor extends FacilioProcessor {
                     try {
                         partitionKey = record.getPartitionKey();
                         if (dataType != null) {
-                            switch (dataType) {
-                                case AgentKeys.TIMESERIES:
+                            switch (publishType) {
+                                case timeseries:
                                     processTimeSeries(record);
                                     break;
-                                case AgentKeys.DEVICE_POINTS:
+                                case devicepoints:
                                     devicePointsUtil.processDevicePoints(payLoad, orgId, deviceMap, agent.getId());
                                     break;
-                                case AgentKeys.ACK:
+                                case ack:
                                     ackUtil.processAck(payLoad, orgId);
+                                    if(isStage) {
+                                        agentUtil.putLog(payLoad, orgId, agent.getId(), false);
+                                    }
                                     break;
-                                case AgentKeys.AGENT:
-                                    numberOfRows = agentUtil.processAgent(payLoad);
+                                case agent:
+                                    numberOfRows = agentUtil.processAgent(payLoad,agentName);
                                     break;
-                                case AgentKeys.EVENT:
+                                case event:
                                     alarmCreated = eventUtil.processEvents(record.getTimeStamp(), payLoad, record.getPartitionKey(), orgId, eventRules);
                                     break;
 
@@ -160,7 +171,7 @@ public class Processor extends FacilioProcessor {
                             dataTypeLastMessageTime.put(dataType, lastMessageReceivedTime);
                             deviceMessageTime.put(deviceId, dataTypeLastMessageTime);
                         }if (numberOfRows == 0) {
-                            GenericUpdateRecordBuilder genericUpdateRecordBuilder = new GenericUpdateRecordBuilder().table(AgentKeys.TABLE_NAME).fields(FieldFactory.getAgentDataFields()).andCustomWhere(AgentKeys.NAME + "= '" + payLoad.get(AgentKeys.AGENT) + "'");
+                            GenericUpdateRecordBuilder genericUpdateRecordBuilder = new GenericUpdateRecordBuilder().table(AgentKeys.AGENT_TABLE).fields(FieldFactory.getAgentDataFields()).andCustomWhere(AgentKeys.NAME + "= '" + payLoad.get(PublishType.agent.getValue()) + "'");
                             Map<String, Object> toUpdate = new HashMap<>();
                             toUpdate.put(AgentKeys.LAST_DATA_RECEIVED_TIME, System.currentTimeMillis());
                             genericUpdateRecordBuilder.update(toUpdate);

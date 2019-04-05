@@ -60,5 +60,13 @@ public interface ModuleCRUDBean {
 	
 	public Map<String, Long> getDeviceMap() throws Exception;
 
-	public  List<Map<String,Object>> getAgentDataMap() throws Exception;
+	public  List<Map<String,Object>> getAgentDataMap(String agentName) throws Exception;
+
+	public Long addLog(Map<String,Object> logData) throws Exception;
+
+	public void updateAgentMetrics(Map<String,Object> metrics) throws Exception;
+
+	public void insertAgentMetrics(Map<String,Object> metrics) throws Exception;
+
+	public List<Map<String, Object>> getMetrics(Long agentId, Integer publishType) throws Exception;
 }
