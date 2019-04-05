@@ -49,8 +49,8 @@ public class ColumnFactory {
 		columnMap.put("purchaserequest-default", getDefaultPurchaseRequestColumns());
 		columnMap.put("purchaseorder-default", getDefaultPurchaseOrderColumns());
 		columnMap.put("receivable-default", getDefaultReceivableColumns());
-		columnMap.put("purchasecontracte-default", getDefaultContractColumns());
-		columnMap.put("labourcontract-default", getDefaultContractColumns());
+		columnMap.put("purchasecontracts-default", getDefaultContractColumns());
+		columnMap.put("labourcontracts-default", getDefaultContractColumns());
 		
 		// Default report columns 
 		columnMap.put("workorder-report", getWorkOrderReportColumns());
