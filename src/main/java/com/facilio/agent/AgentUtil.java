@@ -201,10 +201,10 @@ public  class AgentUtil
                            toUpdate.put(AgentKeys.DATA_INTERVAL, currDataInterval);
                            agent.setAgentDataInterval(currDataInterval);
                        }
-                   } else {
+                   } /*else {
                        toUpdate.put(AgentKeys.DATA_INTERVAL, DEFAULT_TIME);
                        agent.setAgentDataInterval(DEFAULT_TIME);
-                   }
+                   }*/
 
                    if (jsonObject.containsKey(AgentKeys.NUMBER_OF_CONTROLLERS)) {
                        Integer currNumberOfControllers = Integer.parseInt(jsonObject.get(AgentKeys.NUMBER_OF_CONTROLLERS).toString());
