@@ -233,12 +233,11 @@ public class Processor implements IRecordProcessor {
         }
 
     private FacilioAgent getFacilioAgent(String agentName) {
-            LOGGER.info("rocky**  "+agentName);
         FacilioAgent agent = new FacilioAgent();
         agent.setAgentName(agentName);
         agent.setAgentConnStatus(Boolean.TRUE);
         agent.setAgentState(1);
-        agent.setAgentDataInterval(900000L);
+        agent.setAgentDataInterval(15L);
         return agent;
     }
 
