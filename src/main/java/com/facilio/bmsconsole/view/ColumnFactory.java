@@ -45,6 +45,7 @@ public class ColumnFactory {
 		columnMap.put("toolTypes-default", getDefaultToolTypesColumns());
 		columnMap.put("vendors-default", getDefaultVendorsColumns());
 		columnMap.put("item-default", getDefaultItemColumns());
+		columnMap.put("tool-default", getDefaultToolColumns());
 		columnMap.put("stockedTools-default", getDefaultStockedToolsColumns());
 		columnMap.put("purchaserequest-default", getDefaultPurchaseRequestColumns());
 		columnMap.put("purchaseorder-default", getDefaultPurchaseOrderColumns());
@@ -281,8 +282,19 @@ public class ColumnFactory {
 		List<ViewField> columns = new ArrayList<ViewField>();
 		
 		columns.add(new ViewField("storeRoom", "Store Room"));
-		columns.add(new ViewField("status", "Status"));
+		columns.add(new ViewField("quantity", "Current Balance"));
+		columns.add(new ViewField("costType", "Cost Type"));
+		columns.add(new ViewField("lastPurchasedDate", "Last Purchased Date"));
+		columns.add(new ViewField("lastPurchasedPrice", "Last Purchased Price"));
+		
+		return columns;
+	}
+	private static List<ViewField> getDefaultToolColumns() {
+		List<ViewField> columns = new ArrayList<ViewField>();
+		
+		columns.add(new ViewField("storeRoom", "Store Room"));
 		columns.add(new ViewField("quantity", "Quantity"));
+		columns.add(new ViewField("lastPurchasedDate", "Last Purchased Date"));
 		
 		return columns;
 	}
