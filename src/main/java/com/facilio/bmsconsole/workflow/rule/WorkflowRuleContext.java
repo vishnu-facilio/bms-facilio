@@ -382,6 +382,9 @@ public class WorkflowRuleContext implements Serializable {
 				if(AwsUtil.isDevelopment()) {
 					workflow.setLogNeeded(true);
 				}
+				if(workflow.getId() == 5085l || workflow.getId() == 5904l || workflow.getId() == 8165l || workflow.getId() == 2975l) {
+					workflow.setLogNeeded(true);
+				}
 				workflowFlag = WorkflowUtil.getWorkflowExpressionResultAsBoolean(workflow, placeHolders);
 			}
 			return workflowFlag;
