@@ -16,6 +16,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.apache.struts2.ServletActionContext;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -1490,10 +1491,12 @@ public class WorkOrderAction extends FacilioAction {
 			body.append(inComingDetails.toString())
 				.append("\nOrgId: ")
 				.append(AccountUtil.getCurrentOrg().getOrgId())
-				.append("\n User: ")
+				.append("\nUser: ")
 				.append(AccountUtil.getCurrentUser().getName()).append(" - ").append(AccountUtil.getCurrentUser().getOuid())
-				.append("\n\nDevice Type: ")
+				.append("\nDevice Type: ")
 				.append(AccountUtil.getCurrentAccount().getDeviceType())
+				.append("\nUrl: ")
+				.append(ServletActionContext.getRequest().getRequestURI())
 				.append("\n\n-----------------\n\n")
 				.append("------------------\n\nStackTrace : \n--------\n")
 				.append(errorTrace);
@@ -2381,6 +2384,18 @@ public class WorkOrderAction extends FacilioAction {
 			setResult("workorders", context.get(FacilioConstants.ContextNames.WORK_ORDER_LIST));
 		}
 		
+		return SUCCESS;
+	}
+	
+	public String v2resolveWorkorder() throws Exception {
+		resolveWorkOrder();
+		setResult(FacilioConstants.ContextNames.RESULT, "success");
+		return SUCCESS;
+	}
+	
+	public String v2closeWorkorder() throws Exception {
+		closeWorkOrder();
+		setResult(FacilioConstants.ContextNames.RESULT, "success");
 		return SUCCESS;
 	}
 

@@ -161,6 +161,18 @@
 			<param name="moduleName">workorder</param>
 			<param name="permission">UPDATE,UPDATE_TEAM,UPDATE_OWN</param>
 		</action>
+		
+		<action name="resolve" class="com.facilio.bmsconsole.actions.WorkOrderAction"
+			method="v2resolveWorkorder">
+			<param name="moduleName">workorder</param>
+			<param name="permission">UPDATE,UPDATE_TEAM,UPDATE_OWN</param>
+		</action>
+		
+		<action name="close" class="com.facilio.bmsconsole.actions.WorkOrderAction"
+			method="v2closeWorkorder">
+			<param name="moduleName">workorder</param>
+			<param name="permission">UPDATE,UPDATE_TEAM,UPDATE_OWN</param>
+		</action>
 
 		<action name="sync" class="com.facilio.bmsconsole.actions.WorkOrderAction"
 			method="syncOfflineWorkOrders">
