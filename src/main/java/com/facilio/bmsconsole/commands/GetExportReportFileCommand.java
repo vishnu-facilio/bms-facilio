@@ -246,8 +246,8 @@ public class GetExportReportFileCommand implements Command {
 			String dateFormat = ((DateAggregateOperator)aggr).getFormat();
 			format = dateFormat != null ? dateFormat : format;
 		}
-		
-		List<Map<String, Object>> data = (List<Map<String, Object>>) reportData.get(FacilioConstants.ContextNames.DATA_KEY);
+
+		Collection<Map<String, Object>> data = (Collection<Map<String, Object>>) reportData.get(FacilioConstants.ContextNames.DATA_KEY);
 		if (data != null && !data.isEmpty()) {
 			for(Map<String, Object> row: data) {
 				Map<String, Object> newRow = new HashMap<>();

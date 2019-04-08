@@ -43,9 +43,9 @@ public class FetchReportAdditionalInfoCommand implements Command {
 			
 			JSONObject reportData = (JSONObject) context.get(FacilioConstants.ContextNames.REPORT_DATA);
 			if (reportData != null && !reportData.isEmpty()) {
-				List<Map<String, Object>> csvData = (List<Map<String, Object>>) reportData.get(FacilioConstants.ContextNames.DATA_KEY);
+				Collection<Map<String, Object>> csvData = (Collection<Map<String, Object>>) reportData.get(FacilioConstants.ContextNames.DATA_KEY);
 				Map<String, Object> reportAggrData = (Map<String, Object>) reportData.get(FacilioConstants.ContextNames.AGGR_KEY);
-				
+
 				if (reportData != null && !reportData.isEmpty()) {
 					Long alarmId = null;
 					ReadingAlarmContext currentAlarm = null;
@@ -55,25 +55,25 @@ public class FetchReportAdditionalInfoCommand implements Command {
 							currentAlarm = AlarmAPI.getReadingAlarmContext(alarmId);
 						}
 					}
-					
+
 					Map<Long, ReadingAlarmContext> alarmMap = showAlarms ? new HashMap<>() : null;
 					List<ReadingAlarmContext> allAlarms = showAlarms ? new ArrayList<>() : null;
 					for (ReportDataPointContext dp : report.getDataPoints()) {
 						if (!validateFetchingOfAdditionalInfo(dp)) {
 							return false; // All datapoints should be valid to fetch alarms
 						}
-						
+
 						if (showSafeLimit) {
 							reportAggrData.put(dp.getAliases().get("actual")+".safeLimit", getSafeLimit(dp));
 						}
-						
+
 						if (showAlarms) {
 							List<Long> parentIds = getParentIds(dp);
-							
+
 //							if (AccountUtil.getCurrentOrg().getId() == 75) {
 //								LOGGER.info("Parent IDs of alarms to be fetched : "+parentIds);
 //							}
-							
+
 							if (parentIds != null) {
 								List<ReadingAlarmContext> alarms = null;
 								if (alarmId == null || alarmId == -1) {
@@ -82,11 +82,11 @@ public class FetchReportAdditionalInfoCommand implements Command {
 								else if (currentAlarm != null && currentAlarm.getReadingFieldId() == dp.getyAxis().getFieldId() && parentIds.contains(currentAlarm.getResource().getId())) {
 									alarms = AlarmAPI.getReadingAlarms(currentAlarm.getEntityId(), report.getDateRange().getStartTime(), report.getDateRange().getEndTime(), false);
 								}
-								
+
 //								if (AccountUtil.getCurrentOrg().getId() == 75) {
 //									LOGGER.info("Fetched Alarms : "+alarms);
 //								}
-								
+
 								if (alarms != null && !alarms.isEmpty()) {
 									for (ReadingAlarmContext alarm : alarms) {
 										alarm.addAdditionInfo("dataPoint", dp.getName());
@@ -96,11 +96,11 @@ public class FetchReportAdditionalInfoCommand implements Command {
 							}
 						}
 					}
-					
+
 					if (showAlarms) {
 						reportAggrData.put("alarms", splitAlarms(allAlarms, report.getDateRange(), alarmMap));
 						reportAggrData.put("alarmInfo", alarmMap);
-						
+
 						String sortAlias = (String) context.get(FacilioConstants.ContextNames.REPORT_SORT_ALIAS);
 						getRecordWiseAlarms(report, csvData, allAlarms, alarmMap, sortAlias);
 					}
@@ -114,27 +114,38 @@ public class FetchReportAdditionalInfoCommand implements Command {
 		return dp.getxAxis().getDataTypeEnum() == FieldType.DATE_TIME || dp.getxAxis().getDataTypeEnum() == FieldType.DATE;
 	}
 	
-	private void getRecordWiseAlarms (ReportContext report, List<Map<String, Object>> csvData, List<ReadingAlarmContext> allAlarms, Map<Long, ReadingAlarmContext> alarmMap, String timeAlias) {
-		for (int i = 0; i < csvData.size(); i++) {
-			Map<String, Object> data = csvData.get(i);
-			long startTime, endTime;
-			
-			if (i == 0) {
-				startTime = report.getDateRange().getStartTime();
+	private void getRecordWiseAlarms (ReportContext report, Collection<Map<String, Object>> csvData, List<ReadingAlarmContext> allAlarms, Map<Long, ReadingAlarmContext> alarmMap, String timeAlias) {
+		Iterator<Map<String, Object>> itr = csvData.iterator();
+		Map<String, Object> currentData = itr.next();
+		boolean isFirst = true;
+		while (itr.hasNext()) {
+			Map<String, Object> nextData = itr.next();
+			currentData.put("alarms", calculateAlarmRangeAndGetMeta(report, allAlarms, alarmMap, timeAlias, currentData, nextData, isFirst));
+			currentData = nextData;
+			if (isFirst) {
+				isFirst = false;
 			}
-			else {
-				startTime = (long) data.get(timeAlias);
-			}
-			
-			if (i == csvData.size() - 1) {
-				endTime = report.getDateRange().getEndTime();
-			}
-			else {
-				endTime = (long) csvData.get(i + 1).get(timeAlias);
-			}
-			
-			data.put("alarms", getAlarmMeta(startTime, endTime, allAlarms, alarmMap));
 		}
+		currentData.put("alarms", calculateAlarmRangeAndGetMeta(report, allAlarms, alarmMap, timeAlias, currentData, null, false));
+	}
+
+	private JSONObject calculateAlarmRangeAndGetMeta(ReportContext report, List<ReadingAlarmContext> allAlarms, Map<Long, ReadingAlarmContext> alarmMap, String timeAlias, Map<String, Object> currentData, Map<String, Object> nextData, boolean isFirst) {
+		long startTime, endTime;
+
+		if (isFirst) {
+			startTime = report.getDateRange().getStartTime();
+		}
+		else {
+			startTime = (long) currentData.get(timeAlias);
+		}
+
+		if (nextData == null) {
+			endTime = report.getDateRange().getEndTime();
+		}
+		else {
+			endTime = (long) nextData.get(timeAlias);
+		}
+		return getAlarmMeta(startTime, endTime, allAlarms, alarmMap);
 	}
 	
 	private Map<String, Object> getSafeLimit (ReportDataPointContext dp) throws Exception {
