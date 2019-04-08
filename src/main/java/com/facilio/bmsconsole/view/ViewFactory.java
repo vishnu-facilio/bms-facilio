@@ -2348,9 +2348,9 @@ public class ViewFactory {
 		FacilioModule storeRoomModule = ModuleFactory.getStoreRoomModule();
 
 		FacilioField createdTime = new FacilioField();
-		createdTime.setName("sysCreatedTime");
-		createdTime.setDataType(FieldType.NUMBER);
-		createdTime.setColumnName("CREATED_TIME");
+		createdTime.setName("name");
+		createdTime.setDataType(FieldType.STRING);
+		createdTime.setColumnName("NAME");
 		createdTime.setModule(storeRoomModule);
 
 		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));
@@ -2368,9 +2368,9 @@ public class ViewFactory {
 		FacilioModule itemsModule = ModuleFactory.getItemTypesModule();
 
 		FacilioField createdTime = new FacilioField();
-		createdTime.setName("sysCreatedTime");
-		createdTime.setDataType(FieldType.NUMBER);
-		createdTime.setColumnName("CREATED_TIME");
+		createdTime.setName("name");
+		createdTime.setDataType(FieldType.STRING);
+		createdTime.setColumnName("NAME");
 		createdTime.setModule(itemsModule);
 
 		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));
@@ -2388,9 +2388,9 @@ public class ViewFactory {
 		FacilioModule itemsModule = ModuleFactory.getItemTypesModule();
 
 		FacilioField createdTime = new FacilioField();
-		createdTime.setName("sysCreatedTime");
-		createdTime.setDataType(FieldType.NUMBER);
-		createdTime.setColumnName("CREATED_TIME");
+		createdTime.setName("name");
+		createdTime.setDataType(FieldType.STRING);
+		createdTime.setColumnName("NAME");
 		createdTime.setModule(itemsModule);
 
 		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));
@@ -2444,9 +2444,9 @@ public class ViewFactory {
 		FacilioModule itemsModule = ModuleFactory.getToolTypesModule();
 
 		FacilioField createdTime = new FacilioField();
-		createdTime.setName("sysCreatedTime");
-		createdTime.setDataType(FieldType.NUMBER);
-		createdTime.setColumnName("CREATED_TIME");
+		createdTime.setName("name");
+		createdTime.setDataType(FieldType.STRING);
+		createdTime.setColumnName("NAME");
 		createdTime.setModule(itemsModule);
 
 		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));
@@ -2506,7 +2506,7 @@ public class ViewFactory {
 		FacilioField createdTime = new FacilioField();
 		createdTime.setName("sysCreatedTime");
 		createdTime.setDataType(FieldType.NUMBER);
-		createdTime.setColumnName("TTIME");
+		createdTime.setColumnName("CREATED_TIME");
 		createdTime.setModule(itemsModule);
 
 		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));
