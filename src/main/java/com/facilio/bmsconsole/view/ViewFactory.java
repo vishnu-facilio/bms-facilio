@@ -1,17 +1,42 @@
 package com.facilio.bmsconsole.view;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
 import com.facilio.bmsconsole.context.AlarmContext.AlarmType;
-import com.facilio.bmsconsole.context.*;
+import com.facilio.bmsconsole.context.AssetCategoryContext;
 import com.facilio.bmsconsole.context.AssetContext.AssetState;
+import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.context.TicketContext.SourceType;
-import com.facilio.bmsconsole.criteria.*;
-import com.facilio.bmsconsole.modules.*;
+import com.facilio.bmsconsole.context.TicketStatusContext;
+import com.facilio.bmsconsole.context.ViewField;
+import com.facilio.bmsconsole.context.WorkOrderRequestContext;
+import com.facilio.bmsconsole.criteria.BooleanOperators;
+import com.facilio.bmsconsole.criteria.CommonOperators;
+import com.facilio.bmsconsole.criteria.Condition;
+import com.facilio.bmsconsole.criteria.Criteria;
+import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.criteria.DateOperators;
+import com.facilio.bmsconsole.criteria.LookupOperator;
+import com.facilio.bmsconsole.criteria.NumberOperators;
+import com.facilio.bmsconsole.criteria.PickListOperators;
+import com.facilio.bmsconsole.criteria.StringOperators;
+import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.FacilioModule;
+import com.facilio.bmsconsole.modules.FieldFactory;
+import com.facilio.bmsconsole.modules.FieldType;
+import com.facilio.bmsconsole.modules.LookupField;
+import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.bmsconsole.modules.NumberField;
 import com.facilio.bmsconsole.util.DateTimeUtil;
 import com.facilio.bmsconsole.workflow.rule.ApprovalState;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.events.constants.EventConstants;
-
-import java.util.*;
 
 public class ViewFactory {
 
@@ -1666,7 +1691,7 @@ public class ViewFactory {
 		return view;
 	}
 
-	private static Criteria getCommonAlarmCriteria() {
+	public static Criteria getCommonAlarmCriteria() {
 		return getSourceTypeCriteria(SourceType.ANOMALY_ALARM, false);
 	}
 
@@ -1744,6 +1769,24 @@ public class ViewFactory {
 	}
 
 	private static FacilioView getUnacknowledgedAlarms() {
+		Criteria criteria = getUnacknowledgedAlarmCriteria();
+
+		FacilioField modifiedTime = new FacilioField();
+		modifiedTime.setColumnName("MODIFIED_TIME");
+		modifiedTime.setName("modifiedTime");
+		modifiedTime.setDataType(FieldType.DATE_TIME);
+		modifiedTime.setModule(ModuleFactory.getAlarmsModule());
+
+		FacilioView typeAlarms = new FacilioView();
+		typeAlarms.setName("unacknowledged");
+		typeAlarms.setDisplayName("Unacknowledged");
+		typeAlarms.setCriteria(criteria);
+		typeAlarms.setSortFields(Arrays.asList(new SortField(modifiedTime, false)));
+
+		return typeAlarms;
+	}
+	
+	public static Criteria getUnacknowledgedAlarmCriteria() {
 		Condition falseCondition = new Condition();
 		falseCondition.setColumnName("Alarms.IS_ACKNOWLEDGED");
 		falseCondition.setFieldName("isAcknowledged");
@@ -1773,20 +1816,7 @@ public class ViewFactory {
 		activeAlarm.setCriteriaValue(getSeverityAlarmCriteria("Clear", false));
 
 		criteria.addAndCondition(activeAlarm);
-
-		FacilioField modifiedTime = new FacilioField();
-		modifiedTime.setColumnName("MODIFIED_TIME");
-		modifiedTime.setName("modifiedTime");
-		modifiedTime.setDataType(FieldType.DATE_TIME);
-		modifiedTime.setModule(ModuleFactory.getAlarmsModule());
-
-		FacilioView typeAlarms = new FacilioView();
-		typeAlarms.setName("unacknowledged");
-		typeAlarms.setDisplayName("Unacknowledged");
-		typeAlarms.setCriteria(criteria);
-		typeAlarms.setSortFields(Arrays.asList(new SortField(modifiedTime, false)));
-
-		return typeAlarms;
+		return criteria;
 	}
 
 	private static FacilioView getUnassignedAlarms() {
