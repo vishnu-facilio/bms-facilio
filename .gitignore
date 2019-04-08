@@ -7,3 +7,6 @@ target/
 /bin/
 \.idea/
 \.vscode/
+bmsconsole.iml
+deploy.sh
+src/main/java/test/
