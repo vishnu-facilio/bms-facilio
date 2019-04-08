@@ -223,6 +223,7 @@ public class ViewFactory {
 		order = 1;
 		views = new LinkedHashMap<>();
 		views.put("all", getAllInventry().setOrder(order++));
+		views.put("understocked", getUnderStockedItemView().setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.ITEM, views);
 		
 		order = 1;
@@ -2208,6 +2209,28 @@ public class ViewFactory {
 		criteria.addAndCondition(ticketClose);
 		return criteria;
 	}
+	private static Criteria getUnderstockedItemCriteria(FacilioModule module) {
+		FacilioField quantity = new NumberField();
+		quantity.setName("currentQuantity");
+		quantity.setColumnName("CURRENT_QUANTITY");
+		quantity.setDataType(FieldType.DECIMAL);
+		quantity.setModule(module);
+		
+		FacilioField minimumQuantity = new FacilioField();
+		minimumQuantity.setName("minimumQuantity");
+		minimumQuantity.setColumnName("MINIMUM_QUANTITY");
+		minimumQuantity.setDataType(FieldType.NUMBER);
+		minimumQuantity.setModule(module);
+		
+		Condition ticketClose = new Condition();
+		ticketClose.setField(quantity);
+		ticketClose.setOperator(NumberOperators.LESS_THAN);
+		ticketClose.setValue("MINIMUM_QUANTITY");
+		
+		Criteria criteria = new Criteria();
+		criteria.addAndCondition(ticketClose);
+		return criteria;
+	}
 
 	private static FacilioView getStalePartsView() {
 
@@ -2259,6 +2282,28 @@ public class ViewFactory {
 
 		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));
 
+		FacilioView allView = new FacilioView();
+		allView.setName("understocked");
+		allView.setDisplayName("Understocked Items");
+		allView.setSortFields(sortFields);
+		
+		allView.setCriteria(criteria);
+		return allView;
+	}
+	private static FacilioView getUnderStockedItemView() {
+		
+		Criteria criteria = getUnderstockedItemCriteria(ModuleFactory.getInventryModule());
+		
+		FacilioModule itemsModule = ModuleFactory.getInventryModule();
+		
+		FacilioField createdTime = new FacilioField();
+		createdTime.setName("sysCreatedTime");
+		createdTime.setDataType(FieldType.NUMBER);
+		createdTime.setColumnName("CREATED_TIME");
+		createdTime.setModule(itemsModule);
+		
+		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));
+		
 		FacilioView allView = new FacilioView();
 		allView.setName("understocked");
 		allView.setDisplayName("Understocked Items");
@@ -2411,14 +2456,14 @@ public class ViewFactory {
 		FacilioField createdTime = new FacilioField();
 		createdTime.setName("sysCreatedTime");
 		createdTime.setDataType(FieldType.NUMBER);
-		createdTime.setColumnName("TTIME");
+		createdTime.setColumnName("CREATED_TIME");
 		createdTime.setModule(itemsModule);
 
 		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));
 
 		FacilioView allView = new FacilioView();
 		allView.setName("all");
-		allView.setDisplayName("All Item");
+		allView.setDisplayName("All Items");
 		allView.setSortFields(sortFields);
 
 		return allView;

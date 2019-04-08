@@ -283,7 +283,8 @@ public class ColumnFactory {
 		
 		columns.add(new ViewField("storeRoom", "Store Room"));
 		columns.add(new ViewField("quantity", "Current Balance"));
-		columns.add(new ViewField("costType", "Cost Type"));
+		columns.add(new ViewField("minimumQuantity", "Mininum Quantity"));
+//		columns.add(new ViewField("costType", "Cost Type"));
 		columns.add(new ViewField("lastPurchasedDate", "Last Purchased Date"));
 		columns.add(new ViewField("lastPurchasedPrice", "Last Purchased Price"));
 		
