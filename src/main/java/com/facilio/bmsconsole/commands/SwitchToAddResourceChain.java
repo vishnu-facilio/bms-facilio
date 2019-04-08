@@ -9,31 +9,33 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.actions.ImportProcessContext;
 import com.facilio.bmsconsole.context.PurchasedItemContext;
 import com.facilio.bmsconsole.context.PurchasedToolContext;
 import com.facilio.bmsconsole.context.ReadingContext;
+import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.util.ImportAPI;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
 
 public class SwitchToAddResourceChain implements Command {
 
 	@Override
 	public boolean execute(Context context) throws Exception {
+		ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		ImportProcessContext importProcessContext = (ImportProcessContext) context.get(ImportAPI.ImportProcessConstants.IMPORT_PROCESS_CONTEXT);
 		List<ReadingContext> readingsContext = (List<ReadingContext>) context.get(ImportAPI.ImportProcessConstants.READINGS_LIST); 
 		String moduleName = importProcessContext.getModule().getName();
-		
-		switch(moduleName) {
-		
-		case FacilioConstants.ContextNames.ASSET:
-		{
+		FacilioModule facilioModule = bean.getModule(moduleName);
+		if(facilioModule.getName().equals(FacilioConstants.ContextNames.ASSET) ||
+				(facilioModule.getExtendModule() != null &&  facilioModule.getExtendModule().getName().equals(FacilioConstants.ContextNames.ASSET))
+				) {
 			Chain c = TransactionChainFactory.getAssetImportChain();
 			c.execute(context);	
-			break;
 		}
-		case FacilioConstants.ContextNames.PURCHASED_ITEM:{
+		else if(facilioModule.getName().equals(FacilioConstants.ContextNames.PURCHASED_ITEM)) {
 			JSONObject importMeta = importProcessContext.getImportJobMetaJson();
 			Long StoreRoom;
 			JSONObject moduleStaticFields = (JSONObject) importMeta.get(ImportAPI.ImportProcessConstants.MODULE_STATIC_FIELDS);
@@ -53,9 +55,8 @@ public class SwitchToAddResourceChain implements Command {
 			Chain c = TransactionChainFactory.getImportItemChain();
 			context.put(FacilioConstants.ContextNames.RECORD_LIST, items);
 			c.execute(context);
-			break;
 		}
-		case FacilioConstants.ContextNames.PURCHASED_TOOL:{
+		else if(facilioModule.getName().equals(FacilioConstants.ContextNames.PURCHASED_TOOL)) {
 			JSONObject importMeta = importProcessContext.getImportJobMetaJson();
 			Long StoreRoom;
 			JSONObject moduleStaticFields = (JSONObject) importMeta.get(ImportAPI.ImportProcessConstants.MODULE_STATIC_FIELDS);
@@ -73,8 +74,6 @@ public class SwitchToAddResourceChain implements Command {
 			Chain c = TransactionChainFactory.getImportToolChain();
 			context.put(FacilioConstants.ContextNames.RECORD_LIST, tools);
 			c.execute(context);
-			break;
-		}
 		}
 		
 		return false;

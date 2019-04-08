@@ -9,7 +9,7 @@ public class ConfigureAgentCommand implements Command
 
     @Override
     public boolean execute(Context context) throws Exception {
-            JSONObject agentContext = (JSONObject) context.get(AgentKeys.AGENT);
+            JSONObject agentContext = (JSONObject) context.get(PublishType.agent.getValue());
             return  AgentUtil.agentEdit(agentContext);
     }
 

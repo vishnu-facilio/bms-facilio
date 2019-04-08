@@ -70,5 +70,13 @@ public class ReceiptContext extends ModuleBaseWithCustomFields {
 			return null;
 		}
 	}
+	
+	private String remarks;
+	public String getRemarks() {
+		return remarks;
+	}
+	public void setRemarks(String remarks) {
+		this.remarks = remarks;
+	}
 
 }

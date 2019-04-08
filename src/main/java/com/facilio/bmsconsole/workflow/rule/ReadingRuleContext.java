@@ -423,6 +423,9 @@ public class ReadingRuleContext extends WorkflowRuleContext implements Cloneable
 				if(AwsUtil.isDevelopment()) {
 					workflowContext.setLogNeeded(true);
 				}
+				if(workflowContext.getId() == 5391l || workflowContext.getId() == 5739l) { 
+					workflowContext.setLogNeeded(true);
+				}
 				workflowFlag = WorkflowUtil.getWorkflowExpressionResultAsBoolean(workflowContext, placeHolders, currentRDM, false, true);
 			}
 			return workflowFlag;

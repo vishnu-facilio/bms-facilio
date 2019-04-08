@@ -8,8 +8,10 @@ import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.context.TaskContext.TaskStatus;
+import com.facilio.bmsconsole.criteria.CommonOperators;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
+import com.facilio.bmsconsole.criteria.StringOperators;
 import com.facilio.bmsconsole.modules.*;
 import com.facilio.bmsconsole.templates.TaskSectionTemplate;
 import com.facilio.bmsconsole.templates.WorkorderTemplate;
@@ -19,6 +21,7 @@ import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.events.context.EventRuleContext;
+import com.facilio.events.tasker.tasks.EventUtil;
 import com.facilio.events.util.EventAPI;
 import com.facilio.events.util.EventRulesAPI;
 import com.facilio.fw.BeanFactory;
@@ -618,15 +621,63 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 		return deviceData;
 	}
 
-	public  List<Map<String,Object>> getAgentDataMap() throws Exception{
-		FacilioModule agentDataModule = ModuleFactory.getAgentdataModule();
+	public  List<Map<String,Object>> getAgentDataMap(String agentName) throws Exception{
+		FacilioModule agentDataModule = ModuleFactory.getAgentDataModule();
 		GenericSelectRecordBuilder genericSelectRecordBuilder = new GenericSelectRecordBuilder()
-																.table(AgentKeys.TABLE_NAME).select(FieldFactory.getAgentDataFields())
-																.andCondition(CriteriaAPI.getCurrentOrgIdCondition(agentDataModule))
-																.andCustomWhere(AgentKeys.DELETED_TIME+" is NULL");
-		List<Map<String, Object>> records = genericSelectRecordBuilder.get();
-			return  records;
+				.table(AgentKeys.AGENT_TABLE).select(FieldFactory.getAgentDataFields())
+				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(agentDataModule))
+				.andCondition(CriteriaAPI.getCondition(FieldFactory.getDeletedTimeField(agentDataModule),"NULL", CommonOperators.IS_EMPTY));
+		if (agentName != null)
+		{
+			return genericSelectRecordBuilder.andCondition(CriteriaAPI.getCondition(FieldFactory.getAgentNameField(agentDataModule),agentName,StringOperators.IS)).get();
+		}
+		else {
+			 return genericSelectRecordBuilder.get();
+			}
 
 	}
+
+	@Override
+	public Long addLog(Map<String, Object> logData) throws Exception{
+		FacilioModule logModule = ModuleFactory.getAgentLogModule();
+		GenericInsertRecordBuilder genericInsertRecordBuilder = new GenericInsertRecordBuilder()
+															.table(AgentKeys.AGENT_LOG_TABLE)
+															.fields(FieldFactory.getAgentLogFields());
+		return genericInsertRecordBuilder.insert(logData);
+	}
+
+    @Override
+    public void updateAgentMetrics(Map<String,Object> metrics) throws Exception {
+		FacilioModule metricsmodule = ModuleFactory.getAgentMetricsModule();
+		GenericUpdateRecordBuilder genericUpdateRecordBuilder = new GenericUpdateRecordBuilder()
+																.table(AgentKeys.METRICS_TABLE)
+																.fields(FieldFactory.getAgentMetricsFields())
+																.andCondition(CriteriaAPI.getCurrentOrgIdCondition(metricsmodule))
+																.andCondition(CriteriaAPI.getCondition(FieldFactory.getAgentIdField(metricsmodule),metrics.get(AgentKeys.AGENT_ID).toString(),NumberOperators.EQUALS))
+																.andCondition(CriteriaAPI.getCondition(FieldFactory.getPublishTypeField(metricsmodule),metrics.get(EventUtil.DATA_TYPE).toString(),NumberOperators.EQUALS));
+
+                genericUpdateRecordBuilder.update(metrics);
+
+
+    }
+    public void insertAgentMetrics(Map<String,Object> metrics)throws Exception{
+		GenericInsertRecordBuilder genericInsertRecordBuilder = new GenericInsertRecordBuilder()
+				.table(AgentKeys.METRICS_TABLE)
+				.fields(FieldFactory.getAgentMetricsFields());
+		genericInsertRecordBuilder.insert( metrics);
+	}
+
+    @Override
+    public List<Map<String, Object>> getMetrics(Long agentId,Integer pubLishType) throws Exception {
+		FacilioModule metricsmodule = ModuleFactory.getAgentMetricsModule();
+		GenericSelectRecordBuilder genericSelectRecordBuilder = new GenericSelectRecordBuilder()
+																.table(AgentKeys.METRICS_TABLE)
+																.select(FieldFactory.getAgentMetricsFields())
+																.andCondition(CriteriaAPI.getCondition(FieldFactory.getAgentIdField(metricsmodule),agentId.toString(),NumberOperators.EQUALS))
+                                                                .andCondition(CriteriaAPI.getCondition(FieldFactory.getPublishTypeField(metricsmodule),pubLishType.toString(),NumberOperators.EQUALS))
+																.andCondition(CriteriaAPI.getCurrentOrgIdCondition(metricsmodule))
+																.orderBy("ID DESC").limit(1);
+        return genericSelectRecordBuilder.get();
+    }
 
 }

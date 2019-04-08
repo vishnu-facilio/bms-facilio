@@ -208,7 +208,6 @@ public class ViewFactory {
 		order = 1;
 		views = new LinkedHashMap<>();
 		views.put("all", getAllItemTypes().setOrder(order++));
-		views.put("understocked", getUnderStockedItemTypeView().setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.ITEM_TYPES, views);
 		
 		order = 1;
@@ -246,8 +245,8 @@ public class ViewFactory {
 		order = 1;
 		views = new LinkedHashMap<>();
 		views.put("pendingitem", getItemPendingApproval().setOrder(order++));
-		views.put("allitem", getAllItemApproval().setOrder(order++));
 		views.put("pendingtool", getToolPendingApproval().setOrder(order++));
+		views.put("allitem", getAllItemApproval().setOrder(order++));
 		views.put("alltool", getAllToolApproval().setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.INVENTORY_TRANSACTIONS, views);
 		
@@ -292,6 +291,12 @@ public class ViewFactory {
 		views.put("all", getAllLabourContractView().setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.LABOUR_CONTRACTS, views);
 
+		order = 1;
+		views = new LinkedHashMap<>();
+		views.put("all", getAllPoLineItemsSerialNumeberView().setOrder(order++));
+		viewsMap.put(FacilioConstants.ContextNames.PO_LINE_ITEMS_SERIAL_NUMBERS, views);
+
+		
 		return viewsMap;
 	}
 
@@ -2297,7 +2302,7 @@ public class ViewFactory {
 
 		FacilioView allView = new FacilioView();
 		allView.setName("all");
-		allView.setDisplayName("All Items");
+		allView.setDisplayName("All Item Types");
 		allView.setSortFields(sortFields);
 
 		return allView;
@@ -2373,7 +2378,7 @@ public class ViewFactory {
 
 		FacilioView allView = new FacilioView();
 		allView.setName("all");
-		allView.setDisplayName("All Tools");
+		allView.setDisplayName("All Tool Types");
 		allView.setSortFields(sortFields);
 
 		return allView;
@@ -2413,7 +2418,7 @@ public class ViewFactory {
 
 		FacilioView allView = new FacilioView();
 		allView.setName("all");
-		allView.setDisplayName("All Inventory");
+		allView.setDisplayName("All Item");
 		allView.setSortFields(sortFields);
 
 		return allView;
@@ -3019,5 +3024,18 @@ public class ViewFactory {
 		return allView;
 	}
 
+	private static FacilioView getAllPoLineItemsSerialNumeberView() {
+		FacilioField createdTime = new FacilioField();
+		createdTime.setName("sysCreatedTime");
+		createdTime.setDataType(FieldType.NUMBER);
+		createdTime.setColumnName("SYS_CREATED_TIME");
+		createdTime.setModule(ModuleFactory.getPoLineItemsSerialNumberModule());
+
+		FacilioView allView = new FacilioView();
+		allView.setName("all");
+		allView.setDisplayName("All Serial Numbers");
+		allView.setSortFields(Arrays.asList(new SortField(createdTime, false)));
+		return allView;
+	}
 
 }

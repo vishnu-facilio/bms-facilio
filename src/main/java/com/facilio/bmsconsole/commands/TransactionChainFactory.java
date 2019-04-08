@@ -2370,5 +2370,26 @@ public class TransactionChainFactory {
 			return c;
 		}
 		
+		public static Chain getAddPoLineItemSerialNumbersChain () {
+			Chain chain = getDefaultChain();
+			chain.addCommand(SetTableNamesCommand.getForPoLineItemSerialNumber());
+			chain.addCommand(new AddSerialNumberForPoLineItemsCommand());
+			chain.addCommand(new GenericAddModuleDataListCommand());
+			return chain;
+		}
+		
+		public static Chain getUpdatePoLineItemSerialNumbersChain () {
+			Chain chain = getDefaultChain();
+			chain.addCommand(SetTableNamesCommand.getForPoLineItemSerialNumber());
+			chain.addCommand(new GenericUpdateModuleDataCommand());
+			return chain;
+		}
+		public static Chain getDeletePoLineItemSerialNumbersChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForPoLineItemSerialNumber());
+			c.addCommand(new GenericDeleteModuleDataCommand());
+			return c;
+		}
+		
 }
 

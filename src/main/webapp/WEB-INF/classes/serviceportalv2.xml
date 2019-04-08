@@ -6,7 +6,7 @@
 <struts>
 
 
-	<package name="servicePortalApiV2" namespace="/api/v2/service" extends="v2Api">
+	<package name="servicePortalApiV2" namespace="/api/v2/service" extends="v2BaseApi">
 	
 		<interceptors>
 			<interceptor name="portalinterceptor"

@@ -23,7 +23,8 @@ public class AckUtil
             ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", orgId);
             bean.acknowledgePublishedMessage(msgId);
         }catch(Exception e){
-            e.printStackTrace();
+            LOGGER.info("EXxception occured",e);
         }
+    }
 
-    }}
+}

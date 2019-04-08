@@ -5,30 +5,13 @@
 
 <struts>
 
-	<package name="v2Api" strict-method-invocation="false"
-		namespace="/api/v2" extends="struts-default,json-default">
+	<package name="v2BaseApi" strict-method-invocation="false" extends="struts-default,json-default">
 		<result-types>
 			<result-type name="tiles"
 				class="org.apache.struts2.views.tiles.TilesResult" />
 			<result-type name="json"
 				class="com.facilio.bmsconsole.interceptors.CacheResult" />
 		</result-types>
-		<interceptors>
-			<interceptor name="cacheinterceptor"
-				class="com.facilio.bmsconsole.interceptors.CacheInterceptor" />
-			<interceptor name="authinterceptor"
-				class="com.facilio.bmsconsole.interceptors.AuthInterceptor" />
-			<interceptor-stack name="defaultInterceptor">
-				<interceptor-ref name="defaultStack" />
-				<interceptor-ref name="authinterceptor" />
-				<interceptor-ref name="cacheinterceptor" />
-				<interceptor-ref name="json">
-					<param name="enableSMD">true</param>
-				</interceptor-ref>
-			</interceptor-stack>
-		</interceptors>
-
-		<default-interceptor-ref name="defaultInterceptor" />
 		<global-results>
 			<result name="login" type="redirect">
 				<param name="location">/app/login</param>
@@ -55,6 +38,25 @@
 			<exception-mapping exception="java.lang.Exception"
 				result="exception" />
 		</global-exception-mappings>
+	</package>
+
+	<package name="v2Api" namespace="/api/v2" extends="v2BaseApi">
+		<interceptors>
+			<interceptor name="cacheinterceptor"
+				class="com.facilio.bmsconsole.interceptors.CacheInterceptor" />
+			<interceptor name="authinterceptor"
+				class="com.facilio.bmsconsole.interceptors.AuthInterceptor" />
+			<interceptor-stack name="defaultInterceptor">
+				<interceptor-ref name="defaultStack" />
+				<interceptor-ref name="authinterceptor" />
+				<interceptor-ref name="cacheinterceptor" />
+				<interceptor-ref name="json">
+					<param name="enableSMD">true</param>
+				</interceptor-ref>
+			</interceptor-stack>
+		</interceptors>
+
+		<default-interceptor-ref name="defaultInterceptor" />
 
 		<action name="account" class="com.facilio.bmsconsole.actions.LoginAction"
 			method="v2currentAccount">
@@ -156,6 +158,18 @@
 
 		<action name="assign" class="com.facilio.bmsconsole.actions.WorkOrderAction"
 			method="v2assignWorkOrder">
+			<param name="moduleName">workorder</param>
+			<param name="permission">UPDATE,UPDATE_TEAM,UPDATE_OWN</param>
+		</action>
+		
+		<action name="resolve" class="com.facilio.bmsconsole.actions.WorkOrderAction"
+			method="v2resolveWorkorder">
+			<param name="moduleName">workorder</param>
+			<param name="permission">UPDATE,UPDATE_TEAM,UPDATE_OWN</param>
+		</action>
+		
+		<action name="close" class="com.facilio.bmsconsole.actions.WorkOrderAction"
+			method="v2closeWorkorder">
 			<param name="moduleName">workorder</param>
 			<param name="permission">UPDATE,UPDATE_TEAM,UPDATE_OWN</param>
 		</action>
@@ -904,7 +918,7 @@
 		</action>
 	</package>
 
-	<package name="attachmentPreviewApi" extends="v2Api">
+	<package name="attachmentPreviewApi" namespace="/api/v2/preview" extends="v2Api">
 		<global-results>
 			<result name="success" type="stream">
 				<param name="contentType">${contentType}</param>
@@ -925,17 +939,6 @@
 		</action>
 	</package>
 
-	<package name="filePreviewApi" extends="v2Api">
-		<global-results>
-			<result name="success" type="stream">
-				<param name="contentType">${contentType}</param>
-				<param name="contentDisposition">attachment;filename="${filename}"</param>
-				<param name="inputName">downloadStream</param>
-				<param name="bufferSize">1024</param>
-			</result>
-		</global-results>
-	</package>
-
 	<package name="filePreviewApiv2" namespace="/api/v2/files/preview"
 		extends="attachmentPreviewApi">
 		<action name="*" class="com.facilio.bmsconsole.actions.FileAction"
@@ -950,16 +953,18 @@
 		</action>
 	</package>
 	<package name="fileDownloadApiv2" namespace="/api/v2/files/download"
-		extends="filePreviewApi">
-		<!-- <global-results> <result name="success" type="stream"> <param name="contentType">${contentType}</param> 
-			<param name="contentDisposition">attachment;filename="${filename}"</param> 
-			<param name="inputName">downloadStream</param> <param name="bufferSize">1024</param> 
-			</result> </global-results> -->
+		extends="v2Api">
 		<action name="*" class="com.facilio.bmsconsole.actions.FileAction"
 			method="previewFile">
 			<param name="permission">READ</param>
 			<param name="fileID">{1}</param>
 			<param name="isDownload">true</param>
+			<result name="success" type="stream">
+				<param name="contentType">${contentType}</param>
+				<param name="contentDisposition">attachment;filename="${filename}"</param>
+				<param name="inputName">downloadStream</param>
+				<param name="bufferSize">1024</param>
+			</result>
 		</action>
 	</package>
 
@@ -1899,6 +1904,31 @@
 		</action>
 	</package>
 	
+	<package name="poLineItemSerialNumbers" namespace="/api/v2/polineitemserialnumber"
+		extends="v2Api">
+		<action name="add"
+			class="com.facilio.bmsconsole.actions.PoLineItemSerialNumberAction" method="addLineItem">
+			<param name="moduleName">purchaseorder</param>
+		</action>
+		<action name="update"
+			class="com.facilio.bmsconsole.actions.PoLineItemSerialNumberAction" method="updateLineItem">
+			<param name="moduleName">purchaseorder</param>
+		</action>
+		<action name="delete"
+			class="com.facilio.bmsconsole.actions.PoLineItemSerialNumberAction" method="deletelineitems">
+			<param name="moduleName">purchaseorder</param>
+		</action>
+		
+	</package>
+	<package name="poLineItemSerialNumbersList" namespace="/api/v2/polineitemserialnumber/view"
+		extends="v2Api">
+		<action name="*"
+			class="com.facilio.bmsconsole.actions.PoLineItemSerialNumberAction" method="lineitemsList">
+			<param name="moduleName">purchaseorder</param>
+			<param name="permission">READ</param>
+			<param name="viewName">{1}</param>
+		</action>
+	</package>
 	
 	
 	
