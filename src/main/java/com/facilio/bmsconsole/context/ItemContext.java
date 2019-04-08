@@ -146,5 +146,13 @@ public class ItemContext extends ModuleBaseWithCustomFields {
 	public void setLastPurchasedPrice(double lastPurchasedPrice) {
 		this.lastPurchasedPrice = lastPurchasedPrice;
 	}
+	
+	private double minimumQuantity = -1;
+	public double getMinimumQuantity() {
+		return minimumQuantity;
+	}
+	public void setMinimumQuantity(double minimumQuantity) {
+		this.minimumQuantity = minimumQuantity;
+	}
 
 }

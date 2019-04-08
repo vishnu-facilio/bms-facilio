@@ -1,6 +1,8 @@
 package com.facilio.bmsconsole.commands;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.actions.PoLineItemSerialNumberAction;
+import com.facilio.bmsconsole.context.PoLineItemsSerialNumberContext;
 import com.facilio.bmsconsole.context.PurchaseOrderContext;
 import com.facilio.bmsconsole.context.PurchaseOrderLineItemContext;
 import com.facilio.bmsconsole.context.ReceivableContext;
@@ -53,10 +55,33 @@ public class FetchPurchaseOrderDetailsCommand implements Command {
 					(LookupField) fieldsAsMap.get("toolType")))
 			        ;
 			List<PurchaseOrderLineItemContext> list = builder.get();
+			for(PurchaseOrderLineItemContext item : list) {
+				item.setNoOfSerialNumbers(getSerialNumberCount(item.getId()));
+			}
 			purchaseOrderContext.setLineItems(list);
 					
 		}
 		return false;
+	}
+	
+	private int getSerialNumberCount (long lineItemId) throws Exception {
+		int count = -1;
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		String polineitemserialnomodulename = FacilioConstants.ContextNames.PO_LINE_ITEMS_SERIAL_NUMBERS;
+		List<FacilioField> fields = modBean.getAllFields(polineitemserialnomodulename);
+		Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
+		SelectRecordsBuilder<PoLineItemsSerialNumberContext> builder = new SelectRecordsBuilder<PurchaseOrderLineItemContext>()
+				.moduleName(polineitemserialnomodulename)
+				.select(fields)
+				.beanClass(FacilioConstants.ContextNames.getClassFromModuleName(polineitemserialnomodulename))
+				.andCondition(CriteriaAPI.getCondition(fieldsAsMap.get("lineItem"), String.valueOf(lineItemId), NumberOperators.EQUALS))
+		        ;
+		List<PoLineItemsSerialNumberContext> list = builder.get();
+		if(list!=null && !list.isEmpty()) {
+			count = list.size();
+		}
+		
+		return count;
 	}
 
 }

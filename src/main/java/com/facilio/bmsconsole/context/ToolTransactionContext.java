@@ -178,4 +178,12 @@ public class ToolTransactionContext extends ModuleBaseWithCustomFields {
 	public void setApprovedState(int approvedState) {
 		this.approvedState = ApprovalState.valueOf(approvedState);
 	}
+	
+	private TicketContext workorder;
+	public TicketContext getWorkorder() {
+		return workorder;
+	}
+	public void setWorkorder(TicketContext workorder) {
+		this.workorder = workorder;
+	}
 }
