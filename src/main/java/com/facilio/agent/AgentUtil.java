@@ -365,13 +365,13 @@ public  class AgentUtil
      * @param agentId If passed, fetches only that particular agent's log data.NOT MANDATORY.
      * @param sent
      */
-    public static void putLog(JSONObject payLoad, Long orgId,Long agentId,boolean sent){
+    public static void putLog(JSONObject payLoad, Long orgId,Long agentId,boolean sent) {
 
         if(!sent){
             payLoad.put(AgentKeys.COMMAND_STATUS,CommandStatus.SENT.getKey());
         }
         if(payLoad.containsKey(AgentKeys.COMMAND)){
-            payLoad.replace(AgentKeys.COMMAND, ControllerCommand.valueOf(payLoad.get(AgentKeys.COMMAND).toString()).getValue());
+            payLoad.replace(AgentKeys.COMMAND, ControllerCommand.valueOf(payLoad.get(AgentKeys.COMMAND).toString().toLowerCase()).getValue());
         }
         if(!payLoad.containsKey(AgentKeys.AGENT_ID)){
             payLoad.put(AgentKeys.AGENT_ID,agentId);
