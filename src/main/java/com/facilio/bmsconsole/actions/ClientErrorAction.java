@@ -12,7 +12,7 @@ public class ClientErrorAction extends FacilioAction {
     private static final long serialVersionUID = 1L;
     private static final Logger logger = Logger.getLogger(ClientErrorAction.class.getName());
     private static Appender appender;
-    private static final String APPENDER_NAME = "facilioAppender";
+    private static final String APPENDER_NAME = "clientAppender";
 
     public void init() {
         appender = logger.getAppender(APPENDER_NAME);
@@ -26,28 +26,12 @@ public class ClientErrorAction extends FacilioAction {
         this.ceType = ceType;
     }
 
-    private String ceApi;
-    public String getCeApi() {
-        return ceApi;
-    }
-    public void setCeApi(String ceApi) {
-        this.ceApi = ceApi;
-    }
-
     private String route;
     public String getRoute() {
         return route;
     }
     public void setRoute(String route) {
         this.route = route;
-    }
-
-    private String statusCode;
-    public String getStatusCode() {
-        return statusCode;
-    }
-    public void setStatusCode(String statusCode) {
-        this.statusCode = statusCode;
     }
 
     private String message;
@@ -130,12 +114,6 @@ public class ClientErrorAction extends FacilioAction {
 
         if (this.route != null) {
             event.setProperty("route", this.route);
-        }
-        if (this.statusCode != null) {
-            event.setProperty("statusCode", this.statusCode);
-        }
-        if (this.ceApi != null) {
-            event.setProperty("ceApi", this.ceApi);
         }
         if (this.browser != null) {
             event.setProperty("browser", this.browser);
