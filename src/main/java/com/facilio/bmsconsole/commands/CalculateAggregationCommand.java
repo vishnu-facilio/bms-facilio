@@ -79,7 +79,7 @@ public class CalculateAggregationCommand implements Command {
 				isFirst = false;
 			}
 		}
-		aggregateEnum(report, dp, aggrData, timeAlias, currentData, null, false, previousRecords); //for the last record
+		aggregateEnum(report, dp, aggrData, timeAlias, currentData, null, isFirst, previousRecords); //for the last record
 	}
 
 	private void aggregateEnum (ReportContext report, ReportDataPointContext dp, Map<String, Object> aggrData, String timeAlias, Map<String, Object> currentData, Map<String, Object> nextData, boolean isFirst, Map<String, SimpleEntry<Long, Integer>> previousRecords) {

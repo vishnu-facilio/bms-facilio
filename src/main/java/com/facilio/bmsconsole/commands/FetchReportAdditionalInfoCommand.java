@@ -126,7 +126,7 @@ public class FetchReportAdditionalInfoCommand implements Command {
 				isFirst = false;
 			}
 		}
-		currentData.put("alarms", calculateAlarmRangeAndGetMeta(report, allAlarms, alarmMap, timeAlias, currentData, null, false));
+		currentData.put("alarms", calculateAlarmRangeAndGetMeta(report, allAlarms, alarmMap, timeAlias, currentData, null, isFirst));
 	}
 
 	private JSONObject calculateAlarmRangeAndGetMeta(ReportContext report, List<ReadingAlarmContext> allAlarms, Map<Long, ReadingAlarmContext> alarmMap, String timeAlias, Map<String, Object> currentData, Map<String, Object> nextData, boolean isFirst) {
