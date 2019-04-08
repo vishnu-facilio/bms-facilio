@@ -42,7 +42,7 @@ public class ClientErrorAction extends FacilioAction {
         this.route = route;
     }
 
-    private String statusCode = "-1";
+    private String statusCode;
     public String getStatusCode() {
         return statusCode;
     }
@@ -128,15 +128,26 @@ public class ClientErrorAction extends FacilioAction {
         }
         LoggingEvent event = new LoggingEvent(logger.getName(), logger, Level.INFO, message, null);
 
-        event.setProperty("route", this.route);
+        if (this.route != null) {
+            event.setProperty("route", this.route);
+        }
+        if (this.statusCode != null) {
+            event.setProperty("statusCode", this.statusCode);
+        }
+        if (this.ceApi != null) {
+            event.setProperty("ceApi", this.ceApi);
+        }
+        if (this.browser != null) {
+            event.setProperty("browser", this.browser);
+        }
+        if (this.os != null) {
+            event.setProperty("os", this.os);
+        }
+
+        event.setProperty("ceType", this.ceType);
         event.setProperty("stacktrace", this.stacktrace);
-        event.setProperty("browser", this.browser);
-        event.setProperty("os", this.os);
         event.setProperty("userId", this.userId);
         event.setProperty("orgId", this.orgId);
-        event.setProperty("ceType", this.ceType);
-        event.setProperty("ceApi", this.ceApi);
-        event.setProperty("statusCode", this.statusCode);
 
         if (this.isNotNull(this.ceInfo)) {
             event.setProperty("ceInfo", this.ceInfo.toString());
