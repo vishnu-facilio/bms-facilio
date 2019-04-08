@@ -105,14 +105,14 @@ public class ControllerAction extends FacilioAction {
 				JSONArray agentDetails = new JSONArray();
 				agentDetails.addAll(agentDetailsList);
 				setAgentDetail(agentDetails);
-				setResult("agentDetail", getAgentDetail());
+				setResult("agentDetails", getAgentDetail());
 				return SUCCESS;
 			}else {
-				setResult("agentDetail", getAgentDetail());
+				setResult("agentDetails", getAgentDetail());
 				return NONE;
 			}
 		} else {
-			setResult("agentDetail",getAgentDetail());
+			setResult("agentDetails",getAgentDetail());
 			return ERROR;
 		}
 	}
