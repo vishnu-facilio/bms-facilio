@@ -1,14 +1,20 @@
 package com.facilio.bmsconsole.util;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.MLAssetContext;
+import com.facilio.bmsconsole.context.MLContext;
+import com.facilio.bmsconsole.context.MLVariableContext;
 import com.facilio.bmsconsole.context.MlForecastingContext;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
+import com.facilio.bmsconsole.criteria.StringOperators;
 import com.facilio.bmsconsole.modules.*;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericSelectRecordBuilder;
+
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.log4j.Logger;
 
 import java.util.*;
@@ -174,6 +180,113 @@ public class MLUtil
 		}
 		
 		return true;
+	}
+	
+	
+	public static MLContext getMlContext(long mlID,long orgID) throws Exception
+	{
+
+		//prepare builder to get ML details
+		FacilioModule mlModule = ModuleFactory.getMLModule();
+		List<FacilioField> mlModuleFields = FieldFactory.getMLFields();
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+														.select(mlModuleFields)
+														.table(mlModule.getTableName())
+														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(mlModule))
+														.andCondition(CriteriaAPI.getIdCondition(mlID, mlModule));
+		
+		List<Map<String, Object>> listMap = selectBuilder.get();
+		MLContext mlContext = FieldUtil.getAsBeanFromMap(listMap.get(0), MLContext.class);
+		
+		//prepare builder to get AssetDetails
+		Condition mlIDCondition=CriteriaAPI.getCondition("ML_ID",String.valueOf(mlContext.getId()), String.valueOf(mlID),NumberOperators.EQUALS);
+		FacilioModule mlAssetModule = ModuleFactory.getMLAssetModule();
+		List<FacilioField> mlAssetFields = FieldFactory.getMLAssetFields();
+		GenericSelectRecordBuilder selectBuilder1 = new GenericSelectRecordBuilder()
+														.select(mlAssetFields)
+														.table(mlAssetModule.getTableName())
+														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(mlAssetModule))
+														.andCondition(mlIDCondition);
+			
+		List<Map<String,Object>> assetMLListMap = selectBuilder1.get();
+		List<MLAssetContext> mlAssetList = MLUtil.getMLAssetContext(assetMLListMap);
+		for(MLAssetContext mlAssetContext : mlAssetList)
+		{
+			Condition assetCondition=CriteriaAPI.getCondition("AssetID",String.valueOf(mlAssetContext.getAssetID()), String.valueOf(mlAssetContext.getAssetID()),NumberOperators.EQUALS);
+			FacilioModule mlAssetVariablesModule = ModuleFactory.getMLAssetVariablesModule();
+			List<FacilioField> mlAssetVariableFields = FieldFactory.getMLAssetVariablesFields();
+			GenericSelectRecordBuilder selectBuilder2 = new GenericSelectRecordBuilder()
+															.select(mlAssetVariableFields)
+															.table(mlAssetVariablesModule.getTableName())
+															.andCondition(CriteriaAPI.getCurrentOrgIdCondition(mlAssetModule))
+															.andCondition(mlIDCondition)
+															.andCondition(assetCondition);
+				
+			List<Map<String,Object>> assetVariableList = selectBuilder2.get();
+			for(Map<String,Object> prop : assetVariableList)
+			{
+				mlAssetContext.addData(prop);
+			}
+		}
+		mlContext.setAssetContext(mlAssetList.get(0));
+			
+		
+		//prepare builder to get ModelVariables
+		FacilioModule mlModelVariablesModule = ModuleFactory.getMLModelVariablesModule();
+		List<FacilioField> mlModelVariableAssetFields = FieldFactory.getMLModelVariablesFields();
+		GenericSelectRecordBuilder selectBuilder5 = new GenericSelectRecordBuilder()
+														.select(mlModelVariableAssetFields)
+														.table(mlModelVariablesModule.getTableName())
+														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(mlModelVariablesModule))
+														.andCondition(mlIDCondition);
+		List<Map<String,Object>> modelVariableList = selectBuilder5.get();
+		for(Map<String,Object> prop : modelVariableList)
+		{
+			mlContext.addData(prop);
+		}
+		
+		//prepare builder to get MLVariables
+		FacilioModule mlVariablesModule = ModuleFactory.getMLVariablesModule();
+		List<FacilioField> mlVariableAssetFields = FieldFactory.getMLVariablesFields();
+		GenericSelectRecordBuilder selectBuilder6 = new GenericSelectRecordBuilder()
+														.select(mlVariableAssetFields)
+														.table(mlVariablesModule.getTableName())
+														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(mlVariablesModule))
+														.andCondition(mlIDCondition);
+		List<Map<String,Object>> mlVariableList = selectBuilder6.get();
+		for(Map<String,Object> prop : mlVariableList)
+		{
+			MLVariableContext mlVariableContext = FieldUtil.getAsBeanFromMap(prop, MLVariableContext.class);
+			mlContext.addMLVariable(mlVariableContext);
+		}
+		
+		//prepare builder to get MLCriteria Variables
+		FacilioModule mlCriteriaVariablesModule = ModuleFactory.getMLCriteriaVariablesModule();
+		List<FacilioField> mlCriteriaVariableFields = FieldFactory.getMLCriteriaVariablesFields();
+		GenericSelectRecordBuilder selectBuilder7 = new GenericSelectRecordBuilder()
+														.select(mlCriteriaVariableFields)
+														.table(mlCriteriaVariablesModule.getTableName())
+														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(mlCriteriaVariablesModule))
+														.andCondition(mlIDCondition);
+		List<Map<String,Object>> mlCriteriaVariableList = selectBuilder7.get();
+		for(Map<String,Object> prop : mlCriteriaVariableList)
+		{
+			MLVariableContext mlVariableContext = FieldUtil.getAsBeanFromMap(prop, MLVariableContext.class);
+			mlContext.addMLCriteriaVariable(mlVariableContext);
+		}
+		
+		return mlContext;
+	}
+	
+	private static List<MLAssetContext> getMLAssetContext(List<Map<String,Object>> listMap)
+	{
+		if(listMap != null && listMap.size() > 0) 
+		{
+			List<MLAssetContext> mlList = new ArrayList<>();
+			listMap.forEach(prop->mlList.add(FieldUtil.getAsBeanFromMap(prop, MLAssetContext.class)));
+			return mlList;
+		}
+		return null;
 	}
 
 
