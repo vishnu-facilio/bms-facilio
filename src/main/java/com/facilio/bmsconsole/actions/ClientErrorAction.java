@@ -18,20 +18,36 @@ public class ClientErrorAction extends FacilioAction {
         appender = logger.getAppender(APPENDER_NAME);
     }
 
-    private String type;
-    public String getType() {
-        return type;
+    private String ceType;
+    public String getCeType() {
+        return ceType;
     }
-    public void setType(String type) {
-        this.type = type;
+    public void setCeType(String ceType) {
+        this.ceType = ceType;
     }
 
-    private String url;
-    public String getUrl() {
-        return url;
+    private String ceApi;
+    public String getCeApi() {
+        return ceApi;
     }
-    public void setUrl(String url) {
-        this.url = url;
+    public void setCeApi(String ceApi) {
+        this.ceApi = ceApi;
+    }
+
+    private String route;
+    public String getRoute() {
+        return route;
+    }
+    public void setRoute(String route) {
+        this.route = route;
+    }
+
+    private String statusCode = "-1";
+    public String getStatusCode() {
+        return statusCode;
+    }
+    public void setStatusCode(String statusCode) {
+        this.statusCode = statusCode;
     }
 
     private String message;
@@ -58,6 +74,14 @@ public class ClientErrorAction extends FacilioAction {
         this.browser = browser;
     }
 
+    private String os;
+    public String getOs() {
+        return os;
+    }
+    public void setOs(String os) {
+        this.os = os;
+    }
+
     private String userId = "-1";
     public String getUserId() {
         return userId;
@@ -78,20 +102,20 @@ public class ClientErrorAction extends FacilioAction {
         }
     }
 
-    public Map<String, Object> info;
-    public Map<String, Object> getInfo() {
-        return info;
+    public Map<String, Object> ceInfo;
+    public Map<String, Object> getCeInfo() {
+        return ceInfo;
     }
-    public void setInfo(Map<String, Object> info) {
-        this.info = info;
+    public void setCeInfo(Map<String, Object> ceInfo) {
+        this.ceInfo = ceInfo;
     }
 
-    public Map<String, Object> ua;
-    public Map<String, Object> getUa() {
-        return ua;
+    public Map<String, Object> ceUa;
+    public Map<String, Object> getCeUa() {
+        return ceUa;
     }
-    public void setUa(Map<String, Object> ua) {
-        this.ua = ua;
+    public void setCeUa(Map<String, Object> ceUa) {
+        this.ceUa = ceUa;
     }
 
     public boolean isNotNull(Map<String, Object> value) {
@@ -104,18 +128,21 @@ public class ClientErrorAction extends FacilioAction {
         }
         LoggingEvent event = new LoggingEvent(logger.getName(), logger, Level.INFO, message, null);
 
-        event.setProperty("type", this.type);
+        event.setProperty("route", this.route);
         event.setProperty("stacktrace", this.stacktrace);
-        event.setProperty("url", this.url);
         event.setProperty("browser", this.browser);
+        event.setProperty("os", this.os);
         event.setProperty("userId", this.userId);
         event.setProperty("orgId", this.orgId);
+        event.setProperty("ceType", this.ceType);
+        event.setProperty("ceApi", this.ceApi);
+        event.setProperty("statusCode", this.statusCode);
 
-        if (this.isNotNull(this.info)) {
-            event.setProperty("info", this.info.toString());
+        if (this.isNotNull(this.ceInfo)) {
+            event.setProperty("ceInfo", this.ceInfo.toString());
         }
-        if (this.isNotNull(this.ua)) {
-            event.setProperty("ua", this.ua.toString());
+        if (this.isNotNull(this.ceUa)) {
+            event.setProperty("ceUa", this.ceUa.toString());
         }
 
         if(appender != null) {
