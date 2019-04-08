@@ -176,6 +176,12 @@ public class AddOrUpdateWorkorderToolsCommand implements Command {
 			costOccured = tool.getRate() * duration * woTool.getQuantity();
 		}
 		woTool.setCost(costOccured);
+		if(workorder!=null) {
+			woTool.setWorkorder(workorder);
+			if(workorder.getAssignedTo()!=null) {
+				woTool.setIssuedTo(workorder.getAssignedTo());
+			}
+		}
 		return woTool;
 	}
 
