@@ -43,6 +43,7 @@ import com.facilio.bmsconsole.context.LabourContext;
 import com.facilio.bmsconsole.context.LocationContext;
 import com.facilio.bmsconsole.context.MLAlarmContext;
 import com.facilio.bmsconsole.context.MLAlarmOccurrenceContext;
+import com.facilio.bmsconsole.context.MLContext;
 import com.facilio.bmsconsole.context.MlForecastingContext;
 import com.facilio.bmsconsole.context.PhotosContext;
 import com.facilio.bmsconsole.context.PurchaseOrderContext;
@@ -912,6 +913,8 @@ public class FacilioConstants {
 		
 		private static final String RECEIPT_LINE_ITEMS = "receiptlineitems";
 		public static final String ITEM_VENDORS_LIST = "itemTypesVendorsList";
+		
+		public static final String ML ="ml";
 
 		private static Map<String, Class> classMap = Collections.unmodifiableMap(initClassMap());
 		private static Map<String, Class> initClassMap() {
@@ -1010,6 +1013,8 @@ public class FacilioConstants {
 			classMap.put(RECEIVABLE, ReceivableContext.class);
 			classMap.put(RECEIPT, ReceiptContext.class);
 			classMap.put(RECEIPT_LINE_ITEMS, ReceiptLineItemContext.class);
+			
+			classMap.put(ML, MLContext.class);
 			return classMap;
 		}
 		
