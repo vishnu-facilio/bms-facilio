@@ -2291,6 +2291,12 @@ public class TransactionChainFactory {
 			return c;
 		}
 		
+		public static Chain getUpdateFormSectionChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new UpdateFormSectionCommand());
+			return c;
+		}
+		
 		public static Chain getAddPurchaseContractChain() {
 			Chain chain = getDefaultChain();
 			chain.addCommand(SetTableNamesCommand.getForPurchaseContract());

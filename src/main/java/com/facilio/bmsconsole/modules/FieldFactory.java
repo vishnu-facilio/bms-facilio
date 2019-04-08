@@ -1,14 +1,22 @@
 package com.facilio.bmsconsole.modules;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
+import org.apache.commons.lang3.tuple.Pair;
+
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.agent.AgentKeys;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.events.tasker.tasks.EventUtil;
-import org.apache.commons.lang3.tuple.Pair;
-
-import java.util.*;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 public class FieldFactory {
 
@@ -325,8 +333,22 @@ public class FieldFactory {
 		span.setModule(module);
 		
 		fields.add(getField("defaultValue", "DEFAULT_VALUE", module, FieldType.STRING));
+		fields.add(getField("sectionId", "SECTIONID", module, FieldType.NUMBER));
 		
 		fields.add(span);
+		return fields;
+	}
+	
+	public static List<FacilioField> getFormSectionFields() {
+		List<FacilioField> fields = new ArrayList<>();
+		FacilioModule module = ModuleFactory.getFormSectionModule();
+		
+		fields.add(getIdField(module));
+		fields.add(getNameField(module));
+		fields.add(getField("formId", "FORMID", module, FieldType.NUMBER));
+		fields.add(getField("sequenceNumber", "SEQUENCE_NUMBER", module, FieldType.NUMBER));
+		fields.add(getField("showLabel", "SHOW_LABEL", module, FieldType.BOOLEAN));
+		
 		return fields;
 	}
 

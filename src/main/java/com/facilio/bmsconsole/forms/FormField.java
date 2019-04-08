@@ -201,4 +201,12 @@ public class FormField implements Serializable {
 		this.createFormName = createFormName;
 		return this;
 	}
+	
+	private long sectionId = -1;
+	public long getSectionId() {
+		return sectionId;
+	}
+	public void setSectionId(long sectionId) {
+		this.sectionId = sectionId;
+	}
 }

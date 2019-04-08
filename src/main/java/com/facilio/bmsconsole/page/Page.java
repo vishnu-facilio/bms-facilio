@@ -6,6 +6,7 @@ import java.util.List;
 import com.facilio.bmsconsole.modules.FacilioModule;
 
 public class Page {
+	private static final long serialVersionUID = 1L;
 	
 	private long orgId = -1;
 	public long getOrgId() {

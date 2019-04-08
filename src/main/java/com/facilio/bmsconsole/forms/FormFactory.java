@@ -33,7 +33,7 @@ public class FormFactory {
 	// TODO remove...use FORMS_LIST to get details
 	private static Map<String, FacilioForm> initMap() {
 		Map<String, FacilioForm> forms = new HashMap<>();
-		forms.put("workOrderForm", getWorkOrderForm());
+		forms.put("workOrderForm", getWebWorkOrderForm());
 		forms.put("serviceWorkRequest", getServiceWorkRequestForm());
 		forms.put("serviceWorkOrder", getServiceWorkOrderForm());
 		forms.put("mobileServiceWorkOrder", getMobileServiceWorkOrderForm());
@@ -102,12 +102,30 @@ public class FormFactory {
 		return FORMS_LIST.get(moduleName);
 	}
 	
-	public static FacilioForm getDefaultForm(String moduleName, FacilioForm form) {
-		return getForms(moduleName).get( "default_"+moduleName+"_"+form.getFormTypeVal());
+	public static FacilioForm getDefaultForm(String moduleName, FacilioForm form, Boolean...onlyFields) {
+		return getForm(moduleName, "default_"+moduleName+"_"+form.getFormTypeVal(), onlyFields);
 	}
 	
-	public static FacilioForm getForm(String moduleName, String formName) {
-		return getForms(moduleName).get(formName);
+	public static FacilioForm getForm(String moduleName, String formName, Boolean...onlyFields) {
+		FacilioForm form = getForms(moduleName).get(formName);
+		if (onlyFields == null || onlyFields.length == 0 || !onlyFields[0]) {
+			form = new FacilioForm(form);
+			// TODO add sections in formfactory initialization itself once all client supports
+			if (moduleName.equals(FacilioConstants.ContextNames.WORK_ORDER)) {
+				List<FormSection> sections = new ArrayList<>();
+				form.setSections(sections);
+				int i = 1;
+				FormSection defaultSection = new FormSection(i++, new ArrayList<>(form.getFields()));
+				sections.add(defaultSection);
+				
+				List<FormField> task = form.getFields().stream().filter(field -> field.getDisplayTypeEnum() == FieldDisplayType.TASKS).collect(Collectors.toList());
+				FormSection taskSection = new FormSection(i++, task);
+				sections.add(taskSection);
+				
+				form.setFields(null);
+			}
+		}
+		return form;
 	}
 	
 	private static Map<String, Map<String, FacilioForm>>  initFormsList() {
@@ -173,16 +191,7 @@ public class FormFactory {
 		form.setFormType(FormType.PORTAL);
 		return form;
 	}
-	public static FacilioForm getWorkOrderForm() {
-		FacilioForm form = new FacilioForm();
-		form.setDisplayName("WORKORDER");
-		form.setName("workOrder");
-		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.WORK_ORDER));
-		form.setLabelPosition(LabelPosition.LEFT);
-		form.setFields(getWebWorkOrderFormFields());
-		form.setFormType(FormType.WEB);
-		return form;
-	}
+	
 	public static FacilioForm getApprovalForm() {
 		FacilioForm form = new FacilioForm();
 		form.setDisplayName("Approval");
@@ -286,7 +295,7 @@ public class FormFactory {
 
 	public static FacilioForm getWebWorkOrderForm() {
 		FacilioForm form = new FacilioForm();
-		form.setDisplayName("SUBMIT WORKORDER");
+		form.setDisplayName("WORKORDER");
 		form.setName("default_workorder_web");
 		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.WORK_ORDER));
 		form.setLabelPosition(LabelPosition.LEFT);
@@ -472,8 +481,8 @@ public class FormFactory {
 		fields.add(new FormField("resource", FieldDisplayType.WOASSETSPACECHOOSER, "Space/Asset", Required.OPTIONAL, 6, 1));
 		fields.add(new FormField("assignment", FieldDisplayType.TEAMSTAFFASSIGNMENT, "Team/Staff", Required.OPTIONAL, 7, 1));
 		fields.add(new FormField("attachedFiles", FieldDisplayType.ATTACHMENT, "Attachments", Required.OPTIONAL, "attachment", 8, 1));
-		fields.add(new FormField("tasks", FieldDisplayType.TASKS, "TASKS", Required.OPTIONAL, 10, 1));
-		fields.add(new FormField("sendForApproval", FieldDisplayType.DECISION_BOX, "Send For Approval", Required.OPTIONAL, 11, 1));
+		fields.add(new FormField("sendForApproval", FieldDisplayType.DECISION_BOX, "Send For Approval", Required.OPTIONAL, 10, 1));
+		fields.add(new FormField("tasks", FieldDisplayType.TASKS, "TASKS", Required.OPTIONAL, 11, 1));
 		return Collections.unmodifiableList(fields);
 	}
 

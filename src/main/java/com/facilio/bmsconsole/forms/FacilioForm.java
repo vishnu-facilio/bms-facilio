@@ -85,6 +85,14 @@ public class FacilioForm implements Serializable {
 		this.fields = fields;
 	}
 	
+	private List<FormSection> sections;
+	public List<FormSection> getSections() {
+		return sections;
+	}
+	public void setSections(List<FormSection> sections) {
+		this.sections = sections;
+	}
+
 	private FacilioModule module;
 	
 	public void setModule(FacilioModule module) {

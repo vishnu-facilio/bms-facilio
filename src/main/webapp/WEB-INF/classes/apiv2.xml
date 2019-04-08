@@ -638,6 +638,9 @@
 		</action>
 		<action name="update" class="com.facilio.bmsconsole.actions.FormAction" method="updateForm">
 		</action>
+		<action name="*" class="com.facilio.bmsconsole.actions.FormAction" method="formDetails">
+			<param name="moduleName">{1}</param>
+		</action>
 	</package>
 	<package name="formFieldApiv2" namespace="/api/v2/forms/fields" extends="v2Api">
 		<action name="update" class="com.facilio.bmsconsole.actions.FormAction" method="updateFormField">
@@ -645,6 +648,10 @@
 		<action name="init" class="com.facilio.bmsconsole.actions.FormAction" method="updateFormFields">
 		</action>
 		<action name="unusedlist" class="com.facilio.bmsconsole.actions.FormAction" method="formUnusedFieldList">
+		</action>
+	</package>
+	<package name="formSectionApiv2" namespace="/api/v2/forms/sections" extends="v2Api">
+		<action name="update" class="com.facilio.bmsconsole.actions.FormAction" method="updateSection">
 		</action>
 	</package>
 	

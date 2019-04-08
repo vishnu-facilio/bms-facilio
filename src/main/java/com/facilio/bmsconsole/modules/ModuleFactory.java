@@ -1,11 +1,11 @@
 package com.facilio.bmsconsole.modules;
 
-import com.facilio.agent.AgentKeys;
-import com.facilio.constants.FacilioConstants;
-
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+
+import com.facilio.agent.AgentKeys;
+import com.facilio.constants.FacilioConstants;
 
 public class ModuleFactory {
 
@@ -128,6 +128,14 @@ public class ModuleFactory {
 		formFieldsModule.setName("formFields");
 		formFieldsModule.setDisplayName("Form Fields");
 		formFieldsModule.setTableName("Form_Fields");
+		return formFieldsModule;
+	}
+	
+	public static FacilioModule getFormSectionModule() {
+		FacilioModule formFieldsModule = new FacilioModule();
+		formFieldsModule.setName("formSection");
+		formFieldsModule.setDisplayName("Form Section");
+		formFieldsModule.setTableName("Form_Section");
 		return formFieldsModule;
 	}
 	

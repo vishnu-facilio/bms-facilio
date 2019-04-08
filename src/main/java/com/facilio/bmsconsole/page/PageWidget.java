@@ -11,6 +11,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class PageWidget {
+	private static final long serialVersionUID = 1L;
 	
 	public PageWidget () {}
 	

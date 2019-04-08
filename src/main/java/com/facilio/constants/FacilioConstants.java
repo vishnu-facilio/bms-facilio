@@ -781,6 +781,7 @@ public class FacilioConstants {
 		public static final String FORM_FIELDS = "formFields";
 		public static final String FORM_OBJECT = "formObject";
 		public static final String FORM_TYPE = "formType";
+		public static final String FORM_SECTION = "formSection";
 		
 		
 		public static final String QR_VALUE = "qrValue";
