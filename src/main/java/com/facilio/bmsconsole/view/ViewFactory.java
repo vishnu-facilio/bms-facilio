@@ -2211,9 +2211,9 @@ public class ViewFactory {
 	}
 	private static Criteria getUnderstockedItemCriteria(FacilioModule module) {
 		FacilioField quantity = new NumberField();
-		quantity.setName("currentQuantity");
-		quantity.setColumnName("CURRENT_QUANTITY");
-		quantity.setDataType(FieldType.DECIMAL);
+		quantity.setName("quantity");
+		quantity.setColumnName("QUANTITY");
+		quantity.setDataType(FieldType.NUMBER);
 		quantity.setModule(module);
 		
 		FacilioField minimumQuantity = new FacilioField();
