@@ -220,7 +220,7 @@ public  class AgentUtil
                    if (jsonObject.containsKey(AgentKeys.VERSION)) {
                        Object currDeviceDetails = jsonObject.get(AgentKeys.VERSION);
                        String currDeviceDetailsString = currDeviceDetails.toString();
-                       if (!(agent.getAgentDeviceDetails().equalsIgnoreCase(currDeviceDetailsString))) {
+                       if (agent.getAgentDeviceDetails()!= null && !(agent.getAgentDeviceDetails().equalsIgnoreCase(currDeviceDetailsString))) {
                            toUpdate.put(AgentKeys.DEVICE_DETAILS, currDeviceDetails);
                            toUpdate.put(AgentKeys.VERSION, getVersion(currDeviceDetails));
                            agent.setAgentDeviceDetails(currDeviceDetailsString);
@@ -369,6 +369,9 @@ public  class AgentUtil
 
         if(!sent){
             payLoad.put(AgentKeys.COMMAND_STATUS,CommandStatus.SENT.getKey());
+        }
+        if(payLoad.containsKey(AgentKeys.COMMAND)){
+            payLoad.replace(AgentKeys.COMMAND, ControllerCommand.valueOf(payLoad.get(AgentKeys.COMMAND).toString()).getValue());
         }
         if(!payLoad.containsKey(AgentKeys.AGENT_ID)){
             payLoad.put(AgentKeys.AGENT_ID,agentId);
