@@ -2326,13 +2326,13 @@ public class ViewFactory {
 		
 		FacilioModule itemsModule = ModuleFactory.getInventryModule();
 		
-		FacilioField createdTime = new FacilioField();
-		createdTime.setName("sysCreatedTime");
-		createdTime.setDataType(FieldType.NUMBER);
-		createdTime.setColumnName("CREATED_TIME");
-		createdTime.setModule(itemsModule);
-		
-		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));
+		FacilioField createdTime = new LookupField();
+		createdTime.setName("itemType");
+		createdTime.setDataType(FieldType.LOOKUP);
+		createdTime.setColumnName("ITEM_TYPES_ID");
+		createdTime.setModule(ModuleFactory.getItemTypesModule());
+
+		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, true));
 		
 		FacilioView allView = new FacilioView();
 		allView.setName("understocked");
@@ -2353,7 +2353,7 @@ public class ViewFactory {
 		createdTime.setColumnName("NAME");
 		createdTime.setModule(storeRoomModule);
 
-		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));
+		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, true));
 
 		FacilioView allView = new FacilioView();
 		allView.setName("all");
@@ -2373,7 +2373,7 @@ public class ViewFactory {
 		createdTime.setColumnName("NAME");
 		createdTime.setModule(itemsModule);
 
-		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));
+		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, true));
 
 		FacilioView allView = new FacilioView();
 		allView.setName("all");
@@ -2393,7 +2393,7 @@ public class ViewFactory {
 		createdTime.setColumnName("NAME");
 		createdTime.setModule(itemsModule);
 
-		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));
+		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, true));
 
 		Criteria criteria = getItemTypeStatusCriteria(itemsModule, status);
 		
@@ -2449,7 +2449,7 @@ public class ViewFactory {
 		createdTime.setColumnName("NAME");
 		createdTime.setModule(itemsModule);
 
-		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));
+		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, true));
 
 		FacilioView allView = new FacilioView();
 		allView.setName("all");
@@ -2483,13 +2483,13 @@ public class ViewFactory {
 
 		FacilioModule itemsModule = ModuleFactory.getInventryModule();
 
-		FacilioField createdTime = new FacilioField();
-		createdTime.setName("sysCreatedTime");
-		createdTime.setDataType(FieldType.NUMBER);
-		createdTime.setColumnName("CREATED_TIME");
-		createdTime.setModule(itemsModule);
+		FacilioField createdTime = new LookupField();
+		createdTime.setName("itemType");
+		createdTime.setDataType(FieldType.LOOKUP);
+		createdTime.setColumnName("ITEM_TYPES_ID");
+		createdTime.setModule(ModuleFactory.getItemTypesModule());
 
-		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));
+		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, true));
 
 		FacilioView allView = new FacilioView();
 		allView.setName("all");
@@ -2503,13 +2503,13 @@ public class ViewFactory {
 
 		FacilioModule itemsModule = ModuleFactory.getToolModule();
 
-		FacilioField createdTime = new FacilioField();
-		createdTime.setName("sysCreatedTime");
-		createdTime.setDataType(FieldType.NUMBER);
-		createdTime.setColumnName("CREATED_TIME");
-		createdTime.setModule(itemsModule);
+		FacilioField createdTime = new LookupField();
+		createdTime.setName("toolType");
+		createdTime.setDataType(FieldType.LOOKUP);
+		createdTime.setColumnName("TOOL_TYPE_ID");
+		createdTime.setModule(ModuleFactory.getToolTypesModule());
 
-		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));
+		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, true));
 
 		FacilioView allView = new FacilioView();
 		allView.setName("all");
