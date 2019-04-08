@@ -249,6 +249,7 @@ public class ColumnFactory {
 		List<ViewField> columns = new ArrayList<ViewField>();
 		
 		columns.add(new ViewField("name", "Name"));
+		columns.add(new ViewField("description", "Description"));
 		columns.add(new ViewField("category", "Category"));
 		columns.add(new ViewField("currentQuantity", "Current Quantity"));
 		columns.add(new ViewField("lastPurchasedPrice", "Last Purchased Price"));
@@ -261,9 +262,11 @@ public class ColumnFactory {
 		List<ViewField> columns = new ArrayList<ViewField>();
 		
 		columns.add(new ViewField("name", "Name"));
+		columns.add(new ViewField("description", "Description"));
 		columns.add(new ViewField("category", "Category"));
 		columns.add(new ViewField("currentQuantity", "Current Quantity"));
 		columns.add(new ViewField("lastPurchasedDate", "Last Purchased Date"));
+		columns.add(new ViewField("lastIssuedDate", "Last Issued Date"));
 		
 		return columns;
 	}
@@ -295,6 +298,7 @@ public class ColumnFactory {
 		
 		columns.add(new ViewField("storeRoom", "Store Room"));
 		columns.add(new ViewField("quantity", "Quantity"));
+		columns.add(new ViewField("currentQuantity", "Current Balance"));
 		columns.add(new ViewField("lastPurchasedDate", "Last Purchased Date"));
 		
 		return columns;
@@ -316,7 +320,7 @@ public class ColumnFactory {
 		
 //		columns.add(new ViewField("toolType", "Tool Type"));
 //		columns.add(new ViewField("tool", "Tool"));
-		columns.add(new ViewField("quantity", "Requested Quantity"));
+		columns.add(new ViewField("quantity", "Quantity"));
 		columns.add(new ViewField("sysCreatedTime", "Requested Time"));
 //		columns.add(new ViewField("issuedTo", "Issued To"));
 		return columns;
@@ -326,7 +330,7 @@ public class ColumnFactory {
 		List<ViewField> columns = new ArrayList<ViewField>();
 		
 //		columns.add(new ViewField("itemType", "Item Type"));
-		columns.add(new ViewField("quantity", "Requested Quantity"));
+		columns.add(new ViewField("quantity", "Quantity"));
 		columns.add(new ViewField("sysCreatedTime", "Requested Time"));
 //		columns.add(new ViewField("issuedTo", "Issued To"));
 		return columns;

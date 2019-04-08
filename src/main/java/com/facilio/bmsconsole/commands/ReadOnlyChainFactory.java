@@ -499,6 +499,7 @@ public class ReadOnlyChainFactory {
 	public static Chain getItemList() {
 		Chain c = getDefaultChain();
 		c.addCommand(SetTableNamesCommand.getForItem());
+		c.addCommand(new LoadViewCommand());
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new GenerateCriteriaFromFilterCommand());
 		c.addCommand(new GenerateSearchConditionCommand());
@@ -533,6 +534,7 @@ public class ReadOnlyChainFactory {
 	public static Chain getStockedToolsList() {
 		Chain c = getDefaultChain();
 		c.addCommand(SetTableNamesCommand.getForTool());
+		c.addCommand(new LoadViewCommand());
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new GenerateCriteriaFromFilterCommand());
 		c.addCommand(new GenerateSearchConditionCommand());

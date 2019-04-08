@@ -2243,13 +2243,13 @@ public class ViewFactory {
 		FacilioField quantity = new NumberField();
 		quantity.setName("quantity");
 		quantity.setColumnName("QUANTITY");
-		quantity.setDataType(FieldType.NUMBER);
+		quantity.setDataType(FieldType.DECIMAL);
 		quantity.setModule(module);
 		
 		FacilioField minimumQuantity = new FacilioField();
 		minimumQuantity.setName("minimumQuantity");
 		minimumQuantity.setColumnName("MINIMUM_QUANTITY");
-		minimumQuantity.setDataType(FieldType.NUMBER);
+		minimumQuantity.setDataType(FieldType.DECIMAL);
 		minimumQuantity.setModule(module);
 		
 		Condition ticketClose = new Condition();
