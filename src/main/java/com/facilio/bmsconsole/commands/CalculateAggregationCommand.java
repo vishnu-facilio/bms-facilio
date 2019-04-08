@@ -5,6 +5,7 @@ import com.facilio.report.context.ReportContext;
 import com.facilio.report.context.ReportDataPointContext;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
@@ -33,7 +34,7 @@ public class CalculateAggregationCommand implements Command {
 			Collection<Map<String, Object>> csvData = (Collection<Map<String, Object>>) reportData.get(FacilioConstants.ContextNames.DATA_KEY);
 			Map<String, Object> reportAggrData = (Map<String, Object>) reportData.get(FacilioConstants.ContextNames.AGGR_KEY);
 			Map<String, Object> aggrData = new HashMap<>();
-			
+
 			for (ReportDataPointContext dp : report.getDataPoints()) {
 				if (!dp.isAggrCalculated()) {
 					switch (dp.getyAxis().getDataTypeEnum()) {
@@ -53,7 +54,7 @@ public class CalculateAggregationCommand implements Command {
 					dp.setAggrCalculated(true);
 				}
 			}
-			
+
 			if (reportAggrData == null) {
 				reportData.put(FacilioConstants.ContextNames.AGGR_KEY, aggrData);
 			}
@@ -66,6 +67,10 @@ public class CalculateAggregationCommand implements Command {
 	}
 	
 	private void doEnumAggr (ReportContext report, ReportDataPointContext dp, Collection<Map<String, Object>> csvData, Map<String, Object> aggrData, String timeAlias) {
+		if (CollectionUtils.isEmpty(csvData)) {
+			return;
+		}
+
 		Map<String, SimpleEntry<Long, Integer>> previousRecords = new HashMap<>();
 		Iterator<Map<String, Object>> itr = csvData.iterator();
 		Map<String, Object> currentData = itr.next();
@@ -85,7 +90,7 @@ public class CalculateAggregationCommand implements Command {
 	private void aggregateEnum (ReportContext report, ReportDataPointContext dp, Map<String, Object> aggrData, String timeAlias, Map<String, Object> currentData, Map<String, Object> nextData, boolean isFirst, Map<String, SimpleEntry<Long, Integer>> previousRecords) {
 		long startTime = -1, endTime = -1;
 
-		if (isFirst) {
+		if (!isFirst) {
 			startTime = (long) currentData.get(timeAlias);
 		}
 

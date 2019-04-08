@@ -115,6 +115,10 @@ public class FetchReportAdditionalInfoCommand implements Command {
 	}
 	
 	private void getRecordWiseAlarms (ReportContext report, Collection<Map<String, Object>> csvData, List<ReadingAlarmContext> allAlarms, Map<Long, ReadingAlarmContext> alarmMap, String timeAlias) {
+		if (CollectionUtils.isEmpty(csvData)) {
+			return;
+		}
+
 		Iterator<Map<String, Object>> itr = csvData.iterator();
 		Map<String, Object> currentData = itr.next();
 		boolean isFirst = true;
