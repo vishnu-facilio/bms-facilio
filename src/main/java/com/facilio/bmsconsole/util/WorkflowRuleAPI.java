@@ -994,6 +994,7 @@ public class WorkflowRuleAPI {
 		Map<String, Object> placeHolders = WorkflowRuleAPI.getOrgPlaceHolders();
 		Map<String, Object> recordPlaceHolders = WorkflowRuleAPI.getRecordPlaceHolders(module.getName(), null, placeHolders);
 		recordPlaceHolders.put("executionTime", executionTime);
+		context.put(FacilioConstants.ContextNames.CURRENT_EXECUTION_TIME, executionTime);
 		WorkflowRuleAPI.executeWorkflowsAndGetChildRuleCriteria(Collections.singletonList(rule), module, null, null, null, recordPlaceHolders, (FacilioContext)context,true, Collections.singletonList(rule.getEvent().getActivityTypeEnum()));
 	}
 	
