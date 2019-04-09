@@ -38,8 +38,10 @@ public class GetPurchaseOrdersListOnInventoryTypeIdCommand  implements Command{
 					.innerJoin(lineItemModule.getTableName())
 					.on(purchaseOrderModule.getTableName()+".ID = "+lineItemModule.getTableName()+".PO_ID")
 					.andCondition(CriteriaAPI.getCondition("INVENTORY_TYPE", "inventoryType", String.valueOf(inventoryType), NumberOperators.EQUALS))
-					.andCondition(CriteriaAPI.getCondition("STOREROOM", "storeRoom", String.valueOf(storeRoomId), NumberOperators.EQUALS))
 					;
+			if(storeRoomId != 0) {
+				builder.andCondition(CriteriaAPI.getCondition("STOREROOM", "storeRoom", String.valueOf(storeRoomId), NumberOperators.EQUALS));
+			}
 			if(inventoryType == InventoryType.ITEM.ordinal()+1) {
 				builder.andCondition(CriteriaAPI.getCondition("ITEM_TYPE", "itemType", String.valueOf(id), NumberOperators.EQUALS));
 			}
