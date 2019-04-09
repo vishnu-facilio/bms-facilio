@@ -22,6 +22,7 @@ public class FacilioForm implements Serializable {
 		this.module = module;
 		this.formType = formType;
 		this.labelPosition = labelPosition;
+		this.showInMobile = true;
 	}
 
 	public FacilioForm(FacilioForm form) {
@@ -164,10 +165,24 @@ public class FacilioForm implements Serializable {
 	public void setDescription(String description) {
 		this.description = description;
 	}
+	
+	private Boolean showInMobile;
+	public Boolean getShowInMobile() {
+		return showInMobile;
+	}
+	public void setShowInMobile(Boolean showInMobile) {
+		this.showInMobile = showInMobile;
+	}
+	public Boolean isShowInMobile() {
+		if (this.showInMobile == null) {
+			return true;
+		}
+		return false;
+	}
 
 	public enum FormType {
 		WEB(1, "web"),
-		MOBILE(2, "mobile"),
+		MOBILE(2, "mobile"), // Will be removed
 		PORTAL(3, "portal");
 		
 		private int intVal;

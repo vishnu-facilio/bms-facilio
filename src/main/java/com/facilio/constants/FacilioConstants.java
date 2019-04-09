@@ -937,6 +937,9 @@ public class FacilioConstants {
 		public static final String PO_LINE_ITEMS_SERIAL_NUMBERS = "poLineItemSerialNumbers";
 		public static final String SERIAL_NUMBERS = "serialNumbers";
 		
+		public static final String TOTAL_COST = "totalCost";
+		public static final String TOTAL_QUANTITY = "totalQuantity";
+		
 		private static Map<String, Class> classMap = Collections.unmodifiableMap(initClassMap());
 		private static Map<String, Class> initClassMap() {
 			Map<String, Class> classMap = new HashMap<>();

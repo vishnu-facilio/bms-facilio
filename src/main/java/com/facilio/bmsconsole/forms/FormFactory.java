@@ -115,11 +115,22 @@ public class FormFactory {
 				List<FormSection> sections = new ArrayList<>();
 				form.setSections(sections);
 				int i = 1;
-				FormSection defaultSection = new FormSection(i++, new ArrayList<>(form.getFields()));
-				sections.add(defaultSection);
+				List<FormField> defaultFields = new ArrayList<>();
+				List<FormField> taskFields = new ArrayList<>();
 				
-				List<FormField> task = form.getFields().stream().filter(field -> field.getDisplayTypeEnum() == FieldDisplayType.TASKS).collect(Collectors.toList());
-				FormSection taskSection = new FormSection(i++, task);
+				FormSection defaultSection = new FormSection(i++, defaultFields);
+				sections.add(defaultSection);
+				 form.getFields().forEach(field -> {
+					 if (field.getDisplayTypeEnum() == FieldDisplayType.TASKS) {
+						 taskFields.add(field);
+					 }
+					 else {
+						 defaultFields.add(field);
+					 }
+				 });
+				
+//				List<FormField> task = form.getFields().stream().filter(field -> field.getDisplayTypeEnum() == FieldDisplayType.TASKS).collect(Collectors.toList());
+				FormSection taskSection = new FormSection(i++, taskFields);
 				sections.add(taskSection);
 				
 				form.setFields(null);
@@ -129,7 +140,7 @@ public class FormFactory {
 	}
 	
 	private static Map<String, Map<String, FacilioForm>>  initFormsList() {
-		List<FacilioForm> woForms = Arrays.asList(getWebWorkOrderForm(), getMobileWorkOrderForm(), getServiceWorkOrderForm());
+		List<FacilioForm> woForms = Arrays.asList(getWebWorkOrderForm(), getServiceWorkOrderForm());
 		List<FacilioForm> assetForms = Arrays.asList(getAssetForm());
 		
 		return ImmutableMap.<String, Map<String, FacilioForm>>builder()
@@ -173,8 +184,8 @@ public class FormFactory {
 	}
 	public static FacilioForm getServiceWorkOrderForm() {
 		FacilioForm form = new FacilioForm();
-		form.setDisplayName("SUBMIT A REQUEST");
-		form.setName("serviceWorkOrder");
+		form.setDisplayName("Submit A Request");
+		form.setName("default_workorder_portal");
 		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.WORK_ORDER));
 		form.setLabelPosition(LabelPosition.TOP);
 		form.setFields(getServiceWorkRequestFormFields());
@@ -295,7 +306,7 @@ public class FormFactory {
 
 	public static FacilioForm getWebWorkOrderForm() {
 		FacilioForm form = new FacilioForm();
-		form.setDisplayName("WORKORDER");
+		form.setDisplayName("Workorder");
 		form.setName("default_workorder_web");
 		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.WORK_ORDER));
 		form.setLabelPosition(LabelPosition.LEFT);

@@ -127,7 +127,9 @@ public class FormsAPI {
 						f.setLookupModuleName(lookupMod.getName());
 					}
 				}
-				f.setName(field.getName());
+				if (f.getName() == null) {
+					f.setName(field.getName());
+				}
 			}
 			/***
 			 * Temp handling to set name for form fields if fieldId is empty 
@@ -417,7 +419,11 @@ public class FormsAPI {
 	
 	public static Map<String, List<FormField>> getFormUnusedFields(String moduleName, long formId) throws Exception {
 		FacilioForm form = getFormFromDB(formId);
-		Map<String, FormField> formFieldMap = form.getFields().stream().collect(Collectors.toMap(FormField::getName, Function.identity()));
+		List<FormField> fields = form.getFields();
+		if (fields == null) {
+			fields = getFormFieldsFromSections(form.getSections());
+		}
+		Map<String, FormField> formFieldMap = fields.stream().collect(Collectors.toMap(FormField::getName, Function.identity()));
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioForm defaultForm = FormFactory.getDefaultForm(moduleName, form, true);

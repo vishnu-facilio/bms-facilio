@@ -230,7 +230,18 @@ public class AuthInterceptor extends AbstractInterceptor {
 	
 	private boolean isRemoteScreenMode(HttpServletRequest request) {
 		String remoteScreenHeader = request.getHeader("X-Remote-Screen");
-		return ( remoteScreenHeader != null && "true".equalsIgnoreCase(remoteScreenHeader.trim()));
+		String deviceToken = FacilioCookie.getUserCookie(request, "fc.deviceToken");
+		
+		String facilioToken1 = FacilioCookie.getUserCookie(request, "fc.idToken.facilio");
+		String facilioToken2 = FacilioCookie.getUserCookie(request, "fc.idToken.facilioportal");
+		
+		if ( remoteScreenHeader != null && "true".equalsIgnoreCase(remoteScreenHeader.trim())) {
+			return true;
+		}
+		else if (deviceToken != null && !"".equals(deviceToken) && facilioToken1 == null && facilioToken2 == null) {
+			return true;
+		}
+		return false;
 	}
 	
 	private String getPermalinkToken(HttpServletRequest request) {

@@ -93,10 +93,10 @@ public enum Unit {
 	
 	DEGREE(62,"Degree","&deg;",Metric.DEGREE),
 	
-	SQUARE_METER(63,"square meter","m<sup>2</sup>",Metric.AREA),
-	SQUARE_KILOMETER(64,"square kilometer","km<sup>2</sup>",Metric.AREA,"si/1000000","this * 1000000"),
-	SQUARE_INCH(65,"square inch","in<sup>2</sup>",Metric.AREA,"si*1550.0031000062","this * 0.00064516"),
-	SQUARE_FOOT(66,"square foot","ft<sup>2</sup>",Metric.AREA,"si*10.7639","this/10.7639"),
+	SQUARE_METER(63,"square meter","m\u00B2",Metric.AREA),
+	SQUARE_KILOMETER(64,"square kilometer","km\u00B3",Metric.AREA,"si/1000000","this * 1000000"),
+	SQUARE_INCH(65,"square inch","in\u00B2",Metric.AREA,"si*1550.0031000062","this * 0.00064516"),
+	SQUARE_FOOT(66,"square foot","ft\u00B2",Metric.AREA,"si*10.7639","this/10.7639"),
 	HECTARE(67,"hectare","ha",Metric.AREA,"si/10000","this*10000"),
 	ACRE(68,"acre","acre",Metric.AREA,"si/4046.86","this*4046.86"),
 	
@@ -106,9 +106,9 @@ public enum Unit {
 	MILILITRE(71,"mililitre","ml",Metric.VOLUME,"si*1000","this/1000"),
 	DECALITRE(77,"decalitre","dl",Metric.VOLUME,"si/10","this*10"),
 	KILOLITRE(78,"kilolitre","kl",Metric.VOLUME,"si/1000","this*1000"),
-	CUBICMETER(81,"cubic meter","m<sup>3</sup>",Metric.VOLUME,"si/1000","this*1000"),
-	CUBICFOOT(72,"cubic foot","ft<sup>3</sup>",Metric.VOLUME,"si/28.3168","this*28.3168"),
-	CUBICINCH(73,"cubic inch","in<sup>3</sup>",Metric.VOLUME,"si*61.0237","this/61.0237"),
+	CUBICMETER(81,"cubic meter","m\u00B3",Metric.VOLUME,"si/1000","this*1000"),
+	CUBICFOOT(72,"cubic foot","ft\u00B3",Metric.VOLUME,"si/28.3168","this*28.3168"),
+	CUBICINCH(73,"cubic inch","in\u00B3",Metric.VOLUME,"si*61.0237","this/61.0237"),
 	USGALLON(74,"US Gallon","US gal",Metric.VOLUME,"si/3.78541","this*3.78541"),
 	IMPERIALGALLON(75,"Imperial Gallon","imp gal",Metric.VOLUME,"si/4.54609","this*4.54609"),
 	
@@ -122,11 +122,11 @@ public enum Unit {
 	
 	MILLIPERHOUR(89,"millimeters/hour","mm/hr",Metric.PRECIPITATION_INTENSITY),
 	
-	CUBICFEETPERMIN(90,"cubic feet per minute","ft<sup>3</sup>/min",Metric.FLOWRATE),
-	CUBICFEETPERHOUR(91,"cubic feet per hour","ft<sup>3</sup>/hr",Metric.FLOWRATE,"si*60","this/60"),
+	CUBICFEETPERMIN(90,"cubic feet per minute","ft\u00B3/min",Metric.FLOWRATE),
+	CUBICFEETPERHOUR(91,"cubic feet per hour","ft\u00B3/hr",Metric.FLOWRATE,"si*60","this/60"),
 	GALLONSPERMIN(92,"Gallons per minute","gal/min",Metric.FLOWRATE,"si*7.48","this/7.48"),
 	LITRESPERMIN(93,"litres per minute","l/min",Metric.FLOWRATE,"si*28.316","this/28.316"),
-	CUBICMETERPERSECOND(100,"cubic meter per second","m<sup>3</sup>/sec",Metric.FLOWRATE,"si/2118.88","this*2118.88"),
+	CUBICMETERPERSECOND(100,"cubic meter per second","m\u00B3/sec",Metric.FLOWRATE,"si/2118.88","this*2118.88"),
 	
 	PARTSPERMILLION(101,"parts per million","ppm",Metric.CONCENTRATION),
 	;

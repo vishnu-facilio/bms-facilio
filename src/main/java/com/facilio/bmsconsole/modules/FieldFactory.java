@@ -191,6 +191,8 @@ public class FieldFactory {
 		labelPosition.setModule(module);
 		fields.add(labelPosition);
 		
+		fields.add(getField("showInMobile", "SHOW_IN_MOBILE", module, FieldType.BOOLEAN));
+		
 		return fields;
 	}
 
