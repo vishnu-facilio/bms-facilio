@@ -94,7 +94,7 @@ public class ReportsChainFactory {
 	
 	public static Chain getWoReportScheduleChain() {
 		Chain c = getDefaultChain();
-		c.addCommand(new AddWoTemplateCommand());
+		c.addCommand(new AddTemplateCommand());
 		c.addCommand(new ScheduleWoReportCommand());
 		return c;
 	}
