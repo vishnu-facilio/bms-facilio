@@ -106,7 +106,7 @@ public class UpdateTaskCommand implements Command {
 				   if(task.getStatusNewEnum()!=null) {
 					if(task.getStatusNewEnum().toString() == "CLOSED") {
 						JSONObject info = new JSONObject();
-						long newTaskId = task.getId();
+						long newTaskId = recordIds.get(0);
 							info.put("subject", taskMap.get(newTaskId).getSubject());
 							CommonCommandUtil.addActivityToContext(taskMap.get(recordIds.get(0)).getParentTicketId(), -1, WorkOrderActivityType.CLOSE_TASK, info, (FacilioContext) context);
 						
