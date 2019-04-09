@@ -632,9 +632,11 @@ public class ReadingsAPI {
 			}
 		}
 		List<FacilioField> fieldsToReturn = new ArrayList<>();
-		for(FacilioField field: fields) {
-			if ((parentId == null || (fieldsWithValues != null && fieldsWithValues.contains(field.getId()))) && !DEFAULT_READING_FIELDS.contains(field.getName()) ) {
-				fieldsToReturn.add(field);
+		if(fields != null) {
+			for(FacilioField field: fields) {
+				if ((parentId == null || (fieldsWithValues != null && fieldsWithValues.contains(field.getId()))) && !DEFAULT_READING_FIELDS.contains(field.getName()) ) {
+					fieldsToReturn.add(field);
+				}
 			}
 		}
 		return fieldsToReturn;
