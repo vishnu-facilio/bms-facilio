@@ -733,7 +733,7 @@ public class TemplateAPI {
 		return wfTemplate;
 	}
 	
-	private static Map<Long, TaskSectionTemplate> getTaskSectionTemplatesFromWOTemplate(WorkorderTemplate woTemplate) throws Exception {
+	public static Map<Long, TaskSectionTemplate> getTaskSectionTemplatesFromWOTemplate(WorkorderTemplate woTemplate) throws Exception {
 		FacilioModule module = ModuleFactory.getTaskSectionTemplateModule();
 		List<FacilioField> fields = FieldFactory.getTaskSectionTemplateFields();
 		FacilioField parentIdField = FieldFactory.getAsMap(fields).get("parentWOTemplateId");
@@ -877,7 +877,7 @@ public class TemplateAPI {
 		return template;
 	}
 	
-	private static List<TaskContext> getTasksFromSection(TaskSectionTemplate sectionTemplate) throws Exception {
+	public static List<TaskContext> getTasksFromSection(TaskSectionTemplate sectionTemplate) throws Exception {
 		FacilioModule module = ModuleFactory.getTaskTemplateModule();
 		List<FacilioField> fields = FieldFactory.getTaskTemplateFields();
 		FacilioField sectionIdField = FieldFactory.getAsMap(fields).get("sectionId");

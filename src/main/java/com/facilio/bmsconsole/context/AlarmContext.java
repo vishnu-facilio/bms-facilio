@@ -384,7 +384,7 @@ public class AlarmContext extends TicketContext {
 			return null;
 		}
 		else {
-			return AwsUtil.getConfig("clientapp.url")+"/app/fa/alarms/summary/"+super.getId();
+			return AwsUtil.getConfig("clientapp.url")+"/app/fa/alarms/newsummary/"+super.getId();
 		}
 	}
 	

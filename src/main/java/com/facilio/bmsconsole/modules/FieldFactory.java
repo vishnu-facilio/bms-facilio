@@ -4448,6 +4448,7 @@ public class FieldFactory {
 		List<FacilioField> fields = new ArrayList<>();
 		fields.add(getField("sectionId", "SECTION_ID", module, FieldType.NUMBER));
 		fields.add(getField("triggerId", "PM_TRIGGER_ID", module, FieldType.NUMBER));
+		fields.add(getField("executeIfNotInTime", "EXECUTE_IF_NOT_IN_TIME", module, FieldType.NUMBER));
 		return fields;
 	}
 	
