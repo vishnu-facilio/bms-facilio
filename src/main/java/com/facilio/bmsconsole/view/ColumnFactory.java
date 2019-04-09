@@ -284,7 +284,7 @@ public class ColumnFactory {
 	private static List<ViewField> getDefaultItemColumns() {
 		List<ViewField> columns = new ArrayList<ViewField>();
 		
-		columns.add(new ViewField("storeRoom", "Store Room"));
+		columns.add(new ViewField("storeRoom", "Storeroom"));
 		columns.add(new ViewField("quantity", "Current Balance"));
 		columns.add(new ViewField("minimumQuantity", "Mininum Quantity"));
 //		columns.add(new ViewField("costType", "Cost Type"));
@@ -296,7 +296,7 @@ public class ColumnFactory {
 	private static List<ViewField> getDefaultToolColumns() {
 		List<ViewField> columns = new ArrayList<ViewField>();
 		
-		columns.add(new ViewField("storeRoom", "Store Room"));
+		columns.add(new ViewField("storeRoom", "Storeroom"));
 		columns.add(new ViewField("quantity", "Quantity"));
 		columns.add(new ViewField("currentQuantity", "Current Balance"));
 		columns.add(new ViewField("lastPurchasedDate", "Last Purchased Date"));
