@@ -2454,8 +2454,8 @@ public class TransactionChainFactory {
 			c.addCommand(new AddGatePassLineItemsCommand());
 			return c;
 		}
-		
-		public static Chain getUpdateStateChain() {
+
+		public static Chain getUpdateStateTransistionChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(new GenericGetModuleDataDetailCommand());
 			c.addCommand(new UpdateStateCommand());
@@ -2480,6 +2480,12 @@ public class TransactionChainFactory {
 		public static Chain getAddOrUpdateStateFlow() {
 			Chain c = getDefaultChain();
 			c.addCommand(new AddOrUpdateStateFlowCommand());
+			return c;
+		}
+
+		public static Chain getAddOrUpdateStateChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new AddOrUpdateStateCommand());
 			return c;
 		}
 }

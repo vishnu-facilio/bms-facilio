@@ -5,8 +5,6 @@ import java.io.Serializable;
 import org.apache.struts2.json.annotations.JSON;
 
 import com.facilio.bmsconsole.criteria.Criteria;
-import com.facilio.bmsconsole.modules.FacilioModule;
-import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsole.workflow.rule.StateFlowRuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowEventContext;
@@ -94,6 +92,8 @@ public class StateFlowContext implements Serializable {
 		stateFlowRuleContext.setEvent(event);
 		
 		stateFlowRuleContext.setRuleType(RuleType.STATE_FLOW);
+		
+		stateFlowRuleContext.setId(getId());
 		return stateFlowRuleContext;
 	}
 }

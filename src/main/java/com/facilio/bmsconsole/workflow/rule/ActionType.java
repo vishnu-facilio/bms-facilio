@@ -936,7 +936,8 @@ public enum ActionType {
 		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,
 				Object currentRecord) throws Exception {
 			System.out.println(obj);
-			StateContext state = ((ModuleBaseWithCustomFields) currentRecord).getStateFlow();
+			ModuleBaseWithCustomFields moduleData = ((ModuleBaseWithCustomFields) currentRecord);
+			StateContext state = moduleData.getModuleState();
 			long oldStateId = -1;
 			if (state != null) {
 				oldStateId = state.getId();
@@ -944,11 +945,11 @@ public enum ActionType {
 			Object newState = obj.get("new_state");
 			long newStateId = newState != null ? Long.parseLong(newState.toString()) : -1;
 			
-			String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
+			String moduleName = (String) obj.get("moduleName");
 			FacilioContext c = new FacilioContext();
 			c.put(FacilioConstants.ContextNames.RECORD, currentRecord);
 			c.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
-			List<WorkflowRuleContext> availableState = StateFlowRulesAPI.getAvailableState(oldStateId, newStateId, moduleName, (ModuleBaseWithCustomFields) currentRecord, context);
+			List<WorkflowRuleContext> availableState = StateFlowRulesAPI.getAvailableState(moduleData.getStateFlowId(), oldStateId, newStateId, moduleName, (ModuleBaseWithCustomFields) currentRecord, context);
 			if (CollectionUtils.isNotEmpty(availableState)) {
 				c.put("transistion_id", availableState.get(0).getId());
 			}

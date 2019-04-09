@@ -102,9 +102,9 @@ public class WorkflowRuleAPI {
 			case STATE_RULE:
 				addExtendedProps(ModuleFactory.getStateRuleTransistionModule(), FieldFactory.getStateRuleTransistionFields(), ruleProps);
 				break;
-			case STATE_FLOW:
-				addExtendedProps(ModuleFactory.getStateFlowRuleModule(), FieldFactory.getStateFlowRuleFields(), ruleProps);
-				break;
+//			case STATE_FLOW:
+//				addExtendedProps(ModuleFactory.getStateFlowRuleModule(), FieldFactory.getStateFlowRuleFields(), ruleProps);
+//				break;
 			default:
 				break;
 		}
@@ -608,9 +608,9 @@ public class WorkflowRuleAPI {
 				case STATE_RULE:
 					typeWiseProps.put(entry.getKey(), getExtendedProps(ModuleFactory.getStateRuleTransistionModule(), FieldFactory.getStateRuleTransistionFields(), entry.getValue()));
 					break;
-				case STATE_FLOW:
-					typeWiseProps.put(entry.getKey(), getExtendedProps(ModuleFactory.getStateFlowRuleModule(), FieldFactory.getStateFlowRuleFields(), entry.getValue()));
-					break;
+//				case STATE_FLOW:
+//					typeWiseProps.put(entry.getKey(), getExtendedProps(ModuleFactory.getStateFlowRuleModule(), FieldFactory.getStateFlowRuleFields(), entry.getValue()));
+//					break;
 				default:
 					break;
 			}
@@ -729,7 +729,7 @@ public class WorkflowRuleAPI {
 							rule = StateFlowRulesAPI.constructStateRuleFromProps(prop, modBean);
 							break;
 						case STATE_FLOW:
-							prop.putAll(typeWiseExtendedProps.get(ruleType).get(prop.get("id")));
+//							prop.putAll(typeWiseExtendedProps.get(ruleType).get(prop.get("id")));
 							rule = FieldUtil.getAsBeanFromMap(prop, StateFlowRuleContext.class);
 							break;
 						default:

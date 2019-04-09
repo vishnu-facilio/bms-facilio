@@ -29,7 +29,7 @@ public class ConstructStateFlowTransistionCommand implements Command {
 			}
 			
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			FacilioField field = modBean.getField("stateFlow", moduleName);
+			FacilioField field = modBean.getField("moduleState", moduleName);
 			if (field == null) {
 				throw new IllegalArgumentException("StateFlow is not active for module " + moduleName);
 			}

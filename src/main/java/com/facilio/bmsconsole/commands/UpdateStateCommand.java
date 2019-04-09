@@ -24,12 +24,15 @@ public class UpdateStateCommand implements Command {
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 		Long currentTransitionId = (Long) context.get("transistion_id");
 		Boolean defaultState = (Boolean) context.get("default_state");
+		
 		if (defaultState == null) {
 			defaultState = false;
 		}
 		long defaultStateId = -1;
-		if (context.containsKey("default_state_id")) {
+		long defaultStateFlowId = -1;
+		if (defaultState) {
 			defaultStateId = (long) context.get("default_state_id");
+			defaultStateFlowId = (long) context.get("default_state_flow_id");
 		}
 		
 		if (moduleData == null) {
@@ -41,13 +44,14 @@ public class UpdateStateCommand implements Command {
 		if (defaultState) {
 			StateContext state = StateFlowRulesAPI.getStateContext(defaultStateId);
 			changeState(moduleData, state);
+			moduleData.setStateFlowId(defaultStateFlowId);
 		} 
 		else {
 			if (currentTransitionId != null && currentTransitionId > 0) {
 				StateflowTransistionContext stateflowTransistion = (StateflowTransistionContext) WorkflowRuleAPI.getWorkflowRule(currentTransitionId, true);
 				boolean shouldChangeState = WorkflowRuleAPI.evaluateWorkflowAndExecuteActions(stateflowTransistion, moduleName, moduleData, StateFlowRulesAPI.getDefaultFieldChangeSet(moduleName, moduleData.getId()), recordPlaceHolders, (FacilioContext) context, false);
 				if (shouldChangeState) {
-					if (stateflowTransistion.getFromStateId() != moduleData.getStateFlow().getId()) {
+					if (stateflowTransistion.getFromStateId() != moduleData.getModuleState().getId()) {
 						throw new Exception("State mismatch");
 					}
 					StateContext newState = StateFlowRulesAPI.getStateContext(stateflowTransistion.getToStateId());
@@ -67,7 +71,7 @@ public class UpdateStateCommand implements Command {
 	}
 	
 	private void changeState(ModuleBaseWithCustomFields moduleData, StateContext newState) {
-		moduleData.setStateFlow(newState);
+		moduleData.setModuleState(newState);
 		stateChanged = true;
 	}
 

@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.util;
 
 import java.lang.reflect.InvocationTargetException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -59,7 +60,7 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 		}
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioField field = modBean.getField("stateFlow", moduleName);
+		FacilioField field = modBean.getField("moduleState", moduleName);
 		
 		List<UpdateChangeSet> changeSet = new ArrayList<>();
 		UpdateChangeSet updateChangeSet = new UpdateChangeSet();
@@ -69,16 +70,18 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 		return changeSet;
 	}
 
-	public static List<WorkflowRuleContext> getAvailableState(long fromStateId, String moduleName, ModuleBaseWithCustomFields record, FacilioContext context) throws Exception {
-		return getAvailableState(fromStateId, -1, moduleName, record, context);
+	public static List<WorkflowRuleContext> getAvailableState(long stateFlowId, long fromStateId, String moduleName, ModuleBaseWithCustomFields record, FacilioContext context) throws Exception {
+		return getAvailableState(stateFlowId, fromStateId, -1, moduleName, record, context);
 	}
 
-	public static List<WorkflowRuleContext> getAvailableState(long fromStateId, long toStateId, String moduleName, ModuleBaseWithCustomFields record,
+	public static List<WorkflowRuleContext> getAvailableState(long stateFlowId, long fromStateId, long toStateId, String moduleName, ModuleBaseWithCustomFields record,
 			Context context) throws Exception {
 		FacilioModule stateRuleModule = ModuleFactory.getStateRuleTransistionModule();
 		List<FacilioField> fields = FieldFactory.getWorkflowRuleFields(); 
 		fields.addAll(FieldFactory.getStateRuleTransistionFields());
 		fields.addAll(FieldFactory.getWorkflowEventFields());
+		
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 		
 		FacilioModule module = ModuleFactory.getWorkflowRuleModule();
 		
@@ -86,6 +89,7 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 				.table(module.getTableName())
 				.select(fields)
 				.innerJoin(stateRuleModule.getTableName()).on("Workflow_Rule.ID = " + stateRuleModule.getTableName() + ".ID")
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("stateFlowId"), String.valueOf(stateFlowId), NumberOperators.EQUALS))
 				.andCondition(CriteriaAPI.getCondition("FROM_STATE_ID", "fromStateId", String.valueOf(fromStateId), NumberOperators.EQUALS));
 		
 		if (toStateId > 0) {
@@ -116,7 +120,7 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 		return stateFlows;
 	}
 
-	public static void addOrUpdateStateFlow(StateFlowContext stateFlow) throws Exception {
+	public static void addOrUpdateStateFlow(StateFlowContext stateFlow, boolean add) throws Exception {
 		if (stateFlow == null) {
 			return;
 		}
@@ -130,20 +134,11 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 		FacilioModule module = ModuleFactory.getStateFlowModule();
 		
 		Map<String, Object> props = FieldUtil.getAsProperties(stateFlow);
-		if (stateFlow.getId() < 0) {
-			GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
-					.table(module.getTableName())
-					.fields(FieldFactory.getStateFlowFields());
-			builder.addRecord(props);
-			builder.save();
-			stateFlow.setId((long) props.get("id"));
+		if (add) {
+			stateFlow.setId(addRecord(module, FieldFactory.getStateFlowFields(), props));
 		} 
 		else {
-			GenericUpdateRecordBuilder builder = new GenericUpdateRecordBuilder()
-					.table(module.getTableName())
-					.fields(FieldFactory.getStateFlowFields())
-					.andCondition(CriteriaAPI.getIdCondition(stateFlow.getId(), module));
-			builder.update(props);
+			updateRecord(module, FieldFactory.getStateFlowFields(), stateFlow.getId(), props);
 		}
 	}
 	
@@ -156,6 +151,39 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 		Map<String, Object> map = builder.fetchFirst();
 		StateFlowContext stateFlowContext = FieldUtil.getAsBeanFromMap(map, StateFlowContext.class);
 		return stateFlowContext;
+	}
+
+	public static void addOrUpdateState(StateContext state) throws Exception {
+		if (state == null) {
+			return;
+		}
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.STATE);
+		
+		Map<String, Object> props = FieldUtil.getAsProperties(state);
+		if (state.getId() < 0) {
+			state.setId(addRecord(module, modBean.getAllFields(module.getName()), props));
+		} 
+		else {
+			updateRecord(module, modBean.getAllFields(module.getName()), state.getId(), props);
+		}
+	}
+	
+	private static long addRecord(FacilioModule module, List<FacilioField> fields, Map<String, Object> props) throws Exception {
+		GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
+				.table(module.getTableName())
+				.fields(fields);
+		builder.addRecord(props);
+		builder.save();
+		return ((long) props.get("id"));
+	}
+	
+	private static void updateRecord(FacilioModule module, List<FacilioField> fields, long id, Map<String, Object> props) throws Exception {
+		GenericUpdateRecordBuilder builder = new GenericUpdateRecordBuilder()
+				.table(module.getTableName())
+				.fields(fields)
+				.andCondition(CriteriaAPI.getIdCondition(id, module));
+		builder.update(props);
 	}
 
 }

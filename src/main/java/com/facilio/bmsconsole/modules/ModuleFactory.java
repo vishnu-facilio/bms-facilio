@@ -1951,13 +1951,21 @@ public class ModuleFactory {
 		module.setTableName("StateFlow");
 		return module;
 	}
-
-	public static FacilioModule getStateFlowRuleModule() {
+	
+	public static FacilioModule getStateModule() {
 		FacilioModule module = new FacilioModule();
-		module.setName("stateFlowRuleWorkflow");
-		module.setDisplayName("State Flow Rule Workflow");
-		module.setTableName("StateFlowRule");
-		module.setExtendModule(getWorkflowRuleModule());
+		module.setName("state");
+		module.setDisplayName("State");
+		module.setTableName("State");
 		return module;
 	}
+
+//	public static FacilioModule getStateFlowRuleModule() {
+//		FacilioModule module = new FacilioModule();
+//		module.setName("stateFlowRuleWorkflow");
+//		module.setDisplayName("State Flow Rule Workflow");
+//		module.setTableName("StateFlowRule");
+//		module.setExtendModule(getWorkflowRuleModule());
+//		return module;
+//	}
 }

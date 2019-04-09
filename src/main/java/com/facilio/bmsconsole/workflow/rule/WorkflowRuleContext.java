@@ -470,7 +470,7 @@ public class WorkflowRuleContext implements Serializable {
 		PM_READING_TRIGGER,			// 27
 		
 		STATE_RULE,
-		STATE_FLOW,
+		STATE_FLOW(true),
 		;
 		//Always add at the end
 		

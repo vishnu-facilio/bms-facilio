@@ -7,7 +7,6 @@ import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.GenericUpdateModuleDataCommand;
-import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.commands.UpdateStateCommand;
 import com.facilio.bmsconsole.context.StateFlowContext;
 import com.facilio.bmsconsole.modules.FacilioModule;
@@ -39,6 +38,7 @@ public class StateFlowRuleContext extends WorkflowRuleContext {
 		c.put(FacilioConstants.ContextNames.MODULE_NAME, module.getName());
 		c.put("default_state_id", stateFlowContext.getDefaultStateId());
 		c.put("default_state", true);
+		c.put("default_state_flow_id", getId());
 		
 		Chain chain = FacilioChain.getTransactionChain();
 		chain.addCommand(new UpdateStateCommand());
