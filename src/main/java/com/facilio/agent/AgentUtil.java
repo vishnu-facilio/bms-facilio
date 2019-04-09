@@ -367,16 +367,18 @@ public  class AgentUtil
      */
     public static void putLog(JSONObject payLoad, Long orgId,Long agentId,boolean sent) {
 
-        if(!sent){
+        if(sent){
             payLoad.put(AgentKeys.COMMAND_STATUS,CommandStatus.SENT.getKey());
         }
         if(payLoad.containsKey(AgentKeys.COMMAND)){
             payLoad.replace(AgentKeys.COMMAND, ControllerCommand.valueOf(payLoad.get(AgentKeys.COMMAND).toString().toLowerCase()).getValue());
         }
-        if(!payLoad.containsKey(AgentKeys.AGENT_ID)){
+        if( ! payLoad.containsKey(AgentKeys.AGENT_ID)){
             payLoad.put(AgentKeys.AGENT_ID,agentId);
         }
-        payLoad.put(AgentKeys.CREATED_TIME,System.currentTimeMillis());
+        if( ! payLoad.containsKey(AgentKeys.TIMESTAMP)){
+            payLoad.put(AgentKeys.TIMESTAMP,System.currentTimeMillis());
+        }
         try {
             ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD",orgId);
             bean.addLog(payLoad);
