@@ -54,12 +54,21 @@ public class GatePassLineItemsContext extends ModuleBaseWithCustomFields{
 		this.quantity = quantity;
 	}
 	public GatePassLineItemsContext(InventoryType inventoryType, ItemTypesContext itemType, ToolTypesContext toolType,
-			double quantity) {
+			double quantity, String serialNumber) {
 		super();
 		this.inventoryType = inventoryType;
 		this.itemType = itemType;
 		this.toolType = toolType;
 		this.quantity = quantity;
+		this.serialNumber = serialNumber;
+	}
+	
+	private String serialNumber;
+	public String getSerialNumber() {
+		return serialNumber;
+	}
+	public void setSerialNumber(String serialNumber) {
+		this.serialNumber = serialNumber;
 	}
 
 }

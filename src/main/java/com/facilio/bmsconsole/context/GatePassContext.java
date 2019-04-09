@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.facilio.accounts.dto.User;
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
+import com.facilio.bmsconsole.util.GatePassType;
 
 public class GatePassContext extends ModuleBaseWithCustomFields {
 	private static final long serialVersionUID = 1L;
@@ -71,6 +72,23 @@ public class GatePassContext extends ModuleBaseWithCustomFields {
 		this.vehicleNo = vehicleNo;
 	}
 
+	private GatePassType gatePassType;
+	public GatePassType getGatePassTypeEnum() {
+		return gatePassType;
+	}
+	public int getGatePassType() {
+		if (gatePassType != null) {
+			return gatePassType.getValue();
+		}
+		return -1;
+	}
+	public void setGatePassType(GatePassType gatePassType) {
+		this.gatePassType = gatePassType;
+	}
+	public void setGatePassType(int gatePassType) {
+		this.gatePassType = GatePassType.valueOf(gatePassType);
+	}
+	
 	private List<GatePassLineItemsContext> lineItems;
 	public List<GatePassLineItemsContext> getLineItems() {
 		return lineItems;

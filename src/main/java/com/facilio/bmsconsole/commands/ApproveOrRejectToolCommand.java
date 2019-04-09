@@ -85,7 +85,11 @@ public class ApproveOrRejectToolCommand implements Command {
 				if (transactions.getTransactionTypeEnum() == TransactionType.WORKORDER) {
 					parentIds.add(transactions.getParentId());
 				}
-				gatePassLineItems.add(new GatePassLineItemsContext(InventoryType.TOOL, null, transactions.getToolType(), transactions.getQuantity()));
+				String serialNumber = null;
+				if(transactions.getPurchasedTool()!=null) {
+					serialNumber = transactions.getPurchasedTool().getSerialNumber();
+				}
+				gatePassLineItems.add(new GatePassLineItemsContext(InventoryType.TOOL, null, transactions.getToolType(), transactions.getQuantity(), serialNumber));
 			}
 			context.put(FacilioConstants.ContextNames.GATE_PASS_LINE_ITEMS, gatePassLineItems);
 			context.put(FacilioConstants.ContextNames.RECORD_LIST, toolTransactions);
