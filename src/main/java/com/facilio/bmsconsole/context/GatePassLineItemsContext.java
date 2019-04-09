@@ -71,4 +71,7 @@ public class GatePassLineItemsContext extends ModuleBaseWithCustomFields{
 		this.serialNumber = serialNumber;
 	}
 
+	public GatePassLineItemsContext() {
+		
+	}
 }

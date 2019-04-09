@@ -4,9 +4,11 @@ import java.util.List;
 
 import org.apache.commons.chain.Chain;
 
+import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.GatePassContext;
 import com.facilio.bmsconsole.context.GatePassLineItemsContext;
+import com.facilio.bmsconsole.context.ItemContext;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -53,6 +55,15 @@ public class GatePassAction extends FacilioAction {
 	public void setApprovedState(int approvedState) {
 		this.approvedState = approvedState;
 	}
+	
+	private long gatePassId;
+	public long getGatePassId() {
+		return gatePassId;
+	}
+	public void setGatePassId(long gatePassId) {
+		this.gatePassId = gatePassId;
+	}
+	
 
 	public String addGatePass() throws Exception {
 		FacilioContext context = new FacilioContext();
@@ -68,4 +79,17 @@ public class GatePassAction extends FacilioAction {
 		setResult(FacilioConstants.ContextNames.GATE_PASS, gatePass);
 		return SUCCESS;
 	}
+	
+	public String gatePassDetails() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.ID, getGatePassId());
+
+		Chain inventryDetailsChain = ReadOnlyChainFactory.fetchGatePassDetails();
+		inventryDetailsChain.execute(context);
+
+		setGatePass((GatePassContext) context.get(FacilioConstants.ContextNames.GATE_PASS));
+		setResult(FacilioConstants.ContextNames.GATE_PASS, gatePass);
+		return SUCCESS;
+	}
+	
 }

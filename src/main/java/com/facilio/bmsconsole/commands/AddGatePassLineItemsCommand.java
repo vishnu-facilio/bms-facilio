@@ -6,6 +6,7 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.GatePassContext;
 import com.facilio.bmsconsole.context.GatePassLineItemsContext;
 import com.facilio.bmsconsole.context.ItemContext;
 import com.facilio.bmsconsole.modules.FacilioField;
@@ -20,10 +21,14 @@ public class AddGatePassLineItemsCommand implements Command{
 	public boolean execute(Context context) throws Exception {
 		List<GatePassLineItemsContext> lineItems = (List<GatePassLineItemsContext>) context.get(FacilioConstants.ContextNames.GATE_PASS_LINE_ITEMS);
 		if(lineItems!=null && !lineItems.isEmpty()) {
+			GatePassContext gatePass = (GatePassContext) context.get(FacilioConstants.ContextNames.GATE_PASS);
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.GATE_PASS_LINE_ITEMS);
 			List<FacilioField> fields = modBean
 					.getAllFields(FacilioConstants.ContextNames.GATE_PASS_LINE_ITEMS);
+			for(GatePassLineItemsContext item : lineItems) {
+				item.setGatePass(gatePass);
+			}
 			addItem(module, fields, lineItems);
 		}
 		return false;

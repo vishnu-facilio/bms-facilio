@@ -89,6 +89,10 @@ public class ApproveOrRejectToolCommand implements Command {
 				if(transactions.getPurchasedTool()!=null) {
 					serialNumber = transactions.getPurchasedTool().getSerialNumber();
 				}
+				GatePassContext gatePassContext = (GatePassContext) context.get(FacilioConstants.ContextNames.RECORD);
+				if(gatePassContext!=null) {
+					context.put(FacilioConstants.ContextNames.GATE_PASS, gatePassContext);
+				}
 				gatePassLineItems.add(new GatePassLineItemsContext(InventoryType.TOOL, null, transactions.getToolType(), transactions.getQuantity(), serialNumber));
 			}
 			context.put(FacilioConstants.ContextNames.GATE_PASS_LINE_ITEMS, gatePassLineItems);

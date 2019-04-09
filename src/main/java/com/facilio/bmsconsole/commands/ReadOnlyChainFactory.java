@@ -782,4 +782,11 @@ public class ReadOnlyChainFactory {
 		return c;
 	}
 	
+	public static Chain fetchGatePassDetails() {
+		Chain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForGatePass());
+		c.addCommand(new GenericGetModuleDataDetailCommand());
+		c.addCommand(new GetGatePassDetailsCommand());
+		return c;
+	}
 }
