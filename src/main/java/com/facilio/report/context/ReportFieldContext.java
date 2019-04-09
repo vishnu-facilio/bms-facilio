@@ -1,14 +1,20 @@
 package com.facilio.report.context;
 
-import com.facilio.bmsconsole.modules.*;
-import com.facilio.bmsconsole.modules.FacilioModule.ModuleType;
-import com.facilio.unitconversion.Metric;
-import com.facilio.unitconversion.Unit;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+
+import com.facilio.bmsconsole.modules.BooleanField;
+import com.facilio.bmsconsole.modules.EnumField;
+import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.FacilioModule;
+import com.facilio.bmsconsole.modules.FacilioModule.ModuleType;
+import com.facilio.bmsconsole.modules.FieldType;
+import com.facilio.bmsconsole.modules.FieldUtil;
+import com.facilio.bmsconsole.modules.NumberField;
+import com.facilio.unitconversion.Metric;
+import com.facilio.unitconversion.Unit;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class ReportFieldContext {
 
@@ -113,9 +119,7 @@ public class ReportFieldContext {
 			}
 			
 			if (field instanceof NumberField) {
-				if (this.unitStr == null) {
-					this.unitStr = ((NumberField) field).getUnitEnum() != null ? ((NumberField) field).getUnitEnum().getSymbol() : ((NumberField) field).getUnit();
-				}
+				this.unitStr = ((NumberField) field).getUnitEnum() != null ? ((NumberField) field).getUnitEnum().getSymbol() : ((NumberField) field).getUnit();
 				this.metric = ((NumberField) field).getMetricEnum();
 				this.unit = ((NumberField) field).getUnitEnum();
 			}
