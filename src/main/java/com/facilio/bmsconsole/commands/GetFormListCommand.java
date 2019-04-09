@@ -2,11 +2,13 @@ package com.facilio.bmsconsole.commands;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.forms.FacilioForm.FormType;
 import com.facilio.bmsconsole.forms.FormFactory;
@@ -25,7 +27,11 @@ public class GetFormListCommand implements Command {
 				forms.put(entry.getKey(), entry.getValue());
 			}
 		}
-		context.put(FacilioConstants.ContextNames.FORMS, new ArrayList<>(forms.values()));
+		List<FacilioForm> formsList = new ArrayList<>(forms.values());
+		if (AccountUtil.getCurrentAccount().isFromMobile()) {
+			formsList.removeIf(form -> !form.isShowInMobile());
+		}
+		context.put(FacilioConstants.ContextNames.FORMS, formsList);
 		return false;
 	}
 

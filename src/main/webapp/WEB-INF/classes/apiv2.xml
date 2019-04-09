@@ -638,6 +638,8 @@
 		</action>
 		<action name="update" class="com.facilio.bmsconsole.actions.FormAction" method="updateForm">
 		</action>
+		<action name="delete" class="com.facilio.bmsconsole.actions.FormAction" method="deleteForm">
+		</action>
 		<action name="*" class="com.facilio.bmsconsole.actions.FormAction" method="formDetails">
 			<param name="moduleName">{1}</param>
 		</action>

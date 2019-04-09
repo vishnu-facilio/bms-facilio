@@ -2297,6 +2297,12 @@ public class TransactionChainFactory {
 			return c;
 		}
 		
+		public static Chain getDeleteFormChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new DeleteFormCommand());
+			return c;
+		}
+		
 		public static Chain getAddPurchaseContractChain() {
 			Chain chain = getDefaultChain();
 			chain.addCommand(SetTableNamesCommand.getForPurchaseContract());

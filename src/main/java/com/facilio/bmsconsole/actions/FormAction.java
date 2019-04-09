@@ -275,4 +275,14 @@ public class FormAction extends FacilioAction {
 		
 		return SUCCESS;
 	}
+	
+	public String deleteForm() throws Exception {
+		Context context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.FORM_ID, formId);
+		
+		TransactionChainFactory.getDeleteFormChain().execute(context);
+		setResult(ContextNames.ROWS_UPDATED, context.get(ContextNames.ROWS_UPDATED));
+		
+		return SUCCESS;
+	}
 }
