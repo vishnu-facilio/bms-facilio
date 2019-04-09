@@ -35,6 +35,7 @@ public class ModeledDataCommand implements Command {
 		Map<String,List<ReadingContext>> moduleVsReading = new HashMap<String,List<ReadingContext>> ();
 		Map<String,ReadingContext> iModuleVsReading = new HashMap<String,ReadingContext> ();
 		Long controllerId=(Long) context.get(FacilioConstants.ContextNames.CONTROLLER_ID);
+		/*
 		List<Map<String , Object>> pointsData= TimeSeriesAPI.getPointsData();
 		List<Map<String, Object>> insertNewPointsData= new ArrayList< >();
 		List<Map<String,Object>>  dataPoints= null;
@@ -43,7 +44,7 @@ public class ModeledDataCommand implements Command {
 
 			LOGGER.info("#####Controller Id:  "+controllerId);
 		}
-		
+		*/
 
 /*
 		LOGGER.debug("Inside ModeledDataCommand####### deviceData: "+deviceData);
@@ -157,19 +158,25 @@ public class ModeledDataCommand implements Command {
 
 		context.put(FacilioConstants.ContextNames.READINGS_MAP,moduleVsReading);
 		context.put(FacilioConstants.ContextNames.HISTORY_READINGS, false);
-		context.put("POINTS_DATA_RECORD", pointsData);
+		//context.put("POINTS_DATA_RECORD", pointsData);
 		
 		
 		return false;
 	}
-	private List<Map<String,Object>> getValueContainsPointsData(String deviceName, String instanceName,Long controllerId ,List<Map<String , Object>> points_Data) throws Exception{
+	private Map<String,Object> getValueContainsPointsData(String deviceName, String instanceName,Long controllerId ,List<Map<String , Object>> points_Data) throws Exception{
 
 		for (Map<String, Object> map : points_Data) {
-			if((map.containsValue(deviceName) && map.containsValue(instanceName)&& map.containsValue(controllerId))){
-				List<Map<String, Object>> stat= new ArrayList< >();
-				stat.add(map);			
-				return stat;
+			String mDeviceName=(String) map.get("device");
+			String mInstanceName=(String) map.get("instance");
+			Long mControllerId=(Long)map.get("controllerId");
+			
+			if(deviceName.equals(mDeviceName) && instanceName.equals(mInstanceName)) {
 
+				if(controllerId==null || controllerId.equals(mControllerId)) {
+					// if controller is null.. then return map..
+					// if not null.. then it should be equal to return map..
+					return map;
+				}
 			}
 		}
 		return null;
