@@ -1548,7 +1548,7 @@
 		<action name="approveOrReject"
 			class="com.facilio.bmsconsole.actions.ItemTransactionsAction" method="approveOrRejectItemTransactions">
 			<param name="moduleName">inventory</param>
-			<param name="permission">UPDATE</param>
+			<param name="permission">APPROVE_REJECT_WORKREQUEST</param>
 		</action>
 		
 	</package>
@@ -1643,7 +1643,7 @@
 		<action name="approveOrReject"
 			class="com.facilio.bmsconsole.actions.ToolTransactionsAction" method="approveOrRejectToolTransactions">
 			<param name="moduleName">inventory</param>
-			<param name="permission">UPDATE</param>
+			<param name="permission">APPROVE_REJECT_WORKREQUEST</param>
 		</action>
 		
 	</package>
