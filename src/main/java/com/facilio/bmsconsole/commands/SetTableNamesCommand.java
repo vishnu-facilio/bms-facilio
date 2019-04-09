@@ -286,6 +286,10 @@ public class SetTableNamesCommand implements Command {
 	public static SetTableNamesCommand getForLabourContractLineItem() {
 		return new SetTableNamesCommand("labourcontractlineitems", "LabourContractLineItems");
 	}
+	
+	public static SetTableNamesCommand getForPoLineItemSerialNumber() {
+		return new SetTableNamesCommand("poLineItemSerialNumbers", "PO_Line_Item_Serial_Numbers");
+	}
 
 	public static void setForModule (Context context, String moduleName) {
 		//TODO handle all module and get from map

@@ -330,7 +330,7 @@ public class WorkflowRuleAPI {
 		ruleBuilder.select(fields);
 		List<WorkflowRuleContext> rules = getWorkFlowsFromMapList(ruleBuilder.get(), fetchEvent, true, true);
 		
-		if(fetchAction) {
+		if(fetchAction && rules != null) {
 			for(WorkflowRuleContext rule :rules) {
 				List<ActionContext> actionList = ActionAPI.getAllActionsFromWorkflowRule(AccountUtil.getCurrentOrg().getId(), rule.getId());
 				rule.setActions(actionList);
@@ -994,6 +994,7 @@ public class WorkflowRuleAPI {
 		Map<String, Object> placeHolders = WorkflowRuleAPI.getOrgPlaceHolders();
 		Map<String, Object> recordPlaceHolders = WorkflowRuleAPI.getRecordPlaceHolders(module.getName(), null, placeHolders);
 		recordPlaceHolders.put("executionTime", executionTime);
+		context.put(FacilioConstants.ContextNames.CURRENT_EXECUTION_TIME, executionTime);
 		WorkflowRuleAPI.executeWorkflowsAndGetChildRuleCriteria(Collections.singletonList(rule), module, null, null, null, recordPlaceHolders, (FacilioContext)context,true, Collections.singletonList(rule.getEvent().getActivityTypeEnum()));
 	}
 	

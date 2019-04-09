@@ -1,16 +1,20 @@
 package com.facilio.bmsconsole.commands;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.actions.ImportProcessContext;
 import com.facilio.bmsconsole.context.ItemContext;
 import com.facilio.bmsconsole.context.ItemTypesContext;
 import com.facilio.bmsconsole.context.PurchasedItemContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.*;
+import com.facilio.bmsconsole.util.ImportAPI;
 import com.facilio.bmsconsole.util.TransactionType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.ParseException;
 
 import java.util.*;
 
@@ -86,10 +90,11 @@ public class AddPurchasedItemsForBulkItemAddCommand implements Command {
 					}
 
 				}
-
+				int size = 0;
 				if (pcToBeAdded != null && !pcToBeAdded.isEmpty()) {
-					addInventorycost(purchasedItemModule, purchasedItemFields, pcToBeAdded);
+					size = addInventorycost(purchasedItemModule, purchasedItemFields, pcToBeAdded);
 				}
+				setImportProcessContext(context, size);
 			}
 			itemIds.addAll(uniqueItemIds);
 			itemTypesIds.addAll(uniqueItemTypesIds);
@@ -103,11 +108,12 @@ public class AddPurchasedItemsForBulkItemAddCommand implements Command {
 		return false;
 	}
 
-	private void addInventorycost(FacilioModule module, List<FacilioField> fields, List<PurchasedItemContext> parts)
+	private int addInventorycost(FacilioModule module, List<FacilioField> fields, List<PurchasedItemContext> parts)
 			throws Exception {
 		InsertRecordBuilder<PurchasedItemContext> readingBuilder = new InsertRecordBuilder<PurchasedItemContext>()
 				.module(module).fields(fields).addRecords(parts);
 		readingBuilder.save();
+		return readingBuilder.getRecords().size();
 	}
 
 	private void updateInventorycost(FacilioModule module, List<FacilioField> fields, PurchasedItemContext part)
@@ -118,6 +124,22 @@ public class AddPurchasedItemsForBulkItemAddCommand implements Command {
 		updateBuilder.update(part);
 
 		System.err.println(Thread.currentThread().getName() + "Exiting updateCosts in  AddorUpdateCommand#######  ");
+
+	}
+
+	private void setImportProcessContext(Context c, int size) throws ParseException {
+		ImportProcessContext importProcessContext = (ImportProcessContext) c
+				.get(ImportAPI.ImportProcessConstants.IMPORT_PROCESS_CONTEXT);
+		if (importProcessContext != null) {
+			JSONObject meta = new JSONObject();
+			if (!importProcessContext.getImportJobMetaJson().isEmpty()) {
+				meta = importProcessContext.getFieldMappingJSON();
+				meta.put("Inserted", size + "");
+			} else {
+				meta.put("Inserted", size + "");
+			}
+			importProcessContext.setImportJobMeta(meta.toJSONString());
+		}
 
 	}
 

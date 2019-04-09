@@ -6,7 +6,7 @@
 <struts>
 
 
-	<package name="servicePortalApiV2" namespace="/api/v2/service" extends="v2Api">
+	<package name="servicePortalApiV2" namespace="/api/v2/service" extends="v2BaseApi">
 	
 		<interceptors>
 			<interceptor name="portalinterceptor"
@@ -175,7 +175,7 @@
 	</package>
 	
 	<package name="workflowServiceApiv2" namespace="/api/v2/service/workflow"
-		extends="servicePortalApiV2">
+		extends="v2Api">
 		<action name="execute" class="com.facilio.bmsconsole.actions.CommonAction"
 			method="executeWorkflow">
 		</action>

@@ -57,7 +57,7 @@ public class SingleResourceHistoricalFormulaCalculatorJob extends FacilioJob {
 			
 			if (!isSystem) {
 				JSONObject json = new JSONObject();
-				json.put("to", "praveen@facilio.com, manthosh@facilio.com, shivaraj@facilio.com, shaan@facilio.com");
+				json.put("to", "praveen@facilio.com, manthosh@facilio.com, shivaraj@facilio.com, shaan@facilio.com, arun@facilio.com");
 				json.put("sender", "noreply@facilio.com");
 				json.put("subject", "Historical Calculation completed for Formula : "+formulaId);
 				json.put("message", msg);

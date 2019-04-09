@@ -5,6 +5,7 @@ import com.facilio.report.context.ReportContext;
 import com.facilio.report.context.ReportDataPointContext;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
@@ -30,10 +31,10 @@ public class CalculateAggregationCommand implements Command {
 		String sortAlias = (String) context.get(FacilioConstants.ContextNames.REPORT_SORT_ALIAS);
 		ReportContext report = (ReportContext) context.get(FacilioConstants.ContextNames.REPORT);
 		if (reportData != null && !reportData.isEmpty()) {
-			List<Map<String, Object>> csvData = (List<Map<String, Object>>) reportData.get(FacilioConstants.ContextNames.DATA_KEY);
+			Collection<Map<String, Object>> csvData = (Collection<Map<String, Object>>) reportData.get(FacilioConstants.ContextNames.DATA_KEY);
 			Map<String, Object> reportAggrData = (Map<String, Object>) reportData.get(FacilioConstants.ContextNames.AGGR_KEY);
 			Map<String, Object> aggrData = new HashMap<>();
-			
+
 			for (ReportDataPointContext dp : report.getDataPoints()) {
 				if (!dp.isAggrCalculated()) {
 					switch (dp.getyAxis().getDataTypeEnum()) {
@@ -53,7 +54,7 @@ public class CalculateAggregationCommand implements Command {
 					dp.setAggrCalculated(true);
 				}
 			}
-			
+
 			if (reportAggrData == null) {
 				reportData.put(FacilioConstants.ContextNames.AGGR_KEY, aggrData);
 			}
@@ -65,25 +66,42 @@ public class CalculateAggregationCommand implements Command {
 		return false;
 	}
 	
-	private void doEnumAggr (ReportContext report, ReportDataPointContext dp, List<Map<String, Object>> csvData, Map<String, Object> aggrData, String timeAlias) {
+	private void doEnumAggr (ReportContext report, ReportDataPointContext dp, Collection<Map<String, Object>> csvData, Map<String, Object> aggrData, String timeAlias) {
+		if (CollectionUtils.isEmpty(csvData)) {
+			return;
+		}
+
 		Map<String, SimpleEntry<Long, Integer>> previousRecords = new HashMap<>();
-		for (int i = 0; i < csvData.size(); i++) {
-			Map<String, Object> data = csvData.get(i);
-			long startTime = -1, endTime = -1;
-			
-			if (i != 0) {
-				startTime = (long) data.get(timeAlias);
+		Iterator<Map<String, Object>> itr = csvData.iterator();
+		Map<String, Object> currentData = itr.next();
+		boolean isFirst = true;
+		while (itr.hasNext()) {
+//			Map<String, Object> data = csvData.get(i);
+			Map<String, Object> nextData = itr.next();
+			aggregateEnum(report, dp, aggrData, timeAlias, currentData, nextData, isFirst, previousRecords);
+			currentData = nextData;
+			if (isFirst) {
+				isFirst = false;
 			}
-			
-			if (i != csvData.size() - 1) {
-				endTime = (long) csvData.get(i + 1).get(timeAlias);
-			}
-			
-			for (String alias : dp.getAliases().values()) {
-				EnumVal enumValue = calculateEnumAggr(report, dp.getyAxis().getEnumMap().keySet(), data.get(alias), alias, startTime, endTime, previousRecords, aggrData); //Starttime is included and endtime is excluded
-				if (enumValue != null) {
-					data.put(alias, enumValue);
-				}
+		}
+		aggregateEnum(report, dp, aggrData, timeAlias, currentData, null, isFirst, previousRecords); //for the last record
+	}
+
+	private void aggregateEnum (ReportContext report, ReportDataPointContext dp, Map<String, Object> aggrData, String timeAlias, Map<String, Object> currentData, Map<String, Object> nextData, boolean isFirst, Map<String, SimpleEntry<Long, Integer>> previousRecords) {
+		long startTime = -1, endTime = -1;
+
+		if (!isFirst) {
+			startTime = (long) currentData.get(timeAlias);
+		}
+
+		if (nextData != null) {
+			endTime = (long) nextData.get(timeAlias);
+		}
+
+		for (String alias : dp.getAliases().values()) {
+			EnumVal enumValue = calculateEnumAggr(report, dp.getyAxis().getEnumMap().keySet(), currentData.get(alias), alias, startTime, endTime, previousRecords, aggrData); //Starttime is included and endtime is excluded
+			if (enumValue != null) {
+				currentData.put(alias, enumValue);
 			}
 		}
 	}
@@ -176,7 +194,7 @@ public class CalculateAggregationCommand implements Command {
 		return duration;
 	}
 	
-	private void doDecimalAggr (ReportDataPointContext dp, List<Map<String, Object>> csvData, String sortAlias, Map<String, Object> aggrData) {
+	private void doDecimalAggr (ReportDataPointContext dp, Collection<Map<String, Object>> csvData, String sortAlias, Map<String, Object> aggrData) {
 		for (Map<String, Object> data : csvData) {
 			boolean isLatest = false;
 			if (sortAlias != null && !sortAlias.isEmpty()) {

@@ -217,8 +217,8 @@ private static final String ALIAS = "alias";
 		}
 		
 		columns.add(xAxisReportField.getLabel());
-		
-		List<Map<String, Object>> data = (List<Map<String, Object>>) reportData.get(FacilioConstants.ContextNames.DATA_KEY);
+
+		Collection<Map<String, Object>> data = (Collection<Map<String, Object>>) reportData.get(FacilioConstants.ContextNames.DATA_KEY);
 		if (CollectionUtils.isNotEmpty(data)) {
 			for (Map<String, Object> row : data) {
 				Map<String, Object> newRow = new HashMap<>();

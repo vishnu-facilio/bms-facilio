@@ -47,6 +47,7 @@ import com.facilio.bmsconsole.context.MLAlarmContext;
 import com.facilio.bmsconsole.context.MLAlarmOccurrenceContext;
 import com.facilio.bmsconsole.context.MlForecastingContext;
 import com.facilio.bmsconsole.context.PhotosContext;
+import com.facilio.bmsconsole.context.PoLineItemsSerialNumberContext;
 import com.facilio.bmsconsole.context.PurchaseContractContext;
 import com.facilio.bmsconsole.context.PurchaseContractLineItemContext;
 import com.facilio.bmsconsole.context.PurchaseOrderContext;
@@ -780,6 +781,7 @@ public class FacilioConstants {
 		public static final String FORM_FIELDS = "formFields";
 		public static final String FORM_OBJECT = "formObject";
 		public static final String FORM_TYPE = "formType";
+		public static final String FORM_SECTION = "formSection";
 		
 		
 		public static final String QR_VALUE = "qrValue";
@@ -861,6 +863,7 @@ public class FacilioConstants {
 		
 		public static final String WORKORDER_TOOLS = "workorderTools";
 		public static final String TOOL_TRANSACTIONS = "toolTransactions";
+		public static final String INVENTORY_TRANSACTIONS = "inventoryTransactions";
 		public static final String STOCKED_TOOLS_RETURN_TRACKING = "stockedToolsReturnTracking";
 		
 		public static final String ITEM_TYPES_COUNT = "itemTypesCount";
@@ -919,6 +922,8 @@ public class FacilioConstants {
 		
 		private static final String RECEIPT_LINE_ITEMS = "receiptlineitems";
 		public static final String ITEM_VENDORS_LIST = "itemTypesVendorsList";
+		
+		public static final String SITES_FOR_STORE_ROOM = "sitesForStoreRoom";
 
 		public static final String PURCHASE_CONTRACTS = "purchasecontracts";
 		public static final String PURCHASE_CONTRACT = "purchasecontract";
@@ -928,7 +933,9 @@ public class FacilioConstants {
 		public static final String LABOUR_CONTRACTS = "labourcontracts";
 		public static final String LABOUR_CONTRACT = "labourcontract";
 		public static final String LABOUR_CONTRACTS_LINE_ITEMS = "labourcontractlineitems";
-	
+
+		public static final String PO_LINE_ITEMS_SERIAL_NUMBERS = "poLineItemSerialNumbers";
+		public static final String SERIAL_NUMBERS = "serialNumbers";
 		
 		private static Map<String, Class> classMap = Collections.unmodifiableMap(initClassMap());
 		private static Map<String, Class> initClassMap() {
@@ -1027,10 +1034,10 @@ public class FacilioConstants {
 			classMap.put(PURCHASE_CONTRACTS_LINE_ITEMS, PurchaseContractLineItemContext.class);
 			classMap.put(LABOUR_CONTRACTS, LabourContractContext.class);
 			classMap.put(LABOUR_CONTRACTS_LINE_ITEMS, LabourContractLineItemContext.class);
-				
 			classMap.put(RECEIVABLE, ReceivableContext.class);
 			classMap.put(RECEIPT, ReceiptContext.class);
 			classMap.put(RECEIPT_LINE_ITEMS, ReceiptLineItemContext.class);
+			classMap.put(PO_LINE_ITEMS_SERIAL_NUMBERS, PoLineItemsSerialNumberContext.class);
 			return classMap;
 		}
 		

@@ -1,11 +1,12 @@
 package com.facilio.bmsconsole.commands;
 
-import com.facilio.bmsconsole.actions.GetToolTransactionsListCommand;
-import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
-import com.facilio.chain.FacilioChain;
 import org.apache.commons.chain.Chain;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+
+import com.facilio.bmsconsole.actions.GetToolTransactionsListCommand;
+import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
+import com.facilio.chain.FacilioChain;
 
 public class ReadOnlyChainFactory {
 	private static Logger LOGGER = LogManager.getLogger(ReadOnlyChainFactory.class.getName());
@@ -358,6 +359,12 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new ReportSpecialHandlingCommand(false));
 		return c;
 	}
+
+	public static Chain getPageChain() {
+		Chain c = getDefaultChain();
+		c.addCommand(new GetPageCommand());
+		return c;
+	}
 	
 	private static Chain getDefaultChain() {
 		return FacilioChain.getNonTransactionChain();
@@ -473,6 +480,7 @@ public class ReadOnlyChainFactory {
 	public static Chain getVendorsList() {
 		Chain c = getDefaultChain();
 		c.addCommand(SetTableNamesCommand.getForVendors());
+		c.addCommand(new LoadViewCommand());
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new GenerateCriteriaFromFilterCommand());
 		c.addCommand(new GenerateSearchConditionCommand());
@@ -491,6 +499,7 @@ public class ReadOnlyChainFactory {
 	public static Chain getItemList() {
 		Chain c = getDefaultChain();
 		c.addCommand(SetTableNamesCommand.getForItem());
+		c.addCommand(new LoadViewCommand());
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new GenerateCriteriaFromFilterCommand());
 		c.addCommand(new GenerateSearchConditionCommand());
@@ -525,6 +534,7 @@ public class ReadOnlyChainFactory {
 	public static Chain getStockedToolsList() {
 		Chain c = getDefaultChain();
 		c.addCommand(SetTableNamesCommand.getForTool());
+		c.addCommand(new LoadViewCommand());
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new GenerateCriteriaFromFilterCommand());
 		c.addCommand(new GenerateSearchConditionCommand());
@@ -754,5 +764,22 @@ public class ReadOnlyChainFactory {
 		return c;
 	}
 
+	public static Chain getPoLineItemsSerialNumberList() {
+		Chain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForPoLineItemSerialNumber());
+		c.addCommand(new LoadViewCommand());
+		c.addCommand(new LoadAllFieldsCommand());
+		c.addCommand(new GenerateCriteriaFromFilterCommand());
+		c.addCommand(new GenerateSearchConditionCommand());
+		c.addCommand(new GenericGetModuleDataListCommand());
+		return c;
+	}
+
+	public static Chain getAssetModuleReportCardChain() {
+		Chain c = getDefaultChain();
+		c.addCommand(new ConstructAssetReportCardsCommand());
+		c.addCommand(new GetModuleReportCardsCommand());
+		return c;
+	}
 	
 }

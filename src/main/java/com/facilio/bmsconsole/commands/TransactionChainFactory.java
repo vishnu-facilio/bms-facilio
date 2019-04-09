@@ -1468,6 +1468,8 @@ public class TransactionChainFactory {
 			Chain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForStoreRoom());
 			c.addCommand(new GenericAddModuleDataCommand());
+			c.addCommand(new DeleteSitesForStoreRoomCommad());
+			c.addCommand(new AddSitesForStoreRoomCommand());
 			return c;
 		}
 		
@@ -1475,6 +1477,8 @@ public class TransactionChainFactory {
 			Chain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForStoreRoom());
 			c.addCommand(new GenericUpdateModuleDataCommand());
+			c.addCommand(new DeleteSitesForStoreRoomCommad());
+			c.addCommand(new AddSitesForStoreRoomCommand());
 			return c;
 		}
 		
@@ -2287,11 +2291,17 @@ public class TransactionChainFactory {
 			return c;
 		}
 		
+		public static Chain getUpdateFormSectionChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new UpdateFormSectionCommand());
+			return c;
+		}
+		
 		public static Chain getAddPurchaseContractChain() {
 			Chain chain = getDefaultChain();
 			chain.addCommand(SetTableNamesCommand.getForPurchaseContract());
 			chain.addCommand(new AddOrUpdatePurchaseContractCommand());
-		    //rollup might be needed to update purchase contract total cost -- need to be discussed
+		    chain.addCommand(getPurchaseContractTotalCostChain()); //roll up for calculating total cost
 			return chain;
 		}
 		
@@ -2306,7 +2316,7 @@ public class TransactionChainFactory {
 			Chain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForPurchaseContractLineItem());
 			c.addCommand(new AddOrUpdatePurchaseContractLineItemCommand());
-			//rollup might be needed to update contract total cost -- need to be discussed
+			c.addCommand(getPurchaseContractTotalCostChain()); //roll up for calculating total cost
 			return c;
 		}
 		
@@ -2360,6 +2370,32 @@ public class TransactionChainFactory {
 			return chain;
 		}
 		
+		public static Chain getPurchaseContractTotalCostChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new PurchaseContractTotalCostRollupCommand());
+			return c;
+		}
+		
+		public static Chain getAddPoLineItemSerialNumbersChain () {
+			Chain chain = getDefaultChain();
+			chain.addCommand(SetTableNamesCommand.getForPoLineItemSerialNumber());
+			chain.addCommand(new AddSerialNumberForPoLineItemsCommand());
+			chain.addCommand(new GenericAddModuleDataListCommand());
+			return chain;
+		}
+		
+		public static Chain getUpdatePoLineItemSerialNumbersChain () {
+			Chain chain = getDefaultChain();
+			chain.addCommand(SetTableNamesCommand.getForPoLineItemSerialNumber());
+			chain.addCommand(new GenericUpdateModuleDataCommand());
+			return chain;
+		}
+		public static Chain getDeletePoLineItemSerialNumbersChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForPoLineItemSerialNumber());
+			c.addCommand(new GenericDeleteModuleDataCommand());
+			return c;
+		}
 		
 }
 

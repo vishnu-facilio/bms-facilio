@@ -86,7 +86,8 @@ public class UpdateAlarmRuleCommand implements Command {
 		
 		if(alarmRCARules != null) {
 			
-//			int executionOrder = 1;
+			int executionOrder = getMaxExecutionOrder (oldRule.getAlarmRCARules());
+			
 			for(ReadingRuleContext alarmRCARule :alarmRCARules) {
 				
 				Long parentId = alarmRCARule.getParentRuleName() != null ? ruleNameVsIdMap.get(alarmRCARule.getParentRuleName()) : alarmTriggerRule.getId();
@@ -101,6 +102,7 @@ public class UpdateAlarmRuleCommand implements Command {
 					chain.execute(context);
 				}
 				else {
+					alarmRCARule.setExecutionOrder(++executionOrder);
 					WorkflowRuleAPI.addWorkflowRule(alarmRCARule);
 				}
 				
@@ -132,5 +134,13 @@ public class UpdateAlarmRuleCommand implements Command {
 			WorkflowRuleAPI.addWorkflowRule(alarmClearRuleDuplicate);
 			ruleNameVsIdMap.put(alarmClearRuleDuplicate.getName(), alarmClearRuleDuplicate.getId());
 		}
+	}
+
+
+	private int getMaxExecutionOrder(List<ReadingRuleContext> alarmRCARules) {
+		if(alarmRCARules != null) {
+			return alarmRCARules.get(alarmRCARules.size()-1).getExecutionOrder();
+		}
+		return 0;
 	}
 }

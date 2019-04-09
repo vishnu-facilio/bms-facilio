@@ -1,5 +1,9 @@
 package com.facilio.bmsconsole.modules;
 
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleBean;
@@ -8,18 +12,20 @@ import com.facilio.bmsconsole.util.DateTimeUtil;
 import com.facilio.collections.UniqueMap;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.DBUtil;
-
-import java.util.Collections;
-import java.util.Map;
+import com.facilio.workflows.util.ExpressionAggregateInterface;
 
 public interface AggregateOperator {
-    // Max Operator Code : 26 - Kindly change here if you add new aggregation operator
+    // Max Operator Code : 29 - Kindly change here if you add new aggregation operator
 
     public static AggregateOperator getAggregateOperator(int value) {
         return AGGREGATE_OPERATOR_MAP.get(value);
     }
+    public static AggregateOperator getAggregateOperator(String value) {
+        return AGGREGATE_OPERATOR_STRING_MAP.get(value);
+    }
     public FacilioField getSelectField(FacilioField field) throws Exception;
     static final Map<Integer, AggregateOperator> AGGREGATE_OPERATOR_MAP = Collections.unmodifiableMap(initTypeMap());
+    static final Map<String, AggregateOperator> AGGREGATE_OPERATOR_STRING_MAP = Collections.unmodifiableMap(initTypeStringMap());
     static Map<Integer, AggregateOperator> initTypeMap() {
         Map<Integer, AggregateOperator> typeMap = new UniqueMap<>();
         for(AggregateOperator type : CommonAggregateOperator.values()) {
@@ -40,14 +46,53 @@ public interface AggregateOperator {
         for(AggregateOperator type : EnergyPurposeAggregateOperator.values()) {
             typeMap.put(type.getValue(), type);
         }
+        for(AggregateOperator type : SpecialAggregateOperator.values()) {
+            typeMap.put(type.getValue(), type);
+        }
         return typeMap;
+    }
+    static Map<String, AggregateOperator> initTypeStringMap() {
+        Map<String, AggregateOperator> stringTypeMap = new UniqueMap<>();
+        for(AggregateOperator type : CommonAggregateOperator.values()) {
+            stringTypeMap.put(type.getStringValue(), type);
+        }
+        for(AggregateOperator type : NumberAggregateOperator.values()) {
+            stringTypeMap.put(type.getStringValue(), type);
+        }
+        for(AggregateOperator type : StringAggregateOperator.values()) {
+            stringTypeMap.put(type.getStringValue(), type);
+        }
+        for(AggregateOperator type : DateAggregateOperator.values()) {
+            stringTypeMap.put(type.getStringValue(), type);
+        }
+        for(AggregateOperator type : SpaceAggregateOperator.values()) {
+            stringTypeMap.put(type.getStringValue(), type);
+        }
+        for(AggregateOperator type : EnergyPurposeAggregateOperator.values()) {
+            stringTypeMap.put(type.getStringValue(), type);
+        }
+        for(AggregateOperator type : SpecialAggregateOperator.values()) {
+            stringTypeMap.put(type.getStringValue(), type);
+        }
+        return stringTypeMap;
     }
     public int getValue();
     public String getStringValue();
+    public Object getAggregateResult(List<Map<String, Object>> props,String fieldName);
 
     public enum CommonAggregateOperator implements AggregateOperator {
         ACTUAL(0,"Actual","{$place_holder$}"),
-        COUNT(1,"Count","count({$place_holder$})"),
+        COUNT(1,"count","count({$place_holder$})") {
+    		public Object getAggregateResult(List<Map<String, Object>> props,String fieldName) {
+    			return props.size();
+    		}
+    		
+    		@Override
+    		protected FieldType getFieldType() {
+    			// TODO Auto-generated method stub
+    			return FieldType.NUMBER;
+    		}
+    	},
         ;
 
         private int value;
@@ -95,13 +140,99 @@ public interface AggregateOperator {
 //			selectField.setFieldId(field.getFieldId());
 //			return selectField;
         }
+		@Override
+		public Object getAggregateResult(List<Map<String, Object>> props, String fieldName) {
+			// TODO Auto-generated method stub
+			return null;
+		}
+		protected FieldType getFieldType() {
+    		return null;
+    	}
     }
 
     public enum NumberAggregateOperator implements AggregateOperator {
-        AVERAGE(2,"Average","avg({$place_holder$})"),
-        SUM(3,"Sum","sum({$place_holder$})"),
-        MIN(4,"Min","min({$place_holder$})"),
-        MAX(5,"Max","max({$place_holder$})"),
+        
+        AVERAGE(2,"avg","avg({$place_holder$})") {
+    		public Object getAggregateResult(List<Map<String, Object>> props,String fieldName) {
+    			double sum = 0;
+    			for(Map<String, Object> prop:props) {
+    				if(prop.get(fieldName) != null) {
+    					sum = sum + (double) prop.get(fieldName);
+    				}
+    			}
+    			
+    			return sum/props.size();
+    		}
+    		@Override
+    		protected FieldType getFieldType() {
+    			// TODO Auto-generated method stub
+    			return FieldType.NUMBER;
+    		}
+    	},
+    	SUM(3,"sum","sum({$place_holder$})"){
+    		public Object getAggregateResult(List<Map<String, Object>> props,String fieldName) {
+    			double sum = 0;
+    			for(Map<String, Object> prop:props) {
+    				if(prop.get(fieldName) != null) {
+    					sum = sum + (double) prop.get(fieldName);
+    				}
+    			}
+    			return sum;
+    		}
+    		
+    		@Override
+    		protected FieldType getFieldType() {
+    			// TODO Auto-generated method stub
+    			return FieldType.NUMBER;
+    		}
+    	},
+    	MIN(4,"min","min({$place_holder$})"){
+    		public Object getAggregateResult(List<Map<String, Object>> props,String fieldName) {
+    			double min = 0;
+    			boolean isFirst = true;
+    			for(Map<String, Object> prop:props) {
+    				if(prop.get(fieldName) != null) {					
+    					double value = (double) prop.get(fieldName);
+    					if(isFirst) {
+    						isFirst = false;
+    						min = value;
+    					}
+    					min = value < min ? value:min;
+    				}
+    			}
+    			return min;
+    		}
+    		
+    		@Override
+    		protected FieldType getFieldType() {
+    			// TODO Auto-generated method stub
+    			return FieldType.NUMBER;
+    		}
+    	},
+    	MAX(5,"max","max({$place_holder$})"){
+    		public Object getAggregateResult(List<Map<String, Object>> props,String fieldName) {
+    			double max = 0;
+    			boolean isFirst = true;
+    			for(Map<String, Object> prop:props) {
+    				if(prop.get(fieldName) != null) {					
+    					double value = (double) prop.get(fieldName);
+    					if(isFirst) {
+    						isFirst = false;
+    						max = value;
+    					}
+    					max = value > max ? value:max;
+    				}
+    			}
+    			return max;
+    		}
+    		
+    		@Override
+    		protected FieldType getFieldType() {
+    			// TODO Auto-generated method stub
+    			return FieldType.NUMBER;
+    		}
+    	},
+        
         RANGE(6,"Range","CONCAT(MIN({$place_holder$}),',',AVG({$place_holder$}),',',MAX({$place_holder$}))")
         ;
 
@@ -119,6 +250,9 @@ public interface AggregateOperator {
             this.stringValue = stringValue;
             this.expr = expr;
         }
+    	protected FieldType getFieldType() {
+    		return null;
+    	}
 
         public FacilioField getSelectField(FacilioField field) throws Exception {
             String selectFieldString = expr.replace("{$place_holder$}", field.getCompleteColumnName());
@@ -139,6 +273,11 @@ public interface AggregateOperator {
             selectField.setFieldId(field.getFieldId());
             return selectField;
         }
+		@Override
+		public Object getAggregateResult(List<Map<String, Object>> props, String fieldName) {
+			// TODO Auto-generated method stub
+			return null;
+		}
     }
 
     public enum StringAggregateOperator implements AggregateOperator {
@@ -169,6 +308,11 @@ public interface AggregateOperator {
             selectField.setFieldId(field.getFieldId());
             return selectField;
         }
+		@Override
+		public Object getAggregateResult(List<Map<String, Object>> props, String fieldName) {
+			// TODO Auto-generated method stub
+			return null;
+		}
     }
 
     public enum DateAggregateOperator implements AggregateOperator {
@@ -273,6 +417,11 @@ public interface AggregateOperator {
             }
             return -1;
         }
+		@Override
+		public Object getAggregateResult(List<Map<String, Object>> props, String fieldName) {
+			// TODO Auto-generated method stub
+			return null;
+		}
     }
 
     public enum SpaceAggregateOperator implements AggregateOperator {
@@ -312,6 +461,11 @@ public interface AggregateOperator {
 
             return field;
         }
+		@Override
+		public Object getAggregateResult(List<Map<String, Object>> props, String fieldName) {
+			// TODO Auto-generated method stub
+			return null;
+		}
     }
 
     public enum EnergyPurposeAggregateOperator implements AggregateOperator {
@@ -351,5 +505,66 @@ public interface AggregateOperator {
 
             return selectField;
         }
+		@Override
+		public Object getAggregateResult(List<Map<String, Object>> props, String fieldName) {
+			// TODO Auto-generated method stub
+			return null;
+		}
+    }
+    public enum SpecialAggregateOperator implements AggregateOperator,ExpressionAggregateInterface {
+    	FIRST_VALUE(27,"[0]","{$place_holder$}") {
+    		public Object getAggregateResult(List<Map<String, Object>> props,String fieldName) {
+    			return props.get(0).get(fieldName);
+    		}
+    	},
+    	LAST_VALUE(28,"lastValue","{$place_holder$}") {
+    		public Object getAggregateResult(List<Map<String, Object>> props,String fieldName) {
+    			if(props != null && props.isEmpty()) {
+    				return props.get(props.size()-1).get(fieldName);
+    			}
+    			return null;
+    		}
+    	},
+    	COUNT_RUNNING_TIME(29,"countRunningTime","{$place_holder$}"),
+        ;
+
+        private int value;
+        private String stringValue;
+        private String expr;
+        public int getValue() {
+            return value;
+        }
+        public String getStringValue() {
+            return stringValue;
+        }
+        SpecialAggregateOperator(Integer value,String stringValue,String expr) {
+            this.value = value;
+            this.stringValue = stringValue;
+            this.expr = expr;
+        }
+
+        public FacilioField getSelectField(FacilioField field) throws Exception {
+            String selectFieldString = expr.replace("{$place_holder$}", field.getCompleteColumnName());
+            FacilioField selectField = null;
+            if(field instanceof NumberField) {
+                NumberField numberField =  (NumberField)field;
+                NumberField selectFieldNumber = new NumberField();
+                selectFieldNumber.setMetric(numberField.getMetric());
+                selectFieldNumber.setUnitId(numberField.getUnitId());
+                selectField = selectFieldNumber;
+            }
+            else {
+                selectField = new FacilioField();
+            }
+            selectField.setName(field.getName());
+            selectField.setDisplayName(field.getDisplayName());
+            selectField.setColumnName(selectFieldString);
+            selectField.setFieldId(field.getFieldId());
+            return selectField;
+        }
+		@Override
+		public Object getAggregateResult(List<Map<String, Object>> props, String fieldName) {
+			return null;
+		}
     }
 }

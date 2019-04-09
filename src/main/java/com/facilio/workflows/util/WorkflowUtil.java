@@ -1172,6 +1172,9 @@ public class WorkflowUtil {
 				else {
 					condition.setFieldName(fieldName);
 				}
+				if(operator == null) {
+					LOGGER.severe("conditionString --- "+conditionString+",  operatorString --- "+operatorString);
+				}
 				condition.setOperator(operator);
 				condition.setValue(conditionValue);
 				if(operator.equals(LookupOperator.LOOKUP)) {

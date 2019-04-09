@@ -8,6 +8,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+// delete this file on cleanup
+
 public enum ExpressionAggregateOperator implements ExpressionAggregateInterface {
 	
 	FIRST_VALUE(0,"[0]","{$place_holder$}") {

@@ -1,5 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
+import com.facilio.accounts.dto.User;
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
@@ -50,7 +52,12 @@ public class GetWorkOrderCommand implements Command {
 				
 				TicketAPI.loadRelatedModules(workOrder);
 				TicketAPI.loadTicketLookups(Collections.singleton(workOrder));
-				
+				if (workOrder.getRequester() != null) {
+					List<User> users = AccountUtil.getUserBean().getUsers(null, Collections.singletonList(workOrder.getRequester().getId()));
+					if (users != null && !users.isEmpty()) {
+						workOrder.setRequester(users.get(0));
+					}
+				}
 				Map<Long, List<TaskContext>> taskMap = workOrder.getTasks();
 				if (taskMap != null) {
 					List<TaskContext> tasks = taskMap.values().stream().flatMap(c -> c.stream()).collect(Collectors.toList());

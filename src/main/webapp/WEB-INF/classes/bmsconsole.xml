@@ -1128,6 +1128,21 @@
 				<param name="excludeProperties">criteria.conditions.*\.computedWhereClause</param>
 			</result>
 		</action>
+		<action name="woScheduleReport" class="com.facilio.bmsconsole.actions.ViewAction" method="woScheduleReport">
+			<result name="success" type="json">
+				<param name="includeProperties">reportId</param>
+			</result>
+		</action>
+		<action name="woScheduleReportList" class="com.facilio.bmsconsole.actions.ViewAction" method="woScheduledList">
+			<result name="success" type="json">
+				<param name="includeProperties">^scheduledReports.*</param>
+			</result>
+		</action>
+		<action name="editWoScheduledReport" class="com.facilio.bmsconsole.actions.ViewAction" method="editWoScheduledReport">
+			<result name="success" type="json">
+				<param name="includeProperties">rowsUpdated</param>
+			</result>
+		</action>
 	</package>
 
 	<package name="readingApi" namespace="/api/reading" extends="homeApi">

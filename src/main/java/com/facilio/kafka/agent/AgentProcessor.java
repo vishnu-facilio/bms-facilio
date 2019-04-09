@@ -1,6 +1,7 @@
 package com.facilio.kafka.agent;
 import com.facilio.agent.AgentKeys;
 import com.facilio.agent.AgentUtil;
+import com.facilio.agent.PublishType;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleCRUDBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
@@ -24,7 +25,6 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
-import java.sql.DriverManager;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -66,7 +66,7 @@ public class AgentProcessor extends FacilioProcessor
         setProducer(new FacilioKafkaProducer(getTopic()));
         LOGGER.info("agentUtil created for "+orgDomainName);
         agentUtil = new AgentUtil(orgId, orgDomainName);
-        agentUtil.populateAgentContextMap();
+        agentUtil.populateAgentContextMap(null);
         devicePointsUtil = new DevicePointsUtil();
         ackUtil = new AckUtil();
         initializeModules();
@@ -127,21 +127,21 @@ public class AgentProcessor extends FacilioProcessor
             partitionKey = record.getPartitionKey();
             String dataType = (String)payLoad.remove(EventProcessor.DATA_TYPE);
              if(dataType != null ) {
-                switch (dataType) {
-                    case AgentKeys.AGENT:
+                switch (PublishType.valueOf(dataType)) {
+                    case agent:
                         // numberOfRows = agentUtil.processAgent(payLoad);
                         break;
-                    case AgentKeys.DEVICE_POINTS:
+                    case devicepoints:
                         // devicePointsUtil.processDevicePoints(payLoad,getOrgId(),deviceMap);
                         break;
-                    case AgentKeys.ACK:
+                    case ack:
                         ackUtil.processAck(payLoad,getOrgId());
                         break;
 
 
                 }
                  if((numberOfRows == 0)){
-                     GenericUpdateRecordBuilder genericUpdateRecordBuilder = new GenericUpdateRecordBuilder().useExternalConnection(DriverManager.getConnection("jdbc:mysql://localhost:3306/bmslocal","root","facilio123")).table(AgentKeys.TABLE_NAME).fields(FieldFactory.getAgentDataFields()).andCustomWhere( AgentKeys.NAME+"= '"+payLoad.get(AgentKeys.AGENT)+"'");
+                     GenericUpdateRecordBuilder genericUpdateRecordBuilder = new GenericUpdateRecordBuilder().table(AgentKeys.AGENT_TABLE).fields(FieldFactory.getAgentDataFields()).andCustomWhere( AgentKeys.NAME+"= '"+payLoad.get(PublishType.agent.getValue())+"'");
                      Map<String,Object> toUpdate = new HashMap<>();
                      toUpdate.put(AgentKeys.LAST_DATA_RECEIVED_TIME,System.currentTimeMillis());
                      genericUpdateRecordBuilder.update(toUpdate);
