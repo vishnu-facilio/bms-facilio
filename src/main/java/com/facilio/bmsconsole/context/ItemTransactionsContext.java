@@ -187,4 +187,12 @@ public class ItemTransactionsContext extends ModuleBaseWithCustomFields {
 		this.workorder = workorder;
 	}
 
+	private GatePassContext gatePass;
+	public GatePassContext getGatePass() {
+		return gatePass;
+	}
+	public void setGatePass(GatePassContext gatePass) {
+		this.gatePass = gatePass;
+	}
+	
 }

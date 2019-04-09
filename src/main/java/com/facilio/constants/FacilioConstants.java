@@ -28,6 +28,8 @@ import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.context.EnergyMeterPurposeContext;
 import com.facilio.bmsconsole.context.FCUContext;
 import com.facilio.bmsconsole.context.FloorContext;
+import com.facilio.bmsconsole.context.GatePassContext;
+import com.facilio.bmsconsole.context.GatePassLineItemsContext;
 import com.facilio.bmsconsole.context.HeatPumpContext;
 import com.facilio.bmsconsole.context.InventoryCategoryContext;
 import com.facilio.bmsconsole.context.InventoryContext;
@@ -940,6 +942,9 @@ public class FacilioConstants {
 		public static final String TOTAL_COST = "totalCost";
 		public static final String TOTAL_QUANTITY = "totalQuantity";
 		
+		public static final String GATE_PASS = "gatePass";
+		public static final String GATE_PASS_LINE_ITEMS = "gatePassLineItems";
+		
 		private static Map<String, Class> classMap = Collections.unmodifiableMap(initClassMap());
 		private static Map<String, Class> initClassMap() {
 			Map<String, Class> classMap = new HashMap<>();
@@ -1041,6 +1046,8 @@ public class FacilioConstants {
 			classMap.put(RECEIPT, ReceiptContext.class);
 			classMap.put(RECEIPT_LINE_ITEMS, ReceiptLineItemContext.class);
 			classMap.put(PO_LINE_ITEMS_SERIAL_NUMBERS, PoLineItemsSerialNumberContext.class);
+			classMap.put(GATE_PASS, GatePassContext.class);
+			classMap.put(GATE_PASS_LINE_ITEMS, GatePassLineItemsContext.class);
 			return classMap;
 		}
 		

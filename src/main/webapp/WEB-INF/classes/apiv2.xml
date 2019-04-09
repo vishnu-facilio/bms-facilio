@@ -1902,7 +1902,13 @@
 		</action>
 	</package>
 	
-	
+	<package name="gatePass" namespace="/api/v2/gatePass"
+		extends="v2Api">
+		<action name="add"
+			class="com.facilio.bmsconsole.actions.GatePassAction" method="addGatePass">
+			<param name="moduleName">purchaseorder</param>
+		</action>
+	</package>
 	
 	<!-- <package name="pageApiv2" namespace="/api/v2/pages" extends="v2Api"> 
 		<action name="*" class="com.facilio.bmsconsole.actions.PageAction" method="fetchPage"> 

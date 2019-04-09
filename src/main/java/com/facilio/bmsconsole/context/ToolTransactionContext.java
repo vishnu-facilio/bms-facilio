@@ -186,4 +186,13 @@ public class ToolTransactionContext extends ModuleBaseWithCustomFields {
 	public void setWorkorder(TicketContext workorder) {
 		this.workorder = workorder;
 	}
+	
+	private GatePassContext gatePass;
+	public GatePassContext getGatePass() {
+		return gatePass;
+	}
+	public void setGatePass(GatePassContext gatePass) {
+		this.gatePass = gatePass;
+	}
+	
 }
