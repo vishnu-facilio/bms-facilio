@@ -118,5 +118,13 @@ public class WorkorderCostContext extends ModuleBaseWithCustomFields {
 			return null;
 		}
 	}
+	
+	private long quantity;
+	public long getQuantity() {
+		return quantity;
+	}
+	public void setQuantity(long quantity) {
+		this.quantity = quantity;
+	}
 
 }

@@ -33,17 +33,19 @@ public class AddOrUpdateWorkorderCostCommand implements Command {
 			int costType = (int) context.get(FacilioConstants.ContextNames.WORKORDER_COST_TYPE);
 			CostType cos = CostType.valueOf(costType);
 			double cost = 0;
-
+			long qty = 0;	
 		if (costType == 1) {
 			FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.WORKORDER_ITEMS);
 			List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.WORKORDER_ITEMS);
 			Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(fields);
 			cost = getTotalItemCost(parentId, module, fieldsMap);
+			qty = getTotalNoOfItem(parentId, module, fieldsMap);
 		} else if (costType == 2) {
 			FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.WORKORDER_TOOLS);
 			List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.WORKORDER_TOOLS);
 			Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(fields);
 			cost = getTotalToolCost(parentId, module, fieldsMap);
+			qty = getTotalNoOfTool(parentId, module, fieldsMap);
 		}
 		else if (costType == 3) {
 			FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.WO_LABOUR);
@@ -69,6 +71,7 @@ public class AddOrUpdateWorkorderCostCommand implements Command {
 		if (workorderCosts != null && !workorderCosts.isEmpty()) {
 			workorderCost = workorderCosts.get(0);
 			workorderCost.setCost(cost);
+			workorderCost.setQuantity(qty);
 			workorderCost.setModifiedTime(System.currentTimeMillis());
 			UpdateRecordBuilder<WorkorderCostContext> updateBuilder = new UpdateRecordBuilder<WorkorderCostContext>()
 					.module(workorderCostsModule).fields(modBean.getAllFields(workorderCostsModule.getName()))
@@ -79,6 +82,7 @@ public class AddOrUpdateWorkorderCostCommand implements Command {
 			workorderCost.setCost(cost);
 			workorderCost.setParentId(parentId);
 			workorderCost.setCostType(costType);
+			workorderCost.setQuantity(qty);
 			workorderCost.setTtime(System.currentTimeMillis());
 			workorderCost.setModifiedTime(System.currentTimeMillis());
 			InsertRecordBuilder<WorkorderCostContext> builder = new InsertRecordBuilder<WorkorderCostContext>()
@@ -86,8 +90,9 @@ public class AddOrUpdateWorkorderCostCommand implements Command {
 					.fields(modBean.getAllFields(workorderCostsModule.getName()));
 
 			builder.insert(workorderCost);
-
 			}
+			context.put(FacilioConstants.ContextNames.TOTAL_COST, workorderCost.getCost());
+			context.put(FacilioConstants.ContextNames.TOTAL_QUANTITY, qty);
 			context.put(FacilioConstants.ContextNames.RECORD, workorderCost);
 		}
 
@@ -174,6 +179,54 @@ public class AddOrUpdateWorkorderCostCommand implements Command {
 			return 0d;
 		}
 		return 0d;
+	}
+	
+	private long getTotalNoOfTool(long id, FacilioModule module, Map<String, FacilioField> fieldsMap) throws Exception {
+		if (id <= 0) {
+			return 0;
+		}
+		
+		List<FacilioField> field = new ArrayList<>();
+		field.add(FieldFactory.getField("totalTools", "COUNT(DISTINCT TOOL)", FieldType.NUMBER));
+		
+		SelectRecordsBuilder<WorkorderToolsContext> builder = new SelectRecordsBuilder<WorkorderToolsContext>()
+				.select(field).moduleName(module.getName())
+				.andCondition(CriteriaAPI.getCondition(fieldsMap.get("parentId"), String.valueOf(id), NumberOperators.EQUALS))
+				.andCustomWhere("APPROVED_STATE = ? OR APPROVED_STATE = ? ", 1, 3)
+				.setAggregation();
+		
+		List<Map<String, Object>> rs = builder.getAsProps();
+		if (rs != null && rs.size() > 0) {
+			if (rs.get(0).get("totalTools") != null) {
+				return (long) rs.get(0).get("totalTools");
+			}
+			return 0;
+		}
+		return 0;
+	}
+	
+	private long getTotalNoOfItem(long id, FacilioModule module, Map<String, FacilioField> fieldsMap) throws Exception {
+		if (id <= 0) {
+			return 0;
+		}
+		
+		List<FacilioField> field = new ArrayList<>();
+		field.add(FieldFactory.getField("totalItems", "COUNT(DISTINCT ITEM_ID)", FieldType.NUMBER));
+		
+		SelectRecordsBuilder<WorkorderItemContext> builder = new SelectRecordsBuilder<WorkorderItemContext>()
+				.select(field).moduleName(module.getName())
+				.andCondition(CriteriaAPI.getCondition(fieldsMap.get("parentId"), String.valueOf(id), NumberOperators.EQUALS))
+				.andCustomWhere("APPROVED_STATE = ? OR APPROVED_STATE = ? ", 1, 3)
+				.setAggregation();
+		
+		List<Map<String, Object>> rs = builder.getAsProps();
+		if (rs != null && rs.size() > 0) {
+			if (rs.get(0).get("totalItems") != null) {
+				return (long) rs.get(0).get("totalItems");
+			}
+			return 0;
+		}
+		return 0;
 	}
 
 }

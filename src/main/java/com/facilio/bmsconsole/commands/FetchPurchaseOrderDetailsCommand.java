@@ -70,7 +70,7 @@ public class FetchPurchaseOrderDetailsCommand implements Command {
 		String polineitemserialnomodulename = FacilioConstants.ContextNames.PO_LINE_ITEMS_SERIAL_NUMBERS;
 		List<FacilioField> fields = modBean.getAllFields(polineitemserialnomodulename);
 		Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
-		SelectRecordsBuilder<PoLineItemsSerialNumberContext> builder = new SelectRecordsBuilder<PurchaseOrderLineItemContext>()
+		SelectRecordsBuilder<PoLineItemsSerialNumberContext> builder = new SelectRecordsBuilder<PoLineItemsSerialNumberContext>()
 				.moduleName(polineitemserialnomodulename)
 				.select(fields)
 				.beanClass(FacilioConstants.ContextNames.getClassFromModuleName(polineitemserialnomodulename))
