@@ -23,6 +23,7 @@ public class GetPurchaseOrdersListOnInventoryTypeIdCommand  implements Command{
 		// TODO Auto-generated method stub
 		int inventoryType = (Integer) context.get(FacilioConstants.ContextNames.INVENTORY_CATEGORY);
 		long id = (Long) context.get(FacilioConstants.ContextNames.ID);
+		long storeRoomId = (Long) context.get(FacilioConstants.ContextNames.STORE_ROOM_ID);
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioModule purchaseOrderModule = modBean.getModule(FacilioConstants.ContextNames.PURCHASE_ORDER);
@@ -37,7 +38,8 @@ public class GetPurchaseOrdersListOnInventoryTypeIdCommand  implements Command{
 					.innerJoin(lineItemModule.getTableName())
 					.on(purchaseOrderModule.getTableName()+".ID = "+lineItemModule.getTableName()+".PO_ID")
 					.andCondition(CriteriaAPI.getCondition("INVENTORY_TYPE", "inventoryType", String.valueOf(inventoryType), NumberOperators.EQUALS))
-				    ;
+					.andCondition(CriteriaAPI.getCondition("STOREROOM", "storeRoom", String.valueOf(storeRoomId), NumberOperators.EQUALS))
+					;
 			if(inventoryType == InventoryType.ITEM.ordinal()+1) {
 				builder.andCondition(CriteriaAPI.getCondition("ITEM_TYPE", "itemType", String.valueOf(id), NumberOperators.EQUALS));
 			}

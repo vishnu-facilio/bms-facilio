@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.context;
 
+import com.facilio.accounts.dto.User;
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import org.apache.commons.collections4.CollectionUtils;
 
@@ -52,6 +53,16 @@ public class PurchaseOrderContext extends ModuleBaseWithCustomFields {
 	public Status getStatusEnum() {
 		return status;
 	}
+	private User requestedBy;
+
+	public User getRequestedBy() {
+		return requestedBy;
+	}
+
+	public void setRequestedBy(User requestedBy) {
+		this.requestedBy = requestedBy;
+	}
+
 	public int getStatus() {
 		if (status != null) {
 			return status.getValue();

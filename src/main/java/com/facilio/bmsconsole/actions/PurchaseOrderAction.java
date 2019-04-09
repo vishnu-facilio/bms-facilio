@@ -79,6 +79,16 @@ public class PurchaseOrderAction extends FacilioAction {
 	public void setId(long id) {
 		this.id = id;
 	}
+	
+	private long storeRoomId;
+	
+	
+	public long getStoreRoomId() {
+		return storeRoomId;
+	}
+	public void setStoreRoomId(long storeRoomId) {
+		this.storeRoomId = storeRoomId;
+	}
 	public String addPurchaseOrder() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD, purchaseOrder);
@@ -294,10 +304,11 @@ public class PurchaseOrderAction extends FacilioAction {
 
 	}
 	
-	public String filterPoOnInventoryTypeId () throws Exception {
+	public String filterPoOnInventoryTypeAndStoreRoomId () throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.INVENTORY_CATEGORY, getInventoryType() );
 		context.put(FacilioConstants.ContextNames.ID, getId() );
+		context.put(FacilioConstants.ContextNames.STORE_ROOM_ID, getStoreRoomId() );
 		
 		Chain chain = TransactionChainFactory.getPOOnInventoryTypeIdChain();
 		chain.execute(context);

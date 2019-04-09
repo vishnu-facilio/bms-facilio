@@ -1753,7 +1753,7 @@
 	   <action name="completePurchaseOrder" class="com.facilio.bmsconsole.actions.PurchaseOrderAction" method="completePurchaseOrder">
 			<param name="moduleName">purchaseorder</param>
 		</action>
-		 <action name="filterPO" class="com.facilio.bmsconsole.actions.PurchaseOrderAction" method="filterPoOnInventoryTypeId">
+		 <action name="filterPO" class="com.facilio.bmsconsole.actions.PurchaseOrderAction" method="filterPoOnInventoryTypeAndStoreRoomId">
 			<param name="moduleName">purchaseorder</param>
 		</action>
 		<action name="*" class="com.facilio.bmsconsole.actions.PurchaseOrderAction" method="getPurchaseOrderList">

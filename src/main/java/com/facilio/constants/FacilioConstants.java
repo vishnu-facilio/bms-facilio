@@ -816,7 +816,8 @@ public class FacilioConstants {
 		public static final String STORE_ROOM = "storeRoom";
 		public static final String STORE_ROOMS = "storeRooms";
 		public static final String STORE_ROOM_LIST = "storeRoomList";
-
+		public static final String STORE_ROOM_ID = "storeRoomId";
+		
 		public static final String ITEM_TYPES = "itemTypes";
 		public static final String ITEM_TYPES_LIST = "itemTypesList";
 		public static final String ITEM_TYPES_CATEGORY = "itemTypesCategory";

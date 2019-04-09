@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.PurchaseOrderContext;
 import com.facilio.bmsconsole.context.PurchaseOrderLineItemContext;
@@ -42,6 +43,9 @@ public class AddOrUpdatePurchaseOrderCommand implements Command {
 			if (purchaseOrderContext.getStoreRoom() == null) {
 				throw new Exception("StoreRoom cannot be empty");
 			}
+			// setting current user to requestedBy
+			purchaseOrderContext.setRequestedBy(AccountUtil.getCurrentUser());
+			            
 			purchaseOrderContext.setShipToAddress(LocationAPI.getPoPrLocation(purchaseOrderContext.getStoreRoom(), purchaseOrderContext.getShipToAddress(), "SHIP_TO_Location", true));
 			purchaseOrderContext.setBillToAddress(LocationAPI.getPoPrLocation(purchaseOrderContext.getVendor(), purchaseOrderContext.getBillToAddress(), "BILL_TO_Location", false));
 			if (purchaseOrderContext.getId() > 0) {
