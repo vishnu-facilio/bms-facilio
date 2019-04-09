@@ -165,8 +165,6 @@ public class PurchaseOrderContext extends ModuleBaseWithCustomFields {
 		List<PurchaseOrderLineItemContext> poLineItems = new ArrayList(itemTypeItems.values());
 		poLineItems.addAll(new ArrayList(toolTypeItems.values()));
 		purchaseOrderContext.setLineItems(poLineItems);
-		purchaseOrderContext.setShipToAddress(getLocationContext());
-		purchaseOrderContext.setBillToAddress(getLocationContext());
 	
 	
 		

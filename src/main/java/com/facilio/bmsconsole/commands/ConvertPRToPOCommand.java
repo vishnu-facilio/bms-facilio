@@ -16,6 +16,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -29,11 +30,17 @@ public class ConvertPRToPOCommand implements Command {
 			
 			FacilioModule purchaseRequestModule = modBean.getModule(FacilioConstants.ContextNames.PURCHASE_REQUEST);
 			List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.PURCHASE_REQUEST);
+			Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
+			
 			SelectRecordsBuilder<PurchaseRequestContext> builder = new SelectRecordsBuilder<PurchaseRequestContext>()
 					.module(purchaseRequestModule)
 					.beanClass(PurchaseRequestContext.class)
 					.select(modBean.getAllFields(purchaseRequestModule.getName()))
-					.andCondition(CriteriaAPI.getIdCondition(recordIds, purchaseRequestModule));
+					.andCondition(CriteriaAPI.getIdCondition(recordIds, purchaseRequestModule))
+					;
+					builder.fetchLookups(Arrays.asList((LookupField) fieldsAsMap.get("vendor"),
+					(LookupField) fieldsAsMap.get("storeRoom"),(LookupField) fieldsAsMap.get("shipToAddress"),(LookupField) fieldsAsMap.get("billToAddress")))
+					;
 			List<PurchaseRequestContext> list = builder.get();
 			List<Long> prIds = new ArrayList<Long>();
 			if (CollectionUtils.isNotEmpty(list)) {
