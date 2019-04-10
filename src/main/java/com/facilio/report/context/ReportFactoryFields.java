@@ -132,10 +132,10 @@ public class ReportFactoryFields {
 			if(field != null) {
 				if (field instanceof NumberField) {
 					metricFields.add(field);
-				} else if (field instanceof LookupField) {
-					addFieldInList(dimensionFieldMap, module, field);
 				} else if (field.getDataTypeEnum() == FieldType.DATE || field.getDataTypeEnum() == FieldType.DATE_TIME) {
 					addFieldInList(dimensionFieldMap, "time", field);
+				} else {
+					addFieldInList(dimensionFieldMap, module, field);
 				}
 			}
 		}
