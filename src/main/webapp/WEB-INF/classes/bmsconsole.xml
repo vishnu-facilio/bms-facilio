@@ -2909,6 +2909,17 @@
 			</result>
 	
 		</action>
+	    <action name="getTenantForAsset" class="com.facilio.bmsconsole.actions.TenantAction"
+			method="getTenantForAssetId">
+			<param name="moduleName">tenant</param>
+			<result name="success" type="json">
+				<param name="root">result</param>
+			</result>
+			<result name="error" type="json">
+				<param name="root">error</param>
+			</result>
+	
+		</action>
 		
 		<action name="delete" class="com.facilio.bmsconsole.actions.TenantAction"
 			method="deleteTenant">
