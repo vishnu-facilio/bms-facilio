@@ -60,7 +60,8 @@ public class UpdateWorkorderTotalCostCommand implements Command {
 				
 				Chain c = TransactionChainFactory.getUpdateWorkOrderChain();
 				c.execute(context);
-
+					
+				context.put(FacilioConstants.ContextNames.WO_TOTAL_COST, totalcost);
 				System.out.println("totalcost" + totalcost);
 			}
 		}
