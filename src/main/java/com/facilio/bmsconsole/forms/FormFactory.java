@@ -118,7 +118,7 @@ public class FormFactory {
 				List<FormField> defaultFields = new ArrayList<>();
 				List<FormField> taskFields = new ArrayList<>();
 				
-				FormSection defaultSection = new FormSection(i++, defaultFields);
+				FormSection defaultSection = new FormSection("WORKORDER", i++, defaultFields, true);
 				sections.add(defaultSection);
 				 form.getFields().forEach(field -> {
 					 if (field.getDisplayTypeEnum() == FieldDisplayType.TASKS) {
@@ -130,7 +130,7 @@ public class FormFactory {
 				 });
 				
 //				List<FormField> task = form.getFields().stream().filter(field -> field.getDisplayTypeEnum() == FieldDisplayType.TASKS).collect(Collectors.toList());
-				FormSection taskSection = new FormSection(i++, taskFields);
+				FormSection taskSection = new FormSection("TASKS", i++, taskFields, true);
 				sections.add(taskSection);
 				
 				form.setFields(null);
@@ -500,10 +500,10 @@ public class FormFactory {
 	private static List<FormField> getMobileWorkOrderFormFields() {
 		List<FormField> fields = new ArrayList<>();
 		fields.add(new FormField("subject", FieldDisplayType.TEXTBOX, "Subject", Required.REQUIRED, 1, 1));
-		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.REQUIRED, 2, 1));
+		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 2, 1));
 		fields.add(new FormField("site", FieldDisplayType.LOOKUP_SIMPLE, "Site", Required.REQUIRED, "site", 3, 1));
-		fields.add(new FormField("resource", FieldDisplayType.WOASSETSPACECHOOSER, "Space/Asset", Required.REQUIRED, 4, 1));
-		fields.add(new FormField("assignment", FieldDisplayType.TEAMSTAFFASSIGNMENT, "Team/Staff", Required.REQUIRED, 5, 1));
+		fields.add(new FormField("resource", FieldDisplayType.WOASSETSPACECHOOSER, "Space/Asset", Required.OPTIONAL, 4, 1));
+		fields.add(new FormField("assignment", FieldDisplayType.TEAMSTAFFASSIGNMENT, "Team/Staff", Required.OPTIONAL, 5, 1));
 		fields.add(new FormField("category", FieldDisplayType.LOOKUP_SIMPLE, "Category", Required.OPTIONAL, "ticketcategory", 6, 1));
 		fields.add(new FormField("priority", FieldDisplayType.LOOKUP_SIMPLE, "Priority", Required.OPTIONAL, "ticketpriority", 7, 1));
 		fields.add(new FormField("attachedFiles", FieldDisplayType.ATTACHMENT, "Attachment", Required.OPTIONAL, 8, 1));
