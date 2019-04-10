@@ -1212,7 +1212,13 @@ public class WorkOrderAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		try {
 		
-		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.ASSIGN_TICKET);
+			context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.ASSIGN_TICKET);
+			if(workorder != null && workorder.getAssignedTo() != null && workorder.getAssignedTo().getId() == -1l) {
+				workorder.getAssignedTo().setId(-99l);
+			}
+			if(workorder != null && workorder.getAssignmentGroup() != null && workorder.getAssignmentGroup().getId() == -1l) {
+				workorder.getAssignmentGroup().setId(-99l);
+			}
 		}
 		catch (Exception e) {
 			JSONObject inComingDetails = new JSONObject();
