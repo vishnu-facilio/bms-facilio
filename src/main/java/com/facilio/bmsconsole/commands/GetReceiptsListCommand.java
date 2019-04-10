@@ -110,7 +110,7 @@ public class GetReceiptsListCommand implements Command {
 				.select(fields)
 				.beanClass(FacilioConstants.ContextNames.getClassFromModuleName(polineitemserialnomodulename))
 				.andCondition(CriteriaAPI.getCondition(fieldsAsMap.get("lineItem"), String.valueOf(lineItemId), NumberOperators.EQUALS))
-				.andCondition(CriteriaAPI.getCondition(fieldsAsMap.get("receiptId"), String.valueOf(lineItemId), NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition(fieldsAsMap.get("receiptId"), String.valueOf(receiptId), NumberOperators.EQUALS))
 		        ;
 		List<PoLineItemsSerialNumberContext> list = builder.get();
 		if(list!=null && !list.isEmpty()) {
