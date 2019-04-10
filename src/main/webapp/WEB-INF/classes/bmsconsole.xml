@@ -3740,6 +3740,11 @@
 				<param name="includeProperties">^metricWithUnits.*,^orgUnitsList.*,^metrics.*</param>
 			</result>
 		</action>
+		<action name="migrateToSiUnit" class="com.facilio.bmsconsole.actions.UnitAction" method="unitMigration">
+			<result name="success" type="json">
+				<param name="enumAsBean">true</param>
+			</result>
+		</action>
 		<action name="updatedefaultMetricUnits" class="com.facilio.bmsconsole.actions.UnitAction" method="updatedefaultMetricUnits">
 			<result name="success" type="json">
 				<param name="includeProperties">result</param>

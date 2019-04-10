@@ -169,6 +169,7 @@ public class AddOrUpdateManualToolTransactionsCommand implements Command {
 		if(toolTransaction.getTransactionStateEnum() == TransactionState.RETURN) {
 			woTool.setApprovedState(ApprovalState.YET_TO_BE_REQUESTED);
 		}
+		woTool.setIssuedTo(toolTransaction.getIssuedTo());
 
 		return woTool;
 	}

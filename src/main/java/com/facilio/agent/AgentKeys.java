@@ -16,7 +16,7 @@ public class AgentKeys
     public static final String VERSION = "version";
     public static final String DEVICE_ID = "deviceId";
     public static final String DEVICE_DETAILS = "deviceDetails";
-    public static final String MESSAGE_ID = "msgId";
+    public static final String MESSAGE_ID = "msgid";
     public static final String ORG_ID = "orgId";
     public static final String AGENT_TABLE = "Agent_Data";
     public static final String FACILIO_MQTT_VERSION = "facilio.mqtt";
@@ -34,8 +34,8 @@ public class AgentKeys
     public static final String DISPLAY_NAME = "displayName";
     //log table keys
     public static final String COMMAND = "command";
-    public static final String COMMAND_STATUS = "commandStatus";
-    public static final String CONTENT = "content";
+    public static final String COMMAND_STATUS = "status";
+    public static final String CONTENT = "message";
     public static final String CONTROLLER_ID = "controllerId";
     public static final String AGENT_LOG_TABLE = "Agent_Log";
     //Metrics table

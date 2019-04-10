@@ -6,7 +6,6 @@ import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.apache.log4j.spi.LoggingEvent;
-import com.facilio.aws.util.AwsUtil;
 
 public class ClientErrorAction extends FacilioAction {
     private static final long serialVersionUID = 1L;
@@ -107,9 +106,6 @@ public class ClientErrorAction extends FacilioAction {
     }
 
     public String logClientError() {
-        if (AwsUtil.isProduction()) {
-            return SUCCESS;
-        }
         LoggingEvent event = new LoggingEvent(logger.getName(), logger, Level.INFO, message, null);
 
         if (this.route != null) {

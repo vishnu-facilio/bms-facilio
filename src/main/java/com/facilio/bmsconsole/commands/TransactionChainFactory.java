@@ -1445,7 +1445,7 @@ public class TransactionChainFactory {
 			c.addCommand(new ExecuteAllWorkflowsCommand());
 			c.addCommand(new AddOrUpdateWorkorderCostCommand());
 			c.addCommand(new UpdateWorkorderTotalCostCommand());
-			c.addCommand(getUpdateWorkOrderChain());
+//			c.addCommand(getUpdateWorkOrderChain());
 			return c;
 		}
 		
@@ -1758,7 +1758,7 @@ public class TransactionChainFactory {
 			c.addCommand(getUpdateItemQuantityRollupChain());
 			c.addCommand(new AddOrUpdateWorkorderCostCommand());
 			c.addCommand(new UpdateWorkorderTotalCostCommand());
-			c.addCommand(getUpdateWorkOrderChain());
+//			c.addCommand(getUpdateWorkOrderChain());
 			return c;
 		}
 		
@@ -1771,7 +1771,7 @@ public class TransactionChainFactory {
 			c.addCommand(getUpdateItemQuantityRollupChain());
 			c.addCommand(new AddOrUpdateWorkorderCostCommand());
 			c.addCommand(new UpdateWorkorderTotalCostCommand());
-			c.addCommand(getUpdateWorkOrderChain());
+//			c.addCommand(getUpdateWorkOrderChain());
 			return c;
 		}
 		
@@ -1813,7 +1813,7 @@ public class TransactionChainFactory {
 			c.addCommand(getUpdatetoolQuantityRollupChain());
 			c.addCommand(new AddOrUpdateWorkorderCostCommand());
 			c.addCommand(new UpdateWorkorderTotalCostCommand());
-			c.addCommand(getUpdateWorkOrderChain());
+//			c.addCommand(getUpdateWorkOrderChain());
 			return c;
 		}
 
@@ -1825,7 +1825,7 @@ public class TransactionChainFactory {
 			//c.addCommand(getUpdateAvailabilityRollupChain());
 			c.addCommand(new AddOrUpdateWorkorderCostCommand());
 			c.addCommand(new UpdateWorkorderTotalCostCommand());
-			c.addCommand(getUpdateWorkOrderChain());
+//			c.addCommand(getUpdateWorkOrderChain());
 			return c;
 		}
 
@@ -1857,7 +1857,7 @@ public class TransactionChainFactory {
 			c.addCommand(getUpdatetoolQuantityRollupChain());
 			c.addCommand(new AddOrUpdateWorkorderCostCommand());
 			c.addCommand(new UpdateWorkorderTotalCostCommand());
-			c.addCommand(getUpdateWorkOrderChain());
+//			c.addCommand(getUpdateWorkOrderChain());
 			return c;
 		}
 
@@ -1869,7 +1869,7 @@ public class TransactionChainFactory {
 			//c.addCommand(getUpdateAvailabilityRollupChain());
 			c.addCommand(new AddOrUpdateWorkorderCostCommand());
 			c.addCommand(new UpdateWorkorderTotalCostCommand());
-			c.addCommand(getUpdateWorkOrderChain());
+//			c.addCommand(getUpdateWorkOrderChain());
 			return c;
 		}
 		public static Chain getAddOrUpdateWorkorderCostChain() {
@@ -2030,7 +2030,7 @@ public class TransactionChainFactory {
 			c.addCommand(getUpdateItemQuantityRollupChain());
 			c.addCommand(new AddOrUpdateWorkorderCostCommand());
 			c.addCommand(new UpdateWorkorderTotalCostCommand());
-			c.addCommand(getUpdateWorkOrderChain());
+//			c.addCommand(getUpdateWorkOrderChain());
 			return c;
 		}
 		
@@ -2051,7 +2051,7 @@ public class TransactionChainFactory {
 			c.addCommand(getUpdatetoolQuantityRollupChain());
 			c.addCommand(new AddOrUpdateWorkorderCostCommand());
 			c.addCommand(new UpdateWorkorderTotalCostCommand());
-			c.addCommand(getUpdateWorkOrderChain());
+//			c.addCommand(getUpdateWorkOrderChain());
 			return c;
 		}
 		
@@ -2400,6 +2400,16 @@ public class TransactionChainFactory {
 			Chain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForPoLineItemSerialNumber());
 			c.addCommand(new GenericDeleteModuleDataCommand());
+			return c;
+		}
+		
+		
+		public static Chain getAddGatePassChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForGatePass());
+			c.addCommand(new GenericAddModuleDataCommand());
+			c.addCommand(getApproveRejectWorkorderToolsChain());
+			c.addCommand(new AddGatePassLineItemsCommand());
 			return c;
 		}
 		

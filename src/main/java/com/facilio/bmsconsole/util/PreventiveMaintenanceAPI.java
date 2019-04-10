@@ -2036,4 +2036,16 @@ public class PreventiveMaintenanceAPI {
 		}
 		return null;
 	}
+	
+	public static List<Map<String, Object>> getTaskSectionTemplateTriggers(long triggerId) throws Exception {
+		FacilioModule sectionTriggerModule = ModuleFactory.getTaskSectionTemplateTriggersModule();
+		
+		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+				.table(sectionTriggerModule.getTableName())
+				.select(FieldFactory.getTaskSectionTemplateTriggersFields())
+				.andCustomWhere("PM_TRIGGER_ID = ?", triggerId)
+				.andCustomWhere("EXECUTE_IF_NOT_IN_TIME IS NOT NULL");
+		
+		return builder.get();
+	}
 }
