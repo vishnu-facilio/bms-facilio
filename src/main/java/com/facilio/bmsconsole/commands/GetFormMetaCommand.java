@@ -69,7 +69,7 @@ public class GetFormMetaCommand implements Command {
 				else {
 					List<FormField> fields = new ArrayList<>(form.getFields());
 					form.setFields(fields);
-					setFields(modBean, fields, formModuleName, childModule);
+					setFields(modBean, fields, moduleName, childModule);
 				}
 			}
 			else {
