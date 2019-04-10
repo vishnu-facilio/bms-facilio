@@ -9,6 +9,7 @@ import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
+import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 
@@ -54,6 +55,7 @@ public class UpdateWorkorderTotalCostCommand implements Command {
 				workorder.setId(parentId);
 				workorder.setTotalCost(totalcost);
 
+				context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.EDIT);
 				context.put(FacilioConstants.ContextNames.WORK_ORDER, workorder);
 				context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, parentIds);
 				context.put(FacilioConstants.ContextNames.RECORD_LIST, java.util.Collections.singletonList(workorder));

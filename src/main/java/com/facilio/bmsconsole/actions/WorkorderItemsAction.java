@@ -40,7 +40,6 @@ public class WorkorderItemsAction extends FacilioAction{
 	
 	public String addOrUpdateWorkorderItems() throws Exception {
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.CREATE);
 		context.put(FacilioConstants.ContextNames.RECORD_LIST, workorderItems);
 		context.put(FacilioConstants.ContextNames.PURCHASED_ITEM, purchasedItems);
 		Chain addWorkorderPartChain = TransactionChainFactory.getAddOrUdpateWorkorderItemsChain();
