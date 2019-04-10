@@ -15,6 +15,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.PMJobsContext;
+import com.facilio.bmsconsole.context.PMTaskSectionTemplateTriggers;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.TicketStatusContext;
@@ -24,6 +25,7 @@ import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
+import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
 import com.facilio.bmsconsole.templates.TaskSectionTemplate;
@@ -103,14 +105,16 @@ public class ScheduleWOStatusChange extends FacilioJob {
         			
     				for (Map<String, Object> prop : props) {
     					
-    					if(prop.get("executeIfNotInTime") == null) {
+    					PMTaskSectionTemplateTriggers pmTaskSectionTemplateTriggers =FieldUtil.getAsBeanFromMap(prop, PMTaskSectionTemplateTriggers.class);
+    					
+    					if(pmTaskSectionTemplateTriggers.getExecuteIfNotInTime() <= 0) {
     						continue;
     					}
-    					Long executionTimeInSec = (Long) prop.get("executeIfNotInTime");
+    					Long executionTimeInSec = (Long) pmTaskSectionTemplateTriggers.getExecuteIfNotInTime();
     					
     					executionTimeInSec = DateTimeUtil.getCurrenTime() - (executionTimeInSec * 1000);
 
-    					long sectionTemplateId = (long) prop.get("sectionId");
+    					long sectionTemplateId = pmTaskSectionTemplateTriggers.getSectionId();
     					TaskSectionTemplate section = sectionMap.get(sectionTemplateId);
     					TemplateAPI.getTasksFromSection(section);
 

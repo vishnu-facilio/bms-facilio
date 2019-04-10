@@ -8,9 +8,9 @@ public class PMTaskSectionTemplateTriggers implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	long sectionId;
-	long triggerId;
-	long executeIfNotInTime;
+	long sectionId = -1l;
+	long triggerId = -1l;
+	long executeIfNotInTime = -1l;
 	String triggerName;
 	
 	
