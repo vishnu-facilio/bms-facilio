@@ -211,7 +211,7 @@ public class AddOrUpdateManualItemTransactionCommand implements Command {
 		if (itemTransactions.getTransactionStateEnum() == TransactionState.RETURN) {
 			woItem.setApprovedState(ApprovalState.YET_TO_BE_REQUESTED);
 		}
-
+		woItem.setIssuedTo(itemTransactions.getIssuedTo());
 		return woItem;
 	}
 
