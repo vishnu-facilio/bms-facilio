@@ -39,6 +39,11 @@ public class TaskSectionTemplate extends Template {
 		this.pmTaskSectionTemplateTriggers = pmTaskSectionTemplateTriggers;
 	}
 	
+	public void addPmTaskSectionTemplateTriggers(PMTaskSectionTemplateTriggers pmTaskSectionTemplateTrigger) {
+		this.pmTaskSectionTemplateTriggers = this.pmTaskSectionTemplateTriggers == null ? new ArrayList<>() :this.pmTaskSectionTemplateTriggers;
+		this.pmTaskSectionTemplateTriggers.add(pmTaskSectionTemplateTrigger);
+	}
+	
 	public List<PMTriggerContext> getPmTriggerContexts() {
 		return pmTriggerContexts;
 	}

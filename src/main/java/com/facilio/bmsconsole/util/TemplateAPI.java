@@ -777,6 +777,9 @@ public class TemplateAPI {
 							trigContext.setId(triggerId);
 							trigContext.setName(trigName);
 							section.getPmTriggerContexts().add(trigContext);
+							
+							PMTaskSectionTemplateTriggers pmTaskSectionTemplateTrigger =  FieldUtil.getAsBeanFromMap(prop, PMTaskSectionTemplateTriggers.class);
+							section.addPmTaskSectionTemplateTriggers(pmTaskSectionTemplateTrigger);
 						}
 					}
 				}
