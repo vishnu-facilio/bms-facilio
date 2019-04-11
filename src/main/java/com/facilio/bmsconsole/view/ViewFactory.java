@@ -665,7 +665,7 @@ public class ViewFactory {
 
 		FacilioView activeTenantsView = new FacilioView();
 		activeTenantsView.setName("active");
-		activeTenantsView.setDisplayName("Current Occupants");
+		activeTenantsView.setDisplayName("Residing Tenants");
 		activeTenantsView.setSortFields(Arrays.asList(new SortField(localId, false)));
 		activeTenantsView.setCriteria(criteria);
 		
