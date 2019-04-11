@@ -325,17 +325,18 @@ public class CommonCommandUtil {
 			}
 
 			body.append(fromClass).append(DELIMITER);
-			
-			body.append("\n Org Time : ").append(DateTimeUtil.getDateTime())
+			if(org != null) {
+				body.append("\n Org Info: ").append(org.toString());
+			}
+			body.append("\n\n Org Time : ").append(DateTimeUtil.getDateTime())
 				.append("\n Indian Time : ").append(DateTimeUtil.getDateTime(ZoneId.of("Asia/Kolkata")))
 				.append("\n\nMsg : ")
-				.append(msg)
-				.append("\n\nApp Url : ")
-				.append(AwsUtil.getConfig("clientapp.url"));
-				
+				.append(msg);
+			
 			if (ActionContext.getContext() != null && ServletActionContext.getRequest() != null) {
+				User currentUser = AccountUtil.getCurrentUser();
 				body.append("\nUser: ")
-				.append(AccountUtil.getCurrentUser().getName()).append(" - ").append(AccountUtil.getCurrentUser().getOuid())
+				.append(currentUser.getName()).append(" - ").append(currentUser.getEmail()).append(" - ").append(currentUser.getOuid())
 				.append("\nDevice Type: ")
 				.append(AccountUtil.getCurrentAccount().getDeviceType())
 				.append("\nRequest Url: ")
