@@ -11,6 +11,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
@@ -166,6 +167,9 @@ public class AssetAction extends FacilioAction {
  			JSONObject pagination = new JSONObject();
  	 		pagination.put("page", getPage());
  	 		pagination.put("perPage", getPerPage());
+ 	 		if (AccountUtil.getCurrentAccount().isFromIos()) {
+ 	 			pagination.put("perPage", 155);
+ 	 		}
  	 		if (getPerPage() < 0) {
  	 			pagination.put("perPage", 5000);
  	 		}
