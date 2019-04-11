@@ -229,7 +229,7 @@
 			<param name="moduleName">workorder</param>
 			<param name="permission">READ,READ_TEAM,READ_OWN</param>
 			<param name="viewName">{1}</param>
-			<param name="viewName">{1}</param>
+			<param name="fetchAllType">true</param>
 		</action>
 	</package>
 	<package name="workOrderNewCalendarCountApiV2" namespace="/api/v2/workorders/newcalendar/count"
@@ -239,7 +239,7 @@
 			<param name="moduleName">workorder</param>
 			<param name="permission">READ,READ_TEAM,READ_OWN</param>
 			<param name="viewName">{1}</param>
-			<param name="viewName">{1}</param>
+			<param name="fetchAllType">true</param>
 		</action>
 	</package>
 
