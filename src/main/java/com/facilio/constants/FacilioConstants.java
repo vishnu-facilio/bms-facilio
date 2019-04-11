@@ -430,7 +430,7 @@ public class FacilioConstants {
 		public static final String FIELD_ID = "fieldId";
 		public static final String LOOKUP_FIELD_META_LIST = "lookupFieldMetaList";
 		public static final String FETCH_FIELD_DISPLAY_NAMES = "fetchFieldDisplayNames";
-		public static final String CHANGE_FIELD_DISPLAY_NAME = "changeFieldDisplayName";
+		public static final String ALLOW_SAME_FIELD_DISPLAY_NAME = "changeFieldDisplayName";
 		
 		public static final String SITE = "site";
 		public static final String SITE_LIST = "sites";
