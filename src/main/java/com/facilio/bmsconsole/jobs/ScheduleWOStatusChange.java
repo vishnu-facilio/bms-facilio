@@ -96,12 +96,13 @@ public class ScheduleWOStatusChange extends FacilioJob {
     		
         	for(WorkOrderContext wo :wos) {
         		if(wo.getTrigger() != null && wo.getPm() != null && wo.getPm().getId() > 0) {
-        			
+        			long woSiteId = wo.getSiteId();
         			TicketAPI.loadRelatedModules(wo);
         			
         			List<PreventiveMaintenance> pms = PreventiveMaintenanceAPI.getPMs(Collections.singletonList(wo.getPm().getId()), null, null, null, null, false);
         			
         			PreventiveMaintenance pm = pms.get(0);
+        			long pmSiteId = pm.getSiteId();
         			
         			List<Map<String, Object>> props = PreventiveMaintenanceAPI.getTaskSectionTemplateTriggers(wo.getTrigger().getId());
         			
@@ -155,6 +156,16 @@ public class ScheduleWOStatusChange extends FacilioJob {
     						compareAndRemoveTask(uniqueIdVsParentIdMap,uniqueIdVsParentIdMaptemp,uniqueIds);
     					}
     				}
+    				long newSiteId = wo.getSiteId();
+    	            if (newSiteId != woSiteId || newSiteId != pmSiteId) {
+    	            		StringBuilder builder = new StringBuilder();
+    	            		builder.append("woId: ").append(wo.getId())
+    	            		.append("\nInitial SiteId: ").append(woSiteId)
+    	            		.append("\nNew SiteId: ").append(newSiteId)
+    	            		.append("\nPm SiteId: ").append(pmSiteId);
+    	            		CommonCommandUtil.emailException("ScheduleWOStatusChange", "Workorder site different", builder.toString());
+    	                LOGGER.info("Workorder site different. " + builder.toString());
+    	            }
         		}
         	}
     	}
@@ -215,11 +226,12 @@ public class ScheduleWOStatusChange extends FacilioJob {
         List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.WORK_ORDER);
         Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
         List<Long> woIds = wos.stream().map(WorkOrderContext::getId).collect(Collectors.toList());
-        wos.stream().forEach(w -> w.setJobStatus(WorkOrderContext.JobsStatus.SCHEDULED));
+        WorkOrderContext wo = new WorkOrderContext();
+        wo.setJobStatus(WorkOrderContext.JobsStatus.SCHEDULED);
         UpdateRecordBuilder<WorkOrderContext> updateRecordBuilder = new UpdateRecordBuilder<>();
         updateRecordBuilder.fields(Arrays.asList(fieldMap.get("jobStatus")))
                 .module(module)
                 .andCondition(CriteriaAPI.getIdCondition(woIds, module))
-                .update(wos.get(0));
+                .update(wo);
     }
 }
