@@ -69,7 +69,13 @@ public class WorkflowContext implements Serializable {
 	public boolean isLogNeeded() {
 		return isLogNeeded;
 	}
+	public boolean getIsLogNeeded() {
+		return isLogNeeded;
+	}
 	public void setLogNeeded(boolean isLogNeeded) {
+		this.isLogNeeded = isLogNeeded;
+	}
+	public void setIsLogNeeded(boolean isLogNeeded) {
 		this.isLogNeeded = isLogNeeded;
 	}
 	// only from client
