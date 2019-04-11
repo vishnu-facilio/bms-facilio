@@ -136,7 +136,8 @@ public class CalculateAggregationCommand implements Command {
 	}
 	
 	private EnumVal combineEnumVal (ReportContext report, Set<Integer> enumValues, List<SimpleEntry<Long, Integer>> highResVal, long startTime, long endTime, SimpleEntry<Long, Integer> previousRecord) {
-		if (previousRecord == null && CollectionUtils.isEmpty(highResVal)) {
+		long currentTime = System.currentTimeMillis();
+		if (CollectionUtils.isEmpty(highResVal) && (previousRecord == null || (report.getDateOperatorEnum().isCurrentOperator() && startTime > currentTime))) {
 			return null;
 		}
 
@@ -172,7 +173,7 @@ public class CalculateAggregationCommand implements Command {
 		
 		if (endTime == -1) {
 			if (report.getDateOperatorEnum().isCurrentOperator()) {
-				endTime = System.currentTimeMillis();
+				endTime = currentTime;
 			}
 			else {
 				endTime = report.getDateOperatorEnum().getRange(report.getDateValue()).getEndTime();
