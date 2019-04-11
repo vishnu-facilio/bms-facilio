@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.report.context.ReportContext;
 import com.facilio.report.context.ReportDataPointContext;
@@ -137,6 +138,15 @@ public class CalculateAggregationCommand implements Command {
 	
 	private EnumVal combineEnumVal (ReportContext report, Set<Integer> enumValues, List<SimpleEntry<Long, Integer>> highResVal, long startTime, long endTime, SimpleEntry<Long, Integer> previousRecord) {
 		long currentTime = System.currentTimeMillis();
+
+		if (AccountUtil.getCurrentOrg().getId() == 134) {
+			LOGGER.info(new StringBuilder()
+							.append("High Res : ").append(highResVal).append("\n")
+							.append("Start Time : ").append(startTime).append("\n")
+							.append("Current Time : ").append(currentTime).append("\n")
+							.append("Previous Record : ").append(previousRecord));
+		}
+
 		if (CollectionUtils.isEmpty(highResVal) && (previousRecord == null || startTime > currentTime)) {
 			return null;
 		}
