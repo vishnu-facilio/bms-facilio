@@ -473,6 +473,10 @@ public class V2ReportAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.REPORT_FROM_ALARM, true);
 		context.put(FacilioConstants.ContextNames.ALARM_RESOURCE, alarmResource);
+		if(readingRuleId > 0) {
+			context.put(FacilioConstants.ContextNames.FETCH_EVENT_BAR, true);
+			context.put(FacilioConstants.ContextNames.READING_RULE_ID, readingRuleId);
+		}
 		setReadingsDataContext(context);
 		
 		Chain fetchReadingDataChain = newFormat ? ReadOnlyChainFactory.newFetchReadingReportChain() : ReadOnlyChainFactory.fetchReadingReportChain();

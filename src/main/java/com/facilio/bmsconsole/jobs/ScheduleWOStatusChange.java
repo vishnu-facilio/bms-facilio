@@ -71,6 +71,10 @@ public class ScheduleWOStatusChange extends FacilioJob {
             modifyWorkflowBasedOnRule(wos);
 
             for (WorkOrderContext wo : wos) {
+//            	TicketAPI.loadRelatedModules(wo);
+//            	if(wo.getTasks() == null || wo.getTasks().isEmpty()) {
+//            		continue;
+//            	}
                 FacilioTimer.scheduleOneTimeJob(wo.getId(), "OpenScheduledWO", wo.getScheduledStart()/1000, "priority");
             }
 
