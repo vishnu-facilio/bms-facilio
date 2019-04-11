@@ -8,12 +8,14 @@ import java.util.logging.Logger;
 
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.ZoneContext;
+import com.facilio.bmsconsole.criteria.BuildingOperator;
 
 public class ZoneAPI {
 	private static final Logger LOGGER = Logger.getLogger(ZoneAPI.class.getName());
 	
 	public static void validateZoneChildren(List<Long> childrenIds, long siteId) throws Exception {
 		List<BaseSpaceContext> children = SpaceAPI.getBaseSpaces(childrenIds);
+		
 		for(BaseSpaceContext child : children) {
 			if(child.getSiteId() != siteId) {
 				throw new IllegalArgumentException("The selected space "+ child.getName()+" doesnt belong to the site chosen ");
@@ -24,7 +26,16 @@ public class ZoneAPI {
 			else if(child.getId() != child.getFloorId() && childrenIds.contains(child.getFloorId())) {
 				throw new IllegalArgumentException("Parent Floor of " + child.getName() + " is already chosen");
 		    }
-			else if(child.getId() != child.getSpaceId() && childrenIds.contains(child.getSpaceId())) {
+			else if(child.getId() != child.getSpaceId1() && childrenIds.contains(child.getSpaceId1())) {
+				throw new IllegalArgumentException("Parent Space of " + child.getName() + " is already chosen");
+			}
+			else if(child.getId() != child.getSpaceId2() && childrenIds.contains(child.getSpaceId2())) {
+				throw new IllegalArgumentException("Parent Space of " + child.getName() + " is already chosen");
+			}
+			else if(child.getId() != child.getSpaceId3() && childrenIds.contains(child.getSpaceId3())) {
+				throw new IllegalArgumentException("Parent Space of " + child.getName() + " is already chosen");
+			}
+			else if(child.getId() != child.getSpaceId4() && childrenIds.contains(child.getSpaceId4())) {
 				throw new IllegalArgumentException("Parent Space of " + child.getName() + " is already chosen");
 			}
 		}
@@ -49,7 +60,7 @@ public class ZoneAPI {
 		}
 		for(int i=0;i<children.size();i++)
 		{
-			Long id = children.get(i).getBuildingId() != -1 ? children.get(i).getBuildingId() : children.get(i).getFloorId() != -1 ? children.get(i).getFloorId() : children.get(i).getSpaceId() != -1 ? children.get(i).getSpaceId() : children.get(i).getSpaceId1() != -1 ? children.get(i).getSpaceId1() : children.get(i).getSpaceId2() != -1 ? children.get(i).getSpaceId2() : children.get(i).getSpaceId3() != -1 ? children.get(i).getSpaceId3() : children.get(i).getSpaceId4() != -1 ? children.get(i).getSpaceId4() : -1;
+			Long id = children.get(i).getBuildingId() != -1 ? children.get(i).getBuildingId() : children.get(i).getFloorId() != -1 ? children.get(i).getFloorId() : children.get(i).getSpaceId1() != -1 ? children.get(i).getSpaceId1() : children.get(i).getSpaceId2() != -1 ? children.get(i).getSpaceId2() : children.get(i).getSpaceId3() != -1 ? children.get(i).getSpaceId3() : children.get(i).getSpaceId4() != -1 ? children.get(i).getSpaceId4() : -1;
 			if(id != -1) {
 			parentMap.put(id, children.get(i));
 			}
@@ -58,7 +69,7 @@ public class ZoneAPI {
 			if (spacesMap.containsKey(newTenantChild.getId())) {
 				throw new IllegalArgumentException(newTenantChild.getName()+" occupied by another tenant");
 			}
-			else if(spacesMap.containsKey(newTenantChild.getBuildingId()) || spacesMap.containsKey(newTenantChild.getFloorId()) || spacesMap.containsKey(newTenantChild.getSpaceId()) || spacesMap.containsKey(newTenantChild.getSpaceId1()) || spacesMap.containsKey(newTenantChild.getSpaceId2()) || spacesMap.containsKey(newTenantChild.getSpaceId3()) || spacesMap.containsKey(newTenantChild.getSpaceId4())) {
+			else if(spacesMap.containsKey(newTenantChild.getBuildingId()) || spacesMap.containsKey(newTenantChild.getFloorId()) || spacesMap.containsKey(newTenantChild.getSpaceId1()) || spacesMap.containsKey(newTenantChild.getSpaceId2()) || spacesMap.containsKey(newTenantChild.getSpaceId3()) || spacesMap.containsKey(newTenantChild.getSpaceId4())) {
 				throw new IllegalArgumentException("The Parent of "+newTenantChild.getName()+" is already occupied by another tenant");
 			}
 			else if(parentMap.containsKey(newTenantChild.getId())) {

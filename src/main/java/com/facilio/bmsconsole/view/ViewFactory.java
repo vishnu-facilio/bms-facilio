@@ -33,6 +33,7 @@ import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.LookupField;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.modules.NumberField;
+import com.facilio.bmsconsole.tenant.TenantContext;
 import com.facilio.bmsconsole.util.DateTimeUtil;
 import com.facilio.bmsconsole.workflow.rule.ApprovalState;
 import com.facilio.constants.FacilioConstants;
@@ -149,6 +150,7 @@ public class ViewFactory {
 		order = 1;
 		views = new LinkedHashMap<>();
 		views.put("all", getAllTenantsView().setOrder(order++));
+		views.put("active", getActiveTenantsView().setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.TENANT, views);
 
 		order = 1;
@@ -509,6 +511,25 @@ public class ViewFactory {
 		return criteria;
 	}
 
+	private static Condition getTenantStateCondition(String state) {
+		FacilioModule tenantsModule = ModuleFactory.getTenantsModule();
+		FacilioField statusField = new FacilioField();
+		statusField.setName("status");
+		statusField.setColumnName("STATUS");
+		statusField.setDataType(FieldType.ENUM);
+		statusField.setModule(tenantsModule);
+
+		Condition status = new Condition();
+		status.setField(statusField);
+		status.setOperator(NumberOperators.EQUALS);
+		if (state.equals("Active")) {
+			status.setValue(String.valueOf(TenantContext.Status.ACTIVE.getValue()));
+		} else if (state.equals("Retired")) {
+			status.setValue(String.valueOf(TenantContext.Status.ACTIVE.getValue()));
+		}
+
+		return status;
+	}
 	private static Condition getAssetStateCondition(String state) {
 		FacilioModule assetsModule = ModuleFactory.getAssetsModule();
 		FacilioField statusField = new FacilioField();
@@ -628,6 +649,27 @@ public class ViewFactory {
 		allView.setDisplayName("All Tenants");
 		allView.setSortFields(Arrays.asList(new SortField(localId, false)));
 		return allView;
+	}
+	
+	private static FacilioView getActiveTenantsView() {
+		FacilioField localId = new FacilioField();
+		
+		Criteria criteria = new Criteria();
+		criteria.addAndCondition(getTenantStateCondition("Active"));
+		
+		
+		localId.setName("localId");
+		localId.setColumnName("LOCAL_ID");
+		localId.setDataType(FieldType.NUMBER);
+		localId.setModule(ModuleFactory.getTenantsModule());
+
+		FacilioView activeTenantsView = new FacilioView();
+		activeTenantsView.setName("active");
+		activeTenantsView.setDisplayName("Current Occupants");
+		activeTenantsView.setSortFields(Arrays.asList(new SortField(localId, false)));
+		activeTenantsView.setCriteria(criteria);
+		
+		return activeTenantsView;
 	}
 
 	

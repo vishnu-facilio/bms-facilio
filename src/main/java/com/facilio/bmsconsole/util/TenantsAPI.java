@@ -702,21 +702,27 @@ public class TenantsAPI {
 	
 	private static void validateAssetSpaces(List<UtilityAsset> utilityAssets,List<Long> spaceIds) throws Exception {
 		for (UtilityAsset util : utilityAssets) {
-          BaseSpaceContext baseSpace = SpaceAPI.getBaseSpace(AssetsAPI.getAssetInfo(util.getAssetId()).getSpace().getId());
-          if(spaceIds.contains(baseSpace.getId())) {
-        	  continue;
-          }
-          if(baseSpace.getSpaceTypeEnum() == SpaceType.SPACE) {
-        	  if (spaceIds.contains(baseSpace.getFloorId())) {
-        		  continue;
-        	  }
-          }
-          else if(baseSpace.getSpaceTypeEnum() == SpaceType.FLOOR) {
-        	  if (spaceIds.contains(baseSpace.getBuildingId())) {
-        		  continue;
-        	  }
-          }
-          throw new IllegalArgumentException("The asset #"+util.getAssetId()+" doesn't belong to the selected Space");
+			BaseSpaceContext assetSpace = AssetsAPI.getAssetInfo(util.getAssetId()).getSpace();
+			if(assetSpace != null && assetSpace.getId() > 0) {
+		          BaseSpaceContext baseSpace = SpaceAPI.getBaseSpace(assetSpace.getId());
+		          if(spaceIds.contains(baseSpace.getId())) {
+		        	  continue;
+		          }
+		          if(baseSpace.getSpaceTypeEnum() == SpaceType.SPACE) {
+		        	  if (spaceIds.contains(baseSpace.getSpaceId1()) || spaceIds.contains(baseSpace.getSpaceId2()) || spaceIds.contains(baseSpace.getSpaceId3()) || spaceIds.contains(baseSpace.getSpaceId4()) || spaceIds.contains(baseSpace.getFloorId()) || spaceIds.contains(baseSpace.getBuildingId())) {
+		        		  continue;
+		        	  }
+		          }
+		          else if(baseSpace.getSpaceTypeEnum() == SpaceType.FLOOR) {
+		        	  if (spaceIds.contains(baseSpace.getBuildingId())) {
+		        		  continue;
+		        	  }
+		          }
+		          throw new IllegalArgumentException("The asset #"+util.getAssetId()+" doesn't belong to the selected Space");
+			}
+			else {
+			    continue;			
+			}
   		}
 		
 		
