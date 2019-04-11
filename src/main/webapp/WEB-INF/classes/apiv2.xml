@@ -221,6 +221,27 @@
 			<param name="viewName">{1}</param>
 		</action>
 	</package>
+	
+	<package name="workOrderNewCalendarListApiV2" namespace="/api/v2/workorders/newcalendar/list"
+		extends="v2Api">
+		<action name="*" class="com.facilio.bmsconsole.actions.WorkOrderAction"
+			method="v2workOrderList">
+			<param name="moduleName">workorder</param>
+			<param name="permission">READ,READ_TEAM,READ_OWN</param>
+			<param name="viewName">{1}</param>
+			<param name="viewName">{1}</param>
+		</action>
+	</package>
+	<package name="workOrderNewCalendarCountApiV2" namespace="/api/v2/workorders/newcalendar/count"
+		extends="v2Api">
+		<action name="*" class="com.facilio.bmsconsole.actions.WorkOrderAction"
+			method="v2workOrderCount">
+			<param name="moduleName">workorder</param>
+			<param name="permission">READ,READ_TEAM,READ_OWN</param>
+			<param name="viewName">{1}</param>
+			<param name="viewName">{1}</param>
+		</action>
+	</package>
 
 	<package name="approvalListApiV2" namespace="/api/v2/approvals/view"
 		extends="v2Api">
@@ -1916,9 +1937,12 @@
 		</action>
 	</package>
 	
-	<!-- <package name="pageApiv2" namespace="/api/v2/pages" extends="v2Api"> 
-		<action name="*" class="com.facilio.bmsconsole.actions.PageAction" method="fetchPage"> 
-		<param name="moduleName">asset</param> <param name="permission">READ</param> 
-		<param name="module">{1}</param> </action> </package> -->
+	<package name="moduleApiV2" namespace="/api/v2/modules/fields" extends="v2Api">
+		<action name="add" class="com.facilio.bmsconsole.actions.ModuleAction" method="v2addCustomFields">
+			<result name="success" type="json">
+				<param name="root">fieldIds</param>
+			</result>
+		</action>
+	</package>
 
 </struts>
