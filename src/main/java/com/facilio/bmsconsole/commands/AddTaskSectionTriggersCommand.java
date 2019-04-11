@@ -60,6 +60,7 @@ public class AddTaskSectionTriggersCommand implements Command {
 						throw new IllegalArgumentException("Trigger associated with section does not exist.");
 					}
 					pmTaskSectionTemplateTrigger.setTriggerId(trig.getId());
+					pmTaskSectionTemplateTrigger.setSectionId(sectionTemplates.get(i).getId());
 					props.add(FieldUtil.getAsProperties(pmTaskSectionTemplateTrigger));
 				}
 			}

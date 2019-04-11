@@ -32,25 +32,20 @@ public class DeleteWoScheduledReportsCommand implements Command {
 	@Override
 	public boolean execute(Context context) throws Exception {
 		
-		Long recordIds = (Long) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST);
-		if (recordIds == null || recordIds != -1) {
+		Long id = (Long) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST);
+		if (id == null || id == -1) {
 			return false;
 		}
 		
 		FacilioModule module = ModuleFactory.getViewScheduleInfoModule();
 		List<FacilioField> fields;
-		if (isV2Report) {
-			module = ModuleFactory.getReportScheduleInfo();
-			fields = FieldFactory.getReportScheduleInfo1Fields();
-		}
-		else {
+
 			module = ModuleFactory.getViewScheduleInfoModule();
 			fields = FieldFactory.getViewScheduleInfoFields();
-		}
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(fields)
 				.table(module.getTableName())
-				.andCondition(CriteriaAPI.getIdCondition(recordIds, module));
+				.andCondition(CriteriaAPI.getIdCondition(id, module));
 		
 		List<Map<String, Object>> props = selectBuilder.get();
 		List<ReportInfo> reports = new ArrayList<>();
@@ -71,7 +66,7 @@ public class DeleteWoScheduledReportsCommand implements Command {
 		if (type == null || type != EventType.EDIT) {
 			GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
 					.table(module.getTableName())
-					.andCondition(CriteriaAPI.getIdCondition(recordIds, module));
+					.andCondition(CriteriaAPI.getIdCondition(id, module));
 			
 			int count = builder.delete();
 			
@@ -81,11 +76,10 @@ public class DeleteWoScheduledReportsCommand implements Command {
 		}
 		
 		else {
-			System.out.println("1232333" + templateIds);
 			context.put(FacilioConstants.ContextNames.TEMPLATE_ID, templateIds.get(0));
 		}
 		
-		FacilioTimer.deleteJob(recordIds, isV2Report ? "ReportEmailScheduler" : "ViewEmailScheduler");
+		FacilioTimer.deleteJob(id, "ViewEmailScheduler");
 		
 		return false;
 	}

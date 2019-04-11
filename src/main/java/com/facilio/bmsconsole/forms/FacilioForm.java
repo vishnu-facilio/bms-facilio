@@ -221,7 +221,8 @@ public class FacilioForm implements Serializable {
 	
 	public enum LabelPosition {
 		TOP(1, "top"),
-		LEFT(2, "left");
+		LEFT(2, "left"),
+		RIGHT(3, "right");
 		
 		private int intVal;
 		public int getIntVal() {

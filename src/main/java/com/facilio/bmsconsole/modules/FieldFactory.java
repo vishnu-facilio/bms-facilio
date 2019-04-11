@@ -326,7 +326,7 @@ public class FieldFactory {
 		span.setColumnName("SPAN");
 		span.setModule(module);
 		
-		fields.add(getField("defaultValue", "DEFAULT_VALUE", module, FieldType.STRING));
+		fields.add(getField("value", "DEFAULT_VALUE", module, FieldType.STRING));
 		fields.add(getField("sectionId", "SECTIONID", module, FieldType.NUMBER));
 		
 		fields.add(span);
@@ -3921,6 +3921,7 @@ public class FieldFactory {
 		fields.add(selectFieldId);
 
 		fields.add(getField("workflowUIMode", "UI_MODE", module, FieldType.NUMBER));
+		fields.add(getField("isLogNeeded", "IS_LOG_NEEDED", module, FieldType.BOOLEAN));
 
 		return fields;
 	}

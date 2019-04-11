@@ -23,6 +23,7 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
 
 import java.util.Collections;
@@ -72,6 +73,10 @@ public class AddNotesCommand implements Command, PostTransactionCommand {
 			
 			Set<Long> parentIds = new HashSet<>();
 			for (NoteContext note : notes) {
+				if (StringUtils.isEmpty(note.getBody())) {
+					throw new IllegalArgumentException("Comment cannot be null/ empty");
+				}
+
 				if (note.getCreatedTime() == -1) {
 					note.setCreatedTime(System.currentTimeMillis());
 				}

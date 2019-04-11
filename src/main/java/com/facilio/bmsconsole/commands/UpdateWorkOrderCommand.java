@@ -367,7 +367,12 @@ public class UpdateWorkOrderCommand implements Command {
 
 					List<Long> parentId = (List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST);
 					JSONObject info = new JSONObject();
-					info.put("assignedTo", workOrder.getAssignedTo().getUid());
+					if (workOrder.getAssignedTo() != null && workOrder.getAssignedTo().getId() != -1) {
+						info.put("assignedTo", workOrder.getAssignedTo().getUid());
+					}
+					else {
+						info.put("assignmentGroup", workOrder.getAssignmentGroup().getId());
+					}
 					info.put("assignedBy", workOrder.getAssignedBy().getUid());
 					JSONObject newinfo = new JSONObject();
                     newinfo.put("assigned", info);

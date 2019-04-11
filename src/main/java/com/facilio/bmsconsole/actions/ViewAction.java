@@ -135,8 +135,8 @@ public class ViewAction extends FacilioAction {
 		context.put(FacilioConstants.Workflow.TEMPLATE, emailTemplate);
 		context.put(FacilioConstants.ContextNames.CV_NAME, viewName);
 		context.put(FacilioConstants.ContextNames.START_TIME, startTime);
-//		context.put(FacilioConstants.ContextNames.END_TIME, endTime);
-//		context.put(FacilioConstants.ContextNames.MAX_COUNT, maxCount);
+		context.put(FacilioConstants.ContextNames.END_TIME, endTime);
+		context.put(FacilioConstants.ContextNames.MAX_COUNT, maxCount);
 		context.put(FacilioConstants.ContextNames.SCHEDULE_INFO, scheduleInfo);
 		
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, id);

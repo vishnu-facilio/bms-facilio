@@ -216,7 +216,7 @@ private static final String ALIAS = "alias";
 			format = ((DateAggregateOperator) xAggr).getFormat();
 		}
 		
-		columns.add(xAxisReportField.getLabel());
+		columns.add(handleXAxisLabel(module, xAxisReportField));
 
 		Collection<Map<String, Object>> data = (Collection<Map<String, Object>>) reportData.get(FacilioConstants.ContextNames.DATA_KEY);
 		if (CollectionUtils.isNotEmpty(data)) {

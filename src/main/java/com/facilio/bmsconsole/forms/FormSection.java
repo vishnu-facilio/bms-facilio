@@ -8,9 +8,10 @@ public class FormSection {
 	
 	public FormSection() {}
 	
-	public FormSection(long sequenceNumber, List<FormField> fields) {
+	public FormSection(String name, long sequenceNumber, List<FormField> fields, boolean showLabel) {
 		this.sequenceNumber = sequenceNumber;
 		this.fields = fields;
+		this.showLabel = showLabel;
 	}
 	
 	

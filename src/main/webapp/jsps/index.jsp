@@ -36,17 +36,16 @@
     <meta name="msapplication-tap-highlight" content="no">
     <meta name="viewport" content="user-scalable=no,initial-scale=1,maximum-scale=1,minimum-scale=1,width=device-width">
     <title>Facilio</title>
-<% 
-if(brandName != null && (brandName.indexOf("BuildingsTalk") != -1 )) {%>
+
+<% if(brandName != null && (brandName.indexOf("BuildingsTalk") != -1 )) {%>
 	<link rel="icon" href="<%=staticUrl%>/statics/machinestalk.ico" type="image/x-icon">
-	
 <% } else {%>
 	<link rel="icon" href="<%=staticUrl%>/statics/favicon.png" type="image/x-icon">
 <% }%>
 	
   <!--<link rel="icon" href="<%=staticUrl%>/statics/favicon.png" type="image/x-icon">
     <link rel="icon" href="<%=staticUrl%>/statics/machinestalk.ico" type="image/x-icon"> -->
-    
+
     <link rel="manifest" href="<%=staticUrl%>/statics/manifest.json">
 
     <style>
@@ -108,14 +107,13 @@ if(brandName != null && (brandName.indexOf("BuildingsTalk") != -1 )) {%>
   </script>
   
 <% if(isNewClientBuild) {%>
-<link href="<%=staticUrl%>/css/chunk-vendors.css" rel="stylesheet">
-<link href="<%=staticUrl%>/css/app.css" rel="stylesheet">
-	
+    <link href="<%=staticUrl%>/css/chunk-vendors.css" rel="stylesheet">
+    <link href="<%=staticUrl%>/css/app.css" rel="stylesheet">
 <% } else {%>
-	<link href="<%=staticUrl%>/app.css" rel="stylesheet">	
+	  <link href="<%=staticUrl%>/app.css" rel="stylesheet">	
 <% }%>
   
- </head>
+</head>
 
   <body>
       <div id="q-app">
@@ -130,17 +128,10 @@ if(brandName != null && (brandName.indexOf("BuildingsTalk") != -1 )) {%>
       <script type="text/javascript" charset="UTF-8" src="<%=staticUrl%>/js/chunk-vendors.js"></script>
       <script type="text/javascript" charset="UTF-8" src="<%=staticUrl%>/js/app.js"></script>
 <% } else {%>
-		
-	  <script type="text/javascript" charset="UTF-8" src="<%=staticUrl%>/js/manifest.js"></script>
+      <script type="text/javascript" charset="UTF-8" src="<%=staticUrl%>/js/manifest.js"></script>
       <script type="text/javascript" charset="UTF-8" src="<%=staticUrl%>/js/vendor.js"></script>
       <script type="text/javascript" charset="UTF-8" src="<%=staticUrl%>/js/app.js"></script>
 <% }%> 	
- 
-      
-  </body>
-  
-  <script src="//unpkg.com/ckmeans@1.0.1/src/ckmeans.js"></script>
-  <script src="//cdn.quilljs.com/1.3.6/quill.min.js"></script>
-  <link rel="stylesheet" href="//cdn.quilljs.com/1.3.6/quill.snow.css" />
 
-  </html>
+  </body>
+</html>
