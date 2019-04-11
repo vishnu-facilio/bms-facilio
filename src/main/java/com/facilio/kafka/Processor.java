@@ -133,7 +133,7 @@ public class Processor extends FacilioProcessor {
                 FacilioAgent agent = agentUtil.getFacilioAgent(agentName);
                 if (agent == null ) {
                     agent = getFacilioAgent(agentName);
-                    agentUtil.addAgent(agent);
+                    agent.setId(agentUtil.addAgent(agent));
                 }
                 if(isStage && agent != null) {
                     AgentUtil.addAgentMetrics(data.length(), agent.getId(), publishType.getKey());
