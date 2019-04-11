@@ -236,6 +236,10 @@ public class FetchReportDataCommand implements Command {
 			}
 		}
 		
+		if(report.getCriteria() != null) {
+			newSelectBuilder.andCriteria(report.getCriteria());
+		}
+		
 		List<Map<String, Object>> props = newSelectBuilder.getAsProps();
 		
 		 LOGGER.severe("SELECT BUILDER --- "+ newSelectBuilder);

@@ -1,24 +1,26 @@
 package com.facilio.report.context;
 
-import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.modules.AggregateOperator;
-import com.facilio.bmsconsole.criteria.DateOperators;
-import com.facilio.bmsconsole.criteria.DateRange;
-import com.facilio.bmsconsole.criteria.Operator;
-import com.facilio.bmsconsole.modules.FacilioModule;
-import com.facilio.bmsconsole.modules.FieldUtil;
-import com.facilio.fw.BeanFactory;
-import com.facilio.report.context.ReadingAnalysisContext.AnalyticsType;
-import com.facilio.util.FacilioUtil;
-import com.facilio.workflows.context.WorkflowContext;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.struts2.json.annotations.JSON;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.criteria.Criteria;
+import com.facilio.bmsconsole.criteria.DateOperators;
+import com.facilio.bmsconsole.criteria.DateRange;
+import com.facilio.bmsconsole.criteria.Operator;
+import com.facilio.bmsconsole.modules.AggregateOperator;
+import com.facilio.bmsconsole.modules.FacilioModule;
+import com.facilio.bmsconsole.modules.FieldUtil;
+import com.facilio.fw.BeanFactory;
+import com.facilio.report.context.ReadingAnalysisContext.AnalyticsType;
+import com.facilio.util.FacilioUtil;
+import com.facilio.workflows.context.WorkflowContext;
 
 public class ReportContext {
 
@@ -47,6 +49,15 @@ public class ReportContext {
 		this.id = id;
 	}
 	
+	private Criteria criteria = null;
+	
+	public Criteria getCriteria() {
+		return criteria;
+	}
+	public void setCriteria(Criteria criteria) {
+		this.criteria = criteria;
+	}
+
 	private long orgId = -1;
 	public long getOrgId() {
 		return orgId;

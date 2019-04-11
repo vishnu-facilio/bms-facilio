@@ -53,7 +53,8 @@ public class UpdateCheckPointAndAddControllerActivityCommand implements Command 
 				addControllerActivity((FacilioContext) context, controller, recordTime);
 			}
 			else {
-				CommonCommandUtil.emailAlert("No controller with client id - "+partitionKey, "No controller with client id - "+partitionKey+"\nKindly add proper controller for this");
+				LOGGER.info("No controller with client id - "+partitionKey+"\nKindly add proper controller for this");
+				// CommonCommandUtil.emailAlert("No controller with client id - "+partitionKey, "No controller with client id - "+partitionKey+"\nKindly add proper controller for this");
 			}
 		}
 		else {

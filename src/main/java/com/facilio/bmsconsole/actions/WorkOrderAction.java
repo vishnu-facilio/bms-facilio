@@ -69,6 +69,7 @@ import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsole.workflow.rule.TicketActivity;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.fw.BeanFactory;
 
 public class WorkOrderAction extends FacilioAction {
@@ -1764,6 +1765,7 @@ public class WorkOrderAction extends FacilioAction {
 			context.put(FacilioConstants.ContextNames.FILTERS, json);
 			context.put(FacilioConstants.ContextNames.INCLUDE_PARENT_CRITERIA, getIncludeParentFilter());
 		}
+		context.put(ContextNames.WO_FETCH_ALL, getFetchAllType());
 		context.put(FacilioConstants.ContextNames.CRITERIA_IDS, getCriteriaIds());
 
 		if (getSearch() != null) {
@@ -1950,6 +1952,17 @@ public class WorkOrderAction extends FacilioAction {
 
 	public void setViewDisplayName(String displayName) {
 		this.displayName = displayName;
+	}
+	
+	private Boolean fetchAllType;
+	public Boolean getFetchAllType() {
+		if (fetchAllType == null) {
+			return false;
+		}
+		return fetchAllType;
+	}
+	public void setFetchAllType(Boolean fetchAllType) {
+		this.fetchAllType = fetchAllType;
 	}
 
 	public RecordSummaryLayout getRecordSummaryLayout() {

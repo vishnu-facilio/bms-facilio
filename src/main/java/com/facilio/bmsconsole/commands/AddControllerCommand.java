@@ -61,7 +61,8 @@ public class AddControllerCommand implements Command {
 													.addRecord(controllerProps);
 			builder.save();
 			controller.setId((long) controllerProps.get("id"));
-			AwsUtil.addIotClient(AccountUtil.getCurrentOrg().getDomain(), controller.getMacAddr());
+			// No need to add controller in aws policy since it depends on agent
+			// AwsUtil.addIotClient(AccountUtil.getCurrentOrg().getDomain(), controller.getMacAddr());
 			
 			ControllerAPI.addControllerBuildingRel(controller);
 		}
