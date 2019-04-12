@@ -82,18 +82,19 @@ public class GetToolTransactionsListCommand implements Command {
 		if (scopeCriteria != null) {
 			builder.andCriteria(scopeCriteria);
 		}
-
+		
+		
+		builder.fetchLookup((LookupField) toolTransactionsFieldsMap.get("purchasedTool"));
+		
 		Boolean getShowToolsForReturn = (Boolean) context.get(FacilioConstants.ContextNames.SHOW_TOOLS_FOR_RETURN);
 		if (getShowToolsForReturn != null && getShowToolsForReturn) {
-			List<LookupField> lookUpfields = new ArrayList<>();
-			lookUpfields.add((LookupField) toolTransactionsFieldsMap.get("purchasedTool"));
+			
 			builder.andCondition(CriteriaAPI.getCondition(toolTransactionsFieldsMap.get("remainingQuantity"),
 					String.valueOf(0), NumberOperators.GREATER_THAN));
 			// builder.andCondition(CriteriaAPI.getCondition(toolTransactionsFieldsMap.get("isReturnable"),
 			// String.valueOf(true), BooleanOperators.IS));
 			builder.andCondition(CriteriaAPI.getCondition(toolTransactionsFieldsMap.get("transactionState"),
 					String.valueOf(2), NumberOperators.EQUALS));
-			builder.fetchLookups(lookUpfields);
 		}
 
 		JSONObject pagination = (JSONObject) context.get(FacilioConstants.ContextNames.PAGINATION);
