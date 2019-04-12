@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.actions;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.*;
@@ -16,8 +17,11 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.exception.ReadingValidationException;
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.apache.struts2.ServletActionContext;
+import org.json.simple.JSONObject;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -35,6 +39,7 @@ public class TaskAction extends FacilioAction {
 	public String newTask() throws Exception {
 		
 		FacilioContext context = new FacilioContext();
+		try {
 		Chain newTask = FacilioChainFactory.getNewTaskChain();
 		newTask.execute(context);
 		
@@ -42,6 +47,15 @@ public class TaskAction extends FacilioAction {
 		setActionForm((ActionForm) context.get(FacilioConstants.ContextNames.ACTION_FORM));
 		
 		fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
+		}
+		catch (Exception e) {
+			JSONObject inComingDetails = new JSONObject();
+			inComingDetails.put("moduleName", getModuleName());
+			inComingDetails.put("ActionForm", getActionForm());
+			inComingDetails.put("fields", fields);
+			sendErrorMail(e, inComingDetails);
+			throw e;
+		}
 		
 		return SUCCESS;
 	}
@@ -66,10 +80,18 @@ public class TaskAction extends FacilioAction {
 	public String addTaskSection() throws Exception {
 		
 		FacilioContext context = new FacilioContext();
+		try {
 		context.put(FacilioConstants.ContextNames.TASK_SECTION, section);
 		
 		Chain addSectionChain = FacilioChainFactory.addTaskSectionChain();
 		addSectionChain.execute(context);
+		}
+		catch (Exception e) {
+			JSONObject inComingDetails = new JSONObject();
+			inComingDetails.put("section", section);
+			sendErrorMail(e, inComingDetails);
+			throw e;
+		}
 		
 		return SUCCESS;
 	}
@@ -108,8 +130,8 @@ public class TaskAction extends FacilioAction {
 	//Add Task Props
 	public String addTask() throws Exception {
 		// TODO Auto-generated method stub
-		
 		long siteId = WorkOrderAPI.getSiteIdForWO(task.getParentTicketId());
+		try {
 		task.setSiteId(siteId);
 		
 		FacilioContext context = new FacilioContext();
@@ -120,6 +142,15 @@ public class TaskAction extends FacilioAction {
 		addTask.execute(context);
 		
 		setTaskId(task.getId());
+		}
+		catch (Exception e) {
+			JSONObject inComingDetails = new JSONObject();
+			inComingDetails.put("siteId", siteId);
+			inComingDetails.put("task", task);
+			inComingDetails.put("AttachmentId", getAttachmentId());
+			sendErrorMail(e, inComingDetails);
+			throw e;
+		}
 		
 		return SUCCESS;
 	}
@@ -169,6 +200,7 @@ public class TaskAction extends FacilioAction {
 	}
 	
 	private String updateTask(FacilioContext context) throws Exception {
+		try {
 		if (task.getStatus() != null) {
 			TicketStatusContext status = TicketAPI.getStatus(AccountUtil.getCurrentOrg().getOrgId(), task.getStatus().getId());
 			if (status.getStatus().equals("Submitted")) {
@@ -194,6 +226,15 @@ public class TaskAction extends FacilioAction {
 		Integer count = (Integer) context.get(FacilioConstants.ContextNames.ROWS_UPDATED);
 		if (count != null) {
 			rowsUpdated = count;
+		}
+		}
+		catch (Exception e) {
+			JSONObject inComingDetails = new JSONObject();
+			inComingDetails.put("Task Status", task.getStatus());
+			inComingDetails.put("Task", task);
+			inComingDetails.put("RECORD_ID_LIST", id);
+			sendErrorMail(e, inComingDetails);
+			throw e;
 		}
 		return SUCCESS;
 	}
@@ -225,6 +266,7 @@ public class TaskAction extends FacilioAction {
 	
 	public String closeAllTask() throws Exception {
 		FacilioContext context = new FacilioContext();
+		try {
 		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.EDIT);
 		if (taskIdList != null) {
 			TaskContext defaultClosedTaskObj = new TaskContext();
@@ -238,11 +280,20 @@ public class TaskAction extends FacilioAction {
 			updateTask.execute(context);
 			rowsUpdated += (int) context.get(FacilioConstants.ContextNames.ROWS_UPDATED);
 		}
+		}
+		catch (Exception e) {
+			JSONObject inComingDetails = new JSONObject();
+			inComingDetails.put("Task Id List (Close All Tasks) ", taskIdList);
+			inComingDetails.put("parentTicketId", parentTicketId);
+			sendErrorMail(e, inComingDetails);
+			throw e;
+		}
 		return SUCCESS;
 	}
 	public String updateAllTask() throws Exception {
 		FacilioContext context = new FacilioContext();
 		Map<Long, Map<String, String>> errorMap = new HashMap<>();
+		try {
 		for (TaskContext singleTask :taskContextList)
 		{
 			context.clear();
@@ -269,18 +320,34 @@ public class TaskAction extends FacilioAction {
 				rowsUpdated += (int) count;
 			}
 		}
+	}
+		catch (Exception e) {
+			JSONObject inComingDetails = new JSONObject();
+			inComingDetails.put("taskContextList (update All Tasks) ", taskContextList);
+			sendErrorMail(e, inComingDetails);
+			throw e;
+		}
 		return SUCCESS;
 	}
 	
 	public String deleteTask() throws Exception {
 		
 		FacilioContext context = new FacilioContext();
+		try {
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, id);
 		
 		Command deleteTask = FacilioChainFactory.getDeleteTaskChain();
 		deleteTask.execute(context);
 		rowsUpdated = (int) context.get(FacilioConstants.ContextNames.ROWS_UPDATED);
-		
+		}
+		catch (Exception e) {
+			JSONObject inComingDetails = new JSONObject();
+			inComingDetails.put("RECORD_ID_LIST (deleteTask)", id);
+			inComingDetails.put("ActionForm", getActionForm());
+			inComingDetails.put("fields", fields);
+			sendErrorMail(e, inComingDetails);
+			throw e;
+		}
 		return SUCCESS;
 	}
 	
@@ -289,12 +356,20 @@ public class TaskAction extends FacilioAction {
 		// TODO Auto-generated method stub
 		
 		FacilioContext context = new FacilioContext();
+		try {
 		context.put(FacilioConstants.ContextNames.ID, getTaskId());
 		
 		Chain getTaskChain = FacilioChainFactory.getTaskDetailsChain();
 		getTaskChain.execute(context);
 		
 		setTask((TaskContext) context.get(FacilioConstants.ContextNames.TASK));
+		}catch (Exception e) {
+			JSONObject inComingDetails = new JSONObject();
+			inComingDetails.put("Task Id", getTaskId());
+			inComingDetails.put("Task", getTask());
+			sendErrorMail(e, inComingDetails);
+			throw e;
+		}
 		
 		return SUCCESS;
 	}
@@ -336,7 +411,7 @@ public class TaskAction extends FacilioAction {
 	//Task List
 	public String taskList() throws Exception {
 		// TODO Auto-generated method stub
-
+		try {
 		if (this.recordId > 0 && getViewName() == null) {
 			try {
 				FacilioContext context = new FacilioContext();
@@ -373,6 +448,16 @@ public class TaskAction extends FacilioAction {
 			if(cv != null) {
 				setViewDisplayName(cv.getDisplayName());
 			}
+		}
+		}
+		catch (Exception e) {
+			JSONObject inComingDetails = new JSONObject();
+			inComingDetails.put("recordId", recordId);
+			inComingDetails.put("Task", getTask());
+			inComingDetails.put("Section", getSections());
+			inComingDetails.put("View Name", getViewName());
+			sendErrorMail(e, inComingDetails);
+			throw e;
 		}
 
 		return SUCCESS;
@@ -490,6 +575,7 @@ public class TaskAction extends FacilioAction {
 	public String v2multipleTaskList() throws Exception {
 		
 		FacilioContext context = new FacilioContext();
+		try {
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, this.id);
 
 		Chain getRelatedTasksChain = FacilioChainFactory.getRelatedMultipleTasksChain();
@@ -497,11 +583,20 @@ public class TaskAction extends FacilioAction {
 
 		setTaskMap((Map<Long, Map<String, Object>>) context.get(FacilioConstants.ContextNames.TASK_MAP));
 		setResult(FacilioConstants.ContextNames.TASK_LIST, getTaskMap());
+		}
+		catch (Exception e) {
+			JSONObject inComingDetails = new JSONObject();
+			inComingDetails.put("RECORD_ID_LIST", id);
+			inComingDetails.put("TASK_LIST", getTaskMap());
+			sendErrorMail(e, inComingDetails);
+			throw e;
+		}
 		
 		return SUCCESS;
 	}
 	
 	public String syncOfflineTasks() throws Exception {
+		try {
 		if (lastSyncTime == null || lastSyncTime <= 0 ) {
 			throw new IllegalArgumentException("Task last synced time is mandatory");
 		}
@@ -541,6 +636,14 @@ public class TaskAction extends FacilioAction {
 			setResult("error", errors.size() + " task(s) sync failed");
 		}
 		setResult(FacilioConstants.ContextNames.ROWS_UPDATED, rowsUpdated);
+		}
+		catch (Exception e) {
+			JSONObject inComingDetails = new JSONObject();
+			inComingDetails.put("lastSyncTime", lastSyncTime);
+			inComingDetails.put("taskContextList", taskContextList);
+			sendErrorMail(e, inComingDetails);
+			throw e;
+		}
 		return SUCCESS;
 	}
 	
@@ -550,6 +653,34 @@ public class TaskAction extends FacilioAction {
 	}
 	public void setLastSyncTime(Long lastSyncTime) {
 		this.lastSyncTime = lastSyncTime;
+	}
+	private void sendErrorMail(Exception e, JSONObject inComingDetails) throws Exception {
+		// TODO Auto-generated method stub
+		String errorTrace = null;
+		StringBuilder body = new StringBuilder("\n\nDetails: \n");
+		if (e != null) {
+			errorTrace = ExceptionUtils.getStackTrace(e);
+			body.append(inComingDetails.toString())
+				.append("\nOrgId: ")
+				.append(AccountUtil.getCurrentOrg().getOrgId())
+				.append("\nUser: ")
+				.append(AccountUtil.getCurrentUser().getName()).append(" - ").append(AccountUtil.getCurrentUser().getOuid())
+				.append("\nDevice Type: ")
+				.append(AccountUtil.getCurrentAccount().getDeviceType())
+				.append("\nUrl: ")
+				.append(ServletActionContext.getRequest().getRequestURI())
+				.append("\n\n-----------------\n\n")
+				.append("------------------\n\nStackTrace : \n--------\n")
+				.append(errorTrace);
+			String message = e.getMessage();
+			System.out.println("88888888" + body);
+			JSONObject mailJson = new JSONObject();
+			mailJson.put("sender", "noreply@facilio.com");
+			mailJson.put("to", "shaan@facilio.com, tharani@facilio.com, aravind@facilio.com");
+			mailJson.put("subject", "Task Exception");
+			mailJson.put("message", body.toString());
+			AwsUtil.sendEmail(mailJson);
+		}
 	}
 	
  }
