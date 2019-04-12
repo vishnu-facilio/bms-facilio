@@ -134,7 +134,7 @@ public class StateFlowAction extends FacilioAction {
 	
 	public String addOrUpdateState() throws Exception {
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.STATE, state);
+//		context.put(FacilioConstants.ContextNames.STATE, state);
 		
 		Chain chain = TransactionChainFactory.getAddOrUpdateStateChain();
 		chain.execute(context);

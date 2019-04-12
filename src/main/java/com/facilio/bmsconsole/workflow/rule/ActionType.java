@@ -26,6 +26,7 @@ import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.commands.GenericUpdateModuleDataCommand;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.commands.UpdateStateCommand;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
@@ -937,7 +938,7 @@ public enum ActionType {
 				Object currentRecord) throws Exception {
 			System.out.println(obj);
 			ModuleBaseWithCustomFields moduleData = ((ModuleBaseWithCustomFields) currentRecord);
-			StateContext state = moduleData.getModuleState();
+			TicketStatusContext state = moduleData.getModuleState();
 			long oldStateId = -1;
 			if (state != null) {
 				oldStateId = state.getId();
@@ -955,6 +956,7 @@ public enum ActionType {
 			}
 			Chain chain = FacilioChain.getTransactionChain();
 			chain.addCommand(new UpdateStateCommand());
+			chain.addCommand(new GenericUpdateModuleDataCommand());
 			chain.execute(c);
 		}
 		

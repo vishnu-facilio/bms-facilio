@@ -11,10 +11,10 @@ public class AddOrUpdateStateCommand implements Command {
 
 	@Override
 	public boolean execute(Context context) throws Exception {
-		StateContext state = (StateContext) context.get(FacilioConstants.ContextNames.STATE);
-		if (state != null) {
-			StateFlowRulesAPI.addOrUpdateState(state);
-		}
+//		StateContext state = (StateContext) context.get(FacilioConstants.ContextNames.STATE);
+//		if (state != null) {
+//			StateFlowRulesAPI.addOrUpdateState(state);
+//		}
 		return false;
 	}
 

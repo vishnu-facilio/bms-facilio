@@ -6,6 +6,7 @@ import java.util.Map;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
+import com.facilio.bmsconsole.context.TicketStatusContext;
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.bmsconsole.util.StateFlowRulesAPI;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
@@ -42,7 +43,7 @@ public class UpdateStateCommand implements Command {
 		Map<String, Object> recordPlaceHolders = WorkflowRuleAPI.getRecordPlaceHolders(moduleName, moduleData, WorkflowRuleAPI.getOrgPlaceHolders());
 		
 		if (defaultState) {
-			StateContext state = StateFlowRulesAPI.getStateContext(defaultStateId);
+			TicketStatusContext state = StateFlowRulesAPI.getStateContext(defaultStateId);
 			changeState(moduleData, state);
 			moduleData.setStateFlowId(defaultStateFlowId);
 		} 
@@ -54,7 +55,7 @@ public class UpdateStateCommand implements Command {
 					if (stateflowTransistion.getFromStateId() != moduleData.getModuleState().getId()) {
 						throw new Exception("State mismatch");
 					}
-					StateContext newState = StateFlowRulesAPI.getStateContext(stateflowTransistion.getToStateId());
+					TicketStatusContext newState = StateFlowRulesAPI.getStateContext(stateflowTransistion.getToStateId());
 					if (newState == null) {
 						throw new Exception("Invalid state");
 					}
@@ -70,7 +71,7 @@ public class UpdateStateCommand implements Command {
 		return false;
 	}
 	
-	private void changeState(ModuleBaseWithCustomFields moduleData, StateContext newState) {
+	private void changeState(ModuleBaseWithCustomFields moduleData, TicketStatusContext newState) {
 		moduleData.setModuleState(newState);
 		stateChanged = true;
 	}

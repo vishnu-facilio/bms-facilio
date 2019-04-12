@@ -4,6 +4,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.SharingContext;
+import com.facilio.bmsconsole.context.SingleSharingContext;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.PickListOperators;
@@ -16,6 +17,7 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import org.apache.commons.chain.Chain;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.sql.SQLException;
@@ -73,9 +75,9 @@ public class ApprovalRulesAPI extends WorkflowRuleAPI {
 		}
 	}
 	
-	protected static void addApprovers(ApprovalRuleContext rule) throws Exception {
-		if (rule.getApprovers() != null && !rule.getApprovers().isEmpty()) {
-			SharingAPI.addSharing((SharingContext<ApproverContext>) rule.getApprovers(), rule.getId(), ModuleFactory.getApproversModule());
+	protected static void addApprovers(long parentId, List<ApproverContext> sharing) throws Exception {
+		if (CollectionUtils.isNotEmpty(sharing) && parentId > 0) {
+			SharingAPI.addSharing((SharingContext<? extends SingleSharingContext>) sharing, parentId, ModuleFactory.getApproversModule());
 		}
 	}
 	
@@ -183,7 +185,7 @@ public class ApprovalRulesAPI extends WorkflowRuleAPI {
 		updateWorkflowRuleChildIds(rule);
 		updateChildRuleIds(rule);
 		updateExtendedRule(rule, ModuleFactory.getApprovalRulesModule(), FieldFactory.getApprovalRuleFields());
-		addApprovers(rule);
+		addApprovers(rule.getId(), rule.getApprovers());
 		deleteChildIdsForWorkflow(oldRule, rule);
 		deleteChildRuleIds(oldRule);
 		

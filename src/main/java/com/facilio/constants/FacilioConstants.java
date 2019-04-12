@@ -941,7 +941,7 @@ public class FacilioConstants {
 		public static final String ITEM_VENDORS_LIST = "itemTypesVendorsList";
 		
 		public static final String SITES_FOR_STORE_ROOM = "sitesForStoreRoom";
-		public static final String STATE = "state";
+//		public static final String STATE = "state";
 
 		public static final String PURCHASE_CONTRACTS = "purchasecontracts";
 		public static final String PURCHASE_CONTRACT = "purchasecontract";
@@ -1067,6 +1067,7 @@ public class FacilioConstants {
 			classMap.put(GATE_PASS, GatePassContext.class);
 			classMap.put(GATE_PASS_LINE_ITEMS, GatePassLineItemsContext.class);
 			classMap.put(STATE, StateContext.class);
+//			classMap.put(STATE, StateContext.class);
 			return classMap;
 		}
 		

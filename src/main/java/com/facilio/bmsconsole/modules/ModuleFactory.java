@@ -1934,7 +1934,6 @@ public class ModuleFactory {
 		return gatePass;
 	}
 
-	public static FacilioModule getStageRuleModule() {
 	public static FacilioModule getStateRuleTransistionModule() {
 		FacilioModule module = new FacilioModule();
 		module.setName("stateruleTransistionWorkflow");
@@ -1952,13 +1951,13 @@ public class ModuleFactory {
 		return module;
 	}
 	
-	public static FacilioModule getStateModule() {
-		FacilioModule module = new FacilioModule();
-		module.setName("state");
-		module.setDisplayName("State");
-		module.setTableName("State");
-		return module;
-	}
+//	public static FacilioModule getStateModule() {
+//		FacilioModule module = new FacilioModule();
+//		module.setName("state");
+//		module.setDisplayName("State");
+//		module.setTableName("TicketStatus");
+//		return module;
+//	}
 
 //	public static FacilioModule getStateFlowRuleModule() {
 //		FacilioModule module = new FacilioModule();

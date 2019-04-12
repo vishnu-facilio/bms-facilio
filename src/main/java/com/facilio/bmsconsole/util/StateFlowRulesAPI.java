@@ -1,7 +1,5 @@
 package com.facilio.bmsconsole.util;
 
-import java.lang.reflect.InvocationTargetException;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -14,6 +12,7 @@ import org.apache.commons.lang3.StringUtils;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.StateFlowContext;
+import com.facilio.bmsconsole.context.TicketStatusContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
@@ -24,8 +23,8 @@ import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.modules.UpdateChangeSet;
+import com.facilio.bmsconsole.workflow.rule.ApproverContext;
 import com.facilio.bmsconsole.workflow.rule.StateContext;
-import com.facilio.bmsconsole.workflow.rule.StateFlowRuleContext;
 import com.facilio.bmsconsole.workflow.rule.StateflowTransistionContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.chain.FacilioContext;
@@ -37,20 +36,21 @@ import com.facilio.sql.GenericUpdateRecordBuilder;
 
 public class StateFlowRulesAPI extends WorkflowRuleAPI {
 
-	public static WorkflowRuleContext constructStateRuleFromProps(Map<String, Object> prop, ModuleBean modBean) {
+	public static WorkflowRuleContext constructStateRuleFromProps(Map<String, Object> prop, ModuleBean modBean) throws Exception {
 		StateflowTransistionContext stateFlowRule = FieldUtil.getAsBeanFromMap(prop, StateflowTransistionContext.class);
+		stateFlowRule.setApprovers(SharingAPI.getSharing(stateFlowRule.getId(), ModuleFactory.getApproversModule(), ApproverContext.class));
 		return stateFlowRule;
 	}
 
-	public static StateContext getStateContext(long stateId) throws Exception {
+	public static TicketStatusContext getStateContext(long stateId) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.STATE);
-		SelectRecordsBuilder<StateContext> builder = new SelectRecordsBuilder<StateContext>()
-				.beanClass(StateContext.class)
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.TICKET_STATUS);
+		SelectRecordsBuilder<TicketStatusContext> builder = new SelectRecordsBuilder<TicketStatusContext>()
+				.beanClass(TicketStatusContext.class)
 				.module(module)
 				.select(modBean.getAllFields(module.getName()))
 				.andCondition(CriteriaAPI.getIdCondition(stateId, module));
-		StateContext stateContext = builder.fetchFirst();
+		TicketStatusContext stateContext = builder.fetchFirst();
 		return stateContext;
 	}
 	
@@ -154,19 +154,19 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 	}
 
 	public static void addOrUpdateState(StateContext state) throws Exception {
-		if (state == null) {
-			return;
-		}
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.STATE);
-		
-		Map<String, Object> props = FieldUtil.getAsProperties(state);
-		if (state.getId() < 0) {
-			state.setId(addRecord(module, modBean.getAllFields(module.getName()), props));
-		} 
-		else {
-			updateRecord(module, modBean.getAllFields(module.getName()), state.getId(), props);
-		}
+//		if (state == null) {
+//			return;
+//		}
+//		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+//		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.STATE);
+//		
+//		Map<String, Object> props = FieldUtil.getAsProperties(state);
+//		if (state.getId() < 0) {
+//			state.setId(addRecord(module, modBean.getAllFields(module.getName()), props));
+//		} 
+//		else {
+//			updateRecord(module, modBean.getAllFields(module.getName()), state.getId(), props);
+//		}
 	}
 	
 	private static long addRecord(FacilioModule module, List<FacilioField> fields, Map<String, Object> props) throws Exception {

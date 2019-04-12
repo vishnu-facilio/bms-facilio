@@ -97,10 +97,11 @@ public class WorkflowRuleAPI {
 				ApprovalRulesAPI.validateApprovalRule((ApprovalRuleContext) rule);
 				ApprovalRulesAPI.updateChildRuleIds((ApprovalRuleContext) rule);
 				addExtendedProps(ModuleFactory.getApprovalRulesModule(), FieldFactory.getApprovalRuleFields(), FieldUtil.getAsProperties(rule));
-				ApprovalRulesAPI.addApprovers((ApprovalRuleContext) rule);
+				ApprovalRulesAPI.addApprovers(rule.getId(), ((ApprovalRuleContext) rule).getApprovers());
 				break;
 			case STATE_RULE:
 				addExtendedProps(ModuleFactory.getStateRuleTransistionModule(), FieldFactory.getStateRuleTransistionFields(), ruleProps);
+				ApprovalRulesAPI.addApprovers(rule.getId(), ((StateflowTransistionContext) rule).getApprovers());
 				break;
 //			case STATE_FLOW:
 //				addExtendedProps(ModuleFactory.getStateFlowRuleModule(), FieldFactory.getStateFlowRuleFields(), ruleProps);
