@@ -61,6 +61,8 @@ public class UpdateStateCommand implements Command {
 					}
 					changeState(moduleData, newState);
 					stateflowTransistion.executeTrueActions(moduleData, context, recordPlaceHolders);
+				} else {
+					throw new Exception("Cannot update the state");
 				}
 			}
 		}

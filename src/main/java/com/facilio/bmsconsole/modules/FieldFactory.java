@@ -5552,6 +5552,7 @@ public class FieldFactory {
 		list.add(getField("toStateId", "TO_STATE_ID", stageRuleModule, FieldType.NUMBER));
 		list.add(getField("stateFlowId", "STATE_FLOW_ID", stageRuleModule, FieldType.NUMBER));
 		list.add(getField("formId", "FORM_ID", stageRuleModule, FieldType.NUMBER));
+		list.add(getField("buttonType", "BUTTON_TYPE", stageRuleModule, FieldType.NUMBER));
 		return list;
 	}
 	

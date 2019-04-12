@@ -279,7 +279,7 @@ public class ApprovalRuleContext extends WorkflowRuleContext {
 				result = approverMap.isEmpty();
 			}
 		}
-		addApprovalStep(wo.getId(), action, matchingApprovers);
+		addApprovalStep(wo.getId(), action, matchingApprovers, this);
 		return result;
 	}
 	
@@ -305,31 +305,33 @@ public class ApprovalRuleContext extends WorkflowRuleContext {
 		return null;
 	}
 	
-	private void addApprovalStep (long recordId, ApprovalState action, List<SingleSharingContext> matchingApprovers) throws Exception {
+	public static void addApprovalStep (long recordId, ApprovalState action, List<SingleSharingContext> matchingApprovers, WorkflowRuleContext ruleContext) throws Exception {
 		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
 													.table(ModuleFactory.getApprovalStepsModule().getTableName())
 													.fields(FieldFactory.getApprovalStepsFields())
 													;
 		
 		if (matchingApprovers == null || matchingApprovers.isEmpty()) {
-			insertBuilder.addRecord(constructStep(recordId, null, action));
+			insertBuilder.addRecord(constructStep(recordId, null, action, ruleContext.getSiteId(), ruleContext.getId()));
 		}
 		else {
 			for (SingleSharingContext approver : matchingApprovers) {
-				insertBuilder.addRecord(constructStep(recordId, approver, action));
+				insertBuilder.addRecord(constructStep(recordId, approver, action, ruleContext.getSiteId(), ruleContext.getId()));
 			}
 		}
 		insertBuilder.save();
 	}
 	
-	private Map<String, Object> constructStep(long recordId, SingleSharingContext approver, ApprovalState action) {
+	private static Map<String, Object> constructStep(long recordId, SingleSharingContext approver, ApprovalState action, long siteId, long ruleId) {
 		Map<String, Object> prop = new HashMap<>();
 		prop.put("orgId", AccountUtil.getCurrentOrg().getId());
-		prop.put("siteId", getSiteId());
-		prop.put("ruleId", getId());
+		prop.put("siteId", siteId);
+		prop.put("ruleId", ruleId);
 		prop.put("recordId", recordId);
 		prop.put("actionBy", AccountUtil.getCurrentUser().getId());
-		prop.put("action", action.getValue());
+		if (action != null) {
+			prop.put("action", action.getValue());
+		}
 		prop.put("actionTime", System.currentTimeMillis());
 		if (approver != null) {
 			prop.put("approverGroup", approver.getId());

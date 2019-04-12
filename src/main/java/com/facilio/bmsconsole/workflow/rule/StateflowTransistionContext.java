@@ -1,9 +1,17 @@
 package com.facilio.bmsconsole.workflow.rule;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
 
 import com.facilio.bmsconsole.context.SharingContext;
+import com.facilio.bmsconsole.context.SingleSharingContext;
+import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.bmsconsole.workflow.rule.ApprovalRuleContext.ApprovalOrder;
+import com.facilio.chain.FacilioContext;
 
 public class StateflowTransistionContext extends WorkflowRuleContext {
 	private static final long serialVersionUID = 1L;
@@ -97,5 +105,33 @@ public class StateflowTransistionContext extends WorkflowRuleContext {
 	}
 	public void setApprovalOrder(int approvalOrder) {
 		this.approvalOrder = ApprovalOrder.valueOf(approvalOrder);
+	}
+	
+	private int buttonType;
+	public int getButtonType() {
+		return buttonType;
+	}
+	public void setButtonType(int buttonType) {
+		this.buttonType = buttonType;
+	}
+	
+	@Override
+	public boolean evaluateMisc(String moduleName, Object record, Map<String, Object> placeHolders,
+			FacilioContext context) throws Exception {
+		boolean result = true;
+		if (CollectionUtils.isNotEmpty(approvers)) {
+			List<SingleSharingContext> matching = approvers.getMatching(record);
+			result = CollectionUtils.isNotEmpty(matching);
+		}
+		return result;
+	}
+	
+	@Override
+	public void executeTrueActions(Object record, Context context, Map<String, Object> placeHolders) throws Exception {
+		ModuleBaseWithCustomFields moduleRecord = (ModuleBaseWithCustomFields) record;
+		if (CollectionUtils.isNotEmpty(approvers)) {
+			ApprovalRuleContext.addApprovalStep(moduleRecord.getId(), null, approvers.getMatching(record), this);
+		}
+		super.executeTrueActions(record, context, placeHolders);
 	}
 }
