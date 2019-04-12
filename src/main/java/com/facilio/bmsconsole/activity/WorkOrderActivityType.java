@@ -50,21 +50,21 @@ public enum WorkOrderActivityType implements ActivityType {
 		@Override
 		public String constructMessage(JSONObject json) {
 			// TODO Auto-generated method stub
-			return " added Task ";
+			return " added the Task ";
 		}	
 	},
 	ADD_COMMENT(9) {
 		@Override
 		public String constructMessage(JSONObject json) {
 			// TODO Auto-generated method stub
-			return " added Comment ";
+			return " added the Comment ";
 		}	
 	},
 	ADD_ATTACHMENT(10) {
 		@Override
 		public String constructMessage(JSONObject json) {
 			// TODO Auto-generated method stub
-			return " added Attachment ";
+			return " added the Attachment ";
 		}	
 	},
 	ADD_TASK_ATTACHMENT(11) {
@@ -78,7 +78,7 @@ public enum WorkOrderActivityType implements ActivityType {
 		@Override
 		public String constructMessage(JSONObject json) {
 			// TODO Auto-generated method stub
-			return " updated Task";
+			return " updated the Task";
 		}	
 	},
 	CLOSE_TASK(23) {
@@ -86,6 +86,13 @@ public enum WorkOrderActivityType implements ActivityType {
 		public String constructMessage(JSONObject json) {
 			// TODO Auto-generated method stub
 			return " closed a task ";
+		}
+	},
+	REOPEN_TASK(25) {
+		@Override
+		public String constructMessage(JSONObject json) {
+			// TODO Auto-generated method stub
+			return " reopen the task ";
 		}
 	},
 	ADD_PM_WO(24) {

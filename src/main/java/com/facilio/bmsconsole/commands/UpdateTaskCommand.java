@@ -111,6 +111,13 @@ public class UpdateTaskCommand implements Command {
 							CommonCommandUtil.addActivityToContext(taskMap.get(recordIds.get(0)).getParentTicketId(), -1, WorkOrderActivityType.CLOSE_TASK, info, (FacilioContext) context);
 						
 					}
+					else if(task.getStatusNewEnum().toString() == "OPEN") {
+						JSONObject info = new JSONObject();
+						long newTaskId = recordIds.get(0);
+							info.put("subject", taskMap.get(newTaskId).getSubject());
+							CommonCommandUtil.addActivityToContext(taskMap.get(recordIds.get(0)).getParentTicketId(), -1, WorkOrderActivityType.REOPEN_TASK, info, (FacilioContext) context);
+						
+					}
 				  }
 					taskActivity = EventType.ADD_TASK_INPUT;
 				}

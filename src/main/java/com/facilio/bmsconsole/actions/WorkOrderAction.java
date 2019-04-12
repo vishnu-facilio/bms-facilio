@@ -103,17 +103,8 @@ public class WorkOrderAction extends FacilioAction {
 	}
 
     public String v2workOrderCount () throws Exception {
-    	try {
     		workOrderList();	
-    		setResult(FacilioConstants.ContextNames.WORK_ORDER_COUNT, woCount);
-		}
-		catch (Exception e) {
-			JSONObject inComingDetails = new JSONObject();
-			inComingDetails.put("woCount", woCount);
-			sendErrorMail(e, inComingDetails);
-			throw e;
-		}
-		
+    		setResult(FacilioConstants.ContextNames.WORK_ORDER_COUNT, woCount);		
 		return SUCCESS;
 	}
 
@@ -1483,6 +1474,7 @@ public class WorkOrderAction extends FacilioAction {
 		}
 		catch (Exception e) {
 			JSONObject inComingDetails = new JSONObject();
+			inComingDetails.put("View name", getViewName());
 			sendErrorMail(e, inComingDetails);
 			throw e;
 		}
@@ -2231,28 +2223,15 @@ public class WorkOrderAction extends FacilioAction {
 	}
 	
 	public String v2updateWorkOrder() throws Exception {
-		try {
 		updateWorkOrder();
 		setResult(FacilioConstants.ContextNames.ROWS_UPDATED, rowsUpdated);
-		}
-		catch (Exception e) {
-			JSONObject inComingDetails = new JSONObject();
-			sendErrorMail(e, inComingDetails);
-			throw e;
-		}
 		return SUCCESS;
 	}
 	
 	public String v2assignWorkOrder() throws Exception {
-		try {
 		assignWorkOrder();
 		setResult(FacilioConstants.ContextNames.ROWS_UPDATED, rowsUpdated);
-		}
-		catch (Exception e) {
-			JSONObject inComingDetails = new JSONObject();
-			sendErrorMail(e, inComingDetails);
-			throw e;
-		}
+
 		return SUCCESS;
 	}
 	
