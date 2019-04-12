@@ -266,7 +266,7 @@ public class ApprovalRuleContext extends WorkflowRuleContext {
 		List<SingleSharingContext> matchingApprovers = approvers == null ? null : approvers.getMatching(wo);
 		if (action == ApprovalState.APPROVED && isAllApprovalRequired() && approvalOrder == ApprovalOrder.PARALLEL) {
 			if (approvers != null && approvers.size() > 1) {
-				List<Long> previousApprovers = fetchPreviousApprovers(wo.getId());
+				List<Long> previousApprovers = fetchPreviousApprovers(wo.getId(), getId());
 				Map<Long, SingleSharingContext> approverMap = approvers.stream().collect(Collectors.toMap(SingleSharingContext::getId, Function.identity()));
 				if (previousApprovers != null && !previousApprovers.isEmpty()) {
 					for (Long id : previousApprovers) {
@@ -283,7 +283,7 @@ public class ApprovalRuleContext extends WorkflowRuleContext {
 		return result;
 	}
 	
-	private List<Long> fetchPreviousApprovers(long recordId) throws Exception {
+	private static List<Long> fetchPreviousApprovers(long recordId, long ruleId) throws Exception {
 		FacilioModule module = ModuleFactory.getApprovalStepsModule();
 		List<FacilioField> fields = FieldFactory.getApprovalStepsFields();
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
@@ -294,7 +294,7 @@ public class ApprovalRuleContext extends WorkflowRuleContext {
 														.table(module.getTableName())
 														.select(fields)
 														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
-														.andCondition(CriteriaAPI.getCondition(ruleIdField, String.valueOf(getId()), PickListOperators.IS))
+														.andCondition(CriteriaAPI.getCondition(ruleIdField, String.valueOf(ruleId), PickListOperators.IS))
 														.andCondition(CriteriaAPI.getCondition(recordIdField, String.valueOf(recordId), PickListOperators.IS))
 														;
 		

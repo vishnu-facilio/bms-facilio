@@ -1,17 +1,27 @@
 package com.facilio.bmsconsole.workflow.rule;
 
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
 import com.facilio.bmsconsole.context.SharingContext;
 import com.facilio.bmsconsole.context.SingleSharingContext;
+import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.criteria.PickListOperators;
+import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.FacilioModule;
+import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
+import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.bmsconsole.util.StateFlowRulesAPI;
 import com.facilio.bmsconsole.workflow.rule.ApprovalRuleContext.ApprovalOrder;
 import com.facilio.chain.FacilioContext;
+import com.facilio.sql.GenericSelectRecordBuilder;
 
 public class StateflowTransistionContext extends WorkflowRuleContext {
 	private static final long serialVersionUID = 1L;
@@ -115,23 +125,92 @@ public class StateflowTransistionContext extends WorkflowRuleContext {
 		this.buttonType = buttonType;
 	}
 	
+	private boolean isScheduled = false;
+	public boolean isScheduled() {
+		return isScheduled;
+	};
+	public void setScheduled(boolean isScheduled) {
+		this.isScheduled = isScheduled;
+	}
+	
+	private long scheduleTime = -1;
+	public long getScheduleTime() {
+		return scheduleTime;
+	}
+	
 	@Override
 	public boolean evaluateMisc(String moduleName, Object record, Map<String, Object> placeHolders,
 			FacilioContext context) throws Exception {
 		boolean result = true;
+		ModuleBaseWithCustomFields moduleRecord = (ModuleBaseWithCustomFields) record;
+
+		if (moduleRecord.getModuleState() != null && getFromStateId() != moduleRecord.getModuleState().getId()) {
+			return false;
+		}
+		
 		if (CollectionUtils.isNotEmpty(approvers)) {
 			List<SingleSharingContext> matching = approvers.getMatching(record);
-			result = CollectionUtils.isNotEmpty(matching);
+		
+			List<SingleSharingContext> checkAnyPendingApprovers = checkAnyPendingApprovers(moduleRecord, matching);
+			List<SingleSharingContext> matchingAgain = new SharingContext<>(checkAnyPendingApprovers).getMatching(record);
+			result = CollectionUtils.isNotEmpty(matchingAgain);
 		}
 		return result;
+	}
+	
+	private List<SingleSharingContext> checkAnyPendingApprovers(ModuleBaseWithCustomFields moduleRecord, List<SingleSharingContext> matching) throws Exception {
+		if (isAllApprovalRequired()) {
+			List<Long> previousApprovers = fetchPreviousApprovers(moduleRecord.getId(), getId());
+			Map<Long, SingleSharingContext> approverMap = approvers.stream().collect(Collectors.toMap(SingleSharingContext::getId, Function.identity()));
+			if (previousApprovers != null && !previousApprovers.isEmpty()) {
+				for (Long id : previousApprovers) {
+					approverMap.remove(id);
+				}
+			}
+			return new ArrayList<>(approverMap.values());
+		}
+		else {
+			return matching;
+		}
 	}
 	
 	@Override
 	public void executeTrueActions(Object record, Context context, Map<String, Object> placeHolders) throws Exception {
 		ModuleBaseWithCustomFields moduleRecord = (ModuleBaseWithCustomFields) record;
+		boolean shouldExecuteTrueActions = true;
 		if (CollectionUtils.isNotEmpty(approvers)) {
-			ApprovalRuleContext.addApprovalStep(moduleRecord.getId(), null, approvers.getMatching(record), this);
+			List<SingleSharingContext> matching = approvers.getMatching(record);
+			ApprovalRuleContext.addApprovalStep(moduleRecord.getId(), null, matching, this);
+			
+			List<SingleSharingContext> checkAnyPendingApprovers = checkAnyPendingApprovers(moduleRecord, matching);
+			shouldExecuteTrueActions = CollectionUtils.isEmpty(checkAnyPendingApprovers);
 		}
-		super.executeTrueActions(record, context, placeHolders);
+		
+		if (shouldExecuteTrueActions) {
+			moduleRecord.setModuleState(StateFlowRulesAPI.getStateContext(getToStateId()));
+			super.executeTrueActions(record, context, placeHolders);
+		}
+	}
+	
+	private static List<Long> fetchPreviousApprovers(long recordId, long ruleId) throws Exception {
+		FacilioModule module = ModuleFactory.getApprovalStepsModule();
+		List<FacilioField> fields = FieldFactory.getApprovalStepsFields();
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+		FacilioField recordIdField = fieldMap.get("recordId");
+		FacilioField ruleIdField = fieldMap.get("ruleId");
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+														.table(module.getTableName())
+														.select(fields)
+														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+														.andCondition(CriteriaAPI.getCondition(ruleIdField, String.valueOf(ruleId), PickListOperators.IS))
+														.andCondition(CriteriaAPI.getCondition(recordIdField, String.valueOf(recordId), PickListOperators.IS))
+														;
+		
+		List<Map<String, Object>> props = selectBuilder.get();
+		if (props != null && !props.isEmpty()) {
+			return props.stream().map(p -> (Long) p.get("approverGroup")).collect(Collectors.toList());
+		}
+		return null;
 	}
 }

@@ -10,7 +10,6 @@ import com.facilio.bmsconsole.context.TicketStatusContext;
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.bmsconsole.util.StateFlowRulesAPI;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
-import com.facilio.bmsconsole.workflow.rule.StateContext;
 import com.facilio.bmsconsole.workflow.rule.StateflowTransistionContext;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -52,14 +51,12 @@ public class UpdateStateCommand implements Command {
 				StateflowTransistionContext stateflowTransistion = (StateflowTransistionContext) WorkflowRuleAPI.getWorkflowRule(currentTransitionId, true);
 				boolean shouldChangeState = WorkflowRuleAPI.evaluateWorkflowAndExecuteActions(stateflowTransistion, moduleName, moduleData, StateFlowRulesAPI.getDefaultFieldChangeSet(moduleName, moduleData.getId()), recordPlaceHolders, (FacilioContext) context, false);
 				if (shouldChangeState) {
-					if (stateflowTransistion.getFromStateId() != moduleData.getModuleState().getId()) {
-						throw new Exception("State mismatch");
-					}
 					TicketStatusContext newState = StateFlowRulesAPI.getStateContext(stateflowTransistion.getToStateId());
 					if (newState == null) {
 						throw new Exception("Invalid state");
 					}
-					changeState(moduleData, newState);
+//					changeState(moduleData, newState);
+					stateChanged = true;
 					stateflowTransistion.executeTrueActions(moduleData, context, recordPlaceHolders);
 				} else {
 					throw new Exception("Cannot update the state");
