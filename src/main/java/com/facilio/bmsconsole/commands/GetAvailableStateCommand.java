@@ -26,8 +26,9 @@ public class GetAvailableStateCommand implements Command {
 				List<WorkflowRuleContext> availableState = StateFlowRulesAPI.getAvailableState(moduleData.getStateFlowId(), currentState.getId(), moduleName, moduleData, (FacilioContext) context);
 				
 				context.put("availableStates", availableState);
-				System.out.println(availableState);
 			}
+		} else {
+			throw new Exception("Record not found");
 		}
 		return false;
 	}
