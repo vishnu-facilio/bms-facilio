@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
@@ -295,6 +296,10 @@ public class ExpressionContext implements WorkflowExpression {
 			
 			if (FieldUtil.isSiteIdFieldPresent(module) && AccountUtil.getCurrentSiteId() > 0) {
 				selectBuilder.andCondition(CriteriaAPI.getCurrentSiteIdCondition(module));
+			}
+			if (AccountUtil.getCurrentUser() == null) {
+				User user = AccountUtil.getOrgBean().getSuperAdmin(AccountUtil.getCurrentOrg().getOrgId());
+				AccountUtil.getCurrentAccount().setUser(user);
 			}
 			Criteria scopeCriteria = AccountUtil.getCurrentUser().scopeCriteria(module.getName());
 			if (scopeCriteria != null) {
