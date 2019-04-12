@@ -2029,7 +2029,7 @@ public class PreventiveMaintenanceAPI {
 		int currentCount = pm.getCurrentExecutionCount();
 		long currentTime = System.currentTimeMillis() / 1000;
 		while (nextExecutionTime < currentTime) {
-			nextExecutionTime = trigger.getSchedule().nextExecutionTime(startTime);
+			nextExecutionTime = trigger.getSchedule().nextExecutionTime(nextExecutionTime);
 		}
 		if((pm.getMaxCount() == -1 || currentCount < pm.getMaxCount()) && (pm.getEndTime() == -1 || nextExecutionTime <= pm.getEndTime())) {
 			return createWoContextFromPM(context, pm, trigger, woTemplate, nextExecutionTime);

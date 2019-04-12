@@ -319,7 +319,7 @@ public class ExpressionContext implements WorkflowExpression {
 //				select.setModule(null);
 				select.setName(RESULT_STRING);
 				
-				selectBuilder.andCustomWhere(select.getColumnName()+" is not null");
+				selectBuilder.andCustomWhere(select.getCompleteColumnName()+" is not null");
 				
 				if(aggregateString != null && !aggregateString.isEmpty()) {
 					AggregateOperator expAggregateOpp = getAggregateOpperator();

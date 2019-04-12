@@ -1,6 +1,5 @@
 package com.facilio.bmsconsole.commands;
 
-import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.context.PMTaskSectionTemplateTriggers;
 import com.facilio.bmsconsole.context.PMTriggerContext;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
@@ -42,10 +41,7 @@ public class AddTaskSectionTriggersCommand implements Command {
 		
 		List<Map<String, Object>> props = new ArrayList<>();
 		
-		boolean isNewFlow = false;
-		if(!AwsUtil.isProduction()) {
-			isNewFlow = true;
-		}
+		boolean isNewFlow = true;
 		if(isNewFlow) {
 			for (int i = 0; i < sectionTemplates.size(); i++) {
 				List<PMTaskSectionTemplateTriggers> pmTaskSectionTemplateTriggers = sectionTemplates.get(i).getPmTaskSectionTemplateTriggers();

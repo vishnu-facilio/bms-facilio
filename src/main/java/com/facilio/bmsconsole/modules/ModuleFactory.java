@@ -1765,7 +1765,7 @@ public class ModuleFactory {
 		FacilioModule inventoryModule = new FacilioModule();
 		inventoryModule.setName(FacilioConstants.ContextNames.TOOL);
 		inventoryModule.setDisplayName("Tool");
-		inventoryModule.setTableName("Tools");
+		inventoryModule.setTableName("Tool");
 		return inventoryModule;
 	}
 
