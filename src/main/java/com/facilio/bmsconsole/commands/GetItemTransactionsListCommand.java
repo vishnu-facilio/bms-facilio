@@ -56,6 +56,10 @@ public class GetItemTransactionsListCommand implements Command{
 		}
 		String orderBy = (String) context.get(FacilioConstants.ContextNames.SORTING_QUERY);
 		if (orderBy != null && !orderBy.isEmpty()) {
+			// temp fix
+			if(orderBy.contains("CREATED_TIME")) {
+				orderBy = "Item_Transactions.CREATED_TIME" + orderBy.substring(12); 
+			}
 			builder.orderBy(orderBy);
 		}
 
@@ -90,14 +94,16 @@ public class GetItemTransactionsListCommand implements Command{
 			builder.andCriteria(scopeCriteria);
 		}
 		
+		builder.fetchLookup((LookupField) itemTransactionsFieldsMap.get("purchasedItem"));
+		
 		Boolean getShowItemsForReturn = (Boolean) context.get(FacilioConstants.ContextNames.SHOW_ITEMS_FOR_RETURN);
 		if(getShowItemsForReturn!=null && getShowItemsForReturn) {
-			List<LookupField>lookUpfields = new ArrayList<>();
-			lookUpfields.add((LookupField) itemTransactionsFieldsMap.get("purchasedItem"));
+//			List<LookupField>lookUpfields = new ArrayList<>();
+//			lookUpfields.add((LookupField) itemTransactionsFieldsMap.get("purchasedItem"));
 			builder.andCondition(CriteriaAPI.getCondition(itemTransactionsFieldsMap.get("remainingQuantity"), String.valueOf(0), NumberOperators.GREATER_THAN));
 			builder.andCondition(CriteriaAPI.getCondition(itemTransactionsFieldsMap.get("isReturnable"), String.valueOf(true), BooleanOperators.IS));
 			builder.andCondition(CriteriaAPI.getCondition(itemTransactionsFieldsMap.get("transactionState"), String.valueOf(2), NumberOperators.EQUALS));
-			builder.fetchLookups(lookUpfields);
+//			builder.fetchLookups(lookUpfields);
 		}
 		
 
