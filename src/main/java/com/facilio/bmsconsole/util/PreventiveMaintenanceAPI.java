@@ -675,12 +675,8 @@ public class PreventiveMaintenanceAPI {
 	}
 
 	public static void initScheduledWO(List<Long> orgs) throws Exception {
-		Set<Long> includeOrgs = new HashSet<>(orgs);
-		for (long i = 1; i <= 210; i++) {
+		for (long i : orgs) {
 			try {
-				if (!includeOrgs.contains(i)) {
-					continue;
-				}
 				AccountUtil.setCurrentAccount(i);
 				if (AccountUtil.getCurrentOrg() == null || AccountUtil.getCurrentOrg().getOrgId() <= 0) {
 					LOGGER.log(Level.SEVERE, "Org is missing");
