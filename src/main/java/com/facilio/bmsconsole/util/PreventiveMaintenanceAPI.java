@@ -239,6 +239,9 @@ public class PreventiveMaintenanceAPI {
 			if ((nextExecutionTime * 1000) < currentTime) {
 				LOGGER.log(Level.SEVERE, "Skipping : next: "+ nextExecutionTime * 1000 + " current: "+ currentTime);
 				nextExecutionTime = pmTrigger.getSchedule().nextExecutionTime(nextExecutionTime);
+				if (pmTrigger.getSchedule().getFrequencyTypeEnum() == FrequencyType.DO_NOT_REPEAT) {
+					break;
+				}
 				continue;
 			}
 
@@ -671,29 +674,37 @@ public class PreventiveMaintenanceAPI {
 		return (Long) props.get(0).get("minCreatedTime");
 	}
 
-	public static void initScheduledWO() throws Exception {
-		List<FacilioField> fields = FieldFactory.getPreventiveMaintenanceFields();
-		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+	public static void initScheduledWO(List<Long> orgs) throws Exception {
+		Set<Long> includeOrgs = new HashSet<>(orgs);
+		for (long i = 1; i <= 210; i++) {
+			try {
+				if (!includeOrgs.contains(i)) {
+					continue;
+				}
+				AccountUtil.setCurrentAccount(i);
+				if (AccountUtil.getCurrentOrg() == null || AccountUtil.getCurrentOrg().getOrgId() <= 0) {
+					LOGGER.log(Level.SEVERE, "Org is missing");
+					continue;
+				}
 
-		if (AccountUtil.getCurrentOrg() == null || AccountUtil.getCurrentOrg().getOrgId() <= 0) {
-			LOGGER.log(Level.SEVERE, "Org is missing");
-			return;
+				List<FacilioField> fields = FieldFactory.getPreventiveMaintenanceFields();
+				Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+
+				List<PreventiveMaintenance> pms = PreventiveMaintenanceAPI.getAllActivePMs(null, Arrays.asList(fieldMap.get("id")));
+				if (pms == null || pms.isEmpty()) {
+					LOGGER.log(Level.SEVERE, "There are no PMS in the org " + AccountUtil.getCurrentOrg().getOrgId());
+					continue;
+				}
+
+				LOGGER.log(Level.SEVERE, "Number of PMS to be deactivated: " + pms.size());
+
+				List<Long> skipped = deactivateActivateAllPms(pms);
+
+				LOGGER.log(Level.SEVERE, "skipped pms: " + StringUtils.join(skipped.toArray(), ", "));
+			} finally {
+				AccountUtil.cleanCurrentAccount();
+			}
 		}
-
-		List<PreventiveMaintenance> pms = PreventiveMaintenanceAPI.getAllActivePMs(null, Arrays.asList(fieldMap.get("id")));
-		if(pms == null || pms.isEmpty()) {
-			LOGGER.log(Level.SEVERE, "There are no PMS in the org "+ AccountUtil.getCurrentOrg().getOrgId());
-			return;
-		}
-
-		LOGGER.log(Level.SEVERE, "Number of PMS to be deactivated: " + pms.size());
-
-		List<Long> skipped = deactivateActivateAllPms(pms);
-
-		//Set<Long> skipList = deactivateAllPms(pms);
-		//Set<Long> activateSkipList = activateAllPms(pms, skipList);
-		LOGGER.log(Level.SEVERE, "skipped pms: "+ StringUtils.join(skipped.toArray(), ", "));
-		//LOGGER.log(Level.SEVERE, "Activation skipped: "+ StringUtils.join(activateSkipList.toArray(), ", "));
 	}
 
 	private static List<Long> deactivateActivateAllPms(List<PreventiveMaintenance> pms) throws Exception {
