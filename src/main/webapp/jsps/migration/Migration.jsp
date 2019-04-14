@@ -3,6 +3,6 @@
 <%@ page import ="java.util.List"%>
 <%
 List<Long> orgs = new ArrayList<Long>();
-                orgs.add(108L);
+                orgs.add(116L);
     PreventiveMaintenanceAPI.initScheduledWO(orgs);
 %>
