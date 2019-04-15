@@ -1950,6 +1950,14 @@ public class ModuleFactory {
 		module.setTableName("StateFlow");
 		return module;
 	}
+
+	public static FacilioModule getStateFlowScheduleModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName("stateflowScheduler");
+		module.setDisplayName("State Flow Scheduler");
+		module.setTableName("StateFlowScheduler");
+		return module;
+	}
 	
 //	public static FacilioModule getStateModule() {
 //		FacilioModule module = new FacilioModule();

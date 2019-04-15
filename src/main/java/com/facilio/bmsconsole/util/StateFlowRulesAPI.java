@@ -1,6 +1,9 @@
 package com.facilio.bmsconsole.util;
 
+import java.sql.SQLException;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -33,6 +36,8 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
+import com.facilio.tasker.FacilioTimer;
+import com.facilio.time.SecondsChronoUnit;
 
 public class StateFlowRulesAPI extends WorkflowRuleAPI {
 
@@ -68,6 +73,44 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 		updateChangeSet.setRecordId(recordId);
 		changeSet.add(updateChangeSet);
 		return changeSet;
+	}
+	
+	public static void addScheduledJobIfAny(long fromStateId, String moduleName, ModuleBaseWithCustomFields record, FacilioContext context) throws Exception {
+		List<WorkflowRuleContext> availableState = StateFlowRulesAPI.getAvailableState(record.getStateFlowId(), fromStateId, moduleName, record, context);
+		if (CollectionUtils.isNotEmpty(availableState)) {
+			for (WorkflowRuleContext rule : availableState) {
+				StateflowTransistionContext state = (StateflowTransistionContext) rule;
+				if (state.isScheduled()) {
+					System.out.println(state);
+					scheduleJob(record.getId(), state);
+				}
+			}
+		}
+	}
+	
+	private static void scheduleJob(long recordId, WorkflowRuleContext ruleContext) throws Exception {
+		FacilioModule module = ModuleFactory.getStateFlowScheduleModule();
+		GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
+				.table(module.getTableName())
+				.fields(FieldFactory.getStateFlowScheduleFields());
+		Map<String, Object> prop = new HashMap<>();
+		prop.put("recordId", recordId);
+		prop.put("transistionId", ruleContext.getId());
+		builder.addRecord(prop);
+		builder.save();
+		
+		StateflowTransistionContext stateFlow = (StateflowTransistionContext) ruleContext;
+		FacilioTimer.scheduleOneTimeJob((long) prop.get("id"), "StateFlowScheduledRule", stateFlow.getScheduleTime(), "priority");
+	}
+	
+	public static Map<String, Object> getStateTransistionScheduleInfo(long id) throws Exception {
+		FacilioModule module = ModuleFactory.getStateFlowScheduleModule();
+		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+				.table(module.getTableName())
+				.select(FieldFactory.getStateFlowScheduleFields())
+				.andCondition(CriteriaAPI.getIdCondition(id, module));
+		
+		return builder.fetchFirst();
 	}
 
 	public static List<WorkflowRuleContext> getAvailableState(long stateFlowId, long fromStateId, String moduleName, ModuleBaseWithCustomFields record, FacilioContext context) throws Exception {

@@ -45,6 +45,7 @@ public class UpdateStateCommand implements Command {
 			TicketStatusContext state = StateFlowRulesAPI.getStateContext(defaultStateId);
 			changeState(moduleData, state);
 			moduleData.setStateFlowId(defaultStateFlowId);
+			StateFlowRulesAPI.addScheduledJobIfAny(defaultStateId, moduleName, moduleData, (FacilioContext) context);
 		} 
 		else {
 			if (currentTransitionId != null && currentTransitionId > 0) {
@@ -55,7 +56,6 @@ public class UpdateStateCommand implements Command {
 					if (newState == null) {
 						throw new Exception("Invalid state");
 					}
-//					changeState(moduleData, newState);
 					stateChanged = true;
 					stateflowTransistion.executeTrueActions(moduleData, context, recordPlaceHolders);
 				} else {

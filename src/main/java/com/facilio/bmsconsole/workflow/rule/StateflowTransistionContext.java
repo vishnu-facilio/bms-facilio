@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.SharingContext;
 import com.facilio.bmsconsole.context.SingleSharingContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
@@ -21,6 +22,7 @@ import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.util.StateFlowRulesAPI;
 import com.facilio.bmsconsole.workflow.rule.ApprovalRuleContext.ApprovalOrder;
 import com.facilio.chain.FacilioContext;
+import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericSelectRecordBuilder;
 
 public class StateflowTransistionContext extends WorkflowRuleContext {
@@ -56,6 +58,14 @@ public class StateflowTransistionContext extends WorkflowRuleContext {
 	}
 	public void setFormId(long formId) {
 		this.formId = formId;
+	}
+	
+	private long moduleId = -1;
+	public long getModuleId() {
+		return moduleId;
+	}
+	public void setModuleId(long moduleId) {
+		this.moduleId = moduleId;
 	}
 	
 	private SharingContext<ApproverContext> approvers;
@@ -125,17 +135,20 @@ public class StateflowTransistionContext extends WorkflowRuleContext {
 		this.buttonType = buttonType;
 	}
 	
-	private boolean isScheduled = false;
+	private boolean scheduled = false;
 	public boolean isScheduled() {
-		return isScheduled;
+		return scheduled;
 	};
 	public void setScheduled(boolean isScheduled) {
-		this.isScheduled = isScheduled;
+		this.scheduled = isScheduled;
 	}
 	
-	private long scheduleTime = -1;
-	public long getScheduleTime() {
+	private int scheduleTime = -1;
+	public int getScheduleTime() {
 		return scheduleTime;
+	}
+	public void setScheduleTime(int scheduleTime) {
+		this.scheduleTime = scheduleTime;
 	}
 	
 	@Override
@@ -188,6 +201,10 @@ public class StateflowTransistionContext extends WorkflowRuleContext {
 		
 		if (shouldExecuteTrueActions) {
 			moduleRecord.setModuleState(StateFlowRulesAPI.getStateContext(getToStateId()));
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			FacilioModule module = modBean.getModule(getModuleId());
+			StateFlowRulesAPI.addScheduledJobIfAny(getToStateId(), module.getName(), moduleRecord, (FacilioContext) context);
+			
 			super.executeTrueActions(record, context, placeHolders);
 		}
 	}
