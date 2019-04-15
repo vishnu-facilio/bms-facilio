@@ -36,14 +36,14 @@ public enum WorkOrderActivityType implements ActivityType {
 		@Override
 		public String constructMessage(JSONObject json) {
 			// TODO Auto-generated method stub
-			return " approved Workorder ";
+			return " approved the Workorder ";
 		}
 	},
 	REJECTED(7) {
 		@Override
 		public String constructMessage(JSONObject json) {
 			// TODO Auto-generated method stub
-			return " rejected Workorder ";
+			return " rejected the Workorder ";
 		}
 	},
 	ADD_TASK(8) {
