@@ -38,8 +38,27 @@ import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
 
 public class FormsAPI {
+	
 	public static Map<String, Set<FacilioForm>> getAllForms(FormType formtype) throws Exception {
 		Map<String, Set<FacilioForm>> forms = new HashMap<> (FormFactory.getAllForms(formtype));
+		if (forms != null && AccountUtil.getCurrentAccount().isFromIos()) {
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			for(Map.Entry<String, Set<FacilioForm>> entry :forms.entrySet()) {
+				for(FacilioForm form: entry.getValue()) {
+					String moduleName = form.getModule().getName();
+					int count = form.getFields().size();
+					List<FacilioField> customFields = modBean.getAllCustomFields(moduleName);
+					if (customFields != null && !customFields.isEmpty()) {
+						List<FormField> fields = new ArrayList<>(form.getFields());
+						form.setFields(fields);
+						for (FacilioField f: customFields) {
+							count = count + 1;
+							fields.add(FormsAPI.getFormFieldFromFacilioField(f, count));
+						}
+					}
+				}
+			}
+		}
 		Map<String, Set<FacilioForm>> dbForms = getAllFormsFromDB(formtype);
 		if (!dbForms.isEmpty()) {
 			forms.putAll(dbForms);
