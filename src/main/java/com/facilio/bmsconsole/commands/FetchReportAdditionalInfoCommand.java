@@ -129,15 +129,19 @@ public class FetchReportAdditionalInfoCommand implements Command {
 						criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("createdTime"), report.getDateRange().getStartTime()+","+ report.getDateRange().getEndTime(), DateOperators.BETWEEN));
 						
 						List<EventContext> events = EventAPI.getEvent(criteria);
-						Map<Long,EventContext> eventIdMap = new HashMap<>();
-						Map<Long,EventContext> eventCreationTimeMap = new HashMap<>();
-						for(EventContext event :events) {
-							eventIdMap.put(event.getId(), event);
-							eventCreationTimeMap.put(event.getCreatedTime(), event);
-						}
 						
-						reportAggrData.put("events", splitEvents( report.getDateRange(), eventCreationTimeMap,events));
-						reportAggrData.put("eventInfo", eventIdMap);
+						if(events != null) {
+							Map<Long,EventContext> eventIdMap = new HashMap<>();
+							Map<Long,EventContext> eventCreationTimeMap = new HashMap<>();
+							
+							for(EventContext event :events) {
+								eventIdMap.put(event.getId(), event);
+								eventCreationTimeMap.put(event.getCreatedTime(), event);
+							}
+							
+							reportAggrData.put("events", splitEvents( report.getDateRange(), eventCreationTimeMap,events));
+							reportAggrData.put("eventInfo", eventIdMap);
+						}
 					}
 				}
 				

@@ -29,6 +29,7 @@ import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
+import com.facilio.util.FacilioUtil;
 import com.facilio.workflows.util.WorkflowUtil;
 
 public class ExpressionContext implements WorkflowExpression {
@@ -372,7 +373,7 @@ public class ExpressionContext implements WorkflowExpression {
 							if(readingDataMeta == null) {
 								throw new Exception("readingDataMeta is null for FieldName - "+fieldName +" moduleName - "+moduleName+" parentId - "+parentIdString);
 							}
-							long actualLastRecordedTime = getActualLastRecordedTime(module);
+							long actualLastRecordedTime = FacilioUtil.getActualLastRecordedTime(module);
 							if(actualLastRecordedTime > 0) {
 								if(readingDataMeta.getTtime() >= actualLastRecordedTime) {
 									exprResult = readingDataMeta.getValue();
@@ -523,17 +524,6 @@ public class ExpressionContext implements WorkflowExpression {
 		return exprResult;
 	}
 	
-	private long getActualLastRecordedTime(FacilioModule module) {
-		try {
-			ZonedDateTime zdt = DateTimeUtil.getDateTime(DateTimeUtil.getCurrenTime());
-			zdt = zdt.truncatedTo(module.getDateIntervalUnit());
-			return DateTimeUtil.getMillis(zdt, true);
-		}
-		catch(Exception e) {
-			return -1l;
-		}
-	}
-
 	private boolean isManualAggregateQuery() {
 		if((getAggregateCondition() != null && !getAggregateCondition().isEmpty())) {
 			return true;
