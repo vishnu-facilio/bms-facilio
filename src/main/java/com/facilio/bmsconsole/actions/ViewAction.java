@@ -95,13 +95,9 @@ public class ViewAction extends FacilioAction {
 		emailTemplate.setFrom("report@${org.domain}.facilio.com");
 		
 		FacilioContext context = new FacilioContext();
-//		if(viewId == -1) {
 			context.put(FacilioConstants.ContextNames.CV_NAME, viewName);
-//		}
-//		else {
-//			context.put(FacilioConstants.ContextNames.VIEWID, viewId);
-//		}
-//		context.put(FacilioConstants.ContextNames.CV_NAME, getViewName());
+
+
 		context.put(FacilioConstants.ContextNames.FILE_FORMAT, type);
 		context.put(FacilioConstants.Workflow.TEMPLATE, emailTemplate);
 		context.put(FacilioConstants.ContextNames.START_TIME, startTime);

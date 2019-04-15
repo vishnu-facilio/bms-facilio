@@ -49,7 +49,7 @@ public class CommonAction extends FacilioAction {
 		return SUCCESS;
 	}
 	public String exportModule() throws Exception {
-		fileUrl = ExportUtil.exportModule(FileFormat.getFileFormat(type), moduleName, viewName, filters, false, specialFields);
+		fileUrl = ExportUtil.exportModule(FileFormat.getFileFormat(type), moduleName, viewName, filters, false, specialFields, null);
 		return SUCCESS;
 	}
 	
