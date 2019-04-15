@@ -358,6 +358,7 @@ public class ColumnFactory {
 //		columns.add(new ViewField("name", "Purchase Order Name"));
 //		columns.add(new ViewField("description", "Description"));
 		columns.add(new ViewField("vendor", "Vendor"));
+		columns.add(new ViewField("storeRoom", "Storeroom"));
 		columns.add(new ViewField("orderedTime", "Ordered Date"));
 		columns.add(new ViewField("requiredTime", "Required Date"));
 		columns.add(new ViewField("status", "Status"));
