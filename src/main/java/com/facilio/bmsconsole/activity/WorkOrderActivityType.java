@@ -57,7 +57,7 @@ public enum WorkOrderActivityType implements ActivityType {
 		@Override
 		public String constructMessage(JSONObject json) {
 			// TODO Auto-generated method stub
-			return " added the Comment ";
+			return " added a Comment ";
 		}	
 	},
 	ADD_ATTACHMENT(10) {
