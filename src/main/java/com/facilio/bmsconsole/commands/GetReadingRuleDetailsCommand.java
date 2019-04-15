@@ -1,27 +1,10 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-
 import com.facilio.bmsconsole.context.AlarmContext;
 import com.facilio.bmsconsole.context.ReadingAlarmContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
-import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.FacilioModule;
-import com.facilio.bmsconsole.modules.FieldFactory;
-import com.facilio.bmsconsole.modules.FieldType;
-import com.facilio.bmsconsole.modules.FieldUtil;
+import com.facilio.bmsconsole.modules.*;
 import com.facilio.bmsconsole.util.ReadingRuleAPI;
 import com.facilio.bmsconsole.workflow.rule.AlarmRuleContext;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
@@ -29,6 +12,18 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.events.constants.EventConstants;
 import com.facilio.events.context.EventContext;
 import com.facilio.sql.GenericSelectRecordBuilder;
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class GetReadingRuleDetailsCommand implements Command {
 	
@@ -63,10 +58,25 @@ public class GetReadingRuleDetailsCommand implements Command {
 							List<Long> rcaIds = new ArrayList<>();
 							
 							JSONArray rcaJSONArray = new JSONArray();
+							
+							List<ReadingRuleContext> allRcaRules = new ArrayList<>();
+							
 							for(ReadingRuleContext rcaRule :alarmRuleContext.getAlarmRCARules()) {
 								
 								rcaIds.add(rcaRule.getId());
+								allRcaRules.add(rcaRule);
 							}
+							if(alarmRuleContext.getAlarmRCARulesVersionHistory() !=  null) {
+								
+								for(Long versionId :alarmRuleContext.getAlarmRCARulesVersionHistory().keySet()) {
+									
+									for(ReadingRuleContext rcaRule : alarmRuleContext.getAlarmRCARulesVersionHistory().get(versionId)) {
+										rcaIds.add(rcaRule.getId());
+										allRcaRules.add(rcaRule);
+									}
+								}
+							}
+							
 							List<FacilioField> eventFields = EventConstants.EventFieldFactory.getEventFields();
 							Map<String, FacilioField> eventFieldsMap = FieldFactory.getAsMap(eventFields);
 							List<FacilioField> fields = new ArrayList<>();
@@ -96,7 +106,8 @@ public class GetReadingRuleDetailsCommand implements Command {
 									eventMap.put(eventContext.getSubRuleId(), eventContext);
 								}
 							}
-							for(ReadingRuleContext rcaRule :alarmRuleContext.getAlarmRCARules()) {
+							
+							for(ReadingRuleContext rcaRule :allRcaRules) {
 								EventContext event = eventMap.get(rcaRule.getId());
 								
 								if(event != null) {

@@ -1,23 +1,18 @@
 package com.facilio.report.customreport;
 
-import java.util.List;
-
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.bmsconsole.context.BuildingContext;
-import com.facilio.bmsconsole.context.ReportContext;
-import com.facilio.bmsconsole.context.TicketCategoryContext;
-import com.facilio.bmsconsole.context.TicketStatusContext;
+import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.context.TicketStatusContext.StatusType;
-import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.util.DateTimeUtil;
 import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.util.WorkOrderAPI;
 import com.facilio.fw.BeanFactory;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+
+import java.util.List;
 
 public class CustomReportAswaq6 implements CustomReport {
 

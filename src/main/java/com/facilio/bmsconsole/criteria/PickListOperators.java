@@ -1,22 +1,17 @@
 package com.facilio.bmsconsole.criteria;
 
-import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
+import com.facilio.accounts.dto.Group;
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.constants.FacilioConstants;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.collections.PredicateUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
-import com.facilio.accounts.dto.Group;
-import com.facilio.accounts.util.AccountUtil;
-import com.facilio.constants.FacilioConstants;
+import java.lang.reflect.InvocationTargetException;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public enum PickListOperators implements Operator<String> {
 	

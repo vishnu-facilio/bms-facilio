@@ -1,15 +1,14 @@
 package com.facilio.events.constants;
 
-import java.util.Map;
-
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.events.context.EventRuleContext;
 import com.facilio.events.util.EventRulesAPI;
 import com.facilio.sql.GenericInsertRecordBuilder;
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
+
+import java.util.Map;
 
 public class AddNewEventRuleCommand implements Command {
 

@@ -1,9 +1,5 @@
 package com.facilio.leed.commands;
 
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.json.simple.JSONObject;
-
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.leed.constants.LeedConstants;
@@ -11,6 +7,9 @@ import com.facilio.leed.context.ArcContext;
 import com.facilio.leed.context.FuelContext;
 import com.facilio.leed.util.LeedAPI;
 import com.facilio.leed.util.LeedIntegrator;
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
+import org.json.simple.JSONObject;
 
 public class AddEnergyMeterCommand implements Command {
 

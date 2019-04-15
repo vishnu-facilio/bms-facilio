@@ -1,38 +1,25 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.LocationContext;
+import com.facilio.bmsconsole.context.PurchaseRequestContext;
+import com.facilio.bmsconsole.context.PurchaseRequestContext.Status;
+import com.facilio.bmsconsole.context.PurchaseRequestLineItemContext;
+import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.criteria.NumberOperators;
+import com.facilio.bmsconsole.modules.*;
+import com.facilio.bmsconsole.util.LocationAPI;
+import com.facilio.chain.FacilioContext;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
-import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.LocationContext;
-import com.facilio.bmsconsole.context.PurchaseOrderContext;
-import com.facilio.bmsconsole.context.PurchaseRequestContext;
-import com.facilio.bmsconsole.context.PurchaseRequestContext.Status;
-import com.facilio.bmsconsole.context.PurchaseRequestLineItemContext;
-import com.facilio.bmsconsole.context.StoreRoomContext;
-import com.facilio.bmsconsole.context.VendorContext;
-import com.facilio.bmsconsole.criteria.CriteriaAPI;
-import com.facilio.bmsconsole.criteria.NumberOperators;
-import com.facilio.bmsconsole.modules.DeleteRecordBuilder;
-import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.FacilioModule;
-import com.facilio.bmsconsole.modules.FieldFactory;
-import com.facilio.bmsconsole.modules.InsertRecordBuilder;
-import com.facilio.bmsconsole.modules.LookupField;
-import com.facilio.bmsconsole.modules.LookupFieldMeta;
-import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
-import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
-import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
-import com.facilio.bmsconsole.util.LocationAPI;
-import com.facilio.chain.FacilioContext;
-import com.facilio.constants.FacilioConstants;
-import com.facilio.fw.BeanFactory;
+import java.util.Collections;
+import java.util.List;
 
 public class AddOrUpdatePurchaseRequestCommand implements Command {
 
@@ -50,8 +37,10 @@ public class AddOrUpdatePurchaseRequestCommand implements Command {
 			if (CollectionUtils.isEmpty(purchaseRequestContext.getLineItems())) {
 				throw new Exception("Line items cannot be empty");
 			}
-            purchaseRequestContext.setShipToAddress(LocationAPI.getLocation(purchaseRequestContext.getStoreRoom(), purchaseRequestContext.getShipToAddress(), "SHIP_TO_Location", true));
-            purchaseRequestContext.setBillToAddress(LocationAPI.getLocation(purchaseRequestContext.getVendor(), purchaseRequestContext.getBillToAddress(), "BILL_TO_Location", false));
+			// setting current user to requestedBy
+			purchaseRequestContext.setRequestedBy(AccountUtil.getCurrentUser());
+            purchaseRequestContext.setShipToAddress(LocationAPI.getPoPrLocation(purchaseRequestContext.getStoreRoom(), purchaseRequestContext.getShipToAddress(), "SHIP_TO_Location", true));
+            purchaseRequestContext.setBillToAddress(LocationAPI.getPoPrLocation(purchaseRequestContext.getVendor(), purchaseRequestContext.getBillToAddress(), "BILL_TO_Location", false));
             if (purchaseRequestContext.getId() > 0) {
 				updateRecord(purchaseRequestContext, module, fields);
 				
@@ -65,11 +54,11 @@ public class AddOrUpdatePurchaseRequestCommand implements Command {
 				}
 				
 				purchaseRequestContext.setStatus(Status.REQUESTED);
-				addRecord(Collections.singletonList(purchaseRequestContext), module, fields);
+				addRecord(true, Collections.singletonList(purchaseRequestContext), module, fields);
 			}
 			
 			updateLineItems(purchaseRequestContext);
-			addRecord(purchaseRequestContext.getLineItems(), lineModule, modBean.getAllFields(lineModule.getName()));
+			addRecord(false, purchaseRequestContext.getLineItems(), lineModule, modBean.getAllFields(lineModule.getName()));
 			
 			context.put(FacilioConstants.ContextNames.RECORD, purchaseRequestContext);
 		}
@@ -83,10 +72,13 @@ public class AddOrUpdatePurchaseRequestCommand implements Command {
 		}
 	}
 	
-	private void addRecord(List<? extends ModuleBaseWithCustomFields> list, FacilioModule module, List<FacilioField> fields) throws Exception {
+	private void addRecord(boolean isLocalIdNeeded, List<? extends ModuleBaseWithCustomFields> list, FacilioModule module, List<FacilioField> fields) throws Exception {
 		InsertRecordBuilder insertRecordBuilder = new InsertRecordBuilder<>()
 				.module(module)
 				.fields(fields);
+		if(isLocalIdNeeded) {
+			insertRecordBuilder.withLocalId();
+		}
 		insertRecordBuilder.addRecords(list);
 		insertRecordBuilder.save();
 	}

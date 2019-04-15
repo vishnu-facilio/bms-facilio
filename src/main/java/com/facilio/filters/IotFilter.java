@@ -1,26 +1,19 @@
 package com.facilio.filters;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
-
-import org.apache.commons.chain.Chain;
-import org.apache.log4j.Logger;
-import org.json.simple.JSONObject;
-
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.util.DateTimeUtil;
 import com.facilio.chain.FacilioContext;
 import com.facilio.events.constants.EventConstants;
+import org.apache.commons.chain.Chain;
+import org.apache.log4j.Logger;
+import org.json.simple.JSONObject;
+
+import javax.servlet.*;
+import javax.servlet.http.HttpServletRequest;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class IotFilter implements Filter {
 

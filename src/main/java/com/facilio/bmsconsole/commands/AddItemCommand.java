@@ -1,25 +1,22 @@
 package com.facilio.bmsconsole.commands;
 
+import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.ItemContext;
+import com.facilio.bmsconsole.context.ItemContext.CostType;
+import com.facilio.bmsconsole.context.PurchasedItemContext;
+import com.facilio.bmsconsole.context.ToolContext;
+import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.criteria.NumberOperators;
+import com.facilio.bmsconsole.modules.*;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-
-import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.ItemContext;
-import com.facilio.bmsconsole.context.PurchasedItemContext;
-import com.facilio.bmsconsole.criteria.CriteriaAPI;
-import com.facilio.bmsconsole.criteria.NumberOperators;
-import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.FacilioModule;
-import com.facilio.bmsconsole.modules.FieldFactory;
-import com.facilio.bmsconsole.modules.InsertRecordBuilder;
-import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
-import com.facilio.constants.FacilioConstants;
-import com.facilio.fw.BeanFactory;
 
 public class AddItemCommand implements Command {
 
@@ -50,9 +47,13 @@ public class AddItemCommand implements Command {
 		List<PurchasedItemContext> purchasedItems = new ArrayList<>();
 
 		if (!itemTypesId.contains(item_rec.getItemType().getId())) {
+			if(item_rec.getCostType()<=0) {
+				item_rec.setCostType(CostType.FIFO);
+			}
 			itemToBeAdded.add(item_rec);
 		} else {
 			item_rec.setId(itemTypeVsItem.get(item_rec.getItemType().getId()));
+			updateItem(itemModule, itemFields, item_rec);
 		}
 
 		if (itemToBeAdded != null && !itemToBeAdded.isEmpty()) {
@@ -78,5 +79,11 @@ public class AddItemCommand implements Command {
 		InsertRecordBuilder<ItemContext> readingBuilder = new InsertRecordBuilder<ItemContext>().module(module)
 				.fields(fields).addRecords(parts);
 		readingBuilder.save();
+	}
+	
+	private void updateItem(FacilioModule module, List<FacilioField> fields, ItemContext item) throws Exception {
+		UpdateRecordBuilder<ItemContext> readingBuilder = new UpdateRecordBuilder<ItemContext>().module(module)
+				.fields(fields).andCondition(CriteriaAPI.getIdCondition(item.getId(), module));
+		readingBuilder.update(item);
 	}
 }

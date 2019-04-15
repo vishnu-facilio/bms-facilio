@@ -1,12 +1,5 @@
 package com.facilio.bmsconsole.actions;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.chain.Chain;
-import org.json.simple.JSONObject;
-
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.templates.EMailTemplate;
@@ -17,6 +10,10 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.fs.FileInfo.FileFormat;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
+import org.apache.commons.chain.Chain;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class CommonAction extends FacilioAction {
 	
@@ -36,7 +33,7 @@ public class CommonAction extends FacilioAction {
 		if (workflow.getWorkflowString() == null) {
 			workflow.setWorkflowString(WorkflowUtil.getXmlStringFromWorkflow(workflow));
 		}
-		setResult("workflowResult", WorkflowUtil.getWorkflowExpressionResult(workflow.getWorkflowString(), null));
+		setResult("workflowResult", WorkflowUtil.getWorkflowExpressionResult(workflow, null));
 		return SUCCESS;
 	}
 	public String mailExportModule () throws Exception {
@@ -81,7 +78,7 @@ public class CommonAction extends FacilioAction {
 		if (this.parameters != null) {
 			parameters.putAll(this.parameters);
 		}
-		Map<String, Object> params = WorkflowUtil.getExpressionResultMap(workflow.getWorkflowString(), parameters);
+		Map<String, Object> params = WorkflowUtil.getExpressionResultMap(workflow, parameters);
 		
 		setResult("parsedFtl", FreeMarkerAPI.processTemplate(ftl, params));
 		setResult("workflowResultMap", params);

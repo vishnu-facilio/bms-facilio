@@ -1,9 +1,9 @@
 package com.facilio.report.context;
 
-import java.util.List;
-
-import com.facilio.bmsconsole.context.FormulaContext.AggregateOperator;
+import com.facilio.bmsconsole.modules.AggregateOperator;
 import com.facilio.bmsconsole.criteria.Criteria;
+
+import java.util.List;
 
 public class WorkorderAnalysisContext {
 	private long xFieldId = -1;

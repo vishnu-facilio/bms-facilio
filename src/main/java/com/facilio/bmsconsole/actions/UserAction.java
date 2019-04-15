@@ -1,23 +1,5 @@
 package com.facilio.bmsconsole.actions;
 
-import java.io.File;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-
-import org.apache.commons.chain.Chain;
-import org.apache.commons.chain.Command;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.apache.struts2.ServletActionContext;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-
 import com.chargebee.Environment;
 import com.chargebee.ListResult;
 import com.chargebee.Result;
@@ -26,11 +8,7 @@ import com.chargebee.models.Card;
 import com.chargebee.models.Customer;
 import com.chargebee.models.Subscription;
 import com.chargebee.models.enums.Gateway;
-import com.facilio.accounts.dto.GroupMember;
-import com.facilio.accounts.dto.Organization;
-import com.facilio.accounts.dto.Role;
-import com.facilio.accounts.dto.User;
-import com.facilio.accounts.dto.UserMobileSetting;
+import com.facilio.accounts.dto.*;
 import com.facilio.accounts.exception.AccountException;
 import com.facilio.accounts.impl.UserBeanImpl;
 import com.facilio.accounts.util.AccountConstants;
@@ -41,26 +19,36 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.SetupLayout;
-import com.facilio.bmsconsole.context.ZoneContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
-import com.facilio.bmsconsole.criteria.PickListOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
-import com.facilio.bmsconsole.modules.FieldFactory;
-import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.tenant.TenantContext;
-import com.facilio.bmsconsole.tenant.TenantUserContext;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fs.FileStore;
 import com.facilio.fs.FileStoreFactory;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.DBUtil;
-import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.transaction.FacilioConnectionPool;
 import com.opensymphony.xwork2.ActionContext;
+import org.apache.commons.chain.Chain;
+import org.apache.commons.chain.Command;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.apache.struts2.ServletActionContext;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+
+import javax.servlet.http.HttpServletRequest;
+import java.io.File;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 public class UserAction extends FacilioAction {
 

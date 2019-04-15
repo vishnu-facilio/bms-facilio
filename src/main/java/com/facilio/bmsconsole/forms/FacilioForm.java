@@ -1,7 +1,11 @@
 package com.facilio.bmsconsole.forms;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import com.facilio.bmsconsole.modules.FacilioModule;
 
@@ -18,6 +22,7 @@ public class FacilioForm implements Serializable {
 		this.module = module;
 		this.formType = formType;
 		this.labelPosition = labelPosition;
+		this.showInMobile = true;
 	}
 
 	public FacilioForm(FacilioForm form) {
@@ -81,6 +86,14 @@ public class FacilioForm implements Serializable {
 		this.fields = fields;
 	}
 	
+	private List<FormSection> sections;
+	public List<FormSection> getSections() {
+		return sections;
+	}
+	public void setSections(List<FormSection> sections) {
+		this.sections = sections;
+	}
+
 	private FacilioModule module;
 	
 	public void setModule(FacilioModule module) {
@@ -144,10 +157,32 @@ public class FacilioForm implements Serializable {
 		}
 		return null;
 	}
+	
+	private String description;
+	public String getDescription() {
+		return description;
+	}
+	public void setDescription(String description) {
+		this.description = description;
+	}
+	
+	private Boolean showInMobile;
+	public Boolean getShowInMobile() {
+		return showInMobile;
+	}
+	public void setShowInMobile(Boolean showInMobile) {
+		this.showInMobile = showInMobile;
+	}
+	public Boolean isShowInMobile() {
+		if (this.showInMobile == null) {
+			return true;
+		}
+		return false;
+	}
 
 	public enum FormType {
 		WEB(1, "web"),
-		MOBILE(2, "mobile"),
+		MOBILE(2, "mobile"), // Will be removed
 		PORTAL(3, "portal");
 		
 		private int intVal;
@@ -186,7 +221,8 @@ public class FacilioForm implements Serializable {
 	
 	public enum LabelPosition {
 		TOP(1, "top"),
-		LEFT(2, "left");
+		LEFT(2, "left"),
+		RIGHT(3, "right");
 		
 		private int intVal;
 		public int getIntVal() {

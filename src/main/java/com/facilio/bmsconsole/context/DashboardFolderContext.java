@@ -7,6 +7,13 @@ public class DashboardFolderContext {
 
 	
 	private long orgId = -1;
+	private int displayOrder = -1;
+	public int getDisplayOrder() {
+		return displayOrder;
+	}
+	public void setDisplayOrder(int displayOrder) {
+		this.displayOrder = displayOrder;
+	}
 	public long getOrgId() {
 		return orgId;
 	}

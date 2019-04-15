@@ -1,13 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-
+import com.facilio.accounts.dto.User;
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
@@ -17,6 +11,13 @@ import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class GetWorkOrderCommand implements Command {
 
@@ -51,7 +52,18 @@ public class GetWorkOrderCommand implements Command {
 				
 				TicketAPI.loadRelatedModules(workOrder);
 				TicketAPI.loadTicketLookups(Collections.singleton(workOrder));
-				
+				if (workOrder.getRequester() != null) {
+					List<User> users = AccountUtil.getUserBean().getUsers(null, Collections.singletonList(workOrder.getRequester().getId()));
+					if (users != null && !users.isEmpty()) {
+						workOrder.setRequester(users.get(0));
+					}
+				}
+				if (workOrder.getRequestedBy() != null) {
+					List<User> users = AccountUtil.getUserBean().getUsers(null, Collections.singletonList(workOrder.getRequestedBy().getId()));
+					if (users != null && !users.isEmpty()) {
+						workOrder.setRequestedBy(users.get(0));
+					}
+				}
 				Map<Long, List<TaskContext>> taskMap = workOrder.getTasks();
 				if (taskMap != null) {
 					List<TaskContext> tasks = taskMap.values().stream().flatMap(c -> c.stream()).collect(Collectors.toList());

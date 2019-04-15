@@ -1,10 +1,5 @@
 package com.facilio.cards.util;
 
-import java.util.Map;
-import java.util.Set;
-
-import org.json.simple.JSONObject;
-
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.WidgetStaticContext;
@@ -15,6 +10,10 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.unitconversion.Unit;
 import com.facilio.unitconversion.UnitsUtil;
 import com.facilio.util.FacilioUtil;
+import org.json.simple.JSONObject;
+
+import java.util.Map;
+import java.util.Set;
 
 public class CardUtil {
 	
@@ -25,7 +24,7 @@ public class CardUtil {
 	
 	public static boolean isExtraCard(String key) {
 		
-		if(key.equals("readingWithGraphCard") || key.contains("emrill")) {
+		if(key.equals("readingWithGraphCard") || key.contains("emrill") || key.equals("resourceAlarmBar")) {
 			return true;
 		}
 		return false;

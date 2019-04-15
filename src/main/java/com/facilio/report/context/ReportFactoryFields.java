@@ -1,27 +1,17 @@
 package com.facilio.report.context;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.lang.reflect.FieldUtils;
-import org.json.simple.JSONObject;
-
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.FacilioModule;
-import com.facilio.bmsconsole.modules.FieldFactory;
-import com.facilio.bmsconsole.modules.FieldType;
-import com.facilio.bmsconsole.modules.FieldUtil;
-import com.facilio.bmsconsole.modules.LookupField;
-import com.facilio.bmsconsole.modules.ModuleFactory;
-import com.facilio.bmsconsole.modules.NumberField;
+import com.facilio.bmsconsole.modules.*;
 import com.facilio.fw.BeanFactory;
 import com.facilio.report.context.ReportFactory.Alarm;
 import com.facilio.report.context.ReportFactory.ModuleType;
 import com.facilio.report.context.ReportFactory.WorkOrder;
-import com.mysql.fabric.xmlrpc.base.Array;
+import org.json.simple.JSONObject;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class ReportFactoryFields {
 	
@@ -45,6 +35,7 @@ public class ReportFactoryFields {
 		selectedFields.add(fields.get("assignmentGroup"));
 		selectedFields.add(fields.get("type"));
 		selectedFields.add(fields.get("sourceType"));
+		selectedFields.add(fields.get("totalCost"));
 		selectedFields.add(fields.get("status"));
 		
 		if(customFields.size() != 0) {
@@ -138,12 +129,14 @@ public class ReportFactoryFields {
 		FacilioModule resourceModule = ModuleFactory.getResourceModule();
 		
 		for (FacilioField field : fields) {
-			if (field instanceof NumberField) {
-				metricFields.add(field);
-			} else if (field instanceof LookupField) {
-				addFieldInList(dimensionFieldMap, module, field);
-			} else if (field.getDataTypeEnum() == FieldType.DATE || field.getDataTypeEnum() == FieldType.DATE_TIME) {
-				addFieldInList(dimensionFieldMap, "time", field);
+			if(field != null) {
+				if (field instanceof NumberField) {
+					metricFields.add(field);
+				} else if (field.getDataTypeEnum() == FieldType.DATE || field.getDataTypeEnum() == FieldType.DATE_TIME) {
+					addFieldInList(dimensionFieldMap, "time", field);
+				} else {
+					addFieldInList(dimensionFieldMap, module, field);
+				}
 			}
 		}
 		FacilioField resourceField = getModuleResourceField(module);

@@ -1,48 +1,11 @@
 package com.facilio.bmsconsole.util;
 
-import java.lang.reflect.InvocationTargetException;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.StringJoiner;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.json.simple.JSONObject;
-
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.bmsconsole.criteria.BooleanOperators;
-import com.facilio.bmsconsole.criteria.Condition;
-import com.facilio.bmsconsole.criteria.Criteria;
-import com.facilio.bmsconsole.criteria.CriteriaAPI;
-import com.facilio.bmsconsole.criteria.NumberOperators;
-import com.facilio.bmsconsole.criteria.PickListOperators;
-import com.facilio.bmsconsole.criteria.StringOperators;
-import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.FacilioModule;
-import com.facilio.bmsconsole.modules.FieldFactory;
-import com.facilio.bmsconsole.modules.FieldUtil;
-import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
-import com.facilio.bmsconsole.modules.ModuleFactory;
-import com.facilio.bmsconsole.modules.UpdateChangeSet;
-import com.facilio.bmsconsole.workflow.rule.ActionContext;
-import com.facilio.bmsconsole.workflow.rule.EventType;
-import com.facilio.bmsconsole.workflow.rule.ApprovalRuleContext;
-import com.facilio.bmsconsole.workflow.rule.ApproverContext;
-import com.facilio.bmsconsole.workflow.rule.FieldChangeFieldContext;
-import com.facilio.bmsconsole.workflow.rule.ReadingAlarmRuleContext;
-import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
-import com.facilio.bmsconsole.workflow.rule.WorkflowEventContext;
-import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
+import com.facilio.bmsconsole.criteria.*;
+import com.facilio.bmsconsole.modules.*;
+import com.facilio.bmsconsole.workflow.rule.*;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -53,6 +16,15 @@ import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.json.simple.JSONObject;
+
+import java.lang.reflect.InvocationTargetException;
+import java.sql.SQLException;
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class WorkflowRuleAPI {
 	private static final Logger LOGGER = LogManager.getLogger(WorkflowRuleAPI.class.getName());
@@ -78,6 +50,8 @@ public class WorkflowRuleAPI {
 		rule.setOrgId(AccountUtil.getCurrentOrg().getId());
 		rule.setStatus(true);
 		rule.setLatestVersion(true);
+		rule.setCreatedTime(DateTimeUtil.getCurrenTime());
+		rule.setModifiedTime(rule.getCreatedTime());
 		updateWorkflowRuleChildIds(rule);
 		
 		validateWorkflowRule(rule);
@@ -275,6 +249,7 @@ public class WorkflowRuleAPI {
 	
 	public static int updateWorkflowRule(WorkflowRuleContext rule) throws Exception {
 		FacilioModule module = ModuleFactory.getWorkflowRuleModule();
+		rule.setModifiedTime(DateTimeUtil.getCurrenTime());
 		Map<String, Object> ruleProps = FieldUtil.getAsProperties(rule);
 		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
 													.table(module.getTableName())
@@ -355,7 +330,7 @@ public class WorkflowRuleAPI {
 		ruleBuilder.select(fields);
 		List<WorkflowRuleContext> rules = getWorkFlowsFromMapList(ruleBuilder.get(), fetchEvent, true, true);
 		
-		if(fetchAction) {
+		if(fetchAction && rules != null) {
 			for(WorkflowRuleContext rule :rules) {
 				List<ActionContext> actionList = ActionAPI.getAllActionsFromWorkflowRule(AccountUtil.getCurrentOrg().getId(), rule.getId());
 				rule.setActions(actionList);
@@ -838,6 +813,7 @@ public class WorkflowRuleAPI {
 				Map<String, Object> ruleProps = new HashMap<>();
 				ruleProps.put("latestVersion", false);
 				ruleProps.put("status", false);
+				ruleProps.put("modifiedTime", DateTimeUtil.getCurrenTime());
 				GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
 															.table(module.getTableName())
 															.fields(FieldFactory.getWorkflowRuleFields())
@@ -958,6 +934,7 @@ public class WorkflowRuleAPI {
 						.append(" of module : ")
 						.append(module.getName());
 			}
+			CommonCommandUtil.emailException("RULE EXECUTION FAILED - "+AccountUtil.getCurrentOrg().getId(),builder.toString(), e);
 			LOGGER.error(builder.toString(), e);
 			
 			if (propagateError) {
@@ -1009,6 +986,16 @@ public class WorkflowRuleAPI {
 			}
 		}
 		return null;
+	}
+
+	public static void executeScheduledRule (WorkflowRuleContext rule, long executionTime, FacilioContext context) throws Exception {
+		WorkflowEventContext event = rule.getEvent();
+		FacilioModule module = event.getModule();
+		Map<String, Object> placeHolders = WorkflowRuleAPI.getOrgPlaceHolders();
+		Map<String, Object> recordPlaceHolders = WorkflowRuleAPI.getRecordPlaceHolders(module.getName(), null, placeHolders);
+		recordPlaceHolders.put("executionTime", executionTime);
+		context.put(FacilioConstants.ContextNames.CURRENT_EXECUTION_TIME, executionTime);
+		WorkflowRuleAPI.executeWorkflowsAndGetChildRuleCriteria(Collections.singletonList(rule), module, null, null, null, recordPlaceHolders, (FacilioContext)context,true, Collections.singletonList(rule.getEvent().getActivityTypeEnum()));
 	}
 	
 }

@@ -507,4 +507,13 @@ public class AssetAction extends FacilioAction {
 		assetDetails();
 		return SUCCESS;
 	}
+	
+	public String fetchModuleCards() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.ASSET_ID, assetId);
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+		ReadOnlyChainFactory.getAssetModuleReportCardChain().execute(context);
+		setResult("cards", context.get(FacilioConstants.ContextNames.REPORT_CARDS));
+		return SUCCESS;
+	}
 }

@@ -8,6 +8,7 @@ import com.amazonaws.services.kinesis.model.Record;
 import com.facilio.agent.AgentKeys;
 import com.facilio.agent.AgentUtil;
 import com.facilio.agent.FacilioAgent;
+import com.facilio.agent.PublishType;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleCRUDBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
@@ -18,6 +19,7 @@ import com.facilio.bmsconsole.criteria.StringOperators;
 import com.facilio.bmsconsole.modules.*;
 import com.facilio.devicepoints.DevicePointsUtil;
 import com.facilio.events.context.EventRuleContext;
+import com.facilio.events.tasker.tasks.EventUtil;
 import com.facilio.fw.BeanFactory;
 import com.facilio.kinesis.ErrorDataProducer;
 import com.facilio.sql.GenericUpdateRecordBuilder;
@@ -28,13 +30,13 @@ import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
+import java.io.StringReader;
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import com.facilio.events.tasker.tasks.EventUtil;
 
 public class Processor implements IRecordProcessor {
 
@@ -55,17 +57,20 @@ public class Processor implements IRecordProcessor {
         private DevicePointsUtil devicePointsUtil;
         private AckUtil ackUtil;
         private EventUtil eventUtil;
+        private Boolean isStage = !AwsUtil.isProduction();
 
         public static final String DATA_TYPE = "PUBLISH_TYPE";
         private List<EventRuleContext> eventRules = new ArrayList<>();
+        private JSONParser parser = new JSONParser();
 
 
-        Processor(long orgId, String orgDomainName){
+
+    Processor(long orgId, String orgDomainName){
             this.orgId = orgId;
             this.orgDomainName = orgDomainName;
             this.errorStream = orgDomainName + "-error";
             agentUtil = new AgentUtil(orgId, orgDomainName);
-            agentUtil.populateAgentContextMap();
+            agentUtil.populateAgentContextMap(null);
             devicePointsUtil = new DevicePointsUtil();
             ackUtil = new AckUtil();
             eventUtil = new EventUtil();
@@ -111,9 +116,9 @@ public class Processor implements IRecordProcessor {
 
         @Override
         public void processRecords(ProcessRecordsInput processRecordsInput) {
-
             for (Record record : processRecordsInput.getRecords()) {
                 String data = "";
+                StringReader reader = null;
                 try {
 
                     data = decoder.decode(record.getData()).toString();
@@ -127,17 +132,17 @@ public class Processor implements IRecordProcessor {
                         eventRules = ruleList;
                     }
 
-                    JSONParser parser = new JSONParser();
-                    JSONObject payLoad = (JSONObject) parser.parse(data);
+                    reader = new StringReader(data);
+                    JSONObject payLoad = (JSONObject) parser.parse(reader);
 
-                    String dataType = AgentKeys.EVENT;
+                    String dataType = PublishType.event.getValue();
                     if(payLoad.containsKey(EventUtil.DATA_TYPE)) {
                         dataType = (String)payLoad.remove(EventUtil.DATA_TYPE);
                     }
-
+                    PublishType publishType = PublishType.valueOf(dataType);
                     String agentName = orgDomainName;
-                    if ( payLoad.containsKey(AgentKeys.AGENT)) {
-                       agentName = (String)payLoad.remove(AgentKeys.AGENT);
+                    if ( payLoad.containsKey(PublishType.agent.getValue())) {
+                       agentName = (String)payLoad.remove(PublishType.agent.getValue());
                     }
 
                     String deviceId = orgDomainName;
@@ -152,9 +157,12 @@ public class Processor implements IRecordProcessor {
                     }
 
                     FacilioAgent agent = agentUtil.getFacilioAgent(agentName);
-                    if (agent == null && ! AgentKeys.AGENT.equals(dataType)) {
+                    if (agent == null) {
                         agent = getFacilioAgent(agentName);
                         agentUtil.addAgent(agent);
+                    }
+                    if(isStage && agent != null) {
+                        AgentUtil.addAgentMetrics(data.length(), agent.getId(), publishType.getKey());
                     }
 
                     long i = 0;
@@ -163,25 +171,28 @@ public class Processor implements IRecordProcessor {
                     long deviceLastMessageTime = dataTypeLastMessageTime.getOrDefault(dataType, 0L);
 
                     if(deviceLastMessageTime != lastMessageReceivedTime) {
-                        switch (dataType) {
-                            case AgentKeys.TIMESERIES:
+                        switch (publishType) {
+                            case timeseries:
                                 processTimeSeries(record, payLoad, processRecordsInput, true);
                                 updateDeviceTable(record.getPartitionKey());
                                 break;
-                            case AgentKeys.COV:
+                            case cov:
                                 processTimeSeries(record, payLoad, processRecordsInput, false);
                                 updateDeviceTable(record.getPartitionKey());
                                 break;
-                            case AgentKeys.AGENT:
-                                i =  agentUtil.processAgent( payLoad);
+                            case agent:
+                                i =  agentUtil.processAgent( payLoad,agentName);
                                 break;
-                            case AgentKeys.DEVICE_POINTS:
+                            case devicepoints:
                                 devicePointsUtil.processDevicePoints(payLoad, orgId, deviceMap, agent.getId());
                                 break;
-                            case AgentKeys.ACK:
+                            case ack:
                                 ackUtil.processAck(payLoad, orgId);
+                                if(isStage) {
+                                    agentUtil.putLog(payLoad, orgId, agent.getId(), false);
+                                }
                                 break;
-                            case AgentKeys.EVENT:
+                            case event:
                                 boolean alarmCreated = eventUtil.processEvents(record.getApproximateArrivalTimestamp().getTime(), payLoad, record.getPartitionKey(),orgId,eventRules);
                                 if (alarmCreated) {
                                     processRecordsInput.getCheckpointer().checkpoint(record);
@@ -195,7 +206,7 @@ public class Processor implements IRecordProcessor {
                         LOGGER.info("Duplicate message for device " + deviceId + " and type " + dataType);
                     }
                     if ( i == 0 ) {
-                        GenericUpdateRecordBuilder genericUpdateRecordBuilder = new GenericUpdateRecordBuilder().table(AgentKeys.TABLE_NAME).fields(FieldFactory.getAgentDataFields()).andCustomWhere( AgentKeys.NAME+"= '"+agentName+"'");
+                        GenericUpdateRecordBuilder genericUpdateRecordBuilder = new GenericUpdateRecordBuilder().table(AgentKeys.AGENT_TABLE).fields(FieldFactory.getAgentDataFields()).andCustomWhere( AgentKeys.NAME+"= '"+agentName+"'");
                         Map<String,Object> toUpdate = new HashMap<>();
                         toUpdate.put(AgentKeys.CONNECTION_STATUS, Boolean.TRUE);
                         toUpdate.put(AgentKeys.STATE, 1);
@@ -226,7 +237,7 @@ public class Processor implements IRecordProcessor {
         agent.setAgentName(agentName);
         agent.setAgentConnStatus(Boolean.TRUE);
         agent.setAgentState(1);
-        agent.setAgentDataInterval(900000L);
+        agent.setAgentDataInterval(15L);
         return agent;
     }
 

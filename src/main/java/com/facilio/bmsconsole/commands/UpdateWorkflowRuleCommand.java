@@ -1,8 +1,5 @@
 package com.facilio.bmsconsole.commands;
 
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-
 import com.facilio.bmsconsole.util.ApprovalRulesAPI;
 import com.facilio.bmsconsole.util.ReadingRuleAPI;
 import com.facilio.bmsconsole.util.SLARuleAPI;
@@ -12,6 +9,8 @@ import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 import com.facilio.bmsconsole.workflow.rule.SLARuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.constants.FacilioConstants;
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
 
 public class UpdateWorkflowRuleCommand implements Command {
 
@@ -28,9 +27,12 @@ public class UpdateWorkflowRuleCommand implements Command {
 			
 			if (oldRule.getVersionGroupId() == -1) {
 				updateRule.setVersionGroupId(rule.getId());
+				updateRule.setVersionNumber(1);
+				rule.setVersionNumber(2);
 			}
 			else {
 				updateRule.setVersionGroupId(oldRule.getVersionGroupId());
+				rule.setVersionNumber(oldRule.getVersionNumber()+1);
 			}
 			rule.setVersionGroupId(updateRule.getVersionGroupId());
 			rule.setId(-1);

@@ -1,8 +1,8 @@
 package com.facilio.accounts.dto;
 
-import java.io.Serializable;
-
 import com.facilio.accounts.util.AccountConstants;
+
+import java.io.Serializable;
 
 public class Permissions implements Serializable {
 	/**
@@ -25,6 +25,7 @@ public class Permissions implements Serializable {
 	public long getPermission() {
 		return permission;
 	}
+	
 	public void setPermission(long permission) {
 		this.permission = permission;
 	}

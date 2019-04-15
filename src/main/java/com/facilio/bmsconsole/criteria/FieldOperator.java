@@ -1,16 +1,15 @@
 package com.facilio.bmsconsole.criteria;
 
-import java.util.List;
-
+import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.fw.BeanFactory;
+import com.google.common.base.Objects;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
-import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.fw.BeanFactory;
-import com.google.common.base.Objects;
+import java.util.List;
 
 public enum FieldOperator implements Operator<Object> {
 

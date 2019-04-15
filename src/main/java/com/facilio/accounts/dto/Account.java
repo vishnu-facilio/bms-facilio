@@ -1,8 +1,8 @@
 package com.facilio.accounts.dto;
 
-import java.io.Serializable;
-
 import com.facilio.screen.context.RemoteScreenContext;
+
+import java.io.Serializable;
 
 public class Account implements Serializable {
 	

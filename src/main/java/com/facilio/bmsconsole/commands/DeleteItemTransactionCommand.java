@@ -1,27 +1,19 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ItemContext;
 import com.facilio.bmsconsole.context.ItemTransactionsContext;
 import com.facilio.bmsconsole.context.PurchasedItemContext;
-import com.facilio.bmsconsole.context.ItemTransactionsContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
-import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.FacilioModule;
-import com.facilio.bmsconsole.modules.FieldFactory;
-import com.facilio.bmsconsole.modules.LookupField;
-import com.facilio.bmsconsole.modules.LookupFieldMeta;
-import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
-import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
+import com.facilio.bmsconsole.modules.*;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 public class DeleteItemTransactionCommand implements Command {
 
@@ -38,8 +30,8 @@ public class DeleteItemTransactionCommand implements Command {
 				List<FacilioField> itemFields = modBean.getAllFields(FacilioConstants.ContextNames.ITEM);
 
 				Map<String, FacilioField> itemFieldsMap = FieldFactory.getAsMap(itemFields);
-				List<LookupFieldMeta> lookUpfields = new ArrayList<>();
-				lookUpfields.add(new LookupFieldMeta((LookupField) itemFieldsMap.get("itemType")));
+				List<LookupField>lookUpfields = new ArrayList<>();
+				lookUpfields.add((LookupField) itemFieldsMap.get("itemType"));
 
 				SelectRecordsBuilder<ItemContext> itemSelectBuilder = new SelectRecordsBuilder<ItemContext>()
 						.select(itemFields).table(itemModule.getTableName()).moduleName(itemModule.getName())

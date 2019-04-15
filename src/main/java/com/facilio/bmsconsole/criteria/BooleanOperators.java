@@ -1,11 +1,11 @@
 package com.facilio.bmsconsole.criteria;
 
+import org.apache.commons.collections.Predicate;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.apache.commons.collections.Predicate;
 
 public enum BooleanOperators implements Operator<String> {
 	

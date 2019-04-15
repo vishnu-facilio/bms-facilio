@@ -1,20 +1,22 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.Collections;
-import java.util.Map;
+import com.amazonaws.util.AWSRequestMetrics.Field;
+import com.facilio.accounts.util.AccountConstants;
+import com.facilio.bmsconsole.context.LocationContext;
+import com.facilio.bmsconsole.context.StoreRoomContext;
+import com.facilio.bmsconsole.modules.FieldFactory;
+import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.bmsconsole.util.LocationAPI;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.sql.GenericSelectRecordBuilder;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
-import com.facilio.bmsconsole.context.BaseSpaceContext;
-import com.facilio.bmsconsole.context.InventoryContext;
-import com.facilio.bmsconsole.context.InventoryVendorContext;
-import com.facilio.bmsconsole.context.LocationContext;
-import com.facilio.bmsconsole.context.StoreRoomContext;
-import com.facilio.bmsconsole.util.InventoryApi;
-import com.facilio.bmsconsole.util.LocationAPI;
-import com.facilio.bmsconsole.util.SpaceAPI;
-import com.facilio.constants.FacilioConstants;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 public class GetStoreRoomDetailsCommand implements Command{
 
@@ -28,10 +30,29 @@ public class GetStoreRoomDetailsCommand implements Command{
 					Map<Long, LocationContext> spaceMap = LocationAPI.getLocationMap(Collections.singleton(storeRoom.getLocationId()));
 					storeRoom.setLocation(spaceMap.get(storeRoom.getLocationId()));
 				}
+				storeRoom.setSites(getSitesList(storeRoom.getId()));
 			}
 			context.put(FacilioConstants.ContextNames.STORE_ROOM, storeRoom);
 		}
 		return false;
+	}
+	
+	public List<Long> getSitesList (long storeRoomId) throws Exception {
+        GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+                .select(FieldFactory.getSitesForStoreRoomFields())
+                .table(ModuleFactory.getSitesForStoreRoomModule().getTableName())
+                .andCustomWhere("STORE_ROOM_ID = ?", storeRoomId);
+
+        List<Map<String, Object>> props = selectBuilder.get();
+        if (props != null && !props.isEmpty()) {
+            List<Long> bsids = new ArrayList<>();
+            for(Map<String, Object> prop : props) {
+                bsids.add((Long) prop.get("siteId"));
+            }
+            return bsids;
+        }
+        return null;
+
 	}
 
 }

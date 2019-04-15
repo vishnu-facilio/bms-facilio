@@ -1,19 +1,16 @@
 package com.facilio.bmsconsole.actions;
 
-import java.util.Collections;
-import java.util.List;
-
-import org.apache.commons.chain.Chain;
-import org.apache.commons.chain.Command;
-
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
-import com.facilio.bmsconsole.context.PurchasedItemContext;
 import com.facilio.bmsconsole.context.WorkorderItemContext;
-import com.facilio.bmsconsole.context.WorkorderPartsContext;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import org.apache.commons.chain.Chain;
+import org.apache.commons.chain.Command;
+
+import java.util.Collections;
+import java.util.List;
 
 public class WorkorderItemsAction extends FacilioAction{
 	private static final long serialVersionUID = 1L;
@@ -43,12 +40,17 @@ public class WorkorderItemsAction extends FacilioAction{
 	
 	public String addOrUpdateWorkorderItems() throws Exception {
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.CREATE);
 		context.put(FacilioConstants.ContextNames.RECORD_LIST, workorderItems);
 		context.put(FacilioConstants.ContextNames.PURCHASED_ITEM, purchasedItems);
 		Chain addWorkorderPartChain = TransactionChainFactory.getAddOrUdpateWorkorderItemsChain();
 		addWorkorderPartChain.execute(context);
 		setWorkorderItemsId((List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST));
+		double cost = (double) context.get(FacilioConstants.ContextNames.TOTAL_COST);
+		long qty = (long) context.get(FacilioConstants.ContextNames.TOTAL_QUANTITY);
+		setResult(FacilioConstants.ContextNames.TOTAL_QUANTITY, qty);
+		setResult(FacilioConstants.ContextNames.TOTAL_COST, cost);
+		long totalCost = (long) context.get(FacilioConstants.ContextNames.WO_TOTAL_COST);
+		setResult(FacilioConstants.ContextNames.WO_TOTAL_COST, totalCost);
 		setResult("workorderItemsId", workorderItemsId);
 		return SUCCESS;
 	} 
@@ -65,6 +67,12 @@ public class WorkorderItemsAction extends FacilioAction{
 		Chain deleteInventoryChain = TransactionChainFactory.getDeleteWorkorderItemChain();
 		deleteInventoryChain.execute(context);
 		setWorkorderItemsId((List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST));
+		double cost = (double) context.get(FacilioConstants.ContextNames.TOTAL_COST);
+		long qty = (long) context.get(FacilioConstants.ContextNames.TOTAL_QUANTITY);
+		setResult(FacilioConstants.ContextNames.TOTAL_QUANTITY, qty);
+		setResult(FacilioConstants.ContextNames.TOTAL_COST, cost);
+		long totalCost = (long) context.get(FacilioConstants.ContextNames.WO_TOTAL_COST);
+		setResult(FacilioConstants.ContextNames.WO_TOTAL_COST, totalCost);
 		setResult("workorderItemsId", workorderItemsId);
 		return SUCCESS;
 	}

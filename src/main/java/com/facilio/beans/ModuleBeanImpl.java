@@ -1,52 +1,26 @@
 package com.facilio.beans;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.sql.Types;
-import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.StringJoiner;
-import java.util.stream.Collectors;
-
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsole.commands.data.ServicePortalInfo;
+import com.facilio.bmsconsole.criteria.Condition;
+import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.criteria.NumberOperators;
+import com.facilio.bmsconsole.modules.*;
+import com.facilio.bmsconsole.modules.FacilioModule.ModuleType;
+import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
+import com.facilio.fw.BeanFactory;
+import com.facilio.sql.*;
+import com.facilio.transaction.FacilioConnectionPool;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
-import com.facilio.accounts.util.AccountUtil;
-import com.facilio.bmsconsole.commands.data.ServicePortalInfo;
-import com.facilio.bmsconsole.criteria.Condition;
-import com.facilio.bmsconsole.criteria.CriteriaAPI;
-import com.facilio.bmsconsole.criteria.NumberOperators;
-import com.facilio.bmsconsole.modules.BooleanField;
-import com.facilio.bmsconsole.modules.EnumField;
-import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.FacilioModule;
-import com.facilio.bmsconsole.modules.FacilioModule.ModuleType;
-import com.facilio.bmsconsole.modules.FieldFactory;
-import com.facilio.bmsconsole.modules.FieldType;
-import com.facilio.bmsconsole.modules.FieldUtil;
-import com.facilio.bmsconsole.modules.FileField;
-import com.facilio.bmsconsole.modules.LookupField;
-import com.facilio.bmsconsole.modules.ModuleFactory;
-import com.facilio.bmsconsole.modules.NumberField;
-import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
-import com.facilio.fw.BeanFactory;
-import com.facilio.sql.DBUtil;
-import com.facilio.sql.GenericDeleteRecordBuilder;
-import com.facilio.sql.GenericInsertRecordBuilder;
-import com.facilio.sql.GenericSelectRecordBuilder;
-import com.facilio.sql.GenericUpdateRecordBuilder;
-import com.facilio.transaction.FacilioConnectionPool;
+import java.sql.*;
+import java.text.MessageFormat;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class ModuleBeanImpl implements ModuleBean {
 
@@ -700,17 +674,22 @@ public class ModuleBeanImpl implements ModuleBean {
 		}
 		return null;
 	}
-	
+
+
 	@Override
 	public FacilioField getField(String fieldName, String moduleName) throws Exception {
 		FacilioModule module = getMod(moduleName);
-		
+
 		if (fieldName.equals("id")) {
 			return FieldFactory.getIdField(module);
 		}
-		
-		if (fieldName.equals("siteId")) {
+
+		if (FieldUtil.isSiteIdFieldPresent(module) && fieldName.equals("siteId")) {
 			return FieldFactory.getSiteIdField(module);
+		}
+
+		if (FieldUtil.isSystemFieldsPresent(module) && FieldFactory.isSystemField(fieldName)) {
+			return FieldFactory.getSystemField(fieldName, module);
 		}
 		
 		if(LookupSpecialTypeUtil.isSpecialType(moduleName)) {

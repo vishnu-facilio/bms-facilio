@@ -1,11 +1,10 @@
 package com.facilio.bmsconsole.templates;
 
-import org.json.simple.JSONObject;
-
 import com.facilio.accounts.dto.Group;
 import com.facilio.accounts.dto.User;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import org.json.simple.JSONObject;
 
 public class AssignmentTemplate extends Template {
 

@@ -1,24 +1,16 @@
 package com.facilio.bmsconsole.util;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.InventoryCategoryContext;
-import com.facilio.bmsconsole.context.InventoryContext;
-import com.facilio.bmsconsole.context.InventoryVendorContext;
-import com.facilio.bmsconsole.context.ItemStatusContext;
-import com.facilio.bmsconsole.context.ItemTypesCategoryContext;
-import com.facilio.bmsconsole.context.ItemTypesStatusContext;
-import com.facilio.bmsconsole.context.ToolStatusContext;
-import com.facilio.bmsconsole.context.ToolTypesCategoryContext;
-import com.facilio.bmsconsole.context.ToolTypesStatusContext;
+import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
+
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
 public class InventoryApi {
 	

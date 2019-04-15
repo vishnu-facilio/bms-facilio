@@ -1,13 +1,15 @@
 package com.facilio.report.context;
 
+
+
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.json.annotations.JSON;
+import org.json.simple.JSONObject;
 
-import com.chargebee.org.json.JSONObject;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.EnumOperators;
@@ -90,11 +92,15 @@ public class ReportUserFilterContext {
 		if (CollectionUtils.isNotEmpty(getValues())) {
 			return getValues();
 		}
-		return getDefaultValues();
+		else if (CollectionUtils.isNotEmpty(getDefaultValues())) {
+			return getDefaultValues();
+		} else if (chooseValue != null && CollectionUtils.isNotEmpty(chooseValue.getValues())) {
+			return chooseValue.getValues();
+		}
+		return null;
 	}
 	
 	@JsonIgnore
-	@JSON(serialize=false)
 	public Criteria getCriteria() {
 		List<String> data = getData();
 		if (CollectionUtils.isEmpty(data)) {

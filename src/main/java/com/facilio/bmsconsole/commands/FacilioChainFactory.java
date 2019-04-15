@@ -12,10 +12,11 @@ import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.exception.AccountException;
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.activity.AddActivitiesCommand;
 import com.facilio.bmsconsole.modules.FieldUtil;
-import com.facilio.bmsconsole.util.TenantsAPI;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.chain.FacilioChain;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.leed.commands.AddConsumptionForLeed;
 import com.facilio.leed.commands.AddEnergyMeterCommand;
 import com.facilio.leed.commands.FetchArcAssetsCommand;
@@ -375,7 +376,8 @@ public class FacilioChainFactory {
 		c.addCommand(new AddTaskOptionsCommand());
 		c.addCommand(new UpdateReadingDataMetaCommand());
 		c.addCommand(new AddTaskTicketActivityCommand());
-		c.setPostTransactionChain(TransactionChainFactory.getUpdateTaskCountChain());
+//		c.setPostTransactionChain(TransactionChainFactory.getUpdateTaskCountChain());
+		c.addCommand(new AddActivitiesCommand(FacilioConstants.ContextNames.WORKORDER_ACTIVITY));
 		return c;
 	}
 	
@@ -383,7 +385,7 @@ public class FacilioChainFactory {
 		FacilioChain c = (FacilioChain) FacilioChain.getTransactionChain();
 		c.addCommand(SetTableNamesCommand.getForTask());
 		c.addCommand(new DeleteTaskCommand());
-		c.setPostTransactionChain(TransactionChainFactory.getUpdateTaskCountChain());
+//		c.setPostTransactionChain(TransactionChainFactory.getUpdateTaskCountChain());
 		return c;
 	}
 	
@@ -929,7 +931,8 @@ public class FacilioChainFactory {
 		c.addCommand(new AttachmentContextCommand());
 		c.addCommand(new AddAttachmentRelationshipCommand());
 		c.addCommand(new AddAttachmentTicketActivityCommand());
-		c.setPostTransactionChain(TransactionChainFactory.getUpdateAttachmentCountChain());
+//		c.setPostTransactionChain(TransactionChainFactory.getUpdateAttachmentCountChain());
+		c.addCommand(new AddActivitiesCommand(FacilioConstants.ContextNames.WORKORDER_ACTIVITY));
 		return c;
 	}
 	
@@ -1007,7 +1010,7 @@ public class FacilioChainFactory {
 	public static Chain getDeleteAttachmentChain() {
 		FacilioChain c = (FacilioChain) FacilioChain.getTransactionChain();
 		c.addCommand(new DeleteAttachmentCommand());
-		c.setPostTransactionChain(TransactionChainFactory.getUpdateAttachmentCountChain());
+//		c.setPostTransactionChain(TransactionChainFactory.getUpdateAttachmentCountChain());
 		return c;
 	}
 	
@@ -1710,12 +1713,14 @@ public class FacilioChainFactory {
 	public static Chain getAllFormulasOfTypeChain() {
 		Chain c = FacilioChain.getNonTransactionChain();
 		c.addCommand(new GetAllFormulasOfTypeCommand());
+		c.addCommand(new GetReadingFieldsCommand());
 		return c;
 	}
 	
 	public static Chain updateFormulaChain() {
 		Chain c = FacilioChain.getTransactionChain();
 		c.addCommand(new UpdateFormulaCommand());
+		c.addCommand(new AddValidationRulesCommand());
 		return c;
 	}
 	
@@ -2033,6 +2038,12 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
+	public static Chain toggleStatusChain() {
+		Chain c = FacilioChain.getTransactionChain();
+		c.addCommand(new ToggleTenantStatusCommand());
+		return c;
+	}
+	
 	public static Chain addRateCardChain() {
 		Chain c = FacilioChain.getTransactionChain();
 		c.addCommand(new AddRateCardCommand());
@@ -2063,12 +2074,6 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
-	public static Chain editFormChain() {
-		Chain c = FacilioChain.getTransactionChain();
-		c.addCommand(new GetFormMetaCommand());
-		c.addCommand(new EditFormCommand());
-		return c;
-	}
 	
 	public static Chain getNewInventoryChain() {
 		Chain c = FacilioChain.getTransactionChain();

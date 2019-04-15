@@ -23,6 +23,7 @@ import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.ViewFactory;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.sql.GenericSelectRecordBuilder;
 
 public class GetWorkOrderListCommand implements Command {
@@ -119,7 +120,8 @@ public class GetWorkOrderListCommand implements Command {
 		{
 			selectBuilder.andCustomWhere("Tickets.DUE_DATE BETWEEN ? AND ?", (Long) context.get(FacilioConstants.ContextNames.WO_DUE_STARTTIME) * 1000, (Long) context.get(FacilioConstants.ContextNames.WO_DUE_ENDTIME) * 1000);
 		}
-		if (!isApproval && !isUpcomingGroup(view)) {
+		Boolean fetchAllTypes = (Boolean) context.get(ContextNames.WO_FETCH_ALL);
+		if (!isApproval && !isUpcomingGroup(view) && (fetchAllTypes == null || !fetchAllTypes)) {
 			selectBuilder.andCondition(CriteriaAPI.getCondition("STATUS_ID", "status", TicketAPI.getStatus("preopen").getId()+"", NumberOperators.NOT_EQUALS));
 
 		}
@@ -136,13 +138,19 @@ public class GetWorkOrderListCommand implements Command {
 				int page = (int) pagination.get("page");
 				int perPage = (int) pagination.get("perPage");
 
-				int offset = ((page-1) * perPage);
-				if (offset < 0) {
-					offset = 0;
+				if (perPage != -1) {
+					int offset = ((page-1) * perPage);
+					if (offset < 0) {
+						offset = 0;
+					}
+
+					selectBuilder.offset(offset);
+					selectBuilder.limit(perPage);
 				}
 
-				selectBuilder.offset(offset);
-				selectBuilder.limit(perPage);
+				if (perPage == -1 && (filters == null || !filters.containsKey("createdTime"))) {
+					throw new IllegalArgumentException("createdTime filter is mandatory");
+				}
 			}
 		}
 		List<WorkOrderContext> workOrders = selectBuilder.get();

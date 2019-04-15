@@ -1,11 +1,10 @@
 package com.facilio.bmsconsole.actions;
 
+import com.facilio.bmsconsole.util.WorkOrderRequestAPI;
+import com.opensymphony.xwork2.ActionSupport;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
-
-import com.facilio.bmsconsole.util.WorkOrderRequestAPI;
-import com.opensymphony.xwork2.ActionSupport;
 
 public class SupportMailParseAction extends ActionSupport {
 	

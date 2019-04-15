@@ -1,23 +1,18 @@
 package com.facilio.bmsconsole.context;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
-
 import com.facilio.accounts.dto.User;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.util.DateTimeUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.events.context.EventContext;
 import com.opensymphony.xwork2.conversion.annotations.TypeConversion;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+
+import java.util.*;
 
 public class AlarmContext extends TicketContext {
 	/**
@@ -389,7 +384,7 @@ public class AlarmContext extends TicketContext {
 			return null;
 		}
 		else {
-			return AwsUtil.getConfig("clientapp.url")+"/app/fa/alarms/summary/"+super.getId();
+			return AwsUtil.getConfig("clientapp.url")+"/app/fa/alarms/newsummary/"+super.getId();
 		}
 	}
 	

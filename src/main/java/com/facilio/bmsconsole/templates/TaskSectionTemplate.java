@@ -8,6 +8,7 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import com.facilio.bmsconsole.context.PMIncludeExcludeResourceContext;
+import com.facilio.bmsconsole.context.PMTaskSectionTemplateTriggers;
 import com.facilio.bmsconsole.context.PMTriggerContext;
 import com.facilio.bmsconsole.context.PreventiveMaintenance.PMAssignmentType;
 import com.facilio.bmsconsole.context.TaskContext;
@@ -29,13 +30,28 @@ public class TaskSectionTemplate extends Template {
 		this.pmIncludeExcludeResourceContexts = pmIncludeExcludeResourceContexts;
 	}
 	
-	private List<PMTriggerContext> pmTriggerContexts;
+	private List<PMTaskSectionTemplateTriggers> pmTaskSectionTemplateTriggers;
+	
+	public List<PMTaskSectionTemplateTriggers> getPmTaskSectionTemplateTriggers() {
+		return pmTaskSectionTemplateTriggers;
+	}
+	public void setPmTaskSectionTemplateTriggers(List<PMTaskSectionTemplateTriggers> pmTaskSectionTemplateTriggers) {
+		this.pmTaskSectionTemplateTriggers = pmTaskSectionTemplateTriggers;
+	}
+	
+	public void addPmTaskSectionTemplateTriggers(PMTaskSectionTemplateTriggers pmTaskSectionTemplateTrigger) {
+		this.pmTaskSectionTemplateTriggers = this.pmTaskSectionTemplateTriggers == null ? new ArrayList<>() :this.pmTaskSectionTemplateTriggers;
+		this.pmTaskSectionTemplateTriggers.add(pmTaskSectionTemplateTrigger);
+	}
+	
 	public List<PMTriggerContext> getPmTriggerContexts() {
 		return pmTriggerContexts;
 	}
 	public void setPmTriggerContexts(List<PMTriggerContext> pmTriggerContexts) {
 		this.pmTriggerContexts = pmTriggerContexts;
 	}
+	
+	private List<PMTriggerContext> pmTriggerContexts;
 	
 	
 	private Boolean isEditable;

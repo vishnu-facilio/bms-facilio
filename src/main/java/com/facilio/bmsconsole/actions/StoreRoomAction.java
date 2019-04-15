@@ -1,22 +1,18 @@
 package com.facilio.bmsconsole.actions;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-import org.apache.commons.chain.Chain;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-
-import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
-import com.facilio.bmsconsole.context.InventoryContext;
-import com.facilio.bmsconsole.context.LocationContext;
 import com.facilio.bmsconsole.context.StoreRoomContext;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import org.apache.commons.chain.Chain;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class StoreRoomAction extends FacilioAction{
 	private static final long serialVersionUID = 1L;
@@ -42,6 +38,7 @@ public class StoreRoomAction extends FacilioAction{
 		storeRoom.setTtime(System.currentTimeMillis());
 		storeRoom.setModifiedTime(System.currentTimeMillis());
 		context.put(FacilioConstants.ContextNames.RECORD, storeRoom);
+		context.put(FacilioConstants.ContextNames.SITES_FOR_STORE_ROOM, storeRoom.getSites());
 		Chain addStoreRoom = TransactionChainFactory.getAddStoreRoomChain();
 		addStoreRoom.execute(context);
 		
@@ -53,6 +50,8 @@ public class StoreRoomAction extends FacilioAction{
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.EDIT);
 		context.put(FacilioConstants.ContextNames.RECORD, storeRoom);
+		context.put(FacilioConstants.ContextNames.SITES_FOR_STORE_ROOM, storeRoom.getSites());
+		context.put(FacilioConstants.ContextNames.RECORD_ID, storeRoom.getId());
 		context.put(FacilioConstants.ContextNames.ID, storeRoom.getId());
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(storeRoom.getId()));
 		context.put(FacilioConstants.ContextNames.WITH_CHANGE_SET, true);
@@ -82,6 +81,7 @@ public class StoreRoomAction extends FacilioAction{
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.CV_NAME, getViewName());
 		context.put(FacilioConstants.ContextNames.SORTING_QUERY, "Store_room.ID desc");
+		context.put(FacilioConstants.ContextNames.WORK_ORDER_SITE_ID, siteId);
 		if (getFilters() != null) {
 			JSONParser parser = new JSONParser();
 			JSONObject json = (JSONObject) parser.parse(getFilters());
@@ -175,6 +175,14 @@ public class StoreRoomAction extends FacilioAction{
 	}
 	public void setStoreRoomId(long storeRoomId) {
 		this.storeRoomId = storeRoomId;
+	}
+	
+	private long siteId = -1;
+	public long getSiteId() {
+		return siteId;
+	}
+	public void setSiteId(long siteId) {
+		this.siteId = siteId;
 	}
 	
 }

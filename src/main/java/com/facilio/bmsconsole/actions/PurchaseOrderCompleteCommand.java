@@ -1,100 +1,87 @@
 package com.facilio.bmsconsole.actions;
 
+import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.*;
+import com.facilio.bmsconsole.context.ItemContext.CostType;
+import com.facilio.bmsconsole.context.PurchaseOrderContext.Status;
+import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.criteria.NumberOperators;
+import com.facilio.bmsconsole.modules.*;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-
-import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.InventoryType;
-import com.facilio.bmsconsole.context.ItemContext;
-import com.facilio.bmsconsole.context.ItemContext.CostType;
-import com.facilio.bmsconsole.context.ItemTypesContext;
-import com.facilio.bmsconsole.context.ItemTypesVendorsContext;
-import com.facilio.bmsconsole.context.PurchaseOrderContext;
-import com.facilio.bmsconsole.context.PurchaseOrderLineItemContext;
-import com.facilio.bmsconsole.context.PurchasedItemContext;
-import com.facilio.bmsconsole.context.ToolContext;
-import com.facilio.bmsconsole.context.ToolTypesContext;
-import com.facilio.bmsconsole.context.PurchaseOrderContext.Status;
-import com.facilio.bmsconsole.criteria.CriteriaAPI;
-import com.facilio.bmsconsole.criteria.NumberOperators;
-import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.FacilioModule;
-import com.facilio.bmsconsole.modules.FieldFactory;
-import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
-import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
-import com.facilio.constants.FacilioConstants;
-import com.facilio.fw.BeanFactory;
 
 public class PurchaseOrderCompleteCommand implements Command {
 
 	@Override
 	public boolean execute(Context context) throws Exception {
 		List<Long> purchaseOrdersIds = (List<Long>) context.get(FacilioConstants.ContextNames.PURCHASE_ORDERS);
-		List<PurchaseOrderLineItemContext> lineItems = (List<PurchaseOrderLineItemContext>) context
-				.get(FacilioConstants.ContextNames.PURCHASE_ORDER_LINE_ITEMS);
-		List<ItemContext> itemsTobeAdded = new ArrayList<>();
-		List<ToolContext> toolsToBeAdded = new ArrayList<>();
-		List<ItemTypesVendorsContext> itemTypesVendors = new ArrayList<>();
-		boolean containsIndividualTrackingItem = false;
-		boolean containsIndividualTrackingTool = false;
-		long storeRoomId = -1;
-		long vendorId = -1;
-		List<PurchaseOrderContext> purchaseOrders = getPurchaseOrderContext(purchaseOrdersIds);
-		if (purchaseOrders != null && !purchaseOrders.isEmpty()) {
-			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			FacilioModule pomodule = modBean.getModule(FacilioConstants.ContextNames.PURCHASE_ORDER);
-			for (PurchaseOrderContext po : purchaseOrders) {
-				storeRoomId = po.getStoreRoom().getId();
-				vendorId = po.getVendor().getId();
-				if (lineItems == null) {
-					lineItems = getLineItemsForPO(po.getId());
-				}
+		if (purchaseOrdersIds != null && !purchaseOrdersIds.isEmpty()) {
+			List<PurchaseOrderLineItemContext> lineItems = (List<PurchaseOrderLineItemContext>) context
+					.get(FacilioConstants.ContextNames.PURCHASE_ORDER_LINE_ITEMS);
+			List<ItemContext> itemsTobeAdded = new ArrayList<>();
+			List<ToolContext> toolsToBeAdded = new ArrayList<>();
+			List<ItemTypesVendorsContext> itemTypesVendors = new ArrayList<>();
+			boolean containsIndividualTrackingItem = false;
+			boolean containsIndividualTrackingTool = false;
+			long storeRoomId = -1;
+			long vendorId = -1;
+			List<PurchaseOrderContext> purchaseOrders = getPurchaseOrderContext(purchaseOrdersIds);
+			if (purchaseOrders != null && !purchaseOrders.isEmpty()) {
+				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+				FacilioModule pomodule = modBean.getModule(FacilioConstants.ContextNames.PURCHASE_ORDER);
+				for (PurchaseOrderContext po : purchaseOrders) {
+					storeRoomId = po.getStoreRoom().getId();
+					vendorId = po.getVendor().getId();
+					if (lineItems == null) {
+						lineItems = getLineItemsForPO(po.getId());
+					}
 
-				if (lineItems != null && !lineItems.isEmpty()) {
-					for (PurchaseOrderLineItemContext lineItem : lineItems) {
-						if (lineItem.getInventoryTypeEnum() == InventoryType.ITEM) {
-							itemTypesVendors.add(new ItemTypesVendorsContext(lineItem.getItemType(), po.getVendor(),
-									lineItem.getCost(), po.getOrderedTime()));
-							ItemTypesContext itemtype = getItemType(lineItem.getItemType().getId());
-							if (itemtype.individualTracking()) {
-								containsIndividualTrackingItem = true;
-							} else {
-								containsIndividualTrackingItem = false;
-							}
+					if (lineItems != null && !lineItems.isEmpty()) {
+						for (PurchaseOrderLineItemContext lineItem : lineItems) {
 							if (lineItem.getQuantityReceived() > 0) {
-								itemsTobeAdded.add(createItem(po, lineItem, containsIndividualTrackingItem));
-							}
-						} else if (lineItem.getInventoryTypeEnum() == InventoryType.TOOL) {
-							ToolTypesContext toolType = getToolType(lineItem.getToolType().getId());
-							if (toolType.individualTracking()) {
-								containsIndividualTrackingTool = true;
-							} else {
-								containsIndividualTrackingTool = false;
-							}
-							if (lineItem.getQuantityReceived() > 0) {
-								toolsToBeAdded.add(createTool(po, lineItem, containsIndividualTrackingTool));
+								if (lineItem.getInventoryTypeEnum() == InventoryType.ITEM) {
+									itemTypesVendors.add(new ItemTypesVendorsContext(lineItem.getItemType(),
+											po.getVendor(), lineItem.getCost(), po.getOrderedTime()));
+									ItemTypesContext itemtype = getItemType(lineItem.getItemType().getId());
+									if (itemtype.individualTracking()) {
+										containsIndividualTrackingItem = true;
+									} else {
+										containsIndividualTrackingItem = false;
+									}
+									itemsTobeAdded.add(createItem(po, lineItem, containsIndividualTrackingItem));
+								} else if (lineItem.getInventoryTypeEnum() == InventoryType.TOOL) {
+									ToolTypesContext toolType = getToolType(lineItem.getToolType().getId());
+									if (toolType.individualTracking()) {
+										containsIndividualTrackingTool = true;
+									} else {
+										containsIndividualTrackingTool = false;
+									}
+									toolsToBeAdded.add(createTool(po, lineItem, containsIndividualTrackingTool));
+								}
 							}
 						}
 					}
+					po.setStatus(Status.COMPLETED);
+					po.setCompletedTime(System.currentTimeMillis());
+					UpdateRecordBuilder<PurchaseOrderContext> updateBuilder = new UpdateRecordBuilder<PurchaseOrderContext>()
+							.module(pomodule).fields(modBean.getAllFields(pomodule.getName()))
+							.andCondition(CriteriaAPI.getIdCondition(po.getId(), pomodule));
+					updateBuilder.update(po);
 				}
-				po.setStatus(Status.COMPLETED);
-				po.setCompletedTime(System.currentTimeMillis());
-				UpdateRecordBuilder<PurchaseOrderContext> updateBuilder = new UpdateRecordBuilder<PurchaseOrderContext>()
-						.module(pomodule).fields(modBean.getAllFields(pomodule.getName()))
-						.andCondition(CriteriaAPI.getIdCondition(po.getId(), pomodule));
-				updateBuilder.update(po);
 			}
+			context.put(FacilioConstants.ContextNames.STORE_ROOM, storeRoomId);
+			context.put(FacilioConstants.ContextNames.VENDOR_ID, vendorId);
+			context.put(FacilioConstants.ContextNames.ITEM_VENDORS_LIST, itemTypesVendors);
+			context.put(FacilioConstants.ContextNames.ITEMS, itemsTobeAdded);
+			context.put(FacilioConstants.ContextNames.TOOLS, toolsToBeAdded);
 		}
-		context.put(FacilioConstants.ContextNames.STORE_ROOM, storeRoomId);
-		context.put(FacilioConstants.ContextNames.VENDOR_ID, vendorId);
-		context.put(FacilioConstants.ContextNames.ITEM_VENDORS_LIST, itemTypesVendors);
-		context.put(FacilioConstants.ContextNames.ITEMS, itemsTobeAdded);
-		context.put(FacilioConstants.ContextNames.TOOLS, toolsToBeAdded);
 		return false;
 	}
 
@@ -164,13 +151,20 @@ public class PurchaseOrderCompleteCommand implements Command {
 	}
 
 	private ItemContext createItem(PurchaseOrderContext po, PurchaseOrderLineItemContext lineItem,
-			boolean isIndividualTracking) {
+			boolean isIndividualTracking) throws Exception {
 		ItemContext item = new ItemContext();
 		item.setStoreRoom(po.getStoreRoom());
 		item.setItemType(lineItem.getItemType());
 		item.setCostType(CostType.FIFO);
 		if (isIndividualTracking) {
-			item.setPurchasedItems(lineItem.getPurchasedItems());
+			List<String> serialNumbers = getLineItemSerialNumbers(lineItem.getId());
+			if (serialNumbers.size() < lineItem.getQuantityReceived()) {
+				throw new IllegalArgumentException("Please fill all the serial numbers of item");
+			} else {
+				List<PurchasedItemContext> purchasedItems = setPurchasedItemContext(serialNumbers,
+						lineItem.getUnitPrice());
+				item.setPurchasedItems(purchasedItems);
+			}
 		} else {
 			PurchasedItemContext purchasedItem = new PurchasedItemContext();
 			purchasedItem.setQuantity(lineItem.getQuantityReceived());
@@ -181,15 +175,65 @@ public class PurchaseOrderCompleteCommand implements Command {
 	}
 
 	private ToolContext createTool(PurchaseOrderContext po, PurchaseOrderLineItemContext lineItem,
-			boolean isIndividualTracking) {
+			boolean isIndividualTracking) throws Exception {
 		ToolContext tool = new ToolContext();
 		tool.setStoreRoom(po.getStoreRoom());
 		tool.setToolType(lineItem.getToolType());
 		tool.setQuantity(lineItem.getQuantityReceived());
 		tool.setRate(lineItem.getCost());
 		if (isIndividualTracking) {
-			tool.setPurchasedTools(lineItem.getPurchasedTools());
+			List<String> serialNumbers = getLineItemSerialNumbers(lineItem.getId());
+			if (serialNumbers.size() < lineItem.getQuantityReceived()) {
+				throw new IllegalArgumentException("Please fill all the serial numbers of tool");
+			} else {
+				List<PurchasedToolContext> purchasedTools = setPurchasedToolsContext(serialNumbers, lineItem.getCost());
+				tool.setPurchasedTools(purchasedTools);
+			}
 		}
 		return tool;
+	}
+
+	private List<String> getLineItemSerialNumbers(long lineitemId) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.PO_LINE_ITEMS_SERIAL_NUMBERS);
+		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.PO_LINE_ITEMS_SERIAL_NUMBERS);
+		Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(fields);
+		SelectRecordsBuilder<PoLineItemsSerialNumberContext> builder = new SelectRecordsBuilder<PoLineItemsSerialNumberContext>()
+				.module(module)
+				.select(fields).andCondition(CriteriaAPI.getCondition(fieldsMap.get("lineItem"),
+						String.valueOf(lineitemId), NumberOperators.EQUALS))
+				.beanClass(PoLineItemsSerialNumberContext.class);
+
+		List<PoLineItemsSerialNumberContext> polineitemsserialnumbers = builder.get();
+		List<String> serialNumbers = new ArrayList<>();
+		if (polineitemsserialnumbers != null && !polineitemsserialnumbers.isEmpty()) {
+			for (PoLineItemsSerialNumberContext polineitemsserialnumber : polineitemsserialnumbers) {
+				serialNumbers.add(polineitemsserialnumber.getSerialNumber());
+			}
+			return serialNumbers;
+		}
+		return null;
+	}
+
+	private List<PurchasedItemContext> setPurchasedItemContext(List<String> serialNumbers, double cost) {
+		List<PurchasedItemContext> purchasedItems = new ArrayList<>();
+		for (String serialNumber : serialNumbers) {
+			PurchasedItemContext pItem = new PurchasedItemContext();
+			pItem.setSerialNumber(serialNumber);
+			pItem.setUnitcost(cost);
+			purchasedItems.add(pItem);
+		}
+		return purchasedItems;
+	}
+
+	private List<PurchasedToolContext> setPurchasedToolsContext(List<String> serialNumbers, double cost) {
+		List<PurchasedToolContext> purchasedTools = new ArrayList<>();
+		for (String serialNumber : serialNumbers) {
+			PurchasedToolContext pTool = new PurchasedToolContext();
+			pTool.setSerialNumber(serialNumber);
+			pTool.setRate(cost);
+			purchasedTools.add(pTool);
+		}
+		return purchasedTools;
 	}
 }

@@ -1,19 +1,15 @@
 package com.facilio.bmsconsole.util;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
 import com.facilio.bmsconsole.context.SkillContext;
 import com.facilio.bmsconsole.context.TicketCategoryContext;
 import com.facilio.sql.DBUtil;
 import com.facilio.transaction.FacilioConnectionPool;
+
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 public class SkillAPI {
 	

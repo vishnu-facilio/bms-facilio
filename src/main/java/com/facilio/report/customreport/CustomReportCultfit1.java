@@ -1,12 +1,5 @@
 package com.facilio.report.customreport;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.FormulaContext;
@@ -14,15 +7,18 @@ import com.facilio.bmsconsole.context.ReportContext;
 import com.facilio.bmsconsole.context.ReportFieldContext;
 import com.facilio.bmsconsole.context.TicketStatusContext;
 import com.facilio.bmsconsole.criteria.Condition;
-import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.FacilioModule;
-import com.facilio.bmsconsole.modules.FieldFactory;
-import com.facilio.bmsconsole.modules.FieldType;
+import com.facilio.bmsconsole.modules.*;
 import com.facilio.bmsconsole.util.DashboardUtil;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericSelectRecordBuilder;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 public class CustomReportCultfit1 implements CustomReport {
 
@@ -45,7 +41,7 @@ public class CustomReportCultfit1 implements CustomReport {
 		
 		List<FacilioField> selectFields = new ArrayList<>();
 		
-		FacilioField countField = FormulaContext.CommonAggregateOperator.COUNT.getSelectField(statusField);
+		FacilioField countField = AggregateOperator.CommonAggregateOperator.COUNT.getSelectField(statusField);
 		countField.setName("value");
 		
 		ReportFieldContext reportFieldContext = new ReportFieldContext();

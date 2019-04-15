@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.context;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.facilio.accounts.dto.User;
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.twilio.sdk.resource.conversations.v1.conversation.Completed;
 
@@ -165,5 +166,15 @@ public class PurchaseRequestContext extends ModuleBaseWithCustomFields {
 			this.lineItems = new ArrayList<PurchaseRequestLineItemContext>();
 		}
 		this.lineItems.add(lineItem);
+	}
+	
+	private User requestedBy;
+
+	public User getRequestedBy() {
+		return requestedBy;
+	}
+
+	public void setRequestedBy(User requestedBy) {
+		this.requestedBy = requestedBy;
 	}
 }

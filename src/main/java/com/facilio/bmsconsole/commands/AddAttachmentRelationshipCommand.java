@@ -7,22 +7,35 @@ import java.util.logging.Logger;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections.CollectionUtils;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
+import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.activity.WorkOrderActivityType;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.AttachmentContext;
+import com.facilio.bmsconsole.context.TaskContext;
+import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.modules.FacilioModule;
+import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.util.AttachmentsAPI;
 import com.facilio.bmsconsole.workflow.rule.EventType;
-import com.facilio.chain.FacilioChain;
+import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
 
-public class AddAttachmentRelationshipCommand implements Command {
+public class AddAttachmentRelationshipCommand implements Command, PostTransactionCommand {
 
 	private static Logger LOGGER = Logger.getLogger(AddAttachmentRelationshipCommand.class.getName());
+	private List<Long> idsToUpdateChain;
+	private String moduleName;
 	
 	@Override
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		
-		String moduleName = (String) context.get(FacilioConstants.ContextNames.ATTACHMENT_MODULE_NAME);
+		moduleName = (String) context.get(FacilioConstants.ContextNames.ATTACHMENT_MODULE_NAME);
 		if(moduleName == null ) {
 			moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 		}
@@ -43,8 +56,10 @@ public class AddAttachmentRelationshipCommand implements Command {
 		if(recordId == null || recordId == -1) {
 			throw new IllegalArgumentException("Invalid record id during addition of attachments");
 		}
-		FacilioChain.addPostTrasanction(FacilioConstants.ContextNames.IDS_TO_UPDATE_COUNT, Collections.singletonList(recordId));
-		FacilioChain.addPostTrasanction(FacilioConstants.ContextNames.MODULE_NAME, context.get(FacilioConstants.ContextNames.MODULE_NAME));
+		
+		idsToUpdateChain = Collections.singletonList(recordId);
+//		FacilioChain.addPostTrasanction(FacilioConstants.ContextNames.IDS_TO_UPDATE_COUNT, Collections.singletonList(recordId));
+//		FacilioChain.addPostTrasanction(FacilioConstants.ContextNames.MODULE_NAME, context.get(FacilioConstants.ContextNames.MODULE_NAME));
 		
 		List<AttachmentContext> attachments = (List<AttachmentContext>) context.get(FacilioConstants.ContextNames.ATTACHMENT_CONTEXT_LIST);
 		if(attachments != null && !attachments.isEmpty()) {
@@ -66,13 +81,68 @@ public class AddAttachmentRelationshipCommand implements Command {
 			for (AttachmentContext ac : attachments) {
 				attachmentIds.add(ac.getId());
 			}
-			
-			context.put(FacilioConstants.ContextNames.ATTACHMENT_LIST, AttachmentsAPI.getAttachments(moduleName, attachmentIds));
+
+			attachments = AttachmentsAPI.getAttachments(moduleName, attachmentIds);
+			context.put(FacilioConstants.ContextNames.ATTACHMENT_LIST, attachments);
 			if(moduleName.equals(FacilioConstants.ContextNames.TICKET_ATTACHMENTS)) {
 				context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.ADD_TICKET_ATTACHMENTS);
 			}
+			JSONArray attachmentNames = new JSONArray();
+     		JSONObject attach = new JSONObject();
+			List<Object> attachmentActivity = new ArrayList<>();
+     		
+     		
+     		if(moduleName.equals(FacilioConstants.ContextNames.TICKET_ATTACHMENTS)) {
+			for(AttachmentContext attaches : attachments) {
+				attachmentNames.add(attaches.getFileName());
+		  		JSONObject info = new JSONObject();
+						info.put("Filename", attaches.getFileName());
+						info.put("Url", attaches.getPreviewUrl());
+						attachmentActivity.add(info);
+			}
+			attach.put("attachment", attachmentActivity);
+			 CommonCommandUtil.addActivityToContext(recordId, -1, WorkOrderActivityType.ADD_ATTACHMENT, attach, (FacilioContext) context);
+     		}
+     		else if(moduleName.equals(FacilioConstants.ContextNames.TASK_ATTACHMENTS)) {
+    			TaskContext task = getTask(recordId);
+    			long parentAttachmentId = task.getParentTicketId();
+     			for(AttachmentContext attaches : attachments) {
+    				attachmentNames.add(attaches.getFileName());
+    		  		JSONObject info = new JSONObject();
+					info.put("subject", task.getSubject());
+					info.put("Filename", attaches.getFileName());
+					info.put("Url", attaches.getPreviewUrl());
+					info.put("type", attaches.getType());
+					attachmentActivity.add(info);
+    			}
+    			attach.put("taskattachment", attachmentActivity);
+    			CommonCommandUtil.addActivityToContext(parentAttachmentId, -1, WorkOrderActivityType.ADD_TASK_ATTACHMENT, attach, (FacilioContext) context);
+     		} 
+
 		}
 		
 		return false;
+	}
+	
+	@Override
+	public boolean postExecute() throws Exception {
+		AttachmentsAPI.updateAttachmentCount(idsToUpdateChain, moduleName);
+		return false;
+	}
+	
+	private TaskContext getTask(long id) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.TASK);
+		SelectRecordsBuilder<TaskContext> builder = new SelectRecordsBuilder<TaskContext>()
+														.module(module)
+														.beanClass(TaskContext.class)
+														.select(modBean.getAllFields(FacilioConstants.ContextNames.TASK))
+														.andCondition(CriteriaAPI.getIdCondition(id, module));
+		
+		List<TaskContext> tasks = builder.get();
+		if(CollectionUtils.isNotEmpty(tasks)) {
+			return tasks.get(0);
+		}
+		return null;
 	}
 }

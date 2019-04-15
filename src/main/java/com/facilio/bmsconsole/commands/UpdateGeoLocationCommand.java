@@ -1,16 +1,5 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.Collections;
-import java.util.List;
-
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.json.simple.JSONObject;
-
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.activity.AssetActivityType;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
@@ -19,13 +8,22 @@ import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.LookupField;
-import com.facilio.bmsconsole.modules.LookupFieldMeta;
 import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
 import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.util.FacilioUtil;
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.json.simple.JSONObject;
+
+import java.util.Collections;
+import java.util.List;
 
 public class UpdateGeoLocationCommand implements Command {
 
@@ -80,9 +78,11 @@ public class UpdateGeoLocationCommand implements Command {
 				if (isDesignatedLocation != null) {
 					info.put("designatedLocation", isDesignatedLocation);
 				}
+				JSONObject newinfo = new JSONObject();
+                newinfo.put("Location",info);
 				LOGGER.info("Asset Acitibity "+info.toJSONString());
 				updateAsset(asset, geoLocation, newLocation, isDesignatedLocation, distanceMoved);
-				CommonCommandUtil.addActivityToContext(asset.getId(), -1, AssetActivityType.LOCATION, info, (FacilioContext) context);
+				CommonCommandUtil.addActivityToContext(asset.getId(), -1, AssetActivityType.LOCATION, newinfo, (FacilioContext) context);
 			}
 		}
 		return false;
@@ -110,7 +110,7 @@ public class UpdateGeoLocationCommand implements Command {
 	
 	private SiteContext getNearestLocation(double lat, double lng) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		List<SiteContext> sites = SpaceAPI.getAllSites(Collections.singletonList(new LookupFieldMeta((LookupField) modBean.getField("location", FacilioConstants.ContextNames.SITE))));
+		List<SiteContext> sites = SpaceAPI.getAllSites(Collections.singletonList((LookupField) modBean.getField("location", FacilioConstants.ContextNames.SITE)));
 		
 		if (CollectionUtils.isNotEmpty(sites)) {
 			for (SiteContext site : sites) {

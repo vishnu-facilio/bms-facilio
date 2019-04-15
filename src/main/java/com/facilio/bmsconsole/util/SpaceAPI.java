@@ -1,55 +1,25 @@
 package com.facilio.bmsconsole.util;
 
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Logger;
-
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.json.simple.JSONObject;
-
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.BaseSpaceContext;
+import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.context.BaseSpaceContext.SpaceType;
-import com.facilio.bmsconsole.context.BuildingContext;
-import com.facilio.bmsconsole.context.FloorContext;
-import com.facilio.bmsconsole.context.LocationContext;
-import com.facilio.bmsconsole.context.PhotosContext;
-import com.facilio.bmsconsole.context.SiteContext;
-import com.facilio.bmsconsole.context.SpaceContext;
-import com.facilio.bmsconsole.context.TicketStatusContext;
-import com.facilio.bmsconsole.context.ZoneContext;
-import com.facilio.bmsconsole.criteria.BooleanOperators;
-import com.facilio.bmsconsole.criteria.BuildingOperator;
-import com.facilio.bmsconsole.criteria.CommonOperators;
-import com.facilio.bmsconsole.criteria.Condition;
-import com.facilio.bmsconsole.criteria.Criteria;
-import com.facilio.bmsconsole.criteria.CriteriaAPI;
-import com.facilio.bmsconsole.criteria.NumberOperators;
-import com.facilio.bmsconsole.criteria.PickListOperators;
-import com.facilio.bmsconsole.criteria.StringOperators;
-import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.FacilioModule;
+import com.facilio.bmsconsole.criteria.*;
+import com.facilio.bmsconsole.modules.*;
 import com.facilio.bmsconsole.modules.FacilioModule.ModuleType;
-import com.facilio.bmsconsole.modules.FieldFactory;
-import com.facilio.bmsconsole.modules.FieldType;
-import com.facilio.bmsconsole.modules.InsertRecordBuilder;
-import com.facilio.bmsconsole.modules.LookupFieldMeta;
-import com.facilio.bmsconsole.modules.ModuleFactory;
-import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
-import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
 import com.facilio.bmsconsole.view.ViewFactory;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericDeleteRecordBuilder;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.json.simple.JSONObject;
+
+import java.sql.SQLException;
+import java.util.*;
+import java.util.logging.Logger;
 
 public class SpaceAPI {
 	
@@ -454,6 +424,16 @@ public class SpaceAPI {
 	public static List<ZoneContext> getTenantZones() throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule("zone");
+		FacilioModule tenantModule = modBean.getModule("tenant");
+		
+		FacilioField isDeletedField = FieldFactory.getIsDeletedField(tenantModule);
+		
+		Condition isDeletedCond = new Condition();
+		isDeletedCond.setField(isDeletedField);
+		isDeletedCond.setOperator(NumberOperators.NOT_EQUALS);
+		isDeletedCond.setValue(""+1);
+
+		
 		List<FacilioField> fields = modBean.getAllFields("zone");
 		
 		SelectRecordsBuilder<ZoneContext> builder = new SelectRecordsBuilder<ZoneContext>()
@@ -461,7 +441,11 @@ public class SpaceAPI {
 													.moduleName("zone")
 													.select(fields)
 													.beanClass(ZoneContext.class)
+													.innerJoin(tenantModule.getTableName())
+													.on(tenantModule.getTableName()+".ZONE_ID = "+module.getTableName()+".ID")
 													.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+													.andCondition(isDeletedCond)
+													.andCustomWhere(tenantModule.getTableName()+".STATUS = ?", 1)
 													.andCustomWhere(module.getTableName()+".TENANT_ZONE = ?", 1)
 													.orderBy("ID");
 		List<ZoneContext> zoneList = builder.get();
@@ -846,7 +830,7 @@ public class SpaceAPI {
 		return sites;
 	}
 	
-	public static List<SiteContext> getAllSites(List<LookupFieldMeta> lookupFields) throws Exception {
+	public static List<SiteContext> getAllSites(List<? extends LookupField> lookupFields) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.SITE);
 		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.SITE);

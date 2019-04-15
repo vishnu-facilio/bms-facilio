@@ -1,6 +1,8 @@
 package com.facilio.bmsconsole.actions;
 
+
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -17,7 +19,11 @@ import org.json.simple.parser.ParseException;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
+import com.facilio.bmsconsole.modules.FieldType;
+import com.facilio.bmsconsole.modules.LookupField;
 import com.facilio.bmsconsole.util.ImportAPI;
+import com.facilio.bmsconsole.util.ImportFieldFactory;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.fs.FileStore;
 import com.facilio.fs.FileStoreFactory;
 import com.facilio.fw.BeanFactory;
@@ -92,7 +98,12 @@ public class ImportProcessContext implements Serializable
 		this.skippedEntries = count;
 	}
 	
-
+	public JSONObject getOptions() throws Exception{
+		if(getModule() != null) {
+			return ImportFieldFactory.getImportOptions(getModule());
+		}
+		return null;
+	}
 	public void setMailSetting(Integer mail) {
 		this.mailSetting = mail;
 	}
@@ -292,7 +303,16 @@ public class ImportProcessContext implements Serializable
 				{
 					if(!ImportAPI.isRemovableFieldOnImport(field.getName()))
 					{
-						facilioFieldMapping.put(field.getName(), field);
+						if(field.getDataType() == FieldType.LOOKUP.getTypeAsInt() && getModule().getName().equals(FacilioConstants.ContextNames.ASSET) == false && getModule().getExtendModule().getName().equals(FacilioConstants.ContextNames.ASSET) == false) {
+							LookupField lookupField = (LookupField) field;
+							List<FacilioField> lookupFields = bean.getAllFields(lookupField.getLookupModule().getName());
+							for(FacilioField lookup : lookupFields) {
+								facilioFieldMapping.put(lookup.getName(), lookup);
+							}
+						}
+						else {
+							facilioFieldMapping.put(field.getName(), field);
+						}
 					}
 				}
 				return facilioFieldMapping;

@@ -1,11 +1,5 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.List;
-
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.json.simple.JSONObject;
-
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.criteria.Criteria;
@@ -18,6 +12,11 @@ import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
+import org.json.simple.JSONObject;
+
+import java.util.List;
 
 public class GenericGetModuleDataListCommand implements Command {
 
@@ -90,7 +89,7 @@ public class GenericGetModuleDataListCommand implements Command {
 		List<? extends ModuleBaseWithCustomFields> records = builder.get();
 		ResourceAPI.loadModuleResources(records, fields);
 		context.put(FacilioConstants.ContextNames.RECORD_LIST, records);
-		
+
 		return false;
 	}
 	

@@ -1,10 +1,10 @@
 package com.facilio.bmsconsole.context;
 
-import java.io.Serializable;
-import java.util.Map;
-
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.unitconversion.Unit;
+
+import java.io.Serializable;
+import java.util.Map;
 
 public class ReadingDataMeta implements Serializable {
 	/**

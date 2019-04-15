@@ -1,13 +1,13 @@
 package com.facilio.bmsconsole.context;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import com.facilio.accounts.dto.User;
+import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import org.apache.commons.collections4.CollectionUtils;
 
-import com.facilio.bmsconsole.context.PurchaseRequestContext.Status;
-import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
-import com.facilio.bmsconsole.util.LocationAPI;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class PurchaseOrderContext extends ModuleBaseWithCustomFields {
 
@@ -53,6 +53,16 @@ public class PurchaseOrderContext extends ModuleBaseWithCustomFields {
 	public Status getStatusEnum() {
 		return status;
 	}
+	private User requestedBy;
+
+	public User getRequestedBy() {
+		return requestedBy;
+	}
+
+	public void setRequestedBy(User requestedBy) {
+		this.requestedBy = requestedBy;
+	}
+
 	public int getStatus() {
 		if (status != null) {
 			return status.getValue();
@@ -93,9 +103,19 @@ public class PurchaseOrderContext extends ModuleBaseWithCustomFields {
 	public static PurchaseOrderContext fromPurchaseRequest(List<PurchaseRequestContext> list) throws Exception {
 		PurchaseOrderContext purchaseOrderContext = new PurchaseOrderContext();
 		purchaseOrderContext.setStatus(Status.REQUESTED);
+		if(!CollectionUtils.isEmpty(list)) {
+			purchaseOrderContext.setName(list.get(0).getName());
+			purchaseOrderContext.setDescription(list.get(0).getDescription());
+			purchaseOrderContext.setShipToAddress(list.get(0).getShipToAddress());
+			purchaseOrderContext.setBillToAddress(list.get(0).getBillToAddress());
+		}
 		long vendorId = -1;
 		long storeRoomId = -1;
 		
+		Map<Long,PurchaseOrderLineItemContext> toolTypeItems = new HashMap<Long, PurchaseOrderLineItemContext>();
+		Map<Long,PurchaseOrderLineItemContext> itemTypeItems = new HashMap<Long, PurchaseOrderLineItemContext>();
+		double quantity = 0.0;
+	
 		for(PurchaseRequestContext pr : list) {
 			if(pr.getStatusEnum() != PurchaseRequestContext.Status.APPROVED) {
 				throw new IllegalArgumentException("Only Purchase Requests with Approved status can be converted to Purchase Order");
@@ -114,13 +134,37 @@ public class PurchaseOrderContext extends ModuleBaseWithCustomFields {
 			if(pr.getStoreRoom() != null && pr.getStoreRoom().getId() != storeRoomId) {
 				throw new IllegalArgumentException("Cannot create single PO for multiple storeroom items");
 			}
+			if (CollectionUtils.isNotEmpty(pr.getLineItems())) {
+				for (PurchaseRequestLineItemContext prItem : pr.getLineItems()) {
+					if(prItem.getInventoryTypeEnum() == InventoryType.ITEM) {
+						if(!itemTypeItems.containsKey(prItem.getItemType().getId())) {
+							itemTypeItems.put(prItem.getItemType().getId(), PurchaseOrderLineItemContext.from(prItem));
+						}
+						else {
+							PurchaseOrderLineItemContext itemTypeLineItem = itemTypeItems.get(prItem.getItemType().getId());
+							quantity = itemTypeLineItem.getQuantity() + prItem.getQuantity(); 
+							itemTypeLineItem.setQuantity(quantity);
+						}
+					}
+					else {
+						if(!toolTypeItems.containsKey(prItem.getToolType().getId())) {
+							toolTypeItems.put(prItem.getToolType().getId(), PurchaseOrderLineItemContext.from(prItem));
+						}
+						else {
+							PurchaseOrderLineItemContext toolTypeLineItem = toolTypeItems.get(prItem.getToolType().getId());
+							quantity = toolTypeLineItem.getQuantity() + prItem.getQuantity(); 
+							toolTypeLineItem.setQuantity(quantity);
+						}
+					}
+					
+				}
+			}
 			
-			
-			purchaseOrderContext.addLineItems(PurchaseOrderLineItemContext.from(pr.getLineItems()));
 		}
 		
-		purchaseOrderContext.setShipToAddress(getLocationContext());
-		purchaseOrderContext.setBillToAddress(getLocationContext());
+		List<PurchaseOrderLineItemContext> poLineItems = new ArrayList(itemTypeItems.values());
+		poLineItems.addAll(new ArrayList(toolTypeItems.values()));
+		purchaseOrderContext.setLineItems(poLineItems);
 	
 	
 		

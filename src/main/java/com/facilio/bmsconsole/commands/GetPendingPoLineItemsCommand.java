@@ -1,24 +1,18 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.PurchaseOrderLineItemContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
-import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.FieldFactory;
-import com.facilio.bmsconsole.modules.LookupField;
-import com.facilio.bmsconsole.modules.LookupFieldMeta;
-import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
+import com.facilio.bmsconsole.modules.*;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 public class GetPendingPoLineItemsCommand implements Command{
 
@@ -40,8 +34,8 @@ public class GetPendingPoLineItemsCommand implements Command{
 															        .andCustomWhere("(QUANTITY_RECEIVED < QUANTITY) OR (QUANTITY_RECEIVED IS NULL) ");
 															        ;
 		Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
-		List<LookupFieldMeta> fetchLookup = Arrays.asList(new LookupFieldMeta((LookupField) fieldsAsMap.get("toolType")), 
-																			new LookupFieldMeta((LookupField) fieldsAsMap.get("itemType")));
+		List<LookupField>fetchLookup = Arrays.asList((LookupField) fieldsAsMap.get("toolType"),
+																			(LookupField) fieldsAsMap.get("itemType"));
 		
 		builder.fetchLookups(fetchLookup);
 		List<PurchaseOrderLineItemContext> pendingItems = builder.get();	

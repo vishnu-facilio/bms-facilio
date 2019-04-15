@@ -133,7 +133,7 @@ public class GenerateCriteriaFromFilterCommand implements Command {
 					else {
 						isFirst = false;
 					}
-					if (obj.indexOf("_") != -1) {
+					if (obj.indexOf("_") != -1 && !obj.equals(FacilioConstants.Criteria.LOGGED_IN_USER) && !obj.equals(FacilioConstants.Criteria.LOGGED_IN_USER_GROUP)) {
 						try {
 							String filterValue = obj.split("_")[0];
 							values.append(filterValue);

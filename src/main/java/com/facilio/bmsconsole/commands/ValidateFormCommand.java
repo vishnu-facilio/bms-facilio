@@ -1,6 +1,5 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.ArrayList;
 import java.util.Map;
 
 import org.apache.commons.beanutils.PropertyUtils;
@@ -26,12 +25,11 @@ public class ValidateFormCommand implements Command {
 
 	@Override
 	public boolean execute(Context context) throws Exception {
-		ArrayList<FacilioForm> forms = (ArrayList<FacilioForm>) context.get(FacilioConstants.ContextNames.FORMS);
-		if (forms == null || forms.isEmpty()) {
+		FacilioForm form = (FacilioForm) context.get(FacilioConstants.ContextNames.FORM);
+		if (form == null) {
 			return false;
 		}
 		
-		FacilioForm form = forms.get(0);
 		Object formObject = context.get(FacilioConstants.ContextNames.FORM_OBJECT);
 		
 		try {

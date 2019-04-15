@@ -1,13 +1,25 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
-import java.util.stream.Collectors;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.bmsconsole.context.ReadingAlarmContext;
+import com.facilio.bmsconsole.criteria.Condition;
+import com.facilio.bmsconsole.criteria.Criteria;
+import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.criteria.DateOperators;
+import com.facilio.bmsconsole.criteria.DateRange;
+import com.facilio.bmsconsole.criteria.NumberOperators;
+import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.FieldFactory;
+import com.facilio.bmsconsole.modules.FieldType;
+import com.facilio.bmsconsole.util.AlarmAPI;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.events.constants.EventConstants.EventFieldFactory;
+import com.facilio.events.context.EventContext;
+import com.facilio.events.util.EventAPI;
+import com.facilio.report.context.ReportContext;
+import com.facilio.report.context.ReportContext.ReportType;
+import com.facilio.report.context.ReportDataPointContext;
+import com.facilio.util.FacilioUtil;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
@@ -18,16 +30,8 @@ import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.bmsconsole.context.ReadingAlarmContext;
-import com.facilio.bmsconsole.criteria.Condition;
-import com.facilio.bmsconsole.criteria.DateRange;
-import com.facilio.bmsconsole.modules.FieldType;
-import com.facilio.bmsconsole.util.AlarmAPI;
-import com.facilio.constants.FacilioConstants;
-import com.facilio.report.context.ReportContext;
-import com.facilio.report.context.ReportContext.ReportType;
-import com.facilio.report.context.ReportDataPointContext;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class FetchReportAdditionalInfoCommand implements Command {
 	
@@ -48,39 +52,43 @@ public class FetchReportAdditionalInfoCommand implements Command {
 				showSafeLimit = false;
 			}
 			
+			Boolean fetchEventBar = (Boolean) context.get(FacilioConstants.ContextNames.FETCH_EVENT_BAR);
+			fetchEventBar = fetchEventBar == null ? false : fetchEventBar;
+			Long readingRuleId = (Long) context.get(FacilioConstants.ContextNames.READING_RULE_ID);
+			
 			JSONObject reportData = (JSONObject) context.get(FacilioConstants.ContextNames.REPORT_DATA);
 			if (reportData != null && !reportData.isEmpty()) {
-				List<Map<String, Object>> csvData = (List<Map<String, Object>>) reportData.get(FacilioConstants.ContextNames.DATA_KEY);
+				Collection<Map<String, Object>> csvData = (Collection<Map<String, Object>>) reportData.get(FacilioConstants.ContextNames.DATA_KEY);
 				Map<String, Object> reportAggrData = (Map<String, Object>) reportData.get(FacilioConstants.ContextNames.AGGR_KEY);
-				
+
 				if (reportData != null && !reportData.isEmpty()) {
 					Long alarmId = null;
 					ReadingAlarmContext currentAlarm = null;
-					if (showAlarms) {
+					if (showAlarms || fetchEventBar) {
 						alarmId = (Long) context.get(FacilioConstants.ContextNames.ALARM_ID);
 						if (alarmId != null) {
 							currentAlarm = AlarmAPI.getReadingAlarmContext(alarmId);
 						}
 					}
-					
+
 					Map<Long, ReadingAlarmContext> alarmMap = showAlarms ? new HashMap<>() : null;
 					List<ReadingAlarmContext> allAlarms = showAlarms ? new ArrayList<>() : null;
 					for (ReportDataPointContext dp : report.getDataPoints()) {
 						if (!validateFetchingOfAdditionalInfo(dp)) {
 							return false; // All datapoints should be valid to fetch alarms
 						}
-						
+
 						if (showSafeLimit) {
 							reportAggrData.put(dp.getAliases().get("actual")+".safeLimit", getSafeLimit(dp));
 						}
-						
-						if (showAlarms) {
+
+						if (showAlarms && !fetchEventBar) {
 							List<Long> parentIds = getParentIds(dp);
-							
+
 //							if (AccountUtil.getCurrentOrg().getId() == 75) {
 //								LOGGER.info("Parent IDs of alarms to be fetched : "+parentIds);
 //							}
-							
+
 							if (parentIds != null) {
 								List<ReadingAlarmContext> alarms = null;
 								if (alarmId == null || alarmId == -1) {
@@ -89,11 +97,11 @@ public class FetchReportAdditionalInfoCommand implements Command {
 								else if (currentAlarm != null && currentAlarm.getReadingFieldId() == dp.getyAxis().getFieldId() && parentIds.contains(currentAlarm.getResource().getId())) {
 									alarms = AlarmAPI.getReadingAlarms(currentAlarm.getEntityId(), report.getDateRange().getStartTime(), report.getDateRange().getEndTime(), false);
 								}
-								
+
 //								if (AccountUtil.getCurrentOrg().getId() == 75) {
 //									LOGGER.info("Fetched Alarms : "+alarms);
 //								}
-								
+
 								if (alarms != null && !alarms.isEmpty()) {
 									for (ReadingAlarmContext alarm : alarms) {
 										alarm.addAdditionInfo("dataPoint", dp.getName());
@@ -103,15 +111,36 @@ public class FetchReportAdditionalInfoCommand implements Command {
 							}
 						}
 					}
-					
-					if (showAlarms) {
+
+					if (showAlarms && !fetchEventBar) {
 						reportAggrData.put("alarms", splitAlarms(allAlarms, report.getDateRange(), alarmMap));
 						reportAggrData.put("alarmInfo", alarmMap);
-						
+
 						String sortAlias = (String) context.get(FacilioConstants.ContextNames.REPORT_SORT_ALIAS);
 						getRecordWiseAlarms(report, csvData, allAlarms, alarmMap, sortAlias);
 					}
+					
+					if(fetchEventBar) {
+						Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(EventFieldFactory.getEventFields());
+						
+						Criteria criteria = new Criteria();
+						criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("subRuleId"), readingRuleId+"", NumberOperators.EQUALS));
+						criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("resourceId"), currentAlarm.getResource().getId()+"", NumberOperators.EQUALS));
+						criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("createdTime"), report.getDateRange().getStartTime()+","+ report.getDateRange().getEndTime(), DateOperators.BETWEEN));
+						
+						List<EventContext> events = EventAPI.getEvent(criteria);
+						Map<Long,EventContext> eventIdMap = new HashMap<>();
+						Map<Long,EventContext> eventCreationTimeMap = new HashMap<>();
+						for(EventContext event :events) {
+							eventIdMap.put(event.getId(), event);
+							eventCreationTimeMap.put(event.getCreatedTime(), event);
+						}
+						
+						reportAggrData.put("events", splitEvents( report.getDateRange(), eventCreationTimeMap,events));
+						reportAggrData.put("eventInfo", eventIdMap);
+					}
 				}
+				
 			}
 		}
 		return false;
@@ -121,27 +150,42 @@ public class FetchReportAdditionalInfoCommand implements Command {
 		return dp.getxAxis().getDataTypeEnum() == FieldType.DATE_TIME || dp.getxAxis().getDataTypeEnum() == FieldType.DATE;
 	}
 	
-	private void getRecordWiseAlarms (ReportContext report, List<Map<String, Object>> csvData, List<ReadingAlarmContext> allAlarms, Map<Long, ReadingAlarmContext> alarmMap, String timeAlias) {
-		for (int i = 0; i < csvData.size(); i++) {
-			Map<String, Object> data = csvData.get(i);
-			long startTime, endTime;
-			
-			if (i == 0) {
-				startTime = report.getDateRange().getStartTime();
-			}
-			else {
-				startTime = (long) data.get(timeAlias);
-			}
-			
-			if (i == csvData.size() - 1) {
-				endTime = report.getDateRange().getEndTime();
-			}
-			else {
-				endTime = (long) csvData.get(i + 1).get(timeAlias);
-			}
-			
-			data.put("alarms", getAlarmMeta(startTime, endTime, allAlarms, alarmMap));
+	private void getRecordWiseAlarms (ReportContext report, Collection<Map<String, Object>> csvData, List<ReadingAlarmContext> allAlarms, Map<Long, ReadingAlarmContext> alarmMap, String timeAlias) {
+		if (CollectionUtils.isEmpty(csvData)) {
+			return;
 		}
+
+		Iterator<Map<String, Object>> itr = csvData.iterator();
+		Map<String, Object> currentData = itr.next();
+		boolean isFirst = true;
+		while (itr.hasNext()) {
+			Map<String, Object> nextData = itr.next();
+			currentData.put("alarms", calculateAlarmRangeAndGetMeta(report, allAlarms, alarmMap, timeAlias, currentData, nextData, isFirst));
+			currentData = nextData;
+			if (isFirst) {
+				isFirst = false;
+			}
+		}
+		currentData.put("alarms", calculateAlarmRangeAndGetMeta(report, allAlarms, alarmMap, timeAlias, currentData, null, isFirst));
+	}
+
+	private JSONObject calculateAlarmRangeAndGetMeta(ReportContext report, List<ReadingAlarmContext> allAlarms, Map<Long, ReadingAlarmContext> alarmMap, String timeAlias, Map<String, Object> currentData, Map<String, Object> nextData, boolean isFirst) {
+		long startTime, endTime;
+
+		if (isFirst) {
+			startTime = report.getDateRange().getStartTime();
+		}
+		else {
+			startTime = (long) currentData.get(timeAlias);
+		}
+
+		if (nextData == null) {
+			endTime = report.getDateRange().getEndTime();
+		}
+		else {
+			endTime = (long) nextData.get(timeAlias);
+		}
+		return getAlarmMeta(startTime, endTime, allAlarms, alarmMap);
 	}
 	
 	private Map<String, Object> getSafeLimit (ReportDataPointContext dp) throws Exception {
@@ -179,14 +223,14 @@ public class FetchReportAdditionalInfoCommand implements Command {
 	}
 	
 	private static final int MAX_ALARM_INFO_PER_WINDOW = 2;
-	private JSONArray splitAlarms (List<ReadingAlarmContext> allAlarms, DateRange range, Map<Long, ReadingAlarmContext> alarmMap) {
+	static JSONArray splitAlarms (List<ReadingAlarmContext> allAlarms, DateRange range, Map<Long, ReadingAlarmContext> alarmMap) {
 		
 		if (CollectionUtils.isEmpty(allAlarms)) {
 			return null;
 		}
 		
 		Set<Long> times = new TreeSet<>(); //To get sorted set
-		
+		long currentTime = System.currentTimeMillis();
 		for (ReadingAlarmContext alarm : allAlarms) {
 			if (alarm.getCreatedTime() < range.getStartTime()) {
 				times.add(range.getStartTime());
@@ -196,7 +240,7 @@ public class FetchReportAdditionalInfoCommand implements Command {
 			}
 			
 			if (alarm.getClearedTime() == -1 || alarm.getCreatedTime() > range.getEndTime()) {
-				times.add(range.getEndTime());
+				times.add(range.getEndTime() > currentTime ? currentTime : range.getEndTime());
 			}
 			else {
 				times.add(alarm.getClearedTime());
@@ -214,8 +258,42 @@ public class FetchReportAdditionalInfoCommand implements Command {
 		
 		return alarmMetaList;
 	}
+	
+	static JSONArray splitEvents (DateRange range, Map<Long, EventContext> eventCreatedTimeMap,List<EventContext> allEvents) {
+		
+		if (allEvents.isEmpty()) {
+			return null;
+		}
+		long nextPosibleEventIntervel = 600000l; // keeping it as 10 for now, should be calculated dynamically using controller settings
+		
+		Set<Long> times = new TreeSet<>(); //To get sorted set and to avoid duplication
+		times.add(range.getStartTime());
+		
+		for (EventContext event : allEvents) {
+			times.add(event.getCreatedTime());
+			times.add(event.getCreatedTime()+nextPosibleEventIntervel);
+		}
+		times.add(range.getEndTime());
+		
+		JSONArray eventMetaList = new JSONArray();
+		List<Long> timesList = new ArrayList<>(times);
+		for (int i = 0; i < timesList.size(); i++) {
+			long startTime = timesList.get(i);
+			
+			JSONObject json = new JSONObject();
+			json.put("time", startTime);
+			
+			if(eventCreatedTimeMap.get(startTime) != null) {
+				json.put("event", FacilioUtil.getSingleTonJsonArray(eventCreatedTimeMap.get(startTime).getId()));
+			}
+			
+			eventMetaList.add(json);
+		}
+		
+		return eventMetaList;
+	}
 
-	private JSONObject getAlarmMeta (long startTime, long endTime, List<ReadingAlarmContext> allAlarms, Map<Long, ReadingAlarmContext> alarmMap) {
+	private static JSONObject getAlarmMeta (long startTime, long endTime, List<ReadingAlarmContext> allAlarms, Map<Long, ReadingAlarmContext> alarmMap) {
 		JSONObject json = new JSONObject();
 		json.put("time", startTime);
 		

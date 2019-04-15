@@ -1,25 +1,26 @@
 package com.facilio.chain;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.transaction.Transaction;
-import javax.transaction.TransactionManager;
-
+import com.facilio.bmsconsole.commands.PostTransactionCommand;
+import com.facilio.transaction.FacilioTransactionManager;
 import org.apache.commons.chain.Chain;
+import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.commons.chain.impl.ChainBase;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
-import com.facilio.aws.util.AwsUtil;
-import com.facilio.transaction.FacilioTransactionManager;
+import javax.transaction.Transaction;
+import javax.transaction.TransactionManager;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class FacilioChain extends ChainBase {
 	private static final ThreadLocal<FacilioChain> rootChain = new ThreadLocal<>();
-	private static final ThreadLocal<FacilioContext> postTransactionContext = new ThreadLocal<>();
+//	private static final ThreadLocal<FacilioContext> postTransactionContext = new ThreadLocal<>();
 	
-	private Chain postTransactionChain;
+	private List<PostTransactionCommand> postTransactionChains;
 	private boolean enableTransaction = true;
 	private int timeout = -1;
 	
@@ -44,37 +45,72 @@ public class FacilioChain extends ChainBase {
 	
     private static final Logger LOGGER = LogManager.getLogger(FacilioChain.class.getName());
 
-	public Chain getPostTransactionChain() {
-		return postTransactionChain;
-	}
-
-	public void setPostTransactionChain(Chain postTransaction) {
-		this.postTransactionChain = postTransaction;
-	}
+//	public Chain getPostTransactionChain() {
+//		return postTransactionChain;
+//	}
+//
+//	public void setPostTransactionChain(Chain postTransaction) {
+//		this.postTransactionChain = postTransaction;
+//	}
 	
-	public static void addPostTrasanction(Object key, Object value) {
-		FacilioContext facilioContext = getPostTransactionContext();
-		facilioContext.put(key, value);
-	}
-	
-	public static void addPostTransactionListObject(Object key, Object value) {
-		FacilioContext facilioContext = getPostTransactionContext();
-		List list = (List) facilioContext.get(key);
-		if (list == null) {
-			list = new ArrayList();
-			facilioContext.put(key, list);
-		}
-		list.add(value);
-	}
+//	public static void addPostTrasanction(Object key, Object value) {
+//		FacilioContext facilioContext = getPostTransactionContext();
+//		facilioContext.put(key, value);
+//	}
+//	
+//	public static void addPostTransactionListObject(Object key, Object value) {
+//		FacilioContext facilioContext = getPostTransactionContext();
+//		List list = (List) facilioContext.get(key);
+//		if (list == null) {
+//			list = new ArrayList();
+//			facilioContext.put(key, list);
+//		}
+//		list.add(value);
+//	}
 
-	private static FacilioContext getPostTransactionContext() {
-		FacilioContext facilioContext = postTransactionContext.get();
-		if (facilioContext == null) {
-			facilioContext = new FacilioContext();
-			postTransactionContext.set(facilioContext);
-		}
-		return facilioContext;
-	}
+//	private static FacilioContext getPostTransactionContext() {
+//		FacilioContext facilioContext = postTransactionContext.get();
+//		if (facilioContext == null) {
+//			facilioContext = new FacilioContext();
+//			postTransactionContext.set(facilioContext);
+//		}
+//		return facilioContext;
+//	}
+    
+    @Override
+    public void addCommand(Command command) {
+    	if (command instanceof PostTransactionCommand) {
+    		addPostTransaction((PostTransactionCommand) command);
+    	} else if (command instanceof FacilioChain) {
+    		FacilioChain chain = ((FacilioChain) command);
+    		addPostTransaction(chain.postTransactionChains);
+    		chain.postTransactionChains = null;
+    	}
+    	super.addCommand(command);
+    }
+    
+    private void addPostTransaction(List<PostTransactionCommand> commands) {
+    	if (CollectionUtils.isEmpty(commands)) {
+    		return;
+    	}
+    	
+    	if (postTransactionChains == null) {
+    		postTransactionChains = new ArrayList<>();
+    	}
+    	postTransactionChains.addAll(commands);
+    }
+    
+    private void addPostTransaction(PostTransactionCommand command) {
+    	if (command == null) {
+    		return;
+    	}
+    	
+    	if (postTransactionChains == null) {
+    		postTransactionChains = new ArrayList<>();
+    	}
+    	postTransactionChains.add(command);
+    }
+	
 	public boolean execute(Context context) throws Exception {
 		this.addCommand(new FacilioChainExceptionHandler());
 
@@ -108,21 +144,21 @@ public class FacilioChain extends ChainBase {
 				}
 			}
 			
-			if (postTransactionChain != null) {
+			if (CollectionUtils.isNotEmpty(postTransactionChains)) {
 				FacilioChain root = rootChain.get();
 				if (this.equals(root)) {
-					if (postTransactionContext.get() != null) {
-						postTransactionChain.execute(postTransactionContext.get());
+//					if (postTransactionContext.get() != null) {
+//						postTransactionChain.execute(postTransactionContext.get());
+//					}
+					for (PostTransactionCommand postTransactionCommand : postTransactionChains) {
+						postTransactionCommand.postExecute();
 					}
 					// clear rootChain to set transaction chain as root
 					rootChain.remove();
-					postTransactionContext.remove();
-				} else {
-					if (root.getPostTransactionChain() != null) {
-						root.getPostTransactionChain().addCommand(this.postTransactionChain);
-					} else {
-						root.setPostTransactionChain(this.postTransactionChain);
-					}
+//					postTransactionContext.remove();
+				}
+				else {
+					root.addPostTransaction(this.postTransactionChains);
 				}
 			}
 
@@ -141,7 +177,7 @@ public class FacilioChain extends ChainBase {
 			FacilioChain root = rootChain.get();
 			if (this.equals(root)) {
 				rootChain.remove();
-				postTransactionContext.remove();
+//				postTransactionContext.remove();
 			}
 		}
 	}

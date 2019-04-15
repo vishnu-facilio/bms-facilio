@@ -1,15 +1,14 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.List;
-
+import com.facilio.bmsconsole.context.MarkedReadingContext;
+import com.facilio.bmsconsole.util.MarkingUtil;
+import com.facilio.constants.FacilioConstants;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
-import com.facilio.bmsconsole.context.MarkedReadingContext;
-import com.facilio.bmsconsole.util.MarkingUtil;
-import com.facilio.constants.FacilioConstants;
+import java.util.List;
 
 public class AddMarkedReadingValuesCommand implements Command {
 

@@ -5,14 +5,6 @@ import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 public class ReceivableContext extends ModuleBaseWithCustomFields {
 	private static final long serialVersionUID = 1L;
 
-	private long poId = -1;
-	public long getPoId() {
-		return poId;
-	}
-	public void setPoId(long poId) {
-		this.poId = poId;
-	}
-	
 	private Status status;
 	public int getStatus() {
 		if (status != null) {
@@ -30,6 +22,17 @@ public class ReceivableContext extends ModuleBaseWithCustomFields {
 		this.status = Status.valueOf(status);
 	}
 	
+	private PurchaseOrderContext poId;
+	
+	
+	public PurchaseOrderContext getPoId() {
+		return poId;
+	}
+	public void setPoId(PurchaseOrderContext poId) {
+		this.poId = poId;
+	}
+
+
 	public static enum Status {
 		YET_TO_RECEIVE,
 		PARTIALLY_RECEIVED,

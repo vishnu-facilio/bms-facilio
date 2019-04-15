@@ -1,40 +1,23 @@
 package com.facilio.bmsconsole.util;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.sql.Types;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.chain.Chain;
-import org.apache.commons.collections4.CollectionUtils;
-
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
-import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.LocationContext;
-import com.facilio.bmsconsole.context.PurchaseOrderContext;
 import com.facilio.bmsconsole.context.StoreRoomContext;
 import com.facilio.bmsconsole.context.VendorContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
-import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.FacilioModule;
-import com.facilio.bmsconsole.modules.FieldFactory;
-import com.facilio.bmsconsole.modules.LookupField;
-import com.facilio.bmsconsole.modules.LookupFieldMeta;
-import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
+import com.facilio.bmsconsole.modules.*;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.DBUtil;
 import com.facilio.transaction.FacilioConnectionPool;
+import org.apache.commons.chain.Chain;
+import org.apache.commons.collections4.CollectionUtils;
+
+import java.sql.*;
+import java.util.*;
 
 public class LocationAPI {
 	
@@ -256,7 +239,7 @@ public class LocationAPI {
 		return selectBuilder.getAsMap();
 	}
 	
-	public static LocationContext getLocation (Object obj, LocationContext locationContext, String locationName, boolean isShippingAddress) throws Exception {
+	public static LocationContext getPoPrLocation (Object obj, LocationContext locationContext, String locationName, boolean isShippingAddress) throws Exception {
 		if (locationContext == null) {
 			return null;
 		}
@@ -266,6 +249,9 @@ public class LocationAPI {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		location.setName(locationName);
 		context.put(FacilioConstants.ContextNames.RECORD, location);
+		context.put(FacilioConstants.ContextNames.RECORD_ID, location.getId());
+		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(location.getId()));
+	
 		if (location.getId() > 0) {
 			Chain editLocation = FacilioChainFactory.updateLocationChain();
 			editLocation.execute(context);
@@ -324,7 +310,7 @@ public class LocationAPI {
 					.module(module)
 					.beanClass(FacilioConstants.ContextNames.getClassFromModuleName(module.getName()))
 					.select(fields)
-					.fetchLookup(new LookupFieldMeta((LookupField) fieldsAsMap.get(locationFieldName)))
+					.fetchLookup((LookupField) fieldsAsMap.get(locationFieldName))
 					.andCondition(CriteriaAPI.getIdCondition(id, module));
 					;
         List<StoreRoomContext> list = builder.get();

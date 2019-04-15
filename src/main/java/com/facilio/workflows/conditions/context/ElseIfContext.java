@@ -1,12 +1,5 @@
 package com.facilio.workflows.conditions.context;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
-import org.json.simple.JSONArray;
-
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.workflows.context.ExpressionContext;
 import com.facilio.workflows.context.IteratorContext;
@@ -14,6 +7,12 @@ import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.context.WorkflowExpression;
 import com.facilio.workflows.context.WorkflowExpression.WorkflowExpressionType;
 import com.facilio.workflows.util.WorkflowUtil;
+import org.json.simple.JSONArray;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 public class ElseIfContext implements WorkflowCondition,Serializable {
 
@@ -73,6 +72,11 @@ public class ElseIfContext implements WorkflowCondition,Serializable {
 	public boolean evalCriteriaAndExecute(WorkflowContext workflowContext) throws Exception {
 		
 		Object result = WorkflowUtil.evaluateExpression(criteria, workflowContext.getVariableResultMap(), workflowContext.isIgnoreNullParams());
+		
+		if(result == null) {
+			throw new Exception("Result value is null for criteria- "+criteria+" with params - "+workflowContext.getVariableResultMap());
+		}
+		
 		boolean isPassed;
 		 if(result instanceof Boolean) {
 			 isPassed = (Boolean) result;

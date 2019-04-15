@@ -1,5 +1,8 @@
 package com.facilio.bmsconsole.context;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.facilio.accounts.dto.User;
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 
@@ -114,5 +117,28 @@ public class StoreRoomContext extends ModuleBaseWithCustomFields {
 	}
 	public void setLastPurchasedDate(long lastPurchasedDate) {
 		this.lastPurchasedDate = lastPurchasedDate;
+	}
+	
+	private List<Long> sites;
+	public List<Long> getSites() {
+		return sites;
+	}
+	public void setSites(List<Long> sites) {
+		this.sites = sites;
+	}
+	
+	private Boolean isGatePassRequired;
+	public Boolean getIsGatePassRequired() {
+		return isGatePassRequired;
+	}
+	public void setIsGatePassRequired(Boolean isGatePassRequired) {
+		this.isGatePassRequired = isGatePassRequired;
+	}
+	
+	public boolean isGatePassRequired() {
+		if (isGatePassRequired != null) {
+			return isGatePassRequired.booleanValue();
+		}
+		return false;
 	}
 }

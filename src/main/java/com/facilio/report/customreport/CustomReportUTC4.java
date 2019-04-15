@@ -1,14 +1,5 @@
 package com.facilio.report.customreport;
 
-import java.text.DecimalFormat;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.ReportContext;
 import com.facilio.bmsconsole.context.TicketCategoryContext;
@@ -17,6 +8,14 @@ import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.util.WorkOrderAPI;
 import com.facilio.fw.BeanFactory;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+
+import java.text.DecimalFormat;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class CustomReportUTC4 implements CustomReport {	//Score Trends
 

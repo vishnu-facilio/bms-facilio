@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 public interface WorkflowExpression extends Serializable,Cloneable {
 	
-	public Object execute() throws Exception;
+	public Object execute(WorkflowContext workflowContext) throws Exception;
 	
 	public int getWorkflowExpressionType();
 	

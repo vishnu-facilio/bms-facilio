@@ -1,62 +1,22 @@
 package com.facilio.bmsconsole.util;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-
 import com.facilio.accounts.dto.Group;
-import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.AssetContext;
-import com.facilio.bmsconsole.context.AttachmentContext;
-import com.facilio.bmsconsole.context.BaseSpaceContext;
+import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.context.BaseSpaceContext.SpaceType;
-import com.facilio.bmsconsole.context.CalendarColorContext;
-import com.facilio.bmsconsole.context.NoteContext;
-import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.context.ReadingDataMeta.ReadingInputType;
-import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.ResourceContext.ResourceType;
-import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.TaskContext.InputType;
-import com.facilio.bmsconsole.context.TaskSectionContext;
-import com.facilio.bmsconsole.context.TicketCategoryContext;
-import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.context.TicketContext.SourceType;
-import com.facilio.bmsconsole.context.TicketPriorityContext;
-import com.facilio.bmsconsole.context.TicketStatusContext;
 import com.facilio.bmsconsole.context.TicketStatusContext.StatusType;
-import com.facilio.bmsconsole.context.TicketTypeContext;
-import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
-import com.facilio.bmsconsole.modules.BooleanField;
-import com.facilio.bmsconsole.modules.DeleteRecordBuilder;
-import com.facilio.bmsconsole.modules.EnumField;
-import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.FacilioModule;
-import com.facilio.bmsconsole.modules.FieldFactory;
-import com.facilio.bmsconsole.modules.FieldType;
-import com.facilio.bmsconsole.modules.FieldUtil;
-import com.facilio.bmsconsole.modules.ModuleFactory;
-import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
+import com.facilio.bmsconsole.modules.*;
 import com.facilio.bmsconsole.tenant.TenantContext;
-import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
@@ -67,6 +27,15 @@ import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
 import com.facilio.workflows.util.WorkflowUtil;
+
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.MutablePair;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class TicketAPI {
 	
@@ -386,6 +355,19 @@ public class TicketAPI {
 			}
 		}
 		return tasks;
+	}
+	
+	public static int deleteTasks(List<Long> taskIds) throws Exception 
+	{
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule("task");
+		 
+		GenericDeleteRecordBuilder delete = new GenericDeleteRecordBuilder()
+				.table(module.getTableName())
+				.andCondition(CriteriaAPI.getIdCondition(taskIds, module));
+		
+		return delete.delete();
+		
 	}
 	
 	private static Map<Long, TaskSectionContext> getTasksSectionsFromMapList(List<Map<String, Object>> sectionProps) {
@@ -1071,6 +1053,9 @@ public static Map<Long, TicketContext> getTickets(String ids) throws Exception {
 							}
 						}
 					}
+				
+					associateTenant(ticket);
+				
 				}
 			}
 		} else if(ticket.getAssignedTo() != null || ticket.getAssignmentGroup() != null) {
@@ -1219,5 +1204,107 @@ public static Map<Long, TicketContext> getTickets(String ids) throws Exception {
 			throw new IllegalArgumentException("The User does not belong to current site.");
 		}
 		
+	}
+	public static void associateTenant (TicketContext ticket) throws Exception {
+		if (AccountUtil.isFeatureEnabled(AccountUtil.FEATURE_TENANTS) && ticket.getResource() != null && ticket.getResource().getId() != -1) {
+			ResourceContext resource = ResourceAPI.getResource(ticket.getResource().getId());
+			if(resource.getResourceTypeEnum() ==  ResourceType.ASSET) {
+				ticket.setTenant(TenantsAPI.getTenantForAsset(ticket.getResource().getId()));
+			}
+			else if(resource.getResourceTypeEnum() ==  ResourceType.SPACE) {
+				ticket.setTenant(TenantsAPI.getTenantForSpace(ticket.getResource().getId()));
+			}
+		}
+	}
+
+	public static void updateTaskCount(Collection parentIds) throws Exception {
+		if (CollectionUtils.isNotEmpty(parentIds)) {
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			String moduleName = "task";
+
+			FacilioField parentIdField = modBean.getField("parentTicketId", moduleName);
+			FacilioModule module = modBean.getModule(moduleName);
+			
+			List<FacilioField> fields = new ArrayList<>();
+			fields.add(parentIdField);
+			
+			FacilioField countField = new FacilioField();
+			countField.setName("count");
+			countField.setColumnName("COUNT(*)");
+			countField.setDataType(FieldType.NUMBER);
+			fields.add(countField);
+			
+			Condition condition = CriteriaAPI.getCondition(parentIdField, parentIds, NumberOperators.EQUALS);
+			GenericSelectRecordBuilder select = new GenericSelectRecordBuilder()
+					.table(module.getTableName())
+					.select(fields)
+					.groupBy(parentIdField.getCompleteColumnName())
+					.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+					.andCondition(condition);
+			
+			List<Map<String, Object>> totalCountList = select.get();
+			
+			Map<Long, MutablePair<Integer, Integer>> updatedValues = new HashMap<>();
+			for (Map<String, Object> map : totalCountList) {
+				long id = ((Number) map.get("parentTicketId")).longValue();
+				MutablePair<Integer, Integer> pair = new MutablePair<>();
+				pair.setLeft(((Number) map.get("count")).intValue());
+				updatedValues.put(id, pair);
+			}
+			
+			FacilioField statusField = modBean.getField("statusNew", moduleName);
+			Condition completedStatusCondition = CriteriaAPI.getCondition(statusField, NumberOperators.EQUALS);
+			completedStatusCondition.setValue(String.valueOf(2));
+			select = new GenericSelectRecordBuilder()
+					.table(module.getTableName())
+					.select(fields)
+					.groupBy(parentIdField.getCompleteColumnName())
+					.andCondition(condition)
+					.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+					.andCondition(completedStatusCondition);
+			
+			List<Map<String, Object>> completedCountList = select.get();
+			
+			for (Map<String, Object> map : completedCountList) {
+				long id = ((Number) map.get("parentTicketId")).longValue();
+				MutablePair<Integer, Integer> pair = updatedValues.get(id);
+				if (pair == null) {
+					pair = new MutablePair<>();
+				}
+				pair.setRight(((Number) map.get("count")).intValue());
+			}
+
+			String ticketModuleName = "ticket";
+			FacilioModule ticketModule = modBean.getModule(ticketModuleName);
+			
+			FacilioField noOfTasksField = new FacilioField();
+			noOfTasksField.setName("noOfTasks");
+			noOfTasksField.setColumnName("NO_OF_TASKS");
+			noOfTasksField.setDataType(FieldType.NUMBER);
+			
+			FacilioField noOfClosedTasksField = new FacilioField();
+			noOfClosedTasksField.setName("noOfClosedTasks");
+			noOfClosedTasksField.setColumnName("NO_OF_CLOSED_TASKS");
+			noOfClosedTasksField.setDataType(FieldType.NUMBER);
+			
+			for (Long id: updatedValues.keySet()) {
+				Map<String, Object> updateMap = new HashMap<>();
+				MutablePair<Integer,Integer> pair = updatedValues.get(id);
+				
+				updateMap.put("noOfTasks", pair.getLeft() == null ? 0 : pair.getLeft());
+				updateMap.put("noOfClosedTasks", pair.getRight() == null ? 0 : pair.getRight());
+				
+				FacilioField idField = FieldFactory.getIdField(ticketModule);
+				Condition idFieldCondition = CriteriaAPI.getCondition(idField, NumberOperators.EQUALS);
+				idFieldCondition.setValue(String.valueOf(id));
+				
+				GenericUpdateRecordBuilder recordBuilder = new GenericUpdateRecordBuilder()
+						.table(ticketModule.getTableName())
+						.fields(Arrays.asList(noOfTasksField, noOfClosedTasksField))
+						.andCondition(CriteriaAPI.getCurrentOrgIdCondition(ticketModule))
+						.andCondition(idFieldCondition);
+				recordBuilder.update(updateMap);
+			}
+		}		
 	}
 }

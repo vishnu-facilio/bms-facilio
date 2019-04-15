@@ -1,14 +1,14 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
 import com.facilio.bmsconsole.context.BaseLineContext;
 import com.facilio.bmsconsole.context.BaseLineContext.AdjustType;
 import com.facilio.bmsconsole.util.BaseLineAPI;
 import com.facilio.report.context.ReportBaseLineContext;
 import com.facilio.report.context.ReportContext;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 public class CommonReportUtil {
 	public static void fetchBaseLines (ReportContext report, List<ReportBaseLineContext> reportBaseLines) throws Exception {

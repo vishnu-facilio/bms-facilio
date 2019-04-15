@@ -1,16 +1,15 @@
 package com.facilio.bmsconsole.commands;
 
+import com.facilio.constants.FacilioConstants;
+import com.facilio.sql.DBUtil;
+import com.facilio.transaction.FacilioConnectionPool;
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Types;
-
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-
-import com.facilio.constants.FacilioConstants;
-import com.facilio.sql.DBUtil;
-import com.facilio.transaction.FacilioConnectionPool;
 
 public class AssignTicketCommand implements Command {
 

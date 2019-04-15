@@ -1,15 +1,5 @@
 package com.facilio.events.constants;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.apache.log4j.Level;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.modules.FieldUtil;
@@ -18,6 +8,15 @@ import com.facilio.events.context.EventContext.EventState;
 import com.facilio.events.context.EventRuleContext;
 import com.facilio.events.util.EventAPI;
 import com.facilio.workflows.util.WorkflowUtil;
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
+import org.apache.log4j.Level;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class ExecuteEventRulesCommand implements Command {
 
@@ -63,7 +62,7 @@ public class ExecuteEventRulesCommand implements Command {
 		}
 		boolean workflowFlag = true;
 		if (rule.getWorkflow() != null) {
-			workflowFlag = WorkflowUtil.getWorkflowExpressionResultAsBoolean(rule.getWorkflow().getWorkflowString(), rulePlaceHolders);
+			workflowFlag = WorkflowUtil.getWorkflowExpressionResultAsBoolean(rule.getWorkflow(), rulePlaceHolders);
 		}
 		return criteriaFlag && workflowFlag;
 	}

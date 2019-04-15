@@ -1,21 +1,18 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.AbstractMap.SimpleEntry;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.report.context.ReportContext;
+import com.facilio.report.context.ReportDataPointContext;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
-import com.facilio.constants.FacilioConstants;
-import com.facilio.report.context.ReportContext;
-import com.facilio.report.context.ReportDataPointContext;
+import java.util.AbstractMap.SimpleEntry;
+import java.util.*;
 
 public class CalculateAggregationCommand implements Command {
 
@@ -35,10 +32,10 @@ public class CalculateAggregationCommand implements Command {
 		String sortAlias = (String) context.get(FacilioConstants.ContextNames.REPORT_SORT_ALIAS);
 		ReportContext report = (ReportContext) context.get(FacilioConstants.ContextNames.REPORT);
 		if (reportData != null && !reportData.isEmpty()) {
-			List<Map<String, Object>> csvData = (List<Map<String, Object>>) reportData.get(FacilioConstants.ContextNames.DATA_KEY);
+			Collection<Map<String, Object>> csvData = (Collection<Map<String, Object>>) reportData.get(FacilioConstants.ContextNames.DATA_KEY);
 			Map<String, Object> reportAggrData = (Map<String, Object>) reportData.get(FacilioConstants.ContextNames.AGGR_KEY);
 			Map<String, Object> aggrData = new HashMap<>();
-			
+
 			for (ReportDataPointContext dp : report.getDataPoints()) {
 				if (!dp.isAggrCalculated()) {
 					switch (dp.getyAxis().getDataTypeEnum()) {
@@ -58,7 +55,7 @@ public class CalculateAggregationCommand implements Command {
 					dp.setAggrCalculated(true);
 				}
 			}
-			
+
 			if (reportAggrData == null) {
 				reportData.put(FacilioConstants.ContextNames.AGGR_KEY, aggrData);
 			}
@@ -70,44 +67,60 @@ public class CalculateAggregationCommand implements Command {
 		return false;
 	}
 	
-	private void doEnumAggr (ReportContext report, ReportDataPointContext dp, List<Map<String, Object>> csvData, Map<String, Object> aggrData, String timeAlias) {
+	private void doEnumAggr (ReportContext report, ReportDataPointContext dp, Collection<Map<String, Object>> csvData, Map<String, Object> aggrData, String timeAlias) {
+		if (CollectionUtils.isEmpty(csvData)) {
+			return;
+		}
+
 		Map<String, SimpleEntry<Long, Integer>> previousRecords = new HashMap<>();
-		for (int i = 0; i < csvData.size(); i++) {
-			Map<String, Object> data = csvData.get(i);
-			long startTime = -1, endTime = -1;
-			
-			if (i != 0) {
-				startTime = (long) data.get(timeAlias);
+		Iterator<Map<String, Object>> itr = csvData.iterator();
+		Map<String, Object> currentData = itr.next();
+		boolean isFirst = true;
+		while (itr.hasNext()) {
+//			Map<String, Object> data = csvData.get(i);
+			Map<String, Object> nextData = itr.next();
+			aggregateEnum(report, dp, aggrData, timeAlias, currentData, nextData, isFirst, previousRecords);
+			if (isFirst) {
+				isFirst = false;
 			}
-			
-			if (i != csvData.size() - 1) {
-				endTime = (long) csvData.get(i + 1).get(timeAlias);
-			}
-			
-			for (String alias : dp.getAliases().values()) {
-				EnumVal enumValue = calculateEnumAggr(report, dp.getyAxis().getEnumMap().keySet(), data.get(alias), alias, startTime, endTime, previousRecords, aggrData); //Starttime is included and endtime is excluded
-				if (enumValue != null) {
-					data.put(alias, enumValue);
-				}
+			currentData = nextData;
+		}
+		aggregateEnum(report, dp, aggrData, timeAlias, currentData, null, isFirst, previousRecords); //for the last record
+	}
+
+	private void aggregateEnum (ReportContext report, ReportDataPointContext dp, Map<String, Object> aggrData, String timeAlias, Map<String, Object> currentData, Map<String, Object> nextData, boolean isFirst, Map<String, SimpleEntry<Long, Integer>> previousRecords) {
+		long startTime = -1, endTime = -1;
+
+		if (!isFirst) {
+			startTime = (long) currentData.get(timeAlias);
+		}
+
+		if (nextData != null) {
+			endTime = (long) nextData.get(timeAlias);
+		}
+
+		for (String alias : dp.getAliases().values()) {
+			EnumVal enumValue = calculateEnumAggr(report, dp.getyAxis().getEnumMap().keySet(), currentData.get(alias), alias, startTime, endTime, previousRecords, aggrData); //Starttime is included and endtime is excluded
+			if (enumValue != null) {
+				currentData.put(alias, enumValue);
 			}
 		}
 	}
 	
 	private EnumVal calculateEnumAggr (ReportContext report, Set<Integer> enumValueKeys, Object value, String alias, long startTime, long endTime, Map<String, SimpleEntry<Long, Integer>> previousRecords, Map<String, Object> aggrData) {
-		if (value != null) {
-			List<SimpleEntry<Long, Integer>> enumVal = (List<SimpleEntry<Long, Integer>>) value;
-			EnumVal enumValue = combineEnumVal(report, enumValueKeys, enumVal, startTime, endTime, previousRecords.get(alias));
+		List<SimpleEntry<Long, Integer>> enumVal = (List<SimpleEntry<Long, Integer>>) value;
+		EnumVal enumValue = combineEnumVal(report, enumValueKeys, enumVal, startTime, endTime, previousRecords.get(alias));
+
+		if (enumValue != null) {
 			previousRecords.put(alias, enumValue.timeline.get(enumValue.timeline.size() - 1));
-			
 			//Aggr
-			String timelineKey = alias+".timeline";
-			String duraionKey = alias+".duration";
+			String timelineKey = alias + ".timeline";
+			String duraionKey = alias + ".duration";
 			List<SimpleEntry<Long, Integer>> fullTimeline = (List<SimpleEntry<Long, Integer>>) aggrData.get(timelineKey);
 			if (fullTimeline == null) {
 				aggrData.put(timelineKey, new ArrayList<>(enumValue.timeline));
 				aggrData.put(duraionKey, new HashMap<>(enumValue.duration));
-			}
-			else {
+			} else {
 				int i = 0;
 				if (fullTimeline.get(fullTimeline.size() - 1).getValue() == enumValue.timeline.get(0).getValue()) {
 					i = 1;
@@ -115,16 +128,29 @@ public class CalculateAggregationCommand implements Command {
 				for (; i < enumValue.timeline.size(); i++) {
 					fullTimeline.add(enumValue.timeline.get(i));
 				}
-				
+
 				Map<Integer, Long> completeDuration = (Map<Integer, Long>) aggrData.get(duraionKey);
 				completeDuration.replaceAll((val, duration) -> duration + enumValue.duration.get(val));
 			}
-			return enumValue;
 		}
-		return null;
+		return enumValue;
 	}
 	
 	private EnumVal combineEnumVal (ReportContext report, Set<Integer> enumValues, List<SimpleEntry<Long, Integer>> highResVal, long startTime, long endTime, SimpleEntry<Long, Integer> previousRecord) {
+		long currentTime = System.currentTimeMillis();
+
+		if (AccountUtil.getCurrentOrg().getId() == 134) {
+			LOGGER.info(new StringBuilder()
+							.append("High Res : ").append(highResVal).append("\n")
+							.append("Start Time : ").append(startTime).append("\n")
+							.append("Current Time : ").append(currentTime).append("\n")
+							.append("Previous Record : ").append(previousRecord));
+		}
+
+		if (CollectionUtils.isEmpty(highResVal) && (previousRecord == null || startTime > currentTime)) {
+			return null;
+		}
+
 		List<SimpleEntry<Long, Integer>> timeline = new ArrayList<>();
 		Map<Integer, Long> durations = initDuration(enumValues);
 		
@@ -135,28 +161,29 @@ public class CalculateAggregationCommand implements Command {
 						.append("endTime : ").append(endTime).append("\n")
 						.append("Prev record : ").append(previousRecord).append("\n"));
 		
-		if (startTime != -1 && previousRecord != null) {
+		if (previousRecord != null) {
 			SimpleEntry<Long, Integer> val = new SimpleEntry<Long, Integer>(startTime, previousRecord.getValue());
 			timeline.add(val);
 			previousRecord = val;
 		}
-		
-		for (SimpleEntry<Long, Integer> val : highResVal) {
-			if (previousRecord == null) {
-				timeline.add(val);
-				previousRecord = val;
-			}
-			else if (previousRecord.getValue() != val.getValue()) {
-				timeline.add(val);
-				long duration = durations.get(previousRecord.getValue());
-				durations.put(previousRecord.getValue(), duration + (val.getKey() - previousRecord.getKey()));
-				previousRecord = val;
+
+		if (CollectionUtils.isNotEmpty(highResVal)) {
+			for (SimpleEntry<Long, Integer> val : highResVal) {
+				if (previousRecord == null) {
+					timeline.add(val);
+					previousRecord = val;
+				} else if (previousRecord.getValue() != val.getValue()) {
+					timeline.add(val);
+					long duration = durations.get(previousRecord.getValue());
+					durations.put(previousRecord.getValue(), duration + (val.getKey() - previousRecord.getKey()));
+					previousRecord = val;
+				}
 			}
 		}
 		
 		if (endTime == -1) {
 			if (report.getDateOperatorEnum().isCurrentOperator()) {
-				endTime = System.currentTimeMillis();
+				endTime = currentTime;
 			}
 			else {
 				endTime = report.getDateOperatorEnum().getRange(report.getDateValue()).getEndTime();
@@ -181,7 +208,7 @@ public class CalculateAggregationCommand implements Command {
 		return duration;
 	}
 	
-	private void doDecimalAggr (ReportDataPointContext dp, List<Map<String, Object>> csvData, String sortAlias, Map<String, Object> aggrData) {
+	private void doDecimalAggr (ReportDataPointContext dp, Collection<Map<String, Object>> csvData, String sortAlias, Map<String, Object> aggrData) {
 		for (Map<String, Object> data : csvData) {
 			boolean isLatest = false;
 			if (sortAlias != null && !sortAlias.isEmpty()) {

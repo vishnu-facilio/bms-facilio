@@ -1,26 +1,19 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.PurchasedToolContext;
 import com.facilio.bmsconsole.context.ToolContext;
 import com.facilio.bmsconsole.context.WorkorderToolsContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
-import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.FacilioModule;
-import com.facilio.bmsconsole.modules.FieldFactory;
-import com.facilio.bmsconsole.modules.LookupField;
-import com.facilio.bmsconsole.modules.LookupFieldMeta;
-import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
-import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
+import com.facilio.bmsconsole.modules.*;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 public class DeleteWorkorderToolCommand implements Command {
 
@@ -37,8 +30,8 @@ public class DeleteWorkorderToolCommand implements Command {
 				List<FacilioField> toolFields = modBean.getAllFields(FacilioConstants.ContextNames.TOOL);
 
 				Map<String, FacilioField> toolFieldsMap = FieldFactory.getAsMap(toolFields);
-				List<LookupFieldMeta> lookUpfields = new ArrayList<>();
-				lookUpfields.add(new LookupFieldMeta((LookupField) toolFieldsMap.get("toolType")));
+				List<LookupField>lookUpfields = new ArrayList<>();
+				lookUpfields.add((LookupField) toolFieldsMap.get("toolType"));
 
 				SelectRecordsBuilder<ToolContext> itemSelectBuilder = new SelectRecordsBuilder<ToolContext>()
 						.select(toolFields).table(toolModule.getTableName()).moduleName(toolModule.getName())

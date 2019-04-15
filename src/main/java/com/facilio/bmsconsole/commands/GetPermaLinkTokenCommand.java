@@ -1,14 +1,13 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.constants.FacilioConstants;
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class GetPermaLinkTokenCommand implements Command{
 	

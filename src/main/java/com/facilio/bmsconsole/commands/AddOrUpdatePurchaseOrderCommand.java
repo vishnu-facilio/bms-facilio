@@ -1,12 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.Collections;
-import java.util.List;
-
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.apache.commons.collections4.CollectionUtils;
-
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.PurchaseOrderContext;
 import com.facilio.bmsconsole.context.PurchaseOrderLineItemContext;
@@ -14,15 +8,16 @@ import com.facilio.bmsconsole.context.ReceivableContext;
 import com.facilio.bmsconsole.context.ReceivableContext.Status;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
-import com.facilio.bmsconsole.modules.DeleteRecordBuilder;
-import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.FacilioModule;
-import com.facilio.bmsconsole.modules.InsertRecordBuilder;
-import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
-import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
+import com.facilio.bmsconsole.modules.*;
 import com.facilio.bmsconsole.util.LocationAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
+
+import java.util.Collections;
+import java.util.List;
 
 public class AddOrUpdatePurchaseOrderCommand implements Command {
 
@@ -41,24 +36,19 @@ public class AddOrUpdatePurchaseOrderCommand implements Command {
 				throw new Exception("Line items cannot be empty");
 			}
 			
-//			if (purchaseOrderContext.getVendor() == null) {
-//				throw new Exception("Vendor cannot be empty");
-//			}
-//			
-//			if (purchaseOrderContext.getStoreRoom() == null) {
-//				throw new Exception("StoreRoom cannot be empty");
-//			}
-			purchaseOrderContext.setShipToAddress(LocationAPI.getLocation(purchaseOrderContext.getStoreRoom(), purchaseOrderContext.getShipToAddress(), "SHIP_TO_Location", true));
-			purchaseOrderContext.setBillToAddress(LocationAPI.getLocation(purchaseOrderContext.getVendor(), purchaseOrderContext.getBillToAddress(), "BILL_TO_Location", false));
+			if (purchaseOrderContext.getVendor() == null) {
+				throw new Exception("Vendor cannot be empty");
+			}
+			
+			if (purchaseOrderContext.getStoreRoom() == null) {
+				throw new Exception("StoreRoom cannot be empty");
+			}
+			// setting current user to requestedBy
+			purchaseOrderContext.setRequestedBy(AccountUtil.getCurrentUser());
+			            
+			purchaseOrderContext.setShipToAddress(LocationAPI.getPoPrLocation(purchaseOrderContext.getStoreRoom(), purchaseOrderContext.getShipToAddress(), "SHIP_TO_Location", true));
+			purchaseOrderContext.setBillToAddress(LocationAPI.getPoPrLocation(purchaseOrderContext.getVendor(), purchaseOrderContext.getBillToAddress(), "BILL_TO_Location", false));
 			if (purchaseOrderContext.getId() > 0) {
-				if(purchaseOrderContext.getStatusEnum() == PurchaseOrderContext.Status.APPROVED) {
-					if(purchaseOrderContext.getVendor() == null || (purchaseOrderContext.getVendor()!=null && purchaseOrderContext.getVendor().getId() == -1)) {
-						throw new IllegalArgumentException("Vendor cannot be null for approved Purchase Order");
-					}
-					if(purchaseOrderContext.getStoreRoom() == null || (purchaseOrderContext.getStoreRoom()!=null && purchaseOrderContext.getStoreRoom().getId() == -1)) {
-						throw new IllegalArgumentException("Storeroom cannot be null for approved Purchase Order");
-					}
-				}
 				updateRecord(purchaseOrderContext, module, fields);
 				
 				DeleteRecordBuilder<PurchaseOrderLineItemContext> deleteBuilder = new DeleteRecordBuilder<PurchaseOrderLineItemContext>()
@@ -71,16 +61,16 @@ public class AddOrUpdatePurchaseOrderCommand implements Command {
 					purchaseOrderContext.setOrderedTime(System.currentTimeMillis());
 				}
 				purchaseOrderContext.setStatus(PurchaseOrderContext.Status.REQUESTED);
-				addRecord(Collections.singletonList(purchaseOrderContext), module, fields);
+				addRecord(true,Collections.singletonList(purchaseOrderContext), module, fields);
 				FacilioModule receivableModule = modBean.getModule(FacilioConstants.ContextNames.RECEIVABLE);
 				ReceivableContext receivableContext = new ReceivableContext();
-				receivableContext.setPoId(purchaseOrderContext.getId());
+				receivableContext.setPoId(purchaseOrderContext);
 				receivableContext.setStatus(Status.YET_TO_RECEIVE);
-				addRecord(Collections.singletonList(receivableContext), receivableModule, modBean.getAllFields(receivableModule.getName()));
+				addRecord(true,Collections.singletonList(receivableContext), receivableModule, modBean.getAllFields(receivableModule.getName()));
 			}
 			
 			updateLineItems(purchaseOrderContext);
-			addRecord(purchaseOrderContext.getLineItems(), lineModule, modBean.getAllFields(lineModule.getName()));
+			addRecord(false,purchaseOrderContext.getLineItems(), lineModule, modBean.getAllFields(lineModule.getName()));
 			
 			context.put(FacilioConstants.ContextNames.RECORD, purchaseOrderContext);
 		}
@@ -94,10 +84,13 @@ public class AddOrUpdatePurchaseOrderCommand implements Command {
 		}
 	}
 	
-	private void addRecord(List<? extends ModuleBaseWithCustomFields> list, FacilioModule module, List<FacilioField> fields) throws Exception {
+	private void addRecord(boolean isLocalIdNeeded, List<? extends ModuleBaseWithCustomFields> list, FacilioModule module, List<FacilioField> fields) throws Exception {
 		InsertRecordBuilder insertRecordBuilder = new InsertRecordBuilder<>()
 				.module(module)
 				.fields(fields);
+		if(isLocalIdNeeded) {
+			insertRecordBuilder.withLocalId();
+		}
 		insertRecordBuilder.addRecords(list);
 		insertRecordBuilder.save();
 	}

@@ -3,7 +3,6 @@ package com.facilio.util;
 import com.facilio.agent.AgentKeys;
 import com.facilio.beans.ModuleCRUDBean;
 import com.facilio.fw.BeanFactory;
-import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
@@ -24,7 +23,8 @@ public class AckUtil
             ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", orgId);
             bean.acknowledgePublishedMessage(msgId);
         }catch(Exception e){
-            e.printStackTrace();
+            LOGGER.info("EXxception occured",e);
         }
+    }
 
-    }}
+}

@@ -1,40 +1,27 @@
 package com.facilio.wms.util;
 
+import com.amazonaws.services.kinesis.model.PutRecordResult;
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.aws.util.AwsUtil;
+import com.facilio.kafka.FacilioKafkaProducer;
+import com.facilio.procon.message.FacilioRecord;
+import com.facilio.procon.producer.FacilioProducer;
+import com.facilio.wms.endpoints.FacilioClientEndpoint;
+import com.facilio.wms.endpoints.SessionManager;
+import com.facilio.wms.message.*;
+import org.apache.kafka.clients.producer.RecordMetadata;
+import org.json.simple.JSONObject;
+
+import javax.websocket.EncodeException;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 import java.util.concurrent.Future;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import javax.websocket.EncodeException;
-
-import com.facilio.kafka.FacilioKafkaProducer;
-import com.facilio.procon.message.FacilioRecord;
-import com.facilio.procon.producer.FacilioProducer;
-import org.apache.kafka.clients.producer.KafkaProducer;
-import org.apache.kafka.clients.producer.ProducerRecord;
-import org.apache.kafka.clients.producer.RecordMetadata;
-import org.json.simple.JSONObject;
-
-import com.amazonaws.services.kinesis.model.PutRecordResult;
-import com.facilio.accounts.util.AccountUtil;
-import com.facilio.aws.util.AwsUtil;
-import com.facilio.wms.endpoints.FacilioClientEndpoint;
-import com.facilio.wms.endpoints.SessionManager;
-import com.facilio.wms.message.Message;
-import com.facilio.wms.message.WmsChatMessage;
-import com.facilio.wms.message.WmsEvent;
-import com.facilio.wms.message.WmsNotification;
-import com.facilio.wms.message.WmsPublishResponse;
-import com.facilio.wms.message.WmsRemoteScreenMessage;
 
 public class WmsApi
 {
@@ -53,8 +40,8 @@ public class WmsApi
 
 		if(! AwsUtil.isDevelopment()) {
 			kinesisNotificationTopic = AwsUtil.getConfig("environment") + "-" + kinesisNotificationTopic;
-			LOGGER.info("Initialized Kafka Producer");
 			producer = new FacilioKafkaProducer(kinesisNotificationTopic);
+			LOGGER.info("Initialized Kafka Producer");
 		}
 	}
 
@@ -67,8 +54,7 @@ public class WmsApi
 			}
 			dataMap.put("timestamp", System.currentTimeMillis());
 			dataMap.put("data", data);
-			Future<RecordMetadata> future = (Future<RecordMetadata>)producer.putRecord(new FacilioRecord(partitionKey, dataMap));
-			RecordMetadata metadata = future.get();
+			RecordMetadata future = (RecordMetadata)producer.putRecord(new FacilioRecord(partitionKey, dataMap));
 		} catch (Exception e) {
 			LOGGER.info(kinesisNotificationTopic + " : " + dataMap);
 			LOGGER.log(Level.INFO, "Exception while producing to kafka ", e);

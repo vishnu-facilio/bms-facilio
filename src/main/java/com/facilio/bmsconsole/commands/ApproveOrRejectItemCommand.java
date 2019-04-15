@@ -1,30 +1,20 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.ItemContext;
 import com.facilio.bmsconsole.context.ItemTransactionsContext;
 import com.facilio.bmsconsole.context.PurchasedItemContext;
-import com.facilio.bmsconsole.context.WorkorderItemContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
-import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.FacilioModule;
-import com.facilio.bmsconsole.modules.FieldFactory;
-import com.facilio.bmsconsole.modules.LookupField;
-import com.facilio.bmsconsole.modules.LookupFieldMeta;
-import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
-import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
-import com.facilio.bmsconsole.util.TransactionState;
+import com.facilio.bmsconsole.modules.*;
 import com.facilio.bmsconsole.util.TransactionType;
 import com.facilio.bmsconsole.workflow.rule.ApprovalState;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 public class ApproveOrRejectItemCommand implements Command {
 
@@ -32,58 +22,62 @@ public class ApproveOrRejectItemCommand implements Command {
 	@Override
 	public boolean execute(Context context) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		List<Long> recordIds = (List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST);
+		if (recordIds != null && !recordIds.isEmpty()) {
+			FacilioModule itemTransactionsModule = modBean.getModule(FacilioConstants.ContextNames.ITEM_TRANSACTIONS);
+			List<FacilioField> itemTransactionsFields = modBean
+					.getAllFields(FacilioConstants.ContextNames.ITEM_TRANSACTIONS);
+			Map<String, FacilioField> itemTransactionsFieldMap = FieldFactory.getAsMap(itemTransactionsFields);
 
-		FacilioModule itemTransactionsModule = modBean.getModule(FacilioConstants.ContextNames.ITEM_TRANSACTIONS);
-		List<FacilioField> itemTransactionsFields = modBean
-				.getAllFields(FacilioConstants.ContextNames.ITEM_TRANSACTIONS);
-		Map<String, FacilioField> itemTransactionsFieldMap = FieldFactory.getAsMap(itemTransactionsFields);
+			int approvedStateVal = (int) context.get(FacilioConstants.ContextNames.ITEM_TRANSACTION_APPORVED_STATE);
+			ApprovalState approvalState = ApprovalState.valueOf(approvedStateVal);
+			List<Long> parentIds = new ArrayList<>();
+			List<LookupField> lookUpfields = new ArrayList<>();
+			lookUpfields.add((LookupField) itemTransactionsFieldMap.get("item"));
+			lookUpfields.add((LookupField) itemTransactionsFieldMap.get("purchasedItem"));
+			lookUpfields.add((LookupField) itemTransactionsFieldMap.get("itemType"));
 
-		List<Long> recordIds = (List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID);
-		int approvedStateVal = (int) context.get(FacilioConstants.ContextNames.ITEM_TRANSACTION_APPORVED_STATE);
-		ApprovalState approvalState = ApprovalState.valueOf(approvedStateVal);
-		List<Long> parentIds = new ArrayList<>();
-		List<LookupFieldMeta> lookUpfields = new ArrayList<>();
-		lookUpfields.add(new LookupFieldMeta((LookupField) itemTransactionsFieldMap.get("item")));
-		lookUpfields.add(new LookupFieldMeta((LookupField) itemTransactionsFieldMap.get("purchasedItem")));
-		lookUpfields.add(new LookupFieldMeta((LookupField) itemTransactionsFieldMap.get("itemType")));
+			SelectRecordsBuilder<ItemTransactionsContext> selectBuilder = new SelectRecordsBuilder<ItemTransactionsContext>()
+					.select(itemTransactionsFields).table(itemTransactionsModule.getTableName())
+					.moduleName(itemTransactionsModule.getName()).beanClass(ItemTransactionsContext.class)
+					.andCondition(CriteriaAPI.getIdCondition(recordIds, itemTransactionsModule))
+					.fetchLookups(lookUpfields);
 
-		SelectRecordsBuilder<ItemTransactionsContext> selectBuilder = new SelectRecordsBuilder<ItemTransactionsContext>()
-				.select(itemTransactionsFields).table(itemTransactionsModule.getTableName())
-				.moduleName(itemTransactionsModule.getName()).beanClass(ItemTransactionsContext.class)
-				.andCondition(CriteriaAPI.getIdCondition(recordIds, itemTransactionsModule)).fetchLookups(lookUpfields);
-
-		List<ItemTransactionsContext> itemTransactions = selectBuilder.get();
-		for (ItemTransactionsContext transactions : itemTransactions) {
-			if (approvalState == ApprovalState.APPROVED) {
-				if (transactions.getItemType().individualTracking()) {
-					if (transactions.getPurchasedItem().isUsed()) {
-						throw new IllegalArgumentException("Insufficient quantity in inventory!");
+			List<ItemTransactionsContext> itemTransactions = selectBuilder.get();
+			for (ItemTransactionsContext transactions : itemTransactions) {
+				if (approvalState == ApprovalState.APPROVED) {
+					if (transactions.getItemType().individualTracking()) {
+						if (transactions.getPurchasedItem().isUsed()) {
+							throw new IllegalArgumentException("Insufficient quantity in inventory!");
+						} else {
+							PurchasedItemContext pItem = transactions.getPurchasedItem();
+							pItem.setIsUsed(true);
+							updatePurchasedItem(pItem);
+						}
 					} else {
+						if (transactions.getPurchasedItem().getCurrentQuantity() < transactions.getQuantity()) {
+							throw new IllegalArgumentException("Insufficient quantity in inventory!");
+						}
+					}
+					transactions.setRemainingQuantity(transactions.getQuantity());
+				} else if (approvalState == ApprovalState.REJECTED) {
+					if (transactions.getItemType().individualTracking()) {
 						PurchasedItemContext pItem = transactions.getPurchasedItem();
-						pItem.setIsUsed(true);
+						pItem.setIsUsed(false);
 						updatePurchasedItem(pItem);
 					}
-				} else {
-					if (transactions.getPurchasedItem().getCurrentQuantity() < transactions.getQuantity()) {
-						throw new IllegalArgumentException("Insufficient quantity in inventory!");
-					}
+					transactions.setRemainingQuantity(0);
 				}
-				transactions.setRemainingQuantity(transactions.getQuantity());
-			} else if (approvalState == ApprovalState.REJECTED) {
-				if (transactions.getItemType().individualTracking()) {
-					PurchasedItemContext pItem = transactions.getPurchasedItem();
-					pItem.setIsUsed(false);
-					updatePurchasedItem(pItem);
-				}
-				transactions.setRemainingQuantity(0);
-			}
-			transactions.setApprovedState(approvedStateVal);
-			updateWorkorderItems(itemTransactionsModule, itemTransactionsFields, transactions);
+				transactions.setApprovedState(approvedStateVal);
+				updateWorkorderItems(itemTransactionsModule, itemTransactionsFields, transactions);
 
-			parentIds.add(transactions.getParentId());
+				if (transactions.getTransactionTypeEnum() == TransactionType.WORKORDER) {
+					parentIds.add(transactions.getParentId());
+				}
+			}
+			context.put(FacilioConstants.ContextNames.RECORD_LIST, itemTransactions);
+			context.put(FacilioConstants.ContextNames.PARENT_ID_LIST, parentIds);
 		}
-		context.put(FacilioConstants.ContextNames.RECORD_LIST, itemTransactions);
-		context.put(FacilioConstants.ContextNames.PARENT_ID_LIST, parentIds);
 		return false;
 	}
 

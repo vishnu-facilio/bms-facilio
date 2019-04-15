@@ -1,14 +1,13 @@
 package com.facilio.bmsconsole.actions;
 
-import java.util.List;
-import java.util.Map;
-
-import org.json.simple.JSONObject;
-
 import com.facilio.beans.ModuleCRUDBean;
 import com.facilio.bmsconsole.context.AlarmContext;
 import com.facilio.fw.BeanFactory;
 import com.opensymphony.xwork2.ActionSupport;
+import org.json.simple.JSONObject;
+
+import java.util.List;
+import java.util.Map;
 
 public class InternalActions extends ActionSupport {
 	//All actions in this should be done via a bean

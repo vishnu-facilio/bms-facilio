@@ -1,30 +1,11 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.AbstractMap.SimpleEntry;
-import java.util.Map.Entry;
-import java.util.stream.Collectors;
-
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.apache.commons.collections.CollectionUtils;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
-import com.facilio.bmsconsole.commands.CalculateAggregationCommand.EnumVal;
-import com.facilio.bmsconsole.context.FormulaContext.AggregateOperator;
-import com.facilio.bmsconsole.context.FormulaContext.CommonAggregateOperator;
-import com.facilio.bmsconsole.context.FormulaContext.DateAggregateOperator;
+import com.facilio.bmsconsole.modules.AggregateOperator;
+import com.facilio.bmsconsole.modules.AggregateOperator.DateAggregateOperator;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
-import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.LookupField;
 import com.facilio.bmsconsole.reports.ReportsUtil;
 import com.facilio.bmsconsole.util.DateTimeUtil;
@@ -32,14 +13,13 @@ import com.facilio.bmsconsole.util.ExportUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fs.FileInfo.FileFormat;
 import com.facilio.pdf.PdfUtil;
-import com.facilio.report.context.ReportBaseLineContext;
-import com.facilio.report.context.ReportContext;
-import com.facilio.report.context.ReportDataPointContext;
-import com.facilio.report.context.ReportFieldContext;
-import com.facilio.report.context.ReportGroupByField;
-import com.facilio.report.context.ReportYAxisContext;
-import com.facilio.report.context.ReadingAnalysisContext.ReportMode;
-import com.facilio.report.context.ReportDataPointContext.DataPointType;
+import com.facilio.report.context.*;
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
+import org.apache.commons.collections.CollectionUtils;
+import org.json.simple.JSONObject;
+
+import java.util.*;
 
 public class GetExportModuleReportFileCommand implements Command {
 
@@ -236,9 +216,9 @@ private static final String ALIAS = "alias";
 			format = ((DateAggregateOperator) xAggr).getFormat();
 		}
 		
-		columns.add(xAxisReportField.getLabel());
-		
-		List<Map<String, Object>> data = (List<Map<String, Object>>) reportData.get(FacilioConstants.ContextNames.DATA_KEY);
+		columns.add(handleXAxisLabel(module, xAxisReportField));
+
+		Collection<Map<String, Object>> data = (Collection<Map<String, Object>>) reportData.get(FacilioConstants.ContextNames.DATA_KEY);
 		if (CollectionUtils.isNotEmpty(data)) {
 			for (Map<String, Object> row : data) {
 				Map<String, Object> newRow = new HashMap<>();

@@ -1,13 +1,5 @@
 package com.facilio.bmsconsole.commands;
 
-import java.io.Serializable;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.json.simple.JSONObject;
-
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
@@ -17,6 +9,13 @@ import com.facilio.bmsconsole.util.ImportAPI;
 import com.facilio.fs.FileInfo;
 import com.facilio.fs.FileStore;
 import com.facilio.fs.FileStoreFactory;
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
+import org.json.simple.JSONObject;
+
+import java.io.Serializable;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class SendEmailCommand implements Command,Serializable{
 	
@@ -46,11 +45,12 @@ public class SendEmailCommand implements Command,Serializable{
 				JSONObject emailJSON = template.getOriginalTemplate();
 				emailJSON.put("mailType", "html");
 				AwsUtil.sendEmail(emailJSON);
+				LOGGER.info("Import email sent for importJob:" + importProcessContext.getId() + "to" + user.getEmail());
 			}
 			else {
 				emailMessage.delete(0, emailMessage.length());
 			}
-			LOGGER.info("Import email sent for importJob:" + importProcessContext.getId());
+			LOGGER.info("Import email sent for import" + importProcessContext.getId());
 		}
 		catch(Exception e) {
 			LOGGER.log(Level.SEVERE, e.getMessage(), e);

@@ -38,6 +38,7 @@ import com.facilio.bmsconsole.criteria.DateOperators;
 import com.facilio.bmsconsole.criteria.DateRange;
 import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.criteria.PickListOperators;
+import com.facilio.bmsconsole.modules.AggregateOperator;
 import com.facilio.bmsconsole.modules.DeleteRecordBuilder;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
@@ -62,7 +63,6 @@ import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.context.WorkflowExpression;
 import com.facilio.workflows.context.WorkflowFieldContext;
 import com.facilio.workflows.context.WorkflowFunctionContext;
-import com.facilio.workflows.util.ExpressionAggregateOperator;
 import com.facilio.workflows.util.WorkflowUtil;
 
 public class FormulaFieldAPI {
@@ -249,7 +249,7 @@ public class FormulaFieldAPI {
 					if (workflow.getWorkflowString() == null) {
 						workflow.setWorkflowString(WorkflowUtil.getXmlStringFromWorkflow(workflow));
 					}
-					Object workflowResult = WorkflowUtil.getWorkflowExpressionResult(workflow.getWorkflowString(), params, null, ignoreNullValues, false);
+					Object workflowResult = WorkflowUtil.getWorkflowExpressionResult(workflow, params, null, ignoreNullValues, false);
 					if(workflowResult != null) {
 						Double resultVal = Double.parseDouble(workflowResult.toString());
 //						if (AccountUtil.getCurrentOrg().getId() == 135) {
@@ -713,7 +713,7 @@ public class FormulaFieldAPI {
 		
 		if (fields != null) {
 			for (WorkflowFieldContext field : fields) {
-				if (field.getAggregationEnum() != ExpressionAggregateOperator.LAST_VALUE) {
+				if (field.getAggregationEnum() != AggregateOperator.SpecialAggregateOperator.LAST_VALUE) {
 					return false;
 				}
 			}
@@ -804,7 +804,7 @@ public class FormulaFieldAPI {
 		LOGGER.debug("Meta -- "+workflow.getMetas());
 		LOGGER.debug("wfParams :: "+params);
 		long workflowExecutionStartTime = System.currentTimeMillis();
-		Map<Object, Object> result = (Map<Object,Object>) WorkflowUtil.getWorkflowExpressionResult(wfXmlString, params, null, false, false);
+		Map<Object, Object> result = (Map<Object,Object>) WorkflowUtil.getWorkflowExpressionResult(wfXmlString, params);
 		LOGGER.debug("Time taken for optimised workflow execution : "+(System.currentTimeMillis() - workflowExecutionStartTime));
 		
 		long readingsStartTime = System.currentTimeMillis();

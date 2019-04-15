@@ -1,18 +1,16 @@
 package com.facilio.bmsconsole.actions;
 
-import java.util.Collections;
-import java.util.List;
-
-import org.apache.commons.chain.Chain;
-import org.apache.commons.chain.Command;
-
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
-import com.facilio.bmsconsole.context.WorkorderItemContext;
 import com.facilio.bmsconsole.context.WorkorderToolsContext;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import org.apache.commons.chain.Chain;
+import org.apache.commons.chain.Command;
+
+import java.util.Collections;
+import java.util.List;
 
 public class WorkorderToolsAction extends FacilioAction {
 	private static final long serialVersionUID = 1L;
@@ -75,6 +73,12 @@ public class WorkorderToolsAction extends FacilioAction {
 		Chain addWorkorderPartChain = TransactionChainFactory.getAddOrUdpateWorkorderToolsChain();
 		addWorkorderPartChain.execute(context);
 		setWorkorderToolsIds((List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST));
+		double cost = (double) context.get(FacilioConstants.ContextNames.TOTAL_COST);
+		long qty = (long) context.get(FacilioConstants.ContextNames.TOTAL_QUANTITY);
+		setResult(FacilioConstants.ContextNames.TOTAL_QUANTITY, qty);
+		setResult(FacilioConstants.ContextNames.TOTAL_COST, cost);
+		long totalCost = (long) context.get(FacilioConstants.ContextNames.WO_TOTAL_COST);
+		setResult(FacilioConstants.ContextNames.WO_TOTAL_COST, totalCost);
 		setResult("workorderToolsIds", workorderToolsIds);
 		return SUCCESS;
 	}
@@ -91,6 +95,12 @@ public class WorkorderToolsAction extends FacilioAction {
 		Chain deleteInventoryChain = TransactionChainFactory.getDeleteWorkorderToolsChain();
 		deleteInventoryChain.execute(context);
 		setWorkorderToolsIds((List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST));
+		double cost = (double) context.get(FacilioConstants.ContextNames.TOTAL_COST);
+		long qty = (long) context.get(FacilioConstants.ContextNames.TOTAL_QUANTITY);
+		setResult(FacilioConstants.ContextNames.TOTAL_QUANTITY, qty);
+		setResult(FacilioConstants.ContextNames.TOTAL_COST, cost);
+		long totalCost = (long) context.get(FacilioConstants.ContextNames.WO_TOTAL_COST);
+		setResult(FacilioConstants.ContextNames.WO_TOTAL_COST, totalCost);
 		setResult("workorderToolsIds", workorderToolsIds);
 		return SUCCESS;
 	}

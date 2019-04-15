@@ -11,8 +11,12 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
@@ -26,12 +30,15 @@ import com.facilio.sql.GenericSelectRecordBuilder;
 
 public class UpdateNotesCountCommand implements Command {
 
+	private static final Logger LOGGER = LogManager.getLogger(UpdateNotesCountCommand.class.getName());
+	
 	@Override
 	public boolean execute(Context context) throws Exception {
 		
 		String ticketModule = (String) context.get("ticketmodule");
 		String moduleString = (String) context.get("moduleName");
 		Collection<Long> parentIds = (Collection<Long>) context.get(FacilioConstants.ContextNames.IDS_TO_UPDATE_COUNT);
+		try {
 		
 		if (StringUtils.isNoneEmpty(ticketModule) && CollectionUtils.isNotEmpty(parentIds)) {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -40,6 +47,10 @@ public class UpdateNotesCountCommand implements Command {
 			FacilioModule module = modBean.getModule(moduleString);
 			
 			FacilioField parentIdField = modBean.getField("parentId", moduleString);
+			if (parentIdField == null) {
+				// log for testing, will remove it once its fixed
+				LOGGER.error("moduleString inside UpdateNotesCountCommand: " + moduleString);
+			}
 	
 			List<FacilioField> fields = new ArrayList<>();
 			fields.add(parentIdField);
@@ -73,6 +84,11 @@ public class UpdateNotesCountCommand implements Command {
 				
 				updateRecordBuilder.updateViaMap(updateMap);
 			}
+		}
+		}
+		catch(Exception e) {
+			LOGGER.error("Exception in UpdateNotesCountCommand: moduleString" + moduleString + ", ticketModule:" + ticketModule + ",parentIds: "+ parentIds, e);
+			CommonCommandUtil.emailException("UpdateNotesCountCommand", "Exception in UpdateNotesCountCommand - " + AccountUtil.getCurrentOrg().getId(), e);
 		}
 		return false;
 	}

@@ -1,37 +1,25 @@
 package com.facilio.bmsconsole.actions;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.ToolContext;
+import com.facilio.bmsconsole.context.ToolTransactionContext;
+import com.facilio.bmsconsole.criteria.Criteria;
+import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.criteria.NumberOperators;
+import com.facilio.bmsconsole.modules.*;
+import com.facilio.bmsconsole.util.StoreroomApi;
+import com.facilio.bmsconsole.util.ToolsApi;
+import com.facilio.bmsconsole.view.FacilioView;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
-import com.facilio.accounts.util.AccountUtil;
-import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.ItemContext;
-import com.facilio.bmsconsole.context.ItemTransactionsContext;
-import com.facilio.bmsconsole.context.ToolContext;
-import com.facilio.bmsconsole.context.ToolTransactionContext;
-import com.facilio.bmsconsole.criteria.BooleanOperators;
-import com.facilio.bmsconsole.criteria.Criteria;
-import com.facilio.bmsconsole.criteria.CriteriaAPI;
-import com.facilio.bmsconsole.criteria.EnumOperators;
-import com.facilio.bmsconsole.criteria.NumberOperators;
-import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.FacilioModule;
-import com.facilio.bmsconsole.modules.FieldFactory;
-import com.facilio.bmsconsole.modules.LookupField;
-import com.facilio.bmsconsole.modules.LookupFieldMeta;
-import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
-import com.facilio.bmsconsole.util.ItemsApi;
-import com.facilio.bmsconsole.util.StoreroomApi;
-import com.facilio.bmsconsole.util.ToolsApi;
-import com.facilio.bmsconsole.util.TransactionState;
-import com.facilio.bmsconsole.view.FacilioView;
-import com.facilio.constants.FacilioConstants;
-import com.facilio.fw.BeanFactory;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 public class GetToolTransactionsListCommand implements Command {
 	@Override
@@ -50,7 +38,7 @@ public class GetToolTransactionsListCommand implements Command {
 			fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
 		}
 		Map<String, FacilioField> toolTransactionsFieldsMap = FieldFactory.getAsMap(fields);
-		
+
 		FacilioView view = (FacilioView) context.get(FacilioConstants.ContextNames.CUSTOM_VIEW);
 
 		SelectRecordsBuilder<ToolTransactionContext> builder = new SelectRecordsBuilder<ToolTransactionContext>()
@@ -80,7 +68,9 @@ public class GetToolTransactionsListCommand implements Command {
 		}
 		if ((filters == null || includeParentCriteria) && view != null) {
 			Criteria criteria = view.getCriteria();
-			builder.andCriteria(criteria);
+			if (criteria != null && !criteria.isEmpty()) {
+				builder.andCriteria(criteria);
+			}
 		}
 
 		Criteria searchCriteria = (Criteria) context.get(FacilioConstants.ContextNames.SEARCH_CRITERIA);
@@ -92,17 +82,21 @@ public class GetToolTransactionsListCommand implements Command {
 		if (scopeCriteria != null) {
 			builder.andCriteria(scopeCriteria);
 		}
-
-		Boolean getShowToolsForReturn = (Boolean) context.get(FacilioConstants.ContextNames.SHOW_TOOLS_FOR_RETURN);
-		if(getShowToolsForReturn!=null && getShowToolsForReturn) {
-			List<LookupFieldMeta> lookUpfields = new ArrayList<>();
-			lookUpfields.add(new LookupFieldMeta((LookupField) toolTransactionsFieldsMap.get("purchasedTool")));
-			builder.andCondition(CriteriaAPI.getCondition(toolTransactionsFieldsMap.get("remainingQuantity"), String.valueOf(0), NumberOperators.GREATER_THAN));
-//			builder.andCondition(CriteriaAPI.getCondition(toolTransactionsFieldsMap.get("isReturnable"), String.valueOf(true), BooleanOperators.IS));
-			builder.andCondition(CriteriaAPI.getCondition(toolTransactionsFieldsMap.get("transactionState"), String.valueOf(2), NumberOperators.EQUALS));
-			builder.fetchLookups(lookUpfields);
-		}
 		
+		
+		builder.fetchLookup((LookupField) toolTransactionsFieldsMap.get("purchasedTool"));
+		
+		Boolean getShowToolsForReturn = (Boolean) context.get(FacilioConstants.ContextNames.SHOW_TOOLS_FOR_RETURN);
+		if (getShowToolsForReturn != null && getShowToolsForReturn) {
+			
+			builder.andCondition(CriteriaAPI.getCondition(toolTransactionsFieldsMap.get("remainingQuantity"),
+					String.valueOf(0), NumberOperators.GREATER_THAN));
+			// builder.andCondition(CriteriaAPI.getCondition(toolTransactionsFieldsMap.get("isReturnable"),
+			// String.valueOf(true), BooleanOperators.IS));
+			builder.andCondition(CriteriaAPI.getCondition(toolTransactionsFieldsMap.get("transactionState"),
+					String.valueOf(2), NumberOperators.EQUALS));
+		}
+
 		JSONObject pagination = (JSONObject) context.get(FacilioConstants.ContextNames.PAGINATION);
 		if (pagination != null) {
 			int page = (int) pagination.get("page");

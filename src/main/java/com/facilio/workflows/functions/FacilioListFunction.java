@@ -1,12 +1,8 @@
 package com.facilio.workflows.functions;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import com.facilio.workflows.exceptions.FunctionParamException;
+
+import java.util.*;
 
 public enum FacilioListFunction implements FacilioWorkflowFunctionInterface {
 

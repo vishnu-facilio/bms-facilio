@@ -1,11 +1,5 @@
 package com.facilio.events.actions;
 
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.chain.Chain;
-import org.json.simple.JSONObject;
-
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.actions.FacilioAction;
 import com.facilio.bmsconsole.context.ReadingContext;
@@ -17,6 +11,11 @@ import com.facilio.events.context.EventProperty;
 import com.facilio.events.context.EventRuleContext;
 import com.facilio.events.util.EventAPI;
 import com.facilio.events.util.EventRulesAPI;
+import org.apache.commons.chain.Chain;
+import org.json.simple.JSONObject;
+
+import java.util.List;
+import java.util.Map;
 
 @SuppressWarnings("serial")
 public class EventAction extends FacilioAction {

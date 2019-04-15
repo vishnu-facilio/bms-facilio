@@ -1,29 +1,21 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.json.simple.JSONObject;
-
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.PurchaseRequestContext;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
-import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.FacilioModule;
-import com.facilio.bmsconsole.modules.FieldFactory;
-import com.facilio.bmsconsole.modules.FieldUtil;
-import com.facilio.bmsconsole.modules.LookupField;
-import com.facilio.bmsconsole.modules.LookupFieldMeta;
-import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
+import com.facilio.bmsconsole.modules.*;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
+import org.json.simple.JSONObject;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 public class GetPurchaseRequestListCommand implements Command {
 
@@ -58,8 +50,8 @@ public class GetPurchaseRequestListCommand implements Command {
 			builder.setAggregation();
 		}
 		else {
-			builder.fetchLookups(Arrays.asList(new LookupFieldMeta((LookupField) fieldsAsMap.get("vendor")), 
-					new LookupFieldMeta((LookupField) fieldsAsMap.get("storeRoom"))))
+			builder.fetchLookups(Arrays.asList((LookupField) fieldsAsMap.get("vendor"),
+					(LookupField) fieldsAsMap.get("storeRoom")))
 			;
 
 		}

@@ -1,13 +1,12 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.Collections;
-
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-
 import com.facilio.bmsconsole.util.ActionAPI;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.constants.FacilioConstants;
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
+
+import java.util.Collections;
 
 public class DeleterOldRuleActionsCommand implements Command {
 

@@ -1,10 +1,9 @@
 package com.facilio.bmsconsole.context;
 
-import java.util.List;
-
-import com.facilio.bmsconsole.context.WorkorderCostContext.CostType;
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.unitconversion.Unit;
+
+import java.util.List;
 
 public class ItemContext extends ModuleBaseWithCustomFields {
 	private static final long serialVersionUID = 1L;
@@ -146,6 +145,14 @@ public class ItemContext extends ModuleBaseWithCustomFields {
 
 	public void setLastPurchasedPrice(double lastPurchasedPrice) {
 		this.lastPurchasedPrice = lastPurchasedPrice;
+	}
+	
+	private double minimumQuantity = -1;
+	public double getMinimumQuantity() {
+		return minimumQuantity;
+	}
+	public void setMinimumQuantity(double minimumQuantity) {
+		this.minimumQuantity = minimumQuantity;
 	}
 
 }

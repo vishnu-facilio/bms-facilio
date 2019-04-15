@@ -1,28 +1,27 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
+import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericDeleteRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
 
-public class DeleteTaskCommand implements Command {
+import java.util.*;
+
+public class DeleteTaskCommand implements Command, PostTransactionCommand {
+
+	private Set<Long> idsToUpdateTaskCount;
+	private String moduleName;
 
 	@Override
 	public boolean execute(Context context) throws Exception {
@@ -63,9 +62,20 @@ public class DeleteTaskCommand implements Command {
 			
 			context.put(FacilioConstants.ContextNames.ROWS_UPDATED, builder.delete());
 			context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.DELETE);
-			FacilioChain.addPostTrasanction(FacilioConstants.ContextNames.IDS_TO_UPDATE_TASK_COUNT, parentIds);
-			FacilioChain.addPostTrasanction(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+			
+			idsToUpdateTaskCount = parentIds;
+			this.moduleName = moduleName;
+//			for (Long parentId : parentIds) {
+//				FacilioChain.addPostTransactionListObject(FacilioConstants.ContextNames.IDS_TO_UPDATE_TASK_COUNT, parentId);
+//			}
+//			FacilioChain.addPostTrasanction(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
 		}
+		return false;
+	}
+	
+	@Override
+	public boolean postExecute() throws Exception {
+		TicketAPI.updateTaskCount(idsToUpdateTaskCount);
 		return false;
 	}
 }

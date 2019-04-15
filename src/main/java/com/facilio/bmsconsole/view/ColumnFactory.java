@@ -1,17 +1,12 @@
 package com.facilio.bmsconsole.view;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import com.facilio.bmsconsole.context.ViewField;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
+
+import java.util.*;
 
 public class ColumnFactory {
 	
@@ -50,17 +45,22 @@ public class ColumnFactory {
 		columnMap.put("toolTypes-default", getDefaultToolTypesColumns());
 		columnMap.put("vendors-default", getDefaultVendorsColumns());
 		columnMap.put("item-default", getDefaultItemColumns());
+		columnMap.put("tool-default", getDefaultToolColumns());
 		columnMap.put("stockedTools-default", getDefaultStockedToolsColumns());
 		columnMap.put("purchaserequest-default", getDefaultPurchaseRequestColumns());
 		columnMap.put("purchaseorder-default", getDefaultPurchaseOrderColumns());
 		columnMap.put("receivable-default", getDefaultReceivableColumns());
-		
+		columnMap.put("purchasecontracts-default", getDefaultContractColumns());
+		columnMap.put("labourcontracts-default", getDefaultContractColumns());
+		columnMap.put("poLineItemSerialNumbers-default", getDefaultPoLineItemsSerialNumberColumns());
 		// Default report columns 
 		columnMap.put("workorder-report", getWorkOrderReportColumns());
 		columnMap.put("alarm-report", getAlarmReportColumns());
 		columnMap.put("energydata-report", getDefaultEnergyColumns());
 		columnMap.put("toolTransactions-default", getDefaultToolTransactionsColumns());
 		columnMap.put("itemTransactions-default", getDefaultItemTransactionsColumns());
+		
+		
 		
 		// Special types
 		columnMap.put("preventivemaintenance-default", getPreventiveMaintenanceColumns());
@@ -182,9 +182,9 @@ public class ColumnFactory {
 		
 		columns.add(new ViewField("name", "Tenant Name"));
 		columns.add(new ViewField("description", "Description"));
-		columns.add(new ViewField("sysCreatedTime", "Created Time"));
-		columns.add(new ViewField("sysModifiedTime", "Modified Time"));
 		columns.add(new ViewField("contact", "Contact"));
+		columns.add(new ViewField("inTime", "Lease Start Time"));
+		columns.add(new ViewField("outTime", "Lease End Time"));
 				
 		return columns;
 	}
@@ -249,6 +249,7 @@ public class ColumnFactory {
 		List<ViewField> columns = new ArrayList<ViewField>();
 		
 		columns.add(new ViewField("name", "Name"));
+		columns.add(new ViewField("description", "Description"));
 		columns.add(new ViewField("category", "Category"));
 		columns.add(new ViewField("currentQuantity", "Current Quantity"));
 		columns.add(new ViewField("lastPurchasedPrice", "Last Purchased Price"));
@@ -261,9 +262,11 @@ public class ColumnFactory {
 		List<ViewField> columns = new ArrayList<ViewField>();
 		
 		columns.add(new ViewField("name", "Name"));
+		columns.add(new ViewField("description", "Description"));
 		columns.add(new ViewField("category", "Category"));
 		columns.add(new ViewField("currentQuantity", "Current Quantity"));
 		columns.add(new ViewField("lastPurchasedDate", "Last Purchased Date"));
+		columns.add(new ViewField("lastIssuedDate", "Last Issued Date"));
 		
 		return columns;
 	}
@@ -281,9 +284,22 @@ public class ColumnFactory {
 	private static List<ViewField> getDefaultItemColumns() {
 		List<ViewField> columns = new ArrayList<ViewField>();
 		
-		columns.add(new ViewField("storeRoom", "Store Room"));
-		columns.add(new ViewField("status", "Status"));
+		columns.add(new ViewField("storeRoom", "Storeroom"));
+		columns.add(new ViewField("quantity", "Current Balance"));
+		columns.add(new ViewField("minimumQuantity", "Mininum Quantity"));
+//		columns.add(new ViewField("costType", "Cost Type"));
+		columns.add(new ViewField("lastPurchasedDate", "Last Purchased Date"));
+		columns.add(new ViewField("lastPurchasedPrice", "Last Purchased Price"));
+		
+		return columns;
+	}
+	private static List<ViewField> getDefaultToolColumns() {
+		List<ViewField> columns = new ArrayList<ViewField>();
+		
+		columns.add(new ViewField("storeRoom", "Storeroom"));
 		columns.add(new ViewField("quantity", "Quantity"));
+		columns.add(new ViewField("currentQuantity", "Current Balance"));
+		columns.add(new ViewField("lastPurchasedDate", "Last Purchased Date"));
 		
 		return columns;
 	}
@@ -304,7 +320,7 @@ public class ColumnFactory {
 		
 //		columns.add(new ViewField("toolType", "Tool Type"));
 //		columns.add(new ViewField("tool", "Tool"));
-		columns.add(new ViewField("quantity", "Requested Quantity"));
+		columns.add(new ViewField("quantity", "Quantity"));
 		columns.add(new ViewField("sysCreatedTime", "Requested Time"));
 //		columns.add(new ViewField("issuedTo", "Issued To"));
 		return columns;
@@ -314,7 +330,7 @@ public class ColumnFactory {
 		List<ViewField> columns = new ArrayList<ViewField>();
 		
 //		columns.add(new ViewField("itemType", "Item Type"));
-		columns.add(new ViewField("quantity", "Requested Quantity"));
+		columns.add(new ViewField("quantity", "Quantity"));
 		columns.add(new ViewField("sysCreatedTime", "Requested Time"));
 //		columns.add(new ViewField("issuedTo", "Issued To"));
 		return columns;
@@ -323,11 +339,12 @@ public class ColumnFactory {
 	private static List<ViewField> getDefaultPurchaseRequestColumns() {
 		List<ViewField> columns = new ArrayList<ViewField>();
 		
-		columns.add(new ViewField("localId", "Purchase Request Id"));
-		columns.add(new ViewField("name", "Purchase Request Name"));
+//		columns.add(new ViewField("localId", "Purchase Request Id"));
+//		columns.add(new ViewField("name", "Purchase Request Name"));
 		columns.add(new ViewField("description", "Description"));
-		columns.add(new ViewField("requestedTime", "Requested Time"));
-		columns.add(new ViewField("requiredTime", "Required Time"));
+//		columns.add(new ViewField("vendor", "Vendor"));
+		columns.add(new ViewField("requestedTime", "Requested Date"));
+		columns.add(new ViewField("requiredTime", "Required Date"));
 		columns.add(new ViewField("status", "Status"));
 		columns.add(new ViewField("totalCost", "Total Cost"));
 				
@@ -337,23 +354,40 @@ public class ColumnFactory {
 	private static List<ViewField> getDefaultPurchaseOrderColumns() {
 		List<ViewField> columns = new ArrayList<ViewField>();
 		
-		columns.add(new ViewField("localId", "Purchase Order Id"));
-		columns.add(new ViewField("name", "Purchase Order Name"));
-		columns.add(new ViewField("description", "Description"));
-		columns.add(new ViewField("orderedTime", "Ordered Time"));
-		columns.add(new ViewField("requiredTime", "Required Time"));
-		columns.add(new ViewField("status", "Status"));
+//		columns.add(new ViewField("localId", "Purchase Order Id"));
+//		columns.add(new ViewField("name", "Purchase Order Name"));
+//		columns.add(new ViewField("description", "Description"));
 		columns.add(new ViewField("vendor", "Vendor"));
+		columns.add(new ViewField("orderedTime", "Ordered Date"));
+		columns.add(new ViewField("requiredTime", "Required Date"));
+		columns.add(new ViewField("status", "Status"));
 		columns.add(new ViewField("totalCost", "Total Cost"));
 		return columns;
 	}
 	
 	private static List<ViewField> getDefaultReceivableColumns() {
 		List<ViewField> columns = new ArrayList<ViewField>();
-		columns.add(new ViewField("localId", "Receivable Id"));
-		columns.add(new ViewField("poId", "Purchase Order ID"));
+//		columns.add(new ViewField("localId", "Receivable Id"));
+//		columns.add(new ViewField("poId", "Purchase Order ID"));
 		columns.add(new ViewField("status", "Status"));
-		columns.add(new ViewField("sysCreatedTime", "Created Time"));
+//		columns.add(new ViewField("sysCreatedTime", "Created Time"));
+		return columns;
+	}
+	private static List<ViewField> getDefaultContractColumns() {
+		List<ViewField> columns = new ArrayList<ViewField>();
+		columns.add(new ViewField("vendor", "Vendor"));
+		columns.add(new ViewField("status", "Status"));
+		columns.add(new ViewField("fromDate", "Valid From"));
+		columns.add(new ViewField("endDate", "Valid Till"));
+		columns.add(new ViewField("totalCost", "Total Cost"));
+
+		return columns;
+	}
+	
+	private static List<ViewField> getDefaultPoLineItemsSerialNumberColumns() {
+		List<ViewField> columns = new ArrayList<ViewField>();
+		columns.add(new ViewField("serialNumber", "Serial Number"));
+	
 		return columns;
 	}
 }

@@ -1,10 +1,10 @@
 package com.facilio.util;
 
+import org.apache.struts2.json.annotations.JSON;
+
 import java.util.Stack;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import org.apache.struts2.json.annotations.JSON;
 
 public abstract class ExpressionEvaluator<E> {
 	

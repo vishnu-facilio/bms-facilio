@@ -6,7 +6,7 @@
 <struts>
 
 
-	<package name="servicePortalApiV2" namespace="/api/v2/service" extends="v2Api">
+	<package name="servicePortalApiV2" namespace="/api/v2/service" extends="v2BaseApi">
 	
 		<interceptors>
 			<interceptor name="portalinterceptor"
@@ -163,6 +163,21 @@
 		<action name="*" class="com.facilio.bmsconsole.actions.FileAction" method="previewFile">
 			<param name="permission">READ</param>
 			<param name="fileID">{1}</param>
+		</action>
+	</package>
+	
+	<package name="assetServiceApiV2" namespace="/api/v2/service/assets" extends="servicePortalApiV2">
+		<action name="qr" class="com.facilio.bmsconsole.actions.AssetAction"
+			method="fetchAssetFromQR">
+			<param name="moduleName">asset</param>
+			<param name="permission">READ</param>
+		</action>
+	</package>
+	
+	<package name="workflowServiceApiv2" namespace="/api/v2/service/workflow"
+		extends="servicePortalApiV2">
+		<action name="execute" class="com.facilio.bmsconsole.actions.CommonAction"
+			method="executeWorkflow">
 		</action>
 	</package>
 

@@ -1,61 +1,26 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-import java.util.StringJoiner;
-import java.util.logging.Logger;
-
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.criteria.*;
+import com.facilio.bmsconsole.modules.*;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
+import com.facilio.report.context.*;
+import com.facilio.report.context.ReportContext.ReportType;
+import com.facilio.report.context.ReportDataPointContext.DataPointType;
+import com.facilio.report.context.ReportDataPointContext.OrderByFunction;
+import com.facilio.sql.GenericSelectRecordBuilder;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import com.facilio.accounts.util.AccountUtil;
-import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.ResourceContext;
-import com.facilio.bmsconsole.context.FormulaContext.AggregateOperator;
-import com.facilio.bmsconsole.context.FormulaContext.CommonAggregateOperator;
-import com.facilio.bmsconsole.context.FormulaContext.DateAggregateOperator;
-import com.facilio.bmsconsole.context.FormulaContext.NumberAggregateOperator;
-import com.facilio.bmsconsole.context.FormulaContext.SpaceAggregateOperator;
-import com.facilio.bmsconsole.criteria.BooleanOperators;
-import com.facilio.bmsconsole.criteria.Condition;
-import com.facilio.bmsconsole.criteria.Criteria;
-import com.facilio.bmsconsole.criteria.CriteriaAPI;
-import com.facilio.bmsconsole.criteria.DateOperators;
-import com.facilio.bmsconsole.criteria.DateRange;
-import com.facilio.bmsconsole.criteria.EnumOperators;
-import com.facilio.bmsconsole.criteria.LookupOperator;
-import com.facilio.bmsconsole.criteria.NumberOperators;
-import com.facilio.bmsconsole.criteria.PickListOperators;
-import com.facilio.bmsconsole.criteria.StringOperators;
-import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.FacilioModule;
-import com.facilio.bmsconsole.modules.FieldFactory;
-import com.facilio.bmsconsole.modules.FieldType;
-import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
-import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
-import com.facilio.constants.FacilioConstants;
-import com.facilio.fw.BeanFactory;
-import com.facilio.report.context.ReportBaseLineContext;
-import com.facilio.report.context.ReportContext;
-import com.facilio.report.context.ReportContext.ReportType;
-import com.facilio.report.context.ReportDataContext;
-import com.facilio.report.context.ReportDataPointContext;
-import com.facilio.report.context.ReportDataPointContext.DataPointType;
-import com.facilio.report.context.ReportDataPointContext.OrderByFunction;
-import com.facilio.report.context.ReportFieldContext;
-import com.facilio.report.context.ReportFilterContext;
-import com.facilio.report.context.ReportGroupByField;
-import com.facilio.report.context.ReportUserFilterContext;
-import com.facilio.sql.GenericSelectRecordBuilder;
+import com.facilio.bmsconsole.modules.AggregateOperator.*;
+import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
+
+import java.util.*;
+import java.util.logging.Logger;
 
 public class FetchReportDataCommand implements Command {
 
@@ -138,11 +103,12 @@ public class FetchReportDataCommand implements Command {
 		
 		SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder = new SelectRecordsBuilder<ModuleBaseWithCustomFields>()
 																				.module(baseModule) //Assuming X to be the base module
+																				.setAggregation()
 																				;
 		Set<FacilioModule> addedModules = new HashSet<>();
 		addedModules.add(baseModule);
 		
-		joinModuleIfRequred(dp.getxAxis(), selectBuilder, addedModules);
+//		joinModuleIfRequred(dp.getxAxis(), selectBuilder, addedModules);
 		joinModuleIfRequred(dp.getyAxis(), selectBuilder, addedModules);
 		applyOrderByAndLimit(dp, selectBuilder);
 		List<FacilioField> fields = new ArrayList<>();
@@ -271,9 +237,13 @@ public class FetchReportDataCommand implements Command {
 			}
 		}
 		
+		if(report.getCriteria() != null) {
+			newSelectBuilder.andCriteria(report.getCriteria());
+		}
+		
 		List<Map<String, Object>> props = newSelectBuilder.getAsProps();
 		
-		// LOGGER.severe("SELECT BUILDER --- "+ newSelectBuilder);
+		 LOGGER.severe("SELECT BUILDER --- "+ newSelectBuilder);
 //		LOGGER.info("DATE FROM QUERY : "+props);
 		return props;
 	}
@@ -320,12 +290,12 @@ public class FetchReportDataCommand implements Command {
 				}
 				fields.add(gField);
 				
-				FacilioModule groupByModule = groupByField.getModule();
-				if (!isAlreadyAdded(addedModules, groupByModule)) {
-					
-					applyJoin(groupByField.getJoinOn(), groupByModule, selectBuilder);
-					addedModules.add(groupByModule);
-				}
+//				FacilioModule groupByModule = groupByField.getModule();
+//				if (!isAlreadyAdded(addedModules, groupByModule)) {
+//					applyJoin(groupByField.getJoinOn(), groupByModule, selectBuilder);
+//					addedModules.add(groupByModule);
+//				}
+				handleJoin(groupByField, selectBuilder, addedModules);
 				groupBy.add(gField.getCompleteColumnName());
 			}
 		}
@@ -489,6 +459,63 @@ public class FetchReportDataCommand implements Command {
 		return spaceField;
 	}
 	
+	private String getJoinOn(LookupField lookupField) {
+		FacilioField idField = null;
+		if (LookupSpecialTypeUtil.isSpecialType(lookupField.getSpecialType())) {
+			idField = LookupSpecialTypeUtil.getIdField(lookupField.getSpecialType());
+		}
+		else {
+			idField = FieldFactory.getIdField(lookupField.getLookupModule());
+		}
+		return lookupField.getCompleteColumnName()+" = "+idField.getCompleteColumnName();
+	}
+	
+	private Map<String, LookupField> getLookupFields(List<FacilioField> fields) {
+		Map<String, LookupField> lookupFields = new HashMap<>();
+		for (FacilioField field : fields) {
+			if (field.getDataTypeEnum() == FieldType.LOOKUP) {
+				LookupField lookupField = (LookupField) field;
+				if (LookupSpecialTypeUtil.isSpecialType(lookupField.getSpecialType())) {
+					lookupFields.put(lookupField.getSpecialType(), lookupField);
+				}
+				else {
+					lookupFields.put(lookupField.getLookupModule().getName(), lookupField);
+				}
+			}
+		}
+		return lookupFields;
+	}
+	
+	private void handleLookupJoin(Map<String, LookupField> lookupFields, FacilioModule module, SelectRecordsBuilder builder, Set<FacilioModule> addedModules) {
+		Stack<FacilioModule> stack = null;
+		FacilioModule prevModule = null;
+		while (module != null) {
+			if (lookupFields.containsKey(module.getName())) {
+				LookupField lookupFieldClone = lookupFields.get(module.getName()).clone();
+				String joinOn = getJoinOn(lookupFieldClone);
+				applyJoin(joinOn, module, builder);
+				prevModule = module;
+				break;
+			}
+			if (stack == null) {
+				stack = new Stack<>();
+			}
+			stack.push(module);
+			module = module.getExtendModule();
+		}
+		
+		while (prevModule != null && CollectionUtils.isNotEmpty(stack)) {
+			FacilioModule pop = stack.pop();
+			builder.innerJoin(pop.getTableName())
+			.on(prevModule.getTableName()+".ID = "+pop.getTableName()+".ID");
+			prevModule = pop;
+		}
+		
+		if (prevModule != null) {
+			addedModules.add(prevModule);
+		}
+	}
+	
 	private FacilioField applyXAggregation(ReportDataPointContext dp, AggregateOperator xAggr, StringJoiner groupBy, SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder, List<FacilioField> fields, Set<FacilioModule> addedModules) throws Exception {
 		FacilioField xAggrField = null;
 		if (dp.getyAxis().getAggrEnum() != null && dp.getyAxis().getAggr() != 0) {
@@ -511,6 +538,8 @@ public class FetchReportDataCommand implements Command {
 			else {
 				fields.add(xAggrField);
 			}
+			
+			handleJoin(dp.getxAxis(), selectBuilder, addedModules);
 		}
 		else {
 			if (xAggr == null || xAggr == CommonAggregateOperator.ACTUAL || dp.isHandleEnum()) { //Return x field as aggr field as there's no X aggregation
@@ -524,6 +553,16 @@ public class FetchReportDataCommand implements Command {
 		return xAggrField;
 	}
 	
+	private void handleJoin(ReportFieldContext reportField, SelectRecordsBuilder selectBuilder, Set<FacilioModule> addedModules) throws Exception {
+		if (!reportField.getField().getModule().equals(baseModule)) {		// inter-module support
+			List<FacilioField> allFields = modBean.getAllFields(baseModule.getName()); // for now base module is enough
+			Map<String, LookupField> lookupFields = getLookupFields(allFields);
+			handleLookupJoin(lookupFields, reportField.getField().getModule(), selectBuilder, addedModules);
+		} else {
+			joinModuleIfRequred(reportField, selectBuilder, addedModules);
+		}
+	}
+
 	private boolean applyYAggregation (ReportDataPointContext dataPoint, List<FacilioField> fields) throws Exception {
 		if (dataPoint.getyAxis().getAggrEnum() == null || dataPoint.getyAxis().getAggr() == 0) { 
 			fields.add(dataPoint.getyAxis().getField());

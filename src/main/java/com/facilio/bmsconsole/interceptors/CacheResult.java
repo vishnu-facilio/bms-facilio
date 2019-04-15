@@ -1,13 +1,11 @@
 package com.facilio.bmsconsole.interceptors;
 
-import java.io.IOException;
-
-import javax.servlet.http.HttpServletRequest;
-
+import com.opensymphony.xwork2.ActionInvocation;
 import org.apache.struts2.ServletActionContext;
 import org.apache.struts2.json.JSONResult;
 
-import com.opensymphony.xwork2.ActionInvocation;
+import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
 
 public class CacheResult extends JSONResult {
 

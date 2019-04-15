@@ -70,5 +70,21 @@ public class ReceiptContext extends ModuleBaseWithCustomFields {
 			return null;
 		}
 	}
+	
+	private String remarks;
+	public String getRemarks() {
+		return remarks;
+	}
+	public void setRemarks(String remarks) {
+		this.remarks = remarks;
+	}
+	
+	private int noOfSerialNumbers = -1;
+	public int getNoOfSerialNumbers() {
+		return noOfSerialNumbers;
+	}
+	public void setNoOfSerialNumbers(int noOfSerialNumbers) {
+		this.noOfSerialNumbers = noOfSerialNumbers;
+	}
 
 }

@@ -1,16 +1,8 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.apache.logging.log4j.util.Strings;
-
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.context.BuildingContext;
-//import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.ControllerContext;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldFactory;
@@ -19,6 +11,14 @@ import com.facilio.bmsconsole.util.ControllerAPI;
 import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.sql.GenericInsertRecordBuilder;
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
+import org.apache.logging.log4j.util.Strings;
+
+import java.util.List;
+import java.util.Map;
+
+//import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 
 public class AddControllerCommand implements Command {
 	@Override
@@ -61,7 +61,8 @@ public class AddControllerCommand implements Command {
 													.addRecord(controllerProps);
 			builder.save();
 			controller.setId((long) controllerProps.get("id"));
-			AwsUtil.addIotClient(AccountUtil.getCurrentOrg().getDomain(), controller.getMacAddr());
+			// No need to add controller in aws policy since it depends on agent
+			// AwsUtil.addIotClient(AccountUtil.getCurrentOrg().getDomain(), controller.getMacAddr());
 			
 			ControllerAPI.addControllerBuildingRel(controller);
 		}

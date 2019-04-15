@@ -10,12 +10,12 @@ import java.util.regex.Pattern;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.BaseLineContext;
+import com.facilio.bmsconsole.modules.AggregateOperator;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.util.BaseLineAPI;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericSelectRecordBuilder;
-import com.facilio.workflows.util.ExpressionAggregateOperator;
 import com.udojava.evalex.Expression;
 
 public class FacilioExpressionParser {
@@ -284,10 +284,10 @@ public class FacilioExpressionParser {
 				select.setName(RESULT_STRING);
 
 				if(aggregateFunctionString != null) {
-					ExpressionAggregateOperator expAggregateOpp = ExpressionAggregateOperator.getExpressionAggregateOperator(aggregateFunctionString);
+					AggregateOperator expAggregateOpp = AggregateOperator.getAggregateOperator(aggregateFunctionString);
 					select = expAggregateOpp.getSelectField(select);
 
-					if(expAggregateOpp.equals(ExpressionAggregateOperator.FIRST_VALUE)) {
+					if(expAggregateOpp.equals(AggregateOperator.SpecialAggregateOperator.FIRST_VALUE)) {
 						selectBuilder.limit(1);
 					}
 				}

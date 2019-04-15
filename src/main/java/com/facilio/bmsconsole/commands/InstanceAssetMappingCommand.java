@@ -1,12 +1,11 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.Map;
-
+import com.facilio.constants.FacilioConstants;
+import com.facilio.timeseries.TimeSeriesAPI;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
-import com.facilio.constants.FacilioConstants;
-import com.facilio.timeseries.TimeSeriesAPI;
+import java.util.Map;
 
 public class InstanceAssetMappingCommand implements Command {
 

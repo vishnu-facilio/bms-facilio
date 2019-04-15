@@ -1,10 +1,5 @@
 package com.facilio.events.constants;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.commons.chain.Chain;
-
 import com.facilio.bmsconsole.commands.GetExportValueField;
 import com.facilio.bmsconsole.commands.UpdateEventCountCommand;
 import com.facilio.bmsconsole.modules.FacilioField;
@@ -12,15 +7,11 @@ import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.chain.FacilioChain;
-import com.facilio.events.commands.EventToAlarmCommand;
-import com.facilio.events.commands.GetEventDetailCommand;
-import com.facilio.events.commands.GetEventListCommand;
-import com.facilio.events.commands.InsertEventCommand;
-import com.facilio.events.commands.ProcessEventCommand;
-import com.facilio.events.commands.UpdateAlarmAssetMappingCommand;
-import com.facilio.events.commands.UpdateEventCommand;
-import com.facilio.events.commands.UpdateEventResourcesMappingCommand;
-import com.facilio.events.commands.UpdateSourceToResourceMappingCommand;
+import com.facilio.events.commands.*;
+import org.apache.commons.chain.Chain;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class EventConstants {
 	
@@ -58,7 +49,7 @@ public class EventConstants {
 			c.addCommand(new ExecuteEventRulesCommand());
 			c.addCommand(new EventToAlarmCommand());
 			c.addCommand(new UpdateEventCommand());
-			c.setPostTransactionChain(getUpdateEventCountChain());
+//			c.setPostTransactionChain(getUpdateEventCountChain());
 			return c;
 		}
 		

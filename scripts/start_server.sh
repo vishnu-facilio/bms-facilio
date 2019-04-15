@@ -6,7 +6,7 @@ export CONF_DIR="$APP_HOME/webapps/ROOT/WEB-INF/classes/conf"
 
 cd /home/ubuntu
 
-killall -9 java
+sudo killall -9 java
 nohup sh start_xvfb.sh &
 chmod 644 $APP_HOME/logs/*
 sh $APP_HOME/bin/startup.sh

@@ -9,6 +9,7 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.criteria.CommonOperators;
+import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
@@ -22,6 +23,10 @@ public class FilterFieldCommand implements Command {
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		ReportContext report = (ReportContext) context.get(FacilioConstants.ContextNames.REPORT);
+		Criteria criteria = (Criteria) context.get(FacilioConstants.ContextNames.FILTER_CRITERIA);
+		if(criteria != null) {
+			report.setCriteria(criteria);
+		}
 		if (report.getFilters() != null && !report.getFilters().isEmpty()) {
 			for (ReportFilterContext filter : report.getFilters()) {
 				if (!filter.isDataFilter()) {

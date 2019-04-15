@@ -1,9 +1,9 @@
 package com.facilio.bmsconsole.context;
 
-import java.time.LocalTime;
-
 import com.facilio.bmsconsole.util.FacilioFrequency;
 import com.facilio.bmsconsole.workflow.rule.ActionContext;
+
+import java.time.LocalTime;
 
 public class ScheduledActionContext {
 

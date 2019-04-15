@@ -1,59 +1,18 @@
 package com.facilio.bmsconsole.util;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.InputStream;
-import java.lang.reflect.InvocationTargetException;
-import java.nio.charset.StandardCharsets;
-import java.sql.SQLException;
-import java.util.*;
-import java.util.Map.Entry;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import javax.xml.bind.JAXBContext;
-
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
-import org.apache.log4j.Level;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.billing.context.ExcelTemplate;
-import com.facilio.bmsconsole.context.PMIncludeExcludeResourceContext;
-import com.facilio.bmsconsole.context.PMTriggerContext;
-import com.facilio.bmsconsole.context.PreventiveMaintenance;
-import com.facilio.bmsconsole.context.ResourceContext;
-import com.facilio.bmsconsole.context.TaskContext;
+import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.context.TaskContext.InputType;
 import com.facilio.bmsconsole.context.TaskContext.TaskStatus;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.criteria.PickListOperators;
-import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.FacilioModule;
-import com.facilio.bmsconsole.modules.FieldFactory;
-import com.facilio.bmsconsole.modules.FieldType;
-import com.facilio.bmsconsole.modules.FieldUtil;
-import com.facilio.bmsconsole.modules.ModuleFactory;
-import com.facilio.bmsconsole.templates.AssignmentTemplate;
-import com.facilio.bmsconsole.templates.DefaultTemplate;
-import com.facilio.bmsconsole.templates.DefaultTemplateWorkflowsConf;
+import com.facilio.bmsconsole.modules.*;
+import com.facilio.bmsconsole.templates.*;
 import com.facilio.bmsconsole.templates.DefaultTemplateWorkflowsConf.TemplateWorkflowConf;
-import com.facilio.bmsconsole.templates.EMailTemplate;
-import com.facilio.bmsconsole.templates.JSONTemplate;
-import com.facilio.bmsconsole.templates.PushNotificationTemplate;
-import com.facilio.bmsconsole.templates.SLATemplate;
-import com.facilio.bmsconsole.templates.SMSTemplate;
-import com.facilio.bmsconsole.templates.TaskSectionTemplate;
-import com.facilio.bmsconsole.templates.TaskTemplate;
-import com.facilio.bmsconsole.templates.Template;
 import com.facilio.bmsconsole.templates.Template.Type;
 import com.facilio.bmsconsole.workflow.rule.AlarmRuleContext;
 import com.facilio.bmsconsole.templates.WebNotificationTemplate;
@@ -71,6 +30,26 @@ import com.facilio.workflows.context.ExpressionContext;
 import com.facilio.workflows.context.ParameterContext;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+import org.apache.log4j.Level;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+
+import javax.xml.bind.JAXBContext;
+import java.io.File;
+import java.io.FileReader;
+import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
+import java.nio.charset.StandardCharsets;
+import java.sql.SQLException;
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class TemplateAPI {
 	private static Logger log = LogManager.getLogger(TemplateAPI.class.getName());
@@ -199,6 +178,9 @@ public class TemplateAPI {
 		else if (template instanceof WorkflowTemplate) {
 			id = TemplateAPI.addWorkflowTemplate((WorkflowTemplate) template);
 		}
+		else if (template instanceof  ControlActionTemplate) {
+			id = addControlActionTemplate((ControlActionTemplate) template);
+		}
 		return id;
 	}
 	
@@ -255,6 +237,10 @@ public class TemplateAPI {
 				return AssignmentTemplate.class;
 			case SLA:
 				return SLATemplate.class;
+			case WORKFLOW:
+				return WorkflowTemplate.class;
+			case CONTROL_ACTION:
+				return ControlActionTemplate.class;
 			default:
 				return null;
 		}
@@ -421,12 +407,18 @@ public class TemplateAPI {
 					 template = getJSONTemplateFromMap(templateMap);
 				}
 			}break;
-			case WORKFLOW:
-			{
+			case WORKFLOW: {
 				List<Map<String, Object>> templates = getExtendedProps(ModuleFactory.getWorkflowTemplatesModule(), FieldFactory.getWorkflowTemplateFields(), id);
 				if(templates != null && !templates.isEmpty()) {
 					templateMap.putAll(templates.get(0));
 					template = getWorkflowTemplateFromMap(templateMap);
+				}
+			}break;
+			case CONTROL_ACTION: {
+				List<Map<String, Object>> templates = getExtendedProps(ModuleFactory.getControlActionTemplateModule(), FieldFactory.getControlActionTemplateFields(), id);
+				if(templates != null && !templates.isEmpty()) {
+					templateMap.putAll(templates.get(0));
+					template = getControllerActionTemplateFromMap(templateMap);
 				}
 			}break;
 			default: break;
@@ -437,6 +429,10 @@ public class TemplateAPI {
 		}
 		
 		return template;
+	}
+
+	private static ControlActionTemplate getControllerActionTemplateFromMap (Map<String, Object> templateMap) {
+		return FieldUtil.getAsBeanFromMap(templateMap, ControlActionTemplate.class);
 	}
  	
 	private static List<Map<String, Object>> getExtendedProps(FacilioModule module, List<FacilioField> fields, long id) throws Exception {
@@ -752,7 +748,7 @@ public class TemplateAPI {
 		return wfTemplate;
 	}
 	
-	private static Map<Long, TaskSectionTemplate> getTaskSectionTemplatesFromWOTemplate(WorkorderTemplate woTemplate) throws Exception {
+	public static Map<Long, TaskSectionTemplate> getTaskSectionTemplatesFromWOTemplate(WorkorderTemplate woTemplate) throws Exception {
 		FacilioModule module = ModuleFactory.getTaskSectionTemplateModule();
 		List<FacilioField> fields = FieldFactory.getTaskSectionTemplateFields();
 		FacilioField parentIdField = FieldFactory.getAsMap(fields).get("parentWOTemplateId");
@@ -796,6 +792,9 @@ public class TemplateAPI {
 							trigContext.setId(triggerId);
 							trigContext.setName(trigName);
 							section.getPmTriggerContexts().add(trigContext);
+							
+							PMTaskSectionTemplateTriggers pmTaskSectionTemplateTrigger =  FieldUtil.getAsBeanFromMap(prop, PMTaskSectionTemplateTriggers.class);
+							section.addPmTaskSectionTemplateTriggers(pmTaskSectionTemplateTrigger);
 						}
 					}
 				}
@@ -896,7 +895,7 @@ public class TemplateAPI {
 		return template;
 	}
 	
-	private static List<TaskContext> getTasksFromSection(TaskSectionTemplate sectionTemplate) throws Exception {
+	public static List<TaskContext> getTasksFromSection(TaskSectionTemplate sectionTemplate) throws Exception {
 		FacilioModule module = ModuleFactory.getTaskTemplateModule();
 		List<FacilioField> fields = FieldFactory.getTaskTemplateFields();
 		FacilioField sectionIdField = FieldFactory.getAsMap(fields).get("sectionId");
@@ -1010,7 +1009,12 @@ public class TemplateAPI {
 	}
 	
 	public static long addWorkflowTemplate (WorkflowTemplate template) throws Exception {
-		return insertTemplateWithExtendedProps(ModuleFactory.getWorkflowTemplatesModule(), FieldFactory.getWorkflowTemplateFields(), FieldUtil.getAsProperties(template)); //add tasks
+		return insertTemplateWithExtendedProps(ModuleFactory.getWorkflowTemplatesModule(), FieldFactory.getWorkflowTemplateFields(), FieldUtil.getAsProperties(template));
+	}
+
+	public static long addControlActionTemplate (ControlActionTemplate template) throws Exception {
+		addDefaultProps(template);
+		return insertTemplateWithExtendedProps(ModuleFactory.getControlActionTemplateModule(), FieldFactory.getControlActionTemplateFields(), FieldUtil.getAsProperties(template));
 	}
 	
 	private static long addWorkOrderTemplate(WorkorderTemplate template, Type woType, Type taskType, Type sectionType) throws Exception {

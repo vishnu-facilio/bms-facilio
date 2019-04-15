@@ -1,20 +1,17 @@
 package com.facilio.bmsconsole.actions;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.commons.chain.Chain;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.ItemTransactionsContext;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import org.apache.commons.chain.Chain;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 
-import nl.basjes.shaded.org.antlr.v4.runtime.atn.SemanticContext.PrecedencePredicate;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ItemTransactionsAction extends FacilioAction {
 
@@ -101,15 +98,16 @@ public class ItemTransactionsAction extends FacilioAction {
 	public String approveOrRejectItemTransactions() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.EDIT);
-		context.put(FacilioConstants.ContextNames.RECORD_ID, itemTransactionsId);
+		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, itemTransactionsId);
 		context.put(FacilioConstants.ContextNames.ITEM_TRANSACTION_APPORVED_STATE, approvedState);
 		context.put(FacilioConstants.ContextNames.WORKORDER_COST_TYPE, 1);
 		Chain addWorkorderPartChain;
-		if (transactionType == 3) {
-			addWorkorderPartChain = TransactionChainFactory.getApproveRejectManualItemsChain();
-		} else {
-			addWorkorderPartChain = TransactionChainFactory.getApproveRejectWorkorderItemsChain();
-		}
+		addWorkorderPartChain = TransactionChainFactory.getApproveRejectWorkorderItemsChain();
+//		if (transactionType == 3) {
+//			addWorkorderPartChain = TransactionChainFactory.getApproveRejectManualItemsChain();
+//		} else {
+//			addWorkorderPartChain = TransactionChainFactory.getApproveRejectWorkorderItemsChain();
+//		}
 		addWorkorderPartChain.execute(context);
 		setItemTransactionsId((List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST));
 		setResult("itemTransactionsId", itemTransactionsId);
@@ -169,7 +167,7 @@ public class ItemTransactionsAction extends FacilioAction {
 	
 	public String itemTransactionsCount() throws Exception {
 		itemsList();
-		setResult(FacilioConstants.ContextNames.COUNT, count);
+		setResult(FacilioConstants.ContextNames.COUNT, itemsCount);
 		return SUCCESS;
 	}
 

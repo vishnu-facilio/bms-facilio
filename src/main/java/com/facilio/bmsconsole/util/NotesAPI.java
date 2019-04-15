@@ -1,18 +1,10 @@
 package com.facilio.bmsconsole.util;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.StringJoiner;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.context.NoteContext;
+import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.criteria.BooleanOperators;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
@@ -20,8 +12,24 @@ import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
+import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
+import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
 import com.facilio.fw.BeanFactory;
+import com.facilio.sql.GenericSelectRecordBuilder;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.StringJoiner;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 
 public class NotesAPI {
 	
@@ -106,6 +114,50 @@ public class NotesAPI {
 		List<NoteContext> props = selectBuilder.get();
 
 		return getNotes(parentIds, moduleName, props);
+	}
+	
+	public static void updateNotesCount(Collection<Long> parentIds, String ticketModule, String moduleString) throws Exception {
+		if (StringUtils.isNoneEmpty(ticketModule) && CollectionUtils.isNotEmpty(parentIds)) {
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			FacilioField noOfNotesField = modBean.getField("noOfNotes", ticketModule);
+			FacilioModule tModule = modBean.getModule(ticketModule);
+			FacilioModule module = modBean.getModule(moduleString);
+			
+			FacilioField parentIdField = modBean.getField("parentId", moduleString);
+	
+			List<FacilioField> fields = new ArrayList<>();
+			fields.add(parentIdField);
+			FacilioField countField = new FacilioField();
+			countField.setName("count");
+			countField.setColumnName("COUNT(*)");
+			countField.setDataType(FieldType.NUMBER);
+			fields.add(countField);
+			
+			GenericSelectRecordBuilder select = new GenericSelectRecordBuilder()
+					.table(module.getTableName())
+					.select(fields)
+					.groupBy(parentIdField.getCompleteColumnName())
+					.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+					.andCondition(CriteriaAPI.getCondition(parentIdField, parentIds, NumberOperators.EQUALS));
+			
+			List<Map<String, Object>> list = select.get();
+			for (Map<String, Object> map : list) {
+				long id = ((Number) map.get("parentId")).longValue();
+				int noOfNotes = ((Number) map.get("count")).intValue();
+				
+				Map<String, Object> updateMap = new HashMap<>();
+				updateMap.put("noOfNotes", noOfNotes);
+				
+				UpdateRecordBuilder<WorkOrderContext> updateRecordBuilder = new UpdateRecordBuilder<WorkOrderContext>()
+						.module(tModule)
+						.fields(Collections.singletonList(noOfNotesField))
+						.andCondition(CriteriaAPI.getCurrentOrgIdCondition(tModule))
+						.andCondition(CriteriaAPI.getIdCondition(id, tModule))
+						;
+				
+				updateRecordBuilder.updateViaMap(updateMap);
+			}
+		}
 	}
 
 }

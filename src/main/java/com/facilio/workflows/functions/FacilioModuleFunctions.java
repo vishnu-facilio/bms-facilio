@@ -1,16 +1,14 @@
 package com.facilio.workflows.functions;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.modules.EnumField;
+import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.fw.BeanFactory;
 import com.facilio.util.FacilioUtil;
 import com.facilio.workflows.exceptions.FunctionParamException;
 import com.facilio.workflows.util.WorkflowUtil;
+
+import java.util.*;
 
 public enum FacilioModuleFunctions implements FacilioWorkflowFunctionInterface {
 
@@ -42,7 +40,7 @@ public enum FacilioModuleFunctions implements FacilioWorkflowFunctionInterface {
 			}
 		}
 	},
-	GETFIELD(1,"getField",WorkflowUtil.getFacilioFunctionParam(FacilioFunctionsParamType.STRING.getValue(),"fieldRefObject"),WorkflowUtil.getFacilioFunctionParam(FacilioFunctionsParamType.STRING.getValue(),"moduleRefObject")) {
+	GETFIELD(2,"getField",WorkflowUtil.getFacilioFunctionParam(FacilioFunctionsParamType.STRING.getValue(),"fieldRefObject"),WorkflowUtil.getFacilioFunctionParam(FacilioFunctionsParamType.STRING.getValue(),"moduleRefObject")) {
 		@Override
 		public Object execute(Object... objects) throws Exception {
 			
@@ -81,6 +79,37 @@ public enum FacilioModuleFunctions implements FacilioWorkflowFunctionInterface {
 		public void checkParam(Object... objects) throws Exception {
 			if(objects.length <= 0) {
 				throw new FunctionParamException("Required Object is null");
+			}
+		}
+	},
+	GETENUMFIELDVALUE(3,"getEnumFieldValue",WorkflowUtil.getFacilioFunctionParam(FacilioFunctionsParamType.STRING.getValue(),"fieldName"),WorkflowUtil.getFacilioFunctionParam(FacilioFunctionsParamType.STRING.getValue(),"moduleName"),WorkflowUtil.getFacilioFunctionParam(FacilioFunctionsParamType.STRING.getValue(),"enumIntValue")) {
+		@Override
+		public Object execute(Object... objects) throws Exception {
+			
+			checkParam(objects);
+			
+			if(objects[0] == null) {
+				return null;
+			}
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			
+			String fieldName = objects[0].toString();
+			String moduleName = objects[1].toString();
+			
+			FacilioField field = modBean.getField(fieldName, moduleName);
+			
+			if (field instanceof EnumField) {
+				EnumField enumField = (EnumField) field;
+				int index = Integer.parseInt(objects[2].toString());
+				return enumField.getValue(index);
+			}
+
+			return null;
+		};
+		
+		public void checkParam(Object... objects) throws Exception {
+			if(objects.length <= 2) {
+				throw new FunctionParamException("Required Object is null -- "+objects);
 			}
 		}
 	},

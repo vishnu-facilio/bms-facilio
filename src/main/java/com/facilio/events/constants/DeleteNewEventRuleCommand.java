@@ -1,14 +1,13 @@
 package com.facilio.events.constants;
 
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.events.context.EventRuleContext;
 import com.facilio.events.util.EventRulesAPI;
 import com.facilio.sql.GenericDeleteRecordBuilder;
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
 
 public class DeleteNewEventRuleCommand implements Command {
 

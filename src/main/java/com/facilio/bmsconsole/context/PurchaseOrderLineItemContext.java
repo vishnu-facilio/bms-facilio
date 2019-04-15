@@ -1,7 +1,9 @@
 package com.facilio.bmsconsole.context;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.collections4.CollectionUtils;
 
@@ -78,16 +80,6 @@ public class PurchaseOrderLineItemContext extends ModuleBaseWithCustomFields{
 		this.cost = cost;
 	}
 	
-	public static List<PurchaseOrderLineItemContext> from(List<PurchaseRequestLineItemContext> lineItems) {
-		List<PurchaseOrderLineItemContext> items = new ArrayList<PurchaseOrderLineItemContext>();
-		if (CollectionUtils.isNotEmpty(lineItems)) {
-			for (PurchaseRequestLineItemContext prItem : lineItems) {
-				items.add(PurchaseOrderLineItemContext.from(prItem));
-			}
-		}
-		return items;
-	}
-	
 	public static PurchaseOrderLineItemContext from(PurchaseRequestLineItemContext prItem) {
 		PurchaseOrderLineItemContext poItem = null;
 		if (prItem != null) {
@@ -130,5 +122,14 @@ public class PurchaseOrderLineItemContext extends ModuleBaseWithCustomFields{
 	public void setPurchasedTools(List<PurchasedToolContext> purchasedTools) {
 		this.purchasedTools = purchasedTools;
 	}
+	
+	private int noOfSerialNumbers = -1;
+	public int getNoOfSerialNumbers() {
+		return noOfSerialNumbers;
+	}
+	public void setNoOfSerialNumbers(int noOfSerialNumbers) {
+		this.noOfSerialNumbers = noOfSerialNumbers;
+	}
+	
 
 }

@@ -1,15 +1,5 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.apache.commons.lang3.StringUtils;
-
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.FormulaContext;
 import com.facilio.bmsconsole.context.ReadingAlarmContext;
@@ -20,12 +10,7 @@ import com.facilio.bmsconsole.criteria.CommonOperators;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.DateOperators;
 import com.facilio.bmsconsole.criteria.NumberOperators;
-import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.FacilioModule;
-import com.facilio.bmsconsole.modules.FieldFactory;
-import com.facilio.bmsconsole.modules.FieldUtil;
-import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
-import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
+import com.facilio.bmsconsole.modules.*;
 import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.workflow.rule.AlarmRuleContext;
@@ -33,6 +18,11 @@ import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericSelectRecordBuilder;
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
+import org.apache.commons.lang3.StringUtils;
+
+import java.util.*;
 
 public class FetchExtraMetaForAlarmRuleCommand implements Command {
 
@@ -196,7 +186,7 @@ public class FetchExtraMetaForAlarmRuleCommand implements Command {
 		 FacilioModule ticketModule = modBean.getModule(FacilioConstants.ContextNames.TICKET);
 		
 		List<FacilioField> fetchFields = new ArrayList<>();
-		FacilioField countField = FormulaContext.CommonAggregateOperator.COUNT.getSelectField(fieldMap.get("resource"));
+		FacilioField countField = AggregateOperator.CommonAggregateOperator.COUNT.getSelectField(fieldMap.get("resource"));
 		countField.setName("count");
 		fetchFields.add(countField);
 		fetchFields.add(fieldMap.get("resource"));

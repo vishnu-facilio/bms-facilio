@@ -4,6 +4,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -31,7 +32,7 @@ public class UnModeledDataCommand implements Command {
 		long timeStamp=(long)context.get(FacilioConstants.ContextNames.TIMESTAMP);
 		Long controllerId=(Long) context.get(FacilioConstants.ContextNames.CONTROLLER_ID);
 		List<Map<String, Object>> records=new ArrayList<Map<String,Object>>();
-
+		List<Map<String, Object>> pointsRecords=(List<Map<String, Object>>) context.get("POINTS_DATA_RECORD");
 		for(Map.Entry<String, Map<String,String>> data:deviceData.entrySet()) {
 			String deviceName=data.getKey();
 			Map<String,String> instanceMap= data.getValue();
@@ -42,6 +43,8 @@ public class UnModeledDataCommand implements Command {
 					continue;
 				}
 				
+				// Long pointsInstanceId = getPointsUnmodledInstance(deviceName , instanceName ,controllerId, pointsRecords);
+	
 				Long instanceId= getUnmodledInstance(deviceName,instanceName,controllerId);
 				
 				if(instanceId==null && controllerId!=null) {
@@ -58,6 +61,7 @@ public class UnModeledDataCommand implements Command {
 					instanceId=getUnmodeledInstanceAfterInsert(deviceName,instanceName,controllerId);
 				}
 				Map<String, Object> record=new HashMap<String,Object>();
+				//record.put("newInstanceId", pointsInstanceId);
 				record.put("instanceId", instanceId);
 				record.put("ttime",timeStamp);
 				record.put("value", instanceVal);
@@ -94,8 +98,22 @@ public class UnModeledDataCommand implements Command {
 		}
 		return id;
 	}
-
 	
+	private  Long getPointsUnmodledInstance(String deviceName, String instanceName, Long controllerId,List<Map<String, Object>> pointsRecords) throws Exception {
+		
+		Iterator<Map<String,Object>> itr= pointsRecords.iterator();
+		while (itr.hasNext()) {
+			Map<String,Object> map= itr.next();
+			Long id= (Long) map.get("id");
+			if((map.containsValue(deviceName) && map.containsValue(instanceName)&& map.containsValue(controllerId))){
+				itr.remove();
+				return id;
+			}
+		}
+		return null;
+
+	}
+
 	private void updateControllerForInstance(long instanceId, long controllerId) {
 		
 		try {
@@ -121,6 +139,7 @@ public class UnModeledDataCommand implements Command {
 		
 	}
 	
+  
 	private  Long getUnmodeledInstanceAfterInsert(String deviceName, String instanceName, Long controllerId) throws SQLException {
 
 		long orgId = AccountUtil.getCurrentOrg().getOrgId();
@@ -141,7 +160,8 @@ public class UnModeledDataCommand implements Command {
 		Long instanceId = (Long) value.get("id");
 		return instanceId;
 	}
-
+	
+	
 	private void insertUnmodeledData(List<Map<String, Object>> records) throws SQLException {
 
 		if(records.isEmpty()) {

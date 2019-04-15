@@ -1,18 +1,10 @@
 package com.facilio.accounts.util;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import com.facilio.accounts.dto.Permissions;
 import com.facilio.accounts.dto.Role;
-import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.FacilioModule;
-import com.facilio.bmsconsole.modules.FieldFactory;
-import com.facilio.bmsconsole.modules.FieldType;
-import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.bmsconsole.modules.*;
+
+import java.util.*;
 
 public class AccountConstants {
 
@@ -239,7 +231,9 @@ public class AccountConstants {
 		
 		VIEW_DASHBOARDS(34359738368L),
 		
-		VIEW_APPROVAL(68719476736L)
+		VIEW_APPROVAL(68719476736L),
+		
+		INVENTORY_APPROVAL(137438953472L),
 
 		
 //		GENERAL(34359738368L),

@@ -44,7 +44,13 @@ public class ModuleAction extends FacilioAction {
 	}
 	
 	public String addCustomFields() throws Exception {
-		FacilioContext context = new FacilioContext();
+		return addCustomFields(null);
+	}
+	
+	private String addCustomFields(FacilioContext context) throws Exception {
+		if (context == null) {
+			context = new FacilioContext();
+		}
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, getModuleName());
 		context.put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, getFields());
 		
@@ -53,6 +59,19 @@ public class ModuleAction extends FacilioAction {
 		
 		setFieldIds((List<Long>) context.get(FacilioConstants.ContextNames.MODULE_FIELD_IDS));
 		
+		return SUCCESS;
+	}
+	
+	public String v2addCustomFields() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.ALLOW_SAME_FIELD_DISPLAY_NAME, true);
+		setFields(Collections.singletonList(field));
+		addCustomFields(context);
+		
+		setFieldId(getFieldIds().get(0));
+		fieldDetails();
+		
+		setResult("field", field);
 		return SUCCESS;
 	}
 	

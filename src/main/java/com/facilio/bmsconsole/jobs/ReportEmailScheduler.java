@@ -51,6 +51,7 @@ public class ReportEmailScheduler extends FacilioJob {
 				ReportContext reportContext = ReportUtil.getReport(reportId);
 				
 				context.put(FacilioConstants.ContextNames.REPORT, reportContext);
+				context.put("isS3Url", true);
 				
 				Chain mailReportChain = ReadOnlyChainFactory.sendReportMailChain();
 				mailReportChain.execute(context);				

@@ -1,18 +1,17 @@
 package com.facilio.bmsconsole.actions;
 
-import java.util.Collections;
-import java.util.List;
-
-import org.apache.commons.chain.Chain;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.PurchaseRequestContext;
 import com.facilio.bmsconsole.context.PurchaseRequestLineItemContext;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import org.apache.commons.chain.Chain;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+
+import java.util.Collections;
+import java.util.List;
 
 public class PurchaseRequestAction extends FacilioAction {
 	private static final long serialVersionUID = 1L;
@@ -51,7 +50,24 @@ public class PurchaseRequestAction extends FacilioAction {
 	public void setRecordId(long recordId) {
 		this.recordId = recordId;
 	}
+	private int status;
 	
+	public int getStatus() {
+		return status;
+	}
+	public void setStatus(int status) {
+		this.status = status;
+	}
+
+	private List<Long> recordIds;
+	
+	public List<Long> getRecordIds() {
+		return recordIds;
+	}
+	public void setRecordIds(List<Long> recordIds) {
+		this.recordIds = recordIds;
+	}
+
 	private boolean includeParentFilter;
 
 	public boolean getIncludeParentFilter() {
@@ -130,12 +146,11 @@ public class PurchaseRequestAction extends FacilioAction {
 	
 	public String deletePurchaseRequest() throws Exception {
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(recordId));
-		
+		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, recordId != -1 ? Collections.singletonList(recordId) : recordIds);
 		Chain chain = TransactionChainFactory.getPurchaseRequestDeleteChain();
 		chain.execute(context);
 		
-		setResult(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(recordId));
+		setResult(FacilioConstants.ContextNames.RECORD_ID_LIST, recordId != -1 ? Collections.singletonList(recordId) : recordIds);
 		return SUCCESS;
 	}
 	
@@ -155,6 +170,19 @@ public class PurchaseRequestAction extends FacilioAction {
 		chain.execute(context);
 		
 		setResult(FacilioConstants.ContextNames.RECORD, context.get(FacilioConstants.ContextNames.RECORD));
+		
+		return SUCCESS;
+	}
+	
+	public String bulkStatusUpdate() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, recordIds);
+		context.put(FacilioConstants.ContextNames.STATUS, getStatus());
+		
+		Chain chain = TransactionChainFactory.getUpdatePurchaseRequestStatusChain();
+		chain.execute(context);
+		
+		setResult(FacilioConstants.ContextNames.ROWS_UPDATED, context.get(FacilioConstants.ContextNames.ROWS_UPDATED));
 		
 		return SUCCESS;
 	}

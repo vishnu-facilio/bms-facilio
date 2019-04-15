@@ -1,57 +1,55 @@
 package com.facilio.bmsconsole.commands;
 
-import java.text.DecimalFormat;
-import java.util.AbstractMap.SimpleEntry;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.StringJoiner;
-
+import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.modules.AggregateOperator.DateAggregateOperator;
+import com.facilio.bmsconsole.modules.AggregateOperator.NumberAggregateOperator;
+import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.modules.*;
+import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
+import com.facilio.report.context.*;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
 
-import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.FormulaContext.AggregateOperator;
-import com.facilio.bmsconsole.context.FormulaContext.DateAggregateOperator;
-import com.facilio.bmsconsole.context.FormulaContext.NumberAggregateOperator;
-import com.facilio.bmsconsole.criteria.CriteriaAPI;
-import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.FacilioModule;
-import com.facilio.bmsconsole.modules.FieldFactory;
-import com.facilio.bmsconsole.modules.LookupField;
-import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
-import com.facilio.bmsconsole.modules.ModuleFactory;
-import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
-import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
-import com.facilio.constants.FacilioConstants;
-import com.facilio.fw.BeanFactory;
-import com.facilio.report.context.ReportBaseLineContext;
-import com.facilio.report.context.ReportContext;
-import com.facilio.report.context.ReportDataContext;
-import com.facilio.report.context.ReportDataPointContext;
-import com.facilio.report.context.ReportFieldContext;
-import com.facilio.report.context.ReportGroupByField;
-import com.facilio.sql.GenericSelectRecordBuilder;
+import java.text.DecimalFormat;
+import java.util.AbstractMap.SimpleEntry;
+import java.util.*;
 
 public class ConstructReportDataCommand implements Command {
 
-	private List<Map<String, Object>> initList() { //In case we wanna implement a sorted list
-		return new ArrayList<>();
+	private Collection<Map<String, Object>> initList(String sortAlias, boolean isTimeSeries) { //In case we wanna implement a sorted list
+	    if (isTimeSeries) {
+            return new TreeSet<Map<String, Object>>((data1, data2) -> Long.compare((long) data1.get(sortAlias), (Long) data2.get(sortAlias)));
+        }
+	    else {
+	        return new ArrayList<>();
+        }
 	}
 	
 //	private Map<Long, Map<Long, Object>> labelMap = new HashMap<>();
+
+    private boolean isTimeSeries (List<ReportDataContext> reportData) { //Temporary check
+	    if (CollectionUtils.isNotEmpty(reportData)) {
+	        ReportDataPointContext dp = reportData.get(0).getDataPoints().get(0);
+	        if (dp.getxAxis().getDataTypeEnum() == FieldType.DATE_TIME || dp.getxAxis().getDataTypeEnum() == FieldType.DATE) {
+	            return true;
+            }
+        }
+	    return false;
+    }
 
 	@Override
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		List<ReportDataContext> reportData = (List<ReportDataContext>) context.get(FacilioConstants.ContextNames.REPORT_DATA);
 		ReportContext report = (ReportContext) context.get(FacilioConstants.ContextNames.REPORT);
-		List<Map<String, Object>> transformedData = initList();
+		String xAlias = getxAlias(report);
+		Collection<Map<String, Object>> transformedData = initList(xAlias, isTimeSeries(reportData));
 		Map<String, Object> intermediateData = new HashMap<>();
 		for (ReportDataContext data : reportData ) {
 			Map<String, List<Map<String, Object>>> reportProps = data.getProps();
@@ -72,12 +70,12 @@ public class ConstructReportDataCommand implements Command {
 		JSONObject data = new JSONObject();
 		data.put(FacilioConstants.ContextNames.DATA_KEY, transformedData);
 //		data.put(FacilioConstants.ContextNames.LABEL_MAP, labelMap);
-		context.put(FacilioConstants.ContextNames.REPORT_SORT_ALIAS, getxAlias(report));
+		context.put(FacilioConstants.ContextNames.REPORT_SORT_ALIAS, xAlias);
 		context.put(FacilioConstants.ContextNames.REPORT_DATA, data);
 		return false;
 	}
 	
-	private void constructData(ReportContext report, ReportDataPointContext dataPoint, List<Map<String, Object>> props, ReportBaseLineContext baseLine, List<Map<String, Object>> transformedData, Map<String, Object> directHelperData) throws Exception {
+	private void constructData(ReportContext report, ReportDataPointContext dataPoint, List<Map<String, Object>> props, ReportBaseLineContext baseLine, Collection<Map<String, Object>> transformedData, Map<String, Object> directHelperData) throws Exception {
 		if (props != null && !props.isEmpty()) {
 			for (Map<String, Object> prop : props) {
 				Object xVal = prop.get(dataPoint.getxAxis().getField().getName());
@@ -113,7 +111,7 @@ public class ConstructReportDataCommand implements Command {
 		}
 	}
 	
-	private void constructAndAddData(String key, Map<String, Object> existingData, Object xVal, Object yVal, Object minYVal, Object maxYVal, String yAlias, ReportContext report, ReportDataPointContext dataPoint, List<Map<String, Object>> transformedData, Map<String, Object> intermediateData) {
+	private void constructAndAddData(String key, Map<String, Object> existingData, Object xVal, Object yVal, Object minYVal, Object maxYVal, String yAlias, ReportContext report, ReportDataPointContext dataPoint, Collection<Map<String, Object>> transformedData, Map<String, Object> intermediateData) {
 		Map<String, Object> data = (Map<String, Object>) intermediateData.get(key);
 		if (data == null) {
 			data = existingData == null ? new HashMap<>() : existingData;

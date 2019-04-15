@@ -1,60 +1,25 @@
 package com.facilio.bmsconsole.util;
 
-import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.sql.SQLException;
-import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.stream.Collectors;
-
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.bmsconsole.criteria.*;
-import com.facilio.bmsconsole.modules.*;
-import com.facilio.bmsconsole.commands.TransactionChainFactory;
-import com.facilio.bmsconsole.context.*;
-import com.facilio.bmsconsole.workflow.rule.*;
-import com.facilio.chain.FacilioContext;
-import org.apache.commons.chain.Chain;
-import org.apache.commons.chain.Context;
-import org.apache.commons.lang3.StringUtils;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.AssetContext;
-import com.facilio.bmsconsole.context.BaseSpaceContext;
-import com.facilio.bmsconsole.context.PMIncludeExcludeResourceContext;
-import com.facilio.bmsconsole.context.PMJobsContext;
+import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.context.PMJobsContext.PMJobsStatus;
-import com.facilio.bmsconsole.context.PMReminder;
 import com.facilio.bmsconsole.context.PMReminder.ReminderType;
-import com.facilio.bmsconsole.context.PMReminderAction;
-import com.facilio.bmsconsole.context.PMResourcePlannerContext;
-import com.facilio.bmsconsole.context.PMResourcePlannerReminderContext;
-import com.facilio.bmsconsole.context.PMTriggerContext;
 import com.facilio.bmsconsole.context.PMTriggerContext.TriggerExectionSource;
 import com.facilio.bmsconsole.context.PMTriggerContext.TriggerType;
-import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.context.PreventiveMaintenance.PMAssignmentType;
-import com.facilio.bmsconsole.context.ResourceContext;
-import com.facilio.bmsconsole.context.SpaceContext;
-import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.TaskContext.InputType;
-import com.facilio.bmsconsole.context.TicketContext;
-import com.facilio.bmsconsole.context.WorkOrderContext;
-import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.FacilioModule;
-import com.facilio.bmsconsole.modules.FieldFactory;
-import com.facilio.bmsconsole.modules.FieldType;
-import com.facilio.bmsconsole.modules.FieldUtil;
-import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.bmsconsole.criteria.*;
+import com.facilio.bmsconsole.modules.*;
 import com.facilio.bmsconsole.templates.TaskSectionTemplate;
 import com.facilio.bmsconsole.templates.TaskTemplate;
 import com.facilio.bmsconsole.templates.TaskTemplate.AttachmentRequiredEnum;
 import com.facilio.bmsconsole.templates.Template;
 import com.facilio.bmsconsole.templates.WorkorderTemplate;
+import com.facilio.bmsconsole.workflow.rule.*;
+import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericDeleteRecordBuilder;
@@ -68,6 +33,19 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
+import org.apache.commons.chain.Chain;
+import org.apache.commons.chain.Context;
+import org.apache.commons.lang3.StringUtils;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.sql.SQLException;
+import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 public class PreventiveMaintenanceAPI {
 	
@@ -261,6 +239,9 @@ public class PreventiveMaintenanceAPI {
 			if ((nextExecutionTime * 1000) < currentTime) {
 				LOGGER.log(Level.SEVERE, "Skipping : next: "+ nextExecutionTime * 1000 + " current: "+ currentTime);
 				nextExecutionTime = pmTrigger.getSchedule().nextExecutionTime(nextExecutionTime);
+				if (pmTrigger.getSchedule().getFrequencyTypeEnum() == FrequencyType.DO_NOT_REPEAT) {
+					break;
+				}
 				continue;
 			}
 
@@ -275,7 +256,7 @@ public class PreventiveMaintenanceAPI {
 			}
 			isScheduled = true;
 		}
-		if (!isScheduled) {
+		if (!isScheduled && pmTrigger.getFrequencyEnum() != FacilioFrequency.ANNUALLY) {
 			LOGGER.log(Level.SEVERE, "No Work orders generated for PM "+ pm.getId() + " PM Trigger ID: "+pmTrigger.getId());
 			CommonCommandUtil.emailAlert("No Work orders generated for pm", "PM "+ pm.getId() + " PM Trigger ID: "+pmTrigger.getId());
 		}
@@ -693,29 +674,33 @@ public class PreventiveMaintenanceAPI {
 		return (Long) props.get(0).get("minCreatedTime");
 	}
 
-	public static void initScheduledWO() throws Exception {
-		List<FacilioField> fields = FieldFactory.getPreventiveMaintenanceFields();
-		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+	public static void initScheduledWO(List<Long> orgs) throws Exception {
+		for (long i : orgs) {
+			try {
+				AccountUtil.setCurrentAccount(i);
+				if (AccountUtil.getCurrentOrg() == null || AccountUtil.getCurrentOrg().getOrgId() <= 0) {
+					LOGGER.log(Level.SEVERE, "Org is missing");
+					continue;
+				}
 
-		if (AccountUtil.getCurrentOrg() == null || AccountUtil.getCurrentOrg().getOrgId() <= 0) {
-			LOGGER.log(Level.SEVERE, "Org is missing");
-			return;
+				List<FacilioField> fields = FieldFactory.getPreventiveMaintenanceFields();
+				Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+
+				List<PreventiveMaintenance> pms = PreventiveMaintenanceAPI.getAllActivePMs(null, Arrays.asList(fieldMap.get("id")));
+				if (pms == null || pms.isEmpty()) {
+					LOGGER.log(Level.SEVERE, "There are no PMS in the org " + AccountUtil.getCurrentOrg().getOrgId());
+					continue;
+				}
+
+				LOGGER.log(Level.SEVERE, "Number of PMS to be deactivated: " + pms.size());
+
+				List<Long> skipped = deactivateActivateAllPms(pms);
+
+				LOGGER.log(Level.SEVERE, "skipped pms: " + StringUtils.join(skipped.toArray(), ", "));
+			} finally {
+				AccountUtil.cleanCurrentAccount();
+			}
 		}
-
-		List<PreventiveMaintenance> pms = PreventiveMaintenanceAPI.getAllActivePMs(null, Arrays.asList(fieldMap.get("id")));
-		if(pms == null || pms.isEmpty()) {
-			LOGGER.log(Level.SEVERE, "There are no PMS in the org "+ AccountUtil.getCurrentOrg().getOrgId());
-			return;
-		}
-
-		LOGGER.log(Level.SEVERE, "Number of PMS to be deactivated: " + pms.size());
-
-		List<Long> skipped = deactivateActivateAllPms(pms);
-
-		//Set<Long> skipList = deactivateAllPms(pms);
-		//Set<Long> activateSkipList = activateAllPms(pms, skipList);
-		LOGGER.log(Level.SEVERE, "skipped pms: "+ StringUtils.join(skipped.toArray(), ", "));
-		//LOGGER.log(Level.SEVERE, "Activation skipped: "+ StringUtils.join(activateSkipList.toArray(), ", "));
 	}
 
 	private static List<Long> deactivateActivateAllPms(List<PreventiveMaintenance> pms) throws Exception {
@@ -2051,11 +2036,23 @@ public class PreventiveMaintenanceAPI {
 		int currentCount = pm.getCurrentExecutionCount();
 		long currentTime = System.currentTimeMillis() / 1000;
 		while (nextExecutionTime < currentTime) {
-			nextExecutionTime = trigger.getSchedule().nextExecutionTime(startTime);
+			nextExecutionTime = trigger.getSchedule().nextExecutionTime(nextExecutionTime);
 		}
 		if((pm.getMaxCount() == -1 || currentCount < pm.getMaxCount()) && (pm.getEndTime() == -1 || nextExecutionTime <= pm.getEndTime())) {
 			return createWoContextFromPM(context, pm, trigger, woTemplate, nextExecutionTime);
 		}
 		return null;
+	}
+	
+	public static List<Map<String, Object>> getTaskSectionTemplateTriggers(long triggerId) throws Exception {
+		FacilioModule sectionTriggerModule = ModuleFactory.getTaskSectionTemplateTriggersModule();
+		
+		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+				.table(sectionTriggerModule.getTableName())
+				.select(FieldFactory.getTaskSectionTemplateTriggersFields())
+				.andCustomWhere("PM_TRIGGER_ID = ?", triggerId)
+				.andCustomWhere("EXECUTE_IF_NOT_IN_TIME IS NOT NULL");
+		
+		return builder.get();
 	}
 }

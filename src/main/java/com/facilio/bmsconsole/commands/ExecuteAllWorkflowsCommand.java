@@ -1,20 +1,5 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ForkJoinTask;
-import java.util.concurrent.RecursiveAction;
-
-import org.apache.commons.chain.Context;
-import org.apache.log4j.Level;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-
 import com.facilio.accounts.dto.Account;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
@@ -22,11 +7,7 @@ import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.criteria.CommonOperators;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
-import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.FacilioModule;
-import com.facilio.bmsconsole.modules.FieldFactory;
-import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
-import com.facilio.bmsconsole.modules.UpdateChangeSet;
+import com.facilio.bmsconsole.modules.*;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
@@ -36,6 +17,14 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.serializable.SerializableCommand;
 import com.google.common.collect.Lists;
+import org.apache.commons.chain.Context;
+import org.apache.log4j.Level;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
+import java.util.*;
+import java.util.concurrent.ForkJoinTask;
+import java.util.concurrent.RecursiveAction;
 
 public class ExecuteAllWorkflowsCommand implements SerializableCommand
 {
@@ -67,21 +56,35 @@ public class ExecuteAllWorkflowsCommand implements SerializableCommand
 	
 	@Override
 	public boolean execute(Context context) throws Exception {
-		long startTime = System.currentTimeMillis();
-		Boolean historyReading = (Boolean) context.get(FacilioConstants.ContextNames.HISTORY_READINGS);
-		if (historyReading != null && historyReading==true) {
-			return false;
+		Map<String, List> recordMap = null;
+		try {
+			long startTime = System.currentTimeMillis();
+			Boolean historyReading = (Boolean) context.get(FacilioConstants.ContextNames.HISTORY_READINGS);
+			if (historyReading != null && historyReading==true) {
+				return false;
+			}
+			recordMap = CommonCommandUtil.getRecordMap((FacilioContext) context);
+			Map<String, Map<Long, List<UpdateChangeSet>>> changeSetMap = CommonCommandUtil.getChangeSetMap((FacilioContext) context);
+			if(recordMap != null && !recordMap.isEmpty()) {
+				if (recordsPerThread == -1) {
+					fetchAndExecuteRules(recordMap, changeSetMap, (FacilioContext) context);
+				}
+				else {
+					new ParallalWorkflowExecution(AccountUtil.getCurrentAccount(), recordMap, changeSetMap, (FacilioContext) context).invoke();
+				}
+				LOGGER.debug("Time taken to Execute workflows for modules : "+recordMap.keySet()+" is "+(System.currentTimeMillis() - startTime));
+			}
 		}
-		Map<String, List> recordMap = CommonCommandUtil.getRecordMap((FacilioContext) context);
-		Map<String, Map<Long, List<UpdateChangeSet>>> changeSetMap = CommonCommandUtil.getChangeSetMap((FacilioContext) context);
-		if(recordMap != null && !recordMap.isEmpty()) {
-			if (recordsPerThread == -1) {
-				fetchAndExecuteRules(recordMap, changeSetMap, (FacilioContext) context);
+		catch(Exception e) {
+			StringBuilder builder = new StringBuilder("Error during execution of rule : ");
+			builder.append(" for Record : "+recordMap)
+			.append(" this.propagateError " +this.propagateError)
+			.append(" for this.ruleTypes "+this.ruleTypes);
+			LOGGER.error(builder.toString(), e);
+			CommonCommandUtil.emailException("RULE EXECUTION FAILED - "+AccountUtil.getCurrentOrg().getId(),builder.toString(), e);
+			if (propagateError) {
+				throw e;
 			}
-			else {
-				new ParallalWorkflowExecution(AccountUtil.getCurrentAccount(), recordMap, changeSetMap, (FacilioContext) context).invoke();
-			}
-			LOGGER.debug("Time taken to Execute workflows for modules : "+recordMap.keySet()+" is "+(System.currentTimeMillis() - startTime));
 		}
 		return false;
 	}

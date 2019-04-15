@@ -1,13 +1,11 @@
 package com.facilio.bmsconsole.context;
 
+import com.facilio.accounts.dto.User;
+import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-
-import com.facilio.accounts.dto.User;
-import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
-import com.facilio.bmsconsole.modules.FacilioField.FieldDisplayType;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class LabourContext extends ModuleBaseWithCustomFields {
 	private static final long serialVersionUID = 1L;
@@ -32,12 +30,6 @@ public class LabourContext extends ModuleBaseWithCustomFields {
 	}
 	public void setEmail(String email) {
 		this.email = email;
-	}
-	public String getAddress() {
-		return address;
-	}
-	public void setAddress(String address) {
-		this.address = address;
 	}
 	public String getPhone() {
 		return phone;
@@ -90,7 +82,6 @@ public class LabourContext extends ModuleBaseWithCustomFields {
 	}
 
 	private String email;
-	private String address;
 	private String phone;
 	private double cost = -1;
 	

@@ -1128,6 +1128,21 @@
 				<param name="excludeProperties">criteria.conditions.*\.computedWhereClause</param>
 			</result>
 		</action>
+		<action name="woScheduleReport" class="com.facilio.bmsconsole.actions.ViewAction" method="woScheduleReport">
+			<result name="success" type="json">
+				<param name="includeProperties">reportId</param>
+			</result>
+		</action>
+		<action name="woScheduleReportList" class="com.facilio.bmsconsole.actions.ViewAction" method="woScheduledList">
+			<result name="success" type="json">
+				<param name="includeProperties">^scheduledReports.*</param>
+			</result>
+		</action>
+		<action name="editWoScheduledReport" class="com.facilio.bmsconsole.actions.ViewAction" method="editWoScheduledReport">
+			<result name="success" type="json">
+				<param name="includeProperties">rowsUpdated</param>
+			</result>
+		</action>
 	</package>
 
 	<package name="readingApi" namespace="/api/reading" extends="homeApi">
@@ -2863,8 +2878,9 @@
 	<package name="tenant" namespace="/api/tenant" extends="homeApi">
 		<action name="add" class="com.facilio.bmsconsole.actions.TenantAction"
 			method="addTenant">
-			<!-- <param name="permission">WORKORDER_READ,TASK_READ</param> -->
-			<result name="success" type="json">
+			<param name="permission">CREATE</param> 
+			<param name="moduleName">tenant</param>
+		    <result name="success" type="json">
 				<param name="root">result</param>
 			</result>
 			<result name="error" type="json">
@@ -2874,8 +2890,35 @@
 		
 		<action name="update" class="com.facilio.bmsconsole.actions.TenantAction"
 			method="updateTenant">
-			<!-- <param name="permission">WORKORDER_READ,TASK_READ</param> -->
+			<param name="permission">UPDATE</param> 
+			<param name="moduleName">tenant</param>
 			<result name="success" type="json">
+				<param name="root">result</param>
+			</result>
+			<result name="error" type="json">
+				<param name="root">error</param>
+			</result>
+	
+		</action>
+	
+		<action name="toggleStatus" class="com.facilio.bmsconsole.actions.TenantAction"
+			method="toggleStatus">
+			
+			<param name="permission">UPDATE</param> 
+			<param name="moduleName">tenant</param>
+		    <result name="success" type="json">
+				<param name="root">result</param>
+			</result>
+			<result name="error" type="json">
+				<param name="root">error</param>
+			</result>
+	
+		</action>
+	    <action name="getTenantForAsset" class="com.facilio.bmsconsole.actions.TenantAction"
+			method="getTenantForAssetId">
+			<param name="permission">READ</param> 
+			<param name="moduleName">tenant</param>
+		     <result name="success" type="json">
 				<param name="root">result</param>
 			</result>
 			<result name="error" type="json">
@@ -2886,8 +2929,9 @@
 		
 		<action name="delete" class="com.facilio.bmsconsole.actions.TenantAction"
 			method="deleteTenant">
-			<!-- <param name="permission">WORKORDER_READ,TASK_READ</param> -->
-			<result name="success" type="json">
+		   <param name="permission">DELETE</param> 
+		   <param name="moduleName">tenant</param>
+		   <result name="success" type="json">
 				<param name="root">result</param>
 			</result>
 			<result name="error" type="json">
@@ -2896,17 +2940,18 @@
 		</action>
 		<action name="tenantCount" class="com.facilio.bmsconsole.actions.TenantAction"
 			method="tenantCount">
+			<param name="permission">READ</param> 
 			<param name="moduleName">tenant</param>
-			<param name="permission">READ,READ_TEAM,READ_OWN</param>
-			<result name="success" type="json">
+		    <result name="success" type="json">
 				<param name="includeProperties">tenantCount</param>
 			</result>
 		</action>
 	
 		<action name="getLogoUrl" class="com.facilio.bmsconsole.actions.TenantAction"
 			method="getTenantLogoUrl">
-			<!-- <param name="permission">WORKORDER_READ,TASK_READ</param> -->
-			<result name="success" type="json">
+			<param name="permission">READ</param> 
+			<param name="moduleName">tenant</param>
+		     <result name="success" type="json">
 				<param name="includeProperties">logoUrl</param>
 			</result>
 		</action>
@@ -2922,8 +2967,9 @@
 	
 	<action name="markAsPrimaryContact" class="com.facilio.bmsconsole.actions.TenantAction" 
 	method="markAsPrimaryContact">
-	<param name="moduleName">setup</param>
-		<result name="success" type="json">
+		<param name="permission">UPDATE</param> 
+		<param name="moduleName">tenant</param>
+			<result name="success" type="json">
 				<param name="root">result</param>
 			</result>
 			<result name="error" type="json">
@@ -2984,16 +3030,18 @@
 		
 		<action name="details" class="com.facilio.bmsconsole.actions.TenantAction"
 			method="fetchTenant">
-			<!-- <param name="permission">WORKORDER_READ,TASK_READ</param> -->
-			<result name="success" type="json">
+			<param name="permission">READ</param> 
+			<param name="moduleName">tenant</param>
+		   <result name="success" type="json">
 				<param name="root">result</param>
 			</result>
 		</action>
 		
 		<action name="*" class="com.facilio.bmsconsole.actions.TenantAction"
 			method="fetchAllTenants">
-			<!-- <param name="permission">WORKORDER_READ,TASK_READ</param> -->
-			<param name="viewName">{1}</param>
+			<param name="permission">READ</param> 
+			<param name="moduleName">tenant</param>
+		    <param name="viewName">{1}</param>
 			<result name="success" type="json">
 				<param name="root">result</param>
 			</result>
@@ -3703,6 +3751,11 @@
 				<param name="includeProperties">^metricWithUnits.*,^orgUnitsList.*,^metrics.*</param>
 			</result>
 		</action>
+		<action name="migrateToSiUnit" class="com.facilio.bmsconsole.actions.UnitAction" method="unitMigration">
+			<result name="success" type="json">
+				<param name="enumAsBean">true</param>
+			</result>
+		</action>
 		<action name="updatedefaultMetricUnits" class="com.facilio.bmsconsole.actions.UnitAction" method="updatedefaultMetricUnits">
 			<result name="success" type="json">
 				<param name="includeProperties">result</param>
@@ -3754,7 +3807,7 @@
 				<param name="includeProperties">fields.*</param>
 			</result>
 		</action>
-		<action name="edit" class="com.facilio.bmsconsole.actions.FormAction" method="editForm">
+		<action name="edit" class="com.facilio.bmsconsole.actions.FormAction" method="updateForm">
 			<result name="success" type="json">
 				<param name="includeProperties">res</param>
 			</result>

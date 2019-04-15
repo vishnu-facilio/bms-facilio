@@ -1,18 +1,18 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
+import com.facilio.bmsconsole.context.ResourceContext;
+import com.facilio.bmsconsole.util.ResourceAPI;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.report.context.ReportContext;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-import com.facilio.bmsconsole.context.ResourceContext;
-import com.facilio.bmsconsole.util.ResourceAPI;
-import com.facilio.constants.FacilioConstants;
-import com.facilio.report.context.ReportContext;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
 public class FetchResourcesCommand implements Command {
 
@@ -23,7 +23,7 @@ public class FetchResourcesCommand implements Command {
 		JSONObject reportData = (JSONObject) context.get(FacilioConstants.ContextNames.REPORT_DATA);
 		ReportContext report = (ReportContext) context.get(FacilioConstants.ContextNames.REPORT);
 		if (reportData != null && !reportData.isEmpty()) {
-			List<Map<String, Object>> csvData = (List<Map<String, Object>>) reportData.get(FacilioConstants.ContextNames.DATA_KEY);
+			Collection<Map<String, Object>> csvData = (Collection<Map<String, Object>>) reportData.get(FacilioConstants.ContextNames.DATA_KEY);
 			JSONArray resourceAliases = (JSONArray) report.getFromReportState(FacilioConstants.ContextNames.REPORT_RESOURCE_ALIASES);
 			
 			if (resourceAliases != null && !resourceAliases.isEmpty()) {

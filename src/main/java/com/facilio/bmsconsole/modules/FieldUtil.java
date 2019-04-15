@@ -30,6 +30,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
@@ -298,6 +299,7 @@ public class FieldUtil {
 		nonModuleClasses.add(PreventiveMaintenance.class);
 		nonModuleClasses.add(SortField.class);
 		nonModuleClasses.add(FacilioView.class);
+		nonModuleClasses.add(FacilioForm.class);
 		return nonModuleClasses;
 	}
 
@@ -435,9 +437,10 @@ public class FieldUtil {
 																						;
 
 					if (field instanceof LookupFieldMeta && CollectionUtils.isNotEmpty(((LookupFieldMeta) field).getChildLookupFields())) {
-						for (LookupField lookupField : ((LookupFieldMeta) field).getChildLookupFields()) {
-							lookupBeanBuilder.fetchLookup(lookupField instanceof LookupFieldMeta ? (LookupFieldMeta) lookupField : new LookupFieldMeta(lookupField));
-						}
+						lookupBeanBuilder.fetchLookups(((LookupFieldMeta) field).getChildLookupFields());
+//						for (LookupField lookupField : ((LookupFieldMeta) field).getChildLookupFields()) {
+////							lookupBeanBuilder.fetchLookup(lookupField instanceof LookupFieldMeta ? (LookupFieldMeta) lookupField : new LookupFieldMeta(lookupField));
+//						}
 					}
 
 					if (isMap) {
@@ -627,14 +630,14 @@ public class FieldUtil {
 	}
 
 	private static final Set<String> SITE_ID_ALLOWED_MODULES = Collections.unmodifiableSet(
-			new HashSet<>(Arrays.asList("resource", "asset", "building", "floor", "space", "zone", "alarm", "ticket", "workorder", "workorderrequest", "task", "readingalarm", "inventory", "tenant", "labour","purchaserequest","purchaseorder","receivable","receipts")));
+			new HashSet<>(Arrays.asList("resource", "asset", "building", "floor", "space", "zone", "alarm", "ticket", "workorder", "workorderrequest", "task", "readingalarm", "inventory", "tenant", "labour")));
 
 	public static boolean isSiteIdFieldPresent(FacilioModule module) {
 		return SITE_ID_ALLOWED_MODULES.contains(module.getName()) || (module.getExtendModule() != null && module.getExtendModule().getName().equals("asset"));
 	}
 
 	private static final Set<String> SYSTEM_FIELDS_ALLOWED_MODULES = Collections.unmodifiableSet(
-			new HashSet<>(Arrays.asList("assetactivity"))
+			new HashSet<>(Arrays.asList(FacilioConstants.ContextNames.ASSET_ACTIVITY, FacilioConstants.ContextNames.WORKORDER_ACTIVITY, FacilioConstants.ContextNames.PURCHASE_ORDER, FacilioConstants.ContextNames.PURCHASE_REQUEST, FacilioConstants.ContextNames.RECEIVABLE, FacilioConstants.ContextNames.RECEIPTS, FacilioConstants.ContextNames.CONTRACTS))
 			);
 
 	public static boolean isSystemFieldsPresent (FacilioModule module) {

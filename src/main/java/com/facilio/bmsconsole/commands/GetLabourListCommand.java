@@ -1,36 +1,19 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.LabourContext;
+import com.facilio.bmsconsole.criteria.Criteria;
+import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.modules.*;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
-import com.facilio.accounts.util.AccountUtil;
-import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.LabourContext;
-import com.facilio.bmsconsole.context.LocationContext;
-import com.facilio.bmsconsole.context.StoreRoomContext;
-import com.facilio.bmsconsole.context.ToolContext;
-import com.facilio.bmsconsole.context.ToolTypesContext;
-import com.facilio.bmsconsole.context.VendorContext;
-import com.facilio.bmsconsole.criteria.Criteria;
-import com.facilio.bmsconsole.criteria.CriteriaAPI;
-import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.FacilioModule;
-import com.facilio.bmsconsole.modules.FieldFactory;
-import com.facilio.bmsconsole.modules.LookupField;
-import com.facilio.bmsconsole.modules.LookupFieldMeta;
-import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
-import com.facilio.bmsconsole.util.LocationAPI;
-import com.facilio.bmsconsole.util.StoreroomApi;
-import com.facilio.bmsconsole.util.ToolsApi;
-import com.facilio.constants.FacilioConstants;
-import com.facilio.fw.BeanFactory;
+import java.util.ArrayList;
+import java.util.List;
 
 public class GetLabourListCommand implements Command{
 	@Override
@@ -52,9 +35,9 @@ public class GetLabourListCommand implements Command{
 			fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
 		}
 	
-		List<LookupFieldMeta> lookUpFields = new ArrayList<LookupFieldMeta>();
-		lookUpFields.add(new LookupFieldMeta((LookupField) modBean.getField("user", moduleName)));
-		lookUpFields.add(new LookupFieldMeta((LookupField) modBean.getField("location", moduleName)));
+		List<LookupField>lookUpFields = new ArrayList<>();
+		lookUpFields.add((LookupField) modBean.getField("user", moduleName));
+		lookUpFields.add((LookupField) modBean.getField("location", moduleName));
 		SelectRecordsBuilder<LabourContext> builder = new SelectRecordsBuilder<LabourContext>()
 				.module(module)
 				.beanClass(FacilioConstants.ContextNames.getClassFromModuleName(moduleName))

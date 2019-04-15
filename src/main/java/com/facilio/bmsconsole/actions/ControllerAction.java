@@ -4,6 +4,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.agent.AgentKeys;
 import com.facilio.agent.AgentUtil;
 import com.facilio.agent.ControllerUtil;
+import com.facilio.agent.PublishType;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -70,9 +71,9 @@ public class ControllerAction extends FacilioAction {
 		this.agentContext = agentContext;
 	}
 
-	public String agentEdit() throws Exception {
+	public String editAgent() throws Exception {
 		FacilioContext context = new FacilioContext();
-		context.put(AgentKeys.AGENT, getAgentContext());
+		context.put(PublishType.agent.getValue(), getAgentContext());
 		Chain createAgentChain = TransactionChainFactory.editAgent();
 		if (createAgentChain.execute(context)) {
 			 setResult("msg", SUCCESS);
@@ -83,19 +84,19 @@ public class ControllerAction extends FacilioAction {
 		}
 	}
 
-	private JSONArray agentDetails;
-	public JSONArray getAgentDetails() {
-		return agentDetails;
+	private JSONArray agentDetail;
+	public JSONArray getAgentDetail() {
+		return agentDetail;
 	}
-	public void setAgentDetails(JSONArray agentDetails) {
-		this.agentDetails = agentDetails;
+	public void setAgentDetail(JSONArray agentDetail) {
+		this.agentDetail = agentDetail;
 	}
 
 	/**
 	 * This action is to list agent details.
 	 * @return SUCCESS if agent list obtained, ERROR if Account-null and NONE if no agent detail is found.
 	 */
-	public String agentDetails() {
+	public String getAgentDetails() {
 		if ((AccountUtil.getCurrentOrg() != null)) {
 			List<Map<String, Object>> agentDetailsList;
 			agentDetailsList = new AgentUtil(AccountUtil.getCurrentOrg().getOrgId(), AccountUtil.getCurrentOrg().getDomain()).agentDetails();
@@ -103,15 +104,15 @@ public class ControllerAction extends FacilioAction {
 			if (agentDetailsList != null) {
 				JSONArray agentDetails = new JSONArray();
 				agentDetails.addAll(agentDetailsList);
-				setAgentDetails(agentDetails);
-				setResult("agentDetails", getAgentDetails());
+				setAgentDetail(agentDetails);
+				setResult("agentDetails", getAgentDetail());
 				return SUCCESS;
 			}else {
-				setResult("agentDetails", getAgentDetails());
+				setResult("agentDetails", getAgentDetail());
 				return NONE;
 			}
 		} else {
-			setResult("agentDetails",getAgentDetails());
+			setResult("agentDetails",getAgentDetail());
 			return ERROR;
 		}
 	}
@@ -132,11 +133,10 @@ public class ControllerAction extends FacilioAction {
 	 */
 	public String fetchControllerDetails() throws Exception {
 
-		Long agentId = getAgentId();
 		List<Map<String, Object>> agentControllerList;
 		agentControllerList =    ControllerUtil.controllerDetailsAPI(getAgentId());
 
-		if (agentControllerList != null) {
+		if (!agentControllerList.isEmpty()) {
 			this.controllerDetails = new JSONArray();
 			this.controllerDetails.addAll(agentControllerList);
 			setResult("controllerDetails", getControllerDetails());
@@ -146,12 +146,57 @@ public class ControllerAction extends FacilioAction {
 		return ERROR;
 	}
 
+	public JSONArray getJsonArray() {
+		return jsonArray;
+	}
+
+	public void setJsonArray(JSONArray jsonArray) {
+		this.jsonArray = jsonArray;
+	}
+
+	private JSONArray jsonArray;
+	public String getAgentLog() throws Exception{
+		List<Map<String, Object>> agentLog;
+		agentLog = AgentUtil.getAgentLog(getAgentId());
+
+		if(!agentLog.isEmpty()){
+			this.jsonArray = new JSONArray();
+			this.jsonArray.addAll(agentLog);
+			setResult("agentLog", getJsonArray());
+			return SUCCESS;
+		}
+		setResult("agentLog", getJsonArray());
+		return ERROR;
+	}
+	private Integer publishType;
+
+	public Integer getPublishType() {
+		return publishType;
+	}
+
+	public void setPublishType(Integer publishType) {
+		this.publishType = publishType;
+	}
+
+	public String getAgentMetrics() throws Exception{
+		List<Map<String, Object>> agentMetrics;
+		agentMetrics = AgentUtil.getAgentMetrics(getAgentId(),getPublishType());
+		if(!agentMetrics.isEmpty()){
+			this.jsonArray = new JSONArray();
+			this.jsonArray.addAll(agentMetrics);
+			setResult("agentMetrics", getJsonArray());
+			return SUCCESS;
+		}
+		setResult("agentMetrics", getJsonArray());
+		return ERROR;
+	}
+
 	/**
 	 * this Action is to delete an Agent.
 	 * @return SUCCESS if deleted else ERROR.
 	 * @throws Exception
 	 */
-	public String agentDelete() throws Exception {
+	public String deleteAgent() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(AgentKeys.ID, getAgentId());
 		Chain deleteAgentChain = TransactionChainFactory.deleteAgent();

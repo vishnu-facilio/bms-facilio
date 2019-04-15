@@ -359,6 +359,12 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new ReportSpecialHandlingCommand(false));
 		return c;
 	}
+
+	public static Chain getPageChain() {
+		Chain c = getDefaultChain();
+		c.addCommand(new GetPageCommand());
+		return c;
+	}
 	
 	private static Chain getDefaultChain() {
 		return FacilioChain.getNonTransactionChain();
@@ -459,7 +465,7 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new GenerateCriteriaFromFilterCommand());
 		c.addCommand(new GenerateSearchConditionCommand());
-		c.addCommand(new GetToolsListCommand());
+		c.addCommand(new GetToolTypesListCommand());
 		return c;
 	}
 	
@@ -474,6 +480,7 @@ public class ReadOnlyChainFactory {
 	public static Chain getVendorsList() {
 		Chain c = getDefaultChain();
 		c.addCommand(SetTableNamesCommand.getForVendors());
+		c.addCommand(new LoadViewCommand());
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new GenerateCriteriaFromFilterCommand());
 		c.addCommand(new GenerateSearchConditionCommand());
@@ -492,6 +499,7 @@ public class ReadOnlyChainFactory {
 	public static Chain getItemList() {
 		Chain c = getDefaultChain();
 		c.addCommand(SetTableNamesCommand.getForItem());
+		c.addCommand(new LoadViewCommand());
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new GenerateCriteriaFromFilterCommand());
 		c.addCommand(new GenerateSearchConditionCommand());
@@ -526,10 +534,11 @@ public class ReadOnlyChainFactory {
 	public static Chain getStockedToolsList() {
 		Chain c = getDefaultChain();
 		c.addCommand(SetTableNamesCommand.getForTool());
+		c.addCommand(new LoadViewCommand());
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new GenerateCriteriaFromFilterCommand());
 		c.addCommand(new GenerateSearchConditionCommand());
-		c.addCommand(new GetStockedToolsListCommand());
+		c.addCommand(new GetToolsListCommand());
 		return c;
 	}
 	
@@ -709,8 +718,75 @@ public class ReadOnlyChainFactory {
 		Chain c = getDefaultChain();
 		c.addCommand(SetTableNamesCommand.getForReceivables());
 		c.addCommand(new LoadAllFieldsCommand());
+		c.addCommand(new LoadViewCommand());
+		c.addCommand(new GenerateCriteriaFromFilterCommand());
+		c.addCommand(new GenerateSearchConditionCommand());
 		c.addCommand(new GetReceivablesListCommand());
 		return c;
 	}
 	
+	public static Chain getPurchaseContractListChain() {
+		Chain chain = getDefaultChain();
+		chain.addCommand(SetTableNamesCommand.getForPurchaseContract());
+		chain.addCommand(new LoadAllFieldsCommand());
+		chain.addCommand(new LoadViewCommand());
+		chain.addCommand(new GenerateCriteriaFromFilterCommand());
+		chain.addCommand(new GenerateSearchConditionCommand());
+		chain.addCommand(new GetPurchaseContractListCommand());
+		return chain;
+	}
+
+	public static Chain getPurchaseContractDetailsChain() {
+		Chain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForPurchaseContract());
+		c.addCommand(new LoadContractLookUpCommand());
+		c.addCommand(new GenericGetModuleDataDetailCommand());
+		c.addCommand(new FetchPurchaseContractDetailsCommand());
+		return c;
+	}
+	public static Chain getLabourContractListChain() {
+		Chain chain = getDefaultChain();
+		chain.addCommand(SetTableNamesCommand.getForLabourContract());
+		chain.addCommand(new LoadAllFieldsCommand());
+		chain.addCommand(new LoadViewCommand());
+		chain.addCommand(new GenerateCriteriaFromFilterCommand());
+		chain.addCommand(new GenerateSearchConditionCommand());
+		chain.addCommand(new GetLabourContractListCommand());
+		return chain;
+	}
+	
+	public static Chain getLabourContractDetailsChain() {
+		Chain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForLabourContract());
+		c.addCommand(new LoadContractLookUpCommand());
+		c.addCommand(new GenericGetModuleDataDetailCommand());
+		c.addCommand(new FetchLabourContractDetailsCommand());
+		return c;
+	}
+
+	public static Chain getPoLineItemsSerialNumberList() {
+		Chain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForPoLineItemSerialNumber());
+		c.addCommand(new LoadViewCommand());
+		c.addCommand(new LoadAllFieldsCommand());
+		c.addCommand(new GenerateCriteriaFromFilterCommand());
+		c.addCommand(new GenerateSearchConditionCommand());
+		c.addCommand(new GenericGetModuleDataListCommand());
+		return c;
+	}
+
+	public static Chain getAssetModuleReportCardChain() {
+		Chain c = getDefaultChain();
+		c.addCommand(new ConstructAssetReportCardsCommand());
+		c.addCommand(new GetModuleReportCardsCommand());
+		return c;
+	}
+	
+	public static Chain fetchGatePassDetails() {
+		Chain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForGatePass());
+		c.addCommand(new GenericGetModuleDataDetailCommand());
+		c.addCommand(new GetGatePassDetailsCommand());
+		return c;
+	}
 }

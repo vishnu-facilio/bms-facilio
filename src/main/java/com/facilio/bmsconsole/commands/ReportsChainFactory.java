@@ -1,8 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
-import org.apache.commons.chain.Chain;
-
 import com.facilio.chain.FacilioChain;
+import org.apache.commons.chain.Chain;
 
 public class ReportsChainFactory {
 	
@@ -93,9 +92,36 @@ public class ReportsChainFactory {
 		return c;
 	}
 	
+	public static Chain getWoReportScheduleChain() {
+		Chain c = getDefaultChain();
+		c.addCommand(new AddTemplateCommand());
+		c.addCommand(new ScheduleWoReportCommand());
+		return c;
+	}
+	
 	public static Chain getScheduledReportsChain() {
 		Chain c = getDefaultChain();
 		c.addCommand(new ReportScheduledListCommand());
+		return c;
+	}
+	
+	public static Chain getWoScheduledReportsChain() {
+		Chain c = getDefaultChain();
+		c.addCommand(new getWoScheduledReportsChain());
+		return c;
+	}
+	
+	public static Chain updateWoScheduledReportsChain() {
+		Chain c = getDefaultChain();
+		c.addCommand(new AddTemplateCommand());
+		c.addCommand(new DeleteWoScheduledReportsCommand());
+		c.addCommand(new ScheduleWoReportCommand());
+		return c;
+	}
+	
+	public static Chain deleteWoScheduledReportsChain() {
+		Chain c = getDefaultChain();
+		c.addCommand(new DeleteWoScheduledReportsCommand());
 		return c;
 	}
 	

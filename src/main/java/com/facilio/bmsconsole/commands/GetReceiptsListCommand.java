@@ -1,29 +1,24 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-
+import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.InventoryType;
+import com.facilio.bmsconsole.context.ItemTypesContext;
+import com.facilio.bmsconsole.context.PoLineItemsSerialNumberContext;
+import com.facilio.bmsconsole.context.PurchaseOrderLineItemContext;
+import com.facilio.bmsconsole.context.ReceiptContext;
+import com.facilio.bmsconsole.context.ToolTypesContext;
+import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.criteria.NumberOperators;
+import com.facilio.bmsconsole.modules.*;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.InventoryType;
-import com.facilio.bmsconsole.context.ItemTypesContext;
-import com.facilio.bmsconsole.context.ReceiptContext;
-import com.facilio.bmsconsole.context.ToolTypesContext;
-import com.facilio.bmsconsole.criteria.CriteriaAPI;
-import com.facilio.bmsconsole.criteria.NumberOperators;
-import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.FacilioModule;
-import com.facilio.bmsconsole.modules.FieldFactory;
-import com.facilio.bmsconsole.modules.LookupField;
-import com.facilio.bmsconsole.modules.LookupFieldMeta;
-import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
-import com.facilio.constants.FacilioConstants;
-import com.facilio.fw.BeanFactory;
+import java.util.List;
+import java.util.Map;
 
 public class GetReceiptsListCommand implements Command {
 
@@ -47,11 +42,14 @@ public class GetReceiptsListCommand implements Command {
 					.select(fields)
 					.beanClass(ReceiptContext.class)
 					.andCondition(CriteriaAPI.getCondition("RECEIVABLE_ID", "receivableId", String.valueOf(receivableId), NumberOperators.EQUALS))
-			        .fetchLookup(new LookupFieldMeta((LookupField) fieldsAsMap.get("lineItem")))
+			        .fetchLookup((LookupField) fieldsAsMap.get("lineItem"))
 			        ;
 
 			List<ReceiptContext> list = builder.get();
 			fetchItemType(list);
+			for(ReceiptContext item : list) {
+				item.setNoOfSerialNumbers(getSerialNumberCount(item.getId(),item.getLineItem().getId()));
+			}
 			context.put(FacilioConstants.ContextNames.RECORD_LIST, list);
 		}
 		return false;
@@ -99,6 +97,27 @@ public class GetReceiptsListCommand implements Command {
 		}
 		
 		
+	}
+	
+	private int getSerialNumberCount (long receiptId,long lineItemId) throws Exception {
+		int count = -1;
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		String polineitemserialnomodulename = FacilioConstants.ContextNames.PO_LINE_ITEMS_SERIAL_NUMBERS;
+		List<FacilioField> fields = modBean.getAllFields(polineitemserialnomodulename);
+		Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
+		SelectRecordsBuilder<PoLineItemsSerialNumberContext> builder = new SelectRecordsBuilder<PoLineItemsSerialNumberContext>()
+				.moduleName(polineitemserialnomodulename)
+				.select(fields)
+				.beanClass(FacilioConstants.ContextNames.getClassFromModuleName(polineitemserialnomodulename))
+				.andCondition(CriteriaAPI.getCondition(fieldsAsMap.get("lineItem"), String.valueOf(lineItemId), NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition(fieldsAsMap.get("receiptId"), String.valueOf(receiptId), NumberOperators.EQUALS))
+		        ;
+		List<PoLineItemsSerialNumberContext> list = builder.get();
+		if(list!=null && !list.isEmpty()) {
+			count = list.size();
+		}
+		
+		return count;
 	}
 
 }

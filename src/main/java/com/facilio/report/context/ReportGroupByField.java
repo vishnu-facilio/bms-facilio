@@ -1,6 +1,6 @@
 package com.facilio.report.context;
 
-import com.facilio.bmsconsole.context.FormulaContext.AggregateOperator;
+import com.facilio.bmsconsole.modules.AggregateOperator;
 
 public class ReportGroupByField extends ReportFieldContext {
 	private String alias;

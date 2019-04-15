@@ -1,28 +1,19 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.apache.commons.collections4.CollectionUtils;
-
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.PurchaseRequestContext;
 import com.facilio.bmsconsole.context.PurchaseRequestLineItemContext;
-import com.facilio.bmsconsole.context.StoreRoomContext;
-import com.facilio.bmsconsole.context.VendorContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
-import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.FacilioModule;
-import com.facilio.bmsconsole.modules.FieldFactory;
-import com.facilio.bmsconsole.modules.LookupField;
-import com.facilio.bmsconsole.modules.LookupFieldMeta;
-import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
+import com.facilio.bmsconsole.modules.*;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 public class FetchPurchaseRequestDetailsCommand implements Command {
 
@@ -40,8 +31,8 @@ public class FetchPurchaseRequestDetailsCommand implements Command {
 					.select(fields)
 					.beanClass(FacilioConstants.ContextNames.getClassFromModuleName(lineItemModuleName))
 					.andCondition(CriteriaAPI.getCondition("PR_ID", "prid", String.valueOf(purchaseRequestContext.getId()), NumberOperators.EQUALS))
-					.fetchLookups(Arrays.asList(new LookupFieldMeta((LookupField) fieldsAsMap.get("itemType")), 
-					new LookupFieldMeta((LookupField) fieldsAsMap.get("toolType"))));
+					.fetchLookups(Arrays.asList((LookupField) fieldsAsMap.get("itemType"),
+					(LookupField) fieldsAsMap.get("toolType")));
 		
 			List<PurchaseRequestLineItemContext> list = builder.get();
 			purchaseRequestContext.setLineItems(list);

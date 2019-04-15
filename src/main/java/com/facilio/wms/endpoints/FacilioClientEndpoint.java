@@ -1,19 +1,10 @@
 package com.facilio.wms.endpoints;
 
+import com.facilio.wms.message.Message;
+
+import javax.websocket.*;
 import java.io.IOException;
 import java.net.URI;
-
-import javax.websocket.ClientEndpoint;
-import javax.websocket.CloseReason;
-import javax.websocket.ContainerProvider;
-import javax.websocket.EncodeException;
-import javax.websocket.OnClose;
-import javax.websocket.OnMessage;
-import javax.websocket.OnOpen;
-import javax.websocket.Session;
-import javax.websocket.WebSocketContainer;
-
-import com.facilio.wms.message.Message;
 
 /**
  *

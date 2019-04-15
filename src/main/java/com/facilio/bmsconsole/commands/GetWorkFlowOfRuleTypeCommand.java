@@ -1,19 +1,15 @@
 package com.facilio.bmsconsole.commands;
 
-import java.sql.Array;
-import java.util.ArrayList;
-
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.json.simple.JSONObject;
-
-import com.facilio.bmsconsole.context.AlarmContext;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.instrumentation.SizeOf;
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
+import org.json.simple.JSONObject;
+
+import java.util.ArrayList;
 
 public class GetWorkFlowOfRuleTypeCommand implements Command {
 

@@ -1,40 +1,9 @@
 package com.facilio.bmsconsole.util;
 
-import java.io.File;
-import java.io.Reader;
-import java.io.StringReader;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Logger;
-
-import org.apache.log4j.LogManager;
-import org.apache.poi.hssf.usermodel.HSSFDateUtil;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellType;
-import org.apache.poi.ss.usermodel.DataFormatter;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.ss.usermodel.WorkbookFactory;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.supercsv.io.CsvListReader;
-import org.supercsv.io.ICsvListReader;
-import org.supercsv.prefs.CsvPreference;
-
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.actions.ImportBuildingAction;
-import com.facilio.bmsconsole.actions.ImportFloorAction;
-import com.facilio.bmsconsole.actions.ImportProcessContext;
+import com.facilio.bmsconsole.actions.*;
 import com.facilio.bmsconsole.actions.ImportProcessContext.ImportStatus;
-import com.facilio.bmsconsole.actions.ImportSiteAction;
-import com.facilio.bmsconsole.actions.ImportSpaceAction;
 import com.facilio.bmsconsole.commands.ImportProcessLogContext;
 import com.facilio.bmsconsole.commands.data.ProcessXLS;
 import com.facilio.bmsconsole.context.BuildingContext;
@@ -42,18 +11,27 @@ import com.facilio.bmsconsole.context.FloorContext;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ResourceContext.ResourceType;
 import com.facilio.bmsconsole.context.SiteContext;
-import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.FacilioModule;
-import com.facilio.bmsconsole.modules.FieldFactory;
-import com.facilio.bmsconsole.modules.FieldType;
-import com.facilio.bmsconsole.modules.FieldUtil;
-import com.facilio.bmsconsole.modules.LookupField;
-import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.bmsconsole.modules.*;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
+import org.apache.log4j.LogManager;
+import org.apache.poi.hssf.usermodel.HSSFDateUtil;
+import org.apache.poi.ss.usermodel.*;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.supercsv.io.CsvListReader;
+import org.supercsv.io.ICsvListReader;
+import org.supercsv.prefs.CsvPreference;
+
+import java.io.File;
+import java.io.Reader;
+import java.io.StringReader;
+import java.util.*;
+import java.util.logging.Logger;
 
 public class ImportAPI {
 
@@ -594,18 +572,19 @@ public class ImportAPI {
 		
 		try {
 			ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			FacilioModule facilioModule = bean.getModule(module);
-			List<FacilioField> fieldsList= bean.getAllFields(module);
+			FacilioModule facilioModule =  bean.getModule(module);
 
-			for(FacilioField field : fieldsList)
-			{
-				if(!ImportAPI.isRemovableFieldOnImport(field.getName()))
-				{
-					fields.add(field.getName());
-				}
-			}
 			if(facilioModule.getName().equals(FacilioConstants.ContextNames.ASSET) || (facilioModule.getExtendModule() != null && facilioModule.getExtendModule().getName().equals(FacilioConstants.ContextNames.ASSET))) {
-				
+					List<FacilioField> fieldsList= bean.getAllFields(module);
+					LOGGER.severe(fieldsList.toString());
+					for(FacilioField field : fieldsList)
+					{
+						if(!ImportAPI.isRemovableFieldOnImport(field.getName()))
+						{
+							LOGGER.severe(field.getName());
+							fields.add(field.getName());
+						}
+					}
 				fields.remove("space");
 				fields.remove("localId");
 				fields.remove("resourceType");
@@ -622,6 +601,26 @@ public class ImportAPI {
 				fields.add("subspace2");
 				fields.add("subspace3");
 			}
+			}
+			else if(facilioModule.getName().equals(FacilioConstants.ContextNames.TOOL)
+					|| facilioModule.getName().equals(FacilioConstants.ContextNames.PURCHASED_TOOL)
+					|| facilioModule.getName().equals(FacilioConstants.ContextNames.TOOL_TYPES)
+					|| facilioModule.getName().equals(FacilioConstants.ContextNames.PURCHASED_ITEM)
+					|| facilioModule.getName().equals(FacilioConstants.ContextNames.ITEM)
+					|| facilioModule.getName().equals(FacilioConstants.ContextNames.ITEM_TYPES)		
+					) {
+//				for(FacilioField field : fieldsList) {
+//					if(field.getDataType() == FieldType.LOOKUP.getTypeAsInt() && !ImportAPI.isRemovableFieldOnImport(field.getName())) {
+//						LookupField lookupField = (LookupField) field;
+//						fields.remove(field.getName());
+//						List<FacilioField> lookupModuleFields = bean.getAllFields(lookupField.getLookupModule().getName());
+//						for(FacilioField lkField : lookupModuleFields) {
+//							fields.add(lkField.getName());
+//						}
+//					}
+//				}
+				
+				fields.addAll(ImportFieldFactory.getImportFieldNames(facilioModule.getName()));
 			}
 		}
 		catch(Exception e) {
@@ -660,6 +659,8 @@ public class ImportAPI {
 		}
 		return fieldMap;
 	}
+	
+	
 	public static class  ImportProcessConstants{
 		public static final String IMPORT_PROCESS_CONTEXT = "importprocessContext";
 		public static final String READINGS_LIST = "readingsList";
@@ -702,6 +703,7 @@ public class ImportAPI {
 		public static final String NULL_COUNT = "nullCount";
 		public static final String PARSING_ERROR="parsingError";
 		public static final String PARSING_ERROR_MESSAGE="parsingErrorMessage";
+		public static final String MODULE_STATIC_FIELDS = "moduleStaticFields";
 	}
 	
 	

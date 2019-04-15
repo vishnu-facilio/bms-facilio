@@ -6,24 +6,30 @@ import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
+import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.rule.ActionContext;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.constants.FacilioConstants;
+import org.apache.commons.chain.Chain;
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
+
+import java.util.List;
 
 public class AddValidationRulesCommand implements Command {
 
 	@Override
 	public boolean execute(Context context) throws Exception {
-		List<List<ReadingRuleContext>> readingRules = (List<List<ReadingRuleContext>>) context.get(FacilioConstants.ContextNames.READING_RULES_LIST); 
+		List<List<ReadingRuleContext>> readingRules = (List<List<ReadingRuleContext>>) context.get(FacilioConstants.ContextNames.READING_RULES_LIST);
 		List<List<List<ActionContext>>> actionsList = (List<List<List<ActionContext>>>) context.get(FacilioConstants.ContextNames.ACTIONS_LIST);
 		Long resourceID = (Long) context.get(FacilioConstants.ContextNames.PARENT_ID);
 		List<Long> delReadingRulesIds = (List<Long>) context.get(FacilioConstants.ContextNames.DEL_READING_RULE_IDS);
-
+		
 		WorkflowRuleAPI.deleteWorkFlowRules(delReadingRulesIds);
 		
-		if (readingRules == null || readingRules.isEmpty() || actionsList == null || actionsList.isEmpty()) {
+		if (readingRules == null || readingRules.isEmpty()) {
 			return false; 
 		}
 		

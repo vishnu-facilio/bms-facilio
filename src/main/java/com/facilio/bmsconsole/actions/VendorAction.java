@@ -1,22 +1,20 @@
 package com.facilio.bmsconsole.actions;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-import org.apache.commons.chain.Chain;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.LocationContext;
-import com.facilio.bmsconsole.context.StoreRoomContext;
 import com.facilio.bmsconsole.context.VendorContext;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import org.apache.commons.chain.Chain;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class VendorAction extends FacilioAction{
 	private static final long serialVersionUID = 1L;
@@ -79,8 +77,11 @@ public class VendorAction extends FacilioAction{
 			location.setName(vendor.getName()+"_Location");
 			context.put(FacilioConstants.ContextNames.RECORD, location);
 			if (location.getId() > 0) {
+				context.put(FacilioConstants.ContextNames.RECORD_ID, location.getId());
 				context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, java.util.Collections.singletonList(location.getId()));
-				vendor.setAddress(null);
+				Chain editLocation = FacilioChainFactory.updateLocationChain();
+				editLocation.execute(context);
+				vendor.setAddress(location);
 			}
 			else {
 				Chain addLocation = FacilioChainFactory.addLocationChain();

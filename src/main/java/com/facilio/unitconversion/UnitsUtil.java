@@ -1,12 +1,5 @@
 package com.facilio.unitconversion;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.json.simple.JSONObject;
-
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.OrgUnitsContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
@@ -18,6 +11,12 @@ import com.facilio.bmsconsole.modules.NumberField;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
 import com.udojava.evalex.Expression;
+import org.json.simple.JSONObject;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class UnitsUtil {
 
@@ -77,12 +76,15 @@ public class UnitsUtil {
 	public static Object convertToDisplayUnit(Object value,NumberField numberField) throws Exception {
 
 		if(numberField.getMetric() > 0 && value != null) {
+			if(numberField.getMetric() == Metric.CURRENCY.getMetricId()) {
+				return Double.parseDouble(value.toString());
+			}
 			if(numberField.getUnitId() > 0) {
 				Unit siUnit = Unit.valueOf(Metric.valueOf(numberField.getMetric()).getSiUnitId());
-				value = UnitsUtil.convert(value, siUnit.getUnitId(), numberField.getUnitId());
+				value = convert(value, siUnit.getUnitId(), numberField.getUnitId());
 			}
 			else {
-				value = UnitsUtil.convertToOrgDisplayUnitFromSi(value, numberField.getMetric());
+				value = convertToOrgDisplayUnitFromSi(value, numberField.getMetric());
 			}
 			return Double.parseDouble(value.toString());
 		}

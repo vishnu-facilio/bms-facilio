@@ -1,26 +1,20 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
+import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.ReceiptContext;
+import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.modules.*;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.PurchaseOrderContext;
-import com.facilio.bmsconsole.context.ReceiptContext;
-import com.facilio.bmsconsole.criteria.CriteriaAPI;
-import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.FacilioModule;
-import com.facilio.bmsconsole.modules.InsertRecordBuilder;
-import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
-import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
-import com.facilio.constants.FacilioConstants;
-import com.facilio.fw.BeanFactory;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class AddOrUpdateReceiptCommand implements Command {
 
@@ -51,7 +45,7 @@ public class AddOrUpdateReceiptCommand implements Command {
 				}
 			}
 			updateRecords(updateReceipts, module, fields);
-			saveRecords(saveReceipts, module, fields);
+			saveRecords(true, saveReceipts, module, fields);
 			context.put(FacilioConstants.ContextNames.RECEIPTS, saveReceipts.size() > 0 ? saveReceipts : updateReceipts);
 
 		}
@@ -61,10 +55,13 @@ public class AddOrUpdateReceiptCommand implements Command {
 		return false;
 	}
 
-	private void saveRecords(List<ReceiptContext> receiptContext, FacilioModule module, List<FacilioField> fields) throws Exception {
+	private void saveRecords(boolean isLocalIdNeeded, List<ReceiptContext> receiptContext, FacilioModule module, List<FacilioField> fields) throws Exception {
 		InsertRecordBuilder insertRecordBuilder = new InsertRecordBuilder<>()
 				.module(module)
 				.fields(fields);
+		if(isLocalIdNeeded) {
+			insertRecordBuilder.withLocalId();
+		}
 		insertRecordBuilder.addRecords(receiptContext);
 		insertRecordBuilder.save();
 	}

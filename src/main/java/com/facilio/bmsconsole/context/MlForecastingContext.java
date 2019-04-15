@@ -1,28 +1,28 @@
 package com.facilio.bmsconsole.context;
 
-import java.util.List;
-
-import org.json.JSONArray;
-
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
+import org.json.JSONArray;
+
+import java.util.List;
 
 public class MlForecastingContext extends ModuleBaseWithCustomFields 
 {
 	private static final long serialVersionUID = 1L;
 	
-	private  long assetid;
-	private long criteriaId;
-	private long sourceModuleId;
-	private long predictedLogFieldId;
-	private long predictedFiedlId;
-	private int predictionInterval;
-	private long lastExecutionTime;
-	private int dataInterval;
-	private int modelSamplingInterval;
+	private long assetid = -1;
+	private long criteriaId = -1;
+	private long sourceModuleId = -1;
+	private long predictedLogFieldId = -1;
+	private long predictedFiedlId = -1;
+	private int predictionInterval = -1;
+	private long lastExecutionTime = -1;
+	private int dataInterval = -1;
+	private int modelSamplingInterval = -1;
+	private long ruleId = -1;
 
-	public long getAssetid() 
+	public long getAssetid()
 	{
 		return assetid;
 	}
@@ -33,7 +33,7 @@ public class MlForecastingContext extends ModuleBaseWithCustomFields
 	}
 	
 	
-	public long getCriteriaid() 
+	public long getCriteriaid()
 	{
 		return criteriaId;
 	}
@@ -103,6 +103,13 @@ public class MlForecastingContext extends ModuleBaseWithCustomFields
 		this.modelSamplingInterval = modelsamplinginterval;
 	}
 
+	public long getRuleId() {
+		return ruleId;
+	}
+
+	public void setRuleId(long ruleId) {
+		this.ruleId = ruleId;
+	}
 	
 	
 	private List<FacilioField> fields;

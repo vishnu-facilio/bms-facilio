@@ -1,17 +1,16 @@
 package com.facilio.bmsconsole.commands;
 
-import java.io.File;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.logging.Logger;
-
+import com.facilio.aws.util.AwsUtil;
+import com.facilio.sql.DBUtil;
+import com.facilio.sql.SQLScriptRunner;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
 
-import com.facilio.aws.util.AwsUtil;
-import com.facilio.sql.DBUtil;
-import com.facilio.sql.SQLScriptRunner;
+import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.logging.Logger;
 
 public class AddDefaultModulesCommand implements Command {
 	private static org.apache.log4j.Logger log = LogManager.getLogger(AddDefaultModulesCommand.class.getName());

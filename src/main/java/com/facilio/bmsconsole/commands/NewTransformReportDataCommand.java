@@ -1,15 +1,16 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.HashMap;
-import java.util.Map;
-
+import com.facilio.constants.FacilioConstants;
+import com.facilio.report.context.ReportContext;
+import com.facilio.workflows.util.WorkflowUtil;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
-import com.facilio.constants.FacilioConstants;
-import com.facilio.report.context.ReportContext;
-import com.facilio.workflows.util.WorkflowUtil;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 public class NewTransformReportDataCommand implements Command {
 
@@ -21,7 +22,7 @@ public class NewTransformReportDataCommand implements Command {
 		if (report != null && report.getTransformWorkflow() != null && reportData != null && !reportData.isEmpty()) {
 			String wfXmlString = WorkflowUtil.getXmlStringFromWorkflow(report.getTransformWorkflow());
 			Map<String,Object> params = new HashMap<>();
-			params.put(FacilioConstants.ContextNames.DATA_KEY, reportData.get(FacilioConstants.ContextNames.DATA_KEY));
+			params.put(FacilioConstants.ContextNames.DATA_KEY, new ArrayList<>((Collection<Map<String, Object>>) reportData.get(FacilioConstants.ContextNames.DATA_KEY)));
 			params.put(FacilioConstants.ContextNames.AGGR_KEY, reportData.get(FacilioConstants.ContextNames.AGGR_KEY));
 			
 			Map<String, Object> transformedData =  WorkflowUtil.getExpressionResultMap(wfXmlString, params);

@@ -1,13 +1,5 @@
 package com.facilio.workflows.functions;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.lang3.StringUtils;
-
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.BuildingContext;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
@@ -18,6 +10,9 @@ import com.facilio.bmsconsole.reports.ReportsUtil;
 import com.facilio.bmsconsole.util.DashboardUtil;
 import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.workflows.exceptions.FunctionParamException;
+import org.apache.commons.lang3.StringUtils;
+
+import java.util.*;
 
 public enum FacilioReadingFunctions implements FacilioWorkflowFunctionInterface  {
 

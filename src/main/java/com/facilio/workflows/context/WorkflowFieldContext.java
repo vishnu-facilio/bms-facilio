@@ -1,15 +1,15 @@
 package com.facilio.workflows.context;
 
+import com.facilio.bmsconsole.modules.AggregateOperator;
 import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.workflows.util.ExpressionAggregateOperator;
 
 public class WorkflowFieldContext{
 
-	private ExpressionAggregateOperator aggregation;
-	public ExpressionAggregateOperator getAggregationEnum() {
+	private AggregateOperator aggregation;
+	public AggregateOperator getAggregationEnum() {
 		return aggregation;
 	}
-	public void setAggregation(ExpressionAggregateOperator aggregation) {
+	public void setAggregation(AggregateOperator aggregation) {
 		this.aggregation = aggregation;
 	}
 	public int getAggregation() {
@@ -19,7 +19,7 @@ public class WorkflowFieldContext{
 		return -1;
 	}
 	public void setAggregation(int aggregation) {
-		this.aggregation = ExpressionAggregateOperator.valueOf(aggregation);
+		this.aggregation = AggregateOperator.getAggregateOperator(aggregation);
 	}
 
 	private long resourceId = -1;

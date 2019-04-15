@@ -1,16 +1,15 @@
 package com.facilio.bmsconsole.modules;
 
+import com.facilio.bmsconsole.workflow.rule.ActionContext;
+import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.apache.commons.lang3.StringUtils;
+
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.apache.commons.lang3.StringUtils;
-
-import com.facilio.bmsconsole.workflow.rule.ActionContext;
-import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class FacilioField implements Serializable {
 	
@@ -418,13 +417,17 @@ public class FacilioField implements Serializable {
 		GEO_LOCATION(31, "Geo Location"),
 		PURCHASEDITEMT(32,"purchasedItem"),
 		IMAGE(33, "image"),
-		PURCHASEDTOOL(32,"purchasedTool"),
+		PURCHASEDTOOL(34,"purchasedTool"),
         ASSETMULTICHOOSER(35,"asset-multi-chooser"),
         SPACEMULTICHOOSER(36,"space-multi-chooser"),
 		LOGO(37,"logo"),
 		BUILDINGCHOOSER(38, "building-chooser"),
 		LINEITEMS(39, "line-items"),
-		RECEIPT_LINE_ITEMS(40, "receipt-line-items")
+		RECEIPT_LINE_ITEMS(40, "receipt-line-items"),
+		QR(41, "qr"),
+		SADDRESS(42, "address"),
+		LABOUR_LINE_ITEMS(43, "labour-line-items"),
+        SITEMULTICHOOSER(44,"site-multi-chooser")
 		;
 		
 		private int intVal;

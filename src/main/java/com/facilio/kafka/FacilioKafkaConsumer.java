@@ -1,10 +1,8 @@
 package com.facilio.kafka;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Properties;
-
+import com.facilio.aws.util.AwsUtil;
+import com.facilio.procon.consumer.FacilioConsumer;
+import com.facilio.procon.message.FacilioRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
@@ -16,14 +14,17 @@ import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
-import com.facilio.aws.util.AwsUtil;
-import com.facilio.procon.consumer.FacilioConsumer;
-import com.facilio.procon.message.FacilioRecord;
+import java.io.StringReader;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Properties;
 
 public class FacilioKafkaConsumer implements FacilioConsumer {
 
     private KafkaConsumer<String, String> consumer;
     private TopicPartition topicPartition = null;
+    private JSONParser parser = new JSONParser();
     private static final Logger LOGGER = LogManager.getLogger(FacilioKafkaConsumer.class.getName());
 
     public FacilioKafkaConsumer(String client, String consumerGroup, String topic) {
@@ -55,8 +56,8 @@ public class FacilioKafkaConsumer implements FacilioConsumer {
         try {
             ConsumerRecords<String, String> records = consumer.poll(timeout);
             for (ConsumerRecord<String, String> record : records) {
-                JSONParser parser = new JSONParser();
-                JSONObject object = (JSONObject) parser.parse(record.value());
+                StringReader reader = new StringReader(record.value());
+                JSONObject object = (JSONObject) parser.parse(reader);
                 JSONObject data = (JSONObject) parser.parse((String)object.get("data"));
                 FacilioRecord facilioRecord = new FacilioRecord(record.key(), data);
                 facilioRecord.setId(String.valueOf(record.offset()));

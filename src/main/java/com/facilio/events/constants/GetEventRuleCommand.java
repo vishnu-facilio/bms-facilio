@@ -1,10 +1,9 @@
 package com.facilio.events.constants;
 
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-
 import com.facilio.constants.FacilioConstants;
 import com.facilio.events.util.EventRulesAPI;
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
 
 public class GetEventRuleCommand implements Command {
 

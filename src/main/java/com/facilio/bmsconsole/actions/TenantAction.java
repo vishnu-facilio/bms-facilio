@@ -1,34 +1,28 @@
 package com.facilio.bmsconsole.actions;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.chain.Chain;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-
-import com.amazonaws.services.cloudfront.model.EventType;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
-import com.facilio.bmsconsole.context.AssetContext;
-import com.facilio.bmsconsole.context.FileContext;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.ZoneContext;
 import com.facilio.bmsconsole.tenant.RateCardContext;
 import com.facilio.bmsconsole.tenant.TenantContext;
 import com.facilio.bmsconsole.tenant.TenantUserContext;
-import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.TenantsAPI;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.pdf.PdfUtil;
-import com.opensymphony.xwork2.ActionSupport;
+import org.apache.commons.chain.Chain;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class TenantAction extends FacilioAction {
 	
@@ -61,7 +55,16 @@ public class TenantAction extends FacilioAction {
 	public void setId(long id) {
 		this.id = id;
 	}
-	
+    
+	private int status;
+
+	public int getStatus() {
+		return status;
+	}
+	public void setStatus(int status) {
+		this.status = status;
+	}
+
 	private String search;
 	public void setSearch(String search) {
 		this.search = search;
@@ -384,7 +387,7 @@ private Map<String, Double> readingData;
 			context.put(FacilioConstants.ContextNames.EVENT_TYPE, com.facilio.bmsconsole.workflow.rule.EventType.CREATE);
 			context.put(FacilioConstants.ContextNames.SET_LOCAL_MODULE_ID, true);
 			context.put(FacilioConstants.ContextNames.RECORD, tenant);
-			
+			context.put(FacilioConstants.ContextNames.SITE_ID, tenant.getSiteId());
 			context.put(FacilioConstants.ContextNames.IS_TENANT_ZONE, tenantZone);
 			context.put(FacilioConstants.ContextNames.ZONE, zone);
 			context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, spaceId);
@@ -417,6 +420,7 @@ private Map<String, Double> readingData;
 			context.put(FacilioConstants.ContextNames.EVENT_TYPE, com.facilio.bmsconsole.workflow.rule.EventType.CREATE);
 			context.put(FacilioConstants.ContextNames.SET_LOCAL_MODULE_ID, true);
 			context.put(FacilioConstants.ContextNames.RECORD, tenant);
+			context.put(FacilioConstants.ContextNames.SITE_ID, tenant.getSiteId());
 			context.put(FacilioConstants.ContextNames.IS_TENANT_ZONE, tenantZone);
 			context.put(FacilioConstants.ContextNames.ZONE, zone);
 			context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, spaceId);
@@ -450,6 +454,21 @@ private Map<String, Double> readingData;
 			return ERROR;
 		}
 	}
+	public String toggleStatus() throws Exception {
+		try {
+			FacilioContext context = new FacilioContext();
+			context.put(FacilioConstants.ContextNames.RECORD_ID, tenantId);
+			context.put(FacilioConstants.ContextNames.TENANT_STATUS, status);
+			Chain updateTnantStatusChain = FacilioChainFactory.toggleStatusChain();
+			updateTnantStatusChain.execute(context);
+			setResult("rowsUpdated", context.get(FacilioConstants.ContextNames.ROWS_UPDATED));
+			return SUCCESS;
+		}
+		catch (Exception e) {
+			setError("error",e.getMessage());
+			return ERROR;
+		}
+	}
 	public String tenantCount () throws Exception {
 		return fetchAllTenants();
 	}
@@ -465,6 +484,12 @@ private Map<String, Double> readingData;
 		return SUCCESS;
 	}
 	
+	public String getTenantForAssetId() throws Exception {
+		TenantContext tenantContext = TenantsAPI.getTenantForAsset(assetId);
+		setResult("tenant", tenantContext);
+		return SUCCESS;
+
+	}
 	public String deleteTenant() {
         try {
 			FacilioContext context = new FacilioContext();
@@ -738,5 +763,14 @@ private Map<String, Double> readingData;
 	public void setBillDetails(Map<String, Object> billDetails) {
 		this.billDetails = billDetails;
 	}
+	
+	private long assetId;
+	public long getAssetId() {
+		return assetId;
+	}
+	public void setAssetId(long assetId) {
+		this.assetId = assetId;
+	}
+	
 	
 }

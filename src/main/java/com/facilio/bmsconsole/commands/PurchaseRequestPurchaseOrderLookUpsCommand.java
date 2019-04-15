@@ -1,20 +1,15 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-
+import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.modules.*;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
-import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.FacilioModule;
-import com.facilio.bmsconsole.modules.FieldFactory;
-import com.facilio.bmsconsole.modules.LookupField;
-import com.facilio.bmsconsole.modules.LookupFieldMeta;
-import com.facilio.constants.FacilioConstants;
-import com.facilio.fw.BeanFactory;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 public class PurchaseRequestPurchaseOrderLookUpsCommand implements Command  {
 
@@ -32,8 +27,10 @@ public class PurchaseRequestPurchaseOrderLookUpsCommand implements Command  {
 		}
 		Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
 		
-		List<LookupFieldMeta> fetchLookup = Arrays.asList(new LookupFieldMeta((LookupField) fieldsAsMap.get("vendor")), 
-				new LookupFieldMeta((LookupField) fieldsAsMap.get("storeRoom")),new LookupFieldMeta((LookupField) fieldsAsMap.get("shipToAddress")),new LookupFieldMeta((LookupField) fieldsAsMap.get("billToAddress")));
+		List<LookupField>fetchLookup = Arrays.asList((LookupField) fieldsAsMap.get("vendor"),
+													(LookupField) fieldsAsMap.get("storeRoom"),
+													(LookupField) fieldsAsMap.get("shipToAddress"),
+													(LookupField) fieldsAsMap.get("billToAddress"));
 		context.put(FacilioConstants.ContextNames.LOOKUP_FIELD_META_LIST,fetchLookup);
 		return false;
 	}

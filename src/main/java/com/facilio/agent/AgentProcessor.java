@@ -19,8 +19,6 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.kinesis.ErrorDataProducer;
 import com.facilio.sql.GenericUpdateRecordBuilder;
 import com.facilio.util.AckUtil;
-import org.apache.kafka.clients.producer.KafkaProducer;
-import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -29,7 +27,10 @@ import org.json.simple.parser.JSONParser;
 
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class AgentProcessor implements IRecordProcessor {
     private static final Logger LOGGER = LogManager.getLogger(AgentProcessor.class.getName());
@@ -45,7 +46,6 @@ public class AgentProcessor implements IRecordProcessor {
     private FacilioModule deviceDetailsModule;
     private HashMap<String, HashMap<String, Long>> deviceMessageTime = new HashMap<>();
     private AgentUtil agentUtil;
-    private DevicePointsUtil devicePointsUtil;
     private AckUtil ackUtil;
 
     public AgentProcessor(long orgId, String orgDomainName)  {
@@ -53,8 +53,8 @@ public class AgentProcessor implements IRecordProcessor {
         this.orgDomainName = orgDomainName;
         this.errorStream = orgDomainName + "-error";
         agentUtil = new AgentUtil(orgId, orgDomainName);
-        agentUtil.populateAgentContextMap();
-        devicePointsUtil = new DevicePointsUtil();
+        agentUtil.populateAgentContextMap(null);
+        DevicePointsUtil devicePointsUtil = new DevicePointsUtil();
         ackUtil = new AckUtil();
     }
 
@@ -125,14 +125,14 @@ public class AgentProcessor implements IRecordProcessor {
                     long deviceLastMessageTime = dataTypeLastMessageTime.getOrDefault(dataType, 0L);
                     int i = 0;
                     if(deviceLastMessageTime != lastMessageReceivedTime) {
-                        switch (dataType) {
-                            case AgentKeys.AGENT:
+                        switch (PublishType.valueOf(dataType)) {
+                            case agent:
                                 // i =  agentUtil.processAgent( payLoad);
                                 break;
-                            case AgentKeys.DEVICE_POINTS:
+                            case devicepoints:
                                 // devicePointsUtil.processDevicePoints(payLoad, orgId, deviceMap);
                                 break;
-                            case AgentKeys.ACK:
+                            case ack:
                                  ackUtil.processAck(payLoad, orgId);
                                 break;
 
@@ -143,7 +143,7 @@ public class AgentProcessor implements IRecordProcessor {
                         LOGGER.info("Duplicate message for device " + deviceId + " and type " + dataType);
                     }
                     if(i == 0 ) {
-                        GenericUpdateRecordBuilder genericUpdateRecordBuilder = new GenericUpdateRecordBuilder().table(AgentKeys.TABLE_NAME).fields(FieldFactory.getAgentDataFields()).andCustomWhere( AgentKeys.NAME+"= '"+payLoad.get(AgentKeys.AGENT)+"'");
+                        GenericUpdateRecordBuilder genericUpdateRecordBuilder = new GenericUpdateRecordBuilder().table(AgentKeys.AGENT_TABLE).fields(FieldFactory.getAgentDataFields()).andCustomWhere( AgentKeys.NAME+"= '"+payLoad.get(PublishType.agent.getValue())+"'");
                         Map<String,Object> toUpdate = new HashMap<>();
                         toUpdate.put(AgentKeys.LAST_DATA_RECEIVED_TIME,System.currentTimeMillis());
                         genericUpdateRecordBuilder.update(toUpdate);

@@ -1,11 +1,11 @@
 package com.facilio.sql;
 
+import com.facilio.bmsconsole.modules.FacilioField;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import com.facilio.bmsconsole.modules.FacilioField;
 
 public abstract class DBUpdateRecordBuilder {
 	

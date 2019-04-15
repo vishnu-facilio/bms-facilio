@@ -1,24 +1,18 @@
 package com.facilio.bmsconsole.actions;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.chain.Chain;
-import org.apache.struts2.json.JSONException;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.context.PortalInfoContext;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.opensymphony.xwork2.ActionSupport;
-
 import net.minidev.json.parser.JSONParser;
+import org.apache.commons.chain.Chain;
+import org.apache.struts2.json.JSONException;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+
+import java.io.File;
+import java.util.*;
 
 
 public class PortalInfoAction extends ActionSupport 

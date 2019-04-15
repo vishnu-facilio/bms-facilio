@@ -1,19 +1,13 @@
 package com.facilio.accounts.dto;
 
-import java.io.Serializable;
-import java.util.List;
-
+import com.facilio.bmsconsole.criteria.*;
+import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.license.LicenseContext.FacilioLicense;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.json.annotations.JSON;
 
-import com.facilio.bmsconsole.criteria.BooleanOperators;
-import com.facilio.bmsconsole.criteria.BuildingOperator;
-import com.facilio.bmsconsole.criteria.Condition;
-import com.facilio.bmsconsole.criteria.Criteria;
-import com.facilio.bmsconsole.criteria.CriteriaAPI;
-import com.facilio.bmsconsole.criteria.PickListOperators;
-import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.license.LicenseContext.FacilioLicense;
+import java.io.Serializable;
+import java.util.List;
 
 public class User implements Serializable {
 	

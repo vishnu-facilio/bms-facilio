@@ -1,12 +1,5 @@
 package com.facilio.bmsconsole.modules;
 
-import java.sql.Connection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
-import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
@@ -18,6 +11,12 @@ import com.facilio.sql.GenericDeleteRecordBuilder;
 import com.facilio.sql.GenericDeleteRecordBuilder.GenericJoinBuilder;
 import com.facilio.sql.JoinBuilderIfc;
 import com.facilio.sql.WhereBuilder;
+
+import java.sql.Connection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class DeleteRecordBuilder<E extends ModuleBaseWithCustomFields> implements DeleteBuilderIfc<E> {
 	private GenericDeleteRecordBuilder deleteBuilder = new GenericDeleteRecordBuilder();

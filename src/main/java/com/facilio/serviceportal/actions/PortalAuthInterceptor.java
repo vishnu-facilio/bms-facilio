@@ -1,6 +1,7 @@
 package com.facilio.serviceportal.actions;
 
 import java.util.HashMap;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.servlet.ServletContext;
@@ -15,6 +16,7 @@ import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.fw.auth.CognitoUtil;
 import com.facilio.util.AuthenticationUtil;
+import com.opensymphony.xwork2.Action;
 import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.interceptor.AbstractInterceptor;
 
@@ -52,10 +54,15 @@ public class PortalAuthInterceptor extends AbstractInterceptor {
 	public String intercept(ActionInvocation arg0) throws Exception {
 		try {
 			intercept0();
+		} catch (Exception e) {
+			logger.log(Level.SEVERE, "error in portal auth interceptor", e);
+			return Action.LOGIN;
+		}
+		try {
 			return arg0.invoke();
 		} catch (Exception e) {
-			log.info("Exception occurred ", e);
-			return "login";
+			logger.log(Level.SEVERE, "error thrown from action class", e);
+			throw e;
 		}
 	}
 

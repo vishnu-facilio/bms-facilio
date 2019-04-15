@@ -10,7 +10,6 @@ import org.apache.commons.chain.Chain;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.apache.tiles.request.collection.CollectionUtil;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
@@ -24,6 +23,7 @@ import com.facilio.bmsconsole.criteria.CommonOperators;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.DateOperators;
 import com.facilio.bmsconsole.criteria.PickListOperators;
+import com.facilio.bmsconsole.modules.AggregateOperator;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
@@ -42,7 +42,6 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.tasker.job.FacilioJob;
 import com.facilio.tasker.job.JobContext;
 import com.facilio.workflows.context.WorkflowFieldContext;
-import com.facilio.workflows.util.ExpressionAggregateOperator;
 import com.facilio.workflows.util.WorkflowUtil;
 
 public class HistoricalRunForReadingRule extends FacilioJob {
@@ -196,7 +195,7 @@ public class HistoricalRunForReadingRule extends FacilioJob {
 	private void getOtherRDMs(long resourceId, long ttime, Map<String, List<ReadingDataMeta>> rdmMap, Map<String, ReadingDataMeta> rdmCache, Map<String, Integer> lastItr, List<WorkflowFieldContext> fields) {
 		if (rdmMap != null && !rdmMap.isEmpty() && fields != null && !fields.isEmpty()) {
 			for (WorkflowFieldContext field : fields) {
-				if (field.getAggregationEnum() == ExpressionAggregateOperator.LAST_VALUE) {
+				if (field.getAggregationEnum() == AggregateOperator.SpecialAggregateOperator.LAST_VALUE) {
 					long parentId = field.getResourceId() == -1 ? resourceId : field.getResourceId();
 					String rdmKey = ReadingsAPI.getRDMKey(parentId, field.getField());
 					List<ReadingDataMeta> rdmList = rdmMap.get(ReadingsAPI.getRDMKey(parentId, field.getField()));
@@ -243,7 +242,7 @@ public class HistoricalRunForReadingRule extends FacilioJob {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		Map<String, List<ReadingDataMeta>> supportingValues = new HashMap<>();
 		for (WorkflowFieldContext field : fields) {
-			if (field.getAggregationEnum() == ExpressionAggregateOperator.LAST_VALUE) {
+			if (field.getAggregationEnum() == AggregateOperator.SpecialAggregateOperator.LAST_VALUE) {
 				if (resourceId == -1 && field.getResourceId() == -1) {
 					continue;
 				}

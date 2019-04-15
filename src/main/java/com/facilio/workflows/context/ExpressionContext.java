@@ -8,27 +8,27 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
-import com.facilio.bmsconsole.criteria.DateOperators;
 import com.facilio.bmsconsole.criteria.FacilioModulePredicate;
 import com.facilio.bmsconsole.criteria.NumberOperators;
+import com.facilio.bmsconsole.modules.AggregateOperator;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
+import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
+import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.util.DateTimeUtil;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
-import com.facilio.sql.GenericSelectRecordBuilder;
-import com.facilio.time.SecondsChronoUnit;
-import com.facilio.workflows.util.ExpressionAggregateOperator;
 import com.facilio.workflows.util.WorkflowUtil;
 
 public class ExpressionContext implements WorkflowExpression {
@@ -61,7 +61,6 @@ public class ExpressionContext implements WorkflowExpression {
 	String limit;
 	String groupBy;
 	Map<Integer,Long> conditionSeqVsBaselineId;
-	WorkflowContext workflowContext;
 	String expr;
 	
 	public String getExpr() {
@@ -71,10 +70,7 @@ public class ExpressionContext implements WorkflowExpression {
 	public void setExpr(String expr) {
 		this.expr = expr;
 	}
-
-	public WorkflowContext getWorkflowContext() {
-		return workflowContext;
-	}
+	
 	
 	public String getPrintStatement() {
 		return printStatement;
@@ -82,10 +78,6 @@ public class ExpressionContext implements WorkflowExpression {
 
 	public void setPrintStatement(String printStatement) {
 		this.printStatement = printStatement;
-	}
-
-	public void setWorkflowContext(WorkflowContext workflowContext) {
-		this.workflowContext = workflowContext;
 	}
 
 	boolean isCustomFunctionResultEvaluator;
@@ -220,8 +212,8 @@ public class ExpressionContext implements WorkflowExpression {
 	public String getAggregateString() {
 		return aggregateString;
 	}
-	public ExpressionAggregateOperator getAggregateOpperator() {
-		return ExpressionAggregateOperator.getExpressionAggregateOperator(getAggregateString());
+	public AggregateOperator getAggregateOpperator() {
+		return AggregateOperator.getAggregateOperator(getAggregateString());
 	}
 	public void setFacilioField(FacilioField facilioField) {
 		this.facilioField = facilioField;
@@ -249,9 +241,9 @@ public class ExpressionContext implements WorkflowExpression {
 		this.variableToExpresionMap = variableToExpresionMap;
 	}
 
-	public Object execute() throws Exception {
+	public Object execute(WorkflowContext workflowContext) throws Exception {
 		
-		GenericSelectRecordBuilder selectBuilder = null;
+		SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder = null;
 		if(isCustomFunctionResultEvaluator) {
 			return WorkflowUtil.evalCustomFunctions(defaultFunctionContext,variableToExpresionMap);
 		}
@@ -262,15 +254,13 @@ public class ExpressionContext implements WorkflowExpression {
 			return WorkflowUtil.evaluateExpression(getExpr(), variableToExpresionMap, workflowContext.isIgnoreNullParams());
 		}
 		if(getPrintStatement() != null) {
-			
-			printStatement(getPrintStatement(),variableToExpresionMap);
-			return null;
+			return printStatement(getPrintStatement(),variableToExpresionMap);
 		}
-		if(getWorkflowContext() != null && getWorkflowContext().isGetDataFromCache() && this.getWorkflowContext().getCachedData() != null) {
+		if(workflowContext != null && workflowContext.isGetDataFromCache() && workflowContext.getCachedData() != null) {
 			
 			String parentId = WorkflowUtil.getParentIdFromCriteria(criteria);
 			
-			List<Map<String, Object>> cachedDatas = this.getWorkflowContext().getCachedData().get(WorkflowUtil.getCacheKey(moduleName, parentId));
+			List<Map<String, Object>> cachedDatas = workflowContext.getCachedData().get(WorkflowUtil.getCacheKey(moduleName, parentId));
 
 			if (cachedDatas != null && !cachedDatas.isEmpty()) {
 				List<Map<String, Object>> passedData = new ArrayList<>();
@@ -296,8 +286,9 @@ public class ExpressionContext implements WorkflowExpression {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioModule module = modBean.getModule(moduleName);
 			
-			selectBuilder = new GenericSelectRecordBuilder()
+			selectBuilder = new SelectRecordsBuilder<ModuleBaseWithCustomFields>()
 					.table(module.getTableName())
+					.module(module)
 					.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 					.andCondition(CriteriaAPI.getCondition(FieldFactory.getModuleIdField(module), String.valueOf(module.getModuleId()), NumberOperators.EQUALS))
 					.andCriteria(criteria)
@@ -306,34 +297,42 @@ public class ExpressionContext implements WorkflowExpression {
 			if (FieldUtil.isSiteIdFieldPresent(module) && AccountUtil.getCurrentSiteId() > 0) {
 				selectBuilder.andCondition(CriteriaAPI.getCurrentSiteIdCondition(module));
 			}
+			if (AccountUtil.getCurrentUser() == null) {
+				User user = AccountUtil.getOrgBean().getSuperAdmin(AccountUtil.getCurrentOrg().getOrgId());
+				AccountUtil.getCurrentAccount().setUser(user);
+			}
 			Criteria scopeCriteria = AccountUtil.getCurrentUser().scopeCriteria(module.getName());
 			if (scopeCriteria != null) {
 				selectBuilder.andCriteria(scopeCriteria);
 			}
 			
-			if(modBean.getModule(moduleName).getExtendModule() != null) {
-				selectBuilder.innerJoin(modBean.getModule(moduleName).getExtendModule().getTableName())
-				.on(modBean.getModule(moduleName).getTableName()+".ID = "+modBean.getModule(moduleName).getExtendModule().getTableName()+".ID");
-			}
+//			if(modBean.getModule(moduleName).getExtendModule() != null) {
+//				selectBuilder.innerJoin(modBean.getModule(moduleName).getExtendModule().getTableName())
+//				.on(modBean.getModule(moduleName).getTableName()+".ID = "+modBean.getModule(moduleName).getExtendModule().getTableName()+".ID");
+//			}
 			
 			if(fieldName != null && !isManualAggregateQuery()) {
 				List<FacilioField> selectFields = new ArrayList<>();
 				
 				FacilioField select = modBean.getField(fieldName, moduleName);
-				select.setColumnName(select.getTableName()+"."+select.getColumnName());
-//				select.setExtendedModule(null);
-				select.setModule(null);
+				
+				if(select == null) {
+					throw new Exception("Field is null for FieldName - "+fieldName +" moduleName - "+moduleName);
+				}
+				
+//				select.setColumnName(select.getTableName()+"."+select.getColumnName());
+//				select.setModule(null);
 				select.setName(RESULT_STRING);
 				
-				selectBuilder.andCustomWhere(select.getColumnName()+" is not null");
+				selectBuilder.andCustomWhere(select.getCompleteColumnName()+" is not null");
 				
 				if(aggregateString != null && !aggregateString.isEmpty()) {
-					ExpressionAggregateOperator expAggregateOpp = getAggregateOpperator();
-					select = expAggregateOpp.getSelectField(select);
-					if(expAggregateOpp.equals(ExpressionAggregateOperator.FIRST_VALUE)) {
+					AggregateOperator expAggregateOpp = getAggregateOpperator();
+					selectBuilder.aggregate(expAggregateOpp, select);
+					if(expAggregateOpp.equals(AggregateOperator.SpecialAggregateOperator.FIRST_VALUE)) {
 						selectBuilder.limit(1);
 					}
-					else if(expAggregateOpp.equals(ExpressionAggregateOperator.LAST_VALUE)) {
+					else if(expAggregateOpp.equals(AggregateOperator.SpecialAggregateOperator.LAST_VALUE)) {
 						boolean isLastValueWithTimeRange = false;
 						
 						Map<String, Condition> conditions = criteria.getConditions();
@@ -370,6 +369,9 @@ public class ExpressionContext implements WorkflowExpression {
 							if(readingDataMeta == null) {
 								readingDataMeta = ReadingsAPI.getReadingDataMeta(Long.parseLong(parentIdString), select);
 							}
+							if(readingDataMeta == null) {
+								throw new Exception("readingDataMeta is null for FieldName - "+fieldName +" moduleName - "+moduleName+" parentId - "+parentIdString);
+							}
 							long actualLastRecordedTime = getActualLastRecordedTime(module);
 							if(actualLastRecordedTime > 0) {
 								if(readingDataMeta.getTtime() >= actualLastRecordedTime) {
@@ -399,7 +401,9 @@ public class ExpressionContext implements WorkflowExpression {
 						selectFields.add(selectMarked);
 					}
 				}
-				selectFields.add(select);
+				else {
+					selectFields.add(select);	// check
+				}
 				
 				selectBuilder.select(selectFields);
 			}
@@ -407,7 +411,7 @@ public class ExpressionContext implements WorkflowExpression {
 				List<FacilioField> fields = new ArrayList<>(modBean.getAllFields(moduleName));
 				fields.add(FieldFactory.getIdField(module));
 				selectBuilder.select(fields);
-				if(getAggregateOpperator() != null && getAggregateOpperator().equals(ExpressionAggregateOperator.COUNT_RUNNING_TIME)) {
+				if(getAggregateOpperator() != null && getAggregateOpperator().equals(AggregateOperator.SpecialAggregateOperator.COUNT_RUNNING_TIME)) {
 					selectBuilder.orderBy("TTIME");
 				}
 			}
@@ -429,7 +433,10 @@ public class ExpressionContext implements WorkflowExpression {
 				selectBuilder.groupBy(groupByField.getColumnName());
 			}
 			
-			props = selectBuilder.get();
+			if(module != null && module.getName().equals("weather")) {						// temp handling must be removed (predicted weather data will be stored in same table with same module)
+				selectBuilder.andCustomWhere("TTIME <= ?", DateTimeUtil.getCurrenTime());
+			}
+			props = selectBuilder.getAsProps();
 			
 		}
 		else {
@@ -462,7 +469,7 @@ public class ExpressionContext implements WorkflowExpression {
 						}
 					}
 					if(isPassedData) {
-						if(getAggregateOpperator().equals(ExpressionAggregateOperator.COUNT_RUNNING_TIME)) {
+						if(getAggregateOpperator().equals(AggregateOperator.SpecialAggregateOperator.COUNT_RUNNING_TIME)) {
 							if(i < props.size()-1) {
 								Long ss = (Long)props.get(i+1).get("ttime") - (Long)prop.get("ttime");
 								ttimeCount = ttimeCount + ss;
@@ -471,10 +478,10 @@ public class ExpressionContext implements WorkflowExpression {
 						passedData.add(prop);
 					}
 				}
-				if(getAggregateOpperator() != null && !getAggregateOpperator().equals(ExpressionAggregateOperator.COUNT_RUNNING_TIME)) {
+				if(getAggregateOpperator() != null && !getAggregateOpperator().equals(AggregateOperator.SpecialAggregateOperator.COUNT_RUNNING_TIME)) {
 					return getAggregateOpperator().getAggregateResult(passedData, fieldName);
 				}
-				else if (getAggregateOpperator() != null && getAggregateOpperator().equals(ExpressionAggregateOperator.COUNT_RUNNING_TIME)) {
+				else if (getAggregateOpperator() != null && getAggregateOpperator().equals(AggregateOperator.SpecialAggregateOperator.COUNT_RUNNING_TIME)) {
 					return ttimeCount;
 				}
 				else {
@@ -534,7 +541,7 @@ public class ExpressionContext implements WorkflowExpression {
 		return false;
 	}
 	
-	private void printStatement(String printStatement,Map<String,Object> variableToExpresionMap1) {
+	private Object printStatement(String printStatement,Map<String,Object> variableToExpresionMap1) {
 		String[] splitedPrints = printStatement.split("\\+");
 		
 		String finalResult = "";
@@ -555,6 +562,7 @@ public class ExpressionContext implements WorkflowExpression {
 			finalResult = finalResult + splitedPrints[i];
 		}
 		LOGGER.log(Level.SEVERE, finalResult);
+		return null;
 	}
 	
 	@Override
@@ -566,6 +574,7 @@ public class ExpressionContext implements WorkflowExpression {
 		result = result +"field -- "+getFieldName() +"\n";
 		result = result +"aggregate -- "+getAggregateString() +"\n";
 		result = result +"constant -- "+getConstant() +"\n";
+		result = result +"criteria -- "+getCriteria() +"\n";
 		return result;
 	}
 

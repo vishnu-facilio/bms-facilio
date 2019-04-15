@@ -1,10 +1,10 @@
 package com.facilio.util;
 
+import com.udojava.evalex.Expression;
+
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
-
-import com.udojava.evalex.Expression;
 
 public class FacilioExpressionWrapper {
 	

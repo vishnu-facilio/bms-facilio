@@ -1,8 +1,8 @@
 package com.facilio.workflows.context;
 
-import java.io.Serializable;
-
 import com.facilio.bmsconsole.modules.FieldType;
+
+import java.io.Serializable;
 
 public class ParameterContext implements Serializable {
 

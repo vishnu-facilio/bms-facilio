@@ -1,9 +1,9 @@
 package com.facilio.bmsconsole.util;
 
-import java.awt.Color;
-import java.awt.image.BufferedImage;
-
 import org.imgscalr.Scalr;
+
+import java.awt.*;
+import java.awt.image.BufferedImage;
 
 public class ImageScaleUtil {
 	

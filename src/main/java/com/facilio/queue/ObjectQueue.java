@@ -1,14 +1,13 @@
 package com.facilio.queue;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-
+import com.amazonaws.util.Base64;
 import org.apache.commons.lang.SerializationException;
 import org.apache.commons.lang3.SerializationUtils;
 import org.apache.log4j.Logger;
 
-import com.amazonaws.util.Base64;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ObjectQueue {
 

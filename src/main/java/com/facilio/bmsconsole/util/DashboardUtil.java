@@ -1,96 +1,22 @@
 
 package com.facilio.bmsconsole.util;
 
-import java.sql.SQLException;
-import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.OptionalDouble;
-import java.util.Stack;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.stream.Collectors;
-
-import org.apache.commons.chain.Chain;
-import org.apache.commons.collections.list.SetUniqueList;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.Pair;
-import org.apache.log4j.LogManager;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-
 import com.facilio.accounts.dto.Group;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
-import com.facilio.bmsconsole.context.BaseLineContext;
+import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.context.BaseLineContext.RangeType;
-import com.facilio.bmsconsole.context.BaseSpaceContext;
-import com.facilio.bmsconsole.context.BuildingContext;
-import com.facilio.bmsconsole.context.DashboardContext;
-import com.facilio.bmsconsole.context.DashboardFolderContext;
-import com.facilio.bmsconsole.context.DashboardSharingContext;
 import com.facilio.bmsconsole.context.DashboardSharingContext.SharingType;
-import com.facilio.bmsconsole.context.DashboardWidgetContext;
 import com.facilio.bmsconsole.context.DashboardWidgetContext.WidgetType;
-import com.facilio.bmsconsole.context.DerivationContext;
-import com.facilio.bmsconsole.context.EnergyMeterContext;
-import com.facilio.bmsconsole.context.EnergyMeterPurposeContext;
-import com.facilio.bmsconsole.context.FloorContext;
-import com.facilio.bmsconsole.context.FormulaContext;
-import com.facilio.bmsconsole.context.FormulaContext.AggregateOperator;
-import com.facilio.bmsconsole.context.FormulaContext.CommonAggregateOperator;
-import com.facilio.bmsconsole.context.FormulaContext.DateAggregateOperator;
-import com.facilio.bmsconsole.context.FormulaContext.NumberAggregateOperator;
-import com.facilio.bmsconsole.context.FormulaFieldContext;
 import com.facilio.bmsconsole.context.FormulaFieldContext.ResourceType;
-import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.context.ReadingDataMeta.ReadingInputType;
-import com.facilio.bmsconsole.context.ReportBenchmarkRelContext;
-import com.facilio.bmsconsole.context.ReportColumnContext;
-import com.facilio.bmsconsole.context.ReportContext;
 import com.facilio.bmsconsole.context.ReportContext.LegendMode;
 import com.facilio.bmsconsole.context.ReportContext.ReportChartType;
-import com.facilio.bmsconsole.context.ReportDateFilterContext;
-import com.facilio.bmsconsole.context.ReportEnergyMeterContext;
-import com.facilio.bmsconsole.context.ReportFieldContext;
-import com.facilio.bmsconsole.context.ReportFolderContext;
-import com.facilio.bmsconsole.context.ReportFormulaFieldContext;
-import com.facilio.bmsconsole.context.ReportSpaceFilterContext;
-import com.facilio.bmsconsole.context.ReportThreshold;
-import com.facilio.bmsconsole.context.ReportUserFilterContext;
-import com.facilio.bmsconsole.context.ResourceContext;
-import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.bmsconsole.context.SiteContext.SiteType;
-import com.facilio.bmsconsole.context.SpaceFilteredDashboardSettings;
-import com.facilio.bmsconsole.context.UserWorkHourReading;
-import com.facilio.bmsconsole.context.WidgetChartContext;
-import com.facilio.bmsconsole.context.WidgetVsWorkflowContext;
-import com.facilio.bmsconsole.criteria.BooleanOperators;
-import com.facilio.bmsconsole.criteria.Condition;
-import com.facilio.bmsconsole.criteria.Criteria;
-import com.facilio.bmsconsole.criteria.CriteriaAPI;
-import com.facilio.bmsconsole.criteria.DateOperators;
-import com.facilio.bmsconsole.criteria.DateRange;
-import com.facilio.bmsconsole.criteria.NumberOperators;
-import com.facilio.bmsconsole.criteria.Operator;
-import com.facilio.bmsconsole.criteria.PickListOperators;
-import com.facilio.bmsconsole.criteria.StringOperators;
-import com.facilio.bmsconsole.modules.DeleteRecordBuilder;
-import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.FacilioModule;
-import com.facilio.bmsconsole.modules.FieldFactory;
-import com.facilio.bmsconsole.modules.FieldType;
-import com.facilio.bmsconsole.modules.FieldUtil;
-import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
-import com.facilio.bmsconsole.modules.ModuleFactory;
-import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
-import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
+import com.facilio.bmsconsole.criteria.*;
+import com.facilio.bmsconsole.modules.*;
 import com.facilio.cards.util.CardType;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -108,6 +34,22 @@ import com.facilio.workflows.util.WorkflowUtil;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Multiset;
+import org.apache.commons.chain.Chain;
+import org.apache.commons.collections.list.SetUniqueList;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.log4j.LogManager;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+
+import java.sql.SQLException;
+import java.time.ZonedDateTime;
+import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.stream.Collectors;
+
+import com.facilio.bmsconsole.modules.AggregateOperator.*;
 
 public class DashboardUtil {
 	
@@ -1832,13 +1774,13 @@ public static JSONObject getStandardVariance1(ReportContext report,JSONArray pro
 				ReportFieldContext reportXAxisField = DashboardUtil.getReportField(reportContext.getxAxisField());
 				reportContext.setxAxisField(reportXAxisField);
 				if(reportContext.getxAxisaggregateFunction() == null) {
-					reportContext.setxAxisaggregateFunction(FormulaContext.CommonAggregateOperator.COUNT.getValue());
+					reportContext.setxAxisaggregateFunction(CommonAggregateOperator.COUNT.getValue());
 				}
 				if(reportContext.getY1Axis() != null || reportContext.getY1AxisField() != null ) {
 					ReportFieldContext reportY1AxisField = DashboardUtil.getReportField(reportContext.getY1AxisField());
 					reportContext.setY1AxisField(reportY1AxisField);
 					if(reportContext.getY1AxisaggregateFunction() == null) {
-						reportContext.setY1AxisaggregateFunction(FormulaContext.CommonAggregateOperator.COUNT.getValue());
+						reportContext.setY1AxisaggregateFunction(CommonAggregateOperator.COUNT.getValue());
 					}
 				}
 				if(reportContext.getGroupBy() != null) {
@@ -2317,12 +2259,12 @@ public static JSONObject getStandardVariance1(ReportContext report,JSONArray pro
 
 			reportContext.setxAxis(DashboardUtil.addOrGetReportfield(reportContext.getxAxisField(), reportContext.getModuleName()).getId());
 			if(reportContext.getxAxisaggregateFunction() == null) {
-				reportContext.setxAxisaggregateFunction(FormulaContext.CommonAggregateOperator.COUNT.getValue());
+				reportContext.setxAxisaggregateFunction(CommonAggregateOperator.COUNT.getValue());
 			}
 			if(reportContext.getY1AxisField() != null && reportContext.getY1AxisField().getModuleField() != null) {
 				reportContext.setY1Axis(DashboardUtil.addOrGetReportfield(reportContext.getY1AxisField(), reportContext.getModuleName()).getId());
 				if(reportContext.getY1AxisaggregateFunction() == null) {
-					reportContext.setxAxisaggregateFunction(FormulaContext.CommonAggregateOperator.COUNT.getValue());
+					reportContext.setxAxisaggregateFunction(CommonAggregateOperator.COUNT.getValue());
 				}
 			}
 			if(reportContext.getGroupByField() != null && reportContext.getGroupByField().getModuleField() != null) {
@@ -2789,13 +2731,13 @@ public static JSONObject getStandardVariance1(ReportContext report,JSONArray pro
 		ReportFieldContext xAxisFld = new ReportFieldContext();
 		xAxisFld.setModuleFieldId(ttimeFld.getId());
 		highResReport.setxAxisField(xAxisFld);
-		highResReport.setxAxisaggregateFunction(FormulaContext.CommonAggregateOperator.ACTUAL.getValue());
+		highResReport.setxAxisaggregateFunction(CommonAggregateOperator.ACTUAL.getValue());
 		highResReport.setxAxisLabel("Time");
 		
 		ReportFieldContext y1AxisFld = new ReportFieldContext();
 		y1AxisFld.setModuleFieldId(modBean.getField("totalEnergyConsumptionDelta", module.getName()).getId());
 		highResReport.setY1AxisField(y1AxisFld);
-		highResReport.setY1AxisaggregateFunction(FormulaContext.NumberAggregateOperator.SUM.getValue());
+		highResReport.setY1AxisaggregateFunction(NumberAggregateOperator.SUM.getValue());
 		highResReport.setY1AxisLabel("Energy Consumption");
 		highResReport.setY1AxisUnit("kw");
 		
@@ -2823,13 +2765,13 @@ public static JSONObject getStandardVariance1(ReportContext report,JSONArray pro
 		ReportFieldContext endUseXAxisFld = new ReportFieldContext();
 		endUseXAxisFld.setModuleFieldId(ttimeFld.getId());
 		endUseBreakdown.setxAxisField(endUseXAxisFld);
-		endUseBreakdown.setxAxisaggregateFunction(FormulaContext.DateAggregateOperator.FULLDATE.getValue());
+		endUseBreakdown.setxAxisaggregateFunction(DateAggregateOperator.FULLDATE.getValue());
 		endUseBreakdown.setxAxisLabel("Date");
 		
 		ReportFieldContext endUseY1AxisFld = new ReportFieldContext();
 		endUseY1AxisFld.setModuleFieldId(modBean.getField("totalEnergyConsumptionDelta", module.getName()).getId());
 		endUseBreakdown.setY1AxisField(endUseY1AxisFld);
-		endUseBreakdown.setY1AxisaggregateFunction(FormulaContext.NumberAggregateOperator.SUM.getValue());
+		endUseBreakdown.setY1AxisaggregateFunction(NumberAggregateOperator.SUM.getValue());
 		endUseBreakdown.setY1AxisLabel("Energy Consumption");
 		endUseBreakdown.setY1AxisUnit("kwh");
 		
@@ -2858,13 +2800,13 @@ public static JSONObject getStandardVariance1(ReportContext report,JSONArray pro
 		ReportFieldContext costUseXAxisFld = new ReportFieldContext();
 		costUseXAxisFld.setModuleFieldId(ttimeFld.getId());
 		costUseBreakdown.setxAxisField(costUseXAxisFld);
-		costUseBreakdown.setxAxisaggregateFunction(FormulaContext.DateAggregateOperator.FULLDATE.getValue());
+		costUseBreakdown.setxAxisaggregateFunction(DateAggregateOperator.FULLDATE.getValue());
 		costUseBreakdown.setxAxisLabel("Date");
 		
 		ReportFieldContext costUseY1AxisFld = new ReportFieldContext();
 		costUseY1AxisFld.setModuleFieldId(modBean.getField("totalEnergyConsumptionDelta", module.getName()).getId());
 		costUseBreakdown.setY1AxisField(costUseY1AxisFld);
-		costUseBreakdown.setY1AxisaggregateFunction(FormulaContext.NumberAggregateOperator.SUM.getValue());
+		costUseBreakdown.setY1AxisaggregateFunction(NumberAggregateOperator.SUM.getValue());
 		costUseBreakdown.setY1AxisLabel("Cost Usage");
 		costUseBreakdown.setY1AxisUnit("cost");
 		
@@ -2893,13 +2835,13 @@ public static JSONObject getStandardVariance1(ReportContext report,JSONArray pro
 		ReportFieldContext dailyXAxisFld = new ReportFieldContext();
 		dailyXAxisFld.setModuleFieldId(ttimeFld.getId());
 		dailyBreakdown.setxAxisField(dailyXAxisFld);
-		dailyBreakdown.setxAxisaggregateFunction(FormulaContext.DateAggregateOperator.FULLDATE.getValue());
+		dailyBreakdown.setxAxisaggregateFunction(DateAggregateOperator.FULLDATE.getValue());
 		dailyBreakdown.setxAxisLabel("Date");
 		
 		ReportFieldContext dailyY1AxisFld = new ReportFieldContext();
 		dailyY1AxisFld.setModuleFieldId(modBean.getField("totalEnergyConsumptionDelta", module.getName()).getId());
 		dailyBreakdown.setY1AxisField(dailyY1AxisFld);
-		dailyBreakdown.setY1AxisaggregateFunction(FormulaContext.NumberAggregateOperator.SUM.getValue());
+		dailyBreakdown.setY1AxisaggregateFunction(NumberAggregateOperator.SUM.getValue());
 		dailyBreakdown.setY1AxisLabel("Energy Consumption");
 		dailyBreakdown.setY1AxisUnit("kwh");
 		

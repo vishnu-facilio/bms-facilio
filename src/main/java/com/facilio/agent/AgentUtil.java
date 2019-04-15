@@ -2,15 +2,17 @@ package com.facilio.agent;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleCRUDBean;
+import com.facilio.bmsconsole.criteria.*;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.bmsconsole.util.DateTimeUtil;
+import com.facilio.events.tasker.tasks.EventUtil;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
@@ -28,7 +30,7 @@ public  class AgentUtil
 {
     private long orgId ;
     private String orgDomainName;
-    private static final long DEFAULT_TIME = 600000L;
+    private static final long DEFAULT_TIME = 10L;
     private Map<String, FacilioAgent> agentMap = new HashMap<>();
 
     private static final Logger LOGGER = LogManager.getLogger(AgentUtil.class.getName());
@@ -38,16 +40,13 @@ public  class AgentUtil
         this.orgDomainName = orgDomainName;
     }
 
-    public void populateAgentContextMap() {
+    public void populateAgentContextMap(String agentName) {
         try {
             ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", orgId);
-            List<Map<String, Object>> records = bean.getAgentDataMap();
+            List<Map<String, Object>> records = bean.getAgentDataMap(agentName);
             for (Map<String,Object> record :records) {
                 JSONObject payload = new JSONObject();
                 payload.putAll(record);
-                if(payload.isEmpty()){
-                    return;
-                }
                 FacilioAgent agent = getFacilioAgentFromJson(payload);
                 agentMap.put(agent.getAgentName(), agent);
             }
@@ -57,7 +56,12 @@ public  class AgentUtil
     }
 
     public FacilioAgent getFacilioAgent(String agentName) {
-        return agentMap.get(agentName);
+        FacilioAgent agent = agentMap.get(agentName);
+        if(agent == null){
+            populateAgentContextMap(agentName);
+            agent =agentMap.get(agentName);
+        }
+        return agent;
     }
 
     /**
@@ -111,15 +115,14 @@ public  class AgentUtil
         if(payload.containsKey(AgentKeys.NUMBER_OF_CONTROLLERS)){
             agent.setAgentNumberOfControllers(Integer.parseInt(payload.get(AgentKeys.NUMBER_OF_CONTROLLERS).toString()));
         }
+
         if(payload.containsKey(AgentKeys.NAME)){
-            agent.setAgentName(payload.get(AgentKeys.NAME).toString());
+            agent.setAgentName(payload.get(AgentKeys.NAME).toString().trim());
         }
-
-        if(payload.containsKey(AgentKeys.AGENT)){
-            agent.setAgentName(payload.get(AgentKeys.AGENT).toString());
+        else if(payload.containsKey(PublishType.agent.getValue())){
+            agent.setAgentName(payload.get(PublishType.agent.getValue()).toString().trim());
         }
-
-        if (agent.getAgentName() == null) {
+        else{
             agent.setAgentName(orgDomainName);
         }
 
@@ -134,118 +137,123 @@ public  class AgentUtil
         }else {
             agent.setWritable(false);
         }
-
         return agent;
 
     }
 
-    public long processAgent(JSONObject jsonObject) {
-        String agentName = (String) jsonObject.get(AgentKeys.AGENT);
-        
+    public long processAgent(JSONObject jsonObject,String agentName) {
+       /* String agentName = agentName;
         if (StringUtils.isEmpty(agentName)) { //Temp fix to avoid NPE
         	agentName = orgDomainName;
-        }
-        
-        if ( agentMap.containsKey(agentName) ) {
-         FacilioAgent agent = agentMap.get(agentName);
-            GenericUpdateRecordBuilder genericUpdateRecordBuilder = new GenericUpdateRecordBuilder()
-                    .table(AgentKeys.TABLE_NAME)
-                    .fields(FieldFactory.getAgentDataFields()).andCustomWhere(AgentKeys.NAME+"='"+agentName+"'");
-            try {
+            LOGGER.info(" in process agent agentName="+agentName);
+        }*/
+       FacilioAgent agent = getFacilioAgent(agentName);
+       if(agent==null) {
+           agent = getFacilioAgentFromJson(jsonObject);
+           return addAgent(agent);
+       }
 
-                Map<String,Object> toUpdate = new HashMap<>();
-                if(jsonObject.containsKey(AgentKeys.CONNECTION_STATUS)) {
-                    Boolean connectionStatus = Boolean.valueOf((jsonObject.get(AgentKeys.CONNECTION_STATUS).toString()));
-                    if (agent.getAgentConnStatus() != connectionStatus) {
-                        toUpdate.put(AgentKeys.CONNECTION_STATUS, connectionStatus);
-                        agent.setAgentConnStatus(connectionStatus);
-                    }
-                } else{
-                    toUpdate.put(AgentKeys.CONNECTION_STATUS, false);
-                    agent.setAgentConnStatus(false);
-                }
+           else  {
+               Condition agentNameCondition = new Condition();
+               agentNameCondition.setField(FieldFactory.getAgentNameField(ModuleFactory.getAgentDataModule()));
+               agentNameCondition.setOperator(StringOperators.IS);
+               agentNameCondition.setValue(agentName);
 
-                if(jsonObject.containsKey(AgentKeys.DISPLAY_NAME)) {
-                    if( ! jsonObject.get(AgentKeys.DISPLAY_NAME).toString().equals(agent.getDisplayName())) {
-                        toUpdate.put(AgentKeys.DISPLAY_NAME, jsonObject.get(AgentKeys.DISPLAY_NAME));
-                        agent.setDisplayName(jsonObject.get(AgentKeys.DISPLAY_NAME).toString());
-                    }
-                }
+               GenericUpdateRecordBuilder genericUpdateRecordBuilder = new GenericUpdateRecordBuilder()
+                       .table(AgentKeys.AGENT_TABLE)
+                       .fields(FieldFactory.getAgentDataFields()).andCondition(agentNameCondition);
+               try {
 
-                if(jsonObject.containsKey(AgentKeys.STATE)) {
-                    Integer currStatus = Integer.parseInt(jsonObject.get(AgentKeys.STATE).toString());
-                    if (!agent.getAgentState().equals(currStatus)) {
-                        toUpdate.put(AgentKeys.STATE, currStatus);
-                        agent.setAgentState(currStatus);
+                   Map<String, Object> toUpdate = new HashMap<>();
+                   if (jsonObject.containsKey(AgentKeys.CONNECTION_STATUS)) {
+                       Boolean connectionStatus = Boolean.valueOf((jsonObject.get(AgentKeys.CONNECTION_STATUS).toString()));
+                       if (agent.getAgentConnStatus() != connectionStatus) {
+                           toUpdate.put(AgentKeys.CONNECTION_STATUS, connectionStatus);
+                           agent.setAgentConnStatus(connectionStatus);
+                       }
+                   } else {
+                       toUpdate.put(AgentKeys.CONNECTION_STATUS, false);
+                       agent.setAgentConnStatus(false);
+                   }
 
-                    }
-                }else{
-                    toUpdate.put(AgentKeys.STATE,0);
-                    agent.setAgentState(0);
-                }
+                   if (jsonObject.containsKey(AgentKeys.DISPLAY_NAME)) {
+                       if (!jsonObject.get(AgentKeys.DISPLAY_NAME).toString().equals(agent.getDisplayName())) {
+                           toUpdate.put(AgentKeys.DISPLAY_NAME, jsonObject.get(AgentKeys.DISPLAY_NAME));
+                           agent.setDisplayName(jsonObject.get(AgentKeys.DISPLAY_NAME).toString());
+                       }
+                   }
 
-                if(jsonObject.containsKey(AgentKeys.DATA_INTERVAL)) {
-                    Long currDataInterval = Long.parseLong(jsonObject.get(AgentKeys.DATA_INTERVAL).toString());
-                    if ( agent.getAgentDataInterval().longValue() != currDataInterval.longValue() ) {
-                        toUpdate.put(AgentKeys.DATA_INTERVAL, currDataInterval);
-                        agent.setAgentDataInterval(currDataInterval);
-                    }
-                } else{
-                    toUpdate.put(AgentKeys.DATA_INTERVAL, DEFAULT_TIME);
-                    agent.setAgentDataInterval(DEFAULT_TIME);
-                }
+                   if (jsonObject.containsKey(AgentKeys.STATE)) {
+                       Integer currStatus = Integer.parseInt(jsonObject.get(AgentKeys.STATE).toString());
+                       if (!agent.getAgentState().equals(currStatus)) {
+                           toUpdate.put(AgentKeys.STATE, currStatus);
+                           agent.setAgentState(currStatus);
 
-                if(jsonObject.containsKey(AgentKeys.NUMBER_OF_CONTROLLERS)){
-                    Integer currNumberOfControllers = Integer.parseInt(jsonObject.get(AgentKeys.NUMBER_OF_CONTROLLERS).toString());
-                    if( (agent.getAgentNumberOfControllers().intValue() != currNumberOfControllers.intValue())){
-                        toUpdate.put(AgentKeys.NUMBER_OF_CONTROLLERS,currNumberOfControllers);
-                        agent.setAgentNumberOfControllers(currNumberOfControllers);
-                    }
-                } else{
-                    toUpdate.put(AgentKeys.NUMBER_OF_CONTROLLERS,0);
-                    agent.setAgentNumberOfControllers(0);
-                }
+                       }
+                   } else {
+                       toUpdate.put(AgentKeys.STATE, 0);
+                       agent.setAgentState(0);
+                   }
 
-                if (jsonObject.containsKey(AgentKeys.VERSION)) {
-                    Object currDeviceDetails = jsonObject.get(AgentKeys.VERSION);
-                    String currDeviceDetailsString = currDeviceDetails.toString();
-                    if (!(agent.getAgentDeviceDetails().equalsIgnoreCase(currDeviceDetailsString))) {
-                        toUpdate.put(AgentKeys.DEVICE_DETAILS, currDeviceDetails);
-                        toUpdate.put(AgentKeys.VERSION, getVersion(currDeviceDetails));
-                        agent.setAgentDeviceDetails(currDeviceDetailsString);
-                    }
-                }
-                if(jsonObject.containsKey(AgentKeys.WRITABLE)){
-                    Boolean currWriteble = Boolean.parseBoolean(jsonObject.get(AgentKeys.WRITABLE).toString());
-                    if(agent.getWritable() != currWriteble){
-                        toUpdate.put(AgentKeys.WRITABLE,currWriteble);
-                        agent.setWritable(currWriteble);
-                    }
-                }
-                if(jsonObject.containsKey(AgentKeys.DELETED_TIME)){
-                    Long currDeletedTime = Long.parseLong(jsonObject.get(AgentKeys.DELETED_TIME).toString());
-                    if(agent.getDeletedTime().longValue() != currDeletedTime.longValue()){
-                        agent.setDeletedTime(currDeletedTime);
-                        toUpdate.put(AgentKeys.DELETED_TIME,currDeletedTime);
-                    }
-                }
-                if(!toUpdate.isEmpty()) {
-                    toUpdate.put(AgentKeys.LAST_MODIFIED_TIME, System.currentTimeMillis());
-                }
-                if(!toUpdate.isEmpty()) {
-                    toUpdate.put(AgentKeys.LAST_DATA_RECEIVED_TIME,System.currentTimeMillis());
-                    return genericUpdateRecordBuilder.update(toUpdate);
-                }
-                return 0;
-            }
-            catch (Exception e) {
-                LOGGER.info("Exception occurred ", e);
-            }
-        } else {
-            FacilioAgent agent = getFacilioAgentFromJson(jsonObject);
-            return addAgent(agent);
-        }
-        return 0;
+                   if (jsonObject.containsKey(AgentKeys.DATA_INTERVAL)) {
+                       Long currDataInterval = Long.parseLong(jsonObject.get(AgentKeys.DATA_INTERVAL).toString());
+                       if (agent.getAgentDataInterval().longValue() != currDataInterval.longValue()) {
+                           toUpdate.put(AgentKeys.DATA_INTERVAL, currDataInterval);
+                           agent.setAgentDataInterval(currDataInterval);
+                       }
+                   } /*else {
+                       toUpdate.put(AgentKeys.DATA_INTERVAL, DEFAULT_TIME);
+                       agent.setAgentDataInterval(DEFAULT_TIME);
+                   }*/
+
+                   if (jsonObject.containsKey(AgentKeys.NUMBER_OF_CONTROLLERS)) {
+                       Integer currNumberOfControllers = Integer.parseInt(jsonObject.get(AgentKeys.NUMBER_OF_CONTROLLERS).toString());
+                       if ((agent.getAgentNumberOfControllers().intValue() != currNumberOfControllers.intValue())) {
+                           toUpdate.put(AgentKeys.NUMBER_OF_CONTROLLERS, currNumberOfControllers);
+                           agent.setAgentNumberOfControllers(currNumberOfControllers);
+                       }
+                   } else {
+                       toUpdate.put(AgentKeys.NUMBER_OF_CONTROLLERS, 0);
+                       agent.setAgentNumberOfControllers(0);
+                   }
+
+                   if (jsonObject.containsKey(AgentKeys.VERSION)) {
+                       Object currDeviceDetails = jsonObject.get(AgentKeys.VERSION);
+                       String currDeviceDetailsString = currDeviceDetails.toString();
+                       if (agent.getAgentDeviceDetails()!= null && !(agent.getAgentDeviceDetails().equalsIgnoreCase(currDeviceDetailsString))) {
+                           toUpdate.put(AgentKeys.DEVICE_DETAILS, currDeviceDetails);
+                           toUpdate.put(AgentKeys.VERSION, getVersion(currDeviceDetails));
+                           agent.setAgentDeviceDetails(currDeviceDetailsString);
+                       }
+                   }
+                   if (jsonObject.containsKey(AgentKeys.WRITABLE)) {
+                       Boolean currWriteble = Boolean.parseBoolean(jsonObject.get(AgentKeys.WRITABLE).toString());
+                       if (agent.getWritable() != currWriteble) {
+                           toUpdate.put(AgentKeys.WRITABLE, currWriteble);
+                           agent.setWritable(currWriteble);
+                       }
+                   }
+                   if (jsonObject.containsKey(AgentKeys.DELETED_TIME)) {
+                       Long currDeletedTime = Long.parseLong(jsonObject.get(AgentKeys.DELETED_TIME).toString());
+                       if (agent.getDeletedTime().longValue() != currDeletedTime.longValue()) {
+                           agent.setDeletedTime(currDeletedTime);
+                           toUpdate.put(AgentKeys.DELETED_TIME, currDeletedTime);
+                       }
+                   }
+                   if (!toUpdate.isEmpty()) {
+                       toUpdate.put(AgentKeys.LAST_MODIFIED_TIME, System.currentTimeMillis());
+                   }
+                   if (!toUpdate.isEmpty()) {
+                       toUpdate.put(AgentKeys.LAST_DATA_RECEIVED_TIME, System.currentTimeMillis());
+                       return genericUpdateRecordBuilder.update(toUpdate);
+                   }
+                   return 0;
+               } catch (Exception e) {
+                   LOGGER.info("Exception occurred ", e);
+               }
+           }
+
+       return 0;
     }
 
 
@@ -266,9 +274,8 @@ public  class AgentUtil
         payload.put(AgentKeys.LAST_MODIFIED_TIME, currTime);
         payload.put(AgentKeys.LAST_DATA_RECEIVED_TIME, currTime);
         GenericInsertRecordBuilder genericInsertRecordBuilder = new GenericInsertRecordBuilder()
-                .table(AgentKeys.TABLE_NAME)
+                .table(AgentKeys.AGENT_TABLE)
                 .fields(FieldFactory.getAgentDataFields());
-
         try {
             long id = (int)genericInsertRecordBuilder.insert(payload);
             agent.setId(id);
@@ -294,15 +301,15 @@ public  class AgentUtil
     //This method fetches Details of all the agent in the current Org and which aren't deleted.
     public List<Map<String,Object>> agentDetails()
     {
+        FacilioModule agentDataModule = ModuleFactory.getAgentDataModule();
         List<FacilioField> fields = new ArrayList<>();
-        FacilioModule agentModule = ModuleFactory.getAgentdataModule();
         fields.add(FieldFactory.getControllerIdCount(ModuleFactory.getControllerModule()));
         fields.addAll(FieldFactory.getAgentDataFields());
-        GenericSelectRecordBuilder genericSelectRecordBuilder = new GenericSelectRecordBuilder().table(AgentKeys.TABLE_NAME)
+        GenericSelectRecordBuilder genericSelectRecordBuilder = new GenericSelectRecordBuilder().table(AgentKeys.AGENT_TABLE)
                 .select(fields).leftJoin(AgentKeys.CONTROLLER_TABLE)
-                .on(AgentKeys.TABLE_NAME+".ID=Controller.Agent_Id")
-                .groupBy(AgentKeys.TABLE_NAME+".ID").andCustomWhere("Agent_Data.ORGID="+orgId)
-                .andCustomWhere(AgentKeys.TABLE_NAME+"."+AgentKeys.DELETED_TIME+" is NULL");
+                .on(AgentKeys.AGENT_TABLE +".ID=Controller.Agent_Id")
+                .groupBy(AgentKeys.AGENT_TABLE +".ID").andCondition(CriteriaAPI.getOrgIdCondition(orgId,agentDataModule))
+                .andCondition(CriteriaAPI.getCondition(FieldFactory.getDeletedTimeField(agentDataModule),"NULL", CommonOperators.IS_EMPTY));
 
         try {
             return genericSelectRecordBuilder.get();
@@ -320,15 +327,15 @@ public  class AgentUtil
     static boolean agentDelete(JSONObject payload) throws SQLException {
         if(AccountUtil.getCurrentOrg()!= null) {
             List<FacilioField> fields = new ArrayList<>();
-            fields.add(FieldFactory.getDeletedTimeField(ModuleFactory.getAgentdataModule()));
+            fields.add(FieldFactory.getDeletedTimeField(ModuleFactory.getAgentDataModule()));
             HashMap<String, Object> toUpdate = new HashMap<>();
             toUpdate.put(AgentKeys.DELETED_TIME, System.currentTimeMillis());
             GenericUpdateRecordBuilder genericUpdateRecordBuilder = new GenericUpdateRecordBuilder()
-                    .table(AgentKeys.TABLE_NAME)
+                    .table(AgentKeys.AGENT_TABLE)
                     .fields(fields)
-                    .andCustomWhere(AgentKeys.ORG_ID + "=" + AccountUtil.getCurrentOrg().getOrgId());
+                    .andCondition(CriteriaAPI.getCurrentOrgIdCondition(ModuleFactory.getAgentDataModule()));
             if (payload.containsKey(AgentKeys.ID)) {
-                int deletedRows = genericUpdateRecordBuilder.andCustomWhere(AgentKeys.ID + "=" + Long.parseLong(payload.get(AgentKeys.ID).toString()))
+                int deletedRows = genericUpdateRecordBuilder.andCondition(CriteriaAPI.getCondition(FieldFactory.getIdField(ModuleFactory.getAgentDataModule()),payload.get(AgentKeys.ID).toString(),NumberOperators.EQUALS))
                         .update(toUpdate);
                 return (deletedRows > 0);
             } else {
@@ -341,13 +348,129 @@ public  class AgentUtil
     static boolean agentEdit(JSONObject payload) throws SQLException {
         if(AccountUtil.getCurrentOrg() != null && payload.containsKey(AgentKeys.ID)) {
             GenericUpdateRecordBuilder genericUpdateRecordBuilder = new GenericUpdateRecordBuilder()
-                    .table(AgentKeys.TABLE_NAME)
+                    .table(AgentKeys.AGENT_TABLE)
                     .fields(FieldFactory.getAgentDataFields())
-                    .andCustomWhere(AgentKeys.ORG_ID + "=" + AccountUtil.getCurrentOrg().getOrgId())
-                    .andCustomWhere(AgentKeys.ID + "=" + Long.parseLong(payload.remove(AgentKeys.ID).toString()));
+                    .andCondition(CriteriaAPI.getCurrentOrgIdCondition(ModuleFactory.getAgentDataModule()))
+                    .andCondition(CriteriaAPI.getCondition(FieldFactory.getIdField(ModuleFactory.getAgentDataModule()),payload.get(AgentKeys.ID).toString(),NumberOperators.EQUALS));
             int updatedRows= genericUpdateRecordBuilder.update(payload);
             return (updatedRows > 0);
         }
         return false;
     }
+
+    /**
+     * This method inserts agent-log data into the log table, each time a message is sent to or received from an agent.
+     * @param payLoad Contains data needed for the log-table.
+     * @param orgId Tells which org's lod data to be fetched.
+     * @param agentId If passed, fetches only that particular agent's log data.NOT MANDATORY.
+     * @param sent
+     */
+    public static void putLog(JSONObject payLoad, Long orgId,Long agentId,boolean sent) {
+
+        if(sent){
+            payLoad.put(AgentKeys.COMMAND_STATUS,CommandStatus.SENT.getKey());
+        }
+        if(payLoad.containsKey(AgentKeys.COMMAND)){
+            payLoad.replace(AgentKeys.COMMAND, ControllerCommand.valueOf(payLoad.get(AgentKeys.COMMAND).toString().toLowerCase()).getValue());
+        }
+        if( ! payLoad.containsKey(AgentKeys.AGENT_ID)){
+            payLoad.put(AgentKeys.AGENT_ID,agentId);
+        }
+        if( ! payLoad.containsKey(AgentKeys.TIMESTAMP)){
+            payLoad.put(AgentKeys.TIMESTAMP,System.currentTimeMillis());
+        }
+        try {
+            ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD",orgId);
+            bean.addLog(payLoad);
+        } catch (Exception e)
+        {
+            LOGGER.info("Exception occured",e);
+        }
+
+    }
+
+    /**
+     * This method fetches agent-log data of the entire organization or a particular agent.
+     * @param agentId If passed, only those ogs which belongs this particular agent is returned, NOT MANDATORY.
+     * @return agent-log data from database
+     * @throws Exception
+     */
+    public static List<Map<String,Object>> getAgentLog(Long agentId) throws Exception {
+        GenericSelectRecordBuilder genericSelectRecordBuilder = new GenericSelectRecordBuilder().table(AgentKeys.AGENT_LOG_TABLE)
+                .select(FieldFactory.getAgentLogFields()).andCondition(CriteriaAPI.getCurrentOrgIdCondition(ModuleFactory.getAgentLogModule()));
+        if(agentId != null){
+             genericSelectRecordBuilder.andCondition(CriteriaAPI.getCondition(FieldFactory.getAgentIdField(ModuleFactory.getAgentLogModule()),agentId.toString(),NumberOperators.EQUALS));
+        }
+        return genericSelectRecordBuilder.get();
+    }
+
+    /**
+     * This method fetches metrics data of a particular agent and for a particular Publish-type.
+     * If agentId and publishType is absent results with just ORGID condition is returned.
+     * @param agentId This parameter if passed fetches only those data which belongs to an agent,NOT MANDATORY.
+     * @param publishType This parameter if passed fetches only those data which belongs to this publish-type,NOT MANDATORY.
+     * @throws Exception
+     */
+    public static List<Map<String,Object>> getAgentMetrics(Long agentId,Integer publishType) throws Exception {
+        FacilioModule agentMetriceModule = ModuleFactory.getAgentMetricsModule();
+        GenericSelectRecordBuilder genericSelectRecordBuilder = new GenericSelectRecordBuilder().table(AgentKeys.METRICS_TABLE)
+                .select(FieldFactory.getAgentMetricsFields()).andCondition(CriteriaAPI.getCurrentOrgIdCondition(ModuleFactory.getAgentMetricsModule()));
+        if(agentId != null){
+            genericSelectRecordBuilder.andCondition(CriteriaAPI.getCondition(FieldFactory.getAgentIdField(agentMetriceModule),agentId.toString(),NumberOperators.EQUALS));
+        }
+        if(publishType != null){
+            genericSelectRecordBuilder.andCondition(CriteriaAPI.getCondition(FieldFactory.getPublishTypeField(agentMetriceModule),publishType.toString(),NumberOperators.EQUALS));
+        }
+        return genericSelectRecordBuilder.get();
+    }
+
+
+    /**
+     * This method adds metrics to the database, which holds data explaining size and number of messages that were sent by the agent per publishtype, per day.
+     * If message already there for a particular Publishtype tha day, updation takes place else insertion.
+     * @param messageSize Size of an individual message.
+     * @param agentId If of the agent that sent this message.
+     * @param publishType Publish-Type of the message.
+     */
+    public static void addAgentMetrics(Integer messageSize, Long agentId, int publishType){
+        Long createdTime = DateTimeUtil.getDayStartTimeOf(System.currentTimeMillis());
+        Long lastUpdatedTime = System.currentTimeMillis();
+        ModuleCRUDBean bean;
+        Map<String, Object> metrics = new HashMap<>();
+        metrics.put(AgentKeys.AGENT_ID, agentId);
+        metrics.put(EventUtil.DATA_TYPE,publishType);
+        Map<String, Object> record;
+        try {
+            bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", AccountUtil.getCurrentOrg().getId());
+            List<Map<String,Object>> records = bean.getMetrics(agentId,publishType);
+            if(!records.isEmpty()) {
+                record = records.get(0);
+                if (!record.isEmpty())
+                    if (createdTime == Long.parseLong(record.get(AgentKeys.CREATED_TIME).toString())) {
+                        metrics.put(AgentKeys.SIZE, Integer.parseInt(record.get(AgentKeys.SIZE).toString()) + messageSize);
+                        metrics.put(AgentKeys.NO_OF_MESSAGES, Integer.parseInt(record.get(AgentKeys.NO_OF_MESSAGES).toString()) + 1);
+                        metrics.put(AgentKeys.LAST_UPDATED_TIME, lastUpdatedTime);
+                        metrics.put(AgentKeys.CREATED_TIME, createdTime);
+                        bean.updateAgentMetrics(metrics);
+                    }
+            }
+            else {
+                metrics.put(AgentKeys.NO_OF_MESSAGES, 1);
+                metrics.put(AgentKeys.SIZE, messageSize);
+                metrics.put(AgentKeys.CREATED_TIME, createdTime);
+                metrics.put(AgentKeys.LAST_UPDATED_TIME, lastUpdatedTime);
+                bean.insertAgentMetrics(metrics);
+            }
+
+
+        } catch (Exception e) {
+            LOGGER.info("Exception occured ", e);
+        }
+    }
+
 }
+
+
+
+
+

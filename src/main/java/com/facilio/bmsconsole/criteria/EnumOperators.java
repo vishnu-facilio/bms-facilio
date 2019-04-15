@@ -1,20 +1,14 @@
 package com.facilio.bmsconsole.criteria;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.StringJoiner;
-
+import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.modules.EnumField;
+import com.facilio.fw.BeanFactory;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.collections.PredicateUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
-import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.modules.EnumField;
-import com.facilio.fw.BeanFactory;
+import java.util.*;
 
 public enum EnumOperators implements Operator<String> {
 	VALUE_IS(52, "value is") {
@@ -259,6 +253,7 @@ public enum EnumOperators implements Operator<String> {
 		for(Operator operator : values()) {
 			operatorMap.put(operator.getOperator(), operator);
 		}
+		operatorMap.putAll(CommonOperators.getAllOperators());
 		return operatorMap;
 	}
 	public static Map<String, Operator> getAllOperators() {

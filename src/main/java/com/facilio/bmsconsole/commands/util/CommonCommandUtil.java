@@ -23,6 +23,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.apache.struts2.ServletActionContext;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
@@ -82,6 +83,7 @@ import com.facilio.workflows.context.ExpressionContext;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.context.WorkflowExpression;
 import com.facilio.workflows.util.WorkflowUtil;
+import com.opensymphony.xwork2.ActionContext;
 
 public class CommonCommandUtil {
 	private static final Logger LOGGER = LogManager.getLogger(CommonCommandUtil.class.getName());
@@ -323,13 +325,24 @@ public class CommonCommandUtil {
 			}
 
 			body.append(fromClass).append(DELIMITER);
-			
-			body.append("\n Org Time : ").append(DateTimeUtil.getDateTime())
+			if(org != null) {
+				body.append("\n Org Info: ").append(org.toString());
+			}
+			body.append("\n\n Org Time : ").append(DateTimeUtil.getDateTime())
 				.append("\n Indian Time : ").append(DateTimeUtil.getDateTime(ZoneId.of("Asia/Kolkata")))
 				.append("\n\nMsg : ")
-				.append(msg)
-				.append("\n\nApp Url : ")
-				.append(AwsUtil.getConfig("clientapp.url"));
+				.append(msg);
+			
+			if (ActionContext.getContext() != null && ServletActionContext.getRequest() != null) {
+				User currentUser = AccountUtil.getCurrentUser();
+				body.append("\nUser: ")
+				.append(currentUser.getName()).append(" - ").append(currentUser.getEmail()).append(" - ").append(currentUser.getOuid())
+				.append("\nDevice Type: ")
+				.append(AccountUtil.getCurrentAccount().getDeviceType())
+				.append("\nRequest Url: ")
+				.append(ServletActionContext.getRequest().getRequestURI());
+			}
+				json.put("message", body.toString());;
 			
 			String errorTrace = null;
 			if (e != null) {
@@ -787,7 +800,7 @@ public class CommonCommandUtil {
 			for(Unit unit :units) {
 				unitsJson.add(unit);
 			}
-			metricswithUnits.put(metric, unitsJson);
+			metricswithUnits.put(metric.getMetricId(), unitsJson);
 		}
 		return metricswithUnits;
 	}
@@ -819,9 +832,10 @@ public class CommonCommandUtil {
 		List<ActivityContext> activities = (List<ActivityContext>) context.get(FacilioConstants.ContextNames.ACTIVITY_LIST);
 		if (activities == null) {
 			activities = new ArrayList<>();
-			context.put(FacilioConstants.ContextNames.ACTIVITY_LIST, activities);
 		}
 		activities.add(activity);
+		context.put(FacilioConstants.ContextNames.ACTIVITY_LIST, activities);
+
 	}
 	
 	public static void addEventType (EventType type, FacilioContext context) {

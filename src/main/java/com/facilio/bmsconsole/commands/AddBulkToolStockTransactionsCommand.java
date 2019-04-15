@@ -1,100 +1,95 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.PurchasedToolContext;
 import com.facilio.bmsconsole.context.ToolContext;
 import com.facilio.bmsconsole.context.ToolTransactionContext;
-import com.facilio.bmsconsole.context.ToolTypesContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
-import com.facilio.bmsconsole.criteria.EnumOperators;
 import com.facilio.bmsconsole.criteria.NumberOperators;
-import com.facilio.bmsconsole.criteria.PickListOperators;
-import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.FacilioModule;
-import com.facilio.bmsconsole.modules.FieldFactory;
-import com.facilio.bmsconsole.modules.InsertRecordBuilder;
-import com.facilio.bmsconsole.modules.LookupField;
-import com.facilio.bmsconsole.modules.LookupFieldMeta;
-import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
-import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
+import com.facilio.bmsconsole.modules.*;
 import com.facilio.bmsconsole.util.TransactionState;
 import com.facilio.bmsconsole.util.TransactionType;
 import com.facilio.bmsconsole.workflow.rule.ApprovalState;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 public class AddBulkToolStockTransactionsCommand implements Command {
 
 	@Override
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.TOOL_TRANSACTIONS);
-		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.TOOL_TRANSACTIONS);
-
-		FacilioModule ptmodule = modBean.getModule(FacilioConstants.ContextNames.PURCHASED_TOOL);
-		List<FacilioField> ptfields = modBean.getAllFields(FacilioConstants.ContextNames.PURCHASED_TOOL);
-		Map<String, FacilioField> ptoolsFieldMap = FieldFactory.getAsMap(ptfields);
-		List<LookupFieldMeta> ptlookUpfields = new ArrayList<>();
-		ptlookUpfields.add(new LookupFieldMeta((LookupField) ptoolsFieldMap.get("toolType")));
-
 		List<Long> toolIds = (List<Long>) context.get(FacilioConstants.ContextNames.TOOL_IDS);
-		FacilioModule Toolmodule = modBean.getModule(FacilioConstants.ContextNames.TOOL);
-		List<FacilioField> Toolfields = modBean.getAllFields(FacilioConstants.ContextNames.TOOL);
-		Map<String, FacilioField> toolsFieldMap = FieldFactory.getAsMap(Toolfields);
-		List<LookupFieldMeta> lookUpfields = new ArrayList<>();
-		lookUpfields.add(new LookupFieldMeta((LookupField) toolsFieldMap.get("toolType")));
+		if (toolIds != null && !toolIds.isEmpty()) {
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.TOOL_TRANSACTIONS);
+			List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.TOOL_TRANSACTIONS);
 
-		List<ToolTransactionContext> toolTransaction = new ArrayList<>();
+			FacilioModule ptmodule = modBean.getModule(FacilioConstants.ContextNames.PURCHASED_TOOL);
+			List<FacilioField> ptfields = modBean.getAllFields(FacilioConstants.ContextNames.PURCHASED_TOOL);
+			Map<String, FacilioField> ptoolsFieldMap = FieldFactory.getAsMap(ptfields);
+			List<LookupField> ptlookUpfields = new ArrayList<>();
+			ptlookUpfields.add((LookupField) ptoolsFieldMap.get("toolType"));
 
-		SelectRecordsBuilder<ToolContext> toolselectBuilder = new SelectRecordsBuilder<ToolContext>().select(Toolfields)
-				.table(Toolmodule.getTableName()).moduleName(Toolmodule.getName()).beanClass(ToolContext.class)
-				.andCondition(CriteriaAPI.getIdCondition(toolIds, Toolmodule)).fetchLookups(lookUpfields);
+			FacilioModule Toolmodule = modBean.getModule(FacilioConstants.ContextNames.TOOL);
+			List<FacilioField> Toolfields = modBean.getAllFields(FacilioConstants.ContextNames.TOOL);
+			Map<String, FacilioField> toolsFieldMap = FieldFactory.getAsMap(Toolfields);
+			List<LookupField> lookUpfields = new ArrayList<>();
+			lookUpfields.add((LookupField) toolsFieldMap.get("toolType"));
 
-		List<ToolContext> tools = (List<ToolContext>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
-		Map<Long, List<PurchasedToolContext>> toolVsPurchaseTool =  (Map<Long, List<PurchasedToolContext>>) context.get(FacilioConstants.ContextNames.PURCHASED_TOOL);
-		if (tools != null && !tools.isEmpty()) {
-			for (ToolContext tool : tools) {
-				ToolTransactionContext transaction = new ToolTransactionContext();
-				if (tool.getToolType().individualTracking()) {
-					List<PurchasedToolContext> purchasedTools = toolVsPurchaseTool.get(tool.getId());
-					if (purchasedTools != null && !purchasedTools.isEmpty()) {
-						for (PurchasedToolContext purchaseTool : purchasedTools) {
-							transaction.setQuantity(1);
-							transaction.setTransactionState(TransactionState.ADDITION.getValue());
-							transaction.setTool(tool);
-							transaction.setParentId(tool.getId());
-							transaction.setIsReturnable(false);
-							transaction.setTransactionType(TransactionType.STOCK.getValue());
-							transaction.setToolType(tool.getToolType());
-							transaction.setPurchasedTool(purchaseTool);
-							toolTransaction.add(transaction);
+			List<ToolTransactionContext> toolTransaction = new ArrayList<>();
+
+			SelectRecordsBuilder<ToolContext> toolselectBuilder = new SelectRecordsBuilder<ToolContext>()
+					.select(Toolfields).table(Toolmodule.getTableName()).moduleName(Toolmodule.getName())
+					.beanClass(ToolContext.class).andCondition(CriteriaAPI.getIdCondition(toolIds, Toolmodule))
+					.fetchLookups(lookUpfields);
+
+			List<ToolContext> tools = (List<ToolContext>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
+			Map<Long, List<PurchasedToolContext>> toolVsPurchaseTool = (Map<Long, List<PurchasedToolContext>>) context
+					.get(FacilioConstants.ContextNames.PURCHASED_TOOL);
+			if (tools != null && !tools.isEmpty()) {
+				for (ToolContext tool : tools) {
+					ToolTransactionContext transaction = new ToolTransactionContext();
+					if (tool.getToolType().individualTracking()) {
+						List<PurchasedToolContext> purchasedTools = toolVsPurchaseTool.get(tool.getId());
+						if (purchasedTools != null && !purchasedTools.isEmpty()) {
+							for (PurchasedToolContext purchaseTool : purchasedTools) {
+								transaction.setQuantity(1);
+								transaction.setTransactionState(TransactionState.ADDITION.getValue());
+								transaction.setTool(tool);
+								transaction.setParentId(tool.getId());
+								transaction.setIsReturnable(false);
+								transaction.setTransactionType(TransactionType.STOCK.getValue());
+								transaction.setToolType(tool.getToolType());
+								transaction.setPurchasedTool(purchaseTool);
+								transaction.setApprovedState(ApprovalState.YET_TO_BE_REQUESTED);
+								toolTransaction.add(transaction);
+							}
 						}
+					} else {
+						transaction.setQuantity(tool.getQuantity());
+						transaction.setTransactionState(TransactionState.ADDITION.getValue());
+						transaction.setTool(tool);
+						transaction.setParentId(tool.getId());
+						transaction.setIsReturnable(false);
+						transaction.setTransactionType(TransactionType.STOCK.getValue());
+						transaction.setToolType(tool.getToolType());
+						transaction.setApprovedState(ApprovalState.YET_TO_BE_REQUESTED);
+						toolTransaction.add(transaction);
 					}
-				} else {
-					transaction.setQuantity(tool.getQuantity());
-					transaction.setTransactionState(TransactionState.ADDITION.getValue());
-					transaction.setTool(tool);
-					transaction.setParentId(tool.getId());
-					transaction.setIsReturnable(false);
-					transaction.setTransactionType(TransactionType.STOCK.getValue());
-					transaction.setToolType(tool.getToolType());
-					toolTransaction.add(transaction);
 				}
 			}
-		}
 
-		InsertRecordBuilder<ToolTransactionContext> readingBuilder = new InsertRecordBuilder<ToolTransactionContext>()
-				.module(module).fields(fields).addRecords(toolTransaction);
-		readingBuilder.save();
-		context.put(FacilioConstants.ContextNames.RECORD_LIST, toolTransaction);
+			InsertRecordBuilder<ToolTransactionContext> readingBuilder = new InsertRecordBuilder<ToolTransactionContext>()
+					.module(module).fields(fields).addRecords(toolTransaction);
+			readingBuilder.save();
+			context.put(FacilioConstants.ContextNames.RECORD_LIST, toolTransaction);
+		}
 		return false;
 	}
 

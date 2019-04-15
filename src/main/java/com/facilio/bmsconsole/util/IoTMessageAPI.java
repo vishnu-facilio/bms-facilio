@@ -1,35 +1,16 @@
 package com.facilio.bmsconsole.util;
 
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-
-import com.amazonaws.services.iot.client.AWSIotConnectionStatus;
-import com.amazonaws.services.iot.client.AWSIotException;
-import com.amazonaws.services.iot.client.AWSIotMessage;
-import com.amazonaws.services.iot.client.AWSIotMqttClient;
-import com.amazonaws.services.iot.client.AWSIotQos;
+import com.amazonaws.services.iot.client.*;
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.agent.AgentKeys;
+import com.facilio.agent.AgentUtil;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ControllerContext;
 import com.facilio.bmsconsole.context.PublishData;
 import com.facilio.bmsconsole.context.PublishMessage;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
-import com.facilio.bmsconsole.modules.FacilioModule;
-import com.facilio.bmsconsole.modules.FieldFactory;
-import com.facilio.bmsconsole.modules.FieldType;
-import com.facilio.bmsconsole.modules.FieldUtil;
-import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.bmsconsole.modules.*;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
@@ -37,11 +18,20 @@ import com.facilio.serializable.SerializableConsumer;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
 import com.facilio.tasker.FacilioTimer;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+
+import java.sql.SQLException;
+import java.util.*;
 
 public class IoTMessageAPI {
 	private static final Logger LOGGER = LogManager.getLogger(IoTMessageAPI.class.getName());
 	
 	private static final int MAX_BUFFER = 112640; // 110KiB;  AWS IOT limits max publish message size to 128KiB
+	private static Boolean isStage = !AwsUtil.isProduction();
 	
 	private static PublishData constructIotMessage (List<Map<String, Object>> instances, IotCommandType command) throws Exception {
 		return constructIotMessage((long) instances.get(0).get("controllerId"), command, instances, null);
@@ -279,6 +269,9 @@ public class IoTMessageAPI {
 			mqttClient.connect();
 			if(mqttClient.getConnectionStatus() == AWSIotConnectionStatus.CONNECTED) {
 				mqttClient.publish(new AWSIotMessage(topic, AWSIotQos.QOS0, object.toJSONString()));
+				if(isStage) {
+					AgentUtil.putLog(object, AccountUtil.getCurrentOrg().getOrgId(), Long.parseLong(object.get(AgentKeys.AGENT_ID).toString()), true);
+				}
 			}
 		} catch (AWSIotException e) {
 			LOGGER.error("Exception while publishing message ", e);

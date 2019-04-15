@@ -1,11 +1,5 @@
 package com.facilio.bmsconsole.jobs;
 
-import java.util.Map;
-
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.json.simple.JSONObject;
-
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.FormulaFieldContext;
@@ -13,6 +7,11 @@ import com.facilio.bmsconsole.criteria.DateRange;
 import com.facilio.bmsconsole.util.FormulaFieldAPI;
 import com.facilio.tasker.job.FacilioJob;
 import com.facilio.tasker.job.JobContext;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.json.simple.JSONObject;
+
+import java.util.Map;
 
 public class SingleResourceHistoricalFormulaCalculatorJob extends FacilioJob {
 	private static final Logger LOGGER = LogManager.getLogger(SingleResourceHistoricalFormulaCalculatorJob.class.getName());
@@ -58,7 +57,7 @@ public class SingleResourceHistoricalFormulaCalculatorJob extends FacilioJob {
 			
 			if (!isSystem) {
 				JSONObject json = new JSONObject();
-				json.put("to", "praveen@facilio.com, manthosh@facilio.com, shivaraj@facilio.com, shaan@facilio.com");
+				json.put("to", "praveen@facilio.com, manthosh@facilio.com, shivaraj@facilio.com, shaan@facilio.com, arun@facilio.com");
 				json.put("sender", "noreply@facilio.com");
 				json.put("subject", "Historical Calculation completed for Formula : "+formulaId);
 				json.put("message", msg);

@@ -1,7 +1,12 @@
 package com.facilio.activity;
 
-import java.util.List;
-
+import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.bmsconsole.modules.FacilioModule;
+import com.facilio.bmsconsole.modules.FacilioModule.ModuleType;
+import com.facilio.bmsconsole.modules.InsertRecordBuilder;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
@@ -9,12 +14,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
-import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.modules.FacilioModule;
-import com.facilio.bmsconsole.modules.FacilioModule.ModuleType;
-import com.facilio.bmsconsole.modules.InsertRecordBuilder;
-import com.facilio.constants.FacilioConstants;
-import com.facilio.fw.BeanFactory;
+import java.util.List;
 
 public class AddActivitiesCommand implements Command {
 
@@ -34,18 +34,25 @@ public class AddActivitiesCommand implements Command {
 	@Override
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
-		List<ActivityContext> activities = (List<ActivityContext>) context.get(FacilioConstants.ContextNames.ACTIVITY_LIST);
-		if (CollectionUtils.isNotEmpty(activities)) {
-			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			FacilioModule activityModule = getActivityModule(modBean, context);
-			if (activityModule != null) {
-				InsertRecordBuilder<ActivityContext> insertBuilder = new InsertRecordBuilder<ActivityContext>()
-																			.fields(modBean.getAllFields(activityModule.getName()))
-																			.module(activityModule)
-																			.addRecords(activities)
-																			;
-				insertBuilder.save();
+		try {
+			List<ActivityContext> activities = (List<ActivityContext>) context.get(FacilioConstants.ContextNames.ACTIVITY_LIST);
+			if (CollectionUtils.isNotEmpty(activities)) {
+				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+				FacilioModule activityModule = getActivityModule(modBean, context);
+				if (activityModule != null) {
+					InsertRecordBuilder<ActivityContext> insertBuilder = new InsertRecordBuilder<ActivityContext>()
+																				.fields(modBean.getAllFields(activityModule.getName()))
+																				.module(activityModule)
+																				.addRecords(activities)
+																				;
+					insertBuilder.save();
+					context.put(FacilioConstants.ContextNames.ACTIVITY_LIST, null);
+				}
 			}
+		}
+		catch(Exception e) {
+			LOGGER.error("Error occurred during activity addition", e);
+			CommonCommandUtil.emailException("AddActivitiesCommand", "Error occurred during execution of AddActivitiesCommand", e);
 		}
 		
 		return false;

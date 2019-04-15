@@ -1,11 +1,11 @@
 package com.facilio.workflows.functions;
 
+import com.facilio.workflows.exceptions.FunctionParamException;
+import com.facilio.workflows.util.FunctionUtil;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-
-import com.facilio.workflows.exceptions.FunctionParamException;
-import com.facilio.workflows.util.FunctionUtil;
 
 public enum FacilioCostFunctions implements FacilioWorkflowFunctionInterface {
 

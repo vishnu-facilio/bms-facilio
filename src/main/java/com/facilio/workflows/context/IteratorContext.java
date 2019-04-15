@@ -1,15 +1,14 @@
 package com.facilio.workflows.context;
 
+import com.facilio.bmsconsole.commands.CalculateDerivationCommand;
+import com.facilio.bmsconsole.modules.FieldUtil;
+import org.json.simple.JSONArray;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
-
-import org.json.simple.JSONArray;
-
-import com.facilio.bmsconsole.commands.CalculateDerivationCommand;
-import com.facilio.bmsconsole.modules.FieldUtil;
 
 public class IteratorContext implements WorkflowExpression {
 
@@ -65,9 +64,8 @@ public class IteratorContext implements WorkflowExpression {
 		
 		expressions.add(expression);
 	}
-	WorkflowContext workflowContext;
 	
-	public Object execute() throws Exception {
+	public Object execute(WorkflowContext workflowContext) throws Exception {
 		
 		Map<String, Object> variableToExpresionMap = workflowContext.getVariableResultMap();
 		if(iteratableVariable == null || variableToExpresionMap.get(iteratableVariable) == null || !isIteratableVariable(variableToExpresionMap.get(iteratableVariable))) {
@@ -131,12 +129,6 @@ public class IteratorContext implements WorkflowExpression {
 	}
 	public void setIteratableVariable(String iteratableVariable) {
 		this.iteratableVariable = iteratableVariable;
-	}
-	public WorkflowContext getWorkflowContext() {
-		return workflowContext;
-	}
-	public void setWorkflowContext(WorkflowContext workflowContext) {
-		this.workflowContext = workflowContext;
 	}
 	@Override
 	public int getWorkflowExpressionType(){

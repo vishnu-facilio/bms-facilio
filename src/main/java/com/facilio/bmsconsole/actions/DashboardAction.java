@@ -1,140 +1,28 @@
 package com.facilio.bmsconsole.actions;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.text.DecimalFormat;
-import java.time.ZonedDateTime;
-import java.time.temporal.ChronoField;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import org.apache.commons.chain.Chain;
-import org.apache.commons.chain.Command;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.Pair;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
+import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.ReportsChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.bmsconsole.context.AlarmContext;
-import com.facilio.bmsconsole.context.AssetCategoryContext;
-import com.facilio.bmsconsole.context.AssetContext;
-import com.facilio.bmsconsole.context.BaseLineContext;
+import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.context.BaseLineContext.AdjustType;
 import com.facilio.bmsconsole.context.BaseLineContext.RangeType;
-import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.BaseSpaceContext.SpaceType;
-import com.facilio.bmsconsole.context.BenchmarkContext;
-import com.facilio.bmsconsole.context.BenchmarkUnit;
-import com.facilio.bmsconsole.context.BuildingContext;
-import com.facilio.bmsconsole.context.DashboardContext;
 import com.facilio.bmsconsole.context.DashboardContext.DashboardPublishStatus;
-import com.facilio.bmsconsole.context.DashboardFolderContext;
-import com.facilio.bmsconsole.context.DashboardSharingContext;
-import com.facilio.bmsconsole.context.DashboardWidgetContext;
-import com.facilio.bmsconsole.context.DerivationContext;
-import com.facilio.bmsconsole.context.EnergyMeterContext;
-import com.facilio.bmsconsole.context.EnergyMeterPurposeContext;
-import com.facilio.bmsconsole.context.FormulaContext;
-import com.facilio.bmsconsole.context.FormulaContext.AggregateOperator;
-import com.facilio.bmsconsole.context.FormulaContext.CommonAggregateOperator;
-import com.facilio.bmsconsole.context.FormulaContext.DateAggregateOperator;
-import com.facilio.bmsconsole.context.FormulaContext.EnergyPurposeAggregateOperator;
-import com.facilio.bmsconsole.context.FormulaContext.NumberAggregateOperator;
-import com.facilio.bmsconsole.context.FormulaContext.SpaceAggregateOperator;
-import com.facilio.bmsconsole.context.MarkedReadingContext;
-import com.facilio.bmsconsole.context.PhotosContext;
-import com.facilio.bmsconsole.context.PreventiveMaintenance;
-import com.facilio.bmsconsole.context.ReadingAlarmContext;
-import com.facilio.bmsconsole.context.ReadingContext;
-import com.facilio.bmsconsole.context.ReadingDataMeta;
-import com.facilio.bmsconsole.context.ReportBenchmarkRelContext;
-import com.facilio.bmsconsole.context.ReportColumnContext;
-import com.facilio.bmsconsole.context.ReportContext;
 import com.facilio.bmsconsole.context.ReportContext.LegendMode;
 import com.facilio.bmsconsole.context.ReportContext.ReportChartType;
-import com.facilio.bmsconsole.context.ReportDateFilterContext;
-import com.facilio.bmsconsole.context.ReportFieldContext;
-import com.facilio.bmsconsole.context.ReportFolderContext;
-import com.facilio.bmsconsole.context.ReportInfo;
-import com.facilio.bmsconsole.context.ReportSpaceFilterContext;
-import com.facilio.bmsconsole.context.ReportThreshold;
-import com.facilio.bmsconsole.context.ReportUserFilterContext;
-import com.facilio.bmsconsole.context.ResourceContext;
-import com.facilio.bmsconsole.context.SiteContext;
-import com.facilio.bmsconsole.context.SpaceFilteredDashboardSettings;
-import com.facilio.bmsconsole.context.TaskContext;
-import com.facilio.bmsconsole.context.TaskSectionContext;
-import com.facilio.bmsconsole.context.TicketCategoryContext;
-import com.facilio.bmsconsole.context.TicketStatusContext;
 import com.facilio.bmsconsole.context.TicketStatusContext.StatusType;
-import com.facilio.bmsconsole.context.WidgetChartContext;
-import com.facilio.bmsconsole.context.WidgetListViewContext;
-import com.facilio.bmsconsole.context.WidgetStaticContext;
-import com.facilio.bmsconsole.context.WidgetVsWorkflowContext;
-import com.facilio.bmsconsole.context.WidgetWebContext;
-import com.facilio.bmsconsole.context.WorkOrderContext;
-import com.facilio.bmsconsole.context.WorkOrderRequestContext;
 import com.facilio.bmsconsole.context.WorkOrderRequestContext.WORUrgency;
-import com.facilio.bmsconsole.criteria.BooleanOperators;
-import com.facilio.bmsconsole.criteria.Condition;
-import com.facilio.bmsconsole.criteria.Criteria;
-import com.facilio.bmsconsole.criteria.CriteriaAPI;
-import com.facilio.bmsconsole.criteria.DateOperators;
-import com.facilio.bmsconsole.criteria.DateRange;
-import com.facilio.bmsconsole.criteria.NumberOperators;
-import com.facilio.bmsconsole.criteria.Operator;
-import com.facilio.bmsconsole.criteria.PickListOperators;
-import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.FacilioModule;
-import com.facilio.bmsconsole.modules.FieldFactory;
-import com.facilio.bmsconsole.modules.FieldType;
-import com.facilio.bmsconsole.modules.FieldUtil;
-import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
-import com.facilio.bmsconsole.modules.ModuleFactory;
-import com.facilio.bmsconsole.modules.NumberField;
-import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
+import com.facilio.bmsconsole.criteria.*;
+import com.facilio.bmsconsole.modules.*;
 import com.facilio.bmsconsole.reports.ReportExportUtil;
 import com.facilio.bmsconsole.reports.ReportsUtil;
 import com.facilio.bmsconsole.templates.EMailTemplate;
-import com.facilio.bmsconsole.util.AlarmAPI;
-import com.facilio.bmsconsole.util.AssetsAPI;
-import com.facilio.bmsconsole.util.BaseLineAPI;
-import com.facilio.bmsconsole.util.BenchmarkAPI;
-import com.facilio.bmsconsole.util.DashboardUtil;
-import com.facilio.bmsconsole.util.DateTimeUtil;
-import com.facilio.bmsconsole.util.DerivationAPI;
-import com.facilio.bmsconsole.util.DeviceAPI;
-import com.facilio.bmsconsole.util.ExportUtil;
-import com.facilio.bmsconsole.util.FacilioFrequency;
-import com.facilio.bmsconsole.util.FormulaFieldAPI;
-import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
-import com.facilio.bmsconsole.util.ReadingRuleAPI;
-import com.facilio.bmsconsole.util.ReadingsAPI;
-import com.facilio.bmsconsole.util.ResourceAPI;
-import com.facilio.bmsconsole.util.SpaceAPI;
-import com.facilio.bmsconsole.util.TicketAPI;
-import com.facilio.bmsconsole.util.WorkOrderAPI;
-import com.facilio.bmsconsole.util.WorkflowRuleAPI;
+import com.facilio.bmsconsole.util.*;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleAlarmMeta;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
@@ -159,10 +47,31 @@ import com.facilio.unitconversion.UnitsUtil;
 import com.facilio.workflows.context.ExpressionContext;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.context.WorkflowExpression;
-//import com.facilio.workflows.context.WorkflowExpression;
 import com.facilio.workflows.util.WorkflowUtil;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
+import org.apache.commons.chain.Chain;
+import org.apache.commons.chain.Command;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.text.DecimalFormat;
+import java.time.ZonedDateTime;
+import java.time.temporal.ChronoField;
+import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import com.facilio.bmsconsole.modules.AggregateOperator.*;
+
+//import com.facilio.workflows.context.WorkflowExpression;
 
 public class DashboardAction extends FacilioAction {
 
@@ -1172,289 +1081,19 @@ public class DashboardAction extends FacilioAction {
 	
 	public String getCardData() throws Exception {
 		
-		WidgetStaticContext widgetStaticContext = null;
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		if(widgetId != null) {
-			DashboardWidgetContext dashboardWidgetContext =  DashboardUtil.getWidget(widgetId);
-			widgetStaticContext = (WidgetStaticContext) dashboardWidgetContext;
-		}
-		else {
-			widgetStaticContext = new WidgetStaticContext();
-			widgetStaticContext.setStaticKey(staticKey);
-			widgetStaticContext.setBaseSpaceId(baseSpaceId);
-			
-			if(workflow != null) {
-				WidgetVsWorkflowContext widgetVsWorkflowContext = new WidgetVsWorkflowContext();
-				widgetVsWorkflowContext.setWorkflow(workflow);
-				widgetStaticContext.addWidgetVsWorkflowContexts(widgetVsWorkflowContext);
-			}
-			else {
-				List<WidgetVsWorkflowContext> workflowList = DashboardUtil.getCardWorkflowBasedOnStaticKey(staticKey);
-				if(workflowList != null) {
-					for(WidgetVsWorkflowContext workflow :workflowList) {
-						workflow.setBaseSpaceId(baseSpaceId);
-					}
-				}
-				widgetStaticContext.setWidgetVsWorkflowContexts(workflowList);
-			}
-		}
-		if(paramsJson != null) {
-			widgetStaticContext.setParamsJson(paramsJson);
-		}
+		Chain fetchCardData = ReadOnlyChainFactory.fetchCardDataChain();
+		FacilioContext context = new FacilioContext();
 		
-		if(widgetStaticContext != null) {
-			
-			Map<String,Object> result = null;
-			widgetStaticContext.setParamsJson(DashboardUtil.getCardParams(widgetStaticContext.getParamsJson()));
-			if(CardUtil.isGetDataFromEnum(widgetStaticContext.getStaticKey())) {
-				
-				result = new HashMap<>();
-				
-				CardType card = CardType.getCardType(widgetStaticContext.getStaticKey());
-				
-				if(DashboardUtil.isDynamicWFGeneratingCard(widgetStaticContext.getStaticKey())) {
-					card.setWorkflow(widgetStaticContext.getWidgetVsWorkflowContexts().get(0).getWorkflowString());
-				}
-				
-				if(widgetStaticContext.getStaticKey().equals(CardType.FAHU_STATUS_CARD_NEW.getName())) {
-					CardUtil.fillParamJsonForFahuCard(AccountUtil.getCurrentOrg().getId(),widgetStaticContext.getParamsJson());
-				}
-				
-				if(card.isSingleResultWorkFlow()) {
-					Object wfResult = WorkflowUtil.getWorkflowExpressionResult(card.getWorkflow(), widgetStaticContext.getParamsJson());
-					
-					wfResult = CardUtil.getWorkflowResultForClient(wfResult, widgetStaticContext); // parsing data suitable for client
-					result.put("result", wfResult);
-					
-					result.put("unit", CardUtil.getUnit(widgetStaticContext.getParamsJson()));
-				}
-				else {
-					Map<String, Object> expResult = WorkflowUtil.getExpressionResultMap(card.getWorkflow(), widgetStaticContext.getParamsJson());
-					
-					expResult = (Map<String, Object>) CardUtil.getWorkflowResultForClient(expResult, widgetStaticContext); // parsing data suitable for client
-					
-					result.put("result", expResult);
-				}
-				result.put("widget", widgetStaticContext);
-				setCardResult(result);
-				return SUCCESS;
-			}
-			
-			else if(CardUtil.isExtraCard(widgetStaticContext.getStaticKey())) { // check in stage
-				
-				result = new HashMap<>();
-				
-				if(widgetStaticContext.getStaticKey().equals("readingWithGraphCard")) {
-					
-					V2ReportAction reportAction = new V2ReportAction();
-					if(widgetId != null) {
-						reportAction.setCardWidgetId(widgetId);
-					}
-					else {
-						reportAction.setCardParamJson(widgetStaticContext.getParamsJson());
-					}
-					reportAction.fetchReadingsFromCard();
-					
-					FacilioContext context = reportAction.getResultContext();
-					
-					result.put("result", context);
-					
-					JSONObject params = widgetStaticContext.getParamsJson();
-					
-					 Map<Long, ReadingRuleAlarmMeta> alarmMeta = ReadingRuleAPI.fetchAlarmMeta((Long)params.get("parentId"), (Long)params.get("fieldId"));
-					 
-					List<AlarmContext> alarms = AlarmAPI.getAlarms(alarmMeta.keySet());
-					
-					result.put("alarmSeverity", AlarmAPI.getMaxSeverity(alarms));
-					
-					result.put("unit", CardUtil.getUnit(params));
-					
-					result.put("widget", widgetStaticContext);
-					setCardResult(result);
-					return SUCCESS;
-					
-				}
-				else if(widgetStaticContext.getStaticKey().contains("emrillFcu")) {
-					
-					JSONObject json = widgetStaticContext.getParamsJson();
-					
-					Long buildingId = (Long)json.get("buildingId");
-					String levelString = (String) json.get("level");
-					
-					result = new HashMap<>();
-					
-					List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.RESOURCE);
-					
-					List<FacilioField> newFieldList = new ArrayList<>(fields);
-					
-					newFieldList.add(FieldFactory.getIdField(modBean.getModule(FacilioConstants.ContextNames.RESOURCE)));
-					
-					GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-							.select(newFieldList)
-							.table(modBean.getModule(FacilioConstants.ContextNames.RESOURCE).getTableName())
-							.innerJoin("Assets").on("Assets.ID = Resources.ID")
-							.innerJoin("BaseSpace").on("BaseSpace.ID = Resources.SPACE_ID")
-							.andCustomWhere("BaseSpace.BUILDING_ID = ?",buildingId)
-							.andCustomWhere("Resources.ORGID = ?",AccountUtil.getCurrentOrg().getId())
-							.andCustomWhere("Assets.STRING_CF2 = ?", levelString);
-					
-					List<Map<String, Object>> props = selectBuilder.get();
-					
-					if(widgetStaticContext.getStaticKey().equals("emrillFcuList")) {
-						DashboardUtil.getEmrillFCUListWidgetResult(props,result);
-					}
-					else {
-						DashboardUtil.getEmrillFCUWidgetResult(result, props);
-					}
-					
-					setCardResult(result);
-					return SUCCESS;
-				}
-			}
-			if(widgetStaticContext.getWidgetVsWorkflowContexts() != null) {
-				
-				result = new HashMap<>();
-				
-				for(WidgetVsWorkflowContext widgetVsWorkflowContext : widgetStaticContext.getWidgetVsWorkflowContexts()) {
-					
-					if(widgetStaticContext.getStaticKey().equals("profilemini") && widgetVsWorkflowContext.getBaseSpaceId() != null) {
-						
-						BuildingContext building = SpaceAPI.getBuildingSpace(widgetVsWorkflowContext.getBaseSpaceId());
-						
-						List<EnergyMeterContext> meters = DeviceAPI.getMainEnergyMeter(building.getId()+"");
-						
-						EnergyMeterContext meter = meters.get(0);
-						
-						DateOperators dateOpp = DateOperators.CURRENT_MONTH;
-						
-						BaseLineContext baseline = BaseLineAPI.getBaseLine(RangeType.PREVIOUS_MONTH);
-						DateRange lastMonthUptoNow = baseline.calculateBaseLineRange(new DateRange(dateOpp.getRange(null).getStartTime(), DateTimeUtil.getCurrenTime()), AdjustType.NONE);
-						
-						double previousValue = DashboardAction.getTotalKwh(Collections.singletonList(meter.getId()+""), lastMonthUptoNow.getStartTime(), lastMonthUptoNow.getEndTime());
-						
-						value = DashboardAction.getTotalKwh(Collections.singletonList(meter.getId()+""), dateOpp.getRange(null).getStartTime(), dateOpp.getRange(null).getEndTime());
-						JSONObject json1 = new JSONObject();
-						
-						json1.put("consumption", value);
-						json1.put("unit", "kWh");
-						
-						JSONObject json = new JSONObject();
-						
-						json.put("name", building.getName());
-						
-						if(building.getPhotoId() <= 0) {
-							
-							List<PhotosContext> photos = SpaceAPI.getBaseSpacePhotos(building.getId());
-							
-							if(photos != null && !photos.isEmpty()) {
-								building.setPhotoId(photos.get(0).getPhotoId());
-							}
-						}
-						
-						json.put("avatar", building.getAvatarUrl());
-						json.put("currentVal", json1);
-						
-						json.put("variance", ReportsUtil.getVariance(value, previousValue));
-						
-						result.put("card", json);
-						result.put("building", building);
-					}
-					else {
-						try {
-							Map<String,Object> paramMap = null;
-							if(widgetVsWorkflowContext.getBaseSpaceId() != null) {
-								if(paramMap == null) {
-									paramMap = new HashMap<>();
-								}
-								paramMap.put("parentId", widgetVsWorkflowContext.getBaseSpaceId());
-								
-								if(widgetStaticContext != null && ( ((widgetStaticContext.getStaticKey().equals(DashboardUtil.STATIC_WIDGET_WEATHER_CARD) || widgetStaticContext.getStaticKey().equals(DashboardUtil.STATIC_WIDGET_WEATHER_CARD_MINI)) && widgetVsWorkflowContext.getWorkflowName().equals("weather"))  || (widgetStaticContext.getStaticKey().equals("weathercardaltayer") && widgetVsWorkflowContext.getWorkflowName().equals("weather")) )) {
-									BaseSpaceContext basespace = SpaceAPI.getBaseSpace(widgetVsWorkflowContext.getBaseSpaceId());
-									if(basespace != null) {
-										paramMap.put("parentId", basespace.getSiteId());
-									}
-								}
-							}
-							if(reportSpaceFilterContext != null) {
-								if(paramMap == null) {
-									paramMap = new HashMap<>();
-								}
-								if(reportSpaceFilterContext.getBuildingId() != null) {
-									paramMap.put("parentId", reportSpaceFilterContext.getBuildingId());
-								}
-								if(widgetStaticContext != null && ( ((widgetStaticContext.getStaticKey().equals(DashboardUtil.STATIC_WIDGET_WEATHER_CARD) || widgetStaticContext.getStaticKey().equals(DashboardUtil.STATIC_WIDGET_WEATHER_CARD_MINI)) && widgetVsWorkflowContext.getWorkflowName().equals("weather"))  || (widgetStaticContext.getStaticKey().equals("weathercardaltayer") && widgetVsWorkflowContext.getWorkflowName().equals("weather")) )) {
-									BaseSpaceContext basespace = SpaceAPI.getBaseSpace(reportSpaceFilterContext.getBuildingId());
-									if(basespace != null) {
-										paramMap.put("parentId", basespace.getSiteId());
-									}
-								}
-							}
-							if (widgetVsWorkflowContext.getWorkflowName().equals("lastMonthThisDate") || widgetVsWorkflowContext.getWorkflowName().equals("lastMonthDate")){
-								if(paramMap == null) {
-									paramMap = new HashMap<>();
-								}
-								DateRange range1 = DateOperators.CURRENT_MONTH_UPTO_NOW.getRange(null);
-								paramMap.put("startTime", range1.getStartTime());
-								paramMap.put("endTime", range1.getEndTime());
-							}
-							Object wfResult = null;
-							if(widgetVsWorkflowContext.getWorkflowId() != null) {
-								wfResult = WorkflowUtil.getResult(widgetVsWorkflowContext.getWorkflowId(), paramMap);
-							}
-							else {
-								wfResult = WorkflowUtil.getWorkflowExpressionResult(widgetVsWorkflowContext.getWorkflowString(), paramMap);
-							}
-							
-							if(widgetStaticContext != null && (widgetStaticContext.getStaticKey().equals("weathercard") || widgetStaticContext.getStaticKey().equals("weathermini")) && widgetVsWorkflowContext.getWorkflowName().equals("weather")) {
-								Map<String,Object> ss = (Map<String, Object>) wfResult;
-								Object temprature = ss.get("temperature");
-								if(AccountUtil.getCurrentOrg().getOrgId() == 104l || AccountUtil.getCurrentOrg().getOrgId() == 75l) {
-									ss.put("unit", "F");
-								}
-								DecimalFormat f = new DecimalFormat("##.0");
-								ss.put("temperature", f.format(temprature));
-								
-							}
-							
-							LOGGER.severe("widgetVsWorkflowContext.getWorkflowId() --- "+widgetVsWorkflowContext.getWorkflowId() +" wfResult --  "+wfResult);
-							result.put(widgetVsWorkflowContext.getWorkflowName(), wfResult);
-						}
-						catch(Exception e) {
-							LOGGER.severe(e.getMessage());
-						}
-					}
-				}
-			} 
-			LOGGER.severe("result --- "+result);
-			setCardResult(result);
-		}
-//		else if(staticKey != null) {
-//			
-//			Map<String,Object> result = null;
-//			paramsJson = DashboardUtil.getCardParams(paramsJson);
-//			
-//			if(CardUtil.isGetDataFromEnum(staticKey)) {}
-//			else if(CardUtil.isExtraCard(staticKey)) {}
-//			
-//			
-//			List<WidgetVsWorkflowContext> workflowList = DashboardUtil.getCardWorkflowBasedOnStaticKey(staticKey);
-//			
-//			if(workflowList != null) {
-//				
-//				result = new HashMap<>();
-//				
-//				for(WidgetVsWorkflowContext widgetVsWorkflowContext : workflowList) {
-//					
-//					widgetVsWorkflowContext.setBaseSpaceId(baseSpaceId);
-//					
-//					if(staticKey.equals("profilemini")) {}
-//					else {}
-//				}
-//			}
-//			LOGGER.severe("result --- "+result);
-//			setCardResult(result);
-//			
-//		}
+		context.put(FacilioConstants.ContextNames.WIDGET_ID, widgetId);
+		context.put(FacilioConstants.ContextNames.WIDGET_STATIC_KEY, staticKey);
+		context.put(FacilioConstants.ContextNames.WIDGET_BASESPACE_ID, baseSpaceId);
+		context.put(FacilioConstants.ContextNames.WIDGET_WORKFLOW, workflow);
+		context.put(FacilioConstants.ContextNames.WIDGET_PARAMJSON, paramsJson);
+		context.put(FacilioConstants.ContextNames.WIDGET_REPORT_SPACE_FILTER_CONTEXT, reportSpaceFilterContext);
+		
+		fetchCardData.execute(context);
+		
+		setCardResult(context.get(FacilioConstants.ContextNames.RESULT));
 		return SUCCESS;
 	}
 	public JSONObject getParamsJson() {
@@ -4236,7 +3875,7 @@ public class DashboardAction extends FacilioAction {
 		Multimap<Long, Long> spaceResourceMap = ArrayListMultimap.create();
 		
 		if(xAxisField.getName().equals("resource")) {
-			if(reportContext.getxAxisaggregateFunction().equals(FormulaContext.SpaceAggregateOperator.BUILDING.getValue())) {
+			if(reportContext.getxAxisaggregateFunction().equals(SpaceAggregateOperator.BUILDING.getValue())) {
 				
 				for(BuildingContext building:SpaceAPI.getAllBuildings()) {
 					List<Long> resourceList = DashboardUtil.getAllResources(building.getId());
@@ -4245,7 +3884,7 @@ public class DashboardAction extends FacilioAction {
 				report.getxAxisField().getField().setDisplayName("Building");
 				report.getxAxisField().getField().setName("building");
 			}
-			else if(reportContext.getxAxisaggregateFunction().equals(FormulaContext.SpaceAggregateOperator.SITE.getValue())) {
+			else if(reportContext.getxAxisaggregateFunction().equals(SpaceAggregateOperator.SITE.getValue())) {
 				
 				for( SiteContext site:SpaceAPI.getAllSites()) {
 					List<Long> resourceList = DashboardUtil.getAllResources(site.getId());
@@ -4261,7 +3900,7 @@ public class DashboardAction extends FacilioAction {
 			FacilioField dummyField = new FacilioField();
 			dummyField.setColumnName(xAxisField.getColumnName());
 			dummyField.setName("dummyField");
-			if (report.getXAxisAggregateOpperator() == FormulaContext.CommonAggregateOperator.ACTUAL) {
+			if (report.getXAxisAggregateOpperator() == CommonAggregateOperator.ACTUAL) {
 				dummyField = CommonAggregateOperator.ACTUAL.getSelectField(dummyField);
 			}
 			else {
@@ -4279,16 +3918,16 @@ public class DashboardAction extends FacilioAction {
 				int oprId =  dateFilter != null ? DashboardUtil.predictDateOpperator(dateFilter) : report.getDateFilter().getOperatorId();
 				
 				if (oprId == DateOperators.TODAY.getOperatorId() || oprId == DateOperators.YESTERDAY.getOperatorId()) {
-					xAggregateOpperator = FormulaContext.DateAggregateOperator.HOURSOFDAY;
+					xAggregateOpperator = DateAggregateOperator.HOURSOFDAY;
 				}
 				else if (oprId == DateOperators.CURRENT_WEEK.getOperatorId() || oprId == DateOperators.LAST_WEEK.getOperatorId() || oprId == DateOperators.CURRENT_WEEK_UPTO_NOW.getOperatorId()) {
-					xAggregateOpperator = FormulaContext.DateAggregateOperator.WEEKDAY;
+					xAggregateOpperator = DateAggregateOperator.WEEKDAY;
 				}
 				else if (oprId == DateOperators.CURRENT_MONTH.getOperatorId() || oprId == DateOperators.LAST_MONTH.getOperatorId() || oprId == DateOperators.CURRENT_MONTH_UPTO_NOW.getOperatorId() || oprId == DateOperators.LAST_N_DAYS.getOperatorId()) {
-					xAggregateOpperator = FormulaContext.DateAggregateOperator.DAYSOFMONTH;
+					xAggregateOpperator = DateAggregateOperator.DAYSOFMONTH;
 				}
 				else if (oprId == DateOperators.CURRENT_YEAR.getOperatorId() || oprId == DateOperators.LAST_YEAR.getOperatorId() || oprId == DateOperators.CURRENT_YEAR_UPTO_NOW.getOperatorId()) {
-					xAggregateOpperator = FormulaContext.DateAggregateOperator.MONTHANDYEAR;
+					xAggregateOpperator = DateAggregateOperator.MONTHANDYEAR;
 				}
 				report.setxAxisaggregateFunction(xAggregateOpperator.getValue());
 				
@@ -4377,7 +4016,7 @@ public class DashboardAction extends FacilioAction {
 			groupByString = groupByString + ",groupBy";
 		}
 			
-		if (report.getY1AxisAggregateOpperator() != FormulaContext.CommonAggregateOperator.ACTUAL) {
+		if (report.getY1AxisAggregateOpperator() != CommonAggregateOperator.ACTUAL) {
 			builder.groupBy(groupByString);
 		}
 		
@@ -4528,7 +4167,7 @@ public class DashboardAction extends FacilioAction {
 			Multimap<Object, JSONObject> res = ArrayListMultimap.create();
 			HashMap<String, Object> labelMapping = new HashMap<>();
 			HashMap<Long, JSONObject> buildingRes = new HashMap<>();
-			if(reportContext.getxAxisaggregateFunction().equals(FormulaContext.SpaceAggregateOperator.BUILDING.getValue()) || reportContext.getxAxisaggregateFunction().equals(FormulaContext.SpaceAggregateOperator.SITE.getValue())) {
+			if(reportContext.getxAxisaggregateFunction().equals(SpaceAggregateOperator.BUILDING.getValue()) || reportContext.getxAxisaggregateFunction().equals(SpaceAggregateOperator.SITE.getValue())) {
 				for(int i=0;i<rs.size();i++) {
 					Map<String, Object> thisMap = rs.get(i);
 					if(thisMap.get("label") != null) {
@@ -4587,7 +4226,7 @@ public class DashboardAction extends FacilioAction {
 								value.put("label", jsonKey);
 				 				value.put("value", json.get(jsonKey));
 				 				
-				 				if(reportContext.getxAxisaggregateFunction().equals(FormulaContext.SpaceAggregateOperator.SITE.getValue())) {
+				 				if(reportContext.getxAxisaggregateFunction().equals(SpaceAggregateOperator.SITE.getValue())) {
 				 					SiteContext site = SpaceAPI.getSiteSpace(buildingId);
 				 					res.put(site.getName(), value);
 				 				}
@@ -4641,7 +4280,7 @@ public class DashboardAction extends FacilioAction {
 
 				Map<String, Object> thisMap = rs.get(i);
 				JSONObject component = new JSONObject();
-				if(reportContext.getxAxisaggregateFunction().equals(FormulaContext.SpaceAggregateOperator.BUILDING.getValue()) || reportContext.getxAxisaggregateFunction().equals(FormulaContext.SpaceAggregateOperator.SITE.getValue())) {
+				if(reportContext.getxAxisaggregateFunction().equals(SpaceAggregateOperator.BUILDING.getValue()) || reportContext.getxAxisaggregateFunction().equals(SpaceAggregateOperator.SITE.getValue())) {
 					
 					Object label = thisMap.get("label");
 					Object value = thisMap.get("value");
@@ -4702,7 +4341,7 @@ public class DashboardAction extends FacilioAction {
 			for( Long key:buildingResult.keySet()) {
 				JSONObject component = new JSONObject();
 				Object key1 = key;
-				if(reportContext.getxAxisaggregateFunction().equals(FormulaContext.SpaceAggregateOperator.SITE.getValue())) {
+				if(reportContext.getxAxisaggregateFunction().equals(SpaceAggregateOperator.SITE.getValue())) {
 					SiteContext site = SpaceAPI.getSiteSpace(key);
 					if(site != null) {
 						key1 = site.getName();
@@ -4881,7 +4520,7 @@ public class DashboardAction extends FacilioAction {
 			FacilioField dummyField = new FacilioField();
 			dummyField.setColumnName(xAxisField.getColumnName());
 			dummyField.setName("dummyField");
-			if (report.getXAxisAggregateOpperator() == FormulaContext.CommonAggregateOperator.ACTUAL) {
+			if (report.getXAxisAggregateOpperator() == CommonAggregateOperator.ACTUAL) {
 				dummyField = CommonAggregateOperator.ACTUAL.getSelectField(dummyField);
 			}
 			else {
@@ -4903,30 +4542,30 @@ public class DashboardAction extends FacilioAction {
 				
 				boolean isRegression = (reportContext.getChartType() != null && reportContext.getChartType().equals(ReportChartType.REGRESSION.getValue()));
 				if (isRegression) {
-					xAggregateOpperator = FormulaContext.DateAggregateOperator.FULLDATE;
+					xAggregateOpperator = DateAggregateOperator.FULLDATE;
 				}
 				else if(getIsHeatMap() || (reportContext.getChartType() != null && reportContext.getChartType().equals(ReportChartType.HEATMAP.getValue()))) {
-					xAggregateOpperator = FormulaContext.DateAggregateOperator.HOURSOFDAYONLY;
+					xAggregateOpperator = DateAggregateOperator.HOURSOFDAYONLY;
 					report.setChartType(ReportChartType.HEATMAP.getValue());
 				}
 				else if (oprId == DateOperators.TODAY.getOperatorId() || oprId == DateOperators.YESTERDAY.getOperatorId() || oprId == DateOperators.TODAY_UPTO_NOW.getOperatorId()) {
-					xAggregateOpperator = FormulaContext.DateAggregateOperator.HOURSOFDAY;
+					xAggregateOpperator = DateAggregateOperator.HOURSOFDAY;
 				}
 				else if (oprId == DateOperators.CURRENT_WEEK.getOperatorId() || oprId == DateOperators.LAST_WEEK.getOperatorId() || oprId == DateOperators.CURRENT_WEEK_UPTO_NOW.getOperatorId()) {
-					if(!(xAggregateOpperator.equals(FormulaContext.DateAggregateOperator.WEEKDAY) || xAggregateOpperator.equals(FormulaContext.DateAggregateOperator.FULLDATE) )) {
-						xAggregateOpperator = FormulaContext.DateAggregateOperator.WEEKDAY;
+					if(!(xAggregateOpperator.equals(DateAggregateOperator.WEEKDAY) || xAggregateOpperator.equals(DateAggregateOperator.FULLDATE) )) {
+						xAggregateOpperator = DateAggregateOperator.WEEKDAY;
 					}
 				}
 				else if (oprId == DateOperators.CURRENT_MONTH.getOperatorId() || oprId == DateOperators.LAST_MONTH.getOperatorId() || oprId == DateOperators.CURRENT_MONTH_UPTO_NOW.getOperatorId() || oprId == DateOperators.LAST_N_DAYS.getOperatorId()) {
 					
-					if(!(xAggregateOpperator.equals(FormulaContext.DateAggregateOperator.WEEK) || xAggregateOpperator.equals(FormulaContext.DateAggregateOperator.WEEKANDYEAR) || xAggregateOpperator.equals(FormulaContext.DateAggregateOperator.WEEKDAY) || xAggregateOpperator.equals(FormulaContext.DateAggregateOperator.DAYSOFMONTH) || xAggregateOpperator.equals(FormulaContext.DateAggregateOperator.FULLDATE))) {
-						xAggregateOpperator = FormulaContext.DateAggregateOperator.DAYSOFMONTH;
+					if(!(xAggregateOpperator.equals(DateAggregateOperator.WEEK) || xAggregateOpperator.equals(DateAggregateOperator.WEEKANDYEAR) || xAggregateOpperator.equals(DateAggregateOperator.WEEKDAY) || xAggregateOpperator.equals(DateAggregateOperator.DAYSOFMONTH) || xAggregateOpperator.equals(DateAggregateOperator.FULLDATE))) {
+						xAggregateOpperator = DateAggregateOperator.DAYSOFMONTH;
 					}
 				}
 				else if (oprId == DateOperators.CURRENT_YEAR.getOperatorId() || oprId == DateOperators.LAST_YEAR.getOperatorId() || oprId == DateOperators.CURRENT_YEAR_UPTO_NOW.getOperatorId()) {
 					
-					if(!(xAggregateOpperator.equals(FormulaContext.DateAggregateOperator.MONTH) || xAggregateOpperator.equals(FormulaContext.DateAggregateOperator.WEEK) || xAggregateOpperator.equals(FormulaContext.DateAggregateOperator.MONTHANDYEAR) || xAggregateOpperator.equals(FormulaContext.DateAggregateOperator.WEEKANDYEAR) || xAggregateOpperator.equals(FormulaContext.DateAggregateOperator.WEEKDAY) || xAggregateOpperator.equals(FormulaContext.DateAggregateOperator.DAYSOFMONTH) || xAggregateOpperator.equals(FormulaContext.DateAggregateOperator.FULLDATE))) {
-						xAggregateOpperator = FormulaContext.DateAggregateOperator.MONTHANDYEAR;
+					if(!(xAggregateOpperator.equals(DateAggregateOperator.MONTH) || xAggregateOpperator.equals(DateAggregateOperator.WEEK) || xAggregateOpperator.equals(DateAggregateOperator.MONTHANDYEAR) || xAggregateOpperator.equals(DateAggregateOperator.WEEKANDYEAR) || xAggregateOpperator.equals(DateAggregateOperator.WEEKDAY) || xAggregateOpperator.equals(DateAggregateOperator.DAYSOFMONTH) || xAggregateOpperator.equals(DateAggregateOperator.FULLDATE))) {
+						xAggregateOpperator = DateAggregateOperator.MONTHANDYEAR;
 					}
 				}
 				dateAggr = (DateAggregateOperator) xAggregateOpperator;
@@ -5052,7 +4691,7 @@ public class DashboardAction extends FacilioAction {
 			groupByString = groupByString + ",groupBy";
 		}
 			
-		if (report.getY1AxisAggregateOpperator() != FormulaContext.CommonAggregateOperator.ACTUAL) {
+		if (report.getY1AxisAggregateOpperator() != CommonAggregateOperator.ACTUAL) {
 			builder.groupBy(groupByString);
 		}
 		
@@ -5497,6 +5136,11 @@ public class DashboardAction extends FacilioAction {
 				fields.add(markedField);
 			}
 		}
+		if (module != null && "energydata".equalsIgnoreCase(module.getName())) {
+			FacilioField markedField = modBean.getField("marked", module.getName());
+			builder.andCondition(CriteriaAPI.getCondition(markedField, "false", BooleanOperators.IS));
+		}
+				
 		builder.select(fields);
 		if(buildingCondition != null) {
 			builder.andCondition(buildingCondition);
@@ -5532,7 +5176,6 @@ public class DashboardAction extends FacilioAction {
 			
 			if (getIsHeatMap() || (report != null && report.getChartType() != null && report.getChartType() == ReportContext.ReportChartType.HEATMAP.getValue())) {
 				builder.orderBy("value");
-				String reportDataSQL = builder.constructSelectStatement();
 //				this.calculateHeatMapRange(reportDataSQL, fields);
 			}
 		}

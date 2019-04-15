@@ -67,7 +67,9 @@ import com.facilio.events.constants.EventConstants;
 import com.facilio.events.context.EventContext;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericSelectRecordBuilder;
+import com.facilio.timeseries.TimeSeriesAPI;
 import com.facilio.util.FacilioUtil;
+import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
 
 public enum ActionType {
@@ -483,14 +485,16 @@ public enum ActionType {
 			assignedToUserId = (long) obj.get("assignedUserId");
 			assignGroupId = (long) obj.get("assignedGroupId");
 
-			WorkOrderContext workOrder = (WorkOrderContext) context.get(FacilioConstants.ContextNames.WORK_ORDER);
+			WorkOrderContext workOrder = (WorkOrderContext) currentRecord;
 			WorkOrderContext updateWO = new WorkOrderContext();
 
+			boolean userAssigned = false;
 			if (assignedToUserId != -1  && (workOrder.getAssignedTo() == null || workOrder.getAssignedTo().getOuid() == -1)) {
 				User user = new User();
 				user.setOuid(assignedToUserId);
 				workOrder.setAssignedTo(user);
 				updateWO.setAssignedTo(user);
+				userAssigned = true;
 			}
 
 			if (assignGroupId != -1 && (workOrder.getAssignmentGroup() == null || workOrder.getAssignmentGroup().getGroupId() == -1)) {
@@ -498,19 +502,22 @@ public enum ActionType {
 				group.setId(assignGroupId);
 				workOrder.setAssignmentGroup(group);
 				updateWO.setAssignmentGroup(group);
+				userAssigned = true;
 			}
 			try {
-				if (assignedToUserId != -1 || assignGroupId != -1) {
-					TicketStatusContext status = TicketAPI.getStatus("Assigned");
-					workOrder.setStatus(status);
-					updateWO.setStatus(status);
+				if (userAssigned) {
+					if (assignedToUserId != -1 || assignGroupId != -1) {
+						TicketStatusContext status = TicketAPI.getStatus("Assigned");
+						workOrder.setStatus(status);
+						updateWO.setStatus(status);
+					}
+					ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+					FacilioModule woModule = modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER);
+					UpdateRecordBuilder<WorkOrderContext> updateBuilder = new UpdateRecordBuilder<WorkOrderContext>()
+							.module(woModule).fields(modBean.getAllFields(FacilioConstants.ContextNames.WORK_ORDER))
+							.andCondition(CriteriaAPI.getIdCondition(workOrder.getId(), woModule));
+					updateBuilder.update(updateWO);
 				}
-				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-				FacilioModule woModule = modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER);
-				UpdateRecordBuilder<WorkOrderContext> updateBuilder = new UpdateRecordBuilder<WorkOrderContext>()
-						.module(woModule).fields(modBean.getAllFields(FacilioConstants.ContextNames.WORK_ORDER))
-						.andCondition(CriteriaAPI.getIdCondition(workOrder.getId(), woModule));
-				updateBuilder.update(updateWO);
 			} catch (Exception e) {
 				LOGGER.error("Exception occurred ", e);
 			}
@@ -790,7 +797,10 @@ public enum ActionType {
 			Map<String,Object> currentRecordJson = null;
 			currentRecordJson = FieldUtil.getAsProperties(currentRecord);
 			params.put("record", currentRecordJson);
-			Map<String,Object> workflowResult = WorkflowUtil.getExpressionResultMap((String)obj.get("WorkflowString"), params);
+			
+			WorkflowContext workflowContext = WorkflowUtil.getWorkflowContext((Long)obj.get("resultWorkflowId"));
+			
+			Map<String,Object> workflowResult = WorkflowUtil.getExpressionResultMap(workflowContext, params);
 			if (AccountUtil.getCurrentOrg().getId() == 186) {
 				LOGGER.info("Workflow result in field change action : "+workflowResult);
 			}
@@ -845,11 +855,9 @@ public enum ActionType {
 				alarmId = (Long) currentRecordJson.get("id");
 			}
 			
-			if(AccountUtil.getCurrentOrg().getId() == 88l) {
-				LOGGER.error("currentRecordJson --- "+currentRecordJson);
-			}
-			
-			Object val = WorkflowUtil.getWorkflowExpressionResult((String)obj.get("WorkflowString"), currentRecordJson);
+			WorkflowContext workflowContext = WorkflowUtil.getWorkflowContext((Long)obj.get("resultWorkflowId"));
+			workflowContext.setLogNeeded(true);
+			Object val = WorkflowUtil.getWorkflowExpressionResult(workflowContext, currentRecordJson);
 			
 			JSONArray fieldsJsonArray = (JSONArray) obj.get("fields");
 			for (Object key : fieldsJsonArray) {
@@ -897,6 +905,16 @@ public enum ActionType {
 		}
 		
 	},
+	CONTROL_ACTION (18) {
+		@Override
+		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule, Object currentRecord) throws Exception {
+			LOGGER.info("Performing Control action : "+obj.toJSONString());
+			long fieldId = FacilioUtil.parseLong(obj.get("metric"));
+			long resourceId = FacilioUtil.parseLong(obj.get("resource"));
+			String val = (String) obj.get("val");
+			TimeSeriesAPI.setControlValue(resourceId, fieldId, val);
+		}
+	}
 	;
 
 	private int val;

@@ -1,16 +1,5 @@
 package com.facilio.bmsconsole.util;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-
-import org.apache.commons.collections4.CollectionUtils;
-
 import com.facilio.accounts.dto.Group;
 import com.facilio.accounts.dto.Role;
 import com.facilio.accounts.dto.User;
@@ -32,6 +21,11 @@ import com.facilio.events.constants.EventConstants;
 import com.facilio.events.context.EventContext;
 import com.facilio.events.util.EventAPI;
 import com.facilio.fw.BeanFactory;
+import org.apache.commons.collections4.CollectionUtils;
+
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class LookupSpecialTypeUtil {
 	public static boolean isSpecialType(String specialType) {

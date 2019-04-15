@@ -4,8 +4,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-import org.apache.commons.lang3.StringUtils;
-
 import com.facilio.bmsconsole.modules.BooleanField;
 import com.facilio.bmsconsole.modules.EnumField;
 import com.facilio.bmsconsole.modules.FacilioField;
@@ -121,9 +119,7 @@ public class ReportFieldContext {
 			}
 			
 			if (field instanceof NumberField) {
-				if (this.unitStr == null) {
-					this.unitStr = ((NumberField) field).getUnitEnum() != null ? ((NumberField) field).getUnitEnum().getSymbol() : ((NumberField) field).getUnit();
-				}
+				this.unitStr = ((NumberField) field).getUnitEnum() != null ? ((NumberField) field).getUnitEnum().getSymbol() : ((NumberField) field).getUnit();
 				this.metric = ((NumberField) field).getMetricEnum();
 				this.unit = ((NumberField) field).getUnitEnum();
 			}
@@ -135,8 +131,8 @@ public class ReportFieldContext {
 					enumMap.put(0, boolField.getFalseVal());
 				}
 				else {
-					enumMap.put(1, 1);
-					enumMap.put(0, 0);
+					enumMap.put(1, "True");
+					enumMap.put(0, "False");
 				}
 			}
 			else if (field instanceof EnumField) {

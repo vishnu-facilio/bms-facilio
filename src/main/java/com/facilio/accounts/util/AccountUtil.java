@@ -120,6 +120,7 @@ public class AccountUtil {
 	public static final int FEATURE_INVENTORY = 8192;
 	public static final int FEATURE_SCHEDULED_WO = 16384;
 	public static final int FEATURE_TENANTS = 32768;
+	public static final int FEATURE_NEW_FORM = 65536;
 
 
 	public static int getFeatureLicense() throws Exception {
