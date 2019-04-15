@@ -93,7 +93,7 @@ public class StateflowTransistionContext extends WorkflowRuleContext {
 		}
 	}
 	
-	private Boolean allApprovalRequired;
+	private Boolean allApprovalRequired = false;
 	public Boolean getAllApprovalRequired() {
 		return allApprovalRequired;
 	}

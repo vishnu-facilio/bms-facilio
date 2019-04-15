@@ -1066,8 +1066,6 @@ public class FacilioConstants {
 			classMap.put(PO_LINE_ITEMS_SERIAL_NUMBERS, PoLineItemsSerialNumberContext.class);
 			classMap.put(GATE_PASS, GatePassContext.class);
 			classMap.put(GATE_PASS_LINE_ITEMS, GatePassLineItemsContext.class);
-			classMap.put(STATE, StateContext.class);
-//			classMap.put(STATE, StateContext.class);
 			return classMap;
 		}
 		
