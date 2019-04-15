@@ -1,5 +1,53 @@
 package com.facilio.bmsconsole.actions;
 
+import java.io.File;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.KeyException;
+import java.security.NoSuchAlgorithmException;
+import java.security.PrivateKey;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.UUID;
+import java.util.zip.Inflater;
+
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import javax.xml.crypto.dsig.CanonicalizationMethod;
+import javax.xml.crypto.dsig.DigestMethod;
+import javax.xml.crypto.dsig.Reference;
+import javax.xml.crypto.dsig.SignatureMethod;
+import javax.xml.crypto.dsig.SignedInfo;
+import javax.xml.crypto.dsig.Transform;
+import javax.xml.crypto.dsig.XMLSignature;
+import javax.xml.crypto.dsig.XMLSignatureFactory;
+import javax.xml.crypto.dsig.dom.DOMSignContext;
+import javax.xml.crypto.dsig.keyinfo.KeyInfo;
+import javax.xml.crypto.dsig.keyinfo.KeyInfoFactory;
+import javax.xml.crypto.dsig.keyinfo.X509Data;
+import javax.xml.crypto.dsig.spec.C14NMethodParameterSpec;
+import javax.xml.crypto.dsig.spec.TransformParameterSpec;
+
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.apache.struts2.ServletActionContext;
+import org.json.simple.JSONObject;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
+
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.facilio.accounts.dto.Group;
 import com.facilio.accounts.dto.Organization;
@@ -13,9 +61,16 @@ import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.TicketStatusContext;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.forms.FacilioForm.FormType;
-import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.reports.ReportsUtil;
-import com.facilio.bmsconsole.util.*;
+import com.facilio.bmsconsole.util.AlarmAPI;
+import com.facilio.bmsconsole.util.AssetsAPI;
+import com.facilio.bmsconsole.util.DeviceAPI;
+import com.facilio.bmsconsole.util.EncryptionUtil;
+import com.facilio.bmsconsole.util.FormsAPI;
+import com.facilio.bmsconsole.util.InventoryApi;
+import com.facilio.bmsconsole.util.ShiftAPI;
+import com.facilio.bmsconsole.util.SpaceAPI;
+import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.auth.CognitoUtil;
 import com.facilio.fw.auth.SAMLAttribute;
@@ -24,35 +79,6 @@ import com.facilio.screen.context.RemoteScreenContext;
 import com.facilio.screen.util.ScreenUtil;
 import com.facilio.wms.util.WmsApi;
 import com.opensymphony.xwork2.ActionContext;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.apache.struts2.ServletActionContext;
-import org.json.simple.JSONObject;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
-
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-import javax.xml.crypto.dsig.*;
-import javax.xml.crypto.dsig.dom.DOMSignContext;
-import javax.xml.crypto.dsig.keyinfo.KeyInfo;
-import javax.xml.crypto.dsig.keyinfo.KeyInfoFactory;
-import javax.xml.crypto.dsig.keyinfo.X509Data;
-import javax.xml.crypto.dsig.spec.C14NMethodParameterSpec;
-import javax.xml.crypto.dsig.spec.TransformParameterSpec;
-import java.io.File;
-import java.security.InvalidAlgorithmParameterException;
-import java.security.KeyException;
-import java.security.NoSuchAlgorithmException;
-import java.security.PrivateKey;
-import java.security.cert.CertificateException;
-import java.security.cert.X509Certificate;
-import java.text.SimpleDateFormat;
-import java.util.*;
-import java.util.zip.Inflater;
 
 public class LoginAction extends FacilioAction {
 	/**
@@ -332,12 +358,12 @@ public class LoginAction extends FacilioAction {
 		
 		
 		if (AccountUtil.getCurrentAccount().isFromMobile()) {
-			Map<String, Set<FacilioForm>> forms = FormsAPI.getAllForms(FormType.MOBILE);
+			Map<String, Collection<FacilioForm>> forms = FormsAPI.getAllForms(FormType.MOBILE);
 			data.put("forms", forms);
 			data.put("ticketStatus", getTicketStatus());
 		}
 		else {
-			Map<String, Set<FacilioForm>> forms = FormsAPI.getAllForms(FormType.WEB);
+			Map<String, Collection<FacilioForm>> forms = FormsAPI.getAllForms(FormType.WEB);
 			data.put("forms", forms);
 			data.put("ticketStatus", TicketAPI.getAllStatus(true));
 		}

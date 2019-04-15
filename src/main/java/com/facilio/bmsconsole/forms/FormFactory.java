@@ -86,8 +86,7 @@ public class FormFactory {
 						.put(FacilioConstants.ContextNames.LABOUR, getLabourForm())
 						.put(FacilioConstants.ContextNames.PURCHASE_CONTRACTS, getPurchaseContractForm())
 						.put(FacilioConstants.ContextNames.LABOUR_CONTRACTS, getLabourContractForm())
-							
-						.put(FacilioConstants.ContextNames.INVENTORY, getInventoryForm()).build())
+						.build())
         			
 				.put(FormType.PORTAL, ImmutableMultimap.<String, FacilioForm>builder()
 						.put(FacilioConstants.ContextNames.WORK_ORDER_REQUEST, getServiceWorkRequestForm()).build())
