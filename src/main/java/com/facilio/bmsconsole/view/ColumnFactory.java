@@ -59,6 +59,7 @@ public class ColumnFactory {
 		columnMap.put("energydata-report", getDefaultEnergyColumns());
 		columnMap.put("toolTransactions-default", getDefaultToolTransactionsColumns());
 		columnMap.put("itemTransactions-default", getDefaultItemTransactionsColumns());
+		columnMap.put("purchasedItem-default", getDefaultPurchasedItemColumns());
 		
 		
 		
@@ -333,6 +334,17 @@ public class ColumnFactory {
 		columns.add(new ViewField("quantity", "Quantity"));
 		columns.add(new ViewField("sysCreatedTime", "Requested Time"));
 //		columns.add(new ViewField("issuedTo", "Issued To"));
+		return columns;
+	}
+	
+	private static List<ViewField> getDefaultPurchasedItemColumns() {
+		List<ViewField> columns = new ArrayList<ViewField>();
+		
+		columns.add(new ViewField("quantity", "Quantity"));
+		columns.add(new ViewField("currentQuantity", "Current Quantity"));
+		columns.add(new ViewField("serialNumber", "Serial Number"));
+		columns.add(new ViewField("isUsed", "Is Used"));
+		columns.add(new ViewField("unitcost", "Unit Cost"));
 		return columns;
 	}
 	

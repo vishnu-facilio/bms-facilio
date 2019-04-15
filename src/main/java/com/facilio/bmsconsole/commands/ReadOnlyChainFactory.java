@@ -601,6 +601,17 @@ public class ReadOnlyChainFactory {
 		return c;
 	}
 	
+	public static Chain getPurchasedItemsViewsList() {
+		Chain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForPurchasedItem());
+		c.addCommand(new LoadViewCommand());
+		c.addCommand(new LoadAllFieldsCommand());
+		c.addCommand(new GenerateCriteriaFromFilterCommand());
+		c.addCommand(new GenerateSearchConditionCommand());
+		c.addCommand(new GetPurchasedItemsViewsListCommand());
+		return c;
+	}
+	
 	public static Chain GetItemTypesForVendorCommand(){
 		Chain c = getDefaultChain();
 		c.addCommand(SetTableNamesCommand.getForItemTypesVendors());
