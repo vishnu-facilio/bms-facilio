@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.commands;
 import com.facilio.bmsconsole.context.AlarmContext;
 import com.facilio.bmsconsole.context.ReadingAlarmContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.criteria.DateOperators;
 import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.*;
 import com.facilio.bmsconsole.util.ReadingRuleAPI;
@@ -92,8 +93,13 @@ public class GetReadingRuleDetailsCommand implements Command {
 																							.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 																							.andCondition(CriteriaAPI.getConditionFromList("SUB_RULE_ID", "subRuleId", rcaIds, NumberOperators.EQUALS))
 																							.andCondition(CriteriaAPI.getCondition(eventFieldsMap.get("resourceId"), alarm.getResource().getId()+"", NumberOperators.EQUALS))
+																							.andCondition(CriteriaAPI.getCondition(eventFieldsMap.get("createdTime"), alarm.getCreatedTime()+"", DateOperators.IS_AFTER))
 																							.groupBy("ORGID,SUB_RULE_ID")
 																							;
+							
+							if(alarm.getClearedTime() > 0) {
+								genericSelectRecordBuilder.andCondition(CriteriaAPI.getCondition(eventFieldsMap.get("createdTime"), alarm.getClearedTime()+"", DateOperators.IS_BEFORE));
+							}
 							List<Map<String, Object>> props = genericSelectRecordBuilder.get();
 							
 							LOGGER.error("genericSelectRecordBuilder --- "+genericSelectRecordBuilder);
