@@ -1163,6 +1163,17 @@ public class FieldFactory {
 
 		return fields;
 	}
+	
+	public static List<FacilioField> getReadingRuleMetricFields() {
+		List<FacilioField> fields = new ArrayList<>();
+		FacilioModule module = ModuleFactory.getReadingRuleMetricModule();
+		fields.add(getIdField(module));
+		
+		fields.add(getField("readingRuleId", "READING_RULE_ID", module, FieldType.LOOKUP));
+		fields.add(getField("fieldId", "FIELD_ID", module, FieldType.LOOKUP));
+		fields.add(getField("resourceId", "RESOURCE_ID", module, FieldType.LOOKUP));
+		return fields;
+	}
 
 	public static List<FacilioField> getReadingAlarmRuleFields() {
 		List<FacilioField> fields = new ArrayList<>();

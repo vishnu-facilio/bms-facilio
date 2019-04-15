@@ -43,6 +43,14 @@ public class ReadingRuleContext extends WorkflowRuleContext implements Cloneable
 
 	private static final Logger LOGGER = LogManager.getLogger(ReadingRuleContext.class.getName());
 	
+	List<ReadingRuleMetricContext> ruleMetrics;
+	
+	public List<ReadingRuleMetricContext> getRuleMetrics() {
+		return ruleMetrics;
+	}
+	public void setRuleMetrics(List<ReadingRuleMetricContext> ruleMetrics) {
+		this.ruleMetrics = ruleMetrics;
+	}
 	public Object clone()throws CloneNotSupportedException{  
 		return super.clone();  
 	}  
