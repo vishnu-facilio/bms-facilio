@@ -233,7 +233,7 @@ public interface AggregateOperator {
     		}
     	},
         
-        RANGE(6,"Range","CONCAT(CAST(MIN({$place_holder$} as char)),',',CAST(AVG({$place_holder$}) as char),',',CAST(MAX({$place_holder$}) as char))")
+        RANGE(6,"Range","CONCAT(CAST(MIN({$place_holder$}) as char),',',CAST(AVG({$place_holder$}) as char),',',CAST(MAX({$place_holder$}) as char))")
         ;
 
         private int value;
