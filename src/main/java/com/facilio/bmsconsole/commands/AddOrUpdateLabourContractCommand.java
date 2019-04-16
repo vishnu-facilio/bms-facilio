@@ -13,6 +13,7 @@ import com.facilio.bmsconsole.context.LabourContext;
 import com.facilio.bmsconsole.context.LabourContractContext;
 import com.facilio.bmsconsole.context.LabourContractLineItemContext;
 import com.facilio.bmsconsole.context.LocationContext;
+import com.facilio.bmsconsole.context.ContractsContext.ContractType;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.DeleteRecordBuilder;
@@ -46,7 +47,8 @@ public class AddOrUpdateLabourContractCommand implements Command{
 			if (labourContractContext.getVendor() == null) {
 				throw new Exception("Vendor cannot be empty");
 			}
-		
+			labourContractContext.setContractType(ContractType.LABOUR);
+			
 			if (labourContractContext.getId() > 0) {
 				updateRecord(labourContractContext, module, fields);
 				

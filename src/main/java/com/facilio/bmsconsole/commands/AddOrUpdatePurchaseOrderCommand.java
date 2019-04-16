@@ -44,7 +44,10 @@ public class AddOrUpdatePurchaseOrderCommand implements Command {
 				throw new Exception("StoreRoom cannot be empty");
 			}
 			// setting current user to requestedBy
-			purchaseOrderContext.setRequestedBy(AccountUtil.getCurrentUser());
+			if(purchaseOrderContext.getRequestedBy() == null) {
+				purchaseOrderContext.setRequestedBy(AccountUtil.getCurrentUser());
+			}
+			
 			            
 			purchaseOrderContext.setShipToAddress(LocationAPI.getPoPrLocation(purchaseOrderContext.getStoreRoom(), purchaseOrderContext.getShipToAddress(), "SHIP_TO_Location", true));
 			purchaseOrderContext.setBillToAddress(LocationAPI.getPoPrLocation(purchaseOrderContext.getVendor(), purchaseOrderContext.getBillToAddress(), "BILL_TO_Location", false));
