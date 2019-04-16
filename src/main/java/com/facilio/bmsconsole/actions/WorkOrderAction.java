@@ -41,6 +41,7 @@ import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.context.PreventiveMaintenance.PMAssignmentType;
 import com.facilio.bmsconsole.context.RecordSummaryLayout;
 import com.facilio.bmsconsole.context.ResourceContext;
+import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.bmsconsole.context.SpaceContext;
 import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.TaskContext.InputType;
@@ -2283,6 +2284,16 @@ public class WorkOrderAction extends FacilioAction {
 		workorder.setSendForApproval(true);
 		TicketStatusContext preOpenStatus = TicketAPI.getStatus("preopen");
 		workorder.setStatus(preOpenStatus);
+		
+		if (AccountUtil.getCurrentOrg().getOrgId() == 104) {
+			if (workorder.getSubject() == null) {
+				workorder.setSubject("Temperature Adjustment");
+			}
+			if (workorder.getSiteId() == -1) {
+				SiteContext site = SpaceAPI.getAllSites().get(0);
+				workorder.setSiteId(site.getId());
+			}
+		}
 
 		addWorkOrder(workorder);
 		setResult(FacilioConstants.ContextNames.WORK_ORDER, workorder);
