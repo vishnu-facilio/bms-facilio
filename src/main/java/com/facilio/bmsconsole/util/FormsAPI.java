@@ -17,6 +17,7 @@ import java.util.stream.Collectors;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.criteria.BooleanOperators;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
@@ -108,7 +109,7 @@ public class FormsAPI {
 	}
 
 	public static List<FacilioForm> getFormFromDB(Criteria criteria) throws Exception {
-		List<FacilioForm> forms = getDBFormList(null, null, criteria);
+		List<FacilioForm> forms = getDBFormList(null, null, false, criteria);
 		if (forms == null || forms.isEmpty()) {
 			return null;
 		}
@@ -322,7 +323,7 @@ public class FormsAPI {
 	}
 	
 	private static List<FormField> getFormFieldsFromSections(List<FormSection> sections) {
-		return sections.stream().map(section -> section.getFields()).flatMap(List::stream).collect(Collectors.toList());
+		return sections.stream().map(section -> section.getFields() != null ? section.getFields() : new ArrayList<FormField>()).flatMap(List::stream).collect(Collectors.toList());
 	}
 	
 	public static int deleteFormFields(long formId) throws Exception {
@@ -406,7 +407,7 @@ public class FormsAPI {
 	}
 	
 	public static Map<String, FacilioForm> getFormsAsMap (String moduleName,FormType formType) throws Exception {
-		List<FacilioForm> forms = getDBFormList(moduleName, formType, null);
+		List<FacilioForm> forms = getDBFormList(moduleName, formType, true, null);
 		Map<String, FacilioForm> formMap = new LinkedHashMap<>();
 		if (forms != null && !forms.isEmpty()) {
 			for(FacilioForm form: forms) {
@@ -417,7 +418,7 @@ public class FormsAPI {
 		return null;
 	}
 	
-	public static List<FacilioForm> getDBFormList(String moduleName,FormType formType, Criteria criteria) throws Exception{
+	public static List<FacilioForm> getDBFormList(String moduleName,FormType formType, boolean fetchNonHiddenFormsOnly, Criteria criteria) throws Exception{
 		
 		FacilioModule formModule = ModuleFactory.getFormModule();
 		
@@ -435,6 +436,9 @@ public class FormsAPI {
 		}
 		if (formType != null) {
 			formListBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("formType"), String.valueOf(formType.getIntVal()), NumberOperators.EQUALS));
+		}
+		if (fetchNonHiddenFormsOnly) {
+			formListBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("hideInList"), String.valueOf(false), BooleanOperators.IS));
 		}
 		if (criteria != null) {
 			formListBuilder.andCriteria(criteria);
