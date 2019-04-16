@@ -22,6 +22,7 @@ public class GetAvailableStateCommand implements Command {
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 		if (moduleData != null) {
 			TicketStatusContext currentState = moduleData.getModuleState();
+			context.put("currentState", moduleData.getModuleState());
 			if (currentState != null) {
 				List<WorkflowRuleContext> availableState = StateFlowRulesAPI.getAvailableState(moduleData.getStateFlowId(), currentState.getId(), moduleName, moduleData, (FacilioContext) context);
 				

@@ -6,13 +6,16 @@ import java.util.Map;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.TicketStatusContext;
+import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.bmsconsole.util.StateFlowRulesAPI;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.rule.StateflowTransistionContext;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
 
 public class UpdateStateCommand implements Command {
 
@@ -42,9 +45,13 @@ public class UpdateStateCommand implements Command {
 		Map<String, Object> recordPlaceHolders = WorkflowRuleAPI.getRecordPlaceHolders(moduleName, moduleData, WorkflowRuleAPI.getOrgPlaceHolders());
 		
 		if (defaultState) {
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			FacilioModule module = modBean.getModule(moduleName);
+
 			TicketStatusContext state = StateFlowRulesAPI.getStateContext(defaultStateId);
-			changeState(moduleData, state);
 			moduleData.setStateFlowId(defaultStateFlowId);
+			moduleData.setModuleState(state);
+			StateFlowRulesAPI.updateState(moduleData, module, true);
 			StateFlowRulesAPI.addScheduledJobIfAny(defaultStateId, moduleName, moduleData, (FacilioContext) context);
 		} 
 		else {

@@ -5563,7 +5563,7 @@ public class FieldFactory {
 		FacilioModule stateFlowModule = ModuleFactory.getStateFlowModule();
 		List<FacilioField> list = new ArrayList<>();
 		
-		list.add(getField("id", "ID", stateFlowModule, FieldType.ID));
+		list.add(getField("id", "ID", stateFlowModule, FieldType.NUMBER));
 		list.add(getField("moduleId", "MODULEID", FieldType.NUMBER));
 		list.add(getField("name", "NAME", stateFlowModule, FieldType.STRING));
 		list.add(getField("description", "DESCRIPTION", stateFlowModule, FieldType.STRING));

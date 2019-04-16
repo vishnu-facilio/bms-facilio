@@ -948,17 +948,20 @@ public enum ActionType {
 			long newStateId = newState != null ? Long.parseLong(newState.toString()) : -1;
 			
 			String moduleName = (String) obj.get("moduleName");
-			FacilioContext c = new FacilioContext();
-			c.put(FacilioConstants.ContextNames.RECORD, currentRecord);
-			c.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+			
 			List<WorkflowRuleContext> availableState = StateFlowRulesAPI.getAvailableState(moduleData.getStateFlowId(), oldStateId, newStateId, moduleName, (ModuleBaseWithCustomFields) currentRecord, context);
+			
 			if (CollectionUtils.isNotEmpty(availableState)) {
+				FacilioContext c = new FacilioContext();
+				c.put(FacilioConstants.ContextNames.RECORD, currentRecord);
+				c.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
 				c.put("transistion_id", availableState.get(0).getId());
+				
+				Chain chain = FacilioChain.getTransactionChain();
+				chain.addCommand(new UpdateStateCommand());
+//				chain.addCommand(new GenericUpdateModuleDataCommand());
+				chain.execute(c);
 			}
-			Chain chain = FacilioChain.getTransactionChain();
-			chain.addCommand(new UpdateStateCommand());
-			chain.addCommand(new GenericUpdateModuleDataCommand());
-			chain.execute(c);
 		}
 		
 	}

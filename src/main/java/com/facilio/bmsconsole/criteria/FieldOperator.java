@@ -68,12 +68,15 @@ public enum FieldOperator implements Operator<Object> {
 	}
 
 	@Override
-	public FacilioModulePredicate getPredicate(String fieldName, Object valueFieldName) {
+	public FacilioModulePredicate getPredicate(String fieldName, Object valueField) {
 		FacilioModulePredicate predicate = new FacilioModulePredicate(fieldName, new Predicate() {
 			@Override
 			public boolean evaluate(Object object) {
-				Objects.equal(object, valueFieldName);
-				return false;
+				if ((object == null || (object instanceof Number && ((Number) object).intValue() == -1)) 
+						&& ((valueField == null || (valueField instanceof Number && ((Number) object).intValue() == -1)))) {
+					return true;
+				}
+				return Objects.equal(object, valueField);
 			}
 		});
 		return predicate;

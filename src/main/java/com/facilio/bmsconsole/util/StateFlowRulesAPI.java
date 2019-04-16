@@ -26,6 +26,7 @@ import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.modules.UpdateChangeSet;
+import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
 import com.facilio.bmsconsole.workflow.rule.ApproverContext;
 import com.facilio.bmsconsole.workflow.rule.StateContext;
 import com.facilio.bmsconsole.workflow.rule.StateflowTransistionContext;
@@ -45,6 +46,22 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 		StateflowTransistionContext stateFlowRule = FieldUtil.getAsBeanFromMap(prop, StateflowTransistionContext.class);
 		stateFlowRule.setApprovers(SharingAPI.getSharing(stateFlowRule.getId(), ModuleFactory.getApproversModule(), ApproverContext.class));
 		return stateFlowRule;
+	}
+	
+	public static void updateState(ModuleBaseWithCustomFields record, FacilioModule module, boolean includeStateFlowChange) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		
+		List<FacilioField> fields = new ArrayList<>();
+		fields.add(modBean.getField("moduleState", module.getName()));
+		if (includeStateFlowChange) {
+			fields.add(modBean.getField("stateFlowId", module.getName()));
+		}
+		
+		UpdateRecordBuilder<ModuleBaseWithCustomFields> updateBuilder = new UpdateRecordBuilder<ModuleBaseWithCustomFields>()
+				.module(module)
+				.fields(fields)
+				.andCondition(CriteriaAPI.getIdCondition(record.getId(), module));
+		updateBuilder.update(record);
 	}
 
 	public static TicketStatusContext getStateContext(long stateId) throws Exception {

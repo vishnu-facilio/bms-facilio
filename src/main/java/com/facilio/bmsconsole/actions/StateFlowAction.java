@@ -114,6 +114,7 @@ public class StateFlowAction extends FacilioAction {
 		chain.execute(context);
 		
 		setResult("states", context.get("availableStates"));
+		setResult("currentState", context.get("currentState"));
 		
 		return SUCCESS;
 	}

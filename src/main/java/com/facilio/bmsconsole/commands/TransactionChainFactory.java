@@ -814,6 +814,7 @@ public class TransactionChainFactory {
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.ASSIGNMENT_RULE));
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.SLA_RULE));
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.APPROVAL_RULE, RuleType.CHILD_APPROVAL_RULE, RuleType.REQUEST_APPROVAL_RULE, RuleType.REQUEST_REJECT_RULE));
+			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.STATE_RULE));
 			c.addCommand(new ForkChainToInstantJobCommand()
 				.addCommand(new ExecuteAllWorkflowsCommand(RuleType.WORKORDER_AGENT_NOTIFICATION_RULE, RuleType.WORKORDER_REQUESTER_NOTIFICATION_RULE, RuleType.CUSTOM_WORKORDER_NOTIFICATION_RULE))
 				.addCommand(new ClearAlarmOnWOCloseCommand())
@@ -2459,7 +2460,7 @@ public class TransactionChainFactory {
 			Chain c = getDefaultChain();
 			c.addCommand(new GenericGetModuleDataDetailCommand());
 			c.addCommand(new UpdateStateCommand());
-			c.addCommand(new GenericUpdateModuleDataCommand());
+//			c.addCommand(new GenericUpdateModuleDataCommand());
 			return c;
 		}
 
