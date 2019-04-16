@@ -113,6 +113,11 @@ public class Processor extends FacilioProcessor {
                 if (payLoad.containsKey(EventUtil.DATA_TYPE)) {
                     dataType = (String) payLoad.remove(EventUtil.DATA_TYPE);
                 }
+                // Temp fix - bug: Publish_Type wrongly set to "agents"
+                if("agents".equals(dataType)){
+                    dataType = PublishType.agent.getValue();
+                }
+                //Temp fix  - bug: Publish_Type wrongly set to "agents"
                 PublishType publishType = PublishType.valueOf(dataType);
                 String agentName = orgDomainName.trim();
                 if (payLoad.containsKey(PublishType.agent.getValue())) {
