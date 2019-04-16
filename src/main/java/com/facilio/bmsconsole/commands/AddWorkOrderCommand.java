@@ -170,7 +170,7 @@ public class AddWorkOrderCommand implements Command {
     	                wolist.add(info);
     				}	
 
-    				addWO.put("addWO", wolist);
+    				addWO.put("addPMWO", wolist);
 
     				CommonCommandUtil.addActivityToContext(workOrder.getId(), -1, WorkOrderActivityType.ADD_PM_WO, addWO, (FacilioContext) context);
                 }
