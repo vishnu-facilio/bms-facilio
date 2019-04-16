@@ -46,20 +46,25 @@ public class FormsAPI {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			for(Map.Entry<String, Collection<FacilioForm>> entry :forms.entrySet()) {
 				Iterator<FacilioForm> iterator = entry.getValue().iterator();
+				List<FacilioForm> formsList = new ArrayList<>();
 				while (iterator.hasNext()) {
 					FacilioForm form = (FacilioForm) iterator.next();
+					FacilioForm mutatedForm = new FacilioForm(form);
+					formsList.add(mutatedForm);
+					
 					String moduleName = form.getModule().getName();
 					int count = form.getFields().size();
 					List<FacilioField> customFields = modBean.getAllCustomFields(moduleName);
 					if (customFields != null && !customFields.isEmpty()) {
 						List<FormField> fields = new ArrayList<>(form.getFields());
-						form.setFields(fields);
+						mutatedForm.setFields(fields);
 						for (FacilioField f: customFields) {
 							count = count + 1;
 							fields.add(FormsAPI.getFormFieldFromFacilioField(f, count));
 						}
 					}
 				}
+				entry.setValue(formsList);
 			}
 		}
 		Map<String, Set<FacilioForm>> dbForms = getAllFormsFromDB(formtype);
