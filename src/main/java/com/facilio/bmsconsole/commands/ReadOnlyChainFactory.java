@@ -271,7 +271,7 @@ public class ReadOnlyChainFactory {
 	
 	public static Chain getResourcesListForMultiplePM() {
 		Chain c = getDefaultChain();
-		c.addCommand(new getResourceListForMultiplePM());
+		c.addCommand(new GetResourceListForMultiplePM());
 		return c;
 	}
 	
