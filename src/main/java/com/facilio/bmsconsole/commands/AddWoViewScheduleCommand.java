@@ -27,7 +27,7 @@ import com.facilio.sql.GenericUpdateRecordBuilder;
 import com.facilio.tasker.FacilioTimer;
 import com.facilio.tasker.ScheduleInfo;
 
-public class ScheduleWoReportCommand implements Command {
+public class AddWoViewScheduleCommand implements Command {
 
 	@Override
 	public boolean execute(Context context) throws Exception {

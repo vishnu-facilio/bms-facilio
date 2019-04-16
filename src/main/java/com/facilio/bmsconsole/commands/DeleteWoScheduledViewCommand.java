@@ -22,12 +22,12 @@ import com.facilio.sql.GenericDeleteRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.tasker.FacilioTimer;
 
-public class DeleteWoScheduledReportsCommand implements Command {
+public class DeleteWoScheduledViewCommand implements Command {
 
-	boolean isV2Report;
-	public DeleteWoScheduledReportsCommand(Boolean... isV2Report) {
-		this.isV2Report = isV2Report.length == 1 ? isV2Report[0] : false;
-	}
+//	boolean isV2Report;
+//	public DeleteWoScheduledViewCommand(Boolean... isV2Report) {
+//		this.isV2Report = isV2Report.length == 1 ? isV2Report[0] : false;
+//	}
 	
 	@Override
 	public boolean execute(Context context) throws Exception {

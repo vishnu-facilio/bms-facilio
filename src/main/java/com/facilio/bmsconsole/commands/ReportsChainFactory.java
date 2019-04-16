@@ -92,10 +92,10 @@ public class ReportsChainFactory {
 		return c;
 	}
 	
-	public static Chain getWoReportScheduleChain() {
+	public static Chain getWoViewScheduleChain() {
 		Chain c = getDefaultChain();
 		c.addCommand(new AddTemplateCommand());
-		c.addCommand(new ScheduleWoReportCommand());
+		c.addCommand(new AddWoViewScheduleCommand());
 		return c;
 	}
 	
@@ -105,23 +105,23 @@ public class ReportsChainFactory {
 		return c;
 	}
 	
-	public static Chain getWoScheduledReportsChain() {
+	public static Chain getWoScheduledViewListChain() {
 		Chain c = getDefaultChain();
-		c.addCommand(new getWoScheduledReportsChain());
+		c.addCommand(new getWoScheduledViewList());
 		return c;
 	}
 	
-	public static Chain updateWoScheduledReportsChain() {
+	public static Chain updateWoScheduledViewChain() {
 		Chain c = getDefaultChain();
 		c.addCommand(new AddTemplateCommand());
-		c.addCommand(new DeleteWoScheduledReportsCommand());
-		c.addCommand(new ScheduleWoReportCommand());
+		c.addCommand(new DeleteWoScheduledViewCommand());
+		c.addCommand(new AddWoViewScheduleCommand());
 		return c;
 	}
 	
-	public static Chain deleteWoScheduledReportsChain() {
+	public static Chain deleteWoScheduledViewChain() {
 		Chain c = getDefaultChain();
-		c.addCommand(new DeleteWoScheduledReportsCommand());
+		c.addCommand(new DeleteWoScheduledViewCommand());
 		return c;
 	}
 	

@@ -1128,17 +1128,22 @@
 				<param name="excludeProperties">criteria.conditions.*\.computedWhereClause</param>
 			</result>
 		</action>
-		<action name="woScheduleReport" class="com.facilio.bmsconsole.actions.ViewAction" method="woScheduleReport">
+		<action name="woScheduleView" class="com.facilio.bmsconsole.actions.ViewAction" method="addWoScheduleView">
 			<result name="success" type="json">
 				<param name="includeProperties">reportId</param>
 			</result>
 		</action>
-		<action name="woScheduleReportList" class="com.facilio.bmsconsole.actions.ViewAction" method="woScheduledList">
+		<action name="woScheduleViewList" class="com.facilio.bmsconsole.actions.ViewAction" method="woScheduledList">
 			<result name="success" type="json">
 				<param name="includeProperties">^scheduledReports.*</param>
 			</result>
 		</action>
-		<action name="editWoScheduledReport" class="com.facilio.bmsconsole.actions.ViewAction" method="editWoScheduledReport">
+		<action name="editWoScheduledView" class="com.facilio.bmsconsole.actions.ViewAction" method="editWoScheduledView">
+			<result name="success" type="json">
+				<param name="includeProperties">rowsUpdated</param>
+			</result>
+		</action>
+		<action name="deleteScheduledView" class="com.facilio.bmsconsole.actions.ViewAction" method="deleteScheduledView">
 			<result name="success" type="json">
 				<param name="includeProperties">rowsUpdated</param>
 			</result>

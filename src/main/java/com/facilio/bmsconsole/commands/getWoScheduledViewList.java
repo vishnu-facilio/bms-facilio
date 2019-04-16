@@ -27,7 +27,7 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.tasker.job.JobContext;
 
-public class getWoScheduledReportsChain implements Command {
+public class getWoScheduledViewList implements Command {
 
 	@Override
 	public boolean execute(Context context) throws Exception {
