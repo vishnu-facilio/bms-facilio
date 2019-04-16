@@ -81,7 +81,7 @@
 		
 	</package>
 	
-	<package name="servicePortalApiV2" namespace="/api/service/v2" extends="servicePortalApiV2">
+	<package name="newServicePortalApiV2" namespace="/api/service/v2" extends="servicePortalApiV2">
 		<action name="forms" class="com.facilio.bmsconsole.actions.FormAction" method="formList">
 			<param name="formType">3</param>
 		</action>
@@ -249,7 +249,7 @@
 		</action>
 	</package>
 	
-	<package name="serviceReportApiv2" namespace="/api/service/v2/forms" extends="servicePortalApiV2">
+	<package name="serviceFormApiv2" namespace="/api/service/v2/forms" extends="servicePortalApiV2">
 		<action name="*" class="com.facilio.bmsconsole.actions.FormAction" method="formDetails">
 			<param name="moduleName">{1}</param>
 		</action>
