@@ -97,15 +97,16 @@ public class ApproveOrRejectItemCommand implements Command {
 				if (transactions.getTransactionTypeEnum() == TransactionType.WORKORDER) {
 					parentIds.add(transactions.getParentId());
 				}
-			}
-			JSONObject newinfo = new JSONObject();
-			if (approvalState == ApprovalState.REJECTED) {
-				newinfo.put("rejected", woitemactivity);
-				CommonCommandUtil.addActivityToContext(itemTypesId, -1, ItemActivityType.ITEM_REJECTED, newinfo, (FacilioContext) context);
-			}
-			else if (approvalState == ApprovalState.APPROVED) {
-				newinfo.put("approved", woitemactivity);
-				CommonCommandUtil.addActivityToContext(itemTypesId, -1, ItemActivityType.ITEM_APPROVED, newinfo, (FacilioContext) context);
+				
+				JSONObject newinfo = new JSONObject();
+				if (approvalState == ApprovalState.REJECTED) {
+					newinfo.put("rejected", woitemactivity);
+					CommonCommandUtil.addActivityToContext(itemTypesId, -1, ItemActivityType.ITEM_REJECTED, newinfo, (FacilioContext) context);
+				}
+				else if (approvalState == ApprovalState.APPROVED) {
+					newinfo.put("approved", woitemactivity);
+					CommonCommandUtil.addActivityToContext(itemTypesId, -1, ItemActivityType.ITEM_APPROVED, newinfo, (FacilioContext) context);
+				}
 			}
 			context.put(FacilioConstants.ContextNames.RECORD_LIST, itemTransactions);
 			context.put(FacilioConstants.ContextNames.PARENT_ID_LIST, parentIds);
