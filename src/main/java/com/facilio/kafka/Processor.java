@@ -179,6 +179,8 @@ public class Processor extends FacilioProcessor {
                             GenericUpdateRecordBuilder genericUpdateRecordBuilder = new GenericUpdateRecordBuilder().table(AgentKeys.AGENT_TABLE).fields(FieldFactory.getAgentDataFields()).andCustomWhere(AgentKeys.NAME + "= '" + payLoad.get(PublishType.agent.getValue()) + "'");
                             Map<String, Object> toUpdate = new HashMap<>();
                             toUpdate.put(AgentKeys.LAST_DATA_RECEIVED_TIME, System.currentTimeMillis());
+                            toUpdate.put(AgentKeys.CONNECTION_STATUS, Boolean.TRUE);
+                            toUpdate.put(AgentKeys.STATE, 1);
                             genericUpdateRecordBuilder.update(toUpdate);
 
                         }

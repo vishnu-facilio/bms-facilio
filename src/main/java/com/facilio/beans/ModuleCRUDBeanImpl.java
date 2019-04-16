@@ -668,16 +668,31 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 	}
 
     @Override
-    public List<Map<String, Object>> getMetrics(Long agentId,Integer pubLishType) throws Exception {
-		FacilioModule metricsmodule = ModuleFactory.getAgentMetricsModule();
-		GenericSelectRecordBuilder genericSelectRecordBuilder = new GenericSelectRecordBuilder()
-																.table(AgentKeys.METRICS_TABLE)
-																.select(FieldFactory.getAgentMetricsFields())
-																.andCondition(CriteriaAPI.getCondition(FieldFactory.getAgentIdField(metricsmodule),agentId.toString(),NumberOperators.EQUALS))
-                                                                .andCondition(CriteriaAPI.getCondition(FieldFactory.getPublishTypeField(metricsmodule),pubLishType.toString(),NumberOperators.EQUALS))
-																.andCondition(CriteriaAPI.getCurrentOrgIdCondition(metricsmodule))
-																.orderBy("ID DESC").limit(1);
-        return genericSelectRecordBuilder.get();
+    public List<Map<String, Object>> getMetrics(Long agentId,Integer publishType, Long createdTime) throws Exception {
+		FacilioModule metricsModule = ModuleFactory.getAgentMetricsModule();
+		if(agentId != null && publishType != null) {
+			GenericSelectRecordBuilder genericSelectRecordBuilder = new GenericSelectRecordBuilder()
+					.table(AgentKeys.METRICS_TABLE)
+					.select(FieldFactory.getAgentMetricsFields())
+					.andCondition(CriteriaAPI.getCondition(FieldFactory.getAgentIdField(metricsModule), agentId.toString(), NumberOperators.EQUALS))
+					.andCondition(CriteriaAPI.getCondition(FieldFactory.getPublishTypeField(metricsModule), publishType.toString(), NumberOperators.EQUALS))
+					.andCondition(CriteriaAPI.getCurrentOrgIdCondition(metricsModule))
+					.andCondition(CriteriaAPI.getCondition(FieldFactory.getCreatedTime(metricsModule),createdTime.toString(),NumberOperators.EQUALS));
+			return genericSelectRecordBuilder.get();
+		}
+		return new ArrayList<>();
     }
+
+	/*@Override
+	public List<Map<String, Object>> getIntegration() throws Exception {
+		FacilioModule integrationModule = ModuleFactory.getIntegrationModule();
+		GenericSelectRecordBuilder genericSelectRecordBuilder = new GenericSelectRecordBuilder()
+				.table(WattsenseKeys.INTEGRATION_TABLE_NAME)
+				.select(FieldFactory.getIntegrationFields())
+				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(integrationModule));
+		return genericSelectRecordBuilder.get();
+	}*/
+
+
 
 }
