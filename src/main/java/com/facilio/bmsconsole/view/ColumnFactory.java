@@ -392,6 +392,7 @@ public class ColumnFactory {
 		columns.add(new ViewField("status", "Status"));
 		columns.add(new ViewField("fromDate", "Valid From"));
 		columns.add(new ViewField("endDate", "Valid Till"));
+		columns.add(new ViewField("renewalDate", "Renewal Date"));
 		columns.add(new ViewField("totalCost", "Total Cost"));
 
 		return columns;
