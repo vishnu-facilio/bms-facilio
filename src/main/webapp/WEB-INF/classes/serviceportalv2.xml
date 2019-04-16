@@ -80,6 +80,12 @@
         </action>
 		
 	</package>
+	
+	<package name="servicePortalApiV2" namespace="/api/service/v2" extends="servicePortalApiV2">
+		<action name="forms" class="com.facilio.bmsconsole.actions.FormAction" method="formList">
+			<param name="formType">3</param>
+		</action>
+	</package>
 
 	<!-- new service portal api will be open -->
 	<!-- <package name="servicePortalApiV2" namespace="/api/service/v2" extends="v2Api">
@@ -240,6 +246,12 @@
 		<action name="moveReport" class="com.facilio.bmsconsole.actions.V2ReportAction" method="moveReport">
 		</action>
 		<action name="search" class="com.facilio.bmsconsole.actions.V2ReportAction" method="searchReportAndFolders">
+		</action>
+	</package>
+	
+	<package name="serviceReportApiv2" namespace="/api/service/v2/forms" extends="servicePortalApiV2">
+		<action name="*" class="com.facilio.bmsconsole.actions.FormAction" method="formDetails">
+			<param name="moduleName">{1}</param>
 		</action>
 	</package>
 
