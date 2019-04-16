@@ -362,7 +362,7 @@ public static void insertInstanceAssetMapping(String deviceName, long assetId, l
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("device"), deviceName, StringOperators.IS))
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("instance"), instanceName, StringOperators.IS))
 				;
-		updatePointsData(deviceName, instanceName,prop );
+//		updatePointsData(deviceName, instanceName,prop );
 		int count = builder.update(prop);
 		
 		FacilioContext context = new FacilioContext();
