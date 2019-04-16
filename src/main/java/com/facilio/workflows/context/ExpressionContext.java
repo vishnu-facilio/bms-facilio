@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
@@ -28,6 +29,7 @@ import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
+import com.facilio.util.FacilioUtil;
 import com.facilio.workflows.util.WorkflowUtil;
 
 public class ExpressionContext implements WorkflowExpression {
@@ -296,6 +298,10 @@ public class ExpressionContext implements WorkflowExpression {
 			if (FieldUtil.isSiteIdFieldPresent(module) && AccountUtil.getCurrentSiteId() > 0) {
 				selectBuilder.andCondition(CriteriaAPI.getCurrentSiteIdCondition(module));
 			}
+			if (AccountUtil.getCurrentUser() == null) {
+				User user = AccountUtil.getOrgBean().getSuperAdmin(AccountUtil.getCurrentOrg().getOrgId());
+				AccountUtil.getCurrentAccount().setUser(user);
+			}
 			Criteria scopeCriteria = AccountUtil.getCurrentUser().scopeCriteria(module.getName());
 			if (scopeCriteria != null) {
 				selectBuilder.andCriteria(scopeCriteria);
@@ -319,7 +325,7 @@ public class ExpressionContext implements WorkflowExpression {
 //				select.setModule(null);
 				select.setName(RESULT_STRING);
 				
-				selectBuilder.andCustomWhere(select.getColumnName()+" is not null");
+				selectBuilder.andCustomWhere(select.getCompleteColumnName()+" is not null");
 				
 				if(aggregateString != null && !aggregateString.isEmpty()) {
 					AggregateOperator expAggregateOpp = getAggregateOpperator();
@@ -367,7 +373,7 @@ public class ExpressionContext implements WorkflowExpression {
 							if(readingDataMeta == null) {
 								throw new Exception("readingDataMeta is null for FieldName - "+fieldName +" moduleName - "+moduleName+" parentId - "+parentIdString);
 							}
-							long actualLastRecordedTime = getActualLastRecordedTime(module);
+							long actualLastRecordedTime = FacilioUtil.getActualLastRecordedTime(module);
 							if(actualLastRecordedTime > 0) {
 								if(readingDataMeta.getTtime() >= actualLastRecordedTime) {
 									exprResult = readingDataMeta.getValue();
@@ -518,17 +524,6 @@ public class ExpressionContext implements WorkflowExpression {
 		return exprResult;
 	}
 	
-	private long getActualLastRecordedTime(FacilioModule module) {
-		try {
-			ZonedDateTime zdt = DateTimeUtil.getDateTime(DateTimeUtil.getCurrenTime());
-			zdt = zdt.truncatedTo(module.getDateIntervalUnit());
-			return DateTimeUtil.getMillis(zdt, true);
-		}
-		catch(Exception e) {
-			return -1l;
-		}
-	}
-
 	private boolean isManualAggregateQuery() {
 		if((getAggregateCondition() != null && !getAggregateCondition().isEmpty())) {
 			return true;

@@ -13,6 +13,7 @@ import com.facilio.bmsconsole.workflow.rule.AlarmRuleContext;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleAlarmMeta;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext.ThresholdType;
+import com.facilio.bmsconsole.workflow.rule.ReadingRuleMetricContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -53,6 +54,22 @@ public class ReadingRuleAPI extends WorkflowRuleAPI {
 		}
 	}
 	
+	protected static void addReadingRuleMetrics(ReadingRuleContext rule) throws Exception {
+			
+		if (rule.getRuleMetrics() != null && !rule.getRuleMetrics().isEmpty()) {
+			
+			List<Map<String, Object>> props = new ArrayList<>();
+			for(ReadingRuleMetricContext metric :rule.getRuleMetrics()) {
+				props.add(FieldUtil.getAsProperties(metric));
+			}
+			GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+														.table(ModuleFactory.getReadingRuleMetricModule().getTableName())
+														.fields(FieldFactory.getReadingRuleMetricFields())
+														.addRecords(props);
+			insertBuilder.save();
+		}
+	}
+	
 	private static void getInclusionExclusionList(long ruleGroupId, List<Long> resources, boolean isInclude, List<Map<String, Object>> inclusionExclusionList) {
 		if (resources != null && !resources.isEmpty()) {
 			long orgId = AccountUtil.getCurrentOrg().getId();
@@ -82,7 +99,9 @@ public class ReadingRuleAPI extends WorkflowRuleAPI {
 		updateExtendedRule(rule, ModuleFactory.getReadingRuleModule(), FieldFactory.getReadingRuleFields());
 		deleteChildIdsForWorkflow(oldRule, rule);
 		deleteInclusionsExclusions(oldRule);
+		deleteRuleMetrics(rule);
 		ReadingRuleAPI.addReadingRuleInclusionsExlusions((ReadingRuleContext) rule);
+		ReadingRuleAPI.addReadingRuleMetrics(rule);
 		if (rule.getName() == null) {
 			rule.setName(oldRule.getName());
 		}
@@ -122,6 +141,17 @@ public class ReadingRuleAPI extends WorkflowRuleAPI {
 		GenericDeleteRecordBuilder deleteBuilder = new GenericDeleteRecordBuilder();
 		deleteBuilder.table(ModuleFactory.getReadingRuleInclusionsExclusionsModule().getTableName());
 		deleteBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("ruleGroupId"), readingRule.getRuleGroupId()+"", NumberOperators.EQUALS));
+		
+		deleteBuilder.delete();
+		
+	}
+	private static void deleteRuleMetrics (ReadingRuleContext readingRule) throws Exception {
+		
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getReadingRuleMetricFields());
+		
+		GenericDeleteRecordBuilder deleteBuilder = new GenericDeleteRecordBuilder();
+		deleteBuilder.table(ModuleFactory.getReadingRuleMetricModule().getTableName());
+		deleteBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("readingRuleId"), readingRule.getId()+"", NumberOperators.EQUALS));
 		
 		deleteBuilder.delete();
 		
@@ -202,12 +232,31 @@ public class ReadingRuleAPI extends WorkflowRuleAPI {
 		ReadingRuleContext readingRule = FieldUtil.getAsBeanFromMap(prop, ReadingRuleContext.class);
 		readingRule.setReadingField(modBean.getField(readingRule.getReadingFieldId()));
 		setMatchedResources(readingRule);
-		
+		fetchReadingRuleMetricList(readingRule);
 		if (fetchChildren) {
 			fetchAlarmMeta(readingRule);
 		}
 		
 		return readingRule;
+	}
+	
+	protected static ReadingRuleContext fetchReadingRuleMetricList(ReadingRuleContext rule) throws Exception {
+		
+		List<FacilioField> fields = FieldFactory.getReadingRuleMetricFields();
+		
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(fields)
+				.table(ModuleFactory.getReadingRuleMetricModule().getTableName())
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("readingRuleId"), String.valueOf(rule.getId()), NumberOperators.EQUALS))
+				;
+		List<Map<String, Object>> props = selectBuilder.get();
+		if (props != null && !props.isEmpty()) {
+			List<ReadingRuleMetricContext> readingRuleMetricContexts =  FieldUtil.getAsBeanListFromMapList(props, ReadingRuleMetricContext.class);
+			rule.setRuleMetrics(readingRuleMetricContexts);
+		}
+		return rule;
 	}
 	
 	private static void fetchAlarmMeta (ReadingRuleContext rule) throws Exception {

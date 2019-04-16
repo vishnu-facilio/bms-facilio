@@ -81,6 +81,7 @@ public class StoreRoomAction extends FacilioAction{
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.CV_NAME, getViewName());
 		context.put(FacilioConstants.ContextNames.SORTING_QUERY, "Store_room.ID desc");
+		context.put(FacilioConstants.ContextNames.WORK_ORDER_SITE_ID, siteId);
 		if (getFilters() != null) {
 			JSONParser parser = new JSONParser();
 			JSONObject json = (JSONObject) parser.parse(getFilters());
@@ -174,6 +175,14 @@ public class StoreRoomAction extends FacilioAction{
 	}
 	public void setStoreRoomId(long storeRoomId) {
 		this.storeRoomId = storeRoomId;
+	}
+	
+	private long siteId = -1;
+	public long getSiteId() {
+		return siteId;
+	}
+	public void setSiteId(long siteId) {
+		this.siteId = siteId;
 	}
 	
 }

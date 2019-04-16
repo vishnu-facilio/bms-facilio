@@ -27,12 +27,11 @@ import com.facilio.sql.GenericUpdateRecordBuilder;
 import com.facilio.tasker.FacilioTimer;
 import com.facilio.tasker.ScheduleInfo;
 
-public class ScheduleWoReportCommand implements Command {
+public class AddWoViewScheduleCommand implements Command {
 
 	@Override
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
-//		long reportId = (long) context.get(FacilioConstants.ContextNames.REPORT_ID);
 		long viewId;
 		String viewName = (String) context.get(FacilioConstants.ContextNames.CV_NAME);
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -44,14 +43,11 @@ public class ScheduleWoReportCommand implements Command {
 		if ((view != null) && (view.getId() == -1)) {
 			viewId = ViewAPI.checkAndAddView(view.getName(), "workorder", null);
 			view.setId(viewId);
-			System.out.println("viwewwId" + viewId);
 		}
 		else {
 			viewId = view.getId();
-			System.out.println("viwewwId" + viewId);
 		}
 		if (viewId > 0) {
-			// JSONArray dateFilter = (JSONArray)context.get(FacilioConstants.ContextNames.DATE_FILTER);
 			int fileFormat = (int) context.get(FacilioConstants.ContextNames.FILE_FORMAT);
 			EMailTemplate emailTemplate = (EMailTemplate) context.get(FacilioConstants.Workflow.TEMPLATE);
 			

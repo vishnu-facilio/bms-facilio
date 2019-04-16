@@ -417,7 +417,7 @@ public class FacilioField implements Serializable {
 		GEO_LOCATION(31, "Geo Location"),
 		PURCHASEDITEMT(32,"purchasedItem"),
 		IMAGE(33, "image"),
-		PURCHASEDTOOL(32,"purchasedTool"),
+		PURCHASEDTOOL(34,"purchasedTool"),
         ASSETMULTICHOOSER(35,"asset-multi-chooser"),
         SPACEMULTICHOOSER(36,"space-multi-chooser"),
 		LOGO(37,"logo"),

@@ -1389,6 +1389,11 @@
 			<param name="moduleName">inventory</param>
 			<param name="permission">CREATE</param>
 		</action>
+		<action name="count" class="com.facilio.bmsconsole.actions.PurchasedItemAction"
+			method="purchasedItemCount">
+			<param name="moduleName">inventory</param>
+			<param name="permission">READ</param>
+		</action>
 	</package>
 	
 	<package name="purchasedItemsList" namespace="/api/v2/purchasedItemsList/item"
@@ -1398,6 +1403,14 @@
 			<param name="moduleName">inventory</param>
 			<param name="permission">READ,READ_OWN</param>
 			<param name = "itemId">{1}</param>
+		</action>
+	</package>
+	
+	<package name="purchasedItemsViewsList" namespace="/api/v2/purchasedItems/view"
+		extends="v2Api">
+		<action name="*"
+			class="com.facilio.bmsconsole.actions.PurchasedItemAction" method="purchasedItemsViewsList">
+			<param name = "viewName">{1}</param>
 		</action>
 	</package>
 	
@@ -1939,9 +1952,6 @@
 	
 	<package name="moduleApiV2" namespace="/api/v2/modules/fields" extends="v2Api">
 		<action name="add" class="com.facilio.bmsconsole.actions.ModuleAction" method="v2addCustomFields">
-			<result name="success" type="json">
-				<param name="root">fieldIds</param>
-			</result>
 		</action>
 	</package>
 

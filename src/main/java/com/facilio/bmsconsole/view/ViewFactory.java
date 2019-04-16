@@ -272,11 +272,8 @@ public class ViewFactory {
 		
 		order = 1;
 		views = new LinkedHashMap<>();
-		views.put("pendingitem", getItemPendingApproval().setOrder(order++));
-		views.put("pendingtool", getToolPendingApproval().setOrder(order++));
-		views.put("allitem", getAllItemApproval().setOrder(order++));
-		views.put("alltool", getAllToolApproval().setOrder(order++));
-		viewsMap.put(FacilioConstants.ContextNames.INVENTORY_TRANSACTIONS, views);
+		views.put("allpuritem", getAllPurchasedItem().setOrder(order++));
+		viewsMap.put(FacilioConstants.ContextNames.PURCHASED_ITEM, views);
 		
 		order = 1;
 		views = new LinkedHashMap<>();
@@ -2656,6 +2653,25 @@ public class ViewFactory {
 		rejectedApproval.setCriteria(criteria);
 		rejectedApproval.setSortFields(Arrays.asList(new SortField(createdTime, false)));
 		return rejectedApproval;
+	}
+	
+	private static FacilioView getAllPurchasedItem() {
+		FacilioModule purchasedItemModule = ModuleFactory.getPurchasedItemModule();
+
+		FacilioField createdTime = new FacilioField();
+		createdTime.setName("sysCreatedTime");
+		createdTime.setDataType(FieldType.NUMBER);
+		createdTime.setColumnName("CREATED_TIME");
+		createdTime.setModule(purchasedItemModule);
+
+		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, true));
+
+		FacilioView allView = new FacilioView();
+		allView.setName("allpuritem");
+		allView.setDisplayName("All Purchased Items");
+		allView.setSortFields(sortFields);
+
+		return allView;
 	}
 	
 	public static Criteria getAllToolApprovalStateCriteria() {

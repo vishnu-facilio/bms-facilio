@@ -1,5 +1,16 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.logging.Logger;
+
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
+import org.apache.commons.collections.CollectionUtils;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.activity.WorkOrderActivityType;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
@@ -10,18 +21,9 @@ import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.util.AttachmentsAPI;
 import com.facilio.bmsconsole.workflow.rule.EventType;
-import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.apache.commons.collections.CollectionUtils;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-
-import java.util.*;
-import java.util.logging.Logger;
 
 public class AddAttachmentRelationshipCommand implements Command, PostTransactionCommand {
 
@@ -33,7 +35,7 @@ public class AddAttachmentRelationshipCommand implements Command, PostTransactio
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		
-		String moduleName = (String) context.get(FacilioConstants.ContextNames.ATTACHMENT_MODULE_NAME);
+		moduleName = (String) context.get(FacilioConstants.ContextNames.ATTACHMENT_MODULE_NAME);
 		if(moduleName == null ) {
 			moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 		}
@@ -56,7 +58,6 @@ public class AddAttachmentRelationshipCommand implements Command, PostTransactio
 		}
 		
 		idsToUpdateChain = Collections.singletonList(recordId);
-		this.moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 //		FacilioChain.addPostTrasanction(FacilioConstants.ContextNames.IDS_TO_UPDATE_COUNT, Collections.singletonList(recordId));
 //		FacilioChain.addPostTrasanction(FacilioConstants.ContextNames.MODULE_NAME, context.get(FacilioConstants.ContextNames.MODULE_NAME));
 		

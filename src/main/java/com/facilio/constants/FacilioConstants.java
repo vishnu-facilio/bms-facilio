@@ -386,6 +386,7 @@ public class FacilioConstants {
 		public static final String REPORT_HANDLE_BOOLEAN = "reportHandleBoolean";
 		public static final String REPORT_FROM_ALARM = "reportFromAlarm";
 		public static final String ALARM_RESOURCE = "alarmResource";
+		public static final String FETCH_EVENT_BAR = "fetchEventBar";
 		public static final String CALCULATE_REPORT_AGGR_DATA = "calculateReportData";
 		public static final String REPORT_CARD_DATA = "reportCardData";
 		public static final String REPORT_VARIANCE_DATA = "reportVarianceData";
@@ -429,7 +430,7 @@ public class FacilioConstants {
 		public static final String FIELD_ID = "fieldId";
 		public static final String LOOKUP_FIELD_META_LIST = "lookupFieldMetaList";
 		public static final String FETCH_FIELD_DISPLAY_NAMES = "fetchFieldDisplayNames";
-		public static final String CHANGE_FIELD_DISPLAY_NAME = "changeFieldDisplayName";
+		public static final String ALLOW_SAME_FIELD_DISPLAY_NAME = "changeFieldDisplayName";
 		
 		public static final String SITE = "site";
 		public static final String SITE_LIST = "sites";
@@ -648,6 +649,7 @@ public class FacilioConstants {
 		public static final String APPROVER_ID_LIST = "approverIdList";
 		public static final String APPROVER_LIST = "approverList";
 		public static final String READING_RULE_LIST ="readingRules";
+		public static final String READING_RULE_ID ="readingRuleId";
 		public static final String IS_READING_RULE_EXECUTE_FROM_JOB ="isReadingRulesExecutionFromJob";
 		public static final String READING_RULE_ALARM_META ="readingRuleAlarmMeta";
 		public static final String WORKFLOW_RULE_TYPE = "workflowRuleType";
@@ -766,6 +768,7 @@ public class FacilioConstants {
 		public static final String BENCHMARK_VALUE = "benchmarkValue";
 		public static final String BENCHMARK_DATE_AGGR = "benchmarkDateAggr";
 		public static final String READING_RULES_LIST = "readingRulesList";
+		public static final String READING_FIELD_ID = "readingFieldId";
 		public static final String ACTIONS_LIST = "actionsList";
 		public static final String DEL_READING_RULE_IDS = "delReadingRuleIDs";
 		public static final String DEL_READING_RULE = "delReadingRule";
@@ -872,6 +875,7 @@ public class FacilioConstants {
 		
 		public static final String ITEM_TYPES_COUNT = "itemTypesCount";
 		public static final String ITEM_COUNT = "itemCount";
+		public static final String PURCHASED_ITEM_COUNT = "purchasedItemCount";
 		public static final String TOOL_TYPES_COUNT = "toolTypesCount";
 		public static final String TOOL_COUNT = "toolCount";
 		public static final String VENDORS_COUNT = "vendorsCount";

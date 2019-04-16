@@ -107,7 +107,13 @@ public class ReportUserFilterContext {
 			return null;
 		}
 		if (data.contains(ALL)) {
-			return null;
+			if (chooseValue != null) {
+				if (chooseValue.isOtherCriteria()) {
+					return null;
+				} else if (CollectionUtils.isNotEmpty(chooseValue.getValues())) {
+					data = chooseValue.getValues();
+				}
+			}
 		}
 		
 		Criteria c = new Criteria();
@@ -123,7 +129,9 @@ public class ReportUserFilterContext {
 				otherCriteria.setOperator(getOperator(true));
 				continue;
 			}
-			selectedValues.add(s);
+			if (!s.equals(ALL)) {
+				selectedValues.add(s);
+			}
 		}
 		
 		if (CollectionUtils.isNotEmpty(selectedValues)) {
@@ -138,6 +146,9 @@ public class ReportUserFilterContext {
 			c.addOrCondition(otherCriteria);
 		}
 		
+		if (c.isEmpty()) {
+			return null;
+		}
 		return c;
 	}
 	
@@ -154,6 +165,7 @@ public class ReportUserFilterContext {
 	public static class ChooseValue {
 		private String type;
 		private List<String> values;
+		private boolean otherEnabled;
 		public String getType() {
 			return type;
 		}
@@ -165,6 +177,12 @@ public class ReportUserFilterContext {
 		}
 		public void setValues(List<String> values) {
 			this.values = values;
+		}
+		public boolean isOtherEnabled() {
+			return otherEnabled;
+		}
+		public void setOtherEnabled(boolean otherEnabled) {
+			this.otherEnabled = otherEnabled;
 		}
 		
 		@JsonIgnore

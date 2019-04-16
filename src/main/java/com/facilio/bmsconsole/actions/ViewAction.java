@@ -89,19 +89,15 @@ public class ViewAction extends FacilioAction {
 	public void setScheduledReports(List<ReportInfo> scheduledReports) {
 		this.scheduledReports = scheduledReports;
 	}
-	public String woScheduleReport() throws Exception {
+	public String addWoScheduleView() throws Exception {
 		
 		emailTemplate.setName("Report");
 		emailTemplate.setFrom("report@${org.domain}.facilio.com");
 		
 		FacilioContext context = new FacilioContext();
-//		if(viewId == -1) {
 			context.put(FacilioConstants.ContextNames.CV_NAME, viewName);
-//		}
-//		else {
-//			context.put(FacilioConstants.ContextNames.VIEWID, viewId);
-//		}
-//		context.put(FacilioConstants.ContextNames.CV_NAME, getViewName());
+
+
 		context.put(FacilioConstants.ContextNames.FILE_FORMAT, type);
 		context.put(FacilioConstants.Workflow.TEMPLATE, emailTemplate);
 		context.put(FacilioConstants.ContextNames.START_TIME, startTime);
@@ -109,7 +105,7 @@ public class ViewAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.MAX_COUNT, maxCount);
 		context.put(FacilioConstants.ContextNames.SCHEDULE_INFO, scheduleInfo);
  		
-		Chain mailReportChain = ReportsChainFactory.getWoReportScheduleChain();
+		Chain mailReportChain = ReportsChainFactory.getWoViewScheduleChain();
 		mailReportChain.execute(context);
  		
  		return SUCCESS;
@@ -118,19 +114,18 @@ public class ViewAction extends FacilioAction {
 		
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, "workorder");
-		Chain mailReportChain = ReportsChainFactory.getWoScheduledReportsChain();
+		Chain mailReportChain = ReportsChainFactory.getWoScheduledViewListChain();
 		mailReportChain.execute(context);
 		setScheduledReports((List<ReportInfo>) context.get(FacilioConstants.ContextNames.REPORT_LIST));
 		
 		return SUCCESS;
 	}
 	
-	public String editWoScheduledReport () throws Exception {
+	public String editWoScheduledView () throws Exception {
 		emailTemplate.setName("Report");
 		emailTemplate.setFrom("report@${org.domain}.facilio.com");
 		
 		FacilioContext context = new FacilioContext();
-//		context.put(FacilioConstants.ContextNames.REPORT_ID, id);
 		context.put(FacilioConstants.ContextNames.FILE_FORMAT, type);
 		context.put(FacilioConstants.Workflow.TEMPLATE, emailTemplate);
 		context.put(FacilioConstants.ContextNames.CV_NAME, viewName);
@@ -141,7 +136,7 @@ public class ViewAction extends FacilioAction {
 		
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, id);
 		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.EDIT);
-		Chain mailReportChain = ReportsChainFactory.updateWoScheduledReportsChain();
+		Chain mailReportChain = ReportsChainFactory.updateWoScheduledViewChain();
 		mailReportChain.execute(context);
 		
 //		rowsUpdated = (int) context.get(FacilioConstants.ContextNames.ROWS_UPDATED);
@@ -149,10 +144,10 @@ public class ViewAction extends FacilioAction {
 		return SUCCESS;
 	}
 	
-	public String deleteScheduledReport () throws Exception {
+	public String deleteScheduledView () throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, id);
-		Chain mailReportChain = ReportsChainFactory.deleteScheduledReportsChain();
+		Chain mailReportChain = ReportsChainFactory.deleteWoScheduledViewChain();
 		mailReportChain.execute(context);
 		
 //		rowsUpdated = (int) context.get(FacilioConstants.ContextNames.ROWS_UPDATED);

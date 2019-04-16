@@ -2,10 +2,13 @@ package com.facilio.report.context;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.modules.*;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.report.context.ReportFactory.Alarm;
 import com.facilio.report.context.ReportFactory.ModuleType;
 import com.facilio.report.context.ReportFactory.WorkOrder;
+import com.mysql.fabric.xmlrpc.base.Array;
+
 import org.json.simple.JSONObject;
 
 import java.util.ArrayList;
@@ -43,7 +46,29 @@ public class ReportFactoryFields {
 				selectedFields.add(customFields.get(customFieldName));
 			}
 		}
-		return rearrangeFields(selectedFields, "workorder");
+		
+		// loading additional module fields
+		JSONObject rearragedFields = rearrangeFields(selectedFields, "workorder");
+		HashMap<String , Map<String, FacilioField>> additionalModuleFields = getAdditionalModuleFields("workorder", bean);
+		
+	
+		List<FacilioField> assetFields = new ArrayList<FacilioField>();
+		assetFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.ASSET).get("category"));
+		assetFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.ASSET).get("type"));
+		assetFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.ASSET).get("department"));
+		assetFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.ASSET).get("state"));
+		assetFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.ASSET).get("unitPrice"));
+		assetFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.ASSET).get("purchasedDate"));
+		assetFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.ASSET).get("retireDate"));
+		assetFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.ASSET).get("warrantyExpiryDate"));
+		
+		
+		Map<String, List<FacilioField>> dimensionFieldMap = (Map<String, List<FacilioField>>)rearragedFields.get("dimension");
+
+		
+		dimensionFieldMap.put(FacilioConstants.ContextNames.ASSET, assetFields);
+		
+		return rearragedFields;
 	}
 	
 	public static JSONObject getassetReportFields() throws Exception{
@@ -72,6 +97,8 @@ public class ReportFactoryFields {
 				selectedFields.add(customFields.get(customFieldName));
 			}
 		}
+		
+		
 		return rearrangeFields(selectedFields, "asset");
 	}
 	
@@ -100,7 +127,27 @@ public class ReportFactoryFields {
 			}
 		}
 		
-		return rearrangeFields(selectedFields, "alarm");	
+		// loading additional module fields
+				JSONObject rearragedFields = rearrangeFields(selectedFields, "alarm");
+				HashMap<String , Map<String, FacilioField>> additionalModuleFields = getAdditionalModuleFields("alarm", bean);
+				
+			
+				List<FacilioField> assetFields = new ArrayList<FacilioField>();
+				assetFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.ASSET).get("category"));
+				assetFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.ASSET).get("type"));
+				assetFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.ASSET).get("department"));
+				assetFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.ASSET).get("state"));
+				assetFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.ASSET).get("unitPrice"));
+				assetFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.ASSET).get("purchasedDate"));
+				assetFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.ASSET).get("retireDate"));
+				assetFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.ASSET).get("warrantyExpiryDate"));
+				
+				
+				Map<String, List<FacilioField>> dimensionFieldMap = (Map<String, List<FacilioField>>)rearragedFields.get("dimension");
+				
+				dimensionFieldMap.put(FacilioConstants.ContextNames.ASSET, assetFields);
+		
+		return rearragedFields;	
 	}
 	
 	public static JSONObject getReportFields(String moduleName) throws Exception {
@@ -132,10 +179,10 @@ public class ReportFactoryFields {
 			if(field != null) {
 				if (field instanceof NumberField) {
 					metricFields.add(field);
-				} else if (field instanceof LookupField) {
-					addFieldInList(dimensionFieldMap, module, field);
 				} else if (field.getDataTypeEnum() == FieldType.DATE || field.getDataTypeEnum() == FieldType.DATE_TIME) {
 					addFieldInList(dimensionFieldMap, "time", field);
+				} else {
+					addFieldInList(dimensionFieldMap, module, field);
 				}
 			}
 		}
@@ -214,5 +261,40 @@ public class ReportFactoryFields {
 			map.put(name, list);
 		}
 		list.add(field);
+	}
+	
+	private static HashMap<String, Map<String, FacilioField>> getAdditionalModuleFields(String moduleName, ModuleBean bean) throws Exception {
+		List<String> additonalModules = getAdditionalModules(moduleName);
+		HashMap<String, Map<String, FacilioField>> additionalModuleFields = new HashMap<String, Map<String, FacilioField>>();
+		
+		for(String module: additonalModules) {
+			Map<String, FacilioField> moduleFields = FieldFactory.getAsMap(bean.getAllFields(module));
+
+			List<FacilioField> customModuleFields = bean.getAllCustomFields(module);
+			if(customModuleFields != null) {
+				moduleFields.putAll(FieldFactory.getAsMap(customModuleFields));
+			}
+			
+			additionalModuleFields.put(module, moduleFields);
+		}
+		
+		return additionalModuleFields;
+		
+	}
+	
+	private static List<String> getAdditionalModules(String moduleName) {
+		List<String> moduleNames = new ArrayList<String>();
+		
+		switch(moduleName) {
+			case "workorder":
+				moduleNames.add(FacilioConstants.ContextNames.ASSET);
+				break;
+
+			case "alarm":
+				moduleNames.add(FacilioConstants.ContextNames.ASSET);
+				break;
+		}
+		
+		return moduleNames;
 	}
 }

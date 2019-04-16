@@ -7,6 +7,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,8 +39,34 @@ import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
 
 public class FormsAPI {
-	public static Map<String, Set<FacilioForm>> getAllForms(FormType formtype) throws Exception {
-		Map<String, Set<FacilioForm>> forms = new HashMap<> (FormFactory.getAllForms(formtype));
+	
+	public static Map<String, Collection<FacilioForm>> getAllForms(FormType formtype) throws Exception {
+		Map<String, Collection<FacilioForm>> forms = new HashMap<> (FormFactory.getAllForms(formtype));
+		if (forms != null && AccountUtil.getCurrentAccount().isFromIos()) {
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			for(Map.Entry<String, Collection<FacilioForm>> entry :forms.entrySet()) {
+				Iterator<FacilioForm> iterator = entry.getValue().iterator();
+				List<FacilioForm> formsList = new ArrayList<>();
+				while (iterator.hasNext()) {
+					FacilioForm form = (FacilioForm) iterator.next();
+					FacilioForm mutatedForm = new FacilioForm(form);
+					formsList.add(mutatedForm);
+					
+					String moduleName = form.getModule().getName();
+					int count = form.getFields().size();
+					List<FacilioField> customFields = modBean.getAllCustomFields(moduleName);
+					if (customFields != null && !customFields.isEmpty()) {
+						List<FormField> fields = new ArrayList<>(form.getFields());
+						mutatedForm.setFields(fields);
+						for (FacilioField f: customFields) {
+							count = count + 1;
+							fields.add(FormsAPI.getFormFieldFromFacilioField(f, count));
+						}
+					}
+				}
+				entry.setValue(formsList);
+			}
+		}
 		Map<String, Set<FacilioForm>> dbForms = getAllFormsFromDB(formtype);
 		if (!dbForms.isEmpty()) {
 			forms.putAll(dbForms);

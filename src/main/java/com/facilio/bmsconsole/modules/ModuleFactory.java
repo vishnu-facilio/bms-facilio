@@ -278,6 +278,14 @@ public class ModuleFactory {
 
 		return readingRuleModule;
 	}
+	public static FacilioModule getReadingRuleMetricModule() {
+		FacilioModule readingRuleModule = new FacilioModule();
+		readingRuleModule.setName("readingruleMetrics");
+		readingRuleModule.setDisplayName("Reading Rule Metrics");
+		readingRuleModule.setTableName("Reading_Rule_Metrics");
+
+		return readingRuleModule;
+	}
 	public static FacilioModule getReadingAlarmRuleModule() {
 		FacilioModule readingRuleModule = new FacilioModule();
 		readingRuleModule.setName("readingalarmrule");
@@ -1765,7 +1773,7 @@ public class ModuleFactory {
 		FacilioModule inventoryModule = new FacilioModule();
 		inventoryModule.setName(FacilioConstants.ContextNames.TOOL);
 		inventoryModule.setDisplayName("Tool");
-		inventoryModule.setTableName("Tools");
+		inventoryModule.setTableName("Tool");
 		return inventoryModule;
 	}
 

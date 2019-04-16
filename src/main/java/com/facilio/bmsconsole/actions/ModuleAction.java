@@ -1,5 +1,15 @@
 package com.facilio.bmsconsole.actions;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.chain.Chain;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
@@ -12,11 +22,6 @@ import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
-import org.apache.commons.chain.Chain;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-
-import java.util.*;
 
 public class ModuleAction extends FacilioAction {
 	
@@ -39,7 +44,13 @@ public class ModuleAction extends FacilioAction {
 	}
 	
 	public String addCustomFields() throws Exception {
-		FacilioContext context = new FacilioContext();
+		return addCustomFields(null);
+	}
+	
+	private String addCustomFields(FacilioContext context) throws Exception {
+		if (context == null) {
+			context = new FacilioContext();
+		}
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, getModuleName());
 		context.put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, getFields());
 		
@@ -48,6 +59,19 @@ public class ModuleAction extends FacilioAction {
 		
 		setFieldIds((List<Long>) context.get(FacilioConstants.ContextNames.MODULE_FIELD_IDS));
 		
+		return SUCCESS;
+	}
+	
+	public String v2addCustomFields() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.ALLOW_SAME_FIELD_DISPLAY_NAME, true);
+		setFields(Collections.singletonList(field));
+		addCustomFields(context);
+		
+		setFieldId(getFieldIds().get(0));
+		fieldDetails();
+		
+		setResult("field", field);
 		return SUCCESS;
 	}
 	

@@ -7,7 +7,7 @@ import java.util.*;
 @JsonFormat(shape = JsonFormat.Shape.OBJECT)
 public enum Unit {
 	
-	// last id -- 101
+	// last id -- 103
 	
 	KWH(1,"kilowatt-hour","kWh",Metric.ENERGY),
 	HECTOWH(76,"hectowatt-hour","hWh",Metric.ENERGY,"si*10","this/10"),
@@ -90,6 +90,8 @@ public enum Unit {
 	MEGAVAR(60,"Megavolt-ampere reactive","Mvar",Metric.REACTIVEPOWER,"si/1000000","this*1000000"),
 	
 	PASCAL(61,"pascal","Pa",Metric.PRESSURE),
+	KGPERCMSQ(102,"kilogram per square centimeter","kg/cm\u00B2",Metric.PRESSURE,"si/98066.5","this*98066.5"),
+	KILOPASCAL(103,"kilo pascal","kPa",Metric.PRESSURE,"si/1000","this*1000"),
 	
 	DEGREE(62,"Degree","&deg;",Metric.DEGREE),
 	

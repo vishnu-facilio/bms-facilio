@@ -9,12 +9,15 @@ import com.facilio.bmsconsole.context.TicketContext.SourceType;
 import com.facilio.bmsconsole.criteria.*;
 import com.facilio.bmsconsole.modules.*;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
+import com.facilio.bmsconsole.workflow.rule.ReadingRuleMetricContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericInsertRecordBuilder;
+import com.facilio.util.FacilioUtil;
 import com.facilio.workflows.context.ExpressionContext;
 import com.facilio.workflows.context.WorkflowContext;
 import org.apache.commons.chain.Context;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.text.WordUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -485,6 +488,52 @@ public class AlarmAPI {
 		String resourceName = ((ResourceContext)reading.getParent()).getName();
 		obj.put("source", resourceName);
 		obj.put("timestamp", reading.getTtime());
+		
+		JSONObject values = getMetricsValuesForRule(rule, reading);
+		obj.put("metricValues", values);
+	}
+	
+	private static JSONObject getMetricsValuesForRule(ReadingRuleContext rule, ReadingContext reading) throws Exception {
+		try {
+			if(rule.getRuleGroupId() > 0) {
+				long resourceId = ((ResourceContext)reading.getParent()).getId();
+				ReadingRuleContext readingRule = (ReadingRuleContext) WorkflowRuleAPI.getWorkflowRule(rule.getRuleGroupId());
+				if(readingRule.getRuleMetrics() !=null && !readingRule.getRuleMetrics().isEmpty()) {
+					
+					Pair<Long, FacilioField> pair = null;
+					List<Pair<Long, FacilioField>> rdmPairs = new ArrayList<>();
+					JSONObject metricValues = new JSONObject();
+					
+					for( ReadingRuleMetricContext metric : readingRule.getRuleMetrics()) {
+						long tempResourceId = metric.getResourceId() > 0 ? metric.getResourceId() : resourceId;   
+						pair = Pair.of(tempResourceId, metric.getField());
+						rdmPairs.add(pair);
+					}
+					
+					Map<String, ReadingDataMeta> rdms = ReadingsAPI.getReadingDataMetaMap(rdmPairs);
+					
+					
+					for(String rdmKey : rdms.keySet()) {
+						ReadingDataMeta rdm = rdms.get(rdmKey);
+						
+						long actualLastRecordedTime = FacilioUtil.getActualLastRecordedTime(rdm.getField().getModule());
+						if(actualLastRecordedTime > 0) {
+							if(rdm.getTtime() >= actualLastRecordedTime) {
+								metricValues.put(rdmKey, rdm.getValue());
+							}
+						}
+						else {
+							metricValues.put(rdmKey, rdm.getValue());
+						}
+					}
+					return metricValues;
+				}
+			}
+		}
+		catch(Exception e) {
+			LOGGER.error("ERROR DURING METRICS VALUE FETCH", e);
+		}
+		return null;
 	}
 	
 	public static void addMLAlarmProps (JSONObject obj, ReadingRuleContext rule, Context context) throws Exception {

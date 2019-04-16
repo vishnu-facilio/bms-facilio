@@ -7,13 +7,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.apache.commons.chain.Chain;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.apache.struts2.json.annotations.JSON;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -22,7 +20,6 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.AddOrUpdateReportCommand;
 import com.facilio.bmsconsole.commands.ConstructReportData;
-import com.facilio.bmsconsole.commands.GenerateCondtionsFromFiltersCommand;
 import com.facilio.bmsconsole.commands.GenerateCriteriaFromFilterCommand;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.SendReadingReportMailCommand;
@@ -31,7 +28,6 @@ import com.facilio.bmsconsole.context.AlarmContext;
 import com.facilio.bmsconsole.context.DashboardWidgetContext;
 import com.facilio.bmsconsole.context.FormulaFieldContext;
 import com.facilio.bmsconsole.context.MLAlarmContext;
-import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.context.ReadingAlarmContext;
 import com.facilio.bmsconsole.context.ReportInfo;
 import com.facilio.bmsconsole.context.ResourceContext;
@@ -47,19 +43,13 @@ import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.templates.EMailTemplate;
-import com.facilio.bmsconsole.templates.TaskSectionTemplate;
-import com.facilio.bmsconsole.templates.TaskTemplate;
-import com.facilio.bmsconsole.templates.Template;
-import com.facilio.bmsconsole.templates.WorkorderTemplate;
 import com.facilio.bmsconsole.util.AlarmAPI;
 import com.facilio.bmsconsole.util.DashboardUtil;
 import com.facilio.bmsconsole.util.DateTimeUtil;
 import com.facilio.bmsconsole.util.FacilioFrequency;
 import com.facilio.bmsconsole.util.FormulaFieldAPI;
-import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
 import com.facilio.bmsconsole.util.ReadingRuleAPI;
 import com.facilio.bmsconsole.util.ResourceAPI;
-import com.facilio.bmsconsole.util.TemplateAPI;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.rule.AlarmRuleContext;
 import com.facilio.bmsconsole.workflow.rule.EventType;
@@ -204,7 +194,9 @@ public class V2ReportAction extends FacilioAction {
 				reportContext.setDateValue(range.toString());
 			}
 		}
-		
+		reportContext.addToReportState(FacilioConstants.ContextNames.REPORT_SHOW_ALARMS, showAlarms);
+		reportContext.addToReportState(FacilioConstants.ContextNames.REPORT_SHOW_SAFE_LIMIT, showSafeLimit);
+
 		context.put(FacilioConstants.ContextNames.REPORT, reportContext);
 		context.put(FacilioConstants.ContextNames.REPORT_HANDLE_BOOLEAN, newFormat);
 	}
@@ -473,6 +465,10 @@ public class V2ReportAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.REPORT_FROM_ALARM, true);
 		context.put(FacilioConstants.ContextNames.ALARM_RESOURCE, alarmResource);
+		if(readingRuleId > 0) {
+			context.put(FacilioConstants.ContextNames.FETCH_EVENT_BAR, true);
+			context.put(FacilioConstants.ContextNames.READING_RULE_ID, readingRuleId);
+		}
 		setReadingsDataContext(context);
 		
 		Chain fetchReadingDataChain = newFormat ? ReadOnlyChainFactory.newFetchReadingReportChain() : ReadOnlyChainFactory.fetchReadingReportChain();

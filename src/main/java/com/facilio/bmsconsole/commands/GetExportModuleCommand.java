@@ -16,7 +16,7 @@ public class GetExportModuleCommand implements Command  {
 		String filters = (String) context.get(FacilioConstants.ContextNames.FILTERS);
 		FileFormat type = (FileFormat) context.get(FacilioConstants.ContextNames.FILE_FORMAT);
 		
-		String fileUrl = ExportUtil.exportModule(type, moduleName, viewName, filters, false, false);
+		String fileUrl = ExportUtil.exportModule(type, moduleName, viewName, filters, false, false, null);
 		context.put(FacilioConstants.ContextNames.FILE_URL, fileUrl);
 		return false;
 	}

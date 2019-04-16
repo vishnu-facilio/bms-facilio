@@ -1,7 +1,9 @@
 package com.facilio.util;
 
+import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.bmsconsole.util.DateTimeUtil;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
@@ -13,6 +15,7 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import java.text.DecimalFormat;
+import java.time.ZonedDateTime;
 import java.util.*;
 
 public class FacilioUtil {
@@ -21,6 +24,19 @@ public class FacilioUtil {
 
     public static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("#.##");
 
+    public static long getActualLastRecordedTime(FacilioModule module) {
+    	if(module.getDataInterval() <= 0) {
+    		return -1l;
+    	}
+		try {
+			ZonedDateTime zdt = DateTimeUtil.getDateTime(DateTimeUtil.getCurrenTime());
+			zdt = zdt.truncatedTo(module.getDateIntervalUnit());
+			return DateTimeUtil.getMillis(zdt, true);
+		}
+		catch(Exception e) {
+			return -1l;
+		}
+	}
 
     public static boolean isNumeric(String str) {
     	if(str == null) {

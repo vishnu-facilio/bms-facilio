@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.report.context.ReportContext;
 import com.facilio.report.context.ReportDataPointContext;
@@ -79,10 +80,10 @@ public class CalculateAggregationCommand implements Command {
 //			Map<String, Object> data = csvData.get(i);
 			Map<String, Object> nextData = itr.next();
 			aggregateEnum(report, dp, aggrData, timeAlias, currentData, nextData, isFirst, previousRecords);
-			currentData = nextData;
 			if (isFirst) {
 				isFirst = false;
 			}
+			currentData = nextData;
 		}
 		aggregateEnum(report, dp, aggrData, timeAlias, currentData, null, isFirst, previousRecords); //for the last record
 	}
@@ -107,20 +108,19 @@ public class CalculateAggregationCommand implements Command {
 	}
 	
 	private EnumVal calculateEnumAggr (ReportContext report, Set<Integer> enumValueKeys, Object value, String alias, long startTime, long endTime, Map<String, SimpleEntry<Long, Integer>> previousRecords, Map<String, Object> aggrData) {
-		if (value != null) {
-			List<SimpleEntry<Long, Integer>> enumVal = (List<SimpleEntry<Long, Integer>>) value;
-			EnumVal enumValue = combineEnumVal(report, enumValueKeys, enumVal, startTime, endTime, previousRecords.get(alias));
+		List<SimpleEntry<Long, Integer>> enumVal = (List<SimpleEntry<Long, Integer>>) value;
+		EnumVal enumValue = combineEnumVal(report, enumValueKeys, enumVal, startTime, endTime, previousRecords.get(alias));
+
+		if (enumValue != null) {
 			previousRecords.put(alias, enumValue.timeline.get(enumValue.timeline.size() - 1));
-			
 			//Aggr
-			String timelineKey = alias+".timeline";
-			String duraionKey = alias+".duration";
+			String timelineKey = alias + ".timeline";
+			String duraionKey = alias + ".duration";
 			List<SimpleEntry<Long, Integer>> fullTimeline = (List<SimpleEntry<Long, Integer>>) aggrData.get(timelineKey);
 			if (fullTimeline == null) {
 				aggrData.put(timelineKey, new ArrayList<>(enumValue.timeline));
 				aggrData.put(duraionKey, new HashMap<>(enumValue.duration));
-			}
-			else {
+			} else {
 				int i = 0;
 				if (fullTimeline.get(fullTimeline.size() - 1).getValue() == enumValue.timeline.get(0).getValue()) {
 					i = 1;
@@ -128,16 +128,29 @@ public class CalculateAggregationCommand implements Command {
 				for (; i < enumValue.timeline.size(); i++) {
 					fullTimeline.add(enumValue.timeline.get(i));
 				}
-				
+
 				Map<Integer, Long> completeDuration = (Map<Integer, Long>) aggrData.get(duraionKey);
 				completeDuration.replaceAll((val, duration) -> duration + enumValue.duration.get(val));
 			}
-			return enumValue;
 		}
-		return null;
+		return enumValue;
 	}
 	
 	private EnumVal combineEnumVal (ReportContext report, Set<Integer> enumValues, List<SimpleEntry<Long, Integer>> highResVal, long startTime, long endTime, SimpleEntry<Long, Integer> previousRecord) {
+		long currentTime = System.currentTimeMillis();
+
+		if (AccountUtil.getCurrentOrg().getId() == 134) {
+			LOGGER.info(new StringBuilder()
+							.append("High Res : ").append(highResVal).append("\n")
+							.append("Start Time : ").append(startTime).append("\n")
+							.append("Current Time : ").append(currentTime).append("\n")
+							.append("Previous Record : ").append(previousRecord));
+		}
+
+		if (CollectionUtils.isEmpty(highResVal) && (previousRecord == null || startTime > currentTime)) {
+			return null;
+		}
+
 		List<SimpleEntry<Long, Integer>> timeline = new ArrayList<>();
 		Map<Integer, Long> durations = initDuration(enumValues);
 		
@@ -148,28 +161,29 @@ public class CalculateAggregationCommand implements Command {
 						.append("endTime : ").append(endTime).append("\n")
 						.append("Prev record : ").append(previousRecord).append("\n"));
 		
-		if (startTime != -1 && previousRecord != null) {
+		if (previousRecord != null) {
 			SimpleEntry<Long, Integer> val = new SimpleEntry<Long, Integer>(startTime, previousRecord.getValue());
 			timeline.add(val);
 			previousRecord = val;
 		}
-		
-		for (SimpleEntry<Long, Integer> val : highResVal) {
-			if (previousRecord == null) {
-				timeline.add(val);
-				previousRecord = val;
-			}
-			else if (previousRecord.getValue() != val.getValue()) {
-				timeline.add(val);
-				long duration = durations.get(previousRecord.getValue());
-				durations.put(previousRecord.getValue(), duration + (val.getKey() - previousRecord.getKey()));
-				previousRecord = val;
+
+		if (CollectionUtils.isNotEmpty(highResVal)) {
+			for (SimpleEntry<Long, Integer> val : highResVal) {
+				if (previousRecord == null) {
+					timeline.add(val);
+					previousRecord = val;
+				} else if (previousRecord.getValue() != val.getValue()) {
+					timeline.add(val);
+					long duration = durations.get(previousRecord.getValue());
+					durations.put(previousRecord.getValue(), duration + (val.getKey() - previousRecord.getKey()));
+					previousRecord = val;
+				}
 			}
 		}
 		
 		if (endTime == -1) {
 			if (report.getDateOperatorEnum().isCurrentOperator()) {
-				endTime = System.currentTimeMillis();
+				endTime = currentTime;
 			}
 			else {
 				endTime = report.getDateOperatorEnum().getRange(report.getDateValue()).getEndTime();
