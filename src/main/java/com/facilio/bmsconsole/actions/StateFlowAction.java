@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.actions;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.chain.Chain;
 
@@ -96,6 +97,14 @@ public class StateFlowAction extends FacilioAction {
 		return SUCCESS;
 	}
 	
+	private Map<String, Object> data;
+	public Map<String, Object> getData() {
+		return data;
+	}
+	public void setData(Map<String, Object> data) {
+		this.data = data;
+	}
+	
 	public String updateStateTransistion() throws Exception {
 		FacilioContext context = new FacilioContext();
 		
@@ -123,6 +132,7 @@ public class StateFlowAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
 		context.put(FacilioConstants.ContextNames.ID, id);
 		context.put("transistion_id", transitionId);
+		context.put(FacilioConstants.ContextNames.DATA_KEY, data);
 	}
 	
 	private StateContext state;
