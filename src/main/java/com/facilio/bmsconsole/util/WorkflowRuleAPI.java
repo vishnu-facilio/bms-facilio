@@ -84,6 +84,7 @@ public class WorkflowRuleAPI {
 				}
 				addExtendedProps(ModuleFactory.getReadingRuleModule(), FieldFactory.getReadingRuleFields(), ruleProps);
 				ReadingRuleAPI.addReadingRuleInclusionsExlusions((ReadingRuleContext) rule);
+				ReadingRuleAPI.addReadingRuleMetrics((ReadingRuleContext) rule);
 				break;
 			case READING_ALARM_RULE:
 				addExtendedProps(ModuleFactory.getReadingAlarmRuleModule(), FieldFactory.getReadingAlarmRuleFields(), ruleProps);
