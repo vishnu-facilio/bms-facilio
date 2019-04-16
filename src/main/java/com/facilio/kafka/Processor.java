@@ -167,6 +167,9 @@ public class Processor extends FacilioProcessor {
                                     break;
                                 case agent:
                                     numberOfRows = agentUtil.processAgent(payLoad,agentName);
+                                    if(isStage && (payLoad.containsKey(AgentKeys.COMMAND_STATUS) || payLoad.containsKey(AgentKeys.CONTENT))){
+                                        agentUtil.putLog(payLoad,orgId,agent.getId(),false);
+                                    }
                                     break;
                                 case event:
                                     alarmCreated = eventUtil.processEvents(record.getTimeStamp(), payLoad, record.getPartitionKey(), orgId, eventRules);

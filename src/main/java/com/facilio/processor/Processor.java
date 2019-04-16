@@ -187,6 +187,9 @@ public class Processor implements IRecordProcessor {
                                 break;
                             case agent:
                                 i =  agentUtil.processAgent( payLoad,agentName);
+                                if(isStage && (payLoad.containsKey(AgentKeys.COMMAND_STATUS) || payLoad.containsKey(AgentKeys.CONTENT))){
+                                    agentUtil.putLog(payLoad,orgId,agent.getId(),false);
+                                }
                                 break;
                             case devicepoints:
                                 devicePointsUtil.processDevicePoints(payLoad, orgId, deviceMap, agent.getId());

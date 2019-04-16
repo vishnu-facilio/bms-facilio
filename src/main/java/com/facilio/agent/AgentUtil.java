@@ -386,6 +386,14 @@ public  class AgentUtil
         if( ! payLoad.containsKey(AgentKeys.TIMESTAMP)){
             payLoad.put(AgentKeys.TIMESTAMP,System.currentTimeMillis());
         }
+        if( payLoad.containsKey(AgentKeys.COMMAND_STATUS)){
+            if((payLoad.get(AgentKeys.COMMAND_STATUS)).toString().equals("1")){
+                payLoad.put(AgentKeys.CONTENT,"Agent connected to Facilio");
+            }
+            else{
+                payLoad.put(AgentKeys.CONTENT,"Agent disconnected to Facilio");
+            }
+        }
         try {
             ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD",orgId);
             bean.addLog(payLoad);
