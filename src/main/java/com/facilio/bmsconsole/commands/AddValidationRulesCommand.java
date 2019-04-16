@@ -26,6 +26,7 @@ public class AddValidationRulesCommand implements Command {
 		List<List<List<ActionContext>>> actionsList = (List<List<List<ActionContext>>>) context.get(FacilioConstants.ContextNames.ACTIONS_LIST);
 		Long resourceID = (Long) context.get(FacilioConstants.ContextNames.PARENT_ID);
 		List<Long> delReadingRulesIds = (List<Long>) context.get(FacilioConstants.ContextNames.DEL_READING_RULE_IDS);
+		Long readingFieldId = (Long) context.get(FacilioConstants.ContextNames.READING_FIELD_ID);
 		
 		WorkflowRuleAPI.deleteWorkFlowRules(delReadingRulesIds);
 		
@@ -42,6 +43,9 @@ public class AddValidationRulesCommand implements Command {
 			Chain updateChain = TransactionChainFactory.updateWorkflowRuleChain();
 			int len = readingRules.get(i).size();
 			for (int j = 0; j < len; ++j) {
+				if(readingRules.get(i).get(j).getReadingFieldId() == -1) {
+					readingRules.get(i).get(j).setReadingFieldId(readingFieldId);
+				}
 				ReadingRuleContext rule = readingRules.get(i).get(j);
 				rule.setRuleType(WorkflowRuleContext.RuleType.VALIDATION_RULE);
 				if (resourceID != null) {
