@@ -23,22 +23,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class UpdateDashboardCommand implements Command {
+public class UpdateDashboardWithWidgetCommand implements Command {
 
 	@Override
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		DashboardContext dashboard = (DashboardContext) context.get(FacilioConstants.ContextNames.DASHBOARD);
-		if(dashboard != null) {			
-			List<FacilioField> fields = FieldFactory.getDashboardFields();
+		if(dashboard != null) {
 			
-			GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
-					.table(ModuleFactory.getDashboardModule().getTableName())
-					.fields(fields)
-					.andCustomWhere(ModuleFactory.getDashboardModule().getTableName()+".ID = ?", dashboard.getId());
-
-			Map<String, Object> props = FieldUtil.getAsProperties(dashboard);
-			updateBuilder.update(props);
+			DashboardUtil.updateDashboard(dashboard);
 			
 			List<DashboardWidgetContext> existingWidgets = DashboardUtil.getDashboardWidgetsFormDashboardId(dashboard.getId());
 			
@@ -74,7 +67,7 @@ public class UpdateDashboardCommand implements Command {
 					removedWidgets.add(existingWidgets.get(i).getId());
 				}
 			}
-			
+			GenericUpdateRecordBuilder updateBuilder = null;
 			List<DashboardWidgetContext> updatedWidgets = dashboard.getDashboardWidgets();
 			if (updatedWidgets != null && updatedWidgets.size() > 0)  {
 				for (int i = 0; i < updatedWidgets.size(); i++) {
@@ -98,7 +91,6 @@ public class UpdateDashboardCommand implements Command {
 								.andCustomWhere(ModuleFactory.getWidgetStaticModule().getTableName()+".ID = ?",updatewidget.getId());
 
 						
-						System.out.println("dashboard update props --- "+props1);
 						updateBuilder.update(props1);
 					}
 					

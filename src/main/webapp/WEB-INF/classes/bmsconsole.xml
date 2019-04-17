@@ -3490,9 +3490,14 @@
 				<param name="includeProperties">dashboardFolders,dashboardFolders\[\d+\],dashboardFolders\[\d+\].*</param>
 			</result>
 		</action>
-		<action name="update" class="com.facilio.bmsconsole.actions.DashboardAction" method="updateDashboard">
+		<action name="update" class="com.facilio.bmsconsole.actions.DashboardAction" method="updateDashboardWithWidgets">
 			<result name="success" type="json">
 				<param name="includeProperties">^dashboard.*</param>
+			</result>
+		</action>
+		<action name="updateDashboard" class="com.facilio.bmsconsole.actions.DashboardAction" method="updateDashboards">
+			<result name="success" type="json">
+				<param name="includeProperties">^dashboards.*</param>
 			</result>
 		</action>
 		<action name="supportedmodules" class="com.facilio.bmsconsole.actions.DashboardAction" method="getSupportedModules">

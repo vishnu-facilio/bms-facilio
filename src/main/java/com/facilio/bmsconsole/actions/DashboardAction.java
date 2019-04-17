@@ -6226,17 +6226,6 @@ public class DashboardAction extends FacilioAction {
 		return SUCCESS;
 	}
 
-	public String addDashboard() throws Exception {
-		FacilioContext context = new FacilioContext();
-		dashboard.setPublishStatus(DashboardPublishStatus.NONE.ordinal());
-		dashboard.setCreatedByUserId(AccountUtil.getCurrentUser().getId());
-		dashboard.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
-		context.put(FacilioConstants.ContextNames.DASHBOARD, dashboard);
-		Chain addDashboardChain = FacilioChainFactory.getAddDashboardChain();
-		addDashboardChain.execute(context);
-		return SUCCESS;
-	}
-	
 	JSONObject dashboardMeta;
 	
 	public void setDashboardMeta(JSONObject dashboardMeta) {
@@ -6245,71 +6234,6 @@ public class DashboardAction extends FacilioAction {
 	
 	public JSONObject getDashboardMeta() {
 		return this.dashboardMeta;
-	}
-	
-	public String updateDashboard() throws Exception {
-		
-		Long dashboardId = (Long) dashboardMeta.get("id");
-		this.dashboard = null;
-		if (buildingId != null) {
-			DashboardContext dbContext = DashboardUtil.getDashboardWithWidgets(dashboardId);
-			this.dashboard = DashboardUtil.getDashboardForBaseSpace(buildingId, dbContext.getModuleId());
-		}
-		if(this.dashboard == null) {
-			this.dashboard = new DashboardContext();
-			this.dashboard.setId((Long) dashboardMeta.get("id"));
-			if (dashboardMeta.containsKey("linkName")) {
-				this.dashboard.setLinkName((String) dashboardMeta.get("linkName"));
-			}
-		}
-		if(dashboardMeta.get("dashboardFolderId") != null) {
-			this.dashboard.setDashboardFolderId((Long) dashboardMeta.get("dashboardFolderId")); 
-		}
-		else {
-			this.dashboard.setDashboardFolderId(null);
-		}
-		if(dashboardMeta.get("mobileEnabled") != null) {
-			this.dashboard.setMobileEnabled((boolean)dashboardMeta.get("mobileEnabled"));
-		}
-		this.dashboard.setDashboardName((String) dashboardMeta.get("dashboardName"));
-		
-		List dashboardWidgets = (List) dashboardMeta.get("dashboardWidgets");
-		if (dashboardWidgets != null) {
-			for (int i=0; i < dashboardWidgets.size(); i++) {
-				Map widget = (Map) dashboardWidgets.get(i);
-				Integer widgetType = DashboardWidgetContext.WidgetType.getWidgetType(widget.get("type").toString()).getValue();
-				
-				DashboardWidgetContext widgetContext = null;
-				if (widgetType == DashboardWidgetContext.WidgetType.CHART.getValue()) {
-					widgetContext = new WidgetChartContext();
-					widgetContext = FieldUtil.getAsBeanFromMap(widget, WidgetChartContext.class);
-				}
-				else if (widgetType == DashboardWidgetContext.WidgetType.LIST_VIEW.getValue()) {
-					widgetContext = new WidgetListViewContext();
-					widgetContext = FieldUtil.getAsBeanFromMap(widget, WidgetListViewContext.class);
-				}
-				else if (widgetType == DashboardWidgetContext.WidgetType.STATIC.getValue()) {
-					widgetContext = new WidgetStaticContext();
-					widgetContext = FieldUtil.getAsBeanFromMap(widget, WidgetStaticContext.class);
-				}
-				else if (widgetType == DashboardWidgetContext.WidgetType.WEB.getValue()) {
-					widgetContext = new WidgetWebContext();
-					widgetContext = FieldUtil.getAsBeanFromMap(widget, WidgetWebContext.class);
-				}
-				
-				widgetContext.setLayoutPosition(Integer.parseInt(widget.get("order").toString()));
-				widgetContext.setType(widgetType);
-				
-				this.dashboard.addDashboardWidget(widgetContext);
-			}
-		}
-		
-		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.DASHBOARD, dashboard);
-		
-		Chain updateDashboardChain = TransactionChainFactory.getUpdateDashboardChain();
-		updateDashboardChain.execute(context);
-		return SUCCESS;
 	}
 	
 	public String addWidget() throws Exception {			// check and remove
@@ -6895,6 +6819,95 @@ public class DashboardAction extends FacilioAction {
 			chain.execute(context);
 			
 		}
+		return SUCCESS;
+	}
+	
+	public String addDashboard() throws Exception {
+		FacilioContext context = new FacilioContext();
+		dashboard.setPublishStatus(DashboardPublishStatus.NONE.ordinal());
+		dashboard.setCreatedByUserId(AccountUtil.getCurrentUser().getId());
+		dashboard.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
+		context.put(FacilioConstants.ContextNames.DASHBOARD, dashboard);
+		Chain addDashboardChain = TransactionChainFactory.getAddDashboardChain();
+		addDashboardChain.execute(context);
+		return SUCCESS;
+	}
+	
+	public String updateDashboardWithWidgets() throws Exception {
+		
+		Long dashboardId = (Long) dashboardMeta.get("id");
+		this.dashboard = null;
+		if (buildingId != null) {
+			DashboardContext dbContext = DashboardUtil.getDashboardWithWidgets(dashboardId);
+			this.dashboard = DashboardUtil.getDashboardForBaseSpace(buildingId, dbContext.getModuleId());
+		}
+		if(this.dashboard == null) {
+			this.dashboard = new DashboardContext();
+			this.dashboard.setId((Long) dashboardMeta.get("id"));
+			if (dashboardMeta.containsKey("linkName")) {
+				this.dashboard.setLinkName((String) dashboardMeta.get("linkName"));
+			}
+		}
+		if(dashboardMeta.get("dashboardFolderId") != null) {
+			this.dashboard.setDashboardFolderId((Long) dashboardMeta.get("dashboardFolderId")); 
+		}
+		else {
+			this.dashboard.setDashboardFolderId(null);
+		}
+		if(dashboardMeta.get("mobileEnabled") != null) {
+			this.dashboard.setMobileEnabled((boolean)dashboardMeta.get("mobileEnabled"));
+		}
+		this.dashboard.setDashboardName((String) dashboardMeta.get("dashboardName"));
+		
+		List dashboardWidgets = (List) dashboardMeta.get("dashboardWidgets");
+		if (dashboardWidgets != null) {
+			for (int i=0; i < dashboardWidgets.size(); i++) {
+				Map widget = (Map) dashboardWidgets.get(i);
+				Integer widgetType = DashboardWidgetContext.WidgetType.getWidgetType(widget.get("type").toString()).getValue();
+				
+				DashboardWidgetContext widgetContext = null;
+				if (widgetType == DashboardWidgetContext.WidgetType.CHART.getValue()) {
+					widgetContext = new WidgetChartContext();
+					widgetContext = FieldUtil.getAsBeanFromMap(widget, WidgetChartContext.class);
+				}
+				else if (widgetType == DashboardWidgetContext.WidgetType.LIST_VIEW.getValue()) {
+					widgetContext = new WidgetListViewContext();
+					widgetContext = FieldUtil.getAsBeanFromMap(widget, WidgetListViewContext.class);
+				}
+				else if (widgetType == DashboardWidgetContext.WidgetType.STATIC.getValue()) {
+					widgetContext = new WidgetStaticContext();
+					widgetContext = FieldUtil.getAsBeanFromMap(widget, WidgetStaticContext.class);
+				}
+				else if (widgetType == DashboardWidgetContext.WidgetType.WEB.getValue()) {
+					widgetContext = new WidgetWebContext();
+					widgetContext = FieldUtil.getAsBeanFromMap(widget, WidgetWebContext.class);
+				}
+				
+				widgetContext.setLayoutPosition(Integer.parseInt(widget.get("order").toString()));
+				widgetContext.setType(widgetType);
+				
+				this.dashboard.addDashboardWidget(widgetContext);
+			}
+		}
+		
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.DASHBOARD, dashboard);
+		
+		Chain updateDashboardChain = TransactionChainFactory.getUpdateDashboardChain();
+		updateDashboardChain.execute(context);
+		return SUCCESS;
+	}
+	
+	public String updateDashboards() throws Exception {
+		
+		if(dashboards != null) {
+			FacilioContext context = new FacilioContext();
+			context.put(FacilioConstants.ContextNames.DASHBOARDS, dashboards);
+			
+			Chain updateDashboardChain = TransactionChainFactory.getUpdateDashboardsChain();
+			updateDashboardChain.execute(context);
+		}
+		
 		return SUCCESS;
 	}
 }

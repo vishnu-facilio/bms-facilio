@@ -345,6 +345,7 @@ public class FacilioConstants {
 		public static final String ADJUST_READING_TTIME = "adjustReadingTtime";
 		
 		public static final String DASHBOARD = "dashboard";
+		public static final String DASHBOARDS = "dashboards";
 		public static final String DASHBOARD_ID = "dashboardId";
 		public static final String DASHBOARD_FOLDERS = "dashboardFolders";
 		public static final String DASHBOARD_FOLDER = "dashboardFolder";

@@ -1340,10 +1340,20 @@ public class TransactionChainFactory {
 			c.addCommand(new AddWidgetCommand());
 			return c;
 		}
+	    public static Chain getAddDashboardChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new AddDashboardCommand());
+			return c;
+		}
 	    public static Chain getUpdateDashboardChain() {
 			Chain c = getDefaultChain();
-			c.addCommand(new UpdateDashboardCommand());
+			c.addCommand(new UpdateDashboardWithWidgetCommand());
 			c.addCommand(new EnableMobileDashboardCommand());
+			return c;
+		}
+	    public static Chain getUpdateDashboardsChain() {
+			Chain c = FacilioChain.getTransactionChain();
+			c.addCommand(new UpdateDashboardsCommand());
 			return c;
 		}
 	    

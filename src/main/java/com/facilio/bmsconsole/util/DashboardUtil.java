@@ -2378,7 +2378,6 @@ public class DashboardUtil {
 	
 	public static void addDashboardFolder(DashboardFolderContext dashboardFolder) throws Exception {
 		
-		
 		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
 				.table(ModuleFactory.getDashboardFolderModule().getTableName())
 				.fields(FieldFactory.getDashboardFolderFields());
@@ -2388,6 +2387,17 @@ public class DashboardUtil {
 		insertBuilder.save();
 		
 		dashboardFolder.setId((Long) props.get("id"));
+	}
+	
+	public static void updateDashboard(DashboardContext dashboard) throws Exception {
+		
+		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
+				.table(ModuleFactory.getDashboardModule().getTableName())
+				.fields(FieldFactory.getDashboardFields())
+				.andCustomWhere(ModuleFactory.getDashboardModule().getTableName()+".ID = ?", dashboard.getId());
+
+		Map<String, Object> props = FieldUtil.getAsProperties(dashboard);
+		updateBuilder.update(props);
 	}
 	
 	public static void deleteDashboardFolder(DashboardFolderContext dashboardFolder) throws Exception {
@@ -2798,7 +2808,7 @@ public class DashboardUtil {
 		dashboard.setCreatedByUserId(AccountUtil.getCurrentUser().getId());
 		dashboard.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
 		context.put(FacilioConstants.ContextNames.DASHBOARD, dashboard);
-		Chain addDashboardChain = FacilioChainFactory.getAddDashboardChain();
+		Chain addDashboardChain = TransactionChainFactory.getAddDashboardChain();
 		
 		addDashboardChain.execute(context);
 		
