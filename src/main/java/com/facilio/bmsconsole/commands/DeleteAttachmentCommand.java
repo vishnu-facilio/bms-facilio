@@ -28,7 +28,7 @@ public class DeleteAttachmentCommand implements Command, PostTransactionCommand 
 		// TODO Auto-generated method stub
 		
 		List<Long> attachmentIdList = (List<Long>) context.get(FacilioConstants.ContextNames.ATTACHMENT_ID_LIST);
-		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
+		moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module =  modBean.getModule(moduleName);
 		
@@ -44,9 +44,6 @@ public class DeleteAttachmentCommand implements Command, PostTransactionCommand 
 			if (attachments != null && !attachments.isEmpty()) {
 				Set<Long> parentIds = attachments.stream().map(AttachmentContext::getParentId).collect(Collectors.toSet());
 				idsToUpdateCount = parentIds;
-				this.moduleName = moduleName;
-//				FacilioChain.addPostTrasanction(FacilioConstants.ContextNames.IDS_TO_UPDATE_COUNT, parentIds);
-//				FacilioChain.addPostTrasanction(FacilioConstants.ContextNames.MODULE_NAME, moduleName);				
 			}
 			
 			// TODO mark file as deleted if no reference for that file is available for all modules

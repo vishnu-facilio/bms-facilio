@@ -48,12 +48,23 @@ public class TicketStatusContext extends ModuleBaseWithCustomFields {
 		this.type = StatusType.typeMap.get(type);
 	}
 	
-	private Boolean timerEnabled = false;
-	public Boolean isTimerEnabled() {
+	private Boolean timerEnabled;
+	public Boolean getTimerEnabled() {
+		if (timerEnabled == null) {
+			return false;
+		}
 		return timerEnabled;
 	}
 	public void setTimerEnabled(Boolean timerEnabled) {
 		this.timerEnabled = timerEnabled;
+	}
+	
+	private Boolean recordLocked;
+	public Boolean getRecordLocked() {
+		return recordLocked;
+	}
+	public void setRecordLocked(Boolean recordLocked) {
+		this.recordLocked = recordLocked;
 	}
 	
 	@Override
@@ -101,6 +112,6 @@ public class TicketStatusContext extends ModuleBaseWithCustomFields {
 			return true;
 		}
 		
-		return !(oldState.isTimerEnabled() == isTimerEnabled());
+		return !(oldState.getTimerEnabled() == getTimerEnabled());
 	}
 }

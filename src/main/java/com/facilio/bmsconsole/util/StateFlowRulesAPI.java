@@ -56,7 +56,9 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 				
 		TicketStatusContext oldState = record.getModuleState();
-		oldState = getStateContext(oldState.getId());
+		if (oldState != null) {
+			oldState = getStateContext(oldState.getId());
+		}
 		record.setModuleState(ticketStatusContext);
 		
 		Map<String, Object> prop = FieldUtil.getAsProperties(record);
@@ -64,7 +66,7 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 		boolean shouldChangeTimer = ticketStatusContext.shouldChangeTimer(oldState);
 		TimerField timerField = TimerFieldUtil.getTimerField(module.getName());
 		if (shouldChangeTimer) {
-			if (ticketStatusContext.isTimerEnabled()) {
+			if (ticketStatusContext.getTimerEnabled()) {
 				prop.put(timerField.getResumeTimeFieldName(), DateTimeUtil.getCurrenTime());
 			} else {
 				Long totalTime = (Long) prop.get(timerField.getTotalTimeFieldName());

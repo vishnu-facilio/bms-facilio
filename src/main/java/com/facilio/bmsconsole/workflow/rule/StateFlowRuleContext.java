@@ -42,7 +42,7 @@ public class StateFlowRuleContext extends WorkflowRuleContext {
 		
 		Chain chain = FacilioChain.getTransactionChain();
 		chain.addCommand(new UpdateStateCommand());
-		chain.addCommand(new GenericUpdateModuleDataCommand());
+//		chain.addCommand(new GenericUpdateModuleDataCommand());
 		chain.execute(c);
 		
 		super.executeTrueActions(record, context, placeHolders);
