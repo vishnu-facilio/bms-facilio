@@ -50,8 +50,7 @@ public class UpdateStateCommand implements Command {
 
 			TicketStatusContext state = StateFlowRulesAPI.getStateContext(defaultStateId);
 			moduleData.setStateFlowId(defaultStateFlowId);
-			moduleData.setModuleState(state);
-			StateFlowRulesAPI.updateState(moduleData, module, true);
+			StateFlowRulesAPI.updateState(moduleData, module, state, true);
 			StateFlowRulesAPI.addScheduledJobIfAny(defaultStateId, moduleName, moduleData, (FacilioContext) context);
 		} 
 		else {

@@ -1,7 +1,5 @@
 package com.facilio.bmsconsole.util;
 
-import java.sql.SQLException;
-import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -27,6 +25,8 @@ import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.modules.UpdateChangeSet;
 import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
+import com.facilio.bmsconsole.stateflow.TimerFieldUtil;
+import com.facilio.bmsconsole.stateflow.TimerFieldUtil.TimerField;
 import com.facilio.bmsconsole.workflow.rule.ApproverContext;
 import com.facilio.bmsconsole.workflow.rule.StateContext;
 import com.facilio.bmsconsole.workflow.rule.StateflowTransistionContext;
@@ -38,7 +38,7 @@ import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
 import com.facilio.tasker.FacilioTimer;
-import com.facilio.time.SecondsChronoUnit;
+import com.facilio.util.FacilioUtil;
 
 public class StateFlowRulesAPI extends WorkflowRuleAPI {
 
@@ -48,11 +48,41 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 		return stateFlowRule;
 	}
 	
-	public static void updateState(ModuleBaseWithCustomFields record, FacilioModule module, boolean includeStateFlowChange) throws Exception {
+	public static void updateState(ModuleBaseWithCustomFields record, FacilioModule module, TicketStatusContext ticketStatusContext, boolean includeStateFlowChange) throws Exception {
+		if (ticketStatusContext == null) {
+			return;
+		}
+		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+				
+		TicketStatusContext oldState = record.getModuleState();
+		oldState = getStateContext(oldState.getId());
+		record.setModuleState(ticketStatusContext);
+		
+		Map<String, Object> prop = FieldUtil.getAsProperties(record);
+
+		boolean shouldChangeTimer = ticketStatusContext.shouldChangeTimer(oldState);
+		TimerField timerField = TimerFieldUtil.getTimerField(module.getName());
+		if (shouldChangeTimer) {
+			if (ticketStatusContext.isTimerEnabled()) {
+				prop.put(timerField.getResumeTimeFieldName(), DateTimeUtil.getCurrenTime());
+			} else {
+				Long totalTime = (Long) prop.get(timerField.getTotalTimeFieldName());
+				if (totalTime == null) {
+					totalTime = 0l;
+				}
+				Long lastTime = (Long) prop.get(timerField.getResumeTimeFieldName());
+				if (lastTime != null) {
+					totalTime += ((DateTimeUtil.getCurrenTime() - lastTime) / 1000);
+				}
+				prop.put(timerField.getTotalTimeFieldName(), totalTime);
+			}
+		}
 		
 		List<FacilioField> fields = new ArrayList<>();
 		fields.add(modBean.getField("moduleState", module.getName()));
+		fields.add(modBean.getField(timerField.getResumeTimeFieldName(), module.getName()));
+		fields.add(modBean.getField(timerField.getTotalTimeFieldName(), module.getName()));
 		if (includeStateFlowChange) {
 			fields.add(modBean.getField("stateFlowId", module.getName()));
 		}
@@ -61,7 +91,7 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 				.module(module)
 				.fields(fields)
 				.andCondition(CriteriaAPI.getIdCondition(record.getId(), module));
-		updateBuilder.update(record);
+		updateBuilder.updateViaMap(prop);
 	}
 
 	public static TicketStatusContext getStateContext(long stateId) throws Exception {
