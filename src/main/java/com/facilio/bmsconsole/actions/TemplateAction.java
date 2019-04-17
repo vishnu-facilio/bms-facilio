@@ -9,7 +9,13 @@ import com.facilio.bmsconsole.templates.WebNotificationTemplate;
 import com.facilio.bmsconsole.util.TemplateAPI;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.workflows.util.WorkflowUtil;
+
 import org.apache.commons.chain.Chain;
+import org.apache.commons.text.StringSubstitutor;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 
 import java.util.HashMap;
 import java.util.List;
@@ -105,6 +111,36 @@ public class TemplateAction  extends FacilioAction {
 	
 	public String getDefaultRuleTemplates() throws Exception {
 		setResult("templates", TemplateAPI.getAllRuleLibraryTemplate());
+		return SUCCESS;
+	}
+	
+	JSONObject placeHolder;
+	
+	public JSONObject getPlaceHolder() {
+		return placeHolder;
+	}
+	public void setPlaceHolder(JSONObject placeHolder) {
+		this.placeHolder = placeHolder;
+	}
+	@SuppressWarnings("unchecked")
+	public String createRulefromTemplates () {
+		JSONObject templateJson = TemplateAPI.getDefaultTemplate(DefaultTemplateType.RULE, (int) id).getJson();
+		JSONObject rules = (JSONObject) templateJson.get("fdd_rule");
+		JSONObject placeholders = (JSONObject) rules.get("placeHolder");
+		try {
+			Map<String, Object> placeHolderMap = new HashMap<>();
+			placeholders.keySet().forEach(keyStr -> {
+				final JSONObject keyvalue = (JSONObject) placeholders.get(keyStr);
+				placeHolderMap.put((String) keyvalue.get("uniqueId"), keyvalue.get("default_value"));
+			});
+			JSONParser parser = new JSONParser();
+			String resolvedString =  StringSubstitutor.replace(rules, placeHolderMap);
+			JSONObject obj = (JSONObject) parser.parse(resolvedString);
+			
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		return SUCCESS;
 	}
 	
