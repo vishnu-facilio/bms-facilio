@@ -2519,7 +2519,7 @@ public class FieldFactory {
 
 		fields.add(parent);
 		
-		fields.add(getField("sysCreatedTime", "CREATED_TIME", FieldType.DATE_TIME));
+//		fields.add(getField("sysCreatedTime", "CREATED_TIME", FieldType.DATE_TIME));
 		
 		fields.add(getField("marked","Marked",FieldType.BOOLEAN));
 
