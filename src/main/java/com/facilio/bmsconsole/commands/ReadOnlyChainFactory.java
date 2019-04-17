@@ -612,6 +612,17 @@ public class ReadOnlyChainFactory {
 		return c;
 	}
 	
+	public static Chain getGatePassList() {
+		Chain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForGatePass());
+		c.addCommand(new LoadViewCommand());
+		c.addCommand(new LoadAllFieldsCommand());
+		c.addCommand(new GenerateCriteriaFromFilterCommand());
+		c.addCommand(new GenerateSearchConditionCommand());
+		c.addCommand(new GetGatePassListCommand());
+		return c;
+	}
+	
 	public static Chain GetItemTypesForVendorCommand(){
 		Chain c = getDefaultChain();
 		c.addCommand(SetTableNamesCommand.getForItemTypesVendors());

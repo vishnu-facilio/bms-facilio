@@ -1948,6 +1948,19 @@
 			<param name="moduleName">purchaseorder</param>
 			<param name = "gatePassId">{1}</param>
 		</action>
+		<action name="count" class="com.facilio.bmsconsole.actions.GatePassAction"
+			method="gatePassCount">
+			<param name="moduleName">inventory</param>
+			<param name="permission">READ</param>
+		</action>
+	</package>
+	
+	<package name="gatePassList" namespace="/api/v2/gatePass/view"
+		extends="v2Api">
+		<action name="*"
+			class="com.facilio.bmsconsole.actions.GatePassAction" method="gatePassList">
+			<param name = "viewName">{1}</param>
+		</action>
 	</package>
 	
 	<package name="moduleApiV2" namespace="/api/v2/modules/fields" extends="v2Api">

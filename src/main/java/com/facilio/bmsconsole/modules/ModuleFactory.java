@@ -1925,4 +1925,12 @@ public class ModuleFactory {
 		tenants.setTableName("PO_Line_Item_Serial_Numbers");
 		return tenants;
 	}
+	
+	public static FacilioModule getGatePassModule() {
+		FacilioModule gatePass = new FacilioModule();
+		gatePass.setName("gatePass");
+		gatePass.setDisplayName("Gate Pass");
+		gatePass.setTableName("Gate_Pass");
+		return gatePass;
+	}
 }

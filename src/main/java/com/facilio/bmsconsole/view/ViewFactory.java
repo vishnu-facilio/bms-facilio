@@ -277,6 +277,11 @@ public class ViewFactory {
 		
 		order = 1;
 		views = new LinkedHashMap<>();
+		views.put("all", getAllGatePass().setOrder(order++));
+		viewsMap.put(FacilioConstants.ContextNames.GATE_PASS, views);
+		
+		order = 1;
+		views = new LinkedHashMap<>();
 		views.put("all", getAllPurchaseRequestView().setOrder(order++));
 		views.put("open", getOpenPurchaseRequest().setOrder(order++));
 		views.put("pending", getPurchaseRequestForStatus("pending", "Pending", 1).setOrder(order++));
@@ -2671,6 +2676,25 @@ public class ViewFactory {
 		allView.setDisplayName("All Purchased Items");
 		allView.setSortFields(sortFields);
 
+		return allView;
+	}
+	
+	private static FacilioView getAllGatePass() {
+		FacilioModule purchasedItemModule = ModuleFactory.getGatePassModule();
+		
+		FacilioField createdTime = new FacilioField();
+		createdTime.setName("issuedTime");
+		createdTime.setDataType(FieldType.NUMBER);
+		createdTime.setColumnName("ISSUED_TIME");
+		createdTime.setModule(purchasedItemModule);
+		
+		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, true));
+		
+		FacilioView allView = new FacilioView();
+		allView.setName("all");
+		allView.setDisplayName("All Gate Pass");
+		allView.setSortFields(sortFields);
+		
 		return allView;
 	}
 	

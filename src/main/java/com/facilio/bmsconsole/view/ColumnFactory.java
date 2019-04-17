@@ -53,13 +53,15 @@ public class ColumnFactory {
 		columnMap.put("purchasecontracts-default", getDefaultContractColumns());
 		columnMap.put("labourcontracts-default", getDefaultContractColumns());
 		columnMap.put("poLineItemSerialNumbers-default", getDefaultPoLineItemsSerialNumberColumns());
+		columnMap.put("toolTransactions-default", getDefaultToolTransactionsColumns());
+		columnMap.put("itemTransactions-default", getDefaultItemTransactionsColumns());
+		columnMap.put("purchasedItem-default", getDefaultPurchasedItemColumns());
+		columnMap.put("gatePass-default", getDefaultGatePassColumns());
+		
 		// Default report columns 
 		columnMap.put("workorder-report", getWorkOrderReportColumns());
 		columnMap.put("alarm-report", getAlarmReportColumns());
 		columnMap.put("energydata-report", getDefaultEnergyColumns());
-		columnMap.put("toolTransactions-default", getDefaultToolTransactionsColumns());
-		columnMap.put("itemTransactions-default", getDefaultItemTransactionsColumns());
-		columnMap.put("purchasedItem-default", getDefaultPurchasedItemColumns());
 		
 		
 		
@@ -345,6 +347,18 @@ public class ColumnFactory {
 		columns.add(new ViewField("serialNumber", "Serial Number"));
 		columns.add(new ViewField("isUsed", "Is Used"));
 		columns.add(new ViewField("unitcost", "Unit Cost"));
+		return columns;
+	}
+	private static List<ViewField> getDefaultGatePassColumns() {
+		List<ViewField> columns = new ArrayList<ViewField>();
+		
+		columns.add(new ViewField("issuedTime", "Issued Time"));
+		columns.add(new ViewField("returnTime", "Return Time"));
+		columns.add(new ViewField("issuedTo", "Issued To"));
+		columns.add(new ViewField("issuedBy", "Issued By"));
+		columns.add(new ViewField("isReturnable", "Is Returnable"));
+		columns.add(new ViewField("gatePassType", "Gate Pass Type"));
+		columns.add(new ViewField("vehicleNo", "Vehicle Number"));
 		return columns;
 	}
 	
