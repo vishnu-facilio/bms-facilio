@@ -347,6 +347,7 @@ public class FacilioConstants {
 		public static final String DASHBOARD = "dashboard";
 		public static final String DASHBOARDS = "dashboards";
 		public static final String DASHBOARD_ID = "dashboardId";
+		public static final String DASHBOARD_ERROR_MESSAGE = "dashboardErrorMessage";
 		public static final String DASHBOARD_FOLDERS = "dashboardFolders";
 		public static final String DASHBOARD_FOLDER = "dashboardFolder";
 		public static final String DASHBOARD_PUBLISH_STATUS = "dashboardPublishStatus";

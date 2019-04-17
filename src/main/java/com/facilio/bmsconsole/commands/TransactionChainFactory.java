@@ -1357,6 +1357,12 @@ public class TransactionChainFactory {
 			return c;
 		}
 	    
+	    public static Chain getDeleteDashboardChain() {
+			Chain c = FacilioChain.getTransactionChain();
+			c.addCommand(new DeleteDashboardCommand());
+			return c;
+		}
+	    
 	    public static Chain getAddDashboardFolderChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(new AddDashboardFolderCommand());

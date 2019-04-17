@@ -1,55 +1,21 @@
 package com.facilio.bmsconsole.actions;
 
-import com.facilio.accounts.util.AccountUtil;
-import com.facilio.aws.util.AwsUtil;
-import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.commands.FacilioChainFactory;
-import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
-import com.facilio.bmsconsole.commands.ReportsChainFactory;
-import com.facilio.bmsconsole.commands.TransactionChainFactory;
-import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.bmsconsole.context.*;
-import com.facilio.bmsconsole.context.BaseLineContext.AdjustType;
-import com.facilio.bmsconsole.context.BaseLineContext.RangeType;
-import com.facilio.bmsconsole.context.BaseSpaceContext.SpaceType;
-import com.facilio.bmsconsole.context.DashboardContext.DashboardPublishStatus;
-import com.facilio.bmsconsole.context.ReportContext.LegendMode;
-import com.facilio.bmsconsole.context.ReportContext.ReportChartType;
-import com.facilio.bmsconsole.context.TicketStatusContext.StatusType;
-import com.facilio.bmsconsole.context.WorkOrderRequestContext.WORUrgency;
-import com.facilio.bmsconsole.criteria.*;
-import com.facilio.bmsconsole.modules.*;
-import com.facilio.bmsconsole.reports.ReportExportUtil;
-import com.facilio.bmsconsole.reports.ReportsUtil;
-import com.facilio.bmsconsole.templates.EMailTemplate;
-import com.facilio.bmsconsole.util.*;
-import com.facilio.bmsconsole.workflow.rule.EventType;
-import com.facilio.bmsconsole.workflow.rule.ReadingRuleAlarmMeta;
-import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
-import com.facilio.cards.util.CardType;
-import com.facilio.cards.util.CardUtil;
-import com.facilio.chain.FacilioContext;
-import com.facilio.constants.FacilioConstants;
-import com.facilio.fs.FileInfo.FileFormat;
-import com.facilio.fw.BeanFactory;
-import com.facilio.pdf.PdfUtil;
-import com.facilio.report.customreport.CustomReport;
-import com.facilio.sql.DBUtil;
-import com.facilio.sql.GenericInsertRecordBuilder;
-import com.facilio.sql.GenericSelectRecordBuilder;
-import com.facilio.sql.GenericUpdateRecordBuilder;
-import com.facilio.tasker.ScheduleInfo;
-import com.facilio.timeseries.TimeSeriesAPI;
-import com.facilio.transaction.FacilioConnectionPool;
-import com.facilio.unitconversion.Metric;
-import com.facilio.unitconversion.Unit;
-import com.facilio.unitconversion.UnitsUtil;
-import com.facilio.workflows.context.ExpressionContext;
-import com.facilio.workflows.context.WorkflowContext;
-import com.facilio.workflows.context.WorkflowExpression;
-import com.facilio.workflows.util.WorkflowUtil;
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Multimap;
+import java.text.DecimalFormat;
+import java.time.ZonedDateTime;
+import java.time.temporal.ChronoField;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
 import org.apache.commons.lang3.StringUtils;
@@ -58,18 +24,127 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.text.DecimalFormat;
-import java.time.ZonedDateTime;
-import java.time.temporal.ChronoField;
-import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import com.facilio.bmsconsole.modules.AggregateOperator.*;
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.aws.util.AwsUtil;
+import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.commands.FacilioChainFactory;
+import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
+import com.facilio.bmsconsole.commands.ReportsChainFactory;
+import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.bmsconsole.context.AlarmContext;
+import com.facilio.bmsconsole.context.AssetCategoryContext;
+import com.facilio.bmsconsole.context.AssetContext;
+import com.facilio.bmsconsole.context.BaseLineContext;
+import com.facilio.bmsconsole.context.BaseSpaceContext;
+import com.facilio.bmsconsole.context.BaseSpaceContext.SpaceType;
+import com.facilio.bmsconsole.context.BenchmarkContext;
+import com.facilio.bmsconsole.context.BenchmarkUnit;
+import com.facilio.bmsconsole.context.BuildingContext;
+import com.facilio.bmsconsole.context.DashboardContext;
+import com.facilio.bmsconsole.context.DashboardContext.DashboardPublishStatus;
+import com.facilio.bmsconsole.context.DashboardFolderContext;
+import com.facilio.bmsconsole.context.DashboardSharingContext;
+import com.facilio.bmsconsole.context.DashboardWidgetContext;
+import com.facilio.bmsconsole.context.DerivationContext;
+import com.facilio.bmsconsole.context.EnergyMeterContext;
+import com.facilio.bmsconsole.context.EnergyMeterPurposeContext;
+import com.facilio.bmsconsole.context.MarkedReadingContext;
+import com.facilio.bmsconsole.context.PreventiveMaintenance;
+import com.facilio.bmsconsole.context.ReadingAlarmContext;
+import com.facilio.bmsconsole.context.ReadingContext;
+import com.facilio.bmsconsole.context.ReportBenchmarkRelContext;
+import com.facilio.bmsconsole.context.ReportColumnContext;
+import com.facilio.bmsconsole.context.ReportContext;
+import com.facilio.bmsconsole.context.ReportContext.LegendMode;
+import com.facilio.bmsconsole.context.ReportContext.ReportChartType;
+import com.facilio.bmsconsole.context.ReportDateFilterContext;
+import com.facilio.bmsconsole.context.ReportFieldContext;
+import com.facilio.bmsconsole.context.ReportFolderContext;
+import com.facilio.bmsconsole.context.ReportInfo;
+import com.facilio.bmsconsole.context.ReportSpaceFilterContext;
+import com.facilio.bmsconsole.context.ReportThreshold;
+import com.facilio.bmsconsole.context.ReportUserFilterContext;
+import com.facilio.bmsconsole.context.ResourceContext;
+import com.facilio.bmsconsole.context.SiteContext;
+import com.facilio.bmsconsole.context.SpaceFilteredDashboardSettings;
+import com.facilio.bmsconsole.context.TaskContext;
+import com.facilio.bmsconsole.context.TaskSectionContext;
+import com.facilio.bmsconsole.context.TicketCategoryContext;
+import com.facilio.bmsconsole.context.TicketStatusContext;
+import com.facilio.bmsconsole.context.TicketStatusContext.StatusType;
+import com.facilio.bmsconsole.context.WidgetChartContext;
+import com.facilio.bmsconsole.context.WidgetListViewContext;
+import com.facilio.bmsconsole.context.WidgetStaticContext;
+import com.facilio.bmsconsole.context.WidgetWebContext;
+import com.facilio.bmsconsole.context.WorkOrderContext;
+import com.facilio.bmsconsole.context.WorkOrderRequestContext;
+import com.facilio.bmsconsole.context.WorkOrderRequestContext.WORUrgency;
+import com.facilio.bmsconsole.criteria.BooleanOperators;
+import com.facilio.bmsconsole.criteria.Condition;
+import com.facilio.bmsconsole.criteria.Criteria;
+import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.criteria.DateOperators;
+import com.facilio.bmsconsole.criteria.DateRange;
+import com.facilio.bmsconsole.criteria.NumberOperators;
+import com.facilio.bmsconsole.criteria.Operator;
+import com.facilio.bmsconsole.criteria.PickListOperators;
+import com.facilio.bmsconsole.modules.AggregateOperator;
+import com.facilio.bmsconsole.modules.AggregateOperator.CommonAggregateOperator;
+import com.facilio.bmsconsole.modules.AggregateOperator.DateAggregateOperator;
+import com.facilio.bmsconsole.modules.AggregateOperator.EnergyPurposeAggregateOperator;
+import com.facilio.bmsconsole.modules.AggregateOperator.NumberAggregateOperator;
+import com.facilio.bmsconsole.modules.AggregateOperator.SpaceAggregateOperator;
+import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.FacilioModule;
+import com.facilio.bmsconsole.modules.FieldFactory;
+import com.facilio.bmsconsole.modules.FieldType;
+import com.facilio.bmsconsole.modules.FieldUtil;
+import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
+import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.bmsconsole.modules.NumberField;
+import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
+import com.facilio.bmsconsole.reports.ReportExportUtil;
+import com.facilio.bmsconsole.reports.ReportsUtil;
+import com.facilio.bmsconsole.templates.EMailTemplate;
+import com.facilio.bmsconsole.util.AlarmAPI;
+import com.facilio.bmsconsole.util.AssetsAPI;
+import com.facilio.bmsconsole.util.BaseLineAPI;
+import com.facilio.bmsconsole.util.BenchmarkAPI;
+import com.facilio.bmsconsole.util.DashboardUtil;
+import com.facilio.bmsconsole.util.DateTimeUtil;
+import com.facilio.bmsconsole.util.DerivationAPI;
+import com.facilio.bmsconsole.util.DeviceAPI;
+import com.facilio.bmsconsole.util.ExportUtil;
+import com.facilio.bmsconsole.util.FacilioFrequency;
+import com.facilio.bmsconsole.util.FormulaFieldAPI;
+import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
+import com.facilio.bmsconsole.util.ReadingsAPI;
+import com.facilio.bmsconsole.util.ResourceAPI;
+import com.facilio.bmsconsole.util.SpaceAPI;
+import com.facilio.bmsconsole.util.TicketAPI;
+import com.facilio.bmsconsole.util.WorkOrderAPI;
+import com.facilio.bmsconsole.util.WorkflowRuleAPI;
+import com.facilio.bmsconsole.workflow.rule.EventType;
+import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
+import com.facilio.chain.FacilioContext;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.fs.FileInfo.FileFormat;
+import com.facilio.fw.BeanFactory;
+import com.facilio.pdf.PdfUtil;
+import com.facilio.report.customreport.CustomReport;
+import com.facilio.sql.GenericSelectRecordBuilder;
+import com.facilio.sql.GenericUpdateRecordBuilder;
+import com.facilio.tasker.ScheduleInfo;
+import com.facilio.timeseries.TimeSeriesAPI;
+import com.facilio.unitconversion.Metric;
+import com.facilio.unitconversion.Unit;
+import com.facilio.workflows.context.ExpressionContext;
+import com.facilio.workflows.context.WorkflowContext;
+import com.facilio.workflows.context.WorkflowExpression;
+import com.facilio.workflows.util.WorkflowUtil;
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Multimap;
 
 //import com.facilio.workflows.context.WorkflowExpression;
 
@@ -326,29 +401,6 @@ public class DashboardAction extends FacilioAction {
 	public void setErrorString(String errorString) {
 		this.errorString = errorString;
 	}
-	public String deleteDashboard() throws Exception {		// check and remove
-		
-		if(dashboardId != null) {
-			
-			GenericSelectRecordBuilder select = new GenericSelectRecordBuilder();
-			select.table(ModuleFactory.getScreenDashboardRelModule().getTableName());
-			select.select(FieldFactory.getScreenDashboardRelModuleFields());
-			select.andCustomWhere("DASHBOARD_ID = ?", dashboardId);
-			
-			List<Map<String, Object>> props = select.get();
-			
-			if(props == null || props.isEmpty()) {
-				if(DashboardUtil.deleteDashboard(dashboardId)) {
-					return SUCCESS;
-				}
-			}
-			else {
-				errorString = "Dashboard Used in Screen";
-			}
-		}
-		return ERROR;
-	}
-	
 	public JSONObject dashboardDisplayOrder;
 	public JSONObject getDashboardDisplayOrder() {
 		return dashboardDisplayOrder;
@@ -6908,6 +6960,23 @@ public class DashboardAction extends FacilioAction {
 			updateDashboardChain.execute(context);
 		}
 		
+		return SUCCESS;
+	}
+	public String deleteDashboard() throws Exception {
+		
+		if(dashboardId != null) {
+			
+			FacilioContext context = new FacilioContext();
+			context.put(FacilioConstants.ContextNames.DASHBOARD_ID, dashboardId);
+			
+			Chain deleteDashboardChain = TransactionChainFactory.getDeleteDashboardChain();
+			deleteDashboardChain.execute(context);
+			
+			if(context.get(FacilioConstants.ContextNames.DASHBOARD_ERROR_MESSAGE) != null) {
+				errorString = (String) context.get(FacilioConstants.ContextNames.DASHBOARD_ERROR_MESSAGE);
+				return ERROR;
+			}
+		}
 		return SUCCESS;
 	}
 }
