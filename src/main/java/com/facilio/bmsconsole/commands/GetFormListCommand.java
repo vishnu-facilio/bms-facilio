@@ -20,7 +20,7 @@ public class GetFormListCommand implements Command {
 	@Override
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
-		Map<String, FacilioForm> forms = new LinkedHashMap<>(FormFactory.getForms((String)context.get(FacilioConstants.ContextNames.MODULE_NAME)));
+		Map<String, FacilioForm> forms = new LinkedHashMap<>(FormFactory.getForms((String)context.get(FacilioConstants.ContextNames.MODULE_NAME), (FormType) (context.get(FacilioConstants.ContextNames.FORM_TYPE))));
 		Map<String, FacilioForm> dbForms=FormsAPI.getFormsAsMap((String)context.get(FacilioConstants.ContextNames.MODULE_NAME),(FormType) (context.get(FacilioConstants.ContextNames.FORM_TYPE)));
 		Map<String, FacilioForm> newForms = new LinkedHashMap<>();	// Temp
 		if (forms != null) {
@@ -34,9 +34,8 @@ public class GetFormListCommand implements Command {
 			}
 		}
 		List<FacilioForm> formsList = new ArrayList<>(newForms.values());
-		if (AccountUtil.getCurrentAccount().isFromMobile()) {
-			formsList.removeIf(form -> !form.isShowInMobile());
-		}
+		formsList.removeIf(form -> form.isHideInList() || (AccountUtil.getCurrentAccount().isFromMobile() && !form.isShowInMobile()));
+
 		context.put(FacilioConstants.ContextNames.FORMS, formsList);
 		return false;
 	}

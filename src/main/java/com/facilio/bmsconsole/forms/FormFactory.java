@@ -93,9 +93,13 @@ public class FormFactory {
 				.build();
 	}
 	
-	public static List<FacilioForm> getForms(String moduleName, FormType formtype) {
-		Map<String, FacilioForm> forms = FORMS_LIST.get(moduleName);
-		return forms.values().stream().filter(form -> form.getFormTypeEnum() == formtype).collect(Collectors.toList());
+	public static Map<String, FacilioForm> getForms(String moduleName, FormType formtype) {
+		Map<String, FacilioForm> forms = getForms(moduleName);
+		if (formtype == null) {
+			return forms;
+		}
+		return forms.entrySet().stream().filter(f -> f.getValue().getFormTypeEnum() == formtype)
+	            .collect(Collectors.toMap(f -> f.getKey(), f -> f.getValue()));
 	}
 	
 	public static Map<String, FacilioForm> getForms(String moduleName) {
