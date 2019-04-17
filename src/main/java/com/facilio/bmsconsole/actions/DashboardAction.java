@@ -483,28 +483,6 @@ public class DashboardAction extends FacilioAction {
 		return this.comboChartList;
 	}
 	
-	
-	public String getRelatedAlarmsList() throws Exception {		// check and remove
-		if (reportContext == null) {
-			reportContext = DashboardUtil.getReportContext(reportId);
-		}
-		
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		
-		FacilioModule module = reportModule;
-		if (module == null) {
-			module = modBean.getModule(reportContext.getModuleId());
-		}
-		
-//		FacilioContext context = new FacilioContext();
-//		context.put(FacilioConstants.ContextNames.REPORT, reportContext);
-//		context.put(FacilioConstants.ContextNames.MODULE, module);
-//		context.put(FacilioConstants.ContextNames.REPORT_DATE_FILTER, dateFilter);
-//		Chain getRelatedAlarms = FacilioChainFactory.getRelatedAlarmForReports();
-//		getRelatedAlarms.execute(context);
-		return SUCCESS;
-	}
-	
 	private long readingFieldId = -1;
 	public long getReadingFieldId() {
 		return readingFieldId;
@@ -6331,42 +6309,12 @@ public class DashboardAction extends FacilioAction {
 	public void setDashboardFolders(List<DashboardFolderContext> dashboardFolders) {
 		this.dashboardFolders = dashboardFolders;
 	}
-	public String getDashboardFolder() throws Exception {
-		
-		if(moduleName != null) {
-			dashboardFolders = DashboardUtil.getDashboardFolder(moduleName);
-		}
-		return SUCCESS;
-	}
-	public String getPortalDashboardFolder() throws Exception {
-		dashboardFolders = DashboardUtil.getDashboardListWithFolder(getOnlyMobileDashboard,true);
-		return SUCCESS;
-	}
-	public String getDashboardList() throws Exception {
-		if (moduleName != null) {
-			dashboards = DashboardUtil.getDashboardList(moduleName);
-		}
-		return SUCCESS;
-	}
 	boolean getOnlyMobileDashboard;
 	public boolean getGetOnlyMobileDashboard() {
 		return getOnlyMobileDashboard;
 	}
 	public void setGetOnlyMobileDashboard(boolean getOnlyMobileDashboard) {
 		this.getOnlyMobileDashboard = getOnlyMobileDashboard;
-	}
-	public String getDashboardListWithFolder() throws Exception {
-		if (moduleName != null) {
-			dashboardFolders = DashboardUtil.getDashboardListWithFolder(moduleName,getOnlyMobileDashboard);
-		}
-		return SUCCESS;
-	}
-	
-	public String getDashboardTree() throws Exception {
-		if (moduleName != null) {
-			dashboardFolders = DashboardUtil.getDashboardTree(moduleName);
-		}
-		return SUCCESS;
 	}
 	
 	private List<DashboardSharingContext> dashboardSharing;
@@ -6376,82 +6324,6 @@ public class DashboardAction extends FacilioAction {
 	public void setDashboardSharing(List<DashboardSharingContext> dashboardSharing) {
 		this.dashboardSharing = dashboardSharing;
 	}
-	
-	public String viewDashboard() throws Exception {
-		if(buildingId != null) {
-			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			FacilioModule module = modBean.getModule(moduleName);
-			
-			dashboard = DashboardUtil.getDashboardForBaseSpace(buildingId, module.getModuleId());
-			linkName = (dashboard != null) ? dashboard.getLinkName() : linkName;
-		}
-		dashboard = DashboardUtil.getDashboardWithWidgets(linkName, moduleName);
-		setDashboardJson(DashboardUtil.getDashboardResponseJson(dashboard));
-		return SUCCESS;
-	}
-	
-	public String updateDashboardPublishStatus() throws Exception {
-		dashboard = new DashboardContext();
-		dashboard.setPublishStatus(dashboardPublishStatus);
-		dashboard.setId(dashboardId);
-		DashboardUtil.updateDashboardPublishStatus(dashboard);
-		return SUCCESS;
-	}
-	
-	public String toggleMobileDashboard() throws Exception {
-		if(buildingId != null) {
-			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			FacilioModule module = modBean.getModule(moduleName);
-			
-			dashboard = DashboardUtil.getDashboardForBaseSpace(buildingId, module.getModuleId());
-			linkName = (dashboard != null) ? dashboard.getLinkName() : linkName;
-		}
-		if(dashboard == null) {
-			dashboard = DashboardUtil.getDashboardWithWidgets(linkName, moduleName);
-		}
-		Boolean mobileEnabled = false;
-		if(dashboard.getLinkName().equals(DashboardUtil.BUILDING_DASHBOARD_KEY) && (dashboard.getBaseSpaceId() == null || dashboard.getBaseSpaceId() <= 0) && buildingId != null && buildingId > 0 ) {
-			
-			SpaceFilteredDashboardSettings spaceFilteredDashboardSettings = DashboardUtil.getSpaceFilteredDashboardSettings(dashboard.getId(), buildingId);
-			
-			if(spaceFilteredDashboardSettings != null) {
-				mobileEnabled = !spaceFilteredDashboardSettings.getMobileEnabled();
-				spaceFilteredDashboardSettings.setMobileEnabled(mobileEnabled);
-				DashboardUtil.updateSpaceFilteredDashboardSettings(spaceFilteredDashboardSettings);
-			}
-			else {
-				spaceFilteredDashboardSettings = new SpaceFilteredDashboardSettings();
-				spaceFilteredDashboardSettings.setDashboardId(dashboard.getId());
-				spaceFilteredDashboardSettings.setBaseSpaceId(buildingId);
-				spaceFilteredDashboardSettings.setMobileEnabled(true);
-				
-				DashboardUtil.addSpaceFilteredDashboardSettings(spaceFilteredDashboardSettings);
-			}
-			if(!dashboard.getMobileEnabled()) {
-				dashboard.setMobileEnabled(true);
-				DashboardUtil.updateDashboardPublishStatus(dashboard);
-			}
-		}
-		else {
-			
-			mobileEnabled = !dashboard.getMobileEnabled();
-			
-			dashboard.setMobileEnabled(mobileEnabled);
-			dashboard.setId(dashboard.getId());
-			DashboardUtil.updateDashboardPublishStatus(dashboard);
-		}
-		
-		if(mobileEnabled) {
-			FacilioContext context = new FacilioContext();
-			context.put(FacilioConstants.ContextNames.DASHBOARD, dashboard);
-			
-			Chain enableMobileDashboardChain = FacilioChainFactory.getEnableMobileDashboardChain();
-			enableMobileDashboardChain.execute(context);
-		}
-		
-		return SUCCESS;
-	}
-	
 	private JSONArray dashboardJson;
 	
 	public void setDashboardJson(JSONArray dashboardJson) {
@@ -6945,6 +6817,113 @@ public class DashboardAction extends FacilioAction {
 	
 	public String viewDashboardSharing() throws Exception {						// Using in client should be removed after removed in client
 		setDashboardSharing(DashboardUtil.getDashboardSharing(dashboardId));
+		return SUCCESS;
+	}
+	
+	public String getDashboardFolder() throws Exception {
+		
+		if(moduleName != null) {
+			dashboardFolders = DashboardUtil.getDashboardFolder(moduleName);
+		}
+		return SUCCESS;
+	}
+	public String getPortalDashboardFolder() throws Exception {
+		dashboardFolders = DashboardUtil.getDashboardListWithFolder(getOnlyMobileDashboard,true);
+		return SUCCESS;
+	}
+	public String getDashboardList() throws Exception {
+		if (moduleName != null) {
+			dashboards = DashboardUtil.getDashboardList(moduleName);
+		}
+		return SUCCESS;
+	}
+	
+	public String getDashboardListWithFolder() throws Exception {
+		if (moduleName != null) {
+			dashboardFolders = DashboardUtil.getDashboardListWithFolder(moduleName,getOnlyMobileDashboard);
+		}
+		return SUCCESS;
+	}
+	
+	public String getDashboardTree() throws Exception {
+		if (moduleName != null) {
+			dashboardFolders = DashboardUtil.getDashboardTree(moduleName);
+		}
+		return SUCCESS;
+	}
+	
+	public String viewDashboard() throws Exception {
+		if(buildingId != null) {
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			FacilioModule module = modBean.getModule(moduleName);
+			
+			dashboard = DashboardUtil.getDashboardForBaseSpace(buildingId, module.getModuleId());
+			linkName = (dashboard != null) ? dashboard.getLinkName() : linkName;
+		}
+		dashboard = DashboardUtil.getDashboardWithWidgets(linkName, moduleName);
+		setDashboardJson(DashboardUtil.getDashboardResponseJson(dashboard));
+		return SUCCESS;
+	}
+	
+	public String updateDashboardPublishStatus() throws Exception {
+		dashboard = new DashboardContext();
+		dashboard.setPublishStatus(dashboardPublishStatus);
+		dashboard.setId(dashboardId);
+		DashboardUtil.updateDashboardPublishStatus(dashboard);
+		return SUCCESS;
+	}
+	
+	public String toggleMobileDashboard() throws Exception {
+		if(buildingId != null) {
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			FacilioModule module = modBean.getModule(moduleName);
+			
+			dashboard = DashboardUtil.getDashboardForBaseSpace(buildingId, module.getModuleId());
+			linkName = (dashboard != null) ? dashboard.getLinkName() : linkName;
+		}
+		if(dashboard == null) {
+			dashboard = DashboardUtil.getDashboardWithWidgets(linkName, moduleName);
+		}
+		Boolean mobileEnabled = false;
+		if(dashboard.getLinkName().equals(DashboardUtil.BUILDING_DASHBOARD_KEY) && (dashboard.getBaseSpaceId() == null || dashboard.getBaseSpaceId() <= 0) && buildingId != null && buildingId > 0 ) {
+			
+			SpaceFilteredDashboardSettings spaceFilteredDashboardSettings = DashboardUtil.getSpaceFilteredDashboardSettings(dashboard.getId(), buildingId);
+			
+			if(spaceFilteredDashboardSettings != null) {
+				mobileEnabled = !spaceFilteredDashboardSettings.getMobileEnabled();
+				spaceFilteredDashboardSettings.setMobileEnabled(mobileEnabled);
+				DashboardUtil.updateSpaceFilteredDashboardSettings(spaceFilteredDashboardSettings);
+			}
+			else {
+				spaceFilteredDashboardSettings = new SpaceFilteredDashboardSettings();
+				spaceFilteredDashboardSettings.setDashboardId(dashboard.getId());
+				spaceFilteredDashboardSettings.setBaseSpaceId(buildingId);
+				spaceFilteredDashboardSettings.setMobileEnabled(true);
+				
+				DashboardUtil.addSpaceFilteredDashboardSettings(spaceFilteredDashboardSettings);
+			}
+			if(!dashboard.getMobileEnabled()) {
+				dashboard.setMobileEnabled(true);
+				DashboardUtil.updateDashboardPublishStatus(dashboard);
+			}
+		}
+		else {
+			
+			mobileEnabled = !dashboard.getMobileEnabled();
+			
+			dashboard.setMobileEnabled(mobileEnabled);
+			dashboard.setId(dashboard.getId());
+			DashboardUtil.updateDashboardPublishStatus(dashboard);
+		}
+		
+		if(mobileEnabled) {
+			FacilioContext context = new FacilioContext();
+			context.put(FacilioConstants.ContextNames.DASHBOARD, dashboard);
+			
+			Chain enableMobileDashboardChain = FacilioChainFactory.getEnableMobileDashboardChain();
+			enableMobileDashboardChain.execute(context);
+		}
+		
 		return SUCCESS;
 	}
 	
