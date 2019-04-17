@@ -689,6 +689,10 @@
 			<param name="moduleName">alarm</param>
 			<param name="permission">READ,READ_TEAM,READ_OWN</param>
 		</action>
+		<action name="createRule" class="com.facilio.bmsconsole.actions.TemplateAction" method="createRulefromTemplates">
+			<param name="moduleName">alarm</param>
+			<param name="permission">READ,READ_TEAM,READ_OWN</param>
+		</action>
 	</package>
 	<package name="readingRuleHistoricalRunApiV2" namespace="/api/v2/reading/rule/historicalrun"
 		extends="v2Api">
