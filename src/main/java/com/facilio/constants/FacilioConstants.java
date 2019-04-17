@@ -881,6 +881,7 @@ public class FacilioConstants {
 		public static final String ITEM_TYPES_COUNT = "itemTypesCount";
 		public static final String ITEM_COUNT = "itemCount";
 		public static final String PURCHASED_ITEM_COUNT = "purchasedItemCount";
+		public static final String GATE_PASS_COUNT = "gatePassCount";
 		public static final String TOOL_TYPES_COUNT = "toolTypesCount";
 		public static final String TOOL_COUNT = "toolCount";
 		public static final String VENDORS_COUNT = "vendorsCount";
