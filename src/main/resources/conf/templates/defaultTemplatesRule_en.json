@@ -1,68 +1,80 @@
 {
-	"1": {	
-		 "preRequsite": {
-			"name" : "All chillers in running state together",
-			"description" : "All the Chillers are turned ON",
-			"assetCategory": "Chillers",
-			"thresholdType": "1",
-			"operatorId": "9",
-			"percentage": "2",
-			"occurences": "2",
-			"prerequisteCondition": "Check whether Chiller is turned On",
-			"consecutiveoroverperiod": "${{preRequsiteConsecutiveoverperiod}}",
-			"readingField" : {
-				"name": "runStatus",
-				"displayName": "Run Status",
-				"moduleName" : "chillerreading"
+	"1": {
+		"fdd_rule": {
+			"name":"Damper Fail to Open or Stuck Closed",
+			"description": "Damper is stuck or in open state. Unable to open Damper",
+			"problem": "Damper fails to follow the command",
+			"possible_causes": "1. Poor Lubrication <br/> 2. Sensor Failure",
+			"category": "FAHU",
+			"severity": "Major",
+			"possible_solution": "1. Lubricate the bearings and louvres \n 2. Check sensor functioning",
+			"ASSET_SELECTION_CRITERIA": {
+			 	"categoryType": "FAHU",
+			 	"includeResource": "${includeResource}",
+			 	"excludeResource": "${excludeResource}"
 			},
-			"criteria" : {
-				"pattern" : "(1)",
-				"conditions": [{
-				 	"fieldName": "supplyTemperature",
-				 	"operatorId": "9",
-				 	"sequence": "1",
-				 	"value": "${{preRequsiteValue}}",
-				 	"isExpressionValue": "false"
-				}]
-			
-			},
-			"workflow" : {
-
-			}
-		},
-		"alarmTriggerRules": [
-			{
-				"name" : "${{triggerCondition1Name}}",
-				"description" : "desc",
-				"criteria" : {
-				},
-				"workflow" : {
+			"rules": {
+				"1": {
+					"condition": "$FAN_STATUS=1 & $DAMPER_COMMAND=1 & $DAMPER_STATUS=0",
+					"for": "${interval}",
+					"action": "TRIGGER_ALARM",
+					"condition_statement" : "When Fan Status is 1 and Damper Command is 1 and Damper Status is 0 for 10 min"
 				}
 			},
-			{
-				"name" : "triggerCondition2",
-				"description" : "desc",
-				
-				"criteria" : {
-				},
-				"workflow" : {
-				}
+			"placeHolder": {
+				"1": {
+                     "label": "Assets",
+                     "uniqueId": "resource",
+                     "default_value": "All Asset Selected",
+                     "selection_criteria": {
+                     	"displayType": "ASSETCHOOSER"
+                    },
+                     "type": "default"
+                 },
+                 "2":{
+                     "label": "Interval",
+                     "uniqueId": "interval",
+                     "default_value": "10",
+                     "selection_criteria": {
+                     	"displayType": "DURATION"
+                    },
+                     "type": "rules"
+                 }
 			}
-		],
-		"alarmClearRule": {
-			"name" : "clearRule",
-			"description" : "desc",
-			"criteria" : {
+		}
+	},
+	"2": {
+		"fdd_rule": {
+			"name":"Damper Fail to Close or Stuck Open",
+			"description": "Damper is stuck or in close state. Unable to close Damper",
+			"problem": "Damper fails to follow the command",
+			"possible_causes": "1. Poor Lubrication \n 2. Sensor Failure",
+			"category": "FAHU",
+			"severity": "Major",
+			"possible_solution": "1. Lubricate the bearings and louvres \n 2. Check sensor functioning",
+			"ASSET_SELECTION_CRITERIA": {
+			 	"categoryType": "FAHU"
 			},
-			"workflow" : {
+			"rules": {
+				"1": {
+					"condition": "$FAN_STATUS=1 & $DAMPER_COMMAND=0 & $DAMPER_STATUS=1",
+					"for": "10 min",
+					"action": "TRIGGER_ALARM",
+					"condition_statement" : "When Fan Status is 1 and Damper Command is 0 and Damper Status is 1 for 10 min"
+				}
+			},
+			"placeHolder": {
+				"1":{
+                      "label": "Assets",
+                       "default_value": "All Asset Selected",
+                       "type": "assets"
+                 },
+                 "2":{
+                      "label": "Interval",
+                       "default_value": "10 min",
+                       "type": "interval"
+                 }
 			}
-		},
-		"placeHolders": [{ "key" :"preRequsiteLimit",
-			"description" : "Specfic a limit when preRequestic has to be executed" },
-			{ "key":"triggerCondition1Name" } ,
-			{ "key": "preRequsiteValue", 
-			"description": "Specfic the Run Status Value for to pre satifies" },
-			{ "key" : "preRequsiteConsecutiveoverperiod", 
-			"description": "Specfic Consecutive time of Occurrences " }]
+		}
 	}
 }
