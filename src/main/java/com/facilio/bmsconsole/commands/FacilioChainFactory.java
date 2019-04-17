@@ -1730,13 +1730,6 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
-	public static Chain addTabularReportChain() {
-		Chain c = FacilioChain.getTransactionChain();
-		c.addCommand(new AddComparisonReportsCommand());
-		c.addCommand(new AddReportColumnsCommand());
-		return c;
-	}
-	
 	public static Chain updateReportColumnSequence() {
 		Chain c = FacilioChain.getTransactionChain();
 		c.addCommand(new UpdateReportColumnSequence());

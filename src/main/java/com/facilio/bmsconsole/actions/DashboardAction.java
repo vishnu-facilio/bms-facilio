@@ -257,15 +257,7 @@ public class DashboardAction extends FacilioAction {
 	public void setReportSpaceFilterContext(ReportSpaceFilterContext reportSpaceFilterContext) {
 		this.reportSpaceFilterContext = reportSpaceFilterContext;
 	}
-//	ReportEnergyMeterContext energyMeterFilter;
-//	public ReportEnergyMeterContext getEnergyMeterFilter() {
-//		return energyMeterFilter;
-//	}
-//	
-//	public void setEnergyMeterFilter(ReportEnergyMeterContext energyMeterFilter) {
-//		this.energyMeterFilter = energyMeterFilter;
-//	}
-//	
+
 	String period;
 	public String getPeriod() {
 		return period;
@@ -325,19 +317,7 @@ public class DashboardAction extends FacilioAction {
 		
 		return SUCCESS;
 	}
-	public String addThreshold() throws Exception {
-		
-		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
-				.table(ModuleFactory.getReportThreshold().getTableName())
-				.fields(FieldFactory.getReportThresholdFields());
-		
-		Map<String, Object> props = FieldUtil.getAsProperties(reportThreshold);
-		insertBuilder.addRecord(props);
-		insertBuilder.save();
-		
-		return SUCCESS;
-	}
-	
+
 	String errorString = "";
 	
 	public String getErrorString() {
@@ -346,7 +326,7 @@ public class DashboardAction extends FacilioAction {
 	public void setErrorString(String errorString) {
 		this.errorString = errorString;
 	}
-	public String deleteDashboard() throws Exception {
+	public String deleteDashboard() throws Exception {		// check and remove
 		
 		if(dashboardId != null) {
 			
@@ -367,37 +347,6 @@ public class DashboardAction extends FacilioAction {
 			}
 		}
 		return ERROR;
-	}
-	public String addReport() throws Exception {
-		
-		if ((reportContext.getParentFolderId() == null || reportContext.getParentFolderId() < 0) && reportContext.getReportEntityId() == null) {
-			// if report parent folder not exists, mapping to default folder 
-			if(reportContext.getParentFolderId() == null && reportContext.getReportFolderContext() != null) {
-				if(reportContext.getReportFolderContext().getId() > 0 ) {
-					reportContext.setParentFolderId(reportContext.getReportFolderContext().getId());
-				}
-				else if (reportContext.getReportFolderContext().getName() != null) {
-					reportFolderContext = reportContext.getReportFolderContext();
-					ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-					FacilioModule module = modBean.getModule(moduleName);
-					reportFolderContext.setModuleId(module.getModuleId());
-					DashboardUtil.addReportFolder(reportFolderContext);
-					reportContext.setParentFolderId(reportFolderContext.getId());
-				}
-			}
-			if(reportContext.getParentFolderId() == null) {
-				ReportFolderContext defaultFolder = DashboardUtil.getDefaultReportFolder(moduleName);
-				reportContext.setParentFolderId(defaultFolder.getId());
-			}
-		}
-		if(reportContext.getModuleId() == -1l) {
-			reportContext.setModuleName(moduleName);
-		}
-		DashboardUtil.addReport(reportContext);
-		
-		reportContext = DashboardUtil.getReportContext(reportContext.getId());
-		
-		return SUCCESS;
 	}
 	
 	public JSONObject dashboardDisplayOrder;
@@ -425,36 +374,12 @@ public class DashboardAction extends FacilioAction {
 		this.reports = reports;
 	}
 	
-	public String addTabularReport() throws Exception {
-		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.REPORT_LIST, reports);
-		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
-		
-		Chain addTabularReportChain = FacilioChainFactory.addTabularReportChain();
-		addTabularReportChain.execute(context);
-		reportContext = DashboardUtil.getReportContext((Long) context.get(FacilioConstants.ContextNames.RECORD_ID));
-		
-		return SUCCESS;
-	}
-	
 	private List<Long> id;
 	public List<Long> getId() {
 		return id;
 	}
 	public void setId(List<Long> id) {
 		this.id = id;
-	}
-	
-	public String updateSequence() throws Exception {
-		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.REPORT_COLUMN_LIST, reportColumns);
-		
-		Chain updateSequence = FacilioChainFactory.updateReportColumnSequence();
-		updateSequence.execute(context);
-		
-		setResult("result",(String) context.get(FacilioConstants.ContextNames.RESULT));
-		
-		return SUCCESS;
 	}
 	
 	private Integer refreshInterval = null;
@@ -481,18 +406,6 @@ public class DashboardAction extends FacilioAction {
 			
 			updateBuilder.update(props);
 		}
-		
-		return SUCCESS;
-	}
-	
-	public String addReportFolder() throws Exception {
-		
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioModule module = modBean.getModule(moduleName);
-		
-		reportFolderContext.setModuleId(module.getModuleId());
-		
-		DashboardUtil.addReportFolder(reportFolderContext);
 		
 		return SUCCESS;
 	}
@@ -525,61 +438,6 @@ public class DashboardAction extends FacilioAction {
 		this.isReportUpdateFromDashboard = isReportUpdateFromDashboard;
 	}
 	
-	public String updateDateFilter() throws Exception {
-		
-		return SUCCESS;
-	}
-	
-	public String updateChartType() throws Exception {
-		
-		if (reportId > 0) {
-			
-			if ("combo".equalsIgnoreCase(chartType)) {
-				GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
-						.table(ModuleFactory.getReport().getTableName())
-						.fields(FieldFactory.getReportFields())
-						.andCustomWhere("ID = ?", reportId);
-
-				Map<String, Object> props = new HashMap<String, Object>();
-				props.put("isCombinationReport", true);
-				
-				updateBuilder.update(props);
-			}
-			else if(isReportUpdateFromDashboard && widgetId != null) {
-				GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
-						.table(ModuleFactory.getWidgetChartModule().getTableName())
-						.fields(FieldFactory.getWidgetChartFields())
-						.andCustomWhere("ID = ?", widgetId);
-
-				Map<String, Object> props = new HashMap<String, Object>();
-				props.put("chartType", ReportContext.ReportChartType.getWidgetChartType(chartType).getValue());
-				props.put("isCombinationReport", false);
-				if (secChartType != null) {
-					props.put("secChartType", ReportContext.ReportChartType.getWidgetChartType(secChartType).getValue());
-				}
-				
-				updateBuilder.update(props);
-			}
-			else {
-				GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
-						.table(ModuleFactory.getReport().getTableName())
-						.fields(FieldFactory.getReportFields())
-						.andCustomWhere("ID = ?", reportId);
-
-				Map<String, Object> props = new HashMap<String, Object>();
-				props.put("chartType", ReportContext.ReportChartType.getWidgetChartType(chartType).getValue());
-				props.put("isCombinationReport", false);
-				if (secChartType != null) {
-					props.put("secChartType", ReportContext.ReportChartType.getWidgetChartType(secChartType).getValue());
-				}
-				
-				updateBuilder.update(props);
-			}
-		}
-		
-		return SUCCESS;
-	}
-	
 	private JSONArray comboChartList;
 	
 	public void setComboChartList(JSONArray comboChartList) {
@@ -590,33 +448,8 @@ public class DashboardAction extends FacilioAction {
 		return this.comboChartList;
 	}
 	
-	public String updateComboChart() throws Exception {
-		
-		if (getComboChartList() != null && getComboChartList().size() > 0) {
-			for (int i=0; i < getComboChartList().size(); i++) {
-				HashMap comboChart = (HashMap) getComboChartList().get(i);
-				Long rid = (Long) comboChart.get("id");
-				
-				GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
-						.table(ModuleFactory.getReport().getTableName())
-						.fields(FieldFactory.getReportFields())
-						.andCustomWhere("ID = ?", rid);
-
-				Map<String, Object> props = new HashMap<String, Object>();
-				props.put("chartType", ReportContext.ReportChartType.getWidgetChartType((String) comboChart.get("chartType")).getValue());
-				if (comboChart.get("reportColor") != null) {
-					props.put("reportColor", comboChart.get("reportColor"));
-				}
-				
-				updateBuilder.update(props);
-			}
-		}
-		
-		return SUCCESS;
-	}
 	
-	
-	public String getRelatedAlarmsList() throws Exception {
+	public String getRelatedAlarmsList() throws Exception {		// check and remove
 		if (reportContext == null) {
 			reportContext = DashboardUtil.getReportContext(reportId);
 		}
@@ -817,15 +650,6 @@ public class DashboardAction extends FacilioAction {
 		setEntityName(derivation.getName());
 		
 		return SUCCESS;
-	}
-	
-	public String addComparisionReport() throws Exception {
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioField readingField = modBean.getFieldFromDB(readingFieldId);
-		FacilioModule module = readingField.getModule();
-		ReportContext readingReport = constructReportObjectForReadingReport(module, readingField,parentId);
-		this.reportContext = readingReport;
-		return addReport();
 	}
 	
 	Long alarmId;
@@ -1224,7 +1048,7 @@ public class DashboardAction extends FacilioAction {
 		this.dashboardVsWidgetId = dashboardVsWidgetId;
 	}
 	public Long dashboardVsWidgetId;
-	public String deleteWidgetFromDashboard() throws Exception {
+	public String deleteWidgetFromDashboard() throws Exception {		// check and remove
 		
 		if(dashboardId != null && widgetId != null) {
 
@@ -1351,7 +1175,7 @@ public class DashboardAction extends FacilioAction {
 		return this.excludeViolatedReadings;
 	}
 	
-	private void setConditions(String moduleName, String fieldName, JSONObject fieldJson,List<Condition> conditionList) throws Exception {
+	private void setConditions(String moduleName, String fieldName, JSONObject fieldJson,List<Condition> conditionList) throws Exception { // check and remove
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
@@ -1410,12 +1234,6 @@ public class DashboardAction extends FacilioAction {
 	}
 	public void setReportFieldsJson(JSONObject reportFieldsJson) {
 		this.reportFieldsJson = reportFieldsJson;
-	}
-	public String getReportFields() throws Exception {
-		if(moduleName != null) {
-			reportFieldsJson = DashboardUtil.getReportFields(moduleName);
-		}
-		return SUCCESS;
 	}
 	
 	private JSONArray getDataForTickets(ReportContext report, FacilioModule module, JSONArray dateFilter, JSONObject userFilterValues, long baseLineId, long criteriaId) throws Exception {
@@ -5692,57 +5510,6 @@ public class DashboardAction extends FacilioAction {
 		return readingData;
 	}
 	
-	private void calculateHeatMapRange(String reportDataSQL, List<FacilioField> fields) throws Exception {
-		double leastPercent = 0.05;
-		double highestPercent = 0.95;
-		
-		String sql = "select * from (SELECT temp.*, @row_num :=@row_num + 1 AS row_num FROM (" + reportDataSQL + ") temp, (SELECT @row_num:=0) counter) as temp1 where temp1.row_num = ROUND (? * @row_num) or temp1.row_num = ROUND (? * @row_num)";
-		
-		PreparedStatement pstmt = null;
-		ResultSet rs1 = null;
-		Connection conn = FacilioConnectionPool.INSTANCE.getConnection();
-		try {
-			pstmt = conn.prepareStatement(sql);
-			pstmt.setDouble(1, leastPercent);
-			pstmt.setDouble(2, highestPercent);
-			
-			rs1 = pstmt.executeQuery();
-			List<Map<String, Object>> records = new ArrayList<>();
-			while(rs1.next()) {
-				Map<String, Object> record = new HashMap<>();
-				for(FacilioField field : fields) {
-					Object val = FieldUtil.getObjectFromRS(field, rs1);
-					if(field != null &&  field instanceof NumberField) {
-						NumberField numberField =  (NumberField)field;
-						if(numberField.getMetric() > 0) {
-							val = UnitsUtil.convertToOrgDisplayUnitFromSi(val, numberField.getMetric());
-						}
-					}
-					if(val != null) {
-						record.put(field.getName(), val);
-					}
-				}
-				if(!record.isEmpty()) {
-					records.add(record);
-				}
-			}
-			
-			if (records.size() >= 2) {
-				JSONObject heatMapRangeObj = new JSONObject();
-				heatMapRangeObj.put("min", records.get(0).get("value"));
-				heatMapRangeObj.put("max", records.get(1).get("value"));
-				this.setHeatMapRange(heatMapRangeObj);
-			}
-		}
-		catch(SQLException e) {
-			LOGGER.log(Level.SEVERE, "Exception " ,e);
-			throw e;
-		}
-		finally {
-			DBUtil.closeAll(conn,pstmt, rs1);
-		}
-	}
-	
 	private List<ReadingAlarmContext> readingAlarms;
 	public List<ReadingAlarmContext> getReadingAlarms() {
 		return readingAlarms;
@@ -6266,70 +6033,6 @@ public class DashboardAction extends FacilioAction {
 		return labels;
 	}
 	
-	@SuppressWarnings("unchecked")
-	private JSONArray getAlarmReturnFormat(Map<Object, JSONArray> alarmProps) {
-		if(alarmProps==null) {
-			return null;
-		}
-		
-		JSONArray relatedAlarms= new JSONArray();
-		for(Map.Entry<Object, JSONArray> props : alarmProps.entrySet() ) {
-			
-			JSONArray list= props.getValue();
-			JSONObject alarms= (JSONObject)list.get(list.size()-1);
-			Long labelTime = (Long)alarms.get("time");
-			JSONObject record = new JSONObject();
-			record.put("label", labelTime);
-			record.put("value", list);
-			relatedAlarms.add(record);
-		}
-		return relatedAlarms;
-	}
-	
-	
-	
-	@SuppressWarnings("unchecked")
-	private Map<Object ,JSONArray> getAlarmProps (List<Map<String, Object>> alarmVsEnergyProps ){
-
-		if(alarmVsEnergyProps==null || alarmVsEnergyProps.isEmpty()) {
-			return null;
-
-		}
-
-		Integer aggregator=reportContext.getxAxisaggregateFunction();
-		int formatter=19;
-		if (aggregator != null) {
-			formatter= AggregateOperator.getAggregateOperator(aggregator).getValue();
-		}
-
-		Map<Object ,JSONArray> alarmProps= new HashMap<Object,JSONArray>();
-		for(Map<String,Object> mappingProp: alarmVsEnergyProps) {
-
-			String subject = (String) mappingProp.get("subject");
-			Long createdTime=(Long)mappingProp.get("createdTime");
-			Long id= (Long)mappingProp.get("alarmid");
-			Long alarmSerialNumber=(Long)mappingProp.get("serialNumber");
-			Long alarmSeverity=(Long)mappingProp.get("severity");
-
-			JSONObject props = new JSONObject();
-			props.put("alarmId", id);
-			props.put("subject", subject);
-			props.put("severity", alarmSeverity);
-			props.put("time", createdTime);
-			props.put("serialNumber", alarmSerialNumber);
-
-			Object key=getKey(createdTime,formatter);
-			JSONArray alarmsList= alarmProps.get(key);
-
-			if(alarmsList==null) {
-				alarmsList= new JSONArray();
-				alarmProps.put(key, alarmsList);
-			}
-			alarmsList.add(props);
-		}
-		return alarmProps;
-	}
-	
 	private Object getKey(Long modifiedTime,int formatter) {
 		
 		Object key=null;
@@ -6353,36 +6056,6 @@ public class DashboardAction extends FacilioAction {
 			
 		}
 		return key;
-	}
-	
-	private List<FacilioField> getDisplayColumns(String module) throws Exception {
-		
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		List<FacilioField> allFields = modBean.getAllFields(module);
-		
-		String[] displayFieldNames = null;
-		
-		if ("workorder".equals(module)) {
-			displayFieldNames = new String[]{"subject", "category", "space", "assignedTo", "status", "priority", "createdTime", "dueDate"};
-		}
-		else if ("alarm".equals(module)) {
-			displayFieldNames = new String[]{"subject", "severity", "node", "createdTime", "acknowledgedBy", "state"};
-		}
-		else if ("energydata".equals(module)) {
-			displayFieldNames = new String[]{"ttime", "totalEnergyConsumptionDelta"};
-		}
-		
-		List<FacilioField> displayColumns = new ArrayList<>();
-		
-		for (String fieldName : displayFieldNames) {
-			for (FacilioField field : allFields) {
-				if (field.getName().equalsIgnoreCase(fieldName)) {
-					displayColumns.add(field);
-				}
-			}
-		}
-		
-		return displayColumns;
 	}
 	
 	private List<FacilioField> displayFields;
@@ -6639,7 +6312,7 @@ public class DashboardAction extends FacilioAction {
 		return SUCCESS;
 	}
 	
-	public String addWidget() throws Exception {
+	public String addWidget() throws Exception {			// check and remove
 		
 		FacilioContext context = new FacilioContext();
 		
@@ -6710,7 +6383,6 @@ public class DashboardAction extends FacilioAction {
 		this.dashboardFolderContext = dashboardFolderContext;
 	}
 	public String addDashboardFolder() throws Exception {
-		
 		
 		if(dashboardFolderContext != null) {
 			dashboardFolderContext.setOrgId(AccountUtil.getCurrentOrg().getId());
