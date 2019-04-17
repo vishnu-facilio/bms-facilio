@@ -1346,6 +1346,22 @@ public class TransactionChainFactory {
 			c.addCommand(new EnableMobileDashboardCommand());
 			return c;
 		}
+	    
+	    public static Chain getAddDashboardFolderChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new AddDashboardFolderCommand());
+			return c;
+		}
+	    public static Chain getUpdateDashboardFolderChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new UpdateDashboardFolderCommand());
+			return c;
+		}
+	    public static Chain getDeleteDashboardFolderChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new DeleteDashboardFolderCommand());
+			return c;
+		}
 
 		public static Chain executeScheduledReadingRuleChain() {
 			Chain c = getDefaultChain();

@@ -39,6 +39,7 @@ import org.apache.commons.collections.list.SetUniqueList;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.LogManager;
+import org.apache.tiles.request.collection.CollectionUtil;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
@@ -2399,19 +2400,22 @@ public class DashboardUtil {
 		delete.delete();
 	}
 	
-	public static void updateDashboardFolder(DashboardFolderContext dashboardFolder) throws Exception {
+	public static void updateDashboardFolder(List<DashboardFolderContext> dashboardFolders) throws Exception {
 		
 		UpdateRecordBuilder<ModuleBaseWithCustomFields> update = new UpdateRecordBuilder<>();
 		
-		update.module(ModuleFactory.getDashboardFolderModule());
-		update.fields(FieldFactory.getDashboardFolderFields())
-		.andCustomWhere("ID = ?", dashboardFolder.getId());
+		for(DashboardFolderContext dashboardFolder :dashboardFolders) {
+			update.module(ModuleFactory.getDashboardFolderModule());
+			update.fields(FieldFactory.getDashboardFolderFields())
+			.andCustomWhere("ID = ?", dashboardFolder.getId());
+			
+			Map<String, Object> prop = FieldUtil.getAsProperties(dashboardFolder);
+			ModuleBaseWithCustomFields record = new ModuleBaseWithCustomFields();
+			record.addData(prop);
+			
+			update.update(record);
+		}
 		
-		Map<String, Object> prop = FieldUtil.getAsProperties(dashboardFolder);
-		ModuleBaseWithCustomFields record = new ModuleBaseWithCustomFields();
-		record.addData(prop);
-		
-		update.update(record);
 	}
 	
 	public static List<DashboardFolderContext> getDashboardFolder(String moduleName) throws Exception {

@@ -6375,26 +6375,11 @@ public class DashboardAction extends FacilioAction {
 	}
 	
 	public DashboardFolderContext dashboardFolderContext;
-	
 	public DashboardFolderContext getDashboardFolderContext() {
 		return dashboardFolderContext;
 	}
 	public void setDashboardFolderContext(DashboardFolderContext dashboardFolderContext) {
 		this.dashboardFolderContext = dashboardFolderContext;
-	}
-	public String addDashboardFolder() throws Exception {
-		
-		if(dashboardFolderContext != null) {
-			dashboardFolderContext.setOrgId(AccountUtil.getCurrentOrg().getId());
-			
-			if(moduleName != null) {
-				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-				FacilioModule module = modBean.getModule(moduleName);
-				dashboardFolderContext.setModuleId(module.getModuleId());
-			}
-			DashboardUtil.addDashboardFolder(dashboardFolderContext);
-		}
-		return SUCCESS;
 	}
 	List<DashboardFolderContext> dashboardFolders;
 	
@@ -6415,22 +6400,6 @@ public class DashboardAction extends FacilioAction {
 		dashboardFolders = DashboardUtil.getDashboardListWithFolder(getOnlyMobileDashboard,true);
 		return SUCCESS;
 	}
-	public String updateDashboardFolder() throws Exception {
-		
-		if(dashboardFolderContext != null) {
-			DashboardUtil.updateDashboardFolder(dashboardFolderContext);
-		}
-		return SUCCESS;
-	}
-	
-	public String deleteDashboardFolder() throws Exception {
-		
-		if(dashboardFolderContext != null) {
-			DashboardUtil.deleteDashboardFolder(dashboardFolderContext);
-		}
-		return SUCCESS;
-	}
-	
 	public String getDashboardList() throws Exception {
 		if (moduleName != null) {
 			dashboards = DashboardUtil.getDashboardList(moduleName);
@@ -6874,7 +6843,7 @@ public class DashboardAction extends FacilioAction {
 	public void setUnits(List<BenchmarkUnit> units) {
 		this.units = units;
 	}
-	
+	/*********************** needed methods *********************/
 	/*********************** v2 *********************/
 	public String v2getDashboardListWithFolder() throws Exception {
 		getDashboardListWithFolder();
@@ -6882,4 +6851,50 @@ public class DashboardAction extends FacilioAction {
 		return SUCCESS;
 	}
 	
+	public String addDashboardFolder() throws Exception {
+		
+		if(dashboardFolderContext != null) {
+			dashboardFolderContext.setOrgId(AccountUtil.getCurrentOrg().getId());
+			
+			if(moduleName != null) {
+				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+				FacilioModule module = modBean.getModule(moduleName);
+				dashboardFolderContext.setModuleId(module.getModuleId());
+			}
+			FacilioContext context = new FacilioContext();
+			context.put(FacilioConstants.ContextNames.DASHBOARD_FOLDER, dashboardFolderContext);
+			
+			Chain chain = TransactionChainFactory.getAddDashboardFolderChain();
+			chain.execute(context);
+		}
+		return SUCCESS;
+	}
+	
+	public String updateDashboardFolder() throws Exception {
+		
+		FacilioContext context = new FacilioContext();
+		if(dashboardFolderContext != null) {
+			context.put(FacilioConstants.ContextNames.DASHBOARD_FOLDERS, Collections.singletonList(dashboardFolderContext));
+		}
+		else if(dashboardFolders != null) {
+			context.put(FacilioConstants.ContextNames.DASHBOARD_FOLDERS, dashboardFolders);
+		}
+		Chain chain = TransactionChainFactory.getUpdateDashboardFolderChain();
+		chain.execute(context);
+		return SUCCESS;
+	}
+	
+	public String deleteDashboardFolder() throws Exception {
+		
+		if(dashboardFolderContext != null) {
+			FacilioContext context = new FacilioContext();
+			
+			context.put(FacilioConstants.ContextNames.DASHBOARD_FOLDER, dashboardFolderContext);
+			
+			Chain chain = TransactionChainFactory.getDeleteDashboardFolderChain();
+			chain.execute(context);
+			
+		}
+		return SUCCESS;
+	}
 }
