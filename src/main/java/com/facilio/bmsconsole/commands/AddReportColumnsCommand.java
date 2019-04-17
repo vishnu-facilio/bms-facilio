@@ -10,7 +10,7 @@ import org.apache.commons.chain.Context;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AddReportColumnsCommand implements Command {
+public class AddReportColumnsCommand implements Command {  // delete this class
 
 	@Override
 	public boolean execute(Context context) throws Exception {
@@ -26,7 +26,6 @@ public class AddReportColumnsCommand implements Command {
 			reportColumn.setBaseLineAdjust(true);
 			columns.add(reportColumn);
 		}
-		DashboardUtil.addReportColumns(columns);
 		return false;
 	}
 

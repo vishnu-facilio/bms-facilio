@@ -91,6 +91,16 @@ public class DashboardContext extends ModuleBaseWithCustomFields implements Clon
 	public void setBuildingExcludeList(List<Long> buildingExcludeList) {
 		this.buildingExcludeList = buildingExcludeList;
 	}
+	
+	List<DashboardSharingContext> dashboardSharingContext;
+
+	public List<DashboardSharingContext> getDashboardSharingContext() {
+		return dashboardSharingContext;
+	}
+
+	public void setDashboardSharingContext(List<DashboardSharingContext> dashboardSharingContext) {
+		this.dashboardSharingContext = dashboardSharingContext;
+	}
 
 	private String linkName;
 	
