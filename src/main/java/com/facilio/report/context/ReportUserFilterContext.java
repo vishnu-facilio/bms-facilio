@@ -108,7 +108,7 @@ public class ReportUserFilterContext {
 		}
 		if (data.contains(ALL)) {
 			if (chooseValue != null) {
-				if (chooseValue.isOtherCriteria()) {
+				if (chooseValue.isOtherEnabled()) {
 					return null;
 				} else if (CollectionUtils.isNotEmpty(chooseValue.getValues())) {
 					data = chooseValue.getValues();
