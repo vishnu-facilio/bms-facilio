@@ -2148,24 +2148,6 @@ public class DashboardUtil {
 		}
 		return null;
 	}
-	public static void UpdateDashboardDisplayOrder(JSONObject dashboardDisplayOrder) throws Exception {	// move up
-		
-		for(Object key:dashboardDisplayOrder.keySet()) {
-			Long dashboardId = Long.parseLong( key.toString()); 
-			Integer order = Integer.parseInt(dashboardDisplayOrder.get(key).toString());
-			
-			Map<String,Object> value = new HashMap<>(); 
-			
-			value.put("displayOrder", order);
-			
-			GenericUpdateRecordBuilder update = new GenericUpdateRecordBuilder();
-			update.table(ModuleFactory.getDashboardModule().getTableName())
-			.fields(FieldFactory.getDashboardFields())
-			.andCustomWhere(ModuleFactory.getDashboardModule().getTableName()+".ID = ?", dashboardId);
-			
-			update.update(value);
-		}
-	}
 	public static Integer getLastDashboardDisplayOrder(Long orgid,Long moduleId) throws Exception { 	// move up
 		
 		if(orgid != null && moduleId != null) {

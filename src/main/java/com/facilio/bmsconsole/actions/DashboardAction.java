@@ -401,23 +401,6 @@ public class DashboardAction extends FacilioAction {
 	public void setErrorString(String errorString) {
 		this.errorString = errorString;
 	}
-	public JSONObject dashboardDisplayOrder;
-	public JSONObject getDashboardDisplayOrder() {
-		return dashboardDisplayOrder;
-	}
-	public void setDashboardDisplayOrder(JSONObject dashboardDisplayOrder) {
-		this.dashboardDisplayOrder = dashboardDisplayOrder;
-	}
-	public String updateDashboardOrder() throws Exception {
-		
-		if(dashboardDisplayOrder != null) {
-			DashboardUtil.UpdateDashboardDisplayOrder(dashboardDisplayOrder);
-			dashboards = DashboardUtil.getDashboardList(moduleName);
-			return SUCCESS;
-		}
-		return ERROR;
-	}
-	
 	private List<ReportContext> reports;
 	public List<ReportContext> getReports() {
 		return reports;
@@ -955,23 +938,6 @@ public class DashboardAction extends FacilioAction {
 	
 	JSONObject paramsJson;
 	
-	public String getCardData() throws Exception {
-		
-		Chain fetchCardData = ReadOnlyChainFactory.fetchCardDataChain();
-		FacilioContext context = new FacilioContext();
-		
-		context.put(FacilioConstants.ContextNames.WIDGET_ID, widgetId);
-		context.put(FacilioConstants.ContextNames.WIDGET_STATIC_KEY, staticKey);
-		context.put(FacilioConstants.ContextNames.WIDGET_BASESPACE_ID, baseSpaceId);
-		context.put(FacilioConstants.ContextNames.WIDGET_WORKFLOW, workflow);
-		context.put(FacilioConstants.ContextNames.WIDGET_PARAMJSON, paramsJson);
-		context.put(FacilioConstants.ContextNames.WIDGET_REPORT_SPACE_FILTER_CONTEXT, reportSpaceFilterContext);
-		
-		fetchCardData.execute(context);
-		
-		setCardResult(context.get(FacilioConstants.ContextNames.RESULT));
-		return SUCCESS;
-	}
 	public JSONObject getParamsJson() {
 		return paramsJson;
 	}
@@ -6977,9 +6943,29 @@ public class DashboardAction extends FacilioAction {
 		return SUCCESS;
 	}
 	
-	public String viewDashboardSharing() throws Exception {
+	public String viewDashboardSharing() throws Exception {						// Using in client should be removed after removed in client
 		setDashboardSharing(DashboardUtil.getDashboardSharing(dashboardId));
 		return SUCCESS;
 	}
 	
+	// data part starts
+	public String getCardData() throws Exception {
+		
+		Chain fetchCardData = ReadOnlyChainFactory.fetchCardDataChain();
+		FacilioContext context = new FacilioContext();
+		
+		context.put(FacilioConstants.ContextNames.WIDGET_ID, widgetId);
+		context.put(FacilioConstants.ContextNames.WIDGET_STATIC_KEY, staticKey);
+		context.put(FacilioConstants.ContextNames.WIDGET_BASESPACE_ID, baseSpaceId);
+		context.put(FacilioConstants.ContextNames.WIDGET_WORKFLOW, workflow);
+		context.put(FacilioConstants.ContextNames.WIDGET_PARAMJSON, paramsJson);
+		context.put(FacilioConstants.ContextNames.WIDGET_REPORT_SPACE_FILTER_CONTEXT, reportSpaceFilterContext);
+		
+		fetchCardData.execute(context);
+		
+		setCardResult(context.get(FacilioConstants.ContextNames.RESULT));
+		return SUCCESS;
+	}
+	
+	// data part ends
 }
