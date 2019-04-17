@@ -1,6 +1,8 @@
 package com.facilio.bmsconsole.commands;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.DashboardContext;
+import com.facilio.bmsconsole.context.DashboardContext.DashboardPublishStatus;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
@@ -21,6 +23,11 @@ public class AddDashboardCommand implements Command {
 		// TODO Auto-generated method stub
 		DashboardContext dashboard = (DashboardContext) context.get(FacilioConstants.ContextNames.DASHBOARD);
 		if(dashboard != null) {			
+			
+			dashboard.setPublishStatus(DashboardPublishStatus.NONE.ordinal());
+			dashboard.setCreatedByUserId(AccountUtil.getCurrentUser().getId());
+			dashboard.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
+			
 			List<FacilioField> fields = FieldFactory.getDashboardFields();
 			
 			// on add dashboard, we will set order as null so that it will go to the last in order

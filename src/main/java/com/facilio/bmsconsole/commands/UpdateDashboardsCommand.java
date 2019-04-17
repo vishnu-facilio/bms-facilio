@@ -20,6 +20,9 @@ public class UpdateDashboardsCommand implements Command {
 		if(dashboards != null) {
 			for(DashboardContext dashboard :dashboards) {
 				DashboardUtil.updateDashboard(dashboard);
+				if(dashboard.getDashboardSharingContext() != null) {
+					DashboardUtil.applyDashboardSharing(dashboard.getId(), dashboard.getDashboardSharingContext());
+				}
 			}
 		}
 		return false;

@@ -6411,16 +6411,6 @@ public class DashboardAction extends FacilioAction {
 		this.dashboardSharing = dashboardSharing;
 	}
 	
-	public String viewDashboardSharing() throws Exception {
-		setDashboardSharing(DashboardUtil.getDashboardSharing(dashboardId));
-		return SUCCESS;
-	}
-	
-	public String applyDashboardSharing() throws Exception {
-		DashboardUtil.applyDashboardSharing(dashboardId, dashboardSharing);
-		return SUCCESS;
-	}
-	
 	public String viewDashboard() throws Exception {
 		if(buildingId != null) {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -6819,7 +6809,9 @@ public class DashboardAction extends FacilioAction {
 	public void setUnits(List<BenchmarkUnit> units) {
 		this.units = units;
 	}
+	
 	/*********************** needed methods *********************/
+	
 	/*********************** v2 *********************/
 	public String v2getDashboardListWithFolder() throws Exception {
 		getDashboardListWithFolder();
@@ -6876,9 +6868,6 @@ public class DashboardAction extends FacilioAction {
 	
 	public String addDashboard() throws Exception {
 		FacilioContext context = new FacilioContext();
-		dashboard.setPublishStatus(DashboardPublishStatus.NONE.ordinal());
-		dashboard.setCreatedByUserId(AccountUtil.getCurrentUser().getId());
-		dashboard.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
 		context.put(FacilioConstants.ContextNames.DASHBOARD, dashboard);
 		Chain addDashboardChain = TransactionChainFactory.getAddDashboardChain();
 		addDashboardChain.execute(context);
@@ -6952,13 +6941,21 @@ public class DashboardAction extends FacilioAction {
 	
 	public String updateDashboards() throws Exception {
 		
+		FacilioContext context = new FacilioContext();
 		if(dashboards != null) {
-			FacilioContext context = new FacilioContext();
 			context.put(FacilioConstants.ContextNames.DASHBOARDS, dashboards);
-			
-			Chain updateDashboardChain = TransactionChainFactory.getUpdateDashboardsChain();
-			updateDashboardChain.execute(context);
 		}
+		else if(dashboardId != null && dashboardSharing != null) {
+			dashboard = new DashboardContext();
+			dashboard.setId(dashboardId);
+			dashboard.setDashboardSharingContext(dashboardSharing);
+		}
+		if(dashboard != null) {
+			context.put(FacilioConstants.ContextNames.DASHBOARDS, Collections.singletonList(dashboard));
+		}
+		
+		Chain updateDashboardChain = TransactionChainFactory.getUpdateDashboardsChain();
+		updateDashboardChain.execute(context);
 		
 		return SUCCESS;
 	}
@@ -6979,4 +6976,10 @@ public class DashboardAction extends FacilioAction {
 		}
 		return SUCCESS;
 	}
+	
+	public String viewDashboardSharing() throws Exception {
+		setDashboardSharing(DashboardUtil.getDashboardSharing(dashboardId));
+		return SUCCESS;
+	}
+	
 }
