@@ -154,6 +154,9 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 			context.put(FacilioConstants.ContextNames.WORK_ORDER, workOrder);
 			context.put(FacilioConstants.ContextNames.IS_PUBLIC_REQUEST, true);
 			
+			TicketStatusContext preOpenStatus = TicketAPI.getStatus("preopen");
+			workOrder.setStatus(preOpenStatus);
+			
 			if (attachedFiles != null && !attachedFiles.isEmpty() && attachedFileNames != null && !attachedFileNames.isEmpty() && attachedFilesContentType != null && !attachedFilesContentType.isEmpty()) {
 				context.put(FacilioConstants.ContextNames.ATTACHMENT_FILE_LIST, attachedFiles);
 		 		context.put(FacilioConstants.ContextNames.ATTACHMENT_FILE_NAME, attachedFileNames);
