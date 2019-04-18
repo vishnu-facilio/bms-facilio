@@ -173,7 +173,7 @@ public class WorkOrderAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		
 		context.put(FacilioConstants.ContextNames.REQUESTER, workorder.getRequester());
-		if (AccountUtil.getCurrentUser() == null && workorder.getRequester() != null && workorder.getRequester().getEmail() != null) {
+		if (AccountUtil.getCurrentUser() == null) {
 			context.put(FacilioConstants.ContextNames.IS_PUBLIC_REQUEST, true);
 		}
 		

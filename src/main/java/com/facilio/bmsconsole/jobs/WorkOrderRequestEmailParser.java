@@ -1,12 +1,31 @@
 package com.facilio.bmsconsole.jobs;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.activation.DataSource;
+import javax.mail.Address;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
+
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.mail.util.MimeMessageParser;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 import com.amazonaws.services.s3.model.S3Object;
 import com.facilio.accounts.dto.Group;
 import com.facilio.accounts.dto.User;
-import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleCRUDBean;
-import com.facilio.bmsconsole.context.*;
+import com.facilio.bmsconsole.context.SupportEmailContext;
+import com.facilio.bmsconsole.context.TicketContext;
+import com.facilio.bmsconsole.context.TicketStatusContext;
+import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
@@ -20,21 +39,6 @@ import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
 import com.facilio.tasker.job.FacilioJob;
 import com.facilio.tasker.job.JobContext;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.mail.util.MimeMessageParser;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-
-import javax.activation.DataSource;
-import javax.mail.Address;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
-import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 public class WorkOrderRequestEmailParser extends FacilioJob {
 
@@ -99,24 +103,18 @@ public class WorkOrderRequestEmailParser extends FacilioJob {
 		if(supportEmail != null) {
 			ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", supportEmail.getOrgId());
 			
-			TicketContext ticketContext;
-			if (bean.isFeatureEnabled(AccountUtil.FEATURE_APPROVAL)) {
-				ticketContext = new WorkOrderContext();
-				((WorkOrderContext)ticketContext).setSendForApproval(true);
-			}
-			else {
-				ticketContext = new WorkOrderRequestContext();
-			}
+			WorkOrderContext workorderContext = new WorkOrderContext();
+			workorderContext.setSendForApproval(true);
 			
 			User requester = new User();
 			requester.setEmail(parser.getFrom());
 			
-			ticketContext.setSubject(parser.getSubject());
+			workorderContext.setSubject(parser.getSubject());
 			if (parser.getPlainContent() != null) {
-				ticketContext.setDescription(StringUtils.trim(parser.getPlainContent()));
+				workorderContext.setDescription(StringUtils.trim(parser.getPlainContent()));
 			} 
 			else {
-				ticketContext.setDescription(StringUtils.trim(parser.getHtmlContent()));
+				workorderContext.setDescription(StringUtils.trim(parser.getHtmlContent()));
 			}
 			
 			List<DataSource> attachments = parser.getAttachmentList();
@@ -146,24 +144,17 @@ public class WorkOrderRequestEmailParser extends FacilioJob {
 				LOGGER.info("Parsed Attachments : "+attachedFiles);
 			}
 			if (supportEmail.getAutoAssignGroupId() != -1) {
-				ticketContext.setAssignmentGroup((Group) LookupSpecialTypeUtil.getEmptyLookedupObject(FacilioConstants.ContextNames.GROUPS, supportEmail.getAutoAssignGroupId()));
+				workorderContext.setAssignmentGroup((Group) LookupSpecialTypeUtil.getEmptyLookedupObject(FacilioConstants.ContextNames.GROUPS, supportEmail.getAutoAssignGroupId()));
 			}
-			ticketContext.setSiteId(supportEmail.getSiteId());
+			workorderContext.setSiteId(supportEmail.getSiteId());
 			
-			ticketContext.setSourceType(TicketContext.SourceType.EMAIL_REQUEST);
+			workorderContext.setSourceType(TicketContext.SourceType.EMAIL_REQUEST);
 			
 			TicketStatusContext preOpenStatus = TicketAPI.getStatus("preopen");
-			ticketContext.setStatus(preOpenStatus);
+			workorderContext.setStatus(preOpenStatus);
 			
-			long requestId;
-			if (ticketContext instanceof WorkOrderContext) {
-				((WorkOrderContext) ticketContext).setRequester(requester);
-				requestId = bean.addWorkOrderFromEmail((WorkOrderContext) ticketContext, attachedFiles, attachedFilesFileName, attachedFilesContentType);
-			}
-			else {
-				((WorkOrderRequestContext) ticketContext).setRequester(requester);
-				requestId = bean.addWorkOrderRequest((WorkOrderRequestContext) ticketContext, attachedFiles, attachedFilesFileName, attachedFilesContentType);
-			}
+			workorderContext.setRequester(requester);
+			long requestId = bean.addWorkOrderFromEmail((WorkOrderContext) workorderContext, attachedFiles, attachedFilesFileName, attachedFilesContentType);
 			LOGGER.info("Added Workorder from Email Parser : " + requestId );
 			return requestId;
 		}
