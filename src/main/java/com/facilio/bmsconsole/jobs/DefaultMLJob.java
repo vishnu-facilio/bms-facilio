@@ -1,5 +1,7 @@
 package com.facilio.bmsconsole.jobs;
 
+import java.util.List;
+
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Context;
 
@@ -16,15 +18,17 @@ public class DefaultMLJob extends FacilioJob
 
 	@Override
 	public void execute(JobContext jc) throws Exception 
-	{
-		long mlID = jc.getJobId();
-		
-		MLContext mlContext = MLUtil.getMlContext(mlID,jc.getOrgId());
-		Context context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.ML, mlContext);
-		
-		Chain c = FacilioChainFactory.getMLModelBuildingChain();
-		c.execute(context);
+	{	
+		List<MLContext> mlContextList = MLUtil.getMlContext(jc);
+		for(MLContext mlContext:mlContextList)
+		{
+			mlContext.setPredictionTime(jc.getExecutionTime());
+			Context context = new FacilioContext();
+			context.put(FacilioConstants.ContextNames.ML, mlContext);
+			
+			Chain c = FacilioChainFactory.getMLModelBuildingChain();
+			c.execute(context);
+		}
 	}
 
 }
