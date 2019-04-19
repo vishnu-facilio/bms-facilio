@@ -25,10 +25,10 @@ public class ApplyCriteriaForMLCommand implements Command {
 		MLContext mlContext = (MLContext) context.get(FacilioConstants.ContextNames.ML);
 		if(mlContext.getMLCriteriaVariables()!=null && mlContext.getMLCriteriaVariables().size()>0)
 		{
-			SortedMap<Long, Hashtable<String, Object>> variableDataMap = mlContext.getMlVariablesDataMap();
+			Hashtable<Long, Hashtable<String, SortedMap<Long, Object>>> variableDataMap = mlContext.getMlVariablesDataMap();
 			SortedMap<Long, Hashtable<String, Object>> criteriaVariableDataMap = mlContext.getMlCriteriaVariablesDataMap();
 			
-			SortedMap<Long,Hashtable<String,Object>> criteriaSatisfiedDataMap = new TreeMap<Long,Hashtable<String,Object>>();
+			Hashtable<Long, Hashtable<String, SortedMap<Long, Object>>> criteriaSatisfiedDataMap = new Hashtable<Long, Hashtable<String, SortedMap<Long, Object>>>();
 			
 			Set<Long> keySet = criteriaVariableDataMap.keySet();
 			Criteria criteria = CriteriaAPI.getCriteria(mlContext.getOrgId(), mlContext.getCriteriaId());
@@ -41,11 +41,55 @@ public class ApplyCriteriaForMLCommand implements Command {
 				{
 					if(previousTime==-1)
 					{
-						criteriaSatisfiedDataMap.putAll(variableDataMap.headMap(ttime+1));
+						Set<Long> assetList = variableDataMap.keySet();
+						for(long assetID:assetList)
+						{
+							Hashtable<String,SortedMap<Long,Object>> attributeDataMap = variableDataMap.get(assetID);
+							Set<String> attributeDataSet = attributeDataMap.keySet();
+							for(String attributeName:attributeDataSet)
+							{
+								SortedMap<Long,Object> satisfiedData =  attributeDataMap.get(attributeName).headMap(ttime+1);
+								if(!criteriaSatisfiedDataMap.containsKey(assetID))
+								{
+									criteriaSatisfiedDataMap.put(assetID, new Hashtable<String,SortedMap<Long,Object>>());
+								}
+								Hashtable<String,SortedMap<Long,Object>> dataset = criteriaSatisfiedDataMap.get(assetID);
+								if(dataset.containsKey(attributeName))
+								{
+									dataset.get(attributeName).putAll(satisfiedData);
+								}
+								else
+								{
+									dataset.put(attributeName, satisfiedData);
+								}
+							}
+						}
 					}
 					else
 					{
-						criteriaSatisfiedDataMap.putAll(variableDataMap.subMap(previousTime, ttime+1));
+						Set<Long> assetList = variableDataMap.keySet();
+						for(long assetID:assetList)
+						{
+							Hashtable<String,SortedMap<Long,Object>> attributeDataMap = variableDataMap.get(assetID);
+							Set<String> attributeDataSet = attributeDataMap.keySet();
+							for(String attributeName:attributeDataSet)
+							{
+								SortedMap<Long,Object> satisfiedData =  attributeDataMap.get(attributeName).subMap(previousTime, ttime+1);
+								if(!criteriaSatisfiedDataMap.containsKey(assetID))
+								{
+									criteriaSatisfiedDataMap.put(assetID, new Hashtable<String,SortedMap<Long,Object>>());
+								}
+								Hashtable<String,SortedMap<Long,Object>> dataset = criteriaSatisfiedDataMap.get(assetID);
+								if(dataset.containsKey(attributeName))
+								{
+									dataset.get(attributeName).putAll(satisfiedData);
+								}
+								else
+								{
+									dataset.put(attributeName, satisfiedData);
+								}
+							}
+						}
 					}
 				}
 				previousTime = ttime;
