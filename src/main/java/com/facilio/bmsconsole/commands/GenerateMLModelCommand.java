@@ -16,13 +16,12 @@ import org.json.JSONObject;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.MLContext;
+import com.facilio.bmsconsole.context.MLModelVariableContext;
 import com.facilio.bmsconsole.context.MLVariableContext;
-import com.facilio.bmsconsole.context.MlForecastingContext;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class GenerateMLModelCommand implements Command {
 
@@ -31,28 +30,57 @@ public class GenerateMLModelCommand implements Command {
 	{
 		MLContext mlContext = (MLContext) context.get(FacilioConstants.ContextNames.ML);
 		JSONObject postObj = new JSONObject();
-		postObj.put("mlID",mlContext.getId());
-		postObj.put("orgID", mlContext.getOrgId());
-		postObj.put("assetID", mlContext.getAssetContext().getAssetID());
-		postObj.put("modelVariables",new ObjectMapper().writeValueAsString(mlContext.getData()));
+		postObj.put("ml_id",mlContext.getId());
+		postObj.put("orgid", mlContext.getOrgId());
+		
+		JSONObject modelVariables = new JSONObject();
+		if(mlContext.getMLModelVariable()!=null)
+		{
+			for(MLModelVariableContext modelVariableContext : mlContext.getMLModelVariable())
+			{
+				modelVariables.put(modelVariableContext.getVariableKey(), modelVariableContext.getVariableValue());
+			}
+		}
+		postObj.put("modelvariables",modelVariables);
+		
+		JSONArray assetVariables = new JSONArray();
+		
+		Set<Long> assetIDList = mlContext.getAssetVariables().keySet();
+		for(long assetID:assetIDList)
+		{
+			JSONObject data = new JSONObject();
+			HashMap<String,String> assetVariablesMap= mlContext.getAssetVariables().get(assetID);
+			Set<String> keySet = assetVariablesMap.keySet();
+			JSONObject variableMap = new JSONObject();
+			for(String key:keySet)
+			{
+				variableMap.put(key, assetVariablesMap.get(key));
+			}
+			data.put(""+assetID, variableMap);
+			assetVariables.put(data);
+		}
+		postObj.put("assetdetails", assetVariables);
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		JSONArray ip = new JSONArray();
 		for(MLVariableContext variableContext : mlContext.getMLVariable())
 		{
-			FacilioField field =modBean.getField(variableContext.getFieldid());
+			FacilioField field =modBean.getField(variableContext.getFieldID());
 			ip.put(field.getName());
 		}
-		postObj.put("inputMetrics",ip);
+		postObj.put("inputmetrics",ip);
 		
 		JSONArray op = new JSONArray();
-		FacilioModule module = modBean.getModule(mlContext.getPredictedLogModuleid());
-		List<FacilioField> fields = module.getFields();
-		for(FacilioField field:fields)
+		FacilioModule module = modBean.getModule(mlContext.getPredictionLogModuleID());
+		if(module!=null)
 		{
-			op.put(field.getName());
+			List<FacilioField> fields = modBean.getAllFields(module.getName());
+			for(FacilioField field:fields)
+			{
+				op.put(field.getName());
+			}
 		}
-		postObj.put("outputMetrics",op);
+		postObj.put("outputmetrics",op);
 		postObj.put("data", constructJSONArray(mlContext.getMlVariablesDataMap()));
 		
 		String postURL=AwsUtil.getAnomalyPredictAPIURL() + "/"+mlContext.getModelPath();
@@ -63,23 +91,33 @@ public class GenerateMLModelCommand implements Command {
 		return false;
 	}
 	
-	private JSONArray constructJSONArray(SortedMap<Long,Hashtable<String,Object>> map) throws JSONException
+	private JSONArray constructJSONArray(Hashtable<Long, Hashtable<String, SortedMap<Long, Object>>> assetDataMap) throws JSONException
 	{
-		JSONArray array = new JSONArray();
-		Set<Long> keySet = map.keySet();
-		for(Long ttime:keySet)
+		JSONArray dataObject = new JSONArray();
+		Set<Long> assetSet = assetDataMap.keySet();
+		for(long assetID: assetSet)
 		{
-			JSONObject jsonObject = new JSONObject();
-			jsonObject.put("ttime", ttime);
-			Hashtable<String,Object> dataMap = map.get(ttime);
-			for(String key:dataMap.keySet())
+			JSONArray atrributeArray = new JSONArray();
+			Hashtable<String,SortedMap<Long,Object>> attributeData = assetDataMap.get(assetID);
+			Set<String> attributeNameSet = attributeData.keySet();
+			for(String attributeName:attributeNameSet)
 			{
-				jsonObject.put(key, dataMap.get(key));
+				SortedMap<Long,Object> attributeDataMap = attributeData.get(attributeName);
+				Set<Long> timeSet = attributeDataMap.keySet();
+				for(long time: timeSet)
+				{
+					JSONObject object = new JSONObject();
+					object.put("ttime", time);
+					object.put(attributeName, attributeDataMap.get(time));
+					object.put("assetID", assetID);
+					
+					atrributeArray.put(object);
+				}
 			}
-			
-			array.put(jsonObject);
+			dataObject.put(atrributeArray);
 		}
-		return array;
+		return dataObject;
+		
 	}
 	
 
