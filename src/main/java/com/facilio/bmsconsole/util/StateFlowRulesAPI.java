@@ -222,7 +222,7 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 		return stateFlows;
 	}
 	
-	public static void evaluateStateFlowAndExecuteActions(List<WorkflowRuleContext> stateFlows, String moduleName, ModuleBaseWithCustomFields record, Context context) throws Exception {
+	public static List<WorkflowRuleContext> evaluateStateFlowAndExecuteActions(List<WorkflowRuleContext> stateFlows, String moduleName, ModuleBaseWithCustomFields record, Context context) throws Exception {
 		if (CollectionUtils.isNotEmpty(stateFlows)) {
 			
 			Map<String, Object> recordPlaceHolders = WorkflowRuleAPI.getRecordPlaceHolders(moduleName, record, WorkflowRuleAPI.getOrgPlaceHolders());
@@ -237,6 +237,7 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 				}
 			}
 		}
+		return stateFlows;
 	}
 	
 	public static Map<String, List<WorkflowRuleContext>> getAvailableStates(List<? extends ModuleBaseWithCustomFields> records) throws Exception {

@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
 import com.facilio.accounts.dto.Group;
@@ -46,14 +47,19 @@ public class FetchApprovalRulesCommand implements Command {
 		
 		if (workOrders != null && !workOrders.isEmpty()) {
 			
-			if (workOrders.get(0).getModuleState() != null && workOrders.get(0).getModuleState().getId() != -1) {
-				setAvailableStates(context, workOrders);
-				return false;
-			}
+//			if (workOrders.get(0).getModuleState() != null && workOrders.get(0).getModuleState().getId() != -1) {
+			setAvailableStates(context, workOrders);
+//				return false;
+//			}
 			
 			List<Long> ruleIds = new ArrayList<>();
 			List<Pair<Long, Long>> recordAndRuleIdPairs = new ArrayList<>();
 			for (WorkOrderContext wo : workOrders) {
+				// moved to state flow
+				if (wo.getModuleState() != null) {
+					continue;
+				}
+				
 				if (wo.getApprovalStateEnum() == ApprovalState.REQUESTED) {
 					ruleIds.add(wo.getApprovalRuleId());
 					recordAndRuleIdPairs.add(Pair.of(wo.getId(), wo.getApprovalRuleId()));
@@ -97,6 +103,11 @@ public class FetchApprovalRulesCommand implements Command {
 				Map<Long, List<Long>> previousSteps = ApprovalRulesAPI.fetchPreviousSteps(recordAndRuleIdPairs);
 				List<Long> groupIds = null;
 				for (WorkOrderContext wo : workOrders) {
+					// moved to state flow
+					if (wo.getModuleState() != null) {
+						continue;
+					}
+					
 					if (wo.getApprovalStateEnum() == ApprovalState.REQUESTED) {
 						ApprovalRuleContext rule = ruleMap.get(wo.getApprovalRuleId()); 
 						wo.setApprovalRule(rule);
@@ -162,9 +173,13 @@ public class FetchApprovalRulesCommand implements Command {
 	private void setAvailableStates(Context context, List<WorkOrderContext> workOrders) throws Exception {
 		Map<String, List<WorkflowRuleContext>> stateFlows = StateFlowRulesAPI.getAvailableStates(workOrders);
 		for(WorkOrderContext workorder: workOrders) {
+			if (workorder.getModuleState() == null) {
+				continue;
+			}
 			String key = workorder.getStateFlowId() + "_" + workorder.getModuleState().getId();
 			if(stateFlows.containsKey(key)) {
-				StateFlowRulesAPI.evaluateStateFlowAndExecuteActions(stateFlows.get(key), ContextNames.WORK_ORDER, workorder, context);
+				List<WorkflowRuleContext> evaluateStateFlowAndExecuteActions = StateFlowRulesAPI.evaluateStateFlowAndExecuteActions(new ArrayList<>(stateFlows.get(key)), ContextNames.WORK_ORDER, workorder, context);
+				workorder.setCanCurrentUserApprove(CollectionUtils.isNotEmpty(evaluateStateFlowAndExecuteActions));
 			}
 		}
 		context.put("stateFlows", stateFlows);
