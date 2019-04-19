@@ -5612,8 +5612,6 @@ public class FieldFactory {
 		FacilioModule module = ModuleFactory.getMLModule();
 		
 		fields.add(getField("modelPath", "MODEL_PATH", module, FieldType.STRING));
-		fields.add(getField("minSamplingPeriod","MIN_SAMPLING_PERIOD",module,FieldType.NUMBER));
-		fields.add(getField("maxSamplingPeriod","MAX_SAMPLING_PERIOD",module,FieldType.NUMBER));
 		fields.add(getField("predictionLogModuleID","PREDICTION_LOG_MODULEID",module,FieldType.NUMBER));
 		fields.add(getField("predictionModuleID","PREDICTION_MODULEID",module,FieldType.NUMBER));
 		fields.add(getField("criteriaID","CRITERIA_ID",module,FieldType.NUMBER));
@@ -5659,6 +5657,10 @@ public class FieldFactory {
 		fields.add(getField("moduleID","MODULEID",module,FieldType.NUMBER));
 		fields.add(getField("fieldID","FIELDID",module,FieldType.NUMBER));
 		fields.add(getField("isSource","IS_SOURCE",module,FieldType.BOOLEAN));
+		fields.add(getField("parentFieldID","PARENT_FIELDID",module,FieldType.NUMBER));
+		fields.add(getField("parentID","PARENT_ID",module,FieldType.NUMBER));
+		fields.add(getField("maxSamplingPeriod","MAX_SAMPLING_PERIOD",module,FieldType.NUMBER));
+		fields.add(getField("sequence","SEQUENCE",module,FieldType.NUMBER));
 		return fields;
 	}
 	
