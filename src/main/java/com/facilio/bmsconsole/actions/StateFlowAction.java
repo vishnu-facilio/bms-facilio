@@ -49,11 +49,11 @@ public class StateFlowAction extends FacilioAction {
 		this.stateTransistion = stateTransistion;
 	}
 	
-	public String addStateTransistion() throws Exception {
+	public String addOrUpdateStateTransistion() throws Exception {
 		FacilioContext context = new FacilioContext();
 		
 		updateStateContext(context);
-		Chain chain = TransactionChainFactory.getAddStateFlowTransistion();
+		Chain chain = TransactionChainFactory.getAddOrUpdateStateFlowTransistion();
 		chain.execute(context);
 		return SUCCESS;
 	}

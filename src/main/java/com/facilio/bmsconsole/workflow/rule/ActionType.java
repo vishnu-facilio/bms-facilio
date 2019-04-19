@@ -705,6 +705,7 @@ public enum ActionType {
 							default:
 								break;
 						}
+						obj.put(key, val);	// setting newly updated value if any
 						
 						fields.add(field);
 						if (field.isDefault()) {

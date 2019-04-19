@@ -116,8 +116,8 @@
 			class="com.facilio.bmsconsole.actions.StateFlowAction" method="updateStateTransistion" />
 		<action name="getAvailableState"
 			class="com.facilio.bmsconsole.actions.StateFlowAction" method="getAvailableState" />
-		<action name="add"
-			class="com.facilio.bmsconsole.actions.StateFlowAction" method="addStateTransistion" />
+		<action name="addOrUpdate"
+			class="com.facilio.bmsconsole.actions.StateFlowAction" method="addOrUpdateStateTransistion" />
 	</package>
 
 	<package name="importTemplate" namespace="/api/v2/importTemplate"

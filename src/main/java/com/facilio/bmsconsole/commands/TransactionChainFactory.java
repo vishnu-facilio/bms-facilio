@@ -2472,10 +2472,10 @@ public class TransactionChainFactory {
 			return c;
 		}
 
-		public static Chain getAddStateFlowTransistion() {
+		public static Chain getAddOrUpdateStateFlowTransistion() {
 			Chain c = getDefaultChain();
 			c.addCommand(new ConstructStateFlowTransistionCommand());
-			c.addCommand(addWorkflowRuleChain());
+			c.addCommand(new AddOrUpdateStateTransistionCommand());
 			return c;
 		}
 
