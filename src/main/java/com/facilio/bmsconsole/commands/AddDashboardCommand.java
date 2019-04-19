@@ -30,11 +30,6 @@ public class AddDashboardCommand implements Command {
 			
 			List<FacilioField> fields = FieldFactory.getDashboardFields();
 			
-			// on add dashboard, we will set order as null so that it will go to the last in order
-//			Integer lastDisplayOrder = DashboardUtil.getLastDashboardDisplayOrder(dashboard.getOrgId(), dashboard.getModuleId());
-//			
-//			dashboard.setDisplayOrder(lastDisplayOrder + 1);
-			
 			getDashboardLinkName(dashboard);
 			
 			GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
@@ -60,7 +55,7 @@ public class AddDashboardCommand implements Command {
 		String temp = linkName;
 		while(true) {
 			
-			if(DashboardUtil.getDashboard(temp,dashboard.getModuleId()) == null) {
+			if(DashboardUtil.getDashboard(temp,dashboard.getModuleId()) == null && (!DashboardUtil.RESERVED_DASHBOARD_LINK_NAME.contains(temp))) {
 				dashboard.setLinkName(temp);
 				break;
 			}

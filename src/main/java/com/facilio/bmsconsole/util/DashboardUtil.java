@@ -81,6 +81,7 @@ public class DashboardUtil {
 	public static final String STATIC_WIDGET_ENERGY_CARD = "energycard";
 	public static final String STATIC_WIDGET_PROFILE_CARD = "profilecard";
 	
+	public static List<String> RESERVED_DASHBOARD_LINK_NAME  = new ArrayList<>();
 	
 	public static final String STATIC_WIDGET_WEATHER_CARD_MINI = "weathermini";
 	public static final String STATIC_WIDGET_ENERGY_CARBON_CARD_MINI = "carbonmini";
@@ -92,6 +93,10 @@ public class DashboardUtil {
 	
 	public static String BUILDING_DASHBOARD_KEY = "buildingdashboard";
 	
+	static {
+		RESERVED_DASHBOARD_LINK_NAME.add("portfolio");
+		RESERVED_DASHBOARD_LINK_NAME.add("buildingdashboard");
+	}
 	
 	
 	public static FacilioField getField(String moduleName,String fieldName) throws Exception {
