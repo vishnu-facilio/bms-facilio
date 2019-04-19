@@ -5610,22 +5610,12 @@ public class FieldFactory {
 	{
 		List<FacilioField> fields = new ArrayList<>();
 		FacilioModule module = ModuleFactory.getMLModule();
-		
+		fields.add(getField("id","ID",module,FieldType.NUMBER));
 		fields.add(getField("modelPath", "MODEL_PATH", module, FieldType.STRING));
 		fields.add(getField("predictionLogModuleID","PREDICTION_LOG_MODULEID",module,FieldType.NUMBER));
 		fields.add(getField("predictionModuleID","PREDICTION_MODULEID",module,FieldType.NUMBER));
 		fields.add(getField("criteriaID","CRITERIA_ID",module,FieldType.NUMBER));
 		fields.add(getField("ruleID","RULE_ID",module,FieldType.NUMBER));
-		
-		return fields;
-	}
-	
-	public static List<FacilioField> getMLAssetFields()
-	{
-		List<FacilioField> fields = new ArrayList<>();
-		FacilioModule module = ModuleFactory.getMLAssetModule();
-		fields.add(getField("mlID","ML_ID",module,FieldType.NUMBER));
-		fields.add(getField("assetID","ASSETID",module,FieldType.NUMBER));
 		
 		return fields;
 	}
@@ -5660,7 +5650,7 @@ public class FieldFactory {
 		fields.add(getField("parentFieldID","PARENT_FIELDID",module,FieldType.NUMBER));
 		fields.add(getField("parentID","PARENT_ID",module,FieldType.NUMBER));
 		fields.add(getField("maxSamplingPeriod","MAX_SAMPLING_PERIOD",module,FieldType.NUMBER));
-		fields.add(getField("sequence","SEQUENCE",module,FieldType.NUMBER));
+
 		return fields;
 	}
 	
