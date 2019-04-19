@@ -1,5 +1,17 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
+
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.modules.FacilioModule;
@@ -9,11 +21,6 @@ import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.ViewFactory;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-
-import java.util.*;
-import java.util.stream.Collectors;
 
 public class GetViewListCommand implements Command {
 
@@ -23,6 +30,13 @@ public class GetViewListCommand implements Command {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule moduleObj = null;
 		Map<String,FacilioView> viewMap = ViewFactory.getModuleViews(moduleName);
+		// Temporary
+		if (AccountUtil.getCurrentOrg().getOrgId() == 114) {
+			viewMap = new HashMap<>();
+			FacilioView requested = ViewFactory.getRequestedStateApproval();
+			viewMap.put(requested.getName(), requested);
+		}
+		
 		List<FacilioView> dbViews = null;
 		if (LookupSpecialTypeUtil.isSpecialType(moduleName)) {
 			dbViews = ViewAPI.getAllViews(moduleName);
@@ -160,7 +174,11 @@ public class GetViewListCommand implements Command {
 							views = (List<FacilioView>) group.get("views");
 						}
 						else {
-							views = ((List<String>)group.get("views")).stream().map(view -> viewMap.get(view)).collect(Collectors.toList());
+							views = new ArrayList<>();
+							for(String view: ((List<String>)group.get("views"))) {
+								views.add(viewMap.get(view));
+							}
+//							views = ((List<String>)group.get("views")).stream().map(view -> viewMap.get(view)).collect(Collectors.toList());
 						}
 						views.sort(Comparator.comparing(FacilioView::getSequenceNumber, (s1, s2) -> {
 							if(s1 == s2){

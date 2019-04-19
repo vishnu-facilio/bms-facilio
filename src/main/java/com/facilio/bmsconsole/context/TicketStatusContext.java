@@ -1,10 +1,10 @@
 package com.facilio.bmsconsole.context;
 
-import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
-
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+
+import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 
 public class TicketStatusContext extends ModuleBaseWithCustomFields {
 	/**
@@ -75,7 +75,9 @@ public class TicketStatusContext extends ModuleBaseWithCustomFields {
 	public static enum StatusType {
 		OPEN(1, "Open"),
 		CLOSED(2, "Closed"),
-		PRE_OPEN(3, "Pre-Open")
+		PRE_OPEN(3, "Pre-Open"),
+		REQUESTED(4, "Requested"),
+		REJECTED(5, "Rejected")
 		;
 		
 		private int intVal;

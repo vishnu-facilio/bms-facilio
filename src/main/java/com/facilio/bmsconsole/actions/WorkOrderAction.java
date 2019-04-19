@@ -68,6 +68,7 @@ import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsole.workflow.rule.TicketActivity;
+import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
@@ -1804,6 +1805,7 @@ public class WorkOrderAction extends FacilioAction {
 			}
 			setWorkOrders((List<WorkOrderContext>) context.get(FacilioConstants.ContextNames.WORK_ORDER_LIST));
 		}
+		setStateFlows((Map<String, List<WorkflowRuleContext>>) context.get("stateFlows"));
 		FacilioView cv = (FacilioView) context.get(FacilioConstants.ContextNames.CUSTOM_VIEW);
 		if (cv != null) {
 			setViewDisplayName(cv.getDisplayName());
@@ -2264,6 +2266,7 @@ public class WorkOrderAction extends FacilioAction {
 			setResult(FacilioConstants.ContextNames.SUB_VIEW_COUNT, subViewsCount);
 		}
 		setResult(FacilioConstants.ContextNames.WORK_ORDER_LIST, workOrders);
+		setResult("stateFlows", stateFlows);
 		}
 		catch (Exception e) {
 			JSONObject inComingDetails = new JSONObject();
@@ -2274,6 +2277,14 @@ public class WorkOrderAction extends FacilioAction {
 		return SUCCESS;
 	}
 	
+	private Map<String, List<WorkflowRuleContext>> stateFlows;
+	public Map<String, List<WorkflowRuleContext>> getStateFlows() {
+		return stateFlows;
+	}
+	public void setStateFlows(Map<String, List<WorkflowRuleContext>> stateFlows) {
+		this.stateFlows = stateFlows;
+	}
+
 	public String addPortalOrders() throws Exception {
 		if(workOrderString != null) {
 			setWorkordercontex(workOrderString);

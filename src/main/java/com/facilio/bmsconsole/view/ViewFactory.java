@@ -14,6 +14,7 @@ import com.facilio.bmsconsole.context.AssetContext.AssetState;
 import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.context.TicketContext.SourceType;
 import com.facilio.bmsconsole.context.TicketStatusContext;
+import com.facilio.bmsconsole.context.TicketStatusContext.StatusType;
 import com.facilio.bmsconsole.context.ViewField;
 import com.facilio.bmsconsole.context.WorkOrderRequestContext;
 import com.facilio.bmsconsole.criteria.BooleanOperators;
@@ -810,6 +811,43 @@ public class ViewFactory {
 
 		return criteria;
 	}
+	
+	public static Criteria getStateCriteria(StatusType statusType) {
+		FacilioModule module = ModuleFactory.getTicketsModule();
+		LookupField statusField = new LookupField();
+		statusField.setName("moduleState");
+		statusField.setColumnName("MODULE_STATE");
+		statusField.setDataType(FieldType.LOOKUP);
+		statusField.setModule(module);
+		statusField.setLookupModule(ModuleFactory.getTicketStatusModule());
+
+		Condition status = new Condition();
+		status.setField(statusField);
+		status.setOperator(LookupOperator.LOOKUP);
+		status.setCriteriaValue(getStateTypeCriteria(statusType));
+		
+		Criteria criteria = new Criteria();
+		criteria.addAndCondition(status);
+		return criteria;
+	}
+	
+	public static Criteria getStateTypeCriteria(StatusType statusType) {
+		FacilioField statusTypeField = new FacilioField();
+		statusTypeField.setName("typeCode");
+		statusTypeField.setColumnName("STATUS_TYPE");
+		statusTypeField.setDataType(FieldType.NUMBER);
+		statusTypeField.setModule(ModuleFactory.getTicketStatusModule());
+
+		Condition status = new Condition();
+		status.setField(statusTypeField);
+		status.setOperator(NumberOperators.EQUALS);
+		status.setValue(String.valueOf(statusType));
+
+		Criteria criteria = new Criteria();
+		criteria.addAndCondition(status);
+
+		return criteria;
+	}
 
 	private static FacilioView getUnassignedWorkorders() {
 		FacilioModule workOrdersModule = ModuleFactory.getWorkOrdersModule();
@@ -1076,6 +1114,24 @@ public class ViewFactory {
 	private static FacilioView getRequestedApproval() {
 
 		Criteria criteria = getApprovalStateCriteria(ApprovalState.REQUESTED);
+
+		FacilioField createdTime = new FacilioField();
+		createdTime.setName("createdTime");
+		createdTime.setDataType(FieldType.NUMBER);
+		createdTime.setColumnName("CREATED_TIME");
+		createdTime.setModule(ModuleFactory.getWorkOrdersModule());
+
+		FacilioView rejectedApproval = new FacilioView();
+		rejectedApproval.setName("requested");
+		rejectedApproval.setDisplayName("Pending Approval");
+		rejectedApproval.setCriteria(criteria);
+		rejectedApproval.setSortFields(Arrays.asList(new SortField(createdTime, false)));
+		return rejectedApproval;
+	}
+	
+	public static FacilioView getRequestedStateApproval() {
+
+		Criteria criteria = getStateCriteria(StatusType.REQUESTED);
 
 		FacilioField createdTime = new FacilioField();
 		createdTime.setName("createdTime");

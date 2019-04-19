@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.util;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -14,6 +15,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.StateFlowContext;
 import com.facilio.bmsconsole.context.TicketStatusContext;
+import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
@@ -38,7 +40,6 @@ import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
 import com.facilio.tasker.FacilioTimer;
-import com.facilio.util.FacilioUtil;
 
 public class StateFlowRulesAPI extends WorkflowRuleAPI {
 
@@ -165,9 +166,23 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 	public static List<WorkflowRuleContext> getAvailableState(long stateFlowId, long fromStateId, String moduleName, ModuleBaseWithCustomFields record, FacilioContext context) throws Exception {
 		return getAvailableState(stateFlowId, fromStateId, -1, moduleName, record, context);
 	}
-
+	
 	public static List<WorkflowRuleContext> getAvailableState(long stateFlowId, long fromStateId, long toStateId, String moduleName, ModuleBaseWithCustomFields record,
 			Context context) throws Exception {
+		
+		Map<String, Long> stateIds = new HashMap<>();
+		stateIds.put("stateFlowId", stateFlowId);
+		stateIds.put("fromStateId", fromStateId);
+		stateIds.put("toStateId", toStateId);
+		List<Map<String, Long>> ids = Collections.singletonList(stateIds);
+		
+		List<WorkflowRuleContext> stateFlows = getStateTransitions(ids);
+		evaluateStateFlowAndExecuteActions(stateFlows, moduleName, record, context);
+		
+		return stateFlows;
+	}
+	
+	public static List<WorkflowRuleContext> getStateTransitions(List<Map<String, Long>> stateIds) throws Exception {
 		FacilioModule stateRuleModule = ModuleFactory.getStateRuleTransistionModule();
 		List<FacilioField> fields = FieldFactory.getWorkflowRuleFields(); 
 		fields.addAll(FieldFactory.getStateRuleTransistionFields());
@@ -180,25 +195,39 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 				.table(module.getTableName())
 				.select(fields)
-				.innerJoin(stateRuleModule.getTableName()).on("Workflow_Rule.ID = " + stateRuleModule.getTableName() + ".ID")
-				.andCondition(CriteriaAPI.getCondition(fieldMap.get("stateFlowId"), String.valueOf(stateFlowId), NumberOperators.EQUALS))
-				.andCondition(CriteriaAPI.getCondition("FROM_STATE_ID", "fromStateId", String.valueOf(fromStateId), NumberOperators.EQUALS));
+				.innerJoin(stateRuleModule.getTableName()).on("Workflow_Rule.ID = " + stateRuleModule.getTableName() + ".ID");
+				
 		
-		if (toStateId > 0) {
-			builder.andCondition(CriteriaAPI.getCondition("TO_STATE_ID", "toStateId", String.valueOf(toStateId), NumberOperators.EQUALS));
+		for(Map<String, Long> ids: stateIds) {
+			long fromStateId = ids.get("fromStateId");
+			long stateFlowId = ids.get("stateFlowId");
+			Long toStateId = ids.get("toStateId");
+			Criteria criteria = new Criteria();
+			criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("stateFlowId"), String.valueOf(stateFlowId), NumberOperators.EQUALS));
+			criteria.addAndCondition(CriteriaAPI.getCondition("FROM_STATE_ID", "fromStateId", String.valueOf(fromStateId), NumberOperators.EQUALS));
+			if (toStateId != null && toStateId > 0) {
+				criteria.addAndCondition(CriteriaAPI.getCondition("TO_STATE_ID", "toStateId", String.valueOf(toStateId), NumberOperators.EQUALS));
+			}
+			builder.orCriteria(criteria);
 		}
+		
 		
 		FacilioModule eventModule = ModuleFactory.getWorkflowEventModule();
 		builder.innerJoin(eventModule.getTableName())
 					.on(module.getTableName()+".EVENT_ID = "+eventModule.getTableName()+".ID");
 		
 
-		Map<String, Object> recordPlaceHolders = WorkflowRuleAPI.getRecordPlaceHolders(moduleName, record, WorkflowRuleAPI.getOrgPlaceHolders());
-		List<UpdateChangeSet> changeSet = getDefaultFieldChangeSet(moduleName, record.getId());
-			
 		List<Map<String, Object>> list = builder.get();
 		List<WorkflowRuleContext> stateFlows = getWorkFlowsFromMapList(list, true, true, true);
+		return stateFlows;
+	}
+	
+	public static void evaluateStateFlowAndExecuteActions(List<WorkflowRuleContext> stateFlows, String moduleName, ModuleBaseWithCustomFields record, Context context) throws Exception {
 		if (CollectionUtils.isNotEmpty(stateFlows)) {
+			
+			Map<String, Object> recordPlaceHolders = WorkflowRuleAPI.getRecordPlaceHolders(moduleName, record, WorkflowRuleAPI.getOrgPlaceHolders());
+			List<UpdateChangeSet> changeSet = getDefaultFieldChangeSet(moduleName, record.getId());
+			
 			Iterator<WorkflowRuleContext> iterator = stateFlows.iterator();
 			while (iterator.hasNext()) {
 				WorkflowRuleContext stateFlow = iterator.next();
@@ -208,8 +237,36 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 				}
 			}
 		}
+	}
+	
+	public static Map<String, List<WorkflowRuleContext>> getAvailableStates(List<? extends ModuleBaseWithCustomFields> records) throws Exception {
+		List<Map<String, Long>> stateIds = new ArrayList<>();
+		for(ModuleBaseWithCustomFields record: records) {
+			Map<String, Long> ids = new HashMap<>();
+			ids.put("fromStateId", record.getModuleState().getId());
+			ids.put("stateFlowId", record.getStateFlowId());
+			stateIds.add(ids);
+		}
+		List<WorkflowRuleContext> stateFlows = getStateTransitions(stateIds);
+		return getStateTransitionMap(stateFlows);
+	}
+	
+	private static Map<String, List<WorkflowRuleContext>> getStateTransitionMap(List<WorkflowRuleContext> stateFlows) {
+		Map<String, List<WorkflowRuleContext>> stateFlowMap = new HashMap<>();
+		if (CollectionUtils.isNotEmpty(stateFlows)) {
+			for(WorkflowRuleContext flow: stateFlows) {
+				StateflowTransistionContext stateFlowTransition = (StateflowTransistionContext)flow;
+				String key = stateFlowTransition.getStateFlowId() + "_" + stateFlowTransition.getFromStateId();
+				List<WorkflowRuleContext> transitions = stateFlowMap.get(key);
+				if (transitions == null) {
+					transitions = new ArrayList<>();
+					stateFlowMap.put(key, transitions);
+				}
+				transitions.add(stateFlowTransition);
+			}
+		}
 		
-		return stateFlows;
+		return stateFlowMap;
 	}
 
 	public static void addOrUpdateStateFlow(StateFlowContext stateFlow, boolean add) throws Exception {
