@@ -183,6 +183,10 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 	}
 	
 	public static List<WorkflowRuleContext> getStateTransitions(List<Map<String, Long>> stateIds) throws Exception {
+		if (CollectionUtils.isEmpty(stateIds)) {
+			return null;
+		}
+		
 		FacilioModule stateRuleModule = ModuleFactory.getStateRuleTransistionModule();
 		List<FacilioField> fields = FieldFactory.getWorkflowRuleFields(); 
 		fields.addAll(FieldFactory.getStateRuleTransistionFields());
