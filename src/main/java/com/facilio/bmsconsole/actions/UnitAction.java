@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.actions;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -11,14 +12,17 @@ import org.json.simple.JSONObject;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.OrgUnitsContext;
+import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.DateOperators;
 import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
-import com.facilio.bmsconsole.modules.FieldType;
+import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
+import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
 import com.facilio.fw.BeanFactory;
+import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
 import com.facilio.unitconversion.Metric;
 import com.facilio.unitconversion.Unit;
@@ -106,11 +110,11 @@ public class UnitAction extends ActionSupport {
 		
 		FacilioField field = modBean.getField(fieldId).clone();
 		
-		field.setDataType(FieldType.MISC);
-		
 		FacilioModule module = field.getModule();
 		
-		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(module.getName()));
+		List<FacilioField> allFields = modBean.getAllFields(module.getName());
+		
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(allFields);
 		
 		Unit from = Unit.valueOf(unit);
 		
@@ -118,21 +122,37 @@ public class UnitAction extends ActionSupport {
 			return null;
 		}
 		
-		GenericUpdateRecordBuilder updateRecordBuilder = new GenericUpdateRecordBuilder()
-				.table(module.getTableName())
-				.fields(Collections.singletonList(field))
+		SelectRecordsBuilder<ReadingContext> selectRecordBuilder = new SelectRecordsBuilder<ReadingContext>()
+				.module(module)
+				.beanClass(ReadingContext.class)
+				.select(Collections.singletonList(field))
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("parentId"), parentId+"", NumberOperators.EQUALS))
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("ttime"), startTime+","+endTime, DateOperators.BETWEEN))
 				;
 		
-		Map<String, Object> value = new HashMap<>();
+		 List<ReadingContext> readings = selectRecordBuilder.get();
+		 
 		
-		String toSifromula = from.getToSiUnit();
-		toSifromula = toSifromula.replaceAll("this", field.getColumnName());
+		UpdateRecordBuilder<ReadingContext> updateRecordBuilder = null;
 		
-		value.put(field.getName(), toSifromula);
-		
-		updateRecordBuilder.update(value);
+		if(readings != null && !readings.isEmpty()) {
+			for(ReadingContext reading :readings) {
+				Object value = reading.getDatum(field.getName());
+				value = UnitsUtil.convertToSiUnit(value, from);
+				
+				reading.setDatum(field.getName(), value);
+				
+				updateRecordBuilder = new UpdateRecordBuilder<ReadingContext>()
+						.table(module.getTableName())
+						.module(module)
+						.fields(allFields)
+						;
+				
+				updateRecordBuilder.andCustomWhere("ID = ?", reading.getId())
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("parentId"), parentId+"", NumberOperators.EQUALS));
+				updateRecordBuilder.update(reading);
+			}
+		}
 		
 		return SUCCESS;
 	}
