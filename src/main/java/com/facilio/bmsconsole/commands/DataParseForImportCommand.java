@@ -36,7 +36,7 @@ public class DataParseForImportCommand implements Command {
 		HashMap<Integer, HashMap<String, Object>> nullResources = new HashMap<>();
 		HashMap<Integer, HashMap<String, Object>> duplicateEntries = new HashMap<>();
 		HashMap<String, List<ImportRowContext>> groupedContext = new HashMap<String, List<ImportRowContext>>();
-		
+		ArrayList<String> requiredFields = getRequiredFields(importProcessContext.getModule().getName());
 		FileStore fs = FileStoreFactory.getInstance().getFileStore();
 		InputStream is = fs.readFile(importProcessContext.getFileId());
 		HashMap<Integer, String> headerIndex = new HashMap<Integer, String>();
@@ -47,7 +47,7 @@ public class DataParseForImportCommand implements Command {
 		int row_no = 0;
 	
 		if(importProcessContext.getModule().getName().equals(FacilioConstants.ContextNames.ASSET) ||
-				importProcessContext.getModule().getExtendModule().getName().equals(FacilioConstants.ContextNames.ASSET)) {
+				(importProcessContext.getModule().getExtendModule()!= null && importProcessContext.getModule().getExtendModule().getName().equals(FacilioConstants.ContextNames.ASSET))) {
 			if(!fieldMapping.containsKey("resource__name") || !fieldMapping.containsKey(importProcessContext.getModule().getName() + "__site")) {
 				ArrayList<String> columns = new ArrayList<String>();
 				if(!fieldMapping.containsKey("resource__name") &&!fieldMapping.containsKey(importProcessContext.getModule().getName() + "__site") ) {
@@ -63,6 +63,19 @@ public class DataParseForImportCommand implements Command {
 				throw new ImportAssetMandatoryFieldsException(null, columns, new Exception());
 			}
 		}
+		
+		else if(requiredFields.size() != 0) {
+			ArrayList<String> columns = new ArrayList<String>();
+			
+			for(String field: requiredFields) {
+				if(!fieldMapping.containsKey(importProcessContext.getModule().getName() + "__" + field)) {
+					columns.add(field);
+			}
+			}
+				if(columns.size() != 0) {
+					throw new ImportAssetMandatoryFieldsException(null, columns, new Exception());
+				}
+		}
 			
 		
 		for (int i = 0; i < workbook.getNumberOfSheets(); i++) {
@@ -72,6 +85,7 @@ public class DataParseForImportCommand implements Command {
 			boolean heading = true;
 			
 			while (rowItr.hasNext()) {
+				StringBuilder uniqueString = new StringBuilder();
 				ImportRowContext rowContext = new ImportRowContext();
 				row_no++;
 				LOGGER.severe("row_no -- " + row_no);
@@ -100,7 +114,7 @@ public class DataParseForImportCommand implements Command {
 					Cell cell = cellItr.next();
 
 					String cellName = headerIndex.get(cell.getColumnIndex());
-					if (cellName == null) {
+					if (cellName == null || cellName == "") {
 						continue;
 					}
 
@@ -154,11 +168,13 @@ public class DataParseForImportCommand implements Command {
 				rowContext.setSheetNumber(i);
 				
 				
-				String name = fieldMapping.get("resource__name");
-				String site = fieldMapping.get(importProcessContext.getModule().getName() + "__site");
+				
 				
 				if(importProcessContext.getModule().getName().equals(FacilioConstants.ContextNames.ASSET) ||
-						importProcessContext.getModule().getExtendModule().getName().equals(FacilioConstants.ContextNames.ASSET)) {
+						(importProcessContext.getModule().getExtendModule() != null && importProcessContext.getModule().getExtendModule().getName().equals(FacilioConstants.ContextNames.ASSET))) {
+					String name = fieldMapping.get("resource__name");
+					String site = fieldMapping.get(importProcessContext.getModule().getName() + "__site");
+					
 					if(colVal.get(name) == null || colVal.get(site) == null) {
 						ArrayList<String> columns = new ArrayList<String>();
 						if((colVal.get(name) == null || !colVal.containsKey(name)) && (colVal.get(site) == null || !colVal.containsKey(site))) {
@@ -174,15 +190,47 @@ public class DataParseForImportCommand implements Command {
 						
 						throw new ImportAssetMandatoryFieldsException(row_no,columns, new Exception());
 					}
+					else {
+						uniqueString.append(colVal.get(name) + "__" + colVal.get(site));
+					}
 				}
-				
+				else if(requiredFields.size() != 0) {
+					ArrayList<String> columns  = new ArrayList<String>();
+					for(String field : requiredFields) {
+						if(colVal.get(fieldMapping.get(importProcessContext.getModule().getName() + "__" + field)) == null) {
+							throw new ImportFieldValueMissingException(row_no, fieldMapping.get(importProcessContext.getModule().getName() + "__" + field), new Exception());
+						}
+						else {
+							if(requiredFields.indexOf(field) != requiredFields.size() - 1) {
+								uniqueString.append(colVal.get(fieldMapping.get(importProcessContext.getModule().getName() + "__" + field)));
+								uniqueString.append("__");
+							}
+							else {
+								uniqueString.append(colVal.get(fieldMapping.get(importProcessContext.getModule().getName() + "__" + field)));
+							}
+							
+						}
+					}
+				}
+				else {
+					
+					if(requiredFields.size() == 0) {
+						List<Integer> keys= new ArrayList(groupedContext.keySet());
+						Integer lastKey = new Integer(0);
+						if(keys.size() == 0) {
+							lastKey = 1;
+						}
+						else {
+							lastKey = keys.size() + 1;
+						}
+						
+						uniqueString = uniqueString.append(lastKey.toString());
+					}
+				}
+					
 				if(importProcessContext.getImportSetting() != ImportProcessContext.ImportSetting.INSERT.getValue()) {
 					String settingArrayName = getSettingString(importProcessContext);
-					LOGGER.severe("SETTINGS ARRAY NAME");
-					LOGGER.severe(settingArrayName);
 					ArrayList<String> fieldList = new ArrayList<String>();
-					LOGGER.severe("JSON META!!!!");
-					LOGGER.severe(importProcessContext.getImportJobMetaJson().toJSONString());
 					if(importProcessContext.getImportJobMetaJson() != null && 
 							 !importProcessContext.getImportJobMetaJson().isEmpty() &&
 							importProcessContext.getImportJobMetaJson().containsKey(settingArrayName)) {
@@ -190,8 +238,7 @@ public class DataParseForImportCommand implements Command {
 						fieldList = (ArrayList<String>)importProcessContext.getImportJobMetaJson().get(settingArrayName);
 					}
 					
-					LOGGER.severe("!!!!THIS IS field lIST");
-					LOGGER.severe(fieldList.toString());
+
 					for(String field : fieldList) {
 						if(colVal.get(fieldMapping.get(field)) == null) {
 							throw new ImportFieldValueMissingException(row_no, fieldMapping.get(field), new Exception());
@@ -199,8 +246,7 @@ public class DataParseForImportCommand implements Command {
 					}
 					
 				}
-				StringBuilder uniqueString = new StringBuilder();
-				uniqueString.append(colVal.get(name) + "__" + colVal.get(site));
+				
 				LOGGER.severe("UNIQUE STRING!!!!!!!!!");
 				LOGGER.severe(uniqueString.toString());
 				if(!groupedContext.containsKey(uniqueString.toString())) {
@@ -230,6 +276,13 @@ public class DataParseForImportCommand implements Command {
 		else {
 			return "updateBy";
 		}
+	}
+	
+	private ArrayList<String> getRequiredFields(String moduleName){
+		ArrayList<String> fields = new ArrayList<String>();
+		switch (moduleName) {
+		}
+		return fields;
 	}
 		
 }

@@ -40,13 +40,20 @@ public class ImportToolCommand implements Command {
 					if ((purchasedTool.getSerialNumber() == null
 							|| purchasedTool.getSerialNumber().equalsIgnoreCase("null"))) {
 						toolType.setIndividualTracking(false);
-						tool.setPurchasedTools(null);
+						// tool.setPurchasedTools(null);
 					} else if (purchasedTool.getSerialNumber() != null
 							&& !purchasedTool.getSerialNumber().equalsIgnoreCase("null")) {
 						toolType.setIndividualTracking(true);
-						tool.setPurchasedTools(Collections.singletonList(purchasedTool));
+						// tool.setPurchasedTools(Collections.singletonList(purchasedTool));
 					}
 					toolType.setId(insertToolType(modBean, toolType));
+				}
+				if ((purchasedTool.getSerialNumber() == null
+						|| purchasedTool.getSerialNumber().equalsIgnoreCase("null"))) {
+					tool.setQuantity(purchasedTool.getTool().getQuantity());
+					tool.setPurchasedTools(null);
+				} else {
+					tool.setPurchasedTools(Collections.singletonList(purchasedTool));
 				}
 				tool.setToolType(toolType);
 				tool.setStoreRoom(StoreroomApi.getStoreRoom(storeRoomId));

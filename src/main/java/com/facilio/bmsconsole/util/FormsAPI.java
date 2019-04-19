@@ -288,6 +288,7 @@ public class FormsAPI {
 			for(FacilioForm form: forms) {
 				formMap.put(form.getName(), form);
 			}
+			return formMap;
 		}
 		return null;
 	}

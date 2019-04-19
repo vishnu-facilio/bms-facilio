@@ -1,21 +1,14 @@
 package com.facilio.bmsconsole.modules;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-
-import org.apache.commons.lang3.tuple.Pair;
-
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.agent.AgentKeys;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.events.tasker.tasks.EventUtil;
+import org.apache.commons.lang3.tuple.Pair;
+
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class FieldFactory {
 
@@ -190,111 +183,78 @@ public class FieldFactory {
 	}
 
 	private static FacilioField getDisplay_NameField(FacilioModule module) {
-		FacilioField displayName = new FacilioField();
+		/*FacilioField displayName = new FacilioField();
 		displayName.setName("displayName");
 		displayName.setDataType(FieldType.STRING);
 		displayName.setColumnName("DISPLAY_NAME");
-		displayName.setModule(module);
-		return displayName;
+		displayName.setModule(module);*/
+		return getField(AgentKeys.DISPLAY_NAME,"DISPLAY_NAME",module,FieldType.STRING);
+	}
+
+	public static List<FacilioField> getAgentLogFields(){
+		List<FacilioField> fields = new ArrayList<>();
+		FacilioModule module = ModuleFactory.getAgentLogModule();
+		fields.add(getField(AgentKeys.TIME,"TIME",FieldType.NUMBER));
+		fields.add(getAgentIdField(module));
+		fields.add(getField(AgentKeys.DEVICE_ID,"DEVICE_ID",module,FieldType.STRING));
+		fields.add(getField(AgentKeys.CONTENT,"CONTENT",module,FieldType.STRING));
+		fields.add(getField(AgentKeys.MESSAGE_ID,"MSG_ID",module,FieldType.NUMBER));
+		fields.add(getField(AgentKeys.COMMAND,"COMMAND",module,FieldType.NUMBER));
+		fields.add(getField(AgentKeys.COMMAND_STATUS,"COMMAND_STATUS",module,FieldType.NUMBER));
+
+		return fields;
+	}
+
+	public static FacilioField getAgentIdField(FacilioModule module){
+		return getField(AgentKeys.AGENT_ID,"AGENT_ID",FieldType.NUMBER);
+	}
+
+	public static List<FacilioField> getAgentMetricsFields(){
+		List<FacilioField> fields = new ArrayList<>();
+		FacilioModule module = ModuleFactory.getAgentMetricsModule();
+		fields.add(getAgentIdField(module));
+		fields.add(getPublishTypeField(module));
+		fields.add(getField(AgentKeys.SIZE,"SIZE",module,FieldType.NUMBER));
+		fields.add(getField(AgentKeys.NO_OF_MESSAGES,"NO_OF_MSGS",module,FieldType.NUMBER));
+		fields.add(getField(AgentKeys.LAST_UPDATED_TIME,"LAST_UPDATED_TIME",module,FieldType.NUMBER));
+		fields.add(getCreatedTime(module));
+		return fields;
+	}
+	public static FacilioField getPublishTypeField(FacilioModule module){
+		return getField(EventUtil.DATA_TYPE,"PUBLISH_TYPE",module,FieldType.NUMBER);
 	}
 
 	public static List<FacilioField> getAgentDataFields(){
 		List<FacilioField> fields = new ArrayList<>();
-		FacilioModule module = ModuleFactory.getAgentdataModule();
-		fields.add(getAgentIdField(module));
-		fields.add(getAgentDeviceDetailsField(module));
-		fields.add(getAgentConnectionStatusField(module));
-		fields.add(getAgentName(module));
-		fields.add(getDisplay_NameField(module));
-		fields.add(getAgentDataInterval(module));
-		fields.add(getAgentType(module));
-		fields.add(getAgentVersion(module));
-		fields.add(getLastModifiedTime(module));
+		FacilioModule module = ModuleFactory.getAgentDataModule();
+		fields.add(getIdField(module));
+		fields.add(getField(AgentKeys.DEVICE_ID,"DEVICE_DETAILS",module,FieldType.STRING));
+		fields.add(getField(AgentKeys.CONNECTION_STATUS,"Conn_status",module,FieldType.BOOLEAN));
+		fields.add(getAgentNameField(module));
+		fields.add(getField(AgentKeys.DISPLAY_NAME,"DISPLAY_NAME",module,FieldType.STRING));
+		fields.add(getField(AgentKeys.DATA_INTERVAL,"DATA_INTERVAL",module,FieldType.NUMBER));
+		fields.add(getField(AgentKeys.AGENT_TYPE,"TYPE",module,FieldType.NUMBER));
+		fields.add(getField(AgentKeys.VERSION,"VERSION",module,FieldType.STRING));
+		fields.add(getField(AgentKeys.LAST_MODIFIED_TIME,"LAST_MODIFIED_TIME",module,FieldType.NUMBER));
 		fields.add(getCreatedTime(module));
-		fields.add(getLastDataRecievedTime(module));
-		fields.add(getAgentState(module));
-		fields.add(getAgentSiteIdField(module));
+		fields.add(getField(AgentKeys.LAST_DATA_RECEIVED_TIME,"LAST_DATA_RECEIVED_TIME",module,FieldType.NUMBER));
+		fields.add(getField(AgentKeys.STATE,"STATE",module,FieldType.NUMBER));
+		fields.add(getField(AgentKeys.SITE_ID,"SITE_ID",module,FieldType.NUMBER));
 		fields.add(getWritableField(module));
 		fields.add(getDeletedTimeField(module));
 		return fields;
 	}
-
-	public static FacilioField getAgentIdField() { return getOrgIdField(null);
-	}
-
-	public static FacilioField getAgentIdField(FacilioModule module) {
-		FacilioField field = new FacilioField();
-		field.setName(AgentKeys.ID);
-		field.setDisplayName("id");
-		field.setDataType(FieldType.STRING);
-		field.setColumnName("ID");
-		if (module != null) {
-			field.setModule(module);
-		}
-		return field;
-	}
-
-	public static FacilioField getAgentSiteIdField() { return getOrgIdField(null);
-	}
-
-	public static FacilioField getAgentSiteIdField(FacilioModule module) {
-		FacilioField field = new FacilioField();
-		field.setName(AgentKeys.SITE_ID);
-		field.setDisplayName("site id");
-		field.setDataType(FieldType.NUMBER);
-		field.setColumnName("SITE_ID");
-		if (module != null) {
-			field.setModule(module);
-		}
-		return field;
-	}
-
-	public static FacilioField getWritableField() { return getOrgIdField(null);
+	public static FacilioField getAgentNameField(FacilioModule module) {
+		return getField(AgentKeys.NAME,"NAME",module,FieldType.STRING);
 	}
 
 	public static FacilioField getWritableField(FacilioModule module) {
-		FacilioField field = new FacilioField();
-		field.setName(AgentKeys.WRITABLE);
-		field.setDisplayName("writable");
-		field.setDataType(FieldType.BOOLEAN);
-		field.setColumnName("WRITABLE");
-		if (module != null) {
-			field.setModule(module);
-		}
-		return field;
+		return getField(AgentKeys.WRITABLE,"WRITABLE",module,FieldType.BOOLEAN);
 	}
 
-    public static FacilioField getDeletedTimeField() { return getOrgIdField(null);
+	public static FacilioField  getDeletedTimeField(FacilioModule module) {
+      	return getField(AgentKeys.DELETED_TIME,"DELETED_TIME",module,FieldType.NUMBER);
     }
-
-    public static FacilioField getDeletedTimeField(FacilioModule module) {
-        FacilioField field = new FacilioField();
-        field.setName(AgentKeys.DELETED_TIME);
-        field.setDisplayName("deletedTime");
-        field.setDataType(FieldType.NUMBER);
-        field.setColumnName("Deleted_Time");
-        if (module != null) {
-            field.setModule(module);
-        }
-        return field;
-    }
-	public static FacilioField getNumberOfControllers() { return getOrgIdField(null);
-	}
-
-	public static FacilioField getNumberOfControllers(FacilioModule module) {
-		FacilioField field = new FacilioField();
-		field.setName(AgentKeys.NUMBER_OF_CONTROLLERS);
-		field.setDisplayName("numberOfControllers");
-		field.setDataType(FieldType.NUMBER);
-		field.setColumnName("NO_OF_CONTROLLERS");
-		if (module != null) {
-			field.setModule(module);
-		}
-		return field;
-	}
-
-	public static FacilioField getControllerIdCount() { return getOrgIdField(null);
-	}
 
 	public static FacilioField getControllerIdCount(FacilioModule module) {
 		FacilioField field = new FacilioField();
@@ -305,155 +265,10 @@ public class FieldFactory {
 		return field;
 	}
 
-	public static FacilioField getAgentName() { return getOrgIdField(null);
-	}
-
-	public static FacilioField getAgentName(FacilioModule module) {
-		FacilioField field = new FacilioField();
-		field.setName(AgentKeys.NAME);
-		field.setDisplayName("name");
-		field.setDataType(FieldType.STRING);
-		field.setColumnName("NAME");
-		if (module != null) {
-			field.setModule(module);
-		}
-		return field;
-	}
-
-	public static FacilioField getAgentDataInterval() { return getOrgIdField(null);
-	}
-
-	public static FacilioField getAgentDataInterval(FacilioModule module) {
-		FacilioField field = new FacilioField();
-		field.setName(AgentKeys.DATA_INTERVAL);
-		field.setDisplayName("data interval");
-		field.setDataType(FieldType.NUMBER);
-		field.setColumnName("DATA_INTERVAL");
-		if (module != null) {
-			field.setModule(module);
-		}
-		return field;
-	}
-
-	public static FacilioField getAgentType() { return getOrgIdField(null);
-	}
-
-	public static FacilioField getAgentType(FacilioModule module) {
-		FacilioField field = new FacilioField();
-		field.setName(AgentKeys.AGENT_TYPE);
-		field.setDisplayName("agent type");
-		field.setDataType(FieldType.NUMBER);
-		field.setColumnName("TYPE");
-		if (module != null) {
-			field.setModule(module);
-		}
-		return field;
-	}
-
-	public static FacilioField getAgentVersion() { return getOrgIdField(null);
-	}
-
-	public static FacilioField getAgentVersion(FacilioModule module) {
-		FacilioField field = new FacilioField();
-		field.setName(AgentKeys.VERSION);
-		field.setDisplayName("version");
-		field.setDataType(FieldType.STRING);
-		field.setColumnName("VERSION");
-		if (module != null) {
-			field.setModule(module);
-		}
-		return field;
-	}
-
-	public static FacilioField getLastModifiedTime() { return getOrgIdField(null);
-	}
-
-	public static FacilioField getLastModifiedTime(FacilioModule module) {
-		FacilioField field = new FacilioField();
-		field.setName(AgentKeys.LAST_MODIFIED_TIME);
-		field.setDisplayName("last modified time");
-		field.setDataType(FieldType.NUMBER);
-		field.setColumnName("LAST_MODIFIED_TIME");
-		if (module != null) {
-			field.setModule(module);
-		}
-		return field;
-	}
-
-	public static FacilioField getCreatedTime() { return getOrgIdField(null);
-	}
 
 	public static FacilioField getCreatedTime(FacilioModule module) {
-		FacilioField field = new FacilioField();
-		field.setName(AgentKeys.CREATED_TIME);
-		field.setDisplayName("created time");
-		field.setDataType(FieldType.NUMBER);
-		field.setColumnName("CREATED_TIME");
-		if (module != null) {
-			field.setModule(module);
-		}
-		return field;
+		return getField(AgentKeys.CREATED_TIME,"CREATED_TIME",module,FieldType.NUMBER);
 	}
-
-	public static FacilioField getLastDataRecievedTime() { return getOrgIdField(null);
-	}
-
-	public static FacilioField getLastDataRecievedTime(FacilioModule module) {
-		FacilioField field = new FacilioField();
-		field.setName(AgentKeys.LAST_DATA_RECEIVED_TIME);
-		field.setDisplayName("last data recieved time ");
-		field.setDataType(FieldType.NUMBER);
-		field.setColumnName("LAST_DATA_RECEIVED_TIME");
-		if (module != null) {
-			field.setModule(module);
-		}
-		return field;
-	}
-
-	public static FacilioField getAgentDeviceDetailsField() { return getOrgIdField(null);
-	}
-
-	public static FacilioField getAgentDeviceDetailsField(FacilioModule module) {
-		FacilioField field = new FacilioField();
-		field.setName(AgentKeys.DEVICE_DETAILS);
-		field.setDisplayName("deviceDetails");
-		field.setDataType(FieldType.STRING);
-		field.setColumnName("DEVICE_DETAILS");
-		if (module != null) {
-			field.setModule(module);
-		}
-		return field;
-	}
-
-
-	public static FacilioField getAgentConnectionStatusField() { return getOrgIdField(null);
-	}
-
-	public static FacilioField getAgentConnectionStatusField(FacilioModule module) {
-		FacilioField field = new FacilioField();
-		field.setName(AgentKeys.CONNECTION_STATUS);
-		field.setDisplayName("Connection Status");
-		field.setDataType(FieldType.BOOLEAN);
-		field.setColumnName("CONN_STATUS");
-		if (module != null) {
-			field.setModule(module);
-		}
-		return field;
-	}
-    public static FacilioField getAgentState() { return getOrgIdField(null);
-    }
-
-    public static FacilioField getAgentState(FacilioModule module) {
-        FacilioField field = new FacilioField();
-        field.setName(AgentKeys.STATE);
-        field.setDisplayName("state");
-        field.setDataType(FieldType.NUMBER);
-        field.setColumnName("STATE");
-        if (module != null) {
-            field.setModule(module);
-        }
-        return field;
-    }
 
 	public static List<FacilioField> getFormFieldsFields() {
 		List<FacilioField> fields = new ArrayList<>();
@@ -5677,6 +5492,18 @@ public class FieldFactory {
 		return fields;
 	}
 
+	public static List<FacilioField> getSitesForStoreRoomFields() {
+		FacilioModule module = ModuleFactory.getSitesForStoreRoomModule();
+		List<FacilioField> fields = new ArrayList<>();
+		
+		fields.add(getIdField(module));
+		fields.add(getField("storeRoomId", "STORE_ROOM_ID", module, FieldType.NUMBER));
+		fields.add(getField("siteId", "SITE_ID", module, FieldType.NUMBER));
+		
+		return fields;
+	}
+	
+	
 	public static FacilioField getField(String name, String colName, FacilioModule module, FieldType type) {
 		return getField(name, null, colName, module, type);
 	}

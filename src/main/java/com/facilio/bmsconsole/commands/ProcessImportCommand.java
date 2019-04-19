@@ -63,7 +63,6 @@ public class ProcessImportCommand implements Command {
 
 		HashMap<Integer, String> headerIndex = new HashMap<Integer, String>();
 		List<Map<String, Object>> allRows = ImportAPI.getValidatedRows(importProcessContext.getId());
-//		Workbook workbook = WorkbookFactory.create(ins);
 
 		for(Map<String, Object> row: allRows) {
 			ImportProcessLogContext rowLogContext = FieldUtil.getAsBeanFromMap(row, ImportProcessLogContext.class);
@@ -78,85 +77,6 @@ public class ProcessImportCommand implements Command {
 			
 			int row_no = rowContext.getRowNumber();
 			HashMap<String, Object> colVal = rowContext.getColVal();
-			
-//		for (int i = 0; i < workbook.getNumberOfSheets(); i++) {
-//			Sheet datatypeSheet = workbook.getSheetAt(i);
-//
-//			Iterator<Row> rowItr = datatypeSheet.iterator();
-//			boolean heading = true;
-//			int row_no = 0;
-//			while (rowItr.hasNext()) {
-//				row_no++;
-//				LOGGER.severe("row_no -- " + row_no);
-//				Row row = rowItr.next();
-//
-//				if (row.getPhysicalNumberOfCells() <= 0) {
-//					break;
-//				}
-//				if (heading) {
-//					Iterator<Cell> cellItr = row.cellIterator();
-//					int cellIndex = 0;
-//					while (cellItr.hasNext()) {
-//						Cell cell = cellItr.next();
-//						String cellValue = cell.getStringCellValue();
-//						headerIndex.put(cellIndex, cellValue);
-//						cellIndex++;
-//					}
-//					heading = false;
-//					continue;
-//				}
-//
-//				HashMap<String, Object> colVal = new HashMap<>();
-//
-//				Iterator<Cell> cellItr = row.cellIterator();
-//				while (cellItr.hasNext()) {
-//					Cell cell = cellItr.next();
-//
-//					String cellName = headerIndex.get(cell.getColumnIndex());
-//					if (cellName == null) {
-//						continue;
-//					}
-//
-//					Object val = 0.0;
-//					if (cell.getCellTypeEnum() == CellType.STRING) {
-//
-//						val = cell.getStringCellValue().trim();
-//					} else if (cell.getCellTypeEnum() == CellType.NUMERIC
-//							|| cell.getCellTypeEnum() == CellType.FORMULA) {
-//						if (cell.getCellTypeEnum() == CellType.NUMERIC && HSSFDateUtil.isCellDateFormatted(cell)) {
-//							Date date = cell.getDateCellValue();
-//							Instant date1 = date.toInstant();
-//							val = date1.getEpochSecond()*1000;
-//						} 
-//						else if(cell.getCellTypeEnum() == CellType.FORMULA) {
-//							val = cell.getStringCellValue();
-//						}
-//						else {
-//							val = cell.getNumericCellValue();
-//						}
-//					} else if (cell.getCellTypeEnum() == CellType.BOOLEAN) {
-//						val = cell.getBooleanCellValue();
-//					} else {
-//						val = null;
-//					}
-//					colVal.put(cellName, val);
-//
-//				}
-//
-//				if (colVal.values() == null || colVal.values().isEmpty()) {
-//					break;
-//				} else {
-//					boolean isAllNull = true;
-//					for (Object value : colVal.values()) {
-//						if (value != null) {
-//							isAllNull = false;
-//							break;
-//						}
-//					}
-//					if (isAllNull) {
-//						break;
-//					}
-//				}
 			
 				LOGGER.severe("row -- " + row_no + " colVal --- " + colVal);
 
@@ -185,7 +105,6 @@ public class ProcessImportCommand implements Command {
 								}
 							}
 						}
-
 						colVal.remove(fieldMapping.get(importProcessContext.getModule().getName() + "__site"));
 						colVal.remove(fieldMapping.get(importProcessContext.getModule().getName() + "__building"));
 						colVal.remove(fieldMapping.get(importProcessContext.getModule().getName() + "__floor"));
@@ -218,7 +137,7 @@ public class ProcessImportCommand implements Command {
 				
 					}
 
-					if (importProcessContext.getModule().getName().equals(FacilioConstants.ContextNames.BUILDING)) {
+					else if (importProcessContext.getModule().getName().equals(FacilioConstants.ContextNames.BUILDING)) {
 					
 						Long buildingId = getSpaceID(importProcessContext,colVal, fieldMapping);
 						lookupHolder = new HashMap<>();
@@ -248,65 +167,41 @@ public class ProcessImportCommand implements Command {
 						props.put("spaceType",BaseSpaceContext.SpaceType.SITE.getIntVal());
 					
 					}
+					
+					
 					LOGGER.severe("\n\n importProcessContext.getFacilioFieldMapping() --- "
 							+ importProcessContext.getFacilioFieldMapping());
 
 					LOGGER.severe("\n\n colVal --- " + colVal);
 
-						for(int fieldIndex = 0; fieldIndex < modulesPlusFields.size(); fieldIndex++) {
-						String key = modulesPlusFields.get(fieldIndex);
-						String[] fieldAndModule = key.split("__");
-						String field = fieldAndModule[(fieldAndModule.length) - 1];
+//						for(int fieldIndex = 0; fieldIndex < modulesPlusFields.size(); fieldIndex++) {
+//						String key = modulesPlusFields.get(fieldIndex);
+//						String[] fieldAndModule = key.split("__");
+//						String field = fieldAndModule[(fieldAndModule.length) - 1];
+//						String fieldModule = fieldAndModule[0];
+						
+						List<FacilioField> fields = new ArrayList<FacilioField>();
+						try {
+							ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+							fields = bean.getAllFields(importProcessContext.getModule().getName());
+						}catch(Exception e) {
+							LOGGER.severe("Cannot get fields for module" + e.getMessage());
+						}
+						
+						for(FacilioField facilioField: fields)
+						{
+							String key = facilioField.getModule().getName() + "__" + facilioField.getName();
 							Object cellValue = colVal.get(fieldMapping.get(key));
 							boolean isfilledByLookup = false;
 
-							if (cellValue != null && !cellValue.toString().equals("")) {
-
-								FacilioField facilioField = null;
-								try {
-									ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-									facilioField = bean.getField(field, module);
-								} catch (Exception e) {
-									// TODO Auto-generated catch block
-									log.info("Exception occurred ", e);
-								}
-
-								if (facilioField != null) {
-									if (facilioField.getDataTypeEnum().equals(FieldType.LOOKUP) && facilioField instanceof LookupField) {
-										LookupField lookupField = (LookupField) facilioField;
-
-										boolean isSkipSpecialLookup = false;
-
-										try {
-											if ((importProcessContext.getModule().getName().equals(FacilioConstants.ContextNames.ASSET) || (importProcessContext.getModule().getExtendModule() != null && importProcessContext.getModule().getExtendModule().getName().equals(FacilioConstants.ContextNames.ASSET))) && lookupField.getName().equals("department")) {
-												isSkipSpecialLookup = true;
-											}
-										} catch (Exception e) {
-											e.printStackTrace();
-										}
-
-										if (facilioField.getDisplayType().equals(FacilioField.FieldDisplayType.LOOKUP_SIMPLE) || isSkipSpecialLookup) {
-											List<Map<String, Object>> lookupPropsList = getLookupProps(lookupField,cellValue);
-											if (lookupPropsList != null) {
-												Map<String, Object> lookupProps = lookupPropsList.get(0);
-												if (!props.containsKey(field)) {
-													props.put(field, lookupProps);
-												}
-												isfilledByLookup = true;
-
-											}
-										} 
-										else if (facilioField.getDisplayType().equals(FacilioField.FieldDisplayType.LOOKUP_POPUP)) {
-											Map<String, Object> specialLookupList = getSpecialLookupProps(lookupField,cellValue);
-											if (specialLookupList != null) {
-												if (!props.containsKey(field)) {
-													props.put(field, specialLookupList);
-												}
-												isfilledByLookup = true;
-											}
-										}
-									}
-
+							if (cellValue != null && !cellValue.toString().equals("") && facilioField.getDataType() != FieldType.LOOKUP.getTypeAsInt()) {
+//								try {
+//									ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+//									facilioField = bean.getField(field, fieldModule);
+//								} catch (Exception e) {
+//									// TODO Auto-generated catch block
+//									log.info("Exception occurred ", e);
+//								}
 									try {
 										if (facilioField.getDataTypeEnum().equals(FieldType.DATE_TIME) || facilioField.getDataTypeEnum().equals(FieldType.DATE)) {
 											if (!(cellValue instanceof Long)) {
@@ -319,10 +214,19 @@ public class ProcessImportCommand implements Command {
 													millis = dateInstant.toEpochMilli();
 												}
 //												long millis = DateTimeUtil.getTime(cellValue.toString(),"dd/MM/yyyy HH:mm:ss");
-												if (!props.containsKey(field)) {
-													props.put(field, millis);
+												if (!props.containsKey(facilioField.getName())) {
+													props.put(facilioField.getName(), millis);
 												}
 												isfilledByLookup = true;
+											}
+										}
+										else if(facilioField.getDataType() == FieldType.ENUM.getTypeAsInt()) {
+											EnumField enumField = (EnumField) facilioField;
+											String enumString = (String)colVal.get(fieldMapping.get(key));
+											int enumIndex = enumField.getIndex(enumString.toLowerCase());
+											
+											if(!props.containsKey(facilioField.getName())) {
+												props.put(facilioField.getName(), enumIndex);
 											}
 										}
 										else if(facilioField.getDataTypeEnum().equals(FieldType.NUMBER) || facilioField.getDataTypeEnum().equals(FieldType.DECIMAL)) {
@@ -332,8 +236,8 @@ public class ProcessImportCommand implements Command {
 											}
 											
 											Double cellDoubleValue = Double.parseDouble(cellValueString);
-											if(!props.containsKey(field)) {
-												props.put(field, cellDoubleValue);
+											if(!props.containsKey(facilioField.getName())) {
+												props.put(facilioField.getName(), cellDoubleValue);
 											}
 											isfilledByLookup = true;
 										}
@@ -342,12 +246,45 @@ public class ProcessImportCommand implements Command {
 										e.printStackTrace();
 										throw new ImportParseException(row_no, fieldMapping.get(key), e);
 									}
+							}
+							else if (facilioField.getDataTypeEnum().equals(FieldType.LOOKUP) && facilioField instanceof LookupField) {
+								LookupField lookupField = (LookupField) facilioField;
+
+								boolean isSkipSpecialLookup = false;
+
+								try {
+									if ((importProcessContext.getModule().getName().equals(FacilioConstants.ContextNames.ASSET) || (importProcessContext.getModule().getExtendModule() != null && importProcessContext.getModule().getExtendModule().getName().equals(FacilioConstants.ContextNames.ASSET))) && lookupField.getName().equals("department")) {
+										isSkipSpecialLookup = true;
+									}
+								} catch (Exception e) {
+									e.printStackTrace();
+								}
+
+								if (facilioField.getDisplayType().equals(FacilioField.FieldDisplayType.LOOKUP_SIMPLE) || isSkipSpecialLookup) {
+									List<Map<String, Object>> lookupPropsList = getLookupProps(lookupField,colVal, fieldMapping.get(key), importProcessContext);
+									if (lookupPropsList != null) {
+										Map<String, Object> lookupProps = lookupPropsList.get(0);
+										if (!props.containsKey(facilioField.getName())) {
+											props.put(facilioField.getName(), lookupProps);
+										}
+										isfilledByLookup = true;
+
+									}
+								} 
+								else if (facilioField.getDisplayType().equals(FacilioField.FieldDisplayType.LOOKUP_POPUP)) {
+									Map<String, Object> specialLookupList = getSpecialLookupProps(lookupField,cellValue);
+									if (specialLookupList != null) {
+										if (!props.containsKey(facilioField.getName())) {
+											props.put(facilioField.getName(), specialLookupList);
+										}
+										isfilledByLookup = true;
+									}
 								}
 							}
 
 							if (!isfilledByLookup) {
-								if (!props.containsKey(field)) {
-									props.put(field, cellValue);
+								if (!props.containsKey(facilioField.getName())) {
+									props.put(facilioField.getName(), cellValue);
 								}
 							}
 					}
@@ -369,90 +306,129 @@ public class ProcessImportCommand implements Command {
 		return false;
 	}
 
-	public static List<Map<String, Object>> getLookupProps(LookupField lookupField, Object value) {
+	public static List<Map<String, Object>> getLookupProps(LookupField lookupField, HashMap<String, Object> colVal, String key, ImportProcessContext importProcessContext) {
 
 		try {
-			LOGGER.severe("getLookupProps -- " + lookupField.getColumnName() + " facilioField.getModule() - "
-					+ lookupField.getLookupModule().getTableName() + " with value -- " + value);
 
 			ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			ArrayList<FacilioField> fieldsList = new ArrayList<FacilioField>();
-
-			fieldsList = new ArrayList<>(bean.getAllFields(lookupField.getLookupModule().getName()));
-			fieldsList.add(FieldFactory.getIdField(lookupField.getLookupModule()));
-			/*fieldsList.add(FieldFactory.getOrgIdField(lookupField.getLookupModule()));*/
-			fieldsList.add(FieldFactory.getModuleIdField(lookupField.getLookupModule()));
-
-			String collumnName = "NAME";
-			String fieldName = "name";
-			if (lookupField.getModule().getName().equals(FacilioConstants.ContextNames.WORK_ORDER)) {
-				if (lookupField.getName().equals("status")) {
-					collumnName = "STATUS";
-					fieldName = "status";
-				} else if (lookupField.getName().equals("priority")) {
-					collumnName = "PRIORITY";
-					fieldName = "priority";
+			if(isNewLookupFormat(importProcessContext)) {
+				List<Map<String, Object>> lookupFieldList = new ArrayList<Map<String,Object>>();
+				List<FacilioField> lookupModuleFields = bean.getAllFields(lookupField.getLookupModule().getName());
+				HashMap<String, String> fieldMapping = importProcessContext.getFieldMapping();
+				Map<String, Object> lookupFieldMap = new HashMap<String, Object>();
+				for(FacilioField field : lookupModuleFields) {
+					
+					if(fieldMapping.containsKey(field.getModule().getName() + "__" + field.getName())) {
+						if(field.getDataType() == FieldType.ENUM.getTypeAsInt()) {
+							EnumField enumField = (EnumField) field;
+							String enumString = (String)colVal.get(fieldMapping.get(field.getModule().getName() + "__" + field.getName()));
+							int enumIndex = enumField.getIndex(enumString.toLowerCase());
+							lookupFieldMap.put(field.getName(),enumIndex);
+						}
+						else if(field.getDataType() == FieldType.LOOKUP.getTypeAsInt()) {
+							// special handling for tool and items. Their types have a second lookup
+							if(importProcessContext.getModule().getName().equals(FacilioConstants.ContextNames.PURCHASED_ITEM) 
+									|| importProcessContext.getModule().getName().equals(FacilioConstants.ContextNames.PURCHASED_TOOL)) {
+								Map<String, Object> secondLookup = new HashMap<String, Object>();
+								secondLookup.put("name", (String)colVal.get(fieldMapping.get(field.getModule().getName() + "__" + field.getName())));
+								lookupFieldMap.put(field.getName(), secondLookup);
+							}
+						}
+						else {
+							lookupFieldMap.put(field.getName(), colVal.get(fieldMapping.get(field.getModule().getName() + "__" + field.getName())));
+						}
+						
+					}
 				}
+				lookupFieldList.add(lookupFieldMap);
+				return lookupFieldList;
 			}
-			GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder().select(fieldsList)
-					.table(lookupField.getLookupModule().getTableName())
-					.andCustomWhere("LOWER(" + collumnName + ") = ?", value.toString().toLowerCase())
-					.andCondition(CriteriaAPI.getCurrentOrgIdCondition(lookupField.getLookupModule()));
-
-			List<Map<String, Object>> props = selectBuilder.get();
-
-			if (props.isEmpty()) {
-
-				HashMap<String, Object> insertProps = new LinkedHashMap<String, Object>();
-
-				insertProps.put(fieldName, value);
-				insertProps.put("orgId", AccountUtil.getCurrentOrg().getId());
-				insertProps.put("moduleId", lookupField.getLookupModule().getModuleId());
+			else {
+				Object value = colVal.get(key);
+				LOGGER.severe("getLookupProps -- " + lookupField.getColumnName() + " facilioField.getModule() - "
+						+ lookupField.getLookupModule().getTableName() + " with value -- " + value);
 
 				
-				
-				if (lookupField.getLookupModule().getName().equals(FacilioConstants.ContextNames.ASSET_CATEGORY)) {
-					FacilioModule module = new FacilioModule();
-					String name = value.toString();
-					
-					ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-					FacilioModule assetModule = modBean.getModule("asset");
-					
-					module.setName(name.toLowerCase().replaceAll("[^a-zA-Z0-9]+",""));
-					module.setDisplayName(name);
-					module.setTableName("AssetCustomModuleData");
-					module.setType(ModuleType.BASE_ENTITY);
-					module.setExtendModule(assetModule);
-					
-					FacilioContext context = new FacilioContext();
-					context.put(FacilioConstants.ContextNames.MODULE_LIST, Collections.singletonList(module));
-					
-					Chain addCategory = FacilioChain.getTransactionChain();
-					TransactionChainFactory.commonAddModuleChain(addCategory);
-					
-					addCategory.execute(context);
-					
-					FacilioModule AssetModuleId = (FacilioModule) ((List<FacilioModule>) context.get(FacilioConstants.ContextNames.MODULE_LIST)).get(0);
-					insertProps.put("type", AssetCategoryContext.AssetCategoryType.MISC.getIntVal());
-					insertProps.put("assetModuleID", AssetModuleId.getModuleId());
+				ArrayList<FacilioField> fieldsList = new ArrayList<FacilioField>();
+
+				fieldsList = new ArrayList<>(bean.getAllFields(lookupField.getLookupModule().getName()));
+				fieldsList.add(FieldFactory.getIdField(lookupField.getLookupModule()));
+				/*fieldsList.add(FieldFactory.getOrgIdField(lookupField.getLookupModule()));*/
+				fieldsList.add(FieldFactory.getModuleIdField(lookupField.getLookupModule()));
+
+				String collumnName = "NAME";
+				String fieldName = "name";
+				if (lookupField.getModule().getName().equals(FacilioConstants.ContextNames.WORK_ORDER)) {
+					if (lookupField.getName().equals("status")) {
+						collumnName = "STATUS";
+						fieldName = "status";
+					} else if (lookupField.getName().equals("priority")) {
+						collumnName = "PRIORITY";
+						fieldName = "priority";
+					}
 				}
-				
-				
-				GenericInsertRecordBuilder insertRecordBuilder = new GenericInsertRecordBuilder()
-						.table(lookupField.getLookupModule().getTableName()).fields(fieldsList);
+				GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder().select(fieldsList)
+						.table(lookupField.getLookupModule().getTableName())
+						.andCustomWhere("LOWER(" + collumnName + ") = ?", value.toString().toLowerCase())
+						.andCondition(CriteriaAPI.getCurrentOrgIdCondition(lookupField.getLookupModule()));
 
-				insertRecordBuilder.addRecord(insertProps);
+				List<Map<String, Object>> props = selectBuilder.get();
 
-				insertRecordBuilder.save();
-				LOGGER.severe("insertProps --- " + insertProps);
-				Long id = (Long) insertProps.get("id");
+				if (props.isEmpty()) {
 
-				if (id != null) {
-					LOGGER.severe("inserted with ID --" + id);
-					props.add(insertProps);
+					HashMap<String, Object> insertProps = new LinkedHashMap<String, Object>();
+
+					insertProps.put(fieldName, value);
+					insertProps.put("orgId", AccountUtil.getCurrentOrg().getId());
+					insertProps.put("moduleId", lookupField.getLookupModule().getModuleId());
+
+					
+					
+					if (lookupField.getLookupModule().getName().equals(FacilioConstants.ContextNames.ASSET_CATEGORY)) {
+						FacilioModule module = new FacilioModule();
+						String name = value.toString();
+						
+						ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+						FacilioModule assetModule = modBean.getModule("asset");
+						
+						module.setName(name.toLowerCase().replaceAll("[^a-zA-Z0-9]+",""));
+						module.setDisplayName(name);
+						module.setTableName("AssetCustomModuleData");
+						module.setType(ModuleType.BASE_ENTITY);
+						module.setExtendModule(assetModule);
+						
+						FacilioContext context = new FacilioContext();
+						context.put(FacilioConstants.ContextNames.MODULE_LIST, Collections.singletonList(module));
+						
+						Chain addCategory = FacilioChain.getTransactionChain();
+						TransactionChainFactory.commonAddModuleChain(addCategory);
+						
+						addCategory.execute(context);
+						
+						FacilioModule AssetModuleId = (FacilioModule) ((List<FacilioModule>) context.get(FacilioConstants.ContextNames.MODULE_LIST)).get(0);
+						insertProps.put("type", AssetCategoryContext.AssetCategoryType.MISC.getIntVal());
+						insertProps.put("assetModuleID", AssetModuleId.getModuleId());
+					}
+					
+					
+					GenericInsertRecordBuilder insertRecordBuilder = new GenericInsertRecordBuilder()
+							.table(lookupField.getLookupModule().getTableName()).fields(fieldsList);
+
+					insertRecordBuilder.addRecord(insertProps);
+
+					insertRecordBuilder.save();
+					LOGGER.severe("insertProps --- " + insertProps);
+					Long id = (Long) insertProps.get("id");
+
+					if (id != null) {
+						LOGGER.severe("inserted with ID --" + id);
+						props.add(insertProps);
+					}
 				}
+				return props;
 			}
-			return props;
+			
+			
 		} catch (Exception e) {
 			LOGGER.severe("Exception occurred at lookup field");
 			LOGGER.severe(e.toString());
@@ -460,6 +436,19 @@ public class ProcessImportCommand implements Command {
 		return null;
 	}
 
+	public static boolean isNewLookupFormat(ImportProcessContext importProcessContext) throws Exception{
+		boolean isNewFormat = false;
+		List<String> moduleList = new ArrayList<String>();
+		
+		moduleList.add(FacilioConstants.ContextNames.PURCHASED_ITEM);
+		moduleList.add(FacilioConstants.ContextNames.PURCHASED_TOOL);
+		
+		if(moduleList.contains(importProcessContext.getModule().getName())) {
+			isNewFormat = true;
+		}
+		return isNewFormat;
+		
+	}
 	public static Map<String, Object> getSpecialLookupProps(LookupField lookupField, Object value) {
 
 		try {

@@ -55,7 +55,16 @@ public class TenantAction extends FacilioAction {
 	public void setId(long id) {
 		this.id = id;
 	}
-	
+    
+	private int status;
+
+	public int getStatus() {
+		return status;
+	}
+	public void setStatus(int status) {
+		this.status = status;
+	}
+
 	private String search;
 	public void setSearch(String search) {
 		this.search = search;
@@ -437,6 +446,21 @@ private Map<String, Double> readingData;
 			context.put(FacilioConstants.ContextNames.USER, user);
 			Chain updatePrimaryContact = FacilioChainFactory.updateTenantPrimaryContactChain();
 			updatePrimaryContact.execute(context);
+			setResult("rowsUpdated", context.get(FacilioConstants.ContextNames.ROWS_UPDATED));
+			return SUCCESS;
+		}
+		catch (Exception e) {
+			setError("error",e.getMessage());
+			return ERROR;
+		}
+	}
+	public String toggleStatus() throws Exception {
+		try {
+			FacilioContext context = new FacilioContext();
+			context.put(FacilioConstants.ContextNames.RECORD_ID, tenantId);
+			context.put(FacilioConstants.ContextNames.TENANT_STATUS, status);
+			Chain updateTnantStatusChain = FacilioChainFactory.toggleStatusChain();
+			updateTnantStatusChain.execute(context);
 			setResult("rowsUpdated", context.get(FacilioConstants.ContextNames.ROWS_UPDATED));
 			return SUCCESS;
 		}

@@ -1,17 +1,12 @@
 package com.facilio.bmsconsole.commands;
 
-import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.WorkOrderContext;
-import com.facilio.bmsconsole.criteria.CriteriaAPI;
-import com.facilio.bmsconsole.criteria.NumberOperators;
-import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.FacilioModule;
-import com.facilio.bmsconsole.modules.FieldType;
-import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
-import com.facilio.bmsconsole.util.WorkflowRuleAPI;
-import com.facilio.constants.FacilioConstants;
-import com.facilio.fw.BeanFactory;
-import com.facilio.sql.GenericSelectRecordBuilder;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
@@ -19,11 +14,23 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
-import java.util.*;
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.bmsconsole.context.WorkOrderContext;
+import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.criteria.NumberOperators;
+import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.FacilioModule;
+import com.facilio.bmsconsole.modules.FieldType;
+import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
+import com.facilio.sql.GenericSelectRecordBuilder;
 
 public class UpdateNotesCountCommand implements Command {
 
-	private static final Logger LOGGER = LogManager.getLogger(WorkflowRuleAPI.class.getName());
+	private static final Logger LOGGER = LogManager.getLogger(UpdateNotesCountCommand.class.getName());
 	
 	@Override
 	public boolean execute(Context context) throws Exception {
@@ -31,6 +38,7 @@ public class UpdateNotesCountCommand implements Command {
 		String ticketModule = (String) context.get("ticketmodule");
 		String moduleString = (String) context.get("moduleName");
 		Collection<Long> parentIds = (Collection<Long>) context.get(FacilioConstants.ContextNames.IDS_TO_UPDATE_COUNT);
+		try {
 		
 		if (StringUtils.isNoneEmpty(ticketModule) && CollectionUtils.isNotEmpty(parentIds)) {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -76,6 +84,11 @@ public class UpdateNotesCountCommand implements Command {
 				
 				updateRecordBuilder.updateViaMap(updateMap);
 			}
+		}
+		}
+		catch(Exception e) {
+			LOGGER.error("Exception in UpdateNotesCountCommand: moduleString" + moduleString + ", ticketModule:" + ticketModule + ",parentIds: "+ parentIds, e);
+			CommonCommandUtil.emailException("UpdateNotesCountCommand", "Exception in UpdateNotesCountCommand - " + AccountUtil.getCurrentOrg().getId(), e);
 		}
 		return false;
 	}

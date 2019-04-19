@@ -39,16 +39,19 @@ public class AddOrUpdateReceivablesCommand implements Command {
 				updateRecords(updateReceivables, module, fields);
 			}
 			if(!CollectionUtils.isEmpty(saveReceivables)) {
-				saveRecords(saveReceivables, module, fields);
+				saveRecords(true, saveReceivables, module, fields);
 			}
 		}
 		return false;
 	}
 
-	private void saveRecords(List<ReceivableContext> receivableContext, FacilioModule module, List<FacilioField> fields) throws Exception {
+	private void saveRecords(boolean isLocalIdNeeded, List<ReceivableContext> receivableContext, FacilioModule module, List<FacilioField> fields) throws Exception {
 		InsertRecordBuilder insertRecordBuilder = new InsertRecordBuilder<>()
 				.module(module)
 				.fields(fields);
+		if(isLocalIdNeeded) {
+			insertRecordBuilder.withLocalId();
+		}
 		insertRecordBuilder.addRecords(receivableContext);
 		insertRecordBuilder.save();
 	}

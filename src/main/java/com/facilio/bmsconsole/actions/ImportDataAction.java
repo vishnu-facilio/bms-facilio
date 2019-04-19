@@ -55,7 +55,9 @@ public class ImportDataAction extends ActionSupport {
         FacilioModule facilioModule = modBean.getModule(getModuleName());
         
         LOGGER.severe("THIRD POINT-- ");
-		
+		if(facilioModule ==  null) {
+			return ERROR;
+		}
         if(facilioModule.getName().equals(FacilioConstants.ContextNames.ASSET) && (assetCategory != -1)) {
         	Map<String,String> moduleInfo = AssetsAPI.getAssetModuleName(this.assetCategory);
         	String moduleName = moduleInfo.get(FacilioConstants.ContextNames.MODULE_NAME);
@@ -85,7 +87,15 @@ public class ImportDataAction extends ActionSupport {
         
         ImportAPI.addImportProcess(importProcessContext);
 		
-        ImportAPI.getFieldMapping(importProcessContext);
+        if(getModuleName().equals("purchasedTool") || getModuleName().equals("purchasedItem")) {
+        	importProcessContext.setFacilioFieldMapping(ImportFieldFactory.getFacilioFieldMapping(getModuleName()));
+        	importProcessContext.setFieldMapping(ImportFieldFactory.getFieldMapping(getModuleName()));
+
+        }
+        else {
+        	ImportAPI.getFieldMapping(importProcessContext);
+        }
+        
         
         LOGGER.severe("LAST POINT-- ");
 		return SUCCESS;

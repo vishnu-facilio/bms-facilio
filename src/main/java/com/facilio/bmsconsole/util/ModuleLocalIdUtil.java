@@ -40,6 +40,13 @@ public class ModuleLocalIdUtil {
 		modulesWithLocalId.add(FacilioConstants.ContextNames.TOOL);
 		modulesWithLocalId.add(FacilioConstants.ContextNames.LABOUR);
 		modulesWithLocalId.add(FacilioConstants.ContextNames.TENANT);
+		modulesWithLocalId.add(FacilioConstants.ContextNames.PURCHASE_ORDER);
+		modulesWithLocalId.add(FacilioConstants.ContextNames.PURCHASE_REQUEST);
+		modulesWithLocalId.add(FacilioConstants.ContextNames.RECEIVABLE);
+		modulesWithLocalId.add(FacilioConstants.ContextNames.RECEIPTS);
+		modulesWithLocalId.add(FacilioConstants.ContextNames.PURCHASE_CONTRACTS);
+		modulesWithLocalId.add(FacilioConstants.ContextNames.LABOUR_CONTRACTS);
+		
 
 		return modulesWithLocalId;
 	}

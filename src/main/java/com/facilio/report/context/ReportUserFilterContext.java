@@ -1,15 +1,22 @@
 package com.facilio.report.context;
 
-import com.chargebee.org.json.JSONObject;
-import com.facilio.bmsconsole.criteria.*;
-import com.facilio.bmsconsole.modules.FacilioField;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.struts2.json.annotations.JSON;
+
 
 import java.util.ArrayList;
 import java.util.List;
+
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.struts2.json.annotations.JSON;
+import org.json.simple.JSONObject;
+
+import com.facilio.bmsconsole.criteria.Condition;
+import com.facilio.bmsconsole.criteria.Criteria;
+import com.facilio.bmsconsole.criteria.EnumOperators;
+import com.facilio.bmsconsole.criteria.Operator;
+import com.facilio.bmsconsole.criteria.PickListOperators;
+import com.facilio.bmsconsole.modules.FacilioField;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class ReportUserFilterContext {
 

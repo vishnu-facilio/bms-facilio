@@ -330,7 +330,7 @@ public class WorkflowRuleAPI {
 		ruleBuilder.select(fields);
 		List<WorkflowRuleContext> rules = getWorkFlowsFromMapList(ruleBuilder.get(), fetchEvent, true, true);
 		
-		if(fetchAction) {
+		if(fetchAction && rules != null) {
 			for(WorkflowRuleContext rule :rules) {
 				List<ActionContext> actionList = ActionAPI.getAllActionsFromWorkflowRule(AccountUtil.getCurrentOrg().getId(), rule.getId());
 				rule.setActions(actionList);

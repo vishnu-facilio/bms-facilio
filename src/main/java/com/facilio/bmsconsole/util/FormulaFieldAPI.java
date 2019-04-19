@@ -1,5 +1,23 @@
 package com.facilio.bmsconsole.util;
 
+import java.sql.SQLException;
+import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.stream.Collectors;
+
+import org.apache.commons.chain.Chain;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Level;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
@@ -12,9 +30,23 @@ import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ReadingContext.SourceType;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.context.ResourceContext;
-import com.facilio.bmsconsole.criteria.*;
-import com.facilio.bmsconsole.modules.*;
+import com.facilio.bmsconsole.criteria.BooleanOperators;
+import com.facilio.bmsconsole.criteria.CommonOperators;
+import com.facilio.bmsconsole.criteria.Condition;
+import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.criteria.DateOperators;
+import com.facilio.bmsconsole.criteria.DateRange;
+import com.facilio.bmsconsole.criteria.NumberOperators;
+import com.facilio.bmsconsole.criteria.PickListOperators;
+import com.facilio.bmsconsole.modules.AggregateOperator;
+import com.facilio.bmsconsole.modules.DeleteRecordBuilder;
+import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FacilioModule.ModuleType;
+import com.facilio.bmsconsole.modules.FieldFactory;
+import com.facilio.bmsconsole.modules.FieldUtil;
+import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
@@ -24,19 +56,14 @@ import com.facilio.sql.GenericUpdateRecordBuilder;
 import com.facilio.tasker.FacilioTimer;
 import com.facilio.tasker.ScheduleInfo;
 import com.facilio.tasker.ScheduleInfo.FrequencyType;
-import com.facilio.workflows.context.*;
-import com.facilio.workflows.util.ExpressionAggregateOperator;
+import com.facilio.workflows.context.ExpressionContext;
+import com.facilio.workflows.context.IteratorContext;
+import com.facilio.workflows.context.ParameterContext;
+import com.facilio.workflows.context.WorkflowContext;
+import com.facilio.workflows.context.WorkflowExpression;
+import com.facilio.workflows.context.WorkflowFieldContext;
+import com.facilio.workflows.context.WorkflowFunctionContext;
 import com.facilio.workflows.util.WorkflowUtil;
-import org.apache.commons.chain.Chain;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Level;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-
-import java.sql.SQLException;
-import java.time.LocalTime;
-import java.util.*;
-import java.util.stream.Collectors;
 
 public class FormulaFieldAPI {
 	private static final Logger LOGGER = LogManager.getLogger(FormulaFieldAPI.class.getName());
@@ -686,7 +713,7 @@ public class FormulaFieldAPI {
 		
 		if (fields != null) {
 			for (WorkflowFieldContext field : fields) {
-				if (field.getAggregationEnum() != ExpressionAggregateOperator.LAST_VALUE) {
+				if (field.getAggregationEnum() != AggregateOperator.SpecialAggregateOperator.LAST_VALUE) {
 					return false;
 				}
 			}

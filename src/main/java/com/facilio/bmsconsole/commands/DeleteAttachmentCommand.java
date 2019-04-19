@@ -5,6 +5,7 @@ import com.facilio.bmsconsole.context.AttachmentContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
+import com.facilio.bmsconsole.util.AttachmentsAPI;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fs.FileStoreFactory;
@@ -17,7 +18,10 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class DeleteAttachmentCommand implements Command {
+public class DeleteAttachmentCommand implements Command, PostTransactionCommand {
+
+	private Set<Long> idsToUpdateCount;
+	private String moduleName;
 
 	@Override
 	public boolean execute(Context context) throws Exception {
@@ -39,8 +43,10 @@ public class DeleteAttachmentCommand implements Command {
 			List<AttachmentContext> attachments = attachmentBuilder.get();
 			if (attachments != null && !attachments.isEmpty()) {
 				Set<Long> parentIds = attachments.stream().map(AttachmentContext::getParentId).collect(Collectors.toSet());
-				FacilioChain.addPostTrasanction(FacilioConstants.ContextNames.IDS_TO_UPDATE_COUNT, parentIds);
-				FacilioChain.addPostTrasanction(FacilioConstants.ContextNames.MODULE_NAME, moduleName);				
+				idsToUpdateCount = parentIds;
+				this.moduleName = moduleName;
+//				FacilioChain.addPostTrasanction(FacilioConstants.ContextNames.IDS_TO_UPDATE_COUNT, parentIds);
+//				FacilioChain.addPostTrasanction(FacilioConstants.ContextNames.MODULE_NAME, moduleName);				
 			}
 			
 			// TODO mark file as deleted if no reference for that file is available for all modules
@@ -59,6 +65,12 @@ public class DeleteAttachmentCommand implements Command {
 			context.put(FacilioConstants.ContextNames.ROWS_UPDATED, builder.delete());
 		}
 		
+		return false;
+	}
+	
+	@Override
+	public boolean postExecute() throws Exception {
+		AttachmentsAPI.updateAttachmentCount(idsToUpdateCount, moduleName);
 		return false;
 	}
 

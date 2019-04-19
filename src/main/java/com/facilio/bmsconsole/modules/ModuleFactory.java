@@ -1,5 +1,8 @@
 package com.facilio.bmsconsole.modules;
 
+import com.facilio.agent.AgentKeys;
+import com.facilio.constants.FacilioConstants;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -75,6 +78,8 @@ public class ModuleFactory {
 		moduleMap.put(FacilioConstants.ContextNames.PURCHASE_ORDER, getPurchaseOrderModule());
 		moduleMap.put(FacilioConstants.ContextNames.PURCHASE_REQUEST, getPurchaseRequestModule());
 		moduleMap.put(FacilioConstants.ContextNames.RECEIPT, getReceiptModule());
+		moduleMap.put(FacilioConstants.ContextNames.PURCHASE_CONTRACTS, getPurchaseContractModule());
+		moduleMap.put(FacilioConstants.ContextNames.LABOUR_CONTRACTS, getLabourContractModule());
 		
 		return moduleMap;
 	}
@@ -96,14 +101,29 @@ public class ModuleFactory {
 		return formModule;
 	}
 
-	public static FacilioModule getAgentdataModule() {
-		FacilioModule AgentdataModul = new FacilioModule();
-		AgentdataModul.setName("agentdata");
-		AgentdataModul.setDisplayName("agentdata");
-		AgentdataModul.setTableName("Agent_Data");
-		return AgentdataModul;
+	public static FacilioModule getAgentDataModule() {
+		FacilioModule agentDataModule = new FacilioModule();
+		agentDataModule.setName("agentData");
+		agentDataModule.setDisplayName("agentData");
+		agentDataModule.setTableName(AgentKeys.AGENT_TABLE);
+		return agentDataModule;
 	}
 
+	public static FacilioModule getAgentMetricsModule() {
+		FacilioModule agentMetricsModule = new FacilioModule();
+		agentMetricsModule.setName("addAgentMetrics");
+        agentMetricsModule.setDisplayName("addAgentMetrics");
+        agentMetricsModule.setTableName(AgentKeys.METRICS_TABLE);
+		return agentMetricsModule;
+	}
+
+	public static FacilioModule getAgentLogModule() {
+		FacilioModule agentLogModule = new FacilioModule();
+		agentLogModule.setName("agentLog");
+		agentLogModule.setDisplayName("agentLog");
+		agentLogModule.setTableName(AgentKeys.AGENT_LOG_TABLE);
+		return agentLogModule;
+	}
 
 	public static FacilioModule getFormFieldsModule() {
 		FacilioModule formFieldsModule = new FacilioModule();
@@ -1851,6 +1871,22 @@ public class ModuleFactory {
 		return purchaseOrder;
 	}
 
+	public static FacilioModule getPurchaseContractModule() {
+		FacilioModule purchasecontract = new FacilioModule();
+		purchasecontract.setName("purchasecontracts");
+		purchasecontract.setDisplayName("Purchase Contracts");
+		purchasecontract.setTableName("Purchase_Contracts");
+		return purchasecontract;
+	}
+
+	public static FacilioModule getLabourContractModule() {
+		FacilioModule labourcontract = new FacilioModule();
+		labourcontract.setName("labourcontracts");
+		labourcontract.setDisplayName("Labour Contracts");
+		labourcontract.setTableName("Labour_Contracts");
+		return labourcontract;
+	}
+
 	public static FacilioModule getControlActionTemplateModule() {
 		FacilioModule controlActionTemplate = new FacilioModule();
 		controlActionTemplate.setName("controlActionTemplate");
@@ -1912,5 +1948,21 @@ public class ModuleFactory {
 		mlCriteriaVariableModule.setDisplayName("MLCriteriaVariables");
 		mlCriteriaVariableModule.setTableName("ML_Criteria_Variables");
 		return mlCriteriaVariableModule;
+	}
+	
+	public static FacilioModule getSitesForStoreRoomModule() {
+		FacilioModule accessbileSpaceModule = new FacilioModule();
+		accessbileSpaceModule.setName(FacilioConstants.ContextNames.SITES_FOR_STORE_ROOM);
+		accessbileSpaceModule.setDisplayName("Store Room Sites");
+		accessbileSpaceModule.setTableName("Storeroom_Sites");
+		return accessbileSpaceModule;
+	}
+	
+	public static FacilioModule getPoLineItemsSerialNumberModule() {
+		FacilioModule tenants = new FacilioModule();
+		tenants.setName("poLineItemSerialNumbers");
+		tenants.setDisplayName("Serial Numbers");
+		tenants.setTableName("PO_Line_Item_Serial_Numbers");
+		return tenants;
 	}
 }

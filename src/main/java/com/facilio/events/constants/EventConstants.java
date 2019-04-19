@@ -49,7 +49,7 @@ public class EventConstants {
 			c.addCommand(new ExecuteEventRulesCommand());
 			c.addCommand(new EventToAlarmCommand());
 			c.addCommand(new UpdateEventCommand());
-			c.setPostTransactionChain(getUpdateEventCountChain());
+//			c.setPostTransactionChain(getUpdateEventCountChain());
 			return c;
 		}
 		

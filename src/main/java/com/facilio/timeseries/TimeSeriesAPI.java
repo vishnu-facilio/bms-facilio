@@ -1,5 +1,25 @@
 package com.facilio.timeseries;
 
+import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
+import org.apache.commons.chain.Chain;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+
 import com.amazonaws.services.kinesis.clientlibrary.interfaces.IRecordProcessorCheckpointer;
 import com.amazonaws.services.kinesis.model.PutRecordResult;
 import com.amazonaws.services.kinesis.model.Record;
@@ -13,7 +33,14 @@ import com.facilio.bmsconsole.context.ReadingContext.SourceType;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.context.ReadingDataMeta.ReadingInputType;
 import com.facilio.bmsconsole.context.ReadingDataMeta.ReadingType;
-import com.facilio.bmsconsole.criteria.*;
+import com.facilio.bmsconsole.criteria.BooleanOperators;
+import com.facilio.bmsconsole.criteria.CommonOperators;
+import com.facilio.bmsconsole.criteria.Condition;
+import com.facilio.bmsconsole.criteria.Criteria;
+import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.criteria.DateOperators;
+import com.facilio.bmsconsole.criteria.NumberOperators;
+import com.facilio.bmsconsole.criteria.StringOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
@@ -30,22 +57,6 @@ import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
 import com.facilio.tasker.FacilioTimer;
-
-import java.sql.SQLException;
-
-import org.apache.commons.chain.Chain;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.Pair;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-
-import java.nio.ByteBuffer;
-import java.nio.charset.Charset;
-import java.util.*;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 public class TimeSeriesAPI {
 
@@ -203,7 +214,6 @@ public class TimeSeriesAPI {
 		else {
 			updateInstanceAssetMapping(deviceName, assetId, categoryId, instance, fieldId, modeledData);
 		}
-		ControllerAPI.updateControllerModifiedTime(controllerId);
 	}
 	
 	// Temp
@@ -254,11 +264,11 @@ public static void insertInstanceAssetMapping(String deviceName, long assetId, l
 			long fieldId = entry.getValue();
 			
 			checkForInputType(assetId, fieldId, instanceName, metaMap);
-		
+			/*
 			Map<String, Object> pointsRecord = (Map<String, Object>) getNewPointsData(assetId,categoryId,fieldId);
 			
 			updatePointsData(deviceName, instanceName, pointsRecord);
-		
+			*/
 			
 			Map<String, Object> record = new HashMap<String,Object>();
 			record.put("orgId", orgId);

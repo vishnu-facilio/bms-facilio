@@ -559,11 +559,21 @@ public class V2ReportAction extends FacilioAction {
 	public void setPmId(long pmId) {
 		this.pmId = pmId;
 	}
+	
+	private long resourceId = -1;
+	
+	public long getResourceId() {
+		return resourceId;
+	}
+	public void setResourceId(long resourceId) {
+		this.resourceId = resourceId;
+	}
 	public String fetchReportData() throws Exception {
 		FacilioContext context = new FacilioContext();
 		Chain c = FacilioChain.getNonTransactionChain();
 		if(pmId != -1) {
 			context.put("pmId", pmId);
+			context.put("resourceId", resourceId);
 			c.addCommand(new ConstructReportDataForPM());
 		}
 		else {
@@ -826,9 +836,6 @@ public class V2ReportAction extends FacilioAction {
 				baseLines = baselineArray.toJSONString();
 			}
 			
-			if (newFormat) {
-				ReportUtil.setAliasForDataPoints(dataPoints, readingRules.get(0).getBaselineId());
-			}
 		}
 		else if(isAnomalyAlarm){
 			
@@ -845,13 +852,49 @@ public class V2ReportAction extends FacilioAction {
 			dataPoint.put("yAxis", yAxisJson);
 			
 			dataPoint.put("type", 1);
+			
 			dataPoints.add(dataPoint);
 			
-			
-			if (newFormat) {
-				ReportUtil.setAliasForDataPoints(dataPoints,-1l);
-			}
 		}
+		String additionalDataPointString = "anomalyreadings";
+		if(alarmContext != null && alarmContext.getAdditionInfo() != null && alarmContext.getAdditionInfo().containsKey(additionalDataPointString)) {
+			
+			this.startTime = DateTimeUtil.getDayStartTimeOf(alarmContext.getCreatedTime());		// specific handling for
+			dataPoints = new JSONArray();														// anomaly alarms
+			
+			JSONArray points = FacilioUtil.parseJsonArray(alarmContext.getAdditionInfo().get(additionalDataPointString).toString());
+			
+			for(int i=0;i<points.size();i++) {
+				long fieldId = Long.parseLong(points.get(i).toString());
+				
+				JSONObject dataPoint = new JSONObject();
+				
+				dataPoint.put("parentId", FacilioUtil.getSingleTonJsonArray(resource.getId()));
+				
+				JSONObject yAxisJson = new JSONObject();
+				yAxisJson.put("fieldId", fieldId);
+				yAxisJson.put("aggr", 0);
+				
+				dataPoint.put("yAxis", yAxisJson);
+				
+				dataPoint.put("type", 1);
+				
+				dataPoints.add(dataPoint);
+			}
+			
+		}
+		if(alarmId == 890083l) {
+			LOGGER.error("new data point json -- "+dataPoints);
+		}
+		if (newFormat) {
+			long baselineId = -1l;
+			if(readingRules != null && !readingRules.isEmpty() && readingRules.get(0) != null) {
+				baselineId = readingRules.get(0).getBaselineId();
+			}
+			ReportUtil.setAliasForDataPoints(dataPoints, baselineId);
+		}
+		
+		
 		if(this.startTime <= 0 && this.endTime <= 0) {
 			long modifiedTime = alarmContext.getCreatedTime();
 			if(alarmContext.getModifiedTime() > 0) {

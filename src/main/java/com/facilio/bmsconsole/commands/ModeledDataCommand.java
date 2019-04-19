@@ -40,10 +40,12 @@ public class ModeledDataCommand implements Command {
 		List<Map<String,Object>>  dataPoints= null;
 		long orgId = AccountUtil.getCurrentOrg().getOrgId();
 		if(!AwsUtil.isProduction() && orgId==75) {
-			
+
 			LOGGER.info("#####Controller Id:  "+controllerId);
-		}	
+		}
 		
+
+/*
 		LOGGER.debug("Inside ModeledDataCommand####### deviceData: "+deviceData);
 		for(Map.Entry<String, Map<String,String>> data:deviceData.entrySet()) {
 
@@ -83,7 +85,7 @@ public class ModeledDataCommand implements Command {
 		}	
 		TimeSeriesAPI.insertPoints(insertNewPointsData);
 		pointsData.addAll(insertNewPointsData);
-				
+	*/
 		
 		//oldPublish data
 		for(Map.Entry<String, Map<String,String>> data:deviceData.entrySet()) {

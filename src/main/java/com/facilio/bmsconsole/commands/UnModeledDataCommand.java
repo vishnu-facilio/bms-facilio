@@ -43,7 +43,7 @@ public class UnModeledDataCommand implements Command {
 					continue;
 				}
 				
-				 Long pointsInstanceId = getPointsUnmodledInstance(deviceName , instanceName ,controllerId, pointsRecords);
+				// Long pointsInstanceId = getPointsUnmodledInstance(deviceName , instanceName ,controllerId, pointsRecords);
 	
 				Long instanceId= getUnmodledInstance(deviceName,instanceName,controllerId);
 				
@@ -61,7 +61,7 @@ public class UnModeledDataCommand implements Command {
 					instanceId=getUnmodeledInstanceAfterInsert(deviceName,instanceName,controllerId);
 				}
 				Map<String, Object> record=new HashMap<String,Object>();
-				record.put("newInstanceId", pointsInstanceId);
+				//record.put("newInstanceId", pointsInstanceId);
 				record.put("instanceId", instanceId);
 				record.put("ttime",timeStamp);
 				record.put("value", instanceVal);

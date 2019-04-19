@@ -280,11 +280,9 @@ public class WorkflowUtil {
 		
 		Object result = workflowContext.executeWorkflow();
 		
-//		if(!AwsUtil.isProduction()) {
-//			if(workflowContext.isLogNeeded()) {
-//				WorkflowLogUtil.addWorkflowLog(workflowContext,paramMap,result);
-//			}
-//		}
+		if(workflowContext.isLogNeeded()) {
+			WorkflowLogUtil.addWorkflowLog(workflowContext,paramMap,result);
+		}
 		
 		if(isVariableMapNeeded) {
 			return workflowContext.getVariableResultMap();
@@ -1173,6 +1171,9 @@ public class WorkflowUtil {
 				}
 				else {
 					condition.setFieldName(fieldName);
+				}
+				if(operator == null) {
+					LOGGER.severe("conditionString --- "+conditionString+",  operatorString --- "+operatorString);
 				}
 				condition.setOperator(operator);
 				condition.setValue(conditionValue);

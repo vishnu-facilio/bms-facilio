@@ -38,6 +38,7 @@ public class StoreRoomAction extends FacilioAction{
 		storeRoom.setTtime(System.currentTimeMillis());
 		storeRoom.setModifiedTime(System.currentTimeMillis());
 		context.put(FacilioConstants.ContextNames.RECORD, storeRoom);
+		context.put(FacilioConstants.ContextNames.SITES_FOR_STORE_ROOM, storeRoom.getSites());
 		Chain addStoreRoom = TransactionChainFactory.getAddStoreRoomChain();
 		addStoreRoom.execute(context);
 		
@@ -49,6 +50,8 @@ public class StoreRoomAction extends FacilioAction{
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.EDIT);
 		context.put(FacilioConstants.ContextNames.RECORD, storeRoom);
+		context.put(FacilioConstants.ContextNames.SITES_FOR_STORE_ROOM, storeRoom.getSites());
+		context.put(FacilioConstants.ContextNames.RECORD_ID, storeRoom.getId());
 		context.put(FacilioConstants.ContextNames.ID, storeRoom.getId());
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(storeRoom.getId()));
 		context.put(FacilioConstants.ContextNames.WITH_CHANGE_SET, true);
