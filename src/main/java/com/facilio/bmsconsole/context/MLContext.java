@@ -13,7 +13,6 @@ public class MLContext extends ModuleBaseWithCustomFields
 {
 	private static final long serialVersionUID = 1L;
 	
-	private MLAssetContext assetContext;
 	private Hashtable<Long,Map<String,Object>> assetDetails=new Hashtable<Long,Map<String,Object>>(10);
 	private Map<Long,HashMap<String,String>> assetVariables;
 	private List<MLModelVariableContext> mlModelVariables;
@@ -86,10 +85,6 @@ public class MLContext extends ModuleBaseWithCustomFields
 	{
 		return modelPath;
 	}
-	public void setAssetContext(MLAssetContext context) 
-	{
-		this.assetContext = context;
-	}
 	
 	public void setAssetDetails(long assetID,Map<String,Object> data)
 	{
@@ -122,10 +117,6 @@ public class MLContext extends ModuleBaseWithCustomFields
 		return assetDetails;
 	}
 	
-	public MLAssetContext getAssetContext()
-	{
-		return assetContext;
-	}
 	
 	public void addMLVariable(MLVariableContext context)
 	{

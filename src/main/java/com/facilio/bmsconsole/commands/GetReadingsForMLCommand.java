@@ -84,7 +84,7 @@ public class GetReadingsForMLCommand implements Command {
 																		.beanClass(ReadingContext.class)
 																		.orderBy("TTIME ASC")
 																		.andCustomWhere("TTIME >= ? AND TTIME < ? AND PARENT_ID=? ",
-																				startTime, currentTime, mlContext.getAssetContext().getAssetID());
+																				startTime, currentTime, variables.getParentID());
 				List<Map<String, Object>> props = selectBuilder.getAsProps();
 				for(Map<String,Object> prop : props)
 				{
