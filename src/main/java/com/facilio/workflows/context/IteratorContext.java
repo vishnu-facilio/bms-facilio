@@ -94,6 +94,19 @@ public class IteratorContext implements WorkflowExpression {
 			
 		}
 		else if(iterateObject instanceof Map) {
+			Map iterateMap = (Map) iterateObject;
+			for(Object key :iterateMap.keySet() ) {
+				variableToExpresionMap.put(loopVariableIndexName, key);						// index acts as key for Map Iteration 
+				variableToExpresionMap.put(loopVariableValueName, iterateMap.get(key));
+				
+				List<WorkflowExpression> newExpressions = new ArrayList<WorkflowExpression>(expressions.size());
+			    for (WorkflowExpression expression : expressions) {
+			    	newExpressions.add((WorkflowExpression)expression.clone());
+			    }
+				WorkflowContext.executeExpression(newExpressions, workflowContext);
+			}
+			variableToExpresionMap.remove(loopVariableIndexName);
+			variableToExpresionMap.remove(loopVariableValueName);
 		}
 		
 		return null;
