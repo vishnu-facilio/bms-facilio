@@ -38,13 +38,13 @@ public class UpdateFormulaCommand implements Command {
 		}
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = null;
-		if ((newFormula.getName() != null && !newFormula.getName().isEmpty()) || (formulaFieldUnit != null && !formulaFieldUnit.isEmpty())) {
+		if ((newFormula.getName() != null && !newFormula.getName().isEmpty()) || (formulaFieldUnit != null)) {
 			FacilioField field = new NumberField();
 			
 			if((newFormula.getName() != null && !newFormula.getName().isEmpty())) {
 				field.setDisplayName(newFormula.getName());
 			}
-			if((formulaFieldUnit != null && !formulaFieldUnit.isEmpty())) {
+			if(formulaFieldUnit != null) {
 				((NumberField)field).setUnit(formulaFieldUnit);
 			}
 			
