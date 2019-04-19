@@ -14,13 +14,18 @@ public class ApplyRuleForMLCommand implements Command {
 	@Override
 	public boolean execute(Context context) throws Exception 
 	{
+		
 		MLContext mlContext = (MLContext) context.get(FacilioConstants.ContextNames.ML);
-		WorkflowRuleContext rule = WorkflowRuleAPI.getWorkflowRule(mlContext.getRuleId(),true,true,true);
+		WorkflowRuleContext rule = WorkflowRuleAPI.getWorkflowRule(mlContext.getRuleID(),true,true,true);
 		if (rule != null && rule.isActive()) 
 		{
-			WorkflowRuleAPI.executeScheduledRule(rule, mlContext.getPredictionTime() * 1000, new FacilioContext());
+			
+			FacilioContext ruleContext = new FacilioContext();
+			ruleContext.put("jobid", "6");
+			WorkflowRuleAPI.executeScheduledRule(rule, mlContext.getPredictionTime() * 1000, ruleContext);
 		}
 		return false;
+		
 	}
 
 }
