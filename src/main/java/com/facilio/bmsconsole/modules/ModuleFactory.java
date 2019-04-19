@@ -1872,9 +1872,9 @@ public class ModuleFactory {
 	public static FacilioModule getMLAssetModule() 
 	{
 		FacilioModule mlAssetModule = new FacilioModule();
-		mlAssetModule.setName("mlAsset");
-		mlAssetModule.setDisplayName("MlAsset");
-		mlAssetModule.setTableName("ML_Asset");
+		mlAssetModule.setName("mlAssets");
+		mlAssetModule.setDisplayName("MlAssets");
+		mlAssetModule.setTableName("ML_Assets");
 		return mlAssetModule;
 	}
 	
