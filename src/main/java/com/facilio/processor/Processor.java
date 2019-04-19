@@ -188,6 +188,16 @@ public class Processor implements IRecordProcessor {
                             case agent:
                                 i =  agentUtil.processAgent( payLoad,agentName);
                                 if(isStage && (payLoad.containsKey(AgentKeys.COMMAND_STATUS) || payLoad.containsKey(AgentKeys.CONTENT))){
+                                    if( payLoad.containsKey(AgentKeys.COMMAND_STATUS)){
+                                        if((payLoad.remove(AgentKeys.COMMAND_STATUS)).toString().equals("1")){
+                                            LOGGER.info(" Payload -- "+payLoad);
+                                            payLoad.put(AgentKeys.CONTENT,"Agent connected to Facilio");
+                                        }
+                                        else{
+                                            LOGGER.info(" Payload -- "+payLoad);
+                                            payLoad.put(AgentKeys.CONTENT,"Agent disconnected to Facilio");
+                                        }
+                                    }
                                     agentUtil.putLog(payLoad,orgId,agent.getId(),false);
                                 }
                                 break;
