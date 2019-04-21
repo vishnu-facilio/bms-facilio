@@ -1255,9 +1255,9 @@ public class DashboardUtil {
 		
 		List<DashboardFolderContext> dashboardFolderContexts = new ArrayList<>();
 		
-		DashboardFolderContext defaultFolder = new DashboardFolderContext();
+		DashboardFolderContext defaultFolder = new DashboardFolderContext();						// remove this after mig
 		
-		defaultFolder.setName("default");
+		defaultFolder.setName("default");															// remove this after mig
 		
 		for(DashboardContext dashboard :dashboards) {
 			
@@ -1278,12 +1278,12 @@ public class DashboardUtil {
 					dashboardFolderContexts.add(folder);
 				}
 			}
-			else {
+			else {																					// remove this after mig
 				defaultFolder.addDashboards(dashboard);
 			}
 		}
 		
-		if(defaultFolder.getDashboards() != null && !defaultFolder.getDashboards().isEmpty()) {
+		if(defaultFolder.getDashboards() != null && !defaultFolder.getDashboards().isEmpty()) {		// remove this after mig
 			
 			dashboardFolderContexts.add(defaultFolder);
 		}
