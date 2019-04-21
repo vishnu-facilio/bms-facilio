@@ -140,6 +140,7 @@ public class UpdateAlarmRuleCommand implements Command {
 		if(alarmRule.getDeletedAlarmRCARules() != null) {
 			for(ReadingRuleContext deletedRcaRule : alarmRule.getDeletedAlarmRCARules()) {
 				WorkflowRuleAPI.deleteWorkflowRule(deletedRcaRule.getId());
+				updateParentRuleId(deletedRcaRule.getId(), alarmTriggerRule.getId());
 			}
 		}
 		
