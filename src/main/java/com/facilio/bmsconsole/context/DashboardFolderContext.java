@@ -65,7 +65,7 @@ public class DashboardFolderContext {
 		this.dashboards = dashboards;
 	}
 	
-	public void addDashboards(DashboardContext dashboard) {
+	public void addDashboard(DashboardContext dashboard) {
 		this.dashboards = (this.dashboards == null) ? new ArrayList<>() : this.dashboards; 
 		this.dashboards.add(dashboard);
 	}
