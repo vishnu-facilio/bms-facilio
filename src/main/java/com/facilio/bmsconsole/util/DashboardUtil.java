@@ -2399,18 +2399,15 @@ public class DashboardUtil {
 	
 	public static void updateDashboardFolder(List<DashboardFolderContext> dashboardFolders) throws Exception {
 		
-		UpdateRecordBuilder<ModuleBaseWithCustomFields> update = new UpdateRecordBuilder<>();
+		GenericUpdateRecordBuilder update = new GenericUpdateRecordBuilder();
 		
 		for(DashboardFolderContext dashboardFolder :dashboardFolders) {
-			update.module(ModuleFactory.getDashboardFolderModule());
+			update.table(ModuleFactory.getDashboardFolderModule().getTableName());
 			update.fields(FieldFactory.getDashboardFolderFields())
 			.andCustomWhere("ID = ?", dashboardFolder.getId());
 			
 			Map<String, Object> prop = FieldUtil.getAsProperties(dashboardFolder);
-			ModuleBaseWithCustomFields record = new ModuleBaseWithCustomFields();
-			record.addData(prop);
-			
-			update.update(record);
+			update.update(prop);
 		}
 		
 	}
