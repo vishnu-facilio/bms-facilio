@@ -7,7 +7,7 @@ import java.util.*;
 @JsonFormat(shape = JsonFormat.Shape.OBJECT)
 public enum Unit {
 	
-	// last id -- 103
+	// last id -- 104
 	
 	KWH(1,"kilowatt-hour","kWh",Metric.ENERGY),
 	HECTOWH(76,"hectowatt-hour","hWh",Metric.ENERGY,"si*10","this/10"),
@@ -129,6 +129,7 @@ public enum Unit {
 	GALLONSPERMIN(92,"Gallons per minute","gal/min",Metric.FLOWRATE,"si*7.48","this/7.48"),
 	LITRESPERMIN(93,"litres per minute","l/min",Metric.FLOWRATE,"si*28.316","this/28.316"),
 	CUBICMETERPERSECOND(100,"cubic meter per second","m\u00B3/sec",Metric.FLOWRATE,"si/2118.88","this*2118.88"),
+	CUBICMETERPERHOUR(104,"cubic meter per hour","m\u00B3/hr",Metric.FLOWRATE,"si*1.69901","this/1.69901"),
 	
 	PARTSPERMILLION(101,"parts per million","ppm",Metric.CONCENTRATION),
 	;

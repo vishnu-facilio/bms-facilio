@@ -693,6 +693,7 @@ public enum ActionType {
 								Object id = ((Map<String, Object>)val).get("id");
 								if ( FacilioConstants.ContextNames.USERS.equals(((LookupField) field).getSpecialType()) && FacilioConstants.Criteria.LOGGED_IN_USER.equals(id)) {
 									val = AccountUtil.getCurrentUser();
+									((Map<String, Object>)val).put("id", AccountUtil.getCurrentUser().getId());// setting newly updated value if any
 								}
 								else {
 									val = FieldUtil.getEmptyLookupVal((LookupField) field, FacilioUtil.parseLong(id));
@@ -701,12 +702,11 @@ public enum ActionType {
 							case DATE:
 							case DATE_TIME:
 								val = currentTime + FacilioUtil.parseLong(val);
+								obj.put(key, val);	// setting newly updated value if any
 								break;
 							default:
 								break;
 						}
-						obj.put(key, val);	// setting newly updated value if any
-						
 						fields.add(field);
 						if (field.isDefault()) {
 							BeanUtils.setProperty(currentRecord, field.getName(), val);

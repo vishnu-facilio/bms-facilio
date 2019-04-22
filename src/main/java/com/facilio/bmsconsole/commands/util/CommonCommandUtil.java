@@ -828,7 +828,6 @@ public class CommonCommandUtil {
 		activity.setType(type);
 		activity.setInfo(info);
 		activity.setDoneBy(AccountUtil.getCurrentUser());
-		
 		List<ActivityContext> activities = (List<ActivityContext>) context.get(FacilioConstants.ContextNames.ACTIVITY_LIST);
 		if (activities == null) {
 			activities = new ArrayList<>();

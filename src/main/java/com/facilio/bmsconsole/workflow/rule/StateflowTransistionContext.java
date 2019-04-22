@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.workflow.rule;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -183,7 +184,7 @@ public class StateflowTransistionContext extends WorkflowRuleContext {
 			return new ArrayList<>(approverMap.values());
 		}
 		else {
-			return matching;
+			return Collections.emptyList();	// there is not pending approvers
 		}
 	}
 	
@@ -202,7 +203,7 @@ public class StateflowTransistionContext extends WorkflowRuleContext {
 		if (shouldExecuteTrueActions) {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioModule module = modBean.getModule(getModuleId());
-			StateFlowRulesAPI.updateState(moduleRecord, module, StateFlowRulesAPI.getStateContext(getToStateId()), false);
+			StateFlowRulesAPI.updateState(moduleRecord, module, StateFlowRulesAPI.getStateContext(getToStateId()), false, context);
 			
 			StateFlowRulesAPI.addScheduledJobIfAny(getToStateId(), module.getName(), moduleRecord, (FacilioContext) context);
 			

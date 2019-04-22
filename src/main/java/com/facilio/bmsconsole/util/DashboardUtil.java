@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.util;
 
 import com.facilio.accounts.dto.Group;
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
@@ -980,7 +981,17 @@ public class DashboardUtil {
 			if(getOnlyMobileDashboard) {
 				splitBuildingDashboardForMobile(dashboards);
 			}
-			
+			if(!AwsUtil.isProduction()) {
+				List<DashboardFolderContext> folders = getDashboardFolder(moduleName);
+				for(DashboardFolderContext folder :folders) {
+					for(DashboardContext dashboard :dashboards) {
+						if(dashboard.getDashboardFolderId() == folder.getId()) {
+							folder.addDashboard(dashboard);
+						}
+					}
+				}
+				return folders;
+			}
 			return sortDashboardByFolder(dashboards);
 		}
 		return null;
@@ -1126,7 +1137,7 @@ public class DashboardUtil {
 			
 			if (portfolioDashboard != null) {	
 				if (portfolioDashboard != null && ((buildings != null && buildings.size() > 1) || (sites != null && sites.size() > 1))) {
-					portfolioFolder.addDashboards(portfolioDashboard);
+					portfolioFolder.addDashboard(portfolioDashboard);
 				}
 			}
 				
@@ -1147,7 +1158,7 @@ public class DashboardUtil {
 					bd.setCreatedByUserId(buildingDashboard.getCreatedByUserId());
 					bd.setDisplayOrder(buildingDashboard.getDisplayOrder());
 					
-					portfolioFolder.addDashboards(bd);
+					portfolioFolder.addDashboard(bd);
 				}
 			}
 			
@@ -1168,12 +1179,12 @@ public class DashboardUtil {
 					bd.setCreatedByUserId(siteDashboard.getCreatedByUserId());
 					bd.setDisplayOrder(siteDashboard.getDisplayOrder());
 					
-					portfolioFolder.addDashboards(bd);
+					portfolioFolder.addDashboard(bd);
 				}
 			}
 			
 			if (commercialPortfolioDashboard != null) {
-				commercialPortfolioFolder.addDashboards(commercialPortfolioDashboard);
+				commercialPortfolioFolder.addDashboard(commercialPortfolioDashboard);
 			}
 			
 			if (commercialPortfolioDashboard != null && buildingDashboard != null) {
@@ -1197,7 +1208,7 @@ public class DashboardUtil {
 								bd.setCreatedByUserId(buildingDashboard.getCreatedByUserId());
 								bd.setDisplayOrder(buildingDashboard.getDisplayOrder());
 								
-								commercialPortfolioFolder.addDashboards(bd);
+								commercialPortfolioFolder.addDashboard(bd);
 							}
 						}
 					}
@@ -1205,7 +1216,7 @@ public class DashboardUtil {
 			}
 			
 			if (residentialPortfolioDashboard != null) {
-				residentialPortfolioFolder.addDashboards(residentialPortfolioDashboard);
+				residentialPortfolioFolder.addDashboard(residentialPortfolioDashboard);
 			}
 			
 			if (residentialPortfolioDashboard != null && buildingDashboard != null) {
@@ -1229,7 +1240,7 @@ public class DashboardUtil {
 								bd.setCreatedByUserId(buildingDashboard.getCreatedByUserId());
 								bd.setDisplayOrder(buildingDashboard.getDisplayOrder());
 								
-								residentialPortfolioFolder.addDashboards(bd);
+								residentialPortfolioFolder.addDashboard(bd);
 							}
 						}
 					}
@@ -1267,22 +1278,21 @@ public class DashboardUtil {
 				for(DashboardFolderContext dashboardFolderContext :dashboardFolderContexts) {
 					
 					if(dashboard.getDashboardFolderId().equals(dashboardFolderContext.getId())) {
-						dashboardFolderContext.addDashboards(dashboard);
+						dashboardFolderContext.addDashboard(dashboard);
 						found = true;
 						break;
 					}
 				}
 				if(!found) {
 					DashboardFolderContext folder = getDashboardFolder(dashboard.getDashboardFolderId());
-					folder.addDashboards(dashboard);
+					folder.addDashboard(dashboard);
 					dashboardFolderContexts.add(folder);
 				}
 			}
 			else {																					// remove this after mig
-				defaultFolder.addDashboards(dashboard);
+				defaultFolder.addDashboard(dashboard);
 			}
 		}
-		
 		if(defaultFolder.getDashboards() != null && !defaultFolder.getDashboards().isEmpty()) {		// remove this after mig
 			
 			dashboardFolderContexts.add(defaultFolder);
@@ -2399,18 +2409,15 @@ public class DashboardUtil {
 	
 	public static void updateDashboardFolder(List<DashboardFolderContext> dashboardFolders) throws Exception {
 		
-		UpdateRecordBuilder<ModuleBaseWithCustomFields> update = new UpdateRecordBuilder<>();
+		GenericUpdateRecordBuilder update = new GenericUpdateRecordBuilder();
 		
 		for(DashboardFolderContext dashboardFolder :dashboardFolders) {
-			update.module(ModuleFactory.getDashboardFolderModule());
+			update.table(ModuleFactory.getDashboardFolderModule().getTableName());
 			update.fields(FieldFactory.getDashboardFolderFields())
 			.andCustomWhere("ID = ?", dashboardFolder.getId());
 			
 			Map<String, Object> prop = FieldUtil.getAsProperties(dashboardFolder);
-			ModuleBaseWithCustomFields record = new ModuleBaseWithCustomFields();
-			record.addData(prop);
-			
-			update.update(record);
+			update.update(prop);
 		}
 		
 	}

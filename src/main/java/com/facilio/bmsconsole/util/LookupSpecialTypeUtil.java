@@ -40,6 +40,7 @@ public class LookupSpecialTypeUtil {
 				|| FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE.equals(specialType)
 				|| FacilioConstants.ContextNames.WORK_ORDER_TEMPLATE.equals(specialType)
 				|| "trigger".equals(specialType)
+				|| "connectedApps".equals(specialType)
 				;
 	}
 	
@@ -415,6 +416,9 @@ public class LookupSpecialTypeUtil {
 		}
 		else if("trigger".equals(specialType)) {
 			return ModuleFactory.getPMTriggersModule();
+		}
+		else if("connectedApps".equals(specialType)) {
+			return ModuleFactory.getConnectedAppsModule();
 		}
 		return null;
 	}

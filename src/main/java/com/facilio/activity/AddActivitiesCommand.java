@@ -68,7 +68,7 @@ public class AddActivitiesCommand implements Command {
 			currentActivity = (String) context.get(FacilioConstants.ContextNames.CURRENT_ACTIVITY);
 		}
 		if (StringUtils.isNotEmpty(currentActivity)) {
-			FacilioModule module = modBean.getModule(activityModule);
+			FacilioModule module = modBean.getModule(currentActivity);
 			if (module == null) {
 				LOGGER.info("No valid Activity Module with name "+activityModule+" and so not adding activities for that");
 			}

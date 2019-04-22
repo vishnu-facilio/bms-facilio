@@ -1576,6 +1576,20 @@ public class TransactionChainFactory {
 			return c;
 		}
 		
+		public static Chain getAddOrUpdateConnectedAppChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForConnectedApps());
+			c.addCommand(new AddOrUpdateConnectedAppCommand());
+			return c;
+		}
+		
+		public static Chain getDeleteConnectedAppChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForConnectedApps());
+			c.addCommand(new DeleteConnectedAppCommand());
+			return c;
+		}
+		
 		public static Chain getAddToolTypesCategoryChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForToolTypesCategory());
@@ -2461,6 +2475,7 @@ public class TransactionChainFactory {
 			c.addCommand(new GenericGetModuleDataDetailCommand());
 			c.addCommand(new UpdateFieldDataCommand());
 			c.addCommand(new UpdateStateCommand());
+			c.addCommand(new AddActivitiesCommand());
 //			c.addCommand(new GenericUpdateModuleDataCommand());
 			return c;
 		}

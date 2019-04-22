@@ -2525,17 +2525,12 @@ public class FieldFactory {
 	}
 
 	public static List<FacilioField> getConnectedAppFields() {
-		FacilioModule module = ModuleFactory.getConnectedAppModule();
+		FacilioModule module = ModuleFactory.getConnectedAppsModule();
 
-		List<FacilioField> fields = new ArrayList<>();
+		List<FacilioField> fields = getSystemFields(module);
+		
 		/*fields.add(getOrgIdField(module));*/
-
-		FacilioField connectedAppId = new FacilioField();
-		connectedAppId.setName("connectedAppId");
-		connectedAppId.setDataType(FieldType.ID);
-		connectedAppId.setColumnName("CONNECTED_APP_ID");
-		connectedAppId.setModule(module);
-		fields.add(connectedAppId);
+		fields.add(getIdField(module));
 
 		FacilioField name = new FacilioField();
 		name.setName("name");
@@ -2557,13 +2552,22 @@ public class FieldFactory {
 		description.setColumnName("DESCRIPTION");
 		description.setModule(module);
 		fields.add(description);
+		
+		FacilioField logoId = new FacilioField();
+		logoId.setName("logoId");
+		logoId.setDataType(FieldType.NUMBER);
+		logoId.setColumnName("LOGO_ID");
+		logoId.setModule(module);
+		fields.add(logoId);
 
-		FacilioField baseurl = new FacilioField();
-		baseurl.setName("baseurl");
-		baseurl.setDataType(FieldType.STRING);
-		baseurl.setColumnName("BASEURL");
-		baseurl.setModule(module);
-		fields.add(baseurl);
+		FacilioField baseUrl = new FacilioField();
+		baseUrl.setName("baseUrl");
+		baseUrl.setDataType(FieldType.STRING);
+		baseUrl.setColumnName("BASE_URL");
+		baseUrl.setModule(module);
+		fields.add(baseUrl);
+		
+		fields.add(getField("isActive", "IS_ACTIVE", module, FieldType.BOOLEAN));
 
 		return fields;
 	}
