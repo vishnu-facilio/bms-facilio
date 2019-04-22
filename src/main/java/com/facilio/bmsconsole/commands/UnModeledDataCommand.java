@@ -21,6 +21,7 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
+import com.facilio.timeseries.TimeSeriesAPI;
 
 public class UnModeledDataCommand implements Command {
 
@@ -42,11 +43,12 @@ public class UnModeledDataCommand implements Command {
 				if(instanceVal.equalsIgnoreCase("NaN")) {
 					continue;
 				}
-				
-				// Long pointsInstanceId = getPointsUnmodledInstance(deviceName , instanceName ,controllerId, pointsRecords);
-	
+				Long pointsInstanceId=null;
+				if(TimeSeriesAPI.isStage()) {
+					pointsInstanceId = getPointsUnmodledInstance(deviceName , instanceName ,controllerId, pointsRecords);
+				}
 				Long instanceId= getUnmodledInstance(deviceName,instanceName,controllerId);
-				
+
 				if(instanceId==null && controllerId!=null) {
 					//TODO temporary code.. should be removed later
 					//for now passing controllerid as null to ensure updating of the unmodelled instance with proper controllerId.. 
@@ -56,12 +58,14 @@ public class UnModeledDataCommand implements Command {
 						updateControllerForInstance(instanceId, controllerId);
 					}
 				}
-				
+
 				if(instanceId==null) {
 					instanceId=getUnmodeledInstanceAfterInsert(deviceName,instanceName,controllerId);
 				}
-				Map<String, Object> record=new HashMap<String,Object>();
-				//record.put("newInstanceId", pointsInstanceId);
+				Map<String, Object> record=new HashMap<String,Object>();			
+				if(TimeSeriesAPI.isStage()) {
+					record.put("newInstanceId", pointsInstanceId);
+				}
 				record.put("instanceId", instanceId);
 				record.put("ttime",timeStamp);
 				record.put("value", instanceVal);
@@ -71,9 +75,6 @@ public class UnModeledDataCommand implements Command {
 		insertUnmodeledData(records);
 		return false;
 	}
-
-
-
 
 	private  Long getUnmodledInstance(String deviceName, String instanceName, Long controllerId) throws Exception {
 
@@ -98,14 +99,16 @@ public class UnModeledDataCommand implements Command {
 		}
 		return id;
 	}
-	
+
 	private  Long getPointsUnmodledInstance(String deviceName, String instanceName, Long controllerId,List<Map<String, Object>> pointsRecords) throws Exception {
-		
+
 		Iterator<Map<String,Object>> itr= pointsRecords.iterator();
 		while (itr.hasNext()) {
 			Map<String,Object> map= itr.next();
 			Long id= (Long) map.get("id");
-			if((map.containsValue(deviceName) && map.containsValue(instanceName)&& map.containsValue(controllerId))){
+			String mDeviceName=(String) map.get("device");
+			String mInstanceName=(String) map.get("instance");
+			if((mDeviceName.equals(deviceName) && mInstanceName.equals(instanceName))){
 				itr.remove();
 				return id;
 			}
@@ -115,31 +118,31 @@ public class UnModeledDataCommand implements Command {
 	}
 
 	private void updateControllerForInstance(long instanceId, long controllerId) {
-		
+
 		try {
 			FacilioModule module = ModuleFactory.getUnmodeledInstancesModule();
 			List<FacilioField> fields = FieldFactory.getUnmodeledInstanceFields();
-			
+
 			Map<String, Object> prop = Collections.singletonMap("controllerId", controllerId);
 			GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
-															.table(module.getTableName())
-															.fields(fields)
-															.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
-															.andCustomWhere("ID=?", instanceId);
-															;
-			 updateBuilder.update(prop);
-			
-			
+					.table(module.getTableName())
+					.fields(fields)
+					.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+					.andCustomWhere("ID=?", instanceId);
+			;
+			updateBuilder.update(prop);
+
+
 		}
 		catch(Exception e) {
 			System.err.println("Exception while updating the controller Id: "+e.getMessage());
-			
+
 		}
-		
-		
+
+
 	}
-	
-  
+
+
 	private  Long getUnmodeledInstanceAfterInsert(String deviceName, String instanceName, Long controllerId) throws SQLException {
 
 		long orgId = AccountUtil.getCurrentOrg().getOrgId();
@@ -160,8 +163,8 @@ public class UnModeledDataCommand implements Command {
 		Long instanceId = (Long) value.get("id");
 		return instanceId;
 	}
-	
-	
+
+
 	private void insertUnmodeledData(List<Map<String, Object>> records) throws SQLException {
 
 		if(records.isEmpty()) {

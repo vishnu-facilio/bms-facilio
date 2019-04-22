@@ -4660,17 +4660,18 @@ public class FieldFactory {
         fields.add(getField("thresholdJson", "THRESHOLD_JSON", module, FieldType.STRING));
         fields.add(getField("createdTime", "CREATED_TIME", module, FieldType.NUMBER));
 		return fields;
+
 	}
 	
 	public static List<FacilioField>  getPointsFields() {
 		FacilioModule module = ModuleFactory.getPointsModule();
 		List<FacilioField> fields = new ArrayList<>();
-		fields.add(getField("assetId", "ASSET_ID", module, FieldType.NUMBER));
+		fields.add(getField("resourceId", "RESOURCE_ID", module, FieldType.NUMBER));
 		fields.add(getField("categoryId", "ASSET_CATEGORY_ID", module, FieldType.NUMBER));
 		fields.add(getField("fieldId", "FIELD_ID", module, FieldType.NUMBER));
         fields.add(getField("mappedTime", "MAPPED_TIME", module, FieldType.NUMBER));
-		fields.add(getField("device", "DEVICE_NAME", module, FieldType.STRING));
-		fields.add(getField("instance", "INSTANCE_NAME", module, FieldType.STRING));
+		fields.add(getDeviceField(module));
+		fields.add(getInstanceField(module));
         fields.add(getField("controllerId", "CONTROLLER_ID", module, FieldType.NUMBER));
         fields.add(getField("objectInstanceNumber", "OBJECT_INSTANCE_NUMBER", module, FieldType.NUMBER));
         fields.add(getField("instanceDescription", "INSTANCE_DESCRIPTION", module, FieldType.STRING));
@@ -4681,6 +4682,15 @@ public class FieldFactory {
         fields.add(getField("createdTime", "CREATED_TIME", module, FieldType.NUMBER));
         fields.add(getField("unit", "UNIT", module, FieldType.NUMBER));
 		return fields;
+	}
+
+	public static FacilioField getInstanceField(FacilioModule module ) {
+		
+		return getField("instance", "INSTANCE_NAME", module, FieldType.STRING);
+	}
+	public static FacilioField getDeviceField(FacilioModule module ) {
+		
+		return getField("device", "DEVICE_NAME", module, FieldType.STRING);
 	}
 
 	public static List<FacilioField> getWeatherStationsFields() {

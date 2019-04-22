@@ -66,6 +66,9 @@ public  class DevicePointsUtil {
                 JSONArray points = (JSONArray)payLoad.get(DevicePointsKeys.POINTS);
                 LOGGER.info("Device Points : "+points);
                 TimeSeriesAPI.addUnmodeledInstances(points, controllerSettingsId);
+                if(TimeSeriesAPI.isStage()) {
+                	TimeSeriesAPI.addPointsInstances(points, controllerSettingsId);
+               }
             }
         // }
     }
