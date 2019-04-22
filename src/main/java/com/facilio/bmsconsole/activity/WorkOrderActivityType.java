@@ -101,6 +101,13 @@ public enum WorkOrderActivityType implements ActivityType {
 			// TODO Auto-generated method stub
 			return " added workorder through PM ";
 		}
+	},
+	UPDATE_STATUS(26) {
+		@Override
+		public String constructMessage(JSONObject json) {
+			// TODO Auto-generated method stub
+			return " updated ";
+		}
 	};
 	private int value;
 

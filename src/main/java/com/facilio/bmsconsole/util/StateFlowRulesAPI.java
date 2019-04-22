@@ -10,9 +10,12 @@ import java.util.Map;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.activity.WorkOrderActivityType;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.StateFlowContext;
 import com.facilio.bmsconsole.context.TicketStatusContext;
 import com.facilio.bmsconsole.criteria.Criteria;
@@ -49,7 +52,7 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 		return stateFlowRule;
 	}
 	
-	public static void updateState(ModuleBaseWithCustomFields record, FacilioModule module, TicketStatusContext ticketStatusContext, boolean includeStateFlowChange) throws Exception {
+	public static void updateState(ModuleBaseWithCustomFields record, FacilioModule module, TicketStatusContext ticketStatusContext, boolean includeStateFlowChange, Context context) throws Exception {
 		if (ticketStatusContext == null) {
 			return;
 		}
@@ -88,13 +91,20 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 		fields.add(modBean.getField(timerField.getTotalTimeFieldName(), module.getName()));
 		if (includeStateFlowChange) {
 			fields.add(modBean.getField("stateFlowId", module.getName()));
-		}
-		
+		} 
 		UpdateRecordBuilder<ModuleBaseWithCustomFields> updateBuilder = new UpdateRecordBuilder<ModuleBaseWithCustomFields>()
 				.module(module)
 				.fields(fields)
 				.andCondition(CriteriaAPI.getIdCondition(record.getId(), module));
 		updateBuilder.updateViaMap(prop);
+		
+		if ((module.getName().contains("workorder")) && oldState != null && oldState.getDisplayName() != null && ticketStatusContext != null && ticketStatusContext.getDisplayName() != null) {
+			JSONObject info = new JSONObject();
+			info.put("status", ticketStatusContext.getDisplayName());
+			info.put("oldValue", oldState.getDisplayName());
+			info.put("newValue", ticketStatusContext.getDisplayName());
+			CommonCommandUtil.addActivityToContext(record.getId(), -1, WorkOrderActivityType.UPDATE_STATUS, info, (FacilioContext) context);
+		}
 	}
 
 	public static TicketStatusContext getStateContext(long stateId) throws Exception {

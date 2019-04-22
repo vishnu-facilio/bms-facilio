@@ -2461,6 +2461,7 @@ public class TransactionChainFactory {
 			c.addCommand(new GenericGetModuleDataDetailCommand());
 			c.addCommand(new UpdateFieldDataCommand());
 			c.addCommand(new UpdateStateCommand());
+			c.addCommand(new AddActivitiesCommand());
 //			c.addCommand(new GenericUpdateModuleDataCommand());
 			return c;
 		}
