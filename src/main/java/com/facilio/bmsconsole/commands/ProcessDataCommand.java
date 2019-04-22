@@ -84,7 +84,7 @@ public class ProcessDataCommand implements Command {
 					//here taking the keyName as deviceName in the assumption that POINT_ will not come hereafter...
 					//so not handling the deviceName as list scenario below..
 					deviceAndInstanceCriteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getDeviceField(module), keyName, StringOperators.IS));
-					deviceAndInstanceCriteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getDeviceField(module), instanceList.toString(), StringOperators.IS));
+					deviceAndInstanceCriteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getInstanceField(module), instanceList.toString(), StringOperators.IS));
 					criteriaList.orCriteria(deviceAndInstanceCriteria);
 				}	
 			}
