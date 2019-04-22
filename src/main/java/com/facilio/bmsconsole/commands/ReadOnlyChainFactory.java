@@ -811,4 +811,18 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new GetGatePassDetailsCommand());
 		return c;
 	}
+	
+	public static Chain fetchConnectedAppDetails() {
+		Chain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForConnectedApps());
+		c.addCommand(new GetConnectedAppDetailsCommand());
+		return c;
+	}
+	
+	public static Chain getConnectedAppsList() {
+		Chain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForConnectedApps());
+		c.addCommand(new GetConnectedAppsListCommand());
+		return c;
+	}
 }

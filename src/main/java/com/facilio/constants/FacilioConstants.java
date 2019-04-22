@@ -23,6 +23,7 @@ import com.facilio.bmsconsole.context.ChillerCondenserPumpContext;
 import com.facilio.bmsconsole.context.ChillerContext;
 import com.facilio.bmsconsole.context.ChillerPrimaryPumpContext;
 import com.facilio.bmsconsole.context.ChillerSecondaryPumpContext;
+import com.facilio.bmsconsole.context.ConnectedAppContext;
 import com.facilio.bmsconsole.context.CoolingTowerContext;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.context.EnergyMeterPurposeContext;
@@ -191,6 +192,7 @@ public class FacilioConstants {
 		public static final String BUSINESS_HOUR = "businesshour";
 		
 		public static final String ID = "Id";
+		public static final String LINK_NAME = "linkName";
 		public static final String PARENT_ID = "parentId";
 		public static final String PARENT_ID_LIST = "parentIds";
 		
@@ -961,6 +963,8 @@ public class FacilioConstants {
 
 		public static final String GATE_PASS = "gatePass";
 		public static final String GATE_PASS_LINE_ITEMS = "gatePassLineItems";
+		
+		public static final String CONNECTED_APPS = "connectedApps";
 
 		private static Map<String, Class> classMap = Collections.unmodifiableMap(initClassMap());
 		private static Map<String, Class> initClassMap() {
@@ -1066,6 +1070,7 @@ public class FacilioConstants {
 			classMap.put(PO_LINE_ITEMS_SERIAL_NUMBERS, PoLineItemsSerialNumberContext.class);
 			classMap.put(GATE_PASS, GatePassContext.class);
 			classMap.put(GATE_PASS_LINE_ITEMS, GatePassLineItemsContext.class);
+			classMap.put(CONNECTED_APPS, ConnectedAppContext.class);
 			return classMap;
 		}
 		

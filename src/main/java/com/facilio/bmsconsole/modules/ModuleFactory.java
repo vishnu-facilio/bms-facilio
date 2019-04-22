@@ -48,7 +48,7 @@ public class ModuleFactory {
 		moduleMap.put(FacilioConstants.ContextNames.ASSET, getAssetsModule());
 		moduleMap.put("jsontemplate", getJSONTemplateModule());
 		moduleMap.put("preventivemaintenance", getPreventiveMaintenanceModule());
-		moduleMap.put("connectedapp", getConnectedAppModule());
+		moduleMap.put("connectedApps", getConnectedAppsModule());
 		moduleMap.put("tabwidget", getTabWidgetModule());
 		moduleMap.put(FacilioConstants.ContextNames.SPACE_CATEGORY, getSpaceCategoryModule());
 		moduleMap.put("singledaybusinesshour", getSingleDayBusinessHourModule());
@@ -692,11 +692,11 @@ public class ModuleFactory {
 		return alarmModule;
 	}
 
-	public static FacilioModule getConnectedAppModule() {
+	public static FacilioModule getConnectedAppsModule() {
 		FacilioModule connectedApp = new FacilioModule();
-		connectedApp.setName("connectedapp");
-		connectedApp.setDisplayName("Connected App");
-		connectedApp.setTableName("Connected_App");
+		connectedApp.setName("connectedApps");
+		connectedApp.setDisplayName("Connected Apps");
+		connectedApp.setTableName("ConnectedApps");
 		return connectedApp;
 	}
 

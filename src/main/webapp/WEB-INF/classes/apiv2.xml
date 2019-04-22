@@ -1982,6 +1982,33 @@
 		</action>
 	</package>
 	
+	<package name="connectedApps" namespace="/api/v2/connectedApps"
+		extends="v2Api">
+		<action name="add"
+			class="com.facilio.bmsconsole.actions.ConnectedAppAction" method="addConnectedApp">
+		</action>
+		
+		<action name="update"
+			class="com.facilio.bmsconsole.actions.ConnectedAppAction" method="updateConnectedApp">
+		</action>
+		
+		<action name="delete"
+			class="com.facilio.bmsconsole.actions.ConnectedAppAction" method="deleteConnectedApp">
+		</action>
+		
+		<action name="all"
+			class="com.facilio.bmsconsole.actions.ConnectedAppAction" method="connectedAppList">
+		</action>
+	</package>
+	
+	<package name="connectedAppsDetails" namespace="/api/v2/connectedApps/details"
+		extends="v2Api">
+		<action name="*"
+			class="com.facilio.bmsconsole.actions.ConnectedAppAction" method="connectedAppDetails">
+			<param name = "linkName">{1}</param>
+		</action>
+	</package>
+	
 	<package name="moduleApiV2" namespace="/api/v2/modules/fields" extends="v2Api">
 		<action name="add" class="com.facilio.bmsconsole.actions.ModuleAction" method="v2addCustomFields">
 		</action>
