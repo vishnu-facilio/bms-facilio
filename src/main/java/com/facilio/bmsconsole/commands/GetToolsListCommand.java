@@ -94,7 +94,9 @@ public class GetToolsListCommand implements Command{
 		}
 		if ((filters == null || includeParentCriteria) && view != null) {
 			Criteria criteria = view.getCriteria();
-			builder.andCriteria(criteria);
+			if (criteria != null && !criteria.isEmpty()) {
+				builder.andCriteria(criteria);
+			}
 		}
 
 		Criteria searchCriteria = (Criteria) context.get(FacilioConstants.ContextNames.SEARCH_CRITERIA);
