@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.workflow.rule;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -183,7 +184,7 @@ public class StateflowTransistionContext extends WorkflowRuleContext {
 			return new ArrayList<>(approverMap.values());
 		}
 		else {
-			return matching;
+			return Collections.emptyList();	// there is not pending approvers
 		}
 	}
 	
