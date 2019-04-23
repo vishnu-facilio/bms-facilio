@@ -554,10 +554,10 @@ public class FetchReportDataCommand implements Command {
 	}
 	
 	private void handleJoin(ReportFieldContext reportField, SelectRecordsBuilder selectBuilder, Set<FacilioModule> addedModules) throws Exception {
-		if (!reportField.getField().getModule().equals(baseModule)) {		// inter-module support
+		if (!reportField.getModule().equals(baseModule)) {		// inter-module support
 			List<FacilioField> allFields = modBean.getAllFields(baseModule.getName()); // for now base module is enough
 			Map<String, LookupField> lookupFields = getLookupFields(allFields);
-			handleLookupJoin(lookupFields, reportField.getField().getModule(), selectBuilder, addedModules);
+			handleLookupJoin(lookupFields, reportField.getModule(), selectBuilder, addedModules);
 		} else {
 			joinModuleIfRequred(reportField, selectBuilder, addedModules);
 		}
