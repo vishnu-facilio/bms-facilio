@@ -35,6 +35,7 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Context;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -124,7 +125,8 @@ public class PreventiveMaintenanceAPI {
 					 dupSectionNameCount.put(sectionName, count);
 					 sectionName += sectionName + " - " + count;
 				 }
-				 
+
+				 int sectionAssignmentType = sectiontemplate.getAssignmentType();
 				 List<TaskTemplate> taskTemplates = sectiontemplate.getTaskTemplates();
 				 
 				 List<TaskContext> tasks = new ArrayList<TaskContext>();
@@ -132,23 +134,17 @@ public class PreventiveMaintenanceAPI {
 					 
 					 List<Long> taskResourceIds = PreventiveMaintenanceAPI.getMultipleResourceToBeAddedFromPM(PMAssignmentType.valueOf(taskTemplate.getAssignmentType()), sectionResource.getId(), taskTemplate.getSpaceCategoryId(), taskTemplate.getAssetCategoryId(),taskTemplate.getResourceId(),taskTemplate.getPmIncludeExcludeResourceContexts());
 
-					 if (AccountUtil.getCurrentOrg().getOrgId() == 183 && taskTemplate.getSequence() == 2) {
-					 	String s = "";
-					 	for (Long r: taskResourceIds) {
-					 		s = s + r + ",";
-						}
-						 LOGGER.log(Level.SEVERE, "ResourceIds "+ s);
-					 }
-
 					 applySectionSettingsIfApplicable(sectiontemplate,taskTemplate);
 					 for(Long taskResourceId :taskResourceIds) {
-						 ResourceContext taskResource = ResourceAPI.getResource(taskResourceId);
-						 TaskContext task = taskTemplate.getTask();
-						 task.setResource(taskResource);
-						 if (AccountUtil.getCurrentOrg().getOrgId() == 183 && taskTemplate.getSequence() == 2) {
-							 LOGGER.log(Level.SEVERE, "Parent ticket Id: " + task.getParentTicketId()+ " resourceId: " + taskResource.getId() + " unique id:" + task.getUniqueId());
-						 }
-						 tasks.add(task);
+					 	if (sectionAssignmentType == PMAssignmentType.ASSET_CATEGORY.getVal() || sectionAssignmentType == PMAssignmentType.SPACE_CATEGORY.getVal()) {
+							if (ObjectUtils.compare(taskResourceId, resourceId) != 0) {
+								continue;
+							}
+						}
+					 	ResourceContext taskResource = ResourceAPI.getResource(taskResourceId);
+					 	TaskContext task = taskTemplate.getTask();
+					 	task.setResource(taskResource);
+					 	tasks.add(task);
 					 }
 				 }
 				 taskMap.put(sectionName, tasks);
