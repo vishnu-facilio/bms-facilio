@@ -201,4 +201,12 @@ public class ToolTransactionContext extends ModuleBaseWithCustomFields {
 	public void setAsset(AssetContext asset) {
 		this.asset = asset;
 	}
+	
+	private List<Long> assetIds;
+	public List<Long> getAssetIds() {
+		return assetIds;
+	}
+	public void setAssetIds(List<Long> assetIds) {
+		this.assetIds = assetIds;
+	}
 }
