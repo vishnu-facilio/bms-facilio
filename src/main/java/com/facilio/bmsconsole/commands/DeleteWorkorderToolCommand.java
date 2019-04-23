@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.PurchasedToolContext;
 import com.facilio.bmsconsole.context.ToolContext;
 import com.facilio.bmsconsole.context.WorkorderToolsContext;
@@ -43,20 +44,20 @@ public class DeleteWorkorderToolCommand implements Command {
 				if (tools != null && !tools.isEmpty()) {
 					ToolContext tool = tools.get(0);
 					if (tool.getToolType().isRotating()) {
-						FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.PURCHASED_TOOL);
-						List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.PURCHASED_TOOL);
+						FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ASSET);
+						List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.ASSET);
 
-						SelectRecordsBuilder<PurchasedToolContext> selectBuilder = new SelectRecordsBuilder<PurchasedToolContext>()
+						SelectRecordsBuilder<AssetContext> selectBuilder = new SelectRecordsBuilder<AssetContext>()
 								.select(fields).table(module.getTableName()).moduleName(module.getName())
-								.beanClass(PurchasedToolContext.class).andCustomWhere(module.getTableName() + ".ID = ?",
-										workordertool.getPurchasedTool().getId());
+								.beanClass(AssetContext.class).andCustomWhere(module.getTableName() + ".ID = ?",
+										workordertool.getAsset().getId());
 
-						List<PurchasedToolContext> purchasedTools = selectBuilder.get();
+						List<AssetContext> purchasedTools = selectBuilder.get();
 
 						if (purchasedTools != null && !purchasedTools.isEmpty()) {
-							PurchasedToolContext purchasedTool = purchasedTools.get(0);
+							AssetContext purchasedTool = purchasedTools.get(0);
 							purchasedTool.setIsUsed(false);
-							updatePurchasedTool(purchasedTool, module, fields);
+							updateAsset(purchasedTool, module, fields);
 						}
 					}
 				}
@@ -67,10 +68,10 @@ public class DeleteWorkorderToolCommand implements Command {
 		return false;
 	}
 
-	private void updatePurchasedTool(PurchasedToolContext purchasedTool,FacilioModule module, List<FacilioField> fields) throws Exception {
-		UpdateRecordBuilder<PurchasedToolContext> updateBuilder = new UpdateRecordBuilder<PurchasedToolContext>()
-				.module(module).fields(fields).andCondition(CriteriaAPI.getIdCondition(purchasedTool.getId(), module));
-		updateBuilder.update(purchasedTool);
+	private void updateAsset(AssetContext asset,FacilioModule module, List<FacilioField> fields) throws Exception {
+		UpdateRecordBuilder<AssetContext> updateBuilder = new UpdateRecordBuilder<AssetContext>()
+				.module(module).fields(fields).andCondition(CriteriaAPI.getIdCondition(asset.getId(), module));
+		updateBuilder.update(asset);
 
 		System.err.println(Thread.currentThread().getName() + "Exiting updateReadings in  AddorUpdateCommand#######  ");
 
