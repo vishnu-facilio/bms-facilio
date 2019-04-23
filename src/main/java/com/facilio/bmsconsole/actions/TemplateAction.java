@@ -1,17 +1,32 @@
 package com.facilio.bmsconsole.actions;
 
+import com.facilio.beans.ModuleBean;
+import com.facilio.beans.ModuleBeanImpl;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
+import com.facilio.bmsconsole.context.AssetCategoryContext;
+import com.facilio.bmsconsole.context.AssetCategoryContext.AssetCategoryType;
+import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.FacilioModule;
+import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.templates.*;
 import com.facilio.bmsconsole.templates.Template.Type;
 import com.facilio.bmsconsole.templates.WebNotificationTemplate;
+import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.TemplateAPI;
+import com.facilio.bmsconsole.workflow.rule.AlarmRuleContext;
+import com.facilio.bmsconsole.workflow.rule.EventType;
+import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
+import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext.ThresholdType;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
+import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
 
 import org.apache.commons.chain.Chain;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringSubstitutor;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -20,6 +35,7 @@ import org.json.simple.parser.JSONParser;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class TemplateAction  extends FacilioAction {
 	
@@ -136,6 +152,35 @@ public class TemplateAction  extends FacilioAction {
 			JSONParser parser = new JSONParser();
 			String resolvedString =  StringSubstitutor.replace(rules, placeHolderMap);
 			JSONObject obj = (JSONObject) parser.parse(resolvedString);
+			JSONObject rulesObj = (JSONObject) obj.get("rules");
+			Set<String> ruleskeys = rulesObj.keySet();
+			AssetCategoryContext assetCategory = AssetsAPI.getCategory((String) obj.get("category"));
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			FacilioModule module = modBean.getModule((String) obj.get("moduleName"));
+			System.out.println((String) obj.get("threshold_metric"));
+			
+			AlarmRuleContext alarmRule = new AlarmRuleContext();
+			alarmRule.setPreRequsite(new ReadingRuleContext());
+			alarmRule.setAlarmTriggerRule(new ReadingRuleContext());
+			alarmRule.getPreRequsite().setName((String) obj.get("name"));
+			alarmRule.getPreRequsite().setDescription((String) obj.get("description"));
+			alarmRule.getPreRequsite().setAssetCategoryId(assetCategory.getId());
+			
+			FacilioField field = modBean.getField((String) obj.get("threshold_metric"), module.getName());
+			
+			alarmRule.getPreRequsite().setReadingFieldId(field.getId());
+			alarmRule.getPreRequsite().getEvent().setModuleId(module.getModuleId());
+			alarmRule.getPreRequsite().getEvent().setActivityType(EventType.CREATE.getValue());
+			for (String key : ruleskeys) {
+				JSONObject rule = (JSONObject) rulesObj.get(key);
+				if (((String)rule.get("action")).equals("PreRequsite")) {
+					alarmRule.getPreRequsite().setWorkflow((WorkflowContext) rule.get("workflow"));
+					FacilioField preRequesitefield = modBean.getField((String) rule.get("threshold_metric"), module.getName());
+					alarmRule.getPreRequsite().setReadingFieldId(preRequesitefield.getId());
+				} else if (((String)rule.get("action")).equals("TRIGGER_ALARM")) {
+					alarmRule.getAlarmTriggerRule().setWorkflow((WorkflowContext) rule.get("workflow"));
+				}
+			}
 			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -144,6 +189,20 @@ public class TemplateAction  extends FacilioAction {
 		return SUCCESS;
 	}
 	
+//	private void parseRule(ReadingRuleContext ruleObj, JSONObject rule) throws Exception {
+//		// TODO Auto-generated method stub
+//		int count = StringUtils.countMatches((String) rule.get("condition"), "&&");
+//		if(count > 0) {
+//			ruleObj.setThresholdType(ThresholdType.ADVANCED.getValue());
+//			JSONArray fields = TemplateAPI.getFieldForRules((String) rule.get("condition"));
+//		}
+//		else {
+//			ruleObj.setThresholdType(ThresholdType.SIMPLE.getValue());
+//			String field = (String) TemplateAPI.getFieldForRules((String) rule.get("condition")).get(0);
+//		}
+//		
+//	}
+
 	private TaskSectionTemplate taskGroup;
 	public TaskSectionTemplate getTaskGroup() {
 		return taskGroup;
