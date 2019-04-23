@@ -68,11 +68,16 @@ public class GetToolsListCommand implements Command{
 			builder.setAggregation();
 		}
 		
+		Criteria permissionCriteria = AccountUtil.getCurrentUser().getRole().permissionCriteria("inventory","read");
+		if(permissionCriteria != null) {
+			builder.andCriteria(permissionCriteria);
+		}
+		
 		String orderBy = (String) context.get(FacilioConstants.ContextNames.SORTING_QUERY);
 		if (orderBy != null && !orderBy.isEmpty()) {
-			if(orderBy.contains("LAST_PURCHASED_DATE")) {
-				orderBy = "Tool.LAST_PURCHASED_DATE" + orderBy.substring(0, orderBy.indexOf(" ")); 
-			}
+//			if(orderBy.contains("LAST_PURCHASED_DATE")) {
+//				orderBy = "Tool.LAST_PURCHASED_DATE" + orderBy.substring(0, orderBy.indexOf(" ")); 
+//			}
 			builder.orderBy(orderBy);
 		}
 

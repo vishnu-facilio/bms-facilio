@@ -57,12 +57,15 @@ public class GetItemTransactionsListCommand implements Command{
 		String orderBy = (String) context.get(FacilioConstants.ContextNames.SORTING_QUERY);
 		if (orderBy != null && !orderBy.isEmpty()) {
 			// temp fix
-			if(orderBy.contains("CREATED_TIME")) {
-				orderBy = "Item_Transactions.CREATED_TIME" + orderBy.substring(12); 
-			}
+//			if(orderBy.contains("CREATED_TIME")) {
+//				orderBy = "Item_Transactions.CREATED_TIME" + orderBy.substring(12); 
+//			}
 			builder.orderBy(orderBy);
 		}
-
+		Criteria permissionCriteria = AccountUtil.getCurrentUser().getRole().permissionCriteria("inventory","read");
+		if(permissionCriteria != null) {
+			builder.andCriteria(permissionCriteria);
+		}
 		Integer maxLevel = (Integer) context.get(FacilioConstants.ContextNames.MAX_LEVEL);
 		if (maxLevel != null && maxLevel != -1) {
 			builder.maxLevel(maxLevel);

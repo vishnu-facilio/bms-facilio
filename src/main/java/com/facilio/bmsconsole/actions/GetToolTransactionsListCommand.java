@@ -15,6 +15,7 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
 
 import java.util.ArrayList;
@@ -45,6 +46,16 @@ public class GetToolTransactionsListCommand implements Command {
 				.module(module).beanClass(FacilioConstants.ContextNames.getClassFromModuleName(moduleName))
 				.select(fields);
 
+		List<Long> accessibleSpaces = AccountUtil.getCurrentUser().getAccessibleSpace();
+		builder.innerJoin(ModuleFactory.getToolModule().getTableName())
+				.on(ModuleFactory.getToolModule().getTableName() + ".ID = "
+						+ ModuleFactory.getToolTransactionsModule().getTableName() + ".TOOL");
+		if (accessibleSpaces != null && !accessibleSpaces.isEmpty()) {
+			builder.andCustomWhere(
+					"Store_room.ID IN (Select STORE_ROOM_ID from Storeroom_Sites where SITE_ID IN ( ? ))",
+					StringUtils.join(accessibleSpaces, ", "));
+		}
+		
 		String orderBy = (String) context.get(FacilioConstants.ContextNames.SORTING_QUERY);
 		if (orderBy != null && !orderBy.isEmpty()) {
 			builder.orderBy(orderBy);
@@ -95,6 +106,11 @@ public class GetToolTransactionsListCommand implements Command {
 			// String.valueOf(true), BooleanOperators.IS));
 			builder.andCondition(CriteriaAPI.getCondition(toolTransactionsFieldsMap.get("transactionState"),
 					String.valueOf(2), NumberOperators.EQUALS));
+		}
+		
+		Criteria permissionCriteria = AccountUtil.getCurrentUser().getRole().permissionCriteria("inventory","read");
+		if(permissionCriteria != null) {
+			builder.andCriteria(permissionCriteria);
 		}
 
 		JSONObject pagination = (JSONObject) context.get(FacilioConstants.ContextNames.PAGINATION);

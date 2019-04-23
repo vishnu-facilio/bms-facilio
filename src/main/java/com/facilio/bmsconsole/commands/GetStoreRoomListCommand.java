@@ -105,6 +105,11 @@ public class GetStoreRoomListCommand implements Command {
 		if (scopeCriteria != null) {
 			builder.andCriteria(scopeCriteria);
 		}
+		
+		Criteria permissionCriteria = AccountUtil.getCurrentUser().getRole().permissionCriteria("inventory","read");
+		if(permissionCriteria != null) {
+			builder.andCriteria(permissionCriteria);
+		}
 
 		JSONObject pagination = (JSONObject) context.get(FacilioConstants.ContextNames.PAGINATION);
 		if (pagination != null) {
