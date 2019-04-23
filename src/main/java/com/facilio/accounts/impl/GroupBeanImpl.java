@@ -276,7 +276,11 @@ public class GroupBeanImpl implements GroupBean {
 				.select(AccountConstants.getGroupFields())
 				.table(module.getTableName())
 				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
-				.andCriteria(criteria);
+				;
+
+		if (criteria != null && !criteria.isEmpty()) {
+			selectBuilder.andCriteria(criteria);
+		}
 		
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
