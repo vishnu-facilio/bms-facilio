@@ -50,7 +50,11 @@
 			<param name="moduleName">workorder</param>
 			<param name="permission">READ,READ_TEAM,READ_OWN</param>
 		</action>	
-		
+		<action name="activity" class="com.facilio.bmsconsole.actions.WorkOrderAction"
+			method="fetchActivity">
+			<param name="moduleName">workorder</param>
+			<param name="permission">READ</param>
+		</action>
 		<action name="attachment" class="com.facilio.bmsconsole.actions.AttachmentAction" method="v2attachmentList">
 		</action>
 		
