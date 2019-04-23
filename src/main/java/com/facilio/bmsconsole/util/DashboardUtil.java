@@ -2788,13 +2788,6 @@ public class DashboardUtil {
 		}
 	}
 
-	public static boolean isDynamicWFGeneratingCard(String staticKey) {
-		if(staticKey.equals(CardType.READING_COMBO_CARD.getName())) {
-			return true;
-		}
-		return false;
-	}
-	
 	public static void duplicateDashboard(DashboardContext dashboard) throws Exception {
 		
 		FacilioContext context = new FacilioContext();
