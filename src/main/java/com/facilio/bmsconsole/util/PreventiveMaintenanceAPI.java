@@ -131,13 +131,23 @@ public class PreventiveMaintenanceAPI {
 				 for(TaskTemplate taskTemplate :taskTemplates) {
 					 
 					 List<Long> taskResourceIds = PreventiveMaintenanceAPI.getMultipleResourceToBeAddedFromPM(PMAssignmentType.valueOf(taskTemplate.getAssignmentType()), sectionResource.getId(), taskTemplate.getSpaceCategoryId(), taskTemplate.getAssetCategoryId(),taskTemplate.getResourceId(),taskTemplate.getPmIncludeExcludeResourceContexts());
-					 
+
+					 if (AccountUtil.getCurrentOrg().getOrgId() == 183 && taskTemplate.getSequence() == 2) {
+					 	String s = "";
+					 	for (Long r: taskResourceIds) {
+					 		s = s + r + ",";
+						}
+						 LOGGER.log(Level.SEVERE, "ResourceIds "+ s);
+					 }
+
 					 applySectionSettingsIfApplicable(sectiontemplate,taskTemplate);
 					 for(Long taskResourceId :taskResourceIds) {
 						 ResourceContext taskResource = ResourceAPI.getResource(taskResourceId);
 						 TaskContext task = taskTemplate.getTask();
 						 task.setResource(taskResource);
-						 
+						 if (AccountUtil.getCurrentOrg().getOrgId() == 183 && taskTemplate.getSequence() == 2) {
+							 LOGGER.log(Level.SEVERE, "Parent ticket Id: " + task.getParentTicketId()+ " resourceId: " + taskResource.getId() + " unique id:" + task.getUniqueId());
+						 }
 						 tasks.add(task);
 					 }
 				 }
