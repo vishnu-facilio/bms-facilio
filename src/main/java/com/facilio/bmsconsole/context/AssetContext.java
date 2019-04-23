@@ -348,4 +348,17 @@ public class AssetContext extends ResourceContext {
 	public void setPrice(double price) {
 		this.price = price;
 	}
+	public Boolean isUsed;
+	public Boolean getIsUsed() {
+		return isUsed;
+	}
+	public void setIsUsed(Boolean isUsed) {
+		this.isUsed = isUsed;
+	}
+	public boolean isUsed() {
+		if(isUsed != null) {
+			return isUsed.booleanValue();
+		}
+		return false;
+	}
 }
