@@ -6715,23 +6715,10 @@ public class DashboardAction extends FacilioAction {
 	public String updateDashboardWithWidgets() throws Exception {
 		
 		Long dashboardId = (Long) dashboardMeta.get("id");
-		this.dashboard = null;
-		if (buildingId != null) {
-			DashboardContext dbContext = DashboardUtil.getDashboardWithWidgets(dashboardId);
-			this.dashboard = DashboardUtil.getDashboardForBaseSpace(buildingId, dbContext.getModuleId());
-		}
-		if(this.dashboard == null) {
-			this.dashboard = new DashboardContext();
-			this.dashboard.setId((Long) dashboardMeta.get("id"));
-			if (dashboardMeta.containsKey("linkName")) {
-				this.dashboard.setLinkName((String) dashboardMeta.get("linkName"));
-			}
-		}
+		this.dashboard = DashboardUtil.getDashboardWithWidgets(dashboardId);
+		
 		if(dashboardMeta.get("dashboardFolderId") != null) {
 			this.dashboard.setDashboardFolderId((Long) dashboardMeta.get("dashboardFolderId")); 
-		}
-		else {
-			this.dashboard.setDashboardFolderId(null);
 		}
 		if(dashboardMeta.get("mobileEnabled") != null) {
 			this.dashboard.setMobileEnabled((boolean)dashboardMeta.get("mobileEnabled"));
@@ -6739,6 +6726,8 @@ public class DashboardAction extends FacilioAction {
 		this.dashboard.setDashboardName((String) dashboardMeta.get("dashboardName"));
 		
 		List dashboardWidgets = (List) dashboardMeta.get("dashboardWidgets");
+		
+		List<DashboardWidgetContext> widgets = new ArrayList<>();
 		if (dashboardWidgets != null) {
 			for (int i=0; i < dashboardWidgets.size(); i++) {
 				Map widget = (Map) dashboardWidgets.get(i);
@@ -6765,12 +6754,14 @@ public class DashboardAction extends FacilioAction {
 				widgetContext.setLayoutPosition(Integer.parseInt(widget.get("order").toString()));
 				widgetContext.setType(widgetType);
 				
-				this.dashboard.addDashboardWidget(widgetContext);
+				widgets.add(widgetContext);
 			}
 		}
+		this.dashboard.setDashboardWidgets(widgets);
 		
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.DASHBOARD, dashboard);
+		context.put(FacilioConstants.ContextNames.BUILDING_ID, buildingId);
 		
 		Chain updateDashboardChain = TransactionChainFactory.getUpdateDashboardChain();
 		updateDashboardChain.execute(context);
@@ -6856,7 +6847,6 @@ public class DashboardAction extends FacilioAction {
 		if(buildingId != null) {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioModule module = modBean.getModule(moduleName);
-			
 			dashboard = DashboardUtil.getDashboardForBaseSpace(buildingId, module.getModuleId());
 			linkName = (dashboard != null) ? dashboard.getLinkName() : linkName;
 		}
