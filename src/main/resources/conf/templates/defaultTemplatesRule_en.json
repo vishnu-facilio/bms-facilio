@@ -5,8 +5,10 @@
 			"description": "Damper is stuck or in open state. Unable to open Damper",
 			"problem": "Damper fails to follow the command",
 			"possible_causes": "1. Poor Lubrication <br/> 2. Sensor Failure",
+			"moduleName": "damperstatus",
 			"category": "FAHU",
 			"severity": "Major",
+			"threshold_metric": "damperstatus",
 			"possible_solution": "1. Lubricate the bearings and louvres \n 2. Check sensor functioning",
 			"ASSET_SELECTION_CRITERIA": {
 			 	"categoryType": "FAHU",
@@ -15,10 +17,99 @@
 			},
 			"rules": {
 				"1": {
-					"condition": "$FAN_STATUS=1 & $DAMPER_COMMAND=1 & $DAMPER_STATUS=0",
+					"condition" : "${{fanstatus}}=1",
+					"action": "PreRequsite",
+					"moduleName": "fanstatus",
+					"threshold_metric": "fanstatus",
+					"condition_statement" : "When Fan Status is 1",
+					"workflow": {
+				        "expressions": [
+				          {
+				            "name": "a",
+				            "aggregateString": "lastValue",
+				            "fieldName": "fanstatus",
+				            "moduleName": "fanstatus",
+				            "criteria": {
+				              "pattern": "(1)",
+				              "conditions": {
+				                "1": {
+				                  "fieldName": "parentId",
+				                  "operatorId": 9,
+				                  "sequence": "1",
+				                  "value": "${resourceId}"
+				                }
+				              }
+				            }
+				          }
+				        ],
+				        "resultEvaluator": "a==1",
+				        "parameters": [
+				          {
+				            "name": "resourceId",
+				            "typeString": "Number"
+				          }
+				        ]
+				   }
+				},
+				"2": {
+					"condition": "${{dampercommand}}==1 && ${{damperstatus}}==0",
 					"for": "${interval}",
 					"action": "TRIGGER_ALARM",
-					"condition_statement" : "When Fan Status is 1 and Damper Command is 1 and Damper Status is 0 for 10 min"
+					"workflow": {
+				        "expressions": [
+				          {
+				            "name": "A",
+				            "aggregateString": "lastValue",
+				            "fieldName": "dampercommand",
+				            "moduleName": "dampercommand",
+				            "criteria": {
+				              "pattern": "(1)",
+				              "conditions": {
+				                "1": {
+				                  "fieldName": "parentId",
+				                  "operatorId": 9,
+				                  "sequence": "1",
+				                  "value": "${resourceId}"
+				                }
+				              }
+				            }
+				          },
+				          {
+				            "name": "B",
+				            "constant": "1"
+				          },
+				          {
+				            "name": "D",
+				            "aggregateString": "lastValue",
+				            "fieldName": "damperstatus",
+				            "moduleName": "damperstatus",
+				            "criteria": {
+				              "pattern": "(1)",
+				              "conditions": {
+				                "1": {
+				                  "fieldName": "parentId",
+				                  "operatorId": 9,
+				                  "sequence": "1",
+				                  "value": "${resourceId}"
+				                }
+				              }
+				            }
+				          },
+				          {
+				            "name": "F",
+				            "constant": "0"
+				          }
+				        ],
+				        "parameters": [
+				          {
+				            "name": "resourceId",
+				            "typeString": "Number"
+				          }
+				        ],
+				        "resultEvaluator": "(A==B)&&(D==F)",
+				        "workflowUIMode": 1
+				   	},
+					"condition_statement" : "Damper Command is 1 and Damper Status is 0 for 10 min"
 				}
 			},
 			"placeHolder": {

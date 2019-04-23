@@ -1295,7 +1295,24 @@ public class TemplateAPI {
 		return null;
 		
 	}
-	
+	public static JSONArray getFieldForRules (String condition) throws Exception {
+		
+		String formatSpecifier = "(\\$\\{\\{([^\\:}}]*))";
+		Pattern pattern = Pattern.compile(formatSpecifier);
+		if (condition != null) {
+			Matcher matcher = pattern.matcher(condition);
+			JSONArray templatePlaceholder = new JSONArray();
+			while (matcher.find()) {
+				String placeHolder = matcher.group(2);
+				if (!templatePlaceholder.contains(placeHolder)) {
+					templatePlaceholder.add(placeHolder);
+				}
+			}
+			return templatePlaceholder;
+		}
+		return null;
+		
+	}
 	public static WorkflowContext getWorkflow(Template template) throws Exception {
 		JSONArray placeHolders = getPlaceholders(template);
 		if (placeHolders != null && !placeHolders.isEmpty()) {
