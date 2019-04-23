@@ -268,8 +268,15 @@ public class PurchaseOrderContext extends ModuleBaseWithCustomFields {
 		return -1;
 	}
 
-
+    private double quantityReceived = -1;
 	
+	public double getQuantityReceived() {
+		return quantityReceived;
+	}
+	public void setQuantityReceived(double quantityReceived) {
+		this.quantityReceived = quantityReceived;
+	}
+
 	private double totalQuantity = -1;
 	public double getTotalQuantity() {
 		return totalQuantity;

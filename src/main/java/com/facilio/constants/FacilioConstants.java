@@ -948,6 +948,7 @@ public class FacilioConstants {
 		public static final String TOTAL_COST = "totalCost";
 		public static final String TOTAL_QUANTITY = "totalQuantity";
 		public static final String WO_TOTAL_COST = "woTotalCost";
+		public static final String UNIT_PRICE = "unitPrice";
 		
 		public static final String GATE_PASS = "gatePass";
 		public static final String GATE_PASS_LINE_ITEMS = "gatePassLineItems";

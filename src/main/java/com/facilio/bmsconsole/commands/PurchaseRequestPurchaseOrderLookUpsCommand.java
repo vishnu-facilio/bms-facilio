@@ -30,7 +30,8 @@ public class PurchaseRequestPurchaseOrderLookUpsCommand implements Command  {
 		List<LookupField>fetchLookup = Arrays.asList((LookupField) fieldsAsMap.get("vendor"),
 													(LookupField) fieldsAsMap.get("storeRoom"),
 													(LookupField) fieldsAsMap.get("shipToAddress"),
-													(LookupField) fieldsAsMap.get("billToAddress"));
+													(LookupField) fieldsAsMap.get("billToAddress"),
+													(LookupField) fieldsAsMap.get("requestedBy"));
 		context.put(FacilioConstants.ContextNames.LOOKUP_FIELD_META_LIST,fetchLookup);
 		return false;
 	}

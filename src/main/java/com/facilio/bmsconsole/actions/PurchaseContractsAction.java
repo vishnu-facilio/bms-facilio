@@ -81,7 +81,42 @@ public class PurchaseContractsAction extends FacilioAction {
 		this.status = status;
 	}
 
+	private long vendorId;
 	
+	
+	public long getVendorId() {
+		return vendorId;
+	}
+	public void setVendorId(long vendorId) {
+		this.vendorId = vendorId;
+	}
+	
+	private long itemTypeId;
+	
+	
+	public long getItemTypeId() {
+		return itemTypeId;
+	}
+	public void setItemTypeId(long itemTypeId) {
+		this.itemTypeId = itemTypeId;
+	}
+	
+	private long toolTypeId;
+	public long getToolTypeId() {
+		return toolTypeId;
+	}
+	public void setToolTypeId(long toolTypeId) {
+		this.toolTypeId = toolTypeId;
+	}
+	private int inventoryType;
+	
+	
+	public int getInventoryType() {
+		return inventoryType;
+	}
+	public void setInventoryType(int inventoryType) {
+		this.inventoryType = inventoryType;
+	}
 	public String getPurchaseContractList() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.FETCH_COUNT, getFetchCount());
@@ -205,6 +240,26 @@ public class PurchaseContractsAction extends FacilioAction {
 		setResult(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(recordId));
 		
 		return SUCCESS;
+	}
+	
+	public String getActiveContractPrice() throws Exception {
+		
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.VENDOR_ID, getVendorId());
+		context.put(FacilioConstants.ContextNames.INVENTORY_CATEGORY, getInventoryType());
+		if(inventoryType == 1) {
+			context.put(FacilioConstants.ContextNames.ITEM_TYPES_ID, getItemTypeId());
+		}
+		else if(inventoryType == 2) {
+			context.put(FacilioConstants.ContextNames.TOOL_TYPES_ID, getToolTypeId());
+		}
+		Chain chain = TransactionChainFactory.getActivePurchaseContractPrice();
+		chain.execute(context);
+		
+		setResult(FacilioConstants.ContextNames.UNIT_PRICE, context.get(FacilioConstants.ContextNames.UNIT_PRICE));
+		
+		return SUCCESS;
+	
 	}
 	
 }

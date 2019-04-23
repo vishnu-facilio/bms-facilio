@@ -1827,6 +1827,9 @@
 		<action name="delete" class="com.facilio.bmsconsole.actions.PurchaseContractsAction" method="deletePurchaseContract">
 			<param name="moduleName">purchasecontracts</param>
 		</action>
+		<action name="getActiveContractPrice" class="com.facilio.bmsconsole.actions.PurchaseContractsAction" method="getActiveContractPrice">
+			<param name="moduleName">purchasecontracts</param>
+		</action>
 		 <action name="*" class="com.facilio.bmsconsole.actions.PurchaseContractsAction" method="getPurchaseContractList">
 			<param name="viewName">{1}</param>
 			<param name="moduleName">purchasecontracts</param>

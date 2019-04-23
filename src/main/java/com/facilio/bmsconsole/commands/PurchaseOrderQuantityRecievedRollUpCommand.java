@@ -57,6 +57,7 @@ public class PurchaseOrderQuantityRecievedRollUpCommand implements Command {
 				if (purchaseOrderlist != null && !purchaseOrderlist.isEmpty()) {
 					for (PurchaseOrderContext po : purchaseOrderlist) {
 						receivable.setPoId(po);
+						po.setQuantityReceived(entry.getValue());
 						if (entry.getValue() < po.getTotalQuantity()) {
 							po.setStatus(Status.PARTIALLY_RECEIVED);
 							receivable.setStatus(com.facilio.bmsconsole.context.ReceivableContext.Status.PARTIALLY_RECEIVED);

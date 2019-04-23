@@ -2326,6 +2326,12 @@ public class TransactionChainFactory {
 			return c;
 		}
 		
+		public static Chain getActivePurchaseContractPrice() {
+			Chain c = getDefaultChain();
+			c.addCommand(new GetActiveContractPriceCommand());
+			return c;
+		}
+		
 		public static Chain getDeletePurchaseContractLineItemChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForPurchaseContractLineItem());
