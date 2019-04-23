@@ -1,7 +1,6 @@
 package com.facilio.bmsconsole.workflow.rule;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -184,7 +183,7 @@ public class StateflowTransistionContext extends WorkflowRuleContext {
 			return new ArrayList<>(approverMap.values());
 		}
 		else {
-			return Collections.emptyList();	// there is not pending approvers
+			return matching;	// there is not pending approvers
 		}
 	}
 	
@@ -197,7 +196,9 @@ public class StateflowTransistionContext extends WorkflowRuleContext {
 			ApprovalRuleContext.addApprovalStep(moduleRecord.getId(), null, matching, this);
 			
 			List<SingleSharingContext> checkAnyPendingApprovers = checkAnyPendingApprovers(moduleRecord, matching);
-			shouldExecuteTrueActions = CollectionUtils.isEmpty(checkAnyPendingApprovers);
+			if (isAllApprovalRequired()) {
+				shouldExecuteTrueActions = CollectionUtils.isEmpty(checkAnyPendingApprovers);
+			}
 		}
 		
 		if (shouldExecuteTrueActions) {
