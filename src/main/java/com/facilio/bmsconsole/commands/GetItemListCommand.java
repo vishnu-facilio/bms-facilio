@@ -66,15 +66,26 @@ public class GetItemListCommand implements Command {
 			builder.setAggregation();
 		}
 
-		Criteria permissionCriteria = AccountUtil.getCurrentUser().getRole().permissionCriteria("inventory","read");
-		if(permissionCriteria != null) {
-			builder.andCriteria(permissionCriteria);
+		Boolean getShowItemsForWo = (Boolean) context.get(FacilioConstants.ContextNames.SHOW_ITEM_FOR_WORKORDER);
+		if (getShowItemsForWo != null && getShowItemsForWo) {
+			builder.innerJoin(ModuleFactory.getItemTypesModule().getTableName())
+					.on(ModuleFactory.getItemTypesModule().getTableName() + ".ID = "
+							+ ModuleFactory.getInventryModule().getTableName() + ".ITEM_TYPES_ID");
+			builder.andCustomWhere(
+					"(Item_types.INDIVIDUAL_TRACKING = 0) OR (Item_types.INDIVIDUAL_TRACKING = 1 AND Item_types.IS_CONSUMABLE = 1)");
+		} else {
+			Criteria permissionCriteria = AccountUtil.getCurrentUser().getRole().permissionCriteria("inventory",
+					"read");
+			if (permissionCriteria != null) {
+				builder.andCriteria(permissionCriteria);
+			}
 		}
 		String orderBy = (String) context.get(FacilioConstants.ContextNames.SORTING_QUERY);
 		if (orderBy != null && !orderBy.isEmpty()) {
-//			if(orderBy.contains("LAST_PURCHASED_DATE")) {
-//				orderBy = "Item.LAST_PURCHASED_DATE" + orderBy.substring(0, orderBy.indexOf(" ")); 
-//			}
+			// if(orderBy.contains("LAST_PURCHASED_DATE")) {
+			// orderBy = "Item.LAST_PURCHASED_DATE" + orderBy.substring(0,
+			// orderBy.indexOf(" "));
+			// }
 			builder.orderBy(orderBy);
 		}
 

@@ -898,7 +898,7 @@ public class FacilioConstants {
 
 		public static final String SHOW_TOOLS_FOR_RETURN = "showToolsForReturn";
 		public static final String SHOW_ITEMS_FOR_RETURN = "showItemsForReturn";
-
+		public static final String SHOW_ITEM_FOR_WORKORDER = "showItemsForWorkorder";
 
 		public static final String ITEM_VENDORS = "itemVendors";
 		public static final String TRANSACTION_TYPE = "transactionType";

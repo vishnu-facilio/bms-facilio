@@ -134,6 +134,9 @@ public class ItemAction extends FacilioAction{
 			}
 			context.put(FacilioConstants.ContextNames.PAGINATION, pagination);
 		}
+		if(getShowForWorkorder()) {
+			context.put(FacilioConstants.ContextNames.SHOW_ITEM_FOR_WORKORDER, showForWorkorder);
+		}
 
 		Chain itemsListChain = ReadOnlyChainFactory.getItemList();
 		itemsListChain.execute(context);
@@ -185,5 +188,16 @@ public class ItemAction extends FacilioAction{
 	}
 	public void setItemCount(Long inventryCount) {
 		this.itemCount = inventryCount;
+	}
+	
+	private Boolean showForWorkorder;
+	public Boolean getShowForWorkorder() {
+		if(showForWorkorder == null) {
+			return false;
+		}
+		return showForWorkorder;
+	}
+	public void setShowForWorkorder(Boolean showForWorkorder) {
+		this.showForWorkorder = showForWorkorder;
 	}
 }
