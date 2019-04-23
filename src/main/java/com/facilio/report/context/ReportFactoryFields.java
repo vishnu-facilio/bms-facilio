@@ -133,7 +133,8 @@ public class ReportFactoryFields {
 				JSONObject rearragedFields = rearrangeFields(selectedFields, "alarm");
 				HashMap<String , Map<String, FacilioField>> additionalModuleFields = getAdditionalModuleFields("alarm", bean);
 				
-			
+				setAdditionalModulemap(rearragedFields, "alarm", bean);
+				
 				List<FacilioField> assetFields = new ArrayList<FacilioField>();
 				assetFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.ASSET).get("name"));
 				assetFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.ASSET).get("category"));
