@@ -46,7 +46,8 @@ public class GetWoScheduledViewList implements Command {
 		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(fields)
-				.table(module.getTableName());
+				.table(module.getTableName())
+				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module));
 //				.innerJoin(reportModule.getTableName())
 //				.on(module.getTableName()+".REPORTID = "+reportModule.getTableName()+".ID")
 /*				.innerJoin(emailModule.getTableName())
@@ -62,11 +63,9 @@ public class GetWoScheduledViewList implements Command {
 		List<Long> reportIds = new ArrayList<>();
 		if(props != null && !props.isEmpty()) {
 			for(Map<String, Object> prop : props) {
-				System.out.println("12323" + prop);
 				ReportInfo report = FieldUtil.getAsBeanFromMap(prop, ReportInfo.class);
 				report.setReportContext(FieldUtil.getAsBeanFromMap(prop, ReportContext.class));
 				report.setEmailTemplate((EMailTemplate) TemplateAPI.getTemplate(report.getTemplateId()));
-//				report.setEmailTemplate(FieldUtil.getAsBeanFromMap(prop, EMailTemplate.class));
 				reportIds.add(report.getId());
 				woReportsMap.put(report.getId(), report);
 			}
