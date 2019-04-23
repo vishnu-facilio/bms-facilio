@@ -10,6 +10,7 @@ import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.criteria.PickListOperators;
 import com.facilio.bmsconsole.modules.*;
+import com.facilio.bmsconsole.util.ItemsApi;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericSelectRecordBuilder;
@@ -88,8 +89,7 @@ public class PurchasedItemsQuantityRollUpCommand implements Command {
 			FacilioModule itemModule = modBean.getModule(FacilioConstants.ContextNames.ITEM);
 			for (Long id : uniqueItemIds) {
 				double totalConsumed = getTotalQuantityConsumed(id, "item");
-				ItemContext item = new ItemContext();
-				item.setId(id);
+				ItemContext item = ItemsApi.getItems(id);
 				item.setQuantity(item.getQuantity() - totalConsumed);
 				UpdateRecordBuilder<ItemContext> updateBuilder = new UpdateRecordBuilder<ItemContext>()
 						.module(itemModule).fields(modBean.getAllFields(itemModule.getName()))
