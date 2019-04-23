@@ -1,6 +1,5 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.Collections;
 import java.util.Map;
 
 import org.apache.commons.chain.Command;
@@ -19,14 +18,12 @@ import com.facilio.fw.BeanFactory;
 
 public class UpdateStateCommand implements Command {
 
-	boolean stateChanged = false;
-	
 	@Override
 	public boolean execute(Context context) throws Exception {
 		ModuleBaseWithCustomFields moduleData = (ModuleBaseWithCustomFields) context.get(FacilioConstants.ContextNames.RECORD);
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
-		Long currentTransitionId = (Long) context.get("transistion_id");
-		Boolean defaultState = (Boolean) context.get("default_state");
+		Long currentTransitionId = (Long) context.get(FacilioConstants.ContextNames.TRANSITION_ID);
+		Boolean defaultState = (Boolean) context.get(FacilioConstants.ContextNames.DEFAULT_STATE);
 		
 		if (defaultState == null) {
 			defaultState = false;
@@ -34,8 +31,8 @@ public class UpdateStateCommand implements Command {
 		long defaultStateId = -1;
 		long defaultStateFlowId = -1;
 		if (defaultState) {
-			defaultStateId = (long) context.get("default_state_id");
-			defaultStateFlowId = (long) context.get("default_state_flow_id");
+			defaultStateId = (long) context.get(FacilioConstants.ContextNames.DEFAULT_STATE_ID);
+			defaultStateFlowId = (long) context.get(FacilioConstants.ContextNames.DEFAULT_STATE_FLOW_ID);
 		}
 		
 		if (moduleData == null) {
@@ -62,23 +59,13 @@ public class UpdateStateCommand implements Command {
 					if (newState == null) {
 						throw new Exception("Invalid state");
 					}
-					stateChanged = true;
 					stateflowTransistion.executeTrueActions(moduleData, context, recordPlaceHolders);
 				} else {
 					throw new Exception("Cannot update the state");
 				}
 			}
 		}
-		
-		if (stateChanged) {
-			context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(moduleData.getId()));
-		}
 		return false;
-	}
-	
-	private void changeState(ModuleBaseWithCustomFields moduleData, TicketStatusContext newState) {
-		moduleData.setModuleState(newState);
-		stateChanged = true;
 	}
 
 }

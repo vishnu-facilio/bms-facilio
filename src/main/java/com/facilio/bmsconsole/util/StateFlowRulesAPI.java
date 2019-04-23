@@ -108,6 +108,10 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 	}
 
 	public static TicketStatusContext getStateContext(long stateId) throws Exception {
+		if (stateId < 0) {
+			return null;
+		}
+		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.TICKET_STATUS);
 		SelectRecordsBuilder<TicketStatusContext> builder = new SelectRecordsBuilder<TicketStatusContext>()
@@ -295,6 +299,18 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 	public static void addOrUpdateStateFlow(StateFlowContext stateFlow, boolean add) throws Exception {
 		if (stateFlow == null) {
 			return;
+		}
+		
+		long moduleId = stateFlow.getModuleId();
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule facilioModule = modBean.getModule(moduleId);
+		if (facilioModule == null) {
+			throw new Exception("Invalid module");
+		}
+		
+		TicketStatusContext stateContext = getStateContext(stateFlow.getDefaultStateId());
+		if (stateContext == null) {
+			throw new Exception("Invalid state");
 		}
 		
 		if (stateFlow.getCriteria() != null && !stateFlow.getCriteria().isEmpty()) {

@@ -2494,10 +2494,10 @@ public class TransactionChainFactory {
 			return c;
 		}
 
-		public static Chain getAddOrUpdateStateFlowTransistion() {
+		public static Chain getAddOrUpdateStateFlowTransition() {
 			Chain c = getDefaultChain();
-			c.addCommand(new ConstructStateFlowTransistionCommand());
-			c.addCommand(new AddOrUpdateStateTransistionCommand());
+			c.addCommand(new ConstructStateFlowTransitionCommand());
+			c.addCommand(new AddOrUpdateStateTransitionCommand());
 			return c;
 		}
 
@@ -2512,22 +2512,28 @@ public class TransactionChainFactory {
 			c.addCommand(new AddOrUpdateStateCommand());
 			return c;
 		}
-		
+
 		public static Chain getAddConnectionChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(new AddConnectionCommand());
 			return c;
 		}
-		
+
 		public static Chain getUpdateConnectionChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(new UpdateConnectionCommand());
 			return c;
 		}
-		
+
 		public static Chain getDeleteConnectionChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(new DeleteConnectionCommand());
+			return c;
+		}
+
+		public static Chain getDeleteStateFlowTransition() {
+			Chain c = getDefaultChain();
+			c.addCommand(new DeleteStateTransitionCommand());
 			return c;
 		}
 }

@@ -925,7 +925,6 @@ public enum ActionType {
 		@Override
 		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,
 				Object currentRecord) throws Exception {
-			System.out.println(obj);
 			ModuleBaseWithCustomFields moduleData = ((ModuleBaseWithCustomFields) currentRecord);
 			TicketStatusContext state = moduleData.getModuleState();
 			long oldStateId = -1;
@@ -943,11 +942,10 @@ public enum ActionType {
 				FacilioContext c = new FacilioContext();
 				c.put(FacilioConstants.ContextNames.RECORD, currentRecord);
 				c.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
-				c.put("transistion_id", availableState.get(0).getId());
+				c.put(FacilioConstants.ContextNames.TRANSITION_ID, availableState.get(0).getId());
 				
 				Chain chain = FacilioChain.getTransactionChain();
 				chain.addCommand(new UpdateStateCommand());
-//				chain.addCommand(new GenericUpdateModuleDataCommand());
 				chain.execute(c);
 			}
 		}

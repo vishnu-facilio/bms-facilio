@@ -113,11 +113,13 @@
 	
 	<package name="stateTransistion" namespace="/api/v2/statetransistion" extends="v2Api">
 		<action name="update"
-			class="com.facilio.bmsconsole.actions.StateFlowAction" method="updateStateTransistion" />
+			class="com.facilio.bmsconsole.actions.StateFlowAction" method="updateStateTransition" />
 		<action name="getAvailableState"
 			class="com.facilio.bmsconsole.actions.StateFlowAction" method="getAvailableState" />
 		<action name="addOrUpdate"
-			class="com.facilio.bmsconsole.actions.StateFlowAction" method="addOrUpdateStateTransistion" />
+			class="com.facilio.bmsconsole.actions.StateFlowAction" method="addOrUpdateStateTransition" />
+		<action name="delete"
+			class="com.facilio.bmsconsole.actions.StateFlowAction" method="deleteStateTransition" />
 	</package>
 
 	<package name="importTemplate" namespace="/api/v2/importTemplate"

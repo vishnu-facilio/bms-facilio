@@ -17,7 +17,7 @@ import com.facilio.bmsconsole.workflow.rule.WorkflowEventContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 
-public class ConstructStateFlowTransistionCommand implements Command {
+public class ConstructStateFlowTransitionCommand implements Command {
 
 	@Override
 	public boolean execute(Context context) throws Exception {
