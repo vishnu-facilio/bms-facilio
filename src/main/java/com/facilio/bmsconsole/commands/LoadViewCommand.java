@@ -125,7 +125,7 @@ public class LoadViewCommand implements Command {
 			if ((((LookupField) field.getSortField()).getSpecialType()) == null) {
 			FacilioModule lookupMod = ModuleFactory.getLookupFieldsModule();
 			
-			columnName = field.getSortField().getColumnName();
+			columnName = field.getSortField().getCompleteColumnName();
 			
 			FacilioField name = new FacilioField();
 			name.setName("name");
@@ -194,7 +194,7 @@ public class LoadViewCommand implements Command {
 				return "FIELD("+columnName + "," + idString+")";
 			}
 		} 
-		return field.getSortField().getColumnName() + " " + (field.getIsAscending()? "asc" : "desc");
+		return field.getSortField().getCompleteColumnName() + " " + (field.getIsAscending()? "asc" : "desc");
 	}
 	
 

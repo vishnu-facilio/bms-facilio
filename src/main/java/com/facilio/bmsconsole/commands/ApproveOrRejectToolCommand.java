@@ -50,7 +50,7 @@ public class ApproveOrRejectToolCommand implements Command {
 			List<GatePassLineItemsContext> gatePassLineItems = new ArrayList<>();
 			for (ToolTransactionContext transactions : toolTransactions) {
 				if (approvalState == ApprovalState.APPROVED) {
-					if (transactions.getToolType().individualTracking()) {
+					if (transactions.getToolType().isRotating()) {
 						if (transactions.getPurchasedTool().isUsed()) {
 							throw new IllegalArgumentException("Insufficient quantity in inventory!");
 						} else {
@@ -67,7 +67,7 @@ public class ApproveOrRejectToolCommand implements Command {
 				}
 
 				else if (approvalState == ApprovalState.REJECTED) {
-					if (transactions.getToolType().individualTracking()) {
+					if (transactions.getToolType().isRotating()) {
 						PurchasedToolContext pTool = transactions.getPurchasedTool();
 						pTool.setIsUsed(false);
 						updatePurchasedTool(pTool);

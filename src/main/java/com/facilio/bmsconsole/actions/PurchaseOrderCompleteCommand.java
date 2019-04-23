@@ -50,7 +50,7 @@ public class PurchaseOrderCompleteCommand implements Command {
 									itemTypesVendors.add(new ItemTypesVendorsContext(lineItem.getItemType(),
 											po.getVendor(), lineItem.getCost(), po.getOrderedTime()));
 									ItemTypesContext itemtype = getItemType(lineItem.getItemType().getId());
-									if (itemtype.individualTracking()) {
+									if (itemtype.isRotating()) {
 										containsIndividualTrackingItem = true;
 									} else {
 										containsIndividualTrackingItem = false;
@@ -58,7 +58,7 @@ public class PurchaseOrderCompleteCommand implements Command {
 									itemsTobeAdded.add(createItem(po, lineItem, containsIndividualTrackingItem));
 								} else if (lineItem.getInventoryTypeEnum() == InventoryType.TOOL) {
 									ToolTypesContext toolType = getToolType(lineItem.getToolType().getId());
-									if (toolType.individualTracking()) {
+									if (toolType.isRotating()) {
 										containsIndividualTrackingTool = true;
 									} else {
 										containsIndividualTrackingTool = false;

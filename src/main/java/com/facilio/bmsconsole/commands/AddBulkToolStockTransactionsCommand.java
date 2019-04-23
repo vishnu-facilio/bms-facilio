@@ -55,7 +55,7 @@ public class AddBulkToolStockTransactionsCommand implements Command {
 			if (tools != null && !tools.isEmpty()) {
 				for (ToolContext tool : tools) {
 					ToolTransactionContext transaction = new ToolTransactionContext();
-					if (tool.getToolType().individualTracking()) {
+					if (tool.getToolType().isRotating()) {
 						List<PurchasedToolContext> purchasedTools = toolVsPurchaseTool.get(tool.getId());
 						if (purchasedTools != null && !purchasedTools.isEmpty()) {
 							for (PurchasedToolContext purchaseTool : purchasedTools) {

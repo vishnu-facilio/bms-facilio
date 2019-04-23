@@ -39,11 +39,11 @@ public class ImportToolCommand implements Command {
 					toolType = purchasedTool.getToolType();
 					if ((purchasedTool.getSerialNumber() == null
 							|| purchasedTool.getSerialNumber().equalsIgnoreCase("null"))) {
-						toolType.setIndividualTracking(false);
+						toolType.setIsRotating(false);
 						// tool.setPurchasedTools(null);
 					} else if (purchasedTool.getSerialNumber() != null
 							&& !purchasedTool.getSerialNumber().equalsIgnoreCase("null")) {
-						toolType.setIndividualTracking(true);
+						toolType.setIsRotating(true);
 						// tool.setPurchasedTools(Collections.singletonList(purchasedTool));
 					}
 					toolType.setId(insertToolType(modBean, toolType));

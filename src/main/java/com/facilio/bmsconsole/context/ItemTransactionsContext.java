@@ -195,4 +195,11 @@ public class ItemTransactionsContext extends ModuleBaseWithCustomFields {
 		this.gatePass = gatePass;
 	}
 	
+	private AssetContext asset;
+	public AssetContext getAsset() {
+		return asset;
+	}
+	public void setAsset(AssetContext asset) {
+		this.asset = asset;
+	}
 }

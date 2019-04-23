@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.ItemContext;
 import com.facilio.bmsconsole.context.ItemTransactionsContext;
 import com.facilio.bmsconsole.context.PurchasedItemContext;
@@ -17,6 +18,8 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -27,13 +30,12 @@ public class AddOrUpdateItemStockTransactionsCommand implements Command {
 		// TODO Auto-generated method stub
 		List<PurchasedItemContext> purchasedItems = (List<PurchasedItemContext>) context
 				.get(FacilioConstants.ContextNames.PURCHASED_ITEM);
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ITEM_TRANSACTIONS);
+		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.ITEM_TRANSACTIONS);
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 		if (purchasedItems != null && !purchasedItems.isEmpty()) {
 			Boolean isBulkItemAdd = (Boolean) context.get(FacilioConstants.ContextNames.IS_BULK_ITEM_ADD);
-
-			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ITEM_TRANSACTIONS);
-			List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.ITEM_TRANSACTIONS);
-			Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 
 			List<ItemTransactionsContext> inventoryTransaction = new ArrayList<>();
 			for (PurchasedItemContext ic : purchasedItems) {
@@ -49,7 +51,7 @@ public class AddOrUpdateItemStockTransactionsCommand implements Command {
 				transaction.setTransactionType(TransactionType.STOCK.getValue());
 				transaction.setApprovedState(ApprovalState.YET_TO_BE_REQUESTED);
 
-				//if bulk insertion add stock transaction entry
+				// if bulk insertion add stock transaction entry
 				if (isBulkItemAdd != null && isBulkItemAdd) {
 					inventoryTransaction.add(transaction);
 				} else {
@@ -76,7 +78,42 @@ public class AddOrUpdateItemStockTransactionsCommand implements Command {
 					.module(module).fields(fields).addRecords(inventoryTransaction);
 			readingBuilder.save();
 		}
+		
+		ItemContext item = (ItemContext) context.get(FacilioConstants.ContextNames.ITEM);
+		AssetContext asset = (AssetContext) context.get(FacilioConstants.ContextNames.RECORD);
+		if (item != null) {
+			ItemContext items = ItemsApi.getItems(item.getId());
+			double q = items.getQuantity() >= 0 ? items.getQuantity() : 0;
+			q+=1;
+			items.setQuantity(q);
+			ItemTransactionsContext transaction = new ItemTransactionsContext();
+			transaction.setTransactionState(TransactionState.ADDITION.getValue());
+			transaction.setIsReturnable(false);
+			transaction.setTransactionType(TransactionType.STOCK.getValue());
+			transaction.setApprovedState(ApprovalState.YET_TO_BE_REQUESTED);
+			transaction.setItem(items);
+			transaction.setItemType(items.getItemType());
+			transaction.setQuantity(1);
+			transaction.setAsset(asset);
+			transaction.setParentId(asset.getId());
+			updateItemQty(items);
+			InsertRecordBuilder<ItemTransactionsContext> readingBuilder = new InsertRecordBuilder<ItemTransactionsContext>()
+					.module(module).fields(fields).addRecord(transaction);
+			readingBuilder.save();
+			
+			context.put(FacilioConstants.ContextNames.ITEM_TYPES_IDS, Collections.singletonList(items.getItemType().getId()));
+		}
 		return false;
+	}
+	
+	private void updateItemQty (ItemContext item) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ITEM);
+		
+		UpdateRecordBuilder<ItemContext> updateBuilder = new UpdateRecordBuilder<ItemContext>()
+				.module(module).fields(modBean.getAllFields(module.getName()))
+				.andCondition(CriteriaAPI.getIdCondition(item.getId(), module));
+		updateBuilder.update(item);		
 	}
 
 }

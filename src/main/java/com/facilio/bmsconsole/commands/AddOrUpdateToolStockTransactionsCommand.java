@@ -1,6 +1,8 @@
 package com.facilio.bmsconsole.commands;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.AssetContext;
+import com.facilio.bmsconsole.context.ItemContext;
 import com.facilio.bmsconsole.context.PurchasedToolContext;
 import com.facilio.bmsconsole.context.ToolContext;
 import com.facilio.bmsconsole.context.ToolTransactionContext;
@@ -9,6 +11,7 @@ import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.EnumOperators;
 import com.facilio.bmsconsole.criteria.PickListOperators;
 import com.facilio.bmsconsole.modules.*;
+import com.facilio.bmsconsole.util.ToolsApi;
 import com.facilio.bmsconsole.util.TransactionState;
 import com.facilio.bmsconsole.util.TransactionType;
 import com.facilio.bmsconsole.workflow.rule.ApprovalState;
@@ -18,6 +21,7 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -31,110 +35,148 @@ public class AddOrUpdateToolStockTransactionsCommand implements Command {
 		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.TOOL_TRANSACTIONS);
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 		
-		long toolTypeId = (long) context.get(FacilioConstants.ContextNames.TOOL_TYPES_ID);
 		List<Long> toolIds = (List<Long>) context.get(FacilioConstants.ContextNames.TOOL_IDS);
-		FacilioModule Toolmodule = modBean.getModule(FacilioConstants.ContextNames.TOOL);
-		List<FacilioField> Toolfields = modBean.getAllFields(FacilioConstants.ContextNames.TOOL);
+		if (toolIds != null && !toolIds.isEmpty()) {
+			long toolTypeId = (long) context.get(FacilioConstants.ContextNames.TOOL_TYPES_ID);
+			FacilioModule Toolmodule = modBean.getModule(FacilioConstants.ContextNames.TOOL);
+			List<FacilioField> Toolfields = modBean.getAllFields(FacilioConstants.ContextNames.TOOL);
 
-		SelectRecordsBuilder<ToolContext> toolselectBuilder = new SelectRecordsBuilder<ToolContext>().select(Toolfields)
-				.table(Toolmodule.getTableName()).moduleName(Toolmodule.getName()).beanClass(ToolContext.class)
-				.andCondition(CriteriaAPI.getIdCondition(toolIds, Toolmodule));
+			SelectRecordsBuilder<ToolContext> toolselectBuilder = new SelectRecordsBuilder<ToolContext>()
+					.select(Toolfields).table(Toolmodule.getTableName()).moduleName(Toolmodule.getName())
+					.beanClass(ToolContext.class).andCondition(CriteriaAPI.getIdCondition(toolIds, Toolmodule));
 
-		List<ToolContext> tools = toolselectBuilder.get();
-		ToolContext tool = (ToolContext) context.get(FacilioConstants.ContextNames.RECORD);
-//		if (tools != null && !tools.isEmpty()) {
-//			tool = tools.get(0);
-//		}
+			List<ToolContext> tools = toolselectBuilder.get();
+			ToolContext tool = (ToolContext) context.get(FacilioConstants.ContextNames.RECORD);
+			// if (tools != null && !tools.isEmpty()) {
+			// tool = tools.get(0);
+			// }
 
-		FacilioModule ToolTypemodule = modBean.getModule(FacilioConstants.ContextNames.TOOL_TYPES);
-		List<FacilioField> ToolTypefields = modBean.getAllFields(FacilioConstants.ContextNames.TOOL_TYPES);
+			FacilioModule ToolTypemodule = modBean.getModule(FacilioConstants.ContextNames.TOOL_TYPES);
+			List<FacilioField> ToolTypefields = modBean.getAllFields(FacilioConstants.ContextNames.TOOL_TYPES);
 
-		SelectRecordsBuilder<ToolTypesContext> toolTypesselectBuilder = new SelectRecordsBuilder<ToolTypesContext>()
-				.select(ToolTypefields).table(ToolTypemodule.getTableName()).moduleName(ToolTypemodule.getName())
-				.beanClass(ToolTypesContext.class)
-				.andCondition(CriteriaAPI.getIdCondition(toolTypeId, ToolTypemodule));
+			SelectRecordsBuilder<ToolTypesContext> toolTypesselectBuilder = new SelectRecordsBuilder<ToolTypesContext>()
+					.select(ToolTypefields).table(ToolTypemodule.getTableName()).moduleName(ToolTypemodule.getName())
+					.beanClass(ToolTypesContext.class)
+					.andCondition(CriteriaAPI.getIdCondition(toolTypeId, ToolTypemodule));
 
-		List<ToolTypesContext> toolTypes = toolTypesselectBuilder.get();
-		ToolTypesContext toolType = null;
-		if (toolTypes != null && !toolTypes.isEmpty()) {
-			toolType = toolTypes.get(0);
-		}
+			List<ToolTypesContext> toolTypes = toolTypesselectBuilder.get();
+			ToolTypesContext toolType = null;
+			if (toolTypes != null && !toolTypes.isEmpty()) {
+				toolType = toolTypes.get(0);
+			}
 
-		if (toolType == null) {
-			throw new IllegalArgumentException("No such tool found");
-		}
+			if (toolType == null) {
+				throw new IllegalArgumentException("No such tool found");
+			}
 
-		List<ToolTransactionContext> toolTransaction = new ArrayList<>();
+			List<ToolTransactionContext> toolTransaction = new ArrayList<>();
 
-		if (toolType.individualTracking()) {
+			if (toolType.isRotating()) {
 
-			List<PurchasedToolContext> pts = (List<PurchasedToolContext>) context.get(FacilioConstants.ContextNames.PURCHASED_TOOL);
+				List<PurchasedToolContext> pts = (List<PurchasedToolContext>) context
+						.get(FacilioConstants.ContextNames.PURCHASED_TOOL);
 
-			if (pts != null && !pts.isEmpty()) {
-				for (PurchasedToolContext pt : pts) {
-					ToolTransactionContext transaction = new ToolTransactionContext();
-					transaction.setTransactionState(TransactionState.ADDITION.getValue());
-					transaction.setPurchasedTool(pt);
-					transaction.setTool(pt.getTool());
-					transaction.setQuantity(1);
-					transaction.setParentId(pt.getId());
-					transaction.setIsReturnable(false);
-					transaction.setTransactionType(TransactionType.STOCK.getValue());
-					transaction.setToolType(toolType);
-					transaction.setApprovedState(ApprovalState.YET_TO_BE_REQUESTED);
+				if (pts != null && !pts.isEmpty()) {
+					for (PurchasedToolContext pt : pts) {
+						ToolTransactionContext transaction = new ToolTransactionContext();
+						transaction.setTransactionState(TransactionState.ADDITION.getValue());
+						transaction.setPurchasedTool(pt);
+						transaction.setTool(pt.getTool());
+						transaction.setQuantity(1);
+						transaction.setParentId(pt.getId());
+						transaction.setIsReturnable(false);
+						transaction.setTransactionType(TransactionType.STOCK.getValue());
+						transaction.setToolType(toolType);
+						transaction.setApprovedState(ApprovalState.YET_TO_BE_REQUESTED);
 
-					SelectRecordsBuilder<ToolTransactionContext> transactionsselectBuilder = new SelectRecordsBuilder<ToolTransactionContext>()
-							.select(fields).table(module.getTableName()).moduleName(module.getName())
-							.beanClass(ToolTransactionContext.class)
-							.andCondition(CriteriaAPI.getCondition(fieldMap.get("transactionState"),
-									String.valueOf(TransactionState.ADDITION.getValue()), EnumOperators.VALUE_IS))
-							.andCondition(CriteriaAPI.getCondition(fieldMap.get("purchasedTool"), String.valueOf(pt.getId()), PickListOperators.IS));
-					List<ToolTransactionContext> transactions = transactionsselectBuilder.get();
-					if (transactions != null && !transactions.isEmpty()) {
-						ToolTransactionContext it = transactions.get(0);
-						it.setQuantity(1);
-						UpdateRecordBuilder<ToolTransactionContext> updateBuilder = new UpdateRecordBuilder<ToolTransactionContext>()
-								.module(module).fields(modBean.getAllFields(module.getName()))
-								.andCondition(CriteriaAPI.getIdCondition(it.getId(), module));
-						updateBuilder.update(it);
-					} else {
-						toolTransaction.add(transaction);
+						SelectRecordsBuilder<ToolTransactionContext> transactionsselectBuilder = new SelectRecordsBuilder<ToolTransactionContext>()
+								.select(fields).table(module.getTableName()).moduleName(module.getName())
+								.beanClass(ToolTransactionContext.class)
+								.andCondition(CriteriaAPI.getCondition(fieldMap.get("transactionState"),
+										String.valueOf(TransactionState.ADDITION.getValue()), EnumOperators.VALUE_IS))
+								.andCondition(CriteriaAPI.getCondition(fieldMap.get("purchasedTool"),
+										String.valueOf(pt.getId()), PickListOperators.IS));
+						List<ToolTransactionContext> transactions = transactionsselectBuilder.get();
+						if (transactions != null && !transactions.isEmpty()) {
+							ToolTransactionContext it = transactions.get(0);
+							it.setQuantity(1);
+							UpdateRecordBuilder<ToolTransactionContext> updateBuilder = new UpdateRecordBuilder<ToolTransactionContext>()
+									.module(module).fields(modBean.getAllFields(module.getName()))
+									.andCondition(CriteriaAPI.getIdCondition(it.getId(), module));
+							updateBuilder.update(it);
+						} else {
+							toolTransaction.add(transaction);
+						}
 					}
 				}
-			}
-		} else {
-			ToolTransactionContext transaction = new ToolTransactionContext();
-			transaction.setTransactionState(TransactionState.ADDITION.getValue());
-			transaction.setTool(tool);
-			transaction.setQuantity(tool.getQuantity());
-			transaction.setParentId(tool.getId());
-			transaction.setIsReturnable(false);
-			transaction.setTransactionType(TransactionType.STOCK.getValue());
-			transaction.setToolType(toolType);
-			transaction.setApprovedState(ApprovalState.YET_TO_BE_REQUESTED);
-
-			SelectRecordsBuilder<ToolTransactionContext> transactionsselectBuilder = new SelectRecordsBuilder<ToolTransactionContext>()
-					.select(fields).table(module.getTableName()).moduleName(module.getName())
-					.beanClass(ToolTransactionContext.class)
-					.andCondition(CriteriaAPI.getCondition(fieldMap.get("transactionState"),
-							String.valueOf(TransactionState.ADDITION.getValue()), EnumOperators.VALUE_IS));
-			List<ToolTransactionContext> transactions = transactionsselectBuilder.get();
-			if (transactions != null && !transactions.isEmpty()) {
-				ToolTransactionContext it = transactions.get(0);
-				it.setQuantity(1);
-				UpdateRecordBuilder<ToolTransactionContext> updateBuilder = new UpdateRecordBuilder<ToolTransactionContext>()
-						.module(module).fields(modBean.getAllFields(module.getName()))
-						.andCondition(CriteriaAPI.getIdCondition(it.getId(), module));
-				updateBuilder.update(it);
 			} else {
-				toolTransaction.add(transaction);
+				ToolTransactionContext transaction = new ToolTransactionContext();
+				transaction.setTransactionState(TransactionState.ADDITION.getValue());
+				transaction.setTool(tool);
+				transaction.setQuantity(tool.getQuantity());
+				transaction.setParentId(tool.getId());
+				transaction.setIsReturnable(false);
+				transaction.setTransactionType(TransactionType.STOCK.getValue());
+				transaction.setToolType(toolType);
+				transaction.setApprovedState(ApprovalState.YET_TO_BE_REQUESTED);
+
+				SelectRecordsBuilder<ToolTransactionContext> transactionsselectBuilder = new SelectRecordsBuilder<ToolTransactionContext>()
+						.select(fields).table(module.getTableName()).moduleName(module.getName())
+						.beanClass(ToolTransactionContext.class)
+						.andCondition(CriteriaAPI.getCondition(fieldMap.get("transactionState"),
+								String.valueOf(TransactionState.ADDITION.getValue()), EnumOperators.VALUE_IS));
+				List<ToolTransactionContext> transactions = transactionsselectBuilder.get();
+				if (transactions != null && !transactions.isEmpty()) {
+					ToolTransactionContext it = transactions.get(0);
+					it.setQuantity(1);
+					UpdateRecordBuilder<ToolTransactionContext> updateBuilder = new UpdateRecordBuilder<ToolTransactionContext>()
+							.module(module).fields(modBean.getAllFields(module.getName()))
+							.andCondition(CriteriaAPI.getIdCondition(it.getId(), module));
+					updateBuilder.update(it);
+				} else {
+					toolTransaction.add(transaction);
+				}
+			}
+			InsertRecordBuilder<ToolTransactionContext> readingBuilder = new InsertRecordBuilder<ToolTransactionContext>()
+					.module(module).fields(fields).addRecords(toolTransaction);
+			readingBuilder.save();
+			context.put(FacilioConstants.ContextNames.RECORD_LIST, toolTransaction);
+		} else {
+			ToolContext tool = (ToolContext) context.get(FacilioConstants.ContextNames.TOOL);
+			AssetContext asset = (AssetContext) context.get(FacilioConstants.ContextNames.RECORD);
+			if (tool != null) {
+				ToolContext t = ToolsApi.getTool(tool.getId());
+				double q = t.getQuantity() >= 0 ? t.getQuantity() : 0;
+				q += 1;
+				t.setQuantity(q);
+				ToolTransactionContext transaction = new ToolTransactionContext();
+				transaction.setTransactionState(TransactionState.ADDITION.getValue());
+				transaction.setTool(t);
+				transaction.setQuantity(1);
+				transaction.setParentId(t.getId());
+				transaction.setIsReturnable(false);
+				transaction.setTransactionType(TransactionType.STOCK.getValue());
+				transaction.setToolType(t.getToolType());
+				transaction.setApprovedState(ApprovalState.YET_TO_BE_REQUESTED);
+				transaction.setAsset(asset);
+				updateToolQty(t);
+				InsertRecordBuilder<ToolTransactionContext> readingBuilder = new InsertRecordBuilder<ToolTransactionContext>()
+						.module(module).fields(fields).addRecord(transaction);
+				readingBuilder.save();
+				context.put(FacilioConstants.ContextNames.RECORD_LIST, Collections.singletonList(transaction));
 			}
 		}
-		InsertRecordBuilder<ToolTransactionContext> readingBuilder = new InsertRecordBuilder<ToolTransactionContext>()
-				.module(module).fields(fields).addRecords(toolTransaction);
-		readingBuilder.save();
-		context.put(FacilioConstants.ContextNames.RECORD_LIST, toolTransaction);
 		return false;
+	}
+
+	private void updateToolQty(ToolContext tool) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.TOOL);
+
+		UpdateRecordBuilder<ToolContext> updateBuilder = new UpdateRecordBuilder<ToolContext>().module(module)
+				.fields(modBean.getAllFields(module.getName()))
+				.andCondition(CriteriaAPI.getIdCondition(tool.getId(), module));
+		updateBuilder.update(tool);
 	}
 
 }

@@ -9,7 +9,7 @@ import org.apache.commons.chain.Context;
 
 import java.util.List;
 
-public class GetResourceListForMultiplePM implements Command {
+public class getResourceListForMultiplePM implements Command {
 
 	@Override
 	public boolean execute(Context context) throws Exception {

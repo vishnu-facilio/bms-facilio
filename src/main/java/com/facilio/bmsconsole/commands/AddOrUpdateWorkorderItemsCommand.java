@@ -82,7 +82,7 @@ public class AddOrUpdateWorkorderItemsCommand implements Command {
 								info.put("itemtype", itemType.getName());
 								info.put("quantity", workorderitem.getQuantity());
 								info.put("issuedToId", workorderitem.getParentId());
-								if (itemType.individualTracking()) {
+								if (itemType.isRotating()) {
 									woitemactivity.add(info);
 									wItem = setWorkorderItemObj(purchaseditem, 1, item, parentId, approvalState, wo);
 
@@ -106,7 +106,7 @@ public class AddOrUpdateWorkorderItemsCommand implements Command {
 						if (itemType.isApprovalNeeded() || storeRoom.isApprovalNeeded()) {
 							approvalState = ApprovalState.REQUESTED;
 						}
-						if (itemType.individualTracking()) {
+						if (itemType.isRotating()) {
 							List<Long> PurchasedItemsIds = workorderitem.getPurchasedItems();
 							List<PurchasedItemContext> purchasedItem = getPurchasedItemsListFromId(PurchasedItemsIds,
 									purchasedItemModule, purchasedItemFields);
