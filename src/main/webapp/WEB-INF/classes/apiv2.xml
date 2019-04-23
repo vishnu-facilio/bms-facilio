@@ -100,6 +100,25 @@
 			<interceptor-ref name="defaultStack" />
 		</action>
 	</package>
+	
+	<package name="state" namespace="/api/v2/state" extends="v2Api">
+		<action name="addOrUpdate"
+			class="com.facilio.bmsconsole.actions.StateFlowAction" method="addOrUpdateState" />
+	</package>
+	
+	<package name="stateFlow" namespace="/api/v2/stateflow" extends="v2Api">
+		<action name="addOrUpdate"
+			class="com.facilio.bmsconsole.actions.StateFlowAction" method="addOrUpdateStateFlow" />
+	</package>
+	
+	<package name="stateTransistion" namespace="/api/v2/statetransistion" extends="v2Api">
+		<action name="update"
+			class="com.facilio.bmsconsole.actions.StateFlowAction" method="updateStateTransistion" />
+		<action name="getAvailableState"
+			class="com.facilio.bmsconsole.actions.StateFlowAction" method="getAvailableState" />
+		<action name="addOrUpdate"
+			class="com.facilio.bmsconsole.actions.StateFlowAction" method="addOrUpdateStateTransistion" />
+	</package>
 
 	<package name="importTemplate" namespace="/api/v2/importTemplate"
 		extends="v2Api">
@@ -1950,6 +1969,46 @@
 			class="com.facilio.bmsconsole.actions.GatePassAction" method="gatePassDetails">
 			<param name="moduleName">purchaseorder</param>
 			<param name = "gatePassId">{1}</param>
+		</action>
+		<action name="count" class="com.facilio.bmsconsole.actions.GatePassAction"
+			method="gatePassCount">
+			<param name="moduleName">inventory</param>
+			<param name="permission">READ</param>
+		</action>
+	</package>
+	
+	<package name="gatePassList" namespace="/api/v2/gatePass/view"
+		extends="v2Api">
+		<action name="*"
+			class="com.facilio.bmsconsole.actions.GatePassAction" method="gatePassList">
+			<param name = "viewName">{1}</param>
+		</action>
+	</package>
+	
+	<package name="connectedApps" namespace="/api/v2/connectedApps"
+		extends="v2Api">
+		<action name="add"
+			class="com.facilio.bmsconsole.actions.ConnectedAppAction" method="addConnectedApp">
+		</action>
+		
+		<action name="update"
+			class="com.facilio.bmsconsole.actions.ConnectedAppAction" method="updateConnectedApp">
+		</action>
+		
+		<action name="delete"
+			class="com.facilio.bmsconsole.actions.ConnectedAppAction" method="deleteConnectedApp">
+		</action>
+		
+		<action name="all"
+			class="com.facilio.bmsconsole.actions.ConnectedAppAction" method="connectedAppList">
+		</action>
+	</package>
+	
+	<package name="connectedAppsDetails" namespace="/api/v2/connectedApps/details"
+		extends="v2Api">
+		<action name="*"
+			class="com.facilio.bmsconsole.actions.ConnectedAppAction" method="connectedAppDetails">
+			<param name = "linkName">{1}</param>
 		</action>
 	</package>
 	

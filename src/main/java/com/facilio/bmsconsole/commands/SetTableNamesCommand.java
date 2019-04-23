@@ -298,6 +298,10 @@ public class SetTableNamesCommand implements Command {
 	public static SetTableNamesCommand getForGatePassLineItems() {
 		return new SetTableNamesCommand("gatePassLineItems", "Gate_Pass_Line_Items");
 	}
+	
+	public static SetTableNamesCommand getForConnectedApps() {
+		return new SetTableNamesCommand("connectedApps", "ConnectedApps");
+	}
 
 	public static void setForModule (Context context, String moduleName) {
 		//TODO handle all module and get from map

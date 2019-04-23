@@ -1,6 +1,9 @@
 package com.facilio.bmsconsole.modules;
 
 import com.facilio.accounts.dto.User;
+import com.facilio.bmsconsole.context.StateFlowContext;
+import com.facilio.bmsconsole.context.TicketStatusContext;
+import com.facilio.bmsconsole.workflow.rule.StateContext;
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 
@@ -143,6 +146,22 @@ public class ModuleBaseWithCustomFields implements Serializable {
 	}
 	public void setSysModifiedBy(User sysModifiedBy) {
 		this.sysModifiedBy = sysModifiedBy;
+	}
+	
+	private TicketStatusContext moduleState;
+	public TicketStatusContext getModuleState() {
+		return moduleState;
+	}
+	public void setModuleState(TicketStatusContext moduleState) {
+		this.moduleState = moduleState;
+	}
+	
+	private long stateFlowId;
+	public long getStateFlowId() {
+		return stateFlowId;
+	}
+	public void setStateFlowId(long stateFlowId) {
+		this.stateFlowId = stateFlowId;
 	}
 	
 	@Override

@@ -69,6 +69,16 @@ public class NoteAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
 		context.put(FacilioConstants.ContextNames.TICKET_MODULE, ticketModuleName);
 		context.put(FacilioConstants.ContextNames.NOTE, note);
+		if (moduleName.equals(FacilioConstants.ContextNames.ITEM_TYPES_NOTES)) {
+		   context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.ITEM_ACTIVITY);
+		}
+		else if (moduleName.equals(FacilioConstants.ContextNames.TICKET_NOTES)) {
+			context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.WORKORDER_ACTIVITY);
+			}
+
+		else if (moduleName.equals(FacilioConstants.ContextNames.ASSET_NOTES)) {
+			context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.ASSET_ACTIVITY);
+			}
 		Chain addNote = TransactionChainFactory.getAddNotesChain();
 		addNote.execute(context);
 		

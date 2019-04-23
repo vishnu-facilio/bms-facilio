@@ -194,8 +194,12 @@ public class V2ReportAction extends FacilioAction {
 				reportContext.setDateValue(range.toString());
 			}
 		}
-		reportContext.addToReportState(FacilioConstants.ContextNames.REPORT_SHOW_ALARMS, showAlarms);
-		reportContext.addToReportState(FacilioConstants.ContextNames.REPORT_SHOW_SAFE_LIMIT, showSafeLimit);
+		if (showAlarms != null) {
+			reportContext.addToReportState(FacilioConstants.ContextNames.REPORT_SHOW_ALARMS, showAlarms);
+		}
+		if (showSafeLimit != null) {
+			reportContext.addToReportState(FacilioConstants.ContextNames.REPORT_SHOW_SAFE_LIMIT, showSafeLimit);
+		}
 
 		context.put(FacilioConstants.ContextNames.REPORT, reportContext);
 		context.put(FacilioConstants.ContextNames.REPORT_HANDLE_BOOLEAN, newFormat);
@@ -717,16 +721,16 @@ public class V2ReportAction extends FacilioAction {
 		this.xCriteriaMode = this.filterMode;
 	}
 	
-	private boolean showSafeLimit;
-	public boolean isShowSafeLimit() {
+	private Boolean showSafeLimit;
+	public Boolean isShowSafeLimit() {
 		return showSafeLimit;
 	}
 	public void setShowSafeLimit(boolean showSafeLimit) {
 		this.showSafeLimit = showSafeLimit;
 	}
 
-	private boolean showAlarms;
-	public boolean isShowAlarms() {
+	private Boolean showAlarms;
+	public Boolean isShowAlarms() {
 		return showAlarms;
 	}
 	public void setShowAlarms(boolean showAlarms) {

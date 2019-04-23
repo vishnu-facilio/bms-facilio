@@ -91,7 +91,9 @@ public class GetStoreRoomListCommand implements Command {
 		}
 		if ((filters == null || includeParentCriteria) && view != null) {
 			Criteria criteria = view.getCriteria();
-			builder.andCriteria(criteria);
+			if (criteria != null && !criteria.isEmpty()) {
+				builder.andCriteria(criteria);
+			}
 		}
 
 		Criteria searchCriteria = (Criteria) context.get(FacilioConstants.ContextNames.SEARCH_CRITERIA);
@@ -102,6 +104,11 @@ public class GetStoreRoomListCommand implements Command {
 		Criteria scopeCriteria = AccountUtil.getCurrentUser().scopeCriteria(moduleName);
 		if (scopeCriteria != null) {
 			builder.andCriteria(scopeCriteria);
+		}
+		
+		Criteria permissionCriteria = AccountUtil.getCurrentUser().getRole().permissionCriteria("inventory","read");
+		if(permissionCriteria != null) {
+			builder.andCriteria(permissionCriteria);
 		}
 
 		JSONObject pagination = (JSONObject) context.get(FacilioConstants.ContextNames.PAGINATION);

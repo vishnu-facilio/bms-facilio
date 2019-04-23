@@ -177,7 +177,21 @@ public class FacilioForm implements Serializable {
 		if (this.showInMobile == null) {
 			return true;
 		}
-		return false;
+		return this.showInMobile;
+	}
+	
+	private Boolean hideInList;
+	public Boolean getHideInList() {
+		return hideInList;
+	}
+	public void setHideInList(Boolean hideInList) {
+		this.hideInList = hideInList;
+	}
+	public Boolean isHideInList() {
+		if (this.hideInList == null) {
+			return false;
+		}
+		return this.hideInList;
 	}
 
 	public enum FormType {

@@ -13,7 +13,7 @@ import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 
 public class TransactionChainFactory {
-	
+
 	private static Chain getDefaultChain() {
 		return FacilioChain.getTransactionChain();
     }
@@ -680,7 +680,7 @@ public class TransactionChainFactory {
 			c.addCommand(new ExecuteNoteWorkflowCommand());
 			c.addCommand(new AddNoteTicketActivityCommand());
 //			c.setPostTransactionChain(getUpdateTicketNotesChain());
-			c.addCommand(new AddActivitiesCommand(FacilioConstants.ContextNames.WORKORDER_ACTIVITY));
+			c.addCommand(new AddActivitiesCommand());
 			return c;
 		}
 		
@@ -745,6 +745,7 @@ public class TransactionChainFactory {
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.ASSIGNMENT_RULE));
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.SLA_RULE));
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.APPROVAL_RULE, RuleType.CHILD_APPROVAL_RULE, RuleType.REQUEST_APPROVAL_RULE, RuleType.REQUEST_REJECT_RULE));
+			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.STATE_FLOW));
 			c.addCommand(new ForkChainToInstantJobCommand()
 					.addCommand(new ExecuteAllWorkflowsCommand(RuleType.WORKORDER_AGENT_NOTIFICATION_RULE, RuleType.WORKORDER_REQUESTER_NOTIFICATION_RULE, RuleType.CUSTOM_WORKORDER_NOTIFICATION_RULE))
 			);
@@ -766,7 +767,7 @@ public class TransactionChainFactory {
 			c.addCommand(new AddTicketActivityCommand());
 			c.addCommand(getAddTasksChain());
 			c.addCommand(getWorkOrderWorkflowsChain());
-			c.addCommand(new AddActivitiesCommand(FacilioConstants.ContextNames.WORKORDER_ACTIVITY));
+			c.addCommand(new AddActivitiesCommand());
 			return c;
 		}
 
@@ -795,7 +796,7 @@ public class TransactionChainFactory {
 			c.addCommand(new UpdateReadingDataMetaCommand());
 			// c.addCommand(new AddTaskTicketActivityCommand());
 //			c.setPostTransactionChain(TransactionChainFactory.getUpdateTaskCountChain());
-			c.addCommand(new AddActivitiesCommand(FacilioConstants.ContextNames.WORKORDER_ACTIVITY));
+			c.addCommand(new AddActivitiesCommand());
 			return c;
 		}
 		
@@ -813,13 +814,14 @@ public class TransactionChainFactory {
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.ASSIGNMENT_RULE));
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.SLA_RULE));
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.APPROVAL_RULE, RuleType.CHILD_APPROVAL_RULE, RuleType.REQUEST_APPROVAL_RULE, RuleType.REQUEST_REJECT_RULE));
+			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.STATE_RULE));
 			c.addCommand(new ForkChainToInstantJobCommand()
 				.addCommand(new ExecuteAllWorkflowsCommand(RuleType.WORKORDER_AGENT_NOTIFICATION_RULE, RuleType.WORKORDER_REQUESTER_NOTIFICATION_RULE, RuleType.CUSTOM_WORKORDER_NOTIFICATION_RULE))
 				.addCommand(new ClearAlarmOnWOCloseCommand())
 			);
 			c.addCommand(new ConstructTicketNotesCommand());
 			c.addCommand(getAddNotesChain());
-			c.addCommand(new AddActivitiesCommand(FacilioConstants.ContextNames.WORKORDER_ACTIVITY));
+			c.addCommand(new AddActivitiesCommand());
 			return c;
 		}
 		
@@ -1003,7 +1005,7 @@ public class TransactionChainFactory {
 			c.addCommand(new SwitchToAddResourceChain());
 			return c;
 		}
-		
+
 		public static Chain getAssetImportChain() {
 			Chain c= getDefaultChain();
 			c.addCommand(new PopulateImportProcessCommand());
@@ -1189,7 +1191,7 @@ public class TransactionChainFactory {
 			c.addCommand(new UpdateClosedTasksCounterCommand());
 			c.addCommand(new AddTaskTicketActivityCommand());
 			c.addCommand(new ExecuteAllWorkflowsCommand());
-			c.addCommand(new AddActivitiesCommand(FacilioConstants.ContextNames.WORKORDER_ACTIVITY));
+			c.addCommand(new AddActivitiesCommand());
 //			c.addCommand(getAddOrUpdateReadingValuesChain());
 			return c;
 		}
@@ -1311,6 +1313,7 @@ public class TransactionChainFactory {
 			Chain c = getDefaultChain();
 			c.addCommand(new ExecutePMsCommand());
 			c.addCommand(new SchedulePostPMRemindersCommandForBulkExecutePm());
+			c.addCommand(new AddActivitiesCommand());
 			return c;
 		}
 		
@@ -1333,16 +1336,48 @@ public class TransactionChainFactory {
 			return c;
 		}
 		
-	    
+
 	    public static Chain getAddWidgetChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(new AddWidgetCommand());
 			return c;
 		}
+	    public static Chain getAddDashboardChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new AddDashboardCommand());
+			return c;
+		}
 	    public static Chain getUpdateDashboardChain() {
 			Chain c = getDefaultChain();
-			c.addCommand(new UpdateDashboardCommand());
+			c.addCommand(new UpdateDashboardWithWidgetCommand());
 			c.addCommand(new EnableMobileDashboardCommand());
+			return c;
+		}
+	    public static Chain getUpdateDashboardsChain() {
+			Chain c = FacilioChain.getTransactionChain();
+			c.addCommand(new UpdateDashboardsCommand());
+			return c;
+		}
+
+	    public static Chain getDeleteDashboardChain() {
+			Chain c = FacilioChain.getTransactionChain();
+			c.addCommand(new DeleteDashboardCommand());
+			return c;
+		}
+
+	    public static Chain getAddDashboardFolderChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new AddDashboardFolderCommand());
+			return c;
+		}
+	    public static Chain getUpdateDashboardFolderChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new UpdateDashboardFolderCommand());
+			return c;
+		}
+	    public static Chain getDeleteDashboardFolderChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new DeleteDashboardFolderCommand());
 			return c;
 		}
 
@@ -1537,6 +1572,21 @@ public class TransactionChainFactory {
 			Chain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForItemTypes());
 			c.addCommand(new GenericUpdateModuleDataCommand());
+			c.addCommand(new AddActivitiesCommand());
+			return c;
+		}
+
+		public static Chain getAddOrUpdateConnectedAppChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForConnectedApps());
+			c.addCommand(new AddOrUpdateConnectedAppCommand());
+			return c;
+		}
+
+		public static Chain getDeleteConnectedAppChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForConnectedApps());
+			c.addCommand(new DeleteConnectedAppCommand());
 			return c;
 		}
 		
@@ -1671,6 +1721,7 @@ public class TransactionChainFactory {
 			c.addCommand(getAddPurchasedItemChain());
 			c.addCommand(getUpdateItemQuantityRollupChain());
 			c.addCommand(getSetItemAndToolTypeForStoreRoomChain());
+			c.addCommand(new AddActivitiesCommand());
 			return c;
 		}
 		
@@ -1691,6 +1742,7 @@ public class TransactionChainFactory {
 			c.addCommand(new GenericUpdateModuleDataCommand());
 			c.addCommand(getAddPurchasedItemChain());
 			c.addCommand(getUpdateItemQuantityRollupChain());
+			c.addCommand(new AddActivitiesCommand());
 			return c;
 		}
 		
@@ -1759,6 +1811,7 @@ public class TransactionChainFactory {
 			c.addCommand(new AddOrUpdateWorkorderCostCommand());
 			c.addCommand(new UpdateWorkorderTotalCostCommand());
 //			c.addCommand(getUpdateWorkOrderChain());
+			c.addCommand(new AddActivitiesCommand());
 			return c;
 		}
 		
@@ -1903,7 +1956,7 @@ public class TransactionChainFactory {
 			c.addCommand(new LoadAssetFields());
 			c.addCommand(new GetAssetDetailCommand());
 			c.addCommand(new UpdateGeoLocationCommand());
-			c.addCommand(new AddActivitiesCommand(FacilioConstants.ContextNames.ASSET_ACTIVITY));
+			c.addCommand(new AddActivitiesCommand());
 			return c;
 		}
 
@@ -1935,6 +1988,8 @@ public class TransactionChainFactory {
 			c.addCommand(getItemTransactionRemainingQuantityRollupChain());
 			c.addCommand(new PurchasedItemsQuantityRollUpCommand());
 			c.addCommand(getUpdateItemQuantityRollupChain());
+			c.addCommand(new AddActivitiesCommand());
+
 			return c;
 		}
 		
@@ -2031,6 +2086,8 @@ public class TransactionChainFactory {
 			c.addCommand(new AddOrUpdateWorkorderCostCommand());
 			c.addCommand(new UpdateWorkorderTotalCostCommand());
 //			c.addCommand(getUpdateWorkOrderChain());
+			c.addCommand(new AddActivitiesCommand());
+
 			return c;
 		}
 		
@@ -2040,6 +2097,7 @@ public class TransactionChainFactory {
 			c.addCommand(new ApproveOrRejectItemCommand());
 			c.addCommand(new PurchasedItemsQuantityRollUpCommand());
 			c.addCommand(getUpdateItemQuantityRollupChain());
+			c.addCommand(new AddActivitiesCommand());
 			return c;
 		}
 
@@ -2095,11 +2153,11 @@ public class TransactionChainFactory {
 			chain.addCommand(getPurchaseRequestTotalCostChain()); //update purchase request total cost
 			return chain;
 		}
-		
+
 		public static Chain getUpdatePurchaseRequestStatusChain() {
 			Chain chain = getDefaultChain();
 			chain.addCommand(SetTableNamesCommand.getForPurchaseRequest());
-			chain.addCommand(new UpdateBulkPurchaseRequestStatusCommand()); 
+			chain.addCommand(new UpdateBulkPurchaseRequestStatusCommand());
 			return chain;
 		}
 
@@ -2153,7 +2211,7 @@ public class TransactionChainFactory {
 		public static Chain getUpdatePurchaseOrderStatusChain() {
 			Chain chain = getDefaultChain();
 			chain.addCommand(SetTableNamesCommand.getForPurchaseOrder());
-			chain.addCommand(new UpdateBulkPurchaseOrderStatusCommand()); 
+			chain.addCommand(new UpdateBulkPurchaseOrderStatusCommand());
 			return chain;
 		}
 
@@ -2245,8 +2303,8 @@ public class TransactionChainFactory {
 			c.addCommand(new GetPurchaseOrdersListOnInventoryTypeIdCommand());
 			return c;
 		}
-		
-		
+
+
 		public static Chain getAddOrUpdateItemTypeVendorChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(new AddOrUpdateItemTypeVendorCommand());
@@ -2266,43 +2324,43 @@ public class TransactionChainFactory {
 			c.addCommand(getBulkAddToolChain());
 			return c;
 		}
-		
+
 		public static  Chain getAddFormCommand() {
 			Chain c = getDefaultChain();
 			c.addCommand(new AddFormCommand());
 			return c;
 		}
-		
+
 		public static Chain getUpdateFormChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(new EditFormCommand());
 			return c;
 		}
-		
+
 		public static Chain getUpdateFormFieldChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(new UpdateFormFieldCommand());
 			return c;
 		}
-		
+
 		public static Chain getUpdateFormFieldsChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(new UpdateFormFieldsCommand());
 			return c;
 		}
-		
+
 		public static Chain getUpdateFormSectionChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(new UpdateFormSectionCommand());
 			return c;
 		}
-		
+
 		public static Chain getDeleteFormChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(new DeleteFormCommand());
 			return c;
 		}
-		
+
 		public static Chain getAddPurchaseContractChain() {
 			Chain chain = getDefaultChain();
 			chain.addCommand(SetTableNamesCommand.getForPurchaseContract());
@@ -2310,14 +2368,14 @@ public class TransactionChainFactory {
 		    chain.addCommand(getPurchaseContractTotalCostChain()); //roll up for calculating total cost
 			return chain;
 		}
-		
+
 		public static Chain getPurchaseContractDeleteChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForPurchaseContract());
 			c.addCommand(new DeletePurchaseContractCommand());
 			return c;
 		}
-		
+
 		public static Chain getAddPurchaseContractLineItem() {
 			Chain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForPurchaseContractLineItem());
@@ -2325,13 +2383,13 @@ public class TransactionChainFactory {
 			c.addCommand(getPurchaseContractTotalCostChain()); //roll up for calculating total cost
 			return c;
 		}
-		
+
 		public static Chain getActivePurchaseContractPrice() {
 			Chain c = getDefaultChain();
 			c.addCommand(new GetActiveContractPriceCommand());
 			return c;
 		}
-		
+
 		public static Chain getDeletePurchaseContractLineItemChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForPurchaseContractLineItem());
@@ -2347,14 +2405,14 @@ public class TransactionChainFactory {
 		    //rollup might be needed to update purchase contract total cost -- need to be discussed
 			return chain;
 		}
-		
+
 		public static Chain getLabourContractDeleteChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForLabourContract());
 			c.addCommand(new DeleteLabourContractCommand());
 			return c;
 		}
-		
+
 		public static Chain getAddLabourContractLineItem() {
 			Chain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForLabourContractLineItem());
@@ -2362,7 +2420,7 @@ public class TransactionChainFactory {
 			//rollup might be needed to update contract total cost -- need to be discussed
 			return c;
 		}
-		
+
 		public static Chain getDeleteLabourContractLineItemChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForLabourContractLineItem());
@@ -2372,22 +2430,22 @@ public class TransactionChainFactory {
 		public static Chain getUpdatePurchaseContractStatusChain() {
 			Chain chain = getDefaultChain();
 			chain.addCommand(SetTableNamesCommand.getForPurchaseContract());
-			chain.addCommand(new UpdateBulkPurchaseContractStatusCommand()); 
+			chain.addCommand(new UpdateBulkPurchaseContractStatusCommand());
 			return chain;
 		}
 		public static Chain getUpdateLabourContractStatusChain() {
 			Chain chain = getDefaultChain();
 			chain.addCommand(SetTableNamesCommand.getForLabourContract());
-			chain.addCommand(new UpdateBulkLabourContractStatusCommand()); 
+			chain.addCommand(new UpdateBulkLabourContractStatusCommand());
 			return chain;
 		}
-		
+
 		public static Chain getPurchaseContractTotalCostChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(new PurchaseContractTotalCostRollupCommand());
 			return c;
 		}
-		
+
 		public static Chain getAddPoLineItemSerialNumbersChain () {
 			Chain chain = getDefaultChain();
 			chain.addCommand(SetTableNamesCommand.getForPoLineItemSerialNumber());
@@ -2395,7 +2453,7 @@ public class TransactionChainFactory {
 			chain.addCommand(new GenericAddModuleDataListCommand());
 			return chain;
 		}
-		
+
 		public static Chain getUpdatePoLineItemSerialNumbersChain () {
 			Chain chain = getDefaultChain();
 			chain.addCommand(SetTableNamesCommand.getForPoLineItemSerialNumber());
@@ -2408,8 +2466,7 @@ public class TransactionChainFactory {
 			c.addCommand(new GenericDeleteModuleDataCommand());
 			return c;
 		}
-		
-		
+
 		public static Chain getAddGatePassChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForGatePass());
@@ -2418,6 +2475,41 @@ public class TransactionChainFactory {
 			c.addCommand(new AddGatePassLineItemsCommand());
 			return c;
 		}
-		
+
+		public static Chain getUpdateStateTransistionChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new GenericGetModuleDataDetailCommand());
+			c.addCommand(new UpdateFieldDataCommand());
+			c.addCommand(new UpdateStateCommand());
+			c.addCommand(new AddActivitiesCommand());
+//			c.addCommand(new GenericUpdateModuleDataCommand());
+			return c;
+		}
+
+		public static Chain getAvailableState() {
+			Chain c = getDefaultChain();
+			c.addCommand(new GenericGetModuleDataDetailCommand());
+			c.addCommand(new GetAvailableStateCommand());
+			return c;
+		}
+
+		public static Chain getAddOrUpdateStateFlowTransistion() {
+			Chain c = getDefaultChain();
+			c.addCommand(new ConstructStateFlowTransistionCommand());
+			c.addCommand(new AddOrUpdateStateTransistionCommand());
+			return c;
+		}
+
+		public static Chain getAddOrUpdateStateFlow() {
+			Chain c = getDefaultChain();
+			c.addCommand(new AddOrUpdateStateFlowCommand());
+			return c;
+		}
+
+		public static Chain getAddOrUpdateStateChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new AddOrUpdateStateCommand());
+			return c;
+		}
 }
 

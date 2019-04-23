@@ -264,12 +264,14 @@ public static void insertInstanceAssetMapping(String deviceName, long assetId, l
 			long fieldId = entry.getValue();
 			
 			checkForInputType(assetId, fieldId, instanceName, metaMap);
-			/*
-			Map<String, Object> pointsRecord = (Map<String, Object>) getNewPointsData(assetId,categoryId,fieldId);
-			
-			updatePointsData(deviceName, instanceName, pointsRecord);
-			*/
-			
+
+			if(isStage()) {
+				Map<String, Object> pointsRecord = (Map<String, Object>) getNewPointsData(assetId,categoryId,fieldId);
+
+				updatePointsData(deviceName, instanceName, pointsRecord);
+
+			}
+
 			Map<String, Object> record = new HashMap<String,Object>();
 			record.put("orgId", orgId);
 			record.put("device", deviceName);
@@ -315,15 +317,17 @@ public static void insertInstanceAssetMapping(String deviceName, long assetId, l
 
 	private static void updatePointsData(String deviceName, String instanceName, Map<String, Object> pointsRecord)
 			throws SQLException {
+
+		if(!isStage()) {
+			return;
+		}
 		FacilioModule module = ModuleFactory.getPointsModule();
-		List<FacilioField> fields = FieldFactory.getPointsFields();
-		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 		GenericUpdateRecordBuilder builderPoints = new GenericUpdateRecordBuilder()
 				.fields(FieldFactory.getPointsFields())
-				.table("Points")
+				.table(module.getTableName())
 				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
-				.andCondition(CriteriaAPI.getCondition(fieldMap.get("device"), deviceName, StringOperators.IS))
-				.andCondition(CriteriaAPI.getCondition(fieldMap.get("instance"), instanceName, StringOperators.IS))
+				.andCondition(CriteriaAPI.getCondition(FieldFactory.getDeviceField(module),deviceName, StringOperators.IS))
+				.andCondition(CriteriaAPI.getCondition(FieldFactory.getInstanceField(module),instanceName, StringOperators.IS))
 				;
 		builderPoints.update(pointsRecord);
 	}
@@ -362,7 +366,9 @@ public static void insertInstanceAssetMapping(String deviceName, long assetId, l
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("device"), deviceName, StringOperators.IS))
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("instance"), instanceName, StringOperators.IS))
 				;
-		updatePointsData(deviceName, instanceName,prop );
+		if(isStage()) {
+			updatePointsData(deviceName, instanceName,prop );
+		}
 		int count = builder.update(prop);
 		
 		FacilioContext context = new FacilioContext();
@@ -578,11 +584,54 @@ public static void insertInstanceAssetMapping(String deviceName, long assetId, l
 		}
 		insertBuilder.save();
 	}
-	
+	public static  void addPointsInstances(JSONArray instanceArray, Long controllerId) throws Exception {
+
+		/*jsonObject should consists
+		object.put("device",deviceName);
+		object.put("instance", instanceName);
+		object.put("objectInstanceNumber", objInstNumbr);
+		object.put("instanceDescription",description);
+		object.put("instanceType", instanceType);
+		 */
+		List<String> instanceNames = null;
+		if (controllerId != null) {
+			List<Map<String, Object>> instances = getPointsInstancesForController(controllerId);
+			if (instances != null && !instances.isEmpty()) {
+				instanceNames = instances.stream().map(instance -> instance.get("device") + "|" + instance.get("instance")).collect(Collectors.toList());
+			}
+		}
+
+		long orgId = AccountUtil.getCurrentOrg().getOrgId();
+		FacilioModule module = ModuleFactory.getPointsModule();
+		GenericInsertRecordBuilder insertBuilderPoints = new GenericInsertRecordBuilder()
+				.fields(FieldFactory.getPointsFields())
+				.table(module.getTableName());
+		for(Object instance:instanceArray) {
+			JSONObject instanceObj = (JSONObject) instance;
+			if (instanceNames != null) {
+				// Checking if the instance already exists. No need to add again on re-discovering of points
+				String name = instanceObj.get("device") + "|" + instanceObj.get("instance");
+				if (instanceNames.contains(name)) {
+					continue;
+				}
+			}
+			instanceObj.put("orgId", orgId);
+			instanceObj.put("createdTime", System.currentTimeMillis());
+			if(controllerId!=null) {
+				//this will ensure the new inserts after addition of controller gets proper controller id
+				instanceObj.put("controllerId", controllerId);
+			}
+			insertBuilderPoints.addRecord(instanceObj);
+		}
+		insertBuilderPoints.save();
+
+	}
 	public static List<Map<String, Object>> getUnmodeledInstancesForController (long controllerId) throws Exception {
 		return getUnmodeledInstancesForController(controllerId, null, null, null, null, false, null);
 	}
-	
+	public static List<Map<String, Object>> getPointsInstancesForController (long controllerId) throws Exception {
+		return getPointsInstancesForController(controllerId, null, null, null, null, false, null);
+	}
 	public static List<Map<String, Object>> getUnmodeledInstancesForController (long controllerId, Boolean configuredOnly, Boolean fetchMapped, JSONObject pagination, Boolean isSubscribed, boolean fetchCount, String searchText) throws Exception {
 		FacilioModule module = ModuleFactory.getUnmodeledInstancesModule();
 		List<FacilioField> fields = FieldFactory.getUnmodeledInstanceFields();
@@ -685,7 +734,92 @@ public static void insertInstanceAssetMapping(String deviceName, long assetId, l
 		 return props;
 
 	}
-		
+	public static List<Map<String, Object>> getPointsInstancesForController (long controllerId, Boolean configuredOnly, Boolean fetchMapped, JSONObject pagination, Boolean isSubscribed, boolean fetchCount, String searchText) throws Exception {
+		FacilioModule module = ModuleFactory.getPointsModule();
+		List<FacilioField> fields = FieldFactory.getPointsFields();
+		fields.add(FieldFactory.getIdField(module));
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+		FacilioField fieldId = fieldMap.get("fieldId");
+		FacilioField resourceId = fieldMap.get("resourceId");
+		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+				.table(module.getTableName())
+				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("controllerId"), String.valueOf(controllerId), NumberOperators.EQUALS));
+
+		if (!fetchCount) {
+			builder.select(fields).orderBy(module.getTableName()+ "." + fieldMap.get("instance").getColumnName() + " ASC");
+		}
+		else {
+			builder.select(FieldFactory.getCountField(module, fieldMap.get("controllerId")));
+		}
+
+		Criteria criteria = new Criteria();
+		criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("instanceType"), CommonOperators.IS_EMPTY));
+		criteria.addOrCondition(CriteriaAPI.getCondition(fieldMap.get("instanceType"), String.valueOf(6), NumberOperators.LESS_THAN));
+		if (searchText != null) {
+			criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("instance"), searchText, StringOperators.CONTAINS));
+		}
+
+		builder.andCriteria(criteria);
+
+		if (configuredOnly != null) {
+			Criteria inUseCriteria = new Criteria();
+			inUseCriteria.addOrCondition(CriteriaAPI.getCondition(fieldMap.get("inUse"), String.valueOf(configuredOnly), BooleanOperators.IS));
+			if (configuredOnly) {
+				inUseCriteria.addOrCondition(CriteriaAPI.getCondition(fieldMap.get("objectInstanceNumber"), CommonOperators.IS_EMPTY));				
+			}
+			builder.andCriteria(inUseCriteria);
+		}
+		if (isSubscribed != null) {
+			Criteria isSubscribedCriteria = new Criteria();
+			isSubscribedCriteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("subscribed"), String.valueOf(isSubscribed), BooleanOperators.IS));
+			builder.andCriteria(isSubscribedCriteria);
+		}
+
+		if (fetchMapped) {
+			builder
+			.andCondition(CriteriaAPI.getCondition(resourceId, CommonOperators.IS_NOT_EMPTY))
+			.andCondition(CriteriaAPI.getCondition(fieldId, CommonOperators.IS_NOT_EMPTY))
+			.orderBy(fieldMap.get("mappedTime").getColumnName() + " DESC");
+			
+		}
+		else {
+			builder
+			.andCondition(CriteriaAPI.getCondition(resourceId, CommonOperators.IS_EMPTY))
+			.andCondition(CriteriaAPI.getCondition(fieldId, CommonOperators.IS_EMPTY));	
+		}
+
+		if (pagination != null) {
+			int page = (int) pagination.get("page");
+			int perPage = (int) pagination.get("perPage");
+
+			int offset = ((page-1) * perPage);
+			if (offset < 0) {
+				offset = 0;
+			}
+
+			builder.offset(offset);
+			builder.limit(perPage);
+		}
+
+		List<Map<String, Object>> props =  builder.get();
+
+		LOGGER.debug("Query in getting instances : "+builder);
+
+		if (props != null && !props.isEmpty() && !fetchCount) {
+			return props.stream().map(prop -> {
+				if (prop.get("instanceType") != null) {
+					InstanceType type = InstanceType.valueOf((int) prop.get("instanceType"));
+					if (type != null) {
+						prop.put("instanceTypeVal", type.name());
+					}
+				}
+				return prop;
+			}).collect(Collectors.toList());
+		}
+		return props;
+
+	}
 	public static List<Map<String, Object>> getUnmodeledInstances (List<Long> ids) throws Exception {
 		return getUnmodeledInstances(null, null, null, ids);
 	}
@@ -822,13 +956,18 @@ public static void insertInstanceAssetMapping(String deviceName, long assetId, l
 				.addRecords(insertNewPointsData);
 		insertBuilderPoints.save();
 	}
-	public static Map<String, Object> getNewPointsData(long assetId,long categoryId,long fieldId) throws Exception {
+	public static Map<String, Object> getNewPointsData(long resourceId,long categoryId,long fieldId) throws Exception {
 		Map<String, Object> pointsRecord = new HashMap<String,Object>();
-		pointsRecord.put("assetId", assetId);
+		pointsRecord.put("resourceId", resourceId);
 		pointsRecord.put("categoryId", categoryId);
 		pointsRecord.put("fieldId", fieldId);
 		pointsRecord.put("mappedTime", System.currentTimeMillis());
 		return pointsRecord;
 	}
-	
+
+	public static boolean isStage() {
+
+		return !AwsUtil.isProduction();
+	}
+
 }

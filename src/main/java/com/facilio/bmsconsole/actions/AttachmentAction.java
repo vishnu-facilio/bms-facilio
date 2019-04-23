@@ -109,6 +109,16 @@ public class AttachmentAction  extends FacilioAction {
  		context.put(FacilioConstants.ContextNames.ATTACHMENT_CONTENT_TYPE, this.attachmentContentType);
  		context.put(FacilioConstants.ContextNames.ATTACHMENT_TYPE, this.attachmentType);
  		
+ 		if (module.equals(FacilioConstants.ContextNames.ITEM_TYPES_ATTACHMENTS)) {
+ 			context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.ITEM_ACTIVITY);
+ 			}
+ 			else if (module.equals(FacilioConstants.ContextNames.TICKET_ATTACHMENTS) || module.equals(FacilioConstants.ContextNames.TASK_ATTACHMENTS)) {
+ 				context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.WORKORDER_ACTIVITY);
+ 				}
+ 			else if (module.equals(FacilioConstants.ContextNames.ASSET_ATTACHMENTS)) {
+ 				context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.ASSET_ACTIVITY);
+ 				}
+ 		
 		Chain addAttachmentChain = FacilioChainFactory.getAddAttachmentChain();
 		addAttachmentChain.execute(context);
 		

@@ -1,6 +1,8 @@
 package com.facilio.bmsconsole.commands;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.DashboardContext;
+import com.facilio.bmsconsole.context.DashboardContext.DashboardPublishStatus;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
@@ -21,12 +23,12 @@ public class AddDashboardCommand implements Command {
 		// TODO Auto-generated method stub
 		DashboardContext dashboard = (DashboardContext) context.get(FacilioConstants.ContextNames.DASHBOARD);
 		if(dashboard != null) {			
-			List<FacilioField> fields = FieldFactory.getDashboardFields();
 			
-			// on add dashboard, we will set order as null so that it will go to the last in order
-//			Integer lastDisplayOrder = DashboardUtil.getLastDashboardDisplayOrder(dashboard.getOrgId(), dashboard.getModuleId());
-//			
-//			dashboard.setDisplayOrder(lastDisplayOrder + 1);
+			dashboard.setPublishStatus(DashboardPublishStatus.NONE.ordinal());
+			dashboard.setCreatedByUserId(AccountUtil.getCurrentUser().getId());
+			dashboard.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
+			
+			List<FacilioField> fields = FieldFactory.getDashboardFields();
 			
 			getDashboardLinkName(dashboard);
 			
@@ -53,7 +55,7 @@ public class AddDashboardCommand implements Command {
 		String temp = linkName;
 		while(true) {
 			
-			if(DashboardUtil.getDashboard(temp,dashboard.getModuleId()) == null) {
+			if(DashboardUtil.getDashboard(temp,dashboard.getModuleId()) == null && (!DashboardUtil.RESERVED_DASHBOARD_LINK_NAME.contains(temp))) {
 				dashboard.setLinkName(temp);
 				break;
 			}

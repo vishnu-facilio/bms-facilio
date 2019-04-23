@@ -48,7 +48,7 @@ public class ModuleFactory {
 		moduleMap.put(FacilioConstants.ContextNames.ASSET, getAssetsModule());
 		moduleMap.put("jsontemplate", getJSONTemplateModule());
 		moduleMap.put("preventivemaintenance", getPreventiveMaintenanceModule());
-		moduleMap.put("connectedapp", getConnectedAppModule());
+		moduleMap.put("connectedApps", getConnectedAppsModule());
 		moduleMap.put("tabwidget", getTabWidgetModule());
 		moduleMap.put(FacilioConstants.ContextNames.SPACE_CATEGORY, getSpaceCategoryModule());
 		moduleMap.put("singledaybusinesshour", getSingleDayBusinessHourModule());
@@ -78,7 +78,7 @@ public class ModuleFactory {
 		moduleMap.put(FacilioConstants.ContextNames.RECEIPT, getReceiptModule());
 		moduleMap.put(FacilioConstants.ContextNames.PURCHASE_CONTRACTS, getPurchaseContractModule());
 		moduleMap.put(FacilioConstants.ContextNames.LABOUR_CONTRACTS, getLabourContractModule());
-		
+
 		return moduleMap;
 	}
 	
@@ -130,7 +130,7 @@ public class ModuleFactory {
 		formFieldsModule.setTableName("Form_Fields");
 		return formFieldsModule;
 	}
-	
+
 	public static FacilioModule getFormSectionModule() {
 		FacilioModule formFieldsModule = new FacilioModule();
 		formFieldsModule.setName("formSection");
@@ -138,7 +138,7 @@ public class ModuleFactory {
 		formFieldsModule.setTableName("Form_Section");
 		return formFieldsModule;
 	}
-	
+
 
 	public static FacilioModule getFieldsModule() {
 		FacilioModule fieldModule = new FacilioModule();
@@ -692,11 +692,11 @@ public class ModuleFactory {
 		return alarmModule;
 	}
 
-	public static FacilioModule getConnectedAppModule() {
+	public static FacilioModule getConnectedAppsModule() {
 		FacilioModule connectedApp = new FacilioModule();
-		connectedApp.setName("connectedapp");
-		connectedApp.setDisplayName("Connected App");
-		connectedApp.setTableName("Connected_App");
+		connectedApp.setName("connectedApps");
+		connectedApp.setDisplayName("Connected Apps");
+		connectedApp.setTableName("ConnectedApps");
 		return connectedApp;
 	}
 
@@ -1093,7 +1093,7 @@ public class ModuleFactory {
 		dashboardWigetModule.setTableName("Workflow");
 		return dashboardWigetModule;
 	}
-	
+
 	public static FacilioModule getWorkflowLogModule() {
 		FacilioModule dashboardWigetModule = new FacilioModule();
 		dashboardWigetModule.setTableName("Workflow_Log");
@@ -1616,7 +1616,7 @@ public class ModuleFactory {
 		syncModule.setTableName("Unmodeled_Instance");
 		return syncModule;
 	}
-	
+
 	public static FacilioModule getPointsModule() {
 		FacilioModule syncModule = new FacilioModule();
 		syncModule.setName("points");
@@ -1624,7 +1624,7 @@ public class ModuleFactory {
 		syncModule.setTableName("Points");
 		return syncModule;
 	}
-	
+
 	public static FacilioModule getUnmodeledDataModule() {
 		FacilioModule syncModule = new FacilioModule();
 		syncModule.setName("unmodeledData");
@@ -1909,7 +1909,7 @@ public class ModuleFactory {
 		controlActionTemplate.setExtendModule(getTemplatesModule());
 		return controlActionTemplate;
 	}
-	
+
 	public static FacilioModule getSitesForStoreRoomModule() {
 		FacilioModule accessbileSpaceModule = new FacilioModule();
 		accessbileSpaceModule.setName(FacilioConstants.ContextNames.SITES_FOR_STORE_ROOM);
@@ -1917,7 +1917,7 @@ public class ModuleFactory {
 		accessbileSpaceModule.setTableName("Storeroom_Sites");
 		return accessbileSpaceModule;
 	}
-	
+
 	public static FacilioModule getPoLineItemsSerialNumberModule() {
 		FacilioModule tenants = new FacilioModule();
 		tenants.setName("poLineItemSerialNumbers");
@@ -1925,4 +1925,54 @@ public class ModuleFactory {
 		tenants.setTableName("PO_Line_Item_Serial_Numbers");
 		return tenants;
 	}
+	
+	public static FacilioModule getGatePassModule() {
+		FacilioModule gatePass = new FacilioModule();
+		gatePass.setName("gatePass");
+		gatePass.setDisplayName("Gate Pass");
+		gatePass.setTableName("Gate_Pass");
+		return gatePass;
+	}
+
+	public static FacilioModule getStateRuleTransistionModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName("stateruleTransistionWorkflow");
+		module.setDisplayName("State Rule Transistion Workflow");
+		module.setTableName("StateFlowTransistion");
+		module.setExtendModule(getWorkflowRuleModule());
+		return module;
+	}
+
+	public static FacilioModule getStateFlowModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName("stateflow");
+		module.setDisplayName("State Flow");
+		module.setTableName("StateFlow");
+		return module;
+	}
+
+	public static FacilioModule getStateFlowScheduleModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName("stateflowScheduler");
+		module.setDisplayName("State Flow Scheduler");
+		module.setTableName("StateFlowScheduler");
+		return module;
+	}
+	
+//	public static FacilioModule getStateModule() {
+//		FacilioModule module = new FacilioModule();
+//		module.setName("state");
+//		module.setDisplayName("State");
+//		module.setTableName("TicketStatus");
+//		return module;
+//	}
+
+//	public static FacilioModule getStateFlowRuleModule() {
+//		FacilioModule module = new FacilioModule();
+//		module.setName("stateFlowRuleWorkflow");
+//		module.setDisplayName("State Flow Rule Workflow");
+//		module.setTableName("StateFlowRule");
+//		module.setExtendModule(getWorkflowRuleModule());
+//		return module;
+//	}
 }

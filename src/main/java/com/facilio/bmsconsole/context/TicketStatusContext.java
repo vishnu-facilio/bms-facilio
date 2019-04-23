@@ -1,10 +1,10 @@
 package com.facilio.bmsconsole.context;
 
-import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
-
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+
+import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 
 public class TicketStatusContext extends ModuleBaseWithCustomFields {
 	/**
@@ -48,6 +48,25 @@ public class TicketStatusContext extends ModuleBaseWithCustomFields {
 		this.type = StatusType.typeMap.get(type);
 	}
 	
+	private Boolean timerEnabled;
+	public Boolean getTimerEnabled() {
+		if (timerEnabled == null) {
+			return false;
+		}
+		return timerEnabled;
+	}
+	public void setTimerEnabled(Boolean timerEnabled) {
+		this.timerEnabled = timerEnabled;
+	}
+	
+	private Boolean recordLocked;
+	public Boolean getRecordLocked() {
+		return recordLocked;
+	}
+	public void setRecordLocked(Boolean recordLocked) {
+		this.recordLocked = recordLocked;
+	}
+	
 	@Override
 	public String toString() {
 		return status;
@@ -56,7 +75,9 @@ public class TicketStatusContext extends ModuleBaseWithCustomFields {
 	public static enum StatusType {
 		OPEN(1, "Open"),
 		CLOSED(2, "Closed"),
-		PRE_OPEN(3, "Pre-Open")
+		PRE_OPEN(3, "Pre-Open"),
+		REQUESTED(4, "Requested"),
+		REJECTED(5, "Rejected")
 		;
 		
 		private int intVal;
@@ -86,5 +107,13 @@ public class TicketStatusContext extends ModuleBaseWithCustomFields {
 		public Map<Integer, StatusType> getAllTypes() {
 			return typeMap;
 		}
+	}
+
+	public boolean shouldChangeTimer(TicketStatusContext oldState) {
+		if (oldState == null) {
+			return true;
+		}
+		
+		return !(oldState.getTimerEnabled() == getTimerEnabled());
 	}
 }

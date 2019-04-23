@@ -324,7 +324,7 @@ public enum CardType {
 			"		<field name=\"${autoStatusField}\" aggregate = \"lastValue\"/> 	\n" + 
 			"	</expression> \n" + 
 			"</workflow>",false),
-	READING_COMBO_CARD(10,"readingComboCard",null,false),
+	READING_COMBO_CARD(10,"readingComboCard",null,false,true),
 	WORK_ORDER_SUMMARY(11,"workorderSummary","<workflow>\n" + 
 			"	<parameter name=\"orgId\" type=\"Number\" />"+
 			"    <expression name=\"dueToday\">\n" + 
@@ -441,6 +441,7 @@ public enum CardType {
 			"        <field aggregate=\"count\" name=\"subject\" />\n" + 
 			"    </expression>\n" + 
 			"</workflow>",false),
+	KPI_CARD(15,"kpiCard",null,false,true),
 	;
 	
 	
@@ -448,7 +449,14 @@ public enum CardType {
 	private String name;
 	private String workflow;
 	private boolean isSingleResultWorkFlow;
+	private boolean isDynamicWfGeneratingCard;
 	
+	public boolean isDynamicWfGeneratingCard() {
+		return isDynamicWfGeneratingCard;
+	}
+	public void setDynamicWfGeneratingCard(boolean isDynamicWfGeneratingCard) {
+		this.isDynamicWfGeneratingCard = isDynamicWfGeneratingCard;
+	}
 	public boolean isSingleResultWorkFlow() {
 		return isSingleResultWorkFlow;
 	}
@@ -480,6 +488,15 @@ public enum CardType {
 		this.workflow = workflow;
 		this.isSingleResultWorkFlow = isSingleResultWorkFlow;
 	}
+	
+	CardType(Integer value,String name,String workflow,boolean isSingleResultWorkFlow,boolean isDynamicWfGeneratingCard) {
+		this.value = value;
+		this.name= name;
+		this.workflow = workflow;
+		this.isSingleResultWorkFlow = isSingleResultWorkFlow;
+		this.isDynamicWfGeneratingCard = isDynamicWfGeneratingCard;
+	}
+	
 	public static CardType getCardType(String name) {
 		return CARD_TYPE_BY_NAME.get(name);
 	}

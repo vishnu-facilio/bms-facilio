@@ -322,7 +322,7 @@ public class FormsAPI {
 	}
 	
 	private static List<FormField> getFormFieldsFromSections(List<FormSection> sections) {
-		return sections.stream().map(section -> section.getFields()).flatMap(List::stream).collect(Collectors.toList());
+		return sections.stream().map(section -> section.getFields() != null ? section.getFields() : new ArrayList<FormField>()).flatMap(List::stream).collect(Collectors.toList());
 	}
 	
 	public static int deleteFormFields(long formId) throws Exception {

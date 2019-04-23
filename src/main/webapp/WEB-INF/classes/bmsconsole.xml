@@ -3490,9 +3490,14 @@
 				<param name="includeProperties">dashboardFolders,dashboardFolders\[\d+\],dashboardFolders\[\d+\].*</param>
 			</result>
 		</action>
-		<action name="update" class="com.facilio.bmsconsole.actions.DashboardAction" method="updateDashboard">
+		<action name="update" class="com.facilio.bmsconsole.actions.DashboardAction" method="updateDashboardWithWidgets">
 			<result name="success" type="json">
 				<param name="includeProperties">^dashboard.*</param>
+			</result>
+		</action>
+		<action name="updateDashboard" class="com.facilio.bmsconsole.actions.DashboardAction" method="updateDashboards">
+			<result name="success" type="json">
+				<param name="includeProperties">^dashboards.*</param>
 			</result>
 		</action>
 		<action name="supportedmodules" class="com.facilio.bmsconsole.actions.DashboardAction" method="getSupportedModules">
@@ -3512,11 +3517,6 @@
 			<result name="error" type="json">
 				<param name="statusCode">400</param>
 				<param name="includeProperties">errorString</param>
-			</result>
-		</action>
-		<action name="getReportFields" class="com.facilio.bmsconsole.actions.DashboardAction" method="getReportFields">
-			<result name="success" type="json">
-				<param name="includeProperties">^reportFields.*</param>
 			</result>
 		</action>
 		<action name="getData" class="com.facilio.bmsconsole.actions.DashboardAction" method="getData">
@@ -3597,11 +3597,6 @@
 				<param name="includeProperties">^dashboard.*</param>
 			</result>
 		</action>
-		<action name="addReportFolder" class="com.facilio.bmsconsole.actions.DashboardAction" method="addReportFolder">
-			<result name="success" type="json">
-				<param name="includeProperties">^reportFolderContext.*</param>
-			</result>
-		</action>
 		<action name="addDashboardFolder" class="com.facilio.bmsconsole.actions.DashboardAction" method="addDashboardFolder">
 			<result name="success" type="json">
 				<param name="includeProperties">^dashboardFolderContext.*</param>
@@ -3617,23 +3612,6 @@
 				<param name="includeProperties">^dashboardFolderContext.*</param>
 			</result>
 		</action>
-		<action name="addReport" class="com.facilio.bmsconsole.actions.DashboardAction" method="addReport">
-			<result name="success" type="json">
-				<param name="includeProperties">^reportContext.*</param>
-			</result>
-		</action>
-		<action name="addTabularReport" class="com.facilio.bmsconsole.actions.DashboardAction" method="addTabularReport">
-			<result name="success" type="json">
-				<param name="includeProperties">^reportContext.*</param>
-			</result>
-		</action>
-		
-		<action name="updateTabularSequence" class="com.facilio.bmsconsole.actions.DashboardAction" method="updateSequence">
-			<result name="success" type="json">
-				<param name="includeProperties">result</param>
-			</result>
-		</action>
-		
 		<action name="deleteReport" class="com.facilio.bmsconsole.actions.DashboardAction" method="deleteReport">
 			<result name="success" type="json">
 				<param name="includeProperties">^reportContext.*</param>
@@ -3644,21 +3622,6 @@
 			</result>
 		</action>
 		<action name="deleteWidgetFromDashboard" class="com.facilio.bmsconsole.actions.DashboardAction" method="deleteWidgetFromDashboard">
-			<result name="success" type="json">
-				<param name="includeProperties">^reportContext.*</param>
-			</result>
-		</action>
-		<action name="addComparisionReport" class="com.facilio.bmsconsole.actions.DashboardAction" method="addComparisionReport">
-			<result name="success" type="json">
-				<param name="includeProperties">^reportContext.*</param>
-			</result>
-		</action>
-		<action name="updateChartType" class="com.facilio.bmsconsole.actions.DashboardAction" method="updateChartType">
-			<result name="success" type="json">
-				<param name="includeProperties">^reportContext.*</param>
-			</result>
-		</action>
-		<action name="updateComboChart" class="com.facilio.bmsconsole.actions.DashboardAction" method="updateComboChart">
 			<result name="success" type="json">
 				<param name="includeProperties">^reportContext.*</param>
 			</result>
@@ -3691,11 +3654,6 @@
 		<action name="editScheduledReport" class="com.facilio.bmsconsole.actions.DashboardAction" method="editScheduledReport">
 			<result name="success" type="json">
 				<param name="includeProperties">rowsUpdated</param>
-			</result>
-		</action>
-		<action name="updateDashboardOrder" class="com.facilio.bmsconsole.actions.DashboardAction" method="updateDashboardOrder">
-			<result name="success" type="json">
-				<param name="includeProperties">dashboards</param>
 			</result>
 		</action>
 		<action name="toggleMobileDashboard" class="com.facilio.bmsconsole.actions.DashboardAction" method="toggleMobileDashboard">
@@ -3736,7 +3694,7 @@
 		</action>
 	</package>
 	<package name="dashboardsharing" namespace="/api/dashboardsharing" extends="homeApi">
-		<action name="apply" class="com.facilio.bmsconsole.actions.DashboardAction" method="applyDashboardSharing">
+		<action name="apply" class="com.facilio.bmsconsole.actions.DashboardAction" method="updateDashboards">
 			<result name="success" type="json">
 				<param name="includeProperties">^dashboardSharing.*</param>
 			</result>

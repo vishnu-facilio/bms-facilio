@@ -109,7 +109,7 @@ public class Condition implements Serializable {
 	private FacilioField valueField;
 	public void setValueField(FacilioField valueField) {
 		this.valueField = valueField;
-		this.value = valueField.getName();
+		this.value = valueField.getModule().getName() + "." + valueField.getName();
 	}
 	
 	private long criteriaValueId = -1;

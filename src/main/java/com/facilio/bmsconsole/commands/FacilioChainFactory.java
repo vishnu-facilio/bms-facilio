@@ -377,7 +377,7 @@ public class FacilioChainFactory {
 		c.addCommand(new UpdateReadingDataMetaCommand());
 		c.addCommand(new AddTaskTicketActivityCommand());
 //		c.setPostTransactionChain(TransactionChainFactory.getUpdateTaskCountChain());
-		c.addCommand(new AddActivitiesCommand(FacilioConstants.ContextNames.WORKORDER_ACTIVITY));
+		c.addCommand(new AddActivitiesCommand());
 		return c;
 	}
 	
@@ -932,7 +932,7 @@ public class FacilioChainFactory {
 		c.addCommand(new AddAttachmentRelationshipCommand());
 		c.addCommand(new AddAttachmentTicketActivityCommand());
 //		c.setPostTransactionChain(TransactionChainFactory.getUpdateAttachmentCountChain());
-		c.addCommand(new AddActivitiesCommand(FacilioConstants.ContextNames.WORKORDER_ACTIVITY));
+		c.addCommand(new AddActivitiesCommand());
 		return c;
 	}
 	
@@ -1647,19 +1647,6 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
-	public static Chain getAddDashboardChain() {
-		Chain c = FacilioChain.getTransactionChain();
-		c.addCommand(new AddDashboardCommand());
-		return c;
-	}
-	
-	public static Chain getUpdateDashboardChain() {
-		Chain c = FacilioChain.getTransactionChain();
-		c.addCommand(new UpdateDashboardCommand());
-		c.addCommand(new EnableMobileDashboardCommand());
-		return c;
-	}
-	
 	public static Chain getEnableMobileDashboardChain() {
 		Chain c = FacilioChain.getTransactionChain();
 		c.addCommand(new EnableMobileDashboardCommand());
@@ -1727,13 +1714,6 @@ public class FacilioChainFactory {
 	public static Chain deleteFormulaChain() {
 		Chain c = FacilioChain.getTransactionChain();
 		c.addCommand(new DeleteFormulaCommand());
-		return c;
-	}
-	
-	public static Chain addTabularReportChain() {
-		Chain c = FacilioChain.getTransactionChain();
-		c.addCommand(new AddComparisonReportsCommand());
-		c.addCommand(new AddReportColumnsCommand());
 		return c;
 	}
 	

@@ -102,7 +102,7 @@ public  class AgentUtil
         if(payload.containsKey(AgentKeys.CONNECTION_STATUS)) {
             agent.setAgentConnStatus(Boolean.valueOf(payload.get(AgentKeys.CONNECTION_STATUS).toString()));
         } else {
-            agent.setAgentConnStatus(false);
+            agent.setAgentConnStatus(true);
         }
 
 
@@ -148,6 +148,13 @@ public  class AgentUtil
             LOGGER.info(" in process agent agentName="+agentName);
         }*/
        FacilioAgent agent = getFacilioAgent(agentName);
+       if(jsonObject.containsKey(AgentKeys.DATA_INTERVAL)){
+           Long currDataInterval = Long.parseLong(jsonObject.get(AgentKeys.DATA_INTERVAL).toString());
+           if(currDataInterval.longValue() > 120L){
+               currDataInterval = 15L;
+               jsonObject.replace(AgentKeys.DATA_INTERVAL,currDataInterval);
+           }
+       }
        if(agent==null) {
            agent = getFacilioAgentFromJson(jsonObject);
            return addAgent(agent);
@@ -172,8 +179,8 @@ public  class AgentUtil
                            agent.setAgentConnStatus(connectionStatus);
                        }
                    } else {
-                       toUpdate.put(AgentKeys.CONNECTION_STATUS, false);
-                       agent.setAgentConnStatus(false);
+                       toUpdate.put(AgentKeys.CONNECTION_STATUS, true);
+                       agent.setAgentConnStatus(true);
                    }
 
                    if (jsonObject.containsKey(AgentKeys.DISPLAY_NAME)) {
@@ -442,7 +449,7 @@ public  class AgentUtil
         Map<String, Object> record;
         try {
             bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", AccountUtil.getCurrentOrg().getId());
-            List<Map<String,Object>> records = bean.getMetrics(agentId,publishType);
+            List<Map<String,Object>> records = bean.getMetrics(agentId,publishType,createdTime);
             if(!records.isEmpty()) {
                 record = records.get(0);
                 if (!record.isEmpty())

@@ -107,7 +107,7 @@ public class ReportsChainFactory {
 	
 	public static Chain getWoScheduledViewListChain() {
 		Chain c = getDefaultChain();
-		c.addCommand(new getWoScheduledViewList());
+		c.addCommand(new GetWoScheduledViewList());
 		return c;
 	}
 	

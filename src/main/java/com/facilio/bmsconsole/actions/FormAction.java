@@ -177,7 +177,7 @@ public class FormAction extends FacilioAction {
 	public String getServicePortalForms() throws Exception{
 		
 		setModuleName(ContextNames.WORK_ORDER);
-		setFormType(FormType.PORTAL);
+		setFormTypeEnum(FormType.PORTAL);
 		
 		return formList();
 	}
@@ -220,7 +220,7 @@ public class FormAction extends FacilioAction {
 	public void setFormType(int type) {
 		this.formType = FormType.getFormType(type);
 	}
-	public void setFormType(FormType type) {
+	public void setFormTypeEnum(FormType type) {
 		this.formType = type;
 	}
 

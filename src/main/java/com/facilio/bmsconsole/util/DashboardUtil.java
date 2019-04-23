@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.util;
 
 import com.facilio.accounts.dto.Group;
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
@@ -39,6 +40,7 @@ import org.apache.commons.collections.list.SetUniqueList;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.LogManager;
+import org.apache.tiles.request.collection.CollectionUtil;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
@@ -80,6 +82,7 @@ public class DashboardUtil {
 	public static final String STATIC_WIDGET_ENERGY_CARD = "energycard";
 	public static final String STATIC_WIDGET_PROFILE_CARD = "profilecard";
 	
+	public static List<String> RESERVED_DASHBOARD_LINK_NAME  = new ArrayList<>();
 	
 	public static final String STATIC_WIDGET_WEATHER_CARD_MINI = "weathermini";
 	public static final String STATIC_WIDGET_ENERGY_CARBON_CARD_MINI = "carbonmini";
@@ -88,190 +91,12 @@ public class DashboardUtil {
 	public static final String STATIC_WIDGET_PROFILE_CARD_MINI = "profilemini";
 	
 	public static final String ENERGY_METER_PURPOSE_MAIN = "Main";
-	public static List<String> workOrderXaxisOmitFields = new ArrayList<String>();
-	public static List<String> workOrderYaxisOmitFields = new ArrayList<String>();
-	public static List<String> workOrderGroupByOmitFields = new ArrayList<String>();
-	
-	public static List<String> workRequestXaxisOmitFields = new ArrayList<String>();
-	public static List<String> workRequestYaxisOmitFields = new ArrayList<String>();
-	public static List<String> workRequestGroupByOmitFields = new ArrayList<String>();
-	
-	public static List<String> alarmsXaxisOmitFields = new ArrayList<String>();
-	public static List<String> alarmsYaxisOmitFields = new ArrayList<String>();
-	public static List<String> alarmsGroupByOmitFields = new ArrayList<String>();
-	
-	public static List<String> eventsXaxisOmitFields = new ArrayList<String>();
-	public static List<String> eventsYaxisOmitFields = new ArrayList<String>();
-	public static List<String> eventsGroupByOmitFields = new ArrayList<String>();
-	
-	public static List<String> energyDataXaxisOmitFields = new ArrayList<String>();
-	public static List<String> energyDataYaxisOmitFields = new ArrayList<String>();
-	public static List<String> energyDataGroupByOmitFields = new ArrayList<String>();
-	
-	public static List<String> assetOmitFields = new ArrayList<String>();
 	
 	public static String BUILDING_DASHBOARD_KEY = "buildingdashboard";
 	
 	static {
-		
-		assetOmitFields.add("description");
-		assetOmitFields.add("parentAssetId");
-		assetOmitFields.add("serialNumber");
-		assetOmitFields.add("localId");
-		assetOmitFields.add("photoId");
-		assetOmitFields.add("resourceType");
-		assetOmitFields.add("id");
-		
-		energyDataXaxisOmitFields.add("activePowerB");
-		energyDataXaxisOmitFields.add("activePowerR");
-		energyDataXaxisOmitFields.add("activePowerY");
-		energyDataXaxisOmitFields.add("apparentPowerB");
-		energyDataXaxisOmitFields.add("apparentPowerR");
-		energyDataXaxisOmitFields.add("apparentPowerY");
-		energyDataXaxisOmitFields.add("frequencyB");
-		energyDataXaxisOmitFields.add("frequencyR");
-		energyDataXaxisOmitFields.add("frequencyY");
-		energyDataXaxisOmitFields.add("lineCurrentB");
-		energyDataXaxisOmitFields.add("lineCurrentR");
-		energyDataXaxisOmitFields.add("lineCurrentY");
-		energyDataXaxisOmitFields.add("lineVoltageB");
-		energyDataXaxisOmitFields.add("lineVoltageR");
-		energyDataXaxisOmitFields.add("lineVoltageY");
-		energyDataXaxisOmitFields.add("phaseEnergyB");
-		energyDataXaxisOmitFields.add("phaseEnergyBDelta");
-		energyDataXaxisOmitFields.add("phaseEnergyR");
-		energyDataXaxisOmitFields.add("phaseEnergyRDelta");
-		energyDataXaxisOmitFields.add("phaseEnergyY");
-		energyDataXaxisOmitFields.add("phaseEnergyYDelta");
-		energyDataXaxisOmitFields.add("phaseVoltageB");
-		energyDataXaxisOmitFields.add("phaseVoltageR");
-		energyDataXaxisOmitFields.add("phaseVoltageY");
-		energyDataXaxisOmitFields.add("powerFactorB");
-		energyDataXaxisOmitFields.add("powerFactorR");
-		energyDataXaxisOmitFields.add("powerFactorY");
-		energyDataXaxisOmitFields.add("reactivePowerB");
-		energyDataXaxisOmitFields.add("reactivePowerR");
-		energyDataXaxisOmitFields.add("reactivePowerY");
-		energyDataXaxisOmitFields.add("totalEnergyConsumption");
-		energyDataXaxisOmitFields.add("totalEnergyConsumptionDelta");
-		
-		
-		energyDataYaxisOmitFields.add("ttime");
-		energyDataYaxisOmitFields.add("week");
-		energyDataYaxisOmitFields.add("date");
-		energyDataYaxisOmitFields.add("day");
-		energyDataYaxisOmitFields.add("hour");
-		energyDataYaxisOmitFields.add("month");
-		energyDataYaxisOmitFields.add("parentId");
-		
-		workOrderXaxisOmitFields.add("subject");
-		workOrderXaxisOmitFields.add("description");
-		workOrderXaxisOmitFields.add("serialNumber");
-		workOrderXaxisOmitFields.add("noOfNotes");
-		workOrderXaxisOmitFields.add("noOfAttachments");
-		workOrderXaxisOmitFields.add("noOfTasks");
-		workOrderXaxisOmitFields.add("noOfClosedTasks");
-		workOrderXaxisOmitFields.add("actualWorkDuration");
-		workOrderXaxisOmitFields.add("estimatedWorkDuration");
-		workOrderXaxisOmitFields.add("resumedWorkStart");
-		workOrderXaxisOmitFields.add("isWorkDurationChangeAllowed");
-		workOrderXaxisOmitFields.add("modifiedTime");
-		workOrderXaxisOmitFields.add("resumedWorkStart");
-		workOrderXaxisOmitFields.add("resource");
-		
-		alarmsXaxisOmitFields.add("subject");
-		alarmsXaxisOmitFields.add("additionalInfoJsonStr");
-		alarmsXaxisOmitFields.add("description");
-		alarmsXaxisOmitFields.add("entityId");
-		alarmsXaxisOmitFields.add("node");
-		alarmsXaxisOmitFields.add("noOfAttachments");
-		alarmsXaxisOmitFields.add("noOfEvents");
-		alarmsXaxisOmitFields.add("noOfNotes");
-		alarmsXaxisOmitFields.add("noOfTasks");
-		alarmsXaxisOmitFields.add("previousSeverity");
-		alarmsXaxisOmitFields.add("serialNumber");
-//		alarmsXaxisOmitFields.add("subject");
-		
-		alarmsYaxisOmitFields.add("subject");
-		alarmsYaxisOmitFields.add("additionalInfoJsonStr");
-		alarmsYaxisOmitFields.add("description");
-		alarmsYaxisOmitFields.add("entityId");
-		alarmsYaxisOmitFields.add("node");
-		alarmsYaxisOmitFields.add("noOfAttachments");
-		alarmsYaxisOmitFields.add("noOfEvents");
-		alarmsYaxisOmitFields.add("noOfNotes");
-		alarmsYaxisOmitFields.add("noOfTasks");
-		alarmsYaxisOmitFields.add("previousSeverity");
-		alarmsYaxisOmitFields.add("serialNumber");
-		alarmsYaxisOmitFields.add("acknowledgedTime");
-		alarmsYaxisOmitFields.add("actualWorkEnd");
-		alarmsYaxisOmitFields.add("actualWorkStart");
-		alarmsYaxisOmitFields.add("scheduledStart");
-		
-		
-		workOrderYaxisOmitFields.add("subject");
-		workOrderYaxisOmitFields.add("description");
-		workOrderYaxisOmitFields.add("dueDate");
-		workOrderYaxisOmitFields.add("serialNumber");
-		workOrderYaxisOmitFields.add("noOfNotes");
-		workOrderYaxisOmitFields.add("noOfAttachments");
-		workOrderYaxisOmitFields.add("noOfTasks");
-		workOrderYaxisOmitFields.add("noOfClosedTasks");
-		workOrderYaxisOmitFields.add("scheduledStart");
-		workOrderYaxisOmitFields.add("estimatedEnd");
-		workOrderYaxisOmitFields.add("requester");
-		workOrderYaxisOmitFields.add("createdTime");
-		workOrderYaxisOmitFields.add("resource");
-		workOrderYaxisOmitFields.add("resumedWorkStart");
-		workOrderYaxisOmitFields.add("isWorkDurationChangeAllowed");
-		workOrderYaxisOmitFields.add("assignedBy");
-		workOrderYaxisOmitFields.add("modifiedTime");
-		
-		
-		workOrderGroupByOmitFields.add("subject");
-		workOrderGroupByOmitFields.add("description");
-		workOrderGroupByOmitFields.add("dueDate");
-		workOrderGroupByOmitFields.add("serialNumber");
-		workOrderGroupByOmitFields.add("scheduledStart");
-		workOrderGroupByOmitFields.add("estimatedEnd");
-		workOrderGroupByOmitFields.add("createdTime");
-		workOrderGroupByOmitFields.add("resumedWorkStart");
-		workOrderGroupByOmitFields.add("isWorkDurationChangeAllowed");
-		workOrderGroupByOmitFields.add("modifiedTime");
-		
-		workRequestXaxisOmitFields.add("subject");
-		workRequestXaxisOmitFields.add("description");
-		workRequestXaxisOmitFields.add("serialNumber");
-		workRequestXaxisOmitFields.add("noOfNotes");
-		workRequestXaxisOmitFields.add("noOfAttachments");
-		workRequestXaxisOmitFields.add("noOfTasks");
-		workRequestXaxisOmitFields.add("noOfClosedTasks");
-		
-		
-		workRequestYaxisOmitFields.add("subject");
-		workRequestYaxisOmitFields.add("description");
-		workRequestYaxisOmitFields.add("dueDate");
-		workRequestYaxisOmitFields.add("serialNumber");
-		workRequestYaxisOmitFields.add("scheduledStart");
-		workRequestYaxisOmitFields.add("estimatedEnd");
-		workRequestYaxisOmitFields.add("actualWorkStart");
-		workRequestYaxisOmitFields.add("actualWorkEnd");
-		workRequestYaxisOmitFields.add("requester");
-		workRequestYaxisOmitFields.add("createdTime");
-		workRequestYaxisOmitFields.add("assignedBy");
-		
-		
-		workRequestGroupByOmitFields.add("subject");
-		workRequestGroupByOmitFields.add("description");
-		workRequestGroupByOmitFields.add("dueDate");
-		workRequestGroupByOmitFields.add("serialNumber");
-		workRequestGroupByOmitFields.add("scheduledStart");
-		workRequestGroupByOmitFields.add("estimatedEnd");
-		workRequestGroupByOmitFields.add("actualWorkStart");
-		workRequestGroupByOmitFields.add("actualWorkEnd");
-		workRequestGroupByOmitFields.add("requester");
-		workRequestGroupByOmitFields.add("createdTime");
-		workRequestGroupByOmitFields.add("assignedBy");
+		RESERVED_DASHBOARD_LINK_NAME.add("portfolio");
+		RESERVED_DASHBOARD_LINK_NAME.add("buildingdashboard");
 	}
 	
 	
@@ -466,23 +291,6 @@ public class DashboardUtil {
 		
 	}
 	
-//	public static boolean deleteWidgetFromDashboard(Long dashboardVsWidgetId) throws SQLException {
-//		
-//		if(dashboardVsWidgetId != null) {
-//			
-//			GenericDeleteRecordBuilder deleteRecordBuilder = new GenericDeleteRecordBuilder();
-//			
-//			deleteRecordBuilder.table(ModuleFactory.getDashboardVsWidgetModule().getTableName())
-//				.andCustomWhere("ID = ?", dashboardVsWidgetId);
-//			
-//			int rowsDeleted = deleteRecordBuilder.delete();
-//			if(rowsDeleted > 0) {
-//				return true;
-//			}
-//		}
-//		return false;
-//	}
-	
 	public static JSONObject getStandardVariance(ReportContext report,List<Map<String, Object>> props,List<String> meterList) {
 		
 		try {
@@ -616,7 +424,7 @@ public class DashboardUtil {
 		return null;
 	}
 	
-public static JSONObject getStandardVariance1(ReportContext report,JSONArray props,List<String> meterList) {
+	public static JSONObject getStandardVariance1(ReportContext report,JSONArray props,List<String> meterList) {
 		
 		try {
 			Double min = null ,max = null,avg = null,sum = (double) 0;
@@ -1126,11 +934,6 @@ public static JSONObject getStandardVariance1(ReportContext report,JSONArray pro
 			Map<Long, DashboardContext> dashboardMap = new HashMap<Long, DashboardContext>();
 			for (Map<String, Object> prop : props) {
 				DashboardContext dashboard = FieldUtil.getAsBeanFromMap(prop, DashboardContext.class);
-				if(dashboard.getLinkName().equals("buildingdashboard") && dashboard.getOrgId() == 58l) {
-					List<Long> s = new ArrayList<>();
-					s.add(382l);
-					dashboard.setBuildingExcludeList(s);
-				}
 				dashboard.setReportSpaceFilterContext(getDashboardSpaceFilter(dashboard.getId()));
 				dashboardMap.put(dashboard.getId(), dashboard);
 				dashboardIds.add(dashboard.getId());
@@ -1167,6 +970,7 @@ public static JSONObject getStandardVariance1(ReportContext report,JSONArray pro
 			Map<Long, DashboardContext> dashboardMap = new HashMap<Long, DashboardContext>();
 			for (Map<String, Object> prop : props) {
 				DashboardContext dashboard = FieldUtil.getAsBeanFromMap(prop, DashboardContext.class);
+				dashboard.setDashboardSharingContext(getDashboardSharing(dashboard.getId()));
 				dashboard.setSpaceFilteredDashboardSettings(getSpaceFilteredDashboardSettings(dashboard.getId()));
 				dashboard.setReportSpaceFilterContext(getDashboardSpaceFilter(dashboard.getId()));
 				dashboardMap.put(dashboard.getId(), dashboard);
@@ -1177,7 +981,17 @@ public static JSONObject getStandardVariance1(ReportContext report,JSONArray pro
 			if(getOnlyMobileDashboard) {
 				splitBuildingDashboardForMobile(dashboards);
 			}
-			
+			if(!AwsUtil.isProduction()) {
+				List<DashboardFolderContext> folders = getDashboardFolder(moduleName);
+				for(DashboardFolderContext folder :folders) {
+					for(DashboardContext dashboard :dashboards) {
+						if(dashboard.getDashboardFolderId() == folder.getId()) {
+							folder.addDashboard(dashboard);
+						}
+					}
+				}
+				return folders;
+			}
 			return sortDashboardByFolder(dashboards);
 		}
 		return null;
@@ -1249,7 +1063,7 @@ public static JSONObject getStandardVariance1(ReportContext report,JSONArray pro
 		dashboards.remove(buildingDashboard);
 	}
 
-	public static List<DashboardFolderContext> getDashboardTree(String moduleName) throws Exception {
+	public static List<DashboardFolderContext> getDashboardTree(String moduleName) throws Exception {		// check this method
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(moduleName);
@@ -1323,7 +1137,7 @@ public static JSONObject getStandardVariance1(ReportContext report,JSONArray pro
 			
 			if (portfolioDashboard != null) {	
 				if (portfolioDashboard != null && ((buildings != null && buildings.size() > 1) || (sites != null && sites.size() > 1))) {
-					portfolioFolder.addDashboards(portfolioDashboard);
+					portfolioFolder.addDashboard(portfolioDashboard);
 				}
 			}
 				
@@ -1344,7 +1158,7 @@ public static JSONObject getStandardVariance1(ReportContext report,JSONArray pro
 					bd.setCreatedByUserId(buildingDashboard.getCreatedByUserId());
 					bd.setDisplayOrder(buildingDashboard.getDisplayOrder());
 					
-					portfolioFolder.addDashboards(bd);
+					portfolioFolder.addDashboard(bd);
 				}
 			}
 			
@@ -1365,12 +1179,12 @@ public static JSONObject getStandardVariance1(ReportContext report,JSONArray pro
 					bd.setCreatedByUserId(siteDashboard.getCreatedByUserId());
 					bd.setDisplayOrder(siteDashboard.getDisplayOrder());
 					
-					portfolioFolder.addDashboards(bd);
+					portfolioFolder.addDashboard(bd);
 				}
 			}
 			
 			if (commercialPortfolioDashboard != null) {
-				commercialPortfolioFolder.addDashboards(commercialPortfolioDashboard);
+				commercialPortfolioFolder.addDashboard(commercialPortfolioDashboard);
 			}
 			
 			if (commercialPortfolioDashboard != null && buildingDashboard != null) {
@@ -1394,7 +1208,7 @@ public static JSONObject getStandardVariance1(ReportContext report,JSONArray pro
 								bd.setCreatedByUserId(buildingDashboard.getCreatedByUserId());
 								bd.setDisplayOrder(buildingDashboard.getDisplayOrder());
 								
-								commercialPortfolioFolder.addDashboards(bd);
+								commercialPortfolioFolder.addDashboard(bd);
 							}
 						}
 					}
@@ -1402,7 +1216,7 @@ public static JSONObject getStandardVariance1(ReportContext report,JSONArray pro
 			}
 			
 			if (residentialPortfolioDashboard != null) {
-				residentialPortfolioFolder.addDashboards(residentialPortfolioDashboard);
+				residentialPortfolioFolder.addDashboard(residentialPortfolioDashboard);
 			}
 			
 			if (residentialPortfolioDashboard != null && buildingDashboard != null) {
@@ -1426,7 +1240,7 @@ public static JSONObject getStandardVariance1(ReportContext report,JSONArray pro
 								bd.setCreatedByUserId(buildingDashboard.getCreatedByUserId());
 								bd.setDisplayOrder(buildingDashboard.getDisplayOrder());
 								
-								residentialPortfolioFolder.addDashboards(bd);
+								residentialPortfolioFolder.addDashboard(bd);
 							}
 						}
 					}
@@ -1452,9 +1266,9 @@ public static JSONObject getStandardVariance1(ReportContext report,JSONArray pro
 		
 		List<DashboardFolderContext> dashboardFolderContexts = new ArrayList<>();
 		
-		DashboardFolderContext defaultFolder = new DashboardFolderContext();
+		DashboardFolderContext defaultFolder = new DashboardFolderContext();						// remove this after mig
 		
-		defaultFolder.setName("default");
+		defaultFolder.setName("default");															// remove this after mig
 		
 		for(DashboardContext dashboard :dashboards) {
 			
@@ -1464,23 +1278,22 @@ public static JSONObject getStandardVariance1(ReportContext report,JSONArray pro
 				for(DashboardFolderContext dashboardFolderContext :dashboardFolderContexts) {
 					
 					if(dashboard.getDashboardFolderId().equals(dashboardFolderContext.getId())) {
-						dashboardFolderContext.addDashboards(dashboard);
+						dashboardFolderContext.addDashboard(dashboard);
 						found = true;
 						break;
 					}
 				}
 				if(!found) {
 					DashboardFolderContext folder = getDashboardFolder(dashboard.getDashboardFolderId());
-					folder.addDashboards(dashboard);
+					folder.addDashboard(dashboard);
 					dashboardFolderContexts.add(folder);
 				}
 			}
-			else {
-				defaultFolder.addDashboards(dashboard);
+			else {																					// remove this after mig
+				defaultFolder.addDashboard(dashboard);
 			}
 		}
-		
-		if(defaultFolder.getDashboards() != null && !defaultFolder.getDashboards().isEmpty()) {
+		if(defaultFolder.getDashboards() != null && !defaultFolder.getDashboards().isEmpty()) {		// remove this after mig
 			
 			dashboardFolderContexts.add(defaultFolder);
 		}
@@ -1561,6 +1374,7 @@ public static JSONObject getStandardVariance1(ReportContext report,JSONArray pro
 	public static List<DashboardSharingContext> getDashboardSharing(Long dashboardId) throws Exception {
 		
 		List<DashboardSharingContext> dashboardSharingList = new ArrayList<DashboardSharingContext>();
+		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(FieldFactory.getDashboardSharingFields())
 				.table(ModuleFactory.getDashboardSharingModule().getTableName())
@@ -1598,66 +1412,8 @@ public static JSONObject getStandardVariance1(ReportContext report,JSONArray pro
 		insertBuilder.save();
 	}
 	
-	public static String getWhereClauseForUserFilter(FacilioField field) {
-		if(field.getDataTypeEnum().equals(FieldType.STRING)) {
-			return field.getColumnName() +" = ?";
-		}
-		else {
-			return field.getColumnName() +" between ? and ?";
-		}
-	}
 	
-	public static Object getFormulaValue(Long formulaId) throws Exception {
-		
-		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-				.select(FieldFactory.getFormulaFields())
-				.table(ModuleFactory.getFormulaModule().getTableName())
-				.andCustomWhere(ModuleFactory.getFormulaModule().getTableName()+".ID = ?", formulaId);
-		
-		List<Map<String, Object>> props = selectBuilder.get();
-		
-		FormulaContext formulaContext = null;
-		if (props != null && !props.isEmpty()) {
-			formulaContext = FieldUtil.getAsBeanFromMap(props.get(0), FormulaContext.class);
-		}
-		
-		if(formulaContext != null) {
-			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			FacilioField selectField = formulaContext.getAggregateOperator().getSelectField(modBean.getFieldFromDB(formulaContext.getSelectFieldId()));
-			selectField.setName("value");
-			List<FacilioField> selectFields = new ArrayList<>();
-			selectFields.add(selectField);
-			GenericSelectRecordBuilder selectValueBuilder = new GenericSelectRecordBuilder()
-					.select(selectFields)
-					.table(modBean.getModule(formulaContext.getModuleId()).getTableName());
-			
-			if(formulaContext.getCriteriaId() != null) {
-				Criteria criteria = CriteriaAPI.getCriteria(formulaContext.getOrgId(), formulaContext.getCriteriaId());
-				if(criteria != null) {
-					selectValueBuilder.andCriteria(criteria);
-				}
-			}
-			List<Map<String, Object>> rs = selectValueBuilder.get();
-			if (rs != null && !rs.isEmpty()) {
-				Object result = rs.get(0).get("value");
-				return result;
-			}
-		}
-		return null;
-	}
-	
-	public static String getTimeFrameFloorValue(Operator dateOperator,String value) {
-		
-		switch(dateOperator.getOperatorId()) {
-		
-		case 30: 
-		case 31:
-		case 32:
-			return "FLOOR("+value+"/(1000*60*60*24))";
-		default:
-			return null;
-		}
- 	}
+	// old reports related APIs 
 	
 	public static List<ReportContext> getReportsFormReportFolderId(Long folderID) throws Exception {
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
@@ -2158,25 +1914,6 @@ public static JSONObject getStandardVariance1(ReportContext report,JSONArray pro
 		deleteRecordBuilder.delete();
 	}
 	
-	public static boolean addReportFolder(ReportFolderContext reportFolder) throws Exception {
-		
-		if (reportFolder != null) {
-			reportFolder.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
-			
-			GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
-					.table(ModuleFactory.getReportFolder().getTableName())
-					.fields(FieldFactory.getReportFolderFields());
-			
-			Map<String, Object> props = FieldUtil.getAsProperties(reportFolder);
-			insertBuilder.addRecord(props);
-			insertBuilder.save();
-			
-			reportFolder.setId((Long) props.get("id"));
-			return true;
-		}
-		return false;
-	}
-	
 	public static ReportContext getParentReportForEntitiyId(Long entityId) throws Exception {
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(FieldFactory.getReportFields())
@@ -2191,384 +1928,6 @@ public static JSONObject getStandardVariance1(ReportContext report,JSONArray pro
 		}
 		return null;
 	}
-	
-	public static void duplicateReport(List<Long> reportIds) throws Exception {
-		
-		for(Long reportId : reportIds) {
-			ReportContext reportContext = DashboardUtil.getReportContext(reportId);
-			duplicateReport(reportContext);
-		}
-	}
-	
-	public static boolean duplicateReport(ReportContext reportContext) throws Exception {
-		
-		return addReport(reportContext);
-	}
-	
-	public static boolean addReport(ReportContext reportContext) throws Exception {
-		
-		boolean isSubReport = true;
-		ReportContext parentReportContext = null;
-		if (reportContext != null) {
-			
-			reportContext.setOrgId(AccountUtil.getCurrentOrg().getId());
-			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			
-			if (reportContext.getDerivation() != null) {
-				setDerivationFormulaProps(reportContext);
-			}
-			if(reportContext.getModuleId() == -1) {
-				FacilioModule module = modBean.getModule(reportContext.getModuleName());
-				reportContext.setModuleId(module.getModuleId());
-			}
-			else {
-				FacilioModule module = modBean.getModule(reportContext.getModuleId());
-				reportContext.setModuleName(module.getName());
-			}
-			
-			List<FacilioField> fields = FieldFactory.getReportFields();
-			
-			if(reportContext.getParentFolderId() != null && reportContext.getReportEntityId() == null) {
-				isSubReport = false;
-				GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
-						.table(ModuleFactory.getReportEntityModule().getTableName())
-						.fields(FieldFactory.getReportEntityFields());
-				
-				Map<String, Object> props = new HashMap<>();
-				props.put("orgId", AccountUtil.getCurrentOrg().getOrgId());
-				insertBuilder.addRecord(props);
-				insertBuilder.save();
-				
-				reportContext.setReportEntityId((Long)props.get("id"));
-				if(reportContext.getComparingReportContexts() != null) {
-					for(ReportContext report :reportContext.getComparingReportContexts()) {
-						report.setReportEntityId(reportContext.getReportEntityId());
-					}
-				}
-			}
-			else {
-				parentReportContext = getParentReportForEntitiyId(reportContext.getReportEntityId());
-				if(parentReportContext != null && parentReportContext.getIsComparisionReport()) {
-					reportContext.setIsComparisionReport(parentReportContext.getIsComparisionReport());
-				}
-			}
-			
-			GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
-					.table(ModuleFactory.getReport().getTableName())
-					.fields(fields);
-
-			reportContext.setxAxis(DashboardUtil.addOrGetReportfield(reportContext.getxAxisField(), reportContext.getModuleName()).getId());
-			if(reportContext.getxAxisaggregateFunction() == null) {
-				reportContext.setxAxisaggregateFunction(CommonAggregateOperator.COUNT.getValue());
-			}
-			if(reportContext.getY1AxisField() != null && reportContext.getY1AxisField().getModuleField() != null) {
-				reportContext.setY1Axis(DashboardUtil.addOrGetReportfield(reportContext.getY1AxisField(), reportContext.getModuleName()).getId());
-				if(reportContext.getY1AxisaggregateFunction() == null) {
-					reportContext.setxAxisaggregateFunction(CommonAggregateOperator.COUNT.getValue());
-				}
-			}
-			if(reportContext.getGroupByField() != null && reportContext.getGroupByField().getModuleField() != null) {
-				reportContext.setGroupBy(DashboardUtil.addOrGetReportfield(reportContext.getGroupByField(), reportContext.getModuleName()).getId());
-			}
-			
-			reportContext.setId(-1);
-			Map<String, Object> props = FieldUtil.getAsProperties(reportContext);
-			insertBuilder.addRecord(props);
-			insertBuilder.save();
-
-			reportContext.setId((Long) props.get("id"));
-			if(reportContext.getCriteria() != null) {
-				
-				Long criteriaId = CriteriaAPI.addCriteria(reportContext.getCriteria(), AccountUtil.getCurrentOrg().getId());
-				insertBuilder = new GenericInsertRecordBuilder()
-						.table(ModuleFactory.getReportCriteria().getTableName())
-						.fields(FieldFactory.getReportCriteriaFields());
-				
-				Map<String, Object> prop = new HashMap<String, Object>();
-				prop.put("reportId", reportContext.getId());
-				prop.put("criteriaId", criteriaId);
-				insertBuilder.addRecord(prop).save();
-			}
-			if(reportContext.getReportUserFilters() != null) {
-				for(ReportUserFilterContext userFilter : reportContext.getReportUserFilters()) {
-					ReportFieldContext userFilterField = DashboardUtil.addOrGetReportfield(userFilter.getReportFieldContext(), reportContext.getModuleName());
-					Map<String, Object> prop = new HashMap<String, Object>();
-					prop.put("reportId", reportContext.getId());
-					prop.put("reportFieldId", userFilterField.getId());
-					prop.put("whereClause", DashboardUtil.getWhereClauseForUserFilter(userFilterField.getField()));
-					
-					insertBuilder = new GenericInsertRecordBuilder()
-							.table(ModuleFactory.getReportUserFilter().getTableName())
-							.fields(FieldFactory.getReportUserFilterFields());
-					
-					insertBuilder.addRecord(prop).save();
-				}
-			}
-			if(reportContext.getReportThresholds() != null) {
-				for(ReportThreshold threshhold : reportContext.getReportThresholds()) {
-					
-					Map<String, Object> prop = FieldUtil.getAsProperties(threshhold);
-					prop.put("reportId", reportContext.getId());
-
-					insertBuilder = new GenericInsertRecordBuilder()
-							.table(ModuleFactory.getReportThreshold().getTableName())
-							.fields(FieldFactory.getReportThresholdFields());
-					
-					insertBuilder.addRecord(prop).save();
-				}
-			}
-			if(reportContext.getDateFilter() != null) {
-				reportContext.getDateFilter().setId(-1l);
-				Map<String, Object> prop = FieldUtil.getAsProperties(reportContext.getDateFilter());
-				prop.put("reportId", reportContext.getId());
-
-				insertBuilder = new GenericInsertRecordBuilder()
-						.table(ModuleFactory.getReportDateFilter().getTableName())
-						.fields(FieldFactory.getReportDateFilterFields());
-				
-				insertBuilder.addRecord(prop).save();
-			}
-//			else if(isSubReport) {
-//				Map<String, Object> prop = new HashMap<>();
-//				prop.put("reportId", reportContext.getId());
-//				prop.put("fieldId", reportContext.getxAxisField().getField().getId());
-//				prop.put("operatorId", parentReportContext.getDateFilter().getOperatorId());
-//
-//				insertBuilder = new GenericInsertRecordBuilder()
-//						.table(ModuleFactory.getReportDateFilter().getTableName())
-//						.fields(FieldFactory.getReportDateFilterFields());
-//				
-//				insertBuilder.addRecord(prop).save();
-//				
-//				LOGGER.severe("sssssaaaa --- "+prop);
-//			}
-//			if(reportContext.getEnergyMeter() != null) {
-//				Map<String, Object> prop = FieldUtil.getAsProperties(reportContext.getEnergyMeter());
-//				prop.put("reportId", reportContext.getId());
-//
-//				insertBuilder = new GenericInsertRecordBuilder()
-//						.table(ModuleFactory.getReportEnergyMeter().getTableName())
-//						.fields(FieldFactory.getReportEnergyMeterFields());
-//				
-//				insertBuilder.addRecord(prop).save();
-//				
-//				prop = FieldUtil.getAsProperties(reportContext.getEnergyMeter());
-//				prop.put("reportId", reportContext.getId());
-//				LOGGER.severe("getReportSpaceFilterModule -- "+prop);
-//				insertBuilder = new GenericInsertRecordBuilder()
-//						.table(ModuleFactory.getReportSpaceFilterModule().getTableName())
-//						.fields(FieldFactory.getReportSpaceFilterFields());
-//				
-//				insertBuilder.addRecord(prop).save();
-//			}
-			if(reportContext.getReportSpaceFilterContext() != null) {
-				
-//				Map<String, Object> prop = FieldUtil.getAsProperties(reportContext.getEnergyMeter());
-//				if(prop == null) {
-//					prop = new HashMap<>();
-//				}
-//				prop.put("reportId", reportContext.getId());
-//
-//				insertBuilder = new GenericInsertRecordBuilder()
-//						.table(ModuleFactory.getReportEnergyMeter().getTableName())
-//						.fields(FieldFactory.getReportEnergyMeterFields());
-//				
-//				insertBuilder.addRecord(prop).save();
-				reportContext.getReportSpaceFilterContext().setId(-1l);
-				Map<String, Object> prop = FieldUtil.getAsProperties(reportContext.getReportSpaceFilterContext());
-				prop.put("reportId", reportContext.getId());
-				
-				insertBuilder = new GenericInsertRecordBuilder()
-						.table(ModuleFactory.getReportSpaceFilter().getTableName())
-						.fields(FieldFactory.getReportSpaceFilterFields());
-				
-				insertBuilder.addRecord(prop).save();
-			}
-			if(reportContext.getBaseLineId() != -1) {
-				
-				insertBuilder = new GenericInsertRecordBuilder()
-						.table(ModuleFactory.getBaseLineReportRelModule().getTableName())
-						.fields(FieldFactory.getBaseLineReportsRelFields());
-				
-				Map<String, Object> prop = new HashMap<>();
-				prop.put("reportId", reportContext.getId());
-				prop.put("id", reportContext.getBaseLineId());
-				prop.put("adjustType", BaseLineContext.AdjustType.NONE.getValue());
-				insertBuilder.addRecord(prop).save();
-			}
-			if(reportContext.getComparingReportContexts() != null) {
-				for(ReportContext report: reportContext.getComparingReportContexts()) {
-					DashboardUtil.addReport(report);
-				}
-			}
-			return true;
-		}
-		return false;
-	}
-	
-	public static List<ReportFormulaFieldContext> getFormulaFields(String moduleName) throws Exception {
-		
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		GenericSelectRecordBuilder select = new GenericSelectRecordBuilder();
-		select.select(FieldFactory.getReportFormulaFieldFields());
-		select.table(ModuleFactory.getReportFormulaField().getTableName());
-		select.andCustomWhere(ModuleFactory.getReportFormulaField().getTableName()+".ORGID = ?", AccountUtil.getCurrentOrg().getId());
-		select.andCustomWhere(ModuleFactory.getReportFormulaField().getTableName()+".MODULEID = ?", modBean.getModule(moduleName).getModuleId());
-		
-		List<Map<String, Object>> props = select.get();
-		List<ReportFormulaFieldContext> result = null;
-		for(Map<String, Object> prop:props) {
-			if(result == null) {
-				result = new ArrayList<>();
-			}
-			ReportFormulaFieldContext reportFormulaFieldContext = FieldUtil.getAsBeanFromMap(prop, ReportFormulaFieldContext.class);
-			result.add(reportFormulaFieldContext);
-		}
-		return result;
-	}
-	
-	public static JSONObject getReportFields(String moduleName) throws Exception {
-		
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		
-		JSONObject result = new JSONObject();
-		
-		List<ReportFieldContext> dateFilterField = new ArrayList<ReportFieldContext>();
-		List<ReportFieldContext> xAxisField = new ArrayList<ReportFieldContext>();
-		List<ReportFieldContext> yAxisField = new ArrayList<ReportFieldContext>();
-		List<ReportFieldContext> groupField = new ArrayList<ReportFieldContext>();
-		
-		List<FacilioField> allFields = modBean.getAllFields(moduleName);
-		
-		for(FacilioField field:allFields) {
-			ReportFieldContext reportFieldContext = new ReportFieldContext();
-			reportFieldContext.setFieldLabel(field.getDisplayName());
-			reportFieldContext.setModuleFieldId(field.getId());
-			reportFieldContext.setModuleField(field);
-			
-			if(field.getDataType() == FieldType.DATE_TIME.getTypeAsInt()) {
-				dateFilterField.add(reportFieldContext);
-			}
-			
-			if(moduleName.equals(ContextNames.WORK_ORDER)) {
-				if(!workOrderXaxisOmitFields.contains(field.getName())) {
-					xAxisField.add(reportFieldContext);
-				}
-				if(!workOrderYaxisOmitFields.contains(field.getName())) {
-					yAxisField.add(reportFieldContext);
-				}
-				if(!workOrderGroupByOmitFields.contains(field.getName())) {
-					groupField.add(reportFieldContext);
-				}
-			}
-			else if (moduleName.endsWith(ContextNames.WORK_ORDER_REQUEST)) {
-				
-				if(!workRequestXaxisOmitFields.contains(field.getName())) {
-					xAxisField.add(reportFieldContext);
-				}
-				if(!workRequestYaxisOmitFields.contains(field.getName())) {
-					yAxisField.add(reportFieldContext);
-				}
-				if(!workRequestGroupByOmitFields.contains(field.getName())) {
-					groupField.add(reportFieldContext);
-				}
-			}
-			else if (moduleName.endsWith(ContextNames.ALARM)) {
-				if(!alarmsXaxisOmitFields.contains(field.getName())) {
-					xAxisField.add(reportFieldContext);
-				}
-				if(!alarmsYaxisOmitFields.contains(field.getName())) {
-					yAxisField.add(reportFieldContext);
-				}
-				if(!alarmsGroupByOmitFields.contains(field.getName())) {
-					groupField.add(reportFieldContext);
-				}
-			}
-			else if (moduleName.endsWith(ContextNames.ENERGY_DATA_READING)) {
-				if(!energyDataXaxisOmitFields.contains(field.getName())) {
-					xAxisField.add(reportFieldContext);
-				}
-				if(!energyDataYaxisOmitFields.contains(field.getName())) {
-					yAxisField.add(reportFieldContext);
-				}
-				if(!energyDataGroupByOmitFields.contains(field.getName())) {
-					groupField.add(reportFieldContext);
-				}
-			}
-		}
-		List<ReportFormulaFieldContext> formulaFieldContexts = getFormulaFields(moduleName);
-		if(formulaFieldContexts != null) {
-			for(ReportFormulaFieldContext formulaFieldContext:formulaFieldContexts) {
-				
-				ReportFieldContext reportFieldContext = new ReportFieldContext();
-				reportFieldContext.setFieldLabel(formulaFieldContext.getName());
-				reportFieldContext.setReportFormulaContext(formulaFieldContext);
-				reportFieldContext.setIsFormulaField(true);
-				yAxisField.add(reportFieldContext);
-			}
-		}
-		
-		result.put("dateFilterFields", dateFilterField);
-		result.put("moduleXAxisFields", xAxisField);
-		result.put("yAxisFields", yAxisField);
-		result.put("groupByFields", groupField);
-		result.put("allFields", allFields);
-		
-		if(moduleName.endsWith(ContextNames.WORK_ORDER) || moduleName.endsWith(ContextNames.WORK_ORDER_REQUEST) || moduleName.endsWith(ContextNames.ALARM)) {
-			allFields = modBean.getAllFields(ContextNames.ASSET);
-			xAxisField = new ArrayList<>();
-			for(FacilioField field:allFields) {
-				if(!assetOmitFields.contains(field.getName())) {
-					ReportFieldContext reportFieldContext = new ReportFieldContext();
-					reportFieldContext.setFieldLabel(field.getDisplayName());
-					reportFieldContext.setModuleFieldId(field.getId());
-					reportFieldContext.setModuleField(field);
-					xAxisField.add(reportFieldContext);
-				}
-			}
-			result.put("assetXAxisFields", xAxisField);
-			
-			ReportFieldContext reportFieldContext = new ReportFieldContext();
-			FacilioField resourceField = modBean.getField("resource", moduleName);
-			reportFieldContext.setFieldLabel("Space");
-			reportFieldContext.setModuleField(resourceField);
-			reportFieldContext.setModuleFieldId(resourceField.getId());
-			
-			xAxisField = new ArrayList<>();
-			
-			xAxisField.add(reportFieldContext);
-			
-			result.put("spaceXAxisFields", xAxisField);
-		}
-		else if (moduleName.endsWith(ContextNames.ENERGY_DATA_READING)) {
-			ReportFieldContext reportFieldContext = new ReportFieldContext();
-			FacilioField resourceField = modBean.getField("purposeSpace", "energymeter");
-			reportFieldContext.setFieldLabel("Space");
-			reportFieldContext.setModuleField(resourceField);
-			reportFieldContext.setModuleFieldId(resourceField.getId());
-			
-			xAxisField = new ArrayList<>();
-			
-			xAxisField.add(reportFieldContext);
-			
-			result.put("spaceXAxisFields", xAxisField);
-			
-			reportFieldContext = new ReportFieldContext();
-			resourceField = modBean.getField("purpose", "energymeter");
-			reportFieldContext.setFieldLabel("Purpose");
-			reportFieldContext.setModuleField(resourceField);
-			reportFieldContext.setModuleFieldId(resourceField.getId());
-			
-			xAxisField = new ArrayList<>();
-			
-			xAxisField.add(reportFieldContext);
-			
-			result.put("purposeXAxisFields", xAxisField);
-		}
-		
-		return result;
-	}
-	
 	
 	public static JSONArray consolidateResult(List<JSONArray> reportDatas,int xAxisAggr,int yAxisAggr) {
 		
@@ -2701,166 +2060,6 @@ public static JSONObject getStandardVariance1(ReportContext report,JSONArray pro
 		return null;
 	}
 	
-	public static boolean populateBuildingEnergyReports(long buildingId, String buildingName) throws Exception {
-		
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioModule module = modBean.getModule("energydata");
-		
-		if (getBuildingReportFolder(module.getName(), buildingId) != null) {
-			// already building report folder exists...
-			return true;
-		}
-		
-		FacilioField ttimeFld = modBean.getField("ttime", module.getName());
-		
-		// create building folder
-		ReportFolderContext buildingFolder = new ReportFolderContext();
-		buildingFolder.setName(buildingName + " Reports");
-		buildingFolder.setModuleId(module.getModuleId());
-		buildingFolder.setBuildingId(buildingId);
-		
-		DashboardUtil.addReportFolder(buildingFolder);
-		
-		// High-res data report
-		ReportContext highResReport = new ReportContext();
-		highResReport.setName("Electricity Demand Today");
-		highResReport.setDescription("Daily Electricity Load in High-Resolution");
-		highResReport.setParentFolderId(buildingFolder.getId());
-		highResReport.setChartType(ReportContext.ReportChartType.AREA.getValue());
-		
-		ReportFieldContext xAxisFld = new ReportFieldContext();
-		xAxisFld.setModuleFieldId(ttimeFld.getId());
-		highResReport.setxAxisField(xAxisFld);
-		highResReport.setxAxisaggregateFunction(CommonAggregateOperator.ACTUAL.getValue());
-		highResReport.setxAxisLabel("Time");
-		
-		ReportFieldContext y1AxisFld = new ReportFieldContext();
-		y1AxisFld.setModuleFieldId(modBean.getField("totalEnergyConsumptionDelta", module.getName()).getId());
-		highResReport.setY1AxisField(y1AxisFld);
-		highResReport.setY1AxisaggregateFunction(NumberAggregateOperator.SUM.getValue());
-		highResReport.setY1AxisLabel("Energy Consumption");
-		highResReport.setY1AxisUnit("kw");
-		
-		ReportEnergyMeterContext energyMeterFilter = new ReportEnergyMeterContext();
-		highResReport.setEnergyMeter(energyMeterFilter);
-		
-		ReportSpaceFilterContext reportSpaceFilterContext = new ReportSpaceFilterContext();
-		reportSpaceFilterContext.setBuildingId(buildingId);
-		highResReport.setReportSpaceFilterContext(reportSpaceFilterContext);
-		
-		ReportDateFilterContext dateFilter = new ReportDateFilterContext();
-		dateFilter.setFieldId(ttimeFld.getId());
-		dateFilter.setOperatorId(DateOperators.TODAY.getOperatorId());
-		highResReport.setDateFilter(dateFilter);
-		
-		DashboardUtil.addReport(highResReport);
-		
-		// End Use breakdown
-		ReportContext endUseBreakdown = new ReportContext();
-		endUseBreakdown.setName("End Use Breakdown");
-		endUseBreakdown.setDescription("End Use Breakdown");
-		endUseBreakdown.setParentFolderId(buildingFolder.getId());
-		endUseBreakdown.setChartType(ReportContext.ReportChartType.STACKED_BAR.getValue());
-		
-		ReportFieldContext endUseXAxisFld = new ReportFieldContext();
-		endUseXAxisFld.setModuleFieldId(ttimeFld.getId());
-		endUseBreakdown.setxAxisField(endUseXAxisFld);
-		endUseBreakdown.setxAxisaggregateFunction(DateAggregateOperator.FULLDATE.getValue());
-		endUseBreakdown.setxAxisLabel("Date");
-		
-		ReportFieldContext endUseY1AxisFld = new ReportFieldContext();
-		endUseY1AxisFld.setModuleFieldId(modBean.getField("totalEnergyConsumptionDelta", module.getName()).getId());
-		endUseBreakdown.setY1AxisField(endUseY1AxisFld);
-		endUseBreakdown.setY1AxisaggregateFunction(NumberAggregateOperator.SUM.getValue());
-		endUseBreakdown.setY1AxisLabel("Energy Consumption");
-		endUseBreakdown.setY1AxisUnit("kwh");
-		
-		ReportEnergyMeterContext endUseEnergyMeterFilter = new ReportEnergyMeterContext();
-		endUseEnergyMeterFilter.setGroupBy("service");
-		endUseBreakdown.setEnergyMeter(endUseEnergyMeterFilter);
-		
-		reportSpaceFilterContext = new ReportSpaceFilterContext();
-		reportSpaceFilterContext.setBuildingId(buildingId);
-		endUseBreakdown.setReportSpaceFilterContext(reportSpaceFilterContext);
-		
-		ReportDateFilterContext endUseDateFilter = new ReportDateFilterContext();
-		endUseDateFilter.setFieldId(ttimeFld.getId());
-		endUseDateFilter.setOperatorId(DateOperators.CURRENT_MONTH.getOperatorId());
-		endUseBreakdown.setDateFilter(endUseDateFilter);
-		
-		DashboardUtil.addReport(endUseBreakdown);
-		
-		// Cost usage by End use
-		ReportContext costUseBreakdown = new ReportContext();
-		costUseBreakdown.setName("Cost usage by End use");
-		costUseBreakdown.setDescription("End Use Breakdown");
-		costUseBreakdown.setParentFolderId(buildingFolder.getId());
-		costUseBreakdown.setChartType(ReportContext.ReportChartType.STACKED_BAR.getValue());
-		
-		ReportFieldContext costUseXAxisFld = new ReportFieldContext();
-		costUseXAxisFld.setModuleFieldId(ttimeFld.getId());
-		costUseBreakdown.setxAxisField(costUseXAxisFld);
-		costUseBreakdown.setxAxisaggregateFunction(DateAggregateOperator.FULLDATE.getValue());
-		costUseBreakdown.setxAxisLabel("Date");
-		
-		ReportFieldContext costUseY1AxisFld = new ReportFieldContext();
-		costUseY1AxisFld.setModuleFieldId(modBean.getField("totalEnergyConsumptionDelta", module.getName()).getId());
-		costUseBreakdown.setY1AxisField(costUseY1AxisFld);
-		costUseBreakdown.setY1AxisaggregateFunction(NumberAggregateOperator.SUM.getValue());
-		costUseBreakdown.setY1AxisLabel("Cost Usage");
-		costUseBreakdown.setY1AxisUnit("cost");
-		
-		ReportEnergyMeterContext costUseEnergyMeterFilter = new ReportEnergyMeterContext();
-		costUseEnergyMeterFilter.setGroupBy("service");
-		costUseBreakdown.setEnergyMeter(costUseEnergyMeterFilter);
-		
-		reportSpaceFilterContext = new ReportSpaceFilterContext();
-		reportSpaceFilterContext.setBuildingId(buildingId);
-		costUseBreakdown.setReportSpaceFilterContext(reportSpaceFilterContext);
-		
-		ReportDateFilterContext costUseDateFilter = new ReportDateFilterContext();
-		costUseDateFilter.setFieldId(ttimeFld.getId());
-		costUseDateFilter.setOperatorId(DateOperators.CURRENT_MONTH.getOperatorId());
-		costUseBreakdown.setDateFilter(costUseDateFilter);
-		
-		DashboardUtil.addReport(costUseBreakdown);
-		
-		// Daily Energy breakdown
-		ReportContext dailyBreakdown = new ReportContext();
-		dailyBreakdown.setName("Daily energy breakdown");
-		dailyBreakdown.setDescription("Daily energy breakdown");
-		dailyBreakdown.setParentFolderId(buildingFolder.getId());
-		dailyBreakdown.setChartType(ReportContext.ReportChartType.BAR.getValue());
-		
-		ReportFieldContext dailyXAxisFld = new ReportFieldContext();
-		dailyXAxisFld.setModuleFieldId(ttimeFld.getId());
-		dailyBreakdown.setxAxisField(dailyXAxisFld);
-		dailyBreakdown.setxAxisaggregateFunction(DateAggregateOperator.FULLDATE.getValue());
-		dailyBreakdown.setxAxisLabel("Date");
-		
-		ReportFieldContext dailyY1AxisFld = new ReportFieldContext();
-		dailyY1AxisFld.setModuleFieldId(modBean.getField("totalEnergyConsumptionDelta", module.getName()).getId());
-		dailyBreakdown.setY1AxisField(dailyY1AxisFld);
-		dailyBreakdown.setY1AxisaggregateFunction(NumberAggregateOperator.SUM.getValue());
-		dailyBreakdown.setY1AxisLabel("Energy Consumption");
-		dailyBreakdown.setY1AxisUnit("kwh");
-		
-		ReportEnergyMeterContext dailyEnergyMeterFilter = new ReportEnergyMeterContext();
-		dailyBreakdown.setEnergyMeter(dailyEnergyMeterFilter);
-		
-		reportSpaceFilterContext = new ReportSpaceFilterContext();
-		reportSpaceFilterContext.setBuildingId(buildingId);
-		costUseBreakdown.setReportSpaceFilterContext(reportSpaceFilterContext);
-		
-		ReportDateFilterContext dailyDateFilter = new ReportDateFilterContext();
-		dailyDateFilter.setFieldId(ttimeFld.getId());
-		dailyDateFilter.setOperatorId(DateOperators.CURRENT_MONTH.getOperatorId());
-		dailyBreakdown.setDateFilter(dailyDateFilter);
-		
-		DashboardUtil.addReport(dailyBreakdown);
-		
-		return true;
-	}
 	
 	public static ReportDateFilterContext getReportDateFilter(Long dateFilterId) throws Exception {
 		if(dateFilterId != null && dateFilterId > 0) {
@@ -2878,52 +2077,26 @@ public static JSONObject getStandardVariance1(ReportContext report,JSONArray pro
 		return null;
 	}
 	
-	public static List<Long> getDataSendingMeters(Long orgid) throws Exception {
-		
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioModule module = modBean.getModule("energydata");
-		
-		FacilioField field = new FacilioField();
-		field.setColumnName("DISTINCT PARENT_METER_ID");
-		field.setName("parentId");
-		
-		ArrayList<FacilioField> selectFields = new ArrayList<FacilioField>();
-		
-		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-				.select(selectFields)
-				.table(module.getTableName())
-				.andCustomWhere("ORGID = ?",orgid);
-		
-		List<Map<String, Object>> props = selectBuilder.get();
-		List<Long> meterIds = null;
-		if (props != null && !props.isEmpty()) {
-			meterIds = new ArrayList<>();
-			for (Map<String, Object> prop : props) {
-				meterIds.add((Long) prop.get("parentId"));
-			}
-		}
-		return meterIds;
-	}
 	public static final long ONE_MIN_MILLIS = 60000l;
 	public static final long ONE_DAY_MILLIS = 86400000l;
 	public static int predictDateOpperator(JSONArray dateFilter) {
 	
-	long diff = (Long) dateFilter.get(1) - (Long) dateFilter.get(0);
+		long diff = (Long) dateFilter.get(1) - (Long) dateFilter.get(0);
+		
+		if(diff <= ONE_MIN_MILLIS * 60 * 24) {
+			return DateOperators.TODAY.getOperatorId();
+		}
+		else if (diff <= ONE_MIN_MILLIS * 60 * 24 * 7) {
+			return DateOperators.CURRENT_WEEK.getOperatorId();
+		}
+		else if (diff <= ONE_MIN_MILLIS * 60 * 24 * 31) {
+			return DateOperators.CURRENT_MONTH.getOperatorId();
+		}
+		else {
+			return DateOperators.CURRENT_YEAR.getOperatorId();
+		}
 	
-	if(diff <= ONE_MIN_MILLIS * 60 * 24) {
-		return DateOperators.TODAY.getOperatorId();
 	}
-	else if (diff <= ONE_MIN_MILLIS * 60 * 24 * 7) {
-		return DateOperators.CURRENT_WEEK.getOperatorId();
-	}
-	else if (diff <= ONE_MIN_MILLIS * 60 * 24 * 31) {
-		return DateOperators.CURRENT_MONTH.getOperatorId();
-	}
-	else {
-		return DateOperators.CURRENT_YEAR.getOperatorId();
-	}
-	
-}
 	public static int getNoOfDaysBetweenDateRange(long startTime,long endTime) {
 		
 		if((endTime-startTime) > ONE_DAY_MILLIS) {
@@ -2967,20 +2140,6 @@ public static JSONObject getStandardVariance1(ReportContext report,JSONArray pro
 		return dateCondition;
 	}
 	
-	public static void addReportColumns (List<ReportColumnContext> reportColumns) throws Exception {
-		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
-													.table(ModuleFactory.getReportColumnsModule().getTableName())
-													.fields(FieldFactory.getReportColumnFields());
-		
-		for(int i = 0; i < reportColumns.size(); i++) {
-			ReportColumnContext reportColumn = reportColumns.get(i);
-			reportColumn.setOrgId(AccountUtil.getCurrentOrg().getId());
-			reportColumn.setSequence(i+1);
-			insertBuilder.addRecord(FieldUtil.getAsProperties(reportColumn));
-		}
-		insertBuilder.save();
-	}
-	
 	public static List<ReportColumnContext> getReportColumns (long entityId) throws Exception {
 		FacilioModule module = ModuleFactory.getReportColumnsModule();
 		List<FacilioField> fields = FieldFactory.getReportColumnFields();
@@ -3004,25 +2163,7 @@ public static JSONObject getStandardVariance1(ReportContext report,JSONArray pro
 		}
 		return null;
 	}
-	public static void UpdateDashboardDisplayOrder(JSONObject dashboardDisplayOrder) throws Exception {
-		
-		for(Object key:dashboardDisplayOrder.keySet()) {
-			Long dashboardId = Long.parseLong( key.toString()); 
-			Integer order = Integer.parseInt(dashboardDisplayOrder.get(key).toString());
-			
-			Map<String,Object> value = new HashMap<>(); 
-			
-			value.put("displayOrder", order);
-			
-			GenericUpdateRecordBuilder update = new GenericUpdateRecordBuilder();
-			update.table(ModuleFactory.getDashboardModule().getTableName())
-			.fields(FieldFactory.getDashboardFields())
-			.andCustomWhere(ModuleFactory.getDashboardModule().getTableName()+".ID = ?", dashboardId);
-			
-			update.update(value);
-		}
-	}
-	public static Integer getLastDashboardDisplayOrder(Long orgid,Long moduleId) throws Exception {
+	public static Integer getLastDashboardDisplayOrder(Long orgid,Long moduleId) throws Exception { 	// move up
 		
 		if(orgid != null && moduleId != null) {
 			BeanFactory.lookup("ModuleBean");
@@ -3113,52 +2254,6 @@ public static JSONObject getStandardVariance1(ReportContext report,JSONArray pro
 		}
 		reportContext = getReportContext(reportContext.getId());
 		return reportContext;
-	}
-	
-	private static void setDerivationFormulaProps (ReportContext reportContext) throws Exception {
-		
-		DerivationContext derivation = reportContext.getDerivation();
-		FormulaFieldContext formulaField = derivation.getFormulaField();
-		if (formulaField.getId() == -1) { 
-			addDefaultFormulaProps(derivation);
-			
-			FacilioContext context = new FacilioContext();
-			context.put(FacilioConstants.ContextNames.FORMULA_FIELD, formulaField);
-			context.put(FacilioConstants.ContextNames.READING_DATA_META_TYPE, ReadingInputType.HIDDEN_FORMULA_FIELD);
-			context.put(FacilioConstants.ContextNames.DERIVATION, derivation);
-			context.put(FacilioConstants.ContextNames.DATE_RANGE, derivation.getDateRange());
-			
-			Chain addFormulaFieldChain = TransactionChainFactory.addDerivationFormulaChain();
-			addFormulaFieldChain.execute(context);
-			formulaField = (FormulaFieldContext) context.get(FacilioConstants.ContextNames.FORMULA_FIELD);
-		}
-		
-		FacilioField readingField = formulaField.getReadingField();
-		reportContext.setModuleId(readingField.getModuleId());
-		
-		ReportFieldContext yAxisField = new ReportFieldContext();
-		yAxisField.setModuleFieldId(readingField.getFieldId());
-		reportContext.setY1AxisField(yAxisField);
-		
-		if (reportContext.getDateFilter() != null) {
-			ReportDateFilterContext dateFilter = reportContext.getDateFilter();
-			dateFilter.setField(readingField);
-		}
-	}
-	
-	private static void addDefaultFormulaProps(DerivationContext derivation) throws Exception {
-		FormulaFieldContext formula = derivation.getFormulaField();
-		List<WorkflowFieldContext> workflowFields = WorkflowUtil.getWorkflowFields(derivation.getWorkflowId()).stream()
-				.filter(f -> f.getResourceId() != -1).collect(Collectors.toList());
-		formula.setResourceType(ResourceType.ONE_RESOURCE);
-		formula.setResourceId(workflowFields.get(0).getResourceId()); // TODO Handle intelligently
-		int interval = ReadingsAPI.getDataInterval(workflowFields);
-		formula.setInterval(interval);
-		// Temp...needs to remove once new analytics done
-		if (formula.getWorkflow() == null) {
-			WorkflowContext workflow = WorkflowUtil.getWorkflowContext(derivation.getWorkflowId());
-			formula.setWorkflow(workflow);
-		}
 	}
 	
 	public static FacilioFrequency getAggrFrequency(int aggr) {
@@ -3280,7 +2375,6 @@ public static JSONObject getStandardVariance1(ReportContext report,JSONArray pro
 	
 	public static void addDashboardFolder(DashboardFolderContext dashboardFolder) throws Exception {
 		
-		
 		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
 				.table(ModuleFactory.getDashboardFolderModule().getTableName())
 				.fields(FieldFactory.getDashboardFolderFields());
@@ -3290,6 +2384,17 @@ public static JSONObject getStandardVariance1(ReportContext report,JSONArray pro
 		insertBuilder.save();
 		
 		dashboardFolder.setId((Long) props.get("id"));
+	}
+	
+	public static void updateDashboard(DashboardContext dashboard) throws Exception {
+		
+		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
+				.table(ModuleFactory.getDashboardModule().getTableName())
+				.fields(FieldFactory.getDashboardFields())
+				.andCustomWhere(ModuleFactory.getDashboardModule().getTableName()+".ID = ?", dashboard.getId());
+
+		Map<String, Object> props = FieldUtil.getAsProperties(dashboard);
+		updateBuilder.update(props);
 	}
 	
 	public static void deleteDashboardFolder(DashboardFolderContext dashboardFolder) throws Exception {
@@ -3302,19 +2407,19 @@ public static JSONObject getStandardVariance1(ReportContext report,JSONArray pro
 		delete.delete();
 	}
 	
-	public static void updateDashboardFolder(DashboardFolderContext dashboardFolder) throws Exception {
+	public static void updateDashboardFolder(List<DashboardFolderContext> dashboardFolders) throws Exception {
 		
-		UpdateRecordBuilder<ModuleBaseWithCustomFields> update = new UpdateRecordBuilder<>();
+		GenericUpdateRecordBuilder update = new GenericUpdateRecordBuilder();
 		
-		update.module(ModuleFactory.getDashboardFolderModule());
-		update.fields(FieldFactory.getDashboardFolderFields())
-		.andCustomWhere("ID = ?", dashboardFolder.getId());
+		for(DashboardFolderContext dashboardFolder :dashboardFolders) {
+			update.table(ModuleFactory.getDashboardFolderModule().getTableName());
+			update.fields(FieldFactory.getDashboardFolderFields())
+			.andCustomWhere("ID = ?", dashboardFolder.getId());
+			
+			Map<String, Object> prop = FieldUtil.getAsProperties(dashboardFolder);
+			update.update(prop);
+		}
 		
-		Map<String, Object> prop = FieldUtil.getAsProperties(dashboardFolder);
-		ModuleBaseWithCustomFields record = new ModuleBaseWithCustomFields();
-		record.addData(prop);
-		
-		update.update(record);
 	}
 	
 	public static List<DashboardFolderContext> getDashboardFolder(String moduleName) throws Exception {
@@ -3683,13 +2788,6 @@ public static JSONObject getStandardVariance1(ReportContext report,JSONArray pro
 		}
 	}
 
-	public static boolean isDynamicWFGeneratingCard(String staticKey) {
-		if(staticKey.equals(CardType.READING_COMBO_CARD.getName())) {
-			return true;
-		}
-		return false;
-	}
-	
 	public static void duplicateDashboard(DashboardContext dashboard) throws Exception {
 		
 		FacilioContext context = new FacilioContext();
@@ -3697,7 +2795,7 @@ public static JSONObject getStandardVariance1(ReportContext report,JSONArray pro
 		dashboard.setCreatedByUserId(AccountUtil.getCurrentUser().getId());
 		dashboard.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
 		context.put(FacilioConstants.ContextNames.DASHBOARD, dashboard);
-		Chain addDashboardChain = FacilioChainFactory.getAddDashboardChain();
+		Chain addDashboardChain = TransactionChainFactory.getAddDashboardChain();
 		
 		addDashboardChain.execute(context);
 		

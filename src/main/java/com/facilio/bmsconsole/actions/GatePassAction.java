@@ -1,14 +1,18 @@
 package com.facilio.bmsconsole.actions;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.chain.Chain;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.GatePassContext;
 import com.facilio.bmsconsole.context.GatePassLineItemsContext;
 import com.facilio.bmsconsole.context.ItemContext;
+import com.facilio.bmsconsole.context.ItemTypesContext;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -63,7 +67,49 @@ public class GatePassAction extends FacilioAction {
 	public void setGatePassId(long gatePassId) {
 		this.gatePassId = gatePassId;
 	}
+
+	private boolean includeParentFilter;
+
+	public boolean getIncludeParentFilter() {
+		return includeParentFilter;
+	}
+
+	public void setIncludeParentFilter(boolean includeParentFilter) {
+		this.includeParentFilter = includeParentFilter;
+	}
 	
+	private List<GatePassContext> gatePassList;
+
+	public List<GatePassContext> getItemTypesList() {
+		return gatePassList;
+	}
+
+	public void setItemTypesList(List<ItemTypesContext> itemTypesList) {
+		this.gatePassList = gatePassList;
+	}
+
+	private Boolean count;
+
+	public Boolean getCount() {
+		if (count == null) {
+			return false;
+		}
+		return count;
+	}
+
+	public void setCount(Boolean count) {
+		this.count = count;
+	}
+	
+	private Long gatePassCount;
+
+	public Long getGatePassCount() {
+		return gatePassCount;
+	}
+
+	public void setGatePassCount(Long itemTypesCount) {
+		this.gatePassCount = itemTypesCount;
+	}
 
 	public String addGatePass() throws Exception {
 		FacilioContext context = new FacilioContext();
@@ -77,6 +123,56 @@ public class GatePassAction extends FacilioAction {
 		c.execute(context);
 		setGatePass((GatePassContext) context.get(FacilioConstants.ContextNames.GATE_PASS));
 		setResult(FacilioConstants.ContextNames.GATE_PASS, gatePass);
+		return SUCCESS;
+	}
+	
+	public String gatePassList() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.CV_NAME, getViewName());
+		context.put(FacilioConstants.ContextNames.SORTING_QUERY, "Gate_Pass.LOCAL_ID desc");
+		if (getFilters() != null) {
+			JSONParser parser = new JSONParser();
+			JSONObject json = (JSONObject) parser.parse(getFilters());
+			context.put(FacilioConstants.ContextNames.FILTERS, json);
+			context.put(FacilioConstants.ContextNames.INCLUDE_PARENT_CRITERIA, getIncludeParentFilter());
+		}
+		if (getSearch() != null) {
+			JSONObject searchObj = new JSONObject();
+			searchObj.put("fields", "Gate_Pass.name");
+			searchObj.put("query", getSearch());
+			context.put(FacilioConstants.ContextNames.SEARCH, searchObj);
+		}
+		if (getCount()) { // only count
+			context.put(FacilioConstants.ContextNames.FETCH_COUNT, true);
+		} else {
+			JSONObject pagination = new JSONObject();
+			pagination.put("page", getPage());
+			pagination.put("perPage", getPerPage());
+			if (getPerPage() < 0) {
+				pagination.put("perPage", 5000);
+			}
+			context.put(FacilioConstants.ContextNames.PAGINATION, pagination);
+		}
+
+		Chain gatePassListChain = ReadOnlyChainFactory.getGatePassList();
+		gatePassListChain.execute(context);
+		if (getCount()) {
+			setGatePassCount((Long) context.get(FacilioConstants.ContextNames.RECORD_COUNT));
+			setResult("count", gatePassCount);
+		} else {
+			gatePassList = (List<GatePassContext>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
+			// Temp...needs to handle in client
+			if (gatePassList == null) {
+				gatePassList = new ArrayList<>();
+			}
+			setResult(FacilioConstants.ContextNames.GATE_PASS, gatePassList);
+		}
+		return SUCCESS;
+	}
+	
+	public String gatePassCount() throws Exception {
+		gatePassList();
+		setResult(FacilioConstants.ContextNames.GATE_PASS_COUNT, gatePass);
 		return SUCCESS;
 	}
 	

@@ -95,16 +95,14 @@ public class UpdateWorkOrderCommand implements Command {
 			
 			context.put(FacilioConstants.ContextNames.ROWS_UPDATED, rowsUpdated);
 			
-			if (!changeSets.isEmpty() && (workOrder.getApprovalStateEnum() == null) && (workOrder.getStatus() == null) && (workOrder.getAssignedTo() == null)) {
+			if (!changeSets.isEmpty() && workOrder.getApprovalStateEnum() == null && workOrder.getStatus() == null && workOrder.getAssignedTo() == null && workOrder.getAssignmentGroup() == null) {
 				context.put(FacilioConstants.ContextNames.CHANGE_SET, changeSets);
-				Map<String, Map<Long, List<UpdateChangeSet>>> changeSetMap = CommonCommandUtil.getChangeSetMap((FacilioContext) context);
-				Map<Long, List<UpdateChangeSet>> currentChangeSet = changeSetMap == null ? null : changeSetMap.get(moduleName);
 
 				Iterator it = recordIds.iterator();
 				List<UpdateChangeSet> changeSetList = null;
 				while (it.hasNext()) {
 					Object record = it.next();
-					 changeSetList = currentChangeSet == null ? null : currentChangeSet.get(record);
+					 changeSetList = changeSets == null ? null : changeSets.get(record);
 				}
                 JSONObject woupdate = new JSONObject();
                 List<Object> wolist = new ArrayList<Object>();
@@ -370,31 +368,19 @@ public class UpdateWorkOrderCommand implements Command {
 				oldWo.setStatus(submittedStatus); //For further check
 			}
 			
+			List<Long> parentId = (List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST);
 			if ( ((workOrder.getAssignedTo() != null && workOrder.getAssignedTo().getId() != -1) || (workOrder.getAssignmentGroup() != null && workOrder.getAssignmentGroup().getId() != -1)) && oldWo.getStatus() != null) {
 				newWo = newWo == null ? cloneWO(workOrder, oldWo.getId(), newWos) : newWo;
 				if ( oldWo.getStatus() != null && oldWo.getStatus().getId() == submittedId) {
 					newWo.setStatus(assignedStatus);
-
-					List<Long> parentId = (List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST);
-					JSONObject info = new JSONObject();
-					if (workOrder.getAssignedTo() != null && workOrder.getAssignedTo().getId() != -1) {
-						info.put("assignedTo", workOrder.getAssignedTo().getOuid());
-					}
-					else {
-						info.put("assignmentGroup", workOrder.getAssignmentGroup().getId());
-					}
-					info.put("assignedBy", workOrder.getAssignedBy().getOuid());
-					JSONObject newinfo = new JSONObject();
-                    newinfo.put("assigned", info);
-					CommonCommandUtil.addActivityToContext(parentId.get(0), -1, WorkOrderActivityType.ASSIGN, newinfo, (FacilioContext) context);
 				}
 				else {
-					if (workOrder.getAssignedTo() != null && oldWo.getAssignedTo() != null) {
-						if (workOrder.getAssignedTo().getOuid() == -1) {
+					if (workOrder.getAssignedTo() != null) {
+						if (workOrder.getAssignedTo().getOuid() == -1 && oldWo.getAssignedTo() != null) {
 							userReadings.addAll(ShiftAPI.addUserWorkHoursReading(oldWo.getAssignedTo().getOuid(), oldWo.getId(), activityType, "Close", System.currentTimeMillis()));
 							newWo.setStatus(submittedStatus);
 
-						} else if (oldWo.getAssignedTo().getOuid() != workOrder.getAssignedTo().getOuid()) {
+						} else if (oldWo.getAssignedTo().getOuid() != workOrder.getAssignedTo().getOuid() && oldWo.getAssignedTo() != null) {
 							try {
 								if (oldWo.getStatus().getId() == wipStatus.getId()) {
 									newWo.setStatus(onHoldStatus);
@@ -407,16 +393,10 @@ public class UpdateWorkOrderCommand implements Command {
 								CommonCommandUtil.emailException(ShiftAPI.class.getName(), "Exception occurred while handling work hours", e);
 							}
 						}
-						List<Long> parentId = (List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST);
-						JSONObject info = new JSONObject();
-						info.put("assignedTo", workOrder.getAssignedTo().getOuid());
-						info.put("assignedBy", workOrder.getAssignedBy().getOuid());
-						JSONObject newinfo = new JSONObject();
-	                    newinfo.put("assigned", info);
-
-						CommonCommandUtil.addActivityToContext(parentId.get(0), -1, WorkOrderActivityType.ASSIGN, newinfo, (FacilioContext) context);
 					}
 				}
+				addAssignmentActivity(workOrder, parentId.get(0), oldWo, context);
+				
 			}
 		}
 	}
@@ -449,6 +429,26 @@ public class UpdateWorkOrderCommand implements Command {
 	private void updateWODetails (WorkOrderContext wo) {
 		TicketAPI.updateTicketAssignedBy(wo);
 		wo.setModifiedTime(System.currentTimeMillis());
+	}
+	
+	private void addAssignmentActivity(WorkOrderContext workOrder, long parentId, WorkOrderContext oldWo, Context context) {
+		JSONObject info = new JSONObject();
+		info.put("assignedBy", workOrder.getAssignedBy().getOuid());
+		if (workOrder.getAssignedTo() != null && workOrder.getAssignedTo().getId() != -1) {
+			info.put("assignedTo", workOrder.getAssignedTo().getOuid());
+			if (oldWo != null && oldWo.getAssignedTo() != null && oldWo.getAssignedTo().getId() != -1) {
+				info.put("prevAssignedTo", oldWo.getAssignedTo().getOuid());
+			}
+		}
+		else {
+			info.put("assignmentGroup", workOrder.getAssignmentGroup().getId());
+			if (oldWo != null && oldWo.getAssignmentGroup() != null && oldWo.getAssignmentGroup().getId() != -1) {
+				info.put("prevAssignmentGroup", oldWo.getAssignmentGroup().getId());
+			}
+		}
+		JSONObject newinfo = new JSONObject();
+        newinfo.put("assigned", info);
+		CommonCommandUtil.addActivityToContext(parentId, -1, WorkOrderActivityType.ASSIGN, newinfo, (FacilioContext) context);
 	}
 	
 }

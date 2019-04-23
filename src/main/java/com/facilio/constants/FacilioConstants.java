@@ -23,6 +23,7 @@ import com.facilio.bmsconsole.context.ChillerCondenserPumpContext;
 import com.facilio.bmsconsole.context.ChillerContext;
 import com.facilio.bmsconsole.context.ChillerPrimaryPumpContext;
 import com.facilio.bmsconsole.context.ChillerSecondaryPumpContext;
+import com.facilio.bmsconsole.context.ConnectedAppContext;
 import com.facilio.bmsconsole.context.CoolingTowerContext;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.context.EnergyMeterPurposeContext;
@@ -94,6 +95,7 @@ import com.facilio.bmsconsole.context.WorkorderPartsContext;
 import com.facilio.bmsconsole.context.WorkorderToolsContext;
 import com.facilio.bmsconsole.context.ZoneContext;
 import com.facilio.bmsconsole.tenant.TenantContext;
+import com.facilio.bmsconsole.workflow.rule.StateContext;
 
 public class FacilioConstants {
 	
@@ -169,6 +171,7 @@ public class FacilioConstants {
 		public static final String EVENT_TYPE_LIST = "eventTypeList";
 		public static final String IS_BULK_ACTION = "isBulkAction";
 		public static final String ACTIVITY_LIST = "activityList";
+		public static final String CURRENT_ACTIVITY = "currentActivity";
 
 		public static final String TENANT_STATUS = "tenantStatus";
 		public static final String USER_ID = "userId";
@@ -189,6 +192,7 @@ public class FacilioConstants {
 		public static final String BUSINESS_HOUR = "businesshour";
 		
 		public static final String ID = "Id";
+		public static final String LINK_NAME = "linkName";
 		public static final String PARENT_ID = "parentId";
 		public static final String PARENT_ID_LIST = "parentIds";
 		
@@ -344,8 +348,11 @@ public class FacilioConstants {
 		public static final String ADJUST_READING_TTIME = "adjustReadingTtime";
 		
 		public static final String DASHBOARD = "dashboard";
+		public static final String DASHBOARDS = "dashboards";
 		public static final String DASHBOARD_ID = "dashboardId";
+		public static final String DASHBOARD_ERROR_MESSAGE = "dashboardErrorMessage";
 		public static final String DASHBOARD_FOLDERS = "dashboardFolders";
+		public static final String DASHBOARD_FOLDER = "dashboardFolder";
 		public static final String DASHBOARD_PUBLISH_STATUS = "dashboardPublishStatus";
 		public static final String WIDGET = "widget";
 		public static final String WIDGET_STATIC_CONTEXT = "widgetStaticContext";
@@ -431,7 +438,7 @@ public class FacilioConstants {
 		public static final String LOOKUP_FIELD_META_LIST = "lookupFieldMetaList";
 		public static final String FETCH_FIELD_DISPLAY_NAMES = "fetchFieldDisplayNames";
 		public static final String ALLOW_SAME_FIELD_DISPLAY_NAME = "changeFieldDisplayName";
-		
+
 		public static final String SITE = "site";
 		public static final String SITE_LIST = "sites";
 		public static final String SITE_ID = "siteId";
@@ -835,6 +842,7 @@ public class FacilioConstants {
 		public static final String ITEM_TYPES_IDS = "itemTypesIds";
 
 
+
 		public static final String TOOL_TYPES = "toolTypes";
 		public static final String TOOL_TYPES_LIST = "toolTypesList";
 		public static final String TOOL_TYPES_STATUS = "toolTypesStatus";
@@ -858,7 +866,9 @@ public class FacilioConstants {
 		public static final String ITEM_ID = "itemId";
 		public static final String ITEM_IDS = "itemIds";
 		public static final String PURCHASED_ITEM = "purchasedItem";
-		
+		public static final String ITEM_ACTIVITY = "itemtypeactivity";
+
+
 		public static final String WORKORDER_ITEMS = "workorderItem";
 		public static final String ITEM_TRANSACTIONS = "itemTransactions";
 
@@ -876,6 +886,7 @@ public class FacilioConstants {
 		public static final String ITEM_TYPES_COUNT = "itemTypesCount";
 		public static final String ITEM_COUNT = "itemCount";
 		public static final String PURCHASED_ITEM_COUNT = "purchasedItemCount";
+		public static final String GATE_PASS_COUNT = "gatePassCount";
 		public static final String TOOL_TYPES_COUNT = "toolTypesCount";
 		public static final String TOOL_COUNT = "toolCount";
 		public static final String VENDORS_COUNT = "vendorsCount";
@@ -932,6 +943,7 @@ public class FacilioConstants {
 		public static final String ITEM_VENDORS_LIST = "itemTypesVendorsList";
 		
 		public static final String SITES_FOR_STORE_ROOM = "sitesForStoreRoom";
+//		public static final String STATE = "state";
 
 		public static final String PURCHASE_CONTRACTS = "purchasecontracts";
 		public static final String PURCHASE_CONTRACT = "purchasecontract";
@@ -949,10 +961,12 @@ public class FacilioConstants {
 		public static final String TOTAL_QUANTITY = "totalQuantity";
 		public static final String WO_TOTAL_COST = "woTotalCost";
 		public static final String UNIT_PRICE = "unitPrice";
-		
+
 		public static final String GATE_PASS = "gatePass";
 		public static final String GATE_PASS_LINE_ITEMS = "gatePassLineItems";
 		
+		public static final String CONNECTED_APPS = "connectedApps";
+
 		private static Map<String, Class> classMap = Collections.unmodifiableMap(initClassMap());
 		private static Map<String, Class> initClassMap() {
 			Map<String, Class> classMap = new HashMap<>();
@@ -1023,6 +1037,7 @@ public class FacilioConstants {
 			classMap.put(ITEM_TYPES_CATEGORY,ItemTypesCategoryContext.class);
 			classMap.put(ITEM_TYPES_STATUS, ItemTypesStatusContext.class);
 			classMap.put(TOOL_TYPES, ToolTypesContext.class);
+			classMap.put(ITEM_ACTIVITY, ActivityContext.class);
 			classMap.put(TOOLS_TYPES_CATEGORY, ToolTypesCategoryContext.class);
 			classMap.put(TOOL_TYPES_STATUS, ToolTypesStatusContext.class);
 			classMap.put(VENDOR, VendorContext.class);
@@ -1056,6 +1071,7 @@ public class FacilioConstants {
 			classMap.put(PO_LINE_ITEMS_SERIAL_NUMBERS, PoLineItemsSerialNumberContext.class);
 			classMap.put(GATE_PASS, GatePassContext.class);
 			classMap.put(GATE_PASS_LINE_ITEMS, GatePassLineItemsContext.class);
+			classMap.put(CONNECTED_APPS, ConnectedAppContext.class);
 			return classMap;
 		}
 		

@@ -64,6 +64,7 @@ public class ItemTypesAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.ID, itemTypes.getId());
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(itemTypes.getId()));
 		context.put(FacilioConstants.ContextNames.WITH_CHANGE_SET, true);
+		context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.ITEM_ACTIVITY);
 
 		Chain updateItemChain = TransactionChainFactory.getUpdateItemTypesChain();
 		updateItemChain.execute(context);

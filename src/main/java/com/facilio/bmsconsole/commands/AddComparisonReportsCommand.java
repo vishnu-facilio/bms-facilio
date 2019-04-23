@@ -9,7 +9,7 @@ import org.apache.commons.chain.Context;
 
 import java.util.List;
 
-public class AddComparisonReportsCommand implements Command {
+public class AddComparisonReportsCommand implements Command {		// delete this class
 
 	@Override
 	public boolean execute(Context context) throws Exception {
@@ -22,14 +22,12 @@ public class AddComparisonReportsCommand implements Command {
 				ReportFolderContext defaultFolder = DashboardUtil.getDefaultReportFolder(moduleName);
 				firstReport.setParentFolderId(defaultFolder.getId());
 			}
-			DashboardUtil.addReport(firstReport);
 			context.put(FacilioConstants.ContextNames.RECORD_ID, firstReport.getId());
 			
 			for (int i = 1; i<reports.size(); i++) {
 				ReportContext report = reports.get(i);
 				report.setReportEntityId(firstReport.getReportEntityId());
 				report.setIsComparisionReport(true);
-				DashboardUtil.addReport(report);
 			}
 		}
 		else {

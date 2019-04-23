@@ -167,6 +167,19 @@ public class Processor extends FacilioProcessor {
                                     break;
                                 case agent:
                                     numberOfRows = agentUtil.processAgent(payLoad,agentName);
+                                    if(isStage && (payLoad.containsKey(AgentKeys.COMMAND_STATUS) || payLoad.containsKey(AgentKeys.CONTENT))){
+                                        if( payLoad.containsKey(AgentKeys.COMMAND_STATUS)){
+                                            if((payLoad.remove(AgentKeys.COMMAND_STATUS)).toString().equals("1")){
+                                                LOGGER.info(" Payload -- "+payLoad);
+                                                payLoad.put(AgentKeys.CONTENT,"Agent connected to Facilio");
+                                            }
+                                            else{
+                                                LOGGER.info(" Payload -- "+payLoad);
+                                                payLoad.put(AgentKeys.CONTENT,"Agent disconnected to Facilio");
+                                            }
+                                        }
+                                        agentUtil.putLog(payLoad,orgId,agent.getId(),false);
+                                    }
                                     break;
                                 case event:
                                     alarmCreated = eventUtil.processEvents(record.getTimeStamp(), payLoad, record.getPartitionKey(), orgId, eventRules);
@@ -179,6 +192,8 @@ public class Processor extends FacilioProcessor {
                             GenericUpdateRecordBuilder genericUpdateRecordBuilder = new GenericUpdateRecordBuilder().table(AgentKeys.AGENT_TABLE).fields(FieldFactory.getAgentDataFields()).andCustomWhere(AgentKeys.NAME + "= '" + payLoad.get(PublishType.agent.getValue()) + "'");
                             Map<String, Object> toUpdate = new HashMap<>();
                             toUpdate.put(AgentKeys.LAST_DATA_RECEIVED_TIME, System.currentTimeMillis());
+                            toUpdate.put(AgentKeys.CONNECTION_STATUS, Boolean.TRUE);
+                            toUpdate.put(AgentKeys.STATE, 1);
                             genericUpdateRecordBuilder.update(toUpdate);
 
                         }

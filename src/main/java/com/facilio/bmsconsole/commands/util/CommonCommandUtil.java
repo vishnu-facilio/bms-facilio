@@ -828,14 +828,12 @@ public class CommonCommandUtil {
 		activity.setType(type);
 		activity.setInfo(info);
 		activity.setDoneBy(AccountUtil.getCurrentUser());
-		
 		List<ActivityContext> activities = (List<ActivityContext>) context.get(FacilioConstants.ContextNames.ACTIVITY_LIST);
 		if (activities == null) {
 			activities = new ArrayList<>();
 		}
 		activities.add(activity);
 		context.put(FacilioConstants.ContextNames.ACTIVITY_LIST, activities);
-
 	}
 	
 	public static void addEventType (EventType type, FacilioContext context) {

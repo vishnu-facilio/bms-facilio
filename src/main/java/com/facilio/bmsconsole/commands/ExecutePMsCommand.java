@@ -1,15 +1,19 @@
 package com.facilio.bmsconsole.commands;
 
 import com.facilio.beans.ModuleCRUDBean;
+import com.facilio.bmsconsole.activity.WorkOrderActivityType;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.PMIncludeExcludeResourceContext;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.context.WorkOrderContext;
+import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.json.simple.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -37,11 +41,10 @@ public class ExecutePMsCommand implements Command {
 				}
 					
 				List<WorkOrderContext> wos = bean.addWorkOrderFromPM(context, pm);
-				
+
 				for(WorkOrderContext wo :wos) {
 					if(wo != null) {
 						woIds.add(wo.getId());
-						
 						Map<Long,WorkOrderContext> map = pmResourceToWoMap.get(pm.getId()) != null ? pmResourceToWoMap.get(pm.getId()) : new HashMap<>();
 						Long resourceId = wo.getResource() != null ? wo.getResource().getId() : -1l;
 						map.put(resourceId, wo);
@@ -49,6 +52,7 @@ public class ExecutePMsCommand implements Command {
 						
 					}
 				}
+				
 				if(wos != null && !wos.isEmpty()) {
 					context.put(FacilioConstants.ContextNames.WORK_ORDER, wos.get(0));	// temp fix for client, need to handle it both in server and client for multiple pms
 				}

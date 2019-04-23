@@ -71,7 +71,7 @@ public class FacilioModule implements Serializable {
 	public void setTableName(String tableName) {
 		this.tableName = tableName;
 	}
-
+	
 	private FacilioModule extendModule;
 	public FacilioModule getExtendModule() {
 		return extendModule;

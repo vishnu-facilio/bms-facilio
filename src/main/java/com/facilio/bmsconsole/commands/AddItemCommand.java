@@ -1,6 +1,9 @@
 package com.facilio.bmsconsole.commands;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.activity.AssetActivityType;
+import com.facilio.bmsconsole.activity.ItemActivityType;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.ItemContext;
 import com.facilio.bmsconsole.context.ItemContext.CostType;
 import com.facilio.bmsconsole.context.PurchasedItemContext;
@@ -8,10 +11,12 @@ import com.facilio.bmsconsole.context.ToolContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.*;
+import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.json.simple.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -42,6 +47,10 @@ public class AddItemCommand implements Command {
 				itemTypeVsItem.put(item.getItemType().getId(), item.getId());
 			}
 		}
+		
+		
+
+		
 
 		List<ItemContext> itemToBeAdded = new ArrayList<>();
 		List<PurchasedItemContext> purchasedItems = new ArrayList<>();
@@ -60,14 +69,31 @@ public class AddItemCommand implements Command {
 			addItem(itemModule, itemFields, itemToBeAdded);
 		}
 
+		
+		
+
+		JSONObject info = new JSONObject();
+		info.put("costTypeEnum", item_rec.getCostTypeEnum());
+		info.put("itemTypeId", item_rec.getItemType().getId());
+		info.put("storeroomId", item_rec.getStoreRoom().getId());
+		List<Object> purchasedItemValues = new ArrayList<>();
 		if (item_rec.getPurchasedItems() != null && !item_rec.getPurchasedItems().isEmpty()) {
 			for (PurchasedItemContext pItem : item_rec.getPurchasedItems()) {
 				pItem.setItem(item_rec);
 				pItem.setItemType(item_rec.getItemType());
 				purchasedItems.add(pItem);
+				JSONObject purchase = new JSONObject();
+				purchase.put("quantity", pItem.getQuantity());
+				purchase.put("unitCost", pItem.getUnitcost());
+				purchasedItemValues.add(purchase);
 			}
 			item_rec.setPurchasedItems(null);
+			info.put("purchasedItemValues", purchasedItemValues);
 		}
+		JSONObject newinfo = new JSONObject();
+		newinfo.put("addItem", info);
+		CommonCommandUtil.addActivityToContext(item_rec.getId(), -1, ItemActivityType.ADD_ITEM, newinfo, (FacilioContext) context);
+
 
 		context.put(FacilioConstants.ContextNames.PURCHASED_ITEM, purchasedItems);
 		context.put(FacilioConstants.ContextNames.RECORD, item_rec);

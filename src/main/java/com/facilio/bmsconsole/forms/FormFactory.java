@@ -59,6 +59,7 @@ public class FormFactory {
 		forms.put("purchaseContractForm", getPurchaseContractForm());
 		forms.put("labourContractForm", getLabourContractForm());
 		forms.put("porequesterForm", getPoRequesterForm());
+		forms.put("connectedAppForm", getConnectedAppForm());
 			
 		return forms;
 	}
@@ -93,9 +94,13 @@ public class FormFactory {
 				.build();
 	}
 	
-	public static List<FacilioForm> getForms(String moduleName, FormType formtype) {
-		Map<String, FacilioForm> forms = FORMS_LIST.get(moduleName);
-		return forms.values().stream().filter(form -> form.getFormTypeEnum() == formtype).collect(Collectors.toList());
+	public static Map<String, FacilioForm> getForms(String moduleName, FormType formtype) {
+		Map<String, FacilioForm> forms = getForms(moduleName);
+		if (formtype == null) {
+			return forms;
+		}
+		return forms.entrySet().stream().filter(f -> f.getValue().getFormTypeEnum() == formtype)
+	            .collect(Collectors.toMap(f -> f.getKey(), f -> f.getValue()));
 	}
 	
 	public static Map<String, FacilioForm> getForms(String moduleName) {
@@ -828,6 +833,18 @@ public class FormFactory {
 		form.setFormType(FormType.WEB);
 		return form;
 	}
+	
+	public static FacilioForm getConnectedAppForm() {
+		FacilioForm form = new FacilioForm();
+		form.setDisplayName("CONNECTED APP");
+		form.setName("web_default");
+		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.CONNECTED_APPS));
+		form.setLabelPosition(LabelPosition.TOP);
+		form.setFields(getConnectedAppFormFields());
+		form.setFormType(FormType.WEB);
+		return form;
+	}
+	
 	private static List<FormField> getLabourFormFields() {
 		List<FormField> fields = new ArrayList<>();
 		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.REQUIRED, 1, 1));
@@ -915,6 +932,7 @@ public class FormFactory {
 		
 		return fields;
 	}
+	
 	private static List<FormField> getPoRequesterFormFields() {
 		List<FormField> fields = new ArrayList<>();
 		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Requester Name", Required.REQUIRED, 1, 2));
@@ -922,7 +940,12 @@ public class FormFactory {
 		return fields;
 	}
 	
-	
-	
-
+	private static List<FormField> getConnectedAppFormFields() {
+		List<FormField> fields = new ArrayList<>();
+		fields.add(new FormField("logoId", FieldDisplayType.IMAGE, "Logo", Required.OPTIONAL, 1, 1));
+		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.REQUIRED, 2, 1));
+		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 3, 1));
+		fields.add(new FormField("baseUrl", FieldDisplayType.TEXTBOX, "Base URL", Required.REQUIRED, 4, 1));
+		return fields;
+	}
 }

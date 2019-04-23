@@ -271,7 +271,7 @@ public class ReadOnlyChainFactory {
 	
 	public static Chain getResourcesListForMultiplePM() {
 		Chain c = getDefaultChain();
-		c.addCommand(new getResourceListForMultiplePM());
+		c.addCommand(new GetResourceListForMultiplePM());
 		return c;
 	}
 	
@@ -612,6 +612,17 @@ public class ReadOnlyChainFactory {
 		return c;
 	}
 	
+	public static Chain getGatePassList() {
+		Chain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForGatePass());
+		c.addCommand(new LoadViewCommand());
+		c.addCommand(new LoadAllFieldsCommand());
+		c.addCommand(new GenerateCriteriaFromFilterCommand());
+		c.addCommand(new GenerateSearchConditionCommand());
+		c.addCommand(new GetGatePassListCommand());
+		return c;
+	}
+	
 	public static Chain GetItemTypesForVendorCommand(){
 		Chain c = getDefaultChain();
 		c.addCommand(SetTableNamesCommand.getForItemTypesVendors());
@@ -798,6 +809,20 @@ public class ReadOnlyChainFactory {
 		c.addCommand(SetTableNamesCommand.getForGatePass());
 		c.addCommand(new GenericGetModuleDataDetailCommand());
 		c.addCommand(new GetGatePassDetailsCommand());
+		return c;
+	}
+	
+	public static Chain fetchConnectedAppDetails() {
+		Chain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForConnectedApps());
+		c.addCommand(new GetConnectedAppDetailsCommand());
+		return c;
+	}
+	
+	public static Chain getConnectedAppsList() {
+		Chain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForConnectedApps());
+		c.addCommand(new GetConnectedAppsListCommand());
 		return c;
 	}
 }

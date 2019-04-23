@@ -135,19 +135,6 @@ public class WorkOrderReportAction extends ActionSupport {
 		// calling this method to create default report folder if not already exists
 		DashboardUtil.getDefaultReportFolder(moduleName);
 		
-		if ("energydata".equalsIgnoreCase(moduleName) && AccountUtil.getCurrentOrg().getOrgId() == 58) {
-			JSONObject buildingMap = ReportsUtil.getBuildingMap();
-			if (buildingMap != null) {
-				Iterator itr = buildingMap.keySet().iterator();
-				while (itr.hasNext()) {
-					Object key = itr.next();
-					String value = (String) buildingMap.get(key);
-					
-					DashboardUtil.populateBuildingEnergyReports(Long.parseLong(key.toString()), value);
-				}
-			}
-		}
-		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(FieldFactory.getReportFolderFields())
 				.table(ModuleFactory.getReportFolder().getTableName())

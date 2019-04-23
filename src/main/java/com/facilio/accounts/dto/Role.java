@@ -127,7 +127,7 @@ public class Role implements Serializable {
 		if(getPermissions() == null) {
 			return null;
 		}
-		if(moduleName.equals("workorder") || moduleName.equals("workorderrequest") || moduleName.equals("planned"))
+		if(moduleName.equals("workorder") || moduleName.equals("workorderrequest") || moduleName.equals("planned") || moduleName.equals("inventory"))
 		{	
 			for (Permissions perm : permissions) {
 				if (perm.getModuleName().equals(moduleName)) {
@@ -151,6 +151,18 @@ public class Role implements Serializable {
 								case READ_OWN:
 								case DELETE_OWN:
 								case UPDATE_OWN: {
+									
+								if (moduleName.equals("inventory")) {
+									Condition storeRoomCondition = new Condition();
+									storeRoomCondition.setColumnName("Store_room.OWNER_ID");
+									storeRoomCondition.setFieldName("owner");
+									storeRoomCondition.setOperator(PickListOperators.IS);
+									storeRoomCondition.setValue(FacilioConstants.Criteria.LOGGED_IN_USER);
+
+									criteria = new Criteria();
+									criteria.addAndCondition(storeRoomCondition);
+								}
+									else {
 									Condition userCondition = new Condition();
 									if (moduleName.equals("planned")) {
 										userCondition.setColumnName("Workorder_Template.ASSIGNED_TO_ID");
@@ -164,6 +176,7 @@ public class Role implements Serializable {
 									
 									criteria = new Criteria();
 									criteria.addAndCondition(userCondition);
+									}
 								}break;
 								case READ_TEAM:
 								case DELETE_TEAM:

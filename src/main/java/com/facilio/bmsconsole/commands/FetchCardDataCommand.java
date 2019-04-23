@@ -107,7 +107,7 @@ public class FetchCardDataCommand implements Command {
 				
 				CardType card = CardType.getCardType(widgetStaticContext.getStaticKey());
 				
-				if(DashboardUtil.isDynamicWFGeneratingCard(widgetStaticContext.getStaticKey())) {
+				if(card.isDynamicWfGeneratingCard()) {
 					card.setWorkflow(widgetStaticContext.getWidgetVsWorkflowContexts().get(0).getWorkflowString());
 				}
 				
