@@ -1176,17 +1176,22 @@ public static Map<Long, TicketContext> getTickets(String ids) throws Exception {
 		Set<Long> userSiteIds = new HashSet<>();
 		if (assignedTo != null && assignedTo.getOuid() > 0) {
 			assignedTo = AccountUtil.getUserBean().getUser(assignedTo.getOuid());
-			List<Long> accessibleSpace = assignedTo.getAccessibleSpace();
-			Map<Long, BaseSpaceContext> idVsBaseSpace = SpaceAPI.getBaseSpaceMap(accessibleSpace);
-			if (accessibleSpace != null && !accessibleSpace.isEmpty()) {
-				for (long id: accessibleSpace) {
-					BaseSpaceContext space = idVsBaseSpace.get(id);
-					if (space.getSpaceTypeEnum() == SpaceType.SITE) {
-						userSiteIds.add(space.getId());
-					} else {
-						userSiteIds.add(space.getSiteId());
+			if (assignedTo != null) {
+				List<Long> accessibleSpace = assignedTo.getAccessibleSpace();
+				Map<Long, BaseSpaceContext> idVsBaseSpace = SpaceAPI.getBaseSpaceMap(accessibleSpace);
+				if (accessibleSpace != null && !accessibleSpace.isEmpty()) {
+					for (long id : accessibleSpace) {
+						BaseSpaceContext space = idVsBaseSpace.get(id);
+						if (space.getSpaceTypeEnum() == SpaceType.SITE) {
+							userSiteIds.add(space.getId());
+						} else {
+							userSiteIds.add(space.getSiteId());
+						}
 					}
 				}
+			}
+			else {
+				ticket.setAssignedTo(null); //Setting assigned to as null if there's no such user
 			}
 		}
 		
