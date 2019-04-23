@@ -37,24 +37,14 @@ public class GetWoScheduledViewList implements Command {
 		FacilioModule moduleToFetch = modBean.getModule(moduleName);
 		
 		FacilioModule module = ModuleFactory.getViewScheduleInfoModule();
-//		FacilioModule reportModule = ModuleFactory.getReport();
 		ModuleFactory.getEMailTemplatesModule();
 		
 		List<FacilioField> fields = FieldFactory.getViewScheduleInfoFields();
-//		fields.addAll(FieldFactory.getReportFields());
-//		fields.addAll(FieldFactory.getEMailTemplateFields());
 		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(fields)
 				.table(module.getTableName())
 				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module));
-//				.innerJoin(reportModule.getTableName())
-//				.on(module.getTableName()+".REPORTID = "+reportModule.getTableName()+".ID")
-/*				.innerJoin(emailModule.getTableName())
-				.on(module.getTableName()+".TEMPLATEID = "+emailModule.getTableName()+".ID")*/
-//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(reportModule))
-//				.andCondition(CriteriaAPI.getCondition(FieldFactory.getModuleIdField(reportModule),String.valueOf(moduleToFetch.getModuleId()), NumberOperators.EQUALS));
-//				.andCondition(CriteriaAPI.getCondition(String.valueOf(moduleToFetch.getModuleId()), NumberOperators.EQUALS));
 
 		
 		List<Map<String, Object>> props = selectBuilder.get();
@@ -80,7 +70,6 @@ public class GetWoScheduledViewList implements Command {
 					.select(jobsField)
 					.table(jobsModule.getTableName())
 					.andCondition(CriteriaAPI.getCurrentOrgIdCondition(jobsModule))
-//					.andCondition(CriteriaAPI.getCondition(fieldMap.get("jobId"), reportIds, NumberOperators.EQUALS))
 					.andCondition(CriteriaAPI.getCondition(fieldMap.get("jobName"), "ViewEmailScheduler", StringOperators.IS));
 			
 			List<Map<String, Object>> jobProps = selectBuilder.get();
