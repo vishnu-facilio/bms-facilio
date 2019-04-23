@@ -78,7 +78,7 @@ public class AddOrUpdateItemStockTransactionsCommand implements Command {
 					.module(module).fields(fields).addRecords(inventoryTransaction);
 			readingBuilder.save();
 		}
-		
+		else  {
 		ItemContext item = (ItemContext) context.get(FacilioConstants.ContextNames.ITEM);
 		AssetContext asset = (AssetContext) context.get(FacilioConstants.ContextNames.RECORD);
 		if (item != null) {
@@ -102,6 +102,7 @@ public class AddOrUpdateItemStockTransactionsCommand implements Command {
 			readingBuilder.save();
 			
 			context.put(FacilioConstants.ContextNames.ITEM_TYPES_IDS, Collections.singletonList(items.getItemType().getId()));
+		}
 		}
 		return false;
 	}
