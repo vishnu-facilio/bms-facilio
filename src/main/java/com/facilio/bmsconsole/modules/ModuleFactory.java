@@ -7,6 +7,8 @@ import java.util.Map;
 import com.facilio.agent.AgentKeys;
 import com.facilio.constants.FacilioConstants;
 
+import com.facilio.constants.FacilioConstants;
+
 public class ModuleFactory {
 
 	private static final Map<String, FacilioModule> MODULE_MAP = Collections.unmodifiableMap(initMap());
@@ -1909,6 +1911,61 @@ public class ModuleFactory {
 		controlActionTemplate.setExtendModule(getTemplatesModule());
 		return controlActionTemplate;
 	}
+	
+	public static FacilioModule getMLModule() 
+	{
+		FacilioModule mlModule = new FacilioModule();
+		mlModule.setName("ml");
+		mlModule.setDisplayName("Ml");
+		mlModule.setTableName("ML");
+		return mlModule;
+	}
+	
+	public static FacilioModule getMLAssetModule() 
+	{
+		FacilioModule mlAssetModule = new FacilioModule();
+		mlAssetModule.setName("mlAssets");
+		mlAssetModule.setDisplayName("MlAssets");
+		mlAssetModule.setTableName("ML_Assets");
+		return mlAssetModule;
+	}
+	
+	public static FacilioModule getMLAssetVariablesModule() 
+	{
+		FacilioModule mlAssetVariablesModule = new FacilioModule();
+		mlAssetVariablesModule.setName("mlAssetVariables");
+		mlAssetVariablesModule.setDisplayName("MLAssetVariables");
+		mlAssetVariablesModule.setTableName("ML_Asset_Variables");
+		return mlAssetVariablesModule;
+	}
+	
+	public static FacilioModule getMLModelVariablesModule()
+	{
+		FacilioModule mlModelVariableModule = new FacilioModule();
+		mlModelVariableModule.setName("mlModelVariables");
+		mlModelVariableModule.setDisplayName("MLModelVariables");
+		mlModelVariableModule.setTableName("ML_Model_Variables");
+		return mlModelVariableModule;
+	}
+	
+	public static FacilioModule getMLVariablesModule()
+	{
+		FacilioModule mlVariableModule = new FacilioModule();
+		mlVariableModule.setName("mlVariables");
+		mlVariableModule.setDisplayName("MLVariables");
+		mlVariableModule.setTableName("ML_Variables");
+		return mlVariableModule;
+	}
+	
+	public static FacilioModule getMLCriteriaVariablesModule()
+	{
+		FacilioModule mlCriteriaVariableModule = new FacilioModule();
+		mlCriteriaVariableModule.setName("mlCriteriaVariables");
+		mlCriteriaVariableModule.setDisplayName("MLCriteriaVariables");
+		mlCriteriaVariableModule.setTableName("ML_Criteria_Variables");
+		return mlCriteriaVariableModule;
+	}
+	
 
 	public static FacilioModule getSitesForStoreRoomModule() {
 		FacilioModule accessbileSpaceModule = new FacilioModule();

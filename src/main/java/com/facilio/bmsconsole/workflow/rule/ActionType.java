@@ -71,6 +71,7 @@ import com.facilio.events.constants.EventConstants;
 import com.facilio.events.context.EventContext;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericSelectRecordBuilder;
+import com.facilio.tasker.FacilioTimer;
 import com.facilio.timeseries.TimeSeriesAPI;
 import com.facilio.util.FacilioUtil;
 import com.facilio.workflows.context.WorkflowContext;
@@ -963,6 +964,20 @@ public enum ActionType {
 //				chain.addCommand(new GenericUpdateModuleDataCommand());
 				chain.execute(c);
 			}
+		}
+	},
+	ML_JOB_ACTION (19) {
+
+		@Override
+		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,Object currentRecord) throws Exception 
+		{
+			FacilioTimer.scheduleOneTimeJob(FacilioUtil.parseLong(context.get("jobid")), "DefaultMLJob", System.currentTimeMillis(), "ml");
+		}
+				
+		@Override
+		public boolean isTemplateNeeded() 
+		{
+			return false;
 		}
 		
 	}

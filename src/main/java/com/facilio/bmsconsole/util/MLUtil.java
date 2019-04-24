@@ -1,6 +1,10 @@
 package com.facilio.bmsconsole.util;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.MLAssetVariableContext;
+import com.facilio.bmsconsole.context.MLContext;
+import com.facilio.bmsconsole.context.MLModelVariableContext;
+import com.facilio.bmsconsole.context.MLVariableContext;
 import com.facilio.bmsconsole.context.MlForecastingContext;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.criteria.Condition;
@@ -9,6 +13,8 @@ import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.*;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericSelectRecordBuilder;
+import com.facilio.tasker.job.JobContext;
+
 import org.apache.log4j.Logger;
 
 import java.util.*;
@@ -174,6 +180,85 @@ public class MLUtil
 		}
 		
 		return true;
+	}
+	
+	
+	public static List<MLContext> getMlContext(JobContext jc) throws Exception
+	{
+
+		List<MLContext> mlContextList = new ArrayList<MLContext>(10);
+		
+		//prepare builder to get ML details
+		Condition jobIDCondition=CriteriaAPI.getCondition("JOBID",String.valueOf(jc.getJobId()), String.valueOf(jc.getJobId()),NumberOperators.EQUALS);
+		FacilioModule mlModule = ModuleFactory.getMLModule();
+		List<FacilioField> mlModuleFields = FieldFactory.getMLFields();
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+														.select(mlModuleFields)
+														.table(mlModule.getTableName())
+														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(mlModule))
+														.andCondition(jobIDCondition);
+		
+		List<Map<String, Object>> listMap = selectBuilder.get();
+		for(Map<String,Object> map:listMap)
+		{
+			MLContext mlContext = FieldUtil.getAsBeanFromMap(map, MLContext.class);
+			
+			List<Map<String,Object>> modelVariableList = MLUtil.get(ModuleFactory.getMLModelVariablesModule(), FieldFactory.getMLModelVariablesFields(),mlContext);
+			for(Map<String,Object> prop : modelVariableList)
+			{
+				MLModelVariableContext modelContext =FieldUtil.getAsBeanFromMap(prop, MLModelVariableContext.class);
+				mlContext.addMLModelVariable(modelContext);
+			}
+			
+			//prepare builder to get MLVariables
+			List<Map<String,Object>> mlVariableList = MLUtil.get(ModuleFactory.getMLVariablesModule(), FieldFactory.getMLVariablesFields(),mlContext);
+			for(Map<String,Object> prop : mlVariableList)
+			{
+				Condition mlIDCondition=CriteriaAPI.getCondition("ML_ID",String.valueOf(mlContext.getId()), String.valueOf(mlContext.getId()),NumberOperators.EQUALS);
+				MLVariableContext mlVariableContext = FieldUtil.getAsBeanFromMap(prop, MLVariableContext.class);
+				Condition assetCondition=CriteriaAPI.getCondition("AssetID",String.valueOf(mlVariableContext.getParentID()), String.valueOf(mlVariableContext.getParentID()),NumberOperators.EQUALS);
+				FacilioModule mlAssetVariablesModule = ModuleFactory.getMLAssetVariablesModule();
+				List<FacilioField> mlAssetVariableFields = FieldFactory.getMLAssetVariablesFields();
+				GenericSelectRecordBuilder selectBuilder2 = new GenericSelectRecordBuilder()
+																.select(mlAssetVariableFields)
+																.table(mlAssetVariablesModule.getTableName())
+																.andCondition(CriteriaAPI.getCurrentOrgIdCondition(mlAssetVariablesModule))
+																.andCondition(mlIDCondition)
+																.andCondition(assetCondition);
+					
+				List<Map<String,Object>> assetVariableList = selectBuilder2.get();
+				for(Map<String,Object> props : assetVariableList)
+				{
+					MLAssetVariableContext assetVariableContext =FieldUtil.getAsBeanFromMap(props, MLAssetVariableContext.class);
+					mlContext.setAssetVariables(mlVariableContext.getParentID(),assetVariableContext);
+				}
+				mlContext.addMLVariable(mlVariableContext);
+			}
+			
+			//prepare builder to get MLCriteria Variables
+			List<Map<String,Object>> mlCriteriaVariableList = MLUtil.get(ModuleFactory.getMLCriteriaVariablesModule(), FieldFactory.getMLCriteriaVariablesFields(),mlContext);
+			for(Map<String,Object> prop : mlCriteriaVariableList)
+			{
+				MLVariableContext mlVariableContext = FieldUtil.getAsBeanFromMap(prop, MLVariableContext.class);
+				mlContext.addMLCriteriaVariable(mlVariableContext);
+			}
+			
+			mlContextList.add(mlContext);
+		}
+		
+		return mlContextList;	
+		
+	}
+	
+	private static List<Map<String,Object>> get(FacilioModule module,List<FacilioField> fieldList,MLContext mlContext) throws Exception
+	{
+		Condition mlIDCondition=CriteriaAPI.getCondition("ML_ID",String.valueOf(mlContext.getId()), String.valueOf(mlContext.getId()),NumberOperators.EQUALS);
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+														.select(fieldList)
+														.table(module.getTableName())
+														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+														.andCondition(mlIDCondition);
+		return selectBuilder.get();
 	}
 
 
