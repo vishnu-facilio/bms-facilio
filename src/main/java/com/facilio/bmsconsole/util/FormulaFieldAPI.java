@@ -921,54 +921,60 @@ public class FormulaFieldAPI {
 		iterator.setLoopVariableValueName("value");
 		
 		for (WorkflowExpression expression : workflow.getExpressions()) {
-			ExpressionContext expr = (ExpressionContext) expression;
-			if (expr.getConstant() == null && expr.getDefaultFunctionContext() == null && expr.getExpr() == null) {
-				
-				if (expr.getCriteria() == null || expr.getCriteria().isEmpty()) {
-					optimisedWorkflow.addWorkflowExpression(expr);
-					continue;
-				}
-				String exprName = "param"+expr.getName();
-				OptimisedFormulaCalculationMeta meta = new OptimisedFormulaCalculationMeta();
-				meta.setParamName(exprName);
-				meta.setModuleName(expr.getModuleName());
-				meta.setFieldName(expr.getFieldName());
-				
-				boolean onlyParentId = true;
-				for (Condition condition : expr.getCriteria().getConditions().values()) {
-					if (condition.getFieldName().equals("parentId")) {
-						if (!condition.getValue().equals("${resourceId}")) {
-							meta.setResourceId(Long.parseLong(condition.getValue()));
-						}
-					}
-					else if (condition.getFieldName().equals("ttime")) {
-						onlyParentId = false;
-					}
-					else {
+			
+			if(expression instanceof ExpressionContext) {
+				ExpressionContext expr = (ExpressionContext) expression;
+				if (expr.getConstant() == null && expr.getDefaultFunctionContext() == null && expr.getExpr() == null) {
+					
+					if (expr.getCriteria() == null || expr.getCriteria().isEmpty()) {
 						optimisedWorkflow.addWorkflowExpression(expr);
 						continue;
 					}
-				}
-				
-				ExpressionContext param = null;
-				if (onlyParentId) {
-					meta.setOnlyParentId(true);
-					optimisedWorkflow.addParamater(getWorkflowParameter(exprName, "string"));
-					param = new ExpressionContext();
-					param.setName(expr.getName());
-					param.setConstant("${"+exprName+"}");
+					String exprName = "param"+expr.getName();
+					OptimisedFormulaCalculationMeta meta = new OptimisedFormulaCalculationMeta();
+					meta.setParamName(exprName);
+					meta.setModuleName(expr.getModuleName());
+					meta.setFieldName(expr.getFieldName());
+					
+					boolean onlyParentId = true;
+					for (Condition condition : expr.getCriteria().getConditions().values()) {
+						if (condition.getFieldName().equals("parentId")) {
+							if (!condition.getValue().equals("${resourceId}")) {
+								meta.setResourceId(Long.parseLong(condition.getValue()));
+							}
+						}
+						else if (condition.getFieldName().equals("ttime")) {
+							onlyParentId = false;
+						}
+						else {
+							optimisedWorkflow.addWorkflowExpression(expr);
+							continue;
+						}
+					}
+					
+					ExpressionContext param = null;
+					if (onlyParentId) {
+						meta.setOnlyParentId(true);
+						optimisedWorkflow.addParamater(getWorkflowParameter(exprName, "string"));
+						param = new ExpressionContext();
+						param.setName(expr.getName());
+						param.setConstant("${"+exprName+"}");
+					}
+					else {
+						optimisedWorkflow.addParamater(getWorkflowParameter(exprName, "map"));
+						param = new ExpressionContext();
+						param.setName(expr.getName());
+						param.setDefaultFunctionContext(getWorkflowFunction("map", "get", exprName+", value"));
+					}
+					iterator.addExpression(param);
+					optimisedWorkflow.addMeta(meta);
 				}
 				else {
-					optimisedWorkflow.addParamater(getWorkflowParameter(exprName, "map"));
-					param = new ExpressionContext();
-					param.setName(expr.getName());
-					param.setDefaultFunctionContext(getWorkflowFunction("map", "get", exprName+", value"));
+					iterator.addExpression(expr);
 				}
-				iterator.addExpression(param);
-				optimisedWorkflow.addMeta(meta);
 			}
 			else {
-				iterator.addExpression(expr);
+				iterator.addExpression(expression);
 			}
 		}
 		ExpressionContext itrResult = new ExpressionContext();
