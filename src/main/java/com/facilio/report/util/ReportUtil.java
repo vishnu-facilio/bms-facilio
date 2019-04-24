@@ -114,6 +114,10 @@ public class ReportUtil {
 		
 		return report;
 	}
+
+	public static String getAggrFieldName (FacilioField field, AggregateOperator aggr) {
+		return aggr == null ? field.getName() : field.getName()+"_"+aggr.getStringValue();
+	}
 	
 	public static List<ReportFolderContext> getAllReportFolder(String moduleName,boolean isWithReports, String searchText) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");

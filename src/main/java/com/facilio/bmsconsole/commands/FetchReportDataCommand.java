@@ -10,6 +10,7 @@ import com.facilio.report.context.*;
 import com.facilio.report.context.ReportContext.ReportType;
 import com.facilio.report.context.ReportDataPointContext.DataPointType;
 import com.facilio.report.context.ReportDataPointContext.OrderByFunction;
+import com.facilio.report.util.ReportUtil;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
@@ -568,7 +569,9 @@ public class FetchReportDataCommand implements Command {
 			return false;
 		}
 		else {
-			fields.add(dataPoint.getyAxis().getAggrEnum().getSelectField(dataPoint.getyAxis().getField()));
+			FacilioField aggrField = dataPoint.getyAxis().getAggrEnum().getSelectField(dataPoint.getyAxis().getField());
+			aggrField.setName(ReportUtil.getAggrFieldName(aggrField, dataPoint.getyAxis().getAggrEnum()));
+			fields.add(aggrField);
 			return true;
 		}
 	}
