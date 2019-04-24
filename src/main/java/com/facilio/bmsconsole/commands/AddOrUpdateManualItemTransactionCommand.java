@@ -3,12 +3,26 @@ package com.facilio.bmsconsole.commands;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.context.ItemContext.CostType;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
+import org.json.simple.JSONObject;
+
+import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.activity.ItemActivityType;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.*;
 import com.facilio.bmsconsole.util.TransactionState;
 import com.facilio.bmsconsole.util.TransactionType;
 import com.facilio.bmsconsole.workflow.rule.ApprovalState;
+import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import org.apache.commons.chain.Command;
@@ -37,7 +51,9 @@ public class AddOrUpdateManualItemTransactionCommand implements Command {
 				.get(FacilioConstants.ContextNames.RECORD_LIST);
 		List<ItemTransactionsContext> itemTransactionsList = new ArrayList<>();
 		List<ItemTransactionsContext> itemTransactiosnToBeAdded = new ArrayList<>();
+		List<Object> woitemactivity = new ArrayList<>();
 		long itemTypeId = -1;
+		ApprovalState approvalState = null;
 		if (itemTransactions != null) {
 			long parentId = itemTransactions.get(0).getParentId();
 			for (ItemTransactionsContext itemTransaction : itemTransactions) {
@@ -45,6 +61,7 @@ public class AddOrUpdateManualItemTransactionCommand implements Command {
 				itemTypeId = item.getItemType().getId();
 				ItemTypesContext itemType = getItemType(itemTypeId);
 				StoreRoomContext storeRoom = item.getStoreRoom();
+
 				if (itemTransaction.getId() > 0) {
 					SelectRecordsBuilder<ItemTransactionsContext> selectBuilder = new SelectRecordsBuilder<ItemTransactionsContext>()
 							.select(itemTransactionsFields).table(itemTransactionsModule.getTableName())
@@ -66,14 +83,23 @@ public class AddOrUpdateManualItemTransactionCommand implements Command {
 									&& (q + purchaseditem.getCurrentQuantity() < itemTransaction.getQuantity())) {
 								throw new IllegalArgumentException("Insufficient quantity in inventory!");
 							} else {
-								ApprovalState approvalState = ApprovalState.YET_TO_BE_REQUESTED;
+								approvalState = ApprovalState.YET_TO_BE_REQUESTED;
 								if (itemType.isApprovalNeeded() || storeRoom.isApprovalNeeded()) {
 									approvalState = ApprovalState.REQUESTED;
 								}
+								JSONObject info = new JSONObject();
+								info.put("itemid", itemTransaction.getItem().getId());
+								info.put("itemtype", itemType.getName());
+								info.put("quantity", itemTransaction.getQuantity());
+								info.put("transactionState", itemTransaction.getTransactionStateEnum().toString());
+								info.put("transactionType", itemTransaction.getTransactionTypeEnum().toString());
+								info.put("issuedToId", itemTransaction.getParentId());
 								if (itemType.individualTracking()) {
+									woitemactivity.add(info);
 									wItem = setWorkorderItemObj(purchaseditem, 1, item, parentId, itemTransaction,
 											itemType, approvalState);
 								} else {
+									woitemactivity.add(info);
 									wItem = setWorkorderItemObj(purchaseditem, itemTransaction.getQuantity(), item,
 											parentId, itemTransaction, itemType, approvalState);
 								}
@@ -89,7 +115,7 @@ public class AddOrUpdateManualItemTransactionCommand implements Command {
 							&& item.getQuantity() < itemTransaction.getQuantity()) {
 						throw new IllegalArgumentException("Insufficient quantity in inventory!");
 					} else {
-						ApprovalState approvalState = ApprovalState.YET_TO_BE_REQUESTED;
+						approvalState = ApprovalState.YET_TO_BE_REQUESTED;
 						if (itemType.isApprovalNeeded() || storeRoom.isApprovalNeeded()) {
 							approvalState = ApprovalState.REQUESTED;
 						}
@@ -104,15 +130,29 @@ public class AddOrUpdateManualItemTransactionCommand implements Command {
 										throw new IllegalArgumentException("Insufficient quantity in inventory!");
 									}
 									ItemTransactionsContext woItem = new ItemTransactionsContext();
+									JSONObject info = new JSONObject();
+									info.put("itemid", itemTransaction.getItem().getId());
+									info.put("itemtype", itemType.getName());
+									info.put("quantity", itemTransaction.getQuantity());
+									info.put("transactionState", itemTransaction.getTransactionStateEnum().toString());
+									info.put("transactionType", itemTransaction.getTransactionTypeEnum().toString());
+									info.put("serialno", pItem.getSerialNumber());
 									if (itemTransaction.getTransactionStateEnum() == TransactionState.ISSUE
 											&& (itemType.isApprovalNeeded() || storeRoom.isApprovalNeeded())) {
 										pItem.setIsUsed(false);
+										info.put("issuedToId", itemTransaction.getParentId());
+										woitemactivity.add(info);
 									} else {
 										if (itemTransaction.getTransactionStateEnum() == TransactionState.RETURN) {
 											pItem.setIsUsed(false);
+											info.put("parentTransactionId", itemTransaction.getParentTransactionId());
+											info.put("returnItemId", itemTransaction.getParentId());
+											woitemactivity.add(info);
 										} else if (itemTransaction
 												.getTransactionStateEnum() == TransactionState.ISSUE) {
 											pItem.setIsUsed(true);
+											info.put("issuedToId", itemTransaction.getParentId());
+											woitemactivity.add(info);
 										}
 									}
 									woItem = setWorkorderItemObj(pItem, 1, item, parentId, itemTransaction, itemType,
@@ -135,6 +175,12 @@ public class AddOrUpdateManualItemTransactionCommand implements Command {
 							}
 
 							if (purchasedItem != null && !purchasedItem.isEmpty()) {
+								JSONObject info = new JSONObject();
+								info.put("itemid", itemTransaction.getItem().getId());
+								info.put("itemtype", itemType.getName());
+								info.put("quantity", itemTransaction.getQuantity());
+								info.put("transactionState", itemTransaction.getTransactionStateEnum().toString());
+								info.put("transactionType", itemTransaction.getTransactionTypeEnum().toString());
 								PurchasedItemContext pItem = purchasedItem.get(0);
 								if (itemTransaction.getQuantity() <= pItem.getCurrentQuantity()) {
 									ItemTransactionsContext woItem = new ItemTransactionsContext();
@@ -142,8 +188,18 @@ public class AddOrUpdateManualItemTransactionCommand implements Command {
 											itemTransaction, itemType, approvalState);
 									itemTransactionsList.add(woItem);
 									itemTransactiosnToBeAdded.add(woItem);
+									if (itemTransaction.getTransactionStateEnum() == TransactionState.ISSUE) {
+									    info.put("issuedToId", itemTransaction.getParentId());
+									}
+									else if (itemTransaction.getTransactionStateEnum() == TransactionState.RETURN) {
+										info.put("returnId", itemTransaction.getParentId());
+										info.put("parentTransactionId", itemTransaction.getParentTransactionId());
+									}
+									woitemactivity.add(info);
+
 								} else {
-									double requiredQuantity = itemTransaction.getQuantity();
+									double requiredQuantity = itemTransaction.getQuantity();					
+									    woitemactivity.add(info);
 									for (PurchasedItemContext purchaseitem : purchasedItem) {
 										ItemTransactionsContext woItem = new ItemTransactionsContext();
 										double quantityUsedForTheCost = 0;
@@ -168,7 +224,22 @@ public class AddOrUpdateManualItemTransactionCommand implements Command {
 				}
 
 			}
-
+            
+			JSONObject newinfo = new JSONObject();
+			if (itemTransactions.get(0).getTransactionStateEnum() == TransactionState.ISSUE && !(approvalState == ApprovalState.REQUESTED)) {
+				newinfo.put("issued", woitemactivity);
+			CommonCommandUtil.addActivityToContext(itemTypeId, -1, ItemActivityType.ISSUED, newinfo, (FacilioContext) context);
+			}
+			else if (itemTransactions.get(0).getTransactionStateEnum() == TransactionState.RETURN) {
+				newinfo.put("returned", woitemactivity);
+			CommonCommandUtil.addActivityToContext(itemTypeId, -1, ItemActivityType.RETURN, newinfo, (FacilioContext) context);
+			}
+			else if (approvalState == ApprovalState.REQUESTED) {
+				newinfo.put("requested", woitemactivity);
+				CommonCommandUtil.addActivityToContext(itemTypeId, -1, ItemActivityType.REQUESTED, newinfo, (FacilioContext) context);
+			}
+			
+			
 			if (itemTransactiosnToBeAdded != null && !itemTransactiosnToBeAdded.isEmpty()) {
 				addWorkorderParts(itemTransactionsModule, itemTransactionsFields, itemTransactiosnToBeAdded);
 			}
@@ -211,7 +282,7 @@ public class AddOrUpdateManualItemTransactionCommand implements Command {
 		if (itemTransactions.getTransactionStateEnum() == TransactionState.RETURN) {
 			woItem.setApprovedState(ApprovalState.YET_TO_BE_REQUESTED);
 		}
-
+		woItem.setIssuedTo(itemTransactions.getIssuedTo());
 		return woItem;
 	}
 

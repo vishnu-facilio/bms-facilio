@@ -441,6 +441,7 @@ public enum CardType {
 			"        <field aggregate=\"count\" name=\"subject\" />\n" + 
 			"    </expression>\n" + 
 			"</workflow>",false),
+	KPI_CARD(15,"kpiCard",null,false),
 	;
 	
 	

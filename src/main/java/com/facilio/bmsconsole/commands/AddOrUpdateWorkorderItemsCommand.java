@@ -1,6 +1,8 @@
 package com.facilio.bmsconsole.commands;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.activity.ItemActivityType;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.context.ItemContext.CostType;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
@@ -9,10 +11,13 @@ import com.facilio.bmsconsole.modules.*;
 import com.facilio.bmsconsole.util.TransactionState;
 import com.facilio.bmsconsole.util.TransactionType;
 import com.facilio.bmsconsole.workflow.rule.ApprovalState;
+import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.constants.FacilioConstants.WorkOrder;
 import com.facilio.fw.BeanFactory;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.json.simple.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -36,7 +41,10 @@ public class AddOrUpdateWorkorderItemsCommand implements Command {
 				.get(FacilioConstants.ContextNames.RECORD_LIST);
 		List<WorkorderItemContext> workorderItemslist = new ArrayList<>();
 		List<WorkorderItemContext> itemToBeAdded = new ArrayList<>();
+		List<Object> woitemactivity = new ArrayList<>();
+
 		long itemTypesId = -1;
+		ApprovalState approvalState = null;
 		if (workorderitems != null) {
 			long parentId = workorderitems.get(0).getParentId();
 			for (WorkorderItemContext workorderitem : workorderitems) {
@@ -44,6 +52,7 @@ public class AddOrUpdateWorkorderItemsCommand implements Command {
 				itemTypesId = item.getItemType().getId();
 				ItemTypesContext itemType = getItemType(itemTypesId);
 				StoreRoomContext storeRoom = item.getStoreRoom();
+				WorkOrderContext wo = getWorkorderContext(parentId);
 				if (workorderitem.getId() > 0) {
 					SelectRecordsBuilder<WorkorderItemContext> selectBuilder = new SelectRecordsBuilder<WorkorderItemContext>()
 							.select(workorderItemFields).table(workorderItemsModule.getTableName())
@@ -64,15 +73,23 @@ public class AddOrUpdateWorkorderItemsCommand implements Command {
 							if ((q + purchaseditem.getCurrentQuantity() < workorderitem.getQuantity())) {
 								throw new IllegalArgumentException("Insufficient quantity in inventory!");
 							} else {
-								ApprovalState approvalState = ApprovalState.YET_TO_BE_REQUESTED;
+								 approvalState = ApprovalState.YET_TO_BE_REQUESTED;
 								if (itemType.isApprovalNeeded() || storeRoom.isApprovalNeeded()) {
 									approvalState = ApprovalState.REQUESTED;
 								}
+								JSONObject info = new JSONObject();
+								info.put("itemid", workorderitem.getItem().getId());
+								info.put("itemtype", itemType.getName());
+								info.put("quantity", workorderitem.getQuantity());
+								info.put("issuedToId", workorderitem.getParentId());
 								if (itemType.individualTracking()) {
-									wItem = setWorkorderItemObj(purchaseditem, 1, item, parentId, approvalState);
+									woitemactivity.add(info);
+									wItem = setWorkorderItemObj(purchaseditem, 1, item, parentId, approvalState, wo);
+
 								} else {
+									woitemactivity.add(info);
 									wItem = setWorkorderItemObj(purchaseditem, workorderitem.getQuantity(), item,
-											parentId, approvalState);
+											parentId, approvalState, wo);
 								}
 								updatePurchasedItem(purchaseditem);
 								wItem.setId(workorderitem.getId());
@@ -85,7 +102,7 @@ public class AddOrUpdateWorkorderItemsCommand implements Command {
 					if (item.getQuantity() < workorderitem.getQuantity()) {
 						throw new IllegalArgumentException("Insufficient quantity in inventory!");
 					} else {
-						ApprovalState approvalState = ApprovalState.YET_TO_BE_REQUESTED;
+						 approvalState = ApprovalState.YET_TO_BE_REQUESTED;
 						if (itemType.isApprovalNeeded() || storeRoom.isApprovalNeeded()) {
 							approvalState = ApprovalState.REQUESTED;
 						}
@@ -98,13 +115,21 @@ public class AddOrUpdateWorkorderItemsCommand implements Command {
 									if(pItem.isUsed()) {
 										throw new IllegalArgumentException("Insufficient quantity in inventory!");
 									}
+									JSONObject info = new JSONObject();
+									info.put("itemid", workorderitem.getItem().getId());
+									info.put("itemtype", itemType.getName());
+									info.put("quantity", workorderitem.getQuantity());
+									info.put("issuedToId", workorderitem.getParentId());
+									info.put("serialno", pItem.getSerialNumber());
 									WorkorderItemContext woItem = new WorkorderItemContext();
 									if (itemType.isApprovalNeeded() || storeRoom.isApprovalNeeded()) {
 										pItem.setIsUsed(false);
+										woitemactivity.add(info);
 									} else {
 										pItem.setIsUsed(true);
+										woitemactivity.add(info);
 									}
-									woItem = setWorkorderItemObj(pItem, 1, item, parentId, approvalState);
+									woItem = setWorkorderItemObj(pItem, 1, item, parentId, approvalState, wo);
 									updatePurchasedItem(pItem);
 									workorderItemslist.add(woItem);
 									itemToBeAdded.add(woItem);
@@ -124,13 +149,20 @@ public class AddOrUpdateWorkorderItemsCommand implements Command {
 
 							if (purchasedItem != null && !purchasedItem.isEmpty()) {
 								PurchasedItemContext pItem = purchasedItem.get(0);
+								JSONObject info = new JSONObject();
+								info.put("itemid", workorderitem.getItem().getId());
+								info.put("itemtype", itemType.getName());
+								info.put("quantity", workorderitem.getQuantity());
+								info.put("issuedToId", workorderitem.getParentId());
 								if (workorderitem.getQuantity() <= pItem.getCurrentQuantity()) {
 									WorkorderItemContext woItem = new WorkorderItemContext();
+									woitemactivity.add(info);
 									woItem = setWorkorderItemObj(pItem, workorderitem.getQuantity(), item, parentId,
-											approvalState);
+											approvalState, wo);
 									workorderItemslist.add(woItem);
 									itemToBeAdded.add(woItem);
 								} else {
+									woitemactivity.add(info);
 									double requiredQuantity = workorderitem.getQuantity();
 									for (PurchasedItemContext purchaseitem : purchasedItem) {
 										WorkorderItemContext woItem = new WorkorderItemContext();
@@ -141,7 +173,7 @@ public class AddOrUpdateWorkorderItemsCommand implements Command {
 											quantityUsedForTheCost = purchaseitem.getCurrentQuantity();
 										}
 										woItem = setWorkorderItemObj(purchaseitem, quantityUsedForTheCost, item,
-												parentId, approvalState);
+												parentId, approvalState, wo);
 										requiredQuantity -= quantityUsedForTheCost;
 										workorderItemslist.add(woItem);
 										itemToBeAdded.add(woItem);
@@ -155,6 +187,15 @@ public class AddOrUpdateWorkorderItemsCommand implements Command {
 					}
 				}
 
+			}
+			JSONObject newinfo = new JSONObject();
+			if (!(approvalState == ApprovalState.REQUESTED)) {
+				newinfo.put("issued", woitemactivity);
+			CommonCommandUtil.addActivityToContext(itemTypesId, -1, ItemActivityType.ISSUED, newinfo, (FacilioContext) context);
+			}
+			else if (approvalState == ApprovalState.REQUESTED) {
+				newinfo.put("requested", woitemactivity);
+			CommonCommandUtil.addActivityToContext(itemTypesId, -1, ItemActivityType.REQUESTED, newinfo, (FacilioContext) context);
 			}
 
 			if (itemToBeAdded != null && !itemToBeAdded.isEmpty()) {
@@ -175,7 +216,7 @@ public class AddOrUpdateWorkorderItemsCommand implements Command {
 	}
 
 	private WorkorderItemContext setWorkorderItemObj(PurchasedItemContext purchasedItem, double quantity,
-			ItemContext item, long parentId, ApprovalState approvalState) {
+			ItemContext item, long parentId, ApprovalState approvalState, WorkOrderContext wo) {
 		WorkorderItemContext woItem = new WorkorderItemContext();
 		woItem.setTransactionType(TransactionType.WORKORDER);
 		woItem.setTransactionState(TransactionState.ISSUE);
@@ -197,6 +238,12 @@ public class AddOrUpdateWorkorderItemsCommand implements Command {
 			costOccured = purchasedItem.getUnitcost() * quantity;
 		}
 		woItem.setCost(costOccured);
+		if(wo!=null) {
+			woItem.setWorkorder(wo);
+			if(wo.getAssignedTo()!=null) {
+				woItem.setIssuedTo(wo.getAssignedTo());
+			}
+		}
 		return woItem;
 	}
 
@@ -314,6 +361,21 @@ public class AddOrUpdateWorkorderItemsCommand implements Command {
 
 		if (purchasedItemlist != null && !purchasedItemlist.isEmpty()) {
 			return purchasedItemlist;
+		}
+		return null;
+	}
+	
+	private WorkOrderContext getWorkorderContext(long woId) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule workorderModule = modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER);
+		List<FacilioField> workorderFields = modBean.getAllFields(FacilioConstants.ContextNames.WORK_ORDER);
+		SelectRecordsBuilder<WorkOrderContext> workorderSetlectBuilder = new SelectRecordsBuilder<WorkOrderContext>()
+				.select(workorderFields).table(workorderModule.getTableName()).moduleName(workorderModule.getName())
+				.beanClass(WorkOrderContext.class).andCondition(CriteriaAPI.getIdCondition(woId, workorderModule));
+
+		List<WorkOrderContext> workorderList = workorderSetlectBuilder.get();
+		if (workorderList != null && !workorderList.isEmpty()) {
+			return workorderList.get(0);
 		}
 		return null;
 	}

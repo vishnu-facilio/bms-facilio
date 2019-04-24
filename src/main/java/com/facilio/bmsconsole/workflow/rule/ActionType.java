@@ -1,5 +1,24 @@
 package com.facilio.bmsconsole.workflow.rule;
 
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.chain.Chain;
+import org.apache.commons.chain.Context;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+
 import com.facilio.accounts.bean.UserBean;
 import com.facilio.accounts.dto.Group;
 import com.facilio.accounts.dto.User;
@@ -7,16 +26,45 @@ import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.commands.GenericUpdateModuleDataCommand;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsole.commands.UpdateStateCommand;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.bmsconsole.context.*;
+import com.facilio.bmsconsole.context.AlarmContext;
+import com.facilio.bmsconsole.context.AlarmSeverityContext;
+import com.facilio.bmsconsole.context.NoteContext;
+import com.facilio.bmsconsole.context.NotificationContext;
+import com.facilio.bmsconsole.context.PMTriggerContext;
+import com.facilio.bmsconsole.context.PreventiveMaintenance;
+import com.facilio.bmsconsole.context.ReadingAlarmContext;
+import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.TicketContext.SourceType;
+import com.facilio.bmsconsole.context.TicketStatusContext;
+import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.criteria.PickListOperators;
-import com.facilio.bmsconsole.modules.*;
-import com.facilio.bmsconsole.util.*;
+import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.FacilioModule;
+import com.facilio.bmsconsole.modules.FieldFactory;
+import com.facilio.bmsconsole.modules.FieldType;
+import com.facilio.bmsconsole.modules.FieldUtil;
+import com.facilio.bmsconsole.modules.LookupField;
+import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
+import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
+import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
+import com.facilio.bmsconsole.util.AlarmAPI;
+import com.facilio.bmsconsole.util.NotificationAPI;
+import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
+import com.facilio.bmsconsole.util.ReadingRuleAPI;
+import com.facilio.bmsconsole.util.SMSUtil;
+import com.facilio.bmsconsole.util.StateFlowRulesAPI;
+import com.facilio.bmsconsole.util.TicketAPI;
+import com.facilio.bmsconsole.util.WorkOrderAPI;
+import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext.ReadingRuleType;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.events.constants.EventConstants;
@@ -31,6 +79,7 @@ import com.facilio.workflows.util.WorkflowUtil;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.LogManager;
@@ -458,11 +507,13 @@ public enum ActionType {
 			WorkOrderContext workOrder = (WorkOrderContext) currentRecord;
 			WorkOrderContext updateWO = new WorkOrderContext();
 
+			boolean userAssigned = false;
 			if (assignedToUserId != -1  && (workOrder.getAssignedTo() == null || workOrder.getAssignedTo().getOuid() == -1)) {
 				User user = new User();
 				user.setOuid(assignedToUserId);
 				workOrder.setAssignedTo(user);
 				updateWO.setAssignedTo(user);
+				userAssigned = true;
 			}
 
 			if (assignGroupId != -1 && (workOrder.getAssignmentGroup() == null || workOrder.getAssignmentGroup().getGroupId() == -1)) {
@@ -470,19 +521,22 @@ public enum ActionType {
 				group.setId(assignGroupId);
 				workOrder.setAssignmentGroup(group);
 				updateWO.setAssignmentGroup(group);
+				userAssigned = true;
 			}
 			try {
-				if (assignedToUserId != -1 || assignGroupId != -1) {
-					TicketStatusContext status = TicketAPI.getStatus("Assigned");
-					workOrder.setStatus(status);
-					updateWO.setStatus(status);
+				if (userAssigned) {
+					if (assignedToUserId != -1 || assignGroupId != -1) {
+						TicketStatusContext status = TicketAPI.getStatus("Assigned");
+						workOrder.setStatus(status);
+						updateWO.setStatus(status);
+					}
+					ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+					FacilioModule woModule = modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER);
+					UpdateRecordBuilder<WorkOrderContext> updateBuilder = new UpdateRecordBuilder<WorkOrderContext>()
+							.module(woModule).fields(modBean.getAllFields(FacilioConstants.ContextNames.WORK_ORDER))
+							.andCondition(CriteriaAPI.getIdCondition(workOrder.getId(), woModule));
+					updateBuilder.update(updateWO);
 				}
-				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-				FacilioModule woModule = modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER);
-				UpdateRecordBuilder<WorkOrderContext> updateBuilder = new UpdateRecordBuilder<WorkOrderContext>()
-						.module(woModule).fields(modBean.getAllFields(FacilioConstants.ContextNames.WORK_ORDER))
-						.andCondition(CriteriaAPI.getIdCondition(workOrder.getId(), woModule));
-				updateBuilder.update(updateWO);
 			} catch (Exception e) {
 				LOGGER.error("Exception occurred ", e);
 			}
@@ -652,6 +706,7 @@ public enum ActionType {
 							default:
 								break;
 						}
+						obj.put(key, val);	// setting newly updated value if any
 						
 						fields.add(field);
 						if (field.isDefault()) {
@@ -880,6 +935,37 @@ public enum ActionType {
 			TimeSeriesAPI.setControlValue(resourceId, fieldId, val);
 		}
 	},
+	CHANGE_STATE (19) {
+		@Override
+		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,
+				Object currentRecord) throws Exception {
+			System.out.println(obj);
+			ModuleBaseWithCustomFields moduleData = ((ModuleBaseWithCustomFields) currentRecord);
+			TicketStatusContext state = moduleData.getModuleState();
+			long oldStateId = -1;
+			if (state != null) {
+				oldStateId = state.getId();
+			}
+			Object newState = obj.get("new_state");
+			long newStateId = newState != null ? Long.parseLong(newState.toString()) : -1;
+			
+			String moduleName = (String) obj.get("moduleName");
+			
+			List<WorkflowRuleContext> availableState = StateFlowRulesAPI.getAvailableState(moduleData.getStateFlowId(), oldStateId, newStateId, moduleName, (ModuleBaseWithCustomFields) currentRecord, context);
+			
+			if (CollectionUtils.isNotEmpty(availableState)) {
+				FacilioContext c = new FacilioContext();
+				c.put(FacilioConstants.ContextNames.RECORD, currentRecord);
+				c.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+				c.put("transistion_id", availableState.get(0).getId());
+				
+				Chain chain = FacilioChain.getTransactionChain();
+				chain.addCommand(new UpdateStateCommand());
+//				chain.addCommand(new GenericUpdateModuleDataCommand());
+				chain.execute(c);
+			}
+		}
+	},
 	ML_JOB_ACTION (19) {
 
 		@Override
@@ -887,7 +973,7 @@ public enum ActionType {
 		{
 			FacilioTimer.scheduleOneTimeJob(FacilioUtil.parseLong(context.get("jobid")), "DefaultMLJob", System.currentTimeMillis(), "ml");
 		}
-		
+				
 		@Override
 		public boolean isTemplateNeeded() 
 		{

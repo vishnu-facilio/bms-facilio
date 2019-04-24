@@ -10,6 +10,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.PurchaseContractContext;
 import com.facilio.bmsconsole.context.PurchaseContractLineItemContext;
+import com.facilio.bmsconsole.context.ContractsContext.ContractType;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.DeleteRecordBuilder;
@@ -31,7 +32,7 @@ public class AddOrUpdatePurchaseContractCommand implements Command {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioModule module = modBean.getModule(moduleName);
 			List<FacilioField> fields = modBean.getAllFields(moduleName);
-			
+		
 			FacilioModule lineModule = modBean.getModule(FacilioConstants.ContextNames.PURCHASE_CONTRACTS_LINE_ITEMS);
 			
 			if (CollectionUtils.isEmpty(purchaseContractContext.getLineItems())) {
@@ -40,7 +41,7 @@ public class AddOrUpdatePurchaseContractCommand implements Command {
 			if (purchaseContractContext.getVendor() == null) {
 				throw new Exception("Vendor cannot be empty");
 			}
-			
+			purchaseContractContext.setContractType(ContractType.PURCHASE);
 			if (purchaseContractContext.getId() > 0) {
 				updateRecord(purchaseContractContext, module, fields);
 				

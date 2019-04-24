@@ -484,6 +484,12 @@ private Map<String, Double> readingData;
 		return SUCCESS;
 	}
 	
+	public String getTenantForAssetId() throws Exception {
+		TenantContext tenantContext = TenantsAPI.getTenantForAsset(assetId);
+		setResult("tenant", tenantContext);
+		return SUCCESS;
+
+	}
 	public String deleteTenant() {
         try {
 			FacilioContext context = new FacilioContext();
@@ -757,5 +763,14 @@ private Map<String, Double> readingData;
 	public void setBillDetails(Map<String, Object> billDetails) {
 		this.billDetails = billDetails;
 	}
+	
+	private long assetId;
+	public long getAssetId() {
+		return assetId;
+	}
+	public void setAssetId(long assetId) {
+		this.assetId = assetId;
+	}
+	
 	
 }

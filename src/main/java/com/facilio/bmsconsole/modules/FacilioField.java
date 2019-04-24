@@ -417,7 +417,7 @@ public class FacilioField implements Serializable {
 		GEO_LOCATION(31, "Geo Location"),
 		PURCHASEDITEMT(32,"purchasedItem"),
 		IMAGE(33, "image"),
-		PURCHASEDTOOL(32,"purchasedTool"),
+		PURCHASEDTOOL(34,"purchasedTool"),
         ASSETMULTICHOOSER(35,"asset-multi-chooser"),
         SPACEMULTICHOOSER(36,"space-multi-chooser"),
 		LOGO(37,"logo"),
@@ -426,7 +426,8 @@ public class FacilioField implements Serializable {
 		RECEIPT_LINE_ITEMS(40, "receipt-line-items"),
 		QR(41, "qr"),
 		SADDRESS(42, "address"),
-		LABOUR_LINE_ITEMS(43, "labour-line-items")
+		LABOUR_LINE_ITEMS(43, "labour-line-items"),
+        SITEMULTICHOOSER(44,"site-multi-chooser")
 		;
 		
 		private int intVal;

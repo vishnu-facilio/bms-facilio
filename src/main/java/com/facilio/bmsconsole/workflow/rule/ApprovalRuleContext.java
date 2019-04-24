@@ -266,7 +266,7 @@ public class ApprovalRuleContext extends WorkflowRuleContext {
 		List<SingleSharingContext> matchingApprovers = approvers == null ? null : approvers.getMatching(wo);
 		if (action == ApprovalState.APPROVED && isAllApprovalRequired() && approvalOrder == ApprovalOrder.PARALLEL) {
 			if (approvers != null && approvers.size() > 1) {
-				List<Long> previousApprovers = fetchPreviousApprovers(wo.getId());
+				List<Long> previousApprovers = fetchPreviousApprovers(wo.getId(), getId());
 				Map<Long, SingleSharingContext> approverMap = approvers.stream().collect(Collectors.toMap(SingleSharingContext::getId, Function.identity()));
 				if (previousApprovers != null && !previousApprovers.isEmpty()) {
 					for (Long id : previousApprovers) {
@@ -279,11 +279,11 @@ public class ApprovalRuleContext extends WorkflowRuleContext {
 				result = approverMap.isEmpty();
 			}
 		}
-		addApprovalStep(wo.getId(), action, matchingApprovers);
+		addApprovalStep(wo.getId(), action, matchingApprovers, this);
 		return result;
 	}
 	
-	private List<Long> fetchPreviousApprovers(long recordId) throws Exception {
+	private static List<Long> fetchPreviousApprovers(long recordId, long ruleId) throws Exception {
 		FacilioModule module = ModuleFactory.getApprovalStepsModule();
 		List<FacilioField> fields = FieldFactory.getApprovalStepsFields();
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
@@ -294,7 +294,7 @@ public class ApprovalRuleContext extends WorkflowRuleContext {
 														.table(module.getTableName())
 														.select(fields)
 														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
-														.andCondition(CriteriaAPI.getCondition(ruleIdField, String.valueOf(getId()), PickListOperators.IS))
+														.andCondition(CriteriaAPI.getCondition(ruleIdField, String.valueOf(ruleId), PickListOperators.IS))
 														.andCondition(CriteriaAPI.getCondition(recordIdField, String.valueOf(recordId), PickListOperators.IS))
 														;
 		
@@ -305,31 +305,33 @@ public class ApprovalRuleContext extends WorkflowRuleContext {
 		return null;
 	}
 	
-	private void addApprovalStep (long recordId, ApprovalState action, List<SingleSharingContext> matchingApprovers) throws Exception {
+	public static void addApprovalStep (long recordId, ApprovalState action, List<SingleSharingContext> matchingApprovers, WorkflowRuleContext ruleContext) throws Exception {
 		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
 													.table(ModuleFactory.getApprovalStepsModule().getTableName())
 													.fields(FieldFactory.getApprovalStepsFields())
 													;
 		
 		if (matchingApprovers == null || matchingApprovers.isEmpty()) {
-			insertBuilder.addRecord(constructStep(recordId, null, action));
+			insertBuilder.addRecord(constructStep(recordId, null, action, ruleContext.getSiteId(), ruleContext.getId()));
 		}
 		else {
 			for (SingleSharingContext approver : matchingApprovers) {
-				insertBuilder.addRecord(constructStep(recordId, approver, action));
+				insertBuilder.addRecord(constructStep(recordId, approver, action, ruleContext.getSiteId(), ruleContext.getId()));
 			}
 		}
 		insertBuilder.save();
 	}
 	
-	private Map<String, Object> constructStep(long recordId, SingleSharingContext approver, ApprovalState action) {
+	private static Map<String, Object> constructStep(long recordId, SingleSharingContext approver, ApprovalState action, long siteId, long ruleId) {
 		Map<String, Object> prop = new HashMap<>();
 		prop.put("orgId", AccountUtil.getCurrentOrg().getId());
-		prop.put("siteId", getSiteId());
-		prop.put("ruleId", getId());
+		prop.put("siteId", siteId);
+		prop.put("ruleId", ruleId);
 		prop.put("recordId", recordId);
 		prop.put("actionBy", AccountUtil.getCurrentUser().getId());
-		prop.put("action", action.getValue());
+		if (action != null) {
+			prop.put("action", action.getValue());
+		}
 		prop.put("actionTime", System.currentTimeMillis());
 		if (approver != null) {
 			prop.put("approverGroup", approver.getId());

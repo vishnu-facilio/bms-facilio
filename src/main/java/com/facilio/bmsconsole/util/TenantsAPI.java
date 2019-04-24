@@ -8,6 +8,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.actions.DashboardAction;
 import com.facilio.bmsconsole.context.*;
+import com.facilio.bmsconsole.context.BaseSpaceContext.SpaceType;
 import com.facilio.bmsconsole.criteria.*;
 import com.facilio.bmsconsole.modules.*;
 import com.facilio.bmsconsole.tenant.*;
@@ -549,26 +550,7 @@ public class TenantsAPI {
 		return null;
 	}
 	
-	@SuppressWarnings("unused")
-//	public static TenantContext addTenant (TenantContext tenant) throws Exception {
-	public static long addTenant (TenantContext tenant) throws Exception {
-		
-		if (tenant.getName() == null || tenant.getName().isEmpty()) {
-			throw new IllegalArgumentException("Invalid name during addition of Tenant");
-		}
-		
-		addTenantLogo(tenant);
-		tenant.setOrgId(AccountUtil.getCurrentOrg().getId());
-		
-		InsertRecordBuilder<TenantContext> insertBuilder = new InsertRecordBuilder<TenantContext>()
-														.table(ModuleFactory.getTenantsModule().getTableName())
-														.fields(FieldFactory.getTenantsFields());
-		long id = insertBuilder.insert(tenant);
-		tenant.setId(id);
-		addUtilityMapping(tenant);
-		return id;
-//		return tenant;
-	}
+
 	
 	public static void addTenantContact(User user, Long tenantId) throws Exception{
 		long orgid = AccountUtil.getCurrentOrg().getOrgId();
@@ -646,11 +628,11 @@ public class TenantsAPI {
 	}
 
 	
-	public static void addUtilityMapping(TenantContext tenant) throws Exception {
+	public static void addUtilityMapping(TenantContext tenant,List<Long> spaceIds) throws Exception {
 		if (tenant.getUtilityAssets() == null || tenant.getUtilityAssets().isEmpty()) {
 			throw new IllegalArgumentException("Atleast one utility mapping should be present to add a Tenant");
 		}
-		validateUtilityMapping(tenant);
+		validateUtilityMapping(tenant,spaceIds);
 		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
 														.table(ModuleFactory.getTenantsUtilityMappingModule().getTableName())
 														.fields(FieldFactory.getTenantsUtilityMappingFields())
@@ -663,11 +645,13 @@ public class TenantsAPI {
 		insertBuilder.save();
 	}
 	
-	private static void validateUtilityMapping(TenantContext tenant) throws Exception {
+	private static void validateUtilityMapping(TenantContext tenant,List<Long> spaceIds) throws Exception {
 		StringJoiner idString = new StringJoiner(",");
 		for (UtilityAsset util : tenant.getUtilityAssets()) {
 			idString.add(String.valueOf(util.getAssetId()));
 		}	
+		
+		validateAssetSpaces(tenant.getUtilityAssets(),spaceIds);
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule utilityModule = ModuleFactory.getTenantsUtilityMappingModule();
@@ -716,6 +700,33 @@ public class TenantsAPI {
         }
 	}
 	
+	private static void validateAssetSpaces(List<UtilityAsset> utilityAssets,List<Long> spaceIds) throws Exception {
+		for (UtilityAsset util : utilityAssets) {
+			BaseSpaceContext assetSpace = AssetsAPI.getAssetInfo(util.getAssetId()).getSpace();
+			if(assetSpace != null && assetSpace.getId() > 0) {
+		          BaseSpaceContext baseSpace = SpaceAPI.getBaseSpace(assetSpace.getId());
+		          if(spaceIds.contains(baseSpace.getId())) {
+		        	  continue;
+		          }
+		          if(baseSpace.getSpaceTypeEnum() == SpaceType.SPACE) {
+		        	  if (spaceIds.contains(baseSpace.getSpaceId1()) || spaceIds.contains(baseSpace.getSpaceId2()) || spaceIds.contains(baseSpace.getSpaceId3()) || spaceIds.contains(baseSpace.getSpaceId4()) || spaceIds.contains(baseSpace.getFloorId()) || spaceIds.contains(baseSpace.getBuildingId())) {
+		        		  continue;
+		        	  }
+		          }
+		          else if(baseSpace.getSpaceTypeEnum() == SpaceType.FLOOR) {
+		        	  if (spaceIds.contains(baseSpace.getBuildingId())) {
+		        		  continue;
+		        	  }
+		          }
+		          throw new IllegalArgumentException("The asset #"+util.getAssetId()+" doesn't belong to the selected Space");
+			}
+			else {
+			    continue;			
+			}
+  		}
+		
+		
+	}
 	public static void addTenantLogo(TenantContext tenant) throws Exception {
 		if (tenant.getTenantLogo() != null) {
 			FileStore fs = FileStoreFactory.getInstance().getFileStore();
@@ -733,14 +744,14 @@ public class TenantsAPI {
 	}
 	
 	
-	public static int updateTenant (TenantContext tenant) throws Exception {
+	public static int updateTenant (TenantContext tenant, List<Long> spaceIds) throws Exception {
 		if (tenant.getId() == -1) {
 			throw new IllegalArgumentException("Invalid ID during updation of tenant");
 		}
 		
 		if (tenant.getUtilityAssets() != null && !tenant.getUtilityAssets().isEmpty()) {
 			deleteUtilityMapping(tenant);
-			addUtilityMapping(tenant);
+			addUtilityMapping(tenant, spaceIds);
 		}
 		else
 		{

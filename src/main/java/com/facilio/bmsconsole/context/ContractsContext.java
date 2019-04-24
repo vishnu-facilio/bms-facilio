@@ -93,6 +93,40 @@ public class ContractsContext extends ModuleBaseWithCustomFields{
 		}
 	}
 	
+	private ContractType contractType;
+	public ContractType getContractTypeEnum() {
+		return contractType;
+	}
+	public int getContractType() {
+		if (contractType != null) {
+			return contractType.getValue();
+		}
+		return -1;
+	}
+	public void setContractType(ContractType contractType) {
+		this.contractType = contractType;
+	}
+	public void setContractType(int contractType) {
+		this.contractType = ContractType.valueOf(contractType);
+	}
+	
+	public static enum ContractType {
+		PURCHASE(),
+		LABOUR()
+		;
+		
+		public int getValue() {
+			return ordinal()+1;
+		}
+
+		public static ContractType valueOf(int value) {
+			if (value > 0 && value <= values().length) {
+				return values()[value - 1];
+			}
+			return null;
+		}
+	}
+	
 	private long fromDate = -1;
 	private long endDate = -1;
 	private long renewalDate = -1;

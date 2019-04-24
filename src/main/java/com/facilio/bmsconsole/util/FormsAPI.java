@@ -7,6 +7,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,6 +25,7 @@ import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.forms.FacilioForm.FormType;
 import com.facilio.bmsconsole.forms.FormFactory;
 import com.facilio.bmsconsole.forms.FormField;
+import com.facilio.bmsconsole.forms.FormSection;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioField.FieldDisplayType;
 import com.facilio.bmsconsole.modules.FacilioModule;
@@ -37,8 +39,34 @@ import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
 
 public class FormsAPI {
-	public static Map<String, Set<FacilioForm>> getAllForms(FormType formtype) throws Exception {
-		Map<String, Set<FacilioForm>> forms = new HashMap<> (FormFactory.getAllForms(formtype));
+	
+	public static Map<String, Collection<FacilioForm>> getAllForms(FormType formtype) throws Exception {
+		Map<String, Collection<FacilioForm>> forms = new HashMap<> (FormFactory.getAllForms(formtype));
+		if (forms != null && AccountUtil.getCurrentAccount().isFromIos()) {
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			for(Map.Entry<String, Collection<FacilioForm>> entry :forms.entrySet()) {
+				Iterator<FacilioForm> iterator = entry.getValue().iterator();
+				List<FacilioForm> formsList = new ArrayList<>();
+				while (iterator.hasNext()) {
+					FacilioForm form = (FacilioForm) iterator.next();
+					FacilioForm mutatedForm = new FacilioForm(form);
+					formsList.add(mutatedForm);
+					
+					String moduleName = form.getModule().getName();
+					int count = form.getFields().size();
+					List<FacilioField> customFields = modBean.getAllCustomFields(moduleName);
+					if (customFields != null && !customFields.isEmpty()) {
+						List<FormField> fields = new ArrayList<>(form.getFields());
+						mutatedForm.setFields(fields);
+						for (FacilioField f: customFields) {
+							count = count + 1;
+							fields.add(FormsAPI.getFormFieldFromFacilioField(f, count));
+						}
+					}
+				}
+				entry.setValue(formsList);
+			}
+		}
 		Map<String, Set<FacilioForm>> dbForms = getAllFormsFromDB(formtype);
 		if (!dbForms.isEmpty()) {
 			forms.putAll(dbForms);
@@ -86,15 +114,21 @@ public class FormsAPI {
 		}
 	
 		for (FacilioForm form: forms) {
+			setFormSections(form);
 			setFormFields(form);
 		}
 		
 		return forms;
 	}
 	
-	public static void setFormFields (FacilioForm form) throws Exception {
+	private static void setFormFields (FacilioForm form) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule fieldsModule = ModuleFactory.getFormFieldsModule();
+		
+		Map<Long,FormSection> sectionMap = null;
+		if (form.getSections() != null) {
+			sectionMap = form.getSections().stream().collect(Collectors.toMap(FormSection::getId, Function.identity()));
+		}
 		
 		GenericSelectRecordBuilder fieldSelectBuilder = new GenericSelectRecordBuilder()
 				.table(fieldsModule.getTableName())
@@ -120,7 +154,9 @@ public class FormsAPI {
 						f.setLookupModuleName(lookupMod.getName());
 					}
 				}
-				f.setName(field.getName());
+				if (f.getName() == null) {
+					f.setName(field.getName());
+				}
 			}
 			/***
 			 * Temp handling to set name for form fields if fieldId is empty 
@@ -157,8 +193,34 @@ public class FormsAPI {
 				f.setName("utilityMeters");
 			}
 			fields.add(f);
+			if (f.getSectionId() != -1) {
+				sectionMap.get(f.getSectionId()).addField(f);
+			}
 		}
-		form.setFields(fields);
+		if (sectionMap == null) {
+			form.setFields(fields);
+		}
+	}
+	
+	private static void setFormSections(FacilioForm form) throws Exception {
+		FacilioModule sectionModule = ModuleFactory.getFormSectionModule();
+		List<FacilioField> fields = FieldFactory.getFormSectionFields();
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+		
+		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+				.table(sectionModule.getTableName())
+				.select(fields)
+				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(sectionModule))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("formId"), String.valueOf(form.getId()), NumberOperators.EQUALS))
+				.orderBy(fieldMap.get("sequenceNumber").getColumnName());
+				;
+				
+		
+		List<Map<String, Object>> props = builder.get();
+		if (props != null && !props.isEmpty()) {
+			List<FormSection> sections = FieldUtil.getAsBeanListFromMapList(props, FormSection.class);
+			form.setSections(sections);
+		}
 	}
 	
 	public static long createForm(FacilioForm form, FacilioModule module) throws Exception {
@@ -175,12 +237,21 @@ public class FormsAPI {
 		long id = insertBuilder.insert(props);
 		form.setId(id);
 		
-		addFormFields(id, form.getFields());
+		addFormFields(id, form);
 		
 		return id;
 	}
 	
-	public static void addFormFields (long formId, List<FormField> fields) throws Exception {
+	public static void addFormFields (long formId, FacilioForm form) throws Exception {
+		List<FormField> fields = null;
+		if (form.getSections() != null) {
+			addFormSections(formId, form.getSections());
+			fields = getFormFieldsFromSections(form.getSections());
+		}
+		else {
+			fields = form.getFields();
+		}
+		
 		if (fields != null) {
 			long orgId = AccountUtil.getCurrentOrg().getId();
 			int i = 1;
@@ -214,9 +285,62 @@ public class FormsAPI {
 		}
 	}
 	
+	private static void addFormSections (long formId, List<FormSection> sections) throws Exception {
+		if (sections != null) {
+			long orgId = AccountUtil.getCurrentOrg().getId();
+			int i = 1;
+			List<Map<String, Object>> props = new ArrayList<>();
+			Map<Long, FormSection> sectionMap = new HashMap<>();
+			for (FormSection f: sections) {
+				f.setId(-1);
+				f.setFormId(formId);
+				f.setOrgId(orgId);
+				f.setSequenceNumber(i);
+				sectionMap.put(Long.valueOf(i++), f);
+				Map<String, Object> prop = FieldUtil.getAsProperties(f);
+				props.add(prop);
+			}
+			
+			FacilioModule module = ModuleFactory.getFormSectionModule();
+			GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
+					.table(module.getTableName())
+					.fields(FieldFactory.getFormSectionFields())
+					.addRecords(props);
+			
+			builder.save();
+			
+			List<FormField> fields = new ArrayList<>();
+			for(Map<String, Object> prop: props) {
+				long id = (long) prop.get("id");
+				long sequenceNumber = (long) prop.get("sequenceNumber");
+				FormSection section = sectionMap.get(sequenceNumber);
+				section.setId(id);
+				section.getFields().forEach(field -> field.setSectionId(id));
+				fields.addAll(section.getFields());
+			}
+		}
+	}
+	
+	private static List<FormField> getFormFieldsFromSections(List<FormSection> sections) {
+		return sections.stream().map(section -> section.getFields() != null ? section.getFields() : new ArrayList<FormField>()).flatMap(List::stream).collect(Collectors.toList());
+	}
+	
 	public static int deleteFormFields(long formId) throws Exception {
+		deleteFormSections(formId);
+		
 		FacilioModule module = ModuleFactory.getFormFieldsModule();
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getFormFieldsFields());
+		GenericDeleteRecordBuilder deleteBuilder = new GenericDeleteRecordBuilder()
+														.table(module.getTableName())
+														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+														.andCondition(CriteriaAPI.getCondition(fieldMap.get("formId"), String.valueOf(formId), NumberOperators.EQUALS))
+														;
+		return deleteBuilder.delete();
+	}
+	
+	private static int deleteFormSections(long formId) throws Exception {
+		FacilioModule module = ModuleFactory.getFormSectionModule();
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getFormSectionFields());
 		GenericDeleteRecordBuilder deleteBuilder = new GenericDeleteRecordBuilder()
 														.table(module.getTableName())
 														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
@@ -322,12 +446,26 @@ public class FormsAPI {
 	
 	public static Map<String, List<FormField>> getFormUnusedFields(String moduleName, long formId) throws Exception {
 		FacilioForm form = getFormFromDB(formId);
-		Map<String, FormField> formFieldMap = form.getFields().stream().collect(Collectors.toMap(FormField::getName, Function.identity()));
-		
-		FacilioForm defaultForm = FormFactory.getDefaultForm(moduleName, form);
-		List<FormField> defaultFields = defaultForm.getFields().stream().filter(field -> !formFieldMap.containsKey(field.getName())).collect(Collectors.toList());
+		List<FormField> fields = form.getFields();
+		if (fields == null) {
+			fields = getFormFieldsFromSections(form.getSections());
+		}
+		Map<String, FormField> formFieldMap = fields.stream().collect(Collectors.toMap(FormField::getName, Function.identity()));
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioForm defaultForm = FormFactory.getDefaultForm(moduleName, form, true);
+		List<FormField> defaultFields = new ArrayList<>();
+		for (FormField f: defaultForm.getFields()) {	// TODO get fields from all sections
+			if (!formFieldMap.containsKey(f.getName())) {
+				FormField formField = FieldUtil.cloneBean(f, FormField.class);
+				FacilioField field = modBean.getField(formField.getName(), moduleName);
+				if (field != null) {
+					formField.setFieldId(field.getFieldId());
+				}
+				defaultFields.add(formField);
+			}
+		}
+		
 		List<FacilioField> customFields = modBean.getAllCustomFields(moduleName);
 		
 		List<FormField> customFormFields = new ArrayList<>();
@@ -340,5 +478,18 @@ public class FormsAPI {
 		formMap.put("systemFields", defaultFields);
 		formMap.put("customFields", customFormFields);
 		return formMap;
+	}
+	
+	public static void setFieldDetails(ModuleBean modBean, List<FormField> fields, String moduleName) throws Exception {
+		for(int i =0; i < fields.size(); i++) {
+			FormField f = fields.get(i);
+			FormField mutatedField = FieldUtil.cloneBean(f, FormField.class);
+			FacilioField field = modBean.getField(mutatedField.getName(), moduleName);
+			if (field != null) {
+				mutatedField.setField(field);
+				mutatedField.setFieldId(field.getFieldId());
+			}
+			fields.set(i, mutatedField);
+		}
 	}
 }

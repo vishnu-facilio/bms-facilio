@@ -239,6 +239,9 @@ public class PreventiveMaintenanceAPI {
 			if ((nextExecutionTime * 1000) < currentTime) {
 				LOGGER.log(Level.SEVERE, "Skipping : next: "+ nextExecutionTime * 1000 + " current: "+ currentTime);
 				nextExecutionTime = pmTrigger.getSchedule().nextExecutionTime(nextExecutionTime);
+				if (pmTrigger.getSchedule().getFrequencyTypeEnum() == FrequencyType.DO_NOT_REPEAT) {
+					break;
+				}
 				continue;
 			}
 
@@ -671,29 +674,33 @@ public class PreventiveMaintenanceAPI {
 		return (Long) props.get(0).get("minCreatedTime");
 	}
 
-	public static void initScheduledWO() throws Exception {
-		List<FacilioField> fields = FieldFactory.getPreventiveMaintenanceFields();
-		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+	public static void initScheduledWO(List<Long> orgs) throws Exception {
+		for (long i : orgs) {
+			try {
+				AccountUtil.setCurrentAccount(i);
+				if (AccountUtil.getCurrentOrg() == null || AccountUtil.getCurrentOrg().getOrgId() <= 0) {
+					LOGGER.log(Level.SEVERE, "Org is missing");
+					continue;
+				}
 
-		if (AccountUtil.getCurrentOrg() == null || AccountUtil.getCurrentOrg().getOrgId() <= 0) {
-			LOGGER.log(Level.SEVERE, "Org is missing");
-			return;
+				List<FacilioField> fields = FieldFactory.getPreventiveMaintenanceFields();
+				Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+
+				List<PreventiveMaintenance> pms = PreventiveMaintenanceAPI.getAllActivePMs(null, Arrays.asList(fieldMap.get("id")));
+				if (pms == null || pms.isEmpty()) {
+					LOGGER.log(Level.SEVERE, "There are no PMS in the org " + AccountUtil.getCurrentOrg().getOrgId());
+					continue;
+				}
+
+				LOGGER.log(Level.SEVERE, "Number of PMS to be deactivated: " + pms.size());
+
+				List<Long> skipped = deactivateActivateAllPms(pms);
+
+				LOGGER.log(Level.SEVERE, "skipped pms: " + StringUtils.join(skipped.toArray(), ", "));
+			} finally {
+				AccountUtil.cleanCurrentAccount();
+			}
 		}
-
-		List<PreventiveMaintenance> pms = PreventiveMaintenanceAPI.getAllActivePMs(null, Arrays.asList(fieldMap.get("id")));
-		if(pms == null || pms.isEmpty()) {
-			LOGGER.log(Level.SEVERE, "There are no PMS in the org "+ AccountUtil.getCurrentOrg().getOrgId());
-			return;
-		}
-
-		LOGGER.log(Level.SEVERE, "Number of PMS to be deactivated: " + pms.size());
-
-		List<Long> skipped = deactivateActivateAllPms(pms);
-
-		//Set<Long> skipList = deactivateAllPms(pms);
-		//Set<Long> activateSkipList = activateAllPms(pms, skipList);
-		LOGGER.log(Level.SEVERE, "skipped pms: "+ StringUtils.join(skipped.toArray(), ", "));
-		//LOGGER.log(Level.SEVERE, "Activation skipped: "+ StringUtils.join(activateSkipList.toArray(), ", "));
 	}
 
 	private static List<Long> deactivateActivateAllPms(List<PreventiveMaintenance> pms) throws Exception {
@@ -2029,11 +2036,23 @@ public class PreventiveMaintenanceAPI {
 		int currentCount = pm.getCurrentExecutionCount();
 		long currentTime = System.currentTimeMillis() / 1000;
 		while (nextExecutionTime < currentTime) {
-			nextExecutionTime = trigger.getSchedule().nextExecutionTime(startTime);
+			nextExecutionTime = trigger.getSchedule().nextExecutionTime(nextExecutionTime);
 		}
 		if((pm.getMaxCount() == -1 || currentCount < pm.getMaxCount()) && (pm.getEndTime() == -1 || nextExecutionTime <= pm.getEndTime())) {
 			return createWoContextFromPM(context, pm, trigger, woTemplate, nextExecutionTime);
 		}
 		return null;
+	}
+	
+	public static List<Map<String, Object>> getTaskSectionTemplateTriggers(long triggerId) throws Exception {
+		FacilioModule sectionTriggerModule = ModuleFactory.getTaskSectionTemplateTriggersModule();
+		
+		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+				.table(sectionTriggerModule.getTableName())
+				.select(FieldFactory.getTaskSectionTemplateTriggersFields())
+				.andCustomWhere("PM_TRIGGER_ID = ?", triggerId)
+				.andCustomWhere("EXECUTE_IF_NOT_IN_TIME IS NOT NULL");
+		
+		return builder.get();
 	}
 }

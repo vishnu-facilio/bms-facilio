@@ -25,6 +25,7 @@ public class Permissions implements Serializable {
 	public long getPermission() {
 		return permission;
 	}
+	
 	public void setPermission(long permission) {
 		this.permission = permission;
 	}

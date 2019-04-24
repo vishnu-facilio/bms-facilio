@@ -32,18 +32,19 @@ public class UpdateFormulaCommand implements Command {
 		String formulaFieldUnit = (String) context.get(FacilioConstants.ContextNames.FORMULA_UNIT_STRING);
 		validateUpdate(newFormula);
 		FormulaFieldContext oldFormula = FormulaFieldAPI.getFormulaField(newFormula.getId());
+		context.put(FacilioConstants.ContextNames.READING_FIELD_ID,oldFormula.getReadingFieldId());
 		if (newFormula.getWorkflow() != null && hasCyclicDependency(newFormula.getWorkflow(), oldFormula.getReadingField(), oldFormula.getTriggerTypeEnum())) {
 			throw new IllegalArgumentException("Formula as cyclic dependency and so cannot be updated");
 		}
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = null;
-		if ((newFormula.getName() != null && !newFormula.getName().isEmpty()) || (formulaFieldUnit != null && !formulaFieldUnit.isEmpty())) {
+		if ((newFormula.getName() != null && !newFormula.getName().isEmpty()) || (formulaFieldUnit != null)) {
 			FacilioField field = new NumberField();
 			
 			if((newFormula.getName() != null && !newFormula.getName().isEmpty())) {
 				field.setDisplayName(newFormula.getName());
 			}
-			if((formulaFieldUnit != null && !formulaFieldUnit.isEmpty())) {
+			if(formulaFieldUnit != null) {
 				((NumberField)field).setUnit(formulaFieldUnit);
 			}
 			

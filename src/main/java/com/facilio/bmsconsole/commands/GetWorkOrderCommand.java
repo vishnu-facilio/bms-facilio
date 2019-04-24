@@ -58,6 +58,12 @@ public class GetWorkOrderCommand implements Command {
 						workOrder.setRequester(users.get(0));
 					}
 				}
+				if (workOrder.getRequestedBy() != null) {
+					List<User> users = AccountUtil.getUserBean().getUsers(null, Collections.singletonList(workOrder.getRequestedBy().getId()));
+					if (users != null && !users.isEmpty()) {
+						workOrder.setRequestedBy(users.get(0));
+					}
+				}
 				Map<Long, List<TaskContext>> taskMap = workOrder.getTasks();
 				if (taskMap != null) {
 					List<TaskContext> tasks = taskMap.values().stream().flatMap(c -> c.stream()).collect(Collectors.toList());

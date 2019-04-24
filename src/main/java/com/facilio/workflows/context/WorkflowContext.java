@@ -1,18 +1,19 @@
 package com.facilio.workflows.context;
 
-import com.facilio.bmsconsole.context.ReadingDataMeta;
-import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.FieldUtil;
-import com.facilio.workflows.context.WorkflowExpression.WorkflowExpressionType;
-import com.facilio.workflows.util.WorkflowUtil;
-import org.json.simple.JSONArray;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
+
+import org.json.simple.JSONArray;
+
+import com.facilio.bmsconsole.context.ReadingDataMeta;
+import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.FieldUtil;
+import com.facilio.workflows.context.WorkflowExpression.WorkflowExpressionType;
+import com.facilio.workflows.util.WorkflowUtil;
 
 public class WorkflowContext implements Serializable {
 	
@@ -69,7 +70,13 @@ public class WorkflowContext implements Serializable {
 	public boolean isLogNeeded() {
 		return isLogNeeded;
 	}
+	public boolean getIsLogNeeded() {
+		return isLogNeeded;
+	}
 	public void setLogNeeded(boolean isLogNeeded) {
+		this.isLogNeeded = isLogNeeded;
+	}
+	public void setIsLogNeeded(boolean isLogNeeded) {
 		this.isLogNeeded = isLogNeeded;
 	}
 	// only from client
@@ -279,7 +286,9 @@ public class WorkflowContext implements Serializable {
 				expressionContext.setVariableToExpresionMap(variableResultMap1);
 				
 				Object res = expressionContext.execute(workflowContext);
-				variableResultMap1.put(expressionContext.getName(), res);
+				if(expressionContext.getName() != null && !expressionContext.getName().isEmpty()) {
+					variableResultMap1.put(expressionContext.getName(), res);
+				}
 			}
 			else if(wokflowExpresion instanceof IteratorContext) {
 		

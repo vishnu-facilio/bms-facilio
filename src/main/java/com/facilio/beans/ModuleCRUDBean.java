@@ -68,5 +68,7 @@ public interface ModuleCRUDBean {
 
 	public void insertAgentMetrics(Map<String,Object> metrics) throws Exception;
 
-	public List<Map<String, Object>> getMetrics(Long agentId, Integer publishType) throws Exception;
+	public List<Map<String, Object>> getMetrics(Long agentId, Integer publishType, Long createdTime) throws Exception;
+
+	//public List<Map<String, Object>> getIntegration() throws Exception;
 }

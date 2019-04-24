@@ -10,6 +10,7 @@ import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
+import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.util.StoreroomApi;
 import com.facilio.bmsconsole.util.ToolsApi;
@@ -18,6 +19,7 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
@@ -53,12 +55,24 @@ public class GetToolsListCommand implements Command{
 		SelectRecordsBuilder<ToolContext> builder = new SelectRecordsBuilder<ToolContext>().module(module)
 				.beanClass(FacilioConstants.ContextNames.getClassFromModuleName(moduleName)).select(fields);
 
+		List<Long> accessibleSpaces = AccountUtil.getCurrentUser().getAccessibleSpace();
+		builder.innerJoin(ModuleFactory.getStoreRoomModule().getTableName())
+				.on(ModuleFactory.getStoreRoomModule().getTableName() + ".ID = "
+						+ ModuleFactory.getToolModule().getTableName() + ".STORE_ROOM_ID");
+		if (accessibleSpaces != null && !accessibleSpaces.isEmpty()) {
+			builder.andCustomWhere("Store_room.ID IN (Select STORE_ROOM_ID from Storeroom_Sites where SITE_ID IN ( ? ))",
+					StringUtils.join(accessibleSpaces, ", "));
+		}
+		
 		if (getCount) {
 			builder.setAggregation();
 		}
 		
 		String orderBy = (String) context.get(FacilioConstants.ContextNames.SORTING_QUERY);
 		if (orderBy != null && !orderBy.isEmpty()) {
+			if(orderBy.contains("LAST_PURCHASED_DATE")) {
+				orderBy = "Tool.LAST_PURCHASED_DATE" + orderBy.substring(0, orderBy.indexOf(" ")); 
+			}
 			builder.orderBy(orderBy);
 		}
 

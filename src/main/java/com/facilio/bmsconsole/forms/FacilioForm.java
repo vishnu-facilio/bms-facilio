@@ -22,6 +22,7 @@ public class FacilioForm implements Serializable {
 		this.module = module;
 		this.formType = formType;
 		this.labelPosition = labelPosition;
+		this.showInMobile = true;
 	}
 
 	public FacilioForm(FacilioForm form) {
@@ -85,6 +86,14 @@ public class FacilioForm implements Serializable {
 		this.fields = fields;
 	}
 	
+	private List<FormSection> sections;
+	public List<FormSection> getSections() {
+		return sections;
+	}
+	public void setSections(List<FormSection> sections) {
+		this.sections = sections;
+	}
+
 	private FacilioModule module;
 	
 	public void setModule(FacilioModule module) {
@@ -156,10 +165,38 @@ public class FacilioForm implements Serializable {
 	public void setDescription(String description) {
 		this.description = description;
 	}
+	
+	private Boolean showInMobile;
+	public Boolean getShowInMobile() {
+		return showInMobile;
+	}
+	public void setShowInMobile(Boolean showInMobile) {
+		this.showInMobile = showInMobile;
+	}
+	public Boolean isShowInMobile() {
+		if (this.showInMobile == null) {
+			return true;
+		}
+		return this.showInMobile;
+	}
+	
+	private Boolean hideInList;
+	public Boolean getHideInList() {
+		return hideInList;
+	}
+	public void setHideInList(Boolean hideInList) {
+		this.hideInList = hideInList;
+	}
+	public Boolean isHideInList() {
+		if (this.hideInList == null) {
+			return false;
+		}
+		return this.hideInList;
+	}
 
 	public enum FormType {
 		WEB(1, "web"),
-		MOBILE(2, "mobile"),
+		MOBILE(2, "mobile"), // Will be removed
 		PORTAL(3, "portal");
 		
 		private int intVal;
@@ -198,7 +235,8 @@ public class FacilioForm implements Serializable {
 	
 	public enum LabelPosition {
 		TOP(1, "top"),
-		LEFT(2, "left");
+		LEFT(2, "left"),
+		RIGHT(3, "right");
 		
 		private int intVal;
 		public int getIntVal() {

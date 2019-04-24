@@ -501,7 +501,7 @@ public class ExportUtil {
 		return null;
 	}
 	
-	public static String exportModule(FileFormat fileFormat, String moduleName, String viewName, String filters, boolean isS3Value, boolean specialFields) throws Exception {
+	public static String exportModule(FileFormat fileFormat, String moduleName, String viewName, String filters, boolean isS3Value, boolean specialFields, Integer viewLimit) throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
 		context.put(FacilioConstants.ContextNames.CV_NAME, viewName);
@@ -512,6 +512,9 @@ public class ExportUtil {
 		
 		if (orgLimit != null && !orgLimit.isEmpty()) {
 			limit = Integer.parseInt(orgLimit);
+		}
+		if (viewLimit != null) {
+			limit = viewLimit;
 		}
 		
 		JSONObject pagination = new JSONObject();

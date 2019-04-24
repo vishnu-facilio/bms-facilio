@@ -1,8 +1,13 @@
 package com.facilio.accounts.dto;
 
-import com.facilio.screen.context.RemoteScreenContext;
-
 import java.io.Serializable;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.struts2.ServletActionContext;
+
+import com.facilio.screen.context.RemoteScreenContext;
+import com.opensymphony.xwork2.ActionContext;
 
 public class Account implements Serializable {
 	
@@ -38,14 +43,13 @@ public class Account implements Serializable {
 	public Account(Organization org, User user) {
 		this.org = org;
 		this.user = user;
+		if (ActionContext.getContext() != null && ServletActionContext.getRequest() != null) {
+			HttpServletRequest request = ServletActionContext.getRequest();
+			setDeviceType(request.getHeader("X-Device-Type"));
+			setAppVersion(request.getHeader("X-App-Version"));
+		}
 	}
-	
-	public Account(Organization org, User user, long siteId) {
-		this.org = org;
-		this.user = user;
-		this.siteId = siteId;
-	}
-	
+
 	public Organization getOrg() {
 		return this.org;
 	}

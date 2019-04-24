@@ -1,11 +1,12 @@
 package com.facilio.bmsconsole.commands;
 
-import com.facilio.bmsconsole.actions.GetToolTransactionsListCommand;
-import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
-import com.facilio.chain.FacilioChain;
 import org.apache.commons.chain.Chain;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+
+import com.facilio.bmsconsole.actions.GetToolTransactionsListCommand;
+import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
+import com.facilio.chain.FacilioChain;
 
 public class ReadOnlyChainFactory {
 	private static Logger LOGGER = LogManager.getLogger(ReadOnlyChainFactory.class.getName());
@@ -270,7 +271,7 @@ public class ReadOnlyChainFactory {
 	
 	public static Chain getResourcesListForMultiplePM() {
 		Chain c = getDefaultChain();
-		c.addCommand(new getResourceListForMultiplePM());
+		c.addCommand(new GetResourceListForMultiplePM());
 		return c;
 	}
 	
@@ -356,6 +357,12 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new ReportSpecialHandlingCommand(true));
 		c.addCommand(newFetchReportDataChain());
 		c.addCommand(new ReportSpecialHandlingCommand(false));
+		return c;
+	}
+
+	public static Chain getPageChain() {
+		Chain c = getDefaultChain();
+		c.addCommand(new GetPageCommand());
 		return c;
 	}
 	
@@ -492,6 +499,7 @@ public class ReadOnlyChainFactory {
 	public static Chain getItemList() {
 		Chain c = getDefaultChain();
 		c.addCommand(SetTableNamesCommand.getForItem());
+		c.addCommand(new LoadViewCommand());
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new GenerateCriteriaFromFilterCommand());
 		c.addCommand(new GenerateSearchConditionCommand());
@@ -526,6 +534,7 @@ public class ReadOnlyChainFactory {
 	public static Chain getStockedToolsList() {
 		Chain c = getDefaultChain();
 		c.addCommand(SetTableNamesCommand.getForTool());
+		c.addCommand(new LoadViewCommand());
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new GenerateCriteriaFromFilterCommand());
 		c.addCommand(new GenerateSearchConditionCommand());
@@ -589,6 +598,28 @@ public class ReadOnlyChainFactory {
 		c.addCommand(SetTableNamesCommand.getForPurchasedItem());
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new GetPurchasedItemsListCommand());
+		return c;
+	}
+	
+	public static Chain getPurchasedItemsViewsList() {
+		Chain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForPurchasedItem());
+		c.addCommand(new LoadViewCommand());
+		c.addCommand(new LoadAllFieldsCommand());
+		c.addCommand(new GenerateCriteriaFromFilterCommand());
+		c.addCommand(new GenerateSearchConditionCommand());
+		c.addCommand(new GetPurchasedItemsViewsListCommand());
+		return c;
+	}
+	
+	public static Chain getGatePassList() {
+		Chain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForGatePass());
+		c.addCommand(new LoadViewCommand());
+		c.addCommand(new LoadAllFieldsCommand());
+		c.addCommand(new GenerateCriteriaFromFilterCommand());
+		c.addCommand(new GenerateSearchConditionCommand());
+		c.addCommand(new GetGatePassListCommand());
 		return c;
 	}
 	
@@ -765,5 +796,19 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new GenericGetModuleDataListCommand());
 		return c;
 	}
+
+	public static Chain getAssetModuleReportCardChain() {
+		Chain c = getDefaultChain();
+		c.addCommand(new ConstructAssetReportCardsCommand());
+		c.addCommand(new GetModuleReportCardsCommand());
+		return c;
+	}
 	
+	public static Chain fetchGatePassDetails() {
+		Chain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForGatePass());
+		c.addCommand(new GenericGetModuleDataDetailCommand());
+		c.addCommand(new GetGatePassDetailsCommand());
+		return c;
+	}
 }

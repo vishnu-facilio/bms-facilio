@@ -55,7 +55,7 @@ public class ViewEmailScheduler extends FacilioJob {
 				FacilioModule viewModule = modBean.getModule(view.getModuleId());
 				view.setModuleName(viewModule.getName());
 
-				String fileUrl = ExportUtil.exportModule(FileInfo.FileFormat.getFileFormat((int) prop.get("fileFormat")), view.getModuleName(), view.getName(), null, true, false);
+				String fileUrl = ExportUtil.exportModule(FileInfo.FileFormat.getFileFormat((int) prop.get("fileFormat")), view.getModuleName(), view.getName(), null, true, false, 2000);
 				Map<String, String> files = new HashMap<>();
 				String fileName = view.getDisplayName();
 				FileInfo.FileFormat fileFormat = FileInfo.FileFormat.getFileFormat((int) prop.get("fileFormat"));

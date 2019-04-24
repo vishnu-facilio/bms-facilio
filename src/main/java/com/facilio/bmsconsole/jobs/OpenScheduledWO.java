@@ -83,6 +83,8 @@ public class OpenScheduledWO extends FacilioJob {
                     .fields(Arrays.asList(fieldMap.get("status"), fieldMap.get("jobStatus")))
                     .andCondition(CriteriaAPI.getIdCondition(woId, module));
             updateRecordBuilder.update(wo);
+            
+            long siteIdAfterUpdate = wo.getSiteId();
 
             FacilioContext context = new FacilioContext();
             
@@ -140,6 +142,9 @@ public class OpenScheduledWO extends FacilioJob {
 			}
             context.put(FacilioConstants.ContextNames.RECORD_MAP, Collections.singletonMap(FacilioConstants.ContextNames.WORK_ORDER, Collections.singletonList(wo)));
             context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(wo.getId()));
+            
+            long siteIdBeforeWorkflow = wo.getSiteId();
+            
             Chain c = TransactionChainFactory.getWorkOrderWorkflowsChain();
             c.addCommand(new AddActivitiesCommand(FacilioConstants.ContextNames.WORKORDER_ACTIVITY));
             c.execute(context);
@@ -153,8 +158,18 @@ public class OpenScheduledWO extends FacilioJob {
             long newSiteId = wo.getSiteId();
             long pmSiteId = pm.getSiteId();
             if (newSiteId != initialSiteId || newSiteId != pmSiteId) {
-            		CommonCommandUtil.emailException("OpenScheduledWO", "Workorder site different from PM", "woId: "+woId);
-                LOGGER.info("Workorder site different from PM. ID: - " + woId);
+            		StringBuilder builder = new StringBuilder();
+            		builder.append("woId: ").append(woId)
+            		.append("\nInitial SiteId: ").append(initialSiteId)
+            		.append("\nSiteId After Status Update: ").append(siteIdAfterUpdate)
+            		.append("\nSiteId Before Workflow: ").append(siteIdBeforeWorkflow)
+            		.append("\nNew SiteId: ").append(newSiteId)
+            		.append("\nPm SiteId: ").append(pmSiteId);
+            		if (changeSets != null && !changeSets.isEmpty()) {
+            			builder.append(changeSets.toString());
+            		}
+            		CommonCommandUtil.emailException("OpenScheduledWO", "Workorder site different", builder.toString());
+                LOGGER.info("Workorder site different. " + builder.toString());
             }
             
         } catch (Exception e) {

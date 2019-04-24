@@ -284,6 +284,10 @@ public class ActionAPI {
 								break;
 							case CONTROL_ACTION:
 								setControlActionTemplate(action, rule);
+								break;
+							case CHANGE_STATE:
+								setDefaultTemplate(action, rule);
+								break;
 							default:
 								break;
 						}
@@ -364,6 +368,13 @@ public class ActionAPI {
 			WorkflowContext workflowContext = FieldUtil.getAsBeanFromMap(workflow, WorkflowContext.class);
 			template.setWorkflow(workflowContext);
 		}
+	}
+	
+	private static void setDefaultTemplate(ActionContext action, WorkflowRuleContext rule) {
+		JSONTemplate jsonTemplate = new JSONTemplate();
+		jsonTemplate.setName(rule.getName());
+		jsonTemplate.setContent(action.getTemplateJson().toString());
+		action.setTemplate(jsonTemplate);
 	}
 	
 	private static void setJsonTemplate(ActionContext action, WorkflowRuleContext rule, Type templateType) throws Exception {

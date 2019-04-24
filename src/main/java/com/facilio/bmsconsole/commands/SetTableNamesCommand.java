@@ -290,6 +290,14 @@ public class SetTableNamesCommand implements Command {
 	public static SetTableNamesCommand getForPoLineItemSerialNumber() {
 		return new SetTableNamesCommand("poLineItemSerialNumbers", "PO_Line_Item_Serial_Numbers");
 	}
+	
+	public static SetTableNamesCommand getForGatePass() {
+		return new SetTableNamesCommand("gatePass", "Gate_Pass");
+	}
+	
+	public static SetTableNamesCommand getForGatePassLineItems() {
+		return new SetTableNamesCommand("gatePassLineItems", "Gate_Pass_Line_Items");
+	}
 
 	public static void setForModule (Context context, String moduleName) {
 		//TODO handle all module and get from map

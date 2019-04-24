@@ -24,6 +24,7 @@ public class AddActivitiesCommand implements Command {
 	
 	public AddActivitiesCommand() {
 		// TODO Auto-generated constructor stub
+		
 	}
 	
 	public AddActivitiesCommand(String activityModule) {
@@ -59,23 +60,26 @@ public class AddActivitiesCommand implements Command {
 	}
 	
 	private FacilioModule getActivityModule (ModuleBean modBean, Context context) throws Exception {
+		String currentActivity = null;
 		if (StringUtils.isNotEmpty(activityModule)) {
+			currentActivity = activityModule;
+		}
+		else {
+			currentActivity = (String) context.get(FacilioConstants.ContextNames.CURRENT_ACTIVITY);
+		}
+		if (StringUtils.isNotEmpty(currentActivity)) {
 			FacilioModule module = modBean.getModule(activityModule);
-			
 			if (module == null) {
 				LOGGER.info("No valid Activity Module with name "+activityModule+" and so not adding activities for that");
 			}
-			
 			return module;
 		}
 		
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
-		
 		if (StringUtils.isEmpty(moduleName)) {
 			LOGGER.info("No valid Activity/ Module name specified and so not adding activities for that");
 			return null;
 		}
-		
 		List<FacilioModule> subModules = modBean.getSubModules(moduleName, ModuleType.ACTIVITY);
 		if (CollectionUtils.isEmpty(subModules)) {
 			LOGGER.info("No Activity Module was found for module "+moduleName+" and so not adding activities for that");

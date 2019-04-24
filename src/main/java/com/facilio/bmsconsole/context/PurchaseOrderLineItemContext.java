@@ -122,5 +122,14 @@ public class PurchaseOrderLineItemContext extends ModuleBaseWithCustomFields{
 	public void setPurchasedTools(List<PurchasedToolContext> purchasedTools) {
 		this.purchasedTools = purchasedTools;
 	}
+	
+	private int noOfSerialNumbers = -1;
+	public int getNoOfSerialNumbers() {
+		return noOfSerialNumbers;
+	}
+	public void setNoOfSerialNumbers(int noOfSerialNumbers) {
+		this.noOfSerialNumbers = noOfSerialNumbers;
+	}
+	
 
 }

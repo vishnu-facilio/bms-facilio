@@ -126,4 +126,19 @@ public class StoreRoomContext extends ModuleBaseWithCustomFields {
 	public void setSites(List<Long> sites) {
 		this.sites = sites;
 	}
+	
+	private Boolean isGatePassRequired;
+	public Boolean getIsGatePassRequired() {
+		return isGatePassRequired;
+	}
+	public void setIsGatePassRequired(Boolean isGatePassRequired) {
+		this.isGatePassRequired = isGatePassRequired;
+	}
+	
+	public boolean isGatePassRequired() {
+		if (isGatePassRequired != null) {
+			return isGatePassRequired.booleanValue();
+		}
+		return false;
+	}
 }

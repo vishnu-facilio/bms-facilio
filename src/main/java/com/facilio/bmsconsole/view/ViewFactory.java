@@ -1,17 +1,44 @@
 package com.facilio.bmsconsole.view;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
 import com.facilio.bmsconsole.context.AlarmContext.AlarmType;
-import com.facilio.bmsconsole.context.*;
+import com.facilio.bmsconsole.context.AssetCategoryContext;
 import com.facilio.bmsconsole.context.AssetContext.AssetState;
+import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.context.TicketContext.SourceType;
-import com.facilio.bmsconsole.criteria.*;
-import com.facilio.bmsconsole.modules.*;
+import com.facilio.bmsconsole.context.TicketStatusContext;
+import com.facilio.bmsconsole.context.TicketStatusContext.StatusType;
+import com.facilio.bmsconsole.context.ViewField;
+import com.facilio.bmsconsole.context.WorkOrderRequestContext;
+import com.facilio.bmsconsole.criteria.BooleanOperators;
+import com.facilio.bmsconsole.criteria.CommonOperators;
+import com.facilio.bmsconsole.criteria.Condition;
+import com.facilio.bmsconsole.criteria.Criteria;
+import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.criteria.DateOperators;
+import com.facilio.bmsconsole.criteria.LookupOperator;
+import com.facilio.bmsconsole.criteria.NumberOperators;
+import com.facilio.bmsconsole.criteria.PickListOperators;
+import com.facilio.bmsconsole.criteria.StringOperators;
+import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.FacilioModule;
+import com.facilio.bmsconsole.modules.FieldFactory;
+import com.facilio.bmsconsole.modules.FieldType;
+import com.facilio.bmsconsole.modules.LookupField;
+import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.bmsconsole.modules.NumberField;
+import com.facilio.bmsconsole.tenant.TenantContext;
 import com.facilio.bmsconsole.util.DateTimeUtil;
 import com.facilio.bmsconsole.workflow.rule.ApprovalState;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.events.constants.EventConstants;
-
-import java.util.*;
 
 public class ViewFactory {
 
@@ -124,6 +151,7 @@ public class ViewFactory {
 		order = 1;
 		views = new LinkedHashMap<>();
 		views.put("all", getAllTenantsView().setOrder(order++));
+		views.put("active", getActiveTenantsView().setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.TENANT, views);
 
 		order = 1;
@@ -223,6 +251,7 @@ public class ViewFactory {
 		order = 1;
 		views = new LinkedHashMap<>();
 		views.put("all", getAllInventry().setOrder(order++));
+		views.put("understocked", getUnderStockedItemView().setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.ITEM, views);
 		
 		order = 1;
@@ -244,11 +273,13 @@ public class ViewFactory {
 		
 		order = 1;
 		views = new LinkedHashMap<>();
-		views.put("pendingitem", getItemPendingApproval().setOrder(order++));
-		views.put("pendingtool", getToolPendingApproval().setOrder(order++));
-		views.put("allitem", getAllItemApproval().setOrder(order++));
-		views.put("alltool", getAllToolApproval().setOrder(order++));
-		viewsMap.put(FacilioConstants.ContextNames.INVENTORY_TRANSACTIONS, views);
+		views.put("allpuritem", getAllPurchasedItem().setOrder(order++));
+		viewsMap.put(FacilioConstants.ContextNames.PURCHASED_ITEM, views);
+		
+		order = 1;
+		views = new LinkedHashMap<>();
+		views.put("all", getAllGatePass().setOrder(order++));
+		viewsMap.put(FacilioConstants.ContextNames.GATE_PASS, views);
 		
 		order = 1;
 		views = new LinkedHashMap<>();
@@ -483,6 +514,25 @@ public class ViewFactory {
 		return criteria;
 	}
 
+	private static Condition getTenantStateCondition(String state) {
+		FacilioModule tenantsModule = ModuleFactory.getTenantsModule();
+		FacilioField statusField = new FacilioField();
+		statusField.setName("status");
+		statusField.setColumnName("STATUS");
+		statusField.setDataType(FieldType.ENUM);
+		statusField.setModule(tenantsModule);
+
+		Condition status = new Condition();
+		status.setField(statusField);
+		status.setOperator(NumberOperators.EQUALS);
+		if (state.equals("Active")) {
+			status.setValue(String.valueOf(TenantContext.Status.ACTIVE.getValue()));
+		} else if (state.equals("Retired")) {
+			status.setValue(String.valueOf(TenantContext.Status.ACTIVE.getValue()));
+		}
+
+		return status;
+	}
 	private static Condition getAssetStateCondition(String state) {
 		FacilioModule assetsModule = ModuleFactory.getAssetsModule();
 		FacilioField statusField = new FacilioField();
@@ -602,6 +652,27 @@ public class ViewFactory {
 		allView.setDisplayName("All Tenants");
 		allView.setSortFields(Arrays.asList(new SortField(localId, false)));
 		return allView;
+	}
+	
+	private static FacilioView getActiveTenantsView() {
+		FacilioField localId = new FacilioField();
+		
+		Criteria criteria = new Criteria();
+		criteria.addAndCondition(getTenantStateCondition("Active"));
+		
+		
+		localId.setName("localId");
+		localId.setColumnName("LOCAL_ID");
+		localId.setDataType(FieldType.NUMBER);
+		localId.setModule(ModuleFactory.getTenantsModule());
+
+		FacilioView activeTenantsView = new FacilioView();
+		activeTenantsView.setName("active");
+		activeTenantsView.setDisplayName("Residing Tenants");
+		activeTenantsView.setSortFields(Arrays.asList(new SortField(localId, false)));
+		activeTenantsView.setCriteria(criteria);
+		
+		return activeTenantsView;
 	}
 
 	
@@ -737,6 +808,43 @@ public class ViewFactory {
 
 		Criteria criteria = new Criteria();
 		criteria.addAndCondition(statusClose);
+
+		return criteria;
+	}
+	
+	public static Criteria getStateCriteria(StatusType statusType) {
+		FacilioModule module = ModuleFactory.getTicketsModule();
+		LookupField statusField = new LookupField();
+		statusField.setName("moduleState");
+		statusField.setColumnName("MODULE_STATE");
+		statusField.setDataType(FieldType.LOOKUP);
+		statusField.setModule(module);
+		statusField.setLookupModule(ModuleFactory.getTicketStatusModule());
+
+		Condition status = new Condition();
+		status.setField(statusField);
+		status.setOperator(LookupOperator.LOOKUP);
+		status.setCriteriaValue(getStateTypeCriteria(statusType));
+		
+		Criteria criteria = new Criteria();
+		criteria.addAndCondition(status);
+		return criteria;
+	}
+	
+	public static Criteria getStateTypeCriteria(StatusType statusType) {
+		FacilioField statusTypeField = new FacilioField();
+		statusTypeField.setName("typeCode");
+		statusTypeField.setColumnName("STATUS_TYPE");
+		statusTypeField.setDataType(FieldType.NUMBER);
+		statusTypeField.setModule(ModuleFactory.getTicketStatusModule());
+
+		Condition status = new Condition();
+		status.setField(statusTypeField);
+		status.setOperator(NumberOperators.EQUALS);
+		status.setValue(String.valueOf(statusType));
+
+		Criteria criteria = new Criteria();
+		criteria.addAndCondition(status);
 
 		return criteria;
 	}
@@ -1006,6 +1114,24 @@ public class ViewFactory {
 	private static FacilioView getRequestedApproval() {
 
 		Criteria criteria = getApprovalStateCriteria(ApprovalState.REQUESTED);
+
+		FacilioField createdTime = new FacilioField();
+		createdTime.setName("createdTime");
+		createdTime.setDataType(FieldType.NUMBER);
+		createdTime.setColumnName("CREATED_TIME");
+		createdTime.setModule(ModuleFactory.getWorkOrdersModule());
+
+		FacilioView rejectedApproval = new FacilioView();
+		rejectedApproval.setName("requested");
+		rejectedApproval.setDisplayName("Pending Approval");
+		rejectedApproval.setCriteria(criteria);
+		rejectedApproval.setSortFields(Arrays.asList(new SortField(createdTime, false)));
+		return rejectedApproval;
+	}
+	
+	public static FacilioView getRequestedStateApproval() {
+
+		Criteria criteria = getStateCriteria(StatusType.REQUESTED);
 
 		FacilioField createdTime = new FacilioField();
 		createdTime.setName("createdTime");
@@ -1665,7 +1791,7 @@ public class ViewFactory {
 		return view;
 	}
 
-	private static Criteria getCommonAlarmCriteria() {
+	public static Criteria getCommonAlarmCriteria() {
 		return getSourceTypeCriteria(SourceType.ANOMALY_ALARM, false);
 	}
 
@@ -1743,6 +1869,24 @@ public class ViewFactory {
 	}
 
 	private static FacilioView getUnacknowledgedAlarms() {
+		Criteria criteria = getUnacknowledgedAlarmCriteria();
+
+		FacilioField modifiedTime = new FacilioField();
+		modifiedTime.setColumnName("MODIFIED_TIME");
+		modifiedTime.setName("modifiedTime");
+		modifiedTime.setDataType(FieldType.DATE_TIME);
+		modifiedTime.setModule(ModuleFactory.getAlarmsModule());
+
+		FacilioView typeAlarms = new FacilioView();
+		typeAlarms.setName("unacknowledged");
+		typeAlarms.setDisplayName("Unacknowledged");
+		typeAlarms.setCriteria(criteria);
+		typeAlarms.setSortFields(Arrays.asList(new SortField(modifiedTime, false)));
+
+		return typeAlarms;
+	}
+	
+	public static Criteria getUnacknowledgedAlarmCriteria() {
 		Condition falseCondition = new Condition();
 		falseCondition.setColumnName("Alarms.IS_ACKNOWLEDGED");
 		falseCondition.setFieldName("isAcknowledged");
@@ -1772,20 +1916,7 @@ public class ViewFactory {
 		activeAlarm.setCriteriaValue(getSeverityAlarmCriteria("Clear", false));
 
 		criteria.addAndCondition(activeAlarm);
-
-		FacilioField modifiedTime = new FacilioField();
-		modifiedTime.setColumnName("MODIFIED_TIME");
-		modifiedTime.setName("modifiedTime");
-		modifiedTime.setDataType(FieldType.DATE_TIME);
-		modifiedTime.setModule(ModuleFactory.getAlarmsModule());
-
-		FacilioView typeAlarms = new FacilioView();
-		typeAlarms.setName("unacknowledged");
-		typeAlarms.setDisplayName("Unacknowledged");
-		typeAlarms.setCriteria(criteria);
-		typeAlarms.setSortFields(Arrays.asList(new SortField(modifiedTime, false)));
-
-		return typeAlarms;
+		return criteria;
 	}
 
 	private static FacilioView getUnassignedAlarms() {
@@ -2208,6 +2339,28 @@ public class ViewFactory {
 		criteria.addAndCondition(ticketClose);
 		return criteria;
 	}
+	private static Criteria getUnderstockedItemCriteria(FacilioModule module) {
+		FacilioField quantity = new NumberField();
+		quantity.setName("quantity");
+		quantity.setColumnName("QUANTITY");
+		quantity.setDataType(FieldType.DECIMAL);
+		quantity.setModule(module);
+		
+		FacilioField minimumQuantity = new FacilioField();
+		minimumQuantity.setName("minimumQuantity");
+		minimumQuantity.setColumnName("MINIMUM_QUANTITY");
+		minimumQuantity.setDataType(FieldType.DECIMAL);
+		minimumQuantity.setModule(module);
+		
+		Condition ticketClose = new Condition();
+		ticketClose.setField(quantity);
+		ticketClose.setOperator(NumberOperators.LESS_THAN);
+		ticketClose.setValue("MINIMUM_QUANTITY");
+		
+		Criteria criteria = new Criteria();
+		criteria.addAndCondition(ticketClose);
+		return criteria;
+	}
 
 	private static FacilioView getStalePartsView() {
 
@@ -2267,18 +2420,40 @@ public class ViewFactory {
 		allView.setCriteria(criteria);
 		return allView;
 	}
+	private static FacilioView getUnderStockedItemView() {
+		
+		Criteria criteria = getUnderstockedItemCriteria(ModuleFactory.getInventryModule());
+		
+		FacilioModule itemsModule = ModuleFactory.getInventryModule();
+		
+		FacilioField createdTime = new LookupField();
+		createdTime.setName("itemType");
+		createdTime.setDataType(FieldType.LOOKUP);
+		createdTime.setColumnName("ITEM_TYPES_ID");
+		createdTime.setModule(ModuleFactory.getItemTypesModule());
+
+		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, true));
+		
+		FacilioView allView = new FacilioView();
+		allView.setName("understocked");
+		allView.setDisplayName("Understocked Items");
+		allView.setSortFields(sortFields);
+		
+		allView.setCriteria(criteria);
+		return allView;
+	}
 	
 	private static FacilioView getAllStoreRooms() {
 
 		FacilioModule storeRoomModule = ModuleFactory.getStoreRoomModule();
 
 		FacilioField createdTime = new FacilioField();
-		createdTime.setName("sysCreatedTime");
-		createdTime.setDataType(FieldType.NUMBER);
-		createdTime.setColumnName("CREATED_TIME");
+		createdTime.setName("name");
+		createdTime.setDataType(FieldType.STRING);
+		createdTime.setColumnName("NAME");
 		createdTime.setModule(storeRoomModule);
 
-		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));
+		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, true));
 
 		FacilioView allView = new FacilioView();
 		allView.setName("all");
@@ -2293,12 +2468,12 @@ public class ViewFactory {
 		FacilioModule itemsModule = ModuleFactory.getItemTypesModule();
 
 		FacilioField createdTime = new FacilioField();
-		createdTime.setName("sysCreatedTime");
-		createdTime.setDataType(FieldType.NUMBER);
-		createdTime.setColumnName("CREATED_TIME");
+		createdTime.setName("name");
+		createdTime.setDataType(FieldType.STRING);
+		createdTime.setColumnName("NAME");
 		createdTime.setModule(itemsModule);
 
-		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));
+		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, true));
 
 		FacilioView allView = new FacilioView();
 		allView.setName("all");
@@ -2313,12 +2488,12 @@ public class ViewFactory {
 		FacilioModule itemsModule = ModuleFactory.getItemTypesModule();
 
 		FacilioField createdTime = new FacilioField();
-		createdTime.setName("sysCreatedTime");
-		createdTime.setDataType(FieldType.NUMBER);
-		createdTime.setColumnName("CREATED_TIME");
+		createdTime.setName("name");
+		createdTime.setDataType(FieldType.STRING);
+		createdTime.setColumnName("NAME");
 		createdTime.setModule(itemsModule);
 
-		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));
+		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, true));
 
 		Criteria criteria = getItemTypeStatusCriteria(itemsModule, status);
 		
@@ -2369,12 +2544,12 @@ public class ViewFactory {
 		FacilioModule itemsModule = ModuleFactory.getToolTypesModule();
 
 		FacilioField createdTime = new FacilioField();
-		createdTime.setName("sysCreatedTime");
-		createdTime.setDataType(FieldType.NUMBER);
-		createdTime.setColumnName("CREATED_TIME");
+		createdTime.setName("name");
+		createdTime.setDataType(FieldType.STRING);
+		createdTime.setColumnName("NAME");
 		createdTime.setModule(itemsModule);
 
-		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));
+		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, true));
 
 		FacilioView allView = new FacilioView();
 		allView.setName("all");
@@ -2408,17 +2583,17 @@ public class ViewFactory {
 
 		FacilioModule itemsModule = ModuleFactory.getInventryModule();
 
-		FacilioField createdTime = new FacilioField();
-		createdTime.setName("sysCreatedTime");
-		createdTime.setDataType(FieldType.NUMBER);
-		createdTime.setColumnName("TTIME");
-		createdTime.setModule(itemsModule);
+		FacilioField createdTime = new LookupField();
+		createdTime.setName("itemType");
+		createdTime.setDataType(FieldType.LOOKUP);
+		createdTime.setColumnName("ITEM_TYPES_ID");
+		createdTime.setModule(ModuleFactory.getItemTypesModule());
 
-		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));
+		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, true));
 
 		FacilioView allView = new FacilioView();
 		allView.setName("all");
-		allView.setDisplayName("All Item");
+		allView.setDisplayName("All Items");
 		allView.setSortFields(sortFields);
 
 		return allView;
@@ -2428,13 +2603,13 @@ public class ViewFactory {
 
 		FacilioModule itemsModule = ModuleFactory.getToolModule();
 
-		FacilioField createdTime = new FacilioField();
-		createdTime.setName("sysCreatedTime");
-		createdTime.setDataType(FieldType.NUMBER);
-		createdTime.setColumnName("TTIME");
-		createdTime.setModule(itemsModule);
+		FacilioField createdTime = new LookupField();
+		createdTime.setName("toolType");
+		createdTime.setDataType(FieldType.LOOKUP);
+		createdTime.setColumnName("TOOL_TYPE_ID");
+		createdTime.setModule(ModuleFactory.getToolTypesModule());
 
-		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));
+		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, true));
 
 		FacilioView allView = new FacilioView();
 		allView.setName("all");
@@ -2539,6 +2714,44 @@ public class ViewFactory {
 		rejectedApproval.setCriteria(criteria);
 		rejectedApproval.setSortFields(Arrays.asList(new SortField(createdTime, false)));
 		return rejectedApproval;
+	}
+	
+	private static FacilioView getAllPurchasedItem() {
+		FacilioModule purchasedItemModule = ModuleFactory.getPurchasedItemModule();
+
+		FacilioField createdTime = new FacilioField();
+		createdTime.setName("sysCreatedTime");
+		createdTime.setDataType(FieldType.NUMBER);
+		createdTime.setColumnName("CREATED_TIME");
+		createdTime.setModule(purchasedItemModule);
+
+		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, true));
+
+		FacilioView allView = new FacilioView();
+		allView.setName("allpuritem");
+		allView.setDisplayName("All Purchased Items");
+		allView.setSortFields(sortFields);
+
+		return allView;
+	}
+	
+	private static FacilioView getAllGatePass() {
+		FacilioModule purchasedItemModule = ModuleFactory.getGatePassModule();
+		
+		FacilioField createdTime = new FacilioField();
+		createdTime.setName("issuedTime");
+		createdTime.setDataType(FieldType.NUMBER);
+		createdTime.setColumnName("ISSUED_TIME");
+		createdTime.setModule(purchasedItemModule);
+		
+		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, true));
+		
+		FacilioView allView = new FacilioView();
+		allView.setName("all");
+		allView.setDisplayName("All Gate Pass");
+		allView.setSortFields(sortFields);
+		
+		return allView;
 	}
 	
 	public static Criteria getAllToolApprovalStateCriteria() {

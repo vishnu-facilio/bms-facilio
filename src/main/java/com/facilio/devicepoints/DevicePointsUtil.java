@@ -5,6 +5,7 @@ import com.facilio.bmsconsole.context.ControllerContext;
 import com.facilio.bmsconsole.util.ControllerAPI;
 import com.facilio.fw.BeanFactory;
 import com.facilio.timeseries.TimeSeriesAPI;
+import com.facilio.util.FacilioUtil;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
@@ -27,7 +28,7 @@ public  class DevicePointsUtil {
         if(payLoad.containsKey(DevicePointsKeys.MAC_ADDRESS)) {
             destinationAddress = (String) payLoad.get(DevicePointsKeys.MAC_ADDRESS);
         }
-        long subnetPrefix = (Long)payLoad.get(DevicePointsKeys.SUBNET_PREFIX);
+        long subnetPrefix = FacilioUtil.parseLong(payLoad.get(DevicePointsKeys.SUBNET_PREFIX));
         long networkNumber = -1;
         if(payLoad.containsKey(DevicePointsKeys.NETWORK_NUMBER)) {
             networkNumber = (Long) payLoad.get(DevicePointsKeys.NETWORK_NUMBER);
@@ -65,6 +66,9 @@ public  class DevicePointsUtil {
                 JSONArray points = (JSONArray)payLoad.get(DevicePointsKeys.POINTS);
                 LOGGER.info("Device Points : "+points);
                 TimeSeriesAPI.addUnmodeledInstances(points, controllerSettingsId);
+                if(TimeSeriesAPI.isStage()) {
+                	TimeSeriesAPI.addPointsInstances(points, controllerSettingsId);
+               }
             }
         // }
     }

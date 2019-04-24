@@ -543,4 +543,12 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 		}
 		
 	}
+
+	public E fetchFirst() throws Exception {
+		List<E> list = get();
+		if (CollectionUtils.isNotEmpty(list)) {
+			return list.get(0);
+		}
+		return null;
+	}
 }

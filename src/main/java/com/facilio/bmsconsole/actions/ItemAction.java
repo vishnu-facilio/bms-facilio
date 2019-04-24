@@ -55,6 +55,7 @@ public class ItemAction extends FacilioAction{
 		context.put(FacilioConstants.ContextNames.STORE_ROOM, storeRoom);
 		context.put(FacilioConstants.ContextNames.PURCHASED_ITEM, item.getPurchasedItems());
 		context.put(FacilioConstants.ContextNames.SET_LOCAL_MODULE_ID, true);
+		context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.ITEM_ACTIVITY);
 		Chain addInventry = TransactionChainFactory.getAddItemChain();
 		addInventry.execute(context);
 		setResult(FacilioConstants.ContextNames.ITEM, item);
@@ -85,7 +86,7 @@ public class ItemAction extends FacilioAction{
 		context.put(FacilioConstants.ContextNames.RECORD_ID, item.getId());
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(item.getId()));
 		context.put(FacilioConstants.ContextNames.WITH_CHANGE_SET, true);
-
+		context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.ITEM_ACTIVITY);
 		Chain updateInventryChain = TransactionChainFactory.getUpdateItemChain();
 		updateInventryChain.execute(context);
 		setItemId(item.getId());

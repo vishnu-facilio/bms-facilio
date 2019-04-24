@@ -1,20 +1,29 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
+
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.bmsconsole.criteria.Criteria;
+import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.criteria.StringOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
+import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
+import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.modules.NumberField;
 import com.facilio.bmsconsole.workflow.rule.ActionContext;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.fw.BeanFactory;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-
-import java.util.ArrayList;
-import java.util.List;
+import com.facilio.sql.GenericSelectRecordBuilder;
 
 public class AddFieldsCommand implements Command {
 	
@@ -28,12 +37,16 @@ public class AddFieldsCommand implements Command {
 			List<Long> fieldIds = new ArrayList<>();
 			List<List<ReadingRuleContext>> readingRules = new ArrayList<>();
 			List<List<List<ActionContext>>> actionsList = new ArrayList<>();
+			Boolean allowSameName = (Boolean) context.get(ContextNames.ALLOW_SAME_FIELD_DISPLAY_NAME);
+			if (allowSameName == null) {
+				allowSameName = false;
+			}
 			for (FacilioModule module : modules) {
 				FacilioModule cloneMod = new FacilioModule(module);
 				if(module != null && module.getFields() != null && !module.getFields().isEmpty()) {
 					for(FacilioField field : module.getFields()) {
 						field.setModule(cloneMod);
-						constructFieldName(field, module);
+						constructFieldName(field, module, allowSameName);
 						long fieldId = modBean.addField(field);
 						field.setFieldId(fieldId);
 						fieldIds.add(fieldId);
@@ -63,10 +76,14 @@ public class AddFieldsCommand implements Command {
 		return false;
 	}
 	
-	private void constructFieldName(FacilioField field, FacilioModule module) {
+	private void constructFieldName(FacilioField field, FacilioModule module, boolean changeDisplayName) throws Exception {
 		if(field.getName() == null || field.getName().isEmpty()) {
 			if(field.getDisplayName() != null && !field.getDisplayName().isEmpty()) {
 				field.setName(field.getDisplayName().toLowerCase().replaceAll("[^a-zA-Z0-9]+",""));
+				// Will be used while adding a new field from form
+				if (changeDisplayName) {
+					changeDisplayName(field);
+				}
 			}
 			else {
 				throw new IllegalArgumentException("Invalid name for field of module : "+module.getName());
@@ -86,6 +103,35 @@ public class AddFieldsCommand implements Command {
 			});
 			readingRules.add(rule);
 			actionsList.add(actions);
+		}
+	}
+	
+	private void changeDisplayName(FacilioField field) throws Exception {
+		FacilioModule module = ModuleFactory.getFieldsModule();
+		List<FacilioField> fields = FieldFactory.getSelectFieldFields();
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+					.table(module.getTableName())
+					.select(fields)
+					.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+					.orderBy(fieldMap.get("fieldId").getColumnName() + " desc")
+					.limit(1);
+		
+		Criteria criteria = new Criteria();
+		criteria.addOrCondition(CriteriaAPI.getCondition(fieldMap.get("name"), field.getName(), StringOperators.IS));
+		criteria.addOrCondition(CriteriaAPI.getCondition(fieldMap.get("name"), field.getName() + "\\_%", StringOperators.CONTAINS));
+		builder.andCriteria(criteria);
+		
+		List<Map<String, Object>> props = builder.get();
+		String dbFieldName = null;
+		if (props != null && !props.isEmpty()) {
+			dbFieldName = (String) props.get(0).get("name");
+			int count = 0;
+			if (dbFieldName.contains("_")) {
+				count = Integer.parseInt(dbFieldName.substring(dbFieldName.lastIndexOf('_') + 1));
+			}
+			field.setName(field.getName() + "_" + ++count);
+			field.setDisplayName(field.getDisplayName() + " " + count);
 		}
 	}
 }

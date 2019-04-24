@@ -2,12 +2,16 @@ package com.facilio.bmsconsole.actions;
 
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsole.context.ItemTypesContext;
 import com.facilio.bmsconsole.context.PurchasedItemContext;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import org.apache.commons.chain.Chain;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -140,6 +144,66 @@ public class PurchasedItemAction extends FacilioAction{
 		return SUCCESS;
 	}
 	
+	public String purchasedItemsViewsList() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.CV_NAME, getViewName());
+		context.put(FacilioConstants.ContextNames.SORTING_QUERY, "Purchased_Item.LOCAL_ID desc");
+		if (getFilters() != null) {
+			JSONParser parser = new JSONParser();
+			JSONObject json = (JSONObject) parser.parse(getFilters());
+			context.put(FacilioConstants.ContextNames.FILTERS, json);
+			context.put(FacilioConstants.ContextNames.INCLUDE_PARENT_CRITERIA, getIncludeParentFilter());
+		}
+		if (getSearch() != null) {
+			JSONObject searchObj = new JSONObject();
+			searchObj.put("query", getSearch());
+			context.put(FacilioConstants.ContextNames.SEARCH, searchObj);
+		}
+		if (getCount()) { // only count
+			context.put(FacilioConstants.ContextNames.FETCH_COUNT, true);
+		} else {
+			JSONObject pagination = new JSONObject();
+			pagination.put("page", getPage());
+			pagination.put("perPage", getPerPage());
+			if (getPerPage() < 0) {
+				pagination.put("perPage", 5000);
+			}
+			context.put(FacilioConstants.ContextNames.PAGINATION, pagination);
+		}
+
+		Chain itemsListChain = ReadOnlyChainFactory.getPurchasedItemsViewsList();
+		itemsListChain.execute(context);
+		if (getCount()) {
+			setPurchasedItemCount((Long) context.get(FacilioConstants.ContextNames.RECORD_COUNT));
+			setResult("count", purchasedItemCount);
+		} else {
+			purchasedItemList = (List<PurchasedItemContext>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
+			// Temp...needs to handle in client
+			if (purchasedItemList == null) {
+				purchasedItemList = new ArrayList<>();
+			}
+			setResult(FacilioConstants.ContextNames.PURCHASED_ITEM, purchasedItemList);
+		}
+		return SUCCESS;
+	}
+	
+	public String purchasedItemCount() throws Exception {
+		purchasedItemsViewsList();
+		setResult(FacilioConstants.ContextNames.PURCHASED_ITEM_COUNT, purchasedItemCount);
+		return SUCCESS;
+	}
+	
+	private List<PurchasedItemContext> purchasedItemList;
+	public List<PurchasedItemContext> getPurchasedItemList() {
+		return purchasedItemList;
+	}
+	public void setPurchasedItemList(List<PurchasedItemContext> purchasedItemList) {
+		this.purchasedItemList = purchasedItemList;
+	}
+
+	private Long purchasedItemCount;
+
+	
 	private int rowsUpdated;
 	public int getRowsUpdated() {
 		return rowsUpdated;
@@ -184,5 +248,11 @@ public class PurchasedItemAction extends FacilioAction{
 	}
 	public void setPurchasedItemsCount(Long toolsCount) {
 		this.purchasedItemsCount = toolsCount;
+	}
+	public Long getPurchasedItemCount() {
+		return purchasedItemCount;
+	}
+	public void setPurchasedItemCount(Long purchasedItemCount) {
+		this.purchasedItemCount = purchasedItemCount;
 	}
 }

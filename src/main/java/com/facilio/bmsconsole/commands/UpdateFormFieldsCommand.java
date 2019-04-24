@@ -13,7 +13,7 @@ public class UpdateFormFieldsCommand implements Command {
 	public boolean execute(Context context) throws Exception {
 		FacilioForm form = (FacilioForm) context.get(FacilioConstants.ContextNames.FORM);
 		FormsAPI.deleteFormFields(form.getId());
-		FormsAPI.addFormFields(form.getId(), form.getFields());
+		FormsAPI.addFormFields(form.getId(), form);
 		return false;
 	}
 

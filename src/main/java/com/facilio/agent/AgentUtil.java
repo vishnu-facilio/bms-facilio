@@ -102,7 +102,7 @@ public  class AgentUtil
         if(payload.containsKey(AgentKeys.CONNECTION_STATUS)) {
             agent.setAgentConnStatus(Boolean.valueOf(payload.get(AgentKeys.CONNECTION_STATUS).toString()));
         } else {
-            agent.setAgentConnStatus(false);
+            agent.setAgentConnStatus(true);
         }
 
 
@@ -148,6 +148,13 @@ public  class AgentUtil
             LOGGER.info(" in process agent agentName="+agentName);
         }*/
        FacilioAgent agent = getFacilioAgent(agentName);
+       if(jsonObject.containsKey(AgentKeys.DATA_INTERVAL)){
+           Long currDataInterval = Long.parseLong(jsonObject.get(AgentKeys.DATA_INTERVAL).toString());
+           if(currDataInterval.longValue() > 120L){
+               currDataInterval = 15L;
+               jsonObject.replace(AgentKeys.DATA_INTERVAL,currDataInterval);
+           }
+       }
        if(agent==null) {
            agent = getFacilioAgentFromJson(jsonObject);
            return addAgent(agent);
@@ -172,8 +179,8 @@ public  class AgentUtil
                            agent.setAgentConnStatus(connectionStatus);
                        }
                    } else {
-                       toUpdate.put(AgentKeys.CONNECTION_STATUS, false);
-                       agent.setAgentConnStatus(false);
+                       toUpdate.put(AgentKeys.CONNECTION_STATUS, true);
+                       agent.setAgentConnStatus(true);
                    }
 
                    if (jsonObject.containsKey(AgentKeys.DISPLAY_NAME)) {
@@ -365,18 +372,20 @@ public  class AgentUtil
      * @param agentId If passed, fetches only that particular agent's log data.NOT MANDATORY.
      * @param sent
      */
-    public static void putLog(JSONObject payLoad, Long orgId,Long agentId,boolean sent){
+    public static void putLog(JSONObject payLoad, Long orgId,Long agentId,boolean sent) {
 
-        if(!sent){
+        if(sent){
             payLoad.put(AgentKeys.COMMAND_STATUS,CommandStatus.SENT.getKey());
         }
         if(payLoad.containsKey(AgentKeys.COMMAND)){
-            payLoad.replace(AgentKeys.COMMAND, ControllerCommand.valueOf(payLoad.get(AgentKeys.COMMAND).toString()).getValue());
+            payLoad.replace(AgentKeys.COMMAND, ControllerCommand.valueOf(payLoad.get(AgentKeys.COMMAND).toString().toLowerCase()).getValue());
         }
-        if(!payLoad.containsKey(AgentKeys.AGENT_ID)){
+        if( ! payLoad.containsKey(AgentKeys.AGENT_ID)){
             payLoad.put(AgentKeys.AGENT_ID,agentId);
         }
-        payLoad.put(AgentKeys.CREATED_TIME,System.currentTimeMillis());
+        if( ! payLoad.containsKey(AgentKeys.TIMESTAMP)){
+            payLoad.put(AgentKeys.TIMESTAMP,System.currentTimeMillis());
+        }
         try {
             ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD",orgId);
             bean.addLog(payLoad);
@@ -440,7 +449,7 @@ public  class AgentUtil
         Map<String, Object> record;
         try {
             bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", AccountUtil.getCurrentOrg().getId());
-            List<Map<String,Object>> records = bean.getMetrics(agentId,publishType);
+            List<Map<String,Object>> records = bean.getMetrics(agentId,publishType,createdTime);
             if(!records.isEmpty()) {
                 record = records.get(0);
                 if (!record.isEmpty())

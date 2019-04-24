@@ -92,9 +92,36 @@ public class ReportsChainFactory {
 		return c;
 	}
 	
+	public static Chain getWoViewScheduleChain() {
+		Chain c = getDefaultChain();
+		c.addCommand(new AddTemplateCommand());
+		c.addCommand(new AddWoViewScheduleCommand());
+		return c;
+	}
+	
 	public static Chain getScheduledReportsChain() {
 		Chain c = getDefaultChain();
 		c.addCommand(new ReportScheduledListCommand());
+		return c;
+	}
+	
+	public static Chain getWoScheduledViewListChain() {
+		Chain c = getDefaultChain();
+		c.addCommand(new GetWoScheduledViewList());
+		return c;
+	}
+	
+	public static Chain updateWoScheduledViewChain() {
+		Chain c = getDefaultChain();
+		c.addCommand(new AddTemplateCommand());
+		c.addCommand(new DeleteWoScheduledViewCommand());
+		c.addCommand(new AddWoViewScheduleCommand());
+		return c;
+	}
+	
+	public static Chain deleteWoScheduledViewChain() {
+		Chain c = getDefaultChain();
+		c.addCommand(new DeleteWoScheduledViewCommand());
 		return c;
 	}
 	

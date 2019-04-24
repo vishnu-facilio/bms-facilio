@@ -1,5 +1,16 @@
 package com.facilio.bmsconsole.actions;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.chain.Chain;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
@@ -13,12 +24,6 @@ import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
-import org.apache.commons.chain.Chain;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-
-import java.util.*;
 
 public class AssetAction extends FacilioAction {
 	
@@ -470,7 +475,7 @@ public class AssetAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.QR_VALUE, value);
 		context.put(FacilioConstants.ContextNames.LOCATION, location);
-		
+		context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, moduleName);
 		Chain getAssetChain = TransactionChainFactory.getAssetFromQRChain();
 		getAssetChain.execute(context);
 		setResult("asset", context.get(FacilioConstants.ContextNames.ASSET));
@@ -500,6 +505,15 @@ public class AssetAction extends FacilioAction {
 		updateAsset();
 		setAssetId(asset.getId());
 		assetDetails();
+		return SUCCESS;
+	}
+	
+	public String fetchModuleCards() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.ASSET_ID, assetId);
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+		ReadOnlyChainFactory.getAssetModuleReportCardChain().execute(context);
+		setResult("cards", context.get(FacilioConstants.ContextNames.REPORT_CARDS));
 		return SUCCESS;
 	}
 }

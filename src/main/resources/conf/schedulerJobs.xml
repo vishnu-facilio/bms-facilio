@@ -57,4 +57,7 @@
 	 <job name='HistoricalScheduledRule' classname='com.facilio.bmsconsole.jobs.HistoricalScheduledRuleJob' transactionTimeout='7200000' />
 	 <!--  ML jobs -->
 	 <job name='DefaultMLJob' classname='com.facilio.bmsconsole.jobs.DefaultMLJob' transactionTimeout='7200000'/> 
+	 
+	 <job name='StateFlowScheduledRule' classname='com.facilio.bmsconsole.jobs.StateFlowScheduledRuleJob' transactionTimeout='900000' />
+
 </scheduler>

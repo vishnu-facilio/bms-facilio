@@ -170,7 +170,7 @@ public class AddWorkOrderCommand implements Command {
     	                wolist.add(info);
     				}	
 
-    				addWO.put("addWO", wolist);
+    				addWO.put("addPMWO", wolist);
 
     				CommonCommandUtil.addActivityToContext(workOrder.getId(), -1, WorkOrderActivityType.ADD_PM_WO, addWO, (FacilioContext) context);
                 }
@@ -182,8 +182,12 @@ public class AddWorkOrderCommand implements Command {
 			if (workOrder.getPm() != null && workOrder.getPm().getId() != -1) {
 				PreventiveMaintenance pm = PreventiveMaintenanceAPI.getPM(workOrder.getPm().getId(), false);
 				if (newSiteId != initialSiteId || pm.getSiteId() != newSiteId) {
-					CommonCommandUtil.emailException("AddWorkOrderCommand", "Workorder site different from PM", "woId: "+workOrder.getId());
-	                LOGGER.info("Workorder site different from PM. ID: - " + workOrder.getId());
+					StringBuilder strBuilder = new StringBuilder();
+					strBuilder.append("woId: ").append(workOrder.getId())
+	            		.append("\nInitial SiteId: ").append(initialSiteId)
+	            		.append("\nNew SiteId: ").append(newSiteId)
+	            		.append("\nPm SiteId: ").append( pm.getSiteId());
+					CommonCommandUtil.emailException("AddWorkOrderCommand", "Workorder site different from PM", strBuilder.toString());
 				}
 			}
 

@@ -82,12 +82,12 @@ public class FormField implements Serializable {
 		this.span = span;
 	}
 	
-	private String defaultValue;
-	public String getDefaultValue() {
-		return defaultValue;
+	private String value;
+	public String getValue() {
+		return value;
 	}
-	public void setDefaultValue(String defaultValue) {
-		this.defaultValue = defaultValue;
+	public void setValue(String value) {
+		this.value = value;
 	}
 
 	public enum Required {
@@ -200,5 +200,13 @@ public class FormField implements Serializable {
 	public FormField setCreateFormName(String createFormName) {
 		this.createFormName = createFormName;
 		return this;
+	}
+	
+	private long sectionId = -1;
+	public long getSectionId() {
+		return sectionId;
+	}
+	public void setSectionId(long sectionId) {
+		this.sectionId = sectionId;
 	}
 }

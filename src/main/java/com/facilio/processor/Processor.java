@@ -139,6 +139,11 @@ public class Processor implements IRecordProcessor {
                     if(payLoad.containsKey(EventUtil.DATA_TYPE)) {
                         dataType = (String)payLoad.remove(EventUtil.DATA_TYPE);
                     }
+                    // Temp fix - bug: Publish_Type wrongly set to "agents"
+                    if("agents".equals(dataType)){
+                        dataType = PublishType.agent.getValue();
+                    }
+                    //Temp fix  - bug: Publish_Type wrongly set to "agents"
                     PublishType publishType = PublishType.valueOf(dataType);
                     String agentName = orgDomainName;
                     if ( payLoad.containsKey(PublishType.agent.getValue())) {
@@ -182,6 +187,18 @@ public class Processor implements IRecordProcessor {
                                 break;
                             case agent:
                                 i =  agentUtil.processAgent( payLoad,agentName);
+                                if(isStage && (payLoad.containsKey(AgentKeys.COMMAND_STATUS) || payLoad.containsKey(AgentKeys.CONTENT))){
+                                    LOGGER.info(" Payload -- "+payLoad);
+                                    if( payLoad.containsKey(AgentKeys.COMMAND_STATUS)){
+                                        if((payLoad.remove(AgentKeys.COMMAND_STATUS)).toString().equals("1")){
+                                            payLoad.put(AgentKeys.CONTENT,"Agent connected to Facilio");
+                                        }
+                                        else{
+                                            payLoad.put(AgentKeys.CONTENT,"Agent disconnected to Facilio");
+                                        }
+                                    }
+                                    agentUtil.putLog(payLoad,orgId,agent.getId(),false);
+                                }
                                 break;
                             case devicepoints:
                                 devicePointsUtil.processDevicePoints(payLoad, orgId, deviceMap, agent.getId());

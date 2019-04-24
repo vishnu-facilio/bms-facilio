@@ -281,7 +281,7 @@ public class EventAPI {
 		if(props != null && !props.isEmpty()) {
 			List<EventContext> events = new ArrayList<>();
 			for(Map<String, Object> prop : props) {
-				events.add(FieldUtil.getAsBeanFromMap(props.get(0), EventContext.class));
+				events.add(FieldUtil.getAsBeanFromMap(prop, EventContext.class));
 			}
 			return events;
 		}

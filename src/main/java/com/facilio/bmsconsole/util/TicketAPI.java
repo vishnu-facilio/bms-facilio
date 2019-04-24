@@ -357,6 +357,19 @@ public class TicketAPI {
 		return tasks;
 	}
 	
+	public static int deleteTasks(List<Long> taskIds) throws Exception 
+	{
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule("task");
+		 
+		GenericDeleteRecordBuilder delete = new GenericDeleteRecordBuilder()
+				.table(module.getTableName())
+				.andCondition(CriteriaAPI.getIdCondition(taskIds, module));
+		
+		return delete.delete();
+		
+	}
+	
 	private static Map<Long, TaskSectionContext> getTasksSectionsFromMapList(List<Map<String, Object>> sectionProps) {
 		Map<Long, TaskSectionContext> sections = new HashMap<>();
 		if(sectionProps != null && !sectionProps.isEmpty()) {

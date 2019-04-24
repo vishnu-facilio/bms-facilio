@@ -16,6 +16,7 @@ import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.forms.FacilioForm.FormType;
 import com.facilio.bmsconsole.forms.FormFactory;
 import com.facilio.bmsconsole.forms.FormField;
+import com.facilio.bmsconsole.forms.FormSection;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.util.FormsAPI;
@@ -59,16 +60,14 @@ public class FormAction extends FacilioAction {
 		c.execute(context);
 		
 		FacilioForm form = (FacilioForm) context.get(FacilioConstants.ContextNames.FORM);
-		this.setForms(Collections.singletonList(form));	// TODO remove
-		this.setForm(form);
+		this.setForms(Collections.singletonList(form));
 		
 		return SUCCESS;
 	}
 	
 	public String v2fetchFormMeta() throws Exception {
 		fetchFormMeta();
-		setResult(FacilioConstants.ContextNames.FORMS, forms); // TODO remove
-		setResult(FacilioConstants.ContextNames.FORM, form);
+		setResult(FacilioConstants.ContextNames.FORMS, forms);
 		return SUCCESS;
 	}
 	
@@ -170,9 +169,7 @@ public class FormAction extends FacilioAction {
 		c.execute(context);
 		
 		setFormId(getForm().getId());
-		fetchFormMeta();
-		
-		setResult(ContextNames.FORM, form);
+		formDetails();
 		
 		return SUCCESS;
 	}
@@ -180,7 +177,7 @@ public class FormAction extends FacilioAction {
 	public String getServicePortalForms() throws Exception{
 		
 		setModuleName(ContextNames.WORK_ORDER);
-		setFormType(FormType.PORTAL);
+		setFormTypeEnum(FormType.PORTAL);
 		
 		return formList();
 	}
@@ -210,10 +207,9 @@ public class FormAction extends FacilioAction {
 		
 		TransactionChainFactory.getAddFormCommand().execute(context);
 		
-		setFormNames(form.getName());
-		fetchFormMeta();
+		setFormName(form.getName());
+		formDetails();
 		
-		setResult(ContextNames.FORM, form);
 		return SUCCESS;
 	}
 	
@@ -224,7 +220,7 @@ public class FormAction extends FacilioAction {
 	public void setFormType(int type) {
 		this.formType = FormType.getFormType(type);
 	}
-	public void setFormType(FormType type) {
+	public void setFormTypeEnum(FormType type) {
 		this.formType = type;
 	}
 
@@ -234,5 +230,59 @@ public class FormAction extends FacilioAction {
 
 	public void setFormId(long formId) {
 		this.formId = formId;
+	}
+	
+	private String formName;
+	public String getFormName() {
+		return formName;
+	}
+	public void setFormName(String formName) {
+		this.formName = formName;
+	}
+	
+	public String formDetails() throws Exception {
+		Context context = new FacilioContext();
+		
+		context.put(FacilioConstants.ContextNames.FORM_NAME, formName);
+		context.put(FacilioConstants.ContextNames.FORM_ID, formId);
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+		Chain c = FacilioChainFactory.getFormMetaChain();
+		c.execute(context);
+		
+		FacilioForm form = (FacilioForm) context.get(FacilioConstants.ContextNames.FORM);
+		setResult(ContextNames.FORM, form);
+		
+		return SUCCESS;
+	}
+	
+	private FormSection formSection;
+	public FormSection getFormSection() {
+		return formSection;
+	}
+	public void setFormSection(FormSection formSection) {
+		this.formSection = formSection;
+	}
+
+	public String updateSection() throws Exception {
+		Context context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.FORM_SECTION, formSection);
+		context.put(FacilioConstants.ContextNames.FORM_ID, formId);
+		
+		Chain c = TransactionChainFactory.getUpdateFormSectionChain();
+		c.execute(context);
+		
+		setResult("result", "success");
+		
+		return SUCCESS;
+	}
+	
+	public String deleteForm() throws Exception {
+		Context context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.FORM_ID, formId);
+		
+		TransactionChainFactory.getDeleteFormChain().execute(context);
+		setResult(ContextNames.ROWS_UPDATED, context.get(ContextNames.ROWS_UPDATED));
+		
+		return SUCCESS;
 	}
 }

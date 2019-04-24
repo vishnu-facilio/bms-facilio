@@ -11,6 +11,7 @@ import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
+import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.util.ItemsApi;
 import com.facilio.bmsconsole.util.StoreroomApi;
@@ -19,6 +20,7 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
 
 import java.util.HashSet;
@@ -26,7 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class GetItemListCommand implements Command{
+public class GetItemListCommand implements Command {
 	@Override
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
@@ -50,13 +52,25 @@ public class GetItemListCommand implements Command{
 
 		SelectRecordsBuilder<ItemContext> builder = new SelectRecordsBuilder<ItemContext>().module(module)
 				.beanClass(FacilioConstants.ContextNames.getClassFromModuleName(moduleName)).select(fields);
-		
+
+		List<Long> accessibleSpaces = AccountUtil.getCurrentUser().getAccessibleSpace();
+		builder.innerJoin(ModuleFactory.getStoreRoomModule().getTableName())
+				.on(ModuleFactory.getStoreRoomModule().getTableName() + ".ID = "
+						+ ModuleFactory.getInventryModule().getTableName() + ".STORE_ROOM_ID");
+		if (accessibleSpaces != null && !accessibleSpaces.isEmpty()) {
+			builder.andCustomWhere(
+					"Store_room.ID IN (Select STORE_ROOM_ID from Storeroom_Sites where SITE_ID IN ( ? ))",
+					StringUtils.join(accessibleSpaces, ", "));
+		}
 		if (getCount) {
 			builder.setAggregation();
 		}
 
 		String orderBy = (String) context.get(FacilioConstants.ContextNames.SORTING_QUERY);
 		if (orderBy != null && !orderBy.isEmpty()) {
+			if(orderBy.contains("LAST_PURCHASED_DATE")) {
+				orderBy = "Item.LAST_PURCHASED_DATE" + orderBy.substring(0, orderBy.indexOf(" ")); 
+			}
 			builder.orderBy(orderBy);
 		}
 
@@ -116,14 +130,14 @@ public class GetItemListCommand implements Command{
 				Set<Long> locatoionIds = new HashSet<Long>();
 				for (ItemContext inventry : records) {
 					if (inventry.getItemType().getId() != -1) {
-						Map<Long, ItemTypesContext> itemMap = ItemsApi.getItemTypesMap
-								((inventry.getItemType().getId()));
+						Map<Long, ItemTypesContext> itemMap = ItemsApi
+								.getItemTypesMap((inventry.getItemType().getId()));
 						inventry.setItemType(itemMap.get(inventry.getItemType().getId()));
 					}
-					
+
 					if (inventry.getStoreRoom().getId() != -1) {
-						Map<Long, StoreRoomContext> storeroomMap = StoreroomApi.getStoreRoomMap
-								((inventry.getStoreRoom().getId()));
+						Map<Long, StoreRoomContext> storeroomMap = StoreroomApi
+								.getStoreRoomMap((inventry.getStoreRoom().getId()));
 						inventry.setStoreRoom(storeroomMap.get(inventry.getStoreRoom().getId()));
 					}
 					inventry.setCostType(CostType.valueOf(inventry.getCostType()));
