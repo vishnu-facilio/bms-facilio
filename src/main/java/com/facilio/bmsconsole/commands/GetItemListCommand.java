@@ -72,7 +72,7 @@ public class GetItemListCommand implements Command {
 					.on(ModuleFactory.getItemTypesModule().getTableName() + ".ID = "
 							+ ModuleFactory.getInventryModule().getTableName() + ".ITEM_TYPES_ID");
 			builder.andCustomWhere(
-					"(Item_types.INDIVIDUAL_TRACKING = 0) OR (Item_types.INDIVIDUAL_TRACKING = 1 AND Item_types.IS_CONSUMABLE = 1)");
+					"(Item_Types.INDIVIDUAL_TRACKING = 0) OR (Item_Types.INDIVIDUAL_TRACKING = 1 AND Item_Types.IS_CONSUMABLE = 1)");
 		} else {
 			Criteria permissionCriteria = AccountUtil.getCurrentUser().getRole().permissionCriteria("inventory",
 					"read");
