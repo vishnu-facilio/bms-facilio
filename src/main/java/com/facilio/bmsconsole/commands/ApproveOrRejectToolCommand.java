@@ -1,10 +1,10 @@
 package com.facilio.bmsconsole.commands;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.GatePassContext;
 import com.facilio.bmsconsole.context.GatePassLineItemsContext;
 import com.facilio.bmsconsole.context.InventoryType;
-import com.facilio.bmsconsole.context.PurchasedToolContext;
 import com.facilio.bmsconsole.context.ToolTransactionContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.*;
@@ -37,7 +37,7 @@ public class ApproveOrRejectToolCommand implements Command {
 			List<Long> parentIds = new ArrayList<>();
 			List<LookupField> lookUpfields = new ArrayList<>();
 			lookUpfields.add((LookupField) toolTransactionsFieldMap.get("tool"));
-			lookUpfields.add((LookupField) toolTransactionsFieldMap.get("purchasedTool"));
+			lookUpfields.add((LookupField) toolTransactionsFieldMap.get("asset"));
 			lookUpfields.add((LookupField) toolTransactionsFieldMap.get("toolType"));
 
 			SelectRecordsBuilder<ToolTransactionContext> selectBuilder = new SelectRecordsBuilder<ToolTransactionContext>()
@@ -51,12 +51,12 @@ public class ApproveOrRejectToolCommand implements Command {
 			for (ToolTransactionContext transactions : toolTransactions) {
 				if (approvalState == ApprovalState.APPROVED) {
 					if (transactions.getToolType().isRotating()) {
-						if (transactions.getPurchasedTool().isUsed()) {
+						if (transactions.getAsset().isUsed()) {
 							throw new IllegalArgumentException("Insufficient quantity in inventory!");
 						} else {
-							PurchasedToolContext pTool = transactions.getPurchasedTool();
-							pTool.setIsUsed(true);
-							updatePurchasedTool(pTool);
+							AssetContext asset = transactions.getAsset();
+							asset.setIsUsed(true);
+							updateAsset(asset);
 						}
 					} else {
 						if (transactions.getTool().getCurrentQuantity() < transactions.getQuantity()) {
@@ -68,9 +68,9 @@ public class ApproveOrRejectToolCommand implements Command {
 
 				else if (approvalState == ApprovalState.REJECTED) {
 					if (transactions.getToolType().isRotating()) {
-						PurchasedToolContext pTool = transactions.getPurchasedTool();
-						pTool.setIsUsed(false);
-						updatePurchasedTool(pTool);
+						AssetContext asset = transactions.getAsset();
+						asset.setIsUsed(false);
+						updateAsset(asset);
 					}
 					transactions.setRemainingQuantity(0);
 				}
@@ -86,14 +86,15 @@ public class ApproveOrRejectToolCommand implements Command {
 					parentIds.add(transactions.getParentId());
 				}
 				String serialNumber = null;
-				if(transactions.getPurchasedTool()!=null) {
-					serialNumber = transactions.getPurchasedTool().getSerialNumber();
+				if (transactions.getAsset() != null) {
+					serialNumber = transactions.getAsset().getSerialNumber();
 				}
 				GatePassContext gatePassContext = (GatePassContext) context.get(FacilioConstants.ContextNames.RECORD);
-				if(gatePassContext!=null) {
+				if (gatePassContext != null) {
 					context.put(FacilioConstants.ContextNames.GATE_PASS, gatePassContext);
 				}
-				gatePassLineItems.add(new GatePassLineItemsContext(InventoryType.TOOL, null, transactions.getToolType(), transactions.getQuantity(), serialNumber));
+				gatePassLineItems.add(new GatePassLineItemsContext(InventoryType.TOOL, null, transactions.getToolType(),
+						transactions.getQuantity(), serialNumber));
 			}
 			context.put(FacilioConstants.ContextNames.GATE_PASS_LINE_ITEMS, gatePassLineItems);
 			context.put(FacilioConstants.ContextNames.RECORD_LIST, toolTransactions);
@@ -102,13 +103,13 @@ public class ApproveOrRejectToolCommand implements Command {
 		return false;
 	}
 
-	private void updatePurchasedTool(PurchasedToolContext purchasedTool) throws Exception {
+	private void updateAsset(AssetContext asset) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.PURCHASED_TOOL);
-		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.PURCHASED_TOOL);
-		UpdateRecordBuilder<PurchasedToolContext> updateBuilder = new UpdateRecordBuilder<PurchasedToolContext>()
-				.module(module).fields(fields).andCondition(CriteriaAPI.getIdCondition(purchasedTool.getId(), module));
-		updateBuilder.update(purchasedTool);
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ASSET);
+		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.ASSET);
+		UpdateRecordBuilder<AssetContext> updateBuilder = new UpdateRecordBuilder<AssetContext>().module(module)
+				.fields(fields).andCondition(CriteriaAPI.getIdCondition(asset.getId(), module));
+		updateBuilder.update(asset);
 
 		System.err.println(Thread.currentThread().getName() + "Exiting updateReadings in  AddorUpdateCommand#######  ");
 	}
