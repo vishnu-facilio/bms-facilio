@@ -90,7 +90,7 @@ public class PurchasedItemsQuantityRollUpCommand implements Command {
 			for (Long id : uniqueItemIds) {
 				double totalConsumed = getTotalQuantityConsumed(id, "item");
 				ItemContext item = ItemsApi.getItems(id);
-				item.setQuantity(item.getQuantity() - totalConsumed);
+				item.setQuantity(totalConsumed);
 				UpdateRecordBuilder<ItemContext> updateBuilder = new UpdateRecordBuilder<ItemContext>()
 						.module(itemModule).fields(modBean.getAllFields(itemModule.getName()))
 						.andCondition(CriteriaAPI.getIdCondition(id, itemModule));
