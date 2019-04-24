@@ -635,9 +635,12 @@ public class ReadingsAPI {
 		if(fields != null) {
 			for(FacilioField field: fields) {
 				if ((parentId == null || (fieldsWithValues != null && fieldsWithValues.contains(field.getId()))) && !DEFAULT_READING_FIELDS.contains(field.getName()) ) {
-					fieldsToReturn.add(field);
-				}
-			}
+//					  if(field.getName().equals("sysCreatedTime") || field.getName().equals("marked")) {
+//						continue;
+//				       }
+						fieldsToReturn.add(field);
+			    }
+		    }
 		}
 		return fieldsToReturn;
 	}

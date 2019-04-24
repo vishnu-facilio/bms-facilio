@@ -8,6 +8,7 @@ import java.util.logging.Logger;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
@@ -138,7 +139,9 @@ public class AddAttachmentRelationshipCommand implements Command, PostTransactio
 	
 	@Override
 	public boolean postExecute() throws Exception {
-		AttachmentsAPI.updateAttachmentCount(idsToUpdateChain, moduleName);
+		if (StringUtils.isNotEmpty(moduleName) && CollectionUtils.isNotEmpty(idsToUpdateChain)) {
+			AttachmentsAPI.updateAttachmentCount(idsToUpdateChain, moduleName);
+		}
 		return false;
 	}
 	

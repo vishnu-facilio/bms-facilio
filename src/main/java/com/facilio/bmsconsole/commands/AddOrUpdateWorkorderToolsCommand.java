@@ -63,7 +63,7 @@ public class AddOrUpdateWorkorderToolsCommand implements Command {
 								approvalState = ApprovalState.REQUESTED;
 							}
 							wTool = setWorkorderItemObj(null, workorderTool.getQuantity(), tool, parentId,
-									workorder, workorderTool, approvalState);
+									workorder, workorderTool, approvalState, null);
 							// update
 							wTool.setId(workorderTool.getId());
 							workorderToolslist.add(wTool);
@@ -78,24 +78,24 @@ public class AddOrUpdateWorkorderToolsCommand implements Command {
 						if (toolTypes.isApprovalNeeded() || storeRoom.isApprovalNeeded()) {
 							approvalState = ApprovalState.REQUESTED;
 						}
-						if (toolTypes.individualTracking()) {
-							List<Long> purchasedToolIds = workorderTool.getPurchasedTools();
-							List<PurchasedToolContext> purchasedTool = getPurchasedToolsListFromId(purchasedToolIds);
-							if (purchasedTool != null) {
-								for (PurchasedToolContext pTool : purchasedTool) {
-									if(pTool.isUsed()) {
+						if (toolTypes.isRotating()) {
+							List<Long> assetIds = workorderTool.getAssetIds();
+							List<AssetContext> assets = getAssetsFromId(assetIds);
+							if (assets != null) {
+								for (AssetContext asset : assets) {
+									if(asset.isUsed()) {
 										throw new IllegalArgumentException("Insufficient quantity in inventory!");
 									}
 									WorkorderToolsContext woTool = new WorkorderToolsContext();
 									if (toolTypes.isApprovalNeeded() || storeRoom.isApprovalNeeded()) {
-										pTool.setIsUsed(false);
+										asset.setIsUsed(false);
 									}
 									else {
-										pTool.setIsUsed(true);
+										asset.setIsUsed(true);
 									}
-									woTool = setWorkorderItemObj(pTool, 1, tool, parentId, workorder,
-											workorderTool, approvalState);
-									updatePurchasedTool(pTool);
+									woTool = setWorkorderItemObj(null, 1, tool, parentId, workorder,
+											workorderTool, approvalState, asset);
+									updatePurchasedTool(asset);
 									workorderToolslist.add(woTool);
 									toolsToBeAdded.add(woTool);
 								}
@@ -103,7 +103,7 @@ public class AddOrUpdateWorkorderToolsCommand implements Command {
 						} else {
 							WorkorderToolsContext woTool = new WorkorderToolsContext();
 							woTool = setWorkorderItemObj(null, workorderTool.getQuantity(), tool, parentId,
-									workorder, workorderTool, approvalState);
+									workorder, workorderTool, approvalState, null);
 							workorderToolslist.add(woTool);
 							toolsToBeAdded.add(woTool);
 						}
@@ -130,7 +130,7 @@ public class AddOrUpdateWorkorderToolsCommand implements Command {
 
 	private WorkorderToolsContext setWorkorderItemObj(PurchasedToolContext purchasedtool, double quantity,
 			ToolContext tool, long parentId, WorkOrderContext workorder, WorkorderToolsContext workorderTools,
-			ApprovalState approvalState) {
+			ApprovalState approvalState, AssetContext asset) {
 		WorkorderToolsContext woTool = new WorkorderToolsContext();
 		woTool.setIssueTime(workorderTools.getIssueTime());
 		woTool.setReturnTime(workorderTools.getReturnTime());
@@ -159,6 +159,9 @@ public class AddOrUpdateWorkorderToolsCommand implements Command {
 		woTool.setIsReturnable(false);
 		if (purchasedtool != null) {
 			woTool.setPurchasedTool(purchasedtool);
+		} 
+		if(asset!=null) {
+			woTool.setAsset(asset);
 		}
 		woTool.setApprovedState(approvalState);
 		if (approvalState == ApprovalState.YET_TO_BE_REQUESTED) {
@@ -265,15 +268,15 @@ public class AddOrUpdateWorkorderToolsCommand implements Command {
 		return null;
 	}
 
-	public static List<PurchasedToolContext> getPurchasedToolsListFromId(List<Long> id) throws Exception {
+	public static List<AssetContext> getAssetsFromId(List<Long> id) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.PURCHASED_TOOL);
-		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.PURCHASED_TOOL);
-		SelectRecordsBuilder<PurchasedToolContext> selectBuilder = new SelectRecordsBuilder<PurchasedToolContext>()
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ASSET);
+		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.ASSET);
+		SelectRecordsBuilder<AssetContext> selectBuilder = new SelectRecordsBuilder<AssetContext>()
 				.select(fields).table(module.getTableName()).moduleName(module.getName())
-				.beanClass(PurchasedToolContext.class).andCondition(CriteriaAPI.getIdCondition(id, module));
+				.beanClass(AssetContext.class).andCondition(CriteriaAPI.getIdCondition(id, module));
 
-		List<PurchasedToolContext> purchasedToolList = selectBuilder.get();
+		List<AssetContext> purchasedToolList = selectBuilder.get();
 
 		if (purchasedToolList != null && !purchasedToolList.isEmpty()) {
 			return purchasedToolList;
@@ -281,13 +284,13 @@ public class AddOrUpdateWorkorderToolsCommand implements Command {
 		return null;
 	}
 
-	private void updatePurchasedTool(PurchasedToolContext purchasedTool) throws Exception {
+	private void updatePurchasedTool(AssetContext asset) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.PURCHASED_TOOL);
-		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.PURCHASED_TOOL);
-		UpdateRecordBuilder<PurchasedToolContext> updateBuilder = new UpdateRecordBuilder<PurchasedToolContext>()
-				.module(module).fields(fields).andCondition(CriteriaAPI.getIdCondition(purchasedTool.getId(), module));
-		updateBuilder.update(purchasedTool);
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ASSET);
+		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.ASSET);
+		UpdateRecordBuilder<AssetContext> updateBuilder = new UpdateRecordBuilder<AssetContext>()
+				.module(module).fields(fields).andCondition(CriteriaAPI.getIdCondition(asset.getId(), module));
+		updateBuilder.update(asset);
 
 		System.err.println(Thread.currentThread().getName() + "Exiting updateReadings in  AddorUpdateCommand#######  ");
 	}

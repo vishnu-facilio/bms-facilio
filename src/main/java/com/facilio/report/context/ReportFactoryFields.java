@@ -49,10 +49,12 @@ public class ReportFactoryFields {
 		
 		// loading additional module fields
 		JSONObject rearragedFields = rearrangeFields(selectedFields, "workorder");
+		setAdditionalModulemap(rearragedFields, "workorder", bean);
 		HashMap<String , Map<String, FacilioField>> additionalModuleFields = getAdditionalModuleFields("workorder", bean);
 		
 	
 		List<FacilioField> assetFields = new ArrayList<FacilioField>();
+		assetFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.ASSET).get("name"));
 		assetFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.ASSET).get("category"));
 		assetFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.ASSET).get("type"));
 		assetFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.ASSET).get("department"));
@@ -131,8 +133,10 @@ public class ReportFactoryFields {
 				JSONObject rearragedFields = rearrangeFields(selectedFields, "alarm");
 				HashMap<String , Map<String, FacilioField>> additionalModuleFields = getAdditionalModuleFields("alarm", bean);
 				
-			
+				setAdditionalModulemap(rearragedFields, "alarm", bean);
+				
 				List<FacilioField> assetFields = new ArrayList<FacilioField>();
+				assetFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.ASSET).get("name"));
 				assetFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.ASSET).get("category"));
 				assetFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.ASSET).get("type"));
 				assetFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.ASSET).get("department"));
@@ -296,5 +300,16 @@ public class ReportFactoryFields {
 		}
 		
 		return moduleNames;
+	}
+	
+	private static void setAdditionalModulemap(JSONObject rearragedFields, String moduleName, ModuleBean bean) throws Exception{
+		
+		List<String> additionalModules = getAdditionalModules(moduleName);
+		HashMap<String, Long> moduleMap = new HashMap<String, Long>();
+		for(String module: additionalModules) {
+			FacilioModule facilioModule = bean.getModule(module);
+			moduleMap.put(module, facilioModule.getModuleId());
+		}
+		rearragedFields.put("moduleMap", moduleMap);
 	}
 }

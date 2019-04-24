@@ -146,7 +146,17 @@ public abstract class Template implements Serializable {
 					LOGGER.info("JSON : "+jsonStr);
 					LOGGER.info("Params : "+params);
 				}
-				jsonStr = StringSubstitutor.replace(jsonStr, params);// StrSubstitutor.replace(jsonStr, params);
+				try {
+					jsonStr = StringSubstitutor.replace(jsonStr, params);// StrSubstitutor.replace(jsonStr, params);
+				}
+				catch (Exception e) {
+					LOGGER.error(new StringBuilder("Error occurred during replacing of place holders \n")
+										.append("JSON : ")
+										.append(jsonStr)
+										.append("\nParams : ")
+										.append(params).toString(), e);
+					throw e;
+				}
 				JSONParser parser = new JSONParser();
 				parsedJson = (JSONObject) parser.parse(jsonStr);
 			}

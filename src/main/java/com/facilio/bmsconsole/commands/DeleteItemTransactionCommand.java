@@ -42,7 +42,7 @@ public class DeleteItemTransactionCommand implements Command {
 				List<ItemContext> items = itemSelectBuilder.get();
 				if (items != null && !items.isEmpty()) {
 					ItemContext item = items.get(0);
-					if (item.getItemType().individualTracking()) {
+					if (item.getItemType().isRotating()) {
 						FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.PURCHASED_ITEM);
 						List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.PURCHASED_ITEM);
 

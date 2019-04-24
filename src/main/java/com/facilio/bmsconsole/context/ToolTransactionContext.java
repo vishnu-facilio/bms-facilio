@@ -194,5 +194,19 @@ public class ToolTransactionContext extends ModuleBaseWithCustomFields {
 	public void setGatePass(GatePassContext gatePass) {
 		this.gatePass = gatePass;
 	}
+	private AssetContext asset;
+	public AssetContext getAsset() {
+		return asset;
+	}
+	public void setAsset(AssetContext asset) {
+		this.asset = asset;
+	}
 	
+	private List<Long> assetIds;
+	public List<Long> getAssetIds() {
+		return assetIds;
+	}
+	public void setAssetIds(List<Long> assetIds) {
+		this.assetIds = assetIds;
+	}
 }

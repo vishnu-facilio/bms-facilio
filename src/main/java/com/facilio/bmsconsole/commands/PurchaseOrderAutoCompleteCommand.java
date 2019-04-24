@@ -42,7 +42,7 @@ public class PurchaseOrderAutoCompleteCommand implements Command {
 							if (lineItem.getInventoryTypeEnum() == InventoryType.ITEM) {
 								itemTypesVendors.add(new ItemTypesVendorsContext(lineItem.getItemType(), po.getVendor(), lineItem.getCost(), po.getOrderedTime()));
 								ItemTypesContext itemtype = getItemType(lineItem.getItemType().getId());
-								if (itemtype.individualTracking()) {
+								if (itemtype.isRotating()) {
 									containsIndividualTrackingItem = true;
 									break;
 								} else {
@@ -50,7 +50,7 @@ public class PurchaseOrderAutoCompleteCommand implements Command {
 								}
 							} else if (lineItem.getInventoryTypeEnum() == InventoryType.TOOL) {
 								ToolTypesContext toolType = getToolType(lineItem.getToolType().getId());
-								if (toolType.individualTracking()) {
+								if (toolType.isRotating()) {
 									containsIndividualTrackingTool = true;
 									break;
 								} else {

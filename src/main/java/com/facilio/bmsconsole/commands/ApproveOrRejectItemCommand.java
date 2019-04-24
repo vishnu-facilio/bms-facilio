@@ -60,7 +60,7 @@ public class ApproveOrRejectItemCommand implements Command {
 				info.put("itemtype", itemType.getName());
 				info.put("quantity", transactions.getQuantity());
 				if (approvalState == ApprovalState.APPROVED) {
-					if (transactions.getItemType().individualTracking()) {
+					if (transactions.getItemType().isRotating()) {
 						if (transactions.getPurchasedItem().isUsed()) {
 							throw new IllegalArgumentException("Insufficient quantity in inventory!");
 						} else {
@@ -82,7 +82,7 @@ public class ApproveOrRejectItemCommand implements Command {
 					}
 					transactions.setRemainingQuantity(transactions.getQuantity());
 				} else if (approvalState == ApprovalState.REJECTED) {
-					if (transactions.getItemType().individualTracking()) {
+					if (transactions.getItemType().isRotating()) {
 						PurchasedItemContext pItem = transactions.getPurchasedItem();
 						pItem.setIsUsed(false);
 						updatePurchasedItem(pItem);

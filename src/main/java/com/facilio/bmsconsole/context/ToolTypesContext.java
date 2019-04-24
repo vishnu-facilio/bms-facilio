@@ -78,19 +78,19 @@ public class ToolTypesContext extends ModuleBaseWithCustomFields {
 		this.unit = Unit.valueOf(issuingUnit);
 	}
 
-	public Boolean individualTracking;
+	public Boolean isRotating;
 
-	public Boolean getIndividualTracking() {
-		return individualTracking;
+	public Boolean getIsRotating() {
+		return isRotating;
 	}
 
-	public void setIndividualTracking(Boolean individualTracking) {
-		this.individualTracking = individualTracking;
+	public void setIsRotating(Boolean individualTracking) {
+		this.isRotating = individualTracking;
 	}
 
-	public boolean individualTracking() {
-		if (individualTracking != null) {
-			return individualTracking.booleanValue();
+	public boolean isRotating() {
+		if (isRotating != null) {
+			return isRotating.booleanValue();
 		}
 		return false;
 	}

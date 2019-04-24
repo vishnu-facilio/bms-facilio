@@ -77,7 +77,7 @@ public class AddOrUpdateManualToolTransactionsCommand implements Command {
 						if (toolTypes.isApprovalNeeded() || storeRoom.isApprovalNeeded()) {
 							approvalState = ApprovalState.REQUESTED;
 						}
-						if (toolTypes.individualTracking()) {
+						if (toolTypes.isRotating()) {
 							List<Long> purchasedToolIds = toolTransaction.getPurchasedTools();
 							List<PurchasedToolContext> purchasedTool = getPurchasedToolsListFromId(purchasedToolIds);
 							if (purchasedTool != null) {

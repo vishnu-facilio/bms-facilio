@@ -94,7 +94,7 @@ public class AddOrUpdateManualItemTransactionCommand implements Command {
 								info.put("transactionState", itemTransaction.getTransactionStateEnum().toString());
 								info.put("transactionType", itemTransaction.getTransactionTypeEnum().toString());
 								info.put("issuedToId", itemTransaction.getParentId());
-								if (itemType.individualTracking()) {
+								if (itemType.isRotating()) {
 									woitemactivity.add(info);
 									wItem = setWorkorderItemObj(purchaseditem, 1, item, parentId, itemTransaction,
 											itemType, approvalState);
@@ -119,7 +119,7 @@ public class AddOrUpdateManualItemTransactionCommand implements Command {
 						if (itemType.isApprovalNeeded() || storeRoom.isApprovalNeeded()) {
 							approvalState = ApprovalState.REQUESTED;
 						}
-						if (itemType.individualTracking()) {
+						if (itemType.isRotating()) {
 							List<Long> PurchasedItemsIds = itemTransaction.getPurchasedItems();
 							List<PurchasedItemContext> purchasedItem = getPurchasedItemsListFromId(PurchasedItemsIds,
 									purchasedItemModule, purchasedItemFields);

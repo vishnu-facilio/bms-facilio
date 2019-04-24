@@ -38,10 +38,10 @@ public class ImportItemCommand implements Command {
 				} else {
 					itemType = purchasedItem.getItemType();
 					if (purchasedItem.getQuantity() > 0 && (purchasedItem.getSerialNumber() == null || purchasedItem.getSerialNumber().equalsIgnoreCase("null"))) {
-						itemType.setIndividualTracking(false);
+						itemType.setIsRotating(false);
 					}
 					else if(purchasedItem.getSerialNumber() != null && !purchasedItem.getSerialNumber().equalsIgnoreCase("null")) {
-						itemType.setIndividualTracking(true);
+						itemType.setIsRotating(true);
 					}
 					itemType.setId(insertItemType(modBean, itemType));
 				}

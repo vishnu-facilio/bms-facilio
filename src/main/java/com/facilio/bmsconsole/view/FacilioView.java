@@ -2,11 +2,13 @@ package com.facilio.bmsconsole.view;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.ViewField;
+import com.facilio.bmsconsole.context.ViewSharingContext;
 import com.facilio.bmsconsole.criteria.Criteria;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -24,6 +26,7 @@ public class FacilioView {
 		this.name = view.name;
 		this.displayName = view.displayName;
 		this.type = view.type;
+		this.sharingType = view.sharingType;
 		this.moduleId = view.moduleId;
 		this.moduleName = view.moduleName;
 		this.criteriaId = view.criteriaId;
@@ -55,7 +58,17 @@ public class FacilioView {
 	public void setId(long id) {
 		this.id = id;
 	}
+	private List<ViewSharingContext> sharingType = new ArrayList<>();
+
 	
+	public List<ViewSharingContext> getSharingType() {
+		return sharingType;
+	}
+
+	public void setSharingType(List<ViewSharingContext> sharingType) {
+		this.sharingType = sharingType;
+	}
+
 	private Boolean includeParentCriteria;
 	
 	public Boolean getIncludeParentCriteria() {
@@ -198,6 +211,7 @@ public class FacilioView {
 		return lookupFields;
 	}
 	
+
 	private JSONObject filters;
 	public JSONObject getFilters() {
 		return filters;

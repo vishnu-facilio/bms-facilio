@@ -227,7 +227,9 @@ public class FacilioModule implements Serializable {
 		CUSTOM,
 		PREDICTED_READING,
 		ACTIVITY,
-		ML_FORECASTING_DATA
+		ML_FORECASTING_DATA,
+		ML_LOG_READING,
+		ML_READING
 		;
 		
 		public int getValue() {

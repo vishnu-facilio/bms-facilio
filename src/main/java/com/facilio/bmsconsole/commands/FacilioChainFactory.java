@@ -2054,6 +2054,16 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
+	public static Chain getMLModelBuildingChain() {
+		Chain c = FacilioChain.getNonTransactionChain();
+		c.addCommand(new GetReadingsForMLCommand());
+		c.addCommand(new ApplyCriteriaForMLCommand());
+		c.addCommand(new GenerateMLModelCommand());
+		c.addCommand(new AddReadingsForMLCommand());
+		c.addCommand(new ApplyRuleForMLCommand());
+		return c;
+	}
+	
 	
 	public static Chain getNewInventoryChain() {
 		Chain c = FacilioChain.getTransactionChain();

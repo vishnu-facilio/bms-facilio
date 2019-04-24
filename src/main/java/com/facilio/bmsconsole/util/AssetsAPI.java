@@ -729,6 +729,13 @@ public class AssetsAPI {
 			if (asset.getType() != null && asset.getType().getId() > 0) {
 				asset.setType(assetTypeMap.get(asset.getType().getId()));
 			}
+			if(asset.getRotatingItem()!=null && asset.getRotatingItem().getId()>0) {
+				asset.setRotatingItem(ItemsApi.getItems(asset.getRotatingItem().getId()));
+			}
+			if(asset.getRotatingTool()!=null && asset.getRotatingTool().getId() > 0) {
+				asset.setRotatingTool(ToolsApi.getTool(asset.getRotatingTool().getId()));
+			}
+		
 		}
 	}
 

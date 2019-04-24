@@ -841,7 +841,7 @@ public class ViewFactory {
 		Condition status = new Condition();
 		status.setField(statusTypeField);
 		status.setOperator(NumberOperators.EQUALS);
-		status.setValue(String.valueOf(statusType));
+		status.setValue(String.valueOf(statusType.getIntVal()));
 
 		Criteria criteria = new Criteria();
 		criteria.addAndCondition(status);
@@ -2430,7 +2430,7 @@ public class ViewFactory {
 		createdTime.setName("itemType");
 		createdTime.setDataType(FieldType.LOOKUP);
 		createdTime.setColumnName("ITEM_TYPES_ID");
-		createdTime.setModule(ModuleFactory.getItemTypesModule());
+		createdTime.setModule(ModuleFactory.getInventryModule());
 
 		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, true));
 		
@@ -2587,7 +2587,7 @@ public class ViewFactory {
 		createdTime.setName("itemType");
 		createdTime.setDataType(FieldType.LOOKUP);
 		createdTime.setColumnName("ITEM_TYPES_ID");
-		createdTime.setModule(ModuleFactory.getItemTypesModule());
+		createdTime.setModule(ModuleFactory.getInventryModule());
 
 		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, true));
 

@@ -5478,6 +5478,63 @@ public class FieldFactory {
 		fields.add(getField("fieldid","FIELDID",module,FieldType.NUMBER));
 		return fields;
 	}
+	
+	public static List<FacilioField> getMLFields() 
+	{
+		List<FacilioField> fields = new ArrayList<>();
+		FacilioModule module = ModuleFactory.getMLModule();
+		fields.add(getField("id","ID",module,FieldType.NUMBER));
+		fields.add(getField("modelPath", "MODEL_PATH", module, FieldType.STRING));
+		fields.add(getField("predictionLogModuleID","PREDICTION_LOG_MODULEID",module,FieldType.NUMBER));
+		fields.add(getField("predictionModuleID","PREDICTION_MODULEID",module,FieldType.NUMBER));
+		fields.add(getField("criteriaID","CRITERIA_ID",module,FieldType.NUMBER));
+		fields.add(getField("ruleID","RULE_ID",module,FieldType.NUMBER));
+		
+		return fields;
+	}
+	
+	public static List<FacilioField> getMLAssetVariablesFields()
+	{
+		List<FacilioField> fields = new ArrayList<>();
+		FacilioModule module = ModuleFactory.getMLAssetVariablesModule();
+		fields.add(getField("variableKey","VARIABLE_KEY",module,FieldType.STRING));
+		fields.add(getField("variableValue","VARIABLE_VALUE",module,FieldType.STRING));
+		
+		return fields;
+	}
+	
+	public static List<FacilioField> getMLModelVariablesFields()
+	{
+		List<FacilioField> fields = new ArrayList<>();
+		FacilioModule module = ModuleFactory.getMLModelVariablesModule();
+		fields.add(getField("variableKey","VARIABLE_KEY",module,FieldType.STRING));
+		fields.add(getField("variableValue","VARIABLE_VALUE",module,FieldType.STRING));
+		
+		return fields;
+	}
+	
+	public static List<FacilioField> getMLVariablesFields()
+	{
+		List<FacilioField> fields = new ArrayList<>();
+		FacilioModule module = ModuleFactory.getMLVariablesModule();
+		fields.add(getField("moduleID","MODULEID",module,FieldType.NUMBER));
+		fields.add(getField("fieldID","FIELDID",module,FieldType.NUMBER));
+		fields.add(getField("isSource","IS_SOURCE",module,FieldType.BOOLEAN));
+		fields.add(getField("parentFieldID","PARENT_FIELDID",module,FieldType.NUMBER));
+		fields.add(getField("parentID","PARENT_ID",module,FieldType.NUMBER));
+		fields.add(getField("maxSamplingPeriod","MAX_SAMPLING_PERIOD",module,FieldType.NUMBER));
+
+		return fields;
+	}
+	
+	public static List<FacilioField> getMLCriteriaVariablesFields()
+	{
+		List<FacilioField> fields = new ArrayList<>();
+		FacilioModule module = ModuleFactory.getMLCriteriaVariablesModule();
+		fields.add(getField("moduleID","MODULEID",module,FieldType.NUMBER));
+		fields.add(getField("fieldID","FIELDID",module,FieldType.NUMBER));
+		return fields;
+	}
 
 	public static List<FacilioField> getNotificationLoggerFields() {
 		FacilioModule module = ModuleFactory.getNotificationLoggerModule();

@@ -48,6 +48,7 @@ import com.facilio.bmsconsole.context.LabourContractLineItemContext;
 import com.facilio.bmsconsole.context.LocationContext;
 import com.facilio.bmsconsole.context.MLAlarmContext;
 import com.facilio.bmsconsole.context.MLAlarmOccurrenceContext;
+import com.facilio.bmsconsole.context.MLContext;
 import com.facilio.bmsconsole.context.MlForecastingContext;
 import com.facilio.bmsconsole.context.PhotosContext;
 import com.facilio.bmsconsole.context.PoLineItemsSerialNumberContext;
@@ -898,7 +899,7 @@ public class FacilioConstants {
 
 		public static final String SHOW_TOOLS_FOR_RETURN = "showToolsForReturn";
 		public static final String SHOW_ITEMS_FOR_RETURN = "showItemsForReturn";
-
+		public static final String SHOW_ITEM_FOR_WORKORDER = "showItemsForWorkorder";
 
 		public static final String ITEM_VENDORS = "itemVendors";
 		public static final String TRANSACTION_TYPE = "transactionType";
@@ -941,6 +942,8 @@ public class FacilioConstants {
 		
 		private static final String RECEIPT_LINE_ITEMS = "receiptlineitems";
 		public static final String ITEM_VENDORS_LIST = "itemTypesVendorsList";
+		
+		public static final String ML ="ml";
 		
 		public static final String SITES_FOR_STORE_ROOM = "sitesForStoreRoom";
 //		public static final String STATE = "state";
@@ -1068,6 +1071,8 @@ public class FacilioConstants {
 			classMap.put(RECEIVABLE, ReceivableContext.class);
 			classMap.put(RECEIPT, ReceiptContext.class);
 			classMap.put(RECEIPT_LINE_ITEMS, ReceiptLineItemContext.class);
+			
+			classMap.put(ML, MLContext.class);
 			classMap.put(PO_LINE_ITEMS_SERIAL_NUMBERS, PoLineItemsSerialNumberContext.class);
 			classMap.put(GATE_PASS, GatePassContext.class);
 			classMap.put(GATE_PASS_LINE_ITEMS, GatePassLineItemsContext.class);

@@ -65,7 +65,7 @@ public class AddPurchasedItemsForBulkItemAddCommand implements Command {
 					}
 					uniqueItemIds.add(pi.getItem().getId());
 					uniqueItemTypesIds.add(pi.getItemType().getId());
-					if (itemType.individualTracking()) {
+					if (itemType.isRotating()) {
 						if (pi.getQuantity() > 0) {
 							throw new IllegalArgumentException(
 									"Quantity cannot be set when individual Tracking is enabled");

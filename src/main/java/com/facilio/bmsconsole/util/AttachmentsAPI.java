@@ -128,6 +128,10 @@ public class AttachmentsAPI {
 	}
 	
 	public static void updateAttachmentCount(Collection<Long> list, String attachmentModuleName) throws Exception {
+		if (StringUtils.isEmpty(attachmentModuleName)) {
+			return;
+		}
+		
 		String moduleName = null;
 		switch (attachmentModuleName) {
 			case "ticketattachments":

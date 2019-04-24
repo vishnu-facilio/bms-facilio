@@ -1379,24 +1379,7 @@ public class WorkOrderAction extends FacilioAction {
 		return SUCCESS;
 	}
 
-	public String fetchActivity() throws Exception {
-		FacilioContext context = new FacilioContext();
-		try {
-		context.put(FacilioConstants.ContextNames.PARENT_ID, workOrderId);
-		context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.WORKORDER_ACTIVITY);
-		
-		Chain workOrderActivity = ReadOnlyChainFactory.getActivitiesChain();
-		workOrderActivity.execute(context);
-		setResult("activity", context.get(FacilioConstants.ContextNames.RECORD_LIST));
-	}
-	catch (Exception e) {
-		JSONObject inComingDetails = new JSONObject();
-		inComingDetails.put("PARENT_ID", workOrderId);
-		sendErrorMail(e, inComingDetails);
-		throw e;
-	}
-		return SUCCESS;
-	}
+	
 	
 	private WorkorderTemplate workorderTemplate;
 
@@ -2059,6 +2042,24 @@ public class WorkOrderAction extends FacilioAction {
 			throw e;
 		}
 
+		return SUCCESS;
+	}
+	public String fetchActivity() throws Exception {
+		FacilioContext context = new FacilioContext();
+		try {
+		context.put(FacilioConstants.ContextNames.PARENT_ID, workOrderId);
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.WORKORDER_ACTIVITY);
+		
+		Chain workOrderActivity = ReadOnlyChainFactory.getActivitiesChain();
+		workOrderActivity.execute(context);
+		setResult("activity", context.get(FacilioConstants.ContextNames.RECORD_LIST));
+	}
+	catch (Exception e) {
+		JSONObject inComingDetails = new JSONObject();
+		inComingDetails.put("PARENT_ID", workOrderId);
+		sendErrorMail(e, inComingDetails);
+		throw e;
+	}
 		return SUCCESS;
 	}
 

@@ -976,6 +976,7 @@ public class TransactionChainFactory {
 			c.addCommand(new SetAssetCategoryCommand());
 			c.addCommand(new SetModuleForSpecialAssetsCommand());
 			c.addCommand(new GenericAddModuleDataCommand());
+			c.addCommand(new AddRotatingItemToolCommand());
 			c.addCommand(new ExecuteAllWorkflowsCommand());
 			c.addCommand(FacilioChainFactory.getCategoryReadingsChain());
 			c.addCommand(new InsertReadingDataMetaForNewResourceCommand());
@@ -1349,6 +1350,7 @@ public class TransactionChainFactory {
 		}
 	    public static Chain getUpdateDashboardChain() {
 			Chain c = getDefaultChain();
+			c.addCommand(new getUpdateWithBuildingsCommand());
 			c.addCommand(new UpdateDashboardWithWidgetCommand());
 			c.addCommand(new EnableMobileDashboardCommand());
 			return c;

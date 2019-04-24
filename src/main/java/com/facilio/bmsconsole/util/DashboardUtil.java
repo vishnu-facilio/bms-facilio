@@ -2787,25 +2787,7 @@ public class DashboardUtil {
 			return addSpaceFilteredDashboardSettings(spaceFilteredDashboardSettings);
 		}
 	}
-
-	public static void duplicateDashboard(DashboardContext dashboard) throws Exception {
-		
-		FacilioContext context = new FacilioContext();
-		dashboard.setId(-1l);
-		dashboard.setCreatedByUserId(AccountUtil.getCurrentUser().getId());
-		dashboard.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
-		context.put(FacilioConstants.ContextNames.DASHBOARD, dashboard);
-		Chain addDashboardChain = TransactionChainFactory.getAddDashboardChain();
-		
-		addDashboardChain.execute(context);
-		
-		for(DashboardWidgetContext widget : dashboard.getDashboardWidgets()) {
-			widget.setId(-1);
-		}
-		Chain updateDashboardChain = TransactionChainFactory.getUpdateDashboardChain();
-		updateDashboardChain.execute(context);
-	}
-
+	
 	public static void getEmrillFCUWidgetResult(Map<String,Object> result, List<Map<String, Object>> props) throws Exception {
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");

@@ -316,4 +316,41 @@ public class AssetContext extends ResourceContext {
 			return STATE_MAP;
 		}
 	}
+	
+	private ItemContext rotatingItem;
+	public ItemContext getRotatingItem() {
+		return rotatingItem;
+	}
+	public void setRotatingItem(ItemContext rotatingItem) {
+		this.rotatingItem = rotatingItem;
+	}
+	
+	private ToolContext rotatingTool;
+	public ToolContext getRotatingTool() {
+		return rotatingTool;
+	}
+	public void setRotatingTool(ToolContext rotatingTool) {
+		this.rotatingTool = rotatingTool;
+	}
+	
+	private PurchaseOrderContext purchaseOrder;
+	public PurchaseOrderContext getPurchaseOrder() {
+		return purchaseOrder;
+	}
+	public void setPurchaseOrder(PurchaseOrderContext purchaseOrder) {
+		this.purchaseOrder = purchaseOrder;
+	}
+	public Boolean isUsed;
+	public Boolean getIsUsed() {
+		return isUsed;
+	}
+	public void setIsUsed(Boolean isUsed) {
+		this.isUsed = isUsed;
+	}
+	public boolean isUsed() {
+		if(isUsed != null) {
+			return isUsed.booleanValue();
+		}
+		return false;
+	}
 }

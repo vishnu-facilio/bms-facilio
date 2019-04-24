@@ -42,7 +42,7 @@ public class DeleteToolTransactionCommand implements Command {
 				List<ToolContext> tools = itemSelectBuilder.get();
 				if (tools != null && !tools.isEmpty()) {
 					ToolContext tool = tools.get(0);
-					if (tool.getToolType().individualTracking()) {
+					if (tool.getToolType().isRotating()) {
 						FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.PURCHASED_TOOL);
 						List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.PURCHASED_TOOL);
 

@@ -375,12 +375,12 @@ public class UpdateWorkOrderCommand implements Command {
 					newWo.setStatus(assignedStatus);
 				}
 				else {
-					if (workOrder.getAssignedTo() != null) {
-						if (workOrder.getAssignedTo().getOuid() == -1 && oldWo.getAssignedTo() != null) {
+					if (workOrder.getAssignedTo() != null && oldWo.getAssignedTo() != null) {
+						if  (workOrder.getAssignedTo().getOuid() == -1) {
 							userReadings.addAll(ShiftAPI.addUserWorkHoursReading(oldWo.getAssignedTo().getOuid(), oldWo.getId(), activityType, "Close", System.currentTimeMillis()));
 							newWo.setStatus(submittedStatus);
 
-						} else if (oldWo.getAssignedTo().getOuid() != workOrder.getAssignedTo().getOuid() && oldWo.getAssignedTo() != null) {
+						} else if (oldWo.getAssignedTo().getOuid() != workOrder.getAssignedTo().getOuid()) {
 							try {
 								if (oldWo.getStatus().getId() == wipStatus.getId()) {
 									newWo.setStatus(onHoldStatus);

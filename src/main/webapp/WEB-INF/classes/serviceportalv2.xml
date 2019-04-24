@@ -50,7 +50,11 @@
 			<param name="moduleName">workorder</param>
 			<param name="permission">READ,READ_TEAM,READ_OWN</param>
 		</action>	
-		
+		<action name="activity" class="com.facilio.bmsconsole.actions.WorkOrderAction"
+			method="fetchActivity">
+			<param name="moduleName">workorder</param>
+			<param name="permission">READ</param>
+		</action>
 		<action name="attachment" class="com.facilio.bmsconsole.actions.AttachmentAction" method="v2attachmentList">
 		</action>
 		
@@ -78,51 +82,19 @@
 	    <action name="apisignup" class="com.facilio.auth.actions.FacilioAuthAction"
         method="v2SignupPortalUser">
         </action>
-		
-	</package>
-	
-	<package name="newServicePortalApiV2" namespace="/api/service/v2" extends="servicePortalApiV2">
-		<action name="forms" class="com.facilio.bmsconsole.actions.FormAction" method="formList">
-			<param name="formType">3</param>
-		</action>
-	</package>
-
-	<!-- new service portal api will be open -->
-	<!-- <package name="servicePortalApiV2" namespace="/api/service/v2" extends="v2Api">
-
-		<interceptors>
-			<interceptor name="portalinterceptor" class="com.facilio.serviceportal.actions.PortalAuthInterceptor" />
-			<interceptor-stack name="defaultInterceptor">
-				<interceptor-ref name="defaultStack" />
-				<interceptor-ref name="portalinterceptor" />
-				<interceptor-ref name="json">
-					<param name="enableSMD">true</param>
-				</interceptor-ref>
-			</interceptor-stack>
-		</interceptors>
-
-		<default-interceptor-ref name="defaultInterceptor" />
-		<global-results>
-			<result name="login">/service/login.jsp</result>
-			<result name="unauthorized" type="redirect">
-				<param name="location">/jsps/serviceportal/unauthorized.jsp</param>
-				<param name="parse">false</param>
-			</result>
-		</global-results>
-
-		<action name="workorders" class="com.facilio.bmsconsole.actions.WorkOrderAction" method="v2workOrderList">
-			<param name="viewName">myrequests</param>
-			<param name="approval">true</param>
-		</action>
 		<action name="dashboard" class="com.facilio.bmsconsole.actions.DashboardAction" method="getDashboardList">
 			<result name="success" type="json">
 				<param name="includeProperties">dashboards,dashboards\[\d+\],dashboards\[\d+\].*</param>
 			</result>
 		</action>
+		
+	</package>
 
-	</package> -->
-
-<!-- temp only -->
+	<package name="extendServicePortalApiV2" namespace="/api/v2/service" extends="servicePortalApiV2">
+		<action name="forms" class="com.facilio.bmsconsole.actions.FormAction" method="formList">
+			<param name="formType">3</param>
+		</action>
+	</package>
 	<package name="serviceWorkOrderApiV2" namespace="/api/v2/service/workorders" extends="servicePortalApiV2">
 		<action name="add" class="com.facilio.bmsconsole.actions.WorkOrderAction" method="addPortalOrders">
 		</action>
@@ -135,29 +107,6 @@
 			<param name="workOrderId">{1}</param>
 		</action>
 	</package>
-
-<!-- new format  -->
-	<!-- <package name="serviceWorkOrderApiV2" namespace="/api/service/v2/workorders" extends="servicePortalApiV2">
-		<action name="add" class="com.facilio.bmsconsole.actions.WorkOrderAction" method="addPortalOrders">
-		</action>
-
-		<action name="update" class="com.facilio.bmsconsole.actions.WorkOrderAction" method="v2updateWorkOrder">
-			<param name="moduleName">workorder</param>
-			<param name="permission">UPDATE,UPDATE_TEAM,UPDATE_OWN</param>
-		</action>
-		<action name="workOrderCount" class="com.facilio.bmsconsole.actions.WorkOrderAction"
-			method="workOrderCount">
-			<param name="moduleName">workorder</param>
-			<param name="permission">READ,READ_TEAM,READ_OWN</param>
-			<result name="success" type="json">
-				<param name="includeProperties">woCount</param>
-			</result>
-		</action>
-		<action name="*" class="com.facilio.bmsconsole.actions.WorkOrderAction" method="v2viewWorkOrder">
-			<param name="workOrderId">{1}</param>
-		</action>
-	</package> -->
-
 	<package name="servicePreviewApiV2" namespace="/api/v2/service/files/preview" extends="servicePortalApiV2">
 		<global-results>
 			<result name="success" type="stream">
@@ -170,8 +119,7 @@
 			<param name="permission">READ</param>
 			<param name="fileID">{1}</param>
 		</action>
-	</package>
-	
+	</package>	
 	<package name="assetServiceApiV2" namespace="/api/v2/service/assets" extends="servicePortalApiV2">
 		<action name="qr" class="com.facilio.bmsconsole.actions.AssetAction"
 			method="fetchAssetFromQR">
@@ -179,14 +127,12 @@
 			<param name="permission">READ</param>
 		</action>
 	</package>
-	
 	<package name="workflowServiceApiv2" namespace="/api/v2/service/workflow"
 		extends="servicePortalApiV2">
 		<action name="execute" class="com.facilio.bmsconsole.actions.CommonAction"
 			method="executeWorkflow">
 		</action>
 	</package>
-
 	<package name="serviceDownloadApiV2" namespace="/api/v2/service/files/download" extends="servicePortalApiV2">
 		<global-results>
 			<result name="success" type="stream">
@@ -202,7 +148,7 @@
 			<param name="isDownload">true</param>
 		</action>
 	</package>
-	<package name="serviceReportApiv2" namespace="/api/service/v2/report" extends="servicePortalApiV2">
+	<package name="serviceReportApiv2" namespace="/api/v2/service/report" extends="servicePortalApiV2">
 		<action name="fetchReportData" class="com.facilio.bmsconsole.actions.V2ReportAction"
 			method="fetchReportData">
 		</action>
@@ -248,11 +194,211 @@
 		<action name="search" class="com.facilio.bmsconsole.actions.V2ReportAction" method="searchReportAndFolders">
 		</action>
 	</package>
-	
-	<package name="serviceFormApiv2" namespace="/api/service/v2/forms" extends="servicePortalApiV2">
+	<package name="serviceFormApiv2" namespace="/api/v2/service/forms" extends="servicePortalApiV2">
 		<action name="*" class="com.facilio.bmsconsole.actions.FormAction" method="formDetails">
 			<param name="moduleName">{1}</param>
 		</action>
 	</package>
 
+	<!-- new format -->
+	<package name="newServicePortalApiV2" namespace="/api/service/v2" extends="v2BaseApi">
+		<interceptors>
+			<interceptor name="portalinterceptor"
+				class="com.facilio.serviceportal.actions.PortalAuthInterceptor" />
+			<interceptor-stack name="defaultInterceptor">
+				<interceptor-ref name="defaultStack" />
+				<interceptor-ref name="portalinterceptor" />
+				<interceptor-ref name="json">
+					<param name="enableSMD">true</param>
+				</interceptor-ref>
+			</interceptor-stack>
+		</interceptors>
+
+		<default-interceptor-ref name="defaultInterceptor" />
+		<global-results>
+			<result name="login">/service/login.jsp</result>
+			<result name="unauthorized" type="redirect">
+				<param name="location">/jsps/serviceportal/unauthorized.jsp</param>
+				<param name="parse">false</param>
+			</result>
+		</global-results>
+		
+		<action name="workorders" class="com.facilio.bmsconsole.actions.WorkOrderAction" method="v2workOrderList">
+			<param name="viewName">myrequests</param>
+			<param name="approval">true</param>
+		</action>
+		
+		<action name="account" class="com.facilio.bmsconsole.actions.LoginAction"
+			method="v2portalAccount"> 
+		</action>
+		<action name="getFormMeta" class="com.facilio.bmsconsole.actions.FormAction"
+			method="v2fetchFormMeta">
+		</action>	
+		
+		<action name="notelist" class="com.facilio.bmsconsole.actions.NoteAction"
+			method="v2getNotesList">
+		</action>	
+		
+		<action name="activities" class="com.facilio.bmsconsole.actions.WorkOrderRequestAction"
+			method="v2getActivitiesList">
+			<param name="moduleName">workorder</param>
+			<param name="permission">READ,READ_TEAM,READ_OWN</param>
+		</action>	
+		<action name="activity" class="com.facilio.bmsconsole.actions.WorkOrderAction"
+			method="fetchActivity">
+			<param name="moduleName">workorder</param>
+			<param name="permission">READ</param>
+		</action>
+		<action name="attachment" class="com.facilio.bmsconsole.actions.AttachmentAction" method="v2attachmentList">
+		</action>
+		
+		<action name="addNotes" class="com.facilio.bmsconsole.actions.NoteAction"
+			method="v2addNote">
+			<param name="permission">WORKORDER_READ,TASK_READ</param>
+		</action>
+		
+		<action name="addmobilesetting"  class="com.facilio.bmsconsole.actions.UserAction" method="v2addMobileSetting">
+			<!-- <param name="moduleName">setup</param>
+			<param name="permission">USER_MANAGEMENT</param> -->
+		</action>
+		
+		<action name="removemobilesetting"  class="com.facilio.bmsconsole.actions.UserAction" method="v2removeMobileSetting">
+			<!-- <param name="moduleName">setup</param>
+			<param name="permission">USER_MANAGEMENT</param> -->
+		</action>
+		
+		<action name="addattachment" class="com.facilio.bmsconsole.actions.AttachmentAction"
+			method="v2addAttachment">
+		</action>       
+		
+		<action name="getFormList" class="com.facilio.bmsconsole.actions.FormAction" method="getServicePortalForms"></action>
+	
+	    <action name="apisignup" class="com.facilio.auth.actions.FacilioAuthAction"
+        method="v2SignupPortalUser">
+        </action>
+		<action name="dashboard" class="com.facilio.bmsconsole.actions.DashboardAction" method="getDashboardList">
+			<result name="success" type="json">
+				<param name="includeProperties">dashboards,dashboards\[\d+\],dashboards\[\d+\].*</param>
+			</result>
+		</action>
+
+	</package>
+	<package name="extendNewServicePortalApiV2" namespace="/api/service/v2" extends="newServicePortalApiV2">
+		<action name="forms" class="com.facilio.bmsconsole.actions.FormAction" method="formList">
+			<param name="formType">3</param>
+		</action>
+	</package>
+	<package name="newServiceWorkOrderApiV2" namespace="/api/service/v2/workorders" extends="newServicePortalApiV2">
+		<action name="add" class="com.facilio.bmsconsole.actions.WorkOrderAction" method="addPortalOrders">
+		</action>
+
+		<action name="update" class="com.facilio.bmsconsole.actions.WorkOrderAction" method="v2updateWorkOrder">
+			<param name="moduleName">workorder</param>
+			<param name="permission">UPDATE,UPDATE_TEAM,UPDATE_OWN</param>
+		</action>
+		<action name="workOrderCount" class="com.facilio.bmsconsole.actions.WorkOrderAction"
+			method="workOrderCount">
+			<param name="moduleName">workorder</param>
+			<param name="permission">READ,READ_TEAM,READ_OWN</param>
+			<result name="success" type="json">
+				<param name="includeProperties">woCount</param>
+			</result>
+		</action>
+		<action name="*" class="com.facilio.bmsconsole.actions.WorkOrderAction" method="v2viewWorkOrder">
+			<param name="workOrderId">{1}</param>
+		</action>
+	</package>
+	<package name="newServicePreviewApiV2" namespace="/api/service/v2/files/preview" extends="newServicePortalApiV2">
+		<global-results>
+			<result name="success" type="stream">
+				<param name="contentType">${contentType}</param>
+				<param name="inputName">downloadStream</param>
+				<param name="bufferSize">1024</param>
+			</result>
+		</global-results>
+		<action name="*" class="com.facilio.bmsconsole.actions.FileAction" method="previewFile">
+			<param name="permission">READ</param>
+			<param name="fileID">{1}</param>
+		</action>
+	</package>
+	<package name="newAssetServiceApiV2" namespace="/api/service/v2/assets" extends="newServicePortalApiV2">
+		<action name="qr" class="com.facilio.bmsconsole.actions.AssetAction"
+			method="fetchAssetFromQR">
+			<param name="moduleName">asset</param>
+			<param name="permission">READ</param>
+		</action>
+	</package>
+	<package name="newWorkflowServiceApiv2" namespace="/api/service/v2/workflow"
+		extends="v2Api">
+		<action name="execute" class="com.facilio.bmsconsole.actions.CommonAction"
+			method="executeWorkflow">
+		</action>
+	</package>
+	<package name="newServiceDownloadApiV2" namespace="/api/service/v2/files/download" extends="newServicePortalApiV2">
+		<global-results>
+			<result name="success" type="stream">
+				<param name="contentType">${contentType}</param>
+				<param name="contentDisposition">attachment;filename="${filename}"</param>
+				<param name="inputName">downloadStream</param>
+				<param name="bufferSize">1024</param>
+			</result>
+		</global-results>
+		<action name="*" class="com.facilio.bmsconsole.actions.FileAction" method="previewFile">
+			<param name="permission">READ</param>
+			<param name="fileID">{1}</param>
+			<param name="isDownload">true</param>
+		</action>
+	</package>
+	<package name="newServiceReportApiv2" namespace="/api/service/v2/report" extends="newServicePortalApiV2">
+		<action name="fetchReportData" class="com.facilio.bmsconsole.actions.V2ReportAction"
+			method="fetchReportData">
+		</action>
+		<action name="getReportFields" class="com.facilio.bmsconsole.actions.V2ReportAction"
+			method="getReportFields">
+		</action>
+		<action name="readingReport" class="com.facilio.bmsconsole.actions.V2ReportAction" method="fetchReadingsData">
+		</action>
+		<action name="fetchReadingsFromCard" class="com.facilio.bmsconsole.actions.V2ReportAction" method="fetchReadingsFromCard">
+		</action>
+		<action name="fetchReadingsFromAlarm" class="com.facilio.bmsconsole.actions.V2ReportAction" method="fetchReadingsFromAlarm">
+		</action>
+		<action name="workorderReport" class="com.facilio.bmsconsole.actions.V2ReportAction" method="fetchWorkorderData">
+		</action>
+		<action name="addReadingReport" class="com.facilio.bmsconsole.actions.V2ReportAction" method="addOrUpdateReadingReport">
+		</action>
+		<action name="addWorkOrderReport" class="com.facilio.bmsconsole.actions.V2ReportAction" method="addWorkOrderReport">
+		</action>
+		<action name="fetchReport" class="com.facilio.bmsconsole.actions.V2ReportAction" method="fetchReport">
+		</action>
+		<action name="export" class="com.facilio.bmsconsole.actions.V2ReportAction" method="exportReport">
+		</action>
+		<action name="sendMail" class="com.facilio.bmsconsole.actions.V2ReportAction" method="sendReportMail">
+		</action>
+		<action name="schedule" class="com.facilio.bmsconsole.actions.V2ReportAction" method="scheduleReport">
+		</action>
+		<action name="fetchReportFolders" class="com.facilio.bmsconsole.actions.V2ReportAction" method="fetchReportFolders">
+		</action>
+		<action name="addReportFolder" class="com.facilio.bmsconsole.actions.V2ReportAction" method="addReportFolder">
+		</action>
+		<action name="fetchReportWithData" class="com.facilio.bmsconsole.actions.V2ReportAction" method="fetchReportWithData">
+		</action>
+		<action name="deleteReport" class="com.facilio.bmsconsole.actions.V2ReportAction" method="deleteReport">
+		</action>
+		<action name="updateReportFolder" class="com.facilio.bmsconsole.actions.V2ReportAction" method="updateReportFolder">
+		</action>
+		<action name="deleteReportFolder" class="com.facilio.bmsconsole.actions.V2ReportAction" method="deleteReportFolder">
+		</action>
+		<action name="duplicateReport" class="com.facilio.bmsconsole.actions.V2ReportAction" method="duplicateReport">
+		</action>
+		<action name="moveReport" class="com.facilio.bmsconsole.actions.V2ReportAction" method="moveReport">
+		</action>
+		<action name="search" class="com.facilio.bmsconsole.actions.V2ReportAction" method="searchReportAndFolders">
+		</action>
+	</package>
+	<package name="newServiceFormApiv2" namespace="/api/service/v2/forms" extends="newServicePortalApiV2">
+		<action name="*" class="com.facilio.bmsconsole.actions.FormAction" method="formDetails">
+			<param name="moduleName">{1}</param>
+		</action>
+	</package>
+	<!-- end -->
 </struts>

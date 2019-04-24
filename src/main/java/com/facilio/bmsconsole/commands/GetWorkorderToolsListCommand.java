@@ -32,6 +32,7 @@ public class GetWorkorderToolsListCommand implements Command {
 			Map<String, FacilioField> workorderItemsFieldMap = FieldFactory.getAsMap(workorderItemsFields);
 			List<LookupField>lookUpfields = new ArrayList<>();
 			lookUpfields.add((LookupField) workorderItemsFieldMap.get("purchasedTool"));
+			lookUpfields.add((LookupField) workorderItemsFieldMap.get("asset"));
 			
 			long parentId = (long) context.get(FacilioConstants.ContextNames.PARENT_ID);
 			SelectRecordsBuilder<WorkorderToolsContext> selectBuilder = new SelectRecordsBuilder<WorkorderToolsContext>()

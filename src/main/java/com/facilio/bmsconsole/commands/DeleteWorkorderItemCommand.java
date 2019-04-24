@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.ItemContext;
 import com.facilio.bmsconsole.context.PurchasedItemContext;
 import com.facilio.bmsconsole.context.WorkorderItemContext;
@@ -42,21 +43,21 @@ public class DeleteWorkorderItemCommand implements Command {
 				List<ItemContext> items = itemSelectBuilder.get();
 				if (items != null && !items.isEmpty()) {
 					ItemContext item = items.get(0);
-					if (item.getItemType().individualTracking()) {
-						FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.PURCHASED_ITEM);
-						List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.PURCHASED_ITEM);
+					if (item.getItemType().isRotating()) {
+						FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ASSET);
+						List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.ASSET);
 
-						SelectRecordsBuilder<PurchasedItemContext> selectBuilder = new SelectRecordsBuilder<PurchasedItemContext>()
+						SelectRecordsBuilder<AssetContext> selectBuilder = new SelectRecordsBuilder<AssetContext>()
 								.select(fields).table(module.getTableName()).moduleName(module.getName())
-								.beanClass(PurchasedItemContext.class).andCustomWhere(module.getTableName() + ".ID = ?",
-										workorderItem.getPurchasedItem().getId());
+								.beanClass(AssetContext.class).andCustomWhere(module.getTableName() + ".ID = ?",
+										workorderItem.getAsset().getId());
 
-						List<PurchasedItemContext> purchasedItems = selectBuilder.get();
+						List<AssetContext> assets = selectBuilder.get();
 
-						if (purchasedItems != null && !purchasedItems.isEmpty()) {
-							PurchasedItemContext purchasedItem = purchasedItems.get(0);
-							purchasedItem.setIsUsed(false);
-							updatePurchasedItem(purchasedItem);
+						if (assets != null && !assets.isEmpty()) {
+							AssetContext asset = assets.get(0);
+							asset.setIsUsed(false);
+							updateAsset(asset);
 						}
 					}
 				}
@@ -67,13 +68,13 @@ public class DeleteWorkorderItemCommand implements Command {
 		return false;
 	}
 
-	private void updatePurchasedItem(PurchasedItemContext purchasedItem) throws Exception {
+	private void updateAsset(AssetContext asset) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.PURCHASED_ITEM);
-		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.PURCHASED_ITEM);
-		UpdateRecordBuilder<PurchasedItemContext> updateBuilder = new UpdateRecordBuilder<PurchasedItemContext>()
-				.module(module).fields(fields).andCondition(CriteriaAPI.getIdCondition(purchasedItem.getId(), module));
-		updateBuilder.update(purchasedItem);
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ASSET);
+		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.ASSET);
+		UpdateRecordBuilder<AssetContext> updateBuilder = new UpdateRecordBuilder<AssetContext>()
+				.module(module).fields(fields).andCondition(CriteriaAPI.getIdCondition(asset.getId(), module));
+		updateBuilder.update(asset);
 
 		System.err.println(Thread.currentThread().getName() + "Exiting updateReadings in  AddorUpdateCommand#######  ");
 
