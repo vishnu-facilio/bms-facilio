@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.actions;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -405,9 +406,13 @@ public class V2ReportAction extends FacilioAction {
 			reportaxisContext.setFieldId((Long)params.get("fieldId"));
 			reportaxisContext.setAggr(Integer.parseInt(params.get("aggregateFunc").toString()));
 			
+			Map<String, String> aliases = new HashMap<>();
+			aliases.put("actual", "A");
+			
 			ReadingAnalysisContext readingAnalysisContext = new ReadingAnalysisContext();
 			readingAnalysisContext.setParentId(Collections.singletonList((Long)params.get("parentId")));
 			readingAnalysisContext.setType(1);
+			readingAnalysisContext.setAliases(aliases);
 			readingAnalysisContext.setyAxis(reportaxisContext);
 			
 			metrics.add(readingAnalysisContext);
@@ -418,7 +423,9 @@ public class V2ReportAction extends FacilioAction {
 			context.put(FacilioConstants.ContextNames.REPORT_Y_FIELDS, metrics);
 			context.put(FacilioConstants.ContextNames.REPORT_MODE, mode);
 			context.put(FacilioConstants.ContextNames.REPORT_CALLING_FROM, "card");
+			context.put(FacilioConstants.ContextNames.REPORT_HANDLE_BOOLEAN, newFormat);
 			
+			newFormat = true;
 			Chain fetchReadingDataChain = newFormat ? ReadOnlyChainFactory.newFetchReadingReportChain() : ReadOnlyChainFactory.fetchReadingReportChain();
 			fetchReadingDataChain.execute(context);
 			
