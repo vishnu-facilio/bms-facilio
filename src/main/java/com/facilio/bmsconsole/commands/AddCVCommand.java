@@ -5,7 +5,12 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ViewSharingContext;
 import com.facilio.bmsconsole.context.ViewSharingContext.SharingType;
 import com.facilio.bmsconsole.criteria.Criteria;
+import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.criteria.NumberOperators;
+import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
+import com.facilio.bmsconsole.modules.FieldFactory;
+import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.bmsconsole.util.ViewAPI;
 import com.facilio.bmsconsole.view.FacilioView;
@@ -14,10 +19,16 @@ import com.facilio.bmsconsole.view.ViewFactory;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
+import com.facilio.sql.GenericDeleteRecordBuilder;
+import com.facilio.sql.GenericSelectRecordBuilder;
+
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.apache.commons.lang3.StringUtils;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class AddCVCommand implements Command {
@@ -82,8 +93,10 @@ public class AddCVCommand implements Command {
 			else {
 				long viewId1 = ViewAPI.updateView(viewId,view);	
 			}
-			
 			List<ViewSharingContext> viewSharingList = (List<ViewSharingContext>) context.get(FacilioConstants.ContextNames.VIEW_SHARING_LIST);
+			
+			FacilioModule module = ModuleFactory.getViewSharingModule();
+			List<FacilioField> fields =  FieldFactory.getViewSharingFields();
 			if (viewSharingList != null && !viewSharingList.isEmpty()) {
 				List<Long> orgUsersId = (List<Long>) viewSharingList.stream().filter(value -> (value.getSharingType() == SharingType.USER.getIntVal())).map(val -> val.getOrgUserId()).collect(Collectors.toList());
 				if (!orgUsersId.contains(AccountUtil.getCurrentUser().getId())) {
@@ -93,7 +106,17 @@ public class AddCVCommand implements Command {
 					viewSharingList.add(newViewSharingContext);	
 				}
 				ViewAPI.applyViewSharing(viewId, viewSharingList);
+				view.setSharingType(ViewAPI.getViewSharingDetail(viewId));
+				
 			}
+			else if (viewSharingList == null || viewSharingList.isEmpty()) {
+				GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
+						.table(module.getTableName())
+						.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+						.andCondition(CriteriaAPI.getCondition("VIEWID", "viewId", String.valueOf(viewId), NumberOperators.EQUALS));
+				
+				int count = builder.delete();
+			}						
 			context.put(FacilioConstants.ContextNames.VIEWID, viewId);
 			view.setId(viewId);
 		}

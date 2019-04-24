@@ -22,6 +22,10 @@ import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.LookupField;
 import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.bmsconsole.context.ViewSharingContext;
+import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.criteria.NumberOperators;
+import com.facilio.bmsconsole.modules.*;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.bmsconsole.util.ViewAPI;
 import com.facilio.bmsconsole.view.ColumnFactory;
@@ -117,6 +121,7 @@ public class LoadViewCommand implements Command {
 				}
 				
 				context.put(FacilioConstants.ContextNames.CUSTOM_VIEW, view);
+				view.setSharingType(ViewAPI.getViewSharingDetail(view.getId()));
 			}
 		}
 		long timeTaken = System.currentTimeMillis() - startTime;
