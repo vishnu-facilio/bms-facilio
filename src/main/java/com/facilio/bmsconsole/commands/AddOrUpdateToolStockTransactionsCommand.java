@@ -143,7 +143,7 @@ public class AddOrUpdateToolStockTransactionsCommand implements Command {
 			context.put(FacilioConstants.ContextNames.RECORD_LIST, toolTransaction);
 		} else {
 			ToolContext tool = (ToolContext) context.get(FacilioConstants.ContextNames.TOOL);
-			AssetContext asset = (AssetContext) context.get(FacilioConstants.ContextNames.RECORD);
+			AssetContext asset = (AssetContext) context.get(FacilioConstants.ContextNames.ROTATING_ASSET);
 			if (tool != null) {
 				ToolContext t = ToolsApi.getTool(tool.getId());
 				double q = t.getQuantity() >= 0 ? t.getQuantity() : 0;

@@ -80,7 +80,7 @@ public class AddOrUpdateItemStockTransactionsCommand implements Command {
 		}
 		else  {
 		ItemContext item = (ItemContext) context.get(FacilioConstants.ContextNames.ITEM);
-		AssetContext asset = (AssetContext) context.get(FacilioConstants.ContextNames.RECORD);
+		AssetContext asset = (AssetContext) context.get(FacilioConstants.ContextNames.ROTATING_ASSET);
 		if (item != null) {
 			ItemContext items = ItemsApi.getItems(item.getId());
 			double q = items.getQuantity() >= 0 ? items.getQuantity() : 0;

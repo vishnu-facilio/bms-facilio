@@ -969,6 +969,8 @@ public class FacilioConstants {
 		public static final String GATE_PASS_LINE_ITEMS = "gatePassLineItems";
 		
 		public static final String CONNECTED_APPS = "connectedApps";
+		
+		public static final String ROTATING_ASSET = "rotatingAsset";
 
 		private static Map<String, Class> classMap = Collections.unmodifiableMap(initClassMap());
 		private static Map<String, Class> initClassMap() {
