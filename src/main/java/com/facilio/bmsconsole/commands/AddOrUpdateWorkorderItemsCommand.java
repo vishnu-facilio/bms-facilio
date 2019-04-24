@@ -239,8 +239,8 @@ public class AddOrUpdateWorkorderItemsCommand implements Command {
 		woItem.setApprovedState(approvalState);
 		if (asset != null) {
 			woItem.setAsset(asset);
-			if(asset.getPrice() >= 0) {
-				costOccured = asset.getPrice() * quantity;
+			if(asset.getUnitPrice() >= 0) {
+				costOccured = asset.getUnitPrice() * quantity;
 			}
 		}
 		if (approvalState == ApprovalState.YET_TO_BE_REQUESTED) {

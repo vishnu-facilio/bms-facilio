@@ -340,14 +340,6 @@ public class AssetContext extends ResourceContext {
 	public void setPurchaseOrder(PurchaseOrderContext purchaseOrder) {
 		this.purchaseOrder = purchaseOrder;
 	}
-	
-	private double price;
-	public double getPrice() {
-		return price;
-	}
-	public void setPrice(double price) {
-		this.price = price;
-	}
 	public Boolean isUsed;
 	public Boolean getIsUsed() {
 		return isUsed;
