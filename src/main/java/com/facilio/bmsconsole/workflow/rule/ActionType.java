@@ -966,7 +966,7 @@ public enum ActionType {
 			}
 		}
 	},
-	ML_JOB_ACTION (19) {
+	ML_JOB_ACTION (20) {
 
 		@Override
 		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,Object currentRecord) throws Exception 
