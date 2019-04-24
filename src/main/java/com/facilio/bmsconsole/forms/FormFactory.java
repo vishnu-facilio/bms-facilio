@@ -553,7 +553,6 @@ public class FormFactory {
 		// new fields
 		fields.add(new FormField("rotatingItem", FieldDisplayType.LOOKUP_SIMPLE, "Rotating Item",Required.OPTIONAL, "item", 12,2));
 		fields.add(new FormField("rotatingTool", FieldDisplayType.LOOKUP_SIMPLE, "Rotating Tool",Required.OPTIONAL, "tool", 12,3));
-		fields.add(new FormField("price", FieldDisplayType.NUMBER, "Price",Required.OPTIONAL, "price", 13,2));
 		return Collections.unmodifiableList(fields);
 	}
 
