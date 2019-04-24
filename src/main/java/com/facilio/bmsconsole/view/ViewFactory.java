@@ -841,7 +841,7 @@ public class ViewFactory {
 		Condition status = new Condition();
 		status.setField(statusTypeField);
 		status.setOperator(NumberOperators.EQUALS);
-		status.setValue(String.valueOf(statusType));
+		status.setValue(String.valueOf(statusType.getIntVal()));
 
 		Criteria criteria = new Criteria();
 		criteria.addAndCondition(status);
