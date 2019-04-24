@@ -214,6 +214,7 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 				;
 				
 		
+		Criteria stateCriteria = new Criteria();
 		for(Map<String, Long> ids: stateIds) {
 			long fromStateId = ids.get("fromStateId");
 			long stateFlowId = ids.get("stateFlowId");
@@ -224,7 +225,10 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 			if (toStateId != null && toStateId > 0) {
 				criteria.addAndCondition(CriteriaAPI.getCondition("TO_STATE_ID", "toStateId", String.valueOf(toStateId), NumberOperators.EQUALS));
 			}
-			builder.orCriteria(criteria);
+			stateCriteria.orCriteria(criteria);
+		}
+		if (!stateCriteria.isEmpty()) {
+			builder.andCriteria(stateCriteria);
 		}
 		
 		
