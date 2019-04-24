@@ -49,7 +49,7 @@ public class WorkorderItemsAction extends FacilioAction{
 		long qty = (long) context.get(FacilioConstants.ContextNames.TOTAL_QUANTITY);
 		setResult(FacilioConstants.ContextNames.TOTAL_QUANTITY, qty);
 		setResult(FacilioConstants.ContextNames.TOTAL_COST, cost);
-		long totalCost = (long) context.get(FacilioConstants.ContextNames.WO_TOTAL_COST);
+		double totalCost = (double) context.get(FacilioConstants.ContextNames.WO_TOTAL_COST);
 		setResult(FacilioConstants.ContextNames.WO_TOTAL_COST, totalCost);
 		setResult("workorderItemsId", workorderItemsId);
 		return SUCCESS;
@@ -71,7 +71,7 @@ public class WorkorderItemsAction extends FacilioAction{
 		long qty = (long) context.get(FacilioConstants.ContextNames.TOTAL_QUANTITY);
 		setResult(FacilioConstants.ContextNames.TOTAL_QUANTITY, qty);
 		setResult(FacilioConstants.ContextNames.TOTAL_COST, cost);
-		long totalCost = (long) context.get(FacilioConstants.ContextNames.WO_TOTAL_COST);
+		double totalCost = (double) context.get(FacilioConstants.ContextNames.WO_TOTAL_COST);
 		setResult(FacilioConstants.ContextNames.WO_TOTAL_COST, totalCost);
 		setResult("workorderItemsId", workorderItemsId);
 		return SUCCESS;
