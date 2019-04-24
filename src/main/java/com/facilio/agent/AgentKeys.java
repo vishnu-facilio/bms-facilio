@@ -38,6 +38,8 @@ public class AgentKeys
     public static final String CONTENT = "message";
     public static final String CONTROLLER_ID = "controllerId";
     public static final String AGENT_LOG_TABLE = "Agent_Log";
+    public static final String CONNECTION_COUNT = "connectionCount";
+
     //Metrics table
     public static final String TIME = "time";
     public static final String METRICS_TABLE = "Agent_Metrics";

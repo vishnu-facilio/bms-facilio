@@ -189,15 +189,28 @@ public class Processor implements IRecordProcessor {
                                 i =  agentUtil.processAgent( payLoad,agentName);
                                 if(isStage && (payLoad.containsKey(AgentKeys.COMMAND_STATUS) || payLoad.containsKey(AgentKeys.CONTENT))){
                                     LOGGER.info(" Payload -- "+payLoad);
+                                    Integer connectionCount = -1;
                                     if( payLoad.containsKey(AgentKeys.COMMAND_STATUS)){
                                         if((payLoad.remove(AgentKeys.COMMAND_STATUS)).toString().equals("1")){
-                                            payLoad.put(AgentKeys.CONTENT,"Agent connected to Facilio");
+                                            if(payLoad.containsKey(AgentKeys.CONNECTION_COUNT)) {
+                                                connectionCount = Integer.parseInt(payLoad.get(AgentKeys.CONNECTION_COUNT).toString());
+                                            }
                                         }
                                         else{
                                             payLoad.put(AgentKeys.CONTENT,"Agent disconnected to Facilio");
                                         }
                                     }
+                                    if (connectionCount == 0) {
+                                        payLoad.put(AgentKeys.CONTENT, "Agent Restarted");
+                                        agentUtil.putLog(payLoad,orgId, agent.getId(),false);
+                                        payLoad.put(AgentKeys.CONTENT, "Agent connected to Facilio");
+                                    } else if (connectionCount == -1) {
+                                        payLoad.put(AgentKeys.CONTENT,"Agent connected to Facilio");
+                                    } else {
+                                        payLoad.put(AgentKeys.CONTENT, "Agent connected to Facilio, " + connectionCount);
+                                    }
                                     agentUtil.putLog(payLoad,orgId,agent.getId(),false);
+
                                 }
                                 break;
                             case devicepoints:
