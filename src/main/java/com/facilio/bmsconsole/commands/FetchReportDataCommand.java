@@ -538,8 +538,6 @@ public class FetchReportDataCommand implements Command {
 			else {
 				fields.add(xAggrField);
 			}
-			
-			handleJoin(dp.getxAxis(), selectBuilder, addedModules);
 		}
 		else {
 			if (xAggr == null || xAggr == CommonAggregateOperator.ACTUAL || dp.isHandleEnum()) { //Return x field as aggr field as there's no X aggregation
@@ -550,6 +548,7 @@ public class FetchReportDataCommand implements Command {
 				throw new IllegalArgumentException("You can't apply X Aggr when Y Aggr is empty");
 			}
 		}
+		handleJoin(dp.getxAxis(), selectBuilder, addedModules);
 		return xAggrField;
 	}
 	

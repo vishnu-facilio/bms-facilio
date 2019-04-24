@@ -39,11 +39,11 @@ public class UpdateFieldDataCommand implements Command {
 						activityType = type;
 					}
 				}
-				else if(!context.containsKey(FacilioConstants.ContextNames.EVENT_TYPE) && ((workorder.getAssignedTo() != null && workorder.getAssignedTo().getId() > 0) || (workorder.getAssignmentGroup() != null && workorder.getAssignmentGroup().getId() > 0)) ) {
+				else if(!updateContext.containsKey(FacilioConstants.ContextNames.EVENT_TYPE) && ((workorder.getAssignedTo() != null && workorder.getAssignedTo().getId() > 0) || (workorder.getAssignmentGroup() != null && workorder.getAssignmentGroup().getId() > 0)) ) {
 					activityType = EventType.ASSIGN_TICKET;
 				}
-				context.put(FacilioConstants.ContextNames.EVENT_TYPE, activityType);
-				context.put(FacilioConstants.ContextNames.COMMENT, data.get("comment"));
+				updateContext.put(FacilioConstants.ContextNames.EVENT_TYPE, activityType);
+				updateContext.put(FacilioConstants.ContextNames.COMMENT, data.get("comment"));
 				
 				Chain chain = TransactionChainFactory.getUpdateWorkOrderChain();
 				chain.execute(updateContext);
