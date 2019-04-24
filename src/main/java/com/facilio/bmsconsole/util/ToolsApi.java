@@ -6,10 +6,13 @@ import com.facilio.bmsconsole.context.ToolTypesContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
+import com.facilio.bmsconsole.modules.FieldFactory;
+import com.facilio.bmsconsole.modules.LookupField;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,10 +39,14 @@ public class ToolsApi {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.TOOL);
 		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.TOOL);
-
+		Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
+		List<LookupField>lookUpfields = new ArrayList<>();
+		lookUpfields.add((LookupField) fieldsAsMap.get("toolType"));
+		lookUpfields.add((LookupField) fieldsAsMap.get("storeRoom"));
 		SelectRecordsBuilder<ToolContext> selectBuilder = new SelectRecordsBuilder<ToolContext>()
 				.select(fields).table(module.getTableName()).moduleName(module.getName())
-				.beanClass(ToolContext.class).andCondition(CriteriaAPI.getIdCondition(id, module));
+				.beanClass(ToolContext.class).andCondition(CriteriaAPI.getIdCondition(id, module))
+				.fetchLookups(lookUpfields);
 
 		List<ToolContext> tools = selectBuilder.get();
 
