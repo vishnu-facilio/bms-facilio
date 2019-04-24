@@ -31,7 +31,7 @@ public class GetViewListCommand implements Command {
 		FacilioModule moduleObj = null;
 		Map<String,FacilioView> viewMap = ViewFactory.getModuleViews(moduleName);
 		// Temporary
-		if (AccountUtil.getCurrentOrg().getOrgId() == 114) {
+		if (AccountUtil.getCurrentOrg().getOrgId() == 114 && moduleName.equals("approval")) {
 			viewMap = new HashMap<>();
 			FacilioView requested = ViewFactory.getRequestedStateApproval();
 			viewMap.put(requested.getName(), requested);
