@@ -133,7 +133,7 @@ public class FormFactory {
 				FormSection taskSection = new FormSection("TASKS", i++, taskFields, true);
 				sections.add(taskSection);
 				
-				form.setFields(null);
+//				form.setFields(null);
 			}
 		}
 		return form;
@@ -527,7 +527,6 @@ public class FormFactory {
 	
 	private static List<FormField> getServiceWorkOrderFormFields() {
 		List<FormField> fields = new ArrayList<>();
-		fields.add(new FormField("requester", FieldDisplayType.REQUESTER, "Requester", Required.REQUIRED, 1, 1));
 		fields.add(new FormField("siteId", FieldDisplayType.LOOKUP_SIMPLE, "Site", Required.REQUIRED, "site" ,2, 1));
 		fields.add(new FormField("subject", FieldDisplayType.TEXTBOX, "Subject", Required.OPTIONAL, 3, 1));
 		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 4, 1));
@@ -543,7 +542,7 @@ public class FormFactory {
 			fields.add(new FormField("email", FieldDisplayType.TEXTBOX, "Requester Email", Required.REQUIRED, 2, 2));
 		}
 		else {
-			fields.add(new FormField("requester", FieldDisplayType.TEXTBOX, "Requester Name", Required.REQUIRED, 1, 2));
+			fields.add(new FormField("requester", FieldDisplayType.REQUESTER, "Requester", Required.REQUIRED, 1, 1));
 		}
 		return fields;
 	}
