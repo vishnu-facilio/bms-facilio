@@ -1,9 +1,27 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.StringJoiner;
+
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ViewField;
-import com.facilio.bmsconsole.modules.*;
+import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.FacilioModule;
+import com.facilio.bmsconsole.modules.FieldFactory;
+import com.facilio.bmsconsole.modules.FieldType;
+import com.facilio.bmsconsole.modules.LookupField;
+import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.bmsconsole.util.ViewAPI;
 import com.facilio.bmsconsole.view.ColumnFactory;
@@ -15,13 +33,6 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.google.common.base.Functions;
 import com.google.common.collect.Lists;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.apache.commons.lang3.tuple.Pair;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-
-import java.util.*;
 
 public class LoadViewCommand implements Command {
 
@@ -47,7 +58,17 @@ public class LoadViewCommand implements Command {
 			}
 			
 			if(view == null) {
-				view = ViewFactory.getView(moduleName, viewName);
+				if (AccountUtil.getCurrentOrg().getOrgId() == 114 && (viewName.equals("approval_requested") || moduleName.equals("approval"))) {
+					view = ViewFactory.getRequestedStateApproval();
+					if (view != null) {
+						List<ViewField> columns = ColumnFactory.getColumns(moduleName, viewName);
+						view.setFields(columns);
+						view.setDefault(true);
+					}
+				}
+				else {
+					view = ViewFactory.getView(moduleName, viewName);
+				}
 				if (view == null && parentViewName != null) {
 					view = ViewFactory.getView(moduleName, parentViewName);
 				}
