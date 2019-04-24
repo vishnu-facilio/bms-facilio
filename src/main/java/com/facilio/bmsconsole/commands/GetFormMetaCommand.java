@@ -7,6 +7,7 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
@@ -27,11 +28,12 @@ public class GetFormMetaCommand implements Command {
 	public boolean execute(Context context) throws Exception {
 		String formName = (String) context.get(FacilioConstants.ContextNames.FORM_NAME);
 		Long formId = (Long) context.get(FacilioConstants.ContextNames.FORM_ID);
+		FacilioForm form = null;
 		if (formName != null) {
 			String formModuleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);	// TODO...needs to be mandatory
 			
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			FacilioForm form = getFormFromDB(formName);
+			form = getFormFromDB(formName);
 			if (form == null) {
 				FacilioModule childModule = null;
 				if (formModuleName != null) {
@@ -85,9 +87,13 @@ public class GetFormMetaCommand implements Command {
 			context.put(FacilioConstants.ContextNames.FORM, form);
 		}
 		else if(formId != null) {
-			FacilioForm form= FormsAPI.getFormFromDB(formId);
+			form= FormsAPI.getFormFromDB(formId);
 			context.put(FacilioConstants.ContextNames.FORM, form);
 		}
+		if (form != null && AccountUtil.getCurrentUser() == null && AccountUtil.getCurrentOrg().getOrgId() != 114) {
+			form.getFields().addAll(0, FormFactory.getRequesterFormFields());
+		}
+		
 		return false;
 	}
 	

@@ -197,9 +197,7 @@ public class FormsAPI {
 				sectionMap.get(f.getSectionId()).addField(f);
 			}
 		}
-		if (sectionMap == null) {
-			form.setFields(fields);
-		}
+		form.setFields(fields);
 	}
 	
 	private static void setFormSections(FacilioForm form) throws Exception {

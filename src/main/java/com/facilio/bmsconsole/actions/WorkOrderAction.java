@@ -2296,6 +2296,9 @@ public class WorkOrderAction extends FacilioAction {
 		workorder.setSendForApproval(true);
 		TicketStatusContext preOpenStatus = TicketAPI.getStatus("preopen");
 		workorder.setStatus(preOpenStatus);
+		if (workorder.getRequester() == null && AccountUtil.getCurrentUser() != null) {
+			workorder.setRequester(AccountUtil.getCurrentUser());
+		}
 		
 		if (AccountUtil.getCurrentOrg().getOrgId() == 104) {
 			if (workorder.getSubject() == null) {
