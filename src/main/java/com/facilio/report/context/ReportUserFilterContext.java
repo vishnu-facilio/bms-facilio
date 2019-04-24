@@ -102,6 +102,10 @@ public class ReportUserFilterContext {
 	
 	@JsonIgnore
 	public Criteria getCriteria() {
+		if (field == null) {
+			return null;
+		}
+		
 		List<String> data = getData();
 		if (CollectionUtils.isEmpty(data)) {
 			return null;
