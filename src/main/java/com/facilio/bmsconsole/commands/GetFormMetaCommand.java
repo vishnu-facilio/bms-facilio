@@ -90,7 +90,7 @@ public class GetFormMetaCommand implements Command {
 			form= FormsAPI.getFormFromDB(formId);
 			context.put(FacilioConstants.ContextNames.FORM, form);
 		}
-		if (form != null && AccountUtil.getCurrentUser() == null && AccountUtil.getCurrentOrg().getOrgId() != 114) {
+		if (form != null && AccountUtil.getCurrentUser() == null && AccountUtil.getCurrentOrg().getOrgId() != 104) {
 			form.getFields().addAll(0, FormFactory.getRequesterFormFields());
 		}
 		
