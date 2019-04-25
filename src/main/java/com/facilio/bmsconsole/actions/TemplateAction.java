@@ -3,11 +3,13 @@ package com.facilio.bmsconsole.actions;
 import com.facilio.beans.ModuleBean;
 import com.facilio.beans.ModuleBeanImpl;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
+import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.AssetCategoryContext;
 import com.facilio.bmsconsole.context.AssetCategoryContext.AssetCategoryType;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
+import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.templates.DefaultTemplate;
@@ -21,23 +23,31 @@ import com.facilio.bmsconsole.templates.*;
 import com.facilio.bmsconsole.templates.Template.Type;
 import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.TemplateAPI;
+import com.facilio.bmsconsole.workflow.rule.ActionContext;
+import com.facilio.bmsconsole.workflow.rule.ActionType;
 import com.facilio.bmsconsole.workflow.rule.AlarmRuleContext;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
+import com.facilio.bmsconsole.workflow.rule.WorkflowEventContext;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext.ThresholdType;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
+import com.facilio.util.FacilioUtil;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.apache.commons.chain.Chain;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringSubstitutor;
+import org.apache.tiles.request.collection.CollectionUtil;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -174,25 +184,67 @@ public class TemplateAction  extends FacilioAction {
 			
 			FacilioField field = modBean.getField((String) obj.get("threshold_metric"), module.getName());
 			
-			alarmRule.getPreRequsite().setReadingFieldId(field.getId());
+			alarmRule.getPreRequsite().setReadingFieldId(field.getFieldId());
+			alarmRule.getPreRequsite().setEvent(new WorkflowEventContext());
 			alarmRule.getPreRequsite().getEvent().setModuleId(module.getModuleId());
 			alarmRule.getPreRequsite().getEvent().setActivityType(EventType.CREATE.getValue());
+			alarmRule.setIsAutoClear(true);
 			for (String key : ruleskeys) {
 				JSONObject rule = (JSONObject) rulesObj.get(key);
+				ObjectMapper mapper = FieldUtil.getMapper(WorkflowContext.class);
+				JSONArray fieldJsons = FacilioUtil.getSingleTonJsonArray((JSONObject) rule.get("workflow"));
+				List<WorkflowContext> list = mapper.readValue(JSONArray.toJSONString(fieldJsons), mapper.getTypeFactory().constructCollectionType(List.class, WorkflowContext.class));
 				if (((String)rule.get("action")).equals("PreRequsite")) {
-					alarmRule.getPreRequsite().setWorkflow((WorkflowContext) rule.get("workflow"));
-					FacilioField preRequesitefield = modBean.getField((String) rule.get("threshold_metric"), module.getName());
+					alarmRule.getPreRequsite().setWorkflow(list.get(0));
+					FacilioModule preModule = modBean.getModule((String) rule.get("moduleName"));
+					FacilioField preRequesitefield = modBean.getField((String) rule.get("threshold_metric"), preModule.getName());
 					alarmRule.getPreRequsite().setReadingFieldId(preRequesitefield.getId());
 				} else if (((String)rule.get("action")).equals("TRIGGER_ALARM")) {
-					alarmRule.getAlarmTriggerRule().setWorkflow((WorkflowContext) rule.get("workflow"));
+					alarmRule.getAlarmTriggerRule().setName("TRIGGER_ALARM");
+					alarmRule.getAlarmTriggerRule().setWorkflow(list.get(0));
+					ActionContext action = new ActionContext();
+					action.setActionType(ActionType.ADD_ALARM);
+					JSONObject possible = new JSONObject();
+					JSONArray fieldMatcher = new JSONArray();
+					JSONObject content = new JSONObject();
+					content.put("field", "problem");
+					content.put("value", obj.get("problem"));
+					fieldMatcher.add(content);
+					content = new JSONObject();
+					content.put("field", "message");
+					content.put("value", obj.get("name"));
+					fieldMatcher.add(content);
+					content = new JSONObject();
+					content.put("field", "possibleCauses");
+					content.put("value", obj.get("possible_causes"));
+					fieldMatcher.add(content);
+					content = new JSONObject();
+					content.put("field", "severity");
+					content.put("value", obj.get("severity"));
+					content = new JSONObject();
+					fieldMatcher.add(content);
+					content.put("field", "recommendation");
+					content.put("value", obj.get("possible_solution"));
+					fieldMatcher.add(content);
+					content = new JSONObject();
+					possible.put("fieldMatcher", fieldMatcher);
+					action.setTemplateJson(possible);
+					alarmRule.getAlarmTriggerRule().setActions(Collections.singletonList(action));
 				}
 			}
+			FacilioContext facilioContext = new FacilioContext();
+
+			facilioContext.put(FacilioConstants.ContextNames.ALARM_RULE, alarmRule);
+			Chain addRule = TransactionChainFactory.addAlarmRuleChain();
+			addRule.execute(facilioContext);
 			
+			setResult("rule", alarmRule);
+			return SUCCESS;
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return SUCCESS;
+		return result;
 	}
 	
 //	private void parseRule(ReadingRuleContext ruleObj, JSONObject rule) throws Exception {
