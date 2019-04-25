@@ -22,8 +22,10 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.activity.ActivityContext;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.activity.WorkOrderActivityType;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
@@ -2052,7 +2054,28 @@ public class WorkOrderAction extends FacilioAction {
 		
 		Chain workOrderActivity = ReadOnlyChainFactory.getActivitiesChain();
 		workOrderActivity.execute(context);
-		setResult("activity", context.get(FacilioConstants.ContextNames.RECORD_LIST));
+		List<ActivityContext> activity =  (List<ActivityContext>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
+		List<ActivityContext> woActivities = new ArrayList<>();
+		long portalID =  AccountUtil.getCurrentUser().getPortalId();
+		for(ActivityContext prop : activity) {	
+		ActivityContext checkIsNotify = prop;
+		if (portalID > 0) {
+				if (checkIsNotify.getType() == WorkOrderActivityType.ADD_COMMENT.getValue()) {
+					if (checkIsNotify.getInfo().get("notifyRequester") != null) {
+						if ((boolean) checkIsNotify.getInfo().get("notifyRequester")) {
+							woActivities.add(checkIsNotify);
+						}
+					}
+				}
+				else {
+					woActivities.add(checkIsNotify);
+				}
+		}
+		else {
+			woActivities.add(checkIsNotify);
+		}
+	  }
+		setResult("activity", woActivities);
 	}
 	catch (Exception e) {
 		JSONObject inComingDetails = new JSONObject();

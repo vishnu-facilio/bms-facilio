@@ -1,11 +1,18 @@
 package com.facilio.bmsconsole.commands;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.activity.WorkOrderActivityType;
+import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.PickListOperators;
+import com.facilio.bmsconsole.criteria.StringOperators;
+import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
+import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FacilioModule.ModuleType;
+import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import org.apache.commons.chain.Command;
@@ -44,8 +51,26 @@ public class ConstructCriteriaAndSetModuleNameForActivity implements Command {
 			else {
 				activityModule = modBean.getModule(moduleName);
 			}
+			List<FacilioField> fields = modBean.getAllFields(activityModule.getName());
+			int index = -1;
 			
 			Criteria filterCriteria = new Criteria();
+			long portalID =  AccountUtil.getCurrentUser().getPortalId();
+			if (portalID > 0) {	
+				for (int i = 0; i<fields.size(); i++) {
+				if (fields.get(i).getName().contains("type")) { 
+					index = i;
+				}
+				}
+			Condition con = new Condition();
+			if( index > -1) {
+				con.setField(fields.get(index));
+				con.setOperator(StringOperators.IS);
+				con.setValue(WorkOrderActivityType.UPDATE_STATUS.getValue() + "," + WorkOrderActivityType.UPDATE.getValue() + "," + WorkOrderActivityType.ADD_COMMENT.getValue() + "," + WorkOrderActivityType.ASSIGN.getValue() + "," + WorkOrderActivityType.APPROVED.getValue() + "," + WorkOrderActivityType.ADD.getValue());
+				filterCriteria.addAndCondition(con);
+			}
+
+			}
 			filterCriteria.addAndCondition(CriteriaAPI.getCondition(modBean.getField("parentId", activityModule.getName()), String.valueOf(parentId), PickListOperators.IS));
 			
 			context.put(FacilioConstants.ContextNames.FILTER_CRITERIA, filterCriteria);
