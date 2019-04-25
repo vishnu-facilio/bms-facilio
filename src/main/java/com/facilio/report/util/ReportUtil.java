@@ -24,6 +24,7 @@ import com.facilio.bmsconsole.criteria.DateRange;
 import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.criteria.StringOperators;
 import com.facilio.bmsconsole.modules.AggregateOperator;
+import com.facilio.bmsconsole.modules.AggregateOperator.CommonAggregateOperator;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
@@ -116,7 +117,7 @@ public class ReportUtil {
 	}
 
 	public static String getAggrFieldName (FacilioField field, AggregateOperator aggr) {
-		return aggr == null ? field.getName() : field.getName()+"_"+aggr.getStringValue();
+		return aggr == null || aggr == CommonAggregateOperator.ACTUAL ? field.getName() : field.getName()+"_"+aggr.getStringValue();
 	}
 	
 	public static List<ReportFolderContext> getAllReportFolder(String moduleName,boolean isWithReports, String searchText) throws Exception {
