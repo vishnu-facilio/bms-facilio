@@ -594,7 +594,14 @@ public class FetchReportDataCommand implements Command {
 			}
 		}
 		else if (dataPoint.getxAxis().getDataTypeEnum() == FieldType.DATE_TIME || dataPoint.getxAxis().getDataTypeEnum() == FieldType.DATE) {
-			String orderBy = "MIN(" + dataPoint.getxAxis().getField().getCompleteColumnName() + ")";
+			
+			String orderBy = null;
+			if(dataPoint.getyAxis().getAggr() < 1) {
+				orderBy = dataPoint.getxAxis().getField().getCompleteColumnName();
+			}
+			else {
+				orderBy = "MIN(" + dataPoint.getxAxis().getField().getCompleteColumnName() + ")";
+			}
 			selectBuilder.orderBy(orderBy);
 		}
 	}
