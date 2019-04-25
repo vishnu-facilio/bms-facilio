@@ -12,6 +12,13 @@ import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
+import com.facilio.bmsconsole.templates.DefaultTemplate;
+import com.facilio.bmsconsole.templates.DefaultTemplate.DefaultTemplateType;
+import com.facilio.bmsconsole.templates.EMailTemplate;
+import com.facilio.bmsconsole.templates.PushNotificationTemplate;
+import com.facilio.bmsconsole.templates.SMSTemplate;
+import com.facilio.bmsconsole.templates.TaskSectionTemplate;
+import com.facilio.bmsconsole.templates.Template;
 import com.facilio.bmsconsole.templates.*;
 
 import com.facilio.bmsconsole.templates.Template.Type;

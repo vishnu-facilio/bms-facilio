@@ -42,9 +42,9 @@ import com.facilio.bmsconsole.modules.*;
 import com.facilio.bmsconsole.templates.*;
 import com.facilio.bmsconsole.templates.DefaultTemplateWorkflowsConf.TemplateWorkflowConf;
 import com.facilio.bmsconsole.templates.Template.Type;
-
 import com.facilio.bmsconsole.workflow.rule.AlarmRuleContext;
 import com.facilio.bmsconsole.templates.WebNotificationTemplate;
+import com.facilio.bmsconsole.templates.WorkflowTemplate;
 import com.facilio.bmsconsole.templates.WorkorderTemplate;
 import com.facilio.bmsconsole.templates.DefaultTemplate.DefaultTemplateType;
 import com.facilio.constants.FacilioConstants;
