@@ -2601,13 +2601,13 @@ public class ViewFactory {
 	
 	private static FacilioView getAllTools() {
 
-		FacilioModule itemsModule = ModuleFactory.getToolModule();
+		FacilioModule toolmodule = ModuleFactory.getToolModule();
 
 		FacilioField createdTime = new LookupField();
 		createdTime.setName("toolType");
 		createdTime.setDataType(FieldType.LOOKUP);
 		createdTime.setColumnName("TOOL_TYPE_ID");
-		createdTime.setModule(ModuleFactory.getToolTypesModule());
+		createdTime.setModule(toolmodule);
 
 		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, true));
 
