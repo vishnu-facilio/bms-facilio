@@ -5700,6 +5700,18 @@ public class FieldFactory {
 		list.add(getField("transistionId", "TRANSISTION_ID", module, FieldType.NUMBER));
 		return list;
 	}
+
+	public static List<FacilioField> getTimeLogFields(FacilioModule module) {
+		List<FacilioField> list = new ArrayList<>();
+		
+		list.add(getField("id", "ID", module, FieldType.ID));
+		list.add(getField("name", "NAME", module, FieldType.STRING));
+		list.add(getField("parentId", "PARENT_ID", module, FieldType.STRING));
+		list.add(getField("startTime", "START_TIME", module, FieldType.NUMBER));
+		list.add(getField("endTime", "END_TIME", module, FieldType.NUMBER));
+		list.add(getField("duration", "DURATION", module, FieldType.NUMBER));
+		return list;
+	}
 	
 //	public static List<FacilioField> getStateFields() {
 //		FacilioModule stateModule = ModuleFactory.getStateModule();

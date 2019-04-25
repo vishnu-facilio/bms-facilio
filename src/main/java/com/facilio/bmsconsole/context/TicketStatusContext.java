@@ -111,7 +111,7 @@ public class TicketStatusContext extends ModuleBaseWithCustomFields {
 
 	public boolean shouldChangeTimer(TicketStatusContext oldState) {
 		if (oldState == null) {
-			return true;
+			return getTimerEnabled();
 		}
 		
 		return !(oldState.getTimerEnabled() == getTimerEnabled());

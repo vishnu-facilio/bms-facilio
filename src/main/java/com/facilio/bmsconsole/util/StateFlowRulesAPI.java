@@ -18,6 +18,7 @@ import com.facilio.bmsconsole.activity.WorkOrderActivityType;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.StateFlowContext;
 import com.facilio.bmsconsole.context.TicketStatusContext;
+import com.facilio.bmsconsole.context.TicketStatusContext.StatusType;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
@@ -30,6 +31,7 @@ import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.modules.UpdateChangeSet;
 import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
+import com.facilio.bmsconsole.modules.FacilioModule.ModuleType;
 import com.facilio.bmsconsole.stateflow.TimerFieldUtil;
 import com.facilio.bmsconsole.stateflow.TimerFieldUtil.TimerField;
 import com.facilio.bmsconsole.workflow.rule.ApproverContext;
@@ -70,25 +72,15 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 		boolean shouldChangeTimer = ticketStatusContext.shouldChangeTimer(oldState);
 		TimerField timerField = TimerFieldUtil.getTimerField(module.getName());
 		if (shouldChangeTimer) {
-			if (ticketStatusContext.getTimerEnabled()) {
-				prop.put(timerField.getResumeTimeFieldName(), DateTimeUtil.getCurrenTime());
-			} else {
-				Long totalTime = (Long) prop.get(timerField.getTotalTimeFieldName());
-				if (totalTime == null) {
-					totalTime = 0l;
-				}
-				Long lastTime = (Long) prop.get(timerField.getResumeTimeFieldName());
-				if (lastTime != null) {
-					totalTime += ((DateTimeUtil.getCurrenTime() - lastTime) / 1000);
-				}
-				prop.put(timerField.getTotalTimeFieldName(), totalTime);
-			}
+			handleTimerUpdation(prop, ticketStatusContext, timerField, module);
 		}
 		
 		List<FacilioField> fields = new ArrayList<>();
 		fields.add(modBean.getField("moduleState", module.getName()));
-		fields.add(modBean.getField(timerField.getResumeTimeFieldName(), module.getName()));
-		fields.add(modBean.getField(timerField.getTotalTimeFieldName(), module.getName()));
+		
+		if (timerField != null && timerField.isTimerEnabled()) {
+			fields.addAll(timerField.getAllFields(modBean, module.getName()));
+		}
 		if (includeStateFlowChange) {
 			fields.add(modBean.getField("stateFlowId", module.getName()));
 		} 
@@ -104,6 +96,90 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 			info.put("oldValue", oldState.getDisplayName());
 			info.put("newValue", ticketStatusContext.getDisplayName());
 			CommonCommandUtil.addActivityToContext(record.getId(), -1, WorkOrderActivityType.UPDATE_STATUS, info, (FacilioContext) context);
+		}
+	}
+
+	private static void handleTimerUpdation(Map<String, Object> prop, TicketStatusContext ticketStatus, TimerField timerField, FacilioModule module) throws Exception {
+		if (timerField == null || !timerField.isTimerEnabled()) {
+			return;
+		}
+		
+		long currentTime = DateTimeUtil.getCurrenTime();
+		
+		if (ticketStatus.getTimerEnabled()) {
+			prop.put(timerField.getResumeTimeFieldName(), currentTime);
+		} else {
+			Long totalTime = (Long) prop.get(timerField.getTotalTimeFieldName());
+			if (totalTime == null) {
+				totalTime = 0l;
+			}
+			Long lastTime = (Long) prop.get(timerField.getResumeTimeFieldName());
+			if (lastTime != null) {
+				totalTime += ((currentTime - lastTime) / 1000);
+			}
+			prop.put(timerField.getTotalTimeFieldName(), totalTime);
+		}
+		
+		// Add or Update Time Log Entries
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		List<FacilioModule> subModules = modBean.getSubModules(module.getModuleId(), ModuleType.TIME_LOG);
+		if (CollectionUtils.isNotEmpty(subModules)) {
+			if (subModules.size() > 1) {
+				throw new Exception("Module " + module.getName() + " cannot have more than one time log module");
+			}
+			
+			long parentId = (long) prop.get("id");
+			
+			Map<String, Object> timeLogProp = new HashMap<>();
+			
+			FacilioModule timeLogModule = subModules.get(0);
+			long id = -1;
+			long startTime = -1;
+			long endTime = -1;
+			
+			if (!ticketStatus.getTimerEnabled()) {
+				endTime = currentTime;
+				Map<String, Object> lastTimerLog = TimerLogUtil.getLastTimerActiveLog(timeLogModule, parentId);
+				if (lastTimerLog != null) {
+					id = (long) lastTimerLog.get("id");
+					startTime = (long) lastTimerLog.get("startTime");
+				} else {
+					return; // start_time has not recorded, so return
+				}
+			}
+			else {
+				startTime = currentTime;
+			}
+			timeLogProp.put("id", id);
+			timeLogProp.put("parentId", parentId);
+			timeLogProp.put("startTime", startTime);
+			timeLogProp.put("endTime", endTime);
+			
+			long duration = -1;
+			if (startTime > 0 && endTime > 0) {
+				duration = (endTime - startTime) / 1000;
+			}
+			timeLogProp.put("duration", duration);
+			
+			TimerLogUtil.addOrUpdate(timeLogModule, timeLogProp);
+			
+			timeLogProp.clear();
+
+			// Update start and end time of the record
+			if (ticketStatus.getType() == StatusType.CLOSED) {
+				if (prop.get(timerField.getEndTimeFieldName()) != null) {
+					Map<String, Object> lastTimerLog = TimerLogUtil.getLastTimerLog(timeLogModule, parentId);
+					prop.put(timerField.getEndTimeFieldName(), lastTimerLog.get("endTime"));
+				}
+			}
+			else if (ticketStatus.getType() == StatusType.OPEN) {
+				if (prop.get(timerField.getEndTimeFieldName()) != null) {
+					prop.put(timerField.getEndTimeFieldName(), -99);
+				}
+				if (prop.get(timerField.getStartTimeFieldName()) == null) {
+					prop.put(timerField.getStartTimeFieldName(), currentTime);
+				}
+			}
 		}
 	}
 
