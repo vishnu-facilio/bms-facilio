@@ -1117,23 +1117,23 @@ public class V2ReportAction extends FacilioAction {
 				
 			}
 			
-//			if(readingruleContext.getId() == 8771l) {
-//				
-//				dataPoint = new JSONObject();
-//				
-//				dataPoint.put("parentId", FacilioUtil.getSingleTonJsonArray(resource.getId()));
-//				
-//				yAxisJson = new JSONObject();
-//				yAxisJson.put("fieldId", 517774l);
-//				yAxisJson.put("aggr", 0);
-//				
-//				dataPoint.put("yAxis", yAxisJson);
-//				
-//				dataPoint.put("type", 1);
-//				
-//				dataPoints.add(dataPoint);
-//				
-//			}
+			if(readingruleContext.getId() == 8771l) {
+				
+				dataPoint = new JSONObject();
+				
+				dataPoint.put("parentId", FacilioUtil.getSingleTonJsonArray(resource.getId()));
+				
+				yAxisJson = new JSONObject();
+				yAxisJson.put("fieldId", 253738l);
+				yAxisJson.put("aggr", 0);
+				
+				dataPoint.put("yAxis", yAxisJson);
+				
+				dataPoint.put("type", 1);
+				
+				dataPoints.add(dataPoint);
+				
+			}
 			
 			zdt = DateTimeUtil.getDateTime(alarmContext.getCreatedTime());
 			zdt = zdt.truncatedTo(new SecondsChronoUnit(24 * 60 * 60));
