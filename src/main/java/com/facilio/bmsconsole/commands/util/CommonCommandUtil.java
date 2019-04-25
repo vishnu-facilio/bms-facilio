@@ -326,12 +326,15 @@ public class CommonCommandUtil {
 
 			body.append(fromClass).append(DELIMITER);
 			if(org != null) {
-				body.append("\n Org Info: ").append(org.toString());
+				body.append("\nOrg Info: \n").append(org.toString());
 			}
-			body.append("\n\n Org Time : ").append(DateTimeUtil.getDateTime())
-				.append("\n Indian Time : ").append(DateTimeUtil.getDateTime(ZoneId.of("Asia/Kolkata")))
+			body.append("\n\nOrg Time : ").append(DateTimeUtil.getDateTime())
+				.append("\nIndian Time : ").append(DateTimeUtil.getDateTime(ZoneId.of("Asia/Kolkata")))
+				.append("\nThread Name : ")
+				.append(Thread.currentThread().getName())
 				.append("\n\nMsg : ")
-				.append(msg);
+				.append(msg)
+			;
 			
 			if (ActionContext.getContext() != null && ServletActionContext.getRequest() != null) {
 				User currentUser = AccountUtil.getCurrentUser();
@@ -342,7 +345,7 @@ public class CommonCommandUtil {
 				.append("\nRequest Url: ")
 				.append(ServletActionContext.getRequest().getRequestURI());
 			}
-				json.put("message", body.toString());;
+			json.put("message", body.toString());;
 			
 			String errorTrace = null;
 			if (e != null) {
