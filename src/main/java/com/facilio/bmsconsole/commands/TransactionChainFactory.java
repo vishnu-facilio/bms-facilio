@@ -2513,5 +2513,23 @@ public class TransactionChainFactory {
 			c.addCommand(new AddOrUpdateStateCommand());
 			return c;
 		}
+		
+		public static Chain getAddConnectionChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new AddConnectionCommand());
+			return c;
+		}
+		
+		public static Chain getUpdateConnectionChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new UpdateConnectionCommand());
+			return c;
+		}
+		
+		public static Chain getDeleteConnectionChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new DeleteConnectionCommand());
+			return c;
+		}
 }
 

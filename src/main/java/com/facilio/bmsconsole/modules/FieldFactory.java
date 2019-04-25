@@ -2571,6 +2571,30 @@ public class FieldFactory {
 
 		return fields;
 	}
+	
+	public static List<FacilioField> getConnectionFields() {
+		FacilioModule module = ModuleFactory.getConnectionModule();
+
+		List<FacilioField> fields = new ArrayList<>();
+		
+		/*fields.add(getOrgIdField(module));*/
+		fields.add(getIdField(module));
+		
+		fields.add(getField("name", "NAME", module, FieldType.STRING));
+		fields.add(getField("serviceName", "SERVICE_NAME", module, FieldType.STRING));
+		fields.add(getField("authType", "AUTH_TYPE", module, FieldType.NUMBER));
+		fields.add(getField("clientId", "CLIENT_ID", module, FieldType.STRING));
+		fields.add(getField("clientSecretId", "CLIENT_SECRET_ID", module, FieldType.STRING));
+		fields.add(getField("authorizeUrl", "AUTHORIZE_URL", module, FieldType.STRING));
+		fields.add(getField("accessTokenUrl", "ACCESS_TOKEN_URL", module, FieldType.STRING));
+		fields.add(getField("refreshTokenUrl", "REFRESH_TOKEN_URL", module, FieldType.STRING));
+		fields.add(getField("revokeTokenUrl", "REVOKE_TOKEN_URL", module, FieldType.STRING));
+		fields.add(getField("authToken", "AUTH_TOKEN", module, FieldType.STRING));
+		fields.add(getField("refreshToken", "REFRESH_TOKEN", module, FieldType.STRING));
+		fields.add(getField("expiryTime", "EXPIRY_TIME", module, FieldType.NUMBER));
+		
+		return fields;
+	}
 
 	public static List<FacilioField> getTabWidgetFields() {
 		FacilioModule module = ModuleFactory.getTabWidgetModule();

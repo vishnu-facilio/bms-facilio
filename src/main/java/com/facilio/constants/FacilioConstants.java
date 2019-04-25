@@ -145,6 +145,9 @@ public class FacilioConstants {
 	}
 	
 	public static class ContextNames {
+		
+		public static final String CONNECTION = "connectionContext";
+		
 		public static final String FACILIO_RECORD = "facilioRecord";
 		public static final String FACILIO_CONSUMER = "facilioConsumer";
 		public static final String FACILIO_PRODUCER = "facilioProducer";

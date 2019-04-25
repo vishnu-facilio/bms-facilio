@@ -701,6 +701,14 @@ public class ModuleFactory {
 		connectedApp.setTableName("ConnectedApps");
 		return connectedApp;
 	}
+	
+	public static FacilioModule getConnectionModule() {
+		FacilioModule connectedApp = new FacilioModule();
+		connectedApp.setName("connection");
+		connectedApp.setDisplayName("Connection");
+		connectedApp.setTableName("Connection");
+		return connectedApp;
+	}
 
 	public static FacilioModule getTabWidgetModule() {
 		FacilioModule tabWidget = new FacilioModule();
