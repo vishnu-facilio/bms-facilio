@@ -65,6 +65,14 @@
 		</result>
 		</action>
 	
+	<action name="portalusers" class="com.facilio.bmsconsole.actions.UserAction" method="portalUserList">
+			<param name="moduleName">setup</param>
+			<param name="permission">USER_ACCESS_ADMINISTER</param>
+			<param name="cache">org</param>
+			<result name="success" type="json">
+				<param name="includeProperties">users.*</param></result>
+		</action>
+	
 	<action name="faciliosubmit" class="com.facilio.auth.actions.FacilioAuthAction"
 		method="validateLogin">
 		<result name="success" type="json">
