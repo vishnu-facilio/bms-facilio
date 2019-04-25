@@ -34,7 +34,7 @@ public class PageFactory {
 
 		Section col1Sec1 = page.new Section();
 		PageWidget pageWidget = new PageWidget(WidgetType.PRIMARY_DETAILS_WIDGET);
-		pageWidget.addToLayoutParams(24, 10);
+		pageWidget.addToLayoutParams(col1Sec1, 24, 10);
 		col1Sec1.addWidget(pageWidget);
 		column1.addSection(col1Sec1);
 
@@ -42,39 +42,39 @@ public class PageFactory {
 		// col1Sec2.setName("overview");
 		// col1Sec2.setDisplayName("common.page.overview");
 		PageWidget detailsWidget = new PageWidget(WidgetType.SECONDARY_DETAILS_WIDGET);
-		detailsWidget.addToLayoutParams(24, 5);
+		detailsWidget.addToLayoutParams(col1Sec2, 24, 5);
 		col1Sec2.addWidget(detailsWidget);
 		column1.addSection(col1Sec2);
 
 		Section col1Sec3 = page.new Section();
 		column1.addSection(col1Sec3);
+		
+		PageWidget readingWidget = getListModuleWidget(FacilioConstants.ContextNames.READING);
+		readingWidget.addToLayoutParams(col1Sec3, 24, 10);
+		col1Sec3.addWidget(readingWidget);
 
-		WidgetGroup group1 = getCommonSubModuleGroup();
-		col1Sec3.addWidgetGroup(group1);
-
-		WidgetGroup group2 = new WidgetGroup(WidgetGroupType.TAB);
-		group2.addToLayoutParams(24, 10);
-		col1Sec3.addWidgetGroup(group2);
+		WidgetGroup moduleGroup = new WidgetGroup(WidgetGroupType.TAB);
+		moduleGroup.addToLayoutParams(col1Sec3, 24, 10);
+		col1Sec3.addWidgetGroup(moduleGroup);
 
 		PageWidget workorderWidget = getCountModuleWidget(FacilioConstants.ContextNames.WORK_ORDER);
-		group2.addWidget(workorderWidget);
+		moduleGroup.addWidget(workorderWidget);
 		PageWidget pmWidget = getListModuleWidget(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE);
-		group2.addWidget(pmWidget);
+		moduleGroup.addWidget(pmWidget);
 		PageWidget alarmWidget = getCountModuleWidget(FacilioConstants.ContextNames.ALARM);
-		group2.addWidget(alarmWidget);
-		PageWidget readingWidget = getListModuleWidget(FacilioConstants.ContextNames.READING);
-		group2.addWidget(readingWidget);
-		// PageWidget activityWidget = new PageWidget(WidgetType.ACTIVITY);
-		// group2.addWidget(activityWidget);
+		moduleGroup.addWidget(alarmWidget);
+		
+		WidgetGroup subModuleGroup = getCommonSubModuleGroup(col1Sec3);
+		col1Sec3.addWidgetGroup(subModuleGroup);
 
 		page.addColumns(column1);
 
 		return page;
 	}
 
-	private static WidgetGroup getCommonSubModuleGroup() {
+	private static WidgetGroup getCommonSubModuleGroup(Section section) {
 		WidgetGroup group = new WidgetGroup(WidgetGroupType.TAB);
-		group.addToLayoutParams(24, 10);
+		group.addToLayoutParams(section, 24, 10);
 
 		PageWidget notesWidget = new PageWidget();
 		notesWidget.setWidgetType(WidgetType.COMMENT);
@@ -120,7 +120,7 @@ public class PageFactory {
 		PageWidget cardWidget = new PageWidget();
 		cardWidget.setWidgetType(WidgetType.CARD);
 
-		cardWidget.addToLayoutParams(8, 2);
+		cardWidget.addToLayoutParams(section, 8, 2);
 
 		addReadingCard(cardWidget, "runHours", "chillerreading");
 
@@ -130,7 +130,7 @@ public class PageFactory {
 	private static void addReadingCard(PageWidget cardWidget, String fieldName, String moduleName) {
 		addReadingCard(cardWidget, fieldName, moduleName, 3, 22, 20);
 	}
-
+	
 	private static void addReadingCard(PageWidget cardWidget, String fieldName, String moduleName, long aggregateFunc, long dateOperator, long xAggr) {
 		cardWidget.addToWidgetParams("staticKey", "readingWithGraphCard");
 		JSONObject paramsJson = new JSONObject();
