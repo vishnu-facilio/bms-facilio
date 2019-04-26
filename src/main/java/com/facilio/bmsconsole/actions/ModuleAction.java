@@ -17,6 +17,7 @@ import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
+import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.chain.FacilioContext;
@@ -73,6 +74,12 @@ public class ModuleAction extends FacilioAction {
 		
 		setResult("field", field);
 		return SUCCESS;
+	}
+	
+	private JSONObject fieldJson;
+	public void setFieldJson(JSONObject fieldJson) throws Exception {
+		this.fieldJson = fieldJson;
+		setField(FieldUtil.parseFieldJson(this.fieldJson));
 	}
 	
 	public String fieldList() throws Exception {
