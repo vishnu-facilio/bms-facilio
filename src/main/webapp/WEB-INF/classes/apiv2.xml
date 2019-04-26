@@ -1999,6 +1999,21 @@
 			class="com.facilio.bmsconsole.actions.ConnectedAppAction" method="deleteConnectedApp">
 		</action>
 		
+		<action name="downloadCertificate"
+			class="com.facilio.bmsconsole.actions.ConnectedAppAction" method="downloadCertificate">
+			<result name="success" type="stream">
+				<param name="contentType">application/download</param>
+				<param name="contentDisposition">attachment;filename="facilio_idp_certificate.crt"</param>
+				<param name="inputName">downloadStream</param>
+				<param name="bufferSize">1024</param>
+			</result>
+		</action>
+		
+		<action name="*"
+			class="com.facilio.bmsconsole.actions.ConnectedAppAction" method="samlLogin">
+			<param name = "linkName">{1}</param>
+		</action>
+		
 		<action name="all"
 			class="com.facilio.bmsconsole.actions.ConnectedAppAction" method="connectedAppList">
 		</action>

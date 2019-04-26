@@ -2568,6 +2568,29 @@ public class FieldFactory {
 		fields.add(baseUrl);
 		
 		fields.add(getField("isActive", "IS_ACTIVE", module, FieldType.BOOLEAN));
+		
+		fields.add(getField("samlEnabled", "SAML_ENABLED", module, FieldType.BOOLEAN));
+		
+		FacilioField spEntityId = new FacilioField();
+		spEntityId.setName("spEntityId");
+		spEntityId.setDataType(FieldType.STRING);
+		spEntityId.setColumnName("SP_ENTITY_ID");
+		spEntityId.setModule(module);
+		fields.add(spEntityId);
+		
+		FacilioField spAcsUrl = new FacilioField();
+		spAcsUrl.setName("spAcsUrl");
+		spAcsUrl.setDataType(FieldType.STRING);
+		spAcsUrl.setColumnName("SP_ACS_URL");
+		spAcsUrl.setModule(module);
+		fields.add(spAcsUrl);
+		
+		FacilioField spLogoutUrl = new FacilioField();
+		spLogoutUrl.setName("spLogoutUrl");
+		spLogoutUrl.setDataType(FieldType.STRING);
+		spLogoutUrl.setColumnName("SP_LOGOUT_URL");
+		spLogoutUrl.setModule(module);
+		fields.add(spLogoutUrl);
 
 		return fields;
 	}

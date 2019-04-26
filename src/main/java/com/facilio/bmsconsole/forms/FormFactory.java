@@ -882,7 +882,7 @@ public class FormFactory {
 		fields.add(new FormField("logoId", FieldDisplayType.IMAGE, "Logo", Required.OPTIONAL, 1, 1));
 		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.REQUIRED, 2, 1));
 		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 3, 1));
-		fields.add(new FormField("baseUrl", FieldDisplayType.TEXTBOX, "Base URL", Required.REQUIRED, 4, 1));
+		fields.add(new FormField("baseUrl", FieldDisplayType.TEXTBOX, "App URL", Required.REQUIRED, 4, 1));
 		return fields;
 	}
 }

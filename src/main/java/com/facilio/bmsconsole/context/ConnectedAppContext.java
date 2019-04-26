@@ -1,5 +1,7 @@
 package com.facilio.bmsconsole.context;
 
+import java.util.List;
+
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.fs.FileStoreFactory;
 
@@ -14,6 +16,10 @@ public class ConnectedAppContext extends ModuleBaseWithCustomFields {
 	private long logoId;
 	private String baseUrl;
 	private Boolean isActive = true;
+	private Boolean samlEnabled;
+	private String spEntityId;
+	private String spAcsUrl;
+	private String spLogoutUrl;
 	
 	public long getId() {
 		return id;
@@ -75,5 +81,29 @@ public class ConnectedAppContext extends ModuleBaseWithCustomFields {
 	}
 	public void setIsActive(Boolean isActive) {
 		this.isActive = isActive;
+	}
+	public Boolean getSamlEnabled() {
+		return samlEnabled;
+	}
+	public void setSamlEnabled(Boolean samlEnabled) {
+		this.samlEnabled = samlEnabled;
+	}
+	public String getSpEntityId() {
+		return spEntityId;
+	}
+	public void setSpEntityId(String spEntityId) {
+		this.spEntityId = spEntityId;
+	}
+	public String getSpAcsUrl() {
+		return spAcsUrl;
+	}
+	public void setSpAcsUrl(String spAcsUrl) {
+		this.spAcsUrl = spAcsUrl;
+	}
+	public String getSpLogoutUrl() {
+		return spLogoutUrl;
+	}
+	public void setSpLogoutUrl(String spLogoutUrl) {
+		this.spLogoutUrl = spLogoutUrl;
 	}
 }
