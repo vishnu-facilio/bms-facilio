@@ -60,7 +60,10 @@ public class SetColumnNameForNewCFsCommand extends FacilioCommand {
 			}
 		}
 		else {
-			throw new IllegalArgumentException("No Fields to Add");
+			Boolean suppressException = (Boolean) context.get("should_suppress_exception");
+			if (suppressException == null || !suppressException) {
+				throw new IllegalArgumentException("No Fields to Add");
+			}
 		}
 		
 		

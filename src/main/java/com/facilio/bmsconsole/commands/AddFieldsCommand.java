@@ -67,7 +67,10 @@ public class AddFieldsCommand extends FacilioCommand {
 			context.put(FacilioConstants.ContextNames.MODULE_FIELD_IDS, fieldIds);
 		}
 		else {
-			throw new IllegalArgumentException("No Fields to Add");
+			Boolean suppressException = (Boolean) context.get("should_suppress_exception");
+			if (suppressException == null || !suppressException) {
+				throw new IllegalArgumentException("No Fields to Add");
+			}
 		}
 		return false;
 	}

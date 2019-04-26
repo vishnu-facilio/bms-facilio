@@ -35,12 +35,14 @@ public class ModuleAction extends FacilioAction {
 		
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, getModuleName());
+		context.put(FacilioConstants.ContextNames.MODULE_TYPE, moduleType);
 		context.put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, getFields());
 		
 		Chain addModulesChain = TransactionChainFactory.getAddModuleChain();
 		addModulesChain.execute(context);
 		
 		FacilioModule module = (FacilioModule) context.get(FacilioConstants.ContextNames.MODULE);
+		setResult("module", module);
 		setModuleId(module.getModuleId());
 		return SUCCESS;
 	}
@@ -272,6 +274,14 @@ public class ModuleAction extends FacilioAction {
 		this.moduleName = moduleName;
 	}
 	
+	private int moduleType;
+	public int getModuleType() {
+		return moduleType;
+	}
+	public void setModuleType(int moduleType) {
+		this.moduleType = moduleType;
+	}
+
 	private FacilioField field;
 	public FacilioField getField() {
 		return field;
