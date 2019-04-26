@@ -52,10 +52,13 @@ public class PageFactory {
 		PageWidget readingWidget = getListModuleWidget(FacilioConstants.ContextNames.READING);
 		readingWidget.addToLayoutParams(col1Sec3, 24, 10);
 		col1Sec3.addWidget(readingWidget);
+		
+		Section col1Sec4 = page.new Section();
+		column1.addSection(col1Sec4);
 
 		WidgetGroup moduleGroup = new WidgetGroup(WidgetGroupType.TAB);
-		moduleGroup.addToLayoutParams(col1Sec3, 24, 10);
-		col1Sec3.addWidgetGroup(moduleGroup);
+		moduleGroup.addToLayoutParams(col1Sec4, 24, 10);
+		col1Sec4.addWidgetGroup(moduleGroup);
 
 		PageWidget workorderWidget = getCountModuleWidget(FacilioConstants.ContextNames.WORK_ORDER);
 		moduleGroup.addWidget(workorderWidget);
@@ -64,8 +67,8 @@ public class PageFactory {
 		PageWidget alarmWidget = getCountModuleWidget(FacilioConstants.ContextNames.ALARM);
 		moduleGroup.addWidget(alarmWidget);
 		
-		WidgetGroup subModuleGroup = getCommonSubModuleGroup(col1Sec3);
-		col1Sec3.addWidgetGroup(subModuleGroup);
+		WidgetGroup subModuleGroup = getCommonSubModuleGroup(col1Sec4);
+		col1Sec4.addWidgetGroup(subModuleGroup);
 
 		page.addColumns(column1);
 
