@@ -57,6 +57,25 @@ public class AssetCategoryContext extends ModuleBaseWithCustomFields {
 	public void setAssetModuleID(long assetModuleID) {
 		this.assetModuleID = assetModuleID;
 	}
+	private String displayName;
+	public String getDisplayName() {
+		if(displayName != null && !displayName.isEmpty()) {
+			return displayName;
+		}
+		else {
+			return name;
+		}
+	}
+	public void setDisplayName(String displayName) {
+		this.displayName = displayName;
+	}
+	private Boolean isDefault;
+	public Boolean getIsDefault() {
+		return isDefault;
+	}
+	public void setIsDefault(Boolean isDefault) {
+		this.isDefault = isDefault;
+	}
 
 	public static enum AssetCategoryType {
 		MISC(0, "Misc"),
