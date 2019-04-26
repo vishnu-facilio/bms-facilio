@@ -287,11 +287,6 @@
 		<action name="forms" class="com.facilio.bmsconsole.actions.FormAction" method="formList">
 			<param name="formType">3</param>
 		</action>
-		<action name="activity" class="com.facilio.bmsconsole.actions.WorkOrderAction"
-			method="fetchActivity">
-			<param name="moduleName">workorder</param>
-			<param name="permission">READ</param>
-		</action>
 	</package>
 	<package name="newServiceWorkOrderApiV2" namespace="/api/service/v2/workorders" extends="newServicePortalApiV2">
 		<action name="add" class="com.facilio.bmsconsole.actions.WorkOrderAction" method="addPortalOrders">
