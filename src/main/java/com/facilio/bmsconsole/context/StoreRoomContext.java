@@ -141,4 +141,11 @@ public class StoreRoomContext extends ModuleBaseWithCustomFields {
 		}
 		return false;
 	}
+	private SiteContext site = null;
+	public SiteContext getSite() {
+		return site;
+	}
+	public void setSite(SiteContext site) {
+		this.site = site;
+	}
 }
