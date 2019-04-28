@@ -133,6 +133,9 @@ public class AttachmentsAPI {
 		}
 		
 		String moduleName = null;
+		if (attachmentModuleName == null) {
+			return;
+		}
 		switch (attachmentModuleName) {
 			case "ticketattachments":
 				moduleName = "ticket";

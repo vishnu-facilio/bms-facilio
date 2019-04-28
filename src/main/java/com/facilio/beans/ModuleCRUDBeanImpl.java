@@ -13,6 +13,7 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.apache.log4j.Priority;
 import org.json.simple.JSONObject;
 
 import com.amazonaws.services.kinesis.clientlibrary.interfaces.IRecordProcessorCheckpointer;
@@ -242,8 +243,7 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 						if(sectiontemplate.getAssignmentType() < 0) {
 							isNewPmType =  false;
 							break;
-						}
-						else {
+						} else {
 							isNewPmType = true; 
 						}
 					}
@@ -261,6 +261,8 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 						}
 						taskMapForNewPmExecution = PreventiveMaintenanceAPI.getTaskMapForNewPMExecution(workorderTemplate.getSectionTemplates(), woTemplateResourceId, currentTriggerId);
 					}
+				} else {
+					taskMapForNewPmExecution = workorderTemplate.getTasks();
 				}
 				if(taskMapForNewPmExecution != null) {
 					taskMap = taskMapForNewPmExecution;
