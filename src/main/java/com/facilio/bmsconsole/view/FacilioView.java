@@ -1,18 +1,19 @@
 package com.facilio.bmsconsole.view;
 
-import com.facilio.accounts.util.AccountUtil;
-import com.facilio.bmsconsole.context.ViewField;
-import com.facilio.bmsconsole.context.ViewSharingContext;
-import com.facilio.bmsconsole.criteria.Criteria;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsole.context.ViewField;
+import com.facilio.bmsconsole.context.ViewSharingContext;
+import com.facilio.bmsconsole.criteria.Criteria;
 
 public class FacilioView {
 	
@@ -191,7 +192,7 @@ public class FacilioView {
 			defaultModulefields = new HashMap<>();
 			for(ViewField vf : fields) {
 				if(vf.getName().equals("tenant")){
-					if(!AccountUtil.isFeatureEnabled(AccountUtil.FEATURE_TENANTS)) {
+					if(!AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.TENANTS)) {
 						continue;
 					}
 				}

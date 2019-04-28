@@ -1,5 +1,10 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.Map;
+
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
+
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
@@ -12,10 +17,6 @@ import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericInsertRecordBuilder;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-
-import java.util.Map;
 
 public class AddPreventiveMaintenanceCommand implements Command {
 
@@ -26,7 +27,7 @@ public class AddPreventiveMaintenanceCommand implements Command {
 		addDefaultProps(pm, context);
 		addResource(pm);
 		Map<String, Object> pmProps = FieldUtil.getAsProperties(pm);
-		if (AccountUtil.isFeatureEnabled(AccountUtil.FEATURE_SCHEDULED_WO) && pm.getTriggers() != null && !pm.getTriggers().isEmpty()) {
+		if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.SCHEDULED_WO) && pm.getTriggers() != null && !pm.getTriggers().isEmpty()) {
 			pmProps.put("woGenerationStatus", true);
 		} else {
 			context.put(FacilioConstants.ContextNames.SKIP_WO_CREATION, true);

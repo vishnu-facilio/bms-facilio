@@ -44,7 +44,7 @@ public class ScheduleWOStatusChange extends FacilioJob {
     @Override
     public void execute(JobContext jc) throws Exception {
         try {
-            if (!AccountUtil.isFeatureEnabled(AccountUtil.FEATURE_SCHEDULED_WO)) {
+            if (!AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.SCHEDULED_WO)) {
                 return;
             }
             ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");

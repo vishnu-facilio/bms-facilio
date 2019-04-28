@@ -1,5 +1,23 @@
 package com.facilio.bmsconsole.actions;
 
+import java.io.File;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.chain.Chain;
+import org.apache.commons.chain.Command;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.apache.struts2.ServletActionContext;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+
 import com.chargebee.Environment;
 import com.chargebee.ListResult;
 import com.chargebee.Result;
@@ -8,7 +26,11 @@ import com.chargebee.models.Card;
 import com.chargebee.models.Customer;
 import com.chargebee.models.Subscription;
 import com.chargebee.models.enums.Gateway;
-import com.facilio.accounts.dto.*;
+import com.facilio.accounts.dto.GroupMember;
+import com.facilio.accounts.dto.Organization;
+import com.facilio.accounts.dto.Role;
+import com.facilio.accounts.dto.User;
+import com.facilio.accounts.dto.UserMobileSetting;
 import com.facilio.accounts.exception.AccountException;
 import com.facilio.accounts.impl.UserBeanImpl;
 import com.facilio.accounts.util.AccountConstants;
@@ -33,22 +55,6 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.sql.DBUtil;
 import com.facilio.transaction.FacilioConnectionPool;
 import com.opensymphony.xwork2.ActionContext;
-import org.apache.commons.chain.Chain;
-import org.apache.commons.chain.Command;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.apache.struts2.ServletActionContext;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-
-import javax.servlet.http.HttpServletRequest;
-import java.io.File;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
 public class UserAction extends FacilioAction {
 
@@ -119,7 +125,7 @@ public class UserAction extends FacilioAction {
 		Connection conn = null;
 		Statement statement = null;
 		try	{
-			if (AccountUtil.isFeatureEnabled(AccountUtil.FEATURE_TENANTS)) {
+			if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.TENANTS)) {
 			  checkforTenantPrimaryContact(user.getEmail());
 			}
 			Organization org = AccountUtil.getOrgBean().getPortalOrg(AccountUtil.getCurrentOrg().getDomain());

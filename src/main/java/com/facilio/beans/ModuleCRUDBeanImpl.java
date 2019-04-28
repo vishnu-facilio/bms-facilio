@@ -18,6 +18,7 @@ import org.json.simple.JSONObject;
 import com.amazonaws.services.kinesis.clientlibrary.interfaces.IRecordProcessorCheckpointer;
 import com.amazonaws.services.kinesis.model.Record;
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.accounts.util.AccountUtil.FeatureLicense;
 import com.facilio.agent.AgentKeys;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
@@ -614,7 +615,7 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 	}
 
 	@Override
-	public Boolean isFeatureEnabled(int license) throws Exception {
+	public Boolean isFeatureEnabled(FeatureLicense license) throws Exception {
 		return AccountUtil.isFeatureEnabled(license);
 	}
 

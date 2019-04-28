@@ -27,6 +27,8 @@ public class FacilioForm implements Serializable {
 
 	public FacilioForm(FacilioForm form) {
 		this(form.id, form.orgId, form.name, form.displayName, form.moduleId, new ArrayList<>(form.fields), form.module, form.formType, form.labelPosition);
+		this.showInMobile = form.showInMobile;
+		this.hideInList = form.hideInList;
 	}
 
 	private static final long serialVersionUID = 1L;

@@ -298,7 +298,7 @@ public class WorkOrderAction extends FacilioAction {
  		context.put(FacilioConstants.ContextNames.ATTACHMENT_CONTENT_TYPE, this.attachedFilesContentType);
  		context.put(FacilioConstants.ContextNames.ATTACHMENT_TYPE, this.attachmentType);
 
- 		if (AccountUtil.isFeatureEnabled(AccountUtil.FEATURE_SCHEDULED_WO)) {
+ 		if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.SCHEDULED_WO)) {
 			Chain addTemplate = FacilioChainFactory.getAddNewPreventiveMaintenanceChain();
 			addTemplate.execute(context);
 		} else {
@@ -795,7 +795,7 @@ public class WorkOrderAction extends FacilioAction {
  			context.put(FacilioConstants.ContextNames.EXISTING_ATTACHMENT_LIST, oldAttachments); 			
  		}
 
- 		if (AccountUtil.isFeatureEnabled(AccountUtil.FEATURE_SCHEDULED_WO)) {
+ 		if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.SCHEDULED_WO)) {
 			Chain updatePM = FacilioChainFactory.getUpdateNewPreventiveMaintenanceChain();
 			updatePM.execute(context);
 		} else {
@@ -835,7 +835,7 @@ public class WorkOrderAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.PM_RESOURCE_ID, resourceId);
 		context.put(FacilioConstants.ContextNames.PM_ID, pmId);
 
-		if (AccountUtil.isFeatureEnabled(AccountUtil.FEATURE_SCHEDULED_WO)) {
+		if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.SCHEDULED_WO)) {
 			Chain updatePM = FacilioChainFactory.getUpdateNewPreventiveMaintenanceJobChain();
 			updatePM.execute(context);
 		} else {
@@ -853,7 +853,7 @@ public class WorkOrderAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD_ID, id.get(0));
 
-		if (AccountUtil.isFeatureEnabled(AccountUtil.FEATURE_SCHEDULED_WO)) {
+		if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.SCHEDULED_WO)) {
 			Chain pmSummary = FacilioChainFactory.getNewPreventiveMaintenanceSummaryChain();
 			pmSummary.execute(context);
 		} else {
@@ -927,7 +927,7 @@ public class WorkOrderAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, id);
 		context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE, preventivemaintenance);
 
-		if (AccountUtil.isFeatureEnabled(AccountUtil.FEATURE_SCHEDULED_WO)) {
+		if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.SCHEDULED_WO)) {
 			Chain addTemplate = TransactionChainFactory.getChangeNewPreventiveMaintenanceStatusChain();
 			addTemplate.execute(context);
 		} else {
@@ -1031,11 +1031,11 @@ public class WorkOrderAction extends FacilioAction {
 		}
 
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE);
-		if (AccountUtil.isFeatureEnabled(AccountUtil.FEATURE_SCHEDULED_WO)) {
+		if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.SCHEDULED_WO)) {
 			context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.WORK_ORDER);
 		}
 
-		if (AccountUtil.isFeatureEnabled(AccountUtil.FEATURE_SCHEDULED_WO)) {
+		if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.SCHEDULED_WO)) {
 			Chain getPmchain = FacilioChainFactory.getGetNewPMJobListChain();
 			getPmchain.execute(context);
 		} else {

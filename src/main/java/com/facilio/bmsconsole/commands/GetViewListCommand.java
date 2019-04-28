@@ -131,7 +131,7 @@ public class GetViewListCommand implements Command {
 						groupViews.set(groupSize - 1, mutatedDetail);
 					}
 
-					if (AccountUtil.isFeatureEnabled(AccountUtil.FEATURE_SCHEDULED_WO)) {
+					if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.SCHEDULED_WO)) {
 						if (upcomingView.isPresent()) {
 							Map<String, Object> groupDetails = new HashMap<>();
 							groupDetails.put("name", "upcoming");

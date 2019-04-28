@@ -214,7 +214,7 @@ public class ModuleAction extends FacilioAction {
 					continue;
 				}
 				if(field.getName().equals("tenant")) {
-					if(AccountUtil.isFeatureEnabled(AccountUtil.FEATURE_TENANTS)) {
+					if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.TENANTS)) {
 					workorderFields.add(field);
 					}
 					continue;
