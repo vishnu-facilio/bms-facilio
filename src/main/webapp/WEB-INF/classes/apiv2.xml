@@ -711,16 +711,22 @@
 			method="getDefaultTemplate">
 			<param name="moduleName">{1}</param>
 		</action>
+	</package>
+	
+	<package name="ruleTemplateApiv2" namespace="/api/v2/rules/template"
+		extends="v2Api">
 		<action name="fetchDefaultRules"
-			class="com.facilio.bmsconsole.actions.TemplateAction" method="getDefaultRuleTemplates">
+			class="com.facilio.bmsconsole.actions.RuleTemplateAction" method="getDefaultRuleTemplates">
 			<param name="moduleName">alarm</param>
 			<param name="permission">READ,READ_TEAM,READ_OWN</param>
 		</action>
-		<action name="createRule" class="com.facilio.bmsconsole.actions.TemplateAction" method="createRulefromTemplates">
+		<action name="createRule" class="com.facilio.bmsconsole.actions.RuleTemplateAction" method="createRulefromTemplates">
 			<param name="moduleName">alarm</param>
 			<param name="permission">READ,READ_TEAM,READ_OWN</param>
 		</action>
 	</package>
+	
+	
 	<package name="readingRuleHistoricalRunApiV2" namespace="/api/v2/reading/rule/historicalrun"
 		extends="v2Api">
 		<action name="*" class="com.facilio.bmsconsole.actions.ReadingAction"
