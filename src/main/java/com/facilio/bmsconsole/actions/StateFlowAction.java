@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.apache.commons.chain.Chain;
 
+import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.StateFlowContext;
 import com.facilio.bmsconsole.workflow.rule.ActionContext;
@@ -60,11 +61,40 @@ public class StateFlowAction extends FacilioAction {
 		return SUCCESS;
 	}
 	
+	private long stateFlowId = -1;
+	public long getStateFlowId() {
+		return stateFlowId;
+	}
+	public void setStateFlowId(long stateFlowId) {
+		this.stateFlowId = stateFlowId;
+	}
+	
+	public String getStateTransitionList() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.STATE_FLOW_ID, stateFlowId);
+		
+		Chain chain = ReadOnlyChainFactory.getStateTransitionList();
+		chain.execute(context);
+		
+		setResult(FacilioConstants.ContextNames.STATE_TRANSITION_LIST, context.get(FacilioConstants.ContextNames.STATE_TRANSITION_LIST));
+		return SUCCESS;
+	}
+	
+	private long stateTransitionId = -1;
+	public long getStateTransitionId() {
+		return stateTransitionId;
+	}
+	public void setStateTransitionId(long stateTransitionId) {
+		this.stateTransitionId = stateTransitionId;
+	}
+
 	public String deleteStateTransition() throws Exception {
 		FacilioContext context = new FacilioContext();
 		
-		updateStateContext(context);
+		context.put(FacilioConstants.ContextNames.STATE_FLOW_ID, stateFlowId);
+		context.put(FacilioConstants.ContextNames.TRANSITION_ID, stateTransitionId);
 		Chain chain = TransactionChainFactory.getDeleteStateFlowTransition();
+		chain.execute(context);
 		return SUCCESS;
 	}
 	
@@ -94,6 +124,16 @@ public class StateFlowAction extends FacilioAction {
 	}
 	public void setStateFlowActions(List<ActionContext> stateFlowActions) {
 		this.stateFlowActions = stateFlowActions;
+	}
+	
+	public String getStateFlowList() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+		Chain chain = ReadOnlyChainFactory.getStateFlowList();
+		chain.execute(context);
+		
+		setResult(FacilioConstants.ContextNames.STATE_FLOW_LIST, context.get(FacilioConstants.ContextNames.STATE_FLOW_LIST));
+		return SUCCESS;
 	}
 	
 	public String addOrUpdateStateFlow() throws Exception {

@@ -109,6 +109,9 @@
 	<package name="stateFlow" namespace="/api/v2/stateflow" extends="v2Api">
 		<action name="addOrUpdate"
 			class="com.facilio.bmsconsole.actions.StateFlowAction" method="addOrUpdateStateFlow" />
+		
+		<action name="list"
+			class="com.facilio.bmsconsole.actions.StateFlowAction" method="getStateFlowList" />
 	</package>
 	
 	<package name="stateTransistion" namespace="/api/v2/statetransistion" extends="v2Api">
@@ -120,6 +123,9 @@
 			class="com.facilio.bmsconsole.actions.StateFlowAction" method="addOrUpdateStateTransition" />
 		<action name="delete"
 			class="com.facilio.bmsconsole.actions.StateFlowAction" method="deleteStateTransition" />
+			
+		<action name="list"
+			class="com.facilio.bmsconsole.actions.StateFlowAction" method="getStateTransitionList" />
 	</package>
 
 	<package name="importTemplate" namespace="/api/v2/importTemplate"

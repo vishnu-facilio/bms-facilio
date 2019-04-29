@@ -975,7 +975,10 @@ public class FacilioConstants {
 		public static final String CONNECTED_APPS = "connectedApps";
 
 		public static final String STATE_FLOW = "stateFlow";
+		public static final String STATE_FLOW_LIST = "stateFlows";
+		public static final String STATE_FLOW_ID = "stateFlowId";
 		public static final String TRANSITION_ID = "transition_id";
+		public static final String STATE_TRANSITION_LIST = "stateTransitionList";
 		public static final String AVAILABLE_STATES = "states";
 		public static final String CURRENT_STATE = "currentState";
 		public static final String DEFAULT_STATE = "default_state";
