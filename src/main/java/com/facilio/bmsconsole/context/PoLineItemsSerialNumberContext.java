@@ -48,5 +48,19 @@ public class PoLineItemsSerialNumberContext extends ModuleBaseWithCustomFields {
 		this.serialNumbers = serialNumbers;
 	}
 	
+	private AssetContext asset;
+	public AssetContext getAsset() {
+		return asset;
+	}
+	public void setAsset(AssetContext asset) {
+		this.asset = asset;
+	}
 	
+	private List<AssetContext> assets;
+	public List<AssetContext> getAssets() {
+		return assets;
+	}
+	public void setAssets(List<AssetContext> assets) {
+		this.assets = assets;
+	}
 }

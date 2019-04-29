@@ -48,10 +48,6 @@ public class AddItemCommand implements Command {
 			}
 		}
 		
-		
-
-		
-
 		List<ItemContext> itemToBeAdded = new ArrayList<>();
 		List<PurchasedItemContext> purchasedItems = new ArrayList<>();
 

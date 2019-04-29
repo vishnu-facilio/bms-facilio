@@ -962,6 +962,7 @@ public class FacilioConstants {
 
 		public static final String PO_LINE_ITEMS_SERIAL_NUMBERS = "poLineItemSerialNumbers";
 		public static final String SERIAL_NUMBERS = "serialNumbers";
+		public static final String ASSETS = "assets";
 		
 		public static final String TOTAL_COST = "totalCost";
 		public static final String TOTAL_QUANTITY = "totalQuantity";

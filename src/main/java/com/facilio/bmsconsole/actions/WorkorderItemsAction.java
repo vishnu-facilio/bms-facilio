@@ -52,6 +52,7 @@ public class WorkorderItemsAction extends FacilioAction{
 		double totalCost = (double) context.get(FacilioConstants.ContextNames.WO_TOTAL_COST);
 		setResult(FacilioConstants.ContextNames.WO_TOTAL_COST, totalCost);
 		setResult("workorderItemsId", workorderItemsId);
+		setResult("workorderItems", workorderItems);
 		return SUCCESS;
 	} 
 	

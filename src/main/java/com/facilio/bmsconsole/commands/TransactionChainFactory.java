@@ -2450,8 +2450,8 @@ public class TransactionChainFactory {
 
 		public static Chain getAddPoLineItemSerialNumbersChain () {
 			Chain chain = getDefaultChain();
-			chain.addCommand(SetTableNamesCommand.getForPoLineItemSerialNumber());
 			chain.addCommand(new AddSerialNumberForPoLineItemsCommand());
+			chain.addCommand(SetTableNamesCommand.getForPoLineItemSerialNumber());
 			chain.addCommand(new GenericAddModuleDataListCommand());
 			return chain;
 		}

@@ -151,12 +151,12 @@ public class PurchaseOrderCompleteCommand implements Command {
 	}
 
 	private ItemContext createItem(PurchaseOrderContext po, PurchaseOrderLineItemContext lineItem,
-			boolean isIndividualTracking) throws Exception {
+			boolean isRotating) throws Exception {
 		ItemContext item = new ItemContext();
 		item.setStoreRoom(po.getStoreRoom());
 		item.setItemType(lineItem.getItemType());
 		item.setCostType(CostType.FIFO);
-		if (isIndividualTracking) {
+		if (isRotating) {
 			List<String> serialNumbers = getLineItemSerialNumbers(lineItem.getId());
 			if (serialNumbers.size() < lineItem.getQuantityReceived()) {
 				throw new IllegalArgumentException("Please fill all the serial numbers of item");
@@ -175,13 +175,13 @@ public class PurchaseOrderCompleteCommand implements Command {
 	}
 
 	private ToolContext createTool(PurchaseOrderContext po, PurchaseOrderLineItemContext lineItem,
-			boolean isIndividualTracking) throws Exception {
+			boolean isRotating) throws Exception {
 		ToolContext tool = new ToolContext();
 		tool.setStoreRoom(po.getStoreRoom());
 		tool.setToolType(lineItem.getToolType());
 		tool.setQuantity(lineItem.getQuantityReceived());
 		tool.setRate(lineItem.getCost());
-		if (isIndividualTracking) {
+		if (isRotating) {
 			List<String> serialNumbers = getLineItemSerialNumbers(lineItem.getId());
 			if (serialNumbers.size() < lineItem.getQuantityReceived()) {
 				throw new IllegalArgumentException("Please fill all the serial numbers of tool");
