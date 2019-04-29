@@ -733,7 +733,6 @@ public class TransactionChainFactory {
 			c.addCommand(new AddAttachmentCommand());
 			c.addCommand(new AttachmentContextCommand());
 			c.addCommand(new AddAttachmentRelationshipCommand());
-			c.addCommand(new AddTicketActivityCommand());
 			c.addCommand(getAddNewTasksChain());
 			return c;
 		}
