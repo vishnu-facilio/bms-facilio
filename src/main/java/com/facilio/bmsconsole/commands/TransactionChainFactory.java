@@ -759,6 +759,7 @@ public class TransactionChainFactory {
 			c.addCommand(SetTableNamesCommand.getForWorkOrder());
 			c.addCommand(new ValidateWorkOrderFieldsCommand());
 			c.addCommand(new LoadAllFieldsCommand());
+			c.addCommand(new UpdateEventListForStateFlowCommand());
 			c.addCommand(new AddWorkOrderCommand());
 			c.addCommand(new AddAttachmentCommand());
 			c.addCommand(new AttachmentContextCommand());
@@ -805,6 +806,8 @@ public class TransactionChainFactory {
 			c.addCommand(new LoadAllFieldsCommand());
 			c.addCommand(new FetchOldWorkOrdersCommand());
 			c.addCommand(new VerifyApprovalCommand());
+			c.addCommand(new BackwardCompatibleStateFlowUpdateCommand());
+			c.addCommand(new UpdateEventListForStateFlowCommand());
 			c.addCommand(new UpdateWorkOrderCommand());
 			c.addCommand(new SendNotificationCommand());
 			c.addCommand(new AddTicketActivityCommand());
@@ -2480,8 +2483,8 @@ public class TransactionChainFactory {
 		public static Chain getUpdateStateTransistionChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(new GenericGetModuleDataDetailCommand());
-			c.addCommand(new UpdateFieldDataCommand());
 			c.addCommand(new UpdateStateCommand());
+			c.addCommand(new UpdateFieldDataCommand());
 			c.addCommand(new AddActivitiesCommand());
 //			c.addCommand(new GenericUpdateModuleDataCommand());
 			return c;

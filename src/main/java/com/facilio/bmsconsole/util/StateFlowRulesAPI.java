@@ -100,6 +100,12 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 		List<FacilioField> fields = new ArrayList<>();
 		fields.add(modBean.getField("moduleState", module.getName()));
 		
+		// backward compatibility for workorder, to update existing status field
+		if (module.getName().equals("workorder")) {
+			fields.add(modBean.getField("status", module.getName()));
+			prop.put("status", FieldUtil.getAsProperties(ticketStatusContext));
+		}
+		
 		if (timerField != null && timerField.isTimerEnabled()) {
 			fields.addAll(timerField.getAllFields(modBean, module.getName()));
 		}
@@ -312,7 +318,7 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 		
 
 		List<Map<String, Object>> list = builder.get();
-		List<WorkflowRuleContext> stateFlows = getWorkFlowsFromMapList(list, true, false, true);
+		List<WorkflowRuleContext> stateFlows = getWorkFlowsFromMapList(list, true, true, true);
 		return stateFlows;
 	}
 	

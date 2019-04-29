@@ -61,6 +61,9 @@ public class TicketStatusContext extends ModuleBaseWithCustomFields {
 	
 	private Boolean recordLocked;
 	public Boolean getRecordLocked() {
+		if (recordLocked == null) {
+			return false;
+		}
 		return recordLocked;
 	}
 	public void setRecordLocked(Boolean recordLocked) {
