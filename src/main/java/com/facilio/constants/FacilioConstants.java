@@ -976,6 +976,7 @@ public class FacilioConstants {
 		
 		public static final String ROTATING_ASSET = "rotatingAsset";
 
+		public static final String UNIT_POINTS="unit";
 		private static Map<String, Class> classMap = Collections.unmodifiableMap(initClassMap());
 		private static Map<String, Class> initClassMap() {
 			Map<String, Class> classMap = new HashMap<>();

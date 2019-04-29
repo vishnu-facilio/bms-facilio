@@ -196,10 +196,10 @@ public class TimeSeriesAPI {
 		}
 	}
 	
-	public static void insertOrUpdateInstance(String deviceName, long assetId, long categoryId, long controllerId, String instance, long fieldId) throws Exception {
+	public static void insertOrUpdateInstance(String deviceName, long assetId, long categoryId, long controllerId, String instance, long fieldId ,Integer unit) throws Exception {
 		Map<String, Object> modeledData = getMappedInstance(deviceName, instance, controllerId);
 		if (modeledData == null) {
-			insertInstanceAssetMapping(deviceName, assetId, categoryId, controllerId, Collections.singletonMap(instance, fieldId));	
+			insertInstanceAssetMapping(deviceName, assetId, categoryId, controllerId, Collections.singletonMap(instance, fieldId),unit);	
 			
 			// TODO move to insertInstanceAssetMapping
 			FacilioContext context = new FacilioContext();
@@ -212,7 +212,7 @@ public class TimeSeriesAPI {
 			FacilioTimer.scheduleInstantJob("ProcessUnmodelledHistoricalData", context);
 		}
 		else {
-			updateInstanceAssetMapping(deviceName, assetId, categoryId, instance, fieldId, modeledData);
+			updateInstanceAssetMapping(deviceName, assetId, categoryId, instance, fieldId, modeledData, unit);
 		}
 	}
 	
@@ -242,7 +242,7 @@ public class TimeSeriesAPI {
 	}
 	
 	
-public static void insertInstanceAssetMapping(String deviceName, long assetId, long categoryId, Long controllerId, Map<String,Long> instanceFieldMap) throws Exception {
+public static void insertInstanceAssetMapping(String deviceName, long assetId, long categoryId, Long controllerId, Map<String,Long> instanceFieldMap, Integer unit) throws Exception {
 		
 		List<Map<String, Object>> instanceDetails = getUnmodeledInstances(deviceName, instanceFieldMap.keySet(), controllerId, null);
 		//List<Map<String, Object>> instancePointsDetails = getPoinstUnmodeledInstances(deviceName, instanceFieldMap.keySet(), controllerId, null);
@@ -267,7 +267,7 @@ public static void insertInstanceAssetMapping(String deviceName, long assetId, l
 
 			if(isStage()) {
 				Map<String, Object> pointsRecord = (Map<String, Object>) getNewPointsData(assetId,categoryId,fieldId);
-
+				pointsRecord.put("unit", unit);
 				updatePointsData(deviceName, instanceName, pointsRecord);
 
 			}
@@ -332,7 +332,7 @@ public static void insertInstanceAssetMapping(String deviceName, long assetId, l
 		builderPoints.update(pointsRecord);
 	}
 	
-	public static int updateInstanceAssetMapping(String deviceName, long assetId, long categoryId, String instanceName, long fieldId, Map<String, Object> oldData) throws Exception {
+	public static int updateInstanceAssetMapping(String deviceName, long assetId, long categoryId, String instanceName, long fieldId, Map<String, Object> oldData,Integer unit) throws Exception {
 		long oldFieldId = (long) oldData.get("fieldId");
 		long oldAssetId = (long) oldData.get("assetId");
 		
@@ -350,8 +350,13 @@ public static void insertInstanceAssetMapping(String deviceName, long assetId, l
 		if (meta.getActualValue() != null && !meta.getActualValue().equals("-1") && ((meta.getTtime()-lastMappedTime) > (30 * 24 * 60 * 60000L) ) ) {
 			throw new IllegalArgumentException("Field cannot be changed. Please contact the support");
 		}
+		Map<String, Object> prop=(Map<String, Object>) getNewPointsData(assetId,categoryId,fieldId);
 		
-		Map<String, Object> prop = (Map<String, Object>) getNewPointsData(assetId,categoryId,fieldId);
+		if(TimeSeriesAPI.isStage()) {
+			if(unit!=null) {
+				prop.put("unit", unit);	
+			}
+		}
 		
 		FacilioModule module = ModuleFactory.getInstanceMappingModule();
 		List<FacilioField> fields = FieldFactory.getInstanceMappingFields();
@@ -775,20 +780,20 @@ public static void insertInstanceAssetMapping(String deviceName, long assetId, l
 			isSubscribedCriteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("subscribed"), String.valueOf(isSubscribed), BooleanOperators.IS));
 			builder.andCriteria(isSubscribedCriteria);
 		}
+		if(fetchMapped!=null) {
+			if (!fetchMapped) {
+				builder
+				.andCondition(CriteriaAPI.getCondition(resourceId, CommonOperators.IS_EMPTY))
+				.andCondition(CriteriaAPI.getCondition(fieldId, CommonOperators.IS_EMPTY));
+			}
+			else {
+				builder
+				.andCondition(CriteriaAPI.getCondition(resourceId, CommonOperators.IS_NOT_EMPTY))
+				.andCondition(CriteriaAPI.getCondition(fieldId, CommonOperators.IS_NOT_EMPTY))
+				.orderBy(fieldMap.get("mappedTime").getColumnName() + " DESC");
 
-		if (fetchMapped) {
-			builder
-			.andCondition(CriteriaAPI.getCondition(resourceId, CommonOperators.IS_NOT_EMPTY))
-			.andCondition(CriteriaAPI.getCondition(fieldId, CommonOperators.IS_NOT_EMPTY))
-			.orderBy(fieldMap.get("mappedTime").getColumnName() + " DESC");
-			
+			}
 		}
-		else {
-			builder
-			.andCondition(CriteriaAPI.getCondition(resourceId, CommonOperators.IS_EMPTY))
-			.andCondition(CriteriaAPI.getCondition(fieldId, CommonOperators.IS_EMPTY));	
-		}
-
 		if (pagination != null) {
 			int page = (int) pagination.get("page");
 			int perPage = (int) pagination.get("perPage");
@@ -956,6 +961,7 @@ public static void insertInstanceAssetMapping(String deviceName, long assetId, l
 				.addRecords(insertNewPointsData);
 		insertBuilderPoints.save();
 	}
+	
 	public static Map<String, Object> getNewPointsData(long resourceId,long categoryId,long fieldId) throws Exception {
 		Map<String, Object> pointsRecord = new HashMap<String,Object>();
 		pointsRecord.put("resourceId", resourceId);
@@ -964,8 +970,10 @@ public static void insertInstanceAssetMapping(String deviceName, long assetId, l
 		pointsRecord.put("mappedTime", System.currentTimeMillis());
 		return pointsRecord;
 	}
+	
+	
 
-	public static boolean isStage() {
+	public static boolean isStage() {	
 
 		return !AwsUtil.isProduction();
 	}

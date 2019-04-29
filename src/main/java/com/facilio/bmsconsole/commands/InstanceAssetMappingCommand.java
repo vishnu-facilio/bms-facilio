@@ -13,7 +13,7 @@ public class InstanceAssetMappingCommand implements Command {
 	public boolean execute(Context context) throws Exception {
 		
 		Long controllerId = (Long) context.get(FacilioConstants.ContextNames.CONTROLLER_ID);
-		
+		Integer unit= (Integer) context.get(FacilioConstants.ContextNames.UNIT_POINTS);
 		Map<String, Object> instanceMap = (Map<String, Object>) context.get(FacilioConstants.ContextNames.INSTANCE_INFO);
 		if (instanceMap != null) {
 			String deviceName = (String) instanceMap.get("deviceName");
@@ -21,14 +21,14 @@ public class InstanceAssetMappingCommand implements Command {
 			String instanceName = (String) instanceMap.get("instanceName");
 			long fieldId = (long) instanceMap.get("fieldId");
 			long categoryId = (long) instanceMap.get("categoryId");
-			TimeSeriesAPI.insertOrUpdateInstance(deviceName, assetId, categoryId, controllerId, instanceName, fieldId);
+			TimeSeriesAPI.insertOrUpdateInstance(deviceName, assetId, categoryId, controllerId, instanceName, fieldId, unit);
 		}
 		else {
 			// For older UI...remove once new ui is completed
 			String deviceName = (String)context.get(FacilioConstants.ContextNames.DEVICE_DATA);
 			long assetId = (long) context.get(FacilioConstants.ContextNames.ASSET_ID);
 			Map<String,Long> instanceFieldMap = (Map<String, Long>) context.get(FacilioConstants.ContextNames.RECORD_MAP);
-			TimeSeriesAPI.insertInstanceAssetMapping(deviceName, assetId, -1, controllerId, instanceFieldMap);
+			TimeSeriesAPI.insertInstanceAssetMapping(deviceName, assetId, -1, controllerId, instanceFieldMap, unit);
 		}
 		
 		return false;

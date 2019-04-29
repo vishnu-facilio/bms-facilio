@@ -65,10 +65,13 @@ public  class DevicePointsUtil {
             if(controllerSettingsId > -1) {
                 JSONArray points = (JSONArray)payLoad.get(DevicePointsKeys.POINTS);
                 LOGGER.info("Device Points : "+points);
-                TimeSeriesAPI.addUnmodeledInstances(points, controllerSettingsId);
+
                 if(TimeSeriesAPI.isStage()) {
                 	TimeSeriesAPI.addPointsInstances(points, controllerSettingsId);
-               }
+                }
+                else {
+                	TimeSeriesAPI.addUnmodeledInstances(points, controllerSettingsId);
+                }
             }
         // }
     }
