@@ -627,6 +627,9 @@ public static void insertInstanceAssetMapping(String deviceName, long assetId, l
 				instanceObj.put("controllerId", controllerId);
 			}
 			insertBuilderPoints.addRecord(instanceObj);
+			if(TimeSeriesAPI.isStage() && AccountUtil.getCurrentOrg().getId()==104) {
+				LOGGER.info(instanceObj+"device points data");
+			}
 		}
 		insertBuilderPoints.save();
 

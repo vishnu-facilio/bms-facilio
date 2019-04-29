@@ -39,7 +39,9 @@ public class ModeledDataCommand implements Command {
 		Map<String,ReadingContext> iModuleVsReading = new HashMap<String,ReadingContext> ();
 		Long controllerId=(Long) context.get(FacilioConstants.ContextNames.CONTROLLER_ID);
 		List<Map<String,Object>> dataPointsValue=(List<Map<String, Object>>) context.get("DATA_POINTS");
-
+		if(TimeSeriesAPI.isStage()  && AccountUtil.getCurrentOrg().getId()==104) {
+		LOGGER.info(dataPointsValue+"Points data incomming");
+		}
 		List<Map<String, Object>> insertNewPointsData= new ArrayList< >();
 		Map<String,Object>  dataPoints= null;
 		long orgId = AccountUtil.getCurrentOrg().getOrgId();
@@ -105,7 +107,11 @@ public class ModeledDataCommand implements Command {
 				}
 			}	
 			if(!insertNewPointsData.isEmpty()) {
-				TimeSeriesAPI.insertPoints(insertNewPointsData);
+				if(AccountUtil.getCurrentOrg().getId()==104) {
+					LOGGER.info("inserted new data"+insertNewPointsData);
+				}
+					TimeSeriesAPI.insertPoints(insertNewPointsData);
+				
 				dataPointsValue.addAll(insertNewPointsData);
 			}
 		}
@@ -193,6 +199,7 @@ public class ModeledDataCommand implements Command {
 				if(controllerId==null || controllerId.equals(mControllerId)) {
 					// if controller is null.. then return map..
 					// if not null.. then it should be equal to return map..
+					System.out.println(map+"the contains value");
 					return map;
 				}
 			}
