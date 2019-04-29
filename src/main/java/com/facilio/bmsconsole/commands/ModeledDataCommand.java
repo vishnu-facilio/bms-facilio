@@ -59,7 +59,10 @@ public class ModeledDataCommand implements Command {
 						continue;
 					}
 						dataPoints=  getValueContainsPointsData( deviceName,  instanceName, controllerId , dataPointsValue);
-					if(dataPoints==null) {
+						if(AccountUtil.getCurrentOrg().getId()==104 && TimeSeriesAPI.isStage()) {
+							LOGGER.info("DATA_POINTS IS NULL or not "+dataPoints);
+						}
+						if(dataPoints==null) {
 
 						Map<String, Object> value=new HashMap<String,Object>();
 						value.put("orgId", orgId);
