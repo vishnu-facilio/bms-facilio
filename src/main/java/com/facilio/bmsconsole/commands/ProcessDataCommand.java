@@ -13,6 +13,7 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.StringOperators;
@@ -91,6 +92,9 @@ public class ProcessDataCommand implements Command {
 		}
 		if(TimeSeriesAPI.isStage()) {
 			pointsStat= getDataPoints(criteriaList);
+			if(TimeSeriesAPI.isStage() && AccountUtil.getCurrentOrg().getId()==104) {
+				LOGGER.info("insert Points Data"+pointsStat);
+			}
 			context.put("DATA_POINTS",pointsStat );
 		}
 		LOGGER.debug("Finished ProcessDataCommand####### : ");
