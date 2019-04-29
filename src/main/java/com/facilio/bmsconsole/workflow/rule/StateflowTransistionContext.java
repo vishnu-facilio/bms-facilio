@@ -206,7 +206,7 @@ public class StateflowTransistionContext extends WorkflowRuleContext {
 			FacilioModule module = modBean.getModule(getModuleId());
 			StateFlowRulesAPI.updateState(moduleRecord, module, StateFlowRulesAPI.getStateContext(getToStateId()), false, context);
 			
-			StateFlowRulesAPI.addScheduledJobIfAny(getToStateId(), module.getName(), moduleRecord, (FacilioContext) context);
+//			StateFlowRulesAPI.addScheduledJobIfAny(getToStateId(), module.getName(), moduleRecord, (FacilioContext) context);
 			
 			super.executeTrueActions(record, context, placeHolders);
 		}

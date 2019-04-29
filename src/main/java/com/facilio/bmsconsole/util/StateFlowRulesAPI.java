@@ -24,6 +24,7 @@ import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
+import com.facilio.bmsconsole.modules.FacilioModule.ModuleType;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
@@ -75,6 +76,26 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 			handleTimerUpdation(prop, ticketStatusContext, timerField, module);
 		}
 		
+		// Update start and end time of the record
+		if (ticketStatusContext.getType() == StatusType.CLOSED) {
+			if (prop.get(timerField.getEndTimeFieldName()) == null) {
+				FacilioModule timeLogModule = getTimeLogModule(module);
+				if (timeLogModule != null) {
+					Map<String, Object> lastTimerLog = TimerLogUtil.getLastTimerLog(timeLogModule, record.getId());
+					prop.put(timerField.getEndTimeFieldName(), lastTimerLog.get("endTime"));
+				}
+			}
+		}
+		else if (ticketStatusContext.getTimerEnabled() && ticketStatusContext.getType() == StatusType.OPEN) {
+			long currentTime = DateTimeUtil.getCurrenTime();
+			if (prop.get(timerField.getEndTimeFieldName()) != null) {
+				prop.put(timerField.getEndTimeFieldName(), -99);
+			}
+			if (prop.get(timerField.getStartTimeFieldName()) == null) {
+				prop.put(timerField.getStartTimeFieldName(), currentTime);
+			}
+		}
+		
 		List<FacilioField> fields = new ArrayList<>();
 		fields.add(modBean.getField("moduleState", module.getName()));
 		
@@ -90,6 +111,8 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 				.andCondition(CriteriaAPI.getIdCondition(record.getId(), module));
 		updateBuilder.updateViaMap(prop);
 		
+		addScheduledJobIfAny(ticketStatusContext.getId(), module.getName(), record, (FacilioContext) context);
+		
 		if ((module.getName().contains("workorder")) && oldState != null && oldState.getDisplayName() != null && ticketStatusContext != null && ticketStatusContext.getDisplayName() != null) {
 			JSONObject info = new JSONObject();
 			info.put("status", ticketStatusContext.getDisplayName());
@@ -97,6 +120,19 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 			info.put("newValue", ticketStatusContext.getDisplayName());
 			CommonCommandUtil.addActivityToContext(record.getId(), -1, WorkOrderActivityType.UPDATE_STATUS, info, (FacilioContext) context);
 		}
+	}
+	
+	private static FacilioModule getTimeLogModule(FacilioModule module) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		List<FacilioModule> subModules = modBean.getSubModules(module.getModuleId(), ModuleType.TIME_LOG);
+		if (CollectionUtils.isNotEmpty(subModules)) {
+			if (subModules.size() > 1) {
+				throw new Exception("Module " + module.getName() + " cannot have more than one time log module");
+			}
+			return subModules.get(0);
+		}
+//		throw new Exception("Module " + module.getName() + " doesn't have time log module");
+		return null;
 	}
 
 	private static void handleTimerUpdation(Map<String, Object> prop, TicketStatusContext ticketStatus, TimerField timerField, FacilioModule module) throws Exception {
@@ -121,18 +157,12 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 		}
 		
 		// Add or Update Time Log Entries
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		List<FacilioModule> subModules = modBean.getSubModules(module.getModuleId(), ModuleType.TIME_LOG);
-		if (CollectionUtils.isNotEmpty(subModules)) {
-			if (subModules.size() > 1) {
-				throw new Exception("Module " + module.getName() + " cannot have more than one time log module");
-			}
-			
+		FacilioModule timeLogModule = getTimeLogModule(module);
+		if (timeLogModule != null) {
 			long parentId = (long) prop.get("id");
 			
 			Map<String, Object> timeLogProp = new HashMap<>();
 			
-			FacilioModule timeLogModule = subModules.get(0);
 			long id = -1;
 			long startTime = -1;
 			long endTime = -1;
@@ -164,22 +194,6 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 			TimerLogUtil.addOrUpdate(timeLogModule, timeLogProp);
 			
 			timeLogProp.clear();
-
-			// Update start and end time of the record
-			if (ticketStatus.getType() == StatusType.CLOSED) {
-				if (prop.get(timerField.getEndTimeFieldName()) != null) {
-					Map<String, Object> lastTimerLog = TimerLogUtil.getLastTimerLog(timeLogModule, parentId);
-					prop.put(timerField.getEndTimeFieldName(), lastTimerLog.get("endTime"));
-				}
-			}
-			else if (ticketStatus.getType() == StatusType.OPEN) {
-				if (prop.get(timerField.getEndTimeFieldName()) != null) {
-					prop.put(timerField.getEndTimeFieldName(), -99);
-				}
-				if (prop.get(timerField.getStartTimeFieldName()) == null) {
-					prop.put(timerField.getStartTimeFieldName(), currentTime);
-				}
-			}
 		}
 	}
 
@@ -215,13 +229,13 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 		return changeSet;
 	}
 	
-	public static void addScheduledJobIfAny(long fromStateId, String moduleName, ModuleBaseWithCustomFields record, FacilioContext context) throws Exception {
+	// TODO - remove scheduled jobs if we manually transfer from one job to other
+	private static void addScheduledJobIfAny(long fromStateId, String moduleName, ModuleBaseWithCustomFields record, FacilioContext context) throws Exception {
 		List<WorkflowRuleContext> availableState = StateFlowRulesAPI.getAvailableState(record.getStateFlowId(), fromStateId, moduleName, record, context);
 		if (CollectionUtils.isNotEmpty(availableState)) {
 			for (WorkflowRuleContext rule : availableState) {
 				StateflowTransistionContext state = (StateflowTransistionContext) rule;
 				if (state.isScheduled()) {
-					System.out.println(state);
 					scheduleJob(record.getId(), state);
 				}
 			}

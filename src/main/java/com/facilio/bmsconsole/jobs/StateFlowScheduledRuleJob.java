@@ -38,7 +38,7 @@ public class StateFlowScheduledRuleJob extends FacilioJob {
 				FacilioModule module = modBean.getModule(moduleId);
 				
 				context.put(FacilioConstants.ContextNames.ID, recordId);
-				context.put("transistion_id", stateTransistion.getId());
+				context.put(FacilioConstants.ContextNames.TRANSITION_ID, stateTransistion.getId());
 				context.put(FacilioConstants.ContextNames.MODULE_NAME, module.getName());
 				
 				chain.execute(context);
