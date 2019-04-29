@@ -143,11 +143,6 @@ public class TemplateAction  extends FacilioAction {
 		return SUCCESS;
 	}
 	
-	public String getDefaultRuleTemplates() throws Exception {
-		setResult("templates", TemplateAPI.getAllRuleLibraryTemplate());
-		return SUCCESS;
-	}
-	
 	JSONObject placeHolder;
 	
 	public JSONObject getPlaceHolder() {
@@ -186,7 +181,7 @@ public class TemplateAction  extends FacilioAction {
 			
 			FacilioField field = modBean.getField((String) obj.get("threshold_metric"), module.getName());
 			
-			alarmRule.getPreRequsite().setReadingFieldId(field.getFieldId());
+			alarmRule.getAlarmTriggerRule().setReadingFieldId(field.getFieldId());
 			alarmRule.getPreRequsite().setEvent(new WorkflowEventContext());
 			alarmRule.getPreRequsite().getEvent().setModuleId(module.getModuleId());
 			alarmRule.getPreRequsite().getEvent().setActivityType(EventType.CREATE.getValue());
@@ -195,15 +190,18 @@ public class TemplateAction  extends FacilioAction {
 				JSONObject rule = (JSONObject) rulesObj.get(key);
 				ObjectMapper mapper = FieldUtil.getMapper(WorkflowContext.class);
 				JSONArray fieldJsons = FacilioUtil.getSingleTonJsonArray((JSONObject) rule.get("workflow"));
+				long thresholdType = (long) rule.get("thresholdType");
 				List<WorkflowContext> list = mapper.readValue(JSONArray.toJSONString(fieldJsons), mapper.getTypeFactory().constructCollectionType(List.class, WorkflowContext.class));
 				if (((String)rule.get("action")).equals("PreRequsite")) {
 					alarmRule.getPreRequsite().setWorkflow(list.get(0));
 					FacilioModule preModule = modBean.getModule((String) rule.get("moduleName"));
 					FacilioField preRequesitefield = modBean.getField((String) rule.get("threshold_metric"), preModule.getName());
+					alarmRule.getPreRequsite().setThresholdType((int) thresholdType);
 					alarmRule.getPreRequsite().setReadingFieldId(preRequesitefield.getId());
 				} else if (((String)rule.get("action")).equals("TRIGGER_ALARM")) {
 					alarmRule.getAlarmTriggerRule().setName("TRIGGER_ALARM");
 					alarmRule.getAlarmTriggerRule().setWorkflow(list.get(0));
+					alarmRule.getAlarmTriggerRule().setThresholdType((int) thresholdType);
 					ActionContext action = new ActionContext();
 					action.setActionType(ActionType.ADD_ALARM);
 					JSONObject possible = new JSONObject();
@@ -248,20 +246,6 @@ public class TemplateAction  extends FacilioAction {
 		}
 		return result;
 	}
-	
-//	private void parseRule(ReadingRuleContext ruleObj, JSONObject rule) throws Exception {
-//		// TODO Auto-generated method stub
-//		int count = StringUtils.countMatches((String) rule.get("condition"), "&&");
-//		if(count > 0) {
-//			ruleObj.setThresholdType(ThresholdType.ADVANCED.getValue());
-//			JSONArray fields = TemplateAPI.getFieldForRules((String) rule.get("condition"));
-//		}
-//		else {
-//			ruleObj.setThresholdType(ThresholdType.SIMPLE.getValue());
-//			String field = (String) TemplateAPI.getFieldForRules((String) rule.get("condition")).get(0);
-//		}
-//		
-//	}
 
 	private TaskSectionTemplate taskGroup;
 	public TaskSectionTemplate getTaskGroup() {
