@@ -62,6 +62,7 @@ public class AddSerialNumberForPoLineItemsCommand implements Command {
 				ast.setRotatingTool(tool);
 				ast.setUnitPrice((int) lineItem.getUnitPrice());
 				context.put(FacilioConstants.ContextNames.MODULE, FacilioConstants.ContextNames.ASSET);
+				context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.ASSET);
 				context.put(FacilioConstants.ContextNames.RECORD, ast);
 				context.put(FacilioConstants.ContextNames.PARENT_CATEGORY_ID, Long.valueOf(-1));
 				context.put(FacilioConstants.ContextNames.SET_LOCAL_MODULE_ID, true);

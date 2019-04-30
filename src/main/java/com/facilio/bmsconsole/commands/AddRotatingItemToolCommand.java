@@ -16,6 +16,7 @@ public class AddRotatingItemToolCommand implements Command {
 		AssetContext asset = (AssetContext) context.get(FacilioConstants.ContextNames.RECORD);
 		if (asset != null) {
 			context.put(FacilioConstants.ContextNames.ROTATING_ASSET, asset);
+			context.put(FacilioConstants.ContextNames.SET_LOCAL_MODULE_ID, false);
 			if (asset.getRotatingItem() != null) {
 				if (asset.getRotatingItem().getId() > 0) {
 				ItemContext item = asset.getRotatingItem();
