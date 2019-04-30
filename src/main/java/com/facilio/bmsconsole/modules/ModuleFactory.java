@@ -1,13 +1,11 @@
 package com.facilio.bmsconsole.modules;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-
 import com.facilio.agent.AgentKeys;
 import com.facilio.constants.FacilioConstants;
 
-import com.facilio.constants.FacilioConstants;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ModuleFactory {
 
@@ -115,6 +113,14 @@ public class ModuleFactory {
         agentMetricsModule.setDisplayName("addAgentMetrics");
         agentMetricsModule.setTableName(AgentKeys.METRICS_TABLE);
 		return agentMetricsModule;
+	}
+
+	public static FacilioModule getIntegrationModule() {
+		FacilioModule integrationModule = new FacilioModule();
+		integrationModule.setName("integrationData");
+		integrationModule.setDisplayName("integrationData");
+		//integrationModule.setTableName(WattsenseKeys.INTEGRATION);
+		return integrationModule;
 	}
 
 	public static FacilioModule getAgentLogModule() {
@@ -708,6 +714,13 @@ public class ModuleFactory {
 		connectedApp.setDisplayName("Connection");
 		connectedApp.setTableName("Connection");
 		return connectedApp;
+	}
+	public static FacilioModule getIntegrationApiModule() {
+		FacilioModule integrationApi = new FacilioModule();
+		integrationApi.setName("integrationapi");
+		integrationApi.setDisplayName("IntegrationApi");
+		integrationApi.setTableName("Integration_Api");
+		return integrationApi;
 	}
 
 	public static FacilioModule getTabWidgetModule() {
