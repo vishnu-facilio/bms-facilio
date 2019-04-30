@@ -2070,5 +2070,11 @@
 		<action name="add" class="com.facilio.bmsconsole.actions.ModuleAction" method="v2addCustomFields">
 		</action>
 	</package>
+	
+	<package name="basespaceApiV2" namespace="/api/v2/basespaces/children" extends="v2Api">
+		<action name="*" class="com.facilio.bmsconsole.actions.BaseSpaceAction" method="basespaceWithChildren">
+			<param name = "spaceId">{1}</param>
+		</action>
+	</package>
 
 </struts>
