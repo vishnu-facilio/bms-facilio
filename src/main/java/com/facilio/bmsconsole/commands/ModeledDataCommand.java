@@ -110,9 +110,6 @@ public class ModeledDataCommand implements Command {
 				}
 			}	
 			if(!insertNewPointsData.isEmpty()) {
-				if(AccountUtil.getCurrentOrg().getId()==104) {
-					LOGGER.info("inserted new data"+insertNewPointsData);
-				}
 					TimeSeriesAPI.insertPoints(insertNewPointsData);
 				
 				dataPointsValue.addAll(insertNewPointsData);
@@ -198,15 +195,17 @@ public class ModeledDataCommand implements Command {
 			Long mControllerId=(Long)map.get("controllerId");
 			
 			if(deviceName.equals(mDeviceName) && instanceName.equals(mInstanceName)) {
-				if(TimeSeriesAPI.isStage() && AccountUtil.getCurrentOrg().getId()==104) {
-					LOGGER.info("Points DEVICE_NAME#######"+"DeviceName is="+deviceName+"###"+"##InstanceName is="+instanceName+"###"+"COntrollerID is="+controllerId+"####"+"equals="+mDeviceName+"###"+mInstanceName+"####"+mControllerId+"search value");
-					}
+				
 				if(controllerId==null || controllerId.equals(mControllerId) ) {
 					// if controller is null.. then return map..
 					// if not null.. then it should be equal to return map..
 					System.out.println(map+"the contains value");
 					return map;
 				}
+			}
+			if(TimeSeriesAPI.isStage() && AccountUtil.getCurrentOrg().getId()==104) {
+				LOGGER.info("####Incoming Value DEVICE_NAME: "+deviceName+" InstanceName: "+instanceName+" ControllerID: "+controllerId);
+				LOGGER.info("####Map Value deviceName: "+mDeviceName+" instanceName: "+mInstanceName+" ControllerID: "+mControllerId);
 			}
 		}
 		return null;

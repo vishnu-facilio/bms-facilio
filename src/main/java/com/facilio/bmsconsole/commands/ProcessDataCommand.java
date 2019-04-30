@@ -91,10 +91,10 @@ public class ProcessDataCommand implements Command {
 			}
 		}
 		if(TimeSeriesAPI.isStage()) {
-			LOGGER.info("###Criteria list is####"+criteriaList);
+			
 			pointsStat= getDataPoints(criteriaList);
-			if(TimeSeriesAPI.isStage() && AccountUtil.getCurrentOrg().getId()==104) {
-				LOGGER.info("insert Points Data"+pointsStat);
+			if(AccountUtil.getCurrentOrg().getId()==104) {
+				LOGGER.info("########### Insert Points Data: "+pointsStat);
 			}
 			context.put("DATA_POINTS",pointsStat );
 		}
