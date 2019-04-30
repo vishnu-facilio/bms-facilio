@@ -197,11 +197,10 @@ public class ModeledDataCommand implements Command {
 			String mInstanceName=(String) map.get("instance");
 			Long mControllerId=(Long)map.get("controllerId");
 			
-			if(TimeSeriesAPI.isStage() && AccountUtil.getCurrentOrg().getId()==104) {
-			LOGGER.info("Points DEVICE_NAME#######"+"DeviceName is="+deviceName+"###"+"##InstanceName is="+instanceName+"###"+"COntrollerID is="+controllerId+"####"+"equals="+mDeviceName+"###"+mInstanceName+"####"+mControllerId+"search value");
-			}
-			
 			if(deviceName.equals(mDeviceName) && instanceName.equals(mInstanceName)) {
+				if(TimeSeriesAPI.isStage() && AccountUtil.getCurrentOrg().getId()==104) {
+					LOGGER.info("Points DEVICE_NAME#######"+"DeviceName is="+deviceName+"###"+"##InstanceName is="+instanceName+"###"+"COntrollerID is="+controllerId+"####"+"equals="+mDeviceName+"###"+mInstanceName+"####"+mControllerId+"search value");
+					}
 				if(controllerId==null || controllerId.equals(mControllerId) ) {
 					// if controller is null.. then return map..
 					// if not null.. then it should be equal to return map..
