@@ -37,7 +37,7 @@ public class ModeledDataCommand implements Command {
 		
 		Map<String,List<ReadingContext>> moduleVsReading = new HashMap<String,List<ReadingContext>> ();
 		Map<String,ReadingContext> iModuleVsReading = new HashMap<String,ReadingContext> ();
-		Long controllerId=(Long) context.get(FacilioConstants.ContextNames.CONTROLLER_ID);
+		Long controllerId= (Long) context.get(FacilioConstants.ContextNames.CONTROLLER_ID);
 		List<Map<String,Object>> dataPointsValue=(List<Map<String, Object>>) context.get("DATA_POINTS");
 		if(TimeSeriesAPI.isStage()  && AccountUtil.getCurrentOrg().getId()==104) {
 		LOGGER.info(dataPointsValue+"Points data incomming");
@@ -196,10 +196,11 @@ public class ModeledDataCommand implements Command {
 			String mDeviceName=(String) map.get("device");
 			String mInstanceName=(String) map.get("instance");
 			Long mControllerId=(Long)map.get("controllerId");
-			
+			LOGGER.info(deviceName+instanceName+controllerId+mDeviceName+mInstanceName+mControllerId+"search value");
 			if(deviceName.equals(mDeviceName) && instanceName.equals(mInstanceName)) {
-
-				if(controllerId==null || controllerId.equals(mControllerId)) {
+				LOGGER.info("devicename and instancename equals");
+				if(controllerId==null || controllerId.equals(mControllerId) ) {
+					LOGGER.info(controllerId);
 					// if controller is null.. then return map..
 					// if not null.. then it should be equal to return map..
 					System.out.println(map+"the contains value");
