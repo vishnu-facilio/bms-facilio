@@ -975,6 +975,9 @@ public class FacilioConstants {
 		public static final String CONNECTED_APPS = "connectedApps";
 		
 		public static final String ROTATING_ASSET = "rotatingAsset";
+		
+		public static final String WO_ITEMS_LIST = "woItemsList";
+		public static final String WO_TOOLS_LIST = "woToolsList";
 
 		public static final String UNIT_POINTS="unit";
 		private static Map<String, Class> classMap = Collections.unmodifiableMap(initClassMap());

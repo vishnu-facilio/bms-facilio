@@ -123,6 +123,7 @@ public class AddOrUpdateWorkorderToolsCommand implements Command {
 			context.put(FacilioConstants.ContextNames.WORKORDER_COST_TYPE, 2);
 			context.put(FacilioConstants.ContextNames.TOOL_TYPES_ID, toolTypesId);
 			context.put(FacilioConstants.ContextNames.TOOL_TYPES_IDS, Collections.singletonList(toolTypesId));
+			context.put(FacilioConstants.ContextNames.WO_TOOLS_LIST, workorderToolslist);
 		}
 
 		return false;

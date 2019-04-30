@@ -80,6 +80,7 @@ public class WorkorderToolsAction extends FacilioAction {
 		double totalCost = (double) context.get(FacilioConstants.ContextNames.WO_TOTAL_COST);
 		setResult(FacilioConstants.ContextNames.WO_TOTAL_COST, totalCost);
 		setResult("workorderToolsIds", workorderToolsIds);
+		setWorkorderToolsList((List<WorkorderToolsContext>) context.get(FacilioConstants.ContextNames.WO_TOOLS_LIST));
 		setResult("workorderTools", workorderToolsList);
 		return SUCCESS;
 	}
