@@ -79,7 +79,7 @@ public class ProcessDataCommand implements Command {
 			}	
 			if(TimeSeriesAPI.isStage()) {
 				
-				if(instanceList.length()>0) {//if innerKeyList isEmpty,.. so the length will be 0 
+				if(instanceList.length()>0) { //if innerKeyList isEmpty,.. so the length will be 0
 					FacilioModule module=ModuleFactory.getPointsModule();
 					Criteria deviceAndInstanceCriteria = new Criteria();
 					//here taking the keyName as deviceName in the assumption that POINT_ will not come hereafter...

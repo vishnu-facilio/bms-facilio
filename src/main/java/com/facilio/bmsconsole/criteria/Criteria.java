@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.base.Objects;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.collections.PredicateUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.Serializable;
@@ -58,10 +59,13 @@ public class Criteria extends ExpressionEvaluator<Predicate> implements Serializ
 	}
 
 	private static final Pattern REG_EX = Pattern.compile("([1-9]\\d*)");
+
+	private List<Object> valueList = null;
 	public String computeWhereClause() {
 		if(conditions != null && !conditions.isEmpty()) {
 			Matcher matcher = REG_EX.matcher(pattern);
 			StringBuilder builder = new StringBuilder();
+			valueList = new ArrayList<>();
 			int i = 0;
 			while (matcher.find()) {
 				Condition condition = conditions.get(matcher.group(1));
@@ -72,6 +76,10 @@ public class Criteria extends ExpressionEvaluator<Predicate> implements Serializ
 				builder.append(pattern.substring(i, matcher.start()));
 				builder.append(computedCondition);
 				i = matcher.end();
+				List<Object> computedValues = condition.getComputedValues();
+				if (CollectionUtils.isNotEmpty(computedValues)) {
+					valueList.addAll(computedValues);
+				}
 			}
 			builder.append(pattern.substring(i, pattern.length()));
 			return  builder.toString();
@@ -81,18 +89,7 @@ public class Criteria extends ExpressionEvaluator<Predicate> implements Serializ
 	
 	@JsonIgnore
 	public List<Object> getComputedValues() {
-		List<Object> list = new ArrayList<>();
-		if(conditions != null && !conditions.isEmpty()) {
-			for(Condition condition : conditions.values()) {
-				List<Object> computedValues = condition.getComputedValues();
-				if(computedValues != null && computedValues.size() > 0) {
-					for(Object val : computedValues) {
-						list.add(val);
-					}
-				}
-			}
-		}
-		return list;
+		return valueList;
 	}
 	
 	public void validatePattern() {
