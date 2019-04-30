@@ -122,7 +122,8 @@ public class AccountUtil {
 		INVENTORY (8192),
 		SCHEDULED_WO (16384),
 		TENANTS (32768),
-		NEW_FORM (65536)
+		NEW_FORM (65536),
+		CONNECTEDAPPS (131072)
 		;
 		
 		// Use 64, 512 for next features
