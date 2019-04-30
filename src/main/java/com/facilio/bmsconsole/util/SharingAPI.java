@@ -1,19 +1,27 @@
 package com.facilio.bmsconsole.util;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.SharingContext;
 import com.facilio.bmsconsole.context.SingleSharingContext;
+import com.facilio.bmsconsole.context.ViewSharingContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.criteria.PickListOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
+import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.fw.BeanFactory;
+import com.facilio.report.context.ReportContext;
+import com.facilio.report.context.ReportFolderContext;
 import com.facilio.sql.GenericDeleteRecordBuilder;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -38,15 +46,6 @@ public class SharingAPI {
 		}
 	}
 	
-	public static int deleteSharing (Collection<Long> ids, FacilioModule module) throws SQLException {
-		GenericDeleteRecordBuilder deleteBuilder = new GenericDeleteRecordBuilder()
-														.table(module.getTableName())
-														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
-														.andCondition(CriteriaAPI.getIdCondition(ids, module))
-														;
-		
-		return deleteBuilder.delete();
-	}
 	
 	public static <E extends SingleSharingContext> SharingContext<E> getSharing (long parentId, FacilioModule module, Class<E> classObj) throws Exception {
 		List<FacilioField> fields = FieldFactory.getSharingFields(module);
@@ -70,4 +69,29 @@ public class SharingAPI {
 		}
 		return null;
 	}
+	public static int deleteSharing (Collection<Long> ids, FacilioModule module) throws SQLException {
+		GenericDeleteRecordBuilder deleteBuilder = new GenericDeleteRecordBuilder()
+														.table(module.getTableName())
+														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+														.andCondition(CriteriaAPI.getIdCondition(ids, module))
+														;
+		
+		return deleteBuilder.delete();
+	}
+	public static List<SingleSharingContext> getSharingList(FacilioModule module) throws Exception {
+		List<FacilioField> fields = FieldFactory.getSharingFields(module);
+		GenericSelectRecordBuilder select = new GenericSelectRecordBuilder()
+				.select(fields)
+				.table(module.getTableName())
+				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+				;
+		List<Map<String, Object>> props = select.get();
+		List<SingleSharingContext> sharingList = new ArrayList<>();
+		if(props != null && !props.isEmpty()) {
+			sharingList = FieldUtil.getAsBeanListFromMapList(props, SingleSharingContext.class);
+		}
+		return sharingList;	
+		
+	}
+
 }

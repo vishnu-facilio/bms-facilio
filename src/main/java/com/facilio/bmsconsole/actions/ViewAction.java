@@ -17,7 +17,9 @@ import com.facilio.tasker.ScheduleInfo;
 import org.apache.commons.chain.Chain;
 import org.json.simple.JSONObject;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class ViewAction extends FacilioAction {
 	
@@ -395,7 +397,6 @@ public class ViewAction extends FacilioAction {
 	public void setSortFields(List<SortField> sortFields) {
 		this.sortFields = sortFields;
 	}
-	
 	private long id = -1;
 	public long getId() {
 		return id;

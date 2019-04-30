@@ -32,6 +32,9 @@ import com.facilio.bmsconsole.context.MLAlarmContext;
 import com.facilio.bmsconsole.context.ReadingAlarmContext;
 import com.facilio.bmsconsole.context.ReportInfo;
 import com.facilio.bmsconsole.context.ResourceContext;
+import com.facilio.bmsconsole.context.SharingContext;
+import com.facilio.bmsconsole.context.SingleSharingContext;
+import com.facilio.bmsconsole.context.ViewSharingContext;
 import com.facilio.bmsconsole.context.WidgetChartContext;
 import com.facilio.bmsconsole.context.WidgetStaticContext;
 import com.facilio.bmsconsole.criteria.Condition;
@@ -43,6 +46,7 @@ import com.facilio.bmsconsole.modules.AggregateOperator;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldUtil;
+import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.templates.EMailTemplate;
 import com.facilio.bmsconsole.util.AlarmAPI;
 import com.facilio.bmsconsole.util.DashboardUtil;
@@ -51,6 +55,7 @@ import com.facilio.bmsconsole.util.FacilioFrequency;
 import com.facilio.bmsconsole.util.FormulaFieldAPI;
 import com.facilio.bmsconsole.util.ReadingRuleAPI;
 import com.facilio.bmsconsole.util.ResourceAPI;
+import com.facilio.bmsconsole.util.SharingAPI;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.rule.AlarmRuleContext;
 import com.facilio.bmsconsole.workflow.rule.EventType;
@@ -215,16 +220,27 @@ public class V2ReportAction extends FacilioAction {
 	}
 	
 	public String addReportFolder() throws Exception {
-		
+		FacilioContext context = new FacilioContext();
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(moduleName);
-		
 		reportFolder.setOrgId(AccountUtil.getCurrentOrg().getId());
 		reportFolder.setModuleId(module.getModuleId());
 		
 		reportFolder = ReportUtil.addReportFolder(reportFolder);
 		setResult("reportFolder", reportFolder);
 		return SUCCESS;
+	}
+	
+	public String addReportFolderPermission() throws Exception {
+	if (folderId > 0) {	
+		if (!reportFolder.getIds().isEmpty() && reportFolder.getIds() != null) {
+	SharingAPI.deleteSharing(reportFolder.getIds(), ModuleFactory.getReportSharingModule());
+		}
+	SharingAPI.addSharing((SharingContext<SingleSharingContext>) reportFolder.getReportSharing(), folderId, ModuleFactory.getReportSharingModule());
+	}
+	return SUCCESS;
+
+		
 	}
 	
 	public String updateReportFolder() throws Exception {

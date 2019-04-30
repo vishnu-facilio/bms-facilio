@@ -1311,6 +1311,14 @@ public class ModuleFactory {
 		viewSharing.setTableName("View_Sharing");
 		return viewSharing;
 	}
+	
+	public static FacilioModule getReportSharingModule() {
+		FacilioModule viewSharing = new FacilioModule();
+		viewSharing.setName("reportSharing");
+		viewSharing.setDisplayName("Report Sharing");
+		viewSharing.setTableName("Report_Folder_Sharing");
+		return viewSharing;
+	}
 
 	public static FacilioModule getWidgetVsWorkflowModule() {
 		FacilioModule dashboardSharing = new FacilioModule();

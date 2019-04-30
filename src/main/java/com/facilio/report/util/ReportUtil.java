@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.commons.chain.Chain;
 import org.apache.commons.collections.CollectionUtils;
@@ -12,11 +13,15 @@ import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
+import com.facilio.accounts.dto.Group;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.CommonReportUtil;
 import com.facilio.bmsconsole.commands.GetAllFieldsCommand;
 import com.facilio.bmsconsole.context.BaseLineContext;
+import com.facilio.bmsconsole.context.SharingContext;
+import com.facilio.bmsconsole.context.SingleSharingContext;
+import com.facilio.bmsconsole.context.SingleSharingContext.SharingType;
 import com.facilio.bmsconsole.context.WidgetChartContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.DateOperators;
@@ -35,9 +40,14 @@ import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.modules.NumberField;
 import com.facilio.bmsconsole.util.BaseLineAPI;
 import com.facilio.bmsconsole.util.DashboardUtil;
+import com.facilio.bmsconsole.util.SharingAPI;
+import com.facilio.bmsconsole.util.ViewAPI;
+import com.facilio.bmsconsole.view.FacilioView;
+import com.facilio.bmsconsole.workflow.rule.ApproverContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.fs.FileInfo.FileFormat;
 import com.facilio.fw.BeanFactory;
 import com.facilio.report.context.ReportBaseLineContext;
 import com.facilio.report.context.ReportContext;
@@ -152,10 +162,73 @@ public class ReportUtil {
 				}
 				reportFolders.add(folder);
 			}
+			
 		}
-		return reportFolders;
+		List<SingleSharingContext> sharing = SharingAPI.getSharingList(ModuleFactory.getReportSharingModule());
+		Map<Long, SharingContext<SingleSharingContext>> map = new HashMap<>();
+		for (int j = 0; j < sharing.size(); j++) {
+			if (map.containsKey(sharing.get(j).getParentId())){
+				map.get(sharing.get(j).getParentId()).add(sharing.get(j));
+			}
+			else {
+				SharingContext<SingleSharingContext> temp = new SharingContext<SingleSharingContext>();
+				temp.add(sharing.get(j));
+				map.put(sharing.get(j).getParentId(), temp);
+			}
+		}
+		for (int i = 0; i < reportFolders.size(); i++) {
+			
+			if (map.containsKey(reportFolders.get(i).getId())) {
+				
+				reportFolders.get(i).setReportSharing(map.get(reportFolders.get(i).getId()));;	
+			}
+		}
+		return getFilteredReport(reportFolders, sharing);
 	}
-	
+	@SuppressWarnings("unlikely-arg-type")
+	public static List<ReportFolderContext> getFilteredReport(List<ReportFolderContext> reportFolders, List<SingleSharingContext> sharing) throws Exception {
+		List<ReportFolderContext> reportFolder = new ArrayList<ReportFolderContext>();
+		Map<Long, ReportFolderContext> parentMap = new HashMap<>();
+		List<Long> parentIds = new ArrayList<>();
+		for(ReportFolderContext pro : reportFolders) 
+		{
+			parentMap.put(pro.getId(), pro);
+			parentIds.add(pro.getId());
+		}
+		if (sharing != null && !sharing.isEmpty()) {
+			for (SingleSharingContext reportSharing : sharing) {
+				if (parentIds.contains(reportSharing.getParentId())) {
+					parentIds.remove(reportSharing.getParentId());
+				}
+				if(!reportFolder.contains(parentMap.get(reportSharing.getParentId()))) {
+					if (reportSharing.getTypeEnum().equals(SharingType.USER) && reportSharing.getUserId() == AccountUtil.getCurrentAccount().getUser().getOuid()) {
+						reportFolder.add(parentMap.get(reportSharing.getParentId()));
+					}
+					else if (reportSharing.getTypeEnum().equals(SharingType.ROLE) && reportSharing.getRoleId() == AccountUtil.getCurrentAccount().getUser().getRoleId()) {
+						reportFolder.add(parentMap.get(reportSharing.getParentId()));
+					}
+					else if (reportSharing.getTypeEnum().equals(SharingType.GROUP)) {
+						List<Group> mygroups = AccountUtil.getGroupBean().getMyGroups(AccountUtil.getCurrentAccount().getUser().getOuid());
+						for (Group group : mygroups) {
+							if (reportSharing.getGroupId() == group.getGroupId() && !reportFolder.contains(parentMap.get(reportSharing.getParentId()))) {
+								reportFolder.add(parentMap.get(reportSharing.getParentId()));
+							}
+						}
+					}
+				}
+			}
+			for (Long id : parentIds) {
+				reportFolder.add(parentMap.get(id));
+			}
+		}
+		else {
+			reportFolder.addAll(parentMap.values());
+		}
+		
+		return reportFolder;
+
+		
+	}
 	public static void moveReport(ReportContext reportContext) throws Exception {
 		FacilioModule module = ModuleFactory.getReportModule();
 		List< FacilioField> updateFields = FieldFactory.getReport1Fields();
@@ -343,6 +416,7 @@ public class ReportUtil {
 	}
 	
 	public static ReportFolderContext addReportFolder(ReportFolderContext reportFolderContext) throws Exception {
+		FacilioContext context = new FacilioContext();
 		
 		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
 				.table(ModuleFactory.getReportFolderModule().getTableName())
@@ -353,7 +427,11 @@ public class ReportUtil {
 		Map<String, Object> props = FieldUtil.getAsProperties(reportFolderContext);
 		long id = insertBuilder.insert(props);
 		reportFolderContext.setId(id);
-		
+		if (!reportFolderContext.getReportSharing().isEmpty() && reportFolderContext.getReportSharing() != null) {
+//		SharingAPI.deleteSharing(reportFolderContext.getReportSharing().stream().map(SingleSharingContext::getId).collect(Collectors.toList()), ModuleFactory.getReportSharingModule());
+		SharingAPI.addSharing((SharingContext<SingleSharingContext>) reportFolderContext.getReportSharing(), id, ModuleFactory.getReportSharingModule());
+		reportFolderContext.setReportSharing(SharingAPI.getSharing(id, ModuleFactory.getReportSharingModule(), SingleSharingContext.class));
+		}
 		return reportFolderContext;
 	}
 	

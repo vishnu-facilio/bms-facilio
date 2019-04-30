@@ -837,6 +837,9 @@
 		<action name="addReportFolder" class="com.facilio.bmsconsole.actions.V2ReportAction"
 			method="addReportFolder">
 		</action>
+		<action name="addReportFolderPermission" class="com.facilio.bmsconsole.actions.V2ReportAction"
+			method="addReportFolderPermission">
+		</action>
 		<action name="fetchReportWithData" class="com.facilio.bmsconsole.actions.V2ReportAction"
 			method="fetchReportWithData">
 		</action>
