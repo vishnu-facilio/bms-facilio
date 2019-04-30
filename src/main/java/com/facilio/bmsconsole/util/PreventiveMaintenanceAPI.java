@@ -323,6 +323,10 @@ public class PreventiveMaintenanceAPI {
 			taskMapForNewPmExecution = woTemplate.getTasks();
 		}
 
+		if (AccountUtil.getCurrentOrg().getOrgId() == 92 && (pm.getId() == 15831 || pm.getId() == 16191)) {
+			LOGGER.log(Level.SEVERE, "isNewPmType: "+ isNewPmType + "has sections: " + (woTemplate.getSectionTemplates() != null && !woTemplate.getSectionTemplates().isEmpty()) + "has tasks: "+ (woTemplate.getTasks() != null && !woTemplate.getTasks().isEmpty()));
+		}
+
 		if(taskMapForNewPmExecution != null) {
 			taskMap = taskMapForNewPmExecution;
 		}
