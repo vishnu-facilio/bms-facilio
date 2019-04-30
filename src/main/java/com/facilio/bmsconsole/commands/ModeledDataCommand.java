@@ -45,8 +45,11 @@ public class ModeledDataCommand implements Command {
 		List<Map<String, Object>> insertNewPointsData= new ArrayList< >();
 		Map<String,Object>  dataPoints= null;
 		long orgId = AccountUtil.getCurrentOrg().getOrgId();
-		LOGGER.debug("Inside ModeledDataCommand####### deviceData: "+deviceData);
+	
 		if(TimeSeriesAPI.isStage()) {
+			if(AccountUtil.getCurrentOrg().getId()==104) {
+				LOGGER.info("Inside ModeledDataCommand####### deviceData: "+deviceData);
+			}
 			for(Map.Entry<String, Map<String,String>> data:deviceData.entrySet()) {
 
 				String deviceName=data.getKey();
@@ -204,8 +207,9 @@ public class ModeledDataCommand implements Command {
 				}
 			}
 			if(TimeSeriesAPI.isStage() && AccountUtil.getCurrentOrg().getId()==104) {
-				LOGGER.info("####Incoming Value DEVICE_NAME: "+deviceName+" InstanceName: "+instanceName+" ControllerID: "+controllerId);
-				LOGGER.info("####Map Value deviceName: "+mDeviceName+" instanceName: "+mInstanceName+" ControllerID: "+mControllerId);
+				
+				LOGGER.info("####Inc value deviceName: "+deviceName+" instanceName: "+instanceName+" ControllerID: "+controllerId+
+						" \\n####Map value deviceName: "+mDeviceName+" instanceName: "+mInstanceName+" ControllerID: "+mControllerId);
 			}
 		}
 		return null;
