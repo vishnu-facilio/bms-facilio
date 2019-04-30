@@ -68,6 +68,7 @@ public class AddOrUpdateWorkorderLabourCommand implements Command {
 			context.put(FacilioConstants.ContextNames.PARENT_ID_LIST, Collections.singletonList(workorderLabours.get(0).getParentId()));
 			context.put(FacilioConstants.ContextNames.RECORD_LIST, workorderLabourlist);
 			context.put(FacilioConstants.ContextNames.WORKORDER_COST_TYPE, 3);
+			context.put(FacilioConstants.ContextNames.WO_LABOUR_LIST, workorderLabourlist);
 		}
 
 		return false;
