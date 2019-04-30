@@ -12,7 +12,7 @@ import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.util.StateFlowRulesAPI;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsole.workflow.rule.FieldChangeFieldContext;
-import com.facilio.bmsconsole.workflow.rule.StateflowTransistionContext;
+import com.facilio.bmsconsole.workflow.rule.StateflowTransitionContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowEventContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
@@ -21,7 +21,7 @@ public class ConstructStateFlowTransitionCommand implements Command {
 
 	@Override
 	public boolean execute(Context context) throws Exception {
-		StateflowTransistionContext stateFlowRuleContext = (StateflowTransistionContext) context.get(FacilioConstants.ContextNames.WORKFLOW_RULE);
+		StateflowTransitionContext stateFlowRuleContext = (StateflowTransitionContext) context.get(FacilioConstants.ContextNames.WORKFLOW_RULE);
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 		if (stateFlowRuleContext != null) {
 			if (StringUtils.isEmpty(moduleName)) {

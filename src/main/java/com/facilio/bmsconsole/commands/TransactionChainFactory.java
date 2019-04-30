@@ -2480,7 +2480,7 @@ public class TransactionChainFactory {
 			return c;
 		}
 
-		public static Chain getUpdateStateTransistionChain() {
+		public static Chain getUpdateStateTransitionChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(new GenericGetModuleDataDetailCommand());
 			c.addCommand(new UpdateStateCommand());

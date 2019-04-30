@@ -25,7 +25,7 @@ import com.facilio.chain.FacilioContext;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericSelectRecordBuilder;
 
-public class StateflowTransistionContext extends WorkflowRuleContext {
+public class StateflowTransitionContext extends WorkflowRuleContext {
 	private static final long serialVersionUID = 1L;
 	
 	private long fromStateId = -1;
@@ -135,14 +135,23 @@ public class StateflowTransistionContext extends WorkflowRuleContext {
 		this.buttonType = buttonType;
 	}
 	
-	private boolean scheduled = false;
-	public boolean isScheduled() {
-		return scheduled;
-	};
-	public void setScheduled(boolean isScheduled) {
-		this.scheduled = isScheduled;
+	private TransitionType type;
+	public int getType() {
+		if (type != null) {
+			return type.getValue();
+		}
+		return -1;
 	}
-	
+	public TransitionType getTypeEnum() {
+		return type;
+	}
+	public void setType(TransitionType type) {
+		this.type = type;
+	}
+	public void setType(int type) {
+		this.type = TransitionType.valueOf(type);
+	}
+
 	private int scheduleTime = -1;
 	public int getScheduleTime() {
 		return scheduleTime;
@@ -232,5 +241,23 @@ public class StateflowTransistionContext extends WorkflowRuleContext {
 			return props.stream().map(p -> (Long) p.get("approverGroup")).collect(Collectors.toList());
 		}
 		return null;
+	}
+	
+	public enum TransitionType {
+		NORMAL,
+		SCHEDULED,
+		CONDITIONED,
+		;
+		
+		public int getValue() {
+			return ordinal() + 1;
+		}
+		
+		public static TransitionType valueOf(int value) {
+			if (value > 0 && value <= values().length) {
+				return values()[value - 1];
+			}
+			return null;
+		}
 	}
 }

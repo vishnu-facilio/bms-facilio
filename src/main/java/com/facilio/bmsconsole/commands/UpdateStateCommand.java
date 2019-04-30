@@ -11,7 +11,7 @@ import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.bmsconsole.util.StateFlowRulesAPI;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
-import com.facilio.bmsconsole.workflow.rule.StateflowTransistionContext;
+import com.facilio.bmsconsole.workflow.rule.StateflowTransitionContext;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
@@ -48,20 +48,20 @@ public class UpdateStateCommand implements Command {
 			TicketStatusContext state = StateFlowRulesAPI.getStateContext(defaultStateId);
 			moduleData.setStateFlowId(defaultStateFlowId);
 			StateFlowRulesAPI.updateState(moduleData, module, state, true, context);
-//			StateFlowRulesAPI.addScheduledJobIfAny(defaultStateId, moduleName, moduleData, (FacilioContext) context);
 		} 
 		else {
 			if (currentTransitionId != null && currentTransitionId > 0) {
-				StateflowTransistionContext stateflowTransistion = (StateflowTransistionContext) WorkflowRuleAPI.getWorkflowRule(currentTransitionId, true);
-				boolean shouldChangeState = WorkflowRuleAPI.evaluateWorkflowAndExecuteActions(stateflowTransistion, moduleName, moduleData, StateFlowRulesAPI.getDefaultFieldChangeSet(moduleName, moduleData.getId()), recordPlaceHolders, (FacilioContext) context, false);
+				StateflowTransitionContext stateflowTransition = (StateflowTransitionContext) WorkflowRuleAPI.getWorkflowRule(currentTransitionId, true);
+				boolean shouldChangeState = WorkflowRuleAPI.evaluateWorkflowAndExecuteActions(stateflowTransition, moduleName, moduleData, StateFlowRulesAPI.getDefaultFieldChangeSet(moduleName, moduleData.getId()), recordPlaceHolders, (FacilioContext) context, false);
 				if (shouldChangeState) {
-					TicketStatusContext newState = StateFlowRulesAPI.getStateContext(stateflowTransistion.getToStateId());
+					TicketStatusContext newState = StateFlowRulesAPI.getStateContext(stateflowTransition.getToStateId());
 					if (newState == null) {
 						throw new Exception("Invalid state");
 					}
-					stateflowTransistion.executeTrueActions(moduleData, context, recordPlaceHolders);
-				} else {
-					throw new Exception("Cannot update the state");
+					stateflowTransition.executeTrueActions(moduleData, context, recordPlaceHolders);
+				} 
+				else {
+					throw new Exception("Cannot update the state: " + stateflowTransition.getId());
 				}
 			}
 		}
