@@ -43,6 +43,7 @@ import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
+import com.facilio.sql.GenericDeleteRecordBuilder;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
@@ -140,8 +141,27 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 		}
 	}
 	
-	// TODO - remove scheduled jobs if we manually transfer from one job to other
 	private static void addScheduledJobIfAny(long fromStateId, String moduleName, ModuleBaseWithCustomFields record, FacilioContext context) throws Exception {
+		// remove scheduled jobs if any
+		FacilioModule stateFlowScheduleModule = ModuleFactory.getStateFlowScheduleModule();
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.table(stateFlowScheduleModule.getTableName())
+				.select(FieldFactory.getStateFlowScheduleFields())
+				.andCondition(CriteriaAPI.getCondition("RECORD_ID", "recordId", String.valueOf(record.getId()), NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(stateFlowScheduleModule));
+		List<Map<String, Object>> list = selectBuilder.get();
+		if (CollectionUtils.isNotEmpty(list)) {
+			List<Long> jobIds = new ArrayList<>();
+			for (Map<String, Object> map : list) {
+				jobIds.add((Long) map.get("id"));
+			}
+			FacilioTimer.deleteJobs(jobIds, "StateFlowScheduledRule");
+			GenericDeleteRecordBuilder deleteBuilder = new GenericDeleteRecordBuilder()
+					.table(stateFlowScheduleModule.getTableName())
+					.andCondition(CriteriaAPI.getIdCondition(jobIds, stateFlowScheduleModule));
+			deleteBuilder.delete();
+		}
+		
 		List<WorkflowRuleContext> availableState = StateFlowRulesAPI.getAvailableState(record.getStateFlowId(), fromStateId, moduleName, record, context, TransitionType.SCHEDULED);
 		if (CollectionUtils.isNotEmpty(availableState)) {
 			for (WorkflowRuleContext rule : availableState) {
@@ -151,6 +171,21 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 				}
 			}
 		}
+	}
+	
+	private static void scheduleJob(long recordId, WorkflowRuleContext ruleContext) throws Exception {
+		FacilioModule module = ModuleFactory.getStateFlowScheduleModule();
+		GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
+				.table(module.getTableName())
+				.fields(FieldFactory.getStateFlowScheduleFields());
+		Map<String, Object> prop = new HashMap<>();
+		prop.put("recordId", recordId);
+		prop.put("transitionId", ruleContext.getId());
+		builder.addRecord(prop);
+		builder.save();
+		
+		StateflowTransitionContext stateFlow = (StateflowTransitionContext) ruleContext;
+		FacilioTimer.scheduleOneTimeJob((long) prop.get("id"), "StateFlowScheduledRule", stateFlow.getScheduleTime(), "priority");
 	}
 
 	private static FacilioModule getTimeLogModule(FacilioModule module) throws Exception {
@@ -258,21 +293,6 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 		updateChangeSet.setRecordId(recordId);
 		changeSet.add(updateChangeSet);
 		return changeSet;
-	}
-	
-	private static void scheduleJob(long recordId, WorkflowRuleContext ruleContext) throws Exception {
-		FacilioModule module = ModuleFactory.getStateFlowScheduleModule();
-		GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
-				.table(module.getTableName())
-				.fields(FieldFactory.getStateFlowScheduleFields());
-		Map<String, Object> prop = new HashMap<>();
-		prop.put("recordId", recordId);
-		prop.put("transitionId", ruleContext.getId());
-		builder.addRecord(prop);
-		builder.save();
-		
-		StateflowTransitionContext stateFlow = (StateflowTransitionContext) ruleContext;
-		FacilioTimer.scheduleOneTimeJob((long) prop.get("id"), "StateFlowScheduledRule", stateFlow.getScheduleTime(), "priority");
 	}
 	
 	public static Map<String, Object> getStateTransitionScheduleInfo(long id) throws Exception {

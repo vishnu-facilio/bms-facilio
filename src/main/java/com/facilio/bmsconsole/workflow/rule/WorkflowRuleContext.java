@@ -469,7 +469,7 @@ public class WorkflowRuleContext implements Serializable {
 		ASSET_NOTIFICATION_RULE,
 		PM_READING_TRIGGER,			// 27
 		
-		STATE_RULE,
+		STATE_RULE(true),
 		STATE_FLOW(true),
 		;
 		//Always add at the end

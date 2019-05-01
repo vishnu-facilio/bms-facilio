@@ -34,14 +34,14 @@ public class ConstructStateFlowTransitionCommand implements Command {
 				throw new IllegalArgumentException("StateFlow is not active for module " + moduleName);
 			}
 			
-			List<FieldChangeFieldContext> fields = new ArrayList<>();
-			FieldChangeFieldContext fieldChange = new FieldChangeFieldContext();
-			fieldChange.setField(field);
-			fields.add(fieldChange);
-			stateFlowRuleContext.setFields(fields);
+//			List<FieldChangeFieldContext> fields = new ArrayList<>();
+//			FieldChangeFieldContext fieldChange = new FieldChangeFieldContext();
+//			fieldChange.setField(field);
+//			fields.add(fieldChange);
+//			stateFlowRuleContext.setFields(fields);
 			
 			WorkflowEventContext event = new WorkflowEventContext();
-			event.setActivityType(EventType.FIELD_CHANGE);
+			event.setActivityType(EventType.STATE_TRANSITION);
 			event.setModuleName(moduleName);
 			stateFlowRuleContext.setEvent(event);
 		}

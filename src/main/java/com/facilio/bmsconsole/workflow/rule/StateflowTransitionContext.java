@@ -22,6 +22,7 @@ import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.util.StateFlowRulesAPI;
 import com.facilio.bmsconsole.workflow.rule.ApprovalRuleContext.ApprovalOrder;
 import com.facilio.chain.FacilioContext;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericSelectRecordBuilder;
 
@@ -165,8 +166,18 @@ public class StateflowTransitionContext extends WorkflowRuleContext {
 			FacilioContext context) throws Exception {
 		boolean result = true;
 		ModuleBaseWithCustomFields moduleRecord = (ModuleBaseWithCustomFields) record;
+		
+		Boolean shouldCheckOnlyConditioned = (Boolean) context.get(FacilioConstants.ContextNames.STATE_TRANSITION_ONLY_CONDITIONED_CHECK);
+		if (shouldCheckOnlyConditioned == null) {
+			shouldCheckOnlyConditioned = false;
+		}
+		
+		if (shouldCheckOnlyConditioned && type != TransitionType.CONDITIONED) {
+			return false;
+		}
 
-		if (moduleRecord.getModuleState() != null && getFromStateId() != moduleRecord.getModuleState().getId()) {
+		if (moduleRecord.getModuleState() != null && moduleRecord.getStateFlowId() > 0 && moduleRecord.getStateFlowId() == getStateFlowId() && 
+				getFromStateId() != moduleRecord.getModuleState().getId()) {
 			return false;
 		}
 		

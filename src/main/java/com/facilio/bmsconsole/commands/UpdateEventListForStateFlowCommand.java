@@ -18,14 +18,15 @@ public class UpdateEventListForStateFlowCommand implements Command {
 	public boolean execute(Context context) throws Exception {
 		WorkOrderContext workOrder = (WorkOrderContext) context.get(FacilioConstants.ContextNames.WORK_ORDER);
 		if (workOrder != null) {
-			User assignedTo = workOrder.getAssignedTo();
-			Group assignmentGroup = workOrder.getAssignmentGroup();
-			if (assignedTo != null && assignedTo.getId() > 0) {
-				addEventType(EventType.ASSIGN_TICKET, context);
-			}
-			if (assignmentGroup != null && assignmentGroup.getId() > 0) {
-				addEventType(EventType.ASSIGN_TICKET, context);
-			}
+			addEventType(EventType.STATE_TRANSITION, context);
+//			User assignedTo = workOrder.getAssignedTo();
+//			Group assignmentGroup = workOrder.getAssignmentGroup();
+//			if (assignedTo != null && assignedTo.getId() > 0) {
+//				addEventType(EventType.ASSIGN_TICKET, context);
+//			}
+//			if (assignmentGroup != null && assignmentGroup.getId() > 0) {
+//				addEventType(EventType.ASSIGN_TICKET, context);
+//			}
 		}
 		return false;
 	}
@@ -34,6 +35,7 @@ public class UpdateEventListForStateFlowCommand implements Command {
 		List<EventType> eventTypes = (List<EventType>) context.get(FacilioConstants.ContextNames.EVENT_TYPE_LIST);
 		if (eventTypes == null) {
 			eventTypes = new ArrayList<>();
+			context.put(FacilioConstants.ContextNames.EVENT_TYPE_LIST, eventTypes);
 		}
 		EventType eventType = (EventType) context.get(FacilioConstants.ContextNames.EVENT_TYPE);
 		if (!eventTypes.contains(eventType)) {

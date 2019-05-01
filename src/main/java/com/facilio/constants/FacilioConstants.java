@@ -985,6 +985,7 @@ public class FacilioConstants {
 		public static final String DEFAULT_STATE_ID = "default_state_id";
 		public static final String DEFAULT_STATE_FLOW_ID = "default_state_flow_id";
 		public static final String TRANSITION = "transition";
+		public static final String STATE_TRANSITION_ONLY_CONDITIONED_CHECK = "stateTransitionOnlyConditionedCheck";
 
 		public static final String ROTATING_ASSET = "rotatingAsset";
 		
