@@ -536,7 +536,7 @@ public enum ActionType {
 				Object currentRecord) {
 
 //			long duedate = -1;
-			WorkOrderContext workOrder = (WorkOrderContext) context.get(FacilioConstants.ContextNames.WORK_ORDER);
+			WorkOrderContext workOrder = (WorkOrderContext) currentRecord;
 			if (workOrder.getPriority() == null) {
 				return;
 			}
