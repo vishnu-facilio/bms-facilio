@@ -39,17 +39,17 @@ public class ModeledDataCommand implements Command {
 		Map<String,ReadingContext> iModuleVsReading = new HashMap<String,ReadingContext> ();
 		Long controllerId= (Long) context.get(FacilioConstants.ContextNames.CONTROLLER_ID);
 		List<Map<String,Object>> dataPointsValue=(List<Map<String, Object>>) context.get("DATA_POINTS");
-		if(TimeSeriesAPI.isStage()  && AccountUtil.getCurrentOrg().getId()==104) {
-		LOGGER.info(dataPointsValue+"Points data incomming");
-		}
+		/*if(TimeSeriesAPI.isStage()  && AccountUtil.getCurrentOrg().getId()==104) {
+			LOGGER.info(dataPointsValue+"Points data incomming");
+		}*/
 		List<Map<String, Object>> insertNewPointsData= new ArrayList< >();
 		Map<String,Object>  dataPoints= null;
 		long orgId = AccountUtil.getCurrentOrg().getOrgId();
 	
 		if(TimeSeriesAPI.isStage()) {
-			if(AccountUtil.getCurrentOrg().getId()==104) {
+			/*if(AccountUtil.getCurrentOrg().getId()==104) {
 				LOGGER.info("Inside ModeledDataCommand####### deviceData: "+deviceData);
-			}
+			}*/
 			for(Map.Entry<String, Map<String,String>> data:deviceData.entrySet()) {
 
 				String deviceName=data.getKey();
@@ -62,9 +62,9 @@ public class ModeledDataCommand implements Command {
 						continue;
 					}
 						dataPoints=  getValueContainsPointsData( deviceName,  instanceName, controllerId , dataPointsValue);
-						if(AccountUtil.getCurrentOrg().getId()==104 && TimeSeriesAPI.isStage()) {
+						/*if(AccountUtil.getCurrentOrg().getId()==104 && TimeSeriesAPI.isStage()) {
 							LOGGER.info("DATA_POINTS IS NULL or not "+dataPoints);
-						}
+						}*/
 						if(dataPoints==null) {
 
 						Map<String, Object> value=new HashMap<String,Object>();
@@ -206,11 +206,11 @@ public class ModeledDataCommand implements Command {
 					return map;
 				}
 			}
-			if(TimeSeriesAPI.isStage() && AccountUtil.getCurrentOrg().getId()==104) {
+			/*if(TimeSeriesAPI.isStage() && AccountUtil.getCurrentOrg().getId()==104) {
 				
 				LOGGER.info("####Inc value deviceName: "+deviceName+" instanceName: "+instanceName+" ControllerID: "+controllerId+
 						" \\n####Map value deviceName: "+mDeviceName+" instanceName: "+mInstanceName+" ControllerID: "+mControllerId);
-			}
+			}*/
 		}
 		return null;
 	}
