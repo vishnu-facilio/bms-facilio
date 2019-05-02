@@ -203,9 +203,6 @@ public class ModeledDataCommand implements Command {
 			}
 
 		}
-		if(TimeSeriesAPI.isStage() && AccountUtil.getCurrentOrg().getId()==104) {	
-			LOGGER.info("####No matching value for Inc value deviceName: "+deviceName+" instanceName: "+instanceName+" ControllerID: "+controllerId);
-		 }
 		return null;
 	}
 	public static void generateEvent(Long assetId,Long timeStamp,String displayName) throws Exception {
