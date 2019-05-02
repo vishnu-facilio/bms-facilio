@@ -28,6 +28,7 @@ public class MLContext extends ModuleBaseWithCustomFields
 	private long criteriaId;
 	private long ruleID;
 	private long predictionTime;
+	private int sequence;
 	
 	private String result;
 		
@@ -223,6 +224,12 @@ public class MLContext extends ModuleBaseWithCustomFields
 			}
 		}
 		return -1;
+	}
+	public int getSequence() {
+		return sequence;
+	}
+	public void setSequence(int sequence) {
+		this.sequence = sequence;
 	}
 	
 }
