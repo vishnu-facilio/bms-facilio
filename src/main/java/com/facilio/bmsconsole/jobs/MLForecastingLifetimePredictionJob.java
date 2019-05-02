@@ -219,7 +219,38 @@ public class MLForecastingLifetimePredictionJob extends FacilioJob
 		 JSONObject postObj = new JSONObject();
 		 postObj.put("predictedFieldID", pc.getPredictedfieldid());
 		 postObj.put("maximumDays", 180);
-		 postObj.put("Threshold", 269);
+		 if(pc.getPredictedfieldid()==490436)
+		 {
+			 postObj.put("Threshold", 269);
+		 }
+		 else if(pc.getPredictedfieldid()==589686)
+		 {
+			 postObj.put("Threshold", 169);
+		 }
+		 else if(pc.getPredictedfieldid()==589687)
+		 {
+			 postObj.put("Threshold", 169);
+		 }
+		 else if(pc.getPredictedfieldid()==589688)
+		 {
+			 postObj.put("Threshold", 149);
+		 }
+		 else if(pc.getPredictedfieldid()==589689)
+		 {
+			 postObj.put("Threshold", 10);
+		 }
+		 else if(pc.getPredictedfieldid()==589690)
+		 {
+			 postObj.put("Threshold", 35);
+		 }
+		 else if(pc.getPredictedfieldid()==589691)
+		 {
+			 postObj.put("Threshold", 7);
+		 }
+		 else if(pc.getPredictedfieldid()==589692)
+		 {
+			 postObj.put("Threshold", 7);
+		 }
 		 postObj.put("Timezone", AccountUtil.getCurrentOrg().getTimezone());
 		 postObj.put("meterInterval",pc.getDatainterval());
 		 postObj.put("AssetDetails", pc.getPyData());
