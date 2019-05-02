@@ -84,9 +84,13 @@ public class ProcessDataCommand implements Command {
 					Criteria deviceAndInstanceCriteria = new Criteria();
 					//here taking the keyName as deviceName in the assumption that POINT_ will not come hereafter...
 					//so not handling the deviceName as list scenario below..
+					
+					
 					deviceAndInstanceCriteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getDeviceField(module), keyName, StringOperators.IS));
 					deviceAndInstanceCriteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getInstanceField(module), instanceList.toString(), StringOperators.IS));
 					criteriaList.orCriteria(deviceAndInstanceCriteria);
+				//	String outputString="###### Criteria for  "+keyName+" instanceList: "+instanceList.toString()+" result criteria "+deviceAndInstanceCriteria;
+					//System.err.println(outputString);
 				}	
 			}
 		}
@@ -113,6 +117,10 @@ public class ProcessDataCommand implements Command {
 				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(ModuleFactory.getPointsModule()))
 				.andCriteria(criteriaList);
 
-		return builder.get();
+		List<Map<String, Object>> props = builder.get();
+		if(AccountUtil.getCurrentOrg().getId()==104 ) {
+			LOGGER.info("###### DataPoints Query ########"+builder.toString());
+		}
+		return props;
 	}
 }
