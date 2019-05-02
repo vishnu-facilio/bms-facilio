@@ -1243,7 +1243,7 @@
 		<action name="update"
 			class="com.facilio.bmsconsole.actions.StoreRoomAction" method="updateStoreRoom">
 			<param name="moduleName">inventory</param>
-			<param name="permission">UPDATE</param>
+			<param name="permission">UPDATE,UPDATE_OWN</param>
 		</action>
 		<action name="*"
 			class="com.facilio.bmsconsole.actions.StoreRoomAction" method="storeRoomDetails">
@@ -1333,7 +1333,7 @@
 		<action name="update"
 			class="com.facilio.bmsconsole.actions.VendorAction" method="updateVendor">
 			<param name="moduleName">inventory</param>
-			<param name="permission">UPDATE</param>
+			<param name="permission">UPDATE,UPDATE_OWN</param>
 		</action> 
 		<action name="*"
 			class="com.facilio.bmsconsole.actions.VendorAction" method="vendorDetails">
@@ -1372,7 +1372,7 @@
 		<action name="update"
 			class="com.facilio.bmsconsole.actions.ItemAction" method="updateItem">
 			<param name="moduleName">inventory</param>
-			<param name="permission">UPDATE</param>
+			<param name="permission">UPDATE,UPDATE_OWN</param>
 		</action> 
 		<action name="*"
 			class="com.facilio.bmsconsole.actions.ItemAction" method="itemDetails">
@@ -1401,7 +1401,7 @@
 		<action name="update"
 			class="com.facilio.bmsconsole.actions.PurchasedItemAction" method="addPurchasedItem">
 			<param name="moduleName">inventory</param>
-			<param name="permission">UPDATE</param>
+			<param name="permission">UPDATE,UPDATE_OWN</param>
 		</action> 
 		<action name="*"
 			class="com.facilio.bmsconsole.actions.PurchasedItemAction" method="purchasedItemDetails">
@@ -1422,7 +1422,7 @@
 		<action name="count" class="com.facilio.bmsconsole.actions.PurchasedItemAction"
 			method="purchasedItemCount">
 			<param name="moduleName">inventory</param>
-			<param name="permission">READ</param>
+			<param name="permission">READ,READ_OWN</param>
 		</action>
 	</package>
 	
@@ -1489,7 +1489,7 @@
 		<action name="update"
 			class="com.facilio.bmsconsole.actions.ToolAction" method="updateTool">
 			<param name="moduleName">inventory</param>
-			<param name="permission">UPDATE</param>
+			<param name="permission">UPDATE,UPDATE_OWN</param>
 		</action> 
 		<action name="*"
 			class="com.facilio.bmsconsole.actions.ToolAction" method="toolDetails">
@@ -1557,19 +1557,13 @@
 		extends="v2Api">
 		<action name="delete"
 			class="com.facilio.bmsconsole.actions.ItemTypesVendorActions" method="deleteItemVendors">
-			<param name="moduleName">asset</param>
-			<param name="permission">CREATE</param>
 		</action>
 		
 		<action name="update"
 			class="com.facilio.bmsconsole.actions.ItemTypesVendorActions" method="udpateItemVendors">
-			<param name="moduleName">asset</param>
-			<param name="permission">CREATE</param>
 		</action>
 		<action name="add"
 			class="com.facilio.bmsconsole.actions.ItemTypesVendorActions" method="addItemVendors">
-			<param name="moduleName">asset</param>
-			<param name="permission">CREATE</param>
 		</action>
 	</package>
 	
@@ -1577,8 +1571,6 @@
 		extends="v2Api">
 		<action name="*"
 			class="com.facilio.bmsconsole.actions.ItemTypesVendorActions" method="itemVendorsList">
-			<param name="moduleName">asset</param>
-			<param name="permission">READ</param>
 			<param name = "itemTypesId">{1}</param>
 		</action>
 	</package>
@@ -1587,8 +1579,6 @@
 		extends="v2Api">
 		<action name="*"
 			class="com.facilio.bmsconsole.actions.ItemTypesVendorActions" method="itemTypesForVendorsList">
-			<param name="moduleName">asset</param>
-			<param name="permission">READ</param>
 			<param name = "vendorsId">{1}</param>
 		</action>
 	</package>
@@ -1643,7 +1633,7 @@
 		<action name="update"
 			class="com.facilio.bmsconsole.actions.PurchasedToolAction" method="addPurchasedTool">
 			<param name="moduleName">inventory</param>
-			<param name="permission">UPDATE</param>
+			<param name="permission">UPDATE,UPDATE_OWN</param>
 		</action> 
 		<action name="*"
 			class="com.facilio.bmsconsole.actions.PurchasedToolAction" method="purchasedItemDetails">
@@ -1693,7 +1683,7 @@
 		<action name="addOrUpdate"
 			class="com.facilio.bmsconsole.actions.ToolTransactionsAction" method="addOrUpdateToolTransactions">
 			<param name="moduleName">inventory</param>
-			<param name="permission">UPDATE</param>
+			<param name="permission">UPDATE,UPDATE_OWN</param>
 		</action>
 		
 		<action name="delete"
