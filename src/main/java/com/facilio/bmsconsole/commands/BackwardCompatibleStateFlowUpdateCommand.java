@@ -18,6 +18,10 @@ public class BackwardCompatibleStateFlowUpdateCommand implements Command {
 	public boolean execute(Context context) throws Exception {
 		WorkOrderContext workOrder = (WorkOrderContext) context.get(FacilioConstants.ContextNames.WORK_ORDER);
 		if (workOrder != null) {
+			if (workOrder.getModuleState() == null || workOrder.getStateFlowId() <= 0) {
+				return false;
+			}
+			
 			String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioField field = modBean.getField("moduleState", moduleName);
