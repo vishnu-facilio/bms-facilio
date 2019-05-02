@@ -1,9 +1,6 @@
 package com.facilio.kafka;
 
-import com.facilio.agent.AgentKeys;
-import com.facilio.agent.AgentUtil;
-import com.facilio.agent.FacilioAgent;
-import com.facilio.agent.PublishType;
+import com.facilio.agent.*;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleCRUDBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
@@ -177,17 +174,17 @@ public class Processor extends FacilioProcessor {
                                                 }
                                             }
                                             else{
-                                                payLoad.put(AgentKeys.CONTENT,"Agent disconnected to Facilio");
+                                                payLoad.put(AgentKeys.CONTENT, AgentContent.DISCONNECTED.getKey());
                                             }
                                         }
                                         if (connectionCount == 0) {
-                                            payLoad.put(AgentKeys.CONTENT, "Agent Restarted");
+                                            payLoad.put(AgentKeys.CONTENT,AgentContent.RESTARTED.getKey());
                                             agentUtil.putLog(payLoad,orgId, agent.getId(),false);
-                                            payLoad.put(AgentKeys.CONTENT, "Agent connected to Facilio");
+                                            payLoad.put(AgentKeys.CONTENT,AgentContent.CONNECTED.getKey());
                                         } else if (connectionCount == -1) {
-                                            payLoad.put(AgentKeys.CONTENT,"Agent connected to Facilio");
+                                            payLoad.put(AgentKeys.CONTENT,AgentContent.CONNECTED.getKey());
                                         } else {
-                                            payLoad.put(AgentKeys.CONTENT, "Agent connected to Facilio, " + connectionCount);
+                                            payLoad.put(AgentKeys.CONTENT, AgentContent.CONNECTED.getKey()+ connectionCount);
                                         }
                                         agentUtil.putLog(payLoad,orgId,agent.getId(),false);
 

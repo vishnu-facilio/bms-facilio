@@ -112,7 +112,7 @@ public class ControllerContext implements Serializable {
 	}
 	public int getControllerType() {
 		if (controllerType != null) {
-			return controllerType.getValue();
+			return controllerType.getKey();
 		}
 		return -1;
 	}
@@ -239,22 +239,5 @@ public class ControllerContext implements Serializable {
 		this.agentId = agentId;
 	}
 
-	public enum ControllerType {
- 		BACNET,
- 		JACE
- 		;
- 		
- 		public int getValue() {
-			return ordinal() + 1;
-		}
-		
-		public static ControllerType valueOf (int value) {
-			if (value > 0 && value <= values().length) {
-				return values() [value - 1];
-			}
-			return null;
-		}
- 		
- 	}
-	
+
 }

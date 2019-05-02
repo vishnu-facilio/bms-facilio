@@ -9,6 +9,7 @@ public class DevicePointsKeys
     public static final String BROADCAST_ADDRESS ="broadcastAddress";
     public static final String DEVICE_NAME ="deviceName";
     public static final String POINTS ="points";
+    public static final String CONTROLLER_TYPR="BACnet";
 
 
 }
