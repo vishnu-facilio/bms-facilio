@@ -78,7 +78,7 @@ public class SharingAPI {
 		
 		return deleteBuilder.delete();
 	}
-	public static List<SingleSharingContext> getSharingList(FacilioModule module) throws Exception {
+	public static <E extends SingleSharingContext> SharingContext<E> getSharingList(FacilioModule module, Class<E> classObj) throws Exception {
 		List<FacilioField> fields = FieldFactory.getSharingFields(module);
 		GenericSelectRecordBuilder select = new GenericSelectRecordBuilder()
 				.select(fields)
@@ -86,9 +86,11 @@ public class SharingAPI {
 				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 				;
 		List<Map<String, Object>> props = select.get();
-		List<SingleSharingContext> sharingList = new ArrayList<>();
+		SharingContext<E> sharingList = new SharingContext<E>();
 		if(props != null && !props.isEmpty()) {
-			sharingList = FieldUtil.getAsBeanListFromMapList(props, SingleSharingContext.class);
+			for (Map<String, Object> prop : props) {
+				sharingList.add(FieldUtil.getAsBeanFromMap(prop, classObj));
+			}
 		}
 		return sharingList;	
 		

@@ -164,7 +164,7 @@ public class ReportUtil {
 			}
 			
 		}
-		List<SingleSharingContext> sharing = SharingAPI.getSharingList(ModuleFactory.getReportSharingModule());
+		SharingContext<SingleSharingContext> sharing = SharingAPI.getSharingList(ModuleFactory.getReportSharingModule(), SingleSharingContext.class);
 		Map<Long, SharingContext<SingleSharingContext>> map = new HashMap<>();
 		for (int j = 0; j < sharing.size(); j++) {
 			if (map.containsKey(sharing.get(j).getParentId())){
@@ -183,46 +183,20 @@ public class ReportUtil {
 				reportFolders.get(i).setReportSharing(map.get(reportFolders.get(i).getId()));;	
 			}
 		}
-		return getFilteredReport(reportFolders, sharing);
+		return getFilteredReport(reportFolders);
 	}
 	@SuppressWarnings("unlikely-arg-type")
-	public static List<ReportFolderContext> getFilteredReport(List<ReportFolderContext> reportFolders, List<SingleSharingContext> sharing) throws Exception {
+	public static List<ReportFolderContext> getFilteredReport(List<ReportFolderContext> reportFolders) throws Exception {
 		List<ReportFolderContext> reportFolder = new ArrayList<ReportFolderContext>();
-		Map<Long, ReportFolderContext> parentMap = new HashMap<>();
-		List<Long> parentIds = new ArrayList<>();
 		for(ReportFolderContext pro : reportFolders) 
 		{
-			parentMap.put(pro.getId(), pro);
-			parentIds.add(pro.getId());
-		}
-		if (sharing != null && !sharing.isEmpty()) {
-			for (SingleSharingContext reportSharing : sharing) {
-				if (parentIds.contains(reportSharing.getParentId())) {
-					parentIds.remove(reportSharing.getParentId());
-				}
-				if(!reportFolder.contains(parentMap.get(reportSharing.getParentId()))) {
-					if (reportSharing.getTypeEnum().equals(SharingType.USER) && reportSharing.getUserId() == AccountUtil.getCurrentAccount().getUser().getOuid()) {
-						reportFolder.add(parentMap.get(reportSharing.getParentId()));
-					}
-					else if (reportSharing.getTypeEnum().equals(SharingType.ROLE) && reportSharing.getRoleId() == AccountUtil.getCurrentAccount().getUser().getRoleId()) {
-						reportFolder.add(parentMap.get(reportSharing.getParentId()));
-					}
-					else if (reportSharing.getTypeEnum().equals(SharingType.GROUP)) {
-						List<Group> mygroups = AccountUtil.getGroupBean().getMyGroups(AccountUtil.getCurrentAccount().getUser().getOuid());
-						for (Group group : mygroups) {
-							if (reportSharing.getGroupId() == group.getGroupId() && !reportFolder.contains(parentMap.get(reportSharing.getParentId()))) {
-								reportFolder.add(parentMap.get(reportSharing.getParentId()));
-							}
-						}
-					}
-				}
+
+			if (pro.getReportSharing().isEmpty() || pro.getReportSharing() == null) {
+				reportFolder.add(pro);
 			}
-			for (Long id : parentIds) {
-				reportFolder.add(parentMap.get(id));
+			else if (pro.getReportSharing().isAllowed(pro)) {
+				reportFolder.add(pro);
 			}
-		}
-		else {
-			reportFolder.addAll(parentMap.values());
 		}
 		
 		return reportFolder;

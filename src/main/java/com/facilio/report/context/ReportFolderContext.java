@@ -28,7 +28,7 @@ public class ReportFolderContext extends ModuleBaseWithCustomFields {
 		this.ids = ids;
 	}
 
-	private SharingContext<SingleSharingContext> reportSharing;
+	private SharingContext<SingleSharingContext> reportSharing = new SharingContext<SingleSharingContext>();
 	
 	
 	public SharingContext<SingleSharingContext> getReportSharing() {
@@ -37,6 +37,8 @@ public class ReportFolderContext extends ModuleBaseWithCustomFields {
 	public void setReportSharing(SharingContext<SingleSharingContext> reportSharing) {
 		this.reportSharing = reportSharing;
 	}
+
+
 	private long orgId = -1;
 	public long getOrgId() {
 		return orgId;
