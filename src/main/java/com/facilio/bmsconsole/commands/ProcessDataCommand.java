@@ -84,22 +84,16 @@ public class ProcessDataCommand implements Command {
 					Criteria deviceAndInstanceCriteria = new Criteria();
 					//here taking the keyName as deviceName in the assumption that POINT_ will not come hereafter...
 					//so not handling the deviceName as list scenario below..
-					
-					
 					deviceAndInstanceCriteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getDeviceField(module), keyName, StringOperators.IS));
 					deviceAndInstanceCriteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getInstanceField(module), instanceList.toString(), StringOperators.IS));
 					criteriaList.orCriteria(deviceAndInstanceCriteria);
-				//	String outputString="###### Criteria for  "+keyName+" instanceList: "+instanceList.toString()+" result criteria "+deviceAndInstanceCriteria;
-					//System.err.println(outputString);
 				}	
 			}
 		}
 		if(TimeSeriesAPI.isStage()) {
 			
 			pointsStat= getDataPoints(criteriaList);
-			if(AccountUtil.getCurrentOrg().getId()==104) {
-				LOGGER.info("########### Insert Points Data: "+pointsStat);
-			}
+			LOGGER.debug("########### Insert Points Data: "+pointsStat);
 			context.put("DATA_POINTS",pointsStat );
 		}
 		LOGGER.debug("Finished ProcessDataCommand####### : ");
@@ -118,9 +112,7 @@ public class ProcessDataCommand implements Command {
 				.andCriteria(criteriaList);
 
 		List<Map<String, Object>> props = builder.get();
-		if(AccountUtil.getCurrentOrg().getId()==104 ) {
-			LOGGER.info("###### DataPoints Query ########"+builder.toString());
-		}
+		LOGGER.debug("###### DataPoints Query ########"+builder.toString());
 		return props;
 	}
 }
