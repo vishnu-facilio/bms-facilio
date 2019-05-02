@@ -8,6 +8,7 @@ import java.util.Map.Entry;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.apache.commons.lang3.StringUtils;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ReadingContext;
@@ -33,7 +34,7 @@ public class AddTaskDefaultValueReadingsCommand implements Command {
 			long time = System.currentTimeMillis();
 			for( Entry<String, List<TaskContext>> entry : taskMap.entrySet()) {
 				for(TaskContext task : entry.getValue()) {
-					if (task.getDefaultValue() != null && task.getReadingFieldId() != -1) {
+					if (StringUtils.isNotEmpty(task.getDefaultValue()) && task.getReadingFieldId() != -1) {
 						if (pmId == -1) {
 							WorkOrderContext wo = WorkOrderAPI.getWorkOrder(task.getParentTicketId());
 							pmId = wo.getPm().getId();
