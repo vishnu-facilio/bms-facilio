@@ -759,6 +759,7 @@ public class TransactionChainFactory {
 			c.addCommand(SetTableNamesCommand.getForWorkOrder());
 			c.addCommand(new ValidateWorkOrderFieldsCommand());
 			c.addCommand(new LoadAllFieldsCommand());
+			c.addCommand(new UpdateEventListForStateFlowCommand());
 			c.addCommand(new AddWorkOrderCommand());
 			c.addCommand(new AddAttachmentCommand());
 			c.addCommand(new AttachmentContextCommand());
@@ -805,6 +806,8 @@ public class TransactionChainFactory {
 			c.addCommand(new LoadAllFieldsCommand());
 			c.addCommand(new FetchOldWorkOrdersCommand());
 			c.addCommand(new VerifyApprovalCommand());
+			c.addCommand(new BackwardCompatibleStateFlowUpdateCommand());
+			c.addCommand(new UpdateEventListForStateFlowCommand());
 			c.addCommand(new UpdateWorkOrderCommand());
 			c.addCommand(new SendNotificationCommand());
 			c.addCommand(new AddTicketActivityCommand());
@@ -813,7 +816,7 @@ public class TransactionChainFactory {
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.ASSIGNMENT_RULE));
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.SLA_RULE));
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.APPROVAL_RULE, RuleType.CHILD_APPROVAL_RULE, RuleType.REQUEST_APPROVAL_RULE, RuleType.REQUEST_REJECT_RULE));
-			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.STATE_RULE));
+			c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
 			c.addCommand(new ForkChainToInstantJobCommand()
 				.addCommand(new ExecuteAllWorkflowsCommand(RuleType.WORKORDER_AGENT_NOTIFICATION_RULE, RuleType.WORKORDER_REQUESTER_NOTIFICATION_RULE, RuleType.CUSTOM_WORKORDER_NOTIFICATION_RULE))
 				.addCommand(new ClearAlarmOnWOCloseCommand())
@@ -2477,11 +2480,11 @@ public class TransactionChainFactory {
 			return c;
 		}
 
-		public static Chain getUpdateStateTransistionChain() {
+		public static Chain getUpdateStateTransitionChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(new GenericGetModuleDataDetailCommand());
-			c.addCommand(new UpdateFieldDataCommand());
 			c.addCommand(new UpdateStateCommand());
+			c.addCommand(new UpdateFieldDataCommand());
 			c.addCommand(new AddActivitiesCommand());
 //			c.addCommand(new GenericUpdateModuleDataCommand());
 			return c;
@@ -2494,10 +2497,10 @@ public class TransactionChainFactory {
 			return c;
 		}
 
-		public static Chain getAddOrUpdateStateFlowTransistion() {
+		public static Chain getAddOrUpdateStateFlowTransition() {
 			Chain c = getDefaultChain();
-			c.addCommand(new ConstructStateFlowTransistionCommand());
-			c.addCommand(new AddOrUpdateStateTransistionCommand());
+			c.addCommand(new ConstructStateFlowTransitionCommand());
+			c.addCommand(new AddOrUpdateStateTransitionCommand());
 			return c;
 		}
 
@@ -2512,22 +2515,28 @@ public class TransactionChainFactory {
 			c.addCommand(new AddOrUpdateStateCommand());
 			return c;
 		}
-		
+
 		public static Chain getAddConnectionChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(new AddConnectionCommand());
 			return c;
 		}
-		
+
 		public static Chain getUpdateConnectionChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(new UpdateConnectionCommand());
 			return c;
 		}
-		
+
 		public static Chain getDeleteConnectionChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(new DeleteConnectionCommand());
+			return c;
+		}
+
+		public static Chain getDeleteStateFlowTransition() {
+			Chain c = getDefaultChain();
+			c.addCommand(new DeleteStateTransitionCommand());
 			return c;
 		}
 }

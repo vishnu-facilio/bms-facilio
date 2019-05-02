@@ -145,9 +145,9 @@ public class FacilioConstants {
 	}
 	
 	public static class ContextNames {
-		
+
 		public static final String CONNECTION = "connectionContext";
-		
+
 		public static final String FACILIO_RECORD = "facilioRecord";
 		public static final String FACILIO_CONSUMER = "facilioConsumer";
 		public static final String FACILIO_PRODUCER = "facilioProducer";
@@ -973,7 +973,20 @@ public class FacilioConstants {
 		public static final String GATE_PASS_LINE_ITEMS = "gatePassLineItems";
 		
 		public static final String CONNECTED_APPS = "connectedApps";
-		
+
+		public static final String STATE_FLOW = "stateFlow";
+		public static final String STATE_FLOW_LIST = "stateFlows";
+		public static final String STATE_FLOW_ID = "stateFlowId";
+		public static final String TRANSITION_ID = "transition_id";
+		public static final String STATE_TRANSITION_LIST = "stateTransitionList";
+		public static final String AVAILABLE_STATES = "states";
+		public static final String CURRENT_STATE = "currentState";
+		public static final String DEFAULT_STATE = "default_state";
+		public static final String DEFAULT_STATE_ID = "default_state_id";
+		public static final String DEFAULT_STATE_FLOW_ID = "default_state_flow_id";
+		public static final String TRANSITION = "transition";
+		public static final String STATE_TRANSITION_ONLY_CONDITIONED_CHECK = "stateTransitionOnlyConditionedCheck";
+
 		public static final String ROTATING_ASSET = "rotatingAsset";
 		
 		public static final String WO_ITEMS_LIST = "woItemsList";

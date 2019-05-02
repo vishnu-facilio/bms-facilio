@@ -38,6 +38,14 @@ public class StateFlowContext implements Serializable {
 		this.description = description;
 	}
 	
+	private String moduleName;
+	public String getModuleName() {
+		return moduleName;
+	}
+	public void setModuleName(String moduleName) {
+		this.moduleName = moduleName;
+	}
+
 	private long moduleId = -1;
 	public long getModuleId() {
 		return moduleId;

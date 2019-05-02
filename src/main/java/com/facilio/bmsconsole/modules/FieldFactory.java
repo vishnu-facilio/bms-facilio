@@ -5661,8 +5661,8 @@ public class FieldFactory {
 				}));
 	}
 
-	public static List<FacilioField> getStateRuleTransistionFields() {
-		FacilioModule stageRuleModule = ModuleFactory.getStateRuleTransistionModule();
+	public static List<FacilioField> getStateRuleTransitionFields() {
+		FacilioModule stageRuleModule = ModuleFactory.getStateRuleTransitionModule();
 		List<FacilioField> list = new ArrayList<>();
 		
 		list.add(getIdField(stageRuleModule));
@@ -5672,7 +5672,7 @@ public class FieldFactory {
 		list.add(getField("formId", "FORM_ID", stageRuleModule, FieldType.NUMBER));
 		list.add(getField("moduleId", "MODULE_ID", stageRuleModule, FieldType.NUMBER));
 		list.add(getField("buttonType", "BUTTON_TYPE", stageRuleModule, FieldType.NUMBER));
-		list.add(getField("scheduled", "IS_SCHEDULED", stageRuleModule, FieldType.BOOLEAN));
+		list.add(getField("type", "TYPE", stageRuleModule, FieldType.NUMBER));
 		list.add(getField("scheduleTime", "SCHEDULE_TIME", stageRuleModule, FieldType.NUMBER));
 		return list;
 	}
@@ -5697,7 +5697,19 @@ public class FieldFactory {
 
 		list.add(getField("id", "ID", module, FieldType.ID));
 		list.add(getField("recordId", "RECORD_ID", module, FieldType.NUMBER));
-		list.add(getField("transistionId", "TRANSISTION_ID", module, FieldType.NUMBER));
+		list.add(getField("transitionId", "TRANSITION_ID", module, FieldType.NUMBER));
+		return list;
+	}
+
+	public static List<FacilioField> getTimeLogFields(FacilioModule module) {
+		List<FacilioField> list = new ArrayList<>();
+		
+		list.add(getField("id", "ID", module, FieldType.ID));
+		list.add(getField("name", "NAME", module, FieldType.STRING));
+		list.add(getField("parentId", "PARENT_ID", module, FieldType.STRING));
+		list.add(getField("startTime", "START_TIME", module, FieldType.NUMBER));
+		list.add(getField("endTime", "END_TIME", module, FieldType.NUMBER));
+		list.add(getField("duration", "DURATION", module, FieldType.NUMBER));
 		return list;
 	}
 	

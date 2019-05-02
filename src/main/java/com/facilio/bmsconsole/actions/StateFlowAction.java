@@ -5,11 +5,12 @@ import java.util.Map;
 
 import org.apache.commons.chain.Chain;
 
+import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.StateFlowContext;
 import com.facilio.bmsconsole.workflow.rule.ActionContext;
 import com.facilio.bmsconsole.workflow.rule.StateContext;
-import com.facilio.bmsconsole.workflow.rule.StateflowTransistionContext;
+import com.facilio.bmsconsole.workflow.rule.StateflowTransitionContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -41,26 +42,65 @@ public class StateFlowAction extends FacilioAction {
 		this.transitionId = transitionId;
 	}
 	
-	private StateflowTransistionContext stateTransistion;
-	public StateflowTransistionContext getStateTransistion() {
-		return stateTransistion;
+	private StateflowTransitionContext stateTransition;
+	public StateflowTransitionContext getStateTransition() {
+		return stateTransition;
 	}
-	public void setStateTransistion(StateflowTransistionContext stateTransistion) {
-		this.stateTransistion = stateTransistion;
+	public void setStateTransition(StateflowTransitionContext stateTransition) {
+		this.stateTransition = stateTransition;
 	}
 	
-	public String addOrUpdateStateTransistion() throws Exception {
+	public String addOrUpdateStateTransition() throws Exception {
 		FacilioContext context = new FacilioContext();
 		
 		updateStateContext(context);
-		Chain chain = TransactionChainFactory.getAddOrUpdateStateFlowTransistion();
+		Chain chain = TransactionChainFactory.getAddOrUpdateStateFlowTransition();
+		chain.execute(context);
+		
+		setResult(FacilioConstants.ContextNames.TRANSITION, stateTransition);
+		return SUCCESS;
+	}
+	
+	private long stateFlowId = -1;
+	public long getStateFlowId() {
+		return stateFlowId;
+	}
+	public void setStateFlowId(long stateFlowId) {
+		this.stateFlowId = stateFlowId;
+	}
+	
+	public String getStateTransitionList() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.STATE_FLOW_ID, stateFlowId);
+		
+		Chain chain = ReadOnlyChainFactory.getStateTransitionList();
+		chain.execute(context);
+		
+		setResult(FacilioConstants.ContextNames.STATE_TRANSITION_LIST, context.get(FacilioConstants.ContextNames.STATE_TRANSITION_LIST));
+		return SUCCESS;
+	}
+	
+	private long stateTransitionId = -1;
+	public long getStateTransitionId() {
+		return stateTransitionId;
+	}
+	public void setStateTransitionId(long stateTransitionId) {
+		this.stateTransitionId = stateTransitionId;
+	}
+
+	public String deleteStateTransition() throws Exception {
+		FacilioContext context = new FacilioContext();
+		
+		context.put(FacilioConstants.ContextNames.STATE_FLOW_ID, stateFlowId);
+		context.put(FacilioConstants.ContextNames.TRANSITION_ID, stateTransitionId);
+		Chain chain = TransactionChainFactory.getDeleteStateFlowTransition();
 		chain.execute(context);
 		return SUCCESS;
 	}
 	
 	private void updateStateContext(FacilioContext context) {
-		stateTransistion.setRuleType(RuleType.STATE_RULE);
-		context.put(FacilioConstants.ContextNames.WORKFLOW_RULE, stateTransistion);
+		stateTransition.setRuleType(RuleType.STATE_RULE);
+		context.put(FacilioConstants.ContextNames.WORKFLOW_RULE, stateTransition);
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
 	}
 	
@@ -86,6 +126,16 @@ public class StateFlowAction extends FacilioAction {
 		this.stateFlowActions = stateFlowActions;
 	}
 	
+	public String getStateFlowList() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+		Chain chain = ReadOnlyChainFactory.getStateFlowList();
+		chain.execute(context);
+		
+		setResult(FacilioConstants.ContextNames.STATE_FLOW_LIST, context.get(FacilioConstants.ContextNames.STATE_FLOW_LIST));
+		return SUCCESS;
+	}
+	
 	public String addOrUpdateStateFlow() throws Exception {
 		FacilioContext context = new FacilioContext();
 		
@@ -93,6 +143,8 @@ public class StateFlowAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.ACTIONS_LIST, stateFlowActions);
 		Chain chain = TransactionChainFactory.getAddOrUpdateStateFlow();
 		chain.execute(context);
+		
+		setResult(FacilioConstants.ContextNames.STATE_FLOW, stateFlow);
 		return SUCCESS;
 	}
 	
@@ -104,11 +156,11 @@ public class StateFlowAction extends FacilioAction {
 		this.data = data;
 	}
 	
-	public String updateStateTransistion() throws Exception {
+	public String updateStateTransition() throws Exception {
 		FacilioContext context = new FacilioContext();
 		
 		updateContext(context);
-		Chain chain = TransactionChainFactory.getUpdateStateTransistionChain();
+		Chain chain = TransactionChainFactory.getUpdateStateTransitionChain();
 		chain.execute(context);
 		
 		return SUCCESS;
@@ -121,8 +173,8 @@ public class StateFlowAction extends FacilioAction {
 		Chain chain = TransactionChainFactory.getAvailableState();
 		chain.execute(context);
 		
-		setResult("states", context.get("availableStates"));
-		setResult("currentState", context.get("currentState"));
+		setResult(FacilioConstants.ContextNames.AVAILABLE_STATES, context.get("availableStates"));
+		setResult(FacilioConstants.ContextNames.CURRENT_STATE, context.get("currentState"));
 		
 		return SUCCESS;
 	}
@@ -130,7 +182,7 @@ public class StateFlowAction extends FacilioAction {
 	private void updateContext(FacilioContext context) {
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
 		context.put(FacilioConstants.ContextNames.ID, id);
-		context.put("transistion_id", transitionId);
+		context.put(FacilioConstants.ContextNames.TRANSITION_ID, transitionId);
 		context.put(FacilioConstants.ContextNames.DATA_KEY, data);
 	}
 	
@@ -144,7 +196,6 @@ public class StateFlowAction extends FacilioAction {
 	
 	public String addOrUpdateState() throws Exception {
 		FacilioContext context = new FacilioContext();
-//		context.put(FacilioConstants.ContextNames.STATE, state);
 		
 		Chain chain = TransactionChainFactory.getAddOrUpdateStateChain();
 		chain.execute(context);
