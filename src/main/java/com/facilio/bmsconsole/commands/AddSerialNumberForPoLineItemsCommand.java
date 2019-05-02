@@ -130,17 +130,17 @@ public class AddSerialNumberForPoLineItemsCommand implements Command {
 					return item;
 				}
 			}
+			return addItem(itemModule, itemFields, storeroom, itemType);
 		} else {
-			itemc = new ItemContext();
-			itemc.setCostType(CostType.FIFO);
-			itemc.setStoreRoom(storeroom);
-			itemc.setItemType(itemType);
-			return addItem(itemModule, itemFields, itemc);
+			return addItem(itemModule, itemFields, storeroom, itemType);
 		}
-		return null;
 	}
 
-	private ItemContext addItem(FacilioModule module, List<FacilioField> fields, ItemContext item) throws Exception {
+	private ItemContext addItem(FacilioModule module, List<FacilioField> fields, StoreRoomContext store, ItemTypesContext itemType) throws Exception {
+		ItemContext item = new ItemContext();
+		item.setStoreRoom(store);
+		item.setItemType(itemType);
+		item.setCostType(CostType.FIFO);
 		InsertRecordBuilder<ItemContext> readingBuilder = new InsertRecordBuilder<ItemContext>().module(module)
 				.fields(fields);
 		readingBuilder.withLocalId();
@@ -166,16 +166,16 @@ public class AddSerialNumberForPoLineItemsCommand implements Command {
 					return tool;
 				}
 			}
+			return addTool(toolModule, toolFields,  storeroom, toolType);
 		} else {
-			toolc = new ToolContext();
-			toolc.setStoreRoom(storeroom);
-			toolc.setToolType(toolType);
-			return addTool(toolModule, toolFields, toolc);
+			return addTool(toolModule, toolFields, storeroom, toolType);
 		}
-		return null;
 	}
 
-	private ToolContext addTool(FacilioModule module, List<FacilioField> fields, ToolContext tool) throws Exception {
+	private ToolContext addTool(FacilioModule module, List<FacilioField> fields, StoreRoomContext store, ToolTypesContext toolType) throws Exception {
+		ToolContext tool = new ToolContext();
+		tool.setStoreRoom(store);
+		tool.setToolType(toolType);
 		InsertRecordBuilder<ToolContext> readingBuilder = new InsertRecordBuilder<ToolContext>().module(module)
 				.fields(fields);
 		readingBuilder.withLocalId();
