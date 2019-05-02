@@ -175,6 +175,11 @@ public class StateflowTransitionContext extends WorkflowRuleContext {
 		if (shouldCheckOnlyConditioned && type != TransitionType.CONDITIONED) {
 			return false;
 		}
+		
+		// this is old records
+		if (moduleRecord.getModuleState() == null || moduleRecord.getStateFlowId() <= 0) {
+			return false;
+		}
 
 		if (moduleRecord.getModuleState() != null && moduleRecord.getStateFlowId() > 0 && moduleRecord.getStateFlowId() == getStateFlowId() && 
 				getFromStateId() != moduleRecord.getModuleState().getId()) {
