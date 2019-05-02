@@ -799,7 +799,6 @@ public class TransactionChainFactory {
 			c.addCommand(new AddTaskOptionsCommand());
 			c.addCommand(new UpdateReadingDataMetaCommand());
 			c.addCommand(new AddTaskDefaultValueReadingsCommand());
-			c.addCommand(ReadOnlyChainFactory.getAddOrUpdateReadingValuesChain());
 			c.addCommand(new UpdateTaskReadingInfoCommand());
 			// c.addCommand(new AddTaskTicketActivityCommand());
 //			c.setPostTransactionChain(TransactionChainFactory.getUpdateTaskCountChain());

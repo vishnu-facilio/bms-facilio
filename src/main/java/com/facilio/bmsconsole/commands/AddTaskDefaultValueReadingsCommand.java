@@ -17,6 +17,7 @@ import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.bmsconsole.util.WorkOrderAPI;
+import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 
@@ -47,7 +48,10 @@ public class AddTaskDefaultValueReadingsCommand implements Command {
 			
 			if (!readingMap.isEmpty()) {
 				context.put(FacilioConstants.ContextNames.READINGS_MAP, readingMap);
-				context.put(FacilioConstants.ContextNames.ADJUST_READING_TTIME, false);
+				FacilioContext newContext = new FacilioContext();
+				newContext.put(FacilioConstants.ContextNames.READINGS_MAP, readingMap);
+				newContext.put(FacilioConstants.ContextNames.ADJUST_READING_TTIME, false);
+				ReadOnlyChainFactory.getAddOrUpdateReadingValuesChain().execute(newContext);
 			}
 		}
 		return false;
