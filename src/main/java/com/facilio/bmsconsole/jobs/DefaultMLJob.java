@@ -22,6 +22,10 @@ public class DefaultMLJob extends FacilioJob
 		List<MLContext> mlContextList = MLUtil.getMlContext(jc);
 		for(MLContext mlContext:mlContextList)
 		{
+			if(mlContext==null)
+			{
+				continue;
+			}
 			mlContext.setPredictionTime(jc.getExecutionTime());
 			Context context = new FacilioContext();
 			context.put(FacilioConstants.ContextNames.ML, mlContext);
