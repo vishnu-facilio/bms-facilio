@@ -96,6 +96,7 @@ public class GetToolTransactionsListCommand implements Command {
 		
 		
 		builder.fetchLookup((LookupField) toolTransactionsFieldsMap.get("purchasedTool"));
+		builder.fetchLookup((LookupField) toolTransactionsFieldsMap.get("asset"));
 		
 		Boolean getShowToolsForReturn = (Boolean) context.get(FacilioConstants.ContextNames.SHOW_TOOLS_FOR_RETURN);
 		if (getShowToolsForReturn != null && getShowToolsForReturn) {

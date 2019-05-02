@@ -98,6 +98,7 @@ public class GetItemTransactionsListCommand implements Command{
 		}
 		
 		builder.fetchLookup((LookupField) itemTransactionsFieldsMap.get("purchasedItem"));
+		builder.fetchLookup((LookupField) itemTransactionsFieldsMap.get("asset"));
 		
 		Boolean getShowItemsForReturn = (Boolean) context.get(FacilioConstants.ContextNames.SHOW_ITEMS_FOR_RETURN);
 		if(getShowItemsForReturn!=null && getShowItemsForReturn) {
