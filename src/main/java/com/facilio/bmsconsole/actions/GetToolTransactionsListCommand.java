@@ -51,9 +51,7 @@ public class GetToolTransactionsListCommand implements Command {
 				.on(ModuleFactory.getToolModule().getTableName() + ".ID = "
 						+ ModuleFactory.getToolTransactionsModule().getTableName() + ".TOOL");
 		if (accessibleSpaces != null && !accessibleSpaces.isEmpty()) {
-			builder.andCustomWhere(
-					"Store_room.ID IN (Select STORE_ROOM_ID from Storeroom_Sites where SITE_ID IN ( ? ))",
-					StringUtils.join(accessibleSpaces, ", "));
+			builder.andCustomWhere("Store_room.SITE_ID IN ( ? )", StringUtils.join(accessibleSpaces, ", "));
 		}
 		
 		String orderBy = (String) context.get(FacilioConstants.ContextNames.SORTING_QUERY);
@@ -96,6 +94,7 @@ public class GetToolTransactionsListCommand implements Command {
 		
 		
 		builder.fetchLookup((LookupField) toolTransactionsFieldsMap.get("purchasedTool"));
+		builder.fetchLookup((LookupField) toolTransactionsFieldsMap.get("asset"));
 		
 		Boolean getShowToolsForReturn = (Boolean) context.get(FacilioConstants.ContextNames.SHOW_TOOLS_FOR_RETURN);
 		if (getShowToolsForReturn != null && getShowToolsForReturn) {

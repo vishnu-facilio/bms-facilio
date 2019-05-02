@@ -79,7 +79,7 @@ public class ProcessDataCommand implements Command {
 			}	
 			if(TimeSeriesAPI.isStage()) {
 				
-				if(instanceList.length()>0) {//if innerKeyList isEmpty,.. so the length will be 0 
+				if(instanceList.length()>0) { //if innerKeyList isEmpty,.. so the length will be 0
 					FacilioModule module=ModuleFactory.getPointsModule();
 					Criteria deviceAndInstanceCriteria = new Criteria();
 					//here taking the keyName as deviceName in the assumption that POINT_ will not come hereafter...
@@ -93,9 +93,7 @@ public class ProcessDataCommand implements Command {
 		if(TimeSeriesAPI.isStage()) {
 			
 			pointsStat= getDataPoints(criteriaList);
-			if(AccountUtil.getCurrentOrg().getId()==104) {
-				LOGGER.info("########### Insert Points Data: "+pointsStat);
-			}
+			LOGGER.debug("########### Insert Points Data: "+pointsStat);
 			context.put("DATA_POINTS",pointsStat );
 		}
 		LOGGER.debug("Finished ProcessDataCommand####### : ");
@@ -113,6 +111,8 @@ public class ProcessDataCommand implements Command {
 				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(ModuleFactory.getPointsModule()))
 				.andCriteria(criteriaList);
 
-		return builder.get();
+		List<Map<String, Object>> props = builder.get();
+		LOGGER.debug("###### DataPoints Query ########"+builder.toString());
+		return props;
 	}
 }

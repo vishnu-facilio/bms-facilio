@@ -100,8 +100,8 @@ public class WorkflowRuleAPI {
 				ApprovalRulesAPI.addApprovers(rule.getId(), ((ApprovalRuleContext) rule).getApprovers());
 				break;
 			case STATE_RULE:
-				addExtendedProps(ModuleFactory.getStateRuleTransistionModule(), FieldFactory.getStateRuleTransistionFields(), ruleProps);
-				ApprovalRulesAPI.addApprovers(rule.getId(), ((StateflowTransistionContext) rule).getApprovers());
+				addExtendedProps(ModuleFactory.getStateRuleTransitionModule(), FieldFactory.getStateRuleTransitionFields(), ruleProps);
+				ApprovalRulesAPI.addApprovers(rule.getId(), ((StateflowTransitionContext) rule).getApprovers());
 				break;
 //			case STATE_FLOW:
 //				addExtendedProps(ModuleFactory.getStateFlowRuleModule(), FieldFactory.getStateFlowRuleFields(), ruleProps);
@@ -607,7 +607,7 @@ public class WorkflowRuleAPI {
 					typeWiseProps.put(entry.getKey(), getExtendedProps(ModuleFactory.getApprovalRulesModule(), FieldFactory.getApprovalRuleFields(), entry.getValue()));
 					break;
 				case STATE_RULE:
-					typeWiseProps.put(entry.getKey(), getExtendedProps(ModuleFactory.getStateRuleTransistionModule(), FieldFactory.getStateRuleTransistionFields(), entry.getValue()));
+					typeWiseProps.put(entry.getKey(), getExtendedProps(ModuleFactory.getStateRuleTransitionModule(), FieldFactory.getStateRuleTransitionFields(), entry.getValue()));
 					break;
 //				case STATE_FLOW:
 //					typeWiseProps.put(entry.getKey(), getExtendedProps(ModuleFactory.getStateFlowRuleModule(), FieldFactory.getStateFlowRuleFields(), entry.getValue()));

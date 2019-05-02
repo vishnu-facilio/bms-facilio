@@ -1,15 +1,18 @@
 package com.facilio.bmsconsole.actions;
 
-import com.facilio.bmsconsole.commands.FacilioChainFactory;
-import com.facilio.bmsconsole.context.ActionForm;
-import com.facilio.bmsconsole.context.BaseSpaceContext;
-import com.facilio.chain.FacilioContext;
-import com.facilio.constants.FacilioConstants;
+import java.util.List;
+
 import org.apache.commons.chain.Chain;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
-import java.util.List;
+import com.facilio.bmsconsole.commands.FacilioChainFactory;
+import com.facilio.bmsconsole.context.ActionForm;
+import com.facilio.bmsconsole.context.BaseSpaceContext;
+import com.facilio.bmsconsole.util.SpaceAPI;
+import com.facilio.chain.FacilioContext;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.constants.FacilioConstants.ContextNames;
 
 @SuppressWarnings("serial")
 public class BaseSpaceAction extends FacilioAction {
@@ -76,6 +79,12 @@ public class BaseSpaceAction extends FacilioAction {
 		
 		setBasespaces((List<BaseSpaceContext>) context.get(FacilioConstants.ContextNames.BASE_SPACE_LIST));
 		
+		return SUCCESS;
+	}
+	
+	public String basespaceWithChildren() throws Exception {
+		List<BaseSpaceContext> spaces = SpaceAPI.getBaseSpaceWithChildren(spaceId);
+		setResult(ContextNames.BASE_SPACE_LIST, spaces);
 		return SUCCESS;
 	}
 	

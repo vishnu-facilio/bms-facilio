@@ -26,8 +26,11 @@ public class PurchaseRequestPurchaseOrderLookUpsCommand implements Command  {
 			fields = modBean.getAllFields(moduleName);
 		}
 		Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
+		LookupFieldMeta vendorField = new LookupFieldMeta((LookupField) fieldsAsMap.get("vendor"));
+		LookupField vendorLocationField = (LookupField) modBean.getField("address", FacilioConstants.ContextNames.VENDORS);
+		vendorField.addChildLookupFIeld(vendorLocationField);
 		
-		List<LookupField>fetchLookup = Arrays.asList((LookupField) fieldsAsMap.get("vendor"),
+		List<LookupField>fetchLookup = Arrays.asList(vendorField,
 													(LookupField) fieldsAsMap.get("storeRoom"),
 													(LookupField) fieldsAsMap.get("shipToAddress"),
 													(LookupField) fieldsAsMap.get("billToAddress"),

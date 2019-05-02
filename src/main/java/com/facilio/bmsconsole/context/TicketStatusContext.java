@@ -61,12 +61,23 @@ public class TicketStatusContext extends ModuleBaseWithCustomFields {
 	
 	private Boolean recordLocked;
 	public Boolean getRecordLocked() {
+		if (recordLocked == null) {
+			return false;
+		}
 		return recordLocked;
 	}
 	public void setRecordLocked(Boolean recordLocked) {
 		this.recordLocked = recordLocked;
 	}
 	
+	private boolean requestedState;
+	public boolean isRequestedState() {
+		return requestedState;
+	}
+	public void setRequestedState(boolean requestedState) {
+		this.requestedState = requestedState;
+	}
+
 	@Override
 	public String toString() {
 		return status;
@@ -110,8 +121,13 @@ public class TicketStatusContext extends ModuleBaseWithCustomFields {
 	}
 
 	public boolean shouldChangeTimer(TicketStatusContext oldState) {
+		// PRE_OPEN doesn't have timer field
+		if (getType() == StatusType.PRE_OPEN) {
+			return false;
+		}
+		
 		if (oldState == null) {
-			return true;
+			return getTimerEnabled();
 		}
 		
 		return !(oldState.getTimerEnabled() == getTimerEnabled());

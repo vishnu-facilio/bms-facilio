@@ -1,5 +1,7 @@
 package com.facilio.report.context;
 
+import com.facilio.bmsconsole.context.SharingContext;
+import com.facilio.bmsconsole.context.SingleSharingContext;
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 
 import java.util.List;
@@ -18,6 +20,25 @@ public class ReportFolderContext extends ModuleBaseWithCustomFields {
 		this.id = id;
 	}
 	
+	private List<Long> ids;
+	public List<Long> getIds() {
+		return ids;
+	}
+	public void setIds(List<Long> ids) {
+		this.ids = ids;
+	}
+
+	private SharingContext<SingleSharingContext> reportSharing = new SharingContext<SingleSharingContext>();
+	
+	
+	public SharingContext<SingleSharingContext> getReportSharing() {
+		return reportSharing;
+	}
+	public void setReportSharing(SharingContext<SingleSharingContext> reportSharing) {
+		this.reportSharing = reportSharing;
+	}
+
+
 	private long orgId = -1;
 	public long getOrgId() {
 		return orgId;

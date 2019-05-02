@@ -53,16 +53,12 @@ public class GetStoreRoomListCommand implements Command {
 
 		List<Long> accessibleSpaces = AccountUtil.getCurrentUser().getAccessibleSpace();
 		if (accessibleSpaces != null && !accessibleSpaces.isEmpty()) {
-			builder.andCustomWhere(
-					"Store_room.ID IN (Select STORE_ROOM_ID from Storeroom_Sites where SITE_ID IN ( ? ))",
-					StringUtils.join(accessibleSpaces, ", "));
+			builder.andCustomWhere("Store_room.SITE_ID IN ( ? )", StringUtils.join(accessibleSpaces, ", "));
 		}
 
 		long siteId = (long) context.get(FacilioConstants.ContextNames.WORK_ORDER_SITE_ID);
 		if (siteId > 0) {
-			builder.andCustomWhere(
-					"Store_room.ID IN (Select STORE_ROOM_ID from Storeroom_Sites where SITE_ID IN ( ? ))",
-					siteId);
+			builder.andCustomWhere("Store_room.SITE_ID IN ( ? )", siteId);
 		}
 		if (getCount) {
 			builder.setAggregation();
@@ -105,9 +101,9 @@ public class GetStoreRoomListCommand implements Command {
 		if (scopeCriteria != null) {
 			builder.andCriteria(scopeCriteria);
 		}
-		
-		Criteria permissionCriteria = AccountUtil.getCurrentUser().getRole().permissionCriteria("inventory","read");
-		if(permissionCriteria != null) {
+
+		Criteria permissionCriteria = AccountUtil.getCurrentUser().getRole().permissionCriteria("inventory", "read");
+		if (permissionCriteria != null) {
 			builder.andCriteria(permissionCriteria);
 		}
 

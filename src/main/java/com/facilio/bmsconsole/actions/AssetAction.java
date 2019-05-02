@@ -24,6 +24,7 @@ import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.constants.FacilioConstants.ContextNames;
 
 public class AssetAction extends FacilioAction {
 	
@@ -475,7 +476,7 @@ public class AssetAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.QR_VALUE, value);
 		context.put(FacilioConstants.ContextNames.LOCATION, location);
-		context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, moduleName);
+		context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, ContextNames.ASSET_ACTIVITY);
 		Chain getAssetChain = TransactionChainFactory.getAssetFromQRChain();
 		getAssetChain.execute(context);
 		setResult("asset", context.get(FacilioConstants.ContextNames.ASSET));

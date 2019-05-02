@@ -61,6 +61,8 @@ public class AddSerialNumberForPoLineItemsCommand implements Command {
 				ast.setRotatingItem(item);
 				ast.setRotatingTool(tool);
 				ast.setUnitPrice((int) lineItem.getUnitPrice());
+				ast.setPurchasedDate(po.getOrderedTime());
+				ast.setPurchaseOrder(po);
 				context.put(FacilioConstants.ContextNames.MODULE, FacilioConstants.ContextNames.ASSET);
 				context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.ASSET);
 				context.put(FacilioConstants.ContextNames.RECORD, ast);
@@ -126,25 +128,19 @@ public class AddSerialNumberForPoLineItemsCommand implements Command {
 			for (ItemContext item : items) {
 				if (item.getItemType().getId() == itemType.getId()) {
 					return item;
-				} else {
-					itemc = new ItemContext();
-					itemc.setCostType(CostType.FIFO);
-					itemc.setStoreRoom(storeroom);
-					itemc.setItemType(itemType);
-					return addItem(itemModule, itemFields, itemc);
 				}
 			}
+			return addItem(itemModule, itemFields, storeroom, itemType);
 		} else {
-			itemc = new ItemContext();
-			itemc.setCostType(CostType.FIFO);
-			itemc.setStoreRoom(storeroom);
-			itemc.setItemType(itemType);
-			return addItem(itemModule, itemFields, itemc);
+			return addItem(itemModule, itemFields, storeroom, itemType);
 		}
-		return null;
 	}
 
-	private ItemContext addItem(FacilioModule module, List<FacilioField> fields, ItemContext item) throws Exception {
+	private ItemContext addItem(FacilioModule module, List<FacilioField> fields, StoreRoomContext store, ItemTypesContext itemType) throws Exception {
+		ItemContext item = new ItemContext();
+		item.setStoreRoom(store);
+		item.setItemType(itemType);
+		item.setCostType(CostType.FIFO);
 		InsertRecordBuilder<ItemContext> readingBuilder = new InsertRecordBuilder<ItemContext>().module(module)
 				.fields(fields);
 		readingBuilder.withLocalId();
@@ -155,36 +151,31 @@ public class AddSerialNumberForPoLineItemsCommand implements Command {
 	private ToolContext getTool(ToolTypesContext toolType, StoreRoomContext storeroom) throws Exception {
 		ToolContext toolc = null;
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioModule toolModule = modBean.getModule(FacilioConstants.ContextNames.ITEM);
-		List<FacilioField> toolFields = modBean.getAllFields(FacilioConstants.ContextNames.ITEM);
+		FacilioModule toolModule = modBean.getModule(FacilioConstants.ContextNames.TOOL);
+		List<FacilioField> toolFields = modBean.getAllFields(FacilioConstants.ContextNames.TOOL);
 		Map<String, FacilioField> toolFieldsMap = FieldFactory.getAsMap(toolFields);
 		SelectRecordsBuilder<ToolContext> itemselectBuilder = new SelectRecordsBuilder<ToolContext>().select(toolFields)
 				.table(toolModule.getTableName()).moduleName(toolModule.getName()).beanClass(ToolContext.class)
 				.andCondition(CriteriaAPI.getCondition(toolFieldsMap.get("storeRoom"),
 						String.valueOf(storeroom.getId()), NumberOperators.EQUALS));
 
-		List<ToolContext> items = itemselectBuilder.get();
-		if (items != null && !items.isEmpty()) {
-			for (ToolContext item : items) {
-				if (item.getToolType().getId() == toolType.getId()) {
-					return item;
-				} else {
-					toolc = new ToolContext();
-					toolc.setStoreRoom(storeroom);
-					toolc.setToolType(toolType);
-					return addTool(toolModule, toolFields, toolc);
+		List<ToolContext> tools = itemselectBuilder.get();
+		if (tools != null && !tools.isEmpty()) {
+			for (ToolContext tool : tools) {
+				if (tool.getToolType().getId() == toolType.getId()) {
+					return tool;
 				}
 			}
+			return addTool(toolModule, toolFields,  storeroom, toolType);
 		} else {
-			toolc = new ToolContext();
-			toolc.setStoreRoom(storeroom);
-			toolc.setToolType(toolType);
-			return addTool(toolModule, toolFields, toolc);
+			return addTool(toolModule, toolFields, storeroom, toolType);
 		}
-		return null;
 	}
 
-	private ToolContext addTool(FacilioModule module, List<FacilioField> fields, ToolContext tool) throws Exception {
+	private ToolContext addTool(FacilioModule module, List<FacilioField> fields, StoreRoomContext store, ToolTypesContext toolType) throws Exception {
+		ToolContext tool = new ToolContext();
+		tool.setStoreRoom(store);
+		tool.setToolType(toolType);
 		InsertRecordBuilder<ToolContext> readingBuilder = new InsertRecordBuilder<ToolContext>().module(module)
 				.fields(fields);
 		readingBuilder.withLocalId();

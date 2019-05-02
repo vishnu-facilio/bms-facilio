@@ -1,7 +1,9 @@
 package com.facilio.bmsconsole.commands;
 
+import com.facilio.bmsconsole.context.TicketStatusContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.modules.FieldUtil;
+import com.facilio.bmsconsole.util.StateFlowRulesAPI;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.rule.ApprovalRuleContext;
 import com.facilio.bmsconsole.workflow.rule.ApprovalState;
@@ -27,11 +29,19 @@ public class VerifyApprovalCommand implements Command {
 			workOrder.setApprovalRuleId(-1); //Approval Rule ID cannot be changed by user action
 			List<Long> ruleIds = new ArrayList<>();
 			for (WorkOrderContext wo : oldWos) {
-				if (wo.getApprovalStateEnum() == ApprovalState.REQUESTED) {
-					ruleIds.add(wo.getApprovalRuleId());
-					
-					if (workOrder.getApprovalStateEnum() != ApprovalState.APPROVED && workOrder.getApprovalStateEnum() != ApprovalState.REJECTED) {
-						throw new IllegalArgumentException("Work Request has to be either approved or rejected. It can't be updated until then.");
+				if (wo.getModuleState() != null) {
+					TicketStatusContext stateContext = StateFlowRulesAPI.getStateContext(wo.getModuleState().getId());
+					if (stateContext.getRecordLocked()) {
+						throw new IllegalArgumentException("Workorder with lock cannot be updated");
+					}
+				}
+				else {
+					if (wo.getApprovalStateEnum() == ApprovalState.REQUESTED) {
+						ruleIds.add(wo.getApprovalRuleId());
+						
+						if (workOrder.getApprovalStateEnum() != ApprovalState.APPROVED && workOrder.getApprovalStateEnum() != ApprovalState.REJECTED) {
+							throw new IllegalArgumentException("Work Request has to be either approved or rejected. It can't be updated until then.");
+						}
 					}
 				}
 			}

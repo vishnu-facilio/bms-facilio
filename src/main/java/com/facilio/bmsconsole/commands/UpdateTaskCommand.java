@@ -67,9 +67,14 @@ public class UpdateTaskCommand implements Command {
 			Map<Long, TaskContext> taskMap = oldTasks.stream().collect(Collectors.toMap(TaskContext::getId, Function.identity()));
 		
 				if(task.getInputValue() != null) {
-					JSONObject info = new JSONObject();
 					long newTaskId = recordIds.get(0);
-					info.put("subject", taskMap.get(newTaskId).getSubject());
+					TaskContext oldTask = taskMap.get(newTaskId);
+					if(StringUtils.isNotEmpty(oldTask.getFailureValue()) && oldTask.getFailureValue().equals(task.getInputValue())) {
+						task.setFailed(true);
+					}
+					
+					JSONObject info = new JSONObject();
+					info.put("subject", oldTask.getSubject());
 					info.put("newvalue", task.getInputValue());
 					JSONObject newinfo = new JSONObject();
 					newinfo.put("taskupdate", info);

@@ -59,7 +59,7 @@ public class GetItemListCommand implements Command {
 						+ ModuleFactory.getInventryModule().getTableName() + ".STORE_ROOM_ID");
 		if (accessibleSpaces != null && !accessibleSpaces.isEmpty()) {
 			builder.andCustomWhere(
-					"Store_room.ID IN (Select STORE_ROOM_ID from Storeroom_Sites where SITE_ID IN ( ? ))",
+					"Store_room.SITE_ID IN ( ? )",
 					StringUtils.join(accessibleSpaces, ", "));
 		}
 		if (getCount) {

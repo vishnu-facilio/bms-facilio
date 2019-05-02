@@ -203,6 +203,13 @@ public enum EventType {
 		}
 		
 	},
+	STATE_TRANSITION (1 << 22) {
+		@Override
+		public String getMessage(JSONObject json) {
+			// TODO Auto-generated method stub
+			return null;
+		}
+	}
 	;
 
     private int eventType;

@@ -109,15 +109,23 @@
 	<package name="stateFlow" namespace="/api/v2/stateflow" extends="v2Api">
 		<action name="addOrUpdate"
 			class="com.facilio.bmsconsole.actions.StateFlowAction" method="addOrUpdateStateFlow" />
+		
+		<action name="list"
+			class="com.facilio.bmsconsole.actions.StateFlowAction" method="getStateFlowList" />
 	</package>
 	
-	<package name="stateTransistion" namespace="/api/v2/statetransistion" extends="v2Api">
+	<package name="stateTransition" namespace="/api/v2/statetransition" extends="v2Api">
 		<action name="update"
-			class="com.facilio.bmsconsole.actions.StateFlowAction" method="updateStateTransistion" />
+			class="com.facilio.bmsconsole.actions.StateFlowAction" method="updateStateTransition" />
 		<action name="getAvailableState"
 			class="com.facilio.bmsconsole.actions.StateFlowAction" method="getAvailableState" />
 		<action name="addOrUpdate"
-			class="com.facilio.bmsconsole.actions.StateFlowAction" method="addOrUpdateStateTransistion" />
+			class="com.facilio.bmsconsole.actions.StateFlowAction" method="addOrUpdateStateTransition" />
+		<action name="delete"
+			class="com.facilio.bmsconsole.actions.StateFlowAction" method="deleteStateTransition" />
+			
+		<action name="list"
+			class="com.facilio.bmsconsole.actions.StateFlowAction" method="getStateTransitionList" />
 	</package>
 
 	<package name="importTemplate" namespace="/api/v2/importTemplate"
@@ -837,6 +845,9 @@
 		<action name="addReportFolder" class="com.facilio.bmsconsole.actions.V2ReportAction"
 			method="addReportFolder">
 		</action>
+		<action name="addReportFolderPermission" class="com.facilio.bmsconsole.actions.V2ReportAction"
+			method="addReportFolderPermission">
+		</action>
 		<action name="fetchReportWithData" class="com.facilio.bmsconsole.actions.V2ReportAction"
 			method="fetchReportWithData">
 		</action>
@@ -1232,7 +1243,7 @@
 		<action name="update"
 			class="com.facilio.bmsconsole.actions.StoreRoomAction" method="updateStoreRoom">
 			<param name="moduleName">inventory</param>
-			<param name="permission">UPDATE</param>
+			<param name="permission">UPDATE,UPDATE_OWN</param>
 		</action>
 		<action name="*"
 			class="com.facilio.bmsconsole.actions.StoreRoomAction" method="storeRoomDetails">
@@ -1322,7 +1333,7 @@
 		<action name="update"
 			class="com.facilio.bmsconsole.actions.VendorAction" method="updateVendor">
 			<param name="moduleName">inventory</param>
-			<param name="permission">UPDATE</param>
+			<param name="permission">UPDATE,UPDATE_OWN</param>
 		</action> 
 		<action name="*"
 			class="com.facilio.bmsconsole.actions.VendorAction" method="vendorDetails">
@@ -1361,7 +1372,7 @@
 		<action name="update"
 			class="com.facilio.bmsconsole.actions.ItemAction" method="updateItem">
 			<param name="moduleName">inventory</param>
-			<param name="permission">UPDATE</param>
+			<param name="permission">UPDATE,UPDATE_OWN</param>
 		</action> 
 		<action name="*"
 			class="com.facilio.bmsconsole.actions.ItemAction" method="itemDetails">
@@ -1390,7 +1401,7 @@
 		<action name="update"
 			class="com.facilio.bmsconsole.actions.PurchasedItemAction" method="addPurchasedItem">
 			<param name="moduleName">inventory</param>
-			<param name="permission">UPDATE</param>
+			<param name="permission">UPDATE,UPDATE_OWN</param>
 		</action> 
 		<action name="*"
 			class="com.facilio.bmsconsole.actions.PurchasedItemAction" method="purchasedItemDetails">
@@ -1411,7 +1422,7 @@
 		<action name="count" class="com.facilio.bmsconsole.actions.PurchasedItemAction"
 			method="purchasedItemCount">
 			<param name="moduleName">inventory</param>
-			<param name="permission">READ</param>
+			<param name="permission">READ,READ_OWN</param>
 		</action>
 	</package>
 	
@@ -1478,7 +1489,7 @@
 		<action name="update"
 			class="com.facilio.bmsconsole.actions.ToolAction" method="updateTool">
 			<param name="moduleName">inventory</param>
-			<param name="permission">UPDATE</param>
+			<param name="permission">UPDATE,UPDATE_OWN</param>
 		</action> 
 		<action name="*"
 			class="com.facilio.bmsconsole.actions.ToolAction" method="toolDetails">
@@ -1546,19 +1557,13 @@
 		extends="v2Api">
 		<action name="delete"
 			class="com.facilio.bmsconsole.actions.ItemTypesVendorActions" method="deleteItemVendors">
-			<param name="moduleName">asset</param>
-			<param name="permission">CREATE</param>
 		</action>
 		
 		<action name="update"
 			class="com.facilio.bmsconsole.actions.ItemTypesVendorActions" method="udpateItemVendors">
-			<param name="moduleName">asset</param>
-			<param name="permission">CREATE</param>
 		</action>
 		<action name="add"
 			class="com.facilio.bmsconsole.actions.ItemTypesVendorActions" method="addItemVendors">
-			<param name="moduleName">asset</param>
-			<param name="permission">CREATE</param>
 		</action>
 	</package>
 	
@@ -1566,8 +1571,6 @@
 		extends="v2Api">
 		<action name="*"
 			class="com.facilio.bmsconsole.actions.ItemTypesVendorActions" method="itemVendorsList">
-			<param name="moduleName">asset</param>
-			<param name="permission">READ</param>
 			<param name = "itemTypesId">{1}</param>
 		</action>
 	</package>
@@ -1576,8 +1579,6 @@
 		extends="v2Api">
 		<action name="*"
 			class="com.facilio.bmsconsole.actions.ItemTypesVendorActions" method="itemTypesForVendorsList">
-			<param name="moduleName">asset</param>
-			<param name="permission">READ</param>
 			<param name = "vendorsId">{1}</param>
 		</action>
 	</package>
@@ -1632,7 +1633,7 @@
 		<action name="update"
 			class="com.facilio.bmsconsole.actions.PurchasedToolAction" method="addPurchasedTool">
 			<param name="moduleName">inventory</param>
-			<param name="permission">UPDATE</param>
+			<param name="permission">UPDATE,UPDATE_OWN</param>
 		</action> 
 		<action name="*"
 			class="com.facilio.bmsconsole.actions.PurchasedToolAction" method="purchasedItemDetails">
@@ -1682,7 +1683,7 @@
 		<action name="addOrUpdate"
 			class="com.facilio.bmsconsole.actions.ToolTransactionsAction" method="addOrUpdateToolTransactions">
 			<param name="moduleName">inventory</param>
-			<param name="permission">UPDATE</param>
+			<param name="permission">UPDATE,UPDATE_OWN</param>
 		</action>
 		
 		<action name="delete"
@@ -2068,6 +2069,12 @@
 	
 	<package name="moduleApiV2" namespace="/api/v2/modules/fields" extends="v2Api">
 		<action name="add" class="com.facilio.bmsconsole.actions.ModuleAction" method="v2addCustomFields">
+		</action>
+	</package>
+	
+	<package name="basespaceApiV2" namespace="/api/v2/basespaces/children" extends="v2Api">
+		<action name="*" class="com.facilio.bmsconsole.actions.BaseSpaceAction" method="basespaceWithChildren">
+			<param name = "spaceId">{1}</param>
 		</action>
 	</package>
 

@@ -1324,6 +1324,14 @@ public class ModuleFactory {
 		viewSharing.setTableName("View_Sharing");
 		return viewSharing;
 	}
+	
+	public static FacilioModule getReportSharingModule() {
+		FacilioModule viewSharing = new FacilioModule();
+		viewSharing.setName("reportSharing");
+		viewSharing.setDisplayName("Report Sharing");
+		viewSharing.setTableName("Report_Folder_Sharing");
+		return viewSharing;
+	}
 
 	public static FacilioModule getWidgetVsWorkflowModule() {
 		FacilioModule dashboardSharing = new FacilioModule();
@@ -2012,11 +2020,11 @@ public class ModuleFactory {
 		return gatePass;
 	}
 
-	public static FacilioModule getStateRuleTransistionModule() {
+	public static FacilioModule getStateRuleTransitionModule() {
 		FacilioModule module = new FacilioModule();
-		module.setName("stateruleTransistionWorkflow");
-		module.setDisplayName("State Rule Transistion Workflow");
-		module.setTableName("StateFlowTransistion");
+		module.setName("stateruleTransitionWorkflow");
+		module.setDisplayName("State Rule Transition Workflow");
+		module.setTableName("StateFlowTransition");
 		module.setExtendModule(getWorkflowRuleModule());
 		return module;
 	}
