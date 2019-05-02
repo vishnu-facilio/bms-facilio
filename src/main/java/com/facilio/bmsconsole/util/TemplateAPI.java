@@ -712,18 +712,18 @@ public class TemplateAPI {
 		List<TaskSectionTemplate> templates = woTemplate.getSectionTemplates();
 		//FIXME this is temporary need to fix this by adding sequence number for task sections
 		if (templates != null) {
-			Collections.sort(templates, Comparator.comparing(i -> {
-					if (woTemplate.getTasks() == null || woTemplate.getTasks().isEmpty()) {
-						return -1;
-					}
-
-					if (woTemplate.getTasks().get(i.getName()) == null || woTemplate.getTasks().get(i.getName()).isEmpty()) {
-						return -1;
-					}
-
-					return woTemplate.getTasks().get(i.getName()).get(0).getSequence();
-				})
-			);
+//			Collections.sort(templates, Comparator.comparing(i -> {
+//					if (woTemplate.getTasks() == null || woTemplate.getTasks().isEmpty()) {
+//						return -1;
+//					}
+//
+//					if (woTemplate.getTasks().get(i.getName()) == null || woTemplate.getTasks().get(i.getName()).isEmpty()) {
+//						return -1;
+//					}
+//
+//					return woTemplate.getTasks().get(i.getName()).get(0).getSequence();
+//				})
+//			);
 		}
 		return woTemplate;
 	}
@@ -838,13 +838,13 @@ public class TemplateAPI {
 			}
 			Set<Entry<String, List<TaskContext>>> entries = orderedTasks.entrySet();
 			List<Entry<String, List<TaskContext>>> entryList = new ArrayList<>(entries);
-			Collections.sort(entryList, Comparator.comparing(e -> {
-					if (e.getValue() == null || e.getValue().isEmpty()) {
-						return -1;
-					}
-					return e.getValue().get(0).getSequence();
-				})
-			);
+//			Collections.sort(entryList, Comparator.comparing(e -> {
+//					if (e.getValue() == null || e.getValue().isEmpty()) {
+//						return -1;
+//					}
+//					return e.getValue().get(0).getSequence();
+//				})
+//			);
 
 			Map<String, List<TaskContext>> orderedTaskMap = new LinkedHashMap<>(entryList.size());
 			entryList.forEach(i -> orderedTaskMap.put(i.getKey(), i.getValue()));

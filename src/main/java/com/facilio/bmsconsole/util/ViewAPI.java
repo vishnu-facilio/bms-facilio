@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.util;
 import com.facilio.accounts.dto.Group;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.PurchasedToolContext;
 import com.facilio.bmsconsole.context.ViewField;
 import com.facilio.bmsconsole.context.ViewSharingContext;
 import com.facilio.bmsconsole.context.ViewSharingContext.SharingType;
@@ -576,5 +577,22 @@ public class ViewAPI {
 				viewField.setParentField(modBean.getField(viewField.getParentFieldId()));
 			}
 		}
+	}
+	public static List<ViewSharingContext> getViewSharingDetail(long viewId) throws Exception {
+		FacilioModule module = ModuleFactory.getViewSharingModule();
+		List<FacilioField> fields =  FieldFactory.getViewSharingFields();
+		GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
+				 .select(fields)
+				 .table(module.getTableName())
+				 .andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+				 .andCondition(CriteriaAPI.getCondition("VIEWID", "viewId", String.valueOf(viewId), NumberOperators.EQUALS));
+		List<Map<String, Object>>  prop = selectRecordBuilder.get();
+		List<ViewSharingContext> viewSharingProps = new ArrayList<>();
+		for(Map<String, Object> pro : prop) {
+		ViewSharingContext viewSharing = FieldUtil.getAsBeanFromMap(pro, ViewSharingContext.class);
+		viewSharingProps.add(viewSharing);
+		}
+		return viewSharingProps;
+		
 	}
 }

@@ -117,6 +117,7 @@ public class LoadViewCommand implements Command {
 				}
 				
 				context.put(FacilioConstants.ContextNames.CUSTOM_VIEW, view);
+				view.setSharingType(ViewAPI.getViewSharingDetail(view.getId()));
 			}
 		}
 		long timeTaken = System.currentTimeMillis() - startTime;
@@ -240,7 +241,7 @@ public class LoadViewCommand implements Command {
 			fieldNames = new HashMap<> ();
 			for(FacilioField field : fields) {
 				if(field.getName().equals("tenant")) {
-					if(!AccountUtil.isFeatureEnabled(AccountUtil.FEATURE_TENANTS)) {
+					if(!AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.TENANTS)) {
 						continue;
 					}
 				}

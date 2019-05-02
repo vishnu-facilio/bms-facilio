@@ -145,6 +145,9 @@ public class FacilioConstants {
 	}
 	
 	public static class ContextNames {
+
+		public static final String CONNECTION = "connectionContext";
+
 		public static final String FACILIO_RECORD = "facilioRecord";
 		public static final String FACILIO_CONSUMER = "facilioConsumer";
 		public static final String FACILIO_PRODUCER = "facilioProducer";
@@ -959,6 +962,7 @@ public class FacilioConstants {
 
 		public static final String PO_LINE_ITEMS_SERIAL_NUMBERS = "poLineItemSerialNumbers";
 		public static final String SERIAL_NUMBERS = "serialNumbers";
+		public static final String ASSETS = "assets";
 		
 		public static final String TOTAL_COST = "totalCost";
 		public static final String TOTAL_QUANTITY = "totalQuantity";
@@ -970,6 +974,26 @@ public class FacilioConstants {
 		
 		public static final String CONNECTED_APPS = "connectedApps";
 
+		public static final String STATE_FLOW = "stateFlow";
+		public static final String STATE_FLOW_LIST = "stateFlows";
+		public static final String STATE_FLOW_ID = "stateFlowId";
+		public static final String TRANSITION_ID = "transition_id";
+		public static final String STATE_TRANSITION_LIST = "stateTransitionList";
+		public static final String AVAILABLE_STATES = "states";
+		public static final String CURRENT_STATE = "currentState";
+		public static final String DEFAULT_STATE = "default_state";
+		public static final String DEFAULT_STATE_ID = "default_state_id";
+		public static final String DEFAULT_STATE_FLOW_ID = "default_state_flow_id";
+		public static final String TRANSITION = "transition";
+		public static final String STATE_TRANSITION_ONLY_CONDITIONED_CHECK = "stateTransitionOnlyConditionedCheck";
+
+		public static final String ROTATING_ASSET = "rotatingAsset";
+		
+		public static final String WO_ITEMS_LIST = "woItemsList";
+		public static final String WO_TOOLS_LIST = "woToolsList";
+		public static final String WO_LABOUR_LIST = "woLabourList";
+
+		public static final String UNIT_POINTS="unit";
 		private static Map<String, Class> classMap = Collections.unmodifiableMap(initClassMap());
 		private static Map<String, Class> initClassMap() {
 			Map<String, Class> classMap = new HashMap<>();

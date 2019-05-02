@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.actions;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -31,6 +32,9 @@ import com.facilio.bmsconsole.context.MLAlarmContext;
 import com.facilio.bmsconsole.context.ReadingAlarmContext;
 import com.facilio.bmsconsole.context.ReportInfo;
 import com.facilio.bmsconsole.context.ResourceContext;
+import com.facilio.bmsconsole.context.SharingContext;
+import com.facilio.bmsconsole.context.SingleSharingContext;
+import com.facilio.bmsconsole.context.ViewSharingContext;
 import com.facilio.bmsconsole.context.WidgetChartContext;
 import com.facilio.bmsconsole.context.WidgetStaticContext;
 import com.facilio.bmsconsole.criteria.Condition;
@@ -42,6 +46,7 @@ import com.facilio.bmsconsole.modules.AggregateOperator;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldUtil;
+import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.templates.EMailTemplate;
 import com.facilio.bmsconsole.util.AlarmAPI;
 import com.facilio.bmsconsole.util.DashboardUtil;
@@ -50,6 +55,7 @@ import com.facilio.bmsconsole.util.FacilioFrequency;
 import com.facilio.bmsconsole.util.FormulaFieldAPI;
 import com.facilio.bmsconsole.util.ReadingRuleAPI;
 import com.facilio.bmsconsole.util.ResourceAPI;
+import com.facilio.bmsconsole.util.SharingAPI;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.rule.AlarmRuleContext;
 import com.facilio.bmsconsole.workflow.rule.EventType;
@@ -214,16 +220,27 @@ public class V2ReportAction extends FacilioAction {
 	}
 	
 	public String addReportFolder() throws Exception {
-		
+		FacilioContext context = new FacilioContext();
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(moduleName);
-		
 		reportFolder.setOrgId(AccountUtil.getCurrentOrg().getId());
 		reportFolder.setModuleId(module.getModuleId());
 		
 		reportFolder = ReportUtil.addReportFolder(reportFolder);
 		setResult("reportFolder", reportFolder);
 		return SUCCESS;
+	}
+	
+	public String addReportFolderPermission() throws Exception {
+	if (folderId > 0) {	
+		if (!reportFolder.getIds().isEmpty() && reportFolder.getIds() != null) {
+	SharingAPI.deleteSharing(reportFolder.getIds(), ModuleFactory.getReportSharingModule());
+		}
+	SharingAPI.addSharing((SharingContext<SingleSharingContext>) reportFolder.getReportSharing(), folderId, ModuleFactory.getReportSharingModule());
+	}
+	return SUCCESS;
+
+		
 	}
 	
 	public String updateReportFolder() throws Exception {
@@ -405,9 +422,13 @@ public class V2ReportAction extends FacilioAction {
 			reportaxisContext.setFieldId((Long)params.get("fieldId"));
 			reportaxisContext.setAggr(Integer.parseInt(params.get("aggregateFunc").toString()));
 			
+			Map<String, String> aliases = new HashMap<>();
+			aliases.put("actual", "A");
+			
 			ReadingAnalysisContext readingAnalysisContext = new ReadingAnalysisContext();
 			readingAnalysisContext.setParentId(Collections.singletonList((Long)params.get("parentId")));
 			readingAnalysisContext.setType(1);
+			readingAnalysisContext.setAliases(aliases);
 			readingAnalysisContext.setyAxis(reportaxisContext);
 			
 			metrics.add(readingAnalysisContext);
@@ -418,7 +439,9 @@ public class V2ReportAction extends FacilioAction {
 			context.put(FacilioConstants.ContextNames.REPORT_Y_FIELDS, metrics);
 			context.put(FacilioConstants.ContextNames.REPORT_MODE, mode);
 			context.put(FacilioConstants.ContextNames.REPORT_CALLING_FROM, "card");
+			context.put(FacilioConstants.ContextNames.REPORT_HANDLE_BOOLEAN, newFormat);
 			
+			newFormat = true;
 			Chain fetchReadingDataChain = newFormat ? ReadOnlyChainFactory.newFetchReadingReportChain() : ReadOnlyChainFactory.fetchReadingReportChain();
 			fetchReadingDataChain.execute(context);
 			
@@ -1010,6 +1033,114 @@ public class V2ReportAction extends FacilioAction {
 				
 				yAxisJson = new JSONObject();
 				yAxisJson.put("fieldId", 517774l);
+				yAxisJson.put("aggr", 0);
+				
+				dataPoint.put("yAxis", yAxisJson);
+				
+				dataPoint.put("type", 1);
+				
+				dataPoints.add(dataPoint);
+				
+			}
+			
+			if(readingruleContext.getId() == 8165l) {
+				
+				dataPoint = new JSONObject();
+				
+				dataPoint.put("parentId", FacilioUtil.getSingleTonJsonArray(resource.getId()));
+				
+				yAxisJson = new JSONObject();
+				yAxisJson.put("fieldId", 253677l);
+				yAxisJson.put("aggr", 0);
+				
+				dataPoint.put("yAxis", yAxisJson);
+				
+				dataPoint.put("type", 1);
+				
+				dataPoints.add(dataPoint);
+				
+			}
+			
+			if(readingruleContext.getId() == 8749l) {
+				
+				dataPoint = new JSONObject();
+				
+				dataPoint.put("parentId", FacilioUtil.getSingleTonJsonArray(resource.getId()));
+				
+				yAxisJson = new JSONObject();
+				yAxisJson.put("fieldId", 253686l);
+				yAxisJson.put("aggr", 0);
+				
+				dataPoint.put("yAxis", yAxisJson);
+				
+				dataPoint.put("type", 1);
+				
+				dataPoints.add(dataPoint);
+				
+			}
+			
+			if(readingruleContext.getId() == 8756l) {
+				
+				dataPoint = new JSONObject();
+				
+				dataPoint.put("parentId", FacilioUtil.getSingleTonJsonArray(resource.getId()));
+				
+				yAxisJson = new JSONObject();
+				yAxisJson.put("fieldId", 253612l);
+				yAxisJson.put("aggr", 0);
+				
+				dataPoint.put("yAxis", yAxisJson);
+				
+				dataPoint.put("type", 1);
+				
+				dataPoints.add(dataPoint);
+				
+			}
+			
+			if(readingruleContext.getId() == 8761l) {
+				
+				dataPoint = new JSONObject();
+				
+				dataPoint.put("parentId", FacilioUtil.getSingleTonJsonArray(resource.getId()));
+				
+				yAxisJson = new JSONObject();
+				yAxisJson.put("fieldId", 253725l);
+				yAxisJson.put("aggr", 0);
+				
+				dataPoint.put("yAxis", yAxisJson);
+				
+				dataPoint.put("type", 1);
+				
+				dataPoints.add(dataPoint);
+				
+			}
+			
+			if(readingruleContext.getId() == 8766l) {
+				
+				dataPoint = new JSONObject();
+				
+				dataPoint.put("parentId", FacilioUtil.getSingleTonJsonArray(resource.getId()));
+				
+				yAxisJson = new JSONObject();
+				yAxisJson.put("fieldId", 351301l);
+				yAxisJson.put("aggr", 0);
+				
+				dataPoint.put("yAxis", yAxisJson);
+				
+				dataPoint.put("type", 1);
+				
+				dataPoints.add(dataPoint);
+				
+			}
+			
+			if(readingruleContext.getId() == 8771l) {
+				
+				dataPoint = new JSONObject();
+				
+				dataPoint.put("parentId", FacilioUtil.getSingleTonJsonArray(resource.getId()));
+				
+				yAxisJson = new JSONObject();
+				yAxisJson.put("fieldId", 253738l);
 				yAxisJson.put("aggr", 0);
 				
 				dataPoint.put("yAxis", yAxisJson);

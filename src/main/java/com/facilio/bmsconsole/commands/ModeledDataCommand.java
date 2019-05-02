@@ -37,14 +37,18 @@ public class ModeledDataCommand implements Command {
 		
 		Map<String,List<ReadingContext>> moduleVsReading = new HashMap<String,List<ReadingContext>> ();
 		Map<String,ReadingContext> iModuleVsReading = new HashMap<String,ReadingContext> ();
-		Long controllerId=(Long) context.get(FacilioConstants.ContextNames.CONTROLLER_ID);
+		Long controllerId= (Long) context.get(FacilioConstants.ContextNames.CONTROLLER_ID);
 		List<Map<String,Object>> dataPointsValue=(List<Map<String, Object>>) context.get("DATA_POINTS");
-
+		if(TimeSeriesAPI.isStage()) {
+			LOGGER.debug(dataPointsValue+"Points data incomming");
+		}
 		List<Map<String, Object>> insertNewPointsData= new ArrayList< >();
 		Map<String,Object>  dataPoints= null;
 		long orgId = AccountUtil.getCurrentOrg().getOrgId();
-		LOGGER.debug("Inside ModeledDataCommand####### deviceData: "+deviceData);
+	
 		if(TimeSeriesAPI.isStage()) {
+			LOGGER.debug("Inside ModeledDataCommand####### deviceData: "+deviceData);
+
 			for(Map.Entry<String, Map<String,String>> data:deviceData.entrySet()) {
 
 				String deviceName=data.getKey();
@@ -57,15 +61,13 @@ public class ModeledDataCommand implements Command {
 						continue;
 					}
 						dataPoints=  getValueContainsPointsData( deviceName,  instanceName, controllerId , dataPointsValue);
-					if(dataPoints==null) {
+						if(dataPoints==null) {
 
-						//why few fields...????
 						Map<String, Object> value=new HashMap<String,Object>();
 						value.put("orgId", orgId);
 						value.put("device",deviceName);
 						value.put("instance", instanceName);
 						value.put("createdTime", System.currentTimeMillis());
-						//value.put("objectInstanceNumber", );
 						if(controllerId!=null) {
 							//this will ensure the new inserts after addition of controller gets proper controller id
 							value.put("controllerId", controllerId);
@@ -80,25 +82,25 @@ public class ModeledDataCommand implements Command {
 							ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 							FacilioField field =bean.getField(fieldId);
 							FieldType type = field.getDataTypeEnum();
-				//			String moduleName=field.getModule().getName();
+							String moduleName=field.getModule().getName();
 							if(instanceVal!=null && (instanceVal.equalsIgnoreCase("NaN")||
 									(type.equals(FieldType.DECIMAL) && instanceVal.equalsIgnoreCase("infinity")))) {
 								generateEvent(resourceId,timeStamp,field.getDisplayName());
 								//Generate event with resourceId : assetId & 
 								continue;
 							}
-						/*	String readingKey=moduleName+"|"+assetId;
+							String readingKey=moduleName+"|"+resourceId;
 							ReadingContext reading=iModuleVsReading.get(readingKey);
 							if(reading == null) {
 								reading = new ReadingContext();
 								iModuleVsReading.put(readingKey, reading);
 							}
 							reading.addReading(field.getName(), instanceVal);
-							reading.setParentId(assetId);
-							reading.setTtime(timeStamp);*/
+							reading.setParentId(resourceId);
+							reading.setTtime(timeStamp);
 							//removing here to avoid going into unmodeled instance..
 							// remove deviceData is important 
-							// instanceList.remove();
+							instanceList.remove();
 							dataPointsValue.remove(dataPoints);
 							//construct the reading to add in their respective module..????
 						}
@@ -107,12 +109,14 @@ public class ModeledDataCommand implements Command {
 				}
 			}	
 			if(!insertNewPointsData.isEmpty()) {
-				TimeSeriesAPI.insertPoints(insertNewPointsData);
+					TimeSeriesAPI.insertPoints(insertNewPointsData);
+				
 				dataPointsValue.addAll(insertNewPointsData);
 			}
 		}
 
 		//oldPublish data
+		if(!TimeSeriesAPI.isStage()) {
 		for(Map.Entry<String, Map<String,String>> data:deviceData.entrySet()) {
 			
 			
@@ -152,12 +156,14 @@ public class ModeledDataCommand implements Command {
 					reading.addReading(field.getName(), instanceVal);
 					reading.setParentId(assetId);
 					reading.setTtime(timeStamp);
+					
 					//removing here to avoid going into unmodeled instance..
 					instanceList.remove();
 				}
 			}
 			
 			
+		}
 		}
 		for(Map.Entry<String, ReadingContext> iMap:iModuleVsReading.entrySet()) { //send the data to their's module eg.Energy_Meter...
 			String key=iMap.getKey();
@@ -188,13 +194,14 @@ public class ModeledDataCommand implements Command {
 			Long mControllerId=(Long)map.get("controllerId");
 			
 			if(deviceName.equals(mDeviceName) && instanceName.equals(mInstanceName)) {
-
-				if(controllerId==null || controllerId.equals(mControllerId)) {
+				
+				if(controllerId==null || controllerId.equals(mControllerId) ) {
 					// if controller is null.. then return map..
 					// if not null.. then it should be equal to return map..
 					return map;
 				}
 			}
+
 		}
 		return null;
 	}

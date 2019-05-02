@@ -13,11 +13,13 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.apache.log4j.Priority;
 import org.json.simple.JSONObject;
 
 import com.amazonaws.services.kinesis.clientlibrary.interfaces.IRecordProcessorCheckpointer;
 import com.amazonaws.services.kinesis.model.Record;
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.accounts.util.AccountUtil.FeatureLicense;
 import com.facilio.agent.AgentKeys;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
@@ -241,8 +243,7 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 						if(sectiontemplate.getAssignmentType() < 0) {
 							isNewPmType =  false;
 							break;
-						}
-						else {
+						} else {
 							isNewPmType = true; 
 						}
 					}
@@ -260,6 +261,8 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 						}
 						taskMapForNewPmExecution = PreventiveMaintenanceAPI.getTaskMapForNewPMExecution(workorderTemplate.getSectionTemplates(), woTemplateResourceId, currentTriggerId);
 					}
+				} else {
+					taskMapForNewPmExecution = workorderTemplate.getTasks();
 				}
 				if(taskMapForNewPmExecution != null) {
 					taskMap = taskMapForNewPmExecution;
@@ -614,7 +617,7 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 	}
 
 	@Override
-	public Boolean isFeatureEnabled(int license) throws Exception {
+	public Boolean isFeatureEnabled(FeatureLicense license) throws Exception {
 		return AccountUtil.isFeatureEnabled(license);
 	}
 

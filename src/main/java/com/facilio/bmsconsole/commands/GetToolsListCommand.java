@@ -29,8 +29,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class GetToolsListCommand implements Command{
+public class GetToolsListCommand implements Command {
 	private static Logger log = LogManager.getLogger(GetToolsListCommand.class.getName());
+
 	@Override
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
@@ -60,24 +61,24 @@ public class GetToolsListCommand implements Command{
 				.on(ModuleFactory.getStoreRoomModule().getTableName() + ".ID = "
 						+ ModuleFactory.getToolModule().getTableName() + ".STORE_ROOM_ID");
 		if (accessibleSpaces != null && !accessibleSpaces.isEmpty()) {
-			builder.andCustomWhere("Store_room.ID IN (Select STORE_ROOM_ID from Storeroom_Sites where SITE_ID IN ( ? ))",
-					StringUtils.join(accessibleSpaces, ", "));
+			builder.andCustomWhere("Store_room.SITE_ID IN ( ? )", StringUtils.join(accessibleSpaces, ", "));
 		}
-		
+
 		if (getCount) {
 			builder.setAggregation();
 		}
-		
-		Criteria permissionCriteria = AccountUtil.getCurrentUser().getRole().permissionCriteria("inventory","read");
-		if(permissionCriteria != null) {
+
+		Criteria permissionCriteria = AccountUtil.getCurrentUser().getRole().permissionCriteria("inventory", "read");
+		if (permissionCriteria != null) {
 			builder.andCriteria(permissionCriteria);
 		}
-		
+
 		String orderBy = (String) context.get(FacilioConstants.ContextNames.SORTING_QUERY);
 		if (orderBy != null && !orderBy.isEmpty()) {
-//			if(orderBy.contains("LAST_PURCHASED_DATE")) {
-//				orderBy = "Tool.LAST_PURCHASED_DATE" + orderBy.substring(0, orderBy.indexOf(" ")); 
-//			}
+			// if(orderBy.contains("LAST_PURCHASED_DATE")) {
+			// orderBy = "Tool.LAST_PURCHASED_DATE" + orderBy.substring(0,
+			// orderBy.indexOf(" "));
+			// }
 			builder.orderBy(orderBy);
 		}
 
@@ -133,7 +134,7 @@ public class GetToolsListCommand implements Command{
 		long getTimeTaken = System.currentTimeMillis() - getStartTime;
 
 		if (records != null && !records.isEmpty()) {
-			if(AccountUtil.getCurrentOrg().getOrgId() == 75) {
+			if (AccountUtil.getCurrentOrg().getOrgId() == 75) {
 				log.info("records" + records);
 				log.info("filterCriteria" + filterCriteria);
 				log.info("filters" + filters);
@@ -147,10 +148,10 @@ public class GetToolsListCommand implements Command{
 						ToolTypesContext tool = ToolsApi.getToolTypes(stockedTools.getToolType().getId());
 						stockedTools.setToolType(tool);
 					}
-					
+
 					if (stockedTools.getStoreRoom().getId() != -1) {
-						Map<Long, StoreRoomContext> storeroomMap = StoreroomApi.getStoreRoomMap
-								((stockedTools.getStoreRoom().getId()));
+						Map<Long, StoreRoomContext> storeroomMap = StoreroomApi
+								.getStoreRoomMap((stockedTools.getStoreRoom().getId()));
 						stockedTools.setStoreRoom(storeroomMap.get(stockedTools.getStoreRoom().getId()));
 					}
 				}

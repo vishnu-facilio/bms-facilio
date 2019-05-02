@@ -197,6 +197,11 @@ public class PickListAction extends FacilioAction {
 	}
 	
 	public String addAssetCategory() throws Exception {
+		if(assetCategory.getName() == null || assetCategory.getName().isEmpty()) {
+			if(assetCategory.getDisplayName() != null && !assetCategory.getDisplayName().isEmpty()) {
+				assetCategory.setName(assetCategory.getDisplayName().toLowerCase().replaceAll("[^a-zA-Z0-9]+",""));
+			}
+		}
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD, getAssetCategory());
 		Chain addAssetCategoryChain = FacilioChainFactory.getAddAssetCategoryChain();

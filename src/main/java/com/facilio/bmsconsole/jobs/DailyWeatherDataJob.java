@@ -1,5 +1,11 @@
 package com.facilio.bmsconsole.jobs;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.ReadingContext;
@@ -11,12 +17,6 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.tasker.job.FacilioJob;
 import com.facilio.tasker.job.JobContext;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 public class DailyWeatherDataJob extends FacilioJob {
 	private static final Logger logger = Logger.getLogger(DailyWeatherDataJob.class.getName());
 	
@@ -26,7 +26,7 @@ public class DailyWeatherDataJob extends FacilioJob {
 	public void execute(JobContext jc) {
 		try {
 		
-			if (!AccountUtil.isFeatureEnabled(AccountUtil.FEATURE_WEATHER_INTEGRATION))
+			if (!AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.WEATHER_INTEGRATION))
 			{
 				return;
 			}

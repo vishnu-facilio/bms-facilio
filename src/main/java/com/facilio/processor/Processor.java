@@ -5,10 +5,7 @@ import com.amazonaws.services.kinesis.clientlibrary.types.InitializationInput;
 import com.amazonaws.services.kinesis.clientlibrary.types.ProcessRecordsInput;
 import com.amazonaws.services.kinesis.clientlibrary.types.ShutdownInput;
 import com.amazonaws.services.kinesis.model.Record;
-import com.facilio.agent.AgentKeys;
-import com.facilio.agent.AgentUtil;
-import com.facilio.agent.FacilioAgent;
-import com.facilio.agent.PublishType;
+import com.facilio.agent.*;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleCRUDBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
@@ -189,15 +186,28 @@ public class Processor implements IRecordProcessor {
                                 i =  agentUtil.processAgent( payLoad,agentName);
                                 if(isStage && (payLoad.containsKey(AgentKeys.COMMAND_STATUS) || payLoad.containsKey(AgentKeys.CONTENT))){
                                     LOGGER.info(" Payload -- "+payLoad);
+                                    Integer connectionCount = -1;
                                     if( payLoad.containsKey(AgentKeys.COMMAND_STATUS)){
                                         if((payLoad.remove(AgentKeys.COMMAND_STATUS)).toString().equals("1")){
-                                            payLoad.put(AgentKeys.CONTENT,"Agent connected to Facilio");
+                                            if(payLoad.containsKey(AgentKeys.CONNECTION_COUNT)) {
+                                                connectionCount = Integer.parseInt(payLoad.get(AgentKeys.CONNECTION_COUNT).toString());
+                                            }
                                         }
                                         else{
-                                            payLoad.put(AgentKeys.CONTENT,"Agent disconnected to Facilio");
+                                            payLoad.put(AgentKeys.CONTENT,AgentContent.DISCONNECTED.getKey());
                                         }
                                     }
+                                    if (connectionCount == 0) {
+                                        payLoad.put(AgentKeys.CONTENT, AgentContent.RESTARTED.getKey());
+                                        agentUtil.putLog(payLoad,orgId, agent.getId(),false);
+                                        payLoad.put(AgentKeys.CONTENT, AgentContent.CONNECTED.getKey());
+                                    } else if (connectionCount == -1) {
+                                        payLoad.put(AgentKeys.CONTENT,AgentContent.CONNECTED.getKey());
+                                    } else {
+                                        payLoad.put(AgentKeys.CONTENT, AgentContent.CONNECTED.getKey() + connectionCount);
+                                    }
                                     agentUtil.putLog(payLoad,orgId,agent.getId(),false);
+
                                 }
                                 break;
                             case devicepoints:

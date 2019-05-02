@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.LogManager;
@@ -26,7 +27,6 @@ import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.commands.GenericUpdateModuleDataCommand;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.commands.UpdateStateCommand;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
@@ -76,20 +76,6 @@ import com.facilio.timeseries.TimeSeriesAPI;
 import com.facilio.util.FacilioUtil;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
-import org.apache.commons.beanutils.BeanUtils;
-import org.apache.commons.chain.Chain;
-import org.apache.commons.chain.Context;
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.Pair;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-
-import java.time.Instant;
-import java.util.*;
-import java.util.stream.Collectors;
 
 public enum ActionType {
 
@@ -468,7 +454,7 @@ public enum ActionType {
 					}
 					
 					pmContext.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE, pm);
-					if (AccountUtil.isFeatureEnabled(AccountUtil.FEATURE_SCHEDULED_WO)) {
+					if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.SCHEDULED_WO)) {
 						Chain executePm = TransactionChainFactory.getNewExecutePreventiveMaintenanceChain();
 						executePm.execute(pmContext);
 					} else {
@@ -550,7 +536,7 @@ public enum ActionType {
 				Object currentRecord) {
 
 //			long duedate = -1;
-			WorkOrderContext workOrder = (WorkOrderContext) context.get(FacilioConstants.ContextNames.WORK_ORDER);
+			WorkOrderContext workOrder = (WorkOrderContext) currentRecord;
 			if (workOrder.getPriority() == null) {
 				return;
 			}
@@ -939,7 +925,6 @@ public enum ActionType {
 		@Override
 		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,
 				Object currentRecord) throws Exception {
-			System.out.println(obj);
 			ModuleBaseWithCustomFields moduleData = ((ModuleBaseWithCustomFields) currentRecord);
 			TicketStatusContext state = moduleData.getModuleState();
 			long oldStateId = -1;
@@ -957,11 +942,10 @@ public enum ActionType {
 				FacilioContext c = new FacilioContext();
 				c.put(FacilioConstants.ContextNames.RECORD, currentRecord);
 				c.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
-				c.put("transistion_id", availableState.get(0).getId());
+				c.put(FacilioConstants.ContextNames.TRANSITION_ID, availableState.get(0).getId());
 				
 				Chain chain = FacilioChain.getTransactionChain();
 				chain.addCommand(new UpdateStateCommand());
-//				chain.addCommand(new GenericUpdateModuleDataCommand());
 				chain.execute(c);
 			}
 		}

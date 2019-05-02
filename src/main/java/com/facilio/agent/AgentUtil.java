@@ -83,11 +83,11 @@ public  class AgentUtil
         if(payload.containsKey(AgentKeys.SITE_ID)){
             agent.setSiteId(Long.parseLong(payload.get(AgentKeys.SITE_ID).toString()));
         }
-        if(payload.containsKey(AgentKeys.DEVICE_DETAILS)) {
-            agent.setAgentDeviceDetails(payload.get(AgentKeys.DEVICE_DETAILS).toString());
+        if(payload.containsKey(AgentKeys.VERSION)) {
+            agent.setAgentDeviceDetails(payload.get(AgentKeys.VERSION).toString());
 
-            if(payload.containsKey(AgentKeys.VERSION)) {
-                agent.setAgentVersion(payload.get(AgentKeys.VERSION).toString());
+            if(payload.containsKey(AgentKeys.OS_VERSION)) {
+                agent.setAgentVersion(payload.get(AgentKeys.OS_VERSION).toString());
             }
         } else {
             if (payload.containsKey(AgentKeys.VERSION)) {

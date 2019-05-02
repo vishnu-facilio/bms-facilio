@@ -72,7 +72,9 @@ public class WorkOrderLabourAction extends FacilioAction {
 		Chain addWorkorderPartChain = TransactionChainFactory.getAddOrUdpateWorkorderLabourChain();
 		addWorkorderPartChain.execute(context);
 		setWorkorderLabourIds((List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST));
+		setWorkorderLabourList( (List<WorkOrderLabourContext>)context.get(FacilioConstants.ContextNames.WO_LABOUR_LIST));
 		setResult("workorderLabourIds", workorderLabourIds);
+		setResult("workorderLabourList", workorderLabourList);
 		return SUCCESS;
 	}
 	

@@ -22,10 +22,11 @@ import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.util.StateFlowRulesAPI;
 import com.facilio.bmsconsole.workflow.rule.ApprovalRuleContext.ApprovalOrder;
 import com.facilio.chain.FacilioContext;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericSelectRecordBuilder;
 
-public class StateflowTransistionContext extends WorkflowRuleContext {
+public class StateflowTransitionContext extends WorkflowRuleContext {
 	private static final long serialVersionUID = 1L;
 	
 	private long fromStateId = -1;
@@ -135,14 +136,23 @@ public class StateflowTransistionContext extends WorkflowRuleContext {
 		this.buttonType = buttonType;
 	}
 	
-	private boolean scheduled = false;
-	public boolean isScheduled() {
-		return scheduled;
-	};
-	public void setScheduled(boolean isScheduled) {
-		this.scheduled = isScheduled;
+	private TransitionType type;
+	public int getType() {
+		if (type != null) {
+			return type.getValue();
+		}
+		return -1;
 	}
-	
+	public TransitionType getTypeEnum() {
+		return type;
+	}
+	public void setType(TransitionType type) {
+		this.type = type;
+	}
+	public void setType(int type) {
+		this.type = TransitionType.valueOf(type);
+	}
+
 	private int scheduleTime = -1;
 	public int getScheduleTime() {
 		return scheduleTime;
@@ -156,8 +166,23 @@ public class StateflowTransistionContext extends WorkflowRuleContext {
 			FacilioContext context) throws Exception {
 		boolean result = true;
 		ModuleBaseWithCustomFields moduleRecord = (ModuleBaseWithCustomFields) record;
+		
+		Boolean shouldCheckOnlyConditioned = (Boolean) context.get(FacilioConstants.ContextNames.STATE_TRANSITION_ONLY_CONDITIONED_CHECK);
+		if (shouldCheckOnlyConditioned == null) {
+			shouldCheckOnlyConditioned = false;
+		}
+		
+		if (shouldCheckOnlyConditioned && type != TransitionType.CONDITIONED) {
+			return false;
+		}
+		
+		// this is old records
+		if (moduleRecord.getModuleState() == null || moduleRecord.getStateFlowId() <= 0) {
+			return false;
+		}
 
-		if (moduleRecord.getModuleState() != null && getFromStateId() != moduleRecord.getModuleState().getId()) {
+		if (moduleRecord.getModuleState() != null && moduleRecord.getStateFlowId() > 0 && moduleRecord.getStateFlowId() == getStateFlowId() && 
+				getFromStateId() != moduleRecord.getModuleState().getId()) {
 			return false;
 		}
 		
@@ -206,7 +231,7 @@ public class StateflowTransistionContext extends WorkflowRuleContext {
 			FacilioModule module = modBean.getModule(getModuleId());
 			StateFlowRulesAPI.updateState(moduleRecord, module, StateFlowRulesAPI.getStateContext(getToStateId()), false, context);
 			
-			StateFlowRulesAPI.addScheduledJobIfAny(getToStateId(), module.getName(), moduleRecord, (FacilioContext) context);
+//			StateFlowRulesAPI.addScheduledJobIfAny(getToStateId(), module.getName(), moduleRecord, (FacilioContext) context);
 			
 			super.executeTrueActions(record, context, placeHolders);
 		}
@@ -232,5 +257,23 @@ public class StateflowTransistionContext extends WorkflowRuleContext {
 			return props.stream().map(p -> (Long) p.get("approverGroup")).collect(Collectors.toList());
 		}
 		return null;
+	}
+	
+	public enum TransitionType {
+		NORMAL,
+		SCHEDULED,
+		CONDITIONED,
+		;
+		
+		public int getValue() {
+			return ordinal() + 1;
+		}
+		
+		public static TransitionType valueOf(int value) {
+			if (value > 0 && value <= values().length) {
+				return values()[value - 1];
+			}
+			return null;
+		}
 	}
 }

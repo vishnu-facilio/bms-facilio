@@ -1,6 +1,5 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.Collections;
 import java.util.Map;
 
 import org.apache.commons.chain.Command;
@@ -12,21 +11,19 @@ import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.bmsconsole.util.StateFlowRulesAPI;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
-import com.facilio.bmsconsole.workflow.rule.StateflowTransistionContext;
+import com.facilio.bmsconsole.workflow.rule.StateflowTransitionContext;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 
 public class UpdateStateCommand implements Command {
 
-	boolean stateChanged = false;
-	
 	@Override
 	public boolean execute(Context context) throws Exception {
 		ModuleBaseWithCustomFields moduleData = (ModuleBaseWithCustomFields) context.get(FacilioConstants.ContextNames.RECORD);
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
-		Long currentTransitionId = (Long) context.get("transistion_id");
-		Boolean defaultState = (Boolean) context.get("default_state");
+		Long currentTransitionId = (Long) context.get(FacilioConstants.ContextNames.TRANSITION_ID);
+		Boolean defaultState = (Boolean) context.get(FacilioConstants.ContextNames.DEFAULT_STATE);
 		
 		if (defaultState == null) {
 			defaultState = false;
@@ -34,8 +31,8 @@ public class UpdateStateCommand implements Command {
 		long defaultStateId = -1;
 		long defaultStateFlowId = -1;
 		if (defaultState) {
-			defaultStateId = (long) context.get("default_state_id");
-			defaultStateFlowId = (long) context.get("default_state_flow_id");
+			defaultStateId = (long) context.get(FacilioConstants.ContextNames.DEFAULT_STATE_ID);
+			defaultStateFlowId = (long) context.get(FacilioConstants.ContextNames.DEFAULT_STATE_FLOW_ID);
 		}
 		
 		if (moduleData == null) {
@@ -51,34 +48,24 @@ public class UpdateStateCommand implements Command {
 			TicketStatusContext state = StateFlowRulesAPI.getStateContext(defaultStateId);
 			moduleData.setStateFlowId(defaultStateFlowId);
 			StateFlowRulesAPI.updateState(moduleData, module, state, true, context);
-			StateFlowRulesAPI.addScheduledJobIfAny(defaultStateId, moduleName, moduleData, (FacilioContext) context);
 		} 
 		else {
 			if (currentTransitionId != null && currentTransitionId > 0) {
-				StateflowTransistionContext stateflowTransistion = (StateflowTransistionContext) WorkflowRuleAPI.getWorkflowRule(currentTransitionId, true);
-				boolean shouldChangeState = WorkflowRuleAPI.evaluateWorkflowAndExecuteActions(stateflowTransistion, moduleName, moduleData, StateFlowRulesAPI.getDefaultFieldChangeSet(moduleName, moduleData.getId()), recordPlaceHolders, (FacilioContext) context, false);
+				StateflowTransitionContext stateflowTransition = (StateflowTransitionContext) WorkflowRuleAPI.getWorkflowRule(currentTransitionId, true);
+				boolean shouldChangeState = WorkflowRuleAPI.evaluateWorkflowAndExecuteActions(stateflowTransition, moduleName, moduleData, StateFlowRulesAPI.getDefaultFieldChangeSet(moduleName, moduleData.getId()), recordPlaceHolders, (FacilioContext) context, false);
 				if (shouldChangeState) {
-					TicketStatusContext newState = StateFlowRulesAPI.getStateContext(stateflowTransistion.getToStateId());
+					TicketStatusContext newState = StateFlowRulesAPI.getStateContext(stateflowTransition.getToStateId());
 					if (newState == null) {
 						throw new Exception("Invalid state");
 					}
-					stateChanged = true;
-					stateflowTransistion.executeTrueActions(moduleData, context, recordPlaceHolders);
-				} else {
-					throw new Exception("Cannot update the state");
+					stateflowTransition.executeTrueActions(moduleData, context, recordPlaceHolders);
+				} 
+				else {
+					throw new Exception("Cannot update the state: " + stateflowTransition.getId());
 				}
 			}
 		}
-		
-		if (stateChanged) {
-			context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(moduleData.getId()));
-		}
 		return false;
-	}
-	
-	private void changeState(ModuleBaseWithCustomFields moduleData, TicketStatusContext newState) {
-		moduleData.setModuleState(newState);
-		stateChanged = true;
 	}
 
 }

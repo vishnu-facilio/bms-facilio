@@ -22,8 +22,10 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.activity.ActivityContext;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.activity.WorkOrderActivityType;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
@@ -296,7 +298,7 @@ public class WorkOrderAction extends FacilioAction {
  		context.put(FacilioConstants.ContextNames.ATTACHMENT_CONTENT_TYPE, this.attachedFilesContentType);
  		context.put(FacilioConstants.ContextNames.ATTACHMENT_TYPE, this.attachmentType);
 
- 		if (AccountUtil.isFeatureEnabled(AccountUtil.FEATURE_SCHEDULED_WO)) {
+ 		if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.SCHEDULED_WO)) {
 			Chain addTemplate = FacilioChainFactory.getAddNewPreventiveMaintenanceChain();
 			addTemplate.execute(context);
 		} else {
@@ -793,7 +795,7 @@ public class WorkOrderAction extends FacilioAction {
  			context.put(FacilioConstants.ContextNames.EXISTING_ATTACHMENT_LIST, oldAttachments); 			
  		}
 
- 		if (AccountUtil.isFeatureEnabled(AccountUtil.FEATURE_SCHEDULED_WO)) {
+ 		if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.SCHEDULED_WO)) {
 			Chain updatePM = FacilioChainFactory.getUpdateNewPreventiveMaintenanceChain();
 			updatePM.execute(context);
 		} else {
@@ -833,7 +835,7 @@ public class WorkOrderAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.PM_RESOURCE_ID, resourceId);
 		context.put(FacilioConstants.ContextNames.PM_ID, pmId);
 
-		if (AccountUtil.isFeatureEnabled(AccountUtil.FEATURE_SCHEDULED_WO)) {
+		if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.SCHEDULED_WO)) {
 			Chain updatePM = FacilioChainFactory.getUpdateNewPreventiveMaintenanceJobChain();
 			updatePM.execute(context);
 		} else {
@@ -851,7 +853,7 @@ public class WorkOrderAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD_ID, id.get(0));
 
-		if (AccountUtil.isFeatureEnabled(AccountUtil.FEATURE_SCHEDULED_WO)) {
+		if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.SCHEDULED_WO)) {
 			Chain pmSummary = FacilioChainFactory.getNewPreventiveMaintenanceSummaryChain();
 			pmSummary.execute(context);
 		} else {
@@ -925,7 +927,7 @@ public class WorkOrderAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, id);
 		context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE, preventivemaintenance);
 
-		if (AccountUtil.isFeatureEnabled(AccountUtil.FEATURE_SCHEDULED_WO)) {
+		if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.SCHEDULED_WO)) {
 			Chain addTemplate = TransactionChainFactory.getChangeNewPreventiveMaintenanceStatusChain();
 			addTemplate.execute(context);
 		} else {
@@ -1029,11 +1031,11 @@ public class WorkOrderAction extends FacilioAction {
 		}
 
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE);
-		if (AccountUtil.isFeatureEnabled(AccountUtil.FEATURE_SCHEDULED_WO)) {
+		if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.SCHEDULED_WO)) {
 			context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.WORK_ORDER);
 		}
 
-		if (AccountUtil.isFeatureEnabled(AccountUtil.FEATURE_SCHEDULED_WO)) {
+		if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.SCHEDULED_WO)) {
 			Chain getPmchain = FacilioChainFactory.getGetNewPMJobListChain();
 			getPmchain.execute(context);
 		} else {
@@ -1379,24 +1381,7 @@ public class WorkOrderAction extends FacilioAction {
 		return SUCCESS;
 	}
 
-	public String fetchActivity() throws Exception {
-		FacilioContext context = new FacilioContext();
-		try {
-		context.put(FacilioConstants.ContextNames.PARENT_ID, workOrderId);
-		context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.WORKORDER_ACTIVITY);
-		
-		Chain workOrderActivity = ReadOnlyChainFactory.getActivitiesChain();
-		workOrderActivity.execute(context);
-		setResult("activity", context.get(FacilioConstants.ContextNames.RECORD_LIST));
-	}
-	catch (Exception e) {
-		JSONObject inComingDetails = new JSONObject();
-		inComingDetails.put("PARENT_ID", workOrderId);
-		sendErrorMail(e, inComingDetails);
-		throw e;
-	}
-		return SUCCESS;
-	}
+	
 	
 	private WorkorderTemplate workorderTemplate;
 
@@ -2061,6 +2046,45 @@ public class WorkOrderAction extends FacilioAction {
 
 		return SUCCESS;
 	}
+	public String fetchActivity() throws Exception {
+		FacilioContext context = new FacilioContext();
+		try {
+		context.put(FacilioConstants.ContextNames.PARENT_ID, workOrderId);
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.WORKORDER_ACTIVITY);
+		
+		Chain workOrderActivity = ReadOnlyChainFactory.getActivitiesChain();
+		workOrderActivity.execute(context);
+		List<ActivityContext> activity =  (List<ActivityContext>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
+		List<ActivityContext> woActivities = new ArrayList<>();
+		long portalID =  AccountUtil.getCurrentUser().getPortalId();
+		for(ActivityContext prop : activity) {	
+		ActivityContext checkIsNotify = prop;
+		if (portalID > 0) {
+				if (checkIsNotify.getType() == WorkOrderActivityType.ADD_COMMENT.getValue()) {
+					if (checkIsNotify.getInfo().get("notifyRequester") != null) {
+						if ((boolean) checkIsNotify.getInfo().get("notifyRequester")) {
+							woActivities.add(checkIsNotify);
+						}
+					}
+				}
+				else {
+					woActivities.add(checkIsNotify);
+				}
+		}
+		else {
+			woActivities.add(checkIsNotify);
+		}
+	  }
+		setResult("activity", woActivities);
+	}
+	catch (Exception e) {
+		JSONObject inComingDetails = new JSONObject();
+		inComingDetails.put("PARENT_ID", workOrderId);
+		sendErrorMail(e, inComingDetails);
+		throw e;
+	}
+		return SUCCESS;
+	}
 
 	private List<TicketActivity> activities;
 
@@ -2295,6 +2319,9 @@ public class WorkOrderAction extends FacilioAction {
 		workorder.setSendForApproval(true);
 		TicketStatusContext preOpenStatus = TicketAPI.getStatus("preopen");
 		workorder.setStatus(preOpenStatus);
+		if (workorder.getRequester() == null && AccountUtil.getCurrentUser() != null) {
+			workorder.setRequester(AccountUtil.getCurrentUser());
+		}
 		
 		if (AccountUtil.getCurrentOrg().getOrgId() == 104) {
 			if (workorder.getSubject() == null) {

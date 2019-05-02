@@ -46,7 +46,7 @@ public class UpdateWorkorderTotalCostCommand implements Command {
 								String.valueOf(parentId), PickListOperators.IS));
 
 				List<WorkorderCostContext> workorderCostsList = workorderCostsSetlectBuilder.get();
-				long totalcost = 0;
+				double totalcost = 0;
 				for (WorkorderCostContext wo : workorderCostsList) {
 					totalcost += wo.getCost();
 				}

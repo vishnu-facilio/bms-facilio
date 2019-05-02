@@ -50,6 +50,7 @@ public class PoLineItemSerialNumberAction extends FacilioAction{
 		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.CREATE);
 		context.put(FacilioConstants.ContextNames.RECORD, poLineItemSerialNumber);
 		context.put(FacilioConstants.ContextNames.SERIAL_NUMBERS, poLineItemSerialNumber.getSerialNumbers());
+		context.put(FacilioConstants.ContextNames.ASSETS, poLineItemSerialNumber.getAssets());
 		Chain addInventry = TransactionChainFactory.getAddPoLineItemSerialNumbersChain();
 		addInventry.execute(context);
 		poLineItemSerialNumbers = (List<PoLineItemsSerialNumberContext>) context.get(FacilioConstants.ContextNames.RECORD_LIST);

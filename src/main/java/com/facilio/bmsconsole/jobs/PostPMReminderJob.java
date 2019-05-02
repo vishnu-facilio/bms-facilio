@@ -1,15 +1,16 @@
 package com.facilio.bmsconsole.jobs;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import org.apache.commons.chain.Chain;
+
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.tasker.job.FacilioJob;
 import com.facilio.tasker.job.JobContext;
-import org.apache.commons.chain.Chain;
-
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class PostPMReminderJob extends FacilioJob {
 	private static final Logger logger = Logger.getLogger(PostPMReminderJob.class.getName());
@@ -18,7 +19,7 @@ public class PostPMReminderJob extends FacilioJob {
 	public void execute(JobContext jc) {
 		// TODO Auto-generated method stub
 		try {
-			if (AccountUtil.isFeatureEnabled(AccountUtil.FEATURE_SCHEDULED_WO)) {
+			if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.SCHEDULED_WO)) {
 				return;
 			}
 			FacilioContext context = new FacilioContext();

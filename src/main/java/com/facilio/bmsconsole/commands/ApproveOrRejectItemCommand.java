@@ -1,10 +1,10 @@
 package com.facilio.bmsconsole.commands;
 import org.json.simple.JSONObject;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.ItemContext;
 import com.facilio.bmsconsole.context.ItemTransactionsContext;
 import com.facilio.bmsconsole.context.ItemTypesContext;
-import com.facilio.bmsconsole.context.PurchasedItemContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.*;
 import com.facilio.bmsconsole.util.TransactionType;
@@ -41,6 +41,7 @@ public class ApproveOrRejectItemCommand implements Command {
 			List<LookupField> lookUpfields = new ArrayList<>();
 			lookUpfields.add((LookupField) itemTransactionsFieldMap.get("item"));
 			lookUpfields.add((LookupField) itemTransactionsFieldMap.get("purchasedItem"));
+			lookUpfields.add((LookupField) itemTransactionsFieldMap.get("asset"));
 			lookUpfields.add((LookupField) itemTransactionsFieldMap.get("itemType"));
 
 			SelectRecordsBuilder<ItemTransactionsContext> selectBuilder = new SelectRecordsBuilder<ItemTransactionsContext>()
@@ -61,13 +62,13 @@ public class ApproveOrRejectItemCommand implements Command {
 				info.put("quantity", transactions.getQuantity());
 				if (approvalState == ApprovalState.APPROVED) {
 					if (transactions.getItemType().isRotating()) {
-						if (transactions.getPurchasedItem().isUsed()) {
+						if (transactions.getAsset().isUsed()) {
 							throw new IllegalArgumentException("Insufficient quantity in inventory!");
 						} else {
-							PurchasedItemContext pItem = transactions.getPurchasedItem();
-							pItem.setIsUsed(true);
-							updatePurchasedItem(pItem);
-							info.put("serialno", pItem.getSerialNumber());
+							AssetContext asset = transactions.getAsset();
+							asset.setIsUsed(true);
+							updateAsset(asset);
+							info.put("serialno", asset.getSerialNumber());
 							info.put("issuedToId", transactions.getParentId());
 							woitemactivity.add(info);
 						}
@@ -83,10 +84,10 @@ public class ApproveOrRejectItemCommand implements Command {
 					transactions.setRemainingQuantity(transactions.getQuantity());
 				} else if (approvalState == ApprovalState.REJECTED) {
 					if (transactions.getItemType().isRotating()) {
-						PurchasedItemContext pItem = transactions.getPurchasedItem();
-						pItem.setIsUsed(false);
-						updatePurchasedItem(pItem);
-						info.put("serialno", pItem.getSerialNumber());
+						AssetContext asset = transactions.getAsset();
+						asset.setIsUsed(false);
+						updateAsset(asset);
+						info.put("serialno", asset.getSerialNumber());
 					}
 					woitemactivity.add(info);
 					transactions.setRemainingQuantity(0);
@@ -125,13 +126,13 @@ public class ApproveOrRejectItemCommand implements Command {
 
 	}
 
-	private void updatePurchasedItem(PurchasedItemContext purchasedItem) throws Exception {
+	private void updateAsset(AssetContext asset) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.PURCHASED_ITEM);
-		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.PURCHASED_ITEM);
-		UpdateRecordBuilder<PurchasedItemContext> updateBuilder = new UpdateRecordBuilder<PurchasedItemContext>()
-				.module(module).fields(fields).andCondition(CriteriaAPI.getIdCondition(purchasedItem.getId(), module));
-		updateBuilder.update(purchasedItem);
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ASSET);
+		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.ASSET);
+		UpdateRecordBuilder<AssetContext> updateBuilder = new UpdateRecordBuilder<AssetContext>()
+				.module(module).fields(fields).andCondition(CriteriaAPI.getIdCondition(asset.getId(), module));
+		updateBuilder.update(asset);
 
 		System.err.println(Thread.currentThread().getName() + "Exiting updateReadings in  AddorUpdateCommand#######  ");
 

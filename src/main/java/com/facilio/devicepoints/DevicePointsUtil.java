@@ -35,7 +35,10 @@ public  class DevicePointsUtil {
         }
         String broadcastAddress = (String) payLoad.get(DevicePointsKeys.BROADCAST_ADDRESS);
         String deviceName = (String) payLoad.get(DevicePointsKeys.DEVICE_NAME);
-
+        Integer controllerType = 0;
+        if(payLoad.containsKey(DevicePointsKeys.CONTROLLER_TYPR)){
+             controllerType = Integer.parseInt(payLoad.get(DevicePointsKeys.CONTROLLER_TYPR).toString());
+        }
         String deviceId = instanceNumber+"_"+destinationAddress+"_"+networkNumber;
         // if( ! deviceMap.containsKey(deviceId)) {
             ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", orgId);
@@ -50,6 +53,7 @@ public  class DevicePointsUtil {
                 controller.setNetworkNumber(networkNumber);
                 controller.setSubnetPrefix(Math.toIntExact(subnetPrefix));
                 controller.setMacAddr(deviceId);
+                controller.setControllerType(controllerType);
                 controller = bean.addController(controller);
             } else {
                 if (controller.getAgentId() < 1 && controller.getId() > -1) {
@@ -65,10 +69,13 @@ public  class DevicePointsUtil {
             if(controllerSettingsId > -1) {
                 JSONArray points = (JSONArray)payLoad.get(DevicePointsKeys.POINTS);
                 LOGGER.info("Device Points : "+points);
-                TimeSeriesAPI.addUnmodeledInstances(points, controllerSettingsId);
+
                 if(TimeSeriesAPI.isStage()) {
                 	TimeSeriesAPI.addPointsInstances(points, controllerSettingsId);
-               }
+                }
+                else {
+                	TimeSeriesAPI.addUnmodeledInstances(points, controllerSettingsId);
+                }
             }
         // }
     }

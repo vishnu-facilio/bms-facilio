@@ -12,16 +12,16 @@ import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.util.StateFlowRulesAPI;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsole.workflow.rule.FieldChangeFieldContext;
-import com.facilio.bmsconsole.workflow.rule.StateflowTransistionContext;
+import com.facilio.bmsconsole.workflow.rule.StateflowTransitionContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowEventContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 
-public class ConstructStateFlowTransistionCommand implements Command {
+public class ConstructStateFlowTransitionCommand implements Command {
 
 	@Override
 	public boolean execute(Context context) throws Exception {
-		StateflowTransistionContext stateFlowRuleContext = (StateflowTransistionContext) context.get(FacilioConstants.ContextNames.WORKFLOW_RULE);
+		StateflowTransitionContext stateFlowRuleContext = (StateflowTransitionContext) context.get(FacilioConstants.ContextNames.WORKFLOW_RULE);
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 		if (stateFlowRuleContext != null) {
 			if (StringUtils.isEmpty(moduleName)) {
@@ -34,14 +34,14 @@ public class ConstructStateFlowTransistionCommand implements Command {
 				throw new IllegalArgumentException("StateFlow is not active for module " + moduleName);
 			}
 			
-			List<FieldChangeFieldContext> fields = new ArrayList<>();
-			FieldChangeFieldContext fieldChange = new FieldChangeFieldContext();
-			fieldChange.setField(field);
-			fields.add(fieldChange);
-			stateFlowRuleContext.setFields(fields);
+//			List<FieldChangeFieldContext> fields = new ArrayList<>();
+//			FieldChangeFieldContext fieldChange = new FieldChangeFieldContext();
+//			fieldChange.setField(field);
+//			fields.add(fieldChange);
+//			stateFlowRuleContext.setFields(fields);
 			
 			WorkflowEventContext event = new WorkflowEventContext();
-			event.setActivityType(EventType.FIELD_CHANGE);
+			event.setActivityType(EventType.STATE_TRANSITION);
 			event.setModuleName(moduleName);
 			stateFlowRuleContext.setEvent(event);
 		}

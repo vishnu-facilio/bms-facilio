@@ -23,7 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class GetItemTransactionsListCommand implements Command{
+public class GetItemTransactionsListCommand implements Command {
 	@Override
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
@@ -42,28 +42,28 @@ public class GetItemTransactionsListCommand implements Command{
 		Map<String, FacilioField> itemTransactionsFieldsMap = FieldFactory.getAsMap(fields);
 		FacilioView view = (FacilioView) context.get(FacilioConstants.ContextNames.CUSTOM_VIEW);
 
-		SelectRecordsBuilder<ItemTransactionsContext> builder = new SelectRecordsBuilder<ItemTransactionsContext>().module(module)
-				.beanClass(FacilioConstants.ContextNames.getClassFromModuleName(moduleName)).select(fields);
+		SelectRecordsBuilder<ItemTransactionsContext> builder = new SelectRecordsBuilder<ItemTransactionsContext>()
+				.module(module).beanClass(FacilioConstants.ContextNames.getClassFromModuleName(moduleName))
+				.select(fields);
 
 		List<Long> accessibleSpaces = AccountUtil.getCurrentUser().getAccessibleSpace();
 		builder.innerJoin(ModuleFactory.getInventryModule().getTableName())
 				.on(ModuleFactory.getInventryModule().getTableName() + ".ID = "
 						+ ModuleFactory.getItemTransactionsModule().getTableName() + ".ITEM_ID");
 		if (accessibleSpaces != null && !accessibleSpaces.isEmpty()) {
-			builder.andCustomWhere(
-					"Store_room.ID IN (Select STORE_ROOM_ID from Storeroom_Sites where SITE_ID IN ( ? ))",
-					StringUtils.join(accessibleSpaces, ", "));
+			builder.andCustomWhere("Store_room.SITE_ID IN ( ? )", StringUtils.join(accessibleSpaces, ", "));
 		}
 		String orderBy = (String) context.get(FacilioConstants.ContextNames.SORTING_QUERY);
 		if (orderBy != null && !orderBy.isEmpty()) {
 			// temp fix
-//			if(orderBy.contains("CREATED_TIME")) {
-//				orderBy = "Item_Transactions.CREATED_TIME" + orderBy.substring(12); 
-//			}
+			// if(orderBy.contains("CREATED_TIME")) {
+			// orderBy = "Item_Transactions.CREATED_TIME" +
+			// orderBy.substring(12);
+			// }
 			builder.orderBy(orderBy);
 		}
-		Criteria permissionCriteria = AccountUtil.getCurrentUser().getRole().permissionCriteria("inventory","read");
-		if(permissionCriteria != null) {
+		Criteria permissionCriteria = AccountUtil.getCurrentUser().getRole().permissionCriteria("inventory", "read");
+		if (permissionCriteria != null) {
 			builder.andCriteria(permissionCriteria);
 		}
 		Integer maxLevel = (Integer) context.get(FacilioConstants.ContextNames.MAX_LEVEL);
@@ -96,19 +96,23 @@ public class GetItemTransactionsListCommand implements Command{
 		if (scopeCriteria != null) {
 			builder.andCriteria(scopeCriteria);
 		}
-		
+
 		builder.fetchLookup((LookupField) itemTransactionsFieldsMap.get("purchasedItem"));
-		
+		builder.fetchLookup((LookupField) itemTransactionsFieldsMap.get("asset"));
+
 		Boolean getShowItemsForReturn = (Boolean) context.get(FacilioConstants.ContextNames.SHOW_ITEMS_FOR_RETURN);
-		if(getShowItemsForReturn!=null && getShowItemsForReturn) {
-//			List<LookupField>lookUpfields = new ArrayList<>();
-//			lookUpfields.add((LookupField) itemTransactionsFieldsMap.get("purchasedItem"));
-			builder.andCondition(CriteriaAPI.getCondition(itemTransactionsFieldsMap.get("remainingQuantity"), String.valueOf(0), NumberOperators.GREATER_THAN));
-			builder.andCondition(CriteriaAPI.getCondition(itemTransactionsFieldsMap.get("isReturnable"), String.valueOf(true), BooleanOperators.IS));
-			builder.andCondition(CriteriaAPI.getCondition(itemTransactionsFieldsMap.get("transactionState"), String.valueOf(2), NumberOperators.EQUALS));
-//			builder.fetchLookups(lookUpfields);
+		if (getShowItemsForReturn != null && getShowItemsForReturn) {
+			// List<LookupField>lookUpfields = new ArrayList<>();
+			// lookUpfields.add((LookupField)
+			// itemTransactionsFieldsMap.get("purchasedItem"));
+			builder.andCondition(CriteriaAPI.getCondition(itemTransactionsFieldsMap.get("remainingQuantity"),
+					String.valueOf(0), NumberOperators.GREATER_THAN));
+			builder.andCondition(CriteriaAPI.getCondition(itemTransactionsFieldsMap.get("isReturnable"),
+					String.valueOf(true), BooleanOperators.IS));
+			builder.andCondition(CriteriaAPI.getCondition(itemTransactionsFieldsMap.get("transactionState"),
+					String.valueOf(2), NumberOperators.EQUALS));
+			// builder.fetchLookups(lookUpfields);
 		}
-		
 
 		JSONObject pagination = (JSONObject) context.get(FacilioConstants.ContextNames.PAGINATION);
 		if (pagination != null) {
@@ -131,11 +135,11 @@ public class GetItemTransactionsListCommand implements Command{
 			} else {
 				for (ItemTransactionsContext itemTransactions : records) {
 					if (itemTransactions.getItem() != null && itemTransactions.getItem().getId() != -1) {
-						ItemContext item= ItemsApi.getItems(itemTransactions.getItem().getId());
+						ItemContext item = ItemsApi.getItems(itemTransactions.getItem().getId());
 						item.setItemType(ItemsApi.getItemTypes(item.getItemType().getId()));
 						item.setStoreRoom(StoreroomApi.getStoreRoom(item.getStoreRoom().getId()));
 						itemTransactions.setItem(item);
-											}
+					}
 				}
 
 				context.put(FacilioConstants.ContextNames.RECORD_LIST, records);

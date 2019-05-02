@@ -21,7 +21,6 @@ import java.util.*;
 import java.util.logging.Logger;
 
 public class PurchasedItemsQuantityRollUpCommand implements Command {
-	private static final Logger LOGGER = Logger.getLogger(PurchasedItemsQuantityRollUpCommand.class.getName());
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -76,7 +75,6 @@ public class PurchasedItemsQuantityRollUpCommand implements Command {
 					UpdateRecordBuilder<PurchasedItemContext> updateBuilder = new UpdateRecordBuilder<PurchasedItemContext>()
 							.module(purchasedItemsModule).fields(modBean.getAllFields(purchasedItemsModule.getName()))
 							.andCondition(CriteriaAPI.getIdCondition(id, purchasedItemsModule));
-					LOGGER.info("totalCost" + purchasedItem.getCurrentQuantity());
 					updateBuilder.update(purchasedItem);
 				}
 			}
@@ -139,7 +137,6 @@ public class PurchasedItemsQuantityRollUpCommand implements Command {
 			addition = rs.get(0).get("addition") != null ? (double) rs.get(0).get("addition") : 0;
 			issues = rs.get(0).get("issues") != null ? (double) rs.get(0).get("issues") : 0;
 			returns = rs.get(0).get("returns") != null ? (double) rs.get(0).get("returns") : 0;
-			LOGGER.info(addition + " " + issues + " " + returns);
 			return ((addition + returns) - issues);
 		}
 		return 0d;

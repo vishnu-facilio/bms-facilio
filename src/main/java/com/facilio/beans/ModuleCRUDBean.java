@@ -1,17 +1,23 @@
 package com.facilio.beans;
 
-import com.amazonaws.services.kinesis.clientlibrary.interfaces.IRecordProcessorCheckpointer;
-import com.amazonaws.services.kinesis.model.Record;
-import com.facilio.bmsconsole.context.*;
-import com.facilio.events.context.EventRuleContext;
-import com.facilio.procon.consumer.FacilioConsumer;
-import com.facilio.procon.message.FacilioRecord;
-import org.apache.commons.chain.Context;
-import org.json.simple.JSONObject;
-
 import java.io.File;
 import java.util.List;
 import java.util.Map;
+
+import org.apache.commons.chain.Context;
+import org.json.simple.JSONObject;
+
+import com.amazonaws.services.kinesis.clientlibrary.interfaces.IRecordProcessorCheckpointer;
+import com.amazonaws.services.kinesis.model.Record;
+import com.facilio.accounts.util.AccountUtil.FeatureLicense;
+import com.facilio.bmsconsole.context.AlarmContext;
+import com.facilio.bmsconsole.context.ControllerContext;
+import com.facilio.bmsconsole.context.PreventiveMaintenance;
+import com.facilio.bmsconsole.context.WorkOrderContext;
+import com.facilio.bmsconsole.context.WorkOrderRequestContext;
+import com.facilio.events.context.EventRuleContext;
+import com.facilio.procon.consumer.FacilioConsumer;
+import com.facilio.procon.message.FacilioRecord;
 
 public interface ModuleCRUDBean {
 	
@@ -22,7 +28,7 @@ public interface ModuleCRUDBean {
 	
 	public AlarmContext processAlarm(JSONObject alarmInfo) throws Exception;
 	
-	public Boolean isFeatureEnabled(int license) throws Exception;
+	public Boolean isFeatureEnabled(FeatureLicense license) throws Exception;
 	
 	public int deleteAlarm(List<Long> id) throws Exception;
 	

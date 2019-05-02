@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.facilio.bmsconsole.modules.FacilioModule;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class Page {
 	private static final long serialVersionUID = 1L;
@@ -53,7 +54,7 @@ public class Page {
 		}
 		columns.add(column);
 	}
-
+	
 	public class Column {
 		
 		Column () {}
@@ -213,6 +214,22 @@ public class Page {
 				this.widgetGroups = new ArrayList<>();
 			}
 			this.widgetGroups.add(widgetGroup);
+		}
+		
+		private int latestX = 0;
+		private int latestY = 0;
+		@JsonIgnore
+		public int getLatestX() {
+			return latestX;
+		}
+		@JsonIgnore
+		public int getLatestY() {
+			return latestY;
+		}
+		@JsonIgnore
+		public void setLatestXY(int latestX, int latestY) {
+			this.latestX = latestX;
+			this.latestY = latestY;
 		}
 	}
 

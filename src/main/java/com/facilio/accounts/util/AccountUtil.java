@@ -3,6 +3,8 @@ package com.facilio.accounts.util;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -104,23 +106,49 @@ public class AccountUtil {
 		return roleBean;
 	}
 
-	public static final int FEATURE_MAINTENANCE 			= 1;
-	public static final int FEATURE_ALARMS 				= 2;
-	public static final int FEATURE_ENERGY 				= 4;
-	public static final int FEATURE_SPACE_ASSET 			= 8;
-	public static final int FEATURE_WEATHER_INTEGRATION 	= 16;
-	public static final int FEATURE_ANOMALY_DETECTOR 		= 32;
-	public static final int FEATURE_WIDGET_LEGENDS 		= 64;
-	public static final int FEATURE_SHIFT_HOURS	 		= 128;
-	public static final int FEATURE_SITE_SWITCH = 256;
-	public static final int FEATURE_DERIVATIONS = 512;
-	public static final int FEATURE_APPROVAL = 1024;
-	public static final int FEATURE_MOBILE_DASHBOARD = 2048;
-	public static final int FEATURE_CONTROL_ACTIONS = 4096;
-	public static final int FEATURE_INVENTORY = 8192;
-	public static final int FEATURE_SCHEDULED_WO = 16384;
-	public static final int FEATURE_TENANTS = 32768;
-	public static final int FEATURE_NEW_FORM = 65536;
+	
+	public enum FeatureLicense {
+		MAINTENANCE (1),
+		ALARMS (2),
+		ENERGY (4),
+		SPACE_ASSET (8),
+		WEATHER_INTEGRATION (16),
+		ANOMALY_DETECTOR (32),
+		SHIFT_HOURS (128),
+		SITE_SWITCH (256),
+		APPROVAL (1024),
+		MOBILE_DASHBOARD (2048),
+		CONTROL_ACTIONS (4096),
+		INVENTORY (8192),
+		SCHEDULED_WO (16384),
+		TENANTS (32768),
+		NEW_FORM (65536),
+		CONNECTEDAPPS (131072)
+		;
+		
+		// Use 64, 512 for next features
+		
+		private int license;
+		FeatureLicense(int license) {
+			this.license = license;
+		}
+		
+		public int getLicense() {
+			return license;
+		}
+		public static FeatureLicense getFeatureLicense (int value) {
+			return FEATURE_MAP.get(value);
+		}
+		
+		private static final Map<Integer, FeatureLicense> FEATURE_MAP = Collections.unmodifiableMap(initFeatureMap());
+		private static Map<Integer, FeatureLicense> initFeatureMap() {
+			Map<Integer, FeatureLicense> typeMap = new HashMap<>();
+			for(FeatureLicense fLicense : values()) {
+				typeMap.put(fLicense.getLicense(), fLicense);
+			}
+			return typeMap;
+		}
+	}
 
 
 	public static int getFeatureLicense() throws Exception {
@@ -150,8 +178,8 @@ public class AccountUtil {
 		return module;
 	}
 	
-	public static boolean isFeatureEnabled(int featureId) throws Exception {
-		return (getFeatureLicense() & featureId) == featureId;
+	public static boolean isFeatureEnabled(FeatureLicense featureLicense) throws Exception {
+		return (getFeatureLicense() & featureLicense.getLicense()) == featureLicense.getLicense();
 	}
 	
 	public static PortalInfoContext getPortalInfo() throws Exception {

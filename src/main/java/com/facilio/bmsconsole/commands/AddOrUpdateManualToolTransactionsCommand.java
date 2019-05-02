@@ -60,8 +60,8 @@ public class AddOrUpdateManualToolTransactionsCommand implements Command {
 							if (toolTypes.isApprovalNeeded() || storeRoom.isApprovalNeeded()) {
 								approvalState = ApprovalState.REQUESTED;
 							}
-							wTool = setWorkorderItemObj(null, toolTransaction.getQuantity(), tool, toolTransaction,
-									toolTypes, approvalState);
+							wTool = setWorkorderItemObj(toolTransaction.getQuantity(), tool, toolTransaction,
+									toolTypes, approvalState, null);
 							// update
 							wTool.setId(toolTransaction.getId());
 							toolTransactionslist.add(wTool);
@@ -78,26 +78,26 @@ public class AddOrUpdateManualToolTransactionsCommand implements Command {
 							approvalState = ApprovalState.REQUESTED;
 						}
 						if (toolTypes.isRotating()) {
-							List<Long> purchasedToolIds = toolTransaction.getPurchasedTools();
-							List<PurchasedToolContext> purchasedTool = getPurchasedToolsListFromId(purchasedToolIds);
-							if (purchasedTool != null) {
-								for (PurchasedToolContext pTool : purchasedTool) {
+							List<Long> assetIds = toolTransaction.getAssetIds();
+							List<AssetContext> assets = getAssetsList(assetIds);
+							if (assets != null) {
+								for (AssetContext asset : assets) {
 									if (toolTransaction.getTransactionStateEnum() == TransactionState.ISSUE
-											&& pTool.isUsed()) {
+											&& asset.isUsed()) {
 										throw new IllegalArgumentException("Insufficient quantity in inventory!");
 									}
 									ToolTransactionContext woTool = new ToolTransactionContext();
 
 									if (toolTransaction.getTransactionStateEnum() == TransactionState.ISSUE
 											&& (toolTypes.isApprovalNeeded() || storeRoom.isApprovalNeeded())) {
-										pTool.setIsUsed(false);
+										asset.setIsUsed(false);
 									} else {
 										if (toolTransaction.getTransactionStateEnum() == TransactionState.RETURN) {
-											pTool.setIsUsed(false);
+											asset.setIsUsed(false);
 											approvalState = ApprovalState.YET_TO_BE_REQUESTED;
 										} else if (toolTransaction
 												.getTransactionStateEnum() == TransactionState.ISSUE) {
-											pTool.setIsUsed(true);
+											asset.setIsUsed(true);
 										}
 									}
 
@@ -109,17 +109,17 @@ public class AddOrUpdateManualToolTransactionsCommand implements Command {
 									// == TransactionState.ISSUE) {
 									// pTool.setIsUsed(true);
 									// }
-									woTool = setWorkorderItemObj(pTool, 1, tool, toolTransaction, toolTypes,
-											approvalState);
-									updatePurchasedTool(pTool);
+									woTool = setWorkorderItemObj(1, tool, toolTransaction, toolTypes,
+											approvalState, asset);
+									updateAsset(asset);
 									toolTransactionslist.add(woTool);
 									toolTransactionsToBeAdded.add(woTool);
 								}
 							}
 						} else {
 							ToolTransactionContext woTool = new ToolTransactionContext();
-							woTool = setWorkorderItemObj(null, toolTransaction.getQuantity(), tool, toolTransaction,
-									toolTypes, approvalState);
+							woTool = setWorkorderItemObj(toolTransaction.getQuantity(), tool, toolTransaction,
+									toolTypes, approvalState, null);
 							toolTransactionslist.add(woTool);
 							toolTransactionsToBeAdded.add(woTool);
 						}
@@ -143,16 +143,16 @@ public class AddOrUpdateManualToolTransactionsCommand implements Command {
 		return false;
 	}
 
-	private ToolTransactionContext setWorkorderItemObj(PurchasedToolContext purchasedtool, double quantity,
+	private ToolTransactionContext setWorkorderItemObj(double quantity,
 			ToolContext tool, ToolTransactionContext toolTransaction, ToolTypesContext toolTypes,
-			ApprovalState approvalState) {
+			ApprovalState approvalState, AssetContext asset) {
 		ToolTransactionContext woTool = new ToolTransactionContext();
 
 		woTool.setTransactionType(toolTransaction.getTransactionTypeEnum());
 		woTool.setTransactionState(toolTransaction.getTransactionStateEnum());
 		woTool.setIsReturnable(true);
-		if (purchasedtool != null) {
-			woTool.setPurchasedTool(purchasedtool);
+		if(asset!=null) {
+			woTool.setAsset(asset);
 		}
 		woTool.setQuantity(quantity);
 		woTool.setTool(tool);
@@ -236,29 +236,29 @@ public class AddOrUpdateManualToolTransactionsCommand implements Command {
 		return null;
 	}
 
-	public static List<PurchasedToolContext> getPurchasedToolsListFromId(List<Long> id) throws Exception {
+	public static List<AssetContext> getAssetsList(List<Long> id) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.PURCHASED_TOOL);
-		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.PURCHASED_TOOL);
-		SelectRecordsBuilder<PurchasedToolContext> selectBuilder = new SelectRecordsBuilder<PurchasedToolContext>()
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ASSET);
+		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.ASSET);
+		SelectRecordsBuilder<AssetContext> selectBuilder = new SelectRecordsBuilder<AssetContext>()
 				.select(fields).table(module.getTableName()).moduleName(module.getName())
-				.beanClass(PurchasedToolContext.class).andCondition(CriteriaAPI.getIdCondition(id, module));
+				.beanClass(AssetContext.class).andCondition(CriteriaAPI.getIdCondition(id, module));
 
-		List<PurchasedToolContext> purchasedToolList = selectBuilder.get();
+		List<AssetContext> assetList = selectBuilder.get();
 
-		if (purchasedToolList != null && !purchasedToolList.isEmpty()) {
-			return purchasedToolList;
+		if (assetList != null && !assetList.isEmpty()) {
+			return assetList;
 		}
 		return null;
 	}
 
-	private void updatePurchasedTool(PurchasedToolContext purchasedTool) throws Exception {
+	private void updateAsset(AssetContext asset) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.PURCHASED_TOOL);
-		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.PURCHASED_TOOL);
-		UpdateRecordBuilder<PurchasedToolContext> updateBuilder = new UpdateRecordBuilder<PurchasedToolContext>()
-				.module(module).fields(fields).andCondition(CriteriaAPI.getIdCondition(purchasedTool.getId(), module));
-		updateBuilder.update(purchasedTool);
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ASSET);
+		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.ASSET);
+		UpdateRecordBuilder<AssetContext> updateBuilder = new UpdateRecordBuilder<AssetContext>()
+				.module(module).fields(fields).andCondition(CriteriaAPI.getIdCondition(asset.getId(), module));
+		updateBuilder.update(asset);
 
 		System.err.println(Thread.currentThread().getName() + "Exiting updateReadings in  AddorUpdateCommand#######  ");
 	}

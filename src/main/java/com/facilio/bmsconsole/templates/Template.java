@@ -154,7 +154,10 @@ public abstract class Template implements Serializable {
 										.append("JSON : ")
 										.append(jsonStr)
 										.append("\nParams : ")
-										.append(params).toString(), e);
+										.append(params)
+										.append("\nParameters : ")
+										.append(parameters)
+										.toString(), e);
 					throw e;
 				}
 				JSONParser parser = new JSONParser();

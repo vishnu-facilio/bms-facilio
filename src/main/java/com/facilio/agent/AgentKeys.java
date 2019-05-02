@@ -32,12 +32,15 @@ public class AgentKeys
     public static final String WRITABLE = "writable";
     public static final String SITE_ID = "siteId";
     public static final String DISPLAY_NAME = "displayName";
+    public static final String OS_VERSION = "os.version";
     //log table keys
     public static final String COMMAND = "command";
     public static final String COMMAND_STATUS = "status";
     public static final String CONTENT = "message";
     public static final String CONTROLLER_ID = "controllerId";
     public static final String AGENT_LOG_TABLE = "Agent_Log";
+    public static final String CONNECTION_COUNT = "connectionCount";
+
     //Metrics table
     public static final String TIME = "time";
     public static final String METRICS_TABLE = "Agent_Metrics";

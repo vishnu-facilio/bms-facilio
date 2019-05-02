@@ -120,7 +120,7 @@ public class TimeSeries extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.INSTANCE_INFO, instanceAssetMap);
 		context.put(FacilioConstants.ContextNames.CONTROLLER_ID, controllerId);
-		
+		context.put(FacilioConstants.ContextNames.UNIT_POINTS, unit);
 		Chain mappingChain = TransactionChainFactory.getInstanceAssetMappingChain();
 		mappingChain.execute(context);
 		
@@ -214,7 +214,16 @@ public class TimeSeries extends FacilioAction {
 		setResult("data", data);
 		return SUCCESS;
 	}
-	
+	private Integer unit;
+
+	public Integer getUnit() {
+		return unit;
+	}
+
+	public void setUnit(Integer unit) {
+		this.unit = unit;
+	}
+
 	private long controllerId;
 	public long getControllerId() {
 		return controllerId;

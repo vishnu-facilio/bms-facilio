@@ -1,22 +1,14 @@
 package com.facilio.bmsconsole.modules;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-
-import org.apache.commons.lang3.tuple.Pair;
-
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.agent.AgentKeys;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.events.tasker.tasks.EventUtil;
+import org.apache.commons.lang3.tuple.Pair;
+
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class FieldFactory {
 
@@ -213,7 +205,7 @@ public class FieldFactory {
 		fields.add(getField(AgentKeys.TIMESTAMP,"TIME",FieldType.NUMBER));
 		fields.add(getAgentIdField(module));
 		fields.add(getField(AgentKeys.DEVICE_ID,"DEVICE_ID",module,FieldType.STRING));
-		fields.add(getField(AgentKeys.CONTENT,"CONTENT",module,FieldType.STRING));
+		fields.add(getField(AgentKeys.CONTENT,"CONTENT",module,FieldType.NUMBER));
 		fields.add(getField(AgentKeys.MESSAGE_ID,"MSG_ID",module,FieldType.NUMBER));
 		fields.add(getField(AgentKeys.COMMAND,"COMMAND",module,FieldType.NUMBER));
 		fields.add(getField(AgentKeys.COMMAND_STATUS,"COMMAND_STATUS",module,FieldType.NUMBER));
@@ -2102,7 +2094,7 @@ public class FieldFactory {
 	public static List<FacilioField> getWorkOrderTemplateFields() {
 		List<FacilioField> woTemplateFields = getWOrderTemplateFields();
 		try {
-			if(AccountUtil.isFeatureEnabled(AccountUtil.FEATURE_TENANTS)) {
+			if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.TENANTS)) {
 				LookupField tenantField = (LookupField) getField("tenantId", "TENANT_ID",ModuleFactory.getWorkOrderTemplateModule(), FieldType.LOOKUP);
 				tenantField.setLookupModule(ModuleFactory.getTenantsModule());
 				woTemplateFields.add(tenantField);
@@ -2568,7 +2560,54 @@ public class FieldFactory {
 		fields.add(baseUrl);
 		
 		fields.add(getField("isActive", "IS_ACTIVE", module, FieldType.BOOLEAN));
+		
+		fields.add(getField("samlEnabled", "SAML_ENABLED", module, FieldType.BOOLEAN));
+		
+		FacilioField spEntityId = new FacilioField();
+		spEntityId.setName("spEntityId");
+		spEntityId.setDataType(FieldType.STRING);
+		spEntityId.setColumnName("SP_ENTITY_ID");
+		spEntityId.setModule(module);
+		fields.add(spEntityId);
+		
+		FacilioField spAcsUrl = new FacilioField();
+		spAcsUrl.setName("spAcsUrl");
+		spAcsUrl.setDataType(FieldType.STRING);
+		spAcsUrl.setColumnName("SP_ACS_URL");
+		spAcsUrl.setModule(module);
+		fields.add(spAcsUrl);
+		
+		FacilioField spLogoutUrl = new FacilioField();
+		spLogoutUrl.setName("spLogoutUrl");
+		spLogoutUrl.setDataType(FieldType.STRING);
+		spLogoutUrl.setColumnName("SP_LOGOUT_URL");
+		spLogoutUrl.setModule(module);
+		fields.add(spLogoutUrl);
 
+		return fields;
+	}
+	
+	public static List<FacilioField> getConnectionFields() {
+		FacilioModule module = ModuleFactory.getConnectionModule();
+
+		List<FacilioField> fields = new ArrayList<>();
+		
+		/*fields.add(getOrgIdField(module));*/
+		fields.add(getIdField(module));
+		
+		fields.add(getField("name", "NAME", module, FieldType.STRING));
+		fields.add(getField("serviceName", "SERVICE_NAME", module, FieldType.STRING));
+		fields.add(getField("authType", "AUTH_TYPE", module, FieldType.NUMBER));
+		fields.add(getField("clientId", "CLIENT_ID", module, FieldType.STRING));
+		fields.add(getField("clientSecretId", "CLIENT_SECRET_ID", module, FieldType.STRING));
+		fields.add(getField("authorizeUrl", "AUTHORIZE_URL", module, FieldType.STRING));
+		fields.add(getField("accessTokenUrl", "ACCESS_TOKEN_URL", module, FieldType.STRING));
+		fields.add(getField("refreshTokenUrl", "REFRESH_TOKEN_URL", module, FieldType.STRING));
+		fields.add(getField("revokeTokenUrl", "REVOKE_TOKEN_URL", module, FieldType.STRING));
+		fields.add(getField("authToken", "AUTH_TOKEN", module, FieldType.STRING));
+		fields.add(getField("refreshToken", "REFRESH_TOKEN", module, FieldType.STRING));
+		fields.add(getField("expiryTime", "EXPIRY_TIME", module, FieldType.NUMBER));
+		
 		return fields;
 	}
 
@@ -5615,8 +5654,8 @@ public class FieldFactory {
 				}));
 	}
 
-	public static List<FacilioField> getStateRuleTransistionFields() {
-		FacilioModule stageRuleModule = ModuleFactory.getStateRuleTransistionModule();
+	public static List<FacilioField> getStateRuleTransitionFields() {
+		FacilioModule stageRuleModule = ModuleFactory.getStateRuleTransitionModule();
 		List<FacilioField> list = new ArrayList<>();
 		
 		list.add(getIdField(stageRuleModule));
@@ -5626,7 +5665,7 @@ public class FieldFactory {
 		list.add(getField("formId", "FORM_ID", stageRuleModule, FieldType.NUMBER));
 		list.add(getField("moduleId", "MODULE_ID", stageRuleModule, FieldType.NUMBER));
 		list.add(getField("buttonType", "BUTTON_TYPE", stageRuleModule, FieldType.NUMBER));
-		list.add(getField("scheduled", "IS_SCHEDULED", stageRuleModule, FieldType.BOOLEAN));
+		list.add(getField("type", "TYPE", stageRuleModule, FieldType.NUMBER));
 		list.add(getField("scheduleTime", "SCHEDULE_TIME", stageRuleModule, FieldType.NUMBER));
 		return list;
 	}
@@ -5651,7 +5690,19 @@ public class FieldFactory {
 
 		list.add(getField("id", "ID", module, FieldType.ID));
 		list.add(getField("recordId", "RECORD_ID", module, FieldType.NUMBER));
-		list.add(getField("transistionId", "TRANSISTION_ID", module, FieldType.NUMBER));
+		list.add(getField("transitionId", "TRANSITION_ID", module, FieldType.NUMBER));
+		return list;
+	}
+
+	public static List<FacilioField> getTimeLogFields(FacilioModule module) {
+		List<FacilioField> list = new ArrayList<>();
+		
+		list.add(getField("id", "ID", module, FieldType.ID));
+		list.add(getField("name", "NAME", module, FieldType.STRING));
+		list.add(getField("parentId", "PARENT_ID", module, FieldType.STRING));
+		list.add(getField("startTime", "START_TIME", module, FieldType.NUMBER));
+		list.add(getField("endTime", "END_TIME", module, FieldType.NUMBER));
+		list.add(getField("duration", "DURATION", module, FieldType.NUMBER));
 		return list;
 	}
 	

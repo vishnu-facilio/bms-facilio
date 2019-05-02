@@ -50,14 +50,16 @@ public class GetReceivablesListCommand implements Command {
 					.module(module)
 					.select(fields)
 					.beanClass(ReceivableContext.class)
-					.fetchLookup((LookupField)fieldsAsMap.get("poId"))
 					;
 			
 
 			if (getCount) {
 				builder.setAggregation();
 			}
-			
+			else {
+				builder.fetchLookup((LookupField)fieldsAsMap.get("poId"));
+				
+			}
 			String orderBy = (String) context.get(FacilioConstants.ContextNames.SORTING_QUERY);
 			if (getCount!=null && !getCount && orderBy != null && !orderBy.isEmpty()) {
 				builder.orderBy(orderBy);

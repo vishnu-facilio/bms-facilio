@@ -793,6 +793,7 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new GenerateCriteriaFromFilterCommand());
 		c.addCommand(new GenerateSearchConditionCommand());
+		c.addCommand(new GetPoLineItemSerialNumbersCommand());
 		c.addCommand(new GenericGetModuleDataListCommand());
 		return c;
 	}
@@ -823,6 +824,18 @@ public class ReadOnlyChainFactory {
 		Chain c = getDefaultChain();
 		c.addCommand(SetTableNamesCommand.getForConnectedApps());
 		c.addCommand(new GetConnectedAppsListCommand());
+		return c;
+	}
+
+	public static Chain getStateFlowList() {
+		Chain c = getDefaultChain();
+		c.addCommand(new GetStateFlowListCommand());
+		return c;
+	}
+
+	public static Chain getStateTransitionList() {
+		Chain c = getDefaultChain();
+		c.addCommand(new GetStateTransitionListCommand());
 		return c;
 	}
 }
