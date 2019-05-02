@@ -155,19 +155,19 @@ public class AddSerialNumberForPoLineItemsCommand implements Command {
 	private ToolContext getTool(ToolTypesContext toolType, StoreRoomContext storeroom) throws Exception {
 		ToolContext toolc = null;
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioModule toolModule = modBean.getModule(FacilioConstants.ContextNames.ITEM);
-		List<FacilioField> toolFields = modBean.getAllFields(FacilioConstants.ContextNames.ITEM);
+		FacilioModule toolModule = modBean.getModule(FacilioConstants.ContextNames.TOOL);
+		List<FacilioField> toolFields = modBean.getAllFields(FacilioConstants.ContextNames.TOOL);
 		Map<String, FacilioField> toolFieldsMap = FieldFactory.getAsMap(toolFields);
 		SelectRecordsBuilder<ToolContext> itemselectBuilder = new SelectRecordsBuilder<ToolContext>().select(toolFields)
 				.table(toolModule.getTableName()).moduleName(toolModule.getName()).beanClass(ToolContext.class)
 				.andCondition(CriteriaAPI.getCondition(toolFieldsMap.get("storeRoom"),
 						String.valueOf(storeroom.getId()), NumberOperators.EQUALS));
 
-		List<ToolContext> items = itemselectBuilder.get();
-		if (items != null && !items.isEmpty()) {
-			for (ToolContext item : items) {
-				if (item.getToolType().getId() == toolType.getId()) {
-					return item;
+		List<ToolContext> tools = itemselectBuilder.get();
+		if (tools != null && !tools.isEmpty()) {
+			for (ToolContext tool : tools) {
+				if (tool.getToolType().getId() == toolType.getId()) {
+					return tool;
 				} else {
 					toolc = new ToolContext();
 					toolc.setStoreRoom(storeroom);
