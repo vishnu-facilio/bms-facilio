@@ -5485,6 +5485,7 @@ public class FieldFactory {
 		FacilioModule module = ModuleFactory.getMLModule();
 		fields.add(getField("id","ID",module,FieldType.NUMBER));
 		fields.add(getField("modelPath", "MODEL_PATH", module, FieldType.STRING));
+		fields.add(getField("sequence", "SEQUENCE", module, FieldType.NUMBER));
 		fields.add(getField("predictionLogModuleID","PREDICTION_LOG_MODULEID",module,FieldType.NUMBER));
 		fields.add(getField("predictionModuleID","PREDICTION_MODULEID",module,FieldType.NUMBER));
 		fields.add(getField("criteriaID","CRITERIA_ID",module,FieldType.NUMBER));
