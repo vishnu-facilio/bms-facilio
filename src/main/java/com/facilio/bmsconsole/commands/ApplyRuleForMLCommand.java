@@ -21,7 +21,7 @@ public class ApplyRuleForMLCommand implements Command {
 		{
 			
 			FacilioContext ruleContext = new FacilioContext();
-			ruleContext.put("jobid", "6");
+			ruleContext.put("jobid", "100");
 			WorkflowRuleAPI.executeScheduledRule(rule, mlContext.getPredictionTime() * 1000, ruleContext);
 		}
 		return false;
