@@ -42,61 +42,62 @@ public class AddReadingsForMLCommand implements Command {
 			FacilioModule logModule = modBean.getModule(mlContext.getPredictionLogModuleID());
 			FacilioModule predictModule = modBean.getModule(mlContext.getPredictionModuleID());
 			
-			JSONArray mlArray = (JSONArray) new JSONObject(mlContext.getResult()).get("Data");
-			List<FacilioField> fields = modBean.getAllFields(logModule.getName());
-			
-			List<ReadingContext> logReadingList = new ArrayList<>();
-			List<ReadingContext> predictReadingList = new ArrayList<>(); 
-			
-			long parentID=mlContext.getSourceID();
-		 
-			 for(int i=0; i<mlArray.length(); i++)
-			 {
-				 JSONObject readingObj = (JSONObject) mlArray.get(i);
-				 
-				 ReadingContext newReading = new ReadingContext();
-				 ReadingContext newUpdatedReading = new ReadingContext();
-				 
-				 newReading.setParentId(parentID);
-				 newUpdatedReading.setParentId(parentID);
-				 
-				 newReading.setTtime((long)readingObj.get("ttime"));
-				 newUpdatedReading.setTtime((long)readingObj.get("ttime"));
-				 
-				 
-				 for(FacilioField field:fields)
+			JSONArray mlArray = (JSONArray) new JSONObject(mlContext.getResult()).get("data");
+			if(mlArray.length()>0)
+			{
+				List<FacilioField> fields = modBean.getAllFields(logModule.getName());
+				
+				List<ReadingContext> logReadingList = new ArrayList<>();
+				List<ReadingContext> predictReadingList = new ArrayList<>(); 
+				
+				long parentID=mlContext.getSourceID();
+			 
+				 for(int i=0; i<mlArray.length(); i++)
 				 {
-					 if(readingObj.has(field.getName()) && !field.getName().equalsIgnoreCase("ttime"))
+					 JSONObject readingObj = (JSONObject) mlArray.get(i);
+					 
+					 ReadingContext newReading = new ReadingContext();
+					 ReadingContext newUpdatedReading = new ReadingContext();
+					 
+					 newReading.setParentId(parentID);
+					 newUpdatedReading.setParentId(parentID);
+					 
+					 newReading.setTtime((long)readingObj.get("ttime"));
+					 newUpdatedReading.setTtime((long)readingObj.get("ttime"));
+					 
+					 
+					 for(FacilioField field:fields)
 					 {
-						 newReading.addReading(field.getName(), readingObj.get(field.getName()));
-						 newUpdatedReading.addReading(field.getName(), readingObj.get(field.getName()));
+						 if(readingObj.has(field.getName()) && !field.getName().equalsIgnoreCase("ttime"))
+						 {
+							 newReading.addReading(field.getName(), readingObj.get(field.getName()));
+							 newUpdatedReading.addReading(field.getName(), readingObj.get(field.getName()));
+						 }
+					 }
+					 newReading.addReading("predictedTime", mlContext.getPredictionTime());
+					 logReadingList.add(newReading);
+					 predictReadingList.add(newUpdatedReading);
+					 
+					 
+					 
+				 }
+				 
+				 if(!predictReadingList.isEmpty())
+				 {
+					 
+					 try
+					 {
+						 updateExistingPredictReading(parentID,predictModule,predictReadingList);
+	
+	
+					 }
+					 catch(Exception e)
+					 {
+						 LOGGER.error("Error while updating Predicted Reading", e);
 					 }
 				 }
-				 newReading.addReading("predictedTime", mlContext.getPredictionTime());
-				 logReadingList.add(newReading);
-				 predictReadingList.add(newUpdatedReading);
-				 
-				 
-				 
-			 }
-			 
-			 if(!predictReadingList.isEmpty())
-			 {
-				 
-				 try
-				 {
-					 updateExistingPredictReading(parentID,predictModule,predictReadingList);
-
-
-				 }
-				 catch(Exception e)
-				 {
-					 LOGGER.error("Error while updating Predicted Reading", e);
-				 }
-			 }
-			 updateReading(logModule,logReadingList);
-			 
-			 
+				 updateReading(logModule,logReadingList);
+			}
 		}
 		catch(Exception e)
 		{
