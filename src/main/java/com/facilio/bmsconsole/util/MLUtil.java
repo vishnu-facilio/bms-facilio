@@ -242,8 +242,14 @@ public class MLUtil
 				MLVariableContext mlVariableContext = FieldUtil.getAsBeanFromMap(prop, MLVariableContext.class);
 				mlContext.addMLCriteriaVariable(mlVariableContext);
 			}
-			
-			mlContextList.add(mlContext);
+			if(mlContextList.size()>=mlContext.getSequence())
+			{
+				mlContextList.add(mlContext.getSequence()-1,mlContext);
+			}
+			else
+			{
+				mlContextList.add(mlContext);
+			}
 		}
 		
 		return mlContextList;	
