@@ -10,7 +10,6 @@ import com.facilio.bmsconsole.actions.PurchaseOrderCompleteCommand;
 import com.facilio.bmsconsole.commands.data.PopulateImportProcessCommand;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.chain.FacilioChain;
-import com.facilio.constants.FacilioConstants;
 
 public class TransactionChainFactory {
 
@@ -777,9 +776,13 @@ public class TransactionChainFactory {
 			c.addCommand(new ValidateNewTasksCommand());
 			c.addCommand(new LoadAllFieldsCommand());
 			c.addCommand(new AddTaskSectionsCommand());
+			c.addCommand(new AddActionForTaskCommand());
 			c.addCommand(new AddTasksCommand());
 			c.addCommand(new AddTaskOptionsCommand());
 			c.addCommand(new UpdateReadingDataMetaCommand());
+			c.addCommand(new AddTaskDefaultValueReadingsCommand());
+			c.addCommand(ReadOnlyChainFactory.getAddOrUpdateReadingValuesChain());
+			c.addCommand(new UpdateTaskReadingInfoCommand());
 			// c.addCommand(new AddTaskTicketActivityCommand());
 //			c.setPostTransactionChain(TransactionChainFactory.getUpdateTaskCountChain());
 			return c;
@@ -791,9 +794,13 @@ public class TransactionChainFactory {
 			c.addCommand(new ValidateTasksCommand());
 			c.addCommand(new LoadAllFieldsCommand());
 			c.addCommand(new AddTaskSectionsCommand());
+			c.addCommand(new AddActionForTaskCommand());
 			c.addCommand(new AddTasksCommand());
 			c.addCommand(new AddTaskOptionsCommand());
 			c.addCommand(new UpdateReadingDataMetaCommand());
+			c.addCommand(new AddTaskDefaultValueReadingsCommand());
+			c.addCommand(ReadOnlyChainFactory.getAddOrUpdateReadingValuesChain());
+			c.addCommand(new UpdateTaskReadingInfoCommand());
 			// c.addCommand(new AddTaskTicketActivityCommand());
 //			c.setPostTransactionChain(TransactionChainFactory.getUpdateTaskCountChain());
 			c.addCommand(new AddActivitiesCommand());
@@ -820,6 +827,7 @@ public class TransactionChainFactory {
 			c.addCommand(new ForkChainToInstantJobCommand()
 				.addCommand(new ExecuteAllWorkflowsCommand(RuleType.WORKORDER_AGENT_NOTIFICATION_RULE, RuleType.WORKORDER_REQUESTER_NOTIFICATION_RULE, RuleType.CUSTOM_WORKORDER_NOTIFICATION_RULE))
 				.addCommand(new ClearAlarmOnWOCloseCommand())
+				.addCommand(new ExecuteTaskFailureActionCommand())
 			);
 			c.addCommand(new ConstructTicketNotesCommand());
 			c.addCommand(getAddNotesChain());
