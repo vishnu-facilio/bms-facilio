@@ -4,21 +4,21 @@ import com.facilio.accounts.dto.User;
 
 public class TenantUserContext  {
 
-	Long tenantId;
-	Long orgid;
-	Long ouid;
-	User orgUser;
-	public Long getTenantId() {
+	private long tenantId = -1;
+	private long orgid = -1;
+	private long ouid = -1;
+	private User orgUser;
+	public long getTenantId() {
 		return tenantId;
 	}
-	public void setTenantId(Long tenantId) {
+	public void setTenantId(long tenantId) {
 		this.tenantId = tenantId;
 	}
 	
-	public Long getOrgid() {
+	public long getOrgid() {
 		return orgid;
 	}
-	public void setOrgid(Long orgid) {
+	public void setOrgid(long orgid) {
 		this.orgid = orgid;
 	}
 	
@@ -31,7 +31,7 @@ public class TenantUserContext  {
 	public long getOuid() {
 		return ouid;
 	}
-	public void setOuid(Long ouid) {
+	public void setOuid(long ouid) {
 		this.ouid = ouid;
 	}
 }
