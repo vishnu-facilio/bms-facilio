@@ -126,12 +126,6 @@ public class AddSerialNumberForPoLineItemsCommand implements Command {
 			for (ItemContext item : items) {
 				if (item.getItemType().getId() == itemType.getId()) {
 					return item;
-				} else {
-					itemc = new ItemContext();
-					itemc.setCostType(CostType.FIFO);
-					itemc.setStoreRoom(storeroom);
-					itemc.setItemType(itemType);
-					return addItem(itemModule, itemFields, itemc);
 				}
 			}
 		} else {
@@ -168,11 +162,6 @@ public class AddSerialNumberForPoLineItemsCommand implements Command {
 			for (ToolContext tool : tools) {
 				if (tool.getToolType().getId() == toolType.getId()) {
 					return tool;
-				} else {
-					toolc = new ToolContext();
-					toolc.setStoreRoom(storeroom);
-					toolc.setToolType(toolType);
-					return addTool(toolModule, toolFields, toolc);
 				}
 			}
 		} else {
