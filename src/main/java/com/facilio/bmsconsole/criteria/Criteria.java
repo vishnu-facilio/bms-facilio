@@ -61,7 +61,9 @@ public class Criteria extends ExpressionEvaluator<Predicate> implements Serializ
 	private static final Pattern REG_EX = Pattern.compile("([1-9]\\d*)");
 
 	private List<Object> valueList = null;
+	private boolean isWhereComputed = false;
 	public String computeWhereClause() {
+		isWhereComputed = true;
 		if(conditions != null && !conditions.isEmpty()) {
 			Matcher matcher = REG_EX.matcher(pattern);
 			StringBuilder builder = new StringBuilder();
@@ -89,6 +91,9 @@ public class Criteria extends ExpressionEvaluator<Predicate> implements Serializ
 	
 	@JsonIgnore
 	public List<Object> getComputedValues() {
+		if (!isWhereComputed) {
+			computeWhereClause();
+		}
 		return valueList;
 	}
 	
