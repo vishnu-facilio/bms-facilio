@@ -30,7 +30,7 @@ public class AddActionForTaskCommand implements Command {
 			for( Entry<String, List<TaskContext>> entry : taskMap.entrySet()) {
 				for(TaskContext task : entry.getValue()) {
 					long templateId = task.getWoCreateTemplateId();
-					if (templateId != -1) {
+					if (templateId > 0) {
 						Template template = templateMap.get(templateId);
 						if (template == null) {
 							template = TemplateAPI.getTemplate(templateId);
