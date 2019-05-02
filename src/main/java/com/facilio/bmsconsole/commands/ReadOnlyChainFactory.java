@@ -793,6 +793,7 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new GenerateCriteriaFromFilterCommand());
 		c.addCommand(new GenerateSearchConditionCommand());
+		c.addCommand(new GetPoLineItemSerialNumbersCommand());
 		c.addCommand(new GenericGetModuleDataListCommand());
 		return c;
 	}
