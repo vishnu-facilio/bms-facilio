@@ -700,7 +700,7 @@ public class WorkOrderAction extends FacilioAction {
 					}
 					
 					assetCategoryIds = AssetsAPI.getAssetCategoryIds(spaceIds, buildingId, true);
-					spaceCategoryIds = Collections.emptyList();
+					spaceCategoryIds = SpaceAPI.getSpaceCategoryIds(spaceIds, buildingId);
 				}
 				else {
 					List<Long> spaceIds = new ArrayList<>();
