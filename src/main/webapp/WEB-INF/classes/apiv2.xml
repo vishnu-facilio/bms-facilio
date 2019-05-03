@@ -2070,6 +2070,8 @@
 	<package name="moduleApiV2" namespace="/api/v2/modules/fields" extends="v2Api">
 		<action name="add" class="com.facilio.bmsconsole.actions.ModuleAction" method="v2addCustomFields">
 		</action>
+		<action name="update" class="com.facilio.bmsconsole.actions.ModuleAction" method="v2updateField">
+		</action>
 	</package>
 	
 	<package name="basespaceApiV2" namespace="/api/v2/basespaces/children" extends="v2Api">
