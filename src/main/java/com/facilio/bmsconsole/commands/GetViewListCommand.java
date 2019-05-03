@@ -20,6 +20,7 @@ import com.facilio.bmsconsole.util.ViewAPI;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.ViewFactory;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.fw.BeanFactory;
 
 public class GetViewListCommand implements Command {
@@ -31,7 +32,7 @@ public class GetViewListCommand implements Command {
 		FacilioModule moduleObj = null;
 		Map<String,FacilioView> viewMap = ViewFactory.getModuleViews(moduleName);
 		// Temporary
-		if (AccountUtil.getCurrentOrg().getOrgId() == 114 && moduleName.equals("approval")) {
+		if (moduleName.equals("approval") && modBean.getField("moduleState", ContextNames.WORK_ORDER) != null) {
 			viewMap = new HashMap<>();
 			FacilioView requested = ViewFactory.getRequestedStateApproval();
 			viewMap.put(requested.getName(), requested);
