@@ -450,12 +450,15 @@ public  class AgentUtil
             List<Map<String,Object>> records = bean.getMetrics(agentId,publishType,createdTime);
             if(!records.isEmpty()) {
                 record = records.get(0);
-                if (!record.isEmpty())
-                    if (createdTime == Long.parseLong(record.get(AgentKeys.CREATED_TIME).toString())) {
+                if ( (!record.isEmpty()) && createdTime == Long.parseLong(record.get(AgentKeys.CREATED_TIME).toString())) {
+                        HashMap<String, Object> criteria = new HashMap<>();
+                        criteria.put(AgentKeys.AGENT_ID, agentId);
+                        criteria.put(EventUtil.DATA_TYPE, publishType);
+
                         metrics.put(AgentKeys.SIZE, Integer.parseInt(record.get(AgentKeys.SIZE).toString()) + messageSize);
                         metrics.put(AgentKeys.NO_OF_MESSAGES, Integer.parseInt(record.get(AgentKeys.NO_OF_MESSAGES).toString()) + 1);
                         metrics.put(AgentKeys.LAST_UPDATED_TIME, lastUpdatedTime);
-                        bean.updateAgentMetrics(metrics);
+                        bean.updateAgentMetrics(metrics, criteria);
                     }
             }
             else {

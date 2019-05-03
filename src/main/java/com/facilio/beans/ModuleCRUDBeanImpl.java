@@ -683,14 +683,14 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 	}
 
     @Override
-    public void updateAgentMetrics(Map<String,Object> metrics) throws Exception {
+    public void updateAgentMetrics(Map<String,Object> metrics, Map<String, Object> criteria) throws Exception {
 		FacilioModule metricsmodule = ModuleFactory.getAgentMetricsModule();
 		GenericUpdateRecordBuilder genericUpdateRecordBuilder = new GenericUpdateRecordBuilder()
 																.table(AgentKeys.METRICS_TABLE)
 																.fields(FieldFactory.getAgentMetricsFields())
 																.andCondition(CriteriaAPI.getCurrentOrgIdCondition(metricsmodule))
-																.andCondition(CriteriaAPI.getCondition(FieldFactory.getAgentIdField(metricsmodule),metrics.get(AgentKeys.AGENT_ID).toString(),NumberOperators.EQUALS))
-																.andCondition(CriteriaAPI.getCondition(FieldFactory.getPublishTypeField(metricsmodule),metrics.get(EventUtil.DATA_TYPE).toString(),NumberOperators.EQUALS));
+																.andCondition(CriteriaAPI.getCondition(FieldFactory.getAgentIdField(metricsmodule), criteria.get(AgentKeys.AGENT_ID).toString(),NumberOperators.EQUALS))
+																.andCondition(CriteriaAPI.getCondition(FieldFactory.getPublishTypeField(metricsmodule), criteria.get(EventUtil.DATA_TYPE).toString(),NumberOperators.EQUALS));
 
                 genericUpdateRecordBuilder.update(metrics);
 

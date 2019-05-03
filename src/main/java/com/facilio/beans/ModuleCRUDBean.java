@@ -70,7 +70,7 @@ public interface ModuleCRUDBean {
 
 	public Long addLog(Map<String,Object> logData) throws Exception;
 
-	public void updateAgentMetrics(Map<String,Object> metrics) throws Exception;
+	public void updateAgentMetrics(Map<String,Object> metrics, Map<String,Object> criteria) throws Exception;
 
 	public void insertAgentMetrics(Map<String,Object> metrics) throws Exception;
 
