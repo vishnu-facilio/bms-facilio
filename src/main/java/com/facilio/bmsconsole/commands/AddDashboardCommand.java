@@ -30,7 +30,11 @@ public class AddDashboardCommand implements Command {
 			
 			List<FacilioField> fields = FieldFactory.getDashboardFields();
 			
-			getDashboardLinkName(dashboard);
+			boolean isSkip = (boolean)context.get(FacilioConstants.ContextNames.IS_SKIP);
+			
+			if(!isSkip) {
+			   getDashboardLinkName(dashboard);
+			}
 			
 			GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
 					.table(ModuleFactory.getDashboardModule().getTableName())

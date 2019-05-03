@@ -1366,6 +1366,7 @@ public class TransactionChainFactory {
 		}
 	    public static Chain getUpdateDashboardsChain() {
 			Chain c = FacilioChain.getTransactionChain();
+			c.addCommand(new DuplicateBaseSpaceForDashboard());
 			c.addCommand(new UpdateDashboardsCommand());
 			return c;
 		}

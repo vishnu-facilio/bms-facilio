@@ -6761,6 +6761,7 @@ public class DashboardAction extends FacilioAction {
 		
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.DASHBOARD, dashboard);
+		
 		context.put(FacilioConstants.ContextNames.BUILDING_ID, buildingId);
 		
 		Chain updateDashboardChain = TransactionChainFactory.getUpdateDashboardChain();
@@ -6782,6 +6783,7 @@ public class DashboardAction extends FacilioAction {
 		if(dashboard != null) {
 			context.put(FacilioConstants.ContextNames.DASHBOARDS, Collections.singletonList(dashboard));
 		}
+		context.put(FacilioConstants.ContextNames.MODULE,moduleName);
 		
 		Chain updateDashboardChain = TransactionChainFactory.getUpdateDashboardsChain();
 		updateDashboardChain.execute(context);
@@ -6849,6 +6851,11 @@ public class DashboardAction extends FacilioAction {
 			FacilioModule module = modBean.getModule(moduleName);
 			dashboard = DashboardUtil.getDashboardForBaseSpace(buildingId, module.getModuleId());
 			linkName = (dashboard != null) ? dashboard.getLinkName() : linkName;
+			if(dashboard != null) {
+			dashboard = DashboardUtil.getDashboardWithWidgets(dashboard.getId());
+			setDashboardJson(DashboardUtil.getDashboardResponseJson(dashboard));
+			return SUCCESS;
+			}
 		}
 		dashboard = DashboardUtil.getDashboardWithWidgets(linkName, moduleName);
 		setDashboardJson(DashboardUtil.getDashboardResponseJson(dashboard));

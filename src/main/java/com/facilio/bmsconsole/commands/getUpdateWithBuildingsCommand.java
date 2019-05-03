@@ -25,6 +25,8 @@ public class getUpdateWithBuildingsCommand implements Command {
 			dashboard = DashboardUtil.getDashboardForBaseSpace(buildingId, db.getModuleId());
 			
 			if(dashboard == null) { 
+				
+				context.put(FacilioConstants.ContextNames.IS_SKIP,true);
 				db.setBaseSpaceId(buildingId);
 				
 				db.setId(-1l);

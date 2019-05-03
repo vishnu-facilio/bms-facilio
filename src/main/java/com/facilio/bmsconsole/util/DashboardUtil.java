@@ -93,6 +93,7 @@ public class DashboardUtil {
 	public static final String ENERGY_METER_PURPOSE_MAIN = "Main";
 	
 	public static String BUILDING_DASHBOARD_KEY = "buildingdashboard";
+	public static String SITE_DASHBOARD_KEY = "sitedashboard";
 	
 	static {
 		RESERVED_DASHBOARD_LINK_NAME.add("portfolio");
@@ -948,14 +949,15 @@ public class DashboardUtil {
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(moduleName);
+		List<Long> baseSpaceIds = new ArrayList<>();
 		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(FieldFactory.getDashboardFields())
 				.table(ModuleFactory.getDashboardModule().getTableName())
 				.andCustomWhere("ORGID = ?", AccountUtil.getCurrentOrg().getOrgId())
-				.andCustomWhere("BASE_SPACE_ID IS NULL")
 				.andCustomWhere("MODULEID = ?", module.getModuleId());
 		
+				
 		if(getOnlyMobileDashboard) {
 			selectBuilder.andCondition(CriteriaAPI.getCondition("SHOW_HIDE_MOBILE", "mobileEnabled", "true", BooleanOperators.IS));
 		}
@@ -975,13 +977,28 @@ public class DashboardUtil {
 				dashboard.setReportSpaceFilterContext(getDashboardSpaceFilter(dashboard.getId()));
 				dashboardMap.put(dashboard.getId(), dashboard);
 				dashboardIds.add(dashboard.getId());
+				if (dashboard.getBaseSpaceId() != null) {
+					baseSpaceIds.add(dashboard.getBaseSpaceId());
+				}
 			}
 			List<DashboardContext> dashboards = getFilteredDashboards(dashboardMap, dashboardIds);
+			
+			getAllBuildingsForDashboard(dashboards,baseSpaceIds,moduleName);
+			
+			getAllSitesForDashboard(dashboards,baseSpaceIds);
 			
 			if(getOnlyMobileDashboard) {
 				splitBuildingDashboardForMobile(dashboards);
 			}
-			if(!AwsUtil.isProduction()) {
+			
+			for (int i=0;i<dashboards.size();i++) {
+				if(dashboards.get(i).getBaseSpaceId() != null) {
+				dashboards.get(i).setDashboardName(ResourceAPI.getResource(dashboards.get(i).getBaseSpaceId()).getName());
+				}
+			}
+				
+			
+			if(!AwsUtil.isProduction() && !AwsUtil.isDevelopment()) {
 				List<DashboardFolderContext> folders = getDashboardFolder(moduleName);
 				for(DashboardFolderContext folder :folders) {
 					for(DashboardContext dashboard :dashboards) {
@@ -995,6 +1012,74 @@ public class DashboardUtil {
 			return sortDashboardByFolder(dashboards);
 		}
 		return null;
+	}
+	
+	public static void getAllBuildingsForDashboard(List<DashboardContext> dashboards, List<Long> baseSpaceIds, String moduleName) throws Exception {
+		
+		 List<BuildingContext> buildings = new ArrayList<>();
+		 List<Long> spaceIds = new ArrayList<>();
+		 
+         buildings = SpaceAPI.getAllBuildings();
+         
+         for(BuildingContext building:buildings) {
+         	if(!(baseSpaceIds.contains(building.getId()))) {
+         		spaceIds.add(building.getId());
+         	}
+         }
+			
+			String spaceIdsString = new String();			
+			
+			if(moduleName.equals("energydata")) {
+				spaceIdsString = StringUtils.join(spaceIds, ',');
+				System.out.print(spaceIdsString);
+				
+				List<EnergyMeterContext> energyMeters = getMainEnergyMeter(spaceIdsString);
+				spaceIds.clear();
+				for(EnergyMeterContext energyMeter:energyMeters) {
+					spaceIds.add(energyMeter.getPurposeSpace().getId());
+				}
+
+			}
+			
+			List<DashboardContext> dbContext =  new ArrayList<>();
+			for(DashboardContext dashboard :dashboards) {
+				if(dashboard.getLinkName().equals(BUILDING_DASHBOARD_KEY) && dashboard.getBaseSpaceId() == null) {
+					for(Long spaceId:spaceIds) {
+						DashboardContext siteDashboard1 = (DashboardContext) dashboard.clone();
+						siteDashboard1.setBaseSpaceId(spaceId);
+						siteDashboard1.setId(-1l);
+						dbContext.add(siteDashboard1);
+					}
+				}
+			}
+			dashboards.addAll(dbContext);
+	}
+	
+	public static void getAllSitesForDashboard(List<DashboardContext> dashboards, List<Long> baseSpaceIds) throws  Exception {
+		List<SiteContext> sites = new ArrayList<>();
+		 List<Long> spaceIds = new ArrayList<>();
+		 
+        sites = SpaceAPI.getAllSites();
+        
+        for(SiteContext site:sites) {
+        	if(!(baseSpaceIds.contains(site.getId()))) {
+        		spaceIds.add(site.getId());
+        	}
+        }
+			
+			List<DashboardContext> dbContext =  new ArrayList<>();
+			for(DashboardContext dashboard :dashboards) {
+				if(dashboard.getLinkName().equals(SITE_DASHBOARD_KEY) && dashboard.getBaseSpaceId() == null) {
+					for(Long spaceId:spaceIds) {
+						DashboardContext siteDashboard1 = (DashboardContext) dashboard.clone();
+						siteDashboard1.setBaseSpaceId(spaceId);
+						siteDashboard1.setId(-1l);
+						dbContext.add(siteDashboard1);
+					}
+				}
+			}
+			dashboards.addAll(dbContext);
+		
 	}
 	
 	public static List<DashboardFolderContext> getDashboardListWithFolder(boolean getOnlyMobileDashboard,boolean isfromPortal) throws Exception {
@@ -1035,6 +1120,21 @@ public class DashboardUtil {
 			return sortDashboardByFolder(dashboards);
 		}
 		return null;
+	}
+	
+	private static void buildingchanges (List<DashboardContext> dashboards, List<Long> baseSpaceIds) throws Exception {
+		List<DashboardContext> dbContext =  new ArrayList<>();
+		for(DashboardContext dashboard :dashboards) {
+			if(dashboard.getLinkName().equals(BUILDING_DASHBOARD_KEY) && dashboard.getBaseSpaceId() == null) {
+		            for(int i=0;i<baseSpaceIds.size();i++) {
+		            	DashboardContext buildingDashboard1 = (DashboardContext) dashboard.clone();
+						buildingDashboard1.setBaseSpaceId(baseSpaceIds.get(i));
+						buildingDashboard1.setId(-1l);
+						dbContext.add(buildingDashboard1);
+		             }
+			}
+		}
+		dashboards.addAll(dbContext);
 	}
 	
 	
