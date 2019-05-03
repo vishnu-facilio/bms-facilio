@@ -561,6 +561,7 @@ public class SpaceAPI {
 							childSpaces = getFloorChildren(parentSpace.getId());
 							break;
 					case SPACE:
+							spaces.add(parentSpace);
 							childSpaces = getSpaceChildren(parentSpace.getId());
 							break;
 					case ZONE:
