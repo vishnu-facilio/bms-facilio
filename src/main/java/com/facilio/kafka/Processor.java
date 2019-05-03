@@ -137,10 +137,7 @@ public class Processor extends FacilioProcessor {
                     agent = getFacilioAgent(agentName);
                     agent.setId(agentUtil.addAgent(agent));
                 }
-                if(isStage && agent != null) {
-                    AgentUtil.addAgentMetrics(data.length(), agent.getId(), publishType.getKey());
-                }
-
+                int dataLength = data.length();
                 HashMap<String, Long> dataTypeLastMessageTime = deviceMessageTime.getOrDefault(deviceId, new HashMap<>());
                 long deviceLastMessageTime = dataTypeLastMessageTime.getOrDefault(dataType, 0L);
 
@@ -206,8 +203,11 @@ public class Processor extends FacilioProcessor {
                             genericUpdateRecordBuilder.update(toUpdate);
 
                         }
-
+                        if(isStage && agent != null) {
+                            AgentUtil.addAgentMetrics(dataLength, agent.getId(), publishType.getKey());
+                        }
                     }
+
                     catch (Exception e) {
                         CommonCommandUtil.emailException("Processor", "Error in processing records ", e, payLoad.toJSONString());
                         LOGGER.info("Exception occurred ", e);
