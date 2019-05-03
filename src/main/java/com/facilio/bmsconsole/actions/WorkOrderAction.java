@@ -659,6 +659,7 @@ public class WorkOrderAction extends FacilioAction {
 	
 	
 	public String getScopeFilteredValuesForPM() throws Exception {
+		buildings = Collections.emptyList();
 		
 		if(assignmentType != null) {
 			

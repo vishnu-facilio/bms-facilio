@@ -176,7 +176,7 @@ public class AssetsAPI {
 			if (allSpaces != null && !allSpaces.isEmpty()) {
 				return getAssetCategoryIds(allSpaces.stream().map(BaseSpaceContext::getId).collect(Collectors.toList()));
 			}
-			return null;
+			return Collections.emptyList();
 		}
 		else {
 			return getAssetCategoryIds(baseSpaceIDs);
