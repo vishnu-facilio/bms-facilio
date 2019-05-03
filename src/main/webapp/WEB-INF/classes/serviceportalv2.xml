@@ -90,11 +90,6 @@
 		
 	</package>
 
-	<package name="extendServicePortalApiV2" namespace="/api/v2/service" extends="servicePortalApiV2">
-		<action name="forms" class="com.facilio.bmsconsole.actions.FormAction" method="formList">
-			<param name="formType">3</param>
-		</action>
-	</package>
 	<package name="serviceWorkOrderApiV2" namespace="/api/v2/service/workorders" extends="servicePortalApiV2">
 		<action name="add" class="com.facilio.bmsconsole.actions.WorkOrderAction" method="addPortalOrders">
 		</action>

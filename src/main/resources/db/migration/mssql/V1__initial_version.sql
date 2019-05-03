@@ -5552,6 +5552,12 @@ CREATE TABLE server_info (
      PRIMARY KEY (id)
    );
    
+   CREATE TABLE IF NOT EXISTS MobileDetails (
+  	ID INT(11) AUTO_INCREMENT PRIMARY KEY,
+  	TYPE VARCHAR(20) NOT NULL,
+	MIN_VERSION DOUBLE NOT NULL
+   );
+   
    --Inventory module tables
   CREATE TABLE Inventory_vendors (
   ID BIGINT identity(1,1) PRIMARY KEY,

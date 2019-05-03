@@ -1,11 +1,11 @@
 package com.facilio.bmsconsole.modules;
 
-import com.facilio.agent.AgentKeys;
-import com.facilio.constants.FacilioConstants;
-
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+
+import com.facilio.agent.AgentKeys;
+import com.facilio.constants.FacilioConstants;
 
 public class ModuleFactory {
 
@@ -2019,6 +2019,14 @@ public class ModuleFactory {
 		gatePass.setTableName("Gate_Pass");
 		return gatePass;
 	}
+	
+	public static FacilioModule getPageModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName("page");
+		module.setDisplayName("Page");
+		module.setTableName("Page");
+		return module;
+	}
 
 	public static FacilioModule getStateRuleTransitionModule() {
 		FacilioModule module = new FacilioModule();
@@ -2061,4 +2069,12 @@ public class ModuleFactory {
 //		module.setExtendModule(getWorkflowRuleModule());
 //		return module;
 //	}
+	
+	public static FacilioModule getMobileDetailsModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName("mobileDetails");
+		module.setDisplayName("Mobile Details");
+		module.setTableName("MobileDetails");
+		return module;
+	}
 }

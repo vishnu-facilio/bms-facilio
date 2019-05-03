@@ -1,18 +1,29 @@
 package com.facilio.sql;
 
-import com.facilio.aws.util.AwsUtil;
-import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.FieldType;
-import com.facilio.transaction.FacilioConnectionPool;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Properties;
+
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-import java.sql.*;
-import java.util.*;
+import com.facilio.aws.util.AwsUtil;
+import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.FieldType;
+import com.facilio.transaction.FacilioConnectionPool;
 
 public class DBUtil {
 	private static final Logger LOGGER = LogManager.getLogger(DBUtil.class.getName());
@@ -65,6 +76,7 @@ public class DBUtil {
 		tablesWithoutOrgId.add("Weather_Stations");
 		tablesWithoutOrgId.add("Organizations");
 		tablesWithoutOrgId.add("WorkOrderRequest_EMail");
+		tablesWithoutOrgId.add("MobileDetails");
 		
 
 		return tablesWithoutOrgId;

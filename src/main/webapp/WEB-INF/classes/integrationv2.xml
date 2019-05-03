@@ -5,6 +5,23 @@
 
 <struts>
 
+	<package name="internalApiv2" namespace="/api/internal/v2" extends="v2BaseApi">
+		<interceptors>
+			<interceptor-stack name="defaultInterceptor">
+				<interceptor-ref name="defaultStack" />
+				<interceptor-ref name="json">
+					<param name="enableSMD">true</param>
+				</interceptor-ref>
+			</interceptor-stack>
+		</interceptors>
+
+		<default-interceptor-ref name="defaultInterceptor" />		
+	</package>
+	<package name="clientInternalApi" namespace="/api/internal/v2/client" extends="internalApiv2">
+		<action name="checkminversion"  class="com.facilio.internal.InternalAction" method="checkMinClientVersion">
+		</action>
+	</package>
+
 	<package name="integrationV2" namespace="/api/v2/integ" extends="v2Api">
 		<action name="addmobilesetting"  class="com.facilio.bmsconsole.actions.UserAction" method="v2addMobileSetting">
 			<!-- <param name="moduleName">setup</param>

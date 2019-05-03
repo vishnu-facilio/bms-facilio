@@ -5601,6 +5601,16 @@ public class FieldFactory {
 		return fields;
 	}
 	
+	public static List<FacilioField> getMobileDetailFields() {
+		FacilioModule module = ModuleFactory.getMobileDetailsModule();
+		List<FacilioField> fields = new ArrayList<>();
+		
+		fields.add(getField("type", "TYPE", module, FieldType.STRING));
+		fields.add(getField("minVersion", "MIN_VERSION", module, FieldType.DECIMAL));
+		
+		return fields;
+	}
+	
 	
 	public static FacilioField getField(String name, String colName, FacilioModule module, FieldType type) {
 		return getField(name, null, colName, module, type);
