@@ -143,7 +143,7 @@ public class GenerateCriteriaFromFilterCommand implements Command {
 						}
 					}
 					else {
-						values.append(obj);
+						values.append(obj.trim());
 					}
 				}
 				String valuesString = values.toString();
