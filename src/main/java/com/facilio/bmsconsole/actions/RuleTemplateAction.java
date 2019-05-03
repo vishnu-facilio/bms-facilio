@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.actions;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -26,12 +27,15 @@ import com.facilio.bmsconsole.workflow.rule.ActionType;
 import com.facilio.bmsconsole.workflow.rule.AlarmRuleContext;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
+import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext.ThresholdType;
 import com.facilio.bmsconsole.workflow.rule.WorkflowEventContext;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.util.FacilioUtil;
 import com.facilio.workflows.context.WorkflowContext;
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class RuleTemplateAction extends FacilioAction {
@@ -65,80 +69,67 @@ public class RuleTemplateAction extends FacilioAction {
 		JSONObject placeholders = (JSONObject) rules.get("placeHolder");
 		try {
 			Map<String, Object> placeHolderMap = new HashMap<>();
-			placeholders.keySet().forEach(keyStr -> {
-				final JSONObject keyvalue = (JSONObject) placeholders.get(keyStr);
-				placeHolderMap.put((String) keyvalue.get("uniqueId"), keyvalue.get("default_value"));
-			});
+			if (placeholders != null) {
+				placeholders.keySet().forEach(keyStr -> {
+					final JSONObject keyvalue = (JSONObject) placeholders.get(keyStr);
+					placeHolderMap.put((String) keyvalue.get("uniqueId"), keyvalue.get("default_value"));
+				});
+			}
 			JSONParser parser = new JSONParser();
 			String resolvedString =  StringSubstitutor.replace(rules, placeHolderMap);
-			JSONObject obj = (JSONObject) parser.parse(resolvedString);
-			JSONObject rulesObj = (JSONObject) obj.get("rules");
-			
-			Set<String> ruleskeys = rulesObj.keySet();
+			JSONObject obj = (JSONObject) parser.parse(resolvedString);			
 			AssetCategoryContext assetCategory = AssetsAPI.getCategory((String) obj.get("category"));
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioModule module = modBean.getModule((String) obj.get("moduleName"));
 			
 			AlarmRuleContext alarmRule = new AlarmRuleContext();
-			alarmRule.setPreRequsite(new ReadingRuleContext());
-			alarmRule.setAlarmTriggerRule(new ReadingRuleContext());
+			alarmRule.setPreRequsite(convertByRuleType((JSONObject) obj.get("preRequsite")));
+			alarmRule.setAlarmTriggerRule(convertByRuleType((JSONObject) obj.get("alarmCondition")));
+			if ((JSONObject) obj.get("alarmClear") != null) {
+				alarmRule.setAlarmClearRule(convertByRuleType((JSONObject) obj.get("preRequsite")));
+			} else {
+				alarmRule.setIsAutoClear(true);
+			}
+			alarmRule.getAlarmTriggerRule().setName("Trigger Name");
+			alarmRule.getPreRequsite().setEvent(new WorkflowEventContext());
+			alarmRule.getPreRequsite().getEvent().setModuleId(module.getModuleId());
+			alarmRule.getPreRequsite().getEvent().setActivityType(EventType.CREATE.getValue());
+			
 			alarmRule.getPreRequsite().setName((String) obj.get("name"));
 			alarmRule.getPreRequsite().setDescription((String) obj.get("description"));
 			alarmRule.getPreRequsite().setAssetCategoryId(assetCategory.getId());
 			
-			FacilioField field = modBean.getField((String) obj.get("threshold_metric"), module.getName());
+			ActionContext action = new ActionContext();
+			action.setActionType(ActionType.ADD_ALARM);
 			
-			alarmRule.getAlarmTriggerRule().setReadingFieldId(field.getFieldId());
-			alarmRule.getPreRequsite().setEvent(new WorkflowEventContext());
-			alarmRule.getPreRequsite().getEvent().setModuleId(module.getModuleId());
-			alarmRule.getPreRequsite().getEvent().setActivityType(EventType.CREATE.getValue());
-			alarmRule.setIsAutoClear(true);
-			for (String key : ruleskeys) {
-				JSONObject rule = (JSONObject) rulesObj.get(key);
-				ObjectMapper mapper = FieldUtil.getMapper(WorkflowContext.class);
-				JSONArray fieldJsons = FacilioUtil.getSingleTonJsonArray((JSONObject) rule.get("workflow"));
-				long thresholdType = (long) rule.get("thresholdType");
-				List<WorkflowContext> list = mapper.readValue(JSONArray.toJSONString(fieldJsons), mapper.getTypeFactory().constructCollectionType(List.class, WorkflowContext.class));
-				if (((String)rule.get("action")).equals("PreRequsite")) {
-					alarmRule.getPreRequsite().setWorkflow(list.get(0));
-					FacilioModule preModule = modBean.getModule((String) rule.get("moduleName"));
-					FacilioField preRequesitefield = modBean.getField((String) rule.get("threshold_metric"), preModule.getName());
-					alarmRule.getPreRequsite().setThresholdType((int) thresholdType);
-					alarmRule.getPreRequsite().setReadingFieldId(preRequesitefield.getId());
-				} else if (((String)rule.get("action")).equals("TRIGGER_ALARM")) {
-					alarmRule.getAlarmTriggerRule().setName("TRIGGER_ALARM");
-					alarmRule.getAlarmTriggerRule().setWorkflow(list.get(0));
-					alarmRule.getAlarmTriggerRule().setThresholdType((int) thresholdType);
-					ActionContext action = new ActionContext();
-					action.setActionType(ActionType.ADD_ALARM);
-					JSONObject possible = new JSONObject();
-					JSONArray fieldMatcher = new JSONArray();
-					JSONObject content = new JSONObject();
-					content.put("field", "problem");
-					content.put("value", obj.get("problem"));
-					fieldMatcher.add(content);
-					content = new JSONObject();
-					content.put("field", "message");
-					content.put("value", obj.get("name"));
-					fieldMatcher.add(content);
-					content = new JSONObject();
-					content.put("field", "possibleCauses");
-					content.put("value", obj.get("possible_causes"));
-					fieldMatcher.add(content);
-					content = new JSONObject();
-					content.put("field", "severity");
-					content.put("value", obj.get("severity"));
-					content = new JSONObject();
-					fieldMatcher.add(content);
-					content.put("field", "recommendation");
-					content.put("value", obj.get("possible_solution"));
-					fieldMatcher.add(content);
-					content = new JSONObject();
-					possible.put("fieldMatcher", fieldMatcher);
-					action.setTemplateJson(possible);
-					alarmRule.getAlarmTriggerRule().setActions(Collections.singletonList(action));
-				}
-			}
+			JSONObject possible = new JSONObject();
+			JSONArray fieldMatcher = new JSONArray();
+			JSONObject content = new JSONObject();
+			content.put("field", "problem");
+			content.put("value", obj.get("problem"));
+			fieldMatcher.add(content);
+			content = new JSONObject();
+			content.put("field", "message");
+			content.put("value", obj.get("name"));
+			fieldMatcher.add(content);
+			content = new JSONObject();
+			content.put("field", "possibleCauses");
+			content.put("value", obj.get("possible_causes"));
+			fieldMatcher.add(content);
+			content = new JSONObject();
+			content.put("field", "severity");
+			content.put("value", obj.get("severity"));
+			fieldMatcher.add(content);
+			content = new JSONObject();
+			content.put("field", "recommendation");
+			content.put("value", obj.get("possible_solution"));
+			fieldMatcher.add(content);
+			content = new JSONObject();
+			possible.put("fieldMatcher", fieldMatcher);
+			action.setTemplateJson(possible);
+			
+			alarmRule.getAlarmTriggerRule().setActions(Collections.singletonList(action));
+			
 			FacilioContext facilioContext = new FacilioContext();
 
 			facilioContext.put(FacilioConstants.ContextNames.ALARM_RULE, alarmRule);
@@ -154,12 +145,40 @@ public class RuleTemplateAction extends FacilioAction {
 		return result;
 	}
 	
-	public ReadingRuleContext convertToRuleContext (ReadingRuleContext rule, JSONObject ruleObject) {
-		
-		return null;
-		
+	public ReadingRuleContext convertByRuleType (JSONObject rulesObject) throws Exception {
+		ReadingRuleContext rule = new ReadingRuleContext();
+		ObjectMapper mapper = FieldUtil.getMapper(WorkflowContext.class);
+		JSONArray fieldJsons = FacilioUtil.getSingleTonJsonArray((JSONObject) rulesObject.get("workflow"));
+		long thresholdType = (long) rulesObject.get("thresholdType");
+		List<WorkflowContext> list = mapper.readValue(JSONArray.toJSONString(fieldJsons), mapper.getTypeFactory().constructCollectionType(List.class, WorkflowContext.class));
+		rule.setWorkflow(list.get(0));
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		System.out.println("Module Name----> " + rulesObject.get("moduleName"));
+		System.out.println("threshold_metric Name----> " + rulesObject.get("threshold_metric"));
+
+		FacilioModule preModule = modBean.getModule((String) rulesObject.get("moduleName"));
+		FacilioField preRequesitefield = modBean.getField((String) rulesObject.get("threshold_metric"), preModule.getName());
+		rule.setThresholdType((int) thresholdType);
+		rule.setReadingFieldId(preRequesitefield.getId());
+		switch (ThresholdType.valueOf(rule.getThresholdType())) {
+			case SIMPLE :
+				long operator = (long) rulesObject.get("operatorId");
+				rule.setOperatorId((int) operator);
+				rule.setPercentage((String) rulesObject.get("percentage"));
+			break;
+			case AGGREGATION:
+			break;
+			case BASE_LINE:
+			break;
+			case FLAPPING:
+			break;
+			case ADVANCED:
+			break;
+			case FUNCTION:
+			break;
+		}
+		return rule;
 	}
-	
 	public String getDefaultRuleTemplates() throws Exception {
 		setResult("templates", TemplateAPI.getAllRuleLibraryTemplate());
 		return SUCCESS;
