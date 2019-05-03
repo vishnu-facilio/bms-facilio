@@ -444,8 +444,6 @@ public  class AgentUtil
         Long lastUpdatedTime = System.currentTimeMillis();
         ModuleCRUDBean bean;
         Map<String, Object> metrics = new HashMap<>();
-        metrics.put(AgentKeys.AGENT_ID, agentId);
-        metrics.put(EventUtil.DATA_TYPE,publishType);
         Map<String, Object> record;
         try {
             bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", AccountUtil.getCurrentOrg().getId());
@@ -457,11 +455,12 @@ public  class AgentUtil
                         metrics.put(AgentKeys.SIZE, Integer.parseInt(record.get(AgentKeys.SIZE).toString()) + messageSize);
                         metrics.put(AgentKeys.NO_OF_MESSAGES, Integer.parseInt(record.get(AgentKeys.NO_OF_MESSAGES).toString()) + 1);
                         metrics.put(AgentKeys.LAST_UPDATED_TIME, lastUpdatedTime);
-                        metrics.put(AgentKeys.CREATED_TIME, createdTime);
                         bean.updateAgentMetrics(metrics);
                     }
             }
             else {
+                metrics.put(AgentKeys.AGENT_ID, agentId);
+                metrics.put(EventUtil.DATA_TYPE, publishType);
                 metrics.put(AgentKeys.NO_OF_MESSAGES, 1);
                 metrics.put(AgentKeys.SIZE, messageSize);
                 metrics.put(AgentKeys.CREATED_TIME, createdTime);
