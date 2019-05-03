@@ -197,7 +197,7 @@ public class Processor implements IRecordProcessor {
                                             payLoad.put(AgentKeys.CONTENT,AgentContent.DISCONNECTED.getKey());
                                         }
                                     }
-                                    if (connectionCount == 0) {
+                                    if (connectionCount == 1) {
                                         payLoad.put(AgentKeys.CONTENT, AgentContent.RESTARTED.getKey());
                                         agentUtil.putLog(payLoad,orgId, agent.getId(),false);
                                         payLoad.put(AgentKeys.CONTENT, AgentContent.CONNECTED.getKey());
