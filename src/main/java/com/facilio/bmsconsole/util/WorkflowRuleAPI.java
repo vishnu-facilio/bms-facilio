@@ -1,11 +1,48 @@
 package com.facilio.bmsconsole.util;
 
+import java.lang.reflect.InvocationTargetException;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.StringJoiner;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.json.simple.JSONObject;
+
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.bmsconsole.criteria.*;
-import com.facilio.bmsconsole.modules.*;
-import com.facilio.bmsconsole.workflow.rule.*;
+import com.facilio.bmsconsole.criteria.BooleanOperators;
+import com.facilio.bmsconsole.criteria.Condition;
+import com.facilio.bmsconsole.criteria.Criteria;
+import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.criteria.NumberOperators;
+import com.facilio.bmsconsole.criteria.PickListOperators;
+import com.facilio.bmsconsole.criteria.StringOperators;
+import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.FacilioModule;
+import com.facilio.bmsconsole.modules.FieldFactory;
+import com.facilio.bmsconsole.modules.FieldUtil;
+import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
+import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.bmsconsole.modules.UpdateChangeSet;
+import com.facilio.bmsconsole.workflow.rule.ActionContext;
+import com.facilio.bmsconsole.workflow.rule.ApprovalRuleContext;
+import com.facilio.bmsconsole.workflow.rule.EventType;
+import com.facilio.bmsconsole.workflow.rule.FieldChangeFieldContext;
+import com.facilio.bmsconsole.workflow.rule.ReadingAlarmRuleContext;
+import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
+import com.facilio.bmsconsole.workflow.rule.StateFlowRuleContext;
+import com.facilio.bmsconsole.workflow.rule.StateflowTransitionContext;
+import com.facilio.bmsconsole.workflow.rule.WorkflowEventContext;
+import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -16,15 +53,6 @@ import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.json.simple.JSONObject;
-
-import java.lang.reflect.InvocationTargetException;
-import java.sql.SQLException;
-import java.util.*;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 public class WorkflowRuleAPI {
 	private static final Logger LOGGER = LogManager.getLogger(WorkflowRuleAPI.class.getName());
@@ -928,6 +956,9 @@ public class WorkflowRuleAPI {
 				LOGGER.error("Result of rule : "+workflowRule.getId()+" for record : "+record+" is "+result);
 			}
 			if (AccountUtil.getCurrentOrg().getId() == 88l && workflowRule.getId() == 7762l) {
+				LOGGER.error("Result of rule : "+workflowRule.getId()+" for record : "+record+" is "+result);
+			}
+			if (AccountUtil.getCurrentOrg().getId() == 75l && (workflowRule.getId() == 9915l || workflowRule.getId() == 9914l)) {
 				LOGGER.error("Result of rule : "+workflowRule.getId()+" for record : "+record+" is "+result);
 			}
 			
