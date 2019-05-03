@@ -5,14 +5,17 @@ import java.util.Map;
 
 import org.apache.commons.chain.Context;
 
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
+import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.util.ActionAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.rule.ActionContext;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.serializable.SerializableCommand;
 
 public class ExecuteTaskFailureActionCommand implements SerializableCommand {
@@ -31,6 +34,7 @@ public class ExecuteTaskFailureActionCommand implements SerializableCommand {
 					if (task.isFailed() && task.getActionId() != -1) {
 						ActionContext action = ActionAPI.getAction(task.getActionId());
 						Map<String, Object> placeHolders = WorkflowRuleAPI.getOrgPlaceHolders();
+						CommonCommandUtil.appendModuleNameInKey(ContextNames.TASK, ContextNames.TASK, FieldUtil.getAsProperties(task), placeHolders);
 						action.executeAction(placeHolders, null, null, null);
 					}
 				}

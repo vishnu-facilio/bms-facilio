@@ -4475,7 +4475,7 @@ public class FieldFactory {
 		userField.setSpecialType(FacilioConstants.ContextNames.USERS);
 		fields.add(userField);
 
-		fields.add(getField("resourceId", "RESOURCE_ID", module, FieldType.LOOKUP));
+		fields.add(getField("resourceId", "RESOURCE_ID", module, FieldType.STRING));
 		fields.add(getField("duration", "DURATION", module, FieldType.NUMBER));
 		fields.add(getField("additionalInfoJsonStr", "ADDITIONAL_INFO", module, FieldType.STRING));
 		

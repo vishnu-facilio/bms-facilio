@@ -216,7 +216,7 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 				resourceIds = PreventiveMaintenanceAPI.getMultipleResourceToBeAddedFromPM(pm.getAssignmentTypeEnum(),resourceId,pm.getSpaceCategoryId(),pm.getAssetCategoryId(),null,pm.getPmIncludeExcludeResourceContexts());
 			}
 			else {
-				resourceIds = Collections.singletonList(workorderTemplate.getResourceId());
+				resourceIds = Collections.singletonList(workorderTemplate.getResourceIdVal());
 			}
 			
 			for(Long resourceId :resourceIds) {

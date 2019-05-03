@@ -174,7 +174,7 @@ public class ScheduleNewPMCommand extends FacilioJob implements SerializableComm
             long templateId = pm.getTemplateId();
             if (templateId > 0) {
                 WorkorderTemplate workorderTemplate = (WorkorderTemplate) TemplateAPI.getTemplate(templateId);
-                ResourceContext resource = ResourceAPI.getResource(workorderTemplate.getResourceId());
+                ResourceContext resource = ResourceAPI.getResource(workorderTemplate.getResourceIdVal());
                 workorderTemplate.setResource(resource);
                 for (PMTriggerContext trigger : pm.getTriggers()) {
                     if (trigger.getSchedule() != null) {

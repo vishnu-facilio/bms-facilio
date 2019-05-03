@@ -284,11 +284,11 @@ public class PreventiveMaintenanceAPI {
 		TicketStatusContext status = TicketAPI.getStatus("preopen");
 		WorkOrderContext wo = woTemplate.getWorkorder();
 		wo.setScheduledStart(nextExecutionTime * 1000);
-		if (woTemplate.getResourceId() > 0) {
+		if (woTemplate.getResourceIdVal() > 0) {
 			if (woTemplate.getResource() != null && woTemplate.getResource().getId() > 0) {
 				wo.setResource(woTemplate.getResource());
 			} else {
-				woTemplate.setResource(ResourceAPI.getResource(woTemplate.getResourceId()));
+				woTemplate.setResource(ResourceAPI.getResource(woTemplate.getResourceIdVal()));
 			}
 		}
 
@@ -1132,8 +1132,8 @@ public class PreventiveMaintenanceAPI {
 			}
 			
 			for(PreventiveMaintenance pm : pms) {
-				if (pm.getWoTemplate().getResourceId() != -1) {
-					resourceIds.add(pm.getWoTemplate().getResourceId());
+				if (pm.getWoTemplate().getResourceIdVal() != -1) {
+					resourceIds.add(pm.getWoTemplate().getResourceIdVal());
 				}
 				pm.setPmIncludeExcludeResourceContexts(TemplateAPI.getPMIncludeExcludeList(pm.getId(), null, null));
 				if (pmTriggers != null) {
@@ -1160,8 +1160,8 @@ public class PreventiveMaintenanceAPI {
 			}
 			Map<Long, ResourceContext> resourceMap = ResourceAPI.getExtendedResourcesAsMapFromIds(resourceIds, true);
 			for(PreventiveMaintenance pm : pms) {
-				if (pm.getWoTemplate().getResourceId() != -1) {
-					pm.getWoTemplate().setResource(resourceMap.get(pm.getWoTemplate().getResourceId()));
+				if (pm.getWoTemplate().getResourceIdVal() != -1) {
+					pm.getWoTemplate().setResource(resourceMap.get(pm.getWoTemplate().getResourceIdVal()));
 				}
 			}
 			if (fetchDependency) {

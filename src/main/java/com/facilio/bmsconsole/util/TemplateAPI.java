@@ -1,19 +1,72 @@
 package com.facilio.bmsconsole.util;
 
+import java.io.File;
+import java.io.FileReader;
+import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
+import java.nio.charset.StandardCharsets;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import javax.xml.bind.JAXBContext;
+
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+import org.apache.log4j.Level;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.billing.context.ExcelTemplate;
-import com.facilio.bmsconsole.context.*;
+import com.facilio.bmsconsole.context.PMIncludeExcludeResourceContext;
+import com.facilio.bmsconsole.context.PMTaskSectionTemplateTriggers;
+import com.facilio.bmsconsole.context.PMTriggerContext;
+import com.facilio.bmsconsole.context.PreventiveMaintenance;
+import com.facilio.bmsconsole.context.ResourceContext;
+import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.TaskContext.InputType;
 import com.facilio.bmsconsole.context.TaskContext.TaskStatus;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.criteria.PickListOperators;
-import com.facilio.bmsconsole.modules.*;
-import com.facilio.bmsconsole.templates.*;
+import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.FacilioModule;
+import com.facilio.bmsconsole.modules.FieldFactory;
+import com.facilio.bmsconsole.modules.FieldType;
+import com.facilio.bmsconsole.modules.FieldUtil;
+import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.bmsconsole.templates.AssignmentTemplate;
+import com.facilio.bmsconsole.templates.ControlActionTemplate;
+import com.facilio.bmsconsole.templates.DefaultTemplate;
+import com.facilio.bmsconsole.templates.DefaultTemplateWorkflowsConf;
 import com.facilio.bmsconsole.templates.DefaultTemplateWorkflowsConf.TemplateWorkflowConf;
+import com.facilio.bmsconsole.templates.EMailTemplate;
+import com.facilio.bmsconsole.templates.JSONTemplate;
+import com.facilio.bmsconsole.templates.PushNotificationTemplate;
+import com.facilio.bmsconsole.templates.SLATemplate;
+import com.facilio.bmsconsole.templates.SMSTemplate;
+import com.facilio.bmsconsole.templates.TaskSectionTemplate;
+import com.facilio.bmsconsole.templates.TaskTemplate;
+import com.facilio.bmsconsole.templates.Template;
 import com.facilio.bmsconsole.templates.Template.Type;
+import com.facilio.bmsconsole.templates.WebNotificationTemplate;
+import com.facilio.bmsconsole.templates.WorkflowTemplate;
+import com.facilio.bmsconsole.templates.WorkorderTemplate;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fs.FileStore;
 import com.facilio.fs.FileStoreFactory;
@@ -25,26 +78,6 @@ import com.facilio.workflows.context.ExpressionContext;
 import com.facilio.workflows.context.ParameterContext;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
-import org.apache.log4j.Level;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-
-import javax.xml.bind.JAXBContext;
-import java.io.File;
-import java.io.FileReader;
-import java.io.InputStream;
-import java.lang.reflect.InvocationTargetException;
-import java.nio.charset.StandardCharsets;
-import java.sql.SQLException;
-import java.util.*;
-import java.util.Map.Entry;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class TemplateAPI {
 	private static Logger log = LogManager.getLogger(TemplateAPI.class.getName());
@@ -300,13 +333,13 @@ public class TemplateAPI {
 			{
 				WorkorderTemplate template = FieldUtil.getAsBeanFromMap(templateProps,WorkorderTemplate.class);
 				woTemplates.add(template);
-				if (template.getResourceId() != -1) {
-					resourceIds.add(template.getResourceId());
+				if (template.getResourceIdVal() != -1) {
+					resourceIds.add(template.getResourceIdVal());
 				}
 			}
 			Map<Long, ResourceContext> resourceMap = ResourceAPI.getResourceAsMapFromIds(resourceIds);
 			for (WorkorderTemplate template : woTemplates) {
-				template.setResource(resourceMap.get(template.getResourceId()));
+				template.setResource(resourceMap.get(template.getResourceIdVal()));
 			}
 			return woTemplates;
 		}
@@ -1028,6 +1061,24 @@ public class TemplateAPI {
 		return templateId;
 	}
 	
+	public static int updateWorkorderTemplate(WorkorderTemplate template, WorkorderTemplate oldTemplate) throws Exception {
+		if (oldTemplate == null) {
+			oldTemplate = (WorkorderTemplate) getTemplate(template.getId());
+		}
+		addDefaultProps(template);
+		
+		FacilioModule module = ModuleFactory.getWorkOrderTemplateModule();
+		Map<String, Object> templateProps = FieldUtil.getAsProperties(template);
+		
+		// TODO handle task and section update
+		
+		int rowsUpdated = updateTemplatesWithExtendedProps(oldTemplate.getId(), module, FieldFactory.getWOrderTemplateFields(), templateProps);
+		if (template.getWorkflow() != null && oldTemplate.getWorkflowId() != -1) {
+			WorkflowUtil.deleteWorkflow(oldTemplate.getWorkflowId());
+		}
+		return rowsUpdated;
+	}
+	
 	private static Map<String, Long> addSectionTemplatesForWO(List<TaskSectionTemplate> sectionTemplates,long woTemplateId, Type taskType,Type sectiontype) throws Exception {
 		List<Map<String, Object>> templatePropList = new ArrayList<>();
 		
@@ -1172,6 +1223,25 @@ public class TemplateAPI {
 							.fields(fields)
 							.addRecords(templatePropList);
 		workorderTemplateBuilder.save();
+	}
+	
+	private static int updateTemplatesWithExtendedProps(long id, FacilioModule extendedModule, List<FacilioField> fields, Map<String, Object> templateProps) throws SQLException, RuntimeException {
+		FacilioModule templateMpdule = ModuleFactory.getTemplatesModule();
+		GenericUpdateRecordBuilder updateRecordBuilder = new GenericUpdateRecordBuilder()
+				.table(templateMpdule.getTableName())
+				.fields(FieldFactory.getTemplateFields())
+				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(templateMpdule))
+				.andCondition(CriteriaAPI.getIdCondition(id, templateMpdule));
+
+		updateRecordBuilder.update(templateProps);
+		
+		GenericUpdateRecordBuilder extendedUpdateRecordBuilder = new GenericUpdateRecordBuilder()
+				.table(extendedModule.getTableName())
+				.fields(fields)
+				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(extendedModule))
+				.andCondition(CriteriaAPI.getIdCondition(id, extendedModule));
+
+		return extendedUpdateRecordBuilder.update(templateProps);
 	}
 	
 	public static long addAlarmTemplate(long orgId, JSONTemplate template) throws Exception {

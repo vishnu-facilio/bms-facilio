@@ -40,8 +40,8 @@ public class CreateWorkorderTemplateCommand implements Command {
 		if(context.get(FacilioConstants.ContextNames.TASK_SECTION_TEMPLATES) != null) {
 			List<TaskSectionTemplate> sectionTemplates =  (List<TaskSectionTemplate>) context.get(FacilioConstants.ContextNames.TASK_SECTION_TEMPLATES);
 			workorderTemplate.setSectionTemplates(sectionTemplates);
-			if (preventivemaintenance.getPmCreationTypeEnum() == PreventiveMaintenance.PMCreationType.SINGLE && workorderTemplate.getResourceId() > 0) {
-				workorderTemplate.setResource(ResourceAPI.getResource(workorderTemplate.getResourceId()));
+			if (preventivemaintenance.getPmCreationTypeEnum() == PreventiveMaintenance.PMCreationType.SINGLE && workorderTemplate.getResourceIdVal() > 0) {
+				workorderTemplate.setResource(ResourceAPI.getResource(workorderTemplate.getResourceIdVal()));
 				if (workorderTemplate.getResource().getResourceTypeEnum() == ResourceType.ASSET) {
 					if (workorderTemplate.getSectionTemplates() != null) {
 						for (int i = 0; i < workorderTemplate.getSectionTemplates().size(); i++) {
