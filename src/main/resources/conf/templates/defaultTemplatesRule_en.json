@@ -16,18 +16,18 @@
 			 	"includeResource": "${includeResource}",
 			 	"excludeResource": "${excludeResource}"
 			},
-			"rules": {
-				"1": {
-					"condition" : "${{fanstatus}}=1",
-					"action": "PreRequsite",
-					"moduleName": "fanstatus",
-					"threshold_metric": "fanstatus",
-					"thresholdType": 1,
-					"operatorId": 9,
-					"condition_statement" : "When Fan Status is 1",
-					"workflow": {
-				        "expressions": [
-				          {
+			"preRequsite": {
+				"condition" : "${{fanstatus}}=1",
+				"action": "PreRequsite",
+				"moduleName": "fanstatus",
+				"threshold_metric": "fanstatus",
+				"thresholdType": 1,
+				"operatorId": 9,
+				"percentage": "32",
+				"condition_statement" : "When Fan Status is 1",
+				"workflow": {
+				 	"expressions": [
+				     	{
 				            "name": "a",
 				            "aggregateString": "lastValue",
 				            "fieldName": "fanstatus",
@@ -52,30 +52,32 @@
 				            "typeString": "Number"
 				          }
 				        ]
-				   }
-				},
-				"2": {
-					"condition": "${{dampercommand}}==1 && ${{damperstatus}}==0",
-					"for": "${interval}",
-					"action": "TRIGGER_ALARM",
-					"thresholdType": 5,
-					"workflow": {
-				        "expressions": [
-				          {
-				            "name": "A",
-				            "aggregateString": "lastValue",
-				            "fieldName": "dampercommand",
-				            "moduleName": "dampercommand",
-				            "criteria": {
-				              "pattern": "(1)",
-				              "conditions": {
-				                "1": {
-				                  "fieldName": "parentId",
-				                  "operatorId": 9,
-				                  "sequence": "1",
-				                  "value": "${resourceId}"
-				                }
-				              }
+				}
+			},
+			"alarmCondition": {
+				"condition": "${{dampercommand}}==1 && ${{damperstatus}}==0",
+				"for": "${interval}",
+				"action": "TRIGGER_ALARM",
+				"moduleName": "damperstatus",
+				"thresholdType": 5,
+				"threshold_metric": "damperstatus",
+				"workflow": {
+				 	"expressions": [
+				      {
+				      	"name": "A",
+				        "aggregateString": "lastValue",
+				        "fieldName": "dampercommand",
+				        "moduleName": "dampercommand",
+				        "criteria": {
+				        "pattern": "(1)",
+				        "conditions": {
+				        "1": {
+				        	"fieldName": "parentId",
+				            "operatorId": 9,
+				            "sequence": "1",
+				            "value": "${resourceId}"
+				         }
+		        		}
 				            }
 				          },
 				          {
@@ -113,9 +115,9 @@
 				        "resultEvaluator": "(A==B)&&(D==F)",
 				        "workflowUIMode": 1
 				   	},
-					"condition_statement" : "Damper Command is 1 and Damper Status is 0 for 10 min"
-				}
+				"condition_statement" : "Damper Command is 1 and Damper Status is 0 for 10 min"
 			},
+			"alarmClear": null,
 			"placeHolder": {
 				"1": {
                      "label": "Assets",
@@ -140,35 +142,36 @@
 	},
 	"2": {
 		"fdd_rule": {
-			"name":"Damper Fail to Close or Stuck Open",
-			"description": "Damper is stuck or in open state. Unable to close Damper",
-			"problem": "Damper fails to follow the command",
+			"name":"AHU Outside Air Damper Stuck open",
+			"description": "AHU Outside Air Damper is stuck or in open state. Unable to open Damper",
+			"problem": "AHU Outside Air Damper fails to follow the command",
 			"possible_causes": "1. Poor Lubrication <br/> 2. Sensor Failure",
-			"moduleName": "damperstatus",
-			"category": "FAHU",
+			"moduleName": "supplyairdampercommand",
+			"category": "AHU",
 			"severity": "Major",
-			"threshold_metric": "damperstatus",
-			"threshold_metric_display": "Damper Status",
+			"threshold_metric": "supplyairdamperstatus",
+			"threshold_metric_display": "Supply Air Damper Status",
 			"possible_solution": "1. Lubricate the bearings and louvres \n 2. Check sensor functioning",
 			"ASSET_SELECTION_CRITERIA": {
-			 	"categoryType": "FAHU",
+			 	"categoryType": "AHU",
 			 	"includeResource": "${includeResource}",
 			 	"excludeResource": "${excludeResource}"
 			},
-			"rules": {
-				"1": {
-					"condition" : "${{fanstatus}}=1",
-					"action": "PreRequsite",
-					"moduleName": "fanstatus",
-					"threshold_metric": "fanstatus",
-					"condition_statement" : "When Fan Status is 1",
-					"workflow": {
-				        "expressions": [
-				          {
+			"preRequsite": {
+				"action": "PreRequsite",
+				"moduleName": "prefilterstatus",
+				"threshold_metric": "runstatus",
+				"thresholdType": 1,
+				"operatorId": 9,
+				"percentage": "1",
+				"condition_statement" : "When Run Status is 1",
+				"workflow": {
+				 	"expressions": [
+				     	{
 				            "name": "a",
 				            "aggregateString": "lastValue",
-				            "fieldName": "fanstatus",
-				            "moduleName": "fanstatus",
+				            "fieldName": "runstatus",
+				            "moduleName": "prefilterstatus",
 				            "criteria": {
 				              "pattern": "(1)",
 				              "conditions": {
@@ -189,19 +192,43 @@
 				            "typeString": "Number"
 				          }
 				        ]
-				   }
-				},
-				"2": {
-					"condition": "${{dampercommand}}==0 && ${{damperstatus}}==1",
-					"for": "${interval}",
-					"action": "TRIGGER_ALARM",
-					"workflow": {
-				        "expressions": [
+				}
+			},
+			"alarmCondition": {
+				"condition": "${{supplyairdampercommand}}==1 && ${{supplyairdamperstatus}}==0",
+				"for": "${interval}",
+				"action": "TRIGGER_ALARM",
+				"moduleName": "supplyairdampercommand",
+				"thresholdType": 5,
+				"threshold_metric": "damperstatus",
+				"workflow": {
+				 	"expressions": [
+				      {
+				      	"name": "A",
+				        "aggregateString": "lastValue",
+				        "fieldName": "supplyairdampercommand",
+				        "moduleName": "supplyairdampercommand",
+				        "criteria": {
+				        "pattern": "(1)",
+				        "conditions": {
+				        "1": {
+				        	"fieldName": "parentId",
+				            "operatorId": 9,
+				            "sequence": "1",
+				            "value": "${resourceId}"
+				         }
+		        		}
+				            }
+				          },
 				          {
-				            "name": "A",
+				            "name": "B",
+				            "constant": "1"
+				          },
+				          {
+				            "name": "D",
 				            "aggregateString": "lastValue",
-				            "fieldName": "dampercommand",
-				            "moduleName": "dampercommand",
+				            "fieldName": "supplyairdamperstatus",
+				            "moduleName": "supplyairdampercommand",
 				            "criteria": {
 				              "pattern": "(1)",
 				              "conditions": {
@@ -215,14 +242,133 @@
 				            }
 				          },
 				          {
+				            "name": "F",
+				            "constant": "0"
+				          }
+				        ],
+				        "parameters": [
+				          {
+				            "name": "resourceId",
+				            "typeString": "Number"
+				          }
+				        ],
+				        "resultEvaluator": "(A==B)&&(D==F)",
+				        "workflowUIMode": 1
+				   	},
+				"condition_statement" : "Damper Command is 1 and Damper Status is 0 for 10 min"
+			},
+			"alarmClear": null,
+			"placeHolder": {
+				"1": {
+                     "label": "Assets",
+                     "uniqueId": "resource",
+                     "default_value": "All Asset Selected",
+                     "selection_criteria": {
+                     	"displayType": "ASSETCHOOSER"
+                    },
+                     "type": "default"
+                 },
+                 "2":{
+                     "label": "Interval",
+                     "uniqueId": "interval",
+                     "default_value": "10",
+                     "selection_criteria": {
+                     	"displayType": "DURATION"
+                    },
+                     "type": "rules"
+                 }
+			}
+		}
+	},
+	"3": {
+		"fdd_rule": {
+			"name":"AHU Outside Air Damper Stuck close",
+			"description": "AHU Outside Air Damper is stuck or in open state. Unable to close Damper",
+			"problem": "AHU Outside Air Damper fails to follow the command",
+			"possible_causes": "1. Poor Lubrication <br/> 2. Sensor Failure",
+			"moduleName": "supplyairdampercommand",
+			"category": "AHU",
+			"severity": "Major",
+			"threshold_metric": "supplyairdamperstatus",
+			"threshold_metric_display": "Supply Air Damper Status",
+			"possible_solution": "1. Lubricate the bearings and louvres \n 2. Check sensor functioning",
+			"ASSET_SELECTION_CRITERIA": {
+			 	"categoryType": "AHU",
+			 	"includeResource": "${includeResource}",
+			 	"excludeResource": "${excludeResource}"
+			},
+			"preRequsite": {
+				"action": "PreRequsite",
+				"moduleName": "runstatus",
+				"threshold_metric": "runstatus",
+				"thresholdType": 1,
+				"operatorId": 9,
+				"percentage": "1",
+				"condition_statement" : "When Run Status is 1",
+				"workflow": {
+				 	"expressions": [
+				     	{
+				            "name": "a",
+				            "aggregateString": "lastValue",
+				            "fieldName": "runstatus",
+				            "moduleName": "prefilterstatus",
+				            "criteria": {
+				              "pattern": "(1)",
+				              "conditions": {
+				                "1": {
+				                  "fieldName": "parentId",
+				                  "operatorId": 9,
+				                  "sequence": "1",
+				                  "value": "${resourceId}"
+				                }
+				              }
+				            }
+				          }
+				        ],
+				        "resultEvaluator": "a==1",
+				        "parameters": [
+				          {
+				            "name": "resourceId",
+				            "typeString": "Number"
+				          }
+				        ]
+				}
+			},
+			"alarmCondition": {
+				"condition": "${{supplyairdampercommand}}==1 && ${{supplyairdamperstatus}}==0",
+				"for": "${interval}",
+				"action": "TRIGGER_ALARM",
+				"moduleName": "supplyairdampercommand",
+				"thresholdType": 5,
+				"threshold_metric": "damperstatus",
+				"workflow": {
+				 	"expressions": [
+				      {
+				      	"name": "A",
+				        "aggregateString": "lastValue",
+				        "fieldName": "supplyairdampercommand",
+				        "moduleName": "supplyairdampercommand",
+				        "criteria": {
+				        "pattern": "(1)",
+				        "conditions": {
+				        "1": {
+				        	"fieldName": "parentId",
+				            "operatorId": 9,
+				            "sequence": "1",
+				            "value": "${resourceId}"
+				         }
+		        		}
+				            }
+				          },
+				          {
 				            "name": "B",
 				            "constant": "0"
 				          },
 				          {
 				            "name": "D",
 				            "aggregateString": "lastValue",
-				            "fieldName": "damperstatus",
-				            "moduleName": "damperstatus",
+				            "fieldName": "supplyairdamperstatus",
+				            "moduleName": "supplyairdampercommand",
 				            "criteria": {
 				              "pattern": "(1)",
 				              "conditions": {
@@ -249,9 +395,9 @@
 				        "resultEvaluator": "(A==B)&&(D==F)",
 				        "workflowUIMode": 1
 				   	},
-					"condition_statement" : "Damper Command is 0 and Damper Status is 1 for 10 min"
-				}
+				"condition_statement" : "Damper Command is 1 and Damper Status is 0 for 10 min"
 			},
+			"alarmClear": null,
 			"placeHolder": {
 				"1": {
                      "label": "Assets",
@@ -274,37 +420,38 @@
 			}
 		}
 	},
-	"3": {
+	"4": {
 		"fdd_rule": {
-			"name":"AHU is OFF but actuator is open",
-			"description": "AHU Fans are switched off and CHW valve is open",
-			"problem": "Excessive water circulation",
-			"possible_causes": "Valve connection issue",
-			"moduleName": "prefilterstatus",
+			"name":"AHU Exhaust Air Damper Stuck open",
+			"description": "AHU Exhaust Air Damper is stuck or in open state. Unable to open Damper",
+			"problem": "AHU Exhaust Air Damper fails to follow the command",
+			"possible_causes": "1. Poor Lubrication <br/> 2. Sensor Failure",
+			"moduleName": "supplyairdampercommand",
 			"category": "AHU",
 			"severity": "Major",
-			"threshold_metric": "valvefeedback",
-			"threshold_metric_display": "Valve Feedback",
-			"possible_solution": "Check the control logic",
+			"threshold_metric": "exhaustairdamperstatus",
+			"threshold_metric_display": "Supply Air Damper Status",
+			"possible_solution": "1. Lubricate the bearings and louvres \n 2. Check sensor functioning",
 			"ASSET_SELECTION_CRITERIA": {
 			 	"categoryType": "AHU",
 			 	"includeResource": "${includeResource}",
 			 	"excludeResource": "${excludeResource}"
 			},
-			"rules": {
-				"1": {
-					"condition" : "${{runstatus}}=1",
-					"action": "PreRequsite",
-					"moduleName": "${preRquesticMetricModule}",
-					"threshold_metric": "${preRquesticMetricFields}",
-					"condition_statement" : "When Fan Status is 1",
-					"workflow": {
-				        "expressions": [
-				          {
+			"preRequsite": {
+				"action": "PreRequsite",
+				"moduleName": "runstatus",
+				"threshold_metric": "runstatus",
+				"thresholdType": 1,
+				"operatorId": 9,
+				"percentage": "1",
+				"condition_statement" : "When Run Status is 1",
+				"workflow": {
+				 	"expressions": [
+				     	{
 				            "name": "a",
 				            "aggregateString": "lastValue",
-				            "fieldName": "${preRquesticMetricFields}",
-				            "moduleName": "${preRquesticMetricModule}",
+				            "fieldName": "runstatus",
+				            "moduleName": "prefilterstatus",
 				            "criteria": {
 				              "pattern": "(1)",
 				              "conditions": {
@@ -325,19 +472,302 @@
 				            "typeString": "Number"
 				          }
 				        ]
-				   }
-				},
-				"2": {
-					"condition": "${{valvefeedback}}==0",
-					"for": "${interval}",
-					"action": "TRIGGER_ALARM",
-					"workflow": {
-				        "expressions": [
+				}
+			},
+			"alarmCondition": {
+				"condition": "${{exhaustairdampercommand}}==1 && ${{exhaustairdamperstatus}}==0",
+				"for": "${interval}",
+				"action": "TRIGGER_ALARM",
+				"moduleName": "supplyairdampercommand",
+				"thresholdType": 5,
+				"threshold_metric": "damperstatus",
+				"workflow": {
+				 	"expressions": [
+				      {
+				      	"name": "A",
+				        "aggregateString": "lastValue",
+				        "fieldName": "exhaustairdampercommand",
+				        "moduleName": "supplyairdampercommand",
+				        "criteria": {
+				        "pattern": "(1)",
+				        "conditions": {
+				        "1": {
+				        	"fieldName": "parentId",
+				            "operatorId": 9,
+				            "sequence": "1",
+				            "value": "${resourceId}"
+				         }
+		        		}
+				            }
+				          },
+				          {
+				            "name": "B",
+				            "constant": "1"
+				          },
+				          {
+				            "name": "D",
+				            "aggregateString": "lastValue",
+				            "fieldName": "exhaustairdamperstatus",
+				            "moduleName": "supplyairdampercommand",
+				            "criteria": {
+				              "pattern": "(1)",
+				              "conditions": {
+				                "1": {
+				                  "fieldName": "parentId",
+				                  "operatorId": 9,
+				                  "sequence": "1",
+				                  "value": "${resourceId}"
+				                }
+				              }
+				            }
+				          },
+				          {
+				            "name": "F",
+				            "constant": "0"
+				          }
+				        ],
+				        "parameters": [
+				          {
+				            "name": "resourceId",
+				            "typeString": "Number"
+				          }
+				        ],
+				        "resultEvaluator": "(A==B)&&(D==F)",
+				        "workflowUIMode": 1
+				   	},
+				"condition_statement" : "Exhaust Damper Command is 1 and Exhaust Damper Status is 0 for 10 min"
+			},
+			"alarmClear": null,
+			"placeHolder": {
+				"1": {
+                     "label": "Assets",
+                     "uniqueId": "resource",
+                     "default_value": "All Asset Selected",
+                     "selection_criteria": {
+                     	"displayType": "ASSETCHOOSER"
+                    },
+                     "type": "default"
+                 },
+                 "2":{
+                     "label": "Interval",
+                     "uniqueId": "interval",
+                     "default_value": "10",
+                     "selection_criteria": {
+                     	"displayType": "DURATION"
+                    },
+                     "type": "rules"
+                 }
+			}
+		}
+	},
+	"5": {
+		"fdd_rule": {
+			"name":"AHU Exhaust Air Damper Stuck close",
+			"description": "AHU Exhaust Air Damper is stuck or in open state. Unable to close Damper",
+			"problem": "AHU Exhaust Air Damper fails to follow the command",
+			"possible_causes": "1. Poor Lubrication <br/> 2. Sensor Failure",
+			"moduleName": "supplyairdampercommand",
+			"category": "AHU",
+			"severity": "Major",
+			"threshold_metric": "exhaustairdamperstatus",
+			"threshold_metric_display": "Exhaust Air Damper Status",
+			"possible_solution": "1. Lubricate the bearings and louvres \n 2. Check sensor functioning",
+			"ASSET_SELECTION_CRITERIA": {
+			 	"categoryType": "AHU",
+			 	"includeResource": "${includeResource}",
+			 	"excludeResource": "${excludeResource}"
+			},
+			"preRequsite": {
+				"action": "PreRequsite",
+				"moduleName": "runstatus",
+				"threshold_metric": "runstatus",
+				"thresholdType": 1,
+				"operatorId": 9,
+				"percentage": "1",
+				"condition_statement" : "When Run Status is 1",
+				"workflow": {
+				 	"expressions": [
+				     	{
+				            "name": "a",
+				            "aggregateString": "lastValue",
+				            "fieldName": "runstatus",
+				            "moduleName": "prefilterstatus",
+				            "criteria": {
+				              "pattern": "(1)",
+				              "conditions": {
+				                "1": {
+				                  "fieldName": "parentId",
+				                  "operatorId": 9,
+				                  "sequence": "1",
+				                  "value": "${resourceId}"
+				                }
+				              }
+				            }
+				          }
+				        ],
+				        "resultEvaluator": "a==1",
+				        "parameters": [
+				          {
+				            "name": "resourceId",
+				            "typeString": "Number"
+				          }
+				        ]
+				}
+			},
+			"alarmCondition": {
+				"condition": "${{exhaustairdampercommand}}==1 && ${{exhaustairdamperstatus}}==0",
+				"for": "${interval}",
+				"action": "TRIGGER_ALARM",
+				"moduleName": "supplyairdampercommand",
+				"thresholdType": 5,
+				"threshold_metric": "damperstatus",
+				"workflow": {
+				 	"expressions": [
+				      {
+				      	"name": "A",
+				        "aggregateString": "lastValue",
+				        "fieldName": "exhaustairdampercommand",
+				        "moduleName": "supplyairdampercommand",
+				        "criteria": {
+				        "pattern": "(1)",
+				        "conditions": {
+				        "1": {
+				        	"fieldName": "parentId",
+				            "operatorId": 9,
+				            "sequence": "1",
+				            "value": "${resourceId}"
+				         }
+		        		}
+				            }
+				          },
+				          {
+				            "name": "B",
+				            "constant": "0"
+				          },
+				          {
+				            "name": "D",
+				            "aggregateString": "lastValue",
+				            "fieldName": "exhaustairdamperstatus",
+				            "moduleName": "supplyairdampercommand",
+				            "criteria": {
+				              "pattern": "(1)",
+				              "conditions": {
+				                "1": {
+				                  "fieldName": "parentId",
+				                  "operatorId": 9,
+				                  "sequence": "1",
+				                  "value": "${resourceId}"
+				                }
+				              }
+				            }
+				          },
+				          {
+				            "name": "F",
+				            "constant": "1"
+				          }
+				        ],
+				        "parameters": [
+				          {
+				            "name": "resourceId",
+				            "typeString": "Number"
+				          }
+				        ],
+				        "resultEvaluator": "(A==B)&&(D==F)",
+				        "workflowUIMode": 1
+				   	},
+				"condition_statement" : "Damper Command is 1 and Damper Status is 0 for 10 min"
+			},
+			"alarmClear": null,
+			"placeHolder": {
+				"1": {
+                     "label": "Assets",
+                     "uniqueId": "resource",
+                     "default_value": "All Asset Selected",
+                     "selection_criteria": {
+                     	"displayType": "ASSETCHOOSER"
+                    },
+                     "type": "default"
+                 },
+                 "2":{
+                     "label": "Interval",
+                     "uniqueId": "interval",
+                     "default_value": "10",
+                     "selection_criteria": {
+                     	"displayType": "DURATION"
+                    },
+                     "type": "rules"
+                 }
+			}
+		}
+	},
+	"6":  {
+		"fdd_rule": {
+			"name":"AHU Pre Filter clogged",
+			"description": "AHU Pre Filter clogged",
+			"problem": "As the outside air contains lot of dust and other pollution particles, the filter being the first line of defence for the AHU, gets the maximum dirt/debris buildup. ",
+			"possible_causes": "Excessive Dust in ambient Air",
+			"moduleName": "bagfilterdp",
+			"category": "AHU",
+			"severity": "Major",
+			"threshold_metric": "prefilterdp",
+			"threshold_metric_display": "Pre Filter DP",
+			"possible_solution": "Dirty/Clogged air filters lead to excessive air pressure drop resulting in reduced airflow, increased energy consumption by the fan and depositing dirt/debris on cooling coil, ducts etc.",
+			"ASSET_SELECTION_CRITERIA": {
+			 	"categoryType": "AHU",
+			 	"includeResource": "${includeResource}",
+			 	"excludeResource": "${excludeResource}"
+			},
+			"preRequsite": {
+				"action": "PreRequsite",
+				"moduleName": "prefilterstatus",
+				"threshold_metric": "runstatus",
+				"thresholdType": 1,
+				"operatorId": 9,
+				"percentage": "1",
+				"condition_statement" : "When Run Status is 1",
+				"workflow": {
+				 	"expressions": [
+				     	{
+				            "name": "a",
+				            "aggregateString": "lastValue",
+				            "fieldName": "runstatus",
+				            "moduleName": "prefilterstatus",
+				            "criteria": {
+				              "pattern": "(1)",
+				              "conditions": {
+				                "1": {
+				                  "fieldName": "parentId",
+				                  "operatorId": 9,
+				                  "sequence": "1",
+				                  "value": "${resourceId}"
+				                }
+				              }
+				            }
+				          }
+				        ],
+				        "resultEvaluator": "a==1",
+				        "parameters": [
+				          {
+				            "name": "resourceId",
+				            "typeString": "Number"
+				          }
+				        ]
+				}
+			},
+			"alarmCondition": {
+				"condition": "${{exhaustairdampercommand}}==1 && ${{exhaustairdamperstatus}}==0",
+				"for": "${interval}",
+				"action": "TRIGGER_ALARM",
+				"moduleName": "bagfilterdp",
+				"thresholdType": 5,
+				"threshold_metric": "prefilterdp",
+				"workflow": {
+				 	"expressions": [
 				          {
 				            "name": "A",
 				            "aggregateString": "lastValue",
-				            "fieldName": "valvefeedback",
-				            "moduleName": "prefilterstatus",
+				            "fieldName": "exhaustairdamperstatus",
+				            "moduleName": "supplyairdampercommand",
 				            "criteria": {
 				              "pattern": "(1)",
 				              "conditions": {
@@ -352,7 +782,7 @@
 				          },
 				          {
 				            "name": "B",
-				            "constant": "1"
+				            "constant": "240"
 				          }
 				        ],
 				        "parameters": [
@@ -361,318 +791,46 @@
 				            "typeString": "Number"
 				          }
 				        ],
-				        "resultEvaluator": "(A==B)",
+				        "resultEvaluator": "(A>B)",
 				        "workflowUIMode": 1
 				   	},
-					"condition_statement" : "Run Status is 1 and Valve Feedback is 0 for 10 min"
-				}
-			},
-			"placeHolder": {
-				"1": {
-                     "label": "Assets",
-                     "uniqueId": "resource",
-                     "default_value": "All Asset Selected",
-                     "selection_criteria": {
-                     	"displayType": "ASSETCHOOSER"
-                    },
-                     "type": "default"
-                 },
-                 "2":{
-                     "label": "Interval",
-                     "uniqueId": "interval",
-                     "default_value": "10",
-                     "selection_criteria": {
-                     	"displayType": "DURATION"
-                    },
-                     "type": "rules"
-                 },
-                 "3":{
-                     "label": "Run Status",
-                     "uniqueId": "preRquesticMetricFields",
-                     "default_value": "runstatus",
-                     "moduleName": "prefilterstatus",
-                     "selection_criteria": {
-                     	"displayType": "field"
-                    },
-                     "type": "Select Fields"
-                 },
-                 "4":{
-                     "label": "Module",
-                     "uniqueId": "preRquesticMetricModule",
-                     "isVisible": "false",
-                     "default_value": "runstatus",
-                     "selection_criteria": {
-                     	"displayType": "module"
-                    },
-                     "type": "Select Fields"
-                 },
-                 "5":{
-                     "label": "Valve FeedBack",
-                     "uniqueId": "triggerMetricFields",
-                     "default_value": "valvefeedback",
-                     "moduleName": "prefilterstatus",
-                     "selection_criteria": {
-                     	"displayType": "field"
-                    },
-                     "type": "Select Fields"
-                 },
-                 "6":{
-                     "label": "Module",
-                     "uniqueId": "triggerMetricModule",
-                     "isVisible": "false",
-                     "selection_criteria": {
-                     	"displayType": "module"
-                    },
-                     "default_value": "prefilterstatus",
-                     "type": "Select Fields"
-                 }
+				"condition_statement" : "Pre Filter differential pressure is lesser than threshold limit. (Standard 240)"
 			}
+			
 		}
 	},
-	"4": {
-	  "fdd_rule": {
-	    "name": "AHU Over Cooling",
-	    "description": "Supply air temperature is less than supply air temperature set-point by 95% for at least 300 seconds.",
-	    "problem": "Leads to Over cooling of the spaces and also increases the energy consumption ",
-	    "possible_causes": "-Due to improper run of Enthalpy wheel -Cooling coil actuator is open when not required",
-	    "moduleName": "prefilterstatus",
-	    "category": "AHU",
-	    "severity": "Critical",
-	    "threshold_metric": "supplyairtemperature",
-	    "threshold_metric_display": "Supply Air Temperature",
-	    "possible_solution": "Check for valve logic operation",
-	    "ASSET_SELECTION_CRITERIA": {
-	      "categoryType": "AHU",
-	      "includeResource": "${includeResource}",
-	      "excludeResource": "${excludeResource}"
-	    },
-	    "rules": {
-	      "1": {
-	        "condition": "${{valvefeedback}}==0",
-	        "for": "${interval}",
-	        "action": "TRIGGER_ALARM",
-	        "workflow": {
-	          "expressions": [
-	            {
-	              "name": "A",
-	              "aggregateString": "lastValue",
-	              "fieldName": "valvefeedback",
-	              "moduleName": "prefilterstatus",
-	              "criteria": {
-	                "pattern": "(1)",
-	                "conditions": {
-	                  "1": {
-	                    "fieldName": "parentId",
-	                    "operatorId": 9,
-	                    "sequence": "1",
-	                    "value": "${resourceId}"
-	                  }
-	                }
-	              }
-	            },
-	            {
-	              "name": "B",
-	              "constant": "1"
-	            }
-	          ],
-	          "parameters": [
-	            {
-	              "name": "resourceId",
-	              "typeString": "Number"
-	            }
-	          ],
-	          "resultEvaluator": "(A==B)",
-	          "workflowUIMode": 1
-	        },
-	        "condition_statement": "Run Status is 1 and Valve Feedback is 0 for 10 min"
-	      },
-	      "2": {
-	        "action": "TRIGGER_ALARM",
-	        "moduleName": "${preRquesticMetricModule}",
-	        "threshold_metric": "${preRquesticMetricFields}",
-	        "condition_statement": "When Fan Status is 1",
-	        "workflow": {
-	          "expressions": [
-	            {
-	              "aggregateOpperator": "LAST_VALUE",
-	              "aggregateString": "lastValue",
-	              "criteria": {
-	                "conditions": {
-	                  "1": {
-	                    "fieldName": "parentId",
-	                    "operator": "EQUALS",
-	                    "operatorId": 9,
-	                    "sequence": -1,
-	                    "value": "${resourceId}"
-	                  }
-	                },
-	                "pattern": "(1)"
-	              },
-	              "fieldName": "supplyairtemperature",
-	              "limit": "1",
-	              "moduleName": "supplyairtemperature",
-	              "name": "A",
-	              "orderByFieldName": "ttime",
-	              "sortBy": "desc"
-	            },
-	            {
-	              "constant": "0.95",
-	              "name": "B"
-	            },
-	            {
-	              "aggregateOpperator": "LAST_VALUE",
-	              "aggregateString": "lastValue",
-	              "criteria": {
-	                "conditions": {
-	                  "1": {
-	                    "fieldName": "parentId",
-	                    "operatorId": 9,
-	                    "value": "${resourceId}"
-	                  }
-	                },
-	                "pattern": "(1)"
-	              },
-	              "limit": "1",
-	              "moduleName": "supplyairtempsetpoint",
-	              "name": "C",
-	              "orderByFieldName": "ttime",
-	              "sortBy": "desc"
-	            },
-	            {
-	              "aggregateOpperator": "LAST_VALUE",
-	              "aggregateString": "lastValue",
-	              "criteria": {
-	                "computedValues": [],
-	                "conditions": {
-	                  "1": {
-	                    "columnName": "Readings.PARENT_ID",
-	                    "fieldName": "parentId",
-	                    "operatorId": 9,
-	                    "value": "${resourceId}"
-	                  }
-	                },
-	                "pattern": "(1)"
-	              },
-	              "fieldName": "supplyfanairflowstatus",
-	              "isOnlyValueExpression": false,
-	              "limit": "1",
-	              "moduleName": "outsideairdamperstatus",
-	              "name": "D",
-	              "orderByFieldName": "ttime"
-	            },
-	            {
-	              "constant": "1",
-	              "name": "F"
-	            }
-	          ],
-	          "resultEvaluator": "(A<(B*C))&&(D==F)",
-	          "parameters": [
-	            {
-	              "name": "resourceId",
-	              "typeString": "Number"
-	            }
-	          ]
-	        }
-	      }
-	    },
-	    "placeHolder": {
-	      "1": {
-	        "label": "Assets",
-	        "uniqueId": "resource",
-	        "default_value": "All Asset Selected",
-	        "selection_criteria": {
-	          "displayType": "ASSETCHOOSER"
-	        },
-	        "type": "default"
-	      },
-	      "2": {
-	        "label": "Interval",
-	        "uniqueId": "interval",
-	        "default_value": "10",
-	        "selection_criteria": {
-	          "displayType": "DURATION"
-	        },
-	        "type": "rules"
-	      },
-	      "3": {
-	        "label": "Run Status",
-	        "uniqueId": "preRquesticMetricFields",
-	        "default_value": "runstatus",
-	        "moduleName": "prefilterstatus",
-	        "selection_criteria": {
-	          "displayType": "field"
-	        },
-	        "type": "Select Fields"
-	      },
-	      "4": {
-	        "label": "Module",
-	        "uniqueId": "preRquesticMetricModule",
-	        "isVisible": "false",
-	        "default_value": "runstatus",
-	        "selection_criteria": {
-	          "displayType": "module"
-	        },
-	        "type": "Select Fields"
-	      },
-	      "5": {
-	        "label": "Valve FeedBack",
-	        "uniqueId": "triggerMetricFields",
-	        "default_value": "valvefeedback",
-	        "moduleName": "prefilterstatus",
-	        "selection_criteria": {
-	          "displayType": "field"
-	        },
-	        "type": "Select Fields"
-	      },
-	      "6": {
-	        "label": "Module",
-	        "uniqueId": "triggerMetricModule",
-	        "isVisible": "false",
-	        "selection_criteria": {
-	          "displayType": "module"
-	        },
-	        "default_value": "prefilterstatus",
-	        "type": "Select Fields"
-	      }
-	    }
-	  }
-	},
-	"5": {
+	"7":  {
 		"fdd_rule": {
-			"name":"Flapping",
-			"description": "Flapping Rules",
-			"problem": "Flapping Rules Flapping Rules Flapping Rules Flapping Rules",
-			"possible_causes": "Flapping Rules Flapping RulesFlapping RulesFlapping Rules",
-			"moduleName": "energydata",
-			"category": "Energy Meter",
-			"severity": "Critical",
-			"threshold_metric": "totalEnergyConsumptionDelta",
-			"threshold_metric_display": "Energy",
-			"possible_solution": "Flapping",
+			"name":"AHU Bag Filter clogged",
+			"description": "AHU Bag Filter clogged",
+			"problem": "As the outside air contains lot of dust and other pollution particles, the filter being the first line of defence for the AHU, gets the maximum dirt/debris buildup. ",
+			"possible_causes": "Excessive Dust in ambient Air",
+			"moduleName": "bagfilterdp",
+			"category": "AHU",
+			"severity": "Major",
+			"threshold_metric": "bagfilterdp",
+			"threshold_metric_display": "Bag Filter DP",
+			"possible_solution": "Dirty/Clogged air filters lead to excessive air pressure drop resulting in reduced airflow, increased energy consumption by the fan and depositing dirt/debris on cooling coil, ducts etc.",
 			"ASSET_SELECTION_CRITERIA": {
-			 	"categoryType": "Energy Meter",
+			 	"categoryType": "AHU",
 			 	"includeResource": "${includeResource}",
 			 	"excludeResource": "${excludeResource}"
 			},
-			"rules": {
-				"1": {
-					"action": "PreRequsite",
-					"moduleName": "marked",
-					"threshold_metric": "Marked",
-					"thresholdType": 1,
-					"condition_statement" : "Marked reached 43 twice",
-					"consecutiveoroverperiod": 1,
-					"dateRange": 1,
-					"overperiod": 1,
-					"percentage": 2,
-					"occurences": 2,
-					"workflow": {
-				        "expressions": [
-				          {
+			"preRequsite": {
+				"action": "PreRequsite",
+				"moduleName": "prefilterstatus",
+				"threshold_metric": "runstatus",
+				"thresholdType": 1,
+				"operatorId": 9,
+				"percentage": "1",
+				"condition_statement" : "When Run Status is On",
+				"workflow": {
+				 	"expressions": [
+				     	{
 				            "name": "a",
 				            "aggregateString": "lastValue",
-				            "fieldName": "fanstatus",
-				            "moduleName": "fanstatus",
+				            "fieldName": "runstatus",
+				            "moduleName": "prefilterstatus",
 				            "criteria": {
 				              "pattern": "(1)",
 				              "conditions": {
@@ -681,88 +839,64 @@
 				                  "operatorId": 9,
 				                  "sequence": "1",
 				                  "value": "${resourceId}"
-				                }, 
-				                "2": {
-                  					"fieldName": "ttime",
-                  					"operatorId": 42,
-                  					"sequence": "2",
-                 				 	"value": "1,${ttime}"
 				                }
 				              }
-				            },
-				            "pattern": "(1 and 2)"
-				          	}
+				            }
+				          }
 				        ],
 				        "resultEvaluator": "a==1",
 				        "parameters": [
 				          {
 				            "name": "resourceId",
 				            "typeString": "Number"
-				          },
-				           {
-				            "name": "ttime",
-				            "typeString": "Number"
 				          }
 				        ]
-				   }
-				},
-				"2": {
-					"action": "TRIGGER_ALARM",
-					"thresholdType": "4",
-					"minFlapValue": "${minFlapValue}",
-					"maxFlapValue": "${maxFlapValue}",
-					"flapFrequency": "${flapFrequency}",
-					"flapInterval": "${flapInterval}",
-					"condition_statement" : "When Energy kwh flaps a ramdom changes to the max of 1000 and immeditealy hits back to 100 for 2 times in interval of 1200 min"
 				}
 			},
-			"placeHolder": {
-				"1": {
-                     "label": "Assets",
-                     "uniqueId": "resource",
-                     "default_value": "All Asset Selected",
-                     "selection_criteria": {
-                     	"displayType": "ASSETCHOOSER"
-                    },
-                     "type": "default"
-                 },
-                 "2":{
-                     "label": "Flapping Frequency",
-                     "uniqueId": "interval",
-                     "default_value": "72000000",
-                     "selection_criteria": {
-                     	"displayType": "DURATION"
-                    },
-                     "type": "rules"
-                 },
-                "3": {
-                     "label": "Lower Trigger",
-                     "uniqueId": "minFlapValue",
-                     "default_value": "100",
-                     "selection_criteria": {
-                     	"displayType": "NUMBER"
-                    },
-                     "type": "rules"
-                 },
-                 "4": {
-                     "label": "Upper Trigger",
-                     "uniqueId": "maxFlapValue",
-                     "default_value": "1000",
-                     "selection_criteria": {
-                     	"displayType": "NUMBER"
-                    },
-                     "type": "rules"
-                 },
-                 "5": {
-                     "label": "Flapping Frequency",
-                     "uniqueId": "flapFrequency",
-                     "default_value": "2",
-                     "selection_criteria": {
-                     	"displayType": "NUMBER"
-                    },
-                     "type": "rules"
-                 }
+			"alarmCondition": {
+				"condition": "${{exhaustairdampercommand}}==1 && ${{exhaustairdamperstatus}}==0",
+				"for": "${interval}",
+				"action": "TRIGGER_ALARM",
+				"moduleName": "bagfilterdp",
+				"thresholdType": 5,
+				"threshold_metric": "bagfilterdp",
+				"workflow": {
+				 	"expressions": [
+				          {
+				            "name": "D",
+				            "aggregateString": "lastValue",
+				            "fieldName": "bagfilterdp",
+				            "moduleName": "bagfilterdp",
+				            "criteria": {
+				              "pattern": "(1)",
+				              "conditions": {
+				                "1": {
+				                  "fieldName": "parentId",
+				                  "operatorId": 13,
+				                  "sequence": "1",
+				                  "value": "${resourceId}"
+				                }
+				              }
+				            }
+				          },
+				          {
+				            "name": "F",
+				            "constant": "120"
+				          }
+				        ],
+				        "parameters": [
+				          {
+				            "name": "resourceId",
+				            "typeString": "Number"
+				          }
+				        ],
+				        "resultEvaluator": "(D>F)",
+				        "workflowUIMode": 1
+				   	},
+				"condition_statement" : "Bag Filter differential pressure is lesser than threshold limit. (Standard 120)"
 			}
+			
 		}
 	}
+	
 }
