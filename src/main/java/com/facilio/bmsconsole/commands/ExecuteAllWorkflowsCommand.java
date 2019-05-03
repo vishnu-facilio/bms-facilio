@@ -148,12 +148,6 @@ public class ExecuteAllWorkflowsCommand implements SerializableCommand
 					LOGGER.error("Matching Rules : "+workflowRules);
 					LOGGER.error("Rule Types : "+Arrays.toString(ruleTypes));
 				}
-				if (AccountUtil.getCurrentOrg().getId() == 75 && "ph".equals(moduleName)) {
-					LOGGER.error("DEMO DEBUGGING");
-					LOGGER.error("Records : "+entry.getValue());
-					LOGGER.error("Matching Rules : "+workflowRules);
-					LOGGER.error("Rule Types : "+Arrays.toString(ruleTypes));
-				}
 				
 				if (workflowRules != null && !workflowRules.isEmpty()) {
 					Map<String, Object> placeHolders = WorkflowRuleAPI.getOrgPlaceHolders();

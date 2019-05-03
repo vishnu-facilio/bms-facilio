@@ -958,9 +958,6 @@ public class WorkflowRuleAPI {
 			if (AccountUtil.getCurrentOrg().getId() == 88l && workflowRule.getId() == 7762l) {
 				LOGGER.error("Result of rule : "+workflowRule.getId()+" for record : "+record+" is "+result);
 			}
-			if (AccountUtil.getCurrentOrg().getId() == 75l && (workflowRule.getId() == 9915l || workflowRule.getId() == 9914l)) {
-				LOGGER.error("Result of rule : "+workflowRule.getId()+" for record : "+record+" is "+result);
-			}
 			
 			boolean stopFurtherExecution = workflowRule.isTerminateExecution();
 			
