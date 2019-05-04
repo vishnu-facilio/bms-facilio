@@ -68,9 +68,16 @@ public class GetFormMetaCommand implements Command {
 				form.setModule(modBean.getModule(moduleName));
 				
 				if (form.getSections() != null) {
+					boolean isFirstSection = true;
 					for(FormSection section: form.getSections()) {
 						List<FormField> fields = section.getFields();
-						setFields(modBean, fields, formModuleName, childModule);
+						if (isFirstSection) {
+							setFields(modBean, fields, formModuleName, childModule);
+							isFirstSection = false;
+						}
+						else {
+							FormsAPI.setFieldDetails(modBean, fields, moduleName);
+						}
 					}
 				}
 				else {
