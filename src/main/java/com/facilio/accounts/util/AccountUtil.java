@@ -106,8 +106,14 @@ public class AccountUtil {
 		return roleBean;
 	}
 
-	
-	public enum FeatureLicense {
+    public static void setReqUri(String requestURI) {
+		if (currentAccount.get() != null) {
+			currentAccount.get().setRequestUri(requestURI);
+		}
+    }
+
+
+    public enum FeatureLicense {
 		MAINTENANCE (1),
 		ALARMS (2),
 		ENERGY (4),

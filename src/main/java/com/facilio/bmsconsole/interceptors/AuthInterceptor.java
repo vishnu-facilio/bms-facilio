@@ -76,6 +76,7 @@ public class AuthInterceptor extends AbstractInterceptor {
 					request.setAttribute("USERID", currentAccount.getUser().getOuid());
 					
 					try {
+						AccountUtil.setReqUri(request.getRequestURI());
 						return arg0.invoke();
 					} catch (Exception e) {
 						System.out.println("exception code 154");

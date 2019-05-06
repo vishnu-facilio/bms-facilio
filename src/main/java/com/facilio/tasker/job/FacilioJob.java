@@ -42,6 +42,7 @@ public abstract class FacilioJob implements Runnable {
 			long orgId = jc.getOrgId();
 			if(orgId != -1) {
 				AccountUtil.setCurrentAccount(orgId);
+				AccountUtil.setReqUri(jc.getJobName());
 			}
 			
 			FacilioContext context = new FacilioContext();
