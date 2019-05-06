@@ -3616,9 +3616,13 @@ public class DashboardAction extends FacilioAction {
 			builder.andCriteria(scopeCriteria);
 		}
 		
-		Criteria permissionCriteria = AccountUtil.getCurrentUser().getRole().permissionCriteria(module.getName(),"read");
-		if (permissionCriteria != null) {
-			builder.andCriteria(permissionCriteria);
+		try {
+			Criteria permissionCriteria = AccountUtil.getCurrentUser().getRole().permissionCriteria(module.getName(),"read");
+			if (permissionCriteria != null) {
+				builder.andCriteria(permissionCriteria);
+			}
+		}
+		catch(Exception e) {
 		}
 		
 		if (getFilters() != null) {
