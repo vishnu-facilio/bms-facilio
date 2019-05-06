@@ -284,7 +284,7 @@ public class FetchReportDataCommand implements Command {
 				
 				if (groupByField.getAggrEnum() != null) {
 					if (groupByField.getAggrEnum() instanceof SpaceAggregateOperator) {
-						gField = applySpaceAggregation(dp, groupByField.getAggrEnum(), selectBuilder, addedModules);
+						gField = applySpaceAggregation(dp, groupByField.getAggrEnum(), selectBuilder, addedModules, groupByField.getField());
 					} else {
 						gField = groupByField.getAggrEnum().getSelectField(gField);
 					}
@@ -415,7 +415,7 @@ public class FetchReportDataCommand implements Command {
 		groupedList.add(dataPointList);
 	}
 	
-	private FacilioField applySpaceAggregation(ReportDataPointContext dp, AggregateOperator xAggr, SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder, Set<FacilioModule> addedModules) throws Exception {
+	private FacilioField applySpaceAggregation(ReportDataPointContext dp, AggregateOperator aggr, SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder, Set<FacilioModule> addedModules, FacilioField field) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule resourceModule = modBean.getModule(FacilioConstants.ContextNames.RESOURCE);
 		FacilioModule baseSpaceModule = modBean.getModule(FacilioConstants.ContextNames.BASE_SPACE);
@@ -423,7 +423,7 @@ public class FetchReportDataCommand implements Command {
 		
 		if (!isAlreadyAdded(addedModules, resourceModule)) {
 			selectBuilder.innerJoin(resourceModule.getTableName())
-						.on(resourceModule.getTableName()+".ID = "+dp.getxAxis().getField().getCompleteColumnName());
+						.on(resourceModule.getTableName()+".ID = " + field.getCompleteColumnName());
 			addedModules.add(resourceModule);
 		}
 		selectBuilder.innerJoin(baseSpaceModule.getTableName())
@@ -431,7 +431,7 @@ public class FetchReportDataCommand implements Command {
 		addedModules.add(baseSpaceModule);
 		
 		FacilioField spaceField = null;
-		switch ((SpaceAggregateOperator)xAggr) {
+		switch ((SpaceAggregateOperator) aggr) {
 			case SITE:
 				spaceField = fieldMap.get("site").clone();
 				break;
@@ -455,7 +455,7 @@ public class FetchReportDataCommand implements Command {
 				.andCondition(CriteriaAPI.getCondition("RESOURCE_TYPE", "resourceType", String.valueOf("1"), NumberOperators.EQUALS));
 		
 		selectBuilder.andCustomWhere(spaceField.getCompleteColumnName() + " in (" + builder.constructSelectStatement() + ")");
-		spaceField.setName(dp.getxAxis().getFieldName());
+		spaceField.setName(field.getName());
 		spaceField.setDataType(FieldType.NUMBER);
 		return spaceField;
 	}
@@ -522,7 +522,7 @@ public class FetchReportDataCommand implements Command {
 		if (dp.getyAxis().getAggrEnum() != null && dp.getyAxis().getAggr() != 0) {
 			if (xAggr != null) {
 				if (xAggr instanceof SpaceAggregateOperator) {
-					xAggrField = applySpaceAggregation(dp, xAggr, selectBuilder, addedModules);
+					xAggrField = applySpaceAggregation(dp, xAggr, selectBuilder, addedModules, dp.getxAxis().getField());
 				}
 				else {
 					xAggrField = xAggr.getSelectField(dp.getxAxis().getField());
