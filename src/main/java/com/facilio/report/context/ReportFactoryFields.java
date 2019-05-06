@@ -48,8 +48,8 @@ public class ReportFactoryFields {
 		}
 		
 		// loading additional module fields
-		JSONObject rearragedFields = rearrangeFields(selectedFields, "workorder");
-		setAdditionalModulemap(rearragedFields, "workorder", bean);
+		JSONObject rearrangedFields = rearrangeFields(selectedFields, "workorder");
+		setAdditionalModulemap(rearrangedFields, "workorder", bean);
 		HashMap<String , Map<String, FacilioField>> additionalModuleFields = getAdditionalModuleFields("workorder", bean);
 		
 	
@@ -65,12 +65,20 @@ public class ReportFactoryFields {
 		assetFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.ASSET).get("warrantyExpiryDate"));
 		
 		
-		Map<String, List<FacilioField>> dimensionFieldMap = (Map<String, List<FacilioField>>)rearragedFields.get("dimension");
+		Map<String, List<FacilioField>> dimensionFieldMap = (Map<String, List<FacilioField>>)rearrangedFields.get("dimension");
 
 		
 		dimensionFieldMap.put(FacilioConstants.ContextNames.ASSET, assetFields);
 		
-		return rearragedFields;
+		
+		ArrayList<String> dimensionListOrder = new ArrayList<String>();
+		dimensionListOrder.add("time");
+		dimensionListOrder.add("workorder");
+		dimensionListOrder.add("asset");
+		
+		rearrangedFields.put("dimensionListOrder", dimensionListOrder);
+		
+		return rearrangedFields;
 	}
 	
 	public static JSONObject getassetReportFields() throws Exception{
@@ -101,7 +109,16 @@ public class ReportFactoryFields {
 		}
 		
 		
-		return rearrangeFields(selectedFields, "asset");
+		JSONObject rearrangedFields = rearrangeFields(selectedFields, "asset");
+		
+		ArrayList<String> dimensionListOrder = new ArrayList<String>();
+		dimensionListOrder.add("time");
+		dimensionListOrder.add("asset");
+		
+		rearrangedFields.put("dimensionListOrder", dimensionListOrder);
+		
+		return rearrangedFields;
+		
 	}
 	
 	public static JSONObject getAlarmReportFields() throws Exception{
@@ -130,10 +147,10 @@ public class ReportFactoryFields {
 		}
 		
 		// loading additional module fields
-				JSONObject rearragedFields = rearrangeFields(selectedFields, "alarm");
+				JSONObject rearrangedFields = rearrangeFields(selectedFields, "alarm");
 				HashMap<String , Map<String, FacilioField>> additionalModuleFields = getAdditionalModuleFields("alarm", bean);
 				
-				setAdditionalModulemap(rearragedFields, "alarm", bean);
+				setAdditionalModulemap(rearrangedFields, "alarm", bean);
 				
 				List<FacilioField> assetFields = new ArrayList<FacilioField>();
 				assetFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.ASSET).get("name"));
@@ -147,11 +164,18 @@ public class ReportFactoryFields {
 				assetFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.ASSET).get("warrantyExpiryDate"));
 				
 				
-				Map<String, List<FacilioField>> dimensionFieldMap = (Map<String, List<FacilioField>>)rearragedFields.get("dimension");
+				Map<String, List<FacilioField>> dimensionFieldMap = (Map<String, List<FacilioField>>)rearrangedFields.get("dimension");
 				
 				dimensionFieldMap.put(FacilioConstants.ContextNames.ASSET, assetFields);
+				
+				ArrayList<String> dimensionListOrder = new ArrayList<String>();
+				dimensionListOrder.add("time");
+				dimensionListOrder.add("alarm");
+				dimensionListOrder.add("asset");
+				
+				rearrangedFields.put("dimensionListOrder", dimensionListOrder);
 		
-		return rearragedFields;	
+		return rearrangedFields;	
 	}
 	
 	public static JSONObject getReportFields(String moduleName) throws Exception {
