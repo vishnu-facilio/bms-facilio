@@ -104,7 +104,7 @@ public class UpdateTaskCommand implements Command {
 						closedtask.add(info);
 						}
 						JSONObject newinfo = new JSONObject();
-						newinfo.put("closetasks", closedtask);
+//						newinfo.put("closetasks", closedtask);
 						CommonCommandUtil.addActivityToContext(oldTasks.get(0).getParentTicketId(), -1, WorkOrderActivityType.CLOSE_ALL_TASK, newinfo, (FacilioContext) context);
                      }
 				} else {
