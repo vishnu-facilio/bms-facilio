@@ -112,7 +112,7 @@
 		
 		<action name="list"
 			class="com.facilio.bmsconsole.actions.StateFlowAction" method="getStateFlowList" />
-		<action name="*"
+		<action name="view"
 			class="com.facilio.bmsconsole.actions.StateFlowAction" method="viewStateFlow" />
 	</package>
 	
@@ -128,7 +128,7 @@
 			
 		<action name="list"
 			class="com.facilio.bmsconsole.actions.StateFlowAction" method="getStateTransitionList" />
-		<action name="*"
+		<action name="view"
 			class="com.facilio.bmsconsole.actions.StateFlowAction" method="viewStateTransition" />
 	</package>
 
