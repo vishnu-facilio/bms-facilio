@@ -98,11 +98,11 @@ public class UpdateTaskCommand implements Command {
 					boolean bulkAction = (boolean) context.get(FacilioConstants.ContextNames.IS_BULK_ACTION);
 					if (bulkAction) {
 						taskActivity = EventType.CLOSE_ALL_TASK;
-						for(TaskContext oldTask : oldTasks) {
-							JSONObject info = new JSONObject();
-						info.put("subject", oldTask.getSubject());
-						closedtask.add(info);
-						}
+//						for(TaskContext oldTask : oldTasks) {
+//							JSONObject info = new JSONObject();
+//						info.put("subject", oldTask.getSubject());
+//						closedtask.add(info);
+//						}
 						JSONObject newinfo = new JSONObject();
 //						newinfo.put("closetasks", closedtask);
 						CommonCommandUtil.addActivityToContext(oldTasks.get(0).getParentTicketId(), -1, WorkOrderActivityType.CLOSE_ALL_TASK, newinfo, (FacilioContext) context);
