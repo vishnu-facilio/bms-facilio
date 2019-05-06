@@ -5716,6 +5716,33 @@ public class FieldFactory {
 		return list;
 	}
 	
+	public static List<FacilioField> getRuleTemplateRelFields() {
+		List<FacilioField> fields = new ArrayList<>();
+		FacilioModule module = ModuleFactory.getReadingRuleModule();
+
+		FacilioField id = new FacilioField();
+		id.setName("id");
+		id.setDataType(FieldType.ID);
+		id.setColumnName("ID");
+		id.setModule(module);
+		fields.add(id);
+
+		FacilioField ruleId = new FacilioField();
+		ruleId.setName("ruleId");
+		ruleId.setDataType(FieldType.NUMBER);
+		ruleId.setColumnName("RULE_ID");
+		ruleId.setModule(module);
+		fields.add(ruleId);
+
+		FacilioField defaultTemplateId = new FacilioField();
+		defaultTemplateId.setName("defaultTemplateId");
+		defaultTemplateId.setDataType(FieldType.NUMBER);
+		defaultTemplateId.setColumnName("DEFAULT_TEMPLATE_ID");
+		defaultTemplateId.setModule(module);
+		fields.add(defaultTemplateId);
+
+		return fields;
+	}
 //	public static List<FacilioField> getStateFields() {
 //		FacilioModule stateModule = ModuleFactory.getStateModule();
 //		List<FacilioField> list = new ArrayList<>();
