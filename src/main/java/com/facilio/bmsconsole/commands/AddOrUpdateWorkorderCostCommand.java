@@ -52,6 +52,7 @@ public class AddOrUpdateWorkorderCostCommand implements Command {
 					List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.WO_LABOUR);
 					Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(fields);
 					cost = getTotalLabourCost(parentId, module, fieldsMap);
+					qty = getTotalNoOfLabour(parentId, module, fieldsMap);
 				}
 
 				FacilioModule workorderCostsModule = modBean.getModule(FacilioConstants.ContextNames.WORKORDER_COST);
@@ -223,6 +224,29 @@ public class AddOrUpdateWorkorderCostCommand implements Command {
 		if (rs != null && rs.size() > 0) {
 			if (rs.get(0).get("totalItems") != null) {
 				return (long) rs.get(0).get("totalItems");
+			}
+			return 0;
+		}
+		return 0;
+	}
+	
+	private long getTotalNoOfLabour(long id, FacilioModule module, Map<String, FacilioField> fieldsMap) throws Exception {
+		if (id <= 0) {
+			return 0;
+		}
+
+		List<FacilioField> field = new ArrayList<>();
+		field.add(FieldFactory.getField("totalLabours", "COUNT(DISTINCT LABOUR)", FieldType.NUMBER));
+
+		SelectRecordsBuilder<WorkOrderLabourContext> builder = new SelectRecordsBuilder<WorkOrderLabourContext>()
+				.select(field).moduleName(module.getName())
+				.andCondition(
+						CriteriaAPI.getCondition(fieldsMap.get("parentId"), String.valueOf(id), NumberOperators.EQUALS)).setAggregation();
+
+		List<Map<String, Object>> rs = builder.getAsProps();
+		if (rs != null && rs.size() > 0) {
+			if (rs.get(0).get("totalLabours") != null) {
+				return (long) rs.get(0).get("totalLabours");
 			}
 			return 0;
 		}
