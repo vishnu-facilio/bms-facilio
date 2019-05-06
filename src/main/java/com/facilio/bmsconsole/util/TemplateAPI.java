@@ -91,7 +91,6 @@ public class TemplateAPI {
 	private static  Map<DefaultTemplateType, Map<String, Map<Integer,DefaultTemplate>>> loadDefaultTemplates() {
 		try {
 			Map<DefaultTemplateType, Map<String, Map<Integer,DefaultTemplate>>> typeDefaultTemplates = new HashMap<>();
-			Map<String, Map<Integer,DefaultTemplate>> defaultTemplates = new HashMap<>();
 			ClassLoader classLoader = TemplateAPI.class.getClassLoader();
 			
 			JAXBContext jaxbContext = JAXBContext.newInstance(DefaultTemplateWorkflowsConf.class);
@@ -106,6 +105,7 @@ public class TemplateAPI {
 			JSONParser parser = new JSONParser();
 			for (DefaultTemplateType defaultTemplateType : DefaultTemplateType.getAllDefaultTemplateType()) {
 				String path = DEFAULT_TEMPLATES_FILE_PATH + defaultTemplateType.getName() + '_';
+				Map<String, Map<Integer,DefaultTemplate>> defaultTemplates = new HashMap<>();
 				for (String lang : LANG) {
 					path += lang;
 					JSONObject templateJsons = (JSONObject) parser.parse(new FileReader(classLoader.getResource(path+".json").getFile()));
@@ -368,7 +368,7 @@ public class TemplateAPI {
 				List<Map<String, Object>> templates = getExtendedProps(ModuleFactory.getEMailTemplatesModule(), FieldFactory.getEMailTemplateFields(), id);
 				if(templates != null && !templates.isEmpty()) {
 					templateMap.putAll(templates.get(0));
-//					template = getEMailTemplateFromMap(templateMap);
+					template = getEMailTemplateFromMap(templateMap);
 				}
 			}break;
 			case SMS: {
