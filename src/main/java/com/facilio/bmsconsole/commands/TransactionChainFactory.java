@@ -2531,5 +2531,12 @@ public class TransactionChainFactory {
 			c.addCommand(new DeleteConnectionCommand());
 			return c;
 		}
+		
+		public static Chain getAddTemplateToRules () {
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForWorkOrder());
+			c.addCommand(new ConvertToRulesCommand());
+			return c;
+		}
 }
 
