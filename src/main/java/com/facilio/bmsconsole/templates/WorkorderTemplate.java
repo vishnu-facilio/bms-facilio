@@ -164,7 +164,8 @@ public class WorkorderTemplate extends Template {
 		this.tenantId = tenantId;
 	}
 
-	public WorkOrderContext getWorkorder() {
+	@JsonIgnore
+	public WorkOrderContext getWorkorder() throws Exception {
 		JSONObject woProp = getAsJSON(false);
 		if (woProp != null && !woProp.isEmpty()) {
 			return FieldUtil.getAsBeanFromMap(woProp, WorkOrderContext.class);
@@ -173,7 +174,7 @@ public class WorkorderTemplate extends Template {
 	}
 	
 	@SuppressWarnings("unchecked")
-	private JSONObject getAsJSON(Boolean fetchPlaceholders) {
+	private JSONObject getAsJSON(Boolean fetchPlaceholders) throws Exception {
 		if (getName() != null && !getName().isEmpty()) {
 			JSONObject woProp = new JSONObject();
 			
@@ -204,6 +205,10 @@ public class WorkorderTemplate extends Template {
 			}
 			if (tenantId != -1) {
 				woProp.put("tenant", FieldUtil.getEmptyLookedUpProp(tenantId));
+			}
+			
+			if (fetchPlaceholders && (tasks != null && !tasks.isEmpty())) {
+				woProp.put("taskList", FieldUtil.getAsJSON(tasks));
 			}
 			
 			if (additionInfo != null) {

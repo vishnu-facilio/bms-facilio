@@ -728,6 +728,7 @@ public enum ActionType {
 			wo.setSourceType(SourceType.WORKFLOW_RULE);
 			FacilioContext woContext = new FacilioContext();
 			woContext.put(FacilioConstants.ContextNames.WORK_ORDER, wo);
+			woContext.put(FacilioConstants.ContextNames.TASK_MAP, wo.getTaskList());
 
 			Chain addWorkOrder = TransactionChainFactory.getAddWorkOrderChain();
 			addWorkOrder.execute(woContext);
