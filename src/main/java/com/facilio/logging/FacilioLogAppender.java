@@ -124,6 +124,7 @@ public class FacilioLogAppender extends DailyRollingFileAppender {
                 }
             } else {
                 event.setProperty("exception", "-");
+                event.setProperty("req_uri", "-");
             }
         } catch (Exception e) {
             event.setProperty("exception", "LogAppenderException");
