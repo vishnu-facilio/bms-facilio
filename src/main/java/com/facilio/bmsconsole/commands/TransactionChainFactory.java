@@ -11,6 +11,7 @@ import com.facilio.bmsconsole.actions.PurchaseOrderCompleteCommand;
 import com.facilio.bmsconsole.commands.data.PopulateImportProcessCommand;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.chain.FacilioChain;
+import com.facilio.constants.FacilioConstants;
 
 public class TransactionChainFactory {
 
@@ -739,12 +740,13 @@ public class TransactionChainFactory {
 
 		public static Chain getWorkOrderWorkflowsChain() {
 			Chain c = getDefaultChain();
+			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.STATE_FLOW));
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.BUSSINESS_LOGIC_WORKORDER_RULE));
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.WORKORDER_CUSTOM_CHANGE));
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.ASSIGNMENT_RULE));
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.SLA_RULE));
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.APPROVAL_RULE, RuleType.CHILD_APPROVAL_RULE, RuleType.REQUEST_APPROVAL_RULE, RuleType.REQUEST_REJECT_RULE));
-			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.STATE_FLOW));
+			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.STATE_RULE));
 			if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getOrgId() == 218L) {
 				c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.WORKORDER_AGENT_NOTIFICATION_RULE, RuleType.WORKORDER_REQUESTER_NOTIFICATION_RULE, RuleType.CUSTOM_WORKORDER_NOTIFICATION_RULE));
 			} else {
@@ -819,6 +821,7 @@ public class TransactionChainFactory {
 			c.addCommand(new BackwardCompatibleStateFlowUpdateCommand());
 			c.addCommand(new UpdateEventListForStateFlowCommand());
 			c.addCommand(new UpdateWorkOrderCommand());
+			c.addCommand(new UpdateStateForWorkorderCommand());
 			c.addCommand(new SendNotificationCommand());
 			c.addCommand(new AddTicketActivityCommand());
 //			c.addCommand(getAddOrUpdateReadingValuesChain());
@@ -2544,7 +2547,7 @@ public class TransactionChainFactory {
 			c.addCommand(new DeleteConnectionCommand());
 			return c;
 		}
-		
+
 		public static Chain getAddTemplateToRules () {
 			Chain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForWorkOrder());

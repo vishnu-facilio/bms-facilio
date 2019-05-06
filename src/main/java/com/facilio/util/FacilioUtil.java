@@ -2,9 +2,12 @@ package com.facilio.util;
 
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
+import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.util.DateTimeUtil;
 import com.facilio.sql.GenericInsertRecordBuilder;
+
+import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -14,6 +17,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import java.lang.reflect.InvocationTargetException;
 import java.text.DecimalFormat;
 import java.time.ZonedDateTime;
 import java.util.*;
@@ -92,6 +96,31 @@ public class FacilioUtil {
 	        list.add(value);
 	    }
 	    return list;
+	}
+	
+	public static boolean isEmptyOrNull (Object object) throws Exception {
+		if (object == null) {
+			return true;
+		}
+		
+		if (object instanceof Number && ((Number) object).intValue() == -1) {
+			return true;
+		}
+		
+		if (object instanceof String && StringUtils.isEmpty((String) object)) {
+			return true;
+		}
+		
+		if (object instanceof ModuleBaseWithCustomFields && ((ModuleBaseWithCustomFields) object).getId() == -1) {
+			return true;
+		}
+		
+		// Any other 
+		if (PropertyUtils.isReadable(object, "id")) {
+			Object property = PropertyUtils.getProperty(object, "id");
+			return isEmptyOrNull(property);
+		}
+		return false;
 	}
 	
 	public static int parseInt (Object val) {

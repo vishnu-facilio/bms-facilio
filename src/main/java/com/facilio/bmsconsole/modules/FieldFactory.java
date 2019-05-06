@@ -5690,7 +5690,9 @@ public class FieldFactory {
 //		list.add(getField("description", "DESCRIPTION", stateFlowModule, FieldType.STRING));
 //		list.add(getField("criteriaId", "CRITERIA_ID", stateFlowModule, FieldType.NUMBER));
 //		list.add(getField("sequence", "SEQUENCE", stateFlowModule, FieldType.NUMBER));
+		list.add(getField("moduleId", "MODULEID", stateFlowModule, FieldType.NUMBER));
 		list.add(getField("defaultStateId", "DEFAULT_STATE_ID", stateFlowModule, FieldType.NUMBER));
+		list.add(getField("defaltStateFlow", "DEFAULT_STATE_FLOW", stateFlowModule, FieldType.BOOLEAN));
 		return list;
 	}
 	

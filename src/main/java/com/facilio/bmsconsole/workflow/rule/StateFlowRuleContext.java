@@ -29,6 +29,14 @@ public class StateFlowRuleContext extends WorkflowRuleContext {
 		this.defaultStateId = defaultStateId;
 	}
 	
+	private boolean defaltStateFlow = false;
+	public boolean isDefaltStateFlow() {
+		return defaltStateFlow;
+	}
+	public void setDefaltStateFlow(boolean defaltStateFlow) {
+		this.defaltStateFlow = defaltStateFlow;
+	}
+
 	private long moduleId = -1;
 	public long getModuleId() {
 		return moduleId;

@@ -11,8 +11,11 @@ import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.util.StateFlowRulesAPI;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.rule.ActionContext;
+import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsole.workflow.rule.StateFlowRuleContext;
 import com.facilio.bmsconsole.workflow.rule.StateflowTransitionContext;
+import com.facilio.bmsconsole.workflow.rule.WorkflowEventContext;
+import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 
@@ -33,8 +36,11 @@ public class AddOrUpdateStateFlowCommand implements Command {
 			}
 			stateFlow.setModuleId(facilioModule.getModuleId());
 			
-//			StateFlowRuleContext ruleContext = stateFlow.constructRule();
-//			ruleContext.setActions(actionList);
+			WorkflowEventContext event = new WorkflowEventContext();
+			event.setActivityType(EventType.CREATE);
+			event.setModuleId(facilioModule.getModuleId());
+			stateFlow.setEvent(event);
+			stateFlow.setRuleType(RuleType.STATE_FLOW);
 			
 			boolean add = false;
 			if (stateFlow.getId() < 0) {
