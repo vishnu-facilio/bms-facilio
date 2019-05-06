@@ -7,7 +7,6 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.StateFlowContext;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.util.StateFlowRulesAPI;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
@@ -21,8 +20,8 @@ public class AddOrUpdateStateFlowCommand implements Command {
 
 	@Override
 	public boolean execute(Context context) throws Exception {
-		StateFlowContext stateFlow = (StateFlowContext) context.get(FacilioConstants.ContextNames.RECORD);
-		List<ActionContext> actionList = (List<ActionContext>) context.get(FacilioConstants.ContextNames.ACTIONS_LIST);
+		StateFlowRuleContext stateFlow = (StateFlowRuleContext) context.get(FacilioConstants.ContextNames.RECORD);
+//		List<ActionContext> actionList = (List<ActionContext>) context.get(FacilioConstants.ContextNames.ACTIONS_LIST);
 		if (stateFlow != null) {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioModule facilioModule = modBean.getModule(stateFlow.getModuleId());
@@ -34,15 +33,15 @@ public class AddOrUpdateStateFlowCommand implements Command {
 			}
 			stateFlow.setModuleId(facilioModule.getModuleId());
 			
-			StateFlowRuleContext ruleContext = stateFlow.constructRule();
-			ruleContext.setActions(actionList);
+//			StateFlowRuleContext ruleContext = stateFlow.constructRule();
+//			ruleContext.setActions(actionList);
 			
 			boolean add = false;
 			if (stateFlow.getId() < 0) {
 				add = true;
 			}
 			
-			context.put(FacilioConstants.ContextNames.WORKFLOW_RULE, ruleContext);
+			context.put(FacilioConstants.ContextNames.WORKFLOW_RULE, stateFlow);
 			Chain ruleChain;
 			if (add) {
 				ruleChain = TransactionChainFactory.addWorkflowRuleChain();
@@ -51,10 +50,10 @@ public class AddOrUpdateStateFlowCommand implements Command {
 			}
 			ruleChain.execute(context);
 			
-			if (add) {
-				stateFlow.setId(ruleContext.getId());
-			}
-			StateFlowRulesAPI.addOrUpdateStateFlow(stateFlow, add);
+//			if (add) {
+//				stateFlow.setId(ruleContext.getId());
+//			}
+//			StateFlowRulesAPI.addOrUpdateStateFlow(stateFlow, add);
 		}
 		return false;
 	}

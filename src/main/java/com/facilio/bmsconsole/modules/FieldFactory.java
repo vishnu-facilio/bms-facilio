@@ -5685,12 +5685,12 @@ public class FieldFactory {
 		List<FacilioField> list = new ArrayList<>();
 		
 		list.add(getField("id", "ID", stateFlowModule, FieldType.NUMBER));
-		list.add(getField("moduleId", "MODULEID", FieldType.NUMBER));
-		list.add(getField("name", "NAME", stateFlowModule, FieldType.STRING));
-		list.add(getField("description", "DESCRIPTION", stateFlowModule, FieldType.STRING));
-		list.add(getField("criteriaId", "CRITERIA_ID", stateFlowModule, FieldType.NUMBER));
-		list.add(getField("sequence", "SEQUENCE", stateFlowModule, FieldType.NUMBER));
-		list.add(getField("defaultStateId", "DEFAULT_STATE_ID", FieldType.NUMBER));
+//		list.add(getField("moduleId", "MODULEID", FieldType.NUMBER));
+//		list.add(getField("name", "NAME", stateFlowModule, FieldType.STRING));
+//		list.add(getField("description", "DESCRIPTION", stateFlowModule, FieldType.STRING));
+//		list.add(getField("criteriaId", "CRITERIA_ID", stateFlowModule, FieldType.NUMBER));
+//		list.add(getField("sequence", "SEQUENCE", stateFlowModule, FieldType.NUMBER));
+		list.add(getField("defaultStateId", "DEFAULT_STATE_ID", stateFlowModule, FieldType.NUMBER));
 		return list;
 	}
 	

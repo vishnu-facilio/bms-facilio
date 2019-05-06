@@ -7,9 +7,9 @@ import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.StateFlowContext;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.util.StateFlowRulesAPI;
+import com.facilio.bmsconsole.workflow.rule.StateFlowRuleContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 
@@ -28,7 +28,7 @@ public class GetStateFlowListCommand implements Command {
 			throw new Exception("Module cannot be empty");
 		}
 		
-		List<StateFlowContext> allStateFlow = StateFlowRulesAPI.getAllStateFlow(module);
+		List<StateFlowRuleContext> allStateFlow = StateFlowRulesAPI.getAllStateFlow(module);
 		context.put(FacilioConstants.ContextNames.STATE_FLOW_LIST, allStateFlow);
 		return false;
 	}

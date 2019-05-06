@@ -838,4 +838,16 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new GetStateTransitionListCommand());
 		return c;
 	}
+
+	public static Chain viewStateFlow() {
+		Chain c = getDefaultChain();
+		c.addCommand(new GetStateFlowCommand());
+		return c;
+	}
+
+	public static Chain viewStateTransition() {
+		Chain c = getDefaultChain();
+		c.addCommand(new GetStateTransitionCommand());
+		return c;
+	}
 }

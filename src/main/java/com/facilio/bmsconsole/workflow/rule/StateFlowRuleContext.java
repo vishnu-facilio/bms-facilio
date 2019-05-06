@@ -4,21 +4,46 @@ import java.util.Map;
 
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Context;
+import org.apache.struts2.json.annotations.JSON;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.commands.GenericUpdateModuleDataCommand;
 import com.facilio.bmsconsole.commands.UpdateStateCommand;
-import com.facilio.bmsconsole.context.StateFlowContext;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.bmsconsole.util.StateFlowRulesAPI;
+import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class StateFlowRuleContext extends WorkflowRuleContext {
 	private static final long serialVersionUID = 1L;
+	
+	private long defaultStateId;
+	public long getDefaultStateId() {
+		return defaultStateId;
+	}
+	public void setDefaultStateId(long defaultStateId) {
+		this.defaultStateId = defaultStateId;
+	}
+	
+	private long moduleId = -1;
+	public long getModuleId() {
+		return moduleId;
+	}
+	public void setModuleId(long moduleId) {
+		this.moduleId = moduleId;
+	}
+	
+	private String moduleName;
+	public String getModuleName() {
+		return moduleName;
+	}
+	public void setModuleName(String moduleName) {
+		this.moduleName = moduleName;
+	}
 	
 	@Override
 	public void executeTrueActions(Object record, Context context, Map<String, Object> placeHolders) throws Exception {
@@ -27,7 +52,7 @@ public class StateFlowRuleContext extends WorkflowRuleContext {
 		}
 		
 		ModuleBaseWithCustomFields moduleRecord = (ModuleBaseWithCustomFields) record;
-		StateFlowContext stateFlowContext = StateFlowRulesAPI.getStateFlowContext(getId());
+		StateFlowRuleContext stateFlowContext = StateFlowRulesAPI.getStateFlowContext(getId());
 		
 		long parentModuleId = stateFlowContext.getModuleId();
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -42,9 +67,27 @@ public class StateFlowRuleContext extends WorkflowRuleContext {
 		
 		Chain chain = FacilioChain.getTransactionChain();
 		chain.addCommand(new UpdateStateCommand());
-//		chain.addCommand(new GenericUpdateModuleDataCommand());
 		chain.execute(c);
 		
 		super.executeTrueActions(record, context, placeHolders);
 	}
+	
+//	@JsonIgnore
+//	@JSON(serialize = false)
+//	public StateFlowRuleContext constructRule() {
+//		StateFlowRuleContext stateFlowRuleContext = new StateFlowRuleContext();
+//		stateFlowRuleContext.setName(getName() + " _Rule");
+//		stateFlowRuleContext.setDescription(getDescription());
+//		stateFlowRuleContext.setCriteria(criteria);
+//		
+//		WorkflowEventContext event = new WorkflowEventContext();
+//		event.setActivityType(EventType.CREATE);
+//		event.setModuleId(moduleId);
+//		stateFlowRuleContext.setEvent(event);
+//		
+//		stateFlowRuleContext.setRuleType(RuleType.STATE_FLOW);
+//		
+//		stateFlowRuleContext.setId(getId());
+//		return stateFlowRuleContext;
+//	}
 }

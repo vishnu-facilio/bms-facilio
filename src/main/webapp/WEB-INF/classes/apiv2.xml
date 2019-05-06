@@ -112,6 +112,8 @@
 		
 		<action name="list"
 			class="com.facilio.bmsconsole.actions.StateFlowAction" method="getStateFlowList" />
+		<action name="*"
+			class="com.facilio.bmsconsole.actions.StateFlowAction" method="viewStateFlow" />
 	</package>
 	
 	<package name="stateTransition" namespace="/api/v2/statetransition" extends="v2Api">
@@ -126,6 +128,8 @@
 			
 		<action name="list"
 			class="com.facilio.bmsconsole.actions.StateFlowAction" method="getStateTransitionList" />
+		<action name="*"
+			class="com.facilio.bmsconsole.actions.StateFlowAction" method="viewStateTransition" />
 	</package>
 
 	<package name="importTemplate" namespace="/api/v2/importTemplate"

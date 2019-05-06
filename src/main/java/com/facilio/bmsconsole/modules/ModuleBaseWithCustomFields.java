@@ -1,15 +1,13 @@
 package com.facilio.bmsconsole.modules;
 
-import com.facilio.accounts.dto.User;
-import com.facilio.bmsconsole.context.StateFlowContext;
-import com.facilio.bmsconsole.context.TicketStatusContext;
-import com.facilio.bmsconsole.workflow.rule.StateContext;
-import com.fasterxml.jackson.annotation.JsonAnyGetter;
-import com.fasterxml.jackson.annotation.JsonAnySetter;
-
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
+
+import com.facilio.accounts.dto.User;
+import com.facilio.bmsconsole.context.TicketStatusContext;
+import com.fasterxml.jackson.annotation.JsonAnyGetter;
+import com.fasterxml.jackson.annotation.JsonAnySetter;
 
 public class ModuleBaseWithCustomFields implements Serializable {
 	
