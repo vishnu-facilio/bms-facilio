@@ -11,6 +11,7 @@ import java.util.StringJoiner;
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.apache.log4j.Priority;
@@ -276,6 +277,12 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 				context.put(FacilioConstants.ContextNames.IS_PM_EXECUTION, true);
 				context.put(FacilioConstants.ContextNames.ATTACHMENT_MODULE_NAME, FacilioConstants.ContextNames.TICKET_ATTACHMENTS);
 				context.put(FacilioConstants.ContextNames.ATTACHMENT_CONTEXT_LIST, wo.getAttachments());
+
+				if (AccountUtil.getCurrentOrg().getOrgId() == 218L) {
+					if (taskMapForNewPmExecution == null || taskMapForNewPmExecution.isEmpty()) {
+						LOGGER.log(Level.ERROR, "PMID : "+ pm.getId() + " No taskmap");
+					}
+				}
 				
 				//Temp fix. Have to be removed eventually
 				PreventiveMaintenanceAPI.updateResourceDetails(wo, taskMap);
