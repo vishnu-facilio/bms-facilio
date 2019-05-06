@@ -70,13 +70,11 @@ public class RuleTemplateAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.TEMPLATE_ID, id);
 		Chain createRuleChain = TransactionChainFactory.getAddTemplateToRules();
 		createRuleChain.execute(context);
-		return result;
+		setResult("rule", id);
+		return SUCCESS;
 	}
 	public String getDefaultRuleTemplates() throws Exception {
 		setResult("templates", TemplateAPI.getAllRuleLibraryTemplate());
 		return SUCCESS;
 	}
-	
-	 
-
 }
