@@ -1083,7 +1083,19 @@ public static long getSitesCount() throws Exception {
 		
 		if(baseSpaceIds != null && !baseSpaceIds.isEmpty()) {
 			BaseSpaceContext basespace = getBaseSpace(baseSpaceIds.get(0));
-			selectBuilder.andCustomWhere("BaseSpace."+basespace.getSpaceTypeEnum().getStringVal().toUpperCase()+"_ID in( ? )", StringUtils.join(baseSpaceIds, ","));
+			if (basespace.getSpaceTypeEnum() == SpaceType.SPACE) {
+				List<Condition> conditions = new ArrayList<>();
+				conditions.add(CriteriaAPI.getCondition("SPACE_ID1", "SPACE_ID1", StringUtils.join(baseSpaceIds, ","), NumberOperators.EQUALS));
+				conditions.add(CriteriaAPI.getCondition("SPACE_ID2", "SPACE_ID2", StringUtils.join(baseSpaceIds, ","), NumberOperators.EQUALS));
+				conditions.add(CriteriaAPI.getCondition("SPACE_ID3", "SPACE_ID3", StringUtils.join(baseSpaceIds, ","), NumberOperators.EQUALS));
+				conditions.add(CriteriaAPI.getCondition("SPACE_ID4", "SPACE_ID4", StringUtils.join(baseSpaceIds, ","), NumberOperators.EQUALS));
+
+				Criteria criteria = new Criteria();
+				criteria.groupOrConditions(conditions);
+				selectBuilder.andCriteria(criteria);
+			} else {
+				selectBuilder.andCustomWhere("BaseSpace."+basespace.getSpaceTypeEnum().getStringVal().toUpperCase()+"_ID in( ? )", StringUtils.join(baseSpaceIds, ","));
+			}
 		}
 		List<SpaceContext> spaces = selectBuilder.get();
 		return spaces;
