@@ -93,8 +93,8 @@ public class StateFlowAction extends FacilioAction {
 		
 		context.put(FacilioConstants.ContextNames.STATE_FLOW_ID, stateFlowId);
 		context.put(FacilioConstants.ContextNames.TRANSITION_ID, stateTransitionId);
-		Chain chain = TransactionChainFactory.getDeleteStateFlowTransition();
-		chain.execute(context);
+//		Chain chain = TransactionChainFactory.getDeleteStateFlowTransition();
+//		chain.execute(context);
 		return SUCCESS;
 	}
 	
