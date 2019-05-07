@@ -494,6 +494,7 @@ public class FacilioAuthAction extends FacilioAction {
     }
     
     public String postIssueResponse() throws Exception {
+	       LOGGER.info( "method called");
     	try {
     	  StringBuffer jb = new StringBuffer();
     	  String line = null;
