@@ -14,6 +14,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 import org.apache.log4j.Level;
@@ -23,6 +24,7 @@ import org.apache.log4j.Logger;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldType;
+import com.facilio.bmsconsole.util.DemoRoleUtil;
 import com.facilio.transaction.FacilioConnectionPool;
 
 public class DBUtil {
@@ -32,6 +34,7 @@ public class DBUtil {
 	private static Boolean executeSingleStatement;
 	private static final Object LOCK = new Object();
 	private static final List<String> TABLES_WITHOUT_ORGID= Collections.unmodifiableList(initOrgIdNotRequired());
+	private static final Map<String, List<String>> TABLES_WITH_DATE_COLUMNS= Collections.unmodifiableMap(DemoRoleUtil.initDateFieldModified());
 	private static final HashSet<String> CACHE_ENABLED_TABLES = new HashSet<>();
 	private static final HashSet<Long> CACHE_ENABLED_ORG = new HashSet<>();
 
@@ -85,6 +88,11 @@ public class DBUtil {
 	static boolean isTableWithoutOrgId(String tableName) {
 		return TABLES_WITHOUT_ORGID.contains(tableName);
 	}
+
+	public static boolean isTableNameContains(String tableName) {
+		return TABLES_WITH_DATE_COLUMNS.containsKey(tableName);
+	}
+	
 	
 	static FacilioField getOrgIdField(String tableName) {
 		FacilioField field = new FacilioField();

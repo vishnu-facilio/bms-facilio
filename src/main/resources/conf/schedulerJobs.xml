@@ -60,4 +60,7 @@
 	 
 	 <job name='StateFlowScheduledRule' classname='com.facilio.bmsconsole.jobs.StateFlowScheduledRuleJob' transactionTimeout='900000' />
 
+	 <!-- Facilio DemoJob -->
+	 <job name='DemoRoleJob' classname='com.facilio.bmsconsole.jobs.DemoRoleJob' transcationTimeout='1800000'/> 
+
 </scheduler>
