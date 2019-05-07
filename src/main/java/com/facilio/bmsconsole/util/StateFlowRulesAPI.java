@@ -122,9 +122,6 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 				.andCondition(CriteriaAPI.getIdCondition(record.getId(), module));
 		updateBuilder.updateViaMap(prop);
 		
-		checkAutomatedCondition(ticketStatusContext, module, record, context);
-		addScheduledJobIfAny(ticketStatusContext.getId(), module.getName(), record, (FacilioContext) context);
-		
 		if ((module.getName().contains("workorder")) && oldState != null && oldState.getDisplayName() != null && ticketStatusContext != null && ticketStatusContext.getDisplayName() != null) {
 			JSONObject info = new JSONObject();
 			info.put("status", ticketStatusContext.getDisplayName());
@@ -132,6 +129,9 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 			info.put("newValue", ticketStatusContext.getDisplayName());
 			CommonCommandUtil.addActivityToContext(record.getId(), -1, WorkOrderActivityType.UPDATE_STATUS, info, (FacilioContext) context);
 		}
+		
+		checkAutomatedCondition(ticketStatusContext, module, record, context);
+		addScheduledJobIfAny(ticketStatusContext.getId(), module.getName(), record, (FacilioContext) context);
 	}
 	
 	private static void checkAutomatedCondition(TicketStatusContext ticketStatusContext, FacilioModule module, ModuleBaseWithCustomFields record, Context context) throws Exception {
