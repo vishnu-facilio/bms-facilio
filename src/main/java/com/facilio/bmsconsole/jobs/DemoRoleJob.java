@@ -5,7 +5,6 @@ package com.facilio.bmsconsole.jobs;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
@@ -13,6 +12,7 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.util.DemoRoleUtil;
 import com.facilio.sql.DBUtil;
 import com.facilio.tasker.job.FacilioJob;
@@ -28,7 +28,7 @@ public class DemoRoleJob extends FacilioJob{
 	private static final Logger LOGGER = LogManager.getLogger(DemoRoleJob.class.getName());
 
 	@SuppressWarnings("resource")
-	public void execute(JobContext jc) throws Exception {
+	public void execute(JobContext jc)throws Exception  {
 		// TODO Auto-generated method stub
 
 		Map<String,List<String>> tableName=DemoRoleUtil.initDateFieldModified();
@@ -59,11 +59,18 @@ public class DemoRoleJob extends FacilioJob{
 				  if(pstmt==null) {
 					  throw new RuntimeException("###update String Data is null");
 				  }
-					  pstmt.executeUpdate();
+				  try {
+				  pstmt.executeUpdate();
+				  LOGGER.info("####DemoRoleUp### executed Successfully");
+				  }
+				  catch(Exception e) {
+					  CommonCommandUtil.emailException("DemoRoleUp", "DemoRoleUp Failed - orgid -- "+AccountUtil.getCurrentOrg().getId(), e);
+				  }
 			}
 		}
-		catch(SQLException | RuntimeException e) {
-			LOGGER.info("Exception Occurred"+e);
+		catch(Exception e) {
+			
+			LOGGER.info("Exception occurred ", e);
 		}
 		finally {
 			DBUtil.closeAll(conn, pstmt);
