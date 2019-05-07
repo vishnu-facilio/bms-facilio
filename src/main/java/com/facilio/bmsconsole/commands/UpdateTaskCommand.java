@@ -1,9 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -41,6 +38,7 @@ import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsole.workflow.rule.StateFlowRuleContext;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.fw.BeanFactory;
 
 public class UpdateTaskCommand implements Command {
@@ -184,7 +182,9 @@ public class UpdateTaskCommand implements Command {
 		
 		List<LookupField> lookupList = new ArrayList<>();
 		lookupList.add((LookupField) fieldMap.get("status"));
-		lookupList.add((LookupField) fieldMap.get("moduleState"));
+		if (modBean.getField("moduleState", ContextNames.WORK_ORDER) != null) {
+			lookupList.add((LookupField) fieldMap.get("moduleState"));
+		}
 		SelectRecordsBuilder<WorkOrderContext> builder = new SelectRecordsBuilder<WorkOrderContext>()
 				.select(woFields)
 				.module(woModule)
