@@ -159,7 +159,7 @@
 			},
 			"preRequsite": {
 				"action": "PreRequsite",
-				"moduleName": "prefilterstatus",
+				"moduleName": "ahureading",
 				"threshold_metric": "runstatus",
 				"thresholdType": 1,
 				"operatorId": 9,
@@ -171,7 +171,7 @@
 				            "name": "a",
 				            "aggregateString": "lastValue",
 				            "fieldName": "runstatus",
-				            "moduleName": "prefilterstatus",
+				            "moduleName": "ahureading",
 				            "criteria": {
 				              "pattern": "(1)",
 				              "conditions": {
@@ -198,7 +198,7 @@
 				"condition": "${{supplyairdampercommand}}==1 && ${{supplyairdamperstatus}}==0",
 				"for": "${interval}",
 				"action": "TRIGGER_ALARM",
-				"moduleName": "supplyairdampercommand",
+				"moduleName": "ahureading",
 				"thresholdType": 5,
 				"threshold_metric": "damperstatus",
 				"workflow": {
@@ -207,7 +207,7 @@
 				      	"name": "A",
 				        "aggregateString": "lastValue",
 				        "fieldName": "supplyairdampercommand",
-				        "moduleName": "supplyairdampercommand",
+				        "moduleName": "ahureading",
 				        "criteria": {
 				        "pattern": "(1)",
 				        "conditions": {
@@ -228,7 +228,7 @@
 				            "name": "D",
 				            "aggregateString": "lastValue",
 				            "fieldName": "supplyairdamperstatus",
-				            "moduleName": "supplyairdampercommand",
+				            "moduleName": "ahureading",
 				            "criteria": {
 				              "pattern": "(1)",
 				              "conditions": {
@@ -286,7 +286,7 @@
 			"description": "AHU Outside Air Damper is stuck or in open state. Unable to close Damper",
 			"problem": "AHU Outside Air Damper fails to follow the command",
 			"possible_causes": "1. Poor Lubrication <br/> 2. Sensor Failure",
-			"moduleName": "supplyairdampercommand",
+			"moduleName": "ahureading",
 			"category": "AHU",
 			"severity": "Major",
 			"threshold_metric": "supplyairdamperstatus",
@@ -299,7 +299,7 @@
 			},
 			"preRequsite": {
 				"action": "PreRequsite",
-				"moduleName": "runstatus",
+				"moduleName": "ahureading",
 				"threshold_metric": "runstatus",
 				"thresholdType": 1,
 				"operatorId": 9,
@@ -311,7 +311,7 @@
 				            "name": "a",
 				            "aggregateString": "lastValue",
 				            "fieldName": "runstatus",
-				            "moduleName": "prefilterstatus",
+				            "moduleName": "ahureading",
 				            "criteria": {
 				              "pattern": "(1)",
 				              "conditions": {
@@ -338,7 +338,7 @@
 				"condition": "${{supplyairdampercommand}}==1 && ${{supplyairdamperstatus}}==0",
 				"for": "${interval}",
 				"action": "TRIGGER_ALARM",
-				"moduleName": "supplyairdampercommand",
+				"moduleName": "ahureading",
 				"thresholdType": 5,
 				"threshold_metric": "damperstatus",
 				"workflow": {
@@ -347,7 +347,7 @@
 				      	"name": "A",
 				        "aggregateString": "lastValue",
 				        "fieldName": "supplyairdampercommand",
-				        "moduleName": "supplyairdampercommand",
+				        "moduleName": "ahureading",
 				        "criteria": {
 				        "pattern": "(1)",
 				        "conditions": {
@@ -368,7 +368,7 @@
 				            "name": "D",
 				            "aggregateString": "lastValue",
 				            "fieldName": "supplyairdamperstatus",
-				            "moduleName": "supplyairdampercommand",
+				            "moduleName": "ahureading",
 				            "criteria": {
 				              "pattern": "(1)",
 				              "conditions": {
@@ -426,7 +426,7 @@
 			"description": "AHU Exhaust Air Damper is stuck or in open state. Unable to open Damper",
 			"problem": "AHU Exhaust Air Damper fails to follow the command",
 			"possible_causes": "1. Poor Lubrication <br/> 2. Sensor Failure",
-			"moduleName": "supplyairdampercommand",
+			"moduleName": "ahureading",
 			"category": "AHU",
 			"severity": "Major",
 			"threshold_metric": "exhaustairdamperstatus",
@@ -439,7 +439,7 @@
 			},
 			"preRequsite": {
 				"action": "PreRequsite",
-				"moduleName": "runstatus",
+				"moduleName": "ahureading",
 				"threshold_metric": "runstatus",
 				"thresholdType": 1,
 				"operatorId": 9,
@@ -451,7 +451,7 @@
 				            "name": "a",
 				            "aggregateString": "lastValue",
 				            "fieldName": "runstatus",
-				            "moduleName": "prefilterstatus",
+				            "moduleName": "ahureading",
 				            "criteria": {
 				              "pattern": "(1)",
 				              "conditions": {
@@ -478,7 +478,7 @@
 				"condition": "${{exhaustairdampercommand}}==1 && ${{exhaustairdamperstatus}}==0",
 				"for": "${interval}",
 				"action": "TRIGGER_ALARM",
-				"moduleName": "supplyairdampercommand",
+				"moduleName": "ahureading",
 				"thresholdType": 5,
 				"threshold_metric": "damperstatus",
 				"workflow": {
@@ -487,7 +487,7 @@
 				      	"name": "A",
 				        "aggregateString": "lastValue",
 				        "fieldName": "exhaustairdampercommand",
-				        "moduleName": "supplyairdampercommand",
+				        "moduleName": "ahureading",
 				        "criteria": {
 				        "pattern": "(1)",
 				        "conditions": {
@@ -508,7 +508,7 @@
 				            "name": "D",
 				            "aggregateString": "lastValue",
 				            "fieldName": "exhaustairdamperstatus",
-				            "moduleName": "supplyairdampercommand",
+				            "moduleName": "ahureading",
 				            "criteria": {
 				              "pattern": "(1)",
 				              "conditions": {
@@ -566,7 +566,7 @@
 			"description": "AHU Exhaust Air Damper is stuck or in open state. Unable to close Damper",
 			"problem": "AHU Exhaust Air Damper fails to follow the command",
 			"possible_causes": "1. Poor Lubrication <br/> 2. Sensor Failure",
-			"moduleName": "supplyairdampercommand",
+			"moduleName": "ahureading",
 			"category": "AHU",
 			"severity": "Major",
 			"threshold_metric": "exhaustairdamperstatus",
@@ -579,7 +579,7 @@
 			},
 			"preRequsite": {
 				"action": "PreRequsite",
-				"moduleName": "runstatus",
+				"moduleName": "ahureading",
 				"threshold_metric": "runstatus",
 				"thresholdType": 1,
 				"operatorId": 9,
@@ -591,7 +591,7 @@
 				            "name": "a",
 				            "aggregateString": "lastValue",
 				            "fieldName": "runstatus",
-				            "moduleName": "prefilterstatus",
+				            "moduleName": "ahureading",
 				            "criteria": {
 				              "pattern": "(1)",
 				              "conditions": {
@@ -618,7 +618,7 @@
 				"condition": "${{exhaustairdampercommand}}==1 && ${{exhaustairdamperstatus}}==0",
 				"for": "${interval}",
 				"action": "TRIGGER_ALARM",
-				"moduleName": "supplyairdampercommand",
+				"moduleName": "ahureading",
 				"thresholdType": 5,
 				"threshold_metric": "damperstatus",
 				"workflow": {
@@ -627,7 +627,7 @@
 				      	"name": "A",
 				        "aggregateString": "lastValue",
 				        "fieldName": "exhaustairdampercommand",
-				        "moduleName": "supplyairdampercommand",
+				        "moduleName": "ahureading",
 				        "criteria": {
 				        "pattern": "(1)",
 				        "conditions": {
@@ -648,7 +648,7 @@
 				            "name": "D",
 				            "aggregateString": "lastValue",
 				            "fieldName": "exhaustairdamperstatus",
-				            "moduleName": "supplyairdampercommand",
+				            "moduleName": "ahureading",
 				            "criteria": {
 				              "pattern": "(1)",
 				              "conditions": {
@@ -706,7 +706,7 @@
 			"description": "AHU Pre Filter clogged",
 			"problem": "As the outside air contains lot of dust and other pollution particles, the filter being the first line of defence for the AHU, gets the maximum dirt/debris buildup. ",
 			"possible_causes": "Excessive Dust in ambient Air",
-			"moduleName": "bagfilterdp",
+			"moduleName": "ahureading",
 			"category": "AHU",
 			"severity": "Major",
 			"threshold_metric": "prefilterdp",
@@ -719,7 +719,7 @@
 			},
 			"preRequsite": {
 				"action": "PreRequsite",
-				"moduleName": "prefilterstatus",
+				"moduleName": "ahureading",
 				"threshold_metric": "runstatus",
 				"thresholdType": 1,
 				"operatorId": 9,
@@ -731,7 +731,7 @@
 				            "name": "a",
 				            "aggregateString": "lastValue",
 				            "fieldName": "runstatus",
-				            "moduleName": "prefilterstatus",
+				            "moduleName": "ahureading",
 				            "criteria": {
 				              "pattern": "(1)",
 				              "conditions": {
@@ -758,7 +758,7 @@
 				"condition": "${{exhaustairdampercommand}}==1 && ${{exhaustairdamperstatus}}==0",
 				"for": "${interval}",
 				"action": "TRIGGER_ALARM",
-				"moduleName": "bagfilterdp",
+				"moduleName": "ahureading",
 				"thresholdType": 5,
 				"threshold_metric": "prefilterdp",
 				"workflow": {
@@ -767,7 +767,7 @@
 				            "name": "A",
 				            "aggregateString": "lastValue",
 				            "fieldName": "exhaustairdamperstatus",
-				            "moduleName": "supplyairdampercommand",
+				            "moduleName": "ahureading",
 				            "criteria": {
 				              "pattern": "(1)",
 				              "conditions": {
@@ -805,7 +805,7 @@
 			"description": "AHU Bag Filter clogged",
 			"problem": "As the outside air contains lot of dust and other pollution particles, the filter being the first line of defence for the AHU, gets the maximum dirt/debris buildup. ",
 			"possible_causes": "Excessive Dust in ambient Air",
-			"moduleName": "bagfilterdp",
+			"moduleName": "ahureading",
 			"category": "AHU",
 			"severity": "Major",
 			"threshold_metric": "bagfilterdp",
@@ -818,7 +818,7 @@
 			},
 			"preRequsite": {
 				"action": "PreRequsite",
-				"moduleName": "prefilterstatus",
+				"moduleName": "ahureading",
 				"threshold_metric": "runstatus",
 				"thresholdType": 1,
 				"operatorId": 9,
@@ -830,7 +830,7 @@
 				            "name": "a",
 				            "aggregateString": "lastValue",
 				            "fieldName": "runstatus",
-				            "moduleName": "prefilterstatus",
+				            "moduleName": "ahureading",
 				            "criteria": {
 				              "pattern": "(1)",
 				              "conditions": {
@@ -857,7 +857,7 @@
 				"condition": "${{exhaustairdampercommand}}==1 && ${{exhaustairdamperstatus}}==0",
 				"for": "${interval}",
 				"action": "TRIGGER_ALARM",
-				"moduleName": "bagfilterdp",
+				"moduleName": "ahureading",
 				"thresholdType": 5,
 				"threshold_metric": "bagfilterdp",
 				"workflow": {
@@ -866,7 +866,7 @@
 				            "name": "D",
 				            "aggregateString": "lastValue",
 				            "fieldName": "bagfilterdp",
-				            "moduleName": "bagfilterdp",
+				            "moduleName": "ahureading",
 				            "criteria": {
 				              "pattern": "(1)",
 				              "conditions": {
