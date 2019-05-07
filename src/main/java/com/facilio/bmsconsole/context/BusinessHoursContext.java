@@ -1,8 +1,9 @@
 package com.facilio.bmsconsole.context;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class BusinessHoursContext {
+public class BusinessHoursContext implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private String name;
 
