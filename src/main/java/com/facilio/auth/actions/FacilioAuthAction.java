@@ -29,6 +29,7 @@ import javax.servlet.http.HttpSession;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.lang.reflect.InvocationTargetException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -494,34 +495,27 @@ public class FacilioAuthAction extends FacilioAction {
     
     public String postIssueResponse(HttpServletRequest request,
             HttpServletResponse response) throws Exception {
-    	
+    	try {
     	  StringBuffer jb = new StringBuffer();
     	  String line = null;
-    	  try {
+
+    	  try(BufferedReader reader = request.getReader()) {
     		  
-    	    BufferedReader reader = request.getReader();    
-    	    while ((line = reader.readLine()) != null)
+    	    while ((line = reader.readLine()) != null) {
     	      jb.append(line);
+    	    }
+    	  }
+    	    
+     	   org.json.JSONObject jsonObject =  HTTP.toJSONObject(jb.toString());
+   	       LOGGER.info( "postIssueResponse"+jsonObject.toString());
     	    
     	  } catch (Exception e) {
               setJsonresponse("message", "Error while reading post issue response");
-              return ERROR;
-    	  }
-  	    final Level level = Level.INFO;
-
-      
-    	  try {
-    		  
-    	   org.json.JSONObject jsonObject =  HTTP.toJSONObject(jb.toString());
-    	    System.out.println("postIssueResponse"+jsonObject);
-    	    LOGGER.log(level, "postIssueResponse"+jsonObject.toString());
-    	    
-    	  } catch (JSONException e) {
-    	    
+      	       LOGGER.log( Level.INFO, "Error while reading post issue response", e);
     		  throw new IOException("Error parsing JSON request string");
     	  }
-      
-          setJsonresponse("message", " post issue response recieved successfully");
+  
+        setJsonresponse("message", " post issue response recieved successfully");
     	return SUCCESS;
     }
 
