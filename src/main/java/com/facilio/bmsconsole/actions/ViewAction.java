@@ -161,7 +161,7 @@ public class ViewAction extends FacilioAction {
 	public String v2viewlist() throws Exception{
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
-		context.put(FacilioConstants.ContextNames.GROUP_STATUS, true);
+		context.put(FacilioConstants.ContextNames.GROUP_STATUS, getGroupStatus());
 
 		Chain getViewListsChain = FacilioChainFactory.getViewListChain();
 		getViewListsChain.execute(context);
@@ -324,6 +324,18 @@ public class ViewAction extends FacilioAction {
 	public void setViews(List<FacilioView> views) {
 		this.views = views;
 	}
+	
+	private Boolean groupStatus;
+	public Boolean getGroupStatus() {
+		if (groupStatus == null) {
+			return true;
+		}
+		return groupStatus;
+	}
+	public void setGroupStatus(Boolean groupStatus) {
+		this.groupStatus = groupStatus;
+	}
+
 	
 	private FacilioView view;
 	public FacilioView getView() {
