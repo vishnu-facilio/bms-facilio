@@ -848,6 +848,24 @@ public class ViewFactory {
 
 		return criteria;
 	}
+	
+	public static Criteria getRequestedStateCriteria(boolean isRequested) {
+		FacilioField statusTypeField = new FacilioField();
+		statusTypeField.setName("requestedState");
+		statusTypeField.setColumnName("REQUESTED_STATE");
+		statusTypeField.setDataType(FieldType.BOOLEAN);
+		statusTypeField.setModule(ModuleFactory.getTicketStatusModule());
+
+		Condition status = new Condition();
+		status.setField(statusTypeField);
+		status.setOperator(BooleanOperators.IS);
+		status.setValue(String.valueOf(isRequested));
+
+		Criteria criteria = new Criteria();
+		criteria.addAndCondition(status);
+
+		return criteria;
+	}
 
 	private static FacilioView getUnassignedWorkorders() {
 		FacilioModule workOrdersModule = ModuleFactory.getWorkOrdersModule();
@@ -1130,8 +1148,22 @@ public class ViewFactory {
 	}
 	
 	public static FacilioView getRequestedStateApproval() {
+		
+		FacilioModule module = ModuleFactory.getTicketsModule();
+		LookupField statusField = new LookupField();
+		statusField.setName("moduleState");
+		statusField.setColumnName("MODULE_STATE");
+		statusField.setDataType(FieldType.LOOKUP);
+		statusField.setModule(module);
+		statusField.setLookupModule(ModuleFactory.getTicketStatusModule());
 
-		Criteria criteria = getStateCriteria(StatusType.REQUESTED);
+		Condition requested = new Condition();
+		requested.setField(statusField);
+		requested.setOperator(LookupOperator.LOOKUP);
+		requested.setCriteriaValue(getRequestedStateCriteria(true));
+		
+		Criteria criteria = new Criteria();
+		criteria.addAndCondition(requested);
 
 		FacilioField createdTime = new FacilioField();
 		createdTime.setName("createdTime");
