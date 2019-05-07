@@ -4,19 +4,16 @@ import java.util.Map;
 
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Context;
-import org.apache.struts2.json.annotations.JSON;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.UpdateStateCommand;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.bmsconsole.util.StateFlowRulesAPI;
-import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class StateFlowRuleContext extends WorkflowRuleContext {
 	private static final long serialVersionUID = 1L;
