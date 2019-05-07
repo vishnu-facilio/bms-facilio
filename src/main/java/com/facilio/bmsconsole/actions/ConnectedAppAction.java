@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.actions;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.ConnectedAppContext;
@@ -212,7 +213,7 @@ public class ConnectedAppAction extends FacilioAction {
 			}
 			
 			SAMLAttribute attr = new SAMLAttribute()
-					.setIssuer(getServerURL(req) + req.getRequestURI())
+					.setIssuer(AwsUtil.getClientAppUrl() + "/app/connectedapp/" + this.getConnectedApp().getLinkName())
 					.setIntendedAudience(spEntityId)
 					.setInResponseTo(requestId)
 					.setRecipient(acsURL)
