@@ -7,6 +7,7 @@ import org.apache.commons.collections.Predicate;
 import org.apache.commons.collections.PredicateUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.struts2.json.annotations.JSON;
 
 import java.io.Serializable;
 import java.util.*;
@@ -90,6 +91,7 @@ public class Criteria extends ExpressionEvaluator<Predicate> implements Serializ
 	}
 	
 	@JsonIgnore
+	@JSON(serialize=false)
 	public List<Object> getComputedValues() {
 		if (!isWhereComputed) {
 			computeWhereClause();
