@@ -498,6 +498,39 @@
 		</action>
 	</package>
 
+<package name="businessHoursApiv2" namespace="/api/v2/businesshours" extends="v2Api">
+		<action name="add"
+			class="com.facilio.bmsconsole.actions.BusinessHoursAction" method="addBussinessHours">
+			<param name="moduleName">setup</param>
+			<param name="permission">GENERAL</param>
+		</action>
+        <action name="edit"
+			class="com.facilio.bmsconsole.actions.BusinessHoursAction" method="v2updateBusinessHours">
+			<param name="moduleName">setup</param>
+			<param name="permission">GENERAL</param>
+		</action>
+		<action name="delete"
+			class="com.facilio.bmsconsole.actions.BusinessHoursAction" method="v2deleteBusinessHours">
+			<param name="moduleName">setup</param>
+			<param name="permission">GENERAL</param>
+		</action>
+		 <action name="list"
+			class="com.facilio.bmsconsole.actions.BusinessHoursAction" method="v2getBusinessHoursList">
+			<param name="moduleName">setup</param>
+			<param name="permission">GENERAL</param>
+		</action>
+		 <action name="updateresource"
+			class="com.facilio.bmsconsole.actions.BusinessHoursAction" method="updateBusinessHourInResource">
+			<param name="moduleName">setup</param>
+			<param name="permission">GENERAL</param>
+		</action>
+		<action name="*"
+			class="com.facilio.bmsconsole.actions.BusinessHoursAction" method="v2getBusinessHoursList">
+			<param name="moduleName">setup</param>
+			<param name="permission">GENERAL</param>
+			<param name="id">{1}</param>
+		</action>
+	</package>
 
 	<package name="taskApiv2" namespace="/api/v2/tasks" extends="v2Api">
 

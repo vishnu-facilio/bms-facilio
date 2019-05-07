@@ -514,7 +514,15 @@
 				<param name="includeProperties">id</param>
 			</result>
 		</action>
-
+        <action name="get"
+			class="com.facilio.bmsconsole.actions.BusinessHoursAction" method="getBusinessHoursList">
+			<param name="moduleName">setup</param>
+			<param name="permission">GENERAL</param>
+			<result name="success" type="json">
+			<param name="root">businessHoursList</param>
+			<param name="root">businessHours</param>
+			</result>
+		</action>
 		<action name="*"
 			class="com.facilio.bmsconsole.actions.BusinessHoursAction" method="getBusinessHoursList">
 			<param name="moduleName">setup</param>

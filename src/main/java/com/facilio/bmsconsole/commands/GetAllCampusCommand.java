@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsole.actions.BusinessHoursAction;
 import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.modules.FacilioField;
@@ -41,6 +42,19 @@ public class GetAllCampusCommand implements Command{
 		List<SiteContext> campuses = builder.get();
 		List<Long> spaceId = new ArrayList<Long>();
 		campuses.forEach((e) -> spaceId.add(e.getId()));
+		
+		BusinessHoursAction businessHoursAction=new BusinessHoursAction();
+		campuses.forEach((e) ->{
+			if(e.getData()!=null){
+//				e.setBusinesshoursId(Long.parseLong(e.getData().get("operatingHour").toString()));
+			businessHoursAction.setId(Long.parseLong(e.getData().get("operatingHour").toString()));
+			try {
+				businessHoursAction.v2getBusinessHoursList();
+			} catch (Exception e1) {
+			}
+			e.setBusinessHour(businessHoursAction.getBusinessHour());
+			}
+		});
 		context.put(FacilioConstants.ContextNames.SITE_LIST, campuses);
 		
 		return false;

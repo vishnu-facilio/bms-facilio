@@ -64,6 +64,7 @@ import com.facilio.bmsconsole.forms.FacilioForm.FormType;
 import com.facilio.bmsconsole.reports.ReportsUtil;
 import com.facilio.bmsconsole.util.AlarmAPI;
 import com.facilio.bmsconsole.util.AssetsAPI;
+import com.facilio.bmsconsole.util.BusinessHoursAPI;
 import com.facilio.bmsconsole.util.DeviceAPI;
 import com.facilio.bmsconsole.util.EncryptionUtil;
 import com.facilio.bmsconsole.util.FormsAPI;
@@ -332,6 +333,7 @@ public class LoginAction extends FacilioAction {
 		data.put("alarmSeverity", AlarmAPI.getAlarmSeverityList());
 		data.put("assetCategory", AssetsAPI.getCategoryList());
 		data.put("assetType", AssetsAPI.getTypeList());
+		data.put("operatingHour", BusinessHoursAPI.getBusinessHours());
 		data.put("assetDepartment", AssetsAPI.getDepartmentList());
 //		data.put("inventoryVendors", InventoryApi.getInventoryVendorList());
 //		data.put("inventoryCategory", InventoryApi.getInventoryCategoryList());

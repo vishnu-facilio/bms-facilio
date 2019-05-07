@@ -194,6 +194,7 @@ public class FacilioConstants {
 		public static final String PERMISSIONS= "permissions";
 		
 		public static final String BUSINESS_HOUR = "businesshour";
+		public static final String BUSINESS_HOUR_LIST="businesshourlist";
 		
 		public static final String ID = "Id";
 		public static final String LINK_NAME = "linkName";

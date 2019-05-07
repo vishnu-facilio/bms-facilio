@@ -2674,10 +2674,12 @@ public class FieldFactory {
 		List<FacilioField> fields = new ArrayList<>();
 		fields.add(getIdField(module));
 		/*fields.add(getOrgIdField(module));*/
-
+		fields.add(getField("name", "NAME", module, FieldType.STRING));
+		fields.add(getField("businessHourTypeId", "BUSINESS_HOUR_TYPE_ID", module, FieldType.NUMBER));
+		fields.add(getField("customHourTypeId", "CUSTOM_HOUR_TYPE_ID", module, FieldType.NUMBER));
+		
 		return fields;
 	}
-	
 	public static List<FacilioField> getShiftField() {
 		FacilioModule module = ModuleFactory.getShiftModule();
 		List<FacilioField> fields = new ArrayList<>();
