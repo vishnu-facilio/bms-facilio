@@ -493,11 +493,12 @@ public class FacilioAuthAction extends FacilioAction {
         return SUCCESS;
     }
     
-    public String postIssueResponse(HttpServletRequest request,
-            HttpServletResponse response) throws Exception {
+    public String postIssueResponse() throws Exception {
     	try {
     	  StringBuffer jb = new StringBuffer();
     	  String line = null;
+    	  
+    	  HttpServletRequest request = ServletActionContext.getRequest();
 
     	  try(BufferedReader reader = request.getReader()) {
     		  
