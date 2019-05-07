@@ -18,12 +18,16 @@ import com.facilio.transaction.FacilioConnectionPool;
 import com.opensymphony.xwork2.ActionContext;
 import org.apache.commons.chain.Chain;
 import org.apache.struts2.ServletActionContext;
+import org.json.HTTP;
+import org.json.JSONException;
 import org.json.simple.JSONObject;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.security.MessageDigest;
@@ -487,9 +491,42 @@ public class FacilioAuthAction extends FacilioAction {
 
         return SUCCESS;
     }
+    
+    public String postIssueResponse(HttpServletRequest request,
+            HttpServletResponse response) throws Exception {
+    	
+    	  StringBuffer jb = new StringBuffer();
+    	  String line = null;
+    	  try {
+    		  
+    	    BufferedReader reader = request.getReader();    
+    	    while ((line = reader.readLine()) != null)
+    	      jb.append(line);
+    	    
+    	  } catch (Exception e) {
+              setJsonresponse("message", "Error while reading post issue response");
+              return ERROR;
+    	  }
+  	    final Level level = Level.INFO;
+
+      
+    	  try {
+    		  
+    	   org.json.JSONObject jsonObject =  HTTP.toJSONObject(jb.toString());
+    	    System.out.println("postIssueResponse"+jsonObject);
+    	    LOGGER.log(level, "postIssueResponse"+jsonObject.toString());
+    	    
+    	  } catch (JSONException e) {
+    	    
+    		  throw new IOException("Error parsing JSON request string");
+    	  }
+      
+          setJsonresponse("message", " post issue response recieved successfully");
+    	return SUCCESS;
+    }
 
     public String verifyEmail() throws Exception {
-
+    	
         JSONObject invitation = new JSONObject();
         User user = AccountUtil.getUserBean().verifyEmail(getInviteToken());
         if (user == null) {
