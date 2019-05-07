@@ -26,7 +26,7 @@ public class AddMLOccurrenceCommand implements Command {
 			isNewEvent = false;
 		}
 		
-		LOGGER.info("Adding MLOccurence COmmand");
+//		LOGGER.info("Adding MLOccurence COmmand");
 		
 		if(alarm != null && alarm instanceof MLAlarmContext && isNewEvent) {
 			LOGGER.info("Add occurrence for MLAlarm : "+alarm.getId());
