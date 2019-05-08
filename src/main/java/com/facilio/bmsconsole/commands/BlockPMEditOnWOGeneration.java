@@ -67,7 +67,7 @@ public class BlockPMEditOnWOGeneration implements Command {
         GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
                 .table(module.getTableName())
                 .select(Arrays.asList(fieldMap.get("woGenerationStatus")))
-                .andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//                .andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
                 .andCondition(CriteriaAPI.getCondition(fieldMap.get("id"), pmIds, NumberOperators.EQUALS));
         List<Map<String, Object>> props = selectRecordBuilder.get();
         if (CollectionUtils.isNotEmpty(props)) {

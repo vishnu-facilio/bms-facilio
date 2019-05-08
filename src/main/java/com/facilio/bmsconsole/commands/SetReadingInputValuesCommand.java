@@ -34,7 +34,7 @@ public class SetReadingInputValuesCommand implements Command {
 		
 		GenericDeleteRecordBuilder deleteBuilder = new GenericDeleteRecordBuilder()
 				.table(module.getTableName())
-				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("rdmId"), String.valueOf(rdmId), NumberOperators.EQUALS));
 		deleteBuilder.delete();
 		

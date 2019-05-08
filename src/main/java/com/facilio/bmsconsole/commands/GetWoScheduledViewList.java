@@ -43,8 +43,8 @@ public class GetWoScheduledViewList implements Command {
 		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(fields)
-				.table(module.getTableName())
-				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module));
+				.table(module.getTableName());
+//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module));
 
 		
 		List<Map<String, Object>> props = selectBuilder.get();
@@ -69,7 +69,7 @@ public class GetWoScheduledViewList implements Command {
 			selectBuilder = new GenericSelectRecordBuilder()
 					.select(jobsField)
 					.table(jobsModule.getTableName())
-					.andCondition(CriteriaAPI.getCurrentOrgIdCondition(jobsModule))
+//					.andCondition(CriteriaAPI.getCurrentOrgIdCondition(jobsModule))
 					.andCondition(CriteriaAPI.getCondition(fieldMap.get("jobName"), "ViewEmailScheduler", StringOperators.IS));
 			
 			List<Map<String, Object>> jobProps = selectBuilder.get();

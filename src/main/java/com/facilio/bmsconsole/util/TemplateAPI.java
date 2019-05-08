@@ -223,7 +223,7 @@ public class TemplateAPI {
 		GenericSelectRecordBuilder selectBuider = new GenericSelectRecordBuilder()
 														.select(fields)
 														.table(module.getTableName())
-														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 														.andCondition(CriteriaAPI.getCondition(typeField, String.valueOf(type.getIntVal()), NumberOperators.EQUALS))
 														;
 		List<Map<String, Object>> props = selectBuider.get();
@@ -282,7 +282,7 @@ public class TemplateAPI {
 		GenericSelectRecordBuilder selectBuider = new GenericSelectRecordBuilder()
 													.select(FieldFactory.getTemplateFields())
 													.table(module.getTableName())
-													.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//													.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 													.andCondition(CriteriaAPI.getIdCondition(id, module))
 													;
 		
@@ -306,8 +306,8 @@ public class TemplateAPI {
 													  .select(fields)
 													  .table(templateModule.getTableName())
 													  .innerJoin(excelTemplateModule.getTableName())
-													  .on(templateModule.getTableName()+".ID = "+excelTemplateModule.getTableName()+".ID")
-													  .andCondition(CriteriaAPI.getCurrentOrgIdCondition(templateModule));
+													  .on(templateModule.getTableName()+".ID = "+excelTemplateModule.getTableName()+".ID");
+//													  .andCondition(CriteriaAPI.getCurrentOrgIdCondition(templateModule));
 		
 		List<Map<String, Object>> templatePropList = selectBuilder.get();
 		List<ExcelTemplate> excelTemplates = new ArrayList();
@@ -334,7 +334,7 @@ public class TemplateAPI {
 													  .table(templateModule.getTableName())
 													  .innerJoin(woTemplateModule.getTableName())
 													  .on(templateModule.getTableName()+".ID = "+woTemplateModule.getTableName()+".ID")
-													  .andCondition(CriteriaAPI.getCurrentOrgIdCondition(templateModule))
+//													  .andCondition(CriteriaAPI.getCurrentOrgIdCondition(templateModule))
 													  .andCondition(CriteriaAPI.getCondition(typeField, String.valueOf(Type.WORKORDER.getIntVal()), NumberOperators.EQUALS))
 													  ;
 		
@@ -484,7 +484,7 @@ public class TemplateAPI {
 		FacilioModule module = ModuleFactory.getTemplatesModule();
 		GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
 													.table(module.getTableName())
-													.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//													.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 													.andCondition(CriteriaAPI.getIdCondition(ids, module));
 		builder.delete();
 		templatePostDelete(template);
@@ -909,8 +909,8 @@ public class TemplateAPI {
 													  .select(fields)
 													  .table(templateModule.getTableName())
 													  .innerJoin(extendedModule.getTableName())
-													  .on(templateModule.getTableName()+".ID = "+extendedModule.getTableName()+".ID")
-													  .andCondition(CriteriaAPI.getCurrentOrgIdCondition(templateModule));
+													  .on(templateModule.getTableName()+".ID = "+extendedModule.getTableName()+".ID");
+//													  .andCondition(CriteriaAPI.getCurrentOrgIdCondition(templateModule));
 		
 		if (extraCondition != null) {
 			selectBuilder.andCondition(extraCondition);
@@ -1243,7 +1243,7 @@ public class TemplateAPI {
 		GenericUpdateRecordBuilder updateRecordBuilder = new GenericUpdateRecordBuilder()
 				.table(templateMpdule.getTableName())
 				.fields(FieldFactory.getTemplateFields())
-				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(templateMpdule))
+//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(templateMpdule))
 				.andCondition(CriteriaAPI.getIdCondition(id, templateMpdule));
 
 		updateRecordBuilder.update(templateProps);
@@ -1251,7 +1251,7 @@ public class TemplateAPI {
 		GenericUpdateRecordBuilder extendedUpdateRecordBuilder = new GenericUpdateRecordBuilder()
 				.table(extendedModule.getTableName())
 				.fields(fields)
-				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(extendedModule))
+//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(extendedModule))
 				.andCondition(CriteriaAPI.getIdCondition(id, extendedModule));
 
 		return extendedUpdateRecordBuilder.update(templateProps);

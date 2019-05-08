@@ -377,7 +377,7 @@ public class JobStore {
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getJobFields());
 		GenericDeleteRecordBuilder deleteBuilder = new GenericDeleteRecordBuilder()
 				.table(module.getTableName())
-				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("jobId"), jobIds, NumberOperators.EQUALS))
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("jobName"), jobName, StringOperators.IS));
 		

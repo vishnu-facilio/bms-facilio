@@ -150,8 +150,8 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.table(stateFlowScheduleModule.getTableName())
 				.select(FieldFactory.getStateFlowScheduleFields())
-				.andCondition(CriteriaAPI.getCondition("RECORD_ID", "recordId", String.valueOf(record.getId()), NumberOperators.EQUALS))
-				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(stateFlowScheduleModule));
+				.andCondition(CriteriaAPI.getCondition("RECORD_ID", "recordId", String.valueOf(record.getId()), NumberOperators.EQUALS));
+//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(stateFlowScheduleModule));
 		List<Map<String, Object>> list = selectBuilder.get();
 		if (CollectionUtils.isNotEmpty(list)) {
 			List<Long> jobIds = new ArrayList<>();
@@ -526,7 +526,7 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 				.table(ModuleFactory.getStateFlowModule().getTableName())
 				.select(FieldFactory.getStateFlowFields())
-				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(ModuleFactory.getStateFlowModule()))
+//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(ModuleFactory.getStateFlowModule()))
 				.andCondition(CriteriaAPI.getCondition("MODULEID", "moduleId", String.valueOf(module.getModuleId()), NumberOperators.EQUALS));
 		List<Map<String, Object>> list = builder.get();
 		List<StateFlowRuleContext> stateFlowList = FieldUtil.getAsBeanListFromMapList(list, StateFlowRuleContext.class);
@@ -566,7 +566,7 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 	public static StateFlowRuleContext getDefaultStateFlow(FacilioModule module) throws Exception {
 		Criteria criteria = new Criteria();
 		criteria.addAndCondition(CriteriaAPI.getCondition("DEFAULT_STATE_FLOW", "defaltStateFlow", String.valueOf("true"), BooleanOperators.IS));
-		criteria.addAndCondition(CriteriaAPI.getCurrentOrgIdCondition(ModuleFactory.getStateFlowModule()));
+//		criteria.addAndCondition(CriteriaAPI.getCurrentOrgIdCondition(ModuleFactory.getStateFlowModule()));
 
 		FacilioField moduleIdField = new FacilioField();
 		moduleIdField.setName("moduleId");

@@ -29,7 +29,7 @@ public class UpdateFormSectionCommand implements Command {
 		GenericUpdateRecordBuilder builder = new GenericUpdateRecordBuilder()
 				.table(module.getTableName())
 				.fields(fields)
-				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 				.andCondition(CriteriaAPI.getIdCondition(section.getId(), module))
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("formId"), String.valueOf(formId), NumberOperators.EQUALS))
 				;

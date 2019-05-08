@@ -2148,7 +2148,7 @@ public class DashboardUtil {
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 														.table(module.getTableName())
 														.select(fields)
-														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 														.andCondition(CriteriaAPI.getCondition(entityField, String.valueOf(entityId), PickListOperators.IS));
 		
 		selectBuilder.orderBy("SEQUENCE_NUMBER");
@@ -2171,7 +2171,7 @@ public class DashboardUtil {
 			GenericSelectRecordBuilder select = new GenericSelectRecordBuilder();
 			select.select(FieldFactory.getDashboardFields())
 			.table(ModuleFactory.getDashboardModule().getTableName())
-			.andCondition(CriteriaAPI.getCurrentOrgIdCondition(ModuleFactory.getDashboardModule()))
+//			.andCondition(CriteriaAPI.getCurrentOrgIdCondition(ModuleFactory.getDashboardModule()))
 			.andCustomWhere(ModuleFactory.getDashboardModule().getTableName()+".MODULEID = ?", moduleId)
 			.orderBy("DISPLAY_ORDER desc")
 			.limit(1);

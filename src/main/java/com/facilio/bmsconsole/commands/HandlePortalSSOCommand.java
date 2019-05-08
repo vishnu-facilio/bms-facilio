@@ -46,7 +46,7 @@ public class HandlePortalSSOCommand implements Command{
 		GenericUpdateRecordBuilder builder = new GenericUpdateRecordBuilder()
 												.table(module.getTableName())
 												.fields(fields)
-												.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//												.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 												.andCustomWhere("PORTALID = ? ", portalid);
 		builder.update(serviceProtalProps);
 		

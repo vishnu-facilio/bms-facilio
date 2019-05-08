@@ -71,7 +71,7 @@ public class ActionAPI {
 				.table(module.getTableName())
 				.innerJoin("Workflow_Rule_Action")
 				.on("Action.ID = Workflow_Rule_Action.ACTION_ID")
-				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 				.andCustomWhere("Workflow_Rule_Action.WORKFLOW_RULE_ID = ? AND Action.STATUS = ?", workflowRuleId, true);
 		return getActionsFromPropList(actionBuilder.get());
 	}
@@ -81,7 +81,7 @@ public class ActionAPI {
 		GenericSelectRecordBuilder actionBuilder = new GenericSelectRecordBuilder()
 														.select(FieldFactory.getActionFields())
 														.table(module.getTableName())
-														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 														.andCondition(CriteriaAPI.getIdCondition(id, module));
 		
 		List<ActionContext> actions = getActionsFromPropList(actionBuilder.get());
@@ -100,7 +100,7 @@ public class ActionAPI {
 		GenericSelectRecordBuilder actionBuilder = new GenericSelectRecordBuilder()
 														.select(FieldFactory.getActionFields())
 														.table(module.getTableName())
-														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 														.andCondition(CriteriaAPI.getIdCondition(ids, module));
 		
 		List<ActionContext> actions = getActionsFromPropList(actionBuilder.get());
@@ -238,7 +238,7 @@ public class ActionAPI {
 		GenericSelectRecordBuilder actionBuilder = new GenericSelectRecordBuilder()
 														.select(FieldFactory.getActionFields())
 														.table(module.getTableName())
-														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 														;
 		if (actionIds != null && !actionIds.isEmpty()) {
 			actionBuilder.andCondition(CriteriaAPI.getIdCondition(actionIds, module));
@@ -257,7 +257,7 @@ public class ActionAPI {
 			FacilioModule actionModule = ModuleFactory.getActionModule();
 			GenericDeleteRecordBuilder deleteBuilder = new GenericDeleteRecordBuilder()
 					.table(actionModule.getTableName())
-					.andCondition(CriteriaAPI.getCurrentOrgIdCondition(actionModule))
+//					.andCondition(CriteriaAPI.getCurrentOrgIdCondition(actionModule))
 					.andCondition(CriteriaAPI.getIdCondition(actionIds, actionModule));
 			deleteBuilder.delete();
 			TemplateAPI.deleteTemplates(templateIds);

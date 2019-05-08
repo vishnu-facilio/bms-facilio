@@ -28,7 +28,7 @@ public class getRelatedEvents implements Command {
 				GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
 						.table(eventModule.getTableName())
 						.select(EventConstants.EventFieldFactory.getEventFields())
-						.andCondition(CriteriaAPI.getCurrentOrgIdCondition(eventModule))
+//						.andCondition(CriteriaAPI.getCurrentOrgIdCondition(eventModule))
 						.andCustomWhere("Event.ALARM_ID=?", readingAlarm.getId());
 
 				List<Map<String, Object>> props = selectRecordBuilder.get();

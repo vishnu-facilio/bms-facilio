@@ -20,7 +20,7 @@ public class ScheduledActionAPI {
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 													.table(module.getTableName())
 													.select(FieldFactory.getScheduledActionFields())
-													.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//													.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 													.andCondition(CriteriaAPI.getIdCondition(id, module));
 		
 		List<Map<String, Object>> props = builder.get();

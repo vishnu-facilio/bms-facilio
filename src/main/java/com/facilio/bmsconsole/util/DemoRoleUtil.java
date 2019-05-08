@@ -68,7 +68,7 @@ public class DemoRoleUtil {
 		tablesContainsDateField.put("Purchase_Orders" , Arrays.asList("SYS_CREATED_TIME","SYS_MODIFIED_TIME","COMPLETED_TIME"));
 		tablesContainsDateField.put("Assets" , Arrays.asList("PURCHASED_DATE","RETIRE_DATE","DATETIME_CF1","DATETIME_CF2","DATETIME_CF3","DATETIME_CF4","DATETIME_CF5"));
 		tablesContainsDateField.put("Asset_Activity" , Arrays.asList("SYS_CREATED_TIME","SYS_MODIFIED_TIME","TTIME"));
-		tablesContainsDateField.put("AssetCustomModuleData" , Arrays.asList());
+//		tablesContainsDateField.put("AssetCustomModuleData" , Arrays.asList("DATETIME_CF1","DATETIME_CF2","DATETIME_CF3","DATETIME_CF4","DATETIME_CF5"));
 		tablesContainsDateField.put("Work_Order_Activity" , Arrays.asList("SYS_CREATED_TIME","SYS_MODIFIED_TIME","TTIME"));
 		tablesContainsDateField.put("Chiller_Readings" , Arrays.asList("ACTUAL_TTIME","TTIME"));
 		tablesContainsDateField.put("Chiller_Condenser_Readings" , Arrays.asList("ACTUAL_TTIME","TTIME"));

@@ -56,7 +56,7 @@ public class PMScheduler extends FacilioJob {
 																.table(pmTriggerModule.getTableName())
 																.innerJoin(pmModule.getTableName())
 																.on(pmTriggerModule.getTableName()+".PM_ID = "+pmModule.getTableName()+".ID")
-																.andCondition(CriteriaAPI.getCurrentOrgIdCondition(pmTriggerModule))
+//																.andCondition(CriteriaAPI.getCurrentOrgIdCondition(pmTriggerModule))
 																.andCondition(CriteriaAPI.getCondition(pmFieldsMap.get("triggerType"), String.valueOf(TriggerType.ONLY_SCHEDULE_TRIGGER.getVal()), NumberOperators.EQUALS))
 																.andCondition(CriteriaAPI.getCondition(pmFieldsMap.get("status"), String.valueOf(true), BooleanOperators.IS))
 																;

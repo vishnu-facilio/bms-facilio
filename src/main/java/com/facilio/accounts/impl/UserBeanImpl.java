@@ -1276,7 +1276,7 @@ public class UserBeanImpl implements UserBean {
 				.table("Users")
 				.innerJoin("ORG_Users")
 				.on("Users.USERID = ORG_Users.USERID")
-				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(ModuleFactory.getOrgUserModule()))
+//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(ModuleFactory.getOrgUserModule()))
 				;
 		
 		if (criteria != null && !criteria.isEmpty()) {

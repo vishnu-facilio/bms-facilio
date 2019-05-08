@@ -40,7 +40,7 @@ public class SchedulePostPMRemindersCommand implements Command {
 				GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 																.table(module.getTableName())
 																.select(FieldFactory.getPMReminderFields())
-																.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//																.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 																.andCustomWhere("PM_ID = ?", pm.getId())
 																.andCustomWhere("REMINDER_TYPE != ?", ReminderType.BEFORE_EXECUTION.getValue())
 																;

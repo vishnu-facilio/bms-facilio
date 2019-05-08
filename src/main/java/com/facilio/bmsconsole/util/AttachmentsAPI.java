@@ -165,7 +165,7 @@ public class AttachmentsAPI {
 					.table(module.getTableName())
 					.select(fields)
 					.groupBy(parentTicketId.getCompleteColumnName())
-					.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//					.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 					.andCondition(CriteriaAPI.getCondition(parentTicketId, list, NumberOperators.EQUALS));
 			List<Map<String, Object>> rs = recordBuilder.get();
 			
@@ -188,7 +188,7 @@ public class AttachmentsAPI {
 					GenericUpdateRecordBuilder updateRecordBuilder = new GenericUpdateRecordBuilder()
 							.table(ticketModule.getTableName())
 							.fields(updateFields)
-							.andCondition(CriteriaAPI.getCurrentOrgIdCondition(ticketModule))
+//							.andCondition(CriteriaAPI.getCurrentOrgIdCondition(ticketModule))
 							.andCondition(idFieldCondition);
 					
 					Map<String, Object> updateMap = new HashMap<String, Object>();

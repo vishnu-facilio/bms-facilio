@@ -23,7 +23,7 @@ public class CostAPI {
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 														.select(FieldFactory.getCostFields())
 														.table(module.getTableName())
-														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 														;
 		return getCostsFromProps(selectBuilder.get());
 	}
@@ -59,7 +59,7 @@ public class CostAPI {
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 														.select(fields)
 														.table(module.getTableName())
-														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 														.andCondition(CriteriaAPI.getCondition(costField, costIds, PickListOperators.IS))
 														;
 		if (orderBy != null) {

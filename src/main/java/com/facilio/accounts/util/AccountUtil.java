@@ -194,8 +194,8 @@ public class AccountUtil {
 		
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 												.table(module.getTableName())
-												.select(fields)
-												.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module));
+												.select(fields);
+//												.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module));
 		
 		List<Map<String, Object>> portalInfoList = builder.get();
 		

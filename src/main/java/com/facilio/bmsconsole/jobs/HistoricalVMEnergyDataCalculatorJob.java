@@ -27,7 +27,7 @@ public class HistoricalVMEnergyDataCalculatorJob extends FacilioJob {
 			GenericSelectRecordBuilder jobBuilder = new GenericSelectRecordBuilder()
 					.select(FieldFactory.getHistoricalVMCalculationFields())
 					.table(module.getTableName())
-					.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//					.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 					.andCondition(CriteriaAPI.getIdCondition(jobId, module));
 					
 			List<Map<String, Object>> jobPropsList = jobBuilder.get();

@@ -67,7 +67,7 @@ public class GetPlannedFutureWOCommand implements Command {
 																.on(pmJobsModule.getTableName()+".PM_ID = "+pmModule.getTableName()+".ID")
 																.innerJoin(woTemplateModule.getTableName())
 																.on(pmModule.getTableName()+".TEMPLATE_ID = "+woTemplateModule.getTableName()+".ID")
-																.andCondition(CriteriaAPI.getCurrentOrgIdCondition(pmModule))
+//																.andCondition(CriteriaAPI.getCurrentOrgIdCondition(pmModule))
 																.andCondition(CriteriaAPI.getCondition(transformedDateField, String.valueOf(startTime+","+endTime), DateOperators.BETWEEN))
 																;
 		

@@ -58,7 +58,7 @@ public class ModuleLocalIdUtil {
 																.useExternalConnection(conn) //This connection will not be closed by builder. Use this with caution
 																.table(module.getTableName())
 																.select(FieldFactory.getModuleLocalIdFields())
-																.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//																.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 																.andCondition(CriteriaAPI.getCondition("MODULE_NAME", "moduleName", moduleName, StringOperators.IS))
 																.forUpdate()
 																;
@@ -126,7 +126,7 @@ public class ModuleLocalIdUtil {
 																.useExternalConnection(conn) //This connection will not be closed by builder. Use this with caution
 																.table(module.getTableName())
 																.fields(fields)
-																.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//																.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 																.andCondition(CriteriaAPI.getCondition(moduleField, moduleName, StringOperators.IS))
 //																.andCondition(CriteriaAPI.getCondition(localIdField, String.valueOf(oldId), NumberOperators.EQUALS))
 																;

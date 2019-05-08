@@ -358,8 +358,8 @@ public class ProcessXLS implements Command {
 			GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 					.select(fieldsList)
 					.table(lookupField.getLookupModule().getTableName())
-					.andCustomWhere("LOWER("+collumnName+") = ?", value.toString().toLowerCase())
-					.andCondition(CriteriaAPI.getCurrentOrgIdCondition(lookupField.getLookupModule()));
+					.andCustomWhere("LOWER("+collumnName+") = ?", value.toString().toLowerCase());
+//					.andCondition(CriteriaAPI.getCurrentOrgIdCondition(lookupField.getLookupModule()));
 			
 			List<Map<String, Object>> props = selectBuilder.get();
 			

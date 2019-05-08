@@ -140,7 +140,7 @@ public class AwsUtil
 				productionEnvironment = "production".equalsIgnoreCase(environment);
 				developmentEnvironment = "development".equalsIgnoreCase(environment);
 				disableCSP = "true".equals(PROPERTIES.getProperty("onpremise", "false").trim());
-				scheduleServer = "true".equals(AwsUtil.getConfig("schedulerServer"));
+				scheduleServer = true;/*"true".equals(AwsUtil.getConfig("schedulerServer"));*/
 				messageProcessor = "true".equalsIgnoreCase(PROPERTIES.getProperty("messageProcessor"));
 				userServer = ! scheduleServer;
 				db = PROPERTIES.getProperty("db.name");

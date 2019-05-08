@@ -48,7 +48,7 @@ public class ViewAPI {
 			GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 													.select(fields)
 													.table(module.getTableName())
-													.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//													.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 													.orderBy("SEQUENCE_NUMBER");
 			
 			if (moduleId != -1) {
@@ -185,7 +185,7 @@ public class ViewAPI {
 			GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 													.select(FieldFactory.getViewFields())
 													.table(module.getTableName())
-													.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//													.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 													.andCondition(CriteriaAPI.getIdCondition(viewId, module));
 			
 			List<Map<String, Object>> viewProps = builder.get();
@@ -584,7 +584,7 @@ public class ViewAPI {
 		GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
 				 .select(fields)
 				 .table(module.getTableName())
-				 .andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//				 .andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 				 .andCondition(CriteriaAPI.getCondition("VIEWID", "viewId", String.valueOf(viewId), NumberOperators.EQUALS));
 		List<Map<String, Object>>  prop = selectRecordBuilder.get();
 		List<ViewSharingContext> viewSharingProps = new ArrayList<>();
