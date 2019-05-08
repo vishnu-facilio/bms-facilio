@@ -50,7 +50,7 @@ public class DemoRoleJob extends FacilioJob{
 				  sql.append("UPDATE").append(" ").append(key).append(" ").append("SET").append("  ");
 				  for (String columnName : valueList) {
 					  sql.append(columnName).append("=");
-					  sql.append(columnName).append("+").append(( 24 * 60 * 60));
+					  sql.append(columnName).append("+").append(( 24 * 60 * 60 * 1000));
 					  sql.append(",");
 				  }		 
 				  sql.replace(sql.length()-1, sql.length(), " ");
@@ -61,7 +61,7 @@ public class DemoRoleJob extends FacilioJob{
 				  }
 				  try {
 					int count=  pstmt.executeUpdate();
-					LOGGER.info("###DemoRoleUp"+count+"of rows updated in"+key+"successfully");
+					LOGGER.info("###DemoRoleUp"+" "+count+" "+"of rows updated in"+key+"successfully");
 				  }
 				  catch(Exception e) {
 					  CommonCommandUtil.emailException("DemoRoleUp", "DemoRoleUp Failed - orgid -- "+AccountUtil.getCurrentOrg().getId(), e);
