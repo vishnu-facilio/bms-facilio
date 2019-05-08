@@ -50,6 +50,7 @@ import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericSelectRecordBuilder;
+import com.facilio.unitconversion.Unit;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
 
@@ -121,7 +122,13 @@ public class FetchCardDataCommand implements Command {
 					wfResult = CardUtil.getWorkflowResultForClient(wfResult, widgetStaticContext); // parsing data suitable for client
 					result.put("result", wfResult);
 					
-					result.put("unit", CardUtil.getUnit(widgetStaticContext.getParamsJson()));
+					Object unit = CardUtil.getUnit(widgetStaticContext.getParamsJson());
+					if(unit instanceof Unit) {
+						result.put("unit", unit);
+					}
+					else {
+						result.put("unitString", unit);
+					}
 				}
 				else {
 					Map<String, Object> expResult = WorkflowUtil.getExpressionResultMap(card.getWorkflow(), widgetStaticContext.getParamsJson());
@@ -162,7 +169,13 @@ public class FetchCardDataCommand implements Command {
 					
 					result.put("alarmSeverity", AlarmAPI.getMaxSeverity(alarms));
 					
-					result.put("unit", CardUtil.getUnit(params));
+					Object unit = CardUtil.getUnit(params);
+					if(unit instanceof Unit) {
+						result.put("unit", unit);
+					}
+					else {
+						result.put("unitString", unit);
+					}
 					
 					result.put("widget", widgetStaticContext);
 					context.put(FacilioConstants.ContextNames.RESULT, result);
