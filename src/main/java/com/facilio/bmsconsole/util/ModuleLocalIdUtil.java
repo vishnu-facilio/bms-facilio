@@ -47,6 +47,8 @@ public class ModuleLocalIdUtil {
 		modulesWithLocalId.add(FacilioConstants.ContextNames.PURCHASE_CONTRACTS);
 		modulesWithLocalId.add(FacilioConstants.ContextNames.LABOUR_CONTRACTS);
 		modulesWithLocalId.add(FacilioConstants.ContextNames.GATE_PASS);
+		modulesWithLocalId.add(FacilioConstants.ContextNames.INVENTORY_REQUESTS);
+
 
 		return modulesWithLocalId;
 	}

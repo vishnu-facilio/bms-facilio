@@ -854,4 +854,38 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new GetStateTransitionCommand());
 		return c;
 	}
+
+	public static Chain getInventoryRequestListChain() {
+		Chain chain = getDefaultChain();
+		chain.addCommand(SetTableNamesCommand.getForInventoryRequest());
+		chain.addCommand(new LoadAllFieldsCommand());
+		chain.addCommand(new LoadViewCommand());
+		chain.addCommand(new GenerateCriteriaFromFilterCommand());
+		chain.addCommand(new GenerateSearchConditionCommand());
+		chain.addCommand(new GetInventoryRequestListCommand());
+		return chain;
+	}
+
+	public static Chain getInventoryRequestDetailsChain() {
+		Chain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForInventoryRequest());
+		c.addCommand(new GenericGetModuleDataDetailCommand());
+		c.addCommand(new FetchInventoryRequestDetailsCommand());
+		return c;
+	}
+
+	public static Chain getInventoryRequestLineItemListByRequesterIdChain() {
+		Chain chain = getDefaultChain();
+		chain.addCommand(SetTableNamesCommand.getForInventoryRequest());
+		chain.addCommand(new GetInventoryRequestLineItemsByRequesterIdCommand());
+		return chain;
+	}
+
+	public static Chain getInventoryRequestLineItemListByParentIdChain() {
+		Chain chain = getDefaultChain();
+		chain.addCommand(SetTableNamesCommand.getForInventoryRequest());
+		chain.addCommand(new GetInventoryRequestLineItemsForParentIdCommand());
+		return chain;
+	}
+
 }

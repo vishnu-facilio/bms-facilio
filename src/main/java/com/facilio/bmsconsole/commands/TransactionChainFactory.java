@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.commands;
 import com.facilio.accounts.util.AccountUtil;
 import org.apache.commons.chain.Chain;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.activity.AddActivitiesCommand;
 import com.facilio.agent.ConfigureAgentCommand;
 import com.facilio.agent.ConfigureControllerCommand;
@@ -2588,13 +2589,56 @@ public class TransactionChainFactory {
 			c.addCommand(new ConvertToRulesCommand());
 			return c;
 		}
-		
+
+		public static Chain getAddOrUpdateInventoryRequestChain() {
+			Chain chain = getDefaultChain();
+			chain.addCommand(SetTableNamesCommand.getForInventoryRequest());
+			chain.addCommand(new AddOrUpdatePurchaseRequestCommand());
+			chain.addCommand(getPurchaseRequestTotalCostChain()); //update purchase request total cost
+			return chain;
+		}
+		public static Chain getInventoryRequestDeleteChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForInventoryRequest());
+			c.addCommand(new DeleteInventoryRequestCommand());
+			return c;
+		}
+
+		public static Chain getAddInventoryRequestLineItem() {
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForInventoryRequest());
+			c.addCommand(new AddOrUpdateInventoryRequestLineItemCommand());
+			return c;
+		}
+
+		public static Chain getDeleteInventoryRequestLineItem() {
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForInventoryRequest());
+			c.addCommand(new DeleteInventoryRequestLineItemCommand());
+			return c;
+		}
+
+		public static Chain getUseLineItemsForItemsChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new UseInventoryRequestLineItemsCommand());
+			c.addCommand(getAddOrUdpateWorkorderItemsChain());
+			return c;
+		}
+
+		public static Chain getUseLineItemsForToolsChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new UseInventoryRequestLineItemsCommand());
+			c.addCommand(getAddOrUdpateWorkorderToolsChain());
+			return c;
+		}
+
+
 		public static Chain getAddJobPlanChain () {
 			Chain c = getDefaultChain();
 			c.addCommand(new AddJobPlanCommand());
 			return c;
 		}
-		
+
 		public static Chain getUpdateJobPlanChain () {
 			Chain c = getDefaultChain();
 			c.addCommand(new UpdateJobPlanCommand());
