@@ -27,9 +27,9 @@ import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.fw.BeanFactory;
 import com.facilio.fw.TransactionBeanFactory;
-import com.facilio.sql.DBUtil;
-import com.facilio.sql.GenericSelectRecordBuilder;
-import com.facilio.transaction.FacilioConnectionPool;
+import com.facilio.db.builder.DBUtil;
+import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.transaction.FacilioConnectionPool;
 
 public class AccountUtil {
 

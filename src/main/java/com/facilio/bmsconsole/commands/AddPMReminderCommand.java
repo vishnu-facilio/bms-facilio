@@ -12,7 +12,7 @@ import com.facilio.bmsconsole.util.TemplateAPI;
 import com.facilio.bmsconsole.workflow.rule.ActionContext;
 import com.facilio.bmsconsole.workflow.rule.ActionType;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.sql.GenericInsertRecordBuilder;
+import com.facilio.db.builder.GenericInsertRecordBuilder;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 

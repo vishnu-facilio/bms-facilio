@@ -16,7 +16,7 @@ import com.facilio.bmsconsole.modules.InsertRecordBuilder;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
-import com.facilio.sql.GenericInsertRecordBuilder;
+import com.facilio.db.builder.GenericInsertRecordBuilder;
 
 public class AddPreventiveMaintenanceCommand implements Command {
 

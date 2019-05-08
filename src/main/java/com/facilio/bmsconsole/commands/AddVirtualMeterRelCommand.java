@@ -6,7 +6,7 @@ import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.util.DateTimeUtil;
 import com.facilio.bmsconsole.util.DeviceAPI;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.sql.GenericInsertRecordBuilder;
+import com.facilio.db.builder.GenericInsertRecordBuilder;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 

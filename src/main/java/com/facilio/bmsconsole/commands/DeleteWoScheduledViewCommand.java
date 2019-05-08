@@ -18,8 +18,8 @@ import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.util.TemplateAPI;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.sql.GenericDeleteRecordBuilder;
-import com.facilio.sql.GenericSelectRecordBuilder;
+import com.facilio.db.builder.GenericDeleteRecordBuilder;
+import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.tasker.FacilioTimer;
 
 public class DeleteWoScheduledViewCommand implements Command {

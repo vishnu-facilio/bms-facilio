@@ -7,7 +7,7 @@ import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.events.constants.EventConstants;
 import com.facilio.events.context.EventRule;
 import com.facilio.events.util.EventRulesAPI;
-import com.facilio.sql.GenericUpdateRecordBuilder;
+import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 

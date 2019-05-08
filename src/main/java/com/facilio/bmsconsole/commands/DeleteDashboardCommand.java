@@ -6,12 +6,11 @@ import java.util.Map;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
-import com.facilio.bmsconsole.context.DashboardContext;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.util.DashboardUtil;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.sql.GenericSelectRecordBuilder;
+import com.facilio.db.builder.GenericSelectRecordBuilder;
 
 public class DeleteDashboardCommand implements Command {
 

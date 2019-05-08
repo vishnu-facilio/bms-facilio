@@ -11,8 +11,8 @@ import com.facilio.bmsconsole.modules.*;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
-import com.facilio.sql.DBUtil;
-import com.facilio.transaction.FacilioConnectionPool;
+import com.facilio.db.builder.DBUtil;
+import com.facilio.db.transaction.FacilioConnectionPool;
 import org.apache.commons.chain.Chain;
 import org.apache.commons.collections4.CollectionUtils;
 

@@ -20,7 +20,7 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.fs.FileInfo.FileFormat;
 import com.facilio.report.context.ReportContext;
 import com.facilio.report.util.ReportUtil;
-import com.facilio.sql.GenericSelectRecordBuilder;
+import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.tasker.job.FacilioJob;
 import com.facilio.tasker.job.JobContext;
 

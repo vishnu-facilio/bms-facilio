@@ -4,8 +4,8 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.FormulaContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.*;
-import com.facilio.sql.GenericInsertRecordBuilder;
-import com.facilio.sql.GenericSelectRecordBuilder;
+import com.facilio.db.builder.GenericInsertRecordBuilder;
+import com.facilio.db.builder.GenericSelectRecordBuilder;
 
 import java.util.ArrayList;
 import java.util.List;

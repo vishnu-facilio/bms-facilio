@@ -16,7 +16,7 @@ import com.facilio.events.context.EventContext;
 import com.facilio.events.context.EventContext.EventInternalState;
 import com.facilio.events.util.EventAPI;
 import com.facilio.fw.BeanFactory;
-import com.facilio.sql.GenericSelectRecordBuilder;
+import com.facilio.db.builder.GenericSelectRecordBuilder;
 
 import java.util.ArrayList;
 import java.util.Collections;

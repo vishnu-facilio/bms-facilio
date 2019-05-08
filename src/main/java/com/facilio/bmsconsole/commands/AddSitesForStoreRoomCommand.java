@@ -11,7 +11,7 @@ import org.apache.commons.chain.Context;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.sql.GenericInsertRecordBuilder;
+import com.facilio.db.builder.GenericInsertRecordBuilder;
 
 public class AddSitesForStoreRoomCommand implements Command {
 

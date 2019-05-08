@@ -8,9 +8,9 @@ import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.ModuleFactory;
-import com.facilio.sql.DBUtil;
-import com.facilio.sql.GenericUpdateRecordBuilder;
-import com.facilio.transaction.FacilioConnectionPool;
+import com.facilio.db.builder.DBUtil;
+import com.facilio.db.builder.GenericUpdateRecordBuilder;
+import com.facilio.db.transaction.FacilioConnectionPool;
 
 import java.io.File;
 import java.io.InputStream;

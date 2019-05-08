@@ -6,7 +6,7 @@ import org.apache.commons.chain.Context;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.sql.GenericDeleteRecordBuilder;
+import com.facilio.db.builder.GenericDeleteRecordBuilder;
 
 public class DeleteConnectedAppCommand implements Command {
 

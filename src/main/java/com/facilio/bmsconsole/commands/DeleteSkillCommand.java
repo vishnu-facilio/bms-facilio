@@ -2,7 +2,7 @@ package com.facilio.bmsconsole.commands;
 
 import com.facilio.bmsconsole.context.SkillContext;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.sql.GenericDeleteRecordBuilder;
+import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 

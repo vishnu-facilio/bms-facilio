@@ -40,15 +40,10 @@ import com.facilio.bmsconsole.modules.LookupField;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.modules.NumberField;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
+import com.facilio.db.builder.*;
 import com.facilio.fw.BeanFactory;
-import com.facilio.sql.DBUtil;
-import com.facilio.sql.GenericDeleteRecordBuilder;
-import com.facilio.sql.GenericInsertRecordBuilder;
-import com.facilio.sql.GenericSelectRecordBuilder;
-import com.facilio.sql.GenericUpdateRecordBuilder;
-import com.facilio.transaction.FacilioConnectionPool;
-
 import org.apache.commons.collections4.CollectionUtils;
+import com.facilio.db.transaction.FacilioConnectionPool;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.json.simple.JSONArray;

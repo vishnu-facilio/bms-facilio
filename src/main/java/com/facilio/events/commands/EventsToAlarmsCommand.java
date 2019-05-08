@@ -19,7 +19,7 @@ import com.facilio.events.context.EventContext.EventState;
 import com.facilio.events.context.EventToAlarmFieldMapping;
 import com.facilio.events.util.EventRulesAPI;
 import com.facilio.fw.BeanFactory;
-import com.facilio.sql.GenericSelectRecordBuilder;
+import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.google.common.base.Strings;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;

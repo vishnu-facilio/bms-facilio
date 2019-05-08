@@ -25,10 +25,10 @@ import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
-import com.facilio.sql.GenericSelectRecordBuilder;
-import com.facilio.sql.JoinBuilderIfc;
-import com.facilio.sql.SelectBuilderIfc;
-import com.facilio.sql.WhereBuilder;
+import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.builder.JoinBuilderIfc;
+import com.facilio.db.builder.SelectBuilderIfc;
+import com.facilio.db.builder.WhereBuilder;
 
 public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implements SelectBuilderIfc<E> {
 	

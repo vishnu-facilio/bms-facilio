@@ -11,7 +11,7 @@ import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.util.DateTimeUtil;
 import com.facilio.collections.UniqueMap;
 import com.facilio.fw.BeanFactory;
-import com.facilio.sql.DBUtil;
+import com.facilio.db.builder.DBUtil;
 import com.facilio.workflows.util.ExpressionAggregateInterface;
 
 public interface AggregateOperator {

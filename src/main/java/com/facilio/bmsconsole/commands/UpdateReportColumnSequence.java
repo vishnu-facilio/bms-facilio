@@ -2,7 +2,7 @@ package com.facilio.bmsconsole.commands;
 
 import com.facilio.bmsconsole.context.ReportColumnContext;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.transaction.FacilioConnectionPool;
+import com.facilio.db.transaction.FacilioConnectionPool;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;

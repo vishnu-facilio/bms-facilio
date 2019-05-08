@@ -70,7 +70,7 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.events.constants.EventConstants;
 import com.facilio.events.context.EventContext;
 import com.facilio.fw.BeanFactory;
-import com.facilio.sql.GenericSelectRecordBuilder;
+import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.tasker.FacilioTimer;
 import com.facilio.timeseries.TimeSeriesAPI;
 import com.facilio.util.FacilioUtil;

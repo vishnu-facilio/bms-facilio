@@ -8,7 +8,7 @@ import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.templates.EMailTemplate;
 import com.facilio.bmsconsole.workflow.rule.ActionContext;
-import com.facilio.sql.GenericSelectRecordBuilder;
+import com.facilio.db.builder.GenericSelectRecordBuilder;
 
 import java.util.List;
 import java.util.Map;
