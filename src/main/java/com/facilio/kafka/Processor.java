@@ -172,14 +172,17 @@ public class Processor extends FacilioProcessor {
                                             }
                                             else{
                                                 payLoad.put(AgentKeys.CONTENT, AgentContent.DISCONNECTED.getKey());
+                                                connectionCount = 0;
                                             }
                                         }
                                         if (connectionCount == 1) {
                                             payLoad.put(AgentKeys.CONTENT, AgentContent.RESTARTED.getKey());
                                             agentUtil.putLog(payLoad,orgId, agent.getId(),false);
-                                            payLoad.put(AgentKeys.CONTENT,AgentContent.CONNECTED.getKey()+connectionCount);
+                                            payLoad.put(AgentKeys.CONTENT, AgentContent.CONNECTED.getKey()+connectionCount);
                                         } else if (connectionCount == -1) {
-                                            payLoad.put(AgentKeys.CONTENT,AgentContent.CONNECTED.getKey());
+                                            payLoad.put(AgentKeys.CONTENT, AgentContent.CONNECTED.getKey());
+                                        } else if (connectionCount == 0) {
+                                            payLoad.put(AgentKeys.CONTENT, AgentContent.DISCONNECTED.getKey());
                                         } else {
                                             payLoad.put(AgentKeys.CONTENT, AgentContent.CONNECTED.getKey()+ connectionCount);
                                         }

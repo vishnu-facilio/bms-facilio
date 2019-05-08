@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.criteria;
 
 import org.apache.commons.collections.Predicate;
+import org.apache.commons.collections.PredicateUtils;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -36,10 +37,10 @@ public enum BooleanOperators implements Operator<String> {
 		// TODO Auto-generated method stub
 		if(fieldName != null && !fieldName.isEmpty() && value != null) {
 			if("true".equalsIgnoreCase(value)) {
-				return new FacilioModulePredicate(fieldName, new BooleanPredicate(true));
+				return new FacilioModulePredicate(fieldName, new TruePredicate());
 			}
 			else {
-				return new FacilioModulePredicate(fieldName, new BooleanPredicate(false));
+				return new FacilioModulePredicate(fieldName, PredicateUtils.notPredicate(new TruePredicate()));
 			}
 		}
 		return null;
@@ -90,24 +91,14 @@ public enum BooleanOperators implements Operator<String> {
 		return operatorMap;
 	}
 	
-	public static class BooleanPredicate implements Predicate {
-
-		private boolean val;
-		
-		public BooleanPredicate(boolean val) {
-			// TODO Auto-generated constructor stub
-			this.val = val;
-		}
-		
+	public static class TruePredicate implements Predicate {
 		@Override
 		public boolean evaluate(Object object) {
 			// TODO Auto-generated method stub
 			if(object != null && object instanceof Boolean) {
-				boolean currentVal = (boolean) object;
-				return val == currentVal;
+				return (boolean) object;
 			}
 			return false;
 		}
-		
 	}
 }

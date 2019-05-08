@@ -1,9 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -184,7 +181,9 @@ public class UpdateTaskCommand implements Command {
 		
 		List<LookupField> lookupList = new ArrayList<>();
 		lookupList.add((LookupField) fieldMap.get("status"));
-		lookupList.add((LookupField) fieldMap.get("moduleState"));
+		if (fieldMap.containsKey("moduleState")) {
+			lookupList.add((LookupField) fieldMap.get("moduleState"));
+		}
 		SelectRecordsBuilder<WorkOrderContext> builder = new SelectRecordsBuilder<WorkOrderContext>()
 				.select(woFields)
 				.module(woModule)

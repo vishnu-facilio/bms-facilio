@@ -46,6 +46,13 @@
 				<param name="includeProperties">jsonresponse.*</param>
 		</result>
 	</action>
+	
+	<action name="receiveIssue" class="com.facilio.auth.actions.FacilioAuthAction" method="postIssueResponse">
+		<param name="auth">false</param>
+		<result name="success" type="json">
+				<param name="includeProperties">jsonresponse.*</param>
+		</result>
+	</action>
 
 	<action name="acceptOpInvite" class="com.facilio.auth.actions.FacilioAuthAction" method="acceptUserInvite">
 		<param name="auth">false</param>

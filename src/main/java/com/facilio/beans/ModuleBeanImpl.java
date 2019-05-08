@@ -789,7 +789,7 @@ public class ModuleBeanImpl implements ModuleBean {
 		return count;
 	}
 	
-	private void addEnumField(EnumField field) throws Exception {
+	private int addEnumField(EnumField field) throws Exception {
 		if (field.getValues() == null || field.getValues().isEmpty()) {
 			throw new IllegalArgumentException("Enum Values cannot be null during addition of Enum Field");
 		}
@@ -798,7 +798,8 @@ public class ModuleBeanImpl implements ModuleBean {
 		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
 														.table(module.getTableName())
 														.fields(FieldFactory.getEnumFieldValuesFields());
-		for (int i = 1; i <= field.getValues().size(); i++) {
+		int optionsCount = field.getValues().size();
+		for (int i = 1; i <= optionsCount; i++) {
 			Map<String, Object> prop = new HashMap<>();
 			prop.put("fieldId", field.getFieldId());
 			prop.put("orgId", getOrgId());
@@ -807,14 +808,15 @@ public class ModuleBeanImpl implements ModuleBean {
 			insertBuilder.addRecord(prop);
 		}
 		insertBuilder.save();
+		return optionsCount;
 	}
 	
-	private void updateEnumField(EnumField field) throws Exception {
+	private int updateEnumField(EnumField field) throws Exception {
 		if (field.getValues() == null || field.getValues().isEmpty()) {
-			return;
+			return 0;
 		}
 		deleteEnumValues(field);
-		addEnumField(field);
+		return addEnumField(field);
 	}
 	
 	private void deleteEnumValues (EnumField field) throws Exception {
@@ -852,7 +854,7 @@ public class ModuleBeanImpl implements ModuleBean {
 				extendendPropsCount = updateExtendedProps(ModuleFactory.getFileFieldModule(), FieldFactory.getFileFieldFields(), field);
 			}
 			else if (field instanceof EnumField) {
-				updateEnumField((EnumField) field);
+				extendendPropsCount = updateEnumField((EnumField) field);
 			}
 			return Math.max(count, extendendPropsCount);
 		}

@@ -1065,6 +1065,32 @@ public class TransactionChainFactory {
 			c.addCommand(getAddAlarmChain());
 			return c;
 		}
+		public static Chain addBusinessHourChain () {
+			Chain c = FacilioChain.getTransactionChain();
+			c.addCommand(new AddBusinessHourCommand());
+			c.addCommand(new AddSingleDayBusinessHourCommand());
+			c.addCommand(new UpdateBusinessHourInResourceCommand());
+			return c;
+		}
+		public static Chain updateBusinessHoursChain() {
+			Chain c = FacilioChain.getTransactionChain();
+			c.addCommand(new UpdateBusinessHoursCommand());
+			c.addCommand(new DeleteSingleDayBusinessHoursCommand());
+			c.addCommand(new AddSingleDayBusinessHourCommand());
+			return c;
+		}
+		public static Chain updateBusinessHourInResourceChain () {
+			Chain c = FacilioChain.getTransactionChain();
+			c.addCommand(new UpdateBusinessHourInResourceCommand());
+			return c;
+		}
+		public static Chain deleteBusinessHoursChain () {
+			Chain c = FacilioChain.getTransactionChain();
+			c.addCommand(new DeleteBusinessHourCommand());
+			c.addCommand(new DeleteSingleDayBusinessHoursCommand());
+			return c;
+		}
+		
 		
 		public static Chain getAddAlarmChain() {
 			Chain c = getDefaultChain();

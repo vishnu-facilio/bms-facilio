@@ -61,6 +61,7 @@ import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericDeleteRecordBuilder;
 import com.facilio.sql.GenericInsertRecordBuilder;
@@ -344,6 +345,9 @@ public class TicketAPI {
 															.beanClass(TicketStatusContext.class)
 															.select(fields);
 		
+		if (modBean.getField("moduleState", ContextNames.WORK_ORDER) != null) {
+			ignorePreOpen = false;
+		}
 		if (ignorePreOpen) {
 			FacilioField typeField = FieldFactory.getAsMap(fields).get("typeCode");
 			builder.andCondition(CriteriaAPI.getCondition(typeField, String.valueOf(TicketStatusContext.StatusType.PRE_OPEN.getIntVal()), NumberOperators.NOT_EQUALS));

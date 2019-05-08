@@ -192,9 +192,8 @@ public class Processor implements IRecordProcessor {
                                             if(payLoad.containsKey(AgentKeys.CONNECTION_COUNT)) {
                                                 connectionCount = Integer.parseInt(payLoad.get(AgentKeys.CONNECTION_COUNT).toString());
                                             }
-                                        }
-                                        else{
-                                            payLoad.put(AgentKeys.CONTENT,AgentContent.DISCONNECTED.getKey());
+                                        } else{
+                                            connectionCount = 0;
                                         }
                                     }
                                     if (connectionCount == 1) {
@@ -202,7 +201,9 @@ public class Processor implements IRecordProcessor {
                                         agentUtil.putLog(payLoad,orgId, agent.getId(),false);
                                         payLoad.put(AgentKeys.CONTENT, AgentContent.CONNECTED.getKey() + connectionCount);
                                     } else if (connectionCount == -1) {
-                                        payLoad.put(AgentKeys.CONTENT,AgentContent.CONNECTED.getKey());
+                                        payLoad.put(AgentKeys.CONTENT, AgentContent.CONNECTED.getKey());
+                                    } else if (connectionCount == 0) {
+                                        payLoad.put(AgentKeys.CONTENT, AgentContent.DISCONNECTED.getKey());
                                     } else {
                                         payLoad.put(AgentKeys.CONTENT, AgentContent.CONNECTED.getKey() + connectionCount);
                                     }
