@@ -411,7 +411,7 @@ public class UpdateWorkOrderCommand implements Command {
 			GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 					.select(Collections.singletonList(FieldFactory.getField("closedTasks", "COUNT(Tasks.ID)", FieldType.NUMBER)))
 					.table(module.getTableName())
-//					.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+					.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 					.andCondition(CriteriaAPI.getCondition(fieldMap.get("parentTicketId"), String.valueOf(oldWo.getId()), NumberOperators.EQUALS))
 					.andCondition(CriteriaAPI.getCondition(fieldMap.get("statusNew"),"2", NumberOperators.EQUALS));
 			

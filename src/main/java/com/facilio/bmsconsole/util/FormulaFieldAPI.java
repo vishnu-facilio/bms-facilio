@@ -195,7 +195,7 @@ public class FormulaFieldAPI {
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 														.select(FieldFactory.getFormulaFieldFields())
 														.table(module.getTableName())
-//														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 														.andCondition(CriteriaAPI.getIdCondition(id, module))
 														;
 		
@@ -217,7 +217,7 @@ public class FormulaFieldAPI {
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 														.select(fields)
 														.table(module.getTableName())
-//														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 														.andCondition(CriteriaAPI.getCondition(readingField, String.valueOf(readingFieldId), PickListOperators.IS))
 														;
 		
@@ -299,7 +299,7 @@ public class FormulaFieldAPI {
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 														.select(fields)
 														.table(module.getTableName())
-//														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 														.andCondition(CriteriaAPI.getCondition(formulaType, String.valueOf(type.getValue()), NumberOperators.EQUALS))
 														;
 		
@@ -317,7 +317,7 @@ public class FormulaFieldAPI {
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 														.select(fields)
 														.table(module.getTableName())
-//														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 														.andCondition(CriteriaAPI.getCondition(triggerType, String.valueOf(TriggerType.SCHEDULE.getValue()), NumberOperators.EQUALS))
 														.andCondition(CriteriaAPI.getCondition(frequencyField, StringUtils.join(types, ","), NumberOperators.EQUALS))
 														.andCondition(CriteriaAPI.getCondition(active, String.valueOf(true), BooleanOperators.IS))
@@ -337,7 +337,7 @@ public class FormulaFieldAPI {
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 													.select(fields)
 													.table(module.getTableName())
-//													.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+													.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 													.andCondition(CriteriaAPI.getCondition(triggerTypeField, String.valueOf(triggerType.getValue()), NumberOperators.EQUALS))
 													.andCondition(CriteriaAPI.getCondition(active, String.valueOf(true), BooleanOperators.IS))
 													.andCustomWhere("WORKFLOW_ID IN (SELECT WORKFLOW_ID FROM Workflow_Field WHERE ORGID = ? AND FIELD_ID IN ("+StringUtils.join(fieldIds, ",")+"))", AccountUtil.getCurrentOrg().getId())
@@ -364,7 +364,7 @@ public class FormulaFieldAPI {
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(fields)
 				.table(module.getTableName())
-//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 				.andCondition(CriteriaAPI.getCondition(triggerTypeField, String.valueOf(TriggerType.PRE_LIVE_READING.getValue()), NumberOperators.EQUALS))
 				.andCondition(CriteriaAPI.getCondition(active, String.valueOf(true), BooleanOperators.IS))
 				.andCondition(CriteriaAPI.getCondition(moduleIdField, moduleIds, PickListOperators.IS))
@@ -437,7 +437,7 @@ public class FormulaFieldAPI {
 		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
 														.table(module.getTableName())
 														.fields(FieldFactory.getFormulaFieldResourceJobFields())
-//														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 														.andCondition(CriteriaAPI.getIdCondition(id, module))
 														;
 		updateBuilder.update(prop);
@@ -454,7 +454,7 @@ public class FormulaFieldAPI {
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 														.table(module.getTableName())
 														.select(fields)
-//														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 														.andCondition(CriteriaAPI.getCondition(formulaIdField, String.valueOf(formulaId), PickListOperators.IS))
 														.andCondition(CriteriaAPI.getCondition(resourceIdField, String.valueOf(resourceId), PickListOperators.IS))
 														.andCondition(CriteriaAPI.getCondition(isSystemField, String.valueOf(isSystem), BooleanOperators.IS))
@@ -473,7 +473,7 @@ public class FormulaFieldAPI {
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 														.table(module.getTableName())
 														.select(FieldFactory.getFormulaFieldResourceJobFields())
-//														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 														.andCondition(CriteriaAPI.getIdCondition(id, module))
 														;
 		
@@ -579,7 +579,7 @@ public class FormulaFieldAPI {
 			GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
 																	.table(module.getTableName())
 																	.select(fields)
-//																	.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+																	.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 																	.andCondition(CriteriaAPI.getCondition(formulaId, String.valueOf(formula.getId()), PickListOperators.IS));
 			
 			List<Map<String, Object>> props = selectRecordBuilder.get();

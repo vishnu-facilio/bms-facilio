@@ -24,7 +24,7 @@ public class ValidateAssetCategoryDeletion implements Command {
 		GenericSelectRecordBuilder assetSelectBuilder = new GenericSelectRecordBuilder()
 				.select(Arrays.asList(FieldFactory.getIdField(assetModule)))
 				.table(assetModule.getTableName())
-//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(assetModule))
+				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(assetModule))
 				.andCustomWhere("CATEGORY = ?", recordID)
 				.limit(1);
 		List<Map<String, Object>> result = assetSelectBuilder.get();
@@ -52,7 +52,7 @@ public class ValidateAssetCategoryDeletion implements Command {
 		GenericSelectRecordBuilder assetCategorySelectBuilder = new GenericSelectRecordBuilder()
 				.select(Arrays.asList(FieldFactory.getIdField(assetCategoryModule)))
 				.table(assetCategoryModule.getTableName())
-//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(assetCategoryModule))
+				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(assetCategoryModule))
 				.andCustomWhere("PARENT_CATEGORY_ID = ?", recordID)
 				.limit(1);
 		result = assetCategorySelectBuilder.get();

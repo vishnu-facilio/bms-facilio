@@ -99,7 +99,7 @@ public class ReadingsAPI {
 		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
 														.table(module.getTableName())
 														.fields(fields)
-//														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 														.andCondition(CriteriaAPI.getCondition(resourceIdField, String.valueOf(rdm.getResourceId()), PickListOperators.IS))
 														.andCondition(CriteriaAPI.getCondition(fieldIdField, String.valueOf(rdm.getFieldId()), PickListOperators.IS))
 														;
@@ -131,7 +131,7 @@ public class ReadingsAPI {
 		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
 														.table(module.getTableName())
 														.fields(fields)
-//														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 														.andCriteria(pkCriteriaList);
 														
 		return updateBuilder.update(prop);
@@ -155,7 +155,7 @@ public class ReadingsAPI {
 		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
 				.table(module.getTableName())
 				.fields(fields)
-//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 				.andCriteria(pkCriteriaList);
 				
 		return updateBuilder.update(FieldUtil.getAsProperties(rdm));
@@ -171,7 +171,7 @@ public class ReadingsAPI {
 		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
 				.table(module.getTableName())
 				.fields(fields)
-//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 				.andCondition(CriteriaAPI.getCondition(resourceIdField, String.valueOf(parentId), PickListOperators.IS))
 				.andCondition(CriteriaAPI.getCondition(fieldIdField, fieldIds, PickListOperators.IS));
 				
@@ -184,7 +184,7 @@ public class ReadingsAPI {
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(FieldFactory.getReadingDataMetaFields())
 				.table(ModuleFactory.getReadingDataMetaModule().getTableName())
-//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 				.andCustomWhere(module.getTableName()+".RESOURCE_ID = ?", resourceId)
 				.andCustomWhere(module.getTableName()+".FIELD_ID = ?", field.getFieldId());
 		
@@ -216,7 +216,7 @@ public class ReadingsAPI {
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 													.select(fields)
 													.table(module.getTableName())
-//													.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+													.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 													.andCriteria(pkCriteriaList);
 		return getReadingDataFromProps(builder.get(), fieldIdMap);
 	}
@@ -246,7 +246,7 @@ public class ReadingsAPI {
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 													.select(fields)
 													.table(module.getTableName())
-//													.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+													.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 													.andCriteria(pkCriteriaList);
 		return getRDMMapFromProps(builder.get(), fieldIdMap);
 	}
@@ -285,8 +285,8 @@ public class ReadingsAPI {
 		List<FacilioField> redingFields = FieldFactory.getReadingDataMetaFields();
 		Map<String, FacilioField> readingFieldsMap = FieldFactory.getAsMap(redingFields);
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
-				.table(module.getTableName());
-//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module));
+				.table(module.getTableName())
+				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module));
 		
 		if (fetchCount) {
 			builder.select(FieldFactory.getCountField(module, readingFieldsMap.get("resourceId")));
@@ -956,7 +956,7 @@ public class ReadingsAPI {
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 				.select(fields)
 				.table(module.getTableName())
-//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("rdmId"), rdmIds, NumberOperators.EQUALS))
 				;
 		return builder.get();

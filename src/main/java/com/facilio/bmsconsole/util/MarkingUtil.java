@@ -75,7 +75,7 @@ public static List<Double> getActualValues(long resourceId, long fieldId, long t
 	GenericSelectRecordBuilder actualValueBuilder = new GenericSelectRecordBuilder()
 			.select(Collections.singletonList(actualValFld))
 			.table(module.getTableName())
-//			.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+			.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 			.andCondition(CriteriaAPI.getCondition(fieldMap.get("resourceId"), String.valueOf(resourceId), PickListOperators.IS))
 			.andCondition(CriteriaAPI.getCondition(fieldMap.get("fieldId"), String.valueOf(fieldId), PickListOperators.IS))
 			.andCondition(CriteriaAPI.getCondition(fieldMap.get("ttime"), String.valueOf(ttime), NumberOperators.GREATER_THAN_EQUAL))

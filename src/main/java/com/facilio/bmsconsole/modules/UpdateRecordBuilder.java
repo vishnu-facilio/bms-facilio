@@ -213,8 +213,8 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 				else {
 					FacilioField moduleIdField = FieldFactory.getModuleIdField(module);
 					WhereBuilder whereCondition = new WhereBuilder();
-//					Condition orgCondition = CriteriaAPI.getCurrentOrgIdCondition(module);
-//					whereCondition.andCondition(orgCondition);
+					Condition orgCondition = CriteriaAPI.getCurrentOrgIdCondition(module);
+					whereCondition.andCondition(orgCondition);
 					
 					Condition moduleCondition = CriteriaAPI.getCondition(moduleIdField, String.valueOf(module.getModuleId()), NumberOperators.EQUALS);
 					whereCondition.andCondition(moduleCondition);

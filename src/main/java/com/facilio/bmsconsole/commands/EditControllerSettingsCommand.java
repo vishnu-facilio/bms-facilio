@@ -66,7 +66,7 @@ public class EditControllerSettingsCommand implements Command {
 		FacilioModule relModule = ModuleFactory.getControllerBuildingRelModule();
 		new GenericDeleteRecordBuilder()
 				.table(relModule.getTableName())
-//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(relModule))
+				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(relModule))
 				.andCondition(CriteriaAPI.getCondition("CONTROLLER_ID","controllerId", String.valueOf(controller.getId()),NumberOperators.EQUALS))
 				.delete();
 		

@@ -23,7 +23,7 @@ public class UpdateFormFieldCommand implements Command{
 		GenericUpdateRecordBuilder formUpdateBuilder = new GenericUpdateRecordBuilder()
 				.table(module.getTableName())
 				.fields(FieldFactory.getFormFieldsFields())
-//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 				.andCondition(CriteriaAPI.getIdCondition(field.getId(), module));
 		
 		Map<String, Object> props = FieldUtil.getAsProperties(field);

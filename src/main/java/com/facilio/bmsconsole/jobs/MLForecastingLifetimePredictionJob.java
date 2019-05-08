@@ -56,8 +56,8 @@ public class MLForecastingLifetimePredictionJob extends FacilioJob
 			FacilioModule module = ModuleFactory.getMlForecastingLifetimeModule();
 			GenericSelectRecordBuilder recordBuilder = new GenericSelectRecordBuilder()
 														.table(module.getTableName())
-														.select(FieldFactory.getMlForecastingLifetimeFields());
-//														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module));
+														.select(FieldFactory.getMlForecastingLifetimeFields())
+														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module));
 			
 			List<Map<String, Object>> predictionListMap = recordBuilder.get();
 			List<MlForecastingContext> mlForecastList = getMlForecastFromFromMapList(predictionListMap);

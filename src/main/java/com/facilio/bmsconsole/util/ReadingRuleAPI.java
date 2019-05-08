@@ -164,7 +164,7 @@ public class ReadingRuleAPI extends WorkflowRuleAPI {
 		GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
 																.table(module.getTableName())
 																.select(fields)
-//																.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+																.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 																.andCondition(CriteriaAPI.getCondition(ruleId, String.valueOf(readingRule.getRuleGroupId()), PickListOperators.IS));
 		
 		List<Map<String, Object>> props = selectRecordBuilder.get();
@@ -206,8 +206,8 @@ public class ReadingRuleAPI extends WorkflowRuleAPI {
 														.select(fields)
 														.table(readingRuleModule.getTableName())
 														.innerJoin(workflowModule.getTableName())
-														.on(readingRuleModule.getTableName()+".ID = "+workflowModule.getTableName()+".ID");
-//														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(workflowModule));
+														.on(readingRuleModule.getTableName()+".ID = "+workflowModule.getTableName()+".ID")
+														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(workflowModule));
 		
 		if(criteria != null) {
 			selectBuilder.andCriteria(criteria);
@@ -267,7 +267,7 @@ public class ReadingRuleAPI extends WorkflowRuleAPI {
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 														.select(fields)
 														.table(module.getTableName())
-//														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 														.andCondition(CriteriaAPI.getCondition(ruleGroupField, String.valueOf(rule.getRuleGroupId()), PickListOperators.IS))
 														;
 		List<Map<String, Object>> props = selectBuilder.get();
@@ -292,7 +292,7 @@ public class ReadingRuleAPI extends WorkflowRuleAPI {
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 														.select(fields)
 														.table(module.getTableName())
-//														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 														.andCondition(CriteriaAPI.getCondition(resourceIdField, String.valueOf(resourceId), NumberOperators.EQUALS))
 														.andCondition(CriteriaAPI.getCondition(fieldIdField, String.valueOf(fieldId), NumberOperators.EQUALS))
 														;
@@ -346,7 +346,7 @@ public class ReadingRuleAPI extends WorkflowRuleAPI {
 		new GenericUpdateRecordBuilder()
 			.table(module.getTableName())
 			.fields(FieldFactory.getReadingRuleAlarmMetaFields())
-//			.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+			.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 			.andCondition(CriteriaAPI.getIdCondition(id, module))
 			.update(prop)
 			;
@@ -363,7 +363,7 @@ public class ReadingRuleAPI extends WorkflowRuleAPI {
 		new GenericUpdateRecordBuilder()
 			.table(module.getTableName())
 			.fields(fields)
-//			.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+			.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 			.andCondition(CriteriaAPI.getCondition(alarmIdField, String.valueOf(alarmId), PickListOperators.IS))
 			.update(prop)
 			;
@@ -419,7 +419,7 @@ public class ReadingRuleAPI extends WorkflowRuleAPI {
 													.table(workflowRuleModule.getTableName())
 													.innerJoin(readingRuleModule.getTableName())
 													.on(workflowRuleModule.getTableName()+".ID = "+readingRuleModule.getTableName()+".ID")
-//													.andCondition(CriteriaAPI.getCurrentOrgIdCondition(workflowRuleModule))
+													.andCondition(CriteriaAPI.getCurrentOrgIdCondition(workflowRuleModule))
 													.andCondition(CriteriaAPI.getCondition(ruleGroupIdField, StringUtils.join(ruleGroupIds, ","), NumberOperators.EQUALS));
 		ruleBuilder.select(fields);
 		List<Map<String, Object>> props = ruleBuilder.get();

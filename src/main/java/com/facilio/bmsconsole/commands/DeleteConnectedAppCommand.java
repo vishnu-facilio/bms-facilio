@@ -18,7 +18,7 @@ public class DeleteConnectedAppCommand implements Command {
 		if (connectedAppId > 0) {
 			GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
 					.table(ModuleFactory.getConnectedAppsModule().getTableName())
-//					.andCondition(CriteriaAPI.getCurrentOrgIdCondition(ModuleFactory.getConnectedAppsModule()))
+					.andCondition(CriteriaAPI.getCurrentOrgIdCondition(ModuleFactory.getConnectedAppsModule()))
 					.andCondition(CriteriaAPI.getIdCondition(connectedAppId, ModuleFactory.getConnectedAppsModule()));
 			
 			builder.delete();

@@ -157,7 +157,7 @@ public class IoTMessageAPI {
 		return new GenericUpdateRecordBuilder()
 				.table(module.getTableName())
 				.fields(FieldFactory.getPublishDataFields())
-//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 				.andCondition(CriteriaAPI.getIdCondition(id, module))
 				.update(prop)
 				;
@@ -170,7 +170,7 @@ public class IoTMessageAPI {
 		return new GenericUpdateRecordBuilder()
 				.table(module.getTableName())
 				.fields(FieldFactory.getPublishMessageFields())
-//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 				.andCondition(CriteriaAPI.getIdCondition(id, module))
 				.update(prop)
 				;

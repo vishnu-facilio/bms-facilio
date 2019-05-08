@@ -32,7 +32,7 @@ public class DeleteControllerCommand implements Command {
 		FacilioModule module = ModuleFactory.getControllerModule();
 		GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
 				.table(module.getTableName())
-//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 				.andCondition(CriteriaAPI.getIdCondition(id, module));
 		
 		context.put(FacilioConstants.ContextNames.ROWS_UPDATED, builder.delete());

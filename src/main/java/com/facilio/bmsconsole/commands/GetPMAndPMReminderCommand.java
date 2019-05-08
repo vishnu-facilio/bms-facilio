@@ -38,7 +38,7 @@ public class GetPMAndPMReminderCommand implements Command {
 								.on("PM_Reminders.PM_ID = Preventive_Maintenance.ID")
 								.innerJoin("After_PM_Reminder_WO_Rel")
 								.on("PM_Reminders.ID = After_PM_Reminder_WO_Rel.PM_REMINDER_ID")
-//								.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+								.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 								.andCondition(CriteriaAPI.getIdCondition(recordId, afterPMReminderWORelModule));
 			reminderProps = selectBuilder.get();
 		}
@@ -51,7 +51,7 @@ public class GetPMAndPMReminderCommand implements Command {
 															.on("PM_Reminders.PM_ID = Preventive_Maintenance.ID")
 															.innerJoin("Before_PM_Reminder_Trigger_Rel")
 															.on("PM_Reminders.ID = Before_PM_Reminder_Trigger_Rel.PM_REMINDER_ID")
-//															.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+															.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 															.andCondition(CriteriaAPI.getIdCondition(recordId, beforeReminderTriggerRelModule))
 															.andCondition(ViewFactory.getPreventiveStatusCondition(true));
 			reminderProps = selectBuilder.get();

@@ -31,13 +31,11 @@ public class DemoRoleJob extends FacilioJob{
 	public void execute(JobContext jc)throws Exception  {
 		// TODO Auto-generated method stub
 
-		
-		
+		Map<String,List<String>> tableName=DemoRoleUtil.initDateFieldModified();
+		long orgId=AccountUtil.getCurrentOrg().getId();
 		Connection conn = null;
 		PreparedStatement pstmt = null;
 		try {
-			Map<String,List<String>> tableName=DemoRoleUtil.initDateFieldModified();
-			long orgId=AccountUtil.getCurrentOrg().getId();
 
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
 			
@@ -52,15 +50,14 @@ public class DemoRoleJob extends FacilioJob{
 				  sql.append("UPDATE").append(" ").append(key).append(" ").append("SET").append("  ");
 				  for (String columnName : valueList) {
 					  sql.append(columnName).append("=");
-					  sql.append(columnName).append("+").append(( 24 * 60 * 60 *1000));
+					  sql.append(columnName).append("+").append(( 24 * 60 * 60));
 					  sql.append(",");
 				  }		 
 				  sql.replace(sql.length()-1, sql.length(), " ");
 				  sql.append("WHERE ORGID=").append(orgId);
 				  pstmt = conn.prepareStatement(sql.toString());
-				  System.out.println("####demo Update Query"+pstmt);
 				  if(pstmt==null) {
-					  throw new RuntimeException("###DemoRoleup###update String Data is null");
+					  throw new RuntimeException("###update String Data is null");
 				  }
 				  try {
 					int count=  pstmt.executeUpdate();

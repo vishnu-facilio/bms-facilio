@@ -33,7 +33,7 @@ public class GetTicketActivitesCommand implements Command {
 			GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 															.select(fields)
 															.table(module.getTableName())
-//															.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+															.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 															.andCustomWhere("TICKET_ID = ?", ticketId)
 															.orderBy("MODIFIED_TIME desc");
 			

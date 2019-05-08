@@ -129,7 +129,7 @@ public class ApprovalRulesAPI extends WorkflowRuleAPI {
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 														.table(module.getTableName())
 														.select(fields)
-//														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 														.andCondition(CriteriaAPI.getCondition(approverIdField, ids, PickListOperators.IS))
 														;
 		
@@ -288,7 +288,7 @@ public class ApprovalRulesAPI extends WorkflowRuleAPI {
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 														.table(module.getTableName())
 														.select(fields)
-//														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 														.andCriteria(criteria)
 														;
 		

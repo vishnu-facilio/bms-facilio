@@ -132,8 +132,8 @@ public class FormsAPI {
 		
 		GenericSelectRecordBuilder fieldSelectBuilder = new GenericSelectRecordBuilder()
 				.table(fieldsModule.getTableName())
-				.select(FieldFactory.getFormFieldsFields());
-//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(fieldsModule));
+				.select(FieldFactory.getFormFieldsFields())
+				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(fieldsModule));
 		
 		long modid = form.getModuleId();
 		form.setModule(modBean.getModule(modid));
@@ -208,7 +208,7 @@ public class FormsAPI {
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 				.table(sectionModule.getTableName())
 				.select(fields)
-//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(sectionModule))
+				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(sectionModule))
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("formId"), String.valueOf(form.getId()), NumberOperators.EQUALS))
 				.orderBy(fieldMap.get("sequenceNumber").getColumnName());
 				;
@@ -330,7 +330,7 @@ public class FormsAPI {
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getFormFieldsFields());
 		GenericDeleteRecordBuilder deleteBuilder = new GenericDeleteRecordBuilder()
 														.table(module.getTableName())
-//														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 														.andCondition(CriteriaAPI.getCondition(fieldMap.get("formId"), String.valueOf(formId), NumberOperators.EQUALS))
 														;
 		return deleteBuilder.delete();
@@ -341,7 +341,7 @@ public class FormsAPI {
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getFormSectionFields());
 		GenericDeleteRecordBuilder deleteBuilder = new GenericDeleteRecordBuilder()
 														.table(module.getTableName())
-//														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 														.andCondition(CriteriaAPI.getCondition(fieldMap.get("formId"), String.valueOf(formId), NumberOperators.EQUALS))
 														;
 		return deleteBuilder.delete();
@@ -378,7 +378,7 @@ public class FormsAPI {
 		FacilioModule module = ModuleFactory.getFormModule();
 		GenericDeleteRecordBuilder deleteBuilder = new GenericDeleteRecordBuilder()
 														.table(module.getTableName())
-//														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 														.andCondition(CriteriaAPI.getIdCondition(ids, module))
 														;
 		return deleteBuilder.delete();
@@ -424,8 +424,8 @@ public class FormsAPI {
 	
 		GenericSelectRecordBuilder formListBuilder=new GenericSelectRecordBuilder()
 				.select(fields)
-				.table(formModule.getTableName());
-//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(formModule));
+				.table(formModule.getTableName())
+				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(formModule));
 		if (moduleName != null) {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			long moduleId=modBean.getModule(moduleName).getModuleId();

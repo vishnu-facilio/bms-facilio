@@ -46,7 +46,7 @@ public class DeleteControllerActivityRecordsJob extends FacilioJob {
 		List<Map<String, Object>> props = new GenericSelectRecordBuilder()
 														.table(module.getTableName())
 														.select(fields)
-//														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 														.andCondition(CriteriaAPI.getCondition(createdTimeField, String.valueOf(lastweek), DateOperators.IS_BEFORE))
 														.get()
 														;
@@ -61,7 +61,7 @@ public class DeleteControllerActivityRecordsJob extends FacilioJob {
 		FacilioModule module = ModuleFactory.getControllerActivityRecordsModule();
 		new GenericDeleteRecordBuilder()
 			.table(module.getTableName())
-//			.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+			.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 			.andCondition(CriteriaAPI.getIdCondition(ids, module))
 			.delete()
 			;

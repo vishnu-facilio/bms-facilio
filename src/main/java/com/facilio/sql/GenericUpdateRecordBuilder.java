@@ -4,8 +4,6 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
-import com.facilio.bmsconsole.criteria.CriteriaAPI;
-import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.*;
 import com.facilio.fs.FileStore;
 import com.facilio.fs.FileStoreFactory;
@@ -238,9 +236,9 @@ public class GenericUpdateRecordBuilder implements UpdateBuilderIfc<Map<String, 
 			return 0;
 		}
 
-		if (orgIdField != null) {
+		/*if (orgIdField != null) {
 			value.put(orgIdField.getName(), AccountUtil.getCurrentOrg().getId());
-		}
+		}*/
 		value.remove("id");
 		this.value = value;
 		removeDefaultValues();
@@ -365,12 +363,12 @@ public class GenericUpdateRecordBuilder implements UpdateBuilderIfc<Map<String, 
 		if (!DBUtil.isTableWithoutOrgId(tableName)) {
 			orgIdField = DBUtil.getOrgIdField(tableName);
 			
-			WhereBuilder whereCondition = new WhereBuilder();
+			/*WhereBuilder whereCondition = new WhereBuilder();
 			Condition orgCondition = CriteriaAPI.getCondition(orgIdField, String.valueOf(AccountUtil.getCurrentOrg().getOrgId()), NumberOperators.EQUALS);
 			whereCondition.andCondition(orgCondition);
 			
 			oldWhere = where;
-			where = whereCondition.andCustomWhere(where.getWhereClause(), where.getValues());
+			where = whereCondition.andCustomWhere(where.getWhereClause(), where.getValues());*/
 		}
 		
 	}

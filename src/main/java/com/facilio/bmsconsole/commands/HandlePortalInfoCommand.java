@@ -23,8 +23,8 @@ public class HandlePortalInfoCommand implements Command{
 		List<FacilioField> fields = FieldFactory.getServicePortalFields();
 		GenericUpdateRecordBuilder builder = new GenericUpdateRecordBuilder()
 												.table(module.getTableName())
-												.fields(fields);
-//												.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module));
+												.fields(fields)
+												.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module));
 		builder.update(servicePortalMap);
 		
 		context.put(FacilioConstants.ContextNames.RESULT, "success");

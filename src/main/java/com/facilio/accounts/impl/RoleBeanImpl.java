@@ -249,7 +249,7 @@ public class RoleBeanImpl implements RoleBean {
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(AccountConstants.getRoleFields())
 				.table(module.getTableName())
-//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 				.andCriteria(criteria);
 		
 		return getRolesFromProps(selectBuilder.get(), false);
@@ -262,7 +262,7 @@ public class RoleBeanImpl implements RoleBean {
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(fields)
 				.table(module.getTableName())
-//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 				.andCondition(CriteriaAPI.getCondition(FieldFactory.getAsMap(fields).get("roleId"), ids, NumberOperators.EQUALS))
 				;
 		
@@ -274,8 +274,8 @@ public class RoleBeanImpl implements RoleBean {
 		List<FacilioField> fields = AccountConstants.getRoleFields();
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(fields)
-				.table(AccountConstants.getRoleModule().getTableName());
-//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(AccountConstants.getRoleModule()));
+				.table(AccountConstants.getRoleModule().getTableName())
+				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(AccountConstants.getRoleModule()));
 				
 		List<Map<String, Object>> props = selectBuilder.get();
 		

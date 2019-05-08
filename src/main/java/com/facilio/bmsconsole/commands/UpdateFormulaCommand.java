@@ -84,7 +84,7 @@ public class UpdateFormulaCommand implements Command {
 		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
 														.table(formulaModule.getTableName())
 														.fields(FieldFactory.getFormulaFieldFields())
-//														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(formulaModule))
+														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(formulaModule))
 														.andCondition(CriteriaAPI.getIdCondition(newFormula.getId(), formulaModule));
 		updateBuilder.update(FieldUtil.getAsProperties(newFormula));
 		

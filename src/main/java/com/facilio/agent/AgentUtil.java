@@ -339,8 +339,8 @@ public  class AgentUtil
             toUpdate.put(AgentKeys.DELETED_TIME, System.currentTimeMillis());
             GenericUpdateRecordBuilder genericUpdateRecordBuilder = new GenericUpdateRecordBuilder()
                     .table(AgentKeys.AGENT_TABLE)
-                    .fields(fields);
-//                    .andCondition(CriteriaAPI.getCurrentOrgIdCondition(ModuleFactory.getAgentDataModule()));
+                    .fields(fields)
+                    .andCondition(CriteriaAPI.getCurrentOrgIdCondition(ModuleFactory.getAgentDataModule()));
             if (payload.containsKey(AgentKeys.ID)) {
                 int deletedRows = genericUpdateRecordBuilder.andCondition(CriteriaAPI.getCondition(FieldFactory.getIdField(ModuleFactory.getAgentDataModule()),payload.get(AgentKeys.ID).toString(),NumberOperators.EQUALS))
                         .update(toUpdate);
@@ -357,7 +357,7 @@ public  class AgentUtil
             GenericUpdateRecordBuilder genericUpdateRecordBuilder = new GenericUpdateRecordBuilder()
                     .table(AgentKeys.AGENT_TABLE)
                     .fields(FieldFactory.getAgentDataFields())
-//                    .andCondition(CriteriaAPI.getCurrentOrgIdCondition(ModuleFactory.getAgentDataModule()))
+                    .andCondition(CriteriaAPI.getCurrentOrgIdCondition(ModuleFactory.getAgentDataModule()))
                     .andCondition(CriteriaAPI.getCondition(FieldFactory.getIdField(ModuleFactory.getAgentDataModule()),payload.get(AgentKeys.ID).toString(),NumberOperators.EQUALS));
             int updatedRows= genericUpdateRecordBuilder.update(payload);
             return (updatedRows > 0);
@@ -404,7 +404,7 @@ public  class AgentUtil
      */
     public static List<Map<String,Object>> getAgentLog(Long agentId) throws Exception {
         GenericSelectRecordBuilder genericSelectRecordBuilder = new GenericSelectRecordBuilder().table(AgentKeys.AGENT_LOG_TABLE)
-                .select(FieldFactory.getAgentLogFields());/*.andCondition(CriteriaAPI.getCurrentOrgIdCondition(ModuleFactory.getAgentLogModule()));*/
+                .select(FieldFactory.getAgentLogFields()).andCondition(CriteriaAPI.getCurrentOrgIdCondition(ModuleFactory.getAgentLogModule()));
         if(agentId != null){
              genericSelectRecordBuilder.andCondition(CriteriaAPI.getCondition(FieldFactory.getAgentIdField(ModuleFactory.getAgentLogModule()),agentId.toString(),NumberOperators.EQUALS));
         }
@@ -421,7 +421,7 @@ public  class AgentUtil
     public static List<Map<String,Object>> getAgentMetrics(Long agentId,Integer publishType) throws Exception {
         FacilioModule agentMetriceModule = ModuleFactory.getAgentMetricsModule();
         GenericSelectRecordBuilder genericSelectRecordBuilder = new GenericSelectRecordBuilder().table(AgentKeys.METRICS_TABLE)
-                .select(FieldFactory.getAgentMetricsFields());/*.andCondition(CriteriaAPI.getCurrentOrgIdCondition(ModuleFactory.getAgentMetricsModule()));*/
+                .select(FieldFactory.getAgentMetricsFields()).andCondition(CriteriaAPI.getCurrentOrgIdCondition(ModuleFactory.getAgentMetricsModule()));
         if(agentId != null){
             genericSelectRecordBuilder.andCondition(CriteriaAPI.getCondition(FieldFactory.getAgentIdField(agentMetriceModule),agentId.toString(),NumberOperators.EQUALS));
         }

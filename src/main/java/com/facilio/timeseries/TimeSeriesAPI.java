@@ -325,7 +325,7 @@ public static void insertInstanceAssetMapping(String deviceName, long assetId, l
 		GenericUpdateRecordBuilder builderPoints = new GenericUpdateRecordBuilder()
 				.fields(FieldFactory.getPointsFields())
 				.table(module.getTableName())
-//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 				.andCondition(CriteriaAPI.getCondition(FieldFactory.getDeviceField(module),deviceName, StringOperators.IS))
 				.andCondition(CriteriaAPI.getCondition(FieldFactory.getInstanceField(module),instanceName, StringOperators.IS))
 				;
@@ -367,7 +367,7 @@ public static void insertInstanceAssetMapping(String deviceName, long assetId, l
 		GenericUpdateRecordBuilder builder = new GenericUpdateRecordBuilder()
 				.fields(fields)
 				.table(module.getTableName())
-//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("device"), deviceName, StringOperators.IS))
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("instance"), instanceName, StringOperators.IS))
 				;
@@ -413,7 +413,7 @@ public static void insertInstanceAssetMapping(String deviceName, long assetId, l
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 				.select(fields)
 				.table(module.getTableName())
-//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("assetId"), String.valueOf(assetId), NumberOperators.EQUALS))
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("fieldId"), String.valueOf(fieldId), NumberOperators.EQUALS))
 				;
@@ -431,7 +431,7 @@ public static void insertInstanceAssetMapping(String deviceName, long assetId, l
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 				.select(fields)
 				.table(module.getTableName())
-//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("device"), device, StringOperators.IS))
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("instance"), instance, StringOperators.IS))
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("controllerId"), String.valueOf(controllerId), StringOperators.IS))
@@ -450,7 +450,7 @@ public static void insertInstanceAssetMapping(String deviceName, long assetId, l
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 				.select(fields)
 				.table(module.getTableName())
-//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 				;
 		Criteria criteriaList = new Criteria();
 		for(Pair<Long, Long> pair: assetFieldPairs) {
@@ -470,7 +470,7 @@ public static void insertInstanceAssetMapping(String deviceName, long assetId, l
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 				.select(fields)
 				.table(module.getTableName())
-//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("controllerId"), String.valueOf(controllerId), NumberOperators.EQUALS))
 				;
 		return builder.get();
@@ -647,7 +647,7 @@ public static void insertInstanceAssetMapping(String deviceName, long assetId, l
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 				.table(module.getTableName())
-//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("controllerId"), String.valueOf(controllerId), NumberOperators.EQUALS));
 		
 		if (!fetchCount) {
@@ -751,7 +751,7 @@ public static void insertInstanceAssetMapping(String deviceName, long assetId, l
 		FacilioField resourceId = fieldMap.get("resourceId");
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 				.table(module.getTableName())
-//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("controllerId"), String.valueOf(controllerId), NumberOperators.EQUALS));
 
 		if (!fetchCount) {
@@ -849,7 +849,7 @@ public static void insertInstanceAssetMapping(String deviceName, long assetId, l
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 				.select(fields)
 				.table(module.getTableName())
-//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 				;
 		
 		if (ids != null ) {
@@ -873,7 +873,7 @@ public static void insertInstanceAssetMapping(String deviceName, long assetId, l
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 				.select(fields)
 				.table(module.getTableName())
-//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("controllerId"), String.valueOf(controllerId), StringOperators.IS))
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("subscribed"), String.valueOf(true), BooleanOperators.IS))
 				;

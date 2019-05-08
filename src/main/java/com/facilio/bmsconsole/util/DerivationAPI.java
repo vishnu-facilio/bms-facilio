@@ -46,8 +46,8 @@ public class DerivationAPI {
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 				.select(fields)
-				.table(module.getTableName());
-//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module));
+				.table(module.getTableName())
+				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module));
 		
 		if (type != -1) {
 			builder.andCondition(CriteriaAPI.getCondition(fieldMap.get("analyticsType"), String.valueOf(type), NumberOperators.EQUALS));

@@ -30,7 +30,7 @@ public class BenchmarkAPI {
 														.table(module.getTableName())
 														.leftJoin(unitModule.getTableName())
 														.on(module.getTableName()+".ID = "+unitModule.getTableName()+".BENCHMARK_ID")
-//														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 														.andCondition(CriteriaAPI.getIdCondition(id, module))
 														;
 		List<BenchmarkContext> benchmarks = getBenchmarksFromProps(selectBuilder.get());
@@ -51,7 +51,7 @@ public class BenchmarkAPI {
 														.table(module.getTableName())
 														.leftJoin(module.getTableName())
 														.on(module.getTableName()+".ID = "+unitModule+".BENCHMARK_ID")
-//														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 														;
 		return getBenchmarksFromProps(selectBuilder.get());
 	}

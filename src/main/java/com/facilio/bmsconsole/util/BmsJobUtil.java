@@ -95,7 +95,7 @@ public class BmsJobUtil {
 		
 		GenericDeleteRecordBuilder deleteBuilder = new GenericDeleteRecordBuilder()
 														.table(module.getTableName())
-//														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 														.andCondition(CriteriaAPI.getCondition(jobIdField, StringUtils.join(jobIds, ","), NumberOperators.EQUALS))
 														.andCondition(CriteriaAPI.getCondition(jobNameField, jobName, StringOperators.IS))
 														;
@@ -113,7 +113,7 @@ public class BmsJobUtil {
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 														.select(fields)
 														.table(module.getTableName())
-//														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 														.andCondition(CriteriaAPI.getCondition(jobIdField, String.valueOf(jobId), NumberOperators.EQUALS))
 														.andCondition(CriteriaAPI.getCondition(jobNameField, jobName, StringOperators.IS))
 														;

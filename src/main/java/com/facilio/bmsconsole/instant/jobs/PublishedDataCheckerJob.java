@@ -56,7 +56,7 @@ public class PublishedDataCheckerJob extends InstantJob {
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 														.table(module.getTableName())
 														.select(selectFields)
-//														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 														.andCondition(CriteriaAPI.getCondition(parentIdField, String.valueOf(data.getId()), PickListOperators.IS))
 														;
 		

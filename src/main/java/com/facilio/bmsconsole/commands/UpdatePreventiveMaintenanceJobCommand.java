@@ -39,7 +39,7 @@ public class UpdatePreventiveMaintenanceJobCommand implements Command {
 			GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
 																.select(fields)
 																.table(module.getTableName())
-//																.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+																.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 																.andCustomWhere("Preventive_Maintenance.ID = ?", pmId);
 																;
 			List<Map<String, Object>> pmProps = selectRecordBuilder.get();

@@ -25,7 +25,7 @@ public class EditFormCommand implements Command {
 		GenericUpdateRecordBuilder formUpdateBuilder = new GenericUpdateRecordBuilder()
 				.table(formModule.getTableName())
 				.fields(FieldFactory.getFormFields())
-//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(formModule))
+				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(formModule))
 				.andCondition(CriteriaAPI.getIdCondition(editedForm.getId(), formModule));
 		
 		formUpdateBuilder.update(props);

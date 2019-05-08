@@ -51,7 +51,7 @@ public class PMToWorkOrder extends FacilioJob {
 															.table(pmTriggerModule.getTableName())
 															.innerJoin(pmJobsModule.getTableName())
 															.on(pmTriggerModule.getTableName()+".ID = "+pmJobsModule.getTableName()+".PM_TRIGGER_ID")
-//															.andCondition(CriteriaAPI.getCurrentOrgIdCondition(pmTriggerModule))
+															.andCondition(CriteriaAPI.getCurrentOrgIdCondition(pmTriggerModule))
 															.andCondition(CriteriaAPI.getIdCondition(pmJobId, pmJobsModule));
 			
 			List<Map<String, Object>> props = pmTriggerBuilder.get();

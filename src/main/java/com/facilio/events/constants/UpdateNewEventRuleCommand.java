@@ -23,7 +23,7 @@ public class UpdateNewEventRuleCommand implements Command {
 			GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
 															.table(module.getTableName())
 															.fields(EventConstants.EventFieldFactory.getEventRulesFields())
-//															.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+															.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 															.andCondition(CriteriaAPI.getIdCondition(eventRule.getId(), module))
 															;
 			

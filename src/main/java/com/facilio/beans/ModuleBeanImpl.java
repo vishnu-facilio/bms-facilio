@@ -526,7 +526,7 @@ public class ModuleBeanImpl implements ModuleBean {
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 														.select(fields)
 														.table(module.getTableName())
-//														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 														.andCondition(CriteriaAPI.getCondition("FIELDID", "fieldId", StringUtils.join(fieldIds, ","), NumberOperators.EQUALS));
 		
 		List<Map<String, Object>> props = selectBuilder.get();
@@ -542,7 +542,7 @@ public class ModuleBeanImpl implements ModuleBean {
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 														.select(FieldFactory.getEnumFieldValuesFields())
 														.table(module.getTableName())
-//														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 														.andCondition(CriteriaAPI.getCondition("FIELDID", "fieldId", StringUtils.join(fieldIds, ","), NumberOperators.EQUALS))
 														.orderBy("FIELDID, IDX")
 														;
@@ -781,7 +781,7 @@ public class ModuleBeanImpl implements ModuleBean {
 		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
 				.table(module.getTableName())
 				.fields(fields)
-//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 				.andCustomWhere("FIELDID = ?", fieldId);
 		
 		int count = updateBuilder.update(props);
@@ -823,7 +823,7 @@ public class ModuleBeanImpl implements ModuleBean {
 		FacilioModule module = ModuleFactory.getEnumFieldValuesModule();
 		GenericDeleteRecordBuilder deleteBuilder = new GenericDeleteRecordBuilder()
 														.table(module.getTableName())
-//														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 														.andCustomWhere("FIELDID = ?", field.getFieldId())
 														;
 		deleteBuilder.delete();

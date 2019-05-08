@@ -46,7 +46,7 @@ public class EventToAlarmCommand implements Command {
 			GenericSelectRecordBuilder eventSelectBuilder = new GenericSelectRecordBuilder()
 					.select(fields)
 					.table(module.getTableName())
-//					.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+					.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 					.andCondition(CriteriaAPI.getCondition(messageKeyField, event.getMessageKey(), StringOperators.IS))
 					.andCondition(CriteriaAPI.getCondition(alarmIdField, CommonOperators.IS_NOT_EMPTY))
 //					.andCondition(CriteriaAPI.getCondition(createdTimeField, String.valueOf(event.getCreatedTime()), NumberOperators.LESS_THAN_EQUAL))

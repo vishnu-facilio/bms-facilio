@@ -23,7 +23,7 @@ public class DeleteTenantZonesCommand implements Command {
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.BASE_SPACE);
 		DeleteRecordBuilder<BaseSpaceContext> deleteAs = new DeleteRecordBuilder<BaseSpaceContext>()
 				.module(module)
-//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 				.andCondition(CriteriaAPI.getIdCondition(ids, module));
 		deleteAs.markAsDelete();
 		return false;

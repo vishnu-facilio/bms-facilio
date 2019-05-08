@@ -71,7 +71,7 @@ public class BaseLineAPI {
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 														.select(fields)
 														.table(module.getTableName())
-//														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 														;
 		
 		return getBaseLinesFromProps(selectBuilder.get());
@@ -89,7 +89,7 @@ public class BaseLineAPI {
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 														.select(fields)
 														.table(module.getTableName())
-//														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 														.andCriteria(spaceCriteria)
 														;
 		
@@ -103,7 +103,7 @@ public class BaseLineAPI {
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 														.select(fields)
 														.table(module.getTableName())
-//														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 														.andCondition(CriteriaAPI.getIdCondition(id, module))
 														;
 		
@@ -121,7 +121,7 @@ public class BaseLineAPI {
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 														.select(fields)
 														.table(module.getTableName())
-//														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 														.andCondition(CriteriaAPI.getCondition("RANGE_TYPE", "RANGE_TYPE", rangeType.getVal()+"", NumberOperators.EQUALS))
 														;
 		
@@ -144,7 +144,7 @@ public class BaseLineAPI {
 														.table(module.getTableName())
 														.innerJoin(relModule.getTableName())
 														.on(module.getTableName()+".ID = "+relModule.getTableName()+".BASE_LINE_ID")
-//														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 														.andCondition(CriteriaAPI.getCondition(reportField, String.valueOf(reportId), NumberOperators.EQUALS))
 														;
 		
@@ -169,7 +169,7 @@ public class BaseLineAPI {
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 														.select(fields)
 														.table(module.getTableName())
-//														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 														.andCondition(CriteriaAPI.getIdCondition(ids, module))
 														;
 		

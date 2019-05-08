@@ -114,7 +114,7 @@ public class CriteriaAPI {
 		
 		GenericDeleteRecordBuilder deleteBuilder = new GenericDeleteRecordBuilder()
 														.table(module.getTableName())
-//														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 														.andCondition(CriteriaAPI.getCondition("CRITERIAID", "criteriaId", String.valueOf(id), NumberOperators.EQUALS))
 														;
 		deleteBuilder.delete();
@@ -134,7 +134,7 @@ public class CriteriaAPI {
 															.table(conditionModule.getTableName())
 															.innerJoin(criteriaModule.getTableName())
 															.on(conditionModule.getTableName()+".PARENT_CRITERIA_ID = "+criteriaModule.getTableName()+".CRITERIAID")
-//															.andCondition(getCurrentOrgIdCondition(criteriaModule))
+															.andCondition(getCurrentOrgIdCondition(criteriaModule))
 															.andCondition(getCondition(criteriaId, String.valueOf(id), PickListOperators.IS))
 															;
 		
@@ -169,7 +169,7 @@ public class CriteriaAPI {
 															.table(conditionModule.getTableName())
 															.innerJoin(criteriaModule.getTableName())
 															.on(conditionModule.getTableName()+".PARENT_CRITERIA_ID = "+criteriaModule.getTableName()+".CRITERIAID")
-//															.andCondition(getCurrentOrgIdCondition(criteriaModule))
+															.andCondition(getCurrentOrgIdCondition(criteriaModule))
 															.andCondition(getCondition(criteriaId, ids, PickListOperators.IS))
 															;
 		
@@ -202,14 +202,14 @@ public class CriteriaAPI {
 		return idCondition;
 	}
 	
-//	public static Condition getCurrentOrgIdCondition(FacilioModule module) {
-//		Condition idCondition = new Condition();
-//		idCondition.setField(FieldFactory.getOrgIdField(module));
-//		idCondition.setOperator(NumberOperators.EQUALS);
-//		idCondition.setValue(String.valueOf(AccountUtil.getCurrentOrg().getOrgId()));
-//		
-//		return idCondition;
-//	}
+	public static Condition getCurrentOrgIdCondition(FacilioModule module) {
+		Condition idCondition = new Condition();
+		idCondition.setField(FieldFactory.getOrgIdField(module));
+		idCondition.setOperator(NumberOperators.EQUALS);
+		idCondition.setValue(String.valueOf(AccountUtil.getCurrentOrg().getOrgId()));
+		
+		return idCondition;
+	}
 	
 	public static Condition getCurrentSiteIdCondition(FacilioModule module) {
 		Condition idCondition = new Condition();

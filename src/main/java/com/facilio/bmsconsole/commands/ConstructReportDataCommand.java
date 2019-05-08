@@ -235,8 +235,8 @@ public class ConstructReportDataCommand implements Command {
 				SelectRecordsBuilder<? extends ModuleBaseWithCustomFields> builder = new SelectRecordsBuilder()
 						.beanClass(FacilioConstants.ContextNames.getClassFromModuleName(lookupModule.getName()))
 						.select(selectFields)
-						.module(lookupModule);
-//						.andCondition(CriteriaAPI.getCurrentOrgIdCondition(lookupModule));
+						.module(lookupModule)
+						.andCondition(CriteriaAPI.getCurrentOrgIdCondition(lookupModule));
 
 				List<Map<String,Object>> asProps = builder.getAsProps();
 				lookupMap = new HashMap<>();
