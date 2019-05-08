@@ -27,6 +27,24 @@ public class SpaceAction extends ActionSupport {
 	 */
 	private static final long serialVersionUID = 1L;
 
+	private int page;
+	public void setPage(int page) {
+		this.page = page;
+	}
+
+	public int getPage() {
+		return this.page;
+	}
+
+	private int perPage = -1;
+	public void setPerPage(int perPage) {
+		this.perPage = perPage;
+	}
+
+	public int getPerPage() {
+		return this.perPage;
+	}
+
 	@SuppressWarnings("unchecked")
 	public String spaceList() throws Exception 
 	{
@@ -48,6 +66,16 @@ public class SpaceAction extends ActionSupport {
 		}
 		if (getCategoryId() > 0) {
 			context.put(FacilioConstants.ContextNames.SPACE_CATEGORY, getCategoryId());
+		}
+
+		if (getPage() > 0) { // Added the check to maintain backward compatibility
+			JSONObject pagination = new JSONObject();
+			pagination.put("page", getPage());
+			pagination.put("perPage", getPerPage());
+			if (getPerPage() < 0) {
+				pagination.put("perPage", 5000);
+			}
+			context.put(FacilioConstants.ContextNames.PAGINATION, pagination);
 		}
 		
 		Chain getAllSpace = FacilioChainFactory.getAllSpaceChain();
