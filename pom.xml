@@ -335,13 +335,6 @@
 			<version>2.9.3</version>
 		</dependency>
 
-		<!-- https://mvnrepository.com/artifact/javax.transaction/jta -->
-		<dependency>
-			<groupId>javax.transaction</groupId>
-			<artifactId>jta</artifactId>
-			<version>1.1</version>
-		</dependency>
-
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-databind</artifactId>
