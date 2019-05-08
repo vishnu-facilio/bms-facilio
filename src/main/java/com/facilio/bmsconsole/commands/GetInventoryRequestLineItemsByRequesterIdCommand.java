@@ -39,7 +39,7 @@ public class GetInventoryRequestLineItemsByRequesterIdCommand implements Command
 		Long requestedBy = (Long) context.get(FacilioConstants.ContextNames.REQUESTER);
 		Integer status = (Integer) context.get(FacilioConstants.ContextNames.STATUS);
 		
-		List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
+		List<FacilioField> fields = modBean.getAllFields(moduleName);
 		
 		List<LookupField>lookUpFields = new ArrayList<>();
 		lookUpFields.add((LookupField) modBean.getField("item", moduleName));
@@ -62,7 +62,7 @@ public class GetInventoryRequestLineItemsByRequesterIdCommand implements Command
 			idString.add(String.valueOf(request.getId()));
 		}
 		List<InventoryRequestLineItemContext> lineItems = InventoryRequestAPI.getLineItemsForInventoryRequest(idString.toString());
-		context.put(FacilioConstants.ContextNames.INVENTORY_REQUEST_LINE_ITEMS, records);
+		context.put(FacilioConstants.ContextNames.INVENTORY_REQUEST_LINE_ITEMS, lineItems);
 		return false;
 	}
 }

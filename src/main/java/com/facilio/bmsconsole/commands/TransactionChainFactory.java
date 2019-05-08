@@ -2593,8 +2593,7 @@ public class TransactionChainFactory {
 		public static Chain getAddOrUpdateInventoryRequestChain() {
 			Chain chain = getDefaultChain();
 			chain.addCommand(SetTableNamesCommand.getForInventoryRequest());
-			chain.addCommand(new AddOrUpdatePurchaseRequestCommand());
-			chain.addCommand(getPurchaseRequestTotalCostChain()); //update purchase request total cost
+			chain.addCommand(new AddOrUpdateInventoryRequestCommand());
 			return chain;
 		}
 		public static Chain getInventoryRequestDeleteChain() {

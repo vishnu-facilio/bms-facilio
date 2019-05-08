@@ -1,6 +1,5 @@
 package com.facilio.bmsconsole.actions;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -13,9 +12,6 @@ import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.InventoryRequestContext;
 import com.facilio.bmsconsole.context.InventoryRequestLineItemContext;
 import com.facilio.bmsconsole.context.InventoryType;
-import com.facilio.bmsconsole.context.LabourContext;
-import com.facilio.bmsconsole.context.PurchaseRequestContext;
-import com.facilio.bmsconsole.context.PurchaseRequestLineItemContext;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 
@@ -133,7 +129,7 @@ public class InventoryRequestAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.FETCH_COUNT, getFetchCount());
 		context.put(FacilioConstants.ContextNames.CV_NAME, getViewName());
-		context.put(FacilioConstants.ContextNames.MODULE_NAME, "inventoryrequest");
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.INVENTORY_REQUEST);
 		context.put(FacilioConstants.ContextNames.SORTING_QUERY, "Inventory_Requests.ID asc");
  		
  		if(getFilters() != null)
@@ -177,6 +173,7 @@ public class InventoryRequestAction extends FacilioAction {
 	public String deleteInventoryRequest() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, recordId != -1 ? Collections.singletonList(recordId) : recordIds);
+		
 		Chain chain = TransactionChainFactory.getInventoryRequestDeleteChain();
 		chain.execute(context);
 		
@@ -238,7 +235,7 @@ public class InventoryRequestAction extends FacilioAction {
 		
 		Chain lineItemListChain = ReadOnlyChainFactory.getInventoryRequestLineItemListByRequesterIdChain();
 		lineItemListChain.execute(context);
-		
+		setLineItems((List<InventoryRequestLineItemContext>)context.get(FacilioConstants.ContextNames.INVENTORY_REQUEST_LINE_ITEMS));
 		setResult(FacilioConstants.ContextNames.INVENTORY_REQUEST_LINE_ITEMS, lineItems);
 		
 		return SUCCESS;
@@ -249,10 +246,9 @@ public class InventoryRequestAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.PARENT_ID, parentId);
 		context.put(FacilioConstants.ContextNames.STATUS, status);
 		
-		
 		Chain lineItemListChain = ReadOnlyChainFactory.getInventoryRequestLineItemListByParentIdChain();
 		lineItemListChain.execute(context);
-		
+		setLineItems((List<InventoryRequestLineItemContext>)context.get(FacilioConstants.ContextNames.INVENTORY_REQUEST_LINE_ITEMS));
 		setResult(FacilioConstants.ContextNames.INVENTORY_REQUEST_LINE_ITEMS, lineItems);
 		
 		return SUCCESS;

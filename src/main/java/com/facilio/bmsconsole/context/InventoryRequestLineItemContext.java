@@ -2,7 +2,6 @@ package com.facilio.bmsconsole.context;
 
 import java.util.List;
 
-import com.facilio.bmsconsole.context.InventoryRequestContext.Status;
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 
 public class InventoryRequestLineItemContext extends ModuleBaseWithCustomFields{
