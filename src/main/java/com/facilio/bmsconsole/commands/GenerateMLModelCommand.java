@@ -9,6 +9,7 @@ import java.util.SortedMap;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -20,11 +21,13 @@ import com.facilio.bmsconsole.context.MLModelVariableContext;
 import com.facilio.bmsconsole.context.MLVariableContext;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
+import com.facilio.bmsconsole.util.MLUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 
 public class GenerateMLModelCommand implements Command {
 
+	private static final Logger LOGGER = Logger.getLogger(GenerateMLModelCommand.class.getName());
 	@Override
 	public boolean execute(Context context) throws Exception 
 	{
@@ -86,6 +89,7 @@ public class GenerateMLModelCommand implements Command {
 		String postURL=AwsUtil.getAnomalyPredictAPIURL() + "/"+mlContext.getModelPath();
 		Map<String, String> headers = new HashMap<>();
 		headers.put("Content-Type", "application/json");
+		LOGGER.info("Sending request to ML Server "+postURL+"::"+mlContext.getId());
 		String result = AwsUtil.doHttpPost(postURL, headers, null, postObj.toString());
 		mlContext.setResult(result);
 		return false;
