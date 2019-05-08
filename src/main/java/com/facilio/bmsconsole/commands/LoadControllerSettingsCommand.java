@@ -5,7 +5,7 @@
  import com.facilio.bmsconsole.modules.FieldFactory;
  import com.facilio.bmsconsole.modules.FieldUtil;
  import com.facilio.constants.FacilioConstants;
- import com.facilio.sql.GenericSelectRecordBuilder;
+ import com.facilio.db.builder.GenericSelectRecordBuilder;
  import org.apache.commons.chain.Command;
  import org.apache.commons.chain.Context;
 

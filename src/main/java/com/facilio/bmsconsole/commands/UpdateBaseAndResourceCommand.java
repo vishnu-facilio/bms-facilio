@@ -6,7 +6,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
-import com.facilio.transaction.FacilioConnectionPool;
+import com.facilio.db.transaction.FacilioConnectionPool;
 import com.google.common.collect.ArrayListMultimap;
 import nl.basjes.shaded.org.springframework.util.StringUtils;
 import org.apache.commons.chain.Command;

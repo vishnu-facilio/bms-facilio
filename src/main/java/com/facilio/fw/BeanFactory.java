@@ -1,7 +1,7 @@
 package com.facilio.fw;
 
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.transaction.FacilioTransactionManager;
+import com.facilio.db.transaction.FacilioTransactionManager;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.w3c.dom.Document;

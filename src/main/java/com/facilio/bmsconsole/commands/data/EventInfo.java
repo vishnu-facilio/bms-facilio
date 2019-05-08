@@ -1,7 +1,7 @@
 package com.facilio.bmsconsole.commands.data;
 
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.transaction.FacilioConnectionPool;
+import com.facilio.db.transaction.FacilioConnectionPool;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 

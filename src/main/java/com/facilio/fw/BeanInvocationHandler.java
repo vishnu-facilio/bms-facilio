@@ -2,7 +2,7 @@ package com.facilio.fw;
 
 import com.facilio.accounts.dto.Account;
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.transaction.FacilioTransactionManager;
+import com.facilio.db.transaction.FacilioTransactionManager;
 
 import javax.transaction.Transaction;
 import javax.transaction.TransactionManager;

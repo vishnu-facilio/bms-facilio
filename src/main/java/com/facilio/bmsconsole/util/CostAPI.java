@@ -7,7 +7,7 @@ import com.facilio.bmsconsole.context.CostSlabContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.PickListOperators;
 import com.facilio.bmsconsole.modules.*;
-import com.facilio.sql.GenericSelectRecordBuilder;
+import com.facilio.db.builder.GenericSelectRecordBuilder;
 
 import java.time.Period;
 import java.time.ZonedDateTime;

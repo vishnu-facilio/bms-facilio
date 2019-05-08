@@ -15,7 +15,7 @@ import com.facilio.events.context.EventProperty;
 import com.facilio.events.context.EventRule;
 import com.facilio.events.context.EventRuleContext;
 import com.facilio.events.context.EventToAlarmFieldMapping;
-import com.facilio.sql.GenericSelectRecordBuilder;
+import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
 import org.json.simple.JSONObject;
