@@ -35,10 +35,12 @@ public class DemoRoleJob extends FacilioJob{
 		long orgId=AccountUtil.getCurrentOrg().getId();
 		Connection conn = null;
 		PreparedStatement pstmt = null;
+		boolean olderCommit = false;
 		try {
 
-			conn = FacilioConnectionPool.INSTANCE.getConnection();
-			
+			conn = FacilioConnectionPool.INSTANCE.getConnectionFromPool();
+			olderCommit = conn.getAutoCommit();
+			conn.setAutoCommit(true);
 			for (Map.Entry<String, List<String>> tableList : tableName.entrySet()) {
 
 				  String key = tableList.getKey();
@@ -72,6 +74,7 @@ public class DemoRoleJob extends FacilioJob{
 			LOGGER.info("Exception occurred ", e);
 		}
 		finally {
+			conn.setAutoCommit(olderCommit);
 			DBUtil.closeAll(conn, pstmt);
 		}
 	}
