@@ -71,6 +71,7 @@ public class DemoRoleJob extends FacilioJob{
 			}
 		}
 		catch(Exception e) {
+			CommonCommandUtil.emailException("DemoRoleUp", "DemoRoleUp Failed - orgid -- "+AccountUtil.getCurrentOrg().getId(), e);
 			LOGGER.info("Exception occurred ", e);
 		}
 		finally {
