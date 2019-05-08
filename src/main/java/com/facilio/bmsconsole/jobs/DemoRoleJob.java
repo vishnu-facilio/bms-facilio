@@ -64,7 +64,6 @@ public class DemoRoleJob extends FacilioJob{
 				  }
 				  try {
 					int count=  pstmt.executeUpdate();
-					System.out.println("###DemoRoleUp"+count+"of rows updated in"+key+"successfully");
 					LOGGER.info("###DemoRoleUp"+count+"of rows updated in"+key+"successfully");
 				  }
 				  catch(Exception e) {
@@ -73,7 +72,6 @@ public class DemoRoleJob extends FacilioJob{
 			}
 		}
 		catch(Exception e) {
-			System.err.printf("Exception occurred ", e);
 			LOGGER.info("Exception occurred ", e);
 		}
 		finally {
