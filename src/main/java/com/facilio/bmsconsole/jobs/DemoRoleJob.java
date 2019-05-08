@@ -44,9 +44,6 @@ public class DemoRoleJob extends FacilioJob{
 			for (Map.Entry<String, List<String>> tableList : tableName.entrySet()) {
 
 				  String key = tableList.getKey();
-				  if(!DBUtil.isTableNameContains(key)) {
-					  continue;
-				  }
 				  List<String> valueList = tableList.getValue();
 				  StringBuilder sql=new StringBuilder();
 				  sql.append("UPDATE").append(" ").append(key).append(" ").append("SET").append("  ");
