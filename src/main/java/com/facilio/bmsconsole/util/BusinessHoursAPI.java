@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.commons.chain.Chain;
 
@@ -56,43 +57,7 @@ public class BusinessHoursAPI {
 		for (int i = 0; i < len; ++i) {
 			singleDayList.get(i).setId((long) singleDayProps.get(i).get("id"));
 		}
-		  return parentId;
-	}
-
-
-	public static void updateBusinessHours(BusinessHoursContext businessHours) throws SQLException, RuntimeException,
-			IllegalAccessException, InvocationTargetException, NoSuchMethodException {
-
-		GenericUpdateRecordBuilder businessHoursBuilder = new GenericUpdateRecordBuilder()
-				.table(ModuleFactory.getBusinessHoursModule().getTableName())
-				.fields(FieldFactory.getBusinessHoursFields()).andCustomWhere("id = ?", businessHours.getId());
-		Map<String, Object> props = FieldUtil.getAsProperties(businessHours);
-		businessHoursBuilder.update(props);
-		long parentId = businessHours.getId();
-
-		GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
-				.table(ModuleFactory.getSingleDayBusinessHourModule().getTableName())
-				.andCustomWhere("PARENT_ID = ?", parentId);
-		builder.delete();
-
-		GenericInsertRecordBuilder singleDayBuilder = new GenericInsertRecordBuilder()
-				.table(ModuleFactory.getSingleDayBusinessHourModule().getTableName())
-				.fields(FieldFactory.getSingleDayBusinessHoursFields());
-
-		List<Map<String, Object>> singleDayProps = new ArrayList<>();
-		List<BusinessHourContext> singleDayList = businessHours.getSingleDaybusinessHoursList();
-		for (BusinessHourContext singleDay : singleDayList) {
-			singleDay.setParentId(parentId);
-			singleDayProps.add(FieldUtil.getAsProperties(singleDay));
-		}
-		singleDayBuilder.addRecords(singleDayProps);
-		singleDayBuilder.save();
-
-		int len = singleDayList.size();
-		for (int i = 0; i < len; ++i) {
-			singleDayList.get(i).setId((long) singleDayProps.get(i).get("id"));
-		}
-
+		return parentId;
 	}
 
 	public static long addBusinessHours(List<BusinessHourContext> businessHours) throws SQLException, RuntimeException,
@@ -102,7 +67,7 @@ public class BusinessHoursAPI {
 		GenericInsertRecordBuilder businessHoursBuilder = new GenericInsertRecordBuilder()
 				.table(ModuleFactory.getBusinessHoursModule().getTableName())
 				.fields(FieldFactory.getBusinessHoursFields()).addRecord(props);
-        businessHoursBuilder.save();
+		businessHoursBuilder.save();
 		long parentId = (long) props.get("id");
 
 		GenericInsertRecordBuilder singleDayBuilder = new GenericInsertRecordBuilder()
@@ -143,106 +108,51 @@ public class BusinessHoursAPI {
 			}
 			return businessHours;
 		}
-
 		return null;
 	}
 
-	public static List<BusinessHourContext> getSingleDayBusinessHours(long id) throws Exception {
+	public static List<BusinessHoursContext> getBusinessHours(List<Long> ids) throws Exception {
+		FacilioModule module = ModuleFactory.getBusinessHoursModule();
 		String businessHoursTable = ModuleFactory.getBusinessHoursModule().getTableName();
-		String singleDayTable = ModuleFactory.getSingleDayBusinessHourModule().getTableName();
-		long orgId = AccountUtil.getCurrentOrg().getOrgId();
-		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-				.select(FieldFactory.getSingleDayBusinessHoursFields()).table(businessHoursTable)
-				.innerJoin(singleDayTable).on(businessHoursTable + ".ID = " + singleDayTable + ".PARENT_ID")
-				.andCustomWhere(businessHoursTable + ".ORGID = ? AND " + businessHoursTable + ".ID = ?", orgId, id)
-				.orderBy("dayOfWeek");
-
-		List<Map<String, Object>> props = selectBuilder.get();
-		if (props != null && !props.isEmpty()) {
-			List<BusinessHourContext> businessHours = new ArrayList<>();
-			for (Map<String, Object> prop : props) {
-				businessHours.add(FieldUtil.getAsBeanFromMap(prop, BusinessHourContext.class));
-			}
-			return businessHours;
-		}
-		else{
-		return null;}
-	}
-	public static BusinessHoursContext getBusinessHoursById(long id) throws Exception {
-
-		String businessHoursTable = ModuleFactory.getBusinessHoursModule().getTableName();
-		long orgId = AccountUtil.getCurrentOrg().getOrgId();
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(FieldFactory.getBusinessHoursFields()).table(businessHoursTable)
-				.andCustomWhere(businessHoursTable + ".ORGID = ? AND " + businessHoursTable + ".ID = ?", orgId,id).orderBy("Id");
+				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+				.andCondition(CriteriaAPI.getIdCondition(ids, module)).orderBy("Id");
 		List<Map<String, Object>> props = selectBuilder.get();
+		List<BusinessHoursContext> businessHours = new ArrayList<>();
 		if (props != null && !props.isEmpty()) {
-			BusinessHoursContext businessHour = new BusinessHoursContext();
+			List<BusinessHourContext> singleDayBusinessHourList = getSingleDayBusinessHours(ids);
 			for (Map<String, Object> prop : props) {
-				 businessHour = FieldUtil.getAsBeanFromMap(prop, BusinessHoursContext.class);
-				businessHour.setSingleDaybusinessHoursList(getSingleDayBusinessHours(businessHour.getId()));
-				}
-			return businessHour;
-		} else {
-			return null;
+				BusinessHoursContext businessHour = FieldUtil.getAsBeanFromMap(prop, BusinessHoursContext.class);
+				businessHour.setSingleDaybusinessHoursList(singleDayBusinessHourList.stream()
+						.filter(bh -> bh.getParentId() == (businessHour.getId())).collect(Collectors.toList()));
+				businessHours.add(businessHour);
+			}
 		}
-	}
-	public static List<BusinessHoursContext> getBusinessHours() throws Exception {
-
-//		String businessHoursTable = ModuleFactory.getBusinessHoursModule().getTableName();
-//		long orgId = AccountUtil.getCurrentOrg().getOrgId();
-//		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-//				.select(FieldFactory.getBusinessHoursFields()).table(businessHoursTable)
-//				.andCustomWhere(businessHoursTable + ".ORGID = ?", orgId).orderBy("Id");
-//		List<Map<String, Object>> props = selectBuilder.get();
-//		if (props != null && !props.isEmpty()) {
-//			List<BusinessHoursContext> businessHours = new ArrayList<>();
-//			for (Map<String, Object> prop : props) {
-//				BusinessHoursContext businessHour = FieldUtil.getAsBeanFromMap(prop, BusinessHoursContext.class);
-//				businessHour.setSingleDaybusinessHoursList(getSingleDayBusinessHours(businessHour.getId()));
-//				businessHours.add(businessHour);
-//			}
-//			return businessHours;
-//		} else {
-//			return null;
-//		}
-		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.ID, (long)-1);
-		Chain getBusinessHoursChain = ReadOnlyChainFactory.getBusinessHoursChain();
-		getBusinessHoursChain.execute(context);
-		List<BusinessHoursContext> businessHoursList=(List<BusinessHoursContext>) context.get(FacilioConstants.ContextNames.BUSINESS_HOUR_LIST);
-		if(businessHoursList==null){
-			businessHoursList=new ArrayList<BusinessHoursContext>();
-		}
-		return businessHoursList;
-		
+		return businessHours;
 	}
 
-	public static List<BusinessHourContext> getSingleDayBusinessHours() throws Exception {
+	public static List<BusinessHourContext> getSingleDayBusinessHours(List<Long> ids) throws Exception {// need
+		FacilioModule module = ModuleFactory.getBusinessHoursModule();
 		String businessHoursTable = ModuleFactory.getBusinessHoursModule().getTableName();
 		String singleDayTable = ModuleFactory.getSingleDayBusinessHourModule().getTableName();
-		long orgId = AccountUtil.getCurrentOrg().getOrgId();
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(FieldFactory.getSingleDayBusinessHoursFields()).table(businessHoursTable)
 				.innerJoin(singleDayTable).on(businessHoursTable + ".ID = " + singleDayTable + ".PARENT_ID")
-				.andCustomWhere(businessHoursTable + ".ORGID = ?", orgId).orderBy("parentId,dayOfWeek");
-
+				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+				.andCondition(CriteriaAPI.getIdCondition(ids, module)).orderBy("dayOfWeek");
 		List<Map<String, Object>> props = selectBuilder.get();
-		System.out.println("props" + props);
+		List<BusinessHourContext> businessHours = new ArrayList<>();
 		if (props != null && !props.isEmpty()) {
-			List<BusinessHourContext> businessHours = new ArrayList<>();
 			for (Map<String, Object> prop : props) {
 				businessHours.add(FieldUtil.getAsBeanFromMap(prop, BusinessHourContext.class));
 			}
-
-			return businessHours;
-		} else {
-			return null;
 		}
+		return businessHours;
 	}
 
-	public static void deleteBusinessHours(long id) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException,
-	SQLException, RuntimeException {
+	public static void deleteBusinessHours(long id) throws IllegalAccessException, InvocationTargetException,
+			NoSuchMethodException, SQLException, RuntimeException {
 		FacilioModule businessHoursTable = ModuleFactory.getBusinessHoursModule();
 		GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder().table(businessHoursTable.getTableName())
 				.andCondition(CriteriaAPI.getIdCondition(id, businessHoursTable)).andCondition(

@@ -2,16 +2,22 @@ package com.facilio.bmsconsole.commands;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.BuildingContext;
+import com.facilio.bmsconsole.context.BusinessHoursContext;
 import com.facilio.bmsconsole.context.LocationContext;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
+import com.facilio.bmsconsole.util.BusinessHoursAPI;
 import com.facilio.bmsconsole.util.SpaceAPI;
+import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
+
+import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
+import java.util.Collections;
 import java.util.List;
 
 public class GetBuildingCommand implements Command {
@@ -46,17 +52,20 @@ public class GetBuildingCommand implements Command {
 			List<BuildingContext> buildings = builder.get();	
 			if(buildings.size() > 0) {
 				BuildingContext building = buildings.get(0);
-				System.out.println("############ building :"+building);
 				LocationContext location=building.getLocation();
 				if(location!=null)
 				{
 					location=SpaceAPI.getLocationSpace(building.getLocation().getId());
 					building.setLocation(location);
 				}
+				if(building.getData()!=null){
+				List<Long> businessHourIds=Collections.singletonList(Long.parseLong(building.getData().get("operatingHour").toString()));
+				List<BusinessHoursContext> businessHour = BusinessHoursAPI.getBusinessHours(businessHourIds);
+				if(!businessHour.isEmpty()){
+				building.setBusinessHour(businessHour.get(0));}
+				}
 				context.put(FacilioConstants.ContextNames.BUILDING, building);
 			}
-			
-
 		}
 		else {
 			throw new IllegalArgumentException("Invalid Building ID : "+buildingId);

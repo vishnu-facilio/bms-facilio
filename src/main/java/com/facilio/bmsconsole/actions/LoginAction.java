@@ -333,7 +333,7 @@ public class LoginAction extends FacilioAction {
 		data.put("alarmSeverity", AlarmAPI.getAlarmSeverityList());
 		data.put("assetCategory", AssetsAPI.getCategoryList());
 		data.put("assetType", AssetsAPI.getTypeList());
-		data.put("operatingHour", BusinessHoursAPI.getBusinessHours());
+//		data.put("operatingHour", BusinessHoursAPI.getBusinessHours());
 		data.put("assetDepartment", AssetsAPI.getDepartmentList());
 //		data.put("inventoryVendors", InventoryApi.getInventoryVendorList());
 //		data.put("inventoryCategory", InventoryApi.getInventoryCategoryList());
