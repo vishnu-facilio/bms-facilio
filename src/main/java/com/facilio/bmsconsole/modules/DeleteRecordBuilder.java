@@ -81,6 +81,7 @@ public class DeleteRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 	}
 	
 	@Override
+	@Deprecated
 	public DeleteRecordBuilder<E> andCustomWhere(String whereCondition, Object... values) {
 		// TODO Auto-generated method stub
 		this.where.andCustomWhere(whereCondition, values);
@@ -88,6 +89,7 @@ public class DeleteRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 	}
 	
 	@Override
+	@Deprecated
 	public DeleteRecordBuilder<E> orCustomWhere(String whereCondition, Object... values) {
 		// TODO Auto-generated method stub
 		this.where.orCustomWhere(whereCondition, values);

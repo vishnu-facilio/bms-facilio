@@ -124,12 +124,14 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 	}
 	
 	@Override
+	@Deprecated
 	public SelectRecordsBuilder<E> andCustomWhere(String where, Object... values) {
 		this.where.andCustomWhere(where, values);
 		return this;
 	}
 	
 	@Override
+	@Deprecated
 	public SelectRecordsBuilder<E> orCustomWhere(String whereCondition, Object... values) {
 		// TODO Auto-generated method stub
 		this.where.orCustomWhere(whereCondition, values);

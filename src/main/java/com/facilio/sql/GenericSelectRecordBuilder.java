@@ -300,6 +300,7 @@ public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, 
 	 *    </pre>
 	 *    @return GenericSelectRecordBuilder object instance
 	 */
+	@Deprecated
 	public GenericSelectRecordBuilder andCustomWhere(String whereCondition, Object... values) {
 		this.where.andCustomWhere(whereCondition, values);
 		return this;
@@ -324,6 +325,7 @@ public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, 
 	 *</pre>
 	 * @return GenericSelectRecordBuilder object instance
 	 */
+	@Deprecated
 	public GenericSelectRecordBuilder orCustomWhere(String whereCondition, Object... values) {
 		// TODO Auto-generated method stub
 		this.where.orCustomWhere(whereCondition, values);
