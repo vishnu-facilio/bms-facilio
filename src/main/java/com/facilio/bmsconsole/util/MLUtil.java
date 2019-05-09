@@ -249,6 +249,10 @@ public class MLUtil
 				{
 					mlContextList.add(mlContext.getSequence()-1,mlContext);
 				}
+				else
+				{
+					mlContextList.add(mlContext);
+				}
 			}
 			else
 			{
