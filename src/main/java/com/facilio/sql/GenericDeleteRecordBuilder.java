@@ -146,6 +146,7 @@ public class GenericDeleteRecordBuilder implements DeleteBuilderIfc<Map<String, 
 	 * </pre>
 	 * @return GenericDeleteRecordBuilder object instance
 	 */
+	@Deprecated
 	public GenericDeleteRecordBuilder andCustomWhere(String whereCondition, Object... values) {
 		this.where.andCustomWhere(whereCondition, values);
 		return this;
@@ -167,6 +168,7 @@ public class GenericDeleteRecordBuilder implements DeleteBuilderIfc<Map<String, 
      * </pre>
 	 * @return GenericDeleteRecordBuilder object instance
 	 */
+	@Deprecated
 	public GenericDeleteRecordBuilder orCustomWhere(String whereCondition, Object... values) {
 		// TODO Auto-generated method stub
 		this.where.orCustomWhere(whereCondition, values);

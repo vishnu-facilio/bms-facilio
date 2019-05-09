@@ -149,13 +149,16 @@ public class GenericUpdateRecordBuilder implements UpdateBuilderIfc<Map<String, 
 		tablesToBeUpdated.add(tableName);
 		return new GenericJoinBuilder(this);
 	}
-	
+
+	@Override
+	@Deprecated
 	public GenericUpdateRecordBuilder andCustomWhere(String whereCondition, Object... values) {
 		this.where.andCustomWhere(whereCondition, values);
 		return this;
 	}
-	
+
 	@Override
+	@Deprecated
 	public GenericUpdateRecordBuilder orCustomWhere(String whereCondition, Object... values) {
 		// TODO Auto-generated method stub
 		this.where.orCustomWhere(whereCondition, values);

@@ -151,6 +151,21 @@ public class MLContext extends ModuleBaseWithCustomFields
 		return mlModelVariables;
 	}
 	
+	public String getMLModelVariable(String key)
+	{
+		if(mlModelVariables.size()>0)
+		{
+			for(MLModelVariableContext context:mlModelVariables)
+			{
+				if(context.getVariableKey().equals(key))
+				{
+					return context.getVariableValue();
+				}
+			}
+		}
+		return null;
+	}
+	
 	public void addMLCriteriaVariable(MLVariableContext context)
 	{
 		if(criteriaVariables==null)

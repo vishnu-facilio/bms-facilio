@@ -22,15 +22,18 @@ import org.json.HTTP;
 import org.json.JSONException;
 import org.json.simple.JSONObject;
 
+import javax.net.ssl.HttpsURLConnection;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import java.io.BufferedReader;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.reflect.InvocationTargetException;
+import java.net.URL;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
@@ -40,6 +43,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -493,11 +497,13 @@ public class FacilioAuthAction extends FacilioAction {
         return SUCCESS;
     }
     
-    public String postIssueResponse(HttpServletRequest request,
-            HttpServletResponse response) throws Exception {
+    public String postIssueResponse() throws Exception {
+	       LOGGER.info( "method called");
     	try {
     	  StringBuffer jb = new StringBuffer();
     	  String line = null;
+    	  
+    	  HttpServletRequest request = ServletActionContext.getRequest();
 
     	  try(BufferedReader reader = request.getReader()) {
     		  
@@ -505,9 +511,50 @@ public class FacilioAuthAction extends FacilioAction {
     	      jb.append(line);
     	    }
     	  }
-    	    
-     	   org.json.JSONObject jsonObject =  HTTP.toJSONObject(jb.toString());
-   	       LOGGER.info( "postIssueResponse"+jsonObject.toString());
+      	String url = "https://facilio.freshrelease.com/DEMO/issues";
+      	String description = "test desc",key = null,title = jb.toString(),blockedReason = null;
+     	List<String> tags = new ArrayList<String>();
+		Map<String,Object> customField =  new HashMap<>();
+		Integer createrId = null,position = null,etaFlag = null,storyPoints = null,issueTypeId = 159,
+				ownerId = null,parentId = null,epicId = null,priorityId = 253,projectId = null,
+				subProjectId = null,reporterId = null,sprintId = null,statusId = null,releaseId = null;
+		List<Integer> documentIds = new ArrayList<Integer>();
+		boolean resolved = false,blocked = false,following = false;
+        JSONObject jget = new JSONObject();
+        jget.put("description", description);
+        jget.put("key", key);
+        jget.put("story_points", storyPoints);
+        jget.put("title", title);
+        jget.put("resolved", resolved);
+        jget.put("blocked", blocked);
+        jget.put("following", following);
+        jget.put("blocked_reason", blockedReason);
+        jget.put("tags", tags);
+        jget.put("eta_flag", etaFlag);
+        jget.put("position", position);
+        jget.put("custom_field", customField);
+        jget.put("document_ids", documentIds);
+        jget.put("creater_id", createrId);
+        jget.put("issue_type_id", issueTypeId);
+        jget.put("owner_id", ownerId);
+        jget.put("parent_id", parentId);
+        jget.put("epic_id", epicId);
+        jget.put("priority_id", priorityId);
+        jget.put("project_id", projectId);
+        jget.put("sub_project_id", subProjectId);
+        jget.put("reporter_id", reporterId);
+        jget.put("sprint_id", sprintId);
+        jget.put("status_id", statusId);
+        jget.put("release_id", releaseId);
+        JSONObject newjget = new JSONObject();
+        newjget.put("issue", jget);
+        String body = newjget.toJSONString();
+          Map<String,String> headers = new HashMap<>();
+          headers.put("Authorization","Token token=92On0bqAP-gQKOCBm8MgyA");
+          headers.put("Content-Type","application/json");
+			http("POST",url,headers,body);
+//   	   org.json.JSONObject jsonObject =  HTTP.toJSONObject(jb.toString());
+   	       LOGGER.info( "postIssueResponse"+jb.toString());
     	    
     	  } catch (Exception e) {
               setJsonresponse("message", "Error while reading post issue response");
@@ -515,9 +562,43 @@ public class FacilioAuthAction extends FacilioAction {
     		  throw new IOException("Error parsing JSON request string");
     	  }
   
-        setJsonresponse("message", " post issue response recieved successfully");
+        setJsonresponse("message", "post issue response recieved successfully");
     	return SUCCESS;
     }
+    
+    private void http(String method, String url, Map headers, String body) throws Exception {
+        URL obj = new URL(url);
+        HttpsURLConnection con = (HttpsURLConnection) obj.openConnection();
+        con.setRequestMethod(method);
+
+        // these are auth headers
+        for(Object head:headers.keySet()) {
+            con.setRequestProperty(head.toString(), headers.get(head).toString());
+        }
+        
+        con.setDoOutput(true);
+        DataOutputStream wr = new DataOutputStream(con.getOutputStream());
+        wr.writeBytes(body);
+        wr.flush();
+        wr.close();
+
+        int responseCode = con.getResponseCode();
+        LOGGER.info("\nSending 'POST' request to URL : " + url);
+        LOGGER.info("Post parameters : " + body);
+        LOGGER.info("Response Code : " + responseCode);
+
+        BufferedReader in = new BufferedReader(
+                new InputStreamReader(con.getInputStream()));
+        String inputLine;
+        StringBuffer response = new StringBuffer();
+
+        while ((inputLine = in.readLine()) != null) {
+            response.append(inputLine);
+        }
+        in.close();
+        LOGGER.info("issue response in freshrelease"+response.toString());
+
+	}
 
     public String verifyEmail() throws Exception {
     	

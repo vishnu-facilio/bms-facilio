@@ -64,12 +64,14 @@ public class ReportFactoryFields {
 		assetFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.ASSET).get("retireDate"));
 		assetFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.ASSET).get("warrantyExpiryDate"));
 		
+		List<FacilioField> spaceFields = new ArrayList<FacilioField>();
+		spaceFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.SPACE).get("spaceCategory"));
 		
 		Map<String, List<FacilioField>> dimensionFieldMap = (Map<String, List<FacilioField>>)rearrangedFields.get("dimension");
 
 		
 		dimensionFieldMap.put(FacilioConstants.ContextNames.ASSET, assetFields);
-		
+		dimensionFieldMap.put(FacilioConstants.ContextNames.SPACE, spaceFields);
 		
 		ArrayList<String> dimensionListOrder = new ArrayList<String>();
 		dimensionListOrder.add("time");
@@ -164,9 +166,13 @@ public class ReportFactoryFields {
 				assetFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.ASSET).get("warrantyExpiryDate"));
 				
 				
+				List<FacilioField> spaceFields = new ArrayList<FacilioField>();
+				spaceFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.SPACE).get("spaceCategory"));
+				
 				Map<String, List<FacilioField>> dimensionFieldMap = (Map<String, List<FacilioField>>)rearrangedFields.get("dimension");
 				
 				dimensionFieldMap.put(FacilioConstants.ContextNames.ASSET, assetFields);
+				dimensionFieldMap.put(FacilioConstants.ContextNames.SPACE, spaceFields);
 				
 				ArrayList<String> dimensionListOrder = new ArrayList<String>();
 				dimensionListOrder.add("time");
@@ -316,10 +322,12 @@ public class ReportFactoryFields {
 		switch(moduleName) {
 			case "workorder":
 				moduleNames.add(FacilioConstants.ContextNames.ASSET);
+				moduleNames.add(FacilioConstants.ContextNames.SPACE);
 				break;
 
 			case "alarm":
 				moduleNames.add(FacilioConstants.ContextNames.ASSET);
+				moduleNames.add(FacilioConstants.ContextNames.SPACE);
 				break;
 		}
 		

@@ -242,9 +242,17 @@ public class MLUtil
 				MLVariableContext mlVariableContext = FieldUtil.getAsBeanFromMap(prop, MLVariableContext.class);
 				mlContext.addMLCriteriaVariable(mlVariableContext);
 			}
-			if(mlContextList.size()>=mlContext.getSequence())
+			LOGGER.fatal("To be removed JAVEED mlCOntext size and sequence are  "+mlContextList.size()+"::"+mlContext.getSequence());
+			if(mlContext.getSequence()!=0)
 			{
-				mlContextList.add(mlContext.getSequence()-1,mlContext);
+				if(mlContextList.size()>=mlContext.getSequence())
+				{
+					mlContextList.add(mlContext.getSequence()-1,mlContext);
+				}
+				else
+				{
+					mlContextList.add(mlContext);
+				}
 			}
 			else
 			{

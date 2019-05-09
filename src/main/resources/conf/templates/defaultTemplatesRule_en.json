@@ -146,7 +146,7 @@
 			"description": "AHU Outside Air Damper is stuck or in open state. Unable to open Damper",
 			"problem": "AHU Outside Air Damper fails to follow the command",
 			"possible_causes": "1. Poor Lubrication <br/> 2. Sensor Failure",
-			"moduleName": "supplyairdampercommand",
+			"moduleName": "ahureading",
 			"category": "AHU",
 			"severity": "Major",
 			"threshold_metric": "supplyairdamperstatus",
@@ -200,7 +200,7 @@
 				"action": "TRIGGER_ALARM",
 				"moduleName": "ahureading",
 				"thresholdType": 5,
-				"threshold_metric": "damperstatus",
+				"threshold_metric": "supplyairdamperstatus",
 				"workflow": {
 				 	"expressions": [
 				      {
@@ -340,7 +340,7 @@
 				"action": "TRIGGER_ALARM",
 				"moduleName": "ahureading",
 				"thresholdType": 5,
-				"threshold_metric": "damperstatus",
+				"threshold_metric": "supplyairdamperstatus",
 				"workflow": {
 				 	"expressions": [
 				      {
@@ -480,7 +480,7 @@
 				"action": "TRIGGER_ALARM",
 				"moduleName": "ahureading",
 				"thresholdType": 5,
-				"threshold_metric": "damperstatus",
+				"threshold_metric": "exhaustairdamperstatus",
 				"workflow": {
 				 	"expressions": [
 				      {
@@ -620,7 +620,7 @@
 				"action": "TRIGGER_ALARM",
 				"moduleName": "ahureading",
 				"thresholdType": 5,
-				"threshold_metric": "damperstatus",
+				"threshold_metric": "exhaustairdamperstatus",
 				"workflow": {
 				 	"expressions": [
 				      {
@@ -897,6 +897,1039 @@
 			}
 			
 		}
+	}, 
+	"8" : {
+		"fdd_rule": {
+			  "name": "Enthalpy Heat Recovery Wheel wasting energy (AUTO mode)",
+			  "description": "Enthalpy Heat Recovery Wheel wasting energy (AUTO mode)",
+			  "problem": "Enthalpy Heat recovery wheel running even when the outside air temperature is lower than the return air temperature and no pre-cooling is required. ",
+			  "possible_causes": "Faulty run of Enthalpy Heat Recovery Wheel may disturb the overall thermal balance of the system and can also lead to increased energy usage (through increased cooling demand).",
+			  "moduleName": "ahureading",
+			  "category": "AHU",
+			  "severity": "Major",
+			  "threshold_metric": "returnairtemperature",
+			  "threshold_metric_display": "Return Air Temperature",
+			  "possible_solution": "This fault/alarm may trigger due to miscalibration of temperature and/or humidity sensors.",
+			  "ASSET_SELECTION_CRITERIA": {
+			    "categoryType": "AHU",
+			    "includeResource": "${includeResource}",
+			    "excludeResource": "${excludeResource}"
+			  },
+			  "preRequsite": {
+			    "action": "PreRequsite",
+			    "moduleName": "ahureading",
+			    "threshold_metric": "enthalpyheatwheelautomanualstatus",
+			    "thresholdType": 1,
+			    "operatorId": 9,
+			    "percentage": "1",
+			    "condition_statement": "When Enthalpy Heat Wheel is in auto mode",
+			    "workflow": {
+			      "expressions": [
+			        {
+			          "name": "a",
+			          "aggregateString": "lastValue",
+			          "fieldName": "enthalpyheatwheelautomanualstatus",
+			          "moduleName": "ahureading",
+			          "aggregateCondition": [],
+			          "criteria": {
+			            "pattern": "(1)",
+			            "conditions": {
+			              "1": {
+			                "fieldName": "parentId",
+			                "operatorId": 9,
+			                "sequence": "1",
+			                "value": "${resourceId}"
+			              }
+			            }
+			          }
+			        }
+			      ],
+			      "resultEvaluator": "a==Auto",
+			      "parameters": [
+			        {
+			          "name": "resourceId",
+			          "typeString": "Number"
+			        }
+			      ]
+			    }
+			  },
+			  "alarmCondition": {
+			    "condition": "${{exhaustairdampercommand}}==1 && ${{exhaustairdamperstatus}}==0",
+			    "for": "${interval}",
+			    "action": "TRIGGER_ALARM",
+			    "thresholdType": 5,
+			    "workflow": {
+			      "expressions": [
+			        {
+			          "name": "A",
+			          "aggregateString": "lastValue",
+			          "fieldName": "supplyfanairflowstatus",
+			          "moduleName": "ahureading",
+			          "criteria": {
+			            "pattern": "(1)",
+			            "conditions": {
+			              "1": {
+			                "fieldName": "parentId",
+			                "operatorId": 9,
+			                "sequence": "1",
+			                "value": "${resourceId}"
+			              }
+			            }
+			          },
+			          "conditionSeqVsBaselineId": {},
+			          "orderByFieldName": "ttime",
+			          "sortBy": "desc",
+			          "limit": 1
+			        },
+			        {
+			          "name": "B",
+			          "constant": "1"
+			        },
+			        {
+			          "name": "C",
+			          "aggregateString": "lastValue",
+			          "fieldName": "returnairtemperature",
+			          "moduleName": "ahureading",
+			          "criteria": {
+			            "pattern": "(1)",
+			            "conditions": {
+			              "1": {
+			                "fieldName": "parentId",
+			                "operatorId": 9,
+			                "sequence": "1",
+			                "value": "${resourceId}"
+			              }
+			            }
+			          },
+			          "conditionSeqVsBaselineId": {},
+			          "orderByFieldName": "ttime",
+			          "sortBy": "desc",
+			          "limit": 1
+			        },
+			        {
+			          "name": "D",
+			          "aggregateString": "lastValue",
+			          "fieldName": "outsideairtemperature",
+			          "moduleName": "ahureading",
+			          "criteria": {
+			            "pattern": "(1)",
+			            "conditions": {
+			              "1": {
+			                "fieldName": "parentId",
+			                "operatorId": 9,
+			                "sequence": "1",
+			                "value": "${resourceId}"
+			              }
+			            }
+			          },
+			          "conditionSeqVsBaselineId": {},
+			          "orderByFieldName": "ttime",
+			          "sortBy": "desc",
+			          "limit": 1
+			        },
+			        {
+			          "name": "F",
+			          "constant": "2"
+			        },
+			        {
+			          "name": "G",
+			          "aggregateString": "lastValue",
+			          "fieldName": "enthalpyheatwheelcommand",
+			          "moduleName": "ahureading",
+			          "criteria": {
+			            "pattern": "(1)",
+			            "conditions": {
+			              "1": {
+			                "fieldName": "parentId",
+			                "operatorId": 9,
+			                "sequence": "1",
+			                "value": "${resourceId}"
+			              }
+			            }
+			          },
+			          "conditionSeqVsBaselineId": {},
+			          "orderByFieldName": "ttime",
+			          "sortBy": "desc",
+			          "limit": 1
+			        },
+			        {
+			          "name": "H",
+			          "constant": "1"
+			        },
+			        {
+			          "name": "I",
+			          "aggregateString": "lastValue",
+			          "fieldName": "enthalpyheatwheelrunstatus",
+			          "moduleName": "ahureading",
+			          "criteria": {
+			            "pattern": "(1)",
+			            "conditions": {
+			              "1": {
+			                "fieldName": "parentId",
+			                "operatorId": 9,
+			                "sequence": "1",
+			                "value": "${resourceId}"
+			              }
+			            }
+			          },
+			          "conditionSeqVsBaselineId": {},
+			          "orderByFieldName": "ttime",
+			          "sortBy": "desc",
+			          "limit": 1
+			        },
+			        {
+			          "name": "J",
+			          "constant": "1"
+			        }
+			      ],
+			      "parameters": [
+			        {
+			          "name": "resourceId",
+			          "typeString": "Number"
+			        }
+			      ],
+			      "resultEvaluator": "(A==B)&&(C-D>=F)&&(G==H)&&(I==J)"
+			    },
+			    "condition_statement": "When Supply Air Fan Status is on and the differnce of Return air temperature and Outside air temperature is less than 2 °C and Enthalpy Heat Wheel Status is On and Enthalpy Heat Wheel Command is On "
+			  }
+			}
+	},
+	"9": {
+		"fdd_rule": {
+			  "name": "Enthalpy Heat Recovery Wheel wasting energy (Manual mode)",
+			  "description": "Enthalpy Heat Recovery Wheel wasting energy (Manual mode)",
+			  "problem": "Enthalpy Heat recovery wheel running even when the outside air temperature is lower than the return air temperature and no pre-cooling is required. ",
+			  "possible_causes": "Faulty run of Enthalpy Heat Recovery Wheel may disturb the overall thermal balance of the system and can also lead to increased energy usage (through increased cooling demand).",
+			  "moduleName": "ahureading",
+			  "category": "AHU",
+			  "severity": "Major",
+			  "threshold_metric": "returnairtemperature",
+			  "threshold_metric_display": "Return Air Temperature",
+			  "possible_solution": "This fault/alarm may trigger due to miscalibration of temperature and/or humidity sensors.",
+			  "ASSET_SELECTION_CRITERIA": {
+			    "categoryType": "AHU",
+			    "includeResource": "${includeResource}",
+			    "excludeResource": "${excludeResource}"
+			  },
+			  "preRequsite": {
+			    "action": "PreRequsite",
+			    "moduleName": "ahureading",
+			    "threshold_metric": "enthalpyheatwheelautomanualstatus",
+			    "thresholdType": 1,
+			    "operatorId": 9,
+			    "percentage": "1",
+			    "condition_statement": "When Enthalpy Heat Wheel is in Manual mode",
+			    "workflow": {
+			      "expressions": [
+			        {
+			          "name": "a",
+			          "aggregateString": "lastValue",
+			          "fieldName": "enthalpyheatwheelautomanualstatus",
+			          "moduleName": "ahureading",
+			          "aggregateCondition": [],
+			          "criteria": {
+			            "pattern": "(1)",
+			            "conditions": {
+			              "1": {
+			                "fieldName": "parentId",
+			                "operatorId": 9,
+			                "sequence": "0",
+			                "value": "${resourceId}"
+			              }
+			            }
+			          }
+			        }
+			      ],
+			      "resultEvaluator": "a==Manual",
+			      "parameters": [
+			        {
+			          "name": "resourceId",
+			          "typeString": "Number"
+			        }
+			      ]
+			    }
+			  },
+			  "alarmCondition": {
+			    "condition": "${{exhaustairdampercommand}}==1 && ${{exhaustairdamperstatus}}==0",
+			    "for": "${interval}",
+			    "action": "TRIGGER_ALARM",
+			    "thresholdType": 5,
+			    "workflow": {
+			      "expressions": [
+			        {
+			          "name": "A",
+			          "aggregateString": "lastValue",
+			          "fieldName": "supplyfanairflowstatus",
+			          "moduleName": "ahureading",
+			          "criteria": {
+			            "pattern": "(1)",
+			            "conditions": {
+			              "1": {
+			                "fieldName": "parentId",
+			                "operatorId": 9,
+			                "sequence": "1",
+			                "value": "${resourceId}"
+			              }
+			            }
+			          },
+			          "conditionSeqVsBaselineId": {},
+			          "orderByFieldName": "ttime",
+			          "sortBy": "desc",
+			          "limit": 1
+			        },
+			        {
+			          "name": "B",
+			          "constant": "1"
+			        },
+			        {
+			          "name": "C",
+			          "aggregateString": "lastValue",
+			          "fieldName": "returnairtemperature",
+			          "moduleName": "ahureading",
+			          "criteria": {
+			            "pattern": "(1)",
+			            "conditions": {
+			              "1": {
+			                "fieldName": "parentId",
+			                "operatorId": 9,
+			                "sequence": "1",
+			                "value": "${resourceId}"
+			              }
+			            }
+			          },
+			          "conditionSeqVsBaselineId": {},
+			          "orderByFieldName": "ttime",
+			          "sortBy": "desc",
+			          "limit": 1
+			        },
+			        {
+			          "name": "D",
+			          "aggregateString": "lastValue",
+			          "fieldName": "outsideairtemperature",
+			          "moduleName": "ahureading",
+			          "criteria": {
+			            "pattern": "(1)",
+			            "conditions": {
+			              "1": {
+			                "fieldName": "parentId",
+			                "operatorId": 9,
+			                "sequence": "1",
+			                "value": "${resourceId}"
+			              }
+			            }
+			          },
+			          "conditionSeqVsBaselineId": {},
+			          "orderByFieldName": "ttime",
+			          "sortBy": "desc",
+			          "limit": 1
+			        },
+			        {
+			          "name": "F",
+			          "constant": "2"
+			        },
+			        {
+			          "name": "G",
+			          "aggregateString": "lastValue",
+			          "fieldName": "enthalpyheatwheelcommand",
+			          "moduleName": "ahureading",
+			          "criteria": {
+			            "pattern": "(1)",
+			            "conditions": {
+			              "1": {
+			                "fieldName": "parentId",
+			                "operatorId": 9,
+			                "sequence": "1",
+			                "value": "${resourceId}"
+			              }
+			            }
+			          },
+			          "conditionSeqVsBaselineId": {},
+			          "orderByFieldName": "ttime",
+			          "sortBy": "desc",
+			          "limit": 1
+			        },
+			        {
+			          "name": "H",
+			          "constant": "1"
+			        },
+			        {
+			          "name": "I",
+			          "aggregateString": "lastValue",
+			          "fieldName": "enthalpyheatwheelrunstatus",
+			          "moduleName": "ahureading",
+			          "criteria": {
+			            "pattern": "(1)",
+			            "conditions": {
+			              "1": {
+			                "fieldName": "parentId",
+			                "operatorId": 9,
+			                "sequence": "1",
+			                "value": "${resourceId}"
+			              }
+			            }
+			          },
+			          "conditionSeqVsBaselineId": {},
+			          "orderByFieldName": "ttime",
+			          "sortBy": "desc",
+			          "limit": 1
+			        },
+			        {
+			          "name": "J",
+			          "constant": "1"
+			        }
+			      ],
+			      "parameters": [
+			        {
+			          "name": "resourceId",
+			          "typeString": "Number"
+			        }
+			      ],
+			      "resultEvaluator": "(A==B)&&(C-D>=F)&&(G==H)&&(I==J)"
+			    },
+			    "condition_statement": "When Supply Air Fan Status is on and the differnce of Return air temperature and Outside air temperature is less than 2 °C and Enthalpy Heat Wheel Status is On and Enthalpy Heat Wheel Command is On "
+			  }
+			}
+	},
+	"10" : {
+		"fdd_rule": {
+			  "name": "Sensible Heat Recovery Wheel wasting energy (AUTO mode)",
+			  "description": "Sensible Heat Recovery Wheel wasting energy (AUTO mode)",
+			  "problem": "Sensible Heat recovery wheel running even when the outside air temperature is lower than the return air temperature and no pre-cooling is required. ",
+			  "possible_causes": "Faulty run of Sensible Heat Recovery Wheel may disturb the overall thermal balance of the system and can also lead to increased energy usage (through increased cooling demand).",
+			  "moduleName": "ahureading",
+			  "category": "AHU",
+			  "severity": "Major",
+			  "threshold_metric": "returnairtemperature",
+			  "threshold_metric_display": "Return Air Temperature",
+			  "possible_solution": "This fault/alarm may trigger due to miscalibration of temperature and/or humidity sensors.",
+			  "ASSET_SELECTION_CRITERIA": {
+			    "categoryType": "AHU",
+			    "includeResource": "${includeResource}",
+			    "excludeResource": "${excludeResource}"
+			  },
+			  "preRequsite": {
+			    "action": "PreRequsite",
+			    "moduleName": "ahureading",
+			    "threshold_metric": "sensibleheatwheelautomanualstatus",
+			    "thresholdType": 1,
+			    "operatorId": 9,
+			    "percentage": "1",
+			    "condition_statement": "When Sensible Heat Wheel is in auto mode",
+			    "workflow": {
+			      "expressions": [
+			        {
+			          "name": "a",
+			          "aggregateString": "lastValue",
+			          "fieldName": "sensibleheatwheelautomanualstatus",
+			          "moduleName": "ahureading",
+			          "aggregateCondition": [],
+			          "criteria": {
+			            "pattern": "(1)",
+			            "conditions": {
+			              "1": {
+			                "fieldName": "parentId",
+			                "operatorId": 9,
+			                "sequence": "1",
+			                "value": "${resourceId}"
+			              }
+			            }
+			          }
+			        }
+			      ],
+			      "resultEvaluator": "a==Auto",
+			      "parameters": [
+			        {
+			          "name": "resourceId",
+			          "typeString": "Number"
+			        }
+			      ]
+			    }
+			  },
+			  "alarmCondition": {
+			    "condition": "${{exhaustairdampercommand}}==1 && ${{exhaustairdamperstatus}}==0",
+			    "for": "${interval}",
+			    "action": "TRIGGER_ALARM",
+			    "thresholdType": 5,
+			    "workflow": {
+			      "expressions": [
+			        {
+			          "name": "A",
+			          "aggregateString": "lastValue",
+			          "fieldName": "supplyfanairflowstatus",
+			          "moduleName": "ahureading",
+			          "criteria": {
+			            "pattern": "(1)",
+			            "conditions": {
+			              "1": {
+			                "fieldName": "parentId",
+			                "operatorId": 9,
+			                "sequence": "1",
+			                "value": "${resourceId}"
+			              }
+			            }
+			          },
+			          "conditionSeqVsBaselineId": {},
+			          "orderByFieldName": "ttime",
+			          "sortBy": "desc",
+			          "limit": 1
+			        },
+			        {
+			          "name": "B",
+			          "constant": "1"
+			        },
+			        {
+			          "name": "C",
+			          "aggregateString": "lastValue",
+			          "fieldName": "returnairtemperature",
+			          "moduleName": "ahureading",
+			          "criteria": {
+			            "pattern": "(1)",
+			            "conditions": {
+			              "1": {
+			                "fieldName": "parentId",
+			                "operatorId": 9,
+			                "sequence": "1",
+			                "value": "${resourceId}"
+			              }
+			            }
+			          },
+			          "conditionSeqVsBaselineId": {},
+			          "orderByFieldName": "ttime",
+			          "sortBy": "desc",
+			          "limit": 1
+			        },
+			        {
+			          "name": "D",
+			          "aggregateString": "lastValue",
+			          "fieldName": "outsideairtemperature",
+			          "moduleName": "ahureading",
+			          "criteria": {
+			            "pattern": "(1)",
+			            "conditions": {
+			              "1": {
+			                "fieldName": "parentId",
+			                "operatorId": 9,
+			                "sequence": "1",
+			                "value": "${resourceId}"
+			              }
+			            }
+			          },
+			          "conditionSeqVsBaselineId": {},
+			          "orderByFieldName": "ttime",
+			          "sortBy": "desc",
+			          "limit": 1
+			        },
+			        {
+			          "name": "F",
+			          "constant": "2"
+			        },
+			        {
+			          "name": "G",
+			          "aggregateString": "lastValue",
+			          "fieldName": "sensibleheatwheelcommand",
+			          "moduleName": "ahureading",
+			          "criteria": {
+			            "pattern": "(1)",
+			            "conditions": {
+			              "1": {
+			                "fieldName": "parentId",
+			                "operatorId": 9,
+			                "sequence": "1",
+			                "value": "${resourceId}"
+			              }
+			            }
+			          },
+			          "conditionSeqVsBaselineId": {},
+			          "orderByFieldName": "ttime",
+			          "sortBy": "desc",
+			          "limit": 1
+			        },
+			        {
+			          "name": "H",
+			          "constant": "1"
+			        },
+			        {
+			          "name": "I",
+			          "aggregateString": "lastValue",
+			          "fieldName": "sensibleheatwheelrunstatus",
+			          "moduleName": "ahureading",
+			          "criteria": {
+			            "pattern": "(1)",
+			            "conditions": {
+			              "1": {
+			                "fieldName": "parentId",
+			                "operatorId": 9,
+			                "sequence": "1",
+			                "value": "${resourceId}"
+			              }
+			            }
+			          },
+			          "conditionSeqVsBaselineId": {},
+			          "orderByFieldName": "ttime",
+			          "sortBy": "desc",
+			          "limit": 1
+			        },
+			        {
+			          "name": "J",
+			          "constant": "1"
+			        }
+			      ],
+			      "parameters": [
+			        {
+			          "name": "resourceId",
+			          "typeString": "Number"
+			        }
+			      ],
+			      "resultEvaluator": "(A==B)&&(C-D>=F)&&(G==H)&&(I==J)"
+			    },
+			    "condition_statement": "When Supply Air Fan Status is on and the differnce of Return air temperature and Outside air temperature is less than 2 °C and Sensible Heat Wheel Status is On and Sensible Heat Wheel Command is On "
+			  }
+			}
+	},
+	"11" : {
+		"fdd_rule": {
+			  "name": "Sensible Heat Recovery Wheel wasting energy (Manual mode)",
+			  "description": "Sensible Heat Recovery Wheel wasting energy (Manual mode)",
+			  "problem": "Sensible Heat recovery wheel running even when the outside air temperature is lower than the return air temperature and no pre-cooling is required. ",
+			  "possible_causes": "Faulty run of Sensible Heat Recovery Wheel may disturb the overall thermal balance of the system and can also lead to increased energy usage (through increased cooling demand).",
+			  "moduleName": "ahureading",
+			  "category": "AHU",
+			  "severity": "Major",
+			  "threshold_metric": "returnairtemperature",
+			  "threshold_metric_display": "Return Air Temperature",
+			  "possible_solution": "This fault/alarm may trigger due to miscalibration of temperature and/or humidity sensors.",
+			  "ASSET_SELECTION_CRITERIA": {
+			    "categoryType": "AHU",
+			    "includeResource": "${includeResource}",
+			    "excludeResource": "${excludeResource}"
+			  },
+			  "preRequsite": {
+			    "action": "PreRequsite",
+			    "moduleName": "ahureading",
+			    "threshold_metric": "sensibleheatwheelautomanualstatus",
+			    "thresholdType": 1,
+			    "operatorId": 9,
+			    "percentage": "1",
+			    "condition_statement": "When Sensible Heat Wheel is in manual mode",
+			    "workflow": {
+			      "expressions": [
+			        {
+			          "name": "a",
+			          "aggregateString": "lastValue",
+			          "fieldName": "sensibleheatwheelautomanualstatus",
+			          "moduleName": "ahureading",
+			          "aggregateCondition": [],
+			          "criteria": {
+			            "pattern": "(1)",
+			            "conditions": {
+			              "1": {
+			                "fieldName": "parentId",
+			                "operatorId": 9,
+			                "sequence": "0",
+			                "value": "${resourceId}"
+			              }
+			            }
+			          }
+			        }
+			      ],
+			      "resultEvaluator": "a==Auto",
+			      "parameters": [
+			        {
+			          "name": "resourceId",
+			          "typeString": "Number"
+			        }
+			      ]
+			    }
+			  },
+			  "alarmCondition": {
+			    "condition": "${{exhaustairdampercommand}}==1 && ${{exhaustairdamperstatus}}==0",
+			    "for": "${interval}",
+			    "action": "TRIGGER_ALARM",
+			    "thresholdType": 5,
+			    "workflow": {
+			      "expressions": [
+			        {
+			          "name": "A",
+			          "aggregateString": "lastValue",
+			          "fieldName": "supplyfanairflowstatus",
+			          "moduleName": "ahureading",
+			          "criteria": {
+			            "pattern": "(1)",
+			            "conditions": {
+			              "1": {
+			                "fieldName": "parentId",
+			                "operatorId": 9,
+			                "sequence": "1",
+			                "value": "${resourceId}"
+			              }
+			            }
+			          },
+			          "conditionSeqVsBaselineId": {},
+			          "orderByFieldName": "ttime",
+			          "sortBy": "desc",
+			          "limit": 1
+			        },
+			        {
+			          "name": "B",
+			          "constant": "1"
+			        },
+			        {
+			          "name": "C",
+			          "aggregateString": "lastValue",
+			          "fieldName": "returnairtemperature",
+			          "moduleName": "ahureading",
+			          "criteria": {
+			            "pattern": "(1)",
+			            "conditions": {
+			              "1": {
+			                "fieldName": "parentId",
+			                "operatorId": 9,
+			                "sequence": "1",
+			                "value": "${resourceId}"
+			              }
+			            }
+			          },
+			          "conditionSeqVsBaselineId": {},
+			          "orderByFieldName": "ttime",
+			          "sortBy": "desc",
+			          "limit": 1
+			        },
+			        {
+			          "name": "D",
+			          "aggregateString": "lastValue",
+			          "fieldName": "outsideairtemperature",
+			          "moduleName": "ahureading",
+			          "criteria": {
+			            "pattern": "(1)",
+			            "conditions": {
+			              "1": {
+			                "fieldName": "parentId",
+			                "operatorId": 9,
+			                "sequence": "1",
+			                "value": "${resourceId}"
+			              }
+			            }
+			          },
+			          "conditionSeqVsBaselineId": {},
+			          "orderByFieldName": "ttime",
+			          "sortBy": "desc",
+			          "limit": 1
+			        },
+			        {
+			          "name": "F",
+			          "constant": "2"
+			        },
+			        {
+			          "name": "G",
+			          "aggregateString": "lastValue",
+			          "fieldName": "sensibleheatwheelcommand",
+			          "moduleName": "ahureading",
+			          "criteria": {
+			            "pattern": "(1)",
+			            "conditions": {
+			              "1": {
+			                "fieldName": "parentId",
+			                "operatorId": 9,
+			                "sequence": "1",
+			                "value": "${resourceId}"
+			              }
+			            }
+			          },
+			          "conditionSeqVsBaselineId": {},
+			          "orderByFieldName": "ttime",
+			          "sortBy": "desc",
+			          "limit": 1
+			        },
+			        {
+			          "name": "H",
+			          "constant": "1"
+			        },
+			        {
+			          "name": "I",
+			          "aggregateString": "lastValue",
+			          "fieldName": "sensibleheatwheelrunstatus",
+			          "moduleName": "ahureading",
+			          "criteria": {
+			            "pattern": "(1)",
+			            "conditions": {
+			              "1": {
+			                "fieldName": "parentId",
+			                "operatorId": 9,
+			                "sequence": "1",
+			                "value": "${resourceId}"
+			              }
+			            }
+			          },
+			          "conditionSeqVsBaselineId": {},
+			          "orderByFieldName": "ttime",
+			          "sortBy": "desc",
+			          "limit": 1
+			        },
+			        {
+			          "name": "J",
+			          "constant": "1"
+			        }
+			      ],
+			      "parameters": [
+			        {
+			          "name": "resourceId",
+			          "typeString": "Number"
+			        }
+			      ],
+			      "resultEvaluator": "(A==B)&&(C-D>=F)&&(G==H)&&(I==J)"
+			    },
+			    "condition_statement": "When Supply Air Fan Status is on and the differnce of Return air temperature and Outside air temperature is less than 2 °C and Sensible Heat Wheel Status is On and Sensible Heat Wheel Command is On "
+			  }
+			}
+	},
+	"12": {
+		"fdd_rule": {
+			  "name": "Enthalpy Heat Recovery wheel fail ",
+			  "description": "Enthalpy Heat Recovery wheel fail ",
+			  "problem": "The enthalpy heat recovery wheel failed to start when commanded ON due to mechanical issues.",
+			  "possible_causes": "",
+			  "moduleName": "ahureading",
+			  "category": "AHU",
+			  "severity": "Major",
+			  "threshold_metric": "enthalpyheatwheelrunstatus",
+			  "threshold_metric_display": "Enthalpy Heatwheel Run Status",
+			  "possible_solution": "",
+			  "ASSET_SELECTION_CRITERIA": {
+			    "categoryType": "AHU",
+			    "includeResource": "${includeResource}",
+			    "excludeResource": "${excludeResource}"
+			  },
+			  "preRequsite": {
+			    "action": "PreRequsite",
+			    "moduleName": "ahureading",
+			    "threshold_metric": "supplyfanairflowstatus",
+			    "thresholdType": 1,
+			    "operatorId": 9,
+			    "percentage": "1",
+			    "condition_statement": "When Supply Fan Airflow Status is On",
+			    "workflow": {
+			      "expressions": [
+			        {
+			          "name": "a",
+			          "aggregateString": "lastValue",
+			          "fieldName": "enthalpyheatwheelautomanualstatus",
+			          "moduleName": "ahureading",
+			          "aggregateCondition": [],
+			          "criteria": {
+			            "pattern": "(1)",
+			            "conditions": {
+			              "1": {
+			                "fieldName": "parentId",
+			                "operatorId": 9,
+			                "sequence": "1",
+			                "value": "${resourceId}"
+			              }
+			            }
+			          }
+			        }
+			      ],
+			      "resultEvaluator": "a==1",
+			      "parameters": [
+			        {
+			          "name": "resourceId",
+			          "typeString": "Number"
+			        }
+			      ]
+			    }
+			  },
+			  "alarmCondition": {
+			    "condition": "${{exhaustairdampercommand}}==1 && ${{exhaustairdamperstatus}}==0",
+			    "for": "${interval}",
+			    "action": "TRIGGER_ALARM",
+			    "thresholdType": 5,
+			    "workflow": {
+			      "expressions": [
+			        {
+			          "name": "A",
+			          "aggregateString": "lastValue",
+			          "fieldName": "enthalpyheatwheelcommand",
+			          "moduleName": "ahureading",
+			          "criteria": {
+			            "pattern": "(1)",
+			            "conditions": {
+			              "1": {
+			                "fieldName": "parentId",
+			                "operatorId": 9,
+			                "sequence": "1",
+			                "value": "${resourceId}"
+			              }
+			            }
+			          },
+			          "conditionSeqVsBaselineId": {},
+			          "orderByFieldName": "ttime",
+			          "sortBy": "desc",
+			          "limit": 1
+			        },
+			        {
+			          "name": "B",
+			          "constant": "1"
+			        },
+			        {
+			          "name": "C",
+			          "aggregateString": "lastValue",
+			          "fieldName": "enthalpyheatwheelrunstatus",
+			          "moduleName": "ahureading",
+			          "criteria": {
+			            "pattern": "(1)",
+			            "conditions": {
+			              "1": {
+			                "fieldName": "parentId",
+			                "operatorId": 9,
+			                "sequence": "1",
+			                "value": "${resourceId}"
+			              }
+			            }
+			          },
+			          "conditionSeqVsBaselineId": {},
+			          "orderByFieldName": "ttime",
+			          "sortBy": "desc",
+			          "limit": 1
+			        },
+			        {
+			          "name": "D",
+			          "constant": "0"
+			        }
+			      ],
+			      "parameters": [
+			        {
+			          "name": "resourceId",
+			          "typeString": "Number"
+			        }
+			      ],
+			      "resultEvaluator": "(A==B)&&(C==D)"
+			    },
+			    "condition_statement": " Enthalpy Heat Wheel Status is On and Enthalpy Heat Wheel Command is Off "
+			  }
+			}
+	},
+	"13": {
+		"fdd_rule": {
+			  "name": "Sensible Heat Recovery wheel fail ",
+			  "description": "Sensible Heat Recovery wheel fail ",
+			  "problem": "The Sensible heat recovery wheel failed to start when commanded ON due to mechanical issues.",
+			  "possible_causes": "",
+			  "moduleName": "ahureading",
+			  "category": "AHU",
+			  "severity": "Major",
+			  "threshold_metric": "sensibleheatwheelrunstatus",
+			  "threshold_metric_display": "Sensible Heatwheel Run Status",
+			  "possible_solution": "",
+			  "ASSET_SELECTION_CRITERIA": {
+			    "categoryType": "AHU",
+			    "includeResource": "${includeResource}",
+			    "excludeResource": "${excludeResource}"
+			  },
+			  "preRequsite": {
+			    "action": "PreRequsite",
+			    "moduleName": "ahureading",
+			    "threshold_metric": "supplyfanairflowstatus",
+			    "thresholdType": 1,
+			    "operatorId": 9,
+			    "percentage": "1",
+			    "condition_statement": "When Supply Fan Airflow Status is On",
+			    "workflow": {
+			      "expressions": [
+			        {
+			          "name": "a",
+			          "aggregateString": "lastValue",
+			          "fieldName": "sensibleheatwheelautomanualstatus",
+			          "moduleName": "ahureading",
+			          "aggregateCondition": [],
+			          "criteria": {
+			            "pattern": "(1)",
+			            "conditions": {
+			              "1": {
+			                "fieldName": "parentId",
+			                "operatorId": 9,
+			                "sequence": "1",
+			                "value": "${resourceId}"
+			              }
+			            }
+			          }
+			        }
+			      ],
+			      "resultEvaluator": "a==1",
+			      "parameters": [
+			        {
+			          "name": "resourceId",
+			          "typeString": "Number"
+			        }
+			      ]
+			    }
+			  },
+			  "alarmCondition": {
+			    "condition": "${{exhaustairdampercommand}}==1 && ${{exhaustairdamperstatus}}==0",
+			    "for": "${interval}",
+			    "action": "TRIGGER_ALARM",
+			    "thresholdType": 5,
+			    "workflow": {
+			      "expressions": [
+			        {
+			          "name": "A",
+			          "aggregateString": "lastValue",
+			          "fieldName": "sensibleheatwheelcommand",
+			          "moduleName": "ahureading",
+			          "criteria": {
+			            "pattern": "(1)",
+			            "conditions": {
+			              "1": {
+			                "fieldName": "parentId",
+			                "operatorId": 9,
+			                "sequence": "1",
+			                "value": "${resourceId}"
+			              }
+			            }
+			          },
+			          "conditionSeqVsBaselineId": {},
+			          "orderByFieldName": "ttime",
+			          "sortBy": "desc",
+			          "limit": 1
+			        },
+			        {
+			          "name": "B",
+			          "constant": "1"
+			        },
+			        {
+			          "name": "C",
+			          "aggregateString": "lastValue",
+			          "fieldName": "sensibleheatwheelrunstatus",
+			          "moduleName": "ahureading",
+			          "criteria": {
+			            "pattern": "(1)",
+			            "conditions": {
+			              "1": {
+			                "fieldName": "parentId",
+			                "operatorId": 9,
+			                "sequence": "1",
+			                "value": "${resourceId}"
+			              }
+			            }
+			          },
+			          "conditionSeqVsBaselineId": {},
+			          "orderByFieldName": "ttime",
+			          "sortBy": "desc",
+			          "limit": 1
+			        },
+			        {
+			          "name": "D",
+			          "constant": "0"
+			        }
+			      ],
+			      "parameters": [
+			        {
+			          "name": "resourceId",
+			          "typeString": "Number"
+			        }
+			      ],
+			      "resultEvaluator": "(A==B)&&(C==D)"
+			    },
+			    "condition_statement": " Sensible Heat Wheel Status is On and Sensible Heat Wheel Command is Off "
+			  }
+			}
 	}
-	
 }

@@ -166,22 +166,23 @@ public class Processor extends FacilioProcessor {
                                         Integer connectionCount = -1;
                                         if( payLoad.containsKey(AgentKeys.COMMAND_STATUS)){
                                             if((payLoad.remove(AgentKeys.COMMAND_STATUS)).toString().equals("1")){
+
                                                 if(payLoad.containsKey(AgentKeys.CONNECTION_COUNT)) {
                                                     connectionCount = Integer.parseInt(payLoad.get(AgentKeys.CONNECTION_COUNT).toString());
                                                 }
-                                            }
-                                            else{
+
+                                                if (connectionCount == -1) {
+                                                    payLoad.put(AgentKeys.CONTENT, AgentContent.CONNECTED.getKey());
+                                                } else {
+                                                    if (connectionCount == 1) {
+                                                        payLoad.put(AgentKeys.CONTENT, AgentContent.RESTARTED.getKey());
+                                                        agentUtil.putLog(payLoad,orgId, agent.getId(),false);
+                                                    }
+                                                    payLoad.put(AgentKeys.CONTENT, AgentContent.CONNECTED.getKey()+connectionCount);
+                                                }
+                                            } else {
                                                 payLoad.put(AgentKeys.CONTENT, AgentContent.DISCONNECTED.getKey());
                                             }
-                                        }
-                                        if (connectionCount == 1) {
-                                            payLoad.put(AgentKeys.CONTENT, AgentContent.RESTARTED.getKey());
-                                            agentUtil.putLog(payLoad,orgId, agent.getId(),false);
-                                            payLoad.put(AgentKeys.CONTENT,AgentContent.CONNECTED.getKey()+connectionCount);
-                                        } else if (connectionCount == -1) {
-                                            payLoad.put(AgentKeys.CONTENT,AgentContent.CONNECTED.getKey());
-                                        } else {
-                                            payLoad.put(AgentKeys.CONTENT, AgentContent.CONNECTED.getKey()+ connectionCount);
                                         }
                                         agentUtil.putLog(payLoad,orgId,agent.getId(),false);
 
@@ -190,7 +191,6 @@ public class Processor extends FacilioProcessor {
                                 case event:
                                     alarmCreated = eventUtil.processEvents(record.getTimeStamp(), payLoad, record.getPartitionKey(), orgId, eventRules);
                                     break;
-
                             }
                             dataTypeLastMessageTime.put(dataType, lastMessageReceivedTime);
                             deviceMessageTime.put(deviceId, dataTypeLastMessageTime);

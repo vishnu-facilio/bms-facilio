@@ -1,13 +1,15 @@
 package com.facilio.bmsconsole.util;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class DemoRoleUtil {
 
-	public static Map<String,List<String>> initDateFieldModified()  {
+	public static final Map<String, List<String>> TABLES_WITH_COLUMN = Collections.unmodifiableMap(dateFieldModified());
+	private static Map<String,List<String>> dateFieldModified()  {
 
 		Map<String, List<String>> tablesContainsDateField = new HashMap<String, List<String>>();
 
@@ -68,7 +70,6 @@ public class DemoRoleUtil {
 		tablesContainsDateField.put("Purchase_Orders" , Arrays.asList("SYS_CREATED_TIME","SYS_MODIFIED_TIME","COMPLETED_TIME"));
 		tablesContainsDateField.put("Assets" , Arrays.asList("PURCHASED_DATE","RETIRE_DATE","DATETIME_CF1","DATETIME_CF2","DATETIME_CF3","DATETIME_CF4","DATETIME_CF5"));
 		tablesContainsDateField.put("Asset_Activity" , Arrays.asList("SYS_CREATED_TIME","SYS_MODIFIED_TIME","TTIME"));
-		tablesContainsDateField.put("AssetCustomModuleData" , Arrays.asList());
 		tablesContainsDateField.put("Work_Order_Activity" , Arrays.asList("SYS_CREATED_TIME","SYS_MODIFIED_TIME","TTIME"));
 		tablesContainsDateField.put("Chiller_Readings" , Arrays.asList("ACTUAL_TTIME","TTIME"));
 		tablesContainsDateField.put("Chiller_Condenser_Readings" , Arrays.asList("ACTUAL_TTIME","TTIME"));
@@ -114,19 +115,14 @@ public class DemoRoleUtil {
 		tablesContainsDateField.put("Report_DateFilter" , Arrays.asList("START_TIME","END_TIME"));
 		tablesContainsDateField.put("BaseLines" , Arrays.asList("START_TIME","END_TIME"));
 		tablesContainsDateField.put("Report1_Folder" , Arrays.asList("MODIFIED_TIME"));
-//		tablesContainsDateField.put("Report1" , Arrays.asList());
 		tablesContainsDateField.put("Report_Notes" , Arrays.asList("CREATED_TIME"));
-//		tablesContainsDateField.put("Dashboard" , Arrays.asList());
 		tablesContainsDateField.put("Dashboard_Notes" , Arrays.asList("CREATED_TIME"));
-//		tablesContainsDateField.put("Widget_Chart" , Arrays.asList());
 		tablesContainsDateField.put("Unmodeled_Instance" , Arrays.asList("CREATED_TIME"));
 //		tablesContainsDateField.put("Points" , Arrays.asList("CREATED_TIME","MAPPED_TIME"));
 		tablesContainsDateField.put("Unmodeled_Data" , Arrays.asList("TTIME"));
 		tablesContainsDateField.put("Historical_VM_Calculation" , Arrays.asList("START_TIME","END_TIME"));
 		tablesContainsDateField.put("Instance_To_Asset_Mapping" , Arrays.asList("MAPPED_TIME"));
 		tablesContainsDateField.put("License" , Arrays.asList("EXPIRY_DATE"));
-//		tablesContainsDateField.put("Report_Schedule_Info" , Arrays.asList());
-//		tablesContainsDateField.put("Reading_Rule" , Arrays.asList());
 		tablesContainsDateField.put("Reading_Alarms" , Arrays.asList("START_TIME","END_TIME"));
 		tablesContainsDateField.put("ML_Alarm_Occurrences" , Arrays.asList("TTIME"));
 		tablesContainsDateField.put("Reading_Rule_Flaps" , Arrays.asList("FLAP_TIME"));
@@ -137,7 +133,6 @@ public class DemoRoleUtil {
 		tablesContainsDateField.put("Marked_Reading" , Arrays.asList("TTIME"));
 		tablesContainsDateField.put("Tenant_Attachments" , Arrays.asList("CREATED_TIME"));
 		tablesContainsDateField.put("Tenant_Notes" , Arrays.asList("CREATED_TIME"));
-//		tablesContainsDateField.put("Shift" , Arrays.asList("START_TIME","END_TIME"));//datatype is time
 		tablesContainsDateField.put("Cost_Assets" , Arrays.asList("FIRST_BILL_TIME"));
 		tablesContainsDateField.put("Cost_Readings" , Arrays.asList("ACTUAL_TTIME"));
 		tablesContainsDateField.put("server_info" , Arrays.asList("pingtime"));

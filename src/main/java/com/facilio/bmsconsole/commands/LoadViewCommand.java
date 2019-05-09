@@ -59,7 +59,7 @@ public class LoadViewCommand implements Command {
 			}
 			
 			if(view == null) {
-				if (modBean.getField("moduleState", ContextNames.WORK_ORDER) != null && (viewName.startsWith("approval_") || moduleName.equals("approval"))) {
+				if (modBean.getField("moduleState", ContextNames.WORK_ORDER) != null && (viewName.equals("approval_requested") || moduleName.equals("approval"))) {
 					view = ViewFactory.getRequestedStateApproval();
 					if (view != null) {
 						List<ViewField> columns = ColumnFactory.getColumns(moduleName, viewName);

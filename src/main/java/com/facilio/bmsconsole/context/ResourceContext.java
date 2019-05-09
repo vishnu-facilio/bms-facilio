@@ -40,12 +40,10 @@ public class ResourceContext extends ModuleBaseWithCustomFields {
 		this.photoId = photoId;
 	}
 
-	BusinessHoursContext businessHour = new BusinessHoursContext();
-
+	BusinessHoursContext businessHour;
 	public BusinessHoursContext getBusinessHour() {
 		return businessHour;
 	}
-
 	public void setBusinessHour(BusinessHoursContext businessHour) {
 		this.businessHour = businessHour;
 	}
