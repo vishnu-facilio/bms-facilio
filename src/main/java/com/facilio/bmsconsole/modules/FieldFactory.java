@@ -5777,4 +5777,13 @@ public class FieldFactory {
 //		list.add(getField("typeCode", "STATUS_TYPE", stateModule, FieldType.NUMBER));
 //		return list;
 //	}
+
+	public static List<FacilioField> getValidationFields(FacilioModule validationModule) {
+		List<FacilioField> fields = new ArrayList<>();
+		fields.add(getField("id", "ID", validationModule, FieldType.ID));
+		fields.add(getField("ruleId", "RULE_ID", validationModule, FieldType.NUMBER));
+		fields.add(getField("errorMessage", "ERROR_MESSAGE", validationModule, FieldType.STRING));
+		fields.add(getField("criteriaId", "CRITERIA_ID", validationModule, FieldType.NUMBER));
+		return fields;
+	}
 }

@@ -161,6 +161,14 @@ public class StateflowTransitionContext extends WorkflowRuleContext {
 		this.scheduleTime = scheduleTime;
 	}
 	
+	private List<ValidationContext> validations;
+	public List<ValidationContext> getValidations() {
+		return validations;
+	}
+	public void setValidations(List<ValidationContext> validations) {
+		this.validations = validations;
+	}
+	
 	@Override
 	public boolean evaluateMisc(String moduleName, Object record, Map<String, Object> placeHolders,
 			FacilioContext context) throws Exception {
@@ -227,14 +235,27 @@ public class StateflowTransitionContext extends WorkflowRuleContext {
 		}
 		
 		if (shouldExecuteTrueActions) {
-			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			FacilioModule module = modBean.getModule(getModuleId());
-			StateFlowRulesAPI.updateState(moduleRecord, module, StateFlowRulesAPI.getStateContext(getToStateId()), false, context);
+			boolean isValid = validationCheck(moduleRecord);
 			
-//			StateFlowRulesAPI.addScheduledJobIfAny(getToStateId(), module.getName(), moduleRecord, (FacilioContext) context);
-			
-			super.executeTrueActions(record, context, placeHolders);
+			if (isValid) {
+				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+				FacilioModule module = modBean.getModule(getModuleId());
+				StateFlowRulesAPI.updateState(moduleRecord, module, StateFlowRulesAPI.getStateContext(getToStateId()), false, context);
+				
+				super.executeTrueActions(record, context, placeHolders);
+			}
 		}
+	}
+	
+	private boolean validationCheck(ModuleBaseWithCustomFields moduleRecord) throws Exception {
+		if (CollectionUtils.isNotEmpty(validations)) {
+			for (ValidationContext validation : validations) {
+				if (!validation.validate(moduleRecord)) {
+					throw new IllegalArgumentException(validation.getErrorMessage());
+				}
+			}
+		}
+		return true;
 	}
 	
 	private static List<Long> fetchPreviousApprovers(long recordId, long ruleId) throws Exception {

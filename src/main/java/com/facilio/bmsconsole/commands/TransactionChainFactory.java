@@ -1,8 +1,8 @@
 package com.facilio.bmsconsole.commands;
 
+import com.facilio.accounts.util.AccountUtil;
 import org.apache.commons.chain.Chain;
 
-import com.facilio.accounts.util.AccountUtil;
 import com.facilio.activity.AddActivitiesCommand;
 import com.facilio.agent.ConfigureAgentCommand;
 import com.facilio.agent.ConfigureControllerCommand;
@@ -11,6 +11,7 @@ import com.facilio.bmsconsole.actions.PurchaseOrderCompleteCommand;
 import com.facilio.bmsconsole.commands.data.PopulateImportProcessCommand;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.chain.FacilioChain;
+import com.facilio.constants.FacilioConstants;
 
 public class TransactionChainFactory {
 
@@ -878,14 +879,14 @@ public class TransactionChainFactory {
 			c.addCommand(new DeleteControllerCommand());
 			return c;
 		}
-		
+
 		public static Chain demoRollUpChain () {
 			Chain c = getDefaultChain();
 			c.addCommand(new DemoRollUpCommand());
 			return c;
 		}
-		
-		
+
+
 		public static Chain editAgent(){
 			Chain c = getDefaultChain();
 			c.addCommand(new ConfigureAgentCommand());
@@ -2599,6 +2600,10 @@ public class TransactionChainFactory {
 			return c;
 		}
 
-		
+		public static Chain getDeleteStateFlowTransition() {
+			Chain c = getDefaultChain();
+			c.addCommand(new DeleteStateFlowTransition());
+			return c;
+		}
 }
 

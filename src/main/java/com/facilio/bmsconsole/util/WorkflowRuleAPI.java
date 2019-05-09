@@ -130,6 +130,7 @@ public class WorkflowRuleAPI {
 			case STATE_RULE:
 				addExtendedProps(ModuleFactory.getStateRuleTransitionModule(), FieldFactory.getStateRuleTransitionFields(), ruleProps);
 				ApprovalRulesAPI.addApprovers(rule.getId(), ((StateflowTransitionContext) rule).getApprovers());
+				ApprovalRulesAPI.addValidations(rule.getId(), ((StateflowTransitionContext) rule).getValidations());
 				break;
 			case STATE_FLOW:
 				addExtendedProps(ModuleFactory.getStateFlowModule(), FieldFactory.getStateFlowFields(), ruleProps);
@@ -851,6 +852,9 @@ public class WorkflowRuleAPI {
 						case APPROVAL_RULE:
 						case CHILD_APPROVAL_RULE:
 							ApprovalRulesAPI.deleteApprovalRuleChildIds((ApprovalRuleContext) rule);
+							break;
+						case STATE_RULE:
+							ApprovalRulesAPI.deleteStateTransitionChildren((StateflowTransitionContext) rule);
 							break;
 						default:
 							break;

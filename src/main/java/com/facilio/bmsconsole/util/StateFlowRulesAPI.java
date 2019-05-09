@@ -40,6 +40,7 @@ import com.facilio.bmsconsole.workflow.rule.StateContext;
 import com.facilio.bmsconsole.workflow.rule.StateFlowRuleContext;
 import com.facilio.bmsconsole.workflow.rule.StateflowTransitionContext;
 import com.facilio.bmsconsole.workflow.rule.StateflowTransitionContext.TransitionType;
+import com.facilio.bmsconsole.workflow.rule.ValidationContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -55,6 +56,9 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 	public static WorkflowRuleContext constructStateRuleFromProps(Map<String, Object> prop, ModuleBean modBean) throws Exception {
 		StateflowTransitionContext stateFlowRule = FieldUtil.getAsBeanFromMap(prop, StateflowTransitionContext.class);
 		stateFlowRule.setApprovers(SharingAPI.getSharing(stateFlowRule.getId(), ModuleFactory.getApproversModule(), ApproverContext.class));
+		
+		List<ValidationContext> validations = ApprovalRulesAPI.getValidations(stateFlowRule.getId());
+		stateFlowRule.setValidations(validations);
 		return stateFlowRule;
 	}
 	
