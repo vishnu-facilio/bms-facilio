@@ -295,6 +295,7 @@
 			method="workOrderCount">
 			<param name="moduleName">workorder</param>
 			<param name="permission">READ,READ_TEAM,READ_OWN</param>
+			<param name="approval">true</param>
 			<result name="success" type="json">
 				<param name="includeProperties">woCount</param>
 			</result>
