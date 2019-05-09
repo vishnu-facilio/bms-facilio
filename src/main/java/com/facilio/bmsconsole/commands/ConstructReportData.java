@@ -4,7 +4,9 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.modules.AggregateOperator.CommonAggregateOperator;
 import com.facilio.bmsconsole.modules.AggregateOperator.DateAggregateOperator;
 import com.facilio.bmsconsole.modules.AggregateOperator.SpaceAggregateOperator;
+import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.context.TicketStatusContext;
+import com.facilio.bmsconsole.context.TicketStatusContext.StatusType;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
@@ -231,12 +233,7 @@ public class ConstructReportData implements Command {
 		}
 		
 		if (module.getName().equals("workorder")) {
-			SelectRecordsBuilder<TicketStatusContext> builder = new SelectRecordsBuilder<TicketStatusContext>()
-					.beanClass(TicketStatusContext.class)
-					.module(modBean.getModule("ticketstatus"))
-					.select(modBean.getAllFields("ticketstatus"))
-					.andCondition(CriteriaAPI.getCondition("STATUS_TYPE", "typeCode", "3", NumberOperators.EQUALS));
-			List<TicketStatusContext> list = builder.get();
+			List<TicketStatusContext> list = TicketAPI.getStatusOfStatusType(module, StatusType.PRE_OPEN);
 			if (CollectionUtils.isNotEmpty(list)) {
 				long id = list.get(0).getId();
 				Criteria c = new Criteria();

@@ -275,14 +275,7 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 			return null;
 		}
 		
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.TICKET_STATUS);
-		SelectRecordsBuilder<TicketStatusContext> builder = new SelectRecordsBuilder<TicketStatusContext>()
-				.beanClass(TicketStatusContext.class)
-				.module(module)
-				.select(modBean.getAllFields(module.getName()))
-				.andCondition(CriteriaAPI.getIdCondition(stateId, module));
-		TicketStatusContext stateContext = builder.fetchFirst();
+		TicketStatusContext stateContext = TicketAPI.getStatus(stateId);
 		return stateContext;
 	}
 	
@@ -554,7 +547,6 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 		criteria.addAndCondition(CriteriaAPI.getCondition("STATE_FLOW_ID", "stateFlowId", String.valueOf(stateFlowID), NumberOperators.EQUALS));
 		
 		List<FacilioField> fields = FieldFactory.getStateRuleTransitionFields();
-//		fields.addAll(FieldFactory.getStateRuleTransitionFields());
 		List<WorkflowRuleContext> stateTransitions = getStateTransitions(ModuleFactory.getStateRuleTransitionModule(), fields, criteria);
 		if (CollectionUtils.isNotEmpty(stateTransitions)) {
 			return stateTransitions.get(0);

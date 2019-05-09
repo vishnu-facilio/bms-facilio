@@ -484,14 +484,14 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 		List<FacilioField> fields = new ArrayList<>();
 		fields.add(ModuleFactory.getTicketStatusIdField());
 		
-		SelectRecordsBuilder<TicketStatusContext> builder1 = new SelectRecordsBuilder<TicketStatusContext>()
-				.table("TicketStatus")
-				.moduleName(FacilioConstants.ContextNames.TICKET_STATUS)
-				.select(fields)
-				.beanClass(TicketStatusContext.class)
-				.andCustomWhere(ModuleFactory.getTicketStatusModule().getTableName()+".ORGID = ? AND STATUS = ?", AccountUtil.getCurrentOrg().getId(), "closed");
+//		SelectRecordsBuilder<TicketStatusContext> builder1 = new SelectRecordsBuilder<TicketStatusContext>()
+//				.table("TicketStatus")
+//				.moduleName(FacilioConstants.ContextNames.TICKET_STATUS)
+//				.select(fields)
+//				.beanClass(TicketStatusContext.class)
+//				.andCustomWhere(ModuleFactory.getTicketStatusModule().getTableName()+".ORGID = ? AND STATUS = ?", AccountUtil.getCurrentOrg().getId(), "closed");
 		
-		ticketStatus = builder1.get();
+		ticketStatus = Collections.singletonList(TicketAPI.getStatus("closed"));
 		
 		ticketStatus.get(0).getId();
 		

@@ -4,6 +4,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.*;
 import com.facilio.bmsconsole.context.*;
+import com.facilio.bmsconsole.context.TicketStatusContext.StatusType;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.Operator;
@@ -12,6 +13,7 @@ import com.facilio.bmsconsole.reports.ReportsUtil;
 import com.facilio.bmsconsole.util.DashboardUtil;
 import com.facilio.bmsconsole.util.DateTimeUtil;
 import com.facilio.bmsconsole.util.SpaceAPI;
+import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
@@ -466,14 +468,15 @@ public class WorkOrderReportAction extends ActionSupport {
 	private Map<String,Object> getOpenHighPriority(String filterBy) throws Exception {
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		SelectRecordsBuilder<TicketStatusContext> builder = new SelectRecordsBuilder<TicketStatusContext>()
-				.table("TicketStatus")
-				.moduleName("ticketstatus")
-				.beanClass(TicketStatusContext.class)
-				.select(modBean.getAllFields("ticketstatus"))
-				.andCustomWhere("STATUS_TYPE=2");
-		List<TicketStatusContext> statuses = builder.get();
-		
+//		SelectRecordsBuilder<TicketStatusContext> builder = new SelectRecordsBuilder<TicketStatusContext>()
+//				.table("TicketStatus")
+//				.moduleName("ticketstatus")
+//				.beanClass(TicketStatusContext.class)
+//				.select(modBean.getAllFields("ticketstatus"))
+//				.andCustomWhere("STATUS_TYPE=2");
+//		List<TicketStatusContext> statuses = builder.get();
+		List<TicketStatusContext> statuses = TicketAPI.getStatusOfStatusType(StatusType.CLOSED);
+
 		Long closedStatusId = statuses.get(0).getId();
 		
 		SelectRecordsBuilder<TicketPriorityContext> builder1 = new SelectRecordsBuilder<TicketPriorityContext>()
