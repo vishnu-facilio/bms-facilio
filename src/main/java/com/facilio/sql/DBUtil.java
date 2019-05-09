@@ -34,7 +34,6 @@ public class DBUtil {
 	private static Boolean executeSingleStatement;
 	private static final Object LOCK = new Object();
 	private static final List<String> TABLES_WITHOUT_ORGID= Collections.unmodifiableList(initOrgIdNotRequired());
-	private static final Map<String, List<String>> TABLES_WITH_DATE_COLUMNS= Collections.unmodifiableMap(DemoRoleUtil.initDateFieldModified());
 	private static final HashSet<String> CACHE_ENABLED_TABLES = new HashSet<>();
 	private static final HashSet<Long> CACHE_ENABLED_ORG = new HashSet<>();
 
@@ -89,11 +88,6 @@ public class DBUtil {
 		return TABLES_WITHOUT_ORGID.contains(tableName);
 	}
 
-	public static boolean isTableNameContains(String tableName) {
-		return TABLES_WITH_DATE_COLUMNS.containsKey(tableName);
-	}
-	
-	
 	static FacilioField getOrgIdField(String tableName) {
 		FacilioField field = new FacilioField();
 		field.setName("orgId");

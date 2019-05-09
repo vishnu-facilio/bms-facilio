@@ -35,16 +35,15 @@ public class DemoRoleJob extends FacilioJob{
 		long orgId=AccountUtil.getCurrentOrg().getId();
 		Connection conn = null;
 		PreparedStatement pstmt = null;
+		boolean olderCommit = false;
 		try {
 
-			conn = FacilioConnectionPool.INSTANCE.getConnection();
-			
+			conn = FacilioConnectionPool.INSTANCE.getConnectionFromPool();
+			olderCommit = conn.getAutoCommit();
+			conn.setAutoCommit(true);
 			for (Map.Entry<String, List<String>> tableList : tableName.entrySet()) {
 
 				  String key = tableList.getKey();
-				  if(!DBUtil.isTableNameContains(key)) {
-					  continue;
-				  }
 				  List<String> valueList = tableList.getValue();
 				  StringBuilder sql=new StringBuilder();
 				  sql.append("UPDATE").append(" ").append(key).append(" ").append("SET").append("  ");
@@ -69,9 +68,11 @@ public class DemoRoleJob extends FacilioJob{
 			}
 		}
 		catch(Exception e) {
+			CommonCommandUtil.emailException("DemoRoleUp", "DemoRoleUp Failed - orgid -- "+AccountUtil.getCurrentOrg().getId(), e);
 			LOGGER.info("Exception occurred ", e);
 		}
 		finally {
+			conn.setAutoCommit(olderCommit);
 			DBUtil.closeAll(conn, pstmt);
 		}
 	}

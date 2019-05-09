@@ -37,6 +37,9 @@ public class ConstructReportDataCommand implements Command {
     private boolean isTimeSeries (List<ReportDataContext> reportData) { //Temporary check
 	    if (CollectionUtils.isNotEmpty(reportData)) {
 	        ReportDataPointContext dp = reportData.get(0).getDataPoints().get(0);
+	        if (CollectionUtils.isNotEmpty(dp.getGroupByFields())) {
+	        	return false;
+	        }
 	        if (dp.getxAxis().getDataTypeEnum() == FieldType.DATE_TIME || dp.getxAxis().getDataTypeEnum() == FieldType.DATE) {
 	            return true;
             }
