@@ -55,11 +55,12 @@ public class RuleTemplateAPI {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		System.out.println("Module Name----> " + rulesObject.get("moduleName"));
 		System.out.println("threshold_metric Name----> " + rulesObject.get("threshold_metric"));
-
-		FacilioModule preModule = modBean.getModule((String) rulesObject.get("moduleName"));
-		FacilioField preRequesitefield = modBean.getField((String) rulesObject.get("threshold_metric"), preModule.getName());
+		if (rulesObject.get("moduleName") != null && rulesObject.get("threshold_metric") != null) {
+			FacilioModule preModule = modBean.getModule((String) rulesObject.get("moduleName"));
+			FacilioField preRequesitefield = modBean.getField((String) rulesObject.get("threshold_metric"), preModule.getName());
+			rule.setReadingFieldId(preRequesitefield.getId());
+		}
 		rule.setThresholdType((int) thresholdType);
-		rule.setReadingFieldId(preRequesitefield.getId());
 		switch (ThresholdType.valueOf(rule.getThresholdType())) {
 			case SIMPLE :
 				long operator = (long) rulesObject.get("operatorId");
@@ -80,30 +81,46 @@ public class RuleTemplateAPI {
 		return rule;
 	}
 	@SuppressWarnings("unchecked")
-	public static AlarmRuleContext convertTemplateToRule (int id) throws Exception {
-		JSONObject templateJson = TemplateAPI.getDefaultTemplate(DefaultTemplateType.RULE, id).getJson();
-		JSONObject rules = (JSONObject) templateJson.get("fdd_rule");
-		JSONObject placeholders = (JSONObject) rules.get("placeHolder");
-//		try {
+	public static JSONObject setPlaceHolder (JSONObject jsonTemplate) throws Exception {
+		
+		
+		JSONObject rules = (JSONObject) jsonTemplate.get("fdd_rule");
+		JSONObject placeholders = (JSONObject) jsonTemplate.get("placeHolder");
+		if (placeholders != null) {
 			Map<String, Object> placeHolderMap = new HashMap<>();
 			if (placeholders != null) {
 				placeholders.keySet().forEach(keyStr -> {
-					final JSONObject keyvalue = (JSONObject) placeholders.get(keyStr);
+					Map <String , Object> keyvalue =  (Map<String, Object>) placeholders.get(keyStr);
 					placeHolderMap.put((String) keyvalue.get("uniqueId"), keyvalue.get("default_value"));
 				});
 			}
 			JSONParser parser = new JSONParser();
 			String resolvedString =  StringSubstitutor.replace(rules, placeHolderMap);
-			JSONObject obj = (JSONObject) parser.parse(resolvedString);			
-			AssetCategoryContext assetCategory = AssetsAPI.getCategory((String) obj.get("category"));
+			JSONObject obj = (JSONObject) parser.parse(resolvedString);
+			return obj;
+		}
+		else {
+			return rules;
+		}
+	}
+	@SuppressWarnings("unchecked")
+	public static AlarmRuleContext convertTemplateToRule (JSONObject ruleObj) throws Exception {
+			
+			AssetCategoryContext assetCategory = AssetsAPI.getCategory((String) ruleObj.get("category"));
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			FacilioModule module = modBean.getModule((String) obj.get("moduleName"));
+			FacilioModule module = modBean.getModule((String) ruleObj.get("moduleName"));
 			
 			AlarmRuleContext alarmRule = new AlarmRuleContext();
-			alarmRule.setPreRequsite(convertByRuleType((JSONObject) obj.get("preRequsite")));
-			alarmRule.setAlarmTriggerRule(convertByRuleType((JSONObject) obj.get("alarmCondition")));
-			if ((JSONObject) obj.get("alarmClear") != null) {
-				alarmRule.setAlarmClearRule(convertByRuleType((JSONObject) obj.get("preRequsite")));
+			if (ruleObj.get("preRequsite") != null) {
+				alarmRule.setPreRequsite(convertByRuleType((JSONObject) ruleObj.get("preRequsite")));
+			}
+			else {
+				
+				alarmRule.setPreRequsite(new ReadingRuleContext());
+			}
+			alarmRule.setAlarmTriggerRule(convertByRuleType((JSONObject) ruleObj.get("alarmCondition")));
+			if ((JSONObject) ruleObj.get("alarmClear") != null) {
+				alarmRule.setAlarmClearRule(convertByRuleType((JSONObject) ruleObj.get("preRequsite")));
 			} else {
 				alarmRule.setIsAutoClear(true);
 			}
@@ -112,8 +129,8 @@ public class RuleTemplateAPI {
 			alarmRule.getPreRequsite().getEvent().setModuleId(module.getModuleId());
 			alarmRule.getPreRequsite().getEvent().setActivityType(EventType.CREATE.getValue());
 			
-			alarmRule.getPreRequsite().setName((String) obj.get("name"));
-			alarmRule.getPreRequsite().setDescription((String) obj.get("description"));
+			alarmRule.getPreRequsite().setName((String) ruleObj.get("name"));
+			alarmRule.getPreRequsite().setDescription((String) ruleObj.get("description"));
 			alarmRule.getPreRequsite().setAssetCategoryId(assetCategory.getId());
 			
 			ActionContext action = new ActionContext();
@@ -123,23 +140,23 @@ public class RuleTemplateAPI {
 			JSONArray fieldMatcher = new JSONArray();
 			JSONObject content = new JSONObject();
 			content.put("field", "problem");
-			content.put("value", obj.get("problem"));
+			content.put("value", ruleObj.get("problem"));
 			fieldMatcher.add(content);
 			content = new JSONObject();
 			content.put("field", "message");
-			content.put("value", obj.get("name"));
+			content.put("value", ruleObj.get("name"));
 			fieldMatcher.add(content);
 			content = new JSONObject();
 			content.put("field", "possibleCauses");
-			content.put("value", obj.get("possible_causes"));
+			content.put("value", ruleObj.get("possible_causes"));
 			fieldMatcher.add(content);
 			content = new JSONObject();
 			content.put("field", "severity");
-			content.put("value", obj.get("severity"));
+			content.put("value", ruleObj.get("severity"));
 			fieldMatcher.add(content);
 			content = new JSONObject();
 			content.put("field", "recommendation");
-			content.put("value", obj.get("possible_solution"));
+			content.put("value", ruleObj.get("possible_solution"));
 			fieldMatcher.add(content);
 			content = new JSONObject();
 			possible.put("fieldMatcher", fieldMatcher);

@@ -18,7 +18,6 @@
 			},
 			"preRequsite": {
 				"condition" : "${{fanstatus}}=1",
-				"action": "PreRequsite",
 				"moduleName": "fanstatus",
 				"threshold_metric": "fanstatus",
 				"thresholdType": 1,
@@ -198,7 +197,6 @@
 				"condition": "${{supplyairdampercommand}}==1 && ${{supplyairdamperstatus}}==0",
 				"for": "${interval}",
 				"action": "TRIGGER_ALARM",
-				"moduleName": "ahureading",
 				"thresholdType": 5,
 				"threshold_metric": "supplyairdamperstatus",
 				"workflow": {
@@ -1931,5 +1929,1009 @@
 			    "condition_statement": " Sensible Heat Wheel Status is On and Sensible Heat Wheel Command is Off "
 			  }
 			}
+	},
+	"14" :{
+		"fdd_rule": {
+			  "name": "AHU Cooling coil Actuator not opening based on Temperature Setpoint",
+			  "description": "AHU Cooling coil Actuator not opening based on Temperature Setpoint",
+			  "problem": "Cooling Coil Valve is not following the command or feedback sensor error.",
+			  "possible_causes": "This may happen if the cooling valve actuator feedback is different from the command due to physical issues (dirt or debris accumulation restriciting the actuator movement) or sensor/signal recieving issues.",
+			  "moduleName": "ahureading",
+			  "category": "AHU",
+			  "severity": "Major",
+			  "threshold_metric": "supplyairtemperature",
+			  "threshold_metric_display": "Supply Air Temperature ",
+			  "possible_solution": "The cooling coil may be opening more than desired or not opening enough as commanded due to which there may be overcooling or undercooling issues.",
+			  "ASSET_SELECTION_CRITERIA": {
+			    "categoryType": "AHU",
+			    "includeResource": "${includeResource}",
+			    "excludeResource": "${excludeResource}"
+			  },
+			  "preRequsite": {
+			    "action": "PreRequsite",
+			    "moduleName": "ahureading",
+			    "threshold_metric": "coolingcoilvalvecommand",
+			    "thresholdType": 1,
+			    "operatorId": 9,
+			    "percentage": "1",
+			    "condition_statement": "When Supply Cooling Coil Valve Command is On",
+			    "workflow": {
+			      "expressions": [
+			        {
+			          "name": "a",
+			          "aggregateString": "lastValue",
+			          "fieldName": "coolingcoilvalvecommand",
+			          "moduleName": "ahureading",
+			          "aggregateCondition": [],
+			          "criteria": {
+			            "pattern": "(1)",
+			            "conditions": {
+			              "1": {
+			                "fieldName": "parentId",
+			                "operatorId": 9,
+			                "sequence": "1",
+			                "value": "${resourceId}"
+			              }
+			            }
+			          }
+			        }
+			      ],
+			      "resultEvaluator": "a==0",
+			      "parameters": [
+			        {
+			          "name": "resourceId",
+			          "typeString": "Number"
+			        }
+			      ]
+			    }
+			  },
+			  "alarmCondition": {
+			    "condition": "Supply Air Temperature  > Supply Air Temperature Set-point && Cooling Coil Valve Command = 0 && Cooling Coil Valve FeedBack =0",
+			    "for": "${interval}",
+			    "action": "TRIGGER_ALARM",
+			    "thresholdType": 5,
+			    "workflow": {
+			      "expressions": [
+			        {
+			          "name": "A",
+			          "aggregateString": "lastValue",
+			          "fieldName": "coolingcoilvalvefeedback",
+			          "moduleName": "ahureading",
+			          "criteria": {
+			            "pattern": "(1)",
+			            "conditions": {
+			              "1": {
+			                "fieldName": "parentId",
+			                "operatorId": 9,
+			                "sequence": "1",
+			                "value": "${resourceId}"
+			              }
+			            }
+			          },
+			          "conditionSeqVsBaselineId": {},
+			          "orderByFieldName": "ttime",
+			          "sortBy": "desc",
+			          "limit": 1
+			        },
+			        {
+			          "name": "B",
+			          "constant": "0"
+			        },
+			        {
+			          "name": "C",
+			          "aggregateString": "lastValue",
+			          "fieldName": "supplyairtemperature",
+			          "moduleName": "ahureading",
+			          "criteria": {
+			            "pattern": "(1)",
+			            "conditions": {
+			              "1": {
+			                "fieldName": "parentId",
+			                "operatorId": 9,
+			                "sequence": "1",
+			                "value": "${resourceId}"
+			              }
+			            }
+			          },
+			          "conditionSeqVsBaselineId": {},
+			          "orderByFieldName": "ttime",
+			          "sortBy": "desc",
+			          "limit": 1
+			        },
+			        {
+			          "name": "D",
+			          "aggregateString": "lastValue",
+			          "fieldName": "supplyairtemperaturesetpoint",
+			          "moduleName": "ahureading",
+			          "criteria": {
+			            "pattern": "(1)",
+			            "conditions": {
+			              "1": {
+			                "fieldName": "parentId",
+			                "operatorId": 9,
+			                "sequence": "1",
+			                "value": "${resourceId}"
+			              }
+			            }
+			          },
+			          "conditionSeqVsBaselineId": {},
+			          "orderByFieldName": "ttime",
+			          "sortBy": "desc",
+			          "limit": 1
+			        }
+			      ],
+			      "parameters": [
+			        {
+			          "name": "resourceId",
+			          "typeString": "Number"
+			        }
+			      ],
+			      "resultEvaluator": "(A==B)&&(C>D)",
+			      "workflowUIMode": 1
+			    },
+			    "condition_statement": "When cooling coil valve command is On and Supply Air Temperature is greater then Supply air temperature Set-Point "
+			  }
+			}
+		},
+		"15": {
+			"fdd_rule":	{
+			  "name": "AHU Cooling coil Actuator not closing based on Temperature Setpoint",
+			  "description": "AHU Cooling coil Actuator not closing based on Temperature Setpoint",
+			  "problem": "Cooling Coil Valve is not following the command or feedback sensor error.",
+			  "possible_causes": "This may happen if the cooling valve actuator feedback is different from the command due to physical issues (dirt or debris accumulation restriciting the actuator movement) or sensor/signal recieving issues.",
+			  "moduleName": "ahureading",
+			  "category": "AHU",
+			  "severity": "Major",
+			  "threshold_metric": "supplyairtemperature",
+			  "threshold_metric_display": "Supply Air Temperature ",
+			  "possible_solution": "The cooling coil may be closing more than desired or not closing enough as commanded due to which there may be overcooling or undercooling issues.",
+			  "ASSET_SELECTION_CRITERIA": {
+			    "categoryType": "AHU",
+			    "includeResource": "${includeResource}",
+			    "excludeResource": "${excludeResource}"
+			  },
+			  "preRequsite": {
+			    "action": "PreRequsite",
+			    "moduleName": "ahureading",
+			    "threshold_metric": "coolingcoilvalvecommand",
+			    "thresholdType": 1,
+			    "operatorId": 9,
+			    "percentage": "1",
+			    "condition_statement": "When Supply Cooling Coil Valve Command is On",
+			    "workflow": {
+			      "expressions": [
+			        {
+			          "name": "a",
+			          "aggregateString": "lastValue",
+			          "fieldName": "coolingcoilvalvecommand",
+			          "moduleName": "ahureading",
+			          "aggregateCondition": [],
+			          "criteria": {
+			            "pattern": "(1)",
+			            "conditions": {
+			              "1": {
+			                "fieldName": "parentId",
+			                "operatorId": 9,
+			                "sequence": "1",
+			                "value": "${resourceId}"
+			              }
+			            }
+			          }
+			        }
+			      ],
+			      "resultEvaluator": "a==1",
+			      "parameters": [
+			        {
+			          "name": "resourceId",
+			          "typeString": "Number"
+			        }
+			      ]
+			    }
+			  },
+			  "alarmCondition": {
+			    "condition": "Supply Air Temperature  > Supply Air Temperature Set-point && Cooling Coil Valve Command = 1 && Cooling Coil Valve FeedBack =0",
+			    "for": "${interval}",
+			    "action": "TRIGGER_ALARM",
+			    "thresholdType": 5,
+			    "workflow": {
+			      "expressions": [
+			        {
+			          "name": "A",
+			          "aggregateString": "lastValue",
+			          "fieldName": "coolingcoilvalvefeedback",
+			          "moduleName": "ahureading",
+			          "criteria": {
+			            "pattern": "(1)",
+			            "conditions": {
+			              "1": {
+			                "fieldName": "parentId",
+			                "operatorId": 9,
+			                "sequence": "1",
+			                "value": "${resourceId}"
+			              }
+			            }
+			          },
+			          "conditionSeqVsBaselineId": {},
+			          "orderByFieldName": "ttime",
+			          "sortBy": "desc",
+			          "limit": 1
+			        },
+			        {
+			          "name": "B",
+			          "constant": "0"
+			        },
+			        {
+			          "name": "C",
+			          "aggregateString": "lastValue",
+			          "fieldName": "supplyairtemperature",
+			          "moduleName": "ahureading",
+			          "criteria": {
+			            "pattern": "(1)",
+			            "conditions": {
+			              "1": {
+			                "fieldName": "parentId",
+			                "operatorId": 9,
+			                "sequence": "1",
+			                "value": "${resourceId}"
+			              }
+			            }
+			          },
+			          "orderByFieldName": "ttime",
+			          "sortBy": "desc",
+			          "limit": 1
+			        },
+			        {
+			          "name": "D",
+			          "aggregateString": "lastValue",
+			          "fieldName": "supplyairtemperaturesetpoint",
+			          "moduleName": "ahureading",
+			          "criteria": {
+			            "pattern": "(1)",
+			            "conditions": {
+			              "1": {
+			                "fieldName": "parentId",
+			                "operatorId": 9,
+			                "sequence": "1",
+			                "value": "${resourceId}"
+			              }
+			            }
+			          },
+			          "orderByFieldName": "ttime",
+			          "sortBy": "desc",
+			          "limit": 1
+			        }
+			      ],
+			      "parameters": [
+			        {
+			          "name": "resourceId",
+			          "typeString": "Number"
+			        }
+			      ],
+			      "resultEvaluator": "(A==B)&&(C>D)"
+			    },
+			    "condition_statement": "When cooling coil valve command is On and Supply Air Temperature is greater then Supply air temperature Set-Point "
+			  }
+			}
+		},
+		"16": {
+			"fdd_rule": {
+			  "name": "AHU Cooling Coil Valve control issue",
+			  "description": "AHU Cooling Coil Valve control issue",
+			  "problem": "Cooling Coil Valve Modulating when Supply Air Fan is commanded OFF",
+			  "possible_causes": "",
+			  "moduleName": "ahureading",
+			  "category": "AHU",
+			  "severity": "Major",
+			  "threshold_metric": "coolingcoilvalvefeedback",
+			  "threshold_metric_display": "Cooling Coil Valve FeedBack  ",
+			  "possible_solution": "",
+			  "ASSET_SELECTION_CRITERIA": {
+			    "categoryType": "AHU",
+			    "includeResource": "${includeResource}",
+			    "excludeResource": "${excludeResource}"
+			  },
+			  "preRequsite": {
+			    "action": "PreRequsite",
+			    "moduleName": "ahureading",
+			    "threshold_metric": "supplyairfanautomanualstatus",
+			    "thresholdType": 1,
+			    "operatorId": 9,
+			    "percentage": "1",
+			    "condition_statement": "When Supply Air Fan Auto/Manual Status Command is Manula",
+			    "workflow": {
+			      "expressions": [
+			        {
+			          "name": "a",
+			          "aggregateString": "lastValue",
+			          "fieldName": "supplyairfanautomanualstatus",
+			          "moduleName": "ahureading",
+			          "aggregateCondition": [],
+			          "criteria": {
+			            "pattern": "(1)",
+			            "conditions": {
+			              "1": {
+			                "fieldName": "parentId",
+			                "operatorId": 9,
+			                "sequence": "0",
+			                "value": "${resourceId}"
+			              }
+			            }
+			          }
+			        }
+			      ],
+			      "resultEvaluator": "a==0",
+			      "parameters": [
+			        {
+			          "name": "resourceId",
+			          "typeString": "Number"
+			        }
+			      ]
+			    }
+			  },
+			  "alarmCondition": {
+			    "condition": "Cooling Coil Valve Feedback Value > 2%",
+			    "for": "${interval}",
+			    "action": "TRIGGER_ALARM",
+			    "thresholdType": 5,
+			    "workflow": {
+			      "expressions": [
+			        {
+			          "name": "A",
+			          "aggregateString": "lastValue",
+			          "fieldName": "coolingcoilvalvefeedback",
+			          "moduleName": "ahureading",
+			          "criteria": {
+			            "pattern": "(1)",
+			            "conditions": {
+			              "1": {
+			                "fieldName": "parentId",
+			                "operatorId": 9,
+			                "sequence": "1",
+			                "value": "${resourceId}"
+			              }
+			            }
+			          },
+			          "conditionSeqVsBaselineId": {},
+			          "orderByFieldName": "ttime",
+			          "sortBy": "desc",
+			          "limit": 1
+			        },
+			        {
+			          "name": "B",
+			          "constant": "2"
+			        }
+			      ],
+			      "parameters": [
+			        {
+			          "name": "resourceId",
+			          "typeString": "Number"
+			        }
+			      ],
+			      "resultEvaluator": "(A > B)"
+			    },
+			    "condition_statement": "When Cooling Coil Valve Feedback Value is greater then 2% "
+			  }
+			}
+		},
+		"17": {
+			"fdd_rule" : {
+				  "name": "Cooling Coil Clogged for Supply Air flow",
+				  "description": "Cooling Coil Clogged for Supply Air flow",
+				  "problem": "Cooling coil airflow pressure drop much higher than the threshold (Only a small fraction of airflow passes through) During the cooling process, condensate forms on the coil. The condensate makes it very easy for dirt and debris to stick to and clog up the coil's air passages. Additionally, coils are great places for mold development that can further obstruct airflow.",
+				  "possible_causes": "1. Reduced airflow due to dirt and debris blockages means reduced comfort for end user. 2. The blower must work harder and use more electricity to pull airflow through the blocked coil passages. 3. A dirty coil can contaminate supply ducts and reintroduce contaminants to spaces, including mold development and spores.",
+				  "moduleName": "ahureading",
+				  "category": "AHU",
+				  "severity": "Major",
+				  "threshold_metric": "airflowcoildp",
+				  "threshold_metric_display": "AirFlow Coil Differinatial Pressure",
+				  "possible_solution": "1. Inspect the cooling coil for cleanliness and check any deposited particles and impurities.2. Wash and clean the cooling coil ",
+				  "ASSET_SELECTION_CRITERIA": {
+				    "categoryType": "AHU",
+				    "includeResource": "${includeResource}",
+				    "excludeResource": "${excludeResource}"
+				  },
+				  "preRequsite": {
+				    "action": "PreRequsite",
+				    "moduleName": "ahureading",
+				    "threshold_metric": "airflowcoildp",
+				    "thresholdType": 1,
+				    "operatorId": 9,
+				    "percentage": "1",
+				    "condition_statement": "When Supply Air Fan Auto/Manual Status Command is Manula",
+				    "workflow": {
+				        "expressions": [
+				          {
+				            "name": "a",
+				            "aggregateString": "lastValue",
+				            "fieldName": "airflowcoildp",
+				            "moduleName": "ahureading",
+				            "aggregateCondition": [],
+				            "criteria": {
+				              "pattern": "(1)",
+				              "conditions": {
+				                "1": {
+				                  "fieldName": "parentId",
+				                  "operatorId": 9,
+				                  "sequence": "1",
+				                  "value": "${resourceId}"
+				                }
+				              }
+				            }
+				          }
+				        ],
+				        "resultEvaluator": "a>=1000",
+				        "parameters": [
+				          {
+				            "name": "resourceId",
+				            "typeString": "Number"
+				          }
+				        ]
+				      }
+				  },
+				  "alarmCondition": {
+				    "condition": "AirFlow Coil DP ≥ 1000",
+				    "for": "${interval}",
+				    "action": "TRIGGER_ALARM",
+				    "thresholdType": 6,
+				    "workflow": {
+				        "expressions": [
+				          {
+				            "name": "a",
+				            "fieldName": "airflowcoildp",
+				            "moduleName": "ahureading",
+				            "criteria": {
+				              "pattern": "(1 and 2)",
+				              "conditions": {
+				                "1": {
+				                  "fieldName": "parentId",
+				                  "operatorId": 9,
+				                  "sequence": "1",
+				                  "value": "${resourceId}"
+				                },
+				                "2": {
+				                  "fieldName": "ttime",
+				                  "operatorId": 42,
+				                  "sequence": "2",
+				                  "value": "1,${ttime}"
+				                }
+				              }
+				            }
+				          },
+				          {
+				            "name": "b",
+				            "defaultFunctionContext": {
+				              "nameSpace": "default",
+				              "functionName": "allMatch",
+				              "params": "a"
+				            }
+				          }
+				        ],
+				        "parameters": [
+				          {
+				            "name": "resourceId",
+				            "typeString": "Number"
+				          },
+				          {
+				            "name": "ttime",
+				            "typeString": "Number"
+				          }
+				        ],
+				        "resultEvaluator": "b"
+				      },
+				    "condition_statement": "If  AirFlow Coil DP ≥ 1000 continuosly for 1 hour (6 ten min intervals)"
+				  }
+				}
+		},
+		"18": {
+			"fdd_rule": {
+				  "name": "AHU Cooling coil chilled Water pressure too high",
+				  "description": "AHU Cooling coil chilled Water pressure too high",
+				  "problem": "Mainly due to fouling in the chilled water tubes",
+				  "possible_causes": "",
+				  "moduleName": "ahureading",
+				  "category": "AHU",
+				  "severity": "Major",
+				  "threshold_metric": "airflowcoildp",
+				  "threshold_metric_display": "AirFlow Coil Differinatial Pressure",
+				  "possible_solution": "",
+				  "ASSET_SELECTION_CRITERIA": {
+				    "categoryType": "AHU",
+				    "includeResource": "${includeResource}",
+				    "excludeResource": "${excludeResource}"
+				  },
+				  "preRequsite": {
+				    "action": "PreRequsite",
+				    "moduleName": "ahureading",
+				    "threshold_metric": "chilledwaterflowdp",
+				    "thresholdType": 1,
+				    "operatorId": 9,
+				    "percentage": "1",
+				    "condition_statement": "When Supply Air Fan Auto/Manual Status Command is Manula",
+				    "workflow": {
+				        "expressions": [
+				          {
+				            "name": "a",
+				            "aggregateString": "lastValue",
+				            "fieldName": "chilledwaterflowdp",
+				            "moduleName": "ahureading",
+				            "criteria": {
+				              "pattern": "(1)",
+				              "conditions": {
+				                "1": {
+				                  "fieldName": "parentId",
+				                  "operatorId": 9,
+				                  "sequence": "1",
+				                  "value": "${resourceId}"
+				                }
+				              }
+				            }
+				          }
+				        ],
+				        "resultEvaluator": "a>35",
+				        "parameters": [
+				          {
+				            "name": "resourceId",
+				            "typeString": "Number"
+				          }
+				        ]
+				      }
+				  },
+				  "alarmCondition": {
+				    "condition": "Chilled Water flow  DP > 35",
+				    "for": "${interval}",
+				    "action": "TRIGGER_ALARM",
+				    "thresholdType": 6,
+				    "workflow": {
+				        "expressions": [
+				          {
+				            "name": "a",
+				            "fieldName": "chilledwaterflowdp",
+				            "moduleName": "ahureading",
+				            "criteria": {
+				              "pattern": "(1 and 2)",
+				              "conditions": {
+				                "1": {
+				                  "fieldName": "parentId",
+				                  "operatorId": 9,
+				                  "sequence": "1",
+				                  "value": "${resourceId}"
+				                },
+				                "2": {
+				                  "fieldName": "ttime",
+				                  "operatorId": 42,
+				                  "sequence": "2",
+				                  "value": "1,${ttime}"
+				                }
+				              }
+				            }
+				          },
+				          {
+				            "name": "b",
+				            "defaultFunctionContext": {
+				              "nameSpace": "default",
+				              "functionName": "allMatch",
+				              "params": "a"
+				            }
+				          }
+				        ],
+				        "parameters": [
+				          {
+				            "name": "resourceId",
+				            "typeString": "Number"
+				          },
+				          {
+				            "name": "ttime",
+				            "typeString": "Number"
+				          }
+				        ],
+				        "resultEvaluator": "b"
+				      },
+				    "condition_statement": "If  AirFlow Coil DP ≥ 1000 continuosly for 1 hour (6 ten min intervals)"
+				  }
+				}
+		},
+		"19": {
+			"fdd_rule": {
+				  "name": "High Chilled water Delta T",
+				  "description": "High Chilled water Delta T",
+				  "problem": "Chilled water delta T across cooling coil too high",
+				  "possible_causes": "High chilled water delta T indicates insufficient flow to the evaporator coil of the OHU which can cause cooling issues. ",
+				  "moduleName": "ahureading",
+				  "category": "AHU",
+				  "severity": "Major",
+				  "threshold_metric": "returnairtemperature",
+				  "threshold_metric_display": "Return Air Temperature",
+				  "possible_solution": "",
+				  "ASSET_SELECTION_CRITERIA": {
+				    "categoryType": "AHU",
+				    "includeResource": "${includeResource}",
+				    "excludeResource": "${excludeResource}"
+				  },
+				  "preRequsite": null,
+				  "alarmCondition": {
+				    "condition": "Chilled Water flow  DP > 35",
+				    "for": "${interval}",
+				    "action": "TRIGGER_ALARM",
+				    "thresholdType": 6,
+				    "workflow": {
+				      "expressions": [
+				        {
+				          "name": "A",
+				          "aggregateString": "lastValue",
+				          "fieldName": "returnairtemperature",
+				          "moduleName": "ahureading",
+				          "criteria": {
+				            "pattern": "(1)",
+				            "conditions": {
+				              "1": {
+				                "fieldName": "parentId",
+				                "operatorId": 9,
+				                "sequence": "1",
+				                "value": "${resourceId}"
+				              }
+				            }
+				          },
+				          "conditionSeqVsBaselineId": {},
+				          "orderByFieldName": "ttime",
+				          "sortBy": "desc",
+				          "limit": 1
+				        },
+				        {
+				          "name": "B",
+				          "aggregateString": "lastValue",
+				          "fieldName": "supplyairtemperature",
+				          "moduleName": "ahureading",
+				          "criteria": {
+				            "pattern": "(1)",
+				            "conditions": {
+				              "1": {
+				                "fieldName": "parentId",
+				                "operatorId": 9,
+				                "sequence": "1",
+				                "value": "${resourceId}"
+				              }
+				            }
+				          },
+				          "conditionSeqVsBaselineId": {},
+				          "orderByFieldName": "ttime",
+				          "sortBy": "desc",
+				          "limit": 1
+				        },
+				        {
+				          "name": "C",
+				          "constant": "12.5"
+				        }
+				      ],
+				      "parameters": [
+				        {
+				          "name": "resourceId",
+				          "typeString": "Number"
+				        }
+				      ],
+				      "resultEvaluator": "(A-B)>(C)"
+				    },
+				    "overPeriod": 3600,
+				    "condition_statement": "If  AirFlow Coil DP ≥ 1000 continuosly for 1 hour (6 ten min intervals)"
+				  }
+				}
+		},
+		"20": {
+			"fdd_rule": {
+				  "name": "Low Chilled water delta T",
+				  "description": "Low Chilled water delta T",
+				  "problem": "Chilled water delta T across cooling coil too low",
+				  "possible_causes": "Low delta T indicates high CHW flow to coils per TR. This is a serious issue as this may be leading to energy wastage in secondary CHW pumps.",
+				  "moduleName": "ahureading",
+				  "category": "AHU",
+				  "severity": "Major",
+				  "threshold_metric": "returnairtemperature",
+				  "threshold_metric_display": "Return Air Temperature",
+				  "possible_solution": "",
+				  "ASSET_SELECTION_CRITERIA": {
+				    "categoryType": "AHU",
+				    "includeResource": "${includeResource}",
+				    "excludeResource": "${excludeResource}"
+				  },
+				  "preRequsite": null,
+				  "alarmCondition": {
+				    "condition": "Chilled Water flow  DP > 35",
+				    "for": "${interval}",
+				    "action": "TRIGGER_ALARM",
+				    "thresholdType": 6,
+				    "workflow": {
+				      "expressions": [
+				        {
+				          "name": "A",
+				          "aggregateString": "lastValue",
+				          "fieldName": "returnairtemperature",
+				          "moduleName": "ahureading",
+				          "criteria": {
+				            "pattern": "(1)",
+				            "conditions": {
+				              "1": {
+				                "fieldName": "parentId",
+				                "operatorId": 9,
+				                "sequence": "1",
+				                "value": "${resourceId}"
+				              }
+				            }
+				          },
+				          "conditionSeqVsBaselineId": {},
+				          "orderByFieldName": "ttime",
+				          "sortBy": "desc",
+				          "limit": 1
+				        },
+				        {
+				          "name": "B",
+				          "aggregateString": "lastValue",
+				          "fieldName": "supplyairtemperature",
+				          "moduleName": "ahureading",
+				          "criteria": {
+				            "pattern": "(1)",
+				            "conditions": {
+				              "1": {
+				                "fieldName": "parentId",
+				                "operatorId": 9,
+				                "sequence": "1",
+				                "value": "${resourceId}"
+				              }
+				            }
+				          },
+				          "conditionSeqVsBaselineId": {},
+				          "orderByFieldName": "ttime",
+				          "sortBy": "desc",
+				          "limit": 1
+				        },
+				        {
+				          "name": "C",
+				          "constant": "5"
+				        }
+				      ],
+				      "parameters": [
+				        {
+				          "name": "resourceId",
+				          "typeString": "Number"
+				        }
+				      ],
+				      "resultEvaluator": "(A-B) < (C)"
+				    },
+				    "overPeriod": 3600,
+				    "condition_statement": "If  AirFlow Coil DP ≥ 1000 continuosly for 1 hour (6 ten min intervals)"
+				  }
+				}
+		},
+		"21": {
+			"fdd_rule": {
+				  "name": "High Chilled Water Temperature",
+				  "description": "High Chilled Water Temperature",
+				  "problem": "May occur due to higher than usual cooling load demand in the spaces or due to malfunctioning of the cooling coil valve.",
+				  "possible_causes": "The required supply air temperature can't be achieved if the chilled water supply temperature is warmer than required.",
+				  "moduleName": "ahureading",
+				  "category": "AHU",
+				  "severity": "Major",
+				  "threshold_metric": "chilledwaterenteringtemperature",
+				  "threshold_metric_display": "Chilled Water Entering Temperature",
+				  "possible_solution": "",
+				  "ASSET_SELECTION_CRITERIA": {
+				    "categoryType": "AHU",
+				    "includeResource": "${includeResource}",
+				    "excludeResource": "${excludeResource}"
+				  },
+				  "preRequsite": {
+				    "action": "PreRequsite",
+				    "moduleName": "ahureading",
+				    "threshold_metric": "supplyairfanautomanualstatus",
+				    "thresholdType": 1,
+				    "operatorId": 9,
+				    "percentage": "1",
+				    "condition_statement": "When Supply Air Fan Auto/Manual Status Command is Manula",
+				    "workflow": {
+				      "expressions": [
+				        {
+				          "name": "a",
+				          "aggregateString": "lastValue",
+				          "fieldName": "supplyairfanautomanualstatus",
+				          "moduleName": "ahureading",
+				          "criteria": {
+				            "pattern": "(1)",
+				            "conditions": {
+				              "1": {
+				                "fieldName": "parentId",
+				                "operatorId": 9,
+				                "sequence": "1",
+				                "value": "${resourceId}"
+				              }
+				            }
+				          }
+				        }
+				      ],
+				      "resultEvaluator": "a=1",
+				      "parameters": [
+				        {
+				          "name": "resourceId",
+				          "typeString": "Number"
+				        }
+				      ]
+				    }
+				  },
+				  "alarmCondition": {
+				    "condition": "Cooling Coil Valve Feedback ≥ 95% AND Chilled Water Supply Temp>15 degrees",
+				    "for": "${interval}",
+				    "action": "TRIGGER_ALARM",
+				    "thresholdType": 5,
+				    "workflow": {
+				      "expressions": [
+				        {
+				          "name": "A",
+				          "aggregateString": "lastValue",
+				          "fieldName": "coolingcoilvalvefeedback",
+				          "moduleName": "ahureading",
+				          "criteria": {
+				            "pattern": "(1)",
+				            "conditions": {
+				              "1": {
+				                "fieldName": "parentId",
+				                "operatorId": 9,
+				                "sequence": "1",
+				                "value": "${resourceId}"
+				              }
+				            }
+				          },
+				          "conditionSeqVsBaselineId": {},
+				          "orderByFieldName": "ttime",
+				          "sortBy": "desc",
+				          "limit": 1
+				        },
+				        {
+				          "name": "B",
+				          "constant": "95"
+				        },
+				        {
+				          "name": "C",
+				          "aggregateString": "lastValue",
+				          "fieldName": "chilledwaterenteringtemperature",
+				          "moduleName": "ahureading",
+				          "criteria": {
+				            "pattern": "(1)",
+				            "conditions": {
+				              "1": {
+				                "fieldName": "parentId",
+				                "operatorId": 9,
+				                "sequence": "1",
+				                "value": "${resourceId}"
+				              }
+				            }
+				          },
+				          "conditionSeqVsBaselineId": {},
+				          "orderByFieldName": "ttime",
+				          "sortBy": "desc",
+				          "limit": 1
+				        },
+				        {
+				          "name": "D",
+				          "constant": "15"
+				        }
+				      ],
+				      "parameters": [
+				        {
+				          "name": "resourceId",
+				          "typeString": "Number"
+				        }
+				      ],
+				      "resultEvaluator": "(A >= B) && (C > D)"
+				    },
+				    "overPeriod": 1800,
+				    "condition_statement": "Cooling Coil Valve Feedback is greater than or equal to 95% AND Chilled Water Supply Temp is greater than 15 degrees"
+				  }
+				}
+		
+		},
+		"22": {
+			"fdd_rule": {
+				  "name": "AHU Cooling coil Chilled Water Strainer needs cleaning",
+				  "description": "AHU Cooling coil Chilled Water Strainer needs cleaning",
+				  "problem": "Chilled water strainer (wire mesh) clogged with debris (Chilled water flow reduced)",
+				  "possible_causes": "Clogging of strainer reduces the chilled water flow, which reduces the ability of the air handler to transfer heat. Hence, reducing the efficiency of the air handling unit.  The strainer removes the rust and mud from the chilled water system. With time, as the openings in the wire mesh are covered with debris, the strainer begins to offer more resistance to water flow. ",
+				  "moduleName": "ahureading",
+				  "category": "AHU",
+				  "severity": "Major",
+				  "threshold_metric": "chilledwaterstrainerdp",
+				  "threshold_metric_display": "Chilled Water Strainer DP",
+				  "possible_solution": "",
+				  "ASSET_SELECTION_CRITERIA": {
+				    "categoryType": "AHU",
+				    "includeResource": "${includeResource}",
+				    "excludeResource": "${excludeResource}"
+				  },
+				  "preRequsite": {
+				    "action": "PreRequsite",
+				    "moduleName": "ahureading",
+				    "threshold_metric": "chilledwaterstrainerdp",
+				    "thresholdType": 1,
+				    "operatorId": 9,
+				    "percentage": "1",
+				    "condition_statement": "Chilled Water Strainer Dp",
+				    "workflow": {
+				      "expressions": [
+				        {
+				          "name": "a",
+				          "aggregateString": "lastValue",
+				          "fieldName": "chilledwaterflowdp",
+				          "moduleName": "ahureading",
+				          "criteria": {
+				            "pattern": "(1)",
+				            "conditions": {
+				              "1": {
+				                "fieldName": "parentId",
+				                "operatorId": 9,
+				                "sequence": "1",
+				                "value": "${resourceId}"
+				              }
+				            }
+				          }
+				        }
+				      ],
+				      "resultEvaluator": "a> 10",
+				      "parameters": [
+				        {
+				          "name": "resourceId",
+				          "typeString": "Number"
+				        }
+				      ]
+				    }
+				  },
+				  "alarmCondition": {
+				    "condition": "Chilled Water flow  DP > 10",
+				    "for": "${interval}",
+				    "action": "TRIGGER_ALARM",
+				    "thresholdType": 6,
+				    "workflow": {
+				      "expressions": [
+				        {
+				          "name": "a",
+				          "fieldName": "chilledwaterflowdp",
+				          "moduleName": "ahureading",
+				          "criteria": {
+				            "pattern": "(1 and 2)",
+				            "conditions": {
+				              "1": {
+				                "fieldName": "parentId",
+				                "operatorId": 9,
+				                "sequence": "1",
+				                "value": "${resourceId}"
+				              },
+				              "2": {
+				                "fieldName": "ttime",
+				                "operatorId": 42,
+				                "sequence": "2",
+				                "value": "1,${ttime}"
+				              }
+				            }
+				          }
+				        },
+				        {
+				          "name": "b",
+				          "defaultFunctionContext": {
+				            "nameSpace": "default",
+				            "functionName": "allMatch",
+				            "params": "a"
+				          }
+				        }
+				      ],
+				      "parameters": [
+				        {
+				          "name": "resourceId",
+				          "typeString": "Number"
+				        },
+				        {
+				          "name": "ttime",
+				          "typeString": "Number"
+				        }
+				      ],
+				      "resultEvaluator": "b"
+				    },
+				    "condition_statement": "If Chilled Water Strainer Dp ≥ 10 continuosly for 1 hour (6 ten min intervals)"
+				  }
+				}
+		}
 	}
-}

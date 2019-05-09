@@ -156,6 +156,7 @@ public class ResourceContext extends ModuleBaseWithCustomFields {
 	public void setQrVal(String qrVal) {
 		this.qrVal = qrVal;
 	}
+	
 
 	public static enum ResourceType {
 		SPACE, ASSET, PM, USER;

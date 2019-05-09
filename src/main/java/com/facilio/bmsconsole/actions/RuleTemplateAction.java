@@ -64,10 +64,19 @@ public class RuleTemplateAction extends FacilioAction {
 		this.result = result;
 	}
 	
+	private JSONObject placeHolder;
+	
+	public JSONObject getPlaceHolder() {
+		return placeHolder;
+	}
+	public void setPlaceHolder(JSONObject placeHolder) {
+		this.placeHolder = placeHolder;
+	}
 	@SuppressWarnings("unchecked")
 	public String createRulefromTemplates () throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.TEMPLATE_ID, id);
+		context.put(FacilioConstants.ContextNames.PLACE_HOLDER, placeHolder);
 		Chain createRuleChain = TransactionChainFactory.getAddTemplateToRules();
 		createRuleChain.execute(context);
 		setResult("rule", id);
