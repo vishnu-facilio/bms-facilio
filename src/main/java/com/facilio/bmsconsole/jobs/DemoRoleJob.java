@@ -30,17 +30,19 @@ public class DemoRoleJob extends FacilioJob{
 	@SuppressWarnings("resource")
 	public void execute(JobContext jc)throws Exception  {
 		// TODO Auto-generated method stub
-
+		long startTime = System.currentTimeMillis();
 		Map<String,List<String>> tableName=DemoRoleUtil.TABLES_WITH_COLUMN;
 		long orgId=AccountUtil.getCurrentOrg().getId();
 		Connection conn = null;
 		PreparedStatement pstmt = null;
 		boolean olderCommit = false;
+
 		try {
 
 			conn = FacilioConnectionPool.INSTANCE.getConnectionFromPool();
 			olderCommit = conn.getAutoCommit();
 			conn.setAutoCommit(true);
+			 
 			for (Map.Entry<String, List<String>> tableList : tableName.entrySet()) {
 
 				  String key = tableList.getKey();
@@ -76,6 +78,7 @@ public class DemoRoleJob extends FacilioJob{
 			conn.setAutoCommit(olderCommit);
 			DBUtil.closeAll(conn, pstmt);
 		}
+		LOGGER.info("####DemoRoleUp Job completed time  is" + (System.currentTimeMillis()-startTime));
 	}
 
 	
