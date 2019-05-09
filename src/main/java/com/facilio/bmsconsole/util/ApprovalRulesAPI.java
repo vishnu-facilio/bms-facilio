@@ -205,6 +205,7 @@ public class ApprovalRulesAPI extends WorkflowRuleAPI {
 		StateflowTransitionContext oldRule = (StateflowTransitionContext) getWorkflowRule(rule.getId());
 		deleteApprovers(oldRule.getApprovers());
 		updateWorkflowRuleWithChildren(rule);
+		updateExtendedRule(rule, ModuleFactory.getStateRuleTransitionModule(), FieldFactory.getStateRuleTransitionFields());
 		addApprovers(rule.getId(), rule.getApprovers());
 		deleteValidations(oldRule.getValidations());
 		addValidations(rule.getId(), rule.getValidations());
