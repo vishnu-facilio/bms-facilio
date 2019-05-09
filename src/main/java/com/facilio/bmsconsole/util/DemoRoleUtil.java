@@ -1,13 +1,15 @@
 package com.facilio.bmsconsole.util;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class DemoRoleUtil {
 
-	public static Map<String,List<String>> initDateFieldModified()  {
+	public static final Map<String, List<String>> TABLES_WITH_COLUMN = Collections.unmodifiableMap(dateFieldModified());
+	private static Map<String,List<String>> dateFieldModified()  {
 
 		Map<String, List<String>> tablesContainsDateField = new HashMap<String, List<String>>();
 
