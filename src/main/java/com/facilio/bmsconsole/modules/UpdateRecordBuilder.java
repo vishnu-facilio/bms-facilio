@@ -80,6 +80,7 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 	}
 
 	@Override
+	@Deprecated
 	public UpdateRecordBuilder<E> andCustomWhere(String whereCondition, Object... values) {
 		this.where.andCustomWhere(whereCondition, values);
 		this.selectBuilder.andCustomWhere(whereCondition, values);
@@ -87,6 +88,7 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 	}
 	
 	@Override
+	@Deprecated
 	public UpdateRecordBuilder<E> orCustomWhere(String whereCondition, Object... values) {
 		// TODO Auto-generated method stub
 		this.where.orCustomWhere(whereCondition, values);
