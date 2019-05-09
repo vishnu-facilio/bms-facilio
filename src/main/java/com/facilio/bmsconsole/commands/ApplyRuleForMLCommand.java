@@ -19,9 +19,9 @@ public class ApplyRuleForMLCommand implements Command {
 		WorkflowRuleContext rule = WorkflowRuleAPI.getWorkflowRule(mlContext.getRuleID(),true,true,true);
 		if (rule != null && rule.isActive()) 
 		{
-			
+			String jobid = mlContext.getMLModelVariable("jobid");
 			FacilioContext ruleContext = new FacilioContext();
-			ruleContext.put("jobid", "100");
+			ruleContext.put("jobid", jobid);
 			WorkflowRuleAPI.executeScheduledRule(rule, mlContext.getPredictionTime() * 1000, ruleContext);
 		}
 		return false;
