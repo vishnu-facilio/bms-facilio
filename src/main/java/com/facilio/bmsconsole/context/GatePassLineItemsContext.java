@@ -5,14 +5,16 @@ import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 public class GatePassLineItemsContext extends ModuleBaseWithCustomFields{
 	
 	private static final long serialVersionUID = 1L;
-	private GatePassContext gatePass;
-	public GatePassContext getGatePass() {
+	private long gatePass;
+	
+	
+	public long getGatePass() {
 		return gatePass;
 	}
-	public void setGatePass(GatePassContext gatePass) {
+	public void setGatePass(long gatePass) {
 		this.gatePass = gatePass;
 	}
-	
+
 	private InventoryType inventoryType;
 	public InventoryType getInventoryTypeEnum() {
 		return inventoryType;

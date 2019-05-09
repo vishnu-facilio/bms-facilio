@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.actions;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.chain.Chain;
@@ -11,8 +12,10 @@ import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.GatePassContext;
 import com.facilio.bmsconsole.context.GatePassLineItemsContext;
-import com.facilio.bmsconsole.context.ItemContext;
 import com.facilio.bmsconsole.context.ItemTypesContext;
+import com.facilio.bmsconsole.context.PurchaseOrderLineItemContext;
+import com.facilio.bmsconsole.context.WorkorderItemContext;
+import com.facilio.bmsconsole.context.WorkorderToolsContext;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -67,6 +70,16 @@ public class GatePassAction extends FacilioAction {
 	public void setGatePassId(long gatePassId) {
 		this.gatePassId = gatePassId;
 	}
+	
+	private List<Long> gatePassIds;
+	
+	public List<Long> getGatePassIds() {
+		return gatePassIds;
+	}
+
+	public void setGatePassIds(List<Long> gatePassIds) {
+		this.gatePassIds = gatePassIds;
+	}
 
 	private boolean includeParentFilter;
 
@@ -110,6 +123,35 @@ public class GatePassAction extends FacilioAction {
 	public void setGatePassCount(Long itemTypesCount) {
 		this.gatePassCount = itemTypesCount;
 	}
+	
+	private List<PurchaseOrderLineItemContext> poLineItems;
+	
+	public List<PurchaseOrderLineItemContext> getPoLineItems() {
+		return poLineItems;
+	}
+
+	public void setPoLineItems(List<PurchaseOrderLineItemContext> poLineItems) {
+		this.poLineItems = poLineItems;
+	}
+	
+	private List<WorkorderItemContext> woItems;
+	private List<WorkorderToolsContext> woTools;
+	
+	public List<WorkorderItemContext> getWoItems() {
+		return woItems;
+	}
+
+	public void setWoItems(List<WorkorderItemContext> woItems) {
+		this.woItems = woItems;
+	}
+
+	public List<WorkorderToolsContext> getWoTools() {
+		return woTools;
+	}
+
+	public void setWoTools(List<WorkorderToolsContext> woTools) {
+		this.woTools = woTools;
+	}
 
 	public String addGatePass() throws Exception {
 		FacilioContext context = new FacilioContext();
@@ -122,6 +164,17 @@ public class GatePassAction extends FacilioAction {
 		Chain c = TransactionChainFactory.getAddGatePassChain();
 		c.execute(context);
 		setGatePass((GatePassContext) context.get(FacilioConstants.ContextNames.GATE_PASS));
+		setResult(FacilioConstants.ContextNames.GATE_PASS, gatePass);
+		return SUCCESS;
+	}
+	
+	public String addOrUpdateGatePass() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.RECORD, gatePass);
+		
+		Chain c = TransactionChainFactory.getAddOrUpdateGatePassChain();
+		c.execute(context);
+		setGatePass((GatePassContext) context.get(FacilioConstants.ContextNames.RECORD));
 		setResult(FacilioConstants.ContextNames.GATE_PASS, gatePass);
 		return SUCCESS;
 	}
@@ -187,5 +240,26 @@ public class GatePassAction extends FacilioAction {
 		setResult(FacilioConstants.ContextNames.GATE_PASS, gatePass);
 		return SUCCESS;
 	}
+	
+	public String deleteGatePass() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, gatePassId != -1 ? Collections.singletonList(gatePassId) : gatePassIds);
+		Chain chain = TransactionChainFactory.getGatePassDeleteChain();
+		chain.execute(context);
+		
+		setResult(FacilioConstants.ContextNames.RECORD_ID_LIST, gatePassId != -1 ? Collections.singletonList(gatePassId) : gatePassIds);
+		return SUCCESS;
+	}
+	
+	public String usePoLineItemsForGatepass() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.PURCHASE_ORDER_LINE_ITEMS, gatePassId != -1 ? Collections.singletonList(gatePassId) : gatePassIds);
+		Chain chain = TransactionChainFactory.getGatePassDeleteChain();
+		chain.execute(context);
+		
+		setResult(FacilioConstants.ContextNames.RECORD_ID_LIST, gatePassId != -1 ? Collections.singletonList(gatePassId) : gatePassIds);
+		return SUCCESS;
+	}
+	
 	
 }

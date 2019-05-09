@@ -27,7 +27,7 @@ public class AddGatePassLineItemsCommand implements Command{
 			List<FacilioField> fields = modBean
 					.getAllFields(FacilioConstants.ContextNames.GATE_PASS_LINE_ITEMS);
 			for(GatePassLineItemsContext item : lineItems) {
-				item.setGatePass(gatePass);
+				item.setGatePass(gatePass.getId());
 			}
 			addItem(module, fields, lineItems);
 		}
