@@ -1,7 +1,7 @@
 package com.facilio.db.builder;
 
-import com.facilio.bmsconsole.criteria.Condition;
-import com.facilio.bmsconsole.criteria.Criteria;
+import com.facilio.db.criteria.Condition;
+import com.facilio.db.criteria.Criteria;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;

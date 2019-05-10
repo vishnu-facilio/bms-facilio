@@ -13,8 +13,8 @@ import org.apache.log4j.Logger;
 
 import com.facilio.bmsconsole.context.PublishData;
 import com.facilio.bmsconsole.context.PublishMessage;
-import com.facilio.bmsconsole.criteria.CriteriaAPI;
-import com.facilio.bmsconsole.criteria.PickListOperators;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.PickListOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;

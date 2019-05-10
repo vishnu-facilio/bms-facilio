@@ -1,7 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
 
-import com.facilio.bmsconsole.criteria.Criteria;
+import com.facilio.db.criteria.Criteria;
 import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.constants.FacilioConstants;
 import org.apache.commons.chain.Command;

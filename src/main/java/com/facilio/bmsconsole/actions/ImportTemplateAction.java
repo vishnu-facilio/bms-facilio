@@ -1,8 +1,8 @@
 package com.facilio.bmsconsole.actions;
 
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.bmsconsole.criteria.CriteriaAPI;
-import com.facilio.bmsconsole.criteria.StringOperators;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.StringOperators;
 import com.facilio.bmsconsole.modules.*;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;

@@ -1,4 +1,4 @@
-package com.facilio.bmsconsole.criteria;
+package com.facilio.db.criteria;
 
 public class DateRange {
 	

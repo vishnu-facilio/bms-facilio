@@ -1,7 +1,7 @@
 package com.facilio.report.context;
 
-import com.facilio.bmsconsole.criteria.Criteria;
-import com.facilio.bmsconsole.criteria.Operator;
+import com.facilio.db.criteria.Criteria;
+import com.facilio.db.criteria.Operator;
 
 public class ReportFilterContext extends ReportFieldContext {
 

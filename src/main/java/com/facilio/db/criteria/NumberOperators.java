@@ -1,4 +1,4 @@
-package com.facilio.bmsconsole.criteria;
+package com.facilio.db.criteria;
 
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.collections.PredicateUtils;

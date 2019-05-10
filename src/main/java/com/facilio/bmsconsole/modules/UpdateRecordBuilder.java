@@ -11,11 +11,9 @@ import java.util.Set;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.criteria.BooleanOperators;
-import com.facilio.bmsconsole.criteria.Condition;
-import com.facilio.bmsconsole.criteria.Criteria;
-import com.facilio.bmsconsole.criteria.CriteriaAPI;
-import com.facilio.bmsconsole.criteria.NumberOperators;
+import com.facilio.bmsconsole.criteria.*;
+import com.facilio.criteria.*;
+import com.facilio.db.criteria.*;
 import com.facilio.fw.BeanFactory;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder.GenericJoinBuilder;

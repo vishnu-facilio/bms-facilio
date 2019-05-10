@@ -1,8 +1,8 @@
 package com.facilio.bmsconsole.jobs;
 
-import com.facilio.bmsconsole.criteria.Condition;
-import com.facilio.bmsconsole.criteria.CriteriaAPI;
-import com.facilio.bmsconsole.criteria.NumberOperators;
+import com.facilio.db.criteria.Condition;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.*;
 import com.facilio.chain.FacilioContext;
 import com.facilio.events.constants.EventConstants;

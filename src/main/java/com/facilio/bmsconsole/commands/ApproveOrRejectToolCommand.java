@@ -6,7 +6,7 @@ import com.facilio.bmsconsole.context.GatePassContext;
 import com.facilio.bmsconsole.context.GatePassLineItemsContext;
 import com.facilio.bmsconsole.context.InventoryType;
 import com.facilio.bmsconsole.context.ToolTransactionContext;
-import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.*;
 import com.facilio.bmsconsole.util.TransactionType;
 import com.facilio.bmsconsole.workflow.rule.ApprovalState;

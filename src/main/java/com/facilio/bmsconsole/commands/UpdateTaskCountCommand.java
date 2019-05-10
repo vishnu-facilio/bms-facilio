@@ -1,9 +1,9 @@
 package com.facilio.bmsconsole.commands;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.criteria.Condition;
-import com.facilio.bmsconsole.criteria.CriteriaAPI;
-import com.facilio.bmsconsole.criteria.NumberOperators;
+import com.facilio.db.criteria.Condition;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;

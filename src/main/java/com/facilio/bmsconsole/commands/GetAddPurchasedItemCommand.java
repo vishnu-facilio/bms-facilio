@@ -4,7 +4,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ItemContext;
 import com.facilio.bmsconsole.context.ItemTypesContext;
 import com.facilio.bmsconsole.context.PurchasedItemContext;
-import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.*;
 import com.facilio.bmsconsole.util.TransactionType;
 import com.facilio.constants.FacilioConstants;

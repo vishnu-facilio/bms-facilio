@@ -21,6 +21,8 @@ import com.facilio.bmsconsole.templates.WorkorderTemplate;
 import com.facilio.bmsconsole.workflow.rule.*;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.criteria.*;
+import com.facilio.db.criteria.*;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioStatus;
 

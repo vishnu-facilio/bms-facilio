@@ -8,7 +8,7 @@ import com.facilio.bmsconsole.context.FormulaFieldContext;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ReadingContext.SourceType;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
-import com.facilio.bmsconsole.criteria.DateRange;
+import com.facilio.db.criteria.DateRange;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule.ModuleType;
 import com.facilio.bmsconsole.util.DateTimeUtil;

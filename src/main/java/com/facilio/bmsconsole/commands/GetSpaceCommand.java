@@ -5,7 +5,7 @@ import com.facilio.bmsconsole.context.BuildingContext;
 import com.facilio.bmsconsole.context.FloorContext;
 import com.facilio.bmsconsole.context.SpaceCategoryContext;
 import com.facilio.bmsconsole.context.SpaceContext;
-import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;

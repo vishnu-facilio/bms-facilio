@@ -3,7 +3,7 @@ package com.facilio.bmsconsole.workflow.rule;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.bmsconsole.criteria.Criteria;
+import com.facilio.db.criteria.Criteria;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;

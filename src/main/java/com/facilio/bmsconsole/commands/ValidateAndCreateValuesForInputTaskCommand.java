@@ -15,7 +15,7 @@ import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.TaskContext.InputType;
 import com.facilio.bmsconsole.context.TaskContext.TaskStatus;
 import com.facilio.bmsconsole.context.WorkOrderContext;
-import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.BooleanField;
 import com.facilio.bmsconsole.modules.EnumField;
 import com.facilio.bmsconsole.modules.FacilioField;

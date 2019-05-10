@@ -1,15 +1,13 @@
 package com.facilio.bmsconsole.commands;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.activity.AssetActivityType;
 import com.facilio.bmsconsole.activity.ItemActivityType;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.ItemContext;
 import com.facilio.bmsconsole.context.ItemContext.CostType;
 import com.facilio.bmsconsole.context.PurchasedItemContext;
-import com.facilio.bmsconsole.context.ToolContext;
-import com.facilio.bmsconsole.criteria.CriteriaAPI;
-import com.facilio.bmsconsole.criteria.NumberOperators;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.*;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;

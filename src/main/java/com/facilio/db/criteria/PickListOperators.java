@@ -1,4 +1,4 @@
-package com.facilio.bmsconsole.criteria;
+package com.facilio.db.criteria;
 
 import com.facilio.accounts.dto.Group;
 import com.facilio.accounts.util.AccountUtil;

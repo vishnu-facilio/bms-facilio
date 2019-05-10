@@ -9,7 +9,7 @@ import com.facilio.bmsconsole.actions.ImportProcessContext.ImportSetting;
 import com.facilio.bmsconsole.commands.data.ProcessXLS;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.context.ResourceContext.ResourceType;
-import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.exceptions.importExceptions.ImportParseException;
 import com.facilio.bmsconsole.modules.*;
 import com.facilio.bmsconsole.modules.FacilioModule.ModuleType;

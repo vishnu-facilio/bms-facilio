@@ -8,8 +8,8 @@ import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.util.DateTimeUtil;
-import com.facilio.chain.FacilioContext;
-import com.facilio.constants.FacilioConstants;
+import com.facilio.criteria.*;
+import com.facilio.db.criteria.*;
 import com.facilio.events.tasker.tasks.EventUtil;
 import com.facilio.fw.BeanFactory;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
@@ -341,7 +341,7 @@ public  class AgentUtil
                     .fields(fields)
                     .andCondition(CriteriaAPI.getCurrentOrgIdCondition(ModuleFactory.getAgentDataModule()));
             if (payload.containsKey(AgentKeys.ID)) {
-                int deletedRows = genericUpdateRecordBuilder.andCondition(CriteriaAPI.getCondition(FieldFactory.getIdField(ModuleFactory.getAgentDataModule()),payload.get(AgentKeys.ID).toString(),NumberOperators.EQUALS))
+                int deletedRows = genericUpdateRecordBuilder.andCondition(CriteriaAPI.getCondition(FieldFactory.getIdField(ModuleFactory.getAgentDataModule()),payload.get(AgentKeys.ID).toString(), NumberOperators.EQUALS))
                         .update(toUpdate);
                 return (deletedRows > 0);
             } else {

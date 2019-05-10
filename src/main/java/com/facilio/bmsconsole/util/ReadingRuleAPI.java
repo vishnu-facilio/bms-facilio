@@ -16,6 +16,8 @@ import com.facilio.bmsconsole.workflow.rule.ReadingRuleMetricContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.criteria.*;
+import com.facilio.db.criteria.*;
 import com.facilio.events.constants.EventConstants;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericInsertRecordBuilder;

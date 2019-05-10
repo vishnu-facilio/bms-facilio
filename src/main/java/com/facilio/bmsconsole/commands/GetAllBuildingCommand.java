@@ -2,9 +2,8 @@ package com.facilio.bmsconsole.commands;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.actions.BusinessHoursAction;
 import com.facilio.bmsconsole.context.BuildingContext;
-import com.facilio.bmsconsole.criteria.Criteria;
+import com.facilio.db.criteria.Criteria;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;

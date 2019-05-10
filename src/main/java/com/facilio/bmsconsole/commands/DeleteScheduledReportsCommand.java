@@ -1,7 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
 import com.facilio.bmsconsole.context.ReportInfo;
-import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.*;
 import com.facilio.bmsconsole.util.TemplateAPI;
 import com.facilio.bmsconsole.workflow.rule.EventType;

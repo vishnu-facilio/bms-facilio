@@ -2,7 +2,7 @@ package com.facilio.bmsconsole.commands;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.*;
-import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.*;
 import com.facilio.bmsconsole.util.TransactionState;
 import com.facilio.bmsconsole.workflow.rule.ApprovalState;

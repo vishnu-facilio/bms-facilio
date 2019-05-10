@@ -1,4 +1,4 @@
-package com.facilio.bmsconsole.criteria;
+package com.facilio.db.criteria;
 
 import com.facilio.bmsconsole.util.DateTimeUtil;
 import org.apache.commons.collections.Predicate;

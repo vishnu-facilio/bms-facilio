@@ -2,8 +2,8 @@ package com.facilio.db.builder;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
-import com.facilio.bmsconsole.criteria.Condition;
-import com.facilio.bmsconsole.criteria.Criteria;
+import com.facilio.db.criteria.Condition;
+import com.facilio.db.criteria.Criteria;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.modules.FieldUtil;
@@ -337,7 +337,7 @@ public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, 
      *     usage:<br>
 	 *         <pre>
 	 *             {@code\
-	 *         Condition condition = new Condition();  {@link com.facilio.bmsconsole.criteria.Condition}
+	 *         Condition condition = new Condition();  {@link Condition }
 	 *         Condition condition = new Condition();
 	 *         condition.setField(FieldFactory.getAgentMessageField(new FacilioModule()));
 	 *         condition.setColumnName("MESSAGE");
@@ -373,7 +373,7 @@ public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, 
 	 *     usage:<br>
 	 *         <pre>
 	 *             {@code
-	 *         Condition condition = new Condition();  {@link com.facilio.bmsconsole.criteria.Condition}
+	 *         Condition condition = new Condition();  {@link Condition }
 	 *         Condition condition = new Condition();
 	 *         condition.setField(FieldFactory.getAgentMessageField(new FacilioModule()));
 	 *         condition.setColumnName("MESSAGE");
@@ -409,7 +409,7 @@ public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, 
 	 *  <pre>
 	 *      {@code
 	 *
-	 *         // for more details about Criteria class - {@link com.facilio.bmsconsole.criteria.Criteria }
+	 *         // for more details about Criteria class - {@link Criteria }
 	 *         criteria.addAndCondition(condition);
 	 *         criteria.addAndCondition(condition1);
 	 *         GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
@@ -434,7 +434,7 @@ public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, 
 	 *  Adds a criteria with OR operation
 	 *  <pre>
 	 *      {@code
-	 *         // for more details about Criteria class - {@link com.facilio.bmsconsole.criteria.Criteria }
+	 *         // for more details about Criteria class - {@link Criteria }
 	 *         criteria.addAndCondition(condition);
 	 *         criteria1.addAndCondition(condition1);
 	 *         GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()

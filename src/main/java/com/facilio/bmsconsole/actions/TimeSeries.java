@@ -19,7 +19,7 @@ import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.PublishData;
 import com.facilio.bmsconsole.context.ReadingContext.SourceType;
-import com.facilio.bmsconsole.criteria.Criteria;
+import com.facilio.db.criteria.Criteria;
 import com.facilio.bmsconsole.util.IoTMessageAPI;
 import com.facilio.bmsconsole.util.IoTMessageAPI.IotCommandType;
 import com.facilio.chain.FacilioContext;

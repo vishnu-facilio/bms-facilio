@@ -5,8 +5,8 @@ import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.ItemContext;
 import com.facilio.bmsconsole.context.ItemTransactionsContext;
 import com.facilio.bmsconsole.context.PurchasedItemContext;
-import com.facilio.bmsconsole.criteria.CriteriaAPI;
-import com.facilio.bmsconsole.criteria.EnumOperators;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.EnumOperators;
 import com.facilio.bmsconsole.modules.*;
 import com.facilio.bmsconsole.util.ItemsApi;
 import com.facilio.bmsconsole.util.TransactionState;
@@ -18,7 +18,6 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;

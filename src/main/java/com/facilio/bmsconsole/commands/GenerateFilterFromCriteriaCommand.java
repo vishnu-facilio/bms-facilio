@@ -2,10 +2,10 @@ package com.facilio.bmsconsole.commands;
 
 import com.facilio.accounts.dto.Group;
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.bmsconsole.criteria.Condition;
-import com.facilio.bmsconsole.criteria.Criteria;
-import com.facilio.bmsconsole.criteria.CriteriaAPI;
-import com.facilio.bmsconsole.criteria.LookupOperator;
+import com.facilio.db.criteria.Condition;
+import com.facilio.db.criteria.Criteria;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.LookupOperator;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.constants.FacilioConstants;
 import org.apache.commons.chain.Command;

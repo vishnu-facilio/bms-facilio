@@ -1,7 +1,7 @@
 package com.facilio.db.builder;
 
-import com.facilio.bmsconsole.criteria.Condition;
-import com.facilio.bmsconsole.criteria.Criteria;
+import com.facilio.db.criteria.Condition;
+import com.facilio.db.criteria.Criteria;
 
 public interface WhereBuilderIfc<E> {
 

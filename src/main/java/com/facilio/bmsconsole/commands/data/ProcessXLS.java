@@ -8,7 +8,7 @@ import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.context.ReadingContext.SourceType;
 import com.facilio.bmsconsole.context.ResourceContext.ResourceType;
-import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.*;
 import com.facilio.bmsconsole.modules.FacilioModule.ModuleType;
 import com.facilio.bmsconsole.util.AssetsAPI;

@@ -2,7 +2,7 @@ package com.facilio.bmsconsole.commands;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.FloorContext;
-import com.facilio.bmsconsole.criteria.Criteria;
+import com.facilio.db.criteria.Criteria;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.constants.FacilioConstants;

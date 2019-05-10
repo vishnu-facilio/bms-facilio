@@ -13,7 +13,7 @@ import org.json.simple.parser.ParseException;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.ViewField;
 import com.facilio.bmsconsole.context.ViewSharingContext;
-import com.facilio.bmsconsole.criteria.Criteria;
+import com.facilio.db.criteria.Criteria;
 
 public class FacilioView {
 	

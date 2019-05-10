@@ -11,7 +11,7 @@ import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.context.BusinessHourContext;
 import com.facilio.bmsconsole.context.BusinessHoursContext;
-import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;

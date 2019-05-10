@@ -1,10 +1,8 @@
-package com.facilio.bmsconsole.criteria;
+package com.facilio.db.criteria;
 
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.collections.PredicateUtils;
-import org.apache.commons.lang3.StringUtils;
 
-import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.util.FacilioUtil;
 
 import java.util.Collections;

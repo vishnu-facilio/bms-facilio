@@ -2,12 +2,12 @@ package com.facilio.bmsconsole.commands;
 
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.ReadingAlarmContext;
-import com.facilio.bmsconsole.criteria.Condition;
-import com.facilio.bmsconsole.criteria.Criteria;
-import com.facilio.bmsconsole.criteria.CriteriaAPI;
-import com.facilio.bmsconsole.criteria.DateOperators;
-import com.facilio.bmsconsole.criteria.DateRange;
-import com.facilio.bmsconsole.criteria.NumberOperators;
+import com.facilio.db.criteria.Condition;
+import com.facilio.db.criteria.Criteria;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.DateOperators;
+import com.facilio.db.criteria.DateRange;
+import com.facilio.db.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldType;

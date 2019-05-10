@@ -12,6 +12,8 @@ import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.criteria.*;
+import com.facilio.db.criteria.*;
 import com.facilio.fw.BeanFactory;
 import com.facilio.tasker.job.FacilioJob;
 import com.facilio.tasker.job.JobContext;
@@ -318,7 +320,7 @@ public class MLHistoricalForecastingJob extends FacilioJob
 			return true;
 		}
 		
-		Map<String,Condition> conditions = criteria.getConditions();
+		Map<String, Condition> conditions = criteria.getConditions();
 		for(Condition condition: conditions.values())
 		{
 			if(prop.containsKey(condition.getFieldName()))

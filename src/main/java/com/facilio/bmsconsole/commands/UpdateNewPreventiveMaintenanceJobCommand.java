@@ -6,7 +6,7 @@ import com.facilio.bmsconsole.context.PMJobsContext;
 import com.facilio.bmsconsole.context.PMJobsContext.PMJobsStatus;
 import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
-import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.*;
 import com.facilio.bmsconsole.templates.Template;
 import com.facilio.bmsconsole.templates.WorkorderTemplate;

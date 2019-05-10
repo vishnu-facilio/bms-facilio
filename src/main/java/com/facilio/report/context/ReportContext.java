@@ -10,10 +10,10 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.criteria.Criteria;
-import com.facilio.bmsconsole.criteria.DateOperators;
-import com.facilio.bmsconsole.criteria.DateRange;
-import com.facilio.bmsconsole.criteria.Operator;
+import com.facilio.db.criteria.Criteria;
+import com.facilio.db.criteria.DateOperators;
+import com.facilio.db.criteria.DateRange;
+import com.facilio.db.criteria.Operator;
 import com.facilio.bmsconsole.modules.AggregateOperator;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldUtil;
