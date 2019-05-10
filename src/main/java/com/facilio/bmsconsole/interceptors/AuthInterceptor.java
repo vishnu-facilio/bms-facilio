@@ -45,8 +45,8 @@ public class AuthInterceptor extends AbstractInterceptor {
 	@Override
 	public String intercept(ActionInvocation arg0) throws Exception {
 
+		HttpServletRequest request = ServletActionContext.getRequest();
 		try {
-			HttpServletRequest request = ServletActionContext.getRequest();
 
 			if (getPermalinkToken(request) != null) {
 				String token = getPermalinkToken(request);
@@ -103,7 +103,7 @@ public class AuthInterceptor extends AbstractInterceptor {
 				if (AuthenticationUtil.checkIfSameUser(currentAccount, cognitoUser)) {
 					AccountUtil.cleanCurrentAccount();
 					AccountUtil.setCurrentAccount(currentAccount);
-					
+
 					List<Long> accessibleSpace = null;
 					if (currentAccount.getUser() != null) {
 						accessibleSpace = currentAccount.getUser().getAccessibleSpace();
@@ -203,6 +203,7 @@ public class AuthInterceptor extends AbstractInterceptor {
 		}
 
 		try {
+			AccountUtil.setReqUri(request.getRequestURI());
 			return arg0.invoke();
 		} catch (Exception e) {
 			System.out.println("exception code 154");
