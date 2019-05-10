@@ -65,7 +65,9 @@ public class InventoryRequestAPI {
 		if(toolIds != null) {
 			idCriteria.addOrCondition(CriteriaAPI.getCondition("TOOL", "tool" , toolIds, NumberOperators.EQUALS));
 		}
-        builder.andCriteria(idCriteria);
+		if(!idCriteria.isEmpty()) {
+			builder.andCriteria(idCriteria);
+		}
 		List<InventoryRequestLineItemContext> records = builder.get();
 		return records;
 		
