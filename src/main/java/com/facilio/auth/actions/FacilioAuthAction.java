@@ -70,6 +70,7 @@ public class FacilioAuthAction extends FacilioAction {
     private String domainname;
     private String timezone;
     private String newPassword;
+    private String title;
     private static MessageDigest md;
 
 
@@ -198,6 +199,14 @@ public class FacilioAuthAction extends FacilioAction {
 
     private void setJsonresponse(String key, Object value) {
         this.jsonresponse.put(key, value);
+    }
+    
+    private String getTitle() {
+            return title;      
+    }
+
+    private void setTitle(String title) {
+        this.title = title;
     }
 
 
@@ -498,7 +507,7 @@ public class FacilioAuthAction extends FacilioAction {
     }
     
     public String postIssueResponse() throws Exception {
-	       LOGGER.info( "method called");
+	       LOGGER.info( "new method called");
     	try {
     	  StringBuffer jb = new StringBuffer();
     	  String line = null;
@@ -512,19 +521,24 @@ public class FacilioAuthAction extends FacilioAction {
     	    }
     	  }
       	String url = "https://facilio.freshrelease.com/DEMO/issues";
-      	String description = "test desc",key = null,title = jb.toString(),blockedReason = null;
+      	String description = "Issue posted at Issue Tracking page",key = null,blockedReason = null;
      	List<String> tags = new ArrayList<String>();
 		Map<String,Object> customField =  new HashMap<>();
-		Integer createrId = null,position = null,etaFlag = null,storyPoints = null,issueTypeId = 159,
-				ownerId = null,parentId = null,epicId = null,priorityId = 253,projectId = null,
+		Integer createrId = null,position = null,etaFlag = null,storyPoints = null,issueTypeId = 161,
+				ownerId = null,parentId = null,epicId = null,priorityId = 252,projectId = null,
 				subProjectId = null,reporterId = null,sprintId = null,statusId = null,releaseId = null;
 		List<Integer> documentIds = new ArrayList<Integer>();
 		boolean resolved = false,blocked = false,following = false;
+		
+		FacilioAuthAction issue = new FacilioAuthAction();
+//	  	org.json.JSONObject jsonObject =  HTTP.toJSONObject(jb.toString());
+System.out.println("jbstring"+jb.toString());
+		issue.setTitle(jb.toString());
         JSONObject jget = new JSONObject();
         jget.put("description", description);
         jget.put("key", key);
         jget.put("story_points", storyPoints);
-        jget.put("title", title);
+        jget.put("title", issue.getTitle());
         jget.put("resolved", resolved);
         jget.put("blocked", blocked);
         jget.put("following", following);
@@ -553,20 +567,20 @@ public class FacilioAuthAction extends FacilioAction {
           headers.put("Authorization","Token token=92On0bqAP-gQKOCBm8MgyA");
           headers.put("Content-Type","application/json");
 			http("POST",url,headers,body);
-//   	   org.json.JSONObject jsonObject =  HTTP.toJSONObject(jb.toString());
    	       LOGGER.info( "postIssueResponse"+jb.toString());
     	    
     	  } catch (Exception e) {
               setJsonresponse("message", "Error while reading post issue response");
       	       LOGGER.log( Level.INFO, "Error while reading post issue response", e);
-    		  //throw new IOException("Error parsing JSON request string");
+
     	  }
   
         setJsonresponse("message", "post issue response recieved successfully");
     	return SUCCESS;
     }
     
-    private void http(String method, String url, Map headers, String body) throws Exception {
+    private void http(String method, String url, Map headers, String body) {
+    	try {
         URL obj = new URL(url);
         HttpsURLConnection con = (HttpsURLConnection) obj.openConnection();
         con.setRequestMethod(method);
@@ -597,6 +611,10 @@ public class FacilioAuthAction extends FacilioAction {
         }
         in.close();
         LOGGER.info("issue response in freshrelease"+response.toString());
+    	}
+    	catch (Exception e) {
+   	       LOGGER.log( Level.INFO, "Error while posting post issue response", e);
+    	}
 
 	}
 
