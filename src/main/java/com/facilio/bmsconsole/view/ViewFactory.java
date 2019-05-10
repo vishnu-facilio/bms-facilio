@@ -326,6 +326,11 @@ public class ViewFactory {
 		views = new LinkedHashMap<>();
 		views.put("all", getAllPoLineItemsSerialNumeberView().setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.PO_LINE_ITEMS_SERIAL_NUMBERS, views);
+		
+		order = 1;
+		views = new LinkedHashMap<>();
+		views.put("all", getAllInventoryRequestView().setOrder(order++));
+		viewsMap.put(FacilioConstants.ContextNames.INVENTORY_REQUEST, views);
 
 		
 		return viewsMap;
@@ -3280,6 +3285,20 @@ public class ViewFactory {
 		allView.setName("all");
 		allView.setDisplayName("All Serial Numbers");
 		allView.setSortFields(Arrays.asList(new SortField(createdTime, false)));
+		return allView;
+	}
+	
+	private static FacilioView getAllInventoryRequestView() {
+		FacilioField localId = new FacilioField();
+		localId.setName("localId");
+		localId.setColumnName("LOCAL_ID");
+		localId.setDataType(FieldType.NUMBER);
+		localId.setModule(ModuleFactory.getInventoryRequestModule());
+
+		FacilioView allView = new FacilioView();
+		allView.setName("all");
+		allView.setDisplayName("All");
+		allView.setSortFields(Arrays.asList(new SortField(localId, false)));
 		return allView;
 	}
 

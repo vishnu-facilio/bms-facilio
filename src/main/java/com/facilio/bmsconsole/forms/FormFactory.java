@@ -53,11 +53,12 @@ public class FormFactory {
 		forms.put("labourForm", getLabourForm());
 		forms.put("purchaseRequestForm", getPurchaseRequestForm());
 		forms.put("purchaseOrderForm", getPurchaseOrderForm());
-		forms.put("receiptForm", getReceiptForm());
 		forms.put("purchaseContractForm", getPurchaseContractForm());
 		forms.put("labourContractForm", getLabourContractForm());
 		forms.put("porequesterForm", getPoRequesterForm());
 		forms.put("connectedAppForm", getConnectedAppForm());
+		forms.put("inventoryRequestForm", getInventoryRequestForm());
+		forms.put("inventoryRequestWOForm", getInventoryRequestWorkOrderForm());
 			
 		return forms;
 	}
@@ -80,10 +81,10 @@ public class FormFactory {
 						.put(FacilioConstants.ContextNames.TENANT, getTenantsForm())
 						.put(FacilioConstants.ContextNames.PURCHASE_REQUEST, getPurchaseRequestForm())
 						.put(FacilioConstants.ContextNames.PURCHASE_ORDER, getPurchaseOrderForm())
-						.put(FacilioConstants.ContextNames.RECEIPT, getReceiptForm())
 						.put(FacilioConstants.ContextNames.LABOUR, getLabourForm())
 						.put(FacilioConstants.ContextNames.PURCHASE_CONTRACTS, getPurchaseContractForm())
 						.put(FacilioConstants.ContextNames.LABOUR_CONTRACTS, getLabourContractForm())
+						.put(FacilioConstants.ContextNames.INVENTORY_REQUEST, getInventoryRequestForm())
 						.build())
         			
 				.build();
@@ -730,16 +731,6 @@ public class FormFactory {
 		return form;
 	}
 	
-	public static FacilioForm getReceiptForm() {
-		FacilioForm form = new FacilioForm();
-		form.setDisplayName("RECEIVABLE RECEIPT");
-		form.setName("web_default");
-		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.RECEIPT));
-		form.setLabelPosition(LabelPosition.TOP);
-		form.setFields(getReceiptFormFields());
-		form.setFormType(FormType.WEB);
-		return form;
-	}
 	public static FacilioForm getPurchaseContractForm() {
 		FacilioForm form = new FacilioForm();
 		form.setDisplayName("PURCHASE CONTRACT");
@@ -832,16 +823,6 @@ public class FormFactory {
 		return fields;
 	}
 	
-	private static List<FormField> getReceiptFormFields() {
-		List<FormField> fields = new ArrayList<>();
-		fields.add(new FormField("lineItemId", FieldDisplayType.RECEIPT_LINE_ITEMS, "Line Item", Required.REQUIRED, 1, 1));
-		fields.add(new FormField("quantity", FieldDisplayType.NUMBER, "QUANTITY", Required.REQUIRED, 2, 1));
-		fields.add(new FormField("receiptTime", FieldDisplayType.DATETIME, "Receipt Time", Required.OPTIONAL, 3, 1));
-		//fields.add(new FormField("status", FieldDisplayType.LOOKUP_SIMPLE, "Status", Required.REQUIRED, 3, 1));
-		//fields.add(new FormField("siteId", FieldDisplayType.LOOKUP_SIMPLE, "Site", Required.REQUIRED, "site", 4, 1));
-		return fields;
-	}
-	
 	private static List<FormField> getPurchaseContractFormFields() {
 		List<FormField> fields = new ArrayList<>();
 		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.REQUIRED, 1, 1));
@@ -883,6 +864,53 @@ public class FormFactory {
 		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.REQUIRED, 2, 1));
 		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 3, 1));
 		fields.add(new FormField("baseUrl", FieldDisplayType.TEXTBOX, "App URL", Required.REQUIRED, 4, 1));
+		return fields;
+	}
+	
+	public static FacilioForm getInventoryRequestForm() {
+		FacilioForm form = new FacilioForm();
+		form.setDisplayName("INVENTORY REQUEST");
+		form.setName("web_default");
+		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.INVENTORY_REQUEST));
+		form.setLabelPosition(LabelPosition.LEFT);
+		form.setFields(getInventoryRequestFormFields());
+		form.setFormType(FormType.WEB);
+		return form;
+	}
+	
+	private static List<FormField> getInventoryRequestFormFields() {
+		List<FormField> fields = new ArrayList<>();
+		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.REQUIRED, 1, 1));
+		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 2, 1));
+		fields.add(new FormField("requestedTime", FieldDisplayType.DATE, "Requested Date", Required.OPTIONAL, 3, 2));
+		fields.add(new FormField("requiredTime", FieldDisplayType.DATE, "Required Date", Required.OPTIONAL, 3, 3));
+		fields.add(new FormField("requestedBy", FieldDisplayType.USER, "Requested By", Required.OPTIONAL, "requester", 4, 1));
+		fields.add(new FormField("lineItems", FieldDisplayType.INVREQUEST_LINE_ITEMS, "LINE ITEMS", Required.REQUIRED, 5, 1));
+		
+		return fields;
+	}
+	
+	public static FacilioForm getInventoryRequestWorkOrderForm() {
+		FacilioForm form = new FacilioForm();
+		form.setDisplayName("INVENTORY REQUEST");
+		form.setName("web_default");
+		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.INVENTORY_REQUEST));
+		form.setLabelPosition(LabelPosition.TOP);
+		form.setFields(getInventoryRequestWorkOrderFormFields());
+		form.setFormType(FormType.WEB);
+		return form;
+	}
+	
+	private static List<FormField> getInventoryRequestWorkOrderFormFields() {
+		List<FormField> fields = new ArrayList<>();
+		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.REQUIRED, 1, 1));
+		fields.add(new FormField("workOrder", FieldDisplayType.TEXTBOX, "Work Order", Required.REQUIRED, 2, 1));
+		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 3, 1));
+		fields.add(new FormField("requestedTime", FieldDisplayType.DATE, "Requested Date", Required.OPTIONAL, 4, 2));
+		fields.add(new FormField("requiredTime", FieldDisplayType.DATE, "Required Date", Required.OPTIONAL, 4, 3));
+		fields.add(new FormField("requestedBy", FieldDisplayType.USER, "Requested By", Required.OPTIONAL, "requester", 5, 1));
+		fields.add(new FormField("lineItems", FieldDisplayType.INVREQUEST_LINE_ITEMS, "LINE ITEMS", Required.REQUIRED, 6, 1));
+		
 		return fields;
 	}
 }

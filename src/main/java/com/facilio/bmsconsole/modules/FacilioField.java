@@ -403,7 +403,7 @@ public class FacilioField implements Serializable {
 		LOGO(37,"logo"),
 		BUILDINGCHOOSER(38, "building-chooser"),
 		LINEITEMS(39, "line-items"),
-		RECEIPT_LINE_ITEMS(40, "receipt-line-items"),
+		INVREQUEST_LINE_ITEMS(40, "inventory-receipt-line-items"),
 		QR(41, "qr"),
 		SADDRESS(42, "address"),
 		LABOUR_LINE_ITEMS(43, "labour-line-items"),

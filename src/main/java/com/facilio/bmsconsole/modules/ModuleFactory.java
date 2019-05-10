@@ -78,6 +78,7 @@ public class ModuleFactory {
 		moduleMap.put(FacilioConstants.ContextNames.RECEIPT, getReceiptModule());
 		moduleMap.put(FacilioConstants.ContextNames.PURCHASE_CONTRACTS, getPurchaseContractModule());
 		moduleMap.put(FacilioConstants.ContextNames.LABOUR_CONTRACTS, getLabourContractModule());
+		moduleMap.put(FacilioConstants.ContextNames.INVENTORY_REQUEST, getInventoryRequestModule());
 
 		return moduleMap;
 	}
@@ -2031,6 +2032,14 @@ public class ModuleFactory {
 		gatePass.setName("gatePass");
 		gatePass.setDisplayName("Gate Pass");
 		gatePass.setTableName("Gate_Pass");
+		return gatePass;
+	}
+	
+	public static FacilioModule getInventoryRequestModule() {
+		FacilioModule gatePass = new FacilioModule();
+		gatePass.setName("inventoryrequest");
+		gatePass.setDisplayName("Inventory Request");
+		gatePass.setTableName("Inventory_Requests");
 		return gatePass;
 	}
 	

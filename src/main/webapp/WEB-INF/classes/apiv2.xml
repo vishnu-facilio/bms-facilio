@@ -2215,6 +2215,16 @@
 		
 	
 	</package>
+	
+	<package name="inventoryRequestListApiv2" namespace="/api/v2/inventoryrequest/view"
+		extends="v2Api">
+		<action name="*" class="com.facilio.bmsconsole.actions.InventoryRequestAction"
+			method="getInventoryRequestList">
+			<param name="moduleName">inventoryrequest</param>
+			<param name="permission">READ,READ_OWN</param>
+			<param name="viewName">{1}</param>
+		</action>
+	</package>
 
 	
 </struts>
