@@ -18,6 +18,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import javax.xml.bind.JAXBContext;
 
@@ -33,6 +34,7 @@ import org.json.simple.parser.JSONParser;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.billing.context.ExcelTemplate;
+import com.facilio.bmsconsole.context.JobPlanContext;
 import com.facilio.bmsconsole.context.PMIncludeExcludeResourceContext;
 import com.facilio.bmsconsole.context.PMTaskSectionTemplateTriggers;
 import com.facilio.bmsconsole.context.PMTriggerContext;
@@ -479,14 +481,18 @@ public class TemplateAPI {
 		Template template = getTemplate(id);
 		List<Long> ids = new ArrayList<>();
 		ids.add(id);
-		templatePreDelete(template, ids);
+		if(template != null) {	// For job plan task template, already passing extended template ids
+			templatePreDelete(template, ids);			
+		}
 		FacilioModule module = ModuleFactory.getTemplatesModule();
 		GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
 													.table(module.getTableName())
 													.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 													.andCondition(CriteriaAPI.getIdCondition(ids, module));
 		builder.delete();
-		templatePostDelete(template);
+		if(template != null) {
+			templatePostDelete(template);
+		}
 	}
 	
 	private static void templatePreDelete(Template template, List<Long> ids) throws Exception {
@@ -537,6 +543,18 @@ public class TemplateAPI {
 		for (Long id : ids) {
 			deleteTemplate(id);
 		}
+	}
+	
+	public static void deleteJobPlanTaskTemplates(JobPlanContext jobPlan) throws Exception {
+		List<Long> ids = new ArrayList<>();
+		getTasksFromTemplate(jobPlan);
+		if (jobPlan.getTaskTemplates() != null) {
+			ids.addAll(jobPlan.getTaskTemplates().stream().map(task -> task.getId()).collect(Collectors.toList()));
+		}
+		if (jobPlan.getSectionTemplates() != null) {
+			ids.addAll(jobPlan.getSectionTemplates().stream().map(task -> task.getId()).collect(Collectors.toList()));
+		}
+		deleteTemplates(ids);
 	}
 	
 	private static void deleteJSONTemplate(JSONTemplate template) throws Exception {
@@ -756,8 +774,8 @@ public class TemplateAPI {
 	
 	private static WorkorderTemplate getWOTemplateFromMap(Map<String, Object> templateProps) throws Exception {
 		WorkorderTemplate woTemplate = FieldUtil.getAsBeanFromMap(templateProps, WorkorderTemplate.class);
-		Map<Long, TaskSectionTemplate> sectionMap = getTaskSectionTemplatesFromWOTemplate(woTemplate, -1);
-		woTemplate.setTasks(getTasksFromWOTemplate(woTemplate, sectionMap, -1));
+		Map<Long, TaskSectionTemplate> sectionMap = getTaskSectionTemplatesFromWOTemplate(woTemplate, null);
+		woTemplate.setTasks(getTasksFromWOTemplate(woTemplate, sectionMap, null));
 		List<TaskSectionTemplate> templates = woTemplate.getSectionTemplates();
 		//FIXME this is temporary need to fix this by adding sequence number for task sections
 		if (templates != null) {
@@ -778,19 +796,19 @@ public class TemplateAPI {
 		return woTemplate;
 	}
 	
-	public static Map<String, List<TaskContext>> getTasksFromTemplate (long jobPlanId) throws Exception {
-		Map<Long, TaskSectionTemplate> sectionMap = getTaskSectionTemplatesFromWOTemplate(null, jobPlanId);
-		Map<String, List<TaskContext>> tasks = getTasksFromWOTemplate(null, sectionMap, jobPlanId);
+	public static Map<String, List<TaskContext>> getTasksFromTemplate (JobPlanContext jobPlan) throws Exception {
+		Map<Long, TaskSectionTemplate> sectionMap = getTaskSectionTemplatesFromWOTemplate(null, jobPlan);
+		Map<String, List<TaskContext>> tasks = getTasksFromWOTemplate(null, sectionMap, jobPlan);
 		return tasks;
 	}
 	
-	public static Map<Long, TaskSectionTemplate> getTaskSectionTemplatesFromWOTemplate(WorkorderTemplate woTemplate, long jobPlanId) throws Exception {
+	public static Map<Long, TaskSectionTemplate> getTaskSectionTemplatesFromWOTemplate(WorkorderTemplate woTemplate, JobPlanContext jobPlan) throws Exception {
 		FacilioModule module = ModuleFactory.getTaskSectionTemplateModule();
 		List<FacilioField> fields = FieldFactory.getTaskSectionTemplateFields();
 		long parentId;
 		FacilioField parentIdField;
-		if (jobPlanId != -1) {
-			parentId = jobPlanId;
+		if (jobPlan != null) {
+			parentId = jobPlan.getId();
 			parentIdField = FieldFactory.getAsMap(fields).get("jobPlanId");
 		}
 		else {
@@ -848,18 +866,21 @@ public class TemplateAPI {
 			if (woTemplate != null) {
 				woTemplate.setSectionTemplates(sectionTemplates);
 			}
+			else {
+				jobPlan.setSectionTemplates(sectionTemplates);
+			}
 			return sections;
 		}
 		return null;
 	}
 	
-	private static Map<String, List<TaskContext>> getTasksFromWOTemplate(WorkorderTemplate woTemplate, Map<Long, TaskSectionTemplate> sectionMap, long jobPlanId) throws Exception {
+	private static Map<String, List<TaskContext>> getTasksFromWOTemplate(WorkorderTemplate woTemplate, Map<Long, TaskSectionTemplate> sectionMap,  JobPlanContext jobPlan) throws Exception {
 		FacilioModule module = ModuleFactory.getTaskTemplateModule();
 		List<FacilioField> fields = FieldFactory.getTaskTemplateFields();
 		long parentId;
 		FacilioField parentIdField;
-		if (jobPlanId != -1) {
-			parentId = jobPlanId;
+		if (jobPlan != null) {
+			parentId = jobPlan.getId();
 			parentIdField = FieldFactory.getAsMap(fields).get("jobPlanId");
 		}
 		else {
@@ -898,6 +919,12 @@ public class TemplateAPI {
 				woTemplate.setTaskTemplates(taskTemplates);
 				if(sectionMap != null) {
 					woTemplate.setSectionTemplates(new ArrayList<>(sectionMap.values()));
+				}
+			}
+			else {
+				jobPlan.setTaskTemplates(taskTemplates);
+				if(sectionMap != null) {
+					jobPlan.setSectionTemplates(new ArrayList<>(sectionMap.values()));
 				}
 			}
 

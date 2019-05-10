@@ -2136,10 +2136,25 @@
 		<action name="list" class="com.facilio.bmsconsole.actions.JobPlanAction" method="jobPlanList">
 		</action>
 		<action name="add" class="com.facilio.bmsconsole.actions.JobPlanAction" method="addJobPlan">
+			<result name="success" type="json">
+				<param name="ignoreHierarchy">false</param>
+				<param name="includeProperties">responseCode, ^result.*</param>
+				<param name="excludeProperties">result.jobPlan.*\.taskTemplates.*, result.jobPlan.*\.sectionTemplates.*</param>
+			</result>
 		</action>
 		<action name="update" class="com.facilio.bmsconsole.actions.JobPlanAction" method="updateJobPlan">
+			<result name="success" type="json">
+				<param name="ignoreHierarchy">false</param>
+				<param name="includeProperties">responseCode, ^result.*</param>
+				<param name="excludeProperties">result.jobPlan.*\.taskTemplates.*, result.jobPlan.*\.sectionTemplates.*</param>
+			</result>
 		</action>
 		<action name="*" class="com.facilio.bmsconsole.actions.JobPlanAction" method="jobPlanDetails">
+			<result name="success" type="json">
+				<param name="ignoreHierarchy">false</param>
+				<param name="includeProperties">responseCode, ^result.*</param>
+				<param name="excludeProperties">result.jobPlan.*\.taskTemplates.*, result.jobPlan.*\.sectionTemplates.*</param>
+			</result>
 			<param name = "id">{1}</param>
 		</action>
 	</package>

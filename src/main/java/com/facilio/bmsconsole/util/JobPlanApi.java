@@ -48,7 +48,7 @@ public class JobPlanApi {
 	}
 	
 	private static void setExtendedJobPlanProps(JobPlanContext jobPlan) throws Exception {
-		 Map<String, List<TaskContext>> tasks = TemplateAPI.getTasksFromTemplate(jobPlan.getId());
+		 Map<String, List<TaskContext>> tasks = TemplateAPI.getTasksFromTemplate(jobPlan);
 		 jobPlan.setTasks(tasks);
 	}
 

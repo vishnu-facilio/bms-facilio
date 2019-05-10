@@ -3,6 +3,10 @@ package com.facilio.bmsconsole.context;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.bmsconsole.templates.TaskSectionTemplate;
+import com.facilio.bmsconsole.templates.TaskTemplate;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 public class JobPlanContext {
 
 	private String name;
@@ -21,7 +25,7 @@ public class JobPlanContext {
 		this.id = id;
 	}
 
-	private long orgId;
+	private long orgId = -1;
 	public long getOrgId() {
 		return orgId;
 	}
@@ -35,6 +39,24 @@ public class JobPlanContext {
 	}
 	public void setTasks(Map<String, List<TaskContext>> tasks) {
 		this.tasks = tasks;
+	}
+	
+	@JsonIgnore
+	private List<TaskTemplate> taskTemplates;
+	public List<TaskTemplate> getTaskTemplates() {
+		return taskTemplates;
+	}
+	public void setTaskTemplates(List<TaskTemplate> taskTemplates) {
+		this.taskTemplates = taskTemplates;
+	}
+	
+	@JsonIgnore
+	private List<TaskSectionTemplate> sectionTemplates;
+	public List<TaskSectionTemplate> getSectionTemplates() {
+		return sectionTemplates;
+	}
+	public void setSectionTemplates(List<TaskSectionTemplate> sectionTemplates) {
+		this.sectionTemplates = sectionTemplates;
 	}
 	
 }

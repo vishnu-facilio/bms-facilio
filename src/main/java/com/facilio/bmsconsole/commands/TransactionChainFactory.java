@@ -2588,7 +2588,7 @@ public class TransactionChainFactory {
 		
 		public static Chain getUpdateJobPlanChain () {
 			Chain c = getDefaultChain();
-			c.addCommand(new AddJobPlanCommand());
+			c.addCommand(new UpdateJobPlanCommand());
 			return c;
 		}
 }
