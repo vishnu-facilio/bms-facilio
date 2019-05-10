@@ -460,12 +460,11 @@ public class AwsUtil
 				AmazonSimpleEmailService client = AmazonSimpleEmailServiceClientBuilder.standard()
 						.withRegion(Regions.US_WEST_2).withCredentials(getAWSCredentialsProvider()).build();
 				client.sendEmail(request);
-				LOGGER.info("Email sent!");
 				if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 151) {
 					LOGGER.info("Email sent to "+toAddress+"\n"+mailJson);
 				}
 			} catch (Exception ex) {
-				LOGGER.info("Error message: " + ex.getMessage());
+				LOGGER.info("Error message: " + toAddress + " " + ex.getMessage());
 				throw ex;
 			}
 		}
@@ -544,7 +543,7 @@ public class AwsUtil
 				
 			} catch (Exception ex) {
 				LOGGER.info("The email was not sent.");
-				LOGGER.info("Error message: " + ex.getMessage());
+				LOGGER.info("Error message: " + toAddress+" " + ex.getMessage());
 				throw ex;
 			}
 		}
