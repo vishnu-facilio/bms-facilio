@@ -318,7 +318,7 @@ public class ReportUtil {
 					xAxis.setField(getModule(xAxis.getModuleId(), xAxis.getModuleName(), modBean), getField(xAxis.getFieldId(), xAxis.getModuleName(), xAxis.getFieldName(), modBean));
 					
 					ReportYAxisContext yAxis = dataPoint.getyAxis();
-					yAxis.setField(getModule(xAxis.getModuleId(), xAxis.getModuleName(), modBean), getField(yAxis.getFieldId(), yAxis.getModuleName(), yAxis.getFieldName(), modBean));
+					yAxis.setField(getModule(yAxis.getModuleId(), yAxis.getModuleName(), modBean), getField(yAxis.getFieldId(), yAxis.getModuleName(), yAxis.getFieldName(), modBean));
 					
 					if (CollectionUtils.isNotEmpty(dataPoint.getGroupByFields())) {
 						for (ReportGroupByField groupByField : dataPoint.getGroupByFields()) {
