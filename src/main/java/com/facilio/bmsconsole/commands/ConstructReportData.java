@@ -240,12 +240,20 @@ public class ConstructReportData implements Command {
 			if (CollectionUtils.isNotEmpty(list)) {
 				long id = list.get(0).getId();
 				Criteria c = new Criteria();
-				Operator operator = NumberOperators.NOT_EQUALS;
-				if (moduleType == 2) {
-					operator = NumberOperators.EQUALS;
+				if (moduleType <= 0 || moduleType > 3) {
+					moduleType = 1;
 				}
-				c.addAndCondition(CriteriaAPI.getCondition("STATUS_ID", "status", String.valueOf(id), operator));
-				dataPointContext.setOtherCriteria(c);	
+				if (moduleType == 1) {
+					Operator operator = NumberOperators.NOT_EQUALS;
+					c.addAndCondition(CriteriaAPI.getCondition("STATUS_ID", "status", String.valueOf(id), operator));
+				}
+				else if (moduleType == 2) {
+					Operator operator = NumberOperators.EQUALS;
+					c.addAndCondition(CriteriaAPI.getCondition("STATUS_ID", "status", String.valueOf(id), operator));
+				}
+				if (!c.isEmpty()) {
+					dataPointContext.setOtherCriteria(c);
+				}
 			}
 		}
 				
