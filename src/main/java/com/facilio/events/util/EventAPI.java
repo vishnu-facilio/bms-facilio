@@ -1,14 +1,11 @@
 package com.facilio.events.util;
 
-import com.facilio.accounts.util.AccountUtil;
-import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.bmsconsole.criteria.*;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.templates.JSONTemplate;
 import com.facilio.chain.FacilioContext;
-import com.facilio.criteria.*;
+
 import com.facilio.db.criteria.*;
 import com.facilio.events.constants.EventConstants;
 import com.facilio.events.context.EventContext;

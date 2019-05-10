@@ -1,8 +1,8 @@
 package com.facilio.accounts.dto;
 
-import com.facilio.bmsconsole.criteria.*;
+
 import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.criteria.*;
+
 import com.facilio.db.criteria.*;
 import com.facilio.license.LicenseContext.FacilioLicense;
 import org.apache.commons.lang3.StringUtils;
