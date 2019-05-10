@@ -864,7 +864,7 @@ public class TemplateAPI {
 		}
 		else {
 			parentId = woTemplate.getId();
-			parentIdField = FieldFactory.getAsMap(fields).get("parentWOTemplateId");
+			parentIdField = FieldFactory.getAsMap(fields).get("parentTemplateId");
 		}
 		List<Map<String, Object>> taskProps = getTemplateJoinedProps(module, fields, CriteriaAPI.getCondition(parentIdField, String.valueOf(parentId), PickListOperators.IS));
 		
