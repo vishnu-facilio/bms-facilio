@@ -3,8 +3,8 @@ package com.facilio.bmsconsole.commands;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.context.WorkorderCostContext;
-import com.facilio.bmsconsole.criteria.CriteriaAPI;
-import com.facilio.bmsconsole.criteria.PickListOperators;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.PickListOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
@@ -13,13 +13,10 @@ import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 
-import io.jsonwebtoken.lang.Collections;
-
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 

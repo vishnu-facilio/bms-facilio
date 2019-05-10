@@ -8,7 +8,6 @@ import java.util.logging.Logger;
 
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.ZoneContext;
-import com.facilio.bmsconsole.criteria.BuildingOperator;
 
 public class ZoneAPI {
 	private static final Logger LOGGER = Logger.getLogger(ZoneAPI.class.getName());

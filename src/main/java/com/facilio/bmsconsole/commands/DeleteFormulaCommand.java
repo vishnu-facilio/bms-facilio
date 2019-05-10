@@ -3,7 +3,7 @@ package com.facilio.bmsconsole.commands;
 import com.facilio.beans.ModuleBean;
 import com.facilio.beans.ModuleCRUDBean;
 import com.facilio.bmsconsole.context.FormulaFieldContext;
-import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.util.FormulaFieldAPI;

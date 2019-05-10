@@ -13,11 +13,10 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
-import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.activity.ItemActivityType;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.bmsconsole.criteria.CriteriaAPI;
-import com.facilio.bmsconsole.criteria.NumberOperators;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.*;
 import com.facilio.bmsconsole.util.TransactionState;
 import com.facilio.bmsconsole.util.TransactionType;
@@ -25,13 +24,6 @@ import com.facilio.bmsconsole.workflow.rule.ApprovalState;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
 
 public class AddOrUpdateManualItemTransactionCommand implements Command {
 

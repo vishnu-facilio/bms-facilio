@@ -2,9 +2,9 @@ package com.facilio.bmsconsole.commands;
 
 import com.facilio.bmsconsole.context.AlarmContext;
 import com.facilio.bmsconsole.context.ReadingAlarmContext;
-import com.facilio.bmsconsole.criteria.CriteriaAPI;
-import com.facilio.bmsconsole.criteria.DateOperators;
-import com.facilio.bmsconsole.criteria.NumberOperators;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.DateOperators;
+import com.facilio.db.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.*;
 import com.facilio.bmsconsole.util.ReadingRuleAPI;
 import com.facilio.bmsconsole.workflow.rule.AlarmRuleContext;

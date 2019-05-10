@@ -2,14 +2,13 @@ package com.facilio.bmsconsole.commands;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AssetContext;
-import com.facilio.bmsconsole.context.ItemContext;
 import com.facilio.bmsconsole.context.PurchasedToolContext;
 import com.facilio.bmsconsole.context.ToolContext;
 import com.facilio.bmsconsole.context.ToolTransactionContext;
 import com.facilio.bmsconsole.context.ToolTypesContext;
-import com.facilio.bmsconsole.criteria.CriteriaAPI;
-import com.facilio.bmsconsole.criteria.EnumOperators;
-import com.facilio.bmsconsole.criteria.PickListOperators;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.EnumOperators;
+import com.facilio.db.criteria.PickListOperators;
 import com.facilio.bmsconsole.modules.*;
 import com.facilio.bmsconsole.util.ToolsApi;
 import com.facilio.bmsconsole.util.TransactionState;

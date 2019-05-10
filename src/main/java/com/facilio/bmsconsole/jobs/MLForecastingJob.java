@@ -13,6 +13,8 @@ import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.criteria.*;
+import com.facilio.db.criteria.*;
 import com.facilio.fw.BeanFactory;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.tasker.job.FacilioJob;
@@ -81,7 +83,7 @@ public class MLForecastingJob extends FacilioJob
 			
 			
 			//get all data from Ml_Forecasting_Data from last predictionInterval
-			Condition parentCondition=CriteriaAPI.getCondition("PARENT_ID","parentId", String.valueOf(predictionContext.getAssetid()),NumberOperators.EQUALS);
+			Condition parentCondition= CriteriaAPI.getCondition("PARENT_ID","parentId", String.valueOf(predictionContext.getAssetid()), NumberOperators.EQUALS);
 			Condition ttimeCondition=CriteriaAPI.getCondition("TTIME","ttime", getTtimeList(props),NumberOperators.EQUALS);
 			
 			FacilioField predictField = modBean.getField(predictionContext.getPredictedfieldid());

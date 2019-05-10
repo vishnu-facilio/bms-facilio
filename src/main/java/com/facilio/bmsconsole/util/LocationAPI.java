@@ -6,7 +6,7 @@ import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.context.LocationContext;
 import com.facilio.bmsconsole.context.StoreRoomContext;
 import com.facilio.bmsconsole.context.VendorContext;
-import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.*;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;

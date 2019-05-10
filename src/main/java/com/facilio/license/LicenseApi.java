@@ -1,7 +1,7 @@
 package com.facilio.license;
 
 import com.facilio.accounts.util.AccountConstants;
-import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.license.LicenseContext.FacilioLicense;

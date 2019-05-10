@@ -1,6 +1,8 @@
 package com.facilio.bmsconsole.modules;
 
 import com.facilio.bmsconsole.criteria.*;
+import com.facilio.criteria.*;
+import com.facilio.db.criteria.*;
 
 import java.util.Collections;
 import java.util.HashMap;

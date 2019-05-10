@@ -3,7 +3,7 @@ package com.facilio.bmsconsole.util;
 import com.facilio.bmsconsole.context.BenchmarkContext;
 import com.facilio.bmsconsole.context.BenchmarkUnit;
 import com.facilio.bmsconsole.modules.AggregateOperator.DateAggregateOperator;
-import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.*;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.unitconversion.Unit;

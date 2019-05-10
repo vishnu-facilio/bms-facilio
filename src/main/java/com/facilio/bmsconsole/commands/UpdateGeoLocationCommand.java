@@ -5,7 +5,7 @@ import com.facilio.bmsconsole.activity.AssetActivityType;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.SiteContext;
-import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.LookupField;
 import com.facilio.bmsconsole.modules.UpdateRecordBuilder;

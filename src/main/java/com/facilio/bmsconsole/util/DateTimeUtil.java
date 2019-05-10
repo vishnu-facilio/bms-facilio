@@ -3,7 +3,7 @@ package com.facilio.bmsconsole.util;
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
-import com.facilio.bmsconsole.criteria.DateRange;
+import com.facilio.db.criteria.DateRange;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.tasker.ScheduleInfo;
 import org.apache.log4j.LogManager;

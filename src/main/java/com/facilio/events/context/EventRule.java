@@ -1,6 +1,6 @@
 package com.facilio.events.context;
 
-import com.facilio.bmsconsole.criteria.Criteria;
+import com.facilio.db.criteria.Criteria;
 import org.json.simple.JSONObject;
 
 import java.util.List;

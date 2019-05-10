@@ -1,4 +1,4 @@
-package com.facilio.bmsconsole.criteria;
+package com.facilio.db.criteria;
 
 import java.sql.SQLException;
 import java.util.ArrayList;

@@ -5,7 +5,7 @@ import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.ItemContext;
 import com.facilio.bmsconsole.context.ItemTransactionsContext;
 import com.facilio.bmsconsole.context.ItemTypesContext;
-import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.*;
 import com.facilio.bmsconsole.util.TransactionType;
 import com.facilio.bmsconsole.workflow.rule.ApprovalState;
@@ -19,7 +19,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import com.facilio.bmsconsole.activity.ItemActivityType;
-import com.facilio.bmsconsole.commands.AddOrUpdateWorkorderItemsCommand;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 
 public class ApproveOrRejectItemCommand implements Command {

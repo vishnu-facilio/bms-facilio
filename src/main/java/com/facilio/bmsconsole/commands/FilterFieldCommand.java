@@ -8,9 +8,9 @@ import java.util.StringJoiner;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
-import com.facilio.bmsconsole.criteria.CommonOperators;
-import com.facilio.bmsconsole.criteria.Criteria;
-import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.db.criteria.CommonOperators;
+import com.facilio.db.criteria.Criteria;
+import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.constants.FacilioConstants;

@@ -13,6 +13,8 @@ import com.facilio.bmsconsole.modules.*;
 import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.criteria.*;
+import com.facilio.db.criteria.*;
 import com.facilio.fw.BeanFactory;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.tasker.job.FacilioJob;
@@ -198,7 +200,7 @@ public class MLForecastingLifetimePredictionJob extends FacilioJob
 			return true;
 		}
 		
-		Map<String,Condition> conditions = criteria.getConditions();
+		Map<String, Condition> conditions = criteria.getConditions();
 		for(Condition condition: conditions.values())
 		{
 			if(prop.containsKey(condition.getFieldName()))

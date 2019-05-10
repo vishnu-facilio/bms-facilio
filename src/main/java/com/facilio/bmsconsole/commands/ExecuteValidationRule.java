@@ -15,6 +15,8 @@ import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.criteria.*;
+import com.facilio.db.criteria.*;
 import com.facilio.exception.ReadingValidationException;
 import com.facilio.fw.BeanFactory;
 import org.apache.commons.chain.Command;

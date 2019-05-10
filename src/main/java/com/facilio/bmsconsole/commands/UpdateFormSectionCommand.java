@@ -6,8 +6,8 @@ import java.util.Map;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
-import com.facilio.bmsconsole.criteria.CriteriaAPI;
-import com.facilio.bmsconsole.criteria.NumberOperators;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.NumberOperators;
 import com.facilio.bmsconsole.forms.FormSection;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;

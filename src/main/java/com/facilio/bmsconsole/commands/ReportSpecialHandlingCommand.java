@@ -1,7 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.criteria.Criteria;
+import com.facilio.db.criteria.Criteria;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;

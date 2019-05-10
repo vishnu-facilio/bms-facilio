@@ -1,10 +1,10 @@
 package com.facilio.bmsconsole.modules;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.criteria.Condition;
-import com.facilio.bmsconsole.criteria.Criteria;
-import com.facilio.bmsconsole.criteria.CriteriaAPI;
-import com.facilio.bmsconsole.criteria.NumberOperators;
+import com.facilio.db.criteria.Condition;
+import com.facilio.db.criteria.Criteria;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.db.builder.DeleteBuilderIfc;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;

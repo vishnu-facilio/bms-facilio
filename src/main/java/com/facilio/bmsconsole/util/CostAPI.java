@@ -4,8 +4,8 @@ import com.facilio.bmsconsole.context.AdditionalCostContext;
 import com.facilio.bmsconsole.context.CostAssetsContext;
 import com.facilio.bmsconsole.context.CostContext;
 import com.facilio.bmsconsole.context.CostSlabContext;
-import com.facilio.bmsconsole.criteria.CriteriaAPI;
-import com.facilio.bmsconsole.criteria.PickListOperators;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.PickListOperators;
 import com.facilio.bmsconsole.modules.*;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 

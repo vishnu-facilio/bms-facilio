@@ -4,10 +4,10 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ItemContext;
 import com.facilio.bmsconsole.context.ItemTransactionsContext;
-import com.facilio.bmsconsole.criteria.BooleanOperators;
-import com.facilio.bmsconsole.criteria.Criteria;
-import com.facilio.bmsconsole.criteria.CriteriaAPI;
-import com.facilio.bmsconsole.criteria.NumberOperators;
+import com.facilio.db.criteria.BooleanOperators;
+import com.facilio.db.criteria.Criteria;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.*;
 import com.facilio.bmsconsole.util.ItemsApi;
 import com.facilio.bmsconsole.util.StoreroomApi;
@@ -19,7 +19,6 @@ import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 

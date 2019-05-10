@@ -13,6 +13,8 @@ import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.FacilioView.ViewType;
 import com.facilio.bmsconsole.view.SortField;
 import com.facilio.bmsconsole.view.ViewFactory;
+import com.facilio.criteria.*;
+import com.facilio.db.criteria.*;
 import com.facilio.fw.BeanFactory;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericInsertRecordBuilder;

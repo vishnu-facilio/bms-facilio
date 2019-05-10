@@ -1,4 +1,4 @@
-package com.facilio.bmsconsole.criteria;
+package com.facilio.db.criteria;
 
 import com.facilio.util.ExpressionEvaluator;
 import com.fasterxml.jackson.annotation.JsonIgnore;

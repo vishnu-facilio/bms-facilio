@@ -1,9 +1,9 @@
 package com.facilio.bmsconsole.context;
 
-import com.facilio.bmsconsole.criteria.Condition;
-import com.facilio.bmsconsole.criteria.CriteriaAPI;
-import com.facilio.bmsconsole.criteria.DateOperators;
-import com.facilio.bmsconsole.criteria.DateRange;
+import com.facilio.db.criteria.Condition;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.DateOperators;
+import com.facilio.db.criteria.DateRange;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.util.DateTimeUtil;
 import org.apache.commons.lang3.tuple.ImmutablePair;

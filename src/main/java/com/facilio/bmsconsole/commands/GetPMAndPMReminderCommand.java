@@ -3,7 +3,7 @@ package com.facilio.bmsconsole.commands;
 import com.facilio.bmsconsole.context.PMReminder;
 import com.facilio.bmsconsole.context.PMReminderAction;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
-import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.*;
 import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
 import com.facilio.bmsconsole.view.ViewFactory;

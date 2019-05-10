@@ -2,8 +2,8 @@ package com.facilio.db.builder;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
-import com.facilio.bmsconsole.criteria.Condition;
-import com.facilio.bmsconsole.criteria.Criteria;
+import com.facilio.db.criteria.Condition;
+import com.facilio.db.criteria.Criteria;
 import com.facilio.bmsconsole.modules.*;
 import com.facilio.fs.FileStore;
 import com.facilio.fs.FileStoreFactory;

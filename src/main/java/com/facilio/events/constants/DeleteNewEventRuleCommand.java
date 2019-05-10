@@ -1,6 +1,6 @@
 package com.facilio.events.constants;
 
-import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.events.context.EventRuleContext;

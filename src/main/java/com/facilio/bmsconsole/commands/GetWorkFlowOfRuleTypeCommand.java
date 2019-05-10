@@ -1,15 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
-import com.facilio.bmsconsole.criteria.BooleanOperators;
-import com.facilio.bmsconsole.criteria.Criteria;
-import com.facilio.bmsconsole.criteria.CriteriaAPI;
-import com.facilio.bmsconsole.criteria.NumberOperators;
-import com.facilio.bmsconsole.criteria.StringOperators;
-import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.FacilioModule;
-import com.facilio.bmsconsole.modules.FieldFactory;
-import com.facilio.bmsconsole.modules.FieldType;
-import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.db.criteria.Criteria;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;

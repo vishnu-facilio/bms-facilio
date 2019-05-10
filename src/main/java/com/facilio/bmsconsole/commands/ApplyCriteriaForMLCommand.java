@@ -4,17 +4,16 @@ import java.util.Hashtable;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedMap;
-import java.util.TreeMap;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.context.MLContext;
-import com.facilio.bmsconsole.criteria.BooleanOperators;
-import com.facilio.bmsconsole.criteria.Condition;
-import com.facilio.bmsconsole.criteria.Criteria;
-import com.facilio.bmsconsole.criteria.CriteriaAPI;
-import com.facilio.bmsconsole.criteria.Operator;
+import com.facilio.db.criteria.BooleanOperators;
+import com.facilio.db.criteria.Condition;
+import com.facilio.db.criteria.Criteria;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.Operator;
 import com.facilio.constants.FacilioConstants;
 
 public class ApplyCriteriaForMLCommand implements Command {

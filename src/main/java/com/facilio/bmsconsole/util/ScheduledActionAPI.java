@@ -1,7 +1,7 @@
 package com.facilio.bmsconsole.util;
 
 import com.facilio.bmsconsole.context.ScheduledActionContext;
-import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;

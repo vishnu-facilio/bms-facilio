@@ -2,8 +2,8 @@ package com.facilio.db.builder;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
-import com.facilio.bmsconsole.criteria.Condition;
-import com.facilio.bmsconsole.criteria.Criteria;
+import com.facilio.db.criteria.Condition;
+import com.facilio.db.criteria.Criteria;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.fw.LRUCache;
 import com.facilio.db.transaction.FacilioConnectionPool;
@@ -180,7 +180,7 @@ public class GenericDeleteRecordBuilder implements DeleteBuilderIfc<Map<String, 
 	 *     usage:<br>
 	 *         <pre>
 	 *             {@code
-	 *         Condition condition = new Condition();   {@link com.facilio.bmsconsole.criteria.Condition}
+	 *         Condition condition = new Condition();   {@link Condition }
 	 *         condition.setField(FieldFactory.getAgentMessageField(new FacilioModule()));
 	 *         condition.setColumnName("MESSAGE");
 	 *         condition.setFieldName("message");
@@ -216,7 +216,7 @@ public class GenericDeleteRecordBuilder implements DeleteBuilderIfc<Map<String, 
 	 *     usage:<br>
 	 *         <pre>
 	 *             {@code
-	 *              Condition condition = new Condition();  {@link com.facilio.bmsconsole.criteria.Condition}
+	 *              Condition condition = new Condition();  {@link Condition }
 	 *         Condition condition = new Condition();
 	 *         condition.setField(FieldFactory.getAgentMessageField(new FacilioModule()));
 	 *         condition.setColumnName("MESSAGE");
@@ -249,7 +249,7 @@ public class GenericDeleteRecordBuilder implements DeleteBuilderIfc<Map<String, 
 	 *  <pre>
 	 *      {@code
 	 *
-	 *         // for more details about Criteria class - {@link com.facilio.bmsconsole.criteria.Criteria }
+	 *         // for more details about Criteria class - {@link Criteria }
 	 *         criteria.addAndCondition(condition);
 	 *         criteria.addAndCondition(condition1);
 	 *         GenericDeleteRecordBuilder deleteBuilder = new GenericDeleteRecordBuilder()
@@ -272,7 +272,7 @@ public class GenericDeleteRecordBuilder implements DeleteBuilderIfc<Map<String, 
 	 *  <pre>
 	 *      {@code
 	 *
-	 *         // for more details about Criteria class - {@link com.facilio.bmsconsole.criteria.Criteria }
+	 *         // for more details about Criteria class - {@link Criteria }
 	 *         criteria.addAndCondition(condition);
 	 *         criteria1.addAndCondition(condition1);
 	 *         GenericDeleteRecordBuilder deleteBuilder = new GenericDeleteRecordBuilder()

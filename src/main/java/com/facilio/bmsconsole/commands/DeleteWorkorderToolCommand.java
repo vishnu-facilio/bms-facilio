@@ -2,10 +2,9 @@ package com.facilio.bmsconsole.commands;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AssetContext;
-import com.facilio.bmsconsole.context.PurchasedToolContext;
 import com.facilio.bmsconsole.context.ToolContext;
 import com.facilio.bmsconsole.context.WorkorderToolsContext;
-import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.*;
 import com.facilio.bmsconsole.util.TransactionState;
 import com.facilio.constants.FacilioConstants;

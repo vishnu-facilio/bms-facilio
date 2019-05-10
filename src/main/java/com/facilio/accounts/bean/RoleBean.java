@@ -2,7 +2,7 @@ package com.facilio.accounts.bean;
 
 import com.facilio.accounts.dto.Permissions;
 import com.facilio.accounts.dto.Role;
-import com.facilio.bmsconsole.criteria.Criteria;
+import com.facilio.db.criteria.Criteria;
 
 import java.util.Collection;
 import java.util.List;
