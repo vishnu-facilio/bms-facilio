@@ -2202,6 +2202,11 @@
 			<param name="moduleName">inventoryrequest</param>
 			<param name="permission">READ</param>
 		</action>
+		<action name="lineItemListByStoreRoomId"
+			class="com.facilio.bmsconsole.actions.InventoryRequestAction" method="getInventoryRequestLineItemListByStoreRoomId">
+			<param name="moduleName">inventoryrequest</param>
+			<param name="permission">READ</param>
+		</action>
 		<action name="lineItemListByParentId"
 			class="com.facilio.bmsconsole.actions.InventoryRequestAction" method="getInventoryRequestLineItemListByParentId">
 			<param name="moduleName">inventoryrequest</param>

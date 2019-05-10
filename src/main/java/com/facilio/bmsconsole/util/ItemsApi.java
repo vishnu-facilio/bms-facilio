@@ -4,6 +4,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ItemContext;
 import com.facilio.bmsconsole.context.ItemTypesContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
@@ -16,6 +17,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.apache.commons.collections4.CollectionUtils;
 
 public class ItemsApi {
 	public static Map<Long, ItemTypesContext> getItemTypesMap(long id) throws Exception {
@@ -68,6 +71,21 @@ public class ItemsApi {
 			return items.get(0);
 		}
 		return null;
+	}
+	
+	public static List<ItemContext> getItemsForStore(long storeId) throws Exception {
+		if (storeId <= 0) {
+			return null;
+		}
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ITEM);
+		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.ITEM);
+		SelectRecordsBuilder<ItemContext> selectBuilder = new SelectRecordsBuilder<ItemContext>().select(fields)
+				.table(module.getTableName()).moduleName(module.getName()).beanClass(ItemContext.class)
+				.andCondition(CriteriaAPI.getCondition("STORE_ROOM_ID", "storeRoom", String.valueOf(storeId), NumberOperators.EQUALS))
+				;
+		List<ItemContext> items = selectBuilder.get();
+		return items;
 	}
 
 	public static Map<String, Long> getAllItemTypes() throws Exception {

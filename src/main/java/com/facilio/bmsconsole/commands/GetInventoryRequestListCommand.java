@@ -5,17 +5,20 @@ import java.util.Map;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.InventoryRequestContext;
+import com.facilio.bmsconsole.context.InventoryRequestLineItemContext;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
+import com.facilio.bmsconsole.util.InventoryRequestAPI;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
@@ -99,6 +102,12 @@ public class GetInventoryRequestListCommand implements Command {
 		}
 
 		List<InventoryRequestContext> records = builder.get();
+		if(CollectionUtils.isNotEmpty(records)) {
+			for(InventoryRequestContext request : records) {
+				List<InventoryRequestLineItemContext> lineItems = InventoryRequestAPI.getLineItemsForInventoryRequest(String.valueOf(request.getId()));
+				request.setLineItems(lineItems);
+			}
+		}
 	
 		if (records != null && !records.isEmpty()) {
 			if (getCount != null && getCount) {

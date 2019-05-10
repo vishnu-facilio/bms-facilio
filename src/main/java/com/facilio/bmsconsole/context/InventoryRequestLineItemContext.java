@@ -116,6 +116,14 @@ public class InventoryRequestLineItemContext extends ModuleBaseWithCustomFields{
 		}
 	}
 
+	private double usedQuantity;
+	
+	public double getUsedQuantity() {
+		return usedQuantity;
+	}
+	public void setUsedQuantity(double usedQuantity) {
+		this.usedQuantity = usedQuantity;
+	}
 	public WorkorderItemContext constructWorkOrderItemContext() {
 		WorkorderItemContext woItem = new WorkorderItemContext();
 		woItem.setItem(this.getItem());

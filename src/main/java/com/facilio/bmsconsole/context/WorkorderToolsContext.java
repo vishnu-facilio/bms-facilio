@@ -42,4 +42,5 @@ public class WorkorderToolsContext extends ToolTransactionContext {
 	public long getDuration() {
 		return duration;
 	}
+	
 }

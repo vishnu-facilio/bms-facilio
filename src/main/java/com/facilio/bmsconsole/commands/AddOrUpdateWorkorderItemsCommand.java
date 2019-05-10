@@ -8,6 +8,8 @@ import com.facilio.bmsconsole.context.ItemContext.CostType;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.*;
+import com.facilio.bmsconsole.util.InventoryRequestAPI;
+import com.facilio.bmsconsole.util.ItemsApi;
 import com.facilio.bmsconsole.util.TransactionState;
 import com.facilio.bmsconsole.util.TransactionType;
 import com.facilio.bmsconsole.workflow.rule.ApprovalState;
@@ -56,6 +58,11 @@ public class AddOrUpdateWorkorderItemsCommand implements Command {
 				ItemTypesContext itemType = getItemType(itemTypesId);
 				StoreRoomContext storeRoom = item.getStoreRoom();
 				WorkOrderContext wo = getWorkorderContext(parentId);
+				if(itemType.isApprovalNeeded()) {
+					if(!InventoryRequestAPI.checkQuantityForWoItemNeedingApproval(item.getId(), parentId, workorderitem.getQuantity())) {
+						throw new IllegalArgumentException("Please check the quantity approved in the request");
+					}
+				}
 				if (workorderitem.getId() > 0) {
 					SelectRecordsBuilder<WorkorderItemContext> selectBuilder = new SelectRecordsBuilder<WorkorderItemContext>()
 							.select(workorderItemFields).table(workorderItemsModule.getTableName())

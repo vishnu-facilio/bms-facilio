@@ -1,9 +1,11 @@
 package com.facilio.bmsconsole.util;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.ItemContext;
 import com.facilio.bmsconsole.context.ToolContext;
 import com.facilio.bmsconsole.context.ToolTypesContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
@@ -16,6 +18,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.apache.commons.collections4.CollectionUtils;
 
 public class ToolsApi {
 	public static ToolTypesContext getToolTypes(long id) throws Exception {
@@ -75,4 +79,20 @@ public class ToolsApi {
 		}
 		return null;
 	}
+	
+	public static List<ToolContext> getToolsForStore(long storeId) throws Exception {
+		if (storeId <= 0) {
+			return null;
+		}
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.TOOL);
+		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.TOOL);
+		SelectRecordsBuilder<ToolContext> selectBuilder = new SelectRecordsBuilder<ToolContext>().select(fields)
+				.table(module.getTableName()).moduleName(module.getName()).beanClass(ToolContext.class)
+				.andCondition(CriteriaAPI.getCondition("STORE_ROOM_ID", "storeRoom", String.valueOf(storeId), NumberOperators.EQUALS))
+				;
+		List<ToolContext> tools = selectBuilder.get();
+		return tools;
+	}
+
 }

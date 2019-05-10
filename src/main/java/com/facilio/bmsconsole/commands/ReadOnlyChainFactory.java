@@ -887,5 +887,12 @@ public class ReadOnlyChainFactory {
 		chain.addCommand(new GetInventoryRequestLineItemsForParentIdCommand());
 		return chain;
 	}
+	
+	public static Chain getInventoryRequestLineItemListByStoreRoomIdChain() {
+		Chain chain = getDefaultChain();
+		chain.addCommand(SetTableNamesCommand.getForInventoryRequest());
+		chain.addCommand(new GetInventoryRequestLineItemsForStoreRoomIdCommand());
+		return chain;
+	}
 
 }

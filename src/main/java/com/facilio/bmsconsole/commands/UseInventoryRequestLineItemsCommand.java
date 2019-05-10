@@ -58,7 +58,7 @@ public class UseInventoryRequestLineItemsCommand implements Command{
 		FacilioField statusField = modBean.getField("status", inventoryRequestLineItemModule.getName());
 		FacilioField parentIdField = modBean.getField("parentId", inventoryRequestLineItemModule.getName());
 		
-		updateMap.put("status", InventoryRequestLineItemContext.Status.ISSUED);
+		updateMap.put("status", InventoryRequestLineItemContext.Status.ISSUED.getValue());
 		updateMap.put("parentId", parentId);
 		
 		List<FacilioField> updatedfields = new ArrayList<FacilioField>();

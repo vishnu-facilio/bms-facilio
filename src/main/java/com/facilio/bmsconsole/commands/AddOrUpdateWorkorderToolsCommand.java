@@ -4,6 +4,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.*;
+import com.facilio.bmsconsole.util.InventoryRequestAPI;
 import com.facilio.bmsconsole.util.TransactionState;
 import com.facilio.bmsconsole.util.TransactionType;
 import com.facilio.bmsconsole.workflow.rule.ApprovalState;
@@ -44,7 +45,14 @@ public class AddOrUpdateWorkorderToolsCommand implements Command {
 				toolTypesId = tool.getToolType().getId();
 				ToolTypesContext toolTypes = getToolType(toolTypesId);
 				StoreRoomContext storeRoom = tool.getStoreRoom();
+				if(toolTypes.isApprovalNeeded()) {
+					if(!InventoryRequestAPI.checkQuantityForWoToolNeedingApproval(tool.getId(), parentId, workorderTool.getQuantity())) {
+						throw new IllegalArgumentException("Please check the quantity approved in the request");
+					}
+				}
 				if (workorderTool.getId() > 0) {
+					
+					
 					SelectRecordsBuilder<WorkorderToolsContext> selectBuilder = new SelectRecordsBuilder<WorkorderToolsContext>()
 							.select(workorderToolsFields).table(workorderToolsModule.getTableName())
 							.moduleName(workorderToolsModule.getName()).beanClass(WorkorderToolsContext.class)

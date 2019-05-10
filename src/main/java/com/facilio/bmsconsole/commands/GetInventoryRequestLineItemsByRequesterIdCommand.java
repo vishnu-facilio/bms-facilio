@@ -61,7 +61,7 @@ public class GetInventoryRequestLineItemsByRequesterIdCommand implements Command
 		for(InventoryRequestContext request : records)	{
 			idString.add(String.valueOf(request.getId()));
 		}
-		List<InventoryRequestLineItemContext> lineItems = InventoryRequestAPI.getLineItemsForInventoryRequest(idString.toString());
+		List<InventoryRequestLineItemContext> lineItems = InventoryRequestAPI.getLineItemsForInventoryRequest(idString.toString(), null, null);
 		context.put(FacilioConstants.ContextNames.INVENTORY_REQUEST_LINE_ITEMS, lineItems);
 		return false;
 	}

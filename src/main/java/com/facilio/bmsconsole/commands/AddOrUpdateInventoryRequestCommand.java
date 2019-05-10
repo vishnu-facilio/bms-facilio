@@ -11,6 +11,9 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.InventoryRequestContext;
 import com.facilio.bmsconsole.context.InventoryRequestLineItemContext;
+import com.facilio.bmsconsole.context.InventoryType;
+import com.facilio.bmsconsole.context.ItemContext;
+import com.facilio.bmsconsole.context.ToolContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.DeleteRecordBuilder;
@@ -19,6 +22,8 @@ import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.InsertRecordBuilder;
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
+import com.facilio.bmsconsole.util.ItemsApi;
+import com.facilio.bmsconsole.util.ToolsApi;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 
@@ -68,10 +73,22 @@ public class AddOrUpdateInventoryRequestCommand implements Command{
 	}
 	
 	
-	private void updateLineItems(InventoryRequestContext inventoryRequestContext) {
+	private void updateLineItems(InventoryRequestContext inventoryRequestContext) throws Exception{
 		for (InventoryRequestLineItemContext lineItemContext : inventoryRequestContext.getLineItems()) {
 			lineItemContext.setInventoryRequestId(inventoryRequestContext.getId());
 			lineItemContext.setStatus(InventoryRequestLineItemContext.Status.YET_TO_BE_ISSUED);
+			if(lineItemContext.getInventoryType() == InventoryType.ITEM.getValue()) {
+				ItemContext item = ItemsApi.getItems(lineItemContext.getItem().getId());
+				if(item.getQuantity() < lineItemContext.getQuantity()) {
+					throw new IllegalArgumentException("Insufficient quantity in inventory");
+				}
+			}
+			else if(lineItemContext.getInventoryType() == InventoryType.TOOL.getValue()) {
+				ToolContext tool = ToolsApi.getTool(lineItemContext.getTool().getId());
+				if(tool.getQuantity() < lineItemContext.getQuantity()) {
+					throw new IllegalArgumentException("Insufficient quantity in inventory");
+				}  
+			}
 			if(inventoryRequestContext.getParentId() != -1) {
 				lineItemContext.setParentId(inventoryRequestContext.getParentId());
 			}

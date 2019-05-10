@@ -88,6 +88,15 @@ public class InventoryRequestAction extends FacilioAction {
 		this.parentId = parentId;
 	}
 
+	private long storeRoomId;
+	
+	public long getStoreRoomId() {
+		return storeRoomId;
+	}
+	public void setStoreRoomId(long storeRoomId) {
+		this.storeRoomId = storeRoomId;
+	}
+
 	private int status;
 	
 	public int getStatus() {
@@ -253,6 +262,20 @@ public class InventoryRequestAction extends FacilioAction {
 		
 		return SUCCESS;
 	}
+	
+	public String getInventoryRequestLineItemListByStoreRoomId() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.STORE_ROOM_ID, storeRoomId);
+		context.put(FacilioConstants.ContextNames.STATUS, status);
+		
+		Chain lineItemListChain = ReadOnlyChainFactory.getInventoryRequestLineItemListByStoreRoomIdChain();
+		lineItemListChain.execute(context);
+		setLineItems((List<InventoryRequestLineItemContext>)context.get(FacilioConstants.ContextNames.INVENTORY_REQUEST_LINE_ITEMS));
+		setResult(FacilioConstants.ContextNames.INVENTORY_REQUEST_LINE_ITEMS, lineItems);
+		
+		return SUCCESS;
+	}
+	
 	
 	public String useLineItems() throws Exception {
 		FacilioContext context = new FacilioContext();

@@ -10,4 +10,7 @@ public class WorkorderItemContext extends ItemTransactionsContext{
 	public void setCost(double cost) {
 		this.cost = cost;
 	}
+	
+	
+	
 }
