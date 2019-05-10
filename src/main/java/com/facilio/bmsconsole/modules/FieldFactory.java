@@ -1,14 +1,22 @@
 package com.facilio.bmsconsole.modules;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
+import org.apache.commons.lang3.tuple.Pair;
+
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.agent.AgentKeys;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.events.tasker.tasks.EventUtil;
-import org.apache.commons.lang3.tuple.Pair;
-
-import java.util.*;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 public class FieldFactory {
 
@@ -4493,6 +4501,7 @@ public class FieldFactory {
 		fields.add(getIdField(module));
 		fields.add(getField("isEditable", "IS_EDITABLE", module, FieldType.BOOLEAN));
 		fields.add(getField("parentWOTemplateId", "PARENT_WO_TEMPLATE_ID", module, FieldType.LOOKUP));
+		fields.add(getField("jobPlanId", "JOB_PLAN_ID", module, FieldType.LOOKUP));
 		fields.add(getField("sequenceNumber", "SEQUENCE_NUMBER", module, FieldType.NUMBER));
 		fields.add(getField("spaceCategoryId", "SPACE_CATEGORY_ID", module, FieldType.LOOKUP));
 		fields.add(getField("assetCategoryId", "ASSET_CATEGORY_ID", module, FieldType.LOOKUP));
@@ -4542,6 +4551,7 @@ public class FieldFactory {
 		fields.add(getField("resourceId", "RESOURCE_ID", module, FieldType.LOOKUP));
 		fields.add(getField("duration", "DURATION", module, FieldType.LOOKUP));
 		fields.add(getField("parentTemplateId", "PARENT_WO_TEMPLATE_ID", module, FieldType.LOOKUP));
+		fields.add(getField("jobPlanId", "JOB_PLAN_ID", module, FieldType.LOOKUP));
 		fields.add(getField("inputType", "INPUT_TYPE", module, FieldType.NUMBER));
 		fields.add(getField("readingFieldId", "READING_ID", module, FieldType.LOOKUP));
 		fields.add(getField("sectionId", "SECTION_ID", module, FieldType.LOOKUP));
@@ -5609,6 +5619,16 @@ public class FieldFactory {
 		
 		fields.add(getField("type", "TYPE", module, FieldType.STRING));
 		fields.add(getField("minVersion", "MIN_VERSION", module, FieldType.DECIMAL));
+		
+		return fields;
+	}
+	
+	public static List<FacilioField> getJobPlanFields() {
+		FacilioModule module = ModuleFactory.getJobPlanModule();
+		List<FacilioField> fields = new ArrayList<>();
+		
+		fields.add(getIdField(module));
+		fields.add(getNameField(module));
 		
 		return fields;
 	}

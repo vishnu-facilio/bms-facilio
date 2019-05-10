@@ -106,7 +106,7 @@ public class ScheduleWOStatusChange extends FacilioJob {
         			
         			List<Map<String, Object>> props = PreventiveMaintenanceAPI.getTaskSectionTemplateTriggers(wo.getTrigger().getId());
         			
-        			Map<Long, TaskSectionTemplate> sectionMap = TemplateAPI.getTaskSectionTemplatesFromWOTemplate(pm.getWoTemplate());
+        			Map<Long, TaskSectionTemplate> sectionMap = TemplateAPI.getTaskSectionTemplatesFromWOTemplate(pm.getWoTemplate(), -1);
         			
     				for (Map<String, Object> prop : props) {
     					

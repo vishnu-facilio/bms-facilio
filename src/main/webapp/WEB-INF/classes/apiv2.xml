@@ -2130,5 +2130,18 @@
 			<param name = "spaceId">{1}</param>
 		</action>
 	</package>
+	
+	<package name="jobPlanApiV2" namespace="/api/v2/jobplans" extends="v2Api">
+		
+		<action name="list" class="com.facilio.bmsconsole.actions.JobPlanAction" method="jobPlanList">
+		</action>
+		<action name="add" class="com.facilio.bmsconsole.actions.JobPlanAction" method="addJobPlan">
+		</action>
+		<action name="update" class="com.facilio.bmsconsole.actions.JobPlanAction" method="updateJobPlan">
+		</action>
+		<action name="*" class="com.facilio.bmsconsole.actions.JobPlanAction" method="jobPlanDetails">
+			<param name = "id">{1}</param>
+		</action>
+	</package>
 
 </struts>

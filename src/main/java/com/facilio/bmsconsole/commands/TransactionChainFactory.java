@@ -1,8 +1,8 @@
 package com.facilio.bmsconsole.commands;
 
-import com.facilio.accounts.util.AccountUtil;
 import org.apache.commons.chain.Chain;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.activity.AddActivitiesCommand;
 import com.facilio.agent.ConfigureAgentCommand;
 import com.facilio.agent.ConfigureControllerCommand;
@@ -11,7 +11,6 @@ import com.facilio.bmsconsole.actions.PurchaseOrderCompleteCommand;
 import com.facilio.bmsconsole.commands.data.PopulateImportProcessCommand;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.chain.FacilioChain;
-import com.facilio.constants.FacilioConstants;
 
 public class TransactionChainFactory {
 
@@ -2578,6 +2577,18 @@ public class TransactionChainFactory {
 			Chain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForWorkOrder());
 			c.addCommand(new ConvertToRulesCommand());
+			return c;
+		}
+		
+		public static Chain getAddJobPlanChain () {
+			Chain c = getDefaultChain();
+			c.addCommand(new AddJobPlanCommand());
+			return c;
+		}
+		
+		public static Chain getUpdateJobPlanChain () {
+			Chain c = getDefaultChain();
+			c.addCommand(new AddJobPlanCommand());
 			return c;
 		}
 }

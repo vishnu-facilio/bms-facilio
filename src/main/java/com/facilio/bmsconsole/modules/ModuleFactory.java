@@ -2077,4 +2077,12 @@ public class ModuleFactory {
 		module.setTableName("MobileDetails");
 		return module;
 	}
+	
+	public static FacilioModule getJobPlanModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName("jobPlan");
+		module.setDisplayName("Job Plan");
+		module.setTableName("Job_Plan");
+		return module;
+	}
 }

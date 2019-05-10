@@ -34,7 +34,7 @@ public class GetFormListCommand implements Command {
 			}
 		}
 		List<FacilioForm> formsList = new ArrayList<>(newForms.values());
-		formsList.removeIf(form -> form.isHideInList() || (AccountUtil.getCurrentAccount().isFromMobile() && !form.isShowInMobile()));
+		formsList.removeIf(form -> form.isHideInList() || (AccountUtil.getCurrentAccount().isFromMobile() && !form.getShowInMobile()));
 
 		context.put(FacilioConstants.ContextNames.FORMS, formsList);
 		return false;
