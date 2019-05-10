@@ -104,7 +104,7 @@ public class GetInventoryRequestListCommand implements Command {
 		List<InventoryRequestContext> records = builder.get();
 		if(CollectionUtils.isNotEmpty(records)) {
 			for(InventoryRequestContext request : records) {
-				List<InventoryRequestLineItemContext> lineItems = InventoryRequestAPI.getLineItemsForInventoryRequest(String.valueOf(request.getId()));
+				List<InventoryRequestLineItemContext> lineItems = InventoryRequestAPI.getLineItemsForInventoryRequest(String.valueOf(request.getId()), null, null);
 				request.setLineItems(lineItems);
 			}
 		}
