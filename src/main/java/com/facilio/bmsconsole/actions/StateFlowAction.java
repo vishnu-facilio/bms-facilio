@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.actions;
 
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.chain.Chain;
@@ -158,11 +159,28 @@ public class StateFlowAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		
 		context.put(FacilioConstants.ContextNames.RECORD, stateFlow);
-//		context.put(FacilioConstants.ContextNames.ACTIONS_LIST, stateFlowActions);
 		Chain chain = TransactionChainFactory.getAddOrUpdateStateFlow();
 		chain.execute(context);
 		
 		setResult(FacilioConstants.ContextNames.STATE_FLOW, stateFlow);
+		return SUCCESS;
+	}
+	
+	private List<StateFlowRuleContext> stateFlows;
+	public List<StateFlowRuleContext> getStateFlows() {
+		return stateFlows;
+	}
+	public void setStateFlows(List<StateFlowRuleContext> stateFlows) {
+		this.stateFlows = stateFlows;
+	}
+	
+	public String rearrangeStateFlows() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.STATE_FLOW_LIST, getStateFlows());
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+		
+		Chain c = TransactionChainFactory.getRearrangeStateFlows();
+		c.execute(context);
 		return SUCCESS;
 	}
 	

@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.util;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -520,11 +521,16 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 	}
 
 	public static List<StateFlowRuleContext> getAllStateFlow(FacilioModule module) throws Exception {
+		List<FacilioField> fields = FieldFactory.getStateFlowFields();
+		fields.addAll(FieldFactory.getWorkflowRuleFields());
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
-				.table(ModuleFactory.getStateFlowModule().getTableName())
-				.select(FieldFactory.getStateFlowFields())
+				.table(ModuleFactory.getWorkflowRuleModule().getTableName())
+				.select(fields)
+				.innerJoin(ModuleFactory.getStateFlowModule().getTableName())
+					.on(ModuleFactory.getWorkflowRuleModule().getTableName() + ".ID = " + ModuleFactory.getStateFlowModule().getTableName() + ".ID")
 				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(ModuleFactory.getStateFlowModule()))
-				.andCondition(CriteriaAPI.getCondition("MODULEID", "moduleId", String.valueOf(module.getModuleId()), NumberOperators.EQUALS));
+				.andCondition(CriteriaAPI.getCondition("MODULEID", "moduleId", String.valueOf(module.getModuleId()), NumberOperators.EQUALS))
+				.orderBy("EXECUTION_ORDER");
 		List<Map<String, Object>> list = builder.get();
 		List<StateFlowRuleContext> stateFlowList = FieldUtil.getAsBeanListFromMapList(list, StateFlowRuleContext.class);
 		return stateFlowList;

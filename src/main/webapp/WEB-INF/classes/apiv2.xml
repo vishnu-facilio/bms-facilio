@@ -110,6 +110,8 @@
 		<action name="addOrUpdate"
 			class="com.facilio.bmsconsole.actions.StateFlowAction" method="addOrUpdateStateFlow" />
 		
+		<action name="rearrange"
+			class="com.facilio.bmsconsole.actions.StateFlowAction" method="rearrangeStateFlows" />
 		<action name="list"
 			class="com.facilio.bmsconsole.actions.StateFlowAction" method="getStateFlowList" />
 		<action name="view"

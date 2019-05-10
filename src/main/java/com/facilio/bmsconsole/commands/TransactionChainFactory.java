@@ -2605,5 +2605,11 @@ public class TransactionChainFactory {
 			c.addCommand(new DeleteStateFlowTransition());
 			return c;
 		}
+
+		public static Chain getRearrangeStateFlows() {
+			Chain c = getDefaultChain();
+			c.addCommand(new ChangeTransitionExecutionOrderCommand());
+			return c;
+		}
 }
 
