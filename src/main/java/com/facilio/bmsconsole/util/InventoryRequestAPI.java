@@ -14,6 +14,7 @@ import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.LookupField;
+import com.facilio.bmsconsole.modules.LookupFieldMeta;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
@@ -27,8 +28,24 @@ public class InventoryRequestAPI {
 		List<FacilioField> fields = modBean.getAllFields(module.getName());
 		Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
 		
-		List<LookupField> fetchLookup = Arrays.asList((LookupField) fieldsAsMap.get("item"),
-				(LookupField) fieldsAsMap.get("tool"));
+
+		LookupFieldMeta itemField = new LookupFieldMeta((LookupField) fieldsAsMap.get("item"));
+		LookupField itemTypeField = (LookupField) modBean.getField("itemType", FacilioConstants.ContextNames.ITEM);
+		itemField.addChildLookupFIeld(itemTypeField);
+		
+		LookupField storeRoomField = (LookupField) modBean.getField("storeRoom", FacilioConstants.ContextNames.ITEM);
+		itemField.addChildLookupFIeld(storeRoomField);
+		
+		LookupFieldMeta toolField = new LookupFieldMeta((LookupField) fieldsAsMap.get("tool"));
+		LookupField toolTypeField = (LookupField) modBean.getField("toolType", FacilioConstants.ContextNames.TOOL);
+		toolField.addChildLookupFIeld(toolTypeField);
+		
+		LookupField storeRoomForToolField = (LookupField) modBean.getField("storeRoom", FacilioConstants.ContextNames.TOOL);
+		toolField.addChildLookupFIeld(storeRoomForToolField);
+		
+		
+		List<LookupField>fetchLookup = Arrays.asList(itemField,toolField);
+		
 		SelectRecordsBuilder<InventoryRequestLineItemContext> builder = new SelectRecordsBuilder<InventoryRequestLineItemContext>()
 				.module(module)
 				.beanClass(FacilioConstants.ContextNames.getClassFromModuleName(module.getName()))
