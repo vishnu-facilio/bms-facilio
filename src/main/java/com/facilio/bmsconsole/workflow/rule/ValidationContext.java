@@ -1,10 +1,12 @@
 package com.facilio.bmsconsole.workflow.rule;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.json.annotations.JSON;
 
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
@@ -65,7 +67,9 @@ public class ValidationContext {
 	public boolean validate(ModuleBaseWithCustomFields moduleRecord) throws Exception {
 		if (criteria != null && !criteria.isEmpty()) {
 			Map<String, Object> prop = FieldUtil.getAsProperties(moduleRecord);
-			return criteria.computePredicate(prop).evaluate(moduleRecord);
+			Map<String, Object> placeHolders = new HashMap<>();
+			CommonCommandUtil.appendModuleNameInKey(null, "workorder", prop, placeHolders);
+			return criteria.computePredicate(placeHolders).evaluate(moduleRecord);
 		}
 		return true;
 	}

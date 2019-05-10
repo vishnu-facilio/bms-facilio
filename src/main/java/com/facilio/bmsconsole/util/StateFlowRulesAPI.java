@@ -30,7 +30,6 @@ import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.bmsconsole.modules.ModuleFactory;
-import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.modules.UpdateChangeSet;
 import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
 import com.facilio.bmsconsole.stateflow.TimerFieldUtil;
@@ -43,7 +42,6 @@ import com.facilio.bmsconsole.workflow.rule.StateflowTransitionContext.Transitio
 import com.facilio.bmsconsole.workflow.rule.ValidationContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.chain.FacilioContext;
-import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericDeleteRecordBuilder;
 import com.facilio.sql.GenericInsertRecordBuilder;
@@ -59,6 +57,8 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 		
 		List<ValidationContext> validations = ApprovalRulesAPI.getValidations(stateFlowRule.getId());
 		stateFlowRule.setValidations(validations);
+		
+		getStateFlowTransitionChildren(stateFlowRule);
 		return stateFlowRule;
 	}
 	
@@ -575,6 +575,26 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 			return (StateFlowRuleContext) stateTransitions.get(0);
 		}
 		return null;
+	}
+
+	public static void addStateFlowTransitionChildren(StateflowTransitionContext rule) throws Exception {
+		if (rule.getForm() != null) {
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			long formId = FormsAPI.createForm(rule.getForm(), modBean.getModule(rule.getModuleId()));
+			rule.setFormId(formId);
+		}
+	}
+	
+	public static void getStateFlowTransitionChildren(StateflowTransitionContext rule) throws Exception {
+		if (rule.getFormId() > 0) {
+			rule.setForm(FormsAPI.getFormFromDB(rule.getFormId()));
+		}
+	}
+	
+	public static void deleteStateFlowTransitionChildren(StateflowTransitionContext rule) throws Exception {
+		if (rule.getFormId() > 0) {
+			FormsAPI.deleteForms(Collections.singletonList(rule.getFormId()));
+		}
 	}
 
 }

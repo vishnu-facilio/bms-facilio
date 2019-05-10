@@ -207,7 +207,7 @@ public class Condition implements Serializable {
 				return operator.getPredicate(fieldName, criteriaValue);
 			}
 			else if (operator instanceof FieldOperator) {
-				if (MapUtils.isEmpty(placeHolders) || !placeHolders.containsKey(getValue())) {
+				if (MapUtils.isEmpty(placeHolders)) {
 					return null;
 				}
 				return operator.getPredicate(getFieldName(), placeHolders.get(getValue()));

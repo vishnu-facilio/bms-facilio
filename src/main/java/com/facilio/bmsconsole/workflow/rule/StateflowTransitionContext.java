@@ -14,6 +14,7 @@ import com.facilio.bmsconsole.context.SharingContext;
 import com.facilio.bmsconsole.context.SingleSharingContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.PickListOperators;
+import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
@@ -51,6 +52,14 @@ public class StateflowTransitionContext extends WorkflowRuleContext {
 	}
 	public void setStateFlowId(long stateFlowId) {
 		this.stateFlowId = stateFlowId;
+	}
+	
+	private FacilioForm form;
+	public FacilioForm getForm() {
+		return form;
+	}
+	public void setForm(FacilioForm form) {
+		this.form = form;
 	}
 	
 	private long formId = -1; // check whether it is good to have
@@ -128,7 +137,7 @@ public class StateflowTransitionContext extends WorkflowRuleContext {
 		this.approvalOrder = ApprovalOrder.valueOf(approvalOrder);
 	}
 	
-	private int buttonType;
+	private int buttonType = -1;
 	public int getButtonType() {
 		return buttonType;
 	}
