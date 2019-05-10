@@ -31,9 +31,11 @@ public class InsertReadingCommand implements Command {
 		HashMap<String, HashMap<String, ReadingContext>> groupedContext = (HashMap<String, HashMap<String, ReadingContext>>) context.get(ImportAPI.ImportProcessConstants.GROUPED_ROW_CONTEXT);
 		List<String> keys = new ArrayList(groupedContext.keySet());
 		int nullFields = (int)context.get(ImportAPI.ImportProcessConstants.NULL_COUNT);
-		for(int i=0; i<keys.size(); i++) {
-		insertSize = insertSize + groupedContext.get(keys.get(i)).size();
+		
+		insertSize = insertSize + groupedContext.get(keys.get(0)).size();
 		LOGGER.severe("---Insert size----" + insertSize);
+		
+		for(int i=0; i<keys.size(); i++) {
 		List<ReadingContext> readingContexts = new ArrayList(groupedContext.get(keys.get(i)).values());
 		insertReadings(keys.get(i),readingContexts);
 		}
