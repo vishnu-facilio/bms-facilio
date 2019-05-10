@@ -1,14 +1,18 @@
 package com.facilio.bmsconsole.commands;
 
-import com.facilio.bmsconsole.context.ImportRowContext;
-import com.facilio.bmsconsole.modules.FieldUtil;
-import com.facilio.bmsconsole.util.AssetsAPI;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.facilio.bmsconsole.context.ImportRowContext;
+import com.facilio.bmsconsole.modules.FacilioModule;
+import com.facilio.bmsconsole.modules.FieldUtil;
+import com.facilio.bmsconsole.util.AssetsAPI;
+import com.facilio.bmsconsole.util.SpaceAPI;
+import com.facilio.constants.FacilioConstants;
 
 public class ImportProcessLogContext {
 	Long id, orgId, importId, templateId,parentId;
@@ -91,10 +95,16 @@ public class ImportProcessLogContext {
 	public Long getParentId() {
 		return parentId;
 	}
-	public void setParentId(Long parentId) throws Exception {
+	public void setParentId(Long parentId, FacilioModule module) throws Exception {
 		this.parentId = parentId;
 		if(parentId != null && parentId > 0) {
-			 setAssetName(AssetsAPI.getAssetInfo(parentId).getName());
+			if(module.getName().equals(FacilioConstants.ContextNames.ASSET) || (module.getExtendModule() != null && module.getExtendModule().getName().equals(FacilioConstants.ContextNames.ASSET))) {
+				setAssetName(AssetsAPI.getAssetInfo(parentId).getName());
+			}
+			else if(module.getName().equals(FacilioConstants.ContextNames.BASE_SPACE) || (module.getExtendModule() != null && module.getExtendModule().getName().equals(FacilioConstants.ContextNames.BASE_SPACE))) {
+				setAssetName(SpaceAPI.getBaseSpace(parentId).getName());
+			}
+			 
 		}
 	}
 	
