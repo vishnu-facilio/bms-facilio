@@ -559,7 +559,7 @@ public class FacilioAuthAction extends FacilioAction {
     	  } catch (Exception e) {
               setJsonresponse("message", "Error while reading post issue response");
       	       LOGGER.log( Level.INFO, "Error while reading post issue response", e);
-    		  throw new IOException("Error parsing JSON request string");
+    		  //throw new IOException("Error parsing JSON request string");
     	  }
   
         setJsonresponse("message", "post issue response recieved successfully");
