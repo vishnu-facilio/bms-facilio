@@ -6,12 +6,12 @@ import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.context.AlarmContext.AlarmType;
 import com.facilio.bmsconsole.context.ResourceContext.ResourceType;
 import com.facilio.bmsconsole.context.TicketContext.SourceType;
-import com.facilio.bmsconsole.criteria.*;
+
 import com.facilio.bmsconsole.modules.*;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleMetricContext;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.criteria.*;
+
 import com.facilio.db.criteria.*;
 import com.facilio.fw.BeanFactory;
 import com.facilio.db.builder.GenericInsertRecordBuilder;

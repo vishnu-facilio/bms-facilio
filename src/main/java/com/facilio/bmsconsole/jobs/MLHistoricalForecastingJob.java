@@ -6,13 +6,13 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ReadingContext.SourceType;
-import com.facilio.bmsconsole.criteria.*;
+
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.criteria.*;
+
 import com.facilio.db.criteria.*;
 import com.facilio.fw.BeanFactory;
 import com.facilio.tasker.job.FacilioJob;

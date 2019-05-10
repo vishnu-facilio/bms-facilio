@@ -22,32 +22,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.AssetCategoryContext;
-import com.facilio.bmsconsole.context.AssetContext;
-import com.facilio.bmsconsole.context.AssetDepartmentContext;
-import com.facilio.bmsconsole.context.AssetTypeContext;
-import com.facilio.bmsconsole.context.BaseSpaceContext;
-import com.facilio.bmsconsole.context.ItemContext;
-import com.facilio.bmsconsole.context.PhotosContext;
-import com.facilio.bmsconsole.context.ResourceContext;
-import com.facilio.bmsconsole.context.ToolContext;
-import com.facilio.bmsconsole.criteria.BooleanOperators;
-import com.facilio.bmsconsole.criteria.BuildingOperator;
-import com.facilio.bmsconsole.criteria.CommonOperators;
-import com.facilio.bmsconsole.criteria.Condition;
-import com.facilio.bmsconsole.criteria.Criteria;
-import com.facilio.bmsconsole.criteria.CriteriaAPI;
-import com.facilio.bmsconsole.criteria.NumberOperators;
-import com.facilio.bmsconsole.criteria.PickListOperators;
-import com.facilio.bmsconsole.criteria.StringOperators;
-import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.FacilioModule;
-import com.facilio.bmsconsole.modules.FieldFactory;
-import com.facilio.bmsconsole.modules.FieldUtil;
-import com.facilio.bmsconsole.modules.ModuleFactory;
-import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
+import com.facilio.bmsconsole.context.*;
+
+import com.facilio.bmsconsole.modules.*;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.criteria.*;
+
 import com.facilio.db.criteria.*;
 import com.facilio.fw.BeanFactory;
 import com.facilio.db.builder.DBUtil;

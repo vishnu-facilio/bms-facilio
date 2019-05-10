@@ -6,7 +6,7 @@ import com.facilio.bmsconsole.context.AlarmContext;
 import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.TicketContext.SourceType;
-import com.facilio.bmsconsole.criteria.*;
+
 import com.facilio.bmsconsole.modules.*;
 import com.facilio.bmsconsole.workflow.rule.AlarmRuleContext;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleAlarmMeta;
@@ -16,7 +16,7 @@ import com.facilio.bmsconsole.workflow.rule.ReadingRuleMetricContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.criteria.*;
+
 import com.facilio.db.criteria.*;
 import com.facilio.events.constants.EventConstants;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;

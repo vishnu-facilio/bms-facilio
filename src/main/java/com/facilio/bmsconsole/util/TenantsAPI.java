@@ -9,12 +9,12 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.actions.DashboardAction;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.context.BaseSpaceContext.SpaceType;
-import com.facilio.bmsconsole.criteria.*;
+
 import com.facilio.bmsconsole.modules.*;
 import com.facilio.bmsconsole.tenant.*;
 import com.facilio.bmsconsole.view.ViewFactory;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.criteria.*;
+
 import com.facilio.db.criteria.*;
 import com.facilio.fs.FileStore;
 import com.facilio.fs.FileStoreFactory;

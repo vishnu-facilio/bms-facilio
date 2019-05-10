@@ -5,7 +5,7 @@ import com.facilio.bmsconsole.modules.AggregateOperator;
 import com.facilio.bmsconsole.modules.AggregateOperator.CommonAggregateOperator;
 import com.facilio.bmsconsole.modules.AggregateOperator.SpaceAggregateOperator;
 import com.facilio.bmsconsole.context.ResourceContext;
-import com.facilio.bmsconsole.criteria.*;
+
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule.ModuleType;
 import com.facilio.bmsconsole.modules.FieldFactory;
@@ -14,7 +14,7 @@ import com.facilio.bmsconsole.util.DateTimeUtil;
 import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.criteria.*;
+
 import com.facilio.db.criteria.*;
 import com.facilio.fw.BeanFactory;
 import com.facilio.report.context.*;
