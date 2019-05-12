@@ -878,7 +878,14 @@ public class TransactionChainFactory {
 			c.addCommand(new DeleteControllerCommand());
 			return c;
 		}
-
+		
+		public static Chain demoRollUpChain () {
+			Chain c = getDefaultChain();
+			c.addCommand(new DemoRollUpCommand());
+			return c;
+		}
+		
+		
 		public static Chain editAgent(){
 			Chain c = getDefaultChain();
 			c.addCommand(new ConfigureAgentCommand());
@@ -2591,5 +2598,7 @@ public class TransactionChainFactory {
 			c.addCommand(new UpdateJobPlanCommand());
 			return c;
 		}
+
+		
 }
 

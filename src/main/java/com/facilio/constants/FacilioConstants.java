@@ -1002,6 +1002,12 @@ public class FacilioConstants {
 		public static final String WO_LABOUR_LIST = "woLabourList";
 
 		public static final String UNIT_POINTS="unit";
+		public static final String DEMO_ROLLUP_EXECUTION_TIME="nextexecution";
+		public static final String DEMO_ROLLUP_JOB_ORG="rollup_job_org";
+		
+		
+		
+		
 		private static Map<String, Class> classMap = Collections.unmodifiableMap(initClassMap());
 		private static Map<String, Class> initClassMap() {
 			Map<String, Class> classMap = new HashMap<>();

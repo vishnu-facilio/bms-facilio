@@ -1090,7 +1090,12 @@
 			<action name="updateCRM" class="com.facilio.bmsconsole.actions.AdminAction" method="updateCRM">
 			<result type="tiles">adminpage/orginfo.jsp</result>
 			</action>
-			
+			<action name="demorollup" class="com.facilio.bmsconsole.actions.AdminAction" >
+			<result type="tiles">adminpage/demorollup.jsp</result>
+			</action>
+			<action name="demoRollUp" class="com.facilio.bmsconsole.actions.AdminAction" method="demoRollUp">
+			<result type="tiles">adminpage/demorollup.jsp</result>
+			</action>
 			
 			
 			</package>
