@@ -7,8 +7,8 @@ import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.context.BaseSpaceContext.SpaceType;
 import com.facilio.bmsconsole.context.ZoneContext;
-import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.InsertRecordBuilder;
+import com.facilio.modules.FacilioField;
+import com.facilio.modules.InsertRecordBuilder;
 import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.bmsconsole.util.ZoneAPI;
 import com.facilio.constants.FacilioConstants;

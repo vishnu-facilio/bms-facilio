@@ -17,8 +17,8 @@ import org.antlr.v4.runtime.tree.ParseTree;
 import org.json.simple.JSONArray;
 
 import com.facilio.bmsconsole.context.ReadingDataMeta;
-import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.FieldUtil;
+import com.facilio.modules.FacilioField;
+import com.facilio.modules.FieldUtil;
 import com.facilio.workflows.context.WorkflowExpression.WorkflowExpressionType;
 import com.facilio.workflows.util.WorkflowUtil;
 import com.facilio.workflowv2.Visitor.FacilioWorkflowFunctionVisitor;

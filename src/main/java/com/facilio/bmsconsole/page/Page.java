@@ -3,7 +3,7 @@ package com.facilio.bmsconsole.page;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.facilio.bmsconsole.modules.FacilioModule;
+import com.facilio.modules.FacilioModule;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class Page {

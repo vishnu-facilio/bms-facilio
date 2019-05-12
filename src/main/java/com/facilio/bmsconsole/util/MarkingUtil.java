@@ -12,6 +12,7 @@ import com.facilio.bmsconsole.modules.*;
 import com.facilio.fw.BeanFactory;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.modules.*;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -67,7 +68,7 @@ public static void addMarkedreadings(List<MarkedReadingContext> markedList) thro
 public static List<Double> getActualValues(long resourceId, long fieldId, long ttime, MarkType type)  {
 	
 	List<Double> actualValList = new ArrayList<>();
-	FacilioModule module=ModuleFactory.getMarkedReadingModule();
+	FacilioModule module= ModuleFactory.getMarkedReadingModule();
 	List<FacilioField> fields = FieldFactory.getMarkedReadingFields();
 	Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 	FacilioField actualValFld = fieldMap.get("actualValue");

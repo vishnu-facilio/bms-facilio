@@ -1,6 +1,6 @@
 package com.facilio.bmsconsole.util;
 
-import com.facilio.bmsconsole.modules.FieldFactory;
+import com.facilio.modules.FieldFactory;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;

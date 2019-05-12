@@ -1,6 +1,6 @@
 package com.facilio.bmsconsole.templates;
 
-import com.facilio.bmsconsole.modules.FieldUtil;
+import com.facilio.modules.FieldUtil;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
 import org.json.simple.JSONObject;

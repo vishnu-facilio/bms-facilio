@@ -1,4 +1,4 @@
-package com.facilio.bmsconsole.modules;
+package com.facilio.modules;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.db.criteria.Condition;

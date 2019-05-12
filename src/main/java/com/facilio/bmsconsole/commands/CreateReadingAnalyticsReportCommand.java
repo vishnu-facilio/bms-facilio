@@ -1,15 +1,15 @@
 package com.facilio.bmsconsole.commands;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.modules.AggregateOperator;
-import com.facilio.bmsconsole.modules.AggregateOperator.CommonAggregateOperator;
-import com.facilio.bmsconsole.modules.AggregateOperator.SpaceAggregateOperator;
+import com.facilio.modules.AggregateOperator;
+import com.facilio.modules.AggregateOperator.CommonAggregateOperator;
+import com.facilio.modules.AggregateOperator.SpaceAggregateOperator;
 import com.facilio.bmsconsole.context.ResourceContext;
 
-import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.FacilioModule.ModuleType;
-import com.facilio.bmsconsole.modules.FieldFactory;
-import com.facilio.bmsconsole.modules.FieldType;
+import com.facilio.modules.FacilioField;
+import com.facilio.modules.FacilioModule.ModuleType;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldType;
 import com.facilio.bmsconsole.util.DateTimeUtil;
 import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.chain.FacilioContext;

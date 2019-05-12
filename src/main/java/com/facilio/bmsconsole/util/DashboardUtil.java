@@ -22,6 +22,7 @@ import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
+import com.facilio.modules.*;
 import com.facilio.unitconversion.Unit;
 import com.facilio.unitconversion.UnitsUtil;
 import com.facilio.workflows.util.WorkflowUtil;
@@ -41,7 +42,7 @@ import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.facilio.bmsconsole.modules.AggregateOperator.*;
+import com.facilio.modules.AggregateOperator.*;
 
 public class DashboardUtil {
 	
@@ -154,7 +155,7 @@ public class DashboardUtil {
 		EnergyMeterPurposeContext energyMeterPurpose = DeviceAPI.getEnergyMetersPurposeByName(ENERGY_METER_PURPOSE_MAIN);
 		
 		if(energyMeterPurpose != null && spaceList != null && !spaceList.isEmpty()) {
-			SelectRecordsBuilder<EnergyMeterContext> selectBuilder = 
+			SelectRecordsBuilder<EnergyMeterContext> selectBuilder =
 					new SelectRecordsBuilder<EnergyMeterContext>()
 					.select(modBean.getAllFields(module.getName()))
 					.module(module)
@@ -214,7 +215,7 @@ public class DashboardUtil {
 		}
 		return false;
 	}
-	public static String getDataFromValue(Long timeValue,AggregateOperator aggregateOperator) {
+	public static String getDataFromValue(Long timeValue, AggregateOperator aggregateOperator) {
 		
 		String timeKey = null;
 		

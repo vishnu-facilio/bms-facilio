@@ -3,7 +3,8 @@ package com.facilio.bmsconsole.reports;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.actions.DashboardAction;
 import com.facilio.bmsconsole.context.*;
-import com.facilio.bmsconsole.modules.AggregateOperator.DateAggregateOperator;
+import com.facilio.modules.*;
+import com.facilio.modules.AggregateOperator.DateAggregateOperator;
 import com.facilio.bmsconsole.context.ReportContext.ReportChartType;
 import com.facilio.bmsconsole.modules.*;
 import com.facilio.bmsconsole.util.DateTimeUtil;
@@ -160,7 +161,7 @@ public class ReportExportUtil {
 			fields.put(xAxisLabel, rowLabel);
 			
 			reportContext.getY1AxisUnit();
-			FieldType valueFieldType = reportContext.getY1AxisField() != null && reportContext.getY1AxisField().getField().getDataTypeEnum() != null ? 
+			FieldType valueFieldType = reportContext.getY1AxisField() != null && reportContext.getY1AxisField().getField().getDataTypeEnum() != null ?
 					reportContext.getY1AxisField().getField().getDataTypeEnum() : null;
 			
 			Object value = data.get("value");

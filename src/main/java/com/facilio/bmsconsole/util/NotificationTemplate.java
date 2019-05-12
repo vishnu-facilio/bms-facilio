@@ -3,7 +3,7 @@ package com.facilio.bmsconsole.util;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.NotificationContext;
-import com.facilio.bmsconsole.modules.FieldUtil;
+import com.facilio.modules.FieldUtil;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import org.apache.commons.text.StringSubstitutor;
 import org.apache.log4j.LogManager;

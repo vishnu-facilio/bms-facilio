@@ -1,6 +1,6 @@
 package com.facilio.bmsconsole.workflow.rule;
 
-import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
+import com.facilio.modules.ModuleBaseWithCustomFields;
 
 public class StateContext extends ModuleBaseWithCustomFields {
 	private static final long serialVersionUID = 1L;

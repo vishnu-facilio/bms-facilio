@@ -1,8 +1,6 @@
 package com.facilio.bmsconsole.context;
-
 import java.util.List;
-
-import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
+import com.facilio.modules.ModuleBaseWithCustomFields;
 
 public class GatePassLineItemsContext extends ModuleBaseWithCustomFields{
 	

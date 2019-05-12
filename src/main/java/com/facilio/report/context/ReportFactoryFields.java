@@ -4,10 +4,10 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.modules.*;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
+import com.facilio.modules.*;
 import com.facilio.report.context.ReportFactory.Alarm;
 import com.facilio.report.context.ReportFactory.ModuleType;
 import com.facilio.report.context.ReportFactory.WorkOrder;
-import com.mysql.fabric.xmlrpc.base.Array;
 
 import org.json.simple.JSONObject;
 

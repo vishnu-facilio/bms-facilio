@@ -1,7 +1,7 @@
 package com.facilio.bmsconsole.util;
 
-import com.facilio.bmsconsole.modules.FieldType;
-import com.facilio.bmsconsole.modules.FieldUtil;
+import com.facilio.modules.FieldType;
+import com.facilio.modules.FieldUtil;
 
 import java.util.HashMap;
 import java.util.Map;

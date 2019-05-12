@@ -2,7 +2,7 @@ package com.facilio.bmsconsole.commands;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.*;
-import com.facilio.bmsconsole.modules.AggregateOperator.DateAggregateOperator;
+import com.facilio.modules.AggregateOperator.DateAggregateOperator;
 import com.facilio.bmsconsole.util.BenchmarkAPI;
 import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.constants.FacilioConstants;

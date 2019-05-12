@@ -1,7 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
 import com.facilio.bmsconsole.context.ReadingDataMeta;
-import com.facilio.bmsconsole.modules.NumberField;
+import com.facilio.modules.NumberField;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.unitconversion.Metric;
 import com.facilio.unitconversion.Unit;

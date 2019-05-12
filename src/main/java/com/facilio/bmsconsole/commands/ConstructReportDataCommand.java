@@ -1,8 +1,9 @@
 package com.facilio.bmsconsole.commands;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.modules.AggregateOperator.DateAggregateOperator;
-import com.facilio.bmsconsole.modules.AggregateOperator.NumberAggregateOperator;
+import com.facilio.modules.*;
+import com.facilio.modules.AggregateOperator.DateAggregateOperator;
+import com.facilio.modules.AggregateOperator.NumberAggregateOperator;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.*;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;

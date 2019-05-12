@@ -1,4 +1,4 @@
-package com.facilio.bmsconsole.modules;
+package com.facilio.modules;
 
 import com.facilio.agent.AgentKeys;
 import com.facilio.constants.FacilioConstants;

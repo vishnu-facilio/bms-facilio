@@ -14,6 +14,7 @@ import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.*;
+import com.facilio.modules.*;
 import com.facilio.tasker.FacilioTimer;
 import com.facilio.time.SecondsChronoUnit;
 import org.apache.log4j.LogManager;

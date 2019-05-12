@@ -24,7 +24,6 @@ import org.json.simple.JSONObject;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.*;
 
-import com.facilio.bmsconsole.modules.*;
 import com.facilio.constants.FacilioConstants;
 
 import com.facilio.db.criteria.*;
@@ -32,6 +31,7 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.db.builder.DBUtil;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.transaction.FacilioConnectionPool;
+import com.facilio.modules.*;
 
 public class AssetsAPI {
 	

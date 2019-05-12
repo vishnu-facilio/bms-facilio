@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.SortedMap;
 
-import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
+import com.facilio.modules.ModuleBaseWithCustomFields;
 
 public class MLContext extends ModuleBaseWithCustomFields
 {
