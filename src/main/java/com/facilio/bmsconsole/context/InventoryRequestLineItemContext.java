@@ -101,7 +101,8 @@ public class InventoryRequestLineItemContext extends ModuleBaseWithCustomFields{
 	
 	public static enum Status {
 		ISSUED(),
-		YET_TO_BE_ISSUED()
+		YET_TO_BE_ISSUED(),
+		RETURNED()
 		;
 		
 		public int getValue() {
@@ -130,6 +131,7 @@ public class InventoryRequestLineItemContext extends ModuleBaseWithCustomFields{
 		woItem.setParentId(this.getParentId());
 		woItem.setAssetIds(this.getAssetIds());
 		woItem.setQuantity(this.getQuantity());
+		woItem.setRequestedLineItem(this.getId());
 		return woItem;
 	}
 	
@@ -140,6 +142,8 @@ public class InventoryRequestLineItemContext extends ModuleBaseWithCustomFields{
 		woTool.setAssetIds(this.getAssetIds());
 		woTool.setQuantity(this.getQuantity());
 		woTool.setDuration(3600000);
+		woTool.setRequestedLineItem(this.getId());
+		
 		return woTool;
 	}
 }

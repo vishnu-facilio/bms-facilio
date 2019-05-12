@@ -210,4 +210,13 @@ public class ItemTransactionsContext extends ModuleBaseWithCustomFields {
 	public void setAssetIds(List<Long> assetIds) {
 		this.assetIds = assetIds;
 	}
+	
+	private long requestedLineItem;
+	public long getRequestedLineItem() {
+		return requestedLineItem;
+	}
+	public void setRequestedLineItem(long requestedLineItem) {
+		this.requestedLineItem = requestedLineItem;
+	}
+	
 }

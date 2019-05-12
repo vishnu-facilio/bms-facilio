@@ -74,7 +74,7 @@ public class InventoryRequestAPI {
 
 	}
 	
-	public static boolean checkQuantityForWoItemNeedingApproval(long itemId, long parentId, double woItemQuantity) throws Exception {
+	public static boolean checkQuantityForWoItemNeedingApproval(long lineItemId, double woItemQuantity) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.INVENTORY_REQUEST_LINE_ITEMS);
 		List<FacilioField> fields = modBean.getAllFields(module.getName());
@@ -83,12 +83,9 @@ public class InventoryRequestAPI {
 				.module(module)
 				.beanClass(FacilioConstants.ContextNames.getClassFromModuleName(module.getName()))
 				.select(fields)
-				.andCondition(CriteriaAPI.getCondition("ITEM", "item", String.valueOf(itemId), NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getIdCondition(lineItemId, module))
 			
 		;
-		if(parentId != -1) {
-			builder.andCondition(CriteriaAPI.getCondition("PARENT_ID", "parentId", String.valueOf(parentId), NumberOperators.EQUALS));
-		}
 		List<InventoryRequestLineItemContext> lineItems = builder.get();
 		if(CollectionUtils.isNotEmpty(lineItems)) {
 			if(woItemQuantity <= lineItems.get(0).getQuantity()) {
@@ -99,7 +96,7 @@ public class InventoryRequestAPI {
 		}
 		return false;
 	}
-	public static boolean checkQuantityForWoToolNeedingApproval(long toolId, long parentId, double woToolQuantity) throws Exception {
+	public static boolean checkQuantityForWoToolNeedingApproval(long lineItemId, double woToolQuantity) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.INVENTORY_REQUEST_LINE_ITEMS);
 		List<FacilioField> fields = modBean.getAllFields(module.getName());
@@ -108,12 +105,9 @@ public class InventoryRequestAPI {
 				.module(module)
 				.beanClass(FacilioConstants.ContextNames.getClassFromModuleName(module.getName()))
 				.select(fields)
-				.andCondition(CriteriaAPI.getCondition("TOOL", "tool", String.valueOf(toolId), NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getIdCondition(lineItemId, module))
 			
 		;
-		if(parentId != -1) {
-			builder.andCondition(CriteriaAPI.getCondition("PARENT_ID", "parentId", String.valueOf(parentId), NumberOperators.EQUALS));
-		}
 		List<InventoryRequestLineItemContext> lineItems = builder.get();
 		if(CollectionUtils.isNotEmpty(lineItems)) {
 			if(woToolQuantity <= lineItems.get(0).getQuantity()) {

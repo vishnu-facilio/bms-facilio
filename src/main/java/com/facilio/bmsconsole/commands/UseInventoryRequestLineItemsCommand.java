@@ -41,7 +41,9 @@ public class UseInventoryRequestLineItemsCommand implements Command{
 			else if(inventoryType == InventoryType.TOOL.getValue()) {
 				woToolList.add(lineItem.constructWorkOrderToolContext());
 			}
-			lineItemIds.add(String.valueOf(lineItem.getId()));
+			if(lineItem.getParentId() != -1) {
+				lineItemIds.add(String.valueOf(lineItem.getId()));
+			}
 		}
 		updateInventoryRequestLineItemsStatus(lineItemIds.toString(), parentId);
 		context.put(FacilioConstants.ContextNames.RECORD_LIST, inventoryType == InventoryType.ITEM.getValue() ? woItemList : woToolList);
@@ -57,9 +59,6 @@ public class UseInventoryRequestLineItemsCommand implements Command{
 		Map<String, Object> updateMap = new HashMap<>();
 		FacilioField statusField = modBean.getField("status", inventoryRequestLineItemModule.getName());
 		FacilioField parentIdField = modBean.getField("parentId", inventoryRequestLineItemModule.getName());
-		
-		updateMap.put("status", InventoryRequestLineItemContext.Status.ISSUED.getValue());
-		updateMap.put("parentId", parentId);
 		
 		List<FacilioField> updatedfields = new ArrayList<FacilioField>();
 		updatedfields.add(statusField);

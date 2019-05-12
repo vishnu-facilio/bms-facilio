@@ -45,8 +45,8 @@ public class AddOrUpdateWorkorderToolsCommand implements Command {
 				toolTypesId = tool.getToolType().getId();
 				ToolTypesContext toolTypes = getToolType(toolTypesId);
 				StoreRoomContext storeRoom = tool.getStoreRoom();
-				if(toolTypes.isApprovalNeeded()) {
-					if(!InventoryRequestAPI.checkQuantityForWoToolNeedingApproval(tool.getId(), parentId, workorderTool.getQuantity())) {
+				if(toolTypes.isApprovalNeeded() || storeRoom.isApprovalNeeded()) {
+					if(!InventoryRequestAPI.checkQuantityForWoToolNeedingApproval(workorderTool.getRequestedLineItem(), workorderTool.getQuantity())) {
 						throw new IllegalArgumentException("Please check the quantity approved in the request");
 					}
 				}
@@ -66,10 +66,10 @@ public class AddOrUpdateWorkorderToolsCommand implements Command {
 								.getQuantity()) {
 							throw new IllegalArgumentException("Insufficient quantity in inventory!");
 						} else {
-							ApprovalState approvalState = ApprovalState.YET_TO_BE_REQUESTED;
-							if (toolTypes.isApprovalNeeded() || storeRoom.isApprovalNeeded()) {
-								approvalState = ApprovalState.REQUESTED;
-							}
+							ApprovalState approvalState = ApprovalState.APPROVED;
+//							if (toolTypes.isApprovalNeeded() || storeRoom.isApprovalNeeded()) {
+//								approvalState = ApprovalState.REQUESTED;
+//							}
 							wTool = setWorkorderItemObj(null, workorderTool.getQuantity(), tool, parentId,
 									workorder, workorderTool, approvalState, null);
 							// update
@@ -82,10 +82,10 @@ public class AddOrUpdateWorkorderToolsCommand implements Command {
 					if (tool.getCurrentQuantity() < workorderTool.getQuantity()) {
 						throw new IllegalArgumentException("Insufficient quantity in inventory!");
 					} else {
-						ApprovalState approvalState = ApprovalState.YET_TO_BE_REQUESTED;
-						if (toolTypes.isApprovalNeeded() || storeRoom.isApprovalNeeded()) {
-							approvalState = ApprovalState.REQUESTED;
-						}
+						ApprovalState approvalState = ApprovalState.APPROVED;
+//						if (toolTypes.isApprovalNeeded() || storeRoom.isApprovalNeeded()) {
+//							approvalState = ApprovalState.REQUESTED;
+//						}
 						if (toolTypes.isRotating()) {
 							List<Long> assetIds = workorderTool.getAssetIds();
 							List<AssetContext> assets = getAssetsFromId(assetIds);

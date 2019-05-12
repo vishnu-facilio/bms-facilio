@@ -58,8 +58,8 @@ public class AddOrUpdateWorkorderItemsCommand implements Command {
 				ItemTypesContext itemType = getItemType(itemTypesId);
 				StoreRoomContext storeRoom = item.getStoreRoom();
 				WorkOrderContext wo = getWorkorderContext(parentId);
-				if(itemType.isApprovalNeeded()) {
-					if(!InventoryRequestAPI.checkQuantityForWoItemNeedingApproval(item.getId(), parentId, workorderitem.getQuantity())) {
+				if(itemType.isApprovalNeeded() || storeRoom.isApprovalNeeded()) {
+					if(!InventoryRequestAPI.checkQuantityForWoItemNeedingApproval(workorderitem.getRequestedLineItem(), workorderitem.getQuantity())) {
 						throw new IllegalArgumentException("Please check the quantity approved in the request");
 					}
 				}
@@ -83,10 +83,10 @@ public class AddOrUpdateWorkorderItemsCommand implements Command {
 							if ((q + purchaseditem.getCurrentQuantity() < workorderitem.getQuantity())) {
 								throw new IllegalArgumentException("Insufficient quantity in inventory!");
 							} else {
-								approvalState = ApprovalState.YET_TO_BE_REQUESTED;
-								if (itemType.isApprovalNeeded() || storeRoom.isApprovalNeeded()) {
-									approvalState = ApprovalState.REQUESTED;
-								}
+								approvalState = ApprovalState.APPROVED;
+//								if (itemType.isApprovalNeeded() || storeRoom.isApprovalNeeded()) {
+//									approvalState = ApprovalState.REQUESTED;
+//								}
 								JSONObject info = new JSONObject();
 								info.put("itemid", workorderitem.getItem().getId());
 								info.put("itemtype", itemType.getName());
@@ -112,10 +112,10 @@ public class AddOrUpdateWorkorderItemsCommand implements Command {
 					if (item.getQuantity() < workorderitem.getQuantity()) {
 						throw new IllegalArgumentException("Insufficient quantity in inventory!");
 					} else {
-						approvalState = ApprovalState.YET_TO_BE_REQUESTED;
-						if (itemType.isApprovalNeeded() || storeRoom.isApprovalNeeded()) {
-							approvalState = ApprovalState.REQUESTED;
-						}
+						approvalState = ApprovalState.APPROVED;
+//						if (itemType.isApprovalNeeded() || storeRoom.isApprovalNeeded()) {
+//							approvalState = ApprovalState.REQUESTED;
+//						}
 						if (itemType.isRotating()) {
 							List<Long> assetIds = workorderitem.getAssetIds();
 							List<AssetContext> purchasedItem = getAssetsFromId(assetIds, assetModule, assetFields);

@@ -76,7 +76,6 @@ public class AddOrUpdateInventoryRequestCommand implements Command{
 	private void updateLineItems(InventoryRequestContext inventoryRequestContext) throws Exception{
 		for (InventoryRequestLineItemContext lineItemContext : inventoryRequestContext.getLineItems()) {
 			lineItemContext.setInventoryRequestId(inventoryRequestContext.getId());
-			lineItemContext.setStatus(InventoryRequestLineItemContext.Status.YET_TO_BE_ISSUED);
 			if(lineItemContext.getInventoryType() == InventoryType.ITEM.getValue()) {
 				ItemContext item = ItemsApi.getItems(lineItemContext.getItem().getId());
 				if(item.getQuantity() < lineItemContext.getQuantity()) {
