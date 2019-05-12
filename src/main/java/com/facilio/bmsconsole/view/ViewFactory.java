@@ -330,6 +330,9 @@ public class ViewFactory {
 		order = 1;
 		views = new LinkedHashMap<>();
 		views.put("all", getAllInventoryRequestView().setOrder(order++));
+		views.put("pending", getInventoryRequestForStatus("pending", "Pending", 1).setOrder(order++));
+		views.put("approved", getInventoryRequestForStatus("approved", "Approved", 2).setOrder(order++));
+		views.put("rejected", getInventoryRequestForStatus("rejected", "Rejected", 3).setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.INVENTORY_REQUEST, views);
 
 		
@@ -3301,5 +3304,45 @@ public class ViewFactory {
 		allView.setSortFields(Arrays.asList(new SortField(localId, false)));
 		return allView;
 	}
+	private static FacilioView getInventoryRequestForStatus(String viewName, String viewDisplayName, int status) {
+		FacilioModule irModule = ModuleFactory.getInventoryRequestModule();
+
+		FacilioField createdTime = new FacilioField();
+		createdTime.setName("localId");
+		createdTime.setDataType(FieldType.NUMBER);
+		createdTime.setColumnName("LOCAL_ID");
+		createdTime.setModule(irModule);
+
+		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));
+
+		Criteria criteria = getInventoryRequestStatusCriteria(irModule, status);
+		
+		FacilioView statusView = new FacilioView();
+		statusView.setName(viewName);
+		statusView.setDisplayName(viewDisplayName);
+		statusView.setSortFields(sortFields);
+		statusView.setCriteria(criteria);
+
+		return statusView;
+	}
+	
+	private static Criteria getInventoryRequestStatusCriteria(FacilioModule module, int status) {
+		
+		FacilioField irStatusField = new FacilioField();
+		irStatusField.setName("status");
+		irStatusField.setColumnName("STATUS");
+		irStatusField.setDataType(FieldType.NUMBER);
+		irStatusField.setModule(ModuleFactory.getInventoryRequestModule());
+		
+		Condition statusCond = new Condition();
+		statusCond.setField(irStatusField);
+		statusCond.setOperator(NumberOperators.EQUALS);
+		statusCond.setValue(String.valueOf(status));
+
+		Criteria inventoryRequestStatusCriteria = new Criteria();
+		inventoryRequestStatusCriteria.addAndCondition(statusCond);
+		return inventoryRequestStatusCriteria;
+	}
+
 
 }
