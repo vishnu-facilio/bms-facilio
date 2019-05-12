@@ -75,48 +75,54 @@ public class InventoryRequestAPI {
 	}
 	
 	public static boolean checkQuantityForWoItemNeedingApproval(long lineItemId, double woItemQuantity) throws Exception {
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.INVENTORY_REQUEST_LINE_ITEMS);
-		List<FacilioField> fields = modBean.getAllFields(module.getName());
-		
-		SelectRecordsBuilder<InventoryRequestLineItemContext> builder = new SelectRecordsBuilder<InventoryRequestLineItemContext>()
-				.module(module)
-				.beanClass(FacilioConstants.ContextNames.getClassFromModuleName(module.getName()))
-				.select(fields)
-				.andCondition(CriteriaAPI.getIdCondition(lineItemId, module))
+		if(lineItemId != -1) {
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.INVENTORY_REQUEST_LINE_ITEMS);
+			List<FacilioField> fields = modBean.getAllFields(module.getName());
 			
-		;
-		List<InventoryRequestLineItemContext> lineItems = builder.get();
-		if(CollectionUtils.isNotEmpty(lineItems)) {
-			if(woItemQuantity <= lineItems.get(0).getQuantity()) {
-				updateRequestUsedQuantity(lineItems.get(0).getId(), woItemQuantity);
-				return true;
+			SelectRecordsBuilder<InventoryRequestLineItemContext> builder = new SelectRecordsBuilder<InventoryRequestLineItemContext>()
+					.module(module)
+					.beanClass(FacilioConstants.ContextNames.getClassFromModuleName(module.getName()))
+					.select(fields)
+					.andCondition(CriteriaAPI.getIdCondition(lineItemId, module))
+				
+			;
+			List<InventoryRequestLineItemContext> lineItems = builder.get();
+			if(CollectionUtils.isNotEmpty(lineItems)) {
+				if(woItemQuantity <= lineItems.get(0).getQuantity()) {
+					updateRequestUsedQuantity(lineItems.get(0).getId(), woItemQuantity);
+					return true;
+				}
+				return false;
 			}
 			return false;
 		}
-		return false;
+		throw new IllegalArgumentException("Please request approval for the item before using it");
 	}
 	public static boolean checkQuantityForWoToolNeedingApproval(long lineItemId, double woToolQuantity) throws Exception {
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.INVENTORY_REQUEST_LINE_ITEMS);
-		List<FacilioField> fields = modBean.getAllFields(module.getName());
-		
-		SelectRecordsBuilder<InventoryRequestLineItemContext> builder = new SelectRecordsBuilder<InventoryRequestLineItemContext>()
-				.module(module)
-				.beanClass(FacilioConstants.ContextNames.getClassFromModuleName(module.getName()))
-				.select(fields)
-				.andCondition(CriteriaAPI.getIdCondition(lineItemId, module))
+		if(lineItemId != -1) {
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.INVENTORY_REQUEST_LINE_ITEMS);
+			List<FacilioField> fields = modBean.getAllFields(module.getName());
 			
-		;
-		List<InventoryRequestLineItemContext> lineItems = builder.get();
-		if(CollectionUtils.isNotEmpty(lineItems)) {
-			if(woToolQuantity <= lineItems.get(0).getQuantity()) {
-				updateRequestUsedQuantity(lineItems.get(0).getId(), woToolQuantity);
-				return true;
+			SelectRecordsBuilder<InventoryRequestLineItemContext> builder = new SelectRecordsBuilder<InventoryRequestLineItemContext>()
+					.module(module)
+					.beanClass(FacilioConstants.ContextNames.getClassFromModuleName(module.getName()))
+					.select(fields)
+					.andCondition(CriteriaAPI.getIdCondition(lineItemId, module))
+				
+			;
+			List<InventoryRequestLineItemContext> lineItems = builder.get();
+			if(CollectionUtils.isNotEmpty(lineItems)) {
+				if(woToolQuantity <= lineItems.get(0).getQuantity()) {
+					updateRequestUsedQuantity(lineItems.get(0).getId(), woToolQuantity);
+					return true;
+				}
+				return false;
 			}
 			return false;
 		}
-		return false;
+		throw new IllegalArgumentException("Please request approval for the tool before using it");
 	}
 	
 	public static void updateRequestUsedQuantity(long lineItemId, double usedQuantity) throws Exception {
