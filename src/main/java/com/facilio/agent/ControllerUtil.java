@@ -1,9 +1,9 @@
 package com.facilio.agent;
 
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.FieldFactory;
-import com.facilio.bmsconsole.modules.FieldType;
+import com.facilio.modules.FacilioField;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldType;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import org.apache.log4j.LogManager;

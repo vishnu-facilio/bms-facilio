@@ -1,4 +1,4 @@
-package com.facilio.bmsconsole.modules;
+package com.facilio.modules;
 
 import java.io.Serializable;
 import java.util.HashMap;

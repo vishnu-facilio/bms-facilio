@@ -1,7 +1,7 @@
 package com.facilio.db.builder.mssql;
 
-import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.FieldType;
+import com.facilio.modules.FacilioField;
+import com.facilio.modules.FieldType;
 import com.facilio.db.builder.DBUpdateRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
 

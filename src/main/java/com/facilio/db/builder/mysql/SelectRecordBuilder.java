@@ -1,6 +1,6 @@
 package com.facilio.db.builder.mysql;
 
-import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.modules.FacilioField;
 import com.facilio.db.builder.DBSelectRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import org.apache.log4j.LogManager;

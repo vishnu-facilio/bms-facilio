@@ -6,7 +6,7 @@ import com.facilio.modules.FacilioStatus;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
-import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
+import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.bmsconsole.util.StateFlowRulesAPI;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.chain.FacilioContext;

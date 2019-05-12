@@ -1,7 +1,7 @@
 package com.facilio.cache;
 
-import com.facilio.bmsconsole.modules.FacilioModule;
-import com.facilio.bmsconsole.modules.FacilioModule.ModuleType;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FacilioModule.ModuleType;
 import org.apache.log4j.LogManager;
 
 import java.io.Serializable;

@@ -1,8 +1,8 @@
 package com.facilio.bmsconsole.context;
 
-import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
-import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
+import com.facilio.modules.FacilioField;
+import com.facilio.modules.ModuleBaseWithCustomFields;
+import com.facilio.modules.SelectRecordsBuilder;
 import org.json.JSONArray;
 
 import java.util.List;

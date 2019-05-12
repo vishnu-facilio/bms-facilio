@@ -2,7 +2,7 @@ package com.facilio.bmsconsole.commands;
 
 import com.facilio.bmsconsole.context.AssetCategoryContext;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
-import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.modules.ModuleFactory;
 import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.constants.FacilioConstants;
 import org.apache.commons.chain.Command;

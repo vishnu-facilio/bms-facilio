@@ -7,9 +7,6 @@ import java.util.Map;
 
 import org.json.simple.JSONObject;
 
-import com.facilio.bmsconsole.modules.FieldUtil;
-import com.facilio.bmsconsole.workflow.rule.AlarmRuleContext;
-
 public class DefaultTemplate extends Template {
 
 	/**

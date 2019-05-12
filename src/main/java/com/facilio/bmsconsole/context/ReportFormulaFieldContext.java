@@ -1,8 +1,8 @@
 package com.facilio.bmsconsole.context;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.modules.FacilioModule;
-import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.fw.BeanFactory;
 
 public class ReportFormulaFieldContext extends ModuleBaseWithCustomFields {

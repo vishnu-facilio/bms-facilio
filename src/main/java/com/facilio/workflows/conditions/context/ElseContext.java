@@ -1,6 +1,6 @@
 package com.facilio.workflows.conditions.context;
 
-import com.facilio.bmsconsole.modules.FieldUtil;
+import com.facilio.modules.FieldUtil;
 import com.facilio.workflows.context.ExpressionContext;
 import com.facilio.workflows.context.IteratorContext;
 import com.facilio.workflows.context.WorkflowContext;

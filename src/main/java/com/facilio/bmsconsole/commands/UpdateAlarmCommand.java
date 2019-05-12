@@ -16,6 +16,7 @@ import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
+import com.facilio.modules.*;
 import com.facilio.wms.message.WmsEvent;
 import com.facilio.wms.util.WmsApi;
 import org.apache.commons.chain.Command;

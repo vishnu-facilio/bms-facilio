@@ -4,7 +4,7 @@ import com.facilio.activity.ActivityType;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.db.criteria.Operator;
 import com.facilio.bmsconsole.templates.DefaultTemplate.DefaultTemplateType;
-import com.facilio.bmsconsole.modules.FieldUtil;
+import com.facilio.modules.FieldUtil;
 import com.facilio.bmsconsole.util.TemplateAPI;
 import com.facilio.cache.RedisManager;
 import com.facilio.filters.HealthCheckFilter;

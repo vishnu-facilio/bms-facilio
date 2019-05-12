@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.facilio.bmsconsole.modules.FacilioModule;
+import com.facilio.modules.FacilioModule;
 
 public class FacilioForm implements Serializable {
 	public FacilioForm () {}

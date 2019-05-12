@@ -1,7 +1,7 @@
 package com.facilio.activity;
 
 import com.facilio.accounts.dto.User;
-import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
+import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.util.FacilioUtil;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.json.simple.JSONObject;

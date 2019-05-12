@@ -9,12 +9,11 @@ import com.facilio.bmsconsole.context.ToolContext;
 import com.facilio.bmsconsole.context.WorkorderItemContext;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.NumberOperators;
-import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.FacilioModule;
-import com.facilio.bmsconsole.modules.FieldFactory;
-import com.facilio.bmsconsole.modules.LookupField;
-import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
-import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
+import com.facilio.modules.FacilioField;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.LookupField;
+import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 

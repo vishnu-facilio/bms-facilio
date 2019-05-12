@@ -11,8 +11,8 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ReceivableContext;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.NumberOperators;
-import com.facilio.bmsconsole.modules.DeleteRecordBuilder;
-import com.facilio.bmsconsole.modules.FacilioModule;
+import com.facilio.modules.DeleteRecordBuilder;
+import com.facilio.modules.FacilioModule;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 

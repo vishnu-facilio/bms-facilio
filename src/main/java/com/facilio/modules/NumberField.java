@@ -1,4 +1,4 @@
-package com.facilio.bmsconsole.modules;
+package com.facilio.modules;
 
 import com.facilio.unitconversion.Metric;
 import com.facilio.unitconversion.Unit;

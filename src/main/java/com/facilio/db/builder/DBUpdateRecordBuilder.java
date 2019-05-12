@@ -1,6 +1,6 @@
 package com.facilio.db.builder;
 
-import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.modules.FacilioField;
 
 import java.util.ArrayList;
 import java.util.HashMap;

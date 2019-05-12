@@ -14,7 +14,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 
 import org.apache.log4j.Level;
@@ -22,9 +21,8 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import com.facilio.aws.util.AwsUtil;
-import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.FieldType;
-import com.facilio.bmsconsole.util.DemoRoleUtil;
+import com.facilio.modules.FacilioField;
+import com.facilio.modules.FieldType;
 import com.facilio.db.transaction.FacilioConnectionPool;
 
 public class DBUtil {

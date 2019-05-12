@@ -3,10 +3,10 @@ package com.facilio.agent;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleCRUDBean;
 
-import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.FacilioModule;
-import com.facilio.bmsconsole.modules.FieldFactory;
-import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.modules.FacilioField;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.ModuleFactory;
 import com.facilio.bmsconsole.util.DateTimeUtil;
 
 import com.facilio.db.criteria.*;

@@ -19,7 +19,7 @@ import com.facilio.db.criteria.FieldOperator;
 import com.facilio.db.criteria.NumberOperators;
 import com.facilio.db.criteria.Operator;
 import com.facilio.db.criteria.PickListOperators;
-import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.modules.FacilioField;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 

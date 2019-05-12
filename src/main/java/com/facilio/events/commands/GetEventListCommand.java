@@ -3,7 +3,7 @@ package com.facilio.events.commands;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.db.criteria.Criteria;
-import com.facilio.bmsconsole.modules.FieldUtil;
+import com.facilio.modules.FieldUtil;
 import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.ViewFactory;

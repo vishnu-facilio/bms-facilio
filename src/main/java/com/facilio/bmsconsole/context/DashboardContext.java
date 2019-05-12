@@ -1,6 +1,6 @@
 package com.facilio.bmsconsole.context;
 
-import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
+import com.facilio.modules.ModuleBaseWithCustomFields;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 

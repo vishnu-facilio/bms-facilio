@@ -3,7 +3,7 @@ package com.facilio.bmsconsole.commands;
 //import java.sql.Connection;
 
 import com.facilio.bmsconsole.context.AlarmContext;
-import com.facilio.bmsconsole.modules.FieldFactory;
+import com.facilio.modules.FieldFactory;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import org.apache.commons.chain.Command;

@@ -1,4 +1,4 @@
-package com.facilio.bmsconsole.modules;
+package com.facilio.modules;
 
 import com.facilio.bmsconsole.workflow.rule.ActionContext;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;

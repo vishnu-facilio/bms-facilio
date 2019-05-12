@@ -12,10 +12,10 @@ import org.apache.commons.chain.Context;
 import com.facilio.bmsconsole.context.BusinessHourContext;
 import com.facilio.bmsconsole.context.BusinessHoursContext;
 import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.bmsconsole.modules.FacilioModule;
-import com.facilio.bmsconsole.modules.FieldFactory;
-import com.facilio.bmsconsole.modules.FieldUtil;
-import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldUtil;
+import com.facilio.modules.ModuleFactory;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 

@@ -4,9 +4,9 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.bmsconsole.modules.AggregateOperator;
-import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.FacilioModule;
+import com.facilio.modules.AggregateOperator;
+import com.facilio.modules.FacilioField;
+import com.facilio.modules.FacilioModule;
 import com.facilio.fw.BeanFactory;
 
 public class FormulaContext {

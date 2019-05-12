@@ -8,6 +8,7 @@ import com.facilio.constants.FacilioConstants;
 
 import com.facilio.db.criteria.*;
 import com.facilio.fw.BeanFactory;
+import com.facilio.modules.*;
 import com.facilio.report.context.*;
 import com.facilio.report.context.ReportContext.ReportType;
 import com.facilio.report.context.ReportDataPointContext.DataPointType;
@@ -19,7 +20,7 @@ import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import com.facilio.bmsconsole.modules.AggregateOperator.*;
+import com.facilio.modules.AggregateOperator.*;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 
 import java.util.*;

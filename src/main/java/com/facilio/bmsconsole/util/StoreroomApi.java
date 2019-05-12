@@ -3,10 +3,9 @@ package com.facilio.bmsconsole.util;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.StoreRoomContext;
 import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.FacilioModule;
-import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
-import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
+import com.facilio.modules.FacilioField;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 

@@ -12,10 +12,10 @@ import org.json.simple.JSONObject;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.actions.ImportProcessContext;
 import com.facilio.bmsconsole.actions.ImportProcessContext.ImportSetting;
-import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.FacilioModule;
-import com.facilio.bmsconsole.modules.FieldType;
-import com.facilio.bmsconsole.modules.LookupField;
+import com.facilio.modules.FacilioField;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldType;
+import com.facilio.modules.LookupField;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 

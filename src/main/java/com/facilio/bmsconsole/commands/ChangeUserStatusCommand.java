@@ -2,8 +2,8 @@ package com.facilio.bmsconsole.commands;
 
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountConstants;
-import com.facilio.bmsconsole.modules.FieldFactory;
-import com.facilio.bmsconsole.modules.FieldUtil;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import org.apache.commons.chain.Command;

@@ -1,7 +1,7 @@
 package com.facilio.bmsconsole.context;
 
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
+import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.fs.FileStore;
 import com.facilio.fs.FileStoreFactory;
 import org.apache.commons.lang.StringUtils;

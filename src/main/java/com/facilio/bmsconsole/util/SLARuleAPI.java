@@ -1,9 +1,9 @@
 package com.facilio.bmsconsole.util;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.modules.FieldFactory;
-import com.facilio.bmsconsole.modules.FieldUtil;
-import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldUtil;
+import com.facilio.modules.ModuleFactory;
 import com.facilio.bmsconsole.workflow.rule.SLARuleContext;
 
 import java.util.Map;

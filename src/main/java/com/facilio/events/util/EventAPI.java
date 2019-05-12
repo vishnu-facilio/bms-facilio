@@ -1,8 +1,9 @@
 package com.facilio.events.util;
 
-import com.facilio.bmsconsole.modules.FacilioModule;
-import com.facilio.bmsconsole.modules.FieldFactory;
-import com.facilio.bmsconsole.modules.FieldUtil;
+
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldUtil;
 import com.facilio.bmsconsole.templates.JSONTemplate;
 import com.facilio.chain.FacilioContext;
 

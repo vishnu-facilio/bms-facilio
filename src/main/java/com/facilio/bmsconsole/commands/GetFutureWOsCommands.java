@@ -1,6 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
-import com.facilio.bmsconsole.modules.AggregateOperator.DateAggregateOperator;
+import com.facilio.modules.AggregateOperator.DateAggregateOperator;
 import com.facilio.bmsconsole.context.PMJobsContext;
 import com.facilio.bmsconsole.context.PMTriggerContext;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
@@ -8,8 +8,8 @@ import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.db.criteria.CommonOperators;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.FieldFactory;
+import com.facilio.modules.FacilioField;
+import com.facilio.modules.FieldFactory;
 import com.facilio.bmsconsole.templates.WorkorderTemplate;
 import com.facilio.bmsconsole.util.DateTimeUtil;
 import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;

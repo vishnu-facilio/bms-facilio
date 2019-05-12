@@ -1,8 +1,8 @@
 package com.facilio.bmsconsole.commands;
 
 import com.facilio.bmsconsole.context.SkillContext;
-import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
+import com.facilio.modules.FacilioField;
+import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.constants.FacilioConstants;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;

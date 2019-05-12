@@ -4,7 +4,7 @@ import com.facilio.bmsconsole.context.DashboardContext;
 import com.facilio.bmsconsole.context.DashboardWidgetContext;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.StringOperators;
-import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.modules.ModuleFactory;
 import com.facilio.bmsconsole.util.DashboardUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;

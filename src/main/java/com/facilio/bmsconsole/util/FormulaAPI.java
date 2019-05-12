@@ -6,6 +6,7 @@ import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.*;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.modules.*;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,7 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
 import com.facilio.db.criteria.DateRange;
-import com.facilio.bmsconsole.modules.FieldUtil;
+import com.facilio.modules.FieldUtil;
 import com.facilio.bmsconsole.util.BmsJobUtil;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.rule.EventType;

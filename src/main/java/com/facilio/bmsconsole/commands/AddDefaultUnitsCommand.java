@@ -1,7 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
-import com.facilio.bmsconsole.modules.FieldFactory;
-import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.ModuleFactory;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.unitconversion.Metric;
 import org.apache.commons.chain.Command;

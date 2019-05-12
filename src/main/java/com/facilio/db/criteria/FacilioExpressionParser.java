@@ -10,9 +10,9 @@ import java.util.regex.Pattern;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.BaseLineContext;
-import com.facilio.bmsconsole.modules.AggregateOperator;
-import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.FieldFactory;
+import com.facilio.modules.AggregateOperator;
+import com.facilio.modules.FacilioField;
+import com.facilio.modules.FieldFactory;
 import com.facilio.bmsconsole.util.BaseLineAPI;
 import com.facilio.fw.BeanFactory;
 import com.facilio.db.builder.GenericSelectRecordBuilder;

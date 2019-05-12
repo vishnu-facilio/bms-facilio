@@ -1,7 +1,7 @@
 
 package com.facilio.db.criteria;
 
-import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.modules.FacilioField;
 import com.facilio.util.FacilioExpressionWrapper;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.apache.commons.collections.Predicate;

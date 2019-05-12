@@ -1,4 +1,4 @@
-	package com.facilio.bmsconsole.modules;
+	package com.facilio.modules;
 
     import com.facilio.time.SecondsChronoUnit;
     import com.fasterxml.jackson.annotation.JsonIgnore;

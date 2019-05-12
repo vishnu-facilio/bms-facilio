@@ -1,8 +1,8 @@
 package com.facilio.bmsconsole.util;
 
-import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.FacilioModule;
-import com.facilio.bmsconsole.modules.FieldType;
+import com.facilio.modules.FacilioField;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldType;
 
 import java.util.ArrayList;
 import java.util.List;

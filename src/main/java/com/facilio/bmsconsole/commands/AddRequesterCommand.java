@@ -13,8 +13,8 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.StringOperators;
-import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.FieldFactory;
+import com.facilio.modules.FacilioField;
+import com.facilio.modules.FieldFactory;
 import com.facilio.constants.FacilioConstants;
 
 public class AddRequesterCommand implements Command {

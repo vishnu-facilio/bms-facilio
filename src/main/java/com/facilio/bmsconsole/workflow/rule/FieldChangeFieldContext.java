@@ -1,6 +1,6 @@
 package com.facilio.bmsconsole.workflow.rule;
 
-import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.modules.FacilioField;
 
 public class FieldChangeFieldContext {
 	private long id = -1;

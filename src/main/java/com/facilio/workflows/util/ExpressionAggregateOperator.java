@@ -1,7 +1,7 @@
 package com.facilio.workflows.util;
 
-import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.FieldType;
+import com.facilio.modules.FacilioField;
+import com.facilio.modules.FieldType;
 
 import java.util.Collections;
 import java.util.HashMap;

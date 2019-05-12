@@ -7,6 +7,7 @@ import com.facilio.bmsconsole.modules.*;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
+import com.facilio.modules.*;
 
 import java.util.ArrayList;
 import java.util.List;

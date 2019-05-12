@@ -4,7 +4,7 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.context.ConnectionContext;
-import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.modules.ModuleFactory;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 

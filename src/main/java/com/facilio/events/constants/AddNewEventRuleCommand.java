@@ -1,7 +1,7 @@
 package com.facilio.events.constants;
 
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.bmsconsole.modules.FieldUtil;
+import com.facilio.modules.FieldUtil;
 import com.facilio.events.context.EventRuleContext;
 import com.facilio.events.util.EventRulesAPI;
 import com.facilio.db.builder.GenericInsertRecordBuilder;

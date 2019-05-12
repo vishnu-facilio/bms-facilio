@@ -9,7 +9,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import com.facilio.beans.ModuleBean;
 import com.facilio.modules.FacilioStatus;
 import com.facilio.bmsconsole.context.WorkOrderContext;
-import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.modules.FacilioField;
 import com.facilio.bmsconsole.util.StateFlowRulesAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;

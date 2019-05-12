@@ -2,7 +2,7 @@ package com.facilio.report.customreport;
 
 import com.facilio.bmsconsole.actions.DashboardAction;
 import com.facilio.bmsconsole.context.ReportContext;
-import com.facilio.bmsconsole.modules.FacilioModule;
+import com.facilio.modules.FacilioModule;
 import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.fw.BeanFactory;
 import org.json.simple.JSONArray;

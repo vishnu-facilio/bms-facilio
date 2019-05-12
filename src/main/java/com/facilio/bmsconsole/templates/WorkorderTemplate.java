@@ -13,7 +13,7 @@ import org.json.simple.parser.ParseException;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
-import com.facilio.bmsconsole.modules.FieldUtil;
+import com.facilio.modules.FieldUtil;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class WorkorderTemplate extends Template {

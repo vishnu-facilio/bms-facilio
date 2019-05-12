@@ -12,6 +12,7 @@ import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.modules.*;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
@@ -23,7 +24,7 @@ public class CustomReportCultfit1 implements CustomReport {
 
 	@Override
 	public JSONArray getData(ReportContext report, FacilioModule module, JSONArray dateFilter,
-			JSONObject userFilterValues, long baseLineId, long criteriaId) throws Exception {
+                             JSONObject userFilterValues, long baseLineId, long criteriaId) throws Exception {
 		
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
