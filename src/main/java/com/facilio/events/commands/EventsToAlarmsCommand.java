@@ -23,6 +23,7 @@ import com.facilio.sql.GenericSelectRecordBuilder;
 import com.google.common.base.Strings;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
@@ -31,8 +32,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class EventToAlarmCommand implements Command {
-	private static final Logger LOGGER = LogManager.getLogger(EventToAlarmCommand.class.getName());
+public class EventsToAlarmsCommand implements Command {
+	private static final Logger LOGGER = LogManager.getLogger(EventsToAlarmsCommand.class.getName());
 	private long getAlarmId (EventContext event) throws Exception {
 		if (event.getAlarmId() == -1) {
 			FacilioModule module = EventConstants.EventModuleFactory.getEventModule();
@@ -78,7 +79,17 @@ public class EventToAlarmCommand implements Command {
 	@Override
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
-		EventContext event = (EventContext) context.get(EventConstants.EventContextNames.EVENT);
+		List<EventContext> events = (List<EventContext>) context.get(EventConstants.EventContextNames.EVENT_LIST);
+
+		if (CollectionUtils.isNotEmpty(events)) {
+			for (EventContext event : events) {
+				processEventToAlarm(event);
+			}
+		}
+		return false;
+	}
+
+	private void processEventToAlarm (EventContext event) throws Exception {
 		if(event.getEventStateEnum() != EventState.IGNORED) {
 			doFieldMapping(event);
 			if(event.getSeverity().equals(FacilioConstants.Alarm.INFO_SEVERITY)) {
@@ -93,7 +104,7 @@ public class EventToAlarmCommand implements Command {
 					createAlarm = false;
 					ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 					List<FacilioField> alarmFields = modBean.getAllFields(FacilioConstants.ContextNames.ALARM);
-					
+
 					SelectRecordsBuilder<AlarmContext> builder = new SelectRecordsBuilder<AlarmContext>()
 							.table("Alarms")
 							.moduleName(FacilioConstants.ContextNames.ALARM)
@@ -119,9 +130,7 @@ public class EventToAlarmCommand implements Command {
 				}
 			}
 			event.setInternalState(EventInternalState.COMPLETED);
-			context.put(EventConstants.EventContextNames.EVENT, event);
 		}
-		return false;
 	}
 	
 	private void doFieldMapping(EventContext event) throws Exception {

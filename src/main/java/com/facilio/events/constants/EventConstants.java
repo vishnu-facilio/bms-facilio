@@ -20,6 +20,7 @@ public class EventConstants {
 		public static final String EVENT_ID = "eventId";
 		public static final String EVENT = "event";
 		public static final String EVENT_PAYLOAD = "eventPayload";
+		public static final String EVENT_PAYLOADS = "eventPayloadList";
 		public static final String EVENT_TIMESTAMP = "eventTimeStamp";
 		public static final String EVENT_LAST_TIMESTAMP = "eventLastTimeStamp";
 		public static final String EVENT_COUNT_MAP = "eventCountMap";
@@ -41,14 +42,14 @@ public class EventConstants {
 	public static class EventChainFactory {
 		public static Chain processEventChain() {
 			FacilioChain c = FacilioChain.getTransactionChain();
-			c.addCommand(new InsertEventCommand());
+			c.addCommand(new InsertEventsCommand());
 //			c.addCommand(new EvalEventBaseCriteriaCommand());
 //			c.addCommand(new EventTransformCommand());
 //			c.addCommand(new EventThresholdCommand());
 //			c.addCommand(new EventCoRelationCommand());
 			c.addCommand(new ExecuteEventRulesCommand());
-			c.addCommand(new EventToAlarmCommand());
-			c.addCommand(new UpdateEventCommand());
+			c.addCommand(new EventsToAlarmsCommand());
+			c.addCommand(new UpdateEventsCommand());
 //			c.setPostTransactionChain(getUpdateEventCountChain());
 			return c;
 		}
