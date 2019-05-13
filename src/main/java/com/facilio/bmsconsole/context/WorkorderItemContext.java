@@ -11,6 +11,13 @@ public class WorkorderItemContext extends ItemTransactionsContext{
 		this.cost = cost;
 	}
 	
+	private long requestedLineItem;
+	public long getRequestedLineItem() {
+		return requestedLineItem;
+	}
+	public void setRequestedLineItem(long requestedLineItem) {
+		this.requestedLineItem = requestedLineItem;
+	}
 	
 	
 }

@@ -10,6 +10,7 @@ import org.apache.commons.collections4.CollectionUtils;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.InventoryRequestLineItemContext;
+import com.facilio.bmsconsole.criteria.CommonOperators;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
@@ -127,18 +128,22 @@ public class InventoryRequestAPI {
 	
 	public static void updateRequestUsedQuantity(long lineItemId, double usedQuantity) throws Exception {
 		
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioModule lineItemModule = modBean.getModule(FacilioConstants.ContextNames.INVENTORY_REQUEST_LINE_ITEMS);
-		Map<String, Object> updateMap = new HashMap<>();
-		FacilioField usedQuantityField = modBean.getField("usedQuantity", lineItemModule.getName());
-		updateMap.put("usedQuantity", usedQuantity);
-		List<FacilioField> updatedfields = new ArrayList<FacilioField>();
-		updatedfields.add(usedQuantityField);
-		UpdateRecordBuilder<InventoryRequestLineItemContext> updateBuilder = new UpdateRecordBuilder<InventoryRequestLineItemContext>()
-						.module(lineItemModule)
-						.fields(updatedfields)
-						.andCondition(CriteriaAPI.getIdCondition(lineItemId, lineItemModule));
-	   updateBuilder.updateViaMap(updateMap);
+		if(lineItemId != -1) {
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			FacilioModule lineItemModule = modBean.getModule(FacilioConstants.ContextNames.INVENTORY_REQUEST_LINE_ITEMS);
+			Map<String, Object> updateMap = new HashMap<>();
+			FacilioField usedQuantityField = modBean.getField("usedQuantity", lineItemModule.getName());
+			updateMap.put("usedQuantity", usedQuantity);
+			List<FacilioField> updatedfields = new ArrayList<FacilioField>();
+			updatedfields.add(usedQuantityField);
+			UpdateRecordBuilder<InventoryRequestLineItemContext> updateBuilder = new UpdateRecordBuilder<InventoryRequestLineItemContext>()
+							.module(lineItemModule)
+							.fields(updatedfields)
+							.andCondition(CriteriaAPI.getIdCondition(lineItemId, lineItemModule))
+							.andCondition(CriteriaAPI.getCondition("PARENT_ID", "parentId", "", CommonOperators.IS_NOT_EMPTY))
+							;
+		   updateBuilder.updateViaMap(updateMap);
+		}
 	}
 	
 }

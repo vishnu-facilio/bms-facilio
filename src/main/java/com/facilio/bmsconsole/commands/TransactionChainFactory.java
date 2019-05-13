@@ -1871,6 +1871,7 @@ public class TransactionChainFactory {
 		public static Chain getDeleteWorkorderItemChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForWorkorderItems());
+			c.addCommand(new RequestedLineItemQuantityRollUpCommand());
 			c.addCommand(new GenericDeleteModuleDataCommand());
 			c.addCommand(new DeleteWorkorderItemCommand());
 			c.addCommand(new PurchasedItemsQuantityRollUpCommand());
@@ -1958,6 +1959,7 @@ public class TransactionChainFactory {
 		public static Chain getDeleteWorkorderToolsChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForWorkorderTools());
+			c.addCommand(new RequestedLineItemQuantityRollUpCommand());
 			c.addCommand(new GenericDeleteModuleDataCommand());
 			c.addCommand(new DeleteWorkorderToolCommand());
 			c.addCommand(getUpdatetoolQuantityRollupChain());

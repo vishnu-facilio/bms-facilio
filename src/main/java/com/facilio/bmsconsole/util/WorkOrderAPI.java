@@ -9,6 +9,8 @@ import com.facilio.bmsconsole.context.SpaceContext;
 import com.facilio.modules.FacilioStatus;
 import com.facilio.modules.FacilioStatus.StatusType;
 import com.facilio.bmsconsole.context.WorkOrderContext;
+import com.facilio.bmsconsole.context.WorkorderItemContext;
+import com.facilio.bmsconsole.context.WorkorderToolsContext;
 import com.facilio.bmsconsole.criteria.*;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
@@ -20,6 +22,7 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import org.apache.commons.chain.Command;
+import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.*;
 import java.util.logging.Logger;
@@ -1266,7 +1269,47 @@ public static List<Map<String,Object>> getTotalClosedWoCountBySite(Long startTim
 	}
 	
 	
+    public static WorkorderItemContext getWorkOrderItem(long woItemId) throws Exception {
+    	
+    	  ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+    	  FacilioModule woItemModule = modBean.getModule(FacilioConstants.ContextNames.WORKORDER_ITEMS);
+    	
+    	
+    	 SelectRecordsBuilder<WorkorderItemContext> selectRecordsBuilder = new SelectRecordsBuilder<WorkorderItemContext>()
+				  .module(woItemModule)
+				  .beanClass(WorkorderItemContext.class)
+                 .select(modBean.getAllFields(woItemModule.getName()))
+                 .andCondition(CriteriaAPI.getIdCondition(woItemId, woItemModule))
+                ;
+    	 
+    	 List<WorkorderItemContext> list = selectRecordsBuilder.get();
+    	 if(CollectionUtils.isNotEmpty(list)) {
+    		 return list.get(0);
+    	 }
+    	 return null;
+
+    }
 	
+    public static WorkorderToolsContext getWorkOrderTool(long woToolId) throws Exception {
+    	
+  	  ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+  	  FacilioModule woToolModule = modBean.getModule(FacilioConstants.ContextNames.WORKORDER_TOOLS);
+  	
+  	
+  	 SelectRecordsBuilder<WorkorderToolsContext> selectRecordsBuilder = new SelectRecordsBuilder<WorkorderToolsContext>()
+				  .module(woToolModule)
+				  .beanClass(WorkorderToolsContext.class)
+               .select(modBean.getAllFields(woToolModule.getName()))
+               .andCondition(CriteriaAPI.getIdCondition(woToolId, woToolModule))
+              ;
+  	 
+  	 List<WorkorderToolsContext> list = selectRecordsBuilder.get();
+  	 if(CollectionUtils.isNotEmpty(list)) {
+  		 return list.get(0);
+  	 }
+  	 return null;
+
+  }
 	
 	
 	

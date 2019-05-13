@@ -43,4 +43,12 @@ public class WorkorderToolsContext extends ToolTransactionContext {
 		return duration;
 	}
 	
+	private long requestedLineItem;
+	public long getRequestedLineItem() {
+		return requestedLineItem;
+	}
+	public void setRequestedLineItem(long requestedLineItem) {
+		this.requestedLineItem = requestedLineItem;
+	}
+	
 }
