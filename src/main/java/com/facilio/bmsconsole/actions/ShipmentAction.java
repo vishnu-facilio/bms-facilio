@@ -12,6 +12,7 @@ import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.PurchaseContractContext;
 import com.facilio.bmsconsole.context.PurchaseContractLineItemContext;
 import com.facilio.bmsconsole.context.ShipmentContext;
+import com.facilio.bmsconsole.context.ShipmentLineItemContext;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 
@@ -155,10 +156,10 @@ public class ShipmentAction extends FacilioAction{
 		return SUCCESS;
 	}
 	
-	public String deletePurchaseContract() throws Exception {
+	public String deleteShipment() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, recordId != -1 ? Collections.singletonList(recordId) : recordIds);
-		Chain chain = TransactionChainFactory.getPurchaseContractDeleteChain();
+		Chain chain = TransactionChainFactory.getDeleteShipmentChain();
 		chain.execute(context);
 		
 		setResult(FacilioConstants.ContextNames.RECORD_ID_LIST, recordId != -1 ? Collections.singletonList(recordId) : recordIds);
@@ -169,16 +170,35 @@ public class ShipmentAction extends FacilioAction{
 		return getShipmentList();
 	}
 	
+	private ShipmentLineItemContext lineItem;
+	public ShipmentLineItemContext getLineItem() {
+		return lineItem;
+	}
+	public void setLineItem(ShipmentLineItemContext lineItem) {
+		this.lineItem = lineItem;
+	}
+	
+	public String addOrUpdateLineItem() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.RECORD, getLineItem());
+		
+		Chain chain = TransactionChainFactory.getAddShipmentLineItem();
+		chain.execute(context);
+		
+		setResult(FacilioConstants.ContextNames.RECORD, context.get(FacilioConstants.ContextNames.RECORD));
+		
+		return SUCCESS;
+	}
+	
 	public String deleteLineItem() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(recordId));
 		
-		Chain chain = TransactionChainFactory.getDeletePurchaseContractLineItemChain();
+		Chain chain = TransactionChainFactory.getDeleteShipmentLineItemChain();
 		chain.execute(context);
 		
 		setResult(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(recordId));
 		
 		return SUCCESS;
 	}
-	 
 }

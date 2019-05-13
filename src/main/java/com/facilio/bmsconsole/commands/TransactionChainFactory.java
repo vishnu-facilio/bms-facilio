@@ -7,6 +7,7 @@ import com.facilio.agent.ConfigureControllerCommand;
 import com.facilio.agent.DeleteAgentCommand;
 import com.facilio.bmsconsole.actions.PurchaseOrderCompleteCommand;
 import com.facilio.bmsconsole.commands.data.PopulateImportProcessCommand;
+import com.facilio.bmsconsole.context.ShipmentLineItemContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.chain.FacilioChain;
 import org.apache.commons.chain.Chain;
@@ -1251,7 +1252,7 @@ public class TransactionChainFactory {
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new UpdateTaskCommand());
 		return c;
-	}		
+	}
 		public static Chain getProcessDataChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(new ProcessDataCommand());
@@ -2691,6 +2692,12 @@ public class TransactionChainFactory {
 			chain.addCommand(new AddOrUpdateShipmentCommand());
 			return chain;
 		}
+		public static Chain getDeleteShipmentChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForShipment());
+			c.addCommand(new GetDeleteShipmentCommand());
+			return c;
+		}
 
 
 		public static Chain getDeleteStateFlowTransition() {
@@ -2709,7 +2716,19 @@ public class TransactionChainFactory {
 			c.addCommand(new UpdatePMPlannerSettingsCommand());
 			return c;
 		}
-		
+		public static Chain getAddShipmentLineItem() {
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForShipmentLineItems());
+			c.addCommand(new AddOrUpdateShipmentLineItemCommand());
+			return c;
+		}
+
+		public static Chain getDeleteShipmentLineItemChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForShipmentLineItems());
+			c.addCommand(new DeleteShipmentLineItemCommand());
+			return c;
+		}
 }
 
 

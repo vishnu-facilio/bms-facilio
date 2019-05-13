@@ -4,7 +4,9 @@ public enum TransactionType {
 
 	STOCK,
 	WORKORDER,
-	MANUAL;
+	MANUAL,
+	SHIPMENT_STOCK;
+	
 	public int getValue() {
 		return ordinal() + 1;
 	}

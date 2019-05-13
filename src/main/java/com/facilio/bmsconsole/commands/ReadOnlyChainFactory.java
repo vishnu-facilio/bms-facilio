@@ -947,9 +947,9 @@ public class ReadOnlyChainFactory {
 	public static Chain getShipmentDetailsChain() {
 		Chain c = getDefaultChain();
 		c.addCommand(SetTableNamesCommand.getForShipment());
-		c.addCommand(new LoadContractLookUpCommand());
+		c.addCommand(new LoadShipmentLookUpCommand());
 		c.addCommand(new GenericGetModuleDataDetailCommand());
-		c.addCommand(new FetchPurchaseContractDetailsCommand());
+		c.addCommand(new FetchShipmentDetailsCommand());
 		return c;
 	}
 }

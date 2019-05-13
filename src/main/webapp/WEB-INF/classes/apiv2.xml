@@ -2246,6 +2246,21 @@
 			<param name="moduleName">shipment</param>
 			<param name="permission">CREATE,UPDATE</param>
 		</action>
+		<action name="delete" class="com.facilio.bmsconsole.actions.ShipmentAction" method="deleteShipment">
+			<param name="moduleName">shipment</param>
+			<param name="permission">DELETE</param>
+		</action>
+		
+		<action name="shipmentCount" class="com.facilio.bmsconsole.actions.ShipmentAction" method="shipmentListCount">
+			<param name="moduleName">shipment</param>
+			<param name="permission">READ</param>
+		</action>
+		 <action name="*" class="com.facilio.bmsconsole.actions.ShipmentAction" method="getShipmentList">
+			<param name="viewName">{1}</param>
+			<param name="moduleName">shipment</param>
+			<param name="permission">READ</param>
+		</action>
+		
 		</package>
 
 	

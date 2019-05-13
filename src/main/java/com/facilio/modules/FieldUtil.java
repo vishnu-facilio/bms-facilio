@@ -33,13 +33,13 @@ import java.util.*;
 public class FieldUtil {
 	
 	private static final Logger LOGGER = LogManager.getLogger(FieldUtil.class.getName());
-	
+
 	public static Map<String, Object> getEmptyLookedUpProp(long id) {
 		Map<String, Object> prop = new HashMap<>();
 		prop.put("id", id);
 		return prop;
 	}
-	
+
 	public static Object castOrParseValueAsPerType(FieldType type, Object value)  {
 		switch (type) {
 			case LOOKUP:
@@ -405,7 +405,7 @@ public class FieldUtil {
 		}
 		return value;
 	}
-	
+
 	private static final Set<String> SITE_ID_ALLOWED_MODULES = Collections.unmodifiableSet(
 			new HashSet<>(Arrays.asList("resource", "asset", "building", "floor", "space", "zone", "alarm", "ticket", "workorder", "workorderrequest", "task", "readingalarm", "inventory", "tenant", "labour")));
 
@@ -414,13 +414,13 @@ public class FieldUtil {
 	}
 
 	private static final Set<String> SYSTEM_FIELDS_ALLOWED_MODULES = Collections.unmodifiableSet(
-			new HashSet<>(Arrays.asList(FacilioConstants.ContextNames.ASSET_ACTIVITY, FacilioConstants.ContextNames.WORKORDER_ACTIVITY, FacilioConstants.ContextNames.ITEM_ACTIVITY, FacilioConstants.ContextNames.PURCHASE_ORDER, FacilioConstants.ContextNames.PURCHASE_REQUEST, FacilioConstants.ContextNames.RECEIVABLE, FacilioConstants.ContextNames.RECEIPTS, FacilioConstants.ContextNames.CONTRACTS, FacilioConstants.ContextNames.GATE_PASS,  FacilioConstants.ContextNames.INVENTORY_REQUEST))
+			new HashSet<>(Arrays.asList(FacilioConstants.ContextNames.ASSET_ACTIVITY, FacilioConstants.ContextNames.WORKORDER_ACTIVITY, FacilioConstants.ContextNames.ITEM_ACTIVITY, FacilioConstants.ContextNames.PURCHASE_ORDER, FacilioConstants.ContextNames.PURCHASE_REQUEST, FacilioConstants.ContextNames.RECEIVABLE, FacilioConstants.ContextNames.RECEIPTS, FacilioConstants.ContextNames.CONTRACTS, FacilioConstants.ContextNames.GATE_PASS, FacilioConstants.ContextNames.SHIPMENT, FacilioConstants.ContextNames.INVENTORY_REQUEST))
 			);
 
 	public static boolean isSystemFieldsPresent (FacilioModule module) {
 		return SYSTEM_FIELDS_ALLOWED_MODULES.contains(module.getName());
 	}
-	
+
 	public static boolean isBaseEntityModule (FacilioModule module) {
 		return module.getTypeEnum() == FacilioModule.ModuleType.BASE_ENTITY;
 	}
