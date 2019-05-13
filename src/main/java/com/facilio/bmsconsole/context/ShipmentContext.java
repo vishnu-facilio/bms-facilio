@@ -1,7 +1,8 @@
 package com.facilio.bmsconsole.context;
 
+import java.util.List;
+
 import com.facilio.accounts.dto.User;
-import com.facilio.bmsconsole.context.PurchaseOrderContext.Status;
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 
 public class ShipmentContext extends ModuleBaseWithCustomFields{
@@ -73,4 +74,11 @@ public class ShipmentContext extends ModuleBaseWithCustomFields{
 		}
 	}
 	
+	private List<ShipmentLineItemContext> lineItems;
+	public List<ShipmentLineItemContext> getLineItems() {
+		return lineItems;
+	}
+	public void setLineItems(List<ShipmentLineItemContext> lineItems) {
+		this.lineItems = lineItems;
+	}
 }

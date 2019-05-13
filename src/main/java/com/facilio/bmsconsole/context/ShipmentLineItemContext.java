@@ -4,11 +4,11 @@ import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 
 public class ShipmentLineItemContext extends ModuleBaseWithCustomFields{
 	
-	private ShipmentContext shipment;
-	public ShipmentContext getShipment() {
+	private long shipment;
+	public long getShipment() {
 		return shipment;
 	}
-	public void setShipment(ShipmentContext shipment) {
+	public void setShipment(long shipment) {
 		this.shipment = shipment;
 	}
 	

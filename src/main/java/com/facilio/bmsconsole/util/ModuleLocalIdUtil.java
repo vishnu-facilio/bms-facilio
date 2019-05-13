@@ -49,6 +49,7 @@ public class ModuleLocalIdUtil {
 		modulesWithLocalId.add(FacilioConstants.ContextNames.GATE_PASS);
 		modulesWithLocalId.add(FacilioConstants.ContextNames.INVENTORY_REQUESTS);
 
+		modulesWithLocalId.add(FacilioConstants.ContextNames.SHIPMENT);
 
 		return modulesWithLocalId;
 	}

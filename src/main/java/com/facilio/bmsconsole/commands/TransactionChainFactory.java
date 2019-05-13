@@ -2684,6 +2684,14 @@ public class TransactionChainFactory {
 			c.addCommand(new UpdateJobPlanCommand());
 			return c;
 		}
+		
+		public static Chain getAddOrUpdateShipmentChain() {
+			Chain chain = getDefaultChain();
+			chain.addCommand(SetTableNamesCommand.getForShipment());
+			chain.addCommand(new AddOrUpdateShipmentCommand());
+			return chain;
+		}
+
 
 		public static Chain getDeleteStateFlowTransition() {
 			Chain c = getDefaultChain();

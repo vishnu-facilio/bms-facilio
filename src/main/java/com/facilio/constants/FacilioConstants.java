@@ -104,7 +104,7 @@ public class FacilioConstants {
 	
 	public static final SimpleDateFormat HTML5_DATE_FORMAT = new SimpleDateFormat("MM/dd/yyyy hh:mm a");
 	public static final SimpleDateFormat HTML5_DATE_FORMAT_1 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
-	
+
 	public static final String ERROR_MESSAGE = "Error Occured";
 	
 	public static class CognitoUserPool {
@@ -304,7 +304,7 @@ public class FacilioConstants {
 		public static final String PRE_REQUEST_MAP="preRequestMap";
 		public static final String PRE_REQUEST_LIST = "preRequests";
 		public static final String PRE_REQUEST_SECTIONS = "preRequestSections";
-		
+
 		public static final String ATTACHMENT = "attachment";
 		public static final String ATTACHMENT_LIST = "attachments";
 		public static final String EXISTING_ATTACHMENT_LIST = "existingAttachments";
@@ -522,10 +522,10 @@ public class FacilioConstants {
 		public static final String ENERGY_METER_PURPOSE = "energymeterpurpose";
 		public static final String RO_MODULE_SPI_CINEMAS = "rowaterenpinew";
 		
-		public static final String ASSET_BREAKDOWN = "assetBreakdown";          
-		public static final String ASSET_DOWNTIME_STATUS = "assetDowntimeStatus";       
-		public static final String ASSET_DOWNTIME_ID = "assetDowntimeId";     
-		
+		public static final String ASSET_BREAKDOWN = "assetBreakdown";
+		public static final String ASSET_DOWNTIME_STATUS = "assetDowntimeStatus";
+		public static final String ASSET_DOWNTIME_ID = "assetDowntimeId";
+
 		public static final String CURRENT_OCCUPANCY_READING = "currentoccupancyreading";
 		public static final String ASSIGNED_OCCUPANCY_READING = "assignedoccupancyreading";
 		public static final String TEMPERATURE_READING = "temperaturereading";
@@ -631,7 +631,7 @@ public class FacilioConstants {
 		public static final String SCHEDULED_PM_JOBS_MAP = "schdeduledPMJobsMap";
 		public static final String PM_TASK_SECTIONS = "pmTaskSections";
 		public static final String PM_PRE_REQUEST_SECTIONS = "pmPreRequestSections";
-		
+
 		public static final String PREVENTIVE_MAINTENANCE_STARTTIME = "preventivemaintenanceStarttime";
 		public static final String PREVENTIVE_MAINTENANCE_ENDTIME = "preventivemaintenanceEndtime";
 		
@@ -932,7 +932,7 @@ public class FacilioConstants {
 		public static final String SHOW_ITEMS_FOR_RETURN = "showItemsForReturn";
 		public static final String SHOW_ITEMS_FOR_ISSUE = "showItemsForIssue";
 		public static final String SHOW_TOOLS_FOR_ISSUE = "showToolsForIssue";
-		
+
 		public static final String SHOW_ITEM_FOR_WORKORDER = "showItemsForWorkorder";
 
 		public static final String ITEM_VENDORS = "itemVendors";
@@ -1027,6 +1027,8 @@ public class FacilioConstants {
 		
 		public static final String SHIPMENT = "shipment";
 		public static final String SHIPMENT_LINE_ITEM = "shipmentLineItem";
+		public static final String SHIPMENTS = "shipments";
+
 
 		public static final String INVENTORY_REQUEST = "inventoryrequest";
 		public static final String INVENTORY_REQUESTS = "inventoryrequests";
@@ -1038,7 +1040,7 @@ public class FacilioConstants {
 		public static final String DEMO_ROLLUP_JOB_ORG="rollup_job_org";
 		
 		public static final String PM_PLANNER_SETTINGS="pm_planner_settings";
-		
+
 		
 		
 		private static Map<String, Class> classMap = Collections.unmodifiableMap(initClassMap());

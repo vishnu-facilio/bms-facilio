@@ -817,19 +817,20 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new GetModuleReportCardsCommand());
 		return c;
 	}
-	
+
 	public static Chain getAssetDowntimeMetricsChain() {
 		Chain c = getDefaultChain();
 		c.addCommand(new FetchAssetDowntimeMetricsCommand());
 		return c;
 	}
-	
+
+
 	public static Chain getAlarmInsightChain() {
 		Chain c = getDefaultChain();
 		c.addCommand(new FetchAlarmInsightCommand());
 		return c;
 	}
-	
+
 	public static Chain fetchGatePassDetails() {
 		Chain c = getDefaultChain();
 		c.addCommand(SetTableNamesCommand.getForGatePass());
@@ -910,14 +911,14 @@ public class ReadOnlyChainFactory {
 		chain.addCommand(new GetInventoryRequestLineItemsForParentIdCommand());
 		return chain;
 	}
-	
+
 	public static Chain getInventoryRequestLineItemListByStoreRoomIdChain() {
 		Chain chain = getDefaultChain();
 		chain.addCommand(SetTableNamesCommand.getForInventoryRequest());
 		chain.addCommand(new GetInventoryRequestLineItemsForStoreRoomIdCommand());
 		return chain;
 	}
-	
+
 	public static Chain getAssetForTypeAndStoreChain() {
 		Chain chain = getDefaultChain();
 		chain.addCommand(SetTableNamesCommand.getForAsset());
@@ -925,10 +926,30 @@ public class ReadOnlyChainFactory {
 		return chain;
 	}
 
-	
+
 	public static Chain getPMPlannerSettingschain() {
 		Chain c = getDefaultChain();
 		c.addCommand(new LoadPMPlannerSettingCommand());
+		return c;
+	}
+
+	public static Chain getShipmentListChain() {
+		Chain chain = getDefaultChain();
+		chain.addCommand(SetTableNamesCommand.getForShipment());
+		chain.addCommand(new LoadAllFieldsCommand());
+		chain.addCommand(new LoadViewCommand());
+		chain.addCommand(new GenerateCriteriaFromFilterCommand());
+		chain.addCommand(new GenerateSearchConditionCommand());
+		chain.addCommand(new GetShipmentListCommand());
+		return chain;
+	}
+
+	public static Chain getShipmentDetailsChain() {
+		Chain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForShipment());
+		c.addCommand(new LoadContractLookUpCommand());
+		c.addCommand(new GenericGetModuleDataDetailCommand());
+		c.addCommand(new FetchPurchaseContractDetailsCommand());
 		return c;
 	}
 }
