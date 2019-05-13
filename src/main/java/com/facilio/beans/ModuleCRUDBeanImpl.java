@@ -711,7 +711,7 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 					.fields(FieldFactory.getAgentMessageFields());
 					return insertRecordBuilder.insert(map);
 		} catch (Exception e) {
-			LOGGER.info("Exception occured ",e);
+            LOGGER.info("Insertion Failed, duplicate entry");
 		}
 		return 0L;
 	}
@@ -726,7 +726,7 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 			Integer rowsAffected= updateRecordBuilder.update(map);
 			return Long.parseLong(rowsAffected.toString());
 		} catch (Exception e) {
-			LOGGER.info("Exception occured ",e);
+			LOGGER.info("Exception Occurred ",e);
 		}
 		return 0L;
 	}
