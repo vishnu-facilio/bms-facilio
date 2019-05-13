@@ -2933,5 +2933,410 @@
 				    "condition_statement": "If Chilled Water Strainer Dp ≥ 10 continuosly for 1 hour (6 ten min intervals)"
 				  }
 				}
+		},
+		"23": {
+			"fdd_rule": {
+				  "severity": "Critical",
+				  "possible_causes": "-Due to improper run of Enthalpy wheel\n-Cooling coil actuator is open when not required",
+				  "moduleName": "ahureading",
+				  "description": "Supply air temperature is less than supply air temperature set-point by 95% for at least 300 seconds.",
+				  "threshold_metric": "supplyairdamperstatus",
+				  "possible_solution": "Check for valve logic operation",
+				  "alarmCondition": {
+				    "condition": "{{supplyairtemperature}} < 0.90* {{supplyairtemperaturesetpoint}}",
+				    "workflow": {
+				      "resultEvaluator": "A < ( B *  C)",
+				      "workflowUIMode": 1,
+				      "expressions": [
+				        {
+				          "fieldName": "supplyairtemperature",
+				          "criteria": {
+				            "pattern": "(1)",
+				            "conditions": {
+				              "1": {
+				                "sequence": "1",
+				                "fieldName": "parentId",
+				                "operatorId": 9,
+				                "value": "${resourceId}"
+				              }
+				            }
+				          },
+				          "name": "A",
+				          "moduleName": "ahureading",
+				          "aggregateString": "lastValue"
+				        },
+				        {
+				          "constant": "0.90",
+				          "name": "B"
+				        },
+				        {
+				          "fieldName": "supplyairtemperaturesetpoint",
+				          "criteria": {
+				            "pattern": "(1)",
+				            "conditions": {
+				              "1": {
+				                "sequence": "1",
+				                "fieldName": "parentId",
+				                "operatorId": 9,
+				                "value": "${resourceId}"
+				              }
+				            }
+				          },
+				          "name": "D",
+				          "moduleName": "ahureading",
+				          "aggregateString": "lastValue"
+				        }
+				      ],
+				      "parameters": [
+				        {
+				          "name": "resourceId",
+				          "typeString": "Number"
+				        }
+				      ]
+				    },
+				    "condition_statement": "When Supply air temperature set-point  is greater than supply air temperature",
+				    "for": "10",
+				    "action": "TRIGGER_ALARM",
+				    "threshold_metric": "supplyairdamperstatus",
+				    "thresholdType": 5
+				  },
+				  "alarmClear": null,
+				  "problem": "Leads to Over cooling of the spaces and also increases the energy consumption ",
+				  "preRequsite": {
+				    "workflow": {
+				      "resultEvaluator": "a==1",
+				      "expressions": [
+				        {
+				          "fieldName": "supplyairfanautomanualstatus",
+				          "criteria": {
+				            "pattern": "(1)",
+				            "conditions": {
+				              "1": {
+				                "sequence": "1",
+				                "fieldName": "parentId",
+				                "operatorId": 9,
+				                "value": "${resourceId}"
+				              }
+				            }
+				          },
+				          "name": "a",
+				          "moduleName": "ahureading",
+				          "aggregateString": "lastValue"
+				        }
+				      ],
+				      "parameters": [
+				        {
+				          "name": "resourceId",
+				          "typeString": "Number"
+				        }
+				      ]
+				    },
+				    "percentage": "1",
+				    "condition_statement": "When supply air fan is in auto mode ",
+				    "moduleName": "ahureading",
+				    "action": "PreRequsite",
+				    "threshold_metric": "runstatus",
+				    "operatorId": 9,
+				    "thresholdType": 1
+				  },
+				  "ASSET_SELECTION_CRITERIA": {
+				    "categoryType": "AHU",
+				    "includeResource": "${includeResource}",
+				    "excludeResource": "${excludeResource}"
+				  },
+				  "name": "AHU Over Cooling",
+				  "threshold_metric_display": "Supply Air Damper Status",
+				  "category": "AHU",
+				  "placeHolder": {
+				    "1": {
+				      "default_value": "All Asset Selected",
+				      "label": "Assets",
+				      "type": "default",
+				      "selection_criteria": {
+				        "displayType": "ASSETCHOOSER"
+				      },
+				      "uniqueId": "resource"
+				    },
+				    "2": {
+				      "default_value": "10",
+				      "label": "Interval",
+				      "type": "rules",
+				      "selection_criteria": {
+				        "displayType": "DURATION"
+				      },
+				      "uniqueId": "interval"
+				    }
+				  }
+				}
+		},
+		"24": {
+			"fdd_rule": {
+				  "severity": "Critical",
+				  "possible_causes": "-Faulty sensor\n-Check for control logic",
+				  "moduleName": "ahureading",
+				  "description": "Relative Higher Humidity",
+				  "threshold_metric": "supplyairhumidity",
+				  "possible_solution": "Replace if faulty sensor",
+				  "alarmCondition": {
+				    "condition": "{{supplyairhumidity}} > 1.1 * {{supplyairhumiditysetpoint}}",
+				    "workflow": {
+				      "resultEvaluator": "A > ( B *  C)",
+				      "workflowUIMode": 1,
+				      "expressions": [
+				        {
+				          "fieldName": "supplyairhumidity",
+				          "criteria": {
+				            "pattern": "(1)",
+				            "conditions": {
+				              "1": {
+				                "sequence": "1",
+				                "fieldName": "parentId",
+				                "operatorId": 9,
+				                "value": "${resourceId}"
+				              }
+				            }
+				          },
+				          "name": "A",
+				          "moduleName": "ahureading",
+				          "aggregateString": "lastValue"
+				        },
+				        {
+				          "constant": "1.1",
+				          "name": "B"
+				        },
+				        {
+				          "fieldName": "supplyairhumiditysetpoint",
+				          "criteria": {
+				            "pattern": "(1)",
+				            "conditions": {
+				              "1": {
+				                "sequence": "1",
+				                "fieldName": "parentId",
+				                "operatorId": 9,
+				                "value": "${resourceId}"
+				              }
+				            }
+				          },
+				          "name": "D",
+				          "moduleName": "ahureading",
+				          "aggregateString": "lastValue"
+				        }
+				      ],
+				      "parameters": [
+				        {
+				          "name": "resourceId",
+				          "typeString": "Number"
+				        }
+				      ]
+				    },
+				    "condition_statement": "When Supply air humidity  is greater than 1.1 times Supply air humidity set- point",
+				    "for": "10",
+				    "action": "TRIGGER_ALARM",
+				    "threshold_metric": "supplyairdamperstatus",
+				    "thresholdType": 5
+				  },
+				  "alarmClear": null,
+				  "problem": "End user may feel stufiness or uneasiness due to high humidity. It is also bad for electronic devices in the space.",
+				  "preRequsite": {
+				    "workflow": {
+				      "resultEvaluator": "a==1",
+				      "expressions": [
+				        {
+				          "fieldName": "supplyfanairflowstatus",
+				          "criteria": {
+				            "pattern": "(1)",
+				            "conditions": {
+				              "1": {
+				                "sequence": "1",
+				                "fieldName": "parentId",
+				                "operatorId": 9,
+				                "value": "${resourceId}"
+				              }
+				            }
+				          },
+				          "name": "a",
+				          "moduleName": "ahureading",
+				          "aggregateString": "lastValue"
+				        }
+				      ],
+				      "parameters": [
+				        {
+				          "name": "resourceId",
+				          "typeString": "Number"
+				        }
+				      ]
+				    },
+				    "percentage": "1",
+				    "condition_statement": "When Supply Fan Airflow Status is On ",
+				    "moduleName": "ahureading",
+				    "action": "PreRequsite",
+				    "threshold_metric": "supplyfanairflowstatus",
+				    "operatorId": 9,
+				    "thresholdType": 1
+				  },
+				  "ASSET_SELECTION_CRITERIA": {
+				    "categoryType": "AHU",
+				    "includeResource": "${includeResource}",
+				    "excludeResource": "${excludeResource}"
+				  },
+				  "name": "FAHU Relative Higher Humidity",
+				  "threshold_metric_display": "Supply Humidity",
+				  "category": "AHU",
+				  "placeHolder": {
+				    "1": {
+				      "default_value": "All Asset Selected",
+				      "label": "Assets",
+				      "type": "default",
+				      "selection_criteria": {
+				        "displayType": "ASSETCHOOSER"
+				      },
+				      "uniqueId": "resource"
+				    },
+				    "2": {
+				      "default_value": "10",
+				      "label": "Interval",
+				      "type": "rules",
+				      "selection_criteria": {
+				        "displayType": "DURATION"
+				      },
+				      "uniqueId": "interval"
+				    }
+				  }
+				}
+		},
+		"25": {
+			"fdd_rule": {
+			  "severity": "Critical",
+			  "possible_causes": "-Faulty sensor\n-Check for control logic",
+			  "moduleName": "ahureading",
+			  "description": "Relative Lower Humidity",
+			  "threshold_metric": "supplyairhumidity",
+			  "possible_solution": "Replace if faulty sensor",
+			  "alarmCondition": {
+			    "condition": "{{supplyairhumidity}} < 0.9 * {{supplyairhumiditysetpoint}}",
+			    "workflow": {
+			      "resultEvaluator": "A < ( B *  C)",
+			      "workflowUIMode": 1,
+			      "expressions": [
+			        {
+			          "fieldName": "supplyairhumidity",
+			          "criteria": {
+			            "pattern": "(1)",
+			            "conditions": {
+			              "1": {
+			                "sequence": "1",
+			                "fieldName": "parentId",
+			                "operatorId": 9,
+			                "value": "${resourceId}"
+			              }
+			            }
+			          },
+			          "name": "A",
+			          "moduleName": "ahureading",
+			          "aggregateString": "lastValue"
+			        },
+			        {
+			          "constant": "0.9",
+			          "name": "B"
+			        },
+			        {
+			          "fieldName": "supplyairhumiditysetpoint",
+			          "criteria": {
+			            "pattern": "(1)",
+			            "conditions": {
+			              "1": {
+			                "sequence": "1",
+			                "fieldName": "parentId",
+			                "operatorId": 9,
+			                "value": "${resourceId}"
+			              }
+			            }
+			          },
+			          "name": "D",
+			          "moduleName": "ahureading",
+			          "aggregateString": "lastValue"
+			        }
+			      ],
+			      "parameters": [
+			        {
+			          "name": "resourceId",
+			          "typeString": "Number"
+			        }
+			      ]
+			    },
+			    "condition_statement": "When Supply air humidity  is lesser than 0.9 times Supply air humidity set- point",
+			    "for": "10",
+			    "action": "TRIGGER_ALARM",
+			    "threshold_metric": "supplyairdamperstatus",
+			    "thresholdType": 5
+			  },
+			  "alarmClear": null,
+			  "problem": "End user may feel excessive dryness on the body and may lead to uneasiness and respiratory issues.",
+			  "preRequsite": {
+			    "workflow": {
+			      "resultEvaluator": "a==1",
+			      "expressions": [
+			        {
+			          "fieldName": "supplyfanairflowstatus",
+			          "criteria": {
+			            "pattern": "(1)",
+			            "conditions": {
+			              "1": {
+			                "sequence": "1",
+			                "fieldName": "parentId",
+			                "operatorId": 9,
+			                "value": "${resourceId}"
+			              }
+			            }
+			          },
+			          "name": "a",
+			          "moduleName": "ahureading",
+			          "aggregateString": "lastValue"
+			        }
+			      ],
+			      "parameters": [
+			        {
+			          "name": "resourceId",
+			          "typeString": "Number"
+			        }
+			      ]
+			    },
+			    "percentage": "1",
+			    "condition_statement": "When Supply Fan Airflow Status is On ",
+			    "moduleName": "ahureading",
+			    "action": "PreRequsite",
+			    "threshold_metric": "supplyfanairflowstatus",
+			    "operatorId": 9,
+			    "thresholdType": 1
+			  },
+			  "ASSET_SELECTION_CRITERIA": {
+			    "categoryType": "AHU",
+			    "includeResource": "${includeResource}",
+			    "excludeResource": "${excludeResource}"
+			  },
+			  "name": "AHU Relative Lower Humidity",
+			  "threshold_metric_display": "Supply Humidity",
+			  "category": "AHU",
+			  "placeHolder": {
+			    "1": {
+			      "default_value": "All Asset Selected",
+			      "label": "Assets",
+			      "type": "default",
+			      "selection_criteria": {
+			        "displayType": "ASSETCHOOSER"
+			      },
+			      "uniqueId": "resource"
+			    },
+			    "2": {
+			      "default_value": "10",
+			      "label": "Interval",
+			      "type": "rules",
+			      "selection_criteria": {
+			        "displayType": "DURATION"
+			      },
+			      "uniqueId": "interval"
+			    }
+			  }
+			}
 		}
 	}

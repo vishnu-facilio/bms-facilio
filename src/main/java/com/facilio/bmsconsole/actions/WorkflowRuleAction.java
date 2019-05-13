@@ -537,6 +537,8 @@ public class WorkflowRuleAction extends FacilioAction {
 			pagination.put("perPage", getPerPage());
 			context.put(FacilioConstants.ContextNames.PAGINATION, pagination);
 		}
+		
+		System.out.println("request" + getIsCount());
 		context.put(FacilioConstants.ContextNames.ID, ruleId);
 		context.put(FacilioConstants.ContextNames.CV_NAME, getViewName());
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.WORKFLOW_RULE_MODULE);
@@ -547,10 +549,10 @@ public class WorkflowRuleAction extends FacilioAction {
 		Chain workflowRuleType = ReadOnlyChainFactory.fetchWorkflowRules();
 		workflowRuleType.execute(context);
 		workflowRuleList = (List<WorkflowRuleContext>) context.get(FacilioConstants.ContextNames.WORKFLOW_RULE_LIST);
-		if (getIsCount() != null) {
-			setCount((long) context.get(FacilioConstants.ContextNames.RULE_COUNT));
-		}
-		setResult("count", getCount());
+//		if (getIsCount() != null) {
+//			setCount((long) context.get(FacilioConstants.ContextNames.RULE_COUNT));
+//		}
+		setResult("count", context.get(FacilioConstants.ContextNames.RULE_COUNT));
 		setResult("rules", workflowRuleList);
 		return SUCCESS;
 

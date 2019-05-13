@@ -1,11 +1,14 @@
 package com.facilio.bmsconsole.util;
 
+import java.lang.reflect.Array;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.text.StringSubstitutor;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -86,22 +89,37 @@ public class RuleTemplateAPI {
 		
 		JSONObject rules = (JSONObject) jsonTemplate.get("fdd_rule");
 		JSONObject placeholders = (JSONObject) jsonTemplate.get("placeHolder");
+		Map<String, Object> placeHolderMap = new HashMap<>();
 		if (placeholders != null) {
-			Map<String, Object> placeHolderMap = new HashMap<>();
 			if (placeholders != null) {
 				placeholders.keySet().forEach(keyStr -> {
 					Map <String , Object> keyvalue =  (Map<String, Object>) placeholders.get(keyStr);
-					placeHolderMap.put((String) keyvalue.get("uniqueId"), keyvalue.get("default_value"));
+					placeHolderMap.put( (String) keyvalue.get("uniqueId"), keyvalue.get("default_value"));
 				});
 			}
-			JSONParser parser = new JSONParser();
-			String resolvedString =  StringSubstitutor.replace(rules, placeHolderMap);
-			JSONObject obj = (JSONObject) parser.parse(resolvedString);
-			return obj;
 		}
 		else {
 			return rules;
+		}		 
+		String resolvedString = rules.toString();
+		for(String key : placeHolderMap.keySet()) {
+			String val = null;
+			if (placeHolderMap.get(key) != null) {
+				val = placeHolderMap.get(key).toString();
+			}
+			else {
+				val = "";
+			}
+			
+			String var = "${"+key+"}";
+			String varRegex = "\\$\\{"+key+"\\}";
+			if(resolvedString.contains(var)) {
+				resolvedString = resolvedString.replaceAll(varRegex, val);
+			}
 		}
+		JSONParser parser = new JSONParser();
+		JSONObject obj = (JSONObject) parser.parse(resolvedString);
+		return obj;
 	}
 	@SuppressWarnings("unchecked")
 	public static AlarmRuleContext convertTemplateToRule (JSONObject ruleObj) throws Exception {
@@ -112,11 +130,22 @@ public class RuleTemplateAPI {
 			
 			AlarmRuleContext alarmRule = new AlarmRuleContext();
 			if (ruleObj.get("preRequsite") != null) {
+				
 				alarmRule.setPreRequsite(convertByRuleType((JSONObject) ruleObj.get("preRequsite")));
 			}
 			else {
-				
 				alarmRule.setPreRequsite(new ReadingRuleContext());
+			}
+			JSONObject selectionResource = (JSONObject) ruleObj.get("ASSET_SELECTION_CRITERIA");
+			if (!selectionResource.get("includeResource").toString().contains("${includeResource"))  {
+				System.out.println(selectionResource.get("includeResource"));
+				JSONParser parser = new JSONParser();
+				Object obj  = parser.parse((String) selectionResource.get("includeResource"));
+				JSONArray resourceList = (JSONArray) obj;
+				alarmRule.getPreRequsite().setIncludedResources(resourceList);
+			}
+			if (!selectionResource.get("excludeResource").toString().contains("${excludeResource}"))  {
+				alarmRule.getPreRequsite().setExcludedResources((List<Long>) selectionResource.get("excludeResource"));
 			}
 			alarmRule.setAlarmTriggerRule(convertByRuleType((JSONObject) ruleObj.get("alarmCondition")));
 			if ((JSONObject) ruleObj.get("alarmClear") != null) {
