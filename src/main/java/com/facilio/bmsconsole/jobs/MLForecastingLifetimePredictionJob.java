@@ -251,6 +251,14 @@ public class MLForecastingLifetimePredictionJob extends FacilioJob
 		 {
 			 postObj.put("Threshold", 7);
 		 }
+		 else if(pc.getPredictedfieldid()==604771)
+		 {
+			 postObj.put("Threshold", 7);
+		 }
+		 else if(pc.getPredictedfieldid()==604772)
+		 {
+			 postObj.put("Threshold", 7);
+		 }
 		 postObj.put("Timezone", AccountUtil.getCurrentOrg().getTimezone());
 		 postObj.put("meterInterval",pc.getDatainterval());
 		 postObj.put("AssetDetails", pc.getPyData());
