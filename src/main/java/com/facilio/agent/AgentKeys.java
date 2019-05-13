@@ -33,6 +33,7 @@ public class AgentKeys
     public static final String SITE_ID = "siteId";
     public static final String DISPLAY_NAME = "displayName";
     public static final String OS_VERSION = "os.version";
+    public static final String MQTT_VERSION = "facilio.mqtt";
     //log table keys
     public static final String COMMAND = "command";
     public static final String COMMAND_STATUS = "status";

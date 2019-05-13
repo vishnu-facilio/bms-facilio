@@ -84,18 +84,11 @@ public  class AgentUtil
             agent.setSiteId(Long.parseLong(payload.get(AgentKeys.SITE_ID).toString()));
         }
         if(payload.containsKey(AgentKeys.VERSION)) {
+            LOGGER.info(" agent is having version "+payload.get(AgentKeys.VERSION).toString());
             agent.setAgentDeviceDetails(payload.get(AgentKeys.VERSION).toString());
 
-            if(payload.containsKey(AgentKeys.OS_VERSION)) {
-                agent.setAgentVersion(payload.get(AgentKeys.OS_VERSION).toString());
-            }
-        } else {
-            if (payload.containsKey(AgentKeys.VERSION)) {
-                agent.setAgentDeviceDetails(payload.get(AgentKeys.VERSION).toString());
-            }
-
-            if (payload.containsKey(AgentKeys.VERSION)) {
-                agent.setAgentVersion(getVersion(payload.get(AgentKeys.VERSION)));
+            if(payload.containsKey(AgentKeys.FACILIO_MQTT_VERSION)) {
+                agent.setAgentVersion(payload.get(AgentKeys.FACILIO_MQTT_VERSION).toString());
             }
         }
 
