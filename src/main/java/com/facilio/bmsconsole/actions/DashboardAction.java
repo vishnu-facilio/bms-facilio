@@ -6834,9 +6834,7 @@ public class DashboardAction extends FacilioAction {
 	}
 	
 	public String getDashboardListWithFolder() throws Exception {
-		if (moduleName != null) {
-			dashboardFolders = DashboardUtil.getDashboardListWithFolder(moduleName,getOnlyMobileDashboard);
-		}
+		dashboardFolders = DashboardUtil.getDashboardListWithFolder(moduleName,getOnlyMobileDashboard);
 		return SUCCESS;
 	}
 	
