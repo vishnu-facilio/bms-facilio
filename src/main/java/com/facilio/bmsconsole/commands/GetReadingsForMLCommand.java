@@ -61,8 +61,9 @@ public class GetReadingsForMLCommand implements Command {
 																	.orderBy("TTIME ASC")
 																	.andCustomWhere("TTIME >= ? AND TTIME < ? AND "+parentField.getColumnName()+"=? ",
 																			startTime, currentTime,variables.getParentID());
-			LOGGER.info(" select Builder query "+selectBuilder);
+			
 			List<Map<String, Object>> props = selectBuilder.getAsProps();
+			LOGGER.info(" select Builder query "+selectBuilder);
 			LOGGER.info(" props are "+props);
 			for(Map<String,Object> prop : props)
 			{
