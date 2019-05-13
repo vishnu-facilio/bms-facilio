@@ -442,6 +442,7 @@ public enum CardType {
 			"    </expression>\n" + 
 			"</workflow>",false),
 	KPI_CARD(15,"kpiCard",null,true,true),
+	KPI_CARD_DYNAMIC(16,"kpiCardDynamic",null,false,true),
 	;
 	
 	
