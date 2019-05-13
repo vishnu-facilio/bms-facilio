@@ -34,6 +34,7 @@ import org.json.simple.parser.JSONParser;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.billing.context.ExcelTemplate;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.JobPlanContext;
 import com.facilio.bmsconsole.context.PMIncludeExcludeResourceContext;
 import com.facilio.bmsconsole.context.PMTaskSectionTemplateTriggers;
@@ -891,6 +892,7 @@ public class TemplateAPI {
 		
 		if (taskProps != null && !taskProps.isEmpty()) {
 			Map<String, List<TaskContext>> taskMap = new HashMap<>();
+			List<TaskContext> allTasks = new ArrayList<>();
 			List<TaskTemplate> taskTemplates = new ArrayList<>();
 			for (Map<String, Object> prop : taskProps) {
 				TaskTemplate template = FieldUtil.getAsBeanFromMap(prop, TaskTemplate.class);
@@ -913,6 +915,7 @@ public class TemplateAPI {
 					tasks = new ArrayList<>();
 					taskMap.put(sectionName, tasks);
 				}
+				allTasks.add(task);
 				tasks.add(task);
 			}
 			if (woTemplate != null) {
@@ -948,6 +951,11 @@ public class TemplateAPI {
 
 			Map<String, List<TaskContext>> orderedTaskMap = new LinkedHashMap<>(entryList.size());
 			entryList.forEach(i -> orderedTaskMap.put(i.getKey(), i.getValue()));
+			
+			if (!allTasks.isEmpty()) {
+				CommonCommandUtil.loadTaskLookups(allTasks);
+			}
+			
 			return taskMap;
 		}
 		return null;
