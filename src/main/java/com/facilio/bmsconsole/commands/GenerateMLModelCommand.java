@@ -48,19 +48,22 @@ public class GenerateMLModelCommand implements Command {
 		
 		JSONArray assetVariables = new JSONArray();
 		
-		Set<Long> assetIDList = mlContext.getAssetVariables().keySet();
-		for(long assetID:assetIDList)
+		if(mlContext.getAssetVariables()!=null)
 		{
-			JSONObject data = new JSONObject();
-			HashMap<String,String> assetVariablesMap= mlContext.getAssetVariables().get(assetID);
-			Set<String> keySet = assetVariablesMap.keySet();
-			JSONObject variableMap = new JSONObject();
-			for(String key:keySet)
+			Set<Long> assetIDList = mlContext.getAssetVariables().keySet();
+			for(long assetID:assetIDList)
 			{
-				variableMap.put(key, assetVariablesMap.get(key));
+				JSONObject data = new JSONObject();
+				HashMap<String,String> assetVariablesMap= mlContext.getAssetVariables().get(assetID);
+				Set<String> keySet = assetVariablesMap.keySet();
+				JSONObject variableMap = new JSONObject();
+				for(String key:keySet)
+				{
+					variableMap.put(key, assetVariablesMap.get(key));
+				}
+				data.put(""+assetID, variableMap);
+				assetVariables.put(data);
 			}
-			data.put(""+assetID, variableMap);
-			assetVariables.put(data);
 		}
 		postObj.put("assetdetails", assetVariables);
 		
