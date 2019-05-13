@@ -110,7 +110,7 @@ public class InventoryRequestContext extends ModuleBaseWithCustomFields{
 		this.requestedBy = requestedBy;
 	}
 	
-	private long parentId;
+	private long parentId = -1;
 	public long getParentId() {
 		return parentId;
 	}

@@ -88,7 +88,7 @@ public class AddOrUpdateInventoryRequestCommand implements Command{
 					throw new IllegalArgumentException("Insufficient quantity in inventory");
 				}  
 			}
-			if(inventoryRequestContext.getParentId() != -1) {
+			if(inventoryRequestContext.getParentId() > 0) {
 				lineItemContext.setParentId(inventoryRequestContext.getParentId());
 			}
 		}
