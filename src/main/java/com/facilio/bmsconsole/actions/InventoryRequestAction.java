@@ -279,7 +279,6 @@ public class InventoryRequestAction extends FacilioAction {
 	
 	public String useLineItems() throws Exception {
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.PARENT_ID, parentId);
 		context.put(FacilioConstants.ContextNames.INVENTORY_REQUEST_LINE_ITEMS, lineItems);
 		context.put(FacilioConstants.ContextNames.INVENTORY_CATEGORY, inventoryType);
 		if(inventoryType == InventoryType.ITEM.getValue()) {

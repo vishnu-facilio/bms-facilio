@@ -28,7 +28,6 @@ public class UseInventoryRequestLineItemsCommand implements Command{
 		// TODO Auto-generated method stub
 		List<InventoryRequestLineItemContext> lineItems = (List<InventoryRequestLineItemContext>) context.get(FacilioConstants.ContextNames.INVENTORY_REQUEST_LINE_ITEMS);
 		Integer inventoryType = (Integer) context.get(FacilioConstants.ContextNames.INVENTORY_CATEGORY);
-		Long parentId = (Long) context.get(FacilioConstants.ContextNames.PARENT_ID);
 		
 		List<WorkorderItemContext> woItemList = new ArrayList<WorkorderItemContext>();
 		List<WorkorderToolsContext> woToolList = new ArrayList<WorkorderToolsContext>();
