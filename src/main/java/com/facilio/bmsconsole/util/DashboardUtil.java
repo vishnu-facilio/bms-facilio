@@ -947,14 +947,16 @@ public class DashboardUtil {
 	public static List<DashboardFolderContext> getDashboardListWithFolder(String moduleName,boolean getOnlyMobileDashboard) throws Exception {
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioModule module = modBean.getModule(moduleName);
-		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(FieldFactory.getDashboardFields())
 				.table(ModuleFactory.getDashboardModule().getTableName())
 				.andCustomWhere("ORGID = ?", AccountUtil.getCurrentOrg().getOrgId())
-				.andCustomWhere("BASE_SPACE_ID IS NULL")
-				.andCustomWhere("MODULEID = ?", module.getModuleId());
+				.andCustomWhere("BASE_SPACE_ID IS NULL");
+		
+		if(moduleName != null) {
+			FacilioModule module = modBean.getModule(moduleName);
+			selectBuilder.andCustomWhere("MODULEID = ?", module.getModuleId());
+		}
 		
 		if(getOnlyMobileDashboard) {
 			selectBuilder.andCondition(CriteriaAPI.getCondition("SHOW_HIDE_MOBILE", "mobileEnabled", "true", BooleanOperators.IS));
@@ -2426,14 +2428,16 @@ public class DashboardUtil {
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
-		FacilioModule module = modBean.getModule(moduleName);
-		 
 		 List<DashboardFolderContext> dashboardFolderContexts = new ArrayList<>();
 		 
 		 GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 					.select(FieldFactory.getDashboardFolderFields())
-					.table(ModuleFactory.getDashboardFolderModule().getTableName())
-					.andCustomWhere(ModuleFactory.getDashboardFolderModule().getTableName()+".MODULEID = ?", module.getModuleId());
+					.table(ModuleFactory.getDashboardFolderModule().getTableName());
+		 
+		 if(moduleName != null) {
+			 FacilioModule module = modBean.getModule(moduleName);
+			 selectBuilder.andCustomWhere(ModuleFactory.getDashboardFolderModule().getTableName()+".MODULEID = ?", module.getModuleId());
+		 }
 			
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {

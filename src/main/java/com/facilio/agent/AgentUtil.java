@@ -1,6 +1,7 @@
 package com.facilio.agent;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleCRUDBean;
 import com.facilio.bmsconsole.criteria.*;
 import com.facilio.bmsconsole.modules.FacilioField;
@@ -8,6 +9,8 @@ import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.util.DateTimeUtil;
+import com.facilio.chain.FacilioContext;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.events.tasker.tasks.EventUtil;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericInsertRecordBuilder;
@@ -18,10 +21,7 @@ import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * This class writes agent's payload data to a table in DB.
@@ -84,18 +84,11 @@ public  class AgentUtil
             agent.setSiteId(Long.parseLong(payload.get(AgentKeys.SITE_ID).toString()));
         }
         if(payload.containsKey(AgentKeys.VERSION)) {
+            LOGGER.info(" agent is having version "+payload.get(AgentKeys.VERSION).toString());
             agent.setAgentDeviceDetails(payload.get(AgentKeys.VERSION).toString());
 
-            if(payload.containsKey(AgentKeys.OS_VERSION)) {
-                agent.setAgentVersion(payload.get(AgentKeys.OS_VERSION).toString());
-            }
-        } else {
-            if (payload.containsKey(AgentKeys.VERSION)) {
-                agent.setAgentDeviceDetails(payload.get(AgentKeys.VERSION).toString());
-            }
-
-            if (payload.containsKey(AgentKeys.VERSION)) {
-                agent.setAgentVersion(getVersion(payload.get(AgentKeys.VERSION)));
+            if(payload.containsKey(AgentKeys.FACILIO_MQTT_VERSION)) {
+                agent.setAgentVersion(payload.get(AgentKeys.FACILIO_MQTT_VERSION).toString());
             }
         }
 
@@ -411,6 +404,38 @@ public  class AgentUtil
         return genericSelectRecordBuilder.get();
     }
 
+
+    public static Long addOrUpdateAgentMessage(String partitionKey, Integer status){
+            Map<String,Object> map = new HashMap<>();
+            map.put(AgentKeys.PARTITION_KEY,partitionKey);
+            map.put(AgentKeys.MSG_STATUS,status);
+            map.put(AgentKeys.START_TIME,System.currentTimeMillis());
+
+            if(status == 0){
+                return addOrUpdateAgentMessage(map,true);
+            }
+        map.put(AgentKeys.FINISH_TIME, System.currentTimeMillis());
+        return addOrUpdateAgentMessage(map,false);
+    }
+
+    private static Long addOrUpdateAgentMessage( Map<String,Object> map,Boolean toAdd){
+        ModuleCRUDBean bean;
+        try {
+            bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", AccountUtil.getCurrentOrg().getId());
+
+            if (toAdd) {
+                return bean.addAgentMessage(map);
+            }
+            return bean.updateAgentMessage(map);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+        return 0L;
+    }
+
+
+
     /**
      * This method fetches metrics data of a particular agent and for a particular Publish-type.
      * If agentId and publishType is absent results with just ORGID condition is returned.
@@ -473,8 +498,38 @@ public  class AgentUtil
 
 
         } catch (Exception e) {
-            LOGGER.info("Exception occured ", e);
+            LOGGER.info("Exception occurred ", e);
         }
+    }
+
+
+    public static Boolean canReprocess(String partitionKey)
+    {
+        FacilioModule module = ModuleFactory.getAgentMessageModule();
+        ModuleCRUDBean bean;
+        try {
+            long timeLimit = System.currentTimeMillis()- AwsUtil.getMessageReprocessInterval();
+            Criteria criteria = new Criteria();
+            criteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getAgentMessagePartitionKeyField(module),partitionKey,NumberOperators.EQUALS));
+            criteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getAgentMessageStartTimeField(module), Long.toString(timeLimit),NumberOperators.LESS_THAN));
+            criteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getAgentMessageStatusField(module),"0",NumberOperators.EQUALS));
+
+            FacilioContext context = new FacilioContext();
+            context.put(FacilioConstants.ContextNames.FIELDS,FieldFactory.getAgentMessageFields());
+            context.put(FacilioConstants.ContextNames.TABLE_NAME,AgentKeys.AGENT_MESSAGE_TABLE);
+            context.put(FacilioConstants.ContextNames.MODULE,module);
+            context.put(FacilioConstants.ContextNames.CRITERIA,criteria);
+
+            bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", Objects.requireNonNull(AccountUtil.getCurrentOrg()).getId());
+            List<Map<String,Object>> rows = bean.getRows(context);
+            if(rows.isEmpty()) {
+                return false;
+            }
+        } catch (Exception e) {
+            LOGGER.info("Exception Occurred ",e);
+        }
+        return true;
+
     }
 
 }

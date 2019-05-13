@@ -24,6 +24,7 @@ import com.amazonaws.services.simpleemail.model.*;
 import com.amazonaws.services.sqs.AmazonSQS;
 import com.amazonaws.services.sqs.AmazonSQSClientBuilder;
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.agent.AgentKeys;
 import com.facilio.email.EmailUtil;
 import com.facilio.sql.DBUtil;
 import com.facilio.transaction.FacilioConnectionPool;
@@ -124,8 +125,13 @@ public class AwsUtil
 	private static String anomalyRefreshWaitTimeInSeconds;
 	private static String anomalyDetectWaitTimeInSeconds;
 	private static String anomalyPredictAPIURL;
+
 	private static boolean sysLogEnabled;
-	
+	public static Long getMessageReprocessInterval() {
+			return messageReprocessInterval;
+	}
+	private static Long messageReprocessInterval;
+
 	static {
 		loadProperties();
 	}
@@ -161,7 +167,7 @@ public class AwsUtil
 				anomalyDetectWaitTimeInSeconds = PROPERTIES.getProperty("anomalyDetectWaitTimeInSeconds","3");
 				anomalyPredictAPIURL = PROPERTIES.getProperty("anomalyPredictServiceURL","http://localhost:7444/api");
 				sysLogEnabled = "true".equals(PROPERTIES.getProperty("syslog.enabled", "false"));
-						
+				messageReprocessInterval = Long.parseLong(PROPERTIES.getProperty(AgentKeys.MESSAGE_REPROCESS_INTERVAL,"300000"));
 				PROPERTIES.put("clientapp.url", clientAppUrl);
 				URL resourceDir = AwsUtil.class.getClassLoader().getResource("");
 				if(resourceDir != null) {

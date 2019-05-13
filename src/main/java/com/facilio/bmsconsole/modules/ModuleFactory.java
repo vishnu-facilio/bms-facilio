@@ -1,11 +1,11 @@
 package com.facilio.bmsconsole.modules;
 
+import com.facilio.agent.AgentKeys;
+import com.facilio.constants.FacilioConstants;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-
-import com.facilio.agent.AgentKeys;
-import com.facilio.constants.FacilioConstants;
 
 public class ModuleFactory {
 
@@ -129,6 +129,14 @@ public class ModuleFactory {
 		agentLogModule.setDisplayName("agentLog");
 		agentLogModule.setTableName(AgentKeys.AGENT_LOG_TABLE);
 		return agentLogModule;
+	}
+
+	public static FacilioModule	getAgentMessageModule(){
+		FacilioModule agentMessageModule = new FacilioModule();
+		agentMessageModule.setName("agentMessage");
+		agentMessageModule.setDisplayName("agentMessage");
+		agentMessageModule.setTableName(AgentKeys.AGENT_MESSAGE_TABLE);
+		return agentMessageModule;
 	}
 
 	public static FacilioModule getFormFieldsModule() {

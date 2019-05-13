@@ -104,8 +104,17 @@ public class DataParseForLogsCommand implements Command {
 					Object val = 0.0;
 					
 					try{
-						if (cell.getCellTypeEnum() == CellType.STRING) {
-							val = cell.getStringCellValue();
+						if(cell.getCellType() == Cell.CELL_TYPE_BLANK) {
+							val = null;
+						}
+						else if (cell.getCellTypeEnum() == CellType.STRING) {
+							if( cell.getStringCellValue().trim().length() == 0) {
+								val = null;
+							}
+							else {
+								val = cell.getStringCellValue().trim();
+							}
+							
 						}
 						else if (cell.getCellTypeEnum() == CellType.NUMERIC || cell.getCellTypeEnum() == CellType.FORMULA) {
 							if(HSSFDateUtil.isCellDateFormatted(cell) && cell.getCellTypeEnum() == CellType.NUMERIC) {
@@ -127,6 +136,7 @@ public class DataParseForLogsCommand implements Command {
 							val = null;
 						}
 						colVal.put(cellName, val);
+						
 					}catch(Exception e) {
 						throw new ImportParseException(rowContext.getRowNumber(), cellName, e);
 						}

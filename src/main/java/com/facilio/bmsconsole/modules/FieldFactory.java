@@ -1,22 +1,14 @@
 package com.facilio.bmsconsole.modules;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-
-import org.apache.commons.lang3.tuple.Pair;
-
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.agent.AgentKeys;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.events.tasker.tasks.EventUtil;
+import org.apache.commons.lang3.tuple.Pair;
+
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class FieldFactory {
 
@@ -223,6 +215,27 @@ public class FieldFactory {
 
 	public static FacilioField getAgentIdField(FacilioModule module){
 		return getField(AgentKeys.AGENT_ID,"AGENT_ID",FieldType.NUMBER);
+	}
+
+	public static List<FacilioField> getAgentMessageFields(){
+		List<FacilioField> fields = new ArrayList<>();
+		FacilioModule module = ModuleFactory.getAgentMessageModule();
+		fields.add(getIdField(module));
+		fields.add(getAgentMessagePartitionKeyField(module));
+		fields.add(getAgentMessageStatusField(module));
+		fields.add(getAgentMessageStartTimeField(module));
+		fields.add(getField(AgentKeys.FINISH_TIME,"FINISH_TIME",module,FieldType.NUMBER));
+		return fields;
+	}
+	public static FacilioField getAgentMessagePartitionKeyField(FacilioModule module){
+		return getField(AgentKeys.PARTITION_KEY,"PARTITION_KEY",module,FieldType.STRING);
+	}
+	public static FacilioField getAgentMessageStartTimeField(FacilioModule module){
+		return getField(AgentKeys.START_TIME,"START_TIME",module,FieldType.NUMBER);
+	}
+
+	public static FacilioField getAgentMessageStatusField(FacilioModule module){
+		return getField(AgentKeys.MSG_STATUS,"MSG_STATUS",module,FieldType.NUMBER);
 	}
 
 	public static List<FacilioField> getAgentMetricsFields(){

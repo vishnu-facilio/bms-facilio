@@ -217,7 +217,13 @@
 				<param name="parse">false</param>
 			</result>
 		</global-results>
-		
+		<action name="validateInviteLink" class="com.facilio.auth.actions.FacilioAuthAction"
+			method="validateInviteLink">
+			<param name="auth">false</param>
+		</action>
+		<action name="acceptOpInvite" class="com.facilio.auth.actions.FacilioAuthAction" method="acceptUserInvite">
+		<param name="auth">false</param>
+		</action>
 		<action name="workorders" class="com.facilio.bmsconsole.actions.WorkOrderAction" method="v2workOrderList">
 			<param name="viewName">myrequests</param>
 			<param name="approval">true</param>

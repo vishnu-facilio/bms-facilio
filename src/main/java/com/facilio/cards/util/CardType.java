@@ -442,6 +442,7 @@ public enum CardType {
 			"    </expression>\n" + 
 			"</workflow>",false),
 	KPI_CARD(15,"kpiCard",null,true,true),
+	KPI_CARD_MULTI_RES(16,"kpiMultiResultCard",null,false,true),
 	;
 	
 	

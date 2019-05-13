@@ -116,7 +116,13 @@ public class Processor implements IRecordProcessor {
             for (Record record : processRecordsInput.getRecords()) {
                 String data = "";
                 StringReader reader = null;
+                String sequenceNumber = record.getSequenceNumber();
                 try {
+                        if ((AgentUtil.addOrUpdateAgentMessage(sequenceNumber, 0).intValue() == 0)) {
+                            if (!AgentUtil.canReprocess(sequenceNumber)) {
+                                continue;
+                            }
+                        }
 
                     data = decoder.decode(record.getData()).toString();
                     if(data.isEmpty()){
@@ -131,7 +137,6 @@ public class Processor implements IRecordProcessor {
 
                     reader = new StringReader(data);
                     JSONObject payLoad = (JSONObject) parser.parse(reader);
-
                     String dataType = PublishType.event.getValue();
                     if(payLoad.containsKey(EventUtil.DATA_TYPE)) {
                         dataType = (String)payLoad.remove(EventUtil.DATA_TYPE);
@@ -242,6 +247,7 @@ public class Processor implements IRecordProcessor {
                         genericUpdateRecordBuilder.update(toUpdate);
 
                     }
+                    AgentUtil.addOrUpdateAgentMessage(sequenceNumber,1);
 
                 } catch (Exception e) {
                     try {
