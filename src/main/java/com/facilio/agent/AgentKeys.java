@@ -40,6 +40,7 @@ public class AgentKeys
     public static final String CONTROLLER_ID = "controllerId";
     public static final String AGENT_LOG_TABLE = "Agent_Log";
     public static final String CONNECTION_COUNT = "connectionCount";
+    public static final String PUBLISH_MESSAGE_TBALE = "Publish_Message";
 
     //Metrics table
     public static final String TIME = "time";
@@ -47,6 +48,16 @@ public class AgentKeys
     public static final String SIZE = "size";
     public static final String NO_OF_MESSAGES = "numberOfMsgs";
     public static final String LAST_UPDATED_TIME = "lastUpdatedTime";
+
+    public static final String MESSAGE_REPROCESS_INTERVAL = "message.reprocess.interval";
+    //Messages table
+    public static final String AGENT_MESSAGE_TABLE = "Agent_Message";
+    public static final String PARTITION_KEY = "partitionKey";
+    public static final String MSG_STATUS = "msgStatus";
+    public static final String START_TIME = "startTime";
+    public static final String FINISH_TIME = "finishTime";
+
+
 
 
 }

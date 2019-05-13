@@ -90,8 +90,15 @@ public class Processor extends FacilioProcessor {
         for (FacilioRecord record : records) {
                 boolean alarmCreated = false;
                 long numberOfRows = 0;
+                String id = record.getId();
             try {
                 String data = "";
+                    if ((AgentUtil.addOrUpdateAgentMessage(id, 0).intValue() == 0)) {
+                        if (!AgentUtil.canReprocess(id)) {
+                            continue;
+                        }
+                    }
+
                 data = record.getData().toString();
                 if (data.isEmpty()) {
                     continue;
@@ -206,6 +213,7 @@ public class Processor extends FacilioProcessor {
                         if(isStage && agent != null) {
                             AgentUtil.addAgentMetrics(dataLength, agent.getId(), publishType.getKey());
                         }
+                        AgentUtil.addOrUpdateAgentMessage(id,1);
                     }
 
                     catch (Exception e) {
