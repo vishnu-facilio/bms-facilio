@@ -205,7 +205,7 @@ public class FieldFactory {
 		fields.add(getField(AgentKeys.TIMESTAMP,"TIME",FieldType.NUMBER));
 		fields.add(getAgentIdField(module));
 		fields.add(getField(AgentKeys.DEVICE_ID,"DEVICE_ID",module,FieldType.STRING));
-		fields.add(getField(AgentKeys.CONTENT,"CONTENT",module,FieldType.NUMBER));
+		fields.add(getField(AgentKeys.CONTENT,"CONTENT",module,FieldType.STRING));
 		fields.add(getField(AgentKeys.MESSAGE_ID,"MSG_ID",module,FieldType.NUMBER));
 		fields.add(getField(AgentKeys.COMMAND,"COMMAND",module,FieldType.NUMBER));
 		fields.add(getField(AgentKeys.COMMAND_STATUS,"COMMAND_STATUS",module,FieldType.NUMBER));
