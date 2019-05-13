@@ -131,7 +131,7 @@ public class InventoryRequestLineItemContext extends ModuleBaseWithCustomFields{
 		woItem.setParentId(this.getParentId());
 		woItem.setAssetIds(this.getAssetIds());
 		woItem.setQuantity(this.getQuantity());
-		woItem.setRequestedLineItem(this.getId());
+		woItem.setRequestedLineItem(this);
 		return woItem;
 	}
 	
@@ -142,7 +142,7 @@ public class InventoryRequestLineItemContext extends ModuleBaseWithCustomFields{
 		woTool.setAssetIds(this.getAssetIds());
 		woTool.setQuantity(this.getQuantity());
 		woTool.setDuration(3600000);
-		woTool.setRequestedLineItem(this.getId());
+		woTool.setRequestedLineItem(this);
 		
 		return woTool;
 	}

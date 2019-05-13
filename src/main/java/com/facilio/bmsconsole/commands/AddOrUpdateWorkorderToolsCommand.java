@@ -71,7 +71,7 @@ public class AddOrUpdateWorkorderToolsCommand implements Command {
 //								approvalState = ApprovalState.REQUESTED;
 //							}
 							wTool = setWorkorderItemObj(null, workorderTool.getQuantity(), tool, parentId,
-									workorder, workorderTool, approvalState, null);
+									workorder, workorderTool, approvalState, null, workorderTool.getRequestedLineItem());
 							// update
 							wTool.setId(workorderTool.getId());
 							workorderToolslist.add(wTool);
@@ -95,14 +95,8 @@ public class AddOrUpdateWorkorderToolsCommand implements Command {
 										throw new IllegalArgumentException("Insufficient quantity in inventory!");
 									}
 									WorkorderToolsContext woTool = new WorkorderToolsContext();
-									if (toolTypes.isApprovalNeeded() || storeRoom.isApprovalNeeded()) {
-										asset.setIsUsed(false);
-									}
-									else {
-										asset.setIsUsed(true);
-									}
 									woTool = setWorkorderItemObj(null, 1, tool, parentId, workorder,
-											workorderTool, approvalState, asset);
+											workorderTool, approvalState, asset, workorderTool.getRequestedLineItem());
 									updatePurchasedTool(asset);
 									workorderToolslist.add(woTool);
 									toolsToBeAdded.add(woTool);
@@ -111,7 +105,7 @@ public class AddOrUpdateWorkorderToolsCommand implements Command {
 						} else {
 							WorkorderToolsContext woTool = new WorkorderToolsContext();
 							woTool = setWorkorderItemObj(null, workorderTool.getQuantity(), tool, parentId,
-									workorder, workorderTool, approvalState, null);
+									workorder, workorderTool, approvalState, null, workorderTool.getRequestedLineItem());
 							workorderToolslist.add(woTool);
 							toolsToBeAdded.add(woTool);
 						}
@@ -139,11 +133,14 @@ public class AddOrUpdateWorkorderToolsCommand implements Command {
 
 	private WorkorderToolsContext setWorkorderItemObj(PurchasedToolContext purchasedtool, double quantity,
 			ToolContext tool, long parentId, WorkOrderContext workorder, WorkorderToolsContext workorderTools,
-			ApprovalState approvalState, AssetContext asset) {
+			ApprovalState approvalState, AssetContext asset, InventoryRequestLineItemContext lineItem) {
 		WorkorderToolsContext woTool = new WorkorderToolsContext();
 		woTool.setIssueTime(workorderTools.getIssueTime());
 		woTool.setReturnTime(workorderTools.getReturnTime());
 		woTool.setDuration(workorderTools.getDuration());
+		if(lineItem != null) {
+			woTool.setRequestedLineItem(lineItem);
+		}
 		int duration = 0;
 		if (woTool.getDuration() <= 0) {
 			if (woTool.getIssueTime() <= 0) {
@@ -173,11 +170,7 @@ public class AddOrUpdateWorkorderToolsCommand implements Command {
 			woTool.setAsset(asset);
 		}
 		woTool.setApprovedState(approvalState);
-		if (approvalState == ApprovalState.YET_TO_BE_REQUESTED) {
-			woTool.setRemainingQuantity(quantity);
-		} else {
-			woTool.setRemainingQuantity(0);
-		}
+		woTool.setRemainingQuantity(quantity);
 		woTool.setQuantity(quantity);
 		woTool.setTool(tool);
 		woTool.setToolType(tool.getToolType());

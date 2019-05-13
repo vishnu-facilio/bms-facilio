@@ -94,12 +94,12 @@ public class AddOrUpdateWorkorderItemsCommand implements Command {
 								info.put("issuedToId", workorderitem.getParentId());
 								if (itemType.isRotating()) {
 									woitemactivity.add(info);
-									wItem = setWorkorderItemObj(purchaseditem, 1, item, parentId, approvalState, wo, workorderitem.getAsset());
+									wItem = setWorkorderItemObj(purchaseditem, 1, item, parentId, approvalState, wo, workorderitem.getAsset(), workorderitem.getRequestedLineItem());
 
 								} else {
 									woitemactivity.add(info);
 									wItem = setWorkorderItemObj(purchaseditem, workorderitem.getQuantity(), item,
-											parentId, approvalState, wo, null);
+											parentId, approvalState, wo, null, workorderitem.getRequestedLineItem());
 								}
 								// updatePurchasedItem(purchaseditem);
 								wItem.setId(workorderitem.getId());
@@ -131,14 +131,9 @@ public class AddOrUpdateWorkorderItemsCommand implements Command {
 									info.put("issuedToId", workorderitem.getParentId());
 									info.put("serialno", asset.getSerialNumber());
 									WorkorderItemContext woItem = new WorkorderItemContext();
-									if (itemType.isApprovalNeeded() || storeRoom.isApprovalNeeded()) {
-										asset.setIsUsed(false);
-										woitemactivity.add(info);
-									} else {
-										asset.setIsUsed(true);
-										woitemactivity.add(info);
-									}
-									woItem = setWorkorderItemObj(null, 1, item, parentId, approvalState, wo, asset);
+									asset.setIsUsed(true);
+									woitemactivity.add(info);
+									woItem = setWorkorderItemObj(null, 1, item, parentId, approvalState, wo, asset, workorderitem.getRequestedLineItem());
 									updatePurchasedItem(asset);
 									workorderItemslist.add(woItem);
 									itemToBeAdded.add(woItem);
@@ -167,7 +162,7 @@ public class AddOrUpdateWorkorderItemsCommand implements Command {
 									WorkorderItemContext woItem = new WorkorderItemContext();
 									woitemactivity.add(info);
 									woItem = setWorkorderItemObj(pItem, workorderitem.getQuantity(), item, parentId,
-											approvalState, wo, null);
+											approvalState, wo, null, workorderitem.getRequestedLineItem());
 									workorderItemslist.add(woItem);
 									itemToBeAdded.add(woItem);
 								} else {
@@ -182,7 +177,7 @@ public class AddOrUpdateWorkorderItemsCommand implements Command {
 											quantityUsedForTheCost = purchaseitem.getCurrentQuantity();
 										}
 										woItem = setWorkorderItemObj(purchaseitem, quantityUsedForTheCost, item,
-												parentId, approvalState, wo, null);
+												parentId, approvalState, wo, null, workorderitem.getRequestedLineItem());
 										requiredQuantity -= quantityUsedForTheCost;
 										workorderItemslist.add(woItem);
 										itemToBeAdded.add(woItem);
@@ -227,7 +222,7 @@ public class AddOrUpdateWorkorderItemsCommand implements Command {
 	}
 
 	private WorkorderItemContext setWorkorderItemObj(PurchasedItemContext purchasedItem, double quantity,
-			ItemContext item, long parentId, ApprovalState approvalState, WorkOrderContext wo, AssetContext asset) {
+			ItemContext item, long parentId, ApprovalState approvalState, WorkOrderContext wo, AssetContext asset, InventoryRequestLineItemContext lineItem) {
 		WorkorderItemContext woItem = new WorkorderItemContext();
 		woItem.setTransactionType(TransactionType.WORKORDER);
 		woItem.setTransactionState(TransactionState.ISSUE);
@@ -240,6 +235,9 @@ public class AddOrUpdateWorkorderItemsCommand implements Command {
 			}
 		}
 		woItem.setQuantity(quantity);
+		if(lineItem != null) {
+			woItem.setRequestedLineItem(lineItem);
+		}
 		woItem.setItem(item);
 		woItem.setItemType(item.getItemType());
 		woItem.setSysModifiedTime(System.currentTimeMillis());
@@ -251,11 +249,7 @@ public class AddOrUpdateWorkorderItemsCommand implements Command {
 				costOccured = asset.getUnitPrice() * quantity;
 			}
 		}
-		if (approvalState == ApprovalState.YET_TO_BE_REQUESTED) {
-			woItem.setRemainingQuantity(quantity);
-		} else {
-			woItem.setRemainingQuantity(0);
-		}
+		woItem.setRemainingQuantity(quantity);
 		
 		woItem.setCost(costOccured);
 		if (wo != null) {

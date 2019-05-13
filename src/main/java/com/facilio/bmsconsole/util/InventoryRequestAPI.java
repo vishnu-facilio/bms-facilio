@@ -75,8 +75,8 @@ public class InventoryRequestAPI {
 
 	}
 	
-	public static boolean checkQuantityForWoItemNeedingApproval(long lineItemId, double woItemQuantity) throws Exception {
-		if(lineItemId != -1) {
+	public static boolean checkQuantityForWoItemNeedingApproval(InventoryRequestLineItemContext lineItem, double woItemQuantity) throws Exception {
+		if(lineItem != null) {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.INVENTORY_REQUEST_LINE_ITEMS);
 			List<FacilioField> fields = modBean.getAllFields(module.getName());
@@ -85,13 +85,13 @@ public class InventoryRequestAPI {
 					.module(module)
 					.beanClass(FacilioConstants.ContextNames.getClassFromModuleName(module.getName()))
 					.select(fields)
-					.andCondition(CriteriaAPI.getIdCondition(lineItemId, module))
+					.andCondition(CriteriaAPI.getIdCondition(lineItem.getId(), module))
 				
 			;
 			List<InventoryRequestLineItemContext> lineItems = builder.get();
 			if(CollectionUtils.isNotEmpty(lineItems)) {
-				if(woItemQuantity <= lineItems.get(0).getQuantity()) {
-					updateRequestUsedQuantity(lineItems.get(0).getId(), woItemQuantity);
+				if(woItemQuantity <= (lineItems.get(0).getQuantity() - lineItems.get(0).getUsedQuantity())) {
+					updateRequestUsedQuantity(lineItems.get(0), woItemQuantity);
 					return true;
 				}
 				return false;
@@ -100,8 +100,8 @@ public class InventoryRequestAPI {
 		}
 		throw new IllegalArgumentException("Please request approval for the item before using it");
 	}
-	public static boolean checkQuantityForWoToolNeedingApproval(long lineItemId, double woToolQuantity) throws Exception {
-		if(lineItemId != -1) {
+	public static boolean checkQuantityForWoToolNeedingApproval(InventoryRequestLineItemContext lineItem, double woToolQuantity) throws Exception {
+		if(lineItem != null) {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.INVENTORY_REQUEST_LINE_ITEMS);
 			List<FacilioField> fields = modBean.getAllFields(module.getName());
@@ -110,13 +110,13 @@ public class InventoryRequestAPI {
 					.module(module)
 					.beanClass(FacilioConstants.ContextNames.getClassFromModuleName(module.getName()))
 					.select(fields)
-					.andCondition(CriteriaAPI.getIdCondition(lineItemId, module))
+					.andCondition(CriteriaAPI.getIdCondition(lineItem.getId(), module))
 				
 			;
 			List<InventoryRequestLineItemContext> lineItems = builder.get();
 			if(CollectionUtils.isNotEmpty(lineItems)) {
-				if(woToolQuantity <= lineItems.get(0).getQuantity()) {
-					updateRequestUsedQuantity(lineItems.get(0).getId(), woToolQuantity);
+				if(woToolQuantity <= (lineItems.get(0).getQuantity() - lineItems.get(0).getUsedQuantity())) {
+					updateRequestUsedQuantity(lineItems.get(0), woToolQuantity);
 					return true;
 				}
 				return false;
@@ -126,9 +126,9 @@ public class InventoryRequestAPI {
 		throw new IllegalArgumentException("Please request approval for the tool before using it");
 	}
 	
-	public static void updateRequestUsedQuantity(long lineItemId, double usedQuantity) throws Exception {
+	public static void updateRequestUsedQuantity(InventoryRequestLineItemContext lineItem, double usedQuantity) throws Exception {
 		
-		if(lineItemId != -1) {
+		if(lineItem != null) {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioModule lineItemModule = modBean.getModule(FacilioConstants.ContextNames.INVENTORY_REQUEST_LINE_ITEMS);
 			Map<String, Object> updateMap = new HashMap<>();
@@ -139,8 +139,7 @@ public class InventoryRequestAPI {
 			UpdateRecordBuilder<InventoryRequestLineItemContext> updateBuilder = new UpdateRecordBuilder<InventoryRequestLineItemContext>()
 							.module(lineItemModule)
 							.fields(updatedfields)
-							.andCondition(CriteriaAPI.getIdCondition(lineItemId, lineItemModule))
-							.andCondition(CriteriaAPI.getCondition("PARENT_ID", "parentId", "", CommonOperators.IS_NOT_EMPTY))
+							.andCondition(CriteriaAPI.getIdCondition(lineItem.getId(), lineItemModule))
 							;
 		   updateBuilder.updateViaMap(updateMap);
 		}
