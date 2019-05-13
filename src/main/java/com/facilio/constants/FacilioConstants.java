@@ -67,6 +67,8 @@ import com.facilio.bmsconsole.context.ReceiptContext;
 import com.facilio.bmsconsole.context.ReceiptLineItemContext;
 import com.facilio.bmsconsole.context.ReceivableContext;
 import com.facilio.bmsconsole.context.ResourceContext;
+import com.facilio.bmsconsole.context.ShipmentContext;
+import com.facilio.bmsconsole.context.ShipmentLineItemContext;
 import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.bmsconsole.context.SkillContext;
 import com.facilio.bmsconsole.context.SpaceCategoryContext;
@@ -1022,6 +1024,9 @@ public class FacilioConstants {
 		public static final String WO_ITEMS_LIST = "woItemsList";
 		public static final String WO_TOOLS_LIST = "woToolsList";
 		public static final String WO_LABOUR_LIST = "woLabourList";
+		
+		public static final String SHIPMENT = "shipment";
+		public static final String SHIPMENT_LINE_ITEM = "shipmentLineItem";
 
 		public static final String INVENTORY_REQUEST = "inventoryrequest";
 		public static final String INVENTORY_REQUESTS = "inventoryrequests";
@@ -1137,6 +1142,8 @@ public class FacilioConstants {
 			classMap.put(RECEIVABLE, ReceivableContext.class);
 			classMap.put(RECEIPT, ReceiptContext.class);
 			classMap.put(RECEIPT_LINE_ITEMS, ReceiptLineItemContext.class);
+			classMap.put(SHIPMENT, ShipmentContext.class);
+			classMap.put(SHIPMENT_LINE_ITEM, ShipmentLineItemContext.class);
 			
 			classMap.put(ML, MLContext.class);
 			classMap.put(PO_LINE_ITEMS_SERIAL_NUMBERS, PoLineItemsSerialNumberContext.class);
