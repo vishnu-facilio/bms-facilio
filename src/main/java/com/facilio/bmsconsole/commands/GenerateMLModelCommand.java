@@ -88,6 +88,7 @@ public class GenerateMLModelCommand implements Command {
 		}
 		postObj.put("outputmetrics",op);
 		postObj.put("data", constructJSONArray(mlContext.getMlVariablesDataMap()));
+		LOGGER.info("DATA OBJECT FOR ML IS "+postObj.get("data"));
 		
 		String postURL=AwsUtil.getAnomalyPredictAPIURL() + "/"+mlContext.getModelPath();
 		Map<String, String> headers = new HashMap<>();
