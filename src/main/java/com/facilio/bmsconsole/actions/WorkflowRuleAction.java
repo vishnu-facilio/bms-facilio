@@ -541,7 +541,7 @@ public class WorkflowRuleAction extends FacilioAction {
 		System.out.println("request" + getIsCount());
 		context.put(FacilioConstants.ContextNames.ID, ruleId);
 		context.put(FacilioConstants.ContextNames.CV_NAME, getViewName());
-		context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.WORKFLOW_RULE_MODULE);
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.READING_RULE_MODULE);
 		context.put(FacilioConstants.ContextNames.WORKFLOW_RULE_TYPE, ruleType);
 		context.put(FacilioConstants.ContextNames.WORKFLOW_FETCH_EVENT, false);
 		context.put(FacilioConstants.ContextNames.WORKFLOW_FETCH_CHILDREN, false);

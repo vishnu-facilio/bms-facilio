@@ -461,12 +461,13 @@
 		<action name="*"
 			class="com.facilio.bmsconsole.actions.WorkflowRuleAction" method="v2RulesList">
 			<param name="permission">READ,READ_OWN,READ_TEAM</param>
+			<param name="moduleName">readingrule</param>
 			<param name="viewName">{1}</param>
 			<param name="ruleType">1</param>
 		</action>
 		<action name="rulesCount"
 			class="com.facilio.bmsconsole.actions.WorkflowRuleAction" method="v2rulesCount">
-			<param name="moduleName">workflowrule</param>
+			<param name="moduleName">readingrule</param>
 			<param name="permission">READ,READ_TEAM,READ_OWN</param>
 		</action>
 	</package>
