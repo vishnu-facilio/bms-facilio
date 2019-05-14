@@ -11,6 +11,7 @@ import org.apache.log4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 
 public class PdfUtil {
 
@@ -40,7 +41,7 @@ public class PdfUtil {
                     String[] server = serverName.split(":");
                     serverName = server[0];
                 }
-                String[] command = new String[]{PDF_CMD, RENDER_JS, url, pdfFileLocation, token, serverName, "--debug=true"};
+                String[] command = new String[]{PDF_CMD, "\"" + RENDER_JS + "\"","\"" + url + "\"", "\"" + pdfFileLocation + "\"", "\"" + token + "\"", "\""+ serverName + "\"", "--debug=true"};
                 int exitStatus = CommandExecutor.execute(command);
                 LOGGER.info("Converted to pdf with exit status : " + exitStatus + " and file " + pdfFile.getAbsolutePath());
             } catch (IOException e) {
