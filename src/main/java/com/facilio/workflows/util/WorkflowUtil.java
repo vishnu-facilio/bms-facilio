@@ -1367,8 +1367,13 @@ public class WorkflowUtil {
         }
 		return null;
 	}
+	public static Object evalSystemFunctions(WorkflowFunctionContext workflowFunctionContext,Object[] objects) throws Exception {
+		
+		FacilioWorkflowFunctionInterface defaultFunctions = getFacilioFunction(workflowFunctionContext.getNameSpace(),workflowFunctionContext.getFunctionName());
+		return defaultFunctions.execute(objects);
+	}
 	
-	public static Object evalCustomFunctions(WorkflowFunctionContext workflowFunctionContext,Map<String,Object> variableToExpresionMap) throws Exception {
+	public static Object evalSystemFunctions(WorkflowFunctionContext workflowFunctionContext,Map<String,Object> variableToExpresionMap) throws Exception {
 		
 		FacilioWorkflowFunctionInterface defaultFunctions = getFacilioFunction(workflowFunctionContext.getNameSpace(),workflowFunctionContext.getFunctionName());
 		

@@ -1,5 +1,6 @@
 package com.facilio.workflows.functions;
 
+import com.facilio.util.FacilioUtil;
 import com.facilio.workflows.exceptions.FunctionParamException;
 
 import java.util.*;
@@ -103,13 +104,26 @@ public enum FacilioListFunction implements FacilioWorkflowFunctionInterface {
 			
 			checkParam(objects);
 			List<Object> list = (List<Object>) objects[0];
-			List<String> list1 = new ArrayList<>();
-			for(Object key :list) {
-				list1.add(key.toString());
+			if(list.get(0) != null) {
+				if(list.get(0) instanceof String) {
+					List<String> list1 = new ArrayList<>();
+					for(Object key :list) {
+						list1.add(key.toString());
+					}
+					
+					Collections.sort(list1);
+					return list1;
+				}
+				else if (FacilioUtil.isNumeric(list.get(0).toString())) {
+					List<Double> list1 = new ArrayList<>();
+					for(Object key :list) {
+						list1.add(Double.parseDouble(key.toString()));
+					}
+					Collections.sort(list1);
+					return list1;
+				}
 			}
-			
-			Collections.sort(list1);
-			return list1;
+			return list;
 		};
 		
 		public void checkParam(Object... objects) throws Exception {

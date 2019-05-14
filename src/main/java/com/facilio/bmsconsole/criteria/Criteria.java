@@ -48,6 +48,10 @@ public class Criteria extends ExpressionEvaluator<Predicate> implements Serializ
 	public void setConditions(Map<String, Condition> conditions) {
 		this.conditions = conditions;
 	}
+	public void addCondition(String seq, Condition condition) {
+		this.conditions = this.conditions == null ? new HashMap<>() : this.conditions;
+		this.conditions.put(seq, condition);
+	}
 
 	private String pattern = null;
 
