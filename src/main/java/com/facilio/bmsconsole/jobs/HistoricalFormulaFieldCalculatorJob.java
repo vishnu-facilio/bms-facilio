@@ -5,7 +5,7 @@ import com.facilio.bmsconsole.context.FormulaFieldContext;
 import com.facilio.db.criteria.DateRange;
 import com.facilio.modules.FieldUtil;
 import com.facilio.bmsconsole.util.BmsJobUtil;
-import com.facilio.bmsconsole.util.DateTimeUtil;
+import com.facilio.time.DateTimeUtil;
 import com.facilio.bmsconsole.util.FormulaFieldAPI;
 import com.facilio.tasker.job.FacilioJob;
 import com.facilio.tasker.job.JobContext;

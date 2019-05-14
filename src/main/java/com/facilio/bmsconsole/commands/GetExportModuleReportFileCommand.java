@@ -19,7 +19,7 @@ import com.facilio.modules.FacilioField;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.LookupField;
 import com.facilio.bmsconsole.reports.ReportsUtil;
-import com.facilio.bmsconsole.util.DateTimeUtil;
+import com.facilio.time.DateTimeUtil;
 import com.facilio.bmsconsole.util.ExportUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fs.FileInfo.FileFormat;

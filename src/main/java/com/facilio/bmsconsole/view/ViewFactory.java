@@ -35,7 +35,7 @@ import com.facilio.modules.LookupField;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.NumberField;
 import com.facilio.bmsconsole.tenant.TenantContext;
-import com.facilio.bmsconsole.util.DateTimeUtil;
+import com.facilio.time.DateTimeUtil;
 import com.facilio.bmsconsole.workflow.rule.ApprovalState;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.events.constants.EventConstants;

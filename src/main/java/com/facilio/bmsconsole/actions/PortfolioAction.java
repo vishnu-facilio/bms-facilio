@@ -7,6 +7,7 @@ import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.modules.FieldUtil;
 import com.facilio.bmsconsole.reports.ReportsUtil;
 import com.facilio.bmsconsole.util.*;
+import com.facilio.time.DateTimeUtil;
 import com.opensymphony.xwork2.ActionSupport;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONArray;
@@ -108,7 +109,7 @@ public class PortfolioAction extends ActionSupport {
 		}
 		result.put("buildingCount", buildings.size());
 		
-		long prevStartTime=DateTimeUtil.getMonthStartTime(-1);
+		long prevStartTime= DateTimeUtil.getMonthStartTime(-1);
 		long currentStartTime=DateTimeUtil.getMonthStartTime();
 		long endTime=DateTimeUtil.getCurrenTime();
 		long previousEndTime=prevStartTime+(endTime-currentStartTime);

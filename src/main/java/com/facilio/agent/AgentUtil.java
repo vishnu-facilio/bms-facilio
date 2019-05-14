@@ -7,7 +7,7 @@ import com.facilio.modules.FacilioField;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
-import com.facilio.bmsconsole.util.DateTimeUtil;
+import com.facilio.time.DateTimeUtil;
 
 import com.facilio.db.criteria.*;
 import com.facilio.events.tasker.tasks.EventUtil;

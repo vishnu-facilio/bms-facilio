@@ -1,4 +1,4 @@
-package com.facilio.bmsconsole.util;
+package com.facilio.time;
 
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.util.AccountUtil;
