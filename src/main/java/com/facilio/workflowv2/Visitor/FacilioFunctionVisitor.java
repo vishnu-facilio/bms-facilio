@@ -1,0 +1,579 @@
+package com.facilio.workflowv2.Visitor;
+
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.antlr.v4.runtime.misc.ParseCancellationException;
+import org.antlr.v4.runtime.tree.RuleNode;
+import org.apache.commons.lang3.tuple.Pair;
+
+import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.criteria.BooleanOperators;
+import com.facilio.bmsconsole.criteria.Condition;
+import com.facilio.bmsconsole.criteria.NumberOperators;
+import com.facilio.bmsconsole.criteria.Operator;
+import com.facilio.bmsconsole.criteria.StringOperators;
+import com.facilio.bmsconsole.modules.FacilioModule;
+import com.facilio.fw.BeanFactory;
+import com.facilio.workflows.context.WorkflowFunctionContext;
+import com.facilio.workflows.functions.FacilioFunctionNameSpace;
+import com.facilio.workflows.util.WorkflowUtil;
+import com.facilio.workflowv2.autogens.WorkflowV2BaseVisitor;
+import com.facilio.workflowv2.autogens.WorkflowV2Parser;
+import com.facilio.workflowv2.autogens.WorkflowV2Parser.ExprContext;
+import com.facilio.workflowv2.autogens.WorkflowV2Parser.Function_paramContext;
+import com.facilio.workflowv2.contexts.DBParamContext;
+import com.facilio.workflowv2.contexts.Value;
+import com.facilio.workflowv2.util.WorkflowV2Util;
+
+public class FacilioFunctionVisitor extends WorkflowV2BaseVisitor<Value> {
+
+    private Map<String, Value> varMemoryMap = new HashMap<String, Value>();
+    
+    String functionName;
+    String nameSpace;
+    Value returnValue;
+    
+
+	boolean breakCodeFlow;
+    
+    /**
+	 * to pass parameters to function
+	 */
+    public void setParams(Map<String,Object> params) {
+    	if(params != null) {
+    		for(String key :params.keySet()) {
+    			varMemoryMap.put(key, new Value(params.get(key)));
+    		}
+    	}
+    }
+    
+    @Override 
+    public Value visitMapInitialisation(WorkflowV2Parser.MapInitialisationContext ctx) { 
+    	return new Value(new HashMap<>()); 
+    }
+    
+    @Override 
+    public Value visitListInitialisation(WorkflowV2Parser.ListInitialisationContext ctx) 
+    { 
+    	return new Value(new ArrayList<>()); 
+    }
+    
+    @Override 
+    public Value visitListFetch(WorkflowV2Parser.ListFetchContext ctx) 
+	{
+    	Value listValue = this.visit(ctx.atom().get(0));
+    	List list = listValue.asList();
+    	int index = this.visit(ctx.atom().get(1)).asInt();
+		return new Value(list.get(index));
+	}
+    @Override 
+    public Value visitDataTypeSpecificFunction(WorkflowV2Parser.DataTypeSpecificFunctionContext ctx) {
+    	try {
+    		
+    		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+    		
+    		Value value = this.visit(ctx.atom());
+    		
+    		if (value.asObject() instanceof FacilioModule) {
+				FacilioModule module = (FacilioModule) value.asObject();
+				
+				String functionName = ctx.VAR().getText();
+    			
+    			ClassLoader classLoader = FacilioFunctionVisitor.class.getClassLoader();
+				Class<?> moduleFunctionClass = null;
+    	        try {
+    	        	moduleFunctionClass = classLoader.loadClass(WorkflowV2Util.getModuleClassNameFromModuleName(module.getName()));
+    	        }
+    	        catch(ClassNotFoundException e) {
+    	        	moduleFunctionClass = classLoader.loadClass("com.facilio.workflowv2.modulefunctions.FacilioModuleFunctionImpl");
+    	        }
+    	        Object moduleFunctionObject = moduleFunctionClass.newInstance();
+    			Method method = moduleFunctionObject.getClass().getMethod(functionName, List.class);
+    			
+    			List<Object> params = new ArrayList<>();
+    			params.add(module);
+    			for(ExprContext expr :ctx.expr()) {
+            		Value paramValue = this.visit(expr);
+            		
+            		WorkflowV2Util.fillExtraInfo(paramValue, module, modBean);
+            		
+            		params.add(paramValue.asObject());
+            	}
+    			Object result = method.invoke(moduleFunctionObject, params);
+    			return new Value(result);
+        	}
+    		else {
+    			WorkflowFunctionContext wfFunctionContext = new WorkflowFunctionContext();
+            	wfFunctionContext.setFunctionName(ctx.VAR().getText());
+            	
+            	boolean isDataTypeSpecificFunction = false;
+            	
+            	if(value.asObject() instanceof List) {
+            		wfFunctionContext.setNameSpace(FacilioFunctionNameSpace.LIST.getName());
+            		isDataTypeSpecificFunction = true;
+            	}
+            	else if(value.asObject() instanceof Map) {
+            		wfFunctionContext.setNameSpace(FacilioFunctionNameSpace.MAP.getName());
+            		isDataTypeSpecificFunction = true;
+            	}
+            	else if(value.asObject() instanceof String) {
+            		wfFunctionContext.setNameSpace(FacilioFunctionNameSpace.STRING.getName());
+            		isDataTypeSpecificFunction = true;
+            	}
+            	else if (value.asObject() instanceof FacilioFunctionNameSpace) {
+            		wfFunctionContext.setNameSpace(((FacilioFunctionNameSpace)value.asObject()).getName());
+            	}
+            	Object[] paramValues = null;
+            	int i= 0;
+            	if(isDataTypeSpecificFunction) {
+            		paramValues = new Object[ctx.expr().size()+1];
+                	paramValues[i++] = value.asObject();
+            	}
+            	else {
+            		paramValues = new Object[ctx.expr().size()];
+            	}
+            	for(ExprContext expr :ctx.expr()) {
+            		Value paramValue = this.visit(expr);
+            		paramValues[i++] = paramValue.asObject();
+            	}
+            	
+            	Object result = WorkflowUtil.evalSystemFunctions(wfFunctionContext, paramValues);
+            	return new Value(result); 
+    		}
+    	}
+    	catch(Exception e) {
+    		throw new ParseCancellationException(e); 
+    	}
+    }
+    
+    @Override
+    public Value visitAssignment(WorkflowV2Parser.AssignmentContext ctx) {
+        String varName = ctx.VAR().getText();
+        Value value = this.visit(ctx.expr());
+        return varMemoryMap.put(varName, value);
+    }
+    
+    @Override 
+    public Value visitFunction_block(WorkflowV2Parser.Function_blockContext ctx) {
+    	
+    	System.out.println("function name ---top == "+ctx.data_type().op.getText());
+    	System.out.println("function name ---top == "+ctx.function_name_declare().getText());
+		for(Function_paramContext param :ctx.function_param()) {
+    		System.out.println("param "+param.data_type().op.getText()+" "+param.VAR().getText());
+    	}
+    	return visitChildren(ctx); 
+    }
+    
+
+    @Override
+    public Value visitVarAtom(WorkflowV2Parser.VarAtomContext ctx) {
+        String varName = ctx.getText();
+        Value value = varMemoryMap.get(varName);
+        if(value == null) {
+            throw new RuntimeException("no such variable: " + varName);
+        }
+        return value;
+    }
+
+    @Override
+    public Value visitStringAtom(WorkflowV2Parser.StringAtomContext ctx) {
+        String str = ctx.getText();
+        // strip quotes
+        str = str.substring(1, str.length() - 1).replace("\"\"", "\"");
+        return new Value(str);
+    }
+
+    @Override
+    public Value visitNumberAtom(WorkflowV2Parser.NumberAtomContext ctx) {
+        return new Value(Double.valueOf(ctx.getText()));
+    }
+
+    @Override
+    public Value visitBooleanAtom(WorkflowV2Parser.BooleanAtomContext ctx) {
+        return new Value(Boolean.valueOf(ctx.getText()));
+    }
+
+    @Override
+    public Value visitNullAtom(WorkflowV2Parser.NullAtomContext ctx) {
+        return new Value(null);
+    }
+
+    @Override
+    public Value visitParanthesisExpr(WorkflowV2Parser.ParanthesisExprContext ctx) {
+        return this.visit(ctx.expr());
+    }
+    
+    @Override 
+    public Value visitModuleInitialization(WorkflowV2Parser.ModuleInitializationContext ctx) {
+    	try {
+    		String moduleName = ctx.VAR(0).getText();
+        	ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        	FacilioModule module = modBean.getModule(moduleName);
+        	return new Value(module); 
+    	}
+    	catch(Exception e) {
+    		throw new ParseCancellationException(e);
+    	}
+    }
+    
+    @Override 
+    public Value visitCustomModuleInitialization(WorkflowV2Parser.CustomModuleInitializationContext ctx) {
+    	try {
+    		String moduleName = this.visit(ctx.atom()).asString();
+        	ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        	FacilioModule module = modBean.getModule(moduleName);
+        	return new Value(module); 
+    	}
+    	catch(Exception e) {
+    		throw new ParseCancellationException(e);
+    	}
+    }
+    
+    @Override 
+    public Value visitNameSpaceInitialization(WorkflowV2Parser.NameSpaceInitializationContext ctx) {
+    	String nameSpace = this.visit(ctx.atom()).asString();
+    	FacilioFunctionNameSpace nameSpaceEnum = FacilioFunctionNameSpace.getFacilioDefaultFunction(nameSpace);
+    	return new Value(nameSpaceEnum); 
+    }
+    
+//    @Override
+//    public Value visitFunctionCall(WorkflowV2Parser.FunctionCallContext ctx) {
+//    	try {
+//    		String functionNameText = ctx.FUNCTION_NAME().getText();
+//        	String[] splits = functionNameText.split(".");
+//        	if(splits[0].equals("app")) {
+//        		WorkflowFunctionContext wfFunctionContext = new WorkflowFunctionContext(); 
+//        		String nameSpace = splits[1];
+//        		String functionName = splits[2];
+//        		
+//        		wfFunctionContext.setNameSpace(nameSpace);
+//        		wfFunctionContext.setFunctionName(functionName);
+//        		
+//        		Object[] paramValues = new Object[ctx.expr().size()];
+//        		int i = 0;
+//    			for(ExprContext expr :ctx.expr()) {
+//            		Value paramValue = this.visit(expr);
+//            		paramValues [i++] = paramValue.asObject();
+//            	}
+//            	Object result = WorkflowUtil.evalSystemFunctions(wfFunctionContext, paramValues);
+//            	return new Value(result);
+//        	}
+//    	}
+//    	catch(Exception e) {
+//    	}
+//    	return Value.VOID;
+//    }
+    
+    
+    DBParamContext dbParamContext = null;
+    
+//   @Override 
+//   public Value visitFetchRecord(WorkflowV2Parser.FetchRecordContext ctx) {
+//	   
+//	   String moduleName = ctx.MODULE_NAME().getText();
+//	   System.out.println("moduleName -- "+moduleName);
+//	   System.out.println("conditions -- "+ctx.criteria().condition().getText());
+//	   this.visit(ctx.criteria());
+//	   System.out.println("conditionMap -- "+conditionMap);
+//	   
+//	   String criteria = ctx.criteria().condition().getText();
+//	   
+//	   String s = criteria;
+//	   for(int key:conditionMap.keySet()) {
+//		   String sk = conditionMap.get(key);
+//		   s = s.replaceFirst(sk, key+"");
+//	   }
+//	   
+//	   System.out.println("final  criteria -- "+s);
+//	   
+////	   for(ConditionContext condition :ctx.condition().condition()) {
+////		   System.out.println("condition -- "+condition.getText());
+////		   System.out.println("fieldName -- "+condition.VAR().getText());
+////		   System.out.println("opp -- "+condition.op.getText());
+////		   System.out.println("value -- "+this.visit(condition.atom()));
+////	   }
+//	   if(ctx.VAR(0) != null) {
+//		   if(ctx.VAR(1) != null) {
+//			   System.out.println("aggregation -- "+ctx.VAR(0));
+//			   System.out.println("fieldName --   "+ctx.VAR(1));
+//		   }
+//		   else {
+//			   System.out.println("fieldName -- "+ctx.VAR(0));
+//		   }
+//	   }
+//	   
+//	   return new Value(10);
+//   }
+
+    @Override
+    public Value visitUnaryMinusExpr(WorkflowV2Parser.UnaryMinusExprContext ctx) {
+        Value value = this.visit(ctx.expr());
+        return new Value(-value.asDouble());
+    }
+    
+//    @Override 
+//    public Value visitApiCall(WorkflowV2Parser.ApiCallContext ctx) {
+//    	
+//    	System.out.println("moduleName -- "+ctx.API().getText());
+//    	
+//    	for(ExprContext expr :ctx.expr()) {
+//    		Value value = this.visit(expr);
+//    		System.out.println("val -- "+value);
+//    	}
+//    	return visitChildren(ctx); 
+//    }
+
+    @Override
+    public Value visitNotExpr(WorkflowV2Parser.NotExprContext ctx) {
+        Value value = this.visit(ctx.expr());
+        return new Value(!value.asBoolean());
+    }
+    
+    @Override
+    public Value visitArithmeticExpr(WorkflowV2Parser.ArithmeticExprContext ctx) {
+
+        Value left = this.visit(ctx.expr(0));
+        Value right = this.visit(ctx.expr(1));
+
+        switch (ctx.op.getType()) {
+            case WorkflowV2Parser.MULT:
+                return new Value(left.asDouble() * right.asDouble());
+            case WorkflowV2Parser.DIV:
+                return new Value(left.asDouble() / right.asDouble());
+            case WorkflowV2Parser.MOD:
+                return new Value(left.asDouble() % right.asDouble());
+            case WorkflowV2Parser.PLUS:
+                return left.isDouble() && right.isDouble() ?
+                        new Value(left.asDouble() + right.asDouble()) :
+                        new Value(left.asString() + right.asString());
+            case WorkflowV2Parser.MINUS:
+                return new Value(left.asDouble() - right.asDouble());
+            default:
+                throw new RuntimeException("unknown operator: " + WorkflowV2Parser.tokenNames[ctx.op.getType()]);
+        }
+    }
+
+    @Override
+    public Value visitRelationalExpr(WorkflowV2Parser.RelationalExprContext ctx) {
+
+        Value left = this.visit(ctx.expr(0));
+        Value right = this.visit(ctx.expr(1));
+
+        switch (ctx.op.getType()) {
+            case WorkflowV2Parser.LT:
+                return new Value(left.asDouble() < right.asDouble());
+            case WorkflowV2Parser.LTEQ:
+                return new Value(left.asDouble() <= right.asDouble());
+            case WorkflowV2Parser.GT:
+                return new Value(left.asDouble() > right.asDouble());
+            case WorkflowV2Parser.GTEQ:
+                return new Value(left.asDouble() >= right.asDouble());
+            case WorkflowV2Parser.EQ:
+                return  new Value(left.equals(right));
+            case WorkflowV2Parser.NEQ:
+                return new Value(!left.equals(right));
+            default:
+                throw new RuntimeException("unknown operator: " + WorkflowV2Parser.tokenNames[ctx.op.getType()]);
+        }
+    }
+    
+    public Value visitBooleanExpr(WorkflowV2Parser.BooleanExprContext ctx) {
+    	 Value left = this.visit(ctx.expr(0));
+         Value right = this.visit(ctx.expr(1));
+
+         switch (ctx.op.getType()) {
+             case WorkflowV2Parser.AND:
+            	 return new Value(left.asBoolean() && right.asBoolean());
+             case WorkflowV2Parser.OR:
+            	 return new Value(left.asBoolean() || right.asBoolean());
+             default:
+                 throw new RuntimeException("unknown operator: " + WorkflowV2Parser.tokenNames[ctx.op.getType()]);
+         } 
+    }
+
+    @Override
+    public Value visitLog(WorkflowV2Parser.LogContext ctx) {
+        Value value = this.visit(ctx.expr());
+        System.out.println(value);
+        return value;
+    }
+    
+    @Override 
+    public Value visitCondition_atom(WorkflowV2Parser.Condition_atomContext ctx) {
+    	
+    	System.out.println("condition subs --- "+ctx.getText());
+    	Condition condition = new Condition();
+    	condition.setFieldName(ctx.VAR().getText());
+    	
+    	Operator operator = null;
+    	
+    	Value operatorValue = this.visit(ctx.atom());
+    	switch(ctx.op.getText()) {
+    	case "==" :
+    		if(operatorValue.asObject() instanceof String) {
+    			operator = StringOperators.IS;
+    		}
+    		else if(operatorValue.asObject() instanceof Boolean) {
+    			operator = BooleanOperators.IS;
+    		}
+    		else {
+    			operator = NumberOperators.EQUALS;
+    		}
+    		break;
+    	default:
+    		operator = NumberOperators.getAllOperators().get(ctx.op.getText());
+    		break;
+    	}
+    	condition.setOperator(operator);
+    	
+    	String value = operatorValue.asString();
+    	
+    	condition.setValue(value);
+    	
+    	int seq = dbParamContext.addConditionMap(condition);
+    	
+    	dbParamContext.setCriteriaPattern(dbParamContext.getCriteriaPattern().replaceFirst(ctx.getText(), seq+""));
+    	
+    	return visitChildren(ctx); 
+    }
+    
+	@Override
+	public Value visitDb_param(WorkflowV2Parser.Db_paramContext ctx) {
+		
+		dbParamContext = new DBParamContext();
+		
+		String criteria = ctx.db_param_criteria().criteria().getText();
+		
+		dbParamContext.setCriteriaPattern(criteria);
+
+		this.visit(ctx.db_param_criteria().criteria());
+		
+		dbParamContext.setCriteriaPattern(adjustCriteriaPattern(dbParamContext.getCriteriaPattern()));
+
+		if(ctx.db_param_field(0) != null) {
+			Value fieldValue = this.visit(ctx.db_param_field(0).atom());
+			dbParamContext.setFieldName(fieldValue.asString());
+		}
+		if(ctx.db_param_aggr(0) != null) {
+			Value aggrValue = this.visit(ctx.db_param_aggr(0).atom());
+			dbParamContext.setAggregateString(aggrValue.asString());
+		}
+		if(ctx.db_param_limit(0) != null) {
+			Value limitValue = this.visit(ctx.db_param_limit(0).atom());
+			dbParamContext.setLimit(limitValue.asInt());
+		}
+		if(ctx.db_param_range(0) != null) {
+			Value fromValue = this.visit(ctx.db_param_range(0).atom(0));
+			Value toValue = this.visit(ctx.db_param_range(0).atom(1));
+			dbParamContext.setRange(Pair.of(fromValue.asInt(), toValue.asInt()));
+		}
+		if(ctx.db_param_sort(0) != null) {
+			Value sortByField = this.visit(ctx.db_param_sort(0).atom());
+			dbParamContext.setSortByFieldName(sortByField.asString());
+			dbParamContext.setSortOrder(ctx.db_param_sort(0).op.getText());
+		}
+		
+		System.out.println("ffinal -- "+dbParamContext);
+		
+		return new Value(dbParamContext);
+	}
+
+    private String adjustCriteriaPattern(String criteriaPattern) {
+		
+    	criteriaPattern = criteriaPattern.replace("||", " or ");
+    	criteriaPattern = criteriaPattern.replace("&&", " and ");
+    	criteriaPattern = criteriaPattern.substring(1, criteriaPattern.length()-1);
+    	return criteriaPattern;
+	}
+
+	@Override
+    public Value visitIf_statement(WorkflowV2Parser.If_statementContext ctx) {
+
+        List<WorkflowV2Parser.Condition_blockContext> conditions =  ctx.condition_block();
+
+        boolean evaluatedBlock = false;
+
+        for(WorkflowV2Parser.Condition_blockContext condition : conditions) {
+
+            Value evaluated = this.visit(condition.expr());
+
+            if(evaluated.asBoolean()) {
+                evaluatedBlock = true;
+                this.visit(condition.statement_block());
+                break;
+            }
+        }
+
+        if(!evaluatedBlock && ctx.statement_block() != null) {
+            // evaluate the else-stat_block (if present == not null)
+            this.visit(ctx.statement_block());
+        }
+
+        return Value.VOID;
+    }
+
+    public Value visitFor_each_statement(WorkflowV2Parser.For_each_statementContext ctx) {
+    	
+    	Value exprValue = this.visit(ctx.expr());
+    	System.out.println("iterateVae - "+exprValue);
+    	String loopVariableValueName = ctx.VAR(0).getText();
+    	String loopVariableIndexName = ctx.VAR(1).getText();
+    	
+    	if(exprValue.asObject() instanceof Collection) {
+			
+			List iterateList = new ArrayList((Collection)exprValue.asObject());
+			
+			for(int i=0 ; i<iterateList.size() ;i++) {
+				varMemoryMap.put(loopVariableIndexName, new Value(i));
+				varMemoryMap.put(loopVariableValueName, new Value(iterateList.get(i)));
+				
+				this.visit(ctx.statement_block());
+			}
+			varMemoryMap.remove(loopVariableIndexName);
+			varMemoryMap.remove(loopVariableValueName);
+			
+		}
+		else if(exprValue.asObject() instanceof Map) {
+			Map iterateMap = (Map) exprValue.asObject();
+			for(Object key :iterateMap.keySet() ) {
+				varMemoryMap.put(loopVariableIndexName, new Value(key));						// index acts as key for Map Iteration 
+				varMemoryMap.put(loopVariableValueName, new Value(iterateMap.get(key)));
+				
+				this.visit(ctx.statement_block());
+			}
+			varMemoryMap.remove(loopVariableIndexName);
+			varMemoryMap.remove(loopVariableValueName);
+		}
+    	
+    	return Value.VOID; 
+    }
+    
+    @Override 
+    public Value visitFunction_return(WorkflowV2Parser.Function_returnContext ctx)
+    {
+    	returnValue = this.visit(ctx.expr());
+    	this.breakCodeFlow = true;
+    	return Value.VOID; 
+    }
+    
+    @Override
+    protected boolean shouldVisitNextChild(RuleNode node, Value currentResult) {
+    	if(breakCodeFlow) {
+    		return false;
+    	}
+    	return super.shouldVisitNextChild(node, currentResult);
+    }
+
+	public Value getReturnValue() {
+		return returnValue;
+	}
+
+	public void setReturnValue(Value returnValue) {
+		this.returnValue = returnValue;
+	}
+}

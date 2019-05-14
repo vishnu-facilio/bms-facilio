@@ -1,12 +1,18 @@
 package com.facilio.workflows.context;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.io.Serializable;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import org.antlr.v4.runtime.CharStreams;
+import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.tree.ParseTree;
 import org.json.simple.JSONArray;
 
 import com.facilio.bmsconsole.context.ReadingDataMeta;
@@ -14,6 +20,9 @@ import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.workflows.context.WorkflowExpression.WorkflowExpressionType;
 import com.facilio.workflows.util.WorkflowUtil;
+import com.facilio.workflowv2.Visitor.FacilioFunctionVisitor;
+import com.facilio.workflowv2.autogens.WorkflowV2Lexer;
+import com.facilio.workflowv2.autogens.WorkflowV2Parser;
 
 public class WorkflowContext implements Serializable {
 	
@@ -249,6 +258,21 @@ public class WorkflowContext implements Serializable {
 		
 		Object result = null;
 		
+		if(workflowUIMode == WorkflowUIMode.NEW_WORKFLOW) {
+			InputStream stream = new ByteArrayInputStream(workflowString.getBytes(StandardCharsets.UTF_8));
+			
+			WorkflowV2Lexer lexer = new WorkflowV2Lexer(CharStreams.fromStream(stream, StandardCharsets.UTF_8));
+	        
+			WorkflowV2Parser parser = new WorkflowV2Parser(new CommonTokenStream(lexer));
+	        ParseTree tree = parser.parse();
+	        
+	        FacilioFunctionVisitor visitor = new FacilioFunctionVisitor();
+	        visitor.setParams(null);
+	        visitor.visit(tree);
+	        
+	        return visitor.getReturnValue();
+		}
+		
 		variableResultMap = new HashMap<String,Object>();
 		for(ParameterContext parameter:parameters) {
 			variableResultMap.put(parameter.getName(), parameter.getValue());
@@ -362,7 +386,8 @@ public class WorkflowContext implements Serializable {
 	public enum WorkflowUIMode {
 		GUI,
 		XML,
-		COMPLEX
+		COMPLEX,
+		NEW_WORKFLOW
 		;
 		
 		public int getValue() {
