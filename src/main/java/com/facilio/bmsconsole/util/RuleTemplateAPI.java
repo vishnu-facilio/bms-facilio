@@ -15,6 +15,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.AlarmSeverityContext;
 import com.facilio.bmsconsole.context.AssetCategoryContext;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
@@ -136,6 +137,8 @@ public class RuleTemplateAPI {
 			else {
 				alarmRule.setPreRequsite(new ReadingRuleContext());
 			}
+			AlarmSeverityContext severity = AlarmAPI.getAlarmSeverity((String) ruleObj.get("severity"));
+			alarmRule.getPreRequsite().setAlarmSeverityId(severity.getId());
 			JSONObject selectionResource = (JSONObject) ruleObj.get("ASSET_SELECTION_CRITERIA");
 			if (!selectionResource.get("includeResource").toString().contains("${includeResource"))  {
 				System.out.println(selectionResource.get("includeResource"));
