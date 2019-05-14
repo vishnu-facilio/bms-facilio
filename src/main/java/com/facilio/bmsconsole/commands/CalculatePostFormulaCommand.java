@@ -10,7 +10,7 @@ import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.modules.FacilioField;
 import com.facilio.modules.FieldFactory;
-import com.facilio.bmsconsole.util.DateTimeUtil;
+import com.facilio.time.DateTimeUtil;
 import com.facilio.bmsconsole.util.FormulaFieldAPI;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;

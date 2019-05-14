@@ -10,7 +10,7 @@ import com.facilio.bmsconsole.exceptions.importExceptions.ImportParseException;
 import com.facilio.modules.FacilioField;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.FieldUtil;
-import com.facilio.bmsconsole.util.DateTimeUtil;
+import com.facilio.time.DateTimeUtil;
 import com.facilio.bmsconsole.util.ImportAPI;
 import com.facilio.fw.BeanFactory;
 import org.apache.commons.chain.Command;

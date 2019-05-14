@@ -1,6 +1,6 @@
 package com.facilio.workflows.functions;
 
-import com.facilio.bmsconsole.util.DateTimeUtil;
+import com.facilio.time.DateTimeUtil;
 import com.facilio.unitconversion.Unit;
 import com.facilio.unitconversion.UnitsUtil;
 import com.facilio.workflows.exceptions.FunctionParamException;

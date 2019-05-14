@@ -1,7 +1,7 @@
 package com.facilio.filters;
 
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.bmsconsole.util.DateTimeUtil;
+import com.facilio.time.DateTimeUtil;
 import com.facilio.chain.FacilioContext;
 import com.facilio.events.constants.EventConstants;
 import org.apache.commons.chain.Chain;

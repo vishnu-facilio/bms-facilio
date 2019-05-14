@@ -7,7 +7,7 @@ import com.facilio.bmsconsole.context.ControllerContext;
 import com.facilio.bmsconsole.context.MultiModuleReadingData;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.util.ControllerAPI;
-import com.facilio.bmsconsole.util.DateTimeUtil;
+import com.facilio.time.DateTimeUtil;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.procon.consumer.FacilioConsumer;

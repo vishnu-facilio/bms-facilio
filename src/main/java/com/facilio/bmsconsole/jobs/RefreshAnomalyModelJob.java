@@ -23,7 +23,7 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.bmsconsole.util.AnomalySchedulerUtil;
-import com.facilio.bmsconsole.util.DateTimeUtil;
+import com.facilio.time.DateTimeUtil;
 import com.facilio.fs.S3FileStore;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.tasker.job.FacilioJob;

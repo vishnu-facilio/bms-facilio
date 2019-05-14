@@ -9,7 +9,7 @@ import org.apache.log4j.Logger;
 
 import com.facilio.accounts.dto.User;
 import com.facilio.aws.util.AwsUtil;
-import com.facilio.bmsconsole.util.DateTimeUtil;
+import com.facilio.time.DateTimeUtil;
 import com.facilio.bmsconsole.workflow.rule.ApprovalRuleContext;
 import com.facilio.bmsconsole.workflow.rule.ApprovalState;
 import com.facilio.bmsconsole.workflow.rule.ApproverContext;
