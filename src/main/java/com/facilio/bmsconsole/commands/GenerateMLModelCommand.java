@@ -105,7 +105,7 @@ public class GenerateMLModelCommand implements Command {
 		Set<Long> assetSet = assetDataMap.keySet();
 		for(long assetID: assetSet)
 		{
-			JSONArray assetArray = new JSONArray();
+			//JSONArray assetArray = new JSONArray();
 			Hashtable<String,SortedMap<Long,Object>> attributeData = assetDataMap.get(assetID);
 			Set<String> attributeNameSet = attributeData.keySet();
 			for(String attributeName:attributeNameSet)
@@ -122,9 +122,9 @@ public class GenerateMLModelCommand implements Command {
 					
 					attributeArray.put(object);
 				}
-				assetArray.put(attributeArray);
+				dataObject.put(attributeArray);
 			}
-			dataObject.put(assetArray);
+			//dataObject.put(assetArray);
 		}
 		return dataObject;
 		
