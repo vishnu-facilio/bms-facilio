@@ -1,14 +1,40 @@
 package com.facilio.bmsconsole.util;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Logger;
+
+import org.apache.commons.chain.Command;
+
 import com.chargebee.internal.StringJoiner;
+import com.facilio.accounts.dto.Group;
+import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.context.SpaceContext;
+import com.facilio.bmsconsole.context.TicketStatusContext;
+import com.facilio.bmsconsole.context.TicketTypeContext;
+import com.facilio.bmsconsole.context.TicketStatusContext.StatusType;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.context.WorkorderItemContext;
 import com.facilio.bmsconsole.context.WorkorderToolsContext;
+import com.facilio.bmsconsole.criteria.BuildingOperator;
+import com.facilio.bmsconsole.criteria.CommonOperators;
+import com.facilio.bmsconsole.criteria.Criteria;
+import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.criteria.DateOperators;
+import com.facilio.bmsconsole.criteria.DateRange;
+import com.facilio.bmsconsole.criteria.NumberOperators;
+import com.facilio.bmsconsole.criteria.StringOperators;
+import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.FacilioModule;
+import com.facilio.bmsconsole.modules.FieldFactory;
+import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.view.ViewFactory;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -30,6 +56,7 @@ import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.*;
 import java.util.logging.Logger;
+import com.facilio.sql.GenericSelectRecordBuilder;
 
 public class WorkOrderAPI {
 	
@@ -1193,72 +1220,92 @@ public static List<Map<String,Object>> getTotalClosedWoCountBySite(Long startTim
 }
 
   
-  public static List<Map<String, Object>> getTopNTechnicians(String count,long startTime,long endTime) throws Exception{
+  public static List<Map<String, Object>> getTopNSitesWithPlannedTypeCount(String count,long startTime,long endTime) throws Exception{
+	  Map<Long, Object> siteArray = WorkOrderAPI.getLookupFieldPrimary("site");
+
 	  ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule workOrderModule = modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER);
-		FacilioModule ticketModule = modBean.getModule(FacilioConstants.ContextNames.TICKET);
-		FacilioModule orgUserModule = AccountConstants.getOrgUserModule();
-		FacilioModule userModule = AccountConstants.getUserModule();
 		FacilioModule resourceModule = modBean.getModule(FacilioConstants.ContextNames.RESOURCE);
-		
+
 
 
 		List<FacilioField> workorderFields = modBean.getAllFields(workOrderModule.getName());
-		List<FacilioField> resourceFields = modBean.getAllFields(resourceModule.getName());
-		
 
 		Map<String, FacilioField> workorderFieldMap = FieldFactory.getAsMap(workorderFields);
-		Map<String, FacilioField> resourceFieldMap = FieldFactory.getAsMap(resourceFields);
-			
-		Criteria closedCriteria = ViewFactory.getClosedTicketsCriteria();
+
 		List<FacilioField> fields = new ArrayList<FacilioField>();
+
 
 		FacilioField idCountField = new FacilioField();
 		idCountField.setColumnName("count(*)");
 		idCountField.setName("count");
 		fields.add(idCountField);
 
-		FacilioField assignedToField = workorderFieldMap.get("assignedTo");
-		
-		FacilioField userIdField = AccountConstants.getUserIdField(orgUserModule);
-		
-		List<FacilioField> userFields = AccountConstants.getUserFields();
-		Map<String,FacilioField> userFieldMap = FieldFactory.getAsMap(userFields);
-	
-		FacilioField userNameField = userFieldMap.get("name");
-		FacilioField userField = userNameField.clone();
-		userField.setName("user_name");
-		fields.add(userField);
-	
-		
-		FacilioField resourceNameField = resourceFieldMap.get("name");
-		FacilioField resourceField = resourceNameField.clone();
-		resourceField.setName("site_name");
-		fields.add(resourceField);
-		
-				
+		FacilioField plannedType = workorderFieldMap.get("type");
 
-		GenericSelectRecordBuilder selectRecordsBuilder = new GenericSelectRecordBuilder()
-				  													.table(workOrderModule.getTableName())
-				  													.select(fields)
-				  													.innerJoin(ticketModule.getTableName()).on(workOrderModule.getTableName() +".ID = "+ticketModule.getTableName()+".ID")
-				  													.innerJoin(orgUserModule.getTableName()).on(orgUserModule.getTableName() +".ORG_USERID = "+assignedToField.getCompleteColumnName())
-				  													.innerJoin(userModule.getTableName()).on(userIdField.getCompleteColumnName()+" = "+userModule.getTableName()+".USERID")
-				  													.innerJoin(resourceModule.getTableName()).on(workOrderModule.getTableName() +".SITE_ID = "+resourceModule.getTableName()+".ID")
-				  													.andCondition(CriteriaAPI.getCondition(workOrderModule.getTableName()+".CREATED_TIME", "createdTime", startTime+","+endTime, DateOperators.BETWEEN))
-				  													.andCondition(CriteriaAPI.getCondition(FieldFactory.getSiteIdField(workOrderModule), CommonOperators.IS_NOT_EMPTY))
-				  													.andCondition(CriteriaAPI.getCondition(assignedToField, CommonOperators.IS_NOT_EMPTY))
-				  													.andCondition(CriteriaAPI.getCondition(workOrderModule.getTableName()+".ORGID", "orgId", ""+AccountUtil.getCurrentOrg().getOrgId(), NumberOperators.EQUALS))
-																	.andCriteria(closedCriteria)
-																	.limit(Integer.parseInt(count))
-				  													.groupBy(assignedToField.getCompleteColumnName()+","+userIdField.getCompleteColumnName()+","+userField.getCompleteColumnName()+","+resourceField.getCompleteColumnName())
-																	.orderBy(idCountField.getColumnName()+" DESC")
-		                                                            .andCustomWhere("ACTUAL_WORK_END <= DUE_DATE");
-							
-			
-				  													
-	 List<Map<String, Object>> topNTechnicians = selectRecordsBuilder.get();
-	 return topNTechnicians;
+		FacilioField sitefield = FieldFactory.getSiteIdField(workOrderModule);
+		FacilioField siteFacilioField = sitefield.clone();
+		siteFacilioField.setName("site_id");
+		fields.add(siteFacilioField);
+		List<TicketTypeContext> types = TicketAPI.getPlannedTypes(AccountUtil.getCurrentOrg().getId());
+		StringJoiner idString = new StringJoiner(",");
+		for(TicketTypeContext type : types) {
+			idString.add(String.valueOf(type.getId()));
+		}
+
+		SelectRecordsBuilder<WorkOrderContext> builder = new SelectRecordsBuilder<WorkOrderContext>()
+				.module(workOrderModule)
+				.beanClass(WorkOrderContext.class)
+				.select(fields)
+				.andCondition(CriteriaAPI.getCondition(plannedType, idString.toString() , NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition(workOrderModule.getTableName()+".CREATED_TIME", "createdTime", startTime+","+endTime, DateOperators.BETWEEN))
+				.limit(Integer.parseInt(count))
+				.groupBy(siteFacilioField.getCompleteColumnName())
+				.orderBy(idCountField.getColumnName()+" DESC")
+				;
+
+
+	 List<Map<String, Object>> plannedWorkOrders = builder.getAsProps();
+
+	 StringJoiner siteIdString = new StringJoiner(",");
+	 for(Map<String,Object> wo : plannedWorkOrders) {
+		 idString.add(String.valueOf(wo.get("site_id")));
+	 }
+
+	 SelectRecordsBuilder<WorkOrderContext> unPlannedbuilder = new SelectRecordsBuilder<WorkOrderContext>()
+				.module(workOrderModule)
+				.beanClass(WorkOrderContext.class)
+				.select(fields)
+				.andCondition(CriteriaAPI.getCondition(plannedType, idString.toString() , NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition(workOrderModule.getTableName()+".CREATED_TIME", "createdTime", startTime+","+endTime, DateOperators.BETWEEN))
+				.limit(Integer.parseInt(count))
+				.groupBy(siteFacilioField.getCompleteColumnName())
+				.orderBy(idCountField.getColumnName()+" DESC")
+				;
+
+	 List<Map<String, Object>> unPlannedWorkOrders = unPlannedbuilder.getAsProps();
+
+
+		Map<Long,Object> unPlannedMap = new HashMap<Long, Object>();
+
+
+		for(int i=0;i<unPlannedWorkOrders.size();i++)
+		{
+		  unPlannedMap.put((Long)unPlannedWorkOrders.get(i).get("site_id"),unPlannedWorkOrders.get(i).get("count"));
+		}
+
+		List<Map<String, Object>> result = new ArrayList<Map<String,Object>>();
+
+		for(int i=0;i<plannedWorkOrders.size();i++)
+		{
+		  Map<String,Object> map = new HashMap<String, Object>();
+		  map.put("siteName", siteArray.get(plannedWorkOrders.get(i).get("site_id")));
+		  map.put("planned", plannedWorkOrders.get(i).get("count"));
+		  map.put("unplanned", unPlannedMap.get(plannedWorkOrders.get(i).get("site_id")));
+		  result.add(map);
+		}
+
+		return result;
 
     }
 
@@ -1271,21 +1318,239 @@ public static List<Map<String,Object>> getTotalClosedWoCountBySite(Long startTim
 		}
 		return wo.getSiteId();
 	}
-	
-	
+
+
+	public static List<Map<String, Object>> getTopNTechnicians(String count,long startTime,long endTime) throws Exception{
+		  ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			FacilioModule workOrderModule = modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER);
+			FacilioModule ticketModule = modBean.getModule(FacilioConstants.ContextNames.TICKET);
+			FacilioModule orgUserModule = AccountConstants.getOrgUserModule();
+			FacilioModule userModule = AccountConstants.getUserModule();
+			FacilioModule resourceModule = modBean.getModule(FacilioConstants.ContextNames.RESOURCE);
+
+
+
+			List<FacilioField> workorderFields = modBean.getAllFields(workOrderModule.getName());
+			List<FacilioField> resourceFields = modBean.getAllFields(resourceModule.getName());
+
+
+			Map<String, FacilioField> workorderFieldMap = FieldFactory.getAsMap(workorderFields);
+			Map<String, FacilioField> resourceFieldMap = FieldFactory.getAsMap(resourceFields);
+
+			Criteria closedCriteria = ViewFactory.getClosedTicketsCriteria();
+			List<FacilioField> fields = new ArrayList<FacilioField>();
+
+			FacilioField idCountField = new FacilioField();
+			idCountField.setColumnName("count(*)");
+			idCountField.setName("count");
+			fields.add(idCountField);
+
+			FacilioField assignedToField = workorderFieldMap.get("assignedTo");
+
+			FacilioField userIdField = AccountConstants.getUserIdField(orgUserModule);
+
+			List<FacilioField> userFields = AccountConstants.getUserFields();
+			Map<String,FacilioField> userFieldMap = FieldFactory.getAsMap(userFields);
+
+			FacilioField userNameField = userFieldMap.get("name");
+			FacilioField userField = userNameField.clone();
+			userField.setName("user_name");
+			fields.add(userField);
+
+
+			FacilioField resourceNameField = resourceFieldMap.get("name");
+			FacilioField resourceField = resourceNameField.clone();
+			resourceField.setName("site_name");
+			fields.add(resourceField);
+
+
+
+			GenericSelectRecordBuilder selectRecordsBuilder = new GenericSelectRecordBuilder()
+					  													.table(workOrderModule.getTableName())
+					  													.select(fields)
+					  													.innerJoin(ticketModule.getTableName()).on(workOrderModule.getTableName() +".ID = "+ticketModule.getTableName()+".ID")
+					  													.innerJoin(orgUserModule.getTableName()).on(orgUserModule.getTableName() +".ORG_USERID = "+assignedToField.getCompleteColumnName())
+					  													.innerJoin(userModule.getTableName()).on(userIdField.getCompleteColumnName()+" = "+userModule.getTableName()+".USERID")
+					  													.innerJoin(resourceModule.getTableName()).on(workOrderModule.getTableName() +".SITE_ID = "+resourceModule.getTableName()+".ID")
+					  													.andCondition(CriteriaAPI.getCondition(workOrderModule.getTableName()+".CREATED_TIME", "createdTime", startTime+","+endTime, DateOperators.BETWEEN))
+					  													.andCondition(CriteriaAPI.getCondition(FieldFactory.getSiteIdField(workOrderModule), CommonOperators.IS_NOT_EMPTY))
+					  													.andCondition(CriteriaAPI.getCondition(assignedToField, CommonOperators.IS_NOT_EMPTY))
+					  													.andCondition(CriteriaAPI.getCondition(workOrderModule.getTableName()+".ORGID", "orgId", ""+AccountUtil.getCurrentOrg().getOrgId(), NumberOperators.EQUALS))
+																		.andCriteria(closedCriteria)
+																		.limit(Integer.parseInt(count))
+					  													.groupBy(assignedToField.getCompleteColumnName()+","+userIdField.getCompleteColumnName()+","+userField.getCompleteColumnName()+","+resourceField.getCompleteColumnName())
+																		.orderBy(idCountField.getColumnName()+" DESC")
+			                                                            .andCustomWhere("ACTUAL_WORK_END <= DUE_DATE");
+
+
+
+		 List<Map<String, Object>> topNTechnicians = selectRecordsBuilder.get();
+		 return topNTechnicians;
+
+	    }
+
+
+	public static List<Map<String, Object>> getTopNTeamWithOpenCloseCount(String count,long startTime, long endTime) throws Exception {
+
+
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule workOrderModule = modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER);
+		List<FacilioField> workorderFields = modBean.getAllFields(workOrderModule.getName());
+		Map<String, FacilioField> workorderFieldMap = FieldFactory.getAsMap(workorderFields);
+
+
+
+
+		List<FacilioField> fields = new ArrayList<FacilioField>();
+
+		FacilioField assignedToTeamField = workorderFieldMap.get("assignmentGroup");
+		FacilioField teamField = assignedToTeamField.clone();
+		teamField.setName("team_name");
+		fields.add(teamField);
+
+		FacilioField idCountField = new FacilioField();
+		idCountField.setColumnName("count(*)");
+		idCountField.setName("count");
+		fields.add(idCountField);
+
+
+		Criteria closedCriteria = ViewFactory.getClosedTicketsCriteria();
+
+		SelectRecordsBuilder<WorkOrderContext> selectRecordsBuilder = new SelectRecordsBuilder<WorkOrderContext>()
+																	  .module(workOrderModule)
+																	  .beanClass(WorkOrderContext.class)
+																	  .select(fields)
+																	  .andCondition(CriteriaAPI.getCondition("CREATED_TIME", "createdTime", startTime+","+endTime, DateOperators.BETWEEN))
+																	  .andCondition(CriteriaAPI.getCondition(FieldFactory.getSiteIdField(workOrderModule), CommonOperators.IS_NOT_EMPTY))
+																	  .andCriteria(closedCriteria)
+																	  .groupBy(teamField.getCompleteColumnName())
+																	  .orderBy(idCountField.getColumnName()+" DESC")
+																	  .limit(Integer.parseInt(count))
+
+			                                                          ;
+	   List<Map<String, Object>> totalClosedWoCountByTeam = selectRecordsBuilder.getAsProps();
+	   List<Map<String, Object>> result = new ArrayList<Map<String,Object>>();
+
+		for(int i=0;i<totalClosedWoCountByTeam.size();i++)
+		{
+		  Map<String,Object> map = new HashMap<String, Object>();
+		  Map teamNameMap = (Map) totalClosedWoCountByTeam.get(i).get("team_name");
+		  Group group = AccountUtil.getGroupBean().getGroup((Long)teamNameMap.get("id"));
+		  map.put("teamName", group.getName());
+		  map.put("closed", totalClosedWoCountByTeam.get(i).get("count"));
+		  result.add(map);
+		}
+
+		return totalClosedWoCountByTeam;
+
+	}
+
+
+	public static List<Map<String,Object>> getAvgCompletionTimeByTechnician(String count, Long startTime,Long endTime) throws Exception {
+
+
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+
+
+		FacilioModule workOrderModule = modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER);
+		FacilioModule ticketModule = modBean.getModule(FacilioConstants.ContextNames.TICKET);
+
+
+		FacilioModule ticketStatusModule = modBean.getModule(FacilioConstants.ContextNames.TICKET_STATUS);
+
+		List<FacilioField> workorderFields = modBean.getAllFields(workOrderModule.getName());
+		List<FacilioField> ticketFields = modBean.getAllFields(workOrderModule.getName());
+
+
+		Map<String, FacilioField> workorderFieldMap = FieldFactory.getAsMap(workorderFields);
+		Map<String, FacilioField> ticketFieldMap = FieldFactory.getAsMap(ticketFields);
+
+
+		List<FacilioField> fields = new ArrayList<FacilioField>();
+
+		FacilioField avgField = new FacilioField();
+		avgField.setName("avg_resolution_time");
+		avgField.setColumnName("avg(ACTUAL_WORK_DURATION/(60))");//to render client in mins
+		fields.add(avgField);
+
+		FacilioField countField = new FacilioField();
+		countField.setName("count");
+		countField.setColumnName("count(*)");
+		fields.add(countField);
+
+
+		FacilioField assignedTo = workorderFieldMap.get("assignedTo");
+		FacilioField technicianField = assignedTo.clone();
+		technicianField.setName("technician");
+		fields.add(technicianField);
+
+
+		FacilioField statusField = ticketFieldMap.get("status");
+		//fields.add(statusField);
+
+
+		//fetching the workorders with closed status
+
+		Criteria closedCriteria = ViewFactory.getClosedTicketsCriteria();
+
+		SelectRecordsBuilder<WorkOrderContext> selectRecordsBuilder = new SelectRecordsBuilder<WorkOrderContext>()
+				  .module(workOrderModule)
+				  .beanClass(WorkOrderContext.class)
+				  .select(fields)
+				  .andCriteria(closedCriteria)
+				  .andCondition(CriteriaAPI.getCondition("CREATED_TIME", "createdTime", startTime+","+endTime, DateOperators.BETWEEN))
+				  .andCondition(CriteriaAPI.getCondition(technicianField, CommonOperators.IS_NOT_EMPTY))
+				  .groupBy(technicianField.getCompleteColumnName())
+				  .orderBy(countField.getColumnName()+" DESC")
+				  .limit(Integer.parseInt(count))
+
+                ;
+
+
+       List<Map<String,Object>> avgResolutionTime = selectRecordsBuilder.getAsProps();
+       List<Map<String, Object>> result = new ArrayList<Map<String,Object>>();
+
+
+		for(int i=0;i<avgResolutionTime.size();i++)
+		{
+		  Map<String,Object> map = new HashMap<String, Object>();
+		  Map technicianMap = (Map) avgResolutionTime.get(i).get("technician");
+		  User user = AccountUtil.getUserBean().getUser((Long)technicianMap.get("id"));
+		  map.put("technician", user.getName());
+		  map.put("avgResolutionTime", avgResolutionTime.get(i).get("avg_resolution_time"));
+		  map.put("count", avgResolutionTime.get(i).get("count"));
+		  result.add(map);
+		}
+
+       return result;
+
+
+	}
+
+
+
+	public static long getSiteIdForWO(long woId) throws Exception {
+		WorkOrderContext wo = getWorkOrder(woId);
+		if (wo == null) {
+			return -1;
+		}
+		return wo.getSiteId();
+	}
+
+
     public static WorkorderItemContext getWorkOrderItem(long woItemId) throws Exception {
-    	
+
     	  ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
     	  FacilioModule woItemModule = modBean.getModule(FacilioConstants.ContextNames.WORKORDER_ITEMS);
-    	
-    	
+
+
     	 SelectRecordsBuilder<WorkorderItemContext> selectRecordsBuilder = new SelectRecordsBuilder<WorkorderItemContext>()
 				  .module(woItemModule)
 				  .beanClass(WorkorderItemContext.class)
                  .select(modBean.getAllFields(woItemModule.getName()))
                  .andCondition(CriteriaAPI.getIdCondition(woItemId, woItemModule))
                 ;
-    	 
+
     	 List<WorkorderItemContext> list = selectRecordsBuilder.get();
     	 if(CollectionUtils.isNotEmpty(list)) {
     		 return list.get(0);
@@ -1293,20 +1558,20 @@ public static List<Map<String,Object>> getTotalClosedWoCountBySite(Long startTim
     	 return null;
 
     }
-	
+
     public static WorkorderToolsContext getWorkOrderTool(long woToolId) throws Exception {
-    	
+
   	  ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
   	  FacilioModule woToolModule = modBean.getModule(FacilioConstants.ContextNames.WORKORDER_TOOLS);
-  	
-  	
+
+
   	 SelectRecordsBuilder<WorkorderToolsContext> selectRecordsBuilder = new SelectRecordsBuilder<WorkorderToolsContext>()
 				  .module(woToolModule)
 				  .beanClass(WorkorderToolsContext.class)
                .select(modBean.getAllFields(woToolModule.getName()))
                .andCondition(CriteriaAPI.getIdCondition(woToolId, woToolModule))
               ;
-  	 
+
   	 List<WorkorderToolsContext> list = selectRecordsBuilder.get();
   	 if(CollectionUtils.isNotEmpty(list)) {
   		 return list.get(0);
@@ -1314,7 +1579,7 @@ public static List<Map<String,Object>> getTotalClosedWoCountBySite(Long startTim
   	 return null;
 
   }
-	
-	
+
+
 	
  }

@@ -259,7 +259,21 @@ public class TicketAPI {
 															.orderBy("ID");
 		return builder.get();
 	}
-	
+
+	public static List<TicketTypeContext> getPlannedTypes(long orgId) throws Exception
+	{
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		SelectRecordsBuilder<TicketTypeContext> builder = new SelectRecordsBuilder<TicketTypeContext>()
+															.table("TicketType")
+															.moduleName(FacilioConstants.ContextNames.TICKET_TYPE)
+															.beanClass(TicketTypeContext.class)
+															.select(modBean.getAllFields(FacilioConstants.ContextNames.TICKET_TYPE))
+															.andCondition(CriteriaAPI.getCondition("NAME","name", "Preventive, Rounds, Compliance", StringOperators.IS))
+															.andCustomWhere("ORGID = ?", orgId)
+															.orderBy("ID");
+		return builder.get();
+	}
+
 	public static List<TicketCategoryContext> getCategories(long orgId) throws Exception
 	{
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");

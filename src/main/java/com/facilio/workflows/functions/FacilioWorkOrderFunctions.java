@@ -55,6 +55,49 @@ public enum FacilioWorkOrderFunctions implements FacilioWorkflowFunctionInterfac
 				throw new FunctionParamException("Required Object is null");
 			}
 		}
+	},
+	GET_TOP_N_SITES_PLANNED_TYPE_COUNT(4,"getTopNSitesWithPlannedTypeCount") {
+		@Override
+		public Object execute(Object... objects) throws Exception {
+			
+			List<Map<String,Object>> plannedMapList = WorkOrderAPI.getTopNSitesWithPlannedTypeCount(objects[0].toString(), Long.valueOf(objects[1].toString()), Long.valueOf(objects[2].toString()));
+			
+            return plannedMapList;
+		};
+		
+		public void checkParam(Object... objects) throws Exception {
+			if(objects.length <= 0) {
+				throw new FunctionParamException("Required Object is null");
+			}
+		}
+	},
+	GET_TEAM_CLOSED_OPEN_COUNT(5,"getTopNTeamsWithOpenCloseCount") {
+		@Override
+		public Object execute(Object... objects) throws Exception {
+			
+			List<Map<String,Object>> teamOpenCloseCountList = WorkOrderAPI.getTopNTeamWithOpenCloseCount(objects[0].toString(), Long.valueOf(objects[1].toString()), Long.valueOf(objects[2].toString()));
+		    return teamOpenCloseCountList;
+		};
+		
+		public void checkParam(Object... objects) throws Exception {
+			if(objects.length <= 0) {
+				throw new FunctionParamException("Required Object is null");
+			}
+		}
+	},
+	GET_TOP_N_TECH_AVG_RESOLUTION_TIME(6,"getTopNTechWithAvgResolutionTime") {
+		@Override
+		public Object execute(Object... objects) throws Exception {
+			
+			List<Map<String,Object>> techResolutionTimeList = WorkOrderAPI.getAvgCompletionTimeByTechnician(objects[0].toString(), Long.valueOf(objects[1].toString()), Long.valueOf(objects[2].toString()));
+		    return techResolutionTimeList;
+		};
+		
+		public void checkParam(Object... objects) throws Exception {
+			if(objects.length <= 0) {
+				throw new FunctionParamException("Required Object is null");
+			}
+		}
 	}
 	;
 	;
