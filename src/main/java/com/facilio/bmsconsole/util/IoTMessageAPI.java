@@ -30,7 +30,7 @@ import java.util.*;
 public class IoTMessageAPI {
 	private static final Logger LOGGER = LogManager.getLogger(IoTMessageAPI.class.getName());
 	
-	private static final int MAX_BUFFER = 112640; // 110KiB;  AWS IOT limits max publish message size to 128KiB
+	private static final int MAX_BUFFER = 45000; //45000 fix for db insert 112640  110KiB;  AWS IOT limits max publish message size to 128KiB
 	private static Boolean isStage = !AwsUtil.isProduction();
 	
 	private static PublishData constructIotMessage (List<Map<String, Object>> instances, IotCommandType command) throws Exception {

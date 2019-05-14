@@ -725,6 +725,7 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 					.andCondition(CriteriaAPI.getCondition(FieldFactory.getAgentMessagePartitionKeyField(messageModule),map.get(AgentKeys.PARTITION_KEY).toString(),NumberOperators.EQUALS));
 
 			map.remove(AgentKeys.PARTITION_KEY);
+			map.remove(AgentKeys.START_TIME);
 			Integer rowsAffected= updateRecordBuilder.update(map);
 			return Long.parseLong(rowsAffected.toString());
 		} catch (Exception e) {
