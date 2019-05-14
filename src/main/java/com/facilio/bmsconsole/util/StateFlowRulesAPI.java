@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.facilio.modules.FacilioStatus;
+import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -16,6 +17,7 @@ import org.json.simple.JSONObject;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.activity.WorkOrderActivityType;
+import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.modules.FacilioStatus.StatusType;
 import com.facilio.bmsconsole.criteria.BooleanOperators;
@@ -23,6 +25,7 @@ import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.EnumOperators;
 import com.facilio.bmsconsole.criteria.NumberOperators;
+import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FacilioModule.ModuleType;
@@ -42,6 +45,7 @@ import com.facilio.bmsconsole.workflow.rule.StateflowTransitionContext.Transitio
 import com.facilio.bmsconsole.workflow.rule.ValidationContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.chain.FacilioContext;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericDeleteRecordBuilder;
 import com.facilio.sql.GenericInsertRecordBuilder;
@@ -583,10 +587,23 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 	}
 
 	public static void addStateFlowTransitionChildren(StateflowTransitionContext rule) throws Exception {
-		if (rule.getForm() != null) {
+		FacilioForm form = rule.getForm();
+		if (form != null) {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			long formId = FormsAPI.createForm(rule.getForm(), modBean.getModule(rule.getModuleId()));
-			rule.setFormId(formId);
+			Context context = new FacilioContext();
+			if (StringUtils.isEmpty(form.getName())) {
+				form.setName("Enter Details");
+			}
+			form.setName(form.getName() + "_" + rule.getId());
+			context.put(FacilioConstants.ContextNames.FORM, form);
+
+			FacilioModule module = modBean.getModule(rule.getModuleId());
+			context.put(FacilioConstants.ContextNames.MODULE_NAME, module.getName());
+
+			Chain chain = TransactionChainFactory.getAddFormCommand();
+			chain.execute(context);
+
+			rule.setFormId(form.getId());
 		}
 	}
 	
