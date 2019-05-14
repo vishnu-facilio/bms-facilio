@@ -28,7 +28,7 @@ public class ModuleBeanCacheImpl extends ModuleBeanImpl implements ModuleBean {
 	@Override
 	public FacilioModule getModule(String moduleName) throws Exception {
 		
-LRUCache modulecache = LRUCache.getModuleCache();
+		LRUCache modulecache = LRUCache.getModuleCache();
 		// FacilioModule moduleObj = (FacilioModule) CacheUtil.get(CacheUtil.MODULE_KEY(getOrgId(), moduleName));
 		FacilioModule moduleObj = (FacilioModule) modulecache.get(CacheUtil.MODULE_KEY(getOrgId(), moduleName));
 		if (moduleObj == null) {
@@ -185,23 +185,31 @@ LRUCache modulecache = LRUCache.getModuleCache();
 	public List<FacilioField> getAllFields(String moduleName) throws Exception {
 		
 		System.currentTimeMillis();
+		FacilioModule module = getModule(moduleName);
+		
+		List<FacilioField> allFields = new ArrayList<>();
+		while (module != null) {
+			List<FacilioField> fields = getModuleFields(module.getName());
+			allFields.addAll(fields);
+			module = module.getExtendModule();
+		}
+		
+		return allFields;
+	}
+	
+	@Override
+	public List<FacilioField> getModuleFields(String moduleName) throws Exception {
 		LRUCache cache = 	LRUCache.getModuleFieldsCache();
-		
 		Object key = CacheUtil.FIELDS_KEY(getOrgId(), moduleName);
-		
 		List<FacilioField> fields = (List<FacilioField>)cache.get(key);
 		if (fields == null) {
 			
-			fields = super.getAllFields(moduleName);
+			fields = super.getModuleFields(moduleName);
 			
 //			CacheUtil.set(CacheUtil.FIELDS_KEY(getOrgId(), moduleName), new ArrayList<>(fields));
 			cache.put(key, fields);
 			
 			//LOGGER.log(Level.INFO, "getAllFields result from DB for module: "+moduleName +"\n Time taken"+ (System.currentTimeMillis()-begintime));
-		}
-		else {
-//			fields = Collections.unmodifiableList(fields);
-			//LOGGER.log(Level.INFO, "getAllFields result from CACHE for module: "+moduleName +"\n Time taken"+ (System.currentTimeMillis()-begintime));
 		}
 		return fields;
 	}

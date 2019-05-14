@@ -440,14 +440,6 @@ public class ModuleBeanImpl implements ModuleBean {
 			
 			List<FacilioField> fields = new ArrayList<>();
 			for (Map<String, Object> prop : props) {
-				Long extendedModuleId = (Long) prop.get("extendedModuleId");
-				if(extendedModuleId != null) {
-					FacilioModule extendedModule = moduleMap.get(extendedModuleId);
-					if(extendedModule == null) {
-						throw new IllegalArgumentException("Invalid Extended module id in Field : "+prop.get("name")+"::Module Id : "+prop.get("moduleId"));
-					}
-					prop.put("extendedModule", extendedModule);
-				}
 				prop.put("module", moduleMap.get(prop.get("moduleId")));
 				
 				try {
@@ -577,6 +569,26 @@ public class ModuleBeanImpl implements ModuleBean {
 														.select(FieldFactory.getSelectFieldFields())
 														.table("Fields")
 														.andCondition(CriteriaAPI.getCondition("MODULEID", "moduleId", StringUtils.join(extendedModuleIds, ","), NumberOperators.EQUALS));
+
+		List<Map<String, Object>> fieldProps = selectBuilder.get();
+		List<FacilioField> fields = getFieldFromPropList(fieldProps, moduleMap);
+		return fields;
+	}
+	
+	@Override
+	public List<FacilioField> getModuleFields(String moduleName) throws Exception {
+		
+		if(LookupSpecialTypeUtil.isSpecialType(moduleName)) {
+			return LookupSpecialTypeUtil.getAllFields(moduleName);
+		}
+		
+		FacilioModule module = getMod(moduleName);
+		Map<Long, FacilioModule> moduleMap = splitModules(module);
+
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+														.select(FieldFactory.getSelectFieldFields())
+														.table("Fields")
+														.andCondition(CriteriaAPI.getCondition("MODULEID", "moduleId", String.valueOf(module.getModuleId()), NumberOperators.EQUALS));
 
 		List<Map<String, Object>> fieldProps = selectBuilder.get();
 		List<FacilioField> fields = getFieldFromPropList(fieldProps, moduleMap);
