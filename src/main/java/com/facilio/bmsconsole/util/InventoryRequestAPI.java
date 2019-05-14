@@ -10,10 +10,14 @@ import org.apache.commons.collections4.CollectionUtils;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.InventoryRequestLineItemContext;
+import com.facilio.bmsconsole.context.ItemTypesContext;
+import com.facilio.bmsconsole.context.ToolTypesContext;
+import com.facilio.bmsconsole.context.WorkorderToolsContext;
 import com.facilio.bmsconsole.criteria.CommonOperators;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
+import com.facilio.bmsconsole.criteria.PickListOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
@@ -75,7 +79,7 @@ public class InventoryRequestAPI {
 
 	}
 	
-	public static boolean checkQuantityForWoItemNeedingApproval(InventoryRequestLineItemContext lineItem, double woItemQuantity) throws Exception {
+	public static boolean checkQuantityForWoItemNeedingApproval(ItemTypesContext itemType, InventoryRequestLineItemContext lineItem, double woItemQuantity) throws Exception {
 		if(lineItem != null) {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.INVENTORY_REQUEST_LINE_ITEMS);
@@ -91,7 +95,12 @@ public class InventoryRequestAPI {
 			List<InventoryRequestLineItemContext> lineItems = builder.get();
 			if(CollectionUtils.isNotEmpty(lineItems)) {
 				if(woItemQuantity <= (lineItems.get(0).getQuantity() - lineItems.get(0).getUsedQuantity())) {
-					updateRequestUsedQuantity(lineItems.get(0), woItemQuantity);
+					if(!itemType.isRotating()) {
+						updateRequestUsedQuantity(lineItems.get(0), woItemQuantity);
+					}
+					else {
+						updateRequestUsedQuantity(lineItems.get(0), lineItems.get(0).getUsedQuantity() + woItemQuantity);
+					}
 					return true;
 				}
 				return false;
@@ -100,7 +109,7 @@ public class InventoryRequestAPI {
 		}
 		throw new IllegalArgumentException("Please request approval for the item before using it");
 	}
-	public static boolean checkQuantityForWoToolNeedingApproval(InventoryRequestLineItemContext lineItem, double woToolQuantity) throws Exception {
+	public static boolean checkQuantityForWoToolNeedingApproval(ToolTypesContext toolType, InventoryRequestLineItemContext lineItem, WorkorderToolsContext woTool) throws Exception {
 		if(lineItem != null) {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.INVENTORY_REQUEST_LINE_ITEMS);
@@ -115,9 +124,11 @@ public class InventoryRequestAPI {
 			;
 			List<InventoryRequestLineItemContext> lineItems = builder.get();
 			if(CollectionUtils.isNotEmpty(lineItems)) {
-				if(woToolQuantity <= (lineItems.get(0).getQuantity() - lineItems.get(0).getUsedQuantity())) {
-					updateRequestUsedQuantity(lineItems.get(0), woToolQuantity);
+				if(!toolType.isRotating() && woTool.getQuantity() <= (lineItems.get(0).getQuantity())) {
 					return true;
+				}
+				else if(toolType.isRotating() && checkRotatingToolCountForWorkOrder(woTool.getTool().getId(), woTool.getParentId()) < lineItems.get(0).getQuantity()) {
+						return true;	
 				}
 				return false;
 			}
@@ -126,6 +137,23 @@ public class InventoryRequestAPI {
 		throw new IllegalArgumentException("Please request approval for the tool before using it");
 	}
 	
+	public static double checkRotatingToolCountForWorkOrder(long toolId, long parentId) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule workorderToolsModule = modBean.getModule(FacilioConstants.ContextNames.WORKORDER_TOOLS);
+		List<FacilioField> workorderToolsFields = modBean.getAllFields(workorderToolsModule.getName());
+		
+		SelectRecordsBuilder<WorkorderToolsContext> selectBuilder = new SelectRecordsBuilder<WorkorderToolsContext>()
+				.select(workorderToolsFields).table(workorderToolsModule.getTableName())
+				.moduleName(workorderToolsModule.getName()).beanClass(WorkorderToolsContext.class)
+				.andCondition(CriteriaAPI.getCondition("PARENT_ID", "parentId",String.valueOf(parentId) , NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition("TOOL", "tool",String.valueOf(toolId) , NumberOperators.EQUALS))
+			;
+		
+		List<WorkorderToolsContext> workorderTools = selectBuilder.get();
+		return workorderTools.size();
+		
+		
+	}
 	public static void updateRequestUsedQuantity(InventoryRequestLineItemContext lineItem, double usedQuantity) throws Exception {
 		
 		if(lineItem != null) {

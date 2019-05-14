@@ -46,13 +46,11 @@ public class AddOrUpdateWorkorderToolsCommand implements Command {
 				ToolTypesContext toolTypes = getToolType(toolTypesId);
 				StoreRoomContext storeRoom = tool.getStoreRoom();
 				if(toolTypes.isApprovalNeeded() || storeRoom.isApprovalNeeded()) {
-					if(!InventoryRequestAPI.checkQuantityForWoToolNeedingApproval(workorderTool.getRequestedLineItem(), workorderTool.getQuantity())) {
+					if(!InventoryRequestAPI.checkQuantityForWoToolNeedingApproval(toolTypes, workorderTool.getRequestedLineItem(), workorderTool)) {
 						throw new IllegalArgumentException("Please check the quantity approved in the request");
 					}
 				}
 				if (workorderTool.getId() > 0) {
-					
-					
 					SelectRecordsBuilder<WorkorderToolsContext> selectBuilder = new SelectRecordsBuilder<WorkorderToolsContext>()
 							.select(workorderToolsFields).table(workorderToolsModule.getTableName())
 							.moduleName(workorderToolsModule.getName()).beanClass(WorkorderToolsContext.class)

@@ -59,7 +59,7 @@ public class AddOrUpdateWorkorderItemsCommand implements Command {
 				StoreRoomContext storeRoom = item.getStoreRoom();
 				WorkOrderContext wo = getWorkorderContext(parentId);
 				if(itemType.isApprovalNeeded() || storeRoom.isApprovalNeeded()) {
-					if(!InventoryRequestAPI.checkQuantityForWoItemNeedingApproval(workorderitem.getRequestedLineItem(), workorderitem.getQuantity())) {
+					if(!InventoryRequestAPI.checkQuantityForWoItemNeedingApproval(itemType, workorderitem.getRequestedLineItem(), workorderitem.getQuantity())) {
 						throw new IllegalArgumentException("Please check the quantity approved in the request");
 					}
 				}
