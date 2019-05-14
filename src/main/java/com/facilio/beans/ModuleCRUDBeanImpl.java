@@ -723,6 +723,8 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 					.fields(FieldFactory.getAgentMessageFields())
 					.andCondition(CriteriaAPI.getCurrentOrgIdCondition(messageModule))
 					.andCondition(CriteriaAPI.getCondition(FieldFactory.getAgentMessagePartitionKeyField(messageModule),map.get(AgentKeys.PARTITION_KEY).toString(),NumberOperators.EQUALS));
+
+			map.remove(AgentKeys.PARTITION_KEY);
 			Integer rowsAffected= updateRecordBuilder.update(map);
 			return Long.parseLong(rowsAffected.toString());
 		} catch (Exception e) {
