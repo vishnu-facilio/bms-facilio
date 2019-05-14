@@ -78,6 +78,9 @@ public class AddOrUpdateInventoryRequestCommand implements Command{
 			lineItemContext.setInventoryRequestId(inventoryRequestContext.getId());
 			if(lineItemContext.getInventoryType() == InventoryType.ITEM.getValue()) {
 				ItemContext item = ItemsApi.getItems(lineItemContext.getItem().getId());
+				if(!ItemsApi.getItemTypes(item.getItemType().getId()).getIsConsumable()) {
+					throw new IllegalArgumentException("Only consumable items can be requested");
+				}
 				if(item.getQuantity() < lineItemContext.getQuantity()) {
 					throw new IllegalArgumentException("Insufficient quantity in inventory");
 				}
