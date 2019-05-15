@@ -43,11 +43,15 @@ public  class AgentUtil
     public void populateAgentContextMap(String agentName) {
         try {
             ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", orgId);
+            LOGGER.info("Agenttest --populatingAgentContext for"+agentName);
             List<Map<String, Object>> records = bean.getAgentDataMap(agentName);
             for (Map<String,Object> record :records) {
                 JSONObject payload = new JSONObject();
                 payload.putAll(record);
                 FacilioAgent agent = getFacilioAgentFromJson(payload);
+                if(agent.getAgentName() == agentName){
+                    LOGGER.info("agenttest --got agent from db --agentname--"+agentName);
+                }
                 agentMap.put(agent.getAgentName(), agent);
             }
         } catch (Exception e1) {
@@ -245,7 +249,7 @@ public  class AgentUtil
                            toUpdate.put(AgentKeys.DELETED_TIME, currDeletedTime);
                        }
                    }
-                   if(agent.getAgentType() == null){
+                   if(agent.getAgentType() == null && (jsonObject.containsKey(AgentKeys.AGENT_TYPE)) ){
                        toUpdate.put(AgentKeys.AGENT_TYPE, (AgentType.valueOf(jsonObject.get(AgentKeys.AGENT_TYPE).toString())).getKey());
                    }
                    if (!toUpdate.isEmpty()) {
