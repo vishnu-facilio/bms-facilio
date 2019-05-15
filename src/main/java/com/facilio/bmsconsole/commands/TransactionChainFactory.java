@@ -818,9 +818,9 @@ public class TransactionChainFactory {
 			c.addCommand(new LoadAllFieldsCommand());
 			c.addCommand(new FetchOldWorkOrdersCommand());
 			c.addCommand(new VerifyApprovalCommand());
-			c.addCommand(new BackwardCompatibleStateFlowUpdateCommand());
 			c.addCommand(new UpdateEventListForStateFlowCommand());
 			c.addCommand(new UpdateWorkOrderCommand());
+			c.addCommand(new BackwardCompatibleStateFlowUpdateCommand());
 			c.addCommand(new UpdateStateForWorkorderCommand());
 			c.addCommand(new SendNotificationCommand());
 			c.addCommand(new AddTicketActivityCommand());
