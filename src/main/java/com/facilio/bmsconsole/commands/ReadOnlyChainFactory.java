@@ -869,6 +869,7 @@ public class ReadOnlyChainFactory {
 	public static Chain getInventoryRequestDetailsChain() {
 		Chain c = getDefaultChain();
 		c.addCommand(SetTableNamesCommand.getForInventoryRequest());
+		c.addCommand(new LoadInventoryRequestLookUpCommand());
 		c.addCommand(new GenericGetModuleDataDetailCommand());
 		c.addCommand(new FetchInventoryRequestDetailsCommand());
 		return c;
