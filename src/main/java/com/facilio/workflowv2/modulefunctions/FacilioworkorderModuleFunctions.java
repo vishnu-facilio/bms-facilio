@@ -18,8 +18,4 @@ public class FacilioworkorderModuleFunctions extends FacilioModuleFunctionImpl {
 	public List<Map<String, Object>> getTopNTechnicians(List<Object> objects) throws Exception{
 		return WorkOrderAPI.getTopNTechnicians(objects.get(0).toString(), Long.valueOf(objects.get(1).toString()), Long.valueOf(objects.get(2).toString()));
 	}
-	
-	public void test(List<Object> objects) {
-		System.out.println("testc -- "+objects.get(0));
-	}
 }

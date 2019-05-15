@@ -191,7 +191,7 @@ public enum FacilioListFunction implements FacilioWorkflowFunctionInterface {
 	private String functionName;
 	private String namespace = "list";
 	private String params;
-	private FacilioFunctionNameSpace nameSpaceEnum = FacilioFunctionNameSpace.LIST;
+	private FacilioSystemFunctionNameSpace nameSpaceEnum = FacilioSystemFunctionNameSpace.LIST;
 	
 	public Integer getValue() {
 		return value;

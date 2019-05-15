@@ -106,7 +106,7 @@ public enum FacilioReadingFunctions implements FacilioWorkflowFunctionInterface 
 	private String functionName;
 	private String namespace = "readings";
 	private String params;
-	private FacilioFunctionNameSpace nameSpaceEnum = FacilioFunctionNameSpace.READINGS;
+	private FacilioSystemFunctionNameSpace nameSpaceEnum = FacilioSystemFunctionNameSpace.READINGS;
 	
 	public Integer getValue() {
 		return value;

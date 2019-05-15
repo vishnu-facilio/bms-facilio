@@ -119,7 +119,7 @@ public enum FacilioModuleFunctions implements FacilioWorkflowFunctionInterface {
 	private String functionName;
 	private String namespace = "module";
 	private List<FacilioFunctionsParamType> params;
-	private FacilioFunctionNameSpace nameSpaceEnum = FacilioFunctionNameSpace.MODULE;
+	private FacilioSystemFunctionNameSpace nameSpaceEnum = FacilioSystemFunctionNameSpace.MODULE;
 	
 	public Integer getValue() {
 		return value;

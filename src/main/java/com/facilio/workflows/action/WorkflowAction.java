@@ -2,7 +2,7 @@ package com.facilio.workflows.action;
 
 import com.facilio.bmsconsole.actions.FacilioAction;
 import com.facilio.workflows.context.WorkflowContext;
-import com.facilio.workflows.functions.FacilioFunctionNameSpace;
+import com.facilio.workflows.functions.FacilioSystemFunctionNameSpace;
 import com.facilio.workflows.functions.FacilioWorkflowFunctionInterface;
 import com.facilio.workflows.util.WorkflowUtil;
 import org.apache.log4j.LogManager;
@@ -22,13 +22,13 @@ public class WorkflowAction extends FacilioAction {
 
 	private static org.apache.log4j.Logger log = LogManager.getLogger(WorkflowUtil.class.getName());
 	
-	List<FacilioFunctionNameSpace> namespaces;
+	List<FacilioSystemFunctionNameSpace> namespaces;
 	
-	public List<FacilioFunctionNameSpace> getNamespaces() {
+	public List<FacilioSystemFunctionNameSpace> getNamespaces() {
 		return namespaces;
 	}
 
-	public void setNamespaces(List<FacilioFunctionNameSpace> namespaces) {
+	public void setNamespaces(List<FacilioSystemFunctionNameSpace> namespaces) {
 		this.namespaces = namespaces;
 	}
 	
@@ -57,7 +57,7 @@ public class WorkflowAction extends FacilioAction {
 		
 		try {
 
-			functions = WorkflowUtil.getFacilioFunctions(FacilioFunctionNameSpace.getFacilioDefaultFunction(nameSpaceValue).getName());
+			functions = WorkflowUtil.getFacilioFunctions(FacilioSystemFunctionNameSpace.getFacilioDefaultFunction(nameSpaceValue).getName());
 			
 			return SUCCESS;
 		}
@@ -70,7 +70,7 @@ public class WorkflowAction extends FacilioAction {
 	public String getAllNameSpace() {
 		
 		try {
-			namespaces = new ArrayList(FacilioFunctionNameSpace.getNamespaceMap().values());
+			namespaces = new ArrayList(FacilioSystemFunctionNameSpace.getNamespaceMap().values());
 			
 			return SUCCESS;
 		}

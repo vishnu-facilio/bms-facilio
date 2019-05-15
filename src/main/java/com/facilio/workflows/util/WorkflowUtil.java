@@ -1367,10 +1367,16 @@ public class WorkflowUtil {
         }
 		return null;
 	}
-	public static Object evalSystemFunctions(WorkflowFunctionContext workflowFunctionContext,Object[] objects) throws Exception {
+	public static Object evalSystemFunctions(WorkflowFunctionContext workflowFunctionContext,List<Object> objects) throws Exception {
 		
 		FacilioWorkflowFunctionInterface defaultFunctions = getFacilioFunction(workflowFunctionContext.getNameSpace(),workflowFunctionContext.getFunctionName());
-		return defaultFunctions.execute(objects);
+		
+		Object[] objs = new Object[objects.size()];
+		
+		for(int i=0;i<objects.size();i++) {
+			objs[i] = objects.get(i);
+		}
+		return defaultFunctions.execute(objs);
 	}
 	
 	public static Object evalSystemFunctions(WorkflowFunctionContext workflowFunctionContext,Map<String,Object> variableToExpresionMap) throws Exception {
@@ -1411,7 +1417,7 @@ public class WorkflowUtil {
 	public static FacilioWorkflowFunctionInterface getFacilioFunction(String nameSpace,String functionName) {
 		
 		FacilioWorkflowFunctionInterface facilioWorkflowFunction = null;
-		FacilioFunctionNameSpace nameSpaceEnum = FacilioFunctionNameSpace.getFacilioDefaultFunction(nameSpace);
+		FacilioSystemFunctionNameSpace nameSpaceEnum = FacilioSystemFunctionNameSpace.getFacilioDefaultFunction(nameSpace);
 		if (nameSpaceEnum != null) {
 			switch(nameSpaceEnum) {
 				case DEFAULT:
@@ -1476,7 +1482,7 @@ public class WorkflowUtil {
 	public static List<FacilioWorkflowFunctionInterface> getFacilioFunctions(String nameSpace) {
 		
 		List<FacilioWorkflowFunctionInterface> facilioWorkflowFunction = null;
-		FacilioFunctionNameSpace nameSpaceEnum = FacilioFunctionNameSpace.getFacilioDefaultFunction(nameSpace);
+		FacilioSystemFunctionNameSpace nameSpaceEnum = FacilioSystemFunctionNameSpace.getFacilioDefaultFunction(nameSpace);
 		if (nameSpaceEnum != null) {
 			switch(nameSpaceEnum) {
 				case DEFAULT:

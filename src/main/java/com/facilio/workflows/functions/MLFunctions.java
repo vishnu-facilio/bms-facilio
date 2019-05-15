@@ -33,7 +33,7 @@ public enum MLFunctions implements FacilioWorkflowFunctionInterface {
 	private String functionName;
 	private String namespace = "asset";
 	private String params;
-	private FacilioFunctionNameSpace nameSpaceEnum = FacilioFunctionNameSpace.ML;
+	private FacilioSystemFunctionNameSpace nameSpaceEnum = FacilioSystemFunctionNameSpace.ML;
 	
 	
 	public void checkParam(int minLength, Object... objects) throws Exception {

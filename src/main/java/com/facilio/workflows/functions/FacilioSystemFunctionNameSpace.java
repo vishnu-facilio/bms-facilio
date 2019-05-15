@@ -4,7 +4,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-public enum FacilioFunctionNameSpace {
+public enum FacilioSystemFunctionNameSpace {
 
 	DEFAULT(1,"default"),
 	DATE(2,"date"),
@@ -30,7 +30,7 @@ public enum FacilioFunctionNameSpace {
 	
 	public Integer value;
 	public String name;
-	FacilioFunctionNameSpace(int value,String name) {
+	FacilioSystemFunctionNameSpace(int value,String name) {
 		
 		this.value = value;
 		this.name = name;
@@ -48,32 +48,32 @@ public enum FacilioFunctionNameSpace {
 		this.name = name;
 	}
 	
-	static final Map<Integer, FacilioFunctionNameSpace> NAMESPACES_BY_VALUE = Collections.unmodifiableMap(initTypeMap());
+	static final Map<Integer, FacilioSystemFunctionNameSpace> NAMESPACES_BY_VALUE = Collections.unmodifiableMap(initTypeMap());
 	
-	public static Map<Integer, FacilioFunctionNameSpace> getNamespaceMap() {
+	public static Map<Integer, FacilioSystemFunctionNameSpace> getNamespaceMap() {
 		return NAMESPACES_BY_VALUE;
 	}
-	public static FacilioFunctionNameSpace getFacilioDefaultFunction(int value) {
+	public static FacilioSystemFunctionNameSpace getFacilioDefaultFunction(int value) {
 		return NAMESPACES_BY_VALUE.get(value);
 	}
 	
-	static Map<Integer, FacilioFunctionNameSpace> initTypeMap() {
-		Map<Integer, FacilioFunctionNameSpace> typeMap = new HashMap<>();
-		for(FacilioFunctionNameSpace type : FacilioFunctionNameSpace.values()) {
+	static Map<Integer, FacilioSystemFunctionNameSpace> initTypeMap() {
+		Map<Integer, FacilioSystemFunctionNameSpace> typeMap = new HashMap<>();
+		for(FacilioSystemFunctionNameSpace type : FacilioSystemFunctionNameSpace.values()) {
 			typeMap.put(type.getValue(), type);
 		}
 		return typeMap;
 	}
 	
-	static final Map<String, FacilioFunctionNameSpace> NAMESPACES_BY_NAME = Collections.unmodifiableMap(initTypeMap1());
+	static final Map<String, FacilioSystemFunctionNameSpace> NAMESPACES_BY_NAME = Collections.unmodifiableMap(initTypeMap1());
 	
-	public static FacilioFunctionNameSpace getFacilioDefaultFunction(String value) {
+	public static FacilioSystemFunctionNameSpace getFacilioDefaultFunction(String value) {
 		return NAMESPACES_BY_NAME.get(value);
 	}
 	
-	static Map<String, FacilioFunctionNameSpace> initTypeMap1() {
-		Map<String, FacilioFunctionNameSpace> typeMap = new HashMap<>();
-		for(FacilioFunctionNameSpace type : FacilioFunctionNameSpace.values()) {
+	static Map<String, FacilioSystemFunctionNameSpace> initTypeMap1() {
+		Map<String, FacilioSystemFunctionNameSpace> typeMap = new HashMap<>();
+		for(FacilioSystemFunctionNameSpace type : FacilioSystemFunctionNameSpace.values()) {
 			typeMap.put(type.getName(), type);
 		}
 		return typeMap;

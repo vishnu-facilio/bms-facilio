@@ -70,7 +70,7 @@ public enum FacilioEnergyMeterFunction implements FacilioWorkflowFunctionInterfa
 	private String functionName;
 	private String namespace = "energyMeter";
 	private List<FacilioFunctionsParamType> params;
-	private FacilioFunctionNameSpace nameSpaceEnum = FacilioFunctionNameSpace.ENERGYMETER;
+	private FacilioSystemFunctionNameSpace nameSpaceEnum = FacilioSystemFunctionNameSpace.ENERGYMETER;
 	
 	public Integer getValue() {
 		return value;

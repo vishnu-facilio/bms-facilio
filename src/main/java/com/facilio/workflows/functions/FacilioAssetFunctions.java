@@ -44,7 +44,7 @@ public enum FacilioAssetFunctions implements FacilioWorkflowFunctionInterface {
 	private String functionName;
 	private String namespace = "asset";
 	private String params;
-	private FacilioFunctionNameSpace nameSpaceEnum = FacilioFunctionNameSpace.ASSET;
+	private FacilioSystemFunctionNameSpace nameSpaceEnum = FacilioSystemFunctionNameSpace.ASSET;
 	
 	public Integer getValue() {
 		return value;

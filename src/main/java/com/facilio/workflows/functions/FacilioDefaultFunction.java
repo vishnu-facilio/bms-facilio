@@ -365,7 +365,7 @@ public enum FacilioDefaultFunction implements FacilioWorkflowFunctionInterface {
 	private String functionName;
 	private String namespace = "default";
 	private List<FacilioFunctionsParamType> params;
-	private FacilioFunctionNameSpace nameSpaceEnum = FacilioFunctionNameSpace.DEFAULT;
+	private FacilioSystemFunctionNameSpace nameSpaceEnum = FacilioSystemFunctionNameSpace.DEFAULT;
 	
 	public Integer getValue() {
 		return value;

@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.antlr.v4.runtime.misc.ParseCancellationException;
+import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.RuleNode;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -19,8 +20,10 @@ import com.facilio.bmsconsole.criteria.Operator;
 import com.facilio.bmsconsole.criteria.StringOperators;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.fw.BeanFactory;
+import com.facilio.workflows.context.ParameterContext;
+import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.context.WorkflowFunctionContext;
-import com.facilio.workflows.functions.FacilioFunctionNameSpace;
+import com.facilio.workflows.functions.FacilioSystemFunctionNameSpace;
 import com.facilio.workflows.util.WorkflowUtil;
 import com.facilio.workflowv2.autogens.WorkflowV2BaseVisitor;
 import com.facilio.workflowv2.autogens.WorkflowV2Parser;
@@ -28,30 +31,39 @@ import com.facilio.workflowv2.autogens.WorkflowV2Parser.ExprContext;
 import com.facilio.workflowv2.autogens.WorkflowV2Parser.Function_paramContext;
 import com.facilio.workflowv2.contexts.DBParamContext;
 import com.facilio.workflowv2.contexts.Value;
+import com.facilio.workflowv2.contexts.WorkflowNamespaceContext;
 import com.facilio.workflowv2.util.WorkflowV2Util;
 
-public class FacilioFunctionVisitor extends WorkflowV2BaseVisitor<Value> {
+public class FacilioWorkflowFunctionVisitor extends WorkflowV2BaseVisitor<Value> {
 
     private Map<String, Value> varMemoryMap = new HashMap<String, Value>();
     
     String functionName;
     String nameSpace;
     Value returnValue;
+    List<ParameterContext> params;
     
-
 	boolean breakCodeFlow;
-    
-    /**
-	 * to pass parameters to function
-	 */
-    public void setParams(Map<String,Object> params) {
-    	if(params != null) {
-    		for(String key :params.keySet()) {
-    			varMemoryMap.put(key, new Value(params.get(key)));
-    		}
+    boolean isFunctionHeaderVisitor;
+    public void setParams(List<Object> parmasObjects) throws Exception {
+    	
+    	if(parmasObjects.size() < params.size()) {
+    		throw new Exception("param count mismatched");
+    	}
+    	
+    	for(int i = 0;i<params.size(); i++) {
+    		ParameterContext param = params.get(i);
+    		Object value = parmasObjects.get(i);
+    		varMemoryMap.put(param.getName(), new Value(value));
     	}
     }
     
+    public void visitFunctionHeader(ParseTree tree) {
+    	isFunctionHeaderVisitor = true;
+    	this.visit(tree);
+    	isFunctionHeaderVisitor = false;
+    	breakCodeFlow = false;
+    }
     @Override 
     public Value visitMapInitialisation(WorkflowV2Parser.MapInitialisationContext ctx) { 
     	return new Value(new HashMap<>()); 
@@ -84,7 +96,7 @@ public class FacilioFunctionVisitor extends WorkflowV2BaseVisitor<Value> {
 				
 				String functionName = ctx.VAR().getText();
     			
-    			ClassLoader classLoader = FacilioFunctionVisitor.class.getClassLoader();
+    			ClassLoader classLoader = FacilioWorkflowFunctionVisitor.class.getClassLoader();
 				Class<?> moduleFunctionClass = null;
     	        try {
     	        	moduleFunctionClass = classLoader.loadClass(WorkflowV2Util.getModuleClassNameFromModuleName(module.getName()));
@@ -107,6 +119,18 @@ public class FacilioFunctionVisitor extends WorkflowV2BaseVisitor<Value> {
     			Object result = method.invoke(moduleFunctionObject, params);
     			return new Value(result);
         	}
+    		else if (value.asObject() instanceof WorkflowNamespaceContext) {
+    			
+    			WorkflowNamespaceContext namespaceContext = (WorkflowNamespaceContext) value.asObject();
+    			List<Object> paramValues = WorkflowV2Util.getParamList(ctx,false,this,null);
+    			
+    			WorkflowContext wfContext = WorkflowV2Util.getWorkflowFunction(namespaceContext.getId(), ctx.VAR().getText());
+    			wfContext.setParams(paramValues);
+    			
+    			Object res = wfContext.executeWorkflow();
+    			
+    			return new Value(res);
+    		}
     		else {
     			WorkflowFunctionContext wfFunctionContext = new WorkflowFunctionContext();
             	wfFunctionContext.setFunctionName(ctx.VAR().getText());
@@ -114,33 +138,22 @@ public class FacilioFunctionVisitor extends WorkflowV2BaseVisitor<Value> {
             	boolean isDataTypeSpecificFunction = false;
             	
             	if(value.asObject() instanceof List) {
-            		wfFunctionContext.setNameSpace(FacilioFunctionNameSpace.LIST.getName());
+            		wfFunctionContext.setNameSpace(FacilioSystemFunctionNameSpace.LIST.getName());
             		isDataTypeSpecificFunction = true;
             	}
             	else if(value.asObject() instanceof Map) {
-            		wfFunctionContext.setNameSpace(FacilioFunctionNameSpace.MAP.getName());
+            		wfFunctionContext.setNameSpace(FacilioSystemFunctionNameSpace.MAP.getName());
             		isDataTypeSpecificFunction = true;
             	}
             	else if(value.asObject() instanceof String) {
-            		wfFunctionContext.setNameSpace(FacilioFunctionNameSpace.STRING.getName());
+            		wfFunctionContext.setNameSpace(FacilioSystemFunctionNameSpace.STRING.getName());
             		isDataTypeSpecificFunction = true;
             	}
-            	else if (value.asObject() instanceof FacilioFunctionNameSpace) {
-            		wfFunctionContext.setNameSpace(((FacilioFunctionNameSpace)value.asObject()).getName());
+            	else if (value.asObject() instanceof FacilioSystemFunctionNameSpace) {
+            		wfFunctionContext.setNameSpace(((FacilioSystemFunctionNameSpace)value.asObject()).getName());
             	}
-            	Object[] paramValues = null;
-            	int i= 0;
-            	if(isDataTypeSpecificFunction) {
-            		paramValues = new Object[ctx.expr().size()+1];
-                	paramValues[i++] = value.asObject();
-            	}
-            	else {
-            		paramValues = new Object[ctx.expr().size()];
-            	}
-            	for(ExprContext expr :ctx.expr()) {
-            		Value paramValue = this.visit(expr);
-            		paramValues[i++] = paramValue.asObject();
-            	}
+            	
+            	List<Object> paramValues = WorkflowV2Util.getParamList(ctx,isDataTypeSpecificFunction,this,value);
             	
             	Object result = WorkflowUtil.evalSystemFunctions(wfFunctionContext, paramValues);
             	return new Value(result); 
@@ -163,9 +176,20 @@ public class FacilioFunctionVisitor extends WorkflowV2BaseVisitor<Value> {
     	
     	System.out.println("function name ---top == "+ctx.data_type().op.getText());
     	System.out.println("function name ---top == "+ctx.function_name_declare().getText());
+    	
+    	functionName = ctx.function_name_declare().getText();
+    	
+    	List<ParameterContext> params = new ArrayList<>();
 		for(Function_paramContext param :ctx.function_param()) {
-    		System.out.println("param "+param.data_type().op.getText()+" "+param.VAR().getText());
+			ParameterContext parameterContext = new ParameterContext();
+			parameterContext.setTypeString(param.data_type().op.getText());
+			parameterContext.setName(param.VAR().getText());
+			params.add(parameterContext);
     	}
+		this.params = params;
+		if(isFunctionHeaderVisitor) {
+			breakCodeFlow = true;
+		}
     	return visitChildren(ctx); 
     }
     
@@ -236,9 +260,22 @@ public class FacilioFunctionVisitor extends WorkflowV2BaseVisitor<Value> {
     
     @Override 
     public Value visitNameSpaceInitialization(WorkflowV2Parser.NameSpaceInitializationContext ctx) {
-    	String nameSpace = this.visit(ctx.atom()).asString();
-    	FacilioFunctionNameSpace nameSpaceEnum = FacilioFunctionNameSpace.getFacilioDefaultFunction(nameSpace);
-    	return new Value(nameSpaceEnum); 
+    	try {
+    		String nameSpaceString = this.visit(ctx.atom()).asString();
+        	FacilioSystemFunctionNameSpace nameSpaceEnum = FacilioSystemFunctionNameSpace.getFacilioDefaultFunction(nameSpaceString);
+        	if(nameSpaceEnum == null) {
+        		WorkflowNamespaceContext namespace = WorkflowV2Util.getNameSpace(nameSpaceString);
+        		if(namespace == null) {
+        			throw new ParseCancellationException("No such namespace - "+nameSpaceString);
+        		}
+        		return new Value(namespace);
+        	}
+        	return new Value(nameSpaceEnum); 
+    	}
+    	catch(Exception e) {
+    		throw new ParseCancellationException(e);
+    	}
+    	
     }
     
 //    @Override

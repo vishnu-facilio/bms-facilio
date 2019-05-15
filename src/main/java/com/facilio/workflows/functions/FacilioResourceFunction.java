@@ -54,7 +54,7 @@ public enum FacilioResourceFunction implements FacilioWorkflowFunctionInterface 
 	private String functionName;
 	private String namespace = "resource";
 	private List<FacilioFunctionsParamType> params;
-	private FacilioFunctionNameSpace nameSpaceEnum = FacilioFunctionNameSpace.RESOURCE;
+	private FacilioSystemFunctionNameSpace nameSpaceEnum = FacilioSystemFunctionNameSpace.RESOURCE;
 	
 	public Integer getValue() {
 		return value;

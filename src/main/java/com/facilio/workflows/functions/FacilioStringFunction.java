@@ -122,7 +122,7 @@ public enum FacilioStringFunction implements FacilioWorkflowFunctionInterface {
 	private String functionName;
 	private String namespace = "string";
 	private String params;
-	private FacilioFunctionNameSpace nameSpaceEnum = FacilioFunctionNameSpace.STRING;
+	private FacilioSystemFunctionNameSpace nameSpaceEnum = FacilioSystemFunctionNameSpace.STRING;
 	
 	public Integer getValue() {
 		return value;

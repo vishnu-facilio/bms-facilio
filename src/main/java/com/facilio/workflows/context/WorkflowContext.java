@@ -20,7 +20,7 @@ import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.workflows.context.WorkflowExpression.WorkflowExpressionType;
 import com.facilio.workflows.util.WorkflowUtil;
-import com.facilio.workflowv2.Visitor.FacilioFunctionVisitor;
+import com.facilio.workflowv2.Visitor.FacilioWorkflowFunctionVisitor;
 import com.facilio.workflowv2.autogens.WorkflowV2Lexer;
 import com.facilio.workflowv2.autogens.WorkflowV2Parser;
 
@@ -66,8 +66,12 @@ public class WorkflowContext implements Serializable {
 
 	long id = -1l;
 	Long orgId;
+	Long nameSpaceId;
+	String name;
 	String workflowString;
 	List<ParameterContext> parameters;
+	List<Object> params;							// for v2 workflow
+	
 	List<WorkflowExpression> expressions;
 	
 	public List<WorkflowExpression> getExpressions() {
@@ -76,11 +80,31 @@ public class WorkflowContext implements Serializable {
 	
 	boolean isLogNeeded;
 	
+	public List<Object> getParams() {
+		return params;
+	}
+	public void setParams(List<Object> params) {
+		this.params = params;
+	}
+	
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	
 	public boolean isLogNeeded() {
 		return isLogNeeded;
 	}
 	public boolean getIsLogNeeded() {
 		return isLogNeeded;
+	}
+	public Long getNameSpaceId() {
+		return nameSpaceId;
+	}
+	public void setNameSpaceId(Long nameSpaceId) {
+		this.nameSpaceId = nameSpaceId;
 	}
 	public void setLogNeeded(boolean isLogNeeded) {
 		this.isLogNeeded = isLogNeeded;
@@ -266,8 +290,9 @@ public class WorkflowContext implements Serializable {
 			WorkflowV2Parser parser = new WorkflowV2Parser(new CommonTokenStream(lexer));
 	        ParseTree tree = parser.parse();
 	        
-	        FacilioFunctionVisitor visitor = new FacilioFunctionVisitor();
-	        visitor.setParams(null);
+	        FacilioWorkflowFunctionVisitor visitor = new FacilioWorkflowFunctionVisitor();
+	        visitor.visitFunctionHeader(tree);
+	        visitor.setParams(params);
 	        visitor.visit(tree);
 	        
 	        return visitor.getReturnValue();

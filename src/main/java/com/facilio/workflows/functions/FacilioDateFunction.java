@@ -444,7 +444,7 @@ public enum FacilioDateFunction implements FacilioWorkflowFunctionInterface {
 	private String functionName;
 	private String namespace = "date";
 	private String params;
-	private FacilioFunctionNameSpace nameSpaceEnum = FacilioFunctionNameSpace.DATE;
+	private FacilioSystemFunctionNameSpace nameSpaceEnum = FacilioSystemFunctionNameSpace.DATE;
 	
 	public Integer getValue() {
 		return value;

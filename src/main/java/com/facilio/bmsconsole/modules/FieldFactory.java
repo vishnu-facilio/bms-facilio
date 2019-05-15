@@ -3999,7 +3999,6 @@ public class FieldFactory {
 		FacilioModule module = ModuleFactory.getWorkflowModule();
 
 		fields.add(getIdField(module));
-		/*fields.add(getOrgIdField(module));*/
 
 		FacilioField selectFieldId = new FacilioField();
 		selectFieldId.setName("workflowString");
@@ -4008,8 +4007,21 @@ public class FieldFactory {
 		selectFieldId.setModule(module);
 		fields.add(selectFieldId);
 
+		fields.add(getField("name", "NAME", module, FieldType.STRING));
+		fields.add(getField("nameSpaceId", "NAMESPACE_ID", module, FieldType.LOOKUP));
 		fields.add(getField("workflowUIMode", "UI_MODE", module, FieldType.NUMBER));
 		fields.add(getField("isLogNeeded", "IS_LOG_NEEDED", module, FieldType.BOOLEAN));
+
+		return fields;
+	}
+	
+	public static List<FacilioField> getWorkflowNamespaceFields() {
+		List<FacilioField> fields = new ArrayList<>();
+		FacilioModule module = ModuleFactory.getWorkflowNamespaceModule();
+
+		fields.add(getIdField(module));
+		
+		fields.add(getField("name", "NAME", module, FieldType.STRING));
 
 		return fields;
 	}

@@ -63,7 +63,7 @@ public enum FacilioWorkOrderFunctions implements FacilioWorkflowFunctionInterfac
 	private String functionName;
 	private String namespace = "workorder";
 	private String params;
-	private FacilioFunctionNameSpace nameSpaceEnum = FacilioFunctionNameSpace.WORKORDER;
+	private FacilioSystemFunctionNameSpace nameSpaceEnum = FacilioSystemFunctionNameSpace.WORKORDER;
 	
 	public Integer getValue() {
 		return value;
