@@ -38,22 +38,11 @@ public class InventoryRequestAPI {
 		Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
 		
 
-		LookupFieldMeta itemField = new LookupFieldMeta((LookupField) fieldsAsMap.get("item"));
-		LookupField itemTypeField = (LookupField) modBean.getField("itemType", FacilioConstants.ContextNames.ITEM);
-		itemField.addChildLookupFIeld(itemTypeField);
-		
-		LookupField storeRoomField = (LookupField) modBean.getField("storeRoom", FacilioConstants.ContextNames.ITEM);
-		itemField.addChildLookupFIeld(storeRoomField);
-		
-		LookupFieldMeta toolField = new LookupFieldMeta((LookupField) fieldsAsMap.get("tool"));
-		LookupField toolTypeField = (LookupField) modBean.getField("toolType", FacilioConstants.ContextNames.TOOL);
-		toolField.addChildLookupFIeld(toolTypeField);
-		
-		LookupField storeRoomForToolField = (LookupField) modBean.getField("storeRoom", FacilioConstants.ContextNames.TOOL);
-		toolField.addChildLookupFIeld(storeRoomForToolField);
+		LookupField itemType = (LookupField) modBean.getField("itemType", FacilioConstants.ContextNames.ITEM_TYPES);
+		LookupField toolType = (LookupField) modBean.getField("toolType", FacilioConstants.ContextNames.TOOL_TYPES);
 		
 		
-		List<LookupField>fetchLookup = Arrays.asList(itemField,toolField);
+		List<LookupField>fetchLookup = Arrays.asList(itemType,toolType);
 		
 		SelectRecordsBuilder<InventoryRequestLineItemContext> builder = new SelectRecordsBuilder<InventoryRequestLineItemContext>()
 				.module(module)
