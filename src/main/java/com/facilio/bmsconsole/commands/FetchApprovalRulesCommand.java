@@ -48,7 +48,11 @@ public class FetchApprovalRulesCommand implements Command {
 		if (workOrders != null && !workOrders.isEmpty()) {
 			
 //			if (workOrders.get(0).getModuleState() != null && workOrders.get(0).getModuleState().getId() != -1) {
-			setAvailableStates(context, workOrders);
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			String viewName = (String) context.get(FacilioConstants.ContextNames.CV_NAME);
+			if (modBean.getField("moduleState", ContextNames.WORK_ORDER) != null && ((viewName != null && viewName.equals("approval_requested")) || workOrders.size() == 1)) {
+				setAvailableStates(context, workOrders);
+			}
 //				return false;
 //			}
 			
@@ -122,7 +126,6 @@ public class FetchApprovalRulesCommand implements Command {
 								wo.setWaitingApprovals(rule.getApprovers());
 							}
 							User currentUser = AccountUtil.getCurrentUser();
-							ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 							for(ApproverContext approverContext: wo.getWaitingApprovals()) {
 								switch(approverContext.getTypeEnum()) {
 									case USER:
