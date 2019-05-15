@@ -286,7 +286,7 @@ public enum ActionType {
 					metaMap = rule.getAlarmMetaMap();
 					isHistorical = false;
 				}
-				if (isHistorical) {/*if (AccountUtil.getCurrentOrg().getId() == 135) {*/
+				if (isHistorical || rule.getRuleGroupId() == 4216) {/*if (AccountUtil.getCurrentOrg().getId() == 135) {*/
 					LOGGER.info("Meta map of rule : "+rule.getId()+" when creating alarm for resource "+resourceId+" at time : "+time+" : "+metaMap);
 				}
 					
@@ -296,7 +296,7 @@ public enum ActionType {
 						metaMap.put(resourceId, addAlarmMeta(event.getAlarmId(), resourceId, rule, isHistorical));
 					}
 					else if (alarmMeta.isClear()) {
-						if (isHistorical) {/*if (AccountUtil.getCurrentOrg().getId() == 135) {*/
+						if (isHistorical || rule.getRuleGroupId() == 4216) {/*if (AccountUtil.getCurrentOrg().getId() == 135) {*/
 							LOGGER.info("Updating meta with alarm id : "+event.getAlarmId()+" for rule : "+rule.getId()+" for resource : "+resourceId);
 						}
 						alarmMeta.setAlarmId(event.getAlarmId());
