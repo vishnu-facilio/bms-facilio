@@ -34,10 +34,10 @@ public class GetWorkFlowOfRuleTypeCommand implements Command {
 		String count = (String)context.get(FacilioConstants.ContextNames.RULE_COUNT);
 		RuleType ruleType = (RuleType) context.get(FacilioConstants.ContextNames.WORKFLOW_RULE_TYPE);
 		
-//		Boolean fetchEvent = (Boolean) context.get(FacilioConstants.ContextNames.WORKFLOW_FETCH_EVENT);
-//		if (fetchEvent == null) {
-//			fetchEvent = true;
-//		}
+		Boolean fetchEvent = (Boolean) context.get(FacilioConstants.ContextNames.WORKFLOW_FETCH_EVENT);
+		if (fetchEvent == null) {
+			fetchEvent = true;
+		}
 		
 		Boolean fetchChildren = (Boolean) context.get(FacilioConstants.ContextNames.WORKFLOW_FETCH_CHILDREN);
 		if (fetchChildren == null) {
@@ -71,6 +71,8 @@ public class GetWorkFlowOfRuleTypeCommand implements Command {
 		FacilioField ruleNameField = FieldFactory.getAsMap(fields).get("name");
 		
 		FacilioModule module = ModuleFactory.getWorkflowRuleModule();
+		FacilioModule eventModule = ModuleFactory.getWorkflowEventModule();
+		fields.addAll(FieldFactory.getWorkflowEventFields());
 		FacilioModule readingRuleModule = ModuleFactory.getReadingRuleModule();
 		List<FacilioField> queryFields = null;
 		if (count != null) {
@@ -86,12 +88,20 @@ public class GetWorkFlowOfRuleTypeCommand implements Command {
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 				.table(module.getTableName())
 				.select(queryFields)
-				.innerJoin(readingRuleModule.getTableName())
-				.on(module.getTableName()+ ".ID =" + readingRuleModule.getTableName() + ".ID")
-				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
-				.andCondition(CriteriaAPI.getCondition(ruleTypeField, String.valueOf(ruleType.getIntVal()), NumberOperators.EQUALS))
-				.andCondition(CriteriaAPI.getCondition(latestVersionField, String.valueOf(true), BooleanOperators.IS))
-				;
+				.innerJoin(eventModule.getTableName())
+				.on(module.getTableName()+".EVENT_ID = "+ eventModule.getTableName() +".ID");
+//				.innerJoin(readingRuleModule.getTableName())
+//				.on(module.getTableName()+ ".ID =" + readingRuleModule.getTableName() + ".ID")
+		
+		if (ruleType == RuleType.READING_RULE) {
+			builder.innerJoin(readingRuleModule.getTableName())
+			.on(module.getTableName()+ ".ID =" + readingRuleModule.getTableName() + ".ID");
+		}
+		
+		builder.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+		.andCondition(CriteriaAPI.getCondition(ruleTypeField, String.valueOf(ruleType.getIntVal()), NumberOperators.EQUALS))
+		.andCondition(CriteriaAPI.getCondition(latestVersionField, String.valueOf(true), BooleanOperators.IS))
+		;
 		
 		if (pagination != null) {
 			int page = (int) pagination.get("page");
@@ -114,7 +124,7 @@ public class GetWorkFlowOfRuleTypeCommand implements Command {
 		if (count != null) {
 			context.put(FacilioConstants.ContextNames.RULE_COUNT, builder.get().get(0).get("count"));
 		} else {
-			context.put(FacilioConstants.ContextNames.WORKFLOW_RULE_LIST,  WorkflowRuleAPI.getWorkFlowsFromMapList(builder.get(), false, fetchChildren, true));
+			context.put(FacilioConstants.ContextNames.WORKFLOW_RULE_LIST,  WorkflowRuleAPI.getWorkFlowsFromMapList(builder.get(), fetchEvent, fetchChildren, true));
 
 		}
 		return false;
