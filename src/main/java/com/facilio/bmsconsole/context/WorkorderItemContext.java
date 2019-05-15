@@ -11,13 +11,5 @@ public class WorkorderItemContext extends ItemTransactionsContext{
 		this.cost = cost;
 	}
 	
-	private InventoryRequestLineItemContext requestedLineItem;
-	public InventoryRequestLineItemContext getRequestedLineItem() {
-		return requestedLineItem;
-	}
-	public void setRequestedLineItem(InventoryRequestLineItemContext requestedLineItem) {
-		this.requestedLineItem = requestedLineItem;
-	}
-	
 	
 }

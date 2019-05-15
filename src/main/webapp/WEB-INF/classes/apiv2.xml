@@ -998,6 +998,12 @@
 			<param name="permission">READ</param>
 		</action>
 		
+		<action name="typeAndStore" class="com.facilio.bmsconsole.actions.AssetAction"
+			method="fetchAssetForTypeStore">
+			<param name="moduleName">asset</param>
+			<param name="permission">READ</param>
+		</action>
+		
 		<action name="generateqr" class="com.facilio.bmsconsole.actions.AssetAction"
 		method="generateQr">
 		<param name="moduleName">asset</param>
@@ -2169,20 +2175,20 @@
 
 	<package name="inventoryRequestsApi" namespace="/api/v2/inventoryrequest" extends="v2Api">
 		<action name="addOrUpdate" class="com.facilio.bmsconsole.actions.InventoryRequestAction" method="addOrUpdateInventoryRequest">
-			<param name="moduleName">inventory</param>
+			<param name="moduleName">inventoryrequest</param>
 			<param name="permission">CREATE,UPDATE,UPDATE_OWN</param>
 		</action>
 		   <action name="list"
 			class="com.facilio.bmsconsole.actions.InventoryRequestAction" method="getInventoryRequestList">
-			<param name="moduleName">inventory</param>
+			<param name="moduleName">inventoryrequest</param>
 			<param name="permission">READ,READ_OWN</param>
 		</action>
-			<action name="count" class="com.facilio.bmsconsole.actions.InventoryRequestAction" method="getInventoryRequestCount">
-			<param name="moduleName">inventory</param>
+		<action name="count" class="com.facilio.bmsconsole.actions.InventoryRequestAction" method="getInventoryRequestCount">
+			<param name="moduleName">inventoryrequest</param>
 			<param name="permission">READ,READ_OWN</param>
 		</action>
 		<action name="delete" class="com.facilio.bmsconsole.actions.InventoryRequestAction" method="deleteInventoryRequest">
-			<param name="moduleName">inventory</param>
+			<param name="moduleName">inventoryrequest</param>
 			<param name="permission">DELETE</param>
 		</action>
 		<action name="details" class="com.facilio.bmsconsole.actions.InventoryRequestAction" method="getInventoryRequestDetails">
@@ -2190,33 +2196,41 @@
 			<param name="permission">READ,READ_OWN</param>
 		</action>
 			<action name="addOrUpdateLineItem" class="com.facilio.bmsconsole.actions.InventoryRequestAction" method="addOrUpdateLineItem">
-			<param name="moduleName">inventory</param>
+			<param name="moduleName">inventoryrequest</param>
 			<param name="permission">CREATE,UPDATE,UPDATE_OWN,APPROVE_REJECT_WORKREQUEST</param>
 		</action>
 		<action name="deleteLineItem" class="com.facilio.bmsconsole.actions.InventoryRequestAction" method="deleteLineItem">
-			<param name="moduleName">inventory</param>
+			<param name="moduleName">inventoryrequest</param>
 			<param name="permission">DELETE</param>
 		</action>
 		<action name="lineItemListByRequesterId"
 			class="com.facilio.bmsconsole.actions.InventoryRequestAction" method="getInventoryRequestLineItemListByRequesterId">
-			<param name="moduleName">inventory</param>
+			<param name="moduleName">inventoryrequest</param>
 			<param name="permission">READ,READ_OWN</param>
 		</action>
 		<action name="lineItemListByStoreRoomId"
 			class="com.facilio.bmsconsole.actions.InventoryRequestAction" method="getInventoryRequestLineItemListByStoreRoomId">
-			<param name="moduleName">inventory</param>
+			<param name="moduleName">inventoryrequest</param>
 			<param name="permission">READ,READ_OWN</param>
 		</action>
 		<action name="lineItemListByParentId"
 			class="com.facilio.bmsconsole.actions.InventoryRequestAction" method="getInventoryRequestLineItemListByParentId">
-			<param name="moduleName">inventory</param>
+			<param name="moduleName">inventoryrequest</param>
 			<param name="permission">READ,READ_OWN</param>
 		</action>
 		<action name="useLineItems"
 			class="com.facilio.bmsconsole.actions.InventoryRequestAction" method="useLineItems">
-			<param name="moduleName">inventory</param>
+			<param name="moduleName">inventoryrequest</param>
 			<param name="permission">READ,READ_OWN</param>
 		</action>
+		<action name="issueInventoryRequests"
+			class="com.facilio.bmsconsole.actions.InventoryRequestAction" method="issueInventoryRequests">
+			<param name="moduleName">inventoryrequest</param>
+			<param name="permission">READ,READ_OWN</param>
+		</action>
+	
+		
+	
 		
 	
 	</package>
@@ -2230,6 +2244,8 @@
 			<param name="viewName">{1}</param>
 		</action>
 	</package>
+	
+	
 
 	
 </struts>

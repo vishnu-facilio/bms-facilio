@@ -85,7 +85,7 @@ public class AddOrUpdateManualItemTransactionCommand implements Command {
 							} else {
 								approvalState = ApprovalState.YET_TO_BE_REQUESTED;
 								if (itemType.isApprovalNeeded() || storeRoom.isApprovalNeeded()) {
-									approvalState = ApprovalState.REQUESTED;
+									approvalState = ApprovalState.APPROVED;
 								}
 								JSONObject info = new JSONObject();
 								info.put("itemid", itemTransaction.getItem().getId());
@@ -117,7 +117,7 @@ public class AddOrUpdateManualItemTransactionCommand implements Command {
 					} else {
 						approvalState = ApprovalState.YET_TO_BE_REQUESTED;
 						if (itemType.isApprovalNeeded() || storeRoom.isApprovalNeeded()) {
-							approvalState = ApprovalState.REQUESTED;
+							approvalState = ApprovalState.APPROVED;
 						}
 						if (itemType.isRotating()) {
 							List<Long> assetIds = itemTransaction.getAssetIds();

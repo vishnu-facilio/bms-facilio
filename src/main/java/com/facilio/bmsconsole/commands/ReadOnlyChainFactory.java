@@ -894,5 +894,12 @@ public class ReadOnlyChainFactory {
 		chain.addCommand(new GetInventoryRequestLineItemsForStoreRoomIdCommand());
 		return chain;
 	}
+	
+	public static Chain getAssetForTypeAndStoreChain() {
+		Chain chain = getDefaultChain();
+		chain.addCommand(SetTableNamesCommand.getForAsset());
+		chain.addCommand(new GetAssetForTypeAndStoreCommand());
+		return chain;
+	}
 
 }

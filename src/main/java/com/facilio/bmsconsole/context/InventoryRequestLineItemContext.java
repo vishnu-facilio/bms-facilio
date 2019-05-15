@@ -1,8 +1,12 @@
 package com.facilio.bmsconsole.context;
 
+import java.util.Collections;
 import java.util.List;
 
+import com.facilio.accounts.dto.User;
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
+import com.facilio.bmsconsole.util.ItemsApi;
+import com.facilio.bmsconsole.util.ToolsApi;
 
 public class InventoryRequestLineItemContext extends ModuleBaseWithCustomFields{
 
@@ -37,24 +41,23 @@ public class InventoryRequestLineItemContext extends ModuleBaseWithCustomFields{
 		this.inventoryType = InventoryType.valueOf(inventoryType);
 	}
 	
-	private ItemContext item;
+	private ItemTypesContext itemType;
 	
-	public ItemContext getItem() {
-		return item;
+	public ItemTypesContext getItemType() {
+		return itemType;
 	}
-	public void setItem(ItemContext item) {
-		this.item = item;
+	public void setItemType(ItemTypesContext itemType) {
+		this.itemType = itemType;
 	}
 
-	private ToolContext tool;
-	
-	public ToolContext getTool() {
-		return tool;
+	private ToolTypesContext toolType;
+	public ToolTypesContext getToolType() {
+		return toolType;
 	}
-	public void setTool(ToolContext tool) {
-		this.tool = tool;
+	public void setToolType(ToolTypesContext toolType) {
+		this.toolType = toolType;
 	}
-	
+
 	private double quantity = -1;
 	public double getQuantity() {
 		return quantity;
@@ -82,6 +85,14 @@ public class InventoryRequestLineItemContext extends ModuleBaseWithCustomFields{
 		this.assetIds = assetIds;
 	}
 	
+	private AssetContext asset;
+	public AssetContext getAsset() {
+		return asset;
+	}
+	public void setAsset(AssetContext asset) {
+		this.asset = asset;
+	}
+
 	private Status status;
 	public Status getStatusEnum() {
 		return status;
@@ -125,9 +136,10 @@ public class InventoryRequestLineItemContext extends ModuleBaseWithCustomFields{
 	public void setUsedQuantity(double usedQuantity) {
 		this.usedQuantity = usedQuantity;
 	}
-	public WorkorderItemContext constructWorkOrderItemContext() {
+	public WorkorderItemContext constructWorkOrderItemContext() throws Exception{
 		WorkorderItemContext woItem = new WorkorderItemContext();
-		woItem.setItem(this.getItem());
+		ItemContext item = ItemsApi.getItemsForTypeAndStore(this.getStoreRoomId(), this.getItemType().getId());
+		woItem.setItem(item);
 		woItem.setParentId(this.getParentId());
 		woItem.setAssetIds(this.getAssetIds());
 		woItem.setQuantity(this.getQuantity());
@@ -135,9 +147,10 @@ public class InventoryRequestLineItemContext extends ModuleBaseWithCustomFields{
 		return woItem;
 	}
 	
-	public WorkorderToolsContext constructWorkOrderToolContext() {
+	public WorkorderToolsContext constructWorkOrderToolContext() throws Exception {
 		WorkorderToolsContext woTool = new WorkorderToolsContext();
-		woTool.setTool(this.getTool());
+		ToolContext tool = ToolsApi.getToolsForTypeAndStore(this.getStoreRoomId(), this.getItemType().getId());
+		woTool.setTool(tool);
 		woTool.setParentId(this.getParentId());
 		woTool.setAssetIds(this.getAssetIds());
 		woTool.setQuantity(this.getQuantity());
@@ -146,4 +159,48 @@ public class InventoryRequestLineItemContext extends ModuleBaseWithCustomFields{
 		
 		return woTool;
 	}
+	
+	public ItemTransactionsContext contructManualItemTransactionContext(User requestedBy) throws Exception {
+		ItemTransactionsContext transaction = new ItemTransactionsContext();
+		ItemContext item = ItemsApi.getItemsForTypeAndStore(this.getStoreRoomId(), this.getItemType().getId());
+		transaction.setItem(item);
+		transaction.setIssuedTo(requestedBy);
+		transaction.setParentId(requestedBy.getOuid());
+		transaction.setTransactionType(3);
+		transaction.setTransactionState(2);
+		transaction.setQuantity(this.getQuantity());
+		if(this.getAsset() != null && this.getAsset().getId() > 0) {
+			transaction.setAssetIds(Collections.singletonList(this.getAsset().getId()));
+		}
+		return transaction;
+		
+	}
+	public ToolTransactionContext contructManualToolTransactionContext(User requestedBy) throws Exception {
+		ToolTransactionContext transaction = new ToolTransactionContext();
+		ToolContext tool = ToolsApi.getToolsForTypeAndStore(this.getStoreRoomId(), this.getToolType().getId());
+		transaction.setTool(tool);
+		transaction.setIssuedTo(requestedBy);
+		transaction.setParentId(requestedBy.getOuid());
+		transaction.setTransactionType(3);
+		transaction.setTransactionState(2);
+		transaction.setQuantity(this.getQuantity());
+		
+		if(this.getAsset() != null && this.getAsset().getId() > 0) {
+			transaction.setAssetIds(Collections.singletonList(this.getAsset().getId()));
+		}
+		return transaction;
+		
+	}
+	
+	private long storeRoomId;
+
+	public long getStoreRoomId() {
+		return storeRoomId;
+	}
+	public void setStoreRoomId(long storeRoomId) {
+		this.storeRoomId = storeRoomId;
+	}
+
+	
+	
 }

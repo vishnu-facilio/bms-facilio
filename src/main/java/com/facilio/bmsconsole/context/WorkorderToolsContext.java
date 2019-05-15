@@ -43,13 +43,6 @@ public class WorkorderToolsContext extends ToolTransactionContext {
 		return duration;
 	}
 	
-	private InventoryRequestLineItemContext requestedLineItem;
-	public InventoryRequestLineItemContext getRequestedLineItem() {
-		return requestedLineItem;
-	}
-	public void setRequestedLineItem(InventoryRequestLineItemContext requestedLineItem) {
-		this.requestedLineItem = requestedLineItem;
-	}
 	
 	
 }

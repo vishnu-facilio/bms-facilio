@@ -76,23 +76,11 @@ public class AddOrUpdateInventoryRequestCommand implements Command{
 	private void updateLineItems(InventoryRequestContext inventoryRequestContext) throws Exception{
 		for (InventoryRequestLineItemContext lineItemContext : inventoryRequestContext.getLineItems()) {
 			lineItemContext.setInventoryRequestId(inventoryRequestContext.getId());
-			if(lineItemContext.getInventoryType() == InventoryType.ITEM.getValue()) {
-				ItemContext item = ItemsApi.getItems(lineItemContext.getItem().getId());
-				if(!ItemsApi.getItemTypes(item.getItemType().getId()).getIsConsumable()) {
-					throw new IllegalArgumentException("Only consumable items can be requested");
-				}
-				if(item.getQuantity() < lineItemContext.getQuantity()) {
-					throw new IllegalArgumentException("Insufficient quantity in inventory");
-				}
-			}
-			else if(lineItemContext.getInventoryType() == InventoryType.TOOL.getValue()) {
-				ToolContext tool = ToolsApi.getTool(lineItemContext.getTool().getId());
-				if(tool.getQuantity() < lineItemContext.getQuantity()) {
-					throw new IllegalArgumentException("Insufficient quantity in inventory");
-				}  
-			}
 			if(inventoryRequestContext.getParentId() > 0) {
 				lineItemContext.setParentId(inventoryRequestContext.getParentId());
+			}
+			if(inventoryRequestContext.getStoreRoom() != null &&  inventoryRequestContext.getStoreRoom().getId() > 0) {
+				lineItemContext.setStoreRoomId(inventoryRequestContext.getStoreRoom().getId());
 			}
 		}
 	}

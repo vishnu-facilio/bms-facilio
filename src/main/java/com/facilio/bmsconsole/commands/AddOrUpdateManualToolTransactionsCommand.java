@@ -58,7 +58,7 @@ public class AddOrUpdateManualToolTransactionsCommand implements Command {
 						} else {
 							ApprovalState approvalState = ApprovalState.YET_TO_BE_REQUESTED;
 							if (toolTypes.isApprovalNeeded() || storeRoom.isApprovalNeeded()) {
-								approvalState = ApprovalState.REQUESTED;
+								approvalState = ApprovalState.APPROVED;
 							}
 							wTool = setWorkorderItemObj(toolTransaction.getQuantity(), tool, toolTransaction,
 									toolTypes, approvalState, null);
@@ -75,7 +75,7 @@ public class AddOrUpdateManualToolTransactionsCommand implements Command {
 					} else {
 						ApprovalState approvalState = ApprovalState.YET_TO_BE_REQUESTED;
 						if (toolTypes.isApprovalNeeded() || storeRoom.isApprovalNeeded()) {
-							approvalState = ApprovalState.REQUESTED;
+							approvalState = ApprovalState.APPROVED;
 						}
 						if (toolTypes.isRotating()) {
 							List<Long> assetIds = toolTransaction.getAssetIds();

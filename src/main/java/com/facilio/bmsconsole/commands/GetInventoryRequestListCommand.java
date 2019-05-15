@@ -14,6 +14,7 @@ import com.facilio.bmsconsole.context.InventoryRequestContext;
 import com.facilio.bmsconsole.context.InventoryRequestLineItemContext;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
@@ -86,7 +87,18 @@ public class GetInventoryRequestListCommand implements Command {
 		if (scopeCriteria != null) {
 			builder.andCriteria(scopeCriteria);
 		}
+        
+		//fetch store specific
 
+		Long storeRoomId = (Long)context.get(FacilioConstants.ContextNames.STORE_ROOM_ID);
+		Integer status = (Integer)context.get(FacilioConstants.ContextNames.STATUS);
+		
+		if(storeRoomId != null && status != null) {
+			builder.andCondition(CriteriaAPI.getCondition("STORE_ROOM", "storeRoom", String.valueOf(storeRoomId), NumberOperators.EQUALS));
+			builder.andCondition(CriteriaAPI.getCondition("STATUS", "status", String.valueOf(status), NumberOperators.EQUALS));
+				
+		}
+		
 		JSONObject pagination = (JSONObject) context.get(FacilioConstants.ContextNames.PAGINATION);
 		if (pagination != null) {
 			int page = (int) pagination.get("page");

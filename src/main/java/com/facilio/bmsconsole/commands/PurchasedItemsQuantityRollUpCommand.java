@@ -49,12 +49,14 @@ public class PurchasedItemsQuantityRollUpCommand implements Command {
 		int totalQuantityConsumed = 0;
 		if (itemTransactions != null && !itemTransactions.isEmpty()) {
 			for (ItemTransactionsContext consumable : itemTransactions) {
-				if (consumable.getPurchasedItem() != null) {
-					uniquepurchasedItemsIds.add(consumable.getPurchasedItem().getId());
-				} else if (consumable.getAsset() != null) {
-					uniqueAssetId.add(consumable.getAsset().getId());
+				if(consumable.getRequestedLineItem() == null) {
+					if (consumable.getPurchasedItem() != null) {
+						uniquepurchasedItemsIds.add(consumable.getPurchasedItem().getId());
+					} else if (consumable.getAsset() != null) {
+						uniqueAssetId.add(consumable.getAsset().getId());
+					}
+					uniqueItemIds.add(consumable.getItem().getId());
 				}
-				uniqueItemIds.add(consumable.getItem().getId());
 			}
 		}
 		

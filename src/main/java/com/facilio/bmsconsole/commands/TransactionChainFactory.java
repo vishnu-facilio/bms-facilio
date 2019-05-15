@@ -2598,6 +2598,19 @@ public class TransactionChainFactory {
 			chain.addCommand(new AddOrUpdateInventoryRequestCommand());
 			return chain;
 		}
+		
+		public static Chain getIssueInventoryRequestChain() {
+			Chain chain = getDefaultChain();
+			chain.addCommand(SetTableNamesCommand.getForInventoryRequest());
+			chain.addCommand(new AddOrUpdateInventoryRequestCommand());
+			chain.addCommand(new LoadItemTransactionEntryInputCommand());
+			chain.addCommand(getAddOrUpdateItemTransactionsChain());
+			//rollups work with record_list object in the context
+			chain.addCommand(new CopyToToolTransactionCommand());
+			chain.addCommand(getUpdatetoolQuantityRollupChain());
+			return chain;
+		
+		}
 		public static Chain getInventoryRequestDeleteChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForInventoryRequest());

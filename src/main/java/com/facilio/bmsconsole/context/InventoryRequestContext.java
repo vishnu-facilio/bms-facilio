@@ -59,7 +59,8 @@ public class InventoryRequestContext extends ModuleBaseWithCustomFields{
 		APPROVED(),
 		REJECTED(),
 		PARTIALLY_APPROVED(),
-		PARTIALLY_REJECTED()
+		PARTIALLY_REJECTED(),
+		ISSUED()
 		;
 		
 		public int getValue() {
@@ -117,5 +118,22 @@ public class InventoryRequestContext extends ModuleBaseWithCustomFields{
 	public void setParentId(long parentId) {
 		this.parentId = parentId;
 	}
+	
+	private List<Long> assetIds;
+	public List<Long> getAssetIds() {
+		return assetIds;
+	}
+	public void setAssetIds(List<Long> assetIds) {
+		this.assetIds = assetIds;
+	}
+	
+	private StoreRoomContext storeRoom;
+	public StoreRoomContext getStoreRoom() {
+		return storeRoom;
+	}
+	public void setStoreRoom(StoreRoomContext storeRoom) {
+		this.storeRoom = storeRoom;
+	}
+	
 	
 }

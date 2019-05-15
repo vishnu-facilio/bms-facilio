@@ -58,6 +58,15 @@ public class InventoryRequestAction extends FacilioAction {
 	public void setInventoryRequest(InventoryRequestContext inventoryRequest) {
 		this.inventoryRequest = inventoryRequest;
 	}
+	
+	private List<InventoryRequestContext> inventoryRequests;
+	
+	public List<InventoryRequestContext> getInventoryRequests() {
+		return inventoryRequests;
+	}
+	public void setInventoryRequests(List<InventoryRequestContext> inventoryRequests) {
+		this.inventoryRequests = inventoryRequests;
+	}
 	public long getRecordId() {
 		return recordId;
 	}
@@ -140,6 +149,10 @@ public class InventoryRequestAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.CV_NAME, getViewName());
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.INVENTORY_REQUEST);
 		context.put(FacilioConstants.ContextNames.SORTING_QUERY, "Inventory_Requests.ID asc");
+		
+		context.put(FacilioConstants.ContextNames.STORE_ROOM_ID, getStoreRoomId());
+		context.put(FacilioConstants.ContextNames.STATUS, getStatus());
+		
  		
  		if(getFilters() != null)
  		{	
@@ -294,5 +307,15 @@ public class InventoryRequestAction extends FacilioAction {
 		
 		return SUCCESS;
 	}
+	public String issueInventoryRequests() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.INVENTORY_REQUEST, inventoryRequest);
+		Chain issueRequestListChain = TransactionChainFactory.getIssueInventoryRequestChain();
+		issueRequestListChain.execute(context);
+		setResult(FacilioConstants.ContextNames.INVENTORY_REQUEST, inventoryRequest);
+		
+		return SUCCESS;
+	}
+	
 
 }

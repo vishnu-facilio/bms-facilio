@@ -94,5 +94,25 @@ public class ToolsApi {
 		List<ToolContext> tools = selectBuilder.get();
 		return tools;
 	}
+	
+	public static ToolContext getToolsForTypeAndStore(long storeId, long toolTypeId) throws Exception {
+		if (storeId <= 0) {
+			return null;
+		}
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.TOOL);
+		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.TOOL);
+		SelectRecordsBuilder<ToolContext> selectBuilder = new SelectRecordsBuilder<ToolContext>().select(fields)
+				.table(module.getTableName()).moduleName(module.getName()).beanClass(ToolContext.class)
+				.andCondition(CriteriaAPI.getCondition("STORE_ROOM_ID", "storeRoom", String.valueOf(storeId), NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition("TOOL_TYPE_ID", "toolType", String.valueOf(toolTypeId), NumberOperators.EQUALS))
+				
+				;
+		List<ToolContext> tools = selectBuilder.get();
+		if(!CollectionUtils.isEmpty(tools)) {
+			return tools.get(0);
+		}
+	 throw new IllegalArgumentException("No appropriate tool found");
+	}
 
 }
