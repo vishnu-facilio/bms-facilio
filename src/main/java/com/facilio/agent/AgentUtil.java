@@ -47,7 +47,6 @@ public  class AgentUtil
             for (Map<String,Object> record :records) {
                 JSONObject payload = new JSONObject();
                 payload.putAll(record);
-                LOGGER.info("testinglog from populateAgentContextMap JSON payload is "+payload);
                 FacilioAgent agent = getFacilioAgentFromJson(payload);
                 agentMap.put(agent.getAgentName(), agent);
             }
@@ -58,11 +57,9 @@ public  class AgentUtil
 
     public FacilioAgent getFacilioAgent(String agentName) {
         FacilioAgent agent = agentMap.get(agentName);
-        LOGGER.info("testinglog--agent load from agentMap is--"+agent+" for agentName"+agentName);
         if(agent == null){
             populateAgentContextMap(agentName);
             agent =agentMap.get(agentName);
-            LOGGER.info("testinglog--agent load from agentMap is null and populating agentContextMap--for agentName"+agentName+" and agent is"+agent);
         }
         return agent;
     }
@@ -87,7 +84,6 @@ public  class AgentUtil
             agent.setSiteId(Long.parseLong(payload.get(AgentKeys.SITE_ID).toString()));
         }
         if(payload.containsKey(AgentKeys.VERSION)) {
-            LOGGER.info(" agent is having version "+payload.get(AgentKeys.VERSION).toString());
             agent.setAgentDeviceDetails(payload.get(AgentKeys.VERSION).toString());
 
             if(payload.containsKey(AgentKeys.FACILIO_MQTT_VERSION)) {
@@ -100,7 +96,6 @@ public  class AgentUtil
         } else {
             agent.setAgentConnStatus(true);
         }
-
 
         if(payload.containsKey(AgentKeys.DATA_INTERVAL)) {
             agent.setAgentDataInterval(Long.parseLong( payload.get(AgentKeys.DATA_INTERVAL).toString()));
@@ -123,7 +118,12 @@ public  class AgentUtil
         }
 
         if(payload.containsKey(AgentKeys.AGENT_TYPE)){
-            agent.setAgentType(Integer.parseInt(payload.get(AgentKeys.AGENT_TYPE).toString()));
+            if(payload.get(AgentKeys.AGENT_TYPE) instanceof Integer){
+                agent.setAgentType(Integer.parseInt(payload.get(AgentKeys.AGENT_TYPE).toString()));
+            }
+            else {
+                agent.setAgentType(AgentType.valueOf(payload.get(AgentKeys.AGENT_TYPE).toString()).getKey());
+            }
         }
         if(payload.containsKey(AgentKeys.DELETED_TIME)){
             agent.setDeletedTime(Long.parseLong(payload.get(AgentKeys.DELETED_TIME).toString()));
@@ -223,10 +223,12 @@ public  class AgentUtil
                    if (jsonObject.containsKey(AgentKeys.VERSION)) {
                        Object currDeviceDetails = jsonObject.get(AgentKeys.VERSION);
                        String currDeviceDetailsString = currDeviceDetails.toString();
-                       if (agent.getAgentDeviceDetails()!= null && !(agent.getAgentDeviceDetails().equalsIgnoreCase(currDeviceDetailsString))) {
-                           toUpdate.put(AgentKeys.DEVICE_DETAILS, currDeviceDetails);
-                           toUpdate.put(AgentKeys.VERSION, getVersion(currDeviceDetails));
+                       String currVersion = getVersion(currDeviceDetails);
+                       if ( (agent.getAgentDeviceDetails() == null) || (agent.getAgentDeviceDetails() != null && !(agent.getAgentDeviceDetails().equalsIgnoreCase(currDeviceDetailsString))) ) {
+                           toUpdate.put(AgentKeys.DEVICE_DETAILS, currDeviceDetailsString);
+                           toUpdate.put(AgentKeys.VERSION, currVersion);
                            agent.setAgentDeviceDetails(currDeviceDetailsString);
+                           agent.setAgentVersion(currVersion);
                        }
                    }
                    if (jsonObject.containsKey(AgentKeys.WRITABLE)) {
@@ -242,6 +244,9 @@ public  class AgentUtil
                            agent.setDeletedTime(currDeletedTime);
                            toUpdate.put(AgentKeys.DELETED_TIME, currDeletedTime);
                        }
+                   }
+                   if(agent.getAgentType() == null){
+                       toUpdate.put(AgentKeys.AGENT_TYPE, (AgentType.valueOf(jsonObject.get(AgentKeys.AGENT_TYPE).toString())).getKey());
                    }
                    if (!toUpdate.isEmpty()) {
                        toUpdate.put(AgentKeys.LAST_MODIFIED_TIME, System.currentTimeMillis());
