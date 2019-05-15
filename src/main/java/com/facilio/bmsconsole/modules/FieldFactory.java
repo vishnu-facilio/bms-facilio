@@ -257,7 +257,7 @@ public class FieldFactory {
 		List<FacilioField> fields = new ArrayList<>();
 		FacilioModule module = ModuleFactory.getAgentDataModule();
 		fields.add(getIdField(module));
-		fields.add(getField(AgentKeys.DEVICE_ID,"DEVICE_DETAILS",module,FieldType.STRING));
+		fields.add(getField(AgentKeys.DEVICE_DETAILS,"DEVICE_DETAILS",module,FieldType.STRING));
 		fields.add(getField(AgentKeys.CONNECTION_STATUS,"Conn_status",module,FieldType.BOOLEAN));
 		fields.add(getAgentNameField(module));
 		fields.add(getField(AgentKeys.DISPLAY_NAME,"DISPLAY_NAME",module,FieldType.STRING));
