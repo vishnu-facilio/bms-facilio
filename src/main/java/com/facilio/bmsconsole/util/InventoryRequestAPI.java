@@ -38,8 +38,8 @@ public class InventoryRequestAPI {
 		Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
 		
 
-		LookupField itemType = (LookupField) modBean.getField("itemType", FacilioConstants.ContextNames.ITEM_TYPES);
-		LookupField toolType = (LookupField) modBean.getField("toolType", FacilioConstants.ContextNames.TOOL_TYPES);
+		LookupField itemType = (LookupField) modBean.getField("itemType", FacilioConstants.ContextNames.INVENTORY_REQUEST_LINE_ITEMS);
+		LookupField toolType = (LookupField) modBean.getField("toolType", FacilioConstants.ContextNames.INVENTORY_REQUEST_LINE_ITEMS);
 		
 		
 		List<LookupField>fetchLookup = Arrays.asList(itemType,toolType);
