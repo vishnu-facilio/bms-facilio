@@ -83,10 +83,10 @@ public class AddOrUpdateWorkorderItemsCommand implements Command {
 							if ((q + purchaseditem.getCurrentQuantity() < workorderitem.getQuantity())) {
 								throw new IllegalArgumentException("Insufficient quantity in inventory!");
 							} else {
-								approvalState = ApprovalState.APPROVED;
-//								if (itemType.isApprovalNeeded() || storeRoom.isApprovalNeeded()) {
-//									approvalState = ApprovalState.REQUESTED;
-//								}
+								approvalState = ApprovalState.YET_TO_BE_REQUESTED;
+								if (itemType.isApprovalNeeded() || storeRoom.isApprovalNeeded()) {
+									approvalState = ApprovalState.APPROVED;
+								}
 								JSONObject info = new JSONObject();
 								info.put("itemid", workorderitem.getItem().getId());
 								info.put("itemtype", itemType.getName());
@@ -112,10 +112,10 @@ public class AddOrUpdateWorkorderItemsCommand implements Command {
 					if (item.getQuantity() < workorderitem.getQuantity()) {
 						throw new IllegalArgumentException("Insufficient quantity in inventory!");
 					} else {
-						approvalState = ApprovalState.APPROVED;
-//						if (itemType.isApprovalNeeded() || storeRoom.isApprovalNeeded()) {
-//							approvalState = ApprovalState.REQUESTED;
-//						}
+						approvalState = ApprovalState.YET_TO_BE_REQUESTED;
+						if (itemType.isApprovalNeeded() || storeRoom.isApprovalNeeded()) {
+							approvalState = ApprovalState.APPROVED;
+						}
 						if (itemType.isRotating()) {
 							List<Long> assetIds = workorderitem.getAssetIds();
 							List<AssetContext> purchasedItem = getAssetsFromId(assetIds, assetModule, assetFields);

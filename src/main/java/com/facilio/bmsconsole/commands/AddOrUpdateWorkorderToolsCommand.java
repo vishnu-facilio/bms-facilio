@@ -64,10 +64,10 @@ public class AddOrUpdateWorkorderToolsCommand implements Command {
 								.getQuantity()) {
 							throw new IllegalArgumentException("Insufficient quantity in inventory!");
 						} else {
-							ApprovalState approvalState = ApprovalState.APPROVED;
-//							if (toolTypes.isApprovalNeeded() || storeRoom.isApprovalNeeded()) {
-//								approvalState = ApprovalState.REQUESTED;
-//							}
+							ApprovalState approvalState = ApprovalState.YET_TO_BE_REQUESTED;
+							if (toolTypes.isApprovalNeeded() || storeRoom.isApprovalNeeded()) {
+								approvalState = ApprovalState.APPROVED;
+							}
 							wTool = setWorkorderItemObj(null, workorderTool.getQuantity(), tool, parentId,
 									workorder, workorderTool, approvalState, null, workorderTool.getRequestedLineItem());
 							// update
@@ -80,10 +80,10 @@ public class AddOrUpdateWorkorderToolsCommand implements Command {
 					if (tool.getCurrentQuantity() < workorderTool.getQuantity()) {
 						throw new IllegalArgumentException("Insufficient quantity in inventory!");
 					} else {
-						ApprovalState approvalState = ApprovalState.APPROVED;
-//						if (toolTypes.isApprovalNeeded() || storeRoom.isApprovalNeeded()) {
-//							approvalState = ApprovalState.REQUESTED;
-//						}
+						ApprovalState approvalState = ApprovalState.YET_TO_BE_REQUESTED;
+						if (toolTypes.isApprovalNeeded() || storeRoom.isApprovalNeeded()) {
+							approvalState = ApprovalState.APPROVED;
+						}
 						if (toolTypes.isRotating()) {
 							List<Long> assetIds = workorderTool.getAssetIds();
 							List<AssetContext> assets = getAssetsFromId(assetIds);
