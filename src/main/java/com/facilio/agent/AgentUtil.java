@@ -47,6 +47,7 @@ public  class AgentUtil
             for (Map<String,Object> record :records) {
                 JSONObject payload = new JSONObject();
                 payload.putAll(record);
+                LOGGER.info("testinglog from populateAgentContextMap JSON payload is "+payload);
                 FacilioAgent agent = getFacilioAgentFromJson(payload);
                 agentMap.put(agent.getAgentName(), agent);
             }
@@ -57,9 +58,11 @@ public  class AgentUtil
 
     public FacilioAgent getFacilioAgent(String agentName) {
         FacilioAgent agent = agentMap.get(agentName);
+        LOGGER.info("testinglog--agent load from agentMap is--"+agent+" for agentName"+agentName);
         if(agent == null){
             populateAgentContextMap(agentName);
             agent =agentMap.get(agentName);
+            LOGGER.info("testinglog--agent load from agentMap is null and populating agentContextMap--for agentName"+agentName+" and agent is"+agent);
         }
         return agent;
     }
