@@ -93,7 +93,7 @@ public class GetInventoryRequestListCommand implements Command {
 		Long storeRoomId = (Long)context.get(FacilioConstants.ContextNames.STORE_ROOM_ID);
 		Integer status = (Integer)context.get(FacilioConstants.ContextNames.STATUS);
 		
-		if(storeRoomId != null && status != null) {
+		if(storeRoomId != null && status != null && storeRoomId > 0 && status >0) {
 			builder.andCondition(CriteriaAPI.getCondition("STOREROOM", "storeRoom", String.valueOf(storeRoomId), NumberOperators.EQUALS));
 			builder.andCondition(CriteriaAPI.getCondition("STATUS", "status", String.valueOf(status), NumberOperators.EQUALS));
 				
