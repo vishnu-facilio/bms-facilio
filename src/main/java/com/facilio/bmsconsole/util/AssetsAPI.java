@@ -735,11 +735,11 @@ public class AssetsAPI {
 		return moduleInfo;
 	}
 	
-	public static AssetContext getAssetForItemTypeAndStore(long itemTypeId, long storeroomId) throws Exception {
+	public static List<AssetContext> getAssetForItemTypeAndStore(long itemTypeId, long storeroomId) throws Exception {
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		ItemContext rotatingItem = ItemsApi.getItemsForTypeAndStore(storeroomId, itemTypeId);
-		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ITEM);
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ASSET);
 		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.ASSET);
 		SelectRecordsBuilder<AssetContext> selectBuilder = new SelectRecordsBuilder<AssetContext>().select(fields)
 				.table(module.getTableName()).moduleName(module.getName()).beanClass(AssetContext.class)
@@ -748,18 +748,18 @@ public class AssetsAPI {
 				;
 		List<AssetContext> assets = selectBuilder.get();
 		if(!CollectionUtils.isEmpty(assets)) {
-			return assets.get(0);
+			return assets;
 		}
 	   throw new IllegalArgumentException("No appropriate asset found");
 		
 		
 	}
 	
-	public static AssetContext getAssetForToolTypeAndStore(long toolTypeId, long storeroomId) throws Exception {
+	public static List<AssetContext> getAssetForToolTypeAndStore(long toolTypeId, long storeroomId) throws Exception {
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		ToolContext rotatingTool = ToolsApi.getToolsForTypeAndStore(storeroomId, toolTypeId);
-		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.TOOL);
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ASSET);
 		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.ASSET);
 		SelectRecordsBuilder<AssetContext> selectBuilder = new SelectRecordsBuilder<AssetContext>().select(fields)
 				.table(module.getTableName()).moduleName(module.getName()).beanClass(AssetContext.class)
@@ -767,7 +767,7 @@ public class AssetsAPI {
 				;
 		List<AssetContext> assets = selectBuilder.get();
 		if(!CollectionUtils.isEmpty(assets)) {
-			return assets.get(0);
+			return assets;
 		}
 	   throw new IllegalArgumentException("No appropriate asset found");
 		

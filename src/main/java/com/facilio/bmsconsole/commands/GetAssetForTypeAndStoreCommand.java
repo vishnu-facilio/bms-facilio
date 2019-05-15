@@ -16,11 +16,11 @@ public class GetAssetForTypeAndStoreCommand implements Command{
 		
 		if(inventoryType == 1) {
 			Long itemTypeId = (Long)context.get(FacilioConstants.ContextNames.ITEM_TYPES_ID);
-			context.put(FacilioConstants.ContextNames.ASSET, AssetsAPI.getAssetForItemTypeAndStore(itemTypeId, storeId));	
+			context.put(FacilioConstants.ContextNames.ASSETS, AssetsAPI.getAssetForItemTypeAndStore(itemTypeId, storeId));	
 		}
 		else if(inventoryType == 2) {
 			Long toolTypeId = (Long)context.get(FacilioConstants.ContextNames.TOOL_TYPES_ID);
-			context.put(FacilioConstants.ContextNames.ASSET, AssetsAPI.getAssetForToolTypeAndStore(toolTypeId, storeId));	
+			context.put(FacilioConstants.ContextNames.ASSETS, AssetsAPI.getAssetForToolTypeAndStore(toolTypeId, storeId));	
 		}
 		
 		return false;

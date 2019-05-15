@@ -571,7 +571,7 @@ public class AssetAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.STORE_ROOM_ID, storeRoomId);
 		
 		ReadOnlyChainFactory.getAssetForTypeAndStoreChain().execute(context);
-		setResult("asset", context.get(FacilioConstants.ContextNames.ASSET));
+		setResult("assets", context.get(FacilioConstants.ContextNames.ASSETS));
 		return SUCCESS;
 	}
 }

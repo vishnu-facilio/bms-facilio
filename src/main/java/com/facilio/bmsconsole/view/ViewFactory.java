@@ -330,9 +330,10 @@ public class ViewFactory {
 		order = 1;
 		views = new LinkedHashMap<>();
 		views.put("all", getAllInventoryRequestView().setOrder(order++));
-		views.put("pending", getInventoryRequestForStatus("pending", "Pending", 1).setOrder(order++));
-		views.put("approved", getInventoryRequestForStatus("approved", "Approved", 2).setOrder(order++));
+		views.put("pendingapproval", getInventoryRequestForStatus("pendingapproval", "Pending Approval", 1).setOrder(order++));
+		views.put("pendingissue", getInventoryRequestForStatus("pendingissue", "Pending Issue", 2).setOrder(order++));
 		views.put("rejected", getInventoryRequestForStatus("rejected", "Rejected", 3).setOrder(order++));
+		views.put("issued", getInventoryRequestForStatus("issued", "Issued", 4).setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.INVENTORY_REQUEST, views);
 
 		
