@@ -245,7 +245,7 @@ public  class AgentUtil
                            toUpdate.put(AgentKeys.DELETED_TIME, currDeletedTime);
                        }
                    }
-                   if(agent.getAgentType() == null){
+                   if(agent.getAgentType() == null && (jsonObject.containsKey(AgentKeys.AGENT_TYPE)) ){
                        toUpdate.put(AgentKeys.AGENT_TYPE, (AgentType.valueOf(jsonObject.get(AgentKeys.AGENT_TYPE).toString())).getKey());
                    }
                    if (!toUpdate.isEmpty()) {
