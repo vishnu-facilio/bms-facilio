@@ -267,7 +267,7 @@ public enum ActionType {
 					addEventContext.put(EventConstants.EventContextNames.EVENT_PAYLOAD, obj);
 					Chain getAddEventChain = EventConstants.EventChainFactory.getAddEventChain();
 					getAddEventChain.execute(addEventContext);
-					EventContext event = (EventContext) addEventContext.get(EventConstants.EventContextNames.EVENT);
+					EventContext event = ((List<EventContext>) addEventContext.get(EventConstants.EventContextNames.EVENT_LIST)).get(0);
 					if (currentRule instanceof ReadingRuleContext) {
 						processAlarmMeta((ReadingRuleContext) currentRule, (long) obj.get("resourceId"), (long) obj.get("timestamp"), event, context);
 					}
