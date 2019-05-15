@@ -85,11 +85,11 @@ public class InventoryRequestLineItemContext extends ModuleBaseWithCustomFields{
 		this.assetIds = assetIds;
 	}
 	
-	private AssetContext asset;
-	public AssetContext getAsset() {
+	private long asset;
+	public long getAsset() {
 		return asset;
 	}
-	public void setAsset(AssetContext asset) {
+	public void setAsset(long asset) {
 		this.asset = asset;
 	}
 
@@ -169,8 +169,8 @@ public class InventoryRequestLineItemContext extends ModuleBaseWithCustomFields{
 		transaction.setTransactionType(3);
 		transaction.setTransactionState(2);
 		transaction.setQuantity(this.getQuantity());
-		if(this.getAsset() != null && this.getAsset().getId() > 0) {
-			transaction.setAssetIds(Collections.singletonList(this.getAsset().getId()));
+		if(this.getAsset() > 0) {
+			transaction.setAssetIds(Collections.singletonList(this.getAsset()));
 		}
 		return transaction;
 		
@@ -185,8 +185,8 @@ public class InventoryRequestLineItemContext extends ModuleBaseWithCustomFields{
 		transaction.setTransactionState(2);
 		transaction.setQuantity(this.getQuantity());
 		
-		if(this.getAsset() != null && this.getAsset().getId() > 0) {
-			transaction.setAssetIds(Collections.singletonList(this.getAsset().getId()));
+		if(this.getAsset() > 0) {
+			transaction.setAssetIds(Collections.singletonList(this.getAsset()));
 		}
 		return transaction;
 		
