@@ -82,6 +82,24 @@ public class AddOrUpdateInventoryRequestCommand implements Command{
 			if(inventoryRequestContext.getStoreRoom() != null &&  inventoryRequestContext.getStoreRoom().getId() > 0) {
 				lineItemContext.setStoreRoomId(inventoryRequestContext.getStoreRoom().getId());
 			}
+			if(lineItemContext.getAssetIds().size() > 0) {
+				lineItemContext.setAsset(lineItemContext.getAssetIds().get(0));
+				for(int i=1; i<=lineItemContext.getAssetIds().size(); i++) {
+					 InventoryRequestLineItemContext lineItem = new InventoryRequestLineItemContext();
+					 lineItem.setAsset(lineItemContext.getAssetIds().get(i));
+					 lineItem.setInventoryType(lineItemContext.getInventoryType());
+					 if(lineItemContext.getInventoryType() == InventoryType.ITEM.getValue()) {
+						 lineItem.setItemType(lineItemContext.getItemType());
+					 }
+					 else if(lineItemContext.getInventoryType() == InventoryType.TOOL.getValue()) {
+						 lineItem.setToolType(lineItemContext.getToolType());
+					 }
+					 
+					 lineItem.setQuantity(lineItemContext.getQuantity());
+					 inventoryRequestContext.getLineItems().add(lineItem); 
+				}
+			}
+			
 		}
 	}
 	
