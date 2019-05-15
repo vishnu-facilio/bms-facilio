@@ -2432,7 +2432,8 @@ public class DashboardUtil {
 		 
 		 GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 					.select(FieldFactory.getDashboardFolderFields())
-					.table(ModuleFactory.getDashboardFolderModule().getTableName());
+					.table(ModuleFactory.getDashboardFolderModule().getTableName())
+					.andCondition(CriteriaAPI.getCurrentOrgIdCondition(ModuleFactory.getDashboardFolderModule()));
 		 
 		 if(moduleName != null) {
 			 FacilioModule module = modBean.getModule(moduleName);
