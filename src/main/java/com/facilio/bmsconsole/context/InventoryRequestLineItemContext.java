@@ -138,7 +138,7 @@ public class InventoryRequestLineItemContext extends ModuleBaseWithCustomFields{
 	}
 	public WorkorderItemContext constructWorkOrderItemContext() throws Exception{
 		WorkorderItemContext woItem = new WorkorderItemContext();
-		ItemContext item = ItemsApi.getItemsForTypeAndStore(this.getStoreRoomId(), this.getItemType().getId());
+		ItemContext item = ItemsApi.getItemsForTypeAndStore(this.getStoreRoom(), this.getItemType().getId());
 		woItem.setItem(item);
 		woItem.setParentId(this.getParentId());
 		woItem.setAssetIds(this.getAssetIds());
@@ -149,7 +149,7 @@ public class InventoryRequestLineItemContext extends ModuleBaseWithCustomFields{
 	
 	public WorkorderToolsContext constructWorkOrderToolContext() throws Exception {
 		WorkorderToolsContext woTool = new WorkorderToolsContext();
-		ToolContext tool = ToolsApi.getToolsForTypeAndStore(this.getStoreRoomId(), this.getItemType().getId());
+		ToolContext tool = ToolsApi.getToolsForTypeAndStore(this.getStoreRoom(), this.getItemType().getId());
 		woTool.setTool(tool);
 		woTool.setParentId(this.getParentId());
 		woTool.setAssetIds(this.getAssetIds());
@@ -162,7 +162,7 @@ public class InventoryRequestLineItemContext extends ModuleBaseWithCustomFields{
 	
 	public ItemTransactionsContext contructManualItemTransactionContext(User requestedBy) throws Exception {
 		ItemTransactionsContext transaction = new ItemTransactionsContext();
-		ItemContext item = ItemsApi.getItemsForTypeAndStore(this.getStoreRoomId(), this.getItemType().getId());
+		ItemContext item = ItemsApi.getItemsForTypeAndStore(this.getStoreRoom(), this.getItemType().getId());
 		transaction.setItem(item);
 		transaction.setIssuedTo(requestedBy);
 		transaction.setParentId(requestedBy.getOuid());
@@ -177,7 +177,7 @@ public class InventoryRequestLineItemContext extends ModuleBaseWithCustomFields{
 	}
 	public ToolTransactionContext contructManualToolTransactionContext(User requestedBy) throws Exception {
 		ToolTransactionContext transaction = new ToolTransactionContext();
-		ToolContext tool = ToolsApi.getToolsForTypeAndStore(this.getStoreRoomId(), this.getToolType().getId());
+		ToolContext tool = ToolsApi.getToolsForTypeAndStore(this.getStoreRoom(), this.getToolType().getId());
 		transaction.setTool(tool);
 		transaction.setIssuedTo(requestedBy);
 		transaction.setParentId(requestedBy.getOuid());
@@ -192,14 +192,16 @@ public class InventoryRequestLineItemContext extends ModuleBaseWithCustomFields{
 		
 	}
 	
-	private long storeRoomId;
+	private long storeRoom;
 
-	public long getStoreRoomId() {
-		return storeRoomId;
+	public long getStoreRoom() {
+		return storeRoom;
 	}
-	public void setStoreRoomId(long storeRoomId) {
-		this.storeRoomId = storeRoomId;
+	public void setStoreRoom(long storeRoom) {
+		this.storeRoom = storeRoom;
 	}
+
+	
 
 	
 	

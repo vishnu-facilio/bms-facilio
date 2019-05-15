@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -74,17 +75,19 @@ public class AddOrUpdateInventoryRequestCommand implements Command{
 	
 	
 	private void updateLineItems(InventoryRequestContext inventoryRequestContext) throws Exception{
+		List<InventoryRequestLineItemContext> rotatingItems = new ArrayList<InventoryRequestLineItemContext>();
+		
 		for (InventoryRequestLineItemContext lineItemContext : inventoryRequestContext.getLineItems()) {
 			lineItemContext.setInventoryRequestId(inventoryRequestContext.getId());
 			if(inventoryRequestContext.getParentId() > 0) {
 				lineItemContext.setParentId(inventoryRequestContext.getParentId());
 			}
 			if(inventoryRequestContext.getStoreRoom() != null &&  inventoryRequestContext.getStoreRoom().getId() > 0) {
-				lineItemContext.setStoreRoomId(inventoryRequestContext.getStoreRoom().getId());
+				lineItemContext.setStoreRoom(inventoryRequestContext.getStoreRoom().getId());
 			}
 			if(lineItemContext.getAssetIds() != null && lineItemContext.getAssetIds().size() > 0) {
 				lineItemContext.setAsset(lineItemContext.getAssetIds().get(0));
-				for(int i=1; i<=lineItemContext.getAssetIds().size(); i++) {
+				for(int i=1; i<lineItemContext.getAssetIds().size(); i++) {
 					 InventoryRequestLineItemContext lineItem = new InventoryRequestLineItemContext();
 					 lineItem.setAsset(lineItemContext.getAssetIds().get(i));
 					 lineItem.setInventoryType(lineItemContext.getInventoryType());
@@ -96,11 +99,20 @@ public class AddOrUpdateInventoryRequestCommand implements Command{
 					 }
 					 
 					 lineItem.setQuantity(lineItemContext.getQuantity());
-					 inventoryRequestContext.getLineItems().add(lineItem); 
+					 lineItem.setInventoryRequestId(inventoryRequestContext.getId());
+					 if(inventoryRequestContext.getParentId() > 0) {
+						 lineItem.setParentId(inventoryRequestContext.getParentId());
+					 }
+					 if(inventoryRequestContext.getStoreRoom() != null &&  inventoryRequestContext.getStoreRoom().getId() > 0) {
+						 lineItem.setStoreRoom(inventoryRequestContext.getStoreRoom().getId());
+					 }
+					
+					 rotatingItems.add(lineItem); 
 				}
 			}
 			
 		}
+		inventoryRequestContext.getLineItems().addAll(rotatingItems);
 	}
 	
 	private void addRecord(boolean isLocalIdNeeded, List<? extends ModuleBaseWithCustomFields> list, FacilioModule module, List<FacilioField> fields) throws Exception {
