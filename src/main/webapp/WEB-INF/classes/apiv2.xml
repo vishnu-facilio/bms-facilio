@@ -615,6 +615,8 @@
 		<action name="add" class="com.facilio.bmsconsole.actions.AttachmentAction"
 			method="v2addAttachment">
 		</action>
+		<action name="delete" class="com.facilio.bmsconsole.actions.AttachmentAction" method="v2deleteAttachment">
+		</action>
 	</package>
 
 	<package name="picklistApiv2" namespace="/api/v2/picklist"
