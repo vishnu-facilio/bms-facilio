@@ -33,7 +33,7 @@ const pupeteer = require('/home/ubuntu/.npm-global/lib/node_modules/puppeteer');
         {
             name:'fc.authtype',
             value: authType,
-            domain: '.facilio.in',
+            domain: domain,
             path: '/'
         }
     ]
