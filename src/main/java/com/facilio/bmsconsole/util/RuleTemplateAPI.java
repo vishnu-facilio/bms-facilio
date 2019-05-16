@@ -57,8 +57,6 @@ public class RuleTemplateAPI {
 		List<WorkflowContext> list = mapper.readValue(JSONArray.toJSONString(fieldJsons), mapper.getTypeFactory().constructCollectionType(List.class, WorkflowContext.class));
 		rule.setWorkflow(list.get(0));
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		System.out.println("Module Name----> " + rulesObject.get("moduleName"));
-		System.out.println("threshold_metric Name----> " + rulesObject.get("threshold_metric"));
 		if (rulesObject.get("moduleName") != null && rulesObject.get("threshold_metric") != null) {
 			FacilioModule preModule = modBean.getModule((String) rulesObject.get("moduleName"));
 			FacilioField preRequesitefield = modBean.getField((String) rulesObject.get("threshold_metric"), preModule.getName());
@@ -131,7 +129,6 @@ public class RuleTemplateAPI {
 			
 			AlarmRuleContext alarmRule = new AlarmRuleContext();
 			if (ruleObj.get("preRequsite") != null) {
-				
 				alarmRule.setPreRequsite(convertByRuleType((JSONObject) ruleObj.get("preRequsite")));
 			}
 			else {
@@ -151,6 +148,9 @@ public class RuleTemplateAPI {
 				alarmRule.getPreRequsite().setExcludedResources((List<Long>) selectionResource.get("excludeResource"));
 			}
 			alarmRule.setAlarmTriggerRule(convertByRuleType((JSONObject) ruleObj.get("alarmCondition")));
+			FacilioModule readingModule = modBean.getModule((String) ruleObj.get("moduleName"));
+			FacilioField readingfield = modBean.getField((String) ruleObj.get("threshold_metric"), readingModule.getName());
+			alarmRule.getAlarmTriggerRule().setReadingFieldId(readingfield.getId());
 			if ((JSONObject) ruleObj.get("alarmClear") != null) {
 				alarmRule.setAlarmClearRule(convertByRuleType((JSONObject) ruleObj.get("preRequsite")));
 			} else {
