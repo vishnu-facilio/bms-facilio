@@ -92,15 +92,12 @@ public class Processor extends FacilioProcessor {
                 String id = record.getId();
             try {
                 String data = "";
-                    if (AgentUtil.checkForDuplicate(id) && (!AgentUtil.canReprocess(id)) ) {
-                        continue;
+                    if ((AgentUtil.addOrUpdateAgentMessage(id, 0).intValue() == 0)) {
+                        if (!AgentUtil.canReprocess(id)) {
+                            continue;
+                        }
                     }
-                    else if( (AgentUtil.checkForDuplicate(id)) && (AgentUtil.canReprocess(id)) ){
-                        AgentUtil.addOrUpdateAgentMessage(id,1);
-                    }
-                    else {
-                        AgentUtil.addOrUpdateAgentMessage(id, 0);
-                    }
+
                 data = record.getData().toString();
                 if (data.isEmpty()) {
                     continue;
