@@ -15,6 +15,7 @@ import org.apache.commons.chain.Chain;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.apache.struts2.ServletActionContext;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
@@ -28,6 +29,16 @@ public class TimeSeries extends FacilioAction {
 	
 	private static final long serialVersionUID = 1L;
 	private static final Logger LOGGER = LogManager.getLogger(TimeSeries.class.getName());
+	
+	public String addR() throws Exception {
+		JSONArray instanceArray = new JSONArray();
+		JSONObject obj = new JSONObject();
+		obj.put("instance", "trend0");
+		obj.put("device", "5BLINX220");
+		instanceArray.add(obj);
+		TimeSeriesAPI.addUnmodeledInstances(instanceArray, controllerId);
+		return SUCCESS;
+	}
 
 	public String publish() throws Exception
 	{
