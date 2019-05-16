@@ -1107,49 +1107,52 @@ CREATE TABLE Building (
 );
 
 CREATE TABLE Agent_Data (
-        ID bigint IDENTITY(1,1) PRIMARY KEY,
-        DEVICE_DETAILS varchar(500),
-        Conn_status tinyint,
-        ORGID bigint not null,
-        NAME varchar(250) not null UNIQUE,
-        DISPLAY_NAME varchar(250) DEFAULT null,
+        ID bigint IDENTITY PRIMARY KEY,
+        DEVICE_DETAILS varchar(1000),
+        Conn_status smallint ,
+        ORGID bigint NOT NULL,
+        NAME varchar(250) NOT NULL,
+        DISPLAY_NAME varchar(250) ,
         DATA_INTERVAL bigint DEFAULT 10 not null,
-        TYPE INT,
+        TYPE INT ,
         VERSION varchar(20),
         LAST_MODIFIED_TIME bigint,
         CREATED_TIME bigint,
         LAST_DATA_RECEIVED_TIME bigint,
         STATE int,
         SITE_ID bigint,
-        WRITABLE tinyint DEFAULT 0,
+        WRITABLE smallint,
         DELETED_TIME BIGINT,
-        CONSTRAINT FIELDS_FK_ORGID FOREIGN KEY (ORGID) REFERENCES Organizations(ORGID),
+        UNIQUE (ORGID,NAME),
+        CONSTRAINT AGENT_FK_ORGID FOREIGN KEY (ORGID) REFERENCES Organizations(ORGID),
         CONSTRAINT AGENT_FK_SITE_ID FOREIGN KEY (SITE_ID) REFERENCES Site(ID)
 );
+
 CREATE TABLE Agent_Message(
     ID BIGINT IDENTITY PRIMARY KEY,
     ORGID BIGINT NOT NULL,
-    PARTITION_KEY varchar(20) NOT NULL,
+    PARTITION_KEY varchar(250) NOT NULL,
     MSG_STATUS bigint NOT NULL,
     START_TIME bigint NOT NULL,
     FINISH_TIME bigint,
-    UNIQUE (ORGID,PARTITION_KEY)
-	CONSTRAINT AGENT_MESSAGE_FK_ORGID FOREIGN KEY (ORGID) REFERENCES Organizations(ORGID),
+    UNIQUE (ORGID,PARTITION_KEY),
+    CONSTRAINT Agent_Message_FK_ORGID FOREIGN KEY (ORGID) REFERENCES Organizations(ORGID)
 );
 
 CREATE TABLE Agent_Log(
         ID bigint IDENTITY PRIMARY KEY,
         ORGID bigint NOT NULL,
-        AGENT_ID BIGINT NOT NULL,
-        DEVICE_ID varchar(20),
+        AGENT_ID BIGINT,
+        DEVICE_ID varchar(250),
         COMMAND BIGINT,
         COMMAND_STATUS BIGINT,
         MSG_ID BIGINT,
-        CONTENT BIGINT(10),
+        CONTENT VARCHAR(500),
         TIME bigint,
     CONSTRAINT Agent_Log_FK_AGENT_ID FOREIGN KEY (AGENT_ID) REFERENCES Agent_Data(ID),
     CONSTRAINT Agent_Log_FK_ORGID FOREIGN KEY (ORGID) REFERENCES Organizations(ORGID)
 );
+
 
 CREATE TABLE Agent_Metrics(
     ID BIGINT IDENTITY PRIMARY KEY,

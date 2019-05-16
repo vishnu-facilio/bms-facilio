@@ -86,19 +86,21 @@ public class Processor extends FacilioProcessor {
 
     @Override
     public void processRecords(List<FacilioRecord> records) {
-
         for (FacilioRecord record : records) {
                 boolean alarmCreated = false;
                 long numberOfRows = 0;
                 String id = record.getId();
             try {
                 String data = "";
-                    if ((AgentUtil.addOrUpdateAgentMessage(id, 0).intValue() == 0)) {
-                        if (!AgentUtil.canReprocess(id)) {
-                            continue;
-                        }
+                    if (AgentUtil.checkForDuplicate(id) && (!AgentUtil.canReprocess(id)) ) {
+                        continue;
                     }
-
+                    else if( (AgentUtil.checkForDuplicate(id)) && (AgentUtil.canReprocess(id)) ){
+                        AgentUtil.addOrUpdateAgentMessage(id,1);
+                    }
+                    else {
+                        AgentUtil.addOrUpdateAgentMessage(id, 0);
+                    }
                 data = record.getData().toString();
                 if (data.isEmpty()) {
                     continue;
@@ -162,38 +164,11 @@ public class Processor extends FacilioProcessor {
                                     break;
                                 case ack:
                                     ackUtil.processAck(payLoad, orgId);
-                                    if(isStage) {
-                                        agentUtil.putLog(payLoad, orgId, agent.getId(), false);
-                                    }
+                                    processLog(payLoad,agent.getId());
                                     break;
                                 case agent:
                                     numberOfRows = agentUtil.processAgent(payLoad,agentName);
-                                    if(isStage && (payLoad.containsKey(AgentKeys.COMMAND_STATUS) || payLoad.containsKey(AgentKeys.CONTENT))){
-                                        LOGGER.info(" Payload -- "+payLoad);
-                                        Integer connectionCount = -1;
-                                        if( payLoad.containsKey(AgentKeys.COMMAND_STATUS)){
-                                            if((payLoad.remove(AgentKeys.COMMAND_STATUS)).toString().equals("1")){
-
-                                                if(payLoad.containsKey(AgentKeys.CONNECTION_COUNT)) {
-                                                    connectionCount = Integer.parseInt(payLoad.get(AgentKeys.CONNECTION_COUNT).toString());
-                                                }
-
-                                                if (connectionCount == -1) {
-                                                    payLoad.put(AgentKeys.CONTENT, AgentContent.CONNECTED.getKey());
-                                                } else {
-                                                    if (connectionCount == 1) {
-                                                        payLoad.put(AgentKeys.CONTENT, AgentContent.RESTARTED.getKey());
-                                                        agentUtil.putLog(payLoad,orgId, agent.getId(),false);
-                                                    }
-                                                    payLoad.put(AgentKeys.CONTENT, AgentContent.CONNECTED.getKey()+connectionCount);
-                                                }
-                                            } else {
-                                                payLoad.put(AgentKeys.CONTENT, AgentContent.DISCONNECTED.getKey());
-                                            }
-                                        }
-                                        agentUtil.putLog(payLoad,orgId,agent.getId(),false);
-
-                                    }
+                                    processLog(payLoad,agent.getId());
                                     break;
                                 case event:
                                     alarmCreated = eventUtil.processEvents(record.getTimeStamp(), payLoad, record.getPartitionKey(), orgId, eventRules);
@@ -234,6 +209,33 @@ public class Processor extends FacilioProcessor {
                 LOGGER.info("Exception occured", e);
             }
 
+        }
+    }
+
+    private void processLog(JSONObject payLoad,Long agentId){
+        if(isStage && (payLoad.containsKey(AgentKeys.COMMAND_STATUS) || payLoad.containsKey(AgentKeys.CONTENT))){
+            int connectionCount = -1;
+            if( payLoad.containsKey(AgentKeys.COMMAND_STATUS)){
+                if((payLoad.remove(AgentKeys.COMMAND_STATUS)).toString().equals("1")){
+
+                    if(payLoad.containsKey(AgentKeys.CONNECTION_COUNT)) {
+                        connectionCount = Integer.parseInt(payLoad.get(AgentKeys.CONNECTION_COUNT).toString());
+                    }
+
+                    if (connectionCount == -1) {
+                        payLoad.put(AgentKeys.CONTENT, AgentContent.CONNECTED.getKey());
+                    } else {
+                        if (connectionCount == 1) {
+                            payLoad.put(AgentKeys.CONTENT, AgentContent.RESTARTED.getKey());
+                            agentUtil.putLog(payLoad,orgId, agentId,false);
+                        }
+                        payLoad.put(AgentKeys.CONTENT, AgentContent.CONNECTED.getKey()+connectionCount);
+                    }
+                } else {
+                    payLoad.put(AgentKeys.CONTENT, AgentContent.DISCONNECTED.getKey());
+                }
+            }
+            AgentUtil.putLog(payLoad,orgId,agentId,false);
         }
     }
 

@@ -639,11 +639,11 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 				.andCondition(CriteriaAPI.getCondition(FieldFactory.getDeletedTimeField(agentDataModule),"NULL", CommonOperators.IS_EMPTY));
 		if (agentName != null)
 		{
-			return genericSelectRecordBuilder.andCondition(CriteriaAPI.getCondition(FieldFactory.getAgentNameField(agentDataModule),agentName,StringOperators.IS)).get();
+			return  genericSelectRecordBuilder.andCondition(CriteriaAPI.getCondition(FieldFactory.getAgentNameField(agentDataModule),agentName,StringOperators.IS)).get();
 		}
 		else {
-			 return genericSelectRecordBuilder.get();
-			}
+			return genericSelectRecordBuilder.get();
+		}
 
 	}
 
@@ -741,10 +741,16 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 					.select((Collection<FacilioField>) context.get(FacilioConstants.ContextNames.FIELDS))
 					.andCondition(CriteriaAPI.getCurrentOrgIdCondition(messageModule))
 					.andCriteria((Criteria) context.get(FacilioConstants.ContextNames.CRITERIA));
+
+			if(context.containsKey(FacilioConstants.ContextNames.OFFSET)){
+			    selectRecordBuilder.offset(Integer.parseInt(context.get(FacilioConstants.ContextNames.OFFSET).toString()));
+            }
+
 			if(context.containsKey(FacilioConstants.ContextNames.LIMIT_VALUE)){
 				selectRecordBuilder.limit(Integer.parseInt((context.get(FacilioConstants.ContextNames.LIMIT_VALUE).toString())));
+			}else {
+				selectRecordBuilder.limit(100);
 			}
-			selectRecordBuilder.limit(100);
 			return selectRecordBuilder.get();
 		} catch (Exception e) {
 			LOGGER.info("Exception Occured ",e);

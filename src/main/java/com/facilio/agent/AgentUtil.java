@@ -143,7 +143,7 @@ public  class AgentUtil
         	agentName = orgDomainName;
             LOGGER.info(" in process agent agentName="+agentName);
         }*/
-       FacilioAgent agent = getFacilioAgent(agentName);
+        FacilioAgent agent = getFacilioAgent(agentName);
        if(jsonObject.containsKey(AgentKeys.DATA_INTERVAL)){
            Long currDataInterval = Long.parseLong(jsonObject.get(AgentKeys.DATA_INTERVAL).toString());
            if(currDataInterval.longValue() > 120L){
@@ -374,7 +374,6 @@ public  class AgentUtil
      * @param sent
      */
     public static void putLog(JSONObject payLoad, Long orgId,Long agentId,boolean sent) {
-
         if(sent){
             payLoad.put(AgentKeys.COMMAND_STATUS,CommandStatus.SENT.getKey());
         }
@@ -442,7 +441,29 @@ public  class AgentUtil
         return 0L;
     }
 
+    public static boolean checkForDuplicate(String partitionKey){
+        FacilioModule messageModule = ModuleFactory.getAgentMessageModule();
+        FacilioContext context = new FacilioContext();
 
+        Criteria criteria = new Criteria();
+        criteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getAgentMessagePartitionKeyField(messageModule),partitionKey,NumberOperators.EQUALS));
+
+        context.put(FacilioConstants.ContextNames.TABLE_NAME,AgentKeys.AGENT_MESSAGE_TABLE);
+        context.put(FacilioConstants.ContextNames.FIELDS,FieldFactory.getAgentMessageFields());
+        context.put(FacilioConstants.ContextNames.MODULE,messageModule);
+        context.put(FacilioConstants.ContextNames.CRITERIA,criteria);
+        ModuleCRUDBean bean;
+        try {
+            bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", AccountUtil.getCurrentOrg().getId());
+            List<Map<String,Object>> rows = bean.getRows(context);
+            if(rows.isEmpty()){
+                return false;
+            }
+        } catch (Exception e) {
+            LOGGER.info("Exception Occurred ",e);
+        }
+        return true;
+    }
 
     /**
      * This method fetches metrics data of a particular agent and for a particular Publish-type.
