@@ -722,7 +722,7 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 					.table(messageModule.getTableName())
 					.fields(FieldFactory.getAgentMessageFields())
 					.andCondition(CriteriaAPI.getCurrentOrgIdCondition(messageModule))
-					.andCondition(CriteriaAPI.getCondition(FieldFactory.getAgentMessagePartitionKeyField(messageModule),map.get(AgentKeys.PARTITION_KEY).toString(),NumberOperators.EQUALS));
+					.andCondition(CriteriaAPI.getCondition(FieldFactory.getAgentMessagePartitionKeyField(messageModule),map.get(AgentKeys.PARTITION_KEY).toString(),StringOperators.IS));
 
 			map.remove(AgentKeys.PARTITION_KEY);
 			map.remove(AgentKeys.START_TIME);
@@ -734,6 +734,7 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 		return 0L;
 	}
 	public List<Map<String,Object>> getRows(FacilioContext context){
+	    // always create an Empty List<Map<String,Object>> and return it instead of null;
 		FacilioModule messageModule = (FacilioModule)context.get(FacilioConstants.ContextNames.MODULE);
 		try {
 			GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
@@ -755,7 +756,7 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 		} catch (Exception e) {
 			LOGGER.info("Exception Occured ",e);
 		}
-		return null;
+		return new ArrayList<>();
 	}
 
 

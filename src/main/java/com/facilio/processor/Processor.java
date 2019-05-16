@@ -118,12 +118,11 @@ public class Processor implements IRecordProcessor {
                 StringReader reader = null;
                 String sequenceNumber = record.getSequenceNumber();
                 try {
-                        /*if ((AgentUtil.addOrUpdateAgentMessage(sequenceNumber, 0).intValue() == 0)) {
+                        if ((AgentUtil.addOrUpdateAgentMessage(sequenceNumber, 0).intValue() == 0)) {
                             if (!AgentUtil.canReprocess(sequenceNumber)) {
                                 continue;
                             }
                         }
-*/
                     data = decoder.decode(record.getData()).toString();
                     if(data.isEmpty()){
                         continue;
@@ -220,7 +219,7 @@ public class Processor implements IRecordProcessor {
                         genericUpdateRecordBuilder.update(toUpdate);
 
                     }
-                    //AgentUtil.addOrUpdateAgentMessage(sequenceNumber,1);
+                    AgentUtil.addOrUpdateAgentMessage(sequenceNumber,1);
 
                 } catch (Exception e) {
                     try {
