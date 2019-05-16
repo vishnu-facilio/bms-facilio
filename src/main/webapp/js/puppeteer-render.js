@@ -27,7 +27,7 @@ const pupeteer = require('/home/ubuntu/.npm-global/lib/node_modules/puppeteer');
         {
             name:'fc.idToken',
             value: encodeURIComponent('facilio ' + token),
-            domain: 'localhost',
+            domain: domain,
             path: '/'
         },
         {
