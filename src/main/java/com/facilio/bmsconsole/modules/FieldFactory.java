@@ -80,6 +80,7 @@ public class FieldFactory {
 			workOrderFieldsInclude.add("createdBy");
 			workOrderFieldsInclude.add("createdTime");
 			workOrderFieldsInclude.add("dueDate");
+			workOrderFieldsInclude.add("trigger");
 //			workOrderFieldsInclude.add("estimatedEnd");
 //			workOrderFieldsInclude.add("estimatedStart");
 			workOrderFieldsInclude.add("estimatedWorkDuration");
