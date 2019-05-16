@@ -522,10 +522,6 @@ public class FacilioAuthAction extends FacilioAction {
 		HttpServletResponse response2 = ServletActionContext.getResponse();
 		HttpServletRequest request = ServletActionContext.getRequest();
 		
-		String res = IOUtils.toString(request.getReader());
-		
-		System.out.println("res -- "+entry);
-
 		if (request.getParameterValues("hub.challenge") != null) {
 			setJsonresponse("message", "post issue verification response recieved successfully");
 			String str[] = request.getParameterValues("hub.challenge");
