@@ -54,8 +54,8 @@ public class AddOrUpdateManualItemTransactionCommand implements Command {
 		List<Object> woitemactivity = new ArrayList<>();
 		long itemTypeId = -1;
 		ApprovalState approvalState = null;
-		if (itemTransactions != null) {
-			long parentId = itemTransactions.get(0).getParentId();
+		if (itemTransactions != null && !itemTransactions.isEmpty()) {
+				long parentId = itemTransactions.get(0).getParentId();
 			for (ItemTransactionsContext itemTransaction : itemTransactions) {
 				ItemContext item = getItem(itemTransaction.getItem().getId());
 				itemTypeId = item.getItemType().getId();
