@@ -456,7 +456,7 @@ public  class AgentUtil
         try {
             bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", AccountUtil.getCurrentOrg().getId());
             List<Map<String,Object>> rows = bean.getRows(context);
-            if(rows.isEmpty()){
+            if(((rows == null) || (rows.isEmpty())) ) {
                 return false;
             }
         } catch (Exception e) {
@@ -551,7 +551,7 @@ public  class AgentUtil
 
             bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", Objects.requireNonNull(AccountUtil.getCurrentOrg()).getId());
             List<Map<String,Object>> rows = bean.getRows(context);
-            if(rows.isEmpty()) {
+            if((rows == null) || (rows.isEmpty()) ) {
                 return false;
             }
         } catch (Exception e) {
