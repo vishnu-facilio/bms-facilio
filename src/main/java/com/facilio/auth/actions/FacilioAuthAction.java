@@ -31,6 +31,7 @@ import javax.servlet.http.HttpSession;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
@@ -201,7 +202,7 @@ public class FacilioAuthAction extends FacilioAction {
         this.jsonresponse.put(key, value);
     }
     
-    private String getTitle() {
+	private String getTitle() {
             return title;      
     }
 
@@ -507,76 +508,108 @@ public class FacilioAuthAction extends FacilioAction {
     }
     
     public String postIssueResponse() throws Exception {
-	       LOGGER.info( "new method called");
-    	try {
-    	  StringBuffer jb = new StringBuffer();
-    	  String line = null;
-    	  
-    	  HttpServletRequest request = ServletActionContext.getRequest();
+    	
+		HttpServletResponse response2 = ServletActionContext.getResponse();
+		HttpServletRequest request = ServletActionContext.getRequest();
 
-    	  try(BufferedReader reader = request.getReader()) {
-    		  
-    	    while ((line = reader.readLine()) != null) {
-    	      jb.append(line);
-    	    }
-    	  }
-      	String url = "https://facilio.freshrelease.com/DEMO/issues";
-      	String description = "Issue posted at Issue Tracking page",key = null,blockedReason = null;
-     	List<String> tags = new ArrayList<String>();
-		Map<String,Object> customField =  new HashMap<>();
-		Integer createrId = null,position = null,etaFlag = null,storyPoints = null,issueTypeId = 161,
-				ownerId = null,parentId = null,epicId = null,priorityId = 252,projectId = null,
-				subProjectId = null,reporterId = null,sprintId = null,statusId = null,releaseId = null;
-		List<Integer> documentIds = new ArrayList<Integer>();
-		boolean resolved = false,blocked = false,following = false;
-		
-		FacilioAuthAction issue = new FacilioAuthAction();
-//	  	org.json.JSONObject jsonObject =  HTTP.toJSONObject(jb.toString());
-System.out.println("jbstring"+jb.toString());
-		issue.setTitle(jb.toString());
-        JSONObject jget = new JSONObject();
-        jget.put("description", description);
-        jget.put("key", key);
-        jget.put("story_points", storyPoints);
-        jget.put("title", issue.getTitle());
-        jget.put("resolved", resolved);
-        jget.put("blocked", blocked);
-        jget.put("following", following);
-        jget.put("blocked_reason", blockedReason);
-        jget.put("tags", tags);
-        jget.put("eta_flag", etaFlag);
-        jget.put("position", position);
-        jget.put("custom_field", customField);
-        jget.put("document_ids", documentIds);
-        jget.put("creater_id", createrId);
-        jget.put("issue_type_id", issueTypeId);
-        jget.put("owner_id", ownerId);
-        jget.put("parent_id", parentId);
-        jget.put("epic_id", epicId);
-        jget.put("priority_id", priorityId);
-        jget.put("project_id", projectId);
-        jget.put("sub_project_id", subProjectId);
-        jget.put("reporter_id", reporterId);
-        jget.put("sprint_id", sprintId);
-        jget.put("status_id", statusId);
-        jget.put("release_id", releaseId);
-        JSONObject newjget = new JSONObject();
-        newjget.put("issue", jget);
-        String body = newjget.toJSONString();
-          Map<String,String> headers = new HashMap<>();
-          headers.put("Authorization","Token token=92On0bqAP-gQKOCBm8MgyA");
-          headers.put("Content-Type","application/json");
-			http("POST",url,headers,body);
-   	       LOGGER.info( "postIssueResponse"+jb.toString());
-    	    
-    	  } catch (Exception e) {
-              setJsonresponse("message", "Error while reading post issue response");
-      	       LOGGER.log( Level.INFO, "Error while reading post issue response", e);
+		if (request.getParameterValues("hub.challenge") != null) {
+			setJsonresponse("message", "post issue verification response recieved successfully");
+			String str[] = request.getParameterValues("hub.challenge");
+			if (str[0] != null) {
+				response2.getWriter().write(str[0]);
+			}
+			return NONE;
+		}
+		else {
+			try {
+				StringBuffer jb = new StringBuffer();
+				String line = null;
 
-    	  }
-  
-        setJsonresponse("message", "post issue response recieved successfully");
-    	return SUCCESS;
+				LOGGER.info("fbres map " + request.getParameterMap().keySet());
+				LOGGER.info("Content type:" + request.getContentType());
+				LOGGER.info("0000000000022" + ServletActionContext.getRequest());
+				LOGGER.info("fbres l is " + request.getContentLength());
+				LOGGER.info("fbres sender is " + request.getParameterValues("sender"));
+				LOGGER.info("fbres field is " + request.getParameterValues("field"));
+				LOGGER.info("fbres https is " + request.isSecure());
+				LOGGER.info("fbres headerNames " + request.getHeaderNames());
+				LOGGER.info("fbres paramNames  " + request.getParameterNames());
+
+				BufferedReader reader = request.getReader();
+				LOGGER.info("00000000000reader" + reader);
+				while ((line = reader.readLine()) != null) {
+					LOGGER.info("Entered jb append");
+					jb.append(line);
+				}
+				LOGGER.info("00000000000jb" + jb.toString());
+
+				String url = "https://facilio.freshrelease.com/DEMO/issues";
+				String description = "Issue posted at Issue Tracking page", key = null, blockedReason = null;
+				List<String> tags = new ArrayList<String>();
+				Map<String, Object> customField = new HashMap<>();
+				Integer createrId = null, position = null, etaFlag = null, storyPoints = null, issueTypeId = 161,
+						ownerId = null, parentId = null, epicId = null, priorityId = 252, projectId = null,
+						subProjectId = null, reporterId = null, sprintId = null, statusId = null, releaseId = null;
+				List<Integer> documentIds = new ArrayList<Integer>();
+				boolean resolved = false, blocked = false, following = false;
+
+				FacilioAuthAction issue = new FacilioAuthAction();
+				LOGGER.info("jbstring" + jb.toString());
+				if (jb.toString().equals("")) {
+					issue.setTitle("Sample Test");
+				} else {
+					issue.setTitle(jb.toString());
+				}
+
+				if (issue.getTitle().equals("")) {
+					issue.setTitle("test");
+				}
+				JSONObject jget = new JSONObject();
+				jget.put("description", description);
+				jget.put("key", key);
+				jget.put("story_points", storyPoints);
+				jget.put("title", issue.getTitle());
+				jget.put("resolved", resolved);
+				jget.put("blocked", blocked);
+				jget.put("following", following);
+				jget.put("blocked_reason", blockedReason);
+				jget.put("tags", tags);
+				jget.put("eta_flag", etaFlag);
+				jget.put("position", position);
+				jget.put("custom_field", customField);
+				jget.put("document_ids", documentIds);
+				jget.put("creater_id", createrId);
+				jget.put("issue_type_id", issueTypeId);
+				jget.put("owner_id", ownerId);
+				jget.put("parent_id", parentId);
+				jget.put("epic_id", epicId);
+				jget.put("priority_id", priorityId);
+				jget.put("project_id", projectId);
+				jget.put("sub_project_id", subProjectId);
+				jget.put("reporter_id", reporterId);
+				jget.put("sprint_id", sprintId);
+				jget.put("status_id", statusId);
+				jget.put("release_id", releaseId);
+				JSONObject newjget = new JSONObject();
+				newjget.put("issue", jget);
+				String body = newjget.toJSONString();
+				Map<String, String> headers = new HashMap<>();
+				headers.put("Authorization", "Token token=92On0bqAP-gQKOCBm8MgyA");
+				headers.put("Content-Type", "application/json");
+				http("POST", url, headers, body);
+				LOGGER.info("postIssueResponse" + jb.toString());
+				
+				setJsonresponse("message", "post issue response recieved successfully");
+
+			} catch (Exception e) {
+				setJsonresponse("message", "Error while reading post issue response");
+				LOGGER.log(Level.INFO, "Error while reading post issue response", e);
+
+			}
+		}
+	    
+		return SUCCESS;
+         	
     }
     
     private void http(String method, String url, Map headers, String body) {
@@ -605,7 +638,7 @@ System.out.println("jbstring"+jb.toString());
                 new InputStreamReader(con.getInputStream()));
         String inputLine;
         StringBuffer response = new StringBuffer();
-
+        LOGGER.info("response code is "+con.getResponseCode());
         while ((inputLine = in.readLine()) != null) {
             response.append(inputLine);
         }
