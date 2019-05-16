@@ -1,37 +1,8 @@
 package com.facilio.auth.actions;
 
-import com.facilio.accounts.dto.Organization;
-import com.facilio.accounts.dto.User;
-import com.facilio.accounts.impl.UserBeanImpl;
-import com.facilio.accounts.util.AccountUtil;
-import com.facilio.auth.cookie.FacilioCookie;
-import com.facilio.aws.util.AwsUtil;
-import com.facilio.bmsconsole.actions.FacilioAction;
-import com.facilio.bmsconsole.actions.PortalInfoAction;
-import com.facilio.bmsconsole.commands.TransactionChainFactory;
-import com.facilio.bmsconsole.context.PortalInfoContext;
-import com.facilio.chain.FacilioContext;
-import com.facilio.constants.FacilioConstants;
-import com.facilio.fw.auth.CognitoUtil;
-import com.facilio.sql.DBUtil;
-import com.facilio.transaction.FacilioConnectionPool;
-import com.opensymphony.xwork2.ActionContext;
-import org.apache.commons.chain.Chain;
-import org.apache.struts2.ServletActionContext;
-import org.json.HTTP;
-import org.json.JSONException;
-import org.json.simple.JSONObject;
-
-import javax.net.ssl.HttpsURLConnection;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
@@ -48,6 +19,36 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import javax.net.ssl.HttpsURLConnection;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+import org.apache.commons.chain.Chain;
+import org.apache.commons.io.IOUtils;
+import org.apache.struts2.ServletActionContext;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+
+import com.facilio.accounts.dto.Organization;
+import com.facilio.accounts.dto.User;
+import com.facilio.accounts.impl.UserBeanImpl;
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.auth.cookie.FacilioCookie;
+import com.facilio.aws.util.AwsUtil;
+import com.facilio.bmsconsole.actions.FacilioAction;
+import com.facilio.bmsconsole.actions.PortalInfoAction;
+import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsole.context.PortalInfoContext;
+import com.facilio.chain.FacilioContext;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.auth.CognitoUtil;
+import com.facilio.sql.DBUtil;
+import com.facilio.transaction.FacilioConnectionPool;
+import com.opensymphony.xwork2.ActionContext;
 
 public class FacilioAuthAction extends FacilioAction {
 
@@ -73,9 +74,18 @@ public class FacilioAuthAction extends FacilioAction {
     private String newPassword;
     private String title;
     private static MessageDigest md;
+    
+    JSONArray entry;
+    
+    public JSONArray getEntry() {
+		return entry;
+	}
 
+	public void setEntry(JSONArray entry) {
+		this.entry = entry;
+	}
 
-    public String getUsername() {
+	public String getUsername() {
         if(username != null) {
             return username;
         } else {
@@ -526,7 +536,16 @@ public class FacilioAuthAction extends FacilioAction {
 		}
 		else {
 			try {
-				StringBuffer jb = new StringBuffer();
+				
+				JSONParser parser = new JSONParser();
+				
+				Map<String,Object> jbJsonObj = (Map<String,Object>)entry.get(0);
+				List test1 = (List)jbJsonObj.get("changes");
+				Map<String,Object> jbJsonObj1 = (Map<String,Object>)test1.get(0);
+				Map<String,Object> jbJsonObj2 = (Map<String,Object>) jbJsonObj1.get("value");
+				String jb = jbJsonObj2.get("message").toString();
+				
+				
 				String line = null;
 
 				LOGGER.info("fbres map " + request.getParameterMap().keySet());
@@ -539,12 +558,12 @@ public class FacilioAuthAction extends FacilioAction {
 				LOGGER.info("fbres headerNames " + request.getHeaderNames());
 				LOGGER.info("fbres paramNames  " + request.getParameterNames());
 
-				BufferedReader reader = request.getReader();
-				LOGGER.info("00000000000reader" + reader);
-				while ((line = reader.readLine()) != null) {
-					LOGGER.info("Entered jb append");
-					jb.append(line);
-				}
+//				BufferedReader reader = request.getReader();
+//				LOGGER.info("00000000000reader" + reader);
+//				while ((line = reader.readLine()) != null) {
+//					LOGGER.info("Entered jb append");
+//					jb.append(line);
+//				}
 				LOGGER.info("00000000000jb" + jb.toString());
 
 				String url = "https://facilio.freshrelease.com/DEMO/issues";
