@@ -1329,7 +1329,7 @@
 			<param name="moduleName">setup</param>
 			<param name="permission">ASSET_SETTINGS</param>
 			<result name="success" type="json">
-				<param name="includeProperties">moduleMap.*, assetCount.*</param>
+				<param name="includeProperties">moduleMap.*,assetCount.*,fieldVsRules.*</param>
 			</result>
 		</action>
 		
@@ -1449,7 +1449,7 @@
 			<param name="moduleName">setup</param>
 			<param name="permission">ENERGY_ANALYTICS</param>
 			<result name="success" type="json">
-				<param name="root">formulaList</param>
+				<param name="includeProperties">formulaList.*,fieldVsRules.*</param>
 			</result>
 		</action>
 				<action name="updateRDM" class="com.facilio.bmsconsole.actions.ReadingAction"

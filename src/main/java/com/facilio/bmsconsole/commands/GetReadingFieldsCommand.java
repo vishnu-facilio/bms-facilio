@@ -2,8 +2,6 @@ package com.facilio.bmsconsole.commands;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.FormulaFieldContext;
-import com.facilio.bmsconsole.context.FormulaFieldContext.FormulaFieldType;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
@@ -24,7 +22,11 @@ import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
 public class GetReadingFieldsCommand implements Command {
@@ -34,7 +36,8 @@ public class GetReadingFieldsCommand implements Command {
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		List<FacilioModule> readings = (List<FacilioModule>) context.get(FacilioConstants.ContextNames.MODULE_LIST);
-		FormulaFieldType type = (FormulaFieldType) context.get(FacilioConstants.ContextNames.FORMULA_FIELD_TYPE);
+		Map<Long, List<ReadingRuleContext>> fieldVsRules = new HashMap<>();
+		context.put(FacilioConstants.ContextNames.VALIDATION_RULES, fieldVsRules);
 		if(readings != null && !readings.isEmpty()) {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			for(FacilioModule reading : readings) {
@@ -56,8 +59,6 @@ public class GetReadingFieldsCommand implements Command {
 		        if (readingRules != null && !readingRules.isEmpty()) {
 		        	List<Long> workFlowIds = readingRules.stream().map(ReadingRuleContext::getWorkflowId).collect(Collectors.toList());
 		            Map<Long, WorkflowContext> workflowMap = WorkflowUtil.getWorkflowsAsMap(workFlowIds, true);
-		            Map<Long, List<ReadingRuleContext>> fieldVsRules = new HashMap<>();
-		            
 		        	for (ReadingRuleContext rule:  readingRules) {
 		        		if (rule.getReadingFieldId() != -1) { 
 		        			List<ReadingRuleContext> rules = fieldVsRules.get(rule.getReadingFieldId());
@@ -73,18 +74,6 @@ public class GetReadingFieldsCommand implements Command {
 		        		}
 		        		List<ActionContext> actions = ActionAPI.getActiveActionsFromWorkflowRule(rule.getId());
 		        		rule.setActions(actions);
-		        	}
-		        	if(type != null && type == FormulaFieldType.ENPI) {
-		        		List<FormulaFieldContext> formulaList = (List<FormulaFieldContext>) context.get(FacilioConstants.ContextNames.FORMULA_LIST);
-		        		for(FormulaFieldContext formula:formulaList) {
-		        			if(formula.getModuleId() == reading.getModuleId())
-		        			{
-		        				formula.getReadingField().setReadingRules(fieldVsRules.get(dataPoints.get(0).getFieldId()));
-		        			}
-		        		}
-		        	}
-		        	else {
-		        	dataPoints.forEach(t -> t.setReadingRules(fieldVsRules.get(t.getFieldId())));
 		        	}
 		        }
 				reading.setFields(dataPoints);

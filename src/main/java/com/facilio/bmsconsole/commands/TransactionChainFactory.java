@@ -1175,7 +1175,7 @@ public class TransactionChainFactory {
 			c.addCommand(new AddCategoryReadingRelCommand());
 			c.addCommand(new GetCategoryResourcesCommand());
 			c.addCommand(new InsertReadingDataMetaForNewReadingCommand());
-			//c.addCommand(new SetValidationRulesContextCommand());
+			c.addCommand(new SetValidationRulesContextCommand());
 			c.addCommand(new AddValidationRulesCommand());
 			return c;
 		}
@@ -1205,6 +1205,7 @@ public class TransactionChainFactory {
 			c.addCommand(new GetCategoryResourcesCommand());
 			c.addCommand(new InsertReadingDataMetaForNewReadingCommand());
 			c.addCommand(new AddFormulaFieldCommand());
+			c.addCommand(new SetValidationRulesContextCommand());
 			c.addCommand(new AddValidationRulesCommand());
 			return c;
 		}

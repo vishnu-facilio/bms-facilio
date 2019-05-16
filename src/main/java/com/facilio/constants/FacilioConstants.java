@@ -869,8 +869,9 @@ public class FacilioConstants {
 		public static final String PR_IDS = "prIds";
 		public static final String RECEIVABLE_ID = "receivableId";
 		public static final String PURCHASE_ORDER_LINE_ITEMS_ID = "purchaseorderlineitemsId";
-		
-		private static final String RECEIPT_LINE_ITEMS = "receiptlineitems";
+        public static final String VALIDATION_RULES = "validationRules";
+
+        private static final String RECEIPT_LINE_ITEMS = "receiptlineitems";
 		public static final String ITEM_VENDORS_LIST = "itemTypesVendorsList";
 		
 		public static final String ML ="ml";
