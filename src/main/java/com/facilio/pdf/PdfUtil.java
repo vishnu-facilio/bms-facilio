@@ -16,7 +16,7 @@ import java.util.Arrays;
 public class PdfUtil {
 
     private static final String PDF_CMD = System.getProperty("user.home")+"/pdf/slimerjs/slimerjs";
-    private static final String NODE = "/usr/local/bin/node";
+    private static final String NODE = "/usr/bin/node";
     private static final String RENDER_JS = AwsUtil.getPdfjsLocation()+"/render.js";
     private static final String RENDER_PUPETTEER_JS = AwsUtil.getPdfjsLocation() + "/puppeteer-render.js";
     private static final Logger LOGGER = LogManager.getLogger(PdfUtil.class.getName());
