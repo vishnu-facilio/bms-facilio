@@ -88,12 +88,11 @@ public class GenerateMLModelCommand implements Command {
 		}
 		postObj.put("outputmetrics",op);
 		postObj.put("data", constructJSONArray(mlContext.getMlVariablesDataMap()));
-		LOGGER.info("DATA OBJECT FOR ML IS "+postObj.get("data"));
 		
 		String postURL=AwsUtil.getAnomalyPredictAPIURL() + "/"+mlContext.getModelPath();
 		Map<String, String> headers = new HashMap<>();
 		headers.put("Content-Type", "application/json");
-		LOGGER.info("[JAVEED =>To be Removed] Sending request to ML Server "+postURL+"::"+mlContext.getId());
+		LOGGER.info(" Sending request to ML Server "+postURL+"::"+mlContext.getId());
 		String result = AwsUtil.doHttpPost(postURL, headers, null, postObj.toString());
 		mlContext.setResult(result);
 		return false;

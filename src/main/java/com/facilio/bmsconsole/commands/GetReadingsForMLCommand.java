@@ -63,8 +63,6 @@ public class GetReadingsForMLCommand implements Command {
 																			startTime, currentTime,variables.getParentID());
 			
 			List<Map<String, Object>> props = selectBuilder.getAsProps();
-			LOGGER.info(" select Builder query "+selectBuilder);
-			LOGGER.info(" props are "+props);
 			for(Map<String,Object> prop : props)
 			{
 				data.put((long)prop.get(ttimeField.getName()), prop.get(variableField.getName()));
