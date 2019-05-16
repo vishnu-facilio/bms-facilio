@@ -198,6 +198,13 @@ public class ModuleFactory {
 		return formFieldsModule;
 	}
 
+	public static FacilioModule getModuleModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName("module");
+		module.setDisplayName("Module");
+		module.setTableName("Modules");
+		return module;
+	}
 
 	public static FacilioModule getFieldsModule() {
 		FacilioModule fieldModule = new FacilioModule();

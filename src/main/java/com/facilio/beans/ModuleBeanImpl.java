@@ -129,6 +129,20 @@ public class ModuleBeanImpl implements ModuleBean {
 	}
 	
 	@Override
+	public List<FacilioModule> getModuleList(ModuleType moduleType) throws Exception {
+		FacilioModule moduleModule = ModuleFactory.getModuleModule();
+		
+		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+				.table(moduleModule.getTableName())
+				.select(FieldFactory.getModuleFields())
+				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(moduleModule))
+				.andCondition(CriteriaAPI.getCondition("MODULE_TYPE", "moduleType", String.valueOf(moduleType.getValue()), NumberOperators.EQUALS));
+		List<Map<String, Object>> props = builder.get();
+		List<FacilioModule> moduleList = FieldUtil.getAsBeanListFromMapList(props, FacilioModule.class);
+		return moduleList;
+	}
+	
+	@Override
 	public FacilioModule getModule(String moduleName) throws Exception {
 		
 		if(LookupSpecialTypeUtil.isSpecialType(moduleName)) {

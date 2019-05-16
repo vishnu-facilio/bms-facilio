@@ -1374,7 +1374,14 @@ public class TransactionChainFactory {
 		public static Chain getAddModuleChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(new CreateCustomModuleCommand());
+			c.addCommand(new AddSystemFieldsCommand());
 			commonAddModuleChain(c);
+			return c;
+		}
+
+		public static Chain getUpdateModuleChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new UpdateModuleCommand());
 			return c;
 		}
 		

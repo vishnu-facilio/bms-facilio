@@ -23,6 +23,7 @@ import org.json.simple.JSONObject;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.forms.FacilioForm;
+import com.facilio.bmsconsole.modules.FacilioModule.ModuleType;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
@@ -433,6 +434,10 @@ public class FieldUtil {
 			);
 
 	public static boolean isSystemFieldsPresent (FacilioModule module) {
+		// custom modules will have system fields by default
+		if (module.getTypeEnum() == ModuleType.CUSTOM) {
+			return true;
+		}
 		return SYSTEM_FIELDS_ALLOWED_MODULES.contains(module.getName());
 	}
 

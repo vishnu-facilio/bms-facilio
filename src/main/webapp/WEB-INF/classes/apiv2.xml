@@ -1481,6 +1481,21 @@
 			method="getResources">
 		</action>
 	</package>
+	
+	<package name="moduleApiV2" namespace="/api/v2/module" extends="v2Api">
+		<action name="add" class="com.facilio.bmsconsole.actions.ModuleAction"
+			method="v2AddModule">
+		</action>
+		
+		<action name="update" class="com.facilio.bmsconsole.actions.ModuleAction"
+			method="v2UpdateModule">
+		</action>
+		
+		<action name="list" class="com.facilio.bmsconsole.actions.ModuleAction"
+			method="v2GetModuleList">
+		</action>
+	</package>
+	
 	<package name="moduleDataApiv2" namespace="/api/v2/module/data"
 		extends="v2Api">
 

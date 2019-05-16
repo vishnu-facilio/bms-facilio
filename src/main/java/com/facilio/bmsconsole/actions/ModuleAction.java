@@ -47,6 +47,51 @@ public class ModuleAction extends FacilioAction {
 		return SUCCESS;
 	}
 	
+	public String v2AddModule() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, getModuleName());
+		context.put(FacilioConstants.ContextNames.MODULE_TYPE, moduleType);
+		context.put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, getFields());
+		
+		Chain addModulesChain = TransactionChainFactory.getAddModuleChain();
+		addModulesChain.execute(context);
+		
+		FacilioModule module = (FacilioModule) context.get(FacilioConstants.ContextNames.MODULE);
+		setResult("module", module);
+		return SUCCESS;
+	}
+	
+	public String v2GetModuleList() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.MODULE_TYPE, moduleType);
+		
+		Chain chain = ReadOnlyChainFactory.getModuleList();
+		chain.execute(context);
+		
+		setResult("moduleList", context.get(FacilioConstants.ContextNames.MODULE_LIST));
+		return SUCCESS;
+	}
+	
+	private String moduleDisplayName;
+	public String getModuleDisplayName() {
+		return moduleDisplayName;
+	}
+	public void setModuleDisplayName(String moduleDisplayName) {
+		this.moduleDisplayName = moduleDisplayName;
+	}
+	
+	public String v2UpdateModule() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, getModuleName());
+		context.put(FacilioConstants.ContextNames.MODULE_DISPLAY_NAME, moduleDisplayName);
+		
+		Chain chain = TransactionChainFactory.getUpdateModuleChain();
+		chain.execute(context);
+		
+		setResult(FacilioConstants.ContextNames.MODULE, context.get(FacilioConstants.ContextNames.MODULE));
+		return SUCCESS;
+	}
+	
 	public String addCustomFields() throws Exception {
 		return addCustomFields(null);
 	}

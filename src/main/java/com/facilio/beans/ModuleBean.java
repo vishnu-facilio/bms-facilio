@@ -16,6 +16,8 @@ public interface ModuleBean extends RootBean {
 	
 	public FacilioModule getModule(String moduleName) throws Exception;
 	
+	public List<FacilioModule> getModuleList(ModuleType moduleType) throws Exception;
+
 	public List<FacilioModule> getAllSubModules(long moduleId) throws Exception;
 	
 	public List<FacilioModule> getAllSubModules(String moduleName) throws Exception;

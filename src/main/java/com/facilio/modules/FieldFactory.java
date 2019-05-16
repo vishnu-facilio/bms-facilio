@@ -596,6 +596,20 @@ public class FieldFactory {
 
 		return fields;
 	}
+	
+	public static List<FacilioField> getModuleFields() {
+		List<FacilioField> fields = new ArrayList<>();
+		FacilioModule module = ModuleFactory.getModuleModule();
+		
+		fields.add(getField("moduleId", "MODULEID", module, FieldType.ID));
+		fields.add(getField("name", "NAME", module, FieldType.STRING));
+		fields.add(getField("displayName", "DISPLAY_NAME", module, FieldType.STRING));
+		fields.add(getField("tableName", "TABLE_NAME", module, FieldType.STRING));
+		fields.add(getField("type", "MODULE_TYPE", module, FieldType.NUMBER));
+		fields.add(getField("trashEnabled", "IS_TRASH_ENABLED", module, FieldType.BOOLEAN));
+		fields.add(getField("name", "NAME", module, FieldType.STRING));
+		return fields;
+	}
 
 	public static List<FacilioField> getAddFieldFields() {
 		List<FacilioField> fields = new ArrayList<>();

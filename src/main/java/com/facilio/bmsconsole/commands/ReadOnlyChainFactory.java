@@ -882,6 +882,12 @@ public class ReadOnlyChainFactory {
 		return c;
 	}
 
+	public static Chain getModuleList() {
+		Chain c = getDefaultChain();
+		c.addCommand(new GetModuleListCommand());
+		return c;
+	}
+
 	public static Chain getInventoryRequestListChain() {
 		Chain chain = getDefaultChain();
 		chain.addCommand(SetTableNamesCommand.getForInventoryRequest());

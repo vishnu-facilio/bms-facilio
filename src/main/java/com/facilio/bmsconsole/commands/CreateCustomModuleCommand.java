@@ -20,7 +20,7 @@ public class CreateCustomModuleCommand extends FacilioCommand {
 			module.setDisplayName(moduleName);
 			module.setTableName("CustomModuleData");
 			if (moduleType != null) {
-				moduleType = ModuleType.BASE_ENTITY.getValue();
+				moduleType = ModuleType.CUSTOM.getValue();
 			}
 			module.setType(moduleType);
 
