@@ -73,7 +73,7 @@ expr
  
 stand_alone_expr
  : (VAR OPEN_PARANTHESIS CLOSE_PARANTHESIS)+																#moduleInitialization
- | 'CustomModule' OPEN_PARANTHESIS atom CLOSE_PARANTHESIS															#customModuleInitialization
+ | 'Module' OPEN_PARANTHESIS atom CLOSE_PARANTHESIS															#customModuleInitialization
  | 'NameSpace' OPEN_PARANTHESIS atom CLOSE_PARANTHESIS																#nameSpaceInitialization
  | list_opperations																									#listOpp
  | map_opperations																									#mapOpps

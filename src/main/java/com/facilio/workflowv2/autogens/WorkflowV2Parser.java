@@ -50,13 +50,13 @@ public class WorkflowV2Parser extends Parser {
 
 	private static String[] makeLiteralNames() {
 		return new String[] {
-			null, "'in'", "'CustomModule'", "'NameSpace'", "'criteria'", "'field'", 
-			"'aggregation'", "'limit'", "'range'", "'to'", "'order by'", "'asc'", 
-			"'desc'", "'void'", "'String'", "'Number'", "'Decimal'", "'Boolean'", 
-			"'return'", "'||'", "'.'", "'&&'", "'=='", "'!='", "'>'", "'<'", "'>='", 
-			"'<='", "'+'", "'-'", "'*'", "'/'", "'%'", "'^'", "'!'", "','", "';'", 
-			"':'", "'='", "'('", "')'", "'{'", "'}'", "'['", "']'", "'true'", "'false'", 
-			"'null'", "'if'", "'else'", "'for each'", "'log'"
+			null, "'in'", "'Module'", "'NameSpace'", "'criteria'", "'field'", "'aggregation'", 
+			"'limit'", "'range'", "'to'", "'order by'", "'asc'", "'desc'", "'void'", 
+			"'String'", "'Number'", "'Decimal'", "'Boolean'", "'return'", "'||'", 
+			"'.'", "'&&'", "'=='", "'!='", "'>'", "'<'", "'>='", "'<='", "'+'", "'-'", 
+			"'*'", "'/'", "'%'", "'^'", "'!'", "','", "';'", "':'", "'='", "'('", 
+			"')'", "'{'", "'}'", "'['", "']'", "'true'", "'false'", "'null'", "'if'", 
+			"'else'", "'for each'", "'log'"
 		};
 	}
 	private static final String[] _LITERAL_NAMES = makeLiteralNames();

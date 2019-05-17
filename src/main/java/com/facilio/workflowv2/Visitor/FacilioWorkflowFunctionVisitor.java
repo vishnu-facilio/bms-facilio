@@ -218,9 +218,9 @@ public class FacilioWorkflowFunctionVisitor extends WorkflowV2BaseVisitor<Value>
     @Override 
     public Value visitModuleInitialization(WorkflowV2Parser.ModuleInitializationContext ctx) {
     	try {
-    		String moduleName = ctx.VAR(0).getText();
+    		String moduleDisplayName = ctx.VAR(0).getText();
         	ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        	FacilioModule module = modBean.getModule(moduleName);
+        	FacilioModule module = modBean.getModule(WorkflowV2Util.getModuleName(moduleDisplayName));
         	return new Value(module); 
     	}
     	catch(Exception e) {
