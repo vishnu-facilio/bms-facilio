@@ -24,6 +24,7 @@ import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflowv2.Visitor.FacilioWorkflowFunctionVisitor;
@@ -36,18 +37,32 @@ import com.facilio.workflowv2.contexts.WorkflowNamespaceContext;
 public class WorkflowV2Util {
 
 	public static Map<String, String> MODULE_CLASS_MAPPER = new HashMap<>();
+	
+	public static Map<String, Object> MODULE_OBJECT_CACHE = new HashMap<>();
 
 	public static final String MODULE_CLASS_MAPPER_FILE_NAME = "conf/workflowModuleClassMapper.xml";
+	
+	public static final String MODULE_CRUD_CLASS_NAME = "com.facilio.workflowv2.modulefunctions.FacilioModuleFunctionImpl";
+	
+	public static final String CRUD_MODULE_KEY = "default_module";
 
 	static {
 		try {
-			initWorkflowRes();
+			initWorkflowResource();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
+	
+	public static Object getInstanceOf(FacilioModule module) throws Exception {
+		
+		if(MODULE_OBJECT_CACHE.containsKey(module.getName())) {
+			return MODULE_OBJECT_CACHE.get(module.getName());
+		}
+		return MODULE_OBJECT_CACHE.get(CRUD_MODULE_KEY);
+	}
 
-	private static void initWorkflowRes() throws Exception {
+	private static void initWorkflowResource() throws Exception {
 		
 		ClassLoader classLoader = WorkflowV2Util.class.getClassLoader();
 		File file = new File(classLoader.getResource(MODULE_CLASS_MAPPER_FILE_NAME).getFile());
@@ -70,15 +85,30 @@ public class WorkflowV2Util {
 	        	}
 			}
         }
+		
+		for(String moduleName :MODULE_CLASS_MAPPER.keySet()) {
+			String className = MODULE_CLASS_MAPPER.get(moduleName);
+			
+			Class<?> moduleFunctionClass = classLoader.loadClass(className);
+	        Object moduleFunctionObject = moduleFunctionClass.newInstance();
+	        MODULE_OBJECT_CACHE.put(moduleName, moduleFunctionObject);
+		}
+		
+		Class<?> moduleFunctionClass = classLoader.loadClass(MODULE_CRUD_CLASS_NAME);
+        Object moduleFunctionObject = moduleFunctionClass.newInstance();
+        MODULE_OBJECT_CACHE.put(CRUD_MODULE_KEY, moduleFunctionObject);
+		
 	}
 
 	public static String getModuleClassNameFromModuleName(String moduleName) {
 		return MODULE_CLASS_MAPPER.get(moduleName);
 	}
 
-	public static void fillExtraInfo(Value paramValue, FacilioModule module, ModuleBean modBean) throws Exception {
+	public static void fillExtraInfo(Value paramValue, FacilioModule module) throws Exception {
 
 		if (paramValue.asObject() instanceof DBParamContext) {
+			
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			DBParamContext dbParamContext = (DBParamContext) paramValue.asObject();
 			for (String key : dbParamContext.getCriteria().getConditions().keySet()) {
 				Condition condition = dbParamContext.getCriteria().getConditions().get(key);
@@ -89,14 +119,16 @@ public class WorkflowV2Util {
 
 	}
 
-	public static List<Object> getParamList(DataTypeSpecificFunctionContext ctx, boolean isDataTypeSpecificFunction,
-			FacilioWorkflowFunctionVisitor facilioWorkflowFunctionVisitor, Value value) {
+	public static List<Object> getParamList(DataTypeSpecificFunctionContext ctx, boolean isDataTypeSpecificFunction,FacilioWorkflowFunctionVisitor facilioWorkflowFunctionVisitor, Value value) throws Exception {
 		List<Object> paramValues = new ArrayList<>();
 		if (isDataTypeSpecificFunction) {
 			paramValues.add(value.asObject());
 		}
 		for (ExprContext expr : ctx.expr()) {
 			Value paramValue = facilioWorkflowFunctionVisitor.visit(expr);
+			if(value != null && value.asObject() instanceof FacilioModule) {
+				WorkflowV2Util.fillExtraInfo(paramValue, value.asModule());
+			}
 			paramValues.add(paramValue.asObject());
 		}
 		return paramValues;

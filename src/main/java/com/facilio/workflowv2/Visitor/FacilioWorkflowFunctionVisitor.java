@@ -87,39 +87,22 @@ public class FacilioWorkflowFunctionVisitor extends WorkflowV2BaseVisitor<Value>
     public Value visitDataTypeSpecificFunction(WorkflowV2Parser.DataTypeSpecificFunctionContext ctx) {
     	try {
     		
-    		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-    		
     		Value value = this.visit(ctx.atom());
     		
-    		if (value.asObject() instanceof FacilioModule) {
+    		if (value.asObject() instanceof FacilioModule) {									// module Functions
 				FacilioModule module = (FacilioModule) value.asObject();
 				
 				String functionName = ctx.VAR().getText();
     			
-    			ClassLoader classLoader = FacilioWorkflowFunctionVisitor.class.getClassLoader();
-				Class<?> moduleFunctionClass = null;
-    	        try {
-    	        	moduleFunctionClass = classLoader.loadClass(WorkflowV2Util.getModuleClassNameFromModuleName(module.getName()));
-    	        }
-    	        catch(ClassNotFoundException e) {
-    	        	moduleFunctionClass = classLoader.loadClass("com.facilio.workflowv2.modulefunctions.FacilioModuleFunctionImpl");
-    	        }
-    	        Object moduleFunctionObject = moduleFunctionClass.newInstance();
+				Object moduleFunctionObject = WorkflowV2Util.getInstanceOf(module);
     			Method method = moduleFunctionObject.getClass().getMethod(functionName, List.class);
     			
-    			List<Object> params = new ArrayList<>();
-    			params.add(module);
-    			for(ExprContext expr :ctx.expr()) {
-            		Value paramValue = this.visit(expr);
-            		
-            		WorkflowV2Util.fillExtraInfo(paramValue, module, modBean);
-            		
-            		params.add(paramValue.asObject());
-            	}
+    			List<Object> params = WorkflowV2Util.getParamList(ctx,true,this,value);
+
     			Object result = method.invoke(moduleFunctionObject, params);
     			return new Value(result);
         	}
-    		else if (value.asObject() instanceof WorkflowNamespaceContext) {
+    		else if (value.asObject() instanceof WorkflowNamespaceContext) {					// user defined functions
     			
     			WorkflowNamespaceContext namespaceContext = (WorkflowNamespaceContext) value.asObject();
     			List<Object> paramValues = WorkflowV2Util.getParamList(ctx,false,this,null);
@@ -131,7 +114,7 @@ public class FacilioWorkflowFunctionVisitor extends WorkflowV2BaseVisitor<Value>
     			
     			return new Value(res);
     		}
-    		else {
+    		else {																				// system functions	
     			WorkflowFunctionContext wfFunctionContext = new WorkflowFunctionContext();
             	wfFunctionContext.setFunctionName(ctx.VAR().getText());
             	

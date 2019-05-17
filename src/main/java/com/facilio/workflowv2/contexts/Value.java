@@ -3,6 +3,8 @@ package com.facilio.workflowv2.contexts;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.bmsconsole.modules.FacilioModule;
+
 public class Value {
 
     public static Value VOID = new Value(new Object());
@@ -15,6 +17,10 @@ public class Value {
     
     public Object asObject() {
     	return value;
+    }
+    
+    public FacilioModule asModule() {
+    	return (FacilioModule) value;
     }
     
     public List<?> asList() {

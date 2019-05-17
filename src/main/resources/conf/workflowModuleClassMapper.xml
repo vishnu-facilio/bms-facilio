@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <workflow>
 	 <module name='workorder' classname='com.facilio.workflowv2.modulefunctions.FacilioWorkOrderModuleFunctions'/>
-
 </workflow>
