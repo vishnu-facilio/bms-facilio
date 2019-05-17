@@ -31,7 +31,8 @@ public enum Metric {
 	FLOWRATE(18,"Flow Rate",90),
 	APPARENTPOWER(19,"Apparent Power",96),
 	CONCENTRATION(20,"Concentration",101),
-	;
+	ROTATIONALSPEED(21, "Rotational Speed",106),
+	SPEED(22, "Speed", 108);
 	
 	public static Map<Integer, Metric> getMetricMap() {
 		return METRIC_MAP;
