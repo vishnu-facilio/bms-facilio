@@ -45,22 +45,25 @@ public class GetAllCampusCommand implements Command {
 		List<Long> spaceId = new ArrayList<Long>();
 		List<Long> businessHourIds = new ArrayList<Long>();
 		Map<Long, Long> spaceBhIdsMap = new HashMap<Long, Long>();
-		;
-		campuses.forEach((e) -> {
-			long spaceid = e.getId();
-			spaceId.add(spaceid);
-			if (e.getData() != null) {
-				long bhid = Long.parseLong(e.getData().get("operatingHour").toString());
-				businessHourIds.add(bhid);
-				spaceBhIdsMap.put(spaceid, bhid);
-			}
-		});
+		if (campuses != null) {
+			campuses.forEach((e) -> {
+				long spaceid = e.getId();
+				spaceId.add(spaceid);
+				if (e.getData() != null) {
+					long bhid = Long.parseLong(e.getData().get("operatingHour").toString());
+					businessHourIds.add(bhid);
+					spaceBhIdsMap.put(spaceid, bhid);
+				}
+			});
+		}
 		List<BusinessHoursContext> businessHourList = BusinessHoursAPI.getBusinessHours(businessHourIds);
-		campuses.forEach((e) -> {
-			if (spaceBhIdsMap.get(e.getId()) != null) {
-				e.setBusinessHour(businessHourList.stream().filter(bh -> spaceBhIdsMap.get(e.getId()).equals(bh.getId())).findFirst().get());
-			}
-		});
+		if (campuses != null) {
+			campuses.forEach((e) -> {
+				if (spaceBhIdsMap.get(e.getId()) != null) {
+					e.setBusinessHour(businessHourList.stream().filter(bh -> spaceBhIdsMap.get(e.getId()).equals(bh.getId())).findFirst().get());
+				}
+			});
+		}
 		context.put(FacilioConstants.ContextNames.SITE_LIST, campuses);
 
 		return false;
