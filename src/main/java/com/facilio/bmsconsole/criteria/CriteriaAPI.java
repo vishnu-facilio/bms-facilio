@@ -1,14 +1,5 @@
 package com.facilio.bmsconsole.criteria;
 
-import com.facilio.accounts.util.AccountUtil;
-import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.modules.*;
-import com.facilio.fw.BeanFactory;
-import com.facilio.sql.GenericDeleteRecordBuilder;
-import com.facilio.sql.GenericInsertRecordBuilder;
-import com.facilio.sql.GenericSelectRecordBuilder;
-import org.apache.commons.lang3.StringUtils;
-
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -16,6 +7,20 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+
+import org.apache.commons.lang3.StringUtils;
+
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.FacilioModule;
+import com.facilio.bmsconsole.modules.FieldFactory;
+import com.facilio.bmsconsole.modules.FieldUtil;
+import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.fw.BeanFactory;
+import com.facilio.sql.GenericDeleteRecordBuilder;
+import com.facilio.sql.GenericInsertRecordBuilder;
+import com.facilio.sql.GenericSelectRecordBuilder;
 
 public class CriteriaAPI {
 	
@@ -178,14 +183,13 @@ public class CriteriaAPI {
 		List<Map<String, Object>> criteriaProps = criteriaBuilder.get();
 	
 		
-		List<Long> list = new ArrayList<>();
+		List<Long> criteriaValues = new ArrayList<>();
 		if (criteriaProps != null && !criteriaProps.isEmpty()) {
 			Map<Long, Criteria> criteriaMap = new HashMap<>();
 			for(Map<String, Object> props : criteriaProps) {
-				Long criteriaValueId = null;
-				criteriaValueId = (Long) props.get("criteriaValueId");
-				if (criteriaValueId != null) {
-					list.add(criteriaValueId);
+				Long criteriaValueId = (Long) props.get("criteriaValueId");
+				if (criteriaValueId != null && criteriaValueId != -1) {
+					criteriaValues.add(criteriaValueId);
 				}
 				Condition condition = FieldUtil.getAsBeanFromMap(props, Condition.class);
 				
@@ -198,15 +202,15 @@ public class CriteriaAPI {
 				}
 				parentCriteria.getConditions().put(String.valueOf(condition.getSequence()), condition);
 			}
-			if (!list.isEmpty() && list != null) {
-				Map<Long, Criteria> criteriaMap1 = CriteriaAPI.getCriteriaAsMap(list);
+			if (!criteriaValues.isEmpty()) {
+				Map<Long, Criteria> criteriaValueMap = CriteriaAPI.getCriteriaAsMap(criteriaValues);
 
-				for (Criteria props : criteriaMap.values())  {
-					for (Entry <String,Condition> condition : props.getConditions().entrySet()) {
-						if (condition.getValue().getCriteriaValueId() != -1) {
-							condition.getValue().setCriteriaValue(criteriaMap1.get(condition.getValue().getCriteriaValueId()));
+				for (Criteria criteria : criteriaMap.values())  {
+					for (Entry <String,Condition> entry : criteria.getConditions().entrySet()) {
+						Condition condition = entry.getValue();
+						if (condition.getCriteriaValueId() != -1) {
+							condition.setCriteriaValue(criteriaValueMap.get(condition.getCriteriaValueId()));
 						}
-						
 					}
 					
 				}
