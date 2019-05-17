@@ -149,7 +149,7 @@ public class InventoryRequestLineItemContext extends ModuleBaseWithCustomFields{
 	
 	public WorkorderToolsContext constructWorkOrderToolContext() throws Exception {
 		WorkorderToolsContext woTool = new WorkorderToolsContext();
-		ToolContext tool = ToolsApi.getToolsForTypeAndStore(this.getStoreRoom(), this.getItemType().getId());
+		ToolContext tool = ToolsApi.getToolsForTypeAndStore(this.getStoreRoom(), this.getToolType().getId());
 		woTool.setTool(tool);
 		woTool.setParentId(this.getParentId());
 		woTool.setAssetIds(this.getAssetIds());
