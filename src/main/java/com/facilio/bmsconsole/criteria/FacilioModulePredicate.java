@@ -23,7 +23,11 @@ public class FacilioModulePredicate extends BeanPredicate {
 	@Override
 	public boolean evaluate(Object object) {
 		// TODO Auto-generated method stub
-		if(object instanceof Map<?,?>) {
+		
+		if (object == null) { //Handling for lookup value. Returning false if there's lookup value is null
+			return false;
+		}
+		else if(object instanceof Map<?,?>) {
 			Object propertyVal = ((Map<String, Object>) object).get(getPropertyName());
 			return getPredicate().evaluate(propertyVal);
 		}

@@ -10,10 +10,12 @@ import com.facilio.sql.GenericSelectRecordBuilder;
 import org.apache.commons.lang3.StringUtils;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 public class CriteriaAPI {
 	
@@ -174,9 +176,17 @@ public class CriteriaAPI {
 															;
 		
 		List<Map<String, Object>> criteriaProps = criteriaBuilder.get();
+	
+		
+		List<Long> list = new ArrayList<>();
 		if (criteriaProps != null && !criteriaProps.isEmpty()) {
 			Map<Long, Criteria> criteriaMap = new HashMap<>();
 			for(Map<String, Object> props : criteriaProps) {
+				Long criteriaValueId = null;
+				criteriaValueId = (Long) props.get("criteriaValueId");
+				if (criteriaValueId != null) {
+					list.add(criteriaValueId);
+				}
 				Condition condition = FieldUtil.getAsBeanFromMap(props, Condition.class);
 				
 				Criteria parentCriteria = criteriaMap.get(condition.getParentCriteriaId());
@@ -187,6 +197,19 @@ public class CriteriaAPI {
 					criteriaMap.put(parentCriteria.getCriteriaId(), parentCriteria);
 				}
 				parentCriteria.getConditions().put(String.valueOf(condition.getSequence()), condition);
+			}
+			if (!list.isEmpty() && list != null) {
+				Map<Long, Criteria> criteriaMap1 = CriteriaAPI.getCriteriaAsMap(list);
+
+				for (Criteria props : criteriaMap.values())  {
+					for (Entry <String,Condition> condition : props.getConditions().entrySet()) {
+						if (condition.getValue().getCriteriaValueId() != -1) {
+							condition.getValue().setCriteriaValue(criteriaMap1.get(condition.getValue().getCriteriaValueId()));
+						}
+						
+					}
+					
+				}
 			}
 			return criteriaMap;
 		}
