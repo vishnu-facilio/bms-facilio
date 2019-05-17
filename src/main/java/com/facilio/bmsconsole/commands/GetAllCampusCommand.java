@@ -50,9 +50,11 @@ public class GetAllCampusCommand implements Command {
 				long spaceid = e.getId();
 				spaceId.add(spaceid);
 				if (e.getData() != null) {
-					long bhid = Long.parseLong(e.getData().get("operatingHour").toString());
-					businessHourIds.add(bhid);
-					spaceBhIdsMap.put(spaceid, bhid);
+					if (e.getData().get("operatingHour") != null) {
+						long bhid = Long.parseLong(e.getData().get("operatingHour").toString());
+						businessHourIds.add(bhid);
+						spaceBhIdsMap.put(spaceid, bhid);
+					}
 				}
 			});
 		}
