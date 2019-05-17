@@ -20,6 +20,10 @@ public class SetValidationRulesContextCommand implements Command {
 		List<List<ReadingRuleContext>> readingRules = (List<List<ReadingRuleContext>>) context.get(FacilioConstants.ContextNames.VALIDATION_RULES);
 		List<FacilioModule> modules =  (List<FacilioModule>) context.get(FacilioConstants.ContextNames.MODULE_LIST);
 
+		if (readingRules == null || readingRules.isEmpty()) {
+			return false;
+		}
+
 		Map<Long, Long> modIdMap = new HashMap<>();
 		List<FacilioField> fields = new ArrayList<>();
 		for (FacilioModule module: modules) {
