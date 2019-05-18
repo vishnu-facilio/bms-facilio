@@ -1,16 +1,12 @@
 package com.facilio.bmsconsole.actions;
 
-import com.facilio.accounts.util.AccountUtil;
-import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
-import com.facilio.bmsconsole.commands.TransactionChainFactory;
-import com.facilio.bmsconsole.context.PublishData;
-import com.facilio.bmsconsole.context.ReadingContext.SourceType;
-import com.facilio.bmsconsole.criteria.Criteria;
-import com.facilio.bmsconsole.util.IoTMessageAPI;
-import com.facilio.bmsconsole.util.IoTMessageAPI.IotCommandType;
-import com.facilio.chain.FacilioContext;
-import com.facilio.constants.FacilioConstants;
-import com.facilio.timeseries.TimeSeriesAPI;
+import java.io.BufferedReader;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.chain.Chain;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -19,25 +15,47 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
-import javax.servlet.http.HttpServletRequest;
-import java.io.BufferedReader;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
+import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsole.context.PublishData;
+import com.facilio.bmsconsole.context.PublishMessage;
+import com.facilio.bmsconsole.context.ReadingContext.SourceType;
+import com.facilio.bmsconsole.criteria.Criteria;
+import com.facilio.bmsconsole.instant.jobs.PublishedDataCheckerJob;
+import com.facilio.bmsconsole.util.IoTMessageAPI;
+import com.facilio.bmsconsole.util.IoTMessageAPI.IotCommandType;
+import com.facilio.chain.FacilioContext;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.timeseries.TimeSeriesAPI;
 
 public class TimeSeries extends FacilioAction {
 	
 	private static final long serialVersionUID = 1L;
 	private static final Logger LOGGER = LogManager.getLogger(TimeSeries.class.getName());
 	
-	public String addR() throws Exception {
+	public String testNotification() throws Exception {
 		JSONArray instanceArray = new JSONArray();
 		JSONObject obj = new JSONObject();
-		obj.put("instance", "trend0");
-		obj.put("device", "5BLINX220");
+		obj.put("instance", "instance1");
+		obj.put("device", "device1");
 		instanceArray.add(obj);
-		TimeSeriesAPI.addUnmodeledInstances(instanceArray, controllerId);
+		PublishMessage pubmsg = new PublishMessage();
+		JSONObject aa = new JSONObject();
+		aa.put("message", "message1");
+		pubmsg.setData(aa);
+		PublishData data = new PublishData();
+		data.setMessages(Collections.singletonList(pubmsg));
+		PublishedDataCheckerJob.sendNotification(data, userId);
 		return SUCCESS;
+	}
+	
+	private long userId = -1;
+	public long getUserId() {
+		return userId;
+	}
+	public void setUserId(long userId) {
+		this.userId = userId;
 	}
 
 	public String publish() throws Exception

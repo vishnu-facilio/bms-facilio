@@ -1,5 +1,6 @@
 package com.facilio.wms.message;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -20,19 +21,19 @@ public class WmsPublishResponse extends Message {
 		setNamespace("publishdata");
 	}
 	
-	public WmsPublishResponse publish(PublishData data) throws Exception {
+	public WmsPublishResponse publish(PublishData data, long userId) throws Exception {
 		addData("response", data);
 		setAction("publish");
-		send();
+		send(userId);
 		return this;
 	}
 	
-	public void send() throws Exception {
+	public void send(long userId) throws Exception {
 		List<User> users = AccountUtil.getOrgBean().getActiveOrgUsers(AccountUtil.getCurrentOrg().getId());
 		List<Long> recipients = users.stream().map(user -> user.getId()).collect(Collectors.toList());
 		LOGGER.info("User Ids for publishing data: " + recipients);
 		
-		WmsApi.sendPublishResponse(recipients, this);
+		WmsApi.sendPublishResponse(Collections.singletonList(userId), this);
 	}
 	
 }
