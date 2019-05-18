@@ -268,7 +268,9 @@ public class WorkflowUtil {
 	}
 	
 	private static Object getWorkflowResult(WorkflowContext workflowContext,Map<String,Object> paramMap, Map<String, ReadingDataMeta> rdmCache, boolean ignoreNullExpressions, boolean ignoreMarked, boolean isVariableMapNeeded) throws Exception {
-		workflowContext = getWorkflowContextFromString(workflowContext.getWorkflowString(),workflowContext);
+		if(workflowContext.getWorkflowUIMode() != WorkflowContext.WorkflowUIMode.NEW_WORKFLOW.getValue()) {
+			workflowContext = getWorkflowContextFromString(workflowContext.getWorkflowString(),workflowContext);
+		}
 		workflowContext.setCachedRDM(rdmCache);
 		workflowContext.setIgnoreMarkedReadings(ignoreMarked);
 		List<ParameterContext> parameterContexts = validateAndGetParameters(workflowContext,paramMap);
@@ -639,7 +641,7 @@ public class WorkflowUtil {
 	public static List<ParameterContext> validateAndGetParameters(WorkflowContext workflowContext,Map<String,Object> paramMap) throws Exception {
 		
 		List<ParameterContext> paramterContexts = workflowContext.getParameters();
-		if(!paramterContexts.isEmpty()) {
+		if(paramterContexts != null && !paramterContexts.isEmpty()) {
 			
 			if(!workflowContext.isIgnoreNullParams()) {
 				if(paramMap == null || paramMap.isEmpty()) {

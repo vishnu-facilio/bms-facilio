@@ -106,6 +106,16 @@ public class WorkflowAction extends FacilioAction {
 
 	String workflowString;
 	
+	int workflowUIMode;
+	
+	public int getWorkflowUIMode() {
+		return workflowUIMode;
+	}
+
+	public void setWorkflowUIMode(int workflowUIMode) {
+		this.workflowUIMode = workflowUIMode;
+	}
+
 	public Long getWorkflowId() {
 		return workflowId;
 	}
@@ -138,6 +148,16 @@ public class WorkflowAction extends FacilioAction {
 	public void setResultMap(Map<String, Object> resultMap) {
 		this.resultMap = resultMap;
 	}
+	
+	String logResult;
+
+	public String getLogResult() {
+		return logResult;
+	}
+
+	public void setLogResult(String logResult) {
+		this.logResult = logResult;
+	}
 
 	public String runWorkflow() throws Exception {
 		if(params == null && paramString != null) {
@@ -148,7 +168,12 @@ public class WorkflowAction extends FacilioAction {
 	    	resultMap = WorkflowUtil.getExpressionResultMap(workflowId, params);
 	    }
 	    else if(workflowString != null) {
-	    	resultMap = WorkflowUtil.getExpressionResultMap(workflowString, params);
+	    	WorkflowContext wfContext = new WorkflowContext();
+	    	wfContext.setWorkflowString(workflowString);
+	    	wfContext.setWorkflowUIMode(workflowUIMode);
+	    	wfContext.setDebugMode(true);
+	    	logResult = WorkflowUtil.getWorkflowExpressionResult(wfContext, params).toString();
+	    	System.out.println(logResult);
 	    }
 		return SUCCESS;
 	}

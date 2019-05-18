@@ -43,18 +43,29 @@ public class FacilioWorkflowFunctionVisitor extends WorkflowV2BaseVisitor<Value>
     Value returnValue;
     List<ParameterContext> params;
     
+    StringBuilder resultString = new StringBuilder();
+    
+	public StringBuilder getResultString() {
+		return resultString;
+	}
+
+	public void setResultString(StringBuilder resultString) {
+		this.resultString = resultString;
+	}
+
 	boolean breakCodeFlow;
     boolean isFunctionHeaderVisitor;
     public void setParams(List<Object> parmasObjects) throws Exception {
-    	
-    	if(parmasObjects.size() < params.size()) {
-    		throw new Exception("param count mismatched");
-    	}
-    	
-    	for(int i = 0;i<params.size(); i++) {
-    		ParameterContext param = params.get(i);
-    		Object value = parmasObjects.get(i);
-    		varMemoryMap.put(param.getName(), new Value(value));
+    	if(params.size() > 0) {
+    		if(parmasObjects.size() < params.size()) {
+        		throw new Exception("param count mismatched");
+        	}
+        	
+        	for(int i = 0;i<params.size(); i++) {
+        		ParameterContext param = params.get(i);
+        		Object value = parmasObjects.get(i);
+        		varMemoryMap.put(param.getName(), new Value(value));
+        	}
     	}
     }
     
@@ -419,6 +430,7 @@ public class FacilioWorkflowFunctionVisitor extends WorkflowV2BaseVisitor<Value>
     @Override
     public Value visitLog(WorkflowV2Parser.LogContext ctx) {
         Value value = this.visit(ctx.expr());
+        resultString.append(value.asString()+"\n");
         System.out.println(value);
         return value;
     }

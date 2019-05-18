@@ -278,24 +278,46 @@ public class WorkflowContext implements Serializable {
 	public void setWorkflowUIMode(int workflowUIMode) {
 		this.workflowUIMode = WorkflowUIMode.valueOf(workflowUIMode);
 	}
+	boolean isDebugMode;
+	public boolean isDebugMode() {
+		return isDebugMode;
+	}
+	public void setDebugMode(boolean isDebugMode) {
+		this.isDebugMode = isDebugMode;
+	}
 	public Object executeWorkflow() throws Exception {
 		
 		Object result = null;
 		
 		if(workflowUIMode == WorkflowUIMode.NEW_WORKFLOW) {
-			InputStream stream = new ByteArrayInputStream(workflowString.getBytes(StandardCharsets.UTF_8));
 			
-			WorkflowV2Lexer lexer = new WorkflowV2Lexer(CharStreams.fromStream(stream, StandardCharsets.UTF_8));
-	        
-			WorkflowV2Parser parser = new WorkflowV2Parser(new CommonTokenStream(lexer));
-	        ParseTree tree = parser.parse();
-	        
-	        FacilioWorkflowFunctionVisitor visitor = new FacilioWorkflowFunctionVisitor();
-	        visitor.visitFunctionHeader(tree);
-	        visitor.setParams(params);
-	        visitor.visit(tree);
-	        
-	        return visitor.getReturnValue();
+			FacilioWorkflowFunctionVisitor visitor = null;
+			try {
+				InputStream stream = new ByteArrayInputStream(workflowString.getBytes(StandardCharsets.UTF_8));
+				
+				WorkflowV2Lexer lexer = new WorkflowV2Lexer(CharStreams.fromStream(stream, StandardCharsets.UTF_8));
+		        
+				WorkflowV2Parser parser = new WorkflowV2Parser(new CommonTokenStream(lexer));
+		        ParseTree tree = parser.parse();
+		        
+		        visitor = new FacilioWorkflowFunctionVisitor();
+		        visitor.visitFunctionHeader(tree);
+		        visitor.setParams(params);
+		        visitor.visit(tree);
+		        
+		        if(isDebugMode) {
+		        	return visitor.getResultString().toString();
+		        }
+		        
+		        return visitor.getReturnValue();
+			}
+			catch(Exception e) {
+				visitor.getResultString().append(e.toString()+"\n");
+				if(isDebugMode) {
+		        	return visitor.getResultString().toString();
+		        }
+				throw e;
+			}
 		}
 		
 		variableResultMap = new HashMap<String,Object>();
