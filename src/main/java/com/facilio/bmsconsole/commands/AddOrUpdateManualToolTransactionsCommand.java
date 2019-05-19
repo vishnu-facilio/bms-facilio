@@ -88,19 +88,14 @@ public class AddOrUpdateManualToolTransactionsCommand implements Command {
 									}
 									ToolTransactionContext woTool = new ToolTransactionContext();
 
-									if (toolTransaction.getTransactionStateEnum() == TransactionState.ISSUE
-											&& (toolTypes.isApprovalNeeded() || storeRoom.isApprovalNeeded())) {
+									if (toolTransaction.getTransactionStateEnum() == TransactionState.RETURN) {
 										asset.setIsUsed(false);
-									} else {
-										if (toolTransaction.getTransactionStateEnum() == TransactionState.RETURN) {
-											asset.setIsUsed(false);
-											approvalState = ApprovalState.YET_TO_BE_REQUESTED;
-										} else if (toolTransaction
-												.getTransactionStateEnum() == TransactionState.ISSUE) {
-											asset.setIsUsed(true);
-										}
+										approvalState = ApprovalState.YET_TO_BE_REQUESTED;
+									} else if (toolTransaction
+										.getTransactionStateEnum() == TransactionState.ISSUE) {
+										asset.setIsUsed(true);
 									}
-
+									
 									// if(toolTransaction.getTransactionStateEnum()
 									// == TransactionState.RETURN){
 									// pTool.setIsUsed(false);

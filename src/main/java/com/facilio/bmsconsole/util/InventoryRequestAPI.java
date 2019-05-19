@@ -1,7 +1,6 @@
 package com.facilio.bmsconsole.util;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,16 +12,13 @@ import com.facilio.bmsconsole.context.InventoryRequestLineItemContext;
 import com.facilio.bmsconsole.context.ItemTypesContext;
 import com.facilio.bmsconsole.context.ToolTypesContext;
 import com.facilio.bmsconsole.context.WorkorderToolsContext;
-import com.facilio.bmsconsole.criteria.CommonOperators;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
-import com.facilio.bmsconsole.criteria.PickListOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.LookupField;
-import com.facilio.bmsconsole.modules.LookupFieldMeta;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
 import com.facilio.constants.FacilioConstants;
@@ -35,33 +31,23 @@ public class InventoryRequestAPI {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.INVENTORY_REQUEST_LINE_ITEMS);
 		List<FacilioField> fields = modBean.getAllFields(module.getName());
-		Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
 		
 
-		LookupField itemType = (LookupField) modBean.getField("itemType", FacilioConstants.ContextNames.INVENTORY_REQUEST_LINE_ITEMS);
-		LookupField toolType = (LookupField) modBean.getField("toolType", FacilioConstants.ContextNames.INVENTORY_REQUEST_LINE_ITEMS);
+		List<LookupField>lookUpFields = new ArrayList<>();
+		lookUpFields.add((LookupField) modBean.getField("itemType", module.getName()));
+		lookUpFields.add((LookupField) modBean.getField("toolType", module.getName()));
+		lookUpFields.add((LookupField) modBean.getField("storeRoom", module.getName()));
+		lookUpFields.add((LookupField) modBean.getField("asset", module.getName()));
 		
-		
-		List<LookupField>fetchLookup = Arrays.asList(itemType,toolType);
 		
 		SelectRecordsBuilder<InventoryRequestLineItemContext> builder = new SelectRecordsBuilder<InventoryRequestLineItemContext>()
 				.module(module)
 				.beanClass(FacilioConstants.ContextNames.getClassFromModuleName(module.getName()))
 				.select(fields)
 				.andCondition(CriteriaAPI.getCondition("INVENTORY_REQUEST_ID", "inventoryRequestId", requestIds, NumberOperators.EQUALS))
-				.fetchLookups(fetchLookup)
+				.fetchLookups(lookUpFields)
 		;
 		
-		Criteria idCriteria = new Criteria();
-		if(itemIds != null) {
-			idCriteria.addAndCondition(CriteriaAPI.getCondition("ITEM", "item" , itemIds, NumberOperators.EQUALS));
-		}
-		if(toolIds != null) {
-			idCriteria.addOrCondition(CriteriaAPI.getCondition("TOOL", "tool" , toolIds, NumberOperators.EQUALS));
-		}
-		if(!idCriteria.isEmpty()) {
-			builder.andCriteria(idCriteria);
-		}
 		List<InventoryRequestLineItemContext> records = builder.get();
 		return records;
 		

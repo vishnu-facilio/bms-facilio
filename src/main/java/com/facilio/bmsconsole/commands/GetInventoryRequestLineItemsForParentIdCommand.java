@@ -35,13 +35,14 @@ public class GetInventoryRequestLineItemsForParentIdCommand implements Command{
 		Integer status = (Integer) context.get(FacilioConstants.ContextNames.STATUS);
 		
 		List<FacilioField> fields = modBean.getAllFields(moduleName);
+
 		
 		SelectRecordsBuilder<InventoryRequestContext> builder = new SelectRecordsBuilder<InventoryRequestContext>()
 				.module(module)
 				.beanClass(FacilioConstants.ContextNames.getClassFromModuleName(moduleName))
 				.select(fields)
 				.andCondition(CriteriaAPI.getCondition("PARENT_ID", "parentId", String.valueOf(parentId), NumberOperators.EQUALS))
-		;
+				;
 				
 
 		if(status != null) {

@@ -10,6 +10,7 @@ import org.apache.commons.collections4.CollectionUtils;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.InventoryRequestContext;
 import com.facilio.bmsconsole.context.InventoryRequestLineItemContext;
 import com.facilio.bmsconsole.context.InventoryType;
@@ -83,13 +84,17 @@ public class AddOrUpdateInventoryRequestCommand implements Command{
 				lineItemContext.setParentId(inventoryRequestContext.getParentId());
 			}
 			if(inventoryRequestContext.getStoreRoom() != null &&  inventoryRequestContext.getStoreRoom().getId() > 0) {
-				lineItemContext.setStoreRoom(inventoryRequestContext.getStoreRoom().getId());
+				lineItemContext.setStoreRoom(inventoryRequestContext.getStoreRoom());
 			}
 			if(lineItemContext.getAssetIds() != null && lineItemContext.getAssetIds().size() > 0) {
-				lineItemContext.setAsset(lineItemContext.getAssetIds().get(0));
+				AssetContext lineItemAsset = new AssetContext();
+				lineItemAsset.setId(lineItemContext.getAssetIds().get(0));
+				lineItemContext.setAsset(lineItemAsset);
 				for(int i=1; i<lineItemContext.getAssetIds().size(); i++) {
 					 InventoryRequestLineItemContext lineItem = new InventoryRequestLineItemContext();
-					 lineItem.setAsset(lineItemContext.getAssetIds().get(i));
+					 AssetContext asset = new AssetContext();
+					 asset.setId(lineItemContext.getAssetIds().get(i));
+					 lineItem.setAsset(asset);
 					 lineItem.setInventoryType(lineItemContext.getInventoryType());
 					 if(lineItemContext.getInventoryType() == InventoryType.ITEM.getValue()) {
 						 lineItem.setItemType(lineItemContext.getItemType());
@@ -104,7 +109,7 @@ public class AddOrUpdateInventoryRequestCommand implements Command{
 						 lineItem.setParentId(inventoryRequestContext.getParentId());
 					 }
 					 if(inventoryRequestContext.getStoreRoom() != null &&  inventoryRequestContext.getStoreRoom().getId() > 0) {
-						 lineItem.setStoreRoom(inventoryRequestContext.getStoreRoom().getId());
+						 lineItem.setStoreRoom(inventoryRequestContext.getStoreRoom());
 					 }
 					
 					 rotatingItems.add(lineItem); 

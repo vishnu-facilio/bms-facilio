@@ -85,11 +85,11 @@ public class InventoryRequestLineItemContext extends ModuleBaseWithCustomFields{
 		this.assetIds = assetIds;
 	}
 	
-	private long asset;
-	public long getAsset() {
+	private AssetContext asset;
+	public AssetContext getAsset() {
 		return asset;
 	}
-	public void setAsset(long asset) {
+	public void setAsset(AssetContext asset) {
 		this.asset = asset;
 	}
 
@@ -138,10 +138,13 @@ public class InventoryRequestLineItemContext extends ModuleBaseWithCustomFields{
 	}
 	public WorkorderItemContext constructWorkOrderItemContext() throws Exception{
 		WorkorderItemContext woItem = new WorkorderItemContext();
-		ItemContext item = ItemsApi.getItemsForTypeAndStore(this.getStoreRoom(), this.getItemType().getId());
+		if(this.getStoreRoom() == null) {
+			throw new IllegalArgumentException("No appropriate Item found");
+		}
+		ItemContext item = ItemsApi.getItemsForTypeAndStore(this.getStoreRoom().getId(), this.getItemType().getId());
 		woItem.setItem(item);
 		woItem.setParentId(this.getParentId());
-		woItem.setAssetIds(this.getAssetIds());
+		woItem.setAssetIds(Collections.singletonList(this.getAsset().getId()));
 		woItem.setQuantity(this.getQuantity());
 		woItem.setRequestedLineItem(this);
 		return woItem;
@@ -149,10 +152,13 @@ public class InventoryRequestLineItemContext extends ModuleBaseWithCustomFields{
 	
 	public WorkorderToolsContext constructWorkOrderToolContext() throws Exception {
 		WorkorderToolsContext woTool = new WorkorderToolsContext();
-		ToolContext tool = ToolsApi.getToolsForTypeAndStore(this.getStoreRoom(), this.getToolType().getId());
+		if(this.getStoreRoom() == null) {
+			throw new IllegalArgumentException("No appropriate Tool found");
+		}
+		ToolContext tool = ToolsApi.getToolsForTypeAndStore(this.getStoreRoom().getId(), this.getToolType().getId());
 		woTool.setTool(tool);
 		woTool.setParentId(this.getParentId());
-		woTool.setAssetIds(this.getAssetIds());
+		woTool.setAssetIds(Collections.singletonList(this.getAsset().getId()));
 		woTool.setQuantity(this.getQuantity());
 		woTool.setDuration(3600000);
 		woTool.setRequestedLineItem(this);
@@ -162,22 +168,28 @@ public class InventoryRequestLineItemContext extends ModuleBaseWithCustomFields{
 	
 	public ItemTransactionsContext contructManualItemTransactionContext(User requestedBy) throws Exception {
 		ItemTransactionsContext transaction = new ItemTransactionsContext();
-		ItemContext item = ItemsApi.getItemsForTypeAndStore(this.getStoreRoom(), this.getItemType().getId());
+		if(this.getStoreRoom() == null) {
+			throw new IllegalArgumentException("No appropriate Item found");
+		}
+		ItemContext item = ItemsApi.getItemsForTypeAndStore(this.getStoreRoom().getId(), this.getItemType().getId());
 		transaction.setItem(item);
 		transaction.setIssuedTo(requestedBy);
 		transaction.setParentId(requestedBy.getOuid());
 		transaction.setTransactionType(3);
 		transaction.setTransactionState(2);
 		transaction.setQuantity(this.getQuantity());
-		if(this.getAsset() > 0) {
-			transaction.setAssetIds(Collections.singletonList(this.getAsset()));
+		if(this.getAsset() != null && this.getAsset().getId() > 0) {
+			transaction.setAssetIds(Collections.singletonList(this.getAsset().getId()));
 		}
 		return transaction;
 		
 	}
 	public ToolTransactionContext contructManualToolTransactionContext(User requestedBy) throws Exception {
 		ToolTransactionContext transaction = new ToolTransactionContext();
-		ToolContext tool = ToolsApi.getToolsForTypeAndStore(this.getStoreRoom(), this.getToolType().getId());
+		if(this.getStoreRoom() == null) {
+			throw new IllegalArgumentException("No appropriate Tool found");
+		}
+		ToolContext tool = ToolsApi.getToolsForTypeAndStore(this.getStoreRoom().getId(), this.getToolType().getId());
 		transaction.setTool(tool);
 		transaction.setIssuedTo(requestedBy);
 		transaction.setParentId(requestedBy.getOuid());
@@ -185,24 +197,21 @@ public class InventoryRequestLineItemContext extends ModuleBaseWithCustomFields{
 		transaction.setTransactionState(2);
 		transaction.setQuantity(this.getQuantity());
 		
-		if(this.getAsset() > 0) {
-			transaction.setAssetIds(Collections.singletonList(this.getAsset()));
+		if(this.getAsset() != null && this.getAsset().getId() > 0) {
+			transaction.setAssetIds(Collections.singletonList(this.getAsset().getId()));
 		}
 		return transaction;
 		
 	}
 	
-	private long storeRoom;
+	private StoreRoomContext storeRoom;
 
-	public long getStoreRoom() {
+	public StoreRoomContext getStoreRoom() {
 		return storeRoom;
 	}
-	public void setStoreRoom(long storeRoom) {
+	public void setStoreRoom(StoreRoomContext storeRoom) {
 		this.storeRoom = storeRoom;
 	}
 
-	
-
-	
 	
 }

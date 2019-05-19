@@ -136,12 +136,12 @@ public class AddOrUpdateManualItemTransactionCommand implements Command {
 									info.put("transactionState", itemTransaction.getTransactionStateEnum().toString());
 									info.put("transactionType", itemTransaction.getTransactionTypeEnum().toString());
 									info.put("serialno", asset.getSerialNumber());
-									if (itemTransaction.getTransactionStateEnum() == TransactionState.ISSUE
-											&& (itemType.isApprovalNeeded() || storeRoom.isApprovalNeeded())) {
-										asset.setIsUsed(false);
-										info.put("issuedToId", itemTransaction.getParentId());
-										woitemactivity.add(info);
-									} else {
+//									if (itemTransaction.getTransactionStateEnum() == TransactionState.ISSUE
+//											&& (itemType.isApprovalNeeded() || storeRoom.isApprovalNeeded())) {
+//										asset.setIsUsed(false);
+//										info.put("issuedToId", itemTransaction.getParentId());
+//										woitemactivity.add(info);
+//									} else {
 										if (itemTransaction.getTransactionStateEnum() == TransactionState.RETURN) {
 											asset.setIsUsed(false);
 											info.put("parentTransactionId", itemTransaction.getParentTransactionId());
@@ -153,7 +153,7 @@ public class AddOrUpdateManualItemTransactionCommand implements Command {
 											info.put("issuedToId", itemTransaction.getParentId());
 											woitemactivity.add(info);
 										}
-									}
+								//	}
 									woItem = setWorkorderItemObj(null, 1, item, parentId, itemTransaction, itemType,
 											approvalState, asset);
 									updatePurchasedItem(asset);

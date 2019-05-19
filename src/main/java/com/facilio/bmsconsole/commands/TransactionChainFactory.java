@@ -2607,7 +2607,7 @@ public class TransactionChainFactory {
 			chain.addCommand(getAddOrUpdateItemTransactionsChain());
 			//rollups work with record_list object in the context
 			chain.addCommand(new CopyToToolTransactionCommand());
-			chain.addCommand(getUpdatetoolQuantityRollupChain());
+			chain.addCommand(getAddOrUdpateToolTransactionsChain());
 			return chain;
 		
 		}

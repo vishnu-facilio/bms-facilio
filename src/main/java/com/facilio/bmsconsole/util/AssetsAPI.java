@@ -31,6 +31,7 @@ import com.facilio.bmsconsole.context.ItemContext;
 import com.facilio.bmsconsole.context.PhotosContext;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.ToolContext;
+import com.facilio.bmsconsole.criteria.BooleanOperators;
 import com.facilio.bmsconsole.criteria.BuildingOperator;
 import com.facilio.bmsconsole.criteria.CommonOperators;
 import com.facilio.bmsconsole.criteria.Condition;
@@ -744,7 +745,7 @@ public class AssetsAPI {
 		SelectRecordsBuilder<AssetContext> selectBuilder = new SelectRecordsBuilder<AssetContext>().select(fields)
 				.table(module.getTableName()).moduleName(module.getName()).beanClass(AssetContext.class)
 				.andCondition(CriteriaAPI.getCondition("ROTATING_ITEM", "rotatingItem", String.valueOf(rotatingItem.getId()), NumberOperators.EQUALS))
-				
+				.andCondition(CriteriaAPI.getCondition("IS_USED", "isUsed", String.valueOf("false"), BooleanOperators.IS))
 				;
 		List<AssetContext> assets = selectBuilder.get();
 		if(!CollectionUtils.isEmpty(assets)) {
@@ -764,6 +765,8 @@ public class AssetsAPI {
 		SelectRecordsBuilder<AssetContext> selectBuilder = new SelectRecordsBuilder<AssetContext>().select(fields)
 				.table(module.getTableName()).moduleName(module.getName()).beanClass(AssetContext.class)
 				.andCondition(CriteriaAPI.getCondition("ROTATING_TOOL", "rotatingTool", String.valueOf(rotatingTool.getId()), NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition("IS_USED", "isUsed", String.valueOf("false"), BooleanOperators.IS))
+						
 				;
 		List<AssetContext> assets = selectBuilder.get();
 		if(!CollectionUtils.isEmpty(assets)) {

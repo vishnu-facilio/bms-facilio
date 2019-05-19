@@ -41,9 +41,7 @@ public class GetInventoryRequestLineItemsByRequesterIdCommand implements Command
 		
 		List<FacilioField> fields = modBean.getAllFields(moduleName);
 		
-		List<LookupField>lookUpFields = new ArrayList<>();
-		lookUpFields.add((LookupField) modBean.getField("item", moduleName));
-		lookUpFields.add((LookupField) modBean.getField("tool", moduleName));
+		
 		SelectRecordsBuilder<InventoryRequestContext> builder = new SelectRecordsBuilder<InventoryRequestContext>()
 				.module(module)
 				.beanClass(FacilioConstants.ContextNames.getClassFromModuleName(moduleName))
