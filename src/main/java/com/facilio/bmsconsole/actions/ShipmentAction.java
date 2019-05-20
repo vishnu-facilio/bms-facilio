@@ -201,4 +201,15 @@ public class ShipmentAction extends FacilioAction{
 		
 		return SUCCESS;
 	}
+	
+	public String shipShipment() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.RECORD, shipment);
+		
+		Chain chain = TransactionChainFactory.getShipShipmentQuantityUpdateChain();
+		chain.execute(context);
+		
+		setResult(FacilioConstants.ContextNames.SHIPMENTS, context.get(FacilioConstants.ContextNames.RECORD));
+		return SUCCESS;
+	}
 }

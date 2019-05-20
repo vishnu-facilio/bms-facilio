@@ -2242,7 +2242,11 @@
 			<param name="moduleName">shipment</param>
 			<param name="permission">READ</param>
 		</action>
-			<action name="addOrUpdate" class="com.facilio.bmsconsole.actions.ShipmentAction" method="addOrUpdateShipment">
+		<action name="addOrUpdate" class="com.facilio.bmsconsole.actions.ShipmentAction" method="addOrUpdateShipment">
+			<param name="moduleName">shipment</param>
+			<param name="permission">CREATE,UPDATE</param>
+		</action>
+		<action name="shipShipment" class="com.facilio.bmsconsole.actions.ShipmentAction" method="shipShipment">
 			<param name="moduleName">shipment</param>
 			<param name="permission">CREATE,UPDATE</param>
 		</action>

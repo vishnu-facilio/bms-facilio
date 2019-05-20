@@ -2729,6 +2729,15 @@ public class TransactionChainFactory {
 			c.addCommand(new DeleteShipmentLineItemCommand());
 			return c;
 		}
+		
+		public static Chain getShipShipmentQuantityUpdateChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new AddOrUpdateShipmentCommand());
+			c.addCommand(new ShipShipmentCommand());
+			c.addCommand(getBulkAddToolChain());
+			c.addCommand(getAddBulkItemChain());
+		    return c;
+		}
 }
 
 

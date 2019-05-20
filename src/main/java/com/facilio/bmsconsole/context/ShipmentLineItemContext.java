@@ -52,4 +52,21 @@ public class ShipmentLineItemContext extends ModuleBaseWithCustomFields{
 	public void setQuantity(double quantity) {
 		this.quantity = quantity;
 	}
+	
+	private double unitPrice;
+	public double getUnitPrice() {
+		return unitPrice;
+	}
+	public void setUnitPrice(double unitPrice) {
+		this.unitPrice = unitPrice;
+	}
+	
+	private double rate;
+	public double getRate() {
+		return rate;
+	}
+	public void setRate(double rate) {
+		this.rate = rate;
+	}
+	
 }
