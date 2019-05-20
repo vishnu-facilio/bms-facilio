@@ -21,28 +21,24 @@ public class MLContext extends ModuleBaseWithCustomFields
 	
 	private Hashtable<Long,Hashtable<String,SortedMap<Long,Object>>> mlVariablesDataMap; // AssetID => Attribute Name => ttime,Attribute Value
 	private SortedMap<Long,Hashtable<String,Object>> mlCriteriaVariablesDataMap;
-	private List<Integer> sequenceList;
+	
 	private String modelPath;
 	private long predictionLogModuleID;
 	private long predictionModuleID;
 	private long criteriaId;
 	private long ruleID;
 	private long predictionTime;
-	private int sequence;
+	private String sequence;
 	
 	private String result;
 		
-	public void addSequence(int sequence)
+	public void setSequence(String sequence)
 	{
-		if(sequenceList==null)
-		{
-			sequenceList = new ArrayList<Integer>(10);
-		}
-		sequenceList.add(sequence);
+		this.sequence = sequence;
 	}
-	public List<Integer> getSequenceList()
+	public String getSequence()
 	{
-		return sequenceList;
+		return sequence;
 	}
 	
 	public void setPredictionTime(long predictionTime)
@@ -124,10 +120,6 @@ public class MLContext extends ModuleBaseWithCustomFields
 		if(mlVariables==null)
 		{
 			mlVariables = new ArrayList<MLVariableContext>(10);
-		}
-		if(context.getSequence()>0)
-		{
-			sequenceList.add(context.getSequence());
 		}
 		mlVariables.add(context);
 	}
@@ -240,11 +232,6 @@ public class MLContext extends ModuleBaseWithCustomFields
 		}
 		return -1;
 	}
-	public int getSequence() {
-		return sequence;
-	}
-	public void setSequence(int sequence) {
-		this.sequence = sequence;
-	}
+	
 	
 }
