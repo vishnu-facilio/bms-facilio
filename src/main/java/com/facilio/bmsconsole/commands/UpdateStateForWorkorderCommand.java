@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
 
 import com.facilio.bmsconsole.context.TicketStatusContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
@@ -18,8 +19,7 @@ public class UpdateStateForWorkorderCommand implements Command {
 
 	@Override
 	public boolean execute(Context context) throws Exception {
-		List<WorkOrderContext> oldWos = (List<WorkOrderContext>) context.get(FacilioConstants.TicketActivity.OLD_TICKETS);
-		WorkOrderContext workOrder = (WorkOrderContext) context.get(FacilioConstants.ContextNames.WORK_ORDER);
+		List<WorkOrderContext> wos = (List<WorkOrderContext>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
 		Long currentTransitionId = (Long) context.get(FacilioConstants.ContextNames.TRANSITION_ID);
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 
@@ -28,9 +28,9 @@ public class UpdateStateForWorkorderCommand implements Command {
 			return false;
 		}
 		
-		if (oldWos != null && !oldWos.isEmpty() && workOrder != null) {
+		if (CollectionUtils.isNotEmpty(wos)) {
 			StateflowTransitionContext stateflowTransition = (StateflowTransitionContext) WorkflowRuleAPI.getWorkflowRule(currentTransitionId, true);
-			for (WorkOrderContext wo : oldWos) {
+			for (WorkOrderContext wo : wos) {
 				Map<String, Object> recordPlaceHolders = WorkflowRuleAPI.getRecordPlaceHolders(moduleName, wo, WorkflowRuleAPI.getOrgPlaceHolders());
 				boolean shouldChangeState = WorkflowRuleAPI.evaluateWorkflowAndExecuteActions(stateflowTransition, moduleName, wo, StateFlowRulesAPI.getDefaultFieldChangeSet(moduleName, wo.getId()), recordPlaceHolders, (FacilioContext) context, false);
 				if (shouldChangeState) {

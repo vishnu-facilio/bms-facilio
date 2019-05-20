@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.commands;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -12,6 +13,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.log4j.LogManager;
 import org.json.simple.JSONObject;
 
@@ -51,7 +53,7 @@ import com.facilio.sql.GenericSelectRecordBuilder;
 public class UpdateWorkOrderCommand implements Command {
 	
 	private static org.apache.log4j.Logger log = LogManager.getLogger(UpdateWorkOrderCommand.class.getName());
-	private static final List<EventType> TYPES = Arrays.asList(EventType.EDIT, EventType.ASSIGN_TICKET, EventType.CLOSE_WORK_ORDER,  EventType.SOLVE_WORK_ORDER, EventType.HOLD_WORK_ORDER);
+	private static final List<EventType> TYPES = Arrays.asList(EventType.EDIT, EventType.ASSIGN_TICKET, EventType.CLOSE_WORK_ORDER,  EventType.SOLVE_WORK_ORDER, EventType.HOLD_WORK_ORDER, EventType.STATE_TRANSITION);
 	
 	@Override
 	public boolean execute(Context context) throws Exception {
@@ -81,7 +83,8 @@ public class UpdateWorkOrderCommand implements Command {
 				rowsUpdated += updateWorkOrders(workOrder, module, oldWoMap.values().stream().collect(Collectors.toList()), readings, activityType, changeSets, context, recordIds);
 			}
 			
-			if(TYPES.contains(activityType) || workOrder.getPriority() != null) {
+			if(((List<EventType>) context.get(FacilioConstants.ContextNames.EVENT_TYPE_LIST) != null && CollectionUtils.containsAny(TYPES, (List<EventType>) context.get(FacilioConstants.ContextNames.EVENT_TYPE_LIST))) 
+					|| TYPES.contains(activityType) || workOrder.getPriority() != null) {
 				SelectRecordsBuilder<WorkOrderContext> builder = new SelectRecordsBuilder<WorkOrderContext>()
 						.module(module)
 						.beanClass(WorkOrderContext.class)
