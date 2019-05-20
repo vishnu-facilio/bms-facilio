@@ -2,7 +2,9 @@ package com.facilio.bmsconsole.util;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ItemContext;
+import com.facilio.bmsconsole.context.ItemTransactionsContext;
 import com.facilio.bmsconsole.context.ItemTypesContext;
+import com.facilio.bmsconsole.context.WorkorderItemContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
@@ -127,5 +129,22 @@ public class ItemsApi {
 			return itemNameVsIdMap;
 		}
 		return null;
+	}
+	public static ItemTransactionsContext getItemTransactionsForRequestedLineItem(long requestedLineItem) throws Exception {
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule itemTransactionModule = modBean.getModule(FacilioConstants.ContextNames.ITEM_TRANSACTIONS);
+		List<FacilioField> itemTransactionFields = modBean.getAllFields(FacilioConstants.ContextNames.ITEM_TRANSACTIONS);
+
+		SelectRecordsBuilder<ItemTransactionsContext> selectBuilder = new SelectRecordsBuilder<ItemTransactionsContext>()
+				.select(itemTransactionFields).table(itemTransactionModule.getTableName())
+				.moduleName(itemTransactionModule.getName()).beanClass(ItemTransactionsContext.class)
+				.andCondition(CriteriaAPI.getCondition("REQUESTED_LINEITEM", "requestedLineItem", String.valueOf(requestedLineItem), NumberOperators.EQUALS));
+		
+		List<ItemTransactionsContext> itemTransactions = selectBuilder.get();
+		if(!CollectionUtils.isEmpty(itemTransactions)) {
+			return itemTransactions.get(0);
+		}
+		throw new IllegalArgumentException("Item shoud be issued before being used");
 	}
 }

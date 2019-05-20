@@ -11,6 +11,7 @@ import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.criteria.PickListOperators;
 import com.facilio.bmsconsole.modules.*;
 import com.facilio.bmsconsole.util.ItemsApi;
+import com.facilio.bmsconsole.util.TransactionState;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericSelectRecordBuilder;
@@ -49,7 +50,7 @@ public class PurchasedItemsQuantityRollUpCommand implements Command {
 		int totalQuantityConsumed = 0;
 		if (itemTransactions != null && !itemTransactions.isEmpty()) {
 			for (ItemTransactionsContext consumable : itemTransactions) {
-				if(consumable.getRequestedLineItem() == null) {
+				if(consumable.getTransactionStateEnum() != TransactionState.USE) {
 					if (consumable.getPurchasedItem() != null) {
 						uniquepurchasedItemsIds.add(consumable.getPurchasedItem().getId());
 					} else if (consumable.getAsset() != null) {

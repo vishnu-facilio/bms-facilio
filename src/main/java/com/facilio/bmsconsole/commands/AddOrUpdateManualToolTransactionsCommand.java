@@ -151,6 +151,9 @@ public class AddOrUpdateManualToolTransactionsCommand implements Command {
 		}
 		woTool.setQuantity(quantity);
 		woTool.setTool(tool);
+		if(toolTransaction.getRequestedLineItem() != null) {
+			woTool.setRequestedLineItem(toolTransaction.getRequestedLineItem());
+		}
 		woTool.setToolType(toolTypes);
 		woTool.setSysModifiedTime(System.currentTimeMillis());
 		woTool.setParentId(toolTransaction.getParentId());

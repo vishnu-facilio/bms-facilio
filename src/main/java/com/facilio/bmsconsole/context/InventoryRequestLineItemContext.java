@@ -144,7 +144,9 @@ public class InventoryRequestLineItemContext extends ModuleBaseWithCustomFields{
 		ItemContext item = ItemsApi.getItemsForTypeAndStore(this.getStoreRoom().getId(), this.getItemType().getId());
 		woItem.setItem(item);
 		woItem.setParentId(this.getParentId());
-		woItem.setAssetIds(Collections.singletonList(this.getAsset().getId()));
+		if(this.getAsset() != null && this.getAsset().getId() > 0) {
+			woItem.setAssetIds(Collections.singletonList(this.getAsset().getId()));
+		}
 		woItem.setQuantity(this.getQuantity());
 		woItem.setRequestedLineItem(this);
 		return woItem;
@@ -158,7 +160,9 @@ public class InventoryRequestLineItemContext extends ModuleBaseWithCustomFields{
 		ToolContext tool = ToolsApi.getToolsForTypeAndStore(this.getStoreRoom().getId(), this.getToolType().getId());
 		woTool.setTool(tool);
 		woTool.setParentId(this.getParentId());
-		woTool.setAssetIds(Collections.singletonList(this.getAsset().getId()));
+		if(this.getAsset() != null && this.getAsset().getId() > 0) {
+			woTool.setAssetIds(Collections.singletonList(this.getAsset().getId()));
+		}
 		woTool.setQuantity(this.getQuantity());
 		woTool.setDuration(3600000);
 		woTool.setRequestedLineItem(this);
@@ -175,6 +179,7 @@ public class InventoryRequestLineItemContext extends ModuleBaseWithCustomFields{
 		transaction.setItem(item);
 		transaction.setIssuedTo(requestedBy);
 		transaction.setParentId(requestedBy.getOuid());
+		transaction.setRequestedLineItem(this);
 		transaction.setTransactionType(3);
 		transaction.setTransactionState(2);
 		transaction.setQuantity(this.getQuantity());
@@ -193,6 +198,7 @@ public class InventoryRequestLineItemContext extends ModuleBaseWithCustomFields{
 		transaction.setTool(tool);
 		transaction.setIssuedTo(requestedBy);
 		transaction.setParentId(requestedBy.getOuid());
+		transaction.setRequestedLineItem(this);
 		transaction.setTransactionType(3);
 		transaction.setTransactionState(2);
 		transaction.setQuantity(this.getQuantity());

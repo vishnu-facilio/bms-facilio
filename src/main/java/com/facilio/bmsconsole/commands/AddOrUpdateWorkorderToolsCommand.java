@@ -5,6 +5,8 @@ import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.*;
 import com.facilio.bmsconsole.util.InventoryRequestAPI;
+import com.facilio.bmsconsole.util.ItemsApi;
+import com.facilio.bmsconsole.util.ToolsApi;
 import com.facilio.bmsconsole.util.TransactionState;
 import com.facilio.bmsconsole.util.TransactionType;
 import com.facilio.bmsconsole.workflow.rule.ApprovalState;
@@ -77,7 +79,7 @@ public class AddOrUpdateWorkorderToolsCommand implements Command {
 						}
 					}
 				} else {
-					if (tool.getCurrentQuantity() < workorderTool.getQuantity()) {
+					if (workorderTool.getRequestedLineItem() == null && tool.getCurrentQuantity() < workorderTool.getQuantity()) {
 						throw new IllegalArgumentException("Insufficient quantity in inventory!");
 					} else {
 						ApprovalState approvalState = ApprovalState.YET_TO_BE_REQUESTED;
@@ -89,7 +91,7 @@ public class AddOrUpdateWorkorderToolsCommand implements Command {
 							List<AssetContext> assets = getAssetsFromId(assetIds);
 							if (assets != null) {
 								for (AssetContext asset : assets) {
-									if(asset.isUsed()) {
+									if(workorderTool.getRequestedLineItem() == null && asset.isUsed()) {
 										throw new IllegalArgumentException("Insufficient quantity in inventory!");
 									}
 									WorkorderToolsContext woTool = new WorkorderToolsContext();
@@ -131,11 +133,21 @@ public class AddOrUpdateWorkorderToolsCommand implements Command {
 
 	private WorkorderToolsContext setWorkorderItemObj(PurchasedToolContext purchasedtool, double quantity,
 			ToolContext tool, long parentId, WorkOrderContext workorder, WorkorderToolsContext workorderTools,
-			ApprovalState approvalState, AssetContext asset, InventoryRequestLineItemContext lineItem) {
+			ApprovalState approvalState, AssetContext asset, InventoryRequestLineItemContext lineItem) throws Exception{
 		WorkorderToolsContext woTool = new WorkorderToolsContext();
 		woTool.setIssueTime(workorderTools.getIssueTime());
 		woTool.setReturnTime(workorderTools.getReturnTime());
 		woTool.setDuration(workorderTools.getDuration());
+		if(lineItem != null) {
+			woTool.setTransactionState(TransactionState.USE);
+			woTool.setRequestedLineItem(lineItem);
+			woTool.setParentTransactionId(ToolsApi.getToolTransactionsForRequestedLineItem(lineItem.getId()).getId());
+			
+		}
+		else {
+			woTool.setTransactionState(TransactionState.ISSUE);
+		}
+		
 		if(lineItem != null) {
 			woTool.setRequestedLineItem(lineItem);
 		}

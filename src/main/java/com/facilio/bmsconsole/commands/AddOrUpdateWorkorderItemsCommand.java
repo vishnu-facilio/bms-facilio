@@ -109,7 +109,7 @@ public class AddOrUpdateWorkorderItemsCommand implements Command {
 						}
 					}
 				} else {
-					if (item.getQuantity() < workorderitem.getQuantity()) {
+					if (workorderitem.getRequestedLineItem() == null && item.getQuantity() < workorderitem.getQuantity()) {
 						throw new IllegalArgumentException("Insufficient quantity in inventory!");
 					} else {
 						approvalState = ApprovalState.YET_TO_BE_REQUESTED;
@@ -121,7 +121,7 @@ public class AddOrUpdateWorkorderItemsCommand implements Command {
 							List<AssetContext> purchasedItem = getAssetsFromId(assetIds, assetModule, assetFields);
 							if (purchasedItem != null) {
 								for (AssetContext asset : purchasedItem) {
-									if (asset.isUsed()) {
+									if (workorderitem.getRequestedLineItem() == null && asset.isUsed()) {
 										throw new IllegalArgumentException("Insufficient quantity in inventory!");
 									}
 									JSONObject info = new JSONObject();
@@ -222,10 +222,9 @@ public class AddOrUpdateWorkorderItemsCommand implements Command {
 	}
 
 	private WorkorderItemContext setWorkorderItemObj(PurchasedItemContext purchasedItem, double quantity,
-			ItemContext item, long parentId, ApprovalState approvalState, WorkOrderContext wo, AssetContext asset, InventoryRequestLineItemContext lineItem) {
+			ItemContext item, long parentId, ApprovalState approvalState, WorkOrderContext wo, AssetContext asset, InventoryRequestLineItemContext lineItem) throws Exception{
 		WorkorderItemContext woItem = new WorkorderItemContext();
 		woItem.setTransactionType(TransactionType.WORKORDER);
-		woItem.setTransactionState(TransactionState.ISSUE);
 		woItem.setIsReturnable(false);
 		double costOccured = 0;
 		if (purchasedItem != null) {
@@ -237,6 +236,11 @@ public class AddOrUpdateWorkorderItemsCommand implements Command {
 		woItem.setQuantity(quantity);
 		if(lineItem != null) {
 			woItem.setRequestedLineItem(lineItem);
+			woItem.setTransactionState(TransactionState.USE);
+			woItem.setParentTransactionId(ItemsApi.getItemTransactionsForRequestedLineItem(lineItem.getId()).getId());
+		}
+		else {
+			woItem.setTransactionState(TransactionState.ISSUE);
 		}
 		woItem.setItem(item);
 		woItem.setItemType(item.getItemType());

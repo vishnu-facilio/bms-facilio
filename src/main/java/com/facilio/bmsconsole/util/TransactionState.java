@@ -3,7 +3,9 @@ package com.facilio.bmsconsole.util;
 public enum TransactionState {
 	ADDITION,
 	ISSUE,
-	RETURN;
+	RETURN,
+	USE
+	;
 	
 	public int getValue() {
 		return ordinal() + 1;

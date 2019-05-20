@@ -2,7 +2,9 @@ package com.facilio.bmsconsole.util;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ItemContext;
+import com.facilio.bmsconsole.context.ItemTransactionsContext;
 import com.facilio.bmsconsole.context.ToolContext;
+import com.facilio.bmsconsole.context.ToolTransactionContext;
 import com.facilio.bmsconsole.context.ToolTypesContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
@@ -113,6 +115,24 @@ public class ToolsApi {
 			return tools.get(0);
 		}
 	 throw new IllegalArgumentException("No appropriate tool found");
+	}
+
+	public static ToolTransactionContext getToolTransactionsForRequestedLineItem(long requestedLineItem) throws Exception {
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule toolTransactionModule = modBean.getModule(FacilioConstants.ContextNames.TOOL_TRANSACTIONS);
+		List<FacilioField> toolTransactionFields = modBean.getAllFields(FacilioConstants.ContextNames.TOOL_TRANSACTIONS);
+
+		SelectRecordsBuilder<ToolTransactionContext> selectBuilder = new SelectRecordsBuilder<ToolTransactionContext>()
+				.select(toolTransactionFields).table(toolTransactionModule.getTableName())
+				.moduleName(toolTransactionModule.getName()).beanClass(ToolTransactionContext.class)
+				.andCondition(CriteriaAPI.getCondition("REQUESTED_LINEITEM", "requestedLineItem", String.valueOf(requestedLineItem), NumberOperators.EQUALS));
+		
+		List<ToolTransactionContext> toolTransactions = selectBuilder.get();
+		if(!CollectionUtils.isEmpty(toolTransactions)) {
+			return toolTransactions.get(0);
+		}
+		throw new IllegalArgumentException("Tool shoud be issued before being used");
 	}
 
 }

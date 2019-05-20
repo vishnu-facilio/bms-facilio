@@ -90,6 +90,7 @@ public class AddOrUpdateInventoryRequestCommand implements Command{
 				AssetContext lineItemAsset = new AssetContext();
 				lineItemAsset.setId(lineItemContext.getAssetIds().get(0));
 				lineItemContext.setAsset(lineItemAsset);
+				lineItemContext.setQuantity(1);
 				for(int i=1; i<lineItemContext.getAssetIds().size(); i++) {
 					 InventoryRequestLineItemContext lineItem = new InventoryRequestLineItemContext();
 					 AssetContext asset = new AssetContext();

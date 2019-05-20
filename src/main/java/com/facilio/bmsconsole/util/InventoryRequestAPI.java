@@ -69,7 +69,7 @@ public class InventoryRequestAPI {
 			;
 			List<InventoryRequestLineItemContext> lineItems = builder.get();
 			if(CollectionUtils.isNotEmpty(lineItems)) {
-				if(woItemQuantity <= (lineItems.get(0).getQuantity() - lineItems.get(0).getUsedQuantity())) {
+				if(woItemQuantity <= (lineItems.get(0).getQuantity())) {
 					if(!itemType.isRotating()) {
 						updateRequestUsedQuantity(lineItems.get(0), woItemQuantity);
 					}

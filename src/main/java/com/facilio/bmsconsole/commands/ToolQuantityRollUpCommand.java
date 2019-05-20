@@ -8,6 +8,7 @@ import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.criteria.PickListOperators;
 import com.facilio.bmsconsole.modules.*;
+import com.facilio.bmsconsole.util.TransactionState;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericSelectRecordBuilder;
@@ -35,7 +36,9 @@ public class ToolQuantityRollUpCommand implements Command {
 				int totalQuantityConsumed = 0;
 
 				for (ToolTransactionContext consumable : toolTransactions) {
-					uniqueToolIds.add(consumable.getTool().getId());
+					if(consumable.getTransactionStateEnum() != TransactionState.USE) {
+					   uniqueToolIds.add(consumable.getTool().getId());
+					}
 				}
 
 				// List<Long> toolIds = (List<Long>)

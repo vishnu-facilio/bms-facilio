@@ -260,6 +260,9 @@ public class AddOrUpdateManualItemTransactionCommand implements Command {
 			ApprovalState approvalState, AssetContext asset) {
 		ItemTransactionsContext woItem = new ItemTransactionsContext();
 		woItem.setTransactionType(TransactionType.MANUAL);
+		if(itemTransactions.getRequestedLineItem() != null) {
+			woItem.setRequestedLineItem(itemTransactions.getRequestedLineItem());
+		}
 		woItem.setTransactionState(itemTransactions.getTransactionStateEnum());
 		woItem.setIsReturnable(true);
 		if (purchasedItem != null) {
