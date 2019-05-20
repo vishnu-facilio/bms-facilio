@@ -17,6 +17,7 @@ public class AgentKeys
     public static final String DEVICE_ID = "deviceId";
     public static final String DEVICE_DETAILS = "deviceDetails";
     public static final String MESSAGE_ID = "msgid";
+    public static final String MESSAGE = "message";
     public static final String ORG_ID = "orgId";
     public static final String AGENT_TABLE = "Agent_Data";
     public static final String FACILIO_MQTT_VERSION = "facilio.mqtt";
@@ -59,7 +60,24 @@ public class AgentKeys
     public static final String FINISH_TIME = "finishTime";
 
 
-
+    public enum AckMessageType {
+    		PROCESSING ("Processing"),
+    		EXECUTED ("Executed")
+    		;
+    	
+    		private String message;
+    		public String getMessage() {
+    			return message;
+    		}
+    		
+    		AckMessageType(String message) {
+    			this.message = message;
+    		}
+    		
+    		public boolean equals (String message) {
+    			return this.message.equals(message);
+    		}
+    }
 
 }
 

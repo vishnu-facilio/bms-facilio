@@ -24,7 +24,6 @@ import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.tasker.job.InstantJob;
-import com.facilio.wms.message.WmsPublishResponse;
 
 public class PublishedDataCheckerJob extends InstantJob {
 	
@@ -100,27 +99,17 @@ public class PublishedDataCheckerJob extends InstantJob {
 		String key = null;
 		LOGGER.info("Msg Map : "+msgMap);
 		if (msgMap.isEmpty()) {
-			IoTMessageAPI.acknowdledgeData(data.getId());
+			IoTMessageAPI.acknowdledgeData(data.getId(), false);
 			key = FacilioConstants.ContextNames.PUBLISH_SUCCESS;
 		}
 		else {
 			key = FacilioConstants.ContextNames.PUBLISH_FAILURE;
+			IoTMessageAPI.sendFailureNotification(data);
 		}
 		Consumer<PublishData> consumer = (Consumer<PublishData>) context.get(key);
 		if (consumer != null) {
 			consumer.accept(data);
 		}
-		sendNotification(data, -1);
 	}
 	
-	public static void sendNotification(PublishData publishData, long userId) {
-		
-		try {
-			WmsPublishResponse data = new WmsPublishResponse();
-			data.publish(publishData, userId);
-		}
-		catch (Exception e) {
-			LOGGER.error("Error occurred while sending publish response notification", e);
-		}
-	}
 }

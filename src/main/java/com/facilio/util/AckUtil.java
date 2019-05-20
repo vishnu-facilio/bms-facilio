@@ -1,11 +1,12 @@
 package com.facilio.util;
 
-import com.facilio.agent.AgentKeys;
-import com.facilio.beans.ModuleCRUDBean;
-import com.facilio.fw.BeanFactory;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
+
+import com.facilio.agent.AgentKeys;
+import com.facilio.beans.ModuleCRUDBean;
+import com.facilio.fw.BeanFactory;
 
 public class AckUtil
 {
@@ -20,8 +21,9 @@ public class AckUtil
 
         try {
             Long msgId = (Long) payLoad.get(AgentKeys.MESSAGE_ID);
+            String message = (String) payLoad.get(AgentKeys.MESSAGE);
             ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", orgId);
-            bean.acknowledgePublishedMessage(msgId);
+            bean.acknowledgePublishedMessage(msgId, message);
         }catch(Exception e){
             LOGGER.info("EXxception occured",e);
         }

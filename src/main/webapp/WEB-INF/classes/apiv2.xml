@@ -1148,9 +1148,6 @@
 			method="getInstancesForController">
 			<param name="showInstanceCount">true</param>
 		</action>
-		<action name="testNotification" class="com.facilio.bmsconsole.actions.TimeSeries"
-			method="testNotification">
-		</action>
 		<action name="*" class="com.facilio.bmsconsole.actions.TimeSeries"
 			method="getInstancesForController">
 			<param name="controllerId">{1}</param>

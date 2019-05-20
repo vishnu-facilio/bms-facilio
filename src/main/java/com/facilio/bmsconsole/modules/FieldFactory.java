@@ -2975,7 +2975,9 @@ public class FieldFactory {
 		fields.add(getControllerIdField(module));
 		fields.add(getField("createdTime", "CREATED_TIME", module, FieldType.DATE_TIME));
 		fields.add(getField("acknowledgeTime", "ACKNOWLEDGE_TIME", module, FieldType.DATE_TIME));
+		fields.add(getField("responseAckTime", "RESPONSE_ACKNOWLEDGE_TIME", module, FieldType.DATE_TIME));
 		fields.add(getField("responseJson", "RESPONSE_JSON", module, FieldType.STRING));
+		fields.add(getField("command", "COMMAND", module, FieldType.NUMBER));
 		return fields;
 	}
 	
@@ -2988,6 +2990,7 @@ public class FieldFactory {
 		fields.add(getField("parentId", "PARENT_ID", module, FieldType.LOOKUP));
 		fields.add(getField("sentTime", "SENT_TIME", module, FieldType.DATE_TIME));
 		fields.add(getField("acknowledgeTime", "ACKNOWLEDGE_TIME", module, FieldType.DATE_TIME));
+		fields.add(getField("responseAckTime", "RESPONSE_ACKNOWLEDGE_TIME", module, FieldType.DATE_TIME));
 		fields.add(getField("dataStr", "MSG_DATA", module, FieldType.STRING));
 		fields.add(getField("responseJson", "RESPONSE_JSON", module, FieldType.STRING));
 		return fields;

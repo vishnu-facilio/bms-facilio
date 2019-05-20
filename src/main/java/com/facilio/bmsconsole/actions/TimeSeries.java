@@ -11,7 +11,6 @@ import org.apache.commons.chain.Chain;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.apache.struts2.ServletActionContext;
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
@@ -19,85 +18,18 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.PublishData;
-import com.facilio.bmsconsole.context.PublishMessage;
 import com.facilio.bmsconsole.context.ReadingContext.SourceType;
 import com.facilio.bmsconsole.criteria.Criteria;
-import com.facilio.bmsconsole.instant.jobs.PublishedDataCheckerJob;
 import com.facilio.bmsconsole.util.IoTMessageAPI;
 import com.facilio.bmsconsole.util.IoTMessageAPI.IotCommandType;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.timeseries.TimeSeriesAPI;
-import com.facilio.wms.message.Message;
-import com.facilio.wms.message.MessageType;
-import com.facilio.wms.message.WmsPublishResponse;
-import com.facilio.wms.util.WmsApi;
 
 public class TimeSeries extends FacilioAction {
 	
 	private static final long serialVersionUID = 1L;
 	private static final Logger LOGGER = LogManager.getLogger(TimeSeries.class.getName());
-	
-	public String testNotification() throws Exception {
-		if (type == 1) {
-			Message message = new Message(MessageType.BROADCAST);
-			message.setNamespace("system");
-			message.setAction("reload");
-			//message.setEventType(WmsEvent.WmsEventType.RECORD_UPDATE);
-			message.addData("time", System.currentTimeMillis());
-			message.addData("sound", false);
-			WmsApi.broadCastMessage(message);
-		}
-		else if (type == 2) {
-			Message message = new WmsPublishResponse();
-			message.setAction("publish");
-			message.addData("time", System.currentTimeMillis());
-			message.addData("sound", false);
-			WmsApi.sendPubSubMessage(Collections.singletonList(userId), message);
-		}
-		else if (type == 3) {
-			
-			Message message = new Message();
-			if (instanceAssetMap.containsKey("messageType")) {
-				message.setMessageType((String) instanceAssetMap.get("messageType"));
-			}
-			message.setNamespace((String) instanceAssetMap.get("namespace"));
-			message.setAction((String) instanceAssetMap.get("action"));
-			message.addData("time", System.currentTimeMillis());
-			message.addData("sound", false);
-			WmsApi.broadCastMessage(message);
-		}
-		else {
-			JSONArray instanceArray = new JSONArray();
-			JSONObject obj = new JSONObject();
-			obj.put("instance", "instance1");
-			obj.put("device", "device1");
-			instanceArray.add(obj);
-			PublishMessage pubmsg = new PublishMessage();
-			JSONObject aa = new JSONObject();
-			aa.put("message", "message1");
-			pubmsg.setData(aa);
-			PublishData data = new PublishData();
-			data.setMessages(Collections.singletonList(pubmsg));
-			PublishedDataCheckerJob.sendNotification(data, userId);
-		}
-		return SUCCESS;
-	}
-	
-	private long userId = -1;
-	public long getUserId() {
-		return userId;
-	}
-	public void setUserId(long userId) {
-		this.userId = userId;
-	}
-	private int type = -1;
-	public int getType() {
-		return type;
-	}
-	public void setType(int type) {
-		this.type = type;
-	}
 	
 	public String publish() throws Exception
 	{

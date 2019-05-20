@@ -1,5 +1,23 @@
 package com.facilio.wms.util;
 
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import javax.websocket.EncodeException;
+
+import org.apache.kafka.clients.producer.RecordMetadata;
+import org.json.simple.JSONObject;
+
 import com.amazonaws.services.kinesis.model.PutRecordResult;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
@@ -8,37 +26,28 @@ import com.facilio.procon.message.FacilioRecord;
 import com.facilio.procon.producer.FacilioProducer;
 import com.facilio.wms.endpoints.FacilioClientEndpoint;
 import com.facilio.wms.endpoints.SessionManager;
-import com.facilio.wms.message.*;
-import org.apache.kafka.clients.producer.RecordMetadata;
-import org.json.simple.JSONObject;
-
-import javax.websocket.EncodeException;
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.nio.ByteBuffer;
-import java.nio.charset.Charset;
-import java.util.*;
-import java.util.concurrent.Future;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import com.facilio.wms.message.Message;
+import com.facilio.wms.message.WmsChatMessage;
+import com.facilio.wms.message.WmsEvent;
+import com.facilio.wms.message.WmsNotification;
+import com.facilio.wms.message.WmsPublishResponse;
+import com.facilio.wms.message.WmsRemoteScreenMessage;
 
 public class WmsApi
 {
 	private static final Logger LOGGER = Logger.getLogger(WmsApi.class.getName());
 	private static String kinesisNotificationTopic = "notifications";
 	
-	private static String WEBSOCKET_URL = "ws://localhost:8080/bms/websocket";
+	private static String WEBSOCKET_URL = "ws://localhost:8080/ROOT/websocket";
 	private static Map<String, FacilioClientEndpoint> FACILIO_CLIENT_ENDPOINTS = new HashMap<>();
 	private static FacilioProducer producer;
 	
 	static {
-		String socketUrl = AwsUtil.getConfig("app.domain");
-		if (socketUrl != null) {
-			WEBSOCKET_URL = "wss://"+socketUrl+"/websocket";
-		}
-
 		if(! AwsUtil.isDevelopment()) {
+			String socketUrl = AwsUtil.getConfig("app.domain");
+			if (socketUrl != null) {
+				WEBSOCKET_URL = "wss://"+socketUrl+"/websocket";
+			}
 			kinesisNotificationTopic = AwsUtil.getConfig("environment") + "-" + kinesisNotificationTopic;
 			producer = new FacilioKafkaProducer(kinesisNotificationTopic);
 			LOGGER.info("Initialized Kafka Producer");
