@@ -243,7 +243,7 @@ public class GatePassAction extends FacilioAction {
 	
 	public String deleteGatePass() throws Exception {
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, gatePassId != -1 ? Collections.singletonList(gatePassId) : gatePassIds);
+		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, gatePassIds);
 		Chain chain = TransactionChainFactory.getGatePassDeleteChain();
 		chain.execute(context);
 		
