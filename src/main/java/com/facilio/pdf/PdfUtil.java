@@ -1,17 +1,17 @@
 package com.facilio.pdf;
 
+import java.io.File;
+import java.io.IOException;
+
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.executor.CommandExecutor;
 import com.facilio.fs.FileInfo.FileFormat;
 import com.facilio.fs.FileStore;
 import com.facilio.fs.FileStoreFactory;
 import com.facilio.fw.auth.CognitoUtil;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.Arrays;
 
 public class PdfUtil {
 
@@ -86,7 +86,12 @@ public class PdfUtil {
           return pdfFileLocation;
           
     }
+    
     public static String exportUrlAsPdf(long orgId, String username, String url, FileFormat... formats){
+    		return exportUrlAsPdf(orgId, username, url, false, formats);
+    }
+    
+    public static String exportUrlAsPdf(long orgId, String username, String url, boolean isS3Url, FileFormat... formats){
         FileFormat format = FileFormat.PDF;
         if (formats != null && formats.length > 0) {
             format = formats[0];
@@ -98,6 +103,9 @@ public class PdfUtil {
             long fileId = 0;
             try {
                 fileId = fs.addFile(pdfFile.getName(), pdfFile, format.getContentType());
+                if (isS3Url) {
+                		return fs.getOrgiDownloadUrl(fileId);
+                }
                 return fs.getDownloadUrl(fileId);
             } catch (Exception e) {
                 LOGGER.info("Exception occurred ", e);

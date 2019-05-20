@@ -1,5 +1,16 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
+import org.apache.commons.collections.CollectionUtils;
+import org.json.simple.JSONObject;
+
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.modules.AggregateOperator;
@@ -13,13 +24,11 @@ import com.facilio.bmsconsole.util.ExportUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fs.FileInfo.FileFormat;
 import com.facilio.pdf.PdfUtil;
-import com.facilio.report.context.*;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.apache.commons.collections.CollectionUtils;
-import org.json.simple.JSONObject;
-
-import java.util.*;
+import com.facilio.report.context.ReportContext;
+import com.facilio.report.context.ReportDataPointContext;
+import com.facilio.report.context.ReportFieldContext;
+import com.facilio.report.context.ReportGroupByField;
+import com.facilio.report.context.ReportYAxisContext;
 
 public class GetExportModuleReportFileCommand implements Command {
 
@@ -58,7 +67,7 @@ private static final String ALIAS = "alias";
 				url.append("&charttype=").append(chartType);
 			}
 			
-			fileUrl = PdfUtil.exportUrlAsPdf(AccountUtil.getCurrentOrg().getOrgId(), AccountUtil.getCurrentUser().getEmail(), url.toString(), fileFormat);
+			fileUrl = PdfUtil.exportUrlAsPdf(AccountUtil.getCurrentOrg().getOrgId(), AccountUtil.getCurrentUser().getEmail(), url.toString(), isS3Url, fileFormat);
 		}
 		
 		context.put(FacilioConstants.ContextNames.FILE_URL, fileUrl);
