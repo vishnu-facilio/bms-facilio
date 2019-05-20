@@ -50,7 +50,7 @@ public class PurchasedItemsQuantityRollUpCommand implements Command {
 		int totalQuantityConsumed = 0;
 		if (itemTransactions != null && !itemTransactions.isEmpty()) {
 			for (ItemTransactionsContext consumable : itemTransactions) {
-				if(consumable.getTransactionStateEnum() != TransactionState.USE) {
+				if(consumable.getTransactionStateEnum() != TransactionState.USE || consumable.getParentTransactionId() <= 0) {
 					if (consumable.getPurchasedItem() != null) {
 						uniquepurchasedItemsIds.add(consumable.getPurchasedItem().getId());
 					} else if (consumable.getAsset() != null) {
@@ -129,6 +129,9 @@ public class PurchasedItemsQuantityRollUpCommand implements Command {
 				FieldType.DECIMAL));
 		fields.add(FieldFactory.getField("returns", "sum(case WHEN TRANSACTION_STATE = 3 THEN QUANTITY ELSE 0 END)",
 				FieldType.DECIMAL));
+		fields.add(FieldFactory.getField("used", "sum(case WHEN TRANSACTION_STATE = 4 AND PARENT_TRANSACTION_ID <= 0 THEN QUANTITY ELSE 0 END)",
+				FieldType.DECIMAL));
+	
 		builder.select(fields);
 
 		builder.andCondition(CriteriaAPI.getCondition(consumableFieldMap.get(fieldName),
@@ -136,10 +139,13 @@ public class PurchasedItemsQuantityRollUpCommand implements Command {
 
 		List<Map<String, Object>> rs = builder.get();
 		if (rs != null && rs.size() > 0) {
-			double addition = 0, issues = 0, returns = 0;
+			double addition = 0, issues = 0, returns = 0, used = 0;
 			addition = rs.get(0).get("addition") != null ? (double) rs.get(0).get("addition") : 0;
 			issues = rs.get(0).get("issues") != null ? (double) rs.get(0).get("issues") : 0;
 			returns = rs.get(0).get("returns") != null ? (double) rs.get(0).get("returns") : 0;
+			used = rs.get(0).get("used") != null ? (double) rs.get(0).get("used") : 0;
+			issues += used;
+			
 			return ((addition + returns) - issues);
 		}
 		return 0d;

@@ -234,13 +234,11 @@ public class AddOrUpdateWorkorderItemsCommand implements Command {
 			}
 		}
 		woItem.setQuantity(quantity);
+		woItem.setTransactionState(TransactionState.USE);
+		
 		if(lineItem != null) {
 			woItem.setRequestedLineItem(lineItem);
-			woItem.setTransactionState(TransactionState.USE);
 			woItem.setParentTransactionId(ItemsApi.getItemTransactionsForRequestedLineItem(lineItem.getId()).getId());
-		}
-		else {
-			woItem.setTransactionState(TransactionState.ISSUE);
 		}
 		woItem.setItem(item);
 		woItem.setItemType(item.getItemType());

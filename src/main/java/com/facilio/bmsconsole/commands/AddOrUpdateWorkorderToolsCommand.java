@@ -138,14 +138,12 @@ public class AddOrUpdateWorkorderToolsCommand implements Command {
 		woTool.setIssueTime(workorderTools.getIssueTime());
 		woTool.setReturnTime(workorderTools.getReturnTime());
 		woTool.setDuration(workorderTools.getDuration());
+		woTool.setTransactionState(TransactionState.USE);
+		
 		if(lineItem != null) {
-			woTool.setTransactionState(TransactionState.USE);
 			woTool.setRequestedLineItem(lineItem);
 			woTool.setParentTransactionId(ToolsApi.getToolTransactionsForRequestedLineItem(lineItem.getId()).getId());
 			
-		}
-		else {
-			woTool.setTransactionState(TransactionState.ISSUE);
 		}
 		
 		if(lineItem != null) {

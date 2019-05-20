@@ -12,6 +12,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.InventoryRequestContext;
 import com.facilio.bmsconsole.context.InventoryRequestLineItemContext;
+import com.facilio.bmsconsole.criteria.CommonOperators;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
@@ -94,8 +95,12 @@ public class GetInventoryRequestListCommand implements Command {
 		Integer status = (Integer)context.get(FacilioConstants.ContextNames.STATUS);
 		
 		if(storeRoomId != null && status != null && storeRoomId > 0 && status >0) {
-			builder.andCondition(CriteriaAPI.getCondition("STOREROOM", "storeRoom", String.valueOf(storeRoomId), NumberOperators.EQUALS));
+			Criteria criteria = new Criteria();
+			criteria.addAndCondition(CriteriaAPI.getCondition("STOREROOM", "storeRoom", String.valueOf(storeRoomId), NumberOperators.EQUALS));
+			criteria.addOrCondition(CriteriaAPI.getCondition("STOREROOM", "storeRoom", "",CommonOperators.IS_EMPTY));
+			
 			builder.andCondition(CriteriaAPI.getCondition("STATUS", "status", String.valueOf(status), NumberOperators.EQUALS));
+			builder.andCriteria(criteria);
 				
 		}
 		
