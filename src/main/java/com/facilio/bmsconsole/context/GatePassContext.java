@@ -102,6 +102,7 @@ public class GatePassContext extends ModuleBaseWithCustomFields {
 		REQUESTED,
 		APPROVED,
 		ISSUED,
+		REJECTED,
 		RETURNED,
 		COMPLETED;
 		
