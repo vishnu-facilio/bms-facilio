@@ -1,15 +1,11 @@
 package com.facilio.bmsconsole.util;
 
-import java.lang.reflect.Array;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang3.StringEscapeUtils;
-import org.apache.commons.text.StringSubstitutor;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -21,14 +17,8 @@ import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
-import com.facilio.bmsconsole.templates.DefaultTemplate.DefaultTemplateType;
-import com.facilio.bmsconsole.workflow.rule.ActionContext;
-import com.facilio.bmsconsole.workflow.rule.ActionType;
-import com.facilio.bmsconsole.workflow.rule.AlarmRuleContext;
-import com.facilio.bmsconsole.workflow.rule.EventType;
-import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
-import com.facilio.bmsconsole.workflow.rule.WorkflowEventContext;
-import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext.ThresholdType;
+import com.facilio.bmsconsole.workflow.rule.*;
+import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext.*;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.util.FacilioUtil;
@@ -68,6 +58,15 @@ public class RuleTemplateAPI {
 				long operator = (long) rulesObject.get("operatorId");
 				rule.setOperatorId((int) operator);
 				rule.setPercentage((String) rulesObject.get("percentage"));
+				if (rulesObject.get("occurences") != null) {
+					rule.setOccurences((int) rulesObject.get("occurences"));
+				}
+				if (rulesObject.get("interval") != null) {
+					rule.setInterval((long) rulesObject.get("interval"));
+				}
+				if (rulesObject.get("consecutive") != null) {
+					rule.setConsecutive((Boolean) rulesObject.get("interval"));
+				}
 			break;
 			case AGGREGATION:
 			break;
@@ -76,6 +75,15 @@ public class RuleTemplateAPI {
 			case FLAPPING:
 			break;
 			case ADVANCED:
+				if (rulesObject.get("occurences") != null) {
+					rule.setOccurences(Integer.valueOf((String) rulesObject.get("occurences")));
+				}
+				if (rulesObject.get("for") != null) {
+					rule.setOverPeriod(Long.valueOf((String) rulesObject.get("for")));
+				}
+				if (rulesObject.get("consecutive") != null) {
+					rule.setConsecutive(Boolean.parseBoolean((String) rulesObject.get("consecutive")));
+				}
 			break;
 			case FUNCTION:
 			break;

@@ -2799,13 +2799,13 @@
 				  "severity": "Critical",
 				  "possible_causes": "-Due to improper run of Enthalpy wheel\n-Cooling coil actuator is open when not required",
 				  "moduleName": "ahureading",
-				  "description": "Supply air temperature is less than supply air temperature set-point by 95% for at least 300 seconds.",
+				  "description": "Supply air temperature is less than supply air temperature set-point by 95% for at least one hour.",
 				  "threshold_metric": "supplyairdamperstatus",
 				  "possible_solution": "Check for valve logic operation",
 				  "alarmCondition": {
 				    "condition": "{{supplyairtemperature}} < 0.90* {{supplyairtemperaturesetpoint}}",
 				    "workflow": {
-				      "resultEvaluator": "A < ( B *  C)",
+				      "resultEvaluator": "A < ( B *  D)",
 				      "workflowUIMode": 1,
 				      "expressions": [
 				        {
@@ -2855,7 +2855,9 @@
 				      ]
 				    },
 				    "condition_statement": "When Supply air temperature set-point  is greater than supply air temperature",
-				    "for": "10",
+				    "for": "${interval}",
+				    "occurences": "${occurences}",
+				    "consecutive": "${consecutive}",
 				    "action": "TRIGGER_ALARM",
 				    "threshold_metric": "supplyairdamperstatus",
 				    "thresholdType": 5
@@ -2917,8 +2919,28 @@
 				      },
 				      "uniqueId": "resource"
 				    },
-				    "2": {
-				      "default_value": "10",
+				   	"2": {
+				      "default_value": 4,
+				      "label": "Occurences",
+				      "type": "rules",
+				      "selection_criteria": {
+				        "displayType": "NUMBER"
+				      },
+				      "uniqueId": "occurences"
+				    },
+				    "3": {
+				      "default_value": "false",
+				      "label": "Type",
+				      "type": "rules",
+				      "selection_criteria": {
+				        "displayType": "Radio",
+				        "trueVal": "Consecutive",
+				        "falseVal": "Over Period"
+				     	},
+				      "uniqueId": "consecutive"
+				    },
+				     "4": {
+				      "default_value": 3600,
 				      "label": "Interval",
 				      "type": "rules",
 				      "selection_criteria": {
@@ -2926,7 +2948,7 @@
 				      },
 				      "uniqueId": "interval"
 				    }
-				  }
+				 }
 				}
 		},
 		"24": {
