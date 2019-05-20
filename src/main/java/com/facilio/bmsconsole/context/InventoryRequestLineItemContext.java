@@ -170,15 +170,15 @@ public class InventoryRequestLineItemContext extends ModuleBaseWithCustomFields{
 		return woTool;
 	}
 	
-	public ItemTransactionsContext contructManualItemTransactionContext(User requestedBy) throws Exception {
+	public ItemTransactionsContext contructManualItemTransactionContext(User requestedFor) throws Exception {
 		ItemTransactionsContext transaction = new ItemTransactionsContext();
 		if(this.getStoreRoom() == null) {
 			throw new IllegalArgumentException("No appropriate Item found");
 		}
 		ItemContext item = ItemsApi.getItemsForTypeAndStore(this.getStoreRoom().getId(), this.getItemType().getId());
 		transaction.setItem(item);
-		transaction.setIssuedTo(requestedBy);
-		transaction.setParentId(requestedBy.getOuid());
+		transaction.setIssuedTo(requestedFor);
+		transaction.setParentId(requestedFor.getOuid());
 		transaction.setRequestedLineItem(this);
 		transaction.setTransactionType(3);
 		transaction.setTransactionState(2);
@@ -189,15 +189,15 @@ public class InventoryRequestLineItemContext extends ModuleBaseWithCustomFields{
 		return transaction;
 		
 	}
-	public ToolTransactionContext contructManualToolTransactionContext(User requestedBy) throws Exception {
+	public ToolTransactionContext contructManualToolTransactionContext(User requestedFor) throws Exception {
 		ToolTransactionContext transaction = new ToolTransactionContext();
 		if(this.getStoreRoom() == null) {
 			throw new IllegalArgumentException("No appropriate Tool found");
 		}
 		ToolContext tool = ToolsApi.getToolsForTypeAndStore(this.getStoreRoom().getId(), this.getToolType().getId());
 		transaction.setTool(tool);
-		transaction.setIssuedTo(requestedBy);
-		transaction.setParentId(requestedBy.getOuid());
+		transaction.setIssuedTo(requestedFor);
+		transaction.setParentId(requestedFor.getOuid());
 		transaction.setRequestedLineItem(this);
 		transaction.setTransactionType(3);
 		transaction.setTransactionState(2);

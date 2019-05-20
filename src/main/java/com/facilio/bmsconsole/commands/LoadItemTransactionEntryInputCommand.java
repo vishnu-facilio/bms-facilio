@@ -26,10 +26,10 @@ public class LoadItemTransactionEntryInputCommand implements Command{
 			
 			for(InventoryRequestLineItemContext lineItem : request.getLineItems()) {
 				if(lineItem.getInventoryType() == InventoryType.ITEM.getValue()) {
-					itemTransactions.add(lineItem.contructManualItemTransactionContext(request.getRequestedBy()));
+					itemTransactions.add(lineItem.contructManualItemTransactionContext(request.getRequestedFor()));
 				}
 				else if(lineItem.getInventoryType() == InventoryType.TOOL.getValue()) {
-					toolTransactions.add(lineItem.contructManualToolTransactionContext(request.getRequestedBy()));
+					toolTransactions.add(lineItem.contructManualToolTransactionContext(request.getRequestedFor()));
 				}
 			}
 			context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.CREATE);

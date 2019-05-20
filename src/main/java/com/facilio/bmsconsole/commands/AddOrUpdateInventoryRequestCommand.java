@@ -46,9 +46,9 @@ public class AddOrUpdateInventoryRequestCommand implements Command{
 			if (CollectionUtils.isEmpty(inventoryRequestContext.getLineItems())) {
 				throw new Exception("Line items cannot be empty");
 			}
-			// setting current user to requestedBy
-			if(inventoryRequestContext.getRequestedBy() == null) {
-		 	  inventoryRequestContext.setRequestedBy(AccountUtil.getCurrentUser());
+			// setting current user to requestedFor
+			if(inventoryRequestContext.getRequestedFor() == null) {
+		 	  inventoryRequestContext.setRequestedFor(AccountUtil.getCurrentUser());
 			}
 			if (inventoryRequestContext.getId() > 0) {
 				updateRecord(inventoryRequestContext, module, fields);

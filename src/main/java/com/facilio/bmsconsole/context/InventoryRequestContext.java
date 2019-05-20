@@ -111,6 +111,15 @@ public class InventoryRequestContext extends ModuleBaseWithCustomFields{
 		this.requestedBy = requestedBy;
 	}
 	
+	private User requestedFor;
+	
+	public User getRequestedFor() {
+		return requestedFor;
+	}
+	public void setRequestedFor(User requestedFor) {
+		this.requestedFor = requestedFor;
+	}
+
 	private long parentId = -1;
 	public long getParentId() {
 		return parentId;

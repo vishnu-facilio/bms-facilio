@@ -36,7 +36,7 @@ public class GetInventoryRequestLineItemsByRequesterIdCommand implements Command
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(moduleName);
 
-		Long requestedBy = (Long) context.get(FacilioConstants.ContextNames.REQUESTER);
+		Long requestedFor = (Long) context.get(FacilioConstants.ContextNames.REQUESTER);
 		Integer status = (Integer) context.get(FacilioConstants.ContextNames.STATUS);
 		
 		List<FacilioField> fields = modBean.getAllFields(moduleName);
@@ -46,7 +46,7 @@ public class GetInventoryRequestLineItemsByRequesterIdCommand implements Command
 				.module(module)
 				.beanClass(FacilioConstants.ContextNames.getClassFromModuleName(moduleName))
 				.select(fields)
-				.andCondition(CriteriaAPI.getCondition("REQUESTED_BY", "requestedBy", String.valueOf(requestedBy), NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition("REQUESTED_FOR", "requestedFor", String.valueOf(requestedFor), NumberOperators.EQUALS))
 				.andCondition(CriteriaAPI.getCondition("PARENT_ID", "parentId", "", CommonOperators.IS_EMPTY))
 		;
 		
