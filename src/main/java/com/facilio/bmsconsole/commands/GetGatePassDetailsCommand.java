@@ -18,6 +18,7 @@ import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.LookupField;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
+import com.facilio.bmsconsole.util.GatePassAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 
@@ -27,21 +28,7 @@ public class GetGatePassDetailsCommand implements Command{
 	public boolean execute(Context context) throws Exception {
 		GatePassContext gatePassContext = (GatePassContext) context.get(FacilioConstants.ContextNames.RECORD);
 		if(gatePassContext!=null) {
-			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.GATE_PASS_LINE_ITEMS);
-			List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.GATE_PASS_LINE_ITEMS);
-			Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
-			
-			SelectRecordsBuilder<GatePassLineItemsContext> builder = new SelectRecordsBuilder<GatePassLineItemsContext>()
-					.module(module)
-					.select(fields)
-					.beanClass(GatePassLineItemsContext.class)
-					.andCondition(CriteriaAPI.getCondition(fieldsAsMap.get("gatePass"), String.valueOf(gatePassContext.getId()), NumberOperators.EQUALS))
-			        .fetchLookups(Arrays.asList((LookupField) fieldsAsMap.get("itemType"),
-					(LookupField) fieldsAsMap.get("toolType")))
-			        ;
-			List<GatePassLineItemsContext> list = builder.get();
-			gatePassContext.setLineItems(list);
+			GatePassAPI.setLineItems(gatePassContext);
 			context.put(FacilioConstants.ContextNames.GATE_PASS, gatePassContext);
 		}
 		return false;
