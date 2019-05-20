@@ -84,7 +84,7 @@ public class AddOrUpdateManualItemTransactionCommand implements Command {
 								throw new IllegalArgumentException("Insufficient quantity in inventory!");
 							} else {
 								approvalState = ApprovalState.YET_TO_BE_REQUESTED;
-								if (itemType.isApprovalNeeded() || storeRoom.isApprovalNeeded()) {
+								if (itemTransaction.getRequestedLineItem() != null && itemTransaction.getRequestedLineItem().getId() > 0) {
 									approvalState = ApprovalState.APPROVED;
 								}
 								JSONObject info = new JSONObject();
@@ -116,7 +116,7 @@ public class AddOrUpdateManualItemTransactionCommand implements Command {
 						throw new IllegalArgumentException("Insufficient quantity in inventory!");
 					} else {
 						approvalState = ApprovalState.YET_TO_BE_REQUESTED;
-						if (itemType.isApprovalNeeded() || storeRoom.isApprovalNeeded()) {
+						if (itemTransaction.getRequestedLineItem() != null && itemTransaction.getRequestedLineItem().getId() > 0) {
 							approvalState = ApprovalState.APPROVED;
 						}
 						if (itemType.isRotating()) {

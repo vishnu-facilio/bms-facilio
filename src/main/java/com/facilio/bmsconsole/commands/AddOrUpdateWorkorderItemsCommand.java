@@ -58,7 +58,7 @@ public class AddOrUpdateWorkorderItemsCommand implements Command {
 				ItemTypesContext itemType = getItemType(itemTypesId);
 				StoreRoomContext storeRoom = item.getStoreRoom();
 				WorkOrderContext wo = getWorkorderContext(parentId);
-				if(itemType.isApprovalNeeded() || storeRoom.isApprovalNeeded()) {
+				if (workorderitem.getRequestedLineItem() != null && workorderitem.getRequestedLineItem().getId() > 0) {
 					if(!InventoryRequestAPI.checkQuantityForWoItemNeedingApproval(itemType, workorderitem.getRequestedLineItem(), workorderitem.getQuantity())) {
 						throw new IllegalArgumentException("Please check the quantity approved in the request");
 					}
@@ -84,7 +84,7 @@ public class AddOrUpdateWorkorderItemsCommand implements Command {
 								throw new IllegalArgumentException("Insufficient quantity in inventory!");
 							} else {
 								approvalState = ApprovalState.YET_TO_BE_REQUESTED;
-								if (itemType.isApprovalNeeded() || storeRoom.isApprovalNeeded()) {
+								if (workorderitem.getRequestedLineItem() != null && workorderitem.getRequestedLineItem().getId() > 0) {
 									approvalState = ApprovalState.APPROVED;
 								}
 								JSONObject info = new JSONObject();
@@ -113,7 +113,7 @@ public class AddOrUpdateWorkorderItemsCommand implements Command {
 						throw new IllegalArgumentException("Insufficient quantity in inventory!");
 					} else {
 						approvalState = ApprovalState.YET_TO_BE_REQUESTED;
-						if (itemType.isApprovalNeeded() || storeRoom.isApprovalNeeded()) {
+						if (workorderitem.getRequestedLineItem() != null && workorderitem.getRequestedLineItem().getId() > 0) {
 							approvalState = ApprovalState.APPROVED;
 						}
 						if (itemType.isRotating()) {

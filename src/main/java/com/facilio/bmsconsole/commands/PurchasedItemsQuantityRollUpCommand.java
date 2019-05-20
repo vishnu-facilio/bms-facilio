@@ -129,7 +129,7 @@ public class PurchasedItemsQuantityRollUpCommand implements Command {
 				FieldType.DECIMAL));
 		fields.add(FieldFactory.getField("returns", "sum(case WHEN TRANSACTION_STATE = 3 THEN QUANTITY ELSE 0 END)",
 				FieldType.DECIMAL));
-		fields.add(FieldFactory.getField("used", "sum(case WHEN TRANSACTION_STATE = 4 AND PARENT_TRANSACTION_ID <= 0 THEN QUANTITY ELSE 0 END)",
+		fields.add(FieldFactory.getField("used", "sum(case WHEN TRANSACTION_STATE = 4 AND (PARENT_TRANSACTION_ID <= 0 OR PARENT_TRANSACTION_ID IS NULL) THEN QUANTITY ELSE 0 END)",
 				FieldType.DECIMAL));
 	
 		builder.select(fields);
