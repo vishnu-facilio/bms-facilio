@@ -156,6 +156,9 @@ public class CriteriaAPI {
 					criteria.setConditions(conditions);
 				}
 				Condition condition = FieldUtil.getAsBeanFromMap(props, Condition.class);
+				if(condition.getCriteriaValueId() > 0) {
+					condition.setCriteriaValue(getCriteria(orgId, condition.getCriteriaValueId()));
+				}
 				conditions.put(String.valueOf(condition.getSequence()), condition);
 			}
 		}

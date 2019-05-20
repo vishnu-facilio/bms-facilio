@@ -47,6 +47,9 @@ public enum LookupOperator implements Operator<Criteria> {
 					LookupField lookupField = (LookupField) modBean.getField(module[1], module[0]);
 					
 					FacilioModule lookupModule = lookupField.getLookupModule();
+					if(lookupModule == null && lookupField.getSpecialType() != null) {
+						lookupModule = modBean.getModule(lookupField.getSpecialType());
+					}
 					if(module != null) {
 						StringBuilder builder = new StringBuilder();
 						builder.append(lookupField.getTableName())
