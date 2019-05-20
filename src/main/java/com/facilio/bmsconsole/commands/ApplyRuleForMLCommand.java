@@ -20,7 +20,7 @@ public class ApplyRuleForMLCommand implements Command {
 		
 		MLContext mlContext = (MLContext) context.get(FacilioConstants.ContextNames.ML);
 		WorkflowRuleContext rule = WorkflowRuleAPI.getWorkflowRule(mlContext.getRuleID(),true,true,true);
-		LOGGER.info("MLContext for Rule id is "+mlContext.getRuleID()+":::"+mlContext.getId());
+		LOGGER.info("MLContext for Rule id is "+mlContext.getRuleID()+":::"+mlContext.getId()+":::"+rule);
 		if (rule != null && rule.isActive()) 
 		{
 			LOGGER.info("Rule is active ");
@@ -28,7 +28,7 @@ public class ApplyRuleForMLCommand implements Command {
 			FacilioContext ruleContext = new FacilioContext();
 			ruleContext.put("jobid", jobid);
 			LOGGER.info("Calling jobid "+jobid);
-			WorkflowRuleAPI.executeScheduledRule(rule, mlContext.getPredictionTime() * 1000, ruleContext);
+			WorkflowRuleAPI.executeScheduledRule(rule, System.currentTimeMillis()+1000, ruleContext);
 			LOGGER.info("After scheduling rule "+jobid);
 		}
 		return false;
