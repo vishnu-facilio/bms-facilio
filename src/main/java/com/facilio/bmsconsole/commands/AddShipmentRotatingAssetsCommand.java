@@ -1,31 +1,38 @@
 package com.facilio.bmsconsole.commands;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.InventoryType;
 import com.facilio.bmsconsole.context.ItemContext;
+import com.facilio.bmsconsole.context.ShipmentContext;
 import com.facilio.bmsconsole.context.ShipmentLineItemContext;
 import com.facilio.bmsconsole.context.ToolContext;
+import com.facilio.bmsconsole.modules.FieldFactory;
+import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.ItemsApi;
 import com.facilio.bmsconsole.util.StoreroomApi;
 import com.facilio.bmsconsole.util.ToolsApi;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.sql.GenericInsertRecordBuilder;
 
 public class AddShipmentRotatingAssetsCommand implements Command{
 
 	@Override
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
-		
+		ShipmentContext shipment = (ShipmentContext)context.get(FacilioConstants.ContextNames.SHIPMENT);
 		List<ShipmentLineItemContext> lineItems = (List<ShipmentLineItemContext>)context.get(FacilioConstants.ContextNames.SHIPMENT_LINE_ITEM);
 		if(CollectionUtils.isNotEmpty(lineItems)) {
 			for(ShipmentLineItemContext lineItem : lineItems) {
@@ -57,6 +64,8 @@ public class AddShipmentRotatingAssetsCommand implements Command{
 				Chain addAssetChain = TransactionChainFactory.getAddAssetChain();
 				addAssetChain.execute(context);
 				
+				addOldNewAssetRelation(asset.getId(), ast.getId(), shipment.getId());
+				
 				
 			}
 		}
@@ -70,6 +79,25 @@ public class AddShipmentRotatingAssetsCommand implements Command{
 		Chain deleteAssetChain = FacilioChainFactory.getDeleteAssetChain();
 		deleteAssetChain.execute(context);
 	
+	}
+	
+	private void addOldNewAssetRelation(long oldAssetId, long newAssetId, long shipmentId) throws Exception{
+		Map<String, Object> prop = new HashMap<>();
+		
+		prop.put("assetIdFromStore", oldAssetId);
+		prop.put("assetIdToStore", newAssetId);
+		prop.put("shipmentId", shipmentId);
+		prop.put("orgId", AccountUtil.getCurrentOrg().getId());
+				
+		
+		GenericInsertRecordBuilder insert = new GenericInsertRecordBuilder();
+		insert.table(ModuleFactory.getShippedAssetRelModule().getTableName());
+		insert.fields(FieldFactory.getShippedAssetRelFields());
+		insert.addRecord(prop);
+
+		insert.save(); 
+
+
 	}
 
 }

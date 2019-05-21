@@ -5913,6 +5913,19 @@ public class FieldFactory {
 
 		return fields;
 	}
+	
+	public static List<FacilioField> getShippedAssetRelFields() {
+		FacilioModule module = ModuleFactory.getShippedAssetRelModule();
+		List<FacilioField> fields = new ArrayList<>();
+
+		//fields.add(getOrgIdField(module));
+		fields.add(getField("assetIdFromStore", "ASSET_ID_FROM_STORE", module, FieldType.NUMBER));
+		fields.add(getField("assetIdToStore", "ASSET_ID_TO_STORE", module, FieldType.NUMBER));
+		fields.add(getField("shipmentId", "SHIPMENT_ID", module, FieldType.NUMBER));
+		fields.add(getField("orgId", "ORGID", module, FieldType.NUMBER));
+
+		return fields;
+	}
 //	public static List<FacilioField> getStateFields() {
 //		FacilioModule stateModule = ModuleFactory.getStateModule();
 //		List<FacilioField> list = new ArrayList<>();

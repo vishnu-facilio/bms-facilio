@@ -1126,7 +1126,7 @@ public class ModuleFactory {
 		module.setTableName("Workflow");
 		return module;
 	}
-	
+
 	public static FacilioModule getWorkflowNamespaceModule() {
 		FacilioModule module = new FacilioModule();
 		module.setTableName("Workflow_Namespace");
@@ -1190,7 +1190,7 @@ public class ModuleFactory {
 		pmPLannerSettingsModule.setTableName("PM_Planner_Settings");
 		return pmPLannerSettingsModule;
 	}
-	
+
 	public static FacilioModule getBaseLineModule() {
 		FacilioModule blModule = new FacilioModule();
 		blModule.setName("baseline");
@@ -2032,9 +2032,9 @@ public class ModuleFactory {
 		module.setName("mlReadings");
 		module.setDisplayName("ML Readings");
 		module.setTableName("ML_Readings");
-		return module;	
+		return module;
 	}
-	
+
 
 	public static FacilioModule getSitesForStoreRoomModule() {
 		FacilioModule accessbileSpaceModule = new FacilioModule();
@@ -2067,7 +2067,7 @@ public class ModuleFactory {
 		gatePass.setTableName("Inventory_Requests");
 		return gatePass;
 	}
-	
+
 	public static FacilioModule getPageModule() {
 		FacilioModule module = new FacilioModule();
 		module.setName("page");
@@ -2131,6 +2131,14 @@ public class ModuleFactory {
 		module.setName("jobPlan");
 		module.setDisplayName("Job Plan");
 		module.setTableName("Job_Plan");
+		return module;
+	}
+
+	public static FacilioModule getShippedAssetRelModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName("shippedAssetRel");
+		module.setDisplayName("Shipped_Asset_Rel");
+		module.setTableName("Shipped_Asset_Rel");
 		return module;
 	}
 
