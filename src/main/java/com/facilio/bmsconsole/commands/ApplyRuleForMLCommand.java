@@ -64,7 +64,7 @@ public class ApplyRuleForMLCommand implements Command {
 		}
 		catch(Exception e)
 		{
-			LOGGER.error("Error while executing job "+jobid);
+			LOGGER.error("Error while executing job "+jobid,e);
 		}
 	}
 
