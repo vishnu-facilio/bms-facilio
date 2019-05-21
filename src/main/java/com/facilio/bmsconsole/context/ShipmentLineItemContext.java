@@ -1,5 +1,7 @@
 package com.facilio.bmsconsole.context;
 
+import java.util.List;
+
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 
 public class ShipmentLineItemContext extends ModuleBaseWithCustomFields{
@@ -68,5 +70,31 @@ public class ShipmentLineItemContext extends ModuleBaseWithCustomFields{
 	public void setRate(double rate) {
 		this.rate = rate;
 	}
+	
+	private AssetContext asset;
+	public AssetContext getAsset() {
+		return asset;
+	}
+	public void setAsset(AssetContext asset) {
+		this.asset = asset;
+	}
+	
+	private List<Long> assetIds;
+	public List<Long> getAssetIds() {
+		return assetIds;
+	}
+	public void setAssetIds(List<Long> assetIds) {
+		this.assetIds = assetIds;
+	}
+	
+	private ShipmentContext shipmentContext;
+	public ShipmentContext getShipmentContext() {
+		return shipmentContext;
+	}
+	public void setShipmentContext(ShipmentContext shipmentContext) {
+		this.shipmentContext = shipmentContext;
+	}
+	
+	
 	
 }

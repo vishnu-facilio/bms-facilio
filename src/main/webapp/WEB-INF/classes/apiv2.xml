@@ -2246,7 +2246,7 @@
 			<param name="moduleName">shipment</param>
 			<param name="permission">CREATE,UPDATE</param>
 		</action>
-		<action name="shipShipment" class="com.facilio.bmsconsole.actions.ShipmentAction" method="shipShipment">
+		<action name="receiveShipment" class="com.facilio.bmsconsole.actions.ShipmentAction" method="receiveShipment">
 			<param name="moduleName">shipment</param>
 			<param name="permission">CREATE,UPDATE</param>
 		</action>

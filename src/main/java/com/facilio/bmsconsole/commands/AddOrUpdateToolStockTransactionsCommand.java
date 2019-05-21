@@ -2,6 +2,17 @@ package com.facilio.bmsconsole.commands;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.*;
+import com.facilio.bmsconsole.context.AssetContext;
+import com.facilio.bmsconsole.context.ItemContext;
+import com.facilio.bmsconsole.context.PurchasedToolContext;
+import com.facilio.bmsconsole.context.ShipmentContext;
+import com.facilio.bmsconsole.context.ToolContext;
+import com.facilio.bmsconsole.context.ToolTransactionContext;
+import com.facilio.bmsconsole.context.ToolTypesContext;
+import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.criteria.EnumOperators;
+import com.facilio.bmsconsole.criteria.PickListOperators;
+import com.facilio.bmsconsole.modules.*;
 import com.facilio.bmsconsole.util.ToolsApi;
 import com.facilio.bmsconsole.util.TransactionState;
 import com.facilio.bmsconsole.util.TransactionType;
@@ -32,6 +43,8 @@ public class AddOrUpdateToolStockTransactionsCommand implements Command {
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 		
 		List<Long> toolIds = (List<Long>) context.get(FacilioConstants.ContextNames.TOOL_IDS);
+		ShipmentContext shipment = (ShipmentContext)context.get(FacilioConstants.ContextNames.SHIPMENT);
+
 		if (toolIds != null && !toolIds.isEmpty()) {
 			long toolTypeId = (long) context.get(FacilioConstants.ContextNames.TOOL_TYPES_ID);
 			FacilioModule Toolmodule = modBean.getModule(FacilioConstants.ContextNames.TOOL);
@@ -75,13 +88,21 @@ public class AddOrUpdateToolStockTransactionsCommand implements Command {
 				if (pts != null && !pts.isEmpty()) {
 					for (PurchasedToolContext pt : pts) {
 						ToolTransactionContext transaction = new ToolTransactionContext();
-						transaction.setTransactionState(TransactionState.ADDITION.getValue());
 						transaction.setPurchasedTool(pt);
 						transaction.setTool(pt.getTool());
 						transaction.setQuantity(1);
 						transaction.setParentId(pt.getId());
 						transaction.setIsReturnable(false);
-						transaction.setTransactionType(TransactionType.STOCK.getValue());
+						if(shipment == null) {
+							transaction.setTransactionType(TransactionType.STOCK.getValue());
+							transaction.setTransactionState(TransactionState.ADDITION.getValue());
+						}
+						else {
+							transaction.setTransactionType(TransactionType.SHIPMENT_STOCK.getValue());
+							transaction.setTransactionState(TransactionState.ADDITION.getValue());
+							transaction.setShipment(shipment.getId());
+						}
+
 						transaction.setToolType(toolType);
 						transaction.setApprovedState(ApprovalState.YET_TO_BE_REQUESTED);
 
@@ -107,14 +128,22 @@ public class AddOrUpdateToolStockTransactionsCommand implements Command {
 				}
 			} else {
 				ToolTransactionContext transaction = new ToolTransactionContext();
-				transaction.setTransactionState(TransactionState.ADDITION.getValue());
 				transaction.setTool(tool);
 				transaction.setQuantity(tool.getQuantity());
 				transaction.setParentId(tool.getId());
 				transaction.setIsReturnable(false);
-				transaction.setTransactionType(TransactionType.STOCK.getValue());
 				transaction.setToolType(toolType);
 				transaction.setApprovedState(ApprovalState.YET_TO_BE_REQUESTED);
+
+				if(shipment == null) {
+					transaction.setTransactionType(TransactionType.STOCK.getValue());
+					transaction.setTransactionState(TransactionState.ADDITION.getValue());
+				}
+				else {
+					transaction.setTransactionType(TransactionType.SHIPMENT_STOCK.getValue());
+					transaction.setTransactionState(TransactionState.ADDITION.getValue());
+					transaction.setShipment(shipment.getId());
+				}
 
 				SelectRecordsBuilder<ToolTransactionContext> transactionsselectBuilder = new SelectRecordsBuilder<ToolTransactionContext>()
 						.select(fields).table(module.getTableName()).moduleName(module.getName())
@@ -146,15 +175,23 @@ public class AddOrUpdateToolStockTransactionsCommand implements Command {
 				q += 1;
 				t.setQuantity(q);
 				ToolTransactionContext transaction = new ToolTransactionContext();
-				transaction.setTransactionState(TransactionState.ADDITION.getValue());
 				transaction.setTool(t);
 				transaction.setQuantity(1);
 				transaction.setParentId(t.getId());
 				transaction.setIsReturnable(false);
-				transaction.setTransactionType(TransactionType.STOCK.getValue());
 				transaction.setToolType(t.getToolType());
 				transaction.setApprovedState(ApprovalState.YET_TO_BE_REQUESTED);
 				transaction.setAsset(asset);
+				if(shipment == null) {
+					transaction.setTransactionType(TransactionType.STOCK.getValue());
+					transaction.setTransactionState(TransactionState.ADDITION.getValue());
+				}
+				else {
+					transaction.setTransactionType(TransactionType.SHIPMENT_STOCK.getValue());
+					transaction.setTransactionState(TransactionState.ADDITION.getValue());
+					transaction.setShipment(shipment.getId());
+				}
+
 				updateToolQty(t);
 				InsertRecordBuilder<ToolTransactionContext> readingBuilder = new InsertRecordBuilder<ToolTransactionContext>()
 						.module(module).fields(fields).addRecord(transaction);

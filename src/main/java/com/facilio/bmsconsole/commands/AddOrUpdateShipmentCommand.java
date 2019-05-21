@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -8,8 +9,8 @@ import org.apache.commons.chain.Context;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.PurchaseContractContext;
-import com.facilio.bmsconsole.context.PurchaseContractLineItemContext;
+import com.facilio.bmsconsole.context.AssetContext;
+import com.facilio.bmsconsole.context.InventoryType;
 import com.facilio.bmsconsole.context.ShipmentContext;
 import com.facilio.bmsconsole.context.ShipmentLineItemContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
@@ -67,9 +68,37 @@ public class AddOrUpdateShipmentCommand implements Command{
 	}
 	
 		private void updateLineItems(ShipmentContext shipment) {
-		for (ShipmentLineItemContext lineItemContext : shipment.getLineItems()) {
-			lineItemContext.setShipment(shipment.getId());
-		}
+		     List<ShipmentLineItemContext> rotatingItems = new ArrayList<ShipmentLineItemContext>(); 
+	         
+		        for (ShipmentLineItemContext lineItemContext : shipment.getLineItems()) { 
+		            lineItemContext.setShipment(shipment.getId()); 
+		            if(lineItemContext.getAssetIds() != null && lineItemContext.getAssetIds().size() > 0) { 
+		                AssetContext lineItemAsset = new AssetContext(); 
+		                lineItemAsset.setId(lineItemContext.getAssetIds().get(0)); 
+		                lineItemContext.setAsset(lineItemAsset); 
+		                lineItemContext.setQuantity(1); 
+		                for(int i=1; i<lineItemContext.getAssetIds().size(); i++) { 
+		                     ShipmentLineItemContext lineItem = new ShipmentLineItemContext(); 
+		                     AssetContext asset = new AssetContext(); 
+		                     asset.setId(lineItemContext.getAssetIds().get(i)); 
+		                     lineItem.setAsset(asset); 
+		                     lineItem.setInventoryType(lineItemContext.getInventoryType()); 
+		                     if(lineItemContext.getInventoryType() == InventoryType.ITEM.getValue()) { 
+		                         lineItem.setItemType(lineItemContext.getItemType()); 
+		                     } 
+		                     else if(lineItemContext.getInventoryType() == InventoryType.TOOL.getValue()) { 
+		                         lineItem.setToolType(lineItemContext.getToolType()); 
+		                     } 
+		                      
+		                     lineItem.setQuantity(lineItemContext.getQuantity()); 
+		                     lineItem.setShipment(shipment.getId()); 
+		                     rotatingItems.add(lineItem);  
+		                } 
+		            } 
+		             
+		        } 
+		        shipment.getLineItems().addAll(rotatingItems); 
+		    
 	}
 	
 	private void addRecord(boolean isLocalIdNeeded, List<? extends ModuleBaseWithCustomFields> list, FacilioModule module, List<FacilioField> fields) throws Exception {

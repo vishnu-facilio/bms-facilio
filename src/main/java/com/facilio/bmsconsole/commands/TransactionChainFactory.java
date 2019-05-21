@@ -2730,12 +2730,14 @@ public class TransactionChainFactory {
 			return c;
 		}
 		
-		public static Chain getShipShipmentQuantityUpdateChain() {
+		public static Chain getReceiveShipmentChain() {
 			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForShipment());
 			c.addCommand(new AddOrUpdateShipmentCommand());
-			c.addCommand(new ShipShipmentCommand());
+			c.addCommand(new ReceiveShipmentCommand());
 			c.addCommand(getBulkAddToolChain());
 			c.addCommand(getAddBulkItemChain());
+			c.addCommand(new AddShipmentRotatingAssetsCommand());
 		    return c;
 		}
 }

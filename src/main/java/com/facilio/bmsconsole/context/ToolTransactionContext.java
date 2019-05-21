@@ -209,7 +209,7 @@ public class ToolTransactionContext extends ModuleBaseWithCustomFields {
 	public void setAssetIds(List<Long> assetIds) {
 		this.assetIds = assetIds;
 	}
-	
+
 	private InventoryRequestLineItemContext requestedLineItem;
 	public InventoryRequestLineItemContext getRequestedLineItem() {
 		return requestedLineItem;
@@ -217,7 +217,18 @@ public class ToolTransactionContext extends ModuleBaseWithCustomFields {
 	public void setRequestedLineItem(InventoryRequestLineItemContext requestedLineItem) {
 		this.requestedLineItem = requestedLineItem;
 	}
-	
-	
-	
+
+
+
+
+	private long shipment;
+
+	public long getShipment() {
+		return shipment;
+	}
+
+	public void setShipment(long shipment) {
+		this.shipment = shipment;
+	}
+
 }

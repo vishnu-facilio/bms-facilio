@@ -210,7 +210,18 @@ public class ItemTransactionsContext extends ModuleBaseWithCustomFields {
 	public void setAssetIds(List<Long> assetIds) {
 		this.assetIds = assetIds;
 	}
-	
+
+	private long shipment;
+
+	public long getShipment() {
+		return shipment;
+	}
+
+	public void setShipment(long shipment) {
+		this.shipment = shipment;
+	}
+
+
 	private InventoryRequestLineItemContext requestedLineItem;
 	public InventoryRequestLineItemContext getRequestedLineItem() {
 		return requestedLineItem;
@@ -218,5 +229,5 @@ public class ItemTransactionsContext extends ModuleBaseWithCustomFields {
 	public void setRequestedLineItem(InventoryRequestLineItemContext requestedLineItem) {
 		this.requestedLineItem = requestedLineItem;
 	}
-	
+
 }

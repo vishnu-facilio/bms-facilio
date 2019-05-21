@@ -25,7 +25,7 @@ public class SetItemAndToolTypeForStoreRoomCommand implements Command{
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		long storeRoomId = (long) context.get(FacilioConstants.ContextNames.STORE_ROOM);
+		Long storeRoomId = (Long) context.get(FacilioConstants.ContextNames.STORE_ROOM);
 		
 		FacilioModule itemModule = modBean.getModule(FacilioConstants.ContextNames.ITEM);
 		List<FacilioField> itemFields = modBean.getAllFields(FacilioConstants.ContextNames.ITEM);

@@ -889,6 +889,7 @@ public class FacilioChainFactory {
 		Chain c = FacilioChain.getTransactionChain();
 		c.addCommand(SetTableNamesCommand.getForAsset());
 		c.addCommand(new DeleteResourceCommand());
+		c.addCommand(new RotatingItemQuantityRollUpCommand());
 		c.addCommand(new ExecuteAllWorkflowsCommand());
 		return c;
 	}
