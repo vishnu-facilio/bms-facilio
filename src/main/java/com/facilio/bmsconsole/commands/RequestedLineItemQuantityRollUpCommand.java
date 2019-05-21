@@ -22,12 +22,12 @@ public class RequestedLineItemQuantityRollUpCommand implements Command {
         for(Long id : recordIds) {
         	if(costType == 1) {
         		WorkorderItemContext woItem = WorkOrderAPI.getWorkOrderItem(id);
-        		InventoryRequestAPI.updateRequestUsedQuantity(woItem.getRequestedLineItem(), 0);
+        		InventoryRequestAPI.updateRequestUsedQuantity(woItem.getRequestedLineItem(), woItem.getRequestedLineItem().getUsedQuantity() - woItem.getQuantity());
         	}
-        	else if(costType == 2) {
-        		WorkorderToolsContext woTool = WorkOrderAPI.getWorkOrderTool(id);
-        		InventoryRequestAPI.updateRequestUsedQuantity(woTool.getRequestedLineItem(), 0);
-        	}
+//        	else if(costType == 2) {
+//        		WorkorderToolsContext woTool = WorkOrderAPI.getWorkOrderTool(id);
+//        		InventoryRequestAPI.updateRequestUsedQuantity(woTool.getRequestedLineItem(), 0);
+//        	}
         }
 		
 		return false;
