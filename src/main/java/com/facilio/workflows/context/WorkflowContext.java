@@ -314,10 +314,10 @@ public class WorkflowContext implements Serializable {
 			}
 			catch(Exception e) {
 				visitor.getResultString().append(e.toString()+"\n");
+				LOGGER.log(Level.SEVERE, e.getMessage(), e);
 				if(isDebugMode) {
 		        	return visitor.getResultString().toString();
 		        }
-				LOGGER.log(Level.SEVERE, e.getMessage(), e);
 				throw e;
 			}
 		}
