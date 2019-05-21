@@ -104,7 +104,7 @@ public class InventoryRequestAPI {
 				if(!toolType.isRotating() && woTool.getQuantity() <= (lineItems.get(0).getIssuedQuantity())) {
 					return true;
 				}
-				else if(toolType.isRotating() && checkRotatingToolCountForWorkOrder(woTool.getTool().getId(), woTool.getParentId()) < lineItems.get(0).getQuantity()) {
+				else if(toolType.isRotating() && checkRotatingToolCountForWorkOrder(woTool.getTool().getId(), woTool.getParentId()) <= lineItems.get(0).getQuantity()) {
 						return true;	
 				}
 				return false;
