@@ -10,6 +10,8 @@ import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.tasker.FacilioTimer;
+import com.facilio.tasker.job.JobContext;
+import com.facilio.tasker.job.JobStore;
 import com.facilio.util.FacilioUtil;
 
 public class ApplyRuleForMLCommand implements Command {
@@ -42,7 +44,22 @@ public class ApplyRuleForMLCommand implements Command {
 			if(jobid!=null)
 			{
 				LOGGER.info("Executing Job "+jobid);
-				FacilioTimer.scheduleOneTimeJob(FacilioUtil.parseLong(jobid), "DefaultMLJob", System.currentTimeMillis(), "ml");
+				JobContext jobContext = FacilioTimer.getJob(FacilioUtil.parseLong(jobid), "DefaultMLJob");
+				if(jobContext!=null)
+				{
+					jobContext = new JobContext();
+					jobContext.setJobId(FacilioUtil.parseLong(jobid));
+					jobContext.setOrgId(mlContext.getOrgId());
+					jobContext.setJobName("DefaultMLJob");
+					jobContext.setActive(true);
+					jobContext.setExecutionTime(System.currentTimeMillis());
+					jobContext.setExecutorName("ml");
+					JobStore.addJob(jobContext);
+				}
+				else
+				{
+					JobStore.updateNextExecutionTimeAndCount(FacilioUtil.parseLong(jobid), "DefaultMLJob", System.currentTimeMillis(), jobContext.getCurrentExecutionCount()+1);
+				}
 			}
 		}
 		catch(Exception e)
