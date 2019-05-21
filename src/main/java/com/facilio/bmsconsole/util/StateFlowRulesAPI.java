@@ -520,7 +520,7 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 		builder.update(props);
 	}
 
-	public static List<StateFlowRuleContext> getAllStateFlow(FacilioModule module) throws Exception {
+	public static List<? extends WorkflowRuleContext> getAllStateFlow(FacilioModule module) throws Exception {
 		List<FacilioField> fields = FieldFactory.getStateFlowFields();
 		fields.addAll(FieldFactory.getWorkflowRuleFields());
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
@@ -532,7 +532,7 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 				.andCondition(CriteriaAPI.getCondition("MODULEID", "moduleId", String.valueOf(module.getModuleId()), NumberOperators.EQUALS))
 				.orderBy("EXECUTION_ORDER");
 		List<Map<String, Object>> list = builder.get();
-		List<StateFlowRuleContext> stateFlowList = FieldUtil.getAsBeanListFromMapList(list, StateFlowRuleContext.class);
+		List<WorkflowRuleContext> stateFlowList = WorkflowRuleAPI.getWorkFlowsFromMapList(list, false, true, true);
 		return stateFlowList;
 	}
 
