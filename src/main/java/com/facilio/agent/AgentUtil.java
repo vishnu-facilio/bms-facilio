@@ -448,7 +448,6 @@ public  class AgentUtil
             }
             else {
                 map.put(AgentKeys.FINISH_TIME, System.currentTimeMillis());
-                LOGGER.info("iamcvijaylogs --processing completed ");
                 map.remove(AgentKeys.START_TIME);
                 if(bean.updateAgentMessage(map) > 0 ){
                     status = true;
