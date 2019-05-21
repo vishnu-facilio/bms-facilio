@@ -1,7 +1,7 @@
 package com.facilio.db.criteria;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.modules.EnumField;
+import com.facilio.modules.fields.EnumField;
 import com.facilio.fw.BeanFactory;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.collections.PredicateUtils;

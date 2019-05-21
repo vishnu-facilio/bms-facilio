@@ -6,6 +6,7 @@ import com.facilio.bmsconsole.util.ModuleLocalIdUtil;
 import com.facilio.fw.BeanFactory;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.InsertBuilderIfc;
+import com.facilio.modules.fields.FacilioField;
 
 import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;

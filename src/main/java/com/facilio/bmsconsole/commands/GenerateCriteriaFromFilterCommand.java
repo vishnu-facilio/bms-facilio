@@ -19,7 +19,7 @@ import com.facilio.db.criteria.FieldOperator;
 import com.facilio.db.criteria.NumberOperators;
 import com.facilio.db.criteria.Operator;
 import com.facilio.db.criteria.PickListOperators;
-import com.facilio.modules.FacilioField;
+import com.facilio.modules.fields.FacilioField;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 
@@ -100,7 +100,7 @@ public class GenerateCriteriaFromFilterCommand implements Command {
 					operatorId = PickListOperators.ISN_T.getOperatorId();
 				}
 			}
-			operatorName = Operator.OPERATOR_MAP.get(operatorId).getOperator();
+			operatorName = Operator.getOperator(operatorId).getOperator();
 		} else {
 			operatorName = (String) fieldJson.get("operator");
 			if (isOldField) {

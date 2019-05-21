@@ -4,7 +4,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.DateOperators;
 import com.facilio.db.criteria.DateRange;
-import com.facilio.modules.FacilioField;
+import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.SelectRecordsBuilder;

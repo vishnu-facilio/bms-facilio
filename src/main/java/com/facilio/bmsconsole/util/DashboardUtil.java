@@ -13,7 +13,6 @@ import com.facilio.bmsconsole.context.ReportContext.LegendMode;
 import com.facilio.bmsconsole.context.ReportContext.ReportChartType;
 import com.facilio.bmsconsole.context.SiteContext.SiteType;
 
-import com.facilio.bmsconsole.modules.*;
 import com.facilio.constants.FacilioConstants;
 
 import com.facilio.db.criteria.*;
@@ -22,6 +21,8 @@ import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
+import com.facilio.modules.*;
+import com.facilio.modules.fields.FacilioField;
 import com.facilio.unitconversion.Unit;
 import com.facilio.unitconversion.UnitsUtil;
 import com.facilio.time.DateTimeUtil;
@@ -147,7 +148,7 @@ public class DashboardUtil {
 		}
 		return false;
 	}
-	
+
 	public static List<EnergyMeterContext> getMainEnergyMeter(String spaceList) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ENERGY_METER);
@@ -2497,7 +2498,7 @@ public class DashboardUtil {
 		
 		DashboardContext dashboard = DashboardUtil.getDashboardWithWidgets(dashboardId);
 		if(dashboard != null && dashboard.getDateOperator() >0) {
-			DateOperators dateOperators = (DateOperators) Operator.OPERATOR_MAP.get(dashboard.getDateOperator());
+			DateOperators dateOperators = (DateOperators) Operator.getOperator(dashboard.getDateOperator());
 			if(dateOperators != null) {
 				DateRange range = dateOperators.getRange(dashboard.getDateValue());
 				return range;

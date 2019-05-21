@@ -42,7 +42,7 @@ import com.facilio.db.criteria.DateOperators;
 import com.facilio.db.criteria.DateRange;
 import com.facilio.db.criteria.Operator;
 import com.facilio.modules.AggregateOperator;
-import com.facilio.modules.FacilioField;
+import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
@@ -415,7 +415,7 @@ public class V2ReportAction extends FacilioAction {
 			int xAggrInt = params.get("xAggr") != null ? Integer.parseInt(params.get("xAggr").toString()) : 0;
 			setxAggr(xAggrInt);
 			
-			DateOperators dateOperator = (DateOperators) Operator.OPERATOR_MAP.get(Integer.parseInt(params.get("dateOperator").toString()));
+			DateOperators dateOperator = (DateOperators) Operator.getOperator(Integer.parseInt(params.get("dateOperator").toString()));
 			
 			ReportYAxisContext reportaxisContext = new ReportYAxisContext();
 			reportaxisContext.setFieldId((Long)params.get("fieldId"));

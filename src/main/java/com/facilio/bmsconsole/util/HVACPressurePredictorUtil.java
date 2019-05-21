@@ -1,6 +1,6 @@
 package com.facilio.bmsconsole.util;
 
-import com.facilio.modules.FacilioField;
+import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldType;
 

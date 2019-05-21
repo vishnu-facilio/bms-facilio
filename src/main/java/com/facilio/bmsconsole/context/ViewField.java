@@ -1,6 +1,6 @@
 package com.facilio.bmsconsole.context;
 
-import com.facilio.modules.FacilioField;
+import com.facilio.modules.fields.FacilioField;
 
 public class ViewField{
 	private long id = -1;

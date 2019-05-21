@@ -2,8 +2,8 @@ package com.facilio.bmsconsole.forms;
 
 import java.io.Serializable;
 
-import com.facilio.modules.FacilioField;
-import com.facilio.modules.FacilioField.FieldDisplayType;
+import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.FacilioField.FieldDisplayType;
 
 public class FormField implements Serializable {
 	private static final long serialVersionUID = 4252438995947509456L;

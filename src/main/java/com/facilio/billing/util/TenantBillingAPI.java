@@ -2,7 +2,7 @@ package com.facilio.billing.util;
 
 import com.facilio.billing.context.ExcelTemplate;
 import com.facilio.billing.context.Tenant;
-import com.facilio.modules.FacilioField;
+import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.db.builder.DBUtil;

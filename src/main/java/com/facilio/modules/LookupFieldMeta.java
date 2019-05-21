@@ -1,5 +1,7 @@
 package com.facilio.modules;
 
+import com.facilio.modules.fields.LookupField;
+
 import java.util.ArrayList;
 import java.util.Collection;
 

@@ -29,7 +29,7 @@ public enum FacilioReadingFunctions implements FacilioWorkflowFunctionInterface 
 			}
 			
 			
-			DateOperators oper = (DateOperators) Operator.OPERATOR_MAP.get(dateOperator);
+			DateOperators oper = (DateOperators) Operator.getOperator(dateOperator);
 			BaseSpaceContext baseSpace = SpaceAPI.getBaseSpace(baseSpaceId);
 			
 			if(baseSpace != null && oper != null) {

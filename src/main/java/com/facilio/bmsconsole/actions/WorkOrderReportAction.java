@@ -9,8 +9,9 @@ import com.facilio.modules.FacilioStatus.StatusType;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.Operator;
-import com.facilio.bmsconsole.modules.*;
 import com.facilio.bmsconsole.util.DashboardUtil;
+import com.facilio.modules.*;
+import com.facilio.modules.fields.FacilioField;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
@@ -604,7 +605,7 @@ public class WorkOrderReportAction extends ActionSupport {
 		String operatorName;
 		if (fieldJson.containsKey("operatorId")) {
 			operatorId = (int) (long) fieldJson.get("operatorId");
-			operatorName = Operator.OPERATOR_MAP.get(operatorId).getOperator();
+			operatorName = Operator.getOperator(operatorId).getOperator();
 		} else {
 			operatorName = (String) fieldJson.get("operator");
 			operatorId = field.getDataTypeEnum().getOperator(operatorName).getOperatorId();

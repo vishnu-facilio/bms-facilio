@@ -3,6 +3,7 @@ package com.facilio.accounts.util;
 import com.facilio.accounts.dto.Permissions;
 import com.facilio.accounts.dto.Role;
 import com.facilio.modules.*;
+import com.facilio.modules.fields.FacilioField;
 
 import java.util.*;
 

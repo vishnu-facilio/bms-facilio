@@ -9,7 +9,7 @@ import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ReadingContext.SourceType;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.db.criteria.DateRange;
-import com.facilio.modules.FacilioField;
+import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.FacilioModule.ModuleType;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.bmsconsole.util.FacilioFrequency;

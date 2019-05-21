@@ -11,6 +11,7 @@ import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericDeleteRecordBuilder.GenericJoinBuilder;
 import com.facilio.db.builder.JoinBuilderIfc;
 import com.facilio.db.builder.WhereBuilder;
+import com.facilio.modules.fields.FacilioField;
 
 import java.sql.Connection;
 import java.util.Collections;

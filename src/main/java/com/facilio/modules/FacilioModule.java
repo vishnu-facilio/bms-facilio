@@ -1,7 +1,7 @@
 	package com.facilio.modules;
 
-    import com.facilio.time.SecondsChronoUnit;
-    import com.facilio.modules.FacilioField;
+    import com.facilio.modules.fields.FacilioField;
+	import com.facilio.time.SecondsChronoUnit;
     import com.fasterxml.jackson.annotation.JsonIgnore;
     import org.apache.struts2.json.annotations.JSON;
 

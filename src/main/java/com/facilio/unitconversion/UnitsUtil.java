@@ -7,7 +7,7 @@ import com.facilio.db.criteria.NumberOperators;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
-import com.facilio.modules.NumberField;
+import com.facilio.modules.fields.NumberField;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.udojava.evalex.Expression;

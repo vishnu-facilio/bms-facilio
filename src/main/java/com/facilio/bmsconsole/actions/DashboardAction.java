@@ -94,14 +94,14 @@ import com.facilio.modules.AggregateOperator.DateAggregateOperator;
 import com.facilio.modules.AggregateOperator.EnergyPurposeAggregateOperator;
 import com.facilio.modules.AggregateOperator.NumberAggregateOperator;
 import com.facilio.modules.AggregateOperator.SpaceAggregateOperator;
-import com.facilio.modules.FacilioField;
+import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.ModuleFactory;
-import com.facilio.modules.NumberField;
+import com.facilio.modules.fields.NumberField;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.reports.ReportExportUtil;
 import com.facilio.bmsconsole.reports.ReportsUtil;
@@ -1180,7 +1180,7 @@ public class DashboardAction extends FacilioAction {
 		String operatorName;
 		if (fieldJson.containsKey("operatorId")) {
 			operatorId = (int) (long) fieldJson.get("operatorId");
-			operatorName = Operator.OPERATOR_MAP.get(operatorId).getOperator();
+			operatorName = Operator.getOperator(operatorId).getOperator();
 		} else {
 			operatorName = (String) fieldJson.get("operator");
 			operatorId = field.getDataTypeEnum().getOperator(operatorName).getOperatorId();
@@ -5540,7 +5540,7 @@ public class DashboardAction extends FacilioAction {
 				timeRange.add((Long) dateFilter.get(1));
 			}
 			else if (reportContext.getDateFilter() != null) {
-				DateOperators operator = (DateOperators) Operator.OPERATOR_MAP.get(reportContext.getDateFilter().getOperatorId());
+				DateOperators operator = (DateOperators) Operator.getOperator(reportContext.getDateFilter().getOperatorId());
 				
 				DateRange range = operator.getRange(reportContext.getDateFilter().getValue());
 				timeRange.add(range.getStartTime());

@@ -11,6 +11,8 @@ import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.JoinBuilderIfc;
 import com.facilio.db.builder.SelectBuilderIfc;
 import com.facilio.db.builder.WhereBuilder;
+import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.LookupField;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;

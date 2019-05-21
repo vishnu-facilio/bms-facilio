@@ -1,7 +1,7 @@
 
 package com.facilio.db.criteria;
 
-import com.facilio.modules.FacilioField;
+import com.facilio.modules.fields.FacilioField;
 import com.facilio.util.FacilioExpressionWrapper;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.apache.commons.collections.Predicate;
@@ -84,7 +84,7 @@ public class Condition implements Serializable {
 	}
 	public void setOperatorId(int operatorId) {
 		this.operatorId = operatorId;
-		this.setOperator(Operator.OPERATOR_MAP.get(operatorId));
+		this.setOperator(Operator.getOperator(operatorId));
 	}
 
 	private Operator operator;

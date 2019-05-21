@@ -89,7 +89,7 @@ public class FacilioContextListener implements ServletContextListener {
 
 
 		initDBConnectionPool();
-		Operator.OPERATOR_MAP.get(1);
+		Operator.getOperator(1);
 		TemplateAPI.getDefaultTemplate(DefaultTemplateType.ACTION,1);
 		ActivityType.getActivityType(1);
 		FieldUtil.inti();

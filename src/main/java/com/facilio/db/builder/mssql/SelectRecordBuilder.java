@@ -1,6 +1,6 @@
 package com.facilio.db.builder.mssql;
 
-import com.facilio.modules.FacilioField;
+import com.facilio.modules.fields.FacilioField;
 import com.facilio.db.builder.DBSelectRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import org.apache.log4j.LogManager;

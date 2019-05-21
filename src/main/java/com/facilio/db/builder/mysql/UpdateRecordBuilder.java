@@ -1,6 +1,6 @@
 package com.facilio.db.builder.mysql;
 
-import com.facilio.modules.FacilioField;
+import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.FieldType;
 import com.facilio.db.builder.DBUpdateRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;

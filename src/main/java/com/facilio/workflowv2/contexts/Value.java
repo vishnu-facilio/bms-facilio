@@ -3,8 +3,8 @@ package com.facilio.workflowv2.contexts;
 import java.util.List;
 import java.util.Map;
 
-import com.facilio.bmsconsole.criteria.Criteria;
-import com.facilio.bmsconsole.modules.FacilioModule;
+import com.facilio.db.criteria.Criteria;
+import com.facilio.modules.FacilioModule;
 
 public class Value {
 

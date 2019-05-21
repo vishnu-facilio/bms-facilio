@@ -1,10 +1,9 @@
 package com.facilio.accounts.dto;
 
 
-import com.facilio.modules.FacilioField;
-
 import com.facilio.db.criteria.*;
 import com.facilio.license.LicenseContext.FacilioLicense;
+import com.facilio.modules.fields.FacilioField;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.json.annotations.JSON;
 

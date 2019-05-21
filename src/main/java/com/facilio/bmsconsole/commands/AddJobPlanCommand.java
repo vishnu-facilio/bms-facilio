@@ -13,7 +13,7 @@ import com.facilio.modules.ModuleFactory;
 import com.facilio.bmsconsole.templates.Template.Type;
 import com.facilio.bmsconsole.util.TemplateAPI;
 import com.facilio.constants.FacilioConstants.ContextNames;
-import com.facilio.sql.GenericInsertRecordBuilder;
+import com.facilio.db.builder.GenericInsertRecordBuilder;
 
 public class AddJobPlanCommand implements Command {
 

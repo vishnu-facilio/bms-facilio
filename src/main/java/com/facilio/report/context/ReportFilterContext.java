@@ -28,7 +28,7 @@ public class ReportFilterContext extends ReportFieldContext {
 	}
 	public void setFilterOperator(int filterOperator) {
 		if (filterOperator > 0) {
-			this.filterOperator = Operator.OPERATOR_MAP.get(filterOperator);
+			this.filterOperator = Operator.getOperator(filterOperator);
 		}
 	}
 	

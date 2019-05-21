@@ -33,7 +33,7 @@ import com.facilio.bmsconsole.context.WidgetVsWorkflowContext;
 import com.facilio.db.criteria.DateOperators;
 import com.facilio.db.criteria.DateRange;
 import com.facilio.db.criteria.Operator;
-import com.facilio.modules.FacilioField;
+import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.FieldFactory;
 import com.facilio.bmsconsole.reports.ReportsUtil;
 import com.facilio.bmsconsole.util.AlarmAPI;
@@ -194,7 +194,7 @@ public class FetchCardDataCommand implements Command {
 					int dateOperator = Integer.parseInt(paramsJson.get("dateOperator").toString());
 					String dateValue = (String) paramsJson.get("dateValue");
 					
-					DateOperators operator = (DateOperators)Operator.OPERATOR_MAP.get(dateOperator);
+					DateOperators operator = (DateOperators)Operator.getOperator(dateOperator);
 					result = getResourceAlarmBar(parentId,operator.getRange(dateValue));
 					context.put(FacilioConstants.ContextNames.RESULT, result);
 					return false;

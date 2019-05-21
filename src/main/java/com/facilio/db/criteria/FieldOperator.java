@@ -1,7 +1,7 @@
 package com.facilio.db.criteria;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.modules.FacilioField;
+import com.facilio.modules.fields.FacilioField;
 import com.facilio.fw.BeanFactory;
 import com.google.common.base.Objects;
 import org.apache.commons.collections.Predicate;

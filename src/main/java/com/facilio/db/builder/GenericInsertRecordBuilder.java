@@ -2,10 +2,13 @@ package com.facilio.db.builder;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.bmsconsole.modules.*;
 import com.facilio.fw.LRUCache;
 import com.facilio.db.transaction.FacilioConnectionPool;
-import com.facilio.modules.*;
+import com.facilio.modules.FieldType;
+import com.facilio.modules.FieldUtil;
+import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.FileField;
+import com.facilio.modules.fields.NumberField;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;

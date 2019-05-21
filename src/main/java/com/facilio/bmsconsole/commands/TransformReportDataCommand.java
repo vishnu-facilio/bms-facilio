@@ -4,7 +4,7 @@ import com.facilio.modules.AggregateOperator;
 import com.facilio.modules.AggregateOperator.DateAggregateOperator;
 import com.facilio.modules.AggregateOperator.SpaceAggregateOperator;
 import com.facilio.bmsconsole.context.ResourceContext;
-import com.facilio.modules.FacilioField;
+import com.facilio.modules.fields.FacilioField;
 import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.report.context.*;

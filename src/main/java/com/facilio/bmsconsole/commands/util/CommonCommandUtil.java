@@ -48,12 +48,12 @@ import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.NumberOperators;
 import com.facilio.db.criteria.StringOperators;
-import com.facilio.modules.FacilioField;
+import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.FieldUtil;
-import com.facilio.modules.LookupField;
+import com.facilio.modules.fields.LookupField;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.SelectRecordsBuilder;
@@ -851,39 +851,5 @@ public class CommonCommandUtil {
 		eventTypes = eventTypes instanceof ArrayList ? eventTypes : new ArrayList<>(eventTypes);
 		eventTypes.add(type);
 		context.put(FacilioConstants.ContextNames.EVENT_TYPE_LIST, eventTypes);
-	}
-
-	public static void addNotificationLogger (NotificationType type, String to, JSONObject info) throws Exception {
-		Map<String, Object> props = new HashMap<>();
-		props.put("type", type.getValue());
-		props.put("to", to);
-		props.put("threadName", Thread.currentThread().getName());
-		props.put("createdTime", System.currentTimeMillis());
-		if (info != null) {
-			props.put("info", info.toJSONString());
-		}
-
-		new GenericInsertRecordBuilder()
-				.table(ModuleFactory.getNotificationLoggerModule().getTableName())
-				.fields(FieldFactory.getNotificationLoggerFields())
-				.insert(props)
-		;
-	}
-
-	public static enum NotificationType {
-		EMAIL,
-		SMS
-		;
-
-		public int getValue() {
-			return ordinal() + 1;
-		}
-
-		public static NotificationType valueOf (int value) {
-			if (value > 0 && value <= values().length) {
-				return values() [value - 1];
-			}
-			return null;
-		}
 	}
 }

@@ -6,7 +6,7 @@ import com.facilio.bmsconsole.context.ReadingContext.SourceType;
 import com.facilio.db.criteria.CommonOperators;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.NumberOperators;
-import com.facilio.modules.FacilioField;
+import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.SelectRecordsBuilder;

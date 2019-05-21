@@ -1,6 +1,6 @@
 package com.facilio.bmsconsole.view;
 
-import com.facilio.modules.FacilioField;
+import com.facilio.modules.fields.FacilioField;
 
 public class SortField {
 	private long orgId = -1;

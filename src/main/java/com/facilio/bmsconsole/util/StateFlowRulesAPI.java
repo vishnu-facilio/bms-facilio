@@ -26,6 +26,7 @@ import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.EnumOperators;
 import com.facilio.db.criteria.NumberOperators;
+import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FacilioModule.ModuleType;
 import com.facilio.modules.FieldFactory;
@@ -415,12 +416,13 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 	public static Map<String, List<WorkflowRuleContext>> getAvailableStates(List<? extends ModuleBaseWithCustomFields> records) throws Exception {
 		List<Map<String, Long>> stateIds = new ArrayList<>();
 		for(ModuleBaseWithCustomFields record: records) {
-			if(record.getModuleState() != null) {
-				Map<String, Long> ids = new HashMap<>();
-				ids.put("fromStateId", record.getModuleState().getId());
-				ids.put("stateFlowId", record.getStateFlowId());
-				stateIds.add(ids);
-			}
+			//COmmenting temporarily
+//			if(record.getModuleState() != null) {
+//				Map<String, Long> ids = new HashMap<>();
+//				ids.put("fromStateId", record.getModuleState().getId());
+//				ids.put("stateFlowId", record.getStateFlowId());
+//				stateIds.add(ids);
+//			}
 		}
 		List<WorkflowRuleContext> stateFlows = getStateTransitions(stateIds);
 		return getStateTransitionMap(stateFlows);

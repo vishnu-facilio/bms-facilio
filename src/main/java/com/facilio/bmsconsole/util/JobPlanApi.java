@@ -8,12 +8,12 @@ import org.apache.commons.collections4.CollectionUtils;
 
 import com.facilio.bmsconsole.context.JobPlanContext;
 import com.facilio.bmsconsole.context.TaskContext;
-import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
-import com.facilio.sql.GenericSelectRecordBuilder;
+import com.facilio.db.builder.GenericSelectRecordBuilder;
 
 public class JobPlanApi {
 	
