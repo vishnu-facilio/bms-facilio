@@ -129,7 +129,8 @@ public class AccountUtil {
 		SCHEDULED_WO (16384),
 		TENANTS (32768),
 		NEW_FORM (65536),
-		CONNECTEDAPPS (131072)
+		CONNECTEDAPPS (131072),
+		NEW_LAYOUT (262144)
 		;
 		
 		// Use 64, 512 for next features
