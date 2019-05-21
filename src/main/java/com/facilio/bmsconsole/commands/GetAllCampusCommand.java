@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.accounts.util.PermissionUtil;
 import com.facilio.bmsconsole.context.BusinessHoursContext;
 import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.db.criteria.Criteria;
@@ -32,7 +33,7 @@ public class GetAllCampusCommand implements Command {
 		SelectRecordsBuilder<SiteContext> builder = new SelectRecordsBuilder<SiteContext>().table(dataTableName)
 				.moduleName(moduleName).beanClass(SiteContext.class).select(fields).maxLevel(2)
 				.orderBy(fieldMap.get("name").getColumnName() + " ASC");
-		Criteria scopeCriteria = AccountUtil.getCurrentUser().scopeCriteria(moduleName);
+		Criteria scopeCriteria = PermissionUtil.getCurrentUserScopeCriteria(moduleName);
 		if (scopeCriteria != null) {
 			builder.andCriteria(scopeCriteria);
 		}

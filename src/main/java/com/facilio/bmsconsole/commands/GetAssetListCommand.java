@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.accounts.util.PermissionUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.ReadingDataMeta.ReadingInputType;
@@ -99,7 +100,7 @@ public class GetAssetListCommand implements Command {
 		}
 		if (AccountUtil.getCurrentUser() != null) { // temp handled for service portal space 
 		
-			Criteria scopeCriteria = AccountUtil.getCurrentUser().scopeCriteria(moduleName);
+			Criteria scopeCriteria = PermissionUtil.getCurrentUserScopeCriteria(moduleName);
 			if(scopeCriteria != null) {
 				builder.andCriteria(scopeCriteria);
 			}

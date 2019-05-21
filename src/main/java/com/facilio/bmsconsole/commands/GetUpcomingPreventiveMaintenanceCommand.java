@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.accounts.util.PermissionUtil;
 import com.facilio.bmsconsole.context.PMJobsContext;
 import com.facilio.bmsconsole.context.PMTriggerContext;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
@@ -40,12 +41,12 @@ public class GetUpcomingPreventiveMaintenanceCommand implements Command {
 			filterCriteria = new Criteria();
 		}
 		filterCriteria.addAndCondition(triggerCondition);
-		Criteria scopeCriteria = AccountUtil.getCurrentUser().scopeCriteria("planned");
+		Criteria scopeCriteria = PermissionUtil.getCurrentUserScopeCriteria("planned");
 		if(scopeCriteria != null) {
 			filterCriteria.andCriteria(scopeCriteria);
 		}
 		
-		Criteria permissionCriteria = AccountUtil.getCurrentUser().getRole().permissionCriteria("planned","read");
+		Criteria permissionCriteria = PermissionUtil.getCurrentUserPermissionCriteria("planned","read");
 		if(permissionCriteria != null) {
 			filterCriteria.andCriteria(permissionCriteria);
 		}

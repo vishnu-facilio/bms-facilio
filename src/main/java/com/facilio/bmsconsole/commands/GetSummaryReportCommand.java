@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.accounts.util.PermissionUtil;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.modules.fields.FacilioField;
@@ -36,12 +37,12 @@ public class GetSummaryReportCommand implements Command {
 				.table(dataTableName)
 				.andCondition(orgCondition);
 		
-		Criteria scopeCriteria = AccountUtil.getCurrentUser().scopeCriteria(moduleName);
+		Criteria scopeCriteria = PermissionUtil.getCurrentUserScopeCriteria(moduleName);
 		if (scopeCriteria != null) {
 			builder.andCriteria(scopeCriteria);
 		}
 		
-		Criteria permissionCriteria = AccountUtil.getCurrentUser().getRole().permissionCriteria(moduleName,"read");
+		Criteria permissionCriteria = PermissionUtil.getCurrentUserPermissionCriteria(moduleName,"read");
 		if (permissionCriteria != null) {
 			builder.andCriteria(permissionCriteria);
 		}

@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.actions;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.accounts.util.PermissionUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ToolContext;
 import com.facilio.bmsconsole.context.ToolTransactionContext;
@@ -89,7 +90,7 @@ public class GetToolTransactionsListCommand implements Command {
 			builder.andCriteria(searchCriteria);
 		}
 
-		Criteria scopeCriteria = AccountUtil.getCurrentUser().scopeCriteria(moduleName);
+		Criteria scopeCriteria = PermissionUtil.getCurrentUserScopeCriteria(moduleName);
 		if (scopeCriteria != null) {
 			builder.andCriteria(scopeCriteria);
 		}
@@ -120,7 +121,7 @@ public class GetToolTransactionsListCommand implements Command {
 			
 		}
 		
-		Criteria permissionCriteria = AccountUtil.getCurrentUser().getRole().permissionCriteria("inventory","read");
+		Criteria permissionCriteria = PermissionUtil.getCurrentUserPermissionCriteria("inventory","read");
 		if(permissionCriteria != null) {
 			builder.andCriteria(permissionCriteria);
 		}

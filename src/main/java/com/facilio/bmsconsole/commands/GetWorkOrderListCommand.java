@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.accounts.util.PermissionUtil;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
@@ -103,14 +104,14 @@ public class GetWorkOrderListCommand implements Command {
 			}
 		}
 
-//		Criteria scopeCriteria = AccountUtil.getCurrentUser().scopeCriteria(moduleName);
+//		Criteria scopeCriteria = PermissionUtil.getCurrentUserScopeCriteria(moduleName);
 //		if(scopeCriteria != null)
 //		{
 //			selectBuilder.andCriteria(scopeCriteria);
 //		}
 //
 //		if (AccountUtil.getCurrentAccount().getUser().getUserType() != 2) {
-//			Criteria permissionCriteria = AccountUtil.getCurrentUser().getRole().permissionCriteria(moduleName,"read");
+//			Criteria permissionCriteria = PermissionUtil.getCurrentUserPermissionCriteria(moduleName,"read");
 //			if(permissionCriteria != null) {
 //				selectBuilder.andCriteria(permissionCriteria);
 //			}
@@ -205,13 +206,13 @@ public class GetWorkOrderListCommand implements Command {
 			selectBuilder.andCriteria(subViewcriteria);
 		}
 		
-		Criteria scopeCriteria = AccountUtil.getCurrentUser().scopeCriteria(workorderModule.getName());
+		Criteria scopeCriteria = PermissionUtil.getCurrentUserScopeCriteria(workorderModule.getName());
 		if(scopeCriteria != null)
 		{
 			selectBuilder.andCriteria(scopeCriteria);
 		}
 
-		Criteria permissionCriteria = AccountUtil.getCurrentUser().getRole().permissionCriteria(workorderModule.getName(),"read");
+		Criteria permissionCriteria = PermissionUtil.getCurrentUserPermissionCriteria(workorderModule.getName(),"read");
 		if(permissionCriteria != null) {
 			selectBuilder.andCriteria(permissionCriteria);
 		}
