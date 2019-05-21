@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -19,6 +20,7 @@ import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.InsertRecordBuilder;
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
+import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 
@@ -68,10 +70,23 @@ public class GetAddOrUpdateGatePassCommand implements Command {
 		return false;
 	}
 
-	private void updateLineItems(GatePassContext gatePassContext) {
+	private void updateLineItems(GatePassContext gatePassContext) throws Exception {
+		List<GatePassLineItemsContext> newLineItems = new ArrayList<GatePassLineItemsContext>();
 		for (GatePassLineItemsContext lineItemContext : gatePassContext.getLineItems()) {
 			lineItemContext.setGatePass(gatePassContext.getId());
+			if(CollectionUtils.isNotEmpty(lineItemContext.getAssetIds())) {
+				lineItemContext.setAsset(AssetsAPI.getAssetInfo(lineItemContext.getAssetIds().get(0)));
+				lineItemContext.setQuantity(1);
+				for(int i=1;i<lineItemContext.getAssetIds().size();i++) {
+					GatePassLineItemsContext gatePassItem = new GatePassLineItemsContext();
+					gatePassItem.setGatePass(gatePassContext.getId());
+					gatePassItem.setAsset(AssetsAPI.getAssetInfo(lineItemContext.getAssetIds().get(i)));
+					gatePassItem.setQuantity(1);
+					newLineItems.add(gatePassItem);
+				}
+			}
 		}
+		gatePassContext.getLineItems().addAll(newLineItems);
 	}
 
 	private void addRecord(boolean isLocalIdNeeded, List<? extends ModuleBaseWithCustomFields> list,

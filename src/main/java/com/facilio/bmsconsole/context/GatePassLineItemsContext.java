@@ -1,5 +1,7 @@
 package com.facilio.bmsconsole.context;
 
+import java.util.List;
+
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 
 public class GatePassLineItemsContext extends ModuleBaseWithCustomFields{
@@ -72,7 +74,24 @@ public class GatePassLineItemsContext extends ModuleBaseWithCustomFields{
 	public void setSerialNumber(String serialNumber) {
 		this.serialNumber = serialNumber;
 	}
-
+	
+	private List<Long> assetIds;
+	
+	public List<Long> getAssetIds() {
+		return assetIds;
+	}
+	public void setAssetIds(List<Long> assetIds) {
+		this.assetIds = assetIds;
+	}
+	
+	private AssetContext asset;
+	
+	public AssetContext getAsset() {
+		return asset;
+	}
+	public void setAsset(AssetContext asset) {
+		this.asset = asset;
+	}
 	public GatePassLineItemsContext() {
 		
 	}
