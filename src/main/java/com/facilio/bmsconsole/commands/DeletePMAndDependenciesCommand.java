@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.facilio.modules.FacilioStatus;
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
@@ -20,7 +21,6 @@ import com.facilio.bmsconsole.context.PMReminder;
 import com.facilio.bmsconsole.context.PMReminderAction;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.context.ResourceContext;
-import com.facilio.bmsconsole.context.TicketStatusContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
@@ -152,7 +152,7 @@ public class DeletePMAndDependenciesCommand implements Command{
 	}
 
 	private List<Long> getScheduledWOIds(List<Long> pmIds) throws Exception {
-		TicketStatusContext status = TicketAPI.getStatus("preopen");
+		FacilioStatus status = TicketAPI.getStatus("preopen");
 		if (status == null) {
 			CommonCommandUtil.emailAlert("Org does not have pre-open state", "ORGID: "+ AccountUtil.getCurrentAccount().getOrg().getOrgId());
 			throw new IllegalStateException("Org does not have pre-open state");

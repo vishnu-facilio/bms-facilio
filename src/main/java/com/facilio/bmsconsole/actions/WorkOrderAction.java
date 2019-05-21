@@ -50,7 +50,7 @@ import com.facilio.bmsconsole.context.TaskContext.InputType;
 import com.facilio.bmsconsole.context.TaskSectionContext;
 import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.context.TicketContext.SourceType;
-import com.facilio.bmsconsole.context.TicketStatusContext;
+import com.facilio.modules.FacilioStatus;
 import com.facilio.bmsconsole.context.ViewLayout;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.modules.FacilioField;
@@ -2333,7 +2333,7 @@ public class WorkOrderAction extends FacilioAction {
 		//The following has to be moved to chain
 		workorder.setSourceType(SourceType.SERVICE_PORTAL_REQUEST);
 		workorder.setSendForApproval(true);
-		TicketStatusContext preOpenStatus = TicketAPI.getStatus("preopen");
+		FacilioStatus preOpenStatus = TicketAPI.getStatus("preopen");
 		workorder.setStatus(preOpenStatus);
 		if (workorder.getRequester() == null && AccountUtil.getCurrentUser() != null) {
 			workorder.setRequester(AccountUtil.getCurrentUser());

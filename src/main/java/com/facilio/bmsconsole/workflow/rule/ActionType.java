@@ -39,7 +39,7 @@ import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.context.ReadingAlarmContext;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.TicketContext.SourceType;
-import com.facilio.bmsconsole.context.TicketStatusContext;
+import com.facilio.modules.FacilioStatus;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
@@ -512,7 +512,7 @@ public enum ActionType {
 			try {
 				if (userAssigned) {
 					if (assignedToUserId != -1 || assignGroupId != -1) {
-						TicketStatusContext status = TicketAPI.getStatus("Assigned");
+						FacilioStatus status = TicketAPI.getStatus("Assigned");
 						workOrder.setStatus(status);
 						updateWO.setStatus(status);
 					}
@@ -927,7 +927,7 @@ public enum ActionType {
 		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,
 				Object currentRecord) throws Exception {
 			ModuleBaseWithCustomFields moduleData = ((ModuleBaseWithCustomFields) currentRecord);
-			TicketStatusContext state = moduleData.getModuleState();
+			FacilioStatus state = moduleData.getModuleState();
 			long oldStateId = -1;
 			if (state != null) {
 				oldStateId = state.getId();
@@ -1056,7 +1056,7 @@ public enum ActionType {
 		FacilioField entityIdField = modBean.getField("entityId", FacilioConstants.ContextNames.ALARM);
 		FacilioField woIdField = modBean.getField("woId", FacilioConstants.ContextNames.ALARM);
 		FacilioField statusField = modBean.getField("status", FacilioConstants.ContextNames.WORK_ORDER);
-		TicketStatusContext closeStatus = TicketAPI.getStatus("Closed");
+		FacilioStatus closeStatus = TicketAPI.getStatus("Closed");
 		
 		
 		SelectRecordsBuilder<WorkOrderContext> woBuilder = new SelectRecordsBuilder<WorkOrderContext>()

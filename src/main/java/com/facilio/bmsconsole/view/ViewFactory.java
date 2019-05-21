@@ -13,8 +13,8 @@ import com.facilio.bmsconsole.context.AssetCategoryContext;
 import com.facilio.bmsconsole.context.AssetContext.AssetState;
 import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.context.TicketContext.SourceType;
-import com.facilio.bmsconsole.context.TicketStatusContext;
-import com.facilio.bmsconsole.context.TicketStatusContext.StatusType;
+import com.facilio.modules.FacilioStatus;
+import com.facilio.modules.FacilioStatus.StatusType;
 import com.facilio.bmsconsole.context.ViewField;
 import com.facilio.bmsconsole.context.WorkOrderRequestContext;
 import com.facilio.bmsconsole.criteria.BooleanOperators;
@@ -716,7 +716,7 @@ public class ViewFactory {
 		Condition statusOpen = new Condition();
 		statusOpen.setField(statusTypeField);
 		statusOpen.setOperator(NumberOperators.NOT_EQUALS);
-		statusOpen.setValue(String.valueOf(TicketStatusContext.StatusType.OPEN.getIntVal()));
+		statusOpen.setValue(String.valueOf(FacilioStatus.StatusType.OPEN.getIntVal()));
 
 		Criteria criteria = new Criteria();
 		criteria.addAndCondition(statusOpen);
@@ -734,7 +734,7 @@ public class ViewFactory {
 		Condition statusOpen = new Condition();
 		statusOpen.setField(statusTypeField);
 		statusOpen.setOperator(NumberOperators.EQUALS);
-		statusOpen.setValue(String.valueOf(TicketStatusContext.StatusType.OPEN.getIntVal()));
+		statusOpen.setValue(String.valueOf(FacilioStatus.StatusType.OPEN.getIntVal()));
 
 		Criteria criteria = new Criteria();
 		criteria.addAndCondition(statusOpen);
@@ -752,7 +752,7 @@ public class ViewFactory {
 		Condition statusOpen = new Condition();
 		statusOpen.setField(statusTypeField);
 		statusOpen.setOperator(NumberOperators.EQUALS);
-		statusOpen.setValue(String.valueOf(TicketStatusContext.StatusType.PRE_OPEN.getIntVal()));
+		statusOpen.setValue(String.valueOf(FacilioStatus.StatusType.PRE_OPEN.getIntVal()));
 
 		Criteria criteria = new Criteria();
 		criteria.addAndCondition(statusOpen);
@@ -804,7 +804,7 @@ public class ViewFactory {
 		Condition statusClose = new Condition();
 		statusClose.setField(statusTypeField);
 		statusClose.setOperator(NumberOperators.EQUALS);
-		statusClose.setValue(String.valueOf(TicketStatusContext.StatusType.CLOSED.getIntVal()));
+		statusClose.setValue(String.valueOf(FacilioStatus.StatusType.CLOSED.getIntVal()));
 
 		Criteria criteria = new Criteria();
 		criteria.addAndCondition(statusClose);

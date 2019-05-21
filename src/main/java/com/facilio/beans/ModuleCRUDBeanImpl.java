@@ -23,6 +23,7 @@ import com.facilio.events.tasker.tasks.EventUtil;
 import com.facilio.events.util.EventAPI;
 import com.facilio.events.util.EventRulesAPI;
 import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioStatus;
 import com.facilio.procon.consumer.FacilioConsumer;
 import com.facilio.procon.message.FacilioRecord;
 import com.facilio.sql.GenericDeleteRecordBuilder;
@@ -124,7 +125,7 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 			context.put(FacilioConstants.ContextNames.WORK_ORDER, workOrder);
 			context.put(FacilioConstants.ContextNames.IS_PUBLIC_REQUEST, true);
 			
-			TicketStatusContext preOpenStatus = TicketAPI.getStatus("preopen");
+			FacilioStatus preOpenStatus = TicketAPI.getStatus("preopen");
 			workOrder.setStatus(preOpenStatus);
 			
 			if (attachedFiles != null && !attachedFiles.isEmpty() && attachedFileNames != null && !attachedFileNames.isEmpty() && attachedFilesContentType != null && !attachedFilesContentType.isEmpty()) {
@@ -431,7 +432,7 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 	public WorkOrderContext CloseAllWorkOrder() throws Exception
 	{
 		List<WorkOrderContext> workOrders = new ArrayList<WorkOrderContext>();
-		List<TicketStatusContext> ticketStatus = new ArrayList<TicketStatusContext>();
+		List<FacilioStatus> ticketStatus = new ArrayList<FacilioStatus>();
 		List<TaskContext> tasks = new ArrayList<TaskContext>();
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean", AccountUtil.getCurrentOrg().getId());
 		FacilioModule module = modBean.getModule("workorder");
@@ -451,11 +452,11 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 		List<FacilioField> fields = new ArrayList<>();
 		fields.add(ModuleFactory.getTicketStatusIdField());
 		
-//		SelectRecordsBuilder<TicketStatusContext> builder1 = new SelectRecordsBuilder<TicketStatusContext>()
+//		SelectRecordsBuilder<FacilioStatus> builder1 = new SelectRecordsBuilder<FacilioStatus>()
 //				.table("TicketStatus")
 //				.moduleName(FacilioConstants.ContextNames.TICKET_STATUS)
 //				.select(fields)
-//				.beanClass(TicketStatusContext.class)
+//				.beanClass(FacilioStatus.class)
 //				.andCustomWhere(ModuleFactory.getTicketStatusModule().getTableName()+".ORGID = ? AND STATUS = ?", AccountUtil.getCurrentOrg().getId(), "closed");
 		
 		ticketStatus = Collections.singletonList(TicketAPI.getStatus("closed"));

@@ -15,6 +15,7 @@ import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.exception.ReadingValidationException;
+import com.facilio.modules.FacilioStatus;
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -202,7 +203,7 @@ public class TaskAction extends FacilioAction {
 	private String updateTask(FacilioContext context) throws Exception {
 		try {
 		if (task.getStatus() != null) {
-			TicketStatusContext status = TicketAPI.getStatus(AccountUtil.getCurrentOrg().getOrgId(), task.getStatus().getId());
+			FacilioStatus status = TicketAPI.getStatus(AccountUtil.getCurrentOrg().getOrgId(), task.getStatus().getId());
 			if (status.getStatus().equals("Submitted")) {
 				task.setStatusNew(TaskStatus.OPEN);
 			} else {

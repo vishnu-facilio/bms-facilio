@@ -7,7 +7,7 @@ import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.TicketStatusContext;
+import com.facilio.modules.FacilioStatus;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.util.StateFlowRulesAPI;
@@ -28,7 +28,7 @@ public class BackwardCompatibleStateFlowUpdateCommand implements Command {
 			
 			// check whether moduleState is found
 			if (field != null) {
-				TicketStatusContext status = workOrder.getStatus();
+				FacilioStatus status = workOrder.getStatus();
 				for (WorkOrderContext wo : oldWos) {
 					StateFlowRulesAPI.updateState(wo, modBean.getModule(moduleName), status, false, context);
 				}

@@ -10,7 +10,6 @@ import java.util.Map;
 import org.apache.commons.chain.Chain;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.apache.tiles.request.collection.CollectionUtil;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
@@ -21,7 +20,7 @@ import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.PMTriggerContext;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
-import com.facilio.bmsconsole.context.TicketStatusContext;
+import com.facilio.modules.FacilioStatus;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.FacilioField;
@@ -73,10 +72,10 @@ public class OpenScheduledWO extends FacilioJob {
             }
             if ((wo.getAssignedTo() != null && wo.getAssignedTo().getId() > 0)
                     || (wo.getAssignmentGroup() != null && (wo.getAssignmentGroup().getId() > 0 || wo.getAssignmentGroup().getGroupId() > 0))) {
-                TicketStatusContext status = TicketAPI.getStatus("Assigned");
+                FacilioStatus status = TicketAPI.getStatus("Assigned");
                 wo.setStatus(status);
             } else {
-                TicketStatusContext status = TicketAPI.getStatus("Submitted");
+                FacilioStatus status = TicketAPI.getStatus("Submitted");
                 wo.setStatus(status);
             }
 

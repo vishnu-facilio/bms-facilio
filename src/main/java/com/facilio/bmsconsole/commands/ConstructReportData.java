@@ -5,8 +5,8 @@ import com.facilio.bmsconsole.modules.AggregateOperator.CommonAggregateOperator;
 import com.facilio.bmsconsole.modules.AggregateOperator.DateAggregateOperator;
 import com.facilio.bmsconsole.modules.AggregateOperator.SpaceAggregateOperator;
 import com.facilio.bmsconsole.util.TicketAPI;
-import com.facilio.bmsconsole.context.TicketStatusContext;
-import com.facilio.bmsconsole.context.TicketStatusContext.StatusType;
+import com.facilio.modules.FacilioStatus;
+import com.facilio.modules.FacilioStatus.StatusType;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
@@ -233,7 +233,7 @@ public class ConstructReportData implements Command {
 		}
 		
 		if (module.getName().equals("workorder")) {
-			List<TicketStatusContext> list = TicketAPI.getStatusOfStatusType(module, StatusType.PRE_OPEN);
+			List<FacilioStatus> list = TicketAPI.getStatusOfStatusType(module, StatusType.PRE_OPEN);
 			if (CollectionUtils.isNotEmpty(list)) {
 				long id = list.get(0).getId();
 				Criteria c = new Criteria();

@@ -1,13 +1,13 @@
 package com.facilio.bmsconsole.util;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.modules.FacilioStatus;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -17,8 +17,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.activity.WorkOrderActivityType;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.bmsconsole.context.TicketStatusContext;
-import com.facilio.bmsconsole.context.TicketStatusContext.StatusType;
+import com.facilio.modules.FacilioStatus.StatusType;
 import com.facilio.bmsconsole.criteria.BooleanOperators;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
@@ -63,29 +62,29 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 		return stateFlowRule;
 	}
 	
-	public static void updateState(ModuleBaseWithCustomFields record, FacilioModule module, TicketStatusContext ticketStatusContext, boolean includeStateFlowChange, Context context) throws Exception {
-		if (ticketStatusContext == null) {
+	public static void updateState(ModuleBaseWithCustomFields record, FacilioModule module, FacilioStatus facilioStatus, boolean includeStateFlowChange, Context context) throws Exception {
+		if (facilioStatus == null) {
 			return;
 		}
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 				
-		TicketStatusContext oldState = record.getModuleState();
+		FacilioStatus oldState = record.getModuleState();
 		if (oldState != null) {
 			oldState = getStateContext(oldState.getId());
 		}
-		record.setModuleState(ticketStatusContext);
+		record.setModuleState(facilioStatus);
 		
 		Map<String, Object> prop = FieldUtil.getAsProperties(record);
 
-		boolean shouldChangeTimer = ticketStatusContext.shouldChangeTimer(oldState);
+		boolean shouldChangeTimer = facilioStatus.shouldChangeTimer(oldState);
 		TimerField timerField = TimerFieldUtil.getTimerField(module.getName());
 		if (shouldChangeTimer) {
-			handleTimerUpdation(prop, ticketStatusContext, timerField, module);
+			handleTimerUpdation(prop, facilioStatus, timerField, module);
 		}
 		
 		// Update start and end time of the record
-		if (ticketStatusContext.getType() == StatusType.CLOSED) {
+		if (facilioStatus.getType() == StatusType.CLOSED) {
 			if (prop.get(timerField.getEndTimeFieldName()) == null) {
 				FacilioModule timeLogModule = getTimeLogModule(module);
 				if (timeLogModule != null) {
@@ -96,7 +95,7 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 				}
 			}
 		}
-		else if (ticketStatusContext.getTimerEnabled() && ticketStatusContext.getType() == StatusType.OPEN) {
+		else if (facilioStatus.getTimerEnabled() && facilioStatus.getType() == StatusType.OPEN) {
 			long currentTime = DateTimeUtil.getCurrenTime();
 			if (prop.get(timerField.getEndTimeFieldName()) != null) {
 				prop.put(timerField.getEndTimeFieldName(), -99);
@@ -112,7 +111,7 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 		// backward compatibility for workorder, to update existing status field
 		if (module.getName().equals("workorder")) {
 			fields.add(modBean.getField("status", module.getName()));
-			prop.put("status", FieldUtil.getAsProperties(ticketStatusContext));
+			prop.put("status", FieldUtil.getAsProperties(facilioStatus));
 		}
 		
 		if (timerField != null && timerField.isTimerEnabled()) {
@@ -127,20 +126,20 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 				.andCondition(CriteriaAPI.getIdCondition(record.getId(), module));
 		updateBuilder.updateViaMap(prop);
 		
-		if ((module.getName().contains("workorder")) && oldState != null && oldState.getDisplayName() != null && ticketStatusContext != null && ticketStatusContext.getDisplayName() != null) {
+		if ((module.getName().contains("workorder")) && oldState != null && oldState.getDisplayName() != null && facilioStatus != null && facilioStatus.getDisplayName() != null) {
 			JSONObject info = new JSONObject();
-			info.put("status", ticketStatusContext.getDisplayName());
+			info.put("status", facilioStatus.getDisplayName());
 			info.put("oldValue", oldState.getDisplayName());
-			info.put("newValue", ticketStatusContext.getDisplayName());
+			info.put("newValue", facilioStatus.getDisplayName());
 			CommonCommandUtil.addActivityToContext(record.getId(), -1, WorkOrderActivityType.UPDATE_STATUS, info, (FacilioContext) context);
 		}
 		
-		checkAutomatedCondition(ticketStatusContext, module, record, context);
-		addScheduledJobIfAny(ticketStatusContext.getId(), module.getName(), record, (FacilioContext) context);
+		checkAutomatedCondition(facilioStatus, module, record, context);
+		addScheduledJobIfAny(facilioStatus.getId(), module.getName(), record, (FacilioContext) context);
 	}
 	
-	private static void checkAutomatedCondition(TicketStatusContext ticketStatusContext, FacilioModule module, ModuleBaseWithCustomFields record, Context context) throws Exception {
-		List<WorkflowRuleContext> availableState = StateFlowRulesAPI.getAvailableState(record.getStateFlowId(), ticketStatusContext.getId(), module.getName(), record, (FacilioContext) context, TransitionType.CONDITIONED);
+	private static void checkAutomatedCondition(FacilioStatus facilioStatus, FacilioModule module, ModuleBaseWithCustomFields record, Context context) throws Exception {
+		List<WorkflowRuleContext> availableState = StateFlowRulesAPI.getAvailableState(record.getStateFlowId(), facilioStatus.getId(), module.getName(), record, (FacilioContext) context, TransitionType.CONDITIONED);
 		if (CollectionUtils.isNotEmpty(availableState)) {
 			for (WorkflowRuleContext rule : availableState) {
 				Map<String, Object> recordPlaceHolders = WorkflowRuleAPI.getRecordPlaceHolders(module.getName(), record, WorkflowRuleAPI.getOrgPlaceHolders());
@@ -209,7 +208,7 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 		return null;
 	}
 
-	private static void handleTimerUpdation(Map<String, Object> prop, TicketStatusContext ticketStatus, TimerField timerField, FacilioModule module) throws Exception {
+	private static void handleTimerUpdation(Map<String, Object> prop, FacilioStatus ticketStatus, TimerField timerField, FacilioModule module) throws Exception {
 		if (timerField == null || !timerField.isTimerEnabled()) {
 			return;
 		}
@@ -271,12 +270,12 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 		}
 	}
 
-	public static TicketStatusContext getStateContext(long stateId) throws Exception {
+	public static FacilioStatus getStateContext(long stateId) throws Exception {
 		if (stateId < 0) {
 			return null;
 		}
 		
-		TicketStatusContext stateContext = TicketAPI.getStatus(stateId);
+		FacilioStatus stateContext = TicketAPI.getStatus(stateId);
 		return stateContext;
 	}
 	
@@ -453,7 +452,7 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 			throw new Exception("Invalid module");
 		}
 		
-		TicketStatusContext stateContext = getStateContext(stateFlow.getDefaultStateId());
+		FacilioStatus stateContext = getStateContext(stateFlow.getDefaultStateId());
 		if (stateContext == null) {
 			throw new Exception("Invalid state");
 		}

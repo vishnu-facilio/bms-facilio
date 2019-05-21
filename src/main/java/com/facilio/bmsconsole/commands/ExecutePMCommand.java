@@ -16,6 +16,7 @@ import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioStatus;
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
@@ -107,7 +108,7 @@ public class ExecutePMCommand implements Command {
 		
 		List<WorkOrderContext> wos = builder.get();
 		if (wos != null && !wos.isEmpty()) {
-			TicketStatusContext closedStatus = TicketAPI.getStatus("Closed");
+			FacilioStatus closedStatus = TicketAPI.getStatus("Closed");
 			WorkOrderContext wo = wos.get(0);
 			if (wo.getStatus() != null && wo.getStatus().getId() != closedStatus.getId()) {
 				return wo;

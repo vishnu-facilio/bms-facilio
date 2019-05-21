@@ -3,6 +3,7 @@ package com.facilio.constants;
 import com.facilio.activity.ActivityContext;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.tenant.TenantContext;
+import com.facilio.modules.FacilioStatus;
 import org.json.simple.JSONObject;
 
 import java.text.SimpleDateFormat;
@@ -931,7 +932,7 @@ public class FacilioConstants {
 		private static Map<String, Class> classMap = Collections.unmodifiableMap(initClassMap());
 		private static Map<String, Class> initClassMap() {
 			Map<String, Class> classMap = new HashMap<>();
-			classMap.put(TICKET_STATUS, TicketStatusContext.class);
+			classMap.put(TICKET_STATUS, FacilioStatus.class);
 			classMap.put(TICKET_PRIORITY, TicketPriorityContext.class);
 			classMap.put(TICKET_CATEGORY, TicketCategoryContext.class);
 			classMap.put(TICKET_TYPE, TicketTypeContext.class);

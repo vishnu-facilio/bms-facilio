@@ -1,4 +1,4 @@
-package com.facilio.bmsconsole.context;
+package com.facilio.modules;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -6,7 +6,7 @@ import java.util.Map;
 
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 
-public class TicketStatusContext extends ModuleBaseWithCustomFields {
+public class FacilioStatus extends ModuleBaseWithCustomFields {
 	
 	private static final long serialVersionUID = 1L;
 	
@@ -127,7 +127,7 @@ public class TicketStatusContext extends ModuleBaseWithCustomFields {
 		}
 	}
 
-	public boolean shouldChangeTimer(TicketStatusContext oldState) {
+	public boolean shouldChangeTimer(FacilioStatus oldState) {
 		// PRE_OPEN doesn't have timer field
 		if (getType() == StatusType.PRE_OPEN) {
 			return false;

@@ -1,11 +1,10 @@
 package com.facilio.bmsconsole.commands;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.FormulaContext;
 import com.facilio.bmsconsole.context.ReadingAlarmContext;
 import com.facilio.bmsconsole.context.ResourceContext;
-import com.facilio.bmsconsole.context.TicketStatusContext;
-import com.facilio.bmsconsole.context.TicketStatusContext.StatusType;
+import com.facilio.modules.FacilioStatus;
+import com.facilio.modules.FacilioStatus.StatusType;
 import com.facilio.bmsconsole.criteria.CommonOperators;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.DateOperators;
@@ -56,10 +55,10 @@ public class FetchExtraMetaForAlarmRuleCommand implements Command {
 		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.READING_ALARM);
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 		
-		List<TicketStatusContext> openStatuses = TicketAPI.getStatusOfStatusType(StatusType.OPEN);
+		List<FacilioStatus> openStatuses = TicketAPI.getStatusOfStatusType(StatusType.OPEN);
 		
 		List<Long> statusids = new ArrayList<>();
-		for(TicketStatusContext openStatus :openStatuses) {
+		for(FacilioStatus openStatus :openStatuses) {
 			statusids.add(openStatus.getId());
 		}
 		
@@ -90,7 +89,7 @@ public class FetchExtraMetaForAlarmRuleCommand implements Command {
 					.andCondition(CriteriaAPI.getCondition(fieldMap.get("ruleId"), String.valueOf(rule.getId()), NumberOperators.EQUALS))
 					.andCondition(CriteriaAPI.getCondition(fieldMap.get("woId"), "", CommonOperators.IS_NOT_EMPTY))
 					.andCondition(CriteriaAPI.getCondition(fieldMap.get("createdTime"), "", DateOperators.CURRENT_MONTH))
-					.andCustomWhere(ticketStatusModule.getTableName()+".STATUS_TYPE = ?", TicketStatusContext.StatusType.OPEN.getIntVal())
+					.andCustomWhere(ticketStatusModule.getTableName()+".STATUS_TYPE = ?", FacilioStatus.StatusType.OPEN.getIntVal())
 					;
 		 int woCreatedThisMonth = selectBuilder.get().size();
 		 

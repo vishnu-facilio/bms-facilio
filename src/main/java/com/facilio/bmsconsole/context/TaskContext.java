@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.context;
 import java.text.ParseException;
 import java.util.List;
 
+import com.facilio.modules.FacilioStatus;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -79,11 +80,11 @@ public class TaskContext extends ModuleBaseWithCustomFields {
 		}
 		
 	}
-	private TicketStatusContext status;
-	public TicketStatusContext getStatus() {
+	private FacilioStatus status;
+	public FacilioStatus getStatus() {
 		return status;
 	}
-	public void setStatus(TicketStatusContext status) {
+	public void setStatus(FacilioStatus status) {
 		this.status = status;
 	}
 	

@@ -40,6 +40,7 @@ import javax.xml.crypto.dsig.keyinfo.X509Data;
 import javax.xml.crypto.dsig.spec.C14NMethodParameterSpec;
 import javax.xml.crypto.dsig.spec.TransformParameterSpec;
 
+import com.facilio.modules.FacilioStatus;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.apache.struts2.ServletActionContext;
@@ -58,13 +59,11 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.auth.cookie.FacilioCookie;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.bmsconsole.context.TicketStatusContext;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.forms.FacilioForm.FormType;
 import com.facilio.bmsconsole.reports.ReportsUtil;
 import com.facilio.bmsconsole.util.AlarmAPI;
 import com.facilio.bmsconsole.util.AssetsAPI;
-import com.facilio.bmsconsole.util.BusinessHoursAPI;
 import com.facilio.bmsconsole.util.DeviceAPI;
 import com.facilio.bmsconsole.util.EncryptionUtil;
 import com.facilio.bmsconsole.util.FormsAPI;
@@ -650,8 +649,8 @@ public class LoginAction extends FacilioAction {
 	private JSONObject getTicketStatus() {
 		try {
 			JSONObject result = new JSONObject();
-			List<TicketStatusContext> ticketStatusList = TicketAPI.getAllStatus(false);
-			for (TicketStatusContext tsc : ticketStatusList) {
+			List<FacilioStatus> ticketStatusList = TicketAPI.getAllStatus(false);
+			for (FacilioStatus tsc : ticketStatusList) {
 				result.put(tsc.getId(), tsc.getStatus());
 			}
 			return result;

@@ -39,8 +39,8 @@ import com.facilio.bmsconsole.context.TicketCategoryContext;
 import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.context.TicketContext.SourceType;
 import com.facilio.bmsconsole.context.TicketPriorityContext;
-import com.facilio.bmsconsole.context.TicketStatusContext;
-import com.facilio.bmsconsole.context.TicketStatusContext.StatusType;
+import com.facilio.modules.FacilioStatus;
+import com.facilio.modules.FacilioStatus.StatusType;
 import com.facilio.bmsconsole.context.TicketTypeContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.criteria.Condition;
@@ -219,49 +219,49 @@ public class TicketAPI {
 	}
 	
 	@Deprecated
-	public static TicketStatusContext getStatus(String status) throws Exception {
+	public static FacilioStatus getStatus(String status) throws Exception {
 		// Default method to get workorder states
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule workorderModule = modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER);
 		return getStatus(workorderModule, status);
 	}
 	
-	public static TicketStatusContext getStatus(FacilioModule module, String status) throws Exception
+	public static FacilioStatus getStatus(FacilioModule module, String status) throws Exception
 	{
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		SelectRecordsBuilder<TicketStatusContext> builder = new SelectRecordsBuilder<TicketStatusContext>()
+		SelectRecordsBuilder<FacilioStatus> builder = new SelectRecordsBuilder<FacilioStatus>()
 				.moduleName(FacilioConstants.ContextNames.TICKET_STATUS)
-				.beanClass(TicketStatusContext.class)
+				.beanClass(FacilioStatus.class)
 				.select(modBean.getAllFields(FacilioConstants.ContextNames.TICKET_STATUS))
 				.andCustomWhere("STATUS = ?", status)
 				.andCondition(CriteriaAPI.getCondition("PARENT_MODULEID", "parentModuleId", String.valueOf(module.getModuleId()), NumberOperators.EQUALS))
 				.orderBy("ID");
 				
-		List<TicketStatusContext> statuses = builder.get();
+		List<FacilioStatus> statuses = builder.get();
 		
 		return statuses.get(0);
 	}
 	
 	@Deprecated
-	public static List<TicketStatusContext> getStatusOfStatusType(StatusType statusType) throws Exception {
+	public static List<FacilioStatus> getStatusOfStatusType(StatusType statusType) throws Exception {
 		// Default method to get workorder states
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule workorderModule = modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER);
 		return getStatusOfStatusType(workorderModule, statusType);
 	}
 	
-	public static List<TicketStatusContext> getStatusOfStatusType(FacilioModule module, StatusType statusType) throws Exception
+	public static List<FacilioStatus> getStatusOfStatusType(FacilioModule module, StatusType statusType) throws Exception
 	{
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
-		SelectRecordsBuilder<TicketStatusContext> builder = new SelectRecordsBuilder<TicketStatusContext>()
+		SelectRecordsBuilder<FacilioStatus> builder = new SelectRecordsBuilder<FacilioStatus>()
 				.moduleName(FacilioConstants.ContextNames.TICKET_STATUS)
-				.beanClass(TicketStatusContext.class)
+				.beanClass(FacilioStatus.class)
 				.select(modBean.getAllFields(FacilioConstants.ContextNames.TICKET_STATUS))
 				.andCustomWhere("STATUS_TYPE = ?", statusType.getIntVal())
 				.andCondition(CriteriaAPI.getCondition("PARENT_MODULEID", "parentModuleId", String.valueOf(module.getModuleId()), NumberOperators.EQUALS))
 				.orderBy("ID");
-		List<TicketStatusContext> statuses = builder.get();
+		List<FacilioStatus> statuses = builder.get();
 		return statuses;
 	}
 	
@@ -344,40 +344,40 @@ public class TicketAPI {
 		return categories.get(0);
 	}
 
-	public static TicketStatusContext getStatus(long stateId) throws Exception {
+	public static FacilioStatus getStatus(long stateId) throws Exception {
 		return getStatus(AccountUtil.getCurrentOrg().getId(), stateId);
 	}
 	
-	public static TicketStatusContext getStatus(long orgId, long id) throws Exception
+	public static FacilioStatus getStatus(long orgId, long id) throws Exception
 	{
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		SelectRecordsBuilder<TicketStatusContext> builder = new SelectRecordsBuilder<TicketStatusContext>()
+		SelectRecordsBuilder<FacilioStatus> builder = new SelectRecordsBuilder<FacilioStatus>()
 				.table("TicketStatus")
 				.moduleName("ticketstatus")
-				.beanClass(TicketStatusContext.class)
+				.beanClass(FacilioStatus.class)
 				.select(modBean.getAllFields("ticketstatus"))
 				.andCustomWhere("ORGID = ? AND ID = ?", orgId, id)
 				.orderBy("ID");
-		List<TicketStatusContext> statuses = builder.get();
+		List<FacilioStatus> statuses = builder.get();
 		return statuses.get(0);
 	}
 	
 	@Deprecated
-	public static List<TicketStatusContext> getAllStatus(boolean ignorePreOpen) throws Exception {
+	public static List<FacilioStatus> getAllStatus(boolean ignorePreOpen) throws Exception {
 		// Default method to get workorder states
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule workorderModule = modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER);
 		return getAllStatus(workorderModule, ignorePreOpen);
 	}
 	
-	public static List<TicketStatusContext> getAllStatus(FacilioModule module, boolean ignorePreOpen) throws Exception
+	public static List<FacilioStatus> getAllStatus(FacilioModule module, boolean ignorePreOpen) throws Exception
 	{
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.TICKET_STATUS);
 		
-		SelectRecordsBuilder<TicketStatusContext> builder = new SelectRecordsBuilder<TicketStatusContext>()
+		SelectRecordsBuilder<FacilioStatus> builder = new SelectRecordsBuilder<FacilioStatus>()
 															.moduleName(FacilioConstants.ContextNames.TICKET_STATUS)
-															.beanClass(TicketStatusContext.class)
+															.beanClass(FacilioStatus.class)
 															.andCondition(CriteriaAPI.getCondition("PARENT_MODULEID", "parentModuleId", String.valueOf(module.getModuleId()), NumberOperators.EQUALS))
 															.select(fields);
 		
@@ -386,7 +386,7 @@ public class TicketAPI {
 		}
 		if (ignorePreOpen) {
 			FacilioField typeField = FieldFactory.getAsMap(fields).get("typeCode");
-			builder.andCondition(CriteriaAPI.getCondition(typeField, String.valueOf(TicketStatusContext.StatusType.PRE_OPEN.getIntVal()), NumberOperators.NOT_EQUALS));
+			builder.andCondition(CriteriaAPI.getCondition(typeField, String.valueOf(FacilioStatus.StatusType.PRE_OPEN.getIntVal()), NumberOperators.NOT_EQUALS));
 		}
 		
 		 return builder.get();
@@ -596,7 +596,7 @@ public class TicketAPI {
 	}
 	
 	public static void updateTicketStatus(EventType activityType, TicketContext ticket, TicketContext oldTicket, boolean isWorkDurationChangeAllowed) throws Exception {
-		TicketStatusContext statusObj = ticket.getStatus();
+		FacilioStatus statusObj = ticket.getStatus();
 		if(statusObj != null && statusObj.getId() > 0) {
 			statusObj = TicketAPI.getStatus(AccountUtil.getCurrentOrg().getId(), statusObj.getId());
 		}
@@ -725,12 +725,12 @@ public static Map<Long, TicketContext> getTickets(String ids) throws Exception {
 	private static void loadTicketStatus(Collection<? extends TicketContext> tickets) throws Exception {
 		if(tickets != null && !tickets.isEmpty()) {
 			try {
-				List<TicketStatusContext> allStatus = getAllStatus(false);
-				Map<Long, TicketStatusContext> statuses = allStatus.stream().collect(Collectors.toMap(TicketStatusContext::getId, Function.identity()));
+				List<FacilioStatus> allStatus = getAllStatus(false);
+				Map<Long, FacilioStatus> statuses = allStatus.stream().collect(Collectors.toMap(FacilioStatus::getId, Function.identity()));
 				
 				for(TicketContext ticket : tickets) {
 					if (ticket != null) {
-						TicketStatusContext status = ticket.getStatus();
+						FacilioStatus status = ticket.getStatus();
 						if(status != null) {
 							ticket.setStatus(statuses.get(status.getId()));
 						}
@@ -1006,7 +1006,7 @@ public static Map<Long, TicketContext> getTickets(String ids) throws Exception {
 	}
 	
 	public static EventType getActivityTypeForTicketStatus(long statusId) throws Exception {
-		TicketStatusContext status = TicketAPI.getStatus(AccountUtil.getCurrentOrg().getId(), statusId);
+		FacilioStatus status = TicketAPI.getStatus(AccountUtil.getCurrentOrg().getId(), statusId);
 		Map<String, EventType> statusVsActivityType = new HashMap<>();
 		statusVsActivityType.put("Resolved", EventType.SOLVE_WORK_ORDER);
 		statusVsActivityType.put("Closed", EventType.CLOSE_WORK_ORDER);

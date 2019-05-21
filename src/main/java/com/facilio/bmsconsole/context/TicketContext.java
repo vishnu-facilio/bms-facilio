@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.modules.FacilioStatus;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -81,11 +82,11 @@ public class TicketContext extends ModuleBaseWithCustomFields {
 		this.assignedBy = assignedBy;
 	}
 
-	private TicketStatusContext status;
-	public TicketStatusContext getStatus() {
+	private FacilioStatus status;
+	public FacilioStatus getStatus() {
 		return status;
 	}
-	public void setStatus(TicketStatusContext status) {
+	public void setStatus(FacilioStatus status) {
 		this.status = status;
 	}
 	

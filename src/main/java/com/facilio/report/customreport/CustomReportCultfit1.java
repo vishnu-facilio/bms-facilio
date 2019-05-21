@@ -2,10 +2,9 @@ package com.facilio.report.customreport;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.FormulaContext;
 import com.facilio.bmsconsole.context.ReportContext;
 import com.facilio.bmsconsole.context.ReportFieldContext;
-import com.facilio.bmsconsole.context.TicketStatusContext;
+import com.facilio.modules.FacilioStatus;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.modules.*;
 import com.facilio.bmsconsole.util.DashboardUtil;
@@ -33,7 +32,7 @@ public class CustomReportCultfit1 implements CustomReport {
 		
 		Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(fields);
 		
-		TicketStatusContext closedStatus = TicketAPI.getStatus("Closed");
+		FacilioStatus closedStatus = TicketAPI.getStatus("Closed");
 		
 		FacilioField statusFieldOrginal = fieldsMap.get("status");
 		

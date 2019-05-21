@@ -6,7 +6,7 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.TicketStatusContext;
+import com.facilio.modules.FacilioStatus;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.bmsconsole.util.StateFlowRulesAPI;
@@ -45,7 +45,7 @@ public class UpdateStateCommand implements Command {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioModule module = modBean.getModule(moduleName);
 
-			TicketStatusContext state = StateFlowRulesAPI.getStateContext(defaultStateId);
+			FacilioStatus state = StateFlowRulesAPI.getStateContext(defaultStateId);
 			moduleData.setStateFlowId(defaultStateFlowId);
 			StateFlowRulesAPI.updateState(moduleData, module, state, true, context);
 		} 
@@ -54,7 +54,7 @@ public class UpdateStateCommand implements Command {
 				StateflowTransitionContext stateflowTransition = (StateflowTransitionContext) WorkflowRuleAPI.getWorkflowRule(currentTransitionId, true);
 				boolean shouldChangeState = WorkflowRuleAPI.evaluateWorkflowAndExecuteActions(stateflowTransition, moduleName, moduleData, StateFlowRulesAPI.getDefaultFieldChangeSet(moduleName, moduleData.getId()), recordPlaceHolders, (FacilioContext) context, false);
 				if (shouldChangeState) {
-					TicketStatusContext newState = StateFlowRulesAPI.getStateContext(stateflowTransition.getToStateId());
+					FacilioStatus newState = StateFlowRulesAPI.getStateContext(stateflowTransition.getToStateId());
 					if (newState == null) {
 						throw new Exception("Invalid state");
 					}

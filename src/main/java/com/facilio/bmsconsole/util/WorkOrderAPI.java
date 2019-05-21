@@ -6,8 +6,8 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.context.SpaceContext;
-import com.facilio.bmsconsole.context.TicketStatusContext;
-import com.facilio.bmsconsole.context.TicketStatusContext.StatusType;
+import com.facilio.modules.FacilioStatus;
+import com.facilio.modules.FacilioStatus.StatusType;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.criteria.*;
 import com.facilio.bmsconsole.modules.FacilioField;
@@ -111,7 +111,7 @@ public class WorkOrderAPI {
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER);
-		TicketStatusContext status = TicketAPI.getStatus("Closed");
+		FacilioStatus status = TicketAPI.getStatus("Closed");
 		
 		SelectRecordsBuilder<WorkOrderContext> builder = new SelectRecordsBuilder<WorkOrderContext>()
 														.table("WorkOrders")
@@ -221,7 +221,7 @@ public static Map<Long, Map<String, Object>> getWorkOrderStatusPercentage(Long s
 		for (int i = 0; i < workOrderStatusCount.size(); i++) {
 			WorkOrderContext mp = workOrderStatusCount.get(i);
 			String siteName = (String) siteArray.get(mp.getSiteId());
-			TicketStatusContext statusMap = mp.getStatus();
+			FacilioStatus statusMap = mp.getStatus();
 			Long siteId = mp.getSiteId();
 			Long dueDate = mp.getDueDate();
 			Long actualWorkEnd = mp.getActualWorkEnd();
@@ -378,7 +378,7 @@ public static List<Map<String,Object>> getWorkOrderStatusPercentageForWorkflow(S
 	    
     }
     
-    TicketStatusContext status = TicketAPI.getStatus("Closed");
+    FacilioStatus status = TicketAPI.getStatus("Closed");
 	
 	SelectRecordsBuilder<WorkOrderContext> openSelectRecordsBuilder = new SelectRecordsBuilder<WorkOrderContext>()
 													.module(workOrderModule)

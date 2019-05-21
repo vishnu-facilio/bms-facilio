@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
+import com.facilio.modules.FacilioStatus;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -19,7 +20,6 @@ import com.facilio.bmsconsole.context.PMTriggerContext;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.context.PreventiveMaintenance.TriggerType;
 import com.facilio.bmsconsole.context.ResourceContext;
-import com.facilio.bmsconsole.context.TicketStatusContext;
 import com.facilio.bmsconsole.criteria.BooleanOperators;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
@@ -221,7 +221,7 @@ public class PMNewScheduler extends FacilioJob {
 		fields.add(triggerIdField);
 		FacilioField statusField = woFieldMap.get("status");
 		FacilioField jobStatusField = woFieldMap.get("jobStatus");
-		TicketStatusContext status = TicketAPI.getStatus("preopen");
+		FacilioStatus status = TicketAPI.getStatus("preopen");
 		FacilioModule ticketModule = ModuleFactory.getTicketsModule();
 
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()

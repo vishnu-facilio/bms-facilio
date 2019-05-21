@@ -1,6 +1,6 @@
 package com.facilio.cards.util;
 
-import com.facilio.bmsconsole.context.TicketStatusContext;
+import com.facilio.modules.FacilioStatus;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -331,7 +331,7 @@ public enum CardType {
 			"        <module name=\"workorder\" />\n" + 
 			"        <criteria pattern=\"(1 and 2)\">\n" + 
 			"            <condition sequence=\"1\">dueDate`Today`</condition>\n" + 
-			"            <condition sequence=\"2\">status`lookup`orgid = ${orgId} and STATUS_TYPE = "+TicketStatusContext.StatusType.OPEN.getIntVal()+"</condition>\n" + 
+			"            <condition sequence=\"2\">status`lookup`orgid = ${orgId} and STATUS_TYPE = "+ FacilioStatus.StatusType.OPEN.getIntVal()+"</condition>\n" +
 			"        </criteria>\n" + 
 			"        <field aggregate=\"count\" name=\"subject\" />\n" + 
 			"    </expression>\n" + 
@@ -339,21 +339,21 @@ public enum CardType {
 			"        <module name=\"workorder\" />\n" + 
 			"        <criteria pattern=\"(1 and 2)\">\n" + 
 			"            <condition sequence=\"1\">assignedTo`is empty`</condition>\n" +
-			"            <condition sequence=\"2\">status`lookup`orgid = ${orgId} and STATUS_TYPE = "+TicketStatusContext.StatusType.OPEN.getIntVal()+"</condition>\n" + 
+			"            <condition sequence=\"2\">status`lookup`orgid = ${orgId} and STATUS_TYPE = "+ FacilioStatus.StatusType.OPEN.getIntVal()+"</condition>\n" +
 			"        </criteria>\n" + 
 			"        <field aggregate=\"count\" name=\"subject\" />\n" + 
 			"    </expression>\n" + 
 			"    <expression name=\"open\">\n" + 
 			"        <module name=\"workorder\" />\n" + 
 			"        <criteria pattern=\"(1)\">\n" + 
-			"            <condition sequence=\"1\">status`lookup`orgid = ${orgId} and STATUS_TYPE = "+TicketStatusContext.StatusType.OPEN.getIntVal()+"</condition>\n" + 
+			"            <condition sequence=\"1\">status`lookup`orgid = ${orgId} and STATUS_TYPE = "+ FacilioStatus.StatusType.OPEN.getIntVal()+"</condition>\n" +
 			"        </criteria>\n" + 
 			"        <field aggregate=\"count\" name=\"subject\" />\n" + 
 			"    </expression>\n" + 
 			"    <expression name=\"overdue\">\n" + 
 			"        <module name=\"workorder\" />\n" + 
 			"        <criteria pattern=\"(1 and 2)\">\n" + 
-			"            <condition sequence=\"1\">status`lookup`orgid = ${orgId} and STATUS_TYPE = "+TicketStatusContext.StatusType.OPEN.getIntVal()+"</condition>\n" + 
+			"            <condition sequence=\"1\">status`lookup`orgid = ${orgId} and STATUS_TYPE = "+ FacilioStatus.StatusType.OPEN.getIntVal()+"</condition>\n" +
 			"            <condition sequence=\"2\">dueDate`Till Now`</condition>\n" + 
 			"        </criteria>\n" + 
 			"        <field aggregate=\"count\" name=\"subject\" />\n" + 
@@ -366,7 +366,7 @@ public enum CardType {
 			"        <module name=\"workorder\" />\n" + 
 			"        <criteria pattern=\"(1 and 2 and 3)\">\n" + 
 			"            <condition sequence=\"1\">dueDate`Today`</condition>\n" + 
-			"            <condition sequence=\"2\">status`lookup`orgid = ${orgId} and STATUS_TYPE = "+TicketStatusContext.StatusType.OPEN.getIntVal()+"</condition>\n" +
+			"            <condition sequence=\"2\">status`lookup`orgid = ${orgId} and STATUS_TYPE = "+ FacilioStatus.StatusType.OPEN.getIntVal()+"</condition>\n" +
 			"            <condition sequence=\"3\">assignedTo`is`${currentUserId}</condition>\n" +
 			"        </criteria>\n" + 
 			"        <field aggregate=\"count\" name=\"subject\" />\n" + 
@@ -374,7 +374,7 @@ public enum CardType {
 			"    <expression name=\"openHighPriority\">\n" + 
 			"        <module name=\"workorder\" />\n" + 
 			"        <criteria pattern=\"(1 and 2 and 3)\">\n" + 
-			"            <condition sequence=\"1\">status`lookup`orgid = ${orgId} and STATUS_TYPE = "+TicketStatusContext.StatusType.OPEN.getIntVal()+"</condition>\n" +
+			"            <condition sequence=\"1\">status`lookup`orgid = ${orgId} and STATUS_TYPE = "+ FacilioStatus.StatusType.OPEN.getIntVal()+"</condition>\n" +
 			"            <condition sequence=\"2\">assignedTo`is`${currentUserId}</condition>\n" +
 			"            <condition sequence=\"3\">priority`lookup`orgid = ${orgId} and PRIORITY = 'High'</condition>\n" +
 			"        </criteria>\n" + 
@@ -383,7 +383,7 @@ public enum CardType {
 			"    <expression name=\"open\">\n" + 
 			"        <module name=\"workorder\" />\n" + 
 			"        <criteria pattern=\"(1 and 2)\">\n" + 
-			"            <condition sequence=\"1\">status`lookup`orgid = ${orgId} and STATUS_TYPE = "+TicketStatusContext.StatusType.OPEN.getIntVal()+"</condition>\n" +
+			"            <condition sequence=\"1\">status`lookup`orgid = ${orgId} and STATUS_TYPE = "+ FacilioStatus.StatusType.OPEN.getIntVal()+"</condition>\n" +
 			"            <condition sequence=\"2\">assignedTo`is`${currentUserId}</condition>\n" +
 			"        </criteria>\n" + 
 			"        <field aggregate=\"count\" name=\"subject\" />\n" + 
@@ -391,7 +391,7 @@ public enum CardType {
 			"    <expression name=\"overdue\">\n" + 
 			"        <module name=\"workorder\" />\n" + 
 			"        <criteria pattern=\"(1 and 2 and 3)\">\n" + 
-			"            <condition sequence=\"1\">status`lookup`orgid = ${orgId} and STATUS_TYPE = "+TicketStatusContext.StatusType.OPEN.getIntVal()+"</condition>\n" + 
+			"            <condition sequence=\"1\">status`lookup`orgid = ${orgId} and STATUS_TYPE = "+ FacilioStatus.StatusType.OPEN.getIntVal()+"</condition>\n" +
 			"            <condition sequence=\"2\">dueDate`Till Now`</condition>\n" + 
 			"            <condition sequence=\"3\">assignedTo`is`${currentUserId}</condition>\n" +
 			"        </criteria>\n" + 

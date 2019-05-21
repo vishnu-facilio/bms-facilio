@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.facilio.modules.FacilioStatus;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
@@ -20,7 +21,6 @@ import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.TicketContext;
-import com.facilio.bmsconsole.context.TicketStatusContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
@@ -199,13 +199,13 @@ public class UpdateTaskCommand implements Command {
 			if (ticket.getStateFlowId() > 0) {
 				StateFlowRuleContext defaultStateFlow = StateFlowRulesAPI.getDefaultStateFlow(woModule);
 				if (ticket.getStateFlowId() == defaultStateFlow.getId()) {
-					TicketStatusContext statusObj = ticket.getModuleState();
+					FacilioStatus statusObj = ticket.getModuleState();
 					if ("Closed".equalsIgnoreCase(statusObj.getStatus()) || "Resolved".equalsIgnoreCase(statusObj.getStatus())) {
 						throw new IllegalArgumentException("Task cannot be updated for completed tickets");
 					}
 					
 					if (!("Work in Progress".equalsIgnoreCase(statusObj.getStatus()))) {
-						TicketStatusContext workInProgressStatus = TicketAPI.getStatus("Work in Progress");
+						FacilioStatus workInProgressStatus = TicketAPI.getStatus("Work in Progress");
 						if (ticket.getAssignedTo() == null) {
 							ticket.setAssignedTo(AccountUtil.getCurrentUser());
 						}
@@ -214,7 +214,7 @@ public class UpdateTaskCommand implements Command {
 				}
 			} 
 			else {
-				TicketStatusContext statusObj = ticket.getStatus();
+				FacilioStatus statusObj = ticket.getStatus();
 				if ("Closed".equalsIgnoreCase(statusObj.getStatus()) || "Resolved".equalsIgnoreCase(statusObj.getStatus())) {
 					throw new IllegalArgumentException("Task cannot be updated for completed tickets");
 				}

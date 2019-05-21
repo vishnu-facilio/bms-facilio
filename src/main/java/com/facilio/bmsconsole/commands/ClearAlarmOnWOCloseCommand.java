@@ -2,7 +2,7 @@ package com.facilio.bmsconsole.commands;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.AlarmContext;
-import com.facilio.bmsconsole.context.TicketStatusContext;
+import com.facilio.modules.FacilioStatus;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.util.AlarmAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
@@ -34,7 +34,7 @@ public class ClearAlarmOnWOCloseCommand implements SerializableCommand {
 		EventType eventType = (EventType) context.get(FacilioConstants.ContextNames.EVENT_TYPE);
 		List<WorkOrderContext> workOrders = (List<WorkOrderContext>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
 		if(workOrders != null && !workOrders.isEmpty()) {
-			TicketStatusContext closeStatus = TicketAPI.getStatus("Closed");
+			FacilioStatus closeStatus = TicketAPI.getStatus("Closed");
 			List<Long> woIds = new ArrayList<>();
 			for (WorkOrderContext workOrder : workOrders) {
 				if (workOrder.getStatus() != null && workOrder.getStatus().getId() == closeStatus.getId()) {
