@@ -4,7 +4,6 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.context.GatePassContext;
-import com.facilio.bmsconsole.util.GatePassAPI;
 import com.facilio.constants.FacilioConstants;
 
 public class GetGatePassDetailsCommand implements Command{

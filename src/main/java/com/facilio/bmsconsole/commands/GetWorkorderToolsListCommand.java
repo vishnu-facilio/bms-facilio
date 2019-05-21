@@ -6,7 +6,7 @@ import com.facilio.bmsconsole.context.ToolContext;
 import com.facilio.bmsconsole.context.ToolTypesContext;
 import com.facilio.bmsconsole.context.WorkorderToolsContext;
 import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.PickListOperators;
+import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.modules.fields.FacilioField;;
 import com.facilio.bmsconsole.util.StoreroomApi;
 import com.facilio.bmsconsole.util.ToolsApi;

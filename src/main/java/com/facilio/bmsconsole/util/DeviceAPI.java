@@ -7,6 +7,10 @@ import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.context.MarkedReadingContext.MarkType;
 import com.facilio.bmsconsole.context.ReadingContext.SourceType;
 
+import com.facilio.db.criteria.operators.BooleanOperators;
+import com.facilio.db.criteria.operators.BuildingOperator;
+import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;;
 import com.facilio.chain.FacilioContext;
@@ -82,7 +86,7 @@ public class DeviceAPI
 		if(purposeId != null) {
 			selectBuilder.andCondition(CriteriaAPI.getCondition(modBean.getField("purpose", module.getName()), ""+purposeId, NumberOperators.EQUALS));
 		}
-		selectBuilder.andCondition(CriteriaAPI.getCondition("IS_VIRTUAL","isVirtual","false",BooleanOperators.IS));
+		selectBuilder.andCondition(CriteriaAPI.getCondition("IS_VIRTUAL","isVirtual","false", BooleanOperators.IS));
 		return selectBuilder.get();
 		
 	}
@@ -316,7 +320,7 @@ public class DeviceAPI
 				.select(modBean.getAllFields(module.getName()))
 				.module(module)
 				.beanClass(EnergyMeterPurposeContext.class)
-				.andCondition(CriteriaAPI.getCondition("NAME","NAME",purposeName,StringOperators.IS))
+				.andCondition(CriteriaAPI.getCondition("NAME","NAME",purposeName, StringOperators.IS))
 				.maxLevel(0);
 		 List<EnergyMeterPurposeContext> props = selectBuilder.get();
 		 if(props != null && !props.isEmpty()) {

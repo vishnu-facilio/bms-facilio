@@ -1,7 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
 import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.PickListOperators;
+import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;

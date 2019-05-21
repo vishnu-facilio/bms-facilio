@@ -12,9 +12,9 @@ import org.json.simple.JSONObject;
 
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
-import com.facilio.db.criteria.EnumOperators;
-import com.facilio.db.criteria.Operator;
-import com.facilio.db.criteria.PickListOperators;
+import com.facilio.db.criteria.operators.EnumOperators;
+import com.facilio.db.criteria.operators.Operator;
+import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.modules.fields.FacilioField;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 

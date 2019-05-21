@@ -1,8 +1,8 @@
 package com.facilio.tasker.job;
 
 import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.NumberOperators;
-import com.facilio.db.criteria.StringOperators;
+import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;

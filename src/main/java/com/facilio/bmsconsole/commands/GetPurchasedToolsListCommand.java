@@ -2,9 +2,9 @@ package com.facilio.bmsconsole.commands;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.PurchasedToolContext;
-import com.facilio.db.criteria.BooleanOperators;
+import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.PickListOperators;
+import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;

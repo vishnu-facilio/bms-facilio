@@ -10,6 +10,8 @@ import java.util.regex.Pattern;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.BaseLineContext;
+import com.facilio.db.criteria.operators.DateOperators;
+import com.facilio.db.criteria.operators.Operator;
 import com.facilio.modules.AggregateOperator;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.FieldFactory;

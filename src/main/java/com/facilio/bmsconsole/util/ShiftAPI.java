@@ -5,7 +5,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.NumberOperators;
+import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;

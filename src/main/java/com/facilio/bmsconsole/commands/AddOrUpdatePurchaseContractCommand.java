@@ -12,7 +12,7 @@ import com.facilio.bmsconsole.context.PurchaseContractContext;
 import com.facilio.bmsconsole.context.PurchaseContractLineItemContext;
 import com.facilio.bmsconsole.context.ContractsContext.ContractType;
 import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.NumberOperators;
+import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.modules.DeleteRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.FacilioModule;

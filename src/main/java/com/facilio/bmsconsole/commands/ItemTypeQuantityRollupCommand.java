@@ -6,7 +6,7 @@ import com.facilio.bmsconsole.context.ItemTransactionsContext;
 import com.facilio.bmsconsole.context.ItemTypesContext;
 import com.facilio.bmsconsole.context.StoreRoomContext;
 import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.NumberOperators;
+import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;

@@ -6,7 +6,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ReceivableContext;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.NumberOperators;
+import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.modules.fields.FacilioField;;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.constants.FacilioConstants;

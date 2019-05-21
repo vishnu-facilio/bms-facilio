@@ -5,7 +5,7 @@ import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.modules.FacilioStatus;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.PickListOperators;
+import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.util.TicketAPI;

@@ -7,8 +7,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import com.facilio.db.criteria.CommonOperators;
-import com.facilio.db.criteria.NumberOperators;
+import com.facilio.db.criteria.operators.CommonOperators;
+import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.modules.fields.FacilioField;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;

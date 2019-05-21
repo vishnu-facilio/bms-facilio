@@ -3,7 +3,7 @@ package com.facilio.bmsconsole.util;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.NotificationContext;
 import com.facilio.db.criteria.Condition;
-import com.facilio.db.criteria.NumberOperators;
+import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.modules.fields.FacilioField;;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;

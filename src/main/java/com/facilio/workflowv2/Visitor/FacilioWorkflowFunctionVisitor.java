@@ -18,7 +18,7 @@ import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.Operator;
-import com.facilio.db.criteria.StringOperators;
+import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.modules.FacilioModule;
 import com.facilio.fw.BeanFactory;
 import com.facilio.workflows.context.ParameterContext;

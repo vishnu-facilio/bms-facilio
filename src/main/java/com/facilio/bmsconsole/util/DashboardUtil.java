@@ -16,6 +16,7 @@ import com.facilio.bmsconsole.context.SiteContext.SiteType;
 import com.facilio.constants.FacilioConstants;
 
 import com.facilio.db.criteria.*;
+import com.facilio.db.criteria.operators.*;
 import com.facilio.fw.BeanFactory;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
@@ -163,7 +164,7 @@ public class DashboardUtil {
 					.beanClass(EnergyMeterContext.class)
 					.andCustomWhere("IS_ROOT= ?", true)
 					.andCustomWhere("PARENT_ASSET_ID IS NULL")
-					.andCondition(CriteriaAPI.getCondition("PURPOSE_SPACE_ID","PURPOSE_SPACE_ID",spaceList,NumberOperators.EQUALS))
+					.andCondition(CriteriaAPI.getCondition("PURPOSE_SPACE_ID","PURPOSE_SPACE_ID",spaceList, NumberOperators.EQUALS))
 					.andCondition(CriteriaAPI.getCondition("PURPOSE_ID","PURPOSE_ID",energyMeterPurpose.getId()+"",NumberOperators.EQUALS))
 					.maxLevel(0);
 			return selectBuilder.get();
@@ -1898,7 +1899,7 @@ public class DashboardUtil {
 		
 		deleteRecordBuilder = new GenericDeleteRecordBuilder();
 		deleteRecordBuilder.table(ModuleFactory.getWidgetModule().getTableName())
-		.andCondition(CriteriaAPI.getCondition(ModuleFactory.getWidgetModule().getTableName()+".ID", "id", StringUtils.join(removedWidgets, ","),StringOperators.IS));
+		.andCondition(CriteriaAPI.getCondition(ModuleFactory.getWidgetModule().getTableName()+".ID", "id", StringUtils.join(removedWidgets, ","), StringOperators.IS));
 		
 		deleteRecordBuilder.delete();
 		

@@ -8,6 +8,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import com.facilio.db.criteria.operators.LookupOperator;
+import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.db.criteria.operators.Operator;
+import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.modules.fields.FacilioField;
 import org.apache.commons.lang3.StringUtils;
 
@@ -281,7 +285,7 @@ public class CriteriaAPI {
 		return condition;
 	}
 	
-	public static Condition getCondition( FacilioField field,Collection<Long> values,Operator operator) {
+	public static Condition getCondition(FacilioField field, Collection<Long> values, Operator operator) {
 		if (values != null && !values.isEmpty()) {
 			String val = StringUtils.join(values, ",");
 			return getCondition(field, val, operator);

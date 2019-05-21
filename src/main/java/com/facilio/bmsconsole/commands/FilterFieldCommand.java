@@ -8,7 +8,7 @@ import java.util.StringJoiner;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
-import com.facilio.db.criteria.CommonOperators;
+import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.modules.ModuleBaseWithCustomFields;

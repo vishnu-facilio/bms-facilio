@@ -7,7 +7,7 @@ import com.facilio.bmsconsole.context.SharingContext;
 import com.facilio.bmsconsole.context.SingleSharingContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.PickListOperators;
+import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.modules.*;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;

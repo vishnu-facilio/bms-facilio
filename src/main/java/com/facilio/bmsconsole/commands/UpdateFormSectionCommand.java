@@ -7,7 +7,7 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.NumberOperators;
+import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.bmsconsole.forms.FormSection;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.FacilioModule;

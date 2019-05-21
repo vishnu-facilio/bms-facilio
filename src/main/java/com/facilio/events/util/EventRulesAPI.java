@@ -1,7 +1,7 @@
 package com.facilio.events.util;
 
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.db.criteria.BooleanOperators;
+import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.modules.fields.FacilioField;

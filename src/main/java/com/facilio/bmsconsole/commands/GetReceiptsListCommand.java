@@ -7,7 +7,7 @@ import com.facilio.bmsconsole.context.PoLineItemsSerialNumberContext;
 import com.facilio.bmsconsole.context.ReceiptContext;
 import com.facilio.bmsconsole.context.ToolTypesContext;
 import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.NumberOperators;
+import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.modules.fields.FacilioField;;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
