@@ -145,10 +145,6 @@ public class AddOrUpdateWorkorderToolsCommand implements Command {
 			woTool.setParentTransactionId(ToolsApi.getToolTransactionsForRequestedLineItem(lineItem.getId()).getId());
 			
 		}
-		
-		if(lineItem != null) {
-			woTool.setRequestedLineItem(lineItem);
-		}
 		int duration = 0;
 		if (woTool.getDuration() <= 0) {
 			if (woTool.getIssueTime() <= 0) {
@@ -169,7 +165,6 @@ public class AddOrUpdateWorkorderToolsCommand implements Command {
 			}
 		}
 		woTool.setTransactionType(TransactionType.WORKORDER);
-		woTool.setTransactionState(TransactionState.ISSUE);
 		woTool.setIsReturnable(false);
 		if (purchasedtool != null) {
 			woTool.setPurchasedTool(purchasedtool);
