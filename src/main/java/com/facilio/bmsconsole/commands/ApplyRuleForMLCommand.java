@@ -9,6 +9,8 @@ import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.tasker.FacilioTimer;
+import com.facilio.util.FacilioUtil;
 
 public class ApplyRuleForMLCommand implements Command {
 
@@ -19,20 +21,34 @@ public class ApplyRuleForMLCommand implements Command {
 	{
 		
 		MLContext mlContext = (MLContext) context.get(FacilioConstants.ContextNames.ML);
+		executeAnotherJob(mlContext);
+		
 		WorkflowRuleContext rule = WorkflowRuleAPI.getWorkflowRule(mlContext.getRuleID(),true,true,true);
-		LOGGER.info("MLContext for Rule id is "+mlContext.getRuleID()+":::"+mlContext.getId()+":::"+rule);
 		if (rule != null && rule.isActive()) 
 		{
-			LOGGER.info("Rule is active ");
-			String jobid = mlContext.getMLModelVariable("jobid");
 			FacilioContext ruleContext = new FacilioContext();
-			ruleContext.put("jobid", jobid);
-			LOGGER.info("Calling jobid "+jobid);
-			WorkflowRuleAPI.executeScheduledRule(rule, System.currentTimeMillis()+1000, ruleContext);
-			LOGGER.info("After scheduling rule "+jobid);
+			WorkflowRuleAPI.executeScheduledRule(rule, mlContext.getPredictionTime() * 1000 , ruleContext);
 		}
+		
 		return false;
 		
+	}
+	
+	private void executeAnotherJob(MLContext mlContext)
+	{
+		String jobid = mlContext.getMLModelVariable("jobid");
+		try
+		{
+			if(jobid!=null)
+			{
+				LOGGER.info("Executing Job "+jobid);
+				FacilioTimer.scheduleOneTimeJob(FacilioUtil.parseLong(jobid), "DefaultMLJob", System.currentTimeMillis(), "ml");
+			}
+		}
+		catch(Exception e)
+		{
+			LOGGER.error("Error while executing job "+jobid);
+		}
 	}
 
 }
