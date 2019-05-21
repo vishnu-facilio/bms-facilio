@@ -36,8 +36,8 @@ public  class DevicePointsUtil {
         String broadcastAddress = (String) payLoad.get(DevicePointsKeys.BROADCAST_ADDRESS);
         String deviceName = (String) payLoad.get(DevicePointsKeys.DEVICE_NAME);
         Integer controllerType = 0;
-        if(payLoad.containsKey(DevicePointsKeys.CONTROLLER_TYPR)){
-             controllerType = Integer.parseInt(payLoad.get(DevicePointsKeys.CONTROLLER_TYPR).toString());
+        if(payLoad.containsKey(DevicePointsKeys.CONTROLLER_TYPE)){
+             controllerType = Integer.parseInt(payLoad.get(DevicePointsKeys.CONTROLLER_TYPE).toString());
         }
         String deviceId = instanceNumber+"_"+destinationAddress+"_"+networkNumber;
         // if( ! deviceMap.containsKey(deviceId)) {

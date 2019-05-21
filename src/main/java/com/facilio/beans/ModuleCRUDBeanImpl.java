@@ -1,22 +1,5 @@
 package com.facilio.beans;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.StringJoiner;
-
-import org.apache.commons.chain.Chain;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.apache.log4j.Level;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.json.simple.JSONObject;
-
 import com.amazonaws.services.kinesis.clientlibrary.interfaces.IRecordProcessorCheckpointer;
 import com.amazonaws.services.kinesis.model.Record;
 import com.facilio.accounts.util.AccountUtil;
@@ -24,40 +7,13 @@ import com.facilio.accounts.util.AccountUtil.FeatureLicense;
 import com.facilio.agent.AgentKeys;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
-import com.facilio.bmsconsole.context.AlarmContext;
-import com.facilio.bmsconsole.context.ControllerContext;
-import com.facilio.bmsconsole.context.PMResourcePlannerContext;
-import com.facilio.bmsconsole.context.PMTriggerContext;
-import com.facilio.bmsconsole.context.PreventiveMaintenance;
-import com.facilio.bmsconsole.context.TaskContext;
+import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.context.TaskContext.TaskStatus;
-import com.facilio.bmsconsole.context.TicketCategoryContext;
-import com.facilio.bmsconsole.context.TicketContext;
-import com.facilio.bmsconsole.context.TicketStatusContext;
-import com.facilio.bmsconsole.context.WorkOrderContext;
-import com.facilio.bmsconsole.context.WorkOrderRequestContext;
-import com.facilio.bmsconsole.criteria.CommonOperators;
-import com.facilio.bmsconsole.criteria.Criteria;
-import com.facilio.bmsconsole.criteria.CriteriaAPI;
-import com.facilio.bmsconsole.criteria.NumberOperators;
-import com.facilio.bmsconsole.criteria.StringOperators;
-import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.FacilioModule;
-import com.facilio.bmsconsole.modules.FieldFactory;
-import com.facilio.bmsconsole.modules.FieldUtil;
-import com.facilio.bmsconsole.modules.InsertRecordBuilder;
-import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
-import com.facilio.bmsconsole.modules.ModuleFactory;
-import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
-import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
+import com.facilio.bmsconsole.criteria.*;
+import com.facilio.bmsconsole.modules.*;
 import com.facilio.bmsconsole.templates.TaskSectionTemplate;
 import com.facilio.bmsconsole.templates.WorkorderTemplate;
-import com.facilio.bmsconsole.util.ControllerAPI;
-import com.facilio.bmsconsole.util.IoTMessageAPI;
-import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
-import com.facilio.bmsconsole.util.ResourceAPI;
-import com.facilio.bmsconsole.util.TemplateAPI;
-import com.facilio.bmsconsole.util.TicketAPI;
+import com.facilio.bmsconsole.util.*;
 import com.facilio.bmsconsole.view.ViewFactory;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.chain.FacilioContext;
@@ -74,6 +30,16 @@ import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
 import com.facilio.timeseries.TimeSeriesAPI;
+import org.apache.commons.chain.Chain;
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
+import org.apache.log4j.Level;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.json.simple.JSONObject;
+
+import java.io.File;
+import java.util.*;
 
 public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 
@@ -737,60 +703,61 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 		return genericSelectRecordBuilder.get();
 	}*/
 
-	public Long addAgentMessage(Map<String,Object> map){
+	public Long addAgentMessage(Map<String,Object> map)throws Exception{
 		FacilioModule messageModule = ModuleFactory.getAgentMessageModule();
-		try {
-			GenericInsertRecordBuilder insertRecordBuilder = new GenericInsertRecordBuilder()
-					.table(messageModule.getTableName())
-					.fields(FieldFactory.getAgentMessageFields());
-					return insertRecordBuilder.insert(map);
-		} catch (Exception e) {
-            LOGGER.info("Insertion Failed, duplicate entry");
-		}
-		return 0L;
+        try {
+            GenericInsertRecordBuilder insertRecordBuilder = new GenericInsertRecordBuilder()
+                    .table(messageModule.getTableName())
+                    .fields(FieldFactory.getAgentMessageFields());
+            return insertRecordBuilder.insert(map);
+    }catch (Exception e){
+        LOGGER.info("Exception Occurred ",e);
+        throw e;
+    }
 	}
-	public Long updateAgentMessage(Map<String,Object> map){
+	public Long updateAgentMessage(Map<String,Object> map) throws Exception{
 		FacilioModule messageModule = ModuleFactory.getAgentMessageModule();
-		try {
+		try{
 			GenericUpdateRecordBuilder updateRecordBuilder = new GenericUpdateRecordBuilder()
 					.table(messageModule.getTableName())
 					.fields(FieldFactory.getAgentMessageFields())
 					.andCondition(CriteriaAPI.getCurrentOrgIdCondition(messageModule))
-					.andCondition(CriteriaAPI.getCondition(FieldFactory.getAgentMessagePartitionKeyField(messageModule),map.get(AgentKeys.PARTITION_KEY).toString(),StringOperators.IS));
+                    .andCondition(CriteriaAPI.getCondition(FieldFactory.getAgentMessageStatusField(messageModule),"0",NumberOperators.EQUALS))
+					.andCondition(CriteriaAPI.getCondition(FieldFactory.getAgentMessagePartitionKeyField(messageModule),map.get(AgentKeys.RECORD_ID).toString(),StringOperators.IS));
 
-			map.remove(AgentKeys.PARTITION_KEY);
-			map.remove(AgentKeys.START_TIME);
 			Integer rowsAffected= updateRecordBuilder.update(map);
-			return Long.parseLong(rowsAffected.toString());
-		} catch (Exception e) {
-			LOGGER.info("Exception Occurred ",e);
-		}
-		return 0L;
+			return Long.valueOf(rowsAffected);
+        }catch (Exception e){
+            LOGGER.info("Exception Occurred ",e);
+            throw e;
+        }
 	}
-	public List<Map<String,Object>> getRows(FacilioContext context){
+	public List<Map<String,Object>> getRows(FacilioContext context) throws Exception{
 	    // always create an Empty List<Map<String,Object>> and return it instead of null;
-		FacilioModule messageModule = (FacilioModule)context.get(FacilioConstants.ContextNames.MODULE);
-		try {
-			GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
-					.table(context.get(FacilioConstants.ContextNames.TABLE_NAME).toString())
-					.select((Collection<FacilioField>) context.get(FacilioConstants.ContextNames.FIELDS))
-					.andCondition(CriteriaAPI.getCurrentOrgIdCondition(messageModule))
-					.andCriteria((Criteria) context.get(FacilioConstants.ContextNames.CRITERIA));
+        List<Map<String,Object>> rows = new ArrayList<>();
+        try {
+            FacilioModule messageModule = (FacilioModule) context.get(FacilioConstants.ContextNames.MODULE);
+            GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
+                    .table(context.get(FacilioConstants.ContextNames.TABLE_NAME).toString())
+                    .select((Collection<FacilioField>) context.get(FacilioConstants.ContextNames.FIELDS))
+                    .andCondition(CriteriaAPI.getCurrentOrgIdCondition(messageModule))
+                    .andCriteria((Criteria) context.get(FacilioConstants.ContextNames.CRITERIA));
 
-			if(context.containsKey(FacilioConstants.ContextNames.OFFSET)){
-			    selectRecordBuilder.offset(Integer.parseInt(context.get(FacilioConstants.ContextNames.OFFSET).toString()));
+            if (context.containsKey(FacilioConstants.ContextNames.OFFSET)) {
+                selectRecordBuilder.offset(Integer.parseInt(context.get(FacilioConstants.ContextNames.OFFSET).toString()));
             }
 
-			if(context.containsKey(FacilioConstants.ContextNames.LIMIT_VALUE)){
-				selectRecordBuilder.limit(Integer.parseInt((context.get(FacilioConstants.ContextNames.LIMIT_VALUE).toString())));
-			}else {
-				selectRecordBuilder.limit(100);
-			}
-			return selectRecordBuilder.get();
-		} catch (Exception e) {
-			LOGGER.info("Exception Occured ",e);
-		}
-		return new ArrayList<>();
+            if (context.containsKey(FacilioConstants.ContextNames.LIMIT_VALUE)) {
+                selectRecordBuilder.limit(Integer.parseInt((context.get(FacilioConstants.ContextNames.LIMIT_VALUE).toString())));
+            } else {
+                selectRecordBuilder.limit(100);
+            }
+            rows.addAll(selectRecordBuilder.get());
+        }catch (Exception e){
+            LOGGER.info("Exception Occurred ",e);
+            throw e;
+        }
+			return rows;
 	}
 
 
