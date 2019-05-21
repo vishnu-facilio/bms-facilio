@@ -13,7 +13,7 @@
              poolName="faciliohikari"
              name="jdbc/pcmDB"
              registerMbeans="true"
-             jdbcUrl="jdbc:mysql://localhost:3306/request3"
+             jdbcUrl="jdbc:mysql://localhost:3306/bmslocal"
              type="javax.sql.DataSource"
              transactionIsolation="TRANSACTION_READ_COMMITTED"
              />  
