@@ -278,14 +278,10 @@ public class AddOrUpdateManualItemTransactionCommand implements Command {
 		woItem.setParentId(parentId);
 		woItem.setParentTransactionId(itemTransactions.getParentTransactionId());
 		woItem.setApprovedState(approvalState);
-		if (approvalState == ApprovalState.YET_TO_BE_REQUESTED) {
-			if (itemTransactions.getTransactionStateEnum() == TransactionState.ISSUE) {
-				woItem.setRemainingQuantity(quantity);
-			}
-		} else {
-			woItem.setRemainingQuantity(0);
+		if (itemTransactions.getTransactionStateEnum() == TransactionState.ISSUE) {
+			woItem.setRemainingQuantity(quantity);
 		}
-
+		
 		if (itemTransactions.getTransactionStateEnum() == TransactionState.RETURN) {
 			woItem.setApprovedState(ApprovalState.YET_TO_BE_REQUESTED);
 		}

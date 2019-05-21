@@ -57,7 +57,7 @@ public class InventoryRequestAPI {
 	public static boolean checkQuantityForWoItemNeedingApproval(ItemTypesContext itemType, InventoryRequestLineItemContext lineItem, double woItemQuantity) throws Exception {
 		if(lineItem != null) {
 			lineItem = getLineItem(lineItem.getId());
-				if(woItemQuantity <= (lineItem.getQuantity())) {
+				if(woItemQuantity <= (lineItem.getIssuedQuantity())) {
 					updateRequestUsedQuantity(lineItem, lineItem.getUsedQuantity() + woItemQuantity);
 					return true;
 				}
@@ -101,7 +101,7 @@ public class InventoryRequestAPI {
 			;
 			List<InventoryRequestLineItemContext> lineItems = builder.get();
 			if(CollectionUtils.isNotEmpty(lineItems)) {
-				if(!toolType.isRotating() && woTool.getQuantity() <= (lineItems.get(0).getQuantity())) {
+				if(!toolType.isRotating() && woTool.getQuantity() <= (lineItems.get(0).getIssuedQuantity())) {
 					return true;
 				}
 				else if(toolType.isRotating() && checkRotatingToolCountForWorkOrder(woTool.getTool().getId(), woTool.getParentId()) < lineItems.get(0).getQuantity()) {

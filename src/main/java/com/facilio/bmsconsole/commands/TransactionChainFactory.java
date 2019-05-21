@@ -1861,6 +1861,7 @@ public class TransactionChainFactory {
 //			c.addCommand(new ExecuteAllWorkflowsCommand());
 			c.addCommand(new PurchasedItemsQuantityRollUpCommand());
 			c.addCommand(getUpdateItemQuantityRollupChain());
+			c.addCommand(new ItemTransactionRemainingQuantityRollupCommand());
 			c.addCommand(new AddOrUpdateWorkorderCostCommand());
 			c.addCommand(new UpdateWorkorderTotalCostCommand());
 //			c.addCommand(getUpdateWorkOrderChain());
@@ -2043,6 +2044,7 @@ public class TransactionChainFactory {
 			c.addCommand(getItemTransactionRemainingQuantityRollupChain());
 			c.addCommand(new PurchasedItemsQuantityRollUpCommand());
 			c.addCommand(getUpdateItemQuantityRollupChain());
+			c.addCommand(new UpdateRequestedItemIssuedQuantityCommand());
 			c.addCommand(new AddActivitiesCommand());
 
 			return c;
@@ -2105,6 +2107,8 @@ public class TransactionChainFactory {
 			c.addCommand(getToolTransactionRemainingQuantityRollupChain());
 			c.addCommand(new ExecuteAllWorkflowsCommand());
 			c.addCommand(getUpdatetoolQuantityRollupChain());
+			c.addCommand(new UpdateRequestedToolIssuedQuantityCommand());
+			
 			return c;
 		}
 		

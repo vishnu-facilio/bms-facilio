@@ -80,6 +80,7 @@ public class AddOrUpdateInventoryRequestCommand implements Command{
 		
 		for (InventoryRequestLineItemContext lineItemContext : inventoryRequestContext.getLineItems()) {
 			lineItemContext.setInventoryRequestId(inventoryRequestContext.getId());
+			lineItemContext.setIssuedQuantity(lineItemContext.getQuantity());
 			if(inventoryRequestContext.getParentId() > 0) {
 				lineItemContext.setParentId(inventoryRequestContext.getParentId());
 			}
@@ -91,6 +92,7 @@ public class AddOrUpdateInventoryRequestCommand implements Command{
 				lineItemAsset.setId(lineItemContext.getAssetIds().get(0));
 				lineItemContext.setAsset(lineItemAsset);
 				lineItemContext.setQuantity(1);
+				lineItemContext.setIssuedQuantity(1);
 				for(int i=1; i<lineItemContext.getAssetIds().size(); i++) {
 					 InventoryRequestLineItemContext lineItem = new InventoryRequestLineItemContext();
 					 AssetContext asset = new AssetContext();
@@ -104,7 +106,9 @@ public class AddOrUpdateInventoryRequestCommand implements Command{
 						 lineItem.setToolType(lineItemContext.getToolType());
 					 }
 					 
-					 lineItem.setQuantity(lineItemContext.getQuantity());
+					 lineItem.setQuantity(1);
+					 lineItem.setIssuedQuantity(1);
+						
 					 lineItem.setInventoryRequestId(inventoryRequestContext.getId());
 					 if(inventoryRequestContext.getParentId() > 0) {
 						 lineItem.setParentId(inventoryRequestContext.getParentId());

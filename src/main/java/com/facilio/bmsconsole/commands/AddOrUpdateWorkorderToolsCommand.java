@@ -49,7 +49,7 @@ public class AddOrUpdateWorkorderToolsCommand implements Command {
 				StoreRoomContext storeRoom = tool.getStoreRoom();
 				if (workorderTool.getRequestedLineItem() != null && workorderTool.getRequestedLineItem().getId() > 0) {
 					if(!InventoryRequestAPI.checkQuantityForWoToolNeedingApproval(toolTypes, workorderTool.getRequestedLineItem(), workorderTool)) {
-						throw new IllegalArgumentException("Please check the quantity approved in the request");
+						throw new IllegalArgumentException("Please check the quantity approved/issued in the request");
 					}
 				}
 				if (workorderTool.getId() > 0) {

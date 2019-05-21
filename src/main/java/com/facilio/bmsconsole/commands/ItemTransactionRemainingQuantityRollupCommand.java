@@ -44,6 +44,19 @@ public class ItemTransactionRemainingQuantityRollupCommand implements Command {
 					updateBuilder.update(itemTransaction);
 				}
 			}
+			else if (itemTransactions.get(0).getTransactionStateEnum() == TransactionState.USE && itemTransactions.get(0).getParentTransactionId() > 0) {
+				for (ItemTransactionsContext transaction : itemTransactions) {
+					ItemTransactionsContext itemTransaction = getItemTransaction(transaction.getParentTransactionId(),
+							itemTransactionsModule, itemTransactionsFields, itemTransactionsFieldsMap);
+					double totalRemainingQuantity = itemTransaction.getQuantity() - transaction.getQuantity();
+					itemTransaction.setRemainingQuantity(totalRemainingQuantity);
+
+					UpdateRecordBuilder<ItemTransactionsContext> updateBuilder = new UpdateRecordBuilder<ItemTransactionsContext>()
+							.module(itemTransactionsModule).fields(itemTransactionsFields).andCondition(CriteriaAPI
+									.getIdCondition(transaction.getParentTransactionId(), itemTransactionsModule));
+					updateBuilder.update(itemTransaction);
+				}
+			}
 		}
 		return false;
 	}
@@ -75,7 +88,7 @@ public class ItemTransactionRemainingQuantityRollupCommand implements Command {
 		}
 		return 0d;
 	}
-
+	
 	private ItemTransactionsContext getItemTransaction(long parentTransactionId, FacilioModule module,
 			List<FacilioField> fields, Map<String, FacilioField> fieldsMap) throws Exception {
 

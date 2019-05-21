@@ -159,11 +159,8 @@ public class AddOrUpdateManualToolTransactionsCommand implements Command {
 		woTool.setParentId(toolTransaction.getParentId());
 		woTool.setParentTransactionId(toolTransaction.getParentTransactionId());
 		woTool.setApprovedState(approvalState);
-		if (approvalState == ApprovalState.YET_TO_BE_REQUESTED) {
-			woTool.setRemainingQuantity(quantity);
-		} else {
-			woTool.setRemainingQuantity(0);
-		}
+		woTool.setRemainingQuantity(quantity);
+		
 		if(toolTransaction.getTransactionStateEnum() == TransactionState.RETURN) {
 			woTool.setApprovedState(ApprovalState.YET_TO_BE_REQUESTED);
 		}

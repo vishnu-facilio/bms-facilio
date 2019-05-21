@@ -99,8 +99,8 @@ public class GetToolTransactionsListCommand implements Command {
 		Boolean getShowToolsForReturn = (Boolean) context.get(FacilioConstants.ContextNames.SHOW_TOOLS_FOR_RETURN);
 		if (getShowToolsForReturn != null && getShowToolsForReturn) {
 			
-			builder.andCondition(CriteriaAPI.getCondition(toolTransactionsFieldsMap.get("remainingQuantity"),
-					String.valueOf(0), NumberOperators.GREATER_THAN));
+//			builder.andCondition(CriteriaAPI.getCondition(toolTransactionsFieldsMap.get("remainingQuantity"),
+//					String.valueOf(0), NumberOperators.GREATER_THAN));
 			// builder.andCondition(CriteriaAPI.getCondition(toolTransactionsFieldsMap.get("isReturnable"),
 			// String.valueOf(true), BooleanOperators.IS));
 			builder.andCondition(CriteriaAPI.getCondition(toolTransactionsFieldsMap.get("transactionState"),
