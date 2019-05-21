@@ -5,6 +5,7 @@ import java.util.List;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
+import com.facilio.bmsconsole.context.InventoryRequestLineItemContext;
 import com.facilio.bmsconsole.context.WorkorderItemContext;
 import com.facilio.bmsconsole.context.WorkorderToolsContext;
 import com.facilio.bmsconsole.util.InventoryRequestAPI;
@@ -22,7 +23,8 @@ public class RequestedLineItemQuantityRollUpCommand implements Command {
         for(Long id : recordIds) {
         	if(costType == 1) {
         		WorkorderItemContext woItem = WorkOrderAPI.getWorkOrderItem(id);
-        		InventoryRequestAPI.updateRequestUsedQuantity(woItem.getRequestedLineItem(), woItem.getRequestedLineItem().getUsedQuantity() - woItem.getQuantity());
+        		InventoryRequestLineItemContext woLineItem = InventoryRequestAPI.getLineItem(woItem.getRequestedLineItem().getId());
+        		InventoryRequestAPI.updateRequestUsedQuantity(woItem.getRequestedLineItem(), woLineItem.getUsedQuantity() - woItem.getQuantity());
         	}
 //        	else if(costType == 2) {
 //        		WorkorderToolsContext woTool = WorkOrderAPI.getWorkOrderTool(id);

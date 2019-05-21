@@ -56,28 +56,35 @@ public class InventoryRequestAPI {
 	
 	public static boolean checkQuantityForWoItemNeedingApproval(ItemTypesContext itemType, InventoryRequestLineItemContext lineItem, double woItemQuantity) throws Exception {
 		if(lineItem != null) {
-			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.INVENTORY_REQUEST_LINE_ITEMS);
-			List<FacilioField> fields = modBean.getAllFields(module.getName());
-			
-			SelectRecordsBuilder<InventoryRequestLineItemContext> builder = new SelectRecordsBuilder<InventoryRequestLineItemContext>()
-					.module(module)
-					.beanClass(FacilioConstants.ContextNames.getClassFromModuleName(module.getName()))
-					.select(fields)
-					.andCondition(CriteriaAPI.getIdCondition(lineItem.getId(), module))
-				
-			;
-			List<InventoryRequestLineItemContext> lineItems = builder.get();
-			if(CollectionUtils.isNotEmpty(lineItems)) {
-				if(woItemQuantity <= (lineItems.get(0).getQuantity())) {
-					updateRequestUsedQuantity(lineItems.get(0), lineItems.get(0).getUsedQuantity() + woItemQuantity);
+			lineItem = getLineItem(lineItem.getId());
+				if(woItemQuantity <= (lineItem.getQuantity())) {
+					updateRequestUsedQuantity(lineItem, lineItem.getUsedQuantity() + woItemQuantity);
 					return true;
 				}
 				return false;
-			}
-			return false;
 		}
 		throw new IllegalArgumentException("Please request approval for the item before using it");
+	}
+	
+	public static InventoryRequestLineItemContext getLineItem(long lineItemId) throws Exception {
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.INVENTORY_REQUEST_LINE_ITEMS);
+		List<FacilioField> fields = modBean.getAllFields(module.getName());
+		
+		SelectRecordsBuilder<InventoryRequestLineItemContext> builder = new SelectRecordsBuilder<InventoryRequestLineItemContext>()
+				.module(module)
+				.beanClass(FacilioConstants.ContextNames.getClassFromModuleName(module.getName()))
+				.select(fields)
+				.andCondition(CriteriaAPI.getIdCondition(lineItemId, module))
+			
+		;
+		List<InventoryRequestLineItemContext> lineItems = builder.get();
+		if(CollectionUtils.isNotEmpty(lineItems)) {
+			return lineItems.get(0);
+		}
+		throw new IllegalArgumentException("No appropriate lineitem found");
+		
 	}
 	public static boolean checkQuantityForWoToolNeedingApproval(ToolTypesContext toolType, InventoryRequestLineItemContext lineItem, WorkorderToolsContext woTool) throws Exception {
 		if(lineItem != null) {
