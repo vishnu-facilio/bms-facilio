@@ -523,7 +523,7 @@ public class FacilioAuthAction extends FacilioAction {
 		HttpServletRequest request = ServletActionContext.getRequest();
 		
 		if (request.getParameterValues("hub.challenge") != null) {
-			setJsonresponse("message", "post issue verification response recieved successfully");
+			setJsonresponse("message", "post issue verification response received successfully");
 			String str[] = request.getParameterValues("hub.challenge");
 			if (str[0] != null) {
 				response2.getWriter().write(str[0]);
@@ -538,32 +538,14 @@ public class FacilioAuthAction extends FacilioAction {
 				Map<String,Object> jbJsonObj = (Map<String,Object>)entry.get(0);
 				List test1 = (List)jbJsonObj.get("changes");
 				Map<String,Object> jbJsonObj1 = (Map<String,Object>)test1.get(0);
-				Map<String,Object> jbJsonObj2 = (Map<String,Object>) jbJsonObj1.get("value");
+				Map<String,Object> jbJsonObj2 = (Map<String,Object>)jbJsonObj1.get("value");
 				String jb = jbJsonObj2.get("message").toString();
-				
-				
+				String link = (String)jbJsonObj2.get("permalink_url");
+				link = "<a href= '" + link + "' >"+link+"</a>";
+
 				String line = null;
-
-				LOGGER.info("fbres map " + request.getParameterMap().keySet());
-				LOGGER.info("Content type:" + request.getContentType());
-				LOGGER.info("0000000000022" + ServletActionContext.getRequest());
-				LOGGER.info("fbres l is " + request.getContentLength());
-				LOGGER.info("fbres sender is " + request.getParameterValues("sender"));
-				LOGGER.info("fbres field is " + request.getParameterValues("field"));
-				LOGGER.info("fbres https is " + request.isSecure());
-				LOGGER.info("fbres headerNames " + request.getHeaderNames());
-				LOGGER.info("fbres paramNames  " + request.getParameterNames());
-
-//				BufferedReader reader = request.getReader();
-//				LOGGER.info("00000000000reader" + reader);
-//				while ((line = reader.readLine()) != null) {
-//					LOGGER.info("Entered jb append");
-//					jb.append(line);
-//				}
-				LOGGER.info("00000000000jb" + jb.toString());
-
 				String url = "https://facilio.freshrelease.com/DEMO/issues";
-				String description = "Issue posted at Issue Tracking page", key = null, blockedReason = null;
+				String description = link, key = null, blockedReason = null;
 				List<String> tags = new ArrayList<String>();
 				Map<String, Object> customField = new HashMap<>();
 				Integer createrId = null, position = null, etaFlag = null, storyPoints = null, issueTypeId = 161,
@@ -574,6 +556,7 @@ public class FacilioAuthAction extends FacilioAction {
 
 				FacilioAuthAction issue = new FacilioAuthAction();
 				LOGGER.info("jbstring" + jb.toString());
+			
 				if (jb.toString().equals("")) {
 					issue.setTitle("Sample Test");
 				} else {
@@ -584,10 +567,11 @@ public class FacilioAuthAction extends FacilioAction {
 					issue.setTitle("test");
 				}
 				JSONObject jget = new JSONObject();
-				jget.put("description", description);
+				
+				jget.put("description", link);
 				jget.put("key", key);
 				jget.put("story_points", storyPoints);
-				jget.put("title", issue.getTitle());
+				jget.put("title", issue.getTitle() );
 				jget.put("resolved", resolved);
 				jget.put("blocked", blocked);
 				jget.put("following", following);
@@ -630,7 +614,7 @@ public class FacilioAuthAction extends FacilioAction {
 		return SUCCESS;
          	
     }
-    
+  
     private void http(String method, String url, Map headers, String body) {
     	try {
         URL obj = new URL(url);
