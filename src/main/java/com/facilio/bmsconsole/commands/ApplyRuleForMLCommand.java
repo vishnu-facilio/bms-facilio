@@ -52,13 +52,13 @@ public class ApplyRuleForMLCommand implements Command {
 					jobContext.setOrgId(mlContext.getOrgId());
 					jobContext.setJobName("DefaultMLJob");
 					jobContext.setActive(true);
-					jobContext.setExecutionTime(System.currentTimeMillis());
+					jobContext.setExecutionTime(mlContext.getPredictionTime());
 					jobContext.setExecutorName("ml");
 					JobStore.addJob(jobContext);
 				}
 				else
 				{
-					JobStore.updateNextExecutionTimeAndCount(FacilioUtil.parseLong(jobid), "DefaultMLJob", System.currentTimeMillis(), jobContext.getCurrentExecutionCount()+1);
+					JobStore.updateNextExecutionTimeAndCount(FacilioUtil.parseLong(jobid), "DefaultMLJob", mlContext.getPredictionTime(), jobContext.getCurrentExecutionCount()+1);
 				}
 			}
 		}
