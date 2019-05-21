@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.accounts.util.PermissionUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.LocationContext;
 import com.facilio.bmsconsole.context.StoreRoomContext;
@@ -96,12 +97,12 @@ public class GetStoreRoomListCommand implements Command {
 			builder.andCriteria(searchCriteria);
 		}
 
-		Criteria scopeCriteria = AccountUtil.getCurrentUser().scopeCriteria(moduleName);
+		Criteria scopeCriteria = PermissionUtil.getCurrentUserScopeCriteria(moduleName);
 		if (scopeCriteria != null) {
 			builder.andCriteria(scopeCriteria);
 		}
 
-		Criteria permissionCriteria = AccountUtil.getCurrentUser().getRole().permissionCriteria("inventory", "read");
+		Criteria permissionCriteria = PermissionUtil.getCurrentUserPermissionCriteria("inventory", "read");
 		if (permissionCriteria != null) {
 			builder.andCriteria(permissionCriteria);
 		}

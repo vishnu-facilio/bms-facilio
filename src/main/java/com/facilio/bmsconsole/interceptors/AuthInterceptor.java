@@ -6,6 +6,7 @@ import com.facilio.accounts.dto.Account;
 import com.facilio.accounts.dto.Role;
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.accounts.util.PermissionUtil;
 import com.facilio.auth.cookie.FacilioCookie;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
@@ -222,12 +223,8 @@ public class AuthInterceptor extends AbstractInterceptor {
 		if(AccountUtil.getCurrentUser() == null) {
 		    return false;
         }
-		Role role = AccountUtil.getCurrentUser().getRole();
-		if(role.getName().equals(AccountConstants.DefaultSuperAdmin.SUPER_ADMIN) || role.getName().equals("Administrator")) {
-			return true;
-		} else {
-			return role.hasPermission(moduleName, permissions);
-		}
+
+		return PermissionUtil.currentUserHasPermission(moduleName, permissions);
 	}
 	
 	private boolean isRemoteScreenMode(HttpServletRequest request) {

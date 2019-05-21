@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.accounts.util.PermissionUtil;
 import com.facilio.bmsconsole.context.PMTriggerContext;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.context.ResourceContext;
@@ -34,13 +35,13 @@ public class GetScheduledWOCommand implements Command {
 			filterCriteria = new Criteria();
 		}
 		boolean isCriteriaAdded = false;
-		Criteria scopeCriteria = AccountUtil.getCurrentUser().scopeCriteria("workorder");
+		Criteria scopeCriteria = PermissionUtil.getCurrentUserScopeCriteria("workorder");
 		if(scopeCriteria != null) {
 			isCriteriaAdded = true;
 			filterCriteria.andCriteria(scopeCriteria);
 		}
 		
-		Criteria permissionCriteria = AccountUtil.getCurrentUser().getRole().permissionCriteria("workorder","read");
+		Criteria permissionCriteria = PermissionUtil.getCurrentUserPermissionCriteria("workorder","read");
 		if(permissionCriteria != null) {
 			isCriteriaAdded = true;
 			filterCriteria.andCriteria(permissionCriteria);

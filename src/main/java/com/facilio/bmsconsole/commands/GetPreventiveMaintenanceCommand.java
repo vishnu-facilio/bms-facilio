@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.accounts.util.PermissionUtil;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
@@ -48,12 +49,12 @@ public class GetPreventiveMaintenanceCommand implements Command {
 //			criteria.andCriteria(searchCriteria);
 		}
 		
-		Criteria scopeCriteria = AccountUtil.getCurrentUser().scopeCriteria("planned");
+		Criteria scopeCriteria = PermissionUtil.getCurrentUserScopeCriteria("planned");
 		if(scopeCriteria != null) {
 			criteria.andCriteria(scopeCriteria);
 		}
 		
-		Criteria permissionCriteria = AccountUtil.getCurrentUser().getRole().permissionCriteria("planned","read");
+		Criteria permissionCriteria = PermissionUtil.getCurrentUserPermissionCriteria("planned","read");
 		if(permissionCriteria != null) {
 			criteria.andCriteria(permissionCriteria);
 		}

@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.accounts.util.PermissionUtil;
 import com.facilio.bmsconsole.context.FloorContext;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.modules.fields.FacilioField;
@@ -34,7 +35,7 @@ public class GetAllFloorCommand implements Command{
 		if (buildingId != null && buildingId > 0) {
 			builder.andCustomWhere("BaseSpace.BUILDING_ID = ?", buildingId);
 		}
-		Criteria scopeCriteria = AccountUtil.getCurrentUser().scopeCriteria(moduleName);
+		Criteria scopeCriteria = PermissionUtil.getCurrentUserScopeCriteria(moduleName);
 		if(scopeCriteria != null)
 		{
 			builder.andCriteria(scopeCriteria);

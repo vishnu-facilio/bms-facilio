@@ -9,6 +9,7 @@ import java.util.logging.Logger;
 
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.accounts.util.PermissionUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.util.CommonAPI;
@@ -302,7 +303,7 @@ public class ExpressionContext implements WorkflowExpression {
 				User user = AccountUtil.getOrgBean().getSuperAdmin(AccountUtil.getCurrentOrg().getOrgId());
 				AccountUtil.getCurrentAccount().setUser(user);
 			}
-			Criteria scopeCriteria = AccountUtil.getCurrentUser().scopeCriteria(module.getName());
+			Criteria scopeCriteria = PermissionUtil.getCurrentUserScopeCriteria(module.getName());
 			if (scopeCriteria != null) {
 				selectBuilder.andCriteria(scopeCriteria);
 			}

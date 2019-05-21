@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.accounts.util.PermissionUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ItemContext;
 import com.facilio.bmsconsole.context.ItemTransactionsContext;
@@ -63,7 +64,7 @@ public class GetItemTransactionsListCommand implements Command {
 			// }
 			builder.orderBy(orderBy);
 		}
-		Criteria permissionCriteria = AccountUtil.getCurrentUser().getRole().permissionCriteria("inventory", "read");
+		Criteria permissionCriteria = PermissionUtil.getCurrentUserPermissionCriteria("inventory", "read");
 		if (permissionCriteria != null) {
 			builder.andCriteria(permissionCriteria);
 		}
@@ -93,7 +94,7 @@ public class GetItemTransactionsListCommand implements Command {
 			builder.andCriteria(searchCriteria);
 		}
 
-		Criteria scopeCriteria = AccountUtil.getCurrentUser().scopeCriteria(moduleName);
+		Criteria scopeCriteria = PermissionUtil.getCurrentUserScopeCriteria(moduleName);
 		if (scopeCriteria != null) {
 			builder.andCriteria(scopeCriteria);
 		}

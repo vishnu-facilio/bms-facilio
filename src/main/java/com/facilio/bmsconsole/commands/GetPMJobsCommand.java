@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.accounts.util.PermissionUtil;
 import com.facilio.bmsconsole.context.PMJobsContext;
 import com.facilio.bmsconsole.context.PMTriggerContext;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
@@ -44,7 +45,7 @@ public class GetPMJobsCommand implements Command {
 		List<FacilioField> fields = FieldFactory.getPreventiveMaintenanceFields();
 		FacilioField triggerField = FieldFactory.getAsMap(fields).get("triggerType");
 
-		Criteria scopeCriteria = AccountUtil.getCurrentUser().scopeCriteria("pmjobs");
+		Criteria scopeCriteria = PermissionUtil.getCurrentUserScopeCriteria("pmjobs");
 
 		long startTime = (Long) context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_STARTTIME);
 		long endTime = (Long) context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_ENDTIME);
@@ -57,7 +58,7 @@ public class GetPMJobsCommand implements Command {
 			filterCriteria = new Criteria();
 		}
 		filterCriteria.addAndCondition(triggerCondition);
-		Criteria permissionCriteria = AccountUtil.getCurrentUser().getRole().permissionCriteria("planned","read");
+		Criteria permissionCriteria = PermissionUtil.getCurrentUserPermissionCriteria("planned","read");
 		if(permissionCriteria != null) {
 			filterCriteria.andCriteria(permissionCriteria);
 		}

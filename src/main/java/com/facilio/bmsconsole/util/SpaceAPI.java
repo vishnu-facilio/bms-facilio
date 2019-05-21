@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import com.facilio.accounts.util.PermissionUtil;
 import com.facilio.modules.FacilioStatus;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -753,12 +754,12 @@ public class SpaceAPI {
 																	.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 																	.andCustomWhere("BaseSpace.SITE_ID =? AND SPACE_TYPE=?",siteId,BaseSpaceContext.SpaceType.BUILDING.getIntVal());
 		
-		Criteria scopeCriteria = AccountUtil.getCurrentUser().scopeCriteria(module.getName());
+		Criteria scopeCriteria = PermissionUtil.getCurrentUserScopeCriteria(module.getName());
 		if (scopeCriteria != null) {
 			selectBuilder.andCriteria(scopeCriteria);
 		}
 		
-		Criteria permissionCriteria = AccountUtil.getCurrentUser().getRole().permissionCriteria(module.getName(),"read");
+		Criteria permissionCriteria = PermissionUtil.getCurrentUserPermissionCriteria(module.getName(),"read");
 		if (permissionCriteria != null) {
 			selectBuilder.andCriteria(permissionCriteria);
 		}
@@ -782,13 +783,13 @@ public class SpaceAPI {
 																	.andCustomWhere("SPACE_TYPE=?",BaseSpaceContext.SpaceType.BUILDING.getIntVal());
 		
 		
-		Criteria scopeCriteria = AccountUtil.getCurrentUser().scopeCriteria(module.getName());
+		Criteria scopeCriteria = PermissionUtil.getCurrentUserScopeCriteria(module.getName());
 		if (scopeCriteria != null) {
 			selectBuilder.andCriteria(scopeCriteria);
 		}
 		
 		 if (AccountUtil.getCurrentUser().getRole() != null) {
-		 	Criteria permissionCriteria = AccountUtil.getCurrentUser().getRole().permissionCriteria(module.getName(),"read");
+		 	Criteria permissionCriteria = PermissionUtil.getCurrentUserPermissionCriteria(module.getName(),"read");
 		 	if (permissionCriteria != null) {
 		 		selectBuilder.andCriteria(permissionCriteria);
 		 	}
@@ -1123,7 +1124,7 @@ public static long getSitesCount() throws Exception {
 		}
 		// temp handling for service portal without Login
 		if (AccountUtil.getCurrentUser() != null) {
-			Criteria scopeCriteria = AccountUtil.getCurrentUser().scopeCriteria("basespace");
+			Criteria scopeCriteria = PermissionUtil.getCurrentUserScopeCriteria("basespace");
 			if(scopeCriteria != null) {
 				selectBuilder.andCriteria(scopeCriteria);
 			}

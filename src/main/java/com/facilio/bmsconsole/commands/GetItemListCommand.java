@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.accounts.util.PermissionUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ItemContext;
 import com.facilio.bmsconsole.context.ItemContext.CostType;
@@ -74,7 +75,7 @@ public class GetItemListCommand implements Command {
 			builder.andCustomWhere(
 					"(Item_Types.INDIVIDUAL_TRACKING = 0) OR (Item_Types.INDIVIDUAL_TRACKING = 1 AND Item_Types.IS_CONSUMABLE = 1)");
 		} else {
-			Criteria permissionCriteria = AccountUtil.getCurrentUser().getRole().permissionCriteria("inventory",
+			Criteria permissionCriteria = PermissionUtil.getCurrentUserPermissionCriteria("inventory",
 					"read");
 			if (permissionCriteria != null) {
 				builder.andCriteria(permissionCriteria);
@@ -117,7 +118,7 @@ public class GetItemListCommand implements Command {
 			builder.andCriteria(searchCriteria);
 		}
 
-		Criteria scopeCriteria = AccountUtil.getCurrentUser().scopeCriteria(moduleName);
+		Criteria scopeCriteria = PermissionUtil.getCurrentUserScopeCriteria(moduleName);
 		if (scopeCriteria != null) {
 			builder.andCriteria(scopeCriteria);
 		}

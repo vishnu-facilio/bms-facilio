@@ -16,6 +16,7 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.facilio.accounts.util.PermissionUtil;
 import com.facilio.modules.FacilioStatus;
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
@@ -3610,13 +3611,13 @@ public class DashboardAction extends FacilioAction {
 				.andCondition(CriteriaAPI.getCondition(FieldFactory.getModuleIdField(module), String.valueOf(module.getModuleId()), NumberOperators.EQUALS))
 				;
 		
-		Criteria scopeCriteria = AccountUtil.getCurrentUser().scopeCriteria(module.getName());
+		Criteria scopeCriteria = PermissionUtil.getCurrentUserScopeCriteria(module.getName());
 		if (scopeCriteria != null) {
 			builder.andCriteria(scopeCriteria);
 		}
 		
 		try {
-			Criteria permissionCriteria = AccountUtil.getCurrentUser().getRole().permissionCriteria(module.getName(),"read");
+			Criteria permissionCriteria = PermissionUtil.getCurrentUserPermissionCriteria(module.getName(),"read");
 			if (permissionCriteria != null) {
 				builder.andCriteria(permissionCriteria);
 			}
@@ -4314,7 +4315,7 @@ public class DashboardAction extends FacilioAction {
 			.on(energyMeterModule.getTableName()+".ID="+resourceModule.getTableName()+".ID")
 			.andCondition(CriteriaAPI.getCondition("SYS_DELETED", "deleted", String.valueOf(false), BooleanOperators.IS));
 			
-			Criteria scopeCriteria = AccountUtil.getCurrentUser().scopeCriteria("asset");
+			Criteria scopeCriteria = PermissionUtil.getCurrentUserScopeCriteria("asset");
 			
 			if(scopeCriteria != null) {
 				subBuilder.andCriteria(scopeCriteria);

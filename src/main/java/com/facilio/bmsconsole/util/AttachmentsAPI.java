@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.util;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.accounts.util.PermissionUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AttachmentContext;
 
@@ -122,7 +123,7 @@ public class AttachmentsAPI {
 		
 		// TODO handle other attachments
 		if (moduleName.equals(FacilioConstants.ContextNames.ASSET_ATTACHMENTS) || moduleName.equals(FacilioConstants.ContextNames.BASE_SPACE_ATTACHMENTS) || moduleName.equals(FacilioConstants.ContextNames.INVENTORY_ATTACHMENTS)) {
-			Criteria scopeCriteria = AccountUtil.getCurrentUser().scopeCriteria(moduleName, fieldMap.get("parentId"));
+			Criteria scopeCriteria = PermissionUtil.getCurrentUserScopeCriteria(moduleName, fieldMap.get("parentId"));
 			if(scopeCriteria != null){
 				selectBuilder.andCriteria(scopeCriteria);
 			}

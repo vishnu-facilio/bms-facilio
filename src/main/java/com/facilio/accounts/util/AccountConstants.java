@@ -117,7 +117,9 @@ public class AccountConstants {
 	}
 	
 	public static class DefaultSuperAdmin {
-		public static final String SUPER_ADMIN 	= "Super Administrator"; }
+		public static final String SUPER_ADMIN 	= "Super Administrator";
+		public static final String ADMINISTRATOR 	= "Administrator";
+	}
 	public static enum CommonPermission {
 		
 		ORG_ACCESS_ADMINISTER(1),

@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.commands;
 
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.accounts.util.PermissionUtil;
 import com.facilio.bmsconsole.context.WorkOrderRequestContext;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
@@ -74,14 +75,14 @@ public class GetWorkOrderRequestListCommand implements Command {
 			builder.andCriteria(searchCriteria);
 		}
 		
-		Criteria scopeCriteria = AccountUtil.getCurrentUser().scopeCriteria(moduleName);
+		Criteria scopeCriteria = PermissionUtil.getCurrentUserScopeCriteria(moduleName);
 		if(scopeCriteria != null)
 		{
 			builder.andCriteria(scopeCriteria);
 		}
 		
 		if (AccountUtil.getCurrentAccount().getUser().getUserType() != 2) {
-			Criteria permissionCriteria = AccountUtil.getCurrentUser().getRole().permissionCriteria(moduleName,"read");
+			Criteria permissionCriteria = PermissionUtil.getCurrentUserPermissionCriteria(moduleName,"read");
 			if(permissionCriteria != null) {
 				builder.andCriteria(permissionCriteria);
 			}
@@ -175,14 +176,14 @@ public class GetWorkOrderRequestListCommand implements Command {
 				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(workorderRequestModule))
 				.andCriteria(viewCriteria);
 		
-		Criteria scopeCriteria = AccountUtil.getCurrentUser().scopeCriteria(workorderRequestModule.getName());
+		Criteria scopeCriteria = PermissionUtil.getCurrentUserScopeCriteria(workorderRequestModule.getName());
 		if(scopeCriteria != null)
 		{
 			selectBuilder.andCriteria(scopeCriteria);
 		}
 
 		if (AccountUtil.getCurrentAccount().getUser().getUserType() != 2) {
-			Criteria permissionCriteria = AccountUtil.getCurrentUser().getRole().permissionCriteria(workorderRequestModule.getName(),"read");
+			Criteria permissionCriteria = PermissionUtil.getCurrentUserPermissionCriteria(workorderRequestModule.getName(),"read");
 			if(permissionCriteria != null) {
 				selectBuilder.andCriteria(permissionCriteria);
 			}

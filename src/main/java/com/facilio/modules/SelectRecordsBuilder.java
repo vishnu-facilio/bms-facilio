@@ -17,6 +17,7 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.accounts.util.PermissionUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.constants.FacilioConstants;
 
@@ -398,13 +399,13 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 	private void handlePermissionAndScope() {
 		if (AccountUtil.getCurrentUser() != null) {
 			if (module.getName().equals(FacilioConstants.ContextNames.WORK_ORDER)) {
-				Criteria scopeCriteria = AccountUtil.getCurrentUser().scopeCriteria(module.getName());
+				Criteria scopeCriteria = PermissionUtil.getCurrentUserScopeCriteria(module.getName());
 				if(scopeCriteria != null) {
 					builder.andCriteria(scopeCriteria);
 				}
 
 				if (AccountUtil.getCurrentAccount().getUser().getUserType() != 2 && AccountUtil.getCurrentUser().getRole() != null) {
-					Criteria permissionCriteria = AccountUtil.getCurrentUser().getRole().permissionCriteria(module.getName(),"read");
+					Criteria permissionCriteria = PermissionUtil.getCurrentUserPermissionCriteria(module.getName(),"read");
 					if(permissionCriteria != null) {
 						builder.andCriteria(permissionCriteria);
 					}

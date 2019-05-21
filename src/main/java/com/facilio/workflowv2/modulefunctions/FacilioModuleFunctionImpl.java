@@ -180,7 +180,7 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 //				User user = AccountUtil.getOrgBean().getSuperAdmin(AccountUtil.getCurrentOrg().getOrgId());
 //				AccountUtil.getCurrentAccount().setUser(user);
 //			}
-//			Criteria scopeCriteria = AccountUtil.getCurrentUser().scopeCriteria(module.getName());
+//			Criteria scopeCriteria = PermissionUtil.getCurrentUserScopeCriteria(module.getName());
 //			if (scopeCriteria != null) {
 //				selectBuilder.andCriteria(scopeCriteria);
 //			}
