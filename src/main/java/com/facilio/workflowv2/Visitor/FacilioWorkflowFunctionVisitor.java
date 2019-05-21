@@ -553,8 +553,8 @@ public class FacilioWorkflowFunctionVisitor extends WorkflowV2BaseVisitor<Value>
     	
     	Value exprValue = this.visit(ctx.expr());
     	System.out.println("iterateVae - "+exprValue);
-    	String loopVariableValueName = ctx.VAR(0).getText();
-    	String loopVariableIndexName = ctx.VAR(1).getText();
+    	String loopVariableIndexName = ctx.VAR(0).getText();
+    	String loopVariableValueName = ctx.VAR(1).getText();
     	
     	if(exprValue.asObject() instanceof Collection) {
 			

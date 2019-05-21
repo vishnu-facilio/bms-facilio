@@ -9,7 +9,7 @@ import java.util.Map;
 
 public enum FacilioStringFunction implements FacilioWorkflowFunctionInterface {
 
-	STRING_EQUALS(1,"stringEquals") {
+	STRING_EQUALS(1,"stringEquals") {	// depricate this method on new workflow
 
 		@Override
 		public Object execute(Object... objects) throws Exception {
@@ -23,7 +23,7 @@ public enum FacilioStringFunction implements FacilioWorkflowFunctionInterface {
 			}
 		}
 	},
-	STRING_CONTAINS(2,"stringContains") {
+	STRING_CONTAINS(2,"stringContains") {	// depricate this method on new workflow
 
 		@Override
 		public Object execute(Object... objects) throws Exception {
@@ -110,6 +110,20 @@ public enum FacilioStringFunction implements FacilioWorkflowFunctionInterface {
 			String string1 = objects[1].toString();
 			
 			return string.contains(string1);
+		}
+		public void checkParam(Object... objects) throws Exception {
+			if(objects.length < 2) {
+				throw new FunctionParamException("Required Object is null");
+			}
+		}
+	},
+	EQUALS(7,"equals") {	// depricate this method on new workflow
+
+		@Override
+		public Object execute(Object... objects) throws Exception {
+			// TODO Auto-generated method stub
+			checkParam(objects);
+			return (objects[0] == null ? objects[1] == null : objects[0].toString().equals(objects[1].toString()));
 		}
 		public void checkParam(Object... objects) throws Exception {
 			if(objects.length < 2) {
