@@ -9,20 +9,20 @@
 	<url>http://maven.apache.org</url>
 	<repositories>
 		<repository>
-			<id>faciliodb-s3-release-repo</id>
-			<url>s3://repo.facilio/faciliodb/release</url>
+			<id>facilio-framework-s3-release-repo</id>
+			<url>s3://repo.facilio/facilio-framework/release</url>
 		</repository>
 		<repository>
-			<id>faciliodb-s3-snapshot-repo</id>
-			<url>s3://repo.facilio/faciliodb/snapshot</url>
+			<id>facilio-framework-s3-snapshot-repo</id>
+			<url>s3://repo.facilio/facilio-framework/snapshot</url>
 		</repository>
 	</repositories>
 	
 	<dependencies>
 		<dependency>
-			<groupId>com.facilio.db</groupId>
-			<artifactId>facilio-db</artifactId>
-			<version>1.0</version>
+			<groupId>com.facilio.framework</groupId>
+			<artifactId>facilio-framework</artifactId>
+			<version>1.0-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
