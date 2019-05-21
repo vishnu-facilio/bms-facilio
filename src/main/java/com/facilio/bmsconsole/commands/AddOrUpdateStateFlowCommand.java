@@ -53,6 +53,7 @@ public class AddOrUpdateStateFlowCommand implements Command {
 			event.setModuleId(facilioModule.getModuleId());
 			stateFlow.setEvent(event);
 			stateFlow.setRuleType(RuleType.STATE_FLOW);
+			stateFlow.setDefaltStateFlow(false);
 			
 			boolean add = false;
 			if (stateFlow.getId() < 0) {

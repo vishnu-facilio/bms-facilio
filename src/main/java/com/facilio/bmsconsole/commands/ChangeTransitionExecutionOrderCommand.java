@@ -34,7 +34,7 @@ public class ChangeTransitionExecutionOrderCommand implements Command {
 		if (CollectionUtils.isNotEmpty(stateFlows) && StringUtils.isNotEmpty(moduleName)) {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioModule module = modBean.getModule(moduleName);
-			List<StateFlowRuleContext> allStateFlow = StateFlowRulesAPI.getAllStateFlow(module);
+			List<StateFlowRuleContext> allStateFlow = (List<StateFlowRuleContext>) StateFlowRulesAPI.getAllStateFlow(module);
 			
 			if (allStateFlow.size() - 1 != stateFlows.size()) {
 				throw new IllegalArgumentException("Stateflow count mismatch");
@@ -46,7 +46,7 @@ public class ChangeTransitionExecutionOrderCommand implements Command {
 				}
 				
 				StateFlowRuleContext stateFlowRuleContext = stateFlowAsMap.remove(stateFlowRule.getId());
-				if (stateFlowRuleContext.isDefaltStateFlow()) {
+				if (stateFlowRuleContext.getDefaltStateFlow()) {
 					throw new IllegalArgumentException("Cannot rearrange default stateflow");
 				}
 			}
