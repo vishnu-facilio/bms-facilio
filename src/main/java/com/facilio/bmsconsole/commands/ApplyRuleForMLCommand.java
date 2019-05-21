@@ -45,22 +45,22 @@ public class ApplyRuleForMLCommand implements Command {
 			{
 				LOGGER.info("Executing Job "+jobid);
 				JobContext jobContext = FacilioTimer.getJob(FacilioUtil.parseLong(jobid), "DefaultMLJob");
-				if(jobContext==null)
+				if(jobContext!=null)
 				{
-					jobContext = new JobContext();
-					jobContext.setJobId(FacilioUtil.parseLong(jobid));
-					jobContext.setOrgId(mlContext.getOrgId());
-					jobContext.setJobName("DefaultMLJob");
-					jobContext.setActive(true);
-					jobContext.setExecutionTime(mlContext.getPredictionTime());
-					jobContext.setExecutorName("ml");
-					JobStore.addJob(jobContext);
+					FacilioTimer.deleteJob(FacilioUtil.parseLong(jobid), "DefaultMLJob");
 				}
-				else
-				{
-					//JobStore.updateNextExecutionTimeAndCount(FacilioUtil.parseLong(jobid), "DefaultMLJob", mlContext.getPredictionTime(), jobContext.getCurrentExecutionCount()+1);
-					JobStore.setInActive(FacilioUtil.parseLong(jobid), "DefaultMLJob");
-				}
+				
+				FacilioTimer.scheduleOneTimeJob(FacilioUtil.parseLong(jobid), "DefaultMLJob", mlContext.getPredictionTime(), "ml");
+				/*
+				jobContext = new JobContext();
+				jobContext.setJobId(FacilioUtil.parseLong(jobid));
+				jobContext.setOrgId(mlContext.getOrgId());
+				jobContext.setJobName("DefaultMLJob");
+				jobContext.setActive(true);
+				jobContext.setExecutionTime(mlContext.getPredictionTime());
+				jobContext.setExecutorName("ml");
+				JobStore.addJob(jobContext);
+				*/
 			}
 		}
 		catch(Exception e)
