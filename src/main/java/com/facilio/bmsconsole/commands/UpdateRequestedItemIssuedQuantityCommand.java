@@ -16,6 +16,7 @@ import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
+import com.facilio.bmsconsole.util.InventoryRequestAPI;
 import com.facilio.bmsconsole.util.TransactionState;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
@@ -28,7 +29,7 @@ public class UpdateRequestedItemIssuedQuantityCommand implements Command{
 		List<ItemTransactionsContext> itemTransactions = (List<ItemTransactionsContext>) context
 				.get(FacilioConstants.ContextNames.RECORD_LIST);
 	   if(CollectionUtils.isNotEmpty(itemTransactions) && itemTransactions.get(0).getRequestedLineItem() != null && itemTransactions.get(0).getRequestedLineItem().getId() > 0) {
-		InventoryRequestLineItemContext lineItem = itemTransactions.get(0).getRequestedLineItem();
+		InventoryRequestLineItemContext lineItem = InventoryRequestAPI.getLineItem(itemTransactions.get(0).getRequestedLineItem().getId());
 		   if(lineItem != null && itemTransactions.get(0).getTransactionStateEnum() == TransactionState.RETURN) {
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 				FacilioModule lineItemModule = modBean.getModule(FacilioConstants.ContextNames.INVENTORY_REQUEST_LINE_ITEMS);

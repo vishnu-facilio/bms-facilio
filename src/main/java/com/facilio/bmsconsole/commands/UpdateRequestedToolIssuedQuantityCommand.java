@@ -17,6 +17,7 @@ import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
+import com.facilio.bmsconsole.util.InventoryRequestAPI;
 import com.facilio.bmsconsole.util.TransactionState;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
@@ -29,8 +30,8 @@ public class UpdateRequestedToolIssuedQuantityCommand implements Command{
 		List<ToolTransactionContext> toolTransactions = (List<ToolTransactionContext>) context
 				.get(FacilioConstants.ContextNames.RECORD_LIST);
 	   if(CollectionUtils.isNotEmpty(toolTransactions) && toolTransactions.get(0).getRequestedLineItem() != null && toolTransactions.get(0).getRequestedLineItem().getId() > 0) {
-		InventoryRequestLineItemContext lineItem = toolTransactions.get(0).getRequestedLineItem();
-		   if(lineItem != null && toolTransactions.get(0).getTransactionStateEnum() == TransactionState.RETURN) {
+		   InventoryRequestLineItemContext lineItem = InventoryRequestAPI.getLineItem(toolTransactions.get(0).getRequestedLineItem().getId());
+			   if(lineItem != null && toolTransactions.get(0).getTransactionStateEnum() == TransactionState.RETURN) {
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 				FacilioModule lineItemModule = modBean.getModule(FacilioConstants.ContextNames.INVENTORY_REQUEST_LINE_ITEMS);
 				Map<String, Object> updateMap = new HashMap<>();
