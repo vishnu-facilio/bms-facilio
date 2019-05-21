@@ -12,13 +12,13 @@ import com.facilio.bmsconsole.workflow.rule.ReadingRuleMetricContext;
 import com.facilio.constants.FacilioConstants;
 
 import com.facilio.db.criteria.*;
+import com.facilio.db.criteria.operators.*;
 import com.facilio.fw.BeanFactory;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.NumberField;
 import com.facilio.time.DateTimeUtil;
-import com.facilio.util.FacilioUtil;
 import com.facilio.workflows.context.ExpressionContext;
 import com.facilio.workflows.context.WorkflowContext;
 import org.apache.commons.chain.Context;

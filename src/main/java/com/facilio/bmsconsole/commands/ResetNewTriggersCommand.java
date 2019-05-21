@@ -4,7 +4,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.context.PMJobsContext.PMJobsStatus;
-import com.facilio.db.criteria.CommonOperators;
+import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;

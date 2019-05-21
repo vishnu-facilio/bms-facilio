@@ -1,8 +1,10 @@
-package com.facilio.db.criteria;
+package com.facilio.db.criteria.operators;
 
 import com.facilio.accounts.dto.Group;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.FacilioModulePredicate;
+import com.facilio.db.criteria.operators.Operator;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.collections.PredicateUtils;

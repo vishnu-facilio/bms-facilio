@@ -14,7 +14,7 @@ import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.ActionForm;
 import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.DateOperators;
+import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.modules.FacilioModule;
 import com.facilio.bmsconsole.templates.AssignmentTemplate;
 import com.facilio.bmsconsole.templates.SLATemplate;

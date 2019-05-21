@@ -46,7 +46,7 @@ import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.NumberOperators;
+import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.modules.fields.BooleanField;
 import com.facilio.modules.DeleteRecordBuilder;
 import com.facilio.modules.fields.EnumField;

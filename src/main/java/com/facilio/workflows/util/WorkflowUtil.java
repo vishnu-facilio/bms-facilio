@@ -6,6 +6,7 @@ import com.facilio.bmsconsole.context.BaseLineContext;
 import com.facilio.bmsconsole.context.BaseLineContext.AdjustType;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
 
+import com.facilio.db.criteria.operators.*;
 import com.facilio.modules.fields.FacilioField;;
 import com.facilio.bmsconsole.util.BaseLineAPI;
 

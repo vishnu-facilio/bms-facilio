@@ -1,9 +1,11 @@
-package com.facilio.db.criteria;
+package com.facilio.db.criteria.operators;
 
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.bmsconsole.util.SpaceAPI;
+import com.facilio.db.criteria.FacilioModulePredicate;
+import com.facilio.db.criteria.operators.Operator;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.collections.PredicateUtils;

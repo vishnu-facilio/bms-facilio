@@ -6,7 +6,7 @@ import com.facilio.beans.ModuleCRUDBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.StringOperators;
+import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.modules.fields.FacilioField;;
 import com.facilio.devicepoints.DevicePointsUtil;
 import com.facilio.events.context.EventRuleContext;

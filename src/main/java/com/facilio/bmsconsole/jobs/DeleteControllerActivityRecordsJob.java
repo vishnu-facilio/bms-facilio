@@ -2,7 +2,7 @@ package com.facilio.bmsconsole.jobs;
 
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.DateOperators;
+import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;

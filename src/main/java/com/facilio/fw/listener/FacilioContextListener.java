@@ -2,7 +2,7 @@ package com.facilio.fw.listener;
 
 import com.facilio.activity.ActivityType;
 import com.facilio.aws.util.AwsUtil;
-import com.facilio.db.criteria.Operator;
+import com.facilio.db.criteria.operators.Operator;
 import com.facilio.bmsconsole.templates.DefaultTemplate.DefaultTemplateType;
 import com.facilio.modules.FieldUtil;
 import com.facilio.bmsconsole.util.TemplateAPI;

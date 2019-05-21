@@ -1,6 +1,9 @@
-package com.facilio.db.criteria;
+package com.facilio.db.criteria.operators;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.db.criteria.operators.CommonOperators;
+import com.facilio.db.criteria.FacilioModulePredicate;
+import com.facilio.db.criteria.operators.Operator;
 import com.facilio.modules.fields.EnumField;
 import com.facilio.fw.BeanFactory;
 import org.apache.commons.collections.Predicate;

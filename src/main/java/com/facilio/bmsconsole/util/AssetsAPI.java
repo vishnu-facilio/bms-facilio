@@ -27,6 +27,7 @@ import com.facilio.bmsconsole.context.*;
 import com.facilio.constants.FacilioConstants;
 
 import com.facilio.db.criteria.*;
+import com.facilio.db.criteria.operators.*;
 import com.facilio.fw.BeanFactory;
 import com.facilio.db.builder.DBUtil;
 import com.facilio.db.builder.GenericSelectRecordBuilder;

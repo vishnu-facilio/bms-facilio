@@ -13,7 +13,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
-import com.facilio.db.criteria.StringOperators;
+import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.forms.FacilioForm.FormType;
 import com.facilio.bmsconsole.forms.FormFactory;

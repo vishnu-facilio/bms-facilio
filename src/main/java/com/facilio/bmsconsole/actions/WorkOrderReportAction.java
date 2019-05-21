@@ -8,7 +8,7 @@ import com.facilio.modules.FacilioStatus;
 import com.facilio.modules.FacilioStatus.StatusType;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
-import com.facilio.db.criteria.Operator;
+import com.facilio.db.criteria.operators.Operator;
 import com.facilio.bmsconsole.util.DashboardUtil;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;

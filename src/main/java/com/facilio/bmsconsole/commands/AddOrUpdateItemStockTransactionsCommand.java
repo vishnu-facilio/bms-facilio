@@ -6,7 +6,7 @@ import com.facilio.bmsconsole.context.ItemContext;
 import com.facilio.bmsconsole.context.ItemTransactionsContext;
 import com.facilio.bmsconsole.context.PurchasedItemContext;
 import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.EnumOperators;
+import com.facilio.db.criteria.operators.EnumOperators;
 import com.facilio.modules.fields.FacilioField;;
 import com.facilio.bmsconsole.util.ItemsApi;
 import com.facilio.bmsconsole.util.TransactionState;
