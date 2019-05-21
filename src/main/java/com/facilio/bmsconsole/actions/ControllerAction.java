@@ -258,7 +258,6 @@ public class ControllerAction extends FacilioAction {
 			criteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getAgentIdField(agentModule), getAgentId().toString(), NumberOperators.EQUALS));
 		}
 		if(getPerPage() != -1 && getPage() > 0){
-			LOGGER.info("iamcvijaylogs ----limit--"+getPerPage()+" ---offset--"+getPage());
 			context.put(FacilioConstants.ContextNames.LIMIT_VALUE,getPerPage());
 			context.put(FacilioConstants.ContextNames.OFFSET,(getPerPage()*(getPage()-1)));
 		}
