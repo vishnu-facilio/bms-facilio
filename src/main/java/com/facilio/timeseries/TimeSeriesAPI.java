@@ -547,7 +547,7 @@ public static void insertInstanceAssetMapping(String deviceName, long assetId, l
 		return criteria;
 	}
 	
-	public static  void addUnmodeledInstances(JSONArray instanceArray, Long controllerId) throws Exception {
+	public static int addUnmodeledInstances(JSONArray instanceArray, Long controllerId) throws Exception {
 		
 		/*jsonObject should consists
 		object.put("device",deviceName);
@@ -589,13 +589,14 @@ public static void insertInstanceAssetMapping(String deviceName, long assetId, l
 		}
 		try {
 			insertBuilder.save();
+			return insertBuilder.getRecords().size();
 		}
 		catch (Exception e) {
 			LOGGER.error("Insertion failed while adding instances: " + instanceNames, e);
 			throw e;
 		}
 	}
-	public static  void addPointsInstances(JSONArray instanceArray, Long controllerId) throws Exception {
+	public static  int addPointsInstances(JSONArray instanceArray, Long controllerId) throws Exception {
 
 		/*jsonObject should consists
 		object.put("device",deviceName);
@@ -638,7 +639,7 @@ public static void insertInstanceAssetMapping(String deviceName, long assetId, l
 			}
 		}
 		insertBuilderPoints.save();
-
+		return insertBuilderPoints.getRecords().size();
 	}
 	public static List<Map<String, Object>> getUnmodeledInstancesForController (long controllerId, Boolean...fetchAllTypes) throws Exception {
 		return getUnmodeledInstancesForController(controllerId, null, null, null, null, false, null, fetchAllTypes.length > 0 && fetchAllTypes[0]);

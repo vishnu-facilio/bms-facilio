@@ -1,19 +1,21 @@
 package com.facilio.devicepoints;
 
-import com.facilio.beans.ModuleCRUDBean;
-import com.facilio.bmsconsole.context.ControllerContext;
-import com.facilio.bmsconsole.util.ControllerAPI;
-import com.facilio.fw.BeanFactory;
-import com.facilio.timeseries.TimeSeriesAPI;
-import com.facilio.util.FacilioUtil;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import com.facilio.beans.ModuleCRUDBean;
+import com.facilio.bmsconsole.context.ControllerContext;
+import com.facilio.bmsconsole.util.ControllerAPI;
+import com.facilio.bmsconsole.util.IoTMessageAPI;
+import com.facilio.fw.BeanFactory;
+import com.facilio.timeseries.TimeSeriesAPI;
+import com.facilio.util.FacilioUtil;
 
 /**
  * AgentProcessor is a dedicated Processor for processing payloads with PUBLISH_TYPE set to 'DevicePoints'.
@@ -69,13 +71,20 @@ public  class DevicePointsUtil {
             if(controllerSettingsId > -1) {
                 JSONArray points = (JSONArray)payLoad.get(DevicePointsKeys.POINTS);
                 LOGGER.info("Device Points : "+points);
-
+                
+                int count;
                 if(TimeSeriesAPI.isStage()) {
-                	TimeSeriesAPI.addPointsInstances(points, controllerSettingsId);
+                		count =  TimeSeriesAPI.addPointsInstances(points, controllerSettingsId);
                 }
                 else {
-                	TimeSeriesAPI.addUnmodeledInstances(points, controllerSettingsId);
+                		count = TimeSeriesAPI.addUnmodeledInstances(points, controllerSettingsId);
                 }
+                
+                JSONObject info = new JSONObject();
+                info.put("controllerId", controllerSettingsId);
+                info.put("publishType", "devicePoints");
+                info.put("count", count);
+                IoTMessageAPI.sendPublishNotification(null, info);
             }
         // }
     }
