@@ -45,7 +45,7 @@ public class ApplyRuleForMLCommand implements Command {
 			{
 				LOGGER.info("Executing Job "+jobid);
 				JobContext jobContext = FacilioTimer.getJob(FacilioUtil.parseLong(jobid), "DefaultMLJob");
-				if(jobContext!=null)
+				if(jobContext==null)
 				{
 					jobContext = new JobContext();
 					jobContext.setJobId(FacilioUtil.parseLong(jobid));
