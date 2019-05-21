@@ -229,7 +229,7 @@ public class FieldFactory {
 		return fields;
 	}
 	public static FacilioField getAgentMessagePartitionKeyField(FacilioModule module){
-		return getField(AgentKeys.PARTITION_KEY,"PARTITION_KEY",module,FieldType.STRING);
+		return getField(AgentKeys.RECORD_ID,"RECORD_ID",module,FieldType.STRING);
 	}
 	public static FacilioField getAgentMessageStartTimeField(FacilioModule module){
 		return getField(AgentKeys.START_TIME,"START_TIME",module,FieldType.NUMBER);

@@ -54,7 +54,7 @@ public class AgentKeys
     public static final String MESSAGE_REPROCESS_INTERVAL = "message.reprocess.interval";
     //Messages table
     public static final String AGENT_MESSAGE_TABLE = "Agent_Message";
-    public static final String PARTITION_KEY = "partitionKey";
+    public static final String RECORD_ID = "recordId";
     public static final String MSG_STATUS = "msgStatus";
     public static final String START_TIME = "startTime";
     public static final String FINISH_TIME = "finishTime";

@@ -55,12 +55,11 @@ public class Processor implements IRecordProcessor {
         private AckUtil ackUtil;
         private EventUtil eventUtil;
         private Boolean isStage = !AwsUtil.isProduction();
+        private  boolean isRestarted = true;
 
         public static final String DATA_TYPE = "PUBLISH_TYPE";
         private List<EventRuleContext> eventRules = new ArrayList<>();
         private JSONParser parser = new JSONParser();
-
-
 
     Processor(long orgId, String orgDomainName){
             this.orgId = orgId;
@@ -116,15 +115,31 @@ public class Processor implements IRecordProcessor {
             for (Record record : processRecordsInput.getRecords()) {
                 String data = "";
                 StringReader reader = null;
-                String sequenceNumber = record.getSequenceNumber();
+                String recordId = record.getSequenceNumber();
                 try {
-                        if ((AgentUtil.addOrUpdateAgentMessage(sequenceNumber, 0).intValue() == 0)) {
-                            if (!AgentUtil.canReprocess(sequenceNumber)) {
+                    try {
+                        boolean  isDuplicateMessage = AgentUtil.isDuplicate(recordId);
+                        if ( isDuplicateMessage ) {
+                            if(isRestarted){
+                                LOGGER.info(" Duplicate message received but can be processed due to server-restart "+recordId);
+                                isRestarted = false;
+                            }
+                            else {
+                                LOGGER.info(" Duplicate message received and cannot be reprocessed "+recordId);
                                 continue;
                             }
                         }
-                    data = decoder.decode(record.getData()).toString();
-                    if(data.isEmpty()){
+                        else {
+                            AgentUtil.addAgentMessage(recordId);
+                        }
+                    }catch (Exception e1){
+                        LOGGER.info("Exception Occured ",e1);
+                    }
+
+                    data = record.getData().toString();
+                    if (data.isEmpty()) {
+                        LOGGER.info(" Empty message received "+recordId);
+                        AgentUtil.updateAgentMessage(recordId, MessageStatus.DATA_EMPTY);
                         continue;
                     }
 
@@ -205,13 +220,16 @@ public class Processor implements IRecordProcessor {
                                 break;
 
                         }
+
                         dataTypeLastMessageTime.put(dataType, lastMessageReceivedTime);
                         deviceMessageTime.put(deviceId, dataTypeLastMessageTime);
                     } else {
                         LOGGER.info("Duplicate message for device " + deviceId + " and type " + dataType);
                     }
                     if ( i == 0 ) {
-                        GenericUpdateRecordBuilder genericUpdateRecordBuilder = new GenericUpdateRecordBuilder().table(AgentKeys.AGENT_TABLE).fields(FieldFactory.getAgentDataFields()).andCustomWhere( AgentKeys.NAME+"= '"+agentName+"'");
+                        GenericUpdateRecordBuilder genericUpdateRecordBuilder = new GenericUpdateRecordBuilder().table(AgentKeys.AGENT_TABLE).fields(FieldFactory.getAgentDataFields())
+                                .andCondition(CriteriaAPI.getCondition(FieldFactory.getAgentNameField(ModuleFactory.getAgentDataModule()),agentName,StringOperators.IS))
+                                .andCondition(CriteriaAPI.getCurrentOrgIdCondition(ModuleFactory.getAgentDataModule()));
                         Map<String,Object> toUpdate = new HashMap<>();
                         toUpdate.put(AgentKeys.CONNECTION_STATUS, Boolean.TRUE);
                         toUpdate.put(AgentKeys.STATE, 1);
@@ -219,8 +237,7 @@ public class Processor implements IRecordProcessor {
                         genericUpdateRecordBuilder.update(toUpdate);
 
                     }
-                    AgentUtil.addOrUpdateAgentMessage(sequenceNumber,1);
-
+                    AgentUtil.updateAgentMessage(recordId,MessageStatus.PROCESSED);
                 } catch (Exception e) {
                     try {
                         if(AwsUtil.isProduction()) {
@@ -244,6 +261,7 @@ public class Processor implements IRecordProcessor {
         agent.setAgentConnStatus(Boolean.TRUE);
         agent.setAgentState(1);
         agent.setAgentDataInterval(15L);
+        agent.setWritable(false);
         return agent;
     }
 
@@ -251,8 +269,7 @@ public class Processor implements IRecordProcessor {
         if(isStage && (payLoad.containsKey(AgentKeys.COMMAND_STATUS) || payLoad.containsKey(AgentKeys.CONTENT))){
             int connectionCount = -1;
             if( payLoad.containsKey(AgentKeys.COMMAND_STATUS)){
-                if((payLoad.remove(AgentKeys.COMMAND_STATUS)).toString().equals("1")){
-
+                if(( "1".equals( payLoad.get( AgentKeys.COMMAND_STATUS ).toString() ) )){
                     if(payLoad.containsKey(AgentKeys.CONNECTION_COUNT)) {
                         connectionCount = Integer.parseInt(payLoad.get(AgentKeys.CONNECTION_COUNT).toString());
                     }

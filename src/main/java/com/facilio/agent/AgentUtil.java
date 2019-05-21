@@ -1,7 +1,6 @@
 package com.facilio.agent;
 
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleCRUDBean;
 import com.facilio.bmsconsole.criteria.*;
 import com.facilio.bmsconsole.modules.FacilioField;
@@ -21,7 +20,10 @@ import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
 import java.sql.SQLException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * This class writes agent's payload data to a table in DB.
@@ -204,11 +206,17 @@ public  class AgentUtil
                            toUpdate.put(AgentKeys.DATA_INTERVAL, currDataInterval);
                            agent.setAgentDataInterval(currDataInterval);
                        }
-                   } /*else {
-                       toUpdate.put(AgentKeys.DATA_INTERVAL, DEFAULT_TIME);
-                       agent.setAgentDataInterval(DEFAULT_TIME);
-                   }*/
-
+                   }
+                   if(jsonObject.containsKey(AgentKeys.AGENT_TYPE)){
+                       if(jsonObject.get(AgentKeys.AGENT_TYPE) instanceof Integer){
+                           agent.setAgentType(Integer.parseInt(jsonObject.get(AgentKeys.AGENT_TYPE).toString().trim()));
+                           toUpdate.put(AgentKeys.AGENT_TYPE,agent.getAgentType());
+                       }
+                       else {
+                           agent.setAgentType(AgentType.valueOf(jsonObject.get(AgentKeys.AGENT_TYPE).toString().trim()).getKey());
+                           toUpdate.put(AgentKeys.AGENT_TYPE,agent.getAgentType());
+                       }
+                   }
                    if (jsonObject.containsKey(AgentKeys.NUMBER_OF_CONTROLLERS)) {
                        Integer currNumberOfControllers = Integer.parseInt(jsonObject.get(AgentKeys.NUMBER_OF_CONTROLLERS).toString());
                        if ((agent.getAgentNumberOfControllers().intValue() != currNumberOfControllers.intValue())) {
@@ -378,7 +386,7 @@ public  class AgentUtil
             payLoad.put(AgentKeys.COMMAND_STATUS,CommandStatus.SENT.getKey());
         }
         if(payLoad.containsKey(AgentKeys.COMMAND)){
-            payLoad.replace(AgentKeys.COMMAND, ControllerCommand.valueOf(payLoad.get(AgentKeys.COMMAND).toString().toLowerCase()).getValue());
+            payLoad.replace(AgentKeys.COMMAND, ControllerCommand.valueOf(payLoad.get(AgentKeys.COMMAND).toString()).getValue());
         }
         if( ! payLoad.containsKey(AgentKeys.AGENT_ID)){
             payLoad.put(AgentKeys.AGENT_ID,agentId);
@@ -411,58 +419,42 @@ public  class AgentUtil
         return genericSelectRecordBuilder.get();
     }
 
+    public static boolean addAgentMessage(String recordId) throws Exception{
+        return addOrUpdateAgentMessage(recordId,MessageStatus.RECIEVED);
+    }
+    public static boolean updateAgentMessage(String recordId,MessageStatus messageStatus) throws Exception{
+        return addOrUpdateAgentMessage(recordId,messageStatus);
+    }
 
-    public static Long addOrUpdateAgentMessage(String partitionKey, Integer status){
+    public static boolean addOrUpdateAgentMessage(String recordId, MessageStatus messageStatus)throws Exception{
+        boolean status = false;
+            ModuleCRUDBean bean;
+            bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", AccountUtil.getCurrentOrg().getId());
             Map<String,Object> map = new HashMap<>();
-            map.put(AgentKeys.PARTITION_KEY,partitionKey);
-            map.put(AgentKeys.MSG_STATUS,status);
+            map.put(AgentKeys.RECORD_ID,recordId);
+            map.put(AgentKeys.MSG_STATUS,messageStatus.getStatusKey());
             map.put(AgentKeys.START_TIME,System.currentTimeMillis());
 
-            if(status == 0){
-                return addOrUpdateAgentMessage(map,true);
+            if(messageStatus == MessageStatus.RECIEVED ){
+                if(bean.addAgentMessage(map) > 0 ){
+                    status = true;
+                }
             }
-        map.put(AgentKeys.FINISH_TIME, System.currentTimeMillis());
-        return addOrUpdateAgentMessage(map,false);
-    }
-
-    private static Long addOrUpdateAgentMessage( Map<String,Object> map,Boolean toAdd){
-        ModuleCRUDBean bean;
-        try {
-            bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", AccountUtil.getCurrentOrg().getId());
-
-            if (toAdd) {
-                return bean.addAgentMessage(map);
+            else if(messageStatus == MessageStatus.DATA_EMPTY){
+                map.put(AgentKeys.FINISH_TIME, System.currentTimeMillis());
+                if(bean.updateAgentMessage(map)>0){
+                    status = true;
+                }
             }
-            return bean.updateAgentMessage(map);
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
-        return 0L;
-    }
-
-    public static boolean checkForDuplicate(String partitionKey){
-        FacilioModule messageModule = ModuleFactory.getAgentMessageModule();
-        FacilioContext context = new FacilioContext();
-
-        Criteria criteria = new Criteria();
-        criteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getAgentMessagePartitionKeyField(messageModule),partitionKey,NumberOperators.EQUALS));
-
-        context.put(FacilioConstants.ContextNames.TABLE_NAME,AgentKeys.AGENT_MESSAGE_TABLE);
-        context.put(FacilioConstants.ContextNames.FIELDS,FieldFactory.getAgentMessageFields());
-        context.put(FacilioConstants.ContextNames.MODULE,messageModule);
-        context.put(FacilioConstants.ContextNames.CRITERIA,criteria);
-        ModuleCRUDBean bean;
-        try {
-            bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", AccountUtil.getCurrentOrg().getId());
-            List<Map<String,Object>> rows = bean.getRows(context);
-            if(((rows == null) || (rows.isEmpty())) ) {
-                return false;
+            else {
+                map.put(AgentKeys.FINISH_TIME, System.currentTimeMillis());
+                LOGGER.info("iamcvijaylogs --processing completed ");
+                map.remove(AgentKeys.START_TIME);
+                if(bean.updateAgentMessage(map) > 0 ){
+                    status = true;
+                }
             }
-        } catch (Exception e) {
-            LOGGER.info("Exception Occurred ",e);
-        }
-        return true;
+           return status;
     }
 
     /**
@@ -531,38 +523,33 @@ public  class AgentUtil
         }
     }
 
+    public static boolean isDuplicate(String partitionKey) throws Exception{
+        boolean status = true;
+        FacilioModule messageModule = ModuleFactory.getAgentMessageModule();
+        FacilioContext context = new FacilioContext();
 
-    public static Boolean canReprocess(String partitionKey)
-    {
-        FacilioModule module = ModuleFactory.getAgentMessageModule();
-        ModuleCRUDBean bean;
+        Criteria criteria = new Criteria();
+        criteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getAgentMessagePartitionKeyField(messageModule),partitionKey,StringOperators.IS));
+
+        context.put(FacilioConstants.ContextNames.TABLE_NAME,AgentKeys.AGENT_MESSAGE_TABLE);
+        context.put(FacilioConstants.ContextNames.FIELDS,FieldFactory.getAgentMessageFields());
+        context.put(FacilioConstants.ContextNames.MODULE,messageModule);
+        context.put(FacilioConstants.ContextNames.CRITERIA,criteria);
         try {
-            long timeLimit = System.currentTimeMillis()- AwsUtil.getMessageReprocessInterval();
-            Criteria criteria = new Criteria();
-            criteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getAgentMessagePartitionKeyField(module),partitionKey,NumberOperators.EQUALS));
-            criteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getAgentMessageStartTimeField(module), Long.toString(timeLimit),NumberOperators.LESS_THAN));
-            criteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getAgentMessageStatusField(module),"0",NumberOperators.EQUALS));
-
-            FacilioContext context = new FacilioContext();
-            context.put(FacilioConstants.ContextNames.FIELDS,FieldFactory.getAgentMessageFields());
-            context.put(FacilioConstants.ContextNames.TABLE_NAME,AgentKeys.AGENT_MESSAGE_TABLE);
-            context.put(FacilioConstants.ContextNames.MODULE,module);
-            context.put(FacilioConstants.ContextNames.CRITERIA,criteria);
-
-            bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", Objects.requireNonNull(AccountUtil.getCurrentOrg()).getId());
-            List<Map<String,Object>> rows = bean.getRows(context);
-            if((rows == null) || (rows.isEmpty()) ) {
-                return false;
+            ModuleCRUDBean bean;
+            bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", AccountUtil.getCurrentOrg().getId());
+            List<Map<String, Object>> rows = bean.getRows(context);
+            if (((rows == null) || (rows.isEmpty()))) {
+                status = false;
             }
-        } catch (Exception e) {
+        }catch (Exception e){
             LOGGER.info("Exception Occurred ",e);
+            throw e;
         }
-        return true;
-
+        return status;
     }
 
 }
-
 
 
 
