@@ -58,7 +58,8 @@ public class ApplyRuleForMLCommand implements Command {
 				}
 				else
 				{
-					JobStore.updateNextExecutionTimeAndCount(FacilioUtil.parseLong(jobid), "DefaultMLJob", mlContext.getPredictionTime(), jobContext.getCurrentExecutionCount()+1);
+					//JobStore.updateNextExecutionTimeAndCount(FacilioUtil.parseLong(jobid), "DefaultMLJob", mlContext.getPredictionTime(), jobContext.getCurrentExecutionCount()+1);
+					JobStore.setInActive(FacilioUtil.parseLong(jobid), "DefaultMLJob");
 				}
 			}
 		}
