@@ -136,7 +136,7 @@ public class Processor implements IRecordProcessor {
                         LOGGER.info("Exception Occured ",e1);
                     }
 
-                    data = record.getData().toString();
+                    data = decoder.decode(record.getData()).toString();
                     if (data.isEmpty()) {
                         LOGGER.info(" Empty message received "+recordId);
                         AgentUtil.updateAgentMessage(recordId, MessageStatus.DATA_EMPTY);
