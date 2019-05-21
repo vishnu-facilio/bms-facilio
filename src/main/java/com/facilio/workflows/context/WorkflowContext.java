@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.antlr.v4.runtime.CharStreams;
@@ -316,6 +317,7 @@ public class WorkflowContext implements Serializable {
 				if(isDebugMode) {
 		        	return visitor.getResultString().toString();
 		        }
+				LOGGER.log(Level.SEVERE, e.getMessage(), e);
 				throw e;
 			}
 		}
