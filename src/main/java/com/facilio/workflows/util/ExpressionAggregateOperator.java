@@ -1,6 +1,6 @@
 package com.facilio.workflows.util;
 
-import com.facilio.modules.FacilioField;
+import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.FieldType;
 
 import java.util.Collections;

@@ -4,7 +4,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.BusinessHoursContext;
 import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.db.criteria.Criteria;
-import com.facilio.modules.FacilioField;
+import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.util.BusinessHoursAPI;

@@ -9,7 +9,7 @@ import com.facilio.bmsconsole.context.TicketContext.SourceType;
 import com.facilio.db.criteria.CommonOperators;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.StringOperators;
-import com.facilio.bmsconsole.modules.*;
+import com.facilio.modules.fields.FacilioField;;
 import com.facilio.bmsconsole.util.AlarmAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.events.constants.EventConstants;

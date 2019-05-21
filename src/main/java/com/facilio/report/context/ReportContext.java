@@ -203,7 +203,7 @@ public class ReportContext {
 	}
 	public void setDateOperator(int dateOperator) {
 		if(dateOperator > 0) {
-			Operator operator = Operator.OPERATOR_MAP.get(dateOperator);
+			Operator operator = Operator.getOperator(dateOperator);
 			if (operator instanceof DateOperators) {
 				this.dateOperator = (DateOperators) operator;
 			}

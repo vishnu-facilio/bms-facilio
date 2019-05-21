@@ -1,7 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
 import com.facilio.bmsconsole.context.TicketContext;
-import com.facilio.modules.FacilioField;
+import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.constants.FacilioConstants;

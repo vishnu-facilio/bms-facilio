@@ -10,7 +10,7 @@ import com.facilio.bmsconsole.context.InventoryType;
 import com.facilio.bmsconsole.context.PurchaseOrderContext;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.NumberOperators;
-import com.facilio.modules.FacilioField;
+import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.constants.FacilioConstants;

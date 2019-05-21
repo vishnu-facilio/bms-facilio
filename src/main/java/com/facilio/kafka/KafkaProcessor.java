@@ -3,7 +3,7 @@ package com.facilio.kafka;
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.modules.FacilioField;
+import com.facilio.modules.fields.FacilioField;
 import com.facilio.procon.processor.FacilioProcessor;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import org.apache.kafka.clients.admin.AdminClient;

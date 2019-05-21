@@ -7,7 +7,7 @@ import com.facilio.bmsconsole.context.MlForecastingContext;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ReadingContext.SourceType;
 
-import com.facilio.bmsconsole.modules.*;
+import com.facilio.modules.fields.FacilioField;;
 import com.facilio.bmsconsole.util.MLUtil;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;

@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.facilio.bmsconsole.forms.FacilioForm;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
@@ -14,7 +15,7 @@ import com.facilio.bmsconsole.context.SharingContext;
 import com.facilio.bmsconsole.context.SingleSharingContext;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.PickListOperators;
-import com.facilio.modules.FacilioField;
+import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleBaseWithCustomFields;
@@ -192,15 +193,15 @@ public class StateflowTransitionContext extends WorkflowRuleContext {
 			return false;
 		}
 		
-		// this is old records
-		if (moduleRecord.getModuleState() == null || moduleRecord.getStateFlowId() <= 0) {
-			return false;
-		}
-
-		if (moduleRecord.getModuleState() != null && moduleRecord.getStateFlowId() > 0 && moduleRecord.getStateFlowId() == getStateFlowId() && 
-				getFromStateId() != moduleRecord.getModuleState().getId()) {
-			return false;
-		}
+		// this is old records //Commentint temporarily
+//		if (moduleRecord.getModuleState() == null || moduleRecord.getStateFlowId() <= 0) {
+//			return false;
+//		}
+//
+//		if (moduleRecord.getModuleState() != null && moduleRecord.getStateFlowId() > 0 && moduleRecord.getStateFlowId() == getStateFlowId() &&
+//				getFromStateId() != moduleRecord.getModuleState().getId()) {
+//			return false;
+//		}
 		
 		if (CollectionUtils.isNotEmpty(approvers)) {
 			List<SingleSharingContext> matching = approvers.getMatching(record);

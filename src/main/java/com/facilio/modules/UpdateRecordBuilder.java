@@ -20,6 +20,7 @@ import com.facilio.db.builder.GenericUpdateRecordBuilder.GenericJoinBuilder;
 import com.facilio.db.builder.JoinBuilderIfc;
 import com.facilio.db.builder.UpdateBuilderIfc;
 import com.facilio.db.builder.WhereBuilder;
+import com.facilio.modules.fields.FacilioField;
 import com.google.common.collect.MapDifference;
 import com.google.common.collect.MapDifference.ValueDifference;
 import com.google.common.collect.Maps;

@@ -6,7 +6,7 @@ import com.facilio.bmsconsole.context.BaseSpaceContext.SpaceType;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.NumberOperators;
 import com.facilio.db.criteria.PickListOperators;
-import com.facilio.bmsconsole.modules.*;
+import com.facilio.modules.fields.FacilioField;;
 import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;

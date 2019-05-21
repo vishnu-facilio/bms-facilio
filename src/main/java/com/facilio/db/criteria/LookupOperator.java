@@ -2,7 +2,7 @@ package com.facilio.db.criteria;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.modules.FacilioModule;
-import com.facilio.modules.LookupField;
+import com.facilio.modules.fields.LookupField;
 import com.facilio.fw.BeanFactory;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;

@@ -5,7 +5,7 @@ import com.facilio.bmsconsole.context.ReadingAlarmContext;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.DateOperators;
 import com.facilio.db.criteria.NumberOperators;
-import com.facilio.bmsconsole.modules.*;
+import com.facilio.modules.fields.FacilioField;;
 import com.facilio.bmsconsole.util.ReadingRuleAPI;
 import com.facilio.bmsconsole.workflow.rule.AlarmRuleContext;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;

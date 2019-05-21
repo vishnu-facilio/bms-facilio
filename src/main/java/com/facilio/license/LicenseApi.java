@@ -2,7 +2,7 @@ package com.facilio.license;
 
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.modules.FacilioField;
+import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.FieldUtil;
 import com.facilio.license.LicenseContext.FacilioLicense;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;

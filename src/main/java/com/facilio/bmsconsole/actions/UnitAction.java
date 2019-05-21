@@ -14,7 +14,7 @@ import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.DateOperators;
 import com.facilio.db.criteria.NumberOperators;
-import com.facilio.modules.FacilioField;
+import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.SelectRecordsBuilder;

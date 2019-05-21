@@ -3,7 +3,7 @@ package com.facilio.bmsconsole.context;
 import com.facilio.beans.ModuleBean;
 import com.facilio.db.criteria.DateOperators;
 import com.facilio.db.criteria.Operator;
-import com.facilio.modules.FacilioField;
+import com.facilio.modules.fields.FacilioField;
 import com.facilio.fw.BeanFactory;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -70,7 +70,7 @@ public class ReportDateFilterContext {
 		this.field = field;
 	}
 	public DateOperators getOperator() {
-		return (DateOperators) Operator.OPERATOR_MAP.get(operatorId);
+		return (DateOperators) Operator.getOperator(operatorId);
 	}
 	public Integer getOperatorId() {
 		return operatorId;

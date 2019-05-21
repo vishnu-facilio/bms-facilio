@@ -4,15 +4,15 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
-import com.facilio.modules.FacilioField;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.FieldUtil;
-import com.facilio.modules.NumberField;
+import com.facilio.modules.fields.NumberField;
 import com.facilio.fs.FileInfo;
 import com.facilio.fs.FileStore;
 import com.facilio.fs.FileStoreFactory;
 import com.facilio.fw.LRUCache;
 import com.facilio.db.transaction.FacilioConnectionPool;
+import com.facilio.modules.fields.FacilioField;
 import com.facilio.unitconversion.UnitsUtil;
 
 import org.apache.commons.collections4.CollectionUtils;

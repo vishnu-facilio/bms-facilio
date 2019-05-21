@@ -9,14 +9,14 @@ import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.PickListOperators;
 import com.facilio.bmsconsole.forms.FacilioForm;
-import com.facilio.bmsconsole.modules.*;
+import com.facilio.modules.*;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
-import com.facilio.modules.*;
+import com.facilio.modules.fields.FacilioField;
 import org.apache.commons.chain.Context;
 
 import java.util.ArrayList;

@@ -8,11 +8,12 @@ import com.facilio.bmsconsole.context.ResourceContext.ResourceType;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.NumberOperators;
 import com.facilio.db.criteria.PickListOperators;
-import com.facilio.bmsconsole.modules.*;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.modules.*;
+import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.LookupField;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 

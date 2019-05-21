@@ -1,7 +1,7 @@
 package com.facilio.bmsconsole.view;
 
 import com.facilio.bmsconsole.context.ViewField;
-import com.facilio.modules.FacilioField;
+import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;

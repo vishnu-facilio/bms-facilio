@@ -1,7 +1,6 @@
-package com.facilio.modules;
+package com.facilio.modules.fields;
 
-import com.facilio.bmsconsole.workflow.rule.ActionContext;
-import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
+import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldType;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.apache.commons.lang3.StringUtils;
@@ -9,7 +8,6 @@ import org.apache.commons.lang3.StringUtils;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class FacilioField implements Serializable {

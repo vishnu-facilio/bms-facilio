@@ -25,7 +25,7 @@ import com.facilio.bmsconsole.context.AssetTreeContext;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.context.TemperatureContext;
 import com.facilio.bmsconsole.context.TicketContext.SourceType;
-import com.facilio.modules.FacilioField;
+import com.facilio.modules.fields.FacilioField;
 import com.facilio.bmsconsole.util.AssetAnomalyUtil;
 import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.chain.FacilioContext;

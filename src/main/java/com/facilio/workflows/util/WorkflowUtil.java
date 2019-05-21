@@ -6,7 +6,7 @@ import com.facilio.bmsconsole.context.BaseLineContext;
 import com.facilio.bmsconsole.context.BaseLineContext.AdjustType;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
 
-import com.facilio.bmsconsole.modules.*;
+import com.facilio.modules.fields.FacilioField;;
 import com.facilio.bmsconsole.util.BaseLineAPI;
 
 import com.facilio.db.criteria.*;
@@ -1139,7 +1139,7 @@ public class WorkflowUtil {
 			else {
 				field = modBean.getField(fieldName, moduleName);
 				if(FacilioUtil.isNumeric(operatorString)) {
-					operator = Operator.OPERATOR_MAP.get(Integer.parseInt(operatorString));
+					operator = Operator.getOperator(Integer.parseInt(operatorString));
 				}
 				else {
 					operator = field.getDataTypeEnum().getOperator(operatorString);

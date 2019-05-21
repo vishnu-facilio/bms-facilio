@@ -9,7 +9,7 @@ import com.facilio.db.criteria.CommonOperators;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.DateOperators;
 import com.facilio.db.criteria.NumberOperators;
-import com.facilio.bmsconsole.modules.*;
+import com.facilio.modules.fields.FacilioField;;
 import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.workflow.rule.AlarmRuleContext;

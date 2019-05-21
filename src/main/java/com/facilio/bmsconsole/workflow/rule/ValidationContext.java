@@ -7,9 +7,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.json.annotations.JSON;
 
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.bmsconsole.criteria.Criteria;
-import com.facilio.bmsconsole.modules.FieldUtil;
-import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
+import com.facilio.db.criteria.Criteria;
+import com.facilio.modules.FieldUtil;
+import com.facilio.modules.ModuleBaseWithCustomFields;
 
 public class ValidationContext {
 	private long id = -1;

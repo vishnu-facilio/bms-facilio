@@ -16,12 +16,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
 
+import com.facilio.modules.fields.FacilioField;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import com.facilio.aws.util.AwsUtil;
-import com.facilio.modules.FacilioField;
 import com.facilio.modules.FieldType;
 import com.facilio.db.transaction.FacilioConnectionPool;
 

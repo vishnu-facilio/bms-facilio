@@ -25,11 +25,11 @@ import com.amazonaws.services.sqs.AmazonSQS;
 import com.amazonaws.services.sqs.AmazonSQSClientBuilder;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.agent.AgentKeys;
+import com.facilio.bmsconsole.util.CommonAPI;
+import com.facilio.bmsconsole.util.CommonAPI.NotificationType;
 import com.facilio.email.EmailUtil;
 import com.facilio.db.builder.DBUtil;
 import com.facilio.db.transaction.FacilioConnectionPool;
-import com.facilio.util.FacilioUtil;
-import com.facilio.util.FacilioUtil.NotificationType;
 import org.apache.http.HttpEntity;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
@@ -483,7 +483,7 @@ public class AwsUtil
 				toAddress = toAddress == null ? "" : toAddress;
 				JSONObject info = new JSONObject();
 				info.put("subject", mailJson.get("subject"));
-				FacilioUtil.addNotificationLogger(NotificationType.EMAIL, toAddress, info);
+				CommonAPI.addNotificationLogger(NotificationType.EMAIL, toAddress, info);
 			}
 		}
 	}

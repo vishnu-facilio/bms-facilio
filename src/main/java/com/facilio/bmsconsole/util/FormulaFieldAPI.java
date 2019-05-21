@@ -41,7 +41,7 @@ import com.facilio.db.criteria.NumberOperators;
 import com.facilio.db.criteria.PickListOperators;
 import com.facilio.modules.AggregateOperator;
 import com.facilio.modules.DeleteRecordBuilder;
-import com.facilio.modules.FacilioField;
+import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FacilioModule.ModuleType;
 import com.facilio.modules.FieldFactory;

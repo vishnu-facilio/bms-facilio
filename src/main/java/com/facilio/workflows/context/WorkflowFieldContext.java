@@ -1,7 +1,7 @@
 package com.facilio.workflows.context;
 
 import com.facilio.modules.AggregateOperator;
-import com.facilio.modules.FacilioField;
+import com.facilio.modules.fields.FacilioField;
 
 public class WorkflowFieldContext{
 

@@ -7,7 +7,7 @@ import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.TicketContext.SourceType;
 
-import com.facilio.bmsconsole.modules.*;
+import com.facilio.modules.fields.FacilioField;;
 import com.facilio.bmsconsole.workflow.rule.AlarmRuleContext;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleAlarmMeta;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
@@ -481,7 +481,7 @@ public class ReadingRuleAPI extends WorkflowRuleAPI {
 			appendSimpleMsg(msgBuilder, rule);
 			break;
 		case BASE_LINE:
-			NumberOperators operator = (NumberOperators) Operator.OPERATOR_MAP.get(rule.getOperatorId());
+			NumberOperators operator = (NumberOperators) Operator.getOperator(rule.getOperatorId());
 			AlarmAPI.appendBaseLineMsg(msgBuilder, operator, rule);
 			break;
 		case FLAPPING:
@@ -514,7 +514,7 @@ public class ReadingRuleAPI extends WorkflowRuleAPI {
 			msgBuilder.append(" for "+rule.getDateRange()+ " hour(s)");
 		}
 		
-		NumberOperators operator = (NumberOperators) Operator.OPERATOR_MAP.get(rule.getOperatorId());
+		NumberOperators operator = (NumberOperators) Operator.getOperator(rule.getOperatorId());
 		msgBuilder.append(" "+operator.getOperator());
 		
 		String value = null;

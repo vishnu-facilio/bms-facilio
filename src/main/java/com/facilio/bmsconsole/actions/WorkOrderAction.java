@@ -52,7 +52,7 @@ import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.context.TicketContext.SourceType;
 import com.facilio.bmsconsole.context.ViewLayout;
 import com.facilio.bmsconsole.context.WorkOrderContext;
-import com.facilio.modules.FacilioField;
+import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleBaseWithCustomFields;
@@ -1249,9 +1249,9 @@ public class WorkOrderAction extends FacilioAction {
 		}
 		
 		// cannot update module state directly
-		if (workorder.getModuleState() != null) {
-			workorder.setModuleState(null);
-		}
+//		if (workorder.getModuleState() != null) { //Commenting temporarily
+//			workorder.setModuleState(null);
+//		}
 		
 		context.put(FacilioConstants.ContextNames.TRANSITION_ID, stateTransitionId);
 		context.put(FacilioConstants.ContextNames.EVENT_TYPE, activityType);
