@@ -193,15 +193,15 @@ public class StateflowTransitionContext extends WorkflowRuleContext {
 			return false;
 		}
 		
-		// this is old records //Commentint temporarily
-//		if (moduleRecord.getModuleState() == null || moduleRecord.getStateFlowId() <= 0) {
-//			return false;
-//		}
-//
-//		if (moduleRecord.getModuleState() != null && moduleRecord.getStateFlowId() > 0 && moduleRecord.getStateFlowId() == getStateFlowId() &&
-//				getFromStateId() != moduleRecord.getModuleState().getId()) {
-//			return false;
-//		}
+		// this is old records
+		if (moduleRecord.getModuleState() == null || moduleRecord.getStateFlowId() <= 0) {
+			return false;
+		}
+
+		if (moduleRecord.getModuleState() != null && moduleRecord.getStateFlowId() > 0 && moduleRecord.getStateFlowId() == getStateFlowId() &&
+				getFromStateId() != moduleRecord.getModuleState().getId()) {
+			return false;
+		}
 		
 		if (CollectionUtils.isNotEmpty(approvers)) {
 			List<SingleSharingContext> matching = approvers.getMatching(record);

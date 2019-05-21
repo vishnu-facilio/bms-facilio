@@ -416,13 +416,12 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 	public static Map<String, List<WorkflowRuleContext>> getAvailableStates(List<? extends ModuleBaseWithCustomFields> records) throws Exception {
 		List<Map<String, Long>> stateIds = new ArrayList<>();
 		for(ModuleBaseWithCustomFields record: records) {
-			//COmmenting temporarily
-//			if(record.getModuleState() != null) {
-//				Map<String, Long> ids = new HashMap<>();
-//				ids.put("fromStateId", record.getModuleState().getId());
-//				ids.put("stateFlowId", record.getStateFlowId());
-//				stateIds.add(ids);
-//			}
+			if(record.getModuleState() != null) {
+				Map<String, Long> ids = new HashMap<>();
+				ids.put("fromStateId", record.getModuleState().getId());
+				ids.put("stateFlowId", record.getStateFlowId());
+				stateIds.add(ids);
+			}
 		}
 		List<WorkflowRuleContext> stateFlows = getStateTransitions(stateIds);
 		return getStateTransitionMap(stateFlows);

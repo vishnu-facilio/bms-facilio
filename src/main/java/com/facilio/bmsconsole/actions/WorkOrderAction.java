@@ -1249,9 +1249,9 @@ public class WorkOrderAction extends FacilioAction {
 		}
 		
 		// cannot update module state directly
-//		if (workorder.getModuleState() != null) { //Commenting temporarily
-//			workorder.setModuleState(null);
-//		}
+		if (workorder.getModuleState() != null) {
+			workorder.setModuleState(null);
+		}
 		
 		context.put(FacilioConstants.ContextNames.TRANSITION_ID, stateTransitionId);
 		context.put(FacilioConstants.ContextNames.EVENT_TYPE, activityType);
