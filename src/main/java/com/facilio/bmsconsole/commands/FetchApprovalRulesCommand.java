@@ -59,10 +59,10 @@ public class FetchApprovalRulesCommand implements Command {
 			List<Long> ruleIds = new ArrayList<>();
 			List<Pair<Long, Long>> recordAndRuleIdPairs = new ArrayList<>();
 			for (WorkOrderContext wo : workOrders) {
-				// moved to state flow //commenting temporarily
-//				if (wo.getModuleState() != null) {
-//					continue;
-//				}
+				// moved to state flow
+				if (wo.getModuleState() != null) {
+					continue;
+				}
 				
 				if (wo.getApprovalStateEnum() == ApprovalState.REQUESTED) {
 					ruleIds.add(wo.getApprovalRuleId());
@@ -107,10 +107,10 @@ public class FetchApprovalRulesCommand implements Command {
 				Map<Long, List<Long>> previousSteps = ApprovalRulesAPI.fetchPreviousSteps(recordAndRuleIdPairs);
 				List<Long> groupIds = null;
 				for (WorkOrderContext wo : workOrders) {
-					// moved to state flow //Commenting temporarily
-//					if (wo.getModuleState() != null) {
-//						continue;
-//					}
+					// moved to state flow
+					if (wo.getModuleState() != null) {
+						continue;
+					}
 					
 					if (wo.getApprovalStateEnum() == ApprovalState.REQUESTED) {
 						ApprovalRuleContext rule = ruleMap.get(wo.getApprovalRuleId()); 
@@ -176,11 +176,10 @@ public class FetchApprovalRulesCommand implements Command {
 	private void setAvailableStates(Context context, List<WorkOrderContext> workOrders) throws Exception {
 		Map<String, List<WorkflowRuleContext>> stateFlows = StateFlowRulesAPI.getAvailableStates(workOrders);
 		for(WorkOrderContext workorder: workOrders) {
-			//Commentint temporarily
-//			if (workorder.getModuleState() == null) {
-//				continue;
-//			}
-			String key = null;//workorder.getStateFlowId() + "_" + workorder.getModuleState().getId();
+			if (workorder.getModuleState() == null) {
+				continue;
+			}
+			String key = workorder.getStateFlowId() + "_" + workorder.getModuleState().getId();
 			if(stateFlows.containsKey(key)) {
 				List<WorkflowRuleContext> evaluateStateFlowAndExecuteActions = StateFlowRulesAPI.evaluateStateFlowAndExecuteActions(new ArrayList<>(stateFlows.get(key)), ContextNames.WORK_ORDER, workorder, context);
 				workorder.setCanCurrentUserApprove(CollectionUtils.isNotEmpty(evaluateStateFlowAndExecuteActions));
