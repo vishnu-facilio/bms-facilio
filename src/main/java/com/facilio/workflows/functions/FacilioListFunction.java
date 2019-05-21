@@ -85,9 +85,7 @@ public enum FacilioListFunction implements FacilioWorkflowFunctionInterface {
 			
 			checkParam(objects);
 			List<Object> list = (List<Object>) objects[0];
-			Object element = objects[1];
-			
-			list.remove(element);
+			list.clear();
 			return list;
 		};
 		
