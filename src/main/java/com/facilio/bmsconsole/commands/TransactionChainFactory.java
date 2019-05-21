@@ -2740,6 +2740,17 @@ public class TransactionChainFactory {
 			c.addCommand(new AddShipmentRotatingAssetsCommand());
 		    return c;
 		}
+		
+		public static Chain getStageShipmentChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForShipment());
+			c.addCommand(new AddOrUpdateShipmentCommand());
+			c.addCommand(new ReceiveShipmentCommand());
+			c.addCommand(getBulkAddToolChain());
+			c.addCommand(getAddBulkItemChain());
+			c.addCommand(new AddShipmentRotatingAssetsCommand());
+		    return c;
+		}
 }
 
 
