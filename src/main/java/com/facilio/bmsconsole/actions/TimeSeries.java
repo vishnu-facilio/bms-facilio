@@ -42,10 +42,7 @@ public class TimeSeries extends FacilioAction {
 		message.setAction((String) instanceAssetMap.get("action"));
 		message.addData("time", System.currentTimeMillis());
 		message.addData("sound", false);
-		if (userId != -1) {
-			message.setTo(userId);
-		}
-		WmsApi.broadCastMessage(message);
+		WmsApi.sendPubSubMessage(Collections.singletonList(userId), message);
 		return SUCCESS;
 	}
 	
