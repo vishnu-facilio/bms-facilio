@@ -1056,7 +1056,6 @@ public class DashboardUtil {
 						buildingDashboard.setDashboardName(ResourceAPI.getResource(spaceId).getName());
 						dbContext.add(buildingDashboard);
 					}
-					break;
 				}
 			}
 			dashboards.remove(buildDashboardtoBeRemoved);
