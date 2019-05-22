@@ -8,6 +8,7 @@ import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.constants.FacilioConstants;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.json.simple.JSONObject;
 
 import java.util.List;
 
@@ -55,6 +56,20 @@ public class GetAllSpaceCommand implements Command{
 		if(scopeCriteria != null)
 		{
 			builder.andCriteria(scopeCriteria);
+		}
+
+		JSONObject pagination = (JSONObject) context.get(FacilioConstants.ContextNames.PAGINATION);
+		if (pagination != null) {
+			int page = (int) pagination.get("page");
+			int perPage = (int) pagination.get("perPage");
+
+			int offset = ((page-1) * perPage);
+			if (offset < 0) {
+				offset = 0;
+			}
+
+			builder.offset(offset);
+			builder.limit(perPage);
 		}
 
 		List<SpaceContext> spaces = builder.get();

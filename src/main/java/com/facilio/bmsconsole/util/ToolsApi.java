@@ -1,9 +1,13 @@
 package com.facilio.bmsconsole.util;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.ItemContext;
+import com.facilio.bmsconsole.context.ItemTransactionsContext;
 import com.facilio.bmsconsole.context.ToolContext;
+import com.facilio.bmsconsole.context.ToolTransactionContext;
 import com.facilio.bmsconsole.context.ToolTypesContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
@@ -16,6 +20,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.apache.commons.collections4.CollectionUtils;
 
 public class ToolsApi {
 	public static ToolTypesContext getToolTypes(long id) throws Exception {
@@ -75,4 +81,58 @@ public class ToolsApi {
 		}
 		return null;
 	}
+	
+	public static List<ToolContext> getToolsForStore(long storeId) throws Exception {
+		if (storeId <= 0) {
+			return null;
+		}
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.TOOL);
+		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.TOOL);
+		SelectRecordsBuilder<ToolContext> selectBuilder = new SelectRecordsBuilder<ToolContext>().select(fields)
+				.table(module.getTableName()).moduleName(module.getName()).beanClass(ToolContext.class)
+				.andCondition(CriteriaAPI.getCondition("STORE_ROOM_ID", "storeRoom", String.valueOf(storeId), NumberOperators.EQUALS))
+				;
+		List<ToolContext> tools = selectBuilder.get();
+		return tools;
+	}
+	
+	public static ToolContext getToolsForTypeAndStore(long storeId, long toolTypeId) throws Exception {
+		if (storeId <= 0) {
+			return null;
+		}
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.TOOL);
+		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.TOOL);
+		SelectRecordsBuilder<ToolContext> selectBuilder = new SelectRecordsBuilder<ToolContext>().select(fields)
+				.table(module.getTableName()).moduleName(module.getName()).beanClass(ToolContext.class)
+				.andCondition(CriteriaAPI.getCondition("STORE_ROOM_ID", "storeRoom", String.valueOf(storeId), NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition("TOOL_TYPE_ID", "toolType", String.valueOf(toolTypeId), NumberOperators.EQUALS))
+				
+				;
+		List<ToolContext> tools = selectBuilder.get();
+		if(!CollectionUtils.isEmpty(tools)) {
+			return tools.get(0);
+		}
+	 throw new IllegalArgumentException("No appropriate tool found");
+	}
+
+	public static ToolTransactionContext getToolTransactionsForRequestedLineItem(long requestedLineItem) throws Exception {
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule toolTransactionModule = modBean.getModule(FacilioConstants.ContextNames.TOOL_TRANSACTIONS);
+		List<FacilioField> toolTransactionFields = modBean.getAllFields(FacilioConstants.ContextNames.TOOL_TRANSACTIONS);
+
+		SelectRecordsBuilder<ToolTransactionContext> selectBuilder = new SelectRecordsBuilder<ToolTransactionContext>()
+				.select(toolTransactionFields).table(toolTransactionModule.getTableName())
+				.moduleName(toolTransactionModule.getName()).beanClass(ToolTransactionContext.class)
+				.andCondition(CriteriaAPI.getCondition("REQUESTED_LINEITEM", "requestedLineItem", String.valueOf(requestedLineItem), NumberOperators.EQUALS));
+		
+		List<ToolTransactionContext> toolTransactions = selectBuilder.get();
+		if(!CollectionUtils.isEmpty(toolTransactions)) {
+			return toolTransactions.get(0);
+		}
+		throw new IllegalArgumentException("Tool shoud be issued before being used");
+	}
+
 }

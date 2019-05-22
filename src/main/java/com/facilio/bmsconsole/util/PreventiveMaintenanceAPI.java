@@ -22,6 +22,7 @@ import com.facilio.bmsconsole.workflow.rule.*;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioStatus;
 import com.facilio.sql.GenericDeleteRecordBuilder;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
@@ -281,14 +282,14 @@ public class PreventiveMaintenanceAPI {
 	public static WorkOrderContext createWoContextFromPM(Context context, PreventiveMaintenance pm, PMTriggerContext pmTrigger, WorkorderTemplate woTemplate, long nextExecutionTime) throws Exception {
 		Map<String, List<TaskContext>> taskMap = null;
 
-		TicketStatusContext status = TicketAPI.getStatus("preopen");
+		FacilioStatus status = TicketAPI.getStatus("preopen");
 		WorkOrderContext wo = woTemplate.getWorkorder();
 		wo.setScheduledStart(nextExecutionTime * 1000);
-		if (woTemplate.getResourceId() > 0) {
+		if (woTemplate.getResourceIdVal() > 0) {
 			if (woTemplate.getResource() != null && woTemplate.getResource().getId() > 0) {
 				wo.setResource(woTemplate.getResource());
 			} else {
-				woTemplate.setResource(ResourceAPI.getResource(woTemplate.getResourceId()));
+				woTemplate.setResource(ResourceAPI.getResource(woTemplate.getResourceIdVal()));
 			}
 		}
 
@@ -616,7 +617,7 @@ public class PreventiveMaintenanceAPI {
 	}
 
 	public static Map<Long, List<Map<String, Object>>> getPMScheduledWOsFromPMIds(long startTimeInSeconds, long endTimeInSeconds, Criteria filterCriteria) throws Exception {
-		TicketStatusContext ticketStatusContext = TicketAPI.getStatus("preopen");
+		FacilioStatus facilioStatus = TicketAPI.getStatus("preopen");
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER);
 		List<FacilioField> fields = modBean.getAllFields(module.getName());
@@ -629,7 +630,7 @@ public class PreventiveMaintenanceAPI {
 				.select(fields)
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("scheduledStart"), String.valueOf(startTime), NumberOperators.GREATER_THAN_EQUAL))
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("scheduledStart"), String.valueOf(endTime), NumberOperators.LESS_THAN))
-				.andCondition(CriteriaAPI.getCondition(fieldMap.get("status"), String.valueOf(ticketStatusContext.getId()), NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("status"), String.valueOf(facilioStatus.getId()), NumberOperators.EQUALS))
 				.andCustomWhere("WorkOrders.PM_ID IS NOT NULL")
 				.orderBy("scheduledStart");
 		if (filterCriteria != null) {
@@ -671,7 +672,7 @@ public class PreventiveMaintenanceAPI {
 	public static Long getNextExecutionTime(long pmId) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule("workorder");
-		TicketStatusContext preopen = TicketAPI.getStatus("preopen");
+		FacilioStatus preopen = TicketAPI.getStatus("preopen");
 		List<FacilioField> fields = modBean.getAllFields("workorder");
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 		FacilioField minCreatedTime = FieldFactory.getField("minCreatedTime", "MIN(WorkOrders.CREATED_TIME)", FieldType.NUMBER);
@@ -1132,8 +1133,8 @@ public class PreventiveMaintenanceAPI {
 			}
 			
 			for(PreventiveMaintenance pm : pms) {
-				if (pm.getWoTemplate().getResourceId() != -1) {
-					resourceIds.add(pm.getWoTemplate().getResourceId());
+				if (pm.getWoTemplate().getResourceIdVal() != -1) {
+					resourceIds.add(pm.getWoTemplate().getResourceIdVal());
 				}
 				pm.setPmIncludeExcludeResourceContexts(TemplateAPI.getPMIncludeExcludeList(pm.getId(), null, null));
 				if (pmTriggers != null) {
@@ -1160,8 +1161,8 @@ public class PreventiveMaintenanceAPI {
 			}
 			Map<Long, ResourceContext> resourceMap = ResourceAPI.getExtendedResourcesAsMapFromIds(resourceIds, true);
 			for(PreventiveMaintenance pm : pms) {
-				if (pm.getWoTemplate().getResourceId() != -1) {
-					pm.getWoTemplate().setResource(resourceMap.get(pm.getWoTemplate().getResourceId()));
+				if (pm.getWoTemplate().getResourceIdVal() != -1) {
+					pm.getWoTemplate().setResource(resourceMap.get(pm.getWoTemplate().getResourceIdVal()));
 				}
 			}
 			if (fetchDependency) {

@@ -1,7 +1,9 @@
 package com.facilio.bmsconsole.commands;
 
+import com.facilio.accounts.util.AccountUtil;
 import org.apache.commons.chain.Chain;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.activity.AddActivitiesCommand;
 import com.facilio.agent.ConfigureAgentCommand;
 import com.facilio.agent.ConfigureControllerCommand;
@@ -10,6 +12,7 @@ import com.facilio.bmsconsole.actions.PurchaseOrderCompleteCommand;
 import com.facilio.bmsconsole.commands.data.PopulateImportProcessCommand;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.chain.FacilioChain;
+import com.facilio.constants.FacilioConstants;
 
 public class TransactionChainFactory {
 
@@ -738,15 +741,19 @@ public class TransactionChainFactory {
 
 		public static Chain getWorkOrderWorkflowsChain() {
 			Chain c = getDefaultChain();
+			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.STATE_FLOW));
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.BUSSINESS_LOGIC_WORKORDER_RULE));
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.WORKORDER_CUSTOM_CHANGE));
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.ASSIGNMENT_RULE));
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.SLA_RULE));
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.APPROVAL_RULE, RuleType.CHILD_APPROVAL_RULE, RuleType.REQUEST_APPROVAL_RULE, RuleType.REQUEST_REJECT_RULE));
-			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.STATE_FLOW));
-			c.addCommand(new ForkChainToInstantJobCommand()
-					.addCommand(new ExecuteAllWorkflowsCommand(RuleType.WORKORDER_AGENT_NOTIFICATION_RULE, RuleType.WORKORDER_REQUESTER_NOTIFICATION_RULE, RuleType.CUSTOM_WORKORDER_NOTIFICATION_RULE))
-			);
+			c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
+			if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getOrgId() == 218L) {
+				c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.WORKORDER_AGENT_NOTIFICATION_RULE, RuleType.WORKORDER_REQUESTER_NOTIFICATION_RULE, RuleType.CUSTOM_WORKORDER_NOTIFICATION_RULE));
+			} else {
+				c.addCommand(new ForkChainToInstantJobCommand()
+						.addCommand(new ExecuteAllWorkflowsCommand(RuleType.WORKORDER_AGENT_NOTIFICATION_RULE, RuleType.WORKORDER_REQUESTER_NOTIFICATION_RULE, RuleType.CUSTOM_WORKORDER_NOTIFICATION_RULE)));
+			}
 			return c;
 		}
 		public static Chain getAddWorkOrderChain() {
@@ -812,9 +819,10 @@ public class TransactionChainFactory {
 			c.addCommand(new LoadAllFieldsCommand());
 			c.addCommand(new FetchOldWorkOrdersCommand());
 			c.addCommand(new VerifyApprovalCommand());
-			c.addCommand(new BackwardCompatibleStateFlowUpdateCommand());
 			c.addCommand(new UpdateEventListForStateFlowCommand());
 			c.addCommand(new UpdateWorkOrderCommand());
+			c.addCommand(new BackwardCompatibleStateFlowUpdateCommand());
+			c.addCommand(new UpdateStateForWorkorderCommand());
 			c.addCommand(new SendNotificationCommand());
 			c.addCommand(new AddTicketActivityCommand());
 //			c.addCommand(getAddOrUpdateReadingValuesChain());
@@ -872,6 +880,13 @@ public class TransactionChainFactory {
 			c.addCommand(new DeleteControllerCommand());
 			return c;
 		}
+
+		public static Chain demoRollUpChain () {
+			Chain c = getDefaultChain();
+			c.addCommand(new DemoRollUpCommand());
+			return c;
+		}
+
 
 		public static Chain editAgent(){
 			Chain c = getDefaultChain();
@@ -1058,6 +1073,32 @@ public class TransactionChainFactory {
 			c.addCommand(getAddAlarmChain());
 			return c;
 		}
+		public static Chain addBusinessHourChain () {
+			Chain c = FacilioChain.getTransactionChain();
+			c.addCommand(new AddBusinessHourCommand());
+			c.addCommand(new AddSingleDayBusinessHourCommand());
+			c.addCommand(new UpdateBusinessHourInResourceCommand());
+			return c;
+		}
+		public static Chain updateBusinessHoursChain() {
+			Chain c = FacilioChain.getTransactionChain();
+			c.addCommand(new UpdateBusinessHoursCommand());
+			c.addCommand(new DeleteSingleDayBusinessHoursCommand());
+			c.addCommand(new AddSingleDayBusinessHourCommand());
+			return c;
+		}
+		public static Chain updateBusinessHourInResourceChain () {
+			Chain c = FacilioChain.getTransactionChain();
+			c.addCommand(new UpdateBusinessHourInResourceCommand());
+			return c;
+		}
+		public static Chain deleteBusinessHoursChain () {
+			Chain c = FacilioChain.getTransactionChain();
+			c.addCommand(new DeleteBusinessHourCommand());
+			c.addCommand(new DeleteSingleDayBusinessHoursCommand());
+			return c;
+		}
+		
 		
 		public static Chain getAddAlarmChain() {
 			Chain c = getDefaultChain();
@@ -1135,7 +1176,7 @@ public class TransactionChainFactory {
 			c.addCommand(new AddCategoryReadingRelCommand());
 			c.addCommand(new GetCategoryResourcesCommand());
 			c.addCommand(new InsertReadingDataMetaForNewReadingCommand());
-			//c.addCommand(new SetValidationRulesContextCommand());
+			c.addCommand(new SetValidationRulesContextCommand());
 			c.addCommand(new AddValidationRulesCommand());
 			return c;
 		}
@@ -1165,6 +1206,7 @@ public class TransactionChainFactory {
 			c.addCommand(new GetCategoryResourcesCommand());
 			c.addCommand(new InsertReadingDataMetaForNewReadingCommand());
 			c.addCommand(new AddFormulaFieldCommand());
+			c.addCommand(new SetValidationRulesContextCommand());
 			c.addCommand(new AddValidationRulesCommand());
 			return c;
 		}
@@ -1820,6 +1862,7 @@ public class TransactionChainFactory {
 //			c.addCommand(new ExecuteAllWorkflowsCommand());
 			c.addCommand(new PurchasedItemsQuantityRollUpCommand());
 			c.addCommand(getUpdateItemQuantityRollupChain());
+			c.addCommand(new ItemTransactionRemainingQuantityRollupCommand());
 			c.addCommand(new AddOrUpdateWorkorderCostCommand());
 			c.addCommand(new UpdateWorkorderTotalCostCommand());
 //			c.addCommand(getUpdateWorkOrderChain());
@@ -1830,6 +1873,7 @@ public class TransactionChainFactory {
 		public static Chain getDeleteWorkorderItemChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForWorkorderItems());
+			c.addCommand(new RequestedLineItemQuantityRollUpCommand());
 			c.addCommand(new GenericDeleteModuleDataCommand());
 			c.addCommand(new DeleteWorkorderItemCommand());
 			c.addCommand(new PurchasedItemsQuantityRollUpCommand());
@@ -1917,6 +1961,7 @@ public class TransactionChainFactory {
 		public static Chain getDeleteWorkorderToolsChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForWorkorderTools());
+			c.addCommand(new RequestedLineItemQuantityRollUpCommand());
 			c.addCommand(new GenericDeleteModuleDataCommand());
 			c.addCommand(new DeleteWorkorderToolCommand());
 			c.addCommand(getUpdatetoolQuantityRollupChain());
@@ -2000,6 +2045,7 @@ public class TransactionChainFactory {
 			c.addCommand(getItemTransactionRemainingQuantityRollupChain());
 			c.addCommand(new PurchasedItemsQuantityRollUpCommand());
 			c.addCommand(getUpdateItemQuantityRollupChain());
+			c.addCommand(new UpdateRequestedItemIssuedQuantityCommand());
 			c.addCommand(new AddActivitiesCommand());
 
 			return c;
@@ -2062,6 +2108,8 @@ public class TransactionChainFactory {
 			c.addCommand(getToolTransactionRemainingQuantityRollupChain());
 			c.addCommand(new ExecuteAllWorkflowsCommand());
 			c.addCommand(getUpdatetoolQuantityRollupChain());
+			c.addCommand(new UpdateRequestedToolIssuedQuantityCommand());
+			
 			return c;
 		}
 		
@@ -2542,9 +2590,89 @@ public class TransactionChainFactory {
 			return c;
 		}
 
+		public static Chain getAddTemplateToRules () {
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForWorkOrder());
+			c.addCommand(new ConvertToRulesCommand());
+			return c;
+		}
+
+		public static Chain getAddOrUpdateInventoryRequestChain() {
+			Chain chain = getDefaultChain();
+			chain.addCommand(SetTableNamesCommand.getForInventoryRequest());
+			chain.addCommand(new AddOrUpdateInventoryRequestCommand());
+			return chain;
+		}
+		
+		public static Chain getIssueInventoryRequestChain() {
+			Chain chain = getDefaultChain();
+			chain.addCommand(SetTableNamesCommand.getForInventoryRequest());
+			chain.addCommand(new AddOrUpdateInventoryRequestCommand());
+			chain.addCommand(new LoadItemTransactionEntryInputCommand());
+			chain.addCommand(getAddOrUpdateItemTransactionsChain());
+			//rollups work with record_list object in the context
+			chain.addCommand(new CopyToToolTransactionCommand());
+			chain.addCommand(getAddOrUdpateToolTransactionsChain());
+			return chain;
+		
+		}
+		public static Chain getInventoryRequestDeleteChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForInventoryRequest());
+			c.addCommand(new DeleteInventoryRequestCommand());
+			return c;
+		}
+
+		public static Chain getAddInventoryRequestLineItem() {
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForInventoryRequest());
+			c.addCommand(new AddOrUpdateInventoryRequestLineItemCommand());
+			return c;
+		}
+
+		public static Chain getDeleteInventoryRequestLineItem() {
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForInventoryRequest());
+			c.addCommand(new DeleteInventoryRequestLineItemCommand());
+			return c;
+		}
+
+		public static Chain getUseLineItemsForItemsChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new UseInventoryRequestLineItemsCommand());
+			c.addCommand(getAddOrUdpateWorkorderItemsChain());
+			return c;
+		}
+
+		public static Chain getUseLineItemsForToolsChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new UseInventoryRequestLineItemsCommand());
+			c.addCommand(getAddOrUdpateWorkorderToolsChain());
+			return c;
+		}
+
+
+		public static Chain getAddJobPlanChain () {
+			Chain c = getDefaultChain();
+			c.addCommand(new AddJobPlanCommand());
+			return c;
+		}
+
+		public static Chain getUpdateJobPlanChain () {
+			Chain c = getDefaultChain();
+			c.addCommand(new UpdateJobPlanCommand());
+			return c;
+		}
+
 		public static Chain getDeleteStateFlowTransition() {
 			Chain c = getDefaultChain();
-			c.addCommand(new DeleteStateTransitionCommand());
+			c.addCommand(new DeleteStateFlowTransition());
+			return c;
+		}
+
+		public static Chain getRearrangeStateFlows() {
+			Chain c = getDefaultChain();
+			c.addCommand(new ChangeTransitionExecutionOrderCommand());
 			return c;
 		}
 }

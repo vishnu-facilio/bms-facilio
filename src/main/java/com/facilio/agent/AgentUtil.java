@@ -8,6 +8,8 @@ import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.util.DateTimeUtil;
+import com.facilio.chain.FacilioContext;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.events.tasker.tasks.EventUtil;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericInsertRecordBuilder;
@@ -86,16 +88,8 @@ public  class AgentUtil
         if(payload.containsKey(AgentKeys.VERSION)) {
             agent.setAgentDeviceDetails(payload.get(AgentKeys.VERSION).toString());
 
-            if(payload.containsKey(AgentKeys.OS_VERSION)) {
-                agent.setAgentVersion(payload.get(AgentKeys.OS_VERSION).toString());
-            }
-        } else {
-            if (payload.containsKey(AgentKeys.VERSION)) {
-                agent.setAgentDeviceDetails(payload.get(AgentKeys.VERSION).toString());
-            }
-
-            if (payload.containsKey(AgentKeys.VERSION)) {
-                agent.setAgentVersion(getVersion(payload.get(AgentKeys.VERSION)));
+            if(payload.containsKey(AgentKeys.FACILIO_MQTT_VERSION)) {
+                agent.setAgentVersion(payload.get(AgentKeys.FACILIO_MQTT_VERSION).toString());
             }
         }
 
@@ -104,7 +98,6 @@ public  class AgentUtil
         } else {
             agent.setAgentConnStatus(true);
         }
-
 
         if(payload.containsKey(AgentKeys.DATA_INTERVAL)) {
             agent.setAgentDataInterval(Long.parseLong( payload.get(AgentKeys.DATA_INTERVAL).toString()));
@@ -127,7 +120,12 @@ public  class AgentUtil
         }
 
         if(payload.containsKey(AgentKeys.AGENT_TYPE)){
-            agent.setAgentType(Integer.parseInt(payload.get(AgentKeys.AGENT_TYPE).toString()));
+            if(payload.get(AgentKeys.AGENT_TYPE) instanceof Integer){
+                agent.setAgentType(Integer.parseInt(payload.get(AgentKeys.AGENT_TYPE).toString()));
+            }
+            else {
+                agent.setAgentType(AgentType.valueOf(payload.get(AgentKeys.AGENT_TYPE).toString()).getKey());
+            }
         }
         if(payload.containsKey(AgentKeys.DELETED_TIME)){
             agent.setDeletedTime(Long.parseLong(payload.get(AgentKeys.DELETED_TIME).toString()));
@@ -147,7 +145,7 @@ public  class AgentUtil
         	agentName = orgDomainName;
             LOGGER.info(" in process agent agentName="+agentName);
         }*/
-       FacilioAgent agent = getFacilioAgent(agentName);
+        FacilioAgent agent = getFacilioAgent(agentName);
        if(jsonObject.containsKey(AgentKeys.DATA_INTERVAL)){
            Long currDataInterval = Long.parseLong(jsonObject.get(AgentKeys.DATA_INTERVAL).toString());
            if(currDataInterval.longValue() > 120L){
@@ -208,11 +206,17 @@ public  class AgentUtil
                            toUpdate.put(AgentKeys.DATA_INTERVAL, currDataInterval);
                            agent.setAgentDataInterval(currDataInterval);
                        }
-                   } /*else {
-                       toUpdate.put(AgentKeys.DATA_INTERVAL, DEFAULT_TIME);
-                       agent.setAgentDataInterval(DEFAULT_TIME);
-                   }*/
-
+                   }
+                   if(jsonObject.containsKey(AgentKeys.AGENT_TYPE)){
+                       if(jsonObject.get(AgentKeys.AGENT_TYPE) instanceof Integer){
+                           agent.setAgentType(Integer.parseInt(jsonObject.get(AgentKeys.AGENT_TYPE).toString().trim()));
+                           toUpdate.put(AgentKeys.AGENT_TYPE,agent.getAgentType());
+                       }
+                       else {
+                           agent.setAgentType(AgentType.valueOf(jsonObject.get(AgentKeys.AGENT_TYPE).toString().trim()).getKey());
+                           toUpdate.put(AgentKeys.AGENT_TYPE,agent.getAgentType());
+                       }
+                   }
                    if (jsonObject.containsKey(AgentKeys.NUMBER_OF_CONTROLLERS)) {
                        Integer currNumberOfControllers = Integer.parseInt(jsonObject.get(AgentKeys.NUMBER_OF_CONTROLLERS).toString());
                        if ((agent.getAgentNumberOfControllers().intValue() != currNumberOfControllers.intValue())) {
@@ -227,10 +231,12 @@ public  class AgentUtil
                    if (jsonObject.containsKey(AgentKeys.VERSION)) {
                        Object currDeviceDetails = jsonObject.get(AgentKeys.VERSION);
                        String currDeviceDetailsString = currDeviceDetails.toString();
-                       if (agent.getAgentDeviceDetails()!= null && !(agent.getAgentDeviceDetails().equalsIgnoreCase(currDeviceDetailsString))) {
-                           toUpdate.put(AgentKeys.DEVICE_DETAILS, currDeviceDetails);
-                           toUpdate.put(AgentKeys.VERSION, getVersion(currDeviceDetails));
+                       String currVersion = getVersion(currDeviceDetails);
+                       if ( (agent.getAgentDeviceDetails() == null) || (agent.getAgentDeviceDetails() != null && !(agent.getAgentDeviceDetails().equalsIgnoreCase(currDeviceDetailsString))) ) {
+                           toUpdate.put(AgentKeys.DEVICE_DETAILS, currDeviceDetailsString);
+                           toUpdate.put(AgentKeys.VERSION, currVersion);
                            agent.setAgentDeviceDetails(currDeviceDetailsString);
+                           agent.setAgentVersion(currVersion);
                        }
                    }
                    if (jsonObject.containsKey(AgentKeys.WRITABLE)) {
@@ -246,6 +252,9 @@ public  class AgentUtil
                            agent.setDeletedTime(currDeletedTime);
                            toUpdate.put(AgentKeys.DELETED_TIME, currDeletedTime);
                        }
+                   }
+                   if(agent.getAgentType() == null && (jsonObject.containsKey(AgentKeys.AGENT_TYPE)) ){
+                       toUpdate.put(AgentKeys.AGENT_TYPE, (AgentType.valueOf(jsonObject.get(AgentKeys.AGENT_TYPE).toString())).getKey());
                    }
                    if (!toUpdate.isEmpty()) {
                        toUpdate.put(AgentKeys.LAST_MODIFIED_TIME, System.currentTimeMillis());
@@ -373,12 +382,11 @@ public  class AgentUtil
      * @param sent
      */
     public static void putLog(JSONObject payLoad, Long orgId,Long agentId,boolean sent) {
-
         if(sent){
             payLoad.put(AgentKeys.COMMAND_STATUS,CommandStatus.SENT.getKey());
         }
         if(payLoad.containsKey(AgentKeys.COMMAND)){
-            payLoad.replace(AgentKeys.COMMAND, ControllerCommand.valueOf(payLoad.get(AgentKeys.COMMAND).toString().toLowerCase()).getValue());
+            payLoad.replace(AgentKeys.COMMAND, ControllerCommand.valueOf(payLoad.get(AgentKeys.COMMAND).toString()).getValue());
         }
         if( ! payLoad.containsKey(AgentKeys.AGENT_ID)){
             payLoad.put(AgentKeys.AGENT_ID,agentId);
@@ -409,6 +417,43 @@ public  class AgentUtil
              genericSelectRecordBuilder.andCondition(CriteriaAPI.getCondition(FieldFactory.getAgentIdField(ModuleFactory.getAgentLogModule()),agentId.toString(),NumberOperators.EQUALS));
         }
         return genericSelectRecordBuilder.get();
+    }
+
+    public static boolean addAgentMessage(String recordId) throws Exception{
+        return addOrUpdateAgentMessage(recordId,MessageStatus.RECIEVED);
+    }
+    public static boolean updateAgentMessage(String recordId,MessageStatus messageStatus) throws Exception{
+        return addOrUpdateAgentMessage(recordId,messageStatus);
+    }
+
+    public static boolean addOrUpdateAgentMessage(String recordId, MessageStatus messageStatus)throws Exception{
+        boolean status = false;
+            ModuleCRUDBean bean;
+            bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", AccountUtil.getCurrentOrg().getId());
+            Map<String,Object> map = new HashMap<>();
+            map.put(AgentKeys.RECORD_ID,recordId);
+            map.put(AgentKeys.MSG_STATUS,messageStatus.getStatusKey());
+            map.put(AgentKeys.START_TIME,System.currentTimeMillis());
+
+            if(messageStatus == MessageStatus.RECIEVED ){
+                if(bean.addAgentMessage(map) > 0 ){
+                    status = true;
+                }
+            }
+            else if(messageStatus == MessageStatus.DATA_EMPTY){
+                map.put(AgentKeys.FINISH_TIME, System.currentTimeMillis());
+                if(bean.updateAgentMessage(map)>0){
+                    status = true;
+                }
+            }
+            else {
+                map.put(AgentKeys.FINISH_TIME, System.currentTimeMillis());
+                map.remove(AgentKeys.START_TIME);
+                if(bean.updateAgentMessage(map) > 0 ){
+                    status = true;
+                }
+            }
+           return status;
     }
 
     /**
@@ -444,24 +489,26 @@ public  class AgentUtil
         Long lastUpdatedTime = System.currentTimeMillis();
         ModuleCRUDBean bean;
         Map<String, Object> metrics = new HashMap<>();
-        metrics.put(AgentKeys.AGENT_ID, agentId);
-        metrics.put(EventUtil.DATA_TYPE,publishType);
         Map<String, Object> record;
         try {
             bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", AccountUtil.getCurrentOrg().getId());
             List<Map<String,Object>> records = bean.getMetrics(agentId,publishType,createdTime);
             if(!records.isEmpty()) {
                 record = records.get(0);
-                if (!record.isEmpty())
-                    if (createdTime == Long.parseLong(record.get(AgentKeys.CREATED_TIME).toString())) {
+                if ( (!record.isEmpty()) && createdTime == Long.parseLong(record.get(AgentKeys.CREATED_TIME).toString())) {
+                        HashMap<String, Object> criteria = new HashMap<>();
+                        criteria.put(AgentKeys.AGENT_ID, agentId);
+                        criteria.put(EventUtil.DATA_TYPE, publishType);
+
                         metrics.put(AgentKeys.SIZE, Integer.parseInt(record.get(AgentKeys.SIZE).toString()) + messageSize);
                         metrics.put(AgentKeys.NO_OF_MESSAGES, Integer.parseInt(record.get(AgentKeys.NO_OF_MESSAGES).toString()) + 1);
                         metrics.put(AgentKeys.LAST_UPDATED_TIME, lastUpdatedTime);
-                        metrics.put(AgentKeys.CREATED_TIME, createdTime);
-                        bean.updateAgentMetrics(metrics);
+                        bean.updateAgentMetrics(metrics, criteria);
                     }
             }
             else {
+                metrics.put(AgentKeys.AGENT_ID, agentId);
+                metrics.put(EventUtil.DATA_TYPE, publishType);
                 metrics.put(AgentKeys.NO_OF_MESSAGES, 1);
                 metrics.put(AgentKeys.SIZE, messageSize);
                 metrics.put(AgentKeys.CREATED_TIME, createdTime);
@@ -471,12 +518,37 @@ public  class AgentUtil
 
 
         } catch (Exception e) {
-            LOGGER.info("Exception occured ", e);
+            LOGGER.info("Exception occurred ", e);
         }
     }
 
-}
+    public static boolean isDuplicate(String partitionKey) throws Exception{
+        boolean status = true;
+        FacilioModule messageModule = ModuleFactory.getAgentMessageModule();
+        FacilioContext context = new FacilioContext();
 
+        Criteria criteria = new Criteria();
+        criteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getAgentMessagePartitionKeyField(messageModule),partitionKey,StringOperators.IS));
+
+        context.put(FacilioConstants.ContextNames.TABLE_NAME,AgentKeys.AGENT_MESSAGE_TABLE);
+        context.put(FacilioConstants.ContextNames.FIELDS,FieldFactory.getAgentMessageFields());
+        context.put(FacilioConstants.ContextNames.MODULE,messageModule);
+        context.put(FacilioConstants.ContextNames.CRITERIA,criteria);
+        try {
+            ModuleCRUDBean bean;
+            bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", AccountUtil.getCurrentOrg().getId());
+            List<Map<String, Object>> rows = bean.getRows(context);
+            if (((rows == null) || (rows.isEmpty()))) {
+                status = false;
+            }
+        }catch (Exception e){
+            LOGGER.info("Exception Occurred ",e);
+            throw e;
+        }
+        return status;
+    }
+
+}
 
 
 

@@ -1,5 +1,13 @@
 package com.facilio.bmsconsole.actions;
 
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.chain.Chain;
+import org.apache.log4j.Logger;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
@@ -12,6 +20,14 @@ import com.facilio.bmsconsole.templates.AssignmentTemplate;
 import com.facilio.bmsconsole.templates.SLATemplate;
 import com.facilio.bmsconsole.util.ReadingRuleAPI;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
+import com.facilio.bmsconsole.workflow.rule.ActionContext;
+import com.facilio.bmsconsole.workflow.rule.ActionType;
+import com.facilio.bmsconsole.workflow.rule.AlarmRuleContext;
+import com.facilio.bmsconsole.workflow.rule.EventType;
+import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
+import com.facilio.bmsconsole.workflow.rule.SLARuleContext;
+import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
+
 import com.facilio.bmsconsole.workflow.rule.*;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.chain.FacilioContext;
@@ -33,7 +49,7 @@ public class WorkflowRuleAction extends FacilioAction {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private static final Logger LOGGER = Logger.getLogger(DashboardAction.class.getName());
+	private static final Logger LOGGER = Logger.getLogger(WorkflowRuleAction.class.getName());
 	public String execute() throws Exception 
 	{
 	    return SUCCESS;
@@ -521,9 +537,11 @@ public class WorkflowRuleAction extends FacilioAction {
 			pagination.put("perPage", getPerPage());
 			context.put(FacilioConstants.ContextNames.PAGINATION, pagination);
 		}
+		
+		System.out.println("request" + getIsCount());
 		context.put(FacilioConstants.ContextNames.ID, ruleId);
 		context.put(FacilioConstants.ContextNames.CV_NAME, getViewName());
-		context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.WORKFLOW_RULE_MODULE);
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.READING_RULE_MODULE);
 		context.put(FacilioConstants.ContextNames.WORKFLOW_RULE_TYPE, ruleType);
 		context.put(FacilioConstants.ContextNames.WORKFLOW_FETCH_EVENT, false);
 		context.put(FacilioConstants.ContextNames.WORKFLOW_FETCH_CHILDREN, false);
@@ -531,10 +549,10 @@ public class WorkflowRuleAction extends FacilioAction {
 		Chain workflowRuleType = ReadOnlyChainFactory.fetchWorkflowRules();
 		workflowRuleType.execute(context);
 		workflowRuleList = (List<WorkflowRuleContext>) context.get(FacilioConstants.ContextNames.WORKFLOW_RULE_LIST);
-		if (getIsCount() != null) {
-			setCount((long) context.get(FacilioConstants.ContextNames.RULE_COUNT));
-		}
-		setResult("count", getCount());
+//		if (getIsCount() != null) {
+//			setCount((long) context.get(FacilioConstants.ContextNames.RULE_COUNT));
+//		}
+		setResult("count", context.get(FacilioConstants.ContextNames.RULE_COUNT));
 		setResult("rules", workflowRuleList);
 		return SUCCESS;
 

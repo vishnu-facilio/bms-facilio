@@ -159,7 +159,7 @@ public enum FacilioMapFunction implements FacilioWorkflowFunctionInterface {
 	private String functionName;
 	private String namespace = "map";
 	private String params;
-	private FacilioFunctionNameSpace nameSpaceEnum = FacilioFunctionNameSpace.MAP;
+	private FacilioSystemFunctionNameSpace nameSpaceEnum = FacilioSystemFunctionNameSpace.MAP;
 	
 	public Integer getValue() {
 		return value;

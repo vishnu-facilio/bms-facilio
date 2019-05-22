@@ -42,7 +42,7 @@ public class FacilioKafkaConsumer implements FacilioConsumer {
         props.put("max.partition.fetch.bytes", 3145728);
         props.put("auto.offset.reset", "latest");
         props.put("max.poll.interval.ms", 2000);
-        props.put("client.id", client);
+        //props.put("client.id", client);
 
         return props;
     }

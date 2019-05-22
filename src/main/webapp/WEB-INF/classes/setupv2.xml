@@ -192,7 +192,10 @@
 		<action name="edit"  class="com.facilio.bmsconsole.actions.ControllerAction" method="editAgent">
 		</action>
 
-		<action name="log"  class="com.facilio.bmsconsole.actions.ControllerAction" method="getAgentLog">
+		<action name="log"  class="com.facilio.bmsconsole.actions.ControllerAction" method="getLogMessage">
+		</action>
+
+		<action name="logCount"  class="com.facilio.bmsconsole.actions.ControllerAction" method="getLogCount">
 		</action>
 
 		<action name="metrics"  class="com.facilio.bmsconsole.actions.ControllerAction" method="getAgentMetrics">

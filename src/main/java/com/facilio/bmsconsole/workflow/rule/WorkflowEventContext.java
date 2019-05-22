@@ -1,8 +1,12 @@
 package com.facilio.bmsconsole.workflow.rule;
 
+import java.io.Serializable;
+
 import com.facilio.bmsconsole.modules.FacilioModule;
 
-public class WorkflowEventContext {
+public class WorkflowEventContext implements Serializable {
+	private static final long serialVersionUID = 1L;
+	
 	private long id = -1;
 	public long getId() {
 		return id;

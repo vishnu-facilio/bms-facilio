@@ -13,8 +13,8 @@ import com.facilio.bmsconsole.context.AssetCategoryContext;
 import com.facilio.bmsconsole.context.AssetContext.AssetState;
 import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.context.TicketContext.SourceType;
-import com.facilio.bmsconsole.context.TicketStatusContext;
-import com.facilio.bmsconsole.context.TicketStatusContext.StatusType;
+import com.facilio.modules.FacilioStatus;
+import com.facilio.modules.FacilioStatus.StatusType;
 import com.facilio.bmsconsole.context.ViewField;
 import com.facilio.bmsconsole.context.WorkOrderRequestContext;
 import com.facilio.bmsconsole.criteria.BooleanOperators;
@@ -167,7 +167,7 @@ public class ViewFactory {
 		views.put("active", getRulesByStatus("active", "Active", true).setOrder(order++));
 		views.put("inactive", getRulesByStatus("inactive", "In Active", false).setOrder(order++));
 		views.put("all", getAllRules());
-		viewsMap.put("workflowrule", views);
+		viewsMap.put("readingrule", views);
 
 		order = 1;
 		views = new LinkedHashMap<>();
@@ -326,6 +326,15 @@ public class ViewFactory {
 		views = new LinkedHashMap<>();
 		views.put("all", getAllPoLineItemsSerialNumeberView().setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.PO_LINE_ITEMS_SERIAL_NUMBERS, views);
+		
+		order = 1;
+		views = new LinkedHashMap<>();
+		views.put("all", getAllInventoryRequestView().setOrder(order++));
+		views.put("pendingapproval", getInventoryRequestForStatus("pendingapproval", "Pending Approval", 1).setOrder(order++));
+		views.put("pendingissue", getInventoryRequestForStatus("pendingissue", "Pending Issue", 2).setOrder(order++));
+		views.put("rejected", getInventoryRequestForStatus("rejected", "Rejected", 3).setOrder(order++));
+		views.put("issued", getInventoryRequestForStatus("issued", "Issued", 6).setOrder(order++));
+		viewsMap.put(FacilioConstants.ContextNames.INVENTORY_REQUEST, views);
 
 		
 		return viewsMap;
@@ -716,7 +725,7 @@ public class ViewFactory {
 		Condition statusOpen = new Condition();
 		statusOpen.setField(statusTypeField);
 		statusOpen.setOperator(NumberOperators.NOT_EQUALS);
-		statusOpen.setValue(String.valueOf(TicketStatusContext.StatusType.OPEN.getIntVal()));
+		statusOpen.setValue(String.valueOf(FacilioStatus.StatusType.OPEN.getIntVal()));
 
 		Criteria criteria = new Criteria();
 		criteria.addAndCondition(statusOpen);
@@ -734,7 +743,7 @@ public class ViewFactory {
 		Condition statusOpen = new Condition();
 		statusOpen.setField(statusTypeField);
 		statusOpen.setOperator(NumberOperators.EQUALS);
-		statusOpen.setValue(String.valueOf(TicketStatusContext.StatusType.OPEN.getIntVal()));
+		statusOpen.setValue(String.valueOf(FacilioStatus.StatusType.OPEN.getIntVal()));
 
 		Criteria criteria = new Criteria();
 		criteria.addAndCondition(statusOpen);
@@ -752,7 +761,7 @@ public class ViewFactory {
 		Condition statusOpen = new Condition();
 		statusOpen.setField(statusTypeField);
 		statusOpen.setOperator(NumberOperators.EQUALS);
-		statusOpen.setValue(String.valueOf(TicketStatusContext.StatusType.PRE_OPEN.getIntVal()));
+		statusOpen.setValue(String.valueOf(FacilioStatus.StatusType.PRE_OPEN.getIntVal()));
 
 		Criteria criteria = new Criteria();
 		criteria.addAndCondition(statusOpen);
@@ -804,7 +813,7 @@ public class ViewFactory {
 		Condition statusClose = new Condition();
 		statusClose.setField(statusTypeField);
 		statusClose.setOperator(NumberOperators.EQUALS);
-		statusClose.setValue(String.valueOf(TicketStatusContext.StatusType.CLOSED.getIntVal()));
+		statusClose.setValue(String.valueOf(FacilioStatus.StatusType.CLOSED.getIntVal()));
 
 		Criteria criteria = new Criteria();
 		criteria.addAndCondition(statusClose);
@@ -842,6 +851,24 @@ public class ViewFactory {
 		status.setField(statusTypeField);
 		status.setOperator(NumberOperators.EQUALS);
 		status.setValue(String.valueOf(statusType.getIntVal()));
+
+		Criteria criteria = new Criteria();
+		criteria.addAndCondition(status);
+
+		return criteria;
+	}
+	
+	public static Criteria getRequestedStateCriteria(boolean isRequested) {
+		FacilioField statusTypeField = new FacilioField();
+		statusTypeField.setName("requestedState");
+		statusTypeField.setColumnName("REQUESTED_STATE");
+		statusTypeField.setDataType(FieldType.BOOLEAN);
+		statusTypeField.setModule(ModuleFactory.getTicketStatusModule());
+
+		Condition status = new Condition();
+		status.setField(statusTypeField);
+		status.setOperator(BooleanOperators.IS);
+		status.setValue(String.valueOf(isRequested));
 
 		Criteria criteria = new Criteria();
 		criteria.addAndCondition(status);
@@ -1130,8 +1157,22 @@ public class ViewFactory {
 	}
 	
 	public static FacilioView getRequestedStateApproval() {
+		
+		FacilioModule module = ModuleFactory.getTicketsModule();
+		LookupField statusField = new LookupField();
+		statusField.setName("moduleState");
+		statusField.setColumnName("MODULE_STATE");
+		statusField.setDataType(FieldType.LOOKUP);
+		statusField.setModule(module);
+		statusField.setLookupModule(ModuleFactory.getTicketStatusModule());
 
-		Criteria criteria = getStateCriteria(StatusType.REQUESTED);
+		Condition requested = new Condition();
+		requested.setField(statusField);
+		requested.setOperator(LookupOperator.LOOKUP);
+		requested.setCriteriaValue(getRequestedStateCriteria(true));
+		
+		Criteria criteria = new Criteria();
+		criteria.addAndCondition(requested);
 
 		FacilioField createdTime = new FacilioField();
 		createdTime.setName("createdTime");
@@ -3250,5 +3291,59 @@ public class ViewFactory {
 		allView.setSortFields(Arrays.asList(new SortField(createdTime, false)));
 		return allView;
 	}
+	
+	private static FacilioView getAllInventoryRequestView() {
+		FacilioField localId = new FacilioField();
+		localId.setName("localId");
+		localId.setColumnName("LOCAL_ID");
+		localId.setDataType(FieldType.NUMBER);
+		localId.setModule(ModuleFactory.getInventoryRequestModule());
+
+		FacilioView allView = new FacilioView();
+		allView.setName("all");
+		allView.setDisplayName("All");
+		allView.setSortFields(Arrays.asList(new SortField(localId, false)));
+		return allView;
+	}
+	private static FacilioView getInventoryRequestForStatus(String viewName, String viewDisplayName, int status) {
+		FacilioModule irModule = ModuleFactory.getInventoryRequestModule();
+
+		FacilioField createdTime = new FacilioField();
+		createdTime.setName("localId");
+		createdTime.setDataType(FieldType.NUMBER);
+		createdTime.setColumnName("LOCAL_ID");
+		createdTime.setModule(irModule);
+
+		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));
+
+		Criteria criteria = getInventoryRequestStatusCriteria(irModule, status);
+		
+		FacilioView statusView = new FacilioView();
+		statusView.setName(viewName);
+		statusView.setDisplayName(viewDisplayName);
+		statusView.setSortFields(sortFields);
+		statusView.setCriteria(criteria);
+
+		return statusView;
+	}
+	
+	private static Criteria getInventoryRequestStatusCriteria(FacilioModule module, int status) {
+		
+		FacilioField irStatusField = new FacilioField();
+		irStatusField.setName("status");
+		irStatusField.setColumnName("STATUS");
+		irStatusField.setDataType(FieldType.NUMBER);
+		irStatusField.setModule(ModuleFactory.getInventoryRequestModule());
+		
+		Condition statusCond = new Condition();
+		statusCond.setField(irStatusField);
+		statusCond.setOperator(NumberOperators.EQUALS);
+		statusCond.setValue(String.valueOf(status));
+
+		Criteria inventoryRequestStatusCriteria = new Criteria();
+		inventoryRequestStatusCriteria.addAndCondition(statusCond);
+		return inventoryRequestStatusCriteria;
+	}
+
 
 }

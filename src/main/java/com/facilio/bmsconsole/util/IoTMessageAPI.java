@@ -1,36 +1,56 @@
 package com.facilio.bmsconsole.util;
 
-import com.amazonaws.services.iot.client.*;
-import com.facilio.accounts.util.AccountUtil;
-import com.facilio.agent.AgentKeys;
-import com.facilio.agent.AgentUtil;
-import com.facilio.aws.util.AwsUtil;
-import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.ControllerContext;
-import com.facilio.bmsconsole.context.PublishData;
-import com.facilio.bmsconsole.context.PublishMessage;
-import com.facilio.bmsconsole.criteria.CriteriaAPI;
-import com.facilio.bmsconsole.modules.*;
-import com.facilio.chain.FacilioContext;
-import com.facilio.constants.FacilioConstants;
-import com.facilio.fw.BeanFactory;
-import com.facilio.serializable.SerializableConsumer;
-import com.facilio.sql.GenericInsertRecordBuilder;
-import com.facilio.sql.GenericUpdateRecordBuilder;
-import com.facilio.tasker.FacilioTimer;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
-import java.sql.SQLException;
-import java.util.*;
+import com.amazonaws.services.iot.client.AWSIotConnectionStatus;
+import com.amazonaws.services.iot.client.AWSIotException;
+import com.amazonaws.services.iot.client.AWSIotMessage;
+import com.amazonaws.services.iot.client.AWSIotMqttClient;
+import com.amazonaws.services.iot.client.AWSIotQos;
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.agent.AgentKeys;
+import com.facilio.agent.AgentKeys.AckMessageType;
+import com.facilio.agent.AgentUtil;
+import com.facilio.aws.util.AwsUtil;
+import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.ControllerContext;
+import com.facilio.bmsconsole.context.PublishData;
+import com.facilio.bmsconsole.context.PublishMessage;
+import com.facilio.bmsconsole.criteria.CommonOperators;
+import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.criteria.NumberOperators;
+import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.FacilioModule;
+import com.facilio.bmsconsole.modules.FieldFactory;
+import com.facilio.bmsconsole.modules.FieldType;
+import com.facilio.bmsconsole.modules.FieldUtil;
+import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.chain.FacilioContext;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
+import com.facilio.serializable.SerializableConsumer;
+import com.facilio.sql.GenericInsertRecordBuilder;
+import com.facilio.sql.GenericSelectRecordBuilder;
+import com.facilio.sql.GenericUpdateRecordBuilder;
+import com.facilio.tasker.FacilioTimer;
+import com.facilio.wms.message.WmsPublishResponse;
 
 public class IoTMessageAPI {
 	private static final Logger LOGGER = LogManager.getLogger(IoTMessageAPI.class.getName());
 	
-	private static final int MAX_BUFFER = 112640; // 110KiB;  AWS IOT limits max publish message size to 128KiB
+	private static final int MAX_BUFFER = 45000; //45000 fix for db insert 112640  110KiB;  AWS IOT limits max publish message size to 128KiB
 	private static Boolean isStage = !AwsUtil.isProduction();
 	
 	private static PublishData constructIotMessage (List<Map<String, Object>> instances, IotCommandType command) throws Exception {
@@ -51,6 +71,7 @@ public class IoTMessageAPI {
 		
 		PublishData data = new PublishData();
 		data.setControllerId(controller.getId());
+		data.setCommand(command);
 		
 		JSONObject object = new JSONObject();
 		object.put("command", command.getName());
@@ -151,8 +172,14 @@ public class IoTMessageAPI {
 		return type;
 	}
 	
-	public static int acknowdledgeData (long id) throws SQLException {
-		Map<String, Object> prop = Collections.singletonMap("acknowledgeTime", System.currentTimeMillis());
+	public static int acknowdledgeData (long id, boolean isResponseAck) throws SQLException {
+		Map<String, Object> prop;
+		if  (isResponseAck) {
+			prop = Collections.singletonMap("responseAckTime", System.currentTimeMillis());
+		}
+		else {
+			prop = Collections.singletonMap("acknowledgeTime", System.currentTimeMillis());
+		}
 		FacilioModule module = ModuleFactory.getPublishDataModule();
 		return new GenericUpdateRecordBuilder()
 				.table(module.getTableName())
@@ -164,10 +191,18 @@ public class IoTMessageAPI {
 		
 	}
 	
-	public static int acknowdledgeMessage (long id) throws SQLException {
-		Map<String, Object> prop = Collections.singletonMap("acknowledgeTime", System.currentTimeMillis());
+	public static int acknowdledgeMessage (long id, String ackMessage) throws Exception {
+		Map<String, Object> prop;
+		boolean isExecuted = false;
+		if (StringUtils.isNotEmpty(ackMessage) && AckMessageType.EXECUTED.equals(ackMessage)) {
+			isExecuted = true;
+			prop = Collections.singletonMap("responseAckTime", System.currentTimeMillis());
+		}
+		else {
+			prop = Collections.singletonMap("acknowledgeTime", System.currentTimeMillis());
+		}
 		FacilioModule module = ModuleFactory.getPublishMessageModule();
-		return new GenericUpdateRecordBuilder()
+		int count = new GenericUpdateRecordBuilder()
 				.table(module.getTableName())
 				.fields(FieldFactory.getPublishMessageFields())
 				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
@@ -175,6 +210,52 @@ public class IoTMessageAPI {
 				.update(prop)
 				;
 		
+		if (isExecuted) {
+			handlePublishDataOnMessageAck(id);
+		}
+		
+		return count;
+	}
+	
+	private static void handlePublishDataOnMessageAck(long messageId) throws Exception {
+		FacilioModule module = ModuleFactory.getPublishMessageModule();
+		List<FacilioField> fields = FieldFactory.getPublishMessageFields();
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+		
+		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+														.table(module.getTableName())
+														.select(fields)
+														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+														.andCondition(CriteriaAPI.getIdCondition(messageId, module))
+														;
+		Map<String, Object> prop = builder.fetchFirst();
+		if (prop != null && !prop.isEmpty()) {
+			List<FacilioField> selectFields = FieldFactory.getCountField(module);
+			long parentId = (long) prop.get("parentId");
+			builder = new GenericSelectRecordBuilder()
+					.table(module.getTableName())
+					.select(selectFields)
+					.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+					.andCondition(CriteriaAPI.getCondition(fieldMap.get("parentId"), String.valueOf(parentId), NumberOperators.EQUALS))
+					.andCondition(CriteriaAPI.getCondition(fieldMap.get("responseAckTime"), CommonOperators.IS_EMPTY))
+					;
+			prop = builder.fetchFirst();
+			long count = (long) prop.get("count");
+			if (count == 0) {
+				acknowdledgeData(parentId, true);
+				
+				module = ModuleFactory.getPublishDataModule();
+				builder = new GenericSelectRecordBuilder()
+						.table(module.getTableName())
+						.select(FieldFactory.getPublishDataFields())
+						.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+						.andCondition(CriteriaAPI.getIdCondition(parentId, module));
+						;
+				prop =  builder.fetchFirst();
+				PublishData data = FieldUtil.getAsBeanFromMap(prop, PublishData.class);
+				sendPublishNotification(data, null);
+			}
+		}
 	}
 	
 	private static void addPublishData (PublishData data) throws Exception {
@@ -284,6 +365,28 @@ public class IoTMessageAPI {
 			} catch (AWSIotException e) {
 				LOGGER.error("Exception while disconnecting ", e);
 			}
+		}
+	}
+ 	
+ 	public static void sendPublishNotification(PublishData publishData, JSONObject info) {
+		
+		try {
+			WmsPublishResponse data = new WmsPublishResponse();
+			data.publish(publishData, info);
+		}
+		catch (Exception e) {
+			LOGGER.error("Error occurred while sending publish notification", e);
+		}
+	}
+ 	
+ 	public static void sendFailureNotification(PublishData publishData) {
+		
+		try {
+			WmsPublishResponse data = new WmsPublishResponse();
+			data.publishFailure(publishData);
+		}
+		catch (Exception e) {
+			LOGGER.error("Error occurred while sending publish notification", e);
 		}
 	}
  	

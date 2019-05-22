@@ -1,23 +1,37 @@
 package com.facilio.wms.message;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.json.simple.JSONObject;
+
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.PublishData;
 import com.facilio.wms.util.WmsApi;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 public class WmsPublishResponse extends Message {
+	
+	private static final Logger LOGGER = LogManager.getLogger(WmsPublishResponse.class.getName());
 
 	public WmsPublishResponse() {
-		setMessageType(MessageType.PUBLISH);
+		setMessageType(MessageType.BROADCAST);
 		setNamespace("publishdata");
 	}
 	
-	public WmsPublishResponse publish(PublishData data) throws Exception {
-		addData("response", data);
+	public WmsPublishResponse publish(PublishData data, JSONObject info) throws Exception {
+		addData("data", data);
+		addData("info", info);
 		setAction("publish");
+		send();
+		return this;
+	}
+	
+	public WmsPublishResponse publishFailure(PublishData data) throws Exception {
+		addData("response", data);
+		setAction("publishFailure");
 		send();
 		return this;
 	}

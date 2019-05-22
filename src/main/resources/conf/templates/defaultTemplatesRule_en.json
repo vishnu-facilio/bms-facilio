@@ -1,0 +1,3224 @@
+{
+	"2": {
+		"fdd_rule": {
+			"name":"AHU Outside Air Damper Stuck open",
+			"description": "AHU Outside Air Damper is stuck or in open state. Unable to open Damper",
+			"problem": "AHU Outside Air Damper fails to follow the command",
+			"possible_causes": "1. Poor Lubrication <br/> 2. Sensor Failure",
+			"moduleName": "ahureading",
+			"category": "AHU",
+			"severity": "Major",
+			"threshold_metric": "supplyairdamperstatus",
+			"threshold_metric_display": "Supply Air Damper Status",
+			"possible_solution": "1. Lubricate the bearings and louvres \n 2. Check sensor functioning",
+			"ASSET_SELECTION_CRITERIA": {
+			 	"categoryType": "AHU",
+			 	"includeResource": "${includeResource}",
+			 	"excludeResource": "${excludeResource}"
+			},
+			"preRequsite": {
+				"action": "PreRequsite",
+				"moduleName": "ahureading",
+				"threshold_metric": "runstatus",
+				"thresholdType": 1,
+				"operatorId": 9,
+				"percentage": "1",
+				"condition_statement" : "When Run Status is 1",
+				"workflow": {
+				 	"expressions": [
+				     	{
+				            "name": "a",
+				            "aggregateString": "lastValue",
+				            "fieldName": "runstatus",
+				            "moduleName": "ahureading",
+				            "criteria": {
+				              "pattern": "(1)",
+				              "conditions": {
+				                "1": {
+				                  "fieldName": "parentId",
+				                  "operatorId": 9,
+				                  "sequence": "1",
+				                  "value": "${resourceId}"
+				                }
+				              }
+				            }
+				          }
+				        ],
+				        "resultEvaluator": "a==1",
+				        "parameters": [
+				          {
+				            "name": "resourceId",
+				            "typeString": "Number"
+				          }
+				        ]
+				}
+			},
+			"alarmCondition": {
+				"condition": "${{supplyairdampercommand}}==1 && ${{supplyairdamperstatus}}==0",
+				"for": "${interval}",
+				"action": "TRIGGER_ALARM",
+				"thresholdType": 5,
+				"threshold_metric": "supplyairdamperstatus",
+				"workflow": {
+				 	"expressions": [
+				      {
+				      	"name": "A",
+				        "aggregateString": "lastValue",
+				        "fieldName": "supplyairdampercommand",
+				        "moduleName": "ahureading",
+				        "criteria": {
+				        "pattern": "(1)",
+				        "conditions": {
+				        "1": {
+				        	"fieldName": "parentId",
+				            "operatorId": 9,
+				            "sequence": "1",
+				            "value": "${resourceId}"
+				         }
+		        		}
+				            }
+				          },
+				          {
+				            "name": "B",
+				            "constant": "1"
+				          },
+				          {
+				            "name": "D",
+				            "aggregateString": "lastValue",
+				            "fieldName": "supplyairdamperstatus",
+				            "moduleName": "ahureading",
+				            "criteria": {
+				              "pattern": "(1)",
+				              "conditions": {
+				                "1": {
+				                  "fieldName": "parentId",
+				                  "operatorId": 9,
+				                  "sequence": "1",
+				                  "value": "${resourceId}"
+				                }
+				              }
+				            }
+				          },
+				          {
+				            "name": "F",
+				            "constant": "0"
+				          }
+				        ],
+				        "parameters": [
+				          {
+				            "name": "resourceId",
+				            "typeString": "Number"
+				          }
+				        ],
+				        "resultEvaluator": "(A==B)&&(D==F)",
+				        "workflowUIMode": 1
+				   	},
+				"condition_statement" : "Damper Command is 1 and Damper Status is 0 for 10 min"
+			},
+			"alarmClear": null,
+			"placeHolder": {
+				"1": {
+                     "label": "Assets",
+                     "uniqueId": "resource",
+                     "default_value": "All Asset Selected",
+                     "selection_criteria": {
+                     	"displayType": "ASSETCHOOSER"
+                    },
+                     "type": "default"
+                 },
+                 "2":{
+                     "label": "Interval",
+                     "uniqueId": "interval",
+                     "default_value": "10",
+                     "selection_criteria": {
+                     	"displayType": "DURATION"
+                    },
+                     "type": "rules"
+                 }
+			}
+		}
+	},
+	"3": {
+		"fdd_rule": {
+			"name":"AHU Outside Air Damper Stuck close",
+			"description": "AHU Outside Air Damper is stuck or in open state. Unable to close Damper",
+			"problem": "AHU Outside Air Damper fails to follow the command",
+			"possible_causes": "1. Poor Lubrication <br/> 2. Sensor Failure",
+			"moduleName": "ahureading",
+			"category": "AHU",
+			"severity": "Major",
+			"threshold_metric": "supplyairdamperstatus",
+			"threshold_metric_display": "Supply Air Damper Status",
+			"possible_solution": "1. Lubricate the bearings and louvres \n 2. Check sensor functioning",
+			"ASSET_SELECTION_CRITERIA": {
+			 	"categoryType": "AHU",
+			 	"includeResource": "${includeResource}",
+			 	"excludeResource": "${excludeResource}"
+			},
+			"preRequsite": {
+				"action": "PreRequsite",
+				"moduleName": "ahureading",
+				"threshold_metric": "runstatus",
+				"thresholdType": 1,
+				"operatorId": 9,
+				"percentage": "1",
+				"condition_statement" : "When Run Status is 1",
+				"workflow": {
+				 	"expressions": [
+				     	{
+				            "name": "a",
+				            "aggregateString": "lastValue",
+				            "fieldName": "runstatus",
+				            "moduleName": "ahureading",
+				            "criteria": {
+				              "pattern": "(1)",
+				              "conditions": {
+				                "1": {
+				                  "fieldName": "parentId",
+				                  "operatorId": 9,
+				                  "sequence": "1",
+				                  "value": "${resourceId}"
+				                }
+				              }
+				            }
+				          }
+				        ],
+				        "resultEvaluator": "a==1",
+				        "parameters": [
+				          {
+				            "name": "resourceId",
+				            "typeString": "Number"
+				          }
+				        ]
+				}
+			},
+			"alarmCondition": {
+				"condition": "${{supplyairdampercommand}}==1 && ${{supplyairdamperstatus}}==0",
+				"for": "${interval}",
+				"action": "TRIGGER_ALARM",
+				"moduleName": "ahureading",
+				"thresholdType": 5,
+				"threshold_metric": "supplyairdamperstatus",
+				"workflow": {
+				 	"expressions": [
+				      {
+				      	"name": "A",
+				        "aggregateString": "lastValue",
+				        "fieldName": "supplyairdampercommand",
+				        "moduleName": "ahureading",
+				        "criteria": {
+				        "pattern": "(1)",
+				        "conditions": {
+				        "1": {
+				        	"fieldName": "parentId",
+				            "operatorId": 9,
+				            "sequence": "1",
+				            "value": "${resourceId}"
+				         }
+		        		}
+				            }
+				          },
+				          {
+				            "name": "B",
+				            "constant": "0"
+				          },
+				          {
+				            "name": "D",
+				            "aggregateString": "lastValue",
+				            "fieldName": "supplyairdamperstatus",
+				            "moduleName": "ahureading",
+				            "criteria": {
+				              "pattern": "(1)",
+				              "conditions": {
+				                "1": {
+				                  "fieldName": "parentId",
+				                  "operatorId": 9,
+				                  "sequence": "1",
+				                  "value": "${resourceId}"
+				                }
+				              }
+				            }
+				          },
+				          {
+				            "name": "F",
+				            "constant": "1"
+				          }
+				        ],
+				        "parameters": [
+				          {
+				            "name": "resourceId",
+				            "typeString": "Number"
+				          }
+				        ],
+				        "resultEvaluator": "(A==B)&&(D==F)",
+				        "workflowUIMode": 1
+				   	},
+				"condition_statement" : "Damper Command is 1 and Damper Status is 0 for 10 min"
+			},
+			"alarmClear": null,
+			"placeHolder": {
+				"1": {
+                     "label": "Assets",
+                     "uniqueId": "resource",
+                     "default_value": "All Asset Selected",
+                     "selection_criteria": {
+                     	"displayType": "ASSETCHOOSER"
+                    },
+                     "type": "default"
+                 },
+                 "2":{
+                     "label": "Interval",
+                     "uniqueId": "interval",
+                     "default_value": "10",
+                     "selection_criteria": {
+                     	"displayType": "DURATION"
+                    },
+                     "type": "rules"
+                 }
+			}
+		}
+	},
+	"4": {
+		"fdd_rule": {
+			"name":"AHU Exhaust Air Damper Stuck open",
+			"description": "AHU Exhaust Air Damper is stuck or in open state. Unable to open Damper",
+			"problem": "AHU Exhaust Air Damper fails to follow the command",
+			"possible_causes": "1. Poor Lubrication <br/> 2. Sensor Failure",
+			"moduleName": "ahureading",
+			"category": "AHU",
+			"severity": "Major",
+			"threshold_metric": "exhaustairdamperstatus",
+			"threshold_metric_display": "Supply Air Damper Status",
+			"possible_solution": "1. Lubricate the bearings and louvres \n 2. Check sensor functioning",
+			"ASSET_SELECTION_CRITERIA": {
+			 	"categoryType": "AHU",
+			 	"includeResource": "${includeResource}",
+			 	"excludeResource": "${excludeResource}"
+			},
+			"preRequsite": {
+				"action": "PreRequsite",
+				"moduleName": "ahureading",
+				"threshold_metric": "runstatus",
+				"thresholdType": 1,
+				"operatorId": 9,
+				"percentage": "1",
+				"condition_statement" : "When Run Status is 1",
+				"workflow": {
+				 	"expressions": [
+				     	{
+				            "name": "a",
+				            "aggregateString": "lastValue",
+				            "fieldName": "runstatus",
+				            "moduleName": "ahureading",
+				            "criteria": {
+				              "pattern": "(1)",
+				              "conditions": {
+				                "1": {
+				                  "fieldName": "parentId",
+				                  "operatorId": 9,
+				                  "sequence": "1",
+				                  "value": "${resourceId}"
+				                }
+				              }
+				            }
+				          }
+				        ],
+				        "resultEvaluator": "a==1",
+				        "parameters": [
+				          {
+				            "name": "resourceId",
+				            "typeString": "Number"
+				          }
+				        ]
+				}
+			},
+			"alarmCondition": {
+				"condition": "${{exhaustairdampercommand}}==1 && ${{exhaustairdamperstatus}}==0",
+				"for": "${interval}",
+				"action": "TRIGGER_ALARM",
+				"moduleName": "ahureading",
+				"thresholdType": 5,
+				"threshold_metric": "exhaustairdamperstatus",
+				"workflow": {
+				 	"expressions": [
+				      {
+				      	"name": "A",
+				        "aggregateString": "lastValue",
+				        "fieldName": "exhaustairdampercommand",
+				        "moduleName": "ahureading",
+				        "criteria": {
+				        "pattern": "(1)",
+				        "conditions": {
+				        "1": {
+				        	"fieldName": "parentId",
+				            "operatorId": 9,
+				            "sequence": "1",
+				            "value": "${resourceId}"
+				         }
+		        		}
+				            }
+				          },
+				          {
+				            "name": "B",
+				            "constant": "1"
+				          },
+				          {
+				            "name": "D",
+				            "aggregateString": "lastValue",
+				            "fieldName": "exhaustairdamperstatus",
+				            "moduleName": "ahureading",
+				            "criteria": {
+				              "pattern": "(1)",
+				              "conditions": {
+				                "1": {
+				                  "fieldName": "parentId",
+				                  "operatorId": 9,
+				                  "sequence": "1",
+				                  "value": "${resourceId}"
+				                }
+				              }
+				            }
+				          },
+				          {
+				            "name": "F",
+				            "constant": "0"
+				          }
+				        ],
+				        "parameters": [
+				          {
+				            "name": "resourceId",
+				            "typeString": "Number"
+				          }
+				        ],
+				        "resultEvaluator": "(A==B)&&(D==F)",
+				        "workflowUIMode": 1
+				   	},
+				"condition_statement" : "Exhaust Damper Command is 1 and Exhaust Damper Status is 0 for 10 min"
+			},
+			"alarmClear": null,
+			"placeHolder": {
+				"1": {
+                     "label": "Assets",
+                     "uniqueId": "resource",
+                     "default_value": "All Asset Selected",
+                     "selection_criteria": {
+                     	"displayType": "ASSETCHOOSER"
+                    },
+                     "type": "default"
+                 },
+                 "2":{
+                     "label": "Interval",
+                     "uniqueId": "interval",
+                     "default_value": "10",
+                     "selection_criteria": {
+                     	"displayType": "DURATION"
+                    },
+                     "type": "rules"
+                 }
+			}
+		}
+	},
+	"5": {
+		"fdd_rule": {
+			"name":"AHU Exhaust Air Damper Stuck close",
+			"description": "AHU Exhaust Air Damper is stuck or in open state. Unable to close Damper",
+			"problem": "AHU Exhaust Air Damper fails to follow the command",
+			"possible_causes": "1. Poor Lubrication <br/> 2. Sensor Failure",
+			"moduleName": "ahureading",
+			"category": "AHU",
+			"severity": "Major",
+			"threshold_metric": "exhaustairdamperstatus",
+			"threshold_metric_display": "Exhaust Air Damper Status",
+			"possible_solution": "1. Lubricate the bearings and louvres \n 2. Check sensor functioning",
+			"ASSET_SELECTION_CRITERIA": {
+			 	"categoryType": "AHU",
+			 	"includeResource": "${includeResource}",
+			 	"excludeResource": "${excludeResource}"
+			},
+			"preRequsite": {
+				"action": "PreRequsite",
+				"moduleName": "ahureading",
+				"threshold_metric": "runstatus",
+				"thresholdType": 1,
+				"operatorId": 9,
+				"percentage": "1",
+				"condition_statement" : "When Run Status is 1",
+				"workflow": {
+				 	"expressions": [
+				     	{
+				            "name": "a",
+				            "aggregateString": "lastValue",
+				            "fieldName": "runstatus",
+				            "moduleName": "ahureading",
+				            "criteria": {
+				              "pattern": "(1)",
+				              "conditions": {
+				                "1": {
+				                  "fieldName": "parentId",
+				                  "operatorId": 9,
+				                  "sequence": "1",
+				                  "value": "${resourceId}"
+				                }
+				              }
+				            }
+				          }
+				        ],
+				        "resultEvaluator": "a==1",
+				        "parameters": [
+				          {
+				            "name": "resourceId",
+				            "typeString": "Number"
+				          }
+				        ]
+				}
+			},
+			"alarmCondition": {
+				"condition": "${{exhaustairdampercommand}}==1 && ${{exhaustairdamperstatus}}==0",
+				"for": "${interval}",
+				"action": "TRIGGER_ALARM",
+				"moduleName": "ahureading",
+				"thresholdType": 5,
+				"threshold_metric": "exhaustairdamperstatus",
+				"workflow": {
+				 	"expressions": [
+				      {
+				      	"name": "A",
+				        "aggregateString": "lastValue",
+				        "fieldName": "exhaustairdampercommand",
+				        "moduleName": "ahureading",
+				        "criteria": {
+				        "pattern": "(1)",
+				        "conditions": {
+				        "1": {
+				        	"fieldName": "parentId",
+				            "operatorId": 9,
+				            "sequence": "1",
+				            "value": "${resourceId}"
+				         }
+		        		}
+				            }
+				          },
+				          {
+				            "name": "B",
+				            "constant": "0"
+				          },
+				          {
+				            "name": "D",
+				            "aggregateString": "lastValue",
+				            "fieldName": "exhaustairdamperstatus",
+				            "moduleName": "ahureading",
+				            "criteria": {
+				              "pattern": "(1)",
+				              "conditions": {
+				                "1": {
+				                  "fieldName": "parentId",
+				                  "operatorId": 9,
+				                  "sequence": "1",
+				                  "value": "${resourceId}"
+				                }
+				              }
+				            }
+				          },
+				          {
+				            "name": "F",
+				            "constant": "1"
+				          }
+				        ],
+				        "parameters": [
+				          {
+				            "name": "resourceId",
+				            "typeString": "Number"
+				          }
+				        ],
+				        "resultEvaluator": "(A==B)&&(D==F)",
+				        "workflowUIMode": 1
+				   	},
+				"condition_statement" : "Damper Command is 1 and Damper Status is 0 for 10 min"
+			},
+			"alarmClear": null,
+			"placeHolder": {
+				"1": {
+                     "label": "Assets",
+                     "uniqueId": "resource",
+                     "default_value": "All Asset Selected",
+                     "selection_criteria": {
+                     	"displayType": "ASSETCHOOSER"
+                    },
+                     "type": "default"
+                 },
+                 "2":{
+                     "label": "Interval",
+                     "uniqueId": "interval",
+                     "default_value": "10",
+                     "selection_criteria": {
+                     	"displayType": "DURATION"
+                    },
+                     "type": "rules"
+                 }
+			}
+		}
+	},
+	"6":  {
+		"fdd_rule": {
+			"name":"AHU Pre Filter clogged",
+			"description": "AHU Pre Filter clogged",
+			"problem": "As the outside air contains lot of dust and other pollution particles, the filter being the first line of defence for the AHU, gets the maximum dirt/debris buildup. ",
+			"possible_causes": "Excessive Dust in ambient Air",
+			"moduleName": "ahureading",
+			"category": "AHU",
+			"severity": "Major",
+			"threshold_metric": "prefilterdp",
+			"threshold_metric_display": "Pre Filter DP",
+			"possible_solution": "Dirty/Clogged air filters lead to excessive air pressure drop resulting in reduced airflow, increased energy consumption by the fan and depositing dirt/debris on cooling coil, ducts etc.",
+			"ASSET_SELECTION_CRITERIA": {
+			 	"categoryType": "AHU",
+			 	"includeResource": "${includeResource}",
+			 	"excludeResource": "${excludeResource}"
+			},
+			"preRequsite": {
+				"action": "PreRequsite",
+				"moduleName": "ahureading",
+				"threshold_metric": "runstatus",
+				"thresholdType": 1,
+				"operatorId": 9,
+				"percentage": "1",
+				"condition_statement" : "When Run Status is 1",
+				"workflow": {
+				 	"expressions": [
+				     	{
+				            "name": "a",
+				            "aggregateString": "lastValue",
+				            "fieldName": "runstatus",
+				            "moduleName": "ahureading",
+				            "criteria": {
+				              "pattern": "(1)",
+				              "conditions": {
+				                "1": {
+				                  "fieldName": "parentId",
+				                  "operatorId": 9,
+				                  "sequence": "1",
+				                  "value": "${resourceId}"
+				                }
+				              }
+				            }
+				          }
+				        ],
+				        "resultEvaluator": "a==1",
+				        "parameters": [
+				          {
+				            "name": "resourceId",
+				            "typeString": "Number"
+				          }
+				        ]
+				}
+			},
+			"alarmCondition": {
+				"condition": "${{exhaustairdampercommand}}==1 && ${{exhaustairdamperstatus}}==0",
+				"for": "${interval}",
+				"action": "TRIGGER_ALARM",
+				"moduleName": "ahureading",
+				"thresholdType": 5,
+				"threshold_metric": "prefilterdp",
+				"workflow": {
+				 	"expressions": [
+				          {
+				            "name": "A",
+				            "aggregateString": "lastValue",
+				            "fieldName": "exhaustairdamperstatus",
+				            "moduleName": "ahureading",
+				            "criteria": {
+				              "pattern": "(1)",
+				              "conditions": {
+				                "1": {
+				                  "fieldName": "parentId",
+				                  "operatorId": 9,
+				                  "sequence": "1",
+				                  "value": "${resourceId}"
+				                }
+				              }
+				            }
+				          },
+				          {
+				            "name": "B",
+				            "constant": "240"
+				          }
+				        ],
+				        "parameters": [
+				          {
+				            "name": "resourceId",
+				            "typeString": "Number"
+				          }
+				        ],
+				        "resultEvaluator": "(A>B)",
+				        "workflowUIMode": 1
+				   	},
+				"condition_statement" : "Pre Filter differential pressure is lesser than threshold limit. (Standard 240)"
+			}
+			
+		}
+	},
+	"7":  {
+		"fdd_rule": {
+			"name":"AHU Bag Filter clogged",
+			"description": "AHU Bag Filter clogged",
+			"problem": "As the outside air contains lot of dust and other pollution particles, the filter being the first line of defence for the AHU, gets the maximum dirt/debris buildup. ",
+			"possible_causes": "Excessive Dust in ambient Air",
+			"moduleName": "ahureading",
+			"category": "AHU",
+			"severity": "Major",
+			"threshold_metric": "bagfilterdp",
+			"threshold_metric_display": "Bag Filter DP",
+			"possible_solution": "Dirty/Clogged air filters lead to excessive air pressure drop resulting in reduced airflow, increased energy consumption by the fan and depositing dirt/debris on cooling coil, ducts etc.",
+			"ASSET_SELECTION_CRITERIA": {
+			 	"categoryType": "AHU",
+			 	"includeResource": "${includeResource}",
+			 	"excludeResource": "${excludeResource}"
+			},
+			"preRequsite": {
+				"action": "PreRequsite",
+				"moduleName": "ahureading",
+				"threshold_metric": "runstatus",
+				"thresholdType": 1,
+				"operatorId": 9,
+				"percentage": "1",
+				"condition_statement" : "When Run Status is On",
+				"workflow": {
+				 	"expressions": [
+				     	{
+				            "name": "a",
+				            "aggregateString": "lastValue",
+				            "fieldName": "runstatus",
+				            "moduleName": "ahureading",
+				            "criteria": {
+				              "pattern": "(1)",
+				              "conditions": {
+				                "1": {
+				                  "fieldName": "parentId",
+				                  "operatorId": 9,
+				                  "sequence": "1",
+				                  "value": "${resourceId}"
+				                }
+				              }
+				            }
+				          }
+				        ],
+				        "resultEvaluator": "a==1",
+				        "parameters": [
+				          {
+				            "name": "resourceId",
+				            "typeString": "Number"
+				          }
+				        ]
+				}
+			},
+			"alarmCondition": {
+				"condition": "${{exhaustairdampercommand}}==1 && ${{exhaustairdamperstatus}}==0",
+				"for": "${interval}",
+				"action": "TRIGGER_ALARM",
+				"moduleName": "ahureading",
+				"thresholdType": 5,
+				"threshold_metric": "bagfilterdp",
+				"workflow": {
+				 	"expressions": [
+				          {
+				            "name": "D",
+				            "aggregateString": "lastValue",
+				            "fieldName": "bagfilterdp",
+				            "moduleName": "ahureading",
+				            "criteria": {
+				              "pattern": "(1)",
+				              "conditions": {
+				                "1": {
+				                  "fieldName": "parentId",
+				                  "operatorId": 13,
+				                  "sequence": "1",
+				                  "value": "${resourceId}"
+				                }
+				              }
+				            }
+				          },
+				          {
+				            "name": "F",
+				            "constant": "120"
+				          }
+				        ],
+				        "parameters": [
+				          {
+				            "name": "resourceId",
+				            "typeString": "Number"
+				          }
+				        ],
+				        "resultEvaluator": "(D>F)",
+				        "workflowUIMode": 1
+				   	},
+				"condition_statement" : "Bag Filter differential pressure is lesser than threshold limit. (Standard 120)"
+			}
+			
+		}
+	}, 
+	"8" : {
+		"fdd_rule": {
+			  "name": "Enthalpy Heat Recovery Wheel wasting energy (AUTO mode)",
+			  "description": "Enthalpy Heat Recovery Wheel wasting energy (AUTO mode)",
+			  "problem": "Enthalpy Heat recovery wheel running even when the outside air temperature is lower than the return air temperature and no pre-cooling is required. ",
+			  "possible_causes": "Faulty run of Enthalpy Heat Recovery Wheel may disturb the overall thermal balance of the system and can also lead to increased energy usage (through increased cooling demand).",
+			  "moduleName": "ahureading",
+			  "category": "AHU",
+			  "severity": "Major",
+			  "threshold_metric": "returnairtemperature",
+			  "threshold_metric_display": "Return Air Temperature",
+			  "possible_solution": "This fault/alarm may trigger due to miscalibration of temperature and/or humidity sensors.",
+			  "ASSET_SELECTION_CRITERIA": {
+			    "categoryType": "AHU",
+			    "includeResource": "${includeResource}",
+			    "excludeResource": "${excludeResource}"
+			  },
+			  "preRequsite": {
+			    "action": "PreRequsite",
+			    "moduleName": "ahureading",
+			    "threshold_metric": "enthalpyheatwheelautomanualstatus",
+			    "thresholdType": 1,
+			    "operatorId": 9,
+			    "percentage": "1",
+			    "condition_statement": "When Enthalpy Heat Wheel is in auto mode",
+			    "workflow": {
+			      "expressions": [
+			        {
+			          "name": "a",
+			          "aggregateString": "lastValue",
+			          "fieldName": "enthalpyheatwheelautomanualstatus",
+			          "moduleName": "ahureading",
+			          "aggregateCondition": [],
+			          "criteria": {
+			            "pattern": "(1)",
+			            "conditions": {
+			              "1": {
+			                "fieldName": "parentId",
+			                "operatorId": 9,
+			                "sequence": "1",
+			                "value": "${resourceId}"
+			              }
+			            }
+			          }
+			        }
+			      ],
+			      "resultEvaluator": "a==Auto",
+			      "parameters": [
+			        {
+			          "name": "resourceId",
+			          "typeString": "Number"
+			        }
+			      ]
+			    }
+			  },
+			  "alarmCondition": {
+			    "condition": "${{exhaustairdampercommand}}==1 && ${{exhaustairdamperstatus}}==0",
+			    "for": "${interval}",
+			    "action": "TRIGGER_ALARM",
+			    "thresholdType": 5,
+			    "workflow": {
+			      "expressions": [
+			        {
+			          "name": "A",
+			          "aggregateString": "lastValue",
+			          "fieldName": "supplyfanairflowstatus",
+			          "moduleName": "ahureading",
+			          "criteria": {
+			            "pattern": "(1)",
+			            "conditions": {
+			              "1": {
+			                "fieldName": "parentId",
+			                "operatorId": 9,
+			                "sequence": "1",
+			                "value": "${resourceId}"
+			              }
+			            }
+			          },
+			          "conditionSeqVsBaselineId": {},
+			          "orderByFieldName": "ttime",
+			          "sortBy": "desc",
+			          "limit": 1
+			        },
+			        {
+			          "name": "B",
+			          "constant": "1"
+			        },
+			        {
+			          "name": "C",
+			          "aggregateString": "lastValue",
+			          "fieldName": "returnairtemperature",
+			          "moduleName": "ahureading",
+			          "criteria": {
+			            "pattern": "(1)",
+			            "conditions": {
+			              "1": {
+			                "fieldName": "parentId",
+			                "operatorId": 9,
+			                "sequence": "1",
+			                "value": "${resourceId}"
+			              }
+			            }
+			          },
+			          "conditionSeqVsBaselineId": {},
+			          "orderByFieldName": "ttime",
+			          "sortBy": "desc",
+			          "limit": 1
+			        },
+			        {
+			          "name": "D",
+			          "aggregateString": "lastValue",
+			          "fieldName": "outsideairtemperature",
+			          "moduleName": "ahureading",
+			          "criteria": {
+			            "pattern": "(1)",
+			            "conditions": {
+			              "1": {
+			                "fieldName": "parentId",
+			                "operatorId": 9,
+			                "sequence": "1",
+			                "value": "${resourceId}"
+			              }
+			            }
+			          },
+			          "conditionSeqVsBaselineId": {},
+			          "orderByFieldName": "ttime",
+			          "sortBy": "desc",
+			          "limit": 1
+			        },
+			        {
+			          "name": "F",
+			          "constant": "2"
+			        },
+			        {
+			          "name": "G",
+			          "aggregateString": "lastValue",
+			          "fieldName": "enthalpyheatwheelcommand",
+			          "moduleName": "ahureading",
+			          "criteria": {
+			            "pattern": "(1)",
+			            "conditions": {
+			              "1": {
+			                "fieldName": "parentId",
+			                "operatorId": 9,
+			                "sequence": "1",
+			                "value": "${resourceId}"
+			              }
+			            }
+			          },
+			          "conditionSeqVsBaselineId": {},
+			          "orderByFieldName": "ttime",
+			          "sortBy": "desc",
+			          "limit": 1
+			        },
+			        {
+			          "name": "H",
+			          "constant": "1"
+			        },
+			        {
+			          "name": "I",
+			          "aggregateString": "lastValue",
+			          "fieldName": "enthalpyheatwheelrunstatus",
+			          "moduleName": "ahureading",
+			          "criteria": {
+			            "pattern": "(1)",
+			            "conditions": {
+			              "1": {
+			                "fieldName": "parentId",
+			                "operatorId": 9,
+			                "sequence": "1",
+			                "value": "${resourceId}"
+			              }
+			            }
+			          },
+			          "conditionSeqVsBaselineId": {},
+			          "orderByFieldName": "ttime",
+			          "sortBy": "desc",
+			          "limit": 1
+			        },
+			        {
+			          "name": "J",
+			          "constant": "1"
+			        }
+			      ],
+			      "parameters": [
+			        {
+			          "name": "resourceId",
+			          "typeString": "Number"
+			        }
+			      ],
+			      "resultEvaluator": "(A==B)&&(C-D>=F)&&(G==H)&&(I==J)"
+			    },
+			    "condition_statement": "When Supply Air Fan Status is on and the differnce of Return air temperature and Outside air temperature is less than 2 °C and Enthalpy Heat Wheel Status is On and Enthalpy Heat Wheel Command is On "
+			  }
+			}
+	},
+	"9": {
+		"fdd_rule": {
+			  "name": "Enthalpy Heat Recovery Wheel wasting energy (Manual mode)",
+			  "description": "Enthalpy Heat Recovery Wheel wasting energy (Manual mode)",
+			  "problem": "Enthalpy Heat recovery wheel running even when the outside air temperature is lower than the return air temperature and no pre-cooling is required. ",
+			  "possible_causes": "Faulty run of Enthalpy Heat Recovery Wheel may disturb the overall thermal balance of the system and can also lead to increased energy usage (through increased cooling demand).",
+			  "moduleName": "ahureading",
+			  "category": "AHU",
+			  "severity": "Major",
+			  "threshold_metric": "returnairtemperature",
+			  "threshold_metric_display": "Return Air Temperature",
+			  "possible_solution": "This fault/alarm may trigger due to miscalibration of temperature and/or humidity sensors.",
+			  "ASSET_SELECTION_CRITERIA": {
+			    "categoryType": "AHU",
+			    "includeResource": "${includeResource}",
+			    "excludeResource": "${excludeResource}"
+			  },
+			  "preRequsite": {
+			    "action": "PreRequsite",
+			    "moduleName": "ahureading",
+			    "threshold_metric": "enthalpyheatwheelautomanualstatus",
+			    "thresholdType": 1,
+			    "operatorId": 9,
+			    "percentage": "1",
+			    "condition_statement": "When Enthalpy Heat Wheel is in Manual mode",
+			    "workflow": {
+			      "expressions": [
+			        {
+			          "name": "a",
+			          "aggregateString": "lastValue",
+			          "fieldName": "enthalpyheatwheelautomanualstatus",
+			          "moduleName": "ahureading",
+			          "aggregateCondition": [],
+			          "criteria": {
+			            "pattern": "(1)",
+			            "conditions": {
+			              "1": {
+			                "fieldName": "parentId",
+			                "operatorId": 9,
+			                "sequence": "0",
+			                "value": "${resourceId}"
+			              }
+			            }
+			          }
+			        }
+			      ],
+			      "resultEvaluator": "a==Manual",
+			      "parameters": [
+			        {
+			          "name": "resourceId",
+			          "typeString": "Number"
+			        }
+			      ]
+			    }
+			  },
+			  "alarmCondition": {
+			    "condition": "${{exhaustairdampercommand}}==1 && ${{exhaustairdamperstatus}}==0",
+			    "for": "${interval}",
+			    "action": "TRIGGER_ALARM",
+			    "thresholdType": 5,
+			    "workflow": {
+			      "expressions": [
+			        {
+			          "name": "A",
+			          "aggregateString": "lastValue",
+			          "fieldName": "supplyfanairflowstatus",
+			          "moduleName": "ahureading",
+			          "criteria": {
+			            "pattern": "(1)",
+			            "conditions": {
+			              "1": {
+			                "fieldName": "parentId",
+			                "operatorId": 9,
+			                "sequence": "1",
+			                "value": "${resourceId}"
+			              }
+			            }
+			          },
+			          "conditionSeqVsBaselineId": {},
+			          "orderByFieldName": "ttime",
+			          "sortBy": "desc",
+			          "limit": 1
+			        },
+			        {
+			          "name": "B",
+			          "constant": "1"
+			        },
+			        {
+			          "name": "C",
+			          "aggregateString": "lastValue",
+			          "fieldName": "returnairtemperature",
+			          "moduleName": "ahureading",
+			          "criteria": {
+			            "pattern": "(1)",
+			            "conditions": {
+			              "1": {
+			                "fieldName": "parentId",
+			                "operatorId": 9,
+			                "sequence": "1",
+			                "value": "${resourceId}"
+			              }
+			            }
+			          },
+			          "conditionSeqVsBaselineId": {},
+			          "orderByFieldName": "ttime",
+			          "sortBy": "desc",
+			          "limit": 1
+			        },
+			        {
+			          "name": "D",
+			          "aggregateString": "lastValue",
+			          "fieldName": "outsideairtemperature",
+			          "moduleName": "ahureading",
+			          "criteria": {
+			            "pattern": "(1)",
+			            "conditions": {
+			              "1": {
+			                "fieldName": "parentId",
+			                "operatorId": 9,
+			                "sequence": "1",
+			                "value": "${resourceId}"
+			              }
+			            }
+			          },
+			          "conditionSeqVsBaselineId": {},
+			          "orderByFieldName": "ttime",
+			          "sortBy": "desc",
+			          "limit": 1
+			        },
+			        {
+			          "name": "F",
+			          "constant": "2"
+			        },
+			        {
+			          "name": "G",
+			          "aggregateString": "lastValue",
+			          "fieldName": "enthalpyheatwheelcommand",
+			          "moduleName": "ahureading",
+			          "criteria": {
+			            "pattern": "(1)",
+			            "conditions": {
+			              "1": {
+			                "fieldName": "parentId",
+			                "operatorId": 9,
+			                "sequence": "1",
+			                "value": "${resourceId}"
+			              }
+			            }
+			          },
+			          "conditionSeqVsBaselineId": {},
+			          "orderByFieldName": "ttime",
+			          "sortBy": "desc",
+			          "limit": 1
+			        },
+			        {
+			          "name": "H",
+			          "constant": "1"
+			        },
+			        {
+			          "name": "I",
+			          "aggregateString": "lastValue",
+			          "fieldName": "enthalpyheatwheelrunstatus",
+			          "moduleName": "ahureading",
+			          "criteria": {
+			            "pattern": "(1)",
+			            "conditions": {
+			              "1": {
+			                "fieldName": "parentId",
+			                "operatorId": 9,
+			                "sequence": "1",
+			                "value": "${resourceId}"
+			              }
+			            }
+			          },
+			          "conditionSeqVsBaselineId": {},
+			          "orderByFieldName": "ttime",
+			          "sortBy": "desc",
+			          "limit": 1
+			        },
+			        {
+			          "name": "J",
+			          "constant": "1"
+			        }
+			      ],
+			      "parameters": [
+			        {
+			          "name": "resourceId",
+			          "typeString": "Number"
+			        }
+			      ],
+			      "resultEvaluator": "(A==B)&&(C-D>=F)&&(G==H)&&(I==J)"
+			    },
+			    "condition_statement": "When Supply Air Fan Status is on and the differnce of Return air temperature and Outside air temperature is less than 2 °C and Enthalpy Heat Wheel Status is On and Enthalpy Heat Wheel Command is On "
+			  }
+			}
+	},
+	"10" : {
+		"fdd_rule": {
+			  "name": "Sensible Heat Recovery Wheel wasting energy (AUTO mode)",
+			  "description": "Sensible Heat Recovery Wheel wasting energy (AUTO mode)",
+			  "problem": "Sensible Heat recovery wheel running even when the outside air temperature is lower than the return air temperature and no pre-cooling is required. ",
+			  "possible_causes": "Faulty run of Sensible Heat Recovery Wheel may disturb the overall thermal balance of the system and can also lead to increased energy usage (through increased cooling demand).",
+			  "moduleName": "ahureading",
+			  "category": "AHU",
+			  "severity": "Major",
+			  "threshold_metric": "returnairtemperature",
+			  "threshold_metric_display": "Return Air Temperature",
+			  "possible_solution": "This fault/alarm may trigger due to miscalibration of temperature and/or humidity sensors.",
+			  "ASSET_SELECTION_CRITERIA": {
+			    "categoryType": "AHU",
+			    "includeResource": "${includeResource}",
+			    "excludeResource": "${excludeResource}"
+			  },
+			  "preRequsite": {
+			    "action": "PreRequsite",
+			    "moduleName": "ahureading",
+			    "threshold_metric": "sensibleheatwheelautomanualstatus",
+			    "thresholdType": 1,
+			    "operatorId": 9,
+			    "percentage": "1",
+			    "condition_statement": "When Sensible Heat Wheel is in auto mode",
+			    "workflow": {
+			      "expressions": [
+			        {
+			          "name": "a",
+			          "aggregateString": "lastValue",
+			          "fieldName": "sensibleheatwheelautomanualstatus",
+			          "moduleName": "ahureading",
+			          "aggregateCondition": [],
+			          "criteria": {
+			            "pattern": "(1)",
+			            "conditions": {
+			              "1": {
+			                "fieldName": "parentId",
+			                "operatorId": 9,
+			                "sequence": "1",
+			                "value": "${resourceId}"
+			              }
+			            }
+			          }
+			        }
+			      ],
+			      "resultEvaluator": "a==Auto",
+			      "parameters": [
+			        {
+			          "name": "resourceId",
+			          "typeString": "Number"
+			        }
+			      ]
+			    }
+			  },
+			  "alarmCondition": {
+			    "condition": "${{exhaustairdampercommand}}==1 && ${{exhaustairdamperstatus}}==0",
+			    "for": "${interval}",
+			    "action": "TRIGGER_ALARM",
+			    "thresholdType": 5,
+			    "workflow": {
+			      "expressions": [
+			        {
+			          "name": "A",
+			          "aggregateString": "lastValue",
+			          "fieldName": "supplyfanairflowstatus",
+			          "moduleName": "ahureading",
+			          "criteria": {
+			            "pattern": "(1)",
+			            "conditions": {
+			              "1": {
+			                "fieldName": "parentId",
+			                "operatorId": 9,
+			                "sequence": "1",
+			                "value": "${resourceId}"
+			              }
+			            }
+			          },
+			          "conditionSeqVsBaselineId": {},
+			          "orderByFieldName": "ttime",
+			          "sortBy": "desc",
+			          "limit": 1
+			        },
+			        {
+			          "name": "B",
+			          "constant": "1"
+			        },
+			        {
+			          "name": "C",
+			          "aggregateString": "lastValue",
+			          "fieldName": "returnairtemperature",
+			          "moduleName": "ahureading",
+			          "criteria": {
+			            "pattern": "(1)",
+			            "conditions": {
+			              "1": {
+			                "fieldName": "parentId",
+			                "operatorId": 9,
+			                "sequence": "1",
+			                "value": "${resourceId}"
+			              }
+			            }
+			          },
+			          "conditionSeqVsBaselineId": {},
+			          "orderByFieldName": "ttime",
+			          "sortBy": "desc",
+			          "limit": 1
+			        },
+			        {
+			          "name": "D",
+			          "aggregateString": "lastValue",
+			          "fieldName": "outsideairtemperature",
+			          "moduleName": "ahureading",
+			          "criteria": {
+			            "pattern": "(1)",
+			            "conditions": {
+			              "1": {
+			                "fieldName": "parentId",
+			                "operatorId": 9,
+			                "sequence": "1",
+			                "value": "${resourceId}"
+			              }
+			            }
+			          },
+			          "conditionSeqVsBaselineId": {},
+			          "orderByFieldName": "ttime",
+			          "sortBy": "desc",
+			          "limit": 1
+			        },
+			        {
+			          "name": "F",
+			          "constant": "2"
+			        },
+			        {
+			          "name": "G",
+			          "aggregateString": "lastValue",
+			          "fieldName": "sensibleheatwheelcommand",
+			          "moduleName": "ahureading",
+			          "criteria": {
+			            "pattern": "(1)",
+			            "conditions": {
+			              "1": {
+			                "fieldName": "parentId",
+			                "operatorId": 9,
+			                "sequence": "1",
+			                "value": "${resourceId}"
+			              }
+			            }
+			          },
+			          "conditionSeqVsBaselineId": {},
+			          "orderByFieldName": "ttime",
+			          "sortBy": "desc",
+			          "limit": 1
+			        },
+			        {
+			          "name": "H",
+			          "constant": "1"
+			        },
+			        {
+			          "name": "I",
+			          "aggregateString": "lastValue",
+			          "fieldName": "sensibleheatwheelrunstatus",
+			          "moduleName": "ahureading",
+			          "criteria": {
+			            "pattern": "(1)",
+			            "conditions": {
+			              "1": {
+			                "fieldName": "parentId",
+			                "operatorId": 9,
+			                "sequence": "1",
+			                "value": "${resourceId}"
+			              }
+			            }
+			          },
+			          "conditionSeqVsBaselineId": {},
+			          "orderByFieldName": "ttime",
+			          "sortBy": "desc",
+			          "limit": 1
+			        },
+			        {
+			          "name": "J",
+			          "constant": "1"
+			        }
+			      ],
+			      "parameters": [
+			        {
+			          "name": "resourceId",
+			          "typeString": "Number"
+			        }
+			      ],
+			      "resultEvaluator": "(A==B)&&(C-D>=F)&&(G==H)&&(I==J)"
+			    },
+			    "condition_statement": "When Supply Air Fan Status is on and the differnce of Return air temperature and Outside air temperature is less than 2 °C and Sensible Heat Wheel Status is On and Sensible Heat Wheel Command is On "
+			  }
+			}
+	},
+	"11" : {
+		"fdd_rule": {
+			  "name": "Sensible Heat Recovery Wheel wasting energy (Manual mode)",
+			  "description": "Sensible Heat Recovery Wheel wasting energy (Manual mode)",
+			  "problem": "Sensible Heat recovery wheel running even when the outside air temperature is lower than the return air temperature and no pre-cooling is required. ",
+			  "possible_causes": "Faulty run of Sensible Heat Recovery Wheel may disturb the overall thermal balance of the system and can also lead to increased energy usage (through increased cooling demand).",
+			  "moduleName": "ahureading",
+			  "category": "AHU",
+			  "severity": "Major",
+			  "threshold_metric": "returnairtemperature",
+			  "threshold_metric_display": "Return Air Temperature",
+			  "possible_solution": "This fault/alarm may trigger due to miscalibration of temperature and/or humidity sensors.",
+			  "ASSET_SELECTION_CRITERIA": {
+			    "categoryType": "AHU",
+			    "includeResource": "${includeResource}",
+			    "excludeResource": "${excludeResource}"
+			  },
+			  "preRequsite": {
+			    "action": "PreRequsite",
+			    "moduleName": "ahureading",
+			    "threshold_metric": "sensibleheatwheelautomanualstatus",
+			    "thresholdType": 1,
+			    "operatorId": 9,
+			    "percentage": "1",
+			    "condition_statement": "When Sensible Heat Wheel is in manual mode",
+			    "workflow": {
+			      "expressions": [
+			        {
+			          "name": "a",
+			          "aggregateString": "lastValue",
+			          "fieldName": "sensibleheatwheelautomanualstatus",
+			          "moduleName": "ahureading",
+			          "aggregateCondition": [],
+			          "criteria": {
+			            "pattern": "(1)",
+			            "conditions": {
+			              "1": {
+			                "fieldName": "parentId",
+			                "operatorId": 9,
+			                "sequence": "0",
+			                "value": "${resourceId}"
+			              }
+			            }
+			          }
+			        }
+			      ],
+			      "resultEvaluator": "a==Auto",
+			      "parameters": [
+			        {
+			          "name": "resourceId",
+			          "typeString": "Number"
+			        }
+			      ]
+			    }
+			  },
+			  "alarmCondition": {
+			    "condition": "${{exhaustairdampercommand}}==1 && ${{exhaustairdamperstatus}}==0",
+			    "for": "${interval}",
+			    "action": "TRIGGER_ALARM",
+			    "thresholdType": 5,
+			    "workflow": {
+			      "expressions": [
+			        {
+			          "name": "A",
+			          "aggregateString": "lastValue",
+			          "fieldName": "supplyfanairflowstatus",
+			          "moduleName": "ahureading",
+			          "criteria": {
+			            "pattern": "(1)",
+			            "conditions": {
+			              "1": {
+			                "fieldName": "parentId",
+			                "operatorId": 9,
+			                "sequence": "1",
+			                "value": "${resourceId}"
+			              }
+			            }
+			          },
+			          "conditionSeqVsBaselineId": {},
+			          "orderByFieldName": "ttime",
+			          "sortBy": "desc",
+			          "limit": 1
+			        },
+			        {
+			          "name": "B",
+			          "constant": "1"
+			        },
+			        {
+			          "name": "C",
+			          "aggregateString": "lastValue",
+			          "fieldName": "returnairtemperature",
+			          "moduleName": "ahureading",
+			          "criteria": {
+			            "pattern": "(1)",
+			            "conditions": {
+			              "1": {
+			                "fieldName": "parentId",
+			                "operatorId": 9,
+			                "sequence": "1",
+			                "value": "${resourceId}"
+			              }
+			            }
+			          },
+			          "conditionSeqVsBaselineId": {},
+			          "orderByFieldName": "ttime",
+			          "sortBy": "desc",
+			          "limit": 1
+			        },
+			        {
+			          "name": "D",
+			          "aggregateString": "lastValue",
+			          "fieldName": "outsideairtemperature",
+			          "moduleName": "ahureading",
+			          "criteria": {
+			            "pattern": "(1)",
+			            "conditions": {
+			              "1": {
+			                "fieldName": "parentId",
+			                "operatorId": 9,
+			                "sequence": "1",
+			                "value": "${resourceId}"
+			              }
+			            }
+			          },
+			          "conditionSeqVsBaselineId": {},
+			          "orderByFieldName": "ttime",
+			          "sortBy": "desc",
+			          "limit": 1
+			        },
+			        {
+			          "name": "F",
+			          "constant": "2"
+			        },
+			        {
+			          "name": "G",
+			          "aggregateString": "lastValue",
+			          "fieldName": "sensibleheatwheelcommand",
+			          "moduleName": "ahureading",
+			          "criteria": {
+			            "pattern": "(1)",
+			            "conditions": {
+			              "1": {
+			                "fieldName": "parentId",
+			                "operatorId": 9,
+			                "sequence": "1",
+			                "value": "${resourceId}"
+			              }
+			            }
+			          },
+			          "conditionSeqVsBaselineId": {},
+			          "orderByFieldName": "ttime",
+			          "sortBy": "desc",
+			          "limit": 1
+			        },
+			        {
+			          "name": "H",
+			          "constant": "1"
+			        },
+			        {
+			          "name": "I",
+			          "aggregateString": "lastValue",
+			          "fieldName": "sensibleheatwheelrunstatus",
+			          "moduleName": "ahureading",
+			          "criteria": {
+			            "pattern": "(1)",
+			            "conditions": {
+			              "1": {
+			                "fieldName": "parentId",
+			                "operatorId": 9,
+			                "sequence": "1",
+			                "value": "${resourceId}"
+			              }
+			            }
+			          },
+			          "conditionSeqVsBaselineId": {},
+			          "orderByFieldName": "ttime",
+			          "sortBy": "desc",
+			          "limit": 1
+			        },
+			        {
+			          "name": "J",
+			          "constant": "1"
+			        }
+			      ],
+			      "parameters": [
+			        {
+			          "name": "resourceId",
+			          "typeString": "Number"
+			        }
+			      ],
+			      "resultEvaluator": "(A==B)&&(C-D>=F)&&(G==H)&&(I==J)"
+			    },
+			    "condition_statement": "When Supply Air Fan Status is on and the differnce of Return air temperature and Outside air temperature is less than 2 °C and Sensible Heat Wheel Status is On and Sensible Heat Wheel Command is On "
+			  }
+			}
+	},
+	"12": {
+		"fdd_rule": {
+			  "name": "Enthalpy Heat Recovery wheel fail ",
+			  "description": "Enthalpy Heat Recovery wheel fail ",
+			  "problem": "The enthalpy heat recovery wheel failed to start when commanded ON due to mechanical issues.",
+			  "possible_causes": "",
+			  "moduleName": "ahureading",
+			  "category": "AHU",
+			  "severity": "Major",
+			  "threshold_metric": "enthalpyheatwheelrunstatus",
+			  "threshold_metric_display": "Enthalpy Heatwheel Run Status",
+			  "possible_solution": "",
+			  "ASSET_SELECTION_CRITERIA": {
+			    "categoryType": "AHU",
+			    "includeResource": "${includeResource}",
+			    "excludeResource": "${excludeResource}"
+			  },
+			  "preRequsite": {
+			    "action": "PreRequsite",
+			    "moduleName": "ahureading",
+			    "threshold_metric": "supplyfanairflowstatus",
+			    "thresholdType": 1,
+			    "operatorId": 9,
+			    "percentage": "1",
+			    "condition_statement": "When Supply Fan Airflow Status is On",
+			    "workflow": {
+			      "expressions": [
+			        {
+			          "name": "a",
+			          "aggregateString": "lastValue",
+			          "fieldName": "enthalpyheatwheelautomanualstatus",
+			          "moduleName": "ahureading",
+			          "aggregateCondition": [],
+			          "criteria": {
+			            "pattern": "(1)",
+			            "conditions": {
+			              "1": {
+			                "fieldName": "parentId",
+			                "operatorId": 9,
+			                "sequence": "1",
+			                "value": "${resourceId}"
+			              }
+			            }
+			          }
+			        }
+			      ],
+			      "resultEvaluator": "a==1",
+			      "parameters": [
+			        {
+			          "name": "resourceId",
+			          "typeString": "Number"
+			        }
+			      ]
+			    }
+			  },
+			  "alarmCondition": {
+			    "condition": "${{exhaustairdampercommand}}==1 && ${{exhaustairdamperstatus}}==0",
+			    "for": "${interval}",
+			    "action": "TRIGGER_ALARM",
+			    "thresholdType": 5,
+			    "workflow": {
+			      "expressions": [
+			        {
+			          "name": "A",
+			          "aggregateString": "lastValue",
+			          "fieldName": "enthalpyheatwheelcommand",
+			          "moduleName": "ahureading",
+			          "criteria": {
+			            "pattern": "(1)",
+			            "conditions": {
+			              "1": {
+			                "fieldName": "parentId",
+			                "operatorId": 9,
+			                "sequence": "1",
+			                "value": "${resourceId}"
+			              }
+			            }
+			          },
+			          "conditionSeqVsBaselineId": {},
+			          "orderByFieldName": "ttime",
+			          "sortBy": "desc",
+			          "limit": 1
+			        },
+			        {
+			          "name": "B",
+			          "constant": "1"
+			        },
+			        {
+			          "name": "C",
+			          "aggregateString": "lastValue",
+			          "fieldName": "enthalpyheatwheelrunstatus",
+			          "moduleName": "ahureading",
+			          "criteria": {
+			            "pattern": "(1)",
+			            "conditions": {
+			              "1": {
+			                "fieldName": "parentId",
+			                "operatorId": 9,
+			                "sequence": "1",
+			                "value": "${resourceId}"
+			              }
+			            }
+			          },
+			          "conditionSeqVsBaselineId": {},
+			          "orderByFieldName": "ttime",
+			          "sortBy": "desc",
+			          "limit": 1
+			        },
+			        {
+			          "name": "D",
+			          "constant": "0"
+			        }
+			      ],
+			      "parameters": [
+			        {
+			          "name": "resourceId",
+			          "typeString": "Number"
+			        }
+			      ],
+			      "resultEvaluator": "(A==B)&&(C==D)"
+			    },
+			    "condition_statement": " Enthalpy Heat Wheel Status is On and Enthalpy Heat Wheel Command is Off "
+			  }
+			}
+	},
+	"13": {
+		"fdd_rule": {
+			  "name": "Sensible Heat Recovery wheel fail ",
+			  "description": "Sensible Heat Recovery wheel fail ",
+			  "problem": "The Sensible heat recovery wheel failed to start when commanded ON due to mechanical issues.",
+			  "possible_causes": "",
+			  "moduleName": "ahureading",
+			  "category": "AHU",
+			  "severity": "Major",
+			  "threshold_metric": "sensibleheatwheelrunstatus",
+			  "threshold_metric_display": "Sensible Heatwheel Run Status",
+			  "possible_solution": "",
+			  "ASSET_SELECTION_CRITERIA": {
+			    "categoryType": "AHU",
+			    "includeResource": "${includeResource}",
+			    "excludeResource": "${excludeResource}"
+			  },
+			  "preRequsite": {
+			    "action": "PreRequsite",
+			    "moduleName": "ahureading",
+			    "threshold_metric": "supplyfanairflowstatus",
+			    "thresholdType": 1,
+			    "operatorId": 9,
+			    "percentage": "1",
+			    "condition_statement": "When Supply Fan Airflow Status is On",
+			    "workflow": {
+			      "expressions": [
+			        {
+			          "name": "a",
+			          "aggregateString": "lastValue",
+			          "fieldName": "sensibleheatwheelautomanualstatus",
+			          "moduleName": "ahureading",
+			          "aggregateCondition": [],
+			          "criteria": {
+			            "pattern": "(1)",
+			            "conditions": {
+			              "1": {
+			                "fieldName": "parentId",
+			                "operatorId": 9,
+			                "sequence": "1",
+			                "value": "${resourceId}"
+			              }
+			            }
+			          }
+			        }
+			      ],
+			      "resultEvaluator": "a==1",
+			      "parameters": [
+			        {
+			          "name": "resourceId",
+			          "typeString": "Number"
+			        }
+			      ]
+			    }
+			  },
+			  "alarmCondition": {
+			    "condition": "${{exhaustairdampercommand}}==1 && ${{exhaustairdamperstatus}}==0",
+			    "for": "${interval}",
+			    "action": "TRIGGER_ALARM",
+			    "thresholdType": 5,
+			    "workflow": {
+			      "expressions": [
+			        {
+			          "name": "A",
+			          "aggregateString": "lastValue",
+			          "fieldName": "sensibleheatwheelcommand",
+			          "moduleName": "ahureading",
+			          "criteria": {
+			            "pattern": "(1)",
+			            "conditions": {
+			              "1": {
+			                "fieldName": "parentId",
+			                "operatorId": 9,
+			                "sequence": "1",
+			                "value": "${resourceId}"
+			              }
+			            }
+			          },
+			          "conditionSeqVsBaselineId": {},
+			          "orderByFieldName": "ttime",
+			          "sortBy": "desc",
+			          "limit": 1
+			        },
+			        {
+			          "name": "B",
+			          "constant": "1"
+			        },
+			        {
+			          "name": "C",
+			          "aggregateString": "lastValue",
+			          "fieldName": "sensibleheatwheelrunstatus",
+			          "moduleName": "ahureading",
+			          "criteria": {
+			            "pattern": "(1)",
+			            "conditions": {
+			              "1": {
+			                "fieldName": "parentId",
+			                "operatorId": 9,
+			                "sequence": "1",
+			                "value": "${resourceId}"
+			              }
+			            }
+			          },
+			          "conditionSeqVsBaselineId": {},
+			          "orderByFieldName": "ttime",
+			          "sortBy": "desc",
+			          "limit": 1
+			        },
+			        {
+			          "name": "D",
+			          "constant": "0"
+			        }
+			      ],
+			      "parameters": [
+			        {
+			          "name": "resourceId",
+			          "typeString": "Number"
+			        }
+			      ],
+			      "resultEvaluator": "(A==B)&&(C==D)"
+			    },
+			    "condition_statement": " Sensible Heat Wheel Status is On and Sensible Heat Wheel Command is Off "
+			  }
+			}
+	},
+	"14" :{
+		"fdd_rule": {
+			  "name": "AHU Cooling coil Actuator not opening based on Temperature Setpoint",
+			  "description": "AHU Cooling coil Actuator not opening based on Temperature Setpoint",
+			  "problem": "Cooling Coil Valve is not following the command or feedback sensor error.",
+			  "possible_causes": "This may happen if the cooling valve actuator feedback is different from the command due to physical issues (dirt or debris accumulation restriciting the actuator movement) or sensor/signal recieving issues.",
+			  "moduleName": "ahureading",
+			  "category": "AHU",
+			  "severity": "Major",
+			  "threshold_metric": "supplyairtemperature",
+			  "threshold_metric_display": "Supply Air Temperature ",
+			  "possible_solution": "The cooling coil may be opening more than desired or not opening enough as commanded due to which there may be overcooling or undercooling issues.",
+			  "ASSET_SELECTION_CRITERIA": {
+			    "categoryType": "AHU",
+			    "includeResource": "${includeResource}",
+			    "excludeResource": "${excludeResource}"
+			  },
+			  "preRequsite": {
+			    "action": "PreRequsite",
+			    "moduleName": "ahureading",
+			    "threshold_metric": "coolingcoilvalvecommand",
+			    "thresholdType": 1,
+			    "operatorId": 9,
+			    "percentage": "1",
+			    "condition_statement": "When Supply Cooling Coil Valve Command is On",
+			    "workflow": {
+			      "expressions": [
+			        {
+			          "name": "a",
+			          "aggregateString": "lastValue",
+			          "fieldName": "coolingcoilvalvecommand",
+			          "moduleName": "ahureading",
+			          "aggregateCondition": [],
+			          "criteria": {
+			            "pattern": "(1)",
+			            "conditions": {
+			              "1": {
+			                "fieldName": "parentId",
+			                "operatorId": 9,
+			                "sequence": "1",
+			                "value": "${resourceId}"
+			              }
+			            }
+			          }
+			        }
+			      ],
+			      "resultEvaluator": "a==0",
+			      "parameters": [
+			        {
+			          "name": "resourceId",
+			          "typeString": "Number"
+			        }
+			      ]
+			    }
+			  },
+			  "alarmCondition": {
+			    "condition": "Supply Air Temperature  > Supply Air Temperature Set-point && Cooling Coil Valve Command = 0 && Cooling Coil Valve FeedBack =0",
+			    "for": "${interval}",
+			    "action": "TRIGGER_ALARM",
+			    "thresholdType": 5,
+			    "workflow": {
+			      "expressions": [
+			        {
+			          "name": "A",
+			          "aggregateString": "lastValue",
+			          "fieldName": "coolingcoilvalvefeedback",
+			          "moduleName": "ahureading",
+			          "criteria": {
+			            "pattern": "(1)",
+			            "conditions": {
+			              "1": {
+			                "fieldName": "parentId",
+			                "operatorId": 9,
+			                "sequence": "1",
+			                "value": "${resourceId}"
+			              }
+			            }
+			          },
+			          "conditionSeqVsBaselineId": {},
+			          "orderByFieldName": "ttime",
+			          "sortBy": "desc",
+			          "limit": 1
+			        },
+			        {
+			          "name": "B",
+			          "constant": "0"
+			        },
+			        {
+			          "name": "C",
+			          "aggregateString": "lastValue",
+			          "fieldName": "supplyairtemperature",
+			          "moduleName": "ahureading",
+			          "criteria": {
+			            "pattern": "(1)",
+			            "conditions": {
+			              "1": {
+			                "fieldName": "parentId",
+			                "operatorId": 9,
+			                "sequence": "1",
+			                "value": "${resourceId}"
+			              }
+			            }
+			          },
+			          "conditionSeqVsBaselineId": {},
+			          "orderByFieldName": "ttime",
+			          "sortBy": "desc",
+			          "limit": 1
+			        },
+			        {
+			          "name": "D",
+			          "aggregateString": "lastValue",
+			          "fieldName": "supplyairtemperaturesetpoint",
+			          "moduleName": "ahureading",
+			          "criteria": {
+			            "pattern": "(1)",
+			            "conditions": {
+			              "1": {
+			                "fieldName": "parentId",
+			                "operatorId": 9,
+			                "sequence": "1",
+			                "value": "${resourceId}"
+			              }
+			            }
+			          },
+			          "conditionSeqVsBaselineId": {},
+			          "orderByFieldName": "ttime",
+			          "sortBy": "desc",
+			          "limit": 1
+			        }
+			      ],
+			      "parameters": [
+			        {
+			          "name": "resourceId",
+			          "typeString": "Number"
+			        }
+			      ],
+			      "resultEvaluator": "(A==B)&&(C>D)",
+			      "workflowUIMode": 1
+			    },
+			    "condition_statement": "When cooling coil valve command is On and Supply Air Temperature is greater then Supply air temperature Set-Point "
+			  }
+			}
+		},
+		"15": {
+			"fdd_rule":	{
+			  "name": "AHU Cooling coil Actuator not closing based on Temperature Setpoint",
+			  "description": "AHU Cooling coil Actuator not closing based on Temperature Setpoint",
+			  "problem": "Cooling Coil Valve is not following the command or feedback sensor error.",
+			  "possible_causes": "This may happen if the cooling valve actuator feedback is different from the command due to physical issues (dirt or debris accumulation restriciting the actuator movement) or sensor/signal recieving issues.",
+			  "moduleName": "ahureading",
+			  "category": "AHU",
+			  "severity": "Major",
+			  "threshold_metric": "supplyairtemperature",
+			  "threshold_metric_display": "Supply Air Temperature ",
+			  "possible_solution": "The cooling coil may be closing more than desired or not closing enough as commanded due to which there may be overcooling or undercooling issues.",
+			  "ASSET_SELECTION_CRITERIA": {
+			    "categoryType": "AHU",
+			    "includeResource": "${includeResource}",
+			    "excludeResource": "${excludeResource}"
+			  },
+			  "preRequsite": {
+			    "action": "PreRequsite",
+			    "moduleName": "ahureading",
+			    "threshold_metric": "coolingcoilvalvecommand",
+			    "thresholdType": 1,
+			    "operatorId": 9,
+			    "percentage": "1",
+			    "condition_statement": "When Supply Cooling Coil Valve Command is On",
+			    "workflow": {
+			      "expressions": [
+			        {
+			          "name": "a",
+			          "aggregateString": "lastValue",
+			          "fieldName": "coolingcoilvalvecommand",
+			          "moduleName": "ahureading",
+			          "aggregateCondition": [],
+			          "criteria": {
+			            "pattern": "(1)",
+			            "conditions": {
+			              "1": {
+			                "fieldName": "parentId",
+			                "operatorId": 9,
+			                "sequence": "1",
+			                "value": "${resourceId}"
+			              }
+			            }
+			          }
+			        }
+			      ],
+			      "resultEvaluator": "a==1",
+			      "parameters": [
+			        {
+			          "name": "resourceId",
+			          "typeString": "Number"
+			        }
+			      ]
+			    }
+			  },
+			  "alarmCondition": {
+			    "condition": "Supply Air Temperature  > Supply Air Temperature Set-point && Cooling Coil Valve Command = 1 && Cooling Coil Valve FeedBack =0",
+			    "for": "${interval}",
+			    "action": "TRIGGER_ALARM",
+			    "thresholdType": 5,
+			    "workflow": {
+			      "expressions": [
+			        {
+			          "name": "A",
+			          "aggregateString": "lastValue",
+			          "fieldName": "coolingcoilvalvefeedback",
+			          "moduleName": "ahureading",
+			          "criteria": {
+			            "pattern": "(1)",
+			            "conditions": {
+			              "1": {
+			                "fieldName": "parentId",
+			                "operatorId": 9,
+			                "sequence": "1",
+			                "value": "${resourceId}"
+			              }
+			            }
+			          },
+			          "conditionSeqVsBaselineId": {},
+			          "orderByFieldName": "ttime",
+			          "sortBy": "desc",
+			          "limit": 1
+			        },
+			        {
+			          "name": "B",
+			          "constant": "0"
+			        },
+			        {
+			          "name": "C",
+			          "aggregateString": "lastValue",
+			          "fieldName": "supplyairtemperature",
+			          "moduleName": "ahureading",
+			          "criteria": {
+			            "pattern": "(1)",
+			            "conditions": {
+			              "1": {
+			                "fieldName": "parentId",
+			                "operatorId": 9,
+			                "sequence": "1",
+			                "value": "${resourceId}"
+			              }
+			            }
+			          },
+			          "orderByFieldName": "ttime",
+			          "sortBy": "desc",
+			          "limit": 1
+			        },
+			        {
+			          "name": "D",
+			          "aggregateString": "lastValue",
+			          "fieldName": "supplyairtemperaturesetpoint",
+			          "moduleName": "ahureading",
+			          "criteria": {
+			            "pattern": "(1)",
+			            "conditions": {
+			              "1": {
+			                "fieldName": "parentId",
+			                "operatorId": 9,
+			                "sequence": "1",
+			                "value": "${resourceId}"
+			              }
+			            }
+			          },
+			          "orderByFieldName": "ttime",
+			          "sortBy": "desc",
+			          "limit": 1
+			        }
+			      ],
+			      "parameters": [
+			        {
+			          "name": "resourceId",
+			          "typeString": "Number"
+			        }
+			      ],
+			      "resultEvaluator": "(A==B)&&(C>D)"
+			    },
+			    "condition_statement": "When cooling coil valve command is On and Supply Air Temperature is greater then Supply air temperature Set-Point "
+			  }
+			}
+		},
+		"16": {
+			"fdd_rule": {
+			  "name": "AHU Cooling Coil Valve control issue",
+			  "description": "AHU Cooling Coil Valve control issue",
+			  "problem": "Cooling Coil Valve Modulating when Supply Air Fan is commanded OFF",
+			  "possible_causes": "",
+			  "moduleName": "ahureading",
+			  "category": "AHU",
+			  "severity": "Major",
+			  "threshold_metric": "coolingcoilvalvefeedback",
+			  "threshold_metric_display": "Cooling Coil Valve FeedBack  ",
+			  "possible_solution": "",
+			  "ASSET_SELECTION_CRITERIA": {
+			    "categoryType": "AHU",
+			    "includeResource": "${includeResource}",
+			    "excludeResource": "${excludeResource}"
+			  },
+			  "preRequsite": {
+			    "action": "PreRequsite",
+			    "moduleName": "ahureading",
+			    "threshold_metric": "supplyairfanautomanualstatus",
+			    "thresholdType": 1,
+			    "operatorId": 9,
+			    "percentage": "1",
+			    "condition_statement": "When Supply Air Fan Auto/Manual Status Command is Manula",
+			    "workflow": {
+			      "expressions": [
+			        {
+			          "name": "a",
+			          "aggregateString": "lastValue",
+			          "fieldName": "supplyairfanautomanualstatus",
+			          "moduleName": "ahureading",
+			          "aggregateCondition": [],
+			          "criteria": {
+			            "pattern": "(1)",
+			            "conditions": {
+			              "1": {
+			                "fieldName": "parentId",
+			                "operatorId": 9,
+			                "sequence": "0",
+			                "value": "${resourceId}"
+			              }
+			            }
+			          }
+			        }
+			      ],
+			      "resultEvaluator": "a==0",
+			      "parameters": [
+			        {
+			          "name": "resourceId",
+			          "typeString": "Number"
+			        }
+			      ]
+			    }
+			  },
+			  "alarmCondition": {
+			    "condition": "Cooling Coil Valve Feedback Value > 2%",
+			    "for": "${interval}",
+			    "action": "TRIGGER_ALARM",
+			    "thresholdType": 5,
+			    "workflow": {
+			      "expressions": [
+			        {
+			          "name": "A",
+			          "aggregateString": "lastValue",
+			          "fieldName": "coolingcoilvalvefeedback",
+			          "moduleName": "ahureading",
+			          "criteria": {
+			            "pattern": "(1)",
+			            "conditions": {
+			              "1": {
+			                "fieldName": "parentId",
+			                "operatorId": 9,
+			                "sequence": "1",
+			                "value": "${resourceId}"
+			              }
+			            }
+			          },
+			          "conditionSeqVsBaselineId": {},
+			          "orderByFieldName": "ttime",
+			          "sortBy": "desc",
+			          "limit": 1
+			        },
+			        {
+			          "name": "B",
+			          "constant": "2"
+			        }
+			      ],
+			      "parameters": [
+			        {
+			          "name": "resourceId",
+			          "typeString": "Number"
+			        }
+			      ],
+			      "resultEvaluator": "(A > B)"
+			    },
+			    "condition_statement": "When Cooling Coil Valve Feedback Value is greater then 2% "
+			  }
+			}
+		},
+		"17": {
+			"fdd_rule" : {
+				  "name": "Cooling Coil Clogged for Supply Air flow",
+				  "description": "Cooling Coil Clogged for Supply Air flow",
+				  "problem": "Cooling coil airflow pressure drop much higher than the threshold (Only a small fraction of airflow passes through) During the cooling process, condensate forms on the coil. The condensate makes it very easy for dirt and debris to stick to and clog up the coil's air passages. Additionally, coils are great places for mold development that can further obstruct airflow.",
+				  "possible_causes": "1. Reduced airflow due to dirt and debris blockages means reduced comfort for end user. 2. The blower must work harder and use more electricity to pull airflow through the blocked coil passages. 3. A dirty coil can contaminate supply ducts and reintroduce contaminants to spaces, including mold development and spores.",
+				  "moduleName": "ahureading",
+				  "category": "AHU",
+				  "severity": "Major",
+				  "threshold_metric": "airflowcoildp",
+				  "threshold_metric_display": "AirFlow Coil Differinatial Pressure",
+				  "possible_solution": "1. Inspect the cooling coil for cleanliness and check any deposited particles and impurities.2. Wash and clean the cooling coil ",
+				  "ASSET_SELECTION_CRITERIA": {
+				    "categoryType": "AHU",
+				    "includeResource": "${includeResource}",
+				    "excludeResource": "${excludeResource}"
+				  },
+				  "preRequsite": {
+				    "action": "PreRequsite",
+				    "moduleName": "ahureading",
+				    "threshold_metric": "airflowcoildp",
+				    "thresholdType": 1,
+				    "operatorId": 9,
+				    "percentage": "1",
+				    "condition_statement": "When Supply Air Fan Auto/Manual Status Command is Manula",
+				    "workflow": {
+				        "expressions": [
+				          {
+				            "name": "a",
+				            "aggregateString": "lastValue",
+				            "fieldName": "airflowcoildp",
+				            "moduleName": "ahureading",
+				            "aggregateCondition": [],
+				            "criteria": {
+				              "pattern": "(1)",
+				              "conditions": {
+				                "1": {
+				                  "fieldName": "parentId",
+				                  "operatorId": 9,
+				                  "sequence": "1",
+				                  "value": "${resourceId}"
+				                }
+				              }
+				            }
+				          }
+				        ],
+				        "resultEvaluator": "a>=1000",
+				        "parameters": [
+				          {
+				            "name": "resourceId",
+				            "typeString": "Number"
+				          }
+				        ]
+				      }
+				  },
+				  "alarmCondition": {
+				    "condition": "AirFlow Coil DP ≥ 1000",
+				    "for": "${interval}",
+				    "action": "TRIGGER_ALARM",
+				    "thresholdType": 6,
+				    "workflow": {
+				        "expressions": [
+				          {
+				            "name": "a",
+				            "fieldName": "airflowcoildp",
+				            "moduleName": "ahureading",
+				            "criteria": {
+				              "pattern": "(1 and 2)",
+				              "conditions": {
+				                "1": {
+				                  "fieldName": "parentId",
+				                  "operatorId": 9,
+				                  "sequence": "1",
+				                  "value": "${resourceId}"
+				                },
+				                "2": {
+				                  "fieldName": "ttime",
+				                  "operatorId": 42,
+				                  "sequence": "2",
+				                  "value": "1,${ttime}"
+				                }
+				              }
+				            }
+				          },
+				          {
+				            "name": "b",
+				            "defaultFunctionContext": {
+				              "nameSpace": "default",
+				              "functionName": "allMatch",
+				              "params": "a"
+				            }
+				          }
+				        ],
+				        "parameters": [
+				          {
+				            "name": "resourceId",
+				            "typeString": "Number"
+				          },
+				          {
+				            "name": "ttime",
+				            "typeString": "Number"
+				          }
+				        ],
+				        "resultEvaluator": "b"
+				      },
+				    "condition_statement": "If  AirFlow Coil DP ≥ 1000 continuosly for 1 hour (6 ten min intervals)"
+				  }
+				}
+		},
+		"18": {
+			"fdd_rule": {
+				  "name": "AHU Cooling coil chilled Water pressure too high",
+				  "description": "AHU Cooling coil chilled Water pressure too high",
+				  "problem": "Mainly due to fouling in the chilled water tubes",
+				  "possible_causes": "",
+				  "moduleName": "ahureading",
+				  "category": "AHU",
+				  "severity": "Major",
+				  "threshold_metric": "airflowcoildp",
+				  "threshold_metric_display": "AirFlow Coil Differinatial Pressure",
+				  "possible_solution": "",
+				  "ASSET_SELECTION_CRITERIA": {
+				    "categoryType": "AHU",
+				    "includeResource": "${includeResource}",
+				    "excludeResource": "${excludeResource}"
+				  },
+				  "preRequsite": {
+				    "action": "PreRequsite",
+				    "moduleName": "ahureading",
+				    "threshold_metric": "chilledwaterflowdp",
+				    "thresholdType": 1,
+				    "operatorId": 9,
+				    "percentage": "1",
+				    "condition_statement": "When Supply Air Fan Auto/Manual Status Command is Manula",
+				    "workflow": {
+				        "expressions": [
+				          {
+				            "name": "a",
+				            "aggregateString": "lastValue",
+				            "fieldName": "chilledwaterflowdp",
+				            "moduleName": "ahureading",
+				            "criteria": {
+				              "pattern": "(1)",
+				              "conditions": {
+				                "1": {
+				                  "fieldName": "parentId",
+				                  "operatorId": 9,
+				                  "sequence": "1",
+				                  "value": "${resourceId}"
+				                }
+				              }
+				            }
+				          }
+				        ],
+				        "resultEvaluator": "a>35",
+				        "parameters": [
+				          {
+				            "name": "resourceId",
+				            "typeString": "Number"
+				          }
+				        ]
+				      }
+				  },
+				  "alarmCondition": {
+				    "condition": "Chilled Water flow  DP > 35",
+				    "for": "${interval}",
+				    "action": "TRIGGER_ALARM",
+				    "thresholdType": 6,
+				    "workflow": {
+				        "expressions": [
+				          {
+				            "name": "a",
+				            "fieldName": "chilledwaterflowdp",
+				            "moduleName": "ahureading",
+				            "criteria": {
+				              "pattern": "(1 and 2)",
+				              "conditions": {
+				                "1": {
+				                  "fieldName": "parentId",
+				                  "operatorId": 9,
+				                  "sequence": "1",
+				                  "value": "${resourceId}"
+				                },
+				                "2": {
+				                  "fieldName": "ttime",
+				                  "operatorId": 42,
+				                  "sequence": "2",
+				                  "value": "1,${ttime}"
+				                }
+				              }
+				            }
+				          },
+				          {
+				            "name": "b",
+				            "defaultFunctionContext": {
+				              "nameSpace": "default",
+				              "functionName": "allMatch",
+				              "params": "a"
+				            }
+				          }
+				        ],
+				        "parameters": [
+				          {
+				            "name": "resourceId",
+				            "typeString": "Number"
+				          },
+				          {
+				            "name": "ttime",
+				            "typeString": "Number"
+				          }
+				        ],
+				        "resultEvaluator": "b"
+				      },
+				    "condition_statement": "If  AirFlow Coil DP ≥ 1000 continuosly for 1 hour (6 ten min intervals)"
+				  }
+				}
+		},
+		"19": {
+			"fdd_rule": {
+				  "name": "High Chilled water Delta T",
+				  "description": "High Chilled water Delta T",
+				  "problem": "Chilled water delta T across cooling coil too high",
+				  "possible_causes": "High chilled water delta T indicates insufficient flow to the evaporator coil of the OHU which can cause cooling issues. ",
+				  "moduleName": "ahureading",
+				  "category": "AHU",
+				  "severity": "Major",
+				  "threshold_metric": "returnairtemperature",
+				  "threshold_metric_display": "Return Air Temperature",
+				  "possible_solution": "",
+				  "ASSET_SELECTION_CRITERIA": {
+				    "categoryType": "AHU",
+				    "includeResource": "${includeResource}",
+				    "excludeResource": "${excludeResource}"
+				  },
+				  "preRequsite": null,
+				  "alarmCondition": {
+				    "condition": "Chilled Water flow  DP > 35",
+				    "for": "${interval}",
+				    "action": "TRIGGER_ALARM",
+				    "thresholdType": 6,
+				    "workflow": {
+				      "expressions": [
+				        {
+				          "name": "A",
+				          "aggregateString": "lastValue",
+				          "fieldName": "returnairtemperature",
+				          "moduleName": "ahureading",
+				          "criteria": {
+				            "pattern": "(1)",
+				            "conditions": {
+				              "1": {
+				                "fieldName": "parentId",
+				                "operatorId": 9,
+				                "sequence": "1",
+				                "value": "${resourceId}"
+				              }
+				            }
+				          },
+				          "conditionSeqVsBaselineId": {},
+				          "orderByFieldName": "ttime",
+				          "sortBy": "desc",
+				          "limit": 1
+				        },
+				        {
+				          "name": "B",
+				          "aggregateString": "lastValue",
+				          "fieldName": "supplyairtemperature",
+				          "moduleName": "ahureading",
+				          "criteria": {
+				            "pattern": "(1)",
+				            "conditions": {
+				              "1": {
+				                "fieldName": "parentId",
+				                "operatorId": 9,
+				                "sequence": "1",
+				                "value": "${resourceId}"
+				              }
+				            }
+				          },
+				          "conditionSeqVsBaselineId": {},
+				          "orderByFieldName": "ttime",
+				          "sortBy": "desc",
+				          "limit": 1
+				        },
+				        {
+				          "name": "C",
+				          "constant": "12.5"
+				        }
+				      ],
+				      "parameters": [
+				        {
+				          "name": "resourceId",
+				          "typeString": "Number"
+				        }
+				      ],
+				      "resultEvaluator": "(A-B)>(C)"
+				    },
+				    "overPeriod": 3600,
+				    "condition_statement": "If  AirFlow Coil DP ≥ 1000 continuosly for 1 hour (6 ten min intervals)"
+				  }
+				}
+		},
+		"20": {
+			"fdd_rule": {
+				  "name": "Low Chilled water delta T",
+				  "description": "Low Chilled water delta T",
+				  "problem": "Chilled water delta T across cooling coil too low",
+				  "possible_causes": "Low delta T indicates high CHW flow to coils per TR. This is a serious issue as this may be leading to energy wastage in secondary CHW pumps.",
+				  "moduleName": "ahureading",
+				  "category": "AHU",
+				  "severity": "Major",
+				  "threshold_metric": "returnairtemperature",
+				  "threshold_metric_display": "Return Air Temperature",
+				  "possible_solution": "",
+				  "ASSET_SELECTION_CRITERIA": {
+				    "categoryType": "AHU",
+				    "includeResource": "${includeResource}",
+				    "excludeResource": "${excludeResource}"
+				  },
+				  "preRequsite": null,
+				  "alarmCondition": {
+				    "condition": "Chilled Water flow  DP > 35",
+				    "for": "${interval}",
+				    "action": "TRIGGER_ALARM",
+				    "thresholdType": 6,
+				    "workflow": {
+				      "expressions": [
+				        {
+				          "name": "A",
+				          "aggregateString": "lastValue",
+				          "fieldName": "returnairtemperature",
+				          "moduleName": "ahureading",
+				          "criteria": {
+				            "pattern": "(1)",
+				            "conditions": {
+				              "1": {
+				                "fieldName": "parentId",
+				                "operatorId": 9,
+				                "sequence": "1",
+				                "value": "${resourceId}"
+				              }
+				            }
+				          },
+				          "conditionSeqVsBaselineId": {},
+				          "orderByFieldName": "ttime",
+				          "sortBy": "desc",
+				          "limit": 1
+				        },
+				        {
+				          "name": "B",
+				          "aggregateString": "lastValue",
+				          "fieldName": "supplyairtemperature",
+				          "moduleName": "ahureading",
+				          "criteria": {
+				            "pattern": "(1)",
+				            "conditions": {
+				              "1": {
+				                "fieldName": "parentId",
+				                "operatorId": 9,
+				                "sequence": "1",
+				                "value": "${resourceId}"
+				              }
+				            }
+				          },
+				          "conditionSeqVsBaselineId": {},
+				          "orderByFieldName": "ttime",
+				          "sortBy": "desc",
+				          "limit": 1
+				        },
+				        {
+				          "name": "C",
+				          "constant": "5"
+				        }
+				      ],
+				      "parameters": [
+				        {
+				          "name": "resourceId",
+				          "typeString": "Number"
+				        }
+				      ],
+				      "resultEvaluator": "(A-B) < (C)"
+				    },
+				    "overPeriod": 3600,
+				    "condition_statement": "If  AirFlow Coil DP ≥ 1000 continuosly for 1 hour (6 ten min intervals)"
+				  }
+				}
+		},
+		"21": {
+			"fdd_rule": {
+				  "name": "High Chilled Water Temperature",
+				  "description": "High Chilled Water Temperature",
+				  "problem": "May occur due to higher than usual cooling load demand in the spaces or due to malfunctioning of the cooling coil valve.",
+				  "possible_causes": "The required supply air temperature can't be achieved if the chilled water supply temperature is warmer than required.",
+				  "moduleName": "ahureading",
+				  "category": "AHU",
+				  "severity": "Major",
+				  "threshold_metric": "chilledwaterenteringtemperature",
+				  "threshold_metric_display": "Chilled Water Entering Temperature",
+				  "possible_solution": "",
+				  "ASSET_SELECTION_CRITERIA": {
+				    "categoryType": "AHU",
+				    "includeResource": "${includeResource}",
+				    "excludeResource": "${excludeResource}"
+				  },
+				  "preRequsite": {
+				    "action": "PreRequsite",
+				    "moduleName": "ahureading",
+				    "threshold_metric": "supplyairfanautomanualstatus",
+				    "thresholdType": 1,
+				    "operatorId": 9,
+				    "percentage": "1",
+				    "condition_statement": "When Supply Air Fan Auto/Manual Status Command is Manula",
+				    "workflow": {
+				      "expressions": [
+				        {
+				          "name": "a",
+				          "aggregateString": "lastValue",
+				          "fieldName": "supplyairfanautomanualstatus",
+				          "moduleName": "ahureading",
+				          "criteria": {
+				            "pattern": "(1)",
+				            "conditions": {
+				              "1": {
+				                "fieldName": "parentId",
+				                "operatorId": 9,
+				                "sequence": "1",
+				                "value": "${resourceId}"
+				              }
+				            }
+				          }
+				        }
+				      ],
+				      "resultEvaluator": "a=1",
+				      "parameters": [
+				        {
+				          "name": "resourceId",
+				          "typeString": "Number"
+				        }
+				      ]
+				    }
+				  },
+				  "alarmCondition": {
+				    "condition": "Cooling Coil Valve Feedback ≥ 95% AND Chilled Water Supply Temp>15 degrees",
+				    "for": "${interval}",
+				    "action": "TRIGGER_ALARM",
+				    "thresholdType": 5,
+				    "workflow": {
+				      "expressions": [
+				        {
+				          "name": "A",
+				          "aggregateString": "lastValue",
+				          "fieldName": "coolingcoilvalvefeedback",
+				          "moduleName": "ahureading",
+				          "criteria": {
+				            "pattern": "(1)",
+				            "conditions": {
+				              "1": {
+				                "fieldName": "parentId",
+				                "operatorId": 9,
+				                "sequence": "1",
+				                "value": "${resourceId}"
+				              }
+				            }
+				          },
+				          "conditionSeqVsBaselineId": {},
+				          "orderByFieldName": "ttime",
+				          "sortBy": "desc",
+				          "limit": 1
+				        },
+				        {
+				          "name": "B",
+				          "constant": "95"
+				        },
+				        {
+				          "name": "C",
+				          "aggregateString": "lastValue",
+				          "fieldName": "chilledwaterenteringtemperature",
+				          "moduleName": "ahureading",
+				          "criteria": {
+				            "pattern": "(1)",
+				            "conditions": {
+				              "1": {
+				                "fieldName": "parentId",
+				                "operatorId": 9,
+				                "sequence": "1",
+				                "value": "${resourceId}"
+				              }
+				            }
+				          },
+				          "conditionSeqVsBaselineId": {},
+				          "orderByFieldName": "ttime",
+				          "sortBy": "desc",
+				          "limit": 1
+				        },
+				        {
+				          "name": "D",
+				          "constant": "15"
+				        }
+				      ],
+				      "parameters": [
+				        {
+				          "name": "resourceId",
+				          "typeString": "Number"
+				        }
+				      ],
+				      "resultEvaluator": "(A >= B) && (C > D)"
+				    },
+				    "overPeriod": 1800,
+				    "condition_statement": "Cooling Coil Valve Feedback is greater than or equal to 95% AND Chilled Water Supply Temp is greater than 15 degrees"
+				  }
+				}
+		
+		},
+		"22": {
+			"fdd_rule": {
+				  "name": "AHU Cooling coil Chilled Water Strainer needs cleaning",
+				  "description": "AHU Cooling coil Chilled Water Strainer needs cleaning",
+				  "problem": "Chilled water strainer (wire mesh) clogged with debris (Chilled water flow reduced)",
+				  "possible_causes": "Clogging of strainer reduces the chilled water flow, which reduces the ability of the air handler to transfer heat. Hence, reducing the efficiency of the air handling unit.  The strainer removes the rust and mud from the chilled water system. With time, as the openings in the wire mesh are covered with debris, the strainer begins to offer more resistance to water flow. ",
+				  "moduleName": "ahureading",
+				  "category": "AHU",
+				  "severity": "Major",
+				  "threshold_metric": "chilledwaterstrainerdp",
+				  "threshold_metric_display": "Chilled Water Strainer DP",
+				  "possible_solution": "",
+				  "ASSET_SELECTION_CRITERIA": {
+				    "categoryType": "AHU",
+				    "includeResource": "${includeResource}",
+				    "excludeResource": "${excludeResource}"
+				  },
+				  "preRequsite": {
+				    "action": "PreRequsite",
+				    "moduleName": "ahureading",
+				    "threshold_metric": "chilledwaterstrainerdp",
+				    "thresholdType": 1,
+				    "operatorId": 9,
+				    "percentage": "1",
+				    "condition_statement": "Chilled Water Strainer Dp",
+				    "workflow": {
+				      "expressions": [
+				        {
+				          "name": "a",
+				          "aggregateString": "lastValue",
+				          "fieldName": "chilledwaterflowdp",
+				          "moduleName": "ahureading",
+				          "criteria": {
+				            "pattern": "(1)",
+				            "conditions": {
+				              "1": {
+				                "fieldName": "parentId",
+				                "operatorId": 9,
+				                "sequence": "1",
+				                "value": "${resourceId}"
+				              }
+				            }
+				          }
+				        }
+				      ],
+				      "resultEvaluator": "a> 10",
+				      "parameters": [
+				        {
+				          "name": "resourceId",
+				          "typeString": "Number"
+				        }
+				      ]
+				    }
+				  },
+				  "alarmCondition": {
+				    "condition": "Chilled Water flow  DP > 10",
+				    "for": "${interval}",
+				    "action": "TRIGGER_ALARM",
+				    "thresholdType": 6,
+				    "workflow": {
+				      "expressions": [
+				        {
+				          "name": "a",
+				          "fieldName": "chilledwaterflowdp",
+				          "moduleName": "ahureading",
+				          "criteria": {
+				            "pattern": "(1 and 2)",
+				            "conditions": {
+				              "1": {
+				                "fieldName": "parentId",
+				                "operatorId": 9,
+				                "sequence": "1",
+				                "value": "${resourceId}"
+				              },
+				              "2": {
+				                "fieldName": "ttime",
+				                "operatorId": 42,
+				                "sequence": "2",
+				                "value": "1,${ttime}"
+				              }
+				            }
+				          }
+				        },
+				        {
+				          "name": "b",
+				          "defaultFunctionContext": {
+				            "nameSpace": "default",
+				            "functionName": "allMatch",
+				            "params": "a"
+				          }
+				        }
+				      ],
+				      "parameters": [
+				        {
+				          "name": "resourceId",
+				          "typeString": "Number"
+				        },
+				        {
+				          "name": "ttime",
+				          "typeString": "Number"
+				        }
+				      ],
+				      "resultEvaluator": "b"
+				    },
+				    "condition_statement": "If Chilled Water Strainer Dp ≥ 10 continuosly for 1 hour (6 ten min intervals)"
+				  }
+				}
+		},
+		"23": {
+			"fdd_rule": {
+				  "severity": "Critical",
+				  "possible_causes": "-Due to improper run of Enthalpy wheel\n-Cooling coil actuator is open when not required",
+				  "moduleName": "ahureading",
+				  "description": "Supply air temperature is less than supply air temperature set-point by 95% for at least one hour.",
+				  "threshold_metric": "supplyairdamperstatus",
+				  "possible_solution": "Check for valve logic operation",
+				  "alarmCondition": {
+				    "condition": "{{supplyairtemperature}} < 0.90* {{supplyairtemperaturesetpoint}}",
+				    "workflow": {
+				      "resultEvaluator": "A < ( B *  D)",
+				      "workflowUIMode": 1,
+				      "expressions": [
+				        {
+				          "fieldName": "supplyairtemperature",
+				          "criteria": {
+				            "pattern": "(1)",
+				            "conditions": {
+				              "1": {
+				                "sequence": "1",
+				                "fieldName": "parentId",
+				                "operatorId": 9,
+				                "value": "${resourceId}"
+				              }
+				            }
+				          },
+				          "name": "A",
+				          "moduleName": "ahureading",
+				          "aggregateString": "lastValue"
+				        },
+				        {
+				          "constant": "0.90",
+				          "name": "B"
+				        },
+				        {
+				          "fieldName": "supplyairtemperaturesetpoint",
+				          "criteria": {
+				            "pattern": "(1)",
+				            "conditions": {
+				              "1": {
+				                "sequence": "1",
+				                "fieldName": "parentId",
+				                "operatorId": 9,
+				                "value": "${resourceId}"
+				              }
+				            }
+				          },
+				          "name": "D",
+				          "moduleName": "ahureading",
+				          "aggregateString": "lastValue"
+				        }
+				      ],
+				      "parameters": [
+				        {
+				          "name": "resourceId",
+				          "typeString": "Number"
+				        }
+				      ]
+				    },
+				    "condition_statement": "When Supply air temperature set-point  is greater than supply air temperature",
+				    "for": "${interval}",
+				    "occurences": "${occurences}",
+				    "consecutive": "${consecutive}",
+				    "action": "TRIGGER_ALARM",
+				    "threshold_metric": "supplyairdamperstatus",
+				    "thresholdType": 5
+				  },
+				  "alarmClear": null,
+				  "problem": "Leads to Over cooling of the spaces and also increases the energy consumption ",
+				  "preRequsite": {
+				    "workflow": {
+				      "resultEvaluator": "a==1",
+				      "expressions": [
+				        {
+				          "fieldName": "supplyairfanautomanualstatus",
+				          "criteria": {
+				            "pattern": "(1)",
+				            "conditions": {
+				              "1": {
+				                "sequence": "1",
+				                "fieldName": "parentId",
+				                "operatorId": 9,
+				                "value": "${resourceId}"
+				              }
+				            }
+				          },
+				          "name": "a",
+				          "moduleName": "ahureading",
+				          "aggregateString": "lastValue"
+				        }
+				      ],
+				      "parameters": [
+				        {
+				          "name": "resourceId",
+				          "typeString": "Number"
+				        }
+				      ]
+				    },
+				    "percentage": "1",
+				    "condition_statement": "When supply air fan is in auto mode ",
+				    "moduleName": "ahureading",
+				    "action": "PreRequsite",
+				    "threshold_metric": "runstatus",
+				    "operatorId": 9,
+				    "thresholdType": 1
+				  },
+				  "ASSET_SELECTION_CRITERIA": {
+				    "categoryType": "AHU",
+				    "includeResource": "${includeResource}",
+				    "excludeResource": "${excludeResource}"
+				  },
+				  "name": "AHU Over Cooling",
+				  "threshold_metric_display": "Supply Air Damper Status",
+				  "category": "AHU",
+				  "placeHolder": {
+				    "1": {
+				      "default_value": "All Asset Selected",
+				      "label": "Assets",
+				      "type": "default",
+				      "selection_criteria": {
+				        "displayType": "ASSETCHOOSER"
+				      },
+				      "uniqueId": "resource"
+				    },
+				   	"2": {
+				      "default_value": 4,
+				      "label": "Occurences",
+				      "type": "rules",
+				      "selection_criteria": {
+				        "displayType": "NUMBER"
+				      },
+				      "uniqueId": "occurences"
+				    },
+				    "3": {
+				      "default_value": "false",
+				      "label": "Type",
+				      "type": "rules",
+				      "selection_criteria": {
+				        "displayType": "Radio",
+				        "trueVal": "Consecutive",
+				        "falseVal": "Over Period"
+				     	},
+				      "uniqueId": "consecutive"
+				    },
+				     "4": {
+				      "default_value": 3600,
+				      "label": "Interval",
+				      "type": "rules",
+				      "selection_criteria": {
+				        "displayType": "DURATION"
+				      },
+				      "uniqueId": "interval"
+				    }
+				 }
+				}
+		},
+		"24": {
+			"fdd_rule": {
+				  "severity": "Critical",
+				  "possible_causes": "-Faulty sensor\n-Check for control logic",
+				  "moduleName": "ahureading",
+				  "description": "Relative Higher Humidity",
+				  "threshold_metric": "supplyairhumidity",
+				  "possible_solution": "Replace if faulty sensor",
+				  "alarmCondition": {
+				    "condition": "{{supplyairhumidity}} > 1.1 * {{supplyairhumiditysetpoint}}",
+				    "workflow": {
+				      "resultEvaluator": "A > ( B *  C)",
+				      "workflowUIMode": 1,
+				      "expressions": [
+				        {
+				          "fieldName": "supplyairhumidity",
+				          "criteria": {
+				            "pattern": "(1)",
+				            "conditions": {
+				              "1": {
+				                "sequence": "1",
+				                "fieldName": "parentId",
+				                "operatorId": 9,
+				                "value": "${resourceId}"
+				              }
+				            }
+				          },
+				          "name": "A",
+				          "moduleName": "ahureading",
+				          "aggregateString": "lastValue"
+				        },
+				        {
+				          "constant": "1.1",
+				          "name": "B"
+				        },
+				        {
+				          "fieldName": "supplyairhumiditysetpoint",
+				          "criteria": {
+				            "pattern": "(1)",
+				            "conditions": {
+				              "1": {
+				                "sequence": "1",
+				                "fieldName": "parentId",
+				                "operatorId": 9,
+				                "value": "${resourceId}"
+				              }
+				            }
+				          },
+				          "name": "D",
+				          "moduleName": "ahureading",
+				          "aggregateString": "lastValue"
+				        }
+				      ],
+				      "parameters": [
+				        {
+				          "name": "resourceId",
+				          "typeString": "Number"
+				        }
+				      ]
+				    },
+				    "condition_statement": "When Supply air humidity  is greater than 1.1 times Supply air humidity set- point",
+				    "for": "10",
+				    "action": "TRIGGER_ALARM",
+				    "threshold_metric": "supplyairdamperstatus",
+				    "thresholdType": 5
+				  },
+				  "alarmClear": null,
+				  "problem": "End user may feel stufiness or uneasiness due to high humidity. It is also bad for electronic devices in the space.",
+				  "preRequsite": {
+				    "workflow": {
+				      "resultEvaluator": "a==1",
+				      "expressions": [
+				        {
+				          "fieldName": "supplyfanairflowstatus",
+				          "criteria": {
+				            "pattern": "(1)",
+				            "conditions": {
+				              "1": {
+				                "sequence": "1",
+				                "fieldName": "parentId",
+				                "operatorId": 9,
+				                "value": "${resourceId}"
+				              }
+				            }
+				          },
+				          "name": "a",
+				          "moduleName": "ahureading",
+				          "aggregateString": "lastValue"
+				        }
+				      ],
+				      "parameters": [
+				        {
+				          "name": "resourceId",
+				          "typeString": "Number"
+				        }
+				      ]
+				    },
+				    "percentage": "1",
+				    "condition_statement": "When Supply Fan Airflow Status is On ",
+				    "moduleName": "ahureading",
+				    "action": "PreRequsite",
+				    "threshold_metric": "supplyfanairflowstatus",
+				    "operatorId": 9,
+				    "thresholdType": 1
+				  },
+				  "ASSET_SELECTION_CRITERIA": {
+				    "categoryType": "AHU",
+				    "includeResource": "${includeResource}",
+				    "excludeResource": "${excludeResource}"
+				  },
+				  "name": "FAHU Relative Higher Humidity",
+				  "threshold_metric_display": "Supply Humidity",
+				  "category": "AHU",
+				  "placeHolder": {
+				    "1": {
+				      "default_value": "All Asset Selected",
+				      "label": "Assets",
+				      "type": "default",
+				      "selection_criteria": {
+				        "displayType": "ASSETCHOOSER"
+				      },
+				      "uniqueId": "resource"
+				    },
+				    "2": {
+				      "default_value": "10",
+				      "label": "Interval",
+				      "type": "rules",
+				      "selection_criteria": {
+				        "displayType": "DURATION"
+				      },
+				      "uniqueId": "interval"
+				    }
+				  }
+				}
+		},
+		"25": {
+			"fdd_rule": {
+			  "severity": "Critical",
+			  "possible_causes": "-Faulty sensor\n-Check for control logic",
+			  "moduleName": "ahureading",
+			  "description": "Relative Lower Humidity",
+			  "threshold_metric": "supplyairhumidity",
+			  "possible_solution": "Replace if faulty sensor",
+			  "alarmCondition": {
+			    "condition": "{{supplyairhumidity}} < 0.9 * {{supplyairhumiditysetpoint}}",
+			    "workflow": {
+			      "resultEvaluator": "A < ( B *  C)",
+			      "workflowUIMode": 1,
+			      "expressions": [
+			        {
+			          "fieldName": "supplyairhumidity",
+			          "criteria": {
+			            "pattern": "(1)",
+			            "conditions": {
+			              "1": {
+			                "sequence": "1",
+			                "fieldName": "parentId",
+			                "operatorId": 9,
+			                "value": "${resourceId}"
+			              }
+			            }
+			          },
+			          "name": "A",
+			          "moduleName": "ahureading",
+			          "aggregateString": "lastValue"
+			        },
+			        {
+			          "constant": "0.9",
+			          "name": "B"
+			        },
+			        {
+			          "fieldName": "supplyairhumiditysetpoint",
+			          "criteria": {
+			            "pattern": "(1)",
+			            "conditions": {
+			              "1": {
+			                "sequence": "1",
+			                "fieldName": "parentId",
+			                "operatorId": 9,
+			                "value": "${resourceId}"
+			              }
+			            }
+			          },
+			          "name": "D",
+			          "moduleName": "ahureading",
+			          "aggregateString": "lastValue"
+			        }
+			      ],
+			      "parameters": [
+			        {
+			          "name": "resourceId",
+			          "typeString": "Number"
+			        }
+			      ]
+			    },
+			    "condition_statement": "When Supply air humidity  is lesser than 0.9 times Supply air humidity set- point",
+			    "for": "10",
+			    "action": "TRIGGER_ALARM",
+			    "threshold_metric": "supplyairdamperstatus",
+			    "thresholdType": 5
+			  },
+			  "alarmClear": null,
+			  "problem": "End user may feel excessive dryness on the body and may lead to uneasiness and respiratory issues.",
+			  "preRequsite": {
+			    "workflow": {
+			      "resultEvaluator": "a==1",
+			      "expressions": [
+			        {
+			          "fieldName": "supplyfanairflowstatus",
+			          "criteria": {
+			            "pattern": "(1)",
+			            "conditions": {
+			              "1": {
+			                "sequence": "1",
+			                "fieldName": "parentId",
+			                "operatorId": 9,
+			                "value": "${resourceId}"
+			              }
+			            }
+			          },
+			          "name": "a",
+			          "moduleName": "ahureading",
+			          "aggregateString": "lastValue"
+			        }
+			      ],
+			      "parameters": [
+			        {
+			          "name": "resourceId",
+			          "typeString": "Number"
+			        }
+			      ]
+			    },
+			    "percentage": "1",
+			    "condition_statement": "When Supply Fan Airflow Status is On ",
+			    "moduleName": "ahureading",
+			    "action": "PreRequsite",
+			    "threshold_metric": "supplyfanairflowstatus",
+			    "operatorId": 9,
+			    "thresholdType": 1
+			  },
+			  "ASSET_SELECTION_CRITERIA": {
+			    "categoryType": "AHU",
+			    "includeResource": "${includeResource}",
+			    "excludeResource": "${excludeResource}"
+			  },
+			  "name": "AHU Relative Lower Humidity",
+			  "threshold_metric_display": "Supply Humidity",
+			  "category": "AHU",
+			  "placeHolder": {
+			    "1": {
+			      "default_value": "All Asset Selected",
+			      "label": "Assets",
+			      "type": "default",
+			      "selection_criteria": {
+			        "displayType": "ASSETCHOOSER"
+			      },
+			      "uniqueId": "resource"
+			    },
+			    "2": {
+			      "default_value": "10",
+			      "label": "Interval",
+			      "type": "rules",
+			      "selection_criteria": {
+			        "displayType": "DURATION"
+			      },
+			      "uniqueId": "interval"
+			    }
+			  }
+			}
+		}
+	}

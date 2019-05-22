@@ -9,6 +9,7 @@ import java.util.SortedMap;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -20,11 +21,13 @@ import com.facilio.bmsconsole.context.MLModelVariableContext;
 import com.facilio.bmsconsole.context.MLVariableContext;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
+import com.facilio.bmsconsole.util.MLUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 
 public class GenerateMLModelCommand implements Command {
 
+	private static final Logger LOGGER = Logger.getLogger(GenerateMLModelCommand.class.getName());
 	@Override
 	public boolean execute(Context context) throws Exception 
 	{
@@ -45,19 +48,22 @@ public class GenerateMLModelCommand implements Command {
 		
 		JSONArray assetVariables = new JSONArray();
 		
-		Set<Long> assetIDList = mlContext.getAssetVariables().keySet();
-		for(long assetID:assetIDList)
+		if(mlContext.getAssetVariables()!=null)
 		{
-			JSONObject data = new JSONObject();
-			HashMap<String,String> assetVariablesMap= mlContext.getAssetVariables().get(assetID);
-			Set<String> keySet = assetVariablesMap.keySet();
-			JSONObject variableMap = new JSONObject();
-			for(String key:keySet)
+			Set<Long> assetIDList = mlContext.getAssetVariables().keySet();
+			for(long assetID:assetIDList)
 			{
-				variableMap.put(key, assetVariablesMap.get(key));
+				JSONObject data = new JSONObject();
+				HashMap<String,String> assetVariablesMap= mlContext.getAssetVariables().get(assetID);
+				Set<String> keySet = assetVariablesMap.keySet();
+				JSONObject variableMap = new JSONObject();
+				for(String key:keySet)
+				{
+					variableMap.put(key, assetVariablesMap.get(key));
+				}
+				data.put(""+assetID, variableMap);
+				assetVariables.put(data);
 			}
-			data.put(""+assetID, variableMap);
-			assetVariables.put(data);
 		}
 		postObj.put("assetdetails", assetVariables);
 		
@@ -86,6 +92,7 @@ public class GenerateMLModelCommand implements Command {
 		String postURL=AwsUtil.getAnomalyPredictAPIURL() + "/"+mlContext.getModelPath();
 		Map<String, String> headers = new HashMap<>();
 		headers.put("Content-Type", "application/json");
+		LOGGER.info(" Sending request to ML Server "+postURL+"::"+mlContext.getId());
 		String result = AwsUtil.doHttpPost(postURL, headers, null, postObj.toString());
 		mlContext.setResult(result);
 		return false;
@@ -97,11 +104,12 @@ public class GenerateMLModelCommand implements Command {
 		Set<Long> assetSet = assetDataMap.keySet();
 		for(long assetID: assetSet)
 		{
-			JSONArray atrributeArray = new JSONArray();
+			//JSONArray assetArray = new JSONArray();
 			Hashtable<String,SortedMap<Long,Object>> attributeData = assetDataMap.get(assetID);
 			Set<String> attributeNameSet = attributeData.keySet();
 			for(String attributeName:attributeNameSet)
 			{
+				JSONArray attributeArray = new JSONArray();
 				SortedMap<Long,Object> attributeDataMap = attributeData.get(attributeName);
 				Set<Long> timeSet = attributeDataMap.keySet();
 				for(long time: timeSet)
@@ -111,10 +119,11 @@ public class GenerateMLModelCommand implements Command {
 					object.put(attributeName, attributeDataMap.get(time));
 					object.put("assetID", assetID);
 					
-					atrributeArray.put(object);
+					attributeArray.put(object);
 				}
+				dataObject.put(attributeArray);
 			}
-			dataObject.put(atrributeArray);
+			//dataObject.put(assetArray);
 		}
 		return dataObject;
 		

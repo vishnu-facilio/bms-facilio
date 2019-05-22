@@ -10,8 +10,10 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.facilio.modules.FacilioStatus;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.log4j.LogManager;
 import org.json.simple.JSONObject;
 
@@ -24,7 +26,6 @@ import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.TicketContext;
-import com.facilio.bmsconsole.context.TicketStatusContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
@@ -51,7 +52,7 @@ import com.facilio.sql.GenericSelectRecordBuilder;
 public class UpdateWorkOrderCommand implements Command {
 	
 	private static org.apache.log4j.Logger log = LogManager.getLogger(UpdateWorkOrderCommand.class.getName());
-	private static final List<EventType> TYPES = Arrays.asList(EventType.EDIT, EventType.ASSIGN_TICKET, EventType.CLOSE_WORK_ORDER,  EventType.SOLVE_WORK_ORDER, EventType.HOLD_WORK_ORDER);
+	private static final List<EventType> TYPES = Arrays.asList(EventType.EDIT, EventType.ASSIGN_TICKET, EventType.CLOSE_WORK_ORDER,  EventType.SOLVE_WORK_ORDER, EventType.HOLD_WORK_ORDER, EventType.STATE_TRANSITION);
 	
 	@Override
 	public boolean execute(Context context) throws Exception {
@@ -81,7 +82,8 @@ public class UpdateWorkOrderCommand implements Command {
 				rowsUpdated += updateWorkOrders(workOrder, module, oldWoMap.values().stream().collect(Collectors.toList()), readings, activityType, changeSets, context, recordIds);
 			}
 			
-			if(TYPES.contains(activityType) || workOrder.getPriority() != null) {
+			if(((List<EventType>) context.get(FacilioConstants.ContextNames.EVENT_TYPE_LIST) != null && CollectionUtils.containsAny(TYPES, (List<EventType>) context.get(FacilioConstants.ContextNames.EVENT_TYPE_LIST))) 
+					|| TYPES.contains(activityType) || workOrder.getPriority() != null) {
 				SelectRecordsBuilder<WorkOrderContext> builder = new SelectRecordsBuilder<WorkOrderContext>()
 						.module(module)
 						.beanClass(WorkOrderContext.class)
@@ -225,11 +227,11 @@ public class UpdateWorkOrderCommand implements Command {
 		return rowsUpdated;
 	}
 	
-	private Map<String, TicketStatusContext> statusMap = null;
-	private Map<String, TicketStatusContext> getAllTicketStatus() throws Exception {
+	private Map<String, FacilioStatus> statusMap = null;
+	private Map<String, FacilioStatus> getAllTicketStatus() throws Exception {
 		if (statusMap == null) {
-			List<TicketStatusContext> allStatus = TicketAPI.getAllStatus(false);
-			statusMap = allStatus.stream().collect(Collectors.toMap(TicketStatusContext::getStatus, Function.identity()));
+			List<FacilioStatus> allStatus = TicketAPI.getAllStatus(false);
+			statusMap = allStatus.stream().collect(Collectors.toMap(FacilioStatus::getStatus, Function.identity()));
 		}
 		return statusMap; 
 	}
@@ -284,8 +286,8 @@ public class UpdateWorkOrderCommand implements Command {
 	
 	private void validateCloseStatus (WorkOrderContext workOrder, List<WorkOrderContext> oldWos, List<WorkOrderContext> newWos, List<ReadingContext> userReadings, EventType activityType, Context context, List<Long> recordIds) throws Exception {
 		WorkOrderContext oldwork = oldWos.get(0);
-		TicketStatusContext statusoldObj = TicketAPI.getStatus(AccountUtil.getCurrentOrg().getOrgId(), oldwork.getStatus().getId());
-		TicketStatusContext statusObj = TicketAPI.getStatus(AccountUtil.getCurrentOrg().getOrgId(), workOrder.getStatus().getId());
+		FacilioStatus statusoldObj = TicketAPI.getStatus(AccountUtil.getCurrentOrg().getOrgId(), oldwork.getStatus().getId());
+		FacilioStatus statusObj = TicketAPI.getStatus(AccountUtil.getCurrentOrg().getOrgId(), workOrder.getStatus().getId());
 		
 		for(WorkOrderContext oldWo: oldWos) {
 			
@@ -352,12 +354,12 @@ public class UpdateWorkOrderCommand implements Command {
 	}
 	
 	private void updateStatus (WorkOrderContext workOrder, List<WorkOrderContext> oldWos, List<WorkOrderContext> newWos, List<ReadingContext> userReadings, EventType activityType, Context context, List<Long> recordIds) throws Exception {
-		Map<String, TicketStatusContext> allStatus = getAllTicketStatus();
-		TicketStatusContext preOpen = allStatus.get("preopen");
-		TicketStatusContext submittedStatus = allStatus.get("Submitted");
-		TicketStatusContext assignedStatus = allStatus.get("Assigned");  
-		TicketStatusContext onHoldStatus = allStatus.get("On Hold");
-		TicketStatusContext wipStatus = allStatus.get("Work in Progress");
+		Map<String, FacilioStatus> allStatus = getAllTicketStatus();
+		FacilioStatus preOpen = allStatus.get("preopen");
+		FacilioStatus submittedStatus = allStatus.get("Submitted");
+		FacilioStatus assignedStatus = allStatus.get("Assigned");
+		FacilioStatus onHoldStatus = allStatus.get("On Hold");
+		FacilioStatus wipStatus = allStatus.get("Work in Progress");
 		long submittedId = submittedStatus.getId();
 		long preOpenId = preOpen == null ? -1 : preOpen.getId();
 		for (WorkOrderContext oldWo: oldWos) {
@@ -401,7 +403,7 @@ public class UpdateWorkOrderCommand implements Command {
 		}
 	}
 	
-	private boolean validateWorkorderStatus(TicketStatusContext statusObj , WorkOrderContext oldWo) throws Exception {
+	private boolean validateWorkorderStatus(FacilioStatus statusObj , WorkOrderContext oldWo) throws Exception {
 		if ("Resolved".equalsIgnoreCase(statusObj.getStatus()) || "Closed".equalsIgnoreCase(statusObj.getStatus())) {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioModule module = ModuleFactory.getTasksModule();

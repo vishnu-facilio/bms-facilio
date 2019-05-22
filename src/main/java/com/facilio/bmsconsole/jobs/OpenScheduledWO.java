@@ -18,8 +18,9 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.activity.WorkOrderActivityType;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.bmsconsole.context.PMTriggerContext;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
-import com.facilio.bmsconsole.context.TicketStatusContext;
+import com.facilio.modules.FacilioStatus;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.FacilioField;
@@ -65,12 +66,16 @@ public class OpenScheduledWO extends FacilioJob {
             }
 
             WorkOrderContext wo = workOrderContexts.get(0);
+            if(wo.getTrigger() != null && wo.getTrigger().getId() > 0) {
+            	PMTriggerContext trigger = PreventiveMaintenanceAPI.getPMTriggersByTriggerIds(Collections.singletonList(wo.getTrigger().getId())).get(0);
+            	wo.setTrigger(trigger);
+            }
             if ((wo.getAssignedTo() != null && wo.getAssignedTo().getId() > 0)
                     || (wo.getAssignmentGroup() != null && (wo.getAssignmentGroup().getId() > 0 || wo.getAssignmentGroup().getGroupId() > 0))) {
-                TicketStatusContext status = TicketAPI.getStatus("Assigned");
+                FacilioStatus status = TicketAPI.getStatus("Assigned");
                 wo.setStatus(status);
             } else {
-                TicketStatusContext status = TicketAPI.getStatus("Submitted");
+                FacilioStatus status = TicketAPI.getStatus("Submitted");
                 wo.setStatus(status);
             }
 

@@ -17,6 +17,7 @@ import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.AssetCategoryContext;
 import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.FormLayout;
+import com.facilio.bmsconsole.context.InventoryType;
 import com.facilio.bmsconsole.context.ReadingDataMeta.ReadingInputType;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.ModuleFactory;
@@ -515,6 +516,62 @@ public class AssetAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
 		ReadOnlyChainFactory.getAssetModuleReportCardChain().execute(context);
 		setResult("cards", context.get(FacilioConstants.ContextNames.REPORT_CARDS));
+		return SUCCESS;
+	}
+	
+	private long itemTypeId;
+	private long toolTypeId;
+	private long storeRoomId;
+	
+	private int inventoryType;
+	
+	
+	
+	public int getInventoryType() {
+		return inventoryType;
+	}
+
+	public void setInventoryType(int inventoryType) {
+		this.inventoryType = inventoryType;
+	}
+
+	public long getItemTypeId() {
+		return itemTypeId;
+	}
+
+	public void setItemTypeId(long itemTypeId) {
+		this.itemTypeId = itemTypeId;
+	}
+
+	public long getToolTypeId() {
+		return toolTypeId;
+	}
+
+	public void setToolTypeId(long toolTypeId) {
+		this.toolTypeId = toolTypeId;
+	}
+
+	public long getStoreRoomId() {
+		return storeRoomId;
+	}
+
+	public void setStoreRoomId(long storeRoomId) {
+		this.storeRoomId = storeRoomId;
+	}
+
+	public String fetchAssetForTypeStore() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.INVENTORY_CATEGORY, inventoryType);
+		if(inventoryType == InventoryType.ITEM.getValue()) {
+			context.put(FacilioConstants.ContextNames.ITEM_TYPES_ID, itemTypeId);
+		}
+		else if(inventoryType == InventoryType.TOOL.getValue()) {
+			context.put(FacilioConstants.ContextNames.TOOL_TYPES_ID, toolTypeId);
+		}
+		context.put(FacilioConstants.ContextNames.STORE_ROOM_ID, storeRoomId);
+		
+		ReadOnlyChainFactory.getAssetForTypeAndStoreChain().execute(context);
+		setResult("assets", context.get(FacilioConstants.ContextNames.ASSETS));
 		return SUCCESS;
 	}
 }

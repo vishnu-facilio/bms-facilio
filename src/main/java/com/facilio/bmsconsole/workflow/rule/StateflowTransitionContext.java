@@ -14,6 +14,7 @@ import com.facilio.bmsconsole.context.SharingContext;
 import com.facilio.bmsconsole.context.SingleSharingContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.PickListOperators;
+import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
@@ -51,6 +52,14 @@ public class StateflowTransitionContext extends WorkflowRuleContext {
 	}
 	public void setStateFlowId(long stateFlowId) {
 		this.stateFlowId = stateFlowId;
+	}
+	
+	private FacilioForm form;
+	public FacilioForm getForm() {
+		return form;
+	}
+	public void setForm(FacilioForm form) {
+		this.form = form;
 	}
 	
 	private long formId = -1; // check whether it is good to have
@@ -128,7 +137,7 @@ public class StateflowTransitionContext extends WorkflowRuleContext {
 		this.approvalOrder = ApprovalOrder.valueOf(approvalOrder);
 	}
 	
-	private int buttonType;
+	private int buttonType = -1;
 	public int getButtonType() {
 		return buttonType;
 	}
@@ -159,6 +168,14 @@ public class StateflowTransitionContext extends WorkflowRuleContext {
 	}
 	public void setScheduleTime(int scheduleTime) {
 		this.scheduleTime = scheduleTime;
+	}
+	
+	private List<ValidationContext> validations;
+	public List<ValidationContext> getValidations() {
+		return validations;
+	}
+	public void setValidations(List<ValidationContext> validations) {
+		this.validations = validations;
 	}
 	
 	@Override
@@ -227,14 +244,27 @@ public class StateflowTransitionContext extends WorkflowRuleContext {
 		}
 		
 		if (shouldExecuteTrueActions) {
-			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			FacilioModule module = modBean.getModule(getModuleId());
-			StateFlowRulesAPI.updateState(moduleRecord, module, StateFlowRulesAPI.getStateContext(getToStateId()), false, context);
+			boolean isValid = validationCheck(moduleRecord);
 			
-//			StateFlowRulesAPI.addScheduledJobIfAny(getToStateId(), module.getName(), moduleRecord, (FacilioContext) context);
-			
-			super.executeTrueActions(record, context, placeHolders);
+			if (isValid) {
+				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+				FacilioModule module = modBean.getModule(getModuleId());
+				StateFlowRulesAPI.updateState(moduleRecord, module, StateFlowRulesAPI.getStateContext(getToStateId()), false, context);
+				
+				super.executeTrueActions(record, context, placeHolders);
+			}
 		}
+	}
+	
+	private boolean validationCheck(ModuleBaseWithCustomFields moduleRecord) throws Exception {
+		if (CollectionUtils.isNotEmpty(validations)) {
+			for (ValidationContext validation : validations) {
+				if (!validation.validate(moduleRecord)) {
+					throw new IllegalArgumentException(validation.getErrorMessage());
+				}
+			}
+		}
+		return true;
 	}
 	
 	private static List<Long> fetchPreviousApprovers(long recordId, long ruleId) throws Exception {

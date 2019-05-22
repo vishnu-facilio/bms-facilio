@@ -3,6 +3,8 @@ package com.facilio.bmsconsole.context;
 import java.io.Serializable;
 import java.util.List;
 
+import com.facilio.bmsconsole.util.IoTMessageAPI.IotCommandType;
+
 public class PublishData implements Serializable {
 	/**
 	 * 
@@ -52,6 +54,14 @@ public class PublishData implements Serializable {
 		return acknowledgeTime != -1;
 	}
 	
+	private long responseAckTime = -1; 
+	public long getResponseAckTime() {
+		return responseAckTime;
+	}
+	public void setResponseAckTime(long responseAckTime) {
+		this.responseAckTime = responseAckTime;
+	}
+
 	private List<PublishMessage> messages;
 	public List<PublishMessage> getMessages() {
 		return messages;
@@ -59,6 +69,25 @@ public class PublishData implements Serializable {
 	public void setMessages(List<PublishMessage> messages) {
 		this.messages = messages;
 	}
+	
+	private IotCommandType command;
+	public IotCommandType getCommandEnum() {
+		return command;
+	}
+	public int getCommand() {
+		if (command != null) {
+			return command.getValue();
+		}
+		return -1;
+	}
+	
+	public void setCommand(IotCommandType command) {
+		this.command = command;
+	}
+	public void setCommand(int commandVal) {
+		this.command = IotCommandType.valueOf(commandVal);
+	}
+	
 	
 	@Override
 	public String toString() {

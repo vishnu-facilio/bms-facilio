@@ -4,6 +4,9 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.*;
+import com.facilio.bmsconsole.util.InventoryRequestAPI;
+import com.facilio.bmsconsole.util.ItemsApi;
+import com.facilio.bmsconsole.util.ToolsApi;
 import com.facilio.bmsconsole.util.TransactionState;
 import com.facilio.bmsconsole.util.TransactionType;
 import com.facilio.bmsconsole.workflow.rule.ApprovalState;
@@ -44,6 +47,11 @@ public class AddOrUpdateWorkorderToolsCommand implements Command {
 				toolTypesId = tool.getToolType().getId();
 				ToolTypesContext toolTypes = getToolType(toolTypesId);
 				StoreRoomContext storeRoom = tool.getStoreRoom();
+				if (workorderTool.getRequestedLineItem() != null && workorderTool.getRequestedLineItem().getId() > 0) {
+					if(!InventoryRequestAPI.checkQuantityForWoToolNeedingApproval(toolTypes, workorderTool.getRequestedLineItem(), workorderTool)) {
+						throw new IllegalArgumentException("Please check the quantity approved/issued in the request");
+					}
+				}
 				if (workorderTool.getId() > 0) {
 					SelectRecordsBuilder<WorkorderToolsContext> selectBuilder = new SelectRecordsBuilder<WorkorderToolsContext>()
 							.select(workorderToolsFields).table(workorderToolsModule.getTableName())
@@ -59,11 +67,11 @@ public class AddOrUpdateWorkorderToolsCommand implements Command {
 							throw new IllegalArgumentException("Insufficient quantity in inventory!");
 						} else {
 							ApprovalState approvalState = ApprovalState.YET_TO_BE_REQUESTED;
-							if (toolTypes.isApprovalNeeded() || storeRoom.isApprovalNeeded()) {
-								approvalState = ApprovalState.REQUESTED;
+							if (workorderTool.getRequestedLineItem() != null && workorderTool.getRequestedLineItem().getId() > 0) {
+									approvalState = ApprovalState.APPROVED;
 							}
 							wTool = setWorkorderItemObj(null, workorderTool.getQuantity(), tool, parentId,
-									workorder, workorderTool, approvalState, null);
+									workorder, workorderTool, approvalState, null, workorderTool.getRequestedLineItem());
 							// update
 							wTool.setId(workorderTool.getId());
 							workorderToolslist.add(wTool);
@@ -71,30 +79,24 @@ public class AddOrUpdateWorkorderToolsCommand implements Command {
 						}
 					}
 				} else {
-					if (tool.getCurrentQuantity() < workorderTool.getQuantity()) {
+					if (workorderTool.getRequestedLineItem() == null && tool.getCurrentQuantity() < workorderTool.getQuantity()) {
 						throw new IllegalArgumentException("Insufficient quantity in inventory!");
 					} else {
 						ApprovalState approvalState = ApprovalState.YET_TO_BE_REQUESTED;
-						if (toolTypes.isApprovalNeeded() || storeRoom.isApprovalNeeded()) {
-							approvalState = ApprovalState.REQUESTED;
+						if (workorderTool.getRequestedLineItem() != null && workorderTool.getRequestedLineItem().getId() > 0) {
+							approvalState = ApprovalState.APPROVED;
 						}
 						if (toolTypes.isRotating()) {
 							List<Long> assetIds = workorderTool.getAssetIds();
 							List<AssetContext> assets = getAssetsFromId(assetIds);
 							if (assets != null) {
 								for (AssetContext asset : assets) {
-									if(asset.isUsed()) {
+									if(workorderTool.getRequestedLineItem() == null && asset.isUsed()) {
 										throw new IllegalArgumentException("Insufficient quantity in inventory!");
 									}
 									WorkorderToolsContext woTool = new WorkorderToolsContext();
-									if (toolTypes.isApprovalNeeded() || storeRoom.isApprovalNeeded()) {
-										asset.setIsUsed(false);
-									}
-									else {
-										asset.setIsUsed(true);
-									}
 									woTool = setWorkorderItemObj(null, 1, tool, parentId, workorder,
-											workorderTool, approvalState, asset);
+											workorderTool, approvalState, asset, workorderTool.getRequestedLineItem());
 									updatePurchasedTool(asset);
 									workorderToolslist.add(woTool);
 									toolsToBeAdded.add(woTool);
@@ -103,7 +105,7 @@ public class AddOrUpdateWorkorderToolsCommand implements Command {
 						} else {
 							WorkorderToolsContext woTool = new WorkorderToolsContext();
 							woTool = setWorkorderItemObj(null, workorderTool.getQuantity(), tool, parentId,
-									workorder, workorderTool, approvalState, null);
+									workorder, workorderTool, approvalState, null, workorderTool.getRequestedLineItem());
 							workorderToolslist.add(woTool);
 							toolsToBeAdded.add(woTool);
 						}
@@ -131,11 +133,18 @@ public class AddOrUpdateWorkorderToolsCommand implements Command {
 
 	private WorkorderToolsContext setWorkorderItemObj(PurchasedToolContext purchasedtool, double quantity,
 			ToolContext tool, long parentId, WorkOrderContext workorder, WorkorderToolsContext workorderTools,
-			ApprovalState approvalState, AssetContext asset) {
+			ApprovalState approvalState, AssetContext asset, InventoryRequestLineItemContext lineItem) throws Exception{
 		WorkorderToolsContext woTool = new WorkorderToolsContext();
 		woTool.setIssueTime(workorderTools.getIssueTime());
 		woTool.setReturnTime(workorderTools.getReturnTime());
 		woTool.setDuration(workorderTools.getDuration());
+		woTool.setTransactionState(TransactionState.USE);
+		
+		if(lineItem != null) {
+			woTool.setRequestedLineItem(lineItem);
+			woTool.setParentTransactionId(ToolsApi.getToolTransactionsForRequestedLineItem(lineItem.getId()).getId());
+			
+		}
 		int duration = 0;
 		if (woTool.getDuration() <= 0) {
 			if (woTool.getIssueTime() <= 0) {
@@ -156,7 +165,6 @@ public class AddOrUpdateWorkorderToolsCommand implements Command {
 			}
 		}
 		woTool.setTransactionType(TransactionType.WORKORDER);
-		woTool.setTransactionState(TransactionState.ISSUE);
 		woTool.setIsReturnable(false);
 		if (purchasedtool != null) {
 			woTool.setPurchasedTool(purchasedtool);
@@ -165,11 +173,7 @@ public class AddOrUpdateWorkorderToolsCommand implements Command {
 			woTool.setAsset(asset);
 		}
 		woTool.setApprovedState(approvalState);
-		if (approvalState == ApprovalState.YET_TO_BE_REQUESTED) {
-			woTool.setRemainingQuantity(quantity);
-		} else {
-			woTool.setRemainingQuantity(0);
-		}
+		woTool.setRemainingQuantity(quantity);
 		woTool.setQuantity(quantity);
 		woTool.setTool(tool);
 		woTool.setToolType(tool.getToolType());

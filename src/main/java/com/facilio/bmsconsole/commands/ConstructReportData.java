@@ -4,7 +4,9 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.modules.AggregateOperator.CommonAggregateOperator;
 import com.facilio.bmsconsole.modules.AggregateOperator.DateAggregateOperator;
 import com.facilio.bmsconsole.modules.AggregateOperator.SpaceAggregateOperator;
-import com.facilio.bmsconsole.context.TicketStatusContext;
+import com.facilio.bmsconsole.util.TicketAPI;
+import com.facilio.modules.FacilioStatus;
+import com.facilio.modules.FacilioStatus.StatusType;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
@@ -231,21 +233,24 @@ public class ConstructReportData implements Command {
 		}
 		
 		if (module.getName().equals("workorder")) {
-			SelectRecordsBuilder<TicketStatusContext> builder = new SelectRecordsBuilder<TicketStatusContext>()
-					.beanClass(TicketStatusContext.class)
-					.module(modBean.getModule("ticketstatus"))
-					.select(modBean.getAllFields("ticketstatus"))
-					.andCondition(CriteriaAPI.getCondition("STATUS_TYPE", "typeCode", "3", NumberOperators.EQUALS));
-			List<TicketStatusContext> list = builder.get();
+			List<FacilioStatus> list = TicketAPI.getStatusOfStatusType(module, StatusType.PRE_OPEN);
 			if (CollectionUtils.isNotEmpty(list)) {
 				long id = list.get(0).getId();
 				Criteria c = new Criteria();
-				Operator operator = NumberOperators.NOT_EQUALS;
-				if (moduleType == 2) {
-					operator = NumberOperators.EQUALS;
+				if (moduleType <= 0 || moduleType > 3) {
+					moduleType = 1;
 				}
-				c.addAndCondition(CriteriaAPI.getCondition("STATUS_ID", "status", String.valueOf(id), operator));
-				dataPointContext.setOtherCriteria(c);	
+				if (moduleType == 1) {
+					Operator operator = NumberOperators.NOT_EQUALS;
+					c.addAndCondition(CriteriaAPI.getCondition("STATUS_ID", "status", String.valueOf(id), operator));
+				}
+				else if (moduleType == 2) {
+					Operator operator = NumberOperators.EQUALS;
+					c.addAndCondition(CriteriaAPI.getCondition("STATUS_ID", "status", String.valueOf(id), operator));
+				}
+				if (!c.isEmpty()) {
+					dataPointContext.setOtherCriteria(c);
+				}
 			}
 		}
 				

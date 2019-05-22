@@ -91,9 +91,9 @@ public class GetPMJobsCommand implements Command {
 			{
 				List<PMTriggerContext> pmTrigggers = pmTriggersMap.get(pm.getId());
 				if (pmTrigggers != null && !pmTrigggers.isEmpty()) {
-					if(pm.getWoTemplate() != null && pm.getWoTemplate().getResourceId() != -1 && !resourceIds.contains(pm.getWoTemplate().getResourceId()))
+					if(pm.getWoTemplate() != null && pm.getWoTemplate().getResourceIdVal() != -1 && !resourceIds.contains(pm.getWoTemplate().getResourceIdVal()))
 					{
-						resourceIds.add(pm.getWoTemplate().getResourceId());
+						resourceIds.add(pm.getWoTemplate().getResourceIdVal());
 					}
 					for (PMTriggerContext trigger : pmTrigggers) {
 						if(trigger.getSchedule() != null) {

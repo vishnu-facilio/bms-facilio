@@ -31,6 +31,8 @@ public interface ModuleBean extends RootBean {
 	
 	public List<FacilioField> getAllFields(String moduleName) throws Exception;
 	
+	public List<FacilioField> getModuleFields(String moduleName) throws Exception;
+	
 	public List<FacilioField> getAllCustomFields (String moduleName) throws Exception;
 	
 	public FacilioField getField(long fieldId) throws Exception;

@@ -106,8 +106,14 @@ public class AccountUtil {
 		return roleBean;
 	}
 
-	
-	public enum FeatureLicense {
+    public static void setReqUri(String requestURI) {
+		if (currentAccount.get() != null) {
+			currentAccount.get().setRequestUri(requestURI);
+		}
+    }
+
+
+    public enum FeatureLicense {
 		MAINTENANCE (1),
 		ALARMS (2),
 		ENERGY (4),
@@ -123,26 +129,27 @@ public class AccountUtil {
 		SCHEDULED_WO (16384),
 		TENANTS (32768),
 		NEW_FORM (65536),
-		CONNECTEDAPPS (131072)
+		CONNECTEDAPPS (131072),
+		NEW_LAYOUT (262144)
 		;
 		
 		// Use 64, 512 for next features
 		
-		private int license;
-		FeatureLicense(int license) {
+		private long license;
+		FeatureLicense(long license) {
 			this.license = license;
 		}
 		
-		public int getLicense() {
+		public long getLicense() {
 			return license;
 		}
-		public static FeatureLicense getFeatureLicense (int value) {
+		public static FeatureLicense getFeatureLicense (long value) {
 			return FEATURE_MAP.get(value);
 		}
 		
-		private static final Map<Integer, FeatureLicense> FEATURE_MAP = Collections.unmodifiableMap(initFeatureMap());
-		private static Map<Integer, FeatureLicense> initFeatureMap() {
-			Map<Integer, FeatureLicense> typeMap = new HashMap<>();
+		private static final Map<Long, FeatureLicense> FEATURE_MAP = Collections.unmodifiableMap(initFeatureMap());
+		private static Map<Long, FeatureLicense> initFeatureMap() {
+			Map<Long, FeatureLicense> typeMap = new HashMap<>();
 			for(FeatureLicense fLicense : values()) {
 				typeMap.put(fLicense.getLicense(), fLicense);
 			}

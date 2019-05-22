@@ -10,6 +10,7 @@ import com.facilio.bmsconsole.modules.*;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioStatus;
 import com.facilio.sql.GenericDeleteRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
@@ -579,11 +580,11 @@ public class ShiftAPI {
 		return res.setScale(2, RoundingMode.HALF_UP);
 	}
 	
-	public static List<ReadingContext> handleWorkHoursReading(EventType activityType, long assignedToUserId, long workOrderId, TicketStatusContext oldTicketStatus, TicketStatusContext newTicketStatus) throws Exception {
+	public static List<ReadingContext> handleWorkHoursReading(EventType activityType, long assignedToUserId, long workOrderId, FacilioStatus oldTicketStatus, FacilioStatus newTicketStatus) throws Exception {
 		return handleWorkHoursReading(activityType, assignedToUserId, workOrderId, oldTicketStatus, newTicketStatus, false); 
 	}
 
-	public static List<ReadingContext> handleWorkHoursReading(EventType activityType, long assignedToUserId, long workOrderId, TicketStatusContext oldTicketStatus, TicketStatusContext newTicketStatus, boolean invalidate) throws Exception {
+	public static List<ReadingContext> handleWorkHoursReading(EventType activityType, long assignedToUserId, long workOrderId, FacilioStatus oldTicketStatus, FacilioStatus newTicketStatus, boolean invalidate) throws Exception {
 		List<ReadingContext> readings = new ArrayList<>();
 		long now = System.currentTimeMillis();
 		if(newTicketStatus != null && newTicketStatus.getId() != -1) {

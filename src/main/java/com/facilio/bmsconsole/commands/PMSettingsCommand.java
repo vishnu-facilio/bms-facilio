@@ -27,6 +27,7 @@ public class PMSettingsCommand implements Command {
 		if (wo.getPm().isPreventOnNoTask()) {
 			Map<String, List<TaskContext>> taskMap = (Map<String, List<TaskContext>>) context.get(FacilioConstants.ContextNames.TASK_MAP);
 			if (taskMap == null || taskMap.isEmpty()) {
+				LOGGER.log(Level.SEVERE, "Skipping because of no task " + "PM ID " + wo.getPm().getId());
 				return true;
 			}
 		} else {

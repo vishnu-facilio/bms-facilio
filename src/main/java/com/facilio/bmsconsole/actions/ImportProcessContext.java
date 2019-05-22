@@ -303,7 +303,13 @@ public class ImportProcessContext implements Serializable
 				{
 					if(!ImportAPI.isRemovableFieldOnImport(field.getName()))
 					{
-						if(field.getDataType() == FieldType.LOOKUP.getTypeAsInt() && getModule().getName().equals(FacilioConstants.ContextNames.ASSET) == false && getModule().getExtendModule().getName().equals(FacilioConstants.ContextNames.ASSET) == false) {
+						if(field.getDataType() == FieldType.LOOKUP.getTypeAsInt() && getModule().getName().equals(FacilioConstants.ContextNames.ASSET) == false && 
+								
+								(getModule().getExtendModule() != null && getModule().getExtendModule().getName().equals(FacilioConstants.ContextNames.ASSET) == false)
+								&& getModule().getName().equals(FacilioConstants.ContextNames.BASE_SPACE) == false
+								&&(getModule().getExtendModule() != null && getModule().getExtendModule().getName().equals(FacilioConstants.ContextNames.BASE_SPACE) == false)
+								
+								) {
 							LookupField lookupField = (LookupField) field;
 							List<FacilioField> lookupFields = bean.getAllFields(lookupField.getLookupModule().getName());
 							for(FacilioField lookup : lookupFields) {
@@ -313,6 +319,7 @@ public class ImportProcessContext implements Serializable
 						else {
 							facilioFieldMapping.put(field.getName(), field);
 						}
+						
 					}
 				}
 				return facilioFieldMapping;

@@ -78,6 +78,7 @@ public class ModuleFactory {
 		moduleMap.put(FacilioConstants.ContextNames.RECEIPT, getReceiptModule());
 		moduleMap.put(FacilioConstants.ContextNames.PURCHASE_CONTRACTS, getPurchaseContractModule());
 		moduleMap.put(FacilioConstants.ContextNames.LABOUR_CONTRACTS, getLabourContractModule());
+		moduleMap.put(FacilioConstants.ContextNames.INVENTORY_REQUEST, getInventoryRequestModule());
 
 		return moduleMap;
 	}
@@ -129,6 +130,14 @@ public class ModuleFactory {
 		agentLogModule.setDisplayName("agentLog");
 		agentLogModule.setTableName(AgentKeys.AGENT_LOG_TABLE);
 		return agentLogModule;
+	}
+
+	public static FacilioModule	getAgentMessageModule(){
+		FacilioModule agentMessageModule = new FacilioModule();
+		agentMessageModule.setName("agentMessage");
+		agentMessageModule.setDisplayName("agentMessage");
+		agentMessageModule.setTableName(AgentKeys.AGENT_MESSAGE_TABLE);
+		return agentMessageModule;
 	}
 
 	public static FacilioModule getFormFieldsModule() {
@@ -1112,9 +1121,15 @@ public class ModuleFactory {
 	}
 
 	public static FacilioModule getWorkflowModule() {
-		FacilioModule dashboardWigetModule = new FacilioModule();
-		dashboardWigetModule.setTableName("Workflow");
-		return dashboardWigetModule;
+		FacilioModule module = new FacilioModule();
+		module.setTableName("Workflow");
+		return module;
+	}
+	
+	public static FacilioModule getWorkflowNamespaceModule() {
+		FacilioModule module = new FacilioModule();
+		module.setTableName("Workflow_Namespace");
+		return module;
 	}
 
 	public static FacilioModule getWorkflowLogModule() {
@@ -2019,6 +2034,22 @@ public class ModuleFactory {
 		gatePass.setTableName("Gate_Pass");
 		return gatePass;
 	}
+	
+	public static FacilioModule getInventoryRequestModule() {
+		FacilioModule gatePass = new FacilioModule();
+		gatePass.setName("inventoryrequest");
+		gatePass.setDisplayName("Inventory Request");
+		gatePass.setTableName("Inventory_Requests");
+		return gatePass;
+	}
+	
+	public static FacilioModule getPageModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName("page");
+		module.setDisplayName("Page");
+		module.setTableName("Page");
+		return module;
+	}
 
 	public static FacilioModule getStateRuleTransitionModule() {
 		FacilioModule module = new FacilioModule();
@@ -2061,4 +2092,28 @@ public class ModuleFactory {
 //		module.setExtendModule(getWorkflowRuleModule());
 //		return module;
 //	}
+	
+	public static FacilioModule getMobileDetailsModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName("mobileDetails");
+		module.setDisplayName("Mobile Details");
+		module.setTableName("MobileDetails");
+		return module;
+	}
+
+	public static FacilioModule getJobPlanModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName("jobPlan");
+		module.setDisplayName("Job Plan");
+		module.setTableName("Job_Plan");
+		return module;
+	}
+
+	public static FacilioModule getValidationModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName("workflowValidation");
+		module.setDisplayName("Workflow Validations");
+		module.setTableName("Workflow_Validation");
+		return module;
+	}
 }

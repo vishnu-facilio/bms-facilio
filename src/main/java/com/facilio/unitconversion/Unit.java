@@ -7,7 +7,7 @@ import java.util.*;
 @JsonFormat(shape = JsonFormat.Shape.OBJECT)
 public enum Unit {
 	
-	// last id -- 104
+	// last id -- 109
 	
 	KWH(1,"kilowatt-hour","kWh",Metric.ENERGY),
 	HECTOWH(76,"hectowatt-hour","hWh",Metric.ENERGY,"si*10","this/10"),
@@ -92,6 +92,9 @@ public enum Unit {
 	PASCAL(61,"pascal","Pa",Metric.PRESSURE),
 	KGPERCMSQ(102,"kilogram per square centimeter","kg/cm\u00B2",Metric.PRESSURE,"si/98066.5","this*98066.5"),
 	KILOPASCAL(103,"kilo pascal","kPa",Metric.PRESSURE,"si/1000","this*1000"),
+	PSI(105, "Pound per square inch", "psi", Metric.PRESSURE, "si*0.0001450377", "this*6894.75"),
+	PSIG(107, "Pounds per Square Inch Gauge", "psig", Metric.PRESSURE, "si*0.000145", "this.6894.75728"),
+	BAR(109, "bar", "bar", Metric.PRESSURE, "si*10000", "this/1000"),
 	
 	DEGREE(62,"Degree","&deg;",Metric.DEGREE),
 	
@@ -101,7 +104,7 @@ public enum Unit {
 	SQUARE_FOOT(66,"square foot","ft\u00B2",Metric.AREA,"si*10.7639","this/10.7639"),
 	HECTARE(67,"hectare","ha",Metric.AREA,"si/10000","this*10000"),
 	ACRE(68,"acre","acre",Metric.AREA,"si/4046.86","this*4046.86"),
-	
+
 	NEWTON_METER(69,"newton-meter","N m",Metric.TORQUE),
 	
 	LITRE(70,"litre","l",Metric.VOLUME),
@@ -128,10 +131,16 @@ public enum Unit {
 	CUBICFEETPERHOUR(91,"cubic feet per hour","ft\u00B3/hr",Metric.FLOWRATE,"si*60","this/60"),
 	GALLONSPERMIN(92,"Gallons per minute","gal/min",Metric.FLOWRATE,"si*7.48","this/7.48"),
 	LITRESPERMIN(93,"litres per minute","l/min",Metric.FLOWRATE,"si*28.316","this/28.316"),
+	LITRESPERSEC(93,"litres per second","l/s",Metric.FLOWRATE,"si*0.471947","this/0.471947"),
 	CUBICMETERPERSECOND(100,"cubic meter per second","m\u00B3/sec",Metric.FLOWRATE,"si/2118.88","this*2118.88"),
 	CUBICMETERPERHOUR(104,"cubic meter per hour","m\u00B3/hr",Metric.FLOWRATE,"si*1.69901","this/1.69901"),
 	
 	PARTSPERMILLION(101,"parts per million","ppm",Metric.CONCENTRATION),
+	
+	REVOLUTIONSPERMINUTE(106, "Revolutions per minute", "rpm", Metric.ROTATIONALSPEED),
+	METERPERSECOND(108, "Metre per second", "m/s", Metric.SPEED)
+
+	
 	;
 	
 	int unitId;

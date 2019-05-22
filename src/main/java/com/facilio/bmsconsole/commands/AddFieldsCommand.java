@@ -60,9 +60,6 @@ public class AddFieldsCommand implements Command {
 								module.getFields().add(deltaField);
 							}
 						}
-						
-						//The following code has to be moved somewhere else. This is not needed here
-						addSafeLimits(field, readingRules, actionsList);
 					}
 				}
 			}
@@ -91,21 +88,7 @@ public class AddFieldsCommand implements Command {
 		}
 	}
 	
-	private void addSafeLimits(FacilioField field, List<List<ReadingRuleContext>> readingRules, List<List<List<ActionContext>>> actionsList) {
-		List<ReadingRuleContext> rule = field.getReadingRules();
-		List<List<ActionContext>> actions = new ArrayList<>();
-		
-		if (rule != null && !rule.isEmpty()) {
-			rule.stream().forEach((r) -> {
-				r.setReadingFieldId(field.getFieldId());
-				r.getEvent().setModuleId(field.getModule().getModuleId());
-				actions.add(r.getActions());
-			});
-			readingRules.add(rule);
-			actionsList.add(actions);
-		}
-	}
-	
+
 	private void changeDisplayName(FacilioField field) throws Exception {
 		FacilioModule module = ModuleFactory.getFieldsModule();
 		List<FacilioField> fields = FieldFactory.getSelectFieldFields();

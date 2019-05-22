@@ -5,15 +5,26 @@ import com.facilio.agent.AgentKeys;
 import com.facilio.agent.AgentUtil;
 import com.facilio.agent.ControllerUtil;
 import com.facilio.agent.PublishType;
+import com.facilio.beans.ModuleCRUDBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsole.criteria.Criteria;
+import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.criteria.NumberOperators;
+import com.facilio.bmsconsole.modules.FacilioModule;
+import com.facilio.bmsconsole.modules.FieldFactory;
+import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
 import org.apache.commons.chain.Chain;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class ControllerAction extends FacilioAction {
 
@@ -158,7 +169,6 @@ public class ControllerAction extends FacilioAction {
 	public String getAgentLog() throws Exception{
 		List<Map<String, Object>> agentLog;
 		agentLog = AgentUtil.getAgentLog(getAgentId());
-
 		if(!agentLog.isEmpty()){
 			this.jsonArray = new JSONArray();
 			this.jsonArray.addAll(agentLog);
@@ -234,6 +244,59 @@ public class ControllerAction extends FacilioAction {
 			setResult("msg", ERROR);
 			return ERROR;
 		}
+	}
+	private static final Logger LOGGER = LogManager.getLogger(ControllerAction.class.getName());
+
+	public String getLogMessage() throws Exception{
+		ModuleCRUDBean bean;
+		bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", Objects.requireNonNull(AccountUtil.getCurrentOrg()).getId());
+		FacilioModule agentModule = ModuleFactory.getAgentDataModule();
+		FacilioContext context = new FacilioContext();
+		Criteria criteria = new Criteria();
+		JSONArray logDetails = new JSONArray();
+		if(getAgentId() != null) {
+			criteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getAgentIdField(agentModule), getAgentId().toString(), NumberOperators.EQUALS));
+		}
+		if(getPerPage() != -1 && getPage() > 0){
+			context.put(FacilioConstants.ContextNames.LIMIT_VALUE,getPerPage());
+			context.put(FacilioConstants.ContextNames.OFFSET,(getPerPage()*(getPage()-1)));
+		}
+		context.put(FacilioConstants.ContextNames.TABLE_NAME,AgentKeys.AGENT_LOG_TABLE);
+		context.put(FacilioConstants.ContextNames.FIELDS, FieldFactory.getAgentLogFields());
+		context.put(FacilioConstants.ContextNames.CRITERIA,criteria);
+		logDetails.addAll(bean.getRows(context));
+		if(! logDetails.isEmpty()){
+			setResult("logs",logDetails);
+			return SUCCESS;
+		}
+		else {
+			setResult("logs",logDetails);
+			return ERROR;
+		}
+	}
+
+	public String getLogCount(){
+		ModuleCRUDBean bean;
+		try {
+			bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", Objects.requireNonNull(AccountUtil.getCurrentOrg()).getId());
+			FacilioModule agentModule = ModuleFactory.getAgentDataModule();
+			FacilioContext context = new FacilioContext();
+			Criteria criteria = new Criteria();
+			JSONArray logDetails = new JSONArray();
+			if(getAgentId() != null) {
+				criteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getAgentIdField(agentModule), getAgentId().toString(), NumberOperators.EQUALS));
+			}
+			context.put(FacilioConstants.ContextNames.TABLE_NAME,AgentKeys.AGENT_LOG_TABLE);
+			context.put(FacilioConstants.ContextNames.FIELDS, FieldFactory.getAgentLogFields());
+			context.put(FacilioConstants.ContextNames.CRITERIA,criteria);
+			context.put(FacilioConstants.ContextNames.LIMIT_VALUE,100);
+			context.put(FacilioConstants.ContextNames.OFFSET,0);
+			setResult("logCount",bean.getRows(context).size());
+			return SUCCESS;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return ERROR;
 	}
 }
 

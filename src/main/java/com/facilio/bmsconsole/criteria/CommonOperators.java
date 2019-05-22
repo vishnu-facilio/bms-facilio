@@ -1,6 +1,11 @@
 package com.facilio.bmsconsole.criteria;
 
+import org.apache.commons.collections.Predicate;
 import org.apache.commons.collections.PredicateUtils;
+import org.apache.commons.lang3.StringUtils;
+
+import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
+import com.facilio.util.FacilioUtil;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -25,7 +30,7 @@ public enum CommonOperators implements Operator<String> {
 		public FacilioModulePredicate getPredicate(String fieldName, String value) {
 			// TODO Auto-generated method stub
 			if(fieldName != null && !fieldName.isEmpty()) {
-				return new FacilioModulePredicate(fieldName, PredicateUtils.nullPredicate());
+				return new FacilioModulePredicate(fieldName, getNullPredicate());
 			}
 			return null;
 		}
@@ -44,11 +49,25 @@ public enum CommonOperators implements Operator<String> {
 		public FacilioModulePredicate getPredicate(String fieldName, String value) {
 			// TODO Auto-generated method stub
 			if(fieldName != null && !fieldName.isEmpty()) {
-				return new FacilioModulePredicate(fieldName, PredicateUtils.notNullPredicate());
+				return new FacilioModulePredicate(fieldName, PredicateUtils.notPredicate(getNullPredicate()));
 			}
 			return null;
 		}
 	};
+	
+	private static Predicate getNullPredicate() {
+		return new Predicate() {
+			@Override
+			public boolean evaluate(Object object) {
+				try {
+					return FacilioUtil.isEmptyOrNull(object);
+				} catch (Exception e) {
+					e.printStackTrace();
+					return false;
+				}
+			}
+		};
+	}
 	
 	@Override
 	public abstract String getWhereClause(String columnName, String value);

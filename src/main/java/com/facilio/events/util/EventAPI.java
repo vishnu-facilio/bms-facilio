@@ -1,5 +1,7 @@
 package com.facilio.events.util;
 
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.criteria.*;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
@@ -62,12 +64,38 @@ public class EventAPI {
 		eventProp.putAll(FieldUtil.getAsProperties(content));
 		event = FieldUtil.getAsBeanFromMap(eventProp, EventContext.class);
 		event.setMessageKey(null);
-		event.getMessageKey();
+		eventProp.put("messageKey", event.getMessageKey()); //Setting the new key in case if it's updated
+		CommonCommandUtil.appendModuleNameInKey(null, "event", eventProp, placeHolders);//Updating the placeholders with the new event props
 		return event;
 	}
 
+	public static List<EventContext> processPayloadsAndEvents (List<JSONObject> payloads) throws Exception {
+		List<EventContext> events = new ArrayList<>();
+		long orgId = AccountUtil.getCurrentOrg().getId();
+
+		GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
+												.table(EventConstants.EventModuleFactory.getEventModule().getTableName())
+												.fields(EventConstants.EventFieldFactory.getEventFields())
+											;
+		for (JSONObject payload : payloads) {
+			EventContext event = EventAPI.processPayload(-1l, payload, orgId);
+			events.add(event);
+			Map<String, Object> prop = FieldUtil.getAsProperties(event);
+			builder.addRecord(prop);
+		}
+
+		builder.save();
+
+		List<Map<String, Object>> records = builder.getRecords();
+		for (int i = 0; i < records.size(); i++) {
+			events.get(i).setId((long) records.get(i).get("id"));
+		}
+
+		return events;
+	}
+
 	@SuppressWarnings({ "unchecked"})
-	public static EventContext processPayload(long timestamp, JSONObject payload, long orgId) throws Exception 
+	private static EventContext processPayload(long timestamp, JSONObject payload, long orgId) throws Exception
 	{
 		if (orgId == 75) {
 			LOGGER.debug("EventSyncJob Payload:::" + payload);
@@ -184,19 +212,6 @@ public class EventAPI {
 		return -1;
 	}
 
-	public static void insertEvent(EventContext event, long orgId) throws IllegalAccessException, NoSuchMethodException, InvocationTargetException, SQLException {
-		Map<String, Object> props = FieldUtil.getAsProperties(event);
-		insertObject(props);
-	}
-
-	public static void insertObject(Map<String, Object> props) throws SQLException {
-		GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
-				.table("Event")
-				.fields(EventConstants.EventFieldFactory.getEventFields());
-		builder.addRecord(props);
-		builder.save();
-	}
-	
 	public static long addSourceToResourceMapping(String source, long orgId,long controllerId) throws SQLException, RuntimeException {
 		Map<String, Object> prop = new HashMap<>();
 		prop.put("orgId", orgId);

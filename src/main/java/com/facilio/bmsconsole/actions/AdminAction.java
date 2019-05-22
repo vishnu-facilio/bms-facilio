@@ -3,7 +3,10 @@ package com.facilio.bmsconsole.actions;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.auth.actions.FacilioAuthAction;
+import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.util.AdminAPI;
+import com.facilio.chain.FacilioContext;
+import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.fw.LRUCache;
 import com.facilio.license.FreshsalesUtil;
 import com.facilio.tasker.FacilioTimer;
@@ -13,6 +16,8 @@ import com.facilio.wms.util.WmsApi;
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionSupport;
 import com.opensymphony.xwork2.util.ValueStack;
+
+import org.apache.commons.chain.Chain;
 import org.apache.struts2.ServletActionContext;
 import org.json.simple.JSONObject;
 
@@ -203,6 +208,48 @@ public class AdminAction extends ActionSupport
 		
 		return SUCCESS;
 	}
+
+	public String demoRollUp() throws IOException{
+
+		HttpServletRequest request = ServletActionContext.getRequest();
+		long orgId=Long.parseLong(request.getParameter("orgId"));
+		long timeDuration = Long.parseLong(request.getParameter("durations"));
+
+		try {
+			FacilioContext context=new FacilioContext();
+			context.put(ContextNames.DEMO_ROLLUP_EXECUTION_TIME,timeDuration);
+			context.put(ContextNames.DEMO_ROLLUP_JOB_ORG,orgId);
+			Chain demoRollupChain = TransactionChainFactory.demoRollUpChain();
+				demoRollupChain.execute(context);
+		}		
+		catch(Exception e) {
+			logger.log(Level.SEVERE, "Exception while executing Demojob" +e.getMessage(), e);
+		}
+
+		return SUCCESS;
+		
+	}
+	private long orgId;
+
+	public long getOrgId() {
+		return orgId;
+	}
+
+	public void setOrgId(long orgId) {
+		this.orgId = orgId;
+	}
+
+	private long durations;
+	public long getDurations() {
+		return durations;
+	}
+
+	public void setDurations(long durations) {
+		this.durations = durations;
+	}
+	
+	
+	
 	
 	public String getEmail() {
 		return this.email;

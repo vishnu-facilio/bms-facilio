@@ -7,19 +7,20 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.facilio.modules.FacilioStatus;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.json.simple.JSONObject;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.activity.WorkOrderActivityType;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.TicketContext;
-import com.facilio.bmsconsole.context.TicketStatusContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
@@ -31,8 +32,10 @@ import com.facilio.bmsconsole.modules.LookupField;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
 import com.facilio.bmsconsole.util.ShiftAPI;
+import com.facilio.bmsconsole.util.StateFlowRulesAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.workflow.rule.EventType;
+import com.facilio.bmsconsole.workflow.rule.StateFlowRuleContext;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
@@ -98,13 +101,13 @@ public class UpdateTaskCommand implements Command {
 					boolean bulkAction = (boolean) context.get(FacilioConstants.ContextNames.IS_BULK_ACTION);
 					if (bulkAction) {
 						taskActivity = EventType.CLOSE_ALL_TASK;
-						for(TaskContext oldTask : oldTasks) {
-							JSONObject info = new JSONObject();
-						info.put("subject", oldTask.getSubject());
-						closedtask.add(info);
-						}
+//						for(TaskContext oldTask : oldTasks) {
+//							JSONObject info = new JSONObject();
+//						info.put("subject", oldTask.getSubject());
+//						closedtask.add(info);
+//						}
 						JSONObject newinfo = new JSONObject();
-						newinfo.put("closetasks", closedtask);
+//						newinfo.put("closetasks", closedtask);
 						CommonCommandUtil.addActivityToContext(oldTasks.get(0).getParentTicketId(), -1, WorkOrderActivityType.CLOSE_ALL_TASK, newinfo, (FacilioContext) context);
                      }
 				} else {
@@ -176,47 +179,71 @@ public class UpdateTaskCommand implements Command {
 		List<FacilioField> woFields = modBean.getAllFields(woModule.getName());
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(woFields);
 		
+		List<LookupField> lookupList = new ArrayList<>();
+		lookupList.add((LookupField) fieldMap.get("status"));
+		if (fieldMap.containsKey("moduleState")) {
+			lookupList.add((LookupField) fieldMap.get("moduleState"));
+		}
 		SelectRecordsBuilder<WorkOrderContext> builder = new SelectRecordsBuilder<WorkOrderContext>()
 				.select(woFields)
 				.module(woModule)
 				.beanClass(WorkOrderContext.class)
 				.andCondition(CriteriaAPI.getIdCondition(task.getParentTicketId(), woModule))
-				.fetchLookup((LookupField) fieldMap.get("status"));
+				.fetchLookups(lookupList);
 				;
 		
 		List<WorkOrderContext> tickets = builder.get();
 		if(tickets != null && !tickets.isEmpty()) {
 			TicketContext ticket = tickets.get(0);
 			
-			TicketStatusContext statusObj = ticket.getStatus();
-			if ("Closed".equalsIgnoreCase(statusObj.getStatus())|| "Resolved".equalsIgnoreCase(statusObj.getStatus())) {
-				throw new IllegalArgumentException("Task cannot be updated for completed tickets");
-			}
-			
-			if (!("Work in Progress".equalsIgnoreCase(statusObj.getStatus()))) {
-				TicketContext newTicket = new TicketContext();
-				newTicket.setStatus(TicketAPI.getStatus("Work in Progress"));
-				TicketAPI.updateTicketStatus(activityType, newTicket, ticket, false);
-				
-				UpdateRecordBuilder<TicketContext> updateBuilder = new UpdateRecordBuilder<TicketContext>()
-															.module(woModule)
-															.fields(woFields)
-															.andCondition(CriteriaAPI.getIdCondition(task.getParentTicketId(), woModule));
-				
-				updateBuilder.update(newTicket);
-			}
-			try {
-				if (ticket.getAssignedTo() != null) {
-					List<ReadingContext> readings = ShiftAPI.handleWorkHoursReading(activityType, ticket.getAssignedTo().getOuid(), ticket.getId(), ticket.getStatus(), TicketAPI.getStatus("Work in Progress"));
-					Map<String, List<ReadingContext>> readingMap = new HashMap<>();
-					readingMap.put("userworkhoursreading", readings);
-					context.put(FacilioConstants.ContextNames.READINGS_MAP, readingMap);
-					context.put(FacilioConstants.ContextNames.ADJUST_READING_TTIME, false);
+			if (ticket.getStateFlowId() > 0) {
+				StateFlowRuleContext defaultStateFlow = StateFlowRulesAPI.getDefaultStateFlow(woModule);
+				if (ticket.getStateFlowId() == defaultStateFlow.getId()) {
+					FacilioStatus statusObj = ticket.getModuleState();
+					if ("Closed".equalsIgnoreCase(statusObj.getStatus()) || "Resolved".equalsIgnoreCase(statusObj.getStatus())) {
+						throw new IllegalArgumentException("Task cannot be updated for completed tickets");
+					}
+					
+					if (!("Work in Progress".equalsIgnoreCase(statusObj.getStatus()))) {
+						FacilioStatus workInProgressStatus = TicketAPI.getStatus("Work in Progress");
+						if (ticket.getAssignedTo() == null) {
+							ticket.setAssignedTo(AccountUtil.getCurrentUser());
+						}
+						StateFlowRulesAPI.updateState(ticket, woModule, workInProgressStatus, false, context);
+					}
 				}
-			}
-			catch(Exception e) {
-				log.info("Exception occurred while handling work hours", e);
-				CommonCommandUtil.emailException(UpdateTaskCommand.class.getName(), "Exception occurred while handling work hours", e);
+			} 
+			else {
+				FacilioStatus statusObj = ticket.getStatus();
+				if ("Closed".equalsIgnoreCase(statusObj.getStatus()) || "Resolved".equalsIgnoreCase(statusObj.getStatus())) {
+					throw new IllegalArgumentException("Task cannot be updated for completed tickets");
+				}
+				
+				if (!("Work in Progress".equalsIgnoreCase(statusObj.getStatus()))) {
+					TicketContext newTicket = new TicketContext();
+					newTicket.setStatus(TicketAPI.getStatus("Work in Progress"));
+					TicketAPI.updateTicketStatus(activityType, newTicket, ticket, false);
+					
+					UpdateRecordBuilder<TicketContext> updateBuilder = new UpdateRecordBuilder<TicketContext>()
+																.module(woModule)
+																.fields(woFields)
+																.andCondition(CriteriaAPI.getIdCondition(task.getParentTicketId(), woModule));
+					
+					updateBuilder.update(newTicket);
+				}
+				try {
+					if (ticket.getAssignedTo() != null) {
+						List<ReadingContext> readings = ShiftAPI.handleWorkHoursReading(activityType, ticket.getAssignedTo().getOuid(), ticket.getId(), ticket.getStatus(), TicketAPI.getStatus("Work in Progress"));
+						Map<String, List<ReadingContext>> readingMap = new HashMap<>();
+						readingMap.put("userworkhoursreading", readings);
+						context.put(FacilioConstants.ContextNames.READINGS_MAP, readingMap);
+						context.put(FacilioConstants.ContextNames.ADJUST_READING_TTIME, false);
+					}
+				}
+				catch(Exception e) {
+					log.info("Exception occurred while handling work hours", e);
+					CommonCommandUtil.emailException(UpdateTaskCommand.class.getName(), "Exception occurred while handling work hours", e);
+				}
 			}
 			
 		}

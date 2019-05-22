@@ -20,6 +20,7 @@ import com.facilio.bmsconsole.util.ViewAPI;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.ViewFactory;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.fw.BeanFactory;
 
 public class GetViewListCommand implements Command {
@@ -31,7 +32,7 @@ public class GetViewListCommand implements Command {
 		FacilioModule moduleObj = null;
 		Map<String,FacilioView> viewMap = ViewFactory.getModuleViews(moduleName);
 		// Temporary
-		if (AccountUtil.getCurrentOrg().getOrgId() == 114 && moduleName.equals("approval")) {
+		if (moduleName.equals("approval") && modBean.getField("moduleState", ContextNames.WORK_ORDER) != null) {
 			viewMap = new HashMap<>();
 			FacilioView requested = ViewFactory.getRequestedStateApproval();
 			viewMap.put(requested.getName(), requested);
@@ -66,7 +67,7 @@ public class GetViewListCommand implements Command {
 					.filter(view -> view.getIsDefault() != null && view.getIsDefault() && view.getName() != null && view.getName().equals("myupcoming")).findFirst();
 
 			// Temp...Needs to change in web client also
-			if ((AccountUtil.getCurrentAccount().isFromMobile()) || moduleName.equals("asset")) {
+//			if ((AccountUtil.getCurrentAccount().isFromMobile()) || moduleName.equals("asset")) {
 				List<Map<String, Object>> groupViews = new ArrayList<>(ViewFactory.getGroupVsViews(moduleName));
 				if (!groupViews.isEmpty()) {
 					
@@ -123,9 +124,9 @@ public class GetViewListCommand implements Command {
 					}
 						
 					int groupSize = groupViews.size();
-					Map<String, Object> group = groupViews.get(groupSize - 1);
-					if (group.containsKey("type") && group.get("type").equals("custom") && !customViews.isEmpty()) {
-						Map<String, Object> mutatedDetail = new HashMap<>(group);
+					Map<String, Object> group1 = groupViews.get(groupSize - 1);
+					if (group1.containsKey("type") && group1.get("type").equals("custom") && !customViews.isEmpty()) {
+						Map<String, Object> mutatedDetail = new HashMap<>(group1);
 						mutatedDetail.remove("type");
 						mutatedDetail.put("views", customViews);
 						groupViews.set(groupSize - 1, mutatedDetail);
@@ -133,19 +134,19 @@ public class GetViewListCommand implements Command {
 
 					if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.SCHEDULED_WO)) {
 						if (upcomingView.isPresent()) {
-							Map<String, Object> groupDetails = new HashMap<>();
-							groupDetails.put("name", "upcoming");
-							groupDetails.put("displayName", "Upcoming Work Orders");
-							groupDetails.put("views", Arrays.asList(upcomingView.get()));
-							groupViews.add(groupDetails);
+							Map<String, Object> groupDetails1 = new HashMap<>();
+							groupDetails1.put("name", "upcoming");
+							groupDetails1.put("displayName", "Upcoming Work Orders");
+							groupDetails1.put("views", Arrays.asList(upcomingView.get()));
+							groupViews.add(groupDetails1);
 						}
 
 						if (myupcomingView.isPresent()) {
-							Map<String, Object> groupDetails = new HashMap<>();
-							groupDetails.put("name", "myupcoming");
-							groupDetails.put("displayName", "My Upcoming Work Orders");
-							groupDetails.put("views", Arrays.asList(myupcomingView.get()));
-							groupViews.add(groupDetails);
+							Map<String, Object> groupDetails1 = new HashMap<>();
+							groupDetails1.put("name", "myupcoming");
+							groupDetails1.put("displayName", "My Upcoming Work Orders");
+							groupDetails1.put("views", Arrays.asList(myupcomingView.get()));
+							groupViews.add(groupDetails1);
 						}
 					}
 				}
@@ -192,18 +193,18 @@ public class GetViewListCommand implements Command {
 				}
 				
 				context.put(FacilioConstants.ContextNames.VIEW_LIST, groupViews);
-			}
+//			}
 //			 TODO remove
-			else {
-				allViews.sort(Comparator.comparing(FacilioView::getSequenceNumber, (s1, s2) -> {
-					if(s1 == s2){
-				         return 0;
-				    }
-				    return s1 < s2 ? -1 : 1;
-				}));
-				context.put(FacilioConstants.ContextNames.VIEW_LIST, allViews);
-				context.put(FacilioConstants.ContextNames.GROUP_VIEWS, ViewFactory.getGroupViews(moduleName));
-			}
+//			else {
+//				allViews.sort(Comparator.comparing(FacilioView::getSequenceNumber, (s1, s2) -> {
+//					if(s1 == s2){
+//				         return 0;
+//				    }
+//				    return s1 < s2 ? -1 : 1;
+//				}));
+//				context.put(FacilioConstants.ContextNames.VIEW_LIST, allViews);
+//				context.put(FacilioConstants.ContextNames.GROUP_VIEWS, ViewFactory.getGroupViews(moduleName));
+//			}
 		}
 		else {
 			allViews.sort(Comparator.comparing(FacilioView::getSequenceNumber, (s1, s2) -> {

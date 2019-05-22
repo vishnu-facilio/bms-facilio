@@ -24,11 +24,15 @@ import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.templates.ControlActionTemplate;
+import com.facilio.bmsconsole.templates.DefaultTemplate.DefaultTemplateType;
 import com.facilio.bmsconsole.templates.EMailTemplate;
 import com.facilio.bmsconsole.templates.JSONTemplate;
 import com.facilio.bmsconsole.templates.PushNotificationTemplate;
 import com.facilio.bmsconsole.templates.SMSTemplate;
 import com.facilio.bmsconsole.templates.Template;
+import com.facilio.bmsconsole.templates.WorkflowTemplate;
+import com.facilio.bmsconsole.modules.*;
+import com.facilio.bmsconsole.templates.*;
 import com.facilio.bmsconsole.templates.Template.Type;
 import com.facilio.bmsconsole.templates.WorkflowTemplate;
 import com.facilio.bmsconsole.templates.WorkorderTemplate;
@@ -128,7 +132,7 @@ public class ActionAPI {
 					throw new IllegalArgumentException("Either template ID / default template has to be set for Action during addition");
 				}
 				
-				if (action.getTemplateId() == -1 && TemplateAPI.getDefaultTemplate(action.getDefaultTemplateId()) == null) {
+				if (action.getTemplateId() == -1 && TemplateAPI.getDefaultTemplate(DefaultTemplateType.ACTION,action.getDefaultTemplateId()) == null) {
 					throw new IllegalArgumentException("Invalid default template id for action during addition.");
 				}
 			}

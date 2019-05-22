@@ -29,6 +29,7 @@ import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
 import com.facilio.bmsconsole.view.ViewFactory;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.google.common.base.Functions;
@@ -47,8 +48,8 @@ public class LoadViewCommand implements Command {
 			String parentViewName = (String) context.get(FacilioConstants.ContextNames.PARENT_VIEW);	// eg: to get default report columns
 			FacilioView view = null;
 			boolean isCVEnabled = true;
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			if(isCVEnabled) {
-				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 				long moduleId = modBean.getModule(moduleName).getModuleId();
 				if (LookupSpecialTypeUtil.isSpecialType(moduleName)) {
 					view = ViewAPI.getView(viewName, moduleName, AccountUtil.getCurrentOrg().getOrgId());
@@ -58,7 +59,7 @@ public class LoadViewCommand implements Command {
 			}
 			
 			if(view == null) {
-				if (AccountUtil.getCurrentOrg().getOrgId() == 114 && (viewName.equals("approval_requested") || moduleName.equals("approval"))) {
+				if (modBean.getField("moduleState", ContextNames.WORK_ORDER) != null && (viewName.equals("approval_requested") || moduleName.equals("approval"))) {
 					view = ViewFactory.getRequestedStateApproval();
 					if (view != null) {
 						List<ViewField> columns = ColumnFactory.getColumns(moduleName, viewName);

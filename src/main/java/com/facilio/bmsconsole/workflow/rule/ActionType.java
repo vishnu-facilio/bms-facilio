@@ -39,7 +39,7 @@ import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.context.ReadingAlarmContext;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.TicketContext.SourceType;
-import com.facilio.bmsconsole.context.TicketStatusContext;
+import com.facilio.modules.FacilioStatus;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
@@ -267,7 +267,7 @@ public enum ActionType {
 					addEventContext.put(EventConstants.EventContextNames.EVENT_PAYLOAD, obj);
 					Chain getAddEventChain = EventConstants.EventChainFactory.getAddEventChain();
 					getAddEventChain.execute(addEventContext);
-					EventContext event = (EventContext) addEventContext.get(EventConstants.EventContextNames.EVENT);
+					EventContext event = ((List<EventContext>) addEventContext.get(EventConstants.EventContextNames.EVENT_LIST)).get(0);
 					if (currentRule instanceof ReadingRuleContext) {
 						processAlarmMeta((ReadingRuleContext) currentRule, (long) obj.get("resourceId"), (long) obj.get("timestamp"), event, context);
 					}
@@ -286,7 +286,7 @@ public enum ActionType {
 					metaMap = rule.getAlarmMetaMap();
 					isHistorical = false;
 				}
-				if (isHistorical) {/*if (AccountUtil.getCurrentOrg().getId() == 135) {*/
+				if (isHistorical || rule.getRuleGroupId() == 4216) {/*if (AccountUtil.getCurrentOrg().getId() == 135) {*/
 					LOGGER.info("Meta map of rule : "+rule.getId()+" when creating alarm for resource "+resourceId+" at time : "+time+" : "+metaMap);
 				}
 					
@@ -296,7 +296,7 @@ public enum ActionType {
 						metaMap.put(resourceId, addAlarmMeta(event.getAlarmId(), resourceId, rule, isHistorical));
 					}
 					else if (alarmMeta.isClear()) {
-						if (isHistorical) {/*if (AccountUtil.getCurrentOrg().getId() == 135) {*/
+						if (isHistorical || rule.getRuleGroupId() == 4216) {/*if (AccountUtil.getCurrentOrg().getId() == 135) {*/
 							LOGGER.info("Updating meta with alarm id : "+event.getAlarmId()+" for rule : "+rule.getId()+" for resource : "+resourceId);
 						}
 						alarmMeta.setAlarmId(event.getAlarmId());
@@ -512,7 +512,7 @@ public enum ActionType {
 			try {
 				if (userAssigned) {
 					if (assignedToUserId != -1 || assignGroupId != -1) {
-						TicketStatusContext status = TicketAPI.getStatus("Assigned");
+						FacilioStatus status = TicketAPI.getStatus("Assigned");
 						workOrder.setStatus(status);
 						updateWO.setStatus(status);
 					}
@@ -728,6 +728,7 @@ public enum ActionType {
 			wo.setSourceType(SourceType.WORKFLOW_RULE);
 			FacilioContext woContext = new FacilioContext();
 			woContext.put(FacilioConstants.ContextNames.WORK_ORDER, wo);
+			woContext.put(FacilioConstants.ContextNames.TASK_MAP, wo.getTaskList());
 
 			Chain addWorkOrder = TransactionChainFactory.getAddWorkOrderChain();
 			addWorkOrder.execute(woContext);
@@ -926,7 +927,7 @@ public enum ActionType {
 		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,
 				Object currentRecord) throws Exception {
 			ModuleBaseWithCustomFields moduleData = ((ModuleBaseWithCustomFields) currentRecord);
-			TicketStatusContext state = moduleData.getModuleState();
+			FacilioStatus state = moduleData.getModuleState();
 			long oldStateId = -1;
 			if (state != null) {
 				oldStateId = state.getId();
@@ -1055,7 +1056,7 @@ public enum ActionType {
 		FacilioField entityIdField = modBean.getField("entityId", FacilioConstants.ContextNames.ALARM);
 		FacilioField woIdField = modBean.getField("woId", FacilioConstants.ContextNames.ALARM);
 		FacilioField statusField = modBean.getField("status", FacilioConstants.ContextNames.WORK_ORDER);
-		TicketStatusContext closeStatus = TicketAPI.getStatus("Closed");
+		FacilioStatus closeStatus = TicketAPI.getStatus("Closed");
 		
 		
 		SelectRecordsBuilder<WorkOrderContext> woBuilder = new SelectRecordsBuilder<WorkOrderContext>()

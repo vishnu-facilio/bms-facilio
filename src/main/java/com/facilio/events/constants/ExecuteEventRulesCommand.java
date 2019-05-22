@@ -10,6 +10,7 @@ import com.facilio.events.util.EventAPI;
 import com.facilio.workflows.util.WorkflowUtil;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -25,30 +26,33 @@ public class ExecuteEventRulesCommand implements Command {
 	@Override
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
-		EventContext event = (EventContext) context.get(EventConstants.EventContextNames.EVENT);
+		List<EventContext> events = (List<EventContext>) context.get(EventConstants.EventContextNames.EVENT_LIST);
 		List<EventRuleContext> eventRules = (List<EventRuleContext>) context.get(EventConstants.EventContextNames.EVENT_RULE_LIST);
-		if (eventRules != null && !eventRules.isEmpty()) {
+		if (CollectionUtils.isNotEmpty(eventRules) && CollectionUtils.isNotEmpty(events)) {
 			Map<String, Object> placeHolders = new HashMap<>();
 			CommonCommandUtil.appendModuleNameInKey(null, "org", FieldUtil.getAsProperties(AccountUtil.getCurrentOrg()), placeHolders);
 			CommonCommandUtil.appendModuleNameInKey(null, "user", FieldUtil.getAsProperties(AccountUtil.getCurrentUser()), placeHolders);
 //			CommonCommandUtil.appendModuleNameInKey(null, "event", FieldUtil.getAsProperties(event), placeHolders);
-			for (EventRuleContext eventRule : eventRules) {
-				try {
-					Map<String, Object> rulePlaceHolders = new HashMap<>(placeHolders);
-					CommonCommandUtil.appendModuleNameInKey(null, "event", FieldUtil.getAsProperties(event), rulePlaceHolders);
-					if (isRulePassed(event, eventRule, rulePlaceHolders)) {
-						event = executeRule(event, eventRule, rulePlaceHolders);
-						context.put(EventConstants.EventContextNames.EVENT, event);
-						if (!IS_CASCADING) {
-							break;
+
+			for (int itr = 0; itr < events.size(); itr++) {
+				EventContext event = events.get(itr);
+				Map<String, Object> recordPlaceHolders = new HashMap<>(placeHolders);
+				CommonCommandUtil.appendModuleNameInKey(null, "event", FieldUtil.getAsProperties(event), recordPlaceHolders);
+				for (EventRuleContext eventRule : eventRules) {
+					try {
+						if (isRulePassed(event, eventRule, recordPlaceHolders)) {
+							event = executeRule(event, eventRule, recordPlaceHolders);
+							events.set(itr, event);
+							if (!IS_CASCADING) {
+								break;
+							}
 						}
+					} catch (Exception e) {
+						String errorMsg = "Error occurred during execution of event Rule : " + eventRule.getId();
+//						CommonCommandUtil.emailException(errorMsg, e);
+						logger.log(Level.ERROR, errorMsg, e);
+						throw e;
 					}
-				}
-				catch (Exception e) {
-					String errorMsg = "Error occurred during execution of event Rule : "+eventRule.getId();
-//					CommonCommandUtil.emailException(errorMsg, e);
-					logger.log(Level.ERROR, errorMsg, e);
-					throw e;
 				}
 			}
 		}

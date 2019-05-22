@@ -119,8 +119,12 @@ public class FacilioLogAppender extends DailyRollingFileAppender {
                 Throwable throwable = information.getThrowable();
                 String exceptionType = throwable.getClass().getName();
                 event.setProperty("exception", exceptionType);
+                if( AccountUtil.getCurrentAccount() != null && AccountUtil.getCurrentAccount().getRequestUri() != null) {
+                    event.setProperty("req_uri", AccountUtil.getCurrentAccount().getRequestUri());
+                }
             } else {
                 event.setProperty("exception", "-");
+                event.setProperty("req_uri", "-");
             }
         } catch (Exception e) {
             event.setProperty("exception", "LogAppenderException");

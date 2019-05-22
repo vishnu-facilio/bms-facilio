@@ -40,8 +40,6 @@ public class FacilioField implements Serializable {
 		this.icon = field.icon;
 		this.placeHolder = field.placeHolder;
 		this.displayType = field.displayType;
-		this.readingRules = field.readingRules;
-		this.actionsList = field.actionsList;
 	}
 	
 	public FacilioField clone() {
@@ -333,25 +331,7 @@ public class FacilioField implements Serializable {
 		}
 		return -1;
 	}
-	
-	private List<ReadingRuleContext> readingRules;
-	public List<ReadingRuleContext> getReadingRules() {
-		return this.readingRules;
-	}
-	
-	public void setReadingRules(List<ReadingRuleContext> readingRules) {
-		this.readingRules = readingRules;
-	}
-	
-	private List<List<ActionContext>> actionsList;
-	public List<List<ActionContext>> getActionsList() {
-		return this.actionsList;
-	}
-	
-	public void setActionsList(List<List<ActionContext>> actionsList) {
-		this.actionsList = actionsList;
-	}
-	
+
 	public String toString() {
 		
 		StringBuilder builder = new StringBuilder();
@@ -423,7 +403,7 @@ public class FacilioField implements Serializable {
 		LOGO(37,"logo"),
 		BUILDINGCHOOSER(38, "building-chooser"),
 		LINEITEMS(39, "line-items"),
-		RECEIPT_LINE_ITEMS(40, "receipt-line-items"),
+		INVREQUEST_LINE_ITEMS(40, "inventory-request-line-items"),
 		QR(41, "qr"),
 		SADDRESS(42, "address"),
 		LABOUR_LINE_ITEMS(43, "labour-line-items"),

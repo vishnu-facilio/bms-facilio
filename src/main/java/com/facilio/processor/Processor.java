@@ -55,12 +55,11 @@ public class Processor implements IRecordProcessor {
         private AckUtil ackUtil;
         private EventUtil eventUtil;
         private Boolean isStage = !AwsUtil.isProduction();
+        private  boolean isRestarted = true;
 
         public static final String DATA_TYPE = "PUBLISH_TYPE";
         private List<EventRuleContext> eventRules = new ArrayList<>();
         private JSONParser parser = new JSONParser();
-
-
 
     Processor(long orgId, String orgDomainName){
             this.orgId = orgId;
@@ -116,10 +115,31 @@ public class Processor implements IRecordProcessor {
             for (Record record : processRecordsInput.getRecords()) {
                 String data = "";
                 StringReader reader = null;
+                String recordId = record.getSequenceNumber();
                 try {
+                    try {
+                        boolean  isDuplicateMessage = AgentUtil.isDuplicate(recordId);
+                        if ( isDuplicateMessage ) {
+                            if(isRestarted){
+                                LOGGER.info(" Duplicate message received but can be processed due to server-restart "+recordId);
+                                isRestarted = false;
+                            }
+                            else {
+                                LOGGER.info(" Duplicate message received and cannot be reprocessed "+recordId);
+                                continue;
+                            }
+                        }
+                        else {
+                            AgentUtil.addAgentMessage(recordId);
+                        }
+                    }catch (Exception e1){
+                        LOGGER.info("Exception Occured ",e1);
+                    }
 
                     data = decoder.decode(record.getData()).toString();
-                    if(data.isEmpty()){
+                    if (data.isEmpty()) {
+                        LOGGER.info(" Empty message received "+recordId);
+                        AgentUtil.updateAgentMessage(recordId, MessageStatus.DATA_EMPTY);
                         continue;
                     }
 
@@ -131,7 +151,6 @@ public class Processor implements IRecordProcessor {
 
                     reader = new StringReader(data);
                     JSONObject payLoad = (JSONObject) parser.parse(reader);
-
                     String dataType = PublishType.event.getValue();
                     if(payLoad.containsKey(EventUtil.DATA_TYPE)) {
                         dataType = (String)payLoad.remove(EventUtil.DATA_TYPE);
@@ -184,40 +203,14 @@ public class Processor implements IRecordProcessor {
                                 break;
                             case agent:
                                 i =  agentUtil.processAgent( payLoad,agentName);
-                                if(isStage && (payLoad.containsKey(AgentKeys.COMMAND_STATUS) || payLoad.containsKey(AgentKeys.CONTENT))){
-                                    LOGGER.info(" Payload -- "+payLoad);
-                                    Integer connectionCount = -1;
-                                    if( payLoad.containsKey(AgentKeys.COMMAND_STATUS)){
-                                        if((payLoad.remove(AgentKeys.COMMAND_STATUS)).toString().equals("1")){
-                                            if(payLoad.containsKey(AgentKeys.CONNECTION_COUNT)) {
-                                                connectionCount = Integer.parseInt(payLoad.get(AgentKeys.CONNECTION_COUNT).toString());
-                                            }
-                                        }
-                                        else{
-                                            payLoad.put(AgentKeys.CONTENT,AgentContent.DISCONNECTED.getKey());
-                                        }
-                                    }
-                                    if (connectionCount == 0) {
-                                        payLoad.put(AgentKeys.CONTENT, AgentContent.RESTARTED.getKey());
-                                        agentUtil.putLog(payLoad,orgId, agent.getId(),false);
-                                        payLoad.put(AgentKeys.CONTENT, AgentContent.CONNECTED.getKey());
-                                    } else if (connectionCount == -1) {
-                                        payLoad.put(AgentKeys.CONTENT,AgentContent.CONNECTED.getKey());
-                                    } else {
-                                        payLoad.put(AgentKeys.CONTENT, AgentContent.CONNECTED.getKey() + connectionCount);
-                                    }
-                                    agentUtil.putLog(payLoad,orgId,agent.getId(),false);
-
-                                }
+                                processLog(payLoad,agent.getId());
                                 break;
                             case devicepoints:
                                 devicePointsUtil.processDevicePoints(payLoad, orgId, deviceMap, agent.getId());
                                 break;
                             case ack:
                                 ackUtil.processAck(payLoad, orgId);
-                                if(isStage) {
-                                    agentUtil.putLog(payLoad, orgId, agent.getId(), false);
-                                }
+                                processLog(payLoad,agent.getId());
                                 break;
                             case event:
                                 boolean alarmCreated = eventUtil.processEvents(record.getApproximateArrivalTimestamp().getTime(), payLoad, record.getPartitionKey(),orgId,eventRules);
@@ -227,13 +220,16 @@ public class Processor implements IRecordProcessor {
                                 break;
 
                         }
+
                         dataTypeLastMessageTime.put(dataType, lastMessageReceivedTime);
                         deviceMessageTime.put(deviceId, dataTypeLastMessageTime);
                     } else {
                         LOGGER.info("Duplicate message for device " + deviceId + " and type " + dataType);
                     }
                     if ( i == 0 ) {
-                        GenericUpdateRecordBuilder genericUpdateRecordBuilder = new GenericUpdateRecordBuilder().table(AgentKeys.AGENT_TABLE).fields(FieldFactory.getAgentDataFields()).andCustomWhere( AgentKeys.NAME+"= '"+agentName+"'");
+                        GenericUpdateRecordBuilder genericUpdateRecordBuilder = new GenericUpdateRecordBuilder().table(AgentKeys.AGENT_TABLE).fields(FieldFactory.getAgentDataFields())
+                                .andCondition(CriteriaAPI.getCondition(FieldFactory.getAgentNameField(ModuleFactory.getAgentDataModule()),agentName,StringOperators.IS))
+                                .andCondition(CriteriaAPI.getCurrentOrgIdCondition(ModuleFactory.getAgentDataModule()));
                         Map<String,Object> toUpdate = new HashMap<>();
                         toUpdate.put(AgentKeys.CONNECTION_STATUS, Boolean.TRUE);
                         toUpdate.put(AgentKeys.STATE, 1);
@@ -241,7 +237,7 @@ public class Processor implements IRecordProcessor {
                         genericUpdateRecordBuilder.update(toUpdate);
 
                     }
-
+                    AgentUtil.updateAgentMessage(recordId,MessageStatus.PROCESSED);
                 } catch (Exception e) {
                     try {
                         if(AwsUtil.isProduction()) {
@@ -265,7 +261,34 @@ public class Processor implements IRecordProcessor {
         agent.setAgentConnStatus(Boolean.TRUE);
         agent.setAgentState(1);
         agent.setAgentDataInterval(15L);
+        agent.setWritable(false);
         return agent;
+    }
+
+    private void processLog(JSONObject payLoad,Long agentId){
+        if(isStage && (payLoad.containsKey(AgentKeys.COMMAND_STATUS) || payLoad.containsKey(AgentKeys.CONTENT))){
+            int connectionCount = -1;
+            if( payLoad.containsKey(AgentKeys.COMMAND_STATUS)){
+                if(( "1".equals( payLoad.get( AgentKeys.COMMAND_STATUS ).toString() ) )){
+                    if(payLoad.containsKey(AgentKeys.CONNECTION_COUNT)) {
+                        connectionCount = Integer.parseInt(payLoad.get(AgentKeys.CONNECTION_COUNT).toString());
+                    }
+
+                    if (connectionCount == -1) {
+                        payLoad.put(AgentKeys.CONTENT, AgentContent.CONNECTED.getKey());
+                    } else {
+                        if (connectionCount == 1) {
+                            payLoad.put(AgentKeys.CONTENT, AgentContent.RESTARTED.getKey());
+                            agentUtil.putLog(payLoad,orgId, agentId,false);
+                        }
+                        payLoad.put(AgentKeys.CONTENT, AgentContent.CONNECTED.getKey()+connectionCount);
+                    }
+                } else {
+                    payLoad.put(AgentKeys.CONTENT, AgentContent.DISCONNECTED.getKey());
+                }
+            }
+            AgentUtil.putLog(payLoad,orgId,agentId,false);
+        }
     }
 
     private void processTimeSeries(Record record, JSONObject payLoad, ProcessRecordsInput processRecordsInput, boolean isTimeSeries) throws Exception {

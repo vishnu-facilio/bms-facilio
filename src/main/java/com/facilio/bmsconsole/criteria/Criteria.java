@@ -7,6 +7,7 @@ import org.apache.commons.collections.Predicate;
 import org.apache.commons.collections.PredicateUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.struts2.json.annotations.JSON;
 
 import java.io.Serializable;
 import java.util.*;
@@ -47,6 +48,10 @@ public class Criteria extends ExpressionEvaluator<Predicate> implements Serializ
 	public void setConditions(Map<String, Condition> conditions) {
 		this.conditions = conditions;
 	}
+	public void addCondition(String seq, Condition condition) {
+		this.conditions = this.conditions == null ? new HashMap<>() : this.conditions;
+		this.conditions.put(seq, condition);
+	}
 
 	private String pattern = null;
 
@@ -56,6 +61,19 @@ public class Criteria extends ExpressionEvaluator<Predicate> implements Serializ
 
 	public void setPattern(String pattern) {
 		this.pattern = pattern;
+	}
+	
+	int seqOrder = 0;
+	
+	@JsonIgnore
+	@JSON(serialize=false)
+	public int addConditionMap(Condition condition) {
+		if(this.getConditions() == null) {
+			this.setConditions(new HashMap<>());
+		}
+		
+		this.addCondition(String.valueOf(++seqOrder), condition);
+		return seqOrder;
 	}
 
 	private static final Pattern REG_EX = Pattern.compile("([1-9]\\d*)");
@@ -90,6 +108,7 @@ public class Criteria extends ExpressionEvaluator<Predicate> implements Serializ
 	}
 	
 	@JsonIgnore
+	@JSON(serialize=false)
 	public List<Object> getComputedValues() {
 		if (!isWhereComputed) {
 			computeWhereClause();

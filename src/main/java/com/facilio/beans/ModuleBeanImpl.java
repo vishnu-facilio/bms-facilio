@@ -11,6 +11,8 @@ import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.*;
 import com.facilio.transaction.FacilioConnectionPool;
+
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.json.simple.JSONArray;
@@ -440,14 +442,6 @@ public class ModuleBeanImpl implements ModuleBean {
 			
 			List<FacilioField> fields = new ArrayList<>();
 			for (Map<String, Object> prop : props) {
-				Long extendedModuleId = (Long) prop.get("extendedModuleId");
-				if(extendedModuleId != null) {
-					FacilioModule extendedModule = moduleMap.get(extendedModuleId);
-					if(extendedModule == null) {
-						throw new IllegalArgumentException("Invalid Extended module id in Field : "+prop.get("name")+"::Module Id : "+prop.get("moduleId"));
-					}
-					prop.put("extendedModule", extendedModule);
-				}
 				prop.put("module", moduleMap.get(prop.get("moduleId")));
 				
 				try {
@@ -580,6 +574,29 @@ public class ModuleBeanImpl implements ModuleBean {
 
 		List<Map<String, Object>> fieldProps = selectBuilder.get();
 		List<FacilioField> fields = getFieldFromPropList(fieldProps, moduleMap);
+		return fields;
+	}
+	
+	@Override
+	public List<FacilioField> getModuleFields(String moduleName) throws Exception {
+		
+		if(LookupSpecialTypeUtil.isSpecialType(moduleName)) {
+			return LookupSpecialTypeUtil.getAllFields(moduleName);
+		}
+		
+		FacilioModule module = getMod(moduleName);
+		Map<Long, FacilioModule> moduleMap = splitModules(module);
+
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+														.select(FieldFactory.getSelectFieldFields())
+														.table("Fields")
+														.andCondition(CriteriaAPI.getCondition("MODULEID", "moduleId", String.valueOf(module.getModuleId()), NumberOperators.EQUALS));
+
+		List<Map<String, Object>> fieldProps = selectBuilder.get();
+		List<FacilioField> fields = getFieldFromPropList(fieldProps, moduleMap);
+		if (CollectionUtils.isEmpty(fields)) {
+			fields = new ArrayList<>();
+		}
 		return fields;
 	}
 	
@@ -789,7 +806,7 @@ public class ModuleBeanImpl implements ModuleBean {
 		return count;
 	}
 	
-	private void addEnumField(EnumField field) throws Exception {
+	private int addEnumField(EnumField field) throws Exception {
 		if (field.getValues() == null || field.getValues().isEmpty()) {
 			throw new IllegalArgumentException("Enum Values cannot be null during addition of Enum Field");
 		}
@@ -798,7 +815,8 @@ public class ModuleBeanImpl implements ModuleBean {
 		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
 														.table(module.getTableName())
 														.fields(FieldFactory.getEnumFieldValuesFields());
-		for (int i = 1; i <= field.getValues().size(); i++) {
+		int optionsCount = field.getValues().size();
+		for (int i = 1; i <= optionsCount; i++) {
 			Map<String, Object> prop = new HashMap<>();
 			prop.put("fieldId", field.getFieldId());
 			prop.put("orgId", getOrgId());
@@ -807,14 +825,15 @@ public class ModuleBeanImpl implements ModuleBean {
 			insertBuilder.addRecord(prop);
 		}
 		insertBuilder.save();
+		return optionsCount;
 	}
 	
-	private void updateEnumField(EnumField field) throws Exception {
+	private int updateEnumField(EnumField field) throws Exception {
 		if (field.getValues() == null || field.getValues().isEmpty()) {
-			return;
+			return 0;
 		}
 		deleteEnumValues(field);
-		addEnumField(field);
+		return addEnumField(field);
 	}
 	
 	private void deleteEnumValues (EnumField field) throws Exception {
@@ -852,7 +871,7 @@ public class ModuleBeanImpl implements ModuleBean {
 				extendendPropsCount = updateExtendedProps(ModuleFactory.getFileFieldModule(), FieldFactory.getFileFieldFields(), field);
 			}
 			else if (field instanceof EnumField) {
-				updateEnumField((EnumField) field);
+				extendendPropsCount = updateEnumField((EnumField) field);
 			}
 			return Math.max(count, extendendPropsCount);
 		}

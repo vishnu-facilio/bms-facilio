@@ -239,5 +239,13 @@ public class ControllerContext implements Serializable {
 		this.agentId = agentId;
 	}
 
+	private int availablePoints = -1;
 
+	public void setAvailablePoints(int points) {
+		this.availablePoints = points;
+	}
+
+	public int getAvailablePoints() {
+		return availablePoints;
+	}
 }

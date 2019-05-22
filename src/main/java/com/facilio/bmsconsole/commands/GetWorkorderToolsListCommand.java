@@ -27,18 +27,20 @@ public class GetWorkorderToolsListCommand implements Command {
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 		if (moduleName != null && !moduleName.isEmpty()) {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			FacilioModule workorderItemsModule = modBean.getModule(moduleName);
-			List<FacilioField> workorderItemsFields = modBean.getAllFields(moduleName);
-			Map<String, FacilioField> workorderItemsFieldMap = FieldFactory.getAsMap(workorderItemsFields);
+			FacilioModule workorderToolsModule = modBean.getModule(moduleName);
+			List<FacilioField> workorderToolsFields = modBean.getAllFields(moduleName);
+			Map<String, FacilioField> workorderToolsFieldMap = FieldFactory.getAsMap(workorderToolsFields);
 			List<LookupField>lookUpfields = new ArrayList<>();
-			lookUpfields.add((LookupField) workorderItemsFieldMap.get("purchasedTool"));
-			lookUpfields.add((LookupField) workorderItemsFieldMap.get("asset"));
+			lookUpfields.add((LookupField) workorderToolsFieldMap.get("purchasedTool"));
+			lookUpfields.add((LookupField) workorderToolsFieldMap.get("asset"));
+			lookUpfields.add((LookupField) workorderToolsFieldMap.get("requestedLineItem"));
+			
 			
 			long parentId = (long) context.get(FacilioConstants.ContextNames.PARENT_ID);
 			SelectRecordsBuilder<WorkorderToolsContext> selectBuilder = new SelectRecordsBuilder<WorkorderToolsContext>()
-					.select(workorderItemsFields).table(workorderItemsModule.getTableName())
-					.moduleName(workorderItemsModule.getName()).beanClass(WorkorderToolsContext.class)
-					.andCondition(CriteriaAPI.getCondition(workorderItemsFieldMap.get("parentId"),
+					.select(workorderToolsFields).table(workorderToolsModule.getTableName())
+					.moduleName(workorderToolsModule.getName()).beanClass(WorkorderToolsContext.class)
+					.andCondition(CriteriaAPI.getCondition(workorderToolsFieldMap.get("parentId"),
 							String.valueOf(parentId), PickListOperators.IS))
 					.fetchLookups(lookUpfields);
 

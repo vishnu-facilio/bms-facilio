@@ -102,7 +102,7 @@ public enum FacilioSystemFunctions implements FacilioWorkflowFunctionInterface {
 	private int value, requiredParams;
 	private String functionName;
 	private String namespace = "system";
-	private FacilioFunctionNameSpace nameSpaceEnum = FacilioFunctionNameSpace.SYSTEM;
+	private FacilioSystemFunctionNameSpace nameSpaceEnum = FacilioSystemFunctionNameSpace.SYSTEM;
 	private static final Logger LOGGER = LogManager.getLogger(FacilioSystemFunctions.class.getName());
 	
 	FacilioSystemFunctions(int value,String functionName, int requiredParams) {

@@ -268,7 +268,9 @@ public class WorkflowUtil {
 	}
 	
 	private static Object getWorkflowResult(WorkflowContext workflowContext,Map<String,Object> paramMap, Map<String, ReadingDataMeta> rdmCache, boolean ignoreNullExpressions, boolean ignoreMarked, boolean isVariableMapNeeded) throws Exception {
-		workflowContext = getWorkflowContextFromString(workflowContext.getWorkflowString(),workflowContext);
+		if(workflowContext.getWorkflowUIMode() != WorkflowContext.WorkflowUIMode.NEW_WORKFLOW.getValue()) {
+			workflowContext = getWorkflowContextFromString(workflowContext.getWorkflowString(),workflowContext);
+		}
 		workflowContext.setCachedRDM(rdmCache);
 		workflowContext.setIgnoreMarkedReadings(ignoreMarked);
 		List<ParameterContext> parameterContexts = validateAndGetParameters(workflowContext,paramMap);
@@ -639,7 +641,7 @@ public class WorkflowUtil {
 	public static List<ParameterContext> validateAndGetParameters(WorkflowContext workflowContext,Map<String,Object> paramMap) throws Exception {
 		
 		List<ParameterContext> paramterContexts = workflowContext.getParameters();
-		if(!paramterContexts.isEmpty()) {
+		if(paramterContexts != null && !paramterContexts.isEmpty()) {
 			
 			if(!workflowContext.isIgnoreNullParams()) {
 				if(paramMap == null || paramMap.isEmpty()) {
@@ -1367,8 +1369,19 @@ public class WorkflowUtil {
         }
 		return null;
 	}
+	public static Object evalSystemFunctions(WorkflowFunctionContext workflowFunctionContext,List<Object> objects) throws Exception {
+		
+		FacilioWorkflowFunctionInterface defaultFunctions = getFacilioFunction(workflowFunctionContext.getNameSpace(),workflowFunctionContext.getFunctionName());
+		
+		Object[] objs = new Object[objects.size()];
+		
+		for(int i=0;i<objects.size();i++) {
+			objs[i] = objects.get(i);
+		}
+		return defaultFunctions.execute(objs);
+	}
 	
-	public static Object evalCustomFunctions(WorkflowFunctionContext workflowFunctionContext,Map<String,Object> variableToExpresionMap) throws Exception {
+	public static Object evalSystemFunctions(WorkflowFunctionContext workflowFunctionContext,Map<String,Object> variableToExpresionMap) throws Exception {
 		
 		FacilioWorkflowFunctionInterface defaultFunctions = getFacilioFunction(workflowFunctionContext.getNameSpace(),workflowFunctionContext.getFunctionName());
 		
@@ -1406,7 +1419,7 @@ public class WorkflowUtil {
 	public static FacilioWorkflowFunctionInterface getFacilioFunction(String nameSpace,String functionName) {
 		
 		FacilioWorkflowFunctionInterface facilioWorkflowFunction = null;
-		FacilioFunctionNameSpace nameSpaceEnum = FacilioFunctionNameSpace.getFacilioDefaultFunction(nameSpace);
+		FacilioSystemFunctionNameSpace nameSpaceEnum = FacilioSystemFunctionNameSpace.getFacilioDefaultFunction(nameSpace);
 		if (nameSpaceEnum != null) {
 			switch(nameSpaceEnum) {
 				case DEFAULT:
@@ -1471,7 +1484,7 @@ public class WorkflowUtil {
 	public static List<FacilioWorkflowFunctionInterface> getFacilioFunctions(String nameSpace) {
 		
 		List<FacilioWorkflowFunctionInterface> facilioWorkflowFunction = null;
-		FacilioFunctionNameSpace nameSpaceEnum = FacilioFunctionNameSpace.getFacilioDefaultFunction(nameSpace);
+		FacilioSystemFunctionNameSpace nameSpaceEnum = FacilioSystemFunctionNameSpace.getFacilioDefaultFunction(nameSpace);
 		if (nameSpaceEnum != null) {
 			switch(nameSpaceEnum) {
 				case DEFAULT:
@@ -1650,7 +1663,38 @@ public class WorkflowUtil {
 		return expressionContext;
 	}
 	
-public static Criteria parseCriteriaString(String moduleName,String criteriaString) throws Exception {
+	public static void executeExpression(List<WorkflowExpression> expressions,WorkflowContext workflowContext) throws Exception {
+		
+		Map<String, Object> variableResultMap1 = workflowContext.getVariableResultMap();
+		for(int i=0; i<expressions.size(); i++) {
+			
+			WorkflowExpression wokflowExpresion = expressions.get(i);
+			
+			if(wokflowExpresion instanceof ExpressionContext) {
+				
+				ExpressionContext expressionContext = (ExpressionContext) wokflowExpresion;
+				expressionContext = WorkflowUtil.fillParamterAndParseExpressionContext(expressionContext,variableResultMap1);
+				expressionContext.setVariableToExpresionMap(variableResultMap1);
+				
+				Object res = expressionContext.execute(workflowContext);
+				if(expressionContext.getName() != null && !expressionContext.getName().isEmpty()) {
+					variableResultMap1.put(expressionContext.getName(), res);
+				}
+			}
+			else if(wokflowExpresion instanceof IteratorContext) {
+		
+				IteratorContext iteratorContext = (IteratorContext) wokflowExpresion;
+				iteratorContext.execute(workflowContext);
+			}
+			else if(wokflowExpresion instanceof ConditionContext) {
+				
+				ConditionContext conditionContext = (ConditionContext) wokflowExpresion;
+				conditionContext.execute(workflowContext);
+			}
+		}
+	}
+	
+	public static Criteria parseCriteriaString(String moduleName,String criteriaString) throws Exception {
 		
 		String CONDITION_SPACE_SEPERATOR = "##";
 		

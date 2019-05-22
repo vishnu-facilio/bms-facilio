@@ -16,6 +16,7 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.facilio.modules.FacilioStatus;
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
 import org.apache.commons.lang3.StringUtils;
@@ -42,7 +43,6 @@ import com.facilio.bmsconsole.context.BenchmarkContext;
 import com.facilio.bmsconsole.context.BenchmarkUnit;
 import com.facilio.bmsconsole.context.BuildingContext;
 import com.facilio.bmsconsole.context.DashboardContext;
-import com.facilio.bmsconsole.context.DashboardContext.DashboardPublishStatus;
 import com.facilio.bmsconsole.context.DashboardFolderContext;
 import com.facilio.bmsconsole.context.DashboardSharingContext;
 import com.facilio.bmsconsole.context.DashboardWidgetContext;
@@ -71,8 +71,7 @@ import com.facilio.bmsconsole.context.SpaceFilteredDashboardSettings;
 import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.TaskSectionContext;
 import com.facilio.bmsconsole.context.TicketCategoryContext;
-import com.facilio.bmsconsole.context.TicketStatusContext;
-import com.facilio.bmsconsole.context.TicketStatusContext.StatusType;
+import com.facilio.modules.FacilioStatus.StatusType;
 import com.facilio.bmsconsole.context.WidgetChartContext;
 import com.facilio.bmsconsole.context.WidgetListViewContext;
 import com.facilio.bmsconsole.context.WidgetStaticContext;
@@ -1740,7 +1739,7 @@ public class DashboardAction extends FacilioAction {
 								continue;
 							}
 							if(workorder.getStatus() != null && workorder.getStatus().getId() > 0) {
-								TicketStatusContext status = TicketAPI.getStatus(AccountUtil.getCurrentOrg().getId(), workorder.getStatus().getId());
+								FacilioStatus status = TicketAPI.getStatus(AccountUtil.getCurrentOrg().getId(), workorder.getStatus().getId());
 								workorder.setStatus(status);
 							}
 							if(workorder.getStatus() != null && workorder.getStatus().getType() != null && workorder.getStatus().getType().equals(StatusType.CLOSED)) {
@@ -2287,7 +2286,7 @@ public class DashboardAction extends FacilioAction {
 								continue;
 							}
 							if(workorder.getStatus() != null && workorder.getStatus().getId() > 0) {
-								TicketStatusContext status = TicketAPI.getStatus(AccountUtil.getCurrentOrg().getId(), workorder.getStatus().getId());
+								FacilioStatus status = TicketAPI.getStatus(AccountUtil.getCurrentOrg().getId(), workorder.getStatus().getId());
 								workorder.setStatus(status);
 							}
 							if(workorder.getStatus() != null && workorder.getStatus().getType() != null && workorder.getStatus().getType().equals(StatusType.CLOSED)) {
@@ -2356,7 +2355,7 @@ public class DashboardAction extends FacilioAction {
 							continue;
 						}
 						if(workorder.getStatus() != null && workorder.getStatus().getId() > 0) {
-							TicketStatusContext status = TicketAPI.getStatus(AccountUtil.getCurrentOrg().getId(), workorder.getStatus().getId());
+							FacilioStatus status = TicketAPI.getStatus(AccountUtil.getCurrentOrg().getId(), workorder.getStatus().getId());
 							workorder.setStatus(status);
 						}
 						if(workorder.getStatus() != null && workorder.getStatus().getType() != null && workorder.getStatus().getType().equals(StatusType.CLOSED)) {
@@ -3616,9 +3615,13 @@ public class DashboardAction extends FacilioAction {
 			builder.andCriteria(scopeCriteria);
 		}
 		
-		Criteria permissionCriteria = AccountUtil.getCurrentUser().getRole().permissionCriteria(module.getName(),"read");
-		if (permissionCriteria != null) {
-			builder.andCriteria(permissionCriteria);
+		try {
+			Criteria permissionCriteria = AccountUtil.getCurrentUser().getRole().permissionCriteria(module.getName(),"read");
+			if (permissionCriteria != null) {
+				builder.andCriteria(permissionCriteria);
+			}
+		}
+		catch(Exception e) {
 		}
 		
 		if (getFilters() != null) {
@@ -6832,9 +6835,7 @@ public class DashboardAction extends FacilioAction {
 	}
 	
 	public String getDashboardListWithFolder() throws Exception {
-		if (moduleName != null) {
-			dashboardFolders = DashboardUtil.getDashboardListWithFolder(moduleName,getOnlyMobileDashboard);
-		}
+		dashboardFolders = DashboardUtil.getDashboardListWithFolder(moduleName,getOnlyMobileDashboard);
 		return SUCCESS;
 	}
 	

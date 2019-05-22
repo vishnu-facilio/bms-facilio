@@ -34,6 +34,8 @@ import com.facilio.bmsconsole.context.GatePassLineItemsContext;
 import com.facilio.bmsconsole.context.HeatPumpContext;
 import com.facilio.bmsconsole.context.InventoryCategoryContext;
 import com.facilio.bmsconsole.context.InventoryContext;
+import com.facilio.bmsconsole.context.InventoryRequestContext;
+import com.facilio.bmsconsole.context.InventoryRequestLineItemContext;
 import com.facilio.bmsconsole.context.InventoryVendorContext;
 import com.facilio.bmsconsole.context.ItemContext;
 import com.facilio.bmsconsole.context.ItemStatusContext;
@@ -76,7 +78,6 @@ import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.TicketCategoryContext;
 import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.context.TicketPriorityContext;
-import com.facilio.bmsconsole.context.TicketStatusContext;
 import com.facilio.bmsconsole.context.TicketTypeContext;
 import com.facilio.bmsconsole.context.ToolContext;
 import com.facilio.bmsconsole.context.ToolStatusContext;
@@ -96,7 +97,7 @@ import com.facilio.bmsconsole.context.WorkorderPartsContext;
 import com.facilio.bmsconsole.context.WorkorderToolsContext;
 import com.facilio.bmsconsole.context.ZoneContext;
 import com.facilio.bmsconsole.tenant.TenantContext;
-import com.facilio.bmsconsole.workflow.rule.StateContext;
+import com.facilio.modules.FacilioStatus;
 
 public class FacilioConstants {
 	
@@ -147,6 +148,10 @@ public class FacilioConstants {
 	public static class ContextNames {
 
 		public static final String CONNECTION = "connectionContext";
+        public static final String OFFSET = "offset";
+        public static final String TABLE_NAME = "tableName";
+        public static final String CRITERIA = "criteria";
+        public static final String FIELDS = "fields";
 
 		public static final String FACILIO_RECORD = "facilioRecord";
 		public static final String FACILIO_CONSUMER = "facilioConsumer";
@@ -193,7 +198,9 @@ public class FacilioConstants {
 		public static final String ROLE = "role";
 		public static final String PERMISSIONS= "permissions";
 		
+		public static final String BUSINESS_HOUR_IDS = "businesshourids";
 		public static final String BUSINESS_HOUR = "businesshour";
+		public static final String BUSINESS_HOUR_LIST="businesshourlist";
 		
 		public static final String ID = "Id";
 		public static final String LINK_NAME = "linkName";
@@ -247,6 +254,10 @@ public class FacilioConstants {
 		public static final String DEFAULT_TEMPLATE = "default_template";
 		public static final String WORK_ORDER_TEMPLATE = "workordertemplate";
 		public static final String WORK_ORDER_TEMPLATE_LIST = "workordertemplates";
+		
+		
+		
+		public static final String PLACE_HOLDER = "placeHolder";
 		
 		public static final String CONTROLLER_ID = "controllerId";
 		public static final String CONTROLLER = "controller";
@@ -615,6 +626,9 @@ public class FacilioConstants {
 		public static final String PREVENTIVE_MAINTENANCE_STARTTIME = "preventivemaintenanceStarttime";
 		public static final String PREVENTIVE_MAINTENANCE_ENDTIME = "preventivemaintenanceEndtime";
 		
+		public static final String JOB_PLAN = "jobPlan";
+		public static final String JOB_PLAN_LIST = "jobPlans";
+		
 		public static final String WO_DUE_STARTTIME = "woDueStarttime";
 		public static final String WO_DUE_ENDTIME = "woDueEndtime";
 		public static final String WO_LIST_COUNT = "woListCount";
@@ -943,8 +957,9 @@ public class FacilioConstants {
 		public static final String PR_IDS = "prIds";
 		public static final String RECEIVABLE_ID = "receivableId";
 		public static final String PURCHASE_ORDER_LINE_ITEMS_ID = "purchaseorderlineitemsId";
-		
-		private static final String RECEIPT_LINE_ITEMS = "receiptlineitems";
+        public static final String VALIDATION_RULES = "validationRules";
+
+        private static final String RECEIPT_LINE_ITEMS = "receiptlineitems";
 		public static final String ITEM_VENDORS_LIST = "itemTypesVendorsList";
 		
 		public static final String ML ="ml";
@@ -994,11 +1009,22 @@ public class FacilioConstants {
 		public static final String WO_TOOLS_LIST = "woToolsList";
 		public static final String WO_LABOUR_LIST = "woLabourList";
 
+		public static final String INVENTORY_REQUEST = "inventoryrequest";
+		public static final String INVENTORY_REQUESTS = "inventoryrequests";
+		public static final String INVENTORY_REQUEST_LINE_ITEMS = "inventoryrequestlineitems";
+
+
 		public static final String UNIT_POINTS="unit";
+		public static final String DEMO_ROLLUP_EXECUTION_TIME="nextexecution";
+		public static final String DEMO_ROLLUP_JOB_ORG="rollup_job_org";
+		
+		
+		
+		
 		private static Map<String, Class> classMap = Collections.unmodifiableMap(initClassMap());
 		private static Map<String, Class> initClassMap() {
 			Map<String, Class> classMap = new HashMap<>();
-			classMap.put(TICKET_STATUS, TicketStatusContext.class);
+			classMap.put(TICKET_STATUS, FacilioStatus.class);
 			classMap.put(TICKET_PRIORITY, TicketPriorityContext.class);
 			classMap.put(TICKET_CATEGORY, TicketCategoryContext.class);
 			classMap.put(TICKET_TYPE, TicketTypeContext.class);
@@ -1102,6 +1128,9 @@ public class FacilioConstants {
 			classMap.put(GATE_PASS, GatePassContext.class);
 			classMap.put(GATE_PASS_LINE_ITEMS, GatePassLineItemsContext.class);
 			classMap.put(CONNECTED_APPS, ConnectedAppContext.class);
+			classMap.put(INVENTORY_REQUEST, InventoryRequestContext.class);
+			classMap.put(INVENTORY_REQUEST_LINE_ITEMS, InventoryRequestLineItemContext.class);
+
 			return classMap;
 		}
 		

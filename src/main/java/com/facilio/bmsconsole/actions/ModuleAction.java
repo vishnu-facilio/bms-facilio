@@ -121,6 +121,16 @@ public class ModuleAction extends FacilioAction {
 		return SUCCESS;
 	}
 	
+	public String v2updateField() throws Exception {
+		updateField();
+		
+		setFieldId(field.getId());
+		fieldDetails();
+		
+		setResult("field", field);
+		return SUCCESS;
+	}
+	
 	public String deleteFields() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.MODULE_FIELD_IDS, fieldIds);

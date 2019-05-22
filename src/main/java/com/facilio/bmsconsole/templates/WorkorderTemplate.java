@@ -1,18 +1,20 @@
 package com.facilio.bmsconsole.templates;
 
+import java.lang.reflect.InvocationTargetException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.lang3.StringUtils;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
-
-import java.lang.reflect.InvocationTargetException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 public class WorkorderTemplate extends Template {
 	
@@ -86,12 +88,23 @@ public class WorkorderTemplate extends Template {
 		this.assignedToId = assignedToId;
 	}
 
-	private long resourceId = -1;
-	public long getResourceId() {
+	private String resourceId = null;
+	public String getResourceId() {
 		return resourceId;
 	}
-	public void setResourceId(long resourceId) {
+	public long getResourceIdVal() {
+		if (resourceId == null || !StringUtils.isNumeric(resourceId)) {
+			return -1;
+		}
+		return Long.parseLong(resourceId);
+	}
+	public void setResourceId(String resourceId) {
 		this.resourceId = resourceId;
+	}
+	public void setResourceId(Long resourceId) {
+		if (resourceId != null && resourceId > -1) {
+			this.resourceId = String.valueOf(resourceId);
+		}
 	}
 	
 	private ResourceContext resource;
@@ -151,9 +164,19 @@ public class WorkorderTemplate extends Template {
 		this.tenantId = tenantId;
 	}
 
-	public WorkOrderContext getWorkorder() {
+	@JsonIgnore
+	public WorkOrderContext getWorkorder() throws Exception {
+		JSONObject woProp = getAsJSON(false);
+		if (woProp != null && !woProp.isEmpty()) {
+			return FieldUtil.getAsBeanFromMap(woProp, WorkOrderContext.class);
+		}
+		return null;
+	}
+	
+	@SuppressWarnings("unchecked")
+	private JSONObject getAsJSON(Boolean fetchPlaceholders) throws Exception {
 		if (getName() != null && !getName().isEmpty()) {
-			Map<String, Object> woProp = new HashMap<>();
+			JSONObject woProp = new JSONObject();
 			
 			woProp.put("subject", getSubject());
 			woProp.put("description", description);
@@ -177,20 +200,29 @@ public class WorkorderTemplate extends Template {
 			if (assignedToId != -1) {
 				woProp.put("assignedTo", FieldUtil.getEmptyLookedUpProp(assignedToId));
 			}
-			if (resourceId != -1) {
-				woProp.put("resource", FieldUtil.getEmptyLookedUpProp(resourceId));
+			if (resourceId != null && (StringUtils.isNumeric(resourceId) || fetchPlaceholders)) {
+				woProp.put("resource", getEmptyLookedUpProp(resourceId));
 			}
 			if (tenantId != -1) {
 				woProp.put("tenant", FieldUtil.getEmptyLookedUpProp(tenantId));
 			}
 			
+			if (fetchPlaceholders && (tasks != null && !tasks.isEmpty())) {
+				woProp.put("taskList", FieldUtil.getAsJSON(tasks));
+			}
+			
 			if (additionInfo != null) {
 				woProp.putAll(additionInfo);
 			}
-			
-			return FieldUtil.getAsBeanFromMap(woProp, WorkOrderContext.class);
+			return woProp;
 		}
 		return null;
+	}
+	
+	public static Map<String, Object> getEmptyLookedUpProp(String id) {
+		Map<String, Object> prop = new HashMap<>();
+		prop.put("id", id);
+		return prop;
 	}
 	
 	private String subject;
@@ -225,8 +257,8 @@ public class WorkorderTemplate extends Template {
 			if (workorder.getAssignedTo() != null) {
 				assignedToId = workorder.getAssignedTo().getId();
 			}
-			if (workorder.getResource() != null) {
-				resourceId = workorder.getResource().getId();
+			if (workorder.getResource() != null && workorder.getResource().getId() > -1) {
+				resourceId = String.valueOf(workorder.getResource().getId());
 			}
 			
 			if (workorder.getSiteId() != -1) {
@@ -284,7 +316,7 @@ public class WorkorderTemplate extends Template {
 	@Override
 	public JSONObject getOriginalTemplate() throws Exception {
 		// TODO Auto-generated method stub
-		return FieldUtil.getAsJSON(getWorkorder());
+		return getAsJSON(true);
 	}
 
 }

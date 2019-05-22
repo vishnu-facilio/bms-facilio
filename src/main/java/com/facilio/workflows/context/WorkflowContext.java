@@ -1,12 +1,19 @@
 package com.facilio.workflows.context;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.io.Serializable;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.antlr.v4.runtime.CharStreams;
+import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.tree.ParseTree;
 import org.json.simple.JSONArray;
 
 import com.facilio.bmsconsole.context.ReadingDataMeta;
@@ -14,6 +21,10 @@ import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.workflows.context.WorkflowExpression.WorkflowExpressionType;
 import com.facilio.workflows.util.WorkflowUtil;
+import com.facilio.workflowv2.Visitor.FacilioWorkflowFunctionVisitor;
+import com.facilio.workflowv2.autogens.WorkflowV2Lexer;
+import com.facilio.workflowv2.autogens.WorkflowV2Parser;
+import com.facilio.workflowv2.contexts.Value;
 
 public class WorkflowContext implements Serializable {
 	
@@ -57,9 +68,23 @@ public class WorkflowContext implements Serializable {
 
 	long id = -1l;
 	Long orgId;
+	Long nameSpaceId;
+	String name;
 	String workflowString;
 	List<ParameterContext> parameters;
+	List<Object> params;							// for v2 workflow
+	
 	List<WorkflowExpression> expressions;
+	
+	Object returnValue;
+	
+	public Object getReturnValue() {
+		return returnValue;
+	}
+
+	public void setReturnValue(Object returnValue) {
+		this.returnValue = returnValue;
+	}
 	
 	public List<WorkflowExpression> getExpressions() {
 		return expressions;
@@ -67,11 +92,31 @@ public class WorkflowContext implements Serializable {
 	
 	boolean isLogNeeded;
 	
+	public List<Object> getParams() {
+		return params;
+	}
+	public void setParams(List<Object> params) {
+		this.params = params;
+	}
+	
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	
 	public boolean isLogNeeded() {
 		return isLogNeeded;
 	}
 	public boolean getIsLogNeeded() {
 		return isLogNeeded;
+	}
+	public Long getNameSpaceId() {
+		return nameSpaceId;
+	}
+	public void setNameSpaceId(Long nameSpaceId) {
+		this.nameSpaceId = nameSpaceId;
 	}
 	public void setLogNeeded(boolean isLogNeeded) {
 		this.isLogNeeded = isLogNeeded;
@@ -79,32 +124,6 @@ public class WorkflowContext implements Serializable {
 	public void setIsLogNeeded(boolean isLogNeeded) {
 		this.isLogNeeded = isLogNeeded;
 	}
-	// only from client
-	public void setExpressions(JSONArray workflowExpressions) throws Exception {
-		if(workflowExpressions != null) {
-			
-			for(int i=0 ;i<workflowExpressions.size();i++) {
-				
-				WorkflowExpression workflowExpression = null;
-				
-				Map workflowExp = (Map)workflowExpressions.get(i);
-				Integer workflowExpressionType = 0;
-				if (workflowExp.containsKey("workflowExpressionType")) {
-					workflowExpressionType = Integer.parseInt(workflowExp.get("workflowExpressionType").toString());
-				}
-				if(workflowExpressionType <= 0 || workflowExpressionType == WorkflowExpressionType.EXPRESSION.getValue()) {
-					workflowExpression = null;
-					workflowExpression = FieldUtil.getAsBeanFromMap(workflowExp, ExpressionContext.class);
-				}
-				else if(workflowExpressionType == WorkflowExpressionType.ITERATION.getValue()) {
-					workflowExpression = null;
-					workflowExpression = FieldUtil.getAsBeanFromMap(workflowExp, IteratorContext.class);
-				}
-				addWorkflowExpression(workflowExpression);
-			}
-		}
-	}
-	
 	public void setWorkflowExpressions(List<WorkflowExpression> workflowExpressions) throws Exception {
 		
 		this.expressions = workflowExpressions;
@@ -245,9 +264,58 @@ public class WorkflowContext implements Serializable {
 	public void setWorkflowUIMode(int workflowUIMode) {
 		this.workflowUIMode = WorkflowUIMode.valueOf(workflowUIMode);
 	}
+	boolean isDebugMode;
+	public boolean isDebugMode() {
+		return isDebugMode;
+	}
+	public void setDebugMode(boolean isDebugMode) {
+		this.isDebugMode = isDebugMode;
+	}
+	StringBuilder logString = new StringBuilder();
+    
+	public StringBuilder getLogString() {
+		return logString;
+	}
+	public void setLogString(StringBuilder logString) {
+		this.logString = logString;
+	}
+	
 	public Object executeWorkflow() throws Exception {
 		
 		Object result = null;
+		
+		if(workflowUIMode == WorkflowUIMode.NEW_WORKFLOW) {
+			
+			FacilioWorkflowFunctionVisitor visitor = null;
+			try {
+				InputStream stream = new ByteArrayInputStream(workflowString.getBytes(StandardCharsets.UTF_8));
+				
+				WorkflowV2Lexer lexer = new WorkflowV2Lexer(CharStreams.fromStream(stream, StandardCharsets.UTF_8));
+		        
+				WorkflowV2Parser parser = new WorkflowV2Parser(new CommonTokenStream(lexer));
+		        ParseTree tree = parser.parse();
+		        
+		        visitor = new FacilioWorkflowFunctionVisitor();
+		        visitor.setWorkflowContext(this);
+		        visitor.visitFunctionHeader(tree);
+		        visitor.setParams(params);
+		        visitor.visit(tree);
+		        
+		        if(isDebugMode) {
+		        	return this.getLogString().toString();
+		        }
+		        
+		        return this.getReturnValue();
+			}
+			catch(Exception e) {
+				this.getLogString().append(e.toString()+"\n");
+				LOGGER.log(Level.SEVERE, e.getMessage(), e);
+				if(isDebugMode) {
+		        	return this.getLogString().toString();
+		        }
+				throw e;
+			}
+		}
 		
 		variableResultMap = new HashMap<String,Object>();
 		for(ParameterContext parameter:parameters) {
@@ -255,7 +323,7 @@ public class WorkflowContext implements Serializable {
 		}
 		if (expressions != null) {
 			
-			executeExpression(expressions,this);
+			WorkflowUtil.executeExpression(expressions,this);
 			
 			if(getResultEvaluator() == null && isSingleExpression() && expressions.get(0) instanceof ExpressionContext) {
 				ExpressionContext exp = (ExpressionContext) expressions.get(0);
@@ -272,36 +340,32 @@ public class WorkflowContext implements Serializable {
 		return result;
 	}
 	
-	public static void executeExpression(List<WorkflowExpression> expressions,WorkflowContext workflowContext) throws Exception {
-		
-		Map<String, Object> variableResultMap1 = workflowContext.getVariableResultMap();
-		for(int i=0; i<expressions.size(); i++) {
-			
-			WorkflowExpression wokflowExpresion = expressions.get(i);
-			
-			if(wokflowExpresion instanceof ExpressionContext) {
+	//	old workflow methods starts
+	// only from client
+		public void setExpressions(JSONArray workflowExpressions) throws Exception {
+			if(workflowExpressions != null) {
 				
-				ExpressionContext expressionContext = (ExpressionContext) wokflowExpresion;
-				expressionContext = WorkflowUtil.fillParamterAndParseExpressionContext(expressionContext,variableResultMap1);
-				expressionContext.setVariableToExpresionMap(variableResultMap1);
-				
-				Object res = expressionContext.execute(workflowContext);
-				if(expressionContext.getName() != null && !expressionContext.getName().isEmpty()) {
-					variableResultMap1.put(expressionContext.getName(), res);
+				for(int i=0 ;i<workflowExpressions.size();i++) {
+					
+					WorkflowExpression workflowExpression = null;
+					
+					Map workflowExp = (Map)workflowExpressions.get(i);
+					Integer workflowExpressionType = 0;
+					if (workflowExp.containsKey("workflowExpressionType")) {
+						workflowExpressionType = Integer.parseInt(workflowExp.get("workflowExpressionType").toString());
+					}
+					if(workflowExpressionType <= 0 || workflowExpressionType == WorkflowExpressionType.EXPRESSION.getValue()) {
+						workflowExpression = null;
+						workflowExpression = FieldUtil.getAsBeanFromMap(workflowExp, ExpressionContext.class);
+					}
+					else if(workflowExpressionType == WorkflowExpressionType.ITERATION.getValue()) {
+						workflowExpression = null;
+						workflowExpression = FieldUtil.getAsBeanFromMap(workflowExp, IteratorContext.class);
+					}
+					addWorkflowExpression(workflowExpression);
 				}
 			}
-			else if(wokflowExpresion instanceof IteratorContext) {
-		
-				IteratorContext iteratorContext = (IteratorContext) wokflowExpresion;
-				iteratorContext.execute(workflowContext);
-			}
-			else if(wokflowExpresion instanceof ConditionContext) {
-				
-				ConditionContext conditionContext = (ConditionContext) wokflowExpresion;
-				conditionContext.execute(workflowContext);
-			}
 		}
-	}
 	
 	public boolean isSingleExpression() {
 		if(expressions != null && expressions.size() == 1) {
@@ -359,10 +423,13 @@ public class WorkflowContext implements Serializable {
 		return false;
 	}
 	
+//	old workflow methods ends
+	
 	public enum WorkflowUIMode {
 		GUI,
 		XML,
-		COMPLEX
+		COMPLEX,
+		NEW_WORKFLOW
 		;
 		
 		public int getValue() {

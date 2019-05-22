@@ -411,6 +411,12 @@
     <artifactId>libphonenumber</artifactId>
     <version>3.5</version>
 </dependency>
+<!-- https://mvnrepository.com/artifact/org.antlr/antlr4-runtime -->
+<dependency>
+    <groupId>org.antlr</groupId>
+    <artifactId>antlr4-runtime</artifactId>
+    <version>4.7.2</version>
+</dependency>
     
         <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-text -->
 		<dependency>

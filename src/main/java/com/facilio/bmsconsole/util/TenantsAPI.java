@@ -17,6 +17,7 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.fs.FileStore;
 import com.facilio.fs.FileStoreFactory;
 import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioStatus;
 import com.facilio.sql.GenericDeleteRecordBuilder;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
@@ -1149,7 +1150,7 @@ public class TenantsAPI {
 														  .select(workorderFields)
 														  .innerJoin("TicketStatus")
 														  .on("Tickets.STATUS_ID = TicketStatus.ID")
-														  .andCustomWhere("TicketStatus.STATUS_TYPE = ?", TicketStatusContext.StatusType.OPEN.getIntVal())
+														  .andCustomWhere("TicketStatus.STATUS_TYPE = ?", FacilioStatus.StatusType.OPEN.getIntVal())
 														  .andCondition(CriteriaAPI.getCurrentOrgIdCondition(workOrderModule))
 														  .andCondition(tenantCond);
 									
@@ -1248,7 +1249,7 @@ public class TenantsAPI {
 													.on(ticketModule.getTableName()+".ID = "+workOrderModule.getTableName()+".ID")
 													.innerJoin("TicketStatus")
 													.on("Tickets.STATUS_ID = TicketStatus.ID")
-													.andCustomWhere("TicketStatus.STATUS_TYPE = "+TicketStatusContext.StatusType.PRE_OPEN.getIntVal())
+													.andCustomWhere("TicketStatus.STATUS_TYPE = "+ FacilioStatus.StatusType.PRE_OPEN.getIntVal())
 													.andCondition(CriteriaAPI.getCurrentOrgIdCondition(workOrderModule))
 													.andCondition(tenantCond);
 							            		

@@ -238,5 +238,13 @@ public class Account implements Serializable {
 		this.redisDeleteCount = this.redisDeleteCount + redisQueries;
 	}
 
+	private String requestUri;
+    public void setRequestUri(String requestUri) {
+    	this.requestUri = requestUri;
+    }
+
+	public String getRequestUri() {
+    	return requestUri;
+	}
 }
 

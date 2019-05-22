@@ -17,6 +17,7 @@ import java.util.Set;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
+import com.facilio.modules.FacilioStatus;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -43,7 +44,6 @@ import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.SupportEmailContext;
 import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.TaskContext.TaskStatus;
-import com.facilio.bmsconsole.context.TicketStatusContext;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
@@ -712,8 +712,8 @@ public class CommonCommandUtil {
 				}
 			}
 			
-			TicketStatusContext open = TicketAPI.getStatus("Submitted");
-			TicketStatusContext closed = TicketAPI.getStatus("Closed");
+			FacilioStatus open = TicketAPI.getStatus("Submitted");
+			FacilioStatus closed = TicketAPI.getStatus("Closed");
 			
 			tasks.stream().forEach(task -> {
 				if (task.getStatusNewEnum() == null || task.getStatusNewEnum() == TaskStatus.OPEN) {

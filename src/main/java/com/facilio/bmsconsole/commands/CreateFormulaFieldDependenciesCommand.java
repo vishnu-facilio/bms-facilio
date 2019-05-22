@@ -24,10 +24,7 @@ public class CreateFormulaFieldDependenciesCommand implements Command {
 		// TODO Auto-generated method stub
 		FormulaFieldContext formulaField = (FormulaFieldContext) context.get(FacilioConstants.ContextNames.FORMULA_FIELD);
 		String formulaUnit = (String) context.get(FacilioConstants.ContextNames.FORMULA_UNIT_STRING);
-		
-		List<ReadingRuleContext> readingRules = (List<ReadingRuleContext>) context.get(FacilioConstants.ContextNames.READING_RULES_LIST);
-		if (formulaField != null) { 
-			
+		if (formulaField != null) {
 			FormulaFieldAPI.validateFormula(formulaField, false);
 			
 			FacilioField field = FieldFactory.getField(null, formulaField.getName(), null, null, formulaField.getResultDataTypeEnum() == null? FieldType.DECIMAL : formulaField.getResultDataTypeEnum());
@@ -35,7 +32,7 @@ public class CreateFormulaFieldDependenciesCommand implements Command {
 			if(formulaUnit != null && field instanceof NumberField) {
 				((NumberField) field).setUnit(formulaUnit);
 			}
-			field.setReadingRules(readingRules);
+
 			formulaField.setReadingField(field);
 			formulaField.setInterval(FormulaFieldAPI.getDataInterval(formulaField));
 			

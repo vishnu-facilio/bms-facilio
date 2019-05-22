@@ -27,7 +27,7 @@
 			</result>
 			<result name="exception" type="chain">
 				<param name="actionName">handleException</param>
-				<param name="namespace">/v2/internal</param>
+				<param name="namespace">/v2/exception</param>
 			</result>
 			<result name="success" type="json">
 				<param name="ignoreHierarchy">false</param>
@@ -94,7 +94,7 @@
 
 	</package>
 
-	<package name="internalV2" namespace="/v2/internal" extends="v2Api">
+	<package name="internalV2" namespace="/v2/exception" extends="v2Api">
 		<action name="handleException" class="com.facilio.bmsconsole.actions.FacilioAction"
 			method="handleException">
 			<interceptor-ref name="defaultStack" />
@@ -110,8 +110,12 @@
 		<action name="addOrUpdate"
 			class="com.facilio.bmsconsole.actions.StateFlowAction" method="addOrUpdateStateFlow" />
 		
+		<action name="rearrange"
+			class="com.facilio.bmsconsole.actions.StateFlowAction" method="rearrangeStateFlows" />
 		<action name="list"
 			class="com.facilio.bmsconsole.actions.StateFlowAction" method="getStateFlowList" />
+		<action name="view"
+			class="com.facilio.bmsconsole.actions.StateFlowAction" method="viewStateFlow" />
 	</package>
 	
 	<package name="stateTransition" namespace="/api/v2/statetransition" extends="v2Api">
@@ -126,6 +130,8 @@
 			
 		<action name="list"
 			class="com.facilio.bmsconsole.actions.StateFlowAction" method="getStateTransitionList" />
+		<action name="view"
+			class="com.facilio.bmsconsole.actions.StateFlowAction" method="viewStateTransition" />
 	</package>
 
 	<package name="importTemplate" namespace="/api/v2/importTemplate"
@@ -455,12 +461,13 @@
 		<action name="*"
 			class="com.facilio.bmsconsole.actions.WorkflowRuleAction" method="v2RulesList">
 			<param name="permission">READ,READ_OWN,READ_TEAM</param>
+			<param name="moduleName">readingrule</param>
 			<param name="viewName">{1}</param>
 			<param name="ruleType">1</param>
 		</action>
 		<action name="rulesCount"
 			class="com.facilio.bmsconsole.actions.WorkflowRuleAction" method="v2rulesCount">
-			<param name="moduleName">workflowrule</param>
+			<param name="moduleName">readingrule</param>
 			<param name="permission">READ,READ_TEAM,READ_OWN</param>
 		</action>
 	</package>
@@ -494,6 +501,39 @@
 		</action>
 	</package>
 
+<package name="businessHoursApiv2" namespace="/api/v2/businesshours" extends="v2Api">
+		<action name="add"
+			class="com.facilio.bmsconsole.actions.BusinessHoursAction" method="addBussinessHours">
+			<param name="moduleName">setup</param>
+			<param name="permission">GENERAL</param>
+		</action>
+        <action name="edit"
+			class="com.facilio.bmsconsole.actions.BusinessHoursAction" method="v2updateBusinessHours">
+			<param name="moduleName">setup</param>
+			<param name="permission">GENERAL</param>
+		</action>
+		<action name="delete"
+			class="com.facilio.bmsconsole.actions.BusinessHoursAction" method="v2deleteBusinessHours">
+			<param name="moduleName">setup</param>
+			<param name="permission">GENERAL</param>
+		</action>
+		 <action name="list"
+			class="com.facilio.bmsconsole.actions.BusinessHoursAction" method="v2getBusinessHoursList">
+			<param name="moduleName">setup</param>
+			<param name="permission">GENERAL</param>
+		</action>
+		 <action name="updateresource"
+			class="com.facilio.bmsconsole.actions.BusinessHoursAction" method="updateBusinessHourInResource">
+			<param name="moduleName">setup</param>
+			<param name="permission">GENERAL</param>
+		</action>
+		<action name="*"
+			class="com.facilio.bmsconsole.actions.BusinessHoursAction" method="v2getBusinessHoursList">
+			<param name="moduleName">setup</param>
+			<param name="permission">GENERAL</param>
+			<param name="id">{1}</param>
+		</action>
+	</package>
 
 	<package name="taskApiv2" namespace="/api/v2/tasks" extends="v2Api">
 
@@ -574,6 +614,8 @@
 		extends="v2Api">
 		<action name="add" class="com.facilio.bmsconsole.actions.AttachmentAction"
 			method="v2addAttachment">
+		</action>
+		<action name="delete" class="com.facilio.bmsconsole.actions.AttachmentAction" method="v2deleteAttachment">
 		</action>
 	</package>
 
@@ -711,8 +753,22 @@
 			method="getDefaultTemplate">
 			<param name="moduleName">{1}</param>
 		</action>
-
 	</package>
+	
+	<package name="ruleTemplateApiv2" namespace="/api/v2/rules/template"
+		extends="v2Api">
+		<action name="fetchDefaultRules"
+			class="com.facilio.bmsconsole.actions.RuleTemplateAction" method="getDefaultRuleTemplates">
+			<param name="moduleName">alarm</param>
+			<param name="permission">READ,READ_TEAM,READ_OWN</param>
+		</action>
+		<action name="createRule" class="com.facilio.bmsconsole.actions.RuleTemplateAction" method="createRulefromTemplates">
+			<param name="moduleName">alarm</param>
+			<param name="permission">READ,READ_TEAM,READ_OWN</param>
+		</action>
+	</package>
+	
+	
 	<package name="readingRuleHistoricalRunApiV2" namespace="/api/v2/reading/rule/historicalrun"
 		extends="v2Api">
 		<action name="*" class="com.facilio.bmsconsole.actions.ReadingAction"
@@ -942,6 +998,12 @@
 			<param name="permission">READ</param>
 		</action>
 		
+		<action name="typeAndStore" class="com.facilio.bmsconsole.actions.AssetAction"
+			method="fetchAssetForTypeStore">
+			<param name="moduleName">asset</param>
+			<param name="permission">READ</param>
+		</action>
+		
 		<action name="generateqr" class="com.facilio.bmsconsole.actions.AssetAction"
 		method="generateQr">
 		<param name="moduleName">asset</param>
@@ -1091,6 +1153,9 @@
 		<action name="count" class="com.facilio.bmsconsole.actions.TimeSeries"
 			method="getInstancesForController">
 			<param name="showInstanceCount">true</param>
+		</action>
+		<action name="testNotification" class="com.facilio.bmsconsole.actions.TimeSeries"
+			method="testNotification">
 		</action>
 		<action name="*" class="com.facilio.bmsconsole.actions.TimeSeries"
 			method="getInstancesForController">
@@ -2070,6 +2135,8 @@
 	<package name="moduleApiV2" namespace="/api/v2/modules/fields" extends="v2Api">
 		<action name="add" class="com.facilio.bmsconsole.actions.ModuleAction" method="v2addCustomFields">
 		</action>
+		<action name="update" class="com.facilio.bmsconsole.actions.ModuleAction" method="v2updateField">
+		</action>
 	</package>
 	
 	<package name="basespaceApiV2" namespace="/api/v2/basespaces/children" extends="v2Api">
@@ -2077,5 +2144,108 @@
 			<param name = "spaceId">{1}</param>
 		</action>
 	</package>
+	
+	<package name="jobPlanApiV2" namespace="/api/v2/jobplans" extends="v2Api">
+		
+		<action name="list" class="com.facilio.bmsconsole.actions.JobPlanAction" method="jobPlanList">
+		</action>
+		<action name="add" class="com.facilio.bmsconsole.actions.JobPlanAction" method="addJobPlan">
+			<result name="success" type="json">
+				<param name="ignoreHierarchy">false</param>
+				<param name="includeProperties">responseCode, ^result.*</param>
+				<param name="excludeProperties">result.jobPlan.*\.taskTemplates.*, result.jobPlan.*\.sectionTemplates.*</param>
+			</result>
+		</action>
+		<action name="update" class="com.facilio.bmsconsole.actions.JobPlanAction" method="updateJobPlan">
+			<result name="success" type="json">
+				<param name="ignoreHierarchy">false</param>
+				<param name="includeProperties">responseCode, ^result.*</param>
+				<param name="excludeProperties">result.jobPlan.*\.taskTemplates.*, result.jobPlan.*\.sectionTemplates.*</param>
+			</result>
+		</action>
+		<action name="*" class="com.facilio.bmsconsole.actions.JobPlanAction" method="jobPlanDetails">
+			<result name="success" type="json">
+				<param name="ignoreHierarchy">false</param>
+				<param name="includeProperties">responseCode, ^result.*</param>
+				<param name="excludeProperties">result.jobPlan.*\.taskTemplates.*, result.jobPlan.*\.sectionTemplates.*</param>
+			</result>
+			<param name = "id">{1}</param>
+		</action>
+	</package>
 
+	<package name="inventoryRequestsApi" namespace="/api/v2/inventoryrequest" extends="v2Api">
+		<action name="addOrUpdate" class="com.facilio.bmsconsole.actions.InventoryRequestAction" method="addOrUpdateInventoryRequest">
+			<param name="moduleName">inventoryrequest</param>
+			<param name="permission">CREATE,UPDATE,UPDATE_OWN</param>
+		</action>
+		   <action name="list"
+			class="com.facilio.bmsconsole.actions.InventoryRequestAction" method="getInventoryRequestList">
+			<param name="moduleName">inventoryrequest</param>
+			<param name="permission">READ,READ_OWN</param>
+		</action>
+		<action name="count" class="com.facilio.bmsconsole.actions.InventoryRequestAction" method="getInventoryRequestCount">
+			<param name="moduleName">inventoryrequest</param>
+			<param name="permission">READ,READ_OWN</param>
+		</action>
+		<action name="delete" class="com.facilio.bmsconsole.actions.InventoryRequestAction" method="deleteInventoryRequest">
+			<param name="moduleName">inventoryrequest</param>
+			<param name="permission">DELETE</param>
+		</action>
+		<action name="details" class="com.facilio.bmsconsole.actions.InventoryRequestAction" method="getInventoryRequestDetails">
+			<param name="moduleName">inventory</param>
+			<param name="permission">READ,READ_OWN</param>
+		</action>
+			<action name="addOrUpdateLineItem" class="com.facilio.bmsconsole.actions.InventoryRequestAction" method="addOrUpdateLineItem">
+			<param name="moduleName">inventoryrequest</param>
+			<param name="permission">CREATE,UPDATE,UPDATE_OWN,APPROVE_REJECT_WORKREQUEST</param>
+		</action>
+		<action name="deleteLineItem" class="com.facilio.bmsconsole.actions.InventoryRequestAction" method="deleteLineItem">
+			<param name="moduleName">inventoryrequest</param>
+			<param name="permission">DELETE</param>
+		</action>
+		<action name="lineItemListByRequesterId"
+			class="com.facilio.bmsconsole.actions.InventoryRequestAction" method="getInventoryRequestLineItemListByRequesterId">
+			<param name="moduleName">inventoryrequest</param>
+			<param name="permission">READ,READ_OWN</param>
+		</action>
+		<action name="lineItemListByStoreRoomId"
+			class="com.facilio.bmsconsole.actions.InventoryRequestAction" method="getInventoryRequestLineItemListByStoreRoomId">
+			<param name="moduleName">inventoryrequest</param>
+			<param name="permission">READ,READ_OWN</param>
+		</action>
+		<action name="lineItemListByParentId"
+			class="com.facilio.bmsconsole.actions.InventoryRequestAction" method="getInventoryRequestLineItemListByParentId">
+			<param name="moduleName">inventoryrequest</param>
+			<param name="permission">READ,READ_OWN</param>
+		</action>
+		<action name="useLineItems"
+			class="com.facilio.bmsconsole.actions.InventoryRequestAction" method="useLineItems">
+			<param name="moduleName">inventoryrequest</param>
+			<param name="permission">READ,READ_OWN</param>
+		</action>
+		<action name="issueInventoryRequests"
+			class="com.facilio.bmsconsole.actions.InventoryRequestAction" method="issueInventoryRequests">
+			<param name="moduleName">inventoryrequest</param>
+			<param name="permission">READ,READ_OWN</param>
+		</action>
+	
+		
+	
+		
+	
+	</package>
+	
+	<package name="inventoryRequestListApiv2" namespace="/api/v2/inventoryrequest/view"
+		extends="v2Api">
+		<action name="*" class="com.facilio.bmsconsole.actions.InventoryRequestAction"
+			method="getInventoryRequestList">
+			<param name="moduleName">inventory</param>
+			<param name="permission">READ,READ_OWN</param>
+			<param name="viewName">{1}</param>
+		</action>
+	</package>
+	
+	
+
+	
 </struts>

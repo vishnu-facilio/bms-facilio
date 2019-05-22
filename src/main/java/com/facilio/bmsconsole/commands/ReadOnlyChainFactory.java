@@ -21,7 +21,11 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new FetchReportExtraMeta());
 		return c;
 	}
-	
+	public static Chain getBusinessHoursChain () {
+		Chain c = getDefaultChain();
+		c.addCommand(new GetBusinessHourCommand());
+		return c;
+	}
 	public static Chain fetchCardDataChain() {
 		Chain c = getDefaultChain();
 		c.addCommand(new FetchCardDataCommand());
@@ -206,7 +210,7 @@ public class ReadOnlyChainFactory {
 		Chain c = getDefaultChain();
 		c.addCommand(new FetchAlarmRuleCommand());
 		c.addCommand(new GetActionListForAlarmRuleCommand());
-//		c.addCommand(new FetchExtraMetaForAlarmRuleCommand());
+		c.addCommand(new FetchExtraMetaForAlarmRuleCommand());
 		return c;
 	}
 	
@@ -838,4 +842,65 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new GetStateTransitionListCommand());
 		return c;
 	}
+
+	public static Chain viewStateFlow() {
+		Chain c = getDefaultChain();
+		c.addCommand(new GetStateFlowCommand());
+		return c;
+	}
+
+	public static Chain viewStateTransition() {
+		Chain c = getDefaultChain();
+		c.addCommand(new GetStateTransitionCommand());
+		return c;
+	}
+
+	public static Chain getInventoryRequestListChain() {
+		Chain chain = getDefaultChain();
+		chain.addCommand(SetTableNamesCommand.getForInventoryRequest());
+		chain.addCommand(new LoadAllFieldsCommand());
+		chain.addCommand(new LoadViewCommand());
+		chain.addCommand(new GenerateCriteriaFromFilterCommand());
+		chain.addCommand(new GenerateSearchConditionCommand());
+		chain.addCommand(new GetInventoryRequestListCommand());
+		return chain;
+	}
+
+	public static Chain getInventoryRequestDetailsChain() {
+		Chain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForInventoryRequest());
+		c.addCommand(new LoadInventoryRequestLookUpCommand());
+		c.addCommand(new GenericGetModuleDataDetailCommand());
+		c.addCommand(new FetchInventoryRequestDetailsCommand());
+		return c;
+	}
+
+	public static Chain getInventoryRequestLineItemListByRequesterIdChain() {
+		Chain chain = getDefaultChain();
+		chain.addCommand(SetTableNamesCommand.getForInventoryRequest());
+		chain.addCommand(new GetInventoryRequestLineItemsByRequesterIdCommand());
+		return chain;
+	}
+
+	public static Chain getInventoryRequestLineItemListByParentIdChain() {
+		Chain chain = getDefaultChain();
+		chain.addCommand(SetTableNamesCommand.getForInventoryRequest());
+		chain.addCommand(new GetInventoryRequestLineItemsForParentIdCommand());
+		return chain;
+	}
+	
+	public static Chain getInventoryRequestLineItemListByStoreRoomIdChain() {
+		Chain chain = getDefaultChain();
+		chain.addCommand(SetTableNamesCommand.getForInventoryRequest());
+		chain.addCommand(new GetInventoryRequestLineItemsForStoreRoomIdCommand());
+		return chain;
+	}
+	
+	public static Chain getAssetForTypeAndStoreChain() {
+		Chain chain = getDefaultChain();
+		chain.addCommand(SetTableNamesCommand.getForAsset());
+		chain.addCommand(new GetAssetForTypeAndStoreCommand());
+		return chain;
+	}
+
 }

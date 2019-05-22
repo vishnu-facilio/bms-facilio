@@ -15,7 +15,7 @@ public enum ControllerCommand
     configure("configure",5),
     refresh("refresh",6),
     reconfigure("reconfigure",7),
-    discoverpoints("discoverpoints",8),
+    discoverPoints("discoverPoints",8),
     ping("ping",9),
     pong("pong",10);
 

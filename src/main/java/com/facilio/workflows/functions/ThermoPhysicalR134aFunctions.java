@@ -70,7 +70,7 @@ public enum ThermoPhysicalR134aFunctions implements FacilioWorkflowFunctionInter
 	private String functionName;
 	private String namespace = "thermoPhysical.R134a";
 	private String params;
-	private FacilioFunctionNameSpace nameSpaceEnum = FacilioFunctionNameSpace.THERMOPHYSICALR134A;
+	private FacilioSystemFunctionNameSpace nameSpaceEnum = FacilioSystemFunctionNameSpace.THERMOPHYSICALR134A;
 	
 	public Integer getValue() {
 		return value;

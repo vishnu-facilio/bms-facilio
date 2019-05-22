@@ -101,7 +101,7 @@ public enum FacilioMathFunction implements FacilioWorkflowFunctionInterface  {
 	private String functionName;
 	private String namespace = "math";
 	private String params;
-	private FacilioFunctionNameSpace nameSpaceEnum = FacilioFunctionNameSpace.MATH;
+	private FacilioSystemFunctionNameSpace nameSpaceEnum = FacilioSystemFunctionNameSpace.MATH;
 	
 	public Integer getValue() {
 		return value;

@@ -9,35 +9,11 @@
 			<parameter name="workorder.url" type="String" />
 			<parameter name="workorder.assignedBy.name" type="String" />
 			<parameter name="workorder.dueDateString" type="String" />
-			<expression name="org.domain" type="String">
-				<constant>${org.domain}</constant>
-			</expression>
-			<expression name="workorder.assignedTo.email">
-				<constant>${workorder.assignedTo.email}</constant>
-			</expression>
-			<expression name="workorder.subject">
-				<constant>${workorder.subject}</constant>
-			</expression>
-			<expression name="workorder.description">
-				<constant>${workorder.description}</constant>
-			</expression>
-			<expression name="workorder.url">
-				<constant>${workorder.url}</constant>
-			</expression>
-			<expression name="workorder.assignedBy.name">
-			     <constant>${workorder.assignedBy.name}</constant>
-			</expression>
-			<expression name="workorder.dueDateString">
-			     <constant>${workorder.dueDateString}</constant>
-			</expression>
 		</workflow>
 	</template>
 	<template id="2">
 		<workflow>
 			<parameter name="org.domain" type="String" />
-			<expression name="org.domain">
-				<constant>${org.domain}</constant>
-			</expression>
 		</workflow>
 	</template>
 	<template id="3">
@@ -48,24 +24,6 @@
 			<parameter name="workorder.subject" type="String" />
 			<parameter name="workorder.description" type="String" />
 			<parameter name="workorder.dueDateString" type="String" />
-			<expression name="workorder.assignedTo.phone">
-				<constant>${workorder.assignedTo.phone}</constant>
-			</expression>
-			<expression name="workorder.url">
-				<constant>${workorder.url}</constant>
-			</expression>
-			<expression name="workorder.assignedBy.name">
-				<constant>${workorder.assignedBy.name}</constant>
-			</expression>
-			<expression name="workorder.subject">
-				<constant>${workorder.subject}</constant>
-			</expression>
-			<expression name="workorder.description">
-				<constant>${workorder.description}</constant>
-			</expression>
-			<expression name="workorder.dueDateString">
-				<constant>${workorder.dueDateString}</constant>
-			</expression>
 		</workflow>
 	</template>
 	<template id="4">
@@ -75,21 +33,6 @@
 			<parameter name="workorder.subject" type="String" />
 			<parameter name="workorder.url" type="String" />
 			<parameter name="comment.createdBy.name"  type="String" />
-			<expression name="org.domain">
-				<constant>${org.domain}</constant>
-			</expression>
-			<expression name="workorder.assignedTo.email">
-				<constant>${workorder.assignedTo.email}</constant>
-			</expression>
-			<expression name="workorder.subject">
-				<constant>${workorder.subject}</constant>
-			</expression>
-			<expression name="workorder.url">
-				<constant>${workorder.url}</constant>
-			</expression>
-			<expression name="comment.createdBy.name">
-				<constant>${comment.createdBy.name}</constant>
-			</expression>
 		</workflow>
 	</template>
 	<template id="5">
@@ -101,27 +44,6 @@
 			<parameter name="alarm.subject" type="String" />
 			<parameter name="alarm.state" type="String" />
 			<parameter name="alarm.source" type="String" />
-			<expression name="org.domain">
-				<constant>${org.domain}</constant>
-			</expression>
-			<expression name="org.superAdmin.email">
-				<constant>${org.superAdmin.email}</constant>
-			</expression>
-			<expression name="alarm.description">
-				<constant>${alarm.description}</constant>
-			</expression>
-			<expression name="alarm.url">
-				<constant>${alarm.url}</constant>
-			</expression>
-			<expression name="alarm.subject">
-				<constant>${alarm.subject}</constant>
-			</expression>
-			<expression name="alarm.source">
-				<constant>${alarm.source}</constant>
-			</expression>
-			<expression name="alarm.state">
-				<constant>${alarm.state}</constant>
-			</expression>
 		</workflow>
 	</template>
 	<template id="6">
@@ -133,27 +55,6 @@
 			<parameter name="alarm.source" type="String" />
 			<parameter name="alarm.subject" type="String" />
 			<parameter name="alarm.state" type="String" />
-			<expression name="user.phone">
-				<constant>${user.phone}</constant>
-			</expression>
-			<expression name="alarm.modifiedTimeString">
-				<constant>${alarm.modifiedTimeString}</constant>
-			</expression>
-			<expression name="alarm.id">
-				<constant>${alarm.id}</constant>
-			</expression>
-			<expression name="alarm.severity.severity">
-				<constant>${alarm.severity.severity}</constant>
-			</expression>
-			<expression name="alarm.source">
-				<constant>${alarm.source}</constant>
-			</expression>
-			<expression name="alarm.subject">
-				<constant>${alarm.subject}</constant>
-			</expression>
-			<expression name="alarm.state">
-				<constant>${alarm.state}</constant>
-			</expression>
 		</workflow>
 	</template>
 	<template id="7">
@@ -166,30 +67,6 @@
 			<parameter name="alarm.source" type="String" />
 			<parameter name="alarm.subject" type="String" />
 			<parameter name="alarm.state" type="String" />
-			<expression name="user.phone">
-				<constant>${user.phone}</constant>
-			</expression>
-			<expression name="alarm.modifiedTimeString">
-				<constant>${alarm.modifiedTimeString}</constant>
-			</expression>
-			<expression name="alarm.id">
-				<constant>${alarm.id}</constant>
-			</expression>
-			<expression name="alarm.previousSeverity.severity">
-				<constant>${alarm.previousSeverity.severity}</constant>
-			</expression>
-			<expression name="alarm.severity.severity">
-				<constant>${alarm.severity.severity}</constant>
-			</expression>
-			<expression name="alarm.source">
-				<constant>${alarm.source}</constant>
-			</expression>
-			<expression name="alarm.subject">
-				<constant>${alarm.subject}</constant>
-			</expression>
-			<expression name="alarm.state">
-				<constant>${alarm.state}</constant>
-			</expression>
 		</workflow>
 	</template>
 	<template id="8">
@@ -201,30 +78,6 @@
 			<parameter name="alarm.subject" type="String" />
 			<parameter name="alarm.state" type="String" />
 			<parameter name="user.id" type="Number" />
-			<expression name="alarm.modifiedTimeString">
-				<constant>${alarm.modifiedTimeString}</constant>
-			</expression>
-			<expression name="alarm.id">
-				<constant>${alarm.id}</constant>
-			</expression>
-			<expression name="alarm.severity.severity">
-				<constant>${alarm.severity.severity}</constant>
-			</expression>
-			<expression name="alarm.source">
-				<constant>${alarm.source}</constant>
-			</expression>
-			<expression name="alarm.subject">
-				<constant>${alarm.subject}</constant>
-			</expression>
-			<expression name="alarm.state">
-				<constant>${alarm.state}</constant>
-			</expression>
-			<expression name="alarm.id">
-				<constant>${alarm.id}</constant>
-			</expression>
-			<expression name="user.id">
-				<constant>${user.id}</constant>
-			</expression>
 		</workflow>
 	</template>
 	<template id="9">
@@ -237,33 +90,6 @@
 			<parameter name="alarm.subject" type="String" />
 			<parameter name="alarm.state" type="String" />
 			<parameter name="user.id" type="Number" />
-			<expression name="alarm.modifiedTimeString">
-				<constant>${alarm.modifiedTimeString}</constant>
-			</expression>
-			<expression name="alarm.id">
-				<constant>${alarm.id}</constant>
-			</expression>
-			<expression name="alarm.previousSeverity.severity">
-				<constant>${alarm.previousSeverity.severity}</constant>
-			</expression>
-			<expression name="alarm.severity.severity">
-				<constant>${alarm.severity.severity}</constant>
-			</expression>
-			<expression name="alarm.source">
-				<constant>${alarm.source}</constant>
-			</expression>
-			<expression name="alarm.subject">
-				<constant>${alarm.subject}</constant>
-			</expression>
-			<expression name="alarm.state">
-				<constant>${alarm.state}</constant>
-			</expression>
-			<expression name="alarm.id">
-				<constant>${alarm.id}</constant>
-			</expression>
-			<expression name="user.id">
-				<constant>${user.id}</constant>
-			</expression>
 		</workflow>
 	</template>
 	<template id="10">
@@ -273,21 +99,6 @@
 			<parameter name="workorder.assignedTo.email" type="String" />
 			<parameter name="workorder.subject" type="String" />
 			<parameter name="workorder.description" type="String" />
-			<expression name="org.domain">
-				<constant>${org.domain}</constant>
-			</expression>
-			<expression name="workorder.createdTimeString">
-				<constant>${workorder.createdTimeString}</constant>
-			</expression>
-			<expression name="workorder.assignedTo.email">
-				<constant>${workorder.assignedTo.email}</constant>
-			</expression>
-			<expression name="workorder.subject">
-				<constant>${workorder.subject}</constant>
-			</expression>
-			<expression name="workorder.description">
-				<constant>${workorder.description}</constant>
-			</expression>
 		</workflow>
 	</template>
 	<template id="11">
@@ -298,24 +109,6 @@
 			<parameter name="workorder.description" type="String" />
 			<parameter name="workorder.url" type="String" />
 		    <parameter name="workorder.dueDateString" type="String" />
-			<expression name="org.domain">
-				<constant>${org.domain}</constant>
-			</expression>
-			<expression name="workorder.assignedTo.email">
-				<constant>${workorder.assignedTo.email}</constant>
-			</expression>
-			<expression name="workorder.subject">
-				<constant>${workorder.subject}</constant>
-			</expression>
-			<expression name="workorder.description">
-				<constant>${workorder.description}</constant>
-			</expression>
-			<expression name="workorder.url">
-				<constant>${workorder.url}</constant>
-			</expression>
-			<expression name="workorder.dueDateString">
-				<constant>${workorder.dueDateString}</constant>
-			</expression>
 		</workflow>
 	</template>
 	<template id="12">
@@ -326,24 +119,6 @@
 			<parameter name="workorderrequest.description" type="String" />
 			<parameter name="workorderrequest.url" type="String" />
 			<parameter name="workorderrequest.requester.name" type="String" />
-			<expression name="org.domain">
-				<constant>${org.domain}</constant>
-			</expression>
-			<expression name="org.superAdmin.email">
-				<constant>${org.superAdmin.email}</constant>
-			</expression>
-			<expression name="workorderrequest.subject">
-				<constant>${workorderrequest.subject}</constant>
-			</expression>
-			<expression name="workorderrequest.description">
-				<constant>${workorderrequest.description}</constant>
-			</expression>
-			<expression name="workorderrequest.url">
-				<constant>${workorderrequest.url}</constant>
-			</expression>
-			<expression name="workorderrequest.requester.name">
-				<constant>${workorderrequest.requester.name}</constant>
-			</expression>
 		</workflow>
 	</template>
 	<template id="13">
@@ -353,21 +128,6 @@
 			<parameter name="workorderrequest.description" type="String" />
 			<parameter name="workorderrequest.url" type="String" />
 			<parameter name="workorderrequest.requester.name" type="String" />
-			<expression name="org.superAdmin.phone">
-				<constant>${org.superAdmin.phone}</constant>
-			</expression>
-			<expression name="workorderrequest.subject">
-				<constant>${workorderrequest.subject}</constant>
-			</expression>
-			<expression name="workorderrequest.description">
-				<constant>${workorderrequest.description}</constant>
-			</expression>
-			<expression name="workorderrequest.url">
-				<constant>${workorderrequest.url}</constant>
-			</expression>
-			<expression name="workorderrequest.requester.name">
-				<constant>${workorderrequest.requester.name}</constant>
-			</expression>
 		</workflow>
 	</template>
 	<template id="14">
@@ -378,24 +138,6 @@
 			<parameter name="workorderrequest.id" type="Number" />
 			<parameter name="workorderrequest.requester.id" type="Number" />
 			<parameter name="workorderrequest.requester.name" type="String" />
-			<expression name="workorderrequest.subject">
-				<constant>${workorderrequest.subject}</constant>
-			</expression>
-			<expression name="workorderrequest.description">
-				<constant>${workorderrequest.description}</constant>
-			</expression>
-			<expression name="workorderrequest.url">
-				<constant>${workorderrequest.url}</constant>
-			</expression>
-			<expression name="workorderrequest.id">
-				<constant>${workorderrequest.id}</constant>
-			</expression>
-			<expression name="workorderrequest.requester.id">
-				<constant>${workorderrequest.requester.id}</constant>
-			</expression>
-			<expression name="workorderrequest.requester.name">
-				<constant>${workorderrequest.requester.name}</constant>
-			</expression>
 		</workflow>
 	</template>
 	<template id="15">
@@ -406,24 +148,6 @@
 			<parameter name="workorderrequest.id" type="Number" />
 			<parameter name="workorderrequest.requester.id" type="Number" />
 			<parameter name="workorderrequest.requester.name" type="String" />
-			<expression name="workorderrequest.subject">
-				<constant>${workorderrequest.subject}</constant>
-			</expression>
-			<expression name="workorderrequest.description">
-				<constant>${workorderrequest.description}</constant>
-			</expression>
-			<expression name="workorderrequest.url">
-				<constant>${workorderrequest.url}</constant>
-			</expression>
-			<expression name="workorderrequest.id">
-				<constant>${workorderrequest.id}</constant>
-			</expression>
-			<expression name="workorderrequest.requester.id">
-				<constant>${workorderrequest.requester.id}</constant>
-			</expression>
-			<expression name="workorderrequest.requester.name">
-				<constant>${workorderrequest.requester.name}</constant>
-			</expression>
 		</workflow>
 	</template>
 	<template id="16">
@@ -433,21 +157,6 @@
 			<parameter name="workorderrequest.subject" type="String" />
 			<parameter name="workorderrequest.description" type="String" />
 			<parameter name="workorderrequest.assignedTo.name" type="String" />
-			<expression name="org.domain">
-				<constant>${org.domain}</constant>
-			</expression>
-			<expression name="workorderrequest.requester.email">
-				<constant>${workorderrequest.requester.email}</constant>
-			</expression>
-			<expression name="workorderrequest.subject">
-				<constant>${workorderrequest.subject}</constant>
-			</expression>
-			<expression name="workorderrequest.description">
-				<constant>${workorderrequest.description}</constant>
-			</expression>
-			<expression name="workorderrequest.assignedTo.name">
-				<constant>${workorderrequest.assignedTo.name}</constant>
-			</expression>
 		</workflow>
 	</template>
 	<template id="17">
@@ -456,18 +165,6 @@
 			<parameter name="workorderrequest.subject" type="String" />
 			<parameter name="workorderrequest.description" type="String" />
 			<parameter name="workorderrequest.assignedTo.name" type="String" />
-			<expression name="workorderrequest.requester.phone">
-				<constant>${workorderrequest.requester.phone}</constant>
-			</expression>
-			<expression name="workorderrequest.subject">
-				<constant>${workorderrequest.subject}</constant>
-			</expression>
-			<expression name="workorderrequest.description">
-				<constant>${workorderrequest.description}</constant>
-			</expression>
-			<expression name="workorderrequest.assignedTo.name">
-				<constant>${workorderrequest.assignedTo.name}</constant>
-			</expression>
 		</workflow>
 	</template>
 	<template id="18">
@@ -481,21 +178,6 @@
 			<parameter name="workorderrequest.id" type="Number" />
 			<parameter name="workorderrequest.assignedTo.id" type="Number" />
 			<parameter name="workorderrequest.requester.id" type="Number" />
-			<expression name="workorderrequest.subject">
-				<constant>${workorderrequest.subject}</constant>
-			</expression>
-			<expression name="workorderrequest.description">
-				<constant>${workorderrequest.description}</constant>
-			</expression>
-			<expression name="workorderrequest.id">
-				<constant>${workorderrequest.id}</constant>
-			</expression>
-			<expression name="workorderrequest.assignedTo.id">
-				<constant>${workorderrequest.assignedTo.id}</constant>
-			</expression>
-			<expression name="workorderrequest.requester.id">
-				<constant>${workorderrequest.requester.id}</constant>
-			</expression>
 		</workflow>
 	</template>
 	<template id="20">
@@ -505,21 +187,6 @@
 			<parameter name="workorderrequest.subject" type="String" />
 			<parameter name="workorderrequest.description" type="String" />
 			<parameter name="workorderrequest.url" type="String" />
-			<expression name="org.domain">
-				<constant>${org.domain}</constant>
-			</expression>
-			<expression name="workorderrequest.requester.email">
-				<constant>${workorderrequest.requester.email}</constant>
-			</expression>
-			<expression name="workorderrequest.subject">
-				<constant>${workorderrequest.subject}</constant>
-			</expression>
-			<expression name="workorderrequest.description">
-				<constant>${workorderrequest.description}</constant>
-			</expression>
-			<expression name="workorderrequest.url">
-				<constant>${workorderrequest.url}</constant>
-			</expression>
 		</workflow>
 	</template>
 	<template id="21">
@@ -528,18 +195,6 @@
 			<parameter name="workorderrequest.subject" type="String" />
 			<parameter name="workorderrequest.description" type="String" />
 			<parameter name="workorderrequest.url" type="String" />
-			<expression name="workorderrequest.requester.phone">
-				<constant>${workorderrequest.requester.phone}</constant>
-			</expression>
-			<expression name="workorderrequest.subject">
-				<constant>${workorderrequest.subject}</constant>
-			</expression>
-			<expression name="workorderrequest.description">
-				<constant>${workorderrequest.description}</constant>
-			</expression>
-			<expression name="workorderrequest.url">
-				<constant>${workorderrequest.url}</constant>
-			</expression>
 		</workflow>
 	</template>
 	<template id="22">
@@ -553,21 +208,6 @@
 			<parameter name="workorderrequest.url" type="String" />
 			<parameter name="workorderrequest.id" type="Number" />
 			<parameter name="workorderrequest.requester.id" type="Number" />
-			<expression name="workorderrequest.subject">
-				<constant>${workorderrequest.subject}</constant>
-			</expression>
-			<expression name="workorderrequest.description">
-				<constant>${workorderrequest.description}</constant>
-			</expression>
-			<expression name="workorderrequest.url">
-				<constant>${workorderrequest.url}</constant>
-			</expression>
-			<expression name="workorderrequest.id">
-				<constant>${workorderrequest.id}</constant>
-			</expression>
-			<expression name="workorderrequest.requester.id">
-				<constant>${workorderrequest.requester.id}</constant>
-			</expression>
 		</workflow>
 	</template>
 	<template id="24">
@@ -579,27 +219,6 @@
 			<parameter name="workorder.url" type="String" />
 			<parameter name="workorder.assignedTo.name" type="String" />
 			<parameter name="workorder.status.status" type="String" />	
-			<expression name="org.domain">
-				<constant>${org.domain}</constant>
-			</expression>
-			<expression name="workorder.assignedBy.email">
-				<constant>${workorder.assignedBy.email}</constant>
-			</expression>
-			<expression name="workorder.subject">
-				<constant>${workorder.subject}</constant>
-			</expression>
-			<expression name="workorder.description">
-				<constant>${workorder.description}</constant>
-			</expression>
-			<expression name="workorder.url">
-				<constant>${workorder.url}</constant>
-			</expression>
-			<expression name="workorder.assignedTo.name">
-				<constant>${workorder.assignedTo.name}</constant>
-			</expression>
-			<expression name="workorder.status.status">
-				<constant>${workorder.status.status}</constant>
-			</expression>
 		</workflow>
 	</template>
 	<template id="25">
@@ -610,24 +229,6 @@
 			<parameter name="workorder.url" type="String" />
 			<parameter name="workorder.assignedTo.name" type="String" />
 			<parameter name="workorder.status.status" type="String" />
-			<expression name="workorder.assignedBy.phone">
-				<constant>${workorder.assignedBy.phone}</constant>
-			</expression>
-			<expression name="workorder.subject">
-				<constant>${workorder.subject}</constant>
-			</expression>
-			<expression name="workorder.description">
-				<constant>${workorder.description}</constant>
-			</expression>
-			<expression name="workorder.url">
-				<constant>${workorder.url}</constant>
-			</expression>
-			<expression name="workorder.assignedTo.phone">
-				<constant>${workorder.assignedTo.phone}</constant>
-			</expression>
-			<expression name="workorder.status.status">
-				<constant>${workorder.status.status}</constant>
-			</expression>
 		</workflow>
 	</template>
 	<template id="26">
@@ -643,27 +244,6 @@
 			<parameter name="workorder.assignedTo.id" type="Number" />
 			<parameter name="workorder.assignedTo.name" type="String" />
 			<parameter name="workorder.status.status" type="String" />
-			<expression name="workorder.subject">
-				<constant>${workorder.subject}</constant>
-			</expression>
-			<expression name="workorder.description">
-				<constant>${workorder.description}</constant>
-			</expression>
-			<expression name="workorder.url">
-				<constant>${workorder.url}</constant>
-			</expression>
-			<expression name="workorder.id">
-				<constant>${workorder.id}</constant>
-			</expression>
-			<expression name="workorder.assignedTo.id">
-				<constant>${workorder.assignedTo.id}</constant>
-			</expression>
-			<expression name="workorder.assignedTo.name">
-				<constant>${workorder.assignedTo.name}</constant>
-			</expression>
-			<expression name="workorder.status.status">
-				<constant>${workorder.status.status}</constant>
-			</expression>
 		</workflow>
 	</template>
 	<template id="28">
@@ -675,27 +255,6 @@
 			<parameter name="workorder.url" type="String" />
 			<parameter name="workorder.assignedTo.name" type="String" />
 			<parameter name="workorder.status.status" type="String" />			
-			<expression name="org.domain">
-				<constant>${org.domain}</constant>
-			</expression>
-			<expression name="workorder.assignedTo.email">
-				<constant>${workorder.assignedTo.email}</constant>
-			</expression>
-			<expression name="workorder.subject">
-				<constant>${workorder.subject}</constant>
-			</expression>
-			<expression name="workorder.description">
-				<constant>${workorder.description}</constant>
-			</expression>
-			<expression name="workorder.url">
-				<constant>${workorder.url}</constant>
-			</expression>
-			<expression name="workorder.assignedTo.name">
-				<constant>${workorder.assignedTo.name}</constant>
-			</expression>
-			<expression name="workorder.status.status">
-				<constant>${workorder.status.status}</constant>
-			</expression>
 		</workflow>
 	</template>
 	<template id="29">
@@ -706,24 +265,6 @@
 			<parameter name="workorder.url" type="String" />
 			<parameter name="workorder.assignedTo.name" type="String" />
 			<parameter name="workorder.status.status" type="String" />		
-			<expression name="workorder.assignedTo.phone">
-				<constant>${workorder.assignedTo.phone}</constant>
-			</expression>
-			<expression name="workorder.subject">
-				<constant>${workorder.subject}</constant>
-			</expression>
-			<expression name="workorder.description">
-				<constant>${workorder.description}</constant>
-			</expression>
-			<expression name="workorder.url">
-				<constant>${workorder.url}</constant>
-			</expression>
-			<expression name="workorder.assignedTo.name">
-				<constant>${workorder.assignedTo.name}</constant>
-			</expression>
-			<expression name="workorder.status.status">
-				<constant>${workorder.status.status}</constant>
-			</expression>
 		</workflow>
 	</template>
 	<template id="30">
@@ -739,27 +280,6 @@
 			<parameter name="workorder.assignedTo.name" type="String" />			
 			<parameter name="workorder.assignedTo.id" type="Number" />
 			<parameter name="workorder.status.status" type="String" />		
-			<expression name="workorder.subject">
-				<constant>${workorder.subject}</constant>
-			</expression>
-			<expression name="workorder.description">
-				<constant>${workorder.description}</constant>
-			</expression>
-			<expression name="workorder.url">
-				<constant>${workorder.url}</constant>
-			</expression>
-			<expression name="workorder.id">
-				<constant>${workorder.id}</constant>
-			</expression>
-			<expression name="workorder.assignedTo.id">
-				<constant>${workorder.assignedTo.id}</constant>
-			</expression>
-			<expression name="workorder.aassignedTo.name">
-				<constant>${workorder.assignedTo.name}</constant>
-			</expression>
-			<expression name="workorder.status.status">
-				<constant>${workorder.status.status}</constant>
-			</expression>
 		</workflow>
 	</template>
 	<template id="32">
@@ -770,24 +290,6 @@
 			<parameter name="workorder.description" type="String" />
 			<parameter name="workorder.url" type="String" />
 			<parameter name="workorder.assignedTo.name" type="String" />
-			<expression name="org.domain">
-				<constant>${org.domain}</constant>
-			</expression>
-			<expression name="workorderrequester.requester.email">
-				<constant>${workorderrequester.requester.email}</constant>
-			</expression>
-			<expression name="workorder.subject">
-				<constant>${workorder.subject}</constant>
-			</expression>
-			<expression name="workorder.description">
-				<constant>${workorder.description}</constant>
-			</expression>
-			<expression name="workorder.url">
-				<constant>${workorder.url}</constant>
-			</expression>
-			<expression name="workorder.assignedTo.name">
-				<constant>${workorder.assignedTo.name}</constant>
-			</expression>
 		</workflow>
 	</template>
 	<template id="33">
@@ -797,21 +299,6 @@
 			<parameter name="workorder.description" type="String" />
 			<parameter name="workorder.url" type="String" />
 			<parameter name="workorder.assignedTo.name" type="String" />
-			<expression name="workorderrequester.requester.phone">
-				<constant>${workorderrequester.requester.phone}</constant>
-			</expression>
-			<expression name="workorder.subject">
-				<constant>${workorder.subject}</constant>
-			</expression>
-			<expression name="workorder.description">
-				<constant>${workorder.description}</constant>
-			</expression>
-			<expression name="workorder.url">
-				<constant>${workorder.url}</constant>
-			</expression>
-			<expression name="workorder.assignedTo.name">
-				<constant>${workorder.assignedTo.name}</constant>
-			</expression>
 		</workflow>
 	</template>
 	<template id="34">
@@ -826,24 +313,6 @@
 			<parameter name="workorder.id" type="Number" />
 			<parameter name="workorder.assignedTo.name" type="String" />
 			<parameter name="workorderrequest.requester.id" type="Number" />
-			<expression name="workorder.subject">
-				<constant>${workorder.subject}</constant>
-			</expression>
-			<expression name="workorder.description">
-				<constant>${workorder.description}</constant>
-			</expression>
-			<expression name="workorder.url">
-				<constant>${workorder.url}</constant>
-			</expression>
-			<expression name="workorder.id">
-				<constant>${workorder.id}</constant>
-			</expression>
-			<expression name="workorderrequest.requester.id">
-				<constant>${workorderrequest.requester.id}</constant>
-			</expression>
-			<expression name="workorder.assignedTo.name">
-				<constant>${workorder.assignedTo.name}</constant>
-			</expression>
 		</workflow>
 	</template>
 	<template id="36">
@@ -859,27 +328,6 @@
 			<parameter name="workorder.id" type="Number" />
 			<parameter name="workorder.assignedTo.id" type="Number" />
 			<parameter name="workorder.assignedBy.name" type="String" />
-			<expression name="workorder.subject">
-				<constant>${workorder.subject}</constant>
-			</expression>
-			<expression name="workorder.description">
-				<constant>${workorder.description}</constant>
-			</expression>
-			<expression name="workorder.url">
-				<constant>${workorder.url}</constant>
-			</expression>
-			<expression name="workorder.id">
-				<constant>${workorder.id}</constant>
-			</expression>
-			<expression name="workorder.assignedTo.id">
-				<constant>${workorder.assignedTo.id}</constant>
-			</expression>
-			<expression name="workorder.assignedBy.name">
-				<constant>${workorder.assignedBy.name}</constant>
-			</expression>
-			<expression name="workorder.dueDateString">
-				<constant>${workorder.dueDateString}</constant>
-			</expression>
 		</workflow>
 	</template>
 	<template id="38">
@@ -892,30 +340,6 @@
 			<parameter name="workorder.assignedBy.name" type="String" />
 			<parameter name="workorder.dueDateString" type="String" />
 			<parameter name="workorder.assignmentGroup.name" type="String" />
-			<expression name="org.domain">
-				<constant>${org.domain}</constant>
-			</expression>
-			<expression name="workorder.assignmentGroup.email">
-				<constant>${workorder.assignmentGroup.email}</constant>
-			</expression>
-			<expression name="workorder.subject">
-				<constant>${workorder.subject}</constant>
-			</expression>
-			<expression name="workorder.description">
-				<constant>${workorder.description}</constant>
-			</expression>
-			<expression name="workorder.url">
-				<constant>${workorder.url}</constant>
-			</expression>
-			<expression name="workorder.assignedBy.name">
-				<constant>${workorder.assignedBy.name}</constant>
-			</expression>
-			<expression name="workorder.dueDateString">
-				<constant>${workorder.dueDateString}</constant>
-			</expression>
-			<expression name="workorder.assignmentGroup.name">
-				<constant>${workorder.assignmentGroup.name}</constant>
-			</expression>
 		</workflow>
 	</template>
 	<template id="39">
@@ -927,27 +351,6 @@
 			<parameter name="workorder.description" type="String" />
 			<parameter name="workorder.dueDateString" type="String" />
 			<parameter name="workorder.team" type="String" />
-			<expression name="workorder.assignedTo.phone">
-				<constant>${workorder.assignedTo.phone}</constant>
-			</expression>
-			<expression name="workorder.url">
-				<constant>${workorder.url}</constant>
-			</expression>
-			<expression name="workorder.assignedBy.name">
-				<constant>${workorder.assignedBy.name}</constant>
-			</expression>
-			<expression name="workorder.dueDateString">
-				<constant>${workorder.dueDateString}</constant>
-			</expression>
-			<expression name="workorder.subject">
-				<constant>${workorder.subject}</constant>
-			</expression>
-			<expression name="workorder.description">
-				<constant>${workorder.description}</constant>
-			</expression>
-			<expression name="workorder.team">
-				<constant>${workorder.team}</constant>
-			</expression>
 		</workflow>
 	</template>
 	<template id="40">
@@ -964,30 +367,6 @@
 			<parameter name="workorder.assignedBy.name" type="String" />
 			<parameter name="workorder.dueDateString" type="String" />
 			<parameter name="workorder.team" type="String" />						
-			<expression name="workorder.subject">
-				<constant>${workorder.subject}</constant>
-			</expression>
-			<expression name="workorder.description">
-				<constant>${workorder.description}</constant>
-			</expression>
-			<expression name="workorder.url">
-				<constant>${workorder.url}</constant>
-			</expression>
-			<expression name="workorder.id">
-				<constant>${workorder.id}</constant>
-			</expression>
-			<expression name="workorder.assignedTo.id">
-				<constant>${workorder.assignedTo.id}</constant>
-			</expression>
-			<expression name="workorder.assignedBy.name">
-				<constant>${workorder.assignedBy.name}</constant>
-			</expression>
-			<expression name="workorder.dueDateString">
-				<constant>${workorder.dueDateString}</constant>
-			</expression>
-			<expression name="workorder.team">
-				<constant>${workorder.team}</constant>
-			</expression>
 		</workflow>
 	</template>
 	<template id="42">
@@ -996,21 +375,6 @@
 			<parameter name="workorder.subject" type="String" />
 			<parameter name="workorder.url" type="String" />
 			<parameter name="comment.createdBy.name"  type="String" />
-			<expression name="org.domain">
-				<constant>${org.domain}</constant>
-			</expression>
-			<expression name="workorder.assignedTo.phone">
-				<constant>${workorder.assignedTo.phone}</constant>
-			</expression>
-			<expression name="workorder.subject">
-				<constant>${workorder.subject}</constant>
-			</expression>
-			<expression name="workorder.url">
-				<constant>${workorder.url}</constant>
-			</expression>
-			<expression name="comment.createdBy.name">
-				<constant>${comment.createdBy.name}</constant>
-			</expression>
 		</workflow>
 	</template>
 	<template id="43">
@@ -1024,21 +388,6 @@
 			<parameter name="comment.createdBy.name"  type="String" />
 			<parameter name="workorder.subject" type="String" />
 			<parameter name="workorder.url" type="String" />
-			<expression name="workorder.id">
-				<constant>${workorder.id}</constant>
-			</expression>
-			<expression name="workorder.assignedTo.id">
-				<constant>${workorder.assignedTo.id}</constant>
-			</expression>
-			<expression name="comment.createdBy.name">
-				<constant>${comment.createdBy.name}</constant>
-			</expression>
-			<expression name="workorder.subject">
-				<constant>${workorder.subject}</constant>
-			</expression>
-			<expression name="workorder.url">
-				<constant>${workorder.url}</constant>
-			</expression>
 		</workflow>
 	</template>
 	<template id="45">
@@ -1048,21 +397,6 @@
 			<parameter name="workorder.subject" type="String" />
 			<parameter name="workorder.assignedBy.name" type="String" />
 			<parameter name="workorder.url" type="String" />
-			<expression name="org.domain">
-				<constant>${org.domain}</constant>
-			</expression>
-			<expression name="workorder.assignedTo.email">
-				<constant>${workorder.assignedTo.email}</constant>
-			</expression>
-			<expression name="workorder.subject">
-				<constant>${workorder.subject}</constant>
-			</expression>
-			<expression name="workorder.assignedBy.name">
-				<constant>${workorder.assignedBy.name}</constant>
-			</expression>
-			<expression name="workorder.url">
-				<constant>${workorder.url}</constant>
-			</expression>
 		</workflow>
 	</template>
 	<template id="46">
@@ -1071,18 +405,6 @@
 			<parameter name="workorder.subject" type="String" />
 			<parameter name="workorder.assignedBy.name" type="String" />
 			<parameter name="workorder.url" type="String" />
-			<expression name="workorder.assignedTo.phone">
-				<constant>${workorder.assignedTo.phone}</constant>
-			</expression>			
-			<expression name="workorder.subject">
-				<constant>${workorder.subject}</constant>
-			</expression>
-			<expression name="workorder.assignedBy.name">
-				<constant>${workorder.assignedBy.name}</constant>
-			</expression>
-			<expression name="workorder.url">
-				<constant>${workorder.url}</constant>
-			</expression>
 		</workflow>
 	</template>
 	<template id="47">
@@ -1096,21 +418,6 @@
 			<parameter name="workorder.subject" type="String" />
 			<parameter name="workorder.assignedBy.name" type="String" />
 			<parameter name="workorder.url" type="String" />
-			<expression name="workorder.id">
-				<constant>${workorder.id}</constant>
-			</expression>
-			<expression name="workorder.assignedTo.id">
-				<constant>${workorder.assignedTo.id}</constant>
-			</expression>
-			<expression name="workorder.subject">
-				<constant>${workorder.subject}</constant>
-			</expression>
-			<expression name="workorder.assignedBy.name">
-				<constant>${workorder.assignedBy.name}</constant>
-			</expression>
-			<expression name="workorder.url">
-				<constant>${workorder.url}</constant>
-			</expression>
 		</workflow>
 	</template>
 	<template id="49">
@@ -1119,18 +426,6 @@
 			<parameter name="ticket.assignedTo.email" type="String" />
 			<parameter name="workorder.subject" type="String" />
 			<parameter name="workorder.url" type="String" />
-			<expression name="org.domain">
-				<constant>${org.domain}</constant>
-			</expression>
-			<expression name="ticket.assignedTo.email">
-				<constant>${ticket.assignedTo.email}</constant>
-			</expression>
-			<expression name="workorder.subject">
-				<constant>${workorder.subject}</constant>
-			</expression>
-			<expression name="workorder.url">
-				<constant>${workorder.url}</constant>
-			</expression>
 		</workflow>
 	</template>
 	<template id="50">
@@ -1138,15 +433,6 @@
 			<parameter name="workorder.assignedTo.phone" type="String" />
 			<parameter name="workorder.subject" type="String" />
 			<parameter name="workorder.url" type="String" />
-			<expression name="workorder.assignedTo.phone">
-				<constant>${workorder.assignedTo.phone}</constant>
-			</expression>
-			<expression name="workorder.subject">
-				<constant>${workorder.subject}</constant>
-			</expression>
-			<expression name="workorder.url">
-				<constant>${workorder.url}</constant>
-			</expression>
 		</workflow>
 	</template>
 	<template id="51">
@@ -1159,18 +445,6 @@
 			<parameter name="workorder.assignedTo.id" type="Number" />
 			<parameter name="workorder.subject" type="String" />
 			<parameter name="workorder.url" type="String" />
-			<expression name="workorder.id">
-				<constant>${workorder.id}</constant>
-			</expression>
-			<expression name="workorder.assignedTo.id">
-				<constant>${workorder.assignedTo.id}</constant>
-			</expression>
-			<expression name="workorder.subject">
-				<constant>${workorder.subject}</constant>
-			</expression>
-			<expression name="workorder.url">
-				<constant>${workorder.url}</constant>
-			</expression>
 		</workflow>
 	</template>
 	<template id="53">
@@ -1180,21 +454,6 @@
 			<parameter name="workorder.assignedBy.email" type="String" />
 			<parameter name="workorder.subject" type="String" />
 			<parameter name="workorder.url" type="String" />
-			<expression name="org.domain">
-				<constant>${org.domain}</constant>
-			</expression>
-			<expression name="workorder.assignedTo.email">
-				<constant>${workorder.assignedTo.email}</constant>
-			</expression>
-			<expression name="workorder.assignedBy.email">
-				<constant>${workorder.assignedBy.email}</constant>
-			</expression>
-			<expression name="workorder.subject">
-				<constant>${workorder.subject}</constant>
-			</expression>
-			<expression name="workorder.url">
-				<constant>${workorder.url}</constant>
-			</expression>
 		</workflow>
 	</template>
 	<template id="54">
@@ -1203,18 +462,6 @@
 			<parameter name="workorder.assignedBy.phone" type="String" />
 			<parameter name="workorder.subject" type="String" />
 			<parameter name="workorder.url" type="String" />
-			<expression name="workorder.assignedTo.phone">
-				<constant>${workorder.assignedTo.phone}</constant>
-			</expression>
-			<expression name="workorder.assignedBy.phone">
-				<constant>${workorder.assignedBy.phone}</constant>
-			</expression>
-			<expression name="workorder.subject">
-				<constant>${workorder.subject}</constant>
-			</expression>
-			<expression name="workorder.url">
-				<constant>${workorder.url}</constant>
-			</expression>
 		</workflow>
 	</template>
 	<template id="55">
@@ -1228,21 +475,6 @@
 			<parameter name="workorder.assignedBy.id" type="Number" />
 			<parameter name="workorder.subject" type="String" />
 			<parameter name="workorder.url" type="String" />
-			<expression name="workorder.id">
-				<constant>${workorder.id}</constant>
-			</expression>
-			<expression name="workorder.assignedTo.id">
-				<constant>${workorder.assignedTo.id}</constant>
-			</expression>
-			<expression name="workorder.assignedBy.id">
-				<constant>${workorder.assignedBy.id}</constant>
-			</expression>
-			<expression name="workorder.subject">
-				<constant>${workorder.subject}</constant>
-			</expression>
-			<expression name="workorder.url">
-				<constant>${workorder.url}</constant>
-			</expression>
 		</workflow>
 	</template>	
 	<template id="57">
@@ -1253,24 +485,6 @@
 			<parameter name="workorder.description" type="String" />
 			<parameter name="workorder.url" type="String" />
 			<parameter name="workorder.dueDateString" type="String" />
-			<expression name="org.domain">
-				<constant>${org.domain}</constant>
-			</expression>
-			<expression name="workorder.assignedTo.email">
-				<constant>${workorder.assignedTo.email}</constant>
-			</expression>
-			<expression name="workorder.subject">
-				<constant>${workorder.subject}</constant>
-			</expression>
-			<expression name="workorder.description">
-				<constant>${workorder.description}</constant>
-			</expression>
-			<expression name="workorder.url">
-				<constant>${workorder.url}</constant>
-			</expression>
-			<expression name="workorder.dueDateString">
-				<constant>${workorder.dueDateString}</constant>
-			</expression>
 		</workflow>
 	</template>
 	<template id="58">
@@ -1282,27 +496,6 @@
 			<parameter name="workorder.url" type="String" />
 			<parameter name="workorder.assignedBy.name" type="String" />
 			<parameter name="workorder.status.status" type="String" />			
-			<expression name="org.domain">
-				<constant>${org.domain}</constant>
-			</expression>
-			<expression name="workorder.requester.email">
-				<constant>${workorder.requester.email}</constant>
-			</expression>
-			<expression name="workorder.subject">
-				<constant>${workorder.subject}</constant>
-			</expression>
-			<expression name="workorder.description">
-				<constant>${workorder.description}</constant>
-			</expression>
-			<expression name="workorder.url">
-				<constant>${workorder.url}</constant>
-			</expression>
-			<expression name="workorder.assignedBy.name">
-				<constant>${workorder.assignedBy.name}</constant>
-			</expression>
-			<expression name="workorder.status.status">
-				<constant>${workorder.status.status}</constant>
-			</expression>
 		</workflow>
 	</template>
 	<template id="59">
@@ -1313,24 +506,6 @@
 			<parameter name="workorder.url" type="String" />
 			<parameter name="workorder.assignedBy.name" type="String" />
 			<parameter name="workorder.status.status" type="String" />		
-			<expression name="workorder.requester.phone">
-				<constant>${workorder.requester.phone}</constant>
-			</expression>
-			<expression name="workorder.subject">
-				<constant>${workorder.subject}</constant>
-			</expression>
-			<expression name="workorder.description">
-				<constant>${workorder.description}</constant>
-			</expression>
-			<expression name="workorder.url">
-				<constant>${workorder.url}</constant>
-			</expression>
-			<expression name="workorder.assignedBy.name">
-				<constant>${workorder.assignedBy.name}</constant>
-			</expression>
-			<expression name="workorder.status.status">
-				<constant>${workorder.status.status}</constant>
-			</expression>
 		</workflow>
 	</template>
 	<template id="60">
@@ -1346,27 +521,6 @@
 			<parameter name="workorder.assignedBy.name" type="String" />			
 			<parameter name="workorder.requester.id" type="Number" />
 			<parameter name="workorder.status.status" type="String" />		
-			<expression name="workorder.subject">
-				<constant>${workorder.subject}</constant>
-			</expression>
-			<expression name="workorder.description">
-				<constant>${workorder.description}</constant>
-			</expression>
-			<expression name="workorder.url">
-				<constant>${workorder.url}</constant>
-			</expression>
-			<expression name="workorder.id">
-				<constant>${workorder.id}</constant>
-			</expression>
-			<expression name="workorder.requester.id">
-				<constant>${workorder.requester.id}</constant>
-			</expression>
-			<expression name="workorder.assignedBy.name">
-				<constant>${workorder.assignedBy.name}</constant>
-			</expression>
-			<expression name="workorder.status.status">
-				<constant>${workorder.status.status}</constant>
-			</expression>
 		</workflow>
 	</template>
 	<template id="62">
@@ -1377,24 +531,6 @@
 			<parameter name="alarm.url" type="String" />
 			<parameter name="alarm.source" type="String" />
 			<parameter name="alarm.state" type="String" />
-			<expression name="org.domain">
-				<constant>${org.domain}</constant>
-			</expression>
-			<expression name="alarm.description">
-				<constant>${alarm.description}</constant>
-			</expression>
-			<expression name="alarm.url">
-				<constant>${alarm.url}</constant>
-			</expression>
-			<expression name="alarm.subject">
-				<constant>${alarm.subject}</constant>
-			</expression>
-			<expression name="alarm.source">
-				<constant>${alarm.source}</constant>
-			</expression>
-			<expression name="alarm.state">
-				<constant>${alarm.state}</constant>
-			</expression>
 		</workflow>
 	</template>
 	<template id="63">
@@ -1419,30 +555,6 @@
 			<parameter name="asset.names" type="String" />
 			<parameter name="asset.url" type="String" />
 			<parameter name="site.name" type="String" />
-			<expression name="asset.names" type="String">
-				<constant>${asset.names}</constant>
-			</expression>
-			<expression name="asset.id">
-				<constant>${asset.id}</constant>
-			</expression>
-			<expression name="org.superAdmin.phone">
-				<constant>${org.superAdmin.phone}</constant>
-			</expression>
-			<expression name="org.superAdmin.email">
-				<constant>${org.superAdmin.email}</constant>
-			</expression>
-			<expression name="org.domain">
-				<constant>${org.domain}</constant>
-			</expression>
-			<expression name="expired.date">
-				<constant>${expired.date}</constant>
-			</expression>
-			<expression name="asset.url">
-				<constant>${asset.url}</constant>
-			</expression>
-			<expression name="site.name">
-				<constant>${site.name}</constant>
-			</expression>
 		</workflow>
 	</template>
 	<template id="67">
@@ -1455,30 +567,6 @@
 			<parameter name="asset.names" type="String" />
 			<parameter name="asset.url" type="String" />
 			<parameter name="site.name" type="String" />
-			<expression name="asset.names" type="String">
-				<constant>${asset.names}</constant>
-			</expression>
-			<expression name="asset.id">
-				<constant>${asset.id}</constant>
-			</expression>
-			<expression name="org.superAdmin.phone">
-				<constant>${org.superAdmin.phone}</constant>
-			</expression>
-			<expression name="org.superAdmin.email">
-				<constant>${org.superAdmin.email}</constant>
-			</expression>
-			<expression name="org.domain">
-				<constant>${org.domain}</constant>
-			</expression>
-			<expression name="expired.date">
-				<constant>${expired.date}</constant>
-			</expression>
-			<expression name="asset.url">
-				<constant>${asset.url}</constant>
-			</expression>
-			<expression name="site.name">
-				<constant>${site.name}</constant>
-			</expression>
 		</workflow>
 	</template>
 	<template id="68">
@@ -1491,30 +579,6 @@
 			<parameter name="asset.names" type="String" />
 			<parameter name="asset.url" type="String" />
 			<parameter name="site.name" type="String" />
-			<expression name="asset.names" type="String">
-				<constant>${asset.names}</constant>
-			</expression>
-			<expression name="asset.id">
-				<constant>${asset.id}</constant>
-			</expression>
-			<expression name="org.superAdmin.phone">
-				<constant>${org.superAdmin.phone}</constant>
-			</expression>
-			<expression name="org.superAdmin.email">
-				<constant>${org.superAdmin.email}</constant>
-			</expression>
-			<expression name="org.domain">
-				<constant>${org.domain}</constant>
-			</expression>
-			<expression name="expired.date">
-				<constant>${expired.date}</constant>
-			</expression>
-			<expression name="asset.url">
-				<constant>${asset.url}</constant>
-			</expression>
-			<expression name="site.name">
-				<constant>${site.name}</constant>
-			</expression>
 		</workflow>
 	</template>
 	<template id="69">
@@ -1526,27 +590,6 @@
 			<parameter name="workorder.url" type="String" />
 			<parameter name="workorder.status.status" type="String" />
 			<parameter name="workorder.assignedTo.name" type="String" />
-			<expression name="org.domain">
-				<constant>${org.domain}</constant>
-			</expression>		
-			<expression name="workorder.assignedBy.email">
-				<constant>${workorder.assignedBy.email}</constant>
-			</expression>
-			<expression name="workorder.subject">
-				<constant>${workorder.subject}</constant>
-			</expression>
-			<expression name="workorder.description">
-				<constant>${workorder.description}</constant>
-			</expression>
-			<expression name="workorder.url">
-				<constant>${workorder.url}</constant>
-			</expression>
-			<expression name="workorder.status.status">
-				<constant>${workorder.status.status}</constant>
-			</expression>
-			<expression name="workorder.assignedTo.name">
-				<constant>${workorder.assignedTo.name}</constant>
-			</expression>
 		</workflow>
 	</template>
 	<template id="70">
@@ -1558,27 +601,6 @@
 			<parameter name="workorder.url" type="String" />
 			<parameter name="workorder.status.status" type="String" />
 			<parameter name="workorder.assignedTo.name" type="String" />
-			<expression name="org.domain">
-				<constant>${org.domain}</constant>
-			</expression>					
-			<expression name="workorder.assignedBy.phone">
-				<constant>${workorder.assignedBy.phone}</constant>
-			</expression>
-			<expression name="workorder.subject">
-				<constant>${workorder.subject}</constant>
-			</expression>
-			<expression name="workorder.description">
-				<constant>${workorder.description}</constant>
-			</expression>
-			<expression name="workorder.url">
-				<constant>${workorder.url}</constant>
-			</expression>
-			<expression name="workorder.status.status">
-				<constant>${workorder.status.status}</constant>
-			</expression>
-			<expression name="workorder.assignedTo.name">
-				<constant>${workorder.assignedTo.name}</constant>
-			</expression>
 		</workflow>
 	</template>
 	<template id="71">
@@ -1595,30 +617,6 @@
 			<parameter name="workorder.assignedBy.id" type="Number" />
 			<parameter name="workorder.status.status" type="String" />
 			<parameter name="workorder.assignedTo.name" type="String" />
-			<expression name="org.domain">
-				<constant>${org.domain}</constant>
-			</expression>		
-			<expression name="workorder.subject">
-				<constant>${workorder.subject}</constant>
-			</expression>
-			<expression name="workorder.description">
-				<constant>${workorder.description}</constant>
-			</expression>
-			<expression name="workorder.url">
-				<constant>${workorder.url}</constant>
-			</expression>
-			<expression name="workorder.id">
-				<constant>${workorder.id}</constant>
-			</expression>
-			<expression name="workorder.assignedBy.id">
-				<constant>${workorder.assignedBy.id}</constant>
-			</expression>
-			<expression name="workorder.status.status">
-				<constant>${workorder.status.status}</constant>
-			</expression>
-			<expression name="workorder.assignedTo.name">
-				<constant>${workorder.assignedTo.name}</constant>
-			</expression>
 		</workflow>
 	</template>
 	<template id="73">
@@ -1631,30 +629,6 @@
 			<parameter name="asset.names" type="String" />
 			<parameter name="asset.url" type="String" />
 			<parameter name="site.name" type="String" />
-			<expression name="asset.names" type="String">
-				<constant>${asset.names}</constant>
-			</expression>
-			<expression name="asset.id">
-				<constant>${asset.id}</constant>
-			</expression>
-			<expression name="org.superAdmin.phone">
-				<constant>${org.superAdmin.phone}</constant>
-			</expression>
-			<expression name="org.superAdmin.email">
-				<constant>${org.superAdmin.email}</constant>
-			</expression>
-			<expression name="org.domain">
-				<constant>${org.domain}</constant>
-			</expression>
-			<expression name="expired.date">
-				<constant>${expired.date}</constant>
-			</expression>
-			<expression name="asset.url">
-				<constant>${asset.url}</constant>
-			</expression>
-			<expression name="site.name">
-				<constant>${site.name}</constant>
-			</expression>
 		</workflow>
 	</template>
 	<template id="74">
@@ -1663,18 +637,6 @@
 			<parameter name="workorder.requestedBy.email" type="Number" />
 			<parameter name="workorder.subject" type="String" />
 			<parameter name="workorder.url" type="String" />
-			<expression name="workorder.id">
-				<constant>${workorder.id}</constant>
-			</expression>
-			<expression name="workorder.requestedBy.email">
-				<constant>${workorder.requestedBy.email}</constant>
-			</expression>
-			<expression name="workorder.subject">
-				<constant>${workorder.subject}</constant>
-			</expression>
-			<expression name="workorder.url">
-				<constant>${workorder.url}</constant>
-			</expression>
 		</workflow>
 	</template>
 	<template id="75">
@@ -1683,18 +645,6 @@
 			<parameter name="workorder.requestedBy.email" type="Number" />
 			<parameter name="workorder.subject" type="String" />
 			<parameter name="workorder.url" type="String" />
-			<expression name="workorder.id">
-				<constant>${workorder.id}</constant>
-			</expression>
-			<expression name="workorder.requestedBy.email">
-				<constant>${workorder.requestedBy.email}</constant>
-			</expression>
-			<expression name="workorder.subject">
-				<constant>${workorder.subject}</constant>
-			</expression>
-			<expression name="workorder.url">
-				<constant>${workorder.url}</constant>
-			</expression>
 		</workflow>
 	</template>
 	<template id="76">
@@ -1704,18 +654,6 @@
 			<parameter name="workorder.requestedBy.phone" type="Number" />
 			<parameter name="workorder.subject" type="String" />
 			<parameter name="workorder.url" type="String" />
-			<expression name="workorder.id">
-				<constant>${workorder.id}</constant>
-			</expression>
-			<expression name="workorder.requestedBy.phone">
-				<constant>${workorder.requestedBy.phone}</constant>
-			</expression>
-			<expression name="workorder.subject">
-				<constant>${workorder.subject}</constant>
-			</expression>
-			<expression name="workorder.url">
-				<constant>${workorder.url}</constant>
-			</expression>
 		</workflow>
 	</template>
 	<template id="77">
@@ -1725,18 +663,6 @@
 			<parameter name="workorder.requestedBy.phone" type="Number" />
 			<parameter name="workorder.subject" type="String" />
 			<parameter name="workorder.url" type="String" />
-			<expression name="workorder.id">
-				<constant>${workorder.id}</constant>
-			</expression>
-			<expression name="workorder.requestedBy.phone">
-				<constant>${workorder.requestedBy.phone}</constant>
-			</expression>
-			<expression name="workorder.subject">
-				<constant>${workorder.subject}</constant>
-			</expression>
-			<expression name="workorder.url">
-				<constant>${workorder.url}</constant>
-			</expression>
 		</workflow>
 	</template>
 	<template id="78">
@@ -1746,18 +672,6 @@
 			<parameter name="workorder.requestedBy.id" type="Number" />
 			<parameter name="workorder.subject" type="String" />
 			<parameter name="workorder.url" type="String" />
-			<expression name="workorder.id">
-				<constant>${workorder.id}</constant>
-			</expression>
-			<expression name="workorder.requestedBy.id">
-				<constant>${workorder.requestedBy.id}</constant>
-			</expression>
-			<expression name="workorder.subject">
-				<constant>${workorder.subject}</constant>
-			</expression>
-			<expression name="workorder.url">
-				<constant>${workorder.url}</constant>
-			</expression>
 		</workflow>
 	</template>
 	<template id="79">
@@ -1767,18 +681,6 @@
 			<parameter name="workorder.requestedBy.id" type="Number" />
 			<parameter name="workorder.subject" type="String" />
 			<parameter name="workorder.url" type="String" />
-			<expression name="workorder.id">
-				<constant>${workorder.id}</constant>
-			</expression>
-			<expression name="workorder.requestedBy.id">
-				<constant>${workorder.requestedBy.id}</constant>
-			</expression>
-			<expression name="workorder.subject">
-				<constant>${workorder.subject}</constant>
-			</expression>
-			<expression name="workorder.url">
-				<constant>${workorder.url}</constant>
-			</expression>
 		</workflow>
 	</template>
 	<template id="80">
@@ -1786,15 +688,6 @@
 			<parameter name="workorder.id" type="Number" />
 			<parameter name="workorder.subject" type="String" />
 			<parameter name="workorder.url" type="String" />
-			<expression name="workorder.id">
-				<constant>${workorder.id}</constant>
-			</expression>
-			<expression name="workorder.subject">
-				<constant>${workorder.subject}</constant>
-			</expression>
-			<expression name="workorder.url">
-				<constant>${workorder.url}</constant>
-			</expression>
 		</workflow>
 	</template>
 	<template id="81">
@@ -1803,15 +696,6 @@
 			<parameter name="workorder.id" type="Number" />
 			<parameter name="workorder.subject" type="String" />
 			<parameter name="workorder.url" type="String" />
-			<expression name="workorder.id">
-				<constant>${workorder.id}</constant>
-			</expression>
-			<expression name="workorder.subject">
-				<constant>${workorder.subject}</constant>
-			</expression>
-			<expression name="workorder.url">
-				<constant>${workorder.url}</constant>
-			</expression>
 		</workflow>
 	</template>
 	<template id="82">
@@ -1820,15 +704,6 @@
 			<parameter name="workorder.id" type="Number" />
 			<parameter name="workorder.subject" type="String" />
 			<parameter name="workorder.url" type="String" />
-			<expression name="workorder.id">
-				<constant>${workorder.id}</constant>
-			</expression>
-			<expression name="workorder.subject">
-				<constant>${workorder.subject}</constant>
-			</expression>
-			<expression name="workorder.url">
-				<constant>${workorder.url}</constant>
-			</expression>
 		</workflow>
 	</template>
 	<template id="83">

@@ -1,12 +1,14 @@
 package com.facilio.report.context;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.TicketStatusContext;
+import com.facilio.modules.FacilioStatus;
+import com.facilio.modules.FacilioStatus.StatusType;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.FieldOperator;
 import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.*;
+import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.fw.BeanFactory;
 import org.apache.commons.collections4.CollectionUtils;
 
@@ -164,15 +166,16 @@ public class ReportFactory {
 				{
 					if (!data.containsKey("closed_status_id")) {
 						ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-						SelectRecordsBuilder<TicketStatusContext> builder = new SelectRecordsBuilder<TicketStatusContext>()
-								.module(modBean.getModule("ticketstatus"))
-								.select(modBean.getAllFields("ticketstatus"))
-								.beanClass(TicketStatusContext.class)
-								.andCondition(CriteriaAPI.getCondition("STATUS_TYPE", "statusType", "2", NumberOperators.EQUALS));
-						List<TicketStatusContext> list = builder.get();
+//						SelectRecordsBuilder<FacilioStatus> builder = new SelectRecordsBuilder<FacilioStatus>()
+//								.module(modBean.getModule("ticketstatus"))
+//								.select(modBean.getAllFields("ticketstatus"))
+//								.beanClass(FacilioStatus.class)
+//								.andCondition(CriteriaAPI.getCondition("STATUS_TYPE", "statusType", "2", NumberOperators.EQUALS));
+//						List<FacilioStatus> list = builder.get();
+						List<FacilioStatus> list = TicketAPI.getStatusOfStatusType(StatusType.CLOSED);
 						if (CollectionUtils.isNotEmpty(list)) {
-							TicketStatusContext ticketStatusContext = list.get(0);
-							data.put("closed_status_id", ticketStatusContext.getId());
+							FacilioStatus facilioStatus = list.get(0);
+							data.put("closed_status_id", facilioStatus.getId());
 						}
 					}
 					String arguments = String.valueOf((Long) data.get("closed_status_id"));

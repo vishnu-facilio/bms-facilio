@@ -9,6 +9,7 @@ import java.util.TreeMap;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.apache.log4j.Logger;
 
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleBean;
@@ -24,6 +25,7 @@ import com.facilio.fw.BeanFactory;
 
 public class GetReadingsForMLCommand implements Command {
 
+	private static final Logger LOGGER = Logger.getLogger(GenerateMLModelCommand.class.getName());
 	@Override
 	public boolean execute(Context context) throws Exception 
 	{
@@ -59,6 +61,7 @@ public class GetReadingsForMLCommand implements Command {
 																	.orderBy("TTIME ASC")
 																	.andCustomWhere("TTIME >= ? AND TTIME < ? AND "+parentField.getColumnName()+"=? ",
 																			startTime, currentTime,variables.getParentID());
+			
 			List<Map<String, Object>> props = selectBuilder.getAsProps();
 			for(Map<String,Object> prop : props)
 			{

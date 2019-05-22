@@ -55,7 +55,7 @@ public enum FacilioCostFunctions implements FacilioWorkflowFunctionInterface {
 	private String functionName;
 	private String namespace = "cost";
 	private String params;
-	private FacilioFunctionNameSpace nameSpaceEnum = FacilioFunctionNameSpace.COST;
+	private FacilioSystemFunctionNameSpace nameSpaceEnum = FacilioSystemFunctionNameSpace.COST;
 	
 	public Integer getValue() {
 		return value;

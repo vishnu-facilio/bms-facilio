@@ -6,8 +6,6 @@ import java.util.List;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
-import com.facilio.accounts.dto.Group;
-import com.facilio.accounts.dto.User;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.constants.FacilioConstants;

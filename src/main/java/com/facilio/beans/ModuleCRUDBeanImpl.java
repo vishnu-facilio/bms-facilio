@@ -1,21 +1,5 @@
 package com.facilio.beans;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.StringJoiner;
-
-import org.apache.commons.chain.Chain;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.apache.log4j.Priority;
-import org.json.simple.JSONObject;
-
 import com.amazonaws.services.kinesis.clientlibrary.interfaces.IRecordProcessorCheckpointer;
 import com.amazonaws.services.kinesis.model.Record;
 import com.facilio.accounts.util.AccountUtil;
@@ -23,39 +7,13 @@ import com.facilio.accounts.util.AccountUtil.FeatureLicense;
 import com.facilio.agent.AgentKeys;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
-import com.facilio.bmsconsole.context.AlarmContext;
-import com.facilio.bmsconsole.context.ControllerContext;
-import com.facilio.bmsconsole.context.PMResourcePlannerContext;
-import com.facilio.bmsconsole.context.PMTriggerContext;
-import com.facilio.bmsconsole.context.PreventiveMaintenance;
-import com.facilio.bmsconsole.context.TaskContext;
+import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.context.TaskContext.TaskStatus;
-import com.facilio.bmsconsole.context.TicketCategoryContext;
-import com.facilio.bmsconsole.context.TicketContext;
-import com.facilio.bmsconsole.context.TicketStatusContext;
-import com.facilio.bmsconsole.context.WorkOrderContext;
-import com.facilio.bmsconsole.context.WorkOrderRequestContext;
-import com.facilio.bmsconsole.criteria.CommonOperators;
-import com.facilio.bmsconsole.criteria.CriteriaAPI;
-import com.facilio.bmsconsole.criteria.NumberOperators;
-import com.facilio.bmsconsole.criteria.StringOperators;
-import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.FacilioModule;
-import com.facilio.bmsconsole.modules.FieldFactory;
-import com.facilio.bmsconsole.modules.FieldUtil;
-import com.facilio.bmsconsole.modules.InsertRecordBuilder;
-import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
-import com.facilio.bmsconsole.modules.ModuleFactory;
-import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
-import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
+import com.facilio.bmsconsole.criteria.*;
+import com.facilio.bmsconsole.modules.*;
 import com.facilio.bmsconsole.templates.TaskSectionTemplate;
 import com.facilio.bmsconsole.templates.WorkorderTemplate;
-import com.facilio.bmsconsole.util.ControllerAPI;
-import com.facilio.bmsconsole.util.IoTMessageAPI;
-import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
-import com.facilio.bmsconsole.util.ResourceAPI;
-import com.facilio.bmsconsole.util.TemplateAPI;
-import com.facilio.bmsconsole.util.TicketAPI;
+import com.facilio.bmsconsole.util.*;
 import com.facilio.bmsconsole.view.ViewFactory;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.chain.FacilioContext;
@@ -65,6 +23,7 @@ import com.facilio.events.tasker.tasks.EventUtil;
 import com.facilio.events.util.EventAPI;
 import com.facilio.events.util.EventRulesAPI;
 import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioStatus;
 import com.facilio.procon.consumer.FacilioConsumer;
 import com.facilio.procon.message.FacilioRecord;
 import com.facilio.sql.GenericDeleteRecordBuilder;
@@ -72,6 +31,16 @@ import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
 import com.facilio.timeseries.TimeSeriesAPI;
+import org.apache.commons.chain.Chain;
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
+import org.apache.log4j.Level;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.json.simple.JSONObject;
+
+import java.io.File;
+import java.util.*;
 
 public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 
@@ -156,7 +125,7 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 			context.put(FacilioConstants.ContextNames.WORK_ORDER, workOrder);
 			context.put(FacilioConstants.ContextNames.IS_PUBLIC_REQUEST, true);
 			
-			TicketStatusContext preOpenStatus = TicketAPI.getStatus("preopen");
+			FacilioStatus preOpenStatus = TicketAPI.getStatus("preopen");
 			workOrder.setStatus(preOpenStatus);
 			
 			if (attachedFiles != null && !attachedFiles.isEmpty() && attachedFileNames != null && !attachedFileNames.isEmpty() && attachedFilesContentType != null && !attachedFilesContentType.isEmpty()) {
@@ -216,7 +185,7 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 				resourceIds = PreventiveMaintenanceAPI.getMultipleResourceToBeAddedFromPM(pm.getAssignmentTypeEnum(),resourceId,pm.getSpaceCategoryId(),pm.getAssetCategoryId(),null,pm.getPmIncludeExcludeResourceContexts());
 			}
 			else {
-				resourceIds = Collections.singletonList(workorderTemplate.getResourceId());
+				resourceIds = Collections.singletonList(workorderTemplate.getResourceIdVal());
 			}
 			
 			for(Long resourceId :resourceIds) {
@@ -276,6 +245,12 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 				context.put(FacilioConstants.ContextNames.IS_PM_EXECUTION, true);
 				context.put(FacilioConstants.ContextNames.ATTACHMENT_MODULE_NAME, FacilioConstants.ContextNames.TICKET_ATTACHMENTS);
 				context.put(FacilioConstants.ContextNames.ATTACHMENT_CONTEXT_LIST, wo.getAttachments());
+
+				if (AccountUtil.getCurrentOrg().getOrgId() == 218L) {
+					if (taskMapForNewPmExecution == null || taskMapForNewPmExecution.isEmpty()) {
+						LOGGER.log(Level.ERROR, "PMID : "+ pm.getId() + " No taskmap");
+					}
+				}
 				
 				//Temp fix. Have to be removed eventually
 				PreventiveMaintenanceAPI.updateResourceDetails(wo, taskMap);
@@ -457,7 +432,7 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 	public WorkOrderContext CloseAllWorkOrder() throws Exception
 	{
 		List<WorkOrderContext> workOrders = new ArrayList<WorkOrderContext>();
-		List<TicketStatusContext> ticketStatus = new ArrayList<TicketStatusContext>();
+		List<FacilioStatus> ticketStatus = new ArrayList<FacilioStatus>();
 		List<TaskContext> tasks = new ArrayList<TaskContext>();
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean", AccountUtil.getCurrentOrg().getId());
 		FacilioModule module = modBean.getModule("workorder");
@@ -477,14 +452,14 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 		List<FacilioField> fields = new ArrayList<>();
 		fields.add(ModuleFactory.getTicketStatusIdField());
 		
-		SelectRecordsBuilder<TicketStatusContext> builder1 = new SelectRecordsBuilder<TicketStatusContext>()
-				.table("TicketStatus")
-				.moduleName(FacilioConstants.ContextNames.TICKET_STATUS)
-				.select(fields)
-				.beanClass(TicketStatusContext.class)
-				.andCustomWhere(ModuleFactory.getTicketStatusModule().getTableName()+".ORGID = ? AND STATUS = ?", AccountUtil.getCurrentOrg().getId(), "closed");
+//		SelectRecordsBuilder<FacilioStatus> builder1 = new SelectRecordsBuilder<FacilioStatus>()
+//				.table("TicketStatus")
+//				.moduleName(FacilioConstants.ContextNames.TICKET_STATUS)
+//				.select(fields)
+//				.beanClass(FacilioStatus.class)
+//				.andCustomWhere(ModuleFactory.getTicketStatusModule().getTableName()+".ORGID = ? AND STATUS = ?", AccountUtil.getCurrentOrg().getId(), "closed");
 		
-		ticketStatus = builder1.get();
+		ticketStatus = Collections.singletonList(TicketAPI.getStatus("closed"));
 		
 		ticketStatus.get(0).getId();
 		
@@ -622,9 +597,9 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 	}
 
 	@Override
-	public int acknowledgePublishedMessage(long id) throws Exception {
+	public int acknowledgePublishedMessage(long id, String message) throws Exception {
 		// TODO Auto-generated method stub
-		return IoTMessageAPI.acknowdledgeMessage(id);
+		return IoTMessageAPI.acknowdledgeMessage(id, message);
 	}
 
 	@Override
@@ -665,11 +640,11 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 				.andCondition(CriteriaAPI.getCondition(FieldFactory.getDeletedTimeField(agentDataModule),"NULL", CommonOperators.IS_EMPTY));
 		if (agentName != null)
 		{
-			return genericSelectRecordBuilder.andCondition(CriteriaAPI.getCondition(FieldFactory.getAgentNameField(agentDataModule),agentName,StringOperators.IS)).get();
+			return  genericSelectRecordBuilder.andCondition(CriteriaAPI.getCondition(FieldFactory.getAgentNameField(agentDataModule),agentName,StringOperators.IS)).get();
 		}
 		else {
-			 return genericSelectRecordBuilder.get();
-			}
+			return genericSelectRecordBuilder.get();
+		}
 
 	}
 
@@ -683,14 +658,14 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 	}
 
     @Override
-    public void updateAgentMetrics(Map<String,Object> metrics) throws Exception {
+    public void updateAgentMetrics(Map<String,Object> metrics, Map<String, Object> criteria) throws Exception {
 		FacilioModule metricsmodule = ModuleFactory.getAgentMetricsModule();
 		GenericUpdateRecordBuilder genericUpdateRecordBuilder = new GenericUpdateRecordBuilder()
 																.table(AgentKeys.METRICS_TABLE)
 																.fields(FieldFactory.getAgentMetricsFields())
 																.andCondition(CriteriaAPI.getCurrentOrgIdCondition(metricsmodule))
-																.andCondition(CriteriaAPI.getCondition(FieldFactory.getAgentIdField(metricsmodule),metrics.get(AgentKeys.AGENT_ID).toString(),NumberOperators.EQUALS))
-																.andCondition(CriteriaAPI.getCondition(FieldFactory.getPublishTypeField(metricsmodule),metrics.get(EventUtil.DATA_TYPE).toString(),NumberOperators.EQUALS));
+																.andCondition(CriteriaAPI.getCondition(FieldFactory.getAgentIdField(metricsmodule), criteria.get(AgentKeys.AGENT_ID).toString(),NumberOperators.EQUALS))
+																.andCondition(CriteriaAPI.getCondition(FieldFactory.getPublishTypeField(metricsmodule), criteria.get(EventUtil.DATA_TYPE).toString(),NumberOperators.EQUALS));
 
                 genericUpdateRecordBuilder.update(metrics);
 
@@ -728,6 +703,63 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(integrationModule));
 		return genericSelectRecordBuilder.get();
 	}*/
+
+	public Long addAgentMessage(Map<String,Object> map)throws Exception{
+		FacilioModule messageModule = ModuleFactory.getAgentMessageModule();
+        try {
+            GenericInsertRecordBuilder insertRecordBuilder = new GenericInsertRecordBuilder()
+                    .table(messageModule.getTableName())
+                    .fields(FieldFactory.getAgentMessageFields());
+            return insertRecordBuilder.insert(map);
+    }catch (Exception e){
+        LOGGER.info("Exception Occurred ",e);
+        throw e;
+    }
+	}
+	public Long updateAgentMessage(Map<String,Object> map) throws Exception{
+		FacilioModule messageModule = ModuleFactory.getAgentMessageModule();
+		try{
+			GenericUpdateRecordBuilder updateRecordBuilder = new GenericUpdateRecordBuilder()
+					.table(messageModule.getTableName())
+					.fields(FieldFactory.getAgentMessageFields())
+					.andCondition(CriteriaAPI.getCurrentOrgIdCondition(messageModule))
+                    .andCondition(CriteriaAPI.getCondition(FieldFactory.getAgentMessageStatusField(messageModule),"0",NumberOperators.EQUALS))
+					.andCondition(CriteriaAPI.getCondition(FieldFactory.getAgentMessagePartitionKeyField(messageModule),map.get(AgentKeys.RECORD_ID).toString(),StringOperators.IS));
+
+			Integer rowsAffected= updateRecordBuilder.update(map);
+			return Long.valueOf(rowsAffected);
+        }catch (Exception e){
+            LOGGER.info("Exception Occurred ",e);
+            throw e;
+        }
+	}
+	public List<Map<String,Object>> getRows(FacilioContext context) throws Exception{
+	    // always create an Empty List<Map<String,Object>> and return it instead of null;
+        List<Map<String,Object>> rows = new ArrayList<>();
+        try {
+            FacilioModule messageModule = (FacilioModule) context.get(FacilioConstants.ContextNames.MODULE);
+            GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
+                    .table(context.get(FacilioConstants.ContextNames.TABLE_NAME).toString())
+                    .select((Collection<FacilioField>) context.get(FacilioConstants.ContextNames.FIELDS))
+                    .andCondition(CriteriaAPI.getCurrentOrgIdCondition(messageModule))
+                    .andCriteria((Criteria) context.get(FacilioConstants.ContextNames.CRITERIA));
+
+            if (context.containsKey(FacilioConstants.ContextNames.OFFSET)) {
+                selectRecordBuilder.offset(Integer.parseInt(context.get(FacilioConstants.ContextNames.OFFSET).toString()));
+            }
+
+            if (context.containsKey(FacilioConstants.ContextNames.LIMIT_VALUE)) {
+                selectRecordBuilder.limit(Integer.parseInt((context.get(FacilioConstants.ContextNames.LIMIT_VALUE).toString())));
+            } else {
+                selectRecordBuilder.limit(100);
+            }
+            rows.addAll(selectRecordBuilder.get());
+        }catch (Exception e){
+            LOGGER.info("Exception Occurred ",e);
+            throw e;
+        }
+			return rows;
+	}
 
 
 

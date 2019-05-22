@@ -209,4 +209,15 @@ public class ToolTransactionContext extends ModuleBaseWithCustomFields {
 	public void setAssetIds(List<Long> assetIds) {
 		this.assetIds = assetIds;
 	}
+	
+	private InventoryRequestLineItemContext requestedLineItem;
+	public InventoryRequestLineItemContext getRequestedLineItem() {
+		return requestedLineItem;
+	}
+	public void setRequestedLineItem(InventoryRequestLineItemContext requestedLineItem) {
+		this.requestedLineItem = requestedLineItem;
+	}
+	
+	
+	
 }

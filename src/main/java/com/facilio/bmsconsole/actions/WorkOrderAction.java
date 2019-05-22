@@ -50,7 +50,7 @@ import com.facilio.bmsconsole.context.TaskContext.InputType;
 import com.facilio.bmsconsole.context.TaskSectionContext;
 import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.context.TicketContext.SourceType;
-import com.facilio.bmsconsole.context.TicketStatusContext;
+import com.facilio.modules.FacilioStatus;
 import com.facilio.bmsconsole.context.ViewLayout;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.modules.FacilioField;
@@ -1326,6 +1326,14 @@ public class WorkOrderAction extends FacilioAction {
 	public void setComment(String comment) {
 		this.comment = comment;
 	}
+	
+	private Long stateTransitionId;
+	public Long getStateTransitionId() {
+		return stateTransitionId;
+	}
+	public void setStateTransitionId(Long stateTransitionId) {
+		this.stateTransitionId = stateTransitionId;
+	}
 
 	private void setUpdateWorkorderContext(FacilioContext context) throws Exception {
 		EventType activityType = EventType.EDIT;
@@ -1338,6 +1346,13 @@ public class WorkOrderAction extends FacilioAction {
 		else if(!context.containsKey(FacilioConstants.ContextNames.EVENT_TYPE) && ((workorder.getAssignedTo() != null && workorder.getAssignedTo().getId() > 0) || (workorder.getAssignmentGroup() != null && workorder.getAssignmentGroup().getId() > 0)) ) {
 			activityType = EventType.ASSIGN_TICKET;
 		}
+		
+		// cannot update module state directly
+		if (workorder.getModuleState() != null) {
+			workorder.setModuleState(null);
+		}
+		
+		context.put(FacilioConstants.ContextNames.TRANSITION_ID, stateTransitionId);
 		context.put(FacilioConstants.ContextNames.EVENT_TYPE, activityType);
 		context.put(FacilioConstants.ContextNames.COMMENT, comment);
 	}
@@ -2318,7 +2333,7 @@ public class WorkOrderAction extends FacilioAction {
 		//The following has to be moved to chain
 		workorder.setSourceType(SourceType.SERVICE_PORTAL_REQUEST);
 		workorder.setSendForApproval(true);
-		TicketStatusContext preOpenStatus = TicketAPI.getStatus("preopen");
+		FacilioStatus preOpenStatus = TicketAPI.getStatus("preopen");
 		workorder.setStatus(preOpenStatus);
 		if (workorder.getRequester() == null && AccountUtil.getCurrentUser() != null) {
 			workorder.setRequester(AccountUtil.getCurrentUser());

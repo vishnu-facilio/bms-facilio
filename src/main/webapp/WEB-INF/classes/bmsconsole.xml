@@ -514,7 +514,15 @@
 				<param name="includeProperties">id</param>
 			</result>
 		</action>
-
+        <action name="get"
+			class="com.facilio.bmsconsole.actions.BusinessHoursAction" method="getBusinessHoursList">
+			<param name="moduleName">setup</param>
+			<param name="permission">GENERAL</param>
+			<result name="success" type="json">
+			<param name="root">businessHoursList</param>
+			<param name="root">businessHours</param>
+			</result>
+		</action>
 		<action name="*"
 			class="com.facilio.bmsconsole.actions.BusinessHoursAction" method="getBusinessHoursList">
 			<param name="moduleName">setup</param>
@@ -1082,7 +1090,12 @@
 			<action name="updateCRM" class="com.facilio.bmsconsole.actions.AdminAction" method="updateCRM">
 			<result type="tiles">adminpage/orginfo.jsp</result>
 			</action>
-			
+			<action name="demorollup" class="com.facilio.bmsconsole.actions.AdminAction" >
+			<result type="tiles">adminpage/demorollup.jsp</result>
+			</action>
+			<action name="demoRollUp" class="com.facilio.bmsconsole.actions.AdminAction" method="demoRollUp">
+			<result type="tiles">adminpage/demorollup.jsp</result>
+			</action>
 			
 			
 			</package>
@@ -1316,7 +1329,7 @@
 			<param name="moduleName">setup</param>
 			<param name="permission">ASSET_SETTINGS</param>
 			<result name="success" type="json">
-				<param name="includeProperties">moduleMap.*, assetCount.*</param>
+				<param name="includeProperties">moduleMap.*,assetCount.*,fieldVsRules.*</param>
 			</result>
 		</action>
 		
@@ -1436,7 +1449,7 @@
 			<param name="moduleName">setup</param>
 			<param name="permission">ENERGY_ANALYTICS</param>
 			<result name="success" type="json">
-				<param name="root">formulaList</param>
+				<param name="includeProperties">formulaList.*,fieldVsRules.*</param>
 			</result>
 		</action>
 				<action name="updateRDM" class="com.facilio.bmsconsole.actions.ReadingAction"
@@ -3345,7 +3358,7 @@
 		<action name="runWorkflow" class="com.facilio.workflows.action.WorkflowAction" method="runWorkflow">
 			<result name="success" type="json">
 				<param name="enumAsBean">true</param>
-				<param name="includeProperties">^resultMap.*</param>
+				<param name="includeProperties">^resultMap.*,^logResult.*</param>
 			</result>
 			<result name="error" type="json">
 				<param name="statusCode">400</param>

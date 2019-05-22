@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.context.BaseSpaceContext.SpaceType;
@@ -207,6 +208,9 @@ public class ValidateTasksCommand implements Command {
 			long resourceSiteId = -1;
 			if (resource.getResourceTypeEnum() == ResourceType.SPACE) {
 				BaseSpaceContext baseSpace = SpaceAPI.getBaseSpace(resource.getId());
+				if (AccountUtil.getCurrentOrg().getOrgId() == 218L) {
+					LOGGER.log(Level.SEVERE,"ResourceID in task: " + resource.getId());
+				}
 				if (baseSpace.getSpaceTypeEnum() == SpaceType.SITE) {
 					resourceSiteId = baseSpace.getId();
 				} else {

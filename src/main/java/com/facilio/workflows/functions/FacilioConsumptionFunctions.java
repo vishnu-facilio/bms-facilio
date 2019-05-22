@@ -187,7 +187,7 @@ public enum FacilioConsumptionFunctions implements FacilioWorkflowFunctionInterf
 	private String functionName;
 	private String namespace = "consumption";
 	private String params;
-	private FacilioFunctionNameSpace nameSpaceEnum = FacilioFunctionNameSpace.CONSUMPTION;
+	private FacilioSystemFunctionNameSpace nameSpaceEnum = FacilioSystemFunctionNameSpace.CONSUMPTION;
 	
 	public Integer getValue() {
 		return value;

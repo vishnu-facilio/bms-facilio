@@ -1,5 +1,15 @@
 package com.facilio.bmsconsole.context;
 
+import java.text.ParseException;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import com.facilio.modules.FacilioStatus;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 import com.facilio.accounts.dto.Group;
 import com.facilio.accounts.dto.User;
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
@@ -7,14 +17,6 @@ import com.facilio.bmsconsole.tenant.TenantContext;
 import com.facilio.bmsconsole.util.DateTimeUtil;
 import com.facilio.constants.FacilioConstants;
 import com.opensymphony.xwork2.conversion.annotations.TypeConversion;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-
-import java.text.ParseException;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 public class TicketContext extends ModuleBaseWithCustomFields {
 	/**
@@ -80,11 +82,11 @@ public class TicketContext extends ModuleBaseWithCustomFields {
 		this.assignedBy = assignedBy;
 	}
 
-	private TicketStatusContext status;
-	public TicketStatusContext getStatus() {
+	private FacilioStatus status;
+	public FacilioStatus getStatus() {
 		return status;
 	}
-	public void setStatus(TicketStatusContext status) {
+	public void setStatus(FacilioStatus status) {
 		this.status = status;
 	}
 	
@@ -397,6 +399,14 @@ public class TicketContext extends ModuleBaseWithCustomFields {
 	}
 	public void setTasks(Map<Long, List<TaskContext>> tasks) {
 		this.tasks = tasks;
+	}
+	
+	private Map<String, List<TaskContext>> taskList;
+	public Map<String, List<TaskContext>> getTaskList() {
+		return taskList;
+	}
+	public void setTaskList(Map<String, List<TaskContext>> taskList) {
+		this.taskList = taskList;
 	}
 
 	private List<NoteContext> notes;

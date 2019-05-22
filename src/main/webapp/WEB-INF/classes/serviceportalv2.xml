@@ -90,11 +90,6 @@
 		
 	</package>
 
-	<package name="extendServicePortalApiV2" namespace="/api/v2/service" extends="servicePortalApiV2">
-		<action name="forms" class="com.facilio.bmsconsole.actions.FormAction" method="formList">
-			<param name="formType">3</param>
-		</action>
-	</package>
 	<package name="serviceWorkOrderApiV2" namespace="/api/v2/service/workorders" extends="servicePortalApiV2">
 		<action name="add" class="com.facilio.bmsconsole.actions.WorkOrderAction" method="addPortalOrders">
 		</action>
@@ -222,7 +217,13 @@
 				<param name="parse">false</param>
 			</result>
 		</global-results>
-		
+		<action name="validateInviteLink" class="com.facilio.auth.actions.FacilioAuthAction"
+			method="validateInviteLink">
+			<param name="auth">false</param>
+		</action>
+		<action name="acceptOpInvite" class="com.facilio.auth.actions.FacilioAuthAction" method="acceptUserInvite">
+		<param name="auth">false</param>
+		</action>
 		<action name="workorders" class="com.facilio.bmsconsole.actions.WorkOrderAction" method="v2workOrderList">
 			<param name="viewName">myrequests</param>
 			<param name="approval">true</param>
@@ -300,6 +301,7 @@
 			method="workOrderCount">
 			<param name="moduleName">workorder</param>
 			<param name="permission">READ,READ_TEAM,READ_OWN</param>
+			<param name="approval">true</param>
 			<result name="success" type="json">
 				<param name="includeProperties">woCount</param>
 			</result>

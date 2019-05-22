@@ -1,11 +1,48 @@
 package com.facilio.bmsconsole.util;
 
+import java.lang.reflect.InvocationTargetException;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.StringJoiner;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.json.simple.JSONObject;
+
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.bmsconsole.criteria.*;
-import com.facilio.bmsconsole.modules.*;
-import com.facilio.bmsconsole.workflow.rule.*;
+import com.facilio.bmsconsole.criteria.BooleanOperators;
+import com.facilio.bmsconsole.criteria.Condition;
+import com.facilio.bmsconsole.criteria.Criteria;
+import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.criteria.NumberOperators;
+import com.facilio.bmsconsole.criteria.PickListOperators;
+import com.facilio.bmsconsole.criteria.StringOperators;
+import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.FacilioModule;
+import com.facilio.bmsconsole.modules.FieldFactory;
+import com.facilio.bmsconsole.modules.FieldUtil;
+import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
+import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.bmsconsole.modules.UpdateChangeSet;
+import com.facilio.bmsconsole.workflow.rule.ActionContext;
+import com.facilio.bmsconsole.workflow.rule.ApprovalRuleContext;
+import com.facilio.bmsconsole.workflow.rule.EventType;
+import com.facilio.bmsconsole.workflow.rule.FieldChangeFieldContext;
+import com.facilio.bmsconsole.workflow.rule.ReadingAlarmRuleContext;
+import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
+import com.facilio.bmsconsole.workflow.rule.StateFlowRuleContext;
+import com.facilio.bmsconsole.workflow.rule.StateflowTransitionContext;
+import com.facilio.bmsconsole.workflow.rule.WorkflowEventContext;
+import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -16,15 +53,6 @@ import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.json.simple.JSONObject;
-
-import java.lang.reflect.InvocationTargetException;
-import java.sql.SQLException;
-import java.util.*;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 public class WorkflowRuleAPI {
 	private static final Logger LOGGER = LogManager.getLogger(WorkflowRuleAPI.class.getName());
@@ -102,10 +130,12 @@ public class WorkflowRuleAPI {
 			case STATE_RULE:
 				addExtendedProps(ModuleFactory.getStateRuleTransitionModule(), FieldFactory.getStateRuleTransitionFields(), ruleProps);
 				ApprovalRulesAPI.addApprovers(rule.getId(), ((StateflowTransitionContext) rule).getApprovers());
+				ApprovalRulesAPI.addValidations(rule.getId(), ((StateflowTransitionContext) rule).getValidations());
+				StateFlowRulesAPI.addStateFlowTransitionChildren((StateflowTransitionContext) rule);
 				break;
-//			case STATE_FLOW:
-//				addExtendedProps(ModuleFactory.getStateFlowRuleModule(), FieldFactory.getStateFlowRuleFields(), ruleProps);
-//				break;
+			case STATE_FLOW:
+				addExtendedProps(ModuleFactory.getStateFlowModule(), FieldFactory.getStateFlowFields(), ruleProps);
+				break;
 			default:
 				break;
 		}
@@ -609,9 +639,9 @@ public class WorkflowRuleAPI {
 				case STATE_RULE:
 					typeWiseProps.put(entry.getKey(), getExtendedProps(ModuleFactory.getStateRuleTransitionModule(), FieldFactory.getStateRuleTransitionFields(), entry.getValue()));
 					break;
-//				case STATE_FLOW:
-//					typeWiseProps.put(entry.getKey(), getExtendedProps(ModuleFactory.getStateFlowRuleModule(), FieldFactory.getStateFlowRuleFields(), entry.getValue()));
-//					break;
+				case STATE_FLOW:
+					typeWiseProps.put(entry.getKey(), getExtendedProps(ModuleFactory.getStateFlowModule(), FieldFactory.getStateFlowFields(), entry.getValue()));
+					break;
 				default:
 					break;
 			}
@@ -652,7 +682,7 @@ public class WorkflowRuleAPI {
 		return null;
 	}
 	
-	protected static List<WorkflowRuleContext> getWorkFlowsFromMapList(List<Map<String, Object>> props, boolean fetchEvent, boolean fetchChildren, boolean fetchExtended) throws Exception {
+	public static List<WorkflowRuleContext> getWorkFlowsFromMapList(List<Map<String, Object>> props, boolean fetchEvent, boolean fetchChildren, boolean fetchExtended) throws Exception {
 		if(props != null && props.size() > 0) {
 			List<WorkflowRuleContext> workflows = new ArrayList<>();
 			List<Long> workflowIds = fetchChildren ? new ArrayList<>() : null;
@@ -730,7 +760,7 @@ public class WorkflowRuleAPI {
 							rule = StateFlowRulesAPI.constructStateRuleFromProps(prop, modBean);
 							break;
 						case STATE_FLOW:
-//							prop.putAll(typeWiseExtendedProps.get(ruleType).get(prop.get("id")));
+							prop.putAll(typeWiseExtendedProps.get(ruleType).get(prop.get("id")));
 							rule = FieldUtil.getAsBeanFromMap(prop, StateFlowRuleContext.class);
 							break;
 						default:
@@ -823,6 +853,10 @@ public class WorkflowRuleAPI {
 						case APPROVAL_RULE:
 						case CHILD_APPROVAL_RULE:
 							ApprovalRulesAPI.deleteApprovalRuleChildIds((ApprovalRuleContext) rule);
+							break;
+						case STATE_RULE:
+							ApprovalRulesAPI.deleteStateTransitionChildren((StateflowTransitionContext) rule);
+							StateFlowRulesAPI.deleteStateFlowTransitionChildren((StateflowTransitionContext) rule);
 							break;
 						default:
 							break;

@@ -265,12 +265,12 @@ public static void insertInstanceAssetMapping(String deviceName, long assetId, l
 			
 			checkForInputType(assetId, fieldId, instanceName, metaMap);
 
-			if(isStage()) {
+//			if(isStage()) {
 				Map<String, Object> pointsRecord = (Map<String, Object>) getNewPointsData(assetId,categoryId,fieldId);
-				pointsRecord.put("unit", unit);
+//				pointsRecord.put("unit", unit);
 				updatePointsData(deviceName, instanceName, pointsRecord);
 
-			}
+//			}
 
 			Map<String, Object> record = new HashMap<String,Object>();
 			record.put("orgId", orgId);
@@ -318,9 +318,6 @@ public static void insertInstanceAssetMapping(String deviceName, long assetId, l
 	private static void updatePointsData(String deviceName, String instanceName, Map<String, Object> pointsRecord)
 			throws SQLException {
 
-		if(!isStage()) {
-			return;
-		}
 		FacilioModule module = ModuleFactory.getPointsModule();
 		GenericUpdateRecordBuilder builderPoints = new GenericUpdateRecordBuilder()
 				.fields(FieldFactory.getPointsFields())
@@ -352,11 +349,11 @@ public static void insertInstanceAssetMapping(String deviceName, long assetId, l
 		}
 		Map<String, Object> prop=(Map<String, Object>) getNewPointsData(assetId,categoryId,fieldId);
 		
-		if(TimeSeriesAPI.isStage()) {
-			if(unit!=null) {
-				prop.put("unit", unit);	
-			}
-		}
+//		if(TimeSeriesAPI.isStage()) {
+//			if(unit!=null) {
+//				prop.put("unit", unit);	
+//			}
+//		}
 		
 		FacilioModule module = ModuleFactory.getInstanceMappingModule();
 		List<FacilioField> fields = FieldFactory.getInstanceMappingFields();
@@ -371,9 +368,9 @@ public static void insertInstanceAssetMapping(String deviceName, long assetId, l
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("device"), deviceName, StringOperators.IS))
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("instance"), instanceName, StringOperators.IS))
 				;
-		if(isStage()) {
+//		if(isStage()) {
 			updatePointsData(deviceName, instanceName,prop );
-		}
+//		}
 		int count = builder.update(prop);
 		
 		FacilioContext context = new FacilioContext();
@@ -547,7 +544,7 @@ public static void insertInstanceAssetMapping(String deviceName, long assetId, l
 		return criteria;
 	}
 	
-	public static  void addUnmodeledInstances(JSONArray instanceArray, Long controllerId) throws Exception {
+	public static int addUnmodeledInstances(JSONArray instanceArray, Long controllerId) throws Exception {
 		
 		/*jsonObject should consists
 		object.put("device",deviceName);
@@ -559,7 +556,7 @@ public static void insertInstanceAssetMapping(String deviceName, long assetId, l
 		
 		List<String> instanceNames = null;
 		if (controllerId != null) {
-			List<Map<String, Object>> instances = getUnmodeledInstancesForController(controllerId);
+			List<Map<String, Object>> instances = getUnmodeledInstancesForController(controllerId, true);
 			if (instances != null && !instances.isEmpty()) {
 				instanceNames = instances.stream().map(instance -> instance.get("device") + "|" + instance.get("instance")).collect(Collectors.toList());
 			}
@@ -587,9 +584,16 @@ public static void insertInstanceAssetMapping(String deviceName, long assetId, l
 			}
 			insertBuilder.addRecord(instanceObj);
 		}
-		insertBuilder.save();
+		try {
+			insertBuilder.save();
+			return insertBuilder.getRecords().size();
+		}
+		catch (Exception e) {
+			LOGGER.error("Insertion failed while adding instances: " + instanceNames, e);
+			throw e;
+		}
 	}
-	public static  void addPointsInstances(JSONArray instanceArray, Long controllerId) throws Exception {
+	public static  int addPointsInstances(JSONArray instanceArray, Long controllerId) throws Exception {
 
 		/*jsonObject should consists
 		object.put("device",deviceName);
@@ -600,7 +604,7 @@ public static void insertInstanceAssetMapping(String deviceName, long assetId, l
 		 */
 		List<String> instanceNames = null;
 		if (controllerId != null) {
-			List<Map<String, Object>> instances = getPointsInstancesForController(controllerId);
+			List<Map<String, Object>> instances = getPointsInstancesForController(controllerId, true);
 			if (instances != null && !instances.isEmpty()) {
 				instanceNames = instances.stream().map(instance -> instance.get("device") + "|" + instance.get("instance")).collect(Collectors.toList());
 			}
@@ -627,20 +631,20 @@ public static void insertInstanceAssetMapping(String deviceName, long assetId, l
 				instanceObj.put("controllerId", controllerId);
 			}
 			insertBuilderPoints.addRecord(instanceObj);
-			if(TimeSeriesAPI.isStage() && AccountUtil.getCurrentOrg().getId()==104) {
-				LOGGER.info(instanceObj+"device points data");
-			}
+//			if(TimeSeriesAPI.isStage() && AccountUtil.getCurrentOrg().getId()==104) {
+				LOGGER.info(instanceObj+"device points data######");
+//			}
 		}
 		insertBuilderPoints.save();
-
+		return insertBuilderPoints.getRecords().size();
 	}
-	public static List<Map<String, Object>> getUnmodeledInstancesForController (long controllerId) throws Exception {
-		return getUnmodeledInstancesForController(controllerId, null, null, null, null, false, null);
+	public static List<Map<String, Object>> getUnmodeledInstancesForController (long controllerId, Boolean...fetchAllTypes) throws Exception {
+		return getUnmodeledInstancesForController(controllerId, null, null, null, null, false, null, fetchAllTypes.length > 0 && fetchAllTypes[0]);
 	}
-	public static List<Map<String, Object>> getPointsInstancesForController (long controllerId) throws Exception {
-		return getPointsInstancesForController(controllerId, null, null, null, null, false, null);
+	public static List<Map<String, Object>> getPointsInstancesForController (long controllerId, Boolean...fetchAllTypes) throws Exception {
+		return getPointsInstancesForController(controllerId, null, null, null, null, false, null, fetchAllTypes.length > 0 && fetchAllTypes[0]);
 	}
-	public static List<Map<String, Object>> getUnmodeledInstancesForController (long controllerId, Boolean configuredOnly, Boolean fetchMapped, JSONObject pagination, Boolean isSubscribed, boolean fetchCount, String searchText) throws Exception {
+	public static List<Map<String, Object>> getUnmodeledInstancesForController (long controllerId, Boolean configuredOnly, Boolean fetchMapped, JSONObject pagination, Boolean isSubscribed, boolean fetchCount, String searchText, boolean fetchAllTypes) throws Exception {
 		FacilioModule module = ModuleFactory.getUnmodeledInstancesModule();
 		List<FacilioField> fields = FieldFactory.getUnmodeledInstanceFields();
 		fields.add(FieldFactory.getIdField(module));
@@ -658,10 +662,13 @@ public static void insertInstanceAssetMapping(String deviceName, long assetId, l
 		}
 		
 		Criteria criteria = new Criteria();
-		criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("instanceType"), CommonOperators.IS_EMPTY));
-		criteria.addOrCondition(CriteriaAPI.getCondition(fieldMap.get("instanceType"), String.valueOf(6), NumberOperators.LESS_THAN));
+		if (!fetchAllTypes) {
+			criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("instanceType"), CommonOperators.IS_EMPTY));
+			criteria.addOrCondition(CriteriaAPI.getCondition(fieldMap.get("instanceType"), String.valueOf(6), NumberOperators.LESS_THAN));
+			
+		}
 		if (searchText != null) {
-    		criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("instance"), searchText, StringOperators.CONTAINS));
+    			criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("instance"), searchText, StringOperators.CONTAINS));
    		}
 			       
 		builder.andCriteria(criteria);
@@ -742,7 +749,7 @@ public static void insertInstanceAssetMapping(String deviceName, long assetId, l
 		 return props;
 
 	}
-	public static List<Map<String, Object>> getPointsInstancesForController (long controllerId, Boolean configuredOnly, Boolean fetchMapped, JSONObject pagination, Boolean isSubscribed, boolean fetchCount, String searchText) throws Exception {
+	public static List<Map<String, Object>> getPointsInstancesForController (long controllerId, Boolean configuredOnly, Boolean fetchMapped, JSONObject pagination, Boolean isSubscribed, boolean fetchCount, String searchText, boolean fetchAllTypes) throws Exception {
 		FacilioModule module = ModuleFactory.getPointsModule();
 		List<FacilioField> fields = FieldFactory.getPointsFields();
 		fields.add(FieldFactory.getIdField(module));

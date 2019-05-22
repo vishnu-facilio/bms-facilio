@@ -1,6 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
-import com.facilio.bmsconsole.context.TicketStatusContext;
+import com.facilio.modules.FacilioStatus;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.util.StateFlowRulesAPI;
@@ -30,7 +30,7 @@ public class VerifyApprovalCommand implements Command {
 			List<Long> ruleIds = new ArrayList<>();
 			for (WorkOrderContext wo : oldWos) {
 				if (wo.getModuleState() != null) {
-					TicketStatusContext stateContext = StateFlowRulesAPI.getStateContext(wo.getModuleState().getId());
+					FacilioStatus stateContext = StateFlowRulesAPI.getStateContext(wo.getModuleState().getId());
 					if (stateContext.getRecordLocked()) {
 						throw new IllegalArgumentException("Workorder with lock cannot be updated");
 					}

@@ -18,7 +18,7 @@ import com.facilio.bmsconsole.context.PMJobsContext;
 import com.facilio.bmsconsole.context.PMTaskSectionTemplateTriggers;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.context.TaskContext;
-import com.facilio.bmsconsole.context.TicketStatusContext;
+import com.facilio.modules.FacilioStatus;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
@@ -51,7 +51,7 @@ public class ScheduleWOStatusChange extends FacilioJob {
             FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER);
             List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.WORK_ORDER);
             Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
-            TicketStatusContext status = TicketAPI.getStatus("preopen");
+            FacilioStatus status = TicketAPI.getStatus("preopen");
             long maxTime = System.currentTimeMillis()+(30*60*1000);
 
             SelectRecordsBuilder<WorkOrderContext> selectRecordsBuilder = new SelectRecordsBuilder<>();
@@ -106,7 +106,7 @@ public class ScheduleWOStatusChange extends FacilioJob {
         			
         			List<Map<String, Object>> props = PreventiveMaintenanceAPI.getTaskSectionTemplateTriggers(wo.getTrigger().getId());
         			
-        			Map<Long, TaskSectionTemplate> sectionMap = TemplateAPI.getTaskSectionTemplatesFromWOTemplate(pm.getWoTemplate());
+        			Map<Long, TaskSectionTemplate> sectionMap = TemplateAPI.getTaskSectionTemplatesFromWOTemplate(pm.getWoTemplate(), null);
         			
     				for (Map<String, Object> prop : props) {
     					
@@ -128,7 +128,7 @@ public class ScheduleWOStatusChange extends FacilioJob {
 
     					SelectRecordsBuilder<WorkOrderContext> selectRecordsBuilder = new SelectRecordsBuilder<>();
     					
-    		            TicketStatusContext status = TicketAPI.getStatus("preopen");
+    		            FacilioStatus status = TicketAPI.getStatus("preopen");
     		            
     		            Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
     					

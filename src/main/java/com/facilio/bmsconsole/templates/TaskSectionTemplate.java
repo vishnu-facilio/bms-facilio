@@ -106,6 +106,14 @@ public class TaskSectionTemplate extends Template {
 	public void setParentWOTemplateId(long parentWOTemplateId) {
 		this.parentWOTemplateId = parentWOTemplateId;
 	}
+	
+	private long jobPlanId = -1;
+	public long getJobPlanId() {
+		return jobPlanId;
+	}
+	public void setJobPlanId(long jobPlanId) {
+		this.jobPlanId = jobPlanId;
+	}
 
 	private long sequenceNumber = -1;
 	public long getSequenceNumber() {

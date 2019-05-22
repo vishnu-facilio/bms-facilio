@@ -107,6 +107,7 @@ public class ReadingAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, getFields());
 		context.put(FacilioConstants.ContextNames.CATEGORY_READING_PARENT_MODULE, categoryReadingModule);
 		context.put(FacilioConstants.ContextNames.PARENT_CATEGORY_ID, getParentCategoryId());
+		context.put(FacilioConstants.ContextNames.VALIDATION_RULES, getFieldReadingRules());
 		
 		Chain addReadingChain = TransactionChainFactory.getAddCategoryReadingChain();
 		addReadingChain.execute(context);
@@ -117,7 +118,7 @@ public class ReadingAction extends FacilioAction {
 	public String updateReading() throws Exception {
 		FacilioContext context = new FacilioContext();
 		
-		List<List<ReadingRuleContext>> readingRules = Arrays.asList(getField().getReadingRules());
+		List<List<ReadingRuleContext>> readingRules = getFieldReadingRules();
 		readingRules.stream().flatMap(List::stream).forEach((r) -> {
 			r.setReadingFieldId(getField().getFieldId());
 			r.getEvent().setModuleId(getModuleId());
@@ -661,6 +662,8 @@ public class ReadingAction extends FacilioAction {
 		readings = (List<FacilioModule>) context.get(FacilioConstants.ContextNames.MODULE_LIST);
 		moduleMap = (Map<Long,List<FacilioModule>>)context.get(FacilioConstants.ContextNames.MODULE_MAP);
 		assetCount = (Map<String, Long>)context.get(FacilioConstants.ContextNames.COUNT);
+		fieldVsRules = (Map<Long, List<ReadingRuleContext>>) context.get(FacilioConstants.ContextNames.VALIDATION_RULES);
+
 		return SUCCESS;
 	}
 	
@@ -690,6 +693,16 @@ public class ReadingAction extends FacilioAction {
 		this.assetCount = assetCount;
 	}
 
+	public Map<Long, List<ReadingRuleContext>> getFieldVsRules() {
+		return fieldVsRules;
+	}
+
+	public void setFieldVsRules(Map<Long, List<ReadingRuleContext>> fieldVsRules) {
+		this.fieldVsRules = fieldVsRules;
+	}
+
+	private Map<Long, List<ReadingRuleContext>> fieldVsRules;
+
 	private FormulaFieldContext formula;
 	public FormulaFieldContext getFormula() {
 		return formula;
@@ -713,6 +726,16 @@ public class ReadingAction extends FacilioAction {
 		return readingRules;
 	}
 
+	private List<List<ReadingRuleContext>> fieldReadingRules;
+
+	public List<List<ReadingRuleContext>> getFieldReadingRules() {
+		return this.fieldReadingRules;
+	}
+
+	public void setFieldReadingRules(List<List<ReadingRuleContext>> fieldReadingRules) {
+		this.fieldReadingRules = fieldReadingRules;
+	}
+
 	public void setReadingRules(List<ReadingRuleContext> readingRules) {
 		this.readingRules = readingRules;
 	}
@@ -722,7 +745,9 @@ public class ReadingAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.FORMULA_FIELD, formula);
 		context.put(FacilioConstants.ContextNames.FORMULA_UNIT_STRING, formulaFieldUnit);
-		context.put(FacilioConstants.ContextNames.READING_RULES_LIST,readingRules);		
+		context.put(FacilioConstants.ContextNames.READING_RULES_LIST,readingRules);
+		context.put(FacilioConstants.ContextNames.VALIDATION_RULES, getFieldReadingRules());
+
 		if (formula.getInterval() == -1) {
 			int interval = ReadingsAPI.getDataInterval(formula.getWorkflow());
 			formula.setInterval(interval);
@@ -739,7 +764,7 @@ public class ReadingAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.FORMULA_FIELD, formula);
 		context.put(FacilioConstants.ContextNames.FORMULA_UNIT_STRING, formulaFieldUnit);
 			
-	    List<List<ReadingRuleContext>> readingRules = Arrays.asList(getReadingRules());
+	    List<List<ReadingRuleContext>> readingRules = getFieldReadingRules();
 	    List<List<List<ActionContext>>> actionsList = readingRules.stream().map(l -> {return l.stream().map(ReadingRuleContext::getActions).collect(Collectors.toList());}).collect(Collectors.toList());
 		   readingRules.stream().flatMap(List::stream).forEach((r) -> {
 			// r.setReadingFieldId(getField().getFieldId());
@@ -810,7 +835,8 @@ public class ReadingAction extends FacilioAction {
 		getAllENPIsChain.execute(context);
 		
 		formulaList = (List<FormulaFieldContext>) context.get(FacilioConstants.ContextNames.FORMULA_LIST);
-		
+		fieldVsRules = (Map<Long, List<ReadingRuleContext>>) context.get(FacilioConstants.ContextNames.VALIDATION_RULES);
+
 		return SUCCESS;
 	}
 	

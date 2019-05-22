@@ -1,5 +1,38 @@
 package com.facilio.auth.actions;
 
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.lang.reflect.InvocationTargetException;
+import java.net.URL;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import javax.net.ssl.HttpsURLConnection;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+import org.apache.commons.chain.Chain;
+import org.apache.commons.io.IOUtils;
+import org.apache.struts2.ServletActionContext;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.impl.UserBeanImpl;
@@ -16,28 +49,6 @@ import com.facilio.fw.auth.CognitoUtil;
 import com.facilio.sql.DBUtil;
 import com.facilio.transaction.FacilioConnectionPool;
 import com.opensymphony.xwork2.ActionContext;
-import org.apache.commons.chain.Chain;
-import org.apache.struts2.ServletActionContext;
-import org.json.simple.JSONObject;
-
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class FacilioAuthAction extends FacilioAction {
 
@@ -61,10 +72,20 @@ public class FacilioAuthAction extends FacilioAction {
     private String domainname;
     private String timezone;
     private String newPassword;
+    private String title;
     private static MessageDigest md;
+    
+    JSONArray entry;
+    
+    public JSONArray getEntry() {
+		return entry;
+	}
 
+	public void setEntry(JSONArray entry) {
+		this.entry = entry;
+	}
 
-    public String getUsername() {
+	public String getUsername() {
         if(username != null) {
             return username;
         } else {
@@ -189,6 +210,14 @@ public class FacilioAuthAction extends FacilioAction {
 
     private void setJsonresponse(String key, Object value) {
         this.jsonresponse.put(key, value);
+    }
+    
+	private String getTitle() {
+            return title;      
+    }
+
+    private void setTitle(String title) {
+        this.title = title;
     }
 
 
@@ -487,9 +516,146 @@ public class FacilioAuthAction extends FacilioAction {
 
         return SUCCESS;
     }
+    
+    public String postIssueResponse() throws Exception {
+    	
+		HttpServletResponse response2 = ServletActionContext.getResponse();
+		HttpServletRequest request = ServletActionContext.getRequest();
+		
+		if (request.getParameterValues("hub.challenge") != null) {
+			setJsonresponse("message", "post issue verification response received successfully");
+			String str[] = request.getParameterValues("hub.challenge");
+			if (str[0] != null) {
+				response2.getWriter().write(str[0]);
+			}
+			return NONE;
+		}
+		else {
+			try {
+				
+				JSONParser parser = new JSONParser();
+				
+				Map<String,Object> jbJsonObj = (Map<String,Object>)entry.get(0);
+				List test1 = (List)jbJsonObj.get("changes");
+				Map<String,Object> jbJsonObj1 = (Map<String,Object>)test1.get(0);
+				Map<String,Object> jbJsonObj2 = (Map<String,Object>)jbJsonObj1.get("value");
+				String jb = jbJsonObj2.get("message").toString();
+				String link = (String)jbJsonObj2.get("permalink_url");
+				link = "<a href= '" + link + "' >"+link+"</a>";
+
+				String line = null;
+				String url = "https://facilio.freshrelease.com/DEMO/issues";
+				String description = link, key = null, blockedReason = null;
+				List<String> tags = new ArrayList<String>();
+				Map<String, Object> customField = new HashMap<>();
+				Integer createrId = null, position = null, etaFlag = null, storyPoints = null, issueTypeId = 161,
+						ownerId = null, parentId = null, epicId = null, priorityId = 252, projectId = null,
+						subProjectId = null, reporterId = null, sprintId = null, statusId = null, releaseId = null;
+				List<Integer> documentIds = new ArrayList<Integer>();
+				boolean resolved = false, blocked = false, following = false;
+
+				FacilioAuthAction issue = new FacilioAuthAction();
+				LOGGER.info("jbstring" + jb.toString());
+			
+				if (jb.toString().equals("")) {
+					issue.setTitle("Sample Test");
+				} else {
+					issue.setTitle(jb.toString());
+				}
+
+				if (issue.getTitle().equals("")) {
+					issue.setTitle("test");
+				}
+				JSONObject jget = new JSONObject();
+				
+				jget.put("description", link);
+				jget.put("key", key);
+				jget.put("story_points", storyPoints);
+				jget.put("title", issue.getTitle() );
+				jget.put("resolved", resolved);
+				jget.put("blocked", blocked);
+				jget.put("following", following);
+				jget.put("blocked_reason", blockedReason);
+				jget.put("tags", tags);
+				jget.put("eta_flag", etaFlag);
+				jget.put("position", position);
+				jget.put("custom_field", customField);
+				jget.put("document_ids", documentIds);
+				jget.put("creater_id", createrId);
+				jget.put("issue_type_id", issueTypeId);
+				jget.put("owner_id", ownerId);
+				jget.put("parent_id", parentId);
+				jget.put("epic_id", epicId);
+				jget.put("priority_id", priorityId);
+				jget.put("project_id", projectId);
+				jget.put("sub_project_id", subProjectId);
+				jget.put("reporter_id", reporterId);
+				jget.put("sprint_id", sprintId);
+				jget.put("status_id", statusId);
+				jget.put("release_id", releaseId);
+				JSONObject newjget = new JSONObject();
+				newjget.put("issue", jget);
+				String body = newjget.toJSONString();
+				Map<String, String> headers = new HashMap<>();
+				headers.put("Authorization", "Token token=92On0bqAP-gQKOCBm8MgyA");
+				headers.put("Content-Type", "application/json");
+				http("POST", url, headers, body);
+				LOGGER.info("postIssueResponse" + jb.toString());
+				
+				setJsonresponse("message", "post issue response recieved successfully");
+
+			} catch (Exception e) {
+				setJsonresponse("message", "Error while reading post issue response");
+				LOGGER.log(Level.INFO, "Error while reading post issue response", e);
+
+			}
+		}
+	    
+		return SUCCESS;
+         	
+    }
+  
+    private void http(String method, String url, Map headers, String body) {
+    	try {
+        URL obj = new URL(url);
+        HttpsURLConnection con = (HttpsURLConnection) obj.openConnection();
+        con.setRequestMethod(method);
+
+        // these are auth headers
+        for(Object head:headers.keySet()) {
+            con.setRequestProperty(head.toString(), headers.get(head).toString());
+        }
+        
+        con.setDoOutput(true);
+        DataOutputStream wr = new DataOutputStream(con.getOutputStream());
+        wr.writeBytes(body);
+        wr.flush();
+        wr.close();
+
+        int responseCode = con.getResponseCode();
+        LOGGER.info("\nSending 'POST' request to URL : " + url);
+        LOGGER.info("Post parameters : " + body);
+        LOGGER.info("Response Code : " + responseCode);
+
+        BufferedReader in = new BufferedReader(
+                new InputStreamReader(con.getInputStream()));
+        String inputLine;
+        StringBuffer response = new StringBuffer();
+        LOGGER.info("response code is "+con.getResponseCode());
+        while ((inputLine = in.readLine()) != null) {
+            response.append(inputLine);
+        }
+        in.close();
+        LOGGER.info("issue response in freshrelease"+response.toString());
+    	}
+    	catch (Exception e) {
+   	       LOGGER.log( Level.INFO, "Error while posting post issue response", e);
+    	}
+
+	}
 
     public String verifyEmail() throws Exception {
-
+    	
         JSONObject invitation = new JSONObject();
         User user = AccountUtil.getUserBean().verifyEmail(getInviteToken());
         if (user == null) {

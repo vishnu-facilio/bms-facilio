@@ -17,6 +17,7 @@ public class AgentKeys
     public static final String DEVICE_ID = "deviceId";
     public static final String DEVICE_DETAILS = "deviceDetails";
     public static final String MESSAGE_ID = "msgid";
+    public static final String MESSAGE = "message";
     public static final String ORG_ID = "orgId";
     public static final String AGENT_TABLE = "Agent_Data";
     public static final String FACILIO_MQTT_VERSION = "facilio.mqtt";
@@ -33,6 +34,7 @@ public class AgentKeys
     public static final String SITE_ID = "siteId";
     public static final String DISPLAY_NAME = "displayName";
     public static final String OS_VERSION = "os.version";
+    public static final String MQTT_VERSION = "facilio.mqtt";
     //log table keys
     public static final String COMMAND = "command";
     public static final String COMMAND_STATUS = "status";
@@ -40,6 +42,7 @@ public class AgentKeys
     public static final String CONTROLLER_ID = "controllerId";
     public static final String AGENT_LOG_TABLE = "Agent_Log";
     public static final String CONNECTION_COUNT = "connectionCount";
+    public static final String PUBLISH_MESSAGE_TBALE = "Publish_Message";
 
     //Metrics table
     public static final String TIME = "time";
@@ -48,6 +51,33 @@ public class AgentKeys
     public static final String NO_OF_MESSAGES = "numberOfMsgs";
     public static final String LAST_UPDATED_TIME = "lastUpdatedTime";
 
+    public static final String MESSAGE_REPROCESS_INTERVAL = "message.reprocess.interval";
+    //Messages table
+    public static final String AGENT_MESSAGE_TABLE = "Agent_Message";
+    public static final String RECORD_ID = "recordId";
+    public static final String MSG_STATUS = "msgStatus";
+    public static final String START_TIME = "startTime";
+    public static final String FINISH_TIME = "finishTime";
+
+
+    public enum AckMessageType {
+    		PROCESSING ("Processing"),
+    		EXECUTED ("Executed")
+    		;
+    	
+    		private String message;
+    		public String getMessage() {
+    			return message;
+    		}
+    		
+    		AckMessageType(String message) {
+    			this.message = message;
+    		}
+    		
+    		public boolean equals (String message) {
+    			return this.message.equals(message);
+    		}
+    }
 
 }
 

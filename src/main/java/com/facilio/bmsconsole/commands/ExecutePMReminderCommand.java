@@ -8,6 +8,7 @@ import com.facilio.bmsconsole.util.ActionAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.workflow.rule.ActionContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.modules.FacilioStatus;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
@@ -41,7 +42,7 @@ public class ExecutePMReminderCommand implements Command {
 	}
 	
 	private boolean isClosed(WorkOrderContext wo) throws Exception {
-		TicketStatusContext status = TicketAPI.getStatus("Closed");
+		FacilioStatus status = TicketAPI.getStatus("Closed");
 		if(wo.getStatus().getId() == status.getId()) {
 			return true;
 		}

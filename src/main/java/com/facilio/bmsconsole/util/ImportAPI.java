@@ -574,35 +574,8 @@ public class ImportAPI {
 			ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioModule facilioModule =  bean.getModule(module);
 
-			if(facilioModule.getName().equals(FacilioConstants.ContextNames.ASSET) || (facilioModule.getExtendModule() != null && facilioModule.getExtendModule().getName().equals(FacilioConstants.ContextNames.ASSET))) {
-					List<FacilioField> fieldsList= bean.getAllFields(module);
-					LOGGER.severe(fieldsList.toString());
-					for(FacilioField field : fieldsList)
-					{
-						if(!ImportAPI.isRemovableFieldOnImport(field.getName()))
-						{
-							LOGGER.severe(field.getName());
-							fields.add(field.getName());
-						}
-					}
-				fields.remove("space");
-				fields.remove("localId");
-				fields.remove("resourceType");
-				if(importMode == 1 || importMode == null) {
-				if(module.equals(FacilioConstants.ContextNames.ENERGY_METER)) {
-					fields.remove("purposeSpace");
-				}
-				
-				fields.add("site");
-				fields.add("building");
-				fields.add("floor");
-				fields.add("spaceName");
-				fields.add("subspace1");
-				fields.add("subspace2");
-				fields.add("subspace3");
-			}
-			}
-			else if(facilioModule.getName().equals(FacilioConstants.ContextNames.TOOL)
+			
+			if(facilioModule.getName().equals(FacilioConstants.ContextNames.TOOL)
 					|| facilioModule.getName().equals(FacilioConstants.ContextNames.PURCHASED_TOOL)
 					|| facilioModule.getName().equals(FacilioConstants.ContextNames.TOOL_TYPES)
 					|| facilioModule.getName().equals(FacilioConstants.ContextNames.PURCHASED_ITEM)
@@ -622,6 +595,38 @@ public class ImportAPI {
 				
 				fields.addAll(ImportFieldFactory.getImportFieldNames(facilioModule.getName()));
 			}
+			else {
+				List<FacilioField> fieldsList= bean.getAllFields(module);
+				LOGGER.severe(fieldsList.toString());
+				for(FacilioField field : fieldsList)
+				{
+					if(!ImportAPI.isRemovableFieldOnImport(field.getName()))
+					{
+						LOGGER.severe(field.getName());
+						fields.add(field.getName());
+					}
+				}
+				if(facilioModule.getName().equals(FacilioConstants.ContextNames.ASSET) ||
+						(facilioModule.getExtendModule() != null && facilioModule.getExtendModule().getName().equals(FacilioConstants.ContextNames.ASSET))) {
+					fields.remove("space");
+					fields.remove("localId");
+					fields.remove("resourceType");
+					if(importMode == 1 || importMode == null) {
+					if(module.equals(FacilioConstants.ContextNames.ENERGY_METER)) {
+						fields.remove("purposeSpace");
+					}
+					
+					fields.add("site");
+					fields.add("building");
+					fields.add("floor");
+					fields.add("spaceName");
+					fields.add("subspace1");
+					fields.add("subspace2");
+					fields.add("subspace3");
+				}
+				}
+			
+		}
 		}
 		catch(Exception e) {
 			log.info("Exception occurred ", e);

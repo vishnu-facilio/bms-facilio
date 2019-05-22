@@ -16,6 +16,7 @@ import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.tasker.job.JobContext;
 
 import org.apache.log4j.Logger;
+import org.json.JSONArray;
 
 import java.util.*;
 
@@ -185,20 +186,39 @@ public class MLUtil
 	
 	public static List<MLContext> getMlContext(JobContext jc) throws Exception
 	{
-
 		List<MLContext> mlContextList = new ArrayList<MLContext>(10);
 		
 		//prepare builder to get ML details
-		Condition jobIDCondition=CriteriaAPI.getCondition("JOBID",String.valueOf(jc.getJobId()), String.valueOf(jc.getJobId()),NumberOperators.EQUALS);
 		FacilioModule mlModule = ModuleFactory.getMLModule();
 		List<FacilioField> mlModuleFields = FieldFactory.getMLFields();
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 														.select(mlModuleFields)
 														.table(mlModule.getTableName())
 														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(mlModule))
-														.andCondition(jobIDCondition);
+														.andCondition(CriteriaAPI.getIdCondition(jc.getJobId(), mlModule));
 		
 		List<Map<String, Object>> listMap = selectBuilder.get();
+		MLContext jobMlContext = FieldUtil.getAsBeanFromMap(listMap.get(0), MLContext.class);
+		Hashtable<Long,Integer> positionList = new Hashtable<Long,Integer>();
+		
+		if(jobMlContext.getSequence()!=null)
+		{
+			ArrayList<Long> listdata = new ArrayList<Long>();     
+			JSONArray sequenceArr = new JSONArray(jobMlContext.getSequence());
+			for (int i=0;i<sequenceArr.length();i++)
+			{ 
+			    listdata.add(sequenceArr.getLong(i));
+			    positionList.put(sequenceArr.getLong(i), i);
+			}
+			GenericSelectRecordBuilder selectMlContextBuilder = new GenericSelectRecordBuilder()
+																	.select(mlModuleFields)
+																	.table(mlModule.getTableName())
+																	.andCondition(CriteriaAPI.getCurrentOrgIdCondition(mlModule))
+																	.andCondition(CriteriaAPI.getIdCondition(listdata, mlModule));
+			
+			listMap = selectMlContextBuilder.get();
+		}
+		
 		for(Map<String,Object> map:listMap)
 		{
 			MLContext mlContext = FieldUtil.getAsBeanFromMap(map, MLContext.class);
@@ -242,9 +262,18 @@ public class MLUtil
 				MLVariableContext mlVariableContext = FieldUtil.getAsBeanFromMap(prop, MLVariableContext.class);
 				mlContext.addMLCriteriaVariable(mlVariableContext);
 			}
-			if(mlContextList.size()>=mlContext.getSequence())
+			//LOGGER.fatal("To be removed JAVEED mlCOntext size and sequence are  "+mlContextList.size()+"::"+mlContext.getSequence());
+			if(jobMlContext.getSequence()!=null)
 			{
-				mlContextList.add(mlContext.getSequence()-1,mlContext);
+				int position = positionList.get(mlContext.getId());
+				if(mlContextList.size()>=position)
+				{
+					mlContextList.add(position,mlContext);
+				}
+				else
+				{
+					mlContextList.add(mlContext);
+				}
 			}
 			else
 			{

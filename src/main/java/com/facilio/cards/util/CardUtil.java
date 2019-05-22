@@ -30,7 +30,7 @@ public class CardUtil {
 		return false;
 	}
 	
-	public static Unit getUnit(JSONObject params) throws Exception {
+	public static Object getUnit(JSONObject params) throws Exception {
 		
 		if(params == null) {
 			return null;
@@ -51,7 +51,11 @@ public class CardUtil {
 			if(field instanceof NumberField) {
 				NumberField numberField = (NumberField) field;
 				if(numberField.getUnit() != null) {
-					return Unit.getUnitFromSymbol(numberField.getUnit());
+					Unit unit = Unit.getUnitFromSymbol(numberField.getUnit());
+					if(unit == null) {
+						return numberField.getUnit();
+					}
+					return unit;
 				}
 			}
 			

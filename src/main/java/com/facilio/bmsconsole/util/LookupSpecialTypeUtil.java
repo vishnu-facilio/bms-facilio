@@ -451,7 +451,9 @@ public class LookupSpecialTypeUtil {
 			return FieldFactory.getWorkflowRuleFields();
 		}
 		else if(FacilioConstants.ContextNames.READING_RULE_MODULE.equals(specialType)) {
-			return FieldFactory.getReadingRuleFields();
+			List<FacilioField> fields = FieldFactory.getReadingRuleFields();
+			fields.addAll(FieldFactory.getWorkflowRuleFields());
+			return fields;
 		}
 		else if("trigger".equals(specialType)) {
 			return FieldFactory.getPMTriggerFields();

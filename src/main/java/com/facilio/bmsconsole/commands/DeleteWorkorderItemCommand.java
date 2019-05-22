@@ -7,6 +7,7 @@ import com.facilio.bmsconsole.context.PurchasedItemContext;
 import com.facilio.bmsconsole.context.WorkorderItemContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.*;
+import com.facilio.bmsconsole.util.TransactionState;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import org.apache.commons.chain.Command;
@@ -54,7 +55,7 @@ public class DeleteWorkorderItemCommand implements Command {
 
 						List<AssetContext> assets = selectBuilder.get();
 
-						if (assets != null && !assets.isEmpty()) {
+						if (assets != null && !assets.isEmpty() && workorderItem.getTransactionStateEnum() != TransactionState.USE) {
 							AssetContext asset = assets.get(0);
 							asset.setIsUsed(false);
 							updateAsset(asset);

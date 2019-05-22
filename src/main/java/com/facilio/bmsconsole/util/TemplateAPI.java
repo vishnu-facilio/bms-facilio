@@ -1,19 +1,77 @@
 package com.facilio.bmsconsole.util;
 
+import java.io.File;
+import java.io.FileReader;
+import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
+import java.nio.charset.StandardCharsets;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+
+import javax.xml.bind.JAXBContext;
+
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+import org.apache.log4j.Level;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.billing.context.ExcelTemplate;
-import com.facilio.bmsconsole.context.*;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.bmsconsole.context.JobPlanContext;
+import com.facilio.bmsconsole.context.PMIncludeExcludeResourceContext;
+import com.facilio.bmsconsole.context.PMTaskSectionTemplateTriggers;
+import com.facilio.bmsconsole.context.PMTriggerContext;
+import com.facilio.bmsconsole.context.PreventiveMaintenance;
+import com.facilio.bmsconsole.context.ResourceContext;
+import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.TaskContext.InputType;
 import com.facilio.bmsconsole.context.TaskContext.TaskStatus;
 import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.criteria.PickListOperators;
-import com.facilio.bmsconsole.modules.*;
-import com.facilio.bmsconsole.templates.*;
+import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.FacilioModule;
+import com.facilio.bmsconsole.modules.FieldFactory;
+import com.facilio.bmsconsole.modules.FieldType;
+import com.facilio.bmsconsole.modules.FieldUtil;
+import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.bmsconsole.templates.AssignmentTemplate;
+import com.facilio.bmsconsole.templates.ControlActionTemplate;
+import com.facilio.bmsconsole.templates.DefaultTemplate;
+import com.facilio.bmsconsole.templates.DefaultTemplate.DefaultTemplateType;
+import com.facilio.bmsconsole.templates.DefaultTemplateWorkflowsConf;
 import com.facilio.bmsconsole.templates.DefaultTemplateWorkflowsConf.TemplateWorkflowConf;
+import com.facilio.bmsconsole.templates.EMailTemplate;
+import com.facilio.bmsconsole.templates.JSONTemplate;
+import com.facilio.bmsconsole.templates.PushNotificationTemplate;
+import com.facilio.bmsconsole.templates.SLATemplate;
+import com.facilio.bmsconsole.templates.SMSTemplate;
+import com.facilio.bmsconsole.templates.TaskSectionTemplate;
+import com.facilio.bmsconsole.templates.TaskTemplate;
+import com.facilio.bmsconsole.templates.Template;
 import com.facilio.bmsconsole.templates.Template.Type;
+import com.facilio.bmsconsole.templates.WebNotificationTemplate;
+import com.facilio.bmsconsole.templates.WorkflowTemplate;
+import com.facilio.bmsconsole.templates.WorkorderTemplate;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fs.FileStore;
 import com.facilio.fs.FileStoreFactory;
@@ -25,36 +83,16 @@ import com.facilio.workflows.context.ExpressionContext;
 import com.facilio.workflows.context.ParameterContext;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
-import org.apache.log4j.Level;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-
-import javax.xml.bind.JAXBContext;
-import java.io.File;
-import java.io.FileReader;
-import java.io.InputStream;
-import java.lang.reflect.InvocationTargetException;
-import java.nio.charset.StandardCharsets;
-import java.sql.SQLException;
-import java.util.*;
-import java.util.Map.Entry;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class TemplateAPI {
 	private static Logger log = LogManager.getLogger(TemplateAPI.class.getName());
 
-	private static final String DEFAULT_TEMPLATES_FILE_PATH = "conf/templates/defaultTemplates_";
+	private static final String DEFAULT_TEMPLATES_FILE_PATH = "conf/templates/defaultTemplates";
 	private static final String[] LANG = new String[]{"en"};
-	private static final Map<String, Map<Integer,DefaultTemplate>> DEFAULT_TEMPLATES = Collections.unmodifiableMap(loadDefaultTemplates());
-	private static Map<String, Map<Integer,DefaultTemplate>> loadDefaultTemplates() {
+	private static final Map<DefaultTemplateType, Map<String, Map<Integer,DefaultTemplate>>> DEFAULT_TEMPLATES = Collections.unmodifiableMap(loadDefaultTemplates());
+	private static  Map<DefaultTemplateType, Map<String, Map<Integer,DefaultTemplate>>> loadDefaultTemplates() {
 		try {
-			Map<String, Map<Integer,DefaultTemplate>> defaultTemplates = new HashMap<>();
+			Map<DefaultTemplateType, Map<String, Map<Integer,DefaultTemplate>>> typeDefaultTemplates = new HashMap<>();
 			ClassLoader classLoader = TemplateAPI.class.getClassLoader();
 			
 			JAXBContext jaxbContext = JAXBContext.newInstance(DefaultTemplateWorkflowsConf.class);
@@ -67,36 +105,42 @@ public class TemplateAPI {
 			}
 			
 			JSONParser parser = new JSONParser();
-			for (String lang : LANG) {
-				JSONObject templateJsons = (JSONObject) parser.parse(new FileReader(classLoader.getResource(DEFAULT_TEMPLATES_FILE_PATH+lang+".json").getFile()));
-				Map<Integer, DefaultTemplate> templates = new HashMap<>();
-				for (Object key : templateJsons.keySet()) {
-					Integer templateId = Integer.parseInt(key.toString());
-					JSONObject template = (JSONObject) templateJsons.get(key);
-					String name = (String) template.remove("name");
-					DefaultTemplate defaultTemplate = new DefaultTemplate();
-					defaultTemplate.setId(templateId);
-					defaultTemplate.setName(name);
-					defaultTemplate.setFtl(checkAndLoadFtl(template, classLoader));
-					defaultTemplate.setJson(template);
-					defaultTemplate.setPlaceholder(getPlaceholders(defaultTemplate));
-					
-					WorkflowContext defaultWorkflow = defaultWorkflows.get(templateId);
-					if (defaultWorkflow != null) {
-						defaultWorkflow = WorkflowUtil.getWorkflowContextFromString(defaultWorkflow.getWorkflowString());
-						if (!defaultTemplate.isFtl()) { //Temp fix
-							WorkflowUtil.parseExpression(defaultWorkflow);
+			for (DefaultTemplateType defaultTemplateType : DefaultTemplateType.getAllDefaultTemplateType()) {
+				String path = DEFAULT_TEMPLATES_FILE_PATH + defaultTemplateType.getName() + '_';
+				Map<String, Map<Integer,DefaultTemplate>> defaultTemplates = new HashMap<>();
+				for (String lang : LANG) {
+					path += lang;
+					JSONObject templateJsons = (JSONObject) parser.parse(new FileReader(classLoader.getResource(path+".json").getFile()));
+					Map<Integer, DefaultTemplate> templates = new HashMap<>();
+					for (Object key : templateJsons.keySet()) {
+						Integer templateId = Integer.parseInt(key.toString());
+						JSONObject template = (JSONObject) templateJsons.get(key);
+						String name = (String) template.remove("name");
+						DefaultTemplate defaultTemplate = new DefaultTemplate();
+						defaultTemplate.setId(templateId);
+						defaultTemplate.setName(name);
+						defaultTemplate.setFtl(checkAndLoadFtl(template, classLoader));
+						defaultTemplate.setJson(template);
+						defaultTemplate.setPlaceholder(getPlaceholders(defaultTemplate));
+						defaultTemplate.setDefaultTemplateType(defaultTemplateType);
+						WorkflowContext defaultWorkflow = defaultWorkflows.get(templateId);
+						if (defaultWorkflow != null) {
+							defaultWorkflow = WorkflowUtil.getWorkflowContextFromString(defaultWorkflow.getWorkflowString());
+							if (!defaultTemplate.isFtl()) { //Temp fix
+								WorkflowUtil.parseExpression(defaultWorkflow);
+							}
+							defaultTemplate.setWorkflow(defaultWorkflow);
 						}
-						defaultTemplate.setWorkflow(defaultWorkflow);
+						else {
+							throw new IllegalArgumentException("Workflow cannot be null for Default Template : "+templateId);
+						}
+						templates.put(templateId, defaultTemplate);
 					}
-					else {
-						throw new IllegalArgumentException("Workflow cannot be null for Default Template : "+templateId);
-					}
-					templates.put(templateId, defaultTemplate);
+					defaultTemplates.put(lang, templates);
 				}
-				defaultTemplates.put(lang, templates);
+				typeDefaultTemplates.put(defaultTemplateType, defaultTemplates);
 			}
-			return defaultTemplates;
+			return typeDefaultTemplates;
 		}
 		catch (Exception e) {
 			log.log(Level.ERROR, "Error in Parsing default templates",e);
@@ -123,8 +167,12 @@ public class TemplateAPI {
 		return "en"; //This has to be changed according to org from thread local
 	}
 	
-	public static DefaultTemplate getDefaultTemplate (int id) {
-		return DEFAULT_TEMPLATES.get(getLang()).get(id);
+	public static DefaultTemplate getDefaultTemplate (DefaultTemplateType defaultTemplateType, int id) {
+		return DEFAULT_TEMPLATES.get(defaultTemplateType).get(getLang()).get(id);
+	}
+	
+	public static Collection<DefaultTemplate> getAllRuleLibraryTemplate () {
+		return DEFAULT_TEMPLATES.get(DefaultTemplateType.RULE).get(getLang()).values();
 	}
 	
 	public static long addTemplate(Template template) throws Exception {
@@ -300,13 +348,13 @@ public class TemplateAPI {
 			{
 				WorkorderTemplate template = FieldUtil.getAsBeanFromMap(templateProps,WorkorderTemplate.class);
 				woTemplates.add(template);
-				if (template.getResourceId() != -1) {
-					resourceIds.add(template.getResourceId());
+				if (template.getResourceIdVal() != -1) {
+					resourceIds.add(template.getResourceIdVal());
 				}
 			}
 			Map<Long, ResourceContext> resourceMap = ResourceAPI.getResourceAsMapFromIds(resourceIds);
 			for (WorkorderTemplate template : woTemplates) {
-				template.setResource(resourceMap.get(template.getResourceId()));
+				template.setResource(resourceMap.get(template.getResourceIdVal()));
 			}
 			return woTemplates;
 		}
@@ -434,14 +482,18 @@ public class TemplateAPI {
 		Template template = getTemplate(id);
 		List<Long> ids = new ArrayList<>();
 		ids.add(id);
-		templatePreDelete(template, ids);
+		if(template != null) {	// For job plan task template, already passing extended template ids
+			templatePreDelete(template, ids);			
+		}
 		FacilioModule module = ModuleFactory.getTemplatesModule();
 		GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
 													.table(module.getTableName())
 													.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 													.andCondition(CriteriaAPI.getIdCondition(ids, module));
 		builder.delete();
-		templatePostDelete(template);
+		if(template != null) {
+			templatePostDelete(template);
+		}
 	}
 	
 	private static void templatePreDelete(Template template, List<Long> ids) throws Exception {
@@ -492,6 +544,18 @@ public class TemplateAPI {
 		for (Long id : ids) {
 			deleteTemplate(id);
 		}
+	}
+	
+	public static void deleteJobPlanTaskTemplates(JobPlanContext jobPlan) throws Exception {
+		List<Long> ids = new ArrayList<>();
+		getTasksFromTemplate(jobPlan);
+		if (jobPlan.getTaskTemplates() != null) {
+			ids.addAll(jobPlan.getTaskTemplates().stream().map(task -> task.getId()).collect(Collectors.toList()));
+		}
+		if (jobPlan.getSectionTemplates() != null) {
+			ids.addAll(jobPlan.getSectionTemplates().stream().map(task -> task.getId()).collect(Collectors.toList()));
+		}
+		deleteTemplates(ids);
 	}
 	
 	private static void deleteJSONTemplate(JSONTemplate template) throws Exception {
@@ -704,11 +768,15 @@ public class TemplateAPI {
 		return template;
 	}
 	
+	private static WorkflowTemplate getWorkflowTemplateFromMap(Map<String, Object> templateProps) throws Exception {
+		WorkflowTemplate wfTemplate = FieldUtil.getAsBeanFromMap(templateProps, WorkflowTemplate.class);
+		return wfTemplate;
+	}
+	
 	private static WorkorderTemplate getWOTemplateFromMap(Map<String, Object> templateProps) throws Exception {
 		WorkorderTemplate woTemplate = FieldUtil.getAsBeanFromMap(templateProps, WorkorderTemplate.class);
-		
-		Map<Long, TaskSectionTemplate> sectionMap = getTaskSectionTemplatesFromWOTemplate(woTemplate);
-		woTemplate.setTasks(getTasksFromWOTemplate(woTemplate, sectionMap));
+		Map<Long, TaskSectionTemplate> sectionMap = getTaskSectionTemplatesFromWOTemplate(woTemplate, null);
+		woTemplate.setTasks(getTasksFromWOTemplate(woTemplate, sectionMap, null));
 		List<TaskSectionTemplate> templates = woTemplate.getSectionTemplates();
 		//FIXME this is temporary need to fix this by adding sequence number for task sections
 		if (templates != null) {
@@ -725,19 +793,30 @@ public class TemplateAPI {
 //				})
 //			);
 		}
+		
 		return woTemplate;
 	}
 	
-	private static WorkflowTemplate getWorkflowTemplateFromMap(Map<String, Object> templateProps) throws Exception {
-		WorkflowTemplate wfTemplate = FieldUtil.getAsBeanFromMap(templateProps, WorkflowTemplate.class);
-		return wfTemplate;
+	public static Map<String, List<TaskContext>> getTasksFromTemplate (JobPlanContext jobPlan) throws Exception {
+		Map<Long, TaskSectionTemplate> sectionMap = getTaskSectionTemplatesFromWOTemplate(null, jobPlan);
+		Map<String, List<TaskContext>> tasks = getTasksFromWOTemplate(null, sectionMap, jobPlan);
+		return tasks;
 	}
 	
-	public static Map<Long, TaskSectionTemplate> getTaskSectionTemplatesFromWOTemplate(WorkorderTemplate woTemplate) throws Exception {
+	public static Map<Long, TaskSectionTemplate> getTaskSectionTemplatesFromWOTemplate(WorkorderTemplate woTemplate, JobPlanContext jobPlan) throws Exception {
 		FacilioModule module = ModuleFactory.getTaskSectionTemplateModule();
 		List<FacilioField> fields = FieldFactory.getTaskSectionTemplateFields();
-		FacilioField parentIdField = FieldFactory.getAsMap(fields).get("parentWOTemplateId");
-		List<Map<String, Object>> sectionProps = getTemplateJoinedProps(module, fields, CriteriaAPI.getCondition(parentIdField, String.valueOf(woTemplate.getId()), PickListOperators.IS));
+		long parentId;
+		FacilioField parentIdField;
+		if (jobPlan != null) {
+			parentId = jobPlan.getId();
+			parentIdField = FieldFactory.getAsMap(fields).get("jobPlanId");
+		}
+		else {
+			parentId = woTemplate.getId();
+			parentIdField = FieldFactory.getAsMap(fields).get("parentWOTemplateId");
+		}
+		List<Map<String, Object>> sectionProps = getTemplateJoinedProps(module, fields, CriteriaAPI.getCondition(parentIdField, String.valueOf(parentId), PickListOperators.IS));
 		
 		if (sectionProps != null && !sectionProps.isEmpty()) {
 			Map<Long, TaskSectionTemplate> sections = new HashMap<>();
@@ -785,20 +864,35 @@ public class TemplateAPI {
 				}
 			}
 						
-			woTemplate.setSectionTemplates(sectionTemplates);
+			if (woTemplate != null) {
+				woTemplate.setSectionTemplates(sectionTemplates);
+			}
+			else {
+				jobPlan.setSectionTemplates(sectionTemplates);
+			}
 			return sections;
 		}
 		return null;
 	}
 	
-	private static Map<String, List<TaskContext>> getTasksFromWOTemplate(WorkorderTemplate woTemplate, Map<Long, TaskSectionTemplate> sectionMap) throws Exception {
+	private static Map<String, List<TaskContext>> getTasksFromWOTemplate(WorkorderTemplate woTemplate, Map<Long, TaskSectionTemplate> sectionMap,  JobPlanContext jobPlan) throws Exception {
 		FacilioModule module = ModuleFactory.getTaskTemplateModule();
 		List<FacilioField> fields = FieldFactory.getTaskTemplateFields();
-		FacilioField parentIdField = FieldFactory.getAsMap(fields).get("parentTemplateId");
-		List<Map<String, Object>> taskProps = getTemplateJoinedProps(module, fields, CriteriaAPI.getCondition(parentIdField, String.valueOf(woTemplate.getId()), PickListOperators.IS));
+		long parentId;
+		FacilioField parentIdField;
+		if (jobPlan != null) {
+			parentId = jobPlan.getId();
+			parentIdField = FieldFactory.getAsMap(fields).get("jobPlanId");
+		}
+		else {
+			parentId = woTemplate.getId();
+			parentIdField = FieldFactory.getAsMap(fields).get("parentTemplateId");
+		}
+		List<Map<String, Object>> taskProps = getTemplateJoinedProps(module, fields, CriteriaAPI.getCondition(parentIdField, String.valueOf(parentId), PickListOperators.IS));
 		
 		if (taskProps != null && !taskProps.isEmpty()) {
 			Map<String, List<TaskContext>> taskMap = new HashMap<>();
+			List<TaskContext> allTasks = new ArrayList<>();
 			List<TaskTemplate> taskTemplates = new ArrayList<>();
 			for (Map<String, Object> prop : taskProps) {
 				TaskTemplate template = FieldUtil.getAsBeanFromMap(prop, TaskTemplate.class);
@@ -821,11 +915,20 @@ public class TemplateAPI {
 					tasks = new ArrayList<>();
 					taskMap.put(sectionName, tasks);
 				}
+				allTasks.add(task);
 				tasks.add(task);
 			}
-			woTemplate.setTaskTemplates(taskTemplates);
-			if(sectionMap != null) {
-				woTemplate.setSectionTemplates(new ArrayList<>(sectionMap.values()));
+			if (woTemplate != null) {
+				woTemplate.setTaskTemplates(taskTemplates);
+				if(sectionMap != null) {
+					woTemplate.setSectionTemplates(new ArrayList<>(sectionMap.values()));
+				}
+			}
+			else {
+				jobPlan.setTaskTemplates(taskTemplates);
+				if(sectionMap != null) {
+					jobPlan.setSectionTemplates(new ArrayList<>(sectionMap.values()));
+				}
 			}
 
 			Map<String, List<TaskContext>> orderedTasks = new HashMap<>();
@@ -848,6 +951,11 @@ public class TemplateAPI {
 
 			Map<String, List<TaskContext>> orderedTaskMap = new LinkedHashMap<>(entryList.size());
 			entryList.forEach(i -> orderedTaskMap.put(i.getKey(), i.getValue()));
+			
+			if (!allTasks.isEmpty()) {
+				CommonCommandUtil.loadTaskLookups(allTasks);
+			}
+			
 			return taskMap;
 		}
 		return null;
@@ -950,11 +1058,16 @@ public class TemplateAPI {
 		return addJsonTemplate(orgId, template, Template.Type.JSON);
 	}
 	
-	private static TaskTemplate constructTaskTemplate(TaskContext task, long sectionId, long woTemplateId, Type type) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+	private static TaskTemplate constructTaskTemplate(TaskContext task, long sectionId, long parentId, Type type) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
 		TaskTemplate taskTemplate = new TaskTemplate();
 		taskTemplate.setTask(task);
 		taskTemplate.setSectionId(sectionId);
-		taskTemplate.setParentTemplateId(woTemplateId);
+		if (type == Type.JOB_PLAN_TASK) {
+			taskTemplate.setJobPlanId(parentId);
+		}
+		else {
+			taskTemplate.setParentTemplateId(parentId);
+		}
 		taskTemplate.setType(type);
 		taskTemplate.setOrgId(AccountUtil.getCurrentOrg().getId());
 		return taskTemplate;
@@ -1008,8 +1121,31 @@ public class TemplateAPI {
 		Map<String, Object> templateProps = FieldUtil.getAsProperties(template);
 		long templateId = insertTemplateWithExtendedProps(ModuleFactory.getWorkOrderTemplateModule(), FieldFactory.getWorkOrderTemplateFields(), templateProps); //inserting WO template
 		Map<String, List<TaskContext>> tasks = template.getTasks();
+		addTaskTemplate(tasks, taskType, sectionType, templateId);
+		return templateId;
+	}
+	
+	public static int updateWorkorderTemplate(WorkorderTemplate template, WorkorderTemplate oldTemplate) throws Exception {
+		if (oldTemplate == null) {
+			oldTemplate = (WorkorderTemplate) getTemplate(template.getId());
+		}
+		addDefaultProps(template);
+		
+		FacilioModule module = ModuleFactory.getWorkOrderTemplateModule();
+		Map<String, Object> templateProps = FieldUtil.getAsProperties(template);
+		
+		// TODO handle task and section update
+		
+		int rowsUpdated = updateTemplatesWithExtendedProps(oldTemplate.getId(), module, FieldFactory.getWOrderTemplateFields(), templateProps);
+		if (template.getWorkflow() != null && oldTemplate.getWorkflowId() != -1) {
+			WorkflowUtil.deleteWorkflow(oldTemplate.getWorkflowId());
+		}
+		return rowsUpdated;
+	}
+	
+	public static void addTaskTemplate(Map<String, List<TaskContext>> tasks, Type taskType, Type sectionType, long parentId) throws Exception {
 		if (tasks != null && !tasks.isEmpty()) {
-			Map<String, Long> sectionMap = addSectionTemplatesForWO(templateId, tasks.keySet(), sectionType);	//add sections
+			Map<String, Long> sectionMap = addSectionTemplatesForWO(parentId, tasks.keySet(), sectionType);	//add sections
 			List<Map<String, Object>> taskTemplateProps = new ArrayList<>();
 			for (Entry<String, List<TaskContext>> entry : tasks.entrySet()) {
 				long sectionId = -1;
@@ -1020,12 +1156,11 @@ public class TemplateAPI {
 				List<TaskContext> taskList = entry.getValue();
 				for (TaskContext task : taskList) {
 					task.setStatusNew(TaskStatus.OPEN);
-					taskTemplateProps.add(FieldUtil.getAsProperties(constructTaskTemplate(task, sectionId, templateId, taskType)));
+					taskTemplateProps.add(FieldUtil.getAsProperties(constructTaskTemplate(task, sectionId, parentId, taskType)));
 				}
 			}
 			insertTemplatesWithExtendedProps(ModuleFactory.getTaskTemplateModule(), FieldFactory.getTaskTemplateFields(), taskTemplateProps); //add tasks
 		}
-		return templateId;
 	}
 	
 	private static Map<String, Long> addSectionTemplatesForWO(List<TaskSectionTemplate> sectionTemplates,long woTemplateId, Type taskType,Type sectiontype) throws Exception {
@@ -1134,13 +1269,18 @@ public class TemplateAPI {
 		return templateId;
 	}
 	
-	private static Map<String, Long> addSectionTemplatesForWO(long woId, Set<String> sectionNames, Type sectionType) throws Exception {
+	private static Map<String, Long> addSectionTemplatesForWO(long parentId, Set<String> sectionNames, Type sectionType) throws Exception {
 		List<Map<String, Object>> templatePropList = new ArrayList<>();
 		for (String section : sectionNames) {
 			if (!section.equals(FacilioConstants.ContextNames.DEFAULT_TASK_SECTION)) {
 				TaskSectionTemplate sectionTemplate = new TaskSectionTemplate();
 				sectionTemplate.setName(section);
-				sectionTemplate.setParentWOTemplateId(woId);
+				if (sectionType == Type.JOB_PLAN_SECTION) {
+					sectionTemplate.setJobPlanId(parentId);
+				}
+				else {
+					sectionTemplate.setParentWOTemplateId(parentId);
+				}
 				sectionTemplate.setType(sectionType);
 				sectionTemplate.setOrgId(AccountUtil.getCurrentOrg().getId());
 				templatePropList.add(FieldUtil.getAsProperties(sectionTemplate));
@@ -1172,6 +1312,25 @@ public class TemplateAPI {
 							.fields(fields)
 							.addRecords(templatePropList);
 		workorderTemplateBuilder.save();
+	}
+	
+	private static int updateTemplatesWithExtendedProps(long id, FacilioModule extendedModule, List<FacilioField> fields, Map<String, Object> templateProps) throws SQLException, RuntimeException {
+		FacilioModule templateMpdule = ModuleFactory.getTemplatesModule();
+		GenericUpdateRecordBuilder updateRecordBuilder = new GenericUpdateRecordBuilder()
+				.table(templateMpdule.getTableName())
+				.fields(FieldFactory.getTemplateFields())
+				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(templateMpdule))
+				.andCondition(CriteriaAPI.getIdCondition(id, templateMpdule));
+
+		updateRecordBuilder.update(templateProps);
+		
+		GenericUpdateRecordBuilder extendedUpdateRecordBuilder = new GenericUpdateRecordBuilder()
+				.table(extendedModule.getTableName())
+				.fields(fields)
+				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(extendedModule))
+				.andCondition(CriteriaAPI.getIdCondition(id, extendedModule));
+
+		return extendedUpdateRecordBuilder.update(templateProps);
 	}
 	
 	public static long addAlarmTemplate(long orgId, JSONTemplate template) throws Exception {
@@ -1252,7 +1411,24 @@ public class TemplateAPI {
 		return null;
 		
 	}
-	
+	public static JSONArray getFieldForRules (String condition) throws Exception {
+		
+		String formatSpecifier = "(\\$\\{\\{([^\\:}}]*))";
+		Pattern pattern = Pattern.compile(formatSpecifier);
+		if (condition != null) {
+			Matcher matcher = pattern.matcher(condition);
+			JSONArray templatePlaceholder = new JSONArray();
+			while (matcher.find()) {
+				String placeHolder = matcher.group(2);
+				if (!templatePlaceholder.contains(placeHolder)) {
+					templatePlaceholder.add(placeHolder);
+				}
+			}
+			return templatePlaceholder;
+		}
+		return null;
+		
+	}
 	public static WorkflowContext getWorkflow(Template template) throws Exception {
 		JSONArray placeHolders = getPlaceholders(template);
 		if (placeHolders != null && !placeHolders.isEmpty()) {

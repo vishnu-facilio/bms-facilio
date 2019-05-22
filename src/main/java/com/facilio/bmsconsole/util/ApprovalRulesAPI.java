@@ -20,6 +20,7 @@ import com.facilio.bmsconsole.context.SharingContext;
 import com.facilio.bmsconsole.context.SingleSharingContext;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.criteria.PickListOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
@@ -32,12 +33,15 @@ import com.facilio.bmsconsole.workflow.rule.ApprovalState;
 import com.facilio.bmsconsole.workflow.rule.ApproverContext;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsole.workflow.rule.FieldChangeFieldContext;
+import com.facilio.bmsconsole.workflow.rule.StateflowTransitionContext;
+import com.facilio.bmsconsole.workflow.rule.ValidationContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowEventContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
+import com.facilio.sql.GenericDeleteRecordBuilder;
 import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
 
@@ -196,11 +200,26 @@ public class ApprovalRulesAPI extends WorkflowRuleAPI {
 		criteria.addAndCondition(CriteriaAPI.getCondition(modBean.getField(FacilioConstants.ApprovalRule.APPROVAL_RULE_ID_FIELD_NAME, module.getName()), String.valueOf(approvalRule.getId()), PickListOperators.IS));
 		rule.setCriteria(criteria);
 	}
-	
+
+	public static WorkflowRuleContext updateStateflowTransitionRuleWithChildren(StateflowTransitionContext rule) throws Exception {
+		StateflowTransitionContext oldRule = (StateflowTransitionContext) getWorkflowRule(rule.getId());
+		deleteApprovers(oldRule.getApprovers());
+		updateWorkflowRuleWithChildren(rule);
+		updateExtendedRule(rule, ModuleFactory.getStateRuleTransitionModule(), FieldFactory.getStateRuleTransitionFields());
+		addApprovers(rule.getId(), rule.getApprovers());
+		deleteValidations(oldRule.getValidations());
+		addValidations(rule.getId(), rule.getValidations());
+		
+		StateFlowRulesAPI.deleteStateFlowTransitionChildren(oldRule);
+		StateFlowRulesAPI.addStateFlowTransitionChildren(rule);
+		
+		return rule;
+	}
+
 	public static ApprovalRuleContext updateApprovalRuleWithChldren(ApprovalRuleContext rule) throws Exception {	
 		ApprovalRulesAPI.validateApprovalRule(rule);
 		ApprovalRuleContext oldRule = (ApprovalRuleContext) getWorkflowRule(rule.getId());
-		deleteApprovers(oldRule);
+		deleteApprovers(oldRule.getApprovers());
 		updateWorkflowRuleChildIds(rule);
 		updateChildRuleIds(rule);
 		updateExtendedRule(rule, ModuleFactory.getApprovalRulesModule(), FieldFactory.getApprovalRuleFields());
@@ -215,9 +234,9 @@ public class ApprovalRulesAPI extends WorkflowRuleAPI {
 		return rule;
 	}
 	
-	private static int deleteApprovers (ApprovalRuleContext rule) throws SQLException {
-		if (rule.getApprovers() != null && !rule.getApprovers().isEmpty()) {
-			return SharingAPI.deleteSharing(rule.getApprovers().stream().map(ApproverContext::getId).collect(Collectors.toList()), ModuleFactory.getApproversModule());
+	private static int deleteApprovers (List<ApproverContext> approvers) throws SQLException {
+		if (CollectionUtils.isNotEmpty(approvers)) {
+			return SharingAPI.deleteSharing(approvers.stream().map(ApproverContext::getId).collect(Collectors.toList()), ModuleFactory.getApproversModule());
 		}
 		return 0;
 	}
@@ -310,6 +329,85 @@ public class ApprovalRulesAPI extends WorkflowRuleAPI {
 			return previousSteps;
 		}
 		return null;
+	}
+
+	public static void addValidations(long parentId, List<ValidationContext> validations) throws Exception {
+		if (CollectionUtils.isNotEmpty(validations)) {
+			FacilioModule validationModule = ModuleFactory.getValidationModule();
+			List<FacilioField> fields = FieldFactory.getValidationFields(validationModule);
+
+			GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
+					.table(validationModule.getTableName())
+					.fields(fields);
+			
+			for (ValidationContext validationContext : validations) {
+				if (!validationContext.isValid()) {
+					throw new IllegalArgumentException("Invalid validation");
+				}
+				validationContext.setRuleId(parentId);
+				if (validationContext.getCriteria() != null) {
+					long criteriaId = CriteriaAPI.addCriteria(validationContext.getCriteria(),AccountUtil.getCurrentOrg().getId());
+					validationContext.setCriteriaId(criteriaId);
+				}
+				builder.addRecord(FieldUtil.getAsProperties(validationContext));
+			}
+			builder.save();
+			
+			for (int i = 0; i < builder.getRecords().size(); i++) {
+				ValidationContext validationContext = validations.get(i);
+				validationContext.setId((long) builder.getRecords().get(i).get("id"));
+			}
+		}
+	}
+	
+	private static void deleteValidations(List<ValidationContext> validations) throws Exception {
+		if (CollectionUtils.isNotEmpty(validations)) {
+			List<Long> validationIds = validations.stream().map(ValidationContext::getId).collect(Collectors.toList());
+			
+			FacilioModule validationModule = ModuleFactory.getValidationModule();
+			GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
+					.table(validationModule.getTableName())
+					.andCondition(CriteriaAPI.getIdCondition(validationIds, validationModule));
+			builder.delete();
+			
+			for (ValidationContext validation: validations) {
+				if (validation.getCriteriaId() > 0) {
+					CriteriaAPI.deleteCriteria(validation.getCriteriaId());
+				}
+			}
+		}
+	}
+
+	public static List<ValidationContext> getValidations(long id) throws Exception {
+		FacilioModule module = ModuleFactory.getValidationModule();
+		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+				.table(module.getTableName())
+				.select(FieldFactory.getValidationFields(module))
+				.andCondition(CriteriaAPI.getCondition("RULE_ID", "ruleId", String.valueOf(id), NumberOperators.EQUALS));
+		List<Map<String, Object>> list = builder.get();
+		List<ValidationContext> validations = FieldUtil.getAsBeanListFromMapList(list, ValidationContext.class);
+		
+		List<Long> criteriaIds = new ArrayList<>();
+		for (ValidationContext validation: validations) {
+			if (validation.getCriteriaId() > 0) {
+				criteriaIds.add(validation.getCriteriaId());
+			}
+		}
+		if (CollectionUtils.isNotEmpty(criteriaIds)) {
+			Map<Long, Criteria> criteriaMap = CriteriaAPI.getCriteriaAsMap(criteriaIds);
+
+			for (ValidationContext validation: validations) {
+				if (validation.getCriteriaId() > 0) {
+					validation.setCriteria(criteriaMap.get(validation.getCriteriaId()));
+				}
+			}	
+		}
+		return validations;
+	}
+
+	public static void deleteStateTransitionChildren(StateflowTransitionContext rule) throws Exception {
+		deleteApprovers(rule.getApprovers());
+		deleteValidations(rule.getValidations());;
 	}
 	
 }

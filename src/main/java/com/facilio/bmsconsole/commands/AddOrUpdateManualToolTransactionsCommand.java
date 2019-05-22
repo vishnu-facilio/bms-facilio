@@ -57,8 +57,8 @@ public class AddOrUpdateManualToolTransactionsCommand implements Command {
 							throw new IllegalArgumentException("Insufficient quantity in inventory!");
 						} else {
 							ApprovalState approvalState = ApprovalState.YET_TO_BE_REQUESTED;
-							if (toolTypes.isApprovalNeeded() || storeRoom.isApprovalNeeded()) {
-								approvalState = ApprovalState.REQUESTED;
+							if (toolTransaction.getRequestedLineItem() != null && toolTransaction.getRequestedLineItem().getId() > 0) {
+								approvalState = ApprovalState.APPROVED;
 							}
 							wTool = setWorkorderItemObj(toolTransaction.getQuantity(), tool, toolTransaction,
 									toolTypes, approvalState, null);
@@ -74,8 +74,8 @@ public class AddOrUpdateManualToolTransactionsCommand implements Command {
 						throw new IllegalArgumentException("Insufficient quantity in inventory!");
 					} else {
 						ApprovalState approvalState = ApprovalState.YET_TO_BE_REQUESTED;
-						if (toolTypes.isApprovalNeeded() || storeRoom.isApprovalNeeded()) {
-							approvalState = ApprovalState.REQUESTED;
+						if (toolTransaction.getRequestedLineItem() != null && toolTransaction.getRequestedLineItem().getId() > 0) {
+							approvalState = ApprovalState.APPROVED;
 						}
 						if (toolTypes.isRotating()) {
 							List<Long> assetIds = toolTransaction.getAssetIds();
@@ -88,19 +88,14 @@ public class AddOrUpdateManualToolTransactionsCommand implements Command {
 									}
 									ToolTransactionContext woTool = new ToolTransactionContext();
 
-									if (toolTransaction.getTransactionStateEnum() == TransactionState.ISSUE
-											&& (toolTypes.isApprovalNeeded() || storeRoom.isApprovalNeeded())) {
+									if (toolTransaction.getTransactionStateEnum() == TransactionState.RETURN) {
 										asset.setIsUsed(false);
-									} else {
-										if (toolTransaction.getTransactionStateEnum() == TransactionState.RETURN) {
-											asset.setIsUsed(false);
-											approvalState = ApprovalState.YET_TO_BE_REQUESTED;
-										} else if (toolTransaction
-												.getTransactionStateEnum() == TransactionState.ISSUE) {
-											asset.setIsUsed(true);
-										}
+										approvalState = ApprovalState.YET_TO_BE_REQUESTED;
+									} else if (toolTransaction
+										.getTransactionStateEnum() == TransactionState.ISSUE) {
+										asset.setIsUsed(true);
 									}
-
+									
 									// if(toolTransaction.getTransactionStateEnum()
 									// == TransactionState.RETURN){
 									// pTool.setIsUsed(false);
@@ -156,16 +151,16 @@ public class AddOrUpdateManualToolTransactionsCommand implements Command {
 		}
 		woTool.setQuantity(quantity);
 		woTool.setTool(tool);
+		if(toolTransaction.getRequestedLineItem() != null) {
+			woTool.setRequestedLineItem(toolTransaction.getRequestedLineItem());
+		}
 		woTool.setToolType(toolTypes);
 		woTool.setSysModifiedTime(System.currentTimeMillis());
 		woTool.setParentId(toolTransaction.getParentId());
 		woTool.setParentTransactionId(toolTransaction.getParentTransactionId());
 		woTool.setApprovedState(approvalState);
-		if (approvalState == ApprovalState.YET_TO_BE_REQUESTED) {
-			woTool.setRemainingQuantity(quantity);
-		} else {
-			woTool.setRemainingQuantity(0);
-		}
+		woTool.setRemainingQuantity(quantity);
+		
 		if(toolTransaction.getTransactionStateEnum() == TransactionState.RETURN) {
 			woTool.setApprovedState(ApprovalState.YET_TO_BE_REQUESTED);
 		}

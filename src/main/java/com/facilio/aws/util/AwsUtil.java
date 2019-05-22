@@ -24,6 +24,7 @@ import com.amazonaws.services.simpleemail.model.*;
 import com.amazonaws.services.sqs.AmazonSQS;
 import com.amazonaws.services.sqs.AmazonSQSClientBuilder;
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.agent.AgentKeys;
 import com.facilio.email.EmailUtil;
 import com.facilio.sql.DBUtil;
 import com.facilio.transaction.FacilioConnectionPool;
@@ -124,8 +125,13 @@ public class AwsUtil
 	private static String anomalyRefreshWaitTimeInSeconds;
 	private static String anomalyDetectWaitTimeInSeconds;
 	private static String anomalyPredictAPIURL;
+
 	private static boolean sysLogEnabled;
-	
+	public static Long getMessageReprocessInterval() {
+			return messageReprocessInterval;
+	}
+	private static Long messageReprocessInterval;
+
 	static {
 		loadProperties();
 	}
@@ -161,7 +167,7 @@ public class AwsUtil
 				anomalyDetectWaitTimeInSeconds = PROPERTIES.getProperty("anomalyDetectWaitTimeInSeconds","3");
 				anomalyPredictAPIURL = PROPERTIES.getProperty("anomalyPredictServiceURL","http://localhost:7444/api");
 				sysLogEnabled = "true".equals(PROPERTIES.getProperty("syslog.enabled", "false"));
-						
+				messageReprocessInterval = Long.parseLong(PROPERTIES.getProperty(AgentKeys.MESSAGE_REPROCESS_INTERVAL,"300000"));
 				PROPERTIES.put("clientapp.url", clientAppUrl);
 				URL resourceDir = AwsUtil.class.getClassLoader().getResource("");
 				if(resourceDir != null) {
@@ -460,12 +466,11 @@ public class AwsUtil
 				AmazonSimpleEmailService client = AmazonSimpleEmailServiceClientBuilder.standard()
 						.withRegion(Regions.US_WEST_2).withCredentials(getAWSCredentialsProvider()).build();
 				client.sendEmail(request);
-				LOGGER.info("Email sent!");
 				if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 151) {
 					LOGGER.info("Email sent to "+toAddress+"\n"+mailJson);
 				}
 			} catch (Exception ex) {
-				LOGGER.info("Error message: " + ex.getMessage());
+				LOGGER.info("Error message: " + toAddress + " " + ex.getMessage());
 				throw ex;
 			}
 		}
@@ -544,7 +549,7 @@ public class AwsUtil
 				
 			} catch (Exception ex) {
 				LOGGER.info("The email was not sent.");
-				LOGGER.info("Error message: " + ex.getMessage());
+				LOGGER.info("Error message: " + toAddress+" " + ex.getMessage());
 				throw ex;
 			}
 		}

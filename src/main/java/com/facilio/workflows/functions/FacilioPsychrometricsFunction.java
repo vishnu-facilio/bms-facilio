@@ -80,7 +80,7 @@ public enum FacilioPsychrometricsFunction implements FacilioWorkflowFunctionInte
 	private String functionName;
 	private String namespace = "psychrometrics";
 	private String params;
-	private FacilioFunctionNameSpace nameSpaceEnum = FacilioFunctionNameSpace.PSYCHROMETRICS;
+	private FacilioSystemFunctionNameSpace nameSpaceEnum = FacilioSystemFunctionNameSpace.PSYCHROMETRICS;
 	
 	public Integer getValue() {
 		return value;

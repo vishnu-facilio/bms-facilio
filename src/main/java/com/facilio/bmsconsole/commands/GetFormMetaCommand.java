@@ -14,6 +14,7 @@ import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.StringOperators;
 import com.facilio.bmsconsole.forms.FacilioForm;
+import com.facilio.bmsconsole.forms.FacilioForm.FormType;
 import com.facilio.bmsconsole.forms.FormFactory;
 import com.facilio.bmsconsole.forms.FormField;
 import com.facilio.bmsconsole.forms.FormSection;
@@ -68,15 +69,22 @@ public class GetFormMetaCommand implements Command {
 				form.setModule(modBean.getModule(moduleName));
 				
 				if (form.getSections() != null) {
+					boolean isFirstSection = true;
 					for(FormSection section: form.getSections()) {
 						List<FormField> fields = section.getFields();
-						setFields(modBean, fields, formModuleName, childModule);
+						if (isFirstSection) {
+							setFields(form, modBean, fields, formModuleName, childModule);
+							isFirstSection = false;
+						}
+						else {
+							FormsAPI.setFieldDetails(modBean, fields, moduleName);
+						}
 					}
 				}
 				else {
 					List<FormField> fields = new ArrayList<>(form.getFields());
 					form.setFields(fields);
-					setFields(modBean, fields, moduleName, childModule);
+					setFields(form, modBean, fields, moduleName, childModule);
 				}
 			}
 			else {
@@ -120,8 +128,11 @@ public class GetFormMetaCommand implements Command {
 		return form;
 	}
 	
-	private void setFields(ModuleBean modBean, List<FormField> fields, String moduleName, FacilioModule childModule) throws Exception {
+	private void setFields(FacilioForm form, ModuleBean modBean, List<FormField> fields, String moduleName, FacilioModule childModule) throws Exception {
 		FormsAPI.setFieldDetails(modBean, fields, moduleName);
+		if (form.getFormTypeEnum()  == FormType.PORTAL) {
+			return;
+		}
 
 		int count = fields.size();
 		//commenting out as we force update tenant for wo and pm

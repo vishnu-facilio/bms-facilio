@@ -1,5 +1,16 @@
 package com.facilio.bmsconsole.instant.jobs;
 
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 import com.facilio.bmsconsole.context.PublishData;
 import com.facilio.bmsconsole.context.PublishMessage;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
@@ -13,17 +24,6 @@ import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.tasker.job.InstantJob;
-import com.facilio.wms.message.WmsPublishResponse;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 public class PublishedDataCheckerJob extends InstantJob {
 	
@@ -99,27 +99,17 @@ public class PublishedDataCheckerJob extends InstantJob {
 		String key = null;
 		LOGGER.info("Msg Map : "+msgMap);
 		if (msgMap.isEmpty()) {
-			IoTMessageAPI.acknowdledgeData(data.getId());
+			IoTMessageAPI.acknowdledgeData(data.getId(), false);
 			key = FacilioConstants.ContextNames.PUBLISH_SUCCESS;
 		}
 		else {
 			key = FacilioConstants.ContextNames.PUBLISH_FAILURE;
+			IoTMessageAPI.sendFailureNotification(data);
 		}
 		Consumer<PublishData> consumer = (Consumer<PublishData>) context.get(key);
 		if (consumer != null) {
 			consumer.accept(data);
 		}
-		sendNotification(data);
 	}
 	
-	private void sendNotification(PublishData publishData) {
-		
-		try {
-			WmsPublishResponse data = new WmsPublishResponse();
-			data.publish(publishData);
-		}
-		catch (Exception e) {
-			LOGGER.error("Error occurred while sending publish response notification", e);
-		}
-	}
 }

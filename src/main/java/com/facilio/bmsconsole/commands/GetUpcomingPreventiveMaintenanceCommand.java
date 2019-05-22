@@ -64,9 +64,9 @@ public class GetUpcomingPreventiveMaintenanceCommand implements Command {
 			for(PreventiveMaintenance pm : pms) 
 			{
 				List<PMTriggerContext> pmTrigggers = pmTriggersMap.get(pm.getId());
-				if(pm.getWoTemplate() != null && pm.getWoTemplate().getResourceId() != -1 && !resourceIds.contains(pm.getWoTemplate().getResourceId()))
+				if(pm.getWoTemplate() != null && pm.getWoTemplate().getResourceIdVal() != -1 && !resourceIds.contains(pm.getWoTemplate().getResourceIdVal()))
 				{
-					resourceIds.add(pm.getWoTemplate().getResourceId());
+					resourceIds.add(pm.getWoTemplate().getResourceIdVal());
 				}
 				//pm.setTriggerContexts(pmTrigggers);
 				for (PMTriggerContext trigger : pmTrigggers) {

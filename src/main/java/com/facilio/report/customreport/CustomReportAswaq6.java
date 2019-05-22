@@ -2,7 +2,8 @@ package com.facilio.report.customreport;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.*;
-import com.facilio.bmsconsole.context.TicketStatusContext.StatusType;
+import com.facilio.modules.FacilioStatus;
+import com.facilio.modules.FacilioStatus.StatusType;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.util.DateTimeUtil;
 import com.facilio.bmsconsole.util.SpaceAPI;
@@ -47,7 +48,7 @@ public class CustomReportAswaq6 implements CustomReport {
 						continue;
 					}
 					if(workorder.getStatus() != null && workorder.getStatus().getId() > 0) {
-						TicketStatusContext status = TicketAPI.getStatus(AccountUtil.getCurrentOrg().getId(), workorder.getStatus().getId());
+						FacilioStatus status = TicketAPI.getStatus(AccountUtil.getCurrentOrg().getId(), workorder.getStatus().getId());
 						workorder.setStatus(status);
 					}
 					if(workorder.getStatus() != null && workorder.getStatus().getType() != null && workorder.getStatus().getType().equals(StatusType.CLOSED)) {

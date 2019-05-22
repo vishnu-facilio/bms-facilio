@@ -54,8 +54,8 @@ public class AddOrUpdateManualItemTransactionCommand implements Command {
 		List<Object> woitemactivity = new ArrayList<>();
 		long itemTypeId = -1;
 		ApprovalState approvalState = null;
-		if (itemTransactions != null) {
-			long parentId = itemTransactions.get(0).getParentId();
+		if (itemTransactions != null && !itemTransactions.isEmpty()) {
+				long parentId = itemTransactions.get(0).getParentId();
 			for (ItemTransactionsContext itemTransaction : itemTransactions) {
 				ItemContext item = getItem(itemTransaction.getItem().getId());
 				itemTypeId = item.getItemType().getId();
@@ -84,8 +84,8 @@ public class AddOrUpdateManualItemTransactionCommand implements Command {
 								throw new IllegalArgumentException("Insufficient quantity in inventory!");
 							} else {
 								approvalState = ApprovalState.YET_TO_BE_REQUESTED;
-								if (itemType.isApprovalNeeded() || storeRoom.isApprovalNeeded()) {
-									approvalState = ApprovalState.REQUESTED;
+								if (itemTransaction.getRequestedLineItem() != null && itemTransaction.getRequestedLineItem().getId() > 0) {
+									approvalState = ApprovalState.APPROVED;
 								}
 								JSONObject info = new JSONObject();
 								info.put("itemid", itemTransaction.getItem().getId());
@@ -116,8 +116,8 @@ public class AddOrUpdateManualItemTransactionCommand implements Command {
 						throw new IllegalArgumentException("Insufficient quantity in inventory!");
 					} else {
 						approvalState = ApprovalState.YET_TO_BE_REQUESTED;
-						if (itemType.isApprovalNeeded() || storeRoom.isApprovalNeeded()) {
-							approvalState = ApprovalState.REQUESTED;
+						if (itemTransaction.getRequestedLineItem() != null && itemTransaction.getRequestedLineItem().getId() > 0) {
+							approvalState = ApprovalState.APPROVED;
 						}
 						if (itemType.isRotating()) {
 							List<Long> assetIds = itemTransaction.getAssetIds();
@@ -136,12 +136,12 @@ public class AddOrUpdateManualItemTransactionCommand implements Command {
 									info.put("transactionState", itemTransaction.getTransactionStateEnum().toString());
 									info.put("transactionType", itemTransaction.getTransactionTypeEnum().toString());
 									info.put("serialno", asset.getSerialNumber());
-									if (itemTransaction.getTransactionStateEnum() == TransactionState.ISSUE
-											&& (itemType.isApprovalNeeded() || storeRoom.isApprovalNeeded())) {
-										asset.setIsUsed(false);
-										info.put("issuedToId", itemTransaction.getParentId());
-										woitemactivity.add(info);
-									} else {
+//									if (itemTransaction.getTransactionStateEnum() == TransactionState.ISSUE
+//											&& (itemType.isApprovalNeeded() || storeRoom.isApprovalNeeded())) {
+//										asset.setIsUsed(false);
+//										info.put("issuedToId", itemTransaction.getParentId());
+//										woitemactivity.add(info);
+//									} else {
 										if (itemTransaction.getTransactionStateEnum() == TransactionState.RETURN) {
 											asset.setIsUsed(false);
 											info.put("parentTransactionId", itemTransaction.getParentTransactionId());
@@ -153,7 +153,7 @@ public class AddOrUpdateManualItemTransactionCommand implements Command {
 											info.put("issuedToId", itemTransaction.getParentId());
 											woitemactivity.add(info);
 										}
-									}
+								//	}
 									woItem = setWorkorderItemObj(null, 1, item, parentId, itemTransaction, itemType,
 											approvalState, asset);
 									updatePurchasedItem(asset);
@@ -260,6 +260,9 @@ public class AddOrUpdateManualItemTransactionCommand implements Command {
 			ApprovalState approvalState, AssetContext asset) {
 		ItemTransactionsContext woItem = new ItemTransactionsContext();
 		woItem.setTransactionType(TransactionType.MANUAL);
+		if(itemTransactions.getRequestedLineItem() != null) {
+			woItem.setRequestedLineItem(itemTransactions.getRequestedLineItem());
+		}
 		woItem.setTransactionState(itemTransactions.getTransactionStateEnum());
 		woItem.setIsReturnable(true);
 		if (purchasedItem != null) {
@@ -275,14 +278,10 @@ public class AddOrUpdateManualItemTransactionCommand implements Command {
 		woItem.setParentId(parentId);
 		woItem.setParentTransactionId(itemTransactions.getParentTransactionId());
 		woItem.setApprovedState(approvalState);
-		if (approvalState == ApprovalState.YET_TO_BE_REQUESTED) {
-			if (itemTransactions.getTransactionStateEnum() == TransactionState.ISSUE) {
-				woItem.setRemainingQuantity(quantity);
-			}
-		} else {
-			woItem.setRemainingQuantity(0);
+		if (itemTransactions.getTransactionStateEnum() == TransactionState.ISSUE) {
+			woItem.setRemainingQuantity(quantity);
 		}
-
+		
 		if (itemTransactions.getTransactionStateEnum() == TransactionState.RETURN) {
 			woItem.setApprovedState(ApprovalState.YET_TO_BE_REQUESTED);
 		}

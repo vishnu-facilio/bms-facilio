@@ -1,0 +1,15 @@
+void sqrt1(){
+	
+	n = 20;
+	nsp = NameSpace("test");
+	res = nsp.sqrt(n);
+	log "res -- "+res;
+	
+	list=[];
+	list.add(10);
+	list.add(10);
+	nsp = NameSpace("default");
+	res = nsp.allMatch(list);
+	log "res -- "+res;
+	return res;
+}

@@ -302,6 +302,14 @@ public class SetTableNamesCommand implements Command {
 	public static SetTableNamesCommand getForConnectedApps() {
 		return new SetTableNamesCommand("connectedApps", "ConnectedApps");
 	}
+	
+	public static SetTableNamesCommand getForInventoryRequest() {
+		return new SetTableNamesCommand("inventoryrequest", "Inventory_Requests");
+	}
+
+	public static SetTableNamesCommand getForInventoryRequestLineItem() {
+		return new SetTableNamesCommand("inventoryrequestlineitems", "InventoryRequestLineItems");
+	}
 
 	public static void setForModule (Context context, String moduleName) {
 		//TODO handle all module and get from map

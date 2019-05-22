@@ -50,6 +50,9 @@ public class Processor extends FacilioProcessor {
 
     private static final Logger LOGGER = LogManager.getLogger(Processor.class.getName());
 
+    private boolean isRestarted = true;
+
+
 
     public Processor(long orgId, String orgDomainName) {
         super(orgId, orgDomainName);
@@ -86,17 +89,37 @@ public class Processor extends FacilioProcessor {
 
     @Override
     public void processRecords(List<FacilioRecord> records) {
-
         for (FacilioRecord record : records) {
                 boolean alarmCreated = false;
                 long numberOfRows = 0;
+                String recordId = record.getId();
             try {
+
+                try {
+                    boolean  isDuplicateMessage = AgentUtil.isDuplicate(recordId);
+                    if ( isDuplicateMessage ) {
+                        if(isRestarted){
+                            LOGGER.info(" Duplicate message received but can be processed due to server-restart "+recordId);
+                            isRestarted = false;
+                        }
+                        else {
+                            LOGGER.info(" Duplicate message received and cannot be reprocessed "+recordId);
+                            continue;
+                        }
+                    }
+                    else {
+                        AgentUtil.addAgentMessage(recordId);
+                    }
+                }catch (Exception e1){
+                    LOGGER.info("Exception Occured ",e1);
+                }
                 String data = "";
                 data = record.getData().toString();
                 if (data.isEmpty()) {
+                    LOGGER.info(" Empty message received "+recordId);
+                    AgentUtil.updateAgentMessage(recordId, MessageStatus.DATA_EMPTY);
                     continue;
                 }
-
                 ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", orgId);
                 List<EventRuleContext> ruleList = bean.getActiveEventRules();
                 if (ruleList != null) {
@@ -137,10 +160,7 @@ public class Processor extends FacilioProcessor {
                     agent = getFacilioAgent(agentName);
                     agent.setId(agentUtil.addAgent(agent));
                 }
-                if(isStage && agent != null) {
-                    AgentUtil.addAgentMetrics(data.length(), agent.getId(), publishType.getKey());
-                }
-
+                int dataLength = data.length();
                 HashMap<String, Long> dataTypeLastMessageTime = deviceMessageTime.getOrDefault(deviceId, new HashMap<>());
                 long deviceLastMessageTime = dataTypeLastMessageTime.getOrDefault(dataType, 0L);
 
@@ -158,47 +178,22 @@ public class Processor extends FacilioProcessor {
                                     break;
                                 case ack:
                                     ackUtil.processAck(payLoad, orgId);
-                                    if(isStage) {
-                                        agentUtil.putLog(payLoad, orgId, agent.getId(), false);
-                                    }
+                                    processLog(payLoad,agent.getId());
                                     break;
                                 case agent:
                                     numberOfRows = agentUtil.processAgent(payLoad,agentName);
-                                    if(isStage && (payLoad.containsKey(AgentKeys.COMMAND_STATUS) || payLoad.containsKey(AgentKeys.CONTENT))){
-                                        LOGGER.info(" Payload -- "+payLoad);
-                                        Integer connectionCount = -1;
-                                        if( payLoad.containsKey(AgentKeys.COMMAND_STATUS)){
-                                            if((payLoad.remove(AgentKeys.COMMAND_STATUS)).toString().equals("1")){
-                                                if(payLoad.containsKey(AgentKeys.CONNECTION_COUNT)) {
-                                                    connectionCount = Integer.parseInt(payLoad.get(AgentKeys.CONNECTION_COUNT).toString());
-                                                }
-                                            }
-                                            else{
-                                                payLoad.put(AgentKeys.CONTENT, AgentContent.DISCONNECTED.getKey());
-                                            }
-                                        }
-                                        if (connectionCount == 0) {
-                                            payLoad.put(AgentKeys.CONTENT,AgentContent.RESTARTED.getKey());
-                                            agentUtil.putLog(payLoad,orgId, agent.getId(),false);
-                                            payLoad.put(AgentKeys.CONTENT,AgentContent.CONNECTED.getKey());
-                                        } else if (connectionCount == -1) {
-                                            payLoad.put(AgentKeys.CONTENT,AgentContent.CONNECTED.getKey());
-                                        } else {
-                                            payLoad.put(AgentKeys.CONTENT, AgentContent.CONNECTED.getKey()+ connectionCount);
-                                        }
-                                        agentUtil.putLog(payLoad,orgId,agent.getId(),false);
-
-                                    }
+                                    processLog(payLoad,agent.getId());
                                     break;
                                 case event:
                                     alarmCreated = eventUtil.processEvents(record.getTimeStamp(), payLoad, record.getPartitionKey(), orgId, eventRules);
                                     break;
-
                             }
                             dataTypeLastMessageTime.put(dataType, lastMessageReceivedTime);
                             deviceMessageTime.put(deviceId, dataTypeLastMessageTime);
                         }if (numberOfRows == 0) {
-                            GenericUpdateRecordBuilder genericUpdateRecordBuilder = new GenericUpdateRecordBuilder().table(AgentKeys.AGENT_TABLE).fields(FieldFactory.getAgentDataFields()).andCustomWhere(AgentKeys.NAME + "= '" + payLoad.get(PublishType.agent.getValue()) + "'");
+                            GenericUpdateRecordBuilder genericUpdateRecordBuilder = new GenericUpdateRecordBuilder().table(AgentKeys.AGENT_TABLE).fields(FieldFactory.getAgentDataFields())
+                                  .andCondition(CriteriaAPI.getCondition(FieldFactory.getAgentNameField(ModuleFactory.getAgentDataModule()),agentName,StringOperators.IS))
+                                    .andCondition(CriteriaAPI.getCurrentOrgIdCondition(ModuleFactory.getAgentDataModule()));
                             Map<String, Object> toUpdate = new HashMap<>();
                             toUpdate.put(AgentKeys.LAST_DATA_RECEIVED_TIME, System.currentTimeMillis());
                             toUpdate.put(AgentKeys.CONNECTION_STATUS, Boolean.TRUE);
@@ -206,8 +201,13 @@ public class Processor extends FacilioProcessor {
                             genericUpdateRecordBuilder.update(toUpdate);
 
                         }
+                        if(isStage && agent != null) {
+                            AgentUtil.addAgentMetrics(dataLength, agent.getId(), publishType.getKey());
+                        }
 
+                        AgentUtil.updateAgentMessage(recordId,MessageStatus.PROCESSED);
                     }
+
                     catch (Exception e) {
                         CommonCommandUtil.emailException("Processor", "Error in processing records ", e, payLoad.toJSONString());
                         LOGGER.info("Exception occurred ", e);
@@ -229,6 +229,33 @@ public class Processor extends FacilioProcessor {
         }
     }
 
+    private void processLog(JSONObject payLoad,Long agentId){
+        if(isStage && (payLoad.containsKey(AgentKeys.COMMAND_STATUS) || payLoad.containsKey(AgentKeys.CONTENT))){
+            int connectionCount = -1;
+            if( payLoad.containsKey(AgentKeys.COMMAND_STATUS)){
+                if(("1".equals(payLoad.get(AgentKeys.COMMAND_STATUS).toString()))){
+
+                    if(payLoad.containsKey(AgentKeys.CONNECTION_COUNT)) {
+                        connectionCount = Integer.parseInt(payLoad.get(AgentKeys.CONNECTION_COUNT).toString());
+                    }
+
+                    if (connectionCount == -1) {
+                        payLoad.put(AgentKeys.CONTENT, AgentContent.CONNECTED.getKey());
+                    } else {
+                        if (connectionCount == 1) {
+                            payLoad.put(AgentKeys.CONTENT, AgentContent.RESTARTED.getKey());
+                            agentUtil.putLog(payLoad,orgId, agentId,false);
+                        }
+                        payLoad.put(AgentKeys.CONTENT, AgentContent.CONNECTED.getKey()+connectionCount);
+                    }
+                } else {
+                    payLoad.put(AgentKeys.CONTENT, AgentContent.DISCONNECTED.getKey());
+                }
+            }
+            AgentUtil.putLog(payLoad,orgId,agentId,false);
+        }
+    }
+
     private void processTimeSeries(FacilioRecord record) throws Exception {
         ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD",orgId);
         bean.processTimeSeries(getConsumer(), record);
@@ -240,6 +267,7 @@ public class Processor extends FacilioProcessor {
         agent.setAgentConnStatus(Boolean.TRUE);
         agent.setAgentState(1);
         agent.setAgentDataInterval(15L);
+        agent.setWritable(false);
         return agent;
     }
 
