@@ -1,9 +1,14 @@
 package com.facilio.bmsconsole.commands;
 
-import com.facilio.accounts.util.AccountUtil;
-import com.facilio.constants.FacilioConstants;
-import com.facilio.report.context.ReportContext;
-import com.facilio.report.context.ReportDataPointContext;
+import java.util.AbstractMap.SimpleEntry;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
@@ -11,8 +16,10 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
-import java.util.AbstractMap.SimpleEntry;
-import java.util.*;
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.report.context.ReportContext;
+import com.facilio.report.context.ReportDataPointContext;
 
 public class CalculateAggregationCommand implements Command {
 
@@ -37,7 +44,7 @@ public class CalculateAggregationCommand implements Command {
 			Map<String, Object> aggrData = new HashMap<>();
 
 			for (ReportDataPointContext dp : report.getDataPoints()) {
-				if (!dp.isAggrCalculated()) {
+				if (!dp.isAggrCalculated()) {//Whenever new aggregation is handled for another field type, dp.setAggregation should be updated there
 					switch (dp.getyAxis().getDataTypeEnum()) {
 						case NUMBER:
 						case DECIMAL:
@@ -52,7 +59,6 @@ public class CalculateAggregationCommand implements Command {
 						default:
 							break;
 					}
-					dp.setAggrCalculated(true);
 				}
 			}
 
@@ -86,6 +92,7 @@ public class CalculateAggregationCommand implements Command {
 			currentData = nextData;
 		}
 		aggregateEnum(report, dp, aggrData, timeAlias, currentData, null, isFirst, previousRecords); //for the last record
+		dp.setAggrCalculated(aggrData.containsKey(dp.getAliases().get(FacilioConstants.Reports.ACTUAL_DATA) + ".timeline"));
 	}
 
 	private void aggregateEnum (ReportContext report, ReportDataPointContext dp, Map<String, Object> aggrData, String timeAlias, Map<String, Object> currentData, Map<String, Object> nextData, boolean isFirst, Map<String, SimpleEntry<Long, Integer>> previousRecords) {
@@ -223,6 +230,7 @@ public class CalculateAggregationCommand implements Command {
 				calculateNumericAggr(data.get(alias), alias, aggrData, isLatest);
 			}
 		}
+		dp.setAggrCalculated(aggrData.containsKey(dp.getAliases().get(FacilioConstants.Reports.ACTUAL_DATA) + ".sum"));
 	}
 	
 	private void calculateNumericAggr (Object value, String alias, Map<String, Object> aggrData, boolean isLatest) {
