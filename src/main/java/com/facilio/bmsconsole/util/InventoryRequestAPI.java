@@ -58,7 +58,7 @@ public class InventoryRequestAPI {
 		if(lineItem != null) {
 			lineItem = getLineItem(lineItem.getId());
 				if(woItemQuantity <= (lineItem.getIssuedQuantity())) {
-					updateRequestUsedQuantity(lineItem, lineItem.getUsedQuantity() + woItemQuantity);
+					updateRequestUsedQuantity(lineItem, woItemQuantity);
 					return true;
 				}
 				return false;
