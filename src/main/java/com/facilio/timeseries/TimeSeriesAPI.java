@@ -265,12 +265,12 @@ public static void insertInstanceAssetMapping(String deviceName, long assetId, l
 			
 			checkForInputType(assetId, fieldId, instanceName, metaMap);
 
-			if(isStage()) {
+//			if(isStage()) {
 				Map<String, Object> pointsRecord = (Map<String, Object>) getNewPointsData(assetId,categoryId,fieldId);
-				pointsRecord.put("unit", unit);
+//				pointsRecord.put("unit", unit);
 				updatePointsData(deviceName, instanceName, pointsRecord);
 
-			}
+//			}
 
 			Map<String, Object> record = new HashMap<String,Object>();
 			record.put("orgId", orgId);
@@ -318,9 +318,6 @@ public static void insertInstanceAssetMapping(String deviceName, long assetId, l
 	private static void updatePointsData(String deviceName, String instanceName, Map<String, Object> pointsRecord)
 			throws SQLException {
 
-		if(!isStage()) {
-			return;
-		}
 		FacilioModule module = ModuleFactory.getPointsModule();
 		GenericUpdateRecordBuilder builderPoints = new GenericUpdateRecordBuilder()
 				.fields(FieldFactory.getPointsFields())
@@ -352,11 +349,11 @@ public static void insertInstanceAssetMapping(String deviceName, long assetId, l
 		}
 		Map<String, Object> prop=(Map<String, Object>) getNewPointsData(assetId,categoryId,fieldId);
 		
-		if(TimeSeriesAPI.isStage()) {
-			if(unit!=null) {
-				prop.put("unit", unit);	
-			}
-		}
+//		if(TimeSeriesAPI.isStage()) {
+//			if(unit!=null) {
+//				prop.put("unit", unit);	
+//			}
+//		}
 		
 		FacilioModule module = ModuleFactory.getInstanceMappingModule();
 		List<FacilioField> fields = FieldFactory.getInstanceMappingFields();
@@ -371,9 +368,9 @@ public static void insertInstanceAssetMapping(String deviceName, long assetId, l
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("device"), deviceName, StringOperators.IS))
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("instance"), instanceName, StringOperators.IS))
 				;
-		if(isStage()) {
+//		if(isStage()) {
 			updatePointsData(deviceName, instanceName,prop );
-		}
+//		}
 		int count = builder.update(prop);
 		
 		FacilioContext context = new FacilioContext();
@@ -634,9 +631,9 @@ public static void insertInstanceAssetMapping(String deviceName, long assetId, l
 				instanceObj.put("controllerId", controllerId);
 			}
 			insertBuilderPoints.addRecord(instanceObj);
-			if(TimeSeriesAPI.isStage() && AccountUtil.getCurrentOrg().getId()==104) {
-				LOGGER.info(instanceObj+"device points data");
-			}
+//			if(TimeSeriesAPI.isStage() && AccountUtil.getCurrentOrg().getId()==104) {
+				LOGGER.info(instanceObj+"device points data######");
+//			}
 		}
 		insertBuilderPoints.save();
 		return insertBuilderPoints.getRecords().size();
