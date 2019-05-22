@@ -1,3 +1,4 @@
+
 package com.facilio.workflowv2.modulefunctions;
 
 import java.util.ArrayList;
@@ -77,8 +78,18 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
 		FacilioModule module = (FacilioModule) objects.get(0);
-		DBParamContext dbParamContext = (DBParamContext) objects.get(1);
-		Criteria criteria = dbParamContext.getCriteria();
+		
+		Criteria criteria = null;
+		if(objects.get(1) instanceof DBParamContext) {
+			criteria = ((DBParamContext) objects.get(1)).getCriteria();
+		}
+		else if (objects.get(1) instanceof Criteria) {
+			criteria = (Criteria)objects.get(1);
+		}
+		
+		if(criteria == null) {
+			throw new Exception("criteria cannot be null during update");
+		}
 		
 		Map<String, Object> updateMap = (Map<String, Object>)objects.get(2);
 		
@@ -94,11 +105,21 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 		
 		FacilioModule module = (FacilioModule) objects.get(0);
 		
-		DBParamContext dbParamContext = (DBParamContext) objects.get(1);
+		Criteria criteria = null;
+		if(objects.get(1) instanceof DBParamContext) {
+			criteria = ((DBParamContext) objects.get(1)).getCriteria();
+		}
+		else if (objects.get(1) instanceof Criteria) {
+			criteria = (Criteria)objects.get(1);
+		}
+		
+		if(criteria == null) {
+			throw new Exception("criteria cannot be null during delete");
+		}
 		
 		DeleteRecordBuilder<ModuleBaseWithCustomFields> delete = new DeleteRecordBuilder<>()
 				.module(module)
-				.andCriteria(dbParamContext.getCriteria());
+				.andCriteria(criteria);
 		
 		delete.delete();
 	}
