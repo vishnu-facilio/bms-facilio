@@ -1013,6 +1013,9 @@ public class DashboardUtil {
 	
 	public static void getAllBuildingsForDashboard(List<DashboardContext> dashboards, List<Long> baseSpaceIds, String moduleName) throws Exception {
 		
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		
 		 List<BuildingContext> buildings = new ArrayList<>();
 		 List<Long> spaceIds = new ArrayList<>();
 		 
@@ -1026,22 +1029,22 @@ public class DashboardUtil {
 			
 			String spaceIdsString = new String();			
 			
-			if(moduleName.equals("energydata")) {
-				spaceIdsString = StringUtils.join(spaceIds, ',');
-				System.out.print(spaceIdsString);
-				
-				List<EnergyMeterContext> energyMeters = getMainEnergyMeter(spaceIdsString);
-				spaceIds.clear();
-				for(EnergyMeterContext energyMeter:energyMeters) {
-					spaceIds.add(energyMeter.getPurposeSpace().getId());
-				}
-
-			}
-			
 			List<DashboardContext> dbContext =  new ArrayList<>();
 			DashboardContext buildDashboardtoBeRemoved = null; 
 			for(DashboardContext dashboard :dashboards) {
 				if(dashboard.getLinkName().equals(BUILDING_DASHBOARD_KEY) && dashboard.getBaseSpaceId() == null) {
+					FacilioModule module = modBean.getModule(dashboard.getModuleId());
+					if(module.getName().equals("energydata")) {
+						spaceIdsString = StringUtils.join(spaceIds, ',');
+						System.out.print(spaceIdsString);
+						
+						List<EnergyMeterContext> energyMeters = getMainEnergyMeter(spaceIdsString);
+						spaceIds.clear();
+						for(EnergyMeterContext energyMeter:energyMeters) {
+							spaceIds.add(energyMeter.getPurposeSpace().getId());
+						}
+					}
+					
 					buildDashboardtoBeRemoved = dashboard;
 					for(Long spaceId:spaceIds) {
 						DashboardContext buildingDashboard = (DashboardContext) dashboard.clone();
@@ -1053,6 +1056,7 @@ public class DashboardUtil {
 						buildingDashboard.setDashboardName(ResourceAPI.getResource(spaceId).getName());
 						dbContext.add(buildingDashboard);
 					}
+					break;
 				}
 			}
 			dashboards.remove(buildDashboardtoBeRemoved);
@@ -1080,6 +1084,8 @@ public class DashboardUtil {
 						DashboardContext siteDashboard1 = (DashboardContext) dashboard.clone();
 						siteDashboard1.setBaseSpaceId(spaceId);
 						siteDashboard1.setId(-1l);
+						
+						siteDashboard1.setLinkName(siteDashboard1.getLinkName()+"/"+spaceId);
 						siteDashboard1.setDashboardName(ResourceAPI.getResource(spaceId).getName());
 						dbContext.add(siteDashboard1);
 					}
