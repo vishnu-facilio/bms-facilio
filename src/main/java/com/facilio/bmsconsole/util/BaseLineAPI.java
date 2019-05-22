@@ -1,8 +1,8 @@
 package com.facilio.bmsconsole.util;
 
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.bmsconsole.context.BaseLineContext;
-import com.facilio.bmsconsole.context.BaseLineContext.RangeType;
+import com.facilio.modules.BaseLineContext;
+import com.facilio.modules.BaseLineContext.RangeType;
 import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;

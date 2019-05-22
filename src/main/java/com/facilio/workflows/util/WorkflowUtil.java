@@ -2,8 +2,8 @@ package com.facilio.workflows.util;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.BaseLineContext;
-import com.facilio.bmsconsole.context.BaseLineContext.AdjustType;
+import com.facilio.modules.BaseLineContext;
+import com.facilio.modules.BaseLineContext.AdjustType;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
 
 import com.facilio.db.criteria.operators.*;
