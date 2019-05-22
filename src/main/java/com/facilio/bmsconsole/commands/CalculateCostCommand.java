@@ -2,7 +2,7 @@ package com.facilio.bmsconsole.commands;
 
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.context.AdditionalCostContext.CostType;
-import com.facilio.db.criteria.DateRange;
+import com.facilio.time.DateRange;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.FieldFactory;
 import com.facilio.bmsconsole.util.CostAPI;

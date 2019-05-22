@@ -12,7 +12,7 @@ import org.json.simple.parser.JSONParser;
 import com.facilio.beans.ModuleBean;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.operators.DateOperators;
-import com.facilio.db.criteria.DateRange;
+import com.facilio.time.DateRange;
 import com.facilio.db.criteria.operators.Operator;
 import com.facilio.modules.AggregateOperator;
 import com.facilio.modules.FacilioModule;

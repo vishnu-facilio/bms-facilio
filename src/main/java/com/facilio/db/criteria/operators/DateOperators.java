@@ -1,9 +1,7 @@
 package com.facilio.db.criteria.operators;
 
-import com.facilio.db.criteria.operators.CommonOperators;
-import com.facilio.db.criteria.DateRange;
+import com.facilio.time.DateRange;
 import com.facilio.db.criteria.FacilioModulePredicate;
-import com.facilio.db.criteria.operators.Operator;
 import com.facilio.time.DateTimeUtil;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.collections.PredicateUtils;

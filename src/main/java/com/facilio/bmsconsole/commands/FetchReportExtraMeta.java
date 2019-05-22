@@ -6,7 +6,7 @@ import com.facilio.bmsconsole.context.AlarmContext;
 import com.facilio.bmsconsole.context.ReadingAlarmContext;
 import com.facilio.bmsconsole.context.ReportAlarmContext;
 import com.facilio.db.criteria.Condition;
-import com.facilio.db.criteria.DateRange;
+import com.facilio.time.DateRange;
 import com.facilio.bmsconsole.util.AlarmAPI;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.constants.FacilioConstants;

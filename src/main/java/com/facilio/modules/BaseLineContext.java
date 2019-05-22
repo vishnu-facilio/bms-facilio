@@ -3,7 +3,7 @@ package com.facilio.modules;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.DateOperators;
-import com.facilio.db.criteria.DateRange;
+import com.facilio.time.DateRange;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.time.DateTimeUtil;
 import org.apache.commons.lang3.tuple.ImmutablePair;

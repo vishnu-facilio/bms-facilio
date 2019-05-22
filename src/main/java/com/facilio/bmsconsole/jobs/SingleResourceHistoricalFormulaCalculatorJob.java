@@ -3,7 +3,7 @@ package com.facilio.bmsconsole.jobs;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.FormulaFieldContext;
-import com.facilio.db.criteria.DateRange;
+import com.facilio.time.DateRange;
 import com.facilio.bmsconsole.util.FormulaFieldAPI;
 import com.facilio.tasker.job.FacilioJob;
 import com.facilio.tasker.job.JobContext;

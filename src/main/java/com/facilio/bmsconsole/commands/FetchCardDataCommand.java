@@ -31,7 +31,7 @@ import com.facilio.bmsconsole.context.ReportSpaceFilterContext;
 import com.facilio.bmsconsole.context.WidgetStaticContext;
 import com.facilio.bmsconsole.context.WidgetVsWorkflowContext;
 import com.facilio.db.criteria.operators.DateOperators;
-import com.facilio.db.criteria.DateRange;
+import com.facilio.time.DateRange;
 import com.facilio.db.criteria.operators.Operator;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.FieldFactory;
