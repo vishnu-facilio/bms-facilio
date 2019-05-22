@@ -6,6 +6,8 @@ import com.facilio.workflows.context.IteratorContext;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.context.WorkflowExpression;
 import com.facilio.workflows.context.WorkflowExpression.WorkflowExpressionType;
+import com.facilio.workflows.util.WorkflowUtil;
+
 import org.json.simple.JSONArray;
 
 import java.io.Serializable;
@@ -60,7 +62,7 @@ public class ElseContext implements WorkflowCondition,Serializable {
 	@Override
 	public boolean evalCriteriaAndExecute(WorkflowContext workflowContext) throws Exception {
 		
-		WorkflowContext.executeExpression(expressions, workflowContext);
+		WorkflowUtil.executeExpression(expressions, workflowContext);
 		return true;
 	}
 	

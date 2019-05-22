@@ -85,7 +85,7 @@ public class IfContext implements Serializable,WorkflowCondition {
 		 }
 		
 		if(isPassed) {
-			WorkflowContext.executeExpression(expressions, workflowContext);
+			WorkflowUtil.executeExpression(expressions, workflowContext);
 			return true;
 		}
 		return false;

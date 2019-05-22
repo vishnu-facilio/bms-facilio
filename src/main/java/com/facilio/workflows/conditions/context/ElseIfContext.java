@@ -87,7 +87,7 @@ public class ElseIfContext implements WorkflowCondition,Serializable {
 		 }
 		
 		if(isPassed) {
-			WorkflowContext.executeExpression(expressions, workflowContext);
+			WorkflowUtil.executeExpression(expressions, workflowContext);
 			return true;
 		}
 		return false;

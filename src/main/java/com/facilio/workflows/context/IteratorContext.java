@@ -2,6 +2,8 @@ package com.facilio.workflows.context;
 
 import com.facilio.bmsconsole.commands.CalculateDerivationCommand;
 import com.facilio.bmsconsole.modules.FieldUtil;
+import com.facilio.workflows.util.WorkflowUtil;
+
 import org.json.simple.JSONArray;
 
 import java.util.ArrayList;
@@ -87,7 +89,7 @@ public class IteratorContext implements WorkflowExpression {
 			    for (WorkflowExpression expression : expressions) {
 			    	newExpressions.add((WorkflowExpression)expression.clone());
 			    }
-				WorkflowContext.executeExpression(newExpressions, workflowContext);
+			    WorkflowUtil.executeExpression(newExpressions, workflowContext);
 			}
 			variableToExpresionMap.remove(loopVariableIndexName);
 			variableToExpresionMap.remove(loopVariableValueName);
@@ -103,7 +105,7 @@ public class IteratorContext implements WorkflowExpression {
 			    for (WorkflowExpression expression : expressions) {
 			    	newExpressions.add((WorkflowExpression)expression.clone());
 			    }
-				WorkflowContext.executeExpression(newExpressions, workflowContext);
+			    WorkflowUtil.executeExpression(newExpressions, workflowContext);
 			}
 			variableToExpresionMap.remove(loopVariableIndexName);
 			variableToExpresionMap.remove(loopVariableValueName);

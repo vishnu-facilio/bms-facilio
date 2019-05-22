@@ -328,7 +328,7 @@ public class WorkflowContext implements Serializable {
 		}
 		if (expressions != null) {
 			
-			executeExpression(expressions,this);
+			WorkflowUtil.executeExpression(expressions,this);
 			
 			if(getResultEvaluator() == null && isSingleExpression() && expressions.get(0) instanceof ExpressionContext) {
 				ExpressionContext exp = (ExpressionContext) expressions.get(0);
@@ -343,37 +343,6 @@ public class WorkflowContext implements Serializable {
 		
 		result =  WorkflowUtil.evaluateExpression(getResultEvaluator(),variableResultMap, isIgnoreNullParams);
 		return result;
-	}
-	
-	public static void executeExpression(List<WorkflowExpression> expressions,WorkflowContext workflowContext) throws Exception {
-		
-		Map<String, Object> variableResultMap1 = workflowContext.getVariableResultMap();
-		for(int i=0; i<expressions.size(); i++) {
-			
-			WorkflowExpression wokflowExpresion = expressions.get(i);
-			
-			if(wokflowExpresion instanceof ExpressionContext) {
-				
-				ExpressionContext expressionContext = (ExpressionContext) wokflowExpresion;
-				expressionContext = WorkflowUtil.fillParamterAndParseExpressionContext(expressionContext,variableResultMap1);
-				expressionContext.setVariableToExpresionMap(variableResultMap1);
-				
-				Object res = expressionContext.execute(workflowContext);
-				if(expressionContext.getName() != null && !expressionContext.getName().isEmpty()) {
-					variableResultMap1.put(expressionContext.getName(), res);
-				}
-			}
-			else if(wokflowExpresion instanceof IteratorContext) {
-		
-				IteratorContext iteratorContext = (IteratorContext) wokflowExpresion;
-				iteratorContext.execute(workflowContext);
-			}
-			else if(wokflowExpresion instanceof ConditionContext) {
-				
-				ConditionContext conditionContext = (ConditionContext) wokflowExpresion;
-				conditionContext.execute(workflowContext);
-			}
-		}
 	}
 	
 	public boolean isSingleExpression() {
