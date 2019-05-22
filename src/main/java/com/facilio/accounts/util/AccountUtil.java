@@ -130,10 +130,10 @@ public class AccountUtil {
 		TENANTS (32768),
 		NEW_FORM (65536),
 		CONNECTEDAPPS (131072),
-		NEW_LAYOUT (262144)
+		NEW_LAYOUT (64)
 		;
 		
-		// Use 64, 512 for next features
+		// Use 512 for next features
 		
 		private long license;
 		FeatureLicense(long license) {

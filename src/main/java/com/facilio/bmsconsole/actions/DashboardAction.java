@@ -575,7 +575,7 @@ public class DashboardAction extends FacilioAction {
 		return this.heatMapRange;
 	}
 	
-	public String getReadingReportData() throws Exception {
+	public String getReadingReportData() throws Exception {							// report functions
 		if (derivation != null) {
 			return getDerivationData();
 		}
@@ -629,7 +629,7 @@ public class DashboardAction extends FacilioAction {
 	}
 	
 	@SuppressWarnings("unchecked")
-	private String getDerivationData() throws Exception {
+	private String getDerivationData() throws Exception {												// report functions
 		WorkflowContext workflow = WorkflowUtil.getWorkflowContext(derivation.getWorkflowId(), true);
 //		workflow.setFromDerivation(true);
 		List<DateRange> intervals;
@@ -680,7 +680,7 @@ public class DashboardAction extends FacilioAction {
 	public void setReportMeta(JSONObject reportMeta) {
 		this.reportMeta = reportMeta;
 	}
-	public String getReportMetaForAlarms() throws Exception {
+	public String getReportMetaForAlarms() throws Exception {								// report functions
 		
 		AlarmContext alarm = AlarmAPI.getAlarm(alarmId);
 		
@@ -800,7 +800,7 @@ public class DashboardAction extends FacilioAction {
 		return SUCCESS;
 	}
 	
-	private ReportContext constructReportObjectForReadingReport(FacilioModule module, FacilioField readingField,Long parentid) throws Exception {
+	private ReportContext constructReportObjectForReadingReport(FacilioModule module, FacilioField readingField,Long parentid) throws Exception {	// report functions
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		LOGGER.log(Level.SEVERE,"module.getName() -- "+module.getName());
 		ReportContext readingReport = new ReportContext();
@@ -921,7 +921,7 @@ public class DashboardAction extends FacilioAction {
 	public void setParamsJson(JSONObject paramsJson) {
 		this.paramsJson = paramsJson;
 	}
-	public String getTabularData() throws Exception {
+	public String getTabularData() throws Exception {						// report functions
 		
 		if (reportContext == null) {
 			reportContext = DashboardUtil.getReportContext(reportId);
@@ -1062,7 +1062,7 @@ public class DashboardAction extends FacilioAction {
 	public void setVariance(JSONObject variance) {
 		this.variance = variance;
 	}
-	public String getData() throws Exception {
+	public String getData() throws Exception {			// report functions
 		
 		if (reportContext == null) {
 			reportContext = DashboardUtil.getReportContext(reportId);
@@ -1170,7 +1170,7 @@ public class DashboardAction extends FacilioAction {
 		return this.excludeViolatedReadings;
 	}
 	
-	private void setConditions(String moduleName, String fieldName, JSONObject fieldJson,List<Condition> conditionList) throws Exception { // check and remove
+	private void setConditions(String moduleName, String fieldName, JSONObject fieldJson,List<Condition> conditionList) throws Exception { // check and remove	
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
@@ -1231,7 +1231,7 @@ public class DashboardAction extends FacilioAction {
 		this.reportFieldsJson = reportFieldsJson;
 	}
 	
-	private JSONArray getDataForTickets(ReportContext report, FacilioModule module, JSONArray dateFilter, JSONObject userFilterValues, long baseLineId, long criteriaId) throws Exception {
+	private JSONArray getDataForTickets(ReportContext report, FacilioModule module, JSONArray dateFilter, JSONObject userFilterValues, long baseLineId, long criteriaId) throws Exception {	// report functions
 		JSONArray ticketData = null;
 		
 		if(AccountUtil.getCurrentOrg().getOrgId() == 108l) {
@@ -4182,7 +4182,7 @@ public class DashboardAction extends FacilioAction {
 	public void setDeleteWithWidget(boolean isDeleteWithWidget) {
 		this.isDeleteWithWidget = isDeleteWithWidget;
 	}
-	public String deleteReport() throws Exception {
+	public String deleteReport() throws Exception {									// report functions
 		
 		List<WidgetChartContext> widgetCharts = null;
 		if(!isDeleteWithWidget) {
@@ -4197,7 +4197,7 @@ public class DashboardAction extends FacilioAction {
 		}
 		return ERROR;
 	}
-	public String updateReport() throws Exception {
+	public String updateReport() throws Exception {										// report functions
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		if(moduleName != null) {
 			
@@ -4230,7 +4230,7 @@ public class DashboardAction extends FacilioAction {
 	}
 	
 	
-	public static Double getTotalKwh(List<String> parentIds, long startTime, long endTime) throws Exception {
+	public static Double getTotalKwh(List<String> parentIds, long startTime, long endTime) throws Exception {			// report functions
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule("energydata");
@@ -4274,7 +4274,7 @@ public class DashboardAction extends FacilioAction {
 	public void setBooleanResultGrouping(JSONArray booleanResultGrouping) {
 		this.booleanResultGrouping = booleanResultGrouping;
 	}
-	private JSONArray getDataForReadings(ReportContext report, FacilioModule module, JSONArray dateFilter, JSONObject userFilterValues, long baseLineId, long criteriaId) throws Exception {
+	private JSONArray getDataForReadings(ReportContext report, FacilioModule module, JSONArray dateFilter, JSONObject userFilterValues, long baseLineId, long criteriaId) throws Exception {	// report functions
 		JSONArray readingData = null;
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
@@ -5517,7 +5517,7 @@ public class DashboardAction extends FacilioAction {
 		this.readingAlarms = readingAlarms;
 	}
 	
-	private Map<String, Double> getViolatedReadings(ReportContext reportContext, JSONArray dateFilter, Long baseLineId) throws Exception {
+	private Map<String, Double> getViolatedReadings(ReportContext reportContext, JSONArray dateFilter, Long baseLineId) throws Exception {		// report functions
 		
 		Map<String, Double> violatedReadings = new HashMap<>();
 		
@@ -5599,7 +5599,7 @@ public class DashboardAction extends FacilioAction {
 	
 	public static final int aswaqComp = 1,aswaqnonComp = 1,aswaqrep = 1,aswaqna = 1;
 	
-	public String getAswaqData() throws Exception {
+	public String getAswaqData() throws Exception {		// report functions
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
@@ -5733,7 +5733,7 @@ public class DashboardAction extends FacilioAction {
 		return SUCCESS;
 	}
 	
-	public String getUTCData() throws Exception {
+	public String getUTCData() throws Exception {		// report functions
 	
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -6067,7 +6067,7 @@ public class DashboardAction extends FacilioAction {
 		return this.displayFields;
 	}
 	
-	public String getUnderlyingData() throws Exception {
+	public String getUnderlyingData() throws Exception {		// report functions
 		
 		FacilioModule module = getModule();
 		
@@ -6086,7 +6086,7 @@ public class DashboardAction extends FacilioAction {
 		return SUCCESS;
 	}
 	
-	public String exportData() throws Exception{
+	public String exportData() throws Exception{			// report functions
 		
 		FacilioModule module = getModule();
 	
@@ -6154,7 +6154,7 @@ public class DashboardAction extends FacilioAction {
 		this.analyticsConfig = analyticsConfig;
 	}
 	
-	private List<ModuleBaseWithCustomFields> getRawData(FacilioContext context, FacilioModule module) throws Exception {
+	private List<ModuleBaseWithCustomFields> getRawData(FacilioContext context, FacilioModule module) throws Exception {	// report functions
 		
 		if(context == null) {
 			context = new FacilioContext();
@@ -6365,7 +6365,7 @@ public class DashboardAction extends FacilioAction {
 		this.fileUrl = url;
 	}
 	
-	public String sendReportMail() throws Exception {
+	public String sendReportMail() throws Exception {		// report functions
 		
 		FacilioContext context = new FacilioContext();
 		if (reportId != null) {
@@ -6402,7 +6402,7 @@ public class DashboardAction extends FacilioAction {
  		return SUCCESS;
 	}
 	
-	public String scheduleReport() throws Exception {
+	public String scheduleReport() throws Exception {					// report functions
 		
 		emailTemplate.setName("Report");
 		emailTemplate.setFrom("report@${org.domain}.facilio.com");
