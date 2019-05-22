@@ -13,7 +13,6 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
-import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.StringOperators;
@@ -77,7 +76,7 @@ public class ProcessDataCommand implements Command {
 					instanceList.add(instanceName);
 				}
 			}	
-//			if(TimeSeriesAPI.isStage()) {
+		if(TimeSeriesAPI.isStage()) {
 				
 				if(instanceList.length()>0) { //if innerKeyList isEmpty,.. so the length will be 0
 					FacilioModule module=ModuleFactory.getPointsModule();
@@ -88,14 +87,14 @@ public class ProcessDataCommand implements Command {
 					deviceAndInstanceCriteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getInstanceField(module), instanceList.toString(), StringOperators.IS));
 					criteriaList.orCriteria(deviceAndInstanceCriteria);
 				}	
-//			}
 		}
-//		if(TimeSeriesAPI.isStage()) {
+		}
+	if(TimeSeriesAPI.isStage()) {
 			
 			pointsStat= getDataPoints(criteriaList);
 			LOGGER.debug("########### Insert Points Data: "+pointsStat);
 			context.put("DATA_POINTS",pointsStat );
-//		}
+	}
 		LOGGER.debug("Finished ProcessDataCommand####### : ");
 		context.put(FacilioConstants.ContextNames.DEVICE_DATA, deviceData);		
 		return false;
