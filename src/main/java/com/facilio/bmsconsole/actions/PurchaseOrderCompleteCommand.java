@@ -54,16 +54,16 @@ public class PurchaseOrderCompleteCommand implements Command {
 										containsIndividualTrackingItem = true;
 									} else {
 										containsIndividualTrackingItem = false;
-									}
-									itemsTobeAdded.add(createItem(po, lineItem, containsIndividualTrackingItem));
+										itemsTobeAdded.add(createItem(po, lineItem, containsIndividualTrackingItem));
+									}									
 								} else if (lineItem.getInventoryTypeEnum() == InventoryType.TOOL) {
 									ToolTypesContext toolType = getToolType(lineItem.getToolType().getId());
 									if (toolType.isRotating()) {
 										containsIndividualTrackingTool = true;
 									} else {
 										containsIndividualTrackingTool = false;
-									}
-									toolsToBeAdded.add(createTool(po, lineItem, containsIndividualTrackingTool));
+										toolsToBeAdded.add(createTool(po, lineItem, containsIndividualTrackingTool));
+									}								
 								}
 							}
 						}
