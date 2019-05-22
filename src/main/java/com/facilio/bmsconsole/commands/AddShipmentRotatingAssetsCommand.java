@@ -21,6 +21,7 @@ import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.ItemsApi;
+import com.facilio.bmsconsole.util.ShipmentAPI;
 import com.facilio.bmsconsole.util.StoreroomApi;
 import com.facilio.bmsconsole.util.ToolsApi;
 import com.facilio.bmsconsole.workflow.rule.EventType;
@@ -40,16 +41,16 @@ public class AddShipmentRotatingAssetsCommand implements Command{
 				ToolContext tool = null;
 				if (lineItem.getInventoryTypeEnum() == InventoryType.ITEM) {
 					item = ItemsApi.
-							getItem(lineItem.getItemType(), lineItem.getShipmentContext().getToStore());
+							getItem(lineItem.getItemType(), ShipmentAPI.getShipment(lineItem.getShipment()).getToStore());
 				}
 				if (lineItem.getInventoryTypeEnum() == InventoryType.TOOL) {
-					tool = ToolsApi.getTool(lineItem.getToolType(), lineItem.getShipmentContext().getToStore());
+					tool = ToolsApi.getTool(lineItem.getToolType(), ShipmentAPI.getShipment(lineItem.getShipment()).getToStore());
 				}
 			
 				AssetContext asset = AssetsAPI.getAssetInfo(lineItem.getAsset().getId(), true);
 				AssetContext ast = new AssetContext();
 				ast.setSerialNumber(asset.getSerialNumber());
-				ast.setSiteId(StoreroomApi.getStoreRoom(lineItem.getShipmentContext().getToStore().getId()).getSite().getId());
+				ast.setSiteId(StoreroomApi.getStoreRoom(ShipmentAPI.getShipment(lineItem.getShipment()).getToStore().getId()).getSite().getId());
 				ast.setName(asset.getName());
 				ast.setRotatingItem(item);
 				ast.setRotatingTool(tool);
@@ -87,7 +88,6 @@ public class AddShipmentRotatingAssetsCommand implements Command{
 		prop.put("assetIdFromStore", oldAssetId);
 		prop.put("assetIdToStore", newAssetId);
 		prop.put("shipmentId", shipmentId);
-		prop.put("orgId", AccountUtil.getCurrentOrg().getId());
 				
 		
 		GenericInsertRecordBuilder insert = new GenericInsertRecordBuilder();

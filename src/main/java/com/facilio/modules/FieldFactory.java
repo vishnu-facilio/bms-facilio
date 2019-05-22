@@ -5922,8 +5922,7 @@ public class FieldFactory {
 		fields.add(getField("assetIdFromStore", "ASSET_ID_FROM_STORE", module, FieldType.NUMBER));
 		fields.add(getField("assetIdToStore", "ASSET_ID_TO_STORE", module, FieldType.NUMBER));
 		fields.add(getField("shipmentId", "SHIPMENT_ID", module, FieldType.NUMBER));
-		fields.add(getField("orgId", "ORGID", module, FieldType.NUMBER));
-
+		
 		return fields;
 	}
 //	public static List<FacilioField> getStateFields() {

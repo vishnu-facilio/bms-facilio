@@ -1,8 +1,14 @@
 package com.facilio.bmsconsole.context;
 
+import java.util.Collections;
 import java.util.List;
 
+import com.facilio.accounts.dto.User;
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
+import com.facilio.bmsconsole.util.ItemsApi;
+import com.facilio.bmsconsole.util.ShipmentAPI;
+import com.facilio.bmsconsole.util.ToolsApi;
+import com.facilio.bmsconsole.util.TransactionType;
 
 public class ShipmentLineItemContext extends ModuleBaseWithCustomFields{
 	
@@ -87,14 +93,44 @@ public class ShipmentLineItemContext extends ModuleBaseWithCustomFields{
 		this.assetIds = assetIds;
 	}
 	
-	private ShipmentContext shipmentContext;
-	public ShipmentContext getShipmentContext() {
-		return shipmentContext;
-	}
-	public void setShipmentContext(ShipmentContext shipmentContext) {
-		this.shipmentContext = shipmentContext;
-	}
-	
-	
+	  public ItemTransactionsContext contructManualItemTransactionContext(ShipmentContext shipment) throws Exception { 
+	        ItemTransactionsContext transaction = new ItemTransactionsContext(); 
+	        if(shipment.getFromStore() == null) { 
+	            throw new IllegalArgumentException("No appropriate Item found"); 
+	        } 
+	        ItemContext item = ItemsApi.getItemsForTypeAndStore(shipment.getFromStore().getId(), this.getItemType().getId()); 
+	        transaction.setItem(item); 
+	        transaction.setIssuedTo(shipment.getReceivedBy()); 
+	        transaction.setParentId(shipment.getReceivedBy().getId()); 
+	        transaction.setShipment(shipment.getId());
+	        transaction.setTransactionType(TransactionType.SHIPMENT_STOCK); 
+	        transaction.setTransactionState(2); 
+	        transaction.setQuantity(this.getQuantity()); 
+	        if(this.getAsset() != null && this.getAsset().getId() > 0) { 
+	            transaction.setAssetIds(Collections.singletonList(this.getAsset().getId())); 
+	        } 
+	        return transaction; 
+	         
+	    } 
+	    public ToolTransactionContext contructManualToolTransactionContext(ShipmentContext shipment) throws Exception { 
+	    	ToolTransactionContext transaction = new ToolTransactionContext(); 
+	        if(shipment.getFromStore() == null) { 
+	            throw new IllegalArgumentException("No appropriate Tool found"); 
+	        } 
+	        ToolContext tool = ToolsApi.getToolsForTypeAndStore(shipment.getFromStore().getId(), this.getToolType().getId()); 
+	        transaction.setTool(tool); 
+	        transaction.setIssuedTo(shipment.getReceivedBy()); 
+	        transaction.setParentId(shipment.getReceivedBy().getId()); 
+	        transaction.setShipment(shipment.getId());
+	        transaction.setTransactionType(TransactionType.SHIPMENT_STOCK); 
+	        transaction.setTransactionState(2); 
+	        transaction.setQuantity(this.getQuantity()); 
+	         
+	        if(this.getAsset() != null && this.getAsset().getId() > 0) { 
+	            transaction.setAssetIds(Collections.singletonList(this.getAsset().getId())); 
+	        } 
+	        return transaction; 
+	         
+	    } 
 	
 }

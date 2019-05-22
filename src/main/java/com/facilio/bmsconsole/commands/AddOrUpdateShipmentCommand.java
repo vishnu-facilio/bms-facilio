@@ -30,7 +30,7 @@ public class AddOrUpdateShipmentCommand implements Command{
 	public boolean execute(Context context) throws Exception {
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 		ShipmentContext shipment = (ShipmentContext) context.get(FacilioConstants.ContextNames.RECORD);
-		if(shipment!=null) {
+		if(shipment!=null && shipment.isShipmentTrackingEnabled()) {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioModule module = modBean.getModule(moduleName);
 			List<FacilioField> fields = modBean.getAllFields(moduleName);
@@ -55,7 +55,7 @@ public class AddOrUpdateShipmentCommand implements Command{
 				deleteBuilder.delete();
 			} else {
 				
-				shipment.setStatus(ShipmentContext.Status.NOTSTAGED);
+				shipment.setStatus(ShipmentContext.Status.STAGED);
 				addRecord(true,Collections.singletonList(shipment), module, fields);
 			}
 			

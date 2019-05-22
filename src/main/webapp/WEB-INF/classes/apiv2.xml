@@ -2264,6 +2264,12 @@
 			<param name="moduleName">shipment</param>
 			<param name="permission">READ</param>
 		</action>
+		
+		<action name="transfer" class="com.facilio.bmsconsole.actions.ShipmentAction" method="transfer">
+			<param name="moduleName">shipment</param>
+			<param name="permission">READ</param>
+		</action>
+		
 		 <action name="*" class="com.facilio.bmsconsole.actions.ShipmentAction" method="getShipmentList">
 			<param name="viewName">{1}</param>
 			<param name="moduleName">shipment</param>

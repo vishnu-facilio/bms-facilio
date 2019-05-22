@@ -61,7 +61,7 @@ public class AddOrUpdateManualToolTransactionsCommand implements Command {
 							throw new IllegalArgumentException("Insufficient quantity in inventory!");
 						} else {
 							ApprovalState approvalState = ApprovalState.YET_TO_BE_REQUESTED;
-							if (toolTransaction.getRequestedLineItem() != null && toolTransaction.getRequestedLineItem().getId() > 0) {
+							if (toolTypes.isApprovalNeeded() || storeRoom.isApprovalNeeded()) {
 								approvalState = ApprovalState.APPROVED;
 							}
 							wTool = setWorkorderItemObj(toolTransaction.getQuantity(), tool, toolTransaction,
@@ -78,7 +78,7 @@ public class AddOrUpdateManualToolTransactionsCommand implements Command {
 						throw new IllegalArgumentException("Insufficient quantity in inventory!");
 					} else {
 						ApprovalState approvalState = ApprovalState.YET_TO_BE_REQUESTED;
-						if (toolTransaction.getRequestedLineItem() != null && toolTransaction.getRequestedLineItem().getId() > 0) {
+						if (toolTypes.isApprovalNeeded() || storeRoom.isApprovalNeeded()) {
 							approvalState = ApprovalState.APPROVED;
 						}
 						if (toolTypes.isRotating()) {
@@ -99,7 +99,7 @@ public class AddOrUpdateManualToolTransactionsCommand implements Command {
 										.getTransactionStateEnum() == TransactionState.ISSUE) {
 										asset.setIsUsed(true);
 									}
-									
+
 									// if(toolTransaction.getTransactionStateEnum()
 									// == TransactionState.RETURN){
 									// pTool.setIsUsed(false);
@@ -164,7 +164,7 @@ public class AddOrUpdateManualToolTransactionsCommand implements Command {
 		woTool.setParentTransactionId(toolTransaction.getParentTransactionId());
 		woTool.setApprovedState(approvalState);
 		woTool.setRemainingQuantity(quantity);
-		
+
 		if(toolTransaction.getTransactionStateEnum() == TransactionState.RETURN) {
 			woTool.setApprovedState(ApprovalState.YET_TO_BE_REQUESTED);
 		}

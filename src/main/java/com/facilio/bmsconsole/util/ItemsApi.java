@@ -1,12 +1,19 @@
 package com.facilio.bmsconsole.util;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.collections4.CollectionUtils;
+
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.ItemContext;
 import com.facilio.bmsconsole.context.ItemTransactionsContext;
+import com.facilio.bmsconsole.context.ItemContext.CostType;
 import com.facilio.bmsconsole.context.ItemTypesContext;
 import com.facilio.bmsconsole.context.StoreRoomContext;
-import com.facilio.bmsconsole.context.ItemContext.CostType;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
@@ -26,11 +33,6 @@ import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import org.apache.commons.collections4.CollectionUtils;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 public class ItemsApi {
 	public static Map<Long, ItemTypesContext> getItemTypesMap(long id) throws Exception {
@@ -280,6 +282,27 @@ public class ItemsApi {
 		readingBuilder.insert(item);
 		return item;
 	}
+
+
+	public static ItemContext getItemsForTypeAndStore(long storeId, long itemTypeId) throws Exception {
+        if (storeId <= 0) {
+            return null;
+        }
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ITEM);
+        List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.ITEM);
+        SelectRecordsBuilder<ItemContext> selectBuilder = new SelectRecordsBuilder<ItemContext>().select(fields)
+                .table(module.getTableName()).moduleName(module.getName()).beanClass(ItemContext.class)
+                .andCondition(CriteriaAPI.getCondition("STORE_ROOM_ID", "storeRoom", String.valueOf(storeId), NumberOperators.EQUALS))
+                .andCondition(CriteriaAPI.getCondition("ITEM_TYPES_ID", "itemType", String.valueOf(itemTypeId), NumberOperators.EQUALS))
+
+                ;
+        List<ItemContext> items = selectBuilder.get();
+        if(!CollectionUtils.isEmpty(items)) {
+            return items.get(0);
+        }
+     throw new IllegalArgumentException("No appropriate item found");
+    }
 
 
 }

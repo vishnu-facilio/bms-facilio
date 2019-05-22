@@ -81,4 +81,14 @@ public class ShipmentContext extends ModuleBaseWithCustomFields{
 	public void setLineItems(List<ShipmentLineItemContext> lineItems) {
 		this.lineItems = lineItems;
 	}
+	
+	private boolean shipmentTrackingEnabled;
+	public boolean isShipmentTrackingEnabled() {
+		return shipmentTrackingEnabled;
+	}
+	public void setShipmentTrackingEnabled(boolean shipmentTrackingEnabled) {
+		this.shipmentTrackingEnabled = shipmentTrackingEnabled;
+	}
+	
+	
 }

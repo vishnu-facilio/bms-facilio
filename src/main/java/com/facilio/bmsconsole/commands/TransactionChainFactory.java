@@ -2734,21 +2734,44 @@ public class TransactionChainFactory {
 			Chain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForShipment());
 			c.addCommand(new AddOrUpdateShipmentCommand());
+			c.addCommand(getReceiveShipmentInventoryChain());
+		    return c;
+		}
+		
+		public static Chain getReceiveShipmentInventoryChain() {
+			Chain c = getDefaultChain();
 			c.addCommand(new ReceiveShipmentCommand());
 			c.addCommand(getBulkAddToolChain());
 			c.addCommand(getAddBulkItemChain());
 			c.addCommand(new AddShipmentRotatingAssetsCommand());
-		    return c;
+			return c;
 		}
-		
 		public static Chain getStageShipmentChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForShipment());
 			c.addCommand(new AddOrUpdateShipmentCommand());
-			c.addCommand(new ReceiveShipmentCommand());
-			c.addCommand(getBulkAddToolChain());
-			c.addCommand(getAddBulkItemChain());
-			c.addCommand(new AddShipmentRotatingAssetsCommand());
+			c.addCommand(getStageShipmentInventoryChain());
+			return c;
+		}
+		
+		public static Chain getStageShipmentInventoryChain () {
+			Chain c = getDefaultChain();
+			c.addCommand(new StageShipmentCommand());
+			c.addCommand(new LoadTransactionInputForShipmentCommand()); 
+	        c.addCommand(getAddOrUpdateItemTransactionsChain()); 
+	        //rollups work with record_list object in the context 
+	        c.addCommand(new LoadToolTransactionsCommand()); 
+	        c.addCommand(getAddOrUdpateToolTransactionsChain());
+	        c.addCommand(new DeleteShipmentRotatingAssetCommand());
+	        return c;
+		    
+		}
+		
+		public static Chain getTransferShipmentChain() {
+			
+			Chain c = getDefaultChain();
+			c.addCommand(getStageShipmentInventoryChain());
+		    c.addCommand(getReceiveShipmentInventoryChain());
 		    return c;
 		}
 }

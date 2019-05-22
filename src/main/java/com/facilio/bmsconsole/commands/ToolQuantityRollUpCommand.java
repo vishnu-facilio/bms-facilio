@@ -15,6 +15,7 @@ import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.*;
 
@@ -26,15 +27,16 @@ public class ToolQuantityRollUpCommand implements Command {
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
 
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		List<? extends ToolTransactionContext> toolTransactions = (List<ToolTransactionContext>) context
 				.get(FacilioConstants.ContextNames.RECORD_LIST);
+		
+		List<Long> toolIds = (List<Long>) context
+				.get(FacilioConstants.ContextNames.TOOL_IDS);
+		
 		if (toolTransactions != null && !toolTransactions.isEmpty()) {
 			// temp check, to be changed
 			if (toolTransactions.get(0) instanceof ToolTransactionContext) {
-				FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.TOOL);
-				List<FacilioField> toolFields = modBean.getAllFields(FacilioConstants.ContextNames.TOOL);
-
+				
 				Set<Long> uniqueToolIds = new HashSet<Long>();
 				int totalQuantityConsumed = 0;
 
@@ -46,37 +48,53 @@ public class ToolQuantityRollUpCommand implements Command {
 
 				// List<Long> toolIds = (List<Long>)
 				// context.get(FacilioConstants.ContextNames.TOOL_IDS);
-				long toolTypeId = -1;
-				List<Long> toolTypesIds = new ArrayList<>();
-				if (uniqueToolIds != null && !uniqueToolIds.isEmpty()) {
-					for (long stId : uniqueToolIds) {
-						SelectRecordsBuilder<ToolContext> selectBuilder = new SelectRecordsBuilder<ToolContext>()
-								.select(toolFields).table(module.getTableName()).moduleName(module.getName())
-								.beanClass(ToolContext.class).andCondition(CriteriaAPI.getIdCondition(stId, module));
-
-						List<ToolContext> tools = selectBuilder.get();
-						ToolContext tool = new ToolContext();
-						if (tools != null && !tools.isEmpty()) {
-							tool = tools.get(0);
-							toolTypeId = tool.getToolType().getId();
-							tool.setQuantity(getTotalQuantity(stId));
-							double availableQty = getTotalQuantityConsumed(stId);
-							tool.setCurrentQuantity(availableQty);
-							toolTypesIds.add(tool.getToolType().getId());
-						}
-
-						UpdateRecordBuilder<ToolContext> updateBuilder = new UpdateRecordBuilder<ToolContext>()
-								.module(module).fields(modBean.getAllFields(module.getName()))
-								.andCondition(CriteriaAPI.getIdCondition(tool.getId(), module));
-
-						updateBuilder.update(tool);
-						context.put(FacilioConstants.ContextNames.TOOL_TYPES_ID, toolTypeId);
-					}
-				}
-				context.put(FacilioConstants.ContextNames.TOOL_TYPES_IDS, toolTypesIds);
+				constructToolAndTypeIds(uniqueToolIds,context);
 			}
 		}
+		else if(CollectionUtils.isNotEmpty(toolIds)) {
+			Set<Long> uniqueToolIds = new HashSet<Long>();
+			for (Long id : toolIds) {
+				uniqueToolIds.add(id);
+			}
+			constructToolAndTypeIds(uniqueToolIds,context);
+		}
 		return false;
+	}
+	
+	public static void constructToolAndTypeIds(Set<Long> uniqueToolIds, Context context) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.TOOL);
+		List<FacilioField> toolFields = modBean.getAllFields(FacilioConstants.ContextNames.TOOL);
+
+		
+		long toolTypeId = -1;
+		List<Long> toolTypesIds = new ArrayList<>();
+		if (uniqueToolIds != null && !uniqueToolIds.isEmpty()) {
+			for (long stId : uniqueToolIds) {
+				SelectRecordsBuilder<ToolContext> selectBuilder = new SelectRecordsBuilder<ToolContext>()
+						.select(toolFields).table(module.getTableName()).moduleName(module.getName())
+						.beanClass(ToolContext.class).andCondition(CriteriaAPI.getIdCondition(stId, module));
+
+				List<ToolContext> tools = selectBuilder.get();
+				ToolContext tool = new ToolContext();
+				if (tools != null && !tools.isEmpty()) {
+					tool = tools.get(0);
+					toolTypeId = tool.getToolType().getId();
+					tool.setQuantity(getTotalQuantity(stId));
+					double availableQty = getTotalQuantityConsumed(stId);
+					tool.setCurrentQuantity(availableQty);
+					toolTypesIds.add(tool.getToolType().getId());
+				}
+
+				UpdateRecordBuilder<ToolContext> updateBuilder = new UpdateRecordBuilder<ToolContext>()
+						.module(module).fields(modBean.getAllFields(module.getName()))
+						.andCondition(CriteriaAPI.getIdCondition(tool.getId(), module));
+
+				updateBuilder.update(tool);
+				context.put(FacilioConstants.ContextNames.TOOL_TYPES_ID, toolTypeId);
+			}
+		}
+		context.put(FacilioConstants.ContextNames.TOOL_TYPES_IDS, toolTypesIds);
 	}
 
 	public static double getTotalQuantityConsumed(long toolId) throws Exception {

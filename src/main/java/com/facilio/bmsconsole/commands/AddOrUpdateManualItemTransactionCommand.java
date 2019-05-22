@@ -1,10 +1,31 @@
 package com.facilio.bmsconsole.commands;
 
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
+import org.json.simple.JSONObject;
+
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.activity.ItemActivityType;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.context.ItemContext.CostType;
+import com.facilio.bmsconsole.context.AssetContext;
+import com.facilio.bmsconsole.context.ItemContext;
+import com.facilio.bmsconsole.context.ItemContext.CostType;
+import com.facilio.bmsconsole.context.ItemTransactionsContext;
+import com.facilio.bmsconsole.context.ItemTypesContext;
+import com.facilio.bmsconsole.context.PurchasedItemContext;
+import com.facilio.bmsconsole.context.StoreRoomContext;
+import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.criteria.NumberOperators;
+import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.FacilioModule;
+import com.facilio.bmsconsole.modules.FieldFactory;
+import com.facilio.bmsconsole.modules.InsertRecordBuilder;
+import com.facilio.bmsconsole.modules.LookupField;
+import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
+import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
 import com.facilio.bmsconsole.util.TransactionState;
 import com.facilio.bmsconsole.util.TransactionType;
 import com.facilio.bmsconsole.workflow.rule.ApprovalState;
@@ -78,7 +99,7 @@ public class AddOrUpdateManualItemTransactionCommand implements Command {
 								throw new IllegalArgumentException("Insufficient quantity in inventory!");
 							} else {
 								approvalState = ApprovalState.YET_TO_BE_REQUESTED;
-								if (itemTransaction.getRequestedLineItem() != null && itemTransaction.getRequestedLineItem().getId() > 0) {
+								if (itemType.isApprovalNeeded() || storeRoom.isApprovalNeeded()) {
 									approvalState = ApprovalState.APPROVED;
 								}
 								JSONObject info = new JSONObject();
@@ -110,7 +131,7 @@ public class AddOrUpdateManualItemTransactionCommand implements Command {
 						throw new IllegalArgumentException("Insufficient quantity in inventory!");
 					} else {
 						approvalState = ApprovalState.YET_TO_BE_REQUESTED;
-						if (itemTransaction.getRequestedLineItem() != null && itemTransaction.getRequestedLineItem().getId() > 0) {
+						if (itemType.isApprovalNeeded() || storeRoom.isApprovalNeeded()) {
 							approvalState = ApprovalState.APPROVED;
 						}
 						if (itemType.isRotating()) {
@@ -275,7 +296,7 @@ public class AddOrUpdateManualItemTransactionCommand implements Command {
 		if (itemTransactions.getTransactionStateEnum() == TransactionState.ISSUE) {
 			woItem.setRemainingQuantity(quantity);
 		}
-		
+
 		if (itemTransactions.getTransactionStateEnum() == TransactionState.RETURN) {
 			woItem.setApprovedState(ApprovalState.YET_TO_BE_REQUESTED);
 		}

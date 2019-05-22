@@ -150,8 +150,8 @@ public class ShipmentAction extends FacilioAction{
 		Chain chain = ReadOnlyChainFactory.getShipmentDetailsChain();
 		chain.execute(context);
 		
-		PurchaseContractContext purchaseContractContext = (PurchaseContractContext) context.get(FacilioConstants.ContextNames.RECORD);
-		setResult(FacilioConstants.ContextNames.PURCHASE_CONTRACT, purchaseContractContext);
+		ShipmentContext shipmentContext = (ShipmentContext) context.get(FacilioConstants.ContextNames.RECORD);
+		setResult(FacilioConstants.ContextNames.SHIPMENT, shipmentContext);
 		
 		return SUCCESS;
 	}
@@ -219,7 +219,19 @@ public class ShipmentAction extends FacilioAction{
 		context.put(FacilioConstants.ContextNames.RECORD, shipment);
 		context.put(FacilioConstants.ContextNames.SHIPMENT, shipment);
 		
-		Chain chain = TransactionChainFactory.getReceiveShipmentChain();
+		Chain chain = TransactionChainFactory.getStageShipmentChain();
+		chain.execute(context);
+		
+		setResult(FacilioConstants.ContextNames.SHIPMENTS, context.get(FacilioConstants.ContextNames.RECORD));
+		return SUCCESS;
+	}
+	
+	public String transfer() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.RECORD, shipment);
+		context.put(FacilioConstants.ContextNames.SHIPMENT, shipment);
+		
+		Chain chain = TransactionChainFactory.getTransferShipmentChain();
 		chain.execute(context);
 		
 		setResult(FacilioConstants.ContextNames.SHIPMENTS, context.get(FacilioConstants.ContextNames.RECORD));

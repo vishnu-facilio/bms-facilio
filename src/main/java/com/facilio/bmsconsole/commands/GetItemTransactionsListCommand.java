@@ -119,6 +119,8 @@ public class GetItemTransactionsListCommand implements Command {
 					String.valueOf(true), BooleanOperators.IS));
 			builder.andCondition(CriteriaAPI.getCondition(itemTransactionsFieldsMap.get("transactionState"),
 					String.valueOf(2), NumberOperators.EQUALS));
+			builder.andCondition(CriteriaAPI.getCondition(itemTransactionsFieldsMap.get("transactionType"),
+					String.valueOf(4), NumberOperators.NOT_EQUALS));
 			// builder.fetchLookups(lookUpfields);
 		}
 		else if(getShowItemsForIssue != null && getShowItemsForIssue) {

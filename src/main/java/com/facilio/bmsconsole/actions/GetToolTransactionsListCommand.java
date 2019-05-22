@@ -125,11 +125,14 @@ public class GetToolTransactionsListCommand implements Command {
 			finalCriteria.andCriteria(criteria);
 			finalCriteria.orCriteria(criteriaIssue);
 			builder.andCriteria(finalCriteria);
-			
+
 		}
 		else if(getShowToolsForIssue != null && getShowToolsForIssue) {
 			builder.andCondition(CriteriaAPI.getCondition(toolTransactionsFieldsMap.get("transactionState"),
 					String.valueOf(2), NumberOperators.EQUALS));
+			builder.andCondition(CriteriaAPI.getCondition(toolTransactionsFieldsMap.get("transactionType"),
+					String.valueOf(4), NumberOperators.NOT_EQUALS));
+
 			builder.andCondition(CriteriaAPI.getCondition(toolTransactionsFieldsMap.get("issuedTo"),
 					String.valueOf(AccountUtil.getCurrentUser().getOuid()), NumberOperators.EQUALS));
 
