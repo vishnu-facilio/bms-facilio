@@ -39,31 +39,26 @@ public class FacilioWorkflowFunctionVisitor extends WorkflowV2BaseVisitor<Value>
 
     private Map<String, Value> varMemoryMap = new HashMap<String, Value>();
     
-    String functionName;
-    String nameSpace;
-    Value returnValue;
-    List<ParameterContext> params;
+    WorkflowContext workflowContext;
     
-    StringBuilder resultString = new StringBuilder();
-    
-	public StringBuilder getResultString() {
-		return resultString;
+    public WorkflowContext getWorkflowContext() {
+		return workflowContext;
 	}
 
-	public void setResultString(StringBuilder resultString) {
-		this.resultString = resultString;
+	public void setWorkflowContext(WorkflowContext workflowContext) {
+		this.workflowContext = workflowContext;
 	}
 
 	boolean breakCodeFlow;
     boolean isFunctionHeaderVisitor;
     public void setParams(List<Object> parmasObjects) throws Exception {
-    	if(params.size() > 0) {
-    		if(parmasObjects.size() < params.size()) {
+    	if(workflowContext.getParameters().size() > 0) {
+    		if(parmasObjects.size() < workflowContext.getParameters().size()) {
         		throw new Exception("param count mismatched");
         	}
         	
-        	for(int i = 0;i<params.size(); i++) {
-        		ParameterContext param = params.get(i);
+        	for(int i = 0;i<workflowContext.getParameters().size(); i++) {
+        		ParameterContext param = workflowContext.getParameters().get(i);
         		Object value = parmasObjects.get(i);
         		varMemoryMap.put(param.getName(), new Value(value));
         	}
@@ -169,10 +164,9 @@ public class FacilioWorkflowFunctionVisitor extends WorkflowV2BaseVisitor<Value>
     @Override 
     public Value visitFunction_block(WorkflowV2Parser.Function_blockContext ctx) {
     	
-    	System.out.println("function name ---top == "+ctx.data_type().op.getText());
-    	System.out.println("function name ---top == "+ctx.function_name_declare().getText());
+    	String functionName = ctx.function_name_declare().getText();
     	
-    	functionName = ctx.function_name_declare().getText();
+    	workflowContext.setName(functionName);
     	
     	List<ParameterContext> params = new ArrayList<>();
 		for(Function_paramContext param :ctx.function_param()) {
@@ -181,7 +175,8 @@ public class FacilioWorkflowFunctionVisitor extends WorkflowV2BaseVisitor<Value>
 			parameterContext.setName(param.VAR().getText());
 			params.add(parameterContext);
     	}
-		this.params = params;
+		
+		workflowContext.setParameters(params);
 		if(isFunctionHeaderVisitor) {
 			breakCodeFlow = true;
 		}
@@ -430,7 +425,7 @@ public class FacilioWorkflowFunctionVisitor extends WorkflowV2BaseVisitor<Value>
     @Override
     public Value visitLog(WorkflowV2Parser.LogContext ctx) {
         Value value = this.visit(ctx.expr());
-        resultString.append(value.asString()+"\n");
+        workflowContext.getLogString().append(value.asString()+"\n");
         System.out.println(value);
         return value;
     }
@@ -500,10 +495,6 @@ public class FacilioWorkflowFunctionVisitor extends WorkflowV2BaseVisitor<Value>
 		
 		DBParamContext dbParamContext = new DBParamContext();
 		
-//		String criteria = ctx.db_param_criteria().criteria().getText();	
-//		
-//		dbParamContext.setCriteriaPattern(criteria);
-
 		Value criteriaValue = this.visit(ctx.db_param_criteria().criteria());
 		
 		dbParamContext.setCriteria(criteriaValue.asCriteria());
@@ -601,7 +592,8 @@ public class FacilioWorkflowFunctionVisitor extends WorkflowV2BaseVisitor<Value>
     @Override 
     public Value visitFunction_return(WorkflowV2Parser.Function_returnContext ctx)
     {
-    	returnValue = this.visit(ctx.expr());
+    	Value returnValue = this.visit(ctx.expr());
+    	workflowContext.setReturnValue(returnValue.asObject());
     	this.breakCodeFlow = true;
     	return Value.VOID; 
     }
@@ -614,11 +606,4 @@ public class FacilioWorkflowFunctionVisitor extends WorkflowV2BaseVisitor<Value>
     	return super.shouldVisitNextChild(node, currentResult);
     }
 
-	public Value getReturnValue() {
-		return returnValue;
-	}
-
-	public void setReturnValue(Value returnValue) {
-		this.returnValue = returnValue;
-	}
 }
