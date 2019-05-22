@@ -1,6 +1,6 @@
 package com.facilio.bmsconsole.context;
 
-import com.facilio.db.criteria.DateRange;
+import com.facilio.time.DateRange;
 import com.facilio.report.context.ReadingAnalysisContext.AnalyticsType;
 import com.facilio.workflows.context.WorkflowContext;
 

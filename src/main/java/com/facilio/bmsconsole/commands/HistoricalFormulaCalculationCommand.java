@@ -1,7 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
 import com.facilio.bmsconsole.context.FormulaFieldContext;
-import com.facilio.db.criteria.DateRange;
+import com.facilio.time.DateRange;
 import com.facilio.bmsconsole.util.FormulaFieldAPI;
 import com.facilio.constants.FacilioConstants;
 import org.apache.commons.chain.Command;

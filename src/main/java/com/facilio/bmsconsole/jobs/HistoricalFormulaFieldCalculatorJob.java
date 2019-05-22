@@ -2,7 +2,7 @@ package com.facilio.bmsconsole.jobs;
 
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.FormulaFieldContext;
-import com.facilio.db.criteria.DateRange;
+import com.facilio.time.DateRange;
 import com.facilio.modules.FieldUtil;
 import com.facilio.bmsconsole.util.BmsJobUtil;
 import com.facilio.time.DateTimeUtil;

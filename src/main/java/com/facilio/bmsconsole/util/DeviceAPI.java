@@ -21,6 +21,7 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.tasker.FacilioTimer;
+import com.facilio.time.DateRange;
 import com.facilio.time.SecondsChronoUnit;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.util.ExpressionEvaluator;
@@ -700,7 +701,7 @@ public class DeviceAPI
 	}
 	
 	
-	private static ReadingContext calculateVMReading(EnergyMeterContext meter,List<ReadingContext> readings, List<Long> childIds, DateRange interval, boolean ignoreNullValues) throws Exception {
+	private static ReadingContext calculateVMReading(EnergyMeterContext meter, List<ReadingContext> readings, List<Long> childIds, DateRange interval, boolean ignoreNullValues) throws Exception {
 		ReadingContext virtualMeterReading = null;
 		if (!readings.isEmpty()) {
 			Map<Long, List<ReadingContext>> readingMap = new HashMap<>();

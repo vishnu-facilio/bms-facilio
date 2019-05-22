@@ -1,4 +1,4 @@
-package com.facilio.db.criteria;
+package com.facilio.time;
 
 public class DateRange {
 	
