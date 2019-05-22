@@ -39,7 +39,7 @@ public class Account implements Serializable {
 	private long redisDeleteTime = 0L;
 
 	private RemoteScreenContext remoteScreen;
-	
+
 	public Account(Organization org, User user) {
 		this.org = org;
 		this.user = user;
@@ -105,7 +105,7 @@ public class Account implements Serializable {
 	public RemoteScreenContext getRemoteScreen() {
 		return this.remoteScreen;
 	}
-	
+
 	public void setRemoteScreen(RemoteScreenContext remoteScreen) {
 		this.remoteScreen = remoteScreen;
 	}
