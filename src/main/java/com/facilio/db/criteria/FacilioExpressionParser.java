@@ -9,7 +9,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.BaseLineContext;
+import com.facilio.modules.BaseLineContext;
 import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.db.criteria.operators.Operator;
 import com.facilio.modules.AggregateOperator;

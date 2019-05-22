@@ -2,7 +2,8 @@ package com.facilio.bmsconsole.commands;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.*;
-import com.facilio.bmsconsole.context.BaseLineContext.RangeType;
+import com.facilio.modules.BaseLineContext;
+import com.facilio.modules.BaseLineContext.RangeType;
 import com.facilio.bmsconsole.context.DashboardWidgetContext.WidgetType;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.FieldFactory;
