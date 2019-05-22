@@ -1030,7 +1030,7 @@ public class DashboardUtil {
 			String spaceIdsString = new String();			
 			
 			List<DashboardContext> dbContext =  new ArrayList<>();
-			DashboardContext buildDashboardtoBeRemoved = null; 
+			List<DashboardContext> buildDashboardtoBeRemoved = new ArrayList<>(); 
 			for(DashboardContext dashboard :dashboards) {
 				if(dashboard.getLinkName().equals(BUILDING_DASHBOARD_KEY) && dashboard.getBaseSpaceId() == null) {
 					FacilioModule module = modBean.getModule(dashboard.getModuleId());
@@ -1045,7 +1045,7 @@ public class DashboardUtil {
 						}
 					}
 					
-					buildDashboardtoBeRemoved = dashboard;
+					buildDashboardtoBeRemoved.add(dashboard);
 					for(Long spaceId:spaceIds) {
 						DashboardContext buildingDashboard = (DashboardContext) dashboard.clone();
 						buildingDashboard.setBaseSpaceId(spaceId);
@@ -1058,7 +1058,7 @@ public class DashboardUtil {
 					}
 				}
 			}
-			dashboards.remove(buildDashboardtoBeRemoved);
+			dashboards.removeAll(buildDashboardtoBeRemoved);
 			dashboards.addAll(dbContext);
 	}
 	
