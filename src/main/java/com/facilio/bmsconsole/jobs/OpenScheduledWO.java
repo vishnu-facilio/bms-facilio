@@ -10,6 +10,7 @@ import java.util.Map;
 import org.apache.commons.chain.Chain;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.apache.tiles.request.collection.CollectionUtil;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
@@ -18,6 +19,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.activity.WorkOrderActivityType;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.bmsconsole.context.PMTriggerContext;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.context.TicketStatusContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
@@ -65,6 +67,10 @@ public class OpenScheduledWO extends FacilioJob {
             }
 
             WorkOrderContext wo = workOrderContexts.get(0);
+            if(wo.getTrigger() != null && wo.getTrigger().getId() > 0) {
+            	PMTriggerContext trigger = PreventiveMaintenanceAPI.getPMTriggersByTriggerIds(Collections.singletonList(wo.getTrigger().getId())).get(0);
+            	wo.setTrigger(trigger);
+            }
             if ((wo.getAssignedTo() != null && wo.getAssignedTo().getId() > 0)
                     || (wo.getAssignmentGroup() != null && (wo.getAssignmentGroup().getId() > 0 || wo.getAssignmentGroup().getGroupId() > 0))) {
                 TicketStatusContext status = TicketAPI.getStatus("Assigned");
