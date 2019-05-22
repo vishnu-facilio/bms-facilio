@@ -15,6 +15,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.criteria.BooleanOperators;
 import com.facilio.bmsconsole.criteria.Condition;
+import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.criteria.Operator;
 import com.facilio.bmsconsole.criteria.StringOperators;
@@ -301,7 +302,6 @@ public class FacilioWorkflowFunctionVisitor extends WorkflowV2BaseVisitor<Value>
 //    }
     
     
-    DBParamContext dbParamContext = null;
     
 //   @Override 
 //   public Value visitFetchRecord(WorkflowV2Parser.FetchRecordContext ctx) {
@@ -435,6 +435,8 @@ public class FacilioWorkflowFunctionVisitor extends WorkflowV2BaseVisitor<Value>
         return value;
     }
     
+    Criteria criteria = null;
+    
     @Override 
     public Value visitCondition_atom(WorkflowV2Parser.Condition_atomContext ctx) {
     	
@@ -467,25 +469,44 @@ public class FacilioWorkflowFunctionVisitor extends WorkflowV2BaseVisitor<Value>
     	
     	condition.setValue(value);
     	
-    	int seq = dbParamContext.addConditionMap(condition);
+    	int seq = criteria.addConditionMap(condition);
     	
-    	dbParamContext.setCriteriaPattern(dbParamContext.getCriteriaPattern().replaceFirst(ctx.getText(), seq+""));
+    	criteria.setPattern(criteria.getPattern().replaceFirst(ctx.getText(), String.valueOf(seq)));
     	
     	return visitChildren(ctx); 
+    }
+    
+    @Override 
+    public Value visitCriteria(WorkflowV2Parser.CriteriaContext ctx) {
+    	
+    	criteria = new Criteria(); 
+    	
+    	String criteriaSting = ctx.getText();
+    	
+    	criteria.setPattern(criteriaSting);
+    	
+    	this.visit(ctx.condition());
+    	
+    	criteria.setPattern(WorkflowV2Util.adjustCriteriaPattern(criteria.getPattern()));
+    	
+    	Value criteriaVal = new Value(criteria);
+    	
+    	criteria = null;
+    	return criteriaVal;
     }
     
 	@Override
 	public Value visitDb_param(WorkflowV2Parser.Db_paramContext ctx) {
 		
-		dbParamContext = new DBParamContext();
+		DBParamContext dbParamContext = new DBParamContext();
 		
-		String criteria = ctx.db_param_criteria().criteria().getText();
-		
-		dbParamContext.setCriteriaPattern(criteria);
+//		String criteria = ctx.db_param_criteria().criteria().getText();	
+//		
+//		dbParamContext.setCriteriaPattern(criteria);
 
-		this.visit(ctx.db_param_criteria().criteria());
+		Value criteriaValue = this.visit(ctx.db_param_criteria().criteria());
 		
-		dbParamContext.setCriteriaPattern(adjustCriteriaPattern(dbParamContext.getCriteriaPattern()));
+		dbParamContext.setCriteria(criteriaValue.asCriteria());
 
 		if(ctx.db_param_field(0) != null) {
 			Value fieldValue = this.visit(ctx.db_param_field(0).atom());
@@ -513,14 +534,6 @@ public class FacilioWorkflowFunctionVisitor extends WorkflowV2BaseVisitor<Value>
 		System.out.println("ffinal -- "+dbParamContext);
 		
 		return new Value(dbParamContext);
-	}
-
-    private String adjustCriteriaPattern(String criteriaPattern) {
-		
-    	criteriaPattern = criteriaPattern.replace("||", " or ");
-    	criteriaPattern = criteriaPattern.replace("&&", " and ");
-    	criteriaPattern = criteriaPattern.substring(1, criteriaPattern.length()-1);
-    	return criteriaPattern;
 	}
 
 	@Override

@@ -62,6 +62,19 @@ public class Criteria extends ExpressionEvaluator<Predicate> implements Serializ
 	public void setPattern(String pattern) {
 		this.pattern = pattern;
 	}
+	
+	int seqOrder = 0;
+	
+	@JsonIgnore
+	@JSON(serialize=false)
+	public int addConditionMap(Condition condition) {
+		if(this.getConditions() == null) {
+			this.setConditions(new HashMap<>());
+		}
+		
+		this.addCondition(String.valueOf(++seqOrder), condition);
+		return seqOrder;
+	}
 
 	private static final Pattern REG_EX = Pattern.compile("([1-9]\\d*)");
 

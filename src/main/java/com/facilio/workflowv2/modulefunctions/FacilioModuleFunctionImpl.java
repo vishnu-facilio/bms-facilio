@@ -108,7 +108,15 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 		
 		FacilioModule module = (FacilioModule) objects.get(0);
 		
-		DBParamContext dbParamContext = (DBParamContext) objects.get(1);
+		DBParamContext dbParamContext = null;
+		
+		if(objects.get(1) instanceof DBParamContext) {
+			dbParamContext = (DBParamContext) objects.get(1);
+		}
+		else if (objects.get(1) instanceof Criteria) {
+			dbParamContext = new DBParamContext();
+			dbParamContext.setCriteria((Criteria)objects.get(1));
+		}
 		
 		SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder = null;
 		

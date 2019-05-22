@@ -55,27 +55,11 @@ public class DBParamContext {
 		this.criteria = criteria;
 	}
 	
-	public String getCriteriaPattern() {
-		return this.criteria.getPattern();
-	}
-	public void setCriteriaPattern(String criteriaPattern) {
-		this.criteria = this.criteria == null ? new Criteria() : this.criteria;
-		this.criteria.setPattern(criteriaPattern);
-	}
 	public int getSeqOrder() {
 		return seqOrder;
 	}
 	public void setSeqOrder(int seqOrder) {
 		this.seqOrder = seqOrder;
-	}
-	public int addConditionMap(Condition condition) {
-		this.criteria = this.criteria == null ? new Criteria() : this.criteria;
-		if(this.criteria.getConditions() == null) {
-			this.criteria.setConditions(new HashMap<>());
-		}
-		
-		this.criteria.addCondition(++seqOrder+"", condition);
-		return seqOrder;
 	}
 	
 	public String getFieldName() {

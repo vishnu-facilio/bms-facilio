@@ -137,6 +137,13 @@ public interface WorkflowV2Visitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitAtomExpr(WorkflowV2Parser.AtomExprContext ctx);
 	/**
+	 * Visit a parse tree produced by the {@code criteriaInitialization}
+	 * labeled alternative in {@link WorkflowV2Parser#expr}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitCriteriaInitialization(WorkflowV2Parser.CriteriaInitializationContext ctx);
+	/**
 	 * Visit a parse tree produced by the {@code arithmeticExpr}
 	 * labeled alternative in {@link WorkflowV2Parser#expr}.
 	 * @param ctx the parse tree

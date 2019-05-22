@@ -3,6 +3,7 @@ package com.facilio.workflowv2.contexts;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.modules.FacilioModule;
 
 public class Value {
@@ -21,6 +22,14 @@ public class Value {
     
     public FacilioModule asModule() {
     	return (FacilioModule) value;
+    }
+    
+    public Criteria asCriteria() {
+    	return (Criteria) value;
+    }
+    
+    public DBParamContext asDbParams() {
+    	return (DBParamContext) value;
     }
     
     public List<?> asList() {

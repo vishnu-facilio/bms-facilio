@@ -16,6 +16,7 @@ import org.w3c.dom.NodeList;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.criteria.Condition;
+import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.criteria.StringOperators;
@@ -114,17 +115,23 @@ public class WorkflowV2Util {
 
 	public static void fillExtraInfo(Value paramValue, FacilioModule module) throws Exception {
 
-		if (paramValue.asObject() instanceof DBParamContext) {
+		if (paramValue.asObject() instanceof DBParamContext || paramValue.asObject() instanceof Criteria) {
 			
+			Criteria criteria = null;
+			if (paramValue.asObject() instanceof DBParamContext) {
+				criteria = paramValue.asDbParams().getCriteria();
+			}
+			else if (paramValue.asObject() instanceof Criteria) {
+				criteria = paramValue.asCriteria();
+			}
+				
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			DBParamContext dbParamContext = (DBParamContext) paramValue.asObject();
-			for (String key : dbParamContext.getCriteria().getConditions().keySet()) {
-				Condition condition = dbParamContext.getCriteria().getConditions().get(key);
+			for (String key : criteria.getConditions().keySet()) {
+				Condition condition = criteria.getConditions().get(key);
 				FacilioField field = modBean.getField(condition.getFieldName(), module.getName());
 				condition.setField(field);
 			}
 		}
-
 	}
 
 	public static List<Object> getParamList(DataTypeSpecificFunctionContext ctx, boolean isDataTypeSpecificFunction,FacilioWorkflowFunctionVisitor facilioWorkflowFunctionVisitor, Value value) throws Exception {
@@ -159,6 +166,14 @@ public class WorkflowV2Util {
 			workflowNamespaceContext = FieldUtil.getAsBeanFromMap(props.get(0), WorkflowNamespaceContext.class);
 		}
 		return workflowNamespaceContext;
+	}
+	
+	public static String adjustCriteriaPattern(String criteriaPattern) {
+		
+    	criteriaPattern = criteriaPattern.replace("||", " or ");
+    	criteriaPattern = criteriaPattern.replace("&&", " and ");
+    	criteriaPattern = criteriaPattern.substring(1, criteriaPattern.length()-1);
+    	return criteriaPattern;
 	}
 
 	public static WorkflowContext getWorkflowFunction(String nameSpace, String functionName) throws Exception {

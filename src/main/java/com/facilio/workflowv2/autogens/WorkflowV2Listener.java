@@ -220,6 +220,18 @@ public interface WorkflowV2Listener extends ParseTreeListener {
 	 */
 	void exitAtomExpr(WorkflowV2Parser.AtomExprContext ctx);
 	/**
+	 * Enter a parse tree produced by the {@code criteriaInitialization}
+	 * labeled alternative in {@link WorkflowV2Parser#expr}.
+	 * @param ctx the parse tree
+	 */
+	void enterCriteriaInitialization(WorkflowV2Parser.CriteriaInitializationContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code criteriaInitialization}
+	 * labeled alternative in {@link WorkflowV2Parser#expr}.
+	 * @param ctx the parse tree
+	 */
+	void exitCriteriaInitialization(WorkflowV2Parser.CriteriaInitializationContext ctx);
+	/**
 	 * Enter a parse tree produced by the {@code arithmeticExpr}
 	 * labeled alternative in {@link WorkflowV2Parser#expr}.
 	 * @param ctx the parse tree

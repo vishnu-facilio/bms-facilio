@@ -256,6 +256,18 @@ public class WorkflowV2BaseListener implements WorkflowV2Listener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterCriteriaInitialization(WorkflowV2Parser.CriteriaInitializationContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitCriteriaInitialization(WorkflowV2Parser.CriteriaInitializationContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterArithmeticExpr(WorkflowV2Parser.ArithmeticExprContext ctx) { }
 	/**
 	 * {@inheritDoc}
