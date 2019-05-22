@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.util;
 
 import com.facilio.accounts.dto.Group;
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.accounts.util.AccountUtil.FeatureLicense;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
@@ -32,6 +33,7 @@ import com.facilio.unitconversion.UnitsUtil;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.context.WorkflowFieldContext;
 import com.facilio.workflows.util.WorkflowUtil;
+import com.fasterxml.jackson.annotation.JsonFormat.Feature;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Multiset;
@@ -986,33 +988,25 @@ public class DashboardUtil {
 			}
 			List<DashboardContext> dashboards = getFilteredDashboards(dashboardMap, dashboardIds);
 			
-			getAllBuildingsForDashboard(dashboards,baseSpaceIds,moduleName);
-			
-			getAllSitesForDashboard(dashboards,baseSpaceIds);
+			if(AccountUtil.isFeatureEnabled(FeatureLicense.NEW_LAYOUT))  {
+				getAllBuildingsForDashboard(dashboards,baseSpaceIds,moduleName);
+				
+				getAllSitesForDashboard(dashboards,baseSpaceIds);
+			}
 			
 			if(getOnlyMobileDashboard) {
 				splitBuildingDashboardForMobile(dashboards);
 			}
 			
-			for (int i=0;i<dashboards.size();i++) {
-				if(dashboards.get(i).getBaseSpaceId() != null) {
-				dashboards.get(i).setDashboardName(ResourceAPI.getResource(dashboards.get(i).getBaseSpaceId()).getName());
-				}
-			}
-				
-			
-			if(!AwsUtil.isProduction() && !AwsUtil.isDevelopment()) {
-				List<DashboardFolderContext> folders = getDashboardFolder(moduleName);
-				for(DashboardFolderContext folder :folders) {
-					for(DashboardContext dashboard :dashboards) {
-						if(dashboard.getDashboardFolderId() == folder.getId()) {
-							folder.addDashboard(dashboard);
-						}
+			List<DashboardFolderContext> folders = getDashboardFolder(moduleName);
+			for(DashboardFolderContext folder :folders) {
+				for(DashboardContext dashboard :dashboards) {
+					if(dashboard.getDashboardFolderId() == folder.getId()) {
+						folder.addDashboard(dashboard);
 					}
 				}
-				return folders;
 			}
-			return sortDashboardByFolder(dashboards);
+			return folders;
 		}
 		return null;
 	}
@@ -1045,16 +1039,23 @@ public class DashboardUtil {
 			}
 			
 			List<DashboardContext> dbContext =  new ArrayList<>();
+			DashboardContext buildDashboardtoBeRemoved = null; 
 			for(DashboardContext dashboard :dashboards) {
 				if(dashboard.getLinkName().equals(BUILDING_DASHBOARD_KEY) && dashboard.getBaseSpaceId() == null) {
+					buildDashboardtoBeRemoved = dashboard;
 					for(Long spaceId:spaceIds) {
-						DashboardContext siteDashboard1 = (DashboardContext) dashboard.clone();
-						siteDashboard1.setBaseSpaceId(spaceId);
-						siteDashboard1.setId(-1l);
-						dbContext.add(siteDashboard1);
+						DashboardContext buildingDashboard = (DashboardContext) dashboard.clone();
+						buildingDashboard.setBaseSpaceId(spaceId);
+						buildingDashboard.setId(-1l);
+						
+						buildingDashboard.setLinkName(buildingDashboard.getLinkName()+"/"+spaceId);
+						
+						buildingDashboard.setDashboardName(ResourceAPI.getResource(spaceId).getName());
+						dbContext.add(buildingDashboard);
 					}
 				}
 			}
+			dashboards.remove(buildDashboardtoBeRemoved);
 			dashboards.addAll(dbContext);
 	}
 	
@@ -1071,16 +1072,20 @@ public class DashboardUtil {
         }
 			
 			List<DashboardContext> dbContext =  new ArrayList<>();
+			DashboardContext siteDashboardToBeRemoved = null;
 			for(DashboardContext dashboard :dashboards) {
 				if(dashboard.getLinkName().equals(SITE_DASHBOARD_KEY) && dashboard.getBaseSpaceId() == null) {
+					siteDashboardToBeRemoved = dashboard;
 					for(Long spaceId:spaceIds) {
 						DashboardContext siteDashboard1 = (DashboardContext) dashboard.clone();
 						siteDashboard1.setBaseSpaceId(spaceId);
 						siteDashboard1.setId(-1l);
+						siteDashboard1.setDashboardName(ResourceAPI.getResource(spaceId).getName());
 						dbContext.add(siteDashboard1);
 					}
 				}
 			}
+			dashboards.remove(siteDashboardToBeRemoved);
 			dashboards.addAll(dbContext);
 		
 	}
@@ -1369,10 +1374,6 @@ public class DashboardUtil {
 		
 		List<DashboardFolderContext> dashboardFolderContexts = new ArrayList<>();
 		
-		DashboardFolderContext defaultFolder = new DashboardFolderContext();						// remove this after mig
-		
-		defaultFolder.setName("default");															// remove this after mig
-		
 		for(DashboardContext dashboard :dashboards) {
 			
 			if(dashboard.getDashboardFolderId() != null && dashboard.getDashboardFolderId() > 0) {
@@ -1392,13 +1393,6 @@ public class DashboardUtil {
 					dashboardFolderContexts.add(folder);
 				}
 			}
-			else {																					// remove this after mig
-				defaultFolder.addDashboard(dashboard);
-			}
-		}
-		if(defaultFolder.getDashboards() != null && !defaultFolder.getDashboards().isEmpty()) {		// remove this after mig
-			
-			dashboardFolderContexts.add(defaultFolder);
 		}
 		return dashboardFolderContexts;
 	}
