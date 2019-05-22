@@ -1,0 +1,22 @@
+{
+  "dbName": "mysql",
+  "dbConfigClass": "com.facilio.bmsconsole.db.BmsDBConf",
+  "operators" : [
+    {
+      "types": ["STRING", "NUMBER", "DECIMAL", "BOOLEAN", "DATE", "DATE_TIME", "LOOKUP", "ENUM", "FILE", "COUNTER" ,"ID"],
+      "enumClassName": "com.facilio.db.criteria.operators.CommonOperators"
+    },
+    {
+      "types": ["STRING"],
+      "enumClassName": "com.facilio.db.criteria.operators.StringOperators"
+    },
+    {
+      "types": ["NUMBER", "DECIMAL", "ID"],
+      "enumClassName": "com.facilio.db.criteria.operators.NumberOperators"
+    },
+    {
+      "types": ["BOOLEAN"],
+      "enumClassName": "com.facilio.db.criteria.operators.BooleanOperators"
+    }
+  ]
+}
