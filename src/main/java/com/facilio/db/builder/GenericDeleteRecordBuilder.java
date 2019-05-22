@@ -4,6 +4,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
+import com.facilio.db.util.DBConf;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.fw.LRUCache;
 import com.facilio.db.transaction.FacilioConnectionPool;
@@ -55,7 +56,7 @@ public class GenericDeleteRecordBuilder implements DeleteBuilderIfc<Map<String, 
 	private static Constructor constructor;
 
 	static {
-		String dbClass = AwsUtil.getDBClass();
+		String dbClass = DBConf.getInstance().getDBPackage();
 		try {
 			constructor = Class.forName(dbClass + ".DeleteRecordBuilder").getConstructor(GenericDeleteRecordBuilder.class);
 		} catch (NoSuchMethodException | SecurityException | ClassNotFoundException e) {

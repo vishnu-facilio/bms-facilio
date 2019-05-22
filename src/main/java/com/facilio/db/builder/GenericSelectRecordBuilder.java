@@ -4,6 +4,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
+import com.facilio.db.util.DBConf;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.fields.NumberField;
@@ -80,7 +81,7 @@ public class GenericSelectRecordBuilder implements SelectBuilderIfc<Map<String, 
 
 
 	static {
-		String dbClass = AwsUtil.getDBClass();
+		String dbClass = DBConf.getInstance().getDBPackage();
 		try {
 			constructor = Class.forName(dbClass + ".SelectRecordBuilder").getConstructor(GenericSelectRecordBuilder.class);
 		} catch (NoSuchMethodException | SecurityException | ClassNotFoundException e) {

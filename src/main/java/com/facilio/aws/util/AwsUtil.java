@@ -853,11 +853,7 @@ public class AwsUtil
 	public static String getServerName() {
 		return getAppDomain();
 	}
-	
-	public static String getDB() {
-		return db;
-	}
-	
+
 	public static String getDBClass() {
 		return dbClass;
 	}

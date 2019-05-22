@@ -16,6 +16,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
 
+import com.facilio.db.util.DBConf;
 import com.facilio.modules.fields.FacilioField;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
@@ -216,7 +217,7 @@ public class DBUtil {
 	}
 
 	private static void loadProperties() {
-		String propertyFile = DB_PROPERTY_FILE + AwsUtil.getDB() + ".properties";
+		String propertyFile = DB_PROPERTY_FILE + DBConf.getInstance().getDBName() + ".properties";
 		URL resource = AwsUtil.class.getClassLoader().getResource(propertyFile);
 		if (resource != null) {
 			try (InputStream stream = resource.openStream()) {

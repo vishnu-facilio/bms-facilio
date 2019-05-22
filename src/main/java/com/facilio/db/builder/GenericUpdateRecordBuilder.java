@@ -4,6 +4,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
+import com.facilio.db.util.DBConf;
 import com.facilio.fs.FileStore;
 import com.facilio.fs.FileStoreFactory;
 import com.facilio.fw.LRUCache;
@@ -211,7 +212,7 @@ public class GenericUpdateRecordBuilder implements UpdateBuilderIfc<Map<String, 
 	private static Constructor constructor;
 	
 	static {
-		String dbClass = AwsUtil.getDBClass();
+		String dbClass = DBConf.getInstance().getDBPackage();
 		try {
 			constructor = Class.forName(dbClass + ".UpdateRecordBuilder").getConstructor(GenericUpdateRecordBuilder.class);
 		} catch (NoSuchMethodException | SecurityException | ClassNotFoundException e) {
