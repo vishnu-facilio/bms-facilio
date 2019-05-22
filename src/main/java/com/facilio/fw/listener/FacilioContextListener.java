@@ -4,6 +4,7 @@ import com.facilio.activity.ActivityType;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.db.criteria.operators.Operator;
 import com.facilio.bmsconsole.templates.DefaultTemplate.DefaultTemplateType;
+import com.facilio.db.util.DBConf;
 import com.facilio.modules.FieldUtil;
 import com.facilio.bmsconsole.util.TemplateAPI;
 import com.facilio.cache.RedisManager;
@@ -164,7 +165,7 @@ public class FacilioContextListener implements ServletContextListener {
 
 	/*private void initializeDB() {
 //		createTables("conf/leedconsole.sql");
-		//createTables("conf/db/" + AwsUtil.getDB() + "/eventconsole.sql");
+		//createTables("conf/db/" + DBConf.getInstance().getDBName() + "/eventconsole.sql");
 	}*/
 
 	private void createTables(String fileName) {
@@ -205,7 +206,7 @@ public class FacilioContextListener implements ServletContextListener {
 			DataSource ds = FacilioConnectionPool.getInstance().getDataSource();
 			long startTime = System.currentTimeMillis();
 			Flyway flyway = new Flyway();
-			flyway.setLocations("db/migration/" + AwsUtil.getDB());
+			flyway.setLocations("db/migration/" + DBConf.getInstance().getDBName());
 			flyway.setDataSource(ds);
 			flyway.setBaselineOnMigrate(true);
 			int mig_status = flyway.migrate();

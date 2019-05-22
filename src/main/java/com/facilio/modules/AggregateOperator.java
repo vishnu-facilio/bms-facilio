@@ -8,6 +8,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
+import com.facilio.db.util.DBConf;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.NumberField;
 import com.facilio.time.DateTimeUtil;
@@ -383,7 +384,7 @@ public interface AggregateOperator {
         }
 
         private String getTimeZoneString() {
-            String db = AwsUtil.getDB();
+            String db = DBConf.getInstance().getDBName();
             if (db.equalsIgnoreCase("mysql")) {
                 String timeZone = AccountUtil.getCurrentOrg().getTimezone();
                 if(timeZone == null) {
