@@ -1,8 +1,10 @@
 package com.facilio.bmsconsole.util;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.ItemContext;
 import com.facilio.bmsconsole.context.ItemTransactionsContext;
+import com.facilio.bmsconsole.context.PurchasedToolContext;
 import com.facilio.bmsconsole.context.ToolContext;
 import com.facilio.bmsconsole.context.ToolTransactionContext;
 import com.facilio.bmsconsole.context.ToolTypesContext;
@@ -13,6 +15,7 @@ import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.LookupField;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
+import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 
@@ -134,5 +137,90 @@ public class ToolsApi {
 		}
 		throw new IllegalArgumentException("Tool shoud be issued before being used");
 	}
+	
+	public static long getLastPurchasedToolDateForToolId(long id) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ASSET);
+		List<FacilioField> assetFields = modBean.getAllFields(FacilioConstants.ContextNames.ASSET);
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(assetFields);
+		long lastPurchasedDate = -1;
+		SelectRecordsBuilder<AssetContext> itemselectBuilder = new SelectRecordsBuilder<AssetContext>()
+				.select(assetFields).table(module.getTableName()).moduleName(module.getName())
+				.beanClass(AssetContext.class).andCondition(CriteriaAPI.getCondition(fieldMap.get("rotatingTool"), String.valueOf(id), NumberOperators.EQUALS))
+				.orderBy("PURCHASED_DATE DESC");
+		List<AssetContext> assetscontext = itemselectBuilder.get();
+		if(assetscontext!=null && !assetscontext.isEmpty()) {
+			lastPurchasedDate = assetscontext.get(0).getPurchasedDate();
+		}
+		
+		return lastPurchasedDate;
+	}
+	
+	public static void updateLastPurchasedDateForTool(ToolContext tool)
+			throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.TOOL);
+		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.TOOL);
+		UpdateRecordBuilder<ToolContext> updateBuilder = new UpdateRecordBuilder<ToolContext>()
+				.module(module).fields(fields).andCondition(CriteriaAPI.getIdCondition(tool.getId(), module));
+		updateBuilder.update(tool);
+	}
 
+	public static void updatelastPurchaseddetailsInToolType(long id) throws Exception{
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule toolTypesModule = modBean.getModule(FacilioConstants.ContextNames.TOOL_TYPES);
+
+		FacilioModule toolModule = modBean.getModule(FacilioConstants.ContextNames.TOOL);
+		List<FacilioField> toolFields = modBean.getAllFields(FacilioConstants.ContextNames.TOOL);
+		Map<String, FacilioField> toolFieldMap = FieldFactory.getAsMap(toolFields);
+
+		FacilioModule transactionModule = modBean.getModule(FacilioConstants.ContextNames.TOOL_TRANSACTIONS);
+		List<FacilioField> transactionFields = modBean
+				.getAllFields(FacilioConstants.ContextNames.TOOL_TRANSACTIONS);
+		Map<String, FacilioField> transactionFieldMap = FieldFactory.getAsMap(transactionFields);
+
+		long lastPurchasedDate = -1, lastIssuedDate = -1;
+
+			SelectRecordsBuilder<ToolContext> builder = new SelectRecordsBuilder<ToolContext>()
+					.select(toolFields).moduleName(toolModule.getName())
+					.andCondition(CriteriaAPI.getCondition(toolFieldMap.get("toolType"), String.valueOf(id),
+							NumberOperators.EQUALS))
+					.beanClass(ToolContext.class).orderBy("LAST_PURCHASED_DATE DESC");
+
+			List<ToolContext> tools = builder.get();
+			long storeRoomId = -1;
+			ToolContext tool;
+			if (tools != null && !tools.isEmpty()) {
+				tool = tools.get(0);
+				storeRoomId = tool.getStoreRoom().getId();
+				lastPurchasedDate = tool.getLastPurchasedDate();
+			}
+
+			SelectRecordsBuilder<ToolTransactionContext> issuetransactionsbuilder = new SelectRecordsBuilder<ToolTransactionContext>()
+					.select(transactionFields).moduleName(transactionModule.getName())
+					.andCondition(CriteriaAPI.getCondition(transactionFieldMap.get("toolType"),
+							String.valueOf(id), NumberOperators.EQUALS))
+					.andCondition(CriteriaAPI.getCondition(transactionFieldMap.get("transactionState"),
+							String.valueOf(2), NumberOperators.EQUALS))
+					.beanClass(ToolTransactionContext.class).orderBy("CREATED_TIME DESC");
+
+			List<ToolTransactionContext> transactions = issuetransactionsbuilder.get();
+			ToolTransactionContext transaction;
+			if (transactions != null && !transactions.isEmpty()) {
+				transaction = transactions.get(0);
+				lastIssuedDate = transaction.getSysCreatedTime();
+			}
+
+			ToolTypesContext toolType = new ToolTypesContext();
+			toolType.setId(id);
+			toolType.setLastPurchasedDate(lastPurchasedDate);
+			toolType.setLastIssuedDate(lastIssuedDate);
+
+			UpdateRecordBuilder<ToolTypesContext> updateBuilder = new UpdateRecordBuilder<ToolTypesContext>()
+					.module(toolTypesModule).fields(modBean.getAllFields(toolTypesModule.getName()))
+					.andCondition(CriteriaAPI.getIdCondition(id, toolTypesModule));
+
+			updateBuilder.update(toolType);
+			StoreroomApi.updateStoreRoomLastPurchasedDate(storeRoomId, lastPurchasedDate);	
+	}
 }

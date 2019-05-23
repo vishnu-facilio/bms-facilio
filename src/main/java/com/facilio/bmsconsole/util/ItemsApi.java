@@ -1,9 +1,11 @@
 package com.facilio.bmsconsole.util;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.ItemContext;
 import com.facilio.bmsconsole.context.ItemTransactionsContext;
 import com.facilio.bmsconsole.context.ItemTypesContext;
+import com.facilio.bmsconsole.context.ToolContext;
 import com.facilio.bmsconsole.context.WorkorderItemContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
@@ -12,6 +14,7 @@ import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.LookupField;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
+import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 
@@ -146,5 +149,92 @@ public class ItemsApi {
 			return itemTransactions.get(0);
 		}
 		throw new IllegalArgumentException("Item shoud be issued before being used");
+	}
+	
+	public static void updateLastPurchasedDetailsForItemType(long id) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule itemTypesModule = modBean.getModule(FacilioConstants.ContextNames.ITEM_TYPES);
+		
+		FacilioModule itemModule = modBean.getModule(FacilioConstants.ContextNames.ITEM);
+		List<FacilioField> itemFields = modBean.getAllFields(FacilioConstants.ContextNames.ITEM);
+		Map<String, FacilioField> itemFieldMap = FieldFactory.getAsMap(itemFields);
+		
+		long lastPurchasedDate = -1;
+		double lastPurchasedPrice = -1;
+		
+		SelectRecordsBuilder<ItemContext> builder = new SelectRecordsBuilder<ItemContext>()
+				.select(itemFields).moduleName(itemModule.getName())
+				.andCondition(CriteriaAPI.getCondition(itemFieldMap.get("itemType"), String.valueOf(id),
+						NumberOperators.EQUALS))
+				.beanClass(ItemContext.class).orderBy("LAST_PURCHASED_DATE DESC");
+
+		List<ItemContext> items = builder.get();
+		long storeRoomId = -1;
+		ItemContext item;
+		if (items != null && !items.isEmpty()) {
+			item = items.get(0);
+			storeRoomId = item.getStoreRoom().getId();
+			lastPurchasedDate = item.getLastPurchasedDate();
+			lastPurchasedPrice = item.getLastPurchasedPrice();
+		}
+
+		ItemTypesContext itemType = new ItemTypesContext();
+		itemType.setId(id);
+		itemType.setLastPurchasedDate(lastPurchasedDate);
+		itemType.setLastPurchasedPrice(lastPurchasedPrice);
+
+		UpdateRecordBuilder<ItemTypesContext> updateBuilder = new UpdateRecordBuilder<ItemTypesContext>()
+				.module(itemTypesModule).fields(modBean.getAllFields(itemTypesModule.getName()))
+				.andCondition(CriteriaAPI.getIdCondition(itemType.getId(), itemTypesModule));
+
+		updateBuilder.update(itemType);
+
+		StoreroomApi.updateStoreRoomLastPurchasedDate(storeRoomId, lastPurchasedDate);
+	}
+	
+	public static long getLastPurchasedItemDateForItemId(long id) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ASSET);
+		List<FacilioField> assetFields = modBean.getAllFields(FacilioConstants.ContextNames.ASSET);
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(assetFields);
+		long lastPurchasedDate = -1;
+		SelectRecordsBuilder<AssetContext> itemselectBuilder = new SelectRecordsBuilder<AssetContext>()
+				.select(assetFields).table(module.getTableName()).moduleName(module.getName())
+				.beanClass(AssetContext.class).andCondition(CriteriaAPI.getCondition(fieldMap.get("rotatingItem"), String.valueOf(id), NumberOperators.EQUALS))
+				.orderBy("PURCHASED_DATE DESC");
+		List<AssetContext> assetscontext = itemselectBuilder.get();
+		if(assetscontext!=null && !assetscontext.isEmpty()) {
+			lastPurchasedDate = assetscontext.get(0).getPurchasedDate();
+		}
+		
+		return lastPurchasedDate;
+	}
+	
+	public static double getLastPurchasedItemPriceForItemId(long id) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ASSET);
+		List<FacilioField> assetFields = modBean.getAllFields(FacilioConstants.ContextNames.ASSET);
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(assetFields);
+		long lastPurchasedDate = -1;
+		SelectRecordsBuilder<AssetContext> itemselectBuilder = new SelectRecordsBuilder<AssetContext>()
+				.select(assetFields).table(module.getTableName()).moduleName(module.getName())
+				.beanClass(AssetContext.class).andCondition(CriteriaAPI.getCondition(fieldMap.get("rotatingItem"), String.valueOf(id), NumberOperators.EQUALS))
+				.orderBy("PURCHASED_DATE DESC");
+		List<AssetContext> assetscontext = itemselectBuilder.get();
+		if(assetscontext!=null && !assetscontext.isEmpty()) {
+			lastPurchasedDate = assetscontext.get(0).getUnitPrice();
+		}
+		
+		return lastPurchasedDate;
+	}
+	
+	public static void updateLastPurchasedDateForItem(ItemContext item)
+			throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ITEM);
+		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.ITEM);
+		UpdateRecordBuilder<ItemContext> updateBuilder = new UpdateRecordBuilder<ItemContext>()
+				.module(module).fields(fields).andCondition(CriteriaAPI.getIdCondition(item.getId(), module));
+		updateBuilder.update(item);
 	}
 }
