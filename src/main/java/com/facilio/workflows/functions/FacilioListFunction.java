@@ -205,30 +205,7 @@ public enum FacilioListFunction implements FacilioWorkflowFunctionInterface {
 				throw new FunctionParamException("Required Object is null");
 			}
 		}
-	},
-	SPLICE(11,"splice") {										
-		@Override
-		public Object execute(Object... objects) throws Exception {
-			
-			checkParam(objects);
-			
-			List<Object> list = (List<Object>) objects[0];
-			int pos = Double.valueOf(objects[1].toString()).intValue();
-			int nos = Double.valueOf(objects[2].toString()).intValue();
-			
-			for(int i=0;i<nos;i++) {
-				list.remove(pos);
-			}
-			return list;
-		};
-		
-		public void checkParam(Object... objects) throws Exception {
-			
-			if(objects.length <= 0) {
-				throw new FunctionParamException("Required Object is null");
-			}
-		}
-	},
+	}
 	;
 	private Integer value;
 	private String functionName;

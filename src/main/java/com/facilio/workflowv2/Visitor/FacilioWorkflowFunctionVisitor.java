@@ -83,21 +83,12 @@ public class FacilioWorkflowFunctionVisitor extends WorkflowV2BaseVisitor<Value>
     }
     
     @Override 
-    public Value visitListAndMapSymbolOperation(WorkflowV2Parser.ListAndMapSymbolOperationContext ctx)
+    public Value visitListFetch(WorkflowV2Parser.ListFetchContext ctx) 
 	{
-    	String varName = ctx.VAR().getText();
-    	Value value = this.varMemoryMap.get(varName);
-    	if(value.asObject() instanceof List ) {
-    		Value listValue = this.visit(ctx.atom());
-    		Integer index = listValue.asInt();
-    		return new Value(value.asList().get(index));
-    	}
-    	if(value.asObject() instanceof Map ) {
-    		Value mapValue = this.visit(ctx.atom());
-    		Object key = mapValue.asObject();
-    		return new Value(value.asMap().get(key));
-    	}
-    	return Value.VOID;
+    	Value listValue = this.visit(ctx.atom().get(0));
+    	List list = listValue.asList();
+    	int index = this.visit(ctx.atom().get(1)).asInt();
+		return new Value(list.get(index));
 	}
     @Override 
     public Value visitDataTypeSpecificFunction(WorkflowV2Parser.DataTypeSpecificFunctionContext ctx) {
@@ -166,29 +157,8 @@ public class FacilioWorkflowFunctionVisitor extends WorkflowV2BaseVisitor<Value>
     @Override
     public Value visitAssignment(WorkflowV2Parser.AssignmentContext ctx) {
         String varName = ctx.VAR().getText();
-        
-        if (ctx.atom(0) != null) {
-        	
-        	Value parentValue = varMemoryMap.get(varName);
-        	
-        	if(parentValue.asObject() instanceof List) {
-        		
-        		Value index = this.visit(ctx.atom(0));
-        		
-        		Value value = this.visit(ctx.expr());
-        		parentValue.asList().add(index.asInt(), value.asObject());
-        	}
-        	else if (parentValue.asObject() instanceof Map) {
-        		Value key = this.visit(ctx.atom(0));
-        		Value value = this.visit(ctx.expr());
-        		parentValue.asMap().put(key.asObject(), value.asObject());
-        	}
-        }
-        else {
-        	Value value = this.visit(ctx.expr());
-        	return varMemoryMap.put(varName, value);
-        }
-        return Value.VOID;
+        Value value = this.visit(ctx.expr());
+        return varMemoryMap.put(varName, value);
     }
     
     @Override 

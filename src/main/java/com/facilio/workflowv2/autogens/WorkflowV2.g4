@@ -31,7 +31,7 @@ statement
  ;
 
 assignment
- : VAR (OPEN_BRACKET atom CLOSE_BRACKET)* ASSIGN expr SEMICOLON
+ : VAR ASSIGN expr SEMICOLON
  ;
 
 if_statement
@@ -87,12 +87,12 @@ atom
  | (TRUE | FALSE) 																		#booleanAtom
  | STRING         																		#stringAtom
  | NULL           						    											#nullAtom
- | VAR				           						    								#varAtom
- | VAR OPEN_BRACKET atom CLOSE_BRACKET													#listAndMapSymbolOperation
+ | VAR           						    											#varAtom
  ;
  
 list_opperations
  : (OPEN_BRACKET CLOSE_BRACKET)+														#listInitialisation
+ | atom OPEN_BRACKET atom CLOSE_BRACKET													#listFetch
  ;
  
 map_opperations
@@ -108,23 +108,23 @@ db_param_criteria
  ;
 
 db_param_field
- : 'field' COLON atom COMMA
+ : 'field' COLON atom SEMICOLON
  ;
  
 db_param_aggr
- : 'aggregation' COLON atom COMMA
+ : 'aggregation' COLON atom SEMICOLON
  ;
  
 db_param_limit
- : 'limit' COLON atom COMMA
+ : 'limit' COLON atom SEMICOLON
  ;
  
 db_param_range
- : 'range' COLON atom 'to' atom COMMA
+ : 'range' COLON atom 'to' atom SEMICOLON
  ;
  
 db_param_sort
- : 'order by' COLON atom op=('asc' | 'desc') COMMA
+ : 'order by' COLON atom op=('asc' | 'desc') SEMICOLON
  ;
  
 criteria

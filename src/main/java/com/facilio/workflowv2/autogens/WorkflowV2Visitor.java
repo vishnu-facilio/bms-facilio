@@ -242,19 +242,19 @@ public interface WorkflowV2Visitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitVarAtom(WorkflowV2Parser.VarAtomContext ctx);
 	/**
-	 * Visit a parse tree produced by the {@code listAndMapSymbolOperation}
-	 * labeled alternative in {@link WorkflowV2Parser#atom}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitListAndMapSymbolOperation(WorkflowV2Parser.ListAndMapSymbolOperationContext ctx);
-	/**
 	 * Visit a parse tree produced by the {@code listInitialisation}
 	 * labeled alternative in {@link WorkflowV2Parser#list_opperations}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitListInitialisation(WorkflowV2Parser.ListInitialisationContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code listFetch}
+	 * labeled alternative in {@link WorkflowV2Parser#list_opperations}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitListFetch(WorkflowV2Parser.ListFetchContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code mapInitialisation}
 	 * labeled alternative in {@link WorkflowV2Parser#map_opperations}.
