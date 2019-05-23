@@ -57,6 +57,7 @@ public class ShipmentContext extends ModuleBaseWithCustomFields{
 	}
 	
 	public static enum Status {
+		NOT_STAGED(),
 		STAGED(),
 		SHIPPED(),
 		RECEIVED()

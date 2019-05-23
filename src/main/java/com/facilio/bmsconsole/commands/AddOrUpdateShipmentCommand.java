@@ -55,7 +55,7 @@ public class AddOrUpdateShipmentCommand implements Command{
 				deleteBuilder.delete();
 			} else {
 				
-				shipment.setStatus(ShipmentContext.Status.STAGED);
+				shipment.setStatus(ShipmentContext.Status.NOT_STAGED);
 				addRecord(true,Collections.singletonList(shipment), module, fields);
 			}
 			
