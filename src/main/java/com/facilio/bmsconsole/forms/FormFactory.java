@@ -10,7 +10,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.accounts.util.AccountUtil.FeatureLicense;
 import com.facilio.bmsconsole.forms.FacilioForm.FormType;
 import com.facilio.bmsconsole.forms.FacilioForm.LabelPosition;
 import com.facilio.bmsconsole.forms.FormField.Required;
@@ -539,9 +538,9 @@ public class FormFactory {
 		return Collections.unmodifiableList(fields);
 	}
 	
-	public static List<FormField> getRequesterFormFields() throws Exception {
+	public static List<FormField> getRequesterFormFields(boolean fetchBoth) throws Exception {
 		List<FormField> fields = new ArrayList<>();
-		if (AccountUtil.getCurrentAccount().isFromMobile() || AccountUtil.isFeatureEnabled(FeatureLicense.NEW_FORM) ) {
+		if (AccountUtil.getCurrentAccount().isFromMobile() || fetchBoth) {
 			fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Requester Name", Required.REQUIRED, 1, 2));
 			fields.add(new FormField("email", FieldDisplayType.TEXTBOX, "Requester Email", Required.REQUIRED, 2, 2));
 		}
