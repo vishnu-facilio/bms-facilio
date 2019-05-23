@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.commands;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.commons.chain.Command;
@@ -63,6 +64,11 @@ public class AddTasksCommand implements Command, PostTransactionCommand {
 						task.setFailed(true);
 					}
 					task.setCreatedBy(AccountUtil.getCurrentUser());
+
+					if (task.getSubject() != null && AccountUtil.getCurrentOrg().getOrgId() == 176L) {
+						LOGGER.log(Level.SEVERE, "Task subject value " + task.getSubject() + " ==> Length " + task.getSubject().length());
+					}
+
 					builder.addRecord(task);
 				}
 			});
