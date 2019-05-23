@@ -1194,7 +1194,7 @@ CREATE TABLE IF NOT EXISTS Agent_Data (
         NAME varchar(250) NOT NULL,
         DISPLAY_NAME varchar(250) ,
         DATA_INTERVAL bigint(20) DEFAULT 10 not null,
-        TYPE INT(11) ,
+        TYPE varchar(100) ,
         VERSION varchar(20),
         LAST_MODIFIED_TIME bigint(20),
         CREATED_TIME bigint(20),

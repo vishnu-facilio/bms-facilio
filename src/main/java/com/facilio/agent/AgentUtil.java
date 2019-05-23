@@ -120,12 +120,8 @@ public  class AgentUtil
         }
 
         if(payload.containsKey(AgentKeys.AGENT_TYPE)){
-            if(payload.get(AgentKeys.AGENT_TYPE) instanceof Integer){
-                agent.setAgentType(Integer.parseInt(payload.get(AgentKeys.AGENT_TYPE).toString()));
-            }
-            else {
-                agent.setAgentType(AgentType.valueOf(payload.get(AgentKeys.AGENT_TYPE).toString()).getKey());
-            }
+            
+                agent.setAgentType(payload.get(AgentKeys.AGENT_TYPE).toString());
         }
         if(payload.containsKey(AgentKeys.DELETED_TIME)){
             agent.setDeletedTime(Long.parseLong(payload.get(AgentKeys.DELETED_TIME).toString()));
@@ -208,14 +204,8 @@ public  class AgentUtil
                        }
                    }
                    if(jsonObject.containsKey(AgentKeys.AGENT_TYPE)){
-                       if(jsonObject.get(AgentKeys.AGENT_TYPE) instanceof Integer){
-                           agent.setAgentType(Integer.parseInt(jsonObject.get(AgentKeys.AGENT_TYPE).toString().trim()));
-                           toUpdate.put(AgentKeys.AGENT_TYPE,agent.getAgentType());
-                       }
-                       else {
-                           agent.setAgentType(AgentType.valueOf(jsonObject.get(AgentKeys.AGENT_TYPE).toString().trim()).getKey());
-                           toUpdate.put(AgentKeys.AGENT_TYPE,agent.getAgentType());
-                       }
+                	   agent.setAgentType(jsonObject.get(AgentKeys.AGENT_TYPE).toString().trim());
+                	   toUpdate.put(AgentKeys.AGENT_TYPE,agent.getAgentType());
                    }
                    if (jsonObject.containsKey(AgentKeys.NUMBER_OF_CONTROLLERS)) {
                        Integer currNumberOfControllers = Integer.parseInt(jsonObject.get(AgentKeys.NUMBER_OF_CONTROLLERS).toString());
