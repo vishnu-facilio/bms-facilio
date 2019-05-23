@@ -980,6 +980,7 @@ public class DashboardUtil {
 				dashboard.setDashboardSharingContext(getDashboardSharing(dashboard.getId()));
 				dashboard.setSpaceFilteredDashboardSettings(getSpaceFilteredDashboardSettings(dashboard.getId()));
 				dashboard.setReportSpaceFilterContext(getDashboardSpaceFilter(dashboard.getId()));
+				dashboard.setModuleName(modBean.getModule(dashboard.getModuleId()).getName());
 				dashboardMap.put(dashboard.getId(), dashboard);
 				dashboardIds.add(dashboard.getId());
 				if (dashboard.getBaseSpaceId() != null) {
@@ -1121,6 +1122,7 @@ public class DashboardUtil {
 				
 				FacilioModule module = modBean.getModule(dashboard.getModuleId());
 				dashboard.setModuleName(module.getName());
+				dashboard.setModuleName(modBean.getModule(dashboard.getModuleId()).getName());
 				dashboardMap.put(dashboard.getId(), dashboard);
 				dashboardIds.add(dashboard.getId());
 			}
@@ -2546,6 +2548,7 @@ public class DashboardUtil {
 			for(Map<String, Object> prop :props) {
 				
 				DashboardFolderContext dashboardFolderContext = FieldUtil.getAsBeanFromMap(prop, DashboardFolderContext.class);
+				dashboardFolderContext.setModuleName(modBean.getModule(dashboardFolderContext.getModuleId()).getName());
 				dashboardFolderContexts.add(dashboardFolderContext);
 			}
 			

@@ -30,9 +30,9 @@ public class AddDashboardCommand implements Command {
 			
 			List<FacilioField> fields = FieldFactory.getDashboardFields();
 			
-			boolean isSkip = (boolean)context.get(FacilioConstants.ContextNames.IS_SKIP);
+			Boolean isSkip = (Boolean)context.get(FacilioConstants.ContextNames.IS_SKIP);
 			
-			if(!isSkip) {
+			if(isSkip == null || !isSkip) {
 			   getDashboardLinkName(dashboard);
 			}
 			
