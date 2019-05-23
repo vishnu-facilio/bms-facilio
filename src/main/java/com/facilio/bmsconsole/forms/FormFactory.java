@@ -120,7 +120,10 @@ public class FormFactory {
 				List<FormField> defaultFields = new ArrayList<>();
 				List<FormField> taskFields = new ArrayList<>();
 				
-				FormSection defaultSection = new FormSection(form.getFormTypeEnum() != FormType.PORTAL ? "WORKORDER" : "", i++, defaultFields, true);
+				FormSection defaultSection = new FormSection("WORKORDER", i++, defaultFields, true);
+				if (form.getFormTypeEnum() == FormType.PORTAL) {
+					defaultSection.setShowLabel(false);
+				}
 				sections.add(defaultSection);
 				 form.getFields().forEach(field -> {
 					 if (field.getDisplayTypeEnum() == FieldDisplayType.TASKS) {
@@ -544,8 +547,8 @@ public class FormFactory {
 	public static List<FormField> getRequesterFormFields(boolean fetchBoth) throws Exception {
 		List<FormField> fields = new ArrayList<>();
 		if (AccountUtil.getCurrentAccount().isFromMobile() || fetchBoth) {
-			fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Requester Name", Required.REQUIRED, 1, 2));
-			fields.add(new FormField("email", FieldDisplayType.TEXTBOX, "Requester Email", Required.REQUIRED, 2, 2));
+			fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Requester Name", Required.REQUIRED, 1, 1));
+			fields.add(new FormField("email", FieldDisplayType.TEXTBOX, "Requester Email", Required.REQUIRED, 2, 1));
 		}
 		else {
 			fields.add(new FormField("requester", FieldDisplayType.REQUESTER, "Requester", Required.REQUIRED, 1, 1));
