@@ -65,7 +65,7 @@ public class FacilioConstants {
 		public static final String ITEM_TYPES="itemtypes";
 		public static final String STORE_ROOM="storeroom";
 	}
-	
+
 	public static class ContextNames {
 
 		public static final String CONNECTION = "connectionContext";
@@ -313,7 +313,7 @@ public class FacilioConstants {
 		public static final String REPORT_SPACE_FILTER_CONTEXT = "reportSpaceFilterContext";
 		public static final String WIDGET_TYPE = "widgetType";
 		public static final String IS_SKIP_LINKNAME_CHECK = "isSkip";
-		
+
 		
 		public static final String WIDGET_ID = "widgetId";
 		public static final String WIDGET_STATIC_KEY = "widgetStaticKey";
@@ -508,7 +508,7 @@ public class FacilioConstants {
 		public static final String USERS = "users";
 		public static final String ORGUSERS = "orgusers";
 		public static final String ORG_USER_ID = "orgUserId";
-		
+
 		public static final String GROUPS = "groups";
 		
 		public static final String LOCATION = "location";
@@ -766,7 +766,7 @@ public class FacilioConstants {
 		public static final String SHIFT_USER_MAPPING = "shiftUserMapping";
 		public static final String ACTUAL_TIMINGS = "actualTimings";
 		public static final String SHIFT_ID = "shiftId";
-		
+
 		public static final String LAST_SYNC_TIME = "lastSyncTime";
 		public static final String CUSTOM_OBJECT = "customObject";
 		public static final String FORM_NAME = "formName";
@@ -975,7 +975,7 @@ public class FacilioConstants {
 		public static final String WO_ITEMS_LIST = "woItemsList";
 		public static final String WO_TOOLS_LIST = "woToolsList";
 		public static final String WO_LABOUR_LIST = "woLabourList";
-		
+
 		public static final String SHIPMENT = "shipment";
 		public static final String SHIPMENT_LINE_ITEM = "shipmentLineItem";
 		public static final String SHIPMENTS = "shipments";
@@ -993,7 +993,17 @@ public class FacilioConstants {
 		public static final String POINTS_DATA_RECORD="points_data_record";
 
 		public static final String DATE = "date";
-		
+
+		public static final String SERVICE = "service";
+		public static final String SERVICES = "services";
+
+		public static final String SERVICE_CONTRACTS = "servicecontracts";
+		public static final String SERVICE_CONTRACT = "servicecontract";
+		public static final String SERVICE_CONTRACTS_LINE_ITEMS = "servicecontractlineitems";
+
+
+
+
 		public static final String PM_PLANNER_SETTINGS="pm_planner_settings";
 
 		public static final String ATTENDANCE = "attendance";
@@ -1112,7 +1122,7 @@ public class FacilioConstants {
 			classMap.put(RECEIPT_LINE_ITEMS, ReceiptLineItemContext.class);
 			classMap.put(SHIPMENT, ShipmentContext.class);
 			classMap.put(SHIPMENT_LINE_ITEM, ShipmentLineItemContext.class);
-			
+
 			classMap.put(ML, MLContext.class);
 			classMap.put(PO_LINE_ITEMS_SERIAL_NUMBERS, PoLineItemsSerialNumberContext.class);
 			classMap.put(GATE_PASS, GatePassContext.class);
@@ -1120,6 +1130,9 @@ public class FacilioConstants {
 			classMap.put(CONNECTED_APPS, ConnectedAppContext.class);
 			classMap.put(INVENTORY_REQUEST, InventoryRequestContext.class);
 			classMap.put(INVENTORY_REQUEST_LINE_ITEMS, InventoryRequestLineItemContext.class);
+			classMap.put(SERVICE, ServiceContext.class);
+			classMap.put(SERVICE_CONTRACTS, ServiceContractContext.class);
+			classMap.put(SERVICE_CONTRACTS_LINE_ITEMS, ServiceContractLineItemContext.class);
 
 			classMap.put(ATTENDANCE, AttendanceContext.class);
 			classMap.put(ATTENDANCE_TRANSACTIONS, AttendanceTransactionContext.class);
@@ -1188,7 +1201,7 @@ public class FacilioConstants {
 		public static final String PAGE = "page";
 		public static final String PER_PAGE = "perPage";
 	}
-	
+
 	public static class ApprovalRule {
 		public static final String APPROVAL_RULE_ID_FIELD_NAME = "approvalRuleId";
 		public static final String APPROVAL_STATE_FIELD_NAME = "approvalState";

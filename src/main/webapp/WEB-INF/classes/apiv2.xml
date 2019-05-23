@@ -2568,12 +2568,67 @@
 			<param name="moduleName">inventoryrequest</param>
 			<param name="permission">READ,READ_OWN</param>
 		</action>
-	
-		
-	
-		
-	
 	</package>
+	
+	
+		<package name="serviceApi" namespace="/api/v2/service" extends="v2Api">
+		<action name="addOrUpdate" class="com.facilio.bmsconsole.actions.ServiceAction" method="addOrUpdateService">
+			<param name="moduleName">service</param>
+			<param name="permission">CREATE,UPDATE,UPDATE_OWN</param>
+		</action>
+		   <action name="list"
+			class="com.facilio.bmsconsole.actions.ServiceAction" method="getServiceList">
+			<param name="moduleName">service</param>
+			<param name="permission">READ,READ_OWN</param>
+		</action>
+		<action name="count" class="com.facilio.bmsconsole.actions.ServiceAction" method="getServicesCount">
+			<param name="moduleName">service</param>
+			<param name="permission">READ,READ_OWN</param>
+		</action>
+		<action name="delete" class="com.facilio.bmsconsole.actions.ServiceAction" method="deleteServices">
+			<param name="moduleName">service</param>
+			<param name="permission">DELETE</param>
+		</action>
+		<action name="details" class="com.facilio.bmsconsole.actions.ServiceAction" method="getServiceDetails">
+			<param name="moduleName">service</param>
+			<param name="permission">READ,READ_OWN</param>
+		</action>
+		
+	</package>
+	
+	<package name="serviceContractsApi" namespace="/api/v2/servicecontract" extends="v2Api">
+		<action name="list" class="com.facilio.bmsconsole.actions.ServiceContractAction" method="getServiceContractList">
+			<param name="moduleName">contract</param>
+			<param name="permission">READ</param>
+		</action>
+		<action name="getById" class="com.facilio.bmsconsole.actions.ServiceContractAction" method="getServiceContractDetails">
+			<param name="moduleName">contract</param>
+			<param name="permission">READ</param>
+		</action>
+			<action name="addOrUpdate" class="com.facilio.bmsconsole.actions.ServiceContractAction" method="addServiceContract">
+			<param name="moduleName">contract</param>
+			<param name="permission">CREATE,UPDATE</param>
+		</action>
+			<action name="changeStatus" class="com.facilio.bmsconsole.actions.ServiceContractAction" method="bulkStatusUpdate">
+			<param name="moduleName">contract</param>
+			<param name="permission">APPROVE_REJECT_WORKREQUEST</param>
+		</action>
+		<action name="serviceContractCount" class="com.facilio.bmsconsole.actions.ServiceContractAction" method="serviceContractCount">
+			<param name="moduleName">contract</param>
+			<param name="permission">READ</param>
+		</action>
+		<action name="delete" class="com.facilio.bmsconsole.actions.ServiceContractAction" method="deleteServiceContract">
+			<param name="moduleName">contract</param>
+			<param name="permission">DELETE</param>
+		</action>
+		 <action name="*" class="com.facilio.bmsconsole.actions.ServiceContractAction" method="getServiceContractList">
+			<param name="viewName">{1}</param>
+			<param name="moduleName">contract</param>
+			<param name="permission">READ</param>
+		</action>
+
+	</package>109
+	
 	
 	<package name="inventoryRequestListApiv2" namespace="/api/v2/inventoryrequest/view"
 		extends="v2Api">

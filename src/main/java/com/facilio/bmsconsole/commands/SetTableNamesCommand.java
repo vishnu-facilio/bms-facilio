@@ -310,26 +310,38 @@ public class SetTableNamesCommand implements Command {
 	public static SetTableNamesCommand getForInventoryRequestLineItem() {
 		return new SetTableNamesCommand("inventoryrequestlineitems", "InventoryRequestLineItems");
 	}
-	
+
 	public static SetTableNamesCommand getForAttendance() {
 		return new SetTableNamesCommand("attendance", "Attendance");
 	}
-	
+
 	public static SetTableNamesCommand getForAttendanceTransaction() {
 		return new SetTableNamesCommand("attendanceTransaction", "Attendance_Transactions");
 	}
-	
+
 	public static SetTableNamesCommand getForBreak() {
 		return new SetTableNamesCommand("break", "Break");
 	}
-	
+
 	public static SetTableNamesCommand getForShift() {
 		return new SetTableNamesCommand("shift", "Shift");
 	}
-	
-	
+
+
 	public static SetTableNamesCommand getForBreakTransaction() {
 		return new SetTableNamesCommand("breakTransaction", "BREAK_TRANSACTION");
+	}
+
+	public static SetTableNamesCommand getForService() {
+		return new SetTableNamesCommand("service", "Service");
+	}
+
+	public static SetTableNamesCommand getForServiceContract() {
+		return new SetTableNamesCommand("servicecontracts", "Service_Contracts");
+	}
+
+	public static SetTableNamesCommand getForServiceContractLineItems() {
+		return new SetTableNamesCommand("servicecontractlineitems", "ServiceContractLineItems");
 	}
 
 	public static SetTableNamesCommand getForShipment() {

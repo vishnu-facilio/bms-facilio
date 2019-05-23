@@ -1003,21 +1003,21 @@ public class TransactionChainFactory {
 			c.addCommand(new DeleteScheduledReportsCommand(true));
 			return c;
 		}
-		
+
 		public static Chain getExportModuleChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(new ExportCommand());
 			return c;
 		}
-		
-		
+
+
 		public static Chain sendModuleMailChain () {
 			Chain c = getDefaultChain();
 			c.addCommand(FacilioChainFactory.fetchExportModuleChain());
 			c.addCommand(new SendReadingReportMailCommand());
 			return c;
 		}
-		
+
 		public static Chain addWorkflowRuleChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(new AddWorkflowRuleCommand());
@@ -1227,7 +1227,7 @@ public class TransactionChainFactory {
 		}
 		
 		
-		
+
 		public static Chain getAddAlarmChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForAlarm());
@@ -2846,7 +2846,7 @@ public class TransactionChainFactory {
 			c.addCommand(new UpdateJobPlanCommand());
 			return c;
 		}
-		
+
 		public static Chain getAddOrUpdateShipmentChain() {
 			Chain chain = getDefaultChain();
 			chain.addCommand(SetTableNamesCommand.getForShipment());
@@ -2872,6 +2872,41 @@ public class TransactionChainFactory {
 			c.addCommand(new ChangeTransitionExecutionOrderCommand());
 			return c;
 		}
+
+		public static Chain getAddOrUpdateServiceChain() {
+			Chain chain = getDefaultChain();
+			chain.addCommand(SetTableNamesCommand.getForService());
+			chain.addCommand(new AddOrUpdateServiceCommand());
+			return chain;
+		}
+
+		public static Chain getServiceDeleteChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForService());
+			c.addCommand(new DeleteServiceCommand());
+			return c;
+		}
+
+		public static Chain getUpdateServiceContractStatusChain() {
+			Chain chain = getDefaultChain();
+			chain.addCommand(SetTableNamesCommand.getForServiceContract());
+			chain.addCommand(new UpdateBulkServiceContractCommand());
+			return chain;
+		}
+
+		public static Chain getAddServiceContractChain() {
+			Chain chain = getDefaultChain();
+			chain.addCommand(SetTableNamesCommand.getForServiceContract());
+			chain.addCommand(new AddOrUpdateServiceContractCommand());
+			return chain;
+		}
+
+		public static Chain getServiceContractDeleteChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForServiceContract());
+			c.addCommand(new DeleteServiceContractCommand());
+			return c;
+		}
 		public static Chain getPMPlannerSettingsChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(new UpdatePMPlannerSettingsCommand());
@@ -2890,7 +2925,7 @@ public class TransactionChainFactory {
 			c.addCommand(new DeleteShipmentLineItemCommand());
 			return c;
 		}
-		
+
 		public static Chain getReceiveShipmentChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForShipment());
@@ -2898,7 +2933,7 @@ public class TransactionChainFactory {
 			c.addCommand(getReceiveShipmentInventoryChain());
 		    return c;
 		}
-		
+
 		public static Chain getReceiveShipmentInventoryChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(new ReceiveShipmentCommand());
@@ -2914,7 +2949,7 @@ public class TransactionChainFactory {
 			c.addCommand(getStageShipmentInventoryChain());
 			return c;
 		}
-		
+
 		public static Chain getBulkAddShipmentToolChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForTool());
@@ -2929,18 +2964,18 @@ public class TransactionChainFactory {
 		public static Chain getStageShipmentInventoryChain () {
 			Chain c = getDefaultChain();
 			c.addCommand(new StageShipmentCommand());
-			c.addCommand(new LoadTransactionInputForShipmentCommand()); 
-	        c.addCommand(getAddOrUpdateItemTransactionsChain()); 
-	        //rollups work with record_list object in the context 
-	        c.addCommand(new LoadToolTransactionsCommand()); 
+			c.addCommand(new LoadTransactionInputForShipmentCommand());
+	        c.addCommand(getAddOrUpdateItemTransactionsChain());
+	        //rollups work with record_list object in the context
+	        c.addCommand(new LoadToolTransactionsCommand());
 	        c.addCommand(getAddOrUdpateToolTransactionsChain());
 	        c.addCommand(new DeleteShipmentRotatingAssetCommand());
 	        return c;
-		    
+
 		}
-		
+
 		public static Chain getTransferShipmentChain() {
-			
+
 			Chain c = getDefaultChain();
 			c.addCommand(new UpdateShipmentRecordForDirecttransferCommand());
 			c.addCommand(getStageShipmentInventoryChain());
@@ -2980,7 +3015,7 @@ public class TransactionChainFactory {
 			c.addCommand(new DeleteBreakCommand());
 			return c;
 		}
-		
+
 		public static Chain getAddBreakTransactionChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForBreakTransaction());
@@ -2997,13 +3032,13 @@ public class TransactionChainFactory {
 			c.addCommand(new updateAssetDownTimeDetailsCommand());
 			return c;
 		}
-		
+
 		public static Chain getAttendanceTransitionState() {
 			Chain c = getDefaultChain();
 			c.addCommand(new ShowStateForAttendanceCommand());
 			return c;
 		}
-		
+
 		public static Chain getAddMVProjectChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(new ValidateMVProjectCommand());
@@ -3080,7 +3115,7 @@ public class TransactionChainFactory {
 			c.addCommand(new DeleteNameSpaceCommand());
 			return c;
 		}
-		
+
 		public static Chain getAddWorkflowUserFunctionChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(new AddWorkflowCommand());
@@ -3105,27 +3140,27 @@ public class TransactionChainFactory {
 			c.addCommand(new ExecuteWorkflowCommand());
 			return c;
 		}
-		
+
 		public static Chain getExecuteWorkflowChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(new ExecuteWorkflowCommand());
 			return c;
 		}
-		
+
 		public static Chain getAddGraphicsChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForGraphics());
 			c.addCommand(new AddGraphicsCommand());
 			return c;
 		}
-		
+
 		public static Chain getDeleteGraphicsChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForGraphics());
 			c.addCommand(new DeleteGraphicsCommand());
 			return c;
 		}
-		
+
 		public static Chain getUpdateGraphicsChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForGraphics());

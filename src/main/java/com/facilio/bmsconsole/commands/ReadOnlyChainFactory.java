@@ -325,7 +325,7 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new PubSubPublishMessageCommand());
 		return c;
 	}
-	
+
 	
 	public static Chain fetchTenantDetails() {
 		Chain c = getDefaultChain();
@@ -335,7 +335,7 @@ public class ReadOnlyChainFactory {
 		return c;
 	}
 	
-	
+
 	
 	public static Chain constructAndFetchReportDataChain() {
 		Chain c = getDefaultChain();
@@ -352,7 +352,7 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new GetPageCommand());
 		return c;
 	}
-	
+
 	public static Chain getSpecialModulePageChain() {
 		Chain c = getDefaultChain();
 		c.addCommand(new GetSpecialModuleDataDetailCommand());
@@ -921,7 +921,7 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new GetShiftUserMappingCommand());
 		return c;
 	}
-	
+
 	public static Chain getAttendanceList() {
 		Chain c = getDefaultChain();
 		c.addCommand(SetTableNamesCommand.getForAttendance());
@@ -933,7 +933,7 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new GenericGetModuleDataListCommand());
 		return c;
 	}
-	
+
 	public static Chain getAttendanceTransactionsList() {
 		Chain c = getDefaultChain();
 		c.addCommand(SetTableNamesCommand.getForAttendanceTransaction());
@@ -949,7 +949,7 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new GetAllBreaksCommand());
 		return c;
 	}
-	
+
 	public static Chain getBreakList() {
 		Chain c = getDefaultChain();
 		c.addCommand(SetTableNamesCommand.getForBreak());
@@ -960,7 +960,7 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new GetBreakListCommand());
 		return c;
 	}
-	
+
 	public static Chain getShiftList() {
 		Chain c = getDefaultChain();
 		c.addCommand(SetTableNamesCommand.getForShift());
@@ -971,11 +971,22 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new GetShiftListCommand());
 		return c;
 	}
-	
+
 	public static Chain getBreakChain() {
 		Chain c = getDefaultChain();
 		c.addCommand(new GetBreakCommand());
 		return c;
+	}
+
+	public static Chain getServiceListChain() {
+		Chain chain = getDefaultChain();
+		chain.addCommand(SetTableNamesCommand.getForService());
+		chain.addCommand(new LoadAllFieldsCommand());
+		chain.addCommand(new LoadViewCommand());
+		chain.addCommand(new GenerateCriteriaFromFilterCommand());
+		chain.addCommand(new GenerateSearchConditionCommand());
+		chain.addCommand(new GetServicesListCommand());
+		return chain;
 	}
 
 
@@ -1005,7 +1016,7 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new FetchShipmentDetailsCommand());
 		return c;
 	}
-	
+
 	public static Chain getAttendanceDetailsChain() {
 		Chain c = getDefaultChain();
 		c.addCommand(SetTableNamesCommand.getForAttendance());
@@ -1013,7 +1024,34 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new GenericGetModuleDataDetailCommand());
 		return c;
 	}
-	
+
+	public static Chain getServiceDetailsChain() {
+		Chain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForService());
+		c.addCommand(new GenericGetModuleDataDetailCommand());
+		return c;
+	}
+
+	public static Chain getServiceContractListChain() {
+		Chain chain = getDefaultChain();
+		chain.addCommand(SetTableNamesCommand.getForServiceContract());
+		chain.addCommand(new LoadAllFieldsCommand());
+		chain.addCommand(new LoadViewCommand());
+		chain.addCommand(new GenerateCriteriaFromFilterCommand());
+		chain.addCommand(new GenerateSearchConditionCommand());
+		chain.addCommand(new GetServiceContractListCommand());
+		return chain;
+	}
+
+	public static Chain getServiceContractDetailsChain() {
+		Chain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForServiceContract());
+		c.addCommand(new LoadContractLookUpCommand());
+		c.addCommand(new GenericGetModuleDataDetailCommand());
+		c.addCommand(new FetchServiceContractDetailsCommand());
+		return c;
+	}
+
 	public static Chain getAllWorkflowNameSpaceChain() {
 		Chain c = getDefaultChain();
 		c.addCommand(new GetAllNameSpaceWithFunctionCommand());
