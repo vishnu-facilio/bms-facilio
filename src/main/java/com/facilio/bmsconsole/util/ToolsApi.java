@@ -9,6 +9,7 @@ import com.facilio.bmsconsole.context.ToolContext;
 import com.facilio.bmsconsole.context.ToolTransactionContext;
 import com.facilio.bmsconsole.context.ToolTypesContext;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;

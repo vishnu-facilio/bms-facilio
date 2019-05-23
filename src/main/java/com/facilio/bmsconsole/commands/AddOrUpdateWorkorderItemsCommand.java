@@ -5,6 +5,8 @@ import com.facilio.bmsconsole.activity.ItemActivityType;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.context.ItemContext.CostType;
+import com.facilio.bmsconsole.util.InventoryRequestAPI;
+import com.facilio.bmsconsole.util.ItemsApi;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.bmsconsole.util.TransactionState;

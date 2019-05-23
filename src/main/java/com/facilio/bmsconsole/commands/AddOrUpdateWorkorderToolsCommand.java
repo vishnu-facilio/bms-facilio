@@ -2,6 +2,8 @@ package com.facilio.bmsconsole.commands;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.*;
+import com.facilio.bmsconsole.util.InventoryRequestAPI;
+import com.facilio.bmsconsole.util.ToolsApi;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.modules.fields.FacilioField;;
 import com.facilio.bmsconsole.util.TransactionState;
