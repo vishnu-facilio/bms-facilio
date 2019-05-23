@@ -32,12 +32,12 @@ public class Value {
     	return (DBParamContext) value;
     }
     
-    public List<?> asList() {
-    	 return (List<?>)value;
+    public List<Object> asList() {
+    	 return (List<Object>)value;
     }
     
-    public Map<?,?> asMap() {
-   	 return (Map<?,?>)value;
+    public Map<Object,Object> asMap() {
+   	 return (Map<Object,Object>)value;
    }
 
     public Boolean asBoolean() {
