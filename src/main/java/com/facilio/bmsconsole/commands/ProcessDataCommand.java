@@ -76,8 +76,8 @@ public class ProcessDataCommand implements Command {
 						data= new HashMap<String,String> ();
 						deviceData.put(deviceName, data);
 					}
-					data.put(instanceName,instanceVal);				
-					instanceList.add(instanceName);
+					data.put(instanceName,instanceVal);	
+					instanceList.add(instanceName.replace(",", StringOperators.DELIMITED_COMMA));
 				}
 			}	
 		if(TimeSeriesAPI.isStage()) {
