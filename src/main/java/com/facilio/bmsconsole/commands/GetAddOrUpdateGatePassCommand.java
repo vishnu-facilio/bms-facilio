@@ -79,6 +79,9 @@ public class GetAddOrUpdateGatePassCommand implements Command {
 				lineItemContext.setQuantity(1);
 				for(int i=1;i<lineItemContext.getAssetIds().size();i++) {
 					GatePassLineItemsContext gatePassItem = new GatePassLineItemsContext();
+					gatePassItem.setInventoryType(lineItemContext.getInventoryType());
+					gatePassItem.setItemType(lineItemContext.getItemType());
+					gatePassItem.setToolType(lineItemContext.getToolType());
 					gatePassItem.setGatePass(gatePassContext.getId());
 					gatePassItem.setAsset(AssetsAPI.getAssetInfo(lineItemContext.getAssetIds().get(i)));
 					gatePassItem.setQuantity(1);
