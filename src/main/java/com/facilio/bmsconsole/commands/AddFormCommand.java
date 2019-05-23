@@ -26,7 +26,7 @@ public class AddFormCommand implements Command {
 		FacilioModule module = modBean.getModule(moduleName);
 		
 		if (form.getName() == null) {
-			form.setName(form.getDisplayName().toLowerCase().replaceAll("[^a-zA-Z0-9_]+",""));
+			form.setName(form.getDisplayName().toLowerCase().replaceAll("[^a-zA-Z0-9]+",""));
 		} else {
 			form.setName(form.getName().toLowerCase().replaceAll("[^a-zA-Z0-9_]+", ""));
 		}
