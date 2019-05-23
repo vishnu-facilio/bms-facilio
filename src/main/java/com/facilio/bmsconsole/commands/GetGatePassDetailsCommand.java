@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
+import com.facilio.bmsconsole.util.GatePassAPI;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
