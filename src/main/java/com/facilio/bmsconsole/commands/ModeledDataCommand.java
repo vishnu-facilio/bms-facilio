@@ -46,7 +46,7 @@ public class ModeledDataCommand implements Command {
 		Map<String,Object>  dataPoints= null;
 		long orgId = AccountUtil.getCurrentOrg().getOrgId();
 	
-//		if(TimeSeriesAPI.isStage()) {
+	if(TimeSeriesAPI.isStage()) {
 			LOGGER.debug("Inside ModeledDataCommand####### deviceData: "+deviceData);
 
 			for(Map.Entry<String, Map<String,String>> data:deviceData.entrySet()) {
@@ -100,7 +100,7 @@ public class ModeledDataCommand implements Command {
 //							reading.setTtime(timeStamp);
 							//removing here to avoid going into unmodeled instance..
 							// remove deviceData is important 
-							instanceList.remove();
+//							instanceList.remove();
 							dataPointsValue.remove(dataPoints);
 							//construct the reading to add in their respective module..????
 						}
@@ -113,7 +113,7 @@ public class ModeledDataCommand implements Command {
 				
 				dataPointsValue.addAll(insertNewPointsData);
 			}
-//		}
+	}
 
 		//oldPublish data
 		if(!TimeSeriesAPI.isStage()) {

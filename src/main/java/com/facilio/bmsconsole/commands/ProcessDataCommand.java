@@ -7,13 +7,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.StringJoiner;
 
+import com.facilio.accounts.util.AccountUtil;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
-import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.StringOperators;
@@ -33,6 +33,9 @@ public class ProcessDataCommand implements Command {
 	public boolean execute(Context context) throws Exception {
 		
 		JSONObject payLoad =(JSONObject)context.get(FacilioConstants.ContextNames.PAY_LOAD);
+		if (AccountUtil.getCurrentOrg().getId() == 146 ) {
+			LOGGER.info("Payload : "+payLoad);
+		}
 		Iterator<String> keyList = payLoad.keySet().iterator();
 		List<Map<String,Object>> pointsStat=null;
 		Criteria criteriaList = new Criteria();
@@ -73,11 +76,11 @@ public class ProcessDataCommand implements Command {
 						data= new HashMap<String,String> ();
 						deviceData.put(deviceName, data);
 					}
-					data.put(instanceName,instanceVal);				
-					instanceList.add(instanceName);
+					data.put(instanceName,instanceVal);	
+					instanceList.add(instanceName.replace(",", StringOperators.DELIMITED_COMMA));
 				}
 			}	
-//			if(TimeSeriesAPI.isStage()) {
+		if(TimeSeriesAPI.isStage()) {
 				
 				if(instanceList.length()>0) { //if innerKeyList isEmpty,.. so the length will be 0
 					FacilioModule module=ModuleFactory.getPointsModule();
@@ -88,16 +91,19 @@ public class ProcessDataCommand implements Command {
 					deviceAndInstanceCriteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getInstanceField(module), instanceList.toString(), StringOperators.IS));
 					criteriaList.orCriteria(deviceAndInstanceCriteria);
 				}	
-//			}
 		}
-//		if(TimeSeriesAPI.isStage()) {
+		}
+	if(TimeSeriesAPI.isStage()) {
 			
 			pointsStat= getDataPoints(criteriaList);
 			LOGGER.debug("########### Insert Points Data: "+pointsStat);
 			context.put("DATA_POINTS",pointsStat );
-//		}
+	}
 		LOGGER.debug("Finished ProcessDataCommand####### : ");
-		context.put(FacilioConstants.ContextNames.DEVICE_DATA, deviceData);		
+		context.put(FacilioConstants.ContextNames.DEVICE_DATA, deviceData);
+		if (AccountUtil.getCurrentOrg().getId() == 146 ) {
+			LOGGER.info("Device Data : "+deviceData);
+		}
 		return false;
 	}
 

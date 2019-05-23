@@ -1,18 +1,22 @@
 package com.facilio.bmsconsole.context;
 
+import java.util.List;
+
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 
 public class GatePassLineItemsContext extends ModuleBaseWithCustomFields{
 	
 	private static final long serialVersionUID = 1L;
-	private GatePassContext gatePass;
-	public GatePassContext getGatePass() {
+	private long gatePass;
+	
+	
+	public long getGatePass() {
 		return gatePass;
 	}
-	public void setGatePass(GatePassContext gatePass) {
+	public void setGatePass(long gatePass) {
 		this.gatePass = gatePass;
 	}
-	
+
 	private InventoryType inventoryType;
 	public InventoryType getInventoryTypeEnum() {
 		return inventoryType;
@@ -70,7 +74,24 @@ public class GatePassLineItemsContext extends ModuleBaseWithCustomFields{
 	public void setSerialNumber(String serialNumber) {
 		this.serialNumber = serialNumber;
 	}
-
+	
+	private List<Long> assetIds;
+	
+	public List<Long> getAssetIds() {
+		return assetIds;
+	}
+	public void setAssetIds(List<Long> assetIds) {
+		this.assetIds = assetIds;
+	}
+	
+	private AssetContext asset;
+	
+	public AssetContext getAsset() {
+		return asset;
+	}
+	public void setAsset(AssetContext asset) {
+		this.asset = asset;
+	}
 	public GatePassLineItemsContext() {
 		
 	}

@@ -89,9 +89,9 @@ public class ControllerAPI {
 		
 		List<Map<String, Object>> controllerList = ruleBuilder.get();
 		List<ControllerContext> controllers = getControllerFromMapList(controllerList, fetchBuilding);
-		if(!AwsUtil.isProduction() && AccountUtil.getCurrentOrg().getOrgId()==75) {
+		if(AccountUtil.getCurrentOrg().getOrgId()==152) {
 			
-			LOGGER.info("#####Mac Address:  "+macAddress+"  ControllerList: "+controllerList+"  Controllers: "+controllers);
+			LOGGER.info("#####Mac Address:  "+macAddress+"  ControllerList: "+controllerList+"  Controllers: "+controllers+" Sql String: "+ruleBuilder.toString());
 		}
 		if (controllers != null && !controllers.isEmpty()) {
 			return controllers.get(0);

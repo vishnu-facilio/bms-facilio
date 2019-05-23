@@ -3,12 +3,16 @@ package com.facilio.bmsconsole.commands;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.GatePassContext;
+import com.facilio.bmsconsole.context.GatePassLineItemsContext;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
+import com.facilio.bmsconsole.modules.LookupField;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
+import com.facilio.bmsconsole.util.GatePassAPI;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
@@ -16,7 +20,9 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 public class GetGatePassListCommand implements Command{
 
@@ -40,6 +46,8 @@ public class GetGatePassListCommand implements Command{
 		else {
 			fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
 		}
+		Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
+		
 		FacilioView view = (FacilioView) context.get(FacilioConstants.ContextNames.CUSTOM_VIEW);
 		
 		SelectRecordsBuilder<GatePassContext> builder = new SelectRecordsBuilder<GatePassContext>()
@@ -49,6 +57,11 @@ public class GetGatePassListCommand implements Command{
 															;
 		if (getCount) {
 			builder.setAggregation();
+		}
+		else {
+			builder.fetchLookups(Arrays.asList((LookupField) fieldsAsMap.get("fromStoreRoom"),
+					(LookupField) fieldsAsMap.get("toStoreRoom")));
+	
 		}
 		
 		
@@ -113,6 +126,9 @@ public class GetGatePassListCommand implements Command{
 				context.put(FacilioConstants.ContextNames.RECORD_COUNT, records.get(0).getData().get("count"));
 			}
 			else {	
+				for(GatePassContext gatepass : records) {
+					GatePassAPI.setLineItems(gatepass);
+				}
 				context.put(FacilioConstants.ContextNames.RECORD_LIST, records);
 			}
 		}
@@ -120,4 +136,6 @@ public class GetGatePassListCommand implements Command{
 		long timeTaken = System.currentTimeMillis() - startTime;
 		return false;
 	}
+	
+	
 }

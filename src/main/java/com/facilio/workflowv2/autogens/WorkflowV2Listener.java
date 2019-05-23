@@ -400,6 +400,18 @@ public interface WorkflowV2Listener extends ParseTreeListener {
 	 */
 	void exitVarAtom(WorkflowV2Parser.VarAtomContext ctx);
 	/**
+	 * Enter a parse tree produced by the {@code listAndMapSymbolOperation}
+	 * labeled alternative in {@link WorkflowV2Parser#atom}.
+	 * @param ctx the parse tree
+	 */
+	void enterListAndMapSymbolOperation(WorkflowV2Parser.ListAndMapSymbolOperationContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code listAndMapSymbolOperation}
+	 * labeled alternative in {@link WorkflowV2Parser#atom}.
+	 * @param ctx the parse tree
+	 */
+	void exitListAndMapSymbolOperation(WorkflowV2Parser.ListAndMapSymbolOperationContext ctx);
+	/**
 	 * Enter a parse tree produced by the {@code listInitialisation}
 	 * labeled alternative in {@link WorkflowV2Parser#list_opperations}.
 	 * @param ctx the parse tree
@@ -411,18 +423,6 @@ public interface WorkflowV2Listener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitListInitialisation(WorkflowV2Parser.ListInitialisationContext ctx);
-	/**
-	 * Enter a parse tree produced by the {@code listFetch}
-	 * labeled alternative in {@link WorkflowV2Parser#list_opperations}.
-	 * @param ctx the parse tree
-	 */
-	void enterListFetch(WorkflowV2Parser.ListFetchContext ctx);
-	/**
-	 * Exit a parse tree produced by the {@code listFetch}
-	 * labeled alternative in {@link WorkflowV2Parser#list_opperations}.
-	 * @param ctx the parse tree
-	 */
-	void exitListFetch(WorkflowV2Parser.ListFetchContext ctx);
 	/**
 	 * Enter a parse tree produced by the {@code mapInitialisation}
 	 * labeled alternative in {@link WorkflowV2Parser#map_opperations}.

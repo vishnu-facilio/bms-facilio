@@ -502,8 +502,6 @@ public class AssetsAPI {
 	}
 	
 	public static JSONObject getAssetsWithReadings (List<Long> buildingIds) throws Exception {
-		Map<Long, FacilioField> fieldMap = null;
-		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ASSET);
 		List<FacilioField> fields = new ArrayList(modBean.getAllFields(FacilioConstants.ContextNames.ASSET));
@@ -528,16 +526,30 @@ public class AssetsAPI {
 		
 		List<AssetContext> assets = selectBuilder.get();
 		
+		JSONObject data = new JSONObject();
+		
+		JSONObject categoryVsFields = new JSONObject();
+		data.put("categoryWithFields", categoryVsFields);
+		
+		JSONObject categoryVsAssets = new JSONObject();
+		data.put("categoryWithAssets", categoryVsAssets);
+		
+		Map<Long, Object> assetMap = new JSONObject();
+		data.put("assets", assetMap);
+		
+		Map<Long, FacilioField> fieldMap = null;
+		data.put("fields", fieldMap);
+		
 		if (assets == null || assets.isEmpty()) {
-			return null;
+			return data;
 		}
 		Set<Long> fieldIds = assets.stream().map(asset -> (Long) asset.getData().get("fieldId")).collect(Collectors.toSet());
 		fieldMap = modBean.getFields(fieldIds);
 		
-		Map<Long, Object> assetMap = new JSONObject();
 		
-		JSONObject categoryVsFields = new JSONObject();
-		JSONObject categoryVsAssets = new JSONObject();
+		
+		
+		
 		for(AssetContext asset: assets) {
 			if (asset.getCategory() == null) {
 				continue;
@@ -587,7 +599,6 @@ public class AssetsAPI {
 			
 		}
 		
-		JSONObject data = new JSONObject();
 		data.put("categoryWithFields", categoryVsFields);
 		data.put("categoryWithAssets", categoryVsAssets);
 		data.put("assets", assetMap);

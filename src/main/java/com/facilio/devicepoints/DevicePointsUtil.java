@@ -71,13 +71,15 @@ public  class DevicePointsUtil {
             if(controllerSettingsId > -1) {
                 JSONArray points = (JSONArray)payLoad.get(DevicePointsKeys.POINTS);
                 LOGGER.info("Device Points : "+points);
-
-			int count;
-
-			TimeSeriesAPI.addPointsInstances(points, controllerSettingsId);
-
-			count = TimeSeriesAPI.addUnmodeledInstances(points, controllerSettingsId);
-
+                
+                int count;
+                if(TimeSeriesAPI.isStage()) {
+                		count =  TimeSeriesAPI.addPointsInstances(points, controllerSettingsId);
+                }
+                else {
+                		count = TimeSeriesAPI.addUnmodeledInstances(points, controllerSettingsId);
+                }
+                
                 JSONObject info = new JSONObject();
                 info.put("controllerId", controllerSettingsId);
                 info.put("publishType", "devicePoints");

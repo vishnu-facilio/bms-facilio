@@ -10,6 +10,7 @@ import org.json.simple.JSONObject;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.PublishData;
+import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.wms.util.WmsApi;
 
 public class WmsPublishResponse extends Message {
@@ -17,12 +18,12 @@ public class WmsPublishResponse extends Message {
 	private static final Logger LOGGER = LogManager.getLogger(WmsPublishResponse.class.getName());
 
 	public WmsPublishResponse() {
-		setMessageType(MessageType.BROADCAST);
+		setMessageType(MessageType.PUBLISH);
 		setNamespace("publishdata");
 	}
 	
 	public WmsPublishResponse publish(PublishData data, JSONObject info) throws Exception {
-		addData("data", data);
+		addData("data", FieldUtil.getAsJSON(data));
 		addData("info", info);
 		setAction("publish");
 		send();
@@ -30,7 +31,7 @@ public class WmsPublishResponse extends Message {
 	}
 	
 	public WmsPublishResponse publishFailure(PublishData data) throws Exception {
-		addData("response", data);
+		addData("data", FieldUtil.getAsJSON(data));
 		setAction("publishFailure");
 		send();
 		return this;

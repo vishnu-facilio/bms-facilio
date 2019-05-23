@@ -43,6 +43,7 @@ public class AddOrUpdateStateFlowCommand implements Command {
 				throw new Exception("Invalid Module");
 			}
 			stateFlow.setModuleId(facilioModule.getModuleId());
+			stateFlow.setDefaltStateFlow(false);
 			
 			if (stateFlow.getExecutionOrder() == -1) {
 				stateFlow.setExecutionOrder(0);

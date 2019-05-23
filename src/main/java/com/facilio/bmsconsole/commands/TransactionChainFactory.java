@@ -2109,7 +2109,7 @@ public class TransactionChainFactory {
 			c.addCommand(new ExecuteAllWorkflowsCommand());
 			c.addCommand(getUpdatetoolQuantityRollupChain());
 			c.addCommand(new UpdateRequestedToolIssuedQuantityCommand());
-			
+
 			return c;
 		}
 		
@@ -2603,7 +2603,7 @@ public class TransactionChainFactory {
 			chain.addCommand(new AddOrUpdateInventoryRequestCommand());
 			return chain;
 		}
-		
+
 		public static Chain getIssueInventoryRequestChain() {
 			Chain chain = getDefaultChain();
 			chain.addCommand(SetTableNamesCommand.getForInventoryRequest());
@@ -2614,7 +2614,7 @@ public class TransactionChainFactory {
 			chain.addCommand(new CopyToToolTransactionCommand());
 			chain.addCommand(getAddOrUdpateToolTransactionsChain());
 			return chain;
-		
+
 		}
 		public static Chain getInventoryRequestDeleteChain() {
 			Chain c = getDefaultChain();
@@ -2652,6 +2652,21 @@ public class TransactionChainFactory {
 		}
 
 
+
+		public static Chain getAddOrUpdateGatePassChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForGatePass());
+			c.addCommand(new GetAddOrUpdateGatePassCommand());
+			return c;
+		}
+
+		public static Chain getGatePassDeleteChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForGatePass());
+			c.addCommand(new DeleteGatePassCommand());
+			return c;
+		}
+
 		public static Chain getAddJobPlanChain () {
 			Chain c = getDefaultChain();
 			c.addCommand(new AddJobPlanCommand());
@@ -2675,5 +2690,7 @@ public class TransactionChainFactory {
 			c.addCommand(new ChangeTransitionExecutionOrderCommand());
 			return c;
 		}
+
 }
+
 

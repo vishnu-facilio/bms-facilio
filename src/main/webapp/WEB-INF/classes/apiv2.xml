@@ -2072,6 +2072,18 @@
 		<action name="add"
 			class="com.facilio.bmsconsole.actions.GatePassAction" method="addGatePass">
 		</action>
+		<action name="addOrUpdate"
+			class="com.facilio.bmsconsole.actions.GatePassAction" method="addOrUpdateGatePass">
+		</action>
+		
+		<action name="delete"
+			class="com.facilio.bmsconsole.actions.GatePassAction" method="deleteGatePass">
+		</action>
+		
+		<action name="usePoLineItems"
+			class="com.facilio.bmsconsole.actions.GatePassAction" method="usePoLineItemsForGatepass">
+		</action>
+		
 		
 		<action name="*"
 			class="com.facilio.bmsconsole.actions.GatePassAction" method="gatePassDetails">

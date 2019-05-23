@@ -98,6 +98,7 @@ public class AddOrUpdateWorkorderToolsCommand implements Command {
 									woTool = setWorkorderItemObj(null, 1, tool, parentId, workorder,
 											workorderTool, approvalState, asset, workorderTool.getRequestedLineItem());
 									updatePurchasedTool(asset);
+									asset.setIsUsed(true);
 									workorderToolslist.add(woTool);
 									toolsToBeAdded.add(woTool);
 								}

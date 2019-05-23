@@ -10,6 +10,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsole.context.WorkOrderContext.WOUrgency;
 import com.facilio.bmsconsole.forms.FacilioForm.FormType;
 import com.facilio.bmsconsole.forms.FacilioForm.LabelPosition;
 import com.facilio.bmsconsole.forms.FormField.Required;
@@ -120,6 +121,9 @@ public class FormFactory {
 				List<FormField> taskFields = new ArrayList<>();
 				
 				FormSection defaultSection = new FormSection("WORKORDER", i++, defaultFields, true);
+				if (form.getFormTypeEnum() == FormType.PORTAL) {
+					defaultSection.setShowLabel(false);
+				}
 				sections.add(defaultSection);
 				 form.getFields().forEach(field -> {
 					 if (field.getDisplayTypeEnum() == FieldDisplayType.TASKS) {
@@ -131,8 +135,10 @@ public class FormFactory {
 				 });
 				
 //				List<FormField> task = form.getFields().stream().filter(field -> field.getDisplayTypeEnum() == FieldDisplayType.TASKS).collect(Collectors.toList());
-				FormSection taskSection = new FormSection("TASKS", i++, taskFields, true);
-				sections.add(taskSection);
+				if (form.getFormTypeEnum() != FormType.PORTAL) {
+					FormSection taskSection = new FormSection("TASKS", i++, taskFields, true);
+					sections.add(taskSection);
+				}
 				
 //				form.setFields(null);
 			}
@@ -164,7 +170,7 @@ public class FormFactory {
 	
 	public static FacilioForm getServiceWorkOrderForm() {
 		FacilioForm form = new FacilioForm();
-		form.setDisplayName("Submit A Request");
+		form.setDisplayName("Default Request");
 		form.setName("default_workorder_portal");
 		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.WORK_ORDER));
 		form.setLabelPosition(LabelPosition.TOP);
@@ -529,18 +535,20 @@ public class FormFactory {
 	private static List<FormField> getServiceWorkOrderFormFields() {
 		List<FormField> fields = new ArrayList<>();
 		fields.add(new FormField("siteId", FieldDisplayType.LOOKUP_SIMPLE, "Site", Required.REQUIRED, "site" ,2, 1));
-		fields.add(new FormField("subject", FieldDisplayType.TEXTBOX, "Subject", Required.OPTIONAL, 3, 1));
+		fields.add(new FormField("subject", FieldDisplayType.TEXTBOX, "Subject", Required.REQUIRED, 3, 1));
 		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 4, 1));
-		fields.add(new FormField("urgency", FieldDisplayType.URGENCY, "Urgency", Required.OPTIONAL, 5, 1));
+		FormField urgency = new FormField("urgency", FieldDisplayType.URGENCY, "Urgency", Required.OPTIONAL, 5, 1);
+		urgency.setValue(WOUrgency.NOTURGENT.getValue());
+		fields.add(urgency);
 		fields.add(new FormField("attachedFiles", FieldDisplayType.ATTACHMENT, "Attachment", Required.OPTIONAL, 6, 1));
 		return Collections.unmodifiableList(fields);
 	}
 	
-	public static List<FormField> getRequesterFormFields() {
+	public static List<FormField> getRequesterFormFields(boolean fetchBoth) throws Exception {
 		List<FormField> fields = new ArrayList<>();
-		if (AccountUtil.getCurrentAccount().isFromMobile()) {
-			fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Requester Name", Required.REQUIRED, 1, 2));
-			fields.add(new FormField("email", FieldDisplayType.TEXTBOX, "Requester Email", Required.REQUIRED, 2, 2));
+		if (AccountUtil.getCurrentAccount().isFromMobile() || fetchBoth) {
+			fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Requester Name", Required.REQUIRED, 1, 1));
+			fields.add(new FormField("email", FieldDisplayType.TEXTBOX, "Requester Email", Required.REQUIRED, 2, 1));
 		}
 		else {
 			fields.add(new FormField("requester", FieldDisplayType.REQUESTER, "Requester", Required.REQUIRED, 1, 1));

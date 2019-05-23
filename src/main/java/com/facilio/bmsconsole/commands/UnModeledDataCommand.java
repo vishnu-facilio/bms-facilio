@@ -44,9 +44,9 @@ public class UnModeledDataCommand implements Command {
 					continue;
 				}
 				Long pointsInstanceId=null;
-//				if(TimeSeriesAPI.isStage()) {
+				if(TimeSeriesAPI.isStage()) {
 					pointsInstanceId = getPointsUnmodledInstance(deviceName , instanceName ,controllerId, pointsRecords);
-//				}
+				}
 				Long instanceId= getUnmodledInstance(deviceName,instanceName,controllerId);
 
 				if(instanceId==null && controllerId!=null) {
@@ -63,9 +63,9 @@ public class UnModeledDataCommand implements Command {
 					instanceId=getUnmodeledInstanceAfterInsert(deviceName,instanceName,controllerId);
 				}
 				Map<String, Object> record=new HashMap<String,Object>();			
-//				if(TimeSeriesAPI.isStage()) {
+				if(TimeSeriesAPI.isStage()) {
 					record.put("newInstanceId", pointsInstanceId);
-//				}
+				}
 				record.put("instanceId", instanceId);
 				record.put("ttime",timeStamp);
 				record.put("value", instanceVal);

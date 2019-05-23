@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import com.facilio.accounts.util.AccountUtil;
@@ -111,7 +112,10 @@ public class GetFormMetaCommand implements Command {
 				}
 			}
 			if (AccountUtil.getCurrentUser() == null && AccountUtil.getCurrentOrg().getOrgId() != 104) {
-				form.getFields().addAll(0, FormFactory.getRequesterFormFields());
+				form.getFields().addAll(0, FormFactory.getRequesterFormFields(false));
+				if (CollectionUtils.isNotEmpty(form.getSections())) {
+					form.getSections().get(0).getFields().addAll(0, FormFactory.getRequesterFormFields(true));
+				}
 			}
 		}
 		

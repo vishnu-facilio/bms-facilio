@@ -96,4 +96,90 @@ public class GatePassContext extends ModuleBaseWithCustomFields {
 	public void setLineItems(List<GatePassLineItemsContext> lineItems) {
 		this.lineItems = lineItems;
 	}
+	
+	
+	public enum Status {
+		REQUESTED,
+		APPROVED,
+		ISSUED,
+		REJECTED,
+		RETURNED,
+		COMPLETED;
+		
+		public int getValue() {
+			return ordinal() + 1;
+		}
+		
+		public static Status valueOf(int value) {
+			if (value > 0 && value <= values().length) {
+				return values()[value - 1];
+			}
+			return null;
+		}
+	}
+	
+	private Status status;
+	public Status getStatusEnum() {
+		return status;
+	}
+	public int getStatus() {
+		if (status != null) {
+			return status.getValue();
+		}
+		return -1;
+	}
+	public void setStatus(Status status) {
+		this.status = status;
+	}
+	public void setStatus(int status) {
+		this.status = Status.valueOf(status);
+	}
+	
+	private long issuedToPhoneNumber;
+	private WorkOrderContext parentWorkOrderId;
+	private PurchaseOrderContext parentPoId;
+	private StoreRoomContext fromStoreRoom;
+	private StoreRoomContext toStoreRoom;
+
+	public long getIssuedToPhoneNumber() {
+		return issuedToPhoneNumber;
+	}
+
+	public void setIssuedToPhoneNumber(long issuedToPhoneNumber) {
+		this.issuedToPhoneNumber = issuedToPhoneNumber;
+	}
+
+	public WorkOrderContext getParentWorkOrderId() {
+		return parentWorkOrderId;
+	}
+
+	public void setParentWorkOrderId(WorkOrderContext parentWorkOrderId) {
+		this.parentWorkOrderId = parentWorkOrderId;
+	}
+
+	public PurchaseOrderContext getParentPoId() {
+		return parentPoId;
+	}
+
+	public void setParentPoId(PurchaseOrderContext parentPoId) {
+		this.parentPoId = parentPoId;
+	}
+
+	public StoreRoomContext getFromStoreRoom() {
+		return fromStoreRoom;
+	}
+
+	public void setFromStoreRoom(StoreRoomContext fromStoreRoom) {
+		this.fromStoreRoom = fromStoreRoom;
+	}
+
+	public StoreRoomContext getToStoreRoom() {
+		return toStoreRoom;
+	}
+
+	public void setToStoreRoom(StoreRoomContext toStoreRoom) {
+		this.toStoreRoom = toStoreRoom;
+	}
+	
+	
 }

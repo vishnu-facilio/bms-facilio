@@ -4,6 +4,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ToolContext;
 import com.facilio.bmsconsole.context.ToolTransactionContext;
+import com.facilio.bmsconsole.criteria.CommonOperators;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
@@ -103,8 +104,19 @@ public class GetToolTransactionsListCommand implements Command {
 //					String.valueOf(0), NumberOperators.GREATER_THAN));
 			// builder.andCondition(CriteriaAPI.getCondition(toolTransactionsFieldsMap.get("isReturnable"),
 			// String.valueOf(true), BooleanOperators.IS));
-			builder.andCondition(CriteriaAPI.getCondition(toolTransactionsFieldsMap.get("transactionState"),
+			Criteria criteria = new Criteria();
+			criteria.addAndCondition(CriteriaAPI.getCondition(toolTransactionsFieldsMap.get("transactionState"),
+					String.valueOf(4), NumberOperators.EQUALS));
+			criteria.addAndCondition(CriteriaAPI.getCondition(toolTransactionsFieldsMap.get("parentTransactionId"),
+					"", CommonOperators.IS_EMPTY));
+			Criteria criteriaIssue = new Criteria();
+			criteriaIssue.addAndCondition(CriteriaAPI.getCondition(toolTransactionsFieldsMap.get("transactionState"),
 					String.valueOf(2), NumberOperators.EQUALS));
+			Criteria finalCriteria = new Criteria();
+			finalCriteria.andCriteria(criteria);
+			finalCriteria.orCriteria(criteriaIssue);
+			builder.andCriteria(finalCriteria);
+			
 		}
 		
 		Criteria permissionCriteria = AccountUtil.getCurrentUser().getRole().permissionCriteria("inventory","read");
