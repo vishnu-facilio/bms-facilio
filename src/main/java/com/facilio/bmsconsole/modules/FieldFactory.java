@@ -5812,6 +5812,7 @@ public class FieldFactory {
 		List<FacilioField> fields = new ArrayList<>();
 		fields.add(getField("id", "ID", validationModule, FieldType.ID));
 		fields.add(getField("ruleId", "RULE_ID", validationModule, FieldType.NUMBER));
+		fields.add(getField("name", "NAME", validationModule, FieldType.STRING));
 		fields.add(getField("errorMessage", "ERROR_MESSAGE", validationModule, FieldType.STRING));
 		fields.add(getField("criteriaId", "CRITERIA_ID", validationModule, FieldType.NUMBER));
 		return fields;
