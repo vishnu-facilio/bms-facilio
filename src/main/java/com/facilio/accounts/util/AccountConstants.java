@@ -676,6 +676,16 @@ public class AccountConstants {
 
 		return license;
 	}
+	
+	public static FacilioModule getFeatureLicenseModule() {
+		FacilioModule license = new FacilioModule();
+		license.setName("featurelicense");
+		license.setDisplayName("Feature License");
+		license.setTableName("FeatureLicense");
+
+		return license;
+	}
+	
 	public static FacilioModule getUserLicenseModule() {
 		FacilioModule userLicense = new FacilioModule();
 		userLicense.setName("userlicense");
@@ -1262,6 +1272,28 @@ public class AccountConstants {
 		
 		return fields;
 	}
+	
+	public static List<FacilioField> getFeatureLicenseFields() {
+		FacilioModule module = getFeatureLicenseModule();
+		List<FacilioField> fields = new ArrayList<>();
+		
+		/*FacilioField orgId = new FacilioField();
+		orgId.setName("orgId");
+		orgId.setDataType(FieldType.NUMBER);
+		orgId.setColumnName("ORGID");
+		orgId.setModule(module);
+		fields.add(orgId);*/
+		
+		FacilioField license = new FacilioField();
+		license.setName("module");
+		license.setDataType(FieldType.NUMBER);
+		license.setColumnName("MODULE");
+		license.setModule(module);
+		fields.add(license);
+		
+		return fields;
+	}
+	
 	public static List<FacilioField> getUserLicenseFields() {
 		FacilioModule module = getUserLicenseModule();
 		List<FacilioField> fields = new ArrayList<>();
