@@ -83,12 +83,11 @@ public enum FieldOperator implements Operator<Object> {
 		});
 		return predicate;
 	}
-	
-//	@Override
-//	public abstract String getWhereClause(String columnName, String value);
-//
-//	@Override
-//	public abstract FacilioModulePredicate getPredicate(String fieldName, String value);
+
+	@Override
+	public boolean isPlaceHoldersMandatory() {
+		return true;
+	}
 
 	@Override
 	public boolean isDynamicOperator() {

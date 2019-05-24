@@ -1,9 +1,7 @@
 package com.facilio.db.criteria.operators;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.FacilioModulePredicate;
-import com.facilio.db.criteria.operators.Operator;
 import com.facilio.modules.fields.EnumField;
 import com.facilio.fw.BeanFactory;
 import org.apache.commons.collections.Predicate;
@@ -248,6 +246,11 @@ public enum EnumOperators implements Operator<String> {
 	public List<Object> computeValues(String value) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public boolean updateFieldNameWithModule() {
+		return true;
 	}
 
 	private static final Map<String, Operator> operatorMap = Collections.unmodifiableMap(initOperatorMap());

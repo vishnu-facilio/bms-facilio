@@ -108,6 +108,16 @@ public enum LookupOperator implements Operator<Criteria> {
 		return null;
 	}
 
+	@Override
+	public boolean updateFieldNameWithModule() {
+		return true;
+	}
+
+	@Override
+	public boolean useCriteriaVal() {
+		return false;
+	}
+
 	private static final Map<String, Operator> operatorMap = Collections.unmodifiableMap(initOperatorMap());
 	private static Map<String, Operator> initOperatorMap() {
 		Map<String, Operator> operatorMap = new HashMap<>();
