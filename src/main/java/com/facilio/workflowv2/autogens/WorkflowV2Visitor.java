@@ -109,6 +109,13 @@ public interface WorkflowV2Visitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitNotExpr(WorkflowV2Parser.NotExprContext ctx);
 	/**
+	 * Visit a parse tree produced by the {@code arithmeticFirstPrecedenceExpr}
+	 * labeled alternative in {@link WorkflowV2Parser#expr}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitArithmeticFirstPrecedenceExpr(WorkflowV2Parser.ArithmeticFirstPrecedenceExprContext ctx);
+	/**
 	 * Visit a parse tree produced by the {@code unaryMinusExpr}
 	 * labeled alternative in {@link WorkflowV2Parser#expr}.
 	 * @param ctx the parse tree
@@ -122,6 +129,13 @@ public interface WorkflowV2Visitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitStandAloneStatements(WorkflowV2Parser.StandAloneStatementsContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code arithmeticSecondPrecedenceExpr}
+	 * labeled alternative in {@link WorkflowV2Parser#expr}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitArithmeticSecondPrecedenceExpr(WorkflowV2Parser.ArithmeticSecondPrecedenceExprContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code booleanExpr}
 	 * labeled alternative in {@link WorkflowV2Parser#expr}.
@@ -143,13 +157,6 @@ public interface WorkflowV2Visitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitCriteriaInitialization(WorkflowV2Parser.CriteriaInitializationContext ctx);
-	/**
-	 * Visit a parse tree produced by the {@code arithmeticExpr}
-	 * labeled alternative in {@link WorkflowV2Parser#expr}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitArithmeticExpr(WorkflowV2Parser.ArithmeticExprContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code relationalExpr}
 	 * labeled alternative in {@link WorkflowV2Parser#expr}.

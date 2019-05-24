@@ -172,6 +172,18 @@ public interface WorkflowV2Listener extends ParseTreeListener {
 	 */
 	void exitNotExpr(WorkflowV2Parser.NotExprContext ctx);
 	/**
+	 * Enter a parse tree produced by the {@code arithmeticFirstPrecedenceExpr}
+	 * labeled alternative in {@link WorkflowV2Parser#expr}.
+	 * @param ctx the parse tree
+	 */
+	void enterArithmeticFirstPrecedenceExpr(WorkflowV2Parser.ArithmeticFirstPrecedenceExprContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code arithmeticFirstPrecedenceExpr}
+	 * labeled alternative in {@link WorkflowV2Parser#expr}.
+	 * @param ctx the parse tree
+	 */
+	void exitArithmeticFirstPrecedenceExpr(WorkflowV2Parser.ArithmeticFirstPrecedenceExprContext ctx);
+	/**
 	 * Enter a parse tree produced by the {@code unaryMinusExpr}
 	 * labeled alternative in {@link WorkflowV2Parser#expr}.
 	 * @param ctx the parse tree
@@ -195,6 +207,18 @@ public interface WorkflowV2Listener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitStandAloneStatements(WorkflowV2Parser.StandAloneStatementsContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code arithmeticSecondPrecedenceExpr}
+	 * labeled alternative in {@link WorkflowV2Parser#expr}.
+	 * @param ctx the parse tree
+	 */
+	void enterArithmeticSecondPrecedenceExpr(WorkflowV2Parser.ArithmeticSecondPrecedenceExprContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code arithmeticSecondPrecedenceExpr}
+	 * labeled alternative in {@link WorkflowV2Parser#expr}.
+	 * @param ctx the parse tree
+	 */
+	void exitArithmeticSecondPrecedenceExpr(WorkflowV2Parser.ArithmeticSecondPrecedenceExprContext ctx);
 	/**
 	 * Enter a parse tree produced by the {@code booleanExpr}
 	 * labeled alternative in {@link WorkflowV2Parser#expr}.
@@ -231,18 +255,6 @@ public interface WorkflowV2Listener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitCriteriaInitialization(WorkflowV2Parser.CriteriaInitializationContext ctx);
-	/**
-	 * Enter a parse tree produced by the {@code arithmeticExpr}
-	 * labeled alternative in {@link WorkflowV2Parser#expr}.
-	 * @param ctx the parse tree
-	 */
-	void enterArithmeticExpr(WorkflowV2Parser.ArithmeticExprContext ctx);
-	/**
-	 * Exit a parse tree produced by the {@code arithmeticExpr}
-	 * labeled alternative in {@link WorkflowV2Parser#expr}.
-	 * @param ctx the parse tree
-	 */
-	void exitArithmeticExpr(WorkflowV2Parser.ArithmeticExprContext ctx);
 	/**
 	 * Enter a parse tree produced by the {@code relationalExpr}
 	 * labeled alternative in {@link WorkflowV2Parser#expr}.

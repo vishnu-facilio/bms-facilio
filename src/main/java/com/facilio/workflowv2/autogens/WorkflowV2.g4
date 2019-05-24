@@ -63,7 +63,8 @@ function_return
 expr
  : MINUS expr                           																			#unaryMinusExpr
  | NOT expr                             																			#notExpr
- | expr op=(MULT | DIV | MOD | PLUS | MINUS) expr  	    															#arithmeticExpr
+ | expr op=(MULT | DIV | MOD) expr  	    																		#arithmeticFirstPrecedenceExpr
+ | expr op=(PLUS | MINUS) expr  	    																			#arithmeticSecondPrecedenceExpr
  | expr op=(LTEQ | GTEQ | LT | GT | EQ | NEQ) expr     			    												#relationalExpr
  | expr op=(AND | OR) expr                        																	#booleanExpr
  | stand_alone_expr																									#standAloneStatements
@@ -104,27 +105,27 @@ db_param
  ;
  
 db_param_criteria
- : 'criteria' COLON criteria COMMA
+ : 'criteria' COLON criteria (COMMA)*
  ;
 
 db_param_field
- : 'field' COLON atom COMMA
+ : 'field' COLON atom (COMMA)*
  ;
  
 db_param_aggr
- : 'aggregation' COLON atom COMMA
+ : 'aggregation' COLON atom (COMMA)*
  ;
  
 db_param_limit
- : 'limit' COLON atom COMMA
+ : 'limit' COLON atom (COMMA)*
  ;
  
 db_param_range
- : 'range' COLON atom 'to' atom COMMA
+ : 'range' COLON atom 'to' atom (COMMA)*
  ;
  
 db_param_sort
- : 'order by' COLON atom op=('asc' | 'desc') COMMA
+ : 'orderBy' COLON atom op=('asc' | 'desc') (COMMA)*
  ;
  
 criteria
