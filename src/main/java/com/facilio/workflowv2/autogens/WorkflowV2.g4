@@ -89,7 +89,8 @@ atom
  | STRING         																		#stringAtom
  | NULL           						    											#nullAtom
  | VAR           						    											#varAtom
- | VAR OPEN_BRACKET atom CLOSE_BRACKET													#listAndMapSymbolOperation
+ | VAR OPEN_BRACKET atom CLOSE_BRACKET													#listSymbolOperation
+ | VAR '.' VAR ('.' VAR)*																#mapSymbolOperation
  ;
  
 list_opperations

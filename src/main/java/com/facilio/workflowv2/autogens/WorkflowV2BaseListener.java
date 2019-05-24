@@ -448,13 +448,25 @@ public class WorkflowV2BaseListener implements WorkflowV2Listener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterListAndMapSymbolOperation(WorkflowV2Parser.ListAndMapSymbolOperationContext ctx) { }
+	@Override public void enterListSymbolOperation(WorkflowV2Parser.ListSymbolOperationContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitListAndMapSymbolOperation(WorkflowV2Parser.ListAndMapSymbolOperationContext ctx) { }
+	@Override public void exitListSymbolOperation(WorkflowV2Parser.ListSymbolOperationContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterMapSymbolOperation(WorkflowV2Parser.MapSymbolOperationContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitMapSymbolOperation(WorkflowV2Parser.MapSymbolOperationContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
