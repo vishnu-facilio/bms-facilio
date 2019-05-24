@@ -105,6 +105,7 @@ public class ReadOnlyChainFactory {
 	
 	public static Chain fetchModuleDataDetailsChain() {
 		Chain c = getDefaultChain();
+		c.addCommand(new AddLookupFieldMetaList());
 		c.addCommand(new GenericGetModuleDataDetailCommand());
 		return c;
 	}

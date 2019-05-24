@@ -829,6 +829,19 @@ public class ModuleBeanImpl implements ModuleBean {
 					addExtendedProps(ModuleFactory.getBooleanFieldsModule(), FieldFactory.getBooleanFieldFields(), fieldProps);
 					break;
 				case LOOKUP:
+					if (field instanceof LookupField) {
+						LookupField lookupField = (LookupField) field;
+						if (lookupField.getLookupModuleId() > 0) {
+							FacilioModule module = getMod(lookupField.getLookupModuleId());
+							if (module == null) {
+								throw new IllegalArgumentException("Invalid lookup Module");
+							}
+							lookupField.setLookupModule(module);
+							fieldProps.put("lookupModuleId", module.getModuleId());
+						} else if (StringUtils.isEmpty(lookupField.getSpecialType())) {
+							throw new IllegalArgumentException("Lookup module is not specified");
+						}
+					}
 					addExtendedProps(ModuleFactory.getLookupFieldsModule(), FieldFactory.getLookupFieldFields(), fieldProps);
 					break;
 				case FILE:

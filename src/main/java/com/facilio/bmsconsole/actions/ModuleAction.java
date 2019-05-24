@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.chain.Chain;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
@@ -333,6 +334,12 @@ public class ModuleAction extends FacilioAction {
 	}
 	public void setField(FacilioField field) {
 		this.field = field;
+	}
+
+	private JSONArray fieldJsons;
+	public void setFieldJsons(JSONArray fieldJsons) throws Exception {
+		this.fieldJsons = fieldJsons;
+		setFields(FieldUtil.parseFieldJson(this.fieldJsons));
 	}
 
 	private List<FacilioField> fields;
