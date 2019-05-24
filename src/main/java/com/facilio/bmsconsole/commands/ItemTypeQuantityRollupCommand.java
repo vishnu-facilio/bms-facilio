@@ -5,6 +5,8 @@ import com.facilio.bmsconsole.context.ItemContext;
 import com.facilio.bmsconsole.context.ItemTransactionsContext;
 import com.facilio.bmsconsole.context.ItemTypesContext;
 import com.facilio.bmsconsole.context.StoreRoomContext;
+import com.facilio.bmsconsole.criteria.CommonOperators;
+import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.*;
@@ -55,14 +57,27 @@ public class ItemTypeQuantityRollupCommand implements Command {
 						lastPurchasedDate = item.getLastPurchasedDate();
 						lastPurchasedPrice = item.getLastPurchasedPrice();
 					}
+					
+					Criteria criteria = new Criteria();
+					criteria.addAndCondition(CriteriaAPI.getCondition(transFieldMap.get("transactionState"),
+							String.valueOf(4), NumberOperators.EQUALS));
+					criteria.addAndCondition(CriteriaAPI.getCondition(transFieldMap.get("parentTransactionId"),
+							"", CommonOperators.IS_EMPTY));
+					Criteria criteriaIssue = new Criteria();
+					criteriaIssue.addAndCondition(CriteriaAPI.getCondition(transFieldMap.get("transactionState"),
+							String.valueOf(2), NumberOperators.EQUALS));
+					Criteria finalCriteria = new Criteria();
+					finalCriteria.andCriteria(criteria);
+					finalCriteria.orCriteria(criteriaIssue);
+					
 
 					SelectRecordsBuilder<ItemTransactionsContext> issuetransactionsbuilder = new SelectRecordsBuilder<ItemTransactionsContext>()
 							.select(transFields).moduleName(transModule.getName())
 							.andCondition(CriteriaAPI.getCondition(transFieldMap.get("itemType"), String.valueOf(id),
 									NumberOperators.EQUALS))
-							.andCondition(CriteriaAPI.getCondition(transFieldMap.get("transactionState"),
-									String.valueOf(2), NumberOperators.EQUALS))
 							.beanClass(ItemTransactionsContext.class).orderBy("CREATED_TIME DESC");
+					builder.andCriteria(finalCriteria);
+					
 
 					List<ItemTransactionsContext> transactions = issuetransactionsbuilder.get();
 					if (transactions != null && !transactions.isEmpty()) {
