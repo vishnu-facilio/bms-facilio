@@ -499,6 +499,14 @@ public class FacilioWorkflowFunctionVisitor extends WorkflowV2BaseVisitor<Value>
     			operator = NumberOperators.EQUALS;
     		}
     		break;
+    	case "!=" :
+    		if(operatorValue.asObject() instanceof String) {
+    			operator = StringOperators.ISN_T;
+    		}
+    		else {
+    			operator = NumberOperators.NOT_EQUALS;
+    		}
+    		break;
     	default:
     		operator = NumberOperators.getAllOperators().get(ctx.op.getText());
     		break;
