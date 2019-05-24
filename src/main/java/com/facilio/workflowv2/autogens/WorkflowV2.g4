@@ -63,7 +63,8 @@ function_return
 expr
  : MINUS expr                           																			#unaryMinusExpr
  | NOT expr                             																			#notExpr
- | expr op=(MULT | DIV | MOD | PLUS | MINUS) expr  	    															#arithmeticExpr
+ | expr op=(MULT | DIV | MOD) expr  	    																		#arithmeticFirstPrecedenceExpr
+ | expr op=(PLUS | MINUS) expr  	    																			#arithmeticSecondPrecedenceExpr
  | expr op=(LTEQ | GTEQ | LT | GT | EQ | NEQ) expr     			    												#relationalExpr
  | expr op=(AND | OR) expr                        																	#booleanExpr
  | stand_alone_expr																									#standAloneStatements

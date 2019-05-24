@@ -208,6 +208,18 @@ public class WorkflowV2BaseListener implements WorkflowV2Listener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterArithmeticFirstPrecedenceExpr(WorkflowV2Parser.ArithmeticFirstPrecedenceExprContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitArithmeticFirstPrecedenceExpr(WorkflowV2Parser.ArithmeticFirstPrecedenceExprContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterUnaryMinusExpr(WorkflowV2Parser.UnaryMinusExprContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -227,6 +239,18 @@ public class WorkflowV2BaseListener implements WorkflowV2Listener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitStandAloneStatements(WorkflowV2Parser.StandAloneStatementsContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterArithmeticSecondPrecedenceExpr(WorkflowV2Parser.ArithmeticSecondPrecedenceExprContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitArithmeticSecondPrecedenceExpr(WorkflowV2Parser.ArithmeticSecondPrecedenceExprContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -263,18 +287,6 @@ public class WorkflowV2BaseListener implements WorkflowV2Listener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitCriteriaInitialization(WorkflowV2Parser.CriteriaInitializationContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterArithmeticExpr(WorkflowV2Parser.ArithmeticExprContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitArithmeticExpr(WorkflowV2Parser.ArithmeticExprContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

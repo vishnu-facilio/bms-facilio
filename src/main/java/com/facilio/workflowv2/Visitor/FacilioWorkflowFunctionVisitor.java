@@ -392,8 +392,9 @@ public class FacilioWorkflowFunctionVisitor extends WorkflowV2BaseVisitor<Value>
     }
     
     @Override
-    public Value visitArithmeticExpr(WorkflowV2Parser.ArithmeticExprContext ctx) {
+    public Value visitArithmeticFirstPrecedenceExpr(WorkflowV2Parser.ArithmeticFirstPrecedenceExprContext ctx) {
 
+    	System.out.println("arithmetic1 - - "+ctx.getText());
         Value left = this.visit(ctx.expr(0));
         Value right = this.visit(ctx.expr(1));
 
@@ -404,6 +405,19 @@ public class FacilioWorkflowFunctionVisitor extends WorkflowV2BaseVisitor<Value>
                 return new Value(left.asDouble() / right.asDouble());
             case WorkflowV2Parser.MOD:
                 return new Value(left.asDouble() % right.asDouble());
+            default:
+                throw new RuntimeException("unknown operator: " + WorkflowV2Parser.tokenNames[ctx.op.getType()]);
+        }
+    }
+    
+    @Override
+    public Value visitArithmeticSecondPrecedenceExpr(WorkflowV2Parser.ArithmeticSecondPrecedenceExprContext ctx) {
+
+    	System.out.println("arithmetic2 - - "+ctx.getText());
+        Value left = this.visit(ctx.expr(0));
+        Value right = this.visit(ctx.expr(1));
+
+        switch (ctx.op.getType()) {
             case WorkflowV2Parser.PLUS:
                 return left.isDouble() && right.isDouble() ?
                         new Value(left.asDouble() + right.asDouble()) :
