@@ -10,6 +10,7 @@ import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
 import javax.websocket.EncodeException;
 
+import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import org.apache.commons.chain.Chain;
 import org.apache.struts2.ServletActionContext;
 import org.json.simple.JSONObject;
@@ -25,7 +26,6 @@ import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.fw.LRUCache;
 import com.facilio.license.FreshsalesUtil;
-import com.facilio.sql.GenericUpdateRecordBuilder;
 import com.facilio.tasker.FacilioTimer;
 import com.facilio.wms.message.Message;
 import com.facilio.wms.message.MessageType;
