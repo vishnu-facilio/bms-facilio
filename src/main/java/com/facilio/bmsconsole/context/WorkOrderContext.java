@@ -59,7 +59,7 @@ public class WorkOrderContext extends TicketContext {
 	}
 	public String getCreatedTimeString() {
 		if(createdTime != -1) {
-			return DateTimeUtil.getZonedDateTime(createdTime).format(FacilioConstants.READABLE_DATE_FORMAT);
+			return DateTimeUtil.getZonedDateTime(createdTime).format(DateTimeUtil.READABLE_DATE_FORMAT);
 		}
 		return null;
 	}

@@ -165,7 +165,7 @@ public class TicketContext extends ModuleBaseWithCustomFields {
 	}
 	public String getDueDateString() {
 		if(dueDate != -1) {
-			return DateTimeUtil.getZonedDateTime(dueDate).format(FacilioConstants.READABLE_DATE_FORMAT);
+			return DateTimeUtil.getZonedDateTime(dueDate).format(DateTimeUtil.READABLE_DATE_FORMAT);
 		}
 		return null;
 	}

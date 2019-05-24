@@ -104,8 +104,6 @@ public class FacilioConstants {
 	public static final SimpleDateFormat HTML5_DATE_FORMAT = new SimpleDateFormat("MM/dd/yyyy hh:mm a");
 	public static final SimpleDateFormat HTML5_DATE_FORMAT_1 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
 	
-	public static final DateTimeFormatter READABLE_DATE_FORMAT = DateTimeFormatter.ofPattern("dd-MMM-yyyy HH:mm:ss");
-	
 	public static final String ERROR_MESSAGE = "Error Occured";
 	
 	public static class CognitoUserPool {

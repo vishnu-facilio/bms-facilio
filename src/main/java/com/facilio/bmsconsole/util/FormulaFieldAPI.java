@@ -1082,7 +1082,7 @@ public class FormulaFieldAPI {
 				return DateTimeUtil.getTimeIntervals(range.getStartTime(), range.getEndTime(), formula.getInterval());
 			case SCHEDULE:
 				ScheduleInfo schedule = FormulaFieldAPI.getSchedule(formula.getFrequencyEnum());
-				return DateTimeUtil.getTimeIntervals(range.getStartTime(), range.getEndTime(), schedule);
+				return schedule.getTimeIntervals(range.getStartTime(), range.getEndTime());
 		}
 		return null;
 	}
