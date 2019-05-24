@@ -71,6 +71,7 @@ public class WorkflowContext implements Serializable {
 	Long nameSpaceId;
 	String name;
 	String workflowString;
+	String workflowV2String;
 	List<ParameterContext> parameters;
 	List<Object> params;							// for v2 workflow
 	
@@ -88,6 +89,13 @@ public class WorkflowContext implements Serializable {
 	
 	public List<WorkflowExpression> getExpressions() {
 		return expressions;
+	}
+	
+	public String getWorkflowV2String() {
+		return workflowV2String;
+	}
+	public void setWorkflowV2String(String workflowV2String) {
+		this.workflowV2String = workflowV2String;
 	}
 	
 	boolean isLogNeeded;
@@ -288,7 +296,7 @@ public class WorkflowContext implements Serializable {
 			
 			FacilioWorkflowFunctionVisitor visitor = null;
 			try {
-				InputStream stream = new ByteArrayInputStream(workflowString.getBytes(StandardCharsets.UTF_8));
+				InputStream stream = new ByteArrayInputStream(workflowV2String.getBytes(StandardCharsets.UTF_8));
 				
 				WorkflowV2Lexer lexer = new WorkflowV2Lexer(CharStreams.fromStream(stream, StandardCharsets.UTF_8));
 		        
