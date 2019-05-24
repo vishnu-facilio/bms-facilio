@@ -80,6 +80,7 @@ public class ModuleFactory {
 		moduleMap.put(FacilioConstants.ContextNames.PURCHASE_CONTRACTS, getPurchaseContractModule());
 		moduleMap.put(FacilioConstants.ContextNames.LABOUR_CONTRACTS, getLabourContractModule());
 		moduleMap.put(FacilioConstants.ContextNames.INVENTORY_REQUEST, getInventoryRequestModule());
+		moduleMap.put(FacilioConstants.ContextNames.SHIPMENT, getShipmentModule());
 
 		return moduleMap;
 	}
@@ -2148,5 +2149,13 @@ public class ModuleFactory {
 		module.setDisplayName("Workflow Validations");
 		module.setTableName("Workflow_Validation");
 		return module;
+	}
+
+	public static FacilioModule getShipmentModule() {
+		FacilioModule labourcontract = new FacilioModule();
+		labourcontract.setName("shipment");
+		labourcontract.setDisplayName("Shipments");
+		labourcontract.setTableName("Shipment");
+		return labourcontract;
 	}
 }

@@ -317,6 +317,15 @@ public class ViewFactory {
 		views = new LinkedHashMap<>();
 		views.put("all", getAllPoLineItemsSerialNumeberView().setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.PO_LINE_ITEMS_SERIAL_NUMBERS, views);
+		
+
+		order = 1;
+		views = new LinkedHashMap<>();
+		views.put("all", getAllShipmentView().setOrder(order++));
+		views.put("staged", getShipmentForStatus("staged", "Staged", 2).setOrder(order++));
+//		views.put("shipped", getShipmentForStatus("shipped", "Shipped", 3).setOrder(order++));
+		views.put("received", getShipmentForStatus("received", "Received", 4).setOrder(order++));
+		viewsMap.put(FacilioConstants.ContextNames.SHIPMENT, views);
 
 		order = 1;
 		views = new LinkedHashMap<>();
@@ -3282,6 +3291,62 @@ public class ViewFactory {
 		allView.setSortFields(Arrays.asList(new SortField(createdTime, false)));
 		return allView;
 	}
+	
+	private static FacilioView getAllShipmentView() {
+		FacilioField localId = new FacilioField();
+		localId.setName("localId");
+		localId.setColumnName("LOCAL_ID");
+		localId.setDataType(FieldType.NUMBER);
+		localId.setModule(ModuleFactory.getShipmentModule());
+
+		FacilioView allView = new FacilioView();
+		allView.setName("all");
+		allView.setDisplayName("All");
+		allView.setSortFields(Arrays.asList(new SortField(localId, false)));
+		return allView;
+	}
+	
+	
+	private static FacilioView getShipmentForStatus(String viewName, String viewDisplayName, int status) {
+		FacilioModule shipmentModule = ModuleFactory.getShipmentModule();
+
+		FacilioField localId = new FacilioField();
+		localId.setName("localId");
+		localId.setColumnName("LOCAL_ID");
+		localId.setDataType(FieldType.NUMBER);
+		localId.setModule(ModuleFactory.getShipmentModule());
+
+		List<SortField> sortFields = Arrays.asList(new SortField(localId, false));
+
+		Criteria criteria = getShipmentStatusCriteria(shipmentModule, status);
+		
+		FacilioView statusView = new FacilioView();
+		statusView.setName(viewName);
+		statusView.setDisplayName(viewDisplayName);
+		statusView.setSortFields(sortFields);
+		statusView.setCriteria(criteria);
+
+		return statusView;
+	}
+	
+	private static Criteria getShipmentStatusCriteria(FacilioModule module, int status) {
+		
+		FacilioField shipmentStatusField = new FacilioField();
+		shipmentStatusField.setName("status");
+		shipmentStatusField.setColumnName("STATUS");
+		shipmentStatusField.setDataType(FieldType.NUMBER);
+		shipmentStatusField.setModule(ModuleFactory.getShipmentModule());
+		
+		Condition statusCond = new Condition();
+		statusCond.setField(shipmentStatusField);
+		statusCond.setOperator(NumberOperators.EQUALS);
+		statusCond.setValue(String.valueOf(status));
+
+		Criteria shipmentStatusCriteria = new Criteria();
+		shipmentStatusCriteria.addAndCondition(statusCond);
+		return shipmentStatusCriteria;
+	}
+	
 
 	private static FacilioView getAllInventoryRequestView() {
 		FacilioField localId = new FacilioField();
