@@ -186,9 +186,9 @@
 		<action name="list"  class="com.facilio.bmsconsole.actions.ControllerAction" method="getAgentDetails">
 		</action>
 
-		<action name="delete"  class="com.facilio.bmsconsole.actions.ControllerAction" method="deleteAgent">
+		<!--<action name="delete"  class="com.facilio.bmsconsole.actions.ControllerAction" method="deleteAgent">
 		</action>
-
+			-->
 		<action name="edit"  class="com.facilio.bmsconsole.actions.ControllerAction" method="editAgent">
 		</action>
 
