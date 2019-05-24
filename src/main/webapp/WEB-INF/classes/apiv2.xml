@@ -843,6 +843,8 @@
 			method="setReadingInputValues">
 		</action>
 	</package>
+	<package name="dashboardApiv2" namespace="/api/v2/dashboard" extends="v2Api">
+	</package>
 	<package name="reportApiv2" namespace="/api/v2/report" extends="v2Api">
 		<action name="fetchReportData" class="com.facilio.bmsconsole.actions.V2ReportAction"
 			method="fetchReportData">
