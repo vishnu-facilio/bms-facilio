@@ -637,7 +637,7 @@ public class DashboardAction extends FacilioAction {
 		if (xAggr != 0) {
 			FacilioFrequency frequency = DashboardUtil.getAggrFrequency(xAggr);
 			ScheduleInfo schedule = FormulaFieldAPI.getSchedule(frequency);
-			intervals= DateTimeUtil.getTimeIntervals((Long)dateFilter.get(0),(Long) dateFilter.get(1), schedule);
+			intervals= schedule.getTimeIntervals((Long)dateFilter.get(0),(Long) dateFilter.get(1));
 		}
 		else {
 			int minuteInterval = ReadingsAPI.getDataInterval(workflow);

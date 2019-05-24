@@ -644,13 +644,13 @@ public class AlarmAPI {
 		
 		if (range.getEndTime() != -1) {
 			msgBuilder.append(" between ")
-					.append(DateTimeUtil.getZonedDateTime(range.getStartTime()).format(FacilioConstants.READABLE_DATE_FORMAT))
+					.append(DateTimeUtil.getZonedDateTime(range.getStartTime()).format(DateTimeUtil.READABLE_DATE_FORMAT))
 					.append(" and ")
-					.append(DateTimeUtil.getZonedDateTime(range.getEndTime()).format(FacilioConstants.READABLE_DATE_FORMAT));
+					.append(DateTimeUtil.getZonedDateTime(range.getEndTime()).format(DateTimeUtil.READABLE_DATE_FORMAT));
 		}
 		else {
 			msgBuilder.append(" at ")
-						.append(DateTimeUtil.getZonedDateTime(range.getStartTime()).format(FacilioConstants.READABLE_DATE_FORMAT));
+						.append(DateTimeUtil.getZonedDateTime(range.getStartTime()).format(DateTimeUtil.READABLE_DATE_FORMAT));
 		}
 		
 		return msgBuilder.toString();

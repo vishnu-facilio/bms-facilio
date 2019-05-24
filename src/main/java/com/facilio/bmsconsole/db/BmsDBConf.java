@@ -21,6 +21,7 @@ import org.apache.log4j.Logger;
 
 import java.io.File;
 import java.sql.SQLException;
+import java.time.ZoneId;
 import java.util.*;
 
 public class BmsDBConf extends DBConf {
@@ -101,12 +102,35 @@ public class BmsDBConf extends DBConf {
     }
 
     @Override
-    public long getOrgId() {
+    public long getCurrentOrgId() {
         Organization org = AccountUtil.getCurrentOrg();
         if (org != null) {
             return org.getOrgId();
         }
         return -1;
+    }
+
+    @Override
+    public ZoneId getCurrentZoneId() {
+        //TODO TimeZone related changes to be done.
+        Organization org = AccountUtil.getCurrentOrg();
+        if(org != null) {
+            String zone = org.getTimezone();
+            if(zone != null && !zone.isEmpty()) {
+                return ZoneId.of(zone.trim());
+            }
+        }
+        return DBConf.getInstance().isDevelopment() ? ZoneId.systemDefault() : ZoneId.of("Z");
+    }
+
+    @Override
+    public Locale getCurrentLocale() {
+        //TODO Locale related changes to be done..
+        //like OrgInfo.getCurrentOrgInfo().getLocale() & set the Locale..
+        if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getCountry() != null && !"".equalsIgnoreCase(AccountUtil.getCurrentOrg().getCountry().trim())) {
+            return new Locale("en", AccountUtil.getCurrentOrg().getCountry());
+        }
+        return Locale.US;
     }
 
     /**
@@ -197,7 +221,7 @@ public class BmsDBConf extends DBConf {
 
     @Override
     public void addToCache(String tableName, String queryToCache, List<String> tables, List<Map<String,Object>> records) {
-        long orgId = getOrgId();
+        long orgId = getCurrentOrgId();
         if (orgId > 0 && isQueryCacheEnabled(orgId, tableName)) {
             long queryGetTime = System.currentTimeMillis();
             Map<String, Map<String, SelectQueryCache>> table = QUERY_CACHE.getOrDefault(orgId, new HashMap<>());
@@ -214,7 +238,7 @@ public class BmsDBConf extends DBConf {
 
     @Override
     public List<Map<String,Object>> getFromCache(String tableName, String queryToCache) {
-        long orgId = getOrgId();
+        long orgId = getCurrentOrgId();
         if(orgId > 0 && isQueryCacheEnabled(orgId, tableName)) {
             Map<String, Map<String, SelectQueryCache>> table = QUERY_CACHE.get(orgId);
             List<Map<String, Object>> returnValue = new ArrayList<>();
