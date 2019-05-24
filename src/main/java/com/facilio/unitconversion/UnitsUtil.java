@@ -10,6 +10,7 @@ import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.NumberField;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
+import com.facilio.util.FacilioUtil;
 import com.udojava.evalex.Expression;
 import org.json.simple.JSONObject;
 
@@ -73,23 +74,35 @@ public class UnitsUtil {
 		Unit orgDisplayUnit = getOrgDisplayUnit(AccountUtil.getCurrentOrg().getOrgId(),from.getMetric().getMetricId());
 		return convert(value, from, orgDisplayUnit);
 	}
-	public static Object convertToDisplayUnit(Object value,NumberField numberField) throws Exception {
+
+	private static Number castConvertedValue (Object oldVal, Double convertedValue) {
+		if (oldVal instanceof Integer) {
+			return FacilioUtil.parseInt(convertedValue);
+		}
+		else if (oldVal instanceof  Long) {
+			return FacilioUtil.parseLong(convertedValue);
+		}
+		return convertedValue;
+	}
+
+	public static Number convertToDisplayUnit(Object value,NumberField numberField) throws Exception {
 
 		if(numberField.getMetric() > 0 && value != null) {
 			if(numberField.getMetric() == Metric.CURRENCY.getMetricId()) {
-				return Double.parseDouble(value.toString());
+				return (Number) value;
 			}
+			Double convertedValue = -1d;
 			if(numberField.getUnitId() > 0) {
 				Unit siUnit = Unit.valueOf(Metric.valueOf(numberField.getMetric()).getSiUnitId());
-				value = convert(value, siUnit.getUnitId(), numberField.getUnitId());
+				convertedValue = convert(value, siUnit.getUnitId(), numberField.getUnitId());
 			}
 			else {
-				value = convertToOrgDisplayUnitFromSi(value, numberField.getMetric());
+				convertedValue = convertToOrgDisplayUnitFromSi(value, numberField.getMetric());
 			}
-			return Double.parseDouble(value.toString());
+			return castConvertedValue(value, convertedValue);
 		}
 		
-		return value;
+		return (Number) value;
 	}
 	
 	public static Double convertToOrgDisplayUnitFromSi(Object value,int metricId) throws Exception {

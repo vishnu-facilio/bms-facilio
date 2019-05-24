@@ -1,8 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
-import com.facilio.aws.util.AwsUtil;
 import com.facilio.db.builder.DBUtil;
-import com.facilio.db.builder.SQLScriptRunner;
+import com.facilio.db.util.SQLScriptRunner;
 import com.facilio.db.util.DBConf;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;

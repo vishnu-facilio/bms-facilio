@@ -639,15 +639,6 @@ public class CommonCommandUtil {
 		return list;
     }
     
-    public static String getStackTraceString(StackTraceElement[] traces) {
-    	StringJoiner joiner = new StringJoiner("\n");
-    	for (StackTraceElement trace : traces) {
-    		joiner.add(trace.toString());
-    	}
-    	joiner.add("###################################################");
-    	return joiner.toString();
-    }
-    
     public static Pair<Double, Double> getSafeLimitForField(long fieldId) throws Exception {
     	Criteria criteria = new Criteria();
         criteria.addAndCondition(CriteriaAPI.getCondition("READING_FIELD_ID", "readingFieldId", String.valueOf(fieldId), NumberOperators.EQUALS));
