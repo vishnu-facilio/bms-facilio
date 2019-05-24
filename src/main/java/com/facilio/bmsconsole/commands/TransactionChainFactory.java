@@ -1992,7 +1992,7 @@ public class TransactionChainFactory {
 			c.addCommand(new AddOrUpdateItemQuantityCommand());
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.CUSTOM_STOREROOM_MINIMUM_QUANTITY_NOTIFICATION_RULE));
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.CUSTOM_STOREROOM_OUT_OF_STOCK_NOTIFICATION_RULE));
-			
+
 			c.addCommand(getUpdateItemTypeQuantityRollupChain());
 			return c;
 		}
@@ -3225,7 +3225,7 @@ public class TransactionChainFactory {
 			c.addCommand(new SaveAlarmAndEventsCommand());
 			return c;
 		}
-		
+
 		public static Chain configureStoreNotificationsChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(new AssociateFieldIdToStoreRuleTypeCommand());
@@ -3238,14 +3238,34 @@ public class TransactionChainFactory {
 			c.addCommand(new AddMultiWorkflowsCommand());
 			return c;
 		}
-		
+
 		public static Chain updateMultiStoreRulesChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(new UpdateMultiWorkflowsCommand());
 			return c;
 		}
-		
-	
+
+
+
+		public static Chain getAddOrUdpateWorkorderServiceChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForWorkorderService());
+			c.addCommand(new AddOrUpdateWorkorderServiceCommand());
+			c.addCommand(new ExecuteAllWorkflowsCommand());
+			c.addCommand(new AddOrUpdateWorkorderCostCommand());
+			c.addCommand(new UpdateWorkorderTotalCostCommand());
+			return c;
+		}
+
+		public static Chain getDeleteWorkorderServiceChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForWorkorderService());
+			c.addCommand(new GenericDeleteModuleDataCommand());
+			c.addCommand(new AddOrUpdateWorkorderCostCommand());
+			c.addCommand(new UpdateWorkorderTotalCostCommand());
+			return c;
+		}
+
 }
 
 

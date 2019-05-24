@@ -112,7 +112,9 @@ public class ContractsContext extends ModuleBaseWithCustomFields{
 	
 	public static enum ContractType {
 		PURCHASE(),
-		LABOUR()
+		LABOUR(),
+		SERVICE()
+		
 		;
 		
 		public int getValue() {

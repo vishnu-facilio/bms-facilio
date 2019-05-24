@@ -75,14 +75,12 @@ public class AddOrUpdateServiceContractCommand implements Command{
 		private void updateLineItems(ServiceContractContext servicecontractContext) {
 		for (ServiceContractLineItemContext lineItemContext : servicecontractContext.getLineItems()) {
 			lineItemContext.setServiceContractId(servicecontractContext.getId());
-			lineItemContext.setCost(lineItemContext.calculateCost());
 		}
 	}
 		
 	private void addServiceRecords(List<ServiceContractLineItemContext> lineItems,FacilioModule serviceModule, List<FacilioField> serviceFields) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule locationModule = modBean.getModule("location");
-		List<FacilioField> locationFields = modBean.getAllFields(locationModule.getName());
 		List<ServiceContext> newServiceRecords = new ArrayList<ServiceContext>();
 		
 		for(ServiceContractLineItemContext lineItem :lineItems ) {

@@ -1019,6 +1019,13 @@ public class FacilioConstants {
 
 		public static final String BEAN_CLASS_NAME = "beanClassName";
 		
+		public static final String WO_SERVICE = "workorderService";
+		public static final String WO_SERVICES = "workorderServices";
+		public static final String WO_SERVICE_IDS = "workorderServiceIds";
+
+
+
+
 		private static Map<String, Class> classMap = Collections.unmodifiableMap(initClassMap());
 		private static Map<String, Class> initClassMap() {
 			Map<String, Class> classMap = new HashMap<>();
@@ -1133,6 +1140,8 @@ public class FacilioConstants {
 			classMap.put(SERVICE, ServiceContext.class);
 			classMap.put(SERVICE_CONTRACTS, ServiceContractContext.class);
 			classMap.put(SERVICE_CONTRACTS_LINE_ITEMS, ServiceContractLineItemContext.class);
+			classMap.put(WO_SERVICE, WorkOrderServiceContext.class);
+
 
 			classMap.put(ATTENDANCE, AttendanceContext.class);
 			classMap.put(ATTENDANCE_TRANSACTIONS, AttendanceTransactionContext.class);

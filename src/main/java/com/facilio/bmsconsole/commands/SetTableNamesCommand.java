@@ -343,6 +343,10 @@ public class SetTableNamesCommand implements Command {
 	public static SetTableNamesCommand getForServiceContractLineItems() {
 		return new SetTableNamesCommand("servicecontractlineitems", "ServiceContractLineItems");
 	}
+	
+	public static SetTableNamesCommand getForWorkorderService() {
+		return new SetTableNamesCommand("workorderService", "Workorder_service");
+	}
 
 	public static SetTableNamesCommand getForShipment() {
 		return new SetTableNamesCommand("shipment", "Shipment");

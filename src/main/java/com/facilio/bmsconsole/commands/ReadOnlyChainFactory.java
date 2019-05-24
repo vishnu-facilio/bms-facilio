@@ -1052,6 +1052,15 @@ public class ReadOnlyChainFactory {
 		return c;
 	}
 
+	public static Chain getWorkorderServiceList(){
+		Chain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForWorkorderService());
+		c.addCommand(new LoadAllFieldsCommand());
+		c.addCommand(new LoadWorkOrderServiceLookUpCommand());
+		c.addCommand(new GenericGetModuleDataListCommand());
+		return c;
+	}
+
 	public static Chain getAllWorkflowNameSpaceChain() {
 		Chain c = getDefaultChain();
 		c.addCommand(new GetAllNameSpaceWithFunctionCommand());

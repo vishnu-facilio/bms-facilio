@@ -164,17 +164,17 @@
 		<action name="view"
 			class="com.facilio.bmsconsole.actions.StateFlowAction" method="viewStateTransition" />
 	</package>
-	
+
 	<package name="shift" namespace="/api/v2/shift" extends="v2Api">
-		<action name="add" 
+		<action name="add"
 			class="com.facilio.bmsconsole.actions.ShiftAction" method="add" />
-		<action name="list" 
+		<action name="list"
 			class="com.facilio.bmsconsole.actions.ShiftAction" method="all" />
 		<action name="delete"
 			class="com.facilio.bmsconsole.actions.ShiftAction" method="delete" />
 		<action name="update"
 			class="com.facilio.bmsconsole.actions.ShiftAction" method="update" />
-			
+
 		<action name="shiftUserMapping"
 			class="com.facilio.bmsconsole.actions.ShiftAction" method="getShiftUserMapping" />
 		<action name="addShiftUserMapping"
@@ -182,7 +182,7 @@
 		<action name="scheduleTesting"
 			class="com.facilio.bmsconsole.actions.ShiftAction" method="scheduleTesting" />
 	</package>
-	
+
 	<package name="shiftList" namespace="/api/v2/shift/view"
 		extends="v2Api">
 		<action name="*" class="com.facilio.bmsconsole.actions.ShiftAction"
@@ -190,7 +190,7 @@
 			<param name="viewName">{1}</param>
 		</action>
 	</package>
-	
+
 	<package name="break" namespace="/api/v2/break" extends="v2Api">
 		<action name="addOrUpdate"
 			class="com.facilio.bmsconsole.actions.ShiftAction" method="addOrUpdateBreak" />
@@ -201,7 +201,7 @@
 		<action name="delete"
 			class="com.facilio.bmsconsole.actions.ShiftAction" method="deleteBreak" />
 	</package>
-	
+
 	<package name="breakList" namespace="/api/v2/break/view"
 		extends="v2Api">
 		<action name="*" class="com.facilio.bmsconsole.actions.ShiftAction"
@@ -225,15 +225,15 @@
 		<action name="updateTemplate"
 			class="com.facilio.bmsconsole.actions.ImportTemplateAction" method="updateTemplate"></action>
 	</package>
-	
+
 	<package name="mvModule" namespace="/api/v2/mv" extends="v2Api">
-	
+
 		<action name="addMVProject"
 			class="com.facilio.mv.action.MVAction" method="addMVProject"></action>
-			
+
 		<action name="updateMVProject"
 			class="com.facilio.mv.action.MVAction" method="updateMVProject"></action>
-			
+
 		<action name="deleteMVProject"
 			class="com.facilio.mv.action.MVAction" method="deleteMVProject">
 		</action>
@@ -250,7 +250,7 @@
 			class="com.facilio.mv.action.MVAction" method="getMVProjectList">
 		</action>
 	</package>
-	
+
 	<package name="viewApiV2" namespace="/api/v2/views" extends="v2Api">
 		<action name="viewList" class="com.facilio.bmsconsole.actions.ViewAction"
 			method="v2viewlist">
@@ -364,13 +364,13 @@
 			<param name="viewName">{1}</param>
 			<param name="fetchAllType">true</param>
 			<param name="calendarApi">true</param>
-			<result name="success" type="json">			
-				<param name="ignoreHierarchy">false</param>	
-				<param name="includeProperties">^result\.workorders\[\d+\]\.(id|createdTime|subject|assignedTo|trigger|resource)\..*</param>				
-			</result>			
+			<result name="success" type="json">
+				<param name="ignoreHierarchy">false</param>
+				<param name="includeProperties">^result\.workorders\[\d+\]\.(id|createdTime|subject|assignedTo|trigger|resource)\..*</param>
+			</result>
 		</action>
 	</package>
-	
+
 	<package name="workOrderNewCalendarCountApiV2" namespace="/api/v2/workorders/newcalendar/count"
 		extends="v2Api">
 		<action name="*" class="com.facilio.bmsconsole.actions.WorkOrderAction"
@@ -396,10 +396,10 @@
 	<package name="pmplannerupdate" namespace="/api/v2/pmplanner/update"
 		extends="v2Api">
 		<action name="settings" class="com.facilio.bmsconsole.actions.PMPlannerAction"
-			method="updatePMPlannerSettings">			
-		</action>		
+			method="updatePMPlannerSettings">
+		</action>
 	</package>
-	
+
 
 	<package name="approvalListApiV2" namespace="/api/v2/approvals/view"
 		extends="v2Api">
@@ -668,7 +668,7 @@
 			<param name="permission">GENERAL</param>
 			<param name="id">{1}</param>
 		</action>
-	</package> 
+	</package>
 
 	<package name="taskApiv2" namespace="/api/v2/tasks" extends="v2Api">
 
@@ -683,13 +683,13 @@
 			<param name="moduleName">workorder</param>
 			<param name="permission">ADD_UPDATE_DELETE_TASK</param>
 		</action>
-		
+
 		<action name="closeResourceTasks" class="com.facilio.bmsconsole.actions.TaskAction"
 			method="v2closeAllTask">
 			<param name="moduleName">workorder</param>
 			<param name="permission">ADD_UPDATE_DELETE_TASK</param>
 		</action>
-		
+
 		<action name="closeSectionsTasks" class="com.facilio.bmsconsole.actions.TaskAction"
 			method="v2closeAllTask">
 			<param name="moduleName">workorder</param>
@@ -1152,7 +1152,7 @@
 			method="getModuleDataList">
 			<param name="viewName">{1}</param>
 		</action>
-		
+
 	</package>
 
 	<package name="assetApiV2" namespace="/api/v2/assets" extends="v2Api">
@@ -1191,7 +1191,7 @@
 		<action name="update" class="com.facilio.bmsconsole.actions.AssetAction"
 			method="v2updateAsset">
 		</action>
-		
+
 		<action name="downtimemetrics" class="com.facilio.bmsconsole.actions.AssetAction"
 			method="fetchAssetDowntimeMetrics">
 		</action>
@@ -1275,7 +1275,7 @@
 	</package>
 
 	<package name="workflowApiv2" namespace="/api/v2/workflow" extends="v2Api">
-		
+
 		<action name="xml" class="com.facilio.workflows.action.WorkflowAction"
 			method="getWorkflowXmlFromObject">
 		</action>
@@ -1287,46 +1287,47 @@
 			
 		<action name="addWorkflow"
 			class="com.facilio.workflows.action.WorkflowAction" method="addWorkflow"></action>
-			
+
 		<action name="updateWorkflow"
 			class="com.facilio.workflows.action.WorkflowAction" method="updateWorkflow"></action>
-			
+
 		<action name="deleteWorkflow"
 			class="com.facilio.workflows.action.WorkflowAction" method="deleteWorkflow"></action>
-			
+
 		<action name="addNameSpace"
 			class="com.facilio.workflows.action.WorkflowAction" method="addNameSpace"></action>
-			
+
 		<action name="updateNameSpace"
 			class="com.facilio.workflows.action.WorkflowAction" method="updateNameSpace"></action>
-			
+
 		<action name="deleteNameSpace"
 			class="com.facilio.workflows.action.WorkflowAction" method="deleteNameSpace"></action>
-			
+
 		<action name="addUserFunction"
 			class="com.facilio.workflows.action.WorkflowAction" method="addUserFunction"></action>
-			
+
 		<action name="updateUserFunction"
 			class="com.facilio.workflows.action.WorkflowAction" method="updateUserFunction"></action>
-			
+
 		<action name="deleteUserFunction"
 			class="com.facilio.workflows.action.WorkflowAction" method="deleteUserFunction"></action>
-			
+
 		<action name="addScheduledWorkflow"
 			class="com.facilio.workflows.action.WorkflowAction" method="addScheduledWorkflow"></action>
-			
+
 		<action name="updateScheduledWorkflow"
 			class="com.facilio.workflows.action.WorkflowAction" method="updateScheduledWorkflow"></action>
-			
+
 		<action name="deleteScheduledWorkflow"
 			class="com.facilio.workflows.action.WorkflowAction" method="deleteScheduledWorkflow"></action>
-			
+
 		<action name="getScheduledWorkflowList"
 		class="com.facilio.workflows.action.WorkflowAction" method="getScheduledWorkflowList"></action>
-			
+
+
 		<action name="runWorkflow"
 			class="com.facilio.workflows.action.WorkflowAction" method="runWorkflow"></action>
-			
+
 		<action name="getDefaultWorkflowResult"
 			class="com.facilio.workflows.action.WorkflowAction" method="getDefaultWorkflowResultV2"></action>
 	</package>
@@ -1488,14 +1489,14 @@
 			<param name="permission">READ,READ_TEAM,READ_OWN</param>
 		</action>
 	</package>
-	
+
 	<package name="pageSpecialApiv2" namespace="/api/v2/pages/specialModule" extends="v2Api">
 	   <action name="*" class="com.facilio.bmsconsole.actions.PageAction" method="fetchSpecialModulePage">
 			<param name="moduleName">{1}</param>
 			<param name="permission">READ,READ_TEAM,READ_OWN</param>
 		</action>
 	</package>
-		
+
 	<package name="workorderPartsApi" namespace="/api/v2/workorderParts"
 		extends="v2Api">
 		<action name="delete"
@@ -1561,30 +1562,30 @@
 		</action>
 	</package>
 	<package name="storeroomRuleApiV2" namespace="/api/v2/storeroom/rules" extends="v2Api">
-	
+
 		<action name="addOrUpdateRule" class="com.facilio.bmsconsole.actions.StoreRoomAction" method="addStoreNotification">
 			<param name="moduleName">inventory</param>
     	</action>
-		
+
 		<action name="updateRule" class="com.facilio.bmsconsole.actions.StoreRoomAction" method="updateStoreNotification">
 			<param name="moduleName">inventory</param>
     	</action>
-		
+
 		<action name="deleteRule"  class="com.facilio.bmsconsole.actions.StoreRoomAction" method="removeStoreNotification">
 			<param name="moduleName">inventory</param>
     	</action>
-		
+
 		<action name="fetchRule"  class="com.facilio.bmsconsole.actions.StoreRoomAction" method="fetchRuleList">
 			<param name="moduleName">inventory</param>
     	</action>
-		
-		
+
+
 		<action name="*"  class="com.facilio.bmsconsole.actions.StoreRoomAction" method="fetchRuleList">
 			<param name="moduleName">inventory</param>
        </action>
 	</package>
-	
-	
+
+
 	<package name="itemTypesApi" namespace="/api/v2/itemTypes"
 		extends="v2Api">
 		<action name="add"
@@ -2041,7 +2042,7 @@
 			<param name="moduleName">inventory</param>
 			<param name="permission">READ,READ_OWN</param>
 			</action>
-			
+
 	</package>
 	
 	<package name="purchaseRequestApi" namespace="/api/v2/purchaserequest" extends="v2Api">
@@ -2465,7 +2466,7 @@
 			<param name = "id">{1}</param>
 		</action>
 	</package>
-	
+
 		<package name="shipmentsApi" namespace="/api/v2/shipment" extends="v2Api">
 		<action name="list" class="com.facilio.bmsconsole.actions.ShipmentAction" method="getShipmentList">
 			<param name="moduleName">shipment</param>
@@ -2487,31 +2488,31 @@
 			<param name="moduleName">shipment</param>
 			<param name="permission">CREATE,UPDATE</param>
 		</action>
-		
+
 		<action name="delete" class="com.facilio.bmsconsole.actions.ShipmentAction" method="deleteShipment">
 			<param name="moduleName">shipment</param>
 			<param name="permission">DELETE</param>
 		</action>
-		
+
 		<action name="shipmentCount" class="com.facilio.bmsconsole.actions.ShipmentAction" method="shipmentListCount">
 			<param name="moduleName">shipment</param>
 			<param name="permission">READ</param>
 		</action>
-		
+
 		<action name="transfer" class="com.facilio.bmsconsole.actions.ShipmentAction" method="transfer">
 			<param name="moduleName">shipment</param>
 			<param name="permission">READ</param>
 		</action>
-		
+
 		 <action name="*" class="com.facilio.bmsconsole.actions.ShipmentAction" method="getShipmentList">
 			<param name="viewName">{1}</param>
 			<param name="moduleName">shipment</param>
 			<param name="permission">READ</param>
 		</action>
-		
+
 		</package>
 
-	
+
 
 	<package name="inventoryRequestsApi" namespace="/api/v2/inventoryrequest" extends="v2Api">
 		<action name="addOrUpdate" class="com.facilio.bmsconsole.actions.InventoryRequestAction" method="addOrUpdateInventoryRequest">
@@ -2627,7 +2628,7 @@
 			<param name="permission">READ</param>
 		</action>
 
-	</package>109
+	</package>
 	
 	
 	<package name="inventoryRequestListApiv2" namespace="/api/v2/inventoryrequest/view"
@@ -2639,7 +2640,25 @@
 			<param name="viewName">{1}</param>
 		</action>
 	</package>
-	
+
+	<package name="workorderServiceApi" namespace="/api/v2/workorderService"
+		extends="v2Api">
+		<action name="delete"
+			class="com.facilio.bmsconsole.actions.WorkOrderServiceAction" method="deleteWorkorderService">
+		</action>
+		<action name="addOrUpdate"
+			class="com.facilio.bmsconsole.actions.WorkOrderServiceAction" method="addOrUpdateWorkorderService">
+		</action>
+	</package>
+
+	<package name="workorderServiceList" namespace="/api/v2/workorderServiceList/parent"
+		extends="v2Api">
+		<action name="*"
+			class="com.facilio.bmsconsole.actions.WorkOrderServiceAction" method="workorderServiceList">
+			<param name = "parentId">{1}</param>
+		</action>
+	</package>
+
 	<package name="attendanceTrasaction" namespace="/api/v2/attendance"
 		extends="v2Api">
 		<action name="add" class="com.facilio.bmsconsole.actions.AttendanceAction"
@@ -2648,12 +2667,12 @@
 		<action name="getState" class="com.facilio.bmsconsole.actions.AttendanceAction"
 			method="showStateForAttendance">
 		</action>
-		<action name="*" class="com.facilio.bmsconsole.actions.AttendanceAction" 
+		<action name="*" class="com.facilio.bmsconsole.actions.AttendanceAction"
 		method="getAttendanceDetails">
 			<param name="attendanceId">{1}</param>
 		</action>
 	</package>
-	
+
 	<package name="attendanceListApiv2" namespace="/api/v2/attendance/view"
 		extends="v2Api">
 		<action name="*" class="com.facilio.bmsconsole.actions.AttendanceAction"
@@ -2661,7 +2680,7 @@
 			<param name="viewName">{1}</param>
 		</action>
 	</package>
-	
+
 	<package name="attendanceTransactionListApiv2" namespace="/api/v2/attendanceTransaction/view"
 		extends="v2Api">
 		<action name="*" class="com.facilio.bmsconsole.actions.AttendanceAction"
@@ -2669,7 +2688,7 @@
 			<param name="viewName">{1}</param>
 		</action>
 	</package>
-	
+
 	<package name="breakTrasaction" namespace="/api/v2/breakTransaction"
 		extends="v2Api">
 		<action name="add" class="com.facilio.bmsconsole.actions.BreakTransactionAction"

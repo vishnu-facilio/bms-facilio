@@ -2,33 +2,49 @@ package com.facilio.bmsconsole.context;
 
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 
-public class ServiceContractLineItemContext extends ModuleBaseWithCustomFields{
-	
-	/**
-	 * 
-	 */
+public class WorkOrderServiceContext extends ModuleBaseWithCustomFields{
 	private static final long serialVersionUID = 1L;
-	
-	private long serviceContractId = -1;
-	private ServiceContext service;
+
 	private double cost = -1;
+
 	public double getCost() {
 		return cost;
 	}
+
 	public void setCost(double cost) {
 		this.cost = cost;
 	}
-	public long getServiceContractId() {
-		return serviceContractId;
+
+	private long parentId = -1;
+	
+	public long getParentId() {
+		return parentId;
 	}
-	public void setServiceContractId(long serviceContractId) {
-		this.serviceContractId = serviceContractId;
+
+	public void setParentId(long parentId) {
+		this.parentId = parentId;
 	}
+
+	private ServiceContext service;
+	
 	public ServiceContext getService() {
 		return service;
 	}
+
 	public void setService(ServiceContext service) {
 		this.service = service;
 	}
+	
+	private long vendor;
+
+	public long getVendor() {
+		return vendor;
+	}
+
+	public void setVendor(long vendor) {
+		this.vendor = vendor;
+	}
+	
+
 	
 }
