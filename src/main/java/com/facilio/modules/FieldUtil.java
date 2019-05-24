@@ -3,10 +3,6 @@ package com.facilio.modules;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -21,14 +17,12 @@ import java.util.Set;
 import com.facilio.modules.fields.*;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.math.NumberUtils;
-import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.forms.FacilioForm;
@@ -40,8 +34,6 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.fs.FileStore;
 import com.facilio.fs.FileStoreFactory;
 import com.facilio.fw.BeanFactory;
-import com.facilio.unitconversion.Unit;
-import com.facilio.unitconversion.UnitsUtil;
 import com.facilio.util.FacilioUtil;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonInclude.Value;
@@ -56,144 +48,10 @@ public class FieldUtil {
 	
 	private static final Logger LOGGER = LogManager.getLogger(FieldUtil.class.getName());
 	
-	public static final String NUMBER_FIELD_UNIT_SUFFIX = "Unit";
 	public static Map<String, Object> getEmptyLookedUpProp(long id) {
 		Map<String, Object> prop = new HashMap<>();
 		prop.put("id", id);
 		return prop;
-	}
-	
-	public static void castOrParseValueAsPerType(PreparedStatement pstmt, int paramIndex, FacilioField field, Object value) throws SQLException {
-		FieldType type = field.getDataTypeEnum();
-		
-//		if((type.equals(FieldType.DECIMAL) || type.equals(FieldType.NUMBER)) && field instanceof NumberField) {
-//			
-//			NumberField numberField = (NumberField) field;
-//			value = UnitsUtil.convertToSiUnit(value, numberField.getUnitEnum());
-//		}
-		switch(type) {
-			
-			case STRING:
-				if(value != null && !(value instanceof String && ((String)value).isEmpty())) {
-					if(value instanceof String) {
-						pstmt.setString(paramIndex, (String) value);
-					}
-					else {
-						pstmt.setString(paramIndex, value.toString());
-					}
-				}
-				else {
-					pstmt.setNull(paramIndex, Types.VARCHAR);
-				}
-				break;
-			case DECIMAL:
-				if(value != null && !(value instanceof String && ((String)value).isEmpty())) {
-					double val = FacilioUtil.parseDouble(value);
-					if(val != -1 && val != -99) {
-						pstmt.setDouble(paramIndex, val);
-					}
-					else {
-						pstmt.setNull(paramIndex, Types.DOUBLE);
-					}
-				}
-				else {
-					pstmt.setNull(paramIndex, Types.DOUBLE);
-				}
-				break;
-			case BOOLEAN:
-				if(value != null) {
-					if(value instanceof Boolean) {
-						pstmt.setBoolean(paramIndex, (boolean) value);
-					}
-					else {
-						BooleanField booleanField = (BooleanField) field;
-						String val = value.toString().trim();
-						if ((booleanField.getTrueVal() != null && booleanField.getTrueVal().equalsIgnoreCase(val)) || (NumberUtils.isCreatable(val) && new Double(val) > 0)) {
-							pstmt.setBoolean(paramIndex, true);
-						}
-						else {
-							pstmt.setBoolean(paramIndex, Boolean.valueOf(val));
-						}
-					}
-				}
-				else {
-					pstmt.setNull(paramIndex, Types.BOOLEAN);
-				}
-				break;
-			case LOOKUP:
-			case NUMBER:	
-			case DATE:
-			case DATE_TIME:
-			case FILE:
-			case COUNTER:
-			case ID:
-				if(value != null && !(value instanceof String && ((String)value).isEmpty())) {
-					long val = FacilioUtil.parseLong(value);
-					if(val != -1 && val != -99) {
-						pstmt.setLong(paramIndex, val);
-					}
-					else {
-						pstmt.setNull(paramIndex, Types.BIGINT);
-					}
-				}
-				else {
-					pstmt.setNull(paramIndex, Types.BIGINT);
-				}
-				break;
-			case ENUM:
-				pstmt.setNull(paramIndex, Types.INTEGER);
-				if(value != null && !(value instanceof String && ((String)value).isEmpty())) {
-					EnumField enumField = (EnumField) field;
-					if (value instanceof Integer) {
-						int val = (int) value;
-						if (enumField.getValue(val) != null) {
-							pstmt.setInt(paramIndex, val);
-						}
-					}
-					else if (value instanceof Long) {
-						int val = ((Long) value).intValue();
-						if (enumField.getValue(val) != null) {
-							pstmt.setInt(paramIndex, val);
-						}
-					}
-					else {
-						int val = enumField.getIndex(value.toString());
-						if (val != -1) {
-							pstmt.setInt(paramIndex, val);
-						}
-					}
-				}
-				break;
-			case MISC:
-			default:
-					pstmt.setObject(paramIndex, value);
-					break;
-		}
-	}
-	
-	public static Object getObjectFromRS (FacilioField field, ResultSet rs) throws SQLException {
-		if (field.getDataTypeEnum() != null) { //Temp Fix
-			Object val = rs.getObject(field.getName());
-			switch (field.getDataTypeEnum()) {
-				case BOOLEAN:
-					if (val != null) {
-						return rs.getBoolean(field.getName());
-					}
-					else {
-						return val;
-					}
-				case NUMBER:
-					if (val instanceof Short) {
-						return ((Number) val).intValue();
-					}
-				default:
-					return val;
-			}
-		}
-		else {
-			LOGGER.log(Level.DEBUG, "Data type shouldn't be null\n"+CommonCommandUtil.getStackTraceString(Thread.currentThread().getStackTrace()));
-			return rs.getObject(field.getName());
-		}
 	}
 	
 	public static Object castOrParseValueAsPerType(FieldType type, Object value)  {
@@ -562,75 +420,6 @@ public class FieldUtil {
 		return value;
 	}
 	
-	public static void handleNumberFieldUnitConversion(List<NumberField> numberFields, List<Map<String, Object>> values){
-		
-		try {
-			if (numberFields == null || numberFields.isEmpty() || values == null || values.isEmpty()) {
-				return;
-			}
-			for(Map<String, Object> value : values) {
-				for(NumberField field : numberFields) {
-					if (value.containsKey(field.getName()) && value.containsKey(field.getName()+NUMBER_FIELD_UNIT_SUFFIX)) {
-						Object numberField = value.get(field.getName());
-						int unit = Integer.parseInt(value.get(field.getName()+NUMBER_FIELD_UNIT_SUFFIX).toString());
-						numberField = UnitsUtil.convertToSiUnit(numberField, Unit.valueOf(unit));
-						value.put(field.getName(), numberField);
-					}
-				}
-			}
-		} catch (Exception e) {
-			LOGGER.log(Level.ERROR, "Insertion failed During Unit Conversion", e);
-			//throw new RuntimeException("Insertion failed During Unit Conversion");
-		}
-		
-	}
-	public static void addFiles(List<FileField> fileFields, List<Map<String, Object>> values) throws Exception {
-		if (fileFields == null || fileFields.isEmpty()) {
-			return;
-		}
-		FileStore fs = FileStoreFactory.getInstance().getFileStore();
-		for(Map<String, Object> value : values) {
-			for(FacilioField field : fileFields) {
-				if (value.containsKey(field.getName())) {
-					Object fileObj = value.get(field.getName());
-					fileObj = fileObj instanceof List && ((ArrayList)fileObj).get(0) != null ? ((Map<String,Object>)((ArrayList)fileObj).get(0)) : fileObj;
-					File file = null;
-					String fileName = null;
-					String fileType = null;
-					
-					if (fileObj instanceof File || fileObj instanceof String){
-						file = fileObj instanceof File ? (File) fileObj : new File((String)fileObj);
-						fileName = (String) value.get(field.getName()+"FileName");
-						fileType = (String) value.get(field.getName()+"ContentType");
-					}
-					else {
-						Map<String, Object> fileMap = (Map<String, Object>) fileObj;
-						file = new File((String) fileMap.get("content"));
-						fileName = (String) fileMap.get(field.getName()+"FileName");
-						fileType = (String) fileMap.get(field.getName()+"ContentType");
-					}
-					
-					// TODO add file in bulk
-					/*value.put("file", file);
-					value.put("fileName", fileName);
-					value.put("contentType", fileType);
-					files.add(value);*/
-					
-					long fileId = fs.addFile(fileName, file, fileType);
-					value.put(field.getName(), fileId);
-				}
-			}
-		}
-		
-		/*for(Map<String, Object> value : values) {
-			for(FacilioField field : fileFields) {
-				if (value.containsKey("fileId")) {
-					value.put(field.getName(), value.get("fileId"));
-				}
-			}
-		}*/
-	}
-
 	private static final Set<String> SITE_ID_ALLOWED_MODULES = Collections.unmodifiableSet(
 			new HashSet<>(Arrays.asList("resource", "asset", "building", "floor", "space", "zone", "alarm", "ticket", "workorder", "workorderrequest", "task", "readingalarm", "inventory", "tenant", "labour")));
 

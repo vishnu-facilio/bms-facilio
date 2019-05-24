@@ -17,7 +17,7 @@ import com.facilio.queue.FacilioExceptionProcessor;
 import com.facilio.server.ServerInfo;
 import com.facilio.serviceportal.actions.PortalAuthInterceptor;
 import com.facilio.db.builder.DBUtil;
-import com.facilio.db.builder.SQLScriptRunner;
+import com.facilio.db.util.SQLScriptRunner;
 import com.facilio.tasker.FacilioScheduler;
 import com.facilio.tasker.executor.InstantJobExecutor;
 import com.facilio.db.transaction.FacilioConnectionPool;
